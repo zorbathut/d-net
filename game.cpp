@@ -23,8 +23,8 @@ const float tankturn = 2.f / FPS / SUBSTEP;
 void Tank::move( const Keystates &keystates, int phase ) {
 	if( phase == 0 ) {
 		int dv = keystates.forward - keystates.back;
-		x += tankvel * dv * sin( d );
-		y += -tankvel * dv * cos( d );
+		x += tankvel * dv * fsin( d );
+		y += -tankvel * dv * fcos( d );
 	} else if( phase == 1 ) {
 		int dd = keystates.left - keystates.right;
 		d += tankturn * dd;
@@ -73,10 +73,10 @@ float tank_coords[3][2] =  {
 };
 
 vector< float > Tank::getTankVertices() const {
-	float xtx = cos( d );
-	float xty = sin( d );
-	float ytx = sin( d );
-	float yty = -cos( d );
+	float xtx = fcos( d );
+	float xty = fsin( d );
+	float ytx = fsin( d );
+	float yty = -fcos( d );
 	vector< float > rv;
 	for( int i = 0; i < 3; i++ ) {
 		rv.push_back( x + tank_coords[ i ][ 0 ] * xtx + tank_coords[ i ][ 1 ] * xty );
@@ -86,10 +86,10 @@ vector< float > Tank::getTankVertices() const {
 };
 
 pair< float, float > Tank::getFiringPoint() const {
-	float xtx = cos( d );
-	float xty = sin( d );
-	float ytx = sin( d );
-	float yty = -cos( d );
+	float xtx = fcos( d );
+	float xty = fsin( d );
+	float ytx = fsin( d );
+	float yty = -fcos( d );
 	return make_pair( x + tank_coords[ 2 ][ 0 ] * xtx + tank_coords[ 2 ][ 1 ] * xty, y + tank_coords[ 2 ][ 1 ] * yty + tank_coords[ 2 ][ 0 ] * ytx );
 };
 
@@ -103,15 +103,15 @@ const float projectile_length = 1;
 const float projectile_speed = 60.f / FPS / SUBSTEP;
 
 void Projectile::move() {
-	x += projectile_speed * sin( d );
-	y += -projectile_speed * cos( d );
+	x += projectile_speed * fsin( d );
+	y += -projectile_speed * fcos( d );
 };
 void Projectile::render() const {
 	setColor( 1.0, 1.0, 1.0 );
-	drawLine( x, y, x + projectile_length * sin( d ), y - projectile_length * cos( d ), 0.1 );
+	drawLine( x, y, x + projectile_length * fsin( d ), y - projectile_length * fcos( d ), 0.1 );
 };
 bool Projectile::colliding( const Collider &collider ) const {
-	return collider.test( x, y, x + projectile_length * sin( d ), y - projectile_length * cos( d ) );
+	return collider.test( x, y, x + projectile_length * fsin( d ), y - projectile_length * fcos( d ) );
 };
 
 void Game::renderToScreen( int target ) const {
