@@ -17,13 +17,6 @@ Quad::Quad( const Float4 &dim ) : range( dim ) {
 Quad::~Quad() {
 	delete [] quads; }
 
-bool linelineintersect( float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4 ) {
-	float denom = ( y4 - y3 ) * ( x2 - x1 ) - ( x4 - x3 ) * ( y2 - y1 );
-	float ua = ( ( x4 - x3 ) * ( y1 - y3 ) - ( y4 - y3 ) * ( x1 - x3 ) ) / denom;
-	float ub = ( ( x2 - x1 ) * ( y1 - y3 ) - ( y2 - y1 ) * ( x1 - x3 ) ) / denom;
-	return ua >= 0 && ua <= 1 && ub >= 0 && ub <= 1;
-}
-
 void Collider::startGroup() {
 	newGroup.clear();
 };
@@ -72,15 +65,41 @@ void Collider::deleteGroup( int group ) {
 };
 
 bool Collider::test( float sx, float sy, float ex, float ey ) const {
-	for( int i = 0; i < active.size(); i++ )
+	bool res = false;
+	for( int i = 0; i < active.size() && !res; i++ )
 		if( active[ i ] )
 			for( int j = groups[ i ]; j < groups[ i + 1 ]; j += 4 )
-				if( linelineintersect( verts[ j ], verts[ j + 1 ], verts[ j + 2 ], verts[ j + 3 ], sx, sy, ex, ey ) )
-					return true;
-	return false;
+				if( linelineintersect( verts[ j ], verts[ j + 1 ], verts[ j + 2 ], verts[ j + 3 ], sx, sy, ex, ey ) ) {
+					res = true;
+					break;
+				}
+	//dprintf( "Entering qt\n" );
+	bool alterres = quadTest( Float4( sx, sy, ex, ey ), Float4( sx, sy, ex, ey ).normalize(), quad );
+	//dprintf( "Leaving qt\n" );
+	if( res != alterres )
+		dprintf( "Mismatch!\n" );
+	assert( res == alterres );
+	return res;
 };
 
-//int depth = 0;
+bool Collider::quadTest( const Float4 &line, const Float4 &range, const Quad *node ) const {
+	if( rectrectintersect( range, node->range ) ) {
+		if( node->quads ) {
+			//dprintf( "QTL\n" );
+			for( int i = 0; i < 4; i++ )
+				if( quadTest( line, range, &node->quads[ i ] ) )
+					return true;
+			//dprintf( "EQTL\n" );
+		} else {
+			//dprintf( "LIN\n" );
+			for( int i = 0; i < node->lines.size(); i++ )
+				if( active[ node->lines[ i ]->group] && linelineintersect( line, node->lines[ i ]->line ) )
+					return true;
+			//dprintf( "ELIN\n" );
+		}
+	}
+	return false;
+}
 
 #define MAX_LEAF_SIZE	16
 #define LEAF_SLUDGE_TOTAL (MAX_LEAF_SIZE*2)
@@ -89,7 +108,7 @@ bool Collider::test( float sx, float sy, float ex, float ey ) const {
 
 void Collider::quadAdd( const Float4 &range, Collide *ptr, Quad *quad ) {
 //	depth++;
-	if( range.rectIntersects( quad->range ) ) {
+	if( rectrectintersect( range, quad->range ) ) {
 		//dprintf( "Entering %d\n", depth );
 		if( !quad->quads && !quad->sludge && quad->lines.size() >= MAX_LEAF_SIZE ) {
 			//dprintf( "Splitz0ring %d\n", depth );
@@ -134,7 +153,7 @@ void Collider::quadAdd( const Float4 &range, Collide *ptr, Quad *quad ) {
 };
 
 void Collider::quadRemove( const Float4 &range, Collide *ptr, Quad *quad ) {
-	if( range.rectIntersects( quad->range ) ) {
+	if( rectrectintersect( range, quad->range ) ) {
 		if( quad->quads ) {
 			for( int i = 0; i < 4; i++ )
 				quadRemove( range, ptr, &quad->quads[ i ] );

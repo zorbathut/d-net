@@ -61,7 +61,7 @@ private:
 	Collider( const Collider &x ); // do not implement
 	void operator=( const Collider &x ); // see above
 
-	bool quadTest( const Float4 &line, const Float4 &range, Quad *node );
+	bool quadTest( const Float4 &line, const Float4 &range, const Quad *node ) const;
 	void quadAdd( const Float4 &range, Collide *ptr, Quad *node );
 	void quadRemove( const Float4 &range, Collide *ptr, Quad *node ); 
 
