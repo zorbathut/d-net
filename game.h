@@ -33,6 +33,9 @@ public:
 	float x;
 	float y;
 	float d;
+
+	bool live;
+
 };
 
 class Projectile {

@@ -22,6 +22,9 @@ const float tankvel = 24.f / FPS / SUBSTEP;
 const float tankturn = 2.f / FPS / SUBSTEP;
 
 void Tank::move( const Keystates &keystates, int phase ) {
+	if( !live )
+		return;
+
 	if( phase == 0 ) {
 		int dv = keystates.forward - keystates.back;
 		x += tankvel * dv * fsin( d );
@@ -39,6 +42,9 @@ void Tank::move( const Keystates &keystates, int phase ) {
 void Tank::tick() { };
 
 void Tank::render( int tankid ) const {
+	if( !live )
+		return;
+
 	if( tankid == 0 ) {
 		glColor3f( 0.8f, 0.0f, 0.0f );
 	} else if( tankid == 1 ) {
@@ -51,6 +57,8 @@ void Tank::render( int tankid ) const {
 };
 
 bool Tank::colliding( const Collider &collider ) const {
+	if( !live )
+		return false;
 	vector< float > tankpts = getTankVertices();
 	for( int i = 0; i < 3; i++ )
 		if( collider.test( tankpts[ i*2 ], tankpts[ i*2 + 1 ], tankpts[ ( i*2 + 2 ) % 6 ], tankpts[ ( i*2 + 3 ) % 6 ] ) )
@@ -59,6 +67,8 @@ bool Tank::colliding( const Collider &collider ) const {
 };
 
 void Tank::addCollision( Collider *collider ) const {
+	if( !live )
+		return;
 	vector< float > tankpts = getTankVertices();
 	for( int i = 0; i < 3; i++ )
 		collider->add( tankpts[ i*2 ], tankpts[ i*2 + 1 ], tankpts[ ( i*2 + 2 ) % 6 ], tankpts[ ( i*2 + 3 ) % 6 ] );
@@ -98,6 +108,7 @@ Tank::Tank() {
 	x = 0;
 	y = 0;
 	d = 0;
+	live = true;
 }
 
 const float projectile_length = 1;
@@ -194,7 +205,7 @@ void Game::runTick( const vector< Keystates > &keys ) {
 		if( i == SUBSTEP - 1 ) {
 
 			for( int i = 0; i < players.size(); i++ ) {
-				if( keys[ i ].firing ) {
+				if( players[ i ].live && keys[ i ].firing ) {
 					Projectile proj;
 					proj.x = players[ i ].getFiringPoint().first;
 					proj.y = players[ i ].getFiringPoint().second;
