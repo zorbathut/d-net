@@ -49,6 +49,10 @@ void drawLine( float sx, float sy, float ex, float ey, float weight ) {
 	glEnd();
 }
 
+void drawLine( const Float4 &pos, float weight ) {
+	drawLine( pos.sx, pos.sy, pos.ex, pos.ey, weight );
+}
+
 void drawLinePath( const vector< float > &verts, float weight ) {
 	assert( verts.size() % 2 == 0 );
 	for( int i = 0; i < verts.size(); i += 2 )

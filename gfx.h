@@ -11,6 +11,7 @@ void setZoom( float sx, float sy, float ey );
 
 void setColor( float r, float g, float b );
 void drawLine( float sx, float sy, float ex, float ey, float weight );
+void drawLine( const Float4 &loc, float weight );
 void drawLinePath( const vector< float > &verts, float weight );
 
 void drawRect( const Float4 &rect, float weight );

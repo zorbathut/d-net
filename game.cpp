@@ -21,6 +21,23 @@ Keystates::Keystates() {
 const float tankvel = 24.f / FPS / SUBSTEP;
 const float tankturn = 2.f / FPS / SUBSTEP;
 
+void GfxEffects::move() {
+	age++;
+}
+void GfxEffects::render() const {
+	float apercent = 1.0f - (float)age / life;
+	setColor( apercent, apercent, apercent );
+	drawLine( pos + vel * age, 0.1f );
+}
+bool GfxEffects::dead() const {
+	return age >= life;
+}
+
+
+GfxEffects::GfxEffects() {
+	age = 0;
+}
+
 void Tank::move( const Keystates &keystates, int phase ) {
 	if( !live )
 		return;
@@ -104,11 +121,42 @@ pair< float, float > Tank::getFiringPoint() const {
 	return make_pair( x + tank_coords[ 2 ][ 0 ] * xtx + tank_coords[ 2 ][ 1 ] * xty, y + tank_coords[ 2 ][ 1 ] * yty + tank_coords[ 2 ][ 0 ] * ytx );
 };
 
+void Tank::takeDamage( int damage ) {
+	health -= damage;
+	if( health <= 0 ) {
+		live = false;
+		spawnShards = true;
+	}
+};
+
+void Tank::genEffects( vector< GfxEffects > *gfxe ) {
+	if( spawnShards ) {
+		vector< float > tv = getTankVertices();
+		for( int i = 0; i < tv.size(); i += 2 ) {
+			GfxEffects ngfe;
+			ngfe.pos.sx = tv[ i ];
+			ngfe.pos.sy = tv[ i + 1 ];
+			ngfe.pos.ex = tv[ ( i + 2 ) % tv.size() ];
+			ngfe.pos.ey = tv[ ( i + 3 ) % tv.size() ];
+			float cx = ( ngfe.pos.sx + ngfe.pos.ex ) / 2;
+			float cy = ( ngfe.pos.sy + ngfe.pos.ey ) / 2;
+			ngfe.vel.sx = ngfe.vel.ex = cx - x;
+			ngfe.vel.sy = ngfe.vel.ey = cy - y;
+			ngfe.vel /= 5;
+			ngfe.life = 15;
+			gfxe->push_back( ngfe );
+		}
+		spawnShards = false;
+	}
+}
+
 Tank::Tank() {
 	x = 0;
 	y = 0;
 	d = 0;
 	live = true;
+	spawnShards = false;
+	health = 20;
 }
 
 const float projectile_length = 1;
@@ -131,6 +179,9 @@ pair< float, int > Projectile::getImpact( const Collider &collider ) const {
 void Projectile::addCollision( Collider *collider ) const {
 	collider->add( x, y, x + projectile_length * fsin( d ), y - projectile_length * fcos( d ) );
 };
+void Projectile::impact( Tank *target ) {
+	target->takeDamage( 1 );
+};
 
 void Game::renderToScreen( int target ) const {
 	for( int i = 0; i < players.size(); i++ )
@@ -138,6 +189,8 @@ void Game::renderToScreen( int target ) const {
 	for( int i = 0; i < projectiles.size(); i++ )
 		for( int j = 0; j < projectiles[ i ].size(); j++ )
 			projectiles[ i ][ j ].render();
+	for( int i = 0; i < gfxeffects.size(); i++ )
+		gfxeffects[ i ].render();
 	gamemap.render();
 	collider.render();
 };
@@ -255,10 +308,25 @@ void Game::runTick( const vector< Keystates > &keys ) {
 			collider.deleteGroup( pcid[ j ] );
 		}
 
-		for( int i = 0; i < impacts.size(); i++ )
+		for( int i = 0; i < impacts.size(); i++ ) {
 			dprintf( "Impact on player %d\n", impacts[ i ].second );
+			impacts[ i ].first.impact( &players[ impacts[ i ].second ] );
+		}
 
 	}
+
+	{
+		vector< GfxEffects > neffects;
+		for( int i = 0; i < gfxeffects.size(); i++ ) {
+			gfxeffects[ i ].move();
+			if( !gfxeffects[ i ].dead() )
+				neffects.push_back( gfxeffects[ i ] );
+		}
+		swap( neffects, gfxeffects );
+	}
+
+	for( int i = 0; i < players.size(); i++ )
+		players[ i ].genEffects( &gfxeffects );
 
 };
 

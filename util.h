@@ -33,6 +33,19 @@ public:
 	}
 };
 
+inline Float4 operator+( const Float4 &lhs, const Float4 &rhs ) {
+	return Float4( lhs.sx + rhs.sx, lhs.sy + rhs.sy, lhs.ex + rhs.ex, lhs.ey + rhs.ey );
+}
+inline Float4 operator*( const Float4 &lhs, float rhs ) {
+	return Float4( lhs.sx * rhs, lhs.sy * rhs, lhs.ex * rhs, lhs.ey * rhs );
+}
+inline Float4 &operator/=( Float4 &lhs, float rhs ) {
+	lhs.sx /= rhs;
+	lhs.sy /= rhs;
+	lhs.ex /= rhs;
+	lhs.ey /= rhs;
+}
+
 #define assert2(x) assert(x)
 
 inline bool operator==( const Float4 &lhs, const Float4 &rhs ) {

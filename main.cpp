@@ -54,6 +54,7 @@ void MakeWindow( const char * strWindowName, int width, int height ) {
 
 	dprintf( "Mainwindow\n" );
 
+	// appears to be crashing here sometimes?
     MainWindow = SDL_SetVideoMode( width, height, SCREEN_DEPTH, GetVideoFlags() );
 	assert( MainWindow );
 

@@ -17,6 +17,24 @@ public:
 #define RENDERTARGET_SPECTATOR -1
 #define PHASECOUNT 2
 
+
+class GfxEffects {
+public:
+
+	void move();
+	void render() const;
+	bool dead() const;
+
+	Float4 pos;
+	Float4 vel;
+	int life;
+
+	int age;
+
+	GfxEffects();
+
+};
+
 class Tank {
 public:
 	void move( const Keystates &keystates, int phase );
@@ -29,12 +47,18 @@ public:
 
 	vector< float > getTankVertices() const;
 	pair< float, float > getFiringPoint() const;
+
+	void takeDamage( int amount );
+	void genEffects( vector< GfxEffects > *gfxe );
 	
 	float x;
 	float y;
 	float d;
 
+	bool spawnShards;
 	bool live;
+
+	int health;
 
 };
 
@@ -46,6 +70,7 @@ public:
 	bool colliding( const Collider &collider ) const;
 	pair< float, int > getImpact( const Collider &collider ) const;
 	void addCollision( Collider *collider ) const;
+	void impact( Tank *target );
 
 	float x;
 	float y;
@@ -66,7 +91,8 @@ private:
 	int frameNm;
 
 	vector< Tank > players;
-	vector<vector< Projectile > > projectiles;
+	vector< vector< Projectile > > projectiles;
+	vector< GfxEffects > gfxeffects;
 	Gamemap gamemap;
 
 	Collider collider;
