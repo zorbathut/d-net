@@ -9,10 +9,11 @@ using namespace std;
 #include <GL/gl.h>
 #include <GL/glu.h>
 
-#include "core.h"
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
 
-void Init();
-void MainLoop(void);
+#include "core.h"
+#include "debug.h"
 
 #define SCREEN_WIDTH  800
 #define SCREEN_HEIGHT 600
@@ -39,7 +40,7 @@ int GetVideoFlags( void ) {
 
 }
 
-void CreateWindow( const char * strWindowName, int width, int height ) {
+void MakeWindow( const char * strWindowName, int width, int height ) {
 
 	assert( height > 0 );
 	assert( width > 0 );
@@ -78,7 +79,7 @@ void initSystem() {
 		assert( 0 );
 
 	SetupOgl();
-    CreateWindow( "Destruction Net", SCREEN_WIDTH, SCREEN_HEIGHT );
+    MakeWindow( "Destruction Net", SCREEN_WIDTH, SCREEN_HEIGHT );
 
 };
 
@@ -90,16 +91,23 @@ void deinitSystem() {
 
 int main( int argc, char **argv ) {
 
+	dprintf( "Init\n" );
+
 	initSystem();
+
+	dprintf( "Loop\n" );
 
 	MainLoop();
 
-	deinitSystem();                                     
+	dprintf( "Deinit\n" );
+
+	deinitSystem();
+
+	dprintf( "Done\n" );
 
 }
 
-void toggleFullscreen(void)
-{
+void toggleFullscreen( void ) {
     if( SDL_WM_ToggleFullScreen( MainWindow ) == 0 )
 		assert( 0 );
 }

@@ -1,5 +1,5 @@
 
-SOURCES = main core
+SOURCES = main core game timer debug
 CFLAGS = `sdl-config --cflags` -mno-cygwin
 LINKFLAGS = `sdl-config --libs` -lglu32 -lopengl32 -lm -mno-cygwin
 

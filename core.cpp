@@ -9,8 +9,9 @@ using namespace std;
 
 #include "core.h"
 #include "main.h"
+#include "game.h"
+#include "timer.h"
 
-// this stuff gets ripped out
 void RenderScene() {
 
 	glClearColor( 0.25f, 0.25f, 0.25f, 0.0f );
@@ -35,6 +36,9 @@ void keyPress( SDL_keysym* key ) {
 
 void MainLoop() {
 
+	Game game;
+	Timer timer;
+
 	bool quit = false;
 
 	while( !quit ) {
@@ -42,8 +46,7 @@ void MainLoop() {
 		while( SDL_PollEvent( &event ) ) {
 			switch( event.type ) {
 			case SDL_QUIT:
-					quit = true;
-					break;
+					return;
 
 				case SDL_KEYDOWN:
 					keyPress( & event. key.keysym );         // callback for handling keystrokes, arg is key pressed
@@ -58,6 +61,12 @@ void MainLoop() {
 					break;
 			}
 		}
-		RenderScene();
+		game.runTick( vector< Keystates >() );
+		timer.waitForNextFrame();
+		if( !timer.skipFrame() ) {
+			RenderScene();
+			game.renderToScreen( RENDERTARGET_SPECTATOR );
+		}
+		timer.frameDone();
 	}
 }
