@@ -45,6 +45,7 @@ public:
 	void deleteGroup( int group );
 	
 	bool test( float sx, float sy, float ex, float ey ) const;
+	pair< float, int > getImpact( float sx, float sy, float ex, float ey ) const;
 
 	Collider();	// doesn't init to a usable state
 	void reinit( float sx, float sy, float ex, float ey );
@@ -67,6 +68,7 @@ private:
 	void operator=( const Collider &x ); // see above
 
 	bool quadTest( const Float4 &line, const Float4 &range, const Quad *node ) const;
+	pair< float, int > quadImpact( const Float4 &line, const Float4 &range, const Quad *node ) const;
 	void quadAdd( const Float4 &range, Collide *ptr, Quad *node );
 	void quadRemove( const Float4 &range, Collide *ptr, Quad *node ); 
 

@@ -89,8 +89,11 @@ void Collider::deleteGroup( int group ) {
 };
 
 bool Collider::test( float sx, float sy, float ex, float ey ) const {
-	bool rv = quadTest( Float4( sx, sy, ex, ey ), Float4( sx, sy, ex, ey ).normalize(), quad );
-	return rv;
+	return quadTest( Float4( sx, sy, ex, ey ), Float4( sx, sy, ex, ey ).normalize(), quad );
+};
+
+pair< float, int > Collider::getImpact( float sx, float sy, float ex, float ey ) const {
+	return quadImpact( Float4( sx, sy, ex, ey ), Float4( sx, sy, ex, ey ).normalize(), quad );
 };
 
 bool Collider::quadTest( const Float4 &line, const Float4 &range, const Quad *node ) const {
@@ -111,6 +114,29 @@ bool Collider::quadTest( const Float4 &line, const Float4 &range, const Quad *no
 	}
 	return false;
 }
+
+pair< float, int > Collider::quadImpact( const Float4 &line, const Float4 &range, const Quad *node ) const {
+	pair< float, int > rv = make_pair( 2.0f, -1 );
+	if( rectrectintersect( range, node->range ) ) {
+		if( node->node ) {
+			for( int i = 0; i < 4; i++ ) {
+				pair< float, int > nrv = quadImpact( line, range, &node->quads[ i ] );
+				if( nrv < rv )
+					rv = nrv;
+			}
+		} else {
+			for( int i = 0; i < node->lines.size(); i++ )
+				if( active[ node->lines[ i ]->group] ) {
+					pair< float, int > nrv = make_pair( linelineintersectpos( line, node->lines[ i ]->line ), node->lines[ i ]->group );
+					if( nrv < rv )
+						rv = nrv;
+				}
+		}
+	}
+	return rv;
+}
+
+
 
 #define MAX_LEAF_SIZE	16
 #define LEAF_COLLAPSE_THRESH 12

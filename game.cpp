@@ -3,6 +3,7 @@
 
 #include <cmath>
 #include <vector>
+#include <algorithm>
 #include <assert.h>
 using namespace std;
 
@@ -113,6 +114,9 @@ void Projectile::render() const {
 bool Projectile::colliding( const Collider &collider ) const {
 	return collider.test( x, y, x + projectile_length * fsin( d ), y - projectile_length * fcos( d ) );
 };
+pair< float, int > Projectile::getImpact( const Collider &collider ) const {
+	return collider.getImpact( x, y, x + projectile_length * fsin( d ), y - projectile_length * fcos( d ) );
+};
 void Projectile::addCollision( Collider *collider ) const {
 	collider->add( x, y, x + projectile_length * fsin( d ), y - projectile_length * fcos( d ) );
 };
@@ -215,13 +219,20 @@ void Game::runTick( const vector< Keystates > &keys ) {
 				projectiles[ j ][ k ].addCollision( &collider );
 			pcid.push_back( collider.endGroup() );
 		}
+		vector< pair< Projectile, int > > impacts;
 		vector< Projectile > liveproj;
 		for( int j = 0; j < projectiles.size(); j++ ) {
 			collider.disableGroup( tcid[ j ] );
 			collider.disableGroup( pcid[ j ] );
 			for( int k = 0; k < projectiles[ j ].size(); k++ ) {
-				if( !projectiles[ j ][ k ].colliding( collider ) )
+				pair< float, int > impact = projectiles[ j ][ k ].getImpact( collider );
+				if( impact.first == 2.0f ) {
 					liveproj.push_back( projectiles[ j ][ k ] );
+				} else {
+					int target = find( tcid.begin(), tcid.end(), impact.second ) - tcid.begin();
+					if( target < tcid.size() )
+						impacts.push_back( make_pair( projectiles[ j ][ k ], target ) );
+				}	
 			}
 			projectiles[ j ].swap( liveproj );
 			liveproj.clear();
@@ -232,6 +243,9 @@ void Game::runTick( const vector< Keystates > &keys ) {
 			collider.deleteGroup( tcid[ j ] );
 			collider.deleteGroup( pcid[ j ] );
 		}
+
+		for( int i = 0; i < impacts.size(); i++ )
+			dprintf( "Impact on player %d\n", impacts[ i ].second );
 
 	}
 

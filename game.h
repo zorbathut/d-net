@@ -41,6 +41,7 @@ public:
 	void move();
 	void render() const;
 	bool colliding( const Collider &collider ) const;
+	pair< float, int > getImpact( const Collider &collider ) const;
 	void addCollision( Collider *collider ) const;
 
 	float x;
