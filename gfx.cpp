@@ -53,3 +53,17 @@ void drawLinePath( const vector< float > &verts, float weight ) {
 	for( int i = 0; i < verts.size(); i += 2 )
 		drawLine( verts[ i ], verts[ i + 1 ], verts[ ( i + 2 ) % verts.size() ], verts[ ( i + 3 ) % verts.size() ], weight );
 };
+
+void drawRect( const Float4 &rect, float weight ) {
+	vector< float > verts;
+	verts.push_back( rect.sx );
+	verts.push_back( rect.sy );
+	verts.push_back( rect.ex );
+	verts.push_back( rect.sy );
+	verts.push_back( rect.ex );
+	verts.push_back( rect.ey );
+	verts.push_back( rect.sx );
+	verts.push_back( rect.ey );
+	drawLinePath( verts, weight );
+};
+

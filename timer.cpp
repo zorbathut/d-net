@@ -36,6 +36,11 @@ long long Timer::ticksElapsed() {
 	return cpc() - ticksOffset;
 };
 
+long long Timer::getFrameTicks() {
+	return ticksPerFrame;
+};
+
+
 Timer::Timer() {
 	ticksOffset = cpc();
 	ticksPerFrame = cpf() / FPS;

@@ -64,6 +64,8 @@ private:
 	vector< Projectile > projectiles;
 	Gamemap gamemap;
 
+	Collider collider;
+
 };
 
 #endif

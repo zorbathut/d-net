@@ -1,5 +1,5 @@
 
-SOURCES = main core game timer debug gfx collide gamemap
+SOURCES = main core game timer debug gfx collide gamemap util
 CFLAGS = `sdl-config --cflags` -mno-cygwin -O2
 LINKFLAGS = `sdl-config --libs` -lglu32 -lopengl32 -lm -mno-cygwin -O2
 

@@ -120,13 +120,14 @@ void Game::renderToScreen( int target ) const {
 	for( int i = 0; i < projectiles.size(); i++ )
 		projectiles[ i ].render();
 	gamemap.render();
+	collider.render();
 };
 void Game::runTick( const vector< Keystates > &keys ) {
 
 	frameNm++;
 	assert( keys.size() == 2 );
 
-	Collider collider;
+	collider.reinit( 0, 0, 125, 100 );
 	collider.startGroup();
 	gamemap.addCollide( &collider );
 	collider.endGroup();
@@ -160,7 +161,7 @@ void Game::runTick( const vector< Keystates > &keys ) {
 			
 			// remove the old collision points, add the new ones
 			for( int k = 0; k < players.size(); k++ ) {
-				collider.disableGroup( tcid[ k ] );
+				collider.deleteGroup( tcid[ k ] );
 				collider.startGroup();
 				newtanks[ k ].addCollision( &collider );
 				tcid[ k ] = collider.endGroup();
@@ -175,9 +176,8 @@ void Game::runTick( const vector< Keystates > &keys ) {
 			}
 
 			// now clear all the dynamic collision points
-			for( int k = 0; k < players.size(); k++ ) {
-				collider.disableGroup( tcid[ k ] );
-			}
+			for( int k = 0; k < players.size(); k++ )
+				collider.deleteGroup( tcid[ k ] );
 
 			// in theory I could now add their real location and check to make sure they're not colliding still
 
@@ -186,6 +186,7 @@ void Game::runTick( const vector< Keystates > &keys ) {
 		for( int j = 0; j < projectiles.size(); j++ )
 			projectiles[ j ].move();
 
+		// add all the projectiles and update health, in preparation for the Final Movement
 		if( i == SUBSTEP - 1 ) {
 
 			for( int i = 0; i < players.size(); i++ ) {
@@ -219,7 +220,7 @@ void Game::runTick( const vector< Keystates > &keys ) {
 		}
 		swap( liveproj, projectiles );
 		for( int j = 0; j < players.size(); j++ )
-			collider.disableGroup( tcid[ j ] );
+			collider.deleteGroup( tcid[ j ] );
 
 		// projectile collision here
 

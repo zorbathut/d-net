@@ -2,7 +2,30 @@
 #define DNET_COLLIDE
 
 #include <vector>
+#include <map>
 using namespace std;
+
+#include "util.h"
+
+class Collide {
+public:
+	Float4 line;
+	int group;
+	int sid;
+	Collide();
+	Collide( const Float4 &line, int sid );
+};
+
+class Quad {
+public:
+	Quad *quads;
+	vector< Collide * > lines;
+	Float4 range;
+	bool sludge;
+	Quad();
+	Quad( const Float4 &dim );
+	~Quad();
+};
 
 class Collider {
 public:
@@ -13,17 +36,34 @@ public:
 
 	void disableGroup( int group );
 	void enableGroup( int group );
+	void deleteGroup( int group );
 	
 	bool test( float sx, float sy, float ex, float ey ) const;
-	int find( float sx, float sy, float ex, float ey ) const;			// returns the group number
 
-	Collider();
+	Collider();	// doesn't init to a usable state
+	void reinit( float sx, float sy, float ex, float ey );
+	Collider( float sx, float sy, float ex, float ey );
+	~Collider();
+
+	void render() const;
 
 private:
+
+	Quad *quad;
+
+	vector< Collide > newGroup;
+	vector< vector< Collide > * > collides;
 
 	vector< float > verts;
 	vector< int > groups;
 	vector< bool > active;
+
+	Collider( const Collider &x ); // do not implement
+	void operator=( const Collider &x ); // see above
+
+	bool quadTest( const Float4 &line, const Float4 &range, Quad *node );
+	void quadAdd( const Float4 &range, Collide *ptr, Quad *node );
+	void quadRemove( const Float4 &range, Collide *ptr, Quad *node ); 
 
 };
 

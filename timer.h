@@ -9,6 +9,7 @@ public:
 	void frameDone();
 
 	long long ticksElapsed();
+	long long getFrameTicks();
 
 	Timer();
 

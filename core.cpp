@@ -93,23 +93,28 @@ void MainLoop() {
 		timer.waitForNextFrame();
 		waiting += bencher.ticksElapsed();
 		bencher = Timer();
-		if( !timer.skipFrame() ) {
+		//if( !timer.skipFrame() ) {
 			setZoom( 0, 0, 100 );
 			initFrame();
 			game.renderToScreen( RENDERTARGET_SPECTATOR );
 			deinitFrame();
-		} else {
-			dprintf( "Skipped!\n" );
-		}
+		//} else {
+			//dprintf( "Skipped!\n" );
+		//}
 		rendering += bencher.ticksElapsed();
 		timer.frameDone();
 		frako++;
 		if( frako % 60 == 0 ) {
-			long long tot = polling + ticking + waiting + rendering;
+			long long tot = timer.getFrameTicks() * 60;
+			//long long tot = polling + ticking + waiting + rendering;
 			dprintf( "%4d polling", int( polling * 1000 / tot ) );
 			dprintf( "%4d ticking", int( ticking * 1000 / tot ) );
 			dprintf( "%4d waiting", int( waiting * 1000 / tot ) );
 			dprintf( "%4d rendering", int( rendering * 1000 / tot ) );
+			polling = 0;
+			ticking = 0;
+			waiting = 0;
+			rendering = 0;
 		}
 	}
 }
