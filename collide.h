@@ -24,6 +24,7 @@ public:
 	vector< Collide * > lines;
 	Float4 range;
 	bool sludge;
+	bool node;
 #ifdef ENABLE_COLLIDE_DEBUG_VIS
 	float r, g, b;
 #endif

@@ -15,21 +15,21 @@ Collide::Collide( const Float4 &in_line, int in_sid ) : line( in_line ) {
 Quad::Quad() {
 	quads = NULL;
 	sludge = false;
+	node = false;
 #ifdef ENABLE_COLLIDE_DEBUG_VIS
 	r = unsyncRand() * 1.f / RNG_MAX;
 	g = unsyncRand() * 1.f / RNG_MAX;
 	b = unsyncRand() * 1.f / RNG_MAX;
-	dprintf( "this is %f,%f,%f\n", r, g, b );
 #endif
 }
 Quad::Quad( const Float4 &dim ) : range( dim ) {
 	quads = NULL;
 	sludge = false;
+	node = false;
 #ifdef ENABLE_COLLIDE_DEBUG_VIS
 	r = unsyncRand() * 1.f / RNG_MAX;
 	g = unsyncRand() * 1.f / RNG_MAX;
 	b = unsyncRand() * 1.f / RNG_MAX;
-	dprintf( "this is %f,%f,%f\n", r, g, b );
 #endif
 };
 Quad::~Quad() {
@@ -38,6 +38,7 @@ Quad::~Quad() {
 void Collider::startGroup() {
 	newGroup.clear();
 };
+
 int Collider::endGroup() {
 
 	int groupid;
@@ -67,7 +68,6 @@ int Collider::endGroup() {
 };
 
 void Collider::add( float sx, float sy, float ex, float ey ) {
-	//dprintf( "Adding %f, %f, %f, %f\n", sx, sy, ex, ey );
 	newGroup.push_back( Collide( Float4( sx, sy, ex, ey ), newGroup.size() ) );
 };
 
@@ -85,17 +85,17 @@ void Collider::deleteGroup( int group ) {
 	for( int i = 0; i < collides[ group ]->size(); i++ )
 		quadRemove( (*collides[ group ])[ i ].line.normalize(), &(*collides[ group ])[ i ], quad );
 	collides[ group ]->clear();
-	//dprintf( "Wiped group %d, %d\n", group, collides[ group ]->size() );
 	cleared.push_back( group );
 };
 
 bool Collider::test( float sx, float sy, float ex, float ey ) const {
-	return quadTest( Float4( sx, sy, ex, ey ), Float4( sx, sy, ex, ey ).normalize(), quad );
+	bool rv = quadTest( Float4( sx, sy, ex, ey ), Float4( sx, sy, ex, ey ).normalize(), quad );
+	return rv;
 };
 
 bool Collider::quadTest( const Float4 &line, const Float4 &range, const Quad *node ) const {
 	if( rectrectintersect( range, node->range ) ) {
-		if( node->quads ) {
+		if( node->node ) {
 			//dprintf( "QTL\n" );
 			for( int i = 0; i < 4; i++ )
 				if( quadTest( line, range, &node->quads[ i ] ) )
@@ -113,22 +113,24 @@ bool Collider::quadTest( const Float4 &line, const Float4 &range, const Quad *no
 }
 
 #define MAX_LEAF_SIZE	16
+#define LEAF_COLLAPSE_THRESH 12
 #define LEAF_SLUDGE_TOTAL (MAX_LEAF_SIZE*2)
 //#define LEAF_SLUDGE_THRESH (MAX_LEAF_SIZE*3/4)
 #define LEAF_SLUDGE_UNSLUDGE (MAX_LEAF_SIZE*3/4)
 
 void Collider::quadAdd( const Float4 &range, Collide *ptr, Quad *quad ) {
-//	depth++;
 	if( rectrectintersect( range, quad->range ) ) {
-		//dprintf( "Entering %d\n", depth );
-		if( !quad->quads && !quad->sludge && quad->lines.size() >= MAX_LEAF_SIZE ) {
+		if( !quad->node && !quad->sludge && quad->lines.size() >= MAX_LEAF_SIZE ) {
 			//dprintf( "Splitz0ring\n" );
 			// SPLITZ0R
-			quad->quads = new Quad[ 4 ];
-			quad->quads[ 0 ].range = Float4( quad->range.sx, quad->range.sy, ( quad->range.sx + quad->range.ex ) / 2, ( quad->range.sy + quad->range.ey ) / 2 );
-			quad->quads[ 1 ].range = Float4( ( quad->range.sx + quad->range.ex ) / 2, quad->range.sy, quad->range.ex, ( quad->range.sy + quad->range.ey ) / 2 );
-			quad->quads[ 2 ].range = Float4( quad->range.sx, ( quad->range.sy + quad->range.ey ) / 2, ( quad->range.sx + quad->range.ex ) / 2, quad->range.ey );
-			quad->quads[ 3 ].range = Float4( ( quad->range.sx + quad->range.ex ) / 2, ( quad->range.sy + quad->range.ey ) / 2, quad->range.ex, quad->range.ey );
+			if( !quad->quads ) {
+				quad->quads = new Quad[ 4 ];
+				quad->quads[ 0 ].range = Float4( quad->range.sx, quad->range.sy, ( quad->range.sx + quad->range.ex ) / 2, ( quad->range.sy + quad->range.ey ) / 2 );
+				quad->quads[ 1 ].range = Float4( ( quad->range.sx + quad->range.ex ) / 2, quad->range.sy, quad->range.ex, ( quad->range.sy + quad->range.ey ) / 2 );
+				quad->quads[ 2 ].range = Float4( quad->range.sx, ( quad->range.sy + quad->range.ey ) / 2, ( quad->range.sx + quad->range.ex ) / 2, quad->range.ey );
+				quad->quads[ 3 ].range = Float4( ( quad->range.sx + quad->range.ex ) / 2, ( quad->range.sy + quad->range.ey ) / 2, quad->range.ex, quad->range.ey );
+			}
+			quad->node = true;
 			//dprintf( "Readding %d items\n", quad->lines.size() );
 			for( int i = 0; i < quad->lines.size(); i++ ) {
 				//dprintf( "Start %08x\n", quad->lines[ i ] );
@@ -146,14 +148,13 @@ void Collider::quadAdd( const Float4 &range, Collide *ptr, Quad *quad ) {
 					quad->sludge = true;
 			}
 			if( quad->sludge ) {
-				delete [] quad->quads;
-				quad->quads = NULL;
+				quad->node = false;
 				dprintf( "WARNING: Sludge node generated!\n" );
 			} else {
 				quad->lines.clear();
 			}
 		}
-		if( quad->quads ) {
+		if( quad->node ) {
 			//dprintf( "Subadding %d\n", depth );
 			for( int i = 0; i < 4; i++ )
 				quadAdd( range, ptr, &(quad->quads[ i ]) );
@@ -180,16 +181,30 @@ void Collider::quadAdd( const Float4 &range, Collide *ptr, Quad *quad ) {
 			//dprintf( "Adding %08x to %08x\n", ptr, quad );
 			quad->lines.push_back( ptr );
 		}
-		//dprintf( "Done %d\n", depth );
 	}
-//	depth--;
 };
 
 void Collider::quadRemove( const Float4 &range, Collide *ptr, Quad *quad ) {
 	if( rectrectintersect( range, quad->range ) ) {
-		if( quad->quads ) {
-			for( int i = 0; i < 4; i++ )
+		if( quad->node ) {
+			int ct = 0;
+			bool childnode = false;
+			for( int i = 0; i < 4; i++ ) {
 				quadRemove( range, ptr, &quad->quads[ i ] );
+				ct += quad->quads[ i ].lines.size();
+				if( quad->quads[ i ].node )
+					childnode = true;
+			}
+			if( !childnode && ct < LEAF_COLLAPSE_THRESH ) {
+				quad->node = false;
+				for( int i = 0; i < 4; i++ ) {
+					quad->lines.insert( quad->lines.end(), quad->quads[ i ].lines.begin(), quad->quads[ i ].lines.end() );
+					quad->quads[ i ].lines.clear();
+					quad->quads[ i ].sludge = false;	// yeah yeah.
+				}
+				sort( quad->lines.begin(), quad->lines.end() );
+				quad->lines.erase( unique( quad->lines.begin(), quad->lines.end() ), quad->lines.end() );
+			}
 		} else {
 			//dprintf( "Removing %08x from %08x\n", ptr, quad );
 			vector< Collide * >::iterator itr = find( quad->lines.begin(), quad->lines.end(), ptr );
