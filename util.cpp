@@ -8,16 +8,14 @@ using namespace std;
 Float4::Float4() { };
 Float4::Float4( float in_sx, float in_sy, float in_ex, float in_ey ) {
 	sx = in_sx; sy = in_sy; ex = in_ex; ey = in_ey; };
-Float4 Float4::normalize() const {
-	return Float4( min( sx, ex ), min( sy, ey ), max( sx, ex ), max( sy, ey ) ); };
 
 bool operator==( const Float4 &lhs, const Float4 &rhs ) {
 	return lhs.sx == rhs.sx && lhs.sy == rhs.sy && lhs.ex == rhs.ex && lhs.ey == rhs.ey;
 }
 
 bool rectrectintersect( const Float4 &lhs, const Float4 &rhs ) {
-	assert( lhs.normalize() == lhs );
-	assert( rhs.normalize() == rhs );
+	assert2( lhs.normalize() == lhs );
+	assert2( rhs.normalize() == rhs );
 	if( lhs.ex <= rhs.sx || rhs.ex <= lhs.sx || lhs.ey <= rhs.sy || rhs.ey <= lhs.sy )
 		return false;
 	return true;

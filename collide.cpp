@@ -22,14 +22,22 @@ void Collider::startGroup() {
 };
 int Collider::endGroup() {
 
-	groups.push_back( verts.size() );
-	active.push_back( true );
+	int groupid;
+	if( cleared.size() ) {
+		groupid = cleared[ cleared.size() - 1 ];
+		//dprintf( "Reclaimed group %d, %d\n", groupid, collides[ groupid ]->size() );
+		assert( active[ groupid ] == false );
+		assert( collides[ groupid ]->size() == 0 );
+		cleared.pop_back();
+		active[ groupid ] = true;
+	} else {
+		groupid = active.size();
+		active.push_back( true );
+		collides.push_back( new vector< Collide >() );
+	}
 
-	int groupid = active.size() - 1;
-	vector< Collide > *nv = new vector< Collide >;
-	nv->swap( newGroup );
-	collides.push_back( nv );
-	vector< Collide > &cols = *nv;
+	vector< Collide > &cols = *collides[ groupid ];
+	cols.swap( newGroup );
 	//dprintf( "End/adding %d items\n", cols.size() );
 	for( int i = 0; i < cols.size(); i++ ) {
 		cols[ i ].group = groupid;
@@ -42,10 +50,6 @@ int Collider::endGroup() {
 
 void Collider::add( float sx, float sy, float ex, float ey ) {
 	//dprintf( "Adding %f, %f, %f, %f\n", sx, sy, ex, ey );
-	verts.push_back( sx );
-	verts.push_back( sy );
-	verts.push_back( ex );
-	verts.push_back( ey );
 	newGroup.push_back( Collide( Float4( sx, sy, ex, ey ), newGroup.size() ) );
 };
 
@@ -62,24 +66,13 @@ void Collider::deleteGroup( int group ) {
 	active[ group ] = false;
 	for( int i = 0; i < collides[ group ]->size(); i++ )
 		quadRemove( (*collides[ group ])[ i ].line.normalize(), &(*collides[ group ])[ i ], quad );
+	collides[ group ]->clear();
+	//dprintf( "Wiped group %d, %d\n", group, collides[ group ]->size() );
+	cleared.push_back( group );
 };
 
 bool Collider::test( float sx, float sy, float ex, float ey ) const {
-	bool res = false;
-	for( int i = 0; i < active.size() && !res; i++ )
-		if( active[ i ] )
-			for( int j = groups[ i ]; j < groups[ i + 1 ]; j += 4 )
-				if( linelineintersect( verts[ j ], verts[ j + 1 ], verts[ j + 2 ], verts[ j + 3 ], sx, sy, ex, ey ) ) {
-					res = true;
-					break;
-				}
-	//dprintf( "Entering qt\n" );
-	bool alterres = quadTest( Float4( sx, sy, ex, ey ), Float4( sx, sy, ex, ey ).normalize(), quad );
-	//dprintf( "Leaving qt\n" );
-	if( res != alterres )
-		dprintf( "Mismatch!\n" );
-	assert( res == alterres );
-	return res;
+	return quadTest( Float4( sx, sy, ex, ey ), Float4( sx, sy, ex, ey ).normalize(), quad );
 };
 
 bool Collider::quadTest( const Float4 &line, const Float4 &range, const Quad *node ) const {
@@ -173,7 +166,6 @@ void Collider::quadRemove( const Float4 &range, Collide *ptr, Quad *quad ) {
 
 Collider::Collider() { quad = NULL; };
 Collider::Collider( float sx, float sy, float ex, float ey ) {
-	groups.push_back( 0 );
 	quad = new Quad( Float4( sx, sy, ex, ey ) );
 };
 void Collider::reinit( float sx, float sy, float ex, float ey ) {
@@ -182,12 +174,10 @@ void Collider::reinit( float sx, float sy, float ex, float ey ) {
 	for( int i = 0; i < collides.size(); i++ )
 		delete collides[ i ];
 	collides.clear();
-	verts.clear();
-	groups.clear();
 	active.clear();
+	cleared.clear();
 	delete quad;
 
-	groups.push_back( 0 );
 	quad = new Quad( Float4( sx, sy, ex, ey ) );
 		
 }

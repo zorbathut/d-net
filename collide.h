@@ -54,9 +54,8 @@ private:
 	vector< Collide > newGroup;
 	vector< vector< Collide > * > collides;
 
-	vector< float > verts;
-	vector< int > groups;
 	vector< bool > active;
+	vector< int > cleared;
 
 	Collider( const Collider &x ); // do not implement
 	void operator=( const Collider &x ); // see above

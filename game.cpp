@@ -127,11 +127,6 @@ void Game::runTick( const vector< Keystates > &keys ) {
 	frameNm++;
 	assert( keys.size() == 2 );
 
-	collider.reinit( 0, 0, 125, 100 );
-	collider.startGroup();
-	gamemap.addCollide( &collider );
-	collider.endGroup();
-
 	for( int i = 0; i < SUBSTEP; i++ ) {
 
 		for( int j = 0; j < PHASECOUNT; j++ ) {
@@ -228,13 +223,16 @@ void Game::runTick( const vector< Keystates > &keys ) {
 
 };
 
-Game::Game() {
+Game::Game() : collider( 0, 0, 125, 100 ) {
 	frameNm = 0;
 	players.resize( 2 );
 	players[ 0 ].x = 30;
 	players[ 0 ].y = 30;
 	players[ 1 ].x = 60;
 	players[ 1 ].y = 60;
+	collider.startGroup();
+	gamemap.addCollide( &collider );
+	collider.endGroup();
 };
 
 
