@@ -7,6 +7,8 @@ using namespace std;
 
 #include "util.h"
 
+#define ENABLE_COLLIDE_DEBUG_VIS
+
 class Collide {
 public:
 	Float4 line;
@@ -22,6 +24,9 @@ public:
 	vector< Collide * > lines;
 	Float4 range;
 	bool sludge;
+#ifdef ENABLE_COLLIDE_DEBUG_VIS
+	float r, g, b;
+#endif
 	Quad();
 	Quad( const Float4 &dim );
 	~Quad();

@@ -41,11 +41,12 @@ public:
 	void move();
 	void render() const;
 	bool colliding( const Collider &collider ) const;
+	void addCollision( Collider *collider ) const;
 
-	int owner;
 	float x;
 	float y;
 	float d;
+
 };
 
 class Game {
@@ -61,7 +62,7 @@ private:
 	int frameNm;
 
 	vector< Tank > players;
-	vector< Projectile > projectiles;
+	vector<vector< Projectile > > projectiles;
 	Gamemap gamemap;
 
 	Collider collider;

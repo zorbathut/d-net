@@ -6,14 +6,32 @@
 using namespace std;
 
 #include "debug.h"
+#include "rng.h"
 
 Collide::Collide() { };
 Collide::Collide( const Float4 &in_line, int in_sid ) : line( in_line ) {
 	sid = in_sid; };
 
-Quad::Quad() { quads = NULL; sludge = false; }
+Quad::Quad() {
+	quads = NULL;
+	sludge = false;
+#ifdef ENABLE_COLLIDE_DEBUG_VIS
+	r = unsyncRand() * 1.f / RNG_MAX;
+	g = unsyncRand() * 1.f / RNG_MAX;
+	b = unsyncRand() * 1.f / RNG_MAX;
+	dprintf( "this is %f,%f,%f\n", r, g, b );
+#endif
+}
 Quad::Quad( const Float4 &dim ) : range( dim ) {
-	quads = NULL; sludge = false; };
+	quads = NULL;
+	sludge = false;
+#ifdef ENABLE_COLLIDE_DEBUG_VIS
+	r = unsyncRand() * 1.f / RNG_MAX;
+	g = unsyncRand() * 1.f / RNG_MAX;
+	b = unsyncRand() * 1.f / RNG_MAX;
+	dprintf( "this is %f,%f,%f\n", r, g, b );
+#endif
+};
 Quad::~Quad() {
 	delete [] quads; }
 
@@ -104,15 +122,19 @@ void Collider::quadAdd( const Float4 &range, Collide *ptr, Quad *quad ) {
 	if( rectrectintersect( range, quad->range ) ) {
 		//dprintf( "Entering %d\n", depth );
 		if( !quad->quads && !quad->sludge && quad->lines.size() >= MAX_LEAF_SIZE ) {
-			//dprintf( "Splitz0ring %d\n", depth );
+			//dprintf( "Splitz0ring\n" );
 			// SPLITZ0R
 			quad->quads = new Quad[ 4 ];
 			quad->quads[ 0 ].range = Float4( quad->range.sx, quad->range.sy, ( quad->range.sx + quad->range.ex ) / 2, ( quad->range.sy + quad->range.ey ) / 2 );
 			quad->quads[ 1 ].range = Float4( ( quad->range.sx + quad->range.ex ) / 2, quad->range.sy, quad->range.ex, ( quad->range.sy + quad->range.ey ) / 2 );
 			quad->quads[ 2 ].range = Float4( quad->range.sx, ( quad->range.sy + quad->range.ey ) / 2, ( quad->range.sx + quad->range.ex ) / 2, quad->range.ey );
 			quad->quads[ 3 ].range = Float4( ( quad->range.sx + quad->range.ex ) / 2, ( quad->range.sy + quad->range.ey ) / 2, quad->range.ex, quad->range.ey );
-			for( int i = 0; i < quad->lines.size(); i++ )
+			//dprintf( "Readding %d items\n", quad->lines.size() );
+			for( int i = 0; i < quad->lines.size(); i++ ) {
+				//dprintf( "Start %08x\n", quad->lines[ i ] );
 				quadAdd( quad->lines[ i ]->line.normalize(), quad->lines[ i ], quad );
+			}
+			//dprintf( "Done\n" );
 			{
 				int sludgetot = 0;
 				for( int i = 0; i < 4; i++ ) {
@@ -134,7 +156,25 @@ void Collider::quadAdd( const Float4 &range, Collide *ptr, Quad *quad ) {
 		if( quad->quads ) {
 			//dprintf( "Subadding %d\n", depth );
 			for( int i = 0; i < 4; i++ )
-				quadAdd( range, ptr, &quad->quads[ i ] );
+				quadAdd( range, ptr, &(quad->quads[ i ]) );
+				#if 0
+					#ifndef NDEBUG
+						int pts = 0;
+						for( int i = 0; i < 4; i++ )
+							pts += count( quad->quads[ i ].lines.begin(), quad->quads[ i ].lines.end(), ptr );
+						dprintf( "pts is %d\n", pts );
+						if( pts == 0 ) {
+							dprintf( "%f, %f, %f, %f\n", range.sx, range.sy, range.ex, range.ey );
+							dprintf( "%f, %f, %f, %f\n", quad->range.sx, quad->range.sy, quad->range.ex, quad->range.ey );
+							dprintf( "tc is %d\n", rectrectintersect( quad->range, range ) );
+							for( int i = 0; i < 4; i++ ) {
+								dprintf( "%f, %f, %f, %f\n", quad->quads[ i ].range.sx, quad->quads[ i ].range.sy, quad->quads[ i ].range.ex, quad->quads[ i ].range.ey );
+								dprintf( "%d is %d\n", i, rectrectintersect( quad->quads[ i ].range, range ) );
+							}
+						}
+						assert( pts );
+					#endif
+				#endif
 		} else {
 			//dprintf( "Adding %d\n", depth );
 			//dprintf( "Adding %08x to %08x\n", ptr, quad );
@@ -187,17 +227,30 @@ Collider::~Collider() {
 		delete collides[ i ];
 };
 
+#ifdef ENABLE_COLLIDE_DEBUG_VIS
+
 #include "gfx.h"
 void quadRender( Quad *x ) {
+	setColor( x->r, x->g, x->b );
 	if( x->quads ) {
 		for( int i = 0; i < 4; i++ )
 			quadRender( &x->quads[ i ] );
 	} else {
-		drawRect( x->range, 0.4 );
+		drawRect( Float4( x->range.sx + 1, x->range.sy + 1, x->range.ex - 1, x->range.ey - 1 ), 0.4 );
+		//setColor( x->r / 2, x->g / 2, x->b / 2 );
+		//for( int i = 0; i < x->lines.size(); i++ )
+			//drawRect( x->lines[ i ]->line.normalize(), 0.3 );
 	}
 }
 
 void Collider::render() const {
-	setColor( 0, 0, 1 );
-	quadRender( quad );
+	//setColor( 0, 0, 1 );
+	//quadRender( quad );
 }
+
+#else
+
+void Collider::render() const {
+}
+
+#endif

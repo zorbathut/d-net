@@ -20,24 +20,28 @@ public:
 			cp.sx = cp.ex;
 			cp.ex = tmp;
 		}
-		if( cp.sx > cp.ex ) {
+		if( cp.sy > cp.ey ) {
 			tmp = cp.sy;
 			cp.sy = cp.ey;
 			cp.ey = tmp;
 		}
 		return cp;
 	}
+
+	bool isNormalized() const {
+		return sx <= ex && sy <= ey;
+	}
 };
 
-#define assert2(x)
+#define assert2(x) assert(x)
 
 inline bool operator==( const Float4 &lhs, const Float4 &rhs ) {
 	return lhs.sx == rhs.sx && lhs.sy == rhs.sy && lhs.ex == rhs.ex && lhs.ey == rhs.ey;
 }
 
 inline bool rectrectintersect( const Float4 &lhs, const Float4 &rhs ) {
-	assert2( lhs.normalize() == lhs );
-	assert2( rhs.normalize() == rhs );
+	assert2( lhs.isNormalized() );
+	assert2( rhs.isNormalized() );
 	if( lhs.ex <= rhs.sx || rhs.ex <= lhs.sx || lhs.ey <= rhs.sy || rhs.ey <= lhs.sy )
 		return false;
 	return true;

@@ -113,12 +113,16 @@ void Projectile::render() const {
 bool Projectile::colliding( const Collider &collider ) const {
 	return collider.test( x, y, x + projectile_length * fsin( d ), y - projectile_length * fcos( d ) );
 };
+void Projectile::addCollision( Collider *collider ) const {
+	collider->add( x, y, x + projectile_length * fsin( d ), y - projectile_length * fcos( d ) );
+};
 
 void Game::renderToScreen( int target ) const {
 	for( int i = 0; i < players.size(); i++ )
 		players[ i ].render( i );
 	for( int i = 0; i < projectiles.size(); i++ )
-		projectiles[ i ].render();
+		for( int j = 0; j < projectiles[ i ].size(); j++ )
+			projectiles[ i ][ j ].render();
 	gamemap.render();
 	collider.render();
 };
@@ -179,7 +183,8 @@ void Game::runTick( const vector< Keystates > &keys ) {
 		}
 
 		for( int j = 0; j < projectiles.size(); j++ )
-			projectiles[ j ].move();
+			for( int k = 0; k < projectiles[ j ].size(); k++ )
+				projectiles[ j ][ k ].move();
 
 		// add all the projectiles and update health, in preparation for the Final Movement
 		if( i == SUBSTEP - 1 ) {
@@ -187,11 +192,10 @@ void Game::runTick( const vector< Keystates > &keys ) {
 			for( int i = 0; i < players.size(); i++ ) {
 				if( keys[ i ].firing ) {
 					Projectile proj;
-					proj.owner = i;
 					proj.x = players[ i ].getFiringPoint().first;
 					proj.y = players[ i ].getFiringPoint().second;
 					proj.d = players[ i ].d;
-					projectiles.push_back( proj );
+					projectiles[ i ].push_back( proj );
 				}
 			}
 
@@ -201,21 +205,33 @@ void Game::runTick( const vector< Keystates > &keys ) {
 		}
 
 		vector< int > tcid;
+		vector< int > pcid;
 		for( int j = 0; j < players.size(); j++ ) {
 			collider.startGroup();
 			players[ j ].addCollision( &collider );
 			tcid.push_back( collider.endGroup()  );
+			collider.startGroup();
+			for( int k = 0; k < projectiles[ j ].size(); k++ )
+				projectiles[ j ][ k ].addCollision( &collider );
+			pcid.push_back( collider.endGroup() );
 		}
 		vector< Projectile > liveproj;
 		for( int j = 0; j < projectiles.size(); j++ ) {
-			collider.disableGroup( tcid[ projectiles[ j ].owner ] );
-			if( !projectiles[ j ].colliding( collider ) )
-				liveproj.push_back( projectiles[ j ] );
-			collider.enableGroup( tcid[ projectiles[ j ].owner ] );
+			collider.disableGroup( tcid[ j ] );
+			collider.disableGroup( pcid[ j ] );
+			for( int k = 0; k < projectiles[ j ].size(); k++ ) {
+				if( !projectiles[ j ][ k ].colliding( collider ) )
+					liveproj.push_back( projectiles[ j ][ k ] );
+			}
+			projectiles[ j ].swap( liveproj );
+			liveproj.clear();
+			collider.enableGroup( tcid[ j ] );
+			collider.enableGroup( pcid[ j ] );
 		}
-		swap( liveproj, projectiles );
-		for( int j = 0; j < players.size(); j++ )
+		for( int j = 0; j < players.size(); j++ ) {
 			collider.deleteGroup( tcid[ j ] );
+			collider.deleteGroup( pcid[ j ] );
+		}
 
 		// projectile collision here
 
@@ -230,6 +246,7 @@ Game::Game() : collider( 0, 0, 125, 100 ) {
 	players[ 0 ].y = 30;
 	players[ 1 ].x = 60;
 	players[ 1 ].y = 60;
+	projectiles.resize( 2 );
 	collider.startGroup();
 	gamemap.addCollide( &collider );
 	collider.endGroup();

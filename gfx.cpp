@@ -23,6 +23,7 @@ void initFrame() {
 	//glHint( GL_POINT_SMOOTH_HINT, GL_FASTEST );
 	glEnable( GL_BLEND );
 	glBlendFunc( GL_SRC_ALPHA, GL_ONE );
+	//glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 }
 
 void deinitFrame() {
