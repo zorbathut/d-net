@@ -1,6 +1,8 @@
 #ifndef DNET_GAME
 #define DNET_GAME
 
+#include "gamemap.h"
+
 #include <vector>
 using namespace std;
 
@@ -8,7 +10,7 @@ class Collider;
 
 class Keystates {
 public:
-	char forward, back, left, right;
+	char forward, back, left, right, firing;
 	Keystates();
 };
 
@@ -17,7 +19,6 @@ public:
 
 class Tank {
 public:
-	void setPos( float x, float y );
 	void move( const Keystates &keystates, int phase );
 	void tick();
 	void render( int tankid ) const;
@@ -27,26 +28,24 @@ public:
 	Tank();
 
 	vector< float > getTankVertices() const;
+	pair< float, float > getFiringPoint() const;
 	
-private:
 	float x;
 	float y;
 	float d;
 };
 
-class Gamemap {
+class Projectile {
 public:
 
+	void move();
 	void render() const;
-	void addCollide( Collider *collide ) const;
+	bool colliding( const Collider &collider ) const;
 
-	Gamemap();
-
-private:
-
-	vector< float > vertices;
-
-
+	int owner;
+	float x;
+	float y;
+	float d;
 };
 
 class Game {
@@ -62,6 +61,7 @@ private:
 	int frameNm;
 
 	vector< Tank > players;
+	vector< Projectile > projectiles;
 	Gamemap gamemap;
 
 };

@@ -27,6 +27,8 @@ void keyPress( SDL_KeyboardEvent *key ) {
 		ps = &curstates[0].left;
 	if( key->keysym.sym == SDLK_RIGHT )
 		ps = &curstates[0].right;
+	if( key->keysym.sym == SDLK_z )
+		ps = &curstates[0].firing;
 	if( key->keysym.sym == SDLK_w )
 		ps = &curstates[1].forward;
 	if( key->keysym.sym == SDLK_s )
@@ -35,6 +37,8 @@ void keyPress( SDL_KeyboardEvent *key ) {
 		ps = &curstates[1].left;
 	if( key->keysym.sym == SDLK_d )
 		ps = &curstates[1].right;
+	if( key->keysym.sym == SDLK_x )
+		ps = &curstates[1].firing;
 	if( !ps )
 		return;
 	if( key->type == SDL_KEYUP )

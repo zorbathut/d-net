@@ -36,6 +36,10 @@ void setZoom( float in_sx, float in_sy, float in_ey ) {
 	map_zoom = in_ey - in_sy;
 }
 
+void setColor( float r, float g, float b ) {
+	glColor3f( r, g, b );
+}
+
 void drawLine( float sx, float sy, float ex, float ey, float weight ) {
 	glLineWidth( weight / map_zoom * 600 );	// has to end up in pixels - that 600 should be the y-dimension
 	glBegin( GL_LINES );

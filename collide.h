@@ -15,6 +15,7 @@ public:
 	void enableGroup( int group );
 	
 	bool test( float sx, float sy, float ex, float ey ) const;
+	int find( float sx, float sy, float ex, float ey ) const;			// returns the group number
 
 	Collider();
 

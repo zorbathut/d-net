@@ -17,11 +17,6 @@ Keystates::Keystates() {
 	memset( this, 0, sizeof( *this ) );
 };
 
-void Tank::setPos( float in_x, float in_y ) {
-	x = in_x;
-	y = in_y;
-}
-
 const float tankvel = 24.f / FPS / SUBSTEP;
 const float tankturn = 2.f / FPS / SUBSTEP;
 
@@ -90,123 +85,40 @@ vector< float > Tank::getTankVertices() const {
 	return rv;
 };
 
+pair< float, float > Tank::getFiringPoint() const {
+	float xtx = cos( d );
+	float xty = sin( d );
+	float ytx = sin( d );
+	float yty = -cos( d );
+	return make_pair( x + tank_coords[ 2 ][ 0 ] * xtx + tank_coords[ 2 ][ 1 ] * xty, y + tank_coords[ 2 ][ 1 ] * yty + tank_coords[ 2 ][ 0 ] * ytx );
+};
+
 Tank::Tank() {
 	x = 0;
 	y = 0;
 	d = 0;
 }
 
-void Gamemap::render() const {
-	glColor3f( 0.5f, 0.5f, 0.5f );
-	drawLinePath( vertices, 0.5 );
-}
-void Gamemap::addCollide( Collider *collider ) const {
-	for( int i = 0; i < vertices.size(); i += 2 )
-		collider->add( vertices[ i ], vertices[ i + 1 ], vertices[ ( i + 2 ) % vertices.size() ], vertices[ ( i + 3 ) % vertices.size() ] );
-}
+const float projectile_length = 1;
+const float projectile_speed = 60.f / FPS / SUBSTEP;
 
-Gamemap::Gamemap() {
-
-	// bl corner
-	vertices.push_back( 5 );
-	vertices.push_back( 5 );
-
-	// bottom bump
-	{
-		vertices.push_back( 40 );
-		vertices.push_back( 5 );
-
-		vertices.push_back( 50 );
-		vertices.push_back( 24 );
-
-		vertices.push_back( 70 );
-		vertices.push_back( 19 );
-
-		vertices.push_back( 80 );
-		vertices.push_back( 5 );
-	}
-
-	// br corner
-	vertices.push_back( 120 );
-	vertices.push_back( 5 );
-
-	// right wedge
-	{
-		vertices.push_back( 120 );
-		vertices.push_back( 15 );
-
-		vertices.push_back( 110 );
-		vertices.push_back( 15 );
-
-		vertices.push_back( 120 );
-		vertices.push_back( 40 );
-	}
-
-	// tr corner
-	{
-		vertices.push_back( 120 );
-		vertices.push_back( 80 );
-
-		vertices.push_back( 115 );
-		vertices.push_back( 95 );
-	}
-
-	// top depression
-	{
-		vertices.push_back( 90 );
-		vertices.push_back( 95 );
-
-		vertices.push_back( 70 );
-		vertices.push_back( 85 );
-
-		vertices.push_back( 55 );
-		vertices.push_back( 88 );
-
-		vertices.push_back( 45 );
-		vertices.push_back( 97 );
-
-		vertices.push_back( 30 );
-		vertices.push_back( 95 );
-	}
-
-	// tl corner
-	{
-		vertices.push_back( 5 );
-		vertices.push_back( 95 );
-	}
-
-	// left bumpiness
-	{
-		vertices.push_back( 5 );
-		vertices.push_back( 80 );
-
-		vertices.push_back( 20 );
-		vertices.push_back( 74 );
-
-		vertices.push_back( 35 );
-		vertices.push_back( 60 );
-
-		vertices.push_back( 38 );
-		vertices.push_back( 40 );
-
-		vertices.push_back( 33 );
-		vertices.push_back( 58 );
-
-		vertices.push_back( 17 );
-		vertices.push_back( 70 );
-
-		vertices.push_back( 10 );
-		vertices.push_back( 70 );
-
-		vertices.push_back( 5 );
-		vertices.push_back( 62 );
-	}
-}
+void Projectile::move() {
+	x += projectile_speed * sin( d );
+	y += -projectile_speed * cos( d );
+};
+void Projectile::render() const {
+	setColor( 1.0, 1.0, 1.0 );
+	drawLine( x, y, x + projectile_length * sin( d ), y - projectile_length * cos( d ), 0.1 );
+};
+bool Projectile::colliding( const Collider &collider ) const {
+	return collider.test( x, y, x + projectile_length * sin( d ), y - projectile_length * cos( d ) );
+};
 
 void Game::renderToScreen( int target ) const {
-	for( int i = 0; i < players.size(); i++ ) {
+	for( int i = 0; i < players.size(); i++ )
 		players[ i ].render( i );
-	};
+	for( int i = 0; i < projectiles.size(); i++ )
+		projectiles[ i ].render();
 	gamemap.render();
 };
 void Game::runTick( const vector< Keystates > &keys ) {
@@ -271,19 +183,57 @@ void Game::runTick( const vector< Keystates > &keys ) {
 
 		}
 
-	}
+		for( int j = 0; j < projectiles.size(); j++ )
+			projectiles[ j ].move();
 
-	for( int i = 0; i < players.size(); i++ )
-		players[ i ].tick();
+		if( i == SUBSTEP - 1 ) {
+
+			for( int i = 0; i < players.size(); i++ ) {
+				if( keys[ i ].firing ) {
+					Projectile proj;
+					proj.owner = i;
+					proj.x = players[ i ].getFiringPoint().first;
+					proj.y = players[ i ].getFiringPoint().second;
+					proj.d = players[ i ].d;
+					projectiles.push_back( proj );
+				}
+			}
+
+			for( int i = 0; i < players.size(); i++ )
+				players[ i ].tick();
+
+		}
+
+		vector< int > tcid;
+		for( int j = 0; j < players.size(); j++ ) {
+			collider.startGroup();
+			players[ j ].addCollision( &collider );
+			tcid.push_back( collider.endGroup()  );
+		}
+		vector< Projectile > liveproj;
+		for( int j = 0; j < projectiles.size(); j++ ) {
+			collider.disableGroup( tcid[ projectiles[ j ].owner ] );
+			if( !projectiles[ j ].colliding( collider ) )
+				liveproj.push_back( projectiles[ j ] );
+			collider.enableGroup( tcid[ projectiles[ j ].owner ] );
+		}
+		swap( liveproj, projectiles );
+		for( int j = 0; j < players.size(); j++ )
+			collider.disableGroup( tcid[ j ] );
+
+		// projectile collision here
+
+	}
 
 };
 
 Game::Game() {
 	frameNm = 0;
 	players.resize( 2 );
-	players[ 0 ].setPos( 30.f, 30.f );
-	players[ 1 ].setPos( 60.f, 60.f );
-
+	players[ 0 ].x = 30;
+	players[ 0 ].y = 30;
+	players[ 1 ].x = 60;
+	players[ 1 ].y = 60;
 };
 
 
