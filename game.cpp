@@ -233,8 +233,6 @@ void Game::runTick( const vector< Keystates > &keys ) {
 			collider.deleteGroup( pcid[ j ] );
 		}
 
-		// projectile collision here
-
 	}
 
 };

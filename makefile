@@ -27,6 +27,13 @@ package: d-net.exe
 	
 %.d: %.cpp
 	bash -ec '$(CC) $(CFLAGS) -M $< | sed "s/$*.o/$*.o $@/g" > $@'
+	
+stats:
+	@echo Graphics: `cat gfx.h gfx.cpp | wc -l` loc
+	@echo Collisions: `cat collide.h collide.cpp | wc -l` loc
+	@echo Game mechanics: `cat game.h game.cpp gamemap.h gamemap.cpp | wc -l` loc
+	@echo Total project: `cat *.h *.cpp makefile | wc -l` loc
+
 
 
 
