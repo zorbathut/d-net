@@ -2,6 +2,7 @@
 #include "gfx.h"
 
 #include <cmath>
+#include <assert.h>
 using namespace std;
 
 #include <SDL.h>
@@ -18,6 +19,8 @@ void initFrame() {
 	glEnable( GL_LINE_SMOOTH );
 	glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
 	glHint( GL_POINT_SMOOTH_HINT, GL_NICEST );
+	//glHint( GL_LINE_SMOOTH_HINT, GL_FASTEST );
+	//glHint( GL_POINT_SMOOTH_HINT, GL_FASTEST );
 	glEnable( GL_BLEND );
 	glBlendFunc( GL_SRC_ALPHA, GL_ONE );
 }
@@ -41,25 +44,8 @@ void drawLine( float sx, float sy, float ex, float ey, float weight ) {
 	glEnd();
 }
 
-const float tank_width = 5;
-const float tank_length = tank_width*1.3;
-
-float coords[3][2] =  {
-	{-tank_width / 2, -tank_length / 3},
-	{ tank_width / 2, -tank_length / 3},
-	{ 0, tank_length * 2 / 3 }
-};
-
-void drawTank( float x, float y, float dir ) {
-	glColor3f( 0.8f, 0.8f, 0.8f );
-	float xtx = cos( dir );
-	float xty = sin( dir );
-	float ytx = sin( dir );
-	float yty = -cos( dir );
-	for( int i = 0; i < 3; i++ ) {
-		drawLine(
-			x + coords[ i ][ 0 ] * xtx + coords[ i ][ 1 ] * xty, y + coords[ i ][ 1 ] * yty + coords[ i ][ 0 ] * ytx,
-			x + coords[ ( i + 1 ) % 3 ][ 0 ] * xtx + coords[ ( i + 1 ) % 3 ][ 1 ] * xty, y + coords[ ( i + 1 ) % 3 ][ 1 ] * yty + coords[ ( i + 1 ) % 3 ][ 0 ] * ytx,
-			1 );
-	}
+void drawLinePath( const vector< float > &verts, float weight ) {
+	assert( verts.size() % 2 == 0 );
+	for( int i = 0; i < verts.size(); i += 2 )
+		drawLine( verts[ i ], verts[ i + 1 ], verts[ ( i + 2 ) % verts.size() ], verts[ ( i + 3 ) % verts.size() ], weight );
 };

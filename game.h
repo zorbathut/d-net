@@ -4,6 +4,8 @@
 #include <vector>
 using namespace std;
 
+class Collider;
+
 class Keystates {
 public:
 	char forward, back, left, right;
@@ -14,14 +16,27 @@ public:
 class Tank {
 public:
 	void setPos( float x, float y );
-	void move( const Keystates &keystates );
+	void move( const Keystates &keystates, int phase );
+	void tick();
 	void render() const;
+
+	bool colliding( const Collider &collider ) const;
 	Tank();
+
+	vector< float > getTankVertices() const;
 	
 private:
 	float x;
 	float y;
 	float d;
+};
+
+class Gamemap {
+public:
+
+	void render() const;
+	void addCollide( Collider *collide ) const;
+
 };
 
 class Game {
@@ -37,6 +52,7 @@ private:
 	int frameNm;
 
 	Tank player;
+	Gamemap gamemap;
 
 };
 
