@@ -15,14 +15,14 @@ d-net.exe: $(SOURCES:=.o)
 clean:
 	rm -rf *.o *.exe *.d
 	
-run:
+run: d-net.exe
 	d-net.exe
 
 %.o: %.cpp
 	$(CC) $(CFLAGS) -c -o $@ $<
 	
 %.d: %.cpp
-	bash -ec '$(CC) $(CFLAGS) -M $< | sed "s/$*.o/$*.o $@/g" > $@'
+	bash -ec '$(CC) $(CFLAGS) -MM $< | sed "s/$*.o/$*.o $@/g" > $@'
 
 
 
