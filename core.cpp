@@ -15,18 +15,26 @@ using namespace std;
 #include "debug.h"
 #include "gfx.h"
 
-Keystates curstate;
+vector< Keystates > curstates( 2 );
 
 void keyPress( SDL_KeyboardEvent *key ) {
 	char *ps = NULL;
 	if( key->keysym.sym == SDLK_UP )
-		ps = &curstate.forward;
+		ps = &curstates[0].forward;
 	if( key->keysym.sym == SDLK_DOWN )
-		ps = &curstate.back;
+		ps = &curstates[0].back;
 	if( key->keysym.sym == SDLK_LEFT )
-		ps = &curstate.left;
+		ps = &curstates[0].left;
 	if( key->keysym.sym == SDLK_RIGHT )
-		ps = &curstate.right;
+		ps = &curstates[0].right;
+	if( key->keysym.sym == SDLK_w )
+		ps = &curstates[1].forward;
+	if( key->keysym.sym == SDLK_s )
+		ps = &curstates[1].back;
+	if( key->keysym.sym == SDLK_a )
+		ps = &curstates[1].left;
+	if( key->keysym.sym == SDLK_d )
+		ps = &curstates[1].right;
 	if( !ps )
 		return;
 	if( key->type == SDL_KEYUP )
@@ -36,7 +44,6 @@ void keyPress( SDL_KeyboardEvent *key ) {
 }
 
 void MainLoop() {
-	memset( &curstate, 0, sizeof( curstate ) );
 
 	Game game;
 	Timer timer;
@@ -65,9 +72,7 @@ void MainLoop() {
 			}
 		}
 		setZoom( 0, 0, 100 );
-		vector< Keystates > ks;
-		ks.push_back( curstate );
-		game.runTick( ks );
+		game.runTick( curstates );
 		timer.waitForNextFrame();
 		if( !timer.skipFrame() ) {
 			initFrame();

@@ -9,18 +9,21 @@ class Collider;
 class Keystates {
 public:
 	char forward, back, left, right;
+	Keystates();
 };
 
 #define RENDERTARGET_SPECTATOR -1
+#define PHASECOUNT 2
 
 class Tank {
 public:
 	void setPos( float x, float y );
 	void move( const Keystates &keystates, int phase );
 	void tick();
-	void render() const;
+	void render( int tankid ) const;
 
 	bool colliding( const Collider &collider ) const;
+	void addCollision( Collider *collider ) const;
 	Tank();
 
 	vector< float > getTankVertices() const;
@@ -58,7 +61,7 @@ private:
 
 	int frameNm;
 
-	Tank player;
+	vector< Tank > players;
 	Gamemap gamemap;
 
 };

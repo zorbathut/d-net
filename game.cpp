@@ -13,6 +13,10 @@ using namespace std;
 #include "const.h"
 #include "collide.h"
 
+Keystates::Keystates() {
+	memset( this, 0, sizeof( *this ) );
+};
+
 void Tank::setPos( float in_x, float in_y ) {
 	x = in_x;
 	y = in_y;
@@ -38,8 +42,15 @@ void Tank::move( const Keystates &keystates, int phase ) {
 
 void Tank::tick() { };
 
-void Tank::render() const {
-	glColor3f( 0.8f, 0.8f, 0.8f );
+void Tank::render( int tankid ) const {
+	if( tankid == 0 ) {
+		glColor3f( 0.8f, 0.0f, 0.0f );
+	} else if( tankid == 1 ) {
+		glColor3f( 0.0f, 0.8f, 0.0f );
+	} else {
+		assert( 0 );
+	}
+
 	drawLinePath( getTankVertices(), 0.2 );
 };
 
@@ -49,6 +60,12 @@ bool Tank::colliding( const Collider &collider ) const {
 		if( collider.test( tankpts[ i*2 ], tankpts[ i*2 + 1 ], tankpts[ ( i*2 + 2 ) % 6 ], tankpts[ ( i*2 + 3 ) % 6 ] ) )
 			return true;
 	return false;
+};
+
+void Tank::addCollision( Collider *collider ) const {
+	vector< float > tankpts = getTankVertices();
+	for( int i = 0; i < 3; i++ )
+		collider->add( tankpts[ i*2 ], tankpts[ i*2 + 1 ], tankpts[ ( i*2 + 2 ) % 6 ], tankpts[ ( i*2 + 3 ) % 6 ] );
 };
 
 const float tank_width = 5;
@@ -80,6 +97,7 @@ Tank::Tank() {
 }
 
 void Gamemap::render() const {
+	glColor3f( 0.5f, 0.5f, 0.5f );
 	drawLinePath( vertices, 0.5 );
 }
 void Gamemap::addCollide( Collider *collider ) const {
@@ -186,37 +204,86 @@ Gamemap::Gamemap() {
 }
 
 void Game::renderToScreen( int target ) const {
-	player.render();
+	for( int i = 0; i < players.size(); i++ ) {
+		players[ i ].render( i );
+	};
 	gamemap.render();
 };
 void Game::runTick( const vector< Keystates > &keys ) {
 
 	frameNm++;
-	assert( keys.size() == 1 );
+	assert( keys.size() == 2 );
 
 	Collider collider;
+	collider.startGroup();
 	gamemap.addCollide( &collider );
+	collider.endGroup();
 
 	for( int i = 0; i < SUBSTEP; i++ ) {
-		assert( !player.colliding( collider ) );
-		Tank playerbackup;
-		playerbackup = player;
-		playerbackup.move( keys[ 0 ], 0 );
-		if( !playerbackup.colliding( collider ) )
-			player = playerbackup;
-		playerbackup = player;
-		playerbackup.move( keys[ 0 ], 1 );
-		if( !playerbackup.colliding( collider ) )
-			player = playerbackup;
-		player.tick();
-		assert( !player.colliding( collider ) );
+
+		for( int j = 0; j < PHASECOUNT; j++ ) {
+
+			vector< int > tcid;
+
+			// first, add all their collision points
+			for( int k = 0; k < players.size(); k++ ) {
+				collider.startGroup();
+				assert( !players[ k ].colliding( collider ) );
+				players[ k ].addCollision( &collider );
+				tcid.push_back( collider.endGroup() );
+			}
+
+			vector< Tank > newtanks;
+			// next, try moving them, see if it works
+			for( int k = 0; k < players.size(); k++ ) {
+				collider.disableGroup( tcid[ k ] );
+				Tank testtank = players[ k ];
+				testtank.move( keys[ k ], j );
+				if( testtank.colliding( collider ) )
+					newtanks.push_back( players[ k ] );
+				else
+					newtanks.push_back( testtank );
+				collider.enableGroup( tcid[ k ] );
+			}
+			
+			// remove the old collision points, add the new ones
+			for( int k = 0; k < players.size(); k++ ) {
+				collider.disableGroup( tcid[ k ] );
+				collider.startGroup();
+				newtanks[ k ].addCollision( &collider );
+				tcid[ k ] = collider.endGroup();
+			}
+
+			// now look for conflicts
+			for( int k = 0; k < players.size(); k++ ) {
+				collider.disableGroup( tcid[ k ] );
+				if( !newtanks[ k ].colliding( collider ) )
+					players[ k ] = newtanks[ k ];
+				collider.enableGroup( tcid[ k ] );
+			}
+
+			// now clear all the dynamic collision points
+			for( int k = 0; k < players.size(); k++ ) {
+				collider.disableGroup( tcid[ k ] );
+			}
+
+			// in theory I could now add their real location and check to make sure they're not colliding still
+
+		}
+
 	}
+
+	for( int i = 0; i < players.size(); i++ )
+		players[ i ].tick();
 
 };
 
 Game::Game() {
 	frameNm = 0;
-	player.setPos( 30.f, 30.f );
+	players.resize( 2 );
+	players[ 0 ].setPos( 30.f, 30.f );
+	players[ 1 ].setPos( 60.f, 60.f );
+
 };
 
 

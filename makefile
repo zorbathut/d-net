@@ -18,6 +18,10 @@ clean:
 run: d-net.exe
 	d-net.exe
 
+package: d-net.exe
+	strip d-net.exe
+	zip -9 -j `date +c:/inetpub/wwwroot/d-net/dnet%G%m%d%H%M%S.zip` d-net.exe c:/cygwin/usr/local/bin/SDL.dll
+
 %.o: %.cpp
 	$(CC) $(CFLAGS) -c -o $@ $<
 	
