@@ -43,14 +43,24 @@ void keyPress( SDL_KeyboardEvent *key ) {
 		*ps = 1;
 }
 
+long long polling = 0;
+long long waiting = 0;
+long long ticking = 0;
+long long rendering = 0;
+
 void MainLoop() {
 
 	Game game;
 	Timer timer;
 
+	Timer bencher;
+
 	bool quit = false;
 
+	int frako = 0;
+
 	while( !quit ) {
+		bencher = Timer();
 		SDL_Event event;
 		while( SDL_PollEvent( &event ) ) {
 			switch( event.type ) {
@@ -71,16 +81,31 @@ void MainLoop() {
 					break;
 			}
 		}
-		setZoom( 0, 0, 100 );
+		polling += bencher.ticksElapsed();
+		bencher = Timer();
 		game.runTick( curstates );
+		ticking += bencher.ticksElapsed();
+		bencher = Timer();
 		timer.waitForNextFrame();
+		waiting += bencher.ticksElapsed();
+		bencher = Timer();
 		if( !timer.skipFrame() ) {
+			setZoom( 0, 0, 100 );
 			initFrame();
 			game.renderToScreen( RENDERTARGET_SPECTATOR );
 			deinitFrame();
 		} else {
 			dprintf( "Skipped!\n" );
 		}
+		rendering += bencher.ticksElapsed();
 		timer.frameDone();
+		frako++;
+		if( frako % 60 == 0 ) {
+			long long tot = polling + ticking + waiting + rendering;
+			dprintf( "%4d polling", int( polling * 1000 / tot ) );
+			dprintf( "%4d ticking", int( ticking * 1000 / tot ) );
+			dprintf( "%4d waiting", int( waiting * 1000 / tot ) );
+			dprintf( "%4d rendering", int( rendering * 1000 / tot ) );
+		}
 	}
 }

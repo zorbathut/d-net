@@ -7,13 +7,13 @@
 #include "const.h"
 #include "debug.h"
 
-static __int64 cpc() {
+static long long cpc() {
 	LARGE_INTEGER rv;
 	QueryPerformanceCounter( &rv );
 	return rv.QuadPart;
 };
 
-static __int64 cpf() {
+static long long cpf() {
 	LARGE_INTEGER rv;
 	QueryPerformanceFrequency( &rv );
 	return rv.QuadPart;
@@ -30,6 +30,10 @@ bool Timer::skipFrame() {
 
 void Timer::frameDone() {
 	frameNum++;
+};
+
+long long Timer::ticksElapsed() {
+	return cpc() - ticksOffset;
 };
 
 Timer::Timer() {

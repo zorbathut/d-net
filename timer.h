@@ -8,6 +8,8 @@ public:
 	bool skipFrame();
 	void frameDone();
 
+	long long ticksElapsed();
+
 	Timer();
 
 private:
