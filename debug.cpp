@@ -16,25 +16,20 @@ using namespace std;
 
 int dprintf( const char *bort, ... ) {
 
-	static vector< char > buf(1);
+	static vector< char > buf(2);
 	va_list args;
-
-	va_start( args, bort );
-	int len = vsnprintf( &(buf[ 0 ]), 0, bort, args ) + 1;
-	va_end( args );
-
-	buf.resize( len + 1 );
 
 	int done = 0;
 	do {
 		if( done )
 			buf.resize( buf.size() * 2 );
 		va_start( args, bort );
-		done = vsnprintf( &(buf[ 0 ]), buf.size(),  bort, args );
+		done = vsnprintf( &(buf[ 0 ]), buf.size() - 1,  bort, args );
+		assert( done < (int)buf.size() );
 		va_end( args );
-	} while( done == buf.size() - 1 );
+	} while( done == buf.size() - 1 || done == -1);
 
-	assert( done <= len );
+	assert( done < (int)buf.size() );
 
 	OutputDebugString( &(buf[ 0 ]) );
 
