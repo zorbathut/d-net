@@ -6,9 +6,23 @@ using namespace std;
 
 class Keystates {
 public:
+	char forward, back, left, right;
 };
 
 #define RENDERTARGET_SPECTATOR -1
+
+class Tank {
+public:
+	void setPos( float x, float y );
+	void move( const Keystates &keystates );
+	void render() const;
+	Tank();
+	
+private:
+	float x;
+	float y;
+	float d;
+};
 
 class Game {
 public:
@@ -21,6 +35,8 @@ public:
 private:
 
 	int frameNm;
+
+	Tank player;
 
 };
 

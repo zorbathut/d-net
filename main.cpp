@@ -30,11 +30,16 @@ int GetVideoFlags( void ) {
 	assert( videoinfo );
     if( videoinfo->hw_available )
         videoflags |= SDL_HWSURFACE;
-    else
+	else {
+		dprintf( "WARNING: Software surface\n" );
         videoflags |= SDL_SWSURFACE;
+	}
     
-    if( videoinfo->blit_hw )
+	if( videoinfo->blit_hw ) {
         videoflags |= SDL_HWACCEL;
+	} else {
+		dprintf( "WARNING: Software blit\n" );
+	}
 
 	return videoflags;
 
@@ -42,18 +47,30 @@ int GetVideoFlags( void ) {
 
 void MakeWindow( const char * strWindowName, int width, int height ) {
 
+	dprintf( "Startmake\n" );
+
 	assert( height > 0 );
 	assert( width > 0 );
+
+	dprintf( "Mainwindow\n" );
 
     MainWindow = SDL_SetVideoMode( width, height, SCREEN_DEPTH, GetVideoFlags() );
 	assert( MainWindow );
 
+	dprintf( "Caption\n" );
+
     SDL_WM_SetCaption( strWindowName, strWindowName );       // set the window caption (first argument) and icon caption (2nd arg)
+
+	dprintf( "Viewport\n" );
 
     glViewport( 0, 0, width, height );
 
+	dprintf( "Ident/ortho\n" );
+
     glLoadIdentity();
 	glOrtho( 0, 1.25, 0, 1, 1.0, -1.0 );	
+
+	dprintf( "Donemake\n" );
 
 }
 

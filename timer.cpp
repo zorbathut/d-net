@@ -5,6 +5,7 @@
 #include <windows.h>
 
 #include "const.h"
+#include "debug.h"
 
 static __int64 cpc() {
 	LARGE_INTEGER rv;
@@ -20,11 +21,11 @@ static __int64 cpf() {
 
 void Timer::waitForNextFrame() {
 	while( cpc() < frameNum * ticksPerFrame + ticksOffset )
-		Sleep( 0 );
+		;
 };
 
 bool Timer::skipFrame() {
-	return cpc() > frameNum * ( ticksPerFrame + 1 ) + ticksOffset;
+	return cpc() > ( frameNum + 2 ) * ticksPerFrame + ticksOffset;
 };
 
 void Timer::frameDone() {

@@ -1,7 +1,7 @@
 
-SOURCES = main core game timer debug
-CFLAGS = `sdl-config --cflags` -mno-cygwin
-LINKFLAGS = `sdl-config --libs` -lglu32 -lopengl32 -lm -mno-cygwin
+SOURCES = main core game timer debug gfx
+CFLAGS = `sdl-config --cflags` -mno-cygwin -O2
+LINKFLAGS = `sdl-config --libs` -lglu32 -lopengl32 -lm -mno-cygwin -O2
 
 all: d-net.exe
 
@@ -22,7 +22,7 @@ run: d-net.exe
 	$(CC) $(CFLAGS) -c -o $@ $<
 	
 %.d: %.cpp
-	bash -ec '$(CC) $(CFLAGS) -MM $< | sed "s/$*.o/$*.o $@/g" > $@'
+	bash -ec '$(CC) $(CFLAGS) -M $< | sed "s/$*.o/$*.o $@/g" > $@'
 
 
 

@@ -1,6 +1,7 @@
 
 #include <iostream>
 #include <assert.h>
+#include <vector>
 using namespace std;
 
 #include <SDL.h>
@@ -11,30 +12,31 @@ using namespace std;
 #include "main.h"
 #include "game.h"
 #include "timer.h"
+#include "debug.h"
+#include "gfx.h"
 
-void RenderScene() {
+Keystates curstate;
 
-	glClearColor( 0.25f, 0.25f, 0.25f, 0.0f );
-	glClear(GL_COLOR_BUFFER_BIT);
-	glColor3f(1.0f, 0.0f, 0.0f);
-	glRectf(0.1, 0.2, 0.2, 0.1);
-	glFlush();
-	SDL_GL_SwapBuffers(); 
-
-}
-
-void keyPress( SDL_keysym* key ) {
-    switch( key->sym ) {
-        case SDLK_F1:
-            toggleFullscreen();
-            break;
-
-		default:
-            break;
-    }
+void keyPress( SDL_KeyboardEvent *key ) {
+	char *ps = NULL;
+	if( key->keysym.sym == SDLK_UP )
+		ps = &curstate.forward;
+	if( key->keysym.sym == SDLK_DOWN )
+		ps = &curstate.back;
+	if( key->keysym.sym == SDLK_LEFT )
+		ps = &curstate.left;
+	if( key->keysym.sym == SDLK_RIGHT )
+		ps = &curstate.right;
+	if( !ps )
+		return;
+	if( key->type == SDL_KEYUP )
+		*ps = 0;
+	if( key->type == SDL_KEYDOWN )
+		*ps = 1;
 }
 
 void MainLoop() {
+	memset( &curstate, 0, sizeof( curstate ) );
 
 	Game game;
 	Timer timer;
@@ -49,7 +51,8 @@ void MainLoop() {
 					return;
 
 				case SDL_KEYDOWN:
-					keyPress( & event. key.keysym );         // callback for handling keystrokes, arg is key pressed
+				case SDL_KEYUP:
+					keyPress( &event.key );
 					break;
 
 				case SDL_VIDEORESIZE:
@@ -61,11 +64,17 @@ void MainLoop() {
 					break;
 			}
 		}
-		game.runTick( vector< Keystates >() );
+		setZoom( 0, 0, 100 );
+		vector< Keystates > ks;
+		ks.push_back( curstate );
+		game.runTick( ks );
 		timer.waitForNextFrame();
 		if( !timer.skipFrame() ) {
-			RenderScene();
+			initFrame();
 			game.renderToScreen( RENDERTARGET_SPECTATOR );
+			deinitFrame();
+		} else {
+			dprintf( "Skipped!\n" );
 		}
 		timer.frameDone();
 	}

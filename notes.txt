@@ -1,0 +1,12 @@
+OPEC II
+
+CARAT I
+CARAT II
+
+ROXO I
+ROXO II
+
+Speed
+Turning
+Armor
+Power
