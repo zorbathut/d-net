@@ -37,7 +37,7 @@ void setZoom( float in_sx, float in_sy, float in_ey ) {
 }
 
 void drawLine( float sx, float sy, float ex, float ey, float weight ) {
-	glLineWidth( weight * 600 * 0.001f );
+	glLineWidth( weight / map_zoom * 600 );	// has to end up in pixels - that 600 should be the y-dimension
 	glBegin( GL_LINES );
 	glVertex2f( ( sx - map_sx ) / map_zoom, ( sy - map_sy ) / map_zoom );
 	glVertex2f( ( ex - map_sx ) / map_zoom, ( ey - map_sy ) / map_zoom );

@@ -37,6 +37,13 @@ public:
 	void render() const;
 	void addCollide( Collider *collide ) const;
 
+	Gamemap();
+
+private:
+
+	vector< float > vertices;
+
+
 };
 
 class Game {
