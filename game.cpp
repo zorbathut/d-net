@@ -224,61 +224,53 @@ void Game::runTick( const vector< Keystates > &keys ) {
 	frameNm++;
 	assert( keys.size() == 2 );
 
-	collider.reset();
+	collider.reset(players.size());
     
-    dprintf("gm\n");
-
-	collider.createGroup();
+	collider.addThingsToGroup(-1, 0);
     collider.startToken(0);
 	gamemap.addCollide( &collider );
-	collider.endCreateGroup();
+	collider.endAddThingsToGroup();
     
-    dprintf("play\n");
-
 	for( int k = 0; k < players.size(); k++ ) {
-		collider.createGroup();
+		collider.addThingsToGroup(0, k);
         collider.startToken(0);
         players[ k ].startNewMoveCycle();
         players[ k ].setKeys( keys[ k ] );
 		players[ k ].addCollision( &collider );
-		collider.endCreateGroup();
+		collider.endAddThingsToGroup();
 	}
     
-    dprintf("proj\n");
-
 	for( int j = 0; j < projectiles.size(); j++ ) {
-		collider.createGroup();
+		collider.addThingsToGroup(1, j);
 		for( int k = 0; k < projectiles[ j ].size(); k++ ) {
             collider.startToken(k);
             projectiles[ j ][ k ].startNewMoveCycle();
 			projectiles[ j ][ k ].addCollision( &collider );
 		}
-		collider.endCreateGroup();
+		collider.endAddThingsToGroup();
 	}
     
-    dprintf("done\n");
-    
-    for( int k = 0; k < players.size() + 1; k++ ) {
-        assert( !collider.testCollideAgainst( k, k + 1, players.size() + 1, 0 ) );
-    }
+    assert( !collider.testCollideAll() );
     
 	while( collider.doProcess() ) {
 		dprintf( "Collision!\n" );
 		dprintf( "Timestamp %f\n", collider.getCurrentTimestamp() );
-		dprintf( "%d,%d vs %d,%d\n", collider.getLhs().first, collider.getLhs().second, collider.getRhs().first, collider.getRhs().second );
-        pair< int, int > lhs = collider.getLhs();
-        pair< int, int > rhs = collider.getRhs();
+		dprintf( "%d,%d,%d vs %d,%d,%d\n", collider.getLhs().first.first, collider.getLhs().first.second, collider.getLhs().second, collider.getRhs().first.first, collider.getRhs().first.second, collider.getRhs().second );
+        pair< pair< int, int >, int > lhs = collider.getLhs();
+        pair< pair< int, int >, int > rhs = collider.getRhs();
         if( lhs > rhs ) swap( lhs, rhs );
-        if( lhs.first == 0 && rhs.first == 0 ) {
+        if( lhs.first.first == -1 && rhs.first.first == -1 ) {
             // wall-wall collision, wtf?
             assert(0);
-        } else if( lhs.first == 0 && rhs.first <= players.size() ) {
+        } else if( lhs.first.first == -1 && rhs.first.first == 0 ) {
+            
+            assert(rhs.first.second >= 0 && rhs.first.second < players.size());
             
             // wall-tank collision - stop tank
             dprintf( "Wall-tank collision\n" );
             dprintf( "Time currently %f\n", collider.getCurrentTimestamp() );
             
-            int playerTarget = rhs.first - 1;
+            int playerTarget = rhs.first.second;
     
             Keystates stopped = keys[ playerTarget ];
             stopped.left = false;
@@ -294,16 +286,17 @@ void Game::runTick( const vector< Keystates > &keys ) {
             while(1) {
                 assert( cTimeStamp > 0.0 );
                 cTimeStamp = max( cTimeStamp - rollbackStep, 0.0f );
+                collider.setCurrentTimestamp( cTimeStamp );
                 rollbackStep += rollbackStep;
                 temptank = players[ playerTarget ];
                 temptank.move( cTimeStamp );
                 temptank.setKeys( stopped );
-                collider.clearGroup( rhs.first );
-                collider.addThingsToGroup( rhs.first );
+                collider.clearGroup(0, playerTarget);
+                collider.addThingsToGroup(0, playerTarget);
                 collider.startToken(0);
                 temptank.addCollision( &collider );
                 collider.endAddThingsToGroup();
-                if( !collider.testCollideAgainst( rhs.first, 0, players.size() + 1, collider.getCurrentTimestamp() ) )
+                if( !collider.testCollideAgainst( playerTarget ) )
                     break;
                 dprintf( "Multiple rollback! %f\n", rollbackStep );
                 // roll back again
@@ -311,22 +304,30 @@ void Game::runTick( const vector< Keystates > &keys ) {
             
             players[ playerTarget ] = temptank;
             
-            assert( !collider.testCollideAgainst( rhs.first, 0, players.size() + 1, collider.getCurrentTimestamp() ) );
+            assert( !collider.testCollideAgainst( playerTarget ) );
             
-            collider.flagAsMoved( rhs.first );
+            collider.flagAsMoved( 0, playerTarget );
             
-        } else if( lhs.first == 0 ) {
+        } else if( lhs.first.first == -1 && rhs.first.first == 1 ) {
             // wall-projectile collision - kill projectile
             dprintf( "Wall-projectile collision\n" );
-        } else if( lhs.first <= players.size() && rhs.first <= players.size() ) {
+            collider.removeThingsFromGroup( rhs.first.first, rhs.first.second );
+            collider.startToken(rhs.second);
+            projectiles[ rhs.first.second ][ rhs.second ].addCollision( &collider );
+            collider.endRemoveThingsFromGroup();
+            projectiles[ rhs.first.second ][ rhs.second ].live = false;
+        } else if( lhs.first.first == 0 && rhs.first.first == 0 ) {
             // tank-tank collision
             dprintf( "Tank-tank collision\n" );
-        } else if( lhs.first <= players.size() ) {
+        } else if( lhs.first.first == 0 && rhs.first.first == 1 ) {
             // tank-projectile collision
             dprintf( "Tank-projectile collision\n" );
-        } else {
+        } else if( lhs.first.first == 1 && rhs.first.first == 1 ) {
             // projectile-projectile collision
             dprintf( "Projectile-projectile collision\n" );
+        } else {
+            dprintf("omgwtf %d %d\n", lhs.first.first, rhs.first.first);
+            assert(0);
         }
 	}
 

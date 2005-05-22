@@ -130,49 +130,42 @@ float getCollision( const Float4 &l1p, const Float4 &l1v, const Float4 &l2p, con
 	return cBc;
 }
 
-void Collider::reset() {
+void Collider::reset( int in_players ) {
 	assert( state == 0 );
-	items.clear();
+	players = in_players;
+    items.resize( in_players * 2 + 1 );
+    for( int i = 0; i < items.size(); i++ )
+        items[ i ].clear();
 	ctime = 0;
 }
 
 void Collider::startToken( int toki ) {
-	assert( state == 1 && curpush != -1 );
+	assert( ( state == 1 || state == 2 ) && curpush != -1 );
     curtoken = toki;
 }
 void Collider::token( const Float4 &line, const Float4 &direction ) {
-	assert( state == 1 && curpush != -1 && curtoken != -1 );
-    assert( ctime == 0 || ( direction.sx == 0 && direction.sy == 0 && direction.ex == 0 && direction.ey == 0 ) );
-	items[ curpush ].push_back( make_pair( curtoken, make_pair( line, direction ) ) );
+    if( state == 1 ) {
+        assert( state == 1 && curpush != -1 && curtoken != -1 );
+        assert( ctime == 0 || ( direction.sx == 0 && direction.sy == 0 && direction.ex == 0 && direction.ey == 0 ) );
+        items[ curpush ].push_back( make_pair( curtoken, make_pair( line, direction ) ) );
+    } else if( state == 2 ) {
+        assert( state == 2 && curpush != -1 && curtoken != -1 );
+        vector< pair< int, pair< Float4, Float4 > > >::iterator jit = find( items[ curpush ].begin(), items[ curpush ].end(), make_pair( curtoken, make_pair( line, direction ) ) );
+        assert( jit != items[ curpush ].end() );
+        items[ curpush ].erase( jit );
+    }
 }
 
-void Collider::createGroup() {
-	assert( state == 0 && curpush == -1 && curtoken == -1 );
-	state = 1;
-    curpush = items.size();
-	items.push_back( vector< pair< int, pair< Float4, Float4 > > >() );
-}
-int Collider::endCreateGroup() {
-	assert( state == 1 && curpush != -1 );
-	state = 0;
-    curpush = -1;
-    curtoken = -1;
-	return items.size() - 1;
-}
-
-void Collider::clearGroup( int gid ) {
+void Collider::clearGroup( int category, int gid ) {
     assert( state == 0 && curpush == -1 && curtoken == -1 );
-    assert( gid >= 0 && gid < items.size() );
-    items[ gid ].clear();
+    items[ getIndex( category, gid ) ].clear();
 }
 
-void Collider::addThingsToGroup( int gid ) {
+void Collider::addThingsToGroup( int category, int gid ) {
     assert( state == 0 && curpush == -1 && curtoken == -1 );
-    assert( gid >= 0 && gid < items.size() );
     state = 1;
-    curpush = gid;
+    curpush = getIndex( category, gid );
 }
-
 void Collider::endAddThingsToGroup() {
     assert( state == 1 && curpush != -1 );
     state = 0;
@@ -180,37 +173,73 @@ void Collider::endAddThingsToGroup() {
     curtoken = -1;
 }
 
+void Collider::removeThingsFromGroup( int category, int gid ) {
+    assert( state == 0 && curpush == -1 && curtoken == -1 );
+    state = 2;
+    curpush = getIndex( category, gid );
+}
+void Collider::endRemoveThingsFromGroup() {
+    assert( state == 2 && curpush != -1 );
+    state = 0;
+    curpush = -1;
+    curtoken = -1;
+}
+
 bool Collider::doProcess() {
 	assert( state == 0 );
+    
+    for(set<int>::iterator itr = moved.begin(); itr != moved.end(); itr = moved.begin()) {
+        for( int alter = 0; alter < items.size(); alter++ ) {
+            if( !canCollide( *itr, alter ) )
+                continue;
+            for( int x = 0; x < items[ *itr ].size(); x++ ) {
+                for( int y = 0; y < items[ alter ].size(); y++ ) {
+                    if( linelineintersect( lerp( items[ alter ][ y ].second.first, items[ alter ][ y ].second.second, ctime ), lerp( items[ *itr ][ x ].second.first, items[ *itr ][ x ].second.second, ctime ) ) ) {
+                        assert( reverseIndex( alter ).first == 1 );
+                        lhs.first = reverseIndex( *itr );
+                        lhs.second = items[ *itr ][ x ].first;
+                        rhs.first = reverseIndex( alter );
+                        rhs.second = items[ alter ][ y ].first;;
+                        assert( rhs.first.first == 1 );
+                        return true;
+                    }
+                }
+            }
+        }
+        moved.erase( itr );
+    }
+    
 	float firstintersect = 2.0;
+    int lhsx = 0;
+    int rhsx = 0;
 	for( int x = 0; x < items.size(); x++ ) {
 		for( int y = x + 1; y < items.size(); y++ ) {
-			if( x == 0 && y == 1 && frameNumber % 30 == 0 )
-				verbosified = true;
+            if( !canCollide( x, y ) )
+                continue;
 			for( int xa = 0; xa < items[ x ].size(); xa++ ) {
 				for( int ya = 0; ya < items[ y ].size(); ya++ ) {
 					float tcol = getCollision( items[ x ][ xa ].second.first, items[ x ][ xa ].second.second, items[ y ][ ya ].second.first, items[ y ][ ya ].second.second, ctime );
 					if( tcol == NOCOLLIDE )
 						continue;
-					//dprintf( "%d,%d collides with %d%f, %f\n", ctime, tcol );
-					assert( tcol >= ctime );
+					assert( tcol >= ctime  && tcol >= 0 && tcol <= 1 );
 					if( tcol < firstintersect ) {
 						firstintersect = tcol;
-						lhs.first = x;
-						lhs.second = xa;
-						rhs.first = y;
-						rhs.second = ya;
+						lhsx = x;
+						lhs.second = items[ x ][ xa ].first;
+						rhsx = y;
+						rhs.second = items[ y ][ ya ].first;
 					}
 				}
 			}
-			verbosified = false;
 		}
 	}
 	ctime = firstintersect;
+    lhs.first = reverseIndex( lhsx );
+    rhs.first = reverseIndex( rhsx );
 	return firstintersect < 2.0;
 }
 
-float Collider::getCurrentTimestamp() {
+float Collider::getCurrentTimestamp() const {
 	assert( state == 0 && ctime <= 1.0 && ctime >= 0.0 );
 	return ctime;
 }
@@ -219,31 +248,60 @@ void Collider::setCurrentTimestamp( float ntime ) {
 	ctime = ntime;
 }
 
-pair< int, int > Collider::getLhs() {
+pair< pair< int, int >, int > Collider::getLhs() const {
 	assert( state == 0 && ctime <= 1.0 && ctime >= 0.0 );
 	return lhs;
 }
-pair< int, int > Collider::getRhs() {
+pair< pair< int, int >, int > Collider::getRhs() const {
 	assert( state == 0 && ctime <= 1.0 && ctime >= 0.0 );
 	return rhs;
 }
 
-void Collider::flagAsMoved( int group ) { };
+void Collider::flagAsMoved( int category, int gid ) {
+    moved.insert( getIndex( category, gid ) );
+}
 
-bool Collider::testCollideAgainst( int active, int start, int end, float time ) {
-    assert( start >= 0 && start < items.size() );
-    assert( end >= 0 && end < items.size() );
-    assert( start <= end );
-    assert( active >= 0 && active < items.size() );
-    for( int x = start; x < end; x++ ) {
-        if( x == active )
+bool Collider::testCollideSingle( int lhs, int rhs ) const {
+    assert( lhs >= 0 && lhs < items.size() );
+    assert( rhs >= 0 && rhs < items.size() );
+    for( int y = 0; y < items[ lhs ].size(); y++ ) {
+        for( int k = 0; k < items[ rhs ].size(); k++ ) {
+            if( linelineintersect( lerp( items[ lhs ][ y ].second.first, items[ lhs ][ y ].second.second, ctime ), lerp( items[ rhs ][ k ].second.first, items[ rhs ][ k ].second.second, ctime ) ) ) {
+                //dprintf( "%d/%d with %d/%d\n", active, k, x, y );
+                return true;
+            }
+        }
+    }
+    return false;
+}
+bool Collider::testCollideAgainst( int active ) const {
+    int actindex;
+    if( active == -1 )
+        actindex = getIndex( -1, 0 );
+      else
+        actindex = getIndex( 0, active );
+    for( int i = -1; i < players; i++ ) {
+        if( active == i )
             continue;
-        for( int y = 0; y < items[ x ].size(); y++ ) {
-            for( int k = 0; k < items[ active ].size(); k++ ) {
-                if( linelineintersect( lerp( items[ x ][ y ].second.first, items[ x ][ y ].second.second, time ), lerp( items[ active ][ k ].second.first, items[ active ][ k ].second.second, time ) ) ) {
-                    //dprintf( "%d/%d with %d/%d\n", active, k, x, y );
+        if( i == -1 ) {
+            if( testCollideSingle( getIndex( -1, 0 ), actindex ) )
+                return true;
+        } else {
+            if( testCollideSingle( getIndex( 0, i ), actindex ) )
+                return true;
+        }
+    }
+    return false;
+}
+bool Collider::testCollideAll() const {
+    for( int i = -1; i < players; i++ ) {
+        for( int j = i + 1; j < players; j++ ) {
+            if( i == -1 ) {
+                if( testCollideSingle( getIndex( -1, 0 ), getIndex( 0, j ) ) )
                     return true;
-                }
+            } else {
+                if( testCollideSingle( getIndex( 0, i ), getIndex( 0, j ) ) )
+                    return true;
             }
         }
     }
@@ -256,6 +314,30 @@ Collider::Collider() { state = 0; ctime = 0; curpush = -1; curtoken = -1; };
 Collider::~Collider() { };
 
 void Collider::render() const { };
+
+bool Collider::canCollide( int indexa, int indexb ) const {
+    if( indexa > indexb )
+        swap( indexa, indexb );
+    return !( indexb - indexa == players && indexa != 0 ) && indexa != indexb;
+}
+int Collider::getIndex( int category, int gid ) const {
+    if( category == -1 ) {
+        assert( gid == 0 );
+        return 0;
+    } else {
+        assert( category == 0 || category == 1 );
+        assert( gid >= 0 && gid < players );
+        return players * category + gid + 1;
+    }
+}
+pair< int, int > Collider::reverseIndex( int index ) const {
+    if( index == 0 )
+        return make_pair( -1, 0 );
+    else {
+        pair< int, int > out( ( index - 1 ) / players, ( index - 1 ) % players );
+        assert( out.first == 0 || out.first == 1 );
+    }
+}
 
 #else
 /*

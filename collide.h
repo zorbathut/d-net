@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <map>
+#include <set>
 using namespace std;
 
 #include "util.h"
@@ -36,29 +37,28 @@ public:
 class Collider {
 public:
 
-	void reset();
+	void reset( int players );
 
     void startToken( int toki );
 	void token( const Float4 &line, const Float4 &direction );
 
-	void createGroup();
-	int endCreateGroup();
+    void clearGroup( int category, int gid );
 
-    void clearGroup( int gid );
-
-	void removeThingsFromGroup( int gid );
+	void removeThingsFromGroup( int category, int gid );
 	void endRemoveThingsFromGroup();
 
-	void addThingsToGroup( int gid );
+	void addThingsToGroup( int category, int gid );
 	void endAddThingsToGroup();
 
 	bool doProcess();
-	float getCurrentTimestamp();
+	float getCurrentTimestamp() const;
     void setCurrentTimestamp( float t );
-	pair< int, int > getLhs();
-	pair< int, int > getRhs();
+	pair< pair< int, int >, int > getLhs() const;
+	pair< pair< int, int >, int > getRhs() const;
   
-    void flagAsMoved( int group );
+    void flagAsMoved( int category, int gid );
+    // flags to run a series of tests to make sure it's not *currently* impacting anything, and spit out collision errors if so
+    // currently will also error and crash if it's colliding with wall or tank
 
 	Collider();	// doesn't init to a usable state
 	//void reinit( float sx, float sy, float ex, float ey );
@@ -67,7 +67,9 @@ public:
 
 	void render() const;
     
-    bool testCollideAgainst( int active, int start, int end, float time );
+    bool testCollideSingle( int lhs, int rhs ) const;
+    bool testCollideAgainst( int active ) const;
+    bool testCollideAll() const;
 
 private:
 	
@@ -75,12 +77,20 @@ private:
 
 	float ctime;
 
-	pair< int, int > lhs;
-	pair< int, int > rhs;
+	pair< pair< int, int >, int > lhs;
+	pair< pair< int, int >, int > rhs;
 
 	vector< vector< pair< int, pair< Float4, Float4 > > > > items;
     int curpush;
     int curtoken;
+
+    int players;
+
+    set< int > moved;
+
+    bool canCollide( int indexa, int indexb ) const;
+    int getIndex( int category, int gid ) const;
+    pair< int, int > reverseIndex( int index ) const;
 
 	/*
 	Quad *quad;
