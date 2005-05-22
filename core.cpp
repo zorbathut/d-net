@@ -1,6 +1,5 @@
 
 #include <iostream>
-#include <assert.h>
 #include <vector>
 using namespace std;
 
@@ -14,6 +13,7 @@ using namespace std;
 #include "timer.h"
 #include "debug.h"
 #include "gfx.h"
+#include "util.h"
 
 vector< Keystates > curstates( 2 );
 
@@ -103,7 +103,7 @@ void MainLoop() {
 		//}
 		rendering += bencher.ticksElapsed();
 		timer.frameDone();
-		frako++;
+		frameNumber++;
 		if( frako % 60 == 0 ) {
 			long long tot = timer.getFrameTicks() * 60;
 			//long long tot = polling + ticking + waiting + rendering;
@@ -116,5 +116,7 @@ void MainLoop() {
 			waiting = 0;
 			rendering = 0;
 		}
+        frako++;
 	}
+	dprintf( "denial\n" );
 }

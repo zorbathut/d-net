@@ -1,5 +1,5 @@
 
-SOURCES = main core game timer debug gfx collide gamemap util rng
+SOURCES = main core game timer debug gfx collide gamemap util rng const
 CFLAGS = `sdl-config --cflags` -mno-cygwin -O2 #-pg
 LINKFLAGS = `sdl-config --libs` -lglu32 -lopengl32 -lm -mno-cygwin -O2 #-pg
 
@@ -20,7 +20,7 @@ run: d-net.exe
 
 package: d-net.exe
 	strip d-net.exe
-	zip -9 -j `date +c:/inetpub/wwwroot/d-net/dnet%G%m%d%H%M%S.zip` d-net.exe c:/cygwin/usr/local/bin/SDL.dll
+	zip -9 -j `date +x:/d-net/dnet%G%m%d%H%M%S.zip` d-net.exe c:/cygwin/usr/local/bin/SDL.dll
 
 %.o: %.cpp
 	$(CC) $(CFLAGS) -c -o $@ $<

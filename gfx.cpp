@@ -2,11 +2,12 @@
 #include "gfx.h"
 
 #include <cmath>
-#include <assert.h>
 using namespace std;
 
 #include <SDL.h>
 #include <GL/gl.h>
+
+#include "util.h"
 
 static float map_sx;
 static float map_sy;

@@ -37,16 +37,23 @@ public:
 
 class Tank {
 public:
-	void move( const Keystates &keystates, int phase );
-	void tick();
+    
+	//void tick();
 	void render( int tankid ) const;
 
-	bool colliding( const Collider &collider ) const;
+    void startNewMoveCycle();
+    void setKeys( const Keystates &keystates );
+    void move();
+    void move( float time );
+	//bool colliding( const Collider &collider ) const;
 	void addCollision( Collider *collider ) const;
+
 	Tank();
 
-	vector< float > getTankVertices() const;
+	vector< float > getTankVertices( float tx, float ty, float td ) const;
 	pair< float, float > getFiringPoint() const;
+
+    pair< pair< float, float >, float > getDeltaAfterMovement( const Keystates &keys, float x, float y, float d, float t ) const;
 
 	void takeDamage( int amount );
 	void genEffects( vector< GfxEffects > *gfxe );
@@ -59,22 +66,34 @@ public:
 	bool live;
 
 	int health;
+    
+    float timeLeft;
+    Keystates keys;
 
 };
 
 class Projectile {
 public:
 
-	void move();
 	void render() const;
-	bool colliding( const Collider &collider ) const;
-	pair< float, int > getImpact( const Collider &collider ) const;
+
+    void startNewMoveCycle();
+    void move();
+    void move( float time );
+	//bool colliding( const Collider &collider ) const;
 	void addCollision( Collider *collider ) const;
+
 	void impact( Tank *target );
 
 	float x;
 	float y;
 	float d;
+
+    float timeLeft;
+
+    bool live;
+
+    Projectile();
 
 };
 

@@ -1,9 +1,15 @@
 #ifndef DNET_UTIL
 #define DNET_UTIL
 
-#include "const.h"
+#include <utility>
+#include <algorithm>
 
-#include <assert.h>
+using namespace std;
+
+#include "const.h"
+#include "debug.h"
+
+extern bool verbosified;
 
 class Float4 {
 public:
@@ -46,7 +52,9 @@ inline Float4 &operator/=( Float4 &lhs, float rhs ) {
 	lhs.ey /= rhs;
 }
 
+#define assert(x) if(!(x)) { dprintf("Error at %s:%d - %s\n", __FILE__, __LINE__, #x); *(int*)0 = 0; }
 #define assert2(x) assert(x)
+#define printf FAILURE
 
 inline bool operator==( const Float4 &lhs, const Float4 &rhs ) {
 	return lhs.sx == rhs.sx && lhs.sy == rhs.sy && lhs.ex == rhs.ex && lhs.ey == rhs.ey;
@@ -80,7 +88,22 @@ inline float linelineintersectpos( float x1, float y1, float x2, float y2, float
 inline float linelineintersectpos( const Float4 &lhs, const Float4 &rhs ) {
 	return linelineintersectpos( lhs.sx, lhs.sy, lhs.ex, lhs.ey, rhs.sx, rhs.sy, rhs.ex, rhs.ey );
 }
+inline int whichSide( const Float4 &f4, const pair< float, float > &pta ) {
+    float ax = f4.ex - f4.sx;
+    float ay = f4.ey - f4.sy;
+    float bx = pta.first - f4.sx;
+    float by = pta.second - f4.sy;
+    swap(ax, ay);
+    ax *= -1;
+    float rv = ax * bx + ay * by;
+    if( rv < 0 ) return -1;
+    else if( rv > 0 ) return 1;
+    else return 0;
+}
 
+inline Float4 lerp( const Float4 &start, const Float4 &delta, float time ) {
+    return Float4( start.sx + delta.sx * time, start.sy + delta.sy * time, start.ex + delta.ex * time, start.ey + delta.ey * time );
+}
 
 #define SIN_TABLE_SIZE 90
 

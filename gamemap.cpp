@@ -9,7 +9,7 @@ void Gamemap::render() const {
 }
 void Gamemap::addCollide( Collider *collider ) const {
 	for( int i = 0; i < vertices.size(); i += 2 )
-		collider->add( vertices[ i ], vertices[ i + 1 ], vertices[ ( i + 2 ) % vertices.size() ], vertices[ ( i + 3 ) % vertices.size() ] );
+		collider->token( Float4( vertices[ i ], vertices[ i + 1 ], vertices[ ( i + 2 ) % vertices.size() ], vertices[ ( i + 3 ) % vertices.size() ] ), Float4( 0, 0, 0, 0 ) );
 }
 
 Gamemap::Gamemap() {

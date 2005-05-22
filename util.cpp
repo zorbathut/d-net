@@ -1,10 +1,12 @@
 
 #include "util.h"
+#undef printf
 #include "debug.h"
 
-#include <assert.h>
 #include <numeric>
 using namespace std;
+
+bool verbosified = false;
 
 float sin_table[ SIN_TABLE_SIZE + 1 ];
 

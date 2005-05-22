@@ -36,26 +36,53 @@ public:
 class Collider {
 public:
 
-	void startGroup();
-	void add( float sx, float sy, float ex, float ey );
-	int endGroup();
+	void reset();
 
-	void disableGroup( int group );
-	void enableGroup( int group );
-	void deleteGroup( int group );
-	
-	bool test( float sx, float sy, float ex, float ey ) const;
-	pair< float, int > getImpact( float sx, float sy, float ex, float ey ) const;
+    void startToken( int toki );
+	void token( const Float4 &line, const Float4 &direction );
+
+	void createGroup();
+	int endCreateGroup();
+
+    void clearGroup( int gid );
+
+	void removeThingsFromGroup( int gid );
+	void endRemoveThingsFromGroup();
+
+	void addThingsToGroup( int gid );
+	void endAddThingsToGroup();
+
+	bool doProcess();
+	float getCurrentTimestamp();
+    void setCurrentTimestamp( float t );
+	pair< int, int > getLhs();
+	pair< int, int > getRhs();
+  
+    void flagAsMoved( int group );
 
 	Collider();	// doesn't init to a usable state
-	void reinit( float sx, float sy, float ex, float ey );
-	Collider( float sx, float sy, float ex, float ey );
+	//void reinit( float sx, float sy, float ex, float ey );
+	//Collider( float sx, float sy, float ex, float ey );
 	~Collider();
 
 	void render() const;
+    
+    bool testCollideAgainst( int active, int start, int end, float time );
 
 private:
+	
+	int state;
 
+	float ctime;
+
+	pair< int, int > lhs;
+	pair< int, int > rhs;
+
+	vector< vector< pair< int, pair< Float4, Float4 > > > > items;
+    int curpush;
+    int curtoken;
+
+	/*
 	Quad *quad;
 
 	vector< Collide > newGroup;
@@ -70,7 +97,7 @@ private:
 	bool quadTest( const Float4 &line, const Float4 &range, const Quad *node ) const;
 	pair< float, int > quadImpact( const Float4 &line, const Float4 &range, const Quad *node ) const;
 	void quadAdd( const Float4 &range, Collide *ptr, Quad *node );
-	void quadRemove( const Float4 &range, Collide *ptr, Quad *node ); 
+	void quadRemove( const Float4 &range, Collide *ptr, Quad *node ); */
 
 };
 
