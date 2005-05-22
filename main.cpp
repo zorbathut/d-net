@@ -97,7 +97,7 @@ void initSystem() {
 		assert( 0 );
 
 	SetupOgl();
-    MakeWindow( "Destruction Net", SCREEN_WIDTH, SCREEN_HEIGHT );
+    MakeWindow( "Devastation Net", SCREEN_WIDTH, SCREEN_HEIGHT );
 
 };
 

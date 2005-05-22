@@ -310,7 +310,6 @@ void Game::runTick( const vector< Keystates > &keys ) {
             
         } else if( lhs.first.first == -1 && rhs.first.first == 1 ) {
             // wall-projectile collision - kill projectile
-            dprintf( "Wall-projectile collision\n" );
             collider.removeThingsFromGroup( rhs.first.first, rhs.first.second );
             collider.startToken(rhs.second);
             projectiles[ rhs.first.second ][ rhs.second ].addCollision( &collider );
@@ -320,11 +319,26 @@ void Game::runTick( const vector< Keystates > &keys ) {
             // tank-tank collision
             dprintf( "Tank-tank collision\n" );
         } else if( lhs.first.first == 0 && rhs.first.first == 1 ) {
-            // tank-projectile collision
-            dprintf( "Tank-projectile collision\n" );
+            // tank-projectile collision - kill projectile, do damage
+            collider.removeThingsFromGroup( rhs.first.first, rhs.first.second );
+            collider.startToken(rhs.second);
+            projectiles[ rhs.first.second ][ rhs.second ].addCollision( &collider );
+            collider.endRemoveThingsFromGroup();
+            projectiles[ rhs.first.second ][ rhs.second ].impact( &players[ lhs.first.second ] );
+            projectiles[ rhs.first.second ][ rhs.second ].live = false;
         } else if( lhs.first.first == 1 && rhs.first.first == 1 ) {
-            // projectile-projectile collision
-            dprintf( "Projectile-projectile collision\n" );
+            // projectile-projectile collision - kill both projectiles
+            collider.removeThingsFromGroup( lhs.first.first, lhs.first.second );
+            collider.startToken(lhs.second);
+            projectiles[ lhs.first.second ][ lhs.second ].addCollision( &collider );
+            collider.endRemoveThingsFromGroup();
+            projectiles[ lhs.first.second ][ lhs.second ].live = false;
+            
+            collider.removeThingsFromGroup( rhs.first.first, rhs.first.second );
+            collider.startToken(rhs.second);
+            projectiles[ rhs.first.second ][ rhs.second ].addCollision( &collider );
+            collider.endRemoveThingsFromGroup();
+            projectiles[ rhs.first.second ][ rhs.second ].live = false;
         } else {
             dprintf("omgwtf %d %d\n", lhs.first.first, rhs.first.first);
             assert(0);
