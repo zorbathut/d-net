@@ -219,6 +219,224 @@ void Game::renderToScreen( int target ) const {
 	collider.render();
 };
 
+void collideHandler( Collider *collider, vector< Tank > *tanks, const vector< Keystates > &keys, const vector< int > &tankx ) {
+    
+    vector< Keystates > stopped = keys;
+    for( int i = 0; i < stopped.size(); i++ ) {
+        stopped[ i ].left = false;
+        stopped[ i ].right = false;
+        stopped[ i ].forward = false;
+        stopped[ i ].back = false;
+    }
+    
+    Tank temptank;
+    
+    float cCollideTimeStamp = collider->getCurrentTimestamp() + COLLISIONROLLBACK;
+    
+    float cTimeStamp = collider->getCurrentTimestamp();
+    float rollbackStep = COLLISIONROLLBACK;
+    
+    {
+        collider->setCurrentTimestamp( cCollideTimeStamp );
+        assert( collider->testCollideAll() );
+        collider->setCurrentTimestamp( cTimeStamp );
+    }
+    
+    dprintf( "Original timestamp is %f\n", cCollideTimeStamp );
+    
+    while(1) {
+        
+        // If this triggers, we've gotten ourselves in a weird but potentially possible situation
+        // The solution is to figure out *all* the tanks involved in the deadlock, and keep them all from moving
+        // And possibly flash a "treads locked" message so they can figure out how to get out :P
+        assert( cTimeStamp > 0.0 );
+        
+        cTimeStamp = max( cTimeStamp - rollbackStep, 0.0f );
+        collider->setCurrentTimestamp( cTimeStamp );
+        rollbackStep += rollbackStep;
+        for( int i = 0; i < tankx.size(); i++ ) {
+            temptank = (*tanks)[tankx[i]];
+            temptank.move( cTimeStamp );
+            temptank.setKeys( stopped[ i ] );
+            collider->clearGroup(0, tankx[i]);
+            collider->addThingsToGroup(0, tankx[i]);
+            collider->startToken(0);
+            temptank.addCollision( collider );
+            collider->endAddThingsToGroup();
+        }
+        bool collided = false;
+        for( int i = 0; i < tankx.size() && !collided; i++ )
+            if( collider->testCollideAgainst( tankx[ i ] ) )
+                collided = true;
+        if( !collided )
+            break;
+        dprintf( "Multiple rollback! %f\n", rollbackStep );
+        // roll back again
+    }
+    
+    dprintf( "Unfreeze timestamp is %f\n", cTimeStamp );
+    
+    /* now we have our real timestamp, so let's see what can be released */
+    /* all the tanks are still in the "fixed" location", so let's roll forward to the collide point and see what it looks like then */
+    
+    collider->setCurrentTimestamp( cCollideTimeStamp );
+    
+    vector< char > mustBeFrozen( tankx.size() );
+    
+    for( int i = 0; i < tankx.size(); i++ ) {
+        dprintf( "Retesting %d\n", i );
+        // rewind, place tank in again
+        collider->setCurrentTimestamp( 0 );
+        temptank = (*tanks)[tankx[i]];
+        collider->clearGroup(0, tankx[i]);
+        collider->addThingsToGroup(0, tankx[i]);
+        collider->startToken(0);
+        temptank.addCollision( collider );
+        collider->endAddThingsToGroup();
+        collider->setCurrentTimestamp( cCollideTimeStamp );
+        
+        dprintf( "Clix\n" );
+        // if it's colliding again, it clearly can't move forward
+        if( collider->testCollideAgainst( tankx[ i ] ) )
+            mustBeFrozen[ i ] = true;
+        
+        dprintf( "Reset\n" );
+        
+        temptank = (*tanks)[tankx[i]];
+        temptank.move( cTimeStamp );
+        temptank.setKeys( stopped[ i ] );
+        collider->clearGroup(0, tankx[i]);
+        collider->addThingsToGroup(0, tankx[i]);
+        collider->startToken(0);
+        temptank.addCollision( collider );
+        collider->endAddThingsToGroup();
+        dprintf( "Done\n" );
+    }
+    
+    for( int i = 0; i < tankx.size(); i++ )
+        dprintf( "Freeze tokens: %d is %d\n", tankx[ i ], (int)mustBeFrozen[ i ] );
+    
+    if( count( mustBeFrozen.begin(), mustBeFrozen.end(), false ) == mustBeFrozen.size() ) {
+        dprintf( "Mutual dependency, freezing all" );
+        mustBeFrozen.clear();
+        mustBeFrozen.resize( tankx.size(), true );
+    }
+    
+    collider->setCurrentTimestamp( 0 );
+    
+    /* the frozen ones are still frozen at the appropriate time, so let's unfreeze the non-frozen ones, rollback to our "safe" time, and let the sim keep going from there */
+    
+    for( int i = 0; i < tankx.size(); i++ ) {
+        if( mustBeFrozen[ i ] ) {
+            (*tanks)[tankx[i]].move( cTimeStamp );
+            (*tanks)[tankx[i]].setKeys( stopped[ i ] );
+            collider->flagAsMoved( 0, tankx[i] );
+        } else {
+            temptank = (*tanks)[tankx[i]];
+            collider->clearGroup(0, tankx[i]);
+            collider->addThingsToGroup(0, tankx[i]);
+            collider->startToken(0);
+            temptank.addCollision( collider );
+            collider->endAddThingsToGroup();
+        }            
+    }
+    
+    collider->setCurrentTimestamp( cTimeStamp );
+    
+    dprintf( "Sim continuing\n" );
+
+    assert( !collider->testCollideAll() );
+    
+}
+
+/*void tankWallCollide( Collider *collider, int playerid, Tank *player, const Keystates &keys ) {
+    
+    Keystates stopped = keys;
+    stopped.left = false;
+    stopped.right = false;
+    stopped.forward = false;
+    stopped.back = false;
+    
+    Tank temptank;
+    
+    float cTimeStamp = collider->getCurrentTimestamp();
+    float rollbackStep = COLLISIONROLLBACK;
+    
+    while(1) {
+        assert( cTimeStamp > 0.0 );
+        cTimeStamp = max( cTimeStamp - rollbackStep, 0.0f );
+        collider->setCurrentTimestamp( cTimeStamp );
+        rollbackStep += rollbackStep;
+        temptank = *player;
+        temptank.move( cTimeStamp );
+        temptank.setKeys( stopped );
+        collider->clearGroup(0, playerid);
+        collider->addThingsToGroup(0, playerid);
+        collider->startToken(0);
+        temptank.addCollision( collider );
+        collider->endAddThingsToGroup();
+        if( !collider->testCollideAgainst( playerid ) )
+            break;
+        dprintf( "Multiple rollback! %f\n", rollbackStep );
+        // roll back again
+    }
+    
+    *player = temptank;
+    
+    assert( !collider->testCollideAgainst( playerid ) );
+    
+    collider->flagAsMoved( 0, playerid );
+    
+}
+
+void tankTankCollide( Collider *collider, int lhsplayerid, Tank *lhsplayer, const Keystates &lhskeys,
+        int rhsplayerid, Tank *rhsplayer, const Keystates &rhskeys ) {
+    
+    // algorithm:
+    // clamp lhs player's virtual existence post turn distortion, run ahead epsilon, see if rhs is freed. if so, flag CLAMPLHS
+    // clamp rhs player's virtual existence post turn distortion, run ahead epsilon, see if lhs is freed. if so, flag CLAMPRHS
+    
+    // if only one of those is clamped, go to tankWallCollide with that one. otherwise, do a similar thing, only clamping both and stepping backwards until sanity is regained
+    
+    
+    Keystates stopped = keys;
+    stopped.left = false;
+    stopped.right = false;
+    stopped.forward = false;
+    stopped.back = false;
+    
+    Tank temptank;
+    
+    float cTimeStamp = collider->getCurrentTimestamp();
+    float rollbackStep = COLLISIONROLLBACK;
+    
+    while(1) {
+        assert( cTimeStamp > 0.0 );
+        cTimeStamp = max( cTimeStamp - rollbackStep, 0.0f );
+        collider->setCurrentTimestamp( cTimeStamp );
+        rollbackStep += rollbackStep;
+        temptank = *player;
+        temptank.move( cTimeStamp );
+        temptank.setKeys( stopped );
+        collider->clearGroup(0, playerid);
+        collider->addThingsToGroup(0, playerid);
+        collider->startToken(0);
+        temptank.addCollision( collider );
+        collider->endAddThingsToGroup();
+        if( !collider->testCollideAgainst( playerid ) )
+            break;
+        dprintf( "Multiple rollback! %f\n", rollbackStep );
+        // roll back again
+    }
+    
+    *player = temptank;
+    
+    assert( !collider->testCollideAgainst( playerid ) );
+    
+    collider->flagAsMoved( 0, playerid );
+    
+}*/
+
 void Game::runTick( const vector< Keystates > &keys ) {
     
 	frameNm++;
@@ -270,43 +488,9 @@ void Game::runTick( const vector< Keystates > &keys ) {
             dprintf( "Wall-tank collision\n" );
             dprintf( "Time currently %f\n", collider.getCurrentTimestamp() );
             
-            int playerTarget = rhs.first.second;
-    
-            Keystates stopped = keys[ playerTarget ];
-            stopped.left = false;
-            stopped.right = false;
-            stopped.forward = false;
-            stopped.back = false;
-            
-            Tank temptank;
-            
-            float cTimeStamp = collider.getCurrentTimestamp();
-            float rollbackStep = COLLISIONROLLBACK;
-            
-            while(1) {
-                assert( cTimeStamp > 0.0 );
-                cTimeStamp = max( cTimeStamp - rollbackStep, 0.0f );
-                collider.setCurrentTimestamp( cTimeStamp );
-                rollbackStep += rollbackStep;
-                temptank = players[ playerTarget ];
-                temptank.move( cTimeStamp );
-                temptank.setKeys( stopped );
-                collider.clearGroup(0, playerTarget);
-                collider.addThingsToGroup(0, playerTarget);
-                collider.startToken(0);
-                temptank.addCollision( &collider );
-                collider.endAddThingsToGroup();
-                if( !collider.testCollideAgainst( playerTarget ) )
-                    break;
-                dprintf( "Multiple rollback! %f\n", rollbackStep );
-                // roll back again
-            }
-            
-            players[ playerTarget ] = temptank;
-            
-            assert( !collider.testCollideAgainst( playerTarget ) );
-            
-            collider.flagAsMoved( 0, playerTarget );
+            vector< int > tankcollide;
+            tankcollide.push_back(rhs.first.second);
+            collideHandler( &collider, &players, keys, tankcollide );
             
         } else if( lhs.first.first == -1 && rhs.first.first == 1 ) {
             // wall-projectile collision - kill projectile
@@ -318,6 +502,13 @@ void Game::runTick( const vector< Keystates > &keys ) {
         } else if( lhs.first.first == 0 && rhs.first.first == 0 ) {
             // tank-tank collision
             dprintf( "Tank-tank collision\n" );
+            dprintf( "Time currently %f\n", collider.getCurrentTimestamp() );
+            
+            vector< int > tankcollide;
+            tankcollide.push_back(lhs.first.second);
+            tankcollide.push_back(rhs.first.second);
+            collideHandler( &collider, &players, keys, tankcollide );
+
         } else if( lhs.first.first == 0 && rhs.first.first == 1 ) {
             // tank-projectile collision - kill projectile, do damage
             collider.removeThingsFromGroup( rhs.first.first, rhs.first.second );
@@ -396,5 +587,6 @@ Game::Game() /*: collider( 0, 0, 125, 100 ) */ {
 	//gamemap.addCollide( &collider );
 	//collider.endGroup();
 };
+
 
 

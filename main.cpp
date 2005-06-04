@@ -107,15 +107,7 @@ void deinitSystem() {
 
 };
 
-#include "collide.h"
-pair< float, float > getLineCollision( const Float4 &linepos, const Float4 &linevel, const Float4 &ptposvel );
-
 int main( int argc, char **argv ) {
-
-	//pair< float, float > qx = getLineCollision( Float4( 0, 0, 1, 0 ), Float4( 0, -0.2, -0.01, -0.3 ), Float4( 0.5, 0.5, 0, -1 ) );
-	//dprintf( "qx is %f, %f\n", qx.first, qx.second );
-
-	//return 0;
 
 	dprintf( "Init\n" );
 

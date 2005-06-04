@@ -10,6 +10,7 @@ using namespace std;
 
 #define ENABLE_COLLIDE_DEBUG_VIS
 
+/*
 class Collide {
 public:
 	Float4 line;
@@ -33,6 +34,7 @@ public:
 	Quad( const Float4 &dim );
 	~Quad();
 };
+*/
 
 class Collider {
 public:

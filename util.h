@@ -107,6 +107,8 @@ inline Float4 lerp( const Float4 &start, const Float4 &delta, float time ) {
 
 #define SIN_TABLE_SIZE 90
 
+#include <cmath>
+
 extern float sin_table[ SIN_TABLE_SIZE + 1 ];
 
 inline float dsin( float in ) {
