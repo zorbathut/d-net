@@ -31,6 +31,9 @@ public:
 
 	int age;
 
+    int type;
+    enum { EFFECT_POINT, EFFECT_LINE };
+
 	GfxEffects();
 
 };
@@ -84,6 +87,8 @@ public:
 	void addCollision( Collider *collider ) const;
 
 	void impact( Tank *target );
+
+    void genEffects( vector< GfxEffects > *gfxe ) const;
 
 	float x;
 	float y;

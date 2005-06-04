@@ -25,9 +25,15 @@ void GfxEffects::move() {
 	age++;
 }
 void GfxEffects::render() const {
-	float apercent = 1.0f - (float)age / life;
+    float apercent = 1.0f - (float)age / life;
 	setColor( apercent, apercent, apercent );
-	drawLine( pos + vel * age, 0.1f );
+    if( type == EFFECT_LINE ) {
+        drawLine( pos + vel * age, 0.1f );
+    } else if( type == EFFECT_POINT ) {
+        drawPoint( pos.sx + vel.sx * age, pos.sy + vel.sy * age, 0.1f );
+    } else {
+        assert(0);
+    }
 }
 bool GfxEffects::dead() const {
 	return age >= life;
@@ -161,6 +167,7 @@ void Tank::genEffects( vector< GfxEffects > *gfxe ) {
 			ngfe.vel.sy = ngfe.vel.ey = cy - y;
 			ngfe.vel /= 5;
 			ngfe.life = 15;
+            ngfe.type = GfxEffects::EFFECT_LINE;
 			gfxe->push_back( ngfe );
 		}
 		spawnShards = false;
@@ -202,6 +209,22 @@ void Projectile::addCollision( Collider *collider ) const {
 void Projectile::impact( Tank *target ) {
 	target->takeDamage( 1 );
 };
+
+void Projectile::genEffects( vector< GfxEffects > *gfxe ) const {
+    GfxEffects ngfe;
+    ngfe.pos.sx = x + projectile_length * fsin( d );
+    ngfe.pos.sy = y - projectile_length * fcos( d );
+    ngfe.life = 10;
+    ngfe.type = GfxEffects::EFFECT_POINT;
+    for( int i = 0; i < 3; i++ ) {
+        float dir = frand() * 2 * PI;
+        ngfe.vel.sx = fsin( dir );
+        ngfe.vel.sy = -fcos( dir );
+        ngfe.vel /= 5;
+        ngfe.vel *= 1.0 - frand() * frand();
+        gfxe->push_back( ngfe );
+    }
+}
 
 Projectile::Projectile() {
     live = true;
@@ -411,6 +434,7 @@ void Game::runTick( const vector< Keystates > &keys ) {
             projectiles[ rhs.first.second ][ rhs.second ].addCollision( &collider );
             collider.endRemoveThingsFromGroup();
             projectiles[ rhs.first.second ][ rhs.second ].live = false;
+            projectiles[ rhs.first.second ][ rhs.second ].genEffects( &gfxeffects );
         } else if( lhs.first.first == 0 && rhs.first.first == 0 ) {
             // tank-tank collision
             //dprintf( "Tank-tank collision\n" );
@@ -429,6 +453,7 @@ void Game::runTick( const vector< Keystates > &keys ) {
             collider.endRemoveThingsFromGroup();
             projectiles[ rhs.first.second ][ rhs.second ].impact( &players[ lhs.first.second ] );
             projectiles[ rhs.first.second ][ rhs.second ].live = false;
+            projectiles[ rhs.first.second ][ rhs.second ].genEffects( &gfxeffects );
         } else if( lhs.first.first == 1 && rhs.first.first == 1 ) {
             // projectile-projectile collision - kill both projectiles
             collider.removeThingsFromGroup( lhs.first.first, lhs.first.second );
@@ -436,12 +461,14 @@ void Game::runTick( const vector< Keystates > &keys ) {
             projectiles[ lhs.first.second ][ lhs.second ].addCollision( &collider );
             collider.endRemoveThingsFromGroup();
             projectiles[ lhs.first.second ][ lhs.second ].live = false;
+            projectiles[ lhs.first.second ][ lhs.second ].genEffects( &gfxeffects );
             
             collider.removeThingsFromGroup( rhs.first.first, rhs.first.second );
             collider.startToken(rhs.second);
             projectiles[ rhs.first.second ][ rhs.second ].addCollision( &collider );
             collider.endRemoveThingsFromGroup();
             projectiles[ rhs.first.second ][ rhs.second ].live = false;
+            projectiles[ rhs.first.second ][ rhs.second ].genEffects( &gfxeffects );
         } else {
             dprintf("omgwtf %d %d\n", lhs.first.first, rhs.first.first);
             assert(0);

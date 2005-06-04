@@ -45,6 +45,13 @@ inline Float4 operator+( const Float4 &lhs, const Float4 &rhs ) {
 inline Float4 operator*( const Float4 &lhs, float rhs ) {
 	return Float4( lhs.sx * rhs, lhs.sy * rhs, lhs.ex * rhs, lhs.ey * rhs );
 }
+inline const Float4 &operator*=( Float4 &lhs, float rhs ) {
+    lhs.sx *= rhs;
+    lhs.sy *= rhs;
+    lhs.ex *= rhs;
+    lhs.ey *= rhs;
+	return lhs;
+}
 inline Float4 &operator/=( Float4 &lhs, float rhs ) {
 	lhs.sx /= rhs;
 	lhs.sy /= rhs;
@@ -133,6 +140,10 @@ inline float fsin( float in ) {
 }
 inline float fcos( float in ) {
 	return fsin( in + PI / 2 );
+}
+
+inline float frand() {
+    return rand() / ( RAND_MAX + 1.0 );
 }
 
 #endif

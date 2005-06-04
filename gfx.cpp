@@ -60,6 +60,13 @@ void drawLinePath( const vector< float > &verts, float weight ) {
 		drawLine( verts[ i ], verts[ i + 1 ], verts[ ( i + 2 ) % verts.size() ], verts[ ( i + 3 ) % verts.size() ], weight );
 };
 
+void drawPoint( float x, float y, float weight ) {
+    glPointSize( weight / map_zoom * 600 );
+    glBegin( GL_POINTS );
+	glVertex2f( ( x - map_sx ) / map_zoom, ( y - map_sy ) / map_zoom );
+	glEnd();
+}
+
 void drawRect( const Float4 &rect, float weight ) {
 	vector< float > verts;
 	verts.push_back( rect.sx );

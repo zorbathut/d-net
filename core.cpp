@@ -53,6 +53,8 @@ long long ticking = 0;
 long long rendering = 0;
 
 void MainLoop() {
+    
+    srand(time(NULL));
 
 	Game game;
 	Timer timer;

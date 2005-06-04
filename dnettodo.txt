@@ -1,0 +1,7 @@
+- Game saving
+- Game framework, main menu/multilevel/etc
+- Collisions speedup (i.e. not O(n^2))
+- Controller input
+- Netplay
+- Better tank explosions
+- Implement tweekvalues
