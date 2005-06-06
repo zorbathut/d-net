@@ -14,6 +14,7 @@ using namespace std;
 #include "core.h"
 #include "debug.h"
 #include "util.h"
+#include "args.h"
 
 #define SCREEN_WIDTH  800
 #define SCREEN_HEIGHT 600
@@ -110,6 +111,8 @@ void deinitSystem() {
 int main( int argc, char **argv ) {
 
 	dprintf( "Init\n" );
+    
+    initFlags(argc, argv);
 
 	initSystem();
 

@@ -14,6 +14,13 @@ using namespace std;
 #include "debug.h"
 #include "gfx.h"
 #include "util.h"
+#include "args.h"
+
+DEFINE_bool( writeToFile, true, "Dump keypresses to file during game" );
+DEFINE_string( writeTarget, "dumps/dump", "Prefix for file dump" );
+
+DEFINE_bool( readFromFile, false, "Replay game from keypress dump" );
+DEFINE_string( readTarget, "", "File to replay from" );
 
 vector< Keystates > curstates( 2 );
 
@@ -54,6 +61,28 @@ long long rendering = 0;
 
 void MainLoop() {
     
+    assert( !FLAGS_readFromFile ); // not yet implemented
+    assert( !( FLAGS_readFromFile && FLAGS_readTarget == "" ) );
+    
+    FILE *outfile = NULL;
+    FILE *infile = NULL;
+    
+    if(FLAGS_writeToFile) {
+        string fname = FLAGS_writeTarget;
+        char timestampbuf[ 128 ];
+        time_t ctmt = time(NULL);
+        strftime(timestampbuf, sizeof(timestampbuf), "-%Y%m%d-%H%M%S.dnd", gmtime(&ctmt));
+        dprintf("%s\n", timestampbuf);
+        fname += timestampbuf;
+        outfile = fopen(fname.c_str(), "wb");
+        if(outfile) {
+            int ver = 0;
+            fwrite(&ver, 1, sizeof(ver), outfile);
+        } else {
+            dprintf("Outfile %s couldn't be opened! Not writing dump.", fname.c_str());
+        }
+    }
+    
     srand(time(NULL));
 
 	Game game;
@@ -89,6 +118,18 @@ void MainLoop() {
 		}
 		polling += bencher.ticksElapsed();
 		bencher = Timer();
+        if(outfile) {
+            for(int i = 0; i < curstates.size(); i++) {
+                char obyte = 0;
+                obyte = (obyte << 1) + (bool)curstates[i].firing;
+                obyte = (obyte << 1) + (bool)curstates[i].forward;
+                obyte = (obyte << 1) + (bool)curstates[i].back;
+                obyte = (obyte << 1) + (bool)curstates[i].left;
+                obyte = (obyte << 1) + (bool)curstates[i].right;
+                fwrite(&obyte, 1, 1, outfile);
+            }
+            fflush(outfile);
+        }
 		game.runTick( curstates );
 		ticking += bencher.ticksElapsed();
 		bencher = Timer();

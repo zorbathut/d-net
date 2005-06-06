@@ -112,7 +112,7 @@ inline Float4 lerp( const Float4 &start, const Float4 &delta, float time ) {
     return Float4( start.sx + delta.sx * time, start.sy + delta.sy * time, start.ex + delta.ex * time, start.ey + delta.ey * time );
 }
 
-#define SIN_TABLE_SIZE 90
+#define SIN_TABLE_SIZE 180
 
 #include <cmath>
 
