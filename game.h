@@ -8,15 +8,7 @@ using namespace std;
 
 class Collider;
 
-class Keystates {
-public:
-	char forward, back, left, right, firing;
-	Keystates();
-};
-
 #define RENDERTARGET_SPECTATOR -1
-#define PHASECOUNT 2
-
 
 class GfxEffects {
 public:

@@ -9,7 +9,7 @@ using namespace std;
 
 #include "core.h"
 #include "main.h"
-#include "game.h"
+#include "interface.h"
 #include "timer.h"
 #include "debug.h"
 #include "gfx.h"
@@ -85,7 +85,6 @@ void MainLoop() {
     
     srand(time(NULL));
 
-	Game game;
 	Timer timer;
 
 	Timer bencher;
@@ -130,7 +129,7 @@ void MainLoop() {
             }
             fflush(outfile);
         }
-		game.runTick( curstates );
+		interfaceRunTick( curstates );
 		ticking += bencher.ticksElapsed();
 		bencher = Timer();
 		timer.waitForNextFrame();
@@ -139,7 +138,7 @@ void MainLoop() {
 		//if( !timer.skipFrame() ) {
 			setZoom( 0, 0, 100 );
 			initFrame();
-			game.renderToScreen( RENDERTARGET_SPECTATOR );
+			interfaceRenderToScreen();
 			deinitFrame();
 		//} else {
 			//dprintf( "Skipped!\n" );

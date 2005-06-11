@@ -9,7 +9,11 @@ using namespace std;
 #include "const.h"
 #include "debug.h"
 
-extern bool verbosified;
+class Keystates {
+public:
+	char forward, back, left, right, firing;
+	Keystates();
+};
 
 class Float4 {
 public:
