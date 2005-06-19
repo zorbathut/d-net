@@ -5,7 +5,7 @@
 
 void Gamemap::render() const {
 	setColor( 0.5f, 0.5f, 0.5f );
-	drawLinePath( vertices, 0.5 );
+	drawLinePath( vertices, 0.5, true );
 }
 void Gamemap::addCollide( Collider *collider ) const {
 	for( int i = 0; i < vertices.size(); i += 2 )

@@ -15,6 +15,7 @@ using namespace std;
 #include "debug.h"
 #include "util.h"
 #include "args.h"
+#include "gfx.h"
 
 #define SCREEN_WIDTH  800
 #define SCREEN_HEIGHT 600
@@ -115,6 +116,7 @@ int main( int argc, char **argv ) {
     initFlags(argc, argv);
 
 	initSystem();
+    initGfx();
 
 	dprintf( "Loop\n" );
 

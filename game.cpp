@@ -56,7 +56,7 @@ void Tank::render( int tankid ) const {
 		assert( 0 );
 	}
 
-	drawLinePath( getTankVertices( x, y, d ), 0.2 );
+	drawLinePath( getTankVertices( x, y, d ), 0.2, true );
 };
 
 void Tank::startNewMoveCycle() {
@@ -135,7 +135,7 @@ pair< pair< float, float >, float > Tank::getDeltaAfterMovement( const Keystates
 	x += tankvel * dv * fsin( d ) * t;
 	y += -tankvel * dv * fcos( d ) * t;
 
-	int dd = keys.left - keys.right;
+	int dd = keys.right - keys.left;
 	d += tankturn * dd * t;
 	d += 2*PI;
 	d = fmod( d, 2*(float)PI );
