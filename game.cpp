@@ -231,6 +231,7 @@ Projectile::Projectile() {
 }
 
 void Game::renderToScreen( int target ) const {
+    setZoom( 0, 0, 100 );
 	for( int i = 0; i < players.size(); i++ )
 		players[ i ].render( i );
 	for( int i = 0; i < projectiles.size(); i++ )
@@ -372,7 +373,7 @@ void collideHandler( Collider *collider, vector< Tank > *tanks, const vector< Ke
     
 }
 
-void Game::runTick( const vector< Keystates > &keys ) {
+bool Game::runTick( const vector< Keystates > &keys ) {
     
 	frameNm++;
 	assert( keys.size() == 2 );
@@ -511,6 +512,19 @@ void Game::runTick( const vector< Keystates > &keys ) {
 
 	for( int i = 0; i < players.size(); i++ )
 		players[ i ].genEffects( &gfxeffects );
+    
+    {
+        int playersleft = 0;
+        for(int i = 0; i < players.size(); i++) {
+            if(players[i].live)
+                playersleft++;
+        }
+        if(playersleft <= 1) {
+            framesSinceOneLeft++;
+        }
+    }
+    
+    return framesSinceOneLeft / FPS >= 3;
 
 };
 
@@ -522,6 +536,7 @@ Game::Game() /*: collider( 0, 0, 125, 100 ) */ {
 	players[ 1 ].x = 60;
 	players[ 1 ].y = 60;
 	projectiles.resize( 2 );
+    framesSinceOneLeft = 0;
 	//collider.startGroup();
 	//gamemap.addCollide( &collider );
 	//collider.endGroup();

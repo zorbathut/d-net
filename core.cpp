@@ -131,14 +131,14 @@ void MainLoop() {
             }
             fflush(outfile);
         }
-		interfaceRunTick( curstates );
+        if(interfaceRunTick( curstates ))
+            quit = true;
 		ticking += bencher.ticksElapsed();
 		bencher = Timer();
 		timer.waitForNextFrame();
 		waiting += bencher.ticksElapsed();
 		bencher = Timer();
 		//if( !timer.skipFrame() ) {
-			setZoom( 0, 0, 100 );
 			initFrame();
 			interfaceRenderToScreen();
 			deinitFrame();

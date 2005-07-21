@@ -98,13 +98,14 @@ class Game {
 public:
 
 	void renderToScreen( int player ) const;
-	void runTick( const vector< Keystates > &keys );
+	bool runTick( const vector< Keystates > &keys );
 
 	Game();
 
 private:
 
 	int frameNm;
+    int framesSinceOneLeft;
 
 	vector< Tank > players;
 	vector< vector< Projectile > > projectiles;
