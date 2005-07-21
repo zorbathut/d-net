@@ -3,80 +3,136 @@
 #include "game.h"
 #include "gfx.h"
 
-Game game;
+#include <string>
+#include <vector>
 
-int interface_mode;
-int menupos;
+using namespace std;
 
-enum { IMODE_MAINMENU, IMODE_PLAYING };
+class StdMenu {
+    
+    vector<string> items;
+    int cpos;
+    
+public:
 
-void interfaceInit() {
-    interface_mode = IMODE_MAINMENU;
-    menupos = 0;
+    void pushMenuItem(const string &name);
+
+    int tick(const Keystates &keys);
+    void render() const;
+
+    StdMenu();
+
+};
+
+void StdMenu::pushMenuItem(const string &name) {
+    items.push_back(name);
 }
 
-bool interfaceRunTick( const vector< Keystates > &keys ) {
+int StdMenu::tick(const Keystates &keys) {
+    if(keys.firing)
+        return cpos;
+    if(keys.forward)
+        cpos++;
+    if(keys.back)
+        cpos--;
+    cpos += items.size();
+    cpos %= items.size();
+    return -1;
+}
+
+void StdMenu::render() const {
+    setZoom(0, 0, 100);
+    for(int i = 0; i < items.size(); i++) {
+        if(i == cpos) {
+            setColor(1.0, 1.0, 1.0);
+        } else {
+            setColor(0.5, 0.5, 0.5);
+        }
+        drawText(items[i].c_str(), 5, 2, 2 + 6 * i);
+    }
+}
+
+StdMenu::StdMenu() {
+    cpos = 0;
+}
+
+class InterfaceMain {
     
+    enum { IFM_MAINMENU, IFM_PLAYING };
+    int interface_mode;
+    
+    Game game;
+    
+    StdMenu mainmenu;
+    
+public:
+
+    bool tick(const vector< Keystates > &keys);
+    void render() const;
+    InterfaceMain();
+
+};
+
+bool InterfaceMain::tick(const vector< Keystates > &keys) {
+      
     assert(keys.size() >= 1);
     
-    switch(interface_mode) {
-        
-        case IMODE_MAINMENU:
-            if(keys[0].firing) {
-                if(menupos == 0) {
-                    interface_mode = IMODE_PLAYING;
-                    game = Game();
-                } else {
-                    return true;
-                }
-            } else if(keys[0].forward || keys[0].back) {
-                menupos = menupos ^ 1; // ick
-            }
-            break;
-            
-        case IMODE_PLAYING:
-            if(game.runTick(keys)) {
-                interface_mode = IMODE_MAINMENU;
-                menupos = 0;
-            }
-            break;
-        
-        default:
-            assert(0);
-            break;
+    if(interface_mode == IFM_MAINMENU) {
+        int mrv;
+        mrv = mainmenu.tick(keys[0]);
+        if(mrv == 0) {
+            game = Game();
+            interface_mode = IFM_PLAYING;
+        } else if(mrv == 1) {
+            return true;
+        } else {
+            assert(mrv == -1);
+        }
+    } else if(interface_mode == IFM_PLAYING) {
+        if(game.runTick(keys)) {
+            interface_mode = IFM_MAINMENU;
+        }
+    } else {
+        assert(0);
     }
     
     return false;
     
 }
+
+void InterfaceMain::render() const {
+    
+    if(interface_mode == IFM_MAINMENU) {
+        mainmenu.render();
+    } else if(interface_mode == IFM_PLAYING) {
+        game.renderToScreen(RENDERTARGET_SPECTATOR);
+        setColor(1.0, 1.0, 1.0);
+        drawText("ABCDEFGHIJKLMNOPQRSTUVWXYZ", 5, 0, 0);
+        drawText("the quick brown fox jumped over the lazy dog", 5, 0, 6);
+    } else {
+        assert(0);
+    }
+    
+};
+
+InterfaceMain::InterfaceMain() {
+    interface_mode = IFM_MAINMENU;
+    mainmenu.pushMenuItem("New game");
+    mainmenu.pushMenuItem("Exit");
+}
+
+InterfaceMain ifm;
+
+Game game;
+
+void interfaceInit() {
+    ifm = InterfaceMain();
+}
+
+bool interfaceRunTick( const vector< Keystates > &keys ) {
+    return ifm.tick(keys);
+}
     
 void interfaceRenderToScreen() {
-    switch(interface_mode) {
-        
-        case IMODE_MAINMENU: {
-            const char *menutext[] = { "New game", "Exit" };
-            setZoom( 0, 0, 100 );
-            for(int i = 0; i < 2; i++) {
-                if(menupos == i ) {
-                    setColor(1.0, 1.0, 1.0);
-                } else {
-                    setColor(0.5, 0.5, 0.5);
-                }
-                drawText(menutext[i], 5, 2, 2 + 6 * i );
-            }
-            break;
-        }
-        
-        case IMODE_PLAYING:
-            game.renderToScreen(RENDERTARGET_SPECTATOR);
-            setColor(1.0, 1.0, 1.0);
-            drawText("ABCDEFGHIJKLMNOPQRSTUVWXYZ", 5, 0, 0);
-            drawText("the quick brown fox jumped over the lazy dog", 5, 0, 6);
-            break;
-        
-        default:
-            assert(0);
-            break; 
-        
-    }
+    ifm.render();
 }

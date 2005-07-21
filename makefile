@@ -38,6 +38,9 @@ stats:
 	@echo Graphics: `cat gfx.h gfx.cpp | wc -l` loc
 	@echo Collisions: `cat collide.h collide.cpp | wc -l` loc
 	@echo Game mechanics: `cat game.h game.cpp gamemap.h gamemap.cpp | wc -l` loc
+	@echo UI: `cat interface.h interface.cpp | wc -l` loc
+	@echo Framework: `cat core.h core.cpp main.h main.cpp | wc -l` loc
+	@echo Util: `cat timer.h timer.cpp util.h util.cpp args.h args.cpp | wc -l` loc
 	@echo Total project: `cat *.h *.cpp makefile | wc -l` loc
 
 
