@@ -3,11 +3,19 @@
 
 #include <utility>
 #include <algorithm>
+#include <vector>
 
 using namespace std;
 
 #include "const.h"
 #include "debug.h"
+
+class Controller {
+public:
+    float x;
+    float y;
+    vector<bool> keys;
+};
 
 class Keystates {
 public:

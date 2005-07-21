@@ -8,7 +8,7 @@ using namespace std;
 #include "util.h"
 
 void interfaceInit();
-bool interfaceRunTick( const vector< Keystates > &keys );
+bool interfaceRunTick( const vector< Controller > &control, const Keystates &keyb );
 void interfaceRenderToScreen();
 
 #endif

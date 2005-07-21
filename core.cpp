@@ -23,6 +23,7 @@ DEFINE_bool( readFromFile, false, "Replay game from keypress dump" );
 DEFINE_string( readTarget, "", "File to replay from" );
 
 vector< Keystates > curstates( 2 );
+vector< Controller > controllers( 2 );
 
 void keyPress( SDL_KeyboardEvent *key ) {
 	char *ps = NULL;
@@ -52,6 +53,15 @@ void keyPress( SDL_KeyboardEvent *key ) {
 		*ps = 0;
 	if( key->type == SDL_KEYDOWN )
 		*ps = 1;
+}
+
+void mungeToControllers() {
+    for(int i = 0; i < 2; i++) {
+        controllers[i].x = curstates[i].right - curstates[i].left;
+        controllers[i].y = curstates[i].forward - curstates[i].back;
+        controllers[i].keys.resize(1);
+        controllers[i].keys[0] = curstates[i].firing;
+    }
 }
 
 long long polling = 0;
@@ -117,6 +127,7 @@ void MainLoop() {
 					break;
 			}
 		}
+        mungeToControllers();
 		polling += bencher.ticksElapsed();
 		bencher = Timer();
         if(outfile) {
@@ -131,7 +142,7 @@ void MainLoop() {
             }
             fflush(outfile);
         }
-        if(interfaceRunTick( curstates ))
+        if(interfaceRunTick( controllers, curstates[0] ))
             quit = true;
 		ticking += bencher.ticksElapsed();
 		bencher = Timer();
