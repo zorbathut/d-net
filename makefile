@@ -19,8 +19,14 @@ run: d-net.exe
 	d-net.exe
 
 package: d-net.exe
-	strip d-net.exe
-	zip -9 -j `date +x:/d-net/dnet%G%m%d%H%M%S.zip` d-net.exe c:/cygwin/usr/local/bin/SDL.dll
+	mkdir deploy
+	cp d-net.exe deploy
+	cp c:/cygwin/usr/local/bin/SDL.dll deploy
+	cp -r data deploy
+	rm -rf deploy/data/.svn
+	strip deploy/d-net.exe
+	cd deploy ; zip -9 -r `date +x:/d-net/dnet%G%m%d%H%M%S.zip` *
+	rm -rf deploy
 
 %.o: %.cpp
 	$(CPP) $(CPPFLAGS) -c -o $@ $<

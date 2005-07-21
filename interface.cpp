@@ -5,8 +5,19 @@
 
 Game game;
 
-void interfaceRunTick( const vector< Keystates > &keys ) {
+int interface_mode;
+int menupos;
+
+enum { IMODE_MAINMENU, IMODE_PLAYING };
+
+void interfaceInit() {
+    interface_mode = IMODE_MAINMENU;
+    menupos = 0;
+}
+
+bool interfaceRunTick( const vector< Keystates > &keys ) {
     game.runTick(keys);
+    return false;
 }
     
 void interfaceRenderToScreen() {

@@ -84,6 +84,8 @@ void MainLoop() {
     }
     
     srand(time(NULL));
+    
+    interfaceInit();
 
 	Timer timer;
 
