@@ -10,6 +10,22 @@ using namespace std;
 #include "const.h"
 #include "debug.h"
 
+class Button {
+public:
+    bool down;
+    bool up;
+    bool push;
+    bool release;
+    bool repeat;
+    int dur;
+    int sincerep;
+    
+    void newState(bool pushed);
+    void newState(const Button &other);
+
+    Button();
+};
+
 class Controller {
 public:
     float x;
@@ -19,7 +35,10 @@ public:
 
 class Keystates {
 public:
-	char forward, back, left, right, firing;
+    Button u,d,l,r,f;
+
+    void newState(const Keystates &nst);
+
 	Keystates();
 };
 

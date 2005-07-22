@@ -14,10 +14,6 @@ using namespace std;
 #include "collide.h"
 #include "util.h"
 
-Keystates::Keystates() {
-	memset( this, 0, sizeof( *this ) );
-};
-
 const float tankvel = 24.f / FPS;
 const float tankturn = 2.f / FPS;
 
@@ -131,11 +127,11 @@ pair< float, float > Tank::getFiringPoint() const {
 
 pair< pair< float, float >, float > Tank::getDeltaAfterMovement( const Keystates &keys, float x, float y, float d, float t ) const {
     
-	int dv = keys.forward - keys.back;
+	int dv = keys.u.down - keys.d.down;
 	x += tankvel * dv * fsin( d ) * t;
 	y += -tankvel * dv * fcos( d ) * t;
 
-	int dd = keys.right - keys.left;
+	int dd = keys.r.down - keys.l.down;
 	d += tankturn * dd * t;
 	d += 2*PI;
 	d = fmod( d, 2*(float)PI );
@@ -247,10 +243,10 @@ void collideHandler( Collider *collider, vector< Tank > *tanks, const vector< Ke
     
     vector< Keystates > stopped = keys;
     for( int i = 0; i < stopped.size(); i++ ) {
-        stopped[ i ].left = false;
-        stopped[ i ].right = false;
-        stopped[ i ].forward = false;
-        stopped[ i ].back = false;
+        stopped[ i ].u.down = false;
+        stopped[ i ].d.down = false;
+        stopped[ i ].l.down = false;
+        stopped[ i ].r.down = false;
     }
     
     Tank temptank;
@@ -488,7 +484,7 @@ bool Game::runTick( const vector< Keystates > &keys ) {
     }
 
 	for( int i = 0; i < players.size(); i++ ) {
-		if( players[ i ].live && keys[ i ].firing ) {
+		if( players[ i ].live && keys[ i ].f.repeat ) {
 			Projectile proj;
 			proj.x = players[ i ].getFiringPoint().first;
 			proj.y = players[ i ].getFiringPoint().second;

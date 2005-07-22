@@ -22,31 +22,31 @@ DEFINE_string( writeTarget, "dumps/dump", "Prefix for file dump" );
 DEFINE_bool( readFromFile, false, "Replay game from keypress dump" );
 DEFINE_string( readTarget, "", "File to replay from" );
 
-vector< Keystates > curstates( 2 );
-vector< Controller > controllers( 2 );
+vector< Keystates > curstates( 2 ); // these are not kept in a useful state
+
 
 void keyPress( SDL_KeyboardEvent *key ) {
-	char *ps = NULL;
+	bool *ps = NULL;
 	if( key->keysym.sym == SDLK_UP )
-		ps = &curstates[0].forward;
+		ps = &curstates[0].u.down;
 	if( key->keysym.sym == SDLK_DOWN )
-		ps = &curstates[0].back;
+		ps = &curstates[0].d.down;
 	if( key->keysym.sym == SDLK_LEFT )
-		ps = &curstates[0].left;
+		ps = &curstates[0].l.down;
 	if( key->keysym.sym == SDLK_RIGHT )
-		ps = &curstates[0].right;
+		ps = &curstates[0].r.down;
 	if( key->keysym.sym == SDLK_z )
-		ps = &curstates[0].firing;
+		ps = &curstates[0].f.down;
 	if( key->keysym.sym == SDLK_w )
-		ps = &curstates[1].forward;
+		ps = &curstates[1].u.down;
 	if( key->keysym.sym == SDLK_s )
-		ps = &curstates[1].back;
+		ps = &curstates[1].d.down;
 	if( key->keysym.sym == SDLK_a )
-		ps = &curstates[1].left;
+		ps = &curstates[1].l.down;
 	if( key->keysym.sym == SDLK_d )
-		ps = &curstates[1].right;
+		ps = &curstates[1].r.down;
 	if( key->keysym.sym == SDLK_x )
-		ps = &curstates[1].firing;
+		ps = &curstates[1].f.down;
 	if( !ps )
 		return;
 	if( key->type == SDL_KEYUP )
@@ -55,13 +55,15 @@ void keyPress( SDL_KeyboardEvent *key ) {
 		*ps = 1;
 }
 
-void mungeToControllers() {
+vector< Controller > mungeToControllers(const vector<Keystates> &curstates) {
+    vector< Controller > controllers( 2 );
     for(int i = 0; i < 2; i++) {
-        controllers[i].x = curstates[i].right - curstates[i].left;
-        controllers[i].y = curstates[i].forward - curstates[i].back;
+        controllers[i].x = curstates[i].r.down - curstates[i].l.down;
+        controllers[i].y = curstates[i].u.down - curstates[i].d.down;
         controllers[i].keys.resize(1);
-        controllers[i].keys[0] = curstates[i].firing;
+        controllers[i].keys[0] = curstates[i].f.down;
     }
+    return controllers;
 }
 
 long long polling = 0;
@@ -104,7 +106,10 @@ void MainLoop() {
 	bool quit = false;
 
 	int frako = 0;
-
+    
+    vector<Keystates> fullstates(2);
+    vector<Controller> controllers(2);
+    
 	while( !quit ) {
 		bencher = Timer();
 		SDL_Event event;
@@ -127,22 +132,30 @@ void MainLoop() {
 					break;
 			}
 		}
-        mungeToControllers();
+        CHECK(fullstates.size() == curstates.size());
+        for(int i = 0; i < fullstates.size(); i++) {
+            fullstates[i].u.newState(curstates[i].u.down);
+            fullstates[i].d.newState(curstates[i].d.down);
+            fullstates[i].l.newState(curstates[i].l.down);
+            fullstates[i].r.newState(curstates[i].r.down);
+            fullstates[i].f.newState(curstates[i].f.down);
+        }
+        controllers = mungeToControllers(fullstates);
 		polling += bencher.ticksElapsed();
 		bencher = Timer();
         if(outfile) {
-            for(int i = 0; i < curstates.size(); i++) {
+            for(int i = 0; i < fullstates.size(); i++) {
                 char obyte = 0;
-                obyte = (obyte << 1) + (bool)curstates[i].firing;
-                obyte = (obyte << 1) + (bool)curstates[i].forward;
-                obyte = (obyte << 1) + (bool)curstates[i].back;
-                obyte = (obyte << 1) + (bool)curstates[i].left;
-                obyte = (obyte << 1) + (bool)curstates[i].right;
+                obyte = (obyte << 1) + (bool)fullstates[i].f.down;
+                obyte = (obyte << 1) + (bool)fullstates[i].u.down;
+                obyte = (obyte << 1) + (bool)fullstates[i].d.down;
+                obyte = (obyte << 1) + (bool)fullstates[i].l.down;
+                obyte = (obyte << 1) + (bool)fullstates[i].r.down;
                 fwrite(&obyte, 1, 1, outfile);
             }
             fflush(outfile);
         }
-        if(interfaceRunTick( controllers, curstates[0] ))
+        if(interfaceRunTick( controllers, fullstates[0] ))
             quit = true;
 		ticking += bencher.ticksElapsed();
 		bencher = Timer();

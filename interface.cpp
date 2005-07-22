@@ -29,11 +29,12 @@ void StdMenu::pushMenuItem(const string &name, int triggeraction) {
 }
 
 int StdMenu::tick(const Keystates &keys) {
-    if(keys.firing)
+    dprintf("keys: %d %d %d %d %d\n", keys.u.up, keys.u.down, keys.u.push, keys.u.release, keys.u.repeat);
+    if(keys.f.down)
         return items[cpos].second;
-    if(keys.forward)
+    if(keys.u.repeat)
         cpos++;
-    if(keys.back)
+    if(keys.d.repeat)
         cpos--;
     cpos += items.size();
     cpos %= items.size();
@@ -66,6 +67,8 @@ class InterfaceMain {
     
     StdMenu mainmenu;
     
+    vector< Keystates > kst;
+    
 public:
 
     bool tick(const vector< Controller > &control, const Keystates &keyb);
@@ -78,21 +81,37 @@ vector< Keystates > ctk(const vector< Controller > &cont) {
     vector<Keystates> out(cont.size());
     for(int i = 0; i < cont.size(); i++) {
         if(cont[i].x < -.5)
-            out[i].left = 1;
+            out[i].l.down = 1;
         if(cont[i].x > .5)
-            out[i].right = 1;
+            out[i].r.down = 1;
         if(cont[i].y < -.5)
-            out[i].back = 1;
+            out[i].d.down = 1;
         if(cont[i].y > .5)
-            out[i].forward = 1;
+            out[i].u.down = 1;
         if(cont[i].keys[0])
-            out[i].firing = 1;
+            out[i].f.down = 1;
     }
     return out;
 }
 
 bool InterfaceMain::tick(const vector< Controller > &control, const Keystates &keyb) {
-          
+    
+    if(kst.size() == 0) {
+        CHECK(control.size() != 0);
+        kst.resize(control.size());
+    }
+    
+    CHECK(kst.size() == control.size());
+    
+    for(int i = 0; i < control.size(); i++) {
+        CHECK(control[i].keys.size() >= 1);
+        kst[i].u.newState(control[i].y > .5);
+        kst[i].d.newState(control[i].y < -.5);
+        kst[i].r.newState(control[i].x > .5);
+        kst[i].l.newState(control[i].x < -.5);
+        kst[i].f.newState(control[i].keys[0]);
+    }
+    
     if(interface_mode == IFM_S_MAINMENU) {
         int mrv;
         mrv = mainmenu.tick(keyb);
@@ -105,7 +124,7 @@ bool InterfaceMain::tick(const vector< Controller > &control, const Keystates &k
             CHECK(mrv == -1);
         }
     } else if(interface_mode == IFM_S_PLAYING) {
-        if(game.runTick(ctk(control))) {
+        if(game.runTick(kst)) {
             interface_mode = IFM_S_MAINMENU;
         }
     } else {
