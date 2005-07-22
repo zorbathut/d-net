@@ -71,8 +71,8 @@ inline Float4 &operator/=( Float4 &lhs, float rhs ) {
 	lhs.ey /= rhs;
 }
 
-#define assert(x) if(!(x)) { dprintf("Error at %s:%d - %s\n", __FILE__, __LINE__, #x); *(int*)0 = 0; }
-#define assert2(x) assert(x)
+#define CHECK(x) if(!(x)) { dprintf("Error at %s:%d - %s\n", __FILE__, __LINE__, #x); *(int*)0 = 0; }
+#define TEST(x) CHECK(x)
 #define printf FAILURE
 
 inline bool operator==( const Float4 &lhs, const Float4 &rhs ) {
@@ -80,8 +80,8 @@ inline bool operator==( const Float4 &lhs, const Float4 &rhs ) {
 }
 
 inline bool rectrectintersect( const Float4 &lhs, const Float4 &rhs ) {
-	assert2( lhs.isNormalized() );
-	assert2( rhs.isNormalized() );
+	TEST( lhs.isNormalized() );
+	TEST( rhs.isNormalized() );
 	if( lhs.ex <= rhs.sx || rhs.ex <= lhs.sx || lhs.ey <= rhs.sy || rhs.ey <= lhs.sy )
 		return false;
 	return true;
@@ -135,7 +135,7 @@ inline float dsin( float in ) {
 }
 
 inline float fsin( float in ) {
-	assert( in >= 0 );
+	CHECK( in >= 0 );
 	if( in < PI / 2 ) {
 		return dsin( in );
 	} else if( in < PI ) {
@@ -147,7 +147,7 @@ inline float fsin( float in ) {
 	} else if( in < PI * 5 / 2 ) {
 		return dsin( in - PI * 2 );
 	} else {
-		assert( 0 );
+		CHECK( 0 );
 	}
 }
 inline float fcos( float in ) {

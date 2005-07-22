@@ -29,7 +29,7 @@ int GetVideoFlags( void ) {
     videoflags = SDL_OPENGL | SDL_HWPALETTE/* | SDL_RESIZABLE*/;
 
     const SDL_VideoInfo *videoinfo = SDL_GetVideoInfo();
-	assert( videoinfo );
+	CHECK( videoinfo );
     if( videoinfo->hw_available )
         videoflags |= SDL_HWSURFACE;
 	else {
@@ -51,14 +51,14 @@ void MakeWindow( const char * strWindowName, int width, int height ) {
 
 	dprintf( "Startmake\n" );
 
-	assert( height > 0 );
-	assert( width > 0 );
+	CHECK( height > 0 );
+	CHECK( width > 0 );
 
 	dprintf( "Mainwindow\n" );
 
 	// appears to be crashing here sometimes?
     MainWindow = SDL_SetVideoMode( width, height, SCREEN_DEPTH, GetVideoFlags() );
-	assert( MainWindow );
+	CHECK( MainWindow );
 
 	dprintf( "Caption\n" );
 
@@ -96,7 +96,7 @@ void SetupOgl() {
 void initSystem() {
 
     if( SDL_Init( SDL_INIT_VIDEO ) < 0 )
-		assert( 0 );
+		CHECK( 0 );
 
 	SetupOgl();
     MakeWindow( "Devastation Net", SCREEN_WIDTH, SCREEN_HEIGHT );
@@ -132,7 +132,7 @@ int main( int argc, char **argv ) {
 
 void toggleFullscreen( void ) {
     if( SDL_WM_ToggleFullScreen( MainWindow ) == 0 )
-		assert( 0 );
+		CHECK( 0 );
 }
 
 

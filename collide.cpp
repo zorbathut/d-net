@@ -49,11 +49,11 @@ pair< float, float > getLineCollision( const Float4 &linepos, const Float4 &line
 	}
 	{
 		if( rv.first != NOCOLLIDE ) {
-			assert( fabs( a * rv.first * rv.first + b * rv.first + c ) < 1e6 );
+			CHECK( fabs( a * rv.first * rv.first + b * rv.first + c ) < 1e6 );
 			//dprintf( "debugtest: %f resolves to %f\n", rv.first, a * rv.first * rv.first + b * rv.first + c );
 		}
 		if( rv.second != NOCOLLIDE ) {
-			assert( fabs( a * rv.second * rv.second + b * rv.second + c ) < 1e6 );
+			CHECK( fabs( a * rv.second * rv.second + b * rv.second + c ) < 1e6 );
 			//dprintf( "debugtest: %f resolves to %f\n", rv.second, a * rv.second * rv.second + b * rv.second + c );
 		}
 	}
@@ -107,7 +107,7 @@ float getCollision( const Float4 &l1p, const Float4 &l1v, const Float4 &l2p, con
 				ptposvel = &temp;
 				break;
 			default:
-				assert( 0 );
+				CHECK( 0 );
 		}
         pair< float, float > tbv = getLineCollision( *linepos, *linevel, *ptposvel );
 		for( int j = 0; j < 2; j++ ) {
@@ -131,7 +131,7 @@ float getCollision( const Float4 &l1p, const Float4 &l1v, const Float4 &l2p, con
 }
 
 void Collider::reset( int in_players ) {
-	assert( state == 0 );
+	CHECK( state == 0 );
 	players = in_players;
     items.resize( in_players * 2 + 1 );
     for( int i = 0; i < items.size(); i++ )
@@ -140,53 +140,53 @@ void Collider::reset( int in_players ) {
 }
 
 void Collider::startToken( int toki ) {
-	assert( ( state == 1 || state == 2 ) && curpush != -1 );
+	CHECK( ( state == 1 || state == 2 ) && curpush != -1 );
     curtoken = toki;
 }
 void Collider::token( const Float4 &line, const Float4 &direction ) {
     if( state == 1 ) {
-        assert( state == 1 && curpush != -1 && curtoken != -1 );
-        assert( ctime == 0 || ( direction.sx == 0 && direction.sy == 0 && direction.ex == 0 && direction.ey == 0 ) );
+        CHECK( state == 1 && curpush != -1 && curtoken != -1 );
+        CHECK( ctime == 0 || ( direction.sx == 0 && direction.sy == 0 && direction.ex == 0 && direction.ey == 0 ) );
         items[ curpush ].push_back( make_pair( curtoken, make_pair( line, direction ) ) );
     } else if( state == 2 ) {
-        assert( state == 2 && curpush != -1 && curtoken != -1 );
+        CHECK( state == 2 && curpush != -1 && curtoken != -1 );
         vector< pair< int, pair< Float4, Float4 > > >::iterator jit = find( items[ curpush ].begin(), items[ curpush ].end(), make_pair( curtoken, make_pair( line, direction ) ) );
-        assert( jit != items[ curpush ].end() );
+        CHECK( jit != items[ curpush ].end() );
         items[ curpush ].erase( jit );
     }
 }
 
 void Collider::clearGroup( int category, int gid ) {
-    assert( state == 0 && curpush == -1 && curtoken == -1 );
+    CHECK( state == 0 && curpush == -1 && curtoken == -1 );
     items[ getIndex( category, gid ) ].clear();
 }
 
 void Collider::addThingsToGroup( int category, int gid ) {
-    assert( state == 0 && curpush == -1 && curtoken == -1 );
+    CHECK( state == 0 && curpush == -1 && curtoken == -1 );
     state = 1;
     curpush = getIndex( category, gid );
 }
 void Collider::endAddThingsToGroup() {
-    assert( state == 1 && curpush != -1 );
+    CHECK( state == 1 && curpush != -1 );
     state = 0;
     curpush = -1;
     curtoken = -1;
 }
 
 void Collider::removeThingsFromGroup( int category, int gid ) {
-    assert( state == 0 && curpush == -1 && curtoken == -1 );
+    CHECK( state == 0 && curpush == -1 && curtoken == -1 );
     state = 2;
     curpush = getIndex( category, gid );
 }
 void Collider::endRemoveThingsFromGroup() {
-    assert( state == 2 && curpush != -1 );
+    CHECK( state == 2 && curpush != -1 );
     state = 0;
     curpush = -1;
     curtoken = -1;
 }
 
 bool Collider::doProcess() {
-	assert( state == 0 );
+	CHECK( state == 0 );
     
     for(set<int>::iterator itr = moved.begin(); itr != moved.end(); itr = moved.begin()) {
         for( int alter = 0; alter < items.size(); alter++ ) {
@@ -195,12 +195,12 @@ bool Collider::doProcess() {
             for( int x = 0; x < items[ *itr ].size(); x++ ) {
                 for( int y = 0; y < items[ alter ].size(); y++ ) {
                     if( linelineintersect( lerp( items[ alter ][ y ].second.first, items[ alter ][ y ].second.second, ctime ), lerp( items[ *itr ][ x ].second.first, items[ *itr ][ x ].second.second, ctime ) ) ) {
-                        assert( reverseIndex( alter ).first == 1 );
+                        CHECK( reverseIndex( alter ).first == 1 );
                         lhs.first = reverseIndex( *itr );
                         lhs.second = items[ *itr ][ x ].first;
                         rhs.first = reverseIndex( alter );
                         rhs.second = items[ alter ][ y ].first;;
-                        assert( rhs.first.first == 1 );
+                        CHECK( rhs.first.first == 1 );
                         return true;
                     }
                 }
@@ -221,7 +221,7 @@ bool Collider::doProcess() {
 					float tcol = getCollision( items[ x ][ xa ].second.first, items[ x ][ xa ].second.second, items[ y ][ ya ].second.first, items[ y ][ ya ].second.second, ctime );
 					if( tcol == NOCOLLIDE )
 						continue;
-					assert( tcol >= ctime  && tcol >= 0 && tcol <= 1 );
+					CHECK( tcol >= ctime  && tcol >= 0 && tcol <= 1 );
 					if( tcol < firstintersect ) {
 						firstintersect = tcol;
 						lhsx = x;
@@ -240,20 +240,20 @@ bool Collider::doProcess() {
 }
 
 float Collider::getCurrentTimestamp() const {
-	assert( state == 0 && ctime <= 1.0 && ctime >= 0.0 );
+	CHECK( state == 0 && ctime <= 1.0 && ctime >= 0.0 );
 	return ctime;
 }
 void Collider::setCurrentTimestamp( float ntime ) {
-	assert( state == 0 && ntime <= 1.0 && ntime >= 0.0 );
+	CHECK( state == 0 && ntime <= 1.0 && ntime >= 0.0 );
 	ctime = ntime;
 }
 
 pair< pair< int, int >, int > Collider::getLhs() const {
-	assert( state == 0 && ctime <= 1.0 && ctime >= 0.0 );
+	CHECK( state == 0 && ctime <= 1.0 && ctime >= 0.0 );
 	return lhs;
 }
 pair< pair< int, int >, int > Collider::getRhs() const {
-	assert( state == 0 && ctime <= 1.0 && ctime >= 0.0 );
+	CHECK( state == 0 && ctime <= 1.0 && ctime >= 0.0 );
 	return rhs;
 }
 
@@ -262,8 +262,8 @@ void Collider::flagAsMoved( int category, int gid ) {
 }
 
 bool Collider::testCollideSingle( int lhs, int rhs ) const {
-    assert( lhs >= 0 && lhs < items.size() );
-    assert( rhs >= 0 && rhs < items.size() );
+    CHECK( lhs >= 0 && lhs < items.size() );
+    CHECK( rhs >= 0 && rhs < items.size() );
     for( int y = 0; y < items[ lhs ].size(); y++ ) {
         for( int k = 0; k < items[ rhs ].size(); k++ ) {
             if( linelineintersect( lerp( items[ lhs ][ y ].second.first, items[ lhs ][ y ].second.second, ctime ), lerp( items[ rhs ][ k ].second.first, items[ rhs ][ k ].second.second, ctime ) ) ) {
@@ -322,11 +322,11 @@ bool Collider::canCollide( int indexa, int indexb ) const {
 }
 int Collider::getIndex( int category, int gid ) const {
     if( category == -1 ) {
-        assert( gid == 0 );
+        CHECK( gid == 0 );
         return 0;
     } else {
-        assert( category == 0 || category == 1 );
-        assert( gid >= 0 && gid < players );
+        CHECK( category == 0 || category == 1 );
+        CHECK( gid >= 0 && gid < players );
         return players * category + gid + 1;
     }
 }
@@ -335,7 +335,7 @@ pair< int, int > Collider::reverseIndex( int index ) const {
         return make_pair( -1, 0 );
     else {
         pair< int, int > out( ( index - 1 ) / players, ( index - 1 ) % players );
-        assert( out.first == 0 || out.first == 1 );
+        CHECK( out.first == 0 || out.first == 1 );
     }
 }
 
@@ -425,7 +425,7 @@ float getCollision( const Float4 &l1p, const Float4 &l1v, const Float4 &l2p, con
 				ptposvel = &temp;
 				break;
 			default:
-				assert( 0 );
+				CHECK( 0 );
 		}
         pair< float, float > tbv = getPartCollision( *linepos, *linevel, *ptposvel );
 		for( int j = 0; j < 2; j++ ) {
@@ -485,8 +485,8 @@ int Collider::endGroup() {
 	if( cleared.size() ) {
 		groupid = cleared[ cleared.size() - 1 ];
 		//dprintf( "Reclaimed group %d, %d\n", groupid, collides[ groupid ]->size() );
-		assert( active[ groupid ] == false );
-		assert( collides[ groupid ]->size() == 0 );
+		CHECK( active[ groupid ] == false );
+		CHECK( collides[ groupid ]->size() == 0 );
 		cleared.pop_back();
 		active[ groupid ] = true;
 	} else {
@@ -512,15 +512,15 @@ void Collider::add( float sx, float sy, float ex, float ey ) {
 };
 
 void Collider::disableGroup( int group ) {
-	assert( group >= 0 && group < active.size() );
+	CHECK( group >= 0 && group < active.size() );
 	active[ group ] = false;
 };
 void Collider::enableGroup( int group ) {
-	assert( group >= 0 && group < active.size() );
+	CHECK( group >= 0 && group < active.size() );
 	active[ group ] = true;
 };
 void Collider::deleteGroup( int group ) {
-	assert( group >= 0 && group < active.size() );
+	CHECK( group >= 0 && group < active.size() );
 	active[ group ] = false;
 	for( int i = 0; i < collides[ group ]->size(); i++ )
 		quadRemove( (*collides[ group ])[ i ].line.normalize(), &(*collides[ group ])[ i ], quad );
@@ -639,7 +639,7 @@ void Collider::quadAdd( const Float4 &range, Collide *ptr, Quad *quad ) {
 								dprintf( "%d is %d\n", i, rectrectintersect( quad->quads[ i ].range, range ) );
 							}
 						}
-						assert( pts );
+						CHECK( pts );
 					#endif
 				#endif
 		} else {
@@ -674,7 +674,7 @@ void Collider::quadRemove( const Float4 &range, Collide *ptr, Quad *quad ) {
 		} else {
 			//dprintf( "Removing %08x from %08x\n", ptr, quad );
 			vector< Collide * >::iterator itr = find( quad->lines.begin(), quad->lines.end(), ptr );
-			assert( itr != quad->lines.end() );
+			CHECK( itr != quad->lines.end() );
 			quad->lines.erase( itr );
 			if( quad->sludge && quad->lines.size() < LEAF_SLUDGE_UNSLUDGE ) {
 				quad->sludge = false;

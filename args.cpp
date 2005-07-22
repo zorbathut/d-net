@@ -38,11 +38,11 @@ void initFlags(int argc, char *argv[]) {
         } else if(itr->second.type == LinkageData::LINKAGE_STRING) {
             *itr->second.str_link = itr->second.str_def;
         } else {
-            assert(0);
+            CHECK(0);
         }
     }
     for(int i = 1; i < argc; i++) {
-        assert(argv[i][0] == '-' && argv[i][1] == '-');
+        CHECK(argv[i][0] == '-' && argv[i][1] == '-');
         char *arg = argv[i] + 2;
         bool isBoolNo = false;
         if(strncmp(arg, "no", 2)) {
@@ -59,24 +59,24 @@ void initFlags(int argc, char *argv[]) {
         }
         if(!links.count(realarg)) {
             dprintf("Invalid commandline argument %s\n", arg);
-            assert(0);
+            CHECK(0);
             continue;
         }
         
         LinkageData &ld = links[realarg];
         if(ld.type == LinkageData::LINKAGE_BOOL) {
-            assert(!eq || string(eq) == "true" || string(eq) == "false");
-            assert(!eq || !isBoolNo);
+            CHECK(!eq || string(eq) == "true" || string(eq) == "false");
+            CHECK(!eq || !isBoolNo);
             if(isBoolNo || (eq && string(eq) == "false")) {
                 *ld.bool_link = false;
             } else {
                 *ld.bool_link = true;
             }
         } else if(ld.type == LinkageData::LINKAGE_STRING) {
-            assert(!isBoolNo && eq);
+            CHECK(!isBoolNo && eq);
             *ld.str_link = eq;
         } else {
-            assert(0);
+            CHECK(0);
         }
     }
 }

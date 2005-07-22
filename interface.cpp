@@ -102,14 +102,14 @@ bool InterfaceMain::tick(const vector< Controller > &control, const Keystates &k
         } else if(mrv == IFM_M_EXIT) {
             return true;
         } else {
-            assert(mrv == -1);
+            CHECK(mrv == -1);
         }
     } else if(interface_mode == IFM_S_PLAYING) {
         if(game.runTick(ctk(control))) {
             interface_mode = IFM_S_MAINMENU;
         }
     } else {
-        assert(0);
+        CHECK(0);
     }
     
     return false;
@@ -126,7 +126,7 @@ void InterfaceMain::render() const {
         drawText("ABCDEFGHIJKLMNOPQRSTUVWXYZ", 5, 0, 0);
         drawText("the quick brown fox jumped over the lazy dog", 5, 0, 6);
     } else {
-        assert(0);
+        CHECK(0);
     }
     
 };

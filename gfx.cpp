@@ -44,27 +44,27 @@ void initGfx() {
     {
         ifstream font("data/font.txt");
         string line;
-        assert(font);
+        CHECK(font);
         while(getline(font, line)) {
             line = string(line.begin(), find(line.begin(), line.end(), '#'));
             vector<string> first = tokenize(line, ":");
-            assert(first.size() == 2 || line == "");
+            CHECK(first.size() == 2 || line == "");
             if(first.size() == 2) {
-                assert(first[0].size() == 1);
+                CHECK(first[0].size() == 1);
                 vector< string > paths = tokenize(first[1], "|");
-                assert(!fontdata.count(first[0][0]));
+                CHECK(!fontdata.count(first[0][0]));
                 fontdata[first[0][0]]; // creates it
                 for(int i = 0; i < paths.size(); i++) {
                     vector< string > order = tokenize(paths[i], " ");
-                    assert(order.size() != 1);
+                    CHECK(order.size() != 1);
                     vector< pair< int, int > > tpath;
                     for(int j = 0; j < order.size(); j++) {
                         vector< int > out = sti(tokenize(order[j], ","));
-                        assert(out.size() == 2);
+                        CHECK(out.size() == 2);
                         tpath.push_back(make_pair(out[0], out[1]));
                     }
                     if(tpath.size()) {
-                        assert(tpath.size() >= 2);
+                        CHECK(tpath.size() >= 2);
                         fontdata[first[0][0]].push_back(tpath);
                     }
                 }
@@ -121,8 +121,8 @@ void drawLine( const Float4 &pos, float weight ) {
 }
 
 void drawLinePath( const vector< float > &iverts, float weight, bool loop ) {
-	assert( iverts.size() % 2 == 0 );
-    assert( iverts.size() >= 4 );
+	CHECK( iverts.size() % 2 == 0 );
+    CHECK( iverts.size() >= 4 );
     vector< float > verts = iverts;
     if( loop ) {
         verts.push_back(verts[0]);
@@ -156,7 +156,7 @@ void drawText( const char *txt, float scale, float sx, float sy ) {
     scale /= 9;
     for(int i = 0; txt[i]; i++) {
         char kar = toupper(txt[i]);
-        assert(fontdata.count(kar));
+        CHECK(fontdata.count(kar));
         const vector<vector<pair<int, int> > > &pathdat = fontdata[kar];
         for(int i = 0; i < pathdat.size(); i++) {
             vector<float> verts;

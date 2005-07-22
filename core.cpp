@@ -71,8 +71,8 @@ long long rendering = 0;
 
 void MainLoop() {
     
-    assert( !FLAGS_readFromFile ); // not yet implemented
-    assert( !( FLAGS_readFromFile && FLAGS_readTarget == "" ) );
+    CHECK( !FLAGS_readFromFile ); // not yet implemented
+    CHECK( !( FLAGS_readFromFile && FLAGS_readTarget == "" ) );
     
     FILE *outfile = NULL;
     FILE *infile = NULL;
@@ -119,7 +119,7 @@ void MainLoop() {
 					break;
 
 				case SDL_VIDEORESIZE:
-					assert( 0 );
+					CHECK( 0 );
 					//CreateWindow( "Destruction Net", event.resize.w, event.resize.h );
 					break;
 

@@ -32,7 +32,7 @@ void GfxEffects::render() const {
     } else if( type == EFFECT_POINT ) {
         drawPoint( pos.sx + vel.sx * age, pos.sy + vel.sy * age, 0.1f );
     } else {
-        assert(0);
+        CHECK(0);
     }
 }
 bool GfxEffects::dead() const {
@@ -53,7 +53,7 @@ void Tank::render( int tankid ) const {
 	} else if( tankid == 1 ) {
 		glColor3f( 0.0f, 0.8f, 0.0f );
 	} else {
-		assert( 0 );
+		CHECK( 0 );
 	}
 
 	drawLinePath( getTankVertices( x, y, d ), 0.2, true );
@@ -203,7 +203,7 @@ void Projectile::render() const {
 	drawLine( x, y, x + projectile_length * fsin( d ), y - projectile_length * fcos( d ), 0.1 );
 };
 void Projectile::addCollision( Collider *collider ) const {
-    assert( timeLeft == 1.0 );
+    CHECK( timeLeft == 1.0 );
 	collider->token( Float4( x, y, x + projectile_length * fsin( d ), y - projectile_length * fcos( d ) ), Float4( projectile_speed * fsin( d ), -projectile_speed * fcos( d ), projectile_speed * fsin( d ), -projectile_speed * fcos( d ) ) );
 };
 void Projectile::impact( Tank *target ) {
@@ -262,7 +262,7 @@ void collideHandler( Collider *collider, vector< Tank > *tanks, const vector< Ke
     
     {
         collider->setCurrentTimestamp( cCollideTimeStamp );
-        assert( collider->testCollideAll() );
+        CHECK( collider->testCollideAll() );
         collider->setCurrentTimestamp( cTimeStamp );
     }
     
@@ -273,7 +273,7 @@ void collideHandler( Collider *collider, vector< Tank > *tanks, const vector< Ke
         // If this triggers, we've gotten ourselves in a weird but potentially possible situation
         // The solution is to figure out *all* the tanks involved in the deadlock, and keep them all from moving
         // And possibly flash a "treads locked" message so they can figure out how to get out :P
-        assert( cTimeStamp > 0.0 );
+        CHECK( cTimeStamp > 0.0 );
         
         cTimeStamp = max( cTimeStamp - rollbackStep, 0.0f );
         collider->setCurrentTimestamp( cTimeStamp );
@@ -369,14 +369,14 @@ void collideHandler( Collider *collider, vector< Tank > *tanks, const vector< Ke
     
     //dprintf( "Sim continuing\n" );
 
-    assert( !collider->testCollideAll() );
+    CHECK( !collider->testCollideAll() );
     
 }
 
 bool Game::runTick( const vector< Keystates > &keys ) {
     
 	frameNm++;
-	assert( keys.size() == 2 );
+	CHECK( keys.size() == 2 );
 
 	collider.reset(players.size());
     
@@ -404,7 +404,7 @@ bool Game::runTick( const vector< Keystates > &keys ) {
 		collider.endAddThingsToGroup();
 	}
     
-    assert( !collider.testCollideAll() );
+    CHECK( !collider.testCollideAll() );
     
 	while( collider.doProcess() ) {
 		//dprintf( "Collision!\n" );
@@ -415,10 +415,10 @@ bool Game::runTick( const vector< Keystates > &keys ) {
         if( lhs > rhs ) swap( lhs, rhs );
         if( lhs.first.first == -1 && rhs.first.first == -1 ) {
             // wall-wall collision, wtf?
-            assert(0);
+            CHECK(0);
         } else if( lhs.first.first == -1 && rhs.first.first == 0 ) {
             
-            assert(rhs.first.second >= 0 && rhs.first.second < players.size());
+            CHECK(rhs.first.second >= 0 && rhs.first.second < players.size());
             
             // wall-tank collision - stop tank
             //dprintf( "Wall-tank collision\n" );
@@ -472,7 +472,7 @@ bool Game::runTick( const vector< Keystates > &keys ) {
             projectiles[ rhs.first.second ][ rhs.second ].genEffects( &gfxeffects );
         } else {
             dprintf("omgwtf %d %d\n", lhs.first.first, rhs.first.first);
-            assert(0);
+            CHECK(0);
         }
 	}
 
