@@ -2,11 +2,14 @@
 #include "interface.h"
 #include "game.h"
 #include "gfx.h"
+#include "args.h"
 
 #include <string>
 #include <vector>
 
 using namespace std;
+
+DEFINE_bool(vecedit, false, "vector editor mode");
 
 class StdMenu {
     
@@ -165,9 +168,15 @@ void interfaceInit() {
 }
 
 bool interfaceRunTick( const vector< Controller > &control, const Keystates &keyb ) {
+    if(FLAGS_vecedit) {
+        return vecEditTick(keyb);
+    }
     return ifm.tick(control, keyb);
 }
     
 void interfaceRenderToScreen() {
+    if(FLAGS_vecedit) {
+        vecEditRender();
+    }
     ifm.render();
 }

@@ -1,4 +1,3 @@
-- Down/up/toggle/repeat flags
 - New game and key setup system
 - Game framework, main menu/multilevel/etc
 - Collisions speedup (i.e. not O(n^2))

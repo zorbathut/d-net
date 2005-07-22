@@ -1,5 +1,5 @@
 
-SOURCES = main core game timer debug gfx collide gamemap util rng const args interface
+SOURCES = main core game timer debug gfx collide gamemap util rng const args interface vecedit
 CPPFLAGS = `sdl-config --cflags` -mno-cygwin -O2 #-pg
 LINKFLAGS = `sdl-config --libs` -lglu32 -lopengl32 -lm -mno-cygwin -O2 #-pg
 
@@ -18,6 +18,9 @@ clean:
 run: d-net.exe
 	d-net.exe
 
+vecedit: d-net.exe
+	d-net.exe --vecedit
+    
 package: d-net.exe
 	mkdir deploy
 	cp d-net.exe deploy
@@ -41,7 +44,10 @@ stats:
 	@echo UI: `cat interface.h interface.cpp | wc -l` loc
 	@echo Framework: `cat core.h core.cpp main.h main.cpp | wc -l` loc
 	@echo Util: `cat timer.h timer.cpp util.h util.cpp args.h args.cpp | wc -l` loc
-	@echo Total project: `cat *.h *.cpp makefile | wc -l` loc
+	@echo Vector editor: `cat vecedit.h vecedit.cpp | wc -l` loc
+	@echo Total code: `cat *.h *.cpp makefile | wc -l` loc
+	@echo Datafiles: `cat data/* | wc -l` lines
+
 
 
 
