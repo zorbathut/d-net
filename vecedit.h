@@ -3,7 +3,7 @@
 
 #include "util.h"
 
-bool vecEditTick(const Keystates &keys);    
+bool vecEditTick(const Controller &keys);    
 void vecEditRender(void);
 
 #endif

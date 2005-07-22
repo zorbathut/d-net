@@ -3,6 +3,7 @@
 #include "game.h"
 #include "gfx.h"
 #include "args.h"
+#include "vecedit.h"
 
 #include <string>
 #include <vector>
@@ -74,30 +75,13 @@ class InterfaceMain {
     
 public:
 
-    bool tick(const vector< Controller > &control, const Keystates &keyb);
+    bool tick(const vector< Controller > &control);
     void render() const;
     InterfaceMain();
 
 };
 
-vector< Keystates > ctk(const vector< Controller > &cont) {
-    vector<Keystates> out(cont.size());
-    for(int i = 0; i < cont.size(); i++) {
-        if(cont[i].x < -.5)
-            out[i].l.down = 1;
-        if(cont[i].x > .5)
-            out[i].r.down = 1;
-        if(cont[i].y < -.5)
-            out[i].d.down = 1;
-        if(cont[i].y > .5)
-            out[i].u.down = 1;
-        if(cont[i].keys[0])
-            out[i].f.down = 1;
-    }
-    return out;
-}
-
-bool InterfaceMain::tick(const vector< Controller > &control, const Keystates &keyb) {
+bool InterfaceMain::tick(const vector< Controller > &control) {
     
     if(kst.size() == 0) {
         CHECK(control.size() != 0);
@@ -117,7 +101,7 @@ bool InterfaceMain::tick(const vector< Controller > &control, const Keystates &k
     
     if(interface_mode == IFM_S_MAINMENU) {
         int mrv;
-        mrv = mainmenu.tick(keyb);
+        mrv = mainmenu.tick(kst[0]);
         if(mrv == IFM_M_NEWGAME) {
             game = Game();
             interface_mode = IFM_S_PLAYING;
@@ -142,6 +126,9 @@ void InterfaceMain::render() const {
     
     if(interface_mode == IFM_S_MAINMENU) {
         mainmenu.render();
+        setColor(0.5, 0.5, 0.5);
+        drawText("Player one  arrow keys and uiojkl", 3, 2, 20);
+        drawText("Player two  wasd       and rtyfgh", 3, 2, 24);
     } else if(interface_mode == IFM_S_PLAYING) {
         game.renderToScreen(RENDERTARGET_SPECTATOR);
         setColor(1.0, 1.0, 1.0);
@@ -167,11 +154,11 @@ void interfaceInit() {
     ifm = InterfaceMain();
 }
 
-bool interfaceRunTick( const vector< Controller > &control, const Keystates &keyb ) {
+bool interfaceRunTick( const vector< Controller > &control ) {
     if(FLAGS_vecedit) {
-        return vecEditTick(keyb);
+        return vecEditTick(control[0]);
     }
-    return ifm.tick(control, keyb);
+    return ifm.tick(control);
 }
     
 void interfaceRenderToScreen() {

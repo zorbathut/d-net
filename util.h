@@ -30,7 +30,14 @@ class Controller {
 public:
     float x;
     float y;
-    vector<bool> keys;
+    Button u;
+    Button d;
+    Button l;
+    Button r;
+    vector<Button> keys;
+
+    void newState(const Controller &nst);
+
 };
 
 class Keystates {

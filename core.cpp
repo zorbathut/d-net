@@ -22,48 +22,37 @@ DEFINE_string( writeTarget, "dumps/dump", "Prefix for file dump" );
 DEFINE_bool( readFromFile, false, "Replay game from keypress dump" );
 DEFINE_string( readTarget, "", "File to replay from" );
 
-vector< Keystates > curstates( 2 ); // these are not kept in a useful state
+vector< Controller > curstates( 2 );
 
+int playermap[2][10] = {
+    { SDLK_UP, SDLK_DOWN, SDLK_LEFT, SDLK_RIGHT, SDLK_u, SDLK_i, SDLK_o, SDLK_j, SDLK_k, SDLK_l },
+    { SDLK_w, SDLK_s, SDLK_a, SDLK_d, SDLK_r, SDLK_t, SDLK_y, SDLK_f, SDLK_g, SDLK_h }
+};
 
 void keyPress( SDL_KeyboardEvent *key ) {
 	bool *ps = NULL;
-	if( key->keysym.sym == SDLK_UP )
-		ps = &curstates[0].u.down;
-	if( key->keysym.sym == SDLK_DOWN )
-		ps = &curstates[0].d.down;
-	if( key->keysym.sym == SDLK_LEFT )
-		ps = &curstates[0].l.down;
-	if( key->keysym.sym == SDLK_RIGHT )
-		ps = &curstates[0].r.down;
-	if( key->keysym.sym == SDLK_z )
-		ps = &curstates[0].f.down;
-	if( key->keysym.sym == SDLK_w )
-		ps = &curstates[1].u.down;
-	if( key->keysym.sym == SDLK_s )
-		ps = &curstates[1].d.down;
-	if( key->keysym.sym == SDLK_a )
-		ps = &curstates[1].l.down;
-	if( key->keysym.sym == SDLK_d )
-		ps = &curstates[1].r.down;
-	if( key->keysym.sym == SDLK_x )
-		ps = &curstates[1].f.down;
+    for(int i = 0; i < 2; i++) {
+        for(int j = 0; j < 10; j++) {
+            if(key->keysym.sym == playermap[i][j]) {
+                if(j == 0)
+                    ps = &curstates[i].u.down;
+                else if(j == 1)
+                    ps = &curstates[i].d.down;
+                else if(j == 2)
+                    ps = &curstates[i].l.down;
+                else if(j == 3)
+                    ps = &curstates[i].r.down;
+                else
+                    ps = &curstates[i].keys[j-4].down;
+            }
+        }
+    }
 	if( !ps )
 		return;
 	if( key->type == SDL_KEYUP )
 		*ps = 0;
 	if( key->type == SDL_KEYDOWN )
 		*ps = 1;
-}
-
-vector< Controller > mungeToControllers(const vector<Keystates> &curstates) {
-    vector< Controller > controllers( 2 );
-    for(int i = 0; i < 2; i++) {
-        controllers[i].x = curstates[i].r.down - curstates[i].l.down;
-        controllers[i].y = curstates[i].u.down - curstates[i].d.down;
-        controllers[i].keys.resize(1);
-        controllers[i].keys[0] = curstates[i].f.down;
-    }
-    return controllers;
 }
 
 long long polling = 0;
@@ -107,8 +96,11 @@ void MainLoop() {
 
 	int frako = 0;
     
-    vector<Keystates> fullstates(2);
-    vector<Controller> controllers(2);
+    for(int i = 0; i < curstates.size(); i++) {
+        curstates[i].keys.resize(6);
+    }
+    
+    vector<Controller> controllers = curstates;
     
 	while( !quit ) {
 		bencher = Timer();
@@ -132,17 +124,15 @@ void MainLoop() {
 					break;
 			}
 		}
-        CHECK(fullstates.size() == curstates.size());
-        for(int i = 0; i < fullstates.size(); i++) {
-            fullstates[i].u.newState(curstates[i].u.down);
-            fullstates[i].d.newState(curstates[i].d.down);
-            fullstates[i].l.newState(curstates[i].l.down);
-            fullstates[i].r.newState(curstates[i].r.down);
-            fullstates[i].f.newState(curstates[i].f.down);
+        CHECK(controllers.size() == curstates.size());
+        for(int i = 0; i < curstates.size(); i++) {
+            curstates[i].x = curstates[i].r.down - curstates[i].l.down;
+            curstates[i].y = curstates[i].u.down - curstates[i].d.down;
+            controllers[i].newState(curstates[i]);
         }
-        controllers = mungeToControllers(fullstates);
 		polling += bencher.ticksElapsed();
 		bencher = Timer();
+        /*
         if(outfile) {
             for(int i = 0; i < fullstates.size(); i++) {
                 char obyte = 0;
@@ -154,8 +144,8 @@ void MainLoop() {
                 fwrite(&obyte, 1, 1, outfile);
             }
             fflush(outfile);
-        }
-        if(interfaceRunTick( controllers, fullstates[0] ))
+        }*/
+        if(interfaceRunTick( controllers ))
             quit = true;
 		ticking += bencher.ticksElapsed();
 		bencher = Timer();

@@ -50,7 +50,19 @@ void Button::newState(bool pushed) {
         }
         sincerep++;
     }
-}    
+}
+
+void Controller::newState(const Controller &nst) {
+    x = nst.x;
+    y = nst.y;
+    u.newState(nst.u);
+    d.newState(nst.d);
+    l.newState(nst.l);
+    r.newState(nst.r);
+    CHECK(keys.size() == nst.keys.size());
+    for(int i = 0; i < keys.size(); i++)
+        keys[i].newState(nst.keys[i]);
+}
 
 void Keystates::newState(const Keystates &nst) {
     u.newState(nst.u);
