@@ -45,7 +45,7 @@ void initFlags(int argc, char *argv[]) {
         CHECK(argv[i][0] == '-' && argv[i][1] == '-');
         char *arg = argv[i] + 2;
         bool isBoolNo = false;
-        if(strncmp(arg, "no", 2)) {
+        if(!strncmp(arg, "no", 2)) {
             isBoolNo = true;
             arg += 2;
         }

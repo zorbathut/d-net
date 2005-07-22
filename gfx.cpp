@@ -132,6 +132,49 @@ void drawLinePath( const vector< float > &iverts, float weight, bool loop ) {
 		drawLine( verts[ i ], verts[ i + 1 ], verts[ i + 2 ], verts[ i + 3 ], weight );
 };
 
+void drawBox( const Float4 &box, float weight ) {
+    vector<float> verts;
+    verts.push_back(box.sx);
+    verts.push_back(box.sy);
+    verts.push_back(box.sx);
+    verts.push_back(box.ey);
+    verts.push_back(box.ex);
+    verts.push_back(box.ey);
+    verts.push_back(box.ex);
+    verts.push_back(box.sy);
+    drawLinePath(verts, weight, true);
+}
+
+void drawBoxAround(float x, float y, float rad, float weight) {
+    dprintf("%f, %f, %f, %f\n", x, y, rad, weight);
+    drawBox(Float4(x - rad, y - rad, x + rad, y + rad), weight);
+}
+
+float bezinterp(float x0, float x1, float x2, float x3, float t) {
+    float cx = 3 * ( x1 - x0 );
+    float bx = 3 * ( x2 - x1 ) - cx;
+    float ax = x3 - x0 - cx - bx;
+    return ax * t * t * t + bx * t * t + cx * t + x0;
+}
+
+void drawCurve( const Float4 &ptah, const Float4 &ptbh, float weight ) {
+    vector<float> verts;
+    for(int i = 0; i <= 100; i++) {
+        verts.push_back(bezinterp(ptah.sx, ptah.ex, ptbh.sx, ptbh.ex, i / 100.0));
+        verts.push_back(bezinterp(ptah.sy, ptah.ey, ptbh.sy, ptbh.ey, i / 100.0));
+    }
+    drawLinePath(verts, weight, false);
+}
+
+void drawCurveControls( const Float4 &ptah, const Float4 &ptbh, float spacing, float weight ) {
+    drawBoxAround( ptah.sx, ptah.sy, spacing, weight );
+    drawBoxAround( ptah.ex, ptah.ey, spacing, weight );
+    drawBoxAround( ptbh.sx, ptbh.sy, spacing, weight );
+    drawBoxAround( ptbh.ex, ptbh.ey, spacing, weight );
+    drawLine( ptah, weight );
+    drawLine( ptbh, weight );
+}
+
 void drawPoint( float x, float y, float weight ) {
     glPointSize( weight / map_zoom * 600 );   // GL uses pixels internally for this unit, so I have to translate from game-meters
     glBegin( GL_POINTS );

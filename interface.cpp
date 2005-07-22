@@ -157,13 +157,15 @@ void interfaceInit() {
 bool interfaceRunTick( const vector< Controller > &control ) {
     if(FLAGS_vecedit) {
         return vecEditTick(control[0]);
+    } else {
+        return ifm.tick(control);
     }
-    return ifm.tick(control);
 }
     
 void interfaceRenderToScreen() {
     if(FLAGS_vecedit) {
         vecEditRender();
+    } else {
+        ifm.render();
     }
-    ifm.render();
 }
