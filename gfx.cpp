@@ -47,6 +47,7 @@ void initGfx() {
         CHECK(font);
         while(getline(font, line)) {
             line = string(line.begin(), find(line.begin(), line.end(), '#'));
+            dprintf("Parsing font character \"%s\"\n", line.c_str());
             vector<string> first = tokenize(line, ":");
             CHECK(first.size() == 2 || line == "");
             if(first.size() == 2) {
@@ -146,7 +147,6 @@ void drawBox( const Float4 &box, float weight ) {
 }
 
 void drawBoxAround(float x, float y, float rad, float weight) {
-    dprintf("%f, %f, %f, %f\n", x, y, rad, weight);
     drawBox(Float4(x - rad, y - rad, x + rad, y + rad), weight);
 }
 
@@ -199,7 +199,10 @@ void drawText( const char *txt, float scale, float sx, float sy ) {
     scale /= 9;
     for(int i = 0; txt[i]; i++) {
         char kar = toupper(txt[i]);
-        CHECK(fontdata.count(kar));
+        if(!fontdata.count(kar)) {
+            dprintf("Can't find font for character \"%c\"", kar);
+            CHECK(0);
+        }
         const vector<vector<pair<int, int> > > &pathdat = fontdata[kar];
         for(int i = 0; i < pathdat.size(); i++) {
             vector<float> verts;
