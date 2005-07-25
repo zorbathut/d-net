@@ -216,3 +216,92 @@ void drawText( const char *txt, float scale, float sx, float sy ) {
     }
 }
 
+Vecpt Vecpt::mirror() const {
+    Vecpt gn = *this;
+    swap(gn.lhcx, gn.rhcx);
+    swap(gn.lhcy, gn.rhcy);
+    swap(gn.lhcurved, gn.rhcurved);
+    return gn;
+}
+
+Vecpt::Vecpt() {
+    lhcx = 16;
+    lhcy = 16;
+    rhcx = 16;
+    rhcy = 16;
+}
+
+VectorObject loadVectors(const char *fname) {
+    VectorObject rv;
+    ifstream fil(fname);
+    CHECK(fil);
+    string buf;
+    while(getline(fil, buf)) {
+        if(buf.size() == 0)
+            break;
+        vector<string> toks = tokenize(buf, " ");
+        CHECK(toks.size() == 3);
+        vector<int> lhc = sti(tokenize(toks[0], "(,)"));
+        CHECK(lhc.size() == 0 || lhc.size() == 2);
+        vector<int> mainc = sti(tokenize(toks[1], ","));
+        CHECK(mainc.size() == 2);
+        vector<int> rhc = sti(tokenize(toks[2], "(,)"));
+        CHECK(rhc.size() == 0 || rhc.size() == 2);
+        Vecpt tvecpt;
+        tvecpt.x = mainc[0];
+        tvecpt.y = mainc[1];
+        if(lhc.size() == 2) {
+            tvecpt.lhcurved = true;
+            tvecpt.lhcx = lhc[0];
+            tvecpt.lhcy = lhc[1];
+        } else {
+            tvecpt.lhcurved = false;
+        }
+        if(rhc.size() == 2) {
+            tvecpt.rhcurved = true;
+            tvecpt.rhcx = rhc[0];
+            tvecpt.rhcy = rhc[1];
+        } else {
+            tvecpt.rhcurved = false;
+        }
+        rv.points.push_back(tvecpt);
+    }
+    int mx = 1000000;
+    int my = 1000000;
+    int xx = -1000000;
+    int xy = -1000000;
+    for(int i = 0; i < rv.points.size(); i++) {
+        mx = min(mx, rv.points[i].x);
+        my = min(my, rv.points[i].y);
+        xx = max(xx, rv.points[i].x);
+        xy = max(xy, rv.points[i].y);
+    }
+    CHECK(mx != 1000000);
+    CHECK(my != 1000000);
+    CHECK(xx != -1000000);
+    CHECK(xy != -1000000);
+    rv.width = xx - mx;
+    for(int i = 0; i < rv.points.size(); i++) {
+        rv.points[i].x -= mx;
+        rv.points[i].y -= my;
+    }
+    return rv;
+}
+    
+void drawVectors(const VectorObject &vecob, float x, float y, float width, float weight) {
+    float scale = width / vecob.width;
+    Float4 translator = Float4(x, y, x, y);
+    for(int i = 0; i < vecob.points.size(); i++) {
+        int j = ( i + 1 ) % vecob.points.size();
+        CHECK(vecob.points[i].rhcurved == vecob.points[j].lhcurved);
+        if(vecob.points[i].rhcurved) {
+            drawCurve(
+                Float4(vecob.points[i].x, vecob.points[i].y, vecob.points[i].x + vecob.points[i].rhcx, vecob.points[i].y + vecob.points[i].rhcy) * scale + translator,
+                Float4(vecob.points[j].x + vecob.points[j].lhcx, vecob.points[j].y + vecob.points[j].lhcy, vecob.points[j].x, vecob.points[j].y) * scale + translator,
+                weight);
+        } else {
+            drawLine(Float4(vecob.points[i].x, vecob.points[i].y, vecob.points[j].x, vecob.points[j].y) * scale + translator, weight);
+        }
+    }
+}
+

@@ -13,34 +13,90 @@ const char *modes[] = {"none", "horizontal", "vertical"};
 int vecedmode = VECED_REFLECT;
 int vecedreflect = VECRF_NONE;
 
-class Vecpt {
-public:
-    int x;
-    int y;
-    int lhcx;
-    int lhcy;
-    int rhcx;
-    int rhcy;
-    bool lhcurved;
-    bool rhcurved;
-
-    Vecpt mirror() const {
-        Vecpt gn = *this;
-        swap(gn.lhcx, gn.rhcx);
-        swap(gn.lhcy, gn.rhcy);
-        swap(gn.lhcurved, gn.rhcurved);
-        return gn;
-    }
-    
-};
-
 vector<Vecpt> vecs;
+
+vector<Vecpt> getProcessedVecs() {
+    if(vecedreflect == VECRF_NONE) {
+        return vecs;
+    } else if(vecedreflect == VECRF_HORIZONTAL) {
+        vector<Vecpt> fakevec = vecs;
+        for(int i = vecs.size(); i > 0; i--) {
+            Vecpt gta = vecs[i-1].mirror();
+            gta.y *= -1;
+            gta.lhcy *= -1;
+            gta.rhcy *= -1;
+            fakevec.push_back(gta);
+        }
+        return fakevec;
+    } else if(vecedreflect == VECRF_VERTICAL) {
+        vector<Vecpt> fakevec = vecs;
+        for(int i = vecs.size(); i > 0; i--) {
+            Vecpt gta = vecs[i-1].mirror();
+            gta.x *= -1;
+            gta.lhcx *= -1;
+            gta.rhcx*= -1;
+            fakevec.push_back(gta);
+        }
+        return fakevec;
+    } else {
+        CHECK(0);
+    }
+}
+
+void saveVectors() {
+    vector<Vecpt> tv = getProcessedVecs();
+    dprintf("Vectors at %d\n", tv.size());
+    for(int i = 0; i < tv.size(); i++) {
+        for(int j = 0; j + 1 < tv.size(); j++) {
+            if(tv[j].x == tv[j+1].x && tv[j].y == tv[j+1].y) {
+                Vecpt nvpt = tv[j];
+                nvpt.rhcurved = tv[j+1].rhcurved;
+                nvpt.rhcx = tv[j+1].rhcx;
+                nvpt.rhcy = tv[j+1].rhcy;
+                tv[j] = nvpt;
+                tv.erase(tv.begin() + j + 1);
+                j--;
+            }
+        }
+        tv.push_back(tv[0]);
+        tv.erase(tv.begin());
+    }
+    dprintf("Vectors culled to %d\n", tv.size());
+    FILE *outfile;
+    {
+        char timestampbuf[ 128 ];
+        time_t ctmt = time(NULL);
+        strftime(timestampbuf, sizeof(timestampbuf), "%Y%m%d-%H%M%S.dvec", gmtime(&ctmt));
+        dprintf("%s\n", timestampbuf);
+        outfile = fopen(timestampbuf, "wb");
+        if(outfile) {
+        } else {
+            dprintf("Outfile %s couldn't be opened! Didn't save!", timestampbuf);
+        }
+    }
+    for(int i = 0; i < tv.size(); i++) {
+        if(tv[i].lhcurved) {
+            fprintf(outfile, "(%d,%d) ", tv[i].lhcx, tv[i].lhcy);
+        } else {
+            fprintf(outfile, "() ");
+        }
+        fprintf(outfile,"%d,%d ", tv[i].x, tv[i].y);
+        if(tv[i].rhcurved) {
+            fprintf(outfile, "(%d,%d)\n", tv[i].rhcx, tv[i].rhcy);
+        } else {
+            fprintf(outfile, "()\n");
+        }
+    }
+    fclose(outfile);
+}
 
 void drawVecs(const vector<Vecpt> &vecs) {
     for(int i = 0; i < vecs.size(); i++) {
         int next = (i + 1) % vecs.size();
         if(vecs[i].rhcurved) {
-            drawCurve(Float4(vecs[i].x, vecs[i].y, vecs[i].rhcx, vecs[i].rhcy), Float4(vecs[next].lhcx, vecs[next].lhcy, vecs[next].x, vecs[next].y), 0.1);
+            drawCurve(
+                    Float4(vecs[i].x, vecs[i].y, vecs[i].x + vecs[i].rhcx, vecs[i].y + vecs[i].rhcy),
+                    Float4(vecs[next].lhcx + vecs[next].x, vecs[next].lhcy + vecs[next].y, vecs[next].x, vecs[next].y), 0.1);
         } else {
             drawLine(vecs[i].x, vecs[i].y, vecs[(i+1)%vecs.size()].x, vecs[(i+1)%vecs.size()].y, 0.1);
         }
@@ -51,12 +107,12 @@ void drawNodeFramework(const vector<Vecpt> &vecs, int tv) {
     tv %= vecs.size();
     drawBoxAround(vecs[tv].x, vecs[tv].y, 4, 0.1);
     if(vecs[tv].lhcurved) {
-        drawBoxAround(vecs[tv].lhcx, vecs[tv].lhcy, 4, 0.1);
-        drawLine(Float4(vecs[tv].x, vecs[tv].y, vecs[tv].lhcx, vecs[tv].lhcy), 0.1);
+        drawBoxAround(vecs[tv].x + vecs[tv].lhcx, vecs[tv].y + vecs[tv].lhcy, 4, 0.1);
+        drawLine(Float4(vecs[tv].x, vecs[tv].y, vecs[tv].x + vecs[tv].lhcx, vecs[tv].y + vecs[tv].lhcy), 0.1);
     }
     if(vecs[tv].rhcurved) {
-        drawBoxAround(vecs[tv].rhcx, vecs[tv].rhcy, 4, 0.1);
-        drawLine(Float4(vecs[tv].x, vecs[tv].y, vecs[tv].rhcx, vecs[tv].rhcy), 0.1);
+        drawBoxAround(vecs[tv].x + vecs[tv].rhcx, vecs[tv].y + vecs[tv].rhcy, 4, 0.1);
+        drawLine(Float4(vecs[tv].x, vecs[tv].y, vecs[tv].x + vecs[tv].rhcx, vecs[tv].y + vecs[tv].rhcy), 0.1);
     }
 }
 
@@ -167,35 +223,14 @@ bool vecEditTick(const Controller &keys) {
             int alt = traverse(activevec, -1, vecedreflect);
             bool mirr = mirror(activevec, -1, vecedreflect);
             if(mirr) {
-                CHECK(vecs[alt].lhcurved == vecs[activevec].lhcurved);
+                // these can go out of synch right now, but are easily fixable
+                //CHECK(vecs[alt].lhcurved == vecs[activevec].lhcurved);
                 vecs[activevec].lhcurved = !vecs[activevec].lhcurved;
                 vecs[alt].lhcurved = vecs[activevec].lhcurved;
-                if(vecs[activevec].lhcurved) {
-                    vecs[activevec].lhcx = vecs[activevec].x + 4;
-                    vecs[activevec].lhcy = vecs[activevec].y + 4;
-                    vecs[alt].lhcx = vecs[alt].x + 4;
-                    vecs[alt].lhcy = vecs[alt].y + 4;
-                } else {
-                    vecs[activevec].lhcx = vecs[activevec].x;
-                    vecs[activevec].lhcy = vecs[activevec].y;
-                    vecs[alt].lhcx = vecs[alt].x;
-                    vecs[alt].lhcy = vecs[alt].y;
-                }
             } else {
-                CHECK(vecs[alt].rhcurved == vecs[activevec].lhcurved);
+                //CHECK(vecs[alt].rhcurved == vecs[activevec].lhcurved);
                 vecs[activevec].lhcurved = !vecs[activevec].lhcurved;
                 vecs[alt].rhcurved = vecs[activevec].lhcurved;
-                if(vecs[activevec].lhcurved) {
-                    vecs[activevec].lhcx = vecs[activevec].x + 4;
-                    vecs[activevec].lhcy = vecs[activevec].y + 4;
-                    vecs[alt].rhcx = vecs[alt].x + 4;
-                    vecs[alt].rhcy = vecs[alt].y + 4;
-                } else {
-                    vecs[activevec].lhcx = vecs[activevec].x;
-                    vecs[activevec].lhcy = vecs[activevec].y;
-                    vecs[alt].rhcx = vecs[alt].x;
-                    vecs[alt].rhcy = vecs[alt].y;
-                }
             }
         }
         if(keys.keys[5].repeat) {
@@ -203,35 +238,13 @@ bool vecEditTick(const Controller &keys) {
             int alt = traverse(activevec, 1, vecedreflect);
             bool mirr = mirror(activevec, 1, vecedreflect);
             if(mirr) {
-                CHECK(vecs[alt].rhcurved == vecs[activevec].rhcurved);
+                //CHECK(vecs[alt].rhcurved == vecs[activevec].rhcurved);
                 vecs[activevec].rhcurved = !vecs[activevec].rhcurved;
                 vecs[alt].rhcurved = vecs[activevec].rhcurved;
-                if(vecs[activevec].rhcurved) {
-                    vecs[activevec].rhcx = vecs[activevec].x + 4;
-                    vecs[activevec].rhcy = vecs[activevec].y + 4;
-                    vecs[alt].rhcx = vecs[alt].x + 4;
-                    vecs[alt].rhcy = vecs[alt].y + 4;
-                } else {
-                    vecs[activevec].rhcx = vecs[activevec].x;
-                    vecs[activevec].rhcy = vecs[activevec].y;
-                    vecs[alt].rhcx = vecs[alt].x;
-                    vecs[alt].rhcy = vecs[alt].y;
-                }
             } else {
-                CHECK(vecs[alt].lhcurved == vecs[activevec].rhcurved);
+                //CHECK(vecs[alt].lhcurved == vecs[activevec].rhcurved);
                 vecs[activevec].rhcurved = !vecs[activevec].rhcurved;
                 vecs[alt].lhcurved = vecs[activevec].rhcurved;
-                if(vecs[activevec].rhcurved) {
-                    vecs[activevec].rhcx = vecs[activevec].x + 4;
-                    vecs[activevec].rhcy = vecs[activevec].y + 4;
-                    vecs[alt].lhcx = vecs[alt].x + 4;
-                    vecs[alt].lhcy = vecs[alt].y + 4;
-                } else {
-                    vecs[activevec].rhcx = vecs[activevec].x;
-                    vecs[activevec].rhcy = vecs[activevec].y;
-                    vecs[alt].lhcx = vecs[alt].x;
-                    vecs[alt].lhcy = vecs[alt].y;
-                }
             }
         }
         if(keys.keys[1].repeat) {
@@ -251,6 +264,10 @@ bool vecEditTick(const Controller &keys) {
             // delete
             vecs.erase(vecs.begin() + activevec);
             activevec = 0;
+        }
+        if(keys.keys[7].repeat) {
+            // save
+            saveVectors();
         }
     } else if(vecedmode == VECED_MOVE) {
         CHECK(handlex && handley);
@@ -313,32 +330,8 @@ void vecEditRender(void) {
     } else {
         CHECK(0);
     }
-    if(vecedreflect == VECRF_NONE) {
-        drawVecs(vecs);
-    } else if(vecedreflect == VECRF_HORIZONTAL) {
-        vector<Vecpt> fakevec = vecs;
-        for(int i = vecs.size(); i > 0; i--) {
-            Vecpt gta = vecs[i-1].mirror();
-            gta.y *= -1;
-            gta.lhcy *= -1;
-            gta.rhcy *= -1;
-            fakevec.push_back(gta);
-        }
-        setColor(1.0, 1.0, 1.0);
-        drawVecs(fakevec);
-    } else if(vecedreflect == VECRF_VERTICAL) {
-                vector<Vecpt> fakevec = vecs;
-        for(int i = vecs.size(); i > 0; i--) {
-            Vecpt gta = vecs[i-1].mirror();
-            gta.x *= -1;
-            gta.lhcx *= -1;
-            gta.rhcx*= -1;
-            fakevec.push_back(gta);
-        }
-        drawVecs(fakevec);
-    } else {
-        CHECK(0);
-    }
+    setColor(1.0, 1.0, 1.0);
+    drawVecs(getProcessedVecs());
     if(vecedmode == VECED_EXAMINE || vecedmode == VECED_MOVE) {
         setColor(1.0,0.5,0.5);
         drawNodeFramework(vecs, activevec);

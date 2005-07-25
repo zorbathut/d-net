@@ -24,11 +24,11 @@ DEFINE_string( readTarget, "", "File to replay from" );
 
 vector< Controller > curstates( 2 );
 
-const int playerkeys = 7;
+const int playerkeys = 9;
 
 int playermap[2][4 + playerkeys] = {
-    { SDLK_UP, SDLK_DOWN, SDLK_LEFT, SDLK_RIGHT, SDLK_u, SDLK_i, SDLK_o, SDLK_j, SDLK_k, SDLK_l, SDLK_m },
-    { SDLK_w, SDLK_s, SDLK_a, SDLK_d, SDLK_r, SDLK_t, SDLK_y, SDLK_f, SDLK_g, SDLK_h, SDLK_v }
+    { SDLK_UP, SDLK_DOWN, SDLK_LEFT, SDLK_RIGHT, SDLK_u, SDLK_i, SDLK_o, SDLK_j, SDLK_k, SDLK_l, SDLK_m, SDLK_COMMA, SDLK_PERIOD },
+    { SDLK_w, SDLK_s, SDLK_a, SDLK_d, SDLK_r, SDLK_t, SDLK_y, SDLK_f, SDLK_g, SDLK_h, SDLK_v, SDLK_b, SDLK_n }
 };
 
 void keyPress( SDL_KeyboardEvent *key ) {

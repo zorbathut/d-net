@@ -129,11 +129,10 @@ void InterfaceMain::render() const {
         setColor(0.5, 0.5, 0.5);
         drawText("Player one  arrow keys and uiojkl", 3, 2, 20);
         drawText("Player two  wasd       and rtyfgh", 3, 2, 24);
+        drawText("Menu        arrow keys and u", 3, 2, 28);
+        drawVectors(loadVectors("data/curvetest.dvec"), 30, 50, 40, 0.1);
     } else if(interface_mode == IFM_S_PLAYING) {
         game.renderToScreen(RENDERTARGET_SPECTATOR);
-        setColor(1.0, 1.0, 1.0);
-        drawText("ABCDEFGHIJKLMNOPQRSTUVWXYZ", 5, 0, 0);
-        drawText("the quick brown fox jumped over the lazy dog", 5, 0, 6);
     } else {
         CHECK(0);
     }
