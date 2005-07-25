@@ -130,7 +130,11 @@ void InterfaceMain::render() const {
         drawText("Player one  arrow keys and uiojkl", 3, 2, 20);
         drawText("Player two  wasd       and rtyfgh", 3, 2, 24);
         drawText("Menu        arrow keys and u", 3, 2, 28);
-        drawVectors(loadVectors("data/curvetest.dvec"), 30, 50, 40, 0.1);
+        for(int i = 0; i < 6; i++) {
+            char boof[128] = "data/a.dvec";
+            boof[5] += i;
+            drawVectors(loadVectors(boof),5+20*i, 50, 15, 0.1);
+        }
     } else if(interface_mode == IFM_S_PLAYING) {
         game.renderToScreen(RENDERTARGET_SPECTATOR);
     } else {

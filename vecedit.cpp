@@ -8,8 +8,9 @@
 using namespace std;
 
 enum { VECED_REFLECT, VECED_CREATE, VECED_EXAMINE, VECED_MOVE };
-enum { VECRF_NONE, VECRF_HORIZONTAL, VECRF_VERTICAL, VECRF_END };
-const char *modes[] = {"none", "horizontal", "vertical"};
+enum { VECRF_NONE, VECRF_HORIZONTAL, VECRF_VERTICAL, VECRF_VH, VECRF_180DEG, VECRF_SNOWFLAKE4, VECRF_END };
+const bool vecrf_mirror[] = { false, true, true, true, false, true };
+const char *modes[] = {"none", "horizontal", "vertical", "vertical horizontal", "180deg", "snowflake4"};
 int vecedmode = VECED_REFLECT;
 int vecedreflect = VECRF_NONE;
 
@@ -34,10 +35,73 @@ vector<Vecpt> getProcessedVecs() {
             Vecpt gta = vecs[i-1].mirror();
             gta.x *= -1;
             gta.lhcx *= -1;
-            gta.rhcx*= -1;
+            gta.rhcx *= -1;
             fakevec.push_back(gta);
         }
         return fakevec;
+    } else if(vecedreflect == VECRF_VH) {
+        vector<Vecpt> fakevec1 = vecs;
+        for(int i = vecs.size(); i > 0; i--) {
+            Vecpt gta = vecs[i-1].mirror();
+            gta.y *= -1;
+            gta.lhcy *= -1;
+            gta.rhcy *= -1;
+            fakevec1.push_back(gta);
+        }
+        vector<Vecpt> fakevec2 = fakevec1;
+        for(int i = fakevec1.size(); i > 0; i--) {
+            Vecpt gta = fakevec1[i-1].mirror();
+            gta.x *= -1;
+            gta.lhcx *= -1;
+            gta.rhcx *= -1;
+            fakevec2.push_back(gta);
+        }
+        return fakevec2;
+    } else if(vecedreflect == VECRF_180DEG) {
+        vector<Vecpt> fakevec = vecs;
+        for(int i = 0; i < vecs.size(); i++) {
+            Vecpt gta = vecs[i];
+            gta.x *= -1;
+            gta.lhcx *= -1;
+            gta.rhcx *= -1;
+            gta.y *= -1;
+            gta.lhcy *= -1;
+            gta.rhcy *= -1;
+            fakevec.push_back(gta);
+        }
+        return fakevec;
+    } else if(vecedreflect == VECRF_SNOWFLAKE4) {
+        vector<Vecpt> fakevec1 = vecs;
+        for(int i = vecs.size(); i > 0; i--) {
+            Vecpt gta = vecs[i - 1].mirror();
+            swap(gta.x, gta.y);
+            swap(gta.lhcx, gta.lhcy);
+            swap(gta.rhcx, gta.rhcy);
+            fakevec1.push_back(gta);
+        }
+        vector<Vecpt> fakevec2 = fakevec1;
+        for(int i = 0; i < fakevec1.size(); i++) {
+            Vecpt gta = fakevec1[i];
+            swap(gta.x, gta.y);
+            swap(gta.lhcx, gta.lhcy);
+            swap(gta.rhcx, gta.rhcy);
+            gta.x *= -1;
+            gta.lhcx *= -1;
+            gta.rhcx *= -1;
+            fakevec2.push_back(gta);
+        }
+        vector<Vecpt> fakevec3 = fakevec2;
+        for(int i = 0; i < fakevec2.size(); i++) {
+            Vecpt gta = fakevec2[i];
+            gta.x *= -1;
+            gta.lhcx *= -1;
+            gta.rhcx *= -1;
+            gta.y *= -1;
+            gta.lhcy *= -1;
+            gta.rhcy *= -1;
+            fakevec3.push_back(gta);
+        }
+        return fakevec3;
     } else {
         CHECK(0);
     }
@@ -91,13 +155,17 @@ void saveVectors() {
 }
 
 void drawVecs(const vector<Vecpt> &vecs) {
+//    dprintf("-----");
     for(int i = 0; i < vecs.size(); i++) {
+//        dprintf("%d, %d, %d, %d, %d, %d, %d, %d\n", vecs[i].x, vecs[i].y, vecs[i].lhcurved, vecs[i].lhcx, vecs[i].lhcy, vecs[i].rhcurved, vecs[i].rhcx, vecs[i].rhcy);
         int next = (i + 1) % vecs.size();
         if(vecs[i].rhcurved) {
+            setColor(1.0, 0.5, 0.5);
             drawCurve(
                     Float4(vecs[i].x, vecs[i].y, vecs[i].x + vecs[i].rhcx, vecs[i].y + vecs[i].rhcy),
                     Float4(vecs[next].lhcx + vecs[next].x, vecs[next].lhcy + vecs[next].y, vecs[next].x, vecs[next].y), 0.1);
         } else {
+            setColor(1.0, 1.0, 1.0);
             drawLine(vecs[i].x, vecs[i].y, vecs[(i+1)%vecs.size()].x, vecs[(i+1)%vecs.size()].y, 0.1);
         }
     }
@@ -117,7 +185,7 @@ void drawNodeFramework(const vector<Vecpt> &vecs, int tv) {
 }
 
 bool reversed(int mode) {
-    return mode == VECRF_HORIZONTAL || mode == VECRF_VERTICAL;
+    return vecrf_mirror[mode];
 }
 
 int traverse(int start, int delta, int mode) {
@@ -136,7 +204,7 @@ int traverse(int start, int delta, int mode) {
 }
 
 bool mirror(int start, int delta, int mode) {
-        start += delta;
+    start += delta;
     while(start < 0)
         start += vecs.size() * 2;
     start %= vecs.size() * 2;
@@ -222,6 +290,7 @@ bool vecEditTick(const Controller &keys) {
             // toggle bentness on L
             int alt = traverse(activevec, -1, vecedreflect);
             bool mirr = mirror(activevec, -1, vecedreflect);
+            dprintf("%d, %d, %d, %d\n", activevec, alt, vecs.size(), mirr);
             if(mirr) {
                 // these can go out of synch right now, but are easily fixable
                 //CHECK(vecs[alt].lhcurved == vecs[activevec].lhcurved);
@@ -237,6 +306,7 @@ bool vecEditTick(const Controller &keys) {
             // toggle bentness on R
             int alt = traverse(activevec, 1, vecedreflect);
             bool mirr = mirror(activevec, 1, vecedreflect);
+            dprintf("%d, %d, %d, %d\n", activevec, alt, vecs.size(), mirr);
             if(mirr) {
                 //CHECK(vecs[alt].rhcurved == vecs[activevec].rhcurved);
                 vecs[activevec].rhcurved = !vecs[activevec].rhcurved;
@@ -320,13 +390,22 @@ void vecEditRender(void) {
         CHECK(0);
     }
     setZoom(-200*1.25, -200, 200);
+    setColor(0.5, 0.5, 0.5);
     if(vecedreflect == VECRF_NONE) {
     } else if(vecedreflect == VECRF_HORIZONTAL) {
-        setColor(0.5, 0.5, 0.5);
         drawLine(-200*1.25, 0, 200*1.25, 0, 0.1);
     } else if(vecedreflect == VECRF_VERTICAL) {
-        setColor(0.5, 0.5, 0.5);
         drawLine(0, -200, 0, 200, 0.1);
+    } else if(vecedreflect == VECRF_VH) {
+        drawLine(0, -200, 0, 200, 0.1);
+        drawLine(-200*1.25, 0, 200*1.25, 0, 0.1);
+    } else if(vecedreflect == VECRF_180DEG) {
+        drawLine(-200, -200, 200, 200, 0.1);
+    } else if(vecedreflect == VECRF_SNOWFLAKE4) {
+        drawLine(-200, -200, 200, 200, 0.1);
+        drawLine(0, -200, 0, 200, 0.1);
+        drawLine(-200, 0, 200, 0, 0.1);
+        drawLine(-200, 200, 200, -200, 0.1);
     } else {
         CHECK(0);
     }
