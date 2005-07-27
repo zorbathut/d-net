@@ -6,6 +6,32 @@ using namespace std;
 
 #include "util.h"
 
+struct Vecpt {
+public:
+    int x;
+    int y;
+    int lhcx;
+    int lhcy;
+    int rhcx;
+    int rhcy;
+    bool lhcurved;
+    bool rhcurved;
+
+    Vecpt mirror() const;
+    
+    Vecpt();
+    
+};
+
+struct VectorObject {
+public:
+    vector<Vecpt> points;
+    int width;
+    int height;
+};
+
+VectorObject loadVectors(const char *fname);
+
 void initGfx();
 
 void initFrame();
@@ -28,32 +54,9 @@ void drawRect( const Float4 &rect, float weight );
 
 void drawText( const char *txt, float scale, float sx, float sy );
 
-void deinitFrame();
-
-struct Vecpt {
-public:
-    int x;
-    int y;
-    int lhcx;
-    int lhcy;
-    int rhcx;
-    int rhcy;
-    bool lhcurved;
-    bool rhcurved;
-
-    Vecpt mirror() const;
-    
-    Vecpt();
-    
-};
-
-struct VectorObject {
-public:
-    vector<Vecpt> points;
-    int width;
-};
-
-VectorObject loadVectors(const char *fname);
 void drawVectors(const VectorObject &vecob, float x, float y, float width, float weight);
+void drawVectors(const VectorObject &vecob, const Float4 &bounds, bool cx, bool cy, float weight);
+
+void deinitFrame();
 
 #endif

@@ -10,6 +10,10 @@ using namespace std;
 #include "const.h"
 #include "debug.h"
 
+#define CHECK(x) if(!(x)) { /*dprintf("Error at %s:%d - %s\n", __FILE__, __LINE__, #x);*/ *(int*)0 = 0; }
+#define TEST(x) CHECK(x)
+//#define printf FAILURE
+
 class Button {
 public:
     bool down;
@@ -48,6 +52,23 @@ public:
 
 	Keystates();
 };
+
+
+class Float2 {
+public:
+    float x, y;
+    Float2() { };
+    Float2( float in_x, float in_y ) :
+        x( in_x ), y( in_y ) { };
+};
+
+inline Float2 operator+(const Float2 &lhs, const Float2 &rhs) {
+    return Float2(lhs.x + rhs.x, lhs.y + rhs.y);
+}
+
+inline Float2 operator*(const Float2 &lhs, float rhs) {
+    return Float2(lhs.x * rhs, lhs.y * rhs);
+}
 
 class Float4 {
 public:
@@ -96,10 +117,6 @@ inline Float4 &operator/=( Float4 &lhs, float rhs ) {
 	lhs.ex /= rhs;
 	lhs.ey /= rhs;
 }
-
-#define CHECK(x) if(!(x)) { dprintf("Error at %s:%d - %s\n", __FILE__, __LINE__, #x); *(int*)0 = 0; }
-#define TEST(x) CHECK(x)
-#define printf FAILURE
 
 inline bool operator==( const Float4 &lhs, const Float4 &rhs ) {
 	return lhs.sx == rhs.sx && lhs.sy == rhs.sy && lhs.ex == rhs.ex && lhs.ey == rhs.ey;
@@ -182,6 +199,18 @@ inline float fcos( float in ) {
 
 inline float frand() {
     return rand() / ( RAND_MAX + 1.0 );
+}
+
+inline Float2 angle( float ang ) {
+    return Float2(fsin(ang), fcos(ang));
+}
+
+inline Float4 boxaround(const Float2 &lhs, float radius) {
+    return Float4(lhs.x - radius, lhs.y - radius, lhs.x + radius, lhs.y + radius);
+}
+
+inline bool isinside(const Float4 &lhs, const Float2 &rhs) {
+    return !(rhs.x < lhs.sx || rhs.x >= lhs.ex || rhs.y < lhs.sy || rhs.y >= lhs.ey);
 }
 
 #endif

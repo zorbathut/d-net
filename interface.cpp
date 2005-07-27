@@ -1,6 +1,6 @@
 
 #include "interface.h"
-#include "game.h"
+#include "metagame.h"
 #include "gfx.h"
 #include "args.h"
 #include "vecedit.h"
@@ -33,7 +33,6 @@ void StdMenu::pushMenuItem(const string &name, int triggeraction) {
 }
 
 int StdMenu::tick(const Keystates &keys) {
-    dprintf("keys: %d %d %d %d %d\n", keys.u.up, keys.u.down, keys.u.push, keys.u.release, keys.u.repeat);
     if(keys.f.down)
         return items[cpos].second;
     if(keys.u.repeat)
@@ -67,7 +66,7 @@ class InterfaceMain {
     enum { IFM_M_NEWGAME, IFM_M_EXIT };
     int interface_mode;
     
-    Game game;
+    Metagame game;
     
     StdMenu mainmenu;
     
@@ -103,7 +102,7 @@ bool InterfaceMain::tick(const vector< Controller > &control) {
         int mrv;
         mrv = mainmenu.tick(kst[0]);
         if(mrv == IFM_M_NEWGAME) {
-            game = Game();
+            game = Metagame();
             interface_mode = IFM_S_PLAYING;
         } else if(mrv == IFM_M_EXIT) {
             return true;
@@ -111,7 +110,7 @@ bool InterfaceMain::tick(const vector< Controller > &control) {
             CHECK(mrv == -1);
         }
     } else if(interface_mode == IFM_S_PLAYING) {
-        if(game.runTick(kst)) {
+        if(game.runTick(control)) {
             interface_mode = IFM_S_MAINMENU;
         }
     } else {
@@ -130,13 +129,8 @@ void InterfaceMain::render() const {
         drawText("Player one  arrow keys and uiojkl", 3, 2, 20);
         drawText("Player two  wasd       and rtyfgh", 3, 2, 24);
         drawText("Menu        arrow keys and u", 3, 2, 28);
-        for(int i = 0; i < 6; i++) {
-            char boof[128] = "data/a.dvec";
-            boof[5] += i;
-            drawVectors(loadVectors(boof),5+20*i, 50, 15, 0.1);
-        }
     } else if(interface_mode == IFM_S_PLAYING) {
-        game.renderToScreen(RENDERTARGET_SPECTATOR);
+        game.renderToScreen();
     } else {
         CHECK(0);
     }
@@ -150,8 +144,6 @@ InterfaceMain::InterfaceMain() {
 }
 
 InterfaceMain ifm;
-
-Game game;
 
 void interfaceInit() {
     ifm = InterfaceMain();

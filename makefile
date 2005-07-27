@@ -1,5 +1,5 @@
 
-SOURCES = main core game timer debug gfx collide gamemap util rng const args interface vecedit
+SOURCES = main core game timer debug gfx collide gamemap util rng const args interface vecedit metagame
 CPPFLAGS = `sdl-config --cflags` -mno-cygwin -O2 #-pg
 LINKFLAGS = `sdl-config --libs` -lglu32 -lopengl32 -lm -mno-cygwin -O2 #-pg
 
@@ -12,8 +12,10 @@ include $(SOURCES:=.d)
 d-net.exe: $(SOURCES:=.o)
 	$(CPP) -o $@ $(SOURCES:=.o) $(LINKFLAGS) 
 
+asm: $(SOURCES:=.S)
+
 clean:
-	rm -rf *.o *.exe *.d
+	rm -rf *.o *.exe *.d *.S
 	
 run: d-net.exe
 	d-net.exe
@@ -33,7 +35,10 @@ package: d-net.exe
 
 %.o: %.cpp
 	$(CPP) $(CPPFLAGS) -c -o $@ $<
-	
+
+%.S: %.cpp
+	$(CPP) $(CPPFLAGS) -c -g -Wa,-a,-ad $< > $@
+
 %.d: %.cpp
 	bash -ec '$(CPP) $(CPPFLAGS) -M $< | sed "s/$*.o/$*.o $@/g" > $@'
 	
@@ -41,7 +46,7 @@ stats:
 	@echo Graphics: `cat gfx.h gfx.cpp | wc -l` loc
 	@echo Collisions: `cat collide.h collide.cpp | wc -l` loc
 	@echo Game mechanics: `cat game.h game.cpp gamemap.h gamemap.cpp | wc -l` loc
-	@echo UI: `cat interface.h interface.cpp | wc -l` loc
+	@echo UI: `cat interface.h interface.cpp metagame.h metagame.cpp | wc -l` loc
 	@echo Framework: `cat core.h core.cpp main.h main.cpp | wc -l` loc
 	@echo Util: `cat timer.h timer.cpp util.h util.cpp args.h args.cpp | wc -l` loc
 	@echo Vector editor: `cat vecedit.h vecedit.cpp | wc -l` loc

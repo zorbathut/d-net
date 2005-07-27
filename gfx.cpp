@@ -266,31 +266,59 @@ VectorObject loadVectors(const char *fname) {
         }
         rv.points.push_back(tvecpt);
     }
-    int mx = 1000000;
-    int my = 1000000;
-    int xx = -1000000;
-    int xy = -1000000;
+    int nx = 1000000;
+    int ny = 1000000;
+    int mx = -1000000;
+    int my = -1000000;
     for(int i = 0; i < rv.points.size(); i++) {
-        mx = min(mx, rv.points[i].x);
-        my = min(my, rv.points[i].y);
-        xx = max(xx, rv.points[i].x);
-        xy = max(xy, rv.points[i].y);
+        nx = min(nx, rv.points[i].x);
+        ny = min(ny, rv.points[i].y);
+        mx = max(mx, rv.points[i].x);
+        my = max(my, rv.points[i].y);
     }
-    CHECK(mx != 1000000);
-    CHECK(my != 1000000);
-    CHECK(xx != -1000000);
-    CHECK(xy != -1000000);
-    rv.width = xx - mx;
+    CHECK(nx != 1000000);
+    CHECK(ny != 1000000);
+    CHECK(mx != -1000000);
+    CHECK(my != -1000000);
+    rv.width = mx - nx;
+    rv.height = my - ny;
     for(int i = 0; i < rv.points.size(); i++) {
-        rv.points[i].x -= mx;
-        rv.points[i].y -= my;
+        rv.points[i].x -= nx;
+        rv.points[i].y -= ny;
     }
     return rv;
 }
-    
+
 void drawVectors(const VectorObject &vecob, float x, float y, float width, float weight) {
-    float scale = width / vecob.width;
-    Float4 translator = Float4(x, y, x, y);
+    drawVectors(vecob, Float4(x, y, x + width, y + 1000000), true, false, weight);
+}
+
+void drawVectors(const VectorObject &vecob, const Float4 &bounds, bool cx, bool cy, float weight) {
+    CHECK(bounds.isNormalized());
+    float maxwidth = bounds.ex - bounds.sx;
+    float maxheight = bounds.ey - bounds.sy;
+    float widscale = maxwidth / vecob.width;
+    float heiscale = maxheight / vecob.height;
+    float scale = -1.0;
+    bool wid = false;
+    if(widscale < heiscale) {
+        scale = widscale;
+        wid = true;
+    } else {
+        scale = heiscale;
+        wid = false;
+    }
+    CHECK(wid || bounds.sy + 1000000 != bounds.ey);
+    CHECK(scale != -1.0);
+    float widused = vecob.width * scale;
+    float heiused = vecob.height * scale;
+    float transx = bounds.sx;
+    float transy = bounds.sy;
+    if(cx)
+        transx += (maxwidth - widused) / 2;
+    if(cy)
+        transy += (maxheight - heiused) / 2;
+    Float4 translator = Float4(transx, transy, transx, transy);
     for(int i = 0; i < vecob.points.size(); i++) {
         int j = ( i + 1 ) % vecob.points.size();
         CHECK(vecob.points[i].rhcurved == vecob.points[j].lhcurved);
