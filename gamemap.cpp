@@ -14,42 +14,42 @@ void Gamemap::addCollide( Collider *collider ) const {
 
 Gamemap::Gamemap() {
 
-	// bl corner
+	// tl corner
 	vertices.push_back( 5 );
-	vertices.push_back( 5 );
+	vertices.push_back( 10 );
 
-	// bottom bump
+	// top bump
 	{
 		vertices.push_back( 40 );
-		vertices.push_back( 5 );
+		vertices.push_back( 10 );
 
 		vertices.push_back( 50 );
-		vertices.push_back( 24 );
+		vertices.push_back( 29 );
 
 		vertices.push_back( 70 );
-		vertices.push_back( 19 );
+		vertices.push_back( 24 );
 
 		vertices.push_back( 80 );
-		vertices.push_back( 5 );
+		vertices.push_back( 10 );
 	}
 
-	// br corner
+	// tr corner
 	vertices.push_back( 120 );
-	vertices.push_back( 5 );
+	vertices.push_back( 10 );
 
 	// right wedge
 	{
 		vertices.push_back( 120 );
-		vertices.push_back( 15 );
+		vertices.push_back( 20 );
 
 		vertices.push_back( 110 );
-		vertices.push_back( 15 );
+		vertices.push_back( 20 );
 
 		vertices.push_back( 120 );
 		vertices.push_back( 40 );
 	}
 
-	// tr corner
+	// br corner
 	{
 		vertices.push_back( 120 );
 		vertices.push_back( 80 );
@@ -58,7 +58,7 @@ Gamemap::Gamemap() {
 		vertices.push_back( 95 );
 	}
 
-	// top depression
+	// bottom depression
 	{
 		vertices.push_back( 90 );
 		vertices.push_back( 95 );
@@ -76,7 +76,7 @@ Gamemap::Gamemap() {
 		vertices.push_back( 95 );
 	}
 
-	// tl corner
+	// bl corner
 	{
 		vertices.push_back( 5 );
 		vertices.push_back( 95 );

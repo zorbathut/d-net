@@ -17,6 +17,12 @@ using namespace std;
 const float tankvel = 24.f / FPS;
 const float tankturn = 2.f / FPS;
 
+Player::Player() {
+    maxHealth = 20;
+    color = Color(0.5, 0.5, 0.5);
+    cash = 1000;
+}
+
 void GfxEffects::move() {
 	age++;
 }
@@ -40,22 +46,25 @@ GfxEffects::GfxEffects() {
 	age = 0;
 }
 
+void Tank::init(Player *in_player) {
+    CHECK(in_player);
+    CHECK(!player);
+    player = in_player;
+    health = player->maxHealth;
+    initted = true;
+}
+
 void Tank::render( int tankid ) const {
 	if( !live )
 		return;
 
-	if( tankid == 0 ) {
-		glColor3f( 0.8f, 0.0f, 0.0f );
-	} else if( tankid == 1 ) {
-		glColor3f( 0.0f, 0.8f, 0.0f );
-	} else {
-		CHECK( 0 );
-	}
+    setColor(player->color);
 
 	drawLinePath( getTankVertices( x, y, d ), 0.2, true );
 };
 
 void Tank::startNewMoveCycle() {
+    CHECK(initted);
     timeLeft = 1.0;
 };
 
@@ -176,7 +185,9 @@ Tank::Tank() {
 	d = 0;
 	live = true;
 	spawnShards = false;
-	health = 20;
+	health = -47283;
+    player = NULL;
+    initted = false;
 }
 
 const float projectile_length = 1;
@@ -237,6 +248,25 @@ void Game::renderToScreen( int target ) const {
 		gfxeffects[ i ].render();
 	gamemap.render();
 	collider.render();
+    {
+        setColor(1.0, 1.0, 1.0);
+        drawLine(Float4(0, 8, 125, 8), 0.1);
+        for(int i = 0; i < players.size(); i++) {
+            setColor(1.0, 1.0, 1.0);
+            float loffset = 125.0 / players.size() * i;
+            float roffset = 125.0 / players.size() * ( i + 1 );
+            if(i)
+                drawLine(Float4(loffset, 0, loffset, 8), 0.1);
+            if(players[i].live) {
+                setColor(players[i].player->color);
+                float barl = loffset + 2;
+                float bare = (roffset - 2) - (loffset + 2);
+                bare /= players[i].player->maxHealth;
+                bare *= players[i].health;
+                drawShadedBox(Float4(barl, 2, barl + bare, 6), 0.1, 2);
+            }
+        }
+    }
 };
 
 void collideHandler( Collider *collider, vector< Tank > *tanks, const vector< Keystates > &keys, const vector< int > &tankx ) {
@@ -524,9 +554,20 @@ bool Game::runTick( const vector< Keystates > &keys ) {
 
 };
 
-Game::Game() /*: collider( 0, 0, 125, 100 ) */ {
+Game::Game() {
+    playerdata = NULL;
+}
+
+Game::Game(vector<Player> *in_playerdata) {
+    CHECK(in_playerdata);
+    CHECK(in_playerdata->size() == 2);
+    playerdata = in_playerdata;
 	frameNm = 0;
-	players.resize( 2 );
+    players.clear();
+	players.resize( playerdata->size() );
+    for(int i = 0; i < players.size(); i++) {
+        players[i].init(&(*playerdata)[i]);
+    }
 	players[ 0 ].x = 30;
 	players[ 0 ].y = 30;
 	players[ 1 ].x = 60;

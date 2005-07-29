@@ -2,6 +2,7 @@
 #define DNET_GAME
 
 #include "gamemap.h"
+#include "gfx.h"
 
 #include <vector>
 using namespace std;
@@ -9,6 +10,19 @@ using namespace std;
 class Collider;
 
 #define RENDERTARGET_SPECTATOR -1
+
+class Player {
+public:
+
+    int maxHealth;
+
+    Color color;
+
+    int cash;
+
+    Player();
+
+};
 
 class GfxEffects {
 public:
@@ -33,6 +47,8 @@ public:
 class Tank {
 public:
     
+    void init(Player *player);
+    
 	//void tick();
 	void render( int tankid ) const;
 
@@ -52,6 +68,8 @@ public:
 
 	void takeDamage( int amount );
 	void genEffects( vector< GfxEffects > *gfxe );
+    
+    bool initted;
 	
 	float x;
 	float y;
@@ -64,6 +82,8 @@ public:
     
     float timeLeft;
     Keystates keys;
+    
+    Player *player;
 
 };
 
@@ -100,7 +120,8 @@ public:
 	void renderToScreen( int player ) const;
 	bool runTick( const vector< Keystates > &keys );
 
-	Game();
+    Game();
+	Game(vector<Player> *playerdata);
 
 private:
 
@@ -113,6 +134,8 @@ private:
 	Gamemap gamemap;
 
 	Collider collider;
+    
+    vector<Player> *playerdata;
 
 };
 

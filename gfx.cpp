@@ -12,7 +12,11 @@ using namespace std;
 
 #include "util.h"
 
-static vector< string > tokenize( string in, string kar ) {
+Color::Color() { };
+Color::Color(float in_r, float in_g, float in_b) :
+    r(in_r), g(in_g), b(in_b) { };
+
+vector< string > tokenize( string in, string kar ) {
 	string::iterator cp = in.begin();
 	vector< string > oot;
 	while( cp != in.end() ) {
@@ -25,7 +29,7 @@ static vector< string > tokenize( string in, string kar ) {
 	return oot;
 };
 
-static vector< int > sti( const vector< string > &foo ) {
+vector< int > sti( const vector< string > &foo ) {
 	int i;
 	vector< int > bar;
 	for( i = 0; i < foo.size(); i++ ) {
@@ -109,6 +113,10 @@ void setColor( float r, float g, float b ) {
 	glColor3f( r, g, b );
 }
 
+void setColor(const Color &color) {
+    setColor(color.r, color.g, color.b);
+}
+
 void drawLine( float sx, float sy, float ex, float ey, float weight ) {
 	glLineWidth( weight / map_zoom * 600 );   // GL uses pixels internally for this unit, so I have to translate from game-meters
 	glBegin( GL_LINES );
@@ -148,6 +156,12 @@ void drawBox( const Float4 &box, float weight ) {
 
 void drawBoxAround(float x, float y, float rad, float weight) {
     drawBox(Float4(x - rad, y - rad, x + rad, y + rad), weight);
+}
+
+void drawShadedBox(const Float4 &locs, float weight, float shadedens) {
+    drawBox(locs, weight);
+    for(float i = locs.sx; i < locs.ex - ( locs.ey - locs.sy ); i += shadedens)
+        drawLine(i, locs.sy, i + ( locs.ey - locs.sy ), locs.ey, weight);
 }
 
 float bezinterp(float x0, float x1, float x2, float x3, float t) {

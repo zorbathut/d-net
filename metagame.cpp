@@ -2,28 +2,26 @@
 #include "metagame.h"
 #include "gfx.h"
 
+#include <string>
+
+using namespace std;
+
+class Faction {
+public:
+    string filename;
+    Color color;
+};
+
+const Faction factions[] = {
+    { "data/a.dvec", Color(0.8, 0.0, 0.0) },
+    { "data/b.dvec", Color(0.6, 0.0, 0.0) },
+    { "data/c.dvec", Color(0.4, 0.0, 0.0) },
+    { "data/d.dvec", Color(0.2, 0.0, 0.0) },
+    { "data/e.dvec", Color(0.0, 0.0, 0.0) },
+    { "data/f.dvec", Color(0.0, 0.0, 0.0) }
+};
+
 bool Metagame::runTick( const vector< Controller > &keys ) {
-    if(mode == MGM_INIT) {
-        
-        playerkey.clear();
-        playersymbol.clear();
-        playerpos.clear();
-        playerkey.resize(keys.size(), -1);
-        playersymbol.resize(keys.size(), -1);
-        playerpos.resize(keys.size(), Float2(400, 300));
-        
-        for(int i = 0; i < 6; i++) {
-            char bf[128];
-            sprintf(bf, "data/%c.dvec", 'a' + i);
-            symbols.push_back(loadVectors(bf));
-        }
-        
-        for(int i = 0; i < symbols.size(); i++) {
-            symbolpos.push_back( boxaround( angle(PI * 2 * i / symbols.size()) * 200 + Float2( 400, 300 ), 50 ) );
-        }
-        
-        mode = MGM_PLAYERCHOOSE;
-    }
     CHECK(keys.size() == playerpos.size());
     CHECK(keys.size() == playersymbol.size());
     CHECK(keys.size() == playerkey.size());
@@ -46,34 +44,104 @@ bool Metagame::runTick( const vector< Controller > &keys ) {
                 }
             }
         }
+        if(count(playerkey.begin(), playerkey.end(), -1) == 0) {
+            mode = MGM_SHOP;
+            currentShop = 0;
+            playerdata.clear();
+            playerdata.resize(playerkey.size());
+            playerdata[0].color = Color(0.8, 0, 0);
+            playerdata[1].color = Color(0, 0.8, 0);
+        }
+    } else if(mode == MGM_SHOP) {
+        Keystates target = genKeystates(keys)[currentShop];
+        if(target.f.repeat) {
+            currentShop++;
+            if(currentShop == playerdata.size()) {
+                mode = MGM_PLAY;
+                game = Game(&playerdata);
+            }
+        }
+    } else if(mode == MGM_PLAY) {
+        if(game.runTick(genKeystates(keys))) {
+            mode = MGM_SHOP;
+            currentShop = 0;
+        }
+    } else {
+        CHECK(0);
     }
     return false;
 }
 
 void Metagame::renderToScreen() const {
-    setZoom(0, 0, 600);
-    setColor(1.0, 1.0, 1.0);
-    for(int i = 0; i < playerpos.size(); i++) {
-        if(playersymbol[i] == -1) {
-            char bf[16];
-            sprintf(bf, "p%d", i);
-            drawLine(playerpos[i].x, playerpos[i].y - 15, playerpos[i].x, playerpos[i].y - 5, 1.0);
-            drawLine(playerpos[i].x, playerpos[i].y + 15, playerpos[i].x, playerpos[i].y + 5, 1.0);
-            drawLine(playerpos[i].x - 15, playerpos[i].y, playerpos[i].x - 5, playerpos[i].y, 1.0);
-            drawLine(playerpos[i].x +15, playerpos[i].y, playerpos[i].x + 5, playerpos[i].y, 1.0);
-            drawText(bf, 20, playerpos[i].x + 5, playerpos[i].y + 5);
-        } else {
-            dprintf("Players %d %d\n", i, playersymbol[i]);
-            drawVectors(symbols[playersymbol[i]], Float4(20, 20 + 100 * i, 100, 100 + 100 * i), true, true, 1.0);
+    if(mode == MGM_PLAYERCHOOSE) {
+        setZoom(0, 0, 600);
+        setColor(1.0, 1.0, 1.0);
+        for(int i = 0; i < playerpos.size(); i++) {
+            if(playersymbol[i] == -1) {
+                char bf[16];
+                sprintf(bf, "p%d", i);
+                drawLine(playerpos[i].x, playerpos[i].y - 15, playerpos[i].x, playerpos[i].y - 5, 1.0);
+                drawLine(playerpos[i].x, playerpos[i].y + 15, playerpos[i].x, playerpos[i].y + 5, 1.0);
+                drawLine(playerpos[i].x - 15, playerpos[i].y, playerpos[i].x - 5, playerpos[i].y, 1.0);
+                drawLine(playerpos[i].x +15, playerpos[i].y, playerpos[i].x + 5, playerpos[i].y, 1.0);
+                drawText(bf, 20, playerpos[i].x + 5, playerpos[i].y + 5);
+            } else {
+                dprintf("Players %d %d\n", i, playersymbol[i]);
+                drawVectors(symbols[playersymbol[i]], Float4(20, 20 + 100 * i, 100, 100 + 100 * i), true, true, 1.0);
+            }
         }
-    }
-    for(int i = 0; i < symbols.size(); i++) {
-        if(count(playersymbol.begin(), playersymbol.end(), i) == 0) {
-            drawVectors(symbols[i], symbolpos[i], true, true, 1.0);
+        for(int i = 0; i < symbols.size(); i++) {
+            if(count(playersymbol.begin(), playersymbol.end(), i) == 0) {
+                drawVectors(symbols[i], symbolpos[i], true, true, 1.0);
+            }
         }
+    } else if(mode == MGM_SHOP) {
+        setColor(1.0, 1.0, 1.0);
+        setZoom(0, 0, 100);
+        char shopText[128];
+        sprintf(shopText, "shop %d", currentShop);
+        drawText(shopText, 5, 5, 5);
+    } else if(mode == MGM_PLAY) {
+        game.renderToScreen(RENDERTARGET_SPECTATOR);
+    } else {
+        CHECK(0);
     }
 }
 
-Metagame::Metagame() {
-    mode = MGM_INIT;
+vector<Keystates> Metagame::genKeystates(const vector<Controller> &keys) {
+    vector<Keystates> kst(playerpos.size());
+    for(int i = 0; i < playerpos.size(); i++) {
+        kst[i].u = keys[i].u;
+        kst[i].d = keys[i].d;
+        kst[i].l = keys[i].l;
+        kst[i].r = keys[i].r;
+        kst[i].f = keys[i].keys[playerkey[i]];
+    }
+    return kst;
+}
+
+// not a valid state
+Metagame::Metagame() { }
+
+Metagame::Metagame(int playercount) {
+
+    playerkey.clear();
+    playersymbol.clear();
+    playerpos.clear();
+    playerkey.resize(playercount, -1);
+    playersymbol.resize(playercount, -1);
+    playerpos.resize(playercount, Float2(400, 300));
+    
+    for(int i = 0; i < 6; i++) {
+        char bf[128];
+        sprintf(bf, "data/%c.dvec", 'a' + i);
+        symbols.push_back(loadVectors(bf));
+    }
+    
+    for(int i = 0; i < symbols.size(); i++) {
+        symbolpos.push_back( boxaround( angle(PI * 2 * i / symbols.size()) * 200 + Float2( 400, 300 ), 50 ) );
+    }
+    
+    mode = MGM_PLAYERCHOOSE;
+
 }

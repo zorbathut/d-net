@@ -10,7 +10,7 @@ using namespace std;
 #include "const.h"
 #include "debug.h"
 
-#define CHECK(x) if(!(x)) { /*dprintf("Error at %s:%d - %s\n", __FILE__, __LINE__, #x);*/ *(int*)0 = 0; }
+#define CHECK(x) if(!(x)) { dprintf("Error at %s:%d - %s\n", __FILE__, __LINE__, #x); *(int*)0 = 0; }
 #define TEST(x) CHECK(x)
 //#define printf FAILURE
 

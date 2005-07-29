@@ -102,7 +102,7 @@ bool InterfaceMain::tick(const vector< Controller > &control) {
         int mrv;
         mrv = mainmenu.tick(kst[0]);
         if(mrv == IFM_M_NEWGAME) {
-            game = Metagame();
+            game = Metagame(control.size());
             interface_mode = IFM_S_PLAYING;
         } else if(mrv == IFM_M_EXIT) {
             return true;

@@ -13,7 +13,8 @@ class Metagame {
     
     int mode;
     
-    enum { MGM_INIT, MGM_PLAYERCHOOSE, MGM_PLAY };
+    enum { MGM_PLAYERCHOOSE, MGM_SHOP, MGM_PLAY };
+    int currentShop;
 
     vector< int > playerkey;
     vector< int > playersymbol;
@@ -21,13 +22,20 @@ class Metagame {
     
     vector<VectorObject> symbols;
     vector<Float4> symbolpos;
+    
+    Game game;
+    
+    vector<Player> playerdata;
 
 public:
 
 	void renderToScreen() const;
 	bool runTick( const vector< Controller > &keys );
 
-	Metagame();
+    vector<Keystates> genKeystates(const vector<Controller> &keys);
+
+    Metagame();
+	Metagame(int playercount);
 
 };
 
