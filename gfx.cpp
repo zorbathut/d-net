@@ -44,6 +44,13 @@ static float map_zoom;
 
 static map< char, vector< vector< pair< int, int > > > > fontdata;
 
+Color operator*( const Color &lhs, float rhs ) {
+    return Color(lhs.r * rhs, lhs.g * rhs, lhs.b * rhs);
+}
+Color operator+( const Color &lhs, const Color &rhs ) {
+    return Color(lhs.r + rhs.r, lhs.g + rhs.g, lhs.b + rhs.b);
+}
+
 void initGfx() {
     {
         ifstream font("data/font.txt");
@@ -84,8 +91,6 @@ void initGfx() {
 }
 
 void initFrame() {
-	glClearColor( 0.1f, 0.1f, 0.1f, 0.0f );
-	glClear(GL_COLOR_BUFFER_BIT);
 	glEnable( GL_POINT_SMOOTH );
 	glEnable( GL_LINE_SMOOTH );
 	glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
@@ -95,7 +100,12 @@ void initFrame() {
 	glEnable( GL_BLEND );
 	glBlendFunc( GL_SRC_ALPHA, GL_ONE );
 	//glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+    clearFrame(Color(0.1, 0.1, 0.1));
+}
 
+void clearFrame(const Color &color) {
+    glClearColor( color.r, color.g, color.b, 0.0f );
+	glClear(GL_COLOR_BUFFER_BIT);
 }
 
 void deinitFrame() {

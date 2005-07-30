@@ -40,7 +40,12 @@ public:
     Color(float in_r, float in_g, float in_b);
 };
 
+Color operator*( const Color &lhs, float rhs );
+Color operator+( const Color &lhs, const Color &rhs );
+
 void initGfx();
+
+void clearFrame(const Color &color);
 
 void initFrame();
 void setZoom( float sx, float sy, float ey );

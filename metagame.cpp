@@ -13,13 +13,15 @@ public:
 };
 
 const Faction factions[] = {
-    { "data/a.dvec", Color(0.8, 0.0, 0.0) },
-    { "data/b.dvec", Color(0.6, 0.0, 0.0) },
-    { "data/c.dvec", Color(0.4, 0.0, 0.0) },
-    { "data/d.dvec", Color(0.2, 0.0, 0.0) },
-    { "data/e.dvec", Color(0.0, 0.0, 0.0) },
-    { "data/f.dvec", Color(0.0, 0.0, 0.0) }
+    { "data/a.dvec", Color(1.0, 0.0, 0.0) },
+    { "data/b.dvec", Color(1.0, 1.0, 0.0) },
+    { "data/c.dvec", Color(0.0, 1.0, 1.0) },
+    { "data/d.dvec", Color(1.0, 0.0, 1.0) },
+    { "data/e.dvec", Color(0.0, 1.0, 0.0) },
+    { "data/f.dvec", Color(1.0, 1.0, 1.0) }
 };
+
+const int factioncount = sizeof(factions) / sizeof(Faction);
 
 bool Metagame::runTick( const vector< Controller > &keys ) {
     CHECK(keys.size() == playerpos.size());
@@ -49,8 +51,8 @@ bool Metagame::runTick( const vector< Controller > &keys ) {
             currentShop = 0;
             playerdata.clear();
             playerdata.resize(playerkey.size());
-            playerdata[0].color = Color(0.8, 0, 0);
-            playerdata[1].color = Color(0, 0.8, 0);
+            for(int i = 0; i < playerdata.size(); i++)
+                playerdata[i].color = factions[playersymbol[i]].color;
         }
     } else if(mode == MGM_SHOP) {
         Keystates target = genKeystates(keys)[currentShop];
@@ -90,12 +92,15 @@ void Metagame::renderToScreen() const {
                 drawVectors(symbols[playersymbol[i]], Float4(20, 20 + 100 * i, 100, 100 + 100 * i), true, true, 1.0);
             }
         }
+        CHECK(symbols.size() == factioncount);
         for(int i = 0; i < symbols.size(); i++) {
             if(count(playersymbol.begin(), playersymbol.end(), i) == 0) {
+                setColor(factions[i].color);
                 drawVectors(symbols[i], symbolpos[i], true, true, 1.0);
             }
         }
     } else if(mode == MGM_SHOP) {
+        clearFrame(factions[playersymbol[currentShop]].color * 0.05 + Color(0.05, 0.05, 0.05));
         setColor(1.0, 1.0, 1.0);
         setZoom(0, 0, 100);
         char shopText[128];
@@ -132,10 +137,8 @@ Metagame::Metagame(int playercount) {
     playersymbol.resize(playercount, -1);
     playerpos.resize(playercount, Float2(400, 300));
     
-    for(int i = 0; i < 6; i++) {
-        char bf[128];
-        sprintf(bf, "data/%c.dvec", 'a' + i);
-        symbols.push_back(loadVectors(bf));
+    for(int i = 0; i < factioncount; i++) {
+        symbols.push_back(loadVectors(factions[i].filename.c_str()));
     }
     
     for(int i = 0; i < symbols.size(); i++) {
