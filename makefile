@@ -28,7 +28,7 @@ package: d-net.exe
 	cp d-net.exe deploy
 	cp c:/cygwin/usr/local/bin/SDL.dll deploy
 	cp -r data deploy
-	rm -rf deploy/data/.svn
+	rm -rf `cd deploy ; find | grep .svn`
 	strip deploy/d-net.exe
 	cd deploy ; zip -9 -r `date +x:/d-net/dnet%G%m%d%H%M%S.zip` *
 	rm -rf deploy
