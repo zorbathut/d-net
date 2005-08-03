@@ -118,7 +118,7 @@ int main( int argc, char **argv ) {
     
     initItemdb();
     
-    //return 0;
+    return 0;
 
 	initSystem();
     initGfx();
