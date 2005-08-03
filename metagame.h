@@ -6,8 +6,44 @@
 #include "gfx.h"
 
 #include <vector>
+#include <string>
 
 using namespace std;
+
+class ShopNode {
+public:
+    vector<ShopNode> branches;
+
+    string name;
+    int cost;
+    bool showcost;
+    bool choosable;
+
+    ShopNode();
+    ShopNode(const string &name, int cost, bool showcost, bool choosable);
+};
+
+class Shop {
+private:
+    Player *player;
+
+    ShopNode root;
+    vector<int> curloc;
+
+    ShopNode &getCurNode();
+    ShopNode &getCategoryNode();
+
+    void renderNode(const ShopNode &node, int depth) const;
+
+    void recreateShopNetwork();
+
+public:
+    bool runTick( const Keystates &keys );
+    void renderToScreen() const;
+
+    Shop();
+    Shop(Player *player);
+};
 
 class Metagame {
     
@@ -24,6 +60,8 @@ class Metagame {
     vector<Float4> symbolpos;
     
     Game game;
+    
+    Shop shop;
     
     vector<Player> playerdata;
 

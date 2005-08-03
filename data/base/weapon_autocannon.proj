@@ -1,0 +1,28 @@
+
+projectile {
+    name=local.autocannon
+    velocity=60
+    damage=1
+}
+
+weapon {
+    name=ROOT.Weapons.Autocannon.Autocannon
+    cost=0
+    autoreload=2000000000
+    firerate=6
+    projectile=local.autocannon
+}
+
+weapon {
+    name=ROOT.Weapons.Autocannon.Autocannon II
+    cost=2
+    firerate=4
+    projectile=local.autocannon
+}
+
+weapon {
+    name=ROOT.Weapons.Autocannon.Autocannon III
+    cost=3
+    firerate=3
+    projectile=local.autocannon
+}

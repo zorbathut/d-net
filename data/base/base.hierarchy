@@ -1,0 +1,4 @@
+hierarchy {
+    name=ROOT.Weapons
+    type=weapon
+}

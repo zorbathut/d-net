@@ -16,6 +16,7 @@ using namespace std;
 #include "util.h"
 #include "args.h"
 #include "gfx.h"
+#include "itemdb.h"
 
 #define SCREEN_WIDTH  800
 #define SCREEN_HEIGHT 600
@@ -114,6 +115,10 @@ int main( int argc, char **argv ) {
 	dprintf( "Init\n" );
     
     initFlags(argc, argv);
+    
+    initItemdb();
+    
+    //return 0;
 
 	initSystem();
     initGfx();

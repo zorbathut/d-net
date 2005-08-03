@@ -11,32 +11,11 @@ using namespace std;
 #include <GL/gl.h>
 
 #include "util.h"
+#include "parse.h"
 
 Color::Color() { };
 Color::Color(float in_r, float in_g, float in_b) :
     r(in_r), g(in_g), b(in_b) { };
-
-vector< string > tokenize( string in, string kar ) {
-	string::iterator cp = in.begin();
-	vector< string > oot;
-	while( cp != in.end() ) {
-		while( cp != in.end() && count( kar.begin(), kar.end(), *cp ) )
-			cp++;
-		if( cp != in.end() )
-			oot.push_back( string( cp, find_first_of( cp, in.end(), kar.begin(), kar.end() ) ) );
-		cp = find_first_of( cp, in.end(), kar.begin(), kar.end() );
-	};
-	return oot;
-};
-
-vector< int > sti( const vector< string > &foo ) {
-	int i;
-	vector< int > bar;
-	for( i = 0; i < foo.size(); i++ ) {
-		bar.push_back( atoi( foo[ i ].c_str() ) );
-	}
-	return bar;
-};
 
 static float map_sx;
 static float map_sy;
@@ -56,11 +35,12 @@ void initGfx() {
         ifstream font("data/font.txt");
         string line;
         CHECK(font);
-        while(getline(font, line)) {
-            line = string(line.begin(), find(line.begin(), line.end(), '#'));
+        while(getLineStripped(font, line)) {
             dprintf("Parsing font character \"%s\"\n", line.c_str());
+            if(line == ":")
+                line = " : "; // specialcase hack for this particular character
             vector<string> first = tokenize(line, ":");
-            CHECK(first.size() == 2 || line == "");
+            CHECK(first.size() == 2);
             if(first.size() == 2) {
                 CHECK(first[0].size() == 1);
                 vector< string > paths = tokenize(first[1], "|");

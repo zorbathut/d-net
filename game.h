@@ -17,6 +17,7 @@ public:
     int maxHealth;
 
     Color color;
+    VectorObject faction_symb;
 
     int cash;
 

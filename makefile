@@ -1,5 +1,5 @@
 
-SOURCES = main core game timer debug gfx collide gamemap util rng const args interface vecedit metagame
+SOURCES = main core game timer debug gfx collide gamemap util rng const args interface vecedit metagame itemdb parse
 CPPFLAGS = `sdl-config --cflags` -mno-cygwin -O2 #-pg
 LINKFLAGS = `sdl-config --libs` -lglu32 -lopengl32 -lm -mno-cygwin -O2 #-pg
 
