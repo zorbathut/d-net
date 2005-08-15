@@ -6,31 +6,10 @@
 #include "parse.h"
 #include "util.h"
 
-class HierarchyNode {
-public:
-    vector<HierarchyNode> branches;
-
-    string name;
-
-    enum {HNT_CATEGORY, HNT_WEAPON, HNT_DONE, HNT_LAST};
-    int type;
-
-    enum {HNDM_BLANK, HNDM_COST, HNDM_PACK, HNDM_LAST};
-    int displaymode;
-
-    bool buyable;
-    int cost;
-    Weapon *weapon;
-    
-    int quantity;
-    
-    int cat_restrictiontype;
-    
-    void checkConsistency() const;
-    
-    HierarchyNode();
-    
-};
+static HierarchyNode root;
+static map<string, ProjectileClass> projclasses;
+static map<string, Weapon> weapontypes;
+static map<string, Upgrade> upgradetypes;
 
 void HierarchyNode::checkConsistency() const {
     dprintf("Consistency scan entering %s\n", name.c_str());
@@ -56,6 +35,15 @@ void HierarchyNode::checkConsistency() const {
         CHECK(weapon);
     } else {
         CHECK(!weapon);
+    }
+    
+    // upgrades all are unique and are buyable
+    if(type == HNT_UPGRADE) {
+        CHECK(displaymode == HNDM_COSTUNIQUE);
+        CHECK(buyable);
+        CHECK(upgrade);
+    } else {
+        CHECK(!upgrade);
     }
     
     // the "done" token has no cost or other display but is "buyable"
@@ -102,11 +90,8 @@ HierarchyNode::HierarchyNode() {
     quantity = -1;
     cat_restrictiontype = -1;
     weapon = NULL;
+    upgrade = NULL;
 }
-
-HierarchyNode root;
-map<string, ProjectileClass> projclasses;
-map<string, Weapon> weapontypes;
 
 HierarchyNode *findNamedNode(const string &in, int postcut) {
     vector<string> toks = tokenize(in, ".");
@@ -154,6 +139,8 @@ void parseItemFile(const string &fname) {
             if(chunk.kv.count("type")) {
                 if(chunk.kv["type"] == "weapon") {
                     tnode.cat_restrictiontype = HierarchyNode::HNT_WEAPON;
+                } else if(chunk.kv["type"] == "upgrade") {
+                    tnode.cat_restrictiontype = HierarchyNode::HNT_UPGRADE;
                 } else {
                     CHECK(0);
                 }
@@ -178,7 +165,6 @@ void parseItemFile(const string &fname) {
             string name = chunk.consume("name");
             CHECK(weapontypes.count(name) == 0);
             tnode.name = tokenize(name, ".").back();
-            dprintf("name: %s\n", tnode.name.c_str());
             tnode.type = HierarchyNode::HNT_WEAPON;
             tnode.displaymode = HierarchyNode::HNDM_COST;
             tnode.buyable = true;
@@ -198,6 +184,40 @@ void parseItemFile(const string &fname) {
             weapontypes[name].projectile = &projclasses[chunk.consume("projectile")];
             weapontypes[name].costpershot = (float)tnode.cost / tnode.quantity;
             
+        } else if(chunk.category == "upgrade") {
+            
+            HierarchyNode *mountpoint = findNamedNode(chunk.kv["name"], 1);
+            HierarchyNode tnode;
+            string name = chunk.consume("name");
+            CHECK(weapontypes.count(name) == 0);
+            tnode.name = tokenize(name, ".").back();
+            tnode.type = HierarchyNode::HNT_UPGRADE;
+            if(chunk.kv.count("exclusive") && atoi(chunk.consume("exclusive").c_str()))
+                tnode.displaymode = HierarchyNode::HNDM_COSTUNIQUE;
+            else
+                tnode.displaymode = HierarchyNode::HNDM_COST;
+            tnode.buyable = true;
+            tnode.quantity = 1;
+            CHECK(mountpoint->quantity == 1 || mountpoint->quantity == -1);
+            tnode.cost = atoi(chunk.consume("cost").c_str());
+            tnode.cat_restrictiontype = HierarchyNode::HNT_UPGRADE;
+            CHECK(mountpoint->cat_restrictiontype == -1 || tnode.cat_restrictiontype == mountpoint->cat_restrictiontype);
+            tnode.upgrade = &upgradetypes[name];
+            mountpoint->branches.push_back(tnode);
+            
+            if(chunk.kv.count("hull"))
+                upgradetypes[name].hull = atoi(chunk.consume("hull").c_str());
+            else
+                upgradetypes[name].hull = 0;
+            if(chunk.kv.count("engine"))
+                upgradetypes[name].engine = atoi(chunk.consume("engine").c_str());
+            else
+                upgradetypes[name].engine = 0;
+            if(chunk.kv.count("handling"))
+                upgradetypes[name].handling = atoi(chunk.consume("handling").c_str());
+            else
+                upgradetypes[name].handling = 0;
+        
         } else {
             CHECK(0);
         }
@@ -236,4 +256,8 @@ void initItemdb() {
     dprintf("done loading, consistency check\n");
     root.checkConsistency();
     dprintf("Consistency check is awesome!\n");
+}
+
+const HierarchyNode &itemDbRoot() {
+    return root;
 }

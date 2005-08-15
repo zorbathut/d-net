@@ -3,6 +3,7 @@
 
 #include "gamemap.h"
 #include "gfx.h"
+#include "itemdb.h"
 
 #include <vector>
 using namespace std;
@@ -14,12 +15,18 @@ class Collider;
 class Player {
 public:
 
-    int maxHealth;
+    float maxHealth;
+    float turnSpeed;
+    float maxSpeed;
+
+    vector<Upgrade *> upgrades;
 
     Color color;
     VectorObject faction_symb;
 
     int cash;
+
+    void reCalculate();
 
     Player();
 
@@ -79,7 +86,7 @@ public:
 	bool spawnShards;
 	bool live;
 
-	int health;
+	float health;
     
     float timeLeft;
     Keystates keys;

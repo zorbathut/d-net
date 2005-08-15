@@ -117,8 +117,6 @@ int main( int argc, char **argv ) {
     initFlags(argc, argv);
     
     initItemdb();
-    
-    return 0;
 
 	initSystem();
     initGfx();

@@ -17,10 +17,30 @@ using namespace std;
 const float tankvel = 24.f / FPS;
 const float tankturn = 2.f / FPS;
 
-Player::Player() {
+void Player::reCalculate() {
     maxHealth = 20;
+    turnSpeed = 2.f / FPS;
+    maxSpeed = 24.f / FPS;
+    int healthMult = 100;
+    int turnMult = 100;
+    int speedMult = 100;
+    for(int i = 0; i < upgrades.size(); i++) {
+        healthMult += upgrades[i]->hull;
+        turnMult += upgrades[i]->handling;
+        speedMult += upgrades[i]->engine;
+    }
+    maxHealth *= healthMult;
+    maxHealth /= 100;
+    turnSpeed *= turnMult;
+    turnSpeed /= 100;
+    maxSpeed *= speedMult;
+    maxSpeed /= 100;
+}
+
+Player::Player() {
     color = Color(0.5, 0.5, 0.5);
     cash = 1000;
+    reCalculate();
 }
 
 void GfxEffects::move() {
@@ -137,11 +157,11 @@ pair< float, float > Tank::getFiringPoint() const {
 pair< pair< float, float >, float > Tank::getDeltaAfterMovement( const Keystates &keys, float x, float y, float d, float t ) const {
     
 	int dv = keys.u.down - keys.d.down;
-	x += tankvel * dv * fsin( d ) * t;
-	y += -tankvel * dv * fcos( d ) * t;
+	x += player->maxSpeed * dv * fsin( d ) * t;
+	y += -player->maxSpeed * dv * fcos( d ) * t;
 
 	int dd = keys.r.down - keys.l.down;
-	d += tankturn * dd * t;
+	d += player->turnSpeed * dd * t;
 	d += 2*PI;
 	d = fmod( d, 2*(float)PI );
     

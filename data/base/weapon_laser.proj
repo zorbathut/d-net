@@ -1,0 +1,28 @@
+
+projectile {
+    name=local.laser
+    velocity=600
+    damage=1
+}
+
+weapon {
+    name=ROOT.Weapons.Laser.Laser
+    cost=3
+    autoreload=2000000000
+    firerate=6
+    projectile=local.autocannon
+}
+
+weapon {
+    name=ROOT.Weapons.Laser.Laser II
+    cost=5
+    firerate=4
+    projectile=local.autocannon
+}
+
+weapon {
+    name=ROOT.Weapons.Laser.Laser III
+    cost=8
+    firerate=3
+    projectile=local.autocannon
+}

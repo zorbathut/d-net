@@ -2,3 +2,50 @@ hierarchy {
     name=ROOT.Weapons
     type=weapon
 }
+
+hierarchy {
+    name=ROOT.Upgrades
+    type=upgrade
+}
+
+upgrade {
+    name=ROOT.Upgrades.Hull I
+    cost=200
+    hull=20
+    exclusive=1
+}
+
+upgrade {
+    name=ROOT.Upgrades.Hull II
+    cost=30000
+    hull=20
+    exclusive=1
+}
+
+upgrade {
+    name=ROOT.Upgrades.Engine I
+    cost=200
+    engine=20
+    exclusive=1
+}
+
+upgrade {
+    name=ROOT.Upgrades.Engine II
+    cost=30000
+    engine=20
+    exclusive=1
+}
+
+upgrade {
+    name=ROOT.Upgrades.Handling I
+    cost=200
+    handling=20
+    exclusive=1
+}
+
+upgrade {
+    name=ROOT.Upgrades.Handling II
+    cost=30000
+    handling=20
+    exclusive=1
+}

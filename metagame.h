@@ -4,38 +4,25 @@
 #include "util.h"
 #include "game.h"
 #include "gfx.h"
+#include "itemdb.h"
 
 #include <vector>
 #include <string>
 
 using namespace std;
 
-class ShopNode {
-public:
-    vector<ShopNode> branches;
-
-    string name;
-    int cost;
-    bool showcost;
-    bool choosable;
-
-    ShopNode();
-    ShopNode(const string &name, int cost, bool showcost, bool choosable);
-};
-
 class Shop {
 private:
     Player *player;
 
-    ShopNode root;
     vector<int> curloc;
 
-    ShopNode &getCurNode();
-    ShopNode &getCategoryNode();
+    const HierarchyNode &getStepNode(int step) const;
 
-    void renderNode(const ShopNode &node, int depth) const;
+    const HierarchyNode &getCurNode() const;
+    const HierarchyNode &getCategoryNode() const;
 
-    void recreateShopNetwork();
+    void renderNode(const HierarchyNode &node, int depth) const;
 
 public:
     bool runTick( const Keystates &keys );

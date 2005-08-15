@@ -23,38 +23,25 @@ const Faction factions[] = {
 
 const int factioncount = sizeof(factions) / sizeof(Faction);
 
-ShopNode::ShopNode() {
-    name = "null";
-    cost = 0;
-    showcost = false;
-    choosable = false;
-}
-ShopNode::ShopNode(const string &in_name, int in_cost, bool in_showcost, bool in_choosable) {
-    name = in_name;
-    cost = in_cost;
-    showcost = in_showcost;
-    choosable = in_choosable;
-}
-
-ShopNode &Shop::getCurNode() {
-    ShopNode *cnode = &root;
-    for(int i = 0; i < curloc.size(); i++) {
+const HierarchyNode &Shop::getStepNode(int step) const {
+    CHECK(step >= 0 && step <= curloc.size());
+    const HierarchyNode *cnode = &itemDbRoot();
+    for(int i = 0; i < step; i++) {
         CHECK(curloc[i] >= 0 && curloc[i] < cnode->branches.size());
         cnode = &cnode->branches[curloc[i]];
     }
     return *cnode;
 }
 
-ShopNode &Shop::getCategoryNode() {
-    ShopNode *cnode = &root;
-    for(int i = 0; i < curloc.size() - 1; i++) {
-        CHECK(curloc[i] >= 0 && curloc[i] < cnode->branches.size());
-        cnode = &cnode->branches[curloc[i]];
-    }
-    return *cnode;
+const HierarchyNode &Shop::getCurNode() const {
+    return getStepNode(curloc.size());
 }
 
-void Shop::renderNode(const ShopNode &node, int depth) const {
+const HierarchyNode &Shop::getCategoryNode() const {
+    return getStepNode(curloc.size() - 1);
+}
+
+void Shop::renderNode(const HierarchyNode &node, int depth) const {
     CHECK(depth < 3 || node.branches.size() == 0);
     const float hoffset = 1;
     const float voffset = 5;
@@ -83,16 +70,20 @@ void Shop::renderNode(const ShopNode &node, int depth) const {
         drawBox( Float4( hoffbase, voffset + i * itemheight, hoffbase + boxwidth, voffset + i * itemheight + fontsize + boxborder * 2 ), boxthick );
         setColor(1.0, 1.0, 1.0);
         drawText( node.branches[i].name.c_str(), fontsize, hoffbase + boxborder, voffset + i * itemheight + boxborder );
-        if(node.branches[i].showcost) {
+        if(node.branches[i].displaymode == HierarchyNode::HNDM_BLANK) {
+        } else if(node.branches[i].displaymode == HierarchyNode::HNDM_COST || node.branches[i].displaymode == HierarchyNode::HNDM_COSTUNIQUE) {
             char bf[128];
             sprintf(bf, formatstring, node.branches[i].cost);
             drawText( bf, fontsize, hoffbase + pricehpos, voffset + i * itemheight + boxborder );
+        } else if(node.branches[i].displaymode == HierarchyNode::HNDM_PACK) {
+            char bf[128];
+            sprintf(bf, "%dpk", node.branches[i].quantity);
+            drawText( bf, fontsize, hoffbase + pricehpos, voffset + i * itemheight + boxborder );
+        } else {
+            CHECK(0);
         }
     }
 }
-
-// Shop::recreateShopNetwork() has been moved to const.cpp because it compiles so painfully slowly.
-// I suspect that's thanks to all the constants. It'll be moved back once it's sane.
 
 bool Shop::runTick(const Keystates &keys) {
     if(keys.l.repeat && curloc.size() > 1)
@@ -105,12 +96,13 @@ bool Shop::runTick(const Keystates &keys) {
         curloc.back()++;
     curloc.back() += getCategoryNode().branches.size();
     curloc.back() %= getCategoryNode().branches.size();
-    if(keys.f.repeat && getCurNode().choosable && player->cash >= getCurNode().cost) {
+    if(keys.f.repeat && getCurNode().buyable && player->cash >= getCurNode().cost) {
         player->cash -= getCurNode().cost;
-        if(getCurNode().name == "done") {
+        if(getCurNode().type == HierarchyNode::HNT_DONE) {
             return true;
-        } else if(getCurNode().name == "hull boost") {
-            player->maxHealth += 5;
+        } else if(getCurNode().type == HierarchyNode::HNT_UPGRADE) {
+            player->upgrades.push_back(getCurNode().upgrade);
+            player->reCalculate();
         } else {
             dprintf("Bought a %s\n", getCurNode().name.c_str());
         }
@@ -128,7 +120,7 @@ void Shop::renderToScreen() const {
         sprintf(bf, "cash onhand %6d", player->cash);
         drawText(bf, 2, 80, 1);
     }
-    renderNode(root, 0);
+    renderNode(itemDbRoot(), 0);
 }
 
 // Not a valid state
@@ -138,7 +130,7 @@ Shop::Shop() {
 
 Shop::Shop(Player *in_player) {
     player = in_player;
-    recreateShopNetwork();
+    curloc.push_back(0);
 }
 
 bool Metagame::runTick( const vector< Controller > &keys ) {
