@@ -9,20 +9,20 @@ weapon {
     name=ROOT.Weapons.Autocannon.Autocannon
     cost=0
     default=1
-    firerate=6
+    firerate=30
     projectile=local.autocannon
 }
 
 weapon {
     name=ROOT.Weapons.Autocannon.Autocannon II
     cost=200
-    firerate=4
+    firerate=24
     projectile=local.autocannon
 }
 
 weapon {
     name=ROOT.Weapons.Autocannon.Autocannon III
     cost=400
-    firerate=3
+    firerate=20
     projectile=local.autocannon
 }

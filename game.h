@@ -31,6 +31,8 @@ public:
     void reCalculate();
     bool hasUpgrade(const Upgrade *upg) const;
 
+    int resellAmmoValue() const;
+
     Player();
 
 };
@@ -95,6 +97,8 @@ public:
     Keystates keys;
     
     Player *player;
+    
+    int weaponCooldown;
 
 };
 

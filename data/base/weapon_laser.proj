@@ -8,20 +8,20 @@ projectile {
 weapon {
     name=ROOT.Weapons.Laser.Laser
     cost=300
-    firerate=6
+    firerate=20
     projectile=local.laser
 }
 
 weapon {
     name=ROOT.Weapons.Laser.Laser II
     cost=500
-    firerate=4
+    firerate=15
     projectile=local.laser
 }
 
 weapon {
     name=ROOT.Weapons.Laser.Laser III
     cost=800
-    firerate=3
+    firerate=12
     projectile=local.laser
 }

@@ -181,6 +181,7 @@ void parseItemFile(const string &fname) {
             weapontypes[name].firerate = atoi(chunk.consume("firerate").c_str());
             weapontypes[name].projectile = &projclasses[chunk.consume("projectile")];
             weapontypes[name].costpershot = (float)tnode.cost / tnode.quantity;
+            weapontypes[name].name = tnode.name;
             
             if(chunk.kv.count("default") && atoi(chunk.consume("default").c_str())) {
                 CHECK(!defweapon);

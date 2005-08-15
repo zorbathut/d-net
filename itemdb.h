@@ -16,6 +16,7 @@ class Weapon {
 public:
     int firerate;
     float costpershot;
+    string name;
     ProjectileClass *projectile;
 };
 

@@ -38,6 +38,10 @@ bool Player::hasUpgrade(const Upgrade *upg) const {
     return count(upgrades.begin(), upgrades.end(), upg);
 }
 
+int Player::resellAmmoValue() const {
+    return int(shotsLeft * weapon->costpershot * 0.8);
+}
+
 Player::Player() {
     color = Color(0.5, 0.5, 0.5);
     cash = 1000;
@@ -211,6 +215,7 @@ Tank::Tank() {
 	health = -47283;
     player = NULL;
     initted = false;
+    weaponCooldown = 0;
 }
 
 void Projectile::startNewMoveCycle() {
@@ -532,20 +537,29 @@ bool Game::runTick( const vector< Keystates > &keys ) {
             }
         }
     }
+    
+	for( int i = 0; i < players.size(); i++ ) {
+		players[ i ].move();
+        players[ i ].weaponCooldown--;
+    }
 
 	for( int i = 0; i < players.size(); i++ ) {
-		if( players[ i ].live && keys[ i ].f.repeat ) {
+		if( players[ i ].live && keys[ i ].f.down && players[ i ].weaponCooldown <= 0 ) {
 			Projectile proj;
 			proj.x = players[ i ].getFiringPoint().first;
 			proj.y = players[ i ].getFiringPoint().second;
 			proj.d = players[ i ].d;
             proj.v = players[ i ].player->weapon->projectile->velocity;
 			projectiles[ i ].push_back( proj );
+            players[ i ].weaponCooldown = players[ i ].player->weapon->firerate;
+            if(players[i].player->shotsLeft != -1)
+                players[i].player->shotsLeft--;
+            if(players[i].player->shotsLeft == 0) {
+                players[i].player->weapon = defaultWeapon();
+                players[i].player->shotsLeft = -1;
+            }
 		}
 	}
-
-	for( int i = 0; i < players.size(); i++ )
-		players[ i ].move();
 
 	{
 		vector< GfxEffects > neffects;
@@ -557,8 +571,10 @@ bool Game::runTick( const vector< Keystates > &keys ) {
 		swap( neffects, gfxeffects );
 	}
 
-	for( int i = 0; i < players.size(); i++ )
+	for( int i = 0; i < players.size(); i++ ) {
+        players[ i ].weaponCooldown--;
 		players[ i ].genEffects( &gfxeffects );
+    }
     
     {
         int playersleft = 0;

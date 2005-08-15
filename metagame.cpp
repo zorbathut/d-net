@@ -119,8 +119,16 @@ bool Shop::runTick(const Keystates &keys) {
             } else {
                 player->cash += getCurNode().cost;
             }
+        } else if(getCurNode().type == HierarchyNode::HNT_WEAPON) {
+            if(player->weapon != getCurNode().weapon) {
+                if(player->shotsLeft != -1)
+                    player->cash += player->resellAmmoValue();
+                player->weapon = getCurNode().weapon;
+                player->shotsLeft = 0;
+            }
+            player->shotsLeft += getCurNode().quantity;
         } else {
-            dprintf("Bought a %s\n", getCurNode().name.c_str());
+            CHECK(0);
         }
     }
     return false;
@@ -135,6 +143,15 @@ void Shop::renderToScreen() const {
         char bf[128];
         sprintf(bf, "cash onhand %6d", player->cash);
         drawText(bf, 2, 80, 1);
+    }
+    {
+        char bf[128];
+        if(player->shotsLeft == -1) {
+            sprintf(bf, "%10s infinite ammo", player->weapon->name.c_str());
+        } else {
+            sprintf(bf, "%15s %4d shots %6d resell", player->weapon->name.c_str(), player->shotsLeft, player->resellAmmoValue());
+        }
+        drawText(bf, 2, 1, 1);
     }
     renderNode(itemDbRoot(), 0);
 }
