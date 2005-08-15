@@ -20,6 +20,7 @@ public:
     string debugOutput() const;
 
     string consume(string key);
+    void shouldBeDone() const;
 
 };
 

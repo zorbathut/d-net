@@ -176,17 +176,18 @@ bool Metagame::runTick( const vector< Controller > &keys ) {
     } else if(mode == MGM_SHOP) {
         if(shop.runTick(genKeystates(keys)[currentShop])) {
             currentShop++;
-            if(currentShop == playerdata.size()) {
+            if(currentShop != playerdata.size()) {
+                shop = Shop(&playerdata[currentShop]);
+            } else {
                 mode = MGM_PLAY;
                 game = Game(&playerdata);
-            } else {
-                shop = Shop(&playerdata[currentShop]);
             }
         }
     } else if(mode == MGM_PLAY) {
         if(game.runTick(genKeystates(keys))) {
             mode = MGM_SHOP;
             currentShop = 0;
+            shop = Shop(&playerdata[currentShop]);
         }
     } else {
         CHECK(0);

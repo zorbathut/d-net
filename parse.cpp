@@ -45,6 +45,10 @@ string kvData::consume(string key) {
     return out;
 }
 
+void kvData::shouldBeDone() const {
+    CHECK(kv.size() == 0);
+}
+
 istream &getLineStripped(istream &ifs, string &out) {
     while(getline(ifs, out)) {
         out = string(out.begin(), find(out.begin(), out.end(), '#'));

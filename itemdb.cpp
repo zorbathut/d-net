@@ -20,6 +20,7 @@ public:
 
     bool buyable;
     int cost;
+    Weapon *weapon;
     
     int quantity;
     
@@ -52,6 +53,9 @@ void HierarchyNode::checkConsistency() const {
     if(type == HNT_WEAPON) {
         CHECK(displaymode == HNDM_COST);
         CHECK(buyable);
+        CHECK(weapon);
+    } else {
+        CHECK(!weapon);
     }
     
     // the "done" token has no cost or other display but is "buyable"
@@ -97,9 +101,12 @@ HierarchyNode::HierarchyNode() {
     cost = -1;
     quantity = -1;
     cat_restrictiontype = -1;
+    weapon = NULL;
 }
 
 HierarchyNode root;
+map<string, ProjectileClass> projclasses;
+map<string, Weapon> weapontypes;
 
 HierarchyNode *findNamedNode(const string &in, int postcut) {
     vector<string> toks = tokenize(in, ".");
@@ -157,11 +164,44 @@ void parseItemFile(const string &fname) {
             }
             CHECK(mountpoint->cat_restrictiontype == -1 || tnode.cat_restrictiontype == mountpoint->cat_restrictiontype);
             mountpoint->branches.push_back(tnode);
-        } else if(chunk.category == "weapon") {
         } else if(chunk.category == "projectile") {
+            string name = chunk.consume("name");
+            int vel = atoi(chunk.consume("velocity").c_str());
+            int damage = atoi(chunk.consume("damage").c_str());
+            CHECK(projclasses.count(name) == 0);
+            projclasses[name].velocity = vel;
+            projclasses[name].damage = damage;
+        } else if(chunk.category == "weapon") {
+            
+            HierarchyNode *mountpoint = findNamedNode(chunk.kv["name"], 1);
+            HierarchyNode tnode;
+            string name = chunk.consume("name");
+            CHECK(weapontypes.count(name) == 0);
+            tnode.name = tokenize(name, ".").back();
+            dprintf("name: %s\n", tnode.name.c_str());
+            tnode.type = HierarchyNode::HNT_WEAPON;
+            tnode.displaymode = HierarchyNode::HNDM_COST;
+            tnode.buyable = true;
+            tnode.quantity = mountpoint->quantity;
+            CHECK(tnode.quantity >= 1);
+            tnode.cost = atoi(chunk.consume("cost").c_str());
+            if(chunk.kv.count("autoreload")) {
+                /* deal with later */
+                chunk.consume("autoreload");
+            }
+            tnode.cat_restrictiontype = HierarchyNode::HNT_WEAPON;
+            CHECK(mountpoint->cat_restrictiontype == -1 || tnode.cat_restrictiontype == mountpoint->cat_restrictiontype);
+            tnode.weapon = &weapontypes[name];
+            mountpoint->branches.push_back(tnode);
+            
+            weapontypes[name].firerate = atoi(chunk.consume("firerate").c_str());
+            weapontypes[name].projectile = &projclasses[chunk.consume("projectile")];
+            weapontypes[name].costpershot = (float)tnode.cost / tnode.quantity;
+            
         } else {
             CHECK(0);
         }
+        chunk.shouldBeDone();        
     }
 }
 
@@ -195,4 +235,5 @@ void initItemdb() {
     
     dprintf("done loading, consistency check\n");
     root.checkConsistency();
+    dprintf("Consistency check is awesome!\n");
 }
