@@ -14,9 +14,6 @@ using namespace std;
 #include "collide.h"
 #include "util.h"
 
-const float tankvel = 24.f / FPS;
-const float tankturn = 2.f / FPS;
-
 void Player::reCalculate() {
     maxHealth = 20;
     turnSpeed = 2.f / FPS;
@@ -37,10 +34,16 @@ void Player::reCalculate() {
     maxSpeed /= 100;
 }
 
+bool Player::hasUpgrade(const Upgrade *upg) const {
+    return count(upgrades.begin(), upgrades.end(), upg);
+}
+
 Player::Player() {
     color = Color(0.5, 0.5, 0.5);
     cash = 1000;
     reCalculate();
+    weapon = defaultWeapon();
+    shotsLeft = -1;
 }
 
 void GfxEffects::move() {
@@ -210,9 +213,6 @@ Tank::Tank() {
     initted = false;
 }
 
-const float projectile_length = 1;
-const float projectile_speed = 60.f / FPS;
-
 void Projectile::startNewMoveCycle() {
     timeLeft = 1.0f;
 }
@@ -220,18 +220,18 @@ void Projectile::move() {
     move( timeLeft );
 }
 void Projectile::move( float time ) {
-    x += projectile_speed * fsin( d ) * time;
-    y += -projectile_speed * fcos( d ) * time;
+    x += v * fsin( d ) * time;
+    y += -v * fcos( d ) * time;
     timeLeft -= time;
 }
 
 void Projectile::render() const {
 	setColor( 1.0, 1.0, 1.0 );
-	drawLine( x, y, x + projectile_length * fsin( d ), y - projectile_length * fcos( d ), 0.1 );
+	drawLine( x, y, x + v * fsin( d ), y - v * fcos( d ), 0.1 );
 };
 void Projectile::addCollision( Collider *collider ) const {
     CHECK( timeLeft == 1.0 );
-	collider->token( Float4( x, y, x + projectile_length * fsin( d ), y - projectile_length * fcos( d ) ), Float4( projectile_speed * fsin( d ), -projectile_speed * fcos( d ), projectile_speed * fsin( d ), -projectile_speed * fcos( d ) ) );
+	collider->token( Float4( x, y, x + v * fsin( d ), y - v * fcos( d ) ), Float4( v * fsin( d ), -v * fcos( d ), v * fsin( d ), -v * fcos( d ) ) );
 };
 void Projectile::impact( Tank *target ) {
 	target->takeDamage( 1 );
@@ -239,8 +239,8 @@ void Projectile::impact( Tank *target ) {
 
 void Projectile::genEffects( vector< GfxEffects > *gfxe ) const {
     GfxEffects ngfe;
-    ngfe.pos.sx = x + projectile_length * fsin( d );
-    ngfe.pos.sy = y - projectile_length * fcos( d );
+    ngfe.pos.sx = x + v * fsin( d );
+    ngfe.pos.sy = y - v * fcos( d );
     ngfe.life = 10;
     ngfe.type = GfxEffects::EFFECT_POINT;
     for( int i = 0; i < 3; i++ ) {
@@ -539,6 +539,7 @@ bool Game::runTick( const vector< Keystates > &keys ) {
 			proj.x = players[ i ].getFiringPoint().first;
 			proj.y = players[ i ].getFiringPoint().second;
 			proj.d = players[ i ].d;
+            proj.v = players[ i ].player->weapon->projectile->velocity;
 			projectiles[ i ].push_back( proj );
 		}
 	}
@@ -575,28 +576,23 @@ bool Game::runTick( const vector< Keystates > &keys ) {
 };
 
 Game::Game() {
-    playerdata = NULL;
 }
 
 Game::Game(vector<Player> *in_playerdata) {
     CHECK(in_playerdata);
     CHECK(in_playerdata->size() == 2);
-    playerdata = in_playerdata;
 	frameNm = 0;
     players.clear();
-	players.resize( playerdata->size() );
+	players.resize( in_playerdata->size() );
     for(int i = 0; i < players.size(); i++) {
-        players[i].init(&(*playerdata)[i]);
+        players[i].init(&(*in_playerdata)[i]);
     }
 	players[ 0 ].x = 30;
 	players[ 0 ].y = 30;
 	players[ 1 ].x = 60;
 	players[ 1 ].y = 60;
-	projectiles.resize( 2 );
+	projectiles.resize( in_playerdata->size() );
     framesSinceOneLeft = 0;
-	//collider.startGroup();
-	//gamemap.addCollide( &collider );
-	//collider.endGroup();
 };
 
 

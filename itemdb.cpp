@@ -11,6 +11,8 @@ static map<string, ProjectileClass> projclasses;
 static map<string, Weapon> weapontypes;
 static map<string, Upgrade> upgradetypes;
 
+static const Weapon *defweapon = NULL;
+
 void HierarchyNode::checkConsistency() const {
     dprintf("Consistency scan entering %s\n", name.c_str());
     // all nodes need a name
@@ -156,7 +158,7 @@ void parseItemFile(const string &fname) {
             int vel = atoi(chunk.consume("velocity").c_str());
             int damage = atoi(chunk.consume("damage").c_str());
             CHECK(projclasses.count(name) == 0);
-            projclasses[name].velocity = vel;
+            projclasses[name].velocity = vel / FPS;
             projclasses[name].damage = damage;
         } else if(chunk.category == "weapon") {
             
@@ -171,10 +173,6 @@ void parseItemFile(const string &fname) {
             tnode.quantity = mountpoint->quantity;
             CHECK(tnode.quantity >= 1);
             tnode.cost = atoi(chunk.consume("cost").c_str());
-            if(chunk.kv.count("autoreload")) {
-                /* deal with later */
-                chunk.consume("autoreload");
-            }
             tnode.cat_restrictiontype = HierarchyNode::HNT_WEAPON;
             CHECK(mountpoint->cat_restrictiontype == -1 || tnode.cat_restrictiontype == mountpoint->cat_restrictiontype);
             tnode.weapon = &weapontypes[name];
@@ -183,6 +181,11 @@ void parseItemFile(const string &fname) {
             weapontypes[name].firerate = atoi(chunk.consume("firerate").c_str());
             weapontypes[name].projectile = &projclasses[chunk.consume("projectile")];
             weapontypes[name].costpershot = (float)tnode.cost / tnode.quantity;
+            
+            if(chunk.kv.count("default") && atoi(chunk.consume("default").c_str())) {
+                CHECK(!defweapon);
+                defweapon = &weapontypes[name];
+            }
             
         } else if(chunk.category == "upgrade") {
             
@@ -254,10 +257,15 @@ void initItemdb() {
     }
     
     dprintf("done loading, consistency check\n");
+    CHECK(defweapon);
     root.checkConsistency();
     dprintf("Consistency check is awesome!\n");
 }
 
 const HierarchyNode &itemDbRoot() {
     return root;
+}
+
+const Weapon *defaultWeapon() {
+    return defweapon;
 }

@@ -10,7 +10,7 @@ hierarchy {
 
 upgrade {
     name=ROOT.Upgrades.Hull I
-    cost=200
+    cost=2000
     hull=20
     exclusive=1
 }
@@ -24,7 +24,7 @@ upgrade {
 
 upgrade {
     name=ROOT.Upgrades.Engine I
-    cost=200
+    cost=2000
     engine=20
     exclusive=1
 }
@@ -38,7 +38,7 @@ upgrade {
 
 upgrade {
     name=ROOT.Upgrades.Handling I
-    cost=200
+    cost=2000
     handling=20
     exclusive=1
 }

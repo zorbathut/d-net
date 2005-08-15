@@ -70,17 +70,26 @@ void Shop::renderNode(const HierarchyNode &node, int depth) const {
         drawBox( Float4( hoffbase, voffset + i * itemheight, hoffbase + boxwidth, voffset + i * itemheight + fontsize + boxborder * 2 ), boxthick );
         setColor(1.0, 1.0, 1.0);
         drawText( node.branches[i].name.c_str(), fontsize, hoffbase + boxborder, voffset + i * itemheight + boxborder );
-        if(node.branches[i].displaymode == HierarchyNode::HNDM_BLANK) {
-        } else if(node.branches[i].displaymode == HierarchyNode::HNDM_COST || node.branches[i].displaymode == HierarchyNode::HNDM_COSTUNIQUE) {
-            char bf[128];
-            sprintf(bf, formatstring, node.branches[i].cost);
-            drawText( bf, fontsize, hoffbase + pricehpos, voffset + i * itemheight + boxborder );
-        } else if(node.branches[i].displaymode == HierarchyNode::HNDM_PACK) {
-            char bf[128];
-            sprintf(bf, "%dpk", node.branches[i].quantity);
-            drawText( bf, fontsize, hoffbase + pricehpos, voffset + i * itemheight + boxborder );
-        } else {
-            CHECK(0);
+        {
+            int dispmode = node.branches[i].displaymode;
+            if(dispmode == HierarchyNode::HNDM_COSTUNIQUE) {
+                if(!player->hasUpgrade(node.branches[i].upgrade))
+                    dispmode = HierarchyNode::HNDM_COST;
+            }
+            if(dispmode == HierarchyNode::HNDM_BLANK) {
+            } else if(dispmode == HierarchyNode::HNDM_COST) {
+                char bf[128];
+                sprintf(bf, formatstring, node.branches[i].cost);
+                drawText( bf, fontsize, hoffbase + pricehpos, voffset + i * itemheight + boxborder );
+            } else if(dispmode == HierarchyNode::HNDM_PACK) {
+                char bf[128];
+                sprintf(bf, "%dpk", node.branches[i].quantity);
+                drawText( bf, fontsize, hoffbase + pricehpos, voffset + i * itemheight + boxborder );
+            } else if(dispmode == HierarchyNode::HNDM_COSTUNIQUE) {
+                drawText("bought", fontsize, hoffbase + pricehpos, voffset + i * itemheight + boxborder);
+            } else {
+                CHECK(0);
+            }
         }
     }
 }
@@ -101,8 +110,15 @@ bool Shop::runTick(const Keystates &keys) {
         if(getCurNode().type == HierarchyNode::HNT_DONE) {
             return true;
         } else if(getCurNode().type == HierarchyNode::HNT_UPGRADE) {
-            player->upgrades.push_back(getCurNode().upgrade);
-            player->reCalculate();
+            bool allowbuy = true;
+            if(getCurNode().displaymode == HierarchyNode::HNDM_COSTUNIQUE && player->hasUpgrade(getCurNode().upgrade))
+                allowbuy = false;
+            if(allowbuy) {
+                player->upgrades.push_back(getCurNode().upgrade);
+                player->reCalculate();
+            } else {
+                player->cash += getCurNode().cost;
+            }
         } else {
             dprintf("Bought a %s\n", getCurNode().name.c_str());
         }

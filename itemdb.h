@@ -57,5 +57,6 @@ public:
 void initItemdb();
 
 const HierarchyNode &itemDbRoot();
+const Weapon *defaultWeapon();
 
 #endif

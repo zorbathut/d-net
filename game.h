@@ -19,7 +19,9 @@ public:
     float turnSpeed;
     float maxSpeed;
 
-    vector<Upgrade *> upgrades;
+    vector<const Upgrade *> upgrades;
+    const Weapon *weapon;
+    int shotsLeft;
 
     Color color;
     VectorObject faction_symb;
@@ -27,6 +29,7 @@ public:
     int cash;
 
     void reCalculate();
+    bool hasUpgrade(const Upgrade *upg) const;
 
     Player();
 
@@ -114,6 +117,8 @@ public:
 	float y;
 	float d;
 
+    float v;
+
     float timeLeft;
 
     bool live;
@@ -142,8 +147,6 @@ private:
 	Gamemap gamemap;
 
 	Collider collider;
-    
-    vector<Player> *playerdata;
 
 };
 

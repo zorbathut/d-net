@@ -7,22 +7,21 @@ projectile {
 
 weapon {
     name=ROOT.Weapons.Laser.Laser
-    cost=3
-    autoreload=2000000000
+    cost=300
     firerate=6
-    projectile=local.autocannon
+    projectile=local.laser
 }
 
 weapon {
     name=ROOT.Weapons.Laser.Laser II
-    cost=5
+    cost=500
     firerate=4
-    projectile=local.autocannon
+    projectile=local.laser
 }
 
 weapon {
     name=ROOT.Weapons.Laser.Laser III
-    cost=8
+    cost=800
     firerate=3
-    projectile=local.autocannon
+    projectile=local.laser
 }
