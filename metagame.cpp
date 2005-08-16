@@ -3,6 +3,7 @@
 #include "gfx.h"
 
 #include <string>
+#include <numeric>
 
 using namespace std;
 
@@ -199,7 +200,17 @@ bool Metagame::runTick( const vector< Controller > &keys ) {
             shop = Shop(&playerdata[0]);
         }
     } else if(mode == MGM_SHOP) {
-        if(shop.runTick(genKeystates(keys)[currentShop])) {
+        if(currentShop == -1) {
+            for(int i = 0; i < keys.size(); i++)
+                if(genKeystates(keys)[i].f.repeat)
+                    checked[i] = true;
+            if(count(checked.begin(), checked.end(), false) == 0) {
+                for(int i = 0; i < playerdata.size(); i++)
+                    playerdata[i].cash += lrCash[i];
+                currentShop = 0;
+                shop = Shop(&playerdata[0]);
+            }
+        } else if(shop.runTick(genKeystates(keys)[currentShop])) {
             currentShop++;
             if(currentShop != playerdata.size()) {
                 shop = Shop(&playerdata[currentShop]);
@@ -215,13 +226,18 @@ bool Metagame::runTick( const vector< Controller > &keys ) {
         }
     } else if(mode == MGM_PLAY) {
         if(game.runTick(genKeystates(keys))) {
-            mode = MGM_SHOP;
-            for(int i = 0; i < playerdata.size(); i++) {
-                dprintf("%d: %f %d %d", i, playerdata[i].damageDone, playerdata[i].kills, playerdata[i].wins);
+            gameround++;
+            if(gameround % 6 == 0) {
+                mode = MGM_SHOP;
+                currentShop = -1;
+                calculateLrStats();
+                checked.clear();
+                checked.resize(playerdata.size());
+            } else {
+                float firepower = game.firepowerSpent;
+                game = Game(&playerdata);
+                game.firepowerSpent = firepower;
             }
-            dprintf("%f spent", game.getFirepowerSpent());
-            currentShop = 0;
-            shop = Shop(&playerdata[currentShop]);
         }
     } else {
         CHECK(0);
@@ -256,7 +272,22 @@ void Metagame::renderToScreen() const {
             }
         }
     } else if(mode == MGM_SHOP) {
-        shop.renderToScreen();
+        if(currentShop == -1) {
+            setZoom(0, 0, 600);
+            setColor(1.0, 1.0, 1.0);
+            drawText("damage", 30, 20, 20);
+            drawText("kills", 30, 20, 80);
+            drawText("wins", 30, 20, 140);
+            drawText("base", 30, 20, 200);
+            drawText("totals", 30, 20, 320);
+            drawMultibar(lrCategory[0], Float4(200, 20, 700, 50));
+            drawMultibar(lrCategory[1], Float4(200, 80, 700, 110));
+            drawMultibar(lrCategory[2], Float4(200, 140, 700, 170));
+            drawMultibar(lrCategory[3], Float4(200, 200, 700, 230));
+            drawMultibar(lrPlayer, Float4(200, 320, 700, 350));
+        } else {
+            shop.renderToScreen();
+        }
     } else if(mode == MGM_PLAY) {
         game.renderToScreen(RENDERTARGET_SPECTATOR);
     } else {
@@ -276,8 +307,77 @@ vector<Keystates> Metagame::genKeystates(const vector<Controller> &keys) {
     return kst;
 }
 
+void Metagame::calculateLrStats() {
+    vector<vector<float> > values(4);
+    for(int i = 0; i < playerdata.size(); i++) {
+        values[0].push_back(playerdata[i].damageDone);
+        values[1].push_back(playerdata[i].kills);
+        values[2].push_back(playerdata[i].wins);
+        values[3].push_back(1);
+        dprintf("%d: %f %d %d", i, playerdata[i].damageDone, playerdata[i].kills, playerdata[i].wins);
+    }
+    vector<float> totals(values.size());
+    for(int j = 0; j < totals.size(); j++) {
+        totals[j] = accumulate(values[j].begin(), values[j].end(), 0.0);
+    }
+    int chunkTotal = 0;
+    for(int i = 0; i < totals.size(); i++) {
+        if(totals[i] > 1e-6)
+            chunkTotal++;
+    }
+    dprintf("%d, %f\n", gameround, game.firepowerSpent);
+    float totalReturn = 100 * pow(1.03, gameround) + game.firepowerSpent * 0.8;
+    dprintf("Total cash is %f", totalReturn);
+    
+    for(int i = 0; i < playerdata.size(); i++) {
+        for(int j = 0; j < totals.size(); j++) {
+            if(totals[j] > 1e-6)
+                values[j][i] /= totals[j];
+        }
+    }
+    // values now stores percentages for each category
+    
+    vector<float> playercash(playerdata.size());
+    for(int i = 0; i < playercash.size(); i++) {
+        for(int j = 0; j < totals.size(); j++) {
+            playercash[i] += values[j][i];
+        }
+        playercash[i] /= chunkTotal;
+    }
+    // playercash now stores percentages for players
+    
+    vector<int> playercashresult(playerdata.size());
+    for(int i = 0; i < playercash.size(); i++) {
+        playercashresult[i] = int(playercash[i] * totalReturn);
+    }
+    // playercashresult now stores cashola for players
+    
+    lrCategory = values;
+    lrPlayer = playercash;
+    lrCash = playercashresult;
+    
+}
+
+void Metagame::drawMultibar(const vector<float> &sizes, const Float4 &dimensions) const {
+    float total = accumulate(sizes.begin(), sizes.end(), 0.0);
+    if(total < 1e-6) {
+        dprintf("multibar failed, total is %f\n", total);
+        return;
+    }
+    float width = dimensions.ex - dimensions.sx;
+    float per = width / total;
+    float cpos = dimensions.sx;
+    for(int i = 0; i < sizes.size(); i++) {
+        setColor(playerdata[i].color);
+        float epos = cpos + sizes[i] * per;
+        drawShadedBox(Float4(cpos, dimensions.sy, epos, dimensions.ey), 1, 6);
+        cpos = epos;
+    }
+}
+
 // not a valid state
-Metagame::Metagame() { }
+Metagame::Metagame() {
+}
 
 Metagame::Metagame(int playercount) {
 
@@ -297,5 +397,7 @@ Metagame::Metagame(int playercount) {
     }
     
     mode = MGM_PLAYERCHOOSE;
+    
+    gameround = 0;
 
 }

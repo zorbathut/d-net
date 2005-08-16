@@ -605,10 +605,6 @@ bool Game::runTick( const vector< Keystates > &keys ) {
 
 };
 
-float Game::getFirepowerSpent() const {
-    return firepowerSpent;
-}
-
 Game::Game() {
 }
 

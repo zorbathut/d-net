@@ -143,14 +143,12 @@ public:
 	void renderToScreen( int player ) const;
 	bool runTick( const vector< Keystates > &keys );
 
-    float getFirepowerSpent() const;
+    float firepowerSpent;
 
     Game();
 	Game(vector<Player> *playerdata);
 
 private:
-    
-    float firepowerSpent;
 
 	int frameNm;
     int framesSinceOneLeft;

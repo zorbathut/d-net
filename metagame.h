@@ -35,6 +35,7 @@ public:
 class Metagame {
     
     int mode;
+    int gameround;
     
     enum { MGM_PLAYERCHOOSE, MGM_SHOP, MGM_PLAY };
     int currentShop;
@@ -51,6 +52,11 @@ class Metagame {
     Shop shop;
     
     vector<Player> playerdata;
+    
+    vector<vector<float> > lrCategory;
+    vector<float> lrPlayer;
+    vector<int> lrCash;
+    vector<bool> checked;
 
 public:
 
@@ -58,6 +64,9 @@ public:
 	bool runTick( const vector< Controller > &keys );
 
     vector<Keystates> genKeystates(const vector<Controller> &keys);
+
+    void calculateLrStats();
+    void drawMultibar(const vector<float> &sizes, const Float4 &dimensions) const;
 
     Metagame();
 	Metagame(int playercount);
