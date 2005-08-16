@@ -16,7 +16,7 @@ using namespace std;
 #include "util.h"
 #include "args.h"
 
-DEFINE_bool( writeToFile, true, "Dump keypresses to file during game" );
+DEFINE_bool( writeToFile, false, "Dump keypresses to file during game" );
 DEFINE_string( writeTarget, "dumps/dump", "Prefix for file dump" );
 
 DEFINE_bool( readFromFile, false, "Replay game from keypress dump" );
@@ -71,6 +71,7 @@ void MainLoop() {
     FILE *infile = NULL;
     
     if(FLAGS_writeToFile) {
+        CHECK(0);
         string fname = FLAGS_writeTarget;
         char timestampbuf[ 128 ];
         time_t ctmt = time(NULL);
@@ -134,19 +135,6 @@ void MainLoop() {
         }
 		polling += bencher.ticksElapsed();
 		bencher = Timer();
-        /*
-        if(outfile) {
-            for(int i = 0; i < fullstates.size(); i++) {
-                char obyte = 0;
-                obyte = (obyte << 1) + (bool)fullstates[i].f.down;
-                obyte = (obyte << 1) + (bool)fullstates[i].u.down;
-                obyte = (obyte << 1) + (bool)fullstates[i].d.down;
-                obyte = (obyte << 1) + (bool)fullstates[i].l.down;
-                obyte = (obyte << 1) + (bool)fullstates[i].r.down;
-                fwrite(&obyte, 1, 1, outfile);
-            }
-            fflush(outfile);
-        }*/
         if(interfaceRunTick( controllers ))
             quit = true;
 		ticking += bencher.ticksElapsed();
@@ -154,13 +142,13 @@ void MainLoop() {
 		timer.waitForNextFrame();
 		waiting += bencher.ticksElapsed();
 		bencher = Timer();
-		//if( !timer.skipFrame() ) {
+		if( !timer.skipFrame() ) {
 			initFrame();
 			interfaceRenderToScreen();
 			deinitFrame();
-		//} else {
-			//dprintf( "Skipped!\n" );
-		//}
+		} else {
+			dprintf( "Skipped!\n" );
+		}
 		rendering += bencher.ticksElapsed();
 		timer.frameDone();
 		frameNumber++;

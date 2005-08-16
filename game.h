@@ -33,6 +33,10 @@ public:
 
     int resellAmmoValue() const;
 
+    float damageDone;
+    int kills;
+    int wins;
+
     Player();
 
 };
@@ -79,7 +83,7 @@ public:
 
     pair< pair< float, float >, float > getDeltaAfterMovement( const Keystates &keys, float x, float y, float d, float t ) const;
 
-	void takeDamage( int amount );
+	bool takeDamage( int amount ); // returns true on kill
 	void genEffects( vector< GfxEffects > *gfxe );
     
     bool initted;
@@ -126,6 +130,8 @@ public:
     float timeLeft;
 
     bool live;
+    
+    Tank *owner;
 
     Projectile();
 
@@ -137,10 +143,14 @@ public:
 	void renderToScreen( int player ) const;
 	bool runTick( const vector< Keystates > &keys );
 
+    float getFirepowerSpent() const;
+
     Game();
 	Game(vector<Player> *playerdata);
 
 private:
+    
+    float firepowerSpent;
 
 	int frameNm;
     int framesSinceOneLeft;

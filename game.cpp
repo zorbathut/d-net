@@ -176,12 +176,14 @@ pair< pair< float, float >, float > Tank::getDeltaAfterMovement( const Keystates
     
 }
 
-void Tank::takeDamage( int damage ) {
+bool Tank::takeDamage( int damage ) {
 	health -= damage;
-	if( health <= 0 ) {
+	if( health <= 0 && live ) {
 		live = false;
 		spawnShards = true;
+        return true;
 	}
+    return false;
 };
 
 void Tank::genEffects( vector< GfxEffects > *gfxe ) {
@@ -239,7 +241,9 @@ void Projectile::addCollision( Collider *collider ) const {
 	collider->token( Float4( x, y, x + v * fsin( d ), y - v * fcos( d ) ), Float4( v * fsin( d ), -v * fcos( d ), v * fsin( d ), -v * fcos( d ) ) );
 };
 void Projectile::impact( Tank *target ) {
-	target->takeDamage( 1 );
+	if(target->takeDamage( 1 ))
+        owner->player->kills++;
+    owner->player->damageDone += 1;
 };
 
 void Projectile::genEffects( vector< GfxEffects > *gfxe ) const {
@@ -545,11 +549,13 @@ bool Game::runTick( const vector< Keystates > &keys ) {
 
 	for( int i = 0; i < players.size(); i++ ) {
 		if( players[ i ].live && keys[ i ].f.down && players[ i ].weaponCooldown <= 0 ) {
+            firepowerSpent +=players[ i ].player->weapon->costpershot;
 			Projectile proj;
 			proj.x = players[ i ].getFiringPoint().first;
 			proj.y = players[ i ].getFiringPoint().second;
 			proj.d = players[ i ].d;
             proj.v = players[ i ].player->weapon->projectile->velocity;
+            proj.owner = &players[ i ];
 			projectiles[ i ].push_back( proj );
             players[ i ].weaponCooldown = players[ i ].player->weapon->firerate;
             if(players[i].player->shotsLeft != -1)
@@ -587,9 +593,21 @@ bool Game::runTick( const vector< Keystates > &keys ) {
         }
     }
     
-    return framesSinceOneLeft / FPS >= 3;
+    if(framesSinceOneLeft / FPS >= 3) {
+        for(int i = 0; i < players.size(); i++) {
+            if(players[i].live)
+                players[i].player->wins++;
+        }
+        return true;
+    } else {
+        return false;
+    }
 
 };
+
+float Game::getFirepowerSpent() const {
+    return firepowerSpent;
+}
 
 Game::Game() {
 }
@@ -609,6 +627,7 @@ Game::Game(vector<Player> *in_playerdata) {
 	players[ 1 ].y = 60;
 	projectiles.resize( in_playerdata->size() );
     framesSinceOneLeft = 0;
+    firepowerSpent = 0;
 };
 
 

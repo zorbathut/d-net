@@ -205,12 +205,21 @@ bool Metagame::runTick( const vector< Controller > &keys ) {
                 shop = Shop(&playerdata[currentShop]);
             } else {
                 mode = MGM_PLAY;
+                for(int i = 0; i < playerdata.size(); i++) {
+                    playerdata[i].damageDone = 0;
+                    playerdata[i].kills = 0;
+                    playerdata[i].wins = 0;
+                }
                 game = Game(&playerdata);
             }
         }
     } else if(mode == MGM_PLAY) {
         if(game.runTick(genKeystates(keys))) {
             mode = MGM_SHOP;
+            for(int i = 0; i < playerdata.size(); i++) {
+                dprintf("%d: %f %d %d", i, playerdata[i].damageDone, playerdata[i].kills, playerdata[i].wins);
+            }
+            dprintf("%f spent", game.getFirepowerSpent());
             currentShop = 0;
             shop = Shop(&playerdata[currentShop]);
         }
