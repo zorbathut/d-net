@@ -1,7 +1,10 @@
-- New game and key setup system
-- Game framework, main menu/multilevel/etc
+- Finish results page
+- More weapons
+- More upgrades
+- New tank purchases
+- Improved vector editor
+- More levels
 - Collisions speedup (i.e. not O(n^2))
-- Controller input
 - Netplay
 - Better tank explosions
 - Implement tweekvalues
