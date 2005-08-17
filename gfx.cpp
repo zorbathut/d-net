@@ -26,6 +26,9 @@ static map< char, vector< vector< pair< int, int > > > > fontdata;
 Color operator*( const Color &lhs, float rhs ) {
     return Color(lhs.r * rhs, lhs.g * rhs, lhs.b * rhs);
 }
+Color operator/( const Color &lhs, float rhs ) {
+    return Color(lhs.r / rhs, lhs.g / rhs, lhs.b / rhs);
+}
 Color operator+( const Color &lhs, const Color &rhs ) {
     return Color(lhs.r + rhs.r, lhs.g + rhs.g, lhs.b + rhs.b);
 }

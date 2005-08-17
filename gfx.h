@@ -41,6 +41,7 @@ public:
 };
 
 Color operator*( const Color &lhs, float rhs );
+Color operator/( const Color &lhs, float rhs );
 Color operator+( const Color &lhs, const Color &rhs );
 
 void initGfx();

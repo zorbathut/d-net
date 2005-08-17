@@ -57,6 +57,8 @@ class Metagame {
     vector<float> lrPlayer;
     vector<int> lrCash;
     vector<bool> checked;
+    
+    vector<int> fireHeld;
 
 public:
 

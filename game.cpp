@@ -431,7 +431,6 @@ void collideHandler( Collider *collider, vector< Tank > *tanks, const vector< Ke
 bool Game::runTick( const vector< Keystates > &keys ) {
     
 	frameNm++;
-	CHECK( keys.size() == 2 );
 
 	collider.reset(players.size());
     
@@ -610,17 +609,27 @@ Game::Game() {
 
 Game::Game(vector<Player> *in_playerdata) {
     CHECK(in_playerdata);
-    CHECK(in_playerdata->size() == 2);
 	frameNm = 0;
     players.clear();
 	players.resize( in_playerdata->size() );
     for(int i = 0; i < players.size(); i++) {
         players[i].init(&(*in_playerdata)[i]);
     }
-	players[ 0 ].x = 30;
-	players[ 0 ].y = 30;
-	players[ 1 ].x = 60;
-	players[ 1 ].y = 60;
+    if(players.size() > 0) {
+        players[ 0 ].x = 30;
+        players[ 0 ].y = 30;
+    }
+    if(players.size() > 1) {
+        players[ 1 ].x = 60;
+        players[ 1 ].y = 60;
+    }
+    if(players.size() > 2) {
+        players[ 2 ].x = 90;
+        players[ 2 ].y = 60;
+    }
+    if(players.size() > 3) {
+        CHECK(0);
+    }
 	projectiles.resize( in_playerdata->size() );
     framesSinceOneLeft = 0;
     firepowerSpent = 0;

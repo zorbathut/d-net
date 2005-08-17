@@ -85,7 +85,7 @@ void DestroyWindow() {
 void SetupOgl() {
 
 	SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );         // tell SDL that the GL drawing is going to be double buffered
-    SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE,   SCREEN_DEPTH);         // size of depth buffer
+    SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, SCREEN_DEPTH);         // size of depth buffer
     SDL_GL_SetAttribute( SDL_GL_STENCIL_SIZE, 0);          // we aren't going to use the stencil buffer
     SDL_GL_SetAttribute( SDL_GL_ACCUM_RED_SIZE, 0);        // this and the next three lines set the bits allocated per pixel -
     SDL_GL_SetAttribute( SDL_GL_ACCUM_GREEN_SIZE, 0);      // - for the accumulation buffer to 0
@@ -96,8 +96,8 @@ void SetupOgl() {
 
 void initSystem() {
 
-    if( SDL_Init( SDL_INIT_VIDEO ) < 0 )
-		CHECK( 0 );
+    CHECK(SDL_Init( SDL_INIT_VIDEO ) >= 0);
+    CHECK(SDL_InitSubSystem(SDL_INIT_JOYSTICK) >= 0);
 
 	SetupOgl();
     MakeWindow( "Devastation Net", SCREEN_WIDTH, SCREEN_HEIGHT );

@@ -171,6 +171,7 @@ bool Metagame::runTick( const vector< Controller > &keys ) {
     CHECK(keys.size() == playerpos.size());
     CHECK(keys.size() == playersymbol.size());
     CHECK(keys.size() == playerkey.size());
+    CHECK(keys.size() == fireHeld.size());
     if(mode == MGM_PLAYERCHOOSE) {
         for(int i = 0; i < keys.size(); i++) {
             if(playersymbol[i] != -1)
@@ -190,18 +191,35 @@ bool Metagame::runTick( const vector< Controller > &keys ) {
                 }
             }
         }
-        if(count(playerkey.begin(), playerkey.end(), -1) == 0) {
+        for(int i = 0; i < keys.size(); i++) {
+            if(count(playersymbol.begin(), playersymbol.end(), -1) <= playersymbol.size() - 2) {
+                if(playerkey[i] != -1 && keys[i].keys[playerkey[i]].down) {
+                    fireHeld[i]++;
+                } else {
+                    fireHeld[i] = 0;
+                }
+            } else {
+                fireHeld[i] = 0;
+            }
+            if(fireHeld[i] > 60)
+                fireHeld[i] = 60;
+        }
+        if(count(fireHeld.begin(), fireHeld.end(), 60) == playerkey.size() - count(playerkey.begin(), playerkey.end(), -1) && count(fireHeld.begin(), fireHeld.end(), 60) >= 2) {
             mode = MGM_SHOP;
             currentShop = 0;
             playerdata.clear();
-            playerdata.resize(playerkey.size());
-            for(int i = 0; i < playerdata.size(); i++)
-                playerdata[i].color = factions[playersymbol[i]].color;
+            playerdata.resize(count(fireHeld.begin(), fireHeld.end(), 60));
+            int pid = 0;
+            for(int i = 0; i < playerdata.size(); i++) {
+                if(playersymbol[i] != -1) {
+                    playerdata[pid++].color = factions[playersymbol[i]].color;
+                }
+            }
             shop = Shop(&playerdata[0]);
         }
     } else if(mode == MGM_SHOP) {
         if(currentShop == -1) {
-            for(int i = 0; i < keys.size(); i++)
+            for(int i = 0; i < playerdata.size(); i++)
                 if(genKeystates(keys)[i].f.repeat)
                     checked[i] = true;
             if(count(checked.begin(), checked.end(), false) == 0) {
@@ -227,7 +245,7 @@ bool Metagame::runTick( const vector< Controller > &keys ) {
     } else if(mode == MGM_PLAY) {
         if(game.runTick(genKeystates(keys))) {
             gameround++;
-            if(gameround % 6 == 0) {
+            if(gameround % 1 == 0) {
                 mode = MGM_SHOP;
                 currentShop = -1;
                 calculateLrStats();
@@ -261,7 +279,9 @@ void Metagame::renderToScreen() const {
                 drawText(bf, 20, playerpos[i].x + 5, playerpos[i].y + 5);
             } else {
                 setColor(factions[playersymbol[i]].color);
-                drawVectors(symbols[playersymbol[i]], Float4(20, 20 + 100 * i, 100, 100 + 100 * i), true, true, 1.0);
+                drawVectors(symbols[playersymbol[i]], Float4(10, 10 + 100 * i, 90, 90 + 100 * i), true, true, 1.0);
+                setColor(Color(1.0, 1.0, 1.0) / 60 * fireHeld[i]);
+                drawBox(Float4(5, 5 + 100 * i, 95, 95 + 100 * i), 1);
             }
         }
         CHECK(symbols.size() == factioncount);
@@ -270,6 +290,10 @@ void Metagame::renderToScreen() const {
                 setColor(factions[i].color);
                 drawVectors(symbols[i], symbolpos[i], true, true, 1.0);
             }
+        }
+        if(count(playersymbol.begin(), playersymbol.end(), -1) <= playersymbol.size() - 2) {
+            setColor(1.0, 1.0, 1.0);
+            drawText("hold fire to begin", 20, 120, 560);
         }
     } else if(mode == MGM_SHOP) {
         if(currentShop == -1) {
@@ -296,13 +320,17 @@ void Metagame::renderToScreen() const {
 }
 
 vector<Keystates> Metagame::genKeystates(const vector<Controller> &keys) {
-    vector<Keystates> kst(playerpos.size());
-    for(int i = 0; i < playerpos.size(); i++) {
-        kst[i].u = keys[i].u;
-        kst[i].d = keys[i].d;
-        kst[i].l = keys[i].l;
-        kst[i].r = keys[i].r;
-        kst[i].f = keys[i].keys[playerkey[i]];
+    vector<Keystates> kst(playerdata.size());
+    int pid = 0;
+    for(int i = 0; i < playerkey.size(); i++) {
+        if(playerkey[i] != -1) {
+            kst[pid].u = keys[i].u;
+            kst[pid].d = keys[i].d;
+            kst[pid].l = keys[i].l;
+            kst[pid].r = keys[i].r;
+            kst[pid].f = keys[i].keys[playerkey[i]];
+            pid++;
+        }
     }
     return kst;
 }
@@ -387,6 +415,7 @@ Metagame::Metagame(int playercount) {
     playerkey.resize(playercount, -1);
     playersymbol.resize(playercount, -1);
     playerpos.resize(playercount, Float2(400, 300));
+    fireHeld.resize(playercount);
     
     for(int i = 0; i < factioncount; i++) {
         symbols.push_back(loadVectors(factions[i].filename.c_str()));

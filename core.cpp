@@ -22,7 +22,7 @@ DEFINE_string( writeTarget, "dumps/dump", "Prefix for file dump" );
 DEFINE_bool( readFromFile, false, "Replay game from keypress dump" );
 DEFINE_string( readTarget, "", "File to replay from" );
 
-vector< Controller > curstates( 2 );
+vector< Controller > curstates;
 
 const int playerkeys = 9;
 
@@ -99,8 +99,27 @@ void MainLoop() {
 
 	int frako = 0;
     
+    dprintf("%d joysticks detected\n", SDL_NumJoysticks());
+    
+    curstates.resize(2 + SDL_NumJoysticks());
+    
+    vector<SDL_Joystick *> joysticks;
+    for(int i = 0; i < SDL_NumJoysticks(); i++) {
+        dprintf("Opening %d: %s\n", i, SDL_JoystickName(i));
+        joysticks.push_back(SDL_JoystickOpen(i));
+        CHECK(SDL_JoystickNumAxes(joysticks.back()) >= 2);
+        CHECK(SDL_JoystickNumButtons(joysticks.back()) >= 1);
+        dprintf("%d axes, %d buttons\n", SDL_JoystickNumAxes(joysticks.back()), SDL_JoystickNumButtons(joysticks.back()));
+    }
+    
+    dprintf("Done opening joysticks\n");
+    
     for(int i = 0; i < curstates.size(); i++) {
-        curstates[i].keys.resize(playerkeys);
+        if(i < 2) {
+            curstates[i].keys.resize(playerkeys);
+        } else {
+            curstates[i].keys.resize(SDL_JoystickNumButtons(joysticks[i - 2]));
+        }
     }
     
     vector<Controller> controllers = curstates;
@@ -111,7 +130,8 @@ void MainLoop() {
 		while( SDL_PollEvent( &event ) ) {
 			switch( event.type ) {
 			case SDL_QUIT:
-					return;
+					quit = true;
+                    break;
 
 				case SDL_KEYDOWN:
 				case SDL_KEYUP:
@@ -127,10 +147,47 @@ void MainLoop() {
 					break;
 			}
 		}
-        CHECK(controllers.size() == curstates.size());
-        for(int i = 0; i < curstates.size(); i++) {
+        if(quit)
+            break;
+        for(int i = 0; i < 2; i++) {
             curstates[i].x = curstates[i].r.down - curstates[i].l.down;
             curstates[i].y = curstates[i].u.down - curstates[i].d.down;
+        }
+        SDL_JoystickUpdate();
+        for(int i = 0; i < joysticks.size(); i++) {
+            int target = i + 2;
+            curstates[target].x = SDL_JoystickGetAxis(joysticks[i], 0) / 32768.0f;
+            curstates[target].y = -(SDL_JoystickGetAxis(joysticks[i], 1) / 32768.0f);
+            if(abs(curstates[target].x) < .2)
+                curstates[target].x = 0;
+            if(abs(curstates[target].y) < .2)
+                curstates[target].y = 0;
+            if(curstates[target].x < -0.5) {
+                curstates[target].r.down = false;
+                curstates[target].l.down = true;
+            } else if(curstates[target].x > 0.5) {
+                curstates[target].r.down = true;
+                curstates[target].l.down = false;
+            } else {
+                curstates[target].r.down = false;
+                curstates[target].l.down = false;
+            }
+            if(curstates[target].y < -0.5) {
+                curstates[target].u.down = false;
+                curstates[target].d.down = true;
+            } else if(curstates[target].y > 0.5) {
+                curstates[target].u.down = true;
+                curstates[target].d.down = false;
+            } else {
+                curstates[target].u.down = false;
+                curstates[target].d.down = false;
+            }
+            for(int j = 0; j < curstates[target].keys.size(); j++) {
+                curstates[target].keys[j].down = SDL_JoystickGetButton(joysticks[i], j);
+            }
+        }
+        CHECK(controllers.size() == curstates.size());
+        for(int i = 0; i < curstates.size(); i++) {
             controllers[i].newState(curstates[i]);
         }
 		polling += bencher.ticksElapsed();
@@ -166,5 +223,7 @@ void MainLoop() {
 		}
         frako++;
 	}
+    for(int i = 0; i < joysticks.size(); i++)
+        SDL_JoystickClose(joysticks[i]);
 	dprintf( "denial\n" );
 }
