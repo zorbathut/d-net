@@ -213,4 +213,6 @@ inline bool isinside(const Float4 &lhs, const Float2 &rhs) {
     return !(rhs.x < lhs.sx || rhs.x >= lhs.ex || rhs.y < lhs.sy || rhs.y >= lhs.ey);
 }
 
+string StringPrintf( const char *bort, ... ) __attribute__((format(printf,1,2)));
+
 #endif

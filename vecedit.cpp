@@ -4,9 +4,152 @@
 
 #include <vector>
 #include <string>
+#include <stack>
 
 using namespace std;
 
+stack< int > modestack;
+
+enum { VECED_EXAMINE, VECED_PATH, VECED_REFLECT, VECED_MOVE };
+const char *ed_names[] = { "Examine", "Path edit", "Reflect", "Move" };
+enum { VECRF_NONE, VECRF_HORIZONTAL, VECRF_VERTICAL, VECRF_VH, VECRF_180DEG, VECRF_SNOWFLAKE4, VECRF_END };
+const char *rf_names[] = {"none", "horizontal", "vertical", "vertical horizontal", "180deg", "snowflake4"};
+
+class Vecptn {
+public:
+    
+    float x;
+    float y;
+
+    float curvlx;
+    float curvly;
+    float curvrx;
+    float curvry;
+
+    bool curvl;
+    bool curvr;
+
+};
+
+class Path {
+public:
+    
+    float centerx;
+    float centery;
+
+    int reflect;
+
+    vector<Vecptn> path;
+
+    Path() {
+        centerx = centery = 0;
+        reflect = VECRF_NONE;
+    }
+    
+};
+
+vector<Path> paths;
+int zoom = 256;
+int grid = 16;
+
+int cursor_x = 0;
+int cursor_y = 0;
+
+float *write_x = NULL;
+float *write_y = NULL;
+
+int path_target = 0;
+int path_curnode = 0;
+
+int gui_vpos = 0;
+
+void guiText(const string &in) {
+    //setZoom(0, 0, 100);
+    drawText(in, 2, 2, gui_vpos);
+    gui_vpos += 3;
+    //setZoom(-zoom*1.25, -zoom, zoom);
+}
+
+bool vecEditTick(const Controller &keys) {
+    if(modestack.size() == 0)   // get the whole shebang started
+        modestack.push(VECED_EXAMINE);
+    
+    // these are guaranteed consistent behaviors
+    if(keys.keys[0].repeat) {
+        zoom /= 2;
+        zoom = max(zoom, 1);
+    }
+    if(keys.keys[1].repeat) {
+        zoom *= 2;
+        zoom = max(zoom, 1);
+    }
+    if(keys.keys[2].repeat) {
+        grid /= 2;
+        grid = max(grid, 1);
+    }
+    if(keys.keys[3].repeat) {
+        grid *= 2;
+        grid = max(grid, 1);
+    }
+    
+    write_x = NULL;
+    write_y = NULL;
+    
+    if(modestack.top() == VECED_EXAMINE) {
+        if(keys.keys[4].repeat) {   // create path
+            path_target = paths.size() - 1;
+            paths.push_back(Path());
+            paths[path_target].centerx = cursor_x;
+            paths[path_target].centery = cursor_y;
+            modestack.push(VECED_PATH);
+            modestack.push(VECED_REFLECT);
+        }
+    } else if(modestack.top() == VECED_PATH) {
+    } else if(modestack.top() == VECED_REFLECT) {
+        CHECK(path_target >= 0 && path_target < paths.size());
+        write_x = &paths[path_target].centerx;
+        write_y = &paths[path_target].centery;
+    } else {
+        CHECK(0);
+    }
+    
+    if(keys.l.repeat) cursor_x -= grid;
+    if(keys.r.repeat) cursor_x += grid;
+    if(keys.u.repeat) cursor_y -= grid;
+    if(keys.d.repeat) cursor_y += grid;
+    
+    if(write_x) *write_x = cursor_x;
+    if(write_y) *write_y = cursor_y;
+    
+    return false;
+    
+}
+
+void vecEditRender() {
+    setZoom(0, 0, 100);
+    setColor(1.0f, 1.0f, 1.0f);
+    gui_vpos = 2;
+    guiText(StringPrintf("%s mode - 78 90 for zoom+grid (%d, %d)", ed_names[modestack.top()], zoom, grid));
+    if(modestack.top() == VECED_EXAMINE) {
+        guiText("u/j/m to create/edit/destroy paths         .// to load/save");
+        guiText("i/k/, to create/edit/destroy entities      arrow keys to move");
+    } else if(modestack.top() == VECED_PATH) {
+        CHECK(path_target >= 0 && path_target < paths.size());
+        guiText("u/j/m to create/edit/destroy nodes         / to exit");
+    } else if(modestack.top() == VECED_REFLECT) {
+        CHECK(path_target >= 0 && path_target < paths.size());
+        guiText(StringPrintf("u/i to change reflect mode (currently %s)", rf_names[paths[path_target].reflect]));
+        guiText("arrow keys to move center, / to accept");
+    } else {
+        CHECK(0);
+    }
+    
+    drawLine(cursor_x - grid, cursor_y, cursor_x - grid / 2, cursor_y, 0.1);
+    drawLine(cursor_x + grid, cursor_y, cursor_x + grid / 2, cursor_y, 0.1);
+    drawLine(cursor_x, cursor_y - grid, cursor_x, cursor_y - grid / 2, 0.1);
+    drawLine(cursor_x, cursor_y + grid, cursor_x, cursor_y + grid / 2, 0.1);
+}
+/*
 enum { VECED_REFLECT, VECED_CREATE, VECED_EXAMINE, VECED_MOVE };
 enum { VECRF_NONE, VECRF_HORIZONTAL, VECRF_VERTICAL, VECRF_VH, VECRF_180DEG, VECRF_SNOWFLAKE4, VECRF_END };
 const bool vecrf_mirror[] = { false, true, true, true, false, true };
@@ -133,25 +276,25 @@ void saveVectors() {
         strftime(timestampbuf, sizeof(timestampbuf), "%Y%m%d-%H%M%S.dvec", gmtime(&ctmt));
         dprintf("%s\n", timestampbuf);
         outfile = fopen(timestampbuf, "wb");
-        if(outfile) {
-        } else {
-            dprintf("Outfile %s couldn't be opened! Didn't save!", timestampbuf);
-        }
     }
-    for(int i = 0; i < tv.size(); i++) {
-        if(tv[i].lhcurved) {
-            fprintf(outfile, "(%d,%d) ", tv[i].lhcx, tv[i].lhcy);
-        } else {
-            fprintf(outfile, "() ");
+    if(!outfile) {
+        dprintf("Outfile %s couldn't be opened! Didn't save!", timestampbuf);
+    } else {
+        for(int i = 0; i < tv.size(); i++) {
+            if(tv[i].lhcurved) {
+                fprintf(outfile, "(%d,%d) ", tv[i].lhcx, tv[i].lhcy);
+            } else {
+                fprintf(outfile, "() ");
+            }
+            fprintf(outfile,"%d,%d ", tv[i].x, tv[i].y);
+            if(tv[i].rhcurved) {
+                fprintf(outfile, "(%d,%d)\n", tv[i].rhcx, tv[i].rhcy);
+            } else {
+                fprintf(outfile, "()\n");
+            }
         }
-        fprintf(outfile,"%d,%d ", tv[i].x, tv[i].y);
-        if(tv[i].rhcurved) {
-            fprintf(outfile, "(%d,%d)\n", tv[i].rhcx, tv[i].rhcy);
-        } else {
-            fprintf(outfile, "()\n");
-        }
+        fclose(outfile);
     }
-    fclose(outfile);
 }
 
 void drawVecs(const vector<Vecpt> &vecs) {
@@ -220,6 +363,7 @@ bool mirror(int start, int delta, int mode) {
 
 
 int grid = 16;
+int zoom = 200;
 int activevec = 0;
 
 int *handlex = NULL;
@@ -419,3 +563,4 @@ void vecEditRender(void) {
         drawNodeFramework(vecs, activevec + 1);
     }
 }
+*/

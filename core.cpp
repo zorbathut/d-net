@@ -26,15 +26,17 @@ vector< Controller > curstates;
 
 const int playerkeys = 9;
 
-int playermap[2][4 + playerkeys] = {
-    { SDLK_UP, SDLK_DOWN, SDLK_LEFT, SDLK_RIGHT, SDLK_u, SDLK_i, SDLK_o, SDLK_j, SDLK_k, SDLK_l, SDLK_m, SDLK_COMMA, SDLK_PERIOD },
+int baseplayermap[2][4 + playerkeys] = {
+    { SDLK_UP, SDLK_DOWN, SDLK_LEFT, SDLK_RIGHT, SDLK_7, SDLK_8, SDLK_9, SDLK_0, SDLK_u, SDLK_i, SDLK_o, SDLK_p, SDLK_j },
     { SDLK_w, SDLK_s, SDLK_a, SDLK_d, SDLK_r, SDLK_t, SDLK_y, SDLK_f, SDLK_g, SDLK_h, SDLK_v, SDLK_b, SDLK_n }
 };
 
+vector<vector<int> > playermap;
+
 void keyPress( SDL_KeyboardEvent *key ) {
 	bool *ps = NULL;
-    for(int i = 0; i < 2; i++) {
-        for(int j = 0; j < 4 + playerkeys; j++) {
+    for(int i = 0; i < playermap.size(); i++) {
+        for(int j = 0; j < playermap[i].size(); j++) {
             if(key->keysym.sym == playermap[i][j]) {
                 if(j == 0)
                     ps = &curstates[i].u.down;
@@ -87,6 +89,22 @@ void MainLoop() {
         }
     }
     
+    playermap.resize(2);
+    
+    for(int i = 0; i < 2; i++) {
+        for(int j = 0; j < playerkeys + 4; j++) {
+            playermap[i].push_back(baseplayermap[i][j]);
+        }
+    }
+    
+    playermap[0].push_back(SDLK_k);
+    playermap[0].push_back(SDLK_l);
+    playermap[0].push_back(SDLK_SEMICOLON);
+    playermap[0].push_back(SDLK_m);
+    playermap[0].push_back(SDLK_COMMA);
+    playermap[0].push_back(SDLK_PERIOD);
+    playermap[0].push_back(SDLK_SLASH);
+
     srand(time(NULL));
     
     interfaceInit();
@@ -116,13 +134,20 @@ void MainLoop() {
     
     for(int i = 0; i < curstates.size(); i++) {
         if(i < 2) {
-            curstates[i].keys.resize(playerkeys);
+            curstates[i].keys.resize(playermap[i].size() - 4);
         } else {
             curstates[i].keys.resize(SDL_JoystickNumButtons(joysticks[i - 2]));
         }
     }
     
     vector<Controller> controllers = curstates;
+    
+    dprintf("Final controllers:");
+    for(int i = 0; i < curstates.size(); i++) {
+        dprintf("%d: %d buttons", i, curstates[i].keys.size());
+    }
+    
+    int skipped = 0;
     
 	while( !quit ) {
 		bencher = Timer();
@@ -199,13 +224,14 @@ void MainLoop() {
 		timer.waitForNextFrame();
 		waiting += bencher.ticksElapsed();
 		bencher = Timer();
-		if( !timer.skipFrame() ) {
+		//if( !timer.skipFrame()) {
 			initFrame();
 			interfaceRenderToScreen();
 			deinitFrame();
-		} else {
-			dprintf( "Skipped!\n" );
-		}
+		//} else {
+			//dprintf( "Skipped, %d behind\n", timer.framesBehind() );
+		//}
+        //dprintf( "Running, %d behind\n", timer.framesBehind() );
 		rendering += bencher.ticksElapsed();
 		timer.frameDone();
 		frameNumber++;
@@ -216,6 +242,7 @@ void MainLoop() {
 			dprintf( "%4d ticking", int( ticking * 1000 / tot ) );
 			dprintf( "%4d waiting", int( waiting * 1000 / tot ) );
 			dprintf( "%4d rendering", int( rendering * 1000 / tot ) );
+            dprintf( "%4d clusters last 60 frames", getAccumulatedClusterCount());
 			polling = 0;
 			ticking = 0;
 			waiting = 0;

@@ -6,6 +6,7 @@ public:
 
 	void waitForNextFrame();
 	bool skipFrame();
+    int framesBehind();
 	void frameDone();
 
 	long long ticksElapsed();

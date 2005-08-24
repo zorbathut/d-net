@@ -28,6 +28,10 @@ bool Timer::skipFrame() {
 	return cpc() > ( frameNum + 2 ) * ticksPerFrame + ticksOffset;
 };
 
+int Timer::framesBehind() {
+    return ( cpc() - ticksOffset ) / ticksPerFrame - frameNum;
+}
+
 void Timer::frameDone() {
 	frameNum++;
 };

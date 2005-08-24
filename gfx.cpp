@@ -73,7 +73,34 @@ void initGfx() {
     }
 }
 
+float curWeight = -1.f;
+int lineCount = 0;
+int clusterCount = 0;
+
+int getAccumulatedClusterCount() {
+    int tempcount = clusterCount;
+    clusterCount = 0;
+    return tempcount;
+}
+
+void beginLineCluster(float weight) {
+    CHECK(curWeight == -1.f);
+    glLineWidth( weight / map_zoom * 600 );   // GL uses pixels internally for this unit, so I have to translate from game-meters
+    glBegin(GL_LINES);
+    curWeight = weight;
+    lineCount = 0;
+    clusterCount++;
+}
+
+void finishLineCluster() {
+    if(curWeight != -1.f) {
+        curWeight = -1.f;
+        glEnd();
+    }
+}
+
 void initFrame() {
+    CHECK(curWeight == -1.f);
 	glEnable( GL_POINT_SMOOTH );
 	glEnable( GL_LINE_SMOOTH );
 	glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
@@ -87,35 +114,44 @@ void initFrame() {
 }
 
 void clearFrame(const Color &color) {
+    finishLineCluster();
     glClearColor( color.r, color.g, color.b, 0.0f );
 	glClear(GL_COLOR_BUFFER_BIT);
 }
 
 void deinitFrame() {
+    finishLineCluster();
 	glFlush();
 	SDL_GL_SwapBuffers(); 
 }
 
 void setZoom( float in_sx, float in_sy, float in_ey ) {
+    finishLineCluster();
 	map_sx = in_sx;
 	map_sy = in_sy;
 	map_zoom = in_ey - in_sy;
 }
 
 void setColor( float r, float g, float b ) {
+    finishLineCluster();
 	glColor3f( r, g, b );
 }
 
 void setColor(const Color &color) {
+    finishLineCluster();
     setColor(color.r, color.g, color.b);
 }
 
 void drawLine( float sx, float sy, float ex, float ey, float weight ) {
-	glLineWidth( weight / map_zoom * 600 );   // GL uses pixels internally for this unit, so I have to translate from game-meters
-	glBegin( GL_LINES );
+    CHECK(weight > 0);
+    if(weight != curWeight || lineCount > 100) {
+        finishLineCluster();
+        beginLineCluster(weight);
+        glBegin( GL_LINES );
+    }
 	glVertex2f( ( sx - map_sx ) / map_zoom, ( sy - map_sy ) / map_zoom );
 	glVertex2f( ( ex - map_sx ) / map_zoom, ( ey - map_sy ) / map_zoom );
-	glEnd();
+    lineCount++;
 }
 
 void drawLine( const Float4 &pos, float weight ) {
@@ -221,6 +257,10 @@ void drawText( const char *txt, float scale, float sx, float sy ) {
         }
         sx += scale * 8;
     }
+}
+
+void drawText(const string &txt, float scale, float sx, float sy) {
+    drawText(txt.c_str(), scale, sx, sy);
 }
 
 Vecpt Vecpt::mirror() const {

@@ -40,7 +40,7 @@ package: d-net.exe
 	$(CPP) $(CPPFLAGS) -c -g -Wa,-a,-ad $< > $@
 
 %.d: %.cpp
-	bash -ec '$(CPP) $(CPPFLAGS) -M $< | sed "s/$*.o/$*.o $@/g" > $@'
+	bash -ec '$(CPP) $(CPPFLAGS) -MM $< | sed "s/$*.o/$*.o $@/g" > $@'
 	
 stats:
 	@echo Graphics: `cat gfx.h gfx.cpp | wc -l` loc

@@ -16,6 +16,7 @@ using namespace std;
 
 int dprintf( const char *bort, ... ) {
 
+    // this is duplicated code with StringPrintf - I should figure out a way of combining these
 	static vector< char > buf(2);
 	va_list args;
 

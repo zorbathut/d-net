@@ -95,7 +95,11 @@ bool InterfaceMain::tick(const vector< Controller > &control) {
         kst[i].d.newState(control[i].y < -.5);
         kst[i].r.newState(control[i].x > .5);
         kst[i].l.newState(control[i].x < -.5);
-        kst[i].f.newState(control[i].keys[0]);
+        bool aButtonPushed = false;
+        for(int j = 0; j < control[i].keys.size(); j++)
+            if(control[i].keys[j].push)
+                aButtonPushed = true;
+        kst[i].f.newState(aButtonPushed);
     }
     
     if(interface_mode == IFM_S_MAINMENU) {

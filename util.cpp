@@ -1,20 +1,11 @@
 
 #include "util.h"
-#undef printf
 #include "debug.h"
+
+#include <stdarg.h>
 
 #include <numeric>
 using namespace std;
-
-bool verbosified = false;
-
-    bool down;
-    bool up;
-    bool push;
-    bool release;
-    bool repeat;
-    int dur;
-    int sincerep;
 
 Button::Button() {
     down = push = release = repeat = false;
@@ -90,3 +81,24 @@ public:
 };
 
 sinTableMaker sinInit;
+
+string StringPrintf( const char *bort, ... ) {
+
+	static vector< char > buf(2);
+	va_list args;
+
+	int done = 0;
+	do {
+		if( done )
+			buf.resize( buf.size() * 2 );
+		va_start( args, bort );
+		done = vsnprintf( &(buf[ 0 ]), buf.size() - 1,  bort, args );
+		assert( done < (int)buf.size() );
+		va_end( args );
+	} while( done == buf.size() - 1 || done == -1);
+
+	CHECK( done < (int)buf.size() );
+
+    return string(buf.begin(), buf.begin() + done);
+
+};
