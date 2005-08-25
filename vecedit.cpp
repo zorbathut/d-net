@@ -63,11 +63,44 @@ int path_curnode = 0;
 
 int gui_vpos = 0;
 
+void renderSinglePath(int path) {
+    CHECK(path >= 0 && path < paths.size());
+    
+    const Path &p = paths[path];
+    float linelen = zoom / 4;
+    setColor(0.5, 0.5, 0.5);
+    if(p.reflect == VECRF_NONE) {
+    } else if(p.reflect == VECRF_HORIZONTAL) {
+        drawLine(p.centerx - linelen, p.centery, p.centerx + linelen, p.centery, 0.1);
+    } else if(p.reflect == VECRF_VERTICAL) {
+        drawLine(p.centerx, p.centery - linelen, p.centerx, p.centery + linelen, 0.1);
+    } else if(p.reflect == VECRF_VH) {
+        drawLine(p.centerx - linelen, p.centery, p.centerx + linelen, p.centery, 0.1);
+        drawLine(p.centerx, p.centery - linelen, p.centerx, p.centery + linelen, 0.1);
+    } else if(p.reflect == VECRF_180DEG) {
+        drawLine(p.centerx - linelen, p.centery - linelen, p.centerx + linelen, p.centery + linelen, 0.1);
+    } else if(p.reflect == VECRF_SNOWFLAKE4) {
+        drawLine(p.centerx - linelen, p.centery - linelen, p.centerx + linelen, p.centery + linelen, 0.1);
+        drawLine(p.centerx - linelen, p.centery + linelen, p.centerx + linelen, p.centery - linelen, 0.1);
+        drawLine(p.centerx - linelen, p.centery, p.centerx + linelen, p.centery, 0.1);
+        drawLine(p.centerx, p.centery - linelen, p.centerx, p.centery + linelen, 0.1);
+    } else {
+        CHECK(0);
+    }
+    
+}
+
+void renderPaths() {
+    for(int i = 0; i < paths.size(); i++) {
+        renderSinglePath(i);
+    }
+}
+
 void guiText(const string &in) {
-    //setZoom(0, 0, 100);
+    setZoom(0, 0, 100);
     drawText(in, 2, 2, gui_vpos);
     gui_vpos += 3;
-    //setZoom(-zoom*1.25, -zoom, zoom);
+    setZoom(-zoom*1.25, -zoom, zoom);
 }
 
 bool vecEditTick(const Controller &keys) {
@@ -111,6 +144,8 @@ bool vecEditTick(const Controller &keys) {
             paths[path_target].reflect--;
         if(keys.keys[5].repeat) // previous reflect
             paths[path_target].reflect++;
+        if(keys.keys[15].repeat)
+            modestack.pop();
         paths[path_target].reflect += VECRF_END;
         paths[path_target].reflect %= VECRF_END;
         write_x = &paths[path_target].centerx;
@@ -154,6 +189,9 @@ void vecEditRender() {
     drawLine(cursor_x + grid, cursor_y, cursor_x + grid / 2, cursor_y, 0.1);
     drawLine(cursor_x, cursor_y - grid, cursor_x, cursor_y - grid / 2, 0.1);
     drawLine(cursor_x, cursor_y + grid, cursor_x, cursor_y + grid / 2, 0.1);
+    
+    renderPaths();
+    
 }
 /*
 enum { VECED_REFLECT, VECED_CREATE, VECED_EXAMINE, VECED_MOVE };
