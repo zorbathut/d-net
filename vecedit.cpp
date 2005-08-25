@@ -97,7 +97,7 @@ bool vecEditTick(const Controller &keys) {
     
     if(modestack.top() == VECED_EXAMINE) {
         if(keys.keys[4].repeat) {   // create path
-            path_target = paths.size() - 1;
+            path_target = paths.size();
             paths.push_back(Path());
             paths[path_target].centerx = cursor_x;
             paths[path_target].centery = cursor_y;
@@ -107,6 +107,12 @@ bool vecEditTick(const Controller &keys) {
     } else if(modestack.top() == VECED_PATH) {
     } else if(modestack.top() == VECED_REFLECT) {
         CHECK(path_target >= 0 && path_target < paths.size());
+        if(keys.keys[4].repeat) // previous reflect
+            paths[path_target].reflect--;
+        if(keys.keys[5].repeat) // previous reflect
+            paths[path_target].reflect++;
+        paths[path_target].reflect += VECRF_END;
+        paths[path_target].reflect %= VECRF_END;
         write_x = &paths[path_target].centerx;
         write_y = &paths[path_target].centery;
     } else {
