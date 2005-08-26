@@ -224,14 +224,13 @@ void MainLoop() {
 		timer.waitForNextFrame();
 		waiting += bencher.ticksElapsed();
 		bencher = Timer();
-		//if( !timer.skipFrame()) {
+		if( !timer.skipFrame()) {
 			initFrame();
 			interfaceRenderToScreen();
 			deinitFrame();
-		//} else {
-			//dprintf( "Skipped, %d behind\n", timer.framesBehind() );
-		//}
-        //dprintf( "Running, %d behind\n", timer.framesBehind() );
+		} else {
+            skipped++;
+		}
 		rendering += bencher.ticksElapsed();
 		timer.frameDone();
 		frameNumber++;
@@ -242,15 +241,16 @@ void MainLoop() {
 			dprintf( "%4d ticking", int( ticking * 1000 / tot ) );
 			dprintf( "%4d waiting", int( waiting * 1000 / tot ) );
 			dprintf( "%4d rendering", int( rendering * 1000 / tot ) );
+            dprintf( "%4d skipped", skipped );
             dprintf( "%4d clusters last 60 frames", getAccumulatedClusterCount());
 			polling = 0;
 			ticking = 0;
 			waiting = 0;
 			rendering = 0;
+            skipped = 0;
 		}
         frako++;
 	}
     for(int i = 0; i < joysticks.size(); i++)
         SDL_JoystickClose(joysticks[i]);
-	dprintf( "denial\n" );
 }

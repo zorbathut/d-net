@@ -29,6 +29,12 @@ public:
     bool curvl;
     bool curvr;
 
+    Vecptn() {
+        x = y = 0;
+        curvlx = curvly = curvrx = curvry = 0;
+        curvl = curvr = false;
+    }
+
 };
 
 class Path {
@@ -40,6 +46,16 @@ public:
     int reflect;
 
     vector<Vecptn> path;
+    vector<Vecptn> vpath;
+
+    void vpathCreate(int node); // used when nodes are created - the node is created before the given node id
+    void vpathModify(int node); // used when nodes are edited
+    void vpathRemove(int node); // used when nodes are destroyed
+
+    void moveCenterOrReflect(); // used when the center is moved or reflection is changed
+    vector<Vecptn> genFromPath() const;
+
+    void checkConsistency() const;
 
     Path() {
         centerx = centery = 0;
@@ -55,13 +71,91 @@ int grid = 16;
 int cursor_x = 0;
 int cursor_y = 0;
 
-float *write_x = NULL;
-float *write_y = NULL;
+void Path::vpathCreate(int node) {
+    CHECK(reflect == VECRF_NONE);
+    CHECK(node >= 0 && node <= path.size());
+    Vecptn tv;
+    tv.x = cursor_x;
+    tv.y = cursor_y;
+    path.insert(path.begin() + node, tv);
+    vpath = genFromPath();
+    checkConsistency();
+}
 
-int path_target = 0;
-int path_curnode = 0;
+void Path::vpathModify(int node) {
+    CHECK(reflect == VECRF_NONE);
+    path = vpath;
+    dprintf("Modifialized!\n");
+}
+
+void Path::vpathRemove(int node) {
+    CHECK(reflect == VECRF_NONE);
+    dprintf("Removinatilated!\n");
+}
+
+void Path::moveCenterOrReflect() {
+    vpath = genFromPath();
+}
+
+vector<Vecptn> Path::genFromPath() const {
+    CHECK(reflect == VECRF_NONE);
+    return path;
+}
+
+void Path::checkConsistency() const {
+    for(int i = 0; i < vpath.size(); i++) {
+        CHECK(vpath[i].curvl == false);
+        CHECK(vpath[i].curvr == false);
+    }
+}
+
+int path_target = -1;
+int path_curnode = -1;
 
 int gui_vpos = 0;
+
+int distSquared(int x, int y, int path, int node) {
+    CHECK(path >= 0 && path < paths.size());
+    if(node != -1) {
+        CHECK(node >= 0 && node < paths[path].vpath.size());
+        return int(pow(x - paths[path].vpath[node].x, 2) + pow(y - paths[path].vpath[node].y, 2) + 0.5);
+    } else {
+        return int(pow(x - paths[path].centerx, 2) + pow(y - paths[path].centery, 2) + 0.5);
+    }
+}
+
+pair<int, int> findTwoClosestNodes(int x, int y, int path) {
+    CHECK(path >= 0 && path < paths.size());
+    int closest = -1;
+    int closest2 = -1;
+    int best = 1000000000;
+    int best2 = 1000000000;
+    for(int i = 0; i < paths[path].vpath.size(); i++) {
+        if(distSquared(x, y, path, i) < best) {
+            closest2 = closest;
+            best2 = best;
+            closest = i;
+            best = distSquared(x, y, path, i);
+        } else if(distSquared(x, y, path, i) < best2) {
+            closest2 = i;
+            best2 = distSquared(x, y, path, i);
+        }
+    }
+    CHECK(best <= best2);
+    return make_pair(closest, closest2);
+}
+    
+int findClosestPath(int x, int y) {
+    int closest = -1;
+    int best = 1000000000;
+    for(int i = 0; i < paths.size(); i++) {
+        if(distSquared(x, y, i, -1) < best) {
+            closest = i;
+            best = distSquared(x, y, i, -1);
+        }
+    }
+    return closest;
+}
 
 void renderSinglePath(int path) {
     CHECK(path >= 0 && path < paths.size());
@@ -70,6 +164,7 @@ void renderSinglePath(int path) {
     float linelen = zoom / 4;
     setColor(0.5, 0.5, 0.5);
     if(p.reflect == VECRF_NONE) {
+        drawBoxAround(p.centerx, p.centery, linelen / 10, 0.1);
     } else if(p.reflect == VECRF_HORIZONTAL) {
         drawLine(p.centerx - linelen, p.centery, p.centerx + linelen, p.centery, 0.1);
     } else if(p.reflect == VECRF_VERTICAL) {
@@ -87,6 +182,8 @@ void renderSinglePath(int path) {
     } else {
         CHECK(0);
     }
+    
+    // Render here!
     
 }
 
@@ -125,10 +222,12 @@ bool vecEditTick(const Controller &keys) {
         grid = max(grid, 1);
     }
     
-    write_x = NULL;
-    write_y = NULL;
+    float *write_x = NULL;
+    float *write_y = NULL;
     
-    if(modestack.top() == VECED_EXAMINE) {
+    if(keys.keys[15].repeat && modestack.top() != VECED_EXAMINE) {
+        modestack.pop();
+    } else if(modestack.top() == VECED_EXAMINE) {
         if(keys.keys[4].repeat) {   // create path
             path_target = paths.size();
             paths.push_back(Path());
@@ -138,18 +237,39 @@ bool vecEditTick(const Controller &keys) {
             modestack.push(VECED_REFLECT);
         }
     } else if(modestack.top() == VECED_PATH) {
+        CHECK(path_target >= 0 && path_target < paths.size());
+        if(keys.keys[4].repeat) { // create node
+            pair<int, int> close = findTwoClosestNodes(cursor_x, cursor_y, path_target);
+            if(close.first == -1)
+                close.first = 0;
+            // TODO: figure out which side it should be on
+            paths[path_target].vpathCreate(close.first);
+            path_curnode = close.first;
+            modestack.push(VECED_MOVE);
+        } else if(keys.keys[9].repeat) { // center/reflect
+            cursor_x = int(paths[path_target].centerx + 0.5);
+            cursor_y = int(paths[path_target].centery + 0.5);
+            modestack.push(VECED_REFLECT);
+        } else if(keys.keys[15].repeat) {
+            path_target = -1;
+            path_curnode = -1;
+            modestack.pop();
+        }
     } else if(modestack.top() == VECED_REFLECT) {
         CHECK(path_target >= 0 && path_target < paths.size());
         if(keys.keys[4].repeat) // previous reflect
             paths[path_target].reflect--;
-        if(keys.keys[5].repeat) // previous reflect
-            paths[path_target].reflect++;
-        if(keys.keys[15].repeat)
-            modestack.pop();
+        if(keys.keys[5].repeat) // next reflect
+            paths[path_target].reflect++;    
         paths[path_target].reflect += VECRF_END;
         paths[path_target].reflect %= VECRF_END;
         write_x = &paths[path_target].centerx;
         write_y = &paths[path_target].centery;
+    } else if(modestack.top() ==  VECED_MOVE) {
+        CHECK(path_target >= 0 && path_target < paths.size());
+        CHECK(path_curnode >= 0 && path_curnode < paths[path_target].vpath.size());
+        write_x = &paths[path_target].vpath[path_curnode].x;
+        write_y = &paths[path_target].vpath[path_curnode].y;
     } else {
         CHECK(0);
     }
@@ -161,6 +281,17 @@ bool vecEditTick(const Controller &keys) {
     
     if(write_x) *write_x = cursor_x;
     if(write_y) *write_y = cursor_y;
+        
+    if(modestack.top() == VECED_REFLECT) {
+        paths[path_target].moveCenterOrReflect();
+        CHECK(path_target >= 0 && path_target < paths.size());
+    }
+    
+    if(modestack.top() == VECED_MOVE) {
+        CHECK(path_target >= 0 && path_target < paths.size());
+        CHECK(path_curnode >= 0 && path_curnode < paths[path_target].vpath.size());
+        paths[path_target].vpathModify(path_curnode);
+    }
     
     return false;
     
@@ -177,10 +308,15 @@ void vecEditRender() {
     } else if(modestack.top() == VECED_PATH) {
         CHECK(path_target >= 0 && path_target < paths.size());
         guiText("u/j/m to create/edit/destroy nodes         / to exit");
+        guiText("k to move center/reflect");
     } else if(modestack.top() == VECED_REFLECT) {
         CHECK(path_target >= 0 && path_target < paths.size());
         guiText(StringPrintf("u/i to change reflect mode (currently %s)", rf_names[paths[path_target].reflect]));
         guiText("arrow keys to move center, / to accept");
+    } else if(modestack.top() == VECED_MOVE) {
+        CHECK(path_target >= 0 && path_target < paths.size());
+        CHECK(path_curnode >= 0 && path_curnode < paths[path_target].vpath.size());
+        guiText("arrow keys to move, / to accept");
     } else {
         CHECK(0);
     }
