@@ -8,12 +8,77 @@
 
 using namespace std;
 
-stack< int > modestack;
-
 enum { VECED_EXAMINE, VECED_PATH, VECED_REFLECT, VECED_MOVE };
 const char *ed_names[] = { "Examine", "Path edit", "Reflect", "Move" };
 enum { VECRF_NONE, VECRF_HORIZONTAL, VECRF_VERTICAL, VECRF_VH, VECRF_180DEG, VECRF_SNOWFLAKE4, VECRF_END };
 const char *rf_names[] = {"none", "horizontal", "vertical", "vertical horizontal", "180deg", "snowflake4"};
+const int rf_repeats[] = { 1, 2, 2, 4, 2, 8 };
+const bool rf_mirror[] = { false, true, true, true, false, true };
+
+class Transform2d {
+public:
+    float m[3][3];
+
+    void hflip() {
+        for(int i = 0; i < 3; i++)
+            m[0][i] *= -1;
+    }
+    void vflip() {
+        for(int i = 0; i < 3; i++)
+            m[1][i] *= -1;
+    }
+    void dflip() {
+        for(int i = 0; i < 3; i++)
+            swap(m[0][i], m[1][i]);
+    }
+
+    Transform2d() {
+        for(int i = 0; i < 3; i++)
+            for(int j = 0; j < 3; j++)
+                m[i][j] = ( i == j );
+    }
+};
+
+inline Transform2d t2d_identity() {
+    return Transform2d();
+}
+inline Transform2d t2d_flip(bool h, bool v, bool d) {
+    Transform2d o;
+    if(h)
+        o.hflip();
+    if(v)
+        o.vflip();
+    if(d)
+        o.dflip();
+    return o;
+}
+inline Transform2d t2d_rotate(float rad) {
+    Transform2d o;
+    o.m[0][0] = sin(rad);
+    o.m[0][1] = cos(rad);
+    o.m[1][0] = -cos(rad);
+    o.m[1][1] = sin(rad);
+    return o;
+}
+
+Transform2d rf_none[] = {t2d_identity()};
+Transform2d rf_horizontal[] = {t2d_identity(), t2d_flip(1,0,0)};
+Transform2d rf_vertical[] = {t2d_identity(), t2d_flip(0,1,0)};
+Transform2d rf_vh[] = {t2d_identity(), t2d_flip(1,0,0), t2d_flip(1,1,0), t2d_flip(0,1,0)};
+Transform2d rf_180[] = {t2d_identity(), t2d_rotate(PI)};
+Transform2d rf_snowflake4[] = {
+        t2d_flip(0,0,0),
+        t2d_flip(0,0,1),
+        t2d_flip(0,1,1),
+        t2d_flip(1,0,0),
+        t2d_flip(1,1,0),
+        t2d_flip(1,1,1),
+        t2d_flip(0,1,1),
+        t2d_flip(0,1,0) };
+
+stack< int > modestack;
+
+
 
 class Vecptn {
 public:
@@ -71,6 +136,9 @@ int grid = 16;
 int cursor_x = 0;
 int cursor_y = 0;
 
+float offset_x;
+float offset_y;
+
 void Path::vpathCreate(int node) {
     CHECK(reflect == VECRF_NONE);
     CHECK(node >= 0 && node <= path.size());
@@ -84,13 +152,17 @@ void Path::vpathCreate(int node) {
 
 void Path::vpathModify(int node) {
     CHECK(reflect == VECRF_NONE);
+    CHECK(node >= 0 && node <= path.size());
     path = vpath;
-    dprintf("Modifialized!\n");
+    checkConsistency();
 }
 
 void Path::vpathRemove(int node) {
     CHECK(reflect == VECRF_NONE);
-    dprintf("Removinatilated!\n");
+    CHECK(node >= 0 && node <= path.size());
+    path.erase(path.begin() + node);
+    vpath = genFromPath();
+    checkConsistency();
 }
 
 void Path::moveCenterOrReflect() {
@@ -109,6 +181,9 @@ void Path::checkConsistency() const {
     }
 }
 
+void savePaths() {
+}
+
 int path_target = -1;
 int path_curnode = -1;
 
@@ -118,9 +193,9 @@ int distSquared(int x, int y, int path, int node) {
     CHECK(path >= 0 && path < paths.size());
     if(node != -1) {
         CHECK(node >= 0 && node < paths[path].vpath.size());
-        return int(pow(x - paths[path].vpath[node].x, 2) + pow(y - paths[path].vpath[node].y, 2) + 0.5);
+        return round(pow(x - paths[path].vpath[node].x - paths[path].centerx, 2) + pow(y - paths[path].vpath[node].y - paths[path].centery, 2));
     } else {
-        return int(pow(x - paths[path].centerx, 2) + pow(y - paths[path].centery, 2) + 0.5);
+        return round(pow(x - paths[path].centerx, 2) + pow(y - paths[path].centery, 2));
     }
 }
 
@@ -183,7 +258,15 @@ void renderSinglePath(int path) {
         CHECK(0);
     }
     
+    setColor(1.0, 1.0, 1.0);
+    
     // Render here!
+    for(int i = 0; i < p.vpath.size(); i++) {
+        int n = i + 1;
+        n %= p.vpath.size();
+        CHECK(p.vpath[i].curvr == false);
+        drawLine(p.centerx + p.vpath[i].x, p.centery + p.vpath[i].y, p.centerx + p.vpath[n].x, p.centery + p.vpath[n].y, 0.1);
+    }
     
 }
 
@@ -201,6 +284,12 @@ void guiText(const string &in) {
 }
 
 bool vecEditTick(const Controller &keys) {
+    
+    // various consistency checks
+    CHECK(sizeof(rf_names) / sizeof(*rf_names) == VECRF_END);
+    CHECK(sizeof(rf_repeats) / sizeof(*rf_repeats) == VECRF_END);
+    CHECK(sizeof(rf_mirror) / sizeof(*rf_mirror) == VECRF_END);
+    
     if(modestack.size() == 0)   // get the whole shebang started
         modestack.push(VECED_EXAMINE);
     
@@ -235,20 +324,59 @@ bool vecEditTick(const Controller &keys) {
             paths[path_target].centery = cursor_y;
             modestack.push(VECED_PATH);
             modestack.push(VECED_REFLECT);
+        } else if(keys.keys[8].repeat) {    // edit path
+            int close = findClosestPath(cursor_x, cursor_y);
+            if(close != -1) {
+                path_target = close;
+                modestack.push(VECED_PATH);
+            }
+        } else if(keys.keys[12].repeat) {   // delete path
+            int close = findClosestPath(cursor_x, cursor_y);
+            if(close != -1) {
+                savePaths();
+                paths.erase(paths.begin() + close);
+            }
         }
     } else if(modestack.top() == VECED_PATH) {
         CHECK(path_target >= 0 && path_target < paths.size());
         if(keys.keys[4].repeat) { // create node
-            pair<int, int> close = findTwoClosestNodes(cursor_x, cursor_y, path_target);
-            if(close.first == -1)
-                close.first = 0;
-            // TODO: figure out which side it should be on
-            paths[path_target].vpathCreate(close.first);
-            path_curnode = close.first;
+            int createtarget = -1;
+            {
+                pair<int, int> close = findTwoClosestNodes(cursor_x, cursor_y, path_target);
+                createtarget = close.first;
+            }
+            if(createtarget != -1) {
+                int prev = createtarget + paths[path_target].vpath.size() - 1;
+                int nxt = createtarget + 1;
+                prev %= paths[path_target].vpath.size();
+                nxt %= paths[path_target].vpath.size();
+                int pd = distSquared(cursor_x, cursor_y, path_target, prev);
+                int nd = distSquared(cursor_x, cursor_y, path_target, nxt);
+                if(pd >= nd)
+                    createtarget = nxt;
+            } else {
+                // fallback if there are zero nodes
+                CHECK(paths[path_target].vpath.size() == 0);
+                createtarget = 0;
+            }
+            paths[path_target].vpathCreate(createtarget);
+            path_curnode = createtarget;
             modestack.push(VECED_MOVE);
+        } else if(keys.keys[8].repeat) { // edit node
+            pair<int, int> close = findTwoClosestNodes(cursor_x, cursor_y, path_target);
+            if(close.first != -1) {
+                path_curnode = close.first;
+                cursor_x = round(paths[path_target].vpath[path_curnode].x + paths[path_target].centerx);
+                cursor_y = round(paths[path_target].vpath[path_curnode].y + paths[path_target].centery);
+                modestack.push(VECED_MOVE);
+            }
+        } else if(keys.keys[12].repeat) { // delete node
+            pair<int, int> close = findTwoClosestNodes(cursor_x, cursor_y, path_target);
+            if(close.first != -1)
+                paths[path_target].vpathRemove(close.first);
         } else if(keys.keys[9].repeat) { // center/reflect
-            cursor_x = int(paths[path_target].centerx + 0.5);
-            cursor_y = int(paths[path_target].centery + 0.5);
+            cursor_x = round(paths[path_target].centerx);
+            cursor_y = round(paths[path_target].centery);
             modestack.push(VECED_REFLECT);
         } else if(keys.keys[15].repeat) {
             path_target = -1;
@@ -265,11 +393,15 @@ bool vecEditTick(const Controller &keys) {
         paths[path_target].reflect %= VECRF_END;
         write_x = &paths[path_target].centerx;
         write_y = &paths[path_target].centery;
+        offset_x = 0;
+        offset_y = 0;
     } else if(modestack.top() ==  VECED_MOVE) {
         CHECK(path_target >= 0 && path_target < paths.size());
         CHECK(path_curnode >= 0 && path_curnode < paths[path_target].vpath.size());
         write_x = &paths[path_target].vpath[path_curnode].x;
         write_y = &paths[path_target].vpath[path_curnode].y;
+        offset_x = -paths[path_target].centerx;
+        offset_y = -paths[path_target].centery;
     } else {
         CHECK(0);
     }
@@ -279,8 +411,8 @@ bool vecEditTick(const Controller &keys) {
     if(keys.u.repeat) cursor_y -= grid;
     if(keys.d.repeat) cursor_y += grid;
     
-    if(write_x) *write_x = cursor_x;
-    if(write_y) *write_y = cursor_y;
+    if(write_x) *write_x = cursor_x + offset_x;
+    if(write_y) *write_y = cursor_y + offset_y;
         
     if(modestack.top() == VECED_REFLECT) {
         paths[path_target].moveCenterOrReflect();

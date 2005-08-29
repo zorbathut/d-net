@@ -215,4 +215,8 @@ inline bool isinside(const Float4 &lhs, const Float2 &rhs) {
 
 string StringPrintf( const char *bort, ... ) __attribute__((format(printf,1,2)));
 
+inline int round(float in) {
+    return int(floor(in + 0.5));
+}
+
 #endif
