@@ -242,7 +242,7 @@ void MainLoop() {
 			dprintf( "%4d waiting", int( waiting * 1000 / tot ) );
 			dprintf( "%4d rendering", int( rendering * 1000 / tot ) );
             dprintf( "%4d skipped", skipped );
-            dprintf( "%4d clusters last 60 frames", getAccumulatedClusterCount());
+            dprintf( "%f clusters/frame last 60 frames", getAccumulatedClusterCount() / float(60 - skipped));
 			polling = 0;
 			ticking = 0;
 			waiting = 0;

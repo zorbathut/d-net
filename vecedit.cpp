@@ -8,13 +8,6 @@
 
 using namespace std;
 
-enum { VECED_EXAMINE, VECED_PATH, VECED_REFLECT, VECED_MOVE };
-const char *ed_names[] = { "Examine", "Path edit", "Reflect", "Move" };
-enum { VECRF_NONE, VECRF_HORIZONTAL, VECRF_VERTICAL, VECRF_VH, VECRF_180DEG, VECRF_SNOWFLAKE4, VECRF_END };
-const char *rf_names[] = {"none", "horizontal", "vertical", "vertical horizontal", "180deg", "snowflake4"};
-const int rf_repeats[] = { 1, 2, 2, 4, 2, 8 };
-const bool rf_mirror[] = { false, true, true, true, false, true };
-
 class Transform2d {
 public:
     float m[3][3];
@@ -30,6 +23,34 @@ public:
     void dflip() {
         for(int i = 0; i < 3; i++)
             swap(m[0][i], m[1][i]);
+    }
+    
+    float mx(float x, float y) const {
+        float ox = 0.0;
+        ox += m[0][0] * x;
+        ox += m[0][1] * y;
+        ox += m[0][2];
+        return ox;
+    }
+    
+    float my(float x, float y) const {
+        float oy = 0.0;        
+        oy += m[1][0] * x;
+        oy += m[1][1] * y;
+        oy += m[1][2];
+        return oy;
+    }
+    
+    void transform(float *x, float *y) const {
+        float px = *x;
+        float py = *y;
+        *x = mx(px, py);
+        *y = my(px, py);
+    }
+    
+    void display() const {
+        for(int i = 0; i < 3; i++)
+            dprintf("  %f %f %f\n", m[0][i], m[1][i], m[2][i]);
     }
 
     Transform2d() {
@@ -52,6 +73,9 @@ inline Transform2d t2d_flip(bool h, bool v, bool d) {
         o.dflip();
     return o;
 }
+
+/*
+what the fuck?
 inline Transform2d t2d_rotate(float rad) {
     Transform2d o;
     o.m[0][0] = sin(rad);
@@ -60,12 +84,20 @@ inline Transform2d t2d_rotate(float rad) {
     o.m[1][1] = sin(rad);
     return o;
 }
+*/
+
+enum { VECED_EXAMINE, VECED_PATH, VECED_REFLECT, VECED_MOVE };
+const char *ed_names[] = { "Examine", "Path edit", "Reflect", "Move" };
+enum { VECRF_NONE, VECRF_HORIZONTAL, VECRF_VERTICAL, VECRF_VH, VECRF_180DEG, VECRF_SNOWFLAKE4, VECRF_END };
+const char *rf_names[] = {"none", "horizontal", "vertical", "vertical horizontal", "180deg", "snowflake4"};
+const int rf_repeats[] = { 1, 2, 2, 4, 2, 8 };
+const bool rf_mirror[] = { false, true, true, true, false, true };
 
 Transform2d rf_none[] = {t2d_identity()};
-Transform2d rf_horizontal[] = {t2d_identity(), t2d_flip(1,0,0)};
-Transform2d rf_vertical[] = {t2d_identity(), t2d_flip(0,1,0)};
+Transform2d rf_horizontal[] = {t2d_identity(), t2d_flip(0,1,0)};
+Transform2d rf_vertical[] = {t2d_identity(), t2d_flip(1,0,0)};
 Transform2d rf_vh[] = {t2d_identity(), t2d_flip(1,0,0), t2d_flip(1,1,0), t2d_flip(0,1,0)};
-Transform2d rf_180[] = {t2d_identity(), t2d_rotate(PI)};
+Transform2d rf_180[] = {t2d_identity(), t2d_flip(1,1,0)};
 Transform2d rf_snowflake4[] = {
         t2d_flip(0,0,0),
         t2d_flip(0,0,1),
@@ -73,12 +105,12 @@ Transform2d rf_snowflake4[] = {
         t2d_flip(1,0,0),
         t2d_flip(1,1,0),
         t2d_flip(1,1,1),
-        t2d_flip(0,1,1),
-        t2d_flip(0,1,0) };
+        t2d_flip(1,0,1),
+        t2d_flip(0,1,0)};
+
+Transform2d *rf_behavior[] = {rf_none, rf_horizontal, rf_vertical, rf_vh, rf_180, rf_snowflake4};
 
 stack< int > modestack;
-
-
 
 class Vecptn {
 public:
@@ -94,9 +126,21 @@ public:
     bool curvl;
     bool curvr;
 
+    void mirror() {
+        swap(curvlx, curvrx);
+        swap(curvly, curvry);
+        swap(curvl, curvr);
+    }
+    
+    void transform(const Transform2d &ctd) {
+        ctd.transform(&x, &y);
+        ctd.transform(&curvlx, &curvly);
+        ctd.transform(&curvrx, &curvry);
+    }
+
     Vecptn() {
         x = y = 0;
-        curvlx = curvly = curvrx = curvry = 0;
+        curvlx = curvly = curvrx = curvry = 16;
         curvl = curvr = false;
     }
 
@@ -118,9 +162,16 @@ public:
     void vpathRemove(int node); // used when nodes are destroyed
 
     void moveCenterOrReflect(); // used when the center is moved or reflection is changed
+
+    void setVRCurviness(int node, bool curv); // sets the R-curviness of the given virtual node
+
+    Vecptn genNode(int i) const;
     vector<Vecptn> genFromPath() const;
 
-    void checkConsistency() const;
+    void fixCurve();
+    void rebuildVpath();
+
+    pair<int, bool> getCanonicalNode(int vnode) const;
 
     Path() {
         centerx = centery = 0;
@@ -140,45 +191,126 @@ float offset_x;
 float offset_y;
 
 void Path::vpathCreate(int node) {
-    CHECK(reflect == VECRF_NONE);
-    CHECK(node >= 0 && node <= path.size());
+    CHECK(node >= 0 && node <= vpath.size());
+    pair<int, bool> can = getCanonicalNode(node);
+    if(can.second) can.first++;
     Vecptn tv;
     tv.x = cursor_x;
     tv.y = cursor_y;
-    path.insert(path.begin() + node, tv);
-    vpath = genFromPath();
-    checkConsistency();
+    path.insert(path.begin() + can.first, tv);
+    rebuildVpath();
 }
 
 void Path::vpathModify(int node) {
-    CHECK(reflect == VECRF_NONE);
-    CHECK(node >= 0 && node <= path.size());
-    path = vpath;
-    checkConsistency();
+    CHECK(node >= 0 && node < vpath.size());
+    Vecptn orig = genNode(node);
+    if(orig.curvl != vpath[node].curvl)
+        setVRCurviness((node + vpath.size() - 1) % vpath.size(), vpath[node].curvl);
+    if(orig.curvr != vpath[node].curvr)
+        setVRCurviness(node, vpath[node].curvr);
+    if(node >= path.size()) {
+        dprintf("Not modifying, this has to be written!");
+    } else {
+        path[node] = vpath[node];
+    }
+    rebuildVpath();
+}
+
+void Path::setVRCurviness(int node, bool curv) {
+    pair<int, bool> canoa = getCanonicalNode(node);
+    pair<int, bool> canob = getCanonicalNode((node + 1) % (path.size() * rf_repeats[reflect]));
+    dprintf("svrc: %d, %d %d, %d %d\n", node, canoa.first, canoa.second, canob.first, canob.second);
+    if(!canoa.second)
+        path[canoa.first].curvr = curv;
+    else
+        path[canoa.first].curvl = curv;
+    if(!canob.second)
+        path[canob.first].curvl = curv;
+    else
+        path[canob.first].curvr = curv;
 }
 
 void Path::vpathRemove(int node) {
-    CHECK(reflect == VECRF_NONE);
-    CHECK(node >= 0 && node <= path.size());
-    path.erase(path.begin() + node);
-    vpath = genFromPath();
-    checkConsistency();
+    CHECK(node >= 0 && node < vpath.size());
+    path.erase(path.begin() + getCanonicalNode(node).first);
+    rebuildVpath();
 }
 
-void Path::moveCenterOrReflect() {
-    vpath = genFromPath();
+Vecptn Path::genNode(int i) const {
+    pair<int, bool> src = getCanonicalNode(i);
+    Vecptn srcp = path[src.first];
+    if(src.second)
+        srcp.mirror();
+    srcp.transform(rf_behavior[reflect][i / path.size()]);
+    return srcp;
 }
 
 vector<Vecptn> Path::genFromPath() const {
-    CHECK(reflect == VECRF_NONE);
-    return path;
+    vector<Vecptn> nvpt;
+    for(int i = 0; i < path.size() * rf_repeats[reflect]; i++)
+        nvpt.push_back(genNode(i));
+    return nvpt;
 }
 
-void Path::checkConsistency() const {
-    for(int i = 0; i < vpath.size(); i++) {
-        CHECK(vpath[i].curvl == false);
-        CHECK(vpath[i].curvr == false);
+pair<int, bool> Path::getCanonicalNode(int vnode) const {
+    CHECK(vnode >= 0 && vnode <= path.size() * rf_repeats[reflect]);
+    if(vnode == path.size() * rf_repeats[reflect]) {
+        if(rf_mirror[reflect]) {
+            CHECK(rf_repeats[reflect] % 2 == 0);
+            return make_pair(0, false);
+        } else {
+            return make_pair(path.size(), false);
+        }
+        CHECK(0);
     }
+    CHECK(vnode < path.size() * rf_repeats[reflect]);
+    int bank = vnode / path.size();
+    int sub = vnode % path.size();
+    CHECK(bank >= 0 && bank < rf_repeats[reflect]);
+    if(bank % 2 == 1 && rf_mirror[reflect]) {
+        // this is a mirrored node
+        return make_pair(path.size() - sub - 1, true);
+    } else {
+        // this is a normal node
+        return make_pair(sub, false);
+    }
+}
+
+void Path::moveCenterOrReflect() {
+    rebuildVpath();
+}
+
+void Path::fixCurve() {
+    bool changed = false;
+    vector<Vecptn> tvpath = genFromPath();
+    for(int i = 0; i < tvpath.size(); i++) {
+        int n = (i + 1) % tvpath.size();
+        if(tvpath[i].curvr != tvpath[n].curvl) {
+            dprintf("Splicing curves");
+            setVRCurviness(i, true);
+            changed = true;
+        }
+    }
+    if(changed) {
+        dprintf("Curves have been spliced");
+        dprintf("Before:");
+        for(int i = 0; i < tvpath.size(); i++)
+            dprintf("%d %d", tvpath[i].curvl, tvpath[i].curvr);
+        tvpath = genFromPath();
+        dprintf("After:");
+        for(int i = 0; i < tvpath.size(); i++)
+            dprintf("%d %d", tvpath[i].curvl, tvpath[i].curvr);
+        for(int i = 0; i < tvpath.size(); i++)
+            CHECK(tvpath[i].curvr == tvpath[(i + 1) % tvpath.size()].curvl);
+    }
+}
+
+void Path::rebuildVpath() {
+    fixCurve();
+    vpath = genFromPath();
+    CHECK(vpath.size() == path.size() * rf_repeats[reflect]);
+    for(int i = 0; i < vpath.size(); i++)
+        CHECK(vpath[i].curvr == vpath[(i + 1) % vpath.size()].curvl);
 }
 
 void savePaths() {
@@ -186,16 +318,30 @@ void savePaths() {
 
 int path_target = -1;
 int path_curnode = -1;
+int path_curhandle = -1;
 
 int gui_vpos = 0;
 
 int distSquared(int x, int y, int path, int node) {
     CHECK(path >= 0 && path < paths.size());
+    CHECK(node >= -1 && node < (int)paths[path].vpath.size()); // damn size_t
     if(node != -1) {
         CHECK(node >= 0 && node < paths[path].vpath.size());
-        return round(pow(x - paths[path].vpath[node].x - paths[path].centerx, 2) + pow(y - paths[path].vpath[node].y - paths[path].centery, 2));
+        return round(pow(x - paths[path].centerx - paths[path].vpath[node].x, 2) + pow(y - paths[path].centery - paths[path].vpath[node].y, 2));
     } else {
         return round(pow(x - paths[path].centerx, 2) + pow(y - paths[path].centery, 2));
+    }
+}
+
+int handleDistSquared(int x, int y, int path, int node, bool side) {
+    CHECK(path >= 0 && path < paths.size());
+    CHECK(node >= 0 && node < paths[path].vpath.size());
+    if(!side) {
+        return round(pow(x - paths[path].centerx - paths[path].vpath[node].x - paths[path].vpath[node].curvlx, 2) +
+                     pow(y - paths[path].centery - paths[path].vpath[node].y - paths[path].vpath[node].curvly, 2));
+    } else {
+        return round(pow(x - paths[path].centerx - paths[path].vpath[node].x - paths[path].vpath[node].curvrx, 2) +
+                     pow(y - paths[path].centery - paths[path].vpath[node].y - paths[path].vpath[node].curvry, 2));
     }
 }
 
@@ -219,7 +365,31 @@ pair<int, int> findTwoClosestNodes(int x, int y, int path) {
     CHECK(best <= best2);
     return make_pair(closest, closest2);
 }
-    
+
+pair<int, bool> findClosestHandle(int x, int y, int path) {
+    CHECK(path >= 0 && path < paths.size());
+    int closestn = -1;
+    bool closestr = false;
+    int best = 1000000000;
+    for(int i = 0; i < paths[path].vpath.size(); i++) {
+        if(paths[path].vpath[i].curvl) {
+            if(handleDistSquared(x, y, path, i, false) < best) {
+                closestn = i;
+                closestr = false;
+                best = handleDistSquared(x, y, path, i, false);
+            }
+        }
+        if(paths[path].vpath[i].curvr) {
+            if(handleDistSquared(x, y, path, i, true) < best) {
+                closestn = i;
+                closestr = true;
+                best = handleDistSquared(x, y, path, i, true);
+            }
+        }
+    }
+    return make_pair(closestn, closestr);
+}
+
 int findClosestPath(int x, int y) {
     int closest = -1;
     int best = 1000000000;
@@ -232,47 +402,113 @@ int findClosestPath(int x, int y) {
     return closest;
 }
 
-void renderSinglePath(int path) {
+void renderSinglePath(int path, float intense, int widgetlevel) {
     CHECK(path >= 0 && path < paths.size());
     
     const Path &p = paths[path];
     float linelen = zoom / 4;
-    setColor(0.5, 0.5, 0.5);
-    if(p.reflect == VECRF_NONE) {
-        drawBoxAround(p.centerx, p.centery, linelen / 10, 0.1);
-    } else if(p.reflect == VECRF_HORIZONTAL) {
-        drawLine(p.centerx - linelen, p.centery, p.centerx + linelen, p.centery, 0.1);
-    } else if(p.reflect == VECRF_VERTICAL) {
-        drawLine(p.centerx, p.centery - linelen, p.centerx, p.centery + linelen, 0.1);
-    } else if(p.reflect == VECRF_VH) {
-        drawLine(p.centerx - linelen, p.centery, p.centerx + linelen, p.centery, 0.1);
-        drawLine(p.centerx, p.centery - linelen, p.centerx, p.centery + linelen, 0.1);
-    } else if(p.reflect == VECRF_180DEG) {
-        drawLine(p.centerx - linelen, p.centery - linelen, p.centerx + linelen, p.centery + linelen, 0.1);
-    } else if(p.reflect == VECRF_SNOWFLAKE4) {
-        drawLine(p.centerx - linelen, p.centery - linelen, p.centerx + linelen, p.centery + linelen, 0.1);
-        drawLine(p.centerx - linelen, p.centery + linelen, p.centerx + linelen, p.centery - linelen, 0.1);
-        drawLine(p.centerx - linelen, p.centery, p.centerx + linelen, p.centery, 0.1);
-        drawLine(p.centerx, p.centery - linelen, p.centerx, p.centery + linelen, 0.1);
-    } else {
-        CHECK(0);
-    }
     
-    setColor(1.0, 1.0, 1.0);
+    setColor(Color(1.0, 1.0, 1.0) * intense);
     
     // Render here!
     for(int i = 0; i < p.vpath.size(); i++) {
         int n = i + 1;
         n %= p.vpath.size();
-        CHECK(p.vpath[i].curvr == false);
-        drawLine(p.centerx + p.vpath[i].x, p.centery + p.vpath[i].y, p.centerx + p.vpath[n].x, p.centery + p.vpath[n].y, 0.1);
+        CHECK(p.vpath[i].curvr ==p.vpath[n].curvl);
+        if(!p.vpath[i].curvr) {
+            drawLine(p.centerx + p.vpath[i].x, p.centery + p.vpath[i].y, p.centerx + p.vpath[n].x, p.centery + p.vpath[n].y, 0.1);
+        } else {
+            drawCurve(Float4(
+                p.centerx + p.vpath[i].x,                       p.centery + p.vpath[i].y,
+                p.centerx + p.vpath[i].x + p.vpath[i].curvrx,   p.centery + p.vpath[i].y + p.vpath[i].curvry
+            ), Float4(
+                p.centerx + p.vpath[n].x + p.vpath[n].curvlx,   p.centery + p.vpath[n].y + p.vpath[n].curvly,
+                p.centerx + p.vpath[n].x,                       p.centery + p.vpath[n].y
+            ), 0.1);
+        }
+    }
+    
+    // reflection/core widget
+    if(widgetlevel >= 1) {
+        setColor(Color(0.5, 0.5, 0.5) * intense);
+        drawBoxAround(p.centerx, p.centery, linelen / 10, 0.1);
+        if(p.reflect == VECRF_NONE) {
+        } else if(p.reflect == VECRF_HORIZONTAL) {
+            drawLine(p.centerx - linelen, p.centery, p.centerx + linelen, p.centery, 0.1);
+        } else if(p.reflect == VECRF_VERTICAL) {
+            drawLine(p.centerx, p.centery - linelen, p.centerx, p.centery + linelen, 0.1);
+        } else if(p.reflect == VECRF_VH) {
+            drawLine(p.centerx - linelen, p.centery, p.centerx + linelen, p.centery, 0.1);
+            drawLine(p.centerx, p.centery - linelen, p.centerx, p.centery + linelen, 0.1);
+        } else if(p.reflect == VECRF_180DEG) {
+            drawLine(p.centerx - linelen, p.centery - linelen, p.centerx + linelen, p.centery + linelen, 0.1);
+        } else if(p.reflect == VECRF_SNOWFLAKE4) {
+            drawLine(p.centerx - linelen, p.centery - linelen, p.centerx + linelen, p.centery + linelen, 0.1);
+            drawLine(p.centerx - linelen, p.centery + linelen, p.centerx + linelen, p.centery - linelen, 0.1);
+            drawLine(p.centerx - linelen, p.centery, p.centerx + linelen, p.centery, 0.1);
+            drawLine(p.centerx, p.centery - linelen, p.centerx, p.centery + linelen, 0.1);
+        } else {
+            CHECK(0);
+        }
+    }
+    
+    // handle widgets
+    if(widgetlevel >= 2) {
+        setColor(Color(0.3, 0.3, 0.3) * intense);
+        for(int i = 0; i < p.vpath.size(); i++) {
+            if(p.vpath[i].curvl)
+                drawLine(p.centerx + p.vpath[i].x, p.centery + p.vpath[i].y, p.centerx + p.vpath[i].x + p.vpath[i].curvlx, p.centery + p.vpath[i].y + p.vpath[i].curvly, 0.1);
+            if(p.vpath[i].curvr)
+                drawLine(p.centerx + p.vpath[i].x, p.centery + p.vpath[i].y, p.centerx + p.vpath[i].x + p.vpath[i].curvrx, p.centery + p.vpath[i].y + p.vpath[i].curvry, 0.1);
+        }
+    }
+    
+    // closest widgets
+    if(widgetlevel >= 3) {
+        pair<int, int> close = findTwoClosestNodes(cursor_x, cursor_y, path);
+        if(close.first != -1) {
+            setColor(Color(0.0, 0.5, 0.0) * intense);
+            drawBoxAround(p.centerx + p.vpath[close.first].x, p.centery + p.vpath[close.first].y, linelen / 20, 0.1);
+        }
+        if(close.second != -1) {
+            setColor(Color(0.5, 0.0, 0.0) * intense);
+            drawBoxAround(p.centerx + p.vpath[close.second].x, p.centery + p.vpath[close.second].y, linelen / 30, 0.1);
+        }
+        pair<int, bool> handle = findClosestHandle(cursor_x, cursor_y, path);
+        if(handle.first != -1) {
+            setColor(Color(0.0, 0.0, 0.5) * intense);
+            if(!handle.second) {
+                drawBoxAround(p.centerx + p.vpath[handle.first].x + p.vpath[handle.first].curvlx, p.centery + p.vpath[handle.first].y + p.vpath[handle.first].curvly, linelen / 30, 0.1);
+            } else {
+                drawBoxAround(p.centerx + p.vpath[handle.first].x + p.vpath[handle.first].curvrx, p.centery + p.vpath[handle.first].y + p.vpath[handle.first].curvry, linelen / 30, 0.1);
+            }
+        }
     }
     
 }
 
 void renderPaths() {
     for(int i = 0; i < paths.size(); i++) {
-        renderSinglePath(i);
+        float intense;
+        int widgetlevel;
+        if(path_target != -1 && i == path_target) {
+            intense = 1;
+            widgetlevel = 3;
+        } else if(path_target != -1 && i != path_target) {
+            intense = 0.5;
+            widgetlevel = 0;
+        } else {
+            CHECK(path_target == -1);
+            int close = findClosestPath(cursor_x, cursor_y);
+            if(i == close) {
+                intense = 1;
+                widgetlevel = 2;
+            } else {
+                intense = 0.8;
+                widgetlevel = 1;
+            }
+        }
+        renderSinglePath(i, intense, widgetlevel);
     }
 }
 
@@ -289,6 +525,7 @@ bool vecEditTick(const Controller &keys) {
     CHECK(sizeof(rf_names) / sizeof(*rf_names) == VECRF_END);
     CHECK(sizeof(rf_repeats) / sizeof(*rf_repeats) == VECRF_END);
     CHECK(sizeof(rf_mirror) / sizeof(*rf_mirror) == VECRF_END);
+    CHECK(sizeof(rf_behavior) / sizeof(*rf_behavior) == VECRF_END);
     
     if(modestack.size() == 0)   // get the whole shebang started
         modestack.push(VECED_EXAMINE);
@@ -315,7 +552,14 @@ bool vecEditTick(const Controller &keys) {
     float *write_y = NULL;
     
     if(keys.keys[15].repeat && modestack.top() != VECED_EXAMINE) {
+        if(modestack.top() == VECED_MOVE) {
+            path_curhandle = -1;
+            path_curnode = -1;
+        }
         modestack.pop();
+        if(modestack.top() == VECED_EXAMINE) {
+            path_target = -1;
+        }
     } else if(modestack.top() == VECED_EXAMINE) {
         if(keys.keys[4].repeat) {   // create path
             path_target = paths.size();
@@ -366,22 +610,38 @@ bool vecEditTick(const Controller &keys) {
             pair<int, int> close = findTwoClosestNodes(cursor_x, cursor_y, path_target);
             if(close.first != -1) {
                 path_curnode = close.first;
-                cursor_x = round(paths[path_target].vpath[path_curnode].x + paths[path_target].centerx);
-                cursor_y = round(paths[path_target].vpath[path_curnode].y + paths[path_target].centery);
+                cursor_x = round(paths[path_target].centerx + paths[path_target].vpath[path_curnode].x);
+                cursor_y = round(paths[path_target].centery + paths[path_target].vpath[path_curnode].y);
                 modestack.push(VECED_MOVE);
             }
         } else if(keys.keys[12].repeat) { // delete node
             pair<int, int> close = findTwoClosestNodes(cursor_x, cursor_y, path_target);
             if(close.first != -1)
                 paths[path_target].vpathRemove(close.first);
+        } else if(keys.keys[5].repeat) { // node curviness
+            pair<int, int> close = findTwoClosestNodes(cursor_x, cursor_y, path_target);
+            if(close.first != -1) {
+                paths[path_target].vpath[close.first].curvr = !paths[path_target].vpath[close.first].curvr;
+                paths[path_target].vpathModify(close.first);
+            }
+        } else if(keys.keys[6].repeat) { // edit handle
+            pair<int, bool> close = findClosestHandle(cursor_x, cursor_y, path_target);
+            if(close.first != -1) {
+                path_curnode = close.first;
+                path_curhandle = close.second;
+                if(!close.second) {
+                    cursor_x = round(paths[path_target].centerx + paths[path_target].vpath[path_curnode].x + paths[path_target].vpath[path_curnode].curvlx);
+                    cursor_y = round(paths[path_target].centery + paths[path_target].vpath[path_curnode].y + paths[path_target].vpath[path_curnode].curvly);
+                } else {
+                    cursor_x = round(paths[path_target].centerx + paths[path_target].vpath[path_curnode].x + paths[path_target].vpath[path_curnode].curvrx);
+                    cursor_y = round(paths[path_target].centery + paths[path_target].vpath[path_curnode].y + paths[path_target].vpath[path_curnode].curvry);
+                }
+                modestack.push(VECED_MOVE);
+            }
         } else if(keys.keys[9].repeat) { // center/reflect
             cursor_x = round(paths[path_target].centerx);
             cursor_y = round(paths[path_target].centery);
             modestack.push(VECED_REFLECT);
-        } else if(keys.keys[15].repeat) {
-            path_target = -1;
-            path_curnode = -1;
-            modestack.pop();
         }
     } else if(modestack.top() == VECED_REFLECT) {
         CHECK(path_target >= 0 && path_target < paths.size());
@@ -395,13 +655,27 @@ bool vecEditTick(const Controller &keys) {
         write_y = &paths[path_target].centery;
         offset_x = 0;
         offset_y = 0;
-    } else if(modestack.top() ==  VECED_MOVE) {
+    } else if(modestack.top() == VECED_MOVE) {
         CHECK(path_target >= 0 && path_target < paths.size());
         CHECK(path_curnode >= 0 && path_curnode < paths[path_target].vpath.size());
-        write_x = &paths[path_target].vpath[path_curnode].x;
-        write_y = &paths[path_target].vpath[path_curnode].y;
-        offset_x = -paths[path_target].centerx;
-        offset_y = -paths[path_target].centery;
+        if(path_curhandle == -1) {
+            write_x = &paths[path_target].vpath[path_curnode].x;
+            write_y = &paths[path_target].vpath[path_curnode].y;
+            offset_x = paths[path_target].centerx;
+            offset_y = paths[path_target].centery;
+        } else {
+            offset_x = paths[path_target].centerx + paths[path_target].vpath[path_curnode].x;
+            offset_y = paths[path_target].centery + paths[path_target].vpath[path_curnode].y;
+            if(path_curhandle == 0) {
+                write_x = &paths[path_target].vpath[path_curnode].curvlx;
+                write_y = &paths[path_target].vpath[path_curnode].curvly;
+            } else if(path_curhandle == 1) {
+                write_x = &paths[path_target].vpath[path_curnode].curvrx;
+                write_y = &paths[path_target].vpath[path_curnode].curvry;
+            } else {
+                CHECK(0);
+            }
+        }
     } else {
         CHECK(0);
     }
@@ -411,8 +685,8 @@ bool vecEditTick(const Controller &keys) {
     if(keys.u.repeat) cursor_y -= grid;
     if(keys.d.repeat) cursor_y += grid;
     
-    if(write_x) *write_x = cursor_x + offset_x;
-    if(write_y) *write_y = cursor_y + offset_y;
+    if(write_x) *write_x = cursor_x - offset_x;
+    if(write_y) *write_y = cursor_y - offset_y;
         
     if(modestack.top() == VECED_REFLECT) {
         paths[path_target].moveCenterOrReflect();
@@ -440,7 +714,7 @@ void vecEditRender() {
     } else if(modestack.top() == VECED_PATH) {
         CHECK(path_target >= 0 && path_target < paths.size());
         guiText("u/j/m to create/edit/destroy nodes         / to exit");
-        guiText("k to move center/reflect");
+        guiText("k to move center/reflect                   i/o for node curviness");
     } else if(modestack.top() == VECED_REFLECT) {
         CHECK(path_target >= 0 && path_target < paths.size());
         guiText(StringPrintf("u/i to change reflect mode (currently %s)", rf_names[paths[path_target].reflect]));
@@ -461,418 +735,3 @@ void vecEditRender() {
     renderPaths();
     
 }
-/*
-enum { VECED_REFLECT, VECED_CREATE, VECED_EXAMINE, VECED_MOVE };
-enum { VECRF_NONE, VECRF_HORIZONTAL, VECRF_VERTICAL, VECRF_VH, VECRF_180DEG, VECRF_SNOWFLAKE4, VECRF_END };
-const bool vecrf_mirror[] = { false, true, true, true, false, true };
-const char *modes[] = {"none", "horizontal", "vertical", "vertical horizontal", "180deg", "snowflake4"};
-int vecedmode = VECED_REFLECT;
-int vecedreflect = VECRF_NONE;
-
-vector<Vecpt> vecs;
-
-vector<Vecpt> getProcessedVecs() {
-    if(vecedreflect == VECRF_NONE) {
-        return vecs;
-    } else if(vecedreflect == VECRF_HORIZONTAL) {
-        vector<Vecpt> fakevec = vecs;
-        for(int i = vecs.size(); i > 0; i--) {
-            Vecpt gta = vecs[i-1].mirror();
-            gta.y *= -1;
-            gta.lhcy *= -1;
-            gta.rhcy *= -1;
-            fakevec.push_back(gta);
-        }
-        return fakevec;
-    } else if(vecedreflect == VECRF_VERTICAL) {
-        vector<Vecpt> fakevec = vecs;
-        for(int i = vecs.size(); i > 0; i--) {
-            Vecpt gta = vecs[i-1].mirror();
-            gta.x *= -1;
-            gta.lhcx *= -1;
-            gta.rhcx *= -1;
-            fakevec.push_back(gta);
-        }
-        return fakevec;
-    } else if(vecedreflect == VECRF_VH) {
-        vector<Vecpt> fakevec1 = vecs;
-        for(int i = vecs.size(); i > 0; i--) {
-            Vecpt gta = vecs[i-1].mirror();
-            gta.y *= -1;
-            gta.lhcy *= -1;
-            gta.rhcy *= -1;
-            fakevec1.push_back(gta);
-        }
-        vector<Vecpt> fakevec2 = fakevec1;
-        for(int i = fakevec1.size(); i > 0; i--) {
-            Vecpt gta = fakevec1[i-1].mirror();
-            gta.x *= -1;
-            gta.lhcx *= -1;
-            gta.rhcx *= -1;
-            fakevec2.push_back(gta);
-        }
-        return fakevec2;
-    } else if(vecedreflect == VECRF_180DEG) {
-        vector<Vecpt> fakevec = vecs;
-        for(int i = 0; i < vecs.size(); i++) {
-            Vecpt gta = vecs[i];
-            gta.x *= -1;
-            gta.lhcx *= -1;
-            gta.rhcx *= -1;
-            gta.y *= -1;
-            gta.lhcy *= -1;
-            gta.rhcy *= -1;
-            fakevec.push_back(gta);
-        }
-        return fakevec;
-    } else if(vecedreflect == VECRF_SNOWFLAKE4) {
-        vector<Vecpt> fakevec1 = vecs;
-        for(int i = vecs.size(); i > 0; i--) {
-            Vecpt gta = vecs[i - 1].mirror();
-            swap(gta.x, gta.y);
-            swap(gta.lhcx, gta.lhcy);
-            swap(gta.rhcx, gta.rhcy);
-            fakevec1.push_back(gta);
-        }
-        vector<Vecpt> fakevec2 = fakevec1;
-        for(int i = 0; i < fakevec1.size(); i++) {
-            Vecpt gta = fakevec1[i];
-            swap(gta.x, gta.y);
-            swap(gta.lhcx, gta.lhcy);
-            swap(gta.rhcx, gta.rhcy);
-            gta.x *= -1;
-            gta.lhcx *= -1;
-            gta.rhcx *= -1;
-            fakevec2.push_back(gta);
-        }
-        vector<Vecpt> fakevec3 = fakevec2;
-        for(int i = 0; i < fakevec2.size(); i++) {
-            Vecpt gta = fakevec2[i];
-            gta.x *= -1;
-            gta.lhcx *= -1;
-            gta.rhcx *= -1;
-            gta.y *= -1;
-            gta.lhcy *= -1;
-            gta.rhcy *= -1;
-            fakevec3.push_back(gta);
-        }
-        return fakevec3;
-    } else {
-        CHECK(0);
-    }
-}
-
-void saveVectors() {
-    vector<Vecpt> tv = getProcessedVecs();
-    dprintf("Vectors at %d\n", tv.size());
-    for(int i = 0; i < tv.size(); i++) {
-        for(int j = 0; j + 1 < tv.size(); j++) {
-            if(tv[j].x == tv[j+1].x && tv[j].y == tv[j+1].y) {
-                Vecpt nvpt = tv[j];
-                nvpt.rhcurved = tv[j+1].rhcurved;
-                nvpt.rhcx = tv[j+1].rhcx;
-                nvpt.rhcy = tv[j+1].rhcy;
-                tv[j] = nvpt;
-                tv.erase(tv.begin() + j + 1);
-                j--;
-            }
-        }
-        tv.push_back(tv[0]);
-        tv.erase(tv.begin());
-    }
-    dprintf("Vectors culled to %d\n", tv.size());
-    FILE *outfile;
-    {
-        char timestampbuf[ 128 ];
-        time_t ctmt = time(NULL);
-        strftime(timestampbuf, sizeof(timestampbuf), "%Y%m%d-%H%M%S.dvec", gmtime(&ctmt));
-        dprintf("%s\n", timestampbuf);
-        outfile = fopen(timestampbuf, "wb");
-    }
-    if(!outfile) {
-        dprintf("Outfile %s couldn't be opened! Didn't save!", timestampbuf);
-    } else {
-        for(int i = 0; i < tv.size(); i++) {
-            if(tv[i].lhcurved) {
-                fprintf(outfile, "(%d,%d) ", tv[i].lhcx, tv[i].lhcy);
-            } else {
-                fprintf(outfile, "() ");
-            }
-            fprintf(outfile,"%d,%d ", tv[i].x, tv[i].y);
-            if(tv[i].rhcurved) {
-                fprintf(outfile, "(%d,%d)\n", tv[i].rhcx, tv[i].rhcy);
-            } else {
-                fprintf(outfile, "()\n");
-            }
-        }
-        fclose(outfile);
-    }
-}
-
-void drawVecs(const vector<Vecpt> &vecs) {
-//    dprintf("-----");
-    for(int i = 0; i < vecs.size(); i++) {
-//        dprintf("%d, %d, %d, %d, %d, %d, %d, %d\n", vecs[i].x, vecs[i].y, vecs[i].lhcurved, vecs[i].lhcx, vecs[i].lhcy, vecs[i].rhcurved, vecs[i].rhcx, vecs[i].rhcy);
-        int next = (i + 1) % vecs.size();
-        if(vecs[i].rhcurved) {
-            setColor(1.0, 0.5, 0.5);
-            drawCurve(
-                    Float4(vecs[i].x, vecs[i].y, vecs[i].x + vecs[i].rhcx, vecs[i].y + vecs[i].rhcy),
-                    Float4(vecs[next].lhcx + vecs[next].x, vecs[next].lhcy + vecs[next].y, vecs[next].x, vecs[next].y), 0.1);
-        } else {
-            setColor(1.0, 1.0, 1.0);
-            drawLine(vecs[i].x, vecs[i].y, vecs[(i+1)%vecs.size()].x, vecs[(i+1)%vecs.size()].y, 0.1);
-        }
-    }
-}
-void drawNodeFramework(const vector<Vecpt> &vecs, int tv) {
-    tv += vecs.size();
-    tv %= vecs.size();
-    drawBoxAround(vecs[tv].x, vecs[tv].y, 4, 0.1);
-    if(vecs[tv].lhcurved) {
-        drawBoxAround(vecs[tv].x + vecs[tv].lhcx, vecs[tv].y + vecs[tv].lhcy, 4, 0.1);
-        drawLine(Float4(vecs[tv].x, vecs[tv].y, vecs[tv].x + vecs[tv].lhcx, vecs[tv].y + vecs[tv].lhcy), 0.1);
-    }
-    if(vecs[tv].rhcurved) {
-        drawBoxAround(vecs[tv].x + vecs[tv].rhcx, vecs[tv].y + vecs[tv].rhcy, 4, 0.1);
-        drawLine(Float4(vecs[tv].x, vecs[tv].y, vecs[tv].x + vecs[tv].rhcx, vecs[tv].y + vecs[tv].rhcy), 0.1);
-    }
-}
-
-bool reversed(int mode) {
-    return vecrf_mirror[mode];
-}
-
-int traverse(int start, int delta, int mode) {
-    start += delta;
-    while(start < 0)
-        start += vecs.size() * 2;
-    start %= vecs.size() * 2;
-    if(start >= vecs.size()) {
-        if(reversed(mode)) {
-            return vecs.size() - (start - vecs.size()) - 1;
-        } else {
-            return start % vecs.size();
-        }
-    }
-    return start;
-}
-
-bool mirror(int start, int delta, int mode) {
-    start += delta;
-    while(start < 0)
-        start += vecs.size() * 2;
-    start %= vecs.size() * 2;
-    if(start >= vecs.size()) {
-        if(reversed(mode)) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-    return false;
-}
-
-
-int grid = 16;
-int zoom = 200;
-int activevec = 0;
-
-int *handlex = NULL;
-int *handley = NULL;
-
-bool vecEditTick(const Controller &keys) {
-    if(vecedmode == VECED_CREATE || vecedmode == VECED_MOVE) {
-        if(keys.keys[2].push)
-            grid *= 2;
-        if(keys.keys[5].push)
-            grid /= 2;
-        grid = max(grid, 1);
-    }
-    if(vecedmode == VECED_REFLECT) {
-        if(keys.l.repeat)
-            vecedreflect--;
-        if(keys.r.repeat)
-            vecedreflect++;
-        vecedreflect += VECRF_END;
-        vecedreflect %= VECRF_END;
-        if(keys.keys[4].repeat) {
-            vecedmode = VECED_CREATE;
-            Vecpt nvpt;
-            nvpt.x = 0;
-            nvpt.y = 0;
-            nvpt.lhcurved = false;
-            nvpt.rhcurved = false;
-            vecs.push_back(nvpt);
-        }
-    } else if(vecedmode == VECED_CREATE) {
-        int modif = vecs.size() - 1;
-        if(keys.l.repeat)
-            vecs[modif].x -= grid;
-        if(keys.r.repeat)
-            vecs[modif].x += grid;
-        if(keys.u.repeat)
-            vecs[modif].y -= grid;
-        if(keys.d.repeat)
-            vecs[modif].y += grid;
-        if(keys.keys[0].repeat)
-            vecs.push_back(Vecpt(vecs[modif]));
-        if(keys.keys[4].repeat && vecs.size() > 2) {
-            vecedmode = VECED_EXAMINE;
-            vecs.pop_back();
-        }
-    } else if(vecedmode == VECED_EXAMINE) {
-        if(keys.l.repeat)
-            activevec--;
-        if(keys.r.repeat)
-            activevec++;
-        if(activevec < 0)
-            activevec = 0;
-        if(activevec >= vecs.size())
-            activevec = vecs.size() - 1;
-        if(keys.keys[0].repeat && vecs[activevec].lhcurved) {
-            // modify curve handle on L
-            vecedmode = VECED_MOVE;
-            handlex = &vecs[activevec].lhcx;
-            handley = &vecs[activevec].lhcy;
-        }
-        if(keys.keys[2].repeat && vecs[activevec].rhcurved) {
-            // modify curve handle on R
-            vecedmode = VECED_MOVE;
-            handlex = &vecs[activevec].rhcx;
-            handley = &vecs[activevec].rhcy;
-        }
-        if(keys.keys[3].repeat) {
-            // toggle bentness on L
-            int alt = traverse(activevec, -1, vecedreflect);
-            bool mirr = mirror(activevec, -1, vecedreflect);
-            dprintf("%d, %d, %d, %d\n", activevec, alt, vecs.size(), mirr);
-            if(mirr) {
-                // these can go out of synch right now, but are easily fixable
-                //CHECK(vecs[alt].lhcurved == vecs[activevec].lhcurved);
-                vecs[activevec].lhcurved = !vecs[activevec].lhcurved;
-                vecs[alt].lhcurved = vecs[activevec].lhcurved;
-            } else {
-                //CHECK(vecs[alt].rhcurved == vecs[activevec].lhcurved);
-                vecs[activevec].lhcurved = !vecs[activevec].lhcurved;
-                vecs[alt].rhcurved = vecs[activevec].lhcurved;
-            }
-        }
-        if(keys.keys[5].repeat) {
-            // toggle bentness on R
-            int alt = traverse(activevec, 1, vecedreflect);
-            bool mirr = mirror(activevec, 1, vecedreflect);
-            dprintf("%d, %d, %d, %d\n", activevec, alt, vecs.size(), mirr);
-            if(mirr) {
-                //CHECK(vecs[alt].rhcurved == vecs[activevec].rhcurved);
-                vecs[activevec].rhcurved = !vecs[activevec].rhcurved;
-                vecs[alt].rhcurved = vecs[activevec].rhcurved;
-            } else {
-                //CHECK(vecs[alt].lhcurved == vecs[activevec].rhcurved);
-                vecs[activevec].rhcurved = !vecs[activevec].rhcurved;
-                vecs[alt].lhcurved = vecs[activevec].rhcurved;
-            }
-        }
-        if(keys.keys[1].repeat) {
-            // modify
-            vecedmode = VECED_MOVE;
-            handlex = &vecs[activevec].x;
-            handley = &vecs[activevec].y;
-        }
-        if(keys.keys[4].repeat) {
-            // add
-            vecs.insert(vecs.begin() + activevec, Vecpt(vecs[activevec]));
-            vecedmode = VECED_MOVE;
-            handlex = &vecs[activevec].x;
-            handley = &vecs[activevec].y;
-        }
-        if(keys.keys[6].repeat && vecs.size() > 2) {
-            // delete
-            vecs.erase(vecs.begin() + activevec);
-            activevec = 0;
-        }
-        if(keys.keys[7].repeat) {
-            // save
-            saveVectors();
-        }
-    } else if(vecedmode == VECED_MOVE) {
-        CHECK(handlex && handley);
-        if(keys.l.repeat)
-            *handlex -= grid;
-        if(keys.r.repeat)
-            *handlex += grid;
-        if(keys.u.repeat)
-            *handley -= grid;
-        if(keys.d.repeat)
-            *handley += grid;
-        if(keys.keys[0].repeat)
-            vecedmode = VECED_EXAMINE;
-    } else {
-        CHECK(0);
-        return true;
-    }
-    return false;
-}
-void vecEditRender(void) {
-    setZoom(0,0,100);
-    if(vecedmode == VECED_REFLECT) {
-        setColor(1.0, 1.0, 1.0);
-        drawText("Reflection mode - arrows to change - k to accept", 3, 2, 2);
-        drawText("Current mode", 3, 2, 6);
-        drawText(modes[vecedreflect], 3, 2, 10);
-    } else if(vecedmode == VECED_CREATE) {
-        setColor(1.0, 1.0, 1.0);
-        drawText("Create mode - arrows to move - u to add", 3, 2, 2);
-        char buf[256];
-        sprintf(buf, "ol to change grid - k to accept");
-        drawText(buf, 3, 2, 6);
-        sprintf(buf, "current grid %3d - current loc %d, %d", grid, vecs.back().x, vecs.back().y);
-        drawText(buf, 3, 2, 10);
-    } else if(vecedmode == VECED_EXAMINE) {
-        setColor(1.0, 1.0, 1.0);
-        drawText("Examine mode - arrows to traverse", 3, 2, 2);
-        drawText("i move - k create - m delete", 3, 2, 6);
-        drawText("uo to modify curve handle - jl straightness", 3, 2, 10);
-    } else if(vecedmode == VECED_MOVE) {
-        CHECK(handlex && handley);
-        setColor(1.0, 1.0, 1.0);
-        drawText("Move mode - arrows to move", 3, 2, 2);
-        char buf[256];
-        sprintf(buf, "ol to change grid - u to accept");
-        drawText(buf, 3, 2, 6);
-        sprintf(buf, "current grid %3d - current loc %d, %d", grid, *handlex, *handley);
-        drawText(buf, 3, 2, 10);
-    } else {
-        CHECK(0);
-    }
-    setZoom(-200*1.25, -200, 200);
-    setColor(0.5, 0.5, 0.5);
-    if(vecedreflect == VECRF_NONE) {
-    } else if(vecedreflect == VECRF_HORIZONTAL) {
-        drawLine(-200*1.25, 0, 200*1.25, 0, 0.1);
-    } else if(vecedreflect == VECRF_VERTICAL) {
-        drawLine(0, -200, 0, 200, 0.1);
-    } else if(vecedreflect == VECRF_VH) {
-        drawLine(0, -200, 0, 200, 0.1);
-        drawLine(-200*1.25, 0, 200*1.25, 0, 0.1);
-    } else if(vecedreflect == VECRF_180DEG) {
-        drawLine(-200, -200, 200, 200, 0.1);
-    } else if(vecedreflect == VECRF_SNOWFLAKE4) {
-        drawLine(-200, -200, 200, 200, 0.1);
-        drawLine(0, -200, 0, 200, 0.1);
-        drawLine(-200, 0, 200, 0, 0.1);
-        drawLine(-200, 200, 200, -200, 0.1);
-    } else {
-        CHECK(0);
-    }
-    setColor(1.0, 1.0, 1.0);
-    drawVecs(getProcessedVecs());
-    if(vecedmode == VECED_EXAMINE || vecedmode == VECED_MOVE) {
-        setColor(1.0,0.5,0.5);
-        drawNodeFramework(vecs, activevec);
-        setColor(1.0,1.0,1.0);
-        drawNodeFramework(vecs, activevec - 1);
-        drawNodeFramework(vecs, activevec + 1);
-    }
-}
-*/
