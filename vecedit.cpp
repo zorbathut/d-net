@@ -1,6 +1,7 @@
 
 #include "vecedit.h"
 #include "gfx.h"
+#include "game.h" // currently just for Tank
 
 #include <vector>
 #include <string>
@@ -74,24 +75,14 @@ inline Transform2d t2d_flip(bool h, bool v, bool d) {
     return o;
 }
 
-/*
-what the fuck?
-inline Transform2d t2d_rotate(float rad) {
-    Transform2d o;
-    o.m[0][0] = sin(rad);
-    o.m[0][1] = cos(rad);
-    o.m[1][0] = -cos(rad);
-    o.m[1][1] = sin(rad);
-    return o;
-}
-*/
-
-enum { VECED_EXAMINE, VECED_PATH, VECED_REFLECT, VECED_MOVE };
-const char *ed_names[] = { "Examine", "Path edit", "Reflect", "Move" };
+enum { VECED_EXAMINE, VECED_PATH, VECED_REFLECT, VECED_MOVE, VECED_ENTITYTYPE, VECED_ENTITY, VECED_END };
+const char *ed_names[] = { "Examine", "Path edit", "Reflect", "Move", "Entitytype", "Entity" };
 enum { VECRF_NONE, VECRF_HORIZONTAL, VECRF_VERTICAL, VECRF_VH, VECRF_180DEG, VECRF_SNOWFLAKE4, VECRF_END };
 const char *rf_names[] = {"none", "horizontal", "vertical", "vertical horizontal", "180deg", "snowflake4"};
 const int rf_repeats[] = { 1, 2, 2, 4, 2, 8 };
 const bool rf_mirror[] = { false, true, true, true, false, true };
+enum { ENTITY_TANKSTART, ENTITY_END };
+const char *ent_names[] = {"tank start location"};
 
 Transform2d rf_none[] = {t2d_identity()};
 Transform2d rf_horizontal[] = {t2d_identity(), t2d_flip(0,1,0)};
@@ -180,12 +171,65 @@ public:
     
 };
 
-vector<Path> paths;
-int zoom = 256;
-int grid = 16;
+class Parameter {
+public:
+    
+    string name;
+    
+    enum { BOOLEAN, BOUNDED_INTEGER };
+    
+    bool bool_val;
+    
+    int bi_val;
+    int bi_low;
+    int bi_high;
+    
+    void update(const Controller &l, const Controller &r);
+    void render(float x, float y, float h);
+    
+};
 
-int cursor_x = 0;
-int cursor_y = 0;
+Parameter paramBool(const string &name, bool begin) {
+    Parameter param;
+    param.name = name;
+    param.bool_val = begin;
+    return param;
+};
+
+Parameter paramBoundint(const string &name, int begin, int low, int high) {
+    Parameter param;
+    param.name = name;
+    param.bi_val = begin;
+    param.bi_low = low;
+    param.bi_high = high;
+    return param;
+};
+
+class Entity {
+public:
+    
+    int type;
+
+    float x;
+    float y;
+
+    vector<Parameter> params;
+
+    void initParams();  // inits params to the default for that type
+
+};
+
+vector<Path> paths;
+vector<Entity> entities;
+
+int zoompow = 7;
+int gridpow = 2;
+
+float zoom = 64;
+float grid = 4;
+
+float cursor_x = 0;
+float cursor_y = 0;
 
 float offset_x;
 float offset_y;
@@ -313,44 +357,73 @@ void Path::rebuildVpath() {
         CHECK(vpath[i].curvr == vpath[(i + 1) % vpath.size()].curvl);
 }
 
-void savePaths() {
+void Entity::initParams() {
+    params.clear();
+    if(type == ENTITY_TANKSTART) {
+        params.push_back(paramBoundint("numerator", 0, 0, 100));
+        params.push_back(paramBoundint("denominator", 0, 0, 100));
+        params.push_back(paramBool("exist 2", true));
+        params.push_back(paramBool("exist 3", true));
+        params.push_back(paramBool("exist 4", true));
+        params.push_back(paramBool("exist 5", true));
+        params.push_back(paramBool("exist 6", true));
+        params.push_back(paramBool("exist 7", true));
+        params.push_back(paramBool("exist 8", true));
+        params.push_back(paramBool("exist 9", true));
+        params.push_back(paramBool("exist 10", true));
+        params.push_back(paramBool("exist 11", true));
+        params.push_back(paramBool("exist 12", true));
+    } else {
+        CHECK(0);
+    }
+}
+
+void saveDv2() {
 }
 
 int path_target = -1;
 int path_curnode = -1;
 int path_curhandle = -1;
 
+int entity_target = -1;
+
 int gui_vpos = 0;
 
-int distSquared(int x, int y, int path, int node) {
+float dsq(float xa, float ya, float xb, float yb) {
+    return ( xa - xb ) * ( xa - xb ) + ( ya - yb ) * ( ya - yb );
+}
+
+float distSquared(float x, float y, int path, int node) {
     CHECK(path >= 0 && path < paths.size());
     CHECK(node >= -1 && node < (int)paths[path].vpath.size()); // damn size_t
     if(node != -1) {
         CHECK(node >= 0 && node < paths[path].vpath.size());
-        return round(pow(x - paths[path].centerx - paths[path].vpath[node].x, 2) + pow(y - paths[path].centery - paths[path].vpath[node].y, 2));
+        return dsq(x, y, paths[path].centerx + paths[path].vpath[node].x, paths[path].centery + paths[path].vpath[node].y);
     } else {
-        return round(pow(x - paths[path].centerx, 2) + pow(y - paths[path].centery, 2));
+        return dsq(x, y, paths[path].centerx, paths[path].centery);
     }
 }
 
-int handleDistSquared(int x, int y, int path, int node, bool side) {
+float handleDistSquared(float x, float y, int path, int node, bool side) {
     CHECK(path >= 0 && path < paths.size());
     CHECK(node >= 0 && node < paths[path].vpath.size());
     if(!side) {
-        return round(pow(x - paths[path].centerx - paths[path].vpath[node].x - paths[path].vpath[node].curvlx, 2) +
-                     pow(y - paths[path].centery - paths[path].vpath[node].y - paths[path].vpath[node].curvly, 2));
+        return dsq(x, y,
+                        paths[path].centerx + paths[path].vpath[node].x + paths[path].vpath[node].curvlx,
+                        paths[path].centery + paths[path].vpath[node].y + paths[path].vpath[node].curvly);
     } else {
-        return round(pow(x - paths[path].centerx - paths[path].vpath[node].x - paths[path].vpath[node].curvrx, 2) +
-                     pow(y - paths[path].centery - paths[path].vpath[node].y - paths[path].vpath[node].curvry, 2));
+        return dsq(x, y,
+                        paths[path].centerx + paths[path].vpath[node].x + paths[path].vpath[node].curvrx,
+                        paths[path].centery + paths[path].vpath[node].y + paths[path].vpath[node].curvry);
     }
 }
 
-pair<int, int> findTwoClosestNodes(int x, int y, int path) {
+pair<int, int> findTwoClosestNodes(float x, float y, int path) {
     CHECK(path >= 0 && path < paths.size());
     int closest = -1;
     int closest2 = -1;
-    int best = 1000000000;
-    int best2 = 1000000000;
+    float best = 1000000000;
+    float best2 = 1000000000;
     for(int i = 0; i < paths[path].vpath.size(); i++) {
         if(distSquared(x, y, path, i) < best) {
             closest2 = closest;
@@ -366,11 +439,11 @@ pair<int, int> findTwoClosestNodes(int x, int y, int path) {
     return make_pair(closest, closest2);
 }
 
-pair<int, bool> findClosestHandle(int x, int y, int path) {
+pair<int, bool> findClosestHandle(float x, float y, int path) {
     CHECK(path >= 0 && path < paths.size());
     int closestn = -1;
     bool closestr = false;
-    int best = 1000000000;
+    float best = 1000000000;
     for(int i = 0; i < paths[path].vpath.size(); i++) {
         if(paths[path].vpath[i].curvl) {
             if(handleDistSquared(x, y, path, i, false) < best) {
@@ -390,13 +463,25 @@ pair<int, bool> findClosestHandle(int x, int y, int path) {
     return make_pair(closestn, closestr);
 }
 
-int findClosestPath(int x, int y) {
+int findClosestPath(float x, float y) {
     int closest = -1;
-    int best = 1000000000;
+    float best = 1000000000;
     for(int i = 0; i < paths.size(); i++) {
         if(distSquared(x, y, i, -1) < best) {
             closest = i;
             best = distSquared(x, y, i, -1);
+        }
+    }
+    return closest;
+}
+
+int findClosestEntity(float x, float y) {
+    int closest = -1;
+    float best = 1000000000;
+    for(int i = 0; i < entities.size(); i++) {
+        if(dsq(x, y, entities[i].x, entities[i].y) < best) {
+            best = dsq(x, y, entities[i].x, entities[i].y);
+            closest = i;
         }
     }
     return closest;
@@ -512,6 +597,22 @@ void renderPaths() {
     }
 }
 
+void renderSingleEntity(int i) {
+    CHECK(i >= 0 && i < entities.size());
+    if(entities[i].type == ENTITY_TANKSTART) {
+        setColor(1.0, 1.0, 1.0);
+        drawLinePath( Tank().getTankVertices(entities[i].x, entities[i].y, 0), 0.2, true );
+    } else {
+        CHECK(0);
+    }
+}
+
+void renderEntities() {
+    for(int i = 0; i < entities.size(); i++) {
+        renderSingleEntity(i);
+    }
+}
+
 void guiText(const string &in) {
     setZoom(0, 0, 100);
     drawText(in, 2, 2, gui_vpos);
@@ -526,27 +627,23 @@ bool vecEditTick(const Controller &keys) {
     CHECK(sizeof(rf_repeats) / sizeof(*rf_repeats) == VECRF_END);
     CHECK(sizeof(rf_mirror) / sizeof(*rf_mirror) == VECRF_END);
     CHECK(sizeof(rf_behavior) / sizeof(*rf_behavior) == VECRF_END);
+    CHECK(sizeof(ed_names) / sizeof(*ed_names) == VECED_END);
     
     if(modestack.size() == 0)   // get the whole shebang started
         modestack.push(VECED_EXAMINE);
     
     // these are guaranteed consistent behaviors
-    if(keys.keys[0].repeat) {
-        zoom /= 2;
-        zoom = max(zoom, 1);
-    }
-    if(keys.keys[1].repeat) {
-        zoom *= 2;
-        zoom = max(zoom, 1);
-    }
-    if(keys.keys[2].repeat) {
-        grid /= 2;
-        grid = max(grid, 1);
-    }
-    if(keys.keys[3].repeat) {
-        grid *= 2;
-        grid = max(grid, 1);
-    }
+    if(keys.keys[0].repeat)
+        zoompow--;
+    if(keys.keys[1].repeat)
+        zoompow++;
+    if(keys.keys[2].repeat)
+        gridpow--;
+    if(keys.keys[3].repeat)
+        gridpow++;
+    
+    zoom = pow(2., zoompow);
+    grid = pow(2., gridpow);
     
     float *write_x = NULL;
     float *write_y = NULL;
@@ -559,6 +656,7 @@ bool vecEditTick(const Controller &keys) {
         modestack.pop();
         if(modestack.top() == VECED_EXAMINE) {
             path_target = -1;
+            entity_target = -1;
         }
     } else if(modestack.top() == VECED_EXAMINE) {
         if(keys.keys[4].repeat) {   // create path
@@ -568,18 +666,43 @@ bool vecEditTick(const Controller &keys) {
             paths[path_target].centery = cursor_y;
             modestack.push(VECED_PATH);
             modestack.push(VECED_REFLECT);
+        } else if(keys.keys[5].repeat) {    // create entity
+            entity_target = entities.size();
+            entities.push_back(Entity());
+            entities[entity_target].x = cursor_x;
+            entities[entity_target].y = cursor_y;
+            entities[entity_target].type = 0;   // let's hope this is valid!
+            entities[entity_target].initParams();
+            modestack.push(VECED_ENTITY);
+            modestack.push(VECED_ENTITYTYPE);
         } else if(keys.keys[8].repeat) {    // edit path
             int close = findClosestPath(cursor_x, cursor_y);
             if(close != -1) {
                 path_target = close;
                 modestack.push(VECED_PATH);
             }
+        } else if(keys.keys[9].repeat) {    // edit entity
+            int close = findClosestEntity(cursor_x, cursor_y);
+            if(close != -1) {
+                entity_target = close;
+                modestack.push(VECED_ENTITY);
+                cursor_x = entities[entity_target].x;
+                cursor_y = entities[entity_target].y;
+            }
         } else if(keys.keys[12].repeat) {   // delete path
             int close = findClosestPath(cursor_x, cursor_y);
             if(close != -1) {
-                savePaths();
+                saveDv2();
                 paths.erase(paths.begin() + close);
             }
+        } else if(keys.keys[13].repeat) {   // delete entity
+            int close = findClosestEntity(cursor_x, cursor_y);
+            if(close != -1) {
+                saveDv2();
+                entities.erase(entities.begin() + close);
+            }
+        } else if(keys.keys[15].repeat) {   // save
+            saveDv2();
         }
     } else if(modestack.top() == VECED_PATH) {
         CHECK(path_target >= 0 && path_target < paths.size());
@@ -594,8 +717,8 @@ bool vecEditTick(const Controller &keys) {
                 int nxt = createtarget + 1;
                 prev %= paths[path_target].vpath.size();
                 nxt %= paths[path_target].vpath.size();
-                int pd = distSquared(cursor_x, cursor_y, path_target, prev);
-                int nd = distSquared(cursor_x, cursor_y, path_target, nxt);
+                float pd = distSquared(cursor_x, cursor_y, path_target, prev);
+                float nd = distSquared(cursor_x, cursor_y, path_target, nxt);
                 if(pd >= nd)
                     createtarget = nxt;
             } else {
@@ -676,6 +799,21 @@ bool vecEditTick(const Controller &keys) {
                 CHECK(0);
             }
         }
+    } else if(modestack.top() == VECED_ENTITYTYPE) {
+        CHECK(entity_target >= 0 && entity_target < entities.size());
+        if(keys.keys[4].repeat) // previous type
+                entities[entity_target].type--;
+        if(keys.keys[5].repeat) // next type
+                entities[entity_target].type++;
+        entities[entity_target].type += ENTITY_END;
+        entities[entity_target].type %= ENTITY_END;
+        entities[entity_target].initParams();
+        write_x = &entities[entity_target].x;
+        write_y = &entities[entity_target].y;
+    } else if(modestack.top() == VECED_ENTITY) {
+        CHECK(entity_target >= 0 && entity_target < entities.size());
+        write_x = &entities[entity_target].x;
+        write_y = &entities[entity_target].y;
     } else {
         CHECK(0);
     }
@@ -707,7 +845,7 @@ void vecEditRender() {
     setZoom(0, 0, 100);
     setColor(1.0f, 1.0f, 1.0f);
     gui_vpos = 2;
-    guiText(StringPrintf("%s mode - 78 90 for zoom+grid (%d, %d)", ed_names[modestack.top()], zoom, grid));
+    guiText(StringPrintf("%s mode - 78 90 for zoom+grid (%f, %f)", ed_names[modestack.top()], zoom, grid));
     if(modestack.top() == VECED_EXAMINE) {
         guiText("u/j/m to create/edit/destroy paths         .// to load/save");
         guiText("i/k/, to create/edit/destroy entities      arrow keys to move");
@@ -723,6 +861,13 @@ void vecEditRender() {
         CHECK(path_target >= 0 && path_target < paths.size());
         CHECK(path_curnode >= 0 && path_curnode < paths[path_target].vpath.size());
         guiText("arrow keys to move, / to accept");
+    } else if(modestack.top() == VECED_ENTITYTYPE) {
+        CHECK(entity_target >= 0 && entity_target < entities.size());
+        guiText("arrow keys to move, ui to change type, / to accept");
+        guiText(StringPrintf("current type is %s", ent_names[entities[entity_target].type]));
+    } else if(modestack.top() == VECED_ENTITY) {
+        CHECK(entity_target >= 0 && entity_target < entities.size());
+        guiText("arrow keys to move, ijkl to manipulate parameters, / to accept");
     } else {
         CHECK(0);
     }
@@ -733,5 +878,6 @@ void vecEditRender() {
     drawLine(cursor_x, cursor_y + grid, cursor_x, cursor_y + grid / 2, 0.1);
     
     renderPaths();
+    renderEntities();
     
 }
