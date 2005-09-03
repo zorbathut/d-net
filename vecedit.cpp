@@ -26,6 +26,48 @@ public:
             swap(m[0][i], m[1][i]);
     }
     
+    float det() {
+        float rv = 0;
+        for(int x = 0; x < 3; x++) {
+            float tv = m[x][0] * detchunk(x, 0);
+            if(x % 2)
+                tv = -tv;
+            rv += tv;
+        }
+        return rv;
+    }
+    
+    vector<int> allExcept(int t) {
+        CHECK(t >= 0 && t < 3);
+        vector<int> rv;
+        for(int i = 0; i < 3; i++)
+            rv.push_back(i);
+        rv.erase(find(rv.begin(), rv.end(), t));
+        CHECK(rv.size() == 2);
+        return rv;
+    }
+    
+    float detchunk(int x, int y) {
+        // this code sucks.
+        vector<int> xv = allExcept(x);
+        vector<int> yv = allExcept(y);
+        CHECK(xv.size() == 2 && yv.size() == 2);
+        return m[xv[0]][yv[0]] * m[xv[1]][yv[1]] - m[xv[0]][yv[1]] * m[xv[1]][yv[0]];
+    }
+    
+    void invert() {
+        // hahahahahhahah.
+        Transform2d res;
+        for(int x = 0; x < 3; x++) {
+            for(int y = 0; y < 3; y++) {
+                res.m[x][y] = detchunk(y, x) / det();
+                if((x + y) % 2)
+                    res.m[x][y] = -res.m[x][y];
+            }
+        }
+        *this = res;
+    }
+    
     float mx(float x, float y) const {
         float ox = 0.0;
         ox += m[0][0] * x;
@@ -61,6 +103,19 @@ public:
     }
 };
 
+Transform2d operator*(const Transform2d &lhs, const Transform2d &rhs) {
+    Transform2d rv;
+    for(int x = 0; x < 3; x++) {
+        for(int y = 0; y < 3; y++) {
+            rv.m[x][y] = 0;
+            for(int z = 0; z < 3; z++) {
+                rv.m[x][y] += lhs.m[z][y] * rhs.m[x][z];
+            }
+        }
+    }
+    return rv;
+}
+
 inline Transform2d t2d_identity() {
     return Transform2d();
 }
@@ -84,12 +139,12 @@ const bool rf_mirror[] = { false, true, true, true, false, true };
 enum { ENTITY_TANKSTART, ENTITY_END };
 const char *ent_names[] = {"tank start location"};
 
-Transform2d rf_none[] = {t2d_identity()};
-Transform2d rf_horizontal[] = {t2d_identity(), t2d_flip(0,1,0)};
-Transform2d rf_vertical[] = {t2d_identity(), t2d_flip(1,0,0)};
-Transform2d rf_vh[] = {t2d_identity(), t2d_flip(1,0,0), t2d_flip(1,1,0), t2d_flip(0,1,0)};
-Transform2d rf_180[] = {t2d_identity(), t2d_flip(1,1,0)};
-Transform2d rf_snowflake4[] = {
+const Transform2d rf_none[] = {t2d_identity()};
+const Transform2d rf_horizontal[] = {t2d_identity(), t2d_flip(0,1,0)};
+const Transform2d rf_vertical[] = {t2d_identity(), t2d_flip(1,0,0)};
+const Transform2d rf_vh[] = {t2d_identity(), t2d_flip(1,0,0), t2d_flip(1,1,0), t2d_flip(0,1,0)};
+const Transform2d rf_180[] = {t2d_identity(), t2d_flip(1,1,0)};
+const Transform2d rf_snowflake4[] = {
         t2d_flip(0,0,0),
         t2d_flip(0,0,1),
         t2d_flip(0,1,1),
@@ -99,7 +154,7 @@ Transform2d rf_snowflake4[] = {
         t2d_flip(1,0,1),
         t2d_flip(0,1,0)};
 
-Transform2d *rf_behavior[] = {rf_none, rf_horizontal, rf_vertical, rf_vh, rf_180, rf_snowflake4};
+const Transform2d *rf_behavior[] = {rf_none, rf_horizontal, rf_vertical, rf_vh, rf_180, rf_snowflake4};
 
 stack< int > modestack;
 
@@ -179,14 +234,20 @@ public:
     enum { BOOLEAN, BOUNDED_INTEGER };
     int type;
     
+    bool hide_def;
+    
     bool bool_val;
+    bool bool_def;
     
     int bi_val;
+    int bi_def;
     int bi_low;
     int bi_high;
     
     void update(const Button &l, const Button &r);
     void render(float x, float y, float h) const;
+    
+    string dumpTextRep() const;
     
 };
 
@@ -221,19 +282,37 @@ void Parameter::render(float x, float y, float h) const {
     drawText(prefix, h, x, y);
 }
 
-Parameter paramBool(const string &name, bool begin) {
+string Parameter::dumpTextRep() const {
+    if(type == BOOLEAN) {
+        if(hide_def && bool_val == bool_def)
+            return "";
+        return "  " + name + "=" + (bool_val ? "true" : "false") + "\n";
+    } else if(type == BOUNDED_INTEGER) {
+        if(hide_def && bi_val == bi_def)
+            return "";
+        return StringPrintf("  %s=%d\n", name.c_str(), bi_val);
+    } else {
+        CHECK(0);
+    }
+}
+
+Parameter paramBool(const string &name, bool begin, bool hideDefault) {
     Parameter param;
     param.name = name;
     param.type = Parameter::BOOLEAN;
+    param.hide_def = hideDefault;
     param.bool_val = begin;
+    param.bool_def = begin;
     return param;
 };
 
-Parameter paramBoundint(const string &name, int begin, int low, int high) {
+Parameter paramBoundint(const string &name, int begin, int low, int high, bool hideDefault) {
     Parameter param;
     param.name = name;
     param.type = Parameter::BOUNDED_INTEGER;
+    param.hide_def = hideDefault;
     param.bi_val = begin;
+    param.bi_def = begin;
     param.bi_low = low;
     param.bi_high = high;
     return param;
@@ -264,9 +343,6 @@ float grid = 4;
 
 float cursor_x = 0;
 float cursor_y = 0;
-
-float offset_x;
-float offset_y;
 
 void Path::vpathCreate(int node) {
     CHECK(node >= 0 && node <= vpath.size());
@@ -394,25 +470,75 @@ void Path::rebuildVpath() {
 void Entity::initParams() {
     params.clear();
     if(type == ENTITY_TANKSTART) {
-        params.push_back(paramBoundint("numerator", 0, 0, 100));
-        params.push_back(paramBoundint("denominator", 1, 1, 100));
-        params.push_back(paramBool("exist 2", true));
-        params.push_back(paramBool("exist 3", true));
-        params.push_back(paramBool("exist 4", true));
-        params.push_back(paramBool("exist 5", true));
-        params.push_back(paramBool("exist 6", true));
-        params.push_back(paramBool("exist 7", true));
-        params.push_back(paramBool("exist 8", true));
-        params.push_back(paramBool("exist 9", true));
-        params.push_back(paramBool("exist 10", true));
-        params.push_back(paramBool("exist 11", true));
-        params.push_back(paramBool("exist 12", true));
+        params.push_back(paramBoundint("numerator", 0, 0, 100, false));
+        params.push_back(paramBoundint("denominator", 1, 1, 100, false));
+        params.push_back(paramBool("exist2", true, true));
+        params.push_back(paramBool("exist3", true, true));
+        params.push_back(paramBool("exist4", true, true));
+        params.push_back(paramBool("exist5", true, true));
+        params.push_back(paramBool("exist6", true, true));
+        params.push_back(paramBool("exist7", true, true));
+        params.push_back(paramBool("exist8", true, true));
+        params.push_back(paramBool("exist9", true, true));
+        params.push_back(paramBool("exist10", true, true));
+        params.push_back(paramBool("exist11", true, true));
+        params.push_back(paramBool("exist12", true, true));
     } else {
         CHECK(0);
     }
 }
 
+void savePath(int i, FILE *outfile) {
+    CHECK(i >= 0 && i < paths.size());
+    fprintf(outfile, "path {\n");
+    fprintf(outfile, "  center=%f,%f\n", paths[i].centerx, paths[i].centery);
+    fprintf(outfile, "  reflect=%s\n", rf_names[paths[i].reflect]);
+    for(int j = 0; j < paths[i].path.size(); j++) {
+        string lhs;
+        string rhs;
+        if(paths[i].path[j].curvl)
+            lhs = StringPrintf("%f,%f", paths[i].path[j].curvlx, paths[i].path[j].curvly);
+        else
+            lhs = "---";
+        if(paths[i].path[j].curvr)
+            rhs = StringPrintf("%f,%f", paths[i].path[j].curvrx, paths[i].path[j].curvry);
+        else
+            rhs = "---";
+        fprintf(outfile, "  node= %s | %f,%f | %s\n", lhs.c_str(), paths[i].path[j].x, paths[i].path[j].y, rhs.c_str());
+    }
+    fprintf(outfile, "}\n");
+    fprintf(outfile, "\n");
+};
+
+void saveEntity(int i, FILE *outfile) {
+    CHECK(i >= 0 && i < entities.size());
+    fprintf(outfile, "entity {\n");
+    fprintf(outfile, "  type=%s\n", ent_names[entities[i].type]);
+    fprintf(outfile, "  coord=%f,%f\n", entities[i].x, entities[i].y);
+    for(int j = 0; j < entities[i].params.size(); j++)
+        fprintf(outfile, "%s", entities[i].params[j].dumpTextRep().c_str());
+    fprintf(outfile, "}\n");
+    fprintf(outfile, "\n");
+}
+
 void saveDv2() {
+    FILE *outfile;
+    {
+        char timestampbuf[ 128 ];
+        time_t ctmt = time(NULL);
+        strftime(timestampbuf, sizeof(timestampbuf), "%Y%m%d-%H%M%S.dv2", gmtime(&ctmt));
+        dprintf("%s\n", timestampbuf);
+        outfile = fopen(timestampbuf, "wb");
+        if(!outfile) {
+            dprintf("Outfile %s couldn't be opened! Didn't save!", timestampbuf);
+            return;
+        }
+    }    
+    for(int i = 0; i < paths.size(); i++)
+        savePath(i, outfile);
+    for(int i = 0; i < entities.size(); i++)
+        saveEntity(i, outfile);
+    fclose(outfile);
 }
 
 int path_target = -1;
@@ -677,6 +803,33 @@ bool vecEditTick(const Controller &keys) {
     CHECK(sizeof(rf_behavior) / sizeof(*rf_behavior) == VECRF_END);
     CHECK(sizeof(ed_names) / sizeof(*ed_names) == VECED_END);
     
+    {
+        static int firstrun = 1;
+        if(firstrun) {
+            firstrun = 0;
+            // Test my matrix inversion! Wheeee
+            for(int i = 0; i < VECRF_END; i++) {
+                for(int j = 0; j < rf_repeats[i]; j++) {
+                    Transform2d orig = rf_behavior[i][j];
+                    Transform2d inv = orig;
+                    inv.invert();
+                    //dprintf("-----");
+                    //orig.display();
+                    //dprintf("--");
+                    //inv.display();
+                    inv = orig * inv;
+                    //dprintf("--");
+                    //inv.display();
+                    for(int x = 0; x < 3; x++) {
+                        for(int y = 0; y < 3; y++) {
+                            CHECK(fabs(inv.m[x][y] - (x == y)) < 1e-9);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
     if(modestack.size() == 0)   // get the whole shebang started
         modestack.push(VECED_EXAMINE);
     
@@ -695,6 +848,9 @@ bool vecEditTick(const Controller &keys) {
     
     float *write_x = NULL;
     float *write_y = NULL;
+    
+    float offset_x = 0;
+    float offset_y = 0;
     
     if(keys.keys[15].repeat && modestack.top() != VECED_EXAMINE) {
         if(modestack.top() == VECED_MOVE) {
@@ -825,8 +981,6 @@ bool vecEditTick(const Controller &keys) {
         paths[path_target].reflect %= VECRF_END;
         write_x = &paths[path_target].centerx;
         write_y = &paths[path_target].centery;
-        offset_x = 0;
-        offset_y = 0;
     } else if(modestack.top() == VECED_MOVE) {
         CHECK(path_target >= 0 && path_target < paths.size());
         CHECK(path_curnode >= 0 && path_curnode < paths[path_target].vpath.size());

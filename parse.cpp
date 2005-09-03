@@ -82,11 +82,15 @@ istream &getkvData(istream &ifs, kvData &out) {
                 return ifs;
             vector<string> tok = tokenize(line, "=");
             CHECK(tok.size() == 1 || tok.size() == 2);
-            CHECK(!out.kv.count(tok[0]));
+            string dat;
             if(tok.size() == 1)
-                out.kv[tok[0]] = "";
+                dat = "";
             else
-                out.kv[tok[0]] = tok[1];
+                dat = tok[1];
+            if(!out.kv.count(tok[0]))
+                out.kv[tok[0]] = dat;
+            else
+                out.kv[tok[0]] += "\n" + dat;
         }
     }
     CHECK(0);
