@@ -76,6 +76,8 @@ void drawText( const string &txt, float scale, float sx, float sy );
 void drawVectors(const VectorObject &vecob, float x, float y, float width, float weight);
 void drawVectors(const VectorObject &vecob, const Float4 &bounds, bool cx, bool cy, float weight);
 
+void drawSpokes(float x, float y, int dupes, int numer, int denom, float len, float weight);
+
 void deinitFrame();
 
 #endif

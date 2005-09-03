@@ -178,8 +178,15 @@ inline float dsin( float in ) {
 }
 
 inline float fsin( float in ) {
-	CHECK( in >= 0 );
-	if( in < PI / 2 ) {
+    if(in < 0 || in >= PI * 5 / 2) {
+        in = fmod(in, PI * 2);
+        if(in < 0)
+            in = in + PI * 2;
+        return fsin(in);
+    }
+    
+    CHECK(in >= 0);
+    if( in < PI / 2 ) {
 		return dsin( in );
 	} else if( in < PI ) {
 		return dsin( PI - in );
@@ -190,7 +197,7 @@ inline float fsin( float in ) {
 	} else if( in < PI * 5 / 2 ) {
 		return dsin( in - PI * 2 );
 	} else {
-		CHECK( 0 );
+        CHECK(0);
 	}
 }
 inline float fcos( float in ) {

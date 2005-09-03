@@ -116,6 +116,11 @@ Transform2d operator*(const Transform2d &lhs, const Transform2d &rhs) {
     return rv;
 }
 
+Transform2d &operator*=(Transform2d &lhs, const Transform2d &rhs) {
+    lhs = lhs * rhs;
+    return lhs;
+}
+
 inline Transform2d t2d_identity() {
     return Transform2d();
 }
@@ -129,45 +134,61 @@ inline Transform2d t2d_flip(bool h, bool v, bool d) {
         o.dflip();
     return o;
 }
+inline Transform2d t2d_rotate(float rads) {
+    Transform2d o;
+    o.m[0][0] = cos(rads);
+    o.m[0][1] = sin(rads);
+    o.m[1][0] = -sin(rads);
+    o.m[1][1] = cos(rads);
+    return o;
+}
 
 enum { VECED_EXAMINE, VECED_PATH, VECED_REFLECT, VECED_MOVE, VECED_ENTITYTYPE, VECED_ENTITY, VECED_END };
 const char *ed_names[] = { "Examine", "Path edit", "Reflect", "Move", "Entitytype", "Entity" };
-enum { VECRF_NONE, VECRF_HORIZONTAL, VECRF_VERTICAL, VECRF_VH, VECRF_180DEG, VECRF_SNOWFLAKE4, VECRF_END };
-const char *rf_names[] = {"none", "horizontal", "vertical", "vertical horizontal", "180deg", "snowflake4"};
-const int rf_priv_repeats[] = { 1, 2, 2, 4, 2, 8 };
-const bool rf_priv_mirror[] = { false, true, true, true, false, true };
+enum { VECRF_SPIN, VECRF_SNOWFLAKE, VECRF_END };
+const char *rf_names[] = {"spin", "snowflake"};
 enum { ENTITY_TANKSTART, ENTITY_END };
 const char *ent_names[] = {"tank start location"};
 
-const Transform2d rf_none[] = {t2d_identity()};
-const Transform2d rf_horizontal[] = {t2d_identity(), t2d_flip(0,1,0)};
-const Transform2d rf_vertical[] = {t2d_identity(), t2d_flip(1,0,0)};
-const Transform2d rf_vh[] = {t2d_identity(), t2d_flip(1,0,0), t2d_flip(1,1,0), t2d_flip(0,1,0)};
-const Transform2d rf_180[] = {t2d_identity(), t2d_flip(1,1,0)};
-const Transform2d rf_snowflake4[] = {
-        t2d_flip(0,0,0),
-        t2d_flip(0,0,1),
-        t2d_flip(0,1,1),
-        t2d_flip(1,0,0),
-        t2d_flip(1,1,0),
-        t2d_flip(1,1,1),
-        t2d_flip(1,0,1),
-        t2d_flip(0,1,0)};
-
-const Transform2d *rf_priv_behavior[] = {rf_none, rf_horizontal, rf_vertical, rf_vh, rf_180, rf_snowflake4};
-
 int rfg_repeats(int type, int dupe) {
-    CHECK(dupe == 1);
-    return rf_priv_repeats[type];
+    CHECK(dupe > 0);
+    if(type == VECRF_SPIN)
+        return dupe;
+    else if(type == VECRF_SNOWFLAKE)
+        return dupe * 2;
+    else
+        CHECK(0);
 }
 
 bool rfg_mirror(int type) {
-    return rf_priv_mirror[type];
+    if(type == VECRF_SPIN)
+        return false;
+    else if(type == VECRF_SNOWFLAKE)
+        return true;
+    else
+        CHECK(0);
 }
 
 Transform2d rfg_behavior(int type, int segment, int dupe, int numer, int denom) {
-    CHECK(dupe == 1 && numer == 0 && denom == 1);
-    return rf_priv_behavior[type][segment];
+    if(type == VECRF_SPIN) {
+        return t2d_rotate((float)segment / dupe * 2 * PI);
+    } else if(type == VECRF_SNOWFLAKE) {
+        int phase = segment / 2;
+        bool flipped = segment % 2;
+        // Step 1: We're offset from the 0 position by numer / denom. So first we rotate in that direction.
+        Transform2d base;
+        base *= t2d_rotate((float)numer / denom * 2 * PI);
+        // Step 2: If we're flipped, we flip.
+        if(flipped)
+            base *= t2d_flip(0, 1, 0);
+        // Step 3: Return to the 0 position.
+        base *= t2d_rotate(-(float)numer / denom * 2 * PI);
+        // Step 4: Rotate appropriately.
+        base *= t2d_rotate((float)phase / dupe * 2 * PI);
+        return base;
+    } else {
+        CHECK(0);
+    }
 }
 
 stack< int > modestack;
@@ -239,7 +260,7 @@ public:
 
     Path() {
         centerx = centery = 0;
-        reflect = VECRF_NONE;
+        reflect = VECRF_SPIN;
         dupes = 1;
         ang_numer = 0;
         ang_denom = 1;
@@ -491,8 +512,8 @@ void Path::rebuildVpath() {
 void Entity::initParams() {
     params.clear();
     if(type == ENTITY_TANKSTART) {
-        params.push_back(paramBoundint("numerator", 0, 0, 100, false));
-        params.push_back(paramBoundint("denominator", 1, 1, 100, false));
+        params.push_back(paramBoundint("numerator", 0, 0, 100000, false));
+        params.push_back(paramBoundint("denominator", 1, 1, 100000, false));
         params.push_back(paramBool("exist2", true, true));
         params.push_back(paramBool("exist3", true, true));
         params.push_back(paramBool("exist4", true, true));
@@ -514,6 +535,8 @@ void savePath(int i, FILE *outfile) {
     fprintf(outfile, "path {\n");
     fprintf(outfile, "  center=%f,%f\n", paths[i].centerx, paths[i].centery);
     fprintf(outfile, "  reflect=%s\n", rf_names[paths[i].reflect]);
+    fprintf(outfile, "  dupes=%d\n", paths[i].dupes);
+    fprintf(outfile, "  angle=%d/%d\n", paths[i].ang_numer, paths[i].ang_denom);
     for(int j = 0; j < paths[i].path.size(); j++) {
         string lhs;
         string rhs;
@@ -699,21 +722,14 @@ void renderSinglePath(int path, float intense, int widgetlevel) {
     if(widgetlevel >= 1) {
         setColor(Color(0.5, 0.5, 0.5) * intense);
         drawBoxAround(p.centerx, p.centery, linelen / 10, 0.1);
-        if(p.reflect == VECRF_NONE) {
-        } else if(p.reflect == VECRF_HORIZONTAL) {
-            drawLine(p.centerx - linelen, p.centery, p.centerx + linelen, p.centery, 0.1);
-        } else if(p.reflect == VECRF_VERTICAL) {
-            drawLine(p.centerx, p.centery - linelen, p.centerx, p.centery + linelen, 0.1);
-        } else if(p.reflect == VECRF_VH) {
-            drawLine(p.centerx - linelen, p.centery, p.centerx + linelen, p.centery, 0.1);
-            drawLine(p.centerx, p.centery - linelen, p.centerx, p.centery + linelen, 0.1);
-        } else if(p.reflect == VECRF_180DEG) {
-            drawLine(p.centerx - linelen, p.centery - linelen, p.centerx + linelen, p.centery + linelen, 0.1);
-        } else if(p.reflect == VECRF_SNOWFLAKE4) {
-            drawLine(p.centerx - linelen, p.centery - linelen, p.centerx + linelen, p.centery + linelen, 0.1);
-            drawLine(p.centerx - linelen, p.centery + linelen, p.centerx + linelen, p.centery - linelen, 0.1);
-            drawLine(p.centerx - linelen, p.centery, p.centerx + linelen, p.centery, 0.1);
-            drawLine(p.centerx, p.centery - linelen, p.centerx, p.centery + linelen, 0.1);
+        if(p.reflect == VECRF_SPIN) {
+            setColor(Color(0.5, 0.5, 0.5) * intense);
+            drawSpokes(p.centerx, p.centery, p.dupes, p.ang_numer, p.ang_denom, linelen, 0.1);
+        } else if(p.reflect == VECRF_SNOWFLAKE) {
+            setColor(Color(0.5, 0.5, 0.5) * intense);
+            drawSpokes(p.centerx, p.centery, p.dupes, p.ang_numer, p.ang_denom, linelen, 0.1);
+            setColor(Color(0.2, 0.2, 0.2) * intense);
+            drawSpokes(p.centerx, p.centery, p.dupes, p.ang_numer * p.dupes * 2 + p.ang_denom, p.ang_denom * p.dupes * 2, linelen, 0.1);
         } else {
             CHECK(0);
         }
@@ -783,8 +799,10 @@ void renderSingleEntity(int p, int widgetlevel) {
     CHECK(p >= 0 && p < entities.size());
     const Entity &ent = entities[p];
     if(ent.type == ENTITY_TANKSTART) {
+        CHECK(ent.params[0].name == "numerator");
+        CHECK(ent.params[1].name == "denominator");
         setColor(1.0, 1.0, 1.0);
-        drawLinePath( Tank().getTankVertices(ent.x, ent.y, 0), 0.2, true );
+        drawLinePath(Tank().getTankVertices(ent.x, ent.y, (float)ent.params[0].bi_val / ent.params[1].bi_val * 2 * PI), 0.2, true);
         if(widgetlevel >= 1) {
             setZoom(0, 0, 100);
             for(int i = 0; i < ent.params.size(); i++) {
@@ -819,9 +837,6 @@ bool vecEditTick(const Controller &keys) {
     
     // various consistency checks
     CHECK(sizeof(rf_names) / sizeof(*rf_names) == VECRF_END);
-    CHECK(sizeof(rf_priv_repeats) / sizeof(*rf_priv_repeats) == VECRF_END);
-    CHECK(sizeof(rf_priv_mirror) / sizeof(*rf_priv_mirror) == VECRF_END);
-    CHECK(sizeof(rf_priv_behavior) / sizeof(*rf_priv_behavior) == VECRF_END);
     CHECK(sizeof(ed_names) / sizeof(*ed_names) == VECED_END);
     
     {
@@ -997,9 +1012,25 @@ bool vecEditTick(const Controller &keys) {
         if(keys.keys[4].repeat) // previous reflect
             paths[path_target].reflect--;
         if(keys.keys[5].repeat) // next reflect
-            paths[path_target].reflect++;    
+            paths[path_target].reflect++;
         paths[path_target].reflect += VECRF_END;
         paths[path_target].reflect %= VECRF_END;
+        if(keys.keys[8].repeat) // decrement dupes
+            paths[path_target].dupes--;
+        if(keys.keys[9].repeat) // increment dupes
+            paths[path_target].dupes++;
+        if(paths[path_target].dupes <= 0)
+            paths[path_target].dupes = 1;
+        if(keys.keys[6].repeat) // decrement numer
+            paths[path_target].ang_numer--;
+        if(keys.keys[7].repeat) // increment numer
+            paths[path_target].ang_numer++;
+        if(keys.keys[10].repeat) // decrement denom
+            paths[path_target].ang_denom--;
+        if(keys.keys[11].repeat) // increment denom
+            paths[path_target].ang_denom++;
+        if(paths[path_target].ang_denom <= 0)
+            paths[path_target].ang_denom = 1;
         write_x = &paths[path_target].centerx;
         write_y = &paths[path_target].centery;
     } else if(modestack.top() == VECED_MOVE) {
@@ -1089,7 +1120,8 @@ void vecEditRender() {
         guiText("k to move center/reflect                   i/o for node curviness");
     } else if(modestack.top() == VECED_REFLECT) {
         CHECK(path_target >= 0 && path_target < paths.size());
-        guiText(StringPrintf("u/i to change reflect mode (currently %s)", rf_names[paths[path_target].reflect]));
+        guiText("u/i j/k o/p l/; to change reflect modes");
+        guiText(StringPrintf("current %s%d, origin %d/%d x 2PI", rf_names[paths[path_target].reflect], paths[path_target].dupes, paths[path_target].ang_numer, paths[path_target].ang_denom));
         guiText("arrow keys to move center, / to accept");
     } else if(modestack.top() == VECED_MOVE) {
         CHECK(path_target >= 0 && path_target < paths.size());

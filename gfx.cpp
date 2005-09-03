@@ -384,3 +384,10 @@ void drawVectors(const VectorObject &vecob, const Float4 &bounds, bool cx, bool 
     }
 }
 
+void drawSpokes(float x, float y, int dupes, int numer, int denom, float len, float weight) {
+    for(int i = 0; i < dupes; i++) {
+        float ang = ((float)numer / denom + (float)i / dupes) * 2 * PI;
+        drawLine(x, y, x + cos(ang) * len, y + sin(ang) * len, weight);
+    }
+}
+
