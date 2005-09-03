@@ -43,6 +43,10 @@ void initGfx() {
             if(line == ":")
                 line = " : "; // specialcase hack for this particular character
             vector<string> first = tokenize(line, ":");
+            if(first.size() == 1 && line.size() >= 2 && line[0] == ':' && line[1] == ':') {
+                // more specialcaseitude
+                first.insert(first.begin(), ":");
+            }
             CHECK(first.size() == 2);
             if(first.size() == 2) {
                 CHECK(first[0].size() == 1);

@@ -177,6 +177,7 @@ public:
     string name;
     
     enum { BOOLEAN, BOUNDED_INTEGER };
+    int type;
     
     bool bool_val;
     
@@ -184,14 +185,46 @@ public:
     int bi_low;
     int bi_high;
     
-    void update(const Controller &l, const Controller &r);
-    void render(float x, float y, float h);
+    void update(const Button &l, const Button &r);
+    void render(float x, float y, float h) const;
     
 };
+
+void Parameter::update(const Button &l, const Button &r) {
+    if(type == BOOLEAN) {
+        if(l.repeat || r.repeat)
+            bool_val = !bool_val;
+    } else if(type == BOUNDED_INTEGER) {
+        if(l.repeat)
+            bi_val--;
+        if(r.repeat)
+            bi_val++;
+        if(bi_val < bi_low)
+            bi_val = bi_low;
+        if(bi_val >= bi_high)
+            bi_val = bi_high - 1;
+        CHECK(bi_val >= bi_low && bi_val < bi_high);
+    } else {
+        CHECK(0);
+    }
+}
+
+void Parameter::render(float x, float y, float h) const {
+    string prefix = StringPrintf("%12s: ", name.c_str());
+    if(type == BOOLEAN) {
+        prefix += StringPrintf("%s", bool_val ? "true" : "false");
+    } else if(type == BOUNDED_INTEGER) {
+        prefix += StringPrintf("%d", bi_val);
+    } else {
+        CHECK(0);
+    }
+    drawText(prefix, h, x, y);
+}
 
 Parameter paramBool(const string &name, bool begin) {
     Parameter param;
     param.name = name;
+    param.type = Parameter::BOOLEAN;
     param.bool_val = begin;
     return param;
 };
@@ -199,6 +232,7 @@ Parameter paramBool(const string &name, bool begin) {
 Parameter paramBoundint(const string &name, int begin, int low, int high) {
     Parameter param;
     param.name = name;
+    param.type = Parameter::BOUNDED_INTEGER;
     param.bi_val = begin;
     param.bi_low = low;
     param.bi_high = high;
@@ -361,7 +395,7 @@ void Entity::initParams() {
     params.clear();
     if(type == ENTITY_TANKSTART) {
         params.push_back(paramBoundint("numerator", 0, 0, 100));
-        params.push_back(paramBoundint("denominator", 0, 0, 100));
+        params.push_back(paramBoundint("denominator", 1, 1, 100));
         params.push_back(paramBool("exist 2", true));
         params.push_back(paramBool("exist 3", true));
         params.push_back(paramBool("exist 4", true));
@@ -386,6 +420,7 @@ int path_curnode = -1;
 int path_curhandle = -1;
 
 int entity_target = -1;
+int entity_position = -1;
 
 int gui_vpos = 0;
 
@@ -597,11 +632,24 @@ void renderPaths() {
     }
 }
 
-void renderSingleEntity(int i) {
-    CHECK(i >= 0 && i < entities.size());
-    if(entities[i].type == ENTITY_TANKSTART) {
+void renderSingleEntity(int p, int widgetlevel) {
+    CHECK(p >= 0 && p < entities.size());
+    const Entity &ent = entities[p];
+    if(ent.type == ENTITY_TANKSTART) {
         setColor(1.0, 1.0, 1.0);
-        drawLinePath( Tank().getTankVertices(entities[i].x, entities[i].y, 0), 0.2, true );
+        drawLinePath( Tank().getTankVertices(ent.x, ent.y, 0), 0.2, true );
+        if(widgetlevel >= 1) {
+            setZoom(0, 0, 100);
+            for(int i = 0; i < ent.params.size(); i++) {
+                if(entity_position == i) {
+                    setColor(1.0, 1.0, 1.0);
+                } else {
+                    setColor(0.5, 0.5, 0.5);
+                }
+                ent.params[i].render(2, 12 + 3 * i, 2);
+            }
+            setZoom(-zoom*1.25, -zoom, zoom);
+        }
     } else {
         CHECK(0);
     }
@@ -609,7 +657,7 @@ void renderSingleEntity(int i) {
 
 void renderEntities() {
     for(int i = 0; i < entities.size(); i++) {
-        renderSingleEntity(i);
+        renderSingleEntity(i, i == entity_target);
     }
 }
 
@@ -657,6 +705,7 @@ bool vecEditTick(const Controller &keys) {
         if(modestack.top() == VECED_EXAMINE) {
             path_target = -1;
             entity_target = -1;
+            entity_position = -1;
         }
     } else if(modestack.top() == VECED_EXAMINE) {
         if(keys.keys[4].repeat) {   // create path
@@ -812,6 +861,16 @@ bool vecEditTick(const Controller &keys) {
         write_y = &entities[entity_target].y;
     } else if(modestack.top() == VECED_ENTITY) {
         CHECK(entity_target >= 0 && entity_target < entities.size());
+        if(entity_position == -1)
+            entity_position = 0;
+        CHECK(entity_position >= 0 && entity_position < entities[entity_target].params.size());
+        if(keys.keys[5].repeat)
+            entity_position--;
+        if(keys.keys[9].repeat)
+            entity_position++;
+        entity_position += entities[entity_target].params.size();
+        entity_position %= entities[entity_target].params.size();
+        entities[entity_target].params[entity_position].update(keys.keys[8], keys.keys[10]);
         write_x = &entities[entity_target].x;
         write_y = &entities[entity_target].y;
     } else {
