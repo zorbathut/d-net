@@ -242,7 +242,7 @@ public:
     vector<Vecptn> path;
     vector<Vecptn> vpath;
 
-    void vpathCreate(int node); // used when nodes are created - the node is created before the given node id
+    int vpathCreate(int node); // used when nodes are created - the node is created before the given node id. returns the node's new ID (can be funky)
     void vpathModify(int node); // used when nodes are edited
     void vpathRemove(int node); // used when nodes are destroyed
 
@@ -386,15 +386,23 @@ float grid = 4;
 float cursor_x = 0;
 float cursor_y = 0;
 
-void Path::vpathCreate(int node) {
+int Path::vpathCreate(int node) {
     CHECK(node >= 0 && node <= vpath.size());
     pair<int, bool> can = getCanonicalNode(node);
     if(can.second) can.first++;
+    int phase = path.size() ? node / path.size() : 0;
+    // we're inserting a node to be the new can.first at dupe 0, but then we have to figure out what it ended up being at dupe #phase
     Vecptn tv;
     tv.x = cursor_x;
     tv.y = cursor_y;
     path.insert(path.begin() + can.first, tv);
     rebuildVpath();
+    for(int i = 0; i < path.size(); i++) {
+        pair<int, bool> ncan = getCanonicalNode(i + phase * path.size());
+        if(ncan.first == phase)
+            return i + phase * path.size();
+    }
+    CHECK(0);
 }
 
 void Path::vpathModify(int node) {
@@ -967,8 +975,9 @@ bool vecEditTick(const Controller &keys) {
                 CHECK(paths[path_target].vpath.size() == 0);
                 createtarget = 0;
             }
-            paths[path_target].vpathCreate(createtarget);
-            path_curnode = createtarget;
+            path_curnode = paths[path_target].vpathCreate(createtarget);
+            if(path_curnode != createtarget)
+                dprintf("Corrected from %d to %d\n", createtarget, path_curnode);
             modestack.push(VECED_MOVE);
         } else if(keys.keys[8].repeat) { // edit node
             pair<int, int> close = findTwoClosestNodes(cursor_x, cursor_y, path_target);
@@ -1034,26 +1043,7 @@ bool vecEditTick(const Controller &keys) {
         write_x = &paths[path_target].centerx;
         write_y = &paths[path_target].centery;
     } else if(modestack.top() == VECED_MOVE) {
-        CHECK(path_target >= 0 && path_target < paths.size());
-        CHECK(path_curnode >= 0 && path_curnode < paths[path_target].vpath.size());
-        if(path_curhandle == -1) {
-            write_x = &paths[path_target].vpath[path_curnode].x;
-            write_y = &paths[path_target].vpath[path_curnode].y;
-            offset_x = paths[path_target].centerx;
-            offset_y = paths[path_target].centery;
-        } else {
-            offset_x = paths[path_target].centerx + paths[path_target].vpath[path_curnode].x;
-            offset_y = paths[path_target].centery + paths[path_target].vpath[path_curnode].y;
-            if(path_curhandle == 0) {
-                write_x = &paths[path_target].vpath[path_curnode].curvlx;
-                write_y = &paths[path_target].vpath[path_curnode].curvly;
-            } else if(path_curhandle == 1) {
-                write_x = &paths[path_target].vpath[path_curnode].curvrx;
-                write_y = &paths[path_target].vpath[path_curnode].curvry;
-            } else {
-                CHECK(0);
-            }
-        }
+        // this is just write_x setup
     } else if(modestack.top() == VECED_ENTITYTYPE) {
         CHECK(entity_target >= 0 && entity_target < entities.size());
         if(keys.keys[4].repeat) // previous type
@@ -1083,6 +1073,29 @@ bool vecEditTick(const Controller &keys) {
         CHECK(0);
     }
     
+    if(modestack.top() == VECED_MOVE) {
+        CHECK(path_target >= 0 && path_target < paths.size());
+        CHECK(path_curnode >= 0 && path_curnode < paths[path_target].vpath.size());
+        if(path_curhandle == -1) {
+            write_x = &paths[path_target].vpath[path_curnode].x;
+            write_y = &paths[path_target].vpath[path_curnode].y;
+            offset_x = paths[path_target].centerx;
+            offset_y = paths[path_target].centery;
+        } else {
+            offset_x = paths[path_target].centerx + paths[path_target].vpath[path_curnode].x;
+            offset_y = paths[path_target].centery + paths[path_target].vpath[path_curnode].y;
+            if(path_curhandle == 0) {
+                write_x = &paths[path_target].vpath[path_curnode].curvlx;
+                write_y = &paths[path_target].vpath[path_curnode].curvly;
+            } else if(path_curhandle == 1) {
+                write_x = &paths[path_target].vpath[path_curnode].curvrx;
+                write_y = &paths[path_target].vpath[path_curnode].curvry;
+            } else {
+                CHECK(0);
+            }
+        }
+    }
+    
     if(keys.l.repeat) cursor_x -= grid;
     if(keys.r.repeat) cursor_x += grid;
     if(keys.u.repeat) cursor_y -= grid;
@@ -1101,6 +1114,12 @@ bool vecEditTick(const Controller &keys) {
         CHECK(path_curnode >= 0 && path_curnode < paths[path_target].vpath.size());
         paths[path_target].vpathModify(path_curnode);
     }
+    
+    /*if(paths.size()) {
+        dprintf("---");
+        for(int i = 0; i < paths[0].path.size(); i++)
+            dprintf("%f, %f", paths[0].path[i].x, paths[0].path[i].y);
+    }*/
     
     return false;
     
