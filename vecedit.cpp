@@ -134,8 +134,8 @@ enum { VECED_EXAMINE, VECED_PATH, VECED_REFLECT, VECED_MOVE, VECED_ENTITYTYPE, V
 const char *ed_names[] = { "Examine", "Path edit", "Reflect", "Move", "Entitytype", "Entity" };
 enum { VECRF_NONE, VECRF_HORIZONTAL, VECRF_VERTICAL, VECRF_VH, VECRF_180DEG, VECRF_SNOWFLAKE4, VECRF_END };
 const char *rf_names[] = {"none", "horizontal", "vertical", "vertical horizontal", "180deg", "snowflake4"};
-const int rf_repeats[] = { 1, 2, 2, 4, 2, 8 };
-const bool rf_mirror[] = { false, true, true, true, false, true };
+const int rf_priv_repeats[] = { 1, 2, 2, 4, 2, 8 };
+const bool rf_priv_mirror[] = { false, true, true, true, false, true };
 enum { ENTITY_TANKSTART, ENTITY_END };
 const char *ent_names[] = {"tank start location"};
 
@@ -154,7 +154,21 @@ const Transform2d rf_snowflake4[] = {
         t2d_flip(1,0,1),
         t2d_flip(0,1,0)};
 
-const Transform2d *rf_behavior[] = {rf_none, rf_horizontal, rf_vertical, rf_vh, rf_180, rf_snowflake4};
+const Transform2d *rf_priv_behavior[] = {rf_none, rf_horizontal, rf_vertical, rf_vh, rf_180, rf_snowflake4};
+
+int rfg_repeats(int type, int dupe) {
+    CHECK(dupe == 1);
+    return rf_priv_repeats[type];
+}
+
+bool rfg_mirror(int type) {
+    return rf_priv_mirror[type];
+}
+
+Transform2d rfg_behavior(int type, int segment, int dupe, int numer, int denom) {
+    CHECK(dupe == 1 && numer == 0 && denom == 1);
+    return rf_priv_behavior[type][segment];
+}
 
 stack< int > modestack;
 
@@ -199,6 +213,10 @@ public:
     float centery;
 
     int reflect;
+    int dupes;
+
+    int ang_denom;
+    int ang_numer;
 
     vector<Vecptn> path;
     vector<Vecptn> vpath;
@@ -222,6 +240,9 @@ public:
     Path() {
         centerx = centery = 0;
         reflect = VECRF_NONE;
+        dupes = 1;
+        ang_numer = 0;
+        ang_denom = 1;
     }
     
 };
@@ -372,7 +393,7 @@ void Path::vpathModify(int node) {
 
 void Path::setVRCurviness(int node, bool curv) {
     pair<int, bool> canoa = getCanonicalNode(node);
-    pair<int, bool> canob = getCanonicalNode((node + 1) % (path.size() * rf_repeats[reflect]));
+    pair<int, bool> canob = getCanonicalNode((node + 1) % (path.size() * rfg_repeats(reflect, dupes)));
     dprintf("svrc: %d, %d %d, %d %d\n", node, canoa.first, canoa.second, canob.first, canob.second);
     if(!canoa.second)
         path[canoa.first].curvr = curv;
@@ -395,33 +416,33 @@ Vecptn Path::genNode(int i) const {
     Vecptn srcp = path[src.first];
     if(src.second)
         srcp.mirror();
-    srcp.transform(rf_behavior[reflect][i / path.size()]);
+    srcp.transform(rfg_behavior(reflect, i / path.size(), dupes, ang_numer, ang_denom));
     return srcp;
 }
 
 vector<Vecptn> Path::genFromPath() const {
     vector<Vecptn> nvpt;
-    for(int i = 0; i < path.size() * rf_repeats[reflect]; i++)
+    for(int i = 0; i < path.size() * rfg_repeats(reflect, dupes); i++)
         nvpt.push_back(genNode(i));
     return nvpt;
 }
 
 pair<int, bool> Path::getCanonicalNode(int vnode) const {
-    CHECK(vnode >= 0 && vnode <= path.size() * rf_repeats[reflect]);
-    if(vnode == path.size() * rf_repeats[reflect]) {
-        if(rf_mirror[reflect]) {
-            CHECK(rf_repeats[reflect] % 2 == 0);
+    CHECK(vnode >= 0 && vnode <= path.size() * rfg_repeats(reflect, dupes));
+    if(vnode == path.size() * rfg_repeats(reflect, dupes)) {
+        if(rfg_mirror(reflect)) {
+            CHECK(rfg_repeats(reflect, dupes) % 2 == 0);
             return make_pair(0, false);
         } else {
             return make_pair(path.size(), false);
         }
         CHECK(0);
     }
-    CHECK(vnode < path.size() * rf_repeats[reflect]);
+    CHECK(vnode < path.size() * rfg_repeats(reflect, dupes));
     int bank = vnode / path.size();
     int sub = vnode % path.size();
-    CHECK(bank >= 0 && bank < rf_repeats[reflect]);
-    if(bank % 2 == 1 && rf_mirror[reflect]) {
+    CHECK(bank >= 0 && bank < rfg_repeats(reflect, dupes));
+    if(bank % 2 == 1 && rfg_mirror(reflect)) {
         // this is a mirrored node
         return make_pair(path.size() - sub - 1, true);
     } else {
@@ -462,7 +483,7 @@ void Path::fixCurve() {
 void Path::rebuildVpath() {
     fixCurve();
     vpath = genFromPath();
-    CHECK(vpath.size() == path.size() * rf_repeats[reflect]);
+    CHECK(vpath.size() == path.size() * rfg_repeats(reflect, dupes));
     for(int i = 0; i < vpath.size(); i++)
         CHECK(vpath[i].curvr == vpath[(i + 1) % vpath.size()].curvl);
 }
@@ -798,9 +819,9 @@ bool vecEditTick(const Controller &keys) {
     
     // various consistency checks
     CHECK(sizeof(rf_names) / sizeof(*rf_names) == VECRF_END);
-    CHECK(sizeof(rf_repeats) / sizeof(*rf_repeats) == VECRF_END);
-    CHECK(sizeof(rf_mirror) / sizeof(*rf_mirror) == VECRF_END);
-    CHECK(sizeof(rf_behavior) / sizeof(*rf_behavior) == VECRF_END);
+    CHECK(sizeof(rf_priv_repeats) / sizeof(*rf_priv_repeats) == VECRF_END);
+    CHECK(sizeof(rf_priv_mirror) / sizeof(*rf_priv_mirror) == VECRF_END);
+    CHECK(sizeof(rf_priv_behavior) / sizeof(*rf_priv_behavior) == VECRF_END);
     CHECK(sizeof(ed_names) / sizeof(*ed_names) == VECED_END);
     
     {
@@ -809,8 +830,8 @@ bool vecEditTick(const Controller &keys) {
             firstrun = 0;
             // Test my matrix inversion! Wheeee
             for(int i = 0; i < VECRF_END; i++) {
-                for(int j = 0; j < rf_repeats[i]; j++) {
-                    Transform2d orig = rf_behavior[i][j];
+                for(int j = 0; j < rfg_repeats(i, 1); j++) {
+                    Transform2d orig = rfg_behavior(i, j, 1, 0, 1);
                     Transform2d inv = orig;
                     inv.invert();
                     //dprintf("-----");
