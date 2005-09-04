@@ -418,7 +418,14 @@ void Path::vpathModify(int node) {
     if(orig.curvr != vpath[node].curvr)
         setVRCurviness(node, vpath[node].curvr);
     if(node >= path.size()) {
-        dprintf("Not modifying, this has to be written!");
+        pair<int, bool> canon = getCanonicalNode(node);
+        Vecptn tnode = vpath[node];
+        if(canon.second)
+            tnode.mirror();
+        Transform2d trans = rfg_behavior(reflect, node / path.size(), dupes, ang_numer, ang_denom);
+        trans.invert();
+        tnode.transform(trans);
+        path[canon.first] = tnode;
     } else {
         path[node] = vpath[node];
     }
@@ -428,7 +435,7 @@ void Path::vpathModify(int node) {
 void Path::setVRCurviness(int node, bool curv) {
     pair<int, bool> canoa = getCanonicalNode(node);
     pair<int, bool> canob = getCanonicalNode((node + 1) % (path.size() * rfg_repeats(reflect, dupes)));
-    dprintf("svrc: %d, %d %d, %d %d\n", node, canoa.first, canoa.second, canob.first, canob.second);
+    //dprintf("svrc: %d, %d %d, %d %d\n", node, canoa.first, canoa.second, canob.first, canob.second);
     if(!canoa.second)
         path[canoa.first].curvr = curv;
     else
@@ -500,6 +507,7 @@ void Path::fixCurve() {
             changed = true;
         }
     }
+    /*
     if(changed) {
         dprintf("Curves have been spliced");
         dprintf("Before:");
@@ -511,7 +519,7 @@ void Path::fixCurve() {
             dprintf("%d %d", tvpath[i].curvl, tvpath[i].curvr);
         for(int i = 0; i < tvpath.size(); i++)
             CHECK(tvpath[i].curvr == tvpath[(i + 1) % tvpath.size()].curvl);
-    }
+    }*/
 }
 
 void Path::rebuildVpath() {
@@ -598,46 +606,10 @@ void saveDv2() {
     fclose(outfile);
 }
 
-void loadDvec() {
+void loadDv2() {
     saveDv2();
-    ifstream fil("load.dvec");
-    CHECK(fil);
-    paths.clear();
-    entities.clear();
-    string buf;
-    Path newpth;
-    while(getline(fil, buf)) {
-        if(buf.size() == 0)
-            break;
-        vector<string> toks = tokenize(buf, " ");
-        CHECK(toks.size() == 3);
-        vector<int> lhc = sti(tokenize(toks[0], "(,)"));
-        CHECK(lhc.size() == 0 || lhc.size() == 2);
-        vector<int> mainc = sti(tokenize(toks[1], ","));
-        CHECK(mainc.size() == 2);
-        vector<int> rhc = sti(tokenize(toks[2], "(,)"));
-        CHECK(rhc.size() == 0 || rhc.size() == 2);
-        Vecptn tvecpt;
-        tvecpt.x = mainc[0];
-        tvecpt.y = mainc[1];
-        if(lhc.size() == 2) {
-            tvecpt.curvl = true;
-            tvecpt.curvlx = lhc[0];
-            tvecpt.curvly = lhc[1];
-        } else {
-            tvecpt.curvl = false;
-        }
-        if(rhc.size() == 2) {
-            tvecpt.curvr = true;
-            tvecpt.curvrx = rhc[0];
-            tvecpt.curvry = rhc[1];
-        } else {
-            tvecpt.curvr = false;
-        }
-        newpth.path.push_back(tvecpt);
-    }
-    newpth.rebuildVpath();
-    paths.push_back(newpth);
+    // Not yet implemented!
+    CHECK(0);
 }
 
 int path_target = -1;
@@ -998,7 +970,7 @@ bool vecEditTick(const Controller &keys) {
                 entities.erase(entities.begin() + close);
             }
         } else if(keys.keys[14].repeat) {   // load
-            loadDvec();
+            loadDv2();
         } else if(keys.keys[15].repeat) {   // save
             saveDv2();
         }
