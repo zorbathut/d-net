@@ -89,7 +89,7 @@ int getAccumulatedClusterCount() {
 
 void beginLineCluster(float weight) {
     CHECK(curWeight == -1.f);
-    glLineWidth( weight / map_zoom * 600 );   // GL uses pixels internally for this unit, so I have to translate from game-meters
+    glLineWidth( weight / map_zoom * SCREEN_HEIGHT );   // GL uses pixels internally for this unit, so I have to translate from game-meters
     glBegin(GL_LINES);
     curWeight = weight;
     lineCount = 0;
@@ -223,7 +223,7 @@ void drawCurveControls( const Float4 &ptah, const Float4 &ptbh, float spacing, f
 }
 
 void drawPoint( float x, float y, float weight ) {
-    glPointSize( weight / map_zoom * 600 );   // GL uses pixels internally for this unit, so I have to translate from game-meters
+    glPointSize( weight / map_zoom * SCREEN_HEIGHT );   // GL uses pixels internally for this unit, so I have to translate from game-meters
     glBegin( GL_POINTS );
 	glVertex2f( ( x - map_sx ) / map_zoom, ( y - map_sy ) / map_zoom );
 	glEnd();

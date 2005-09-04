@@ -1,5 +1,6 @@
 
 #include "main.h"
+#include "const.h"
 
 #include <iostream>
 using namespace std;
@@ -18,8 +19,6 @@ using namespace std;
 #include "gfx.h"
 #include "itemdb.h"
 
-#define SCREEN_WIDTH  800
-#define SCREEN_HEIGHT 600
 #define SCREEN_DEPTH  16
 SDL_Surface * MainWindow = NULL;
 

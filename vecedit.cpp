@@ -2,10 +2,12 @@
 #include "vecedit.h"
 #include "gfx.h"
 #include "game.h" // currently just for Tank
+#include "parse.h"
 
 #include <vector>
 #include <string>
 #include <stack>
+#include <fstream>
 
 using namespace std;
 
@@ -388,9 +390,12 @@ float cursor_y = 0;
 
 int Path::vpathCreate(int node) {
     CHECK(node >= 0 && node <= vpath.size());
+    //dprintf("node is %d, vpath.size() is %d\n", vpath.size());
     pair<int, bool> can = getCanonicalNode(node);
+    //dprintf("can is %d\n", can.first);
     if(can.second) can.first++;
     int phase = path.size() ? node / path.size() : 0;
+    //dprintf("phase is %d\n", phase);
     // we're inserting a node to be the new can.first at dupe 0, but then we have to figure out what it ended up being at dupe #phase
     Vecptn tv;
     tv.x = cursor_x;
@@ -399,7 +404,7 @@ int Path::vpathCreate(int node) {
     rebuildVpath();
     for(int i = 0; i < path.size(); i++) {
         pair<int, bool> ncan = getCanonicalNode(i + phase * path.size());
-        if(ncan.first == phase)
+        if(ncan.first == can.first)
             return i + phase * path.size();
     }
     CHECK(0);
@@ -591,6 +596,48 @@ void saveDv2() {
     for(int i = 0; i < entities.size(); i++)
         saveEntity(i, outfile);
     fclose(outfile);
+}
+
+void loadDvec() {
+    saveDv2();
+    ifstream fil("load.dvec");
+    CHECK(fil);
+    paths.clear();
+    entities.clear();
+    string buf;
+    Path newpth;
+    while(getline(fil, buf)) {
+        if(buf.size() == 0)
+            break;
+        vector<string> toks = tokenize(buf, " ");
+        CHECK(toks.size() == 3);
+        vector<int> lhc = sti(tokenize(toks[0], "(,)"));
+        CHECK(lhc.size() == 0 || lhc.size() == 2);
+        vector<int> mainc = sti(tokenize(toks[1], ","));
+        CHECK(mainc.size() == 2);
+        vector<int> rhc = sti(tokenize(toks[2], "(,)"));
+        CHECK(rhc.size() == 0 || rhc.size() == 2);
+        Vecptn tvecpt;
+        tvecpt.x = mainc[0];
+        tvecpt.y = mainc[1];
+        if(lhc.size() == 2) {
+            tvecpt.curvl = true;
+            tvecpt.curvlx = lhc[0];
+            tvecpt.curvly = lhc[1];
+        } else {
+            tvecpt.curvl = false;
+        }
+        if(rhc.size() == 2) {
+            tvecpt.curvr = true;
+            tvecpt.curvrx = rhc[0];
+            tvecpt.curvry = rhc[1];
+        } else {
+            tvecpt.curvr = false;
+        }
+        newpth.path.push_back(tvecpt);
+    }
+    newpth.rebuildVpath();
+    paths.push_back(newpth);
 }
 
 int path_target = -1;
@@ -950,6 +997,8 @@ bool vecEditTick(const Controller &keys) {
                 saveDv2();
                 entities.erase(entities.begin() + close);
             }
+        } else if(keys.keys[14].repeat) {   // load
+            loadDvec();
         } else if(keys.keys[15].repeat) {   // save
             saveDv2();
         }
@@ -1040,6 +1089,15 @@ bool vecEditTick(const Controller &keys) {
             paths[path_target].ang_denom++;
         if(paths[path_target].ang_denom <= 0)
             paths[path_target].ang_denom = 1;
+        if(keys.keys[12].repeat || keys.keys[13].repeat) { // rotate/swap
+            if(keys.keys[12].repeat) {
+                paths[path_target].path.insert(paths[path_target].path.begin(), paths[path_target].path.back());
+                paths[path_target].path.pop_back();
+            } else if(keys.keys[13].repeat) {
+                reverse(paths[path_target].path.begin(), paths[path_target].path.end());
+            }
+            paths[path_target].rebuildVpath();
+        }
         write_x = &paths[path_target].centerx;
         write_y = &paths[path_target].centery;
     } else if(modestack.top() == VECED_MOVE) {
@@ -1141,7 +1199,7 @@ void vecEditRender() {
         CHECK(path_target >= 0 && path_target < paths.size());
         guiText("u/i j/k o/p l/; to change reflect modes");
         guiText(StringPrintf("current %s%d, origin %d/%d x 2PI", rf_names[paths[path_target].reflect], paths[path_target].dupes, paths[path_target].ang_numer, paths[path_target].ang_denom));
-        guiText("arrow keys to move center, / to accept");
+        guiText("arrow keys to move center, / to accept, m/, to rotate/reverse point order");
     } else if(modestack.top() == VECED_MOVE) {
         CHECK(path_target >= 0 && path_target < paths.size());
         CHECK(path_curnode >= 0 && path_curnode < paths[path_target].vpath.size());
