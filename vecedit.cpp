@@ -13,94 +13,10 @@ using namespace std;
 
 enum { VECED_EXAMINE, VECED_PATH, VECED_REFLECT, VECED_MOVE, VECED_ENTITYTYPE, VECED_ENTITY, VECED_END };
 const char *ed_names[] = { "Examine", "Path edit", "Reflect", "Move", "Entitytype", "Entity" };
-enum { VECRF_SPIN, VECRF_SNOWFLAKE, VECRF_END };
-const char *rf_names[] = {"spin", "snowflake"};
-
-int rfg_repeats(int type, int dupe) {
-    CHECK(dupe > 0);
-    if(type == VECRF_SPIN)
-        return dupe;
-    else if(type == VECRF_SNOWFLAKE)
-        return dupe * 2;
-    else
-        CHECK(0);
-}
-
-bool rfg_mirror(int type) {
-    if(type == VECRF_SPIN)
-        return false;
-    else if(type == VECRF_SNOWFLAKE)
-        return true;
-    else
-        CHECK(0);
-}
-
-Transform2d rfg_behavior(int type, int segment, int dupe, int numer, int denom) {
-    if(type == VECRF_SPIN) {
-        return t2d_rotate((float)segment / dupe * 2 * PI);
-    } else if(type == VECRF_SNOWFLAKE) {
-        int phase = segment / 2;
-        bool flipped = segment % 2;
-        // Step 1: We're offset from the 0 position by numer / denom. So first we rotate in that direction.
-        Transform2d base;
-        base *= t2d_rotate((float)numer / denom * 2 * PI);
-        // Step 2: If we're flipped, we flip.
-        if(flipped)
-            base *= t2d_flip(0, 1, 0);
-        // Step 3: Return to the 0 position.
-        base *= t2d_rotate(-(float)numer / denom * 2 * PI);
-        // Step 4: Rotate appropriately.
-        base *= t2d_rotate((float)phase / dupe * 2 * PI);
-        return base;
-    } else {
-        CHECK(0);
-    }
-}
 
 stack< int > modestack;
 
-class Path {
-public:
-    
-    float centerx;
-    float centery;
-
-    int reflect;
-    int dupes;
-
-    int ang_denom;
-    int ang_numer;
-
-    vector<VectorPoint> path;
-    vector<VectorPoint> vpath;
-
-    int vpathCreate(int node); // used when nodes are created - the node is created before the given node id. returns the node's new ID (can be funky)
-    void vpathModify(int node); // used when nodes are edited
-    void vpathRemove(int node); // used when nodes are destroyed
-
-    void moveCenterOrReflect(); // used when the center is moved or reflection is changed
-
-    void setVRCurviness(int node, bool curv); // sets the R-curviness of the given virtual node
-
-    VectorPoint genNode(int i) const;
-    vector<VectorPoint> genFromPath() const;
-
-    void fixCurve();
-    void rebuildVpath();
-
-    pair<int, bool> getCanonicalNode(int vnode) const;
-
-    Path() {
-        centerx = centery = 0;
-        reflect = VECRF_SPIN;
-        dupes = 1;
-        ang_numer = 0;
-        ang_denom = 1;
-    }
-    
-};
-
-vector<Path> paths;
+vector<VectorPath> paths;
 vector<Entity> entities;
 
 int zoompow = 7;
@@ -111,148 +27,6 @@ float grid = 4;
 
 float cursor_x = 0;
 float cursor_y = 0;
-
-int Path::vpathCreate(int node) {
-    CHECK(node >= 0 && node <= vpath.size());
-    //dprintf("node is %d, vpath.size() is %d\n", vpath.size());
-    pair<int, bool> can = getCanonicalNode(node);
-    //dprintf("can is %d\n", can.first);
-    if(can.second) can.first++;
-    int phase = path.size() ? node / path.size() : 0;
-    //dprintf("phase is %d\n", phase);
-    // we're inserting a node to be the new can.first at dupe 0, but then we have to figure out what it ended up being at dupe #phase
-    VectorPoint tv;
-    tv.x = cursor_x;
-    tv.y = cursor_y;
-    path.insert(path.begin() + can.first, tv);
-    rebuildVpath();
-    for(int i = 0; i < path.size(); i++) {
-        pair<int, bool> ncan = getCanonicalNode(i + phase * path.size());
-        if(ncan.first == can.first)
-            return i + phase * path.size();
-    }
-    CHECK(0);
-}
-
-void Path::vpathModify(int node) {
-    CHECK(node >= 0 && node < vpath.size());
-    VectorPoint orig = genNode(node);
-    if(orig.curvl != vpath[node].curvl)
-        setVRCurviness((node + vpath.size() - 1) % vpath.size(), vpath[node].curvl);
-    if(orig.curvr != vpath[node].curvr)
-        setVRCurviness(node, vpath[node].curvr);
-    if(node >= path.size()) {
-        pair<int, bool> canon = getCanonicalNode(node);
-        VectorPoint tnode = vpath[node];
-        if(canon.second)
-            tnode.mirror();
-        Transform2d trans = rfg_behavior(reflect, node / path.size(), dupes, ang_numer, ang_denom);
-        trans.invert();
-        tnode.transform(trans);
-        path[canon.first] = tnode;
-    } else {
-        path[node] = vpath[node];
-    }
-    rebuildVpath();
-}
-
-void Path::setVRCurviness(int node, bool curv) {
-    pair<int, bool> canoa = getCanonicalNode(node);
-    pair<int, bool> canob = getCanonicalNode((node + 1) % (path.size() * rfg_repeats(reflect, dupes)));
-    //dprintf("svrc: %d, %d %d, %d %d\n", node, canoa.first, canoa.second, canob.first, canob.second);
-    if(!canoa.second)
-        path[canoa.first].curvr = curv;
-    else
-        path[canoa.first].curvl = curv;
-    if(!canob.second)
-        path[canob.first].curvl = curv;
-    else
-        path[canob.first].curvr = curv;
-}
-
-void Path::vpathRemove(int node) {
-    CHECK(node >= 0 && node < vpath.size());
-    path.erase(path.begin() + getCanonicalNode(node).first);
-    rebuildVpath();
-}
-
-VectorPoint Path::genNode(int i) const {
-    pair<int, bool> src = getCanonicalNode(i);
-    VectorPoint srcp = path[src.first];
-    if(src.second)
-        srcp.mirror();
-    srcp.transform(rfg_behavior(reflect, i / path.size(), dupes, ang_numer, ang_denom));
-    return srcp;
-}
-
-vector<VectorPoint> Path::genFromPath() const {
-    vector<VectorPoint> nvpt;
-    for(int i = 0; i < path.size() * rfg_repeats(reflect, dupes); i++)
-        nvpt.push_back(genNode(i));
-    return nvpt;
-}
-
-pair<int, bool> Path::getCanonicalNode(int vnode) const {
-    CHECK(vnode >= 0 && vnode <= path.size() * rfg_repeats(reflect, dupes));
-    if(vnode == path.size() * rfg_repeats(reflect, dupes)) {
-        if(rfg_mirror(reflect)) {
-            CHECK(rfg_repeats(reflect, dupes) % 2 == 0);
-            return make_pair(0, false);
-        } else {
-            return make_pair(path.size(), false);
-        }
-        CHECK(0);
-    }
-    CHECK(vnode < path.size() * rfg_repeats(reflect, dupes));
-    int bank = vnode / path.size();
-    int sub = vnode % path.size();
-    CHECK(bank >= 0 && bank < rfg_repeats(reflect, dupes));
-    if(bank % 2 == 1 && rfg_mirror(reflect)) {
-        // this is a mirrored node
-        return make_pair(path.size() - sub - 1, true);
-    } else {
-        // this is a normal node
-        return make_pair(sub, false);
-    }
-}
-
-void Path::moveCenterOrReflect() {
-    rebuildVpath();
-}
-
-void Path::fixCurve() {
-    bool changed = false;
-    vector<VectorPoint> tvpath = genFromPath();
-    for(int i = 0; i < tvpath.size(); i++) {
-        int n = (i + 1) % tvpath.size();
-        if(tvpath[i].curvr != tvpath[n].curvl) {
-            dprintf("Splicing curves");
-            setVRCurviness(i, true);
-            changed = true;
-        }
-    }
-    /*
-    if(changed) {
-        dprintf("Curves have been spliced");
-        dprintf("Before:");
-        for(int i = 0; i < tvpath.size(); i++)
-            dprintf("%d %d", tvpath[i].curvl, tvpath[i].curvr);
-        tvpath = genFromPath();
-        dprintf("After:");
-        for(int i = 0; i < tvpath.size(); i++)
-            dprintf("%d %d", tvpath[i].curvl, tvpath[i].curvr);
-        for(int i = 0; i < tvpath.size(); i++)
-            CHECK(tvpath[i].curvr == tvpath[(i + 1) % tvpath.size()].curvl);
-    }*/
-}
-
-void Path::rebuildVpath() {
-    fixCurve();
-    vpath = genFromPath();
-    CHECK(vpath.size() == path.size() * rfg_repeats(reflect, dupes));
-    for(int i = 0; i < vpath.size(); i++)
-        CHECK(vpath[i].curvr == vpath[(i + 1) % vpath.size()].curvl);
-}
 
 void savePath(int i, FILE *outfile) {
     CHECK(i >= 0 && i < paths.size());
@@ -425,7 +199,7 @@ int findClosestEntity(float x, float y) {
 void renderSinglePath(int path, float intense, int widgetlevel) {
     CHECK(path >= 0 && path < paths.size());
     
-    const Path &p = paths[path];
+    const VectorPath &p = paths[path];
     float linelen = zoom / 4;
     
     setColor(Color(1.0, 1.0, 1.0) * intense);
@@ -569,33 +343,6 @@ bool vecEditTick(const Controller &keys) {
     CHECK(sizeof(rf_names) / sizeof(*rf_names) == VECRF_END);
     CHECK(sizeof(ed_names) / sizeof(*ed_names) == VECED_END);
     
-    {
-        static int firstrun = 1;
-        if(firstrun) {
-            firstrun = 0;
-            // Test my matrix inversion! Wheeee
-            for(int i = 0; i < VECRF_END; i++) {
-                for(int j = 0; j < rfg_repeats(i, 1); j++) {
-                    Transform2d orig = rfg_behavior(i, j, 1, 0, 1);
-                    Transform2d inv = orig;
-                    inv.invert();
-                    //dprintf("-----");
-                    //orig.display();
-                    //dprintf("--");
-                    //inv.display();
-                    inv = orig * inv;
-                    //dprintf("--");
-                    //inv.display();
-                    for(int x = 0; x < 3; x++) {
-                        for(int y = 0; y < 3; y++) {
-                            CHECK(fabs(inv.m[x][y] - (x == y)) < 1e-9);
-                        }
-                    }
-                }
-            }
-        }
-    }
-    
     if(modestack.size() == 0)   // get the whole shebang started
         modestack.push(VECED_EXAMINE);
     
@@ -632,7 +379,7 @@ bool vecEditTick(const Controller &keys) {
     } else if(modestack.top() == VECED_EXAMINE) {
         if(keys.keys[4].repeat) {   // create path
             path_target = paths.size();
-            paths.push_back(Path());
+            paths.push_back(VectorPath());
             paths[path_target].centerx = cursor_x;
             paths[path_target].centery = cursor_y;
             modestack.push(VECED_PATH);
