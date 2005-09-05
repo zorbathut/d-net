@@ -10,3 +10,23 @@ Speed
 Turning
 Armor
 Power
+
+
+Connections - both 5%
+Market Membership - both 5%
+Reconditioning - resell 10%
+Haggling - purchase price 5%
+Scrounging - purchase price 5%
+
+Junkyard Friends - low-end optimize 10%
+
+Civilian License - mid-end enable 90%
+Gun Club - mid-end optimize 10%
+
+Military License - high-end enable 90%
+Army Surplus - high-end optimize 10%
+
+Specialty License - ultra-high-end enable 90%
+Research Facility - ultra-high-end optimize 10%
+
+

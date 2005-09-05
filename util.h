@@ -4,16 +4,41 @@
 #include <utility>
 #include <algorithm>
 #include <vector>
+#include <cmath>
 
 using namespace std;
 
 #include "const.h"
 #include "debug.h"
 
+/*************
+ * CHECK/TEST macros
+ */
+
 #define CHECK(x) while(1) { if(!(x)) { dprintf("Error at %s:%d - %s\n", __FILE__, __LINE__, #x); *(int*)0 = 0; } break; }
 #define TEST(x) CHECK(x)
-//#define printf FAILURE
+#define printf FAILURE
 
+/*************
+ * Text processing
+ */
+
+#ifdef printf
+#define PFDEFINED
+#undef printf
+#endif
+
+string StringPrintf( const char *bort, ... ) __attribute__((format(printf,1,2)));
+
+#ifdef PFDEFINED
+#define printf FAILURE
+#undef PFDEFINED
+#endif
+
+/*************
+ * User input
+ */
+ 
 class Button {
 public:
     bool down;
@@ -53,6 +78,9 @@ public:
 	Keystates();
 };
 
+/*************
+ * Float2/Float4 classes and operators
+ */
 
 class Float2 {
 public:
@@ -122,6 +150,48 @@ inline bool operator==( const Float4 &lhs, const Float4 &rhs ) {
 	return lhs.sx == rhs.sx && lhs.sy == rhs.sy && lhs.ex == rhs.ex && lhs.ey == rhs.ey;
 }
 
+/*************
+ * Fast sin/cos
+ */
+
+#define SIN_TABLE_SIZE 180
+extern float sin_table[ SIN_TABLE_SIZE + 1 ];
+
+inline float dsin( float in ) {
+	return sin_table[ int( in * ( 2 * SIN_TABLE_SIZE / PI ) + 0.5f ) ];
+}
+
+inline float fsin( float in ) {
+    if(in < 0 || in >= PI * 5 / 2) {
+        in = fmod(in, PI * 2);
+        if(in < 0)
+            in = in + PI * 2;
+        return fsin(in);
+    }
+    
+    CHECK(in >= 0);
+    if( in < PI / 2 ) {
+		return dsin( in );
+	} else if( in < PI ) {
+		return dsin( PI - in );
+	} else if( in < PI * 3 / 2 ) {
+		return -dsin( in - PI );
+	} else if( in < PI * 2 ) {
+		return -dsin( PI * 2 - in );
+	} else if( in < PI * 5 / 2 ) {
+		return dsin( in - PI * 2 );
+	} else {
+        CHECK(0);
+	}
+}
+inline float fcos( float in ) {
+	return fsin( in + PI / 2 );
+}
+
+/*************
+ * Computational geometry
+ */
+
 inline bool rectrectintersect( const Float4 &lhs, const Float4 &rhs ) {
 	TEST( lhs.isNormalized() );
 	TEST( rhs.isNormalized() );
@@ -163,64 +233,29 @@ inline int whichSide( const Float4 &f4, const pair< float, float > &pta ) {
     else return 0;
 }
 
-inline Float4 lerp( const Float4 &start, const Float4 &delta, float time ) {
-    return Float4( start.sx + delta.sx * time, start.sy + delta.sy * time, start.ex + delta.ex * time, start.ey + delta.ey * time );
-}
-
-#define SIN_TABLE_SIZE 180
-
-#include <cmath>
-
-extern float sin_table[ SIN_TABLE_SIZE + 1 ];
-
-inline float dsin( float in ) {
-	return sin_table[ int( in * ( 2 * SIN_TABLE_SIZE / PI ) + 0.5f ) ];
-}
-
-inline float fsin( float in ) {
-    if(in < 0 || in >= PI * 5 / 2) {
-        in = fmod(in, PI * 2);
-        if(in < 0)
-            in = in + PI * 2;
-        return fsin(in);
-    }
-    
-    CHECK(in >= 0);
-    if( in < PI / 2 ) {
-		return dsin( in );
-	} else if( in < PI ) {
-		return dsin( PI - in );
-	} else if( in < PI * 3 / 2 ) {
-		return -dsin( in - PI );
-	} else if( in < PI * 2 ) {
-		return -dsin( PI * 2 - in );
-	} else if( in < PI * 5 / 2 ) {
-		return dsin( in - PI * 2 );
-	} else {
-        CHECK(0);
-	}
-}
-inline float fcos( float in ) {
-	return fsin( in + PI / 2 );
-}
-
-inline float frand() {
-    return rand() / ( RAND_MAX + 1.0 );
-}
-
 inline Float2 angle( float ang ) {
     return Float2(fsin(ang), fcos(ang));
-}
-
-inline Float4 boxaround(const Float2 &lhs, float radius) {
-    return Float4(lhs.x - radius, lhs.y - radius, lhs.x + radius, lhs.y + radius);
 }
 
 inline bool isinside(const Float4 &lhs, const Float2 &rhs) {
     return !(rhs.x < lhs.sx || rhs.x >= lhs.ex || rhs.y < lhs.sy || rhs.y >= lhs.ey);
 }
 
-string StringPrintf( const char *bort, ... ) __attribute__((format(printf,1,2)));
+inline Float4 boxaround(const Float2 &lhs, float radius) {
+    return Float4(lhs.x - radius, lhs.y - radius, lhs.x + radius, lhs.y + radius);
+}
+
+/*************
+ * Math
+ */
+
+inline Float4 lerp( const Float4 &start, const Float4 &delta, float time ) {
+    return Float4( start.sx + delta.sx * time, start.sy + delta.sy * time, start.ex + delta.ex * time, start.ey + delta.ey * time );
+}
+
+inline float frand() {
+    return rand() / ( RAND_MAX + 1.0 );
+}
 
 inline int round(float in) {
     return int(floor(in + 0.5));

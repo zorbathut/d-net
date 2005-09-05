@@ -1,9 +1,10 @@
-- Finish results page
+- Improved vector editor
+- More levels
+
 - More weapons
 - More upgrades
 - New tank purchases
-- Improved vector editor
-- More levels
+
 - Collisions speedup (i.e. not O(n^2))
 - Netplay
 - Better tank explosions
