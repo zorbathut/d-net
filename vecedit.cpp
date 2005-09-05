@@ -15,8 +15,6 @@ enum { VECED_EXAMINE, VECED_PATH, VECED_REFLECT, VECED_MOVE, VECED_ENTITYTYPE, V
 const char *ed_names[] = { "Examine", "Path edit", "Reflect", "Move", "Entitytype", "Entity" };
 enum { VECRF_SPIN, VECRF_SNOWFLAKE, VECRF_END };
 const char *rf_names[] = {"spin", "snowflake"};
-enum { ENTITY_TANKSTART, ENTITY_END };
-const char *ent_names[] = {"tank start location"};
 
 int rfg_repeats(int type, int dupe) {
     CHECK(dupe > 0);
@@ -61,40 +59,6 @@ Transform2d rfg_behavior(int type, int segment, int dupe, int numer, int denom) 
 
 stack< int > modestack;
 
-class Vecptn {
-public:
-    
-    float x;
-    float y;
-
-    float curvlx;
-    float curvly;
-    float curvrx;
-    float curvry;
-
-    bool curvl;
-    bool curvr;
-
-    void mirror() {
-        swap(curvlx, curvrx);
-        swap(curvly, curvry);
-        swap(curvl, curvr);
-    }
-    
-    void transform(const Transform2d &ctd) {
-        ctd.transform(&x, &y);
-        ctd.transform(&curvlx, &curvly);
-        ctd.transform(&curvrx, &curvry);
-    }
-
-    Vecptn() {
-        x = y = 0;
-        curvlx = curvly = curvrx = curvry = 16;
-        curvl = curvr = false;
-    }
-
-};
-
 class Path {
 public:
     
@@ -107,8 +71,8 @@ public:
     int ang_denom;
     int ang_numer;
 
-    vector<Vecptn> path;
-    vector<Vecptn> vpath;
+    vector<VectorPoint> path;
+    vector<VectorPoint> vpath;
 
     int vpathCreate(int node); // used when nodes are created - the node is created before the given node id. returns the node's new ID (can be funky)
     void vpathModify(int node); // used when nodes are edited
@@ -118,8 +82,8 @@ public:
 
     void setVRCurviness(int node, bool curv); // sets the R-curviness of the given virtual node
 
-    Vecptn genNode(int i) const;
-    vector<Vecptn> genFromPath() const;
+    VectorPoint genNode(int i) const;
+    vector<VectorPoint> genFromPath() const;
 
     void fixCurve();
     void rebuildVpath();
@@ -134,112 +98,6 @@ public:
         ang_denom = 1;
     }
     
-};
-
-class Parameter {
-public:
-    
-    string name;
-    
-    enum { BOOLEAN, BOUNDED_INTEGER };
-    int type;
-    
-    bool hide_def;
-    
-    bool bool_val;
-    bool bool_def;
-    
-    int bi_val;
-    int bi_def;
-    int bi_low;
-    int bi_high;
-    
-    void update(const Button &l, const Button &r);
-    void render(float x, float y, float h) const;
-    
-    string dumpTextRep() const;
-    
-};
-
-void Parameter::update(const Button &l, const Button &r) {
-    if(type == BOOLEAN) {
-        if(l.repeat || r.repeat)
-            bool_val = !bool_val;
-    } else if(type == BOUNDED_INTEGER) {
-        if(l.repeat)
-            bi_val--;
-        if(r.repeat)
-            bi_val++;
-        if(bi_val < bi_low)
-            bi_val = bi_low;
-        if(bi_val >= bi_high)
-            bi_val = bi_high - 1;
-        CHECK(bi_val >= bi_low && bi_val < bi_high);
-    } else {
-        CHECK(0);
-    }
-}
-
-void Parameter::render(float x, float y, float h) const {
-    string prefix = StringPrintf("%12s: ", name.c_str());
-    if(type == BOOLEAN) {
-        prefix += StringPrintf("%s", bool_val ? "true" : "false");
-    } else if(type == BOUNDED_INTEGER) {
-        prefix += StringPrintf("%d", bi_val);
-    } else {
-        CHECK(0);
-    }
-    drawText(prefix, h, x, y);
-}
-
-string Parameter::dumpTextRep() const {
-    if(type == BOOLEAN) {
-        if(hide_def && bool_val == bool_def)
-            return "";
-        return "  " + name + "=" + (bool_val ? "true" : "false") + "\n";
-    } else if(type == BOUNDED_INTEGER) {
-        if(hide_def && bi_val == bi_def)
-            return "";
-        return StringPrintf("  %s=%d\n", name.c_str(), bi_val);
-    } else {
-        CHECK(0);
-    }
-}
-
-Parameter paramBool(const string &name, bool begin, bool hideDefault) {
-    Parameter param;
-    param.name = name;
-    param.type = Parameter::BOOLEAN;
-    param.hide_def = hideDefault;
-    param.bool_val = begin;
-    param.bool_def = begin;
-    return param;
-};
-
-Parameter paramBoundint(const string &name, int begin, int low, int high, bool hideDefault) {
-    Parameter param;
-    param.name = name;
-    param.type = Parameter::BOUNDED_INTEGER;
-    param.hide_def = hideDefault;
-    param.bi_val = begin;
-    param.bi_def = begin;
-    param.bi_low = low;
-    param.bi_high = high;
-    return param;
-};
-
-class Entity {
-public:
-    
-    int type;
-
-    float x;
-    float y;
-
-    vector<Parameter> params;
-
-    void initParams();  // inits params to the default for that type
-
 };
 
 vector<Path> paths;
@@ -263,7 +121,7 @@ int Path::vpathCreate(int node) {
     int phase = path.size() ? node / path.size() : 0;
     //dprintf("phase is %d\n", phase);
     // we're inserting a node to be the new can.first at dupe 0, but then we have to figure out what it ended up being at dupe #phase
-    Vecptn tv;
+    VectorPoint tv;
     tv.x = cursor_x;
     tv.y = cursor_y;
     path.insert(path.begin() + can.first, tv);
@@ -278,14 +136,14 @@ int Path::vpathCreate(int node) {
 
 void Path::vpathModify(int node) {
     CHECK(node >= 0 && node < vpath.size());
-    Vecptn orig = genNode(node);
+    VectorPoint orig = genNode(node);
     if(orig.curvl != vpath[node].curvl)
         setVRCurviness((node + vpath.size() - 1) % vpath.size(), vpath[node].curvl);
     if(orig.curvr != vpath[node].curvr)
         setVRCurviness(node, vpath[node].curvr);
     if(node >= path.size()) {
         pair<int, bool> canon = getCanonicalNode(node);
-        Vecptn tnode = vpath[node];
+        VectorPoint tnode = vpath[node];
         if(canon.second)
             tnode.mirror();
         Transform2d trans = rfg_behavior(reflect, node / path.size(), dupes, ang_numer, ang_denom);
@@ -318,17 +176,17 @@ void Path::vpathRemove(int node) {
     rebuildVpath();
 }
 
-Vecptn Path::genNode(int i) const {
+VectorPoint Path::genNode(int i) const {
     pair<int, bool> src = getCanonicalNode(i);
-    Vecptn srcp = path[src.first];
+    VectorPoint srcp = path[src.first];
     if(src.second)
         srcp.mirror();
     srcp.transform(rfg_behavior(reflect, i / path.size(), dupes, ang_numer, ang_denom));
     return srcp;
 }
 
-vector<Vecptn> Path::genFromPath() const {
-    vector<Vecptn> nvpt;
+vector<VectorPoint> Path::genFromPath() const {
+    vector<VectorPoint> nvpt;
     for(int i = 0; i < path.size() * rfg_repeats(reflect, dupes); i++)
         nvpt.push_back(genNode(i));
     return nvpt;
@@ -364,7 +222,7 @@ void Path::moveCenterOrReflect() {
 
 void Path::fixCurve() {
     bool changed = false;
-    vector<Vecptn> tvpath = genFromPath();
+    vector<VectorPoint> tvpath = genFromPath();
     for(int i = 0; i < tvpath.size(); i++) {
         int n = (i + 1) % tvpath.size();
         if(tvpath[i].curvr != tvpath[n].curvl) {
@@ -394,27 +252,6 @@ void Path::rebuildVpath() {
     CHECK(vpath.size() == path.size() * rfg_repeats(reflect, dupes));
     for(int i = 0; i < vpath.size(); i++)
         CHECK(vpath[i].curvr == vpath[(i + 1) % vpath.size()].curvl);
-}
-
-void Entity::initParams() {
-    params.clear();
-    if(type == ENTITY_TANKSTART) {
-        params.push_back(paramBoundint("numerator", 0, 0, 100000, false));
-        params.push_back(paramBoundint("denominator", 1, 1, 100000, false));
-        params.push_back(paramBool("exist2", true, true));
-        params.push_back(paramBool("exist3", true, true));
-        params.push_back(paramBool("exist4", true, true));
-        params.push_back(paramBool("exist5", true, true));
-        params.push_back(paramBool("exist6", true, true));
-        params.push_back(paramBool("exist7", true, true));
-        params.push_back(paramBool("exist8", true, true));
-        params.push_back(paramBool("exist9", true, true));
-        params.push_back(paramBool("exist10", true, true));
-        params.push_back(paramBool("exist11", true, true));
-        params.push_back(paramBool("exist12", true, true));
-    } else {
-        CHECK(0);
-    }
 }
 
 void savePath(int i, FILE *outfile) {

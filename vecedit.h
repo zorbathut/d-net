@@ -1,7 +1,7 @@
 #ifndef DNET_VECEDIT
 #define DNET_VECEDIT
 
-#include "util.h"
+#include "input.h"
 
 bool vecEditTick(const Controller &keys);    
 void vecEditRender(void);

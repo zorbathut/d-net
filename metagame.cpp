@@ -279,7 +279,7 @@ void Metagame::renderToScreen() const {
                 drawText(bf, 20, playerpos[i].x + 5, playerpos[i].y + 5);
             } else {
                 setColor(factions[playersymbol[i]].color);
-                drawVectors(symbols[playersymbol[i]], Float4(10, 10 + 100 * i, 90, 90 + 100 * i), true, true, 1.0);
+                drawDvec2(symbols[playersymbol[i]], Float4(10, 10 + 100 * i, 90, 90 + 100 * i), true, true, 1.0);
                 setColor(Color(1.0, 1.0, 1.0) / 60 * fireHeld[i]);
                 drawBox(Float4(5, 5 + 100 * i, 95, 95 + 100 * i), 1);
             }
@@ -288,7 +288,7 @@ void Metagame::renderToScreen() const {
         for(int i = 0; i < symbols.size(); i++) {
             if(count(playersymbol.begin(), playersymbol.end(), i) == 0) {
                 setColor(factions[i].color);
-                drawVectors(symbols[i], symbolpos[i], true, true, 1.0);
+                drawDvec2(symbols[i], symbolpos[i], true, true, 1.0);
             }
         }
         if(count(playersymbol.begin(), playersymbol.end(), -1) <= playersymbol.size() - 2) {
@@ -418,7 +418,7 @@ Metagame::Metagame(int playercount) {
     fireHeld.resize(playercount);
     
     for(int i = 0; i < factioncount; i++) {
-        symbols.push_back(loadVectors(factions[i].filename.c_str()));
+        symbols.push_back(loadDvec2(factions[i].filename.c_str()));
     }
     
     for(int i = 0; i < symbols.size(); i++) {

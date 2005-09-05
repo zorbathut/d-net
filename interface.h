@@ -6,6 +6,7 @@
 using namespace std;
 
 #include "util.h"
+#include "input.h"
 
 void interfaceInit();
 bool interfaceRunTick( const vector< Controller > &control );

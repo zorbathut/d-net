@@ -24,7 +24,7 @@ public:
     int shotsLeft;
 
     Color color;
-    VectorObject faction_symb;
+    Dvec2 faction_symb;
 
     int cash;
 

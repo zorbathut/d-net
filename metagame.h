@@ -44,7 +44,7 @@ class Metagame {
     vector< int > playersymbol;
     vector< Float2 > playerpos;
     
-    vector<VectorObject> symbols;
+    vector<Dvec2> symbols;
     vector<Float4> symbolpos;
     
     Game game;

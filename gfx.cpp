@@ -267,85 +267,14 @@ void drawText(const string &txt, float scale, float sx, float sy) {
     drawText(txt.c_str(), scale, sx, sy);
 }
 
-Vecpt Vecpt::mirror() const {
-    Vecpt gn = *this;
-    swap(gn.lhcx, gn.rhcx);
-    swap(gn.lhcy, gn.rhcy);
-    swap(gn.lhcurved, gn.rhcurved);
-    return gn;
+void drawVectorPath(const VectorPath &vecob, float x, float y, float width, float weight) {
+    drawVectorPath(vecob, Float4(x, y, x + width, y + 1000000), true, false, weight);
 }
 
-Vecpt::Vecpt() {
-    lhcx = 16;
-    lhcy = 16;
-    rhcx = 16;
-    rhcy = 16;
-}
-
-VectorObject loadVectors(const char *fname) {
-    VectorObject rv;
-    ifstream fil(fname);
-    CHECK(fil);
-    string buf;
-    while(getline(fil, buf)) {
-        if(buf.size() == 0)
-            break;
-        vector<string> toks = tokenize(buf, " ");
-        CHECK(toks.size() == 3);
-        vector<int> lhc = sti(tokenize(toks[0], "(,)"));
-        CHECK(lhc.size() == 0 || lhc.size() == 2);
-        vector<int> mainc = sti(tokenize(toks[1], ","));
-        CHECK(mainc.size() == 2);
-        vector<int> rhc = sti(tokenize(toks[2], "(,)"));
-        CHECK(rhc.size() == 0 || rhc.size() == 2);
-        Vecpt tvecpt;
-        tvecpt.x = mainc[0];
-        tvecpt.y = mainc[1];
-        if(lhc.size() == 2) {
-            tvecpt.lhcurved = true;
-            tvecpt.lhcx = lhc[0];
-            tvecpt.lhcy = lhc[1];
-        } else {
-            tvecpt.lhcurved = false;
-        }
-        if(rhc.size() == 2) {
-            tvecpt.rhcurved = true;
-            tvecpt.rhcx = rhc[0];
-            tvecpt.rhcy = rhc[1];
-        } else {
-            tvecpt.rhcurved = false;
-        }
-        rv.points.push_back(tvecpt);
-    }
-    int nx = 1000000;
-    int ny = 1000000;
-    int mx = -1000000;
-    int my = -1000000;
-    for(int i = 0; i < rv.points.size(); i++) {
-        nx = min(nx, rv.points[i].x);
-        ny = min(ny, rv.points[i].y);
-        mx = max(mx, rv.points[i].x);
-        my = max(my, rv.points[i].y);
-    }
-    CHECK(nx != 1000000);
-    CHECK(ny != 1000000);
-    CHECK(mx != -1000000);
-    CHECK(my != -1000000);
-    rv.width = mx - nx;
-    rv.height = my - ny;
-    for(int i = 0; i < rv.points.size(); i++) {
-        rv.points[i].x -= nx;
-        rv.points[i].y -= ny;
-    }
-    return rv;
-}
-
-void drawVectors(const VectorObject &vecob, float x, float y, float width, float weight) {
-    drawVectors(vecob, Float4(x, y, x + width, y + 1000000), true, false, weight);
-}
-
-void drawVectors(const VectorObject &vecob, const Float4 &bounds, bool cx, bool cy, float weight) {
+void drawVectorPath(const VectorPath &vecob, const Float4 &bounds, bool cx, bool cy, float weight) {
     CHECK(bounds.isNormalized());
+    CHECK(0);
+    /*
     float maxwidth = bounds.ex - bounds.sx;
     float maxheight = bounds.ey - bounds.sy;
     float widscale = maxwidth / vecob.width;
@@ -382,6 +311,11 @@ void drawVectors(const VectorObject &vecob, const Float4 &bounds, bool cx, bool 
             drawLine(Float4(vecob.points[i].x, vecob.points[i].y, vecob.points[j].x, vecob.points[j].y) * scale + translator, weight);
         }
     }
+    */
+}
+
+void drawDvec2(const Dvec2 &vecob, const Float4 &bounds, bool cx, bool cy, float weight) {
+    CHECK(0);
 }
 
 void drawSpokes(float x, float y, int dupes, int numer, int denom, float len, float weight) {
