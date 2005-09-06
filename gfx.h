@@ -48,10 +48,13 @@ void drawRect( const Float4 &rect, float weight );
 void drawText( const char *txt, float scale, float sx, float sy );
 void drawText( const string &txt, float scale, float sx, float sy );
 
-void drawVectorPath(const VectorPath &vecob, float x, float y, float width, float weight);
-void drawVectorPath(const VectorPath &vecob, const Float4 &bounds, bool cx, bool cy, float weight);
+// VectorPath objects have their own local coordinate system - this scales it by whatever, then translates its origin to the new origin.
+// It is not necessarily an upper-left corner origin (it's more likely to be center, but that's not guaranteed either)
+void drawVectorPath(const VectorPath &vecob, const pair<pair<float, float>, float> &coord, float weight);
 
-void drawDvec2(const Dvec2 &vecob, const Float4 &bounds, bool cx, bool cy, float weight);
+void drawVectorPath(const VectorPath &vecob, const Float4 &bounds, float weight);
+
+void drawDvec2(const Dvec2 &vecob, const Float4 &bounds, float weight);
 
 void drawSpokes(float x, float y, int dupes, int numer, int denom, float len, float weight);
 

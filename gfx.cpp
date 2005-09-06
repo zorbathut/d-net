@@ -267,55 +267,61 @@ void drawText(const string &txt, float scale, float sx, float sy) {
     drawText(txt.c_str(), scale, sx, sy);
 }
 
-void drawVectorPath(const VectorPath &vecob, float x, float y, float width, float weight) {
-    drawVectorPath(vecob, Float4(x, y, x + width, y + 1000000), true, false, weight);
-}
-
-void drawVectorPath(const VectorPath &vecob, const Float4 &bounds, bool cx, bool cy, float weight) {
-    CHECK(bounds.isNormalized());
-    CHECK(0);
-    /*
-    float maxwidth = bounds.ex - bounds.sx;
-    float maxheight = bounds.ey - bounds.sy;
-    float widscale = maxwidth / vecob.width;
-    float heiscale = maxheight / vecob.height;
-    float scale = -1.0;
-    bool wid = false;
-    if(widscale < heiscale) {
-        scale = widscale;
-        wid = true;
-    } else {
-        scale = heiscale;
-        wid = false;
-    }
-    CHECK(wid || bounds.sy + 1000000 != bounds.ey);
-    CHECK(scale != -1.0);
-    float widused = vecob.width * scale;
-    float heiused = vecob.height * scale;
-    float transx = bounds.sx;
-    float transy = bounds.sy;
-    if(cx)
-        transx += (maxwidth - widused) / 2;
-    if(cy)
-        transy += (maxheight - heiused) / 2;
-    Float4 translator = Float4(transx, transy, transx, transy);
-    for(int i = 0; i < vecob.points.size(); i++) {
-        int j = ( i + 1 ) % vecob.points.size();
-        CHECK(vecob.points[i].rhcurved == vecob.points[j].lhcurved);
-        if(vecob.points[i].rhcurved) {
-            drawCurve(
-                Float4(vecob.points[i].x, vecob.points[i].y, vecob.points[i].x + vecob.points[i].rhcx, vecob.points[i].y + vecob.points[i].rhcy) * scale + translator,
-                Float4(vecob.points[j].x + vecob.points[j].lhcx, vecob.points[j].y + vecob.points[j].lhcy, vecob.points[j].x, vecob.points[j].y) * scale + translator,
-                weight);
+void drawVectorPath(const VectorPath &vecob, const pair<pair<float, float>, float> &coord, float weight) {
+    for(int i = 0; i < vecob.vpath.size(); i++) {
+        int j = (i + 1) % vecob.vpath.size();
+        CHECK(vecob.vpath[i].curvr == vecob.vpath[j].curvl);
+        float lx = vecob.centerx + vecob.vpath[i].x;
+        float ly = vecob.centery + vecob.vpath[i].y;
+        float rx = vecob.centerx + vecob.vpath[j].x;
+        float ry = vecob.centery + vecob.vpath[j].y;
+        
+        // these are invalid and meaningless if it's not a curve, but hey!
+        float lcx = lx + vecob.vpath[i].curvrx;
+        float lcy = ly + vecob.vpath[i].curvry;
+        float rcx = rx + vecob.vpath[j].curvlx;
+        float rcy = ry + vecob.vpath[j].curvly;
+        
+        lx *= coord.second;
+        ly *= coord.second;
+        rx *= coord.second;
+        ry *= coord.second;
+        
+        lcx *= coord.second;
+        lcy *= coord.second;
+        rcx *= coord.second;
+        rcy *= coord.second;
+        
+        lx += coord.first.first;
+        ly += coord.first.second;
+        rx += coord.first.first;
+        ry += coord.first.second;
+        
+        lcx += coord.first.first;
+        lcy += coord.first.second;
+        rcx += coord.first.first;
+        rcy += coord.first.second;
+        if(vecob.vpath[i].curvr) {
+            drawCurve(Float4(lx, ly, lcx, lcy), Float4(rcx, rcy, rx, ry), weight);
         } else {
-            drawLine(Float4(vecob.points[i].x, vecob.points[i].y, vecob.points[j].x, vecob.points[j].y) * scale + translator, weight);
+            drawLine(Float4(lx, ly, rx, ry), weight);
         }
     }
-    */
 }
 
-void drawDvec2(const Dvec2 &vecob, const Float4 &bounds, bool cx, bool cy, float weight) {
-    CHECK(0);
+void drawVectorPath(const VectorPath &vecob, const Float4 &bounds, float weight) {
+    CHECK(bounds.isNormalized());
+    drawVectorPath(vecob, fitInside(bounds, vecob.boundingBox()), weight);
+}
+
+void drawDvec2(const Dvec2 &vecob, const Float4 &bounds, float weight) {
+    CHECK(vecob.entities.size() == 0);
+    pair<pair<float, float>, float> dimens = fitInside(vecob.boundingBox(), bounds);
+    //dprintf("fit %f,%f,%f,%f into %f,%f,%f,%f, got %f,%f, %f\n", vecob.boundingBox().sx, vecob.boundingBox().sy,
+            //vecob.boundingBox().ex, vecob.boundingBox().ey, bounds.sx, bounds.sy, bounds.ex, bounds.ey,
+            //dimens.first.first, dimens.first.second, dimens.second);
+    for(int i = 0; i < vecob.paths.size(); i++)
+        drawVectorPath(vecob.paths[i], dimens, weight);
 }
 
 void drawSpokes(float x, float y, int dupes, int numer, int denom, float len, float weight) {

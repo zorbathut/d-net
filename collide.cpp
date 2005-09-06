@@ -336,6 +336,7 @@ pair< int, int > Collider::reverseIndex( int index ) const {
     else {
         pair< int, int > out( ( index - 1 ) / players, ( index - 1 ) % players );
         CHECK( out.first == 0 || out.first == 1 );
+        return out;
     }
 }
 
@@ -474,7 +475,7 @@ Quad::Quad( const Float4 &dim ) : range( dim ) {
 Quad::~Quad() {
 	delete [] quads; }
 
-/*
+
 void Collider::startGroup() {
 	newGroup.clear();
 };

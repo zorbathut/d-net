@@ -39,7 +39,10 @@ string kvData::debugOutput() const {
 }
 
 string kvData::consume(string key) {
-    CHECK(kv.count(key) == 1);
+    if(kv.count(key) != 1) {
+        dprintf("Failed to read key \"%s\" in object \"%s\"\n", key.c_str(), category.c_str());
+        CHECK(kv.count(key) == 1);
+    }
     string out = kv[key];
     kv.erase(kv.find(key));
     return out;

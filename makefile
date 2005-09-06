@@ -1,6 +1,6 @@
 
 SOURCES = main core game timer debug gfx collide gamemap util rng const args interface vecedit metagame itemdb parse dvec2 input
-CPPFLAGS = `sdl-config --cflags` -mno-cygwin -O2 -DVECTOR_PARANOIA #-pg
+CPPFLAGS = `sdl-config --cflags` -mno-cygwin -O2 -DVECTOR_PARANOIA -Wall -Wno-sign-compare -Wno-uninitialized#-pg
 LINKFLAGS = `sdl-config --libs` -lglu32 -lopengl32 -lm -mno-cygwin -O2 #-pg
 
 CPP = g++

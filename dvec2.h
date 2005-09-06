@@ -38,7 +38,7 @@ Parameter paramBool(const string &name, bool begin, bool hideDefault);
 Parameter paramBoundint(const string &name, int begin, int low, int high, bool hideDefault);
 
 enum { ENTITY_TANKSTART, ENTITY_END };
-static const char *ent_names[] = {"tank start location"};
+static const char *const ent_names[] = {"tank start location"};
 
 struct Entity {
 public:
@@ -73,7 +73,7 @@ struct VectorPoint {
 };
 
 enum { VECRF_SPIN, VECRF_SNOWFLAKE, VECRF_END };
-static const char *rf_names[] = {"spin", "snowflake"};
+static const char *const rf_names[] = {"spin", "snowflake"};
 
 struct VectorPath {
 public:
@@ -86,6 +86,9 @@ public:
     float centery;
 
     vector<VectorPoint> vpath;
+
+    // this is not perfect, it doesn't deal with curves well. ATM I don't care. Can be fixed later.
+    Float4 boundingBox() const;
 
     VectorPath();
 
@@ -134,6 +137,8 @@ struct Dvec2 {
 public:
     vector<VectorPath> paths;
     vector<Entity> entities;
+
+    Float4 boundingBox() const;
 };
 
 Dvec2 loadDvec2(const char *fname);

@@ -3,6 +3,11 @@
 
 #include "util.h"
 #include "gfx.h"
+#include "parse.h"
+
+#include <fstream>
+
+using namespace std;
 
 void Parameter::update(const Button &l, const Button &r) {
     if(type == BOOLEAN) {
@@ -151,6 +156,13 @@ Transform2d rfg_behavior(int type, int segment, int dupe, int numer, int denom) 
     }
 }
 
+Float4 VectorPath::boundingBox() const {
+    Float4 bbox = startBoundBox();
+    for(int i = 0; i < vpath.size(); i++)
+        addToBoundBox(&bbox, centerx + vpath[i].x, centery + vpath[i].y);
+    return bbox;
+}
+
 int VectorPath::vpathCreate(int node) {
     CHECK(node >= 0 && node <= vpath.size());
     //dprintf("node is %d, vpath.size() is %d\n", vpath.size());
@@ -164,6 +176,7 @@ int VectorPath::vpathCreate(int node) {
     tv.x = 0;
     tv.y = 0;   // this will look bad, and should be changed by the caller ASAP
     path.insert(path.begin() + can.first, tv);
+    fixCurve();
     rebuildVpath();
     for(int i = 0; i < path.size(); i++) {
         pair<int, bool> ncan = getCanonicalNode(i + phase * path.size());
@@ -212,6 +225,7 @@ void VectorPath::setVRCurviness(int node, bool curv) {
 void VectorPath::vpathRemove(int node) {
     CHECK(node >= 0 && node < vpath.size());
     path.erase(path.begin() + getCanonicalNode(node).first);
+    fixCurve();
     rebuildVpath();
 }
 
@@ -256,6 +270,7 @@ pair<int, bool> VectorPath::getCanonicalNode(int vnode) const {
 }
 
 void VectorPath::moveCenterOrReflect() {
+    fixCurve();
     rebuildVpath();
 }
 
@@ -286,11 +301,23 @@ void VectorPath::fixCurve() {
 }
 
 void VectorPath::rebuildVpath() {
-    fixCurve();
     vpath = genFromPath();
     CHECK(vpath.size() == path.size() * rfg_repeats(reflect, dupes));
-    for(int i = 0; i < vpath.size(); i++)
-        CHECK(vpath[i].curvr == vpath[(i + 1) % vpath.size()].curvl);
+    {
+        bool curveerror = false;
+        for(int i = 0; i < vpath.size(); i++)
+            if(vpath[i].curvr != vpath[(i + 1) % vpath.size()].curvl)
+                curveerror = true;
+        if(curveerror) {
+            dprintf("Curve consistency error! %d, %d\n", path.size(), vpath.size());
+            for(int i = 0; i < vpath.size(); i++) {
+                if(i % path.size() == 0)
+                    dprintf("--");
+                dprintf("%d %d\n", vpath[i].curvl, vpath[i].curvr);
+            }
+            CHECK(0);
+        }
+    }
 }
 
 VectorPath::VectorPath() {
@@ -301,63 +328,60 @@ VectorPath::VectorPath() {
     ang_denom = 1;
 }
 
+Float4 Dvec2::boundingBox() const {
+    Float4 bb = startBoundBox();
+    for(int i = 0; i < paths.size(); i++)
+        addToBoundBox(&bb, paths[i].boundingBox());
+    for(int i = 0; i < entities.size(); i++)
+        addToBoundBox(&bb, entities[i].x, entities[i].y);
+    return bb;
+}
+
 Dvec2 loadDvec2(const char *fname) {
+    dprintf("Loading %s\n", fname);
     Dvec2 rv;
-    CHECK(0);
-    /*
+    kvData dat;
     ifstream fil(fname);
     CHECK(fil);
-    string buf;
-    while(getline(fil, buf)) {
-        if(buf.size() == 0)
-            break;
-        vector<string> toks = tokenize(buf, " ");
-        CHECK(toks.size() == 3);
-        vector<int> lhc = sti(tokenize(toks[0], "(,)"));
-        CHECK(lhc.size() == 0 || lhc.size() == 2);
-        vector<int> mainc = sti(tokenize(toks[1], ","));
-        CHECK(mainc.size() == 2);
-        vector<int> rhc = sti(tokenize(toks[2], "(,)"));
-        CHECK(rhc.size() == 0 || rhc.size() == 2);
-        Vecpt tvecpt;
-        tvecpt.x = mainc[0];
-        tvecpt.y = mainc[1];
-        if(lhc.size() == 2) {
-            tvecpt.lhcurved = true;
-            tvecpt.lhcx = lhc[0];
-            tvecpt.lhcy = lhc[1];
+    while(getkvData(fil, dat)) {
+        if(dat.category == "path") {
+            VectorPath nvp;
+            sscanf(dat.consume("center").c_str(), "%f,%f", &nvp.centerx, &nvp.centery);
+            
+            nvp.reflect = find(rf_names, rf_names + VECRF_END, dat.consume("reflect")) - rf_names;
+            CHECK(nvp.reflect >= 0 && nvp.reflect < VECRF_END);
+            
+            nvp.dupes = atoi(dat.consume("dupes").c_str());
+            sscanf(dat.consume("angle").c_str(), "%d/%d", &nvp.ang_numer, &nvp.ang_denom);
+            
+            vector<string> nodes = tokenize(dat.consume("node"), "\n");
+            for(int i = 0; i < nodes.size(); i++) {
+                vector<string> tnode = tokenize(nodes[i], " |");
+                CHECK(tnode.size() == 3);
+                VectorPoint vpt;
+                sscanf(tnode[1].c_str(), "%f,%f", &vpt.x, &vpt.y);
+                if(tnode[0] == "---") {
+                    vpt.curvl = false;
+                } else {
+                    vpt.curvl = true;
+                    sscanf(tnode[0].c_str(), "%f,%f", &vpt.curvlx, &vpt.curvly);
+                }
+                if(tnode[2] == "---") {
+                    vpt.curvr = false;
+                } else {
+                    vpt.curvr = true;
+                    sscanf(tnode[2].c_str(), "%f,%f", &vpt.curvrx, &vpt.curvry);
+                }
+                nvp.path.push_back(vpt);
+            }
+            
+            nvp.rebuildVpath();
+            rv.paths.push_back(nvp);
         } else {
-            tvecpt.lhcurved = false;
+            CHECK(0);
         }
-        if(rhc.size() == 2) {
-            tvecpt.rhcurved = true;
-            tvecpt.rhcx = rhc[0];
-            tvecpt.rhcy = rhc[1];
-        } else {
-            tvecpt.rhcurved = false;
-        }
-        rv.points.push_back(tvecpt);
+        dat.shouldBeDone();
     }
-    int nx = 1000000;
-    int ny = 1000000;
-    int mx = -1000000;
-    int my = -1000000;
-    for(int i = 0; i < rv.points.size(); i++) {
-        nx = min(nx, rv.points[i].x);
-        ny = min(ny, rv.points[i].y);
-        mx = max(mx, rv.points[i].x);
-        my = max(my, rv.points[i].y);
-    }
-    CHECK(nx != 1000000);
-    CHECK(ny != 1000000);
-    CHECK(mx != -1000000);
-    CHECK(my != -1000000);
-    rv.width = mx - nx;
-    rv.height = my - ny;
-    for(int i = 0; i < rv.points.size(); i++) {
-        rv.points[i].x -= nx;
-        rv.points[i].y -= ny;
-    }*/
     return rv;
 }
 

@@ -70,7 +70,7 @@ void MainLoop() {
     CHECK( !( FLAGS_readFromFile && FLAGS_readTarget == "" ) );
     
     FILE *outfile = NULL;
-    FILE *infile = NULL;
+//    FILE *infile = NULL;
     
     if(FLAGS_writeToFile) {
         CHECK(0);

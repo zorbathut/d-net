@@ -15,7 +15,8 @@ using namespace std;
  * CHECK/TEST macros
  */
 
-#define CHECK(x) while(1) { if(!(x)) { dprintf("Error at %s:%d - %s\n", __FILE__, __LINE__, #x); *(int*)0 = 0; } break; }
+void crash() __attribute__((__noreturn__));
+#define CHECK(x) while(1) { if(!(x)) { dprintf("Error at %s:%d - %s\n", __FILE__, __LINE__, #x); crash(); } break; }
 #define TEST(x) CHECK(x)
 #define printf FAILURE
 
@@ -101,11 +102,22 @@ inline Float4 &operator/=( Float4 &lhs, float rhs ) {
 	lhs.sy /= rhs;
 	lhs.ex /= rhs;
 	lhs.ey /= rhs;
+    return lhs;
 }
 
 inline bool operator==( const Float4 &lhs, const Float4 &rhs ) {
 	return lhs.sx == rhs.sx && lhs.sy == rhs.sy && lhs.ex == rhs.ex && lhs.ey == rhs.ey;
 }
+
+/*************
+ * Bounding box
+ */
+
+Float4 startBoundBox();
+
+void addToBoundBox(Float4 *bbox, float x, float y);
+void addToBoundBox(Float4 *bbox, const Float2 &point);
+void addToBoundBox(Float4 *bbox, const Float4 &rect);
 
 /*************
  * Fast sin/cos
@@ -201,6 +213,9 @@ inline bool isinside(const Float4 &lhs, const Float2 &rhs) {
 inline Float4 boxaround(const Float2 &lhs, float radius) {
     return Float4(lhs.x - radius, lhs.y - radius, lhs.x + radius, lhs.y + radius);
 }
+
+// Returns ( (xtrans, ytrans), scale)
+pair<pair<float, float>, float> fitInside(const Float4 &objbounds, const Float4 &goalbounds);
 
 /*************
  * Matrixtastic

@@ -129,7 +129,8 @@ int main( int argc, char **argv ) {
 	deinitSystem();
 
 	dprintf( "Done\n" );
-
+    
+    return 0;
 }
 
 void toggleFullscreen( void ) {

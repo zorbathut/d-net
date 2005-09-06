@@ -8,6 +8,34 @@
 
 using namespace std;
 
+void crash() {
+    *(int*)0 = 0;
+    while(1);
+}
+
+/*************
+ * Bounding box
+ */
+
+Float4 startBoundBox() {
+    return Float4(1e20, 1e20, -1e20, -1e20);
+};
+
+void addToBoundBox(Float4 *bbox, float x, float y) {
+    bbox->sx = min(bbox->sx, x);
+    bbox->sy = min(bbox->sy, y);
+    bbox->ex = max(bbox->ex, x);
+    bbox->ey = max(bbox->ey, y);
+};
+void addToBoundBox(Float4 *bbox, const Float2 &point) {
+    addToBoundBox(bbox, point.x, point.y);
+};
+void addToBoundBox(Float4 *bbox, const Float4 &rect) {
+    CHECK(rect.isNormalized());
+    addToBoundBox(bbox, rect.sx, rect.sy);
+    addToBoundBox(bbox, rect.ex, rect.ey);
+};
+
 /*************
  * Fast sin/cos
  */
@@ -48,6 +76,21 @@ string StringPrintf( const char *bort, ... ) {
     return string(buf.begin(), buf.begin() + done);
 
 };
+
+/*************
+ * Computational geometry
+ */
+
+pair<pair<float, float>, float> fitInside(const Float4 &objbounds, const Float4 &goalbounds) {
+    float xscale = (goalbounds.ex - goalbounds.sx) / (objbounds.ex - objbounds.sx);
+    float yscale = (goalbounds.ey - goalbounds.sy) / (objbounds.ey - objbounds.sy);
+    float scale = min(xscale, yscale);
+    float goalx = (goalbounds.sx + goalbounds.ex) / 2;
+    float goaly = (goalbounds.sy + goalbounds.ey) / 2;
+    float objx = (objbounds.sx + objbounds.ex) / 2;
+    float objy = (objbounds.sy + objbounds.ey) / 2;
+    return make_pair(make_pair(goalx - objx * scale, goaly - objy * scale), scale);
+}
 
 /*************
  * Matrixtastic

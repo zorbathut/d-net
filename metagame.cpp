@@ -14,12 +14,12 @@ public:
 };
 
 const Faction factions[] = {
-    { "data/a.dvec", Color(1.0, 0.0, 0.0) },
-    { "data/b.dvec", Color(1.0, 1.0, 0.0) },
-    { "data/c.dvec", Color(0.0, 1.0, 1.0) },
-    { "data/d.dvec", Color(1.0, 0.0, 1.0) },
-    { "data/e.dvec", Color(0.0, 1.0, 0.0) },
-    { "data/f.dvec", Color(1.0, 1.0, 1.0) }
+    { "data/a.dv2", Color(1.0, 0.0, 0.0) },
+    { "data/b.dv2", Color(1.0, 1.0, 0.0) },
+    { "data/c.dv2", Color(0.0, 1.0, 1.0) },
+    { "data/d.dv2", Color(1.0, 0.0, 1.0) },
+    { "data/e.dv2", Color(0.0, 1.0, 0.0) },
+    { "data/f.dv2", Color(1.0, 1.0, 1.0) }
 };
 
 const int factioncount = sizeof(factions) / sizeof(Faction);
@@ -279,7 +279,7 @@ void Metagame::renderToScreen() const {
                 drawText(bf, 20, playerpos[i].x + 5, playerpos[i].y + 5);
             } else {
                 setColor(factions[playersymbol[i]].color);
-                drawDvec2(symbols[playersymbol[i]], Float4(10, 10 + 100 * i, 90, 90 + 100 * i), true, true, 1.0);
+                drawDvec2(symbols[playersymbol[i]], Float4(10, 10 + 100 * i, 90, 90 + 100 * i), 1.0);
                 setColor(Color(1.0, 1.0, 1.0) / 60 * fireHeld[i]);
                 drawBox(Float4(5, 5 + 100 * i, 95, 95 + 100 * i), 1);
             }
@@ -288,7 +288,7 @@ void Metagame::renderToScreen() const {
         for(int i = 0; i < symbols.size(); i++) {
             if(count(playersymbol.begin(), playersymbol.end(), i) == 0) {
                 setColor(factions[i].color);
-                drawDvec2(symbols[i], symbolpos[i], true, true, 1.0);
+                drawDvec2(symbols[i], symbolpos[i], 1.0);
             }
         }
         if(count(playersymbol.begin(), playersymbol.end(), -1) <= playersymbol.size() - 2) {
