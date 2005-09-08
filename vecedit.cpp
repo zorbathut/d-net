@@ -85,8 +85,9 @@ void saveDv2() {
 
 void loadDv2() {
     saveDv2();
-    // Not yet implemented!
-    CHECK(0);
+    Dvec2 temp = loadDvec2("load.dv2");
+    paths = temp.paths;
+    entities = temp.entities;
 }
 
 int path_target = -1;

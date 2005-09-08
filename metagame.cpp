@@ -14,12 +14,14 @@ public:
 };
 
 const Faction factions[] = {
-    { "data/a.dv2", Color(1.0, 0.0, 0.0) },
-    { "data/b.dv2", Color(1.0, 1.0, 0.0) },
-    { "data/c.dv2", Color(0.0, 1.0, 1.0) },
-    { "data/d.dv2", Color(1.0, 0.0, 1.0) },
-    { "data/e.dv2", Color(0.0, 1.0, 0.0) },
-    { "data/f.dv2", Color(1.0, 1.0, 1.0) }
+    { "data/faction_a.dv2", Color(1.0, 0.0, 0.0) },
+    { "data/faction_b.dv2", Color(1.0, 1.0, 0.0) },
+    { "data/faction_c.dv2", Color(0.0, 1.0, 1.0) },
+    { "data/faction_d.dv2", Color(1.0, 0.0, 1.0) },
+    { "data/faction_e.dv2", Color(0.0, 1.0, 0.0) },
+    { "data/faction_f.dv2", Color(1.0, 1.0, 1.0) },
+    { "data/faction_g.dv2", Color(0.7, 0.7, 1.0) },
+    { "data/faction_h.dv2", Color(0.0, 0.0, 1.0) }
 };
 
 const int factioncount = sizeof(factions) / sizeof(Faction);
