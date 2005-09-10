@@ -22,6 +22,8 @@ using namespace std;
 #define SCREEN_DEPTH  16
 SDL_Surface * MainWindow = NULL;
 
+DEFINE_bool(fullscreen, true, "Fullscreen");
+
 int GetVideoFlags( void ) {
 
 	int videoflags = 0;
@@ -42,6 +44,9 @@ int GetVideoFlags( void ) {
 	} else {
 		dprintf( "WARNING: Software blit\n" );
 	}
+    
+    if(FLAGS_fullscreen)
+        videoflags |= SDL_FULLSCREEN;
 
 	return videoflags;
 
@@ -132,10 +137,3 @@ int main( int argc, char **argv ) {
     
     return 0;
 }
-
-void toggleFullscreen( void ) {
-    if( SDL_WM_ToggleFullScreen( MainWindow ) == 0 )
-		CHECK( 0 );
-}
-
-

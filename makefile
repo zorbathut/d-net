@@ -18,10 +18,10 @@ clean:
 	rm -rf *.o *.exe *.d *.S
 	
 run: d-net.exe
-	d-net.exe
+	d-net.exe --nofullscreen
 
 vecedit: d-net.exe
-	d-net.exe --vecedit
+	d-net.exe --vecedit --nofullscreen
     
 package: d-net.exe
 	mkdir deploy
