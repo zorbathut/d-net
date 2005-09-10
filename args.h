@@ -30,6 +30,8 @@ public:
     enum { LINKAGE_BOOL, LINKAGE_STRING, LINKAGE_INT };
     int type;
     
+    string descr;
+    
     string str_def;
     int int_def;
     bool bool_def;
@@ -41,7 +43,7 @@ public:
     LinkageData();
 };
 
-map< string, LinkageData > &getLinkageSingleton();
+map< string, string > getFlagDescriptions();
 
 void initFlags(int argc, char *argv[]);
 

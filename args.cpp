@@ -2,9 +2,15 @@
 #include "args.h"
 #include "util.h"
 
+map< string, LinkageData > &getLinkageSingleton() {
+    static map< string, LinkageData > singy;
+    return singy;
+}
+
 ARGS_LinkageObject::ARGS_LinkageObject(const string &id, string *writeto, const string &def, const string &descr) {
     map< string, LinkageData > &links = getLinkageSingleton();
     LinkageData ld;
+    ld.descr = descr;
     ld.type = LinkageData::LINKAGE_STRING;
     ld.str_def = def;
     ld.str_link = writeto;
@@ -13,6 +19,7 @@ ARGS_LinkageObject::ARGS_LinkageObject(const string &id, string *writeto, const 
 ARGS_LinkageObject::ARGS_LinkageObject(const string &id, int *writeto, int def, const string &descr) {
     map< string, LinkageData > &links = getLinkageSingleton();
     LinkageData ld;
+    ld.descr = descr;
     ld.type = LinkageData::LINKAGE_INT;
     ld.int_def = def;
     ld.int_link = writeto;
@@ -21,6 +28,7 @@ ARGS_LinkageObject::ARGS_LinkageObject(const string &id, int *writeto, int def, 
 ARGS_LinkageObject::ARGS_LinkageObject(const string &id, bool *writeto, bool def, const string &descr) {
     map< string, LinkageData > &links = getLinkageSingleton();
     LinkageData ld;
+    ld.descr = descr;
     ld.type = LinkageData::LINKAGE_BOOL;
     ld.bool_def = def;
     ld.bool_link = writeto;
@@ -34,9 +42,12 @@ LinkageData::LinkageData() {
     bool_link = NULL;
 }
 
-map< string, LinkageData > &getLinkageSingleton() {
-    static map< string, LinkageData > singy;
-    return singy;
+map< string, string > getFlagDescriptions() {
+    map<string, string> rv;
+    map<string, LinkageData> &ls = getLinkageSingleton();
+    for(map<string, LinkageData>::const_iterator it = ls.begin(); it != ls.end(); it++)
+        rv.insert(make_pair(it->first, it->second.descr));
+    return rv;
 }
 
 void initFlags(int argc, char *argv[]) {

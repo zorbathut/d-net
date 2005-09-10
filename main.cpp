@@ -23,6 +23,7 @@ using namespace std;
 SDL_Surface * MainWindow = NULL;
 
 DEFINE_bool(fullscreen, true, "Fullscreen");
+DEFINE_bool(help, false, "Get help");
 
 int GetVideoFlags( void ) {
 
@@ -119,6 +120,12 @@ int main( int argc, char **argv ) {
 	dprintf( "Init\n" );
     
     initFlags(argc, argv);
+    if(FLAGS_help) {
+        map<string, string> flags = getFlagDescriptions();
+        for(map<string, string>::iterator itr = flags.begin(); itr != flags.end(); itr++)
+            dprintf("%s: %s\n", itr->first.c_str(), itr->second.c_str());
+        return 0;
+    }
     
     initItemdb();
 
