@@ -1,7 +1,7 @@
 
 projectile {
     name=local.autocannon
-    velocity=60
+    velocity=120
     damage=1
 }
 

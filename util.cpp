@@ -36,6 +36,21 @@ void addToBoundBox(Float4 *bbox, const Float4 &rect) {
     addToBoundBox(bbox, rect.ex, rect.ey);
 };
 
+void expandBoundBox(Float4 *bbox, float factor) {
+    float x = bbox->ex - bbox->sx;
+    float y = bbox->ey - bbox->sy;
+    float xc = ( bbox->sx + bbox->ex ) / 2;
+    float yc = ( bbox->sy + bbox->ey ) / 2;
+    x *= factor;
+    y *= factor;
+    x /= 2;
+    y /= 2;
+    bbox->sx = xc - x;
+    bbox->sy = yc - y;
+    bbox->ex = xc + x;
+    bbox->ey = yc + y;
+}
+
 /*************
  * Fast sin/cos
  */

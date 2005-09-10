@@ -156,7 +156,7 @@ void parseItemFile(const string &fname) {
         } else if(chunk.category == "projectile") {
             string name = chunk.consume("name");
             int vel = atoi(chunk.consume("velocity").c_str());
-            int damage = atoi(chunk.consume("damage").c_str());
+            float damage = atof(chunk.consume("damage").c_str());
             CHECK(projclasses.count(name) == 0);
             projclasses[name].velocity = vel / FPS;
             projclasses[name].damage = damage;

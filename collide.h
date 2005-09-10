@@ -69,9 +69,9 @@ public:
 
 	void render() const;
     
-    bool testCollideSingle( int lhs, int rhs ) const;
-    bool testCollideAgainst( int active ) const;
-    bool testCollideAll() const;
+    bool testCollideSingle(int lhs, int rhs, bool print = false) const;
+    bool testCollideAgainst(int active) const;
+    bool testCollideAll(bool print = false) const;
 
 private:
 	

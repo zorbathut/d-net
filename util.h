@@ -56,10 +56,21 @@ inline Float2 operator*(const Float2 &lhs, float rhs) {
     return Float2(lhs.x * rhs, lhs.y * rhs);
 }
 
+inline bool operator==(const Float2 &lhs, const Float2 &rhs) {
+    return lhs.x == rhs.x && lhs.y == rhs.y;
+}
+
+// not meant to be meaningful
+inline bool operator<(const Float2 &lhs, const Float2 &rhs) {
+    return lhs.x < rhs.x || lhs.x == rhs.x && lhs.y < rhs.y;
+}
+
 class Float4 {
 public:
 	float sx, sy, ex, ey;
 	Float4() { };
+    Float4(const Float2 &s, const Float2 &e) :
+        sx(s.x), sy(s.y), ex(e.x), ey(e.y) { };
 	Float4( float in_sx, float in_sy, float in_ex, float in_ey ) :
 		sx( in_sx ), sy( in_sy ), ex( in_ex ), ey( in_ey ) { };
 
@@ -118,6 +129,8 @@ Float4 startBoundBox();
 void addToBoundBox(Float4 *bbox, float x, float y);
 void addToBoundBox(Float4 *bbox, const Float2 &point);
 void addToBoundBox(Float4 *bbox, const Float4 &rect);
+
+void expandBoundBox(Float4 *bbox, float factor);
 
 /*************
  * Fast sin/cos
@@ -189,6 +202,14 @@ inline float linelineintersectpos( float x1, float y1, float x2, float y2, float
 inline float linelineintersectpos( const Float4 &lhs, const Float4 &rhs ) {
 	return linelineintersectpos( lhs.sx, lhs.sy, lhs.ex, lhs.ey, rhs.sx, rhs.sy, rhs.ex, rhs.ey );
 }
+inline bool linelineintersectend(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4) {
+    float llip = linelineintersectpos(x1, y1, x2, y2, x3, y3, x4, y4);
+    return llip != 2.f && llip > 1e-6 && llip < (1 - 1e-6);
+}
+inline float linelineintersectend( const Float4 &lhs, const Float4 &rhs ) {
+	return linelineintersectend( lhs.sx, lhs.sy, lhs.ex, lhs.ey, rhs.sx, rhs.sy, rhs.ex, rhs.ey );
+}
+
 inline int whichSide( const Float4 &f4, const pair< float, float > &pta ) {
     float ax = f4.ex - f4.sx;
     float ay = f4.ey - f4.sy;

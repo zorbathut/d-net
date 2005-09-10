@@ -2,8 +2,10 @@
 #define DNET_GAMEMAP
 
 #include "collide.h"
+#include "level.h"
 
 #include <vector>
+
 using namespace std;
 
 class Gamemap {
@@ -12,11 +14,14 @@ public:
 	void render() const;
 	void addCollide( Collider *collide ) const;
 
-	Gamemap();
+    Float4 getBounds() const;
+
+    Gamemap();
+	Gamemap(const Level &level);
 
 private:
 
-	vector< float > vertices;
+	vector<vector<Float2> > paths;
 
 };
 

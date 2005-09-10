@@ -6,10 +6,19 @@ Level loadLevel(const string &str) {
     Level rv;
     Dvec2 dv = loadDvec2(str);
     for(int i = 0; i < dv.paths.size(); i++) {
-        vector<pair<float, float> > tp;
+        vector<Float2> tp;
         for(int j = 0; j < dv.paths[i].vpath.size(); j++) {
             CHECK(dv.paths[i].vpath[j].curvl == false && dv.paths[i].vpath[j].curvr == false);
-            tp.push_back(make_pair(dv.paths[i].vpath[j].x + dv.paths[i].centerx, dv.paths[i].vpath[j].y + dv.paths[i].centery));
+            tp.push_back(Float2(dv.paths[i].vpath[j].x + dv.paths[i].centerx, dv.paths[i].vpath[j].y + dv.paths[i].centery));
+        }
+        tp.erase(unique(tp.begin(), tp.end()), tp.end());
+        CHECK(tp.size());
+        if(tp.back() == tp[0])
+            tp.pop_back();
+        CHECK(tp.size());
+        {
+            set<Float2> flup(tp.begin(), tp.end());
+            CHECK(flup.size() == tp.size());
         }
         rv.paths.push_back(tp);
     }
@@ -30,8 +39,9 @@ Level loadLevel(const string &str) {
                 rv.playersValid.insert(itr->first);
                 for(int i = 0; i < dv.entities.size(); i++) {
                     CHECK(dv.entities[i].getParameter("numerator") && dv.entities[i].getParameter("denominator"));
-                    rv.playerStarts[i].push_back(make_pair(make_pair(dv.entities[i].x, dv.entities[i].y), PI * 2 * dv.entities[i].getParameter("numerator")->bi_val / dv.entities[i].getParameter("denominator")->bi_val));
+                    rv.playerStarts[itr->first].push_back(make_pair(Float2(dv.entities[i].x, dv.entities[i].y), PI * 2 * dv.entities[i].getParameter("numerator")->bi_val / dv.entities[i].getParameter("denominator")->bi_val));
                 }
+                
             }
         }
     }

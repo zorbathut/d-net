@@ -243,7 +243,7 @@ bool Metagame::runTick( const vector< Controller > &keys ) {
                     playerdata[i].kills = 0;
                     playerdata[i].wins = 0;
                 }
-                game = Game(&playerdata);
+                game = Game(&playerdata, levels[int(frand() * levels.size())]);
             }
         }
     } else if(mode == MGM_PLAY) {
@@ -257,7 +257,7 @@ bool Metagame::runTick( const vector< Controller > &keys ) {
                 checked.resize(playerdata.size());
             } else {
                 float firepower = game.firepowerSpent;
-                game = Game(&playerdata);
+                game = Game(&playerdata, levels[int(frand() * levels.size())]);
                 game.firepowerSpent = firepower;
             }
         }
@@ -435,8 +435,13 @@ Metagame::Metagame(int playercount, int in_roundsBetweenShop) {
     {
         ifstream ifs("data/levels/levellist.txt");
         string line;
-        while(getLineStripped(ifs, line))
-            levels.push_back(loadLevel("data/levels/" + line));
+        while(getLineStripped(ifs, line)) {
+            Level lev = loadLevel("data/levels/" + line);
+            if(lev.playersValid.count(playercount))
+                levels.push_back(lev);
+        }
+        dprintf("Got %d usable levels\n", levels.size());
+        CHECK(levels.size());
     }
     
     mode = MGM_PLAYERCHOOSE;

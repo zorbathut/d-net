@@ -9,7 +9,7 @@ using namespace std;
 class ProjectileClass {
 public:
     int velocity;
-    int damage;
+    float damage;
 };
 
 class Weapon {

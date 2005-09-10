@@ -83,7 +83,7 @@ public:
 
     pair< pair< float, float >, float > getDeltaAfterMovement( const Keystates &keys, float x, float y, float d, float t ) const;
 
-	bool takeDamage( int amount ); // returns true on kill
+	bool takeDamage( float amount ); // returns true on kill
 	void genEffects( vector< GfxEffects > *gfxe );
     
     bool initted;
@@ -126,6 +126,7 @@ public:
 	float d;
 
     float v;
+    float damage;
 
     float timeLeft;
 
@@ -146,7 +147,7 @@ public:
     float firepowerSpent;
 
     Game();
-	Game(vector<Player> *playerdata);
+	Game(vector<Player> *playerdata, const Level &level);
 
 private:
 

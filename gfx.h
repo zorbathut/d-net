@@ -30,8 +30,10 @@ void setZoom( float sx, float sy, float ey );
 void setColor( float r, float g, float b );
 void setColor( const Color &color );
 void drawLine( float sx, float sy, float ex, float ey, float weight );
+void drawLine( const Float2 &s, const Float2 &e, float weight );
 void drawLine( const Float4 &loc, float weight );
 void drawLinePath( const vector< float > &verts, float weight, bool loop );
+void drawLinePath( const vector<Float2> &verts, float weight, bool loop );
 
 void drawBox( const Float4 &locs, float weight );
 void drawBoxAround( float x, float y, float rad, float weight );

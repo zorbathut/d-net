@@ -4,108 +4,33 @@
 #include "gfx.h"
 
 void Gamemap::render() const {
+    CHECK(paths.size());
 	setColor( 0.5f, 0.5f, 0.5f );
-	drawLinePath( vertices, 0.5, true );
+	for(int i = 0; i < paths.size(); i++)
+        drawLinePath( paths[i], 0.5, true );
 }
 void Gamemap::addCollide( Collider *collider ) const {
-	for( int i = 0; i < vertices.size(); i += 2 )
-		collider->token( Float4( vertices[ i ], vertices[ i + 1 ], vertices[ ( i + 2 ) % vertices.size() ], vertices[ ( i + 3 ) % vertices.size() ] ), Float4( 0, 0, 0, 0 ) );
+    CHECK(paths.size());
+    for(int i = 0; i < paths.size(); i++) {
+        for(int j = 0; j < paths[i].size(); j++) {
+            int k = (j + 1) % paths[i].size();
+            collider->token(Float4(paths[i][j], paths[i][k]), Float4( 0, 0, 0, 0 ));
+        }
+    }
 }
 
-Gamemap::Gamemap() {
+Float4 Gamemap::getBounds() const {
+    Float4 bounds = startBoundBox();
+    for(int i = 0; i < paths.size(); i++) {
+        for(int j = 0; j < paths[i].size(); j++) {
+            addToBoundBox(&bounds, paths[i][j]);
+        }
+    }
+    CHECK(bounds.isNormalized());
+    return bounds;
+}
 
-	// tl corner
-	vertices.push_back( 5 );
-	vertices.push_back( 10 );
-
-	// top bump
-	{
-		vertices.push_back( 40 );
-		vertices.push_back( 10 );
-
-		vertices.push_back( 50 );
-		vertices.push_back( 29 );
-
-		vertices.push_back( 70 );
-		vertices.push_back( 24 );
-
-		vertices.push_back( 80 );
-		vertices.push_back( 10 );
-	}
-
-	// tr corner
-	vertices.push_back( 120 );
-	vertices.push_back( 10 );
-
-	// right wedge
-	{
-		vertices.push_back( 120 );
-		vertices.push_back( 20 );
-
-		vertices.push_back( 110 );
-		vertices.push_back( 20 );
-
-		vertices.push_back( 120 );
-		vertices.push_back( 40 );
-	}
-
-	// br corner
-	{
-		vertices.push_back( 120 );
-		vertices.push_back( 80 );
-
-		vertices.push_back( 115 );
-		vertices.push_back( 95 );
-	}
-
-	// bottom depression
-	{
-		vertices.push_back( 90 );
-		vertices.push_back( 95 );
-
-		vertices.push_back( 70 );
-		vertices.push_back( 85 );
-
-		vertices.push_back( 55 );
-		vertices.push_back( 88 );
-
-		vertices.push_back( 45 );
-		vertices.push_back( 97 );
-
-		vertices.push_back( 30 );
-		vertices.push_back( 95 );
-	}
-
-	// bl corner
-	{
-		vertices.push_back( 5 );
-		vertices.push_back( 95 );
-	}
-
-	// left bumpiness
-	{
-		vertices.push_back( 5 );
-		vertices.push_back( 80 );
-
-		vertices.push_back( 20 );
-		vertices.push_back( 74 );
-
-		vertices.push_back( 35 );
-		vertices.push_back( 60 );
-
-		vertices.push_back( 38 );
-		vertices.push_back( 40 );
-
-		vertices.push_back( 33 );
-		vertices.push_back( 58 );
-
-		vertices.push_back( 17 );
-		vertices.push_back( 70 );
-
-		vertices.push_back( 10 );
-		vertices.push_back( 70 );
-
-		vertices.push_back( 5 );
-		vertices.push_back( 62 );
-	}
+Gamemap::Gamemap() { };
+Gamemap::Gamemap(const Level &lev) {
+    paths = lev.paths;
 }

@@ -157,7 +157,9 @@ void drawLine( float sx, float sy, float ex, float ey, float weight ) {
 	glVertex2f( ( ex - map_sx ) / map_zoom, ( ey - map_sy ) / map_zoom );
     lineCount++;
 }
-
+void drawLine(const Float2 &s, const Float2 &e, float weight) {
+    drawLine(s.x, s.y, e.x, e.y, weight);
+}
 void drawLine( const Float4 &pos, float weight ) {
 	drawLine( pos.sx, pos.sy, pos.ex, pos.ey, weight );
 }
@@ -172,6 +174,14 @@ void drawLinePath( const vector< float > &iverts, float weight, bool loop ) {
     }
 	for( int i = 0; i < verts.size() - 2; i += 2 )
 		drawLine( verts[ i ], verts[ i + 1 ], verts[ i + 2 ], verts[ i + 3 ], weight );
+};
+void drawLinePath( const vector<Float2> &iverts, float weight, bool loop ) {
+    CHECK( iverts.size() >= 1 );
+    vector<Float2> verts = iverts;
+    if( loop )
+        verts.push_back(verts[0]);
+	for( int i = 0; i < verts.size() - 1; i++ )
+		drawLine( verts[i], verts[i + 1], weight );
 };
 
 void drawBox( const Float4 &box, float weight ) {

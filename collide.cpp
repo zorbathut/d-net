@@ -194,12 +194,12 @@ bool Collider::doProcess() {
                 continue;
             for( int x = 0; x < items[ *itr ].size(); x++ ) {
                 for( int y = 0; y < items[ alter ].size(); y++ ) {
-                    if( linelineintersect( lerp( items[ alter ][ y ].second.first, items[ alter ][ y ].second.second, ctime ), lerp( items[ *itr ][ x ].second.first, items[ *itr ][ x ].second.second, ctime ) ) ) {
+                    if( linelineintersectend( lerp( items[ alter ][ y ].second.first, items[ alter ][ y ].second.second, ctime ), lerp( items[ *itr ][ x ].second.first, items[ *itr ][ x ].second.second, ctime ) ) ) {
                         CHECK( reverseIndex( alter ).first == 1 );
                         lhs.first = reverseIndex( *itr );
                         lhs.second = items[ *itr ][ x ].first;
                         rhs.first = reverseIndex( alter );
-                        rhs.second = items[ alter ][ y ].first;;
+                        rhs.second = items[ alter ][ y ].first;
                         CHECK( rhs.first.first == 1 );
                         return true;
                     }
@@ -261,13 +261,18 @@ void Collider::flagAsMoved( int category, int gid ) {
     moved.insert( getIndex( category, gid ) );
 }
 
-bool Collider::testCollideSingle( int lhs, int rhs ) const {
+bool Collider::testCollideSingle( int lhs, int rhs, bool print ) const {
     CHECK( lhs >= 0 && lhs < items.size() );
     CHECK( rhs >= 0 && rhs < items.size() );
     for( int y = 0; y < items[ lhs ].size(); y++ ) {
         for( int k = 0; k < items[ rhs ].size(); k++ ) {
-            if( linelineintersect( lerp( items[ lhs ][ y ].second.first, items[ lhs ][ y ].second.second, ctime ), lerp( items[ rhs ][ k ].second.first, items[ rhs ][ k ].second.second, ctime ) ) ) {
-                //dprintf( "%d/%d with %d/%d\n", active, k, x, y );
+            if( linelineintersectend( lerp( items[ lhs ][ y ].second.first, items[ lhs ][ y ].second.second, ctime ), lerp( items[ rhs ][ k ].second.first, items[ rhs ][ k ].second.second, ctime ) ) ) {
+                if(print) {
+                    Float4 lhl = lerp( items[ lhs ][ y ].second.first, items[ lhs ][ y ].second.second, ctime );
+                    Float4 rhl = lerp( items[ rhs ][ k ].second.first, items[ rhs ][ k ].second.second, ctime );
+                    dprintf("%d/%d with %d/%d\n", lhs, y, rhs, k);
+                    dprintf("%f,%f - %f,%f vs %f,%f - %f,%f\n", lhl.sx, lhl.sy, lhl.ex, lhl.ey, rhl.sx, rhl.sy, rhl.ex, rhl.ey);
+                }
                 return true;
             }
         }
@@ -293,14 +298,14 @@ bool Collider::testCollideAgainst( int active ) const {
     }
     return false;
 }
-bool Collider::testCollideAll() const {
+bool Collider::testCollideAll(bool print) const {
     for( int i = -1; i < players; i++ ) {
         for( int j = i + 1; j < players; j++ ) {
             if( i == -1 ) {
-                if( testCollideSingle( getIndex( -1, 0 ), getIndex( 0, j ) ) )
+                if( testCollideSingle( getIndex( -1, 0 ), getIndex( 0, j ), print ) )
                     return true;
             } else {
-                if( testCollideSingle( getIndex( 0, i ), getIndex( 0, j ) ) )
+                if( testCollideSingle( getIndex( 0, i ), getIndex( 0, j ), print ) )
                     return true;
             }
         }

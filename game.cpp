@@ -176,7 +176,7 @@ pair< pair< float, float >, float > Tank::getDeltaAfterMovement( const Keystates
     
 }
 
-bool Tank::takeDamage( int damage ) {
+bool Tank::takeDamage( float damage ) {
 	health -= damage;
 	if( health <= 0 && live ) {
 		live = false;
@@ -241,7 +241,7 @@ void Projectile::addCollision( Collider *collider ) const {
 	collider->token( Float4( x, y, x + v * fsin( d ), y - v * fcos( d ) ), Float4( v * fsin( d ), -v * fcos( d ), v * fsin( d ), -v * fcos( d ) ) );
 };
 void Projectile::impact( Tank *target ) {
-	if(target->takeDamage( 1 ))
+	if(target->takeDamage( damage ))
         owner->player->kills++;
     owner->player->damageDone += 1;
 };
@@ -267,7 +267,18 @@ Projectile::Projectile() {
 }
 
 void Game::renderToScreen( int target ) const {
-    setZoom( 0, 0, 100 );
+    {
+        Float4 bounds = gamemap.getBounds();
+        dprintf("bounds are %f, %f, %f, %f\n", bounds.sx, bounds.sy, bounds.ex, bounds.ey);
+        expandBoundBox(&bounds, 1.1);
+        dprintf("newbounds are %f, %f, %f, %f\n", bounds.sx, bounds.sy, bounds.ex, bounds.ey);
+        float y = (bounds.ey - bounds.sy) / 0.9;
+        dprintf("y is %f\n", y);
+        float sy = bounds.ey - y;
+        float sx =( bounds.sx + bounds.ex ) / 2 - ( y * 1.25 / 2 );
+        dprintf("sx, sy %f, %f\n", sx, sy);
+        setZoom(sx, sy, bounds.ey);
+    }
 	for( int i = 0; i < players.size(); i++ )
 		players[ i ].render( i );
 	for( int i = 0; i < projectiles.size(); i++ )
@@ -278,8 +289,9 @@ void Game::renderToScreen( int target ) const {
 	gamemap.render();
 	collider.render();
     {
+        setZoom( 0, 0, 100 );
         setColor(1.0, 1.0, 1.0);
-        drawLine(Float4(0, 8, 125, 8), 0.1);
+        drawLine(Float4(0, 10, 125, 10), 0.1);
         for(int i = 0; i < players.size(); i++) {
             setColor(1.0, 1.0, 1.0);
             float loffset = 125.0 / players.size() * i;
@@ -424,7 +436,7 @@ void collideHandler( Collider *collider, vector< Tank > *tanks, const vector< Ke
     
     //dprintf( "Sim continuing\n" );
 
-    CHECK( !collider->testCollideAll() );
+    CHECK( !collider->testCollideAll(true) );
     
 }
 
@@ -458,7 +470,7 @@ bool Game::runTick( const vector< Keystates > &keys ) {
 		collider.endAddThingsToGroup();
 	}
     
-    CHECK( !collider.testCollideAll() );
+    CHECK( !collider.testCollideAll(true) );
     
 	while( collider.doProcess() ) {
 		//dprintf( "Collision!\n" );
@@ -554,6 +566,7 @@ bool Game::runTick( const vector< Keystates > &keys ) {
 			proj.y = players[ i ].getFiringPoint().second;
 			proj.d = players[ i ].d;
             proj.v = players[ i ].player->weapon->projectile->velocity;
+            proj.damage = players[ i ].player->weapon->projectile->damage;
             proj.owner = &players[ i ];
 			projectiles[ i ].push_back( proj );
             players[ i ].weaponCooldown = players[ i ].player->weapon->firerate;
@@ -607,7 +620,7 @@ bool Game::runTick( const vector< Keystates > &keys ) {
 Game::Game() {
 }
 
-Game::Game(vector<Player> *in_playerdata) {
+Game::Game(vector<Player> *in_playerdata, const Level &lev) {
     CHECK(in_playerdata);
 	frameNm = 0;
     players.clear();
@@ -615,24 +628,28 @@ Game::Game(vector<Player> *in_playerdata) {
     for(int i = 0; i < players.size(); i++) {
         players[i].init(&(*in_playerdata)[i]);
     }
-    if(players.size() > 0) {
-        players[ 0 ].x = 30;
-        players[ 0 ].y = 30;
+    {
+        // place players
+        CHECK(lev.playerStarts.count(players.size()));
+        vector<pair<Float2, float> > pstart = lev.playerStarts.find(players.size())->second;
+        for(int i = 0; i < pstart.size(); i++)
+            dprintf("possible: %f, %f, %f\n", pstart[i].first.x, pstart[i].first.y, pstart[i].second);
+        for(int i = 0; i < players.size(); i++) {
+            int loc = int(frand() * pstart.size());
+            CHECK(loc >= 0 && loc < pstart.size());
+            dprintf("loc %d, %f %f %f\n", loc, pstart[loc].first.x, pstart[loc].first.y, pstart[loc].second);
+            players[i].x = pstart[loc].first.x;
+            players[i].y = pstart[loc].first.y;
+            players[i].d = pstart[loc].second;
+            pstart.erase(pstart.begin() + loc);
+        }
     }
-    if(players.size() > 1) {
-        players[ 1 ].x = 60;
-        players[ 1 ].y = 60;
-    }
-    if(players.size() > 2) {
-        players[ 2 ].x = 90;
-        players[ 2 ].y = 60;
-    }
-    if(players.size() > 3) {
-        CHECK(0);
-    }
+
 	projectiles.resize( in_playerdata->size() );
     framesSinceOneLeft = 0;
     firepowerSpent = 0;
+    
+    gamemap = Gamemap(lev);
 };
 
 
