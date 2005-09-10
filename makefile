@@ -1,5 +1,5 @@
 
-SOURCES = main core game timer debug gfx collide gamemap util rng const args interface vecedit metagame itemdb parse dvec2 input
+SOURCES = main core game timer debug gfx collide gamemap util rng const args interface vecedit metagame itemdb parse dvec2 input level
 CPPFLAGS = `sdl-config --cflags` -mno-cygwin -O2 -DVECTOR_PARANOIA -Wall -Wno-sign-compare -Wno-uninitialized#-pg
 LINKFLAGS = `sdl-config --libs` -lglu32 -lopengl32 -lm -mno-cygwin -O2 #-pg
 
@@ -45,7 +45,7 @@ package: d-net.exe
 stats:
 	@echo Graphics: `cat gfx.h gfx.cpp | wc -l` loc
 	@echo Collisions: `cat collide.h collide.cpp | wc -l` loc
-	@echo Game mechanics: `cat game.h game.cpp gamemap.h gamemap.cpp | wc -l` loc
+	@echo Game mechanics: `cat game.h game.cpp gamemap.h gamemap.cpp level.cpp level.h | wc -l` loc
 	@echo Item hierarchy: `cat itemdb.h itemdb.cpp parse.h parse.cpp | wc -l` loc
 	@echo UI: `cat interface.h interface.cpp metagame.h metagame.cpp | wc -l` loc
 	@echo Framework: `cat core.h core.cpp main.h main.cpp input.h input.cpp | wc -l` loc

@@ -54,6 +54,22 @@ string Parameter::dumpTextRep() const {
     }
 }
 
+void Parameter::parseTextRep(const string &in) {
+    if(type == BOOLEAN) {
+        if(in == "false") {
+            bool_val = false;
+        } else if(in == "true") {
+            bool_val = true;
+        } else {
+            CHECK(0);
+        }
+    } else if(type == BOUNDED_INTEGER) {
+        bi_val = atoi(in.c_str());
+    } else {
+        CHECK(0);
+    }
+}
+
 Parameter paramBool(const string &name, bool begin, bool hideDefault) {
     Parameter param;
     param.name = name;
@@ -377,6 +393,20 @@ Dvec2 loadDvec2(const char *fname) {
             
             nvp.rebuildVpath();
             rv.paths.push_back(nvp);
+        } else if(dat.category == "entity") {
+            Entity ne;
+            sscanf(dat.consume("coord").c_str(), "%f,%f", &ne.x, &ne.y);
+            string typ = dat.consume("type");
+            ne.type = -1;
+            for(int i = 0; i < ENTITY_END; i++)
+                if(typ == ent_names[i])
+                    ne.type = i;
+            CHECK(ne.type != -1);
+            ne.initParams();
+            for(int i = 0; i < ne.params.size(); i++)
+                if(dat.kv.count(ne.params[i].name))
+                    ne.params[i].parseTextRep(dat.consume(ne.params[i].name));
+            rv.entities.push_back(ne);
         } else {
             CHECK(0);
         }

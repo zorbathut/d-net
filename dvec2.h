@@ -31,6 +31,7 @@ public:
     void render(float x, float y, float h) const;
     
     string dumpTextRep() const;
+    void parseTextRep(const string &in);
     
 };
 
@@ -51,6 +52,9 @@ public:
     vector<Parameter> params;
 
     void initParams();  // inits params to the default for that type
+
+    Parameter &getParameter(const string &name);
+    const Parameter &getParameter(const string &name) const;
 
 };
 
