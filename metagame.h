@@ -59,6 +59,8 @@ class Metagame {
     vector<bool> checked;
     
     vector<int> fireHeld;
+    
+    int roundsBetweenShop;
 
 public:
 
@@ -71,7 +73,7 @@ public:
     void drawMultibar(const vector<float> &sizes, const Float4 &dimensions) const;
 
     Metagame();
-	Metagame(int playercount);
+	Metagame(int playercount, int roundsBetweenShop);
 
 };
 

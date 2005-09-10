@@ -11,6 +11,7 @@
 using namespace std;
 
 DEFINE_bool(vecedit, false, "vector editor mode");
+DEFINE_int(rounds_per_store, 6, "rounds between store enter");
 
 class StdMenu {
     
@@ -106,7 +107,7 @@ bool InterfaceMain::tick(const vector< Controller > &control) {
         int mrv;
         mrv = mainmenu.tick(kst[0]);
         if(mrv == IFM_M_NEWGAME) {
-            game = Metagame(control.size());
+            game = Metagame(control.size(), FLAGS_rounds_per_store);
             interface_mode = IFM_S_PLAYING;
         } else if(mrv == IFM_M_EXIT) {
             return true;

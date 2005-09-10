@@ -247,7 +247,7 @@ bool Metagame::runTick( const vector< Controller > &keys ) {
     } else if(mode == MGM_PLAY) {
         if(game.runTick(genKeystates(keys))) {
             gameround++;
-            if(gameround % 1 == 0) {
+            if(gameround % 6 == 0) {
                 mode = MGM_SHOP;
                 currentShop = -1;
                 calculateLrStats();
@@ -356,7 +356,7 @@ void Metagame::calculateLrStats() {
             chunkTotal++;
     }
     dprintf("%d, %f\n", gameround, game.firepowerSpent);
-    float totalReturn = 100 * pow(1.03, gameround) + game.firepowerSpent * 0.8;
+    float totalReturn = 75 * pow(1.08, gameround) * playerdata.size() * roundsBetweenShop + game.firepowerSpent * 0.8;
     dprintf("Total cash is %f", totalReturn);
     
     for(int i = 0; i < playerdata.size(); i++) {
@@ -409,8 +409,11 @@ void Metagame::drawMultibar(const vector<float> &sizes, const Float4 &dimensions
 Metagame::Metagame() {
 }
 
-Metagame::Metagame(int playercount) {
+Metagame::Metagame(int playercount, int in_roundsBetweenShop) {
 
+    CHECK(roundsBetweenShop >= 1);
+    roundsBetweenShop = in_roundsBetweenShop;
+    
     playerkey.clear();
     playersymbol.clear();
     playerpos.clear();
