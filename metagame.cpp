@@ -16,14 +16,20 @@ public:
 };
 
 const Faction factions[] = {
-    { "data/faction_a.dv2", Color(1.0, 0.0, 0.0) },
-    { "data/faction_b.dv2", Color(1.0, 1.0, 0.0) },
-    { "data/faction_c.dv2", Color(0.0, 1.0, 1.0) },
-    { "data/faction_d.dv2", Color(1.0, 0.0, 1.0) },
-    { "data/faction_e.dv2", Color(0.0, 1.0, 0.0) },
-    { "data/faction_f.dv2", Color(1.0, 1.0, 1.0) },
-    { "data/faction_g.dv2", Color(0.7, 0.7, 1.0) },
-    { "data/faction_h.dv2", Color(0.0, 0.0, 1.0) }
+    { "data/faction_f.dv2", Color(1.0, 1.0, 1.0) }, // omega
+    
+    { "data/faction_a.dv2", Color(1.0, 0.0, 0.0) }, // pitchfork
+    { "data/faction_e.dv2", Color(0.0, 1.0, 0.0) }, // serpent
+    { "data/faction_h.dv2", Color(0.0, 0.0, 1.0) }, // ocean
+    
+    { "data/faction_b.dv2", Color(1.0, 1.0, 0.0) }, // lightning
+    { "data/faction_c.dv2", Color(0.0, 1.0, 1.0) }, // H
+    { "data/faction_d.dv2", Color(1.0, 0.0, 1.0) }, // compass
+    { "data/faction_g.dv2", Color(0.7, 0.7, 1.0) }, // buzzsaw
+    { "data/faction_i.dv2", Color(1.0, 0.7, 0.7) }, // zen
+    { "data/faction_j.dv2", Color(1.0, 0.7, 0.0) }, // pincer
+    { "data/faction_k.dv2", Color(0.0, 0.7, 1.0) }, // hourglass
+    { "data/faction_l.dv2", Color(1.0, 0.6, 0.8) } // poison
 };
 
 const int factioncount = sizeof(factions) / sizeof(Faction);
@@ -428,8 +434,12 @@ Metagame::Metagame(int playercount, int in_roundsBetweenShop) {
         symbols.push_back(loadDvec2(factions[i].filename));
     }
     
-    for(int i = 0; i < symbols.size(); i++) {
-        symbolpos.push_back( boxaround( angle(PI * 2 * i / symbols.size()) * 200 + Float2( 400, 300 ), 50 ) );
+    for(int i = 0; i < 4; i++) {
+        symbolpos.push_back( boxaround( angle(PI * 2 * i / 4) * 100 + Float2( 400, 300 ), 50 ) );
+    }
+    
+    for(int i = 4; i < symbols.size(); i++) {
+        symbolpos.push_back( boxaround( angle(PI * 2 * ( i - 4 ) / ( symbols.size() - 4 )) * 225 + Float2( 400, 300 ), 50 ) );
     }
     
     {

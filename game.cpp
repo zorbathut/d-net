@@ -297,14 +297,15 @@ void Game::renderToScreen( int target ) const {
             float loffset = 125.0 / players.size() * i;
             float roffset = 125.0 / players.size() * ( i + 1 );
             if(i)
-                drawLine(Float4(loffset, 0, loffset, 8), 0.1);
+                drawLine(Float4(loffset, 0, loffset, 10), 0.1);
             if(players[i].live) {
                 setColor(players[i].player->color);
-                float barl = loffset + 2;
-                float bare = (roffset - 2) - (loffset + 2);
+                float barl = loffset + 1;
+                float bare = (roffset - 1) - (loffset + 1);
                 bare /= players[i].player->maxHealth;
                 bare *= players[i].health;
                 drawShadedBox(Float4(barl, 2, barl + bare, 6), 0.1, 2);
+                drawText(StringPrintf("%d", players[i].player->weapon->name.c_str(), players[i].player->shotsLeft), 2, barl, 7);
             }
         }
     }
