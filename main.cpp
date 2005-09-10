@@ -122,8 +122,9 @@ int main( int argc, char **argv ) {
     initFlags(argc, argv);
     if(FLAGS_help) {
         map<string, string> flags = getFlagDescriptions();
+        #undef printf
         for(map<string, string>::iterator itr = flags.begin(); itr != flags.end(); itr++)
-            dprintf("%s: %s\n", itr->first.c_str(), itr->second.c_str());
+            printf("%s: %s\n", itr->first.c_str(), itr->second.c_str());
         return 0;
     }
     
