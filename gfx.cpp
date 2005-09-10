@@ -277,6 +277,24 @@ void drawText(const string &txt, float scale, float sx, float sy) {
     drawText(txt.c_str(), scale, sx, sy);
 }
 
+void drawJustifiedText(const string &txt, float scale, float sx, float sy, int xps, int yps) {
+    float lscale = scale / 9;
+    float wid = lscale * ( 8 * txt.size() - 3 );
+    if(xps == TEXT_MIN) {
+    } else if(xps == TEXT_CENTER) {
+        sx -= wid / 2;
+    } else if(xps == TEXT_MAX) {
+        sx -= wid;
+    }
+    if(yps == TEXT_MIN) {
+    } else if(yps == TEXT_CENTER) {
+        sy -= lscale * 9 / 2;
+    } else if(yps == TEXT_MAX) {
+        sy -= lscale * 9;
+    }
+    drawText(txt, scale, sx, sy);
+}
+
 void drawVectorPath(const VectorPath &vecob, const pair<pair<float, float>, float> &coord, float weight) {
     for(int i = 0; i < vecob.vpath.size(); i++) {
         int j = (i + 1) % vecob.vpath.size();

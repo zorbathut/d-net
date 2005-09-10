@@ -50,6 +50,10 @@ void drawRect( const Float4 &rect, float weight );
 void drawText( const char *txt, float scale, float sx, float sy );
 void drawText( const string &txt, float scale, float sx, float sy );
 
+enum { TEXT_MIN, TEXT_CENTER, TEXT_MAX };
+
+void drawJustifiedText(const string &txt, float scale, float sx, float sy, int xps, int yps);
+
 // VectorPath objects have their own local coordinate system - this scales it by whatever, then translates its origin to the new origin.
 // It is not necessarily an upper-left corner origin (it's more likely to be center, but that's not guaranteed either)
 void drawVectorPath(const VectorPath &vecob, const pair<pair<float, float>, float> &coord, float weight);

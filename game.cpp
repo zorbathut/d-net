@@ -269,14 +269,10 @@ Projectile::Projectile() {
 void Game::renderToScreen( int target ) const {
     {
         Float4 bounds = gamemap.getBounds();
-        dprintf("bounds are %f, %f, %f, %f\n", bounds.sx, bounds.sy, bounds.ex, bounds.ey);
         expandBoundBox(&bounds, 1.1);
-        dprintf("newbounds are %f, %f, %f, %f\n", bounds.sx, bounds.sy, bounds.ex, bounds.ey);
         float y = (bounds.ey - bounds.sy) / 0.9;
-        dprintf("y is %f\n", y);
         float sy = bounds.ey - y;
         float sx =( bounds.sx + bounds.ex ) / 2 - ( y * 1.25 / 2 );
-        dprintf("sx, sy %f, %f\n", sx, sy);
         setZoom(sx, sy, bounds.ey);
     }
 	for( int i = 0; i < players.size(); i++ )
@@ -305,8 +301,25 @@ void Game::renderToScreen( int target ) const {
                 bare /= players[i].player->maxHealth;
                 bare *= players[i].health;
                 drawShadedBox(Float4(barl, 2, barl + bare, 6), 0.1, 2);
-                drawText(StringPrintf("%d", players[i].player->weapon->name.c_str(), players[i].player->shotsLeft), 2, barl, 7);
+                drawText(StringPrintf("%d", players[i].player->shotsLeft), 2, barl, 7);
             }
+        }
+        if(frameNm < 180) {
+            setColor(1.0, 1.0, 1.0);
+            int fleft = 180 - frameNm;
+            int s;
+            if(frameNm % 60 < 5) {
+                s = 15;
+            } else if(frameNm % 30 < 5) {
+                s = 12;
+            } else {
+                s = 8;
+            }
+            drawJustifiedText(StringPrintf("Ready %d.%02d", fleft / 60, fleft % 60), s, 125.0 / 2, 100.0 / 2, TEXT_CENTER, TEXT_CENTER);
+        } else if(frameNm < 240) {
+            float dens = (240.0 - frameNm) / 60;
+            setColor(dens, dens, dens);
+            drawJustifiedText("GO", 40, 125.0 / 2, 100.0 / 2, TEXT_CENTER, TEXT_CENTER);
         }
     }
 };
@@ -441,9 +454,16 @@ void collideHandler( Collider *collider, vector< Tank > *tanks, const vector< Ke
     
 }
 
-bool Game::runTick( const vector< Keystates > &keys ) {
+bool Game::runTick( const vector< Keystates > &rkeys ) {
     
 	frameNm++;
+    
+    vector< Keystates > keys = rkeys;
+    if(frameNm < 180) {
+        for(int i = 0; i < keys.size(); i++) {
+            keys[i].u = keys[i].d = keys[i].r = keys[i].l = keys[i].f = Button();
+        }
+    }
 
 	collider.reset(players.size());
     
