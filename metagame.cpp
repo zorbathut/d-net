@@ -1,9 +1,11 @@
 
 #include "metagame.h"
 #include "gfx.h"
+#include "parse.h"
 
 #include <string>
 #include <numeric>
+#include <fstream>
 
 using namespace std;
 
@@ -423,11 +425,18 @@ Metagame::Metagame(int playercount, int in_roundsBetweenShop) {
     fireHeld.resize(playercount);
     
     for(int i = 0; i < factioncount; i++) {
-        symbols.push_back(loadDvec2(factions[i].filename.c_str()));
+        symbols.push_back(loadDvec2(factions[i].filename));
     }
     
     for(int i = 0; i < symbols.size(); i++) {
         symbolpos.push_back( boxaround( angle(PI * 2 * i / symbols.size()) * 200 + Float2( 400, 300 ), 50 ) );
+    }
+    
+    {
+        ifstream ifs("data/levels/levellist.txt");
+        string line;
+        while(getLineStripped(ifs, line))
+            levels.push_back(loadLevel("data/levels/" + line));
     }
     
     mode = MGM_PLAYERCHOOSE;

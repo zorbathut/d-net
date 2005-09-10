@@ -113,6 +113,20 @@ void Entity::initParams() {
     }
 }
 
+Parameter *Entity::getParameter(const string &name) {
+    for(int i = 0; i < params.size(); i++)
+        if(params[i].name == name)
+            return &params[i];
+    return NULL;
+}
+const Parameter *Entity::getParameter(const string &name) const {
+    for(int i = 0; i < params.size(); i++)
+        if(params[i].name == name)
+            return &params[i];
+    return NULL;
+}
+
+
 void VectorPoint::mirror() {
     swap(curvlx, curvrx);
     swap(curvly, curvry);
@@ -353,11 +367,11 @@ Float4 Dvec2::boundingBox() const {
     return bb;
 }
 
-Dvec2 loadDvec2(const char *fname) {
-    dprintf("Loading %s\n", fname);
+Dvec2 loadDvec2(const string &fname) {
+    dprintf("Loading %s\n", fname.c_str());
     Dvec2 rv;
     kvData dat;
-    ifstream fil(fname);
+    ifstream fil(fname.c_str());
     CHECK(fil);
     while(getkvData(fil, dat)) {
         if(dat.category == "path") {

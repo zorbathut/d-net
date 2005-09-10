@@ -5,6 +5,7 @@
 #include "game.h"
 #include "gfx.h"
 #include "itemdb.h"
+#include "level.h"
 
 #include <vector>
 #include <string>
@@ -46,6 +47,8 @@ class Metagame {
     
     vector<Dvec2> symbols;
     vector<Float4> symbolpos;
+    
+    vector<Level> levels;
     
     Game game;
     

@@ -53,8 +53,8 @@ public:
 
     void initParams();  // inits params to the default for that type
 
-    Parameter &getParameter(const string &name);
-    const Parameter &getParameter(const string &name) const;
+    Parameter *getParameter(const string &name);
+    const Parameter *getParameter(const string &name) const;
 
 };
 
@@ -145,6 +145,6 @@ public:
     Float4 boundingBox() const;
 };
 
-Dvec2 loadDvec2(const char *fname);
+Dvec2 loadDvec2(const string &fname);
 
 #endif
