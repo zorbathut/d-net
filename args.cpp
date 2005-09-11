@@ -97,7 +97,7 @@ void initFlags(int argc, char *argv[]) {
         } else if(ld.type == LinkageData::LINKAGE_STRING) {
             CHECK(!isBoolNo && eq);
             *ld.str_link = eq;
-        } else if(ld.type == LinkageData::LINKAGE_STRING) {
+        } else if(ld.type == LinkageData::LINKAGE_INT) {
             CHECK(!isBoolNo && eq);
             *ld.int_link = atoi(eq);
         } else {

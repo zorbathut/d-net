@@ -419,8 +419,8 @@ Metagame::Metagame() {
 
 Metagame::Metagame(int playercount, int in_roundsBetweenShop) {
 
-    CHECK(roundsBetweenShop >= 1);
     roundsBetweenShop = in_roundsBetweenShop;
+    CHECK(roundsBetweenShop >= 1);
     
     playerkey.clear();
     playersymbol.clear();
