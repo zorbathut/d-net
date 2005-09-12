@@ -16,8 +16,8 @@ using namespace std;
 #include "util.h"
 #include "args.h"
 
-DEFINE_bool( writeToFile, false, "Dump keypresses to file during game" );
-DEFINE_string( writeTarget, "dumps/dump", "Prefix for file dump" );
+DEFINE_bool( writeToFile, true, "Dump keypresses to file during game" );
+DEFINE_string( writeTarget, "data/dump", "Prefix for file dump" );
 
 DEFINE_bool( readFromFile, false, "Replay game from keypress dump" );
 DEFINE_string( readTarget, "", "File to replay from" );
@@ -66,29 +66,8 @@ long long rendering = 0;
 
 void MainLoop() {
     
-    CHECK( !FLAGS_readFromFile ); // not yet implemented
     CHECK( !( FLAGS_readFromFile && FLAGS_readTarget == "" ) );
-    
-    FILE *outfile = NULL;
-//    FILE *infile = NULL;
-    
-    if(FLAGS_writeToFile) {
-        CHECK(0);
-        string fname = FLAGS_writeTarget;
-        char timestampbuf[ 128 ];
-        time_t ctmt = time(NULL);
-        strftime(timestampbuf, sizeof(timestampbuf), "-%Y%m%d-%H%M%S.dnd", gmtime(&ctmt));
-        dprintf("%s\n", timestampbuf);
-        fname += timestampbuf;
-        outfile = fopen(fname.c_str(), "wb");
-        if(outfile) {
-            int ver = 0;
-            fwrite(&ver, 1, sizeof(ver), outfile);
-        } else {
-            dprintf("Outfile %s couldn't be opened! Not writing dump.", fname.c_str());
-        }
-    }
-    
+
     playermap.resize(2);
     
     for(int i = 0; i < 2; i++) {
@@ -105,7 +84,7 @@ void MainLoop() {
     playermap[0].push_back(SDLK_PERIOD);
     playermap[0].push_back(SDLK_SLASH);
 
-    srand(time(NULL));
+    int randSeed = time(NULL);
     
     interfaceInit();
 
@@ -116,35 +95,86 @@ void MainLoop() {
 	bool quit = false;
 
 	int frako = 0;
-    
-    dprintf("%d joysticks detected\n", SDL_NumJoysticks());
-    
-    curstates.resize(2 + SDL_NumJoysticks());
-    
+
     vector<SDL_Joystick *> joysticks;
-    for(int i = 0; i < SDL_NumJoysticks(); i++) {
-        dprintf("Opening %d: %s\n", i, SDL_JoystickName(i));
-        joysticks.push_back(SDL_JoystickOpen(i));
-        CHECK(SDL_JoystickNumAxes(joysticks.back()) >= 2);
-        CHECK(SDL_JoystickNumButtons(joysticks.back()) >= 1);
-        dprintf("%d axes, %d buttons\n", SDL_JoystickNumAxes(joysticks.back()), SDL_JoystickNumButtons(joysticks.back()));
-    }
+
+    FILE *infile = NULL;
     
-    dprintf("Done opening joysticks\n");
+    if(FLAGS_readFromFile) {
+        dprintf("Reading state record from file %s\n", FLAGS_readTarget.c_str());
+        infile = fopen(FLAGS_readTarget.c_str(), "rb");
+        CHECK(infile);
+        int dat;
+        fread(&dat, 1, sizeof(dat), infile);
+        CHECK(dat == 2);
+        fread(&dat, 1, sizeof(dat), infile);
+        randSeed = dat;
+        fread(&dat, 1, sizeof(dat), infile);
+        dprintf("%d controllers\n", dat);
+        curstates.resize(dat);
+        for(int i = 0; i < curstates.size(); i++) {
+            fread(&dat, 1, sizeof(dat), infile);
+            dprintf("%d: %d buttons\n", i, dat);
+            curstates[i].keys.resize(dat);
+        }
+    } else {
+        dprintf("%d joysticks detected\n", SDL_NumJoysticks());
+        
+        curstates.resize(2 + SDL_NumJoysticks());
     
-    for(int i = 0; i < curstates.size(); i++) {
-        if(i < 2) {
-            curstates[i].keys.resize(playermap[i].size() - 4);
-        } else {
-            curstates[i].keys.resize(SDL_JoystickNumButtons(joysticks[i - 2]));
+        for(int i = 0; i < SDL_NumJoysticks(); i++) {
+            dprintf("Opening %d: %s\n", i, SDL_JoystickName(i));
+            joysticks.push_back(SDL_JoystickOpen(i));
+            CHECK(SDL_JoystickNumAxes(joysticks.back()) >= 2);
+            CHECK(SDL_JoystickNumButtons(joysticks.back()) >= 1);
+            dprintf("%d axes, %d buttons\n", SDL_JoystickNumAxes(joysticks.back()), SDL_JoystickNumButtons(joysticks.back()));
+        }
+        
+        dprintf("Done opening joysticks\n");
+        
+        for(int i = 0; i < curstates.size(); i++) {
+            if(i < 2) {
+                curstates[i].keys.resize(playermap[i].size() - 4);
+            } else {
+                curstates[i].keys.resize(SDL_JoystickNumButtons(joysticks[i - 2]));
+            }
         }
     }
+    
+    sfrand(randSeed);
     
     vector<Controller> controllers = curstates;
     
     dprintf("Final controllers:");
     for(int i = 0; i < curstates.size(); i++) {
         dprintf("%d: %d buttons", i, curstates[i].keys.size());
+    }
+    
+    FILE *outfile = NULL;
+    
+    if(FLAGS_writeToFile) {
+        string fname = FLAGS_writeTarget;
+        char timestampbuf[ 128 ];
+        time_t ctmt = time(NULL);
+        strftime(timestampbuf, sizeof(timestampbuf), "-%Y%m%d-%H%M%S.dnd", gmtime(&ctmt));
+        dprintf("%s\n", timestampbuf);
+        fname += timestampbuf;
+        outfile = fopen(fname.c_str(), "wb");
+        if(outfile) {
+            int dat = 2;
+            fwrite(&dat, 1, sizeof(dat), outfile);
+            dat = randSeed;
+            fwrite(&dat, 1, sizeof(dat), outfile);
+            dat = curstates.size();
+            fwrite(&dat, 1, sizeof(dat), outfile);
+            for(int i = 0; i < curstates.size(); i++) {
+                dat = curstates[i].keys.size();
+                fwrite(&dat, 1, sizeof(dat), outfile);
+            }
+            fflush(outfile);
+        } else {
+            dprintf("Outfile %s couldn't be opened! Not writing dump.", fname.c_str());
+        }
     }
     
     int skipped = 0;
@@ -211,6 +241,32 @@ void MainLoop() {
                 curstates[target].keys[j].down = SDL_JoystickGetButton(joysticks[i], j);
             }
         }
+        if(infile) {
+            for(int i = 0; i < curstates.size(); i++) {
+                fread(&curstates[i].x, 1, sizeof(curstates[i].x), infile);
+                fread(&curstates[i].y, 1, sizeof(curstates[i].y), infile);
+                fread(&curstates[i].u.down, 1, sizeof(curstates[i].u.down), infile);
+                fread(&curstates[i].d.down, 1, sizeof(curstates[i].d.down), infile);
+                fread(&curstates[i].l.down, 1, sizeof(curstates[i].l.down), infile);
+                fread(&curstates[i].r.down, 1, sizeof(curstates[i].r.down), infile);
+                for(int j = 0; j < curstates[i].keys.size(); j++)
+                    fread(&curstates[i].keys[j].down, 1, sizeof(curstates[i].keys[j].down), infile);
+            }
+            CHECK(!feof(infile));
+        }
+        if(outfile) {
+            for(int i = 0; i < curstates.size(); i++) {
+                fwrite(&curstates[i].x, 1, sizeof(curstates[i].x), outfile);
+                fwrite(&curstates[i].y, 1, sizeof(curstates[i].y), outfile);
+                fwrite(&curstates[i].u.down, 1, sizeof(curstates[i].u.down), outfile);
+                fwrite(&curstates[i].d.down, 1, sizeof(curstates[i].d.down), outfile);
+                fwrite(&curstates[i].l.down, 1, sizeof(curstates[i].l.down), outfile);
+                fwrite(&curstates[i].r.down, 1, sizeof(curstates[i].r.down), outfile);
+                for(int j = 0; j < curstates[i].keys.size(); j++)
+                    fwrite(&curstates[i].keys[j].down, 1, sizeof(curstates[i].keys[j].down), outfile);
+            }
+            fflush(outfile);
+        }                
         CHECK(controllers.size() == curstates.size());
         for(int i = 0; i < curstates.size(); i++) {
             controllers[i].newState(curstates[i]);

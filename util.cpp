@@ -239,3 +239,19 @@ Transform2d t2d_rotate(float rads) {
     o.m[1][1] = cos(rads);
     return o;
 }
+
+/*************
+ * Math
+ */
+
+unsigned int randState = 1;
+
+void sfrand(int seed) {
+    randState = seed;
+    frand(); frand();
+}
+
+float frand() {
+  randState = randState * 1103515245 + 12345;
+  return (float)(( randState / 65536 ) % 32768) / 32768;
+}

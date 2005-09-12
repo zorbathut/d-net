@@ -280,9 +280,8 @@ inline Float4 lerp( const Float4 &start, const Float4 &delta, float time ) {
     return Float4( start.sx + delta.sx * time, start.sy + delta.sy * time, start.ex + delta.ex * time, start.ey + delta.ey * time );
 }
 
-inline float frand() {
-    return rand() / ( RAND_MAX + 1.0 );
-}
+void sfrand(int seed);
+float frand();
 
 inline int round(float in) {
     return int(floor(in + 0.5));
