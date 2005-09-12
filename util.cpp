@@ -8,6 +8,9 @@
 
 using namespace std;
 
+int frameNumber = -1;
+bool ffwd = false;
+
 void crash() {
     *(int*)0 = 0;
     while(1);

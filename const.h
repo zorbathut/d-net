@@ -9,6 +9,4 @@
 #define SCREEN_WIDTH 1280
 #define SCREEN_HEIGHT (SCREEN_WIDTH / 4 * 3)
 
-extern int frameNumber;
-
 #endif

@@ -22,6 +22,8 @@ DEFINE_string( writeTarget, "data/dump", "Prefix for file dump" );
 DEFINE_bool( readFromFile, false, "Replay game from keypress dump" );
 DEFINE_string( readTarget, "", "File to replay from" );
 
+DEFINE_int( fastForwardTo, 0, "Fastforward rendering to this frame" );
+
 vector< Controller > curstates;
 
 const int playerkeys = 9;
@@ -179,7 +181,12 @@ void MainLoop() {
     
     int skipped = 0;
     
+    frameNumber = 0;    // it's -1 before this point
+    
 	while( !quit ) {
+        ffwd = ( frameNumber < FLAGS_fastForwardTo );
+        if(frameNumber == FLAGS_fastForwardTo)
+            timer = Timer();    // so we don't end up sitting there for aeons waiting for another frame
 		bencher = Timer();
 		SDL_Event event;
 		while( SDL_PollEvent( &event ) ) {
@@ -252,6 +259,13 @@ void MainLoop() {
                 for(int j = 0; j < curstates[i].keys.size(); j++)
                     fread(&curstates[i].keys[j].down, 1, sizeof(curstates[i].keys[j].down), infile);
             }
+            int cpos = ftell(infile);
+            int x;
+            fread(&x, 1, sizeof(x), infile);
+            if(feof(infile))
+                dprintf("EOF on frame %d\n", frameNumber);
+            fseek(infile, cpos, SEEK_SET);
+            CHECK(cpos == ftell(infile));
             CHECK(!feof(infile));
         }
         if(outfile) {
@@ -277,12 +291,19 @@ void MainLoop() {
             quit = true;
 		ticking += bencher.ticksElapsed();
 		bencher = Timer();
-		timer.waitForNextFrame();
+        if(frameNumber >= FLAGS_fastForwardTo) {
+            timer.waitForNextFrame();
+        }
 		waiting += bencher.ticksElapsed();
 		bencher = Timer();
 		if( !timer.skipFrame()) {
 			initFrame();
 			interfaceRenderToScreen();
+            if(infile) {
+                setColor(1.0, 1.0, 1.0);
+                setZoom(0, 0, 100);
+                drawText(StringPrintf("%d", frameNumber), 10, 5, 85);
+            }
 			deinitFrame();
 		} else {
             skipped++;

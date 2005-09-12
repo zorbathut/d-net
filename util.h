@@ -11,12 +11,15 @@ using namespace std;
 #include "const.h"
 #include "debug.h"
 
+extern int frameNumber;
+extern bool ffwd;
+
 /*************
  * CHECK/TEST macros
  */
 
 void crash() __attribute__((__noreturn__));
-#define CHECK(x) while(1) { if(!(x)) { dprintf("Error at %s:%d - %s\n", __FILE__, __LINE__, #x); crash(); } break; }
+#define CHECK(x) while(1) { if(!(x)) { dprintf("Error at %d, %s:%d - %s\n", frameNumber, __FILE__, __LINE__, #x); crash(); } break; }
 #define TEST(x) CHECK(x)
 #define printf FAILURE
 

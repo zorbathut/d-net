@@ -13,6 +13,9 @@ using namespace std;
 #include "const.h"
 #include "collide.h"
 #include "util.h"
+#include "args.h"
+
+DEFINE_bool(verboseCollisions, false, "Verbose collisions");
 
 void Player::reCalculate() {
     maxHealth = 20;
@@ -326,6 +329,9 @@ void Game::renderToScreen( int target ) const {
 
 void collideHandler( Collider *collider, vector< Tank > *tanks, const vector< Keystates > &keys, const vector< int > &tankx ) {
     
+    if(!ffwd && FLAGS_verboseCollisions)
+        dprintf("Entering collide handler\n");
+    
     vector< Keystates > stopped = keys;
     for( int i = 0; i < stopped.size(); i++ ) {
         stopped[ i ].u.down = false;
@@ -347,7 +353,8 @@ void collideHandler( Collider *collider, vector< Tank > *tanks, const vector< Ke
         collider->setCurrentTimestamp( cTimeStamp );
     }
     
-    //dprintf( "Original timestamp is %f\n", cCollideTimeStamp );
+    if(!ffwd && FLAGS_verboseCollisions)
+        dprintf( "Modified timestamp is %f, vs %f (%f diff)\n", cCollideTimeStamp, cTimeStamp, cCollideTimeStamp - cTimeStamp );
     
     while(1) {
         
@@ -375,11 +382,13 @@ void collideHandler( Collider *collider, vector< Tank > *tanks, const vector< Ke
                 collided = true;
         if( !collided )
             break;
-        //dprintf( "Multiple rollback! %f\n", rollbackStep );
+        if(!ffwd && FLAGS_verboseCollisions)
+            dprintf( "Multiple rollback! %f\n", rollbackStep );
         // roll back again
     }
     
-    //dprintf( "Unfreeze timestamp is %f\n", cTimeStamp );
+    if(!ffwd && FLAGS_verboseCollisions)
+        dprintf( "Unfreeze timestamp is %f\n", cTimeStamp );
     
     /* now we have our real timestamp, so let's see what can be released */
     /* all the tanks are still in the "fixed" location", so let's roll forward to the collide point and see what it looks like then */
@@ -389,7 +398,8 @@ void collideHandler( Collider *collider, vector< Tank > *tanks, const vector< Ke
     vector< char > mustBeFrozen( tankx.size() );
     
     for( int i = 0; i < tankx.size(); i++ ) {
-        //dprintf( "Retesting %d\n", i );
+        if(!ffwd && FLAGS_verboseCollisions)
+            dprintf( "Retesting %d\n", i );
         // rewind, place tank in again
         collider->setCurrentTimestamp( 0 );
         temptank = (*tanks)[tankx[i]];
@@ -400,12 +410,14 @@ void collideHandler( Collider *collider, vector< Tank > *tanks, const vector< Ke
         collider->endAddThingsToGroup();
         collider->setCurrentTimestamp( cCollideTimeStamp );
         
-        //dprintf( "Clix\n" );
+        if(!ffwd && FLAGS_verboseCollisions)
+            dprintf( "Clix\n" );
         // if it's colliding again, it clearly can't move forward
         if( collider->testCollideAgainst( tankx[ i ] ) )
             mustBeFrozen[ i ] = true;
         
-        //dprintf( "Reset\n" );
+        if(!ffwd && FLAGS_verboseCollisions)
+            dprintf( "Reset\n" );
         
         temptank = (*tanks)[tankx[i]];
         temptank.move( cTimeStamp );
@@ -415,14 +427,17 @@ void collideHandler( Collider *collider, vector< Tank > *tanks, const vector< Ke
         collider->startToken(0);
         temptank.addCollision( collider );
         collider->endAddThingsToGroup();
-        //dprintf( "Done\n" );
+        if(!ffwd && FLAGS_verboseCollisions)
+            dprintf( "Done\n" );
     }
     
-    //for( int i = 0; i < tankx.size(); i++ )
-        //dprintf( "Freeze tokens: %d is %d\n", tankx[ i ], (int)mustBeFrozen[ i ] );
+    if(!ffwd && FLAGS_verboseCollisions)
+        for( int i = 0; i < tankx.size(); i++ )
+            dprintf( "Freeze tokens: %d is %d\n", tankx[ i ], (int)mustBeFrozen[ i ] );
     
     if( count( mustBeFrozen.begin(), mustBeFrozen.end(), false ) == mustBeFrozen.size() ) {
-        dprintf( "Mutual dependency, freezing all" );
+        if(!ffwd && FLAGS_verboseCollisions)
+            dprintf( "Mutual dependency, freezing all" );
         mustBeFrozen.clear();
         mustBeFrozen.resize( tankx.size(), true );
     }
@@ -448,13 +463,22 @@ void collideHandler( Collider *collider, vector< Tank > *tanks, const vector< Ke
     
     collider->setCurrentTimestamp( cTimeStamp );
     
-    //dprintf( "Sim continuing\n" );
+    if(!ffwd && FLAGS_verboseCollisions)
+        dprintf( "Sim continuing\n" );
 
+    for(int i = 0; i < tankx.size(); i++)
+        CHECK(!collider->testCollideAgainst( tankx[ i ] ));
     CHECK( !collider->testCollideAll(true) );
+    
+    if(!ffwd && FLAGS_verboseCollisions)
+        dprintf("Exiting collide handler\n");
     
 }
 
 bool Game::runTick( const vector< Keystates > &rkeys ) {
+    
+    if(!ffwd && FLAGS_verboseCollisions)
+        dprintf("Ticking\n");
     
 	frameNm++;
     
@@ -508,7 +532,8 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
             CHECK(rhs.first.second >= 0 && rhs.first.second < players.size());
             
             // wall-tank collision - stop tank
-            //dprintf( "Wall-tank collision\n" );
+            if(!ffwd && FLAGS_verboseCollisions)
+                dprintf( "Wall-tank collision\n" );
             //dprintf( "Time currently %f\n", collider.getCurrentTimestamp() );
             
             vector< int > tankcollide;
@@ -525,7 +550,8 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
             projectiles[ rhs.first.second ][ rhs.second ].genEffects( &gfxeffects );
         } else if( lhs.first.first == 0 && rhs.first.first == 0 ) {
             // tank-tank collision
-            //dprintf( "Tank-tank collision\n" );
+            if(!ffwd && FLAGS_verboseCollisions)
+                dprintf( "Tank-tank collision\n" );
             //dprintf( "Time currently %f\n", collider.getCurrentTimestamp() );
             
             vector< int > tankcollide;
