@@ -75,6 +75,8 @@ public:
     void calculateLrStats();
     void drawMultibar(const vector<float> &sizes, const Float4 &dimensions) const;
 
+    void findLevels(int playercount);
+
     Metagame();
 	Metagame(int playercount, int roundsBetweenShop);
 

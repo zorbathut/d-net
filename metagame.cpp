@@ -249,6 +249,7 @@ bool Metagame::runTick( const vector< Controller > &keys ) {
                     playerdata[i].kills = 0;
                     playerdata[i].wins = 0;
                 }
+                findLevels(playerdata.size());
                 game = Game(&playerdata, levels[int(frand() * levels.size())]);
             }
         }
@@ -413,6 +414,19 @@ void Metagame::drawMultibar(const vector<float> &sizes, const Float4 &dimensions
     }
 }
 
+void Metagame::findLevels(int playercount) {
+    CHECK(!levels.size());
+    ifstream ifs("data/levels/levellist.txt");
+    string line;
+    while(getLineStripped(ifs, line)) {
+        Level lev = loadLevel("data/levels/" + line);
+        if(lev.playersValid.count(playercount))
+            levels.push_back(lev);
+    }
+    dprintf("Got %d usable levels\n", levels.size());
+    CHECK(levels.size());
+}
+
 // not a valid state
 Metagame::Metagame() {
 }
@@ -440,18 +454,6 @@ Metagame::Metagame(int playercount, int in_roundsBetweenShop) {
     
     for(int i = 4; i < symbols.size(); i++) {
         symbolpos.push_back( boxaround( angle(PI * 2 * ( i - 4 ) / ( symbols.size() - 4 )) * 225 + Float2( 400, 300 ), 50 ) );
-    }
-    
-    {
-        ifstream ifs("data/levels/levellist.txt");
-        string line;
-        while(getLineStripped(ifs, line)) {
-            Level lev = loadLevel("data/levels/" + line);
-            if(lev.playersValid.count(playercount))
-                levels.push_back(lev);
-        }
-        dprintf("Got %d usable levels\n", levels.size());
-        CHECK(levels.size());
     }
     
     mode = MGM_PLAYERCHOOSE;
