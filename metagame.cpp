@@ -2,6 +2,7 @@
 #include "metagame.h"
 #include "gfx.h"
 #include "parse.h"
+#include "rng.h"
 
 #include <string>
 #include <numeric>

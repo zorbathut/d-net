@@ -160,8 +160,14 @@ void drawLine( float sx, float sy, float ex, float ey, float weight ) {
 void drawLine(const Float2 &s, const Float2 &e, float weight) {
     drawLine(s.x, s.y, e.x, e.y, weight);
 }
+void drawLine(const Coord2 &s, const Coord2 &e, float weight) {
+    drawLine(s.toFloat(), e.toFloat(), weight);
+}
 void drawLine( const Float4 &pos, float weight ) {
 	drawLine( pos.sx, pos.sy, pos.ex, pos.ey, weight );
+}
+void drawLine( const Coord4 &loc, float weight ) {
+    drawLine(loc.toFloat(), weight);
 }
 
 void drawLinePath( const vector< float > &iverts, float weight, bool loop ) {
@@ -178,6 +184,14 @@ void drawLinePath( const vector< float > &iverts, float weight, bool loop ) {
 void drawLinePath( const vector<Float2> &iverts, float weight, bool loop ) {
     CHECK( iverts.size() >= 1 );
     vector<Float2> verts = iverts;
+    if( loop )
+        verts.push_back(verts[0]);
+	for( int i = 0; i < verts.size() - 1; i++ )
+		drawLine( verts[i], verts[i + 1], weight );
+};
+void drawLinePath( const vector<Coord2> &iverts, float weight, bool loop ) {
+    CHECK( iverts.size() >= 1 );
+    vector<Coord2> verts = iverts;
     if( loop )
         verts.push_back(verts[0]);
 	for( int i = 0; i < verts.size() - 1; i++ )

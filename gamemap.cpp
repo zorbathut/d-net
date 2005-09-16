@@ -14,13 +14,13 @@ void Gamemap::addCollide( Collider *collider ) const {
     for(int i = 0; i < paths.size(); i++) {
         for(int j = 0; j < paths[i].size(); j++) {
             int k = (j + 1) % paths[i].size();
-            collider->token(Float4(paths[i][j], paths[i][k]), Float4( 0, 0, 0, 0 ));
+            collider->token(Coord4(paths[i][j], paths[i][k]), Coord4( 0, 0, 0, 0 ));
         }
     }
 }
 
-Float4 Gamemap::getBounds() const {
-    Float4 bounds = startBoundBox();
+Coord4 Gamemap::getBounds() const {
+    Coord4 bounds = startCBoundBox();
     for(int i = 0; i < paths.size(); i++) {
         for(int j = 0; j < paths[i].size(); j++) {
             addToBoundBox(&bounds, paths[i][j]);

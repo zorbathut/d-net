@@ -15,6 +15,7 @@ using namespace std;
 #include "gfx.h"
 #include "util.h"
 #include "args.h"
+#include "rng.h"
 
 DEFINE_bool( writeToFile, true, "Dump keypresses to file during game" );
 DEFINE_string( writeTarget, "data/dump", "Prefix for file dump" );

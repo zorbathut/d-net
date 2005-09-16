@@ -7,34 +7,9 @@
 using namespace std;
 
 #include "util.h"
+#include "coord.h"
 
 #define ENABLE_COLLIDE_DEBUG_VIS
-
-/*
-class Collide {
-public:
-	Float4 line;
-	int group;
-	int sid;
-	Collide();
-	Collide( const Float4 &line, int sid );
-};
-
-class Quad {
-public:
-	Quad *quads;
-	vector< Collide * > lines;
-	Float4 range;
-	bool sludge;
-	bool node;
-#ifdef ENABLE_COLLIDE_DEBUG_VIS
-	float r, g, b;
-#endif
-	Quad();
-	Quad( const Float4 &dim );
-	~Quad();
-};
-*/
 
 class Collider {
 public:
@@ -42,7 +17,7 @@ public:
 	void reset( int players );
 
     void startToken( int toki );
-	void token( const Float4 &line, const Float4 &direction );
+	void token( const Coord4 &line, const Coord4 &direction );
 
     void clearGroup( int category, int gid );
 
@@ -53,8 +28,8 @@ public:
 	void endAddThingsToGroup();
 
 	bool doProcess();
-	float getCurrentTimestamp() const;
-    void setCurrentTimestamp( float t );
+	Coord getCurrentTimestamp() const;
+    void setCurrentTimestamp( Coord t );
 	pair< pair< int, int >, int > getLhs() const;
 	pair< pair< int, int >, int > getRhs() const;
   
@@ -77,12 +52,12 @@ private:
 	
 	int state;
 
-	float ctime;
+	Coord ctime;
 
 	pair< pair< int, int >, int > lhs;
 	pair< pair< int, int >, int > rhs;
 
-	vector< vector< pair< int, pair< Float4, Float4 > > > > items;
+	vector< vector< pair< int, pair< Coord4, Coord4 > > > > items;
     int curpush;
     int curtoken;
 
@@ -93,23 +68,6 @@ private:
     bool canCollide( int indexa, int indexb ) const;
     int getIndex( int category, int gid ) const;
     pair< int, int > reverseIndex( int index ) const;
-
-	/*
-	Quad *quad;
-
-	vector< Collide > newGroup;
-	vector< vector< Collide > * > collides;
-
-	vector< bool > active;
-	vector< int > cleared;
-
-	Collider( const Collider &x ); // do not implement
-	void operator=( const Collider &x ); // see above
-
-	bool quadTest( const Float4 &line, const Float4 &range, const Quad *node ) const;
-	pair< float, int > quadImpact( const Float4 &line, const Float4 &range, const Quad *node ) const;
-	void quadAdd( const Float4 &range, Collide *ptr, Quad *node );
-	void quadRemove( const Float4 &range, Collide *ptr, Quad *node ); */
 
 };
 

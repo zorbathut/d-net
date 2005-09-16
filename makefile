@@ -1,5 +1,5 @@
 
-SOURCES = main core game timer debug gfx collide gamemap util rng args interface vecedit metagame itemdb parse dvec2 input level
+SOURCES = main core game timer debug gfx collide gamemap util rng args interface vecedit metagame itemdb parse dvec2 input level coord
 CPPFLAGS = `sdl-config --cflags` -mno-cygwin -O2 -DVECTOR_PARANOIA -Wall -Wno-sign-compare -Wno-uninitialized#-pg
 LINKFLAGS = `sdl-config --libs` -lglu32 -lopengl32 -lm -mno-cygwin -O2 #-pg
 
@@ -49,7 +49,7 @@ stats:
 	@echo Item hierarchy: `cat itemdb.h itemdb.cpp parse.h parse.cpp | wc -l` loc
 	@echo UI: `cat interface.h interface.cpp metagame.h metagame.cpp | wc -l` loc
 	@echo Framework: `cat core.h core.cpp main.h main.cpp input.h input.cpp | wc -l` loc
-	@echo Util: `cat timer.h timer.cpp util.h util.cpp args.h args.cpp | wc -l` loc
+	@echo Util: `cat timer.h timer.cpp util.h util.cpp args.h args.cpp rng.h rng.cpp coord.h coord.cpp | wc -l` loc
 	@echo Vector system: `cat vecedit.h vecedit.cpp dvec2.h dvec2.cpp | wc -l` loc
 	@echo Total code: `cat *.h *.cpp makefile | wc -l` loc
 	@echo Datafiles: `cd data; cat \`find -type f | grep -v .svn\` | wc -l` lines

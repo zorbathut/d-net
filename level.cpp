@@ -1,5 +1,10 @@
 
 #include "level.h"
+#include "dvec2.h"
+
+#include <string>
+
+using namespace std;
 
 Level loadLevel(const string &str) {
     dprintf("Loading %s\n", str.c_str());
@@ -20,7 +25,10 @@ Level loadLevel(const string &str) {
             set<Float2> flup(tp.begin(), tp.end());
             CHECK(flup.size() == tp.size());
         }
-        rv.paths.push_back(tp);
+        vector<Coord2> rtp;
+        for(int i = 0; i < tp.size(); i++)
+            rtp.push_back(Coord2(tp[i]));
+        rv.paths.push_back(rtp);
     }
     dprintf("%d paths parsed\n", rv.paths.size());
     CHECK(rv.paths.size() == dv.paths.size());

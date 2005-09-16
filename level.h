@@ -1,7 +1,7 @@
 #ifndef DNET_LEVEL
 #define DNET_LEVEL
 
-#include "dvec2.h"
+#include "coord.h"
 
 #include <vector>
 #include <set>
@@ -11,11 +11,11 @@ using namespace std;
 
 class Level {
 public:
-    vector<vector<Float2> > paths;
+    vector<vector<Coord2> > paths;
 
     set<int> playersValid;
 
-    map<int, vector<pair<Float2, float> > > playerStarts;
+    map<int, vector<pair<Coord2, float> > > playerStarts;
 };
 
 Level loadLevel(const string &str);

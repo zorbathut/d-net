@@ -4,6 +4,7 @@
 #include "gamemap.h"
 #include "gfx.h"
 #include "itemdb.h"
+#include "coord.h"
 
 #include <vector>
 using namespace std;
@@ -17,7 +18,7 @@ public:
 
     float maxHealth;
     float turnSpeed;
-    float maxSpeed;
+    Coord maxSpeed;
 
     vector<const Upgrade *> upgrades;
     const Weapon *weapon;
@@ -72,24 +73,24 @@ public:
     void startNewMoveCycle();
     void setKeys( const Keystates &keystates );
     void move();
-    void move( float time );
+    void move( Coord time );
 	//bool colliding( const Collider &collider ) const;
 	void addCollision( Collider *collider ) const;
 
 	Tank();
 
-	vector< float > getTankVertices( float tx, float ty, float td ) const;
-	pair< float, float > getFiringPoint() const;
+	vector<Coord2> getTankVertices( Coord tx, Coord ty, float td ) const;
+	Coord2 getFiringPoint() const;
 
-    pair< pair< float, float >, float > getDeltaAfterMovement( const Keystates &keys, float x, float y, float d, float t ) const;
+    pair<Coord2, float> getDeltaAfterMovement( const Keystates &keys, Coord x, Coord y, float d, Coord t ) const;
 
 	bool takeDamage( float amount ); // returns true on kill
 	void genEffects( vector< GfxEffects > *gfxe );
     
     bool initted;
 	
-	float x;
-	float y;
+	Coord x;
+	Coord y;
 	float d;
 
 	bool spawnShards;
@@ -97,7 +98,7 @@ public:
 
 	float health;
     
-    float timeLeft;
+    Coord timeLeft;
     Keystates keys;
     
     Player *player;
@@ -113,7 +114,7 @@ public:
 
     void startNewMoveCycle();
     void move();
-    void move( float time );
+    void move( Coord time );
 	//bool colliding( const Collider &collider ) const;
 	void addCollision( Collider *collider ) const;
 
@@ -121,14 +122,14 @@ public:
 
     void genEffects( vector< GfxEffects > *gfxe ) const;
 
-	float x;
-	float y;
+	Coord x;
+	Coord y;
 	float d;
 
-    float v;
+    Coord v;
     float damage;
 
-    float timeLeft;
+    Coord timeLeft;
 
     bool live;
     

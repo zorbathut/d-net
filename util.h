@@ -127,7 +127,7 @@ inline bool operator==( const Float4 &lhs, const Float4 &rhs ) {
  * Bounding box
  */
 
-Float4 startBoundBox();
+Float4 startFBoundBox();
 
 void addToBoundBox(Float4 *bbox, float x, float y);
 void addToBoundBox(Float4 *bbox, const Float2 &point);
@@ -184,6 +184,7 @@ inline bool rectrectintersect( const Float4 &lhs, const Float4 &rhs ) {
 		return false;
 	return true;
 }
+
 inline bool linelineintersect( float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4 ) {
 	float denom = ( y4 - y3 ) * ( x2 - x1 ) - ( x4 - x3 ) * ( y2 - y1 );
 	float ua = ( ( x4 - x3 ) * ( y1 - y3 ) - ( y4 - y3 ) * ( x1 - x3 ) ) / denom;
@@ -282,9 +283,6 @@ Transform2d t2d_rotate(float rads);
 inline Float4 lerp( const Float4 &start, const Float4 &delta, float time ) {
     return Float4( start.sx + delta.sx * time, start.sy + delta.sy * time, start.ex + delta.ex * time, start.ey + delta.ey * time );
 }
-
-void sfrand(int seed);
-float frand();
 
 inline int round(float in) {
     return int(floor(in + 0.5));

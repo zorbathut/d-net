@@ -5,6 +5,7 @@
 using namespace std;
 
 #include "util.h"
+#include "coord.h"
 #include "dvec2.h"
 
 struct Color {
@@ -31,9 +32,12 @@ void setColor( float r, float g, float b );
 void setColor( const Color &color );
 void drawLine( float sx, float sy, float ex, float ey, float weight );
 void drawLine( const Float2 &s, const Float2 &e, float weight );
+void drawLine( const Coord2 &s, const Coord2 &e, float weight );
 void drawLine( const Float4 &loc, float weight );
-void drawLinePath( const vector< float > &verts, float weight, bool loop );
+void drawLine( const Coord4 &loc, float weight );
+void drawLinePath( const vector<float> &verts, float weight, bool loop );
 void drawLinePath( const vector<Float2> &verts, float weight, bool loop );
+void drawLinePath( const vector<Coord2> &verts, float weight, bool loop );
 
 void drawBox( const Float4 &locs, float weight );
 void drawBoxAround( float x, float y, float rad, float weight );

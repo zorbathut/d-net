@@ -3,6 +3,7 @@
 
 #include "collide.h"
 #include "level.h"
+#include "coord.h"
 
 #include <vector>
 
@@ -14,14 +15,14 @@ public:
 	void render() const;
 	void addCollide( Collider *collide ) const;
 
-    Float4 getBounds() const;
+    Coord4 getBounds() const;
 
     Gamemap();
 	Gamemap(const Level &level);
 
 private:
 
-	vector<vector<Float2> > paths;
+	vector<vector<Coord2> > paths;
 
 };
 

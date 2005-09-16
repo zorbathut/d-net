@@ -307,7 +307,7 @@ void renderSingleEntity(int p, int widgetlevel) {
         CHECK(ent.params[0].name == "numerator");
         CHECK(ent.params[1].name == "denominator");
         setColor(1.0, 1.0, 1.0);
-        drawLinePath(Tank().getTankVertices(ent.x, ent.y, (float)ent.params[0].bi_val / ent.params[1].bi_val * 2 * PI), 0.2, true);
+        drawLinePath(Tank().getTankVertices(Coord(ent.x), Coord(ent.y), (float)ent.params[0].bi_val / ent.params[1].bi_val * 2 * PI), 0.2, true);
         if(widgetlevel >= 1) {
             setZoom(0, 0, 100);
             for(int i = 0; i < ent.params.size(); i++) {

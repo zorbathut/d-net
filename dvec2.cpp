@@ -187,7 +187,7 @@ Transform2d rfg_behavior(int type, int segment, int dupe, int numer, int denom) 
 }
 
 Float4 VectorPath::boundingBox() const {
-    Float4 bbox = startBoundBox();
+    Float4 bbox = startFBoundBox();
     for(int i = 0; i < vpath.size(); i++)
         addToBoundBox(&bbox, centerx + vpath[i].x, centery + vpath[i].y);
     return bbox;
@@ -359,7 +359,7 @@ VectorPath::VectorPath() {
 }
 
 Float4 Dvec2::boundingBox() const {
-    Float4 bb = startBoundBox();
+    Float4 bb = startFBoundBox();
     for(int i = 0; i < paths.size(); i++)
         addToBoundBox(&bb, paths[i].boundingBox());
     for(int i = 0; i < entities.size(); i++)

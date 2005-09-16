@@ -14,13 +14,14 @@ using namespace std;
 #include "collide.h"
 #include "util.h"
 #include "args.h"
+#include "rng.h"
 
 DEFINE_bool(verboseCollisions, false, "Verbose collisions");
 
 void Player::reCalculate() {
     maxHealth = 20;
     turnSpeed = 2.f / FPS;
-    maxSpeed = 24.f / FPS;
+    maxSpeed = Coord(24) / FPS;
     int healthMult = 100;
     int turnMult = 100;
     int speedMult = 100;
@@ -95,7 +96,7 @@ void Tank::render( int tankid ) const {
 
 void Tank::startNewMoveCycle() {
     CHECK(initted);
-    timeLeft = 1.0;
+    timeLeft = 1;
 };
 
 void Tank::setKeys( const Keystates &keystates ) {
@@ -106,14 +107,14 @@ void Tank::move() {
     move( timeLeft );
 }
 
-void Tank::move( float time ) {
+void Tank::move( Coord time ) {
 	if( !live )
 		return;
     
-    pair< pair< float, float >, float > newpos = getDeltaAfterMovement( keys, x, y, d, time );
+    pair<Coord2, float> newpos = getDeltaAfterMovement( keys, x, y, d, time );
     
-    x = newpos.first.first;
-    y = newpos.first.second;
+    x = newpos.first.x;
+    y = newpos.first.y;
     d = newpos.second;
     
     timeLeft -= time;
@@ -125,57 +126,55 @@ void Tank::addCollision( Collider *collider ) const {
 	if( !live )
 		return;
 
-	vector< float > tankpts = getTankVertices( x, y, d );
-    pair< pair< float, float >, float > newpos = getDeltaAfterMovement( keys, x, y, d, timeLeft );
-	vector< float > newtankpts = getTankVertices( newpos.first.first, newpos.first.second, newpos.second );
+	vector<Coord2> tankpts = getTankVertices( x, y, d );
+    pair<Coord2, float> newpos = getDeltaAfterMovement( keys, x, y, d, timeLeft );
+	vector<Coord2> newtankpts = getTankVertices( newpos.first.x, newpos.first.y, newpos.second );
 	for( int i = 0; i < newtankpts.size(); i++ )
 		newtankpts[ i ] -= tankpts[ i ];
 	for( int i = 0; i < 3; i++ )
-		collider->token( Float4( tankpts[ i*2 ], tankpts[ i*2 + 1 ], tankpts[ ( i*2 + 2 ) % 6 ], tankpts[ ( i*2 + 3 ) % 6 ] ), Float4( newtankpts[ i*2 ], newtankpts[ i*2 + 1 ], newtankpts[ ( i*2 + 2 ) % 6 ], newtankpts[ ( i*2 + 3 ) % 6 ] ) );
+		collider->token(Coord4(tankpts[i], tankpts[(i + 1) % 3]), Coord4(newtankpts[i], newtankpts[(i + 1) % 3]));
 };
 
 const float tank_width = 5;
 const float tank_length = tank_width*1.3;
 
-float tank_coords[3][2] =  {
-	{-tank_width / 2, -tank_length / 3},
-	{ tank_width / 2, -tank_length / 3},
-	{ 0, tank_length * 2 / 3 }
+const Coord tank_coords[3][2] =  {
+	{Coord(-tank_width / 2), Coord(-tank_length / 3)},
+	{Coord(tank_width / 2), Coord(-tank_length / 3)},
+	{Coord(0), Coord(tank_length * 2 / 3)}
 };
 
-vector< float > Tank::getTankVertices( float tx, float ty, float td ) const {
-	float xtx = fcos( td );
-	float xty = fsin( td );
-	float ytx = fsin( td );
-	float yty = -fcos( td );
-	vector< float > rv;
-	for( int i = 0; i < 3; i++ ) {
-		rv.push_back( tx + tank_coords[ i ][ 0 ] * xtx + tank_coords[ i ][ 1 ] * xty );
-		rv.push_back( ty + tank_coords[ i ][ 1 ] * yty + tank_coords[ i ][ 0 ] * ytx );
-	}
+vector<Coord2> Tank::getTankVertices( Coord tx, Coord ty, float td ) const {
+	Coord xtx = cfcos( td );
+	Coord xty = cfsin( td );
+	Coord ytx = cfsin( td );
+	Coord yty = -cfcos( td );
+	vector<Coord2> rv;
+	for( int i = 0; i < 3; i++ )
+		rv.push_back(Coord2(tx + tank_coords[ i ][ 0 ] * xtx + tank_coords[ i ][ 1 ] * xty, ty + tank_coords[ i ][ 1 ] * yty + tank_coords[ i ][ 0 ] * ytx));
 	return rv;
 };
 
-pair< float, float > Tank::getFiringPoint() const {
-	float xtx = fcos( d );
-	float xty = fsin( d );
-	float ytx = fsin( d );
-	float yty = -fcos( d );
-	return make_pair( x + tank_coords[ 2 ][ 0 ] * xtx + tank_coords[ 2 ][ 1 ] * xty, y + tank_coords[ 2 ][ 1 ] * yty + tank_coords[ 2 ][ 0 ] * ytx );
+Coord2 Tank::getFiringPoint() const {
+	Coord xtx = cfcos( d );
+	Coord xty = cfsin( d );
+	Coord ytx = cfsin( d );
+	Coord yty = -cfcos( d );
+	return Coord2( x + tank_coords[ 2 ][ 0 ] * xtx + tank_coords[ 2 ][ 1 ] * xty, y + tank_coords[ 2 ][ 1 ] * yty + tank_coords[ 2 ][ 0 ] * ytx );
 };
 
-pair< pair< float, float >, float > Tank::getDeltaAfterMovement( const Keystates &keys, float x, float y, float d, float t ) const {
+pair<Coord2, float> Tank::getDeltaAfterMovement( const Keystates &keys, Coord x, Coord y, float d, Coord t ) const {
     
 	int dv = keys.u.down - keys.d.down;
-	x += player->maxSpeed * dv * fsin( d ) * t;
-	y += -player->maxSpeed * dv * fcos( d ) * t;
+	x += player->maxSpeed * dv * cfsin( d ) * t;
+	y += -player->maxSpeed * dv * cfcos( d ) * t;
 
 	int dd = keys.r.down - keys.l.down;
-	d += player->turnSpeed * dd * t;
+	d += player->turnSpeed * dd * t.toFloat();
 	d += 2*PI;
 	d = fmod( d, 2*(float)PI );
     
-    return make_pair( make_pair( x, y ), d );
+    return make_pair( Coord2( x, y ), d );
     
 }
 
@@ -191,17 +190,14 @@ bool Tank::takeDamage( float damage ) {
 
 void Tank::genEffects( vector< GfxEffects > *gfxe ) {
 	if( spawnShards ) {
-		vector< float > tv = getTankVertices( x, y, d );
-		for( int i = 0; i < tv.size(); i += 2 ) {
+		vector<Coord2> tv = getTankVertices( x, y, d );
+		for( int i = 0; i < tv.size(); i++ ) {
 			GfxEffects ngfe;
-			ngfe.pos.sx = tv[ i ];
-			ngfe.pos.sy = tv[ i + 1 ];
-			ngfe.pos.ex = tv[ ( i + 2 ) % tv.size() ];
-			ngfe.pos.ey = tv[ ( i + 3 ) % tv.size() ];
+			ngfe.pos = Float4(tv[i].x.toFloat(), tv[i].y.toFloat(), tv[(i + 1) % tv.size()].x.toFloat(), tv[(i + 1) % tv.size()].y.toFloat());
 			float cx = ( ngfe.pos.sx + ngfe.pos.ex ) / 2;
 			float cy = ( ngfe.pos.sy + ngfe.pos.ey ) / 2;
-			ngfe.vel.sx = ngfe.vel.ex = cx - x;
-			ngfe.vel.sy = ngfe.vel.ey = cy - y;
+			ngfe.vel.sx = ngfe.vel.ex = cx - x.toFloat();
+			ngfe.vel.sy = ngfe.vel.ey = cy - y.toFloat();
 			ngfe.vel /= 5;
 			ngfe.life = 15;
             ngfe.type = GfxEffects::EFFECT_LINE;
@@ -224,24 +220,24 @@ Tank::Tank() {
 }
 
 void Projectile::startNewMoveCycle() {
-    timeLeft = 1.0f;
+    timeLeft = 1;
 }
 void Projectile::move() {
     move( timeLeft );
 }
-void Projectile::move( float time ) {
-    x += v * fsin( d ) * time;
-    y += -v * fcos( d ) * time;
+void Projectile::move( Coord time ) {
+    x += v * cfsin( d ) * time;
+    y += -v * cfcos( d ) * time;
     timeLeft -= time;
 }
 
 void Projectile::render() const {
 	setColor( 1.0, 1.0, 1.0 );
-	drawLine( x, y, x + v * fsin( d ), y - v * fcos( d ), 0.1 );
+	drawLine(Coord4(x, y, x + v * cfsin( d ), y - v * cfcos( d )), 0.1 );
 };
 void Projectile::addCollision( Collider *collider ) const {
-    CHECK( timeLeft == 1.0 );
-	collider->token( Float4( x, y, x + v * fsin( d ), y - v * fcos( d ) ), Float4( v * fsin( d ), -v * fcos( d ), v * fsin( d ), -v * fcos( d ) ) );
+    CHECK( timeLeft == 1 );
+	collider->token( Coord4( x, y, x + v * cfsin( d ), y - v * cfcos( d ) ), Coord4( v * cfsin( d ), -v * cfcos( d ), v * cfsin( d ), -v * cfcos( d ) ) );
 };
 void Projectile::impact( Tank *target ) {
 	if(target->takeDamage( damage ))
@@ -251,8 +247,8 @@ void Projectile::impact( Tank *target ) {
 
 void Projectile::genEffects( vector< GfxEffects > *gfxe ) const {
     GfxEffects ngfe;
-    ngfe.pos.sx = x + v * fsin( d );
-    ngfe.pos.sy = y - v * fcos( d );
+    ngfe.pos.sx = x.toFloat() + v.toFloat() * fsin( d );
+    ngfe.pos.sy = y.toFloat() - v.toFloat() * fcos( d );
     ngfe.life = 10;
     ngfe.type = GfxEffects::EFFECT_POINT;
     for( int i = 0; i < 3; i++ ) {
@@ -342,10 +338,10 @@ void collideHandler( Collider *collider, vector< Tank > *tanks, const vector< Ke
     
     Tank temptank;
     
-    float cCollideTimeStamp = collider->getCurrentTimestamp() + COLLISIONROLLBACK;
+    Coord cCollideTimeStamp = collider->getCurrentTimestamp() + COLLISIONROLLBACK;
     
-    float cTimeStamp = collider->getCurrentTimestamp();
-    float rollbackStep = COLLISIONROLLBACK;
+    Coord cTimeStamp = collider->getCurrentTimestamp();
+    Coord rollbackStep = COLLISIONROLLBACK;
     
     {
         collider->setCurrentTimestamp( cCollideTimeStamp );
@@ -354,16 +350,16 @@ void collideHandler( Collider *collider, vector< Tank > *tanks, const vector< Ke
     }
     
     if(!ffwd && FLAGS_verboseCollisions)
-        dprintf( "Modified timestamp is %f, vs %f (%f diff)\n", cCollideTimeStamp, cTimeStamp, cCollideTimeStamp - cTimeStamp );
+        dprintf( "Modified timestamp is %f, vs %f (%f diff)\n", cCollideTimeStamp.toFloat(), cTimeStamp.toFloat(), cCollideTimeStamp.toFloat() - cTimeStamp.toFloat() );
     
     while(1) {
         
         // If this triggers, we've gotten ourselves in a weird but potentially possible situation
         // The solution is to figure out *all* the tanks involved in the deadlock, and keep them all from moving
         // And possibly flash a "treads locked" message so they can figure out how to get out :P
-        CHECK( cTimeStamp > 0.0 );
+        CHECK( cTimeStamp > 0 );
         
-        cTimeStamp = max( cTimeStamp - rollbackStep, 0.0f );
+        cTimeStamp = max( cTimeStamp - rollbackStep, 0 );
         collider->setCurrentTimestamp( cTimeStamp );
         rollbackStep += rollbackStep;
         for( int i = 0; i < tankx.size(); i++ ) {
@@ -383,12 +379,12 @@ void collideHandler( Collider *collider, vector< Tank > *tanks, const vector< Ke
         if( !collided )
             break;
         if(!ffwd && FLAGS_verboseCollisions)
-            dprintf( "Multiple rollback! %f\n", rollbackStep );
+            dprintf( "Multiple rollback! %f\n", rollbackStep.toFloat() );
         // roll back again
     }
     
     if(!ffwd && FLAGS_verboseCollisions)
-        dprintf( "Unfreeze timestamp is %f\n", cTimeStamp );
+        dprintf( "Unfreeze timestamp is %f\n", cTimeStamp.toFloat() );
     
     /* now we have our real timestamp, so let's see what can be released */
     /* all the tanks are still in the "fixed" location", so let's roll forward to the collide point and see what it looks like then */
@@ -609,8 +605,8 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
 		if( players[ i ].live && keys[ i ].f.down && players[ i ].weaponCooldown <= 0 ) {
             firepowerSpent +=players[ i ].player->weapon->costpershot;
 			Projectile proj;
-			proj.x = players[ i ].getFiringPoint().first;
-			proj.y = players[ i ].getFiringPoint().second;
+			proj.x = players[ i ].getFiringPoint().x;
+			proj.y = players[ i ].getFiringPoint().y;
 			proj.d = players[ i ].d;
             proj.v = players[ i ].player->weapon->projectile->velocity;
             proj.damage = players[ i ].player->weapon->projectile->damage;
@@ -685,8 +681,8 @@ Game::Game(vector<Player> *in_playerdata, const Level &lev) {
             int loc = int(frand() * pstart.size());
             CHECK(loc >= 0 && loc < pstart.size());
             dprintf("loc %d, %f %f %f\n", loc, pstart[loc].first.x, pstart[loc].first.y, pstart[loc].second);
-            players[i].x = pstart[loc].first.x;
-            players[i].y = pstart[loc].first.y;
+            players[i].x = Coord(pstart[loc].first.x);
+            players[i].y = Coord(pstart[loc].first.y);
             players[i].d = pstart[loc].second;
             pstart.erase(pstart.begin() + loc);
         }
