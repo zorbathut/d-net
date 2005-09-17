@@ -12,6 +12,41 @@ using namespace std;
 
 #include "util.h"
 #include "parse.h"
+#include "args.h"
+
+DEFINE_int(resolution_x, -1, "X resolution (Y is X/4*3), -1 for autodetect");
+
+void setDefaultResolution(int width, int height, bool fullscreen) {
+    dprintf("Current detected resolution: %d/%d\n", width, height);
+    if(FLAGS_resolution_x == -1) {
+        FLAGS_resolution_x = width;
+        if(!fullscreen)
+            resDown();
+    }
+}
+    
+int getResolutionX() {
+    CHECK(FLAGS_resolution_x > 0);
+    CHECK(FLAGS_resolution_x % 4 == 0);
+    return FLAGS_resolution_x;
+}
+int getResolutionY() {
+    CHECK(FLAGS_resolution_x > 0);
+    CHECK(FLAGS_resolution_x % 4 == 0);
+    return FLAGS_resolution_x / 4 * 3;
+}
+
+void resDown() {
+    const int reses[] = { 1600, 1400, 1280, 1152, 1024, 800, 640, -1 };
+    CHECK(FLAGS_resolution_x > 0);
+    for(int i = 0; i < sizeof(reses) / sizeof(*reses); i++) {
+        if(FLAGS_resolution_x > reses[i]) {
+            FLAGS_resolution_x = reses[i];
+            break;
+        }
+    }
+    CHECK(FLAGS_resolution_x > 0);
+}
 
 Color::Color() { };
 Color::Color(float in_r, float in_g, float in_b) :
@@ -91,7 +126,7 @@ int getAccumulatedClusterCount() {
 
 void beginLineCluster(float weight) {
     CHECK(curWeight == -1.f);
-    glLineWidth( weight / map_zoom * SCREEN_HEIGHT );   // GL uses pixels internally for this unit, so I have to translate from game-meters
+    glLineWidth( weight / map_zoom * getResolutionY() );   // GL uses pixels internally for this unit, so I have to translate from game-meters
     glBegin(GL_LINES);
     curWeight = weight;
     lineCount = 0;
@@ -251,7 +286,7 @@ void drawCurveControls( const Float4 &ptah, const Float4 &ptbh, float spacing, f
 }
 
 void drawPoint( float x, float y, float weight ) {
-    glPointSize( weight / map_zoom * SCREEN_HEIGHT );   // GL uses pixels internally for this unit, so I have to translate from game-meters
+    glPointSize( weight / map_zoom * getResolutionY() );   // GL uses pixels internally for this unit, so I have to translate from game-meters
     glBegin( GL_POINTS );
 	glVertex2f( ( x - map_sx ) / map_zoom, ( y - map_sy ) / map_zoom );
 	glEnd();

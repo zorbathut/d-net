@@ -6,7 +6,4 @@
 
 #define COLLISIONROLLBACK Coord(0.001f)
 
-#define SCREEN_WIDTH 1280
-#define SCREEN_HEIGHT (SCREEN_WIDTH / 4 * 3)
-
 #endif

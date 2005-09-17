@@ -53,38 +53,26 @@ int GetVideoFlags( void ) {
 
 }
 
-void MakeWindow( const char * strWindowName, int width, int height ) {
-
-	dprintf( "Startmake\n" );
+bool MakeWindow( const char * strWindowName, int width, int height ) {
+    
+    dprintf("Attempting to make window %d/%d\n", width, height);
 
 	CHECK( height > 0 );
 	CHECK( width > 0 );
-
-	dprintf( "Mainwindow\n" );
-
-	// appears to be crashing here sometimes?
+    
     MainWindow = SDL_SetVideoMode( width, height, SCREEN_DEPTH, GetVideoFlags() );
-	CHECK( MainWindow );
-
-	dprintf( "Caption\n" );
+	if(!MainWindow)
+        return false;
 
     SDL_WM_SetCaption( strWindowName, strWindowName );       // set the window caption (first argument) and icon caption (2nd arg)
 
-	dprintf( "Viewport\n" );
-
     glViewport( 0, 0, width, height );
-
-	dprintf( "Ident/ortho\n" );
 
     glLoadIdentity();
 	glOrtho( 0, 1.25, 0, 1, 1.0, -1.0 );	
+    
+    return true;
 
-	dprintf( "Donemake\n" );
-
-}
-
-void DestroyWindow() {
-	// does this need to do anything?
 }
 
 void SetupOgl() {
@@ -102,14 +90,19 @@ void SetupOgl() {
 
 }
 
+void GetStartingResolution() {
+    setDefaultResolution(GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN), FLAGS_fullscreen);
+}
+
 void initSystem() {
 
     CHECK(SDL_Init( SDL_INIT_VIDEO ) >= 0);
     CHECK(SDL_InitSubSystem(SDL_INIT_JOYSTICK) >= 0);
 
 	SetupOgl();
-    MakeWindow( "Devastation Net", SCREEN_WIDTH, SCREEN_HEIGHT );
-
+    GetStartingResolution();
+    while(!MakeWindow( "Devastation Net", getResolutionX(), getResolutionY() ))
+        resDown();
 };
 
 void deinitSystem() {

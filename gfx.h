@@ -20,6 +20,11 @@ Color operator*( const Color &lhs, float rhs );
 Color operator/( const Color &lhs, float rhs );
 Color operator+( const Color &lhs, const Color &rhs );
 
+void setDefaultResolution(int cur_width, int cur_height, bool fullscreen);
+int getResolutionX();
+int getResolutionY();
+void resDown();
+
 void initGfx();
 int getAccumulatedClusterCount();
 
