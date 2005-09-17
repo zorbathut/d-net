@@ -69,6 +69,8 @@ void drawDvec2(const Dvec2 &vecob, const Float4 &bounds, float weight);
 void drawSpokes(float x, float y, int dupes, int numer, int denom, float len, float weight);
 void drawGrid(float spacing, float width);
 
+void drawCrosshair(float x, float y, float rad, float weight);
+
 void deinitFrame();
 
 #endif

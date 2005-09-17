@@ -64,10 +64,12 @@ StdMenu::StdMenu() {
 class InterfaceMain {
     
     enum { IFM_S_MAINMENU, IFM_S_PLAYING };
-    enum { IFM_M_NEWGAME, IFM_M_GRID, IFM_M_EXIT };
+    enum { IFM_M_NEWGAME, IFM_M_INPUTTEST, IFM_M_GRID, IFM_M_EXIT };
     int interface_mode;
     
-    bool gridinate;
+    bool grid;
+    bool inptest;
+    vector<Controller> inptest_controls;
     
     Metagame game;
     
@@ -84,6 +86,8 @@ public:
 };
 
 bool InterfaceMain::tick(const vector< Controller > &control) {
+    
+    inptest_controls = control;
     
     if(kst.size() == 0) {
         CHECK(control.size() != 0);
@@ -113,8 +117,10 @@ bool InterfaceMain::tick(const vector< Controller > &control) {
             interface_mode = IFM_S_PLAYING;
         } else if(mrv == IFM_M_EXIT) {
             return true;
+        } else if(mrv == IFM_M_INPUTTEST) {
+            inptest = !inptest;
         } else if(mrv == IFM_M_GRID) {
-            gridinate = !gridinate;
+            grid = !grid;
         } else {
             CHECK(mrv == -1);
         }
@@ -138,9 +144,58 @@ void InterfaceMain::render() const {
         drawText("Player one  arrow keys and uiojkl", 3, 2, 30);
         drawText("Player two  wasd       and rtyfgh", 3, 2, 34);
         drawText("Menu        arrow keys and u", 3, 2, 38);
-        if(gridinate) {
+        if(grid) {
             setColor(1.0, 1.0, 1.0);
             drawGrid(1, 0.01);
+        }
+        if(inptest) {
+            setZoom(0, 0, 600);
+            setColor(1.0, 1.0, 1.0);
+            const float xsiz = 100;
+            const float bord = xsiz / 25;
+            const float usablesiz = xsiz - bord * 4;
+            const float crosshair = usablesiz / 2;
+            const float ysiz = crosshair + bord * 2;
+            const float crosshairc = crosshair / 2;
+            const float textsize = crosshair / 4;
+            const float textrsize = textsize * 0.8;
+            const int wid = int(800 / xsiz);
+            const int textymax = int(crosshair / textsize);
+            const int textxmax = 2;
+            const float textxofs = crosshair / textxmax;
+            for(int i = 0; i < inptest_controls.size(); i++) {
+                float x = (i % wid) * xsiz;
+                float y = (i / wid) * ysiz + 300;
+                Float4 chbox(x + bord, y + bord, x + bord + crosshair, y + bord + crosshair);
+                drawLine(Float4(chbox.sx, chbox.sy, chbox.sx + crosshair / 4, chbox.sy), 0.1);
+                drawLine(Float4(chbox.sx, chbox.sy, chbox.sx, chbox.sy + crosshair / 4), 0.1);
+                drawLine(Float4(chbox.sx, chbox.ey, chbox.sx + crosshair / 4, chbox.ey), 0.1);
+                drawLine(Float4(chbox.sx, chbox.ey, chbox.sx, chbox.ey - crosshair / 4), 0.1);
+                drawLine(Float4(chbox.ex, chbox.sy, chbox.ex - crosshair / 4, chbox.sy), 0.1);
+                drawLine(Float4(chbox.ex, chbox.sy, chbox.ex, chbox.sy + crosshair / 4), 0.1);
+                drawLine(Float4(chbox.ex, chbox.ey, chbox.ex - crosshair / 4, chbox.ey), 0.1);
+                drawLine(Float4(chbox.ex, chbox.ey, chbox.ex, chbox.ey - crosshair / 4), 0.1);
+                drawCrosshair(inptest_controls[i].x * crosshairc + bord + crosshairc + x, -inptest_controls[i].y * crosshairc + bord + crosshairc + y, crosshair / 4, 0.1);
+                float textx = x + bord * 3 + crosshair;
+                float texty = y + bord;
+                int ctxt = 0;
+                for(int j = 0; j < inptest_controls[i].keys.size(); j++) {
+                    if(inptest_controls[i].keys[j].down) {
+                        string tbd;
+                        if(ctxt >= textymax * textxmax) {
+                            continue;
+                        } else if(ctxt == textymax * textxmax - 1) {
+                            tbd = "...";
+                        } else {
+                            tbd = StringPrintf("%d", j);
+                        }
+                        if(tbd != "") {
+                            drawText(tbd, textrsize, textx + ctxt / textymax * textxofs, texty + (ctxt % textymax) * textsize);
+                            ctxt++;
+                        }
+                    }
+                }
+            }
         }
     } else if(interface_mode == IFM_S_PLAYING) {
         game.renderToScreen();
@@ -153,9 +208,11 @@ void InterfaceMain::render() const {
 InterfaceMain::InterfaceMain() {
     interface_mode = IFM_S_MAINMENU;
     mainmenu.pushMenuItem("New game", IFM_M_NEWGAME);
+    mainmenu.pushMenuItem("Input test", IFM_M_INPUTTEST);
     mainmenu.pushMenuItem("Grid toggle", IFM_M_GRID);
     mainmenu.pushMenuItem("Exit", IFM_M_EXIT);
-    gridinate = false;
+    grid = false;
+    inptest = false;
 }
 
 InterfaceMain ifm;

@@ -388,3 +388,8 @@ void drawGrid(float spacing, float size) {
     for(float s = -spacing; s > map_sy; s -= spacing)
         drawLine(map_sx, s, map_ex, s, size);
 }
+
+void drawCrosshair(float x, float y, float rad, float weight) {
+    drawLine(x - rad, y, x + rad, y, weight);
+    drawLine(x, y - rad, x, y + rad, weight);
+}
