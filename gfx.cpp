@@ -19,6 +19,8 @@ Color::Color(float in_r, float in_g, float in_b) :
 
 static float map_sx;
 static float map_sy;
+static float map_ex;
+static float map_ey;
 static float map_zoom;
 
 static map< char, vector< vector< pair< int, int > > > > fontdata;
@@ -134,6 +136,8 @@ void setZoom( float in_sx, float in_sy, float in_ey ) {
 	map_sx = in_sx;
 	map_sy = in_sy;
 	map_zoom = in_ey - in_sy;
+    map_ey = map_sy + map_zoom;
+    map_ex = map_sx + map_zoom * 1.25;
 }
 
 void setColor( float r, float g, float b ) {
@@ -373,3 +377,14 @@ void drawSpokes(float x, float y, int dupes, int numer, int denom, float len, fl
     }
 }
 
+void drawGrid(float spacing, float size) {
+    CHECK(map_sx <= 0 && map_ex >= 0 && map_sy <= 0 && map_ey >= 0);
+    for(float s = 0; s < map_ex; s += spacing)
+        drawLine(s, map_sy, s, map_ey, size);
+    for(float s = -spacing; s > map_sx; s -= spacing)
+        drawLine(s, map_sy, s, map_ey, size);
+    for(float s = 0; s < map_ey; s += spacing)
+        drawLine(map_sx, s, map_ex, s, size);
+    for(float s = -spacing; s > map_sy; s -= spacing)
+        drawLine(map_sx, s, map_ex, s, size);
+}

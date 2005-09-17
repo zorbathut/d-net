@@ -37,9 +37,9 @@ int StdMenu::tick(const Keystates &keys) {
     if(keys.f.down)
         return items[cpos].second;
     if(keys.u.repeat)
-        cpos++;
-    if(keys.d.repeat)
         cpos--;
+    if(keys.d.repeat)
+        cpos++;
     cpos += items.size();
     cpos %= items.size();
     return -1;
@@ -64,8 +64,10 @@ StdMenu::StdMenu() {
 class InterfaceMain {
     
     enum { IFM_S_MAINMENU, IFM_S_PLAYING };
-    enum { IFM_M_NEWGAME, IFM_M_EXIT };
+    enum { IFM_M_NEWGAME, IFM_M_GRID, IFM_M_EXIT };
     int interface_mode;
+    
+    bool gridinate;
     
     Metagame game;
     
@@ -111,6 +113,8 @@ bool InterfaceMain::tick(const vector< Controller > &control) {
             interface_mode = IFM_S_PLAYING;
         } else if(mrv == IFM_M_EXIT) {
             return true;
+        } else if(mrv == IFM_M_GRID) {
+            gridinate = !gridinate;
         } else {
             CHECK(mrv == -1);
         }
@@ -131,9 +135,13 @@ void InterfaceMain::render() const {
     if(interface_mode == IFM_S_MAINMENU) {
         mainmenu.render();
         setColor(0.5, 0.5, 0.5);
-        drawText("Player one  arrow keys and uiojkl", 3, 2, 20);
-        drawText("Player two  wasd       and rtyfgh", 3, 2, 24);
-        drawText("Menu        arrow keys and u", 3, 2, 28);
+        drawText("Player one  arrow keys and uiojkl", 3, 2, 30);
+        drawText("Player two  wasd       and rtyfgh", 3, 2, 34);
+        drawText("Menu        arrow keys and u", 3, 2, 38);
+        if(gridinate) {
+            setColor(1.0, 1.0, 1.0);
+            drawGrid(1, 0.01);
+        }
     } else if(interface_mode == IFM_S_PLAYING) {
         game.renderToScreen();
     } else {
@@ -145,7 +153,9 @@ void InterfaceMain::render() const {
 InterfaceMain::InterfaceMain() {
     interface_mode = IFM_S_MAINMENU;
     mainmenu.pushMenuItem("New game", IFM_M_NEWGAME);
+    mainmenu.pushMenuItem("Grid toggle", IFM_M_GRID);
     mainmenu.pushMenuItem("Exit", IFM_M_EXIT);
+    gridinate = false;
 }
 
 InterfaceMain ifm;

@@ -67,6 +67,7 @@ void drawVectorPath(const VectorPath &vecob, const Float4 &bounds, float weight)
 void drawDvec2(const Dvec2 &vecob, const Float4 &bounds, float weight);
 
 void drawSpokes(float x, float y, int dupes, int numer, int denom, float len, float weight);
+void drawGrid(float spacing, float width);
 
 void deinitFrame();
 

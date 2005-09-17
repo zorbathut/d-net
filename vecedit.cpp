@@ -646,4 +646,7 @@ void vecEditRender() {
     renderPaths();
     renderEntities();
     
+    setColor(0.3, 0.3, 0.3);
+    drawGrid(zoom / 16, zoom / 512);
+    
 }
