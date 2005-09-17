@@ -89,13 +89,16 @@ void DestroyWindow() {
 
 void SetupOgl() {
 
-	SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );         // tell SDL that the GL drawing is going to be double buffered
-    SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, SCREEN_DEPTH);         // size of depth buffer
-    SDL_GL_SetAttribute( SDL_GL_STENCIL_SIZE, 0);          // we aren't going to use the stencil buffer
-    SDL_GL_SetAttribute( SDL_GL_ACCUM_RED_SIZE, 0);        // this and the next three lines set the bits allocated per pixel -
-    SDL_GL_SetAttribute( SDL_GL_ACCUM_GREEN_SIZE, 0);      // - for the accumulation buffer to 0
-    SDL_GL_SetAttribute( SDL_GL_ACCUM_BLUE_SIZE, 0);
-    SDL_GL_SetAttribute( SDL_GL_ACCUM_ALPHA_SIZE, 0);
+	CHECK(SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1) == 0);         // tell SDL that the GL drawing is going to be double buffered
+    CHECK(SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 5) == 0);
+    CHECK(SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 5) == 0);
+    CHECK(SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 5) == 0);
+    CHECK(SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, SCREEN_DEPTH) == 0);         // size of depth buffer
+    CHECK(SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 0) == 0);          // we aren't going to use the stencil buffer
+    CHECK(SDL_GL_SetAttribute(SDL_GL_ACCUM_RED_SIZE, 0) == 0);        // this and the next three lines set the bits allocated per pixel -
+    CHECK(SDL_GL_SetAttribute(SDL_GL_ACCUM_GREEN_SIZE, 0) == 0);      // - for the accumulation buffer to 0
+    CHECK(SDL_GL_SetAttribute(SDL_GL_ACCUM_BLUE_SIZE, 0) == 0);
+    CHECK(SDL_GL_SetAttribute(SDL_GL_ACCUM_ALPHA_SIZE, 0) == 0);
 
 }
 
