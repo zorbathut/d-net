@@ -5,6 +5,7 @@
 
 #include "parse.h"
 #include "util.h"
+#include "args.h"
 
 static HierarchyNode root;
 static map<string, ProjectileClass> projclasses;
@@ -12,6 +13,8 @@ static map<string, Weapon> weapontypes;
 static map<string, Upgrade> upgradetypes;
 
 static const Weapon *defweapon = NULL;
+
+DEFINE_bool(debugitems, false, "Enable debug items");
 
 void HierarchyNode::checkConsistency() const {
     dprintf("Consistency scan entering %s\n", name.c_str());
@@ -124,6 +127,10 @@ void parseItemFile(const string &fname) {
     kvData chunk;
     while(getkvData(tfil, chunk)) {
         dprintf("%s\n", chunk.debugOutput().c_str());
+        if(chunk.kv.count("debug") && atoi(chunk.consume("debug").c_str()) && !FLAGS_debugitems) {
+            dprintf("Debug only, skipping\n");
+            continue;
+        }
         if(chunk.category == "hierarchy") {
             HierarchyNode *mountpoint = findNamedNode(chunk.kv["name"], 1);
             HierarchyNode tnode;

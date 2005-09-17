@@ -1,0 +1,21 @@
+
+hierarchy {
+    name=ROOT.Weapons.Debug
+    pack=100000
+    debug=1
+}
+
+projectile {
+    name=local.tracer
+    velocity=600
+    damage=0
+    debug=1
+}
+
+weapon {
+    name=ROOT.Weapons.Debug.Tracer
+    cost=0
+    firerate=1
+    projectile=local.tracer
+    debug=1
+}

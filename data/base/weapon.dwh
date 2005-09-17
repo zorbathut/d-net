@@ -7,8 +7,3 @@ hierarchy {
     name=ROOT.Weapons.Laser
     pack=100
 }
-
-hierarchy {
-    name=ROOT.Weapons.Tracer
-    pack=100000
-}
