@@ -68,8 +68,6 @@ void Shop::renderNode(const HierarchyNode &node, int depth) const {
 
     const float boxthick = 0.1;
     
-    const char formatstring[] = "%6d";
-    
     float hoffbase = hoffset + ( boxwidth + hoffset ) * depth;
     
     for(int i = 0; i < node.branches.size(); i++) {
@@ -90,13 +88,9 @@ void Shop::renderNode(const HierarchyNode &node, int depth) const {
             }
             if(dispmode == HierarchyNode::HNDM_BLANK) {
             } else if(dispmode == HierarchyNode::HNDM_COST) {
-                char bf[128];
-                sprintf(bf, formatstring, node.branches[i].cost);
-                drawText( bf, fontsize, hoffbase + pricehpos, voffset + i * itemheight + boxborder );
+                drawText( StringPrintf("%6d", node.branches[i].cost), fontsize, hoffbase + pricehpos, voffset + i * itemheight + boxborder );
             } else if(dispmode == HierarchyNode::HNDM_PACK) {
-                char bf[128];
-                sprintf(bf, "%dpk", node.branches[i].quantity);
-                drawText( bf, fontsize, hoffbase + pricehpos, voffset + i * itemheight + boxborder );
+                drawText( StringPrintf("%dpk", node.branches[i].quantity), fontsize, hoffbase + pricehpos, voffset + i * itemheight + boxborder );
             } else if(dispmode == HierarchyNode::HNDM_COSTUNIQUE) {
                 drawText("bought", fontsize, hoffbase + pricehpos, voffset + i * itemheight + boxborder);
             } else {
@@ -291,9 +285,11 @@ void Metagame::renderToScreen() const {
                 drawText(bf, 20, playerpos[i].x + 5, playerpos[i].y + 5);
             } else {
                 setColor(factions[playersymbol[i]].color);
-                drawDvec2(symbols[playersymbol[i]], Float4(10, 10 + 100 * i, 90, 90 + 100 * i), 1.0);
+                float ye = min(600. / 12, 100.);
+                Float4 box( 0, ye * i, ye, ye + ye * i );
+                drawDvec2(symbols[playersymbol[i]], Float4(box.sx + ye / 10, box.sy + ye / 10, box.ex - ye / 10, box.ey - ye / 10), 1.0);
                 setColor(Color(1.0, 1.0, 1.0) / 60 * fireHeld[i]);
-                drawBox(Float4(5, 5 + 100 * i, 95, 95 + 100 * i), 1);
+                drawBox(Float4(box.sx + ye / 20, box.sy + ye / 20, box.ex - ye / 20, box.ey - ye / 20), 1);
             }
         }
         CHECK(symbols.size() == factioncount);
