@@ -260,6 +260,7 @@ void MainLoop() {
                 for(int j = 0; j < curstates[i].keys.size(); j++)
                     fread(&curstates[i].keys[j].down, 1, sizeof(curstates[i].keys[j].down), infile);
             }
+            CHECK(!feof(infile));
             int cpos = ftell(infile);
             int x;
             fread(&x, 1, sizeof(x), infile);
@@ -267,7 +268,6 @@ void MainLoop() {
                 dprintf("EOF on frame %d\n", frameNumber);
             fseek(infile, cpos, SEEK_SET);
             CHECK(cpos == ftell(infile));
-            CHECK(!feof(infile));
         }
         if(outfile) {
             for(int i = 0; i < curstates.size(); i++) {

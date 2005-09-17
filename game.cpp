@@ -267,7 +267,7 @@ Projectile::Projectile() {
 
 void Game::renderToScreen( int target ) const {
     {
-        Float4 bounds = gamemap.getBounds();
+        Float4 bounds = gamemap.getBounds().toFloat();
         expandBoundBox(&bounds, 1.1);
         float y = (bounds.ey - bounds.sy) / 0.9;
         float sy = bounds.ey - y;
@@ -674,13 +674,13 @@ Game::Game(vector<Player> *in_playerdata, const Level &lev) {
     {
         // place players
         CHECK(lev.playerStarts.count(players.size()));
-        vector<pair<Float2, float> > pstart = lev.playerStarts.find(players.size())->second;
+        vector<pair<Coord2, float> > pstart = lev.playerStarts.find(players.size())->second;
         for(int i = 0; i < pstart.size(); i++)
-            dprintf("possible: %f, %f, %f\n", pstart[i].first.x, pstart[i].first.y, pstart[i].second);
+            dprintf("possible: %f, %f, %f\n", pstart[i].first.x.toFloat(), pstart[i].first.y.toFloat(), pstart[i].second);
         for(int i = 0; i < players.size(); i++) {
             int loc = int(frand() * pstart.size());
             CHECK(loc >= 0 && loc < pstart.size());
-            dprintf("loc %d, %f %f %f\n", loc, pstart[loc].first.x, pstart[loc].first.y, pstart[loc].second);
+            dprintf("loc %d, %f %f %f\n", loc, pstart[loc].first.x.toFloat(), pstart[loc].first.y.toFloat(), pstart[loc].second);
             players[i].x = Coord(pstart[loc].first.x);
             players[i].y = Coord(pstart[loc].first.y);
             players[i].d = pstart[loc].second;

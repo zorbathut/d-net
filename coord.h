@@ -81,12 +81,31 @@ inline Coord operator-(const Coord &lhs, const Coord &rhs) {
 
 // TODO: improve?
 inline Coord operator*(const Coord &lhs, const Coord &rhs) {
-    return coordExplicit((lhs.d >> 16) * (rhs.d >> 16));
+    //dprintf("op/ in!\n");
+    Coord rv = coordExplicit(
+    (long long)(
+            ((long double)lhs.d * (long double)rhs.d) / (1LL << 32)
+        )
+    );
+    //dprintf("  %f %f %f %d\n", lhs.toFloat(), rhs.toFloat(), rv.toFloat(), 1234);
+    //dprintf("  %lld %lld %lld %d\n", lhs.d, rhs.d, rv.d, 1234);
+    //dprintf("op/ out!\n");
+    return rv;
 }
+
 
 // TODO: improve?
 inline Coord operator/(const Coord &lhs, const Coord &rhs) {
-    return coordExplicit((lhs.d << 8) / (rhs.d >> 8));
+    //dprintf("op/ in!\n");
+    Coord rv = coordExplicit(
+    (long long)(
+            ((long double)lhs.d / (long double)rhs.d) * (1LL << 32)
+        )
+    );
+    //dprintf("  %f %f %f %d\n", lhs.toFloat(), rhs.toFloat(), rv.toFloat(), 1234);
+    //dprintf("  %lld %lld %lld %d\n", lhs.d, rhs.d, rv.d, 1234);
+    //dprintf("op/ out!\n");
+    return rv;
 }
 
 inline bool operator==(const Coord &lhs, const Coord &rhs) {
@@ -178,7 +197,51 @@ inline bool operator==(const Coord4 &lhs, const Coord4 &rhs) {
     return lhs.sx == rhs.sx && lhs.sy == rhs.sy && lhs.ex == rhs.ex && lhs.ey == rhs.ey;
 }
 
-bool linelineintersect( Coord x1, Coord y1, Coord x2, Coord y2, Coord x3, Coord y3, Coord x4, Coord y4 );
+inline bool verboselinelineintersect( float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4 ) {
+	float denom = ( y4 - y3 ) * ( x2 - x1 ) - ( x4 - x3 ) * ( y2 - y1 );
+    dprintf("%f\n", denom);
+    float ua = ( ( x4 - x3 ) * ( y1 - y3 ) - ( y4 - y3 ) * ( x1 - x3 ) ) / denom;
+    dprintf("%f\n", ua);
+	float ub = ( ( x2 - x1 ) * ( y1 - y3 ) - ( y2 - y1 ) * ( x1 - x3 ) ) / denom;
+    dprintf("%f\n", ub);
+	return ua >= 0 && ua <= 1 && ub >= 0 && ub <= 1;
+}
+inline bool linelineintersect( Coord x1, Coord y1, Coord x2, Coord y2, Coord x3, Coord y3, Coord x4, Coord y4 ) {
+    //dprintf("%f,%f %f,%f vs %f,%f %f,%f\n",
+        //x1.toFloat(), y1.toFloat(), x2.toFloat(), y2.toFloat(), 
+        //x3.toFloat(), y3.toFloat(), x4.toFloat(), y4.toFloat());
+	Coord denom = ( y4 - y3 ) * ( x2 - x1 ) - ( x4 - x3 ) * ( y2 - y1 );
+    if(denom == 0)
+        return false;
+    //dprintf("%f\n", denom.toFloat());
+	Coord ua = ( ( x4 - x3 ) * ( y1 - y3 ) - ( y4 - y3 ) * ( x1 - x3 ) ) / denom;
+    //dprintf("%f\n", ua.toFloat());
+	Coord ub = ( ( x2 - x1 ) * ( y1 - y3 ) - ( y2 - y1 ) * ( x1 - x3 ) ) / denom;
+    //dprintf("%f\n", ub.toFloat());
+    bool rv = (ua >= 0 && ua <= 1 && ub >= 0 && ub <= 1);
+    if(rv != linelineintersect(x1.toFloat(), y1.toFloat(), x2.toFloat(), y2.toFloat(), 
+        x3.toFloat(), y3.toFloat(), x4.toFloat(), y4.toFloat())) {
+            dprintf("%f,%f %f,%f vs %f,%f %f,%f\n",
+                x1.toFloat(), y1.toFloat(), x2.toFloat(), y2.toFloat(), 
+                x3.toFloat(), y3.toFloat(), x4.toFloat(), y4.toFloat());
+            dprintf("%f\n", denom.toFloat());
+            dprintf("%f\n", ua.toFloat());
+            dprintf("%f\n", ub.toFloat());
+            verboselinelineintersect(x1.toFloat(), y1.toFloat(), x2.toFloat(), y2.toFloat(), 
+                x3.toFloat(), y3.toFloat(), x4.toFloat(), y4.toFloat());
+            dprintf("---");
+            dprintf("%f\n", (x2-x1).toFloat());
+            dprintf("%f\n", (y1-x3).toFloat());
+            dprintf("%f\n", (y2-y1).toFloat());
+            dprintf("%f\n", (x1-x3).toFloat());
+            dprintf("%f\n", (( x2 - x1 ) * ( y1 - y3 )).toFloat());
+            dprintf("%f\n", (( y2 - y1 ) * ( x1 - x3 )).toFloat());
+            dprintf("%f\n", ( ( x2 - x1 ) * ( y1 - y3 ) - ( y2 - y1 ) * ( x1 - x3 ) ).toFloat());
+            dprintf("%f\n", ( ( ( x2 - x1 ) * ( y1 - y3 ) - ( y2 - y1 ) * ( x1 - x3 ) ) / denom ).toFloat());
+            CHECK(0);
+    }
+    return rv;
+}
 inline bool linelineintersect( const Coord4 &lhs, const Coord4 &rhs ) {
 	return linelineintersect( lhs.sx, lhs.sy, lhs.ex, lhs.ey, rhs.sx, rhs.sy, rhs.ex, rhs.ey );
 }
@@ -198,3 +261,4 @@ void addToBoundBox(Coord4 *bbox, const Coord2 &point);
 void addToBoundBox(Coord4 *bbox, const Coord4 &rect);
 
 #endif
+

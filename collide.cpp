@@ -194,7 +194,7 @@ bool Collider::doProcess() {
                 continue;
             for( int x = 0; x < items[ *itr ].size(); x++ ) {
                 for( int y = 0; y < items[ alter ].size(); y++ ) {
-//                    if( linelineintersectend( lerp( items[ alter ][ y ].second.first, items[ alter ][ y ].second.second, ctime ), lerp( items[ *itr ][ x ].second.first, items[ *itr ][ x ].second.second, ctime ) ) ) {
+                    if( linelineintersect( lerp( items[ alter ][ y ].second.first, items[ alter ][ y ].second.second, ctime ), lerp( items[ *itr ][ x ].second.first, items[ *itr ][ x ].second.second, ctime ) ) ) {
                         CHECK( reverseIndex( alter ).first == 1 );
                         lhs.first = reverseIndex( *itr );
                         lhs.second = items[ *itr ][ x ].first;
@@ -202,7 +202,7 @@ bool Collider::doProcess() {
                         rhs.second = items[ alter ][ y ].first;
                         CHECK( rhs.first.first == 1 );
                         return true;
-                    //}
+                    }
                 }
             }
         }
@@ -266,7 +266,7 @@ bool Collider::testCollideSingle( int lhs, int rhs, bool print ) const {
     CHECK( rhs >= 0 && rhs < items.size() );
     for( int y = 0; y < items[ lhs ].size(); y++ ) {
         for( int k = 0; k < items[ rhs ].size(); k++ ) {
-//            if( linelineintersectend( lerp( items[ lhs ][ y ].second.first, items[ lhs ][ y ].second.second, ctime ), lerp( items[ rhs ][ k ].second.first, items[ rhs ][ k ].second.second, ctime ) ) ) {
+            if( linelineintersect( lerp( items[ lhs ][ y ].second.first, items[ lhs ][ y ].second.second, ctime ), lerp( items[ rhs ][ k ].second.first, items[ rhs ][ k ].second.second, ctime ) ) ) {
                 if(print) {
                     Coord4 lhl = lerp( items[ lhs ][ y ].second.first, items[ lhs ][ y ].second.second, ctime );
                     Coord4 rhl = lerp( items[ rhs ][ k ].second.first, items[ rhs ][ k ].second.second, ctime );
@@ -274,7 +274,7 @@ bool Collider::testCollideSingle( int lhs, int rhs, bool print ) const {
                     dprintf("%f,%f - %f,%f vs %f,%f - %f,%f\n", lhl.sx.toFloat(), lhl.sy.toFloat(), lhl.ex.toFloat(), lhl.ey.toFloat(), rhl.sx.toFloat(), rhl.sy.toFloat(), rhl.ex.toFloat(), rhl.ey.toFloat());
                 }
                 return true;
- //           }
+            }
         }
     }
     return false;
