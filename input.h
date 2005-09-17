@@ -39,13 +39,13 @@ public:
 
 };
 
+enum { KSAX_UDLR, KSAX_ABSOLUTE, KSAX_TANK };
+
 class Keystates {
 public:
+    float ax[2];
+    int axmode;
     Button u,d,l,r,f;
-
-    void newState(const Keystates &nst);
-
-	Keystates();
 };
 
 #endif

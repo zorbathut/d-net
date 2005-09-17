@@ -165,11 +165,20 @@ Coord2 Tank::getFiringPoint() const {
 
 pair<Coord2, float> Tank::getDeltaAfterMovement( const Keystates &keys, Coord x, Coord y, float d, Coord t ) const {
     
-	int dv = keys.u.down - keys.d.down;
-	x += player->maxSpeed * dv * cfsin( d ) * t;
-	y += -player->maxSpeed * dv * cfcos( d ) * t;
+    float dv;
+    float dd;
+    if(keys.axmode == KSAX_UDLR) {
+        dd = keys.ax[0];
+        dv = keys.ax[1];
+    } else {
+        CHECK(0);
+    }
+    
+    Coord cdv(dv);
 
-	int dd = keys.r.down - keys.l.down;
+	x += player->maxSpeed * cdv * cfsin( d ) * t;
+	y += -player->maxSpeed * cdv * cfcos( d ) * t;
+
 	d += player->turnSpeed * dd * t.toFloat();
 	d += 2*PI;
 	d = fmod( d, 2*(float)PI );
@@ -334,6 +343,8 @@ void collideHandler( Collider *collider, vector< Tank > *tanks, const vector< Ke
         stopped[ i ].d.down = false;
         stopped[ i ].l.down = false;
         stopped[ i ].r.down = false;
+        stopped[ i ].ax[0] = 0;
+        stopped[ i ].ax[1] = 0;
     }
     
     Tank temptank;
@@ -482,6 +493,7 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
     if(frameNm < 180) {
         for(int i = 0; i < keys.size(); i++) {
             keys[i].u = keys[i].d = keys[i].r = keys[i].l = keys[i].f = Button();
+            keys[i].ax[0] = keys[i].ax[1] = 0;
         }
     }
 

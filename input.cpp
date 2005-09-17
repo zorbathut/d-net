@@ -53,14 +53,3 @@ void Controller::newState(const Controller &nst) {
     for(int i = 0; i < keys.size(); i++)
         keys[i].newState(nst.keys[i]);
 }
-
-void Keystates::newState(const Keystates &nst) {
-    u.newState(nst.u);
-    d.newState(nst.d);
-    l.newState(nst.l);
-    r.newState(nst.r);
-    f.newState(nst.f);
-}
-
-Keystates::Keystates() {
-};

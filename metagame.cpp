@@ -285,7 +285,7 @@ void Metagame::renderToScreen() const {
                 drawText(bf, 20, playerpos[i].x + 5, playerpos[i].y + 5);
             } else {
                 setColor(factions[playersymbol[i]].color);
-                float ye = min(600. / 12, 100.);
+                float ye = min(600. / playersymbol.size(), 100.);
                 Float4 box( 0, ye * i, ye, ye + ye * i );
                 drawDvec2(symbols[playersymbol[i]], Float4(box.sx + ye / 10, box.sy + ye / 10, box.ex - ye / 10, box.ey - ye / 10), 1.0);
                 setColor(Color(1.0, 1.0, 1.0) / 60 * fireHeld[i]);
@@ -337,9 +337,15 @@ vector<Keystates> Metagame::genKeystates(const vector<Controller> &keys) {
             kst[pid].l = keys[i].l;
             kst[pid].r = keys[i].r;
             kst[pid].f = keys[i].keys[playerkey[i]];
+            kst[pid].ax[0] = keys[i].x;
+            kst[pid].ax[1] = keys[i].y;
+            kst[pid].axmode = KSAX_UDLR;
+            CHECK(keys[i].x >= -1 && keys[i].x <= 1);
+            CHECK(keys[i].y >= -1 && keys[i].y <= 1);
             pid++;
         }
     }
+    CHECK(pid == kst.size());
     return kst;
 }
 
