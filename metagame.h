@@ -44,6 +44,7 @@ class Metagame {
     vector< int > playerkey;
     vector< int > playersymbol;
     vector< Float2 > playerpos;
+    vector< int > playermode;
     
     vector<Dvec2> symbols;
     vector<Float4> symbolpos;
@@ -70,7 +71,7 @@ public:
 	void renderToScreen() const;
 	bool runTick( const vector< Controller > &keys );
 
-    vector<Keystates> genKeystates(const vector<Controller> &keys);
+    vector<Keystates> genKeystates(const vector<Controller> &keys, const vector<int> &modes);
 
     void calculateLrStats();
     void drawMultibar(const vector<float> &sizes, const Float4 &dimensions) const;

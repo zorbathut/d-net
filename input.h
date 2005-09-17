@@ -39,7 +39,8 @@ public:
 
 };
 
-enum { KSAX_UDLR, KSAX_ABSOLUTE, KSAX_TANK };
+enum { KSAX_UDLR, KSAX_ABSOLUTE, /*KSAX_TANK,*/ KSAX_END };
+const char *const ksax_names[] = { "UDLR", "ABSOLUTE", "TANK" };
 
 class Keystates {
 public:

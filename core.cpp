@@ -221,14 +221,10 @@ void MainLoop() {
             int target = i + 2;
             curstates[target].x = SDL_JoystickGetAxis(joysticks[i], 0) / 32768.0f;
             curstates[target].y = -(SDL_JoystickGetAxis(joysticks[i], 1) / 32768.0f);
-            if(abs(curstates[target].x) < .2)
-                curstates[target].x = 0;
-            if(abs(curstates[target].y) < .2)
-                curstates[target].y = 0;
-            if(curstates[target].x < -0.5) {
+            if(curstates[target].x < -0.7) {
                 curstates[target].r.down = false;
                 curstates[target].l.down = true;
-            } else if(curstates[target].x > 0.5) {
+            } else if(curstates[target].x > 0.7) {
                 curstates[target].r.down = true;
                 curstates[target].l.down = false;
             } else {

@@ -179,35 +179,42 @@ bool Metagame::runTick( const vector< Controller > &keys ) {
     CHECK(keys.size() == fireHeld.size());
     if(mode == MGM_PLAYERCHOOSE) {
         for(int i = 0; i < keys.size(); i++) {
-            if(playersymbol[i] != -1)
-                continue;
-            playerpos[i].x += keys[i].x * 4;
-            playerpos[i].y -= keys[i].y * 4;
-            int targetInside = -1;
-            for(int j = 0; j < symbolpos.size(); j++)
-                if(isinside(symbolpos[j], playerpos[i]) && !count(playersymbol.begin(), playersymbol.end(), j))
-                    targetInside = j;
-            if(targetInside == -1)
-                continue;
-            for(int j = 0; j < keys[i].keys.size(); j++) {
-                if(keys[i].keys[j].repeat) {
-                    playersymbol[i] = targetInside;
-                    playerkey[i] = j;
+            if(playersymbol[i] == -1) { // if player hasn't chosen symbol yet
+                fireHeld[i] = 0;
+                playerpos[i].x += keys[i].x * 4;
+                playerpos[i].y -= keys[i].y * 4;
+                int targetInside = -1;
+                for(int j = 0; j < symbolpos.size(); j++)
+                    if(isinside(symbolpos[j], playerpos[i]) && !count(playersymbol.begin(), playersymbol.end(), j))
+                        targetInside = j;
+                if(targetInside != -1) {                        
+                    for(int j = 0; j < keys[i].keys.size(); j++) {
+                        if(keys[i].keys[j].repeat) {
+                            playersymbol[i] = targetInside;
+                            playerkey[i] = j;
+                        }
+                    }
                 }
-            }
-        }
-        for(int i = 0; i < keys.size(); i++) {
-            if(count(playersymbol.begin(), playersymbol.end(), -1) <= playersymbol.size() - 2) {
+            } else {    // if player has chosen symbol
+                {
+                    int opm = playermode[i];
+                    if(keys[i].l.repeat)
+                        playermode[i]--;
+                    if(keys[i].r.repeat)
+                        playermode[i]++;
+                    playermode[i] += KSAX_END;
+                    playermode[i] %= KSAX_END;
+                    if(playermode[i] != opm)
+                        fireHeld[i] = 0;    // just for a bit of added safety
+                }
                 if(playerkey[i] != -1 && keys[i].keys[playerkey[i]].down) {
                     fireHeld[i]++;
                 } else {
                     fireHeld[i] = 0;
                 }
-            } else {
-                fireHeld[i] = 0;
+                if(fireHeld[i] > 60)
+                    fireHeld[i] = 60;
             }
-            if(fireHeld[i] > 60)
-                fireHeld[i] = 60;
         }
         if(count(fireHeld.begin(), fireHeld.end(), 60) == playerkey.size() - count(playerkey.begin(), playerkey.end(), -1) && count(fireHeld.begin(), fireHeld.end(), 60) >= 2) {
             mode = MGM_SHOP;
@@ -225,7 +232,7 @@ bool Metagame::runTick( const vector< Controller > &keys ) {
     } else if(mode == MGM_SHOP) {
         if(currentShop == -1) {
             for(int i = 0; i < playerdata.size(); i++)
-                if(genKeystates(keys)[i].f.repeat)
+                if(genKeystates(keys, playermode)[i].f.repeat)
                     checked[i] = true;
             if(count(checked.begin(), checked.end(), false) == 0) {
                 for(int i = 0; i < playerdata.size(); i++)
@@ -233,7 +240,7 @@ bool Metagame::runTick( const vector< Controller > &keys ) {
                 currentShop = 0;
                 shop = Shop(&playerdata[0]);
             }
-        } else if(shop.runTick(genKeystates(keys)[currentShop])) {
+        } else if(shop.runTick(genKeystates(keys, playermode)[currentShop])) {
             currentShop++;
             if(currentShop != playerdata.size()) {
                 shop = Shop(&playerdata[currentShop]);
@@ -249,7 +256,7 @@ bool Metagame::runTick( const vector< Controller > &keys ) {
             }
         }
     } else if(mode == MGM_PLAY) {
-        if(game.runTick(genKeystates(keys))) {
+        if(game.runTick(genKeystates(keys, playermode))) {
             gameround++;
             if(gameround % 6 == 0) {
                 mode = MGM_SHOP;
@@ -290,6 +297,8 @@ void Metagame::renderToScreen() const {
                 drawDvec2(symbols[playersymbol[i]], Float4(box.sx + ye / 10, box.sy + ye / 10, box.ex - ye / 10, box.ey - ye / 10), 1.0);
                 setColor(Color(1.0, 1.0, 1.0) / 60 * fireHeld[i]);
                 drawBox(Float4(box.sx + ye / 20, box.sy + ye / 20, box.ex - ye / 20, box.ey - ye / 20), 1);
+                setColor(Color(0.8, 0.8, 0.8));
+                drawText(ksax_names[playermode[i]], 20, ye, ye * (i + 1. / 20));
             }
         }
         CHECK(symbols.size() == factioncount);
@@ -327,7 +336,7 @@ void Metagame::renderToScreen() const {
     }
 }
 
-vector<Keystates> Metagame::genKeystates(const vector<Controller> &keys) {
+vector<Keystates> Metagame::genKeystates(const vector<Controller> &keys, const vector<int> &modes) {
     vector<Keystates> kst(playerdata.size());
     int pid = 0;
     for(int i = 0; i < playerkey.size(); i++) {
@@ -339,7 +348,7 @@ vector<Keystates> Metagame::genKeystates(const vector<Controller> &keys) {
             kst[pid].f = keys[i].keys[playerkey[i]];
             kst[pid].ax[0] = keys[i].x;
             kst[pid].ax[1] = keys[i].y;
-            kst[pid].axmode = KSAX_UDLR;
+            kst[pid].axmode = modes[i];
             CHECK(keys[i].x >= -1 && keys[i].x <= 1);
             CHECK(keys[i].y >= -1 && keys[i].y <= 1);
             pid++;
@@ -442,9 +451,11 @@ Metagame::Metagame(int playercount, int in_roundsBetweenShop) {
     playerkey.clear();
     playersymbol.clear();
     playerpos.clear();
+    playermode.clear();
     playerkey.resize(playercount, -1);
     playersymbol.resize(playercount, -1);
     playerpos.resize(playercount, Float2(400, 300));
+    playermode.resize(playercount, KSAX_UDLR);
     fireHeld.resize(playercount);
     
     for(int i = 0; i < factioncount; i++) {
