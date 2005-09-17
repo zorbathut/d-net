@@ -168,13 +168,15 @@ pair<Coord2, float> Tank::getDeltaAfterMovement( const Keystates &keys, Coord x,
     float dv;
     float dd;
     if(keys.axmode == KSAX_UDLR) {
-        dd = keys.ax[0];
-        dv = keys.ax[1];
+        dd = deadzone(keys.ax[0], keys.ax[1], 0.2, 0);
+        dv = deadzone(keys.ax[1], keys.ax[0], 0.2, 0);
     } else if(keys.axmode == KSAX_ABSOLUTE) {
-        if(keys.ax[0] == 0 && keys.ax[1] == 0) {
+        float xpd = deadzone(keys.ax[0], keys.ax[1], 0, 0.2);
+        float ypd = deadzone(keys.ax[1], keys.ax[0], 0, 0.2);
+        if(xpd == 0 && ypd == 0) {
             dv = dd = 0;
         } else {
-            float desdir = atan2(keys.ax[0], keys.ax[1]);
+            float desdir = atan2(xpd, ypd);
             desdir -= d;
             desdir += 2 * PI;
             if(desdir > PI)
@@ -184,7 +186,7 @@ pair<Coord2, float> Tank::getDeltaAfterMovement( const Keystates &keys, Coord x,
                 dd = -1;
             if(dd > 1)
                 dd = 1;
-            dv = min(sqrt(keys.ax[1] * keys.ax[1] + keys.ax[0] * keys.ax[0]), 1.f);
+            dv = min(sqrt(xpd * xpd + ypd * ypd), 1.f);
             if(abs(desdir) > PI / 3 && abs(desdir) < PI / 3 * 2)
                 dv = 0; // if we're near right angles, stop
             else if(abs(desdir) > PI / 2)

@@ -181,8 +181,8 @@ bool Metagame::runTick( const vector< Controller > &keys ) {
         for(int i = 0; i < keys.size(); i++) {
             if(playersymbol[i] == -1) { // if player hasn't chosen symbol yet
                 fireHeld[i] = 0;
-                playerpos[i].x += keys[i].x * 4;
-                playerpos[i].y -= keys[i].y * 4;
+                playerpos[i].x += deadzone(keys[i].x, keys[i].y, 0, 0.2) * 4;
+                playerpos[i].y -= deadzone(keys[i].y, keys[i].x, 0, 0.2) * 4;
                 int targetInside = -1;
                 for(int j = 0; j < symbolpos.size(); j++)
                     if(isinside(symbolpos[j], playerpos[i]) && !count(playersymbol.begin(), playersymbol.end(), j))

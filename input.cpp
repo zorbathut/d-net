@@ -53,3 +53,11 @@ void Controller::newState(const Controller &nst) {
     for(int i = 0; i < keys.size(); i++)
         keys[i].newState(nst.keys[i]);
 }
+
+float deadzone(float t, float o, float absdead, float tdead) {
+    if(abs(t) < absdead)
+        return 0;
+    if(t*t + o*o < tdead*tdead)
+        return 0;
+    return t;
+}

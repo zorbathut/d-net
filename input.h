@@ -49,4 +49,10 @@ public:
     Button u,d,l,r,f;
 };
 
+/*************
+ * Utility funcs
+ */
+
+float deadzone(float t, float o, float absdead, float tdead);
+
 #endif
