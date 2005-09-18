@@ -427,16 +427,17 @@ void Metagame::drawMultibar(const vector<float> &sizes, const Float4 &dimensions
 }
 
 void Metagame::findLevels(int playercount) {
-    CHECK(!levels.size());
-    ifstream ifs("data/levels/levellist.txt");
-    string line;
-    while(getLineStripped(ifs, line)) {
-        Level lev = loadLevel("data/levels/" + line);
-        if(lev.playersValid.count(playercount))
-            levels.push_back(lev);
+    if(!levels.size()) {
+        ifstream ifs("data/levels/levellist.txt");
+        string line;
+        while(getLineStripped(ifs, line)) {
+            Level lev = loadLevel("data/levels/" + line);
+            if(lev.playersValid.count(playercount))
+                levels.push_back(lev);
+        }
+        dprintf("Got %d usable levels\n", levels.size());
+        CHECK(levels.size());
     }
-    dprintf("Got %d usable levels\n", levels.size());
-    CHECK(levels.size());
 }
 
 // not a valid state
