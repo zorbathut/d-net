@@ -24,7 +24,7 @@ public:
 	void removeThingsFromGroup( int category, int gid );
 	void endRemoveThingsFromGroup();
 
-	void addThingsToGroup( int category, int gid );
+	void addThingsToGroup( int category, int gid, bool log = false);
 	void endAddThingsToGroup();
 
 	bool doProcess();
@@ -51,6 +51,7 @@ public:
 private:
 	
 	int state;
+    bool log;
 
 	Coord ctime;
 

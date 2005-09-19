@@ -197,14 +197,14 @@ inline bool operator==(const Coord4 &lhs, const Coord4 &rhs) {
     return lhs.sx == rhs.sx && lhs.sy == rhs.sy && lhs.ex == rhs.ex && lhs.ey == rhs.ey;
 }
 
-inline bool verboselinelineintersect( float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4 ) {
-	float denom = ( y4 - y3 ) * ( x2 - x1 ) - ( x4 - x3 ) * ( y2 - y1 );
-    dprintf("%f\n", denom);
-    float ua = ( ( x4 - x3 ) * ( y1 - y3 ) - ( y4 - y3 ) * ( x1 - x3 ) ) / denom;
-    dprintf("%f\n", ua);
-	float ub = ( ( x2 - x1 ) * ( y1 - y3 ) - ( y2 - y1 ) * ( x1 - x3 ) ) / denom;
-    dprintf("%f\n", ub);
-	return ua >= 0 && ua <= 1 && ub >= 0 && ub <= 1;
+inline bool verboselinelineintersect( float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4, float *denom, float *ua, float *ub ) {
+	*denom = ( y4 - y3 ) * ( x2 - x1 ) - ( x4 - x3 ) * ( y2 - y1 );
+    dprintf("%f\n", *denom);
+    *ua = ( ( x4 - x3 ) * ( y1 - y3 ) - ( y4 - y3 ) * ( x1 - x3 ) ) / *denom;
+    dprintf("%f\n", *ua);
+	*ub = ( ( x2 - x1 ) * ( y1 - y3 ) - ( y2 - y1 ) * ( x1 - x3 ) ) / *denom;
+    dprintf("%f\n", *ub);
+	return *ua >= 0 && *ua <= 1 && *ub >= 0 && *ub <= 1;
 }
 inline bool linelineintersect( Coord x1, Coord y1, Coord x2, Coord y2, Coord x3, Coord y3, Coord x4, Coord y4 ) {
     //dprintf("%f,%f %f,%f vs %f,%f %f,%f\n",
@@ -227,8 +227,9 @@ inline bool linelineintersect( Coord x1, Coord y1, Coord x2, Coord y2, Coord x3,
             dprintf("%f\n", denom.toFloat());
             dprintf("%f\n", ua.toFloat());
             dprintf("%f\n", ub.toFloat());
+            float fdenom, fua, fub;
             verboselinelineintersect(x1.toFloat(), y1.toFloat(), x2.toFloat(), y2.toFloat(), 
-                x3.toFloat(), y3.toFloat(), x4.toFloat(), y4.toFloat());
+                x3.toFloat(), y3.toFloat(), x4.toFloat(), y4.toFloat(), &fdenom, &fua, &fub);
             dprintf("---");
             dprintf("%f\n", (x2-x1).toFloat());
             dprintf("%f\n", (y1-x3).toFloat());
@@ -238,6 +239,13 @@ inline bool linelineintersect( Coord x1, Coord y1, Coord x2, Coord y2, Coord x3,
             dprintf("%f\n", (( y2 - y1 ) * ( x1 - x3 )).toFloat());
             dprintf("%f\n", ( ( x2 - x1 ) * ( y1 - y3 ) - ( y2 - y1 ) * ( x1 - x3 ) ).toFloat());
             dprintf("%f\n", ( ( ( x2 - x1 ) * ( y1 - y3 ) - ( y2 - y1 ) * ( x1 - x3 ) ) / denom ).toFloat());
+            float iua = abs(fua - ua.toFloat());
+            float iub = abs(fub - ub.toFloat());
+            float iud = abs(fdenom - denom.toFloat()) / min(abs(fdenom), abs(denom.toFloat()));
+            dprintf("%e\n", abs(fdenom - denom.toFloat()));
+            dprintf("%e %e %e\n", iua, iub, iud);
+            if(iua < 1e-6 && iub < 1e-6)
+                return rv;
             CHECK(0);
     }
     return rv;

@@ -9,6 +9,9 @@ using namespace std;
 #include "debug.h"
 #include "rng.h"
 #include "util.h"
+#include "args.h"
+
+DECLARE_bool(verboseCollisions);
 
 const Coord NOCOLLIDE = Coord(-1000000000);
 
@@ -144,6 +147,11 @@ void Collider::startToken( int toki ) {
     curtoken = toki;
 }
 void Collider::token( const Coord4 &line, const Coord4 &direction ) {
+    if(log) {
+        dprintf("Collide in: %f,%f-%f,%f delta %f,%f-%f,%f\n",
+            line.sx.toFloat(), line.sy.toFloat(), line.ex.toFloat(), line.ey.toFloat(),
+            direction.sx.toFloat(), direction.sy.toFloat(), direction.ex.toFloat(), direction.ey.toFloat());
+    }
     if( state == 1 ) {
         CHECK( state == 1 && curpush != -1 && curtoken != -1 );
         CHECK( ctime == 0 || ( direction.sx == 0 && direction.sy == 0 && direction.ex == 0 && direction.ey == 0 ) );
@@ -161,14 +169,16 @@ void Collider::clearGroup( int category, int gid ) {
     items[ getIndex( category, gid ) ].clear();
 }
 
-void Collider::addThingsToGroup( int category, int gid ) {
+void Collider::addThingsToGroup( int category, int gid, bool ilog ) {
     CHECK( state == 0 && curpush == -1 && curtoken == -1 );
     state = 1;
+    log = ilog;
     curpush = getIndex( category, gid );
 }
 void Collider::endAddThingsToGroup() {
     CHECK( state == 1 && curpush != -1 );
     state = 0;
+    log = false;
     curpush = -1;
     curtoken = -1;
 }
@@ -195,6 +205,8 @@ bool Collider::doProcess() {
             for( int x = 0; x < items[ *itr ].size(); x++ ) {
                 for( int y = 0; y < items[ alter ].size(); y++ ) {
                     if( linelineintersect( lerp( items[ alter ][ y ].second.first, items[ alter ][ y ].second.second, ctime ), lerp( items[ *itr ][ x ].second.first, items[ *itr ][ x ].second.second, ctime ) ) ) {
+                        if(!ffwd && FLAGS_verboseCollisions)
+                            dprintf("detokening %d/%d\n", *itr, alter);
                         CHECK( reverseIndex( alter ).first == 1 );
                         lhs.first = reverseIndex( *itr );
                         lhs.second = items[ *itr ][ x ].first;
@@ -313,9 +325,7 @@ bool Collider::testCollideAll(bool print) const {
     return false;
 }
 
-Collider::Collider() { state = 0; ctime = 0; curpush = -1; curtoken = -1; };
-//Collide::Collide( const Float4 &in_line, int in_sid ) : line( in_line ) {
-	//sid = in_sid; };
+Collider::Collider() { state = 0; ctime = 0; curpush = -1; curtoken = -1; log = false; };
 Collider::~Collider() { };
 
 void Collider::render() const { };

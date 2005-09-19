@@ -96,7 +96,7 @@ void Tank::render( int tankid ) const {
 
 void Tank::startNewMoveCycle() {
     CHECK(initted);
-    timeLeft = 1;
+    timeDone = 0;
 };
 
 void Tank::setKeys( const Keystates &keystates ) {
@@ -104,7 +104,7 @@ void Tank::setKeys( const Keystates &keystates ) {
 };
 
 void Tank::move() {
-    move( timeLeft );
+    move( 1 - timeDone );
 }
 
 void Tank::move( Coord time ) {
@@ -117,8 +117,15 @@ void Tank::move( Coord time ) {
     y = newpos.first.y;
     d = newpos.second;
     
-    timeLeft -= time;
+    timeDone += time;
+    
+    CHECK(timeDone >= 0 && timeDone <= 1);
 	
+};
+
+void Tank::moveTo(Coord time) {
+    CHECK(time >= timeDone);
+    move(time - timeDone);
 };
 
 void Tank::addCollision( Collider *collider ) const {
@@ -127,7 +134,8 @@ void Tank::addCollision( Collider *collider ) const {
 		return;
 
 	vector<Coord2> tankpts = getTankVertices( x, y, d );
-    pair<Coord2, float> newpos = getDeltaAfterMovement( keys, x, y, d, timeLeft );
+    pair<Coord2, float> newpos = getDeltaAfterMovement( keys, x, y, d, 1 - timeDone );
+    CHECK(newpos.first.x == x && newpos.first.y == y && newpos.second == d || timeDone == 0);
 	vector<Coord2> newtankpts = getTankVertices( newpos.first.x, newpos.first.y, newpos.second );
 	for( int i = 0; i < newtankpts.size(); i++ )
 		newtankpts[ i ] -= tankpts[ i ];
@@ -375,34 +383,37 @@ void collideHandler( Collider *collider, vector< Tank > *tanks, const vector< Ke
     }
     
     Tank temptank;
+
+    Coord cCollideTimeStamp = collider->getCurrentTimestamp();
     
-    Coord cCollideTimeStamp = collider->getCurrentTimestamp() + COLLISIONROLLBACK;
-    
-    Coord cTimeStamp = collider->getCurrentTimestamp();
+    Coord cSafeTimeStamp = collider->getCurrentTimestamp();
     Coord rollbackStep = COLLISIONROLLBACK;
-    
-    {
+
+    collider->setCurrentTimestamp( cCollideTimeStamp );
+    if(!collider->testCollideAll()) {
+        cCollideTimeStamp += COLLISIONROLLBACK;
         collider->setCurrentTimestamp( cCollideTimeStamp );
         CHECK( collider->testCollideAll() );
-        collider->setCurrentTimestamp( cTimeStamp );
     }
     
+    collider->setCurrentTimestamp( cSafeTimeStamp );
+
     if(!ffwd && FLAGS_verboseCollisions)
-        dprintf( "Modified timestamp is %f, vs %f (%f diff)\n", cCollideTimeStamp.toFloat(), cTimeStamp.toFloat(), cCollideTimeStamp.toFloat() - cTimeStamp.toFloat() );
-    
+        dprintf( "Modified timestamp is %f, vs %f (%e diff)\n", cCollideTimeStamp.toFloat(), cSafeTimeStamp.toFloat(), cCollideTimeStamp.toFloat() - cSafeTimeStamp.toFloat() );
+
     while(1) {
         
         // If this triggers, we've gotten ourselves in a weird but potentially possible situation
         // The solution is to figure out *all* the tanks involved in the deadlock, and keep them all from moving
         // And possibly flash a "treads locked" message so they can figure out how to get out :P
-        CHECK( cTimeStamp > 0 );
+        CHECK( cSafeTimeStamp > 0 );
         
-        cTimeStamp = max( cTimeStamp - rollbackStep, 0 );
-        collider->setCurrentTimestamp( cTimeStamp );
+        cSafeTimeStamp = max( cSafeTimeStamp - rollbackStep, 0 );
+        collider->setCurrentTimestamp( cSafeTimeStamp );
         rollbackStep += rollbackStep;
         for( int i = 0; i < tankx.size(); i++ ) {
             temptank = (*tanks)[tankx[i]];
-            temptank.move( cTimeStamp );
+            temptank.moveTo( cSafeTimeStamp );
             temptank.setKeys( stopped[ i ] );
             collider->clearGroup(0, tankx[i]);
             collider->addThingsToGroup(0, tankx[i]);
@@ -421,8 +432,11 @@ void collideHandler( Collider *collider, vector< Tank > *tanks, const vector< Ke
         // roll back again
     }
     
+    for(int i = 0; i < tankx.size(); i++)
+        CHECK(!collider->testCollideAgainst( tankx[ i ] ));
+    
     if(!ffwd && FLAGS_verboseCollisions)
-        dprintf( "Unfreeze timestamp is %f\n", cTimeStamp.toFloat() );
+        dprintf( "Unfreeze timestamp is %f\n", cSafeTimeStamp.toFloat() );
     
     /* now we have our real timestamp, so let's see what can be released */
     /* all the tanks are still in the "fixed" location", so let's roll forward to the collide point and see what it looks like then */
@@ -438,7 +452,7 @@ void collideHandler( Collider *collider, vector< Tank > *tanks, const vector< Ke
         collider->setCurrentTimestamp( 0 );
         temptank = (*tanks)[tankx[i]];
         collider->clearGroup(0, tankx[i]);
-        collider->addThingsToGroup(0, tankx[i]);
+        collider->addThingsToGroup(0, tankx[i], true);
         collider->startToken(0);
         temptank.addCollision( collider );
         collider->endAddThingsToGroup();
@@ -447,22 +461,28 @@ void collideHandler( Collider *collider, vector< Tank > *tanks, const vector< Ke
         if(!ffwd && FLAGS_verboseCollisions)
             dprintf( "Clix\n" );
         // if it's colliding again, it clearly can't move forward
-        if( collider->testCollideAgainst( tankx[ i ] ) )
+        if( collider->testCollideAgainst( tankx[ i ] ) ) {
+            if(!ffwd && FLAGS_verboseCollisions)
+                dprintf("Still collides\n");
             mustBeFrozen[ i ] = true;
+        }
         
         if(!ffwd && FLAGS_verboseCollisions)
             dprintf( "Reset\n" );
         
         temptank = (*tanks)[tankx[i]];
-        temptank.move( cTimeStamp );
+        temptank.moveTo( cSafeTimeStamp );
         temptank.setKeys( stopped[ i ] );
         collider->clearGroup(0, tankx[i]);
-        collider->addThingsToGroup(0, tankx[i]);
+        collider->addThingsToGroup(0, tankx[i], true);
         collider->startToken(0);
         temptank.addCollision( collider );
         collider->endAddThingsToGroup();
         if(!ffwd && FLAGS_verboseCollisions)
             dprintf( "Done\n" );
+        
+        for(int i = 0; i < tankx.size(); i++)
+            CHECK(!collider->testCollideAgainst( tankx[ i ] ));
     }
     
     if(!ffwd && FLAGS_verboseCollisions)
@@ -481,21 +501,36 @@ void collideHandler( Collider *collider, vector< Tank > *tanks, const vector< Ke
     /* the frozen ones are still frozen at the appropriate time, so let's unfreeze the non-frozen ones, rollback to our "safe" time, and let the sim keep going from there */
     
     for( int i = 0; i < tankx.size(); i++ ) {
+        if(!ffwd && FLAGS_verboseCollisions)
+            dprintf( "Modifying %d, %d\n", i, mustBeFrozen[i] );
         if( mustBeFrozen[ i ] ) {
-            (*tanks)[tankx[i]].move( cTimeStamp );
+            Coord oldtime = (*tanks)[tankx[i]].timeDone;
+            (*tanks)[tankx[i]].moveTo( cSafeTimeStamp );
             (*tanks)[tankx[i]].setKeys( stopped[ i ] );
             collider->flagAsMoved( 0, tankx[i] );
+            if((*tanks)[tankx[i]].timeDone != cSafeTimeStamp) {
+                dprintf("%f, %f - %g\n", (*tanks)[tankx[i]].timeDone.toFloat(), cSafeTimeStamp.toFloat(), (*tanks)[tankx[i]].timeDone.toFloat() - cSafeTimeStamp.toFloat());
+                dprintf("was %f\n", oldtime.toFloat());
+                CHECK(0);
+            }
         } else {
             temptank = (*tanks)[tankx[i]];
             collider->clearGroup(0, tankx[i]);
-            collider->addThingsToGroup(0, tankx[i]);
+            collider->addThingsToGroup(0, tankx[i], true);
             collider->startToken(0);
             temptank.addCollision( collider );
             collider->endAddThingsToGroup();
-        }            
+        }
+        if(!ffwd && FLAGS_verboseCollisions)
+            dprintf( "Modified %d\n", i );
+        collider->setCurrentTimestamp( cSafeTimeStamp );
+        for(int i = 0; i < tankx.size(); i++)
+            CHECK(!collider->testCollideAgainst( tankx[ i ] ));
+        CHECK( !collider->testCollideAll(true) );
+        collider->setCurrentTimestamp( 0 );
     }
     
-    collider->setCurrentTimestamp( cTimeStamp );
+    collider->setCurrentTimestamp( cSafeTimeStamp );
     
     if(!ffwd && FLAGS_verboseCollisions)
         dprintf( "Sim continuing\n" );
@@ -637,6 +672,7 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
     
 	for( int i = 0; i < players.size(); i++ ) {
 		players[ i ].move();
+        CHECK(players[i].timeDone == 1);
         players[ i ].weaponCooldown--;
     }
 

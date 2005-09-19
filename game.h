@@ -74,6 +74,7 @@ public:
     void setKeys( const Keystates &keystates );
     void move();
     void move( Coord time );
+    void moveTo( Coord time );
 	//bool colliding( const Collider &collider ) const;
 	void addCollision( Collider *collider ) const;
 
@@ -98,7 +99,7 @@ public:
 
 	float health;
     
-    Coord timeLeft;
+    Coord timeDone;
     Keystates keys;
     
     Player *player;
