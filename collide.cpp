@@ -197,30 +197,6 @@ void Collider::endRemoveThingsFromGroup() {
 
 bool Collider::doProcess() {
 	CHECK( state == 0 );
-    
-    for(set<int>::iterator itr = moved.begin(); itr != moved.end(); itr = moved.begin()) {
-        for( int alter = 0; alter < items.size(); alter++ ) {
-            if( !canCollide( *itr, alter ) )
-                continue;
-            for( int x = 0; x < items[ *itr ].size(); x++ ) {
-                for( int y = 0; y < items[ alter ].size(); y++ ) {
-                    if( linelineintersect( lerp( items[ alter ][ y ].second.first, items[ alter ][ y ].second.second, ctime ), lerp( items[ *itr ][ x ].second.first, items[ *itr ][ x ].second.second, ctime ) ) ) {
-                        if(!ffwd && FLAGS_verboseCollisions)
-                            dprintf("detokening %d/%d\n", *itr, alter);
-                        CHECK( reverseIndex( alter ).first == 1 );
-                        lhs.first = reverseIndex( *itr );
-                        lhs.second = items[ *itr ][ x ].first;
-                        rhs.first = reverseIndex( alter );
-                        rhs.second = items[ alter ][ y ].first;
-                        CHECK( rhs.first.first == 1 );
-                        return true;
-                    }
-                }
-            }
-        }
-        moved.erase( itr );
-    }
-    
 	Coord firstintersect = 2;
     int lhsx = 0;
     int rhsx = 0;
@@ -245,7 +221,7 @@ bool Collider::doProcess() {
 			}
 		}
 	}
-	ctime = firstintersect;
+	ctime = min(firstintersect, Coord(1));
     lhs.first = reverseIndex( lhsx );
     rhs.first = reverseIndex( rhsx );
 	return firstintersect < 2;
@@ -269,10 +245,6 @@ pair< pair< int, int >, int > Collider::getRhs() const {
 	return rhs;
 }
 
-void Collider::flagAsMoved( int category, int gid ) {
-    moved.insert( getIndex( category, gid ) );
-}
-
 bool Collider::testCollideSingle( int lhs, int rhs, bool print ) const {
     CHECK( lhs >= 0 && lhs < items.size() );
     CHECK( rhs >= 0 && rhs < items.size() );
@@ -292,6 +264,7 @@ bool Collider::testCollideSingle( int lhs, int rhs, bool print ) const {
     return false;
 }
 bool Collider::testCollideAgainst( int active ) const {
+    CHECK(active >= -1 && active < players);
     int actindex;
     if( active == -1 )
         actindex = getIndex( -1, 0 );
@@ -301,11 +274,15 @@ bool Collider::testCollideAgainst( int active ) const {
         if( active == i )
             continue;
         if( i == -1 ) {
-            if( testCollideSingle( getIndex( -1, 0 ), actindex ) )
+            if( testCollideSingle( getIndex( -1, 0 ), actindex ) ) {
+                //dprintf("%d collided against wall\n", active);
                 return true;
+            }
         } else {
-            if( testCollideSingle( getIndex( 0, i ), actindex ) )
+            if( testCollideSingle( getIndex( 0, i ), actindex ) ) {
+                //dprintf("%d collided against other tank\n", active);
                 return true;
+            }
         }
     }
     return false;
@@ -331,9 +308,16 @@ Collider::~Collider() { };
 void Collider::render() const { };
 
 bool Collider::canCollide( int indexa, int indexb ) const {
-    if( indexa > indexb )
-        swap( indexa, indexb );
-    return !( indexb - indexa == players && indexa != 0 ) && indexa != indexb;
+    pair<int, int> ar = reverseIndex(indexa);
+    pair<int, int> br = reverseIndex(indexb);
+    // Two things can't collide if they're part of the same ownership group
+    if(ar.second == br.second && ar.first != -1 && br.first != -1)
+        return false;
+    // Two things can't collide if neither of them are a projectile
+    if(ar.first != 1 && br.first != 1)
+        return false;
+    // That's pretty much all.
+    return true;
 }
 int Collider::getIndex( int category, int gid ) const {
     if( category == -1 ) {

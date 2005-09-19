@@ -54,6 +54,16 @@ void Controller::newState(const Controller &nst) {
         keys[i].newState(nst.keys[i]);
 }
 
+void Keystates::nullMove() {
+    ax[0] = ax[1] = 0;
+    u = d = l = r = Button();
+}
+
+Keystates::Keystates() {
+    ax[0] = ax[1] = 0;
+    axmode = KSAX_UDLR;
+}
+
 float deadzone(float t, float o, float absdead, float tdead) {
     if(abs(t) < absdead)
         return 0;

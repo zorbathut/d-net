@@ -32,14 +32,8 @@ public:
     void setCurrentTimestamp( Coord t );
 	pair< pair< int, int >, int > getLhs() const;
 	pair< pair< int, int >, int > getRhs() const;
-  
-    void flagAsMoved( int category, int gid );
-    // flags to run a series of tests to make sure it's not *currently* impacting anything, and spit out collision errors if so
-    // currently will also error and crash if it's colliding with wall or tank
 
-	Collider();	// doesn't init to a usable state
-	//void reinit( float sx, float sy, float ex, float ey );
-	//Collider( float sx, float sy, float ex, float ey );
+	Collider();
 	~Collider();
 
 	void render() const;
@@ -63,8 +57,6 @@ private:
     int curtoken;
 
     int players;
-
-    set< int > moved;
 
     bool canCollide( int indexa, int indexb ) const;
     int getIndex( int category, int gid ) const;
