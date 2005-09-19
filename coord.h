@@ -37,6 +37,7 @@ public:
     explicit Coord(float rhs) { d = (long long)(rhs * (1LL << 32)); }
     
     float toFloat() const { return (float)d / ( 1LL << 32 ); }
+    long long raw() const { return d; };
     
     ~Coord() { }; // lol no.
 };
@@ -81,16 +82,22 @@ inline Coord operator-(const Coord &lhs, const Coord &rhs) {
 
 // TODO: improve?
 inline Coord operator*(const Coord &lhs, const Coord &rhs) {
-    //dprintf("op/ in!\n");
-    Coord rv = coordExplicit(
-    (long long)(
-            ((long double)lhs.d * (long double)rhs.d) / (1LL << 32)
-        )
-    );
-    //dprintf("  %f %f %f %d\n", lhs.toFloat(), rhs.toFloat(), rv.toFloat(), 1234);
-    //dprintf("  %lld %lld %lld %d\n", lhs.d, rhs.d, rv.d, 1234);
-    //dprintf("op/ out!\n");
-    return rv;
+    bool neg = false;
+    long long ld = lhs.d;
+    long long rd = rhs.d;
+    if(ld < 0) { neg = !neg; ld = -ld; }
+    if(rd < 0) { neg = !neg; rd = -rd; }
+    unsigned int lh = (unsigned int)(ld >> 32);
+    unsigned int ll = (unsigned int)ld;
+    unsigned int rh = (unsigned int)(rd >> 32);
+    unsigned int rl = (unsigned int)rd;
+    unsigned long long rv = 0;
+    rv += ((unsigned long long)ll * (unsigned long long)rl) >> 32;
+    rv += ((unsigned long long)ll * (unsigned long long)rh);
+    rv += ((unsigned long long)lh * (unsigned long long)rl);
+    rv += ((unsigned long long)lh * (unsigned long long)rh) << 32;
+    if(neg) rv = -rv;
+    return coordExplicit(rv);
 }
 
 

@@ -571,9 +571,13 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
     }
     
 	for( int i = 0; i < players.size(); i++ ) {
+        Coord prem = players[i].timeDone;
 		players[ i ].move();
-        if(players[i].timeDone != 1) {
+        if(players[i].live && players[i].timeDone != 1) {
             dprintf("%f, wtf?\n", players[i].timeDone.toFloat());
+            dprintf("%x also\n", (unsigned int)players[i].timeDone.raw());
+            dprintf("%f, wtf?\n", prem.toFloat());
+            dprintf("%x also\n", (unsigned int)prem.raw());
             CHECK(0);
         }
         players[ i ].weaponCooldown--;
