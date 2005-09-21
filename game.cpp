@@ -386,6 +386,7 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
     
     // I think this works.
     
+    dprintf("ca\n");
     {
         
         vector<vector<Coord4> > coordcache;
@@ -393,6 +394,12 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
         
         for(int i = 0; i < players.size(); i++)
             coordcache.push_back(players[i].getCurrentCollide());
+
+        for(int i = 0; i < coordcache.size(); i++)        
+            for(int j = i + 1; j < coordcache.size(); j++)
+                for(int k = 0; k < coordcache[i].size(); k++)
+                    for(int m = 0; m < coordcache[j].size(); m++)
+                        CHECK(!linelineintersect(coordcache[i][k], coordcache[j][m]));
         
         vector<int> playerorder;
         {
@@ -434,6 +441,7 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
         }
         
     }
+    dprintf("cb\n");
     
     collider.reset(players.size());
     
@@ -470,9 +478,13 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
 		collider.endAddThingsToGroup();
 	}
     
-    CHECK(!collider.testCollideAll(true));
+    dprintf("cc\n");
     
-	while( collider.doProcess() ) {
+    collider.process();
+    
+    dprintf("cd\n");
+    
+	while( collider.next() ) {
 		//dprintf( "Collision!\n" );
 		//dprintf( "Timestamp %f\n", collider.getCurrentTimestamp().toFloat() );
 		//dprintf( "%d,%d,%d vs %d,%d,%d\n", collider.getLhs().first.first, collider.getLhs().first.second, collider.getLhs().second, collider.getRhs().first.first, collider.getRhs().first.second, collider.getRhs().second );
@@ -487,10 +499,6 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
             CHECK(0);
         } else if( lhs.first.first == -1 && rhs.first.first == 1 ) {
             // wall-projectile collision - kill projectile
-            collider.removeThingsFromGroup( rhs.first.first, rhs.first.second );
-            collider.startToken(rhs.second);
-            projectiles[ rhs.first.second ][ rhs.second ].addCollision( &collider );
-            collider.endRemoveThingsFromGroup();
             projectiles[ rhs.first.second ][ rhs.second ].live = false;
             projectiles[ rhs.first.second ][ rhs.second ].genEffects( &gfxeffects );
         } else if( lhs.first.first == 0 && rhs.first.first == 0 ) {
@@ -498,26 +506,14 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
             CHECK(0);
         } else if( lhs.first.first == 0 && rhs.first.first == 1 ) {
             // tank-projectile collision - kill projectile, do damage
-            collider.removeThingsFromGroup( rhs.first.first, rhs.first.second );
-            collider.startToken(rhs.second);
-            projectiles[ rhs.first.second ][ rhs.second ].addCollision( &collider );
-            collider.endRemoveThingsFromGroup();
             projectiles[ rhs.first.second ][ rhs.second ].impact( &players[ lhs.first.second ] );
             projectiles[ rhs.first.second ][ rhs.second ].live = false;
             projectiles[ rhs.first.second ][ rhs.second ].genEffects( &gfxeffects );
         } else if( lhs.first.first == 1 && rhs.first.first == 1 ) {
             // projectile-projectile collision - kill both projectiles
-            collider.removeThingsFromGroup( lhs.first.first, lhs.first.second );
-            collider.startToken(lhs.second);
-            projectiles[ lhs.first.second ][ lhs.second ].addCollision( &collider );
-            collider.endRemoveThingsFromGroup();
             projectiles[ lhs.first.second ][ lhs.second ].live = false;
             projectiles[ lhs.first.second ][ lhs.second ].genEffects( &gfxeffects );
             
-            collider.removeThingsFromGroup( rhs.first.first, rhs.first.second );
-            collider.startToken(rhs.second);
-            projectiles[ rhs.first.second ][ rhs.second ].addCollision( &collider );
-            collider.endRemoveThingsFromGroup();
             projectiles[ rhs.first.second ][ rhs.second ].live = false;
             projectiles[ rhs.first.second ][ rhs.second ].genEffects( &gfxeffects );
         } else {
@@ -525,10 +521,6 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
             CHECK(0);
         }
 	}
-    
-    CHECK(collider.getCurrentTimestamp() == 1);
-    
-    CHECK(!collider.testCollideAll(true));
 
 	for( int j = 0; j < projectiles.size(); j++ ) {
 		for( int k = 0; k < projectiles[ j ].size(); k++ ) {

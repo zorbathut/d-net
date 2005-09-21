@@ -21,15 +21,12 @@ public:
 
     void clearGroup( int category, int gid );
 
-	void removeThingsFromGroup( int category, int gid );
-	void endRemoveThingsFromGroup();
-
 	void addThingsToGroup( int category, int gid, bool log = false);
 	void endAddThingsToGroup();
 
-	bool doProcess();
-	Coord getCurrentTimestamp() const;
-    void setCurrentTimestamp( Coord t );
+	void process();
+
+    bool next();
 	pair< pair< int, int >, int > getLhs() const;
 	pair< pair< int, int >, int > getRhs() const;
 
@@ -37,20 +34,16 @@ public:
 	~Collider();
 
 	void render() const;
-    
-    bool testCollideSingle(int lhs, int rhs, bool print = false) const;
-    bool testCollideAgainst(int active) const;
-    bool testCollideAll(bool print = false) const;
 
 private:
 	
+    enum { CSTA_WAIT, CSTA_ADD, CSTA_PROCESSED };
+    
 	int state;
     bool log;
 
-	Coord ctime;
-
-	pair< pair< int, int >, int > lhs;
-	pair< pair< int, int >, int > rhs;
+    int curcollide;
+    vector< pair< pair< pair< int, int >, int >, pair< pair< int, int >, int > > > collides;
 
 	vector< vector< pair< int, pair< Coord4, Coord4 > > > > items;
     int curpush;
