@@ -85,6 +85,16 @@ void Tank::init(Player *in_player) {
     initted = true;
 }
 
+void Tank::tick(const Keystates &kst) {
+    
+    pair<Coord2, float> newpos = getDeltaAfterMovement( kst, x, y, d );
+    
+    x = newpos.first.x;
+    y = newpos.first.y;
+    d = newpos.second;
+	
+};
+
 void Tank::render( int tankid ) const {
 	if( !live )
 		return;
@@ -94,48 +104,40 @@ void Tank::render( int tankid ) const {
 	drawLinePath( getTankVertices( x, y, d ), 0.2, true );
 };
 
-void Tank::startNewMoveCycle() {
-    CHECK(initted);
-    timeDone = 0;
-};
-
-void Tank::setKeys( const Keystates &keystates ) {
-    keys = keystates;
-};
-
-void Tank::move() {
-    move( 1 - timeDone );
-}
-
-void Tank::move( Coord time ) {
+vector<Coord4> Tank::getCurrentCollide() const {
 	if( !live )
-		return;
-    
-    pair<Coord2, float> newpos = getDeltaAfterMovement( keys, x, y, d, time );
-    
-    x = newpos.first.x;
-    y = newpos.first.y;
-    d = newpos.second;
-    
-    timeDone += time;
-    
-    CHECK(timeDone >= 0 && timeDone <= 1);
-	
+		return vector<Coord4>();
+
+	vector<Coord2> tankpts = getTankVertices( x, y, d );
+    vector<Coord4> rv;
+    for(int i = 0; i < tankpts.size(); i++) {
+        int j = (i + 1) % tankpts.size();
+        rv.push_back(Coord4(tankpts[i], tankpts[j]));
+    }
+    return rv;
 };
 
-void Tank::moveTo(Coord time) {
-    CHECK(time >= timeDone);
-    move(time - timeDone);
+vector<Coord4> Tank::getNextCollide(const Keystates &keys) const {
+	if( !live )
+		return vector<Coord4>();
+
+    pair<Coord2, float> newpos = getDeltaAfterMovement( keys, x, y, d );
+	vector<Coord2> tankpts = getTankVertices( newpos.first.x, newpos.first.y, newpos.second );
+    vector<Coord4> rv;
+    for(int i = 0; i < tankpts.size(); i++) {
+        int j = (i + 1) % tankpts.size();
+        rv.push_back(Coord4(tankpts[i], tankpts[j]));
+    }
+    return rv;
 };
 
-void Tank::addCollision( Collider *collider ) const {
+void Tank::addCollision(Collider *collider, const Keystates &keys) const {
     
 	if( !live )
 		return;
 
 	vector<Coord2> tankpts = getTankVertices( x, y, d );
-    pair<Coord2, float> newpos = getDeltaAfterMovement( keys, x, y, d, 1 - timeDone );
-    CHECK(newpos.first.x == x && newpos.first.y == y && newpos.second == d || timeDone == 0);
+    pair<Coord2, float> newpos = getDeltaAfterMovement( keys, x, y, d );
 	vector<Coord2> newtankpts = getTankVertices( newpos.first.x, newpos.first.y, newpos.second );
 	for( int i = 0; i < newtankpts.size(); i++ )
 		newtankpts[ i ] -= tankpts[ i ];
@@ -171,7 +173,7 @@ Coord2 Tank::getFiringPoint() const {
 	return Coord2( x + tank_coords[ 2 ][ 0 ] * xtx + tank_coords[ 2 ][ 1 ] * xty, y + tank_coords[ 2 ][ 1 ] * yty + tank_coords[ 2 ][ 0 ] * ytx );
 };
 
-pair<Coord2, float> Tank::getDeltaAfterMovement( const Keystates &keys, Coord x, Coord y, float d, Coord t ) const {
+pair<Coord2, float> Tank::getDeltaAfterMovement( const Keystates &keys, Coord x, Coord y, float d ) const {
     
     float dv;
     float dd;
@@ -211,10 +213,10 @@ pair<Coord2, float> Tank::getDeltaAfterMovement( const Keystates &keys, Coord x,
     
     Coord cdv(dv);
 
-	x += player->maxSpeed * cdv * cfsin( d ) * t;
-	y += -player->maxSpeed * cdv * cfcos( d ) * t;
+	x += player->maxSpeed * cdv * cfsin( d );
+	y += -player->maxSpeed * cdv * cfcos( d );
 
-	d += player->turnSpeed * dd * t.toFloat();
+	d += player->turnSpeed * dd;
 	d += 2*PI;
 	d = fmod( d, 2*(float)PI );
     
@@ -263,16 +265,9 @@ Tank::Tank() {
     weaponCooldown = 0;
 }
 
-void Projectile::startNewMoveCycle() {
-    timeLeft = 1;
-}
-void Projectile::move() {
-    move( timeLeft );
-}
-void Projectile::move( Coord time ) {
-    x += v * cfsin( d ) * time;
-    y += -v * cfcos( d ) * time;
-    timeLeft -= time;
+void Projectile::tick() {
+    x += v * cfsin( d );
+    y += -v * cfcos( d );
 }
 
 void Projectile::render() const {
@@ -280,7 +275,6 @@ void Projectile::render() const {
 	drawLine(Coord4(x, y, x + v * cfsin( d ), y - v * cfcos( d )), 0.1 );
 };
 void Projectile::addCollision( Collider *collider ) const {
-    CHECK( timeLeft == 1 );
 	collider->token( Coord4( x, y, x + v * cfsin( d ), y - v * cfcos( d ) ), Coord4( v * cfsin( d ), -v * cfcos( d ), v * cfsin( d ), -v * cfcos( d ) ) );
 };
 void Projectile::impact( Tank *target ) {
@@ -392,92 +386,58 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
     
     // I think this works.
     
-    vector<int> playerorder;
     {
-        vector<int> playersleft;
+        
+        vector<vector<Coord4> > coordcache;
+        coordcache.push_back(gamemap.getCollide());
+        
         for(int i = 0; i < players.size(); i++)
-            playersleft.push_back(i);
-        while(playersleft.size()) {
-            int pt = int(frand() * playersleft.size());
-            CHECK(pt >= 0 && pt < playersleft.size());
-            playerorder.push_back(playersleft[pt]);
-            playersleft.erase(playersleft.begin() + pt);
+            coordcache.push_back(players[i].getCurrentCollide());
+        
+        vector<int> playerorder;
+        {
+            vector<int> playersleft;
+            for(int i = 0; i < players.size(); i++)
+                playersleft.push_back(i);
+            while(playersleft.size()) {
+                int pt = int(frand() * playersleft.size());
+                CHECK(pt >= 0 && pt < playersleft.size());
+                playerorder.push_back(playersleft[pt]);
+                playersleft.erase(playersleft.begin() + pt);
+            }
         }
+        
+        CHECK(playerorder.size() == players.size());
+        for(int i = 0; i < playerorder.size(); i++) {
+            
+            CHECK(count(playerorder.begin(), playerorder.end(), playerorder[i]) == 1);
+            CHECK(playerorder[i] >= 0 && playerorder[i] < players.size());
+            
+            vector<Coord4> newpos = players[playerorder[i]].getNextCollide(keys[playerorder[i]]);
+            
+            bool smashy = false;            
+            for(int j = 0; j < coordcache.size() && !smashy; j++)
+                if(j != playerorder[i] + 1)
+                    for(int k = 0; k < coordcache[j].size() && !smashy; k++)
+                        for(int m = 0; m < newpos.size() && !smashy; m++)
+                            if(linelineintersect(coordcache[j][k], newpos[m]))
+                                smashy = true;
+        
+            
+            if(smashy) {
+                keys[playerorder[i]].nullMove();
+            } else {
+                coordcache[playerorder[i] + 1].clear();
+                coordcache[playerorder[i] + 1] = newpos;
+            }
+
+        }
+        
     }
     
     collider.reset(players.size());
     
-    collider.addThingsToGroup(-1, 0);
-    collider.startToken(0);
-    gamemap.addCollide( &collider );
-	collider.endAddThingsToGroup();
-    
-    collider.setCurrentTimestamp(0);
-    
-    for(int i = 0; i < playerorder.size(); i++) {
-        collider.addThingsToGroup(0, i);
-        collider.startToken(0);
-        players[i].startNewMoveCycle();
-        players[i].setKeys(Keystates());
-        players[i].addCollision(&collider);
-        collider.endAddThingsToGroup();
-    }
-    
-    CHECK(!collider.testCollideAll(true));
-    collider.setCurrentTimestamp(1);
-    CHECK(!collider.testCollideAll(true));
-    collider.setCurrentTimestamp(0);
-    
-    vector<bool> stopped(players.size());
-    vector<bool> notstopped(players.size());
-    
-    //dprintf("Starting cycle\n");
-    
-    CHECK(playerorder.size() == players.size());
-    for(int i = 0; i < playerorder.size(); i++) {
-        CHECK(count(playerorder.begin(), playerorder.end(), playerorder[i]) == 1);
-        CHECK(playerorder[i] >= 0 && playerorder[i] < players.size());
-        
-        //dprintf("PO %d, %d\n", i, playerorder[i]);
-        
-        collider.clearGroup(0, playerorder[i]);
-        collider.addThingsToGroup(0, playerorder[i]);
-        collider.startToken(0);
-        Tank temptank = players[playerorder[i]];
-        temptank.setKeys(keys[playerorder[i]]);
-        temptank.addCollision(&collider);
-        collider.endAddThingsToGroup();
-        
-        CHECK(!collider.testCollideAll(true));
-    
-        collider.setCurrentTimestamp(1);
-
-        if(collider.testCollideAgainst(playerorder[i])) {
-            //dprintf("Single collide hit!\n");
-            collider.setCurrentTimestamp(0);
-            keys[playerorder[i]].nullMove();
-            collider.clearGroup(0, playerorder[i]);
-            collider.addThingsToGroup(0, playerorder[i]);
-            collider.startToken(0);
-            players[playerorder[i]].setKeys(keys[playerorder[i]]);
-            players[playerorder[i]].addCollision(&collider);
-            collider.endAddThingsToGroup();
-            stopped[playerorder[i]] = true;
-        } else {
-            //dprintf("Single collide didn't hit!\n");
-            //CHECK(!collider.testCollideAll(true));
-            collider.setCurrentTimestamp(0);
-            players[playerorder[i]].setKeys(keys[playerorder[i]]);
-            notstopped[playerorder[i]] = true;
-        }
-
-        //CHECK(!collider.testCollideAll(true));
-        //collider.setCurrentTimestamp(1);
-        //CHECK(!collider.testCollideAll(true));
-        //collider.setCurrentTimestamp(0);
-
-    }
-    
+    // stuff!
     /*
     {
         string ope;
@@ -488,12 +448,23 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
         dprintf("%s\n", ope.c_str());
     }
     */
+    
+    collider.addThingsToGroup(-1, 0);
+    collider.startToken(0);
+    gamemap.addCollide(&collider);
+    collider.endAddThingsToGroup();
+    
+    for(int j = 0; j < players.size(); j++) {
+        collider.addThingsToGroup(0, j);
+        collider.startToken(0);
+        players[j].addCollision(&collider, keys[j]);
+        collider.endAddThingsToGroup();
+    }
 
 	for( int j = 0; j < projectiles.size(); j++ ) {
 		collider.addThingsToGroup(1, j);
 		for( int k = 0; k < projectiles[ j ].size(); k++ ) {
             collider.startToken(k);
-            projectiles[ j ][ k ].startNewMoveCycle();
 			projectiles[ j ][ k ].addCollision( &collider );
 		}
 		collider.endAddThingsToGroup();
@@ -565,21 +536,13 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
                 projectiles[ j ].erase( projectiles[ j ].begin() + k );
                 k--;
             } else {
-            	projectiles[ j ][ k ].move();
+            	projectiles[ j ][ k ].tick();
             }
         }
     }
     
 	for( int i = 0; i < players.size(); i++ ) {
-        Coord prem = players[i].timeDone;
-		players[ i ].move();
-        if(players[i].live && players[i].timeDone != 1) {
-            dprintf("%f, wtf?\n", players[i].timeDone.toFloat());
-            dprintf("%x also\n", (unsigned int)players[i].timeDone.raw());
-            dprintf("%f, wtf?\n", prem.toFloat());
-            dprintf("%x also\n", (unsigned int)prem.raw());
-            CHECK(0);
-        }
+		players[ i ].tick(keys[i]);
         players[ i ].weaponCooldown--;
     }
 

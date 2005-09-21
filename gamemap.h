@@ -15,6 +15,8 @@ public:
 	void render() const;
 	void addCollide( Collider *collide ) const;
 
+    vector<Coord4> getCollide() const;
+
     Coord4 getBounds() const;
 
     Gamemap();
@@ -22,7 +24,7 @@ public:
 
 private:
 
-	vector<vector<Coord2> > paths;
+	vector<Coord4> paths;
 
 };
 

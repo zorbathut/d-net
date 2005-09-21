@@ -67,23 +67,20 @@ public:
     
     void init(Player *player);
     
-	//void tick();
+	void tick(const Keystates &kst);
 	void render( int tankid ) const;
 
-    void startNewMoveCycle();
-    void setKeys( const Keystates &keystates );
-    void move();
-    void move( Coord time );
-    void moveTo( Coord time );
-	//bool colliding( const Collider &collider ) const;
-	void addCollision( Collider *collider ) const;
+	void addCollision( Collider *collider, const Keystates &kst ) const;
 
 	Tank();
+
+    vector<Coord4> getCurrentCollide() const;
+    vector<Coord4> getNextCollide(const Keystates &keys) const;
 
 	vector<Coord2> getTankVertices( Coord tx, Coord ty, float td ) const;
 	Coord2 getFiringPoint() const;
 
-    pair<Coord2, float> getDeltaAfterMovement( const Keystates &keys, Coord x, Coord y, float d, Coord t ) const;
+    pair<Coord2, float> getDeltaAfterMovement( const Keystates &keys, Coord x, Coord y, float d ) const;
 
 	bool takeDamage( float amount ); // returns true on kill
 	void genEffects( vector< GfxEffects > *gfxe );
@@ -99,7 +96,6 @@ public:
 
 	float health;
     
-    Coord timeDone;
     Keystates keys;
     
     Player *player;
@@ -111,12 +107,9 @@ public:
 class Projectile {
 public:
 
-	void render() const;
+    void tick();
+    void render() const;
 
-    void startNewMoveCycle();
-    void move();
-    void move( Coord time );
-	//bool colliding( const Collider &collider ) const;
 	void addCollision( Collider *collider ) const;
 
 	void impact( Tank *target );
@@ -129,8 +122,6 @@ public:
 
     Coord v;
     float damage;
-
-    Coord timeLeft;
 
     bool live;
     
