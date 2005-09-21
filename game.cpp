@@ -386,7 +386,6 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
     
     // I think this works.
     
-    dprintf("ca\n");
     {
         
         vector<vector<Coord4> > coordcache;
@@ -441,7 +440,6 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
         }
         
     }
-    dprintf("cb\n");
     
     collider.reset(players.size());
     
@@ -478,11 +476,7 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
 		collider.endAddThingsToGroup();
 	}
     
-    dprintf("cc\n");
-    
     collider.process();
-    
-    dprintf("cd\n");
     
 	while( collider.next() ) {
 		//dprintf( "Collision!\n" );

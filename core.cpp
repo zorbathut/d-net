@@ -17,10 +17,8 @@ using namespace std;
 #include "args.h"
 #include "rng.h"
 
-DEFINE_bool( writeToFile, true, "Dump keypresses to file during game" );
 DEFINE_string( writeTarget, "data/dump", "Prefix for file dump" );
 
-DEFINE_bool( readFromFile, false, "Replay game from keypress dump" );
 DEFINE_string( readTarget, "", "File to replay from" );
 
 DEFINE_int( fastForwardTo, 0, "Fastforward rendering to this frame" );
@@ -68,8 +66,6 @@ long long ticking = 0;
 long long rendering = 0;
 
 void MainLoop() {
-    
-    CHECK( !( FLAGS_readFromFile && FLAGS_readTarget == "" ) );
 
     playermap.resize(2);
     
@@ -103,7 +99,7 @@ void MainLoop() {
 
     FILE *infile = NULL;
     
-    if(FLAGS_readFromFile) {
+    if(FLAGS_readTarget != "") {
         dprintf("Reading state record from file %s\n", FLAGS_readTarget.c_str());
         infile = fopen(FLAGS_readTarget.c_str(), "rb");
         CHECK(infile);
@@ -155,7 +151,7 @@ void MainLoop() {
     
     FILE *outfile = NULL;
     
-    if(FLAGS_writeToFile) {
+    if(FLAGS_writeTarget != "") {
         string fname = FLAGS_writeTarget;
         char timestampbuf[ 128 ];
         time_t ctmt = time(NULL);
