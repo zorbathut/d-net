@@ -3,5 +3,6 @@
 
 void sfrand(int seed);
 float frand();
+int frandseed(); // only valid until frand() is called
 
 #endif

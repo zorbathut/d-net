@@ -254,7 +254,6 @@ void drawSolid(const Float4 &box) {
     finishLineCluster();
     CHECK(glGetError() == GL_NO_ERROR);
     glColor3f(clearcolor.r, clearcolor.g, clearcolor.b);
-    dprintf("scc %f %f %f\n", clearcolor.r, clearcolor.g, clearcolor.b);
     glBlendFunc( GL_ONE, GL_ZERO );
     glBegin(GL_TRIANGLE_STRIP);
     localVertex2f(box.sx, box.sy);
@@ -316,6 +315,7 @@ void drawCurveControls( const Float4 &ptah, const Float4 &ptbh, float spacing, f
 }
 
 void drawPoint( float x, float y, float weight ) {
+    finishLineCluster();
     glPointSize( weight / map_zoom * getResolutionY() );   // GL uses pixels internally for this unit, so I have to translate from game-meters
     glBegin( GL_POINTS );
 	glVertex2f( ( x - map_sx ) / map_zoom, ( y - map_sy ) / map_zoom );

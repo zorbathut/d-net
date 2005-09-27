@@ -64,6 +64,8 @@ Keystates::Keystates() {
     axmode = KSAX_UDLR;
 }
 
+
+
 float deadzone(float t, float o, float absdead, float tdead) {
     if(abs(t) < absdead)
         return 0;

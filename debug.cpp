@@ -1,6 +1,10 @@
 
 #include "debug.h"
 
+#ifdef printf
+#undef printf
+#endif
+
 #ifdef dprintf
 #undef dprintf
 #endif
@@ -13,6 +17,13 @@ using namespace std;
 
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+
+int frameNumber = -1;
+
+void crash() {
+    *(int*)0 = 0;
+    while(1);
+}
 
 int dprintf( const char *bort, ... ) {
 

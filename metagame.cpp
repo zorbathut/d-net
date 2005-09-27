@@ -160,10 +160,10 @@ void Shop::renderToScreen() const {
         }
         drawText(bf, 2, 1, 1);
     }
-    setColor(player->color);
+    setColor(player->color * 0.5);
     {
         const float ofs = 8;
-        drawDvec2(player->faction_symb, Float4(ofs, ofs, 125 - ofs, 100 - ofs), 0.1);
+        drawDvec2(player->faction_symb, Float4(ofs, ofs, 125 - ofs, 100 - ofs), 0.5);
     }
     renderNode(itemDbRoot(), 0);
 }
