@@ -37,6 +37,7 @@ public:
 
     void newState(const Controller &nst);
 
+    Controller();
 };
 
 enum { KSAX_UDLR, KSAX_ABSOLUTE, /*KSAX_TANK,*/ KSAX_END };

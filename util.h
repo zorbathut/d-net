@@ -45,8 +45,36 @@ inline Float2 operator+(const Float2 &lhs, const Float2 &rhs) {
     return Float2(lhs.x + rhs.x, lhs.y + rhs.y);
 }
 
+inline Float2 operator-(const Float2 &lhs, const Float2 &rhs) {
+    return Float2(lhs.x - rhs.x, lhs.y - rhs.y);
+}
+
 inline Float2 operator*(const Float2 &lhs, float rhs) {
     return Float2(lhs.x * rhs, lhs.y * rhs);
+}
+
+inline Float2 operator/(const Float2 &lhs, float rhs) {
+    return Float2(lhs.x / rhs, lhs.y / rhs);
+}
+
+inline Float2 &operator+=(Float2 &lhs, const Float2 &rhs) {
+    lhs = lhs + rhs;
+    return lhs;
+}
+
+inline Float2 &operator-=(Float2 &lhs, const Float2 &rhs) {
+    lhs = lhs - rhs;
+    return lhs;
+}
+
+inline Float2 &operator*=(Float2 &lhs, float rhs) {
+    lhs = lhs * rhs;
+    return lhs;
+}
+
+inline Float2 &operator/=(Float2 &lhs, float rhs) {
+    lhs = lhs / rhs;
+    return lhs;
 }
 
 inline bool operator==(const Float2 &lhs, const Float2 &rhs) {
@@ -56,6 +84,14 @@ inline bool operator==(const Float2 &lhs, const Float2 &rhs) {
 // not meant to be meaningful
 inline bool operator<(const Float2 &lhs, const Float2 &rhs) {
     return lhs.x < rhs.x || lhs.x == rhs.x && lhs.y < rhs.y;
+}
+
+inline float len(const Float2 &in) {
+    return sqrt(in.x * in.x + in.y * in.y);
+}
+
+inline Float2 normalize(const Float2 &in) {
+    return in / len(in);
 }
 
 class Float4 {

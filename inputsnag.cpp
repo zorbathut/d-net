@@ -9,10 +9,13 @@ using namespace std;
 
 DEFINE_string( readTarget, "", "File to replay from" );
 
+DEFINE_int(aiCount, 0, "Number of AIs");
+
 enum { CIP_KEYBOARD, CIP_JOYSTICK, CIP_AI, CIP_PRERECORD };
 
 static vector<pair<int, int> > sources;
 static vector<SDL_Joystick *> joysticks;
+static vector<Ai> ai;
 static FILE *infile;
 
 static vector<Controller> last;
@@ -26,6 +29,7 @@ int baseplayersize[2] = { sizeof(playerone) / sizeof(*playerone), sizeof(playert
 
 vector<Controller> controls_init() {
     CHECK(sources.size() == 0);
+    CHECK(FLAGS_readTarget == "" || FLAGS_aiCount == 0);
     if(FLAGS_readTarget != "") {
         dprintf("Reading state record from file %s\n", FLAGS_readTarget.c_str());
         infile = fopen(FLAGS_readTarget.c_str(), "rb");
@@ -44,6 +48,13 @@ vector<Controller> controls_init() {
             now[i].keys.resize(dat);
             sources.push_back(make_pair((int)CIP_PRERECORD, i));
         }
+    } else if(FLAGS_aiCount) {
+        now.resize(FLAGS_aiCount);
+        ai.resize(FLAGS_aiCount);
+        for(int i = 0; i < FLAGS_aiCount; i++) {
+            sources.push_back(make_pair((int)CIP_AI, i));
+            now[i].keys.resize(1);
+        }
     } else {
         // Keyboard init
         sources.push_back(make_pair((int)CIP_KEYBOARD, 0));
@@ -54,7 +65,7 @@ vector<Controller> controls_init() {
         now[1].keys.resize(baseplayersize[1]);
         
         // Joystick init
-        printf("%d joysticks detected\n", SDL_NumJoysticks());
+        dprintf("%d joysticks detected\n", SDL_NumJoysticks());
         
         now.resize(2 + SDL_NumJoysticks());
     
@@ -126,6 +137,9 @@ vector<Controller> controls_next() {
             dprintf("EOF on frame %d\n", frameNumber);
         fseek(infile, cpos, SEEK_SET);
         CHECK(cpos == ftell(infile));
+    } else if(FLAGS_aiCount) {
+        for(int i = 0; i < FLAGS_aiCount; i++)
+            now[i] = ai[i].getNextKeys();
     } else {
         SDL_JoystickUpdate();
         for(int i = 0; i < now.size(); i++) {
@@ -137,37 +151,38 @@ vector<Controller> controls_next() {
                     now[i].keys[j].down = SDL_JoystickGetButton(joysticks[jstarget], j);
             }
         }
-        
-        // Now we update the parts that have to be implied
-        
-        for(int i = 0; i < now.size(); i++) {
-            if(sources[i].first == CIP_KEYBOARD) {
-                now[i].x = now[i].r.down - now[i].l.down;
-                now[i].y = now[i].u.down - now[i].d.down;
-            } else if(sources[i].first == CIP_JOYSTICK) {
-                if(now[i].x < -0.7) {
-                    now[i].r.down = false;
-                    now[i].l.down = true;
-                } else if(now[i].x > 0.7) {
-                    now[i].r.down = true;
-                    now[i].l.down = false;
-                } else {
-                    now[i].r.down = false;
-                    now[i].l.down = false;
-                }
-                if(now[i].y < -0.7) {
-                    now[i].u.down = false;
-                    now[i].d.down = true;
-                } else if(now[i].y > 0.7) {
-                    now[i].u.down = true;
-                    now[i].d.down = false;
-                } else {
-                    now[i].u.down = false;
-                    now[i].d.down = false;
-                }
+    }
+
+    // Now we update the parts that have to be implied
+    
+    for(int i = 0; i < now.size(); i++) {
+        if(sources[i].first == CIP_KEYBOARD) {
+            now[i].x = now[i].r.down - now[i].l.down;
+            now[i].y = now[i].u.down - now[i].d.down;
+        } else if(sources[i].first == CIP_JOYSTICK || sources[i].first == CIP_AI) {
+            if(now[i].x < -0.7) {
+                now[i].r.down = false;
+                now[i].l.down = true;
+            } else if(now[i].x > 0.7) {
+                now[i].r.down = true;
+                now[i].l.down = false;
             } else {
-                CHECK(0);
+                now[i].r.down = false;
+                now[i].l.down = false;
             }
+            if(now[i].y < -0.7) {
+                now[i].u.down = false;
+                now[i].d.down = true;
+            } else if(now[i].y > 0.7) {
+                now[i].u.down = true;
+                now[i].d.down = false;
+            } else {
+                now[i].u.down = false;
+                now[i].d.down = false;
+            }
+        } else if(sources[i].first == CIP_PRERECORD) {
+        } else {
+            CHECK(0);
         }
     }
 
@@ -177,8 +192,24 @@ vector<Controller> controls_next() {
         last[i].newState(now[i]);
     }
     
+    for(int i = 0; i < last.size(); i++) {
+        CHECK(last[i].x >= -1 && last[i].x <= 1);
+        CHECK(last[i].y >= -1 && last[i].y <= 1);
+    }
+    
     return last;
     
+}
+
+vector<Ai *> controls_ai() {
+    if(FLAGS_aiCount) {
+        vector<Ai *> ais;
+        for(int i = 0; i < ai.size(); i++)
+            ais.push_back(&ai[i]);
+        return ais;
+    } else {
+        return vector<Ai *>(now.size());
+    }
 }
 
 bool controls_users() {

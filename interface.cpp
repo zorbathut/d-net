@@ -80,6 +80,7 @@ class InterfaceMain {
 public:
 
     bool tick(const vector< Controller > &control);
+    void ai(const vector<Ai *> &ais) const;
     void render() const;
     InterfaceMain();
 
@@ -134,6 +135,16 @@ bool InterfaceMain::tick(const vector< Controller > &control) {
     
     return false;
     
+}
+
+void InterfaceMain::ai(const vector<Ai *> &ai) const {
+    if(interface_mode == IFM_S_MAINMENU) {
+        for(int i = 0; i < ai.size(); i++)
+            if(ai[i])
+                ai[i]->updatePregame();
+    } else if(interface_mode == IFM_S_PLAYING) {
+        game.ai(ai);
+    }
 }
 
 void InterfaceMain::render() const {
@@ -226,6 +237,14 @@ bool interfaceRunTick( const vector< Controller > &control ) {
         return vecEditTick(control[0]);
     } else {
         return ifm.tick(control);
+    }
+}
+
+void interfaceRunAi(const vector<Ai *> &ais) {
+    if(FLAGS_vecedit) {
+        CHECK(0);
+    } else {
+        return ifm.ai(ais);
     }
 }
     

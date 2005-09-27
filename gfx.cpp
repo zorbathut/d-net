@@ -200,7 +200,7 @@ void localVertex2f(float x, float y) {
 
 void drawLine( float sx, float sy, float ex, float ey, float weight ) {
     CHECK(weight > 0);
-    if(weight != curWeight || lineCount > 100) {
+    if(weight != curWeight || lineCount > 1000) {
         finishLineCluster();
         beginLineCluster(weight);
     }

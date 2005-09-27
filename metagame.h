@@ -6,6 +6,7 @@
 #include "gfx.h"
 #include "itemdb.h"
 #include "level.h"
+#include "ai.h"
 
 #include <vector>
 #include <string>
@@ -27,6 +28,7 @@ private:
 
 public:
     bool runTick( const Keystates &keys );
+    void ai(Ai *ai) const;
     void renderToScreen() const;
 
     Shop();
@@ -69,6 +71,7 @@ class Metagame {
 public:
 
 	void renderToScreen() const;
+    void ai(const vector<Ai *> &ai) const;
 	bool runTick( const vector< Controller > &keys );
 
     vector<Keystates> genKeystates(const vector<Controller> &keys, const vector<int> &modes);

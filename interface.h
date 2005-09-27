@@ -5,11 +5,12 @@
 
 using namespace std;
 
-#include "util.h"
 #include "input.h"
+#include "ai.h"
 
 void interfaceInit();
 bool interfaceRunTick( const vector< Controller > &control );
+void interfaceRunAi(const vector<Ai *> &ais);
 void interfaceRenderToScreen();
 
 #endif

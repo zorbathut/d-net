@@ -21,7 +21,6 @@ using namespace std;
 DEFINE_string( writeTarget, "data/dump", "Prefix for file dump" );
 
 DEFINE_int( fastForwardTo, 0, "Fastforward rendering to this frame" );
-DEFINE_int(aiCount, 0, "AI players");
 
 long long polling = 0;
 long long waiting = 0;
@@ -129,6 +128,7 @@ void MainLoop() {
 		bencher = Timer();
         if(interfaceRunTick( controllers ))
             quit = true;
+        interfaceRunAi(controls_ai());
 		ticking += bencher.ticksElapsed();
 		bencher = Timer();
         if(frameNumber >= FLAGS_fastForwardTo) {

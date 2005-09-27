@@ -285,6 +285,22 @@ bool Metagame::runTick( const vector< Controller > &keys ) {
     return false;
 }
 
+void Metagame::ai(const vector<Ai *> &ai) const {
+    CHECK(ai.size() == playerpos.size());
+    if(mode == MGM_PLAYERCHOOSE) {
+        for(int i = 0; i < ai.size(); i++) {
+            if(ai[i]) {
+                int mode = -1;
+                if(playersymbol[i] != -1)
+                    mode = playermode[i];
+                ai[i]->updateCharacterChoice(symbolpos, playersymbol, playerpos[i], mode, i);
+            }
+        }
+    } else {
+        CHECK(0);
+    }
+}
+
 void Metagame::renderToScreen() const {
     if(mode == MGM_PLAYERCHOOSE) {
         setZoom(0, 0, 600);

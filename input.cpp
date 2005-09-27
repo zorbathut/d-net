@@ -54,6 +54,10 @@ void Controller::newState(const Controller &nst) {
         keys[i].newState(nst.keys[i]);
 }
 
+Controller::Controller() {
+    x = y = 0;
+}
+
 void Keystates::nullMove() {
     ax[0] = ax[1] = 0;
     u = d = l = r = Button();
