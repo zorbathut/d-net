@@ -125,8 +125,10 @@ int getAccumulatedClusterCount() {
 }
 
 void beginLineCluster(float weight) {
+    CHECK(glGetError() == GL_NO_ERROR);
     CHECK(curWeight == -1.f);
     glLineWidth( weight / map_zoom * getResolutionY() );   // GL uses pixels internally for this unit, so I have to translate from game-meters
+    CHECK(glGetError() == GL_NO_ERROR);
     glBegin(GL_LINES);
     curWeight = weight;
     lineCount = 0;
@@ -137,7 +139,9 @@ void finishLineCluster() {
     if(curWeight != -1.f) {
         curWeight = -1.f;
         glEnd();
+        lineCount = 0;
     }
+    CHECK(glGetError() == GL_NO_ERROR);
 }
 
 void initFrame() {
@@ -152,18 +156,24 @@ void initFrame() {
 	glBlendFunc( GL_SRC_ALPHA, GL_ONE );
 	//glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
     clearFrame(Color(0.1, 0.1, 0.1));
+    CHECK(glGetError() == GL_NO_ERROR);
 }
+
+static Color curcolor;
+static Color clearcolor;
 
 void clearFrame(const Color &color) {
     finishLineCluster();
     glClearColor( color.r, color.g, color.b, 0.0f );
 	glClear(GL_COLOR_BUFFER_BIT);
+    clearcolor = color;
 }
 
 void deinitFrame() {
     finishLineCluster();
 	glFlush();
 	SDL_GL_SwapBuffers(); 
+    CHECK(glGetError() == GL_NO_ERROR);
 }
 
 void setZoom( float in_sx, float in_sy, float in_ey ) {
@@ -176,13 +186,16 @@ void setZoom( float in_sx, float in_sy, float in_ey ) {
 }
 
 void setColor( float r, float g, float b ) {
-    finishLineCluster();
 	glColor3f( r, g, b );
+    curcolor = Color(r, g, b);
 }
 
 void setColor(const Color &color) {
-    finishLineCluster();
     setColor(color.r, color.g, color.b);
+}
+
+void localVertex2f(float x, float y) {
+    glVertex2f( ( x - map_sx ) / map_zoom, ( y - map_sy ) / map_zoom );
 }
 
 void drawLine( float sx, float sy, float ex, float ey, float weight ) {
@@ -190,10 +203,9 @@ void drawLine( float sx, float sy, float ex, float ey, float weight ) {
     if(weight != curWeight || lineCount > 100) {
         finishLineCluster();
         beginLineCluster(weight);
-        glBegin( GL_LINES );
     }
-	glVertex2f( ( sx - map_sx ) / map_zoom, ( sy - map_sy ) / map_zoom );
-	glVertex2f( ( ex - map_sx ) / map_zoom, ( ey - map_sy ) / map_zoom );
+    localVertex2f(sx, sy);
+    localVertex2f(ex, ey);
     lineCount++;
 }
 void drawLine(const Float2 &s, const Float2 &e, float weight) {
@@ -236,6 +248,24 @@ void drawLinePath( const vector<Coord2> &iverts, float weight, bool loop ) {
 	for( int i = 0; i < verts.size() - 1; i++ )
 		drawLine( verts[i], verts[i + 1], weight );
 };
+
+void drawSolid(const Float4 &box) {
+    CHECK(box.isNormalized());
+    finishLineCluster();
+    CHECK(glGetError() == GL_NO_ERROR);
+    glColor3f(clearcolor.r, clearcolor.g, clearcolor.b);
+    dprintf("scc %f %f %f\n", clearcolor.r, clearcolor.g, clearcolor.b);
+    glBlendFunc( GL_ONE, GL_ZERO );
+    glBegin(GL_TRIANGLE_STRIP);
+    localVertex2f(box.sx, box.sy);
+    localVertex2f(box.sx, box.ey);
+    localVertex2f(box.ex, box.sy);
+    localVertex2f(box.ex, box.ey);
+    glEnd();
+    glBlendFunc( GL_SRC_ALPHA, GL_ONE );
+    CHECK(glGetError() == GL_NO_ERROR);
+    setColor(curcolor);
+}
 
 void drawBox( const Float4 &box, float weight ) {
     vector<float> verts;

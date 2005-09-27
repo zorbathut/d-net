@@ -77,6 +77,7 @@ void Shop::renderNode(const HierarchyNode &node, int depth) const {
         } else {
             setColor(0.3, 0.3, 0.3);
         }
+        drawSolid( Float4( hoffbase, voffset + i * itemheight, hoffbase + boxwidth, voffset + i * itemheight + fontsize + boxborder * 2 ) );
         drawBox( Float4( hoffbase, voffset + i * itemheight, hoffbase + boxwidth, voffset + i * itemheight + fontsize + boxborder * 2 ), boxthick );
         setColor(1.0, 1.0, 1.0);
         drawText( node.branches[i].name.c_str(), fontsize, hoffbase + boxborder, voffset + i * itemheight + boxborder );
@@ -159,6 +160,11 @@ void Shop::renderToScreen() const {
         }
         drawText(bf, 2, 1, 1);
     }
+    setColor(player->color);
+    {
+        const float ofs = 8;
+        drawDvec2(player->faction_symb, Float4(ofs, ofs, 125 - ofs, 100 - ofs), 0.1);
+    }
     renderNode(itemDbRoot(), 0);
 }
 
@@ -222,11 +228,14 @@ bool Metagame::runTick( const vector< Controller > &keys ) {
             playerdata.clear();
             playerdata.resize(count(fireHeld.begin(), fireHeld.end(), 60));
             int pid = 0;
-            for(int i = 0; i < playerdata.size(); i++) {
+            for(int i = 0; i < playersymbol.size(); i++) {
                 if(playersymbol[i] != -1) {
-                    playerdata[pid++].color = factions[playersymbol[i]].color;
+                    playerdata[pid].color = factions[playersymbol[i]].color;
+                    playerdata[pid].faction_symb = symbols[playersymbol[i]];
+                    pid++;
                 }
             }
+            CHECK(pid == playerdata.size());
             shop = Shop(&playerdata[0]);
         }
     } else if(mode == MGM_SHOP) {
