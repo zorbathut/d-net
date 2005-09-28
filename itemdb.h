@@ -17,7 +17,7 @@ public:
     int firerate;
     float costpershot;
     string name;
-    ProjectileClass *projectile;
+    const ProjectileClass *projectile;
 };
 
 class Upgrade {
@@ -42,8 +42,8 @@ public:
     bool buyable;
     int cost;
     
-    Weapon *weapon;
-    Upgrade *upgrade;
+    const Weapon *weapon;
+    const Upgrade *upgrade;
     
     int quantity;
     

@@ -141,6 +141,10 @@ bool Shop::runTick(const Keystates &keys) {
     return false;
 }
 
+void Shop::ai(Ai *ais) const {
+    ais->updateShop(player);
+}
+
 void Shop::renderToScreen() const {
     CHECK(player);
     clearFrame(player->color * 0.05 + Color(0.05, 0.05, 0.05));
@@ -285,6 +289,15 @@ bool Metagame::runTick( const vector< Controller > &keys ) {
     return false;
 }
 
+vector<Ai *> distillAi(const vector<Ai *> &ai, const vector<int> &playersymbol) {
+    CHECK(ai.size() == playersymbol.size());
+    vector<Ai *> rv;
+    for(int i = 0; i < playersymbol.size(); i++)
+        if(playersymbol[i] != -1)
+            rv.push_back(ai[i]);
+    return rv;
+}
+    
 void Metagame::ai(const vector<Ai *> &ai) const {
     CHECK(ai.size() == playerpos.size());
     if(mode == MGM_PLAYERCHOOSE) {
@@ -296,6 +309,9 @@ void Metagame::ai(const vector<Ai *> &ai) const {
                 ai[i]->updateCharacterChoice(symbolpos, playersymbol, playerpos[i], mode, i);
             }
         }
+    } else if(mode == MGM_SHOP) {
+        CHECK(currentShop >= 0 && currentShop < playerdata.size());
+        shop.ai(distillAi(ai, playersymbol)[currentShop]);
     } else {
         CHECK(0);
     }

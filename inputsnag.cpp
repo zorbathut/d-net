@@ -50,7 +50,10 @@ vector<Controller> controls_init() {
         }
     } else if(FLAGS_aiCount) {
         now.resize(FLAGS_aiCount);
-        ai.resize(FLAGS_aiCount);
+        dprintf("Creating AIs\n");
+        for(int i = 0; i < FLAGS_aiCount; i++)
+            ai.push_back(Ai()); // to get our random number generators out of sync
+        dprintf("AIs initialized\n");
         for(int i = 0; i < FLAGS_aiCount; i++) {
             sources.push_back(make_pair((int)CIP_AI, i));
             now[i].keys.resize(1);

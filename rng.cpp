@@ -2,28 +2,51 @@
 #include "rng.h"
 #include "debug.h"
 
-static unsigned int sync = 1;
-static int seed = 1;
-static bool start = false;
+#include <ctime>
 
-void sfrand(int in_seed) {
+using namespace std;
+
+static Rng desyncrng(time(NULL));
+
+void Rng::sfrand(int in_seed) {
+    dprintf("Seeding random generator with %d\n", in_seed);
     seed = in_seed;
     sync = seed;
     frand(); frand();
     start = true;
 }
 
-int syncRand( ) {
+int Rng::rand() {
 	sync = sync * 1103515245 + 12345;
 	return ((sync >>16) & 32767);
 }
 
-float frand() {
+float Rng::frand() {
     start = false;
-    return (float)syncRand() / 32768;
+    return (float)rand() / 32768;
 }
 
-int frandseed() {
+int Rng::frandseed() {
     CHECK(start);
     return seed;
 }
+
+Rng::Rng() {
+    sync = 1;
+    seed = 1;
+    start = false;
+    sfrand(desyncrng.rand());
+}
+
+Rng::Rng(int in_seed) {
+    sync = 1;
+    seed = 1;
+    start = false;
+    sfrand(in_seed);
+}
+
+static Rng syncrng;
+
+void sfrand(int seed) { syncrng.sfrand(seed); };
+float frand() { return syncrng.frand(); };
+int frandseed() { return syncrng.frandseed(); };
