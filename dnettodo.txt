@@ -1,6 +1,8 @@
-- Improved vector editor
-- More levels
+- Fix exit crash (if there is one)
+- Accurate projectiles
+- Destroyable terrain
 
+- More levels
 - More weapons
 - More upgrades
 - New tank purchases
