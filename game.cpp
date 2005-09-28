@@ -577,7 +577,13 @@ void Game::renderToScreen( int target ) const {
                 bare /= players[i].player->maxHealth;
                 bare *= players[i].health;
                 drawShadedBox(Float4(barl, 2, barl + bare, 6), 0.1, 2);
-                drawText(StringPrintf("%d", players[i].player->shotsLeft), 2, barl, 7);
+                string ammotext;
+                if(players[i].player->shotsLeft == -1) {
+                    ammotext = "inf";
+                } else {
+                    ammotext = StringPrintf("%d", players[i].player->shotsLeft);
+                }
+                drawText(ammotext, 2, barl, 7);
             }
         }
         if(frameNm < 180) {
