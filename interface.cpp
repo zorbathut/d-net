@@ -242,7 +242,8 @@ bool interfaceRunTick( const vector< Controller > &control ) {
 
 void interfaceRunAi(const vector<Ai *> &ais) {
     if(FLAGS_vecedit) {
-        CHECK(0);
+        for(int i = 0; i < ais.size(); i++)
+            CHECK(!ais[i]);
     } else {
         return ifm.ai(ais);
     }
