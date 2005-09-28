@@ -22,6 +22,8 @@ DEFINE_string( writeTarget, "data/dump", "Prefix for file dump" );
 
 DEFINE_int( fastForwardTo, 0, "Fastforward rendering to this frame" );
 
+DEFINE_bool(frameskip, true, "Enable or disable frameskipping");
+
 long long polling = 0;
 long long waiting = 0;
 long long ticking = 0;
@@ -136,7 +138,7 @@ void MainLoop() {
         }
 		waiting += bencher.ticksElapsed();
 		bencher = Timer();
-		if( !timer.skipFrame() && (!ffwd || frameNumber % 60 == 0)) {
+		if( !timer.skipFrame() && (!ffwd || frameNumber % 60 == 0) || !FLAGS_frameskip) {
 			initFrame();
 			interfaceRenderToScreen();
             if(!controls_users()) {
