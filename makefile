@@ -52,6 +52,6 @@ stats:
 	@echo Framework: `cat core.h core.cpp main.h main.cpp input.h input.cpp inputsnag.h inputsnag.cpp | wc -l` loc
 	@echo Util: `cat timer.h timer.cpp util.h util.cpp args.h args.cpp rng.h rng.cpp coord.h coord.cpp | wc -l` loc
 	@echo Vector system: `cat vecedit.h vecedit.cpp dvec2.h dvec2.cpp | wc -l` loc
-    @echo AI: `cat ai.h ai.cpp | wc -l` loc
+	@echo AI: `cat ai.h ai.cpp | wc -l` loc
 	@echo Total code: `cat *.h *.cpp makefile | wc -l` loc
 	@echo Datafiles: `cd data; cat \`find -type f | grep -v .svn\` | wc -l` lines

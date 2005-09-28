@@ -136,7 +136,7 @@ void MainLoop() {
         }
 		waiting += bencher.ticksElapsed();
 		bencher = Timer();
-		if( !timer.skipFrame()) {
+		if( !timer.skipFrame() && (!ffwd || frameNumber % 60 == 0)) {
 			initFrame();
 			interfaceRenderToScreen();
             if(!controls_users()) {

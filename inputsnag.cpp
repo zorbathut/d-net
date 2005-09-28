@@ -216,7 +216,7 @@ vector<Ai *> controls_ai() {
 }
 
 bool controls_users() {
-    return !infile;
+    return !infile && !FLAGS_aiCount;
 }
 
 void controls_shutdown() {

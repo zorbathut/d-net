@@ -63,6 +63,17 @@ void initFlags(int argc, char *argv[]) {
             CHECK(0);
         }
     }
+    for(map<string, LinkageData>::iterator itr = links.begin(); itr != links.end(); itr++) {
+        if(itr->second.type == LinkageData::LINKAGE_BOOL) {
+            dprintf("Initted bool %s to %d\n", itr->first.c_str(), *itr->second.bool_link);
+        } else if(itr->second.type == LinkageData::LINKAGE_INT) {
+            dprintf("Initted int %s to %d\n", itr->first.c_str(), *itr->second.int_link);
+        } else if(itr->second.type == LinkageData::LINKAGE_STRING) {
+            dprintf("Initted string %s to %s\n", itr->first.c_str(), itr->second.str_link->c_str());
+        } else {
+            CHECK(0);
+        }
+    }
     for(int i = 1; i < argc; i++) {
         CHECK(argv[i][0] == '-' && argv[i][1] == '-');
         char *arg = argv[i] + 2;

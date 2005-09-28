@@ -3,6 +3,8 @@
 #include "gfx.h"
 #include "parse.h"
 #include "rng.h"
+#include "inputsnag.h"
+#include "args.h"
 
 #include <string>
 #include <numeric>
@@ -142,7 +144,8 @@ bool Shop::runTick(const Keystates &keys) {
 }
 
 void Shop::ai(Ai *ais) const {
-    ais->updateShop(player);
+    if(ais)
+        ais->updateShop(player);
 }
 
 void Shop::renderToScreen() const {
@@ -271,7 +274,7 @@ bool Metagame::runTick( const vector< Controller > &keys ) {
     } else if(mode == MGM_PLAY) {
         if(game.runTick(genKeystates(keys, playermode))) {
             gameround++;
-            if(gameround % 6 == 0) {
+            if(gameround % roundsBetweenShop == 0) {
                 mode = MGM_SHOP;
                 currentShop = -1;
                 calculateLrStats();
@@ -310,8 +313,16 @@ void Metagame::ai(const vector<Ai *> &ai) const {
             }
         }
     } else if(mode == MGM_SHOP) {
-        CHECK(currentShop >= 0 && currentShop < playerdata.size());
-        shop.ai(distillAi(ai, playersymbol)[currentShop]);
+        if(currentShop == -1) {
+            for(int i = 0; i < ai.size(); i++)
+                if(ai[i])
+                    ai[i]->updateWaitingForReport();
+        } else {
+            CHECK(currentShop >= 0 && currentShop < playerdata.size());
+            shop.ai(distillAi(ai, playersymbol)[currentShop]);
+        }
+    } else if(mode == MGM_PLAY) {
+        game.ai(distillAi(ai, playersymbol));
     } else {
         CHECK(0);
     }
@@ -372,6 +383,11 @@ void Metagame::renderToScreen() const {
         }
     } else if(mode == MGM_PLAY) {
         game.renderToScreen(RENDERTARGET_SPECTATOR);
+        if(!controls_users()) {        
+            setColor(1.0, 1.0, 1.0);
+            setZoom(0, 0, 100);
+            drawText(StringPrintf("round %d", gameround), 2, 5, 82);
+        }
     } else {
         CHECK(0);
     }

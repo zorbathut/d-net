@@ -148,12 +148,84 @@ void Ai::updateShop(const Player *player) {
     }
     shopQueue.insert(shopQueue.end(), done.begin(), done.end());
     shopQueue.push_back(makeController(0, 0, 1));
-    for(int i = 0; i < shopQueue.size(); i++)
-        dprintf("%f %f %d\n", shopQueue[i].x, shopQueue[i].y, shopQueue[i].keys[0].down);
+    //for(int i = 0; i < shopQueue.size(); i++)
+        //dprintf("%f %f %d\n", shopQueue[i].x, shopQueue[i].y, shopQueue[i].keys[0].down);
     for(int i = 1; i < shopQueue.size(); i += 2)
         shopQueue.insert(shopQueue.begin() + i, makeController(0, 0, 0));
     shopdone = true;
     updateShop(player);
+}
+
+void Ai::updateGame(const vector<Coord4> &collide, const vector<Tank> &players, int me) {
+    if(shopdone || rng.frand() < 0.01) {
+        // find a tank, because approach and retreat both need one
+        int targtank;
+        {
+            vector<int> validtargets;
+            for(int i = 0; i < players.size(); i++)
+                if(i != me && players[i].live)
+                    validtargets.push_back(i);
+            if(validtargets.size() == 0)
+                validtargets.push_back(me);
+            targtank = validtargets[int(validtargets.size() * rng.frand())];
+        }
+        
+        float neai = rng.frand();
+        if(neai < 0.6) {
+            gamemode = AGM_APPROACH;
+            targetplayer = targtank;
+        } else if(neai < 0.7) {
+            gamemode = AGM_RETREAT;
+            targetplayer = targtank;
+        } else if(neai < 0.9) {
+            gamemode = AGM_WANDER;
+            targetdir.x = rng.frand();
+            targetdir.y = rng.frand();
+            targetdir = normalize(targetdir);
+        } else {
+            gamemode = AGM_BACKUP;
+        }
+        //dprintf("Tank %d changing plan, %d\n", me, gamemode);
+        shopdone = false;
+    }
+    Float2 mypos = Float2(players[me].x.toFloat(), players[me].y.toFloat());
+    if(gamemode == AGM_APPROACH) {
+        Float2 enepos = Float2(players[targetplayer].x.toFloat(), players[targetplayer].y.toFloat());
+        enepos -= mypos;
+        enepos.y *= -1;
+        if(len(enepos) > 0)
+            enepos = normalize(enepos);
+        nextKeys.x = enepos.x;
+        nextKeys.y = enepos.y;
+    } else if(gamemode == AGM_RETREAT) {
+        Float2 enepos = Float2(players[targetplayer].x.toFloat(), players[targetplayer].y.toFloat());
+        enepos -= mypos;
+        enepos.y *= -1;
+        enepos *= -1;
+        
+        if(len(enepos) > 0)
+            enepos = normalize(enepos);
+        nextKeys.x = enepos.x;
+        nextKeys.y = enepos.y;
+    } else if(gamemode == AGM_WANDER) {
+        nextKeys.x = targetdir.x;
+        nextKeys.y = targetdir.y;
+    } else if(gamemode == AGM_BACKUP) {
+        Float2 nx(-fsin(players[me].d), -fcos(players[me].d));
+        nx.x += (rng.frand() - 0.5) / 100;
+        nx.y += (rng.frand() - 0.5) / 100;
+        nx = normalize(nx);
+        nextKeys.x = nx.x;
+        nextKeys.y = nx.y;
+    }
+    if(rng.frand() < 0.001)
+        firing = !firing;
+    nextKeys.keys[0].down = firing;
+}
+
+void Ai::updateWaitingForReport() {
+    nextKeys.x = nextKeys.y = 0;
+    nextKeys.keys[0].down = true;
 }
 
 Controller Ai::getNextKeys() const {
@@ -163,4 +235,5 @@ Controller Ai::getNextKeys() const {
 Ai::Ai() {
     nextKeys.keys.resize(1);
     shopdone = false;
+    firing = false;
 }

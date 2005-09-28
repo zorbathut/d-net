@@ -15,6 +15,7 @@ using namespace std;
 #include "util.h"
 #include "args.h"
 #include "rng.h"
+#include "ai.h"
 
 DEFINE_bool(verboseCollisions, false, "Verbose collisions");
 
@@ -303,64 +304,6 @@ Projectile::Projectile() {
     live = true;
 }
 
-void Game::renderToScreen( int target ) const {
-    {
-        Float4 bounds = gamemap.getBounds().toFloat();
-        expandBoundBox(&bounds, 1.1);
-        float y = (bounds.ey - bounds.sy) / 0.9;
-        float sy = bounds.ey - y;
-        float sx =( bounds.sx + bounds.ex ) / 2 - ( y * 1.25 / 2 );
-        setZoom(sx, sy, bounds.ey);
-    }
-	for( int i = 0; i < players.size(); i++ )
-		players[ i ].render( i );
-	for( int i = 0; i < projectiles.size(); i++ )
-		for( int j = 0; j < projectiles[ i ].size(); j++ )
-			projectiles[ i ][ j ].render();
-	for( int i = 0; i < gfxeffects.size(); i++ )
-		gfxeffects[ i ].render();
-	gamemap.render();
-	collider.render();
-    {
-        setZoom( 0, 0, 100 );
-        setColor(1.0, 1.0, 1.0);
-        drawLine(Float4(0, 10, 125, 10), 0.1);
-        for(int i = 0; i < players.size(); i++) {
-            setColor(1.0, 1.0, 1.0);
-            float loffset = 125.0 / players.size() * i;
-            float roffset = 125.0 / players.size() * ( i + 1 );
-            if(i)
-                drawLine(Float4(loffset, 0, loffset, 10), 0.1);
-            if(players[i].live) {
-                setColor(players[i].player->color);
-                float barl = loffset + 1;
-                float bare = (roffset - 1) - (loffset + 1);
-                bare /= players[i].player->maxHealth;
-                bare *= players[i].health;
-                drawShadedBox(Float4(barl, 2, barl + bare, 6), 0.1, 2);
-                drawText(StringPrintf("%d", players[i].player->shotsLeft), 2, barl, 7);
-            }
-        }
-        if(frameNm < 180) {
-            setColor(1.0, 1.0, 1.0);
-            int fleft = 180 - frameNm;
-            int s;
-            if(frameNm % 60 < 5) {
-                s = 15;
-            } else if(frameNm % 30 < 5) {
-                s = 12;
-            } else {
-                s = 8;
-            }
-            drawJustifiedText(StringPrintf("Ready %d.%02d", fleft / 60, fleft % 60), s, 125.0 / 2, 100.0 / 2, TEXT_CENTER, TEXT_CENTER);
-        } else if(frameNm < 240) {
-            float dens = (240.0 - frameNm) / 60;
-            setColor(dens, dens, dens);
-            drawJustifiedText("GO", 40, 125.0 / 2, 100.0 / 2, TEXT_CENTER, TEXT_CENTER);
-        }
-    }
-};
-
 bool Game::runTick( const vector< Keystates > &rkeys ) {
     
     if(!ffwd && FLAGS_verboseCollisions)
@@ -589,6 +532,72 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
         return false;
     }
 
+};
+
+void Game::ai(const vector<Ai *> &ais) const {
+    CHECK(ais.size() == players.size());
+    for(int i = 0; i < ais.size(); i++) {
+        if(ais[i])
+            ais[i]->updateGame(gamemap.getCollide(), players, i);
+    }
+}
+
+void Game::renderToScreen( int target ) const {
+    {
+        Float4 bounds = gamemap.getBounds().toFloat();
+        expandBoundBox(&bounds, 1.1);
+        float y = (bounds.ey - bounds.sy) / 0.9;
+        float sy = bounds.ey - y;
+        float sx =( bounds.sx + bounds.ex ) / 2 - ( y * 1.25 / 2 );
+        setZoom(sx, sy, bounds.ey);
+    }
+	for( int i = 0; i < players.size(); i++ )
+		players[ i ].render( i );
+	for( int i = 0; i < projectiles.size(); i++ )
+		for( int j = 0; j < projectiles[ i ].size(); j++ )
+			projectiles[ i ][ j ].render();
+	for( int i = 0; i < gfxeffects.size(); i++ )
+		gfxeffects[ i ].render();
+	gamemap.render();
+	collider.render();
+    {
+        setZoom( 0, 0, 100 );
+        setColor(1.0, 1.0, 1.0);
+        drawLine(Float4(0, 10, 125, 10), 0.1);
+        for(int i = 0; i < players.size(); i++) {
+            setColor(1.0, 1.0, 1.0);
+            float loffset = 125.0 / players.size() * i;
+            float roffset = 125.0 / players.size() * ( i + 1 );
+            if(i)
+                drawLine(Float4(loffset, 0, loffset, 10), 0.1);
+            if(players[i].live) {
+                setColor(players[i].player->color);
+                float barl = loffset + 1;
+                float bare = (roffset - 1) - (loffset + 1);
+                bare /= players[i].player->maxHealth;
+                bare *= players[i].health;
+                drawShadedBox(Float4(barl, 2, barl + bare, 6), 0.1, 2);
+                drawText(StringPrintf("%d", players[i].player->shotsLeft), 2, barl, 7);
+            }
+        }
+        if(frameNm < 180) {
+            setColor(1.0, 1.0, 1.0);
+            int fleft = 180 - frameNm;
+            int s;
+            if(frameNm % 60 < 5) {
+                s = 15;
+            } else if(frameNm % 30 < 5) {
+                s = 12;
+            } else {
+                s = 8;
+            }
+            drawJustifiedText(StringPrintf("Ready %d.%02d", fleft / 60, fleft % 60), s, 125.0 / 2, 100.0 / 2, TEXT_CENTER, TEXT_CENTER);
+        } else if(frameNm < 240) {
+            float dens = (240.0 - frameNm) / 60;
+            setColor(dens, dens, dens);
+            drawJustifiedText("GO", 40, 125.0 / 2, 100.0 / 2, TEXT_CENTER, TEXT_CENTER);
+        }
+    }
 };
 
 Game::Game() {

@@ -10,6 +10,7 @@
 using namespace std;
 
 class Collider;
+class Ai;
 
 #define RENDERTARGET_SPECTATOR -1
 
@@ -134,8 +135,9 @@ public:
 class Game {
 public:
 
-	void renderToScreen( int player ) const;
 	bool runTick( const vector< Keystates > &keys );
+    void ai(const vector<Ai *> &ais) const;
+    void renderToScreen( int player ) const;
 
     float firepowerSpent;
 
