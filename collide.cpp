@@ -185,7 +185,7 @@ void Collider::process() {
     collides.clear();
     curcollide = -1;
     
-    vector<pair<Coord, pair< pair< pair< int, int >, int >, pair< pair< int, int >, int > > > > clds;
+    vector<pair<Coord, CollideData> > clds;
     
 	for( int x = 0; x < items.size(); x++ ) {
 		for( int y = x + 1; y < items.size(); y++ ) {
@@ -197,7 +197,7 @@ void Collider::process() {
 					if( tcol == NOCOLLIDE )
 						continue;
 					CHECK( tcol >= 0 && tcol <= 1 );
-                    clds.push_back(make_pair(tcol, make_pair(make_pair(reverseIndex(x), items[x][xa].first), make_pair(reverseIndex(y), items[y][ya].first))));
+                    clds.push_back(make_pair(tcol, CollideData(CollideId(reverseIndex(x), items[x][xa].first), CollideId(reverseIndex(y), items[y][ya].first), Coord2())));
 				}
 			}
 		}
@@ -206,19 +206,16 @@ void Collider::process() {
     sort(clds.begin(), clds.end());
     
     {
-        set<pair<pair<int, int>, int> > hit;
+        set<CollideId> hit;
         for(int i = 0; i < clds.size(); i++) {
-            bool allowable = true;
-            if(clds[i].second.first.first.first == 1 && hit.count(clds[i].second.first))
-                allowable = false;
-            if(clds[i].second.second.first.first == 1 && hit.count(clds[i].second.second))
-                allowable = false;
-            if(!allowable)
+            if(clds[i].second.lhs.category == 1 && hit.count(clds[i].second.lhs))
                 continue;
-            if(clds[i].second.first.first.first == 1)
-                hit.insert(clds[i].second.first);
-            if(clds[i].second.second.first.first == 1)
-                hit.insert(clds[i].second.second);
+            if(clds[i].second.rhs.category == 1 && hit.count(clds[i].second.rhs))
+                continue;
+            if(clds[i].second.lhs.category == 1)
+                hit.insert(clds[i].second.lhs);
+            if(clds[i].second.rhs.category == 1)
+                hit.insert(clds[i].second.rhs);
             collides.push_back(clds[i].second);
         }
     }
@@ -229,15 +226,10 @@ bool Collider::next() {
     return curcollide < collides.size();
 }
 
-pair< pair< int, int >, int > Collider::getLhs() const {
-	CHECK(state == CSTA_PROCESSED);
+const CollideData &Collider::getData() const {
+    CHECK(state == CSTA_PROCESSED);
     CHECK(curcollide >= 0 && curcollide < collides.size());
-	return collides[curcollide].first;
-}
-pair< pair< int, int >, int > Collider::getRhs() const {
-	CHECK(state == CSTA_PROCESSED);
-    CHECK(curcollide >= 0 && curcollide < collides.size());
-	return collides[curcollide].second;
+	return collides[curcollide];
 }
 
 Collider::Collider() { state = 0; curpush = -1; curtoken = -1; log = false; };

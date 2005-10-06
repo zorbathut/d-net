@@ -175,6 +175,29 @@ inline Coord2 &operator-=(Coord2 &lhs, const Coord2 &rhs) {
     return lhs;
 }
 
+inline bool operator==(const Coord2 &lhs, const Coord2 &rhs) {
+    if(lhs.x != rhs.x) return false;
+    if(lhs.y != rhs.y) return false;
+    return true;
+}
+inline bool operator!=(const Coord2 &lhs, const Coord2 &rhs) {
+    return !(lhs == rhs);
+}
+inline bool operator<(const Coord2 &lhs, const Coord2 &rhs) {
+    if(lhs.x != rhs.x) return false;
+    if(lhs.y != rhs.y) return false;
+    return true;
+}
+inline bool operator<=(const Coord2 &lhs, const Coord2 &rhs) {
+    return (lhs < rhs) || (lhs == rhs);
+}
+inline bool operator>(const Coord2 &lhs, const Coord2 &rhs) {
+    return rhs < lhs;
+}
+inline bool operator>=(const Coord2 &lhs, const Coord2 &rhs) {
+    return rhs <= lhs;
+}
+
 class Coord4 {
 public:
     Coord sx, sy, ex, ey;

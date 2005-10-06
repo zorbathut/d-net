@@ -425,34 +425,34 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
 		//dprintf( "Collision!\n" );
 		//dprintf( "Timestamp %f\n", collider.getCurrentTimestamp().toFloat() );
 		//dprintf( "%d,%d,%d vs %d,%d,%d\n", collider.getLhs().first.first, collider.getLhs().first.second, collider.getLhs().second, collider.getRhs().first.first, collider.getRhs().first.second, collider.getRhs().second );
-        pair< pair< int, int >, int > lhs = collider.getLhs();
-        pair< pair< int, int >, int > rhs = collider.getRhs();
+        CollideId lhs = collider.getData().lhs;
+        CollideId rhs = collider.getData().rhs;
         if( lhs > rhs ) swap( lhs, rhs );
-        if( lhs.first.first == -1 && rhs.first.first == -1 ) {
+        if( lhs.category == -1 && rhs.category == -1 ) {
             // wall-wall collision, wtf?
             CHECK(0);
-        } else if( lhs.first.first == -1 && rhs.first.first == 0 ) {
+        } else if( lhs.category == -1 && rhs.category == 0 ) {
             // wall-tank collision, should never happen
             CHECK(0);
-        } else if( lhs.first.first == -1 && rhs.first.first == 1 ) {
+        } else if( lhs.category == -1 && rhs.category == 1 ) {
             // wall-projectile collision - kill projectile
-            projectiles[ rhs.first.second ][ rhs.second ].live = false;
-            projectiles[ rhs.first.second ][ rhs.second ].genEffects( &gfxeffects );
-        } else if( lhs.first.first == 0 && rhs.first.first == 0 ) {
+            projectiles[ rhs.bucket ][ rhs.item ].live = false;
+            projectiles[ rhs.bucket ][ rhs.item ].genEffects( &gfxeffects );
+        } else if( lhs.category == 0 && rhs.category == 0 ) {
             // tank-tank collision, should never happen
             CHECK(0);
-        } else if( lhs.first.first == 0 && rhs.first.first == 1 ) {
+        } else if( lhs.category == 0 && rhs.category == 1 ) {
             // tank-projectile collision - kill projectile, do damage
-            projectiles[ rhs.first.second ][ rhs.second ].impact( &players[ lhs.first.second ] );
-            projectiles[ rhs.first.second ][ rhs.second ].live = false;
-            projectiles[ rhs.first.second ][ rhs.second ].genEffects( &gfxeffects );
-        } else if( lhs.first.first == 1 && rhs.first.first == 1 ) {
+            projectiles[ rhs.bucket ][ rhs.item ].impact( &players[ lhs.bucket ] );
+            projectiles[ rhs.bucket ][ rhs.item ].live = false;
+            projectiles[ rhs.bucket ][ rhs.item ].genEffects( &gfxeffects );
+        } else if( lhs.category == 1 && rhs.category == 1 ) {
             // projectile-projectile collision - kill both projectiles
-            projectiles[ lhs.first.second ][ lhs.second ].live = false;
-            projectiles[ lhs.first.second ][ lhs.second ].genEffects( &gfxeffects );
+            projectiles[ lhs.bucket ][ lhs.item ].live = false;
+            projectiles[ lhs.bucket ][ lhs.item ].genEffects( &gfxeffects );
             
-            projectiles[ rhs.first.second ][ rhs.second ].live = false;
-            projectiles[ rhs.first.second ][ rhs.second ].genEffects( &gfxeffects );
+            projectiles[ rhs.bucket ][ rhs.item ].live = false;
+            projectiles[ rhs.bucket ][ rhs.item ].genEffects( &gfxeffects );
         } else {
             // nothing meaningful, should totally never happen, what the hell is going on here, who are you, and why are you in my apartment
             CHECK(0);

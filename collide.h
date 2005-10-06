@@ -11,6 +11,58 @@ using namespace std;
 
 #define ENABLE_COLLIDE_DEBUG_VIS
 
+struct CollideId {
+public:
+    int category;
+    int bucket;
+    int item;
+
+    CollideId() { };
+    CollideId(pair<int, int> catbuck, int in_item) : category(catbuck.first), bucket(catbuck.second), item(in_item) { };
+    CollideId(const CollideId &rhs) : category(rhs.category), bucket(rhs.bucket), item(rhs.item) { };
+};
+
+inline bool operator<(const CollideId &lhs, const CollideId &rhs) {
+    if(lhs.category != rhs.category) return lhs.category < rhs.category;
+    if(lhs.bucket != rhs.bucket) return lhs.bucket < rhs.bucket;
+    if(lhs.item != rhs.item) return lhs.item < rhs.item;
+    return false;
+}
+inline bool operator>(const CollideId &lhs, const CollideId &rhs) {
+    return rhs < lhs;
+}
+
+inline bool operator==(const CollideId &lhs, const CollideId &rhs) {
+    if(lhs.category != rhs.category) return false;
+    if(lhs.bucket != rhs.bucket) return false;
+    if(lhs.item != rhs.item) return false;
+    return true;
+}
+inline bool operator!=(const CollideId &lhs, const CollideId &rhs) {
+    return !(lhs == rhs);
+}
+
+struct CollideData {
+public:
+    CollideId lhs;
+    CollideId rhs;
+    Coord2 loc;
+
+    CollideData() { };
+    CollideData(const CollideId &in_lhs, const CollideId &in_rhs, const Coord2 &in_loc) : lhs(in_lhs), rhs(in_rhs), loc(in_loc) { };
+    CollideData(const CollideData &in_rhs) : lhs(in_rhs.lhs), rhs(in_rhs.rhs), loc(in_rhs.loc) { };
+};
+
+inline bool operator<(const CollideData &lhs, const CollideData &rhs) {
+    if(lhs.lhs != rhs.lhs) return lhs.lhs < rhs.lhs;
+    if(lhs.rhs != rhs.rhs) return lhs.rhs < rhs.rhs;
+    if(lhs.loc != rhs.loc) return lhs.loc < rhs.loc;
+    return false;
+}
+inline bool operator>(const CollideData &lhs, const CollideData &rhs) {
+    return rhs < lhs;
+}
+
 class Collider {
 public:
 
@@ -27,8 +79,7 @@ public:
 	void process();
 
     bool next();
-	pair< pair< int, int >, int > getLhs() const;
-	pair< pair< int, int >, int > getRhs() const;
+    const CollideData &getData() const;
 
 	Collider();
 	~Collider();
@@ -43,7 +94,7 @@ private:
     bool log;
 
     int curcollide;
-    vector< pair< pair< pair< int, int >, int >, pair< pair< int, int >, int > > > collides;
+    vector< CollideData > collides;
 
 	vector< vector< pair< int, pair< Coord4, Coord4 > > > > items;
     int curpush;
