@@ -77,8 +77,9 @@ Coord getu( const Coord4 &linepos, const Coord4 &linevel, const Coord4 &ptposvel
 	return ( ( x3 - x1 ) * ( x2 - x1 ) + ( y3 - y1 ) * ( y2 - y1 ) ) / ( sqr( x2 - x1 ) + sqr( y2 - y1 ) );
 }
 
-Coord getCollision( const Coord4 &l1p, const Coord4 &l1v, const Coord4 &l2p, const Coord4 &l2v ) {
+pair<Coord, Coord2> getCollision( const Coord4 &l1p, const Coord4 &l1v, const Coord4 &l2p, const Coord4 &l2v ) {
 	Coord cBc = NOCOLLIDE;
+    Coord2 pos;
 	Coord4 temp;
 	for( int i = 0; i < 4; i++ ) {
 		const Coord4 *linepos;
@@ -113,6 +114,7 @@ Coord getCollision( const Coord4 &l1p, const Coord4 &l1v, const Coord4 &l2p, con
 				CHECK( 0 );
 		}
         pair< Coord, Coord > tbv = getLineCollision( *linepos, *linevel, *ptposvel );
+        Coord2 tpos;
 		for( int j = 0; j < 2; j++ ) {
 			Coord tt;
 			if( j ) {
@@ -128,9 +130,11 @@ Coord getCollision( const Coord4 &l1p, const Coord4 &l1v, const Coord4 &l2p, con
 			if( u < 0 || u > 1 )
 				continue;
 			cBc = tt;
+            Coord4 cline = lerp(*linepos, *linevel, tt);
+            pos = lerp(Coord2(cline.sx, cline.sy), Coord2(cline.ex - cline.sx, cline.ey - cline.sy), u);
 		}
 	}
-	return cBc;
+	return make_pair(cBc, pos);
 }
 
 void Collider::reset( int in_players ) {
@@ -193,11 +197,11 @@ void Collider::process() {
                 continue;
 			for( int xa = 0; xa < items[ x ].size(); xa++ ) {
 				for( int ya = 0; ya < items[ y ].size(); ya++ ) {
-					Coord tcol = getCollision( items[ x ][ xa ].second.first, items[ x ][ xa ].second.second, items[ y ][ ya ].second.first, items[ y ][ ya ].second.second );
-					if( tcol == NOCOLLIDE )
+					pair<Coord, Coord2> tcol = getCollision( items[ x ][ xa ].second.first, items[ x ][ xa ].second.second, items[ y ][ ya ].second.first, items[ y ][ ya ].second.second );
+					if( tcol.first == NOCOLLIDE )
 						continue;
-					CHECK( tcol >= 0 && tcol <= 1 );
-                    clds.push_back(make_pair(tcol, CollideData(CollideId(reverseIndex(x), items[x][xa].first), CollideId(reverseIndex(y), items[y][ya].first), Coord2())));
+					CHECK( tcol.first >= 0 && tcol.first <= 1 );
+                    clds.push_back(make_pair(tcol.first, CollideData(CollideId(reverseIndex(x), items[x][xa].first), CollideId(reverseIndex(y), items[y][ya].first), tcol.second)));
 				}
 			}
 		}

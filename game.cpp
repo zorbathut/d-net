@@ -284,10 +284,10 @@ void Projectile::impact( Tank *target ) {
     owner->player->damageDone += 1;
 };
 
-void Projectile::genEffects( vector< GfxEffects > *gfxe ) const {
+void Projectile::genEffects( vector< GfxEffects > *gfxe, Coord2 loc ) const {
     GfxEffects ngfe;
-    ngfe.pos.sx = x.toFloat() + v.toFloat() * fsin( d );
-    ngfe.pos.sy = y.toFloat() - v.toFloat() * fcos( d );
+    ngfe.pos.sx = loc.x.toFloat();
+    ngfe.pos.sy = loc.y.toFloat();
     ngfe.life = 10;
     ngfe.type = GfxEffects::EFFECT_POINT;
     for( int i = 0; i < 3; i++ ) {
@@ -437,7 +437,7 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
         } else if( lhs.category == -1 && rhs.category == 1 ) {
             // wall-projectile collision - kill projectile
             projectiles[ rhs.bucket ][ rhs.item ].live = false;
-            projectiles[ rhs.bucket ][ rhs.item ].genEffects( &gfxeffects );
+            projectiles[ rhs.bucket ][ rhs.item ].genEffects( &gfxeffects, collider.getData().loc );
         } else if( lhs.category == 0 && rhs.category == 0 ) {
             // tank-tank collision, should never happen
             CHECK(0);
@@ -445,14 +445,14 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
             // tank-projectile collision - kill projectile, do damage
             projectiles[ rhs.bucket ][ rhs.item ].impact( &players[ lhs.bucket ] );
             projectiles[ rhs.bucket ][ rhs.item ].live = false;
-            projectiles[ rhs.bucket ][ rhs.item ].genEffects( &gfxeffects );
+            projectiles[ rhs.bucket ][ rhs.item ].genEffects( &gfxeffects, collider.getData().loc );
         } else if( lhs.category == 1 && rhs.category == 1 ) {
             // projectile-projectile collision - kill both projectiles
             projectiles[ lhs.bucket ][ lhs.item ].live = false;
-            projectiles[ lhs.bucket ][ lhs.item ].genEffects( &gfxeffects );
+            projectiles[ lhs.bucket ][ lhs.item ].genEffects( &gfxeffects, collider.getData().loc );
             
             projectiles[ rhs.bucket ][ rhs.item ].live = false;
-            projectiles[ rhs.bucket ][ rhs.item ].genEffects( &gfxeffects );
+            projectiles[ rhs.bucket ][ rhs.item ].genEffects( &gfxeffects, collider.getData().loc );
         } else {
             // nothing meaningful, should totally never happen, what the hell is going on here, who are you, and why are you in my apartment
             CHECK(0);

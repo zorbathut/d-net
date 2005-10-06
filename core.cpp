@@ -170,5 +170,7 @@ void MainLoop() {
 		}
         frako++;
 	}
+    dprintf("Control shutdown\n");
     controls_shutdown();
+    dprintf("Exiting core\n");
 }

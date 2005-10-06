@@ -288,6 +288,9 @@ inline Coord linelineintersectpos( const Coord4 &lhs, const Coord4 &rhs ) {
 	return linelineintersectpos( lhs.sx, lhs.sy, lhs.ex, lhs.ey, rhs.sx, rhs.sy, rhs.ex, rhs.ey );
 }
 
+inline Coord2 lerp( const Coord2 &start, const Coord2 &delta, Coord time ) {
+    return Coord2( start.x + delta.x * time, start.y + delta.y * time );
+}
 inline Coord4 lerp( const Coord4 &start, const Coord4 &delta, Coord time ) {
     return Coord4( start.sx + delta.sx * time, start.sy + delta.sy * time, start.ex + delta.ex * time, start.ey + delta.ey * time );
 }

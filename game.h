@@ -115,7 +115,7 @@ public:
 
 	void impact( Tank *target );
 
-    void genEffects( vector< GfxEffects > *gfxe ) const;
+    void genEffects( vector< GfxEffects > *gfxe, Coord2 pos ) const;
 
 	Coord x;
 	Coord y;
