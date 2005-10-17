@@ -341,5 +341,9 @@ int inPath(const Coord2 &point, const vector<Coord2> &path);
 
 Coord2 getPointIn(const vector<Coord2> &path);
 
+enum { PR_SEPARATE, PR_INTERSECT, PR_LHSENCLOSE, PR_RHSENCLOSE };
+
+int getPathRelation(const vector<Coord2> &lhs, const vector<Coord2> &rhs);
+
 #endif
 

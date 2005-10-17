@@ -72,3 +72,29 @@ Coord2 getPointIn(const vector<Coord2> &path) {
     CHECK(found);
     return pt;
 }
+
+int getPathRelation(const vector<Coord2> &lhs, const vector<Coord2> &rhs) {
+    for(int i = 0; i < lhs.size(); i++) {
+        int i2 = (i + 1) % lhs.size();
+        for(int j = 0; j < rhs.size(); j++) {
+            int j2 = (j + 1) % rhs.size();
+            if(linelineintersect(Coord4(lhs[i], lhs[i2]), Coord4(rhs[j], rhs[j2])))
+                return PR_INTERSECT;
+        }
+    }
+    bool lir = inPath(getPointIn(lhs), rhs);
+    bool ril = inPath(getPointIn(lhs), rhs);
+    if(!lir && !ril) {
+        return PR_SEPARATE;
+    } else if(lir && !ril) {
+        return PR_RHSENCLOSE;
+    } else if(!lir && ril) {
+        return PR_LHSENCLOSE;
+    } else if(lir && ril) {
+        // valid result, we *should* check their areas, but I'm currently lazy
+        CHECK(0);
+    } else {
+        // not valid result :P
+        CHECK(0);
+    }
+}

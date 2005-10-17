@@ -79,6 +79,8 @@ void Level::makeProperSolids() {
     }
     for(int i = 0; i < startsin.size(); i++)
         CHECK(startsin[i] == 0 || startsin[i] == starts.size());
+    CHECK(count(startsin.begin(), startsin.end(), starts.size()) == 1);
+    CHECK(count(startsin.begin(), startsin.end(), 0) == startsin.size() - 1);
     for(int i = 0; i < startsin.size(); i++) {
         bool tanksin = (startsin[i] != 0);
         Coord2 ptin = getPointIn(paths[i]);
@@ -87,6 +89,18 @@ void Level::makeProperSolids() {
         if(toggle) {
             dprintf("Toggling\n");
             reverse(paths[i].begin(), paths[i].end());
+        }
+    }
+    // check to make sure we have a sane set of paths
+    for(int i = 0; i < paths.size(); i++) {
+        for(int j = i + 1; j < paths.size(); j++) {
+            int rel = getPathRelation(paths[i], paths[j]);
+            CHECK(rel != PR_INTERSECT);
+            if(rel == PR_LHSENCLOSE) {
+                CHECK(startsin[i]);
+            } else if(rel == PR_RHSENCLOSE) {
+                CHECK(startsin[j]);
+            }
         }
     }
 }
