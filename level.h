@@ -16,6 +16,9 @@ public:
     set<int> playersValid;
 
     map<int, vector<pair<Coord2, float> > > playerStarts;
+
+    void makeProperSolids();
+
 };
 
 Level loadLevel(const string &str);

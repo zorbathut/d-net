@@ -35,9 +35,11 @@ Level loadLevel(const string &str) {
     {
         map<int, int> entallow;
         for(int i = 0; i < dv.entities.size(); i++) {
+            CHECK(dv.entities[i].type == ENTITY_TANKSTART);
             for(int j = 2; j <= dv.entities.size(); j++) {
                 string estr = StringPrintf("exist%d", j);
                 CHECK(dv.entities[i].getParameter(estr) && dv.entities[i].getParameter(estr)->bool_val == true);
+                // yeah, so these don't work yet, it'll be fixed eventually
                 entallow[j]++;
             }
         }
@@ -53,5 +55,22 @@ Level loadLevel(const string &str) {
             }
         }
     }
+    rv.makeProperSolids();
     return rv;
 }
+
+void Level::makeProperSolids() {
+    vector<Coord2> starts;
+    for(map<int, vector<pair<Coord2, float> > >::iterator itr = playerStarts.begin(); itr != playerStarts.end(); itr++) {
+        for(int i = 0; i < itr->second.size(); i++) {
+            starts.push_back(itr->second[i].first);
+        }
+    }
+    sort(starts.begin(), starts.end());
+    starts.erase(unique(starts.begin(), starts.end()), starts.end());
+    dprintf("%d unique starts\n", starts.size());
+    for(int i = 0; i < starts.size(); i++) {
+        dprintf("%f, %f\n", starts[i].x.toFloat(), starts[i].y.toFloat());
+    }
+}
+

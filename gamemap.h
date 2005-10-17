@@ -24,7 +24,7 @@ public:
 
 private:
 
-	vector<Coord4> paths;
+    vector<vector<Coord2> > paths;
 
 };
 

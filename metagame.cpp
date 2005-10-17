@@ -494,6 +494,7 @@ void Metagame::findLevels(int playercount) {
         }
         dprintf("Got %d usable levels\n", levels.size());
         CHECK(levels.size());
+        //CHECK(0);
     }
 }
 

@@ -149,6 +149,13 @@ inline Coord cfcos(float in) {
     return Coord(fcos(in));
 }
 
+inline Coord cfsin(Coord in) {
+    return cfsin(in.toFloat());
+}
+inline Coord cfcos(Coord in) {
+    return cfcos(in.toFloat());
+}
+
 inline Coord abs(const Coord &in) {
     if(in < 0)
         return -in;
@@ -169,6 +176,19 @@ public:
     explicit Coord2(const Float2 &rhs) : x(rhs.x), y(rhs.y) { };
 };
 
+inline Coord2 operator+(const Coord2 &lhs, const Coord2 &rhs) {
+    return Coord2(lhs.x + rhs.x, lhs.y + rhs.y);
+}
+inline Coord2 operator-(const Coord2 &lhs, const Coord2 &rhs) {
+    return Coord2(lhs.x - rhs.x, lhs.y - rhs.y);
+}
+inline Coord2 operator*(const Coord2 &lhs, const Coord &rhs) {
+    return Coord2(lhs.x * rhs, lhs.y * rhs);
+}
+inline Coord2 operator/(const Coord2 &lhs, const Coord &rhs) {
+    return Coord2(lhs.x / rhs, lhs.y / rhs);
+}
+
 inline Coord2 &operator-=(Coord2 &lhs, const Coord2 &rhs) {
     lhs.x -= rhs.x;
     lhs.y -= rhs.y;
@@ -184,9 +204,9 @@ inline bool operator!=(const Coord2 &lhs, const Coord2 &rhs) {
     return !(lhs == rhs);
 }
 inline bool operator<(const Coord2 &lhs, const Coord2 &rhs) {
-    if(lhs.x != rhs.x) return false;
-    if(lhs.y != rhs.y) return false;
-    return true;
+    if(lhs.x != rhs.x) return lhs.x < rhs.x;
+    if(lhs.y != rhs.y) return lhs.y < rhs.y;
+    return false;
 }
 inline bool operator<=(const Coord2 &lhs, const Coord2 &rhs) {
     return (lhs < rhs) || (lhs == rhs);
@@ -196,6 +216,21 @@ inline bool operator>(const Coord2 &lhs, const Coord2 &rhs) {
 }
 inline bool operator>=(const Coord2 &lhs, const Coord2 &rhs) {
     return rhs <= lhs;
+}
+
+inline Coord len(const Coord2 &in) {
+    return sqrt(in.x * in.x + in.y * in.y);
+}
+
+inline Coord2 normalize(const Coord2 &in) {
+    return in / len(in);
+}
+
+inline Coord angle(const Coord2 &in) {
+    return Coord(atan2(in.y.toFloat(), in.x.toFloat()));
+}
+inline Coord2 makeAngle(const Coord &in) {
+    return Coord2(cfcos(in), cfsin(in));
 }
 
 class Coord4 {
