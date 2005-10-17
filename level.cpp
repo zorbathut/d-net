@@ -69,8 +69,25 @@ void Level::makeProperSolids() {
     sort(starts.begin(), starts.end());
     starts.erase(unique(starts.begin(), starts.end()), starts.end());
     dprintf("%d unique starts\n", starts.size());
-    for(int i = 0; i < starts.size(); i++) {
-        dprintf("%f, %f\n", starts[i].x.toFloat(), starts[i].y.toFloat());
+    vector<int> startsin(paths.size());
+    for(int i = 0; i < paths.size(); i++) {
+        for(int j = 0; j < starts.size(); j++) {
+            if(inPath(starts[j], paths[i])) {
+                startsin[i]++;
+            }
+        }
+    }
+    for(int i = 0; i < startsin.size(); i++)
+        CHECK(startsin[i] == 0 || startsin[i] == starts.size());
+    for(int i = 0; i < startsin.size(); i++) {
+        bool tanksin = (startsin[i] != 0);
+        Coord2 ptin = getPointIn(paths[i]);
+        dprintf("tanks is %d, IP is %d\n", tanksin, inPath(ptin, paths[i]));
+        bool toggle = (tanksin != (inPath(ptin, paths[i]) == -1));
+        if(toggle) {
+            dprintf("Toggling\n");
+            reverse(paths[i].begin(), paths[i].end());
+        }
     }
 }
 
