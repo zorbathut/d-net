@@ -16,7 +16,7 @@ enum { CIP_KEYBOARD, CIP_JOYSTICK, CIP_AI, CIP_PRERECORD };
 static vector<pair<int, int> > sources;
 static vector<SDL_Joystick *> joysticks;
 static vector<Ai> ai;
-static FILE *infile;
+static FILE *infile = NULL;
 
 static vector<Controller> last;
 static vector<Controller> now;
@@ -222,5 +222,6 @@ bool controls_users() {
 void controls_shutdown() {
     for(int i = 0; i < joysticks.size(); i++)
         SDL_JoystickClose(joysticks[i]);
-    fclose(infile);
+    if(infile)
+        fclose(infile);
 }

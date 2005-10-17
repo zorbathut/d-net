@@ -121,6 +121,8 @@ public:
 	Coord y;
 	float d;
 
+    bool first;
+
     Coord v;
     float damage;
 

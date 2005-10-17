@@ -269,6 +269,7 @@ Tank::Tank() {
 void Projectile::tick() {
     x += v * cfsin( d );
     y += -v * cfcos( d );
+    first = false;
 }
 
 void Projectile::render() const {
@@ -276,7 +277,11 @@ void Projectile::render() const {
 	drawLine(Coord4(x, y, x + v * cfsin( d ), y - v * cfcos( d )), 0.1 );
 };
 void Projectile::addCollision( Collider *collider ) const {
-	collider->token( Coord4( x, y, x + v * cfsin( d ), y - v * cfcos( d ) ), Coord4( v * cfsin( d ), -v * cfcos( d ), v * cfsin( d ), -v * cfcos( d ) ) );
+    if(first) {
+        collider->token( Coord4( x, y, x, y ), Coord4( v * cfsin( d ), -v * cfcos( d ), 0, 0 ) );
+    } else {
+        collider->token( Coord4( x, y, x - v * cfsin( d ), y + v * cfcos( d ) ), Coord4( v * cfsin( d ), -v * cfcos( d ), v * cfsin( d ), -v * cfcos( d ) ) );
+    }
 };
 void Projectile::impact( Tank *target ) {
 	if(target->takeDamage( damage ))
@@ -302,6 +307,7 @@ void Projectile::genEffects( vector< GfxEffects > *gfxe, Coord2 loc ) const {
 
 Projectile::Projectile() {
     live = true;
+    first = true;
 }
 
 bool Game::runTick( const vector< Keystates > &rkeys ) {
