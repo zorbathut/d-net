@@ -6,7 +6,7 @@ hierarchy {
 }
 
 projectile {
-    name=local.tracer
+    name=projectile.tracer
     velocity=600
     damage=0
     debug=1
@@ -16,7 +16,7 @@ weapon {
     name=ROOT.Weapons.Debug.Tracer
     cost=0
     firerate=1
-    projectile=local.tracer
+    projectile=projectile.tracer
     debug=1
 }
 

@@ -1,9 +1,9 @@
 hierarchy {
     name=ROOT.Weapons.Autocannon
-    pack=100
+    pack=1000
 }
 
 hierarchy {
     name=ROOT.Weapons.Laser
-    pack=100
+    pack=1000
 }

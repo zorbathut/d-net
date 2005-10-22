@@ -1,6 +1,6 @@
 
 projectile {
-    name=local.autocannon
+    name=projectile.autocannon
     velocity=120
     damage=1
 }
@@ -10,19 +10,19 @@ weapon {
     cost=0
     default=1
     firerate=30
-    projectile=local.autocannon
+    projectile=projectile.autocannon
 }
 
 weapon {
     name=ROOT.Weapons.Autocannon.Autocannon II
-    cost=200
+    cost=600
     firerate=24
-    projectile=local.autocannon
+    projectile=projectile.autocannon
 }
 
 weapon {
     name=ROOT.Weapons.Autocannon.Autocannon III
-    cost=400
+    cost=1000
     firerate=20
-    projectile=local.autocannon
+    projectile=projectile.autocannon
 }

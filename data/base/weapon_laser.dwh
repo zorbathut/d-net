@@ -1,27 +1,27 @@
 
 projectile {
-    name=local.laser
+    name=projectile.laser
     velocity=600
     damage=0.5
 }
 
 weapon {
     name=ROOT.Weapons.Laser.Laser
-    cost=300
+    cost=1000
     firerate=20
-    projectile=local.laser
+    projectile=projectile.laser
 }
 
 weapon {
     name=ROOT.Weapons.Laser.Laser II
-    cost=500
+    cost=1400
     firerate=15
-    projectile=local.laser
+    projectile=projectile.laser
 }
 
 weapon {
     name=ROOT.Weapons.Laser.Laser III
-    cost=800
+    cost=1800
     firerate=12
-    projectile=local.laser
+    projectile=projectile.laser
 }
