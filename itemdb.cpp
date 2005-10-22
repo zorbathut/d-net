@@ -247,7 +247,19 @@ void parseItemFile(const string &fname) {
             CHECK(prefixed(name, "projectile"));
             CHECK(projclasses.count(name) == 0);
 
+            projclasses[name].motion = PM_NORMAL;
+            
             projclasses[name].velocity = atoi(chunk.consume("velocity").c_str()) / FPS;
+            
+            if(chunk.kv.count("motion")) {
+                string motion = chunk.consume("motion");
+                if(motion == "normal")
+                    projclasses[name].motion = PM_NORMAL;
+                else if(motion == "missile")
+                    projclasses[name].motion = PM_MISSILE;
+                else
+                    CHECK(0);
+            }
             
             string warheadclass = chunk.consume("warhead");
             CHECK(warheadclasses.count(warheadclass));

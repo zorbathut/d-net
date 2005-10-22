@@ -1,0 +1,36 @@
+
+warhead {
+    name=warhead.missile
+    impactdamage=4
+}
+
+projectile {
+    name=projectile.missile
+    velocity=180
+    motion=missile
+    warhead=warhead.missile
+}
+
+weapon {
+    name=ROOT.Weapons.Missile.Missile
+    cost=1000
+    firerate=90
+    deploy=deploy.forward
+    projectile=projectile.missile
+}
+
+weapon {
+    name=ROOT.Weapons.Missile.Missile II
+    cost=1800
+    firerate=60
+    deploy=deploy.forward
+    projectile=projectile.missile
+}
+
+weapon {
+    name=ROOT.Weapons.Missile.Missile III
+    cost=2500
+    firerate=40
+    deploy=deploy.forward
+    projectile=projectile.missile
+}

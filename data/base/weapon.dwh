@@ -7,3 +7,8 @@ hierarchy {
     name=ROOT.Weapons.Laser
     pack=1000
 }
+
+hierarchy {
+    name=ROOT.Weapons.Missile
+    pack=1000
+}

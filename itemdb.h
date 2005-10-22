@@ -15,9 +15,12 @@ public:
     float impactdamage;
 };
 
+enum { PM_NORMAL, PM_MISSILE };
+
 struct IDBProjectile {
 public:
     int velocity;
+    int motion;
     IDBWarhead *warhead;
 };
 

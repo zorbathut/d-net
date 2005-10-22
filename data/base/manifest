@@ -3,4 +3,5 @@ common.dwh
 weapon.dwh
 weapon_autocannon.dwh
 weapon_laser.dwh
+weapon_missile.dwh
 debug.dwh
