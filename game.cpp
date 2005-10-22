@@ -267,24 +267,23 @@ Tank::Tank() {
 }
 
 void Projectile::tick() {
-    x += v * cfsin( d );
-    y += -v * cfcos( d );
+    pos += movement();
     first = false;
 }
 
 void Projectile::render() const {
 	setColor( 1.0, 1.0, 1.0 );
-	drawLine(Coord4(x, y, x + v * cfsin( d ), y - v * cfcos( d )), 0.1 );
+	drawLine(Coord4(pos, pos - movement()), 0.1 );
 };
 void Projectile::addCollision( Collider *collider ) const {
     if(first) {
-        collider->token( Coord4( x, y, x, y ), Coord4( v * cfsin( d ), -v * cfcos( d ), 0, 0 ) );
+        collider->token( Coord4( pos, pos ), Coord4( movement(), Coord2(0, 0) ) );
     } else {
-        collider->token( Coord4( x, y, x - v * cfsin( d ), y + v * cfcos( d ) ), Coord4( v * cfsin( d ), -v * cfcos( d ), v * cfsin( d ), -v * cfcos( d ) ) );
+        collider->token( Coord4( pos, pos + tail() ), Coord4( movement(), movement() + nexttail() ) );
     }
 };
 void Projectile::impact( Tank *target ) {
-	if(target->takeDamage( damage ))
+	if(target->takeDamage( projtype->warhead->impactdamage ))
         owner->player->kills++;
     owner->player->damageDone += 1;
 };
@@ -303,6 +302,17 @@ void Projectile::genEffects( vector< GfxEffects > *gfxe, Coord2 loc ) const {
         ngfe.vel *= 1.0 - frand() * frand();
         gfxe->push_back( ngfe );
     }
+}
+
+Coord2 Projectile::movement() const {
+    return Coord2(Coord(projtype->velocity) * cfsin( d ), -Coord(projtype->velocity) * cfcos( d ));
+}
+
+Coord2 Projectile::tail() const {
+    return -movement();
+}
+Coord2 Projectile::nexttail() const {
+    return -movement();
 }
 
 Projectile::Projectile() {
@@ -485,11 +495,9 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
 		if( players[ i ].live && keys[ i ].f.down && players[ i ].weaponCooldown <= 0 ) {
             firepowerSpent +=players[ i ].player->weapon->costpershot;
 			Projectile proj;
-			proj.x = players[ i ].getFiringPoint().x;
-			proj.y = players[ i ].getFiringPoint().y;
+			proj.pos = players[ i ].getFiringPoint();
 			proj.d = players[ i ].d;
-            proj.v = players[ i ].player->weapon->projectile->velocity;
-            proj.damage = players[ i ].player->weapon->projectile->warhead->impactdamage;
+            proj.projtype = players[ i ].player->weapon->projectile;
             proj.owner = &players[ i ];
 			projectiles[ i ].push_back( proj );
             players[ i ].weaponCooldown = players[ i ].player->weapon->firerate;

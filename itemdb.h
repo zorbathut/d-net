@@ -21,7 +21,7 @@ struct IDBProjectile {
 public:
     int velocity;
     int motion;
-    IDBWarhead *warhead;
+    const IDBWarhead *warhead;
 };
 
 struct IDBWeapon {
@@ -29,8 +29,8 @@ public:
     int firerate;
     float costpershot;
     string name;
-    IDBDeploy *deploy;
-    IDBProjectile *projectile;
+    const IDBDeploy *deploy;
+    const IDBProjectile *projectile;
 };
 
 struct IDBUpgrade {

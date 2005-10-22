@@ -189,10 +189,29 @@ inline Coord2 operator/(const Coord2 &lhs, const Coord &rhs) {
     return Coord2(lhs.x / rhs, lhs.y / rhs);
 }
 
+inline Coord2 &operator+=(Coord2 &lhs, const Coord2 &rhs) {
+    lhs.x += rhs.x;
+    lhs.y += rhs.y;
+    return lhs;
+}
 inline Coord2 &operator-=(Coord2 &lhs, const Coord2 &rhs) {
     lhs.x -= rhs.x;
     lhs.y -= rhs.y;
     return lhs;
+}
+inline Coord2 &operator*=(Coord2 &lhs, const Coord &rhs) {
+    lhs.x *= rhs;
+    lhs.y *= rhs;
+    return lhs;
+}
+inline Coord2 &operator/=(Coord2 &lhs, const Coord &rhs) {
+    lhs.x /= rhs;
+    lhs.y /= rhs;
+    return lhs;
+}
+
+inline Coord2 operator-(const Coord2 &lhs) {
+    return Coord2(-lhs.x, -lhs.y);
 }
 
 inline bool operator==(const Coord2 &lhs, const Coord2 &rhs) {

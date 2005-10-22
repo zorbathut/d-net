@@ -117,17 +117,19 @@ public:
 
     void genEffects( vector< GfxEffects > *gfxe, Coord2 pos ) const;
 
-	Coord x;
-	Coord y;
+    Coord2 movement() const;
+
+    Coord2 tail() const;
+    Coord2 nexttail() const;
+
+	Coord2 pos;
 	float d;
 
     bool first;
 
-    Coord v;
-    float damage;
-
     bool live;
     
+    const IDBProjectile *projtype;
     Tank *owner;
 
     Projectile();
