@@ -267,16 +267,18 @@ Tank::Tank() {
 }
 
 void Projectile::tick() {
+    CHECK(age != -1);
     pos += movement();
-    first = false;
+    age++;
 }
 
 void Projectile::render() const {
+    CHECK(age != -1);
 	setColor( 1.0, 1.0, 1.0 );
 	drawLine(Coord4(pos, pos - movement()), 0.1 );
 };
 void Projectile::addCollision( Collider *collider ) const {
-    if(first) {
+    if(age == 0) {
         collider->token( Coord4( pos, pos ), Coord4( movement(), Coord2(0, 0) ) );
     } else {
         collider->token( Coord4( pos, pos + tail() ), Coord4( movement(), movement() + nexttail() ) );
@@ -316,8 +318,16 @@ Coord2 Projectile::nexttail() const {
 }
 
 Projectile::Projectile() {
+    live = false;
+    age = -1;
+}
+Projectile::Projectile(const Coord2 &in_pos, float in_d, const IDBProjectile *in_projtype, Tank *in_owner) {
+    pos = in_pos;
+    d = in_d;
+    projtype = in_projtype;
+    owner = in_owner;
+    age = 0;
     live = true;
-    first = true;
 }
 
 bool Game::runTick( const vector< Keystates > &rkeys ) {
@@ -494,12 +504,7 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
 	for( int i = 0; i < players.size(); i++ ) {
 		if( players[ i ].live && keys[ i ].f.down && players[ i ].weaponCooldown <= 0 ) {
             firepowerSpent +=players[ i ].player->weapon->costpershot;
-			Projectile proj;
-			proj.pos = players[ i ].getFiringPoint();
-			proj.d = players[ i ].d;
-            proj.projtype = players[ i ].player->weapon->projectile;
-            proj.owner = &players[ i ];
-			projectiles[ i ].push_back( proj );
+			projectiles[ i ].push_back(Projectile(players[ i ].getFiringPoint(), players[ i ].d, players[ i ].player->weapon->projectile, &players[ i ]));
             players[ i ].weaponCooldown = players[ i ].player->weapon->firerate;
             if(players[i].player->shotsLeft != -1)
                 players[i].player->shotsLeft--;

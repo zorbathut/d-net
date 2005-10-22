@@ -117,6 +117,13 @@ public:
 
     void genEffects( vector< GfxEffects > *gfxe, Coord2 pos ) const;
 
+    Projectile();   // does not start in usable state
+    Projectile(const Coord2 &pos, float d, const IDBProjectile *projtype, Tank *owner);
+
+    bool live;
+
+private:
+    
     Coord2 movement() const;
 
     Coord2 tail() const;
@@ -125,14 +132,10 @@ public:
 	Coord2 pos;
 	float d;
 
-    bool first;
-
-    bool live;
+    int age;
     
     const IDBProjectile *projtype;
     Tank *owner;
-
-    Projectile();
 
 };
 
