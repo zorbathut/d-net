@@ -48,8 +48,11 @@ string kvData::consume(string key) {
     return out;
 }
 
+bool kvData::isDone() const {
+    return kv.size() == 0;
+}
 void kvData::shouldBeDone() const {
-    CHECK(kv.size() == 0);
+    CHECK(isDone());
 }
 
 istream &getLineStripped(istream &ifs, string &out) {

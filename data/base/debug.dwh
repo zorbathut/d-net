@@ -8,8 +8,7 @@ hierarchy {
 projectile {
     name=projectile.tracer
     velocity=600
-    damage=0
-    debug=1
+    warhead=warhead.null
 }
 
 weapon {
@@ -17,6 +16,7 @@ weapon {
     cost=0
     firerate=1
     projectile=projectile.tracer
+    deploy=deploy.forward
     debug=1
 }
 

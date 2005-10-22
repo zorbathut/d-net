@@ -489,7 +489,7 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
 			proj.y = players[ i ].getFiringPoint().y;
 			proj.d = players[ i ].d;
             proj.v = players[ i ].player->weapon->projectile->velocity;
-            proj.damage = players[ i ].player->weapon->projectile->warhead->damage;
+            proj.damage = players[ i ].player->weapon->projectile->warhead->impactdamage;
             proj.owner = &players[ i ];
 			projectiles[ i ].push_back( proj );
             players[ i ].weaponCooldown = players[ i ].player->weapon->firerate;

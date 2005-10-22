@@ -8,9 +8,11 @@
 #include "args.h"
 
 static HierarchyNode root;
+static map<string, IDBDeploy> deployclasses;
+static map<string, IDBWarhead> warheadclasses;
 static map<string, IDBProjectile> projclasses;
-static map<string, IDBWeapon> weapontypes;
-static map<string, IDBUpgrade> upgradetypes;
+static map<string, IDBWeapon> weaponclasses;
+static map<string, IDBUpgrade> upgradeclasses;
 
 static const IDBWeapon *defweapon = NULL;
 
@@ -114,6 +116,9 @@ HierarchyNode *findNamedNode(const string &in, int postcut) {
                 fi = k;
             }
         }
+        if(fc == 0) {
+            dprintf("Parent node not found for item hierarchy!\n");
+        }
         CHECK(fc == 1);
         CHECK(fi != -1);
         current = &current->branches[fi];
@@ -176,7 +181,7 @@ void parseItemFile(const string &fname) {
             HierarchyNode *mountpoint = findNamedNode(chunk.kv["name"], 1);
             HierarchyNode tnode;
             string name = chunk.consume("name");
-            CHECK(weapontypes.count(name) == 0);
+            CHECK(weaponclasses.count(name) == 0);
             tnode.name = tokenize(name, ".").back();
             tnode.type = HierarchyNode::HNT_WEAPON;
             tnode.displaymode = HierarchyNode::HNDM_COST;
@@ -186,17 +191,21 @@ void parseItemFile(const string &fname) {
             tnode.cost = atoi(chunk.consume("cost").c_str());
             tnode.cat_restrictiontype = HierarchyNode::HNT_WEAPON;
             CHECK(mountpoint->cat_restrictiontype == -1 || tnode.cat_restrictiontype == mountpoint->cat_restrictiontype);
-            tnode.weapon = &weapontypes[name];
+            tnode.weapon = &weaponclasses[name];
             mountpoint->branches.push_back(tnode);
             
-            weapontypes[name].firerate = atoi(chunk.consume("firerate").c_str());
-            weapontypes[name].projectile = &projclasses[chunk.consume("projectile")];
-            weapontypes[name].costpershot = (float)tnode.cost / tnode.quantity;
-            weapontypes[name].name = tnode.name;
+            weaponclasses[name].firerate = atoi(chunk.consume("firerate").c_str());
+            weaponclasses[name].projectile = &projclasses[chunk.consume("projectile")];
+            weaponclasses[name].costpershot = (float)tnode.cost / tnode.quantity;
+            weaponclasses[name].name = tnode.name;
+            
+            string deployclass = chunk.consume("deploy");
+            CHECK(deployclasses.count(deployclass));
+            weaponclasses[name].deploy = &deployclasses[deployclass];
             
             if(chunk.kv.count("default") && atoi(chunk.consume("default").c_str())) {
                 CHECK(!defweapon);
-                defweapon = &weapontypes[name];
+                defweapon = &weaponclasses[name];
             }
             
         } else if(chunk.category == "upgrade") {
@@ -204,7 +213,7 @@ void parseItemFile(const string &fname) {
             HierarchyNode *mountpoint = findNamedNode(chunk.kv["name"], 1);
             HierarchyNode tnode;
             string name = chunk.consume("name");
-            CHECK(upgradetypes.count(name) == 0);
+            CHECK(upgradeclasses.count(name) == 0);
             tnode.name = tokenize(name, ".").back();
             tnode.type = HierarchyNode::HNT_UPGRADE;
             if(chunk.kv.count("exclusive") && atoi(chunk.consume("exclusive").c_str()))
@@ -217,21 +226,21 @@ void parseItemFile(const string &fname) {
             tnode.cost = atoi(chunk.consume("cost").c_str());
             tnode.cat_restrictiontype = HierarchyNode::HNT_UPGRADE;
             CHECK(mountpoint->cat_restrictiontype == -1 || tnode.cat_restrictiontype == mountpoint->cat_restrictiontype);
-            tnode.upgrade = &upgradetypes[name];
+            tnode.upgrade = &upgradeclasses[name];
             mountpoint->branches.push_back(tnode);
             
             if(chunk.kv.count("hull"))
-                upgradetypes[name].hull = atoi(chunk.consume("hull").c_str());
+                upgradeclasses[name].hull = atoi(chunk.consume("hull").c_str());
             else
-                upgradetypes[name].hull = 0;
+                upgradeclasses[name].hull = 0;
             if(chunk.kv.count("engine"))
-                upgradetypes[name].engine = atoi(chunk.consume("engine").c_str());
+                upgradeclasses[name].engine = atoi(chunk.consume("engine").c_str());
             else
-                upgradetypes[name].engine = 0;
+                upgradeclasses[name].engine = 0;
             if(chunk.kv.count("handling"))
-                upgradetypes[name].handling = atoi(chunk.consume("handling").c_str());
+                upgradeclasses[name].handling = atoi(chunk.consume("handling").c_str());
             else
-                upgradetypes[name].handling = 0;
+                upgradeclasses[name].handling = 0;
 
         } else if(chunk.category == "projectile") {
             string name = chunk.consume("name");
@@ -239,11 +248,36 @@ void parseItemFile(const string &fname) {
             CHECK(projclasses.count(name) == 0);
 
             projclasses[name].velocity = atoi(chunk.consume("velocity").c_str()) / FPS;
+            
+            string warheadclass = chunk.consume("warhead");
+            CHECK(warheadclasses.count(warheadclass));
+            projclasses[name].warhead = &warheadclasses[warheadclass];
+            
+        } else if(chunk.category == "deploy") {
+            string name = chunk.consume("name");
+            CHECK(prefixed(name, "deploy"));
+            CHECK(deployclasses.count(name) == 0);
+
+            deployclasses[name]; // we don't actually *have* any data for a deploy yet, so.
+            
+        } else if(chunk.category == "warhead") {
+            string name = chunk.consume("name");
+            CHECK(prefixed(name, "warhead"));
+            CHECK(warheadclasses.count(name) == 0);
+
+            warheadclasses[name].impactdamage = 0;
+            
+            if(chunk.kv.count("impactdamage"))
+                warheadclasses[name].impactdamage = atof(chunk.consume("impactdamage").c_str());
 
         } else {
             CHECK(0);
         }
-        chunk.shouldBeDone();        
+        if(!chunk.isDone()) {
+            dprintf("Chunk still has unparsed data!\n");
+            dprintf("%s\n", chunk.debugOutput().c_str());
+            CHECK(0);
+        }
     }
 }
 

@@ -12,7 +12,7 @@ public:
 
 struct IDBWarhead {
 public:
-    int damage;
+    float impactdamage;
 };
 
 struct IDBProjectile {
