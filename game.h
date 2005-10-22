@@ -21,8 +21,8 @@ public:
     float turnSpeed;
     Coord maxSpeed;
 
-    vector<const Upgrade *> upgrades;
-    const Weapon *weapon;
+    vector<const IDBUpgrade *> upgrades;
+    const IDBWeapon *weapon;
     int shotsLeft;
 
     Color color;
@@ -31,7 +31,7 @@ public:
     int cash;
 
     void reCalculate();
-    bool hasUpgrade(const Upgrade *upg) const;
+    bool hasUpgrade(const IDBUpgrade *upg) const;
 
     int resellAmmoValue() const;
 

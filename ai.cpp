@@ -55,7 +55,7 @@ Controller makeController(float x, float y, bool key) {
     return rv;
 }
 
-void doMegaEnumWorker(const HierarchyNode &rt, vector<pair<int, vector<Controller> > > *weps, vector<pair<pair<int, const Upgrade*>, vector<Controller> > > *upgs, vector<Controller> *done, vector<Controller> path) {
+void doMegaEnumWorker(const HierarchyNode &rt, vector<pair<int, vector<Controller> > > *weps, vector<pair<pair<int, const IDBUpgrade*>, vector<Controller> > > *upgs, vector<Controller> *done, vector<Controller> path) {
     if(rt.type == HierarchyNode::HNT_CATEGORY) {
         path.push_back(makeController(1, 0, 0));
         for(int i = 0; i < rt.branches.size(); i++) {
@@ -73,7 +73,7 @@ void doMegaEnumWorker(const HierarchyNode &rt, vector<pair<int, vector<Controlle
     }
 }
 
-void doMegaEnum(const HierarchyNode &rt, vector<pair<int, vector<Controller> > > *weps, vector<pair<pair<int, const Upgrade*>, vector<Controller> > > *upgs, vector<Controller> *done) {
+void doMegaEnum(const HierarchyNode &rt, vector<pair<int, vector<Controller> > > *weps, vector<pair<pair<int, const IDBUpgrade*>, vector<Controller> > > *upgs, vector<Controller> *done) {
     for(int i = 0; i < rt.branches.size(); i++) {
         vector<Controller> tvd;
         for(int j = 0; j < i; j++)
@@ -107,7 +107,7 @@ void Ai::updateShop(const Player *player) {
     CHECK(!shopdone);
     const HierarchyNode &rt = itemDbRoot();
     vector<pair<int, vector<Controller> > > weps;
-    vector<pair<pair<int, const Upgrade *>, vector<Controller> > > upgs;
+    vector<pair<pair<int, const IDBUpgrade *>, vector<Controller> > > upgs;
     vector<Controller> done;
     doMegaEnum(rt, &weps, &upgs, &done);
     dprintf("%d weps, %d upgs, %d donesize\n", weps.size(), upgs.size(), done.size());

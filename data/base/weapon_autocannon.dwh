@@ -1,8 +1,13 @@
 
+warhead {
+    name=warhead.autocannon
+    impactdamage=1
+}
+
 projectile {
     name=projectile.autocannon
     velocity=120
-    damage=1
+    warhead=warhead.autocannon
 }
 
 weapon {
@@ -10,6 +15,7 @@ weapon {
     cost=0
     default=1
     firerate=30
+    deploy=deploy.forward
     projectile=projectile.autocannon
 }
 
@@ -17,6 +23,7 @@ weapon {
     name=ROOT.Weapons.Autocannon.Autocannon II
     cost=600
     firerate=24
+    deploy=deploy.forward
     projectile=projectile.autocannon
 }
 
@@ -24,5 +31,6 @@ weapon {
     name=ROOT.Weapons.Autocannon.Autocannon III
     cost=1000
     firerate=20
+    deploy=deploy.forward
     projectile=projectile.autocannon
 }

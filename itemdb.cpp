@@ -8,11 +8,11 @@
 #include "args.h"
 
 static HierarchyNode root;
-static map<string, ProjectileClass> projclasses;
-static map<string, Weapon> weapontypes;
-static map<string, Upgrade> upgradetypes;
+static map<string, IDBProjectile> projclasses;
+static map<string, IDBWeapon> weapontypes;
+static map<string, IDBUpgrade> upgradetypes;
 
-static const Weapon *defweapon = NULL;
+static const IDBWeapon *defweapon = NULL;
 
 DEFINE_bool(debugitems, false, "Enable debug items");
 
@@ -121,6 +121,16 @@ HierarchyNode *findNamedNode(const string &in, int postcut) {
     return current;
 }
 
+bool prefixed(const string &label, const string &prefix) {
+    if(label.size() < prefix.size() + 1)
+        return false;
+    if(label[prefix.size()] != '.')
+        return false;
+    if(strncmp(label.c_str(), prefix.c_str(), prefix.size()))
+        return false;
+    return true;
+}
+
 void parseItemFile(const string &fname) {
     ifstream tfil(fname.c_str());
     CHECK(tfil);
@@ -160,13 +170,7 @@ void parseItemFile(const string &fname) {
             }
             CHECK(mountpoint->cat_restrictiontype == -1 || tnode.cat_restrictiontype == mountpoint->cat_restrictiontype);
             mountpoint->branches.push_back(tnode);
-        } else if(chunk.category == "projectile") {
-            string name = chunk.consume("name");
-            int vel = atoi(chunk.consume("velocity").c_str());
-            float damage = atof(chunk.consume("damage").c_str());
-            CHECK(projclasses.count(name) == 0);
-            projclasses[name].velocity = vel / FPS;
-            projclasses[name].damage = damage;
+
         } else if(chunk.category == "weapon") {
             
             HierarchyNode *mountpoint = findNamedNode(chunk.kv["name"], 1);
@@ -200,7 +204,7 @@ void parseItemFile(const string &fname) {
             HierarchyNode *mountpoint = findNamedNode(chunk.kv["name"], 1);
             HierarchyNode tnode;
             string name = chunk.consume("name");
-            CHECK(weapontypes.count(name) == 0);
+            CHECK(upgradetypes.count(name) == 0);
             tnode.name = tokenize(name, ".").back();
             tnode.type = HierarchyNode::HNT_UPGRADE;
             if(chunk.kv.count("exclusive") && atoi(chunk.consume("exclusive").c_str()))
@@ -228,7 +232,14 @@ void parseItemFile(const string &fname) {
                 upgradetypes[name].handling = atoi(chunk.consume("handling").c_str());
             else
                 upgradetypes[name].handling = 0;
-        
+
+        } else if(chunk.category == "projectile") {
+            string name = chunk.consume("name");
+            CHECK(prefixed(name, "projectile"));
+            CHECK(projclasses.count(name) == 0);
+
+            projclasses[name].velocity = atoi(chunk.consume("velocity").c_str()) / FPS;
+
         } else {
             CHECK(0);
         }
@@ -274,6 +285,6 @@ const HierarchyNode &itemDbRoot() {
     return root;
 }
 
-const Weapon *defaultWeapon() {
+const IDBWeapon *defaultWeapon() {
     return defweapon;
 }

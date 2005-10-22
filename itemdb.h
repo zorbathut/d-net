@@ -6,28 +6,38 @@
 
 using namespace std;
 
-class ProjectileClass {
+struct IDBDeploy {
 public:
-    int velocity;
-    float damage;
 };
 
-class Weapon {
+struct IDBWarhead {
+public:
+    int damage;
+};
+
+struct IDBProjectile {
+public:
+    int velocity;
+    IDBWarhead *warhead;
+};
+
+struct IDBWeapon {
 public:
     int firerate;
     float costpershot;
     string name;
-    const ProjectileClass *projectile;
+    IDBDeploy *deploy;
+    IDBProjectile *projectile;
 };
 
-class Upgrade {
+struct IDBUpgrade {
 public:
     int hull;
     int engine;
     int handling;
 };
 
-class HierarchyNode {
+struct HierarchyNode {
 public:
     vector<HierarchyNode> branches;
 
@@ -42,8 +52,8 @@ public:
     bool buyable;
     int cost;
     
-    const Weapon *weapon;
-    const Upgrade *upgrade;
+    const IDBWeapon *weapon;
+    const IDBUpgrade *upgrade;
     
     int quantity;
     
@@ -58,6 +68,6 @@ public:
 void initItemdb();
 
 const HierarchyNode &itemDbRoot();
-const Weapon *defaultWeapon();
+const IDBWeapon *defaultWeapon();
 
 #endif
