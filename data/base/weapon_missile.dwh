@@ -14,7 +14,7 @@ projectile {
 weapon {
     name=ROOT.Weapons.Missile.Missile
     cost=1000
-    firerate=90
+    firerate=40
     deploy=deploy.forward
     projectile=projectile.missile
 }
@@ -22,7 +22,7 @@ weapon {
 weapon {
     name=ROOT.Weapons.Missile.Missile II
     cost=1800
-    firerate=60
+    firerate=30
     deploy=deploy.forward
     projectile=projectile.missile
 }
@@ -30,7 +30,7 @@ weapon {
 weapon {
     name=ROOT.Weapons.Missile.Missile III
     cost=2500
-    firerate=40
+    firerate=24
     deploy=deploy.forward
     projectile=projectile.missile
 }

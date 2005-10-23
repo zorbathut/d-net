@@ -134,6 +134,7 @@ private:
     Coord2 missile_accel() const;
     Coord2 missile_backdrop() const;
     Coord2 missile_sidedrop() const;
+    float missile_sidedist;
 
 	Coord2 pos;
 	float d;

@@ -264,6 +264,14 @@ void Projectile::tick() {
     pos += movement();
     lasttail = nexttail();
     age++;
+    
+    if(projtype->motion == PM_NORMAL) {
+    } else if(projtype->motion == PM_MISSILE) {
+        if(age > 30)
+            missile_sidedist /= 1.2;
+    } else {
+        CHECK(0);
+    }
 }
 
 void Projectile::render() const {
@@ -319,13 +327,13 @@ Coord2 Projectile::nexttail() const {
 }
 
 Coord2 Projectile::missile_accel() const {
-    return makeAngle(Coord(d)) * Coord(projtype->velocity) * age / 120;
+    return makeAngle(Coord(d)) * Coord(projtype->velocity) * age / 60;
 }
 Coord2 Projectile::missile_backdrop() const {
     return makeAngle(Coord(d)) / 120;
 }
 Coord2 Projectile::missile_sidedrop() const {
-    return Coord2(0, 0);
+    return makeCAngle(d - M_PI / 2) * Coord(missile_sidedist);
 }
 
 Projectile::Projectile() {
@@ -340,6 +348,13 @@ Projectile::Projectile(const Coord2 &in_pos, float in_d, const IDBProjectile *in
     age = 0;
     live = true;
     lasttail = Coord2(0, 0);
+    
+    if(projtype->motion == PM_NORMAL) {
+    } else if(projtype->motion == PM_MISSILE) {
+        missile_sidedist = ((frand() - 0.5) * (frand() - 0.5));
+    } else {
+        CHECK(0);
+    }
 }
 
 bool Game::runTick( const vector< Keystates > &rkeys ) {
