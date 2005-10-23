@@ -8,6 +8,10 @@ using namespace std;
 #include "coord.h"
 #include "dvec2.h"
 
+/*************
+ * Color struct
+ */
+ 
 struct Color {
 public:
     float r, g, b;
@@ -19,6 +23,10 @@ public:
 Color operator*( const Color &lhs, float rhs );
 Color operator/( const Color &lhs, float rhs );
 Color operator+( const Color &lhs, const Color &rhs );
+
+/*************
+ * Setup and statistics
+ */
 
 void setDefaultResolution(int cur_width, int cur_height, bool fullscreen);
 int getResolutionX();
@@ -33,18 +41,32 @@ void clearFrame(const Color &color);
 void initFrame();
 void setZoom( float sx, float sy, float ey );
 
+void deinitFrame();
+
+/*************
+ * Primitives
+ */
+ 
 void setColor( float r, float g, float b );
 void setColor( const Color &color );
+
 void drawLine( float sx, float sy, float ex, float ey, float weight );
 void drawLine( const Float2 &s, const Float2 &e, float weight );
 void drawLine( const Coord2 &s, const Coord2 &e, float weight );
 void drawLine( const Float4 &loc, float weight );
 void drawLine( const Coord4 &loc, float weight );
+
+void drawPoint( float x, float y, float weight );
+
+void drawSolid(const Float4 &box);
+
+/*************
+ * Composites
+ */
+
 void drawLinePath( const vector<float> &verts, float weight, bool loop );
 void drawLinePath( const vector<Float2> &verts, float weight, bool loop );
 void drawLinePath( const vector<Coord2> &verts, float weight, bool loop );
-
-void drawSolid(const Float4 &box);
 
 void drawBox( const Float4 &locs, float weight );
 void drawBoxAround( float x, float y, float rad, float weight );
@@ -55,8 +77,6 @@ void drawCurve( const Float4 &ptah, const Float4 &ptbh, float weight );
 void drawCurveControls( const Float4 &ptah, const Float4 &ptbh, float spacing, float weight );
 
 void drawCircle( const Float2 &center, float radius, float weight );
-
-void drawPoint( float x, float y, float weight );
 
 void drawRect( const Float4 &rect, float weight );
 
@@ -79,7 +99,5 @@ void drawSpokes(float x, float y, int dupes, int numer, int denom, float len, fl
 void drawGrid(float spacing, float width);
 
 void drawCrosshair(float x, float y, float rad, float weight);
-
-void deinitFrame();
 
 #endif
