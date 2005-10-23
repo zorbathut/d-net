@@ -27,9 +27,9 @@ void addToBoundBox(Coord4 *bbox, const Coord4 &rect) {
 int inPath(const Coord2 &point, const vector<Coord2> &path) {
     CHECK(path.size());
     Coord accum = 0;
-    Coord cpt = angle(path.back() - point);
+    Coord cpt = getAngle(path.back() - point);
     for(int i = 0; i < path.size(); i++) {
-        Coord npt = angle(path[i] - point);
+        Coord npt = getAngle(path[i] - point);
         //dprintf("%f to %f, %f\n", cpt.toFloat(), npt.toFloat(), (npt-cpt).toFloat());
         Coord diff = npt - cpt;
         if(diff < -COORDPI)

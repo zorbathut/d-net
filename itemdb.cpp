@@ -278,9 +278,18 @@ void parseItemFile(const string &fname) {
             CHECK(warheadclasses.count(name) == 0);
 
             warheadclasses[name].impactdamage = 0;
+            warheadclasses[name].radiusdamage = 0;
+            warheadclasses[name].radiusfalloff = -1;
             
             if(chunk.kv.count("impactdamage"))
                 warheadclasses[name].impactdamage = atof(chunk.consume("impactdamage").c_str());
+            
+            CHECK(chunk.kv.count("radiusfalloff") == chunk.kv.count("radiusdamage"));
+            
+            if(chunk.kv.count("radiusdamage")) {
+                warheadclasses[name].radiusdamage = atof(chunk.consume("radiusdamage").c_str());
+                warheadclasses[name].radiusfalloff = atof(chunk.consume("radiusfalloff").c_str());
+            }
 
         } else {
             CHECK(0);

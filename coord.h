@@ -245,15 +245,11 @@ inline Coord2 normalize(const Coord2 &in) {
     return in / len(in);
 }
 
-inline Coord angle(const Coord2 &in) {
+inline Coord getAngle(const Coord2 &in) {
     return Coord(atan2(in.y.toFloat(), in.x.toFloat()));
 }
 inline Coord2 makeAngle(const Coord &in) {
     return Coord2(cfcos(in), cfsin(in));
-}
-
-inline Coord2 makeCAngle(float in) {
-    return makeAngle(Coord(in));
 }
 
 class Coord4 {

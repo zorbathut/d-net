@@ -4,7 +4,7 @@
 #include "gfx.h"
 #include "args.h"
 
-DEFINE_bool(debugGraphics, false, "Enable various debug graphics");
+DECLARE_bool(debugGraphics);
 
 void Gamemap::render() const {
     CHECK(paths.size());
@@ -17,8 +17,8 @@ void Gamemap::render() const {
                 int m = (j + 2) % paths[i].size();
                 Coord2 jk = paths[i][j] - paths[i][k];
                 Coord2 mk = paths[i][m] - paths[i][k];
-                Coord ja = angle(jk);
-                Coord ma = angle(mk);
+                Coord ja = getAngle(jk);
+                Coord ma = getAngle(mk);
                 Coord ad = ma - ja;
                 while(ad < 0)
                     ad += COORDPI * 2;

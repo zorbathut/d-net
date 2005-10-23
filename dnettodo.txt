@@ -1,5 +1,4 @@
-- Fix exit crash (if there is one)
-- Accurate projectiles
+- Clean up gfx.h layout
 - Destroyable terrain
 
 - More levels

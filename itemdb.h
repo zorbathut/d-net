@@ -13,6 +13,8 @@ public:
 struct IDBWarhead {
 public:
     float impactdamage;
+    float radiusdamage;
+    float radiusfalloff;
 };
 
 enum { PM_NORMAL, PM_MISSILE };

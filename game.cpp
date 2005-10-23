@@ -18,6 +18,7 @@ using namespace std;
 #include "ai.h"
 
 DEFINE_bool(verboseCollisions, false, "Verbose collisions");
+DEFINE_bool(debugGraphics, false, "Enable various debug graphics");
 
 void Player::reCalculate() {
     maxHealth = 20;
@@ -56,15 +57,19 @@ Player::Player() {
 }
 
 void GfxEffects::move() {
+    CHECK(life != -1);
 	age++;
 }
 void GfxEffects::render() const {
+    CHECK(life != -1);
     float apercent = 1.0f - (float)age / life;
-	setColor( apercent, apercent, apercent );
-    if( type == EFFECT_LINE ) {
-        drawLine( pos + vel * age, 0.1f );
-    } else if( type == EFFECT_POINT ) {
-        drawPoint( pos.sx + vel.sx * age, pos.sy + vel.sy * age, 0.1f );
+	setColor(apercent, apercent, apercent);
+    if(type == EFFECT_LINE) {
+        drawLine(line_pos + line_vel * age, 0.1f);
+    } else if(type == EFFECT_POINT) {
+        drawPoint(point_pos.x + point_pos.x * age, point_pos.y + point_pos.y * age, 0.1f);
+    } else if(type == EFFECT_CIRCLE) {
+        drawCircle(circle_center, circle_radius, 0.1f);
     } else {
         CHECK(0);
     }
@@ -76,6 +81,7 @@ bool GfxEffects::dead() const {
 
 GfxEffects::GfxEffects() {
 	age = 0;
+    life = -1;
 }
 
 void Tank::init(Player *in_player) {
@@ -155,8 +161,8 @@ const Coord tank_coords[3][2] =  {
 };
 
 vector<Coord2> Tank::getTankVertices( Coord2 pos, float td ) const {
-	Coord2 xt = makeCAngle(td);
-	Coord2 yt = makeCAngle(td - M_PI / 2);
+	Coord2 xt = makeAngle(Coord(td));
+	Coord2 yt = makeAngle(Coord(td) - COORDPI / 2);
 	vector<Coord2> rv;
 	for( int i = 0; i < 3; i++ )
 		rv.push_back(Coord2(pos.x + tank_coords[ i ][ 0 ] * xt.x + tank_coords[ i ][ 1 ] * xt.y, pos.y + tank_coords[ i ][ 1 ] * yt.y + tank_coords[ i ][ 0 ] * yt.x));
@@ -164,8 +170,8 @@ vector<Coord2> Tank::getTankVertices( Coord2 pos, float td ) const {
 };
 
 Coord2 Tank::getFiringPoint() const {
-    Coord2 xt = makeCAngle(d);
-	Coord2 yt = makeCAngle(d - M_PI / 2);
+    Coord2 xt = makeAngle(Coord(d));
+	Coord2 yt = makeAngle(Coord(d) - COORDPI / 2);
 	return Coord2( pos.x + tank_coords[ 2 ][ 0 ] * xt.x + tank_coords[ 2 ][ 1 ] * xt.y, pos.y + tank_coords[ 2 ][ 1 ] * yt.y + tank_coords[ 2 ][ 0 ] * yt.x );
 };
 
@@ -234,12 +240,12 @@ void Tank::genEffects( vector< GfxEffects > *gfxe ) {
 		vector<Coord2> tv = getTankVertices( pos, d );
 		for( int i = 0; i < tv.size(); i++ ) {
 			GfxEffects ngfe;
-			ngfe.pos = Float4(tv[i].x.toFloat(), tv[i].y.toFloat(), tv[(i + 1) % tv.size()].x.toFloat(), tv[(i + 1) % tv.size()].y.toFloat());
-			float cx = ( ngfe.pos.sx + ngfe.pos.ex ) / 2;
-			float cy = ( ngfe.pos.sy + ngfe.pos.ey ) / 2;
-			ngfe.vel.sx = ngfe.vel.ex = cx - pos.x.toFloat();
-			ngfe.vel.sy = ngfe.vel.ey = cy - pos.y.toFloat();
-			ngfe.vel /= 5;
+			ngfe.line_pos = Float4(tv[i].x.toFloat(), tv[i].y.toFloat(), tv[(i + 1) % tv.size()].x.toFloat(), tv[(i + 1) % tv.size()].y.toFloat());
+			float cx = ( ngfe.line_pos.sx + ngfe.line_pos.ex ) / 2;
+			float cy = ( ngfe.line_pos.sy + ngfe.line_pos.ey ) / 2;
+			ngfe.line_vel.sx = ngfe.line_vel.ex = cx - pos.x.toFloat();
+			ngfe.line_vel.sy = ngfe.line_vel.ey = cy - pos.y.toFloat();
+			ngfe.line_vel /= 5;
 			ngfe.life = 15;
             ngfe.type = GfxEffects::EFFECT_LINE;
 			gfxe->push_back( ngfe );
@@ -285,9 +291,17 @@ void Projectile::addCollision( Collider *collider ) const {
 void Projectile::impact(Tank *target, const vector<pair<float, Tank *> > &adjacency) {
     if(target)
         dealDamage(projtype->warhead->impactdamage, target);
+    
+    for(int i = 0; i < adjacency.size(); i++) {
+        dprintf("testing %d, %f distance, %f damage, %d flag", i, adjacency[i].first, projtype->warhead->radiusdamage / projtype->warhead->radiusfalloff * ( projtype->warhead->radiusfalloff - adjacency[i].first), adjacency[i].first < projtype->warhead->radiusfalloff);
+        if(adjacency[i].first < projtype->warhead->radiusfalloff)
+            dealDamage(projtype->warhead->radiusdamage / projtype->warhead->radiusfalloff * ( projtype->warhead->radiusfalloff - adjacency[i].first), adjacency[i].second);
+    }
 };
 
 void Projectile::dealDamage(float dmg, Tank *target) {
+    if(target == owner)
+        return; // friendly fire exception
     if(target->takeDamage(dmg))
         owner->player->kills++;
     owner->player->damageDone += dmg;
@@ -295,17 +309,23 @@ void Projectile::dealDamage(float dmg, Tank *target) {
 
 void Projectile::genEffects( vector< GfxEffects > *gfxe, Coord2 loc ) const {
     GfxEffects ngfe;
-    ngfe.pos.sx = loc.x.toFloat();
-    ngfe.pos.sy = loc.y.toFloat();
+    ngfe.point_pos = loc.toFloat();
     ngfe.life = 10;
     ngfe.type = GfxEffects::EFFECT_POINT;
     for( int i = 0; i < 3; i++ ) {
         float dir = frand() * 2 * PI;
-        ngfe.vel.sx = fsin( dir );
-        ngfe.vel.sy = -fcos( dir );
-        ngfe.vel /= 5;
-        ngfe.vel *= 1.0 - frand() * frand();
+        ngfe.point_vel = makeAngle(dir) / 5;
+        ngfe.point_vel *= 1.0 - frand() * frand();
         gfxe->push_back( ngfe );
+    }
+    
+    if(projtype->warhead->radiusfalloff > 0 && FLAGS_debugGraphics) {
+        GfxEffects dbgf;
+        dbgf.type = GfxEffects::EFFECT_CIRCLE;
+        dbgf.circle_center = loc.toFloat();
+        dbgf.circle_radius = projtype->warhead->radiusfalloff;
+        dbgf.life = 5;
+        gfxe->push_back(dbgf);
     }
 }
 
@@ -313,7 +333,6 @@ Coord2 Projectile::movement() const {
     if(projtype->motion == PM_NORMAL) {
         return makeAngle(Coord(d)) * Coord(projtype->velocity);
     } else if(projtype->motion == PM_MISSILE) {
-        dprintf("(%f,%f) (%f,%f) (%f,%f)\n", missile_accel().x.toFloat(), missile_accel().y.toFloat(), missile_backdrop().x.toFloat(), missile_backdrop().y.toFloat(), missile_sidedrop().x.toFloat(), missile_sidedrop().y.toFloat());
         return missile_accel() + missile_backdrop() + missile_sidedrop();
     } else {
         CHECK(0);
@@ -338,7 +357,7 @@ Coord2 Projectile::missile_backdrop() const {
     return makeAngle(Coord(d)) / 120;
 }
 Coord2 Projectile::missile_sidedrop() const {
-    return makeCAngle(d - M_PI / 2) * Coord(missile_sidedist);
+    return makeAngle(Coord(d) - COORDPI / 2) * Coord(missile_sidedist);
 }
 
 Projectile::Projectile() {
@@ -707,8 +726,17 @@ Game::Game(vector<Player> *in_playerdata, const Level &lev) {
 
 vector<pair<float, Tank *> > Game::genTankDistance(const Coord2 &center) {
     vector<pair<float, Tank *> > rv;
-    for(int i = 0; i < players.size(); i++)
-        if(players[i].live)
-            rv.push_back(make_pair(len(center - players[i].pos).toFloat(), &players[i]));
+    for(int i = 0; i < players.size(); i++) {
+        if(players[i].live) {
+            vector<Coord2> tv = players[i].getTankVertices(players[i].pos, players[i].d);
+            float closest = 1e10;
+            for(int j = 0; j < tv.size(); j++)
+                if(len(center - tv[j]).toFloat() < closest)
+                    closest = len(center - tv[j]).toFloat();
+            CHECK(closest < 1e10);
+            CHECK(closest >= 0);
+            rv.push_back(make_pair(closest, &players[i]));
+        }
+    }
     return rv;
 }

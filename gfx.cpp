@@ -314,6 +314,13 @@ void drawCurveControls( const Float4 &ptah, const Float4 &ptbh, float spacing, f
     drawLine( ptbh, weight );
 }
 
+void drawCircle( const Float2 &center, float radius, float weight ) {
+    vector<Float2> verts;
+    for(int i = 0; i < 16; i++)
+        verts.push_back(makeAngle(i * PI / 8) * radius + center);
+    drawLinePath(verts, weight, true);
+}
+
 void drawPoint( float x, float y, float weight ) {
     finishLineCluster();
     glPointSize( weight / map_zoom * getResolutionY() );   // GL uses pixels internally for this unit, so I have to translate from game-meters

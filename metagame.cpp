@@ -521,11 +521,11 @@ Metagame::Metagame(int playercount, int in_roundsBetweenShop) {
     }
     
     for(int i = 0; i < 4; i++) {
-        symbolpos.push_back( boxaround( angle(PI * 2 * i / 4) * 100 + Float2( 400, 300 ), 50 ) );
+        symbolpos.push_back( boxaround( makeAngle(PI * 2 * i / 4) * 100 + Float2( 400, 300 ), 50 ) );
     }
     
     for(int i = 4; i < symbols.size(); i++) {
-        symbolpos.push_back( boxaround( angle(PI * 2 * ( i - 4 ) / ( symbols.size() - 4 )) * 225 + Float2( 400, 300 ), 50 ) );
+        symbolpos.push_back( boxaround( makeAngle(PI * 2 * ( i - 4 ) / ( symbols.size() - 4 )) * 225 + Float2( 400, 300 ), 50 ) );
     }
     
     mode = MGM_PLAYERCHOOSE;

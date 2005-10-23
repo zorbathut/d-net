@@ -54,6 +54,8 @@ void drawShadedBox(const Float4 &locs, float weight, float shadedens);
 void drawCurve( const Float4 &ptah, const Float4 &ptbh, float weight );
 void drawCurveControls( const Float4 &ptah, const Float4 &ptbh, float spacing, float weight );
 
+void drawCircle( const Float2 &center, float radius, float weight );
+
 void drawPoint( float x, float y, float weight );
 
 void drawRect( const Float4 &rect, float weight );

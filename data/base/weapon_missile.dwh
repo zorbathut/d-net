@@ -1,7 +1,9 @@
 
 warhead {
     name=warhead.missile
-    impactdamage=4
+    impactdamage=1
+    radiusdamage=3
+    radiusfalloff=4
 }
 
 projectile {

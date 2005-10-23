@@ -89,7 +89,6 @@ inline bool operator<(const Float2 &lhs, const Float2 &rhs) {
 inline float len(const Float2 &in) {
     return sqrt(in.x * in.x + in.y * in.y);
 }
-
 inline Float2 normalize(const Float2 &in) {
     return in / len(in);
 }
@@ -253,8 +252,11 @@ inline int whichSide( const Float4 &f4, const pair< float, float > &pta ) {
     else return 0;
 }
 
-inline Float2 angle( float ang ) {
-    return Float2(fsin(ang), fcos(ang));
+inline float getAngle(const Float2 &in) {
+    return atan2(in.y, in.x);
+}
+inline Float2 makeAngle(float in) {
+    return Float2(fcos(in), fsin(in));
 }
 
 inline bool isinside(const Float4 &lhs, const Float2 &rhs) {

@@ -43,6 +43,8 @@ public:
 
 };
 
+// there's a lot of redundancy here, but ATM I don't care
+// I'm not really sure whether inheritance will honestly be better thanks to allocation overhead, though
 class GfxEffects {
 public:
 
@@ -50,14 +52,20 @@ public:
 	void render() const;
 	bool dead() const;
 
-	Float4 pos;
-	Float4 vel;
-	int life;
-
-	int age;
-
     int type;
-    enum { EFFECT_POINT, EFFECT_LINE };
+    enum { EFFECT_POINT, EFFECT_LINE, EFFECT_CIRCLE };
+    
+    int life;
+    int age;
+    
+    Float2 point_pos;
+    Float2 point_vel;
+    
+    Float2 circle_center;
+    float circle_radius;
+    
+	Float4 line_pos;
+	Float4 line_vel;
 
 	GfxEffects();
 
