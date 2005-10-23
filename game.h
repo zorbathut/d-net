@@ -112,7 +112,7 @@ public:
 
 	void addCollision( Collider *collider ) const;
 
-	void impact( Tank *target );
+	void impact(Tank *target, const vector<pair<float, Tank *> > &adjacency);
 
     void genEffects( vector< GfxEffects > *gfxe, Coord2 pos ) const;
 
@@ -122,6 +122,8 @@ public:
     bool live;
 
 private:
+    
+    void dealDamage(float dmg, Tank *target);
     
     Coord2 movement() const;
 
@@ -161,6 +163,8 @@ public:
 	Game(vector<Player> *playerdata, const Level &level);
 
 private:
+    
+    vector<pair<float, Tank *> > genTankDistance(const Coord2 &center);
 
 	int frameNm;
     int framesSinceOneLeft;

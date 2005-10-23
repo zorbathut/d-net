@@ -282,10 +282,15 @@ void Projectile::render() const {
 void Projectile::addCollision( Collider *collider ) const {
     collider->token( Coord4( pos, pos + lasttail ), Coord4( movement(), movement() + nexttail() ) );
 };
-void Projectile::impact( Tank *target ) {
-	if(target->takeDamage( projtype->warhead->impactdamage ))
+void Projectile::impact(Tank *target, const vector<pair<float, Tank *> > &adjacency) {
+    if(target)
+        dealDamage(projtype->warhead->impactdamage, target);
+};
+
+void Projectile::dealDamage(float dmg, Tank *target) {
+    if(target->takeDamage(dmg))
         owner->player->kills++;
-    owner->player->damageDone += 1;
+    owner->player->damageDone += dmg;
 };
 
 void Projectile::genEffects( vector< GfxEffects > *gfxe, Coord2 loc ) const {
@@ -489,6 +494,7 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
             CHECK(0);
         } else if( lhs.category == -1 && rhs.category == 1 ) {
             // wall-projectile collision - kill projectile
+            projectiles[ rhs.bucket ][ rhs.item ].impact( NULL, genTankDistance(collider.getData().loc) );
             projectiles[ rhs.bucket ][ rhs.item ].live = false;
             projectiles[ rhs.bucket ][ rhs.item ].genEffects( &gfxeffects, collider.getData().loc );
         } else if( lhs.category == 0 && rhs.category == 0 ) {
@@ -496,16 +502,29 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
             CHECK(0);
         } else if( lhs.category == 0 && rhs.category == 1 ) {
             // tank-projectile collision - kill projectile, do damage
-            projectiles[ rhs.bucket ][ rhs.item ].impact( &players[ lhs.bucket ] );
+            projectiles[ rhs.bucket ][ rhs.item ].impact( &players[ lhs.bucket ], genTankDistance(collider.getData().loc) );
             projectiles[ rhs.bucket ][ rhs.item ].live = false;
             projectiles[ rhs.bucket ][ rhs.item ].genEffects( &gfxeffects, collider.getData().loc );
         } else if( lhs.category == 1 && rhs.category == 1 ) {
             // projectile-projectile collision - kill both projectiles
-            projectiles[ lhs.bucket ][ lhs.item ].live = false;
-            projectiles[ lhs.bucket ][ lhs.item ].genEffects( &gfxeffects, collider.getData().loc );
+            // also do radius damage, and do it fairly dammit
+            bool lft = frand() < 0.5;
             
+            if(lft) {
+                projectiles[ lhs.bucket ][ lhs.item ].impact( NULL, genTankDistance(collider.getData().loc) );
+                projectiles[ lhs.bucket ][ lhs.item ].live = false;
+                projectiles[ lhs.bucket ][ lhs.item ].genEffects( &gfxeffects, collider.getData().loc );
+            }
+            
+            projectiles[ rhs.bucket ][ rhs.item ].impact( NULL, genTankDistance(collider.getData().loc) );
             projectiles[ rhs.bucket ][ rhs.item ].live = false;
             projectiles[ rhs.bucket ][ rhs.item ].genEffects( &gfxeffects, collider.getData().loc );
+            
+            if(!lft) {
+                projectiles[ lhs.bucket ][ lhs.item ].impact( NULL, genTankDistance(collider.getData().loc) );
+                projectiles[ lhs.bucket ][ lhs.item ].live = false;
+                projectiles[ lhs.bucket ][ lhs.item ].genEffects( &gfxeffects, collider.getData().loc );
+            }
         } else {
             // nothing meaningful, should totally never happen, what the hell is going on here, who are you, and why are you in my apartment
             CHECK(0);
@@ -686,5 +705,10 @@ Game::Game(vector<Player> *in_playerdata, const Level &lev) {
     gamemap = Gamemap(lev);
 };
 
-
-
+vector<pair<float, Tank *> > Game::genTankDistance(const Coord2 &center) {
+    vector<pair<float, Tank *> > rv;
+    for(int i = 0; i < players.size(); i++)
+        if(players[i].live)
+            rv.push_back(make_pair(len(center - players[i].pos).toFloat(), &players[i]));
+    return rv;
+}
