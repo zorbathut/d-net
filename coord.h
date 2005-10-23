@@ -252,6 +252,10 @@ inline Coord2 makeAngle(const Coord &in) {
     return Coord2(cfcos(in), cfsin(in));
 }
 
+inline Coord2 makeCAngle(float in) {
+    return makeAngle(Coord(in));
+}
+
 class Coord4 {
 public:
     Coord sx, sy, ex, ey;

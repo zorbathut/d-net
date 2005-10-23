@@ -188,9 +188,9 @@ void Ai::updateGame(const vector<Coord4> &collide, const vector<Tank> &players, 
         //dprintf("Tank %d changing plan, %d\n", me, gamemode);
         shopdone = false;
     }
-    Float2 mypos = Float2(players[me].x.toFloat(), players[me].y.toFloat());
+    Float2 mypos = players[me].pos.toFloat();
     if(gamemode == AGM_APPROACH) {
-        Float2 enepos = Float2(players[targetplayer].x.toFloat(), players[targetplayer].y.toFloat());
+        Float2 enepos = players[targetplayer].pos.toFloat();
         enepos -= mypos;
         enepos.y *= -1;
         if(len(enepos) > 0)
@@ -198,7 +198,7 @@ void Ai::updateGame(const vector<Coord4> &collide, const vector<Tank> &players, 
         nextKeys.x = enepos.x;
         nextKeys.y = enepos.y;
     } else if(gamemode == AGM_RETREAT) {
-        Float2 enepos = Float2(players[targetplayer].x.toFloat(), players[targetplayer].y.toFloat());
+        Float2 enepos = players[targetplayer].pos.toFloat();
         enepos -= mypos;
         enepos.y *= -1;
         enepos *= -1;

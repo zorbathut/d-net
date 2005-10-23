@@ -88,10 +88,9 @@ void Tank::init(Player *in_player) {
 
 void Tank::tick(const Keystates &kst) {
     
-    pair<Coord2, float> newpos = getDeltaAfterMovement( kst, x, y, d );
+    pair<Coord2, float> newpos = getDeltaAfterMovement( kst, pos, d );
     
-    x = newpos.first.x;
-    y = newpos.first.y;
+    pos = newpos.first;
     d = newpos.second;
 	
 };
@@ -102,14 +101,14 @@ void Tank::render( int tankid ) const {
 
     setColor(player->color);
 
-	drawLinePath( getTankVertices( x, y, d ), 0.2, true );
+	drawLinePath( getTankVertices( pos, d ), 0.2, true );
 };
 
 vector<Coord4> Tank::getCurrentCollide() const {
 	if( !live )
 		return vector<Coord4>();
 
-	vector<Coord2> tankpts = getTankVertices( x, y, d );
+	vector<Coord2> tankpts = getTankVertices( pos, d );
     vector<Coord4> rv;
     for(int i = 0; i < tankpts.size(); i++) {
         int j = (i + 1) % tankpts.size();
@@ -122,8 +121,8 @@ vector<Coord4> Tank::getNextCollide(const Keystates &keys) const {
 	if( !live )
 		return vector<Coord4>();
 
-    pair<Coord2, float> newpos = getDeltaAfterMovement( keys, x, y, d );
-	vector<Coord2> tankpts = getTankVertices( newpos.first.x, newpos.first.y, newpos.second );
+    pair<Coord2, float> newpos = getDeltaAfterMovement( keys, pos, d );
+	vector<Coord2> tankpts = getTankVertices( newpos.first, newpos.second );
     vector<Coord4> rv;
     for(int i = 0; i < tankpts.size(); i++) {
         int j = (i + 1) % tankpts.size();
@@ -137,9 +136,9 @@ void Tank::addCollision(Collider *collider, const Keystates &keys) const {
 	if( !live )
 		return;
 
-	vector<Coord2> tankpts = getTankVertices( x, y, d );
-    pair<Coord2, float> newpos = getDeltaAfterMovement( keys, x, y, d );
-	vector<Coord2> newtankpts = getTankVertices( newpos.first.x, newpos.first.y, newpos.second );
+	vector<Coord2> tankpts = getTankVertices( pos, d );
+    pair<Coord2, float> newpos = getDeltaAfterMovement( keys, pos, d );
+	vector<Coord2> newtankpts = getTankVertices( newpos.first, newpos.second );
 	for( int i = 0; i < newtankpts.size(); i++ )
 		newtankpts[ i ] -= tankpts[ i ];
 	for( int i = 0; i < 3; i++ )
@@ -150,31 +149,27 @@ const float tank_width = 5;
 const float tank_length = tank_width*1.3;
 
 const Coord tank_coords[3][2] =  {
-	{Coord(-tank_width / 2), Coord(-tank_length / 3)},
-	{Coord(tank_width / 2), Coord(-tank_length / 3)},
-	{Coord(0), Coord(tank_length * 2 / 3)}
+	{Coord(-tank_length / 3), Coord(-tank_width / 2)},
+	{Coord(-tank_length / 3), Coord(tank_width / 2)},
+	{Coord(tank_length * 2 / 3), Coord(0)}
 };
 
-vector<Coord2> Tank::getTankVertices( Coord tx, Coord ty, float td ) const {
-	Coord xtx = cfcos( td );
-	Coord xty = cfsin( td );
-	Coord ytx = cfsin( td );
-	Coord yty = -cfcos( td );
+vector<Coord2> Tank::getTankVertices( Coord2 pos, float td ) const {
+	Coord2 xt = makeCAngle(td);
+	Coord2 yt = makeCAngle(td - M_PI / 2);
 	vector<Coord2> rv;
 	for( int i = 0; i < 3; i++ )
-		rv.push_back(Coord2(tx + tank_coords[ i ][ 0 ] * xtx + tank_coords[ i ][ 1 ] * xty, ty + tank_coords[ i ][ 1 ] * yty + tank_coords[ i ][ 0 ] * ytx));
+		rv.push_back(Coord2(pos.x + tank_coords[ i ][ 0 ] * xt.x + tank_coords[ i ][ 1 ] * xt.y, pos.y + tank_coords[ i ][ 1 ] * yt.y + tank_coords[ i ][ 0 ] * yt.x));
 	return rv;
 };
 
 Coord2 Tank::getFiringPoint() const {
-	Coord xtx = cfcos( d );
-	Coord xty = cfsin( d );
-	Coord ytx = cfsin( d );
-	Coord yty = -cfcos( d );
-	return Coord2( x + tank_coords[ 2 ][ 0 ] * xtx + tank_coords[ 2 ][ 1 ] * xty, y + tank_coords[ 2 ][ 1 ] * yty + tank_coords[ 2 ][ 0 ] * ytx );
+    Coord2 xt = makeCAngle(d);
+	Coord2 yt = makeCAngle(d - M_PI / 2);
+	return Coord2( pos.x + tank_coords[ 2 ][ 0 ] * xt.x + tank_coords[ 2 ][ 1 ] * xt.y, pos.y + tank_coords[ 2 ][ 1 ] * yt.y + tank_coords[ 2 ][ 0 ] * yt.x );
 };
 
-pair<Coord2, float> Tank::getDeltaAfterMovement( const Keystates &keys, Coord x, Coord y, float d ) const {
+pair<Coord2, float> Tank::getDeltaAfterMovement( const Keystates &keys, Coord2 pos, float d ) const {
     
     float dv;
     float dd;
@@ -214,14 +209,13 @@ pair<Coord2, float> Tank::getDeltaAfterMovement( const Keystates &keys, Coord x,
     
     Coord cdv(dv);
 
-	x += player->maxSpeed * cdv * cfsin( d );
-	y += -player->maxSpeed * cdv * cfcos( d );
+	pos += makeAngle(Coord(d)) * player->maxSpeed * cdv;
 
 	d += player->turnSpeed * dd;
 	d += 2*PI;
 	d = fmod( d, 2*(float)PI );
     
-    return make_pair( Coord2( x, y ), d );
+    return make_pair( pos, d );
     
 }
 
@@ -237,14 +231,14 @@ bool Tank::takeDamage( float damage ) {
 
 void Tank::genEffects( vector< GfxEffects > *gfxe ) {
 	if( spawnShards ) {
-		vector<Coord2> tv = getTankVertices( x, y, d );
+		vector<Coord2> tv = getTankVertices( pos, d );
 		for( int i = 0; i < tv.size(); i++ ) {
 			GfxEffects ngfe;
 			ngfe.pos = Float4(tv[i].x.toFloat(), tv[i].y.toFloat(), tv[(i + 1) % tv.size()].x.toFloat(), tv[(i + 1) % tv.size()].y.toFloat());
 			float cx = ( ngfe.pos.sx + ngfe.pos.ex ) / 2;
 			float cy = ( ngfe.pos.sy + ngfe.pos.ey ) / 2;
-			ngfe.vel.sx = ngfe.vel.ex = cx - x.toFloat();
-			ngfe.vel.sy = ngfe.vel.ey = cy - y.toFloat();
+			ngfe.vel.sx = ngfe.vel.ex = cx - pos.x.toFloat();
+			ngfe.vel.sy = ngfe.vel.ey = cy - pos.y.toFloat();
 			ngfe.vel /= 5;
 			ngfe.life = 15;
             ngfe.type = GfxEffects::EFFECT_LINE;
@@ -255,8 +249,7 @@ void Tank::genEffects( vector< GfxEffects > *gfxe ) {
 }
 
 Tank::Tank() {
-	x = 0;
-	y = 0;
+	pos = Coord2(0, 0);
 	d = 0;
 	live = true;
 	spawnShards = false;
@@ -304,11 +297,35 @@ void Projectile::genEffects( vector< GfxEffects > *gfxe, Coord2 loc ) const {
 }
 
 Coord2 Projectile::movement() const {
-    return Coord2(Coord(projtype->velocity) * cfsin( d ), -Coord(projtype->velocity) * cfcos( d ));
+    if(projtype->motion == PM_NORMAL) {
+        return makeAngle(Coord(d)) * Coord(projtype->velocity);
+    } else if(projtype->motion == PM_MISSILE) {
+        dprintf("(%f,%f) (%f,%f) (%f,%f)\n", missile_accel().x.toFloat(), missile_accel().y.toFloat(), missile_backdrop().x.toFloat(), missile_backdrop().y.toFloat(), missile_sidedrop().x.toFloat(), missile_sidedrop().y.toFloat());
+        return missile_accel() + missile_backdrop() + missile_sidedrop();
+    } else {
+        CHECK(0);
+    }
+    
 }
 
 Coord2 Projectile::nexttail() const {
-    return -movement();
+    if(projtype->motion == PM_NORMAL) {
+        return -movement();
+    } else if(projtype->motion == PM_MISSILE) {
+        return -missile_accel();
+    } else {
+        CHECK(0);
+    }
+}
+
+Coord2 Projectile::missile_accel() const {
+    return makeAngle(Coord(d)) * Coord(projtype->velocity) * age / 120;
+}
+Coord2 Projectile::missile_backdrop() const {
+    return makeAngle(Coord(d)) / 120;
+}
+Coord2 Projectile::missile_sidedrop() const {
+    return Coord2(0, 0);
 }
 
 Projectile::Projectile() {
@@ -641,8 +658,7 @@ Game::Game(vector<Player> *in_playerdata, const Level &lev) {
             int loc = int(frand() * pstart.size());
             CHECK(loc >= 0 && loc < pstart.size());
             dprintf("loc %d, %f %f %f\n", loc, pstart[loc].first.x.toFloat(), pstart[loc].first.y.toFloat(), pstart[loc].second);
-            players[i].x = Coord(pstart[loc].first.x);
-            players[i].y = Coord(pstart[loc].first.y);
+            players[i].pos = Coord2(pstart[loc].first);
             players[i].d = pstart[loc].second;
             pstart.erase(pstart.begin() + loc);
         }

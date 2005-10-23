@@ -78,18 +78,17 @@ public:
     vector<Coord4> getCurrentCollide() const;
     vector<Coord4> getNextCollide(const Keystates &keys) const;
 
-	vector<Coord2> getTankVertices( Coord tx, Coord ty, float td ) const;
+	vector<Coord2> getTankVertices( Coord2 pos, float td ) const;
 	Coord2 getFiringPoint() const;
 
-    pair<Coord2, float> getDeltaAfterMovement( const Keystates &keys, Coord x, Coord y, float d ) const;
+    pair<Coord2, float> getDeltaAfterMovement( const Keystates &keys, Coord2 pos, float d ) const;
 
 	bool takeDamage( float amount ); // returns true on kill
 	void genEffects( vector< GfxEffects > *gfxe );
     
     bool initted;
 	
-	Coord x;
-	Coord y;
+	Coord2 pos;
 	float d;
 
 	bool spawnShards;
@@ -127,6 +126,14 @@ private:
     Coord2 movement() const;
 
     Coord2 nexttail() const;
+
+    // Missile velocity is a factor of three things:
+    // (1) Acceleration - constantly increases
+    // (2) Backdrop - a constant value
+    // (3) Sidedrop - approaches a constant offset
+    Coord2 missile_accel() const;
+    Coord2 missile_backdrop() const;
+    Coord2 missile_sidedrop() const;
 
 	Coord2 pos;
 	float d;

@@ -39,7 +39,7 @@ pair< Coord, Coord > getLineCollision( const Coord4 &linepos, const Coord4 &line
 	if( sqrii < 0 )
 		return make_pair( NOCOLLIDE, NOCOLLIDE );
 	pair< Coord, Coord > rv;
-	if( a2 == 0 ) {
+	if( abs(a2) < Coord(0.00001f) ) {
 		if( b == 0 ) {
 			return make_pair( NOCOLLIDE, NOCOLLIDE );
 		}
@@ -52,12 +52,14 @@ pair< Coord, Coord > getLineCollision( const Coord4 &linepos, const Coord4 &line
 	}
 	{
 		if( rv.first != NOCOLLIDE ) {
+            if(!(abs( a * rv.first * rv.first + b * rv.first + c ) < 1000000))
+                dprintf( "debugtest: %f resolves to %f (%f, %f, %f, %f)\n", rv.first.toFloat(), (a * rv.first * rv.first + b * rv.first + c).toFloat(), a.toFloat(), b.toFloat(), c.toFloat(), rv.first.toFloat() );
 			CHECK( abs( a * rv.first * rv.first + b * rv.first + c ) < 1000000 );
-			//dprintf( "debugtest: %f resolves to %f\n", rv.first, a * rv.first * rv.first + b * rv.first + c );
 		}
 		if( rv.second != NOCOLLIDE ) {
-			CHECK( abs( a * rv.second * rv.second + b * rv.second + c ) < 1000000 );
-			//dprintf( "debugtest: %f resolves to %f\n", rv.second, a * rv.second * rv.second + b * rv.second + c );
+			if(!(abs( a * rv.second * rv.second + b * rv.second + c ) < 1000000))
+                dprintf( "debugtest: %f resolves to %f (%f, %f, %f, %f)\n", rv.second.toFloat(), (a * rv.second * rv.second + b * rv.second + c).toFloat(), a.toFloat(), b.toFloat(), c.toFloat(), rv.second.toFloat() );
+            CHECK( abs( a * rv.second * rv.second + b * rv.second + c ) < 1000000 );
 		}
 	}
 	return rv;
