@@ -269,20 +269,17 @@ Tank::Tank() {
 void Projectile::tick() {
     CHECK(age != -1);
     pos += movement();
+    lasttail = nexttail();
     age++;
 }
 
 void Projectile::render() const {
     CHECK(age != -1);
 	setColor( 1.0, 1.0, 1.0 );
-	drawLine(Coord4(pos, pos - movement()), 0.1 );
+	drawLine(Coord4(pos, pos + lasttail), 0.1 );
 };
 void Projectile::addCollision( Collider *collider ) const {
-    if(age == 0) {
-        collider->token( Coord4( pos, pos ), Coord4( movement(), Coord2(0, 0) ) );
-    } else {
-        collider->token( Coord4( pos, pos + tail() ), Coord4( movement(), movement() + nexttail() ) );
-    }
+    collider->token( Coord4( pos, pos + lasttail ), Coord4( movement(), movement() + nexttail() ) );
 };
 void Projectile::impact( Tank *target ) {
 	if(target->takeDamage( projtype->warhead->impactdamage ))
@@ -310,9 +307,6 @@ Coord2 Projectile::movement() const {
     return Coord2(Coord(projtype->velocity) * cfsin( d ), -Coord(projtype->velocity) * cfcos( d ));
 }
 
-Coord2 Projectile::tail() const {
-    return -movement();
-}
 Coord2 Projectile::nexttail() const {
     return -movement();
 }
@@ -328,6 +322,7 @@ Projectile::Projectile(const Coord2 &in_pos, float in_d, const IDBProjectile *in
     owner = in_owner;
     age = 0;
     live = true;
+    lasttail = Coord2(0, 0);
 }
 
 bool Game::runTick( const vector< Keystates > &rkeys ) {

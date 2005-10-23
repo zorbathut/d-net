@@ -126,11 +126,12 @@ private:
     
     Coord2 movement() const;
 
-    Coord2 tail() const;
     Coord2 nexttail() const;
 
 	Coord2 pos;
 	float d;
+
+    Coord2 lasttail;
 
     int age;
     
