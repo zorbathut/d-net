@@ -1,12 +1,15 @@
-- Clean up gfx.h layout
+- Better tank explosions
 - Destroyable terrain
+- Next generation of weapons
+- Scrollable bars
+- Weapon info screen
+- Weapon change system
+- Many many more weapons
 
 - More levels
-- More weapons
 - More upgrades
 - New tank purchases
 
 - Collisions speedup (i.e. not O(n^2))
 - Netplay
-- Better tank explosions
 - Implement tweekvalues
