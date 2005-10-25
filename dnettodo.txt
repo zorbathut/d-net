@@ -1,3 +1,4 @@
+- Add explosion radius to default
 - Better tank explosions
 - Destroyable terrain
 - Next generation of weapons
