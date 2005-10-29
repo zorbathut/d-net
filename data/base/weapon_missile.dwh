@@ -36,3 +36,27 @@ weapon {
     deploy=deploy.forward
     projectile=projectile.missile
 }
+
+weapon {
+    name=ROOT.Weapons.Missile.Missile IV
+    cost=4000
+    firerate=20
+    deploy=deploy.forward
+    projectile=projectile.missile
+}
+
+weapon {
+    name=ROOT.Weapons.Missile.Missile V
+    cost=6000
+    firerate=16
+    deploy=deploy.forward
+    projectile=projectile.missile
+}
+
+weapon {
+    name=ROOT.Weapons.Missile.Missile VI
+    cost=8500
+    firerate=14
+    deploy=deploy.forward
+    projectile=projectile.missile
+}

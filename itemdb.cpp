@@ -18,6 +18,31 @@ static const IDBWeapon *defweapon = NULL;
 
 DEFINE_bool(debugitems, false, "Enable debug items");
 
+
+float IDBDeploy::getDamagePerShotMultiplier() const {
+    return 1.0f;
+}
+
+float IDBWarhead::getDamagePerShot() const {
+    return impactdamage + radiusdamage;
+}
+
+float IDBProjectile::getDamagePerShot() const {
+    return warhead->getDamagePerShot();
+}
+
+float IDBWeapon::getDamagePerShot() const {
+    return deploy->getDamagePerShotMultiplier() * projectile->getDamagePerShot();
+}
+
+float IDBWeapon::getDamagePerSecond() const {
+    return getDamagePerShot() * 60 / firerate;
+}
+
+float IDBWeapon::getCostPerDamage() const {
+    return costpershot / getDamagePerShot();
+}
+
 void HierarchyNode::checkConsistency() const {
     dprintf("Consistency scan entering %s\n", name.c_str());
     // all nodes need a name

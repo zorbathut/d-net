@@ -8,6 +8,8 @@ using namespace std;
 
 struct IDBDeploy {
 public:
+
+    float getDamagePerShotMultiplier() const;
 };
 
 struct IDBWarhead {
@@ -15,6 +17,8 @@ public:
     float impactdamage;
     float radiusdamage;
     float radiusfalloff;
+
+    float getDamagePerShot() const;
 };
 
 enum { PM_NORMAL, PM_MISSILE };
@@ -24,6 +28,8 @@ public:
     int velocity;
     int motion;
     const IDBWarhead *warhead;
+
+    float getDamagePerShot() const;
 };
 
 struct IDBWeapon {
@@ -33,6 +39,10 @@ public:
     string name;
     const IDBDeploy *deploy;
     const IDBProjectile *projectile;
+
+    float getDamagePerShot() const;
+    float getDamagePerSecond() const;
+    float getCostPerDamage() const;
 };
 
 struct IDBUpgrade {

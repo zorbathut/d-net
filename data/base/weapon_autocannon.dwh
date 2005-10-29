@@ -34,3 +34,27 @@ weapon {
     deploy=deploy.forward
     projectile=projectile.autocannon
 }
+
+weapon {
+    name=ROOT.Weapons.Autocannon.Autocannon IV
+    cost=1800
+    firerate=15
+    deploy=deploy.forward
+    projectile=projectile.autocannon
+}
+
+weapon {
+    name=ROOT.Weapons.Autocannon.Autocannon V
+    cost=3000
+    firerate=12
+    deploy=deploy.forward
+    projectile=projectile.autocannon
+}
+
+weapon {
+    name=ROOT.Weapons.Autocannon.Autocannon VI
+    cost=5000
+    firerate=10
+    deploy=deploy.forward
+    projectile=projectile.autocannon
+}

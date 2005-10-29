@@ -77,15 +77,17 @@ void initGfx() {
         CHECK(font);
         while(getLineStripped(font, line)) {
             dprintf("Parsing font character \"%s\"\n", line.c_str());
-            if(line == ":")
-                line = " : "; // specialcase hack for this particular character
             vector<string> first = tokenize(line, ":");
-            if(first.size() == 1 && line.size() >= 2 && line[0] == ':' && line[1] == ':') {
-                // more specialcaseitude
-                first.insert(first.begin(), ":");
-            }
+            if(first.size() == 1)
+                first.push_back("");
             CHECK(first.size() == 2);
             if(first.size() == 2) {
+                if(first[0] == "colon")
+                    first[0] = ":";
+                if(first[0] == "hash")
+                    first[0] = "#";
+                if(first[0] == "space")
+                    first[0] = " ";
                 CHECK(first[0].size() == 1);
                 vector< string > paths = tokenize(first[1], "|");
                 CHECK(!fontdata.count(first[0][0]));

@@ -319,7 +319,7 @@ void Projectile::genEffects( vector< GfxEffects > *gfxe, Coord2 loc ) const {
         gfxe->push_back( ngfe );
     }
     
-    if(projtype->warhead->radiusfalloff > 0 && FLAGS_debugGraphics) {
+    if(projtype->warhead->radiusfalloff > 0) {
         GfxEffects dbgf;
         dbgf.type = GfxEffects::EFFECT_CIRCLE;
         dbgf.circle_center = loc.toFloat();

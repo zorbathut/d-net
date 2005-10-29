@@ -173,6 +173,12 @@ void Shop::renderToScreen() const {
         drawDvec2(player->faction_symb, Float4(ofs, ofs, 125 - ofs, 100 - ofs), 0.5);
     }
     renderNode(itemDbRoot(), 0);
+    if(getCurNode().type == HierarchyNode::HNT_WEAPON) {
+        drawText("damage per second", 2, 1.5, 17.5);
+        drawText(StringPrintf("%20.4f", getCurNode().weapon->getDamagePerSecond()), 2, 1.5, 20.5);
+        drawText("cost per damage", 2, 1.5, 23.5);
+        drawText(StringPrintf("%20.4f", getCurNode().weapon->getCostPerDamage()), 2, 1.5, 26.5);
+    }
 }
 
 // Not a valid state

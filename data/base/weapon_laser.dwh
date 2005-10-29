@@ -33,3 +33,27 @@ weapon {
     deploy=deploy.forward
     projectile=projectile.laser
 }
+
+weapon {
+    name=ROOT.Weapons.Laser.Laser IV
+    cost=2500
+    firerate=10
+    deploy=deploy.forward
+    projectile=projectile.laser
+}
+
+weapon {
+    name=ROOT.Weapons.Laser.Laser V
+    cost=4000
+    firerate=8
+    deploy=deploy.forward
+    projectile=projectile.laser
+}
+
+weapon {
+    name=ROOT.Weapons.Laser.Laser VI
+    cost=5500
+    firerate=7
+    deploy=deploy.forward
+    projectile=projectile.laser
+}
