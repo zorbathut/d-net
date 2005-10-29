@@ -1,4 +1,9 @@
 
+deploy {
+    name=deploy.missile
+    anglevariance=0
+}
+
 warhead {
     name=warhead.missile
     impactdamage=1
@@ -17,7 +22,7 @@ weapon {
     name=ROOT.Weapons.Missile.Missile
     cost=1000
     firerate=40
-    deploy=deploy.forward
+    deploy=deploy.missile
     projectile=projectile.missile
 }
 
@@ -25,7 +30,7 @@ weapon {
     name=ROOT.Weapons.Missile.Missile II
     cost=1800
     firerate=30
-    deploy=deploy.forward
+    deploy=deploy.missile
     projectile=projectile.missile
 }
 
@@ -33,7 +38,7 @@ weapon {
     name=ROOT.Weapons.Missile.Missile III
     cost=2500
     firerate=24
-    deploy=deploy.forward
+    deploy=deploy.missile
     projectile=projectile.missile
 }
 
@@ -41,7 +46,7 @@ weapon {
     name=ROOT.Weapons.Missile.Missile IV
     cost=4000
     firerate=20
-    deploy=deploy.forward
+    deploy=deploy.missile
     projectile=projectile.missile
 }
 
@@ -49,7 +54,7 @@ weapon {
     name=ROOT.Weapons.Missile.Missile V
     cost=6000
     firerate=16
-    deploy=deploy.forward
+    deploy=deploy.missile
     projectile=projectile.missile
 }
 
@@ -57,6 +62,6 @@ weapon {
     name=ROOT.Weapons.Missile.Missile VI
     cost=8500
     firerate=14
-    deploy=deploy.forward
+    deploy=deploy.missile
     projectile=projectile.missile
 }

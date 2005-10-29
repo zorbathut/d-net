@@ -294,14 +294,17 @@ void parseItemFile(const string &fname) {
             string name = chunk.consume("name");
             CHECK(prefixed(name, "deploy"));
             CHECK(deployclasses.count(name) == 0);
-
-            deployclasses[name]; // we don't actually *have* any data for a deploy yet, so.
+            
+            deployclasses[name];
+            
+            if(chunk.kv.count("anglevariance"))
+                deployclasses[name].anglevariance = atof(chunk.consume("anglevariance").c_str());
             
         } else if(chunk.category == "warhead") {
             string name = chunk.consume("name");
             CHECK(prefixed(name, "warhead"));
             CHECK(warheadclasses.count(name) == 0);
-
+            
             warheadclasses[name].impactdamage = 0;
             warheadclasses[name].radiusdamage = 0;
             warheadclasses[name].radiusfalloff = -1;

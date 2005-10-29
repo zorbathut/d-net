@@ -1,4 +1,9 @@
 
+deploy {
+    name=deploy.laser
+    anglevariance=0.02
+}
+
 warhead {
     name=warhead.laser
     impactdamage=0.5
@@ -14,7 +19,7 @@ weapon {
     name=ROOT.Weapons.Laser.Laser
     cost=1000
     firerate=20
-    deploy=deploy.forward
+    deploy=deploy.laser
     projectile=projectile.laser
 }
 
@@ -22,7 +27,7 @@ weapon {
     name=ROOT.Weapons.Laser.Laser II
     cost=1400
     firerate=15
-    deploy=deploy.forward
+    deploy=deploy.laser
     projectile=projectile.laser
 }
 
@@ -30,7 +35,7 @@ weapon {
     name=ROOT.Weapons.Laser.Laser III
     cost=1800
     firerate=12
-    deploy=deploy.forward
+    deploy=deploy.laser
     projectile=projectile.laser
 }
 
@@ -38,7 +43,7 @@ weapon {
     name=ROOT.Weapons.Laser.Laser IV
     cost=2500
     firerate=10
-    deploy=deploy.forward
+    deploy=deploy.laser
     projectile=projectile.laser
 }
 
@@ -46,7 +51,7 @@ weapon {
     name=ROOT.Weapons.Laser.Laser V
     cost=4000
     firerate=8
-    deploy=deploy.forward
+    deploy=deploy.laser
     projectile=projectile.laser
 }
 
@@ -54,6 +59,6 @@ weapon {
     name=ROOT.Weapons.Laser.Laser VI
     cost=5500
     firerate=7
-    deploy=deploy.forward
+    deploy=deploy.laser
     projectile=projectile.laser
 }

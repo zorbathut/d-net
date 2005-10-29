@@ -1,4 +1,9 @@
 
+deploy {
+    name=deploy.debug
+    debug=1
+}
+
 hierarchy {
     name=ROOT.Weapons.Debug
     pack=100000
@@ -9,6 +14,7 @@ projectile {
     name=projectile.tracer
     velocity=600
     warhead=warhead.null
+    debug=1
 }
 
 weapon {
@@ -16,7 +22,7 @@ weapon {
     cost=0
     firerate=1
     projectile=projectile.tracer
-    deploy=deploy.forward
+    deploy=deploy.debug
     debug=1
 }
 

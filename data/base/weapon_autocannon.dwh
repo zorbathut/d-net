@@ -1,4 +1,9 @@
 
+deploy {
+    name=deploy.autocannon
+    anglevariance=0.75
+}
+
 warhead {
     name=warhead.autocannon
     impactdamage=1
@@ -15,7 +20,7 @@ weapon {
     cost=0
     default=1
     firerate=30
-    deploy=deploy.forward
+    deploy=deploy.autocannon
     projectile=projectile.autocannon
 }
 
@@ -23,7 +28,7 @@ weapon {
     name=ROOT.Weapons.Autocannon.Autocannon II
     cost=600
     firerate=24
-    deploy=deploy.forward
+    deploy=deploy.autocannon
     projectile=projectile.autocannon
 }
 
@@ -31,7 +36,7 @@ weapon {
     name=ROOT.Weapons.Autocannon.Autocannon III
     cost=1000
     firerate=20
-    deploy=deploy.forward
+    deploy=deploy.autocannon
     projectile=projectile.autocannon
 }
 
@@ -39,7 +44,7 @@ weapon {
     name=ROOT.Weapons.Autocannon.Autocannon IV
     cost=1800
     firerate=15
-    deploy=deploy.forward
+    deploy=deploy.autocannon
     projectile=projectile.autocannon
 }
 
@@ -47,7 +52,7 @@ weapon {
     name=ROOT.Weapons.Autocannon.Autocannon V
     cost=3000
     firerate=12
-    deploy=deploy.forward
+    deploy=deploy.autocannon
     projectile=projectile.autocannon
 }
 
@@ -55,6 +60,6 @@ weapon {
     name=ROOT.Weapons.Autocannon.Autocannon VI
     cost=5000
     firerate=10
-    deploy=deploy.forward
+    deploy=deploy.autocannon
     projectile=projectile.autocannon
 }

@@ -67,7 +67,7 @@ void GfxEffects::render() const {
     if(type == EFFECT_LINE) {
         drawLine(line_pos + line_vel * age, 0.1f);
     } else if(type == EFFECT_POINT) {
-        drawPoint(point_pos.x + point_pos.x * age, point_pos.y + point_pos.y * age, 0.1f);
+        drawPoint(point_pos.x + point_vel.x * age, point_pos.y + point_vel.y * age, 0.1f);
     } else if(type == EFFECT_CIRCLE) {
         drawCircle(circle_center, circle_radius, 0.1f);
     } else {
@@ -569,7 +569,7 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
 	for( int i = 0; i < players.size(); i++ ) {
 		if( players[ i ].live && keys[ i ].f.down && players[ i ].weaponCooldown <= 0 ) {
             firepowerSpent +=players[ i ].player->weapon->costpershot;
-			projectiles[ i ].push_back(Projectile(players[ i ].getFiringPoint(), players[ i ].d, players[ i ].player->weapon->projectile, &players[ i ]));
+			projectiles[ i ].push_back(Projectile(players[ i ].getFiringPoint(), players[ i ].d + players[i].player->weapon->deploy->anglevariance * frand() * frand(), players[ i ].player->weapon->projectile, &players[ i ]));
             players[ i ].weaponCooldown = players[ i ].player->weapon->firerate;
             if(players[i].player->shotsLeft != -1)
                 players[i].player->shotsLeft--;
