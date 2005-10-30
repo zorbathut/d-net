@@ -1,7 +1,7 @@
 
 deploy {
     name=deploy.autocannon
-    anglevariance=0.75
+    anglevariance=0.08
 }
 
 warhead {

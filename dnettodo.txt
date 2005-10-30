@@ -1,9 +1,5 @@
-- lower power lasers
-- lower power missles
 - collision speedup
 - feedback on results screen
-
-- Add explosion radius to default
 - Better tank explosions
 - Destroyable terrain
 - Next generation of weapons
@@ -16,6 +12,5 @@
 - More upgrades
 - New tank purchases
 
-- Collisions speedup (i.e. not O(n^2))
 - Netplay
 - Implement tweekvalues

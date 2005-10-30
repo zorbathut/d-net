@@ -388,7 +388,7 @@ void Metagame::renderToScreen() const {
             shop.renderToScreen();
         }
     } else if(mode == MGM_PLAY) {
-        game.renderToScreen(RENDERTARGET_SPECTATOR);
+        game.renderToScreen();
         if(!controls_users()) {        
             setColor(1.0, 1.0, 1.0);
             setZoom(0, 0, 100);

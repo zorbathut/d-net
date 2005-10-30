@@ -3,6 +3,7 @@
 #include "debug.h"
 
 #include <ctime>
+#include <cmath>
 
 using namespace std;
 
@@ -50,3 +51,10 @@ static Rng syncrng;
 void sfrand(int seed) { syncrng.sfrand(seed); };
 float frand() { return syncrng.frand(); };
 int frandseed() { return syncrng.frandseed(); };
+
+float powerRand(float pw) {
+    float stp = pow(frand(), pw);
+    if(frand() < 0.5)
+        stp = -stp;
+    return stp;
+}

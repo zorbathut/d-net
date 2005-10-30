@@ -273,7 +273,7 @@ void Projectile::tick() {
     
     if(projtype->motion == PM_NORMAL) {
     } else if(projtype->motion == PM_MISSILE) {
-        if(age > 30)
+        if(age > 10)
             missile_sidedist /= 1.2;
     } else {
         CHECK(0);
@@ -375,7 +375,7 @@ Projectile::Projectile(const Coord2 &in_pos, float in_d, const IDBProjectile *in
     
     if(projtype->motion == PM_NORMAL) {
     } else if(projtype->motion == PM_MISSILE) {
-        missile_sidedist = ((frand() - 0.5) * (frand() - 0.5));
+        missile_sidedist = powerRand(2) * 0.25;
     } else {
         CHECK(0);
     }
@@ -569,7 +569,7 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
 	for( int i = 0; i < players.size(); i++ ) {
 		if( players[ i ].live && keys[ i ].f.down && players[ i ].weaponCooldown <= 0 ) {
             firepowerSpent +=players[ i ].player->weapon->costpershot;
-			projectiles[ i ].push_back(Projectile(players[ i ].getFiringPoint(), players[ i ].d + players[i].player->weapon->deploy->anglevariance * frand() * frand(), players[ i ].player->weapon->projectile, &players[ i ]));
+			projectiles[ i ].push_back(Projectile(players[ i ].getFiringPoint(), players[ i ].d + players[i].player->weapon->deploy->anglevariance * powerRand(2), players[ i ].player->weapon->projectile, &players[ i ]));
             players[ i ].weaponCooldown = players[ i ].player->weapon->firerate;
             if(players[i].player->shotsLeft != -1)
                 players[i].player->shotsLeft--;
@@ -626,7 +626,7 @@ void Game::ai(const vector<Ai *> &ais) const {
     }
 }
 
-void Game::renderToScreen( int target ) const {
+void Game::renderToScreen() const {
     {
         Float4 bounds = gamemap.getBounds().toFloat();
         expandBoundBox(&bounds, 1.1);

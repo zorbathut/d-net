@@ -1,12 +1,12 @@
 
 deploy {
     name=deploy.laser
-    anglevariance=0.02
+    anglevariance=0.03
 }
 
 warhead {
     name=warhead.laser
-    impactdamage=0.5
+    impactdamage=0.334
 }
 
 projectile {

@@ -20,4 +20,6 @@ void sfrand(int seed);
 float frand();
 int frandseed(); // only valid until frand() is called
 
+float powerRand(float pw); // returns (-1,1) with the given power
+
 #endif
