@@ -1,3 +1,4 @@
+- abstract as much win32 away as possible
 - collision speedup
 - feedback on results screen
 - Better tank explosions
