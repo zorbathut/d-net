@@ -1,3 +1,8 @@
+- lower power lasers
+- lower power missles
+- collision speedup
+- feedback on results screen
+
 - Add explosion radius to default
 - Better tank explosions
 - Destroyable terrain

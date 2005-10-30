@@ -188,7 +188,7 @@ pair<Coord2, float> Tank::getDeltaAfterMovement( const Keystates &keys, Coord2 p
         if(xpd == 0 && ypd == 0) {
             dv = dd = 0;
         } else {
-            float desdir = atan2(xpd, ypd);
+            float desdir = atan2(-ypd, xpd);
             desdir -= d;
             desdir += 2 * PI;
             if(desdir > PI)

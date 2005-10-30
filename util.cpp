@@ -79,7 +79,7 @@ string StringPrintf( const char *bort, ... ) {
 			buf.resize( buf.size() * 2 );
 		va_start( args, bort );
 		done = vsnprintf( &(buf[ 0 ]), buf.size() - 1,  bort, args );
-		assert( done < (int)buf.size() );
+		CHECK( done < (int)buf.size() );
 		va_end( args );
 	} while( done == buf.size() - 1 || done == -1);
 
