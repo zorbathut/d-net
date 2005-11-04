@@ -1,22 +1,17 @@
 
 #include "timer.h"
 
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-
 #include "const.h"
 #include "debug.h"
 
+#include "SDL.h"
+
 static long long cpc() {
-	LARGE_INTEGER rv;
-	QueryPerformanceCounter( &rv );
-	return rv.QuadPart;
+	return SDL_GetTicks();
 };
 
 static long long cpf() {
-	LARGE_INTEGER rv;
-	QueryPerformanceFrequency( &rv );
-	return rv.QuadPart;
+    return 1000;
 };
 
 void Timer::waitForNextFrame() {

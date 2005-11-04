@@ -9,14 +9,13 @@
 #undef dprintf
 #endif
 
+#include "os.h"
+
 #include <cstdio>
 #include <vector>
 #include <stdarg.h>
 #include <assert.h>
 using namespace std;
-
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
 
 int frameNumber = -1;
 
@@ -43,7 +42,7 @@ int dprintf( const char *bort, ... ) {
 
 	assert( done < (int)buf.size() );
 
-	OutputDebugString( &(buf[ 0 ]) );
+	outputDebugString( &(buf[ 0 ]) );
 
 	return 0;
 

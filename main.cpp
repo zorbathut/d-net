@@ -9,15 +9,13 @@ using namespace std;
 #include <GL/gl.h>
 #include <GL/glu.h>
 
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-
 #include "core.h"
 #include "debug.h"
 #include "util.h"
 #include "args.h"
 #include "gfx.h"
 #include "itemdb.h"
+#include "os.h"
 
 #define SCREEN_DEPTH  16
 SDL_Surface * MainWindow = NULL;
@@ -91,7 +89,7 @@ void SetupOgl() {
 }
 
 void GetStartingResolution() {
-    setDefaultResolution(GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN), FLAGS_fullscreen);
+    setDefaultResolution(getCurrentScreenSize().first, getCurrentScreenSize().second, FLAGS_fullscreen);
 }
 
 void initSystem() {
