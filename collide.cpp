@@ -14,6 +14,7 @@ using namespace std;
 DECLARE_bool(verboseCollisions);
 
 const Coord NOCOLLIDE = Coord(-1000000000);
+const Coord MATRIX_RES = 20;
 
 pair< Coord, Coord > getLineCollision( const Coord4 &linepos, const Coord4 &linevel, const Coord4 &ptposvel ) {
 	Coord x1d = linepos.sx;
@@ -139,12 +140,76 @@ pair<Coord, Coord2> getCollision( const Coord4 &l1p, const Coord4 &l1v, const Co
 	return make_pair(cBc, pos);
 }
 
-void Collider::reset( int in_players ) {
+int getIndex( int players, int category, int gid ) {
+    if( category == -1 ) {
+        CHECK( gid == 0 );
+        return 0;
+    } else {
+        CHECK( category == 0 || category == 1 );
+        CHECK( gid >= 0 && gid < players );
+        return players * category + gid + 1;
+    }
+}
+pair< int, int > reverseIndex( int players, int index ) {
+    if( index == 0 )
+        return make_pair( -1, 0 );
+    else {
+        pair< int, int > out( ( index - 1 ) / players, ( index - 1 ) % players );
+        CHECK( out.first == 0 || out.first == 1 );
+        return out;
+    }
+}
+bool canCollide( int players, int indexa, int indexb ) {
+    pair<int, int> ar = reverseIndex(players, indexa);
+    pair<int, int> br = reverseIndex(players, indexb);
+    // Two things can't collide if they're part of the same ownership group
+    if(ar.second == br.second && ar.first != -1 && br.first != -1)
+        return false;
+    // Two things can't collide if neither of them are a projectile
+    if(ar.first != 1 && br.first != 1)
+        return false;
+    // That's pretty much all.
+    return true;
+}
+
+void ColliderZone::addToken(int groupid, int token, const Coord4 &line, const Coord4 &direction) {
+    items[groupid].push_back(make_pair(token, make_pair(line, direction)));
+}
+void ColliderZone::process(vector<pair<Coord, CollideData> > *clds) const {
+	for( int x = 0; x < items.size(); x++ ) {
+		for( int y = x + 1; y < items.size(); y++ ) {
+            if(!canCollide( players, x, y))
+                continue;
+			for( int xa = 0; xa < items[ x ].size(); xa++ ) {
+				for( int ya = 0; ya < items[ y ].size(); ya++ ) {
+					pair<Coord, Coord2> tcol = getCollision( items[ x ][ xa ].second.first, items[ x ][ xa ].second.second, items[ y ][ ya ].second.first, items[ y ][ ya ].second.second );
+					if( tcol.first == NOCOLLIDE )
+						continue;
+					CHECK( tcol.first >= 0 && tcol.first <= 1 );
+                    clds->push_back(make_pair(tcol.first, CollideData(CollideId(reverseIndex(players, x), items[x][xa].first), CollideId(reverseIndex(players, y), items[y][ya].first), tcol.second)));
+				}
+			}
+		}
+	}
+}
+
+ColliderZone::ColliderZone() { };
+ColliderZone::ColliderZone(int in_players) {
+    items.resize(in_players * 2 + 1);
+    players = in_players;
+}
+
+void Collider::reset(int in_players, const Coord4 &bounds) {
 	CHECK( state == CSTA_WAIT || state == CSTA_PROCESSED );
 	players = in_players;
-    items.resize( in_players * 2 + 1 );
-    for( int i = 0; i < items.size(); i++ )
-        items[ i ].clear();
+    zone = ColliderZone( players );
+    
+    cbounds = bounds;
+    cbounds.sx = floor(cbounds.sx/MATRIX_RES) * MATRIX_RES;
+    cbounds.sy = floor(cbounds.sy/MATRIX_RES) * MATRIX_RES;
+    cbounds.ex = ceil(cbounds.ex/MATRIX_RES) * MATRIX_RES;
+    cbounds.ey = ceil(cbounds.ey/MATRIX_RES) * MATRIX_RES;
+    
     state = CSTA_WAIT;
 }
 
@@ -160,22 +225,17 @@ void Collider::token( const Coord4 &line, const Coord4 &direction ) {
     }
     if( state == CSTA_ADD ) {
         CHECK( state == CSTA_ADD && curpush != -1 && curtoken != -1 );
-        items[ curpush ].push_back( make_pair( curtoken, make_pair( line, direction ) ) );
+        zone.addToken(curpush, curtoken, line, direction);
     } else {
         CHECK(0);
     }
-}
-
-void Collider::clearGroup( int category, int gid ) {
-    CHECK( state == CSTA_WAIT && curpush == -1 && curtoken == -1 );
-    items[ getIndex( category, gid ) ].clear();
 }
 
 void Collider::addThingsToGroup( int category, int gid, bool ilog ) {
     CHECK( state == CSTA_WAIT && curpush == -1 && curtoken == -1 );
     state = CSTA_ADD;
     log = ilog;
-    curpush = getIndex( category, gid );
+    curpush = getIndex(players, category, gid);
 }
 void Collider::endAddThingsToGroup() {
     CHECK( state == CSTA_ADD && curpush != -1 );
@@ -193,21 +253,8 @@ void Collider::process() {
     
     vector<pair<Coord, CollideData> > clds;
     
-	for( int x = 0; x < items.size(); x++ ) {
-		for( int y = x + 1; y < items.size(); y++ ) {
-            if( !canCollide( x, y ) )
-                continue;
-			for( int xa = 0; xa < items[ x ].size(); xa++ ) {
-				for( int ya = 0; ya < items[ y ].size(); ya++ ) {
-					pair<Coord, Coord2> tcol = getCollision( items[ x ][ xa ].second.first, items[ x ][ xa ].second.second, items[ y ][ ya ].second.first, items[ y ][ ya ].second.second );
-					if( tcol.first == NOCOLLIDE )
-						continue;
-					CHECK( tcol.first >= 0 && tcol.first <= 1 );
-                    clds.push_back(make_pair(tcol.first, CollideData(CollideId(reverseIndex(x), items[x][xa].first), CollideId(reverseIndex(y), items[y][ya].first), tcol.second)));
-				}
-			}
-		}
-	}
+    // TODO: Don't bother processing unique pairs more than once?
+    zone.process(&clds);
 	
     sort(clds.begin(), clds.end());
     
@@ -243,34 +290,3 @@ Collider::~Collider() { };
 
 void Collider::render() const { };
 
-bool Collider::canCollide( int indexa, int indexb ) const {
-    pair<int, int> ar = reverseIndex(indexa);
-    pair<int, int> br = reverseIndex(indexb);
-    // Two things can't collide if they're part of the same ownership group
-    if(ar.second == br.second && ar.first != -1 && br.first != -1)
-        return false;
-    // Two things can't collide if neither of them are a projectile
-    if(ar.first != 1 && br.first != 1)
-        return false;
-    // That's pretty much all.
-    return true;
-}
-int Collider::getIndex( int category, int gid ) const {
-    if( category == -1 ) {
-        CHECK( gid == 0 );
-        return 0;
-    } else {
-        CHECK( category == 0 || category == 1 );
-        CHECK( gid >= 0 && gid < players );
-        return players * category + gid + 1;
-    }
-}
-pair< int, int > Collider::reverseIndex( int index ) const {
-    if( index == 0 )
-        return make_pair( -1, 0 );
-    else {
-        pair< int, int > out( ( index - 1 ) / players, ( index - 1 ) % players );
-        CHECK( out.first == 0 || out.first == 1 );
-        return out;
-    }
-}

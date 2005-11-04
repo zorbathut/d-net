@@ -26,6 +26,7 @@ class Coord {
     friend inline bool operator>(const Coord &lhs, const Coord &rhs);
     friend inline bool operator>=(const Coord &lhs, const Coord &rhs);
     friend inline Coord sqrt(const Coord &in);
+    friend inline Coord floor(const Coord &in);
     
 private:
     long long d;
@@ -78,6 +79,14 @@ inline Coord operator+(const Coord &lhs, const Coord &rhs) {
 
 inline Coord operator-(const Coord &lhs, const Coord &rhs) {
     return coordExplicit(lhs.d - rhs.d);
+}
+
+inline Coord floor(const Coord &in) {
+    return coordExplicit(in.d >> 16);
+}
+
+inline Coord ceil(const Coord &in) {
+    return -floor(-in);
 }
 
 // TODO: improve?

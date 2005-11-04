@@ -461,7 +461,7 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
         
     }
     
-    collider.reset(players.size());
+    collider.reset(players.size(), gamemap.getBounds());
     
     // stuff!
     /*

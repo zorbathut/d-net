@@ -63,15 +63,27 @@ inline bool operator>(const CollideData &lhs, const CollideData &rhs) {
     return rhs < lhs;
 }
 
+class ColliderZone {
+private:
+    vector< vector< pair< int, pair< Coord4, Coord4 > > > > items;
+
+    int players;
+public:
+
+    void addToken(int groupid, int token, const Coord4 &line, const Coord4 &direction);
+    void process(vector<pair<Coord, CollideData> > *clds) const;
+
+    ColliderZone();
+    ColliderZone(int players);
+};
+
 class Collider {
 public:
 
-	void reset( int players );
+	void reset(int players, const Coord4 &bounds);
 
     void startToken( int toki );
 	void token( const Coord4 &line, const Coord4 &direction );
-
-    void clearGroup( int category, int gid );
 
 	void addThingsToGroup( int category, int gid, bool log = false);
 	void endAddThingsToGroup();
@@ -94,17 +106,16 @@ private:
     bool log;
 
     int curcollide;
+    
+    ColliderZone zone;
+    
+    Coord4 cbounds;
     vector< CollideData > collides;
 
-	vector< vector< pair< int, pair< Coord4, Coord4 > > > > items;
     int curpush;
     int curtoken;
 
     int players;
-
-    bool canCollide( int indexa, int indexb ) const;
-    int getIndex( int category, int gid ) const;
-    pair< int, int > reverseIndex( int index ) const;
 
 };
 
