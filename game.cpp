@@ -293,7 +293,6 @@ void Projectile::impact(Tank *target, const vector<pair<float, Tank *> > &adjace
         dealDamage(projtype->warhead->impactdamage, target);
     
     for(int i = 0; i < adjacency.size(); i++) {
-        dprintf("testing %d, %f distance, %f damage, %d flag", i, adjacency[i].first, projtype->warhead->radiusdamage / projtype->warhead->radiusfalloff * ( projtype->warhead->radiusfalloff - adjacency[i].first), adjacency[i].first < projtype->warhead->radiusfalloff);
         if(adjacency[i].first < projtype->warhead->radiusfalloff)
             dealDamage(projtype->warhead->radiusdamage / projtype->warhead->radiusfalloff * ( projtype->warhead->radiusfalloff - adjacency[i].first), adjacency[i].second);
     }
