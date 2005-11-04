@@ -63,6 +63,13 @@ inline bool operator>(const CollideData &lhs, const CollideData &rhs) {
     return rhs < lhs;
 }
 
+inline bool operator==(const CollideData &lhs, const CollideData &rhs) {
+    if(lhs.lhs != rhs.lhs) return false;
+    if(lhs.rhs != rhs.rhs) return false;
+    if(lhs.loc != rhs.loc) return false;
+    return true;
+}
+
 class ColliderZone {
 private:
     vector< vector< pair< int, pair< Coord4, Coord4 > > > > items;
@@ -107,9 +114,13 @@ private:
 
     int curcollide;
     
-    ColliderZone zone;
+    Coord2 zstart;
+    int zxs;
+    int zys;
+    int zxe;
+    int zye;
+    vector<vector<ColliderZone> > zone;
     
-    Coord4 cbounds;
     vector< CollideData > collides;
 
     int curpush;

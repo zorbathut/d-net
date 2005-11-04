@@ -202,13 +202,15 @@ ColliderZone::ColliderZone(int in_players) {
 void Collider::reset(int in_players, const Coord4 &bounds) {
 	CHECK( state == CSTA_WAIT || state == CSTA_PROCESSED );
 	players = in_players;
-    zone = ColliderZone( players );
     
-    cbounds = bounds;
-    cbounds.sx = floor(cbounds.sx/MATRIX_RES) * MATRIX_RES;
-    cbounds.sy = floor(cbounds.sy/MATRIX_RES) * MATRIX_RES;
-    cbounds.ex = ceil(cbounds.ex/MATRIX_RES) * MATRIX_RES;
-    cbounds.ey = ceil(cbounds.ey/MATRIX_RES) * MATRIX_RES;
+    Coord4 zbounds = snapToEnclosingGrid(bounds, MATRIX_RES);
+    
+    zxs = (zbounds.sx / MATRIX_RES).toInt();
+    zys = (zbounds.sy / MATRIX_RES).toInt();
+    zxe = (zbounds.ex / MATRIX_RES).toInt();
+    zye = (zbounds.ey / MATRIX_RES).toInt();
+    zone.clear();
+    zone.resize(zxe - zxs, vector<ColliderZone>(zye - zys, ColliderZone( players )));
     
     state = CSTA_WAIT;
 }
@@ -225,7 +227,20 @@ void Collider::token( const Coord4 &line, const Coord4 &direction ) {
     }
     if( state == CSTA_ADD ) {
         CHECK( state == CSTA_ADD && curpush != -1 && curtoken != -1 );
-        zone.addToken(curpush, curtoken, line, direction);
+        Coord4 area = startCBoundBox();
+        addToBoundBox(&area, line.sx, line.sy);
+        addToBoundBox(&area, line.ex, line.ey);
+        addToBoundBox(&area, line.sx + direction.sx, line.sy + direction.sy);
+        addToBoundBox(&area, line.ex + direction.ex, line.ey + direction.ey);
+        area = snapToEnclosingGrid(area, MATRIX_RES);
+        int txs = max((area.sx / MATRIX_RES).toInt(), zxs);
+        int tys = max((area.sy / MATRIX_RES).toInt(), zys);
+        int txe = min((area.ex / MATRIX_RES).toInt(), zxe);
+        int tye = min((area.ey / MATRIX_RES).toInt(), zye);
+        CHECK(txs < zxe && tys < zye && txe > zxs && tye > zys);
+        for(int x = txs; x < txe; x++)
+            for(int y = tys; y < tye; y++)
+                zone[x - zxs][y - zys].addToken(curpush, curtoken, line, direction);
     } else {
         CHECK(0);
     }
@@ -254,9 +269,12 @@ void Collider::process() {
     vector<pair<Coord, CollideData> > clds;
     
     // TODO: Don't bother processing unique pairs more than once?
-    zone.process(&clds);
+    for(int i = 0; i < zone.size(); i++)
+        for(int j = 0; j < zone[i].size(); j++)
+            zone[i][j].process(&clds);
 	
     sort(clds.begin(), clds.end());
+    clds.erase(unique(clds.begin(), clds.end()), clds.end());
     
     {
         set<CollideId> hit;

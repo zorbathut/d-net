@@ -38,6 +38,7 @@ public:
     explicit Coord(float rhs) { d = (long long)(rhs * (1LL << 32)); }
     
     float toFloat() const { return (float)d / ( 1LL << 32 ); }
+    int toInt() const { CHECK(Coord(int(d >> 32)).d == d); return d >> 32; }
     long long raw() const { return d; };
     
     ~Coord() { }; // lol no.
@@ -82,7 +83,7 @@ inline Coord operator-(const Coord &lhs, const Coord &rhs) {
 }
 
 inline Coord floor(const Coord &in) {
-    return coordExplicit(in.d >> 16);
+    return in.d >> 32;
 }
 
 inline Coord ceil(const Coord &in) {
@@ -356,6 +357,14 @@ inline Coord2 lerp( const Coord2 &start, const Coord2 &delta, Coord time ) {
 }
 inline Coord4 lerp( const Coord4 &start, const Coord4 &delta, Coord time ) {
     return Coord4( start.sx + delta.sx * time, start.sy + delta.sy * time, start.ex + delta.ex * time, start.ey + delta.ey * time );
+}
+
+inline Coord4 snapToEnclosingGrid(Coord4 orig, Coord grid) {
+    orig.sx = ceil(orig.sx/grid - 1) * grid;
+    orig.sy = ceil(orig.sy/grid - 1) * grid;
+    orig.ex = ceil(orig.ex/grid) * grid;
+    orig.ey = ceil(orig.ey/grid) * grid;
+    return orig;
 }
 
 Coord4 startCBoundBox();
