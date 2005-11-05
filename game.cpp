@@ -495,7 +495,7 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
 		collider.endAddThingsToGroup();
 	}
     
-    collider.process();
+    collider.processMotion();
     
 	while( collider.next() ) {
 		//dprintf( "Collision!\n" );

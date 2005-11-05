@@ -185,7 +185,7 @@ void ColliderZone::addToken(int groupid, int token, const Coord4 &line, const Co
         items.push_back(make_pair(groupid, vector< pair< int, pair< Coord4, Coord4 > > >()));
     items[fd].second.push_back(make_pair(token, make_pair(line, direction)));
 }
-void ColliderZone::process(vector<pair<Coord, CollideData> > *clds, char *collidematrix) const {
+void ColliderZone::processMotion(vector<pair<Coord, CollideData> > *clds, char *collidematrix) const {
 	for( int x = 0; x < items.size(); x++ ) {
 		for( int y = x + 1; y < items.size(); y++ ) {
             if(!collidematrix[items[x].first * getIndexCount(players) + items[y].first])
@@ -283,7 +283,7 @@ void Collider::endAddThingsToGroup() {
     curtoken = -1;
 }
 
-void Collider::process() {
+void Collider::processMotion() {
 	CHECK( state == CSTA_WAIT );
     state = CSTA_PROCESSED;
     collides.clear();
@@ -294,7 +294,7 @@ void Collider::process() {
     // TODO: Don't bother processing unique pairs more than once?
     for(int i = 0; i < zone.size(); i++)
         for(int j = 0; j < zone[i].size(); j++)
-            zone[i][j].process(&clds, &*collidematrix.begin());
+            zone[i][j].processMotion(&clds, &*collidematrix.begin());
 	
     sort(clds.begin(), clds.end());
     clds.erase(unique(clds.begin(), clds.end()), clds.end());

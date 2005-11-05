@@ -78,7 +78,9 @@ private:
 public:
 
     void addToken(int groupid, int token, const Coord4 &line, const Coord4 &direction);
-    void process(vector<pair<Coord, CollideData> > *clds, char *collidematrix) const;
+
+    void processSimple(vector<pair<Coord, CollideData> > *clds, char *collidematrix) const;
+    void processMotion(vector<pair<Coord, CollideData> > *clds, char *collidematrix) const;
 
     void render(const Coord4 &bbox) const;
 
@@ -97,7 +99,8 @@ public:
 	void addThingsToGroup( int category, int gid, bool log = false);
 	void endAddThingsToGroup();
 
-	void process();
+    void processSimple();
+	void processMotion();
 
     bool next();
     const CollideData &getData() const;
