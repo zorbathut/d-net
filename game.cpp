@@ -407,17 +407,25 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
     
     {
         
-        vector<vector<Coord4> > coordcache;
-        coordcache.push_back(gamemap.getCollide());
+        collider.reset(players.size(), COM_PLAYER, gamemap.getBounds());
         
-        for(int i = 0; i < players.size(); i++)
-            coordcache.push_back(players[i].getCurrentCollide());
-
-        for(int i = 0; i < coordcache.size(); i++)        
-            for(int j = i + 1; j < coordcache.size(); j++)
-                for(int k = 0; k < coordcache[i].size(); k++)
-                    for(int m = 0; m < coordcache[j].size(); m++)
-                        CHECK(!linelineintersect(coordcache[i][k], coordcache[j][m]));
+        collider.addThingsToGroup(-1, 0);
+        collider.startToken(0);
+        gamemap.addCollide(&collider);
+        collider.endAddThingsToGroup();
+        
+        for(int j = 0; j < players.size(); j++) {
+            collider.addThingsToGroup(0, j);
+            collider.startToken(0);
+            players[j].addCollision(&collider, keys[j]);
+            collider.endAddThingsToGroup();
+        }
+        
+        collider.processSimple();
+        
+        CHECK(!collider.next());
+        
+        collider.finishProcess();
         
         vector<int> playerorder;
         {
@@ -440,27 +448,22 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
             
             vector<Coord4> newpos = players[playerorder[i]].getNextCollide(keys[playerorder[i]]);
             
-            bool smashy = false;            
-            for(int j = 0; j < coordcache.size() && !smashy; j++)
-                if(j != playerorder[i] + 1)
-                    for(int k = 0; k < coordcache[j].size() && !smashy; k++)
-                        for(int m = 0; m < newpos.size() && !smashy; m++)
-                            if(linelineintersect(coordcache[j][k], newpos[m]))
-                                smashy = true;
-        
-            
-            if(smashy) {
+            if(collider.checkSimpleCollision(0, playerorder[i], newpos)) {
                 keys[playerorder[i]].nullMove();
             } else {
-                coordcache[playerorder[i] + 1].clear();
-                coordcache[playerorder[i] + 1] = newpos;
+                collider.clearGroup(0, playerorder[i]);
+                collider.addThingsToGroup(0, playerorder[i]);
+                collider.startToken(0);
+                for(int j = 0; j < newpos.size(); j++)
+                    collider.token(newpos[j], Coord4(0, 0, 0, 0));
+                collider.endAddThingsToGroup();
             }
 
         }
         
     }
     
-    collider.reset(players.size(), gamemap.getBounds());
+    collider.reset(players.size(), COM_PROJECTILE, gamemap.getBounds());
     
     // stuff!
     /*
@@ -548,6 +551,8 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
             CHECK(0);
         }
 	}
+    
+    collider.finishProcess();
 
 	for( int j = 0; j < projectiles.size(); j++ ) {
 		for( int k = 0; k < projectiles[ j ].size(); k++ ) {

@@ -79,8 +79,12 @@ public:
 
     void addToken(int groupid, int token, const Coord4 &line, const Coord4 &direction);
 
-    void processSimple(vector<pair<Coord, CollideData> > *clds, char *collidematrix) const;
-    void processMotion(vector<pair<Coord, CollideData> > *clds, char *collidematrix) const;
+    void clearGroup(int groupid);
+
+    bool checkSimpleCollision(int groupid, const vector<Coord4> &line, const char *collidematrix) const;
+
+    void processSimple(vector<pair<Coord, CollideData> > *clds, const char *collidematrix) const;
+    void processMotion(vector<pair<Coord, CollideData> > *clds, const char *collidematrix) const;
 
     void render(const Coord4 &bbox) const;
 
@@ -88,10 +92,12 @@ public:
     ColliderZone(int players);
 };
 
+enum {COM_PLAYER, COM_PROJECTILE};
+
 class Collider {
 public:
 
-	void reset(int players, const Coord4 &bounds);
+	void reset(int players, int mode, const Coord4 &bounds);
 
     void startToken( int toki );
 	void token( const Coord4 &line, const Coord4 &direction );
@@ -99,11 +105,17 @@ public:
 	void addThingsToGroup( int category, int gid, bool log = false);
 	void endAddThingsToGroup();
 
+    void clearGroup(int category, int gid);
+
+    bool checkSimpleCollision(int category, int gid, const vector<Coord4> &line) const;
+
     void processSimple();
 	void processMotion();
 
     bool next();
     const CollideData &getData() const;
+
+    void finishProcess();
 
 	Collider();
 	~Collider();
@@ -112,7 +124,7 @@ public:
 
 private:
 	
-    enum { CSTA_WAIT, CSTA_ADD, CSTA_PROCESSED };
+    enum { CSTA_UNINITTED, CSTA_WAIT, CSTA_ADD, CSTA_PROCESSED };
     
 	int state;
     bool log;

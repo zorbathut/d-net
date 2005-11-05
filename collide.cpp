@@ -163,7 +163,19 @@ pair< int, int > reverseIndex( int players, int index ) {
         return out;
     }
 }
-bool canCollide( int players, int indexa, int indexb ) {
+
+bool canCollidePlayer( int players, int indexa, int indexb ) {
+    pair<int, int> ar = reverseIndex(players, indexa);
+    pair<int, int> br = reverseIndex(players, indexb);
+    // Two things can't collide if they're part of the same ownership group
+    if(ar.second == br.second && ar.first != -1 && br.first != -1)
+        return false;
+    // Nothing can collide with itself
+    if(ar == br)
+        return false;
+    return true;
+}
+bool canCollideProjectile( int players, int indexa, int indexb ) {
     pair<int, int> ar = reverseIndex(players, indexa);
     pair<int, int> br = reverseIndex(players, indexb);
     // Two things can't collide if they're part of the same ownership group
@@ -185,7 +197,45 @@ void ColliderZone::addToken(int groupid, int token, const Coord4 &line, const Co
         items.push_back(make_pair(groupid, vector< pair< int, pair< Coord4, Coord4 > > >()));
     items[fd].second.push_back(make_pair(token, make_pair(line, direction)));
 }
-void ColliderZone::processMotion(vector<pair<Coord, CollideData> > *clds, char *collidematrix) const {
+
+void ColliderZone::clearGroup(int groupid) {
+    for(int fd = 0; fd < items.size(); fd++)
+        if(items[fd].first == groupid)
+            items[fd].second.clear();
+}
+
+bool ColliderZone::checkSimpleCollision(int groupid, const vector<Coord4> &line, const char *collidematrix) const {
+    for(int x = 0; x < items.size(); x++) {
+         if(!collidematrix[groupid * getIndexCount(players) + items[x].first])
+            continue;
+        const vector< pair< int, pair< Coord4, Coord4 > > > &tx = items[x].second;
+        for( int xa = 0; xa < tx.size(); xa++ ) {
+            for( int ya = 0; ya < line.size(); ya++ ) {
+                if(linelineintersect(tx[xa].second.first, line[ya]))
+                    return true;
+            }
+        }
+    }
+    return false;
+}
+
+void ColliderZone::processSimple(vector<pair<Coord, CollideData> > *clds, const char *collidematrix) const {
+	for( int x = 0; x < items.size(); x++ ) {
+		for( int y = x + 1; y < items.size(); y++ ) {
+            if(!collidematrix[items[x].first * getIndexCount(players) + items[y].first])
+                continue;
+            const vector< pair< int, pair< Coord4, Coord4 > > > &tx = items[x].second;
+            const vector< pair< int, pair< Coord4, Coord4 > > > &ty = items[y].second;
+			for( int xa = 0; xa < tx.size(); xa++ ) {
+				for( int ya = 0; ya < ty.size(); ya++ ) {
+                    if(linelineintersect(tx[xa].second.first, ty[ya].second.first))
+                        clds->push_back(make_pair(0, CollideData(CollideId(reverseIndex(players, items[x].first), tx[xa].first), CollideId(reverseIndex(players, items[y].first), ty[ya].first), Coord2())));
+				}
+			}
+		}
+	}
+}
+void ColliderZone::processMotion(vector<pair<Coord, CollideData> > *clds, const char *collidematrix) const {
 	for( int x = 0; x < items.size(); x++ ) {
 		for( int y = x + 1; y < items.size(); y++ ) {
             if(!collidematrix[items[x].first * getIndexCount(players) + items[y].first])
@@ -217,8 +267,9 @@ ColliderZone::ColliderZone(int in_players) {
     players = in_players;
 }
 
-void Collider::reset(int in_players, const Coord4 &bounds) {
-	CHECK( state == CSTA_WAIT || state == CSTA_PROCESSED );
+void Collider::reset(int in_players, int mode, const Coord4 &bounds) {
+	CHECK( state == CSTA_UNINITTED || state == CSTA_WAIT );
+    
 	players = in_players;
     
     Coord4 zbounds = snapToEnclosingGrid(bounds, MATRIX_RES);
@@ -231,9 +282,26 @@ void Collider::reset(int in_players, const Coord4 &bounds) {
     zone.resize(zxe - zxs, vector<ColliderZone>(zye - zys, ColliderZone( players )));
     
     collidematrix.clear();
-    for(int i = 0; i < players * 2 + 1; i++)
+    
+    if(mode == COM_PLAYER) {
+        for(int i = 0; i < players * 2 + 1; i++)
+            for(int j = 0; j < players * 2 + 1; j++)
+                collidematrix.push_back(canCollidePlayer(players, i, j));
+    } else if(mode == COM_PROJECTILE) {
+        for(int i = 0; i < players * 2 + 1; i++)
+            for(int j = 0; j < players * 2 + 1; j++)
+                collidematrix.push_back(canCollideProjectile(players, i, j));
+    } else {
+        CHECK(0);
+    }
+    
+    /*
+    for(int i = 0; i < players * 2 + 1; i++) {
+        string tp;
         for(int j = 0; j < players * 2 + 1; j++)
-            collidematrix.push_back(canCollide(players, i, j));
+            tp += collidematrix[j + i * ( players * 2 + 1 )] + '0';
+        dprintf("%s\n", tp.c_str());
+    }*/
     
     state = CSTA_WAIT;
 }
@@ -260,7 +328,14 @@ void Collider::token( const Coord4 &line, const Coord4 &direction ) {
         int tys = max((area.sy / MATRIX_RES).toInt(), zys);
         int txe = min((area.ex / MATRIX_RES).toInt(), zxe);
         int tye = min((area.ey / MATRIX_RES).toInt(), zye);
-        CHECK(txs < zxe && tys < zye && txe > zxs && tye > zys);
+        if(!(txs < zxe && tys < zye && txe > zxs && tye > zys)) {
+            dprintf("%d, %d, %d, %d\n", txs, tys, txe, tye);
+            dprintf("%d, %d, %d, %d\n", zxs, zys, zxe, zye);
+            dprintf("%f, %f, %f, %f\n", area.sx.toFloat(), area.sy.toFloat(), area.ex.toFloat(), area.ey.toFloat());
+            dprintf("%f, %f, %f, %f\n", line.sx.toFloat(), line.sy.toFloat(), line.ex.toFloat(), line.ey.toFloat());
+            dprintf("%f, %f, %f, %f\n", direction.sx.toFloat(), direction.sy.toFloat(), direction.ex.toFloat(), direction.ey.toFloat());
+            CHECK(0);
+        }
         for(int x = txs; x < txe; x++)
             for(int y = tys; y < tye; y++)
                 zone[x - zxs][y - zys].addToken(curpush, curtoken, line, direction);
@@ -283,6 +358,57 @@ void Collider::endAddThingsToGroup() {
     curtoken = -1;
 }
 
+void Collider::clearGroup(int category, int gid) {
+    int groupid = getIndex(players, category, gid);
+    for(int i = 0; i < zone.size(); i++)
+        for(int j = 0; j < zone[i].size(); j++)
+            zone[i][j].clearGroup(groupid);
+}
+
+bool Collider::checkSimpleCollision(int category, int gid, const vector<Coord4> &line) const {
+    if(line.size() == 0)
+        return false;
+    Coord4 area = startCBoundBox();
+    for(int i = 0; i < line.size(); i++) {
+        addToBoundBox(&area, line[i].sx, line[i].sy);
+        addToBoundBox(&area, line[i].ex, line[i].ey);
+    }
+    Coord4 pa = area;
+    area = snapToEnclosingGrid(area, MATRIX_RES);
+    int txs = max((area.sx / MATRIX_RES).toInt(), zxs);
+    int tys = max((area.sy / MATRIX_RES).toInt(), zys);
+    int txe = min((area.ex / MATRIX_RES).toInt(), zxe);
+    int tye = min((area.ey / MATRIX_RES).toInt(), zye);
+    if(!(txs < zxe && tys < zye && txe > zxs && tye > zys)) {
+        dprintf("%d, %d, %d, %d\n", txs, tys, txe, tye);
+        dprintf("%d, %d, %d, %d\n", zxs, zys, zxe, zye);
+        dprintf("%f, %f, %f, %f\n", area.sx.toFloat(), area.sy.toFloat(), area.ex.toFloat(), area.ey.toFloat());
+        dprintf("%f, %f, %f, %f\n", pa.sx.toFloat(), pa.sy.toFloat(), pa.ex.toFloat(), pa.ey.toFloat());
+        CHECK(0);
+    }
+    for(int x = txs; x < txe; x++)
+        for(int y = tys; y < tye; y++)
+            if(zone[x - zxs][y - zys].checkSimpleCollision(getIndex(players, category, gid), line, &*collidematrix.begin()))
+                return true;
+    return false;
+}
+
+void Collider::processSimple() {
+	CHECK( state == CSTA_WAIT );
+    state = CSTA_PROCESSED;
+    collides.clear();
+    curcollide = -1;
+    
+    vector<pair<Coord, CollideData> > clds;
+    
+    // TODO: Don't bother processing unique pairs more than once?
+    for(int i = 0; i < zone.size(); i++)
+        for(int j = 0; j < zone[i].size(); j++)
+            zone[i][j].processSimple(&clds, &*collidematrix.begin());
+	
+    sort(clds.begin(), clds.end());
+    clds.erase(unique(clds.begin(), clds.end()), clds.end());
+}
 void Collider::processMotion() {
 	CHECK( state == CSTA_WAIT );
     state = CSTA_PROCESSED;
@@ -326,7 +452,12 @@ const CollideData &Collider::getData() const {
 	return collides[curcollide];
 }
 
-Collider::Collider() { state = 0; curpush = -1; curtoken = -1; log = false; };
+void Collider::finishProcess() {
+    CHECK(state == CSTA_PROCESSED);
+    state = CSTA_WAIT;
+}
+
+Collider::Collider() { state = CSTA_UNINITTED; curpush = -1; curtoken = -1; log = false; };
 Collider::~Collider() { };
 
 void Collider::render() const {
