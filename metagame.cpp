@@ -393,6 +393,19 @@ void Metagame::renderToScreen() const {
             drawMultibar(lrCategory[2], Float4(200, 140, 700, 170));
             drawMultibar(lrCategory[3], Float4(200, 200, 700, 230));
             drawMultibar(lrPlayer, Float4(200, 320, 700, 350));
+            setColor(1.0, 1.0, 1.0);
+            drawJustifiedText("waiting", 30, 400, 400, TEXT_CENTER, TEXT_MIN);
+            int notdone = count(checked.begin(), checked.end(), false);
+            CHECK(notdone);
+            int cpos = 0;
+            float increment = 800.0 / notdone;
+            for(int i = 0; i < checked.size(); i++) {
+                if(!checked[i]) {
+                    setColor(playerdata[i].color);
+                    drawDvec2(playerdata[i].faction_symb, Float4(cpos * increment, 440, (cpos + 1) * increment, 580), 1);
+                    cpos++;
+                }
+            }
         } else {
             shop.renderToScreen();
         }

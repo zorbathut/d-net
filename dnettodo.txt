@@ -1,6 +1,4 @@
 - tank interface
-- Fix input test for large number of players
-- feedback on results screen
 - Better tank explosions
 - Destroyable terrain
 - Next generation of weapons
