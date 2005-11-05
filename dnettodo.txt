@@ -1,5 +1,3 @@
-- tank interface
-- make recorded games work with multiple axes
 - add way to quit :)
 - More 12-player maps
 - Better tank explosions
