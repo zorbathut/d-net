@@ -93,6 +93,7 @@ public:
 };
 
 enum {COM_PLAYER, COM_PROJECTILE};
+enum {CGR_WALL, CGR_PLAYER, CGR_PROJECTILE};
 
 class Collider {
 public:

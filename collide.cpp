@@ -145,30 +145,35 @@ inline int getIndexCount(int players) {
     return players * 2 + 1;
 }
 int getIndex( int players, int category, int gid ) {
-    if( category == -1 ) {
-        CHECK( gid == 0 );
+    if(category == CGR_WALL) {
+        CHECK(gid == 0);
         return 0;
+    } else if(category == CGR_PLAYER) {
+        CHECK(gid >= 0 && gid < players);
+        return gid + 1;
+    } else if(category == CGR_PROJECTILE) {
+        CHECK(gid >= 0 && gid < players);
+        return players + gid + 1;
     } else {
-        CHECK( category == 0 || category == 1 );
-        CHECK( gid >= 0 && gid < players );
-        return players * category + gid + 1;
+        return 0;
     }
 }
 pair< int, int > reverseIndex( int players, int index ) {
-    if( index == 0 )
-        return make_pair( -1, 0 );
-    else {
-        pair< int, int > out( ( index - 1 ) / players, ( index - 1 ) % players );
-        CHECK( out.first == 0 || out.first == 1 );
-        return out;
-    }
+    if(index == 0)
+        return make_pair(int(CGR_WALL), 0);
+    else if(index < players + 1)
+        return make_pair(int(CGR_PLAYER), index - 1);
+    else if(index < players * 2 + 1)
+        return make_pair(int(CGR_PROJECTILE), index - players - 1);
+    else
+        CHECK(0);
 }
 
 bool canCollidePlayer( int players, int indexa, int indexb ) {
     pair<int, int> ar = reverseIndex(players, indexa);
     pair<int, int> br = reverseIndex(players, indexb);
     // Two things can't collide if they're part of the same ownership group
-    if(ar.second == br.second && ar.first != -1 && br.first != -1)
+    if(ar.second == br.second && ar.first != CGR_WALL && br.first != CGR_WALL)
         return false;
     // Nothing can collide with itself
     if(ar == br)
@@ -179,10 +184,10 @@ bool canCollideProjectile( int players, int indexa, int indexb ) {
     pair<int, int> ar = reverseIndex(players, indexa);
     pair<int, int> br = reverseIndex(players, indexb);
     // Two things can't collide if they're part of the same ownership group
-    if(ar.second == br.second && ar.first != -1 && br.first != -1)
+    if(ar.second == br.second && ar.first != CGR_WALL && br.first != CGR_WALL)
         return false;
     // Two things can't collide if neither of them are a projectile
-    if(ar.first != 1 && br.first != 1)
+    if(ar.first != CGR_PROJECTILE && br.first != CGR_PROJECTILE)
         return false;
     // That's pretty much all.
     return true;

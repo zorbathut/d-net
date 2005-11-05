@@ -409,13 +409,13 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
         
         collider.reset(players.size(), COM_PLAYER, gamemap.getBounds());
         
-        collider.addThingsToGroup(-1, 0);
+        collider.addThingsToGroup(CGR_WALL, 0);
         collider.startToken(0);
         gamemap.addCollide(&collider);
         collider.endAddThingsToGroup();
         
         for(int j = 0; j < players.size(); j++) {
-            collider.addThingsToGroup(0, j);
+            collider.addThingsToGroup(CGR_PLAYER, j);
             collider.startToken(0);
             players[j].addCollision(&collider, keys[j]);
             collider.endAddThingsToGroup();
@@ -448,11 +448,11 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
             
             vector<Coord4> newpos = players[playerorder[i]].getNextCollide(keys[playerorder[i]]);
             
-            if(collider.checkSimpleCollision(0, playerorder[i], newpos)) {
+            if(collider.checkSimpleCollision(CGR_PLAYER, playerorder[i], newpos)) {
                 keys[playerorder[i]].nullMove();
             } else {
-                collider.clearGroup(0, playerorder[i]);
-                collider.addThingsToGroup(0, playerorder[i]);
+                collider.clearGroup(CGR_PLAYER, playerorder[i]);
+                collider.addThingsToGroup(CGR_PLAYER, playerorder[i]);
                 collider.startToken(0);
                 for(int j = 0; j < newpos.size(); j++)
                     collider.token(newpos[j], Coord4(0, 0, 0, 0));
@@ -477,20 +477,20 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
     }
     */
     
-    collider.addThingsToGroup(-1, 0);
+    collider.addThingsToGroup(CGR_WALL, 0);
     collider.startToken(0);
     gamemap.addCollide(&collider);
     collider.endAddThingsToGroup();
     
     for(int j = 0; j < players.size(); j++) {
-        collider.addThingsToGroup(0, j);
+        collider.addThingsToGroup(CGR_PLAYER, j);
         collider.startToken(0);
         players[j].addCollision(&collider, keys[j]);
         collider.endAddThingsToGroup();
     }
 
 	for( int j = 0; j < projectiles.size(); j++ ) {
-		collider.addThingsToGroup(1, j);
+		collider.addThingsToGroup(CGR_PROJECTILE, j);
 		for( int k = 0; k < projectiles[ j ].size(); k++ ) {
             collider.startToken(k);
 			projectiles[ j ][ k ].addCollision( &collider );
@@ -507,26 +507,26 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
         CollideId lhs = collider.getData().lhs;
         CollideId rhs = collider.getData().rhs;
         if( lhs > rhs ) swap( lhs, rhs );
-        if( lhs.category == -1 && rhs.category == -1 ) {
+        if( lhs.category == CGR_WALL && rhs.category == CGR_WALL ) {
             // wall-wall collision, wtf?
             CHECK(0);
-        } else if( lhs.category == -1 && rhs.category == 0 ) {
+        } else if( lhs.category == CGR_WALL && rhs.category == CGR_PLAYER ) {
             // wall-tank collision, should never happen
             CHECK(0);
-        } else if( lhs.category == -1 && rhs.category == 1 ) {
+        } else if( lhs.category == CGR_WALL && rhs.category == CGR_PROJECTILE ) {
             // wall-projectile collision - kill projectile
             projectiles[ rhs.bucket ][ rhs.item ].impact( NULL, genTankDistance(collider.getData().loc) );
             projectiles[ rhs.bucket ][ rhs.item ].live = false;
             projectiles[ rhs.bucket ][ rhs.item ].genEffects( &gfxeffects, collider.getData().loc );
-        } else if( lhs.category == 0 && rhs.category == 0 ) {
+        } else if( lhs.category == CGR_PLAYER && rhs.category == CGR_PLAYER ) {
             // tank-tank collision, should never happen
             CHECK(0);
-        } else if( lhs.category == 0 && rhs.category == 1 ) {
+        } else if( lhs.category == CGR_PLAYER && rhs.category == CGR_PROJECTILE ) {
             // tank-projectile collision - kill projectile, do damage
             projectiles[ rhs.bucket ][ rhs.item ].impact( &players[ lhs.bucket ], genTankDistance(collider.getData().loc) );
             projectiles[ rhs.bucket ][ rhs.item ].live = false;
             projectiles[ rhs.bucket ][ rhs.item ].genEffects( &gfxeffects, collider.getData().loc );
-        } else if( lhs.category == 1 && rhs.category == 1 ) {
+        } else if( lhs.category == CGR_PROJECTILE && rhs.category == CGR_PROJECTILE ) {
             // projectile-projectile collision - kill both projectiles
             // also do radius damage, and do it fairly dammit
             bool lft = frand() < 0.5;
