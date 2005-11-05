@@ -41,6 +41,13 @@ void clearFrame(const Color &color);
 void initFrame();
 void setZoom( float sx, float sy, float ey );
 
+float getZoomSx();
+float getZoomSy();
+float getZoomEx();
+float getZoomEy();
+float getZoomDx();
+float getZoomDy();
+
 void deinitFrame();
 
 /*************

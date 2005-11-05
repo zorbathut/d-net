@@ -110,7 +110,7 @@ void initGfx() {
         }
     }
     {
-        GLfloat flipy[16]= { 1, 0, 0, 0,   0, -1, 0, 0,   0, 0, 1, 0,    0, 0, 0, 1 };
+        GLfloat flipy[16]= { (5.0/4.0) / (4.0/3.0), 0, 0, 0,   0, -1, 0, 0,   0, 0, 1, 0,    0, 0, 0, 1 };
         glMultMatrixf(flipy);
         glTranslatef(0, -1, 0);
     }
@@ -184,8 +184,15 @@ void setZoom( float in_sx, float in_sy, float in_ey ) {
 	map_sy = in_sy;
 	map_zoom = in_ey - in_sy;
     map_ey = map_sy + map_zoom;
-    map_ex = map_sx + map_zoom * 1.25;
+    map_ex = map_sx + map_zoom * 4 / 3;
 }
+
+float getZoomSx() { return map_sx; }
+float getZoomSy() { return map_sy; }
+float getZoomEx() { return map_ex; }
+float getZoomEy() { return map_ey; }
+float getZoomDx() { return map_ex - map_sx; }
+float getZoomDy() { return map_ey - map_sy; }
 
 void setColor( float r, float g, float b ) {
 	glColor3f( r, g, b );

@@ -174,7 +174,8 @@ void InterfaceMain::render() const {
             const int textymax = int(crosshair / textsize);
             const int textxmax = 2;
             const float textxofs = crosshair / textxmax;
-            for(int i = 0; i < inptest_controls.size(); i++) {
+            for(int i = 0; i < inptest_controls.size() * 4; i++) {
+                const Controller &ct = inptest_controls[i % inptest_controls.size()];
                 float x = (i % wid) * xsiz;
                 float y = (i / wid) * ysiz + 300;
                 Float4 chbox(x + bord, y + bord, x + bord + crosshair, y + bord + crosshair);
@@ -186,16 +187,20 @@ void InterfaceMain::render() const {
                 drawLine(Float4(chbox.ex, chbox.sy, chbox.ex, chbox.sy + crosshair / 4), 0.1);
                 drawLine(Float4(chbox.ex, chbox.ey, chbox.ex - crosshair / 4, chbox.ey), 0.1);
                 drawLine(Float4(chbox.ex, chbox.ey, chbox.ex, chbox.ey - crosshair / 4), 0.1);
-                drawCrosshair(inptest_controls[i].x * crosshairc + bord + crosshairc + x, -inptest_controls[i].y * crosshairc + bord + crosshairc + y, crosshair / 4, 0.1);
+                drawCrosshair(ct.x * crosshairc + bord + crosshairc + x, -ct.y * crosshairc + bord + crosshairc + y, crosshair / 4, 0.1);
                 float textx = x + bord * 3 + crosshair;
                 float texty = y + bord;
                 int ctxt = 0;
-                for(int j = 0; j < inptest_controls[i].keys.size(); j++) {
-                    if(inptest_controls[i].keys[j].down) {
+                int kd = 0;
+                for(int j = 0; j < ct.keys.size(); j++)
+                    if(ct.keys[j].down)
+                        kd++;
+                for(int j = 0; j < ct.keys.size(); j++) {
+                    if(ct.keys[j].down) {
                         string tbd;
                         if(ctxt >= textymax * textxmax) {
                             continue;
-                        } else if(ctxt == textymax * textxmax - 1) {
+                        } else if(ctxt == textymax * textxmax - 1 && kd > textymax * textxmax) {
                             tbd = "...";
                         } else {
                             tbd = StringPrintf("%d", j);

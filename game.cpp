@@ -636,7 +636,7 @@ void Game::renderToScreen() const {
         expandBoundBox(&bounds, 1.1);
         float y = (bounds.ey - bounds.sy) / 0.9;
         float sy = bounds.ey - y;
-        float sx =( bounds.sx + bounds.ex ) / 2 - ( y * 1.25 / 2 );
+        float sx = ( bounds.sx + bounds.ex ) / 2 - ( y * 4 / 3 / 2 );
         setZoom(sx, sy, bounds.ey);
     }
 	for( int i = 0; i < players.size(); i++ )
@@ -651,11 +651,11 @@ void Game::renderToScreen() const {
     {
         setZoom( 0, 0, 100 );
         setColor(1.0, 1.0, 1.0);
-        drawLine(Float4(0, 10, 125, 10), 0.1);
+        drawLine(Float4(0, 10, getZoomEx(), 10), 0.1);
         for(int i = 0; i < players.size(); i++) {
             setColor(1.0, 1.0, 1.0);
-            float loffset = 125.0 / players.size() * i;
-            float roffset = 125.0 / players.size() * ( i + 1 );
+            float loffset = getZoomEx() / players.size() * i;
+            float roffset = getZoomEx() / players.size() * ( i + 1 );
             if(i)
                 drawLine(Float4(loffset, 0, loffset, 10), 0.1);
             if(players[i].live) {

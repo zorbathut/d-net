@@ -57,14 +57,14 @@ const HierarchyNode &Shop::getCategoryNode() const {
 
 void Shop::renderNode(const HierarchyNode &node, int depth) const {
     CHECK(depth < 3 || node.branches.size() == 0);
-    const float hoffset = 1;
+    const float hoffset = 1.5;
     const float voffset = 5;
 
     const float fontsize = 2;
     const float boxborder = 0.5;
     const float itemheight = 4;
 
-    const float boxwidth = 40;
+    const float boxwidth = 42;
     
     const float pricehpos = 29;
 
@@ -518,6 +518,8 @@ Metagame::Metagame() {
 
 Metagame::Metagame(int playercount, int in_roundsBetweenShop) {
 
+    const Float2 cent(450, 300);
+    
     roundsBetweenShop = in_roundsBetweenShop;
     CHECK(roundsBetweenShop >= 1);
     
@@ -527,7 +529,7 @@ Metagame::Metagame(int playercount, int in_roundsBetweenShop) {
     playermode.clear();
     playerkey.resize(playercount, -1);
     playersymbol.resize(playercount, -1);
-    playerpos.resize(playercount, Float2(400, 300));
+    playerpos.resize(playercount, cent);
     playermode.resize(playercount, KSAX_UDLR);
     fireHeld.resize(playercount);
     
@@ -536,11 +538,11 @@ Metagame::Metagame(int playercount, int in_roundsBetweenShop) {
     }
     
     for(int i = 0; i < 4; i++) {
-        symbolpos.push_back( boxaround( makeAngle(PI * 2 * i / 4) * 100 + Float2( 400, 300 ), 50 ) );
+        symbolpos.push_back( boxaround( makeAngle(PI * 2 * i / 4) * 100 + cent, 50 ) );
     }
     
     for(int i = 4; i < symbols.size(); i++) {
-        symbolpos.push_back( boxaround( makeAngle(PI * 2 * ( i - 4 ) / ( symbols.size() - 4 )) * 225 + Float2( 400, 300 ), 50 ) );
+        symbolpos.push_back( boxaround( makeAngle(PI * 2 * ( i - 4 ) / ( symbols.size() - 4 )) * 225 + cent, 50 ) );
     }
     
     mode = MGM_PLAYERCHOOSE;

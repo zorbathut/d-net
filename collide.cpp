@@ -465,9 +465,13 @@ void Collider::finishProcess() {
 Collider::Collider() { state = CSTA_UNINITTED; curpush = -1; curtoken = -1; log = false; };
 Collider::~Collider() { };
 
+DECLARE_bool(debugGraphics);
+
 void Collider::render() const {
-    for(int i = 0; i < zone.size(); i++)
-        for(int j = 0; j < zone[i].size(); j++)
-            zone[i][j].render(Coord4((zxs + i) * MATRIX_RES, (zys + j) * MATRIX_RES, (zxs + i + 1) * MATRIX_RES, (zys + j + 1) * MATRIX_RES));
+    if(FLAGS_debugGraphics) {
+        for(int i = 0; i < zone.size(); i++)
+            for(int j = 0; j < zone[i].size(); j++)
+                zone[i][j].render(Coord4((zxs + i) * MATRIX_RES, (zys + j) * MATRIX_RES, (zxs + i + 1) * MATRIX_RES, (zys + j + 1) * MATRIX_RES));
+    }
 };
 
