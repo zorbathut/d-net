@@ -114,30 +114,39 @@ bool Shop::runTick(const Keystates &keys) {
         curloc.back()++;
     curloc.back() += getCategoryNode().branches.size();
     curloc.back() %= getCategoryNode().branches.size();
-    if(keys.f.repeat && getCurNode().buyable && player->cash >= getCurNode().cost) {
-        player->cash -= getCurNode().cost;
-        if(getCurNode().type == HierarchyNode::HNT_DONE) {
-            return true;
-        } else if(getCurNode().type == HierarchyNode::HNT_UPGRADE) {
-            bool allowbuy = true;
-            if(getCurNode().displaymode == HierarchyNode::HNDM_COSTUNIQUE && player->hasUpgrade(getCurNode().upgrade))
-                allowbuy = false;
-            if(allowbuy) {
-                player->upgrades.push_back(getCurNode().upgrade);
-                player->reCalculate();
+    if(keys.f.repeat && getCurNode().buyable) {
+        bool canBuy = false;
+        if(player->cash >= getCurNode().cost)
+            canBuy = true;
+        if(getCurNode().type == HierarchyNode::HNT_WEAPON && player->weapon != getCurNode().weapon && player->cash + player->resellAmmoValue() >= getCurNode().cost)
+            canBuy = true;
+        if(canBuy) {
+            player->cash -= getCurNode().cost;
+            if(getCurNode().type == HierarchyNode::HNT_DONE) {
+                return true;
+            } else if(getCurNode().type == HierarchyNode::HNT_UPGRADE) {
+                bool allowbuy = true;
+                if(getCurNode().displaymode == HierarchyNode::HNDM_COSTUNIQUE && player->hasUpgrade(getCurNode().upgrade))
+                    allowbuy = false;
+                if(allowbuy) {
+                    player->upgrades.push_back(getCurNode().upgrade);
+                    player->reCalculate();
+                } else {
+                    player->cash += getCurNode().cost;
+                }
+            } else if(getCurNode().type == HierarchyNode::HNT_WEAPON) {
+                if(player->weapon != getCurNode().weapon) {
+                    if(player->shotsLeft != -1)
+                        player->cash += player->resellAmmoValue();
+                    player->weapon = getCurNode().weapon;
+                    player->shotsLeft = 0;
+                }
+                player->shotsLeft += getCurNode().quantity;
+                if(player->weapon == defaultWeapon())
+                    player->shotsLeft = -1;
             } else {
-                player->cash += getCurNode().cost;
+                CHECK(0);
             }
-        } else if(getCurNode().type == HierarchyNode::HNT_WEAPON) {
-            if(player->weapon != getCurNode().weapon) {
-                if(player->shotsLeft != -1)
-                    player->cash += player->resellAmmoValue();
-                player->weapon = getCurNode().weapon;
-                player->shotsLeft = 0;
-            }
-            player->shotsLeft += getCurNode().quantity;
-        } else {
-            CHECK(0);
         }
     }
     return false;

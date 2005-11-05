@@ -1,4 +1,3 @@
-- collision speedup
 - special-case default weapon to not have bizarre interface in buying
 - Make input test ... slightly more conservative
 - Fix input test for large number of players
