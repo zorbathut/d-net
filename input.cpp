@@ -45,6 +45,7 @@ void Button::newState(bool pushed) {
 void Controller::newState(const Controller &nst) {
     x = nst.x;
     y = nst.y;
+    axes = nst.axes;
     u.newState(nst.u);
     d.newState(nst.d);
     l.newState(nst.l);

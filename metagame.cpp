@@ -226,12 +226,20 @@ bool Metagame::runTick( const vector< Controller > &keys ) {
             } else {    // if player has chosen symbol
                 {
                     int opm = playermode[i];
-                    if(keys[i].l.repeat)
-                        playermode[i]--;
-                    if(keys[i].r.repeat)
-                        playermode[i]++;
-                    playermode[i] += KSAX_END;
-                    playermode[i] %= KSAX_END;
+                    if(keys[i].l.repeat) {
+                        do {
+                            playermode[i]--;
+                            playermode[i] += KSAX_END;
+                            playermode[i] %= KSAX_END;
+                        } while(ksax_minaxis[playermode[i]] > keys[i].axes.size());
+                    }
+                    if(keys[i].r.repeat) {
+                        do {
+                            playermode[i]++;
+                            playermode[i] += KSAX_END;
+                            playermode[i] %= KSAX_END;
+                        } while(ksax_minaxis[playermode[i]] > keys[i].axes.size());
+                    }
                     if(playermode[i] != opm)
                         fireHeld[i] = 0;    // just for a bit of added safety
                 }
@@ -431,9 +439,17 @@ vector<Keystates> Metagame::genKeystates(const vector<Controller> &keys, const v
             kst[pid].l = keys[i].l;
             kst[pid].r = keys[i].r;
             kst[pid].f = keys[i].keys[playerkey[i]];
-            kst[pid].ax[0] = keys[i].x;
-            kst[pid].ax[1] = keys[i].y;
             kst[pid].axmode = modes[i];
+            if(kst[pid].axmode == KSAX_UDLR || kst[pid].axmode == KSAX_ABSOLUTE) {
+                kst[pid].ax[0] = keys[i].x;
+                kst[pid].ax[1] = keys[i].y;
+            } else if(kst[pid].axmode == KSAX_TANK) {
+                CHECK(keys[i].axes.size() >= 4);
+                kst[pid].ax[0] = keys[i].axes[1];
+                kst[pid].ax[1] = keys[i].axes[3];
+            } else {
+                CHECK(0);
+            }
             CHECK(keys[i].x >= -1 && keys[i].x <= 1);
             CHECK(keys[i].y >= -1 && keys[i].y <= 1);
             pid++;

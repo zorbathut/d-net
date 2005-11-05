@@ -36,7 +36,7 @@ vector<Controller> controls_init() {
         CHECK(infile);
         int dat;
         fread(&dat, 1, sizeof(dat), infile);
-        CHECK(dat == 2);
+        CHECK(dat == 3);
         fread(&dat, 1, sizeof(dat), infile);
         sfrand(dat);
         fread(&dat, 1, sizeof(dat), infile);
@@ -46,6 +46,9 @@ vector<Controller> controls_init() {
             fread(&dat, 1, sizeof(dat), infile);
             dprintf("%d: %d buttons\n", i, dat);
             now[i].keys.resize(dat);
+            fread(&dat, 1, sizeof(dat), infile);
+            dprintf("%d: %d axes\n", i, dat);
+            now[i].axes.resize(dat);
             sources.push_back(make_pair((int)CIP_PRERECORD, i));
         }
     } else if(FLAGS_aiCount) {
@@ -57,6 +60,7 @@ vector<Controller> controls_init() {
         for(int i = 0; i < FLAGS_aiCount; i++) {
             sources.push_back(make_pair((int)CIP_AI, i));
             now[i].keys.resize(1);
+            now[i].axes.resize(2);
         }
     } else {
         // Keyboard init
@@ -65,7 +69,9 @@ vector<Controller> controls_init() {
         
         now.resize(2);
         now[0].keys.resize(baseplayersize[0]);
+        now[0].axes.resize(2);
         now[1].keys.resize(baseplayersize[1]);
+        now[1].axes.resize(2);
         
         // Joystick init
         dprintf("%d joysticks detected\n", SDL_NumJoysticks());
@@ -75,7 +81,7 @@ vector<Controller> controls_init() {
         for(int i = 0; i < SDL_NumJoysticks(); i++) {
             dprintf("Opening %d: %s\n", i, SDL_JoystickName(i));
             joysticks.push_back(SDL_JoystickOpen(i));
-            CHECK(SDL_JoystickNumAxes(joysticks.back()) >= 2);
+            
             CHECK(SDL_JoystickNumButtons(joysticks.back()) >= 1);
             dprintf("%d axes, %d buttons\n", SDL_JoystickNumAxes(joysticks.back()), SDL_JoystickNumButtons(joysticks.back()));
         }
@@ -85,6 +91,7 @@ vector<Controller> controls_init() {
         for(int i = 0; i < joysticks.size(); i++) {
             sources.push_back(make_pair((int)CIP_JOYSTICK, i));
             now[i + 2].keys.resize(SDL_JoystickNumButtons(joysticks[i]));
+            now[i + 2].axes.resize(SDL_JoystickNumAxes(joysticks[i]));
         }
     }
     CHECK(sources.size() != 0);
@@ -131,6 +138,8 @@ vector<Controller> controls_next() {
             fread(&now[i].r.down, 1, sizeof(now[i].r.down), infile);
             for(int j = 0; j < now[i].keys.size(); j++)
                 fread(&now[i].keys[j].down, 1, sizeof(now[i].keys[j].down), infile);
+            for(int j = 0; j < now[i].axes.size(); j++)
+                fread(&now[i].axes[j], 1, sizeof(now[i].axes[j]), infile);
         }
         CHECK(!feof(infile));
         int cpos = ftell(infile);
@@ -152,6 +161,11 @@ vector<Controller> controls_next() {
                 now[i].y = -(SDL_JoystickGetAxis(joysticks[jstarget], 1) / 32768.0f);
                 for(int j = 0; j < now[i].keys.size(); j++)
                     now[i].keys[j].down = SDL_JoystickGetButton(joysticks[jstarget], j);
+                int toggle = 1;
+                for(int j = 0; j < now[i].axes.size(); j++) {
+                    now[i].axes[j] = SDL_JoystickGetAxis(joysticks[jstarget], j) / 32768.0f * toggle;
+                    toggle = -toggle;
+                }
             }
         }
     }
@@ -162,6 +176,8 @@ vector<Controller> controls_next() {
         if(sources[i].first == CIP_KEYBOARD) {
             now[i].x = now[i].r.down - now[i].l.down;
             now[i].y = now[i].u.down - now[i].d.down;
+            now[i].axes[0] = now[i].x;
+            now[i].axes[1] = now[i].y;
         } else if(sources[i].first == CIP_JOYSTICK || sources[i].first == CIP_AI) {
             if(now[i].x < -0.7) {
                 now[i].r.down = false;
@@ -182,6 +198,11 @@ vector<Controller> controls_next() {
             } else {
                 now[i].u.down = false;
                 now[i].d.down = false;
+            }
+            if(sources[i].first == CIP_AI) {
+                now[i].axes.resize(2);
+                now[i].axes[0] = now[i].x;
+                now[i].axes[1] = now[i].y;
             }
         } else if(sources[i].first == CIP_PRERECORD) {
         } else {

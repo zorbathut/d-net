@@ -47,7 +47,7 @@ void MainLoop() {
     
     dprintf("Final controllers:");
     for(int i = 0; i < controllers.size(); i++) {
-        dprintf("%d: %d buttons", i, controllers[i].keys.size());
+        dprintf("%d: %d buttons, %d axes", i, controllers[i].keys.size(), controllers[i].axes.size());
     }
     
     FILE *outfile = NULL;
@@ -61,7 +61,7 @@ void MainLoop() {
         fname += timestampbuf;
         outfile = fopen(fname.c_str(), "wb");
         if(outfile) {
-            int dat = 2;
+            int dat = 3;
             fwrite(&dat, 1, sizeof(dat), outfile);
             dat = frandseed();
             fwrite(&dat, 1, sizeof(dat), outfile);
@@ -69,6 +69,8 @@ void MainLoop() {
             fwrite(&dat, 1, sizeof(dat), outfile);
             for(int i = 0; i < controllers.size(); i++) {
                 dat = controllers[i].keys.size();
+                fwrite(&dat, 1, sizeof(dat), outfile);
+                dat = controllers[i].axes.size();
                 fwrite(&dat, 1, sizeof(dat), outfile);
             }
             fflush(outfile);
@@ -123,6 +125,8 @@ void MainLoop() {
                 fwrite(&controllers[i].r.down, 1, sizeof(controllers[i].r.down), outfile);
                 for(int j = 0; j < controllers[i].keys.size(); j++)
                     fwrite(&controllers[i].keys[j].down, 1, sizeof(controllers[i].keys[j].down), outfile);
+                for(int j = 0; j < controllers[i].axes.size(); j++)
+                    fwrite(&controllers[i].axes[j], 1, sizeof(controllers[i].axes[j]), outfile);
             }
             fflush(outfile);
         }                

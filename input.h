@@ -51,6 +51,7 @@ public:
     Button d;
     Button l;
     Button r;
+    vector<float> axes;
     vector<Button> keys;
 
     void newState(const Controller &nst);
@@ -70,8 +71,9 @@ inline bool operator<(const Controller &lhs, const Controller &rhs) {
     return false;
 }
 
-enum { KSAX_UDLR, KSAX_ABSOLUTE, /*KSAX_TANK,*/ KSAX_END };
+enum { KSAX_UDLR, KSAX_ABSOLUTE, KSAX_TANK, KSAX_END };
 const char *const ksax_names[] = { "UDLR", "ABSOLUTE", "TANK" };
+const int ksax_minaxis[] = {2, 2, 4};
 
 class Keystates {
 public:

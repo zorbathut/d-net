@@ -204,8 +204,9 @@ pair<Coord2, float> Tank::getDeltaAfterMovement( const Keystates &keys, Coord2 p
             else if(abs(desdir) > PI / 2)
                 dv = -dv;   // if we're merely backwards, go backwards
         }
-    //} else if(keys.axmode == KSAX_TANK) {
-        
+    } else if(keys.axmode == KSAX_TANK) {
+        dv = 0;
+        dd = 0;
     } else {
         CHECK(0);
     }
