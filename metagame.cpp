@@ -446,7 +446,7 @@ vector<Keystates> Metagame::genKeystates(const vector<Controller> &keys, const v
             } else if(kst[pid].axmode == KSAX_TANK) {
                 CHECK(keys[i].axes.size() >= 4);
                 kst[pid].ax[0] = keys[i].axes[1];
-                kst[pid].ax[1] = keys[i].axes[3];
+                kst[pid].ax[1] = keys[i].axes[2];
             } else {
                 CHECK(0);
             }

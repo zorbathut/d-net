@@ -177,40 +177,100 @@ Coord2 Tank::getFiringPoint() const {
 
 pair<Coord2, float> Tank::getDeltaAfterMovement( const Keystates &keys, Coord2 pos, float d ) const {
     
-    float dv;
-    float dd;
-    if(keys.axmode == KSAX_UDLR) {
-        dd = deadzone(keys.ax[0], keys.ax[1], 0.2, 0);
-        dv = deadzone(keys.ax[1], keys.ax[0], 0.2, 0);
-    } else if(keys.axmode == KSAX_ABSOLUTE) {
-        float xpd = deadzone(keys.ax[0], keys.ax[1], 0, 0.2);
-        float ypd = deadzone(keys.ax[1], keys.ax[0], 0, 0.2);
-        if(xpd == 0 && ypd == 0) {
-            dv = dd = 0;
+    float dl;
+    float dr;
+     if(keys.axmode == KSAX_TANK) {
+        dl = deadzone(keys.ax[0], keys.ax[1], 0.2, 0);
+        dr = deadzone(keys.ax[1], keys.ax[0], 0.2, 0);
+     } else if(keys.axmode == KSAX_ABSOLUTE || keys.axmode == KSAX_UDLR) {
+        float dd;
+        float dv;
+        if(keys.axmode == KSAX_ABSOLUTE) {
+            float xpd = deadzone(keys.ax[0], keys.ax[1], 0, 0.2);
+            float ypd = deadzone(keys.ax[1], keys.ax[0], 0, 0.2);
+            if(xpd == 0 && ypd == 0) {
+                dv = dd = 0;
+            } else {
+                float desdir = atan2(-ypd, xpd);
+                desdir -= d;
+                desdir += 2 * PI;
+                if(desdir > PI)
+                    desdir -= 2 * PI;
+                dd = desdir / player->turnSpeed;
+                if(dd < -1)
+                    dd = -1;
+                if(dd > 1)
+                    dd = 1;
+                dv = min(sqrt(xpd * xpd + ypd * ypd), 1.f);
+                if(abs(desdir) > PI / 3 && abs(desdir) < PI / 3 * 2)
+                    dv = 0; // if we're near right angles, stop
+                else if(abs(desdir) > PI / 2)
+                    dv = -dv;   // if we're merely backwards, go backwards
+            }
         } else {
-            float desdir = atan2(-ypd, xpd);
-            desdir -= d;
-            desdir += 2 * PI;
-            if(desdir > PI)
-                desdir -= 2 * PI;
-            dd = desdir / player->turnSpeed;
-            if(dd < -1)
-                dd = -1;
-            if(dd > 1)
-                dd = 1;
-            dv = min(sqrt(xpd * xpd + ypd * ypd), 1.f);
-            if(abs(desdir) > PI / 3 && abs(desdir) < PI / 3 * 2)
-                dv = 0; // if we're near right angles, stop
-            else if(abs(desdir) > PI / 2)
-                dv = -dv;   // if we're merely backwards, go backwards
+            dd = deadzone(keys.ax[0], keys.ax[1], 0.2, 0);
+            dv = deadzone(keys.ax[1], keys.ax[0], 0.2, 0);
         }
-    } else if(keys.axmode == KSAX_TANK) {
-        dv = 0;
-        dd = 0;
-    } else {
-        CHECK(0);
+        // What aspects do we want here?
+        // If dv is zero, we turn at full speed.
+        // If dd is zero, we move at full speed.
+        // For neutral:
+        //  1  1
+        //  0  0
+        // -1 -1
+        // For left turn:
+        //  0  1
+        // -1  1
+        // -1  0
+        // For right turn:
+        //  1  0
+        //  1 -1
+        //  0 -1
+        float d00, d01, d02, d10, d11, d12;
+        if(dd <= 0) {
+            d00 = 1 + dd;
+            d10 = 1;
+            d01 = dd;
+            d11 = -dd;
+            d02 = -1;
+            d12 = -1 - dd;
+        } else {
+            d00 = 1;
+            d10 = 1 - dd;
+            d01 = dd;
+            d11 = -dd;
+            d02 = -1 + dd;
+            d12 = -1;
+        }
+        if(dv <= 0) {
+            float intens = abs(dv);
+            dl = (d02 * intens + d01 * (1 - intens));
+            dr = (d12 * intens + d11 * (1 - intens));
+        } else {
+            float intens = abs(dv);
+            dl = (d00 * intens + d01 * (1 - intens));
+            dr = (d10 * intens + d11 * (1 - intens));
+        }
     }
+
+    float dv = (dr + dl) / 2;
+    float dd = (dl - dr) / 2;
     
+    // More random thoughts:
+    // 1 and 0 should stay 1 and 0
+    // 0.5 and 0 should stay 0.5 and 0
+    // 0.5 and 0.5 should scale up (to 0.707 both?)
+    
+    Float2 ult = makeAngle(getAngle(Float2(dv, dd)));
+    float dif = 1 / (abs(ult.x) + abs(ult.y));
+    dv /= dif;
+    dd /= dif;
+    
+    if(dv > 1) dv = 1;
+    if(dd > 1) dd = 1;
+    if(dv < -1) dv = -1;
+    if(dd < -1) dd = -1;
+
     CHECK(dv >= -1 && dv <= 1);
     CHECK(dd >= -1 && dd <= 1);
     

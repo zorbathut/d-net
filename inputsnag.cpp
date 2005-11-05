@@ -161,10 +161,11 @@ vector<Controller> controls_next() {
                 now[i].y = -(SDL_JoystickGetAxis(joysticks[jstarget], 1) / 32768.0f);
                 for(int j = 0; j < now[i].keys.size(); j++)
                     now[i].keys[j].down = SDL_JoystickGetButton(joysticks[jstarget], j);
-                int toggle = 1;
                 for(int j = 0; j < now[i].axes.size(); j++) {
+                    int toggle = 1;
+                    if(j == 1 || j == 2)
+                        toggle *= -1;
                     now[i].axes[j] = SDL_JoystickGetAxis(joysticks[jstarget], j) / 32768.0f * toggle;
-                    toggle = -toggle;
                 }
             }
         }
