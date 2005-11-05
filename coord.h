@@ -373,6 +373,8 @@ void addToBoundBox(Coord4 *bbox, Coord x, Coord y);
 void addToBoundBox(Coord4 *bbox, const Coord2 &point);
 void addToBoundBox(Coord4 *bbox, const Coord4 &rect);
 
+void expandBoundBox(Coord4 *bbox, Coord factor);
+
 // returns -1 if the point is actually inside the path, but the path is reversed
 int inPath(const Coord2 &point, const vector<Coord2> &path);
 

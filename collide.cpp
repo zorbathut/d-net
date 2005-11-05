@@ -10,6 +10,7 @@ using namespace std;
 #include "rng.h"
 #include "util.h"
 #include "args.h"
+#include "gfx.h"
 
 DECLARE_bool(verboseCollisions);
 
@@ -140,6 +141,9 @@ pair<Coord, Coord2> getCollision( const Coord4 &l1p, const Coord4 &l1v, const Co
 	return make_pair(cBc, pos);
 }
 
+inline int getIndexCount(int players) {
+    return players * 2 + 1;
+}
 int getIndex( int players, int category, int gid ) {
     if( category == -1 ) {
         CHECK( gid == 0 );
@@ -173,29 +177,43 @@ bool canCollide( int players, int indexa, int indexb ) {
 }
 
 void ColliderZone::addToken(int groupid, int token, const Coord4 &line, const Coord4 &direction) {
-    items[groupid].push_back(make_pair(token, make_pair(line, direction)));
+    int fd = 0;
+    for(fd = 0; fd < items.size(); fd++)
+        if(items[fd].first == groupid)
+            break;
+    if(fd == items.size())
+        items.push_back(make_pair(groupid, vector< pair< int, pair< Coord4, Coord4 > > >()));
+    items[fd].second.push_back(make_pair(token, make_pair(line, direction)));
 }
-void ColliderZone::process(vector<pair<Coord, CollideData> > *clds) const {
+void ColliderZone::process(vector<pair<Coord, CollideData> > *clds, char *collidematrix) const {
 	for( int x = 0; x < items.size(); x++ ) {
 		for( int y = x + 1; y < items.size(); y++ ) {
-            if(!canCollide( players, x, y))
+            if(!collidematrix[items[x].first * getIndexCount(players) + items[y].first])
                 continue;
-			for( int xa = 0; xa < items[ x ].size(); xa++ ) {
-				for( int ya = 0; ya < items[ y ].size(); ya++ ) {
-					pair<Coord, Coord2> tcol = getCollision( items[ x ][ xa ].second.first, items[ x ][ xa ].second.second, items[ y ][ ya ].second.first, items[ y ][ ya ].second.second );
+            const vector< pair< int, pair< Coord4, Coord4 > > > &tx = items[x].second;
+            const vector< pair< int, pair< Coord4, Coord4 > > > &ty = items[y].second;
+			for( int xa = 0; xa < tx.size(); xa++ ) {
+				for( int ya = 0; ya < ty.size(); ya++ ) {
+					pair<Coord, Coord2> tcol = getCollision( tx[ xa ].second.first, tx[ xa ].second.second, ty[ ya ].second.first, ty[ ya ].second.second );
 					if( tcol.first == NOCOLLIDE )
 						continue;
 					CHECK( tcol.first >= 0 && tcol.first <= 1 );
-                    clds->push_back(make_pair(tcol.first, CollideData(CollideId(reverseIndex(players, x), items[x][xa].first), CollideId(reverseIndex(players, y), items[y][ya].first), tcol.second)));
+                    clds->push_back(make_pair(tcol.first, CollideData(CollideId(reverseIndex(players, items[x].first), tx[xa].first), CollideId(reverseIndex(players, items[y].first), ty[ya].first), tcol.second)));
 				}
 			}
 		}
 	}
 }
 
+void ColliderZone::render(const Coord4 &bbox) const {
+    Coord4 tbx = bbox;
+    expandBoundBox(&tbx, Coord(0.8f));
+    setColor(Color(1.0, 1.0, 1.0) * 0.2 * items.size());
+    drawBox(tbx.toFloat(), 0.5);
+}
+
 ColliderZone::ColliderZone() { };
 ColliderZone::ColliderZone(int in_players) {
-    items.resize(in_players * 2 + 1);
     players = in_players;
 }
 
@@ -211,6 +229,11 @@ void Collider::reset(int in_players, const Coord4 &bounds) {
     zye = (zbounds.ey / MATRIX_RES).toInt();
     zone.clear();
     zone.resize(zxe - zxs, vector<ColliderZone>(zye - zys, ColliderZone( players )));
+    
+    collidematrix.clear();
+    for(int i = 0; i < players * 2 + 1; i++)
+        for(int j = 0; j < players * 2 + 1; j++)
+            collidematrix.push_back(canCollide(players, i, j));
     
     state = CSTA_WAIT;
 }
@@ -271,7 +294,7 @@ void Collider::process() {
     // TODO: Don't bother processing unique pairs more than once?
     for(int i = 0; i < zone.size(); i++)
         for(int j = 0; j < zone[i].size(); j++)
-            zone[i][j].process(&clds);
+            zone[i][j].process(&clds, &*collidematrix.begin());
 	
     sort(clds.begin(), clds.end());
     clds.erase(unique(clds.begin(), clds.end()), clds.end());
@@ -306,5 +329,9 @@ const CollideData &Collider::getData() const {
 Collider::Collider() { state = 0; curpush = -1; curtoken = -1; log = false; };
 Collider::~Collider() { };
 
-void Collider::render() const { };
+void Collider::render() const {
+    for(int i = 0; i < zone.size(); i++)
+        for(int j = 0; j < zone[i].size(); j++)
+            zone[i][j].render(Coord4((zxs + i) * MATRIX_RES, (zys + j) * MATRIX_RES, (zxs + i + 1) * MATRIX_RES, (zys + j + 1) * MATRIX_RES));
+};
 

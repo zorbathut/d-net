@@ -24,6 +24,21 @@ void addToBoundBox(Coord4 *bbox, const Coord4 &rect) {
     addToBoundBox(bbox, rect.ex, rect.ey);
 };
 
+void expandBoundBox(Coord4 *bbox, Coord factor) {
+    Coord x = bbox->ex - bbox->sx;
+    Coord y = bbox->ey - bbox->sy;
+    Coord xc = ( bbox->sx + bbox->ex ) / 2;
+    Coord yc = ( bbox->sy + bbox->ey ) / 2;
+    x *= factor;
+    y *= factor;
+    x /= 2;
+    y /= 2;
+    bbox->sx = xc - x;
+    bbox->sy = yc - y;
+    bbox->ex = xc + x;
+    bbox->ey = yc + y;
+}
+
 int inPath(const Coord2 &point, const vector<Coord2> &path) {
     CHECK(path.size());
     Coord accum = 0;

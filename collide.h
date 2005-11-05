@@ -72,13 +72,15 @@ inline bool operator==(const CollideData &lhs, const CollideData &rhs) {
 
 class ColliderZone {
 private:
-    vector< vector< pair< int, pair< Coord4, Coord4 > > > > items;
+    vector< pair< int, vector< pair< int, pair< Coord4, Coord4 > > > > > items;
 
     int players;
 public:
 
     void addToken(int groupid, int token, const Coord4 &line, const Coord4 &direction);
-    void process(vector<pair<Coord, CollideData> > *clds) const;
+    void process(vector<pair<Coord, CollideData> > *clds, char *collidematrix) const;
+
+    void render(const Coord4 &bbox) const;
 
     ColliderZone();
     ColliderZone(int players);
@@ -114,7 +116,6 @@ private:
 
     int curcollide;
     
-    Coord2 zstart;
     int zxs;
     int zys;
     int zxe;
@@ -127,6 +128,8 @@ private:
     int curtoken;
 
     int players;
+    
+    vector<char> collidematrix;
 
 };
 
