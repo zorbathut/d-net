@@ -97,6 +97,8 @@ void MainLoop() {
 
 				case SDL_KEYDOWN:
 				case SDL_KEYUP:
+                    if(event.key.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE)
+                        quit = true;
 					controls_key( &event.key );
 					break;
 
