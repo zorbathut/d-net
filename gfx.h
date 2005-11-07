@@ -89,6 +89,7 @@ void drawRect( const Float4 &rect, float weight );
 
 void drawText( const char *txt, float scale, float sx, float sy );
 void drawText( const string &txt, float scale, float sx, float sy );
+void drawText( const string &txt, float scale, const Float2 &pos );
 
 enum { TEXT_MIN, TEXT_CENTER, TEXT_MAX };
 

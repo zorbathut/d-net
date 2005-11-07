@@ -19,6 +19,7 @@ using namespace std;
 
 DEFINE_bool(verboseCollisions, false, "Verbose collisions");
 DEFINE_bool(debugGraphics, false, "Enable various debug graphics");
+DEFINE_int(startingcash, 1000, "Cash to start with");
 
 void Player::reCalculate() {
     maxHealth = 20;
@@ -50,7 +51,7 @@ int Player::resellAmmoValue() const {
 
 Player::Player() {
     color = Color(0.5, 0.5, 0.5);
-    cash = 1000;
+    cash = FLAGS_startingcash;
     reCalculate();
     weapon = defaultWeapon();
     shotsLeft = -1;
@@ -70,6 +71,8 @@ void GfxEffects::render() const {
         drawPoint(point_pos.x + point_vel.x * age, point_pos.y + point_vel.y * age, 0.1f);
     } else if(type == EFFECT_CIRCLE) {
         drawCircle(circle_center, circle_radius, 0.1f);
+    } else if(type == EFFECT_TEXT) {
+        drawText(text_data, text_size, text_pos + text_vel * age);
     } else {
         CHECK(0);
     }
@@ -646,6 +649,19 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
             if(players[i].player->shotsLeft == 0) {
                 players[i].player->weapon = defaultWeapon();
                 players[i].player->shotsLeft = -1;
+            }
+            {
+                string slv = StringPrintf("%d", players[i].player->shotsLeft);
+                if(count(slv.begin(), slv.end(), '0') == slv.size() - 1) {
+                    GfxEffects nge;
+                    nge.type = GfxEffects::EFFECT_TEXT;
+                    nge.life = 30;
+                    nge.text_pos = players[i].pos.toFloat() + Float2(4, -4);
+                    nge.text_vel = Float2(0, -0.1);
+                    nge.text_size = 2.5;
+                    nge.text_data = slv;
+                    gfxeffects.push_back(nge);
+                }
             }
 		}
 	}

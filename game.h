@@ -51,7 +51,7 @@ public:
 	bool dead() const;
 
     int type;
-    enum { EFFECT_POINT, EFFECT_LINE, EFFECT_CIRCLE };
+    enum { EFFECT_POINT, EFFECT_LINE, EFFECT_CIRCLE, EFFECT_TEXT };
     
     int life;
     int age;
@@ -64,6 +64,11 @@ public:
     
 	Float4 line_pos;
 	Float4 line_vel;
+
+    Float2 text_pos;
+    Float2 text_vel;
+    float text_size;
+    string text_data;
 
 	GfxEffects();
 

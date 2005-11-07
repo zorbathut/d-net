@@ -18,7 +18,7 @@ clean:
 	rm -rf *.o *.exe *.d *.S
 	
 run: d-net.exe
-	d-net.exe --nofullscreen --debugitems --debugGraphics
+	d-net.exe --nofullscreen --debugitems --startingcash=1000000
 
 vecedit: d-net.exe
 	d-net.exe --vecedit --nofullscreen

@@ -376,6 +376,10 @@ void drawText(const string &txt, float scale, float sx, float sy) {
     drawText(txt.c_str(), scale, sx, sy);
 }
 
+void drawText(const string &txt, float scale, const Float2 &pos) {
+    drawText(txt.c_str(), scale, pos.x, pos.y);
+}
+
 void drawJustifiedText(const string &txt, float scale, float sx, float sy, int xps, int yps) {
     float lscale = scale / 9;
     float wid = lscale * ( 8 * txt.size() - 3 );
