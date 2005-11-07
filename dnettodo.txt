@@ -1,4 +1,5 @@
 - More 12-player maps
+- Some way to tell which tank is which
 - Better tank explosions
 - Destroyable terrain
 - Next generation of weapons

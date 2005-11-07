@@ -1,0 +1,176 @@
+path {
+  center=16.000000,8.000000
+  reflect=spin
+  dupes=1
+  angle=0/1
+  node= --- | -119.000000,-130.000000 | ---
+  node= --- | -71.500000,-145.000000 | ---
+  node= --- | 72.500000,-125.500000 | ---
+  node= --- | 248.000000,-133.000000 | ---
+  node= --- | 223.500000,-51.000000 | ---
+  node= --- | 257.000000,82.000000 | ---
+  node= --- | 242.500000,124.500000 | ---
+  node= --- | 103.500000,181.000000 | ---
+  node= --- | -26.000000,153.500000 | ---
+  node= --- | -204.000000,174.500000 | ---
+  node= --- | -179.000000,24.000000 | ---
+  node= --- | -203.000000,-62.000000 | ---
+  node= --- | -186.000000,-110.500000 | ---
+}
+
+path {
+  center=11.500000,-13.500000
+  reflect=spin
+  dupes=1
+  angle=0/1
+  node= --- | -151.500000,-67.000000 | ---
+  node= --- | -141.000000,41.500000 | ---
+  node= --- | -63.500000,-93.500000 | ---
+}
+
+path {
+  center=-81.000000,101.500000
+  reflect=spin
+  dupes=1
+  angle=0/1
+  node= --- | 17.000000,-124.000000 | ---
+  node= --- | 128.500000,-60.500000 | ---
+  node= --- | -57.500000,-8.500000 | ---
+}
+
+path {
+  center=95.500000,-50.000000
+  reflect=spin
+  dupes=1
+  angle=0/1
+  node= --- | 83.000000,-14.500000 | ---
+  node= --- | -147.500000,3.000000 | ---
+  node= --- | -115.000000,-50.000000 | ---
+}
+
+path {
+  center=117.500000,-3.000000
+  reflect=spin
+  dupes=1
+  angle=0/1
+  node= --- | 77.500000,-26.000000 | ---
+  node= --- | 114.000000,78.500000 | ---
+  node= --- | -121.500000,-19.500000 | ---
+}
+
+path {
+  center=95.000000,84.500000
+  reflect=spin
+  dupes=1
+  angle=0/1
+  node= --- | 67.500000,-5.000000 | ---
+  node= --- | -5.500000,31.000000 | ---
+  node= --- | -78.500000,3.500000 | ---
+  node= --- | -8.500000,-33.500000 | ---
+}
+
+path {
+  center=-29.500000,115.500000
+  reflect=spin
+  dupes=1
+  angle=0/1
+  node= --- | -113.500000,12.500000 | ---
+  node= --- | 92.000000,15.000000 | ---
+  node= --- | 1.500000,-20.000000 | ---
+}
+
+path {
+  center=164.500000,129.500000
+  reflect=spin
+  dupes=1
+  angle=0/1
+  node= --- | -69.000000,21.500000 | ---
+  node= --- | -35.500000,32.500000 | ---
+  node= --- | 54.500000,-14.000000 | ---
+  node= --- | 29.000000,-30.500000 | ---
+}
+
+entity {
+  type=tank start location
+  coord=-73.000000,-40.000000
+  numerator=1
+  denominator=1
+}
+
+entity {
+  type=tank start location
+  coord=-153.500000,-93.000000
+  numerator=1
+  denominator=4
+}
+
+entity {
+  type=tank start location
+  coord=-33.000000,-120.000000
+  numerator=4
+  denominator=3
+}
+
+entity {
+  type=tank start location
+  coord=236.500000,-105.500000
+  numerator=1
+  denominator=3
+}
+
+entity {
+  type=tank start location
+  coord=112.000000,-105.000000
+  numerator=2
+  denominator=6
+}
+
+entity {
+  type=tank start location
+  coord=248.500000,105.000000
+  numerator=2
+  denominator=3
+}
+
+entity {
+  type=tank start location
+  coord=-160.000000,161.000000
+  numerator=4
+  denominator=5
+}
+
+entity {
+  type=tank start location
+  coord=-9.500000,80.500000
+  numerator=3
+  denominator=4
+}
+
+entity {
+  type=tank start location
+  coord=83.500000,33.000000
+  numerator=1
+  denominator=2
+}
+
+entity {
+  type=tank start location
+  coord=66.500000,162.000000
+  numerator=4
+  denominator=5
+}
+
+entity {
+  type=tank start location
+  coord=-122.000000,49.500000
+  numerator=1
+  denominator=2
+}
+
+entity {
+  type=tank start location
+  coord=152.500000,107.500000
+  numerator=5
+  denominator=6
+}
+
