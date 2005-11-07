@@ -5,3 +5,4 @@ brackets.dv2
 shrapnel.dv2
 maze.dv2
 bunkers.dv2
+pacman.dv2

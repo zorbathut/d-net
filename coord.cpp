@@ -98,7 +98,7 @@ int getPathRelation(const vector<Coord2> &lhs, const vector<Coord2> &rhs) {
         }
     }
     bool lir = inPath(getPointIn(lhs), rhs);
-    bool ril = inPath(getPointIn(lhs), rhs);
+    bool ril = inPath(getPointIn(rhs), lhs);
     if(!lir && !ril) {
         return PR_SEPARATE;
     } else if(lir && !ril) {
