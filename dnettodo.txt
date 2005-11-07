@@ -1,10 +1,10 @@
-- OSD for weapon ammo and weapon type
 - Destroyable terrain
 - Better tank explosions
 - Next generation of weapons
 - Scrollable bars
 - Weapon info screen
 - Weapon change system
+- OSD for weapon type
 - Many many more weapons
 
 - More levels
