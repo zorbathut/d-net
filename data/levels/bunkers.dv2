@@ -1,0 +1,293 @@
+path {
+  center=8.000000,0.000000
+  reflect=snowflake
+  dupes=2
+  angle=0/1
+  node= --- | -156.000000,-100.000000 | ---
+}
+
+path {
+  center=-112.000000,0.000000
+  reflect=snowflake
+  dupes=1
+  angle=0/1
+  node= --- | 8.000000,-60.000000 | ---
+  node= --- | 0.000000,-44.000000 | ---
+}
+
+path {
+  center=128.000000,0.000000
+  reflect=snowflake
+  dupes=1
+  angle=0/1
+  node= --- | -8.000000,-60.000000 | ---
+  node= --- | 0.000000,-44.000000 | ---
+}
+
+path {
+  center=-68.000000,-32.000000
+  reflect=spin
+  dupes=1
+  angle=0/1
+  node= --- | 4.000000,16.000000 | ---
+  node= --- | -4.000000,16.000000 | ---
+  node= --- | -4.000000,-32.000000 | ---
+  node= --- | 4.000000,-48.000000 | ---
+}
+
+path {
+  center=-68.000000,28.000000
+  reflect=spin
+  dupes=1
+  angle=0/1
+  node= --- | 4.000000,52.000000 | ---
+  node= --- | -4.000000,36.000000 | ---
+  node= --- | -4.000000,-12.000000 | ---
+  node= --- | 4.000000,-12.000000 | ---
+}
+
+path {
+  center=88.000000,44.000000
+  reflect=spin
+  dupes=1
+  angle=0/1
+  node= --- | -8.000000,36.000000 | ---
+  node= --- | 0.000000,20.000000 | ---
+  node= --- | 0.000000,-28.000000 | ---
+  node= --- | -8.000000,-28.000000 | ---
+}
+
+path {
+  center=84.000000,-40.000000
+  reflect=spin
+  dupes=1
+  angle=0/1
+  node= --- | -4.000000,24.000000 | ---
+  node= --- | -4.000000,-40.000000 | ---
+  node= --- | 4.000000,-24.000000 | ---
+  node= --- | 4.000000,24.000000 | ---
+}
+
+path {
+  center=-40.000000,-56.000000
+  reflect=spin
+  dupes=1
+  angle=0/1
+  node= --- | -8.000000,-12.000000 | ---
+  node= --- | -8.000000,8.000000 | ---
+  node= --- | 0.000000,8.000000 | ---
+  node= --- | 0.000000,-28.000000 | ---
+}
+
+path {
+  center=-44.000000,-12.000000
+  reflect=spin
+  dupes=1
+  angle=0/1
+  node= --- | 4.000000,-12.000000 | ---
+  node= --- | 4.000000,36.000000 | ---
+  node= --- | -4.000000,36.000000 | ---
+  node= --- | -4.000000,-12.000000 | ---
+}
+
+path {
+  center=-44.000000,64.000000
+  reflect=spin
+  dupes=1
+  angle=0/1
+  node= --- | -4.000000,-16.000000 | ---
+  node= --- | -4.000000,4.000000 | ---
+  node= --- | 4.000000,20.000000 | ---
+  node= --- | 4.000000,-16.000000 | ---
+}
+
+path {
+  center=60.000000,-64.000000
+  reflect=spin
+  dupes=1
+  angle=0/1
+  node= --- | 4.000000,-4.000000 | ---
+  node= --- | 4.000000,16.000000 | ---
+  node= --- | -4.000000,16.000000 | ---
+  node= --- | -4.000000,-20.000000 | ---
+}
+
+path {
+  center=60.000000,-8.000000
+  reflect=spin
+  dupes=1
+  angle=0/1
+  node= --- | 4.000000,-16.000000 | ---
+  node= --- | 4.000000,32.000000 | ---
+  node= --- | -4.000000,32.000000 | ---
+  node= --- | -4.000000,-16.000000 | ---
+}
+
+path {
+  center=64.000000,64.000000
+  reflect=spin
+  dupes=1
+  angle=0/1
+  node= --- | 0.000000,-16.000000 | ---
+  node= --- | 0.000000,4.000000 | ---
+  node= --- | -8.000000,20.000000 | ---
+  node= --- | -8.000000,-16.000000 | ---
+}
+
+path {
+  center=4.000000,-60.000000
+  reflect=spin
+  dupes=1
+  angle=0/1
+  node= --- | 16.000000,-4.000000 | ---
+  node= --- | 32.000000,4.000000 | ---
+  node= --- | -24.000000,4.000000 | ---
+  node= --- | -8.000000,-4.000000 | ---
+}
+
+path {
+  center=0.000000,60.000000
+  reflect=spin
+  dupes=1
+  angle=0/1
+  node= --- | -8.000000,4.000000 | ---
+  node= --- | 20.000000,4.000000 | ---
+  node= --- | 36.000000,-4.000000 | ---
+  node= --- | -20.000000,-4.000000 | ---
+}
+
+path {
+  center=8.000000,0.000000
+  reflect=snowflake
+  dupes=2
+  angle=0/1
+  node= --- | -12.000004,-40.000000 | ---
+  node= --- | -4.000002,-24.000000 | ---
+}
+
+entity {
+  type=tank start location
+  coord=-100.000000,-48.000000
+  numerator=0
+  denominator=1
+}
+
+entity {
+  type=tank start location
+  coord=-100.000000,48.000000
+  numerator=0
+  denominator=1
+}
+
+entity {
+  type=tank start location
+  coord=-60.000000,-76.000000
+  numerator=0
+  denominator=1
+}
+
+entity {
+  type=tank start location
+  coord=-60.000000,76.000000
+  numerator=0
+  denominator=1
+}
+
+entity {
+  type=tank start location
+  coord=-136.000000,-88.000000
+  numerator=0
+  denominator=1
+}
+
+entity {
+  type=tank start location
+  coord=-136.000000,88.000000
+  numerator=0
+  denominator=1
+}
+
+entity {
+  type=tank start location
+  coord=-36.000000,0.000000
+  numerator=0
+  denominator=1
+}
+
+entity {
+  type=tank start location
+  coord=-36.000000,-68.000000
+  numerator=0
+  denominator=1
+}
+
+entity {
+  type=tank start location
+  coord=-36.000000,68.000000
+  numerator=0
+  denominator=1
+}
+
+entity {
+  type=tank start location
+  coord=52.000000,-68.000000
+  numerator=1
+  denominator=2
+}
+
+entity {
+  type=tank start location
+  coord=52.000000,0.000000
+  numerator=1
+  denominator=2
+}
+
+entity {
+  type=tank start location
+  coord=52.000000,68.000000
+  numerator=1
+  denominator=2
+}
+
+entity {
+  type=tank start location
+  coord=76.000000,-76.000000
+  numerator=1
+  denominator=2
+}
+
+entity {
+  type=tank start location
+  coord=76.000000,76.000000
+  numerator=1
+  denominator=2
+}
+
+entity {
+  type=tank start location
+  coord=116.000000,-48.000000
+  numerator=1
+  denominator=2
+}
+
+entity {
+  type=tank start location
+  coord=116.000000,48.000000
+  numerator=1
+  denominator=2
+}
+
+entity {
+  type=tank start location
+  coord=152.000000,-88.000000
+  numerator=1
+  denominator=2
+}
+
+entity {
+  type=tank start location
+  coord=152.000000,88.000000
+  numerator=1
+  denominator=2
+}
+

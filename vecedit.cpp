@@ -29,6 +29,9 @@ float grid = 4;
 float cursor_x = 0;
 float cursor_y = 0;
 
+float mouse_xoverflow = 0;
+float mouse_yoverflow = 0;
+
 void savePath(int i, FILE *outfile) {
     CHECK(i >= 0 && i < paths.size());
     fprintf(outfile, "path {\n");
@@ -307,7 +310,7 @@ void renderSingleEntity(int p, int widgetlevel) {
     if(ent.type == ENTITY_TANKSTART) {
         CHECK(ent.params[0].name == "numerator");
         CHECK(ent.params[1].name == "denominator");
-        setColor(1.0, 1.0, 1.0);
+        setColor(1.0, 0.3, 0.3);
         drawLinePath(Tank().getTankVertices(Coord2(Coord(ent.x), Coord(ent.y)), (float)ent.params[0].bi_val / ent.params[1].bi_val * 2 * PI), 0.2, true);
         if(widgetlevel >= 1) {
             setZoom(0, 0, 100);
@@ -583,8 +586,8 @@ bool vecEditTick(const Controller &keys) {
         if(keys.u.repeat) cursor_y -= grid;
         if(keys.d.repeat) cursor_y += grid;
         {
-            int mx, my;
-            int button = SDL_GetRelativeMouseState(&mx, &my);
+            int imx, imy;
+            int button = SDL_GetRelativeMouseState(&imx, &imy);
             dprintf("%08x\n", button);
             if(button & SDL_BUTTON(1)) {
                 SDL_GrabMode cmode = SDL_WM_GrabInput(SDL_GRAB_QUERY);
@@ -598,8 +601,24 @@ bool vecEditTick(const Controller &keys) {
                 SDL_WM_GrabInput(cmode);
             }
             if(SDL_WM_GrabInput(SDL_GRAB_QUERY) == SDL_GRAB_ON) {
-                if(mx) cursor_x += mx * zoom / 512;
-                if(my) cursor_y += my * zoom / 512;
+                float mx, my;
+                mx = imx * zoom / 512;
+                my = imy * zoom / 512;
+                mx += mouse_xoverflow;
+                my += mouse_yoverflow;
+                mx /= grid;
+                my /= grid;
+                int xgsteps = round(mx);
+                int ygsteps = round(my);
+                //dprintf("%d %d, %f %f, %f %f\n", xgsteps, ygsteps, mx, my);
+                mx -= xgsteps;
+                my -= ygsteps;
+                if(mx) cursor_x += xgsteps * grid;
+                if(my) cursor_y += ygsteps * grid;
+                mx *= grid;
+                my *= grid;
+                mouse_xoverflow = mx;
+                mouse_yoverflow = my;
             }
         }
     }
@@ -668,7 +687,10 @@ void vecEditRender() {
     renderPaths();
     renderEntities();
     
-    setColor(0.3, 0.3, 0.3);
+    setColor(0.1, 0.1, 0.1);
     drawGrid(zoom / 16, zoom / 512);
+    
+    drawLine(-zoom * 2, 0, zoom * 2, 0, 0.1);
+    drawLine(0, -zoom * 2, 0, zoom * 2, 0.1);
     
 }
