@@ -97,17 +97,8 @@ void Entity::initParams() {
     if(type == ENTITY_TANKSTART) {
         params.push_back(paramBoundint("numerator", 0, 0, 100000, false));
         params.push_back(paramBoundint("denominator", 1, 1, 100000, false));
-        params.push_back(paramBool("exist2", true, true));
-        params.push_back(paramBool("exist3", true, true));
-        params.push_back(paramBool("exist4", true, true));
-        params.push_back(paramBool("exist5", true, true));
-        params.push_back(paramBool("exist6", true, true));
-        params.push_back(paramBool("exist7", true, true));
-        params.push_back(paramBool("exist8", true, true));
-        params.push_back(paramBool("exist9", true, true));
-        params.push_back(paramBool("exist10", true, true));
-        params.push_back(paramBool("exist11", true, true));
-        params.push_back(paramBool("exist12", true, true));
+        for(int i = 2; i <= 36; i++)
+            params.push_back(paramBool(StringPrintf("exist%03d", i), true, true));
     } else {
         CHECK(0);
     }

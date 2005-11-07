@@ -3,6 +3,7 @@
 #include "gfx.h"
 #include "game.h" // currently just for Tank
 #include "parse.h"
+#include <SDL.h>
 
 #include <vector>
 #include <string>
@@ -576,11 +577,32 @@ bool vecEditTick(const Controller &keys) {
             }
         }
     }
-    
-    if(keys.l.repeat) cursor_x -= grid;
-    if(keys.r.repeat) cursor_x += grid;
-    if(keys.u.repeat) cursor_y -= grid;
-    if(keys.d.repeat) cursor_y += grid;
+    {        
+        if(keys.l.repeat) cursor_x -= grid;
+        if(keys.r.repeat) cursor_x += grid;
+        if(keys.u.repeat) cursor_y -= grid;
+        if(keys.d.repeat) cursor_y += grid;
+        {
+            int mx, my;
+            int button = SDL_GetRelativeMouseState(&mx, &my);
+            dprintf("%08x\n", button);
+            if(button & SDL_BUTTON(1)) {
+                SDL_GrabMode cmode = SDL_WM_GrabInput(SDL_GRAB_QUERY);
+                if(cmode == SDL_GRAB_OFF) {
+                    cmode = SDL_GRAB_ON;
+                    SDL_ShowCursor(SDL_DISABLE);
+                } else {
+                    cmode = SDL_GRAB_OFF;
+                    SDL_ShowCursor(SDL_ENABLE);
+                }
+                SDL_WM_GrabInput(cmode);
+            }
+            if(SDL_WM_GrabInput(SDL_GRAB_QUERY) == SDL_GRAB_ON) {
+                if(mx) cursor_x += mx * zoom / 512;
+                if(my) cursor_y += my * zoom / 512;
+            }
+        }
+    }
     
     if(write_x) *write_x = cursor_x - offset_x;
     if(write_y) *write_y = cursor_y - offset_y;

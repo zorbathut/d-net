@@ -37,7 +37,7 @@ Level loadLevel(const string &str) {
         for(int i = 0; i < dv.entities.size(); i++) {
             CHECK(dv.entities[i].type == ENTITY_TANKSTART);
             for(int j = 2; j <= dv.entities.size(); j++) {
-                string estr = StringPrintf("exist%d", j);
+                string estr = StringPrintf("exist%03d", j);
                 CHECK(dv.entities[i].getParameter(estr) && dv.entities[i].getParameter(estr)->bool_val == true);
                 // yeah, so these don't work yet, it'll be fixed eventually
                 entallow[j]++;

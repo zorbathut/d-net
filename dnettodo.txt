@@ -1,4 +1,3 @@
-- add way to quit :)
 - More 12-player maps
 - Better tank explosions
 - Destroyable terrain
