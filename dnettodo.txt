@@ -1,7 +1,6 @@
-- More 12-player maps
-- Some way to tell which tank is which
-- Better tank explosions
+- OSD for weapon ammo and weapon type
 - Destroyable terrain
+- Better tank explosions
 - Next generation of weapons
 - Scrollable bars
 - Weapon info screen

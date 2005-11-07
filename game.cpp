@@ -448,9 +448,14 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
     
 	frameNm++;
     
+    tankHighlight.clear();
+    tankHighlight.resize(players.size());
+    
     vector< Keystates > keys = rkeys;
     if(frameNm < 180) {
         for(int i = 0; i < keys.size(); i++) {
+            if(keys[i].f.down)
+                tankHighlight[i] = true;
             keys[i].nullMove();
             keys[i].f = Button();
         }
@@ -700,8 +705,13 @@ void Game::renderToScreen() const {
         float sx = ( bounds.sx + bounds.ex ) / 2 - ( y * 4 / 3 / 2 );
         setZoom(sx, sy, bounds.ey);
     }
-	for( int i = 0; i < players.size(); i++ )
+	for( int i = 0; i < players.size(); i++ ) {
 		players[ i ].render( i );
+        if(tankHighlight[i]) {
+            setColor(1.0, 1.0, 1.0);
+            drawJustifiedText(StringPrintf("P%d", i), 2, players[i].pos.x.toFloat(), players[i].pos.y.toFloat(), TEXT_CENTER, TEXT_CENTER);
+        }
+    }
 	for( int i = 0; i < projectiles.size(); i++ )
 		for( int j = 0; j < projectiles[ i ].size(); j++ )
 			projectiles[ i ][ j ].render();
@@ -785,6 +795,8 @@ Game::Game(vector<Player> *in_playerdata, const Level &lev) {
 	projectiles.resize( in_playerdata->size() );
     framesSinceOneLeft = 0;
     firepowerSpent = 0;
+    
+    tankHighlight.resize(players.size());
     
     gamemap = Gamemap(lev);
 };

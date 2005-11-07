@@ -182,6 +182,8 @@ private:
 
 	Collider collider;
 
+    vector<char> tankHighlight;
+
 };
 
 #endif
