@@ -588,7 +588,6 @@ bool vecEditTick(const Controller &keys) {
         {
             int imx, imy;
             int button = SDL_GetRelativeMouseState(&imx, &imy);
-            dprintf("%08x\n", button);
             if(button & SDL_BUTTON(1)) {
                 SDL_GrabMode cmode = SDL_WM_GrabInput(SDL_GRAB_QUERY);
                 if(cmode == SDL_GRAB_OFF) {

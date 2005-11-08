@@ -40,6 +40,7 @@ public:
     float toFloat() const { return (float)d / ( 1LL << 32 ); }
     int toInt() const { CHECK(Coord(int(d >> 32)).d == d); return d >> 32; }
     long long raw() const { return d; };
+    string rawstr() const;
     
     ~Coord() { }; // lol no.
 };
@@ -182,6 +183,7 @@ public:
 
     Coord2() { };
     Coord2(const Coord &ix, const Coord &iy) : x(ix), y(iy) { };
+    Coord2(float ix, float iy) : x(ix), y(iy) { };
     Coord2(const Coord2 &rhs) : x(rhs.x), y(rhs.y) { };
     explicit Coord2(const Float2 &rhs) : x(rhs.x), y(rhs.y) { };
 };
@@ -383,6 +385,8 @@ Coord2 getPointIn(const vector<Coord2> &path);
 enum { PR_SEPARATE, PR_INTERSECT, PR_LHSENCLOSE, PR_RHSENCLOSE };
 
 int getPathRelation(const vector<Coord2> &lhs, const vector<Coord2> &rhs);
+
+vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Coord2> &rhs);
 
 #endif
 

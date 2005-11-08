@@ -1,3 +1,5 @@
+- Fix the shading
+- Fix lerp function
 - Destroyable terrain
 - Better tank explosions
 - Next generation of weapons
