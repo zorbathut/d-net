@@ -388,5 +388,7 @@ int getPathRelation(const vector<Coord2> &lhs, const vector<Coord2> &rhs);
 
 vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Coord2> &rhs);
 
+bool colinear(const Coord2 &a, const Coord2 &b, const Coord2 &c);
+
 #endif
 

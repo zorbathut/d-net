@@ -181,7 +181,7 @@ bool checkConsistent(const map<Coord2, DualLink> &vertx) {
 }
 
 void printState(const map<Coord2, DualLink> &vertx) {
-    return;
+    //return;
     for(map<Coord2, DualLink>::const_iterator itr = vertx.begin(); itr != vertx.end(); itr++) {
         dprintf("%f, %f:\n", itr->first.x.toFloat(), itr->first.y.toFloat());
         for(int i = 0; i < 2; i++) {
@@ -209,13 +209,40 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
         }
     }
     //dprintf("First consistency\n");
-    printState(vertx);
+    //printState(vertx);
     CHECK(checkConsistent(vertx));
     //dprintf("Passed\n");
     vector<LiveLink> links;
     for(map<Coord2, DualLink>::iterator itr = vertx.begin(); itr != vertx.end(); itr++) {
         //dprintf("Looping, %d live links\n", links.size());
-        // First we remove all the links that end at this point
+        // First we check if any lines need to be split at this point
+        for(int i = 0; i < links.size(); i++) {
+            if(itr->first == links[i].end)
+                continue;
+            if(colinear(links[i].start, itr->first, links[i].end)) {
+                //dprintf("COLINEAR  %f %f  %f %f  %f %f\n",
+                        //links[i].start.x.toFloat(), links[i].start.y.toFloat(),
+                        //itr->first.x.toFloat(), itr->first.y.toFloat(),
+                        //links[i].end.x.toFloat(), links[i].end.y.toFloat());
+                for(int j = 0; j < 2; j++) {
+                    if(vertx[links[i].start].live[j]) {
+                        for(int k = 0; k < 2; k++) {
+                            if(vertx[links[i].start].links[j][k] == links[i].end) {
+                                CHECK(!vertx[itr->first].live[j]);
+                                CHECK(vertx[links[i].end].live[j]);
+                                vertx[itr->first].live[j] = true;
+                                vertx[links[i].start].links[j][k] = itr->first;
+                                vertx[itr->first].links[j][!k] = links[i].start;
+                                vertx[itr->first].links[j][k] = links[i].end;
+                                vertx[links[i].end].links[j][!k] = itr->first;
+                            }
+                        }
+                    }
+                }
+                links[i].end = itr->first;
+            }
+        }
+        // Next we remove all the links that end at this point
         for(int i = 0; i < links.size(); i++) {
             if(links[i].end == itr->first) {
                 links.erase(links.begin() + i);
@@ -306,16 +333,23 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
         }
         //dprintf("Unlooped, %d links\n", links.size());
     }
+    CHECK(links.size() == 0);
     //dprintf("Done\n");
+    //printState(vertx);
     CHECK(checkConsistent(vertx));
     {
         vector<vector<Coord2> > rv;
         {
             set<Coord2> seeds;
             set<pair<bool, Coord2> > seen;
-            for(map<Coord2, DualLink>::const_iterator itr = vertx.begin(); itr != vertx.end(); itr++)
-                if(itr->second.live[0] && !inPath((itr->first + itr->second.links[0][1]) / 2, rhs))
+            for(map<Coord2, DualLink>::const_iterator itr = vertx.begin(); itr != vertx.end(); itr++) {
+                if(itr->second.live[0] && !inPath((itr->first + itr->second.links[0][1]) / 2, rhs) && !(itr->second.live[1] && itr->second.links[0][1] == itr->second.links[1][1])) {
+                    //dprintf("seeding %f, %f\n", itr->second.links[0][1].x.toFloat(), itr->second.links[0][1].y.toFloat());
+                    //dprintf("from %f, %f\n", itr->first.x.toFloat(), itr->first.y.toFloat());
+                    //dprintf("%f, %f link compare to %f, %f\n", itr->second.links[0][1].x.toFloat(), itr->second.links[0][1].y.toFloat(), itr->second.links[1][1].x.toFloat(), itr->second.links[1][1].y.toFloat());
                     seeds.insert(itr->second.links[0][1]);
+                }
+            }
             for(set<Coord2>::iterator itr = seeds.begin(); itr != seeds.end(); itr++) {
                 if(seen.count(make_pair(false, *itr)))
                     continue;
@@ -325,20 +359,25 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
                 while(!seen.count(now)) {
                     seen.insert(now);
                     tpath.push_back(now.second);
+                    //dprintf("  NODE - %f %f\n", now.second.x.toFloat(), now.second.y.toFloat());
                     if(!now.first) {
-                        // came in off a lhs path - switch to rhs if there is one
-                        if(vertx[now.second].live[1]) {
+                        // came in off a lhs path - switch to rhs if there is one, and if it doesn't immediately leave the valid area
+                        if(vertx[now.second].live[1] && inPath((now.second + vertx[now.second].links[1][0]) / 2, lhs)) {
+                            CHECK(inPath((now.second + vertx[now.second].links[1][0]) / 2, lhs));
                             now = make_pair(true, vertx[now.second].links[1][0]);
                         } else {
                             CHECK(vertx[now.second].live[0]);
+                            CHECK(!inPath((now.second + vertx[now.second].links[0][1]) / 2, rhs));
                             now = make_pair(false, vertx[now.second].links[0][1]);
                         }
                     } else {
                         // came in off a rhs path - switch to lhs if there is one
                         if(vertx[now.second].live[0]) {
+                            CHECK(!inPath((now.second + vertx[now.second].links[0][1]) / 2, rhs));
                             now = make_pair(false, vertx[now.second].links[0][1]);
                         } else {
                             CHECK(vertx[now.second].live[1]);
+                            CHECK(inPath((now.second + vertx[now.second].links[1][0]) / 2, lhs));
                             now = make_pair(true, vertx[now.second].links[1][0]);
                         }
                     }
@@ -349,4 +388,14 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
         }
         return rv;
     }
+}
+
+bool colinear(const Coord2 &a, const Coord2 &b, const Coord2 &c) {
+    Coord2 ab = b - a;
+    Coord2 ac = c - a;
+    if((ab.x == 0) != (ac.x == 0))
+        return false;
+    if((ab.y == 0) != (ac.y == 0))
+        return false;
+    return ab.x * ac.y == ac.x * ab.y;
 }

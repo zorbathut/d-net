@@ -159,9 +159,10 @@ void InterfaceMain::render() const {
                 diff[i].push_back(Coord2(dv2t.paths[i].vpath[j].x + dv2t.paths[i].centerx, dv2t.paths[i].vpath[j].y + dv2t.paths[i].centery));
             }
         }
-        static int mov = -128;
-        //mov++;
-        //if(mov > 128) mov = -128;
+        static int mov = -1024;
+        mov++;
+        if(mov > 1024) mov = -1024;
+        dprintf("%d\n", mov);
         for(int j = 0; j < diff[1].size(); j++) {
             diff[1][j].y += Coord(mov) / 8;
         }
@@ -183,6 +184,7 @@ void InterfaceMain::render() const {
             }
             drawLinePath(res[i], 0.1, true);
         }
+        //CHECK(0);
     }
     
     if(interface_mode == IFM_S_MAINMENU) {
