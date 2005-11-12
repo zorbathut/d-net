@@ -107,6 +107,12 @@ Coord2 getPointIn(const vector<Coord2> &path) {
     return pt;
 }
 
+bool pathReversed(const vector<Coord2> &path) {
+    int rv = inPath(getPointIn(path), path);
+    CHECK(rv != 0);
+    return rv == -1;
+}
+
 int getPathRelation(const vector<Coord2> &lhs, const vector<Coord2> &rhs) {
     for(int i = 0; i < lhs.size(); i++) {
         int i2 = (i + 1) % lhs.size();

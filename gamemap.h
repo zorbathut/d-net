@@ -19,6 +19,8 @@ public:
 
     Coord4 getBounds() const;
 
+    void removeWalls(Coord2 center, float radius);
+
     Gamemap();
 	Gamemap(const Level &level);
 

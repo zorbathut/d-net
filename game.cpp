@@ -330,6 +330,7 @@ Tank::Tank() {
 }
 
 void Projectile::tick() {
+    CHECK(live);
     CHECK(age != -1);
     pos += movement();
     lasttail = nexttail();
@@ -345,14 +346,19 @@ void Projectile::tick() {
 }
 
 void Projectile::render() const {
+    CHECK(live);
     CHECK(age != -1);
 	setColor( 1.0, 1.0, 1.0 );
 	drawLine(Coord4(pos, pos + lasttail), 0.1 );
 };
 void Projectile::addCollision( Collider *collider ) const {
+    CHECK(live);
     collider->token( Coord4( pos, pos + lasttail ), Coord4( movement(), movement() + nexttail() ) );
 };
-void Projectile::impact(Tank *target, const vector<pair<float, Tank *> > &adjacency) {
+void Projectile::impact(Coord2 pos, Tank *target, const vector<pair<float, Tank *> > &adjacency, vector<GfxEffects> *gfxe, Gamemap *gm) {
+    if(!live)
+        return;
+    
     if(target)
         dealDamage(projtype->warhead->impactdamage, target);
     
@@ -360,19 +366,9 @@ void Projectile::impact(Tank *target, const vector<pair<float, Tank *> > &adjace
         if(adjacency[i].first < projtype->warhead->radiusfalloff)
             dealDamage(projtype->warhead->radiusdamage / projtype->warhead->radiusfalloff * ( projtype->warhead->radiusfalloff - adjacency[i].first), adjacency[i].second);
     }
-};
-
-void Projectile::dealDamage(float dmg, Tank *target) {
-    if(target == owner)
-        return; // friendly fire exception
-    if(target->takeDamage(dmg))
-        owner->player->kills++;
-    owner->player->damageDone += dmg;
-};
-
-void Projectile::genEffects( vector< GfxEffects > *gfxe, Coord2 loc ) const {
+    
     GfxEffects ngfe;
-    ngfe.point_pos = loc.toFloat();
+    ngfe.point_pos = pos.toFloat();
     ngfe.life = 10;
     ngfe.type = GfxEffects::EFFECT_POINT;
     for( int i = 0; i < 3; i++ ) {
@@ -385,12 +381,30 @@ void Projectile::genEffects( vector< GfxEffects > *gfxe, Coord2 loc ) const {
     if(projtype->warhead->radiusfalloff > 0) {
         GfxEffects dbgf;
         dbgf.type = GfxEffects::EFFECT_CIRCLE;
-        dbgf.circle_center = loc.toFloat();
+        dbgf.circle_center = pos.toFloat();
         dbgf.circle_radius = projtype->warhead->radiusfalloff;
         dbgf.life = 5;
         gfxe->push_back(dbgf);
     }
+    
+    if(projtype->warhead->wallremovalradius > 0) {
+        gm->removeWalls(pos, projtype->warhead->wallremovalradius);
+    }
+    
+    live = false;
+};
+
+bool Projectile::isLive() const {
+    return live;
 }
+
+void Projectile::dealDamage(float dmg, Tank *target) {
+    if(target == owner)
+        return; // friendly fire exception
+    if(target->takeDamage(dmg))
+        owner->player->kills++;
+    owner->player->damageDone += dmg;
+};
 
 Coord2 Projectile::movement() const {
     if(projtype->motion == PM_NORMAL) {
@@ -584,37 +598,26 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
             CHECK(0);
         } else if( lhs.category == CGR_WALL && rhs.category == CGR_PROJECTILE ) {
             // wall-projectile collision - kill projectile
-            projectiles[ rhs.bucket ][ rhs.item ].impact( NULL, genTankDistance(collider.getData().loc) );
-            projectiles[ rhs.bucket ][ rhs.item ].live = false;
-            projectiles[ rhs.bucket ][ rhs.item ].genEffects( &gfxeffects, collider.getData().loc );
+            projectiles[ rhs.bucket ][ rhs.item ].impact(collider.getData().loc, NULL, genTankDistance(collider.getData().loc), &gfxeffects, &gamemap);
         } else if( lhs.category == CGR_PLAYER && rhs.category == CGR_PLAYER ) {
             // tank-tank collision, should never happen
             CHECK(0);
         } else if( lhs.category == CGR_PLAYER && rhs.category == CGR_PROJECTILE ) {
             // tank-projectile collision - kill projectile, do damage
-            projectiles[ rhs.bucket ][ rhs.item ].impact( &players[ lhs.bucket ], genTankDistance(collider.getData().loc) );
-            projectiles[ rhs.bucket ][ rhs.item ].live = false;
-            projectiles[ rhs.bucket ][ rhs.item ].genEffects( &gfxeffects, collider.getData().loc );
+            projectiles[ rhs.bucket ][ rhs.item ].impact(collider.getData().loc, &players[ lhs.bucket ], genTankDistance(collider.getData().loc), &gfxeffects, &gamemap);
         } else if( lhs.category == CGR_PROJECTILE && rhs.category == CGR_PROJECTILE ) {
             // projectile-projectile collision - kill both projectiles
             // also do radius damage, and do it fairly dammit
             bool lft = frand() < 0.5;
             
-            if(lft) {
-                projectiles[ lhs.bucket ][ lhs.item ].impact( NULL, genTankDistance(collider.getData().loc) );
-                projectiles[ lhs.bucket ][ lhs.item ].live = false;
-                projectiles[ lhs.bucket ][ lhs.item ].genEffects( &gfxeffects, collider.getData().loc );
-            }
+            if(lft)
+                projectiles[ lhs.bucket ][ lhs.item ].impact(collider.getData().loc, NULL, genTankDistance(collider.getData().loc), &gfxeffects, &gamemap);
             
-            projectiles[ rhs.bucket ][ rhs.item ].impact( NULL, genTankDistance(collider.getData().loc) );
-            projectiles[ rhs.bucket ][ rhs.item ].live = false;
-            projectiles[ rhs.bucket ][ rhs.item ].genEffects( &gfxeffects, collider.getData().loc );
+            projectiles[ rhs.bucket ][ rhs.item ].impact(collider.getData().loc, NULL, genTankDistance(collider.getData().loc), &gfxeffects, &gamemap);
             
-            if(!lft) {
-                projectiles[ lhs.bucket ][ lhs.item ].impact( NULL, genTankDistance(collider.getData().loc) );
-                projectiles[ lhs.bucket ][ lhs.item ].live = false;
-                projectiles[ lhs.bucket ][ lhs.item ].genEffects( &gfxeffects, collider.getData().loc );
-            }
+            if(!lft)
+                projectiles[ lhs.bucket ][ lhs.item ].impact(collider.getData().loc, NULL, genTankDistance(collider.getData().loc), &gfxeffects, &gamemap);
+            
         } else {
             // nothing meaningful, should totally never happen, what the hell is going on here, who are you, and why are you in my apartment
             CHECK(0);
@@ -623,10 +626,10 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
     
     collider.finishProcess();
 
-	for( int j = 0; j < projectiles.size(); j++ ) {
-		for( int k = 0; k < projectiles[ j ].size(); k++ ) {
-            if( !projectiles[ j ][ k ].live ) {
-                projectiles[ j ].erase( projectiles[ j ].begin() + k );
+	for(int j = 0; j < projectiles.size(); j++) {
+		for(int k = 0; k < projectiles[ j ].size(); k++) {
+            if(!projectiles[ j ][ k ].isLive()) {
+                projectiles[ j ].erase(projectiles[ j ].begin() + k);
                 k--;
             } else {
             	projectiles[ j ][ k ].tick();

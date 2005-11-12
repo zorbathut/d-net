@@ -9,6 +9,7 @@ warhead {
     impactdamage=1
     radiusdamage=2
     radiusfalloff=4
+    wallremovalradius=4
 }
 
 projectile {

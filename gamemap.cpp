@@ -57,6 +57,26 @@ Coord4 Gamemap::getBounds() const {
     return bounds;
 }
 
+void Gamemap::removeWalls(Coord2 center, float radius) {
+    dprintf("Removewalls!\n");
+    vector<vector<Coord2> > oat;
+    vector<Coord2> inters;
+    for(int i = 0; i < 4; i++)
+        inters.push_back(center + makeAngle(-i * COORDPI / 2) * Coord(radius));
+    CHECK(!pathReversed(inters));
+    for(int i = 0; i < paths.size(); i++) {
+        if(pathReversed(paths[i])) {
+            oat.push_back(paths[i]);
+        } else {
+            dprintf("Processing %d\n", i);
+            vector<vector<Coord2> > ntp = getDifference(paths[i], inters);
+            for(int i = 0; i < ntp.size(); i++)
+                oat.push_back(ntp[i]);
+        }
+    }
+    paths = oat;
+}
+
 Gamemap::Gamemap() { };
 Gamemap::Gamemap(const Level &lev) {
     CHECK(lev.paths.size());

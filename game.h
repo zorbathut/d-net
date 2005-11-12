@@ -123,14 +123,12 @@ public:
 
 	void addCollision( Collider *collider ) const;
 
-	void impact(Tank *target, const vector<pair<float, Tank *> > &adjacency);
+	void impact(Coord2 pos, Tank *target, const vector<pair<float, Tank *> > &adjacency, vector<GfxEffects> *gfxe, Gamemap *gm);
 
-    void genEffects( vector< GfxEffects > *gfxe, Coord2 pos ) const;
+    bool isLive() const;
 
     Projectile();   // does not start in usable state
     Projectile(const Coord2 &pos, float d, const IDBProjectile *projtype, Tank *owner);
-
-    bool live;
 
 private:
     
@@ -158,6 +156,8 @@ private:
     
     const IDBProjectile *projtype;
     Tank *owner;
+    
+    bool live;
 
 };
 

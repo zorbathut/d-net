@@ -20,6 +20,7 @@ public:
     float impactdamage;
     float radiusdamage;
     float radiusfalloff;
+    float wallremovalradius;
 
     float getDamagePerShot() const;
 
