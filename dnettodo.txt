@@ -1,3 +1,4 @@
+- Finish intersection
 - Fix the shading
 - Fix lerp function
 - Destroyable terrain

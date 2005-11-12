@@ -337,6 +337,29 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
     //dprintf("Done\n");
     //printState(vertx);
     CHECK(checkConsistent(vertx));
+    /*
+    {
+        vector<vector<Coord2> > rv;
+        for(int i = 0; i < 2; i++) {
+            vector<Coord2> trv;
+            for(map<Coord2, DualLink>::const_iterator itr = vertx.begin(); itr != vertx.end(); itr++) {
+                if(itr->second.live[i]) {
+                    Coord2 start = itr->first;
+                    Coord2 now = itr->first;
+                    do {
+                        Coord2 next = getLink(vertx, now).links[i][1];
+                        CHECK(getLink(vertx, next).live[i]);
+                        CHECK(getLink(vertx, next).links[i][0] == now);
+                        trv.push_back(now);
+                        now = next;
+                    } while(now != start);
+                    break;
+                }
+            }
+            rv.push_back(trv);
+        }
+        return rv;
+    }*/
     {
         vector<vector<Coord2> > rv;
         {
@@ -355,11 +378,9 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
                     continue;
                 vector<Coord2> tpath;
                 pair<bool, Coord2> now(false, *itr);
-                //dprintf("Seeding at %f %f\n", itr->x.toFloat(), itr->y.toFloat());
                 while(!seen.count(now)) {
                     seen.insert(now);
                     tpath.push_back(now.second);
-                    //dprintf("  NODE - %f %f\n", now.second.x.toFloat(), now.second.y.toFloat());
                     if(!now.first) {
                         // came in off a lhs path - switch to rhs if there is one, and if it doesn't immediately leave the valid area
                         if(vertx[now.second].live[1] && inPath((now.second + vertx[now.second].links[1][0]) / 2, lhs)) {
@@ -367,17 +388,19 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
                             now = make_pair(true, vertx[now.second].links[1][0]);
                         } else {
                             CHECK(vertx[now.second].live[0]);
-                            CHECK(!inPath((now.second + vertx[now.second].links[0][1]) / 2, rhs));
+                            if(vertx[now.second].links[0][1] != vertx[now.second].links[1][0]) // parallel links cause some problems
+                                CHECK(!inPath((now.second + vertx[now.second].links[0][1]) / 2, rhs));
                             now = make_pair(false, vertx[now.second].links[0][1]);
                         }
                     } else {
                         // came in off a rhs path - switch to lhs if there is one
-                        if(vertx[now.second].live[0]) {
+                        if(vertx[now.second].live[0] && !inPath((now.second + vertx[now.second].links[0][1]) / 2, rhs)) {
                             CHECK(!inPath((now.second + vertx[now.second].links[0][1]) / 2, rhs));
                             now = make_pair(false, vertx[now.second].links[0][1]);
                         } else {
                             CHECK(vertx[now.second].live[1]);
-                            CHECK(inPath((now.second + vertx[now.second].links[1][0]) / 2, lhs));
+                            if(vertx[now.second].links[0][1] != vertx[now.second].links[1][0]) // parallel links cause some problems
+                                CHECK(inPath((now.second + vertx[now.second].links[1][0]) / 2, lhs));
                             now = make_pair(true, vertx[now.second].links[1][0]);
                         }
                     }

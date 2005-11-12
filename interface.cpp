@@ -152,39 +152,53 @@ void InterfaceMain::ai(const vector<Ai *> &ai) const {
 void InterfaceMain::render() const {
     
     {
-        Dvec2 dv2t = loadDvec2("intersecttest.dv2");
-        vector<Coord2> diff[2];
-        for(int i = 0; i < 2; i++) {
-            for(int j = 0; j < dv2t.paths[i].vpath.size(); j++) {
-                diff[i].push_back(Coord2(dv2t.paths[i].vpath[j].x + dv2t.paths[i].centerx, dv2t.paths[i].vpath[j].y + dv2t.paths[i].centery));
+        static Dvec2 dv2to = loadDvec2("intersecttest.dv2");
+        for(int i = 0; i < 1000000; i++) {
+            Dvec2 dv2t = dv2to;
+            vector<Coord2> diff[2];
+            for(int i = 0; i < 2; i++) {
+                for(int j = 0; j < dv2t.paths[i].vpath.size(); j++) {
+                    diff[i].push_back(Coord2(dv2t.paths[i].vpath[j].x + dv2t.paths[i].centerx, dv2t.paths[i].vpath[j].y + dv2t.paths[i].centery));
+                }
             }
-        }
-        static int mov = -1024;
-        mov++;
-        if(mov > 1024) mov = -1024;
-        dprintf("%d\n", mov);
-        for(int j = 0; j < diff[1].size(); j++) {
-            diff[1][j].y += Coord(mov) / 8;
-        }
-        for(int i = 0; i < 2; i++) {
-            bool tanksin = false;
-            Coord2 ptin = getPointIn(diff[i]);
-            dprintf("tanks is %d, IP is %d\n", tanksin, inPath(ptin, diff[i]));
-            bool toggle = (tanksin != (inPath(ptin,  diff[i]) == -1));
-            if(toggle) {
-                dprintf("Toggling\n");
-                reverse(diff[i].begin(),  diff[i].end());
+            static int xmov = -600;
+            static int ymov = -800;
+            xmov += 2;
+            if(xmov > 600) { xmov = -600; ymov += 2; dprintf("%d\n", ymov); }
+            for(int j = 0; j < diff[1].size(); j++) {
+                diff[1][j].x += Coord(xmov) / 8;
+                diff[1][j].y += Coord(ymov) / 8;
             }
-        }
-        vector<vector<Coord2> > res = getDifference(diff[0], diff[1]);
-        for(int i = 0; i < res.size(); i++) {
-            for(int j = 0; j < res[i].size(); j++) {
-                res[i][j] /= 3;
-                res[i][j] += Coord2(80, 80);
+            for(int i = 0; i < 2; i++) {
+                bool tanksin = false;
+                Coord2 ptin = getPointIn(diff[i]);
+                //dprintf("tanks is %d, IP is %d\n", tanksin, inPath(ptin, diff[i]));
+                bool toggle = (tanksin != (inPath(ptin,  diff[i]) == -1));
+                if(toggle) {
+                    //dprintf("Toggling\n");
+                    reverse(diff[i].begin(),  diff[i].end());
+                }
             }
-            drawLinePath(res[i], 0.1, true);
+            vector<vector<Coord2> > res = getDifference(diff[0], diff[1]);
+            /*
+            for(int i = 0; i < res.size(); i++) {
+                for(int j = 0; j < res[i].size(); j++) {
+                    res[i][j] /= 3;
+                    res[i][j] += Coord2(80, 80);
+                    res[i][j] += Coord2(0, 0);
+                }
+                if(i == 0)
+                    setColor(1.0, 0.3, 0.3);
+                else
+                    setColor(0.3, 1.0, 0.3);
+                drawLinePath(res[i], 0.1, true);
+                for(int j = 0; j < res[i].size(); j++)
+                    drawCircle(res[i][j].toFloat(), 1, 0.1);
+            }*/
+            if(ymov >= 800)
+                break;
         }
-        //CHECK(0);
+        CHECK(0);
     }
     
     if(interface_mode == IFM_S_MAINMENU) {
