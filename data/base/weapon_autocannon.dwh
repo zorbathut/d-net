@@ -5,6 +5,18 @@ deploy {
 }
 
 warhead {
+    name=warhead.wallripper
+    impactdamage=1
+    wallremovalradius=3
+}
+
+projectile {
+    name=projectile.wallripper
+    velocity=60
+    warhead=warhead.wallripper
+}
+
+warhead {
     name=warhead.autocannon
     impactdamage=1
     wallremovalradius=0.5

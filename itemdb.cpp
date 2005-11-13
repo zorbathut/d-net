@@ -219,11 +219,15 @@ void parseItemFile(const string &fname) {
             tnode.weapon = &weaponclasses[name];
             mountpoint->branches.push_back(tnode);
             
+            
             weaponclasses[name].firerate = atoi(chunk.consume("firerate").c_str());
-            weaponclasses[name].projectile = &projclasses[chunk.consume("projectile")];
             weaponclasses[name].costpershot = (float)tnode.cost / tnode.quantity;
             weaponclasses[name].name = tnode.name;
-            
+
+            string projclass = chunk.consume("projectile");
+            CHECK(projclasses.count(projclass));
+            weaponclasses[name].projectile = &projclasses[projclass];
+
             string deployclass = chunk.consume("deploy");
             CHECK(deployclasses.count(deployclass));
             weaponclasses[name].deploy = &deployclasses[deployclass];

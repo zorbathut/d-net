@@ -410,7 +410,7 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
                                 
                                 links[i].end = closest;
                                 
-                                CHECK(checkConsistent(vertx));
+                                //CHECK(checkConsistent(vertx));
                                 continue;
                             }
                         }
@@ -434,7 +434,7 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
                         splice(&vertx, lines, junct, 0);
                         splice(&vertx, lines, junct, 1);
                         
-                        CHECK(checkConsistent(vertx));
+                        //CHECK(checkConsistent(vertx));
                         
                         links[i].end = junct;
                     }
@@ -442,7 +442,7 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
             }
         }
         //dprintf("Intersected\n");
-        CHECK(checkConsistent(vertx));
+        //CHECK(checkConsistent(vertx));
         // Now we add new links from this point
         for(int p = 0; p < 2; p++) {
             if(!itr->second.live[p])
