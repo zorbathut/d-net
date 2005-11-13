@@ -333,7 +333,7 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
         }
         // Next we remove all the links that end at this point
         for(int i = 0; i < links.size(); i++) {
-            if(links[i].end == itr->first) {
+            if(links[i].end <= itr->first) {
                 links.erase(links.begin() + i);
                 i--;
             }
@@ -364,23 +364,35 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
                         lines.links[1][0] = itr->first;
                         lines.links[1][1] = itr->second.links[p][k];
                         
+                        /*
+                        dprintf("Splitting at point %f, %f\n", junct.x.toFloat(), junct.y.toFloat());
+                        dprintf("%f,%f %f,%f vs %f,%f %f,%f",
+                                links[i].start.x.toFloat(), links[i].start.y.toFloat(), links[i].end.x.toFloat(), links[i].end.y.toFloat(),
+                                itr->first.x.toFloat(), itr->first.y.toFloat(),
+                                itr->second.links[p][k].x.toFloat(), itr->second.links[p][k].y.toFloat());
+                        dprintf("%s,%s %s,%s vs %s,%s %s,%s",
+                                links[i].start.x.rawstr().c_str(), links[i].start.y.rawstr().c_str(), links[i].end.x.rawstr().c_str(), links[i].end.y.rawstr().c_str(),
+                                itr->first.x.rawstr().c_str(), itr->first.y.rawstr().c_str(),
+                                itr->second.links[p][k].x.rawstr().c_str(), itr->second.links[p][k].y.rawstr().c_str());
+                        dprintf("%s %s\n", junct.x.rawstr().c_str(), junct.y.rawstr().c_str());*/
                         {
                             Coord2 closest;
-                            int usedlin = -1;
                             Coord dist = 1000000000;
                             for(int lin = 0; lin < 2; lin++) {
                                 for(int nod = 0; nod < 2; nod++) {
                                     Coord2 diff = lines.links[lin][nod] - junct;
                                     if(len(diff) < dist) {
                                         dist = len(diff);
-                                        usedlin = lin;
                                         closest = lines.links[lin][nod];
                                     }
                                 }
                             }
                             if(dist < Coord(0.000001f)) {
-                                // We merge the splits into this point instead
-                                CHECK(usedlin != -1);
+                                // One of these already exists, so a line must go through it
+                                // but we're planning to merge, so a line must only go through one of 'em
+                                CHECK(vertx[closest].live[0] != vertx[closest].live[1]);
+                                int usedlin = vertx[closest].live[1];
+                                
                                 CHECK(!vertx[closest].live[!usedlin]);
                                 CHECK(vertx[closest].live[usedlin]);
                                 
@@ -393,16 +405,6 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
                             }
                         }
 
-                        dprintf("Splitting at point %f, %f\n", junct.x.toFloat(), junct.y.toFloat());
-                        dprintf("%f,%f %f,%f vs %f,%f %f,%f",
-                                links[i].start.x.toFloat(), links[i].start.y.toFloat(), links[i].end.x.toFloat(), links[i].end.y.toFloat(),
-                                itr->first.x.toFloat(), itr->first.y.toFloat(),
-                                itr->second.links[p][k].x.toFloat(), itr->second.links[p][k].y.toFloat());
-                        dprintf("%s,%s %s,%s vs %s,%s %s,%s",
-                                links[i].start.x.rawstr().c_str(), links[i].start.y.rawstr().c_str(), links[i].end.x.rawstr().c_str(), links[i].end.y.rawstr().c_str(),
-                                itr->first.x.rawstr().c_str(), itr->first.y.rawstr().c_str(),
-                                itr->second.links[p][k].x.rawstr().c_str(), itr->second.links[p][k].y.rawstr().c_str());
-                        dprintf("%s %s\n", junct.x.rawstr().c_str(), junct.y.rawstr().c_str());
                         if(junct.x < itr->first.x) {
                             CHECK((itr->first.x - junct.x) < Coord(0.00001f));   // damn accuracy
                             junct.x = itr->first.x;

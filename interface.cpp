@@ -154,25 +154,23 @@ void InterfaceMain::render() const {
     #if 0   // Code used for checking the validity of getDifference :)
     {
         
-        string lhs[20] = {
-            "ffffffa9e14441c0", "ffffffbc00000000",
-            "ffffffb800000000", "ffffffbc00000000",
-            "ffffffbc00000000", "ffffffc000000000",
-            "ffffffb800000000", "ffffffc400000000",
-            "ffffffb00d02e509", "ffffffc400000001",
-            "ffffffb159056335", "ffffffc2b3fd81d5",
-            "ffffffaebc0769b8", "ffffffc016ff8858",
-            "ffffffad59056335", "ffffffbeb3fd81d5",
-            "ffffffaabc0769b8", "ffffffbc16ff8858",
-            "ffffffaa5a2599e8", "ffffffbc78e15828",
+        string lhs[16] = {
+            "ffffff9da5c3cb76", "0000001253ccf40d",
+            "ffffff9dfa7ab49a", "00000011ff160ae3",
+            "ffffff9ffa7ab4a2", "00000013ff160aeb",
+            "ffffffa071011632", "00000013888fa95b",
+            "ffffffa271011632", "00000015888fa95b",
+            "ffffffa47101162d", "00000013888fa95e",
+            "ffffffa5220555ae", "000000143993e8e0",
+            "ffffff9f40000000", "0000001a80000000",
         };
         string rhs[8] = {
-            "ffffffb7449db98a", "ffffffc400000000",
-            "ffffffb3449db98a", "ffffffc800000000",
-            "ffffffaf449db98a", "ffffffc400000000",
-            "ffffffb3449db98a", "ffffffc000000000",
+            "ffffffa87101419b", "00000013888efb3b",
+            "ffffffa47101419b", "00000017888efb3b",
+            "ffffffa07101419b", "00000013888efb3b",
+            "ffffffa47101419b", "0000000f888efb3b",
         };
-        
+
         vector<Coord2> diff[2];
         
         for(int i = 0; i < sizeof(lhs) / sizeof(*lhs); i += 2)
