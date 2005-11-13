@@ -219,25 +219,6 @@ inline bool linelineintersect( float x1, float y1, float x2, float y2, float x3,
 inline bool linelineintersect( const Float4 &lhs, const Float4 &rhs ) {
 	return linelineintersect( lhs.sx, lhs.sy, lhs.ex, lhs.ey, rhs.sx, rhs.sy, rhs.ex, rhs.ey );
 }
-inline float linelineintersectpos( float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4 ) {
-	float denom = ( y4 - y3 ) * ( x2 - x1 ) - ( x4 - x3 ) * ( y2 - y1 );
-	float ua = ( ( x4 - x3 ) * ( y1 - y3 ) - ( y4 - y3 ) * ( x1 - x3 ) ) / denom;
-	float ub = ( ( x2 - x1 ) * ( y1 - y3 ) - ( y2 - y1 ) * ( x1 - x3 ) ) / denom;
-	if( ua >= 0 && ua <= 1 && ub >= 0 && ub <= 1 )
-		return ua;
-	else
-		return 2.f;
-}
-inline float linelineintersectpos( const Float4 &lhs, const Float4 &rhs ) {
-	return linelineintersectpos( lhs.sx, lhs.sy, lhs.ex, lhs.ey, rhs.sx, rhs.sy, rhs.ex, rhs.ey );
-}
-inline bool linelineintersectend(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4) {
-    float llip = linelineintersectpos(x1, y1, x2, y2, x3, y3, x4, y4);
-    return llip != 2.f && llip > 1e-6 && llip < (1 - 1e-6);
-}
-inline float linelineintersectend( const Float4 &lhs, const Float4 &rhs ) {
-	return linelineintersectend( lhs.sx, lhs.sy, lhs.ex, lhs.ey, rhs.sx, rhs.sy, rhs.ex, rhs.ey );
-}
 
 inline int whichSide( const Float4 &f4, const Float2 &pta ) {
     float ax = f4.ex - f4.sx;

@@ -186,11 +186,22 @@ bool checkConsistent(const map<Coord2, DualLink> &vertx) {
                 do {
                     live++;
                     Coord2 next = getLink(vertx, now).links[i][1];
-                    CHECK(getLink(vertx, next).live[i]);
-                    CHECK(getLink(vertx, next).links[i][0] == now);
+                    if(!getLink(vertx, next).live[i]) {
+                        dprintf("Next link isn't marked as live! %d, %f, %f\n", i, itr->first.x.toFloat(), itr->first.y.toFloat());
+                        return false;
+                    }
+                    if(getLink(vertx, next).links[i][0] != now) {
+                        dprintf("Next link doesn't return to proper place! %d, %f, %f vs %f, %f\n",
+                                i, itr->first.x.toFloat(), itr->first.y.toFloat(),
+                                getLink(vertx, next).links[i][0].y.toFloat(), getLink(vertx, next).links[i][0].y.toFloat());
+                        return false;
+                    }
                     now = next;
                 } while(now != start);
-                CHECK(live == seen);
+                if(live != seen) {
+                    dprintf("Live and seen don't match up, %d has %d vs %d\n", i, live, seen);
+                    return false;
+                }
                 break;
             }
         }
@@ -235,6 +246,14 @@ public:
 };
 
 vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Coord2> &rhs) {
+    #if 0       // Pre-split debugging
+    {
+        vector<vector<Coord2> > rv;
+        rv.push_back(lhs);
+        rv.push_back(rhs);
+        return rv;
+    }
+    #endif
     GetDifferenceHandler CrashHandler(lhs, rhs);
     CHECK(!pathReversed(lhs));
     CHECK(!pathReversed(rhs));
@@ -308,6 +327,10 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
                 if(itr->second.links[p][k] < itr->first)
                     continue;
                 for(int i = 0; i < links.size(); i++) {
+                    if(links[i].start == itr->first || links[i].start == itr->second.links[p][k] ||
+                       links[i].end == itr->first || links[i].end == itr->second.links[p][k]) {
+                        continue;
+                    }
                     Coord ofs = linelineintersectpos(Coord4(links[i].start, links[i].end), Coord4(itr->first, itr->second.links[p][k]));
                     if(ofs != 2) {
                         // These two lines intersect.
@@ -341,7 +364,7 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
                         lines.links[0][1] = links[i].end;
                         lines.links[1][0] = itr->first;
                         lines.links[1][1] = itr->second.links[p][k];
-                        bool junctadded[2] = {false, false};
+                        int junctadded[2] = {0, 0};
                         CHECK(vertx[junct].live[0] == false);
                         CHECK(vertx[junct].live[1] == false);
                         for(int iline = 0; iline < 2; iline++) {
@@ -349,9 +372,10 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
                                 for(int curve = 0; curve < 2; curve++) {
                                     for(int boe = 0; boe < 2; boe++) {
                                         if(vertx[lines.links[iline][inode]].links[curve][boe] == lines.links[iline][!inode]) {
-                                            CHECK(vertx[junct].live[curve] == false || junctadded[curve] == true);
+                                            CHECK(vertx[junct].live[curve] == false || junctadded[curve] == 1);
+                                            CHECK(junctadded[curve] == 0 || junctadded[curve] == 1);
                                             vertx[junct].live[curve] = true;
-                                            junctadded[curve] = true;
+                                            junctadded[curve]++;
                                             vertx[lines.links[iline][inode]].links[curve][boe] = junct;
                                             vertx[junct].links[curve][!boe] = lines.links[iline][inode];
                                         }
@@ -359,6 +383,8 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
                                 }
                             }
                         }
+                        for(int k = 0; k < 2; k++)
+                            CHECK(junctadded[k] == 0 || junctadded[k] == 2);
                         CHECK(checkConsistent(vertx));
                         
                         links[i].end = junct;

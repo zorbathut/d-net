@@ -1,3 +1,4 @@
+- Templatize Coord/Float properly
 - Make vector<Coord2> into Path
 - fitInside to Float2, float
 - Post-death bombardment :)

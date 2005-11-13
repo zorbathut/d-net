@@ -154,22 +154,16 @@ void InterfaceMain::render() const {
     #if 0   // Code used for checking the validity of getDifference :)
     {
         
-        string lhs[18] = {
-            "00000038b5b90358", "ffffffd000000000",
-            "0000004000000000", "ffffffd000000000",
-            "0000004000000000", "ffffffca78b9c416",
-            "0000003fdd5bb20a", "ffffffca9b5e120a",
-            "0000003ef97322ba", "ffffffc9b77582ba",
-            "0000003cf97322b8", "ffffffcbb77582ba",
-            "0000003c566473f4", "ffffffcb1466d3f6",
-            "0000003b5a892245", "ffffffcc104225a4",
-            "0000003c00000000", "ffffffccb5b9035f",
+        string lhs[6] = {
+            "ffffffb000000000", "ffffffe400000000",
+            "ffffffb800000000", "ffffffdc00000000",
+            "ffffffac00000000", "ffffffe000000000",
         };
         string rhs[8] = {
-            "00000040766f6486", "ffffffcb3471c488",
-            "0000003c766f6486", "ffffffc73471c488",
-            "00000038766f6486", "ffffffcb3471c488",
-            "0000003c766f6486", "ffffffcf3471c488",
+            "ffffffb7ea909d28", "ffffffe0156f62d8",
+            "ffffffb3ea909d28", "ffffffdc156f62d8",
+            "ffffffafea909d28", "ffffffe0156f62d8",
+            "ffffffb3ea909d28", "ffffffe4156f62d8",
         };
         
         vector<Coord2> diff[2];
@@ -202,11 +196,12 @@ void InterfaceMain::render() const {
                 drawCircle(res[i][j].toFloat(), 1, 0.1);
         }
         
+        /*
         setColor(1.0, 1.0, 1.0);
         drawCircle(diff[0][3].toFloat() * fin.second + Float2(fin.first.first, fin.first.second), 2.0, 0.1);
         
         dprintf("%d\n", whichSide(Coord4(diff[1][1], diff[1][0]), diff[0][3]));
-        dprintf("%d\n", whichSide(Coord4(diff[1][1], diff[1][0]), diff[0][2]));
+        dprintf("%d\n", whichSide(Coord4(diff[1][1], diff[1][0]), diff[0][2]));*/
 
         //CHECK(0);
     }
