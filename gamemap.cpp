@@ -3,6 +3,7 @@
 
 #include "gfx.h"
 #include "args.h"
+#include "rng.h"
 
 DECLARE_bool(debugGraphics);
 
@@ -60,8 +61,17 @@ Coord4 Gamemap::getBounds() const {
 void Gamemap::removeWalls(Coord2 center, float radius) {
     vector<vector<Coord2> > oat;
     vector<Coord2> inters;
-    for(int i = 0; i < 4; i++)
-        inters.push_back(center + makeAngle(i * COORDPI / 2) * Coord(radius));
+    {
+        vector<float> rv;
+        int vct = int(frand() * 3) + 3;
+        float ofs = frand() * 2 * PI / vct;
+        float maxofs = 2 * PI / vct / 2;
+        for(int i = 0; i < vct; i++) {
+            rv.push_back(i * 2 * PI / vct + ofs + powerRand(2) * maxofs);
+        }
+        for(int i = 0; i < rv.size(); i++)
+            inters.push_back(center + makeAngle(Coord(rv[i])) * Coord(radius));
+    }
     CHECK(!pathReversed(inters));
     for(int i = 0; i < paths.size(); i++) {
         if(pathReversed(paths[i])) {

@@ -508,10 +508,11 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
                     continue;
                 vector<Coord2> tpath;
                 pair<bool, Coord2> now(false, *itr);
-                dprintf("Seeding at %f, %f\n", now.second.x.toFloat(), now.second.y.toFloat());
+                //dprintf("Seeding at %f, %f\n", now.second.x.toFloat(), now.second.y.toFloat());
                 while(!seen.count(now)) {
                     seen.insert(now);
                     tpath.push_back(now.second);
+                    /*
                     dprintf("  %f, %f, %d:\n", now.second.x.toFloat(), now.second.y.toFloat(), now.first);
                     for(int i = 0; i < 2; i++) {
                         if(vertx[now.second].live[i]) {
@@ -521,7 +522,7 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
                         } else {
                             dprintf("    NULL");
                         }
-                    }
+                    }*/
                     if(!now.first) {
                         // came in off a lhs path - switch to rhs if there is one, and if it doesn't immediately leave the valid area
                         if(vertx[now.second].live[1] && inPath((now.second + vertx[now.second].links[1][0]) / 2, lhs)) {
