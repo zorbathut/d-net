@@ -154,20 +154,30 @@ void InterfaceMain::render() const {
     #if 0   // Code used for checking the validity of getDifference :)
     {
         
-        string lhs[12] = {
-            "00000004bcda8e21", "ffffffdf0bf0ae16",
-            "00000006e7a07cc3", "ffffffde2b639cbe",
-            "0000000606afc975", "ffffffdf0c54500c",
-            "00000005e847c318", "ffffffdeedec49ab",
-            "00000005987f2f14", "ffffffdf3db4ddaf",
-            "000000050a77fe76", "ffffffdf598e1e6b",
+        string lhs[30] = {
+            "ffffffcc00000000", "ffffffc000000000",
+            "ffffffd000000000", "ffffffbc00000000",
+            "ffffffd400000000", "ffffffc000000000",
+            "ffffffd400000000", "ffffffd000000000",
+            "ffffffd800000000", "ffffffd400000000",
+            "ffffffdf3a854a5f", "ffffffd400000000",
+            "ffffffdbd45f8ffa", "ffffffd76625ba68",
+            "ffffffdfd45f8ffa", "ffffffdb6625ba68",
+            "ffffffe1c1b47362", "ffffffd978d0d700",
+            "ffffffe448e39c5a", "ffffffdc00000000",
+            "ffffffd800000000", "ffffffdc00000000",
+            "ffffffd400000000", "ffffffe000000000",
+            "ffffffd400000000", "fffffff000000000",
+            "ffffffd000000000", "fffffff400000000",
+            "ffffffcc00000000", "fffffff000000000",
         };
         string rhs[8] = {
-            "0000000c0c8b8851", "ffffffe1067762b6",
-            "000000080c8b8851", "ffffffe5067762b6",
-            "000000040c8b8851", "ffffffe1067762b6",
-            "000000080c8b8851", "ffffffdd067762b6",
+            "ffffffe622ecfe37", "ffffffd517984c2a",
+            "ffffffe222ecfe37", "ffffffd917984c2a",
+            "ffffffde22ecfe37", "ffffffd517984c2a",
+            "ffffffe222ecfe37", "ffffffd117984c2a",
         };
+
 
         vector<Coord2> diff[2];
         
@@ -201,10 +211,11 @@ void InterfaceMain::render() const {
                 for(int j = 0; j < res[i].size(); j++)
                     drawCircle(res[i][j].toFloat(), 1, 0.1);
             }
+            /*
             setColor(1.0, 1.0, 1.0);
             drawCircle(Float2(6.026120, -32.951839) * fin.second + Float2(fin.first.first, fin.first.second), 2.0, 0.1);
             drawCircle(Float2(6.904762, -33.830498) * fin.second + Float2(fin.first.first, fin.first.second), 2.0, 0.1);
-            drawCircle(Float2(6.904793, -33.830513) * fin.second + Float2(fin.first.first, fin.first.second), 2.0, 0.1);
+            drawCircle(Float2(6.904793, -33.830513) * fin.second + Float2(fin.first.first, fin.first.second), 2.0, 0.1);*/
         }
 
 

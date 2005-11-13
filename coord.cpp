@@ -310,6 +310,7 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
             if(itr->first == links[i].end)
                 continue;
             if(links[i].end != itr->first && colinear(Coord4(links[i].start, links[i].end), itr->first)) {
+                /*
                 dprintf("COLINEAR  %f %f  %f %f  %f %f\n",
                         links[i].start.x.toFloat(), links[i].start.y.toFloat(),
                         itr->first.x.toFloat(), itr->first.y.toFloat(),
@@ -318,15 +319,11 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
                         links[i].start.x.rawstr().c_str(), links[i].start.y.rawstr().c_str(),
                         itr->first.x.rawstr().c_str(), itr->first.y.rawstr().c_str(),
                         links[i].end.x.rawstr().c_str(), links[i].end.y.rawstr().c_str());
-                dprintf("Starl\n");
+                */
                 for(int j = 0; j < 2; j++) {
-                    dprintf("Jee\n");
                     if(vertx[links[i].start].live[j] && !vertx[itr->first].live[j]) {
-                        dprintf("Live\n");
                         for(int k = 0; k < 2; k++) {
-                            dprintf("Kay\n");
                             if(vertx[links[i].start].links[j][k] == links[i].end) {
-                                dprintf("Fend\n");
                                 CHECK(!vertx[itr->first].live[j]);
                                 CHECK(vertx[links[i].end].live[j]);
                                 vertx[itr->first].live[j] = true;
@@ -550,7 +547,8 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
                     }
                 }
                 //dprintf("Built path of %d vertices\n", tpath.size());
-                rv.push_back(tpath);
+                if(tpath.size() > 2)
+                    rv.push_back(tpath);
             }
         }
         return rv;
