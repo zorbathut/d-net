@@ -1,6 +1,6 @@
+- fitInside to Float2, float
 - Templatize Coord/Float properly
 - Make vector<Coord2> into Path
-- fitInside to Float2, float
 - Post-death bombardment :)
 - Finish intersection
 - Fix the shading

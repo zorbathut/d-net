@@ -154,16 +154,23 @@ void InterfaceMain::render() const {
     #if 0   // Code used for checking the validity of getDifference :)
     {
         
-        string lhs[6] = {
-            "ffffffb000000000", "ffffffe400000000",
-            "ffffffb800000000", "ffffffdc00000000",
-            "ffffffac00000000", "ffffffe000000000",
+        string lhs[20] = {
+            "ffffffa9e14441c0", "ffffffbc00000000",
+            "ffffffb800000000", "ffffffbc00000000",
+            "ffffffbc00000000", "ffffffc000000000",
+            "ffffffb800000000", "ffffffc400000000",
+            "ffffffb00d02e509", "ffffffc400000001",
+            "ffffffb159056335", "ffffffc2b3fd81d5",
+            "ffffffaebc0769b8", "ffffffc016ff8858",
+            "ffffffad59056335", "ffffffbeb3fd81d5",
+            "ffffffaabc0769b8", "ffffffbc16ff8858",
+            "ffffffaa5a2599e8", "ffffffbc78e15828",
         };
         string rhs[8] = {
-            "ffffffb7ea909d28", "ffffffe0156f62d8",
-            "ffffffb3ea909d28", "ffffffdc156f62d8",
-            "ffffffafea909d28", "ffffffe0156f62d8",
-            "ffffffb3ea909d28", "ffffffe4156f62d8",
+            "ffffffb7449db98a", "ffffffc400000000",
+            "ffffffb3449db98a", "ffffffc800000000",
+            "ffffffaf449db98a", "ffffffc400000000",
+            "ffffffb3449db98a", "ffffffc000000000",
         };
         
         vector<Coord2> diff[2];
@@ -178,22 +185,26 @@ void InterfaceMain::render() const {
 
         vector<vector<Coord2> > res = getDifference(diff[0], diff[1]);
         
-        Coord4 bbox = getBoundBox(res[0]);
-        addToBoundBox(&bbox, getBoundBox(res[1]));
-        pair<pair<float, float>, float> fin = fitInside(bbox.toFloat(), Float4(20, 10, 80, 90));
-        for(int i = 0; i < res.size(); i++) {
+        if(res.size()) {
+            Coord4 bbox = getBoundBox(res[0]);
+            for(int i = 0; i < res.size(); i++)
+                addToBoundBox(&bbox, getBoundBox(res[i]));
             
-            for(int j = 0; j < res[i].size(); j++) {
-                res[i][j] *= Coord(fin.second);
-                res[i][j] += Coord2(fin.first.first, fin.first.second);
+            pair<pair<float, float>, float> fin = fitInside(bbox.toFloat(), Float4(20, 10, 80, 90));
+            for(int i = 0; i < res.size(); i++) {
+                
+                for(int j = 0; j < res[i].size(); j++) {
+                    res[i][j] *= Coord(fin.second);
+                    res[i][j] += Coord2(fin.first.first, fin.first.second);
+                }
+                if(i == 0)
+                    setColor(1.0, 0.3, 0.3);
+                else
+                    setColor(0.3, 1.0, 0.3);
+                drawLinePath(res[i], 0.1, true);
+                for(int j = 0; j < res[i].size(); j++)
+                    drawCircle(res[i][j].toFloat(), 1, 0.1);
             }
-            if(i == 0)
-                setColor(1.0, 0.3, 0.3);
-            else
-                setColor(0.3, 1.0, 0.3);
-            drawLinePath(res[i], 0.1, true);
-            for(int j = 0; j < res[i].size(); j++)
-                drawCircle(res[i][j].toFloat(), 1, 0.1);
         }
         
         /*

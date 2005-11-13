@@ -246,6 +246,25 @@ public:
     }
 };
 
+void splice(map<Coord2, DualLink> *vertx, const DualLink &lines, const Coord2 &junct, int curve) {
+    int junctadded = 0;
+    for(int iline = 0; iline < 2; iline++) {
+        for(int inode = 0; inode < 2; inode++) {
+            for(int boe = 0; boe < 2; boe++) {
+                if((*vertx)[lines.links[iline][inode]].links[curve][boe] == lines.links[iline][!inode]) {
+                    CHECK((*vertx)[junct].live[curve] == false || junctadded == 1);
+                    CHECK(junctadded == 0 || junctadded == 1);
+                    (*vertx)[junct].live[curve] = true;
+                    junctadded++;
+                    (*vertx)[lines.links[iline][inode]].links[curve][boe] = junct;
+                    (*vertx)[junct].links[curve][!boe] = lines.links[iline][inode];
+                }
+            }
+        }
+    }
+    CHECK(junctadded == 0 || junctadded == 2);
+}
+
 vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Coord2> &rhs) {
     #if 0       // Pre-split debugging
     {
@@ -339,7 +358,42 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
                         // And since both of these lines must be in at least one poly, we know we must have two different nodes passing through here
                         // This is not actually true - there's an ugly edge case where they're, well, on the edge. But we'll deal with this later.
                         Coord2 junct = links[i].start + (links[i].end - links[i].start) * ofs;
-                        /*dprintf("Splitting at point %f, %f\n", junct.x.toFloat(), junct.y.toFloat());
+                        DualLink lines;
+                        lines.links[0][0] = links[i].start;
+                        lines.links[0][1] = links[i].end;
+                        lines.links[1][0] = itr->first;
+                        lines.links[1][1] = itr->second.links[p][k];
+                        
+                        {
+                            Coord2 closest;
+                            int usedlin = -1;
+                            Coord dist = 1000000000;
+                            for(int lin = 0; lin < 2; lin++) {
+                                for(int nod = 0; nod < 2; nod++) {
+                                    Coord2 diff = lines.links[lin][nod] - junct;
+                                    if(len(diff) < dist) {
+                                        dist = len(diff);
+                                        usedlin = lin;
+                                        closest = lines.links[lin][nod];
+                                    }
+                                }
+                            }
+                            if(dist < Coord(0.000001f)) {
+                                // We merge the splits into this point instead
+                                CHECK(usedlin != -1);
+                                CHECK(!vertx[closest].live[!usedlin]);
+                                CHECK(vertx[closest].live[usedlin]);
+                                
+                                splice(&vertx, lines, closest, !usedlin);
+                                
+                                links[i].end = closest;
+                                
+                                CHECK(checkConsistent(vertx));
+                                continue;
+                            }
+                        }
+
+                        dprintf("Splitting at point %f, %f\n", junct.x.toFloat(), junct.y.toFloat());
                         dprintf("%f,%f %f,%f vs %f,%f %f,%f",
                                 links[i].start.x.toFloat(), links[i].start.y.toFloat(), links[i].end.x.toFloat(), links[i].end.y.toFloat(),
                                 itr->first.x.toFloat(), itr->first.y.toFloat(),
@@ -347,7 +401,8 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
                         dprintf("%s,%s %s,%s vs %s,%s %s,%s",
                                 links[i].start.x.rawstr().c_str(), links[i].start.y.rawstr().c_str(), links[i].end.x.rawstr().c_str(), links[i].end.y.rawstr().c_str(),
                                 itr->first.x.rawstr().c_str(), itr->first.y.rawstr().c_str(),
-                                itr->second.links[p][k].x.rawstr().c_str(), itr->second.links[p][k].y.rawstr().c_str());*/
+                                itr->second.links[p][k].x.rawstr().c_str(), itr->second.links[p][k].y.rawstr().c_str());
+                        dprintf("%s %s\n", junct.x.rawstr().c_str(), junct.y.rawstr().c_str());
                         if(junct.x < itr->first.x) {
                             CHECK((itr->first.x - junct.x) < Coord(0.00001f));   // damn accuracy
                             junct.x = itr->first.x;
@@ -357,35 +412,16 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
                                 dprintf("EQUIVALENCY? wtf!");
                             dprintf("%f,%f vs %f,%f\n", itr->first.x.toFloat(), itr->first.y.toFloat(), junct.x.toFloat(), junct.y.toFloat());
                             dprintf("%s %s vs %s %s\n", itr->first.x.rawstr().c_str(), itr->first.y.rawstr().c_str(), junct.x.rawstr().c_str(), junct.y.rawstr().c_str());
+                            dprintf("%s\n", ofs.rawstr().c_str());
                             dprintf("%f\n", ofs.toFloat());
                             CHECK(0);
                         }
-                        DualLink lines;
-                        lines.links[0][0] = links[i].start;
-                        lines.links[0][1] = links[i].end;
-                        lines.links[1][0] = itr->first;
-                        lines.links[1][1] = itr->second.links[p][k];
-                        int junctadded[2] = {0, 0};
+
                         CHECK(vertx[junct].live[0] == false);
                         CHECK(vertx[junct].live[1] == false);
-                        for(int iline = 0; iline < 2; iline++) {
-                            for(int inode = 0; inode < 2; inode++) {
-                                for(int curve = 0; curve < 2; curve++) {
-                                    for(int boe = 0; boe < 2; boe++) {
-                                        if(vertx[lines.links[iline][inode]].links[curve][boe] == lines.links[iline][!inode]) {
-                                            CHECK(vertx[junct].live[curve] == false || junctadded[curve] == 1);
-                                            CHECK(junctadded[curve] == 0 || junctadded[curve] == 1);
-                                            vertx[junct].live[curve] = true;
-                                            junctadded[curve]++;
-                                            vertx[lines.links[iline][inode]].links[curve][boe] = junct;
-                                            vertx[junct].links[curve][!boe] = lines.links[iline][inode];
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        for(int k = 0; k < 2; k++)
-                            CHECK(junctadded[k] == 0 || junctadded[k] == 2);
+                        splice(&vertx, lines, junct, 0);
+                        splice(&vertx, lines, junct, 1);
+                        
                         CHECK(checkConsistent(vertx));
                         
                         links[i].end = junct;
