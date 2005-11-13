@@ -423,5 +423,7 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
 
 bool colinear(const Coord2 &a, const Coord2 &b, const Coord2 &c);
 
+Coord getArea(const vector<Coord2> &are);
+
 #endif
 

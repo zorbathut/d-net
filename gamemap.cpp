@@ -61,7 +61,7 @@ void Gamemap::removeWalls(Coord2 center, float radius) {
     vector<vector<Coord2> > oat;
     vector<Coord2> inters;
     for(int i = 0; i < 4; i++)
-        inters.push_back(center + makeAngle(-i * COORDPI / 2) * Coord(radius));
+        inters.push_back(center + makeAngle(i * COORDPI / 2) * Coord(radius));
     CHECK(!pathReversed(inters));
     for(int i = 0; i < paths.size(); i++) {
         if(pathReversed(paths[i])) {

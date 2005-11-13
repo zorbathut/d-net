@@ -82,10 +82,10 @@ int inPath(const Coord2 &point, const vector<Coord2> &path) {
         cpt = npt;
     }
     accum /= COORDPI * 2;
-    int solidval = -1;
+    int solidval = 1;
     if(accum < 0) {
         accum = -accum;
-        solidval = 1;
+        solidval = -1;
     }
     if(accum < Coord(0.5f)) {
         CHECK(accum < Coord(0.0001f));
@@ -142,11 +142,12 @@ int getPathRelation(const vector<Coord2> &lhs, const vector<Coord2> &rhs) {
         return PR_RHSENCLOSE;
     } else if(!lir && ril) {
         return PR_LHSENCLOSE;
-    } else if(lir && ril) {
-        // valid result, we *should* check their areas, but I'm currently lazy
-        CHECK(0);
+    } else if(lir && ril && getArea(lhs) < getArea(rhs)) {
+        return PR_RHSENCLOSE;
+    } else if(lir && ril && getArea(lhs) > getArea(rhs)) {
+        return PR_LHSENCLOSE;
     } else {
-        // not valid result :P
+        // dammit, don't send the same two paths! we deny!
         CHECK(0);
     }
 }
@@ -516,4 +517,15 @@ bool colinear(const Coord2 &a, const Coord2 &b, const Coord2 &c) {
     if((ab.y == 0) != (ac.y == 0))
         return false;
     return ab.x * ac.y == ac.x * ab.y;
+}
+
+Coord getArea(const vector<Coord2> &are) {
+    Coord totare = 0;
+    for(int i = 0; i < are.size(); i++) {
+        int j = (i + 1) % are.size();
+        totare += are[i].x * are[j].y - are[j].x * are[i].y;
+    }
+    totare /= 2;
+    dprintf("%f\n", totare.toFloat());
+    return totare;
 }
