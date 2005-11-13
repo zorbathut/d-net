@@ -154,23 +154,19 @@ void InterfaceMain::render() const {
     #if 0   // Code used for checking the validity of getDifference :)
     {
         
-        dprintf("Smel: %f\n", distanceFromLine(Coord4(62.064974f, -64.487867f, 64.000000f, -66.422890f), Coord2(63.530205f, -65.953099f)).toFloat());
-        
-        string lhs[16] = {
-            "0000003800000000", "ffffffc129b7335b",
-            "0000003835030773", "ffffffc15eba3acf",
-            "0000003b5dabbdec", "ffffffbe36118456",
-            "0000003c10a22084", "ffffffbd831b21b6",
-            "0000003e10a22088", "ffffffbf831b21ba",
-            "0000004000000000", "ffffffbd93bd4242",
-            "0000004000000000", "ffffffd000000000",
-            "0000003800000000", "ffffffd000000000",
+        string lhs[12] = {
+            "00000004bcda8e21", "ffffffdf0bf0ae16",
+            "00000006e7a07cc3", "ffffffde2b639cbe",
+            "0000000606afc975", "ffffffdf0c54500c",
+            "00000005e847c318", "ffffffdeedec49ab",
+            "00000005987f2f14", "ffffffdf3db4ddaf",
+            "000000050a77fe76", "ffffffdf598e1e6b",
         };
         string rhs[8] = {
-            "0000003f87bb865f", "ffffffbe0c01bbe1",
-            "0000003b87bb865f", "ffffffc20c01bbe1",
-            "0000003787bb865f", "ffffffbe0c01bbe1",
-            "0000003b87bb865f", "ffffffba0c01bbe1",
+            "0000000c0c8b8851", "ffffffe1067762b6",
+            "000000080c8b8851", "ffffffe5067762b6",
+            "000000040c8b8851", "ffffffe1067762b6",
+            "000000080c8b8851", "ffffffdd067762b6",
         };
 
         vector<Coord2> diff[2];
@@ -205,10 +201,14 @@ void InterfaceMain::render() const {
                 for(int j = 0; j < res[i].size(); j++)
                     drawCircle(res[i][j].toFloat(), 1, 0.1);
             }
+            setColor(1.0, 1.0, 1.0);
+            drawCircle(Float2(6.026120, -32.951839) * fin.second + Float2(fin.first.first, fin.first.second), 2.0, 0.1);
+            drawCircle(Float2(6.904762, -33.830498) * fin.second + Float2(fin.first.first, fin.first.second), 2.0, 0.1);
+            drawCircle(Float2(6.904793, -33.830513) * fin.second + Float2(fin.first.first, fin.first.second), 2.0, 0.1);
         }
-        
+
+
         /*
-        setColor(1.0, 1.0, 1.0);
         drawCircle(diff[0][3].toFloat() * fin.second + Float2(fin.first.first, fin.first.second), 2.0, 0.1);
         
         dprintf("%d\n", whichSide(Coord4(diff[1][1], diff[1][0]), diff[0][3]));

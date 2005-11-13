@@ -331,7 +331,7 @@ inline bool linelineintersect( Coord x1, Coord y1, Coord x2, Coord y2, Coord x3,
 	Coord ub = ( ( x2 - x1 ) * ( y1 - y3 ) - ( y2 - y1 ) * ( x1 - x3 ) ) / denom;
     //dprintf("%f\n", ub.toFloat());
     bool rv = (ua >= 0 && ua <= 1 && ub >= 0 && ub <= 1);
-    if(rv != linelineintersect(x1.toFloat(), y1.toFloat(), x2.toFloat(), y2.toFloat(), 
+    /*if(rv != linelineintersect(x1.toFloat(), y1.toFloat(), x2.toFloat(), y2.toFloat(), 
         x3.toFloat(), y3.toFloat(), x4.toFloat(), y4.toFloat())) {
             dprintf("%f,%f %f,%f vs %f,%f %f,%f\n",
                 x1.toFloat(), y1.toFloat(), x2.toFloat(), y2.toFloat(), 
@@ -359,7 +359,7 @@ inline bool linelineintersect( Coord x1, Coord y1, Coord x2, Coord y2, Coord x3,
             if(iua < 1e-6 && iub < 1e-6)
                 return rv;
             CHECK(0);
-    }
+    }*/
     return rv;
 }
 inline bool linelineintersect( const Coord4 &lhs, const Coord4 &rhs ) {

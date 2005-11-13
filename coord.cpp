@@ -6,6 +6,26 @@
 
 using namespace std;
 
+class GetDifferenceHandler {
+public:
+    
+    const vector<Coord2> &lhs;
+    const vector<Coord2> &rhs;
+    
+    GetDifferenceHandler(const vector<Coord2> &in_lhs, const vector<Coord2> &in_rhs) : lhs(in_lhs), rhs(in_rhs) { };
+    
+    void dsp(const vector<Coord2> &inp, string title) const {
+        dprintf("string %s[%d] = {", title.c_str(), inp.size() * 2);
+        for(int i = 0; i < inp.size(); i++)
+            dprintf("    \"%s\", \"%s\",", inp[i].x.rawstr().c_str(), inp[i].y.rawstr().c_str());
+        dprintf("};");
+    }
+    void operator()() const {
+        dsp(lhs, "lhs");
+        dsp(rhs, "rhs");
+    }
+};
+
 string Coord::rawstr() const {
     return StringPrintf("%08x%08x", (unsigned int)(d >> 32), (unsigned int)d);
 }
@@ -106,6 +126,7 @@ bool roughInPath(const Coord2 &point, const vector<Coord2> &path, int goal) {
 
 Coord2 getPointIn(const vector<Coord2> &path) {
     // TODO: find a point inside the polygon in a better fashion
+    GetDifferenceHandler CrashHandler(path, path);
     Coord2 pt;
     bool found = false;
     for(int j = 0; j < path.size() && !found; j++) {
@@ -226,26 +247,6 @@ void printState(const map<Coord2, DualLink> &vertx) {
     }
 }
 
-class GetDifferenceHandler {
-public:
-    
-    const vector<Coord2> &lhs;
-    const vector<Coord2> &rhs;
-    
-    GetDifferenceHandler(const vector<Coord2> &in_lhs, const vector<Coord2> &in_rhs) : lhs(in_lhs), rhs(in_rhs) { };
-    
-    void dsp(const vector<Coord2> &inp, string title) const {
-        dprintf("string %s[%d] = {", title.c_str(), inp.size() * 2);
-        for(int i = 0; i < inp.size(); i++)
-            dprintf("    \"%s\", \"%s\",", inp[i].x.rawstr().c_str(), inp[i].y.rawstr().c_str());
-        dprintf("};");
-    }
-    void operator()() const {
-        dsp(lhs, "lhs");
-        dsp(rhs, "rhs");
-    }
-};
-
 void splice(map<Coord2, DualLink> *vertx, const DualLink &lines, const Coord2 &junct, int curve) {
     int junctadded = 0;
     for(int iline = 0; iline < 2; iline++) {
@@ -308,15 +309,24 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
         for(int i = 0; i < links.size(); i++) {
             if(itr->first == links[i].end)
                 continue;
-            if(colinear(Coord4(links[i].start, links[i].end), itr->first)) {
+            if(links[i].end != itr->first && colinear(Coord4(links[i].start, links[i].end), itr->first)) {
                 dprintf("COLINEAR  %f %f  %f %f  %f %f\n",
                         links[i].start.x.toFloat(), links[i].start.y.toFloat(),
                         itr->first.x.toFloat(), itr->first.y.toFloat(),
                         links[i].end.x.toFloat(), links[i].end.y.toFloat());
+                dprintf("COLINEAR  %s %s  %s %s  %s %s\n",
+                        links[i].start.x.rawstr().c_str(), links[i].start.y.rawstr().c_str(),
+                        itr->first.x.rawstr().c_str(), itr->first.y.rawstr().c_str(),
+                        links[i].end.x.rawstr().c_str(), links[i].end.y.rawstr().c_str());
+                dprintf("Starl\n");
                 for(int j = 0; j < 2; j++) {
-                    if(vertx[links[i].start].live[j]) {
+                    dprintf("Jee\n");
+                    if(vertx[links[i].start].live[j] && !vertx[itr->first].live[j]) {
+                        dprintf("Live\n");
                         for(int k = 0; k < 2; k++) {
+                            dprintf("Kay\n");
                             if(vertx[links[i].start].links[j][k] == links[i].end) {
+                                dprintf("Fend\n");
                                 CHECK(!vertx[itr->first].live[j]);
                                 CHECK(vertx[links[i].end].live[j]);
                                 vertx[itr->first].live[j] = true;
@@ -549,7 +559,6 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
 
 bool colinear(const Coord4 &line, const Coord2 &pt) {
     Coord koord = distanceFromLine(line, pt);
-    dprintf("%f\n", koord.toFloat());
     return koord < Coord(0.00001f);
 }
 
