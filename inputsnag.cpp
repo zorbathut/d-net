@@ -241,6 +241,9 @@ bool controls_users() {
     return !infile && !FLAGS_aiCount;
 }
 
+bool controls_recordable() {
+    return FLAGS_readTarget == "";
+}
 void controls_shutdown() {
     for(int i = 0; i < joysticks.size(); i++)
         SDL_JoystickClose(joysticks[i]);

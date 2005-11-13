@@ -109,14 +109,10 @@ Coord2 getPointIn(const vector<Coord2> &path) {
     Coord2 pt;
     bool found = false;
     for(int j = 0; j < path.size() && !found; j++) {
-        for(int k = 0; k < 4 && !found; k++) {
-            const int dx[] = {0, 0, 1, -1};
-            const int dy[] = {1, -1, 0, 0};
-            Coord2 pospt = path[j] + Coord2(dx[k], dy[k]);
-            if(inPath(pospt, path)) {
-                pt = pospt;
-                found = true;
-            }
+        Coord2 pospt = (path[j] + path[(j + 1) % path.size()] + path[(j + 2) % path.size()]) / 3;
+        if(inPath(pospt, path)) {
+            pt = pospt;
+            found = true;
         }
     }
     CHECK(found);

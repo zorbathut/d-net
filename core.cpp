@@ -18,9 +18,9 @@ using namespace std;
 #include "rng.h"
 #include "inputsnag.h"
 
-DEFINE_string( writeTarget, "data/dump", "Prefix for file dump" );
+DEFINE_string(writeTarget, "data/dump", "Prefix for file dump");
 
-DEFINE_int( fastForwardTo, 0, "Fastforward rendering to this frame" );
+DEFINE_int(fastForwardTo, 0, "Fastforward rendering to this frame");
 
 DEFINE_bool(frameskip, true, "Enable or disable frameskipping");
 
@@ -52,7 +52,7 @@ void MainLoop() {
     
     FILE *outfile = NULL;
     
-    if(FLAGS_writeTarget != "") {
+    if(FLAGS_writeTarget != "" && controls_recordable()) {
         string fname = FLAGS_writeTarget;
         char timestampbuf[ 128 ];
         time_t ctmt = time(NULL);
