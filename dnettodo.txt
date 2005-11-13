@@ -1,3 +1,4 @@
+- Do damage to outside of level
 - fitInside to Float2, float
 - Templatize Coord/Float properly
 - Make vector<Coord2> into Path

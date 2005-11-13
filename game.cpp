@@ -387,7 +387,7 @@ void Projectile::impact(Coord2 pos, Tank *target, const vector<pair<float, Tank 
         gfxe->push_back(dbgf);
     }
     
-    if(projtype->warhead->wallremovalradius > 0) {
+    if(projtype->warhead->wallremovalradius > 0 && frand() < projtype->warhead->wallremovalchance) {
         gm->removeWalls(pos, projtype->warhead->wallremovalradius);
     }
     

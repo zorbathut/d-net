@@ -284,7 +284,10 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
             return vector<vector<Coord2> >(1, lhs);
         if(state == PR_RHSENCLOSE)
             return vector<vector<Coord2> >();
-        CHECK(state != PR_LHSENCLOSE);
+        if(state == PR_LHSENCLOSE) {
+            dprintf("LHS Enclose! intersection ignored");
+            return vector<vector<Coord2> >(1, lhs);
+        }
         CHECK(state == PR_INTERSECT);
     }
     map<Coord2, DualLink> vertx;

@@ -309,6 +309,7 @@ void parseItemFile(const string &fname) {
             warheadclasses[name].radiusdamage = 0;
             warheadclasses[name].radiusfalloff = -1;
             warheadclasses[name].wallremovalradius = 0;
+            warheadclasses[name].wallremovalchance = 1;
             
             if(chunk.kv.count("impactdamage"))
                 warheadclasses[name].impactdamage = atof(chunk.consume("impactdamage").c_str());
@@ -322,6 +323,9 @@ void parseItemFile(const string &fname) {
             
             if(chunk.kv.count("wallremovalradius"))
                 warheadclasses[name].wallremovalradius = atof(chunk.consume("wallremovalradius").c_str());
+            
+            if(chunk.kv.count("wallremovalchance"))
+                warheadclasses[name].wallremovalchance = atof(chunk.consume("wallremovalchance").c_str());
 
         } else {
             CHECK(0);

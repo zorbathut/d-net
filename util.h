@@ -164,7 +164,7 @@ void expandBoundBox(Float4 *bbox, float factor);
  * Fast sin/cos
  */
 
-#define SIN_TABLE_SIZE 180
+#define SIN_TABLE_SIZE 360
 extern float sin_table[ SIN_TABLE_SIZE + 1 ];
 
 inline float dsin( float in ) {
