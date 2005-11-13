@@ -239,11 +239,11 @@ inline float linelineintersectend( const Float4 &lhs, const Float4 &rhs ) {
 	return linelineintersectend( lhs.sx, lhs.sy, lhs.ex, lhs.ey, rhs.sx, rhs.sy, rhs.ex, rhs.ey );
 }
 
-inline int whichSide( const Float4 &f4, const pair< float, float > &pta ) {
+inline int whichSide( const Float4 &f4, const Float2 &pta ) {
     float ax = f4.ex - f4.sx;
     float ay = f4.ey - f4.sy;
-    float bx = pta.first - f4.sx;
-    float by = pta.second - f4.sy;
+    float bx = pta.x - f4.sx;
+    float by = pta.y - f4.sy;
     swap(ax, ay);
     ax *= -1;
     float rv = ax * bx + ay * by;

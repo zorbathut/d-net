@@ -58,6 +58,14 @@ void expandBoundBox(Coord4 *bbox, Coord factor) {
     bbox->ey = yc + y;
 }
 
+Coord4 getBoundBox(const vector<Coord2> &path) {
+    Coord4 bbox = startCBoundBox();
+    for(int i = 0; i < path.size(); i++)
+        addToBoundBox(&bbox, path[i]);
+    CHECK(bbox.isNormalized());
+    return bbox;
+}
+
 int inPath(const Coord2 &point, const vector<Coord2> &path) {
     CHECK(path.size());
     Coord accum = 0;
@@ -87,6 +95,14 @@ int inPath(const Coord2 &point, const vector<Coord2> &path) {
         return solidval;
     }
 };
+bool roughInPath(const Coord2 &point, const vector<Coord2> &path, int goal) {
+    int dx[] = {0, 0, 0, 1, -1, 1, 1, -1, -1};
+    int dy[] = {0, 1, -1, 0, 0, 1, -1, 1, -1};
+    for(int i = 0; i < 9; i++)
+        if((bool)inPath(point + Coord2(dx[i], dy[i]) / 65536, path) == goal)
+            return true;
+    return false;
+}
 
 Coord2 getPointIn(const vector<Coord2> &path) {
     // TODO: find a point inside the polygon in a better fashion
@@ -202,7 +218,39 @@ void printState(const map<Coord2, DualLink> &vertx) {
     }
 }
 
+class GetDifferenceHandler {
+public:
+    
+    const vector<Coord2> &lhs;
+    const vector<Coord2> &rhs;
+    
+    GetDifferenceHandler(const vector<Coord2> &in_lhs, const vector<Coord2> &in_rhs) : lhs(in_lhs), rhs(in_rhs) { };
+    
+    void dsp(const vector<Coord2> &inp, string title) const {
+        dprintf("string %s[%d] = {", title.c_str(), inp.size() * 2);
+        for(int i = 0; i < inp.size(); i++)
+            dprintf("    \"%s\", \"%s\",", inp[i].x.rawstr().c_str(), inp[i].y.rawstr().c_str());
+        dprintf("};");
+    }
+    void operator()() const {
+        dsp(lhs, "lhs");
+        dsp(rhs, "rhs");
+    }
+};
+
 vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Coord2> &rhs) {
+    GetDifferenceHandler CrashHandler(lhs, rhs);
+    CHECK(!pathReversed(lhs));
+    CHECK(!pathReversed(rhs));
+    {
+        int state = getPathRelation(lhs, rhs);
+        if(state == PR_SEPARATE)
+            return vector<vector<Coord2> >(1, lhs);
+        if(state == PR_RHSENCLOSE)
+            return vector<vector<Coord2> >();
+        CHECK(state != PR_LHSENCLOSE);
+        CHECK(state == PR_INTERSECT);
+    }
     map<Coord2, DualLink> vertx;
     const vector<Coord2> tv[2] = {lhs, rhs};
     //dprintf("Early parsing\n");
@@ -226,10 +274,10 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
             if(itr->first == links[i].end)
                 continue;
             if(colinear(links[i].start, itr->first, links[i].end)) {
-                //dprintf("COLINEAR  %f %f  %f %f  %f %f\n",
-                        //links[i].start.x.toFloat(), links[i].start.y.toFloat(),
-                        //itr->first.x.toFloat(), itr->first.y.toFloat(),
-                        //links[i].end.x.toFloat(), links[i].end.y.toFloat());
+                dprintf("COLINEAR  %f %f  %f %f  %f %f\n",
+                        links[i].start.x.toFloat(), links[i].start.y.toFloat(),
+                        itr->first.x.toFloat(), itr->first.y.toFloat(),
+                        links[i].end.x.toFloat(), links[i].end.y.toFloat());
                 for(int j = 0; j < 2; j++) {
                     if(vertx[links[i].start].live[j]) {
                         for(int k = 0; k < 2; k++) {
@@ -343,7 +391,7 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
     //dprintf("Done\n");
     //printState(vertx);
     CHECK(checkConsistent(vertx));
-    /*
+    #if 0   // This code intercepts the "split" version and returns it as the results - good for debugging
     {
         vector<vector<Coord2> > rv;
         for(int i = 0; i < 2; i++) {
@@ -365,7 +413,8 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
             rv.push_back(trv);
         }
         return rv;
-    }*/
+    }
+    #endif
     {
         vector<vector<Coord2> > rv;
         {
@@ -376,6 +425,13 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
                     //dprintf("seeding %f, %f\n", itr->second.links[0][1].x.toFloat(), itr->second.links[0][1].y.toFloat());
                     //dprintf("from %f, %f\n", itr->first.x.toFloat(), itr->first.y.toFloat());
                     //dprintf("%f, %f link compare to %f, %f\n", itr->second.links[0][1].x.toFloat(), itr->second.links[0][1].y.toFloat(), itr->second.links[1][1].x.toFloat(), itr->second.links[1][1].y.toFloat());
+                    //{
+                        //if(!vertx[itr->second.links[0][1]].live[1]) {
+                            //Coord2 tp = (itr->second.links[0][1] + vertx[itr->second.links[0][1]].links[0][1]) / 2;
+                            //dprintf("%s, %s\n", tp.x.rawstr().c_str(), tp.y.rawstr().c_str());
+                            //CHECK(roughInPath(tp, rhs, false));
+                        //}
+                    //}
                     seeds.insert(itr->second.links[0][1]);
                 }
             }
@@ -384,9 +440,20 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
                     continue;
                 vector<Coord2> tpath;
                 pair<bool, Coord2> now(false, *itr);
+                //dprintf("Seeding at %f, %f\n", now.second.x.toFloat(), now.second.y.toFloat());
                 while(!seen.count(now)) {
                     seen.insert(now);
                     tpath.push_back(now.second);
+                    //dprintf("  %f, %f:\n", now.second.x.toFloat(), now.second.y.toFloat());
+                    //for(int i = 0; i < 2; i++) {
+                        //if(vertx[now.second].live[i]) {
+                            //dprintf("    %f, %f --> this --> %f, %f",
+                                        //vertx[now.second].links[i][0].x.toFloat(), vertx[now.second].links[i][0].y.toFloat(),
+                                        //vertx[now.second].links[i][1].x.toFloat(), vertx[now.second].links[i][1].y.toFloat());
+                        //} else {
+                            //dprintf("    NULL");
+                        //}
+                    //}
                     if(!now.first) {
                         // came in off a lhs path - switch to rhs if there is one, and if it doesn't immediately leave the valid area
                         if(vertx[now.second].live[1] && inPath((now.second + vertx[now.second].links[1][0]) / 2, lhs)) {
@@ -394,8 +461,8 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
                             now = make_pair(true, vertx[now.second].links[1][0]);
                         } else {
                             CHECK(vertx[now.second].live[0]);
-                            if(vertx[now.second].links[0][1] != vertx[now.second].links[1][0]) // parallel links cause some problems
-                                CHECK(!inPath((now.second + vertx[now.second].links[0][1]) / 2, rhs));
+                            if(!vertx[now.second].live[1] || vertx[now.second].links[0][1] != vertx[now.second].links[1][0]) // parallel links cause some problems
+                                CHECK(roughInPath((now.second + vertx[now.second].links[0][1]) / 2, rhs, false));
                             now = make_pair(false, vertx[now.second].links[0][1]);
                         }
                     } else {
@@ -405,8 +472,8 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
                             now = make_pair(false, vertx[now.second].links[0][1]);
                         } else {
                             CHECK(vertx[now.second].live[1]);
-                            if(vertx[now.second].links[0][1] != vertx[now.second].links[1][0]) // parallel links cause some problems
-                                CHECK(inPath((now.second + vertx[now.second].links[1][0]) / 2, lhs));
+                            if(!vertx[now.second].live[0] || vertx[now.second].links[0][1] != vertx[now.second].links[1][0]) // parallel links cause some problems
+                                CHECK(roughInPath((now.second + vertx[now.second].links[1][0]) / 2, lhs, true));
                             now = make_pair(true, vertx[now.second].links[1][0]);
                         }
                     }

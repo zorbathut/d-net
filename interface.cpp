@@ -151,6 +151,67 @@ void InterfaceMain::ai(const vector<Ai *> &ai) const {
 
 void InterfaceMain::render() const {
     
+    #if 0   // Code used for checking the validity of getDifference :)
+    {
+        
+        string lhs[18] = {
+            "00000038b5b90358", "ffffffd000000000",
+            "0000004000000000", "ffffffd000000000",
+            "0000004000000000", "ffffffca78b9c416",
+            "0000003fdd5bb20a", "ffffffca9b5e120a",
+            "0000003ef97322ba", "ffffffc9b77582ba",
+            "0000003cf97322b8", "ffffffcbb77582ba",
+            "0000003c566473f4", "ffffffcb1466d3f6",
+            "0000003b5a892245", "ffffffcc104225a4",
+            "0000003c00000000", "ffffffccb5b9035f",
+        };
+        string rhs[8] = {
+            "00000040766f6486", "ffffffcb3471c488",
+            "0000003c766f6486", "ffffffc73471c488",
+            "00000038766f6486", "ffffffcb3471c488",
+            "0000003c766f6486", "ffffffcf3471c488",
+        };
+        
+        vector<Coord2> diff[2];
+        
+        for(int i = 0; i < sizeof(lhs) / sizeof(*lhs); i += 2)
+            diff[0].push_back(Coord2(coordExplicit(lhs[i]), coordExplicit(lhs[i + 1])));
+        for(int i = 0; i < sizeof(rhs) / sizeof(*rhs); i += 2)
+            diff[1].push_back(Coord2(coordExplicit(rhs[i]), coordExplicit(rhs[i + 1])));
+        
+        //dprintf("%d vs %d\n", whichSide(Coord4(diff[1][3], diff[1][2]), diff[0][
+
+
+        vector<vector<Coord2> > res = getDifference(diff[0], diff[1]);
+        
+        Coord4 bbox = getBoundBox(res[0]);
+        addToBoundBox(&bbox, getBoundBox(res[1]));
+        pair<pair<float, float>, float> fin = fitInside(bbox.toFloat(), Float4(20, 10, 80, 90));
+        for(int i = 0; i < res.size(); i++) {
+            
+            for(int j = 0; j < res[i].size(); j++) {
+                res[i][j] *= Coord(fin.second);
+                res[i][j] += Coord2(fin.first.first, fin.first.second);
+            }
+            if(i == 0)
+                setColor(1.0, 0.3, 0.3);
+            else
+                setColor(0.3, 1.0, 0.3);
+            drawLinePath(res[i], 0.1, true);
+            for(int j = 0; j < res[i].size(); j++)
+                drawCircle(res[i][j].toFloat(), 1, 0.1);
+        }
+        
+        setColor(1.0, 1.0, 1.0);
+        drawCircle(diff[0][3].toFloat() * fin.second + Float2(fin.first.first, fin.first.second), 2.0, 0.1);
+        
+        dprintf("%d\n", whichSide(Coord4(diff[1][1], diff[1][0]), diff[0][3]));
+        dprintf("%d\n", whichSide(Coord4(diff[1][1], diff[1][0]), diff[0][2]));
+
+        //CHECK(0);
+    }
+    #endif
+    
     if(interface_mode == IFM_S_MAINMENU) {
         mainmenu.render();
         setColor(0.5, 0.5, 0.5);

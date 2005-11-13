@@ -50,6 +50,21 @@ inline Coord coordExplicit(long long lhs) {
     coord.d = lhs;
     return coord;
 }
+inline Coord coordExplicit(const string &lhs) {
+    CHECK(lhs.size() == 16);
+    for(int i = 0; i < lhs.size(); i++)
+        CHECK(isdigit(lhs[i]) || (lhs[i] >= 'a' && lhs[i] <= 'f'));
+    long long dd = 0;
+    for(int i = 0; i < 16; i++) {
+        dd *= 16;
+        if(isdigit(lhs[i]))
+            dd += lhs[i] - '0';
+        else
+            dd += lhs[i] - 'a' + 10;
+    }
+    CHECK(coordExplicit(dd).rawstr() == lhs);
+    return coordExplicit(dd);
+}
 
 inline Coord &operator+=(Coord &lhs, const Coord &rhs) {
     lhs.d += rhs.d;
@@ -354,6 +369,19 @@ inline Coord linelineintersectpos( const Coord4 &lhs, const Coord4 &rhs ) {
 	return linelineintersectpos( lhs.sx, lhs.sy, lhs.ex, lhs.ey, rhs.sx, rhs.sy, rhs.ex, rhs.ey );
 }
 
+inline int whichSide( const Coord4 &f4, const Coord2 &pta ) {
+    Coord ax = f4.ex - f4.sx;
+    Coord ay = f4.ey - f4.sy;
+    Coord bx = pta.x - f4.sx;
+    Coord by = pta.y - f4.sy;
+    swap(ax, ay);
+    ax *= -1;
+    Coord rv = ax * bx + ay * by;
+    if( rv < 0 ) return -1;
+    else if( rv > 0 ) return 1;
+    else return 0;
+}
+
 inline Coord2 lerp( const Coord2 &start, const Coord2 &delta, Coord time ) {
     return Coord2( start.x + delta.x * time, start.y + delta.y * time );
 }
@@ -377,8 +405,11 @@ void addToBoundBox(Coord4 *bbox, const Coord4 &rect);
 
 void expandBoundBox(Coord4 *bbox, Coord factor);
 
+Coord4 getBoundBox(const vector<Coord2> &path);
+
 // returns -1 if the point is actually inside the path, but the path is reversed
 int inPath(const Coord2 &point, const vector<Coord2> &path);
+bool roughInPath(const Coord2 &point, const vector<Coord2> &path, int goal);
 
 Coord2 getPointIn(const vector<Coord2> &path);
 

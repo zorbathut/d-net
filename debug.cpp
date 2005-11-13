@@ -19,6 +19,8 @@ using namespace std;
 
 int frameNumber = -1;
 
+void CrashHandler() { };
+
 void crash() {
     *(int*)0 = 0;
     while(1);
