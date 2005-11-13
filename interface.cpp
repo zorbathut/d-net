@@ -154,21 +154,23 @@ void InterfaceMain::render() const {
     #if 0   // Code used for checking the validity of getDifference :)
     {
         
+        dprintf("Smel: %f\n", distanceFromLine(Coord4(62.064974f, -64.487867f, 64.000000f, -66.422890f), Coord2(63.530205f, -65.953099f)).toFloat());
+        
         string lhs[16] = {
-            "ffffff9da5c3cb76", "0000001253ccf40d",
-            "ffffff9dfa7ab49a", "00000011ff160ae3",
-            "ffffff9ffa7ab4a2", "00000013ff160aeb",
-            "ffffffa071011632", "00000013888fa95b",
-            "ffffffa271011632", "00000015888fa95b",
-            "ffffffa47101162d", "00000013888fa95e",
-            "ffffffa5220555ae", "000000143993e8e0",
-            "ffffff9f40000000", "0000001a80000000",
+            "0000003800000000", "ffffffc129b7335b",
+            "0000003835030773", "ffffffc15eba3acf",
+            "0000003b5dabbdec", "ffffffbe36118456",
+            "0000003c10a22084", "ffffffbd831b21b6",
+            "0000003e10a22088", "ffffffbf831b21ba",
+            "0000004000000000", "ffffffbd93bd4242",
+            "0000004000000000", "ffffffd000000000",
+            "0000003800000000", "ffffffd000000000",
         };
         string rhs[8] = {
-            "ffffffa87101419b", "00000013888efb3b",
-            "ffffffa47101419b", "00000017888efb3b",
-            "ffffffa07101419b", "00000013888efb3b",
-            "ffffffa47101419b", "0000000f888efb3b",
+            "0000003f87bb865f", "ffffffbe0c01bbe1",
+            "0000003b87bb865f", "ffffffc20c01bbe1",
+            "0000003787bb865f", "ffffffbe0c01bbe1",
+            "0000003b87bb865f", "ffffffba0c01bbe1",
         };
 
         vector<Coord2> diff[2];

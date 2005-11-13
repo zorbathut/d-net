@@ -295,6 +295,7 @@ public:
     Coord4(const Coord &isx, const Coord &isy, const Coord &iex, const Coord &iey) : sx(isx), sy(isy), ex(iex), ey(iey) { };
     Coord4(const Coord2 &s, const Coord2 &e) : sx(s.x), sy(s.y), ex(e.x), ey(e.y) { };
     Coord4(const Coord4 &rhs) : sx(rhs.sx), sy(rhs.sy), ex(rhs.ex), ey(rhs.ey) { };
+    Coord4(float isx, float isy, float iex, float iey) : sx(isx), sy(isy), ex(iex), ey(iey) { };
 };
 
 inline Coord max(Coord lhs, int rhs) {
@@ -421,7 +422,8 @@ int getPathRelation(const vector<Coord2> &lhs, const vector<Coord2> &rhs);
 
 vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Coord2> &rhs);
 
-bool colinear(const Coord2 &a, const Coord2 &b, const Coord2 &c);
+Coord distanceFromLine(const Coord4 &line, const Coord2 &pt);
+bool colinear(const Coord4 &line, const Coord2 &pt);
 
 Coord getArea(const vector<Coord2> &are);
 

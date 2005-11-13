@@ -308,7 +308,7 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
         for(int i = 0; i < links.size(); i++) {
             if(itr->first == links[i].end)
                 continue;
-            if(colinear(links[i].start, itr->first, links[i].end)) {
+            if(colinear(Coord4(links[i].start, links[i].end), itr->first)) {
                 dprintf("COLINEAR  %f %f  %f %f  %f %f\n",
                         links[i].start.x.toFloat(), links[i].start.y.toFloat(),
                         itr->first.x.toFloat(), itr->first.y.toFloat(),
@@ -501,20 +501,20 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
                     continue;
                 vector<Coord2> tpath;
                 pair<bool, Coord2> now(false, *itr);
-                //dprintf("Seeding at %f, %f\n", now.second.x.toFloat(), now.second.y.toFloat());
+                dprintf("Seeding at %f, %f\n", now.second.x.toFloat(), now.second.y.toFloat());
                 while(!seen.count(now)) {
                     seen.insert(now);
                     tpath.push_back(now.second);
-                    //dprintf("  %f, %f:\n", now.second.x.toFloat(), now.second.y.toFloat());
-                    //for(int i = 0; i < 2; i++) {
-                        //if(vertx[now.second].live[i]) {
-                            //dprintf("    %f, %f --> this --> %f, %f",
-                                        //vertx[now.second].links[i][0].x.toFloat(), vertx[now.second].links[i][0].y.toFloat(),
-                                        //vertx[now.second].links[i][1].x.toFloat(), vertx[now.second].links[i][1].y.toFloat());
-                        //} else {
-                            //dprintf("    NULL");
-                        //}
-                    //}
+                    dprintf("  %f, %f, %d:\n", now.second.x.toFloat(), now.second.y.toFloat(), now.first);
+                    for(int i = 0; i < 2; i++) {
+                        if(vertx[now.second].live[i]) {
+                            dprintf("    %f, %f --> this --> %f, %f",
+                                        vertx[now.second].links[i][0].x.toFloat(), vertx[now.second].links[i][0].y.toFloat(),
+                                        vertx[now.second].links[i][1].x.toFloat(), vertx[now.second].links[i][1].y.toFloat());
+                        } else {
+                            dprintf("    NULL");
+                        }
+                    }
                     if(!now.first) {
                         // came in off a lhs path - switch to rhs if there is one, and if it doesn't immediately leave the valid area
                         if(vertx[now.second].live[1] && inPath((now.second + vertx[now.second].links[1][0]) / 2, lhs)) {
@@ -547,14 +547,18 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
     }
 }
 
-bool colinear(const Coord2 &a, const Coord2 &b, const Coord2 &c) {
-    Coord2 ab = b - a;
-    Coord2 ac = c - a;
-    if((ab.x == 0) != (ac.x == 0))
-        return false;
-    if((ab.y == 0) != (ac.y == 0))
-        return false;
-    return ab.x * ac.y == ac.x * ab.y;
+bool colinear(const Coord4 &line, const Coord2 &pt) {
+    Coord koord = distanceFromLine(line, pt);
+    dprintf("%f\n", koord.toFloat());
+    return koord < Coord(0.00001f);
+}
+
+Coord distanceFromLine(const Coord4 &line, const Coord2 &pt) {
+    Coord u = ((pt.x - line.sx) * (line.ex - line.sx) + (pt.y - line.sy) * (line.ey - line.sy)) / ((line.ex - line.sx) * (line.ex - line.sx) + (line.ey - line.sy) * (line.ey - line.sy));
+    if(u < 0 || u > 1)
+        return min(len(pt - Coord2(line.sx, line.sy)), len(pt - Coord2(line.ex, line.ey)));
+    Coord2 ipt = Coord2(line.sx, line.sy) + Coord2(line.ex - line.sx, line.ey - line.sy) * u;
+    return len(ipt - pt);
 }
 
 Coord getArea(const vector<Coord2> &are) {
