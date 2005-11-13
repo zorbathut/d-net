@@ -826,9 +826,11 @@ vector<pair<float, Tank *> > Game::genTankDistance(const Coord2 &center) {
         if(players[i].live) {
             vector<Coord2> tv = players[i].getTankVertices(players[i].pos, players[i].d);
             float closest = 1e10;
-            for(int j = 0; j < tv.size(); j++)
-                if(len(center - tv[j]).toFloat() < closest)
-                    closest = len(center - tv[j]).toFloat();
+            for(int j = 0; j < tv.size(); j++) {
+                float tdist = distanceFromLine(Coord4(tv[j], tv[(j + 1) % tv.size()]), center).toFloat();
+                if(tdist < closest)
+                    closest = tdist;
+            }
             CHECK(closest < 1e10);
             CHECK(closest >= 0);
             rv.push_back(make_pair(closest, &players[i]));
