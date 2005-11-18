@@ -354,45 +354,5 @@ Coord4 snapToEnclosingGrid(Coord4 orig, Coord grid);
 bool linelineintersect( const Coord4 &lhs, const Coord4 &rhs );
 Coord linelineintersectpos( const Coord4 &lhs, const Coord4 &rhs );
 
-#if 0
-inline Coord2 lerp( const Coord2 &start, const Coord2 &delta, Coord time ) {
-    return Coord2( start.x + delta.x * time, start.y + delta.y * time );
-}
-inline Coord4 lerp( const Coord4 &start, const Coord4 &delta, Coord time ) {
-    return Coord4( start.sx + delta.sx * time, start.sy + delta.sy * time, start.ex + delta.ex * time, start.ey + delta.ey * time );
-}
-
-
-
-enum { PR_SEPARATE, PR_INTERSECT, PR_LHSENCLOSE, PR_RHSENCLOSE };
-
-Coord4 startCBoundBox();
-
-void addToBoundBox(Coord4 *bbox, Coord x, Coord y);
-void addToBoundBox(Coord4 *bbox, const Coord2 &point);
-void addToBoundBox(Coord4 *bbox, const Coord4 &rect);
-
-void expandBoundBox(Coord4 *bbox, Coord factor);
-
-Coord4 getBoundBox(const vector<Coord2> &path);
-
-// returns -1 if the point is actually inside the path, but the path is reversed
-int inPath(const Coord2 &point, const vector<Coord2> &path);
-bool roughInPath(const Coord2 &point, const vector<Coord2> &path, int goal);
-
-Coord2 getPointIn(const vector<Coord2> &path);
-
-bool pathReversed(const vector<Coord2> &path);
-
-int getPathRelation(const vector<Coord2> &lhs, const vector<Coord2> &rhs);
-
-vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Coord2> &rhs);
-
-Coord distanceFromLine(const Coord4 &line, const Coord2 &pt);
-bool colinear(const Coord4 &line, const Coord2 &pt);
-
-Coord getArea(const vector<Coord2> &are);
-#endif
-
 #endif
 

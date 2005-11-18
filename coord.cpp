@@ -582,31 +582,3 @@ Coord4 snapToEnclosingGrid(Coord4 orig, Coord grid) {
 
 bool linelineintersect( const Coord4 &lhs, const Coord4 &rhs ) { return imp_linelineintersect<Coords>(lhs, rhs); };
 Coord linelineintersectpos( const Coord4 &lhs, const Coord4 &rhs ) { return imp_linelineintersectpos<Coords>(lhs, rhs); };
-
-
-
-
-
-
-
-#if 0
-
-
-Coord linelineintersectpos( Coord x1, Coord y1, Coord x2, Coord y2, Coord x3, Coord y3, Coord x4, Coord y4 ) {
-	Coord denom = ( y4 - y3 ) * ( x2 - x1 ) - ( x4 - x3 ) * ( y2 - y1 );
-	Coord ua = ( ( x4 - x3 ) * ( y1 - y3 ) - ( y4 - y3 ) * ( x1 - x3 ) ) / denom;
-	Coord ub = ( ( x2 - x1 ) * ( y1 - y3 ) - ( y2 - y1 ) * ( x1 - x3 ) ) / denom;
-	if( ua > 0 && ua < 1 && ub > 0 && ub < 1 )
-		return ua;
-	else
-		return 2;
-}
-
-Coord4 getBoundBox(const vector<Coord2> &path) {
-    Coord4 bbox = startCBoundBox();
-    for(int i = 0; i < path.size(); i++)
-        addToBoundBox(&bbox, path[i]);
-    CHECK(bbox.isNormalized());
-    return bbox;
-}
-#endif
