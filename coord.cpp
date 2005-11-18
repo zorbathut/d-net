@@ -569,9 +569,6 @@ void expandBoundBox(Coord4 *bbox, Coord factor) { return imp_expandBoundBox<Coor
  * Math
  */
 
-Coord2 lerp( const Coord2 &start, const Coord2 &delta, Coord time ) { return imp_lerp<Coords>(start, delta, time); };
-Coord4 lerp( const Coord4 &start, const Coord4 &delta, Coord time ) { return imp_lerp<Coords>(start, delta, time); };
-
 Coord4 snapToEnclosingGrid(Coord4 orig, Coord grid) {
     orig.sx = ceil(orig.sx/grid - 1) * grid;
     orig.sy = ceil(orig.sy/grid - 1) * grid;

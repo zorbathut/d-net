@@ -284,6 +284,19 @@ public:
     Coord4(float isx, float isy, float iex, float iey) : sx(isx), sy(isy), ex(iex), ey(iey) { };
 };
 
+inline Coord4 operator+(const Coord4 &lhs, const Coord4 &rhs) {
+    return Coord4(lhs.sx + rhs.sx, lhs.sy + rhs.sy, lhs.ex + rhs.ex, lhs.ey + rhs.ey);
+}
+inline Coord4 operator-(const Coord4 &lhs, const Coord4 &rhs) {
+    return Coord4(lhs.sx - rhs.sx, lhs.sy - rhs.sy, lhs.ex - rhs.ex, lhs.ey - rhs.ey);
+}
+inline Coord4 operator*(const Coord4 &lhs, const Coord &rhs) {
+    return Coord4(lhs.sx * rhs, lhs.sy * rhs, lhs.ex * rhs, lhs.ey * rhs);
+}
+inline Coord4 operator/(const Coord4 &lhs, const Coord &rhs) {
+    return Coord4(lhs.sx / rhs, lhs.sy / rhs, lhs.ex / rhs, lhs.ey / rhs);
+}
+
 inline Coord max(Coord lhs, int rhs) {
     return max(lhs, Coord(rhs));
 }
@@ -345,9 +358,6 @@ void expandBoundBox(Coord4 *bbox, Coord factor);
 /*************
  * Math
  */
-
-Coord2 lerp( const Coord2 &start, const Coord2 &delta, Coord time );
-Coord4 lerp( const Coord4 &start, const Coord4 &delta, Coord time );
 
 Coord4 snapToEnclosingGrid(Coord4 orig, Coord grid);
 

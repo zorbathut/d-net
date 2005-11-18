@@ -94,13 +94,6 @@ template <typename T> pair<Type2, float> imp_fitInside(const Type4 &objbounds, c
     return make_pair(Type2(goalx - objx * scale, goaly - objy * scale), scale);
 }
 
-template <typename T> Type2 imp_lerp( const Type2 &start, const Type2 &delta, const Type1 time ) {
-    return Type2( start.x + delta.x * time, start.y + delta.y * time );
-}
-template <typename T> Type4 imp_lerp( const Type4 &start, const Type4 &delta, const Type1 time ) {
-    return Type4( start.sx + delta.sx * time, start.sy + delta.sy * time, start.ex + delta.ex * time, start.ey + delta.ey * time );
-}
-
 template <typename T> bool imp_linelineintersect( Type1 x1, Type1 y1, Type1 x2, Type1 y2, Type1 x3, Type1 y3, Type1 x4, Type1 y4 ) {
 	Type1 denom = ( y4 - y3 ) * ( x2 - x1 ) - ( x4 - x3 ) * ( y2 - y1 );
     if(denom == 0)

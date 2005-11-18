@@ -134,8 +134,8 @@ pair<Coord, Coord2> getCollision( const Coord4 &l1p, const Coord4 &l1v, const Co
 			if( u < 0 || u > 1 )
 				continue;
 			cBc = tt;
-            Coord4 cline = lerp(*linepos, *linevel, tt);
-            pos = lerp(Coord2(cline.sx, cline.sy), Coord2(cline.ex - cline.sx, cline.ey - cline.sy), u);
+            Coord4 cline = *linepos + *linevel * tt;
+            pos = Coord2(cline.sx, cline.sy) + Coord2(cline.ex - cline.sx, cline.ey - cline.sy) * u;
 		}
 	}
 	return make_pair(cBc, pos);
