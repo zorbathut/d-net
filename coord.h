@@ -1,12 +1,15 @@
 #ifndef DNET_COORD
 #define DNET_COORD
 
-#include "util.h"
-#include "float.h" // TEMPORARY
+#include <string>
+#include <vector> // remove when cpath.h and fpath.h are created
 
-#include <numeric>
+#include "cfcommon.h"
 
 using namespace std;
+
+class Float2;
+class Float4;
 
 // 64-bit int in 32:32 fixed-point format
 class Coord {
@@ -51,21 +54,7 @@ inline Coord coordExplicit(long long lhs) {
     coord.d = lhs;
     return coord;
 }
-inline Coord coordExplicit(const string &lhs) {
-    CHECK(lhs.size() == 16);
-    for(int i = 0; i < lhs.size(); i++)
-        CHECK(isdigit(lhs[i]) || (lhs[i] >= 'a' && lhs[i] <= 'f'));
-    long long dd = 0;
-    for(int i = 0; i < 16; i++) {
-        dd *= 16;
-        if(isdigit(lhs[i]))
-            dd += lhs[i] - '0';
-        else
-            dd += lhs[i] - 'a' + 10;
-    }
-    CHECK(coordExplicit(dd).rawstr() == lhs);
-    return coordExplicit(dd);
-}
+Coord coordExplicit(const string &lhs);
 
 inline Coord &operator+=(Coord &lhs, const Coord &rhs) {
     lhs.d += rhs.d;
@@ -193,15 +182,13 @@ class Coord2 {
 public:
     Coord x, y;
 
-    Float2 toFloat() const {
-        return Float2(x.toFloat(), y.toFloat());
-    }
+    Float2 toFloat() const;
 
     Coord2() { };
     Coord2(const Coord &ix, const Coord &iy) : x(ix), y(iy) { };
     Coord2(float ix, float iy) : x(ix), y(iy) { };
     Coord2(const Coord2 &rhs) : x(rhs.x), y(rhs.y) { };
-    explicit Coord2(const Float2 &rhs) : x(rhs.x), y(rhs.y) { };
+    explicit Coord2(const Float2 &rhs);
 };
 
 inline Coord2 operator+(const Coord2 &lhs, const Coord2 &rhs) {
@@ -273,9 +260,7 @@ public:
         return sx <= ex && sy <= ey;
     }
     
-    Float4 toFloat() const {
-        return Float4(sx.toFloat(), sy.toFloat(), ex.toFloat(), ey.toFloat());
-    }
+    Float4 toFloat() const;
 
     Coord4() { };
     Coord4(const Coord &isx, const Coord &isy, const Coord &iex, const Coord &iey) : sx(isx), sy(isy), ex(iex), ey(iey) { };

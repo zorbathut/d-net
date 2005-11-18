@@ -4,7 +4,9 @@
 #include <map>
 #include <set>
 
+#include "float.h"
 #include "composite-imp.h"
+#include "util.h"
 
 using namespace std;
 
@@ -22,6 +24,27 @@ public:
 string Coord::rawstr() const {
     return StringPrintf("%08x%08x", (unsigned int)(d >> 32), (unsigned int)d);
 }
+
+Coord coordExplicit(const string &lhs) {
+    CHECK(lhs.size() == 16);
+    for(int i = 0; i < lhs.size(); i++)
+        CHECK(isdigit(lhs[i]) || (lhs[i] >= 'a' && lhs[i] <= 'f'));
+    long long dd = 0;
+    for(int i = 0; i < 16; i++) {
+        dd *= 16;
+        if(isdigit(lhs[i]))
+            dd += lhs[i] - '0';
+        else
+            dd += lhs[i] - 'a' + 10;
+    }
+    CHECK(coordExplicit(dd).rawstr() == lhs);
+    return coordExplicit(dd);
+}
+
+Float2 Coord2::toFloat() const { return Float2(x.toFloat(), y.toFloat()); }
+Coord2::Coord2(const Float2 &rhs) : x(rhs.x), y(rhs.y) { };
+
+Float4 Coord4::toFloat() const { return Float4(sx.toFloat(), sy.toFloat(), ex.toFloat(), ey.toFloat()); }
 
 /*************
  * Computational geometry

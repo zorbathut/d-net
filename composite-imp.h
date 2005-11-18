@@ -2,6 +2,9 @@
 #define DNET_COMPOSITE_IMP
 
 #include <cmath>
+#include <algorithm>
+
+#include "debug.h"
 
 using namespace std;
 

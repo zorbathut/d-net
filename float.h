@@ -1,11 +1,9 @@
 #ifndef DNET_FLOAT
 #define DNET_FLOAT
 
-#include <cmath>
-#include <algorithm>
+#include <utility>
 
-#include "const.h"
-#include "debug.h"
+#include "cfcommon.h"
 
 using namespace std;
 
@@ -150,44 +148,6 @@ void addToBoundBox(Float4 *bbox, const Float2 &point);
 void addToBoundBox(Float4 *bbox, const Float4 &rect);
 
 void expandBoundBox(Float4 *bbox, float factor);
-
-/*************
- * Fast sin/cos
- */
-
-#define SIN_TABLE_SIZE 360
-extern float sin_table[ SIN_TABLE_SIZE + 1 ];
-
-inline float dsin( float in ) {
-	return sin_table[ int( in * ( 2 * SIN_TABLE_SIZE / PI ) + 0.5f ) ];
-}
-
-inline float fsin( float in ) {
-    if(in < 0 || in >= PI * 5 / 2) {
-        in = fmod(in, PI * 2);
-        if(in < 0)
-            in = in + PI * 2;
-        return fsin(in);
-    }
-    
-    CHECK(in >= 0);
-    if( in < PI / 2 ) {
-		return dsin( in );
-	} else if( in < PI ) {
-		return dsin( PI - in );
-	} else if( in < PI * 3 / 2 ) {
-		return -dsin( in - PI );
-	} else if( in < PI * 2 ) {
-		return -dsin( PI * 2 - in );
-	} else if( in < PI * 5 / 2 ) {
-		return dsin( in - PI * 2 );
-	} else {
-        CHECK(0);
-	}
-}
-inline float fcos( float in ) {
-	return fsin( in + PI / 2 );
-}
 
 /*************
  * Math
