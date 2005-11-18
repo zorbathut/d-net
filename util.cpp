@@ -93,7 +93,7 @@ string StringPrintf( const char *bort, ... ) {
  * Computational geometry
  */
 
-pair<pair<float, float>, float> fitInside(const Float4 &objbounds, const Float4 &goalbounds) {
+pair<Float2, float> fitInside(const Float4 &objbounds, const Float4 &goalbounds) {
     float xscale = (goalbounds.ex - goalbounds.sx) / (objbounds.ex - objbounds.sx);
     float yscale = (goalbounds.ey - goalbounds.sy) / (objbounds.ey - objbounds.sy);
     float scale = min(xscale, yscale);
@@ -101,7 +101,7 @@ pair<pair<float, float>, float> fitInside(const Float4 &objbounds, const Float4 
     float goaly = (goalbounds.sy + goalbounds.ey) / 2;
     float objx = (objbounds.sx + objbounds.ex) / 2;
     float objy = (objbounds.sy + objbounds.ey) / 2;
-    return make_pair(make_pair(goalx - objx * scale, goaly - objy * scale), scale);
+    return make_pair(Float2(goalx - objx * scale, goaly - objy * scale), scale);
 }
 
 /*************

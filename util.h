@@ -249,7 +249,7 @@ inline Float4 boxaround(const Float2 &lhs, float radius) {
 }
 
 // Returns ( (xtrans, ytrans), scale)
-pair<pair<float, float>, float> fitInside(const Float4 &objbounds, const Float4 &goalbounds);
+pair<Float2, float> fitInside(const Float4 &objbounds, const Float4 &goalbounds);
 
 /*************
  * Matrixtastic

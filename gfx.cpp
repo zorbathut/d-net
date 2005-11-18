@@ -398,7 +398,7 @@ void drawJustifiedText(const string &txt, float scale, float sx, float sy, int x
     drawText(txt, scale, sx, sy);
 }
 
-void drawVectorPath(const VectorPath &vecob, const pair<pair<float, float>, float> &coord, float weight) {
+void drawVectorPath(const VectorPath &vecob, const pair<Float2, float> &coord, float weight) {
     for(int i = 0; i < vecob.vpath.size(); i++) {
         int j = (i + 1) % vecob.vpath.size();
         CHECK(vecob.vpath[i].curvr == vecob.vpath[j].curvl);
@@ -423,15 +423,15 @@ void drawVectorPath(const VectorPath &vecob, const pair<pair<float, float>, floa
         rcx *= coord.second;
         rcy *= coord.second;
         
-        lx += coord.first.first;
-        ly += coord.first.second;
-        rx += coord.first.first;
-        ry += coord.first.second;
+        lx += coord.first.x;
+        ly += coord.first.y;
+        rx += coord.first.x;
+        ry += coord.first.y;
         
-        lcx += coord.first.first;
-        lcy += coord.first.second;
-        rcx += coord.first.first;
-        rcy += coord.first.second;
+        lcx += coord.first.x;
+        lcy += coord.first.y;
+        rcx += coord.first.x;
+        rcy += coord.first.y;
         if(vecob.vpath[i].curvr) {
             drawCurve(Float4(lx, ly, lcx, lcy), Float4(rcx, rcy, rx, ry), weight);
         } else {
@@ -447,7 +447,7 @@ void drawVectorPath(const VectorPath &vecob, const Float4 &bounds, float weight)
 
 void drawDvec2(const Dvec2 &vecob, const Float4 &bounds, float weight) {
     CHECK(vecob.entities.size() == 0);
-    pair<pair<float, float>, float> dimens = fitInside(vecob.boundingBox(), bounds);
+    pair<Float2, float> dimens = fitInside(vecob.boundingBox(), bounds);
     //dprintf("fit %f,%f,%f,%f into %f,%f,%f,%f, got %f,%f, %f\n", vecob.boundingBox().sx, vecob.boundingBox().sy,
             //vecob.boundingBox().ex, vecob.boundingBox().ey, bounds.sx, bounds.sy, bounds.ex, bounds.ey,
             //dimens.first.first, dimens.first.second, dimens.second);

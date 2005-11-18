@@ -1,6 +1,5 @@
 - Do damage to outside of level
 - Make it not glacially slow
-- fitInside to Float2, float
 - Templatize Coord/Float properly
 - Make vector<Coord2> into Path
 - Remove tiny shards of level
