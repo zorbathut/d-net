@@ -4,86 +4,43 @@
 #include <map>
 #include <set>
 
+#include "composite-imp.h"
+
 using namespace std;
 
-class GetDifferenceHandler {
+class Coords {
 public:
+    typedef Coord T1;
+    typedef Coord2 T2;
+    typedef Coord4 T4;
     
-    const vector<Coord2> &lhs;
-    const vector<Coord2> &rhs;
-    
-    GetDifferenceHandler(const vector<Coord2> &in_lhs, const vector<Coord2> &in_rhs) : lhs(in_lhs), rhs(in_rhs) { };
-    
-    void dsp(const vector<Coord2> &inp, string title) const {
-        dprintf("string %s[%d] = {", title.c_str(), inp.size() * 2);
-        for(int i = 0; i < inp.size(); i++)
-            dprintf("    \"%s\", \"%s\",", inp[i].x.rawstr().c_str(), inp[i].y.rawstr().c_str());
-        dprintf("};");
-    }
-    void operator()() const {
-        dsp(lhs, "lhs");
-        dsp(rhs, "rhs");
-    }
+    static Coord atan2(Coord a, Coord b) { return Coord(float(::atan2(a.toFloat(), b.toFloat()))); }
+    static Coord sin(Coord a) { return cfsin(a); };
+    static Coord cos(Coord a) { return cfcos(a); };
 };
 
 string Coord::rawstr() const {
     return StringPrintf("%08x%08x", (unsigned int)(d >> 32), (unsigned int)d);
 }
 
-Coord linelineintersectpos( Coord x1, Coord y1, Coord x2, Coord y2, Coord x3, Coord y3, Coord x4, Coord y4 ) {
-	Coord denom = ( y4 - y3 ) * ( x2 - x1 ) - ( x4 - x3 ) * ( y2 - y1 );
-	Coord ua = ( ( x4 - x3 ) * ( y1 - y3 ) - ( y4 - y3 ) * ( x1 - x3 ) ) / denom;
-	Coord ub = ( ( x2 - x1 ) * ( y1 - y3 ) - ( y2 - y1 ) * ( x1 - x3 ) ) / denom;
-	if( ua > 0 && ua < 1 && ub > 0 && ub < 1 )
-		return ua;
-	else
-		return 2;
-}
-
 /*************
- * Bounding box
+ * Computational geometry
  */
 
-Coord4 startCBoundBox() {
-    return Coord4(1000000000, 1000000000, -1000000000, -1000000000);
-};
+Coord len(const Coord2 &in) { return imp_len<Coords>(in); };
+Coord2 normalize(const Coord2 &in) { return imp_normalize<Coords>(in); };
 
-void addToBoundBox(Coord4 *bbox, Coord x, Coord y) {
-    bbox->sx = min(bbox->sx, x);
-    bbox->sy = min(bbox->sy, y);
-    bbox->ex = max(bbox->ex, x);
-    bbox->ey = max(bbox->ey, y);
-};
-void addToBoundBox(Coord4 *bbox, const Coord2 &point) {
-    addToBoundBox(bbox, point.x, point.y);
-};
-void addToBoundBox(Coord4 *bbox, const Coord4 &rect) {
-    CHECK(rect.isNormalized());
-    addToBoundBox(bbox, rect.sx, rect.sy);
-    addToBoundBox(bbox, rect.ex, rect.ey);
-};
+Coord getAngle(const Coord2 &in) { return imp_getAngle<Coords>(in); };
+Coord2 makeAngle(const Coord &in) { return imp_makeAngle<Coords>(in); };
 
-void expandBoundBox(Coord4 *bbox, Coord factor) {
-    Coord x = bbox->ex - bbox->sx;
-    Coord y = bbox->ey - bbox->sy;
-    Coord xc = ( bbox->sx + bbox->ex ) / 2;
-    Coord yc = ( bbox->sy + bbox->ey ) / 2;
-    x *= factor;
-    y *= factor;
-    x /= 2;
-    y /= 2;
-    bbox->sx = xc - x;
-    bbox->sy = yc - y;
-    bbox->ex = xc + x;
-    bbox->ey = yc + y;
-}
+int whichSide( const Coord4 &f4, const Coord2 &pta ) { return imp_whichSide<Coords>(f4, pta); };
 
-Coord4 getBoundBox(const vector<Coord2> &path) {
-    Coord4 bbox = startCBoundBox();
-    for(int i = 0; i < path.size(); i++)
-        addToBoundBox(&bbox, path[i]);
-    CHECK(bbox.isNormalized());
-    return bbox;
+Coord distanceFromLine(const Coord4 &line, const Coord2 &pt) {
+    Coord u = ((pt.x - line.sx) * (line.ex - line.sx) + (pt.y - line.sy) * (line.ey - line.sy)) / ((line.ex - line.sx) * (line.ex - line.sx) + (line.ey - line.sy) * (line.ey - line.sy));
+    if(u < 0 || u > 1)
+        return min(len(pt - Coord2(line.sx, line.sy)), len(pt - Coord2(line.ex, line.ey)));
+    Coord2 ipt = Coord2(line.sx, line.sy) + Coord2(line.ex - line.sx, line.ey - line.sy) * u;
+    return len(ipt - pt);
 }
 
 int inPath(const Coord2 &point, const vector<Coord2> &path) {
@@ -115,6 +72,7 @@ int inPath(const Coord2 &point, const vector<Coord2> &path) {
         return solidval;
     }
 };
+
 bool roughInPath(const Coord2 &point, const vector<Coord2> &path, int goal) {
     int dx[] = {0, 0, 0, 1, -1, 1, 1, -1, -1};
     int dy[] = {0, 1, -1, 0, 0, 1, -1, 1, -1};
@@ -123,6 +81,26 @@ bool roughInPath(const Coord2 &point, const vector<Coord2> &path, int goal) {
             return true;
     return false;
 }
+
+class GetDifferenceHandler {
+public:
+    
+    const vector<Coord2> &lhs;
+    const vector<Coord2> &rhs;
+    
+    GetDifferenceHandler(const vector<Coord2> &in_lhs, const vector<Coord2> &in_rhs) : lhs(in_lhs), rhs(in_rhs) { };
+    
+    void dsp(const vector<Coord2> &inp, string title) const {
+        dprintf("string %s[%d] = {", title.c_str(), inp.size() * 2);
+        for(int i = 0; i < inp.size(); i++)
+            dprintf("    \"%s\", \"%s\",", inp[i].x.rawstr().c_str(), inp[i].y.rawstr().c_str());
+        dprintf("};");
+    }
+    void operator()() const {
+        dsp(lhs, "lhs");
+        dsp(rhs, "rhs");
+    }
+};
 
 Coord2 getPointIn(const vector<Coord2> &path) {
     // TODO: find a point inside the polygon in a better fashion
@@ -559,19 +537,6 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
     }
 }
 
-bool colinear(const Coord4 &line, const Coord2 &pt) {
-    Coord koord = distanceFromLine(line, pt);
-    return koord < Coord(0.00001f);
-}
-
-Coord distanceFromLine(const Coord4 &line, const Coord2 &pt) {
-    Coord u = ((pt.x - line.sx) * (line.ex - line.sx) + (pt.y - line.sy) * (line.ey - line.sy)) / ((line.ex - line.sx) * (line.ex - line.sx) + (line.ey - line.sy) * (line.ey - line.sy));
-    if(u < 0 || u > 1)
-        return min(len(pt - Coord2(line.sx, line.sy)), len(pt - Coord2(line.ex, line.ey)));
-    Coord2 ipt = Coord2(line.sx, line.sy) + Coord2(line.ex - line.sx, line.ey - line.sy) * u;
-    return len(ipt - pt);
-}
-
 Coord getArea(const vector<Coord2> &are) {
     Coord totare = 0;
     for(int i = 0; i < are.size(); i++) {
@@ -582,3 +547,66 @@ Coord getArea(const vector<Coord2> &are) {
     dprintf("%f\n", totare.toFloat());
     return totare;
 }
+
+bool colinear(const Coord4 &line, const Coord2 &pt) {
+    Coord koord = distanceFromLine(line, pt);
+    return koord < Coord(0.00001f);
+}
+
+/*************
+ * Bounding box
+ */
+
+Coord4 startCBoundBox() { return imp_startBoundBox<Coords>(); };
+
+void addToBoundBox(Coord4 *bbox, Coord x, Coord y) { return imp_addToBoundBox<Coords>(bbox, x, y); };
+void addToBoundBox(Coord4 *bbox, const Coord2 &point) { return imp_addToBoundBox<Coords>(bbox, point); };
+void addToBoundBox(Coord4 *bbox, const Coord4 &rect) { return imp_addToBoundBox<Coords>(bbox, rect); };
+
+void expandBoundBox(Coord4 *bbox, Coord factor) { return imp_expandBoundBox<Coords>(bbox, factor); };
+
+/*************
+ * Math
+ */
+
+Coord2 lerp( const Coord2 &start, const Coord2 &delta, Coord time ) { return imp_lerp<Coords>(start, delta, time); };
+Coord4 lerp( const Coord4 &start, const Coord4 &delta, Coord time ) { return imp_lerp<Coords>(start, delta, time); };
+
+Coord4 snapToEnclosingGrid(Coord4 orig, Coord grid) {
+    orig.sx = ceil(orig.sx/grid - 1) * grid;
+    orig.sy = ceil(orig.sy/grid - 1) * grid;
+    orig.ex = ceil(orig.ex/grid) * grid;
+    orig.ey = ceil(orig.ey/grid) * grid;
+    return orig;
+}
+
+bool linelineintersect( const Coord4 &lhs, const Coord4 &rhs ) { return imp_linelineintersect<Coords>(lhs, rhs); };
+Coord linelineintersectpos( const Coord4 &lhs, const Coord4 &rhs ) { return imp_linelineintersectpos<Coords>(lhs, rhs); };
+
+
+
+
+
+
+
+#if 0
+
+
+Coord linelineintersectpos( Coord x1, Coord y1, Coord x2, Coord y2, Coord x3, Coord y3, Coord x4, Coord y4 ) {
+	Coord denom = ( y4 - y3 ) * ( x2 - x1 ) - ( x4 - x3 ) * ( y2 - y1 );
+	Coord ua = ( ( x4 - x3 ) * ( y1 - y3 ) - ( y4 - y3 ) * ( x1 - x3 ) ) / denom;
+	Coord ub = ( ( x2 - x1 ) * ( y1 - y3 ) - ( y2 - y1 ) * ( x1 - x3 ) ) / denom;
+	if( ua > 0 && ua < 1 && ub > 0 && ub < 1 )
+		return ua;
+	else
+		return 2;
+}
+
+Coord4 getBoundBox(const vector<Coord2> &path) {
+    Coord4 bbox = startCBoundBox();
+    for(int i = 0; i < path.size(); i++)
+        addToBoundBox(&bbox, path[i]);
+    CHECK(bbox.isNormalized());
+    return bbox;
+}
+#endif

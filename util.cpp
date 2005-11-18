@@ -10,99 +10,6 @@ using namespace std;
 
 bool ffwd = false;
 
-/*************
- * Bounding box
- */
-
-Float4 startFBoundBox() {
-    return Float4(1e20, 1e20, -1e20, -1e20);
-};
-
-void addToBoundBox(Float4 *bbox, float x, float y) {
-    bbox->sx = min(bbox->sx, x);
-    bbox->sy = min(bbox->sy, y);
-    bbox->ex = max(bbox->ex, x);
-    bbox->ey = max(bbox->ey, y);
-};
-void addToBoundBox(Float4 *bbox, const Float2 &point) {
-    addToBoundBox(bbox, point.x, point.y);
-};
-void addToBoundBox(Float4 *bbox, const Float4 &rect) {
-    CHECK(rect.isNormalized());
-    addToBoundBox(bbox, rect.sx, rect.sy);
-    addToBoundBox(bbox, rect.ex, rect.ey);
-};
-
-void expandBoundBox(Float4 *bbox, float factor) {
-    float x = bbox->ex - bbox->sx;
-    float y = bbox->ey - bbox->sy;
-    float xc = ( bbox->sx + bbox->ex ) / 2;
-    float yc = ( bbox->sy + bbox->ey ) / 2;
-    x *= factor;
-    y *= factor;
-    x /= 2;
-    y /= 2;
-    bbox->sx = xc - x;
-    bbox->sy = yc - y;
-    bbox->ex = xc + x;
-    bbox->ey = yc + y;
-}
-
-/*************
- * Fast sin/cos
- */
-
-float sin_table[ SIN_TABLE_SIZE + 1 ];
-
-class sinTableMaker {
-public:
-	sinTableMaker() {
-		for( int i = 0; i < SIN_TABLE_SIZE + 1; i++ ) {
-			sin_table[ i ] = sin( i * PI / SIN_TABLE_SIZE / 2 );
-		}
-
-		//for( float x = 0; x < PI * 2; x += 0.01 )
-			//dprintf( "%f-%f, %f-%f\n", fsin( x ), sin( x ), fcos( x ), cos( x ) );
-	}
-};
-
-sinTableMaker sinInit;
-
-string StringPrintf( const char *bort, ... ) {
-
-	static vector< char > buf(2);
-	va_list args;
-
-	int done = 0;
-	do {
-		if( done )
-			buf.resize( buf.size() * 2 );
-		va_start( args, bort );
-		done = vsnprintf( &(buf[ 0 ]), buf.size() - 1,  bort, args );
-		CHECK( done < (int)buf.size() );
-		va_end( args );
-	} while( done == buf.size() - 1 || done == -1);
-
-	CHECK( done < (int)buf.size() );
-
-    return string(buf.begin(), buf.begin() + done);
-
-};
-
-/*************
- * Computational geometry
- */
-
-pair<Float2, float> fitInside(const Float4 &objbounds, const Float4 &goalbounds) {
-    float xscale = (goalbounds.ex - goalbounds.sx) / (objbounds.ex - objbounds.sx);
-    float yscale = (goalbounds.ey - goalbounds.sy) / (objbounds.ey - objbounds.sy);
-    float scale = min(xscale, yscale);
-    float goalx = (goalbounds.sx + goalbounds.ex) / 2;
-    float goaly = (goalbounds.sy + goalbounds.ey) / 2;
-    float objx = (objbounds.sx + objbounds.ex) / 2;
-    float objy = (objbounds.sy + objbounds.ey) / 2;
-    return make_pair(Float2(goalx - objx * scale, goaly - objy * scale), scale);
-}
 
 /*************
  * Matrixtastic
@@ -236,3 +143,24 @@ Transform2d t2d_rotate(float rads) {
     o.m[1][1] = cos(rads);
     return o;
 }
+
+string StringPrintf( const char *bort, ... ) {
+
+	static vector< char > buf(2);
+	va_list args;
+
+	int done = 0;
+	do {
+		if( done )
+			buf.resize( buf.size() * 2 );
+		va_start( args, bort );
+		done = vsnprintf( &(buf[ 0 ]), buf.size() - 1,  bort, args );
+		CHECK( done < (int)buf.size() );
+		va_end( args );
+	} while( done == buf.size() - 1 || done == -1);
+
+	CHECK( done < (int)buf.size() );
+
+    return string(buf.begin(), buf.begin() + done);
+
+};

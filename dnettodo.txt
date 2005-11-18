@@ -1,7 +1,8 @@
 - Do damage to outside of level
 - Make it not glacially slow
-- Templatize Coord/Float properly
+- Fix Lerp
 - Make vector<Coord2> into Path
+- Move getDifference into its own file
 - Remove tiny shards of level
 - Post-death bombardment :)
 - Finish intersection

@@ -1,7 +1,7 @@
 
-SOURCES = main core game timer debug gfx collide gamemap util rng args interface vecedit metagame itemdb parse dvec2 input level coord ai inputsnag os_win32
-CPPFLAGS = `sdl-config --cflags` -mno-cygwin -DVECTOR_PARANOIA -Wall -Wno-sign-compare -Wno-uninitialized -O2 -pg #-g -pg
-LINKFLAGS = `sdl-config --libs` -lglu32 -lopengl32 -lm -mno-cygwin -O2 -pg #-g -pg
+SOURCES = main core game timer debug gfx collide gamemap util rng args interface vecedit metagame itemdb parse dvec2 input level coord ai inputsnag os_win32 float
+CPPFLAGS = `sdl-config --cflags` -mno-cygwin -DVECTOR_PARANOIA -Wall -Wno-sign-compare -Wno-uninitialized -O2 #-g -pg
+LINKFLAGS = `sdl-config --libs` -lglu32 -lopengl32 -lm -mno-cygwin -O2 #-g -pg
 
 CPP = g++
 
@@ -49,8 +49,8 @@ stats:
 	@echo Game mechanics: `cat game.h game.cpp gamemap.h gamemap.cpp level.cpp level.h | wc -l` loc
 	@echo Item hierarchy: `cat itemdb.h itemdb.cpp parse.h parse.cpp | wc -l` loc
 	@echo UI: `cat interface.h interface.cpp metagame.h metagame.cpp | wc -l` loc
-	@echo Framework: `cat core.h core.cpp main.h main.cpp input.h input.cpp inputsnag.h inputsnag.cpp | wc -l` loc
-	@echo Util: `cat timer.h timer.cpp util.h util.cpp args.h args.cpp rng.h rng.cpp coord.h coord.cpp | wc -l` loc
+	@echo Framework: `cat core.h core.cpp main.h main.cpp input.h input.cpp inputsnag.h inputsnag.cpp os.h os_gen.cpp os_win32.cpp | wc -l` loc
+	@echo Util: `cat timer.h timer.cpp util.h util.cpp args.h args.cpp rng.h rng.cpp coord.h coord.cpp float.h float.cpp | wc -l` loc
 	@echo Vector system: `cat vecedit.h vecedit.cpp dvec2.h dvec2.cpp | wc -l` loc
 	@echo AI: `cat ai.h ai.cpp | wc -l` loc
 	@echo Total code: `cat *.h *.cpp makefile | wc -l` loc
