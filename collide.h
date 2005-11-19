@@ -73,6 +73,7 @@ inline bool operator==(const CollideData &lhs, const CollideData &rhs) {
 class ColliderZone {
 private:
     vector< pair< int, vector< pair< int, pair< Coord4, Coord4 > > > > > items;
+    int lastItem;
 
     int players;
 public:
@@ -87,6 +88,8 @@ public:
     void processMotion(vector<pair<Coord, CollideData> > *clds, const char *collidematrix) const;
 
     void render(const Coord4 &bbox) const;
+
+    void reset();
 
     ColliderZone();
     ColliderZone(int players);

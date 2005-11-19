@@ -195,11 +195,16 @@ bool canCollideProjectile( int players, int indexa, int indexb ) {
 
 void ColliderZone::addToken(int groupid, int token, const Coord4 &line, const Coord4 &direction) {
     int fd = 0;
-    for(fd = 0; fd < items.size(); fd++)
+    for(fd = 0; fd < lastItem; fd++)
         if(items[fd].first == groupid)
             break;
-    if(fd == items.size())
-        items.push_back(make_pair(groupid, vector< pair< int, pair< Coord4, Coord4 > > >()));
+    if(fd == lastItem) {
+        lastItem++;
+        if(fd == items.size())
+            items.push_back(make_pair(groupid, vector< pair< int, pair< Coord4, Coord4 > > >()));
+        else
+            items[fd].first = groupid;
+    }
     items[fd].second.push_back(make_pair(token, make_pair(line, direction)));
 }
 
@@ -210,7 +215,7 @@ void ColliderZone::clearGroup(int groupid) {
 }
 
 bool ColliderZone::checkSimpleCollision(int groupid, const vector<Coord4> &line, const char *collidematrix) const {
-    for(int x = 0; x < items.size(); x++) {
+    for(int x = 0; x < lastItem; x++) {
          if(!collidematrix[groupid * getIndexCount(players) + items[x].first])
             continue;
         const vector< pair< int, pair< Coord4, Coord4 > > > &tx = items[x].second;
@@ -225,8 +230,8 @@ bool ColliderZone::checkSimpleCollision(int groupid, const vector<Coord4> &line,
 }
 
 void ColliderZone::processSimple(vector<pair<Coord, CollideData> > *clds, const char *collidematrix) const {
-	for( int x = 0; x < items.size(); x++ ) {
-		for( int y = x + 1; y < items.size(); y++ ) {
+	for( int x = 0; x < lastItem; x++ ) {
+		for( int y = x + 1; y < lastItem; y++ ) {
             if(!collidematrix[items[x].first * getIndexCount(players) + items[y].first])
                 continue;
             const vector< pair< int, pair< Coord4, Coord4 > > > &tx = items[x].second;
@@ -241,8 +246,8 @@ void ColliderZone::processSimple(vector<pair<Coord, CollideData> > *clds, const 
 	}
 }
 void ColliderZone::processMotion(vector<pair<Coord, CollideData> > *clds, const char *collidematrix) const {
-	for( int x = 0; x < items.size(); x++ ) {
-		for( int y = x + 1; y < items.size(); y++ ) {
+	for( int x = 0; x < lastItem; x++ ) {
+		for( int y = x + 1; y < lastItem; y++ ) {
             if(!collidematrix[items[x].first * getIndexCount(players) + items[y].first])
                 continue;
             const vector< pair< int, pair< Coord4, Coord4 > > > &tx = items[x].second;
@@ -267,9 +272,18 @@ void ColliderZone::render(const Coord4 &bbox) const {
     drawBox(tbx.toFloat(), 0.5);
 }
 
-ColliderZone::ColliderZone() { };
+void ColliderZone::reset() {
+    lastItem = 0;
+    for(int i = 0; i < items.size(); i++)
+        items[i].second.clear();
+}
+
+ColliderZone::ColliderZone() {
+    lastItem = 0;
+};
 ColliderZone::ColliderZone(int in_players) {
     players = in_players;
+    lastItem = 0;
 }
 
 void Collider::reset(int in_players, int mode, const Coord4 &bounds) {
@@ -283,8 +297,12 @@ void Collider::reset(int in_players, int mode, const Coord4 &bounds) {
     zys = (zbounds.sy / MATRIX_RES).toInt();
     zxe = (zbounds.ex / MATRIX_RES).toInt();
     zye = (zbounds.ey / MATRIX_RES).toInt();
-    zone.clear();
-    zone.resize(zxe - zxs, vector<ColliderZone>(zye - zys, ColliderZone( players )));
+    zone.resize(zxe - zxs);
+    for(int i = 0; i < zone.size(); i++) {
+        for(int j = 0; j < zone[i].size(); j++)
+            zone[i][j].reset();
+        zone[i].resize(zye - zys, ColliderZone(players));
+    }
     
     collidematrix.clear();
     

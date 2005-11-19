@@ -1,12 +1,9 @@
-- Do damage to outside of level
-- Move getDifference into its own file
 - Make it not glacially slow
 - Remove tiny shards of level
+- Fix jerky zooming out
 - Post-death bombardment :)
-- Finish intersection
 - Fix the shading
-- Fix lerp function
-- Destroyable terrain
+- Move getDifference into its own file
 - Better tank explosions
 - Next generation of weapons
 - Scrollable bars
