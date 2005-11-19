@@ -30,21 +30,19 @@ void Gamemap::render() const {
         }
     }
 }
-void Gamemap::addCollide( Collider *collider ) const {
-    vector<Coord4> collide = getCollide();
-    for(int i = 0; i < collide.size(); i++)
-        collider->token(collide[i], Coord4(0, 0, 0, 0));
-}
-
-vector<Coord4> Gamemap::getCollide() const {
+void Gamemap::addCollide(Collider *collider) const {
     vector<Coord4> collide;
     for(int i = 0; i < paths.size(); i++) {
         for(int j = 0; j < paths[i].size(); j++) {
             int k = (j + 1) % paths[i].size();
-            collide.push_back(Coord4(paths[i][j], paths[i][k]));
+            collider->token(Coord4(paths[i][j], paths[i][k]));
         }
     }
-    return collide;
+
+}
+
+const vector<vector<Coord2> > &Gamemap::getCollide() const {
+    return paths;
 }
 
 Coord4 Gamemap::getBounds() const {

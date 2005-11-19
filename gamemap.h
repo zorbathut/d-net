@@ -15,7 +15,7 @@ public:
 	void render() const;
 	void addCollide( Collider *collide ) const;
 
-    vector<Coord4> getCollide() const;
+    const vector<vector<Coord2> > &getCollide() const;
 
     Coord4 getBounds() const;
 

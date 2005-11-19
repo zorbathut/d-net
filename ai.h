@@ -28,7 +28,7 @@ public:
     void updatePregame();
     void updateCharacterChoice(const vector<Float4> &factions, const vector<int> &playerfact, Float2 pos, int mode, int me);
     void updateShop(const Player *player);
-    void updateGame(const vector<Coord4> &collide, const vector<Tank> &players, int me);
+    void updateGame(const vector<vector<Coord2> > &collide, const vector<Tank> &players, int me);
     void updateWaitingForReport();
 
     Controller getNextKeys() const;

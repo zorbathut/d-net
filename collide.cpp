@@ -334,11 +334,6 @@ void Collider::startToken( int toki ) {
     curtoken = toki;
 }
 void Collider::token( const Coord4 &line, const Coord4 &direction ) {
-    if(log) {
-        dprintf("Collide in: %f,%f-%f,%f delta %f,%f-%f,%f\n",
-            line.sx.toFloat(), line.sy.toFloat(), line.ex.toFloat(), line.ey.toFloat(),
-            direction.sx.toFloat(), direction.sy.toFloat(), direction.ex.toFloat(), direction.ey.toFloat());
-    }
     if( state == CSTA_ADD ) {
         CHECK( state == CSTA_ADD && curpush != -1 && curtoken != -1 );
         Coord4 area = startCBoundBox();
@@ -362,6 +357,30 @@ void Collider::token( const Coord4 &line, const Coord4 &direction ) {
         for(int x = txs; x < txe; x++)
             for(int y = tys; y < tye; y++)
                 zone[x - zxs][y - zys].addToken(curpush, curtoken, line, direction);
+    } else {
+        CHECK(0);
+    }
+}
+
+void Collider::token(const Coord4 &line) {
+    if( state == CSTA_ADD ) {
+        CHECK( state == CSTA_ADD && curpush != -1 && curtoken != -1 );
+        Coord4 area(min(line.sx, line.ex), min(line.sy, line.ey), max(line.sx, line.ex), max(line.sy, line.ey));
+        area = snapToEnclosingGrid(area, MATRIX_RES);
+        int txs = max((area.sx / MATRIX_RES).toInt(), zxs);
+        int tys = max((area.sy / MATRIX_RES).toInt(), zys);
+        int txe = min((area.ex / MATRIX_RES).toInt(), zxe);
+        int tye = min((area.ey / MATRIX_RES).toInt(), zye);
+        if(!(txs < zxe && tys < zye && txe > zxs && tye > zys)) {
+            dprintf("%d, %d, %d, %d\n", txs, tys, txe, tye);
+            dprintf("%d, %d, %d, %d\n", zxs, zys, zxe, zye);
+            dprintf("%f, %f, %f, %f\n", area.sx.toFloat(), area.sy.toFloat(), area.ex.toFloat(), area.ey.toFloat());
+            dprintf("%f, %f, %f, %f\n", line.sx.toFloat(), line.sy.toFloat(), line.ex.toFloat(), line.ey.toFloat());
+            CHECK(0);
+        }
+        for(int x = txs; x < txe; x++)
+            for(int y = tys; y < tye; y++)
+                zone[x - zxs][y - zys].addToken(curpush, curtoken, line, Coord4(0, 0, 0, 0));
     } else {
         CHECK(0);
     }

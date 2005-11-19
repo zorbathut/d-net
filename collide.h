@@ -104,7 +104,8 @@ public:
 	void reset(int players, int mode, const Coord4 &bounds);
 
     void startToken( int toki );
-	void token( const Coord4 &line, const Coord4 &direction );
+	void token(const Coord4 &line, const Coord4 &direction);
+    void token(const Coord4 &line);
 
 	void addThingsToGroup( int category, int gid, bool log = false);
 	void endAddThingsToGroup();

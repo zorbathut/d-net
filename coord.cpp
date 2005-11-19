@@ -598,13 +598,5 @@ void expandBoundBox(Coord4 *bbox, Coord factor) { return imp_expandBoundBox<Coor
  * Math
  */
 
-Coord4 snapToEnclosingGrid(Coord4 orig, Coord grid) {
-    orig.sx = ceil(orig.sx/grid - 1) * grid;
-    orig.sy = ceil(orig.sy/grid - 1) * grid;
-    orig.ex = ceil(orig.ex/grid) * grid;
-    orig.ey = ceil(orig.ey/grid) * grid;
-    return orig;
-}
-
 bool linelineintersect( const Coord4 &lhs, const Coord4 &rhs ) { return imp_linelineintersect<Coords>(lhs, rhs); };
 Coord linelineintersectpos( const Coord4 &lhs, const Coord4 &rhs ) { return imp_linelineintersectpos<Coords>(lhs, rhs); };
