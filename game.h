@@ -11,6 +11,9 @@ using namespace std;
 
 class Collider;
 class Ai;
+    
+class Tank;
+class Projectile;
 
 class Player {
 public:
@@ -95,7 +98,7 @@ public:
     pair<Coord2, float> getDeltaAfterMovement( const Keystates &keys, Coord2 pos, float d ) const;
 
 	bool takeDamage( float amount ); // returns true on kill
-	void genEffects( vector< GfxEffects > *gfxe );
+	void genEffects(vector< GfxEffects > *gfxe, vector<Projectile> *projectiles);
     
     bool initted;
 	

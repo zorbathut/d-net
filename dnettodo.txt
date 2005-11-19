@@ -1,4 +1,3 @@
-- Fix jerky zooming out
 - Post-death bombardment :)
 - Move getDifference into its own file
 - Better tank explosions

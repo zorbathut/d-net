@@ -299,7 +299,7 @@ bool Tank::takeDamage( float damage ) {
     return false;
 };
 
-void Tank::genEffects( vector< GfxEffects > *gfxe ) {
+void Tank::genEffects(vector<GfxEffects> *gfxe, vector<Projectile> *projectiles) {
 	if( spawnShards ) {
 		vector<Coord2> tv = getTankVertices( pos, d );
 		for( int i = 0; i < tv.size(); i++ ) {
@@ -485,7 +485,7 @@ void doInterp(float *curcenter, const float *nowcenter, float *curzoom, const fl
         goCloser(curcenter, nowcenter, *nowzoom * *curspeed);
         goCloser(curzoom, nowzoom, *nowzoom * *curspeed);
     } else {
-        *curspeed = max(*curspeed - 0.000002, 0);
+        *curspeed = max(*curspeed - 0.000002, 0.);
     }
 }
 
@@ -712,7 +712,7 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
 
 	for( int i = 0; i < players.size(); i++ ) {
         players[ i ].weaponCooldown--;
-		players[ i ].genEffects( &gfxeffects );
+		players[ i ].genEffects(&gfxeffects, &projectiles[i]);
     }
     
     {
