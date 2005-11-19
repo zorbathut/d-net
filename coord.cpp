@@ -277,14 +277,20 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
     }
     #endif
     GetDifferenceHandler CrashHandler(lhs, rhs);
-    CHECK(!pathReversed(lhs));
+    bool lhsInside = !pathReversed(lhs);
     CHECK(!pathReversed(rhs));
     {
         int state = getPathRelation(lhs, rhs);
         if(state == PR_SEPARATE)
             return vector<vector<Coord2> >(1, lhs);
-        if(state == PR_RHSENCLOSE)
+        if(state == PR_RHSENCLOSE && !pathReversed(lhs))
             return vector<vector<Coord2> >();
+        if(state == PR_RHSENCLOSE && pathReversed(lhs)) {
+            vector<vector<Coord2> > rv;
+            rv.push_back(rhs);
+            reverse(rv[0].begin(), rv[0].end());
+            return rv;
+        }
         if(state == PR_LHSENCLOSE) {
             dprintf("LHS Enclose! intersection ignored");
             return vector<vector<Coord2> >(1, lhs);
@@ -529,8 +535,8 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
                     }*/
                     if(!now.first) {
                         // came in off a lhs path - switch to rhs if there is one, and if it doesn't immediately leave the valid area
-                        if(vertx[now.second].live[1] && inPath((now.second + vertx[now.second].links[1][0]) / 2, lhs)) {
-                            CHECK(inPath((now.second + vertx[now.second].links[1][0]) / 2, lhs));
+                        if(vertx[now.second].live[1] && inPath((now.second + vertx[now.second].links[1][0]) / 2, lhs) == lhsInside) {
+                            CHECK(inPath((now.second + vertx[now.second].links[1][0]) / 2, lhs) == lhsInside);
                             now = make_pair(true, vertx[now.second].links[1][0]);
                         } else {
                             CHECK(vertx[now.second].live[0]);
@@ -546,7 +552,7 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
                         } else {
                             CHECK(vertx[now.second].live[1]);
                             if(!vertx[now.second].live[0] || vertx[now.second].links[0][1] != vertx[now.second].links[1][0]) // parallel links cause some problems
-                                CHECK(roughInPath((now.second + vertx[now.second].links[1][0]) / 2, lhs, true));
+                                CHECK(roughInPath((now.second + vertx[now.second].links[1][0]) / 2, lhs, lhsInside));
                             now = make_pair(true, vertx[now.second].links[1][0]);
                         }
                     }

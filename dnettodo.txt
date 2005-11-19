@@ -1,6 +1,5 @@
-- Make vector<Coord2> into Path
-- Move getDifference into its own file
 - Do damage to outside of level
+- Move getDifference into its own file
 - Make it not glacially slow
 - Remove tiny shards of level
 - Post-death bombardment :)
