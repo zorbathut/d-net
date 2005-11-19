@@ -59,6 +59,10 @@ inline bool operator==(const Float2 &lhs, const Float2 &rhs) {
     return lhs.x == rhs.x && lhs.y == rhs.y;
 }
 
+inline bool operator!=(const Float2 &lhs, const Float2 &rhs) {
+    return lhs.x != rhs.x || lhs.y != rhs.y;
+}
+
 // not meant to be meaningful
 inline bool operator<(const Float2 &lhs, const Float2 &rhs) {
     return lhs.x < rhs.x || lhs.x == rhs.x && lhs.y < rhs.y;

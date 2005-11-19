@@ -20,6 +20,9 @@ clean:
 run: d-net.exe
 	d-net.exe --nofullscreen --debugitems --startingcash=1000000
 
+ai: d-net.exe
+	d-net.exe --nofullscreen --aiCount=2
+
 vecedit: d-net.exe
 	d-net.exe --vecedit --nofullscreen
     

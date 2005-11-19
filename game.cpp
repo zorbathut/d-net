@@ -458,6 +458,37 @@ Projectile::Projectile(const Coord2 &in_pos, float in_d, const IDBProjectile *in
     }
 }
 
+// returns center and width/height
+pair<Float2, Float2> getMapZoom(const Coord4 &mapbounds) {
+    Float4 bounds = mapbounds.toFloat();
+    pair<Float2, Float2> rv;
+    rv.first.x = (bounds.sx + bounds.ex) / 2;
+    rv.first.y = (bounds.sy + bounds.ey) / 2;
+    rv.second.x = bounds.ex - bounds.sx;
+    rv.second.y = bounds.ey - bounds.sy;
+    rv.second.x *= 1.1;
+    rv.second.y *= 1.1;
+    return rv;
+}
+
+void goCloser(float *cur, const float *now, const float dist) {
+    if(*cur < *now) {
+        *cur = min(*cur + dist, *now);
+    } else {
+        *cur = max(*cur - dist, *now);
+    }
+}
+
+void doInterp(float *curcenter, const float *nowcenter, float *curzoom, const float *nowzoom, float *curspeed) {
+    if(*curcenter != *nowcenter || *curzoom != *nowzoom) {
+        *curspeed = min(*curspeed + 0.0000002, 0.001);
+        goCloser(curcenter, nowcenter, *nowzoom * *curspeed);
+        goCloser(curzoom, nowzoom, *nowzoom * *curspeed);
+    } else {
+        *curspeed = max(*curspeed - 0.000002, 0);
+    }
+}
+
 bool Game::runTick( const vector< Keystates > &rkeys ) {
     
     if(!ffwd && FLAGS_verboseCollisions)
@@ -694,7 +725,14 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
             framesSinceOneLeft++;
         }
     }
-    
+
+    {
+        pair<Float2, Float2> z = getMapZoom(gamemap.getBounds());
+        
+        doInterp(&zoom_center.x, &z.first.x, &zoom_size.x, &z.second.x, &zoom_speed.x);
+        doInterp(&zoom_center.y, &z.first.y, &zoom_size.y, &z.second.y, &zoom_speed.y);
+    }
+
     if(framesSinceOneLeft / FPS >= 3) {
         for(int i = 0; i < players.size(); i++) {
             if(players[i].live)
@@ -717,12 +755,10 @@ void Game::ai(const vector<Ai *> &ais) const {
 
 void Game::renderToScreen() const {
     {
-        Float4 bounds = gamemap.getBounds().toFloat();
-        expandBoundBox(&bounds, 1.1);
-        float y = (bounds.ey - bounds.sy) / 0.9;
-        float sy = bounds.ey - y;
-        float sx = ( bounds.sx + bounds.ex ) / 2 - ( y * 4 / 3 / 2 );
-        setZoom(sx, sy, bounds.ey);
+        const float availScreen = 0.9;
+        float pzoom = max(zoom_size.y / availScreen, zoom_size.x / 4 * 3);
+        Float2 origin(zoom_center.x - pzoom * 4 / 3 / 2, zoom_center.y - pzoom * (1.0 - availScreen / 2));
+        setZoom(origin.x, origin.y, origin.y + pzoom);
     }
 	for( int i = 0; i < players.size(); i++ ) {
 		players[ i ].render( i );
@@ -818,6 +854,17 @@ Game::Game(vector<Player> *in_playerdata, const Level &lev) {
     tankHighlight.resize(players.size());
     
     gamemap = Gamemap(lev);
+    
+    dprintf("ginit\n");
+    
+    pair<Float2, Float2> z = getMapZoom(gamemap.getBounds());
+    zoom_center = z.first;
+    zoom_size = z.second;
+    
+    zoom_speed = Float2(0, 0);
+    
+    dprintf("gedone\n");
+
 };
 
 vector<pair<float, Tank *> > Game::genTankDistance(const Coord2 &center) {

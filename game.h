@@ -189,6 +189,11 @@ private:
 
     vector<char> tankHighlight;
 
+    Float2 zoom_center;
+    Float2 zoom_size;
+
+    Float2 zoom_speed;
+
 };
 
 #endif
