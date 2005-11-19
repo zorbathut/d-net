@@ -27,7 +27,7 @@ public:
 
 };
 
-enum { PM_NORMAL, PM_MISSILE };
+enum { PM_NORMAL, PM_MISSILE, PM_AIRBRAKE };
 
 struct IDBProjectile {
 public:
@@ -53,6 +53,19 @@ public:
 
 };
 
+struct IDBGlory {
+public:
+    int minsplits;
+    int maxsplits;
+    int minsplitsize;
+    int maxsplitsize;
+
+    IDBDeploy *deploy;
+    IDBProjectile *projectile;
+
+    int shotspersplit;
+};
+
 struct IDBUpgrade {
 public:
     int hull;
@@ -66,7 +79,7 @@ public:
 
     string name;
 
-    enum {HNT_CATEGORY, HNT_WEAPON, HNT_UPGRADE, HNT_DONE, HNT_LAST};
+    enum {HNT_CATEGORY, HNT_WEAPON, HNT_UPGRADE, HNT_GLORY, HNT_DONE, HNT_LAST};
     int type;
 
     enum {HNDM_BLANK, HNDM_COST, HNDM_PACK, HNDM_COSTUNIQUE, HNDM_LAST};
@@ -77,6 +90,7 @@ public:
     
     const IDBWeapon *weapon;
     const IDBUpgrade *upgrade;
+    const IDBGlory *glory;
     
     int quantity;
     

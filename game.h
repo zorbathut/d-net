@@ -26,6 +26,8 @@ public:
     const IDBWeapon *weapon;
     int shotsLeft;
 
+    const IDBGlory *warhead;
+
     Color color;
     Dvec2 faction_symb;
 

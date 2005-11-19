@@ -8,6 +8,11 @@ hierarchy {
     type=upgrade
 }
 
+hierarchy {
+    name=ROOT.Glory Devices
+    type=glory
+}
+
 upgrade {
     name=ROOT.Upgrades.Hull I
     cost=2000

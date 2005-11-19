@@ -13,11 +13,12 @@ static map<string, IDBWarhead> warheadclasses;
 static map<string, IDBProjectile> projclasses;
 static map<string, IDBWeapon> weaponclasses;
 static map<string, IDBUpgrade> upgradeclasses;
+static map<string, IDBGlory> gloryclasses;
 
 static const IDBWeapon *defweapon = NULL;
+static const IDBGlory *defglory = NULL;
 
 DEFINE_bool(debugitems, false, "Enable debug items");
-
 
 float IDBDeploy::getDamagePerShotMultiplier() const {
     return 1.0f;
@@ -190,7 +191,10 @@ void parseItemFile(const string &fname) {
                     tnode.cat_restrictiontype = HierarchyNode::HNT_WEAPON;
                 } else if(chunk.kv["type"] == "upgrade") {
                     tnode.cat_restrictiontype = HierarchyNode::HNT_UPGRADE;
+                } else if(chunk.kv["type"] == "glory") {
+                    tnode.cat_restrictiontype = HierarchyNode::HNT_GLORY;
                 } else {
+                    dprintf("Unknown restriction type in hierarchy node: %s\n", chunk.kv["type"].c_str());
                     CHECK(0);
                 }
                 chunk.consume("type");
@@ -203,10 +207,11 @@ void parseItemFile(const string &fname) {
 
         } else if(chunk.category == "weapon") {
             
-            HierarchyNode *mountpoint = findNamedNode(chunk.kv["name"], 1);
-            HierarchyNode tnode;
             string name = chunk.consume("name");
             CHECK(weaponclasses.count(name) == 0);
+            
+            HierarchyNode *mountpoint = findNamedNode(name, 1);
+            HierarchyNode tnode;
             tnode.name = tokenize(name, ".").back();
             tnode.type = HierarchyNode::HNT_WEAPON;
             tnode.displaymode = HierarchyNode::HNDM_COST;
@@ -218,7 +223,6 @@ void parseItemFile(const string &fname) {
             CHECK(mountpoint->cat_restrictiontype == -1 || tnode.cat_restrictiontype == mountpoint->cat_restrictiontype);
             tnode.weapon = &weaponclasses[name];
             mountpoint->branches.push_back(tnode);
-            
             
             weaponclasses[name].firerate = atoi(chunk.consume("firerate").c_str());
             weaponclasses[name].costpershot = (float)tnode.cost / tnode.quantity;
@@ -239,10 +243,11 @@ void parseItemFile(const string &fname) {
             
         } else if(chunk.category == "upgrade") {
             
-            HierarchyNode *mountpoint = findNamedNode(chunk.kv["name"], 1);
-            HierarchyNode tnode;
             string name = chunk.consume("name");
             CHECK(upgradeclasses.count(name) == 0);
+            
+            HierarchyNode *mountpoint = findNamedNode(name, 1);
+            HierarchyNode tnode;
             tnode.name = tokenize(name, ".").back();
             tnode.type = HierarchyNode::HNT_UPGRADE;
             if(chunk.kv.count("exclusive") && atoi(chunk.consume("exclusive").c_str()))
@@ -282,12 +287,16 @@ void parseItemFile(const string &fname) {
             
             if(chunk.kv.count("motion")) {
                 string motion = chunk.consume("motion");
-                if(motion == "normal")
+                if(motion == "normal") {
                     projclasses[name].motion = PM_NORMAL;
-                else if(motion == "missile")
+                } else if(motion == "missile") {
                     projclasses[name].motion = PM_MISSILE;
-                else
+                } else if(motion == "airbrake") {
+                    projclasses[name].motion = PM_AIRBRAKE;
+                } else {
+                    dprintf("Unknown projectile motion: %s\n", motion.c_str());
                     CHECK(0);
+                }
             }
             
             string warheadclass = chunk.consume("warhead");
@@ -331,6 +340,44 @@ void parseItemFile(const string &fname) {
             if(chunk.kv.count("wallremovalchance"))
                 warheadclasses[name].wallremovalchance = atof(chunk.consume("wallremovalchance").c_str());
 
+        } else if(chunk.category == "glory") {
+            
+            string name = chunk.consume("name");
+            CHECK(gloryclasses.count(name) == 0);
+            
+            HierarchyNode *mountpoint = findNamedNode(name, 1);
+            HierarchyNode tnode;
+            tnode.name = tokenize(name, ".").back();
+            tnode.type = HierarchyNode::HNT_GLORY;
+            tnode.displaymode = HierarchyNode::HNDM_COST;
+            tnode.buyable = true;
+            tnode.quantity = 1;
+            tnode.cost = atoi(chunk.consume("cost").c_str());
+            tnode.cat_restrictiontype = HierarchyNode::HNT_GLORY;
+            CHECK(mountpoint->cat_restrictiontype == -1 || tnode.cat_restrictiontype == mountpoint->cat_restrictiontype);
+            
+            tnode.glory = &gloryclasses[name];
+            mountpoint->branches.push_back(tnode);
+            
+            string projclass = chunk.consume("projectile");
+            CHECK(projclasses.count(projclass));
+            gloryclasses[name].projectile = &projclasses[projclass];
+
+            string deployclass = chunk.consume("deploy");
+            CHECK(deployclasses.count(deployclass));
+            gloryclasses[name].deploy = &deployclasses[deployclass];
+
+            gloryclasses[name].minsplits = atoi(chunk.consume("minsplits").c_str());
+            gloryclasses[name].maxsplits = atoi(chunk.consume("maxsplits").c_str());
+            gloryclasses[name].minsplitsize = atoi(chunk.consume("minsplitsize").c_str());
+            gloryclasses[name].maxsplitsize = atoi(chunk.consume("maxsplitsize").c_str());
+            gloryclasses[name].shotspersplit = atoi(chunk.consume("shotspersplit").c_str());
+            
+            if(chunk.kv.count("default") && atoi(chunk.consume("default").c_str())) {
+                CHECK(!defglory);
+                defglory = &gloryclasses[name];
+            }
+            
         } else {
             CHECK(0);
         }
@@ -372,6 +419,7 @@ void initItemdb() {
     
     dprintf("done loading, consistency check\n");
     CHECK(defweapon);
+    CHECK(defglory);
     root.checkConsistency();
     dprintf("Consistency check is awesome!\n");
 }

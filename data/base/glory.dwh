@@ -1,0 +1,56 @@
+
+deploy {
+    name=deploy.glory
+    anglevariance=0.2
+}
+
+warhead {
+    name=warhead.glory
+    impactdamage=0.1
+    wallremovalradius=0.5
+}
+
+projectile {
+    name=projectile.glory.basic
+    velocity=20
+    motion=airbrake
+    warhead=warhead.glory
+}
+
+projectile {
+    name=projectile.glory.range
+    velocity=40
+    motion=airbrake
+    warhead=warhead.glory
+}
+
+glory {
+    name=ROOT.Glory Devices.None
+    cost=0
+    default=1
+    
+    deploy=deploy.glory
+    projectile=projectile.glory.basic
+    
+    minsplits=2
+    maxsplits=4
+    minsplitsize=1
+    maxsplitsize=2
+    
+    shotspersplit=10
+}
+
+glory {
+    name=ROOT.Glory Devices.Shaped Charges
+    cost=12000
+    
+    deploy=deploy.glory
+    projectile=projectile.glory.range
+    
+    minsplits=3
+    maxsplits=5
+    minsplitsize=1
+    maxsplitsize=2
+    
+    shotspersplit=20
+}
