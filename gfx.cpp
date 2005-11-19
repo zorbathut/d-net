@@ -294,8 +294,23 @@ void drawBoxAround(float x, float y, float rad, float weight) {
 
 void drawShadedBox(const Float4 &locs, float weight, float shadedens) {
     drawBox(locs, weight);
-    for(float i = locs.sx; i < locs.ex - ( locs.ey - locs.sy ); i += shadedens)
-        drawLine(i, locs.sy, i + ( locs.ey - locs.sy ), locs.ey, weight);
+    float sp = locs.sx - locs.ey + locs.sy;
+    sp = sp - fmod(sp, shadedens) + shadedens;
+    for(float xp = sp; xp < locs.ex; xp += shadedens) {
+        Float2 spos;
+        Float2 epos;
+        if(xp >= locs.sx) {
+            spos = Float2(xp, locs.sy);
+        } else {
+            spos = Float2(locs.sx, locs.sx - xp + locs.sy);
+        }
+        if(xp + locs.ey - locs.sy < locs.ex) {
+            epos = Float2(xp + locs.ey - locs.sy, locs.ey);
+        } else {
+            epos = Float2(locs.ex, locs.ex - xp + locs.sy);
+        }
+        drawLine(spos, epos, weight);
+    }
 }
 
 float bezinterp(float x0, float x1, float x2, float x3, float t) {
