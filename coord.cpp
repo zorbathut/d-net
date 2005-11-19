@@ -142,9 +142,7 @@ Coord2 getPointIn(const vector<Coord2> &path) {
 }
 
 bool pathReversed(const vector<Coord2> &path) {
-    int rv = inPath(getPointIn(path), path);
-    CHECK(rv != 0);
-    return rv == -1;
+    return getArea(path) < 0;
 }
 
 int getPathRelation(const vector<Coord2> &lhs, const vector<Coord2> &rhs) {
@@ -573,8 +571,15 @@ Coord getArea(const vector<Coord2> &are) {
         totare += are[i].x * are[j].y - are[j].x * are[i].y;
     }
     totare /= 2;
-    dprintf("%f\n", totare.toFloat());
     return totare;
+}
+Coord getPerimeter(const vector<Coord2> &are) {
+    Coord totperi = 0;
+    for(int i = 0; i < are.size(); i++) {
+        int j = (i + 1) % are.size();
+        totperi += len(are[i] - are[j]);
+    }
+    return totperi;
 }
 
 bool colinear(const Coord4 &line, const Coord2 &pt) {

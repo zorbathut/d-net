@@ -325,6 +325,7 @@ int getPathRelation(const vector<Coord2> &lhs, const vector<Coord2> &rhs);
 vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Coord2> &rhs);
 
 Coord getArea(const vector<Coord2> &are);
+Coord getPerimeter(const vector<Coord2> &are);
 
 bool colinear(const Coord4 &line, const Coord2 &pt);
 

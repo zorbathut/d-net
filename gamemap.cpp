@@ -73,8 +73,10 @@ void Gamemap::removeWalls(Coord2 center, float radius) {
     CHECK(!pathReversed(inters));
     for(int i = 0; i < paths.size(); i++) {
         vector<vector<Coord2> > ntp = getDifference(paths[i], inters);
-        for(int i = 0; i < ntp.size(); i++)
-            oat.push_back(ntp[i]);
+        for(int i = 0; i < ntp.size(); i++) {
+            if(abs(getArea(ntp[i])) > 1 || getPerimeter(ntp[i]) > 2 )
+                oat.push_back(ntp[i]);
+        }
     }
     paths = oat;
 }
