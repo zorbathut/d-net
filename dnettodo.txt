@@ -1,4 +1,4 @@
-- Get rid of loop in drawLine, use a different function
+- Spark trail for missiles
 - Post-death bombardment :)
 - Move getDifference into its own file
 - Certificates and discounts

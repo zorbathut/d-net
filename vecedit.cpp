@@ -230,7 +230,7 @@ void renderSinglePath(int path, float intense, int widgetlevel) {
     // reflection/core widget
     if(widgetlevel >= 1) {
         setColor(Color(0.5, 0.5, 0.5) * intense);
-        drawBoxAround(p.centerx, p.centery, linelen / 10, 0.1);
+        drawRectAround(p.centerx, p.centery, linelen / 10, 0.1);
         if(p.reflect == VECRF_SPIN) {
             setColor(Color(0.5, 0.5, 0.5) * intense);
             drawSpokes(p.centerx, p.centery, p.dupes, p.ang_numer, p.ang_denom, linelen, 0.1);
@@ -260,19 +260,19 @@ void renderSinglePath(int path, float intense, int widgetlevel) {
         pair<int, int> close = findTwoClosestNodes(cursor_x, cursor_y, path);
         if(close.first != -1) {
             setColor(Color(0.0, 0.5, 0.0) * intense);
-            drawBoxAround(p.centerx + p.vpath[close.first].x, p.centery + p.vpath[close.first].y, linelen / 20, 0.1);
+            drawRectAround(p.centerx + p.vpath[close.first].x, p.centery + p.vpath[close.first].y, linelen / 20, 0.1);
         }
         if(close.second != -1) {
             setColor(Color(0.5, 0.0, 0.0) * intense);
-            drawBoxAround(p.centerx + p.vpath[close.second].x, p.centery + p.vpath[close.second].y, linelen / 30, 0.1);
+            drawRectAround(p.centerx + p.vpath[close.second].x, p.centery + p.vpath[close.second].y, linelen / 30, 0.1);
         }
         pair<int, bool> handle = findClosestHandle(cursor_x, cursor_y, path);
         if(handle.first != -1) {
             setColor(Color(0.0, 0.0, 0.5) * intense);
             if(!handle.second) {
-                drawBoxAround(p.centerx + p.vpath[handle.first].x + p.vpath[handle.first].curvlx, p.centery + p.vpath[handle.first].y + p.vpath[handle.first].curvly, linelen / 30, 0.1);
+                drawRectAround(p.centerx + p.vpath[handle.first].x + p.vpath[handle.first].curvlx, p.centery + p.vpath[handle.first].y + p.vpath[handle.first].curvly, linelen / 30, 0.1);
             } else {
-                drawBoxAround(p.centerx + p.vpath[handle.first].x + p.vpath[handle.first].curvrx, p.centery + p.vpath[handle.first].y + p.vpath[handle.first].curvry, linelen / 30, 0.1);
+                drawRectAround(p.centerx + p.vpath[handle.first].x + p.vpath[handle.first].curvrx, p.centery + p.vpath[handle.first].y + p.vpath[handle.first].curvry, linelen / 30, 0.1);
             }
         }
     }
@@ -311,7 +311,7 @@ void renderSingleEntity(int p, int widgetlevel) {
         CHECK(ent.params[0].name == "numerator");
         CHECK(ent.params[1].name == "denominator");
         setColor(1.0, 0.3, 0.3);
-        drawLinePath(Tank().getTankVertices(Coord2(Coord(ent.x), Coord(ent.y)), (float)ent.params[0].bi_val / ent.params[1].bi_val * 2 * PI), 0.2, true);
+        drawLineLoop(Tank().getTankVertices(Coord2(Coord(ent.x), Coord(ent.y)), (float)ent.params[0].bi_val / ent.params[1].bi_val * 2 * PI), 0.2);
         if(widgetlevel >= 1) {
             setZoom(0, 0, 100);
             for(int i = 0; i < ent.params.size(); i++) {

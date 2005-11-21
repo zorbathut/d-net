@@ -269,7 +269,7 @@ void ColliderZone::render(const Coord4 &bbox) const {
     Coord4 tbx = bbox;
     expandBoundBox(&tbx, Coord(0.8f));
     setColor(Color(1.0, 1.0, 1.0) * 0.2 * items.size());
-    drawBox(tbx.toFloat(), 0.5);
+    drawRect(tbx.toFloat(), 0.5);
 }
 
 void ColliderZone::reset() {

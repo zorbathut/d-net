@@ -236,39 +236,27 @@ void drawLine( const Coord4 &loc, float weight ) {
     drawLine(loc.toFloat(), weight);
 }
 
-void drawLinePath( const vector< float > &iverts, float weight, bool loop ) {
-	CHECK( iverts.size() % 2 == 0 );
-    CHECK( iverts.size() >= 4 );
-    vector< float > verts = iverts;
-    if( loop ) {
-        verts.push_back(verts[0]);
-        verts.push_back(verts[1]);
-    }
-	for( int i = 0; i < verts.size() - 2; i += 2 )
-		drawLine( verts[ i ], verts[ i + 1 ], verts[ i + 2 ], verts[ i + 3 ], weight );
+void drawLinePath(const vector<Float2> &verts, float weight) {
+    CHECK(verts.size() >= 1);
+	for(int i = 0; i < verts.size() - 1; i++)
+		drawLine(verts[i], verts[i + 1], weight);
 };
-void drawLinePath( const vector<Float2> &iverts, float weight, bool loop ) {
-    CHECK( iverts.size() >= 1 );
-    vector<Float2> verts = iverts;
-    if( loop )
-        verts.push_back(verts[0]);
-	for( int i = 0; i < verts.size() - 1; i++ )
-		drawLine( verts[i], verts[i + 1], weight );
+void drawLineLoop(const vector<Float2> &verts, float weight) {
+    CHECK(verts.size() >= 1);
+	for(int i = 0; i < verts.size(); i++)
+		drawLine(verts[i], verts[(i + 1) % verts.size()], weight);
 };
-void drawLinePath( const vector<Coord2> &iverts, float weight, bool loop ) {
-    CHECK( iverts.size() >= 1 );
-    vector<Coord2> verts = iverts;
-    if( loop )
-        verts.push_back(verts[0]);
-	for( int i = 0; i < verts.size() - 1; i++ )
-		drawLine( verts[i], verts[i + 1], weight );
+void drawLineLoop(const vector<Coord2> &verts, float weight) {
+    CHECK(verts.size() >= 1);
+	for(int i = 0; i < verts.size(); i++)
+		drawLine(verts[i], verts[(i + 1) % verts.size()], weight);
 };
 
 void drawTransformedLinePath(const vector<Float2> &verts, float angle, Float2 transform, float weight) {
     vector<Float2> transed;
     for(int i = 0; i < verts.size(); i++)
         transed.push_back(rotate(verts[i], angle) + transform);
-    drawLinePath(transed, weight, true);
+    drawLineLoop(transed, weight);
 };
 
 void drawSolid(const Float4 &box) {
@@ -288,25 +276,21 @@ void drawSolid(const Float4 &box) {
     setColor(curcolor);
 }
 
-void drawBox( const Float4 &box, float weight ) {
-    vector<float> verts;
-    verts.push_back(box.sx);
-    verts.push_back(box.sy);
-    verts.push_back(box.sx);
-    verts.push_back(box.ey);
-    verts.push_back(box.ex);
-    verts.push_back(box.ey);
-    verts.push_back(box.ex);
-    verts.push_back(box.sy);
-    drawLinePath(verts, weight, true);
+void drawRect( const Float4 &rect, float weight ) {
+    vector<Float2> verts;
+    verts.push_back(Float2(rect.sx, rect.sy));
+    verts.push_back(Float2(rect.sx, rect.ey));
+    verts.push_back(Float2(rect.ex, rect.ey));
+    verts.push_back(Float2(rect.ex, rect.sy));
+    drawLineLoop(verts, weight);
 }
 
-void drawBoxAround(float x, float y, float rad, float weight) {
-    drawBox(Float4(x - rad, y - rad, x + rad, y + rad), weight);
+void drawRectAround(float x, float y, float rad, float weight) {
+    drawRect(Float4(x - rad, y - rad, x + rad, y + rad), weight);
 }
 
-void drawShadedBox(const Float4 &locs, float weight, float shadedens) {
-    drawBox(locs, weight);
+void drawShadedRect(const Float4 &locs, float weight, float shadedens) {
+    drawRect(locs, weight);
     float sp = locs.sx - locs.ey + locs.sy;
     sp = sp - fmod(sp, shadedens) + shadedens;
     for(float xp = sp; xp < locs.ex; xp += shadedens) {
@@ -333,32 +317,30 @@ float bezinterp(float x0, float x1, float x2, float x3, float t) {
     return ax * t * t * t + bx * t * t + cx * t + x0;
 }
 
-void drawCurve( const Float4 &ptah, const Float4 &ptbh, float weight ) {
-    vector<float> verts;
-    for(int i = 0; i <= 100; i++) {
-        verts.push_back(bezinterp(ptah.sx, ptah.ex, ptbh.sx, ptbh.ex, i / 100.0));
-        verts.push_back(bezinterp(ptah.sy, ptah.ey, ptbh.sy, ptbh.ey, i / 100.0));
-    }
-    drawLinePath(verts, weight, false);
+void drawCurve(const Float4 &ptah, const Float4 &ptbh, float weight) {
+    vector<Float2> verts;
+    for(int i = 0; i <= 100; i++)
+        verts.push_back(Float2(bezinterp(ptah.sx, ptah.ex, ptbh.sx, ptbh.ex, i / 100.0), bezinterp(ptah.sy, ptah.ey, ptbh.sy, ptbh.ey, i / 100.0)));
+    drawLinePath(verts, weight);
 }
 
-void drawCurveControls( const Float4 &ptah, const Float4 &ptbh, float spacing, float weight ) {
-    drawBoxAround( ptah.sx, ptah.sy, spacing, weight );
-    drawBoxAround( ptah.ex, ptah.ey, spacing, weight );
-    drawBoxAround( ptbh.sx, ptbh.sy, spacing, weight );
-    drawBoxAround( ptbh.ex, ptbh.ey, spacing, weight );
+void drawCurveControls(const Float4 &ptah, const Float4 &ptbh, float spacing, float weight) {
+    drawRectAround( ptah.sx, ptah.sy, spacing, weight );
+    drawRectAround( ptah.ex, ptah.ey, spacing, weight );
+    drawRectAround( ptbh.sx, ptbh.sy, spacing, weight );
+    drawRectAround( ptbh.ex, ptbh.ey, spacing, weight );
     drawLine( ptah, weight );
     drawLine( ptbh, weight );
 }
 
-void drawCircle( const Float2 &center, float radius, float weight ) {
+void drawCircle(const Float2 &center, float radius, float weight) {
     vector<Float2> verts;
     for(int i = 0; i < 16; i++)
         verts.push_back(makeAngle(i * PI / 8) * radius + center);
-    drawLinePath(verts, weight, true);
+    drawLineLoop(verts, weight);
 }
 
-void drawPoint( float x, float y, float weight ) {
+void drawPoint(float x, float y, float weight) {
     finishLineCluster();
     glPointSize( weight / map_zoom * getResolutionY() );   // GL uses pixels internally for this unit, so I have to translate from game-meters
     glBegin( GL_POINTS );
@@ -366,20 +348,7 @@ void drawPoint( float x, float y, float weight ) {
 	glEnd();
 }
 
-void drawRect( const Float4 &rect, float weight ) {
-	vector< float > verts;
-	verts.push_back( rect.sx );
-	verts.push_back( rect.sy );
-	verts.push_back( rect.ex );
-	verts.push_back( rect.sy );
-	verts.push_back( rect.ex );
-	verts.push_back( rect.ey );
-	verts.push_back( rect.sx );
-	verts.push_back( rect.ey );
-	drawLinePath( verts, weight, true );
-};
-
-void drawText( const char *txt, float scale, float sx, float sy ) {
+void drawText(const char *txt, float scale, float sx, float sy) {
     scale /= 9;
     for(int i = 0; txt[i]; i++) {
         char kar = toupper(txt[i]);
@@ -389,12 +358,10 @@ void drawText( const char *txt, float scale, float sx, float sy ) {
         }
         const vector<vector<pair<int, int> > > &pathdat = fontdata[kar];
         for(int i = 0; i < pathdat.size(); i++) {
-            vector<float> verts;
-            for(int j = 0; j < pathdat[i].size(); j++) {
-                verts.push_back(sx + pathdat[i][j].first * scale);
-                verts.push_back(sy + pathdat[i][j].second * scale);
-            }
-            drawLinePath(verts, scale / 5, false);
+            vector<Float2> verts;
+            for(int j = 0; j < pathdat[i].size(); j++)
+                verts.push_back(Float2(sx + pathdat[i][j].first * scale, sy + pathdat[i][j].second * scale));
+            drawLinePath(verts, scale / 5);
         }
         sx += scale * 8;
     }

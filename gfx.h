@@ -73,23 +73,22 @@ void drawSolid(const Float4 &box);
  * Composites
  */
 
-void drawLinePath( const vector<float> &verts, float weight, bool loop );
-void drawLinePath( const vector<Float2> &verts, float weight, bool loop );
-void drawLinePath( const vector<Coord2> &verts, float weight, bool loop );
+void drawLinePath( const vector<Float2> &verts, float weight);
+
+void drawLineLoop( const vector<Float2> &verts, float weight);
+void drawLineLoop( const vector<Coord2> &verts, float weight);
 
 void drawTransformedLinePath(const vector<Float2> &verts, float angle, Float2 translate, float weight);
 
-void drawBox( const Float4 &locs, float weight );
-void drawBoxAround( float x, float y, float rad, float weight );
+void drawRect(const Float4 &rect, float weight);
+void drawRectAround( float x, float y, float rad, float weight );
 
-void drawShadedBox(const Float4 &locs, float weight, float shadedens);
+void drawShadedRect(const Float4 &locs, float weight, float shadedens);
 
 void drawCurve( const Float4 &ptah, const Float4 &ptbh, float weight );
 void drawCurveControls( const Float4 &ptah, const Float4 &ptbh, float spacing, float weight );
 
 void drawCircle( const Float2 &center, float radius, float weight );
-
-void drawRect( const Float4 &rect, float weight );
 
 void drawText( const char *txt, float scale, float sx, float sy );
 void drawText( const string &txt, float scale, float sx, float sy );

@@ -80,10 +80,10 @@ void Shop::renderNode(const HierarchyNode &node, int depth) const {
         } else {
             setColor(0.3, 0.3, 0.3);
         }
-        drawSolid( Float4( hoffbase, sl_voffset + i * sl_itemheight, hoffbase + sl_boxwidth, sl_voffset + i * sl_itemheight + sl_fontsize + sl_boxborder * 2 ) );
-        drawBox( Float4( hoffbase, sl_voffset + i * sl_itemheight, hoffbase + sl_boxwidth, sl_voffset + i * sl_itemheight + sl_fontsize + sl_boxborder * 2 ), sl_boxthick );
+        drawSolid(Float4( hoffbase, sl_voffset + i * sl_itemheight, hoffbase + sl_boxwidth, sl_voffset + i * sl_itemheight + sl_fontsize + sl_boxborder * 2 ));
+        drawRect(Float4( hoffbase, sl_voffset + i * sl_itemheight, hoffbase + sl_boxwidth, sl_voffset + i * sl_itemheight + sl_fontsize + sl_boxborder * 2 ), sl_boxthick);
         setColor(1.0, 1.0, 1.0);
-        drawText( node.branches[i].name.c_str(), sl_fontsize, hoffbase + sl_boxborder, sl_voffset + i * sl_itemheight + sl_boxborder );
+        drawText(node.branches[i].name.c_str(), sl_fontsize, hoffbase + sl_boxborder, sl_voffset + i * sl_itemheight + sl_boxborder);
         {
             int dispmode = node.branches[i].displaymode;
             if(dispmode == HierarchyNode::HNDM_COSTUNIQUE) {
@@ -392,7 +392,7 @@ void Metagame::renderToScreen() const {
                 Float4 box( 0, ye * i, ye, ye + ye * i );
                 drawDvec2(symbols[playersymbol[i]], Float4(box.sx + ye / 10, box.sy + ye / 10, box.ex - ye / 10, box.ey - ye / 10), 1.0);
                 setColor(Color(1.0, 1.0, 1.0) / 60 * fireHeld[i]);
-                drawBox(Float4(box.sx + ye / 20, box.sy + ye / 20, box.ex - ye / 20, box.ey - ye / 20), 1);
+                drawRect(Float4(box.sx + ye / 20, box.sy + ye / 20, box.ex - ye / 20, box.ey - ye / 20), 1);
                 setColor(Color(0.8, 0.8, 0.8));
                 drawText(ksax_names[playermode[i]], 20, ye, ye * (i + 1. / 20));
             }
@@ -543,7 +543,7 @@ void Metagame::drawMultibar(const vector<float> &sizes, const Float4 &dimensions
     for(int i = 0; i < sizes.size(); i++) {
         setColor(playerdata[i].color);
         float epos = cpos + sizes[i] * per;
-        drawShadedBox(Float4(cpos, dimensions.sy, epos, dimensions.ey), 1, 6);
+        drawShadedRect(Float4(cpos, dimensions.sy, epos, dimensions.ey), 1, 6);
         cpos = epos;
     }
 }

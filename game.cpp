@@ -116,7 +116,7 @@ void Tank::render( int tankid ) const {
 
     setColor(player->color);
 
-	drawLinePath( getTankVertices( pos, d ), 0.2, true );
+	drawLineLoop(getTankVertices(pos, d), 0.2);
 };
 
 vector<Coord4> Tank::getCurrentCollide() const {
@@ -882,7 +882,7 @@ void Game::renderToScreen() const {
                 float bare = (roffset - 1) - (loffset + 1);
                 bare /= players[i].player->maxHealth;
                 bare *= players[i].health;
-                drawShadedBox(Float4(barl, 2, barl + bare, 6), 0.1, 2);
+                drawShadedRect(Float4(barl, 2, barl + bare, 6), 0.1, 2);
                 string ammotext;
                 if(players[i].player->shotsLeft == -1) {
                     ammotext = "inf";
