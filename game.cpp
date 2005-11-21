@@ -66,7 +66,7 @@ void GfxEffects::move() {
 void GfxEffects::render() const {
     CHECK(life != -1);
     float apercent = 1.0f - (float)age / life;
-	setColor(apercent, apercent, apercent);
+	setColor(color * apercent);
     if(type == EFFECT_LINE) {
         drawLine(line_pos + line_vel * age, 0.1f);
     } else if(type == EFFECT_POINT) {
@@ -76,7 +76,7 @@ void GfxEffects::render() const {
     } else if(type == EFFECT_TEXT) {
         drawText(text_data, text_size, text_pos + text_vel * age);
     } else if(type == EFFECT_PATH) {
-        drawTranslatedLinePath(path_path, path_start + path_vel * age, 0.1f);
+        drawTransformedLinePath(path_path, path_ang_start + path_ang_vel * age + path_ang_acc * age * age / 2, path_pos_start + path_pos_vel * age + path_pos_acc * age * age / 2, 0.1f);
     } else {
         CHECK(0);
     }
@@ -89,6 +89,7 @@ bool GfxEffects::dead() const {
 GfxEffects::GfxEffects() {
 	age = 0;
     life = -1;
+    color = Color(1.0, 1.0, 1.0);
 }
 
 void Tank::init(Player *in_player) {
@@ -316,7 +317,8 @@ void Tank::genEffects(vector<GfxEffects> *gfxe, vector<Projectile> *projectiles)
         
         vector<float> ang;
         {
-            int ct = int(frand() * (glory->maxsplits - glory->minsplits)) + glory->minsplits;
+            int ct = int(frand() * (glory->maxsplits - glory->minsplits + 1)) + glory->minsplits;
+            CHECK(ct <= glory->maxsplits && ct >= glory->minsplits);
             for(int i = 0; i < ct; i++)
                 ang.push_back(frand() * (glory->maxsplitsize - glory->minsplitsize) + glory->minsplitsize);
             for(int i = 1; i < ang.size(); i++)
@@ -342,12 +344,11 @@ void Tank::genEffects(vector<GfxEffects> *gfxe, vector<Projectile> *projectiles)
             do {
                 intersecty.push_back(makeAngle(Coord(kang)) * 100);
                 kang -= 0.5;
-                if(kang < ned)
+                if(kang - 0.25 < ned)
                     kang = ned;
             } while(kang > ned);
             intersecty.push_back(makeAngle(Coord(ned)) * 100);
             reverse(intersecty.begin(), intersecty.end());
-            
             vector<vector<Coord2> > thischunk = getDifference(tv, intersecty);
             CHECK(thischunk.size() == 1);
             chunks.push_back(thischunk[0]);
@@ -362,11 +363,22 @@ void Tank::genEffects(vector<GfxEffects> *gfxe, vector<Projectile> *projectiles)
             GfxEffects ngfe;
             ngfe.type = GfxEffects::EFFECT_PATH;
             ngfe.path_path = vf2;
-            ngfe.path_start = (centr + subcentroid).toFloat();
-            ngfe.path_vel = vel.toFloat();
+            ngfe.path_pos_start = (centr + subcentroid).toFloat();
+            ngfe.path_pos_vel = vel.toFloat();
+            ngfe.path_pos_acc = -ngfe.path_pos_vel / 30;
+            ngfe.path_ang_start = 0;
+            ngfe.path_ang_vel = powerRand(2) / 20;
+            ngfe.path_ang_acc = -ngfe.path_ang_vel / 30;
             ngfe.life = 30;
+            ngfe.color = player->color;
             gfxe->push_back(ngfe);
         }
+        
+        dprintf("%d projs\n", projectiles->size());
+        for(int i = 0; i < ang.size(); i++)
+            for(int j = 0; j < glory->shotspersplit; j++)
+                projectiles->push_back(Projectile(centr, ang[i] + powerRand(2) / 10, glory->projectile, this));
+        dprintf("%d projs end\n", projectiles->size());
         
 		spawnShards = false;
 	}
@@ -394,6 +406,10 @@ void Projectile::tick() {
     } else if(projtype->motion == PM_MISSILE) {
         if(age > 10)
             missile_sidedist /= 1.2;
+    } else if(projtype->motion == PM_AIRBRAKE) {
+        airbrake_velocity *= 0.95;
+        if(airbrake_liveness() <= 0)
+            live = false;
     } else {
         CHECK(0);
     }
@@ -402,8 +418,16 @@ void Projectile::tick() {
 void Projectile::render() const {
     CHECK(live);
     CHECK(age != -1);
-	setColor( 1.0, 1.0, 1.0 );
-	drawLine(Coord4(pos, pos + lasttail), 0.1 );
+    if(projtype->motion == PM_NORMAL) {
+        setColor(1.0, 1.0, 1.0);
+    } else if(projtype->motion == PM_MISSILE) {
+        setColor(1.0, 1.0, 1.0);
+    } else if(projtype->motion == PM_AIRBRAKE) {
+        setColor(airbrake_liveness(), airbrake_liveness(), airbrake_liveness());
+    } else {
+        CHECK(0);
+    }
+    drawLine(Coord4(pos, pos + lasttail), 0.1);
 };
 void Projectile::addCollision( Collider *collider ) const {
     CHECK(live);
@@ -465,6 +489,8 @@ Coord2 Projectile::movement() const {
         return makeAngle(Coord(d)) * Coord(projtype->velocity);
     } else if(projtype->motion == PM_MISSILE) {
         return missile_accel() + missile_backdrop() + missile_sidedrop();
+    } else if(projtype->motion == PM_AIRBRAKE) {
+        return Coord2(makeAngle(d) * airbrake_velocity);
     } else {
         CHECK(0);
     }
@@ -476,6 +502,8 @@ Coord2 Projectile::nexttail() const {
         return -movement();
     } else if(projtype->motion == PM_MISSILE) {
         return -missile_accel();
+    } else if(projtype->motion == PM_AIRBRAKE) {
+        return Coord2(-makeAngle(d) * (airbrake_velocity + 2));
     } else {
         CHECK(0);
     }
@@ -489,6 +517,10 @@ Coord2 Projectile::missile_backdrop() const {
 }
 Coord2 Projectile::missile_sidedrop() const {
     return makeAngle(Coord(d) - COORDPI / 2) * Coord(missile_sidedist);
+}
+
+float Projectile::airbrake_liveness() const {
+    return 1.0 - (age / 60.0);
 }
 
 Projectile::Projectile() {
@@ -507,6 +539,9 @@ Projectile::Projectile(const Coord2 &in_pos, float in_d, const IDBProjectile *in
     if(projtype->motion == PM_NORMAL) {
     } else if(projtype->motion == PM_MISSILE) {
         missile_sidedist = powerRand(2) * 0.25;
+    } else if(projtype->motion == PM_AIRBRAKE) {
+        airbrake_velocity = (powerRand(2) / 4 + 1) * projtype->velocity;
+        dprintf("ABV is %f, pv is %f\n", airbrake_velocity, projtype->velocity);
     } else {
         CHECK(0);
     }
@@ -713,11 +748,15 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
 
 	for(int j = 0; j < projectiles.size(); j++) {
 		for(int k = 0; k < projectiles[ j ].size(); k++) {
-            if(!projectiles[ j ][ k ].isLive()) {
-                projectiles[ j ].erase(projectiles[ j ].begin() + k);
+            if(!projectiles[j][k].isLive()) {
+                projectiles[j].erase(projectiles[j].begin() + k);
                 k--;
             } else {
-            	projectiles[ j ][ k ].tick();
+            	projectiles[j][k].tick();
+                if(!projectiles[j][k].isLive()) {   // in case it dies in its tick
+                    projectiles[j].erase(projectiles[j].begin() + k);
+                    k--;
+                }
             }
         }
     }

@@ -6,20 +6,20 @@ deploy {
 
 warhead {
     name=warhead.glory
-    impactdamage=0.1
+    impactdamage=0.3
     wallremovalradius=0.5
 }
 
 projectile {
     name=projectile.glory.basic
-    velocity=20
+    velocity=40
     motion=airbrake
     warhead=warhead.glory
 }
 
 projectile {
     name=projectile.glory.range
-    velocity=40
+    velocity=80
     motion=airbrake
     warhead=warhead.glory
 }

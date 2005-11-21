@@ -283,7 +283,7 @@ void parseItemFile(const string &fname) {
 
             projclasses[name].motion = PM_NORMAL;
             
-            projclasses[name].velocity = atoi(chunk.consume("velocity").c_str()) / FPS;
+            projclasses[name].velocity = atof(chunk.consume("velocity").c_str()) / FPS;
             
             if(chunk.kv.count("motion")) {
                 string motion = chunk.consume("motion");

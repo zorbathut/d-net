@@ -4,6 +4,7 @@
 #include "gfx.h"
 #include "args.h"
 #include "vecedit.h"
+#include "coord.h"
 
 #include <string>
 #include <vector>
@@ -154,53 +155,22 @@ void InterfaceMain::render() const {
     #if 0   // Code used for checking the validity of getDifference :)
     {
         
-         string lhs[80] = {
-            "ffffff9000000000", "0000001400000000",
-            "ffffffb9a6db13f8", "00000031c0535768",
-            "ffffffb9930a1571", "0000003248ff2d53",
-            "ffffffb86b124bd0", "00000032413f2019",
-            "ffffffb6a141aed0", "00000033144d5819",
-            "ffffffb95bd65916", "00000033c5b8125f",
-            "ffffffb904d14fb8", "000000361de222a8",
-            "ffffffbb2e55dcb8", "0000003750b406a8",
-            "ffffffbc524081ce", "0000003657620705",
-            "ffffffbc14645e58", "000000370611e8ad",
-            "ffffffc1889de04c", "0000003761955715",
-            "ffffffc800000000", "0000003c00000000",
-            "ffffffcf1000e7e2", "0000003ea60056f4",
-            "ffffffcdbb03ac82", "0000003eee7b1730",
-            "ffffffd101a172ea", "0000003f609c8b17",
-            "ffffffdde1b3bde0", "0000004434a36734",
-            "ffffffded6c2ee80", "000000489d502c00",
-            "ffffffe05e57980f", "000000452360d905",
-            "ffffffe800000000", "0000004800000000",
-            "ffffffea80ca4ed0", "00000047fffffffe",
-            "ffffffed79086513", "0000004a0f662800",
-            "ffffffeccb1f67b5", "00000047fffffffe",
-            "000000023bb35eb8", "00000047fffffffe",
-            "00000002c3784ad8", "0000004b41a77fff",
-            "00000006b6c5fe19", "00000047fffffffe",
-            "00000017ffffe000", "0000004800000000",
-            "00000021ce1adfc9", "0000004452b5f75e",
-            "000000282ac21c23", "00000044447f6d13",
-            "000000282e795823", "000000429ab5f813",
-            "00000023cba0adfc", "0000004393a3cec4",
-            "0000002c68750e88", "0000004058d43f05",
-            "00000030a0994374", "00000042fbc6bdcd",
-            "00000033c932bb74", "0000003e78fa03cd",
-            "0000002e95a47dfb", "0000003f87e27a65",
-            "0000003800000000", "0000003c00004000",
-            "0000007000000000", "000000140000a000",
-            "0000005800000000", "0000003c00008000",
-            "0000002bffffc000", "0000005000000000",
-            "ffffffd400000000", "0000005000000000",
-            "ffffffa800000000", "0000003c00000000",
+        string lhs[6] = {
+            "fffffffd80000000", "fffffffdd5555471",
+            "0000000280000000", "fffffffdd5555471",
+            "0000000000000000", "000000045555571b",
         };
-        string rhs[6] = {
-            "000000117e7c8080", "0000004aece7fbff",
-            "00000013c4eebd00", "0000004bf96ae7ff",
-            "00000011def5e880", "0000004b3c6ef3ff",
+        string rhs[16] = {
+            "0000005f1b0c2400", "0000001ee6d5d400",
+            "0000005f1b0c2400", "0000001ee6d5d400",
+            "0000004484af3c00", "00000048d64bf400",
+            "0000001975cf6000", "00000060b4606c00",
+            "ffffffe7cecca000", "0000006107921400",
+            "ffffffbc70e3f400", "00000049ba4cb400",
+            "ffffffa14e96d400", "0000002024d98c00",
+            "0000000000000000", "0000000000000000",
         };
+
 
         vector<Coord2> diff[2];
         
@@ -219,12 +189,12 @@ void InterfaceMain::render() const {
             for(int i = 0; i < res.size(); i++)
                 addToBoundBox(&bbox, getBoundBox(res[i]));
             
-            pair<pair<float, float>, float> fin = fitInside(bbox.toFloat(), Float4(20, 10, 80, 90));
+            pair<Float2, float> fin = fitInside(bbox.toFloat(), Float4(20, 10, 80, 90));
             for(int i = 0; i < res.size(); i++) {
                 
                 for(int j = 0; j < res[i].size(); j++) {
                     res[i][j] *= Coord(fin.second);
-                    res[i][j] += Coord2(fin.first.first, fin.first.second);
+                    res[i][j] += Coord2(fin.first);
                 }
                 if(i == 0)
                     setColor(1.0, 0.3, 0.3);

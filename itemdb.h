@@ -31,8 +31,8 @@ enum { PM_NORMAL, PM_MISSILE, PM_AIRBRAKE };
 
 struct IDBProjectile {
 public:
-    int velocity;
     int motion;
+    float velocity;
     const IDBWarhead *warhead;
 
     float getDamagePerShot() const;
@@ -60,8 +60,8 @@ public:
     int minsplitsize;
     int maxsplitsize;
 
-    IDBDeploy *deploy;
-    IDBProjectile *projectile;
+    const IDBDeploy *deploy;
+    const IDBProjectile *projectile;
 
     int shotspersplit;
 };

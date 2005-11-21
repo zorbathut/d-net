@@ -60,6 +60,7 @@ public:
     
     int life;
     int age;
+    Color color;
     
     Float2 point_pos;
     Float2 point_vel;
@@ -76,8 +77,12 @@ public:
     string text_data;
     
     vector<Float2> path_path;
-    Float2 path_start;
-    Float2 path_vel;
+    Float2 path_pos_start;
+    Float2 path_pos_vel;
+    Float2 path_pos_acc;
+    float path_ang_start;
+    float path_ang_vel;
+    float path_ang_acc;
 
 	GfxEffects();
 
@@ -155,6 +160,9 @@ private:
     Coord2 missile_backdrop() const;
     Coord2 missile_sidedrop() const;
     float missile_sidedist;
+
+    float airbrake_liveness() const;
+    float airbrake_velocity;
 
 	Coord2 pos;
 	float d;

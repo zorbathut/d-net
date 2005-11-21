@@ -46,3 +46,7 @@ void expandBoundBox(Float4 *bbox, float factor) { return imp_expandBoundBox<Floa
 
 bool linelineintersect( const Float4 &lhs, const Float4 &rhs ) { return imp_linelineintersect<Floats>(lhs, rhs); };
 float linelineintersectpos( const Float4 &lhs, const Float4 &rhs ) { return imp_linelineintersectpos<Floats>(lhs, rhs); };
+
+Float2 rotate(const Float2 &in, float ang) {
+    return makeAngle(getAngle(in) + ang) * len(in);
+}

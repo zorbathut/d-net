@@ -470,13 +470,13 @@ void Collider::processMotion() {
     {
         set<CollideId> hit;
         for(int i = 0; i < clds.size(); i++) {
-            if(clds[i].second.lhs.category == 1 && hit.count(clds[i].second.lhs))
+            if(clds[i].second.lhs.category == CGR_PROJECTILE && hit.count(clds[i].second.lhs))
                 continue;
-            if(clds[i].second.rhs.category == 1 && hit.count(clds[i].second.rhs))
+            if(clds[i].second.rhs.category == CGR_PROJECTILE && hit.count(clds[i].second.rhs))
                 continue;
-            if(clds[i].second.lhs.category == 1)
+            if(clds[i].second.lhs.category == CGR_PROJECTILE)
                 hit.insert(clds[i].second.lhs);
-            if(clds[i].second.rhs.category == 1)
+            if(clds[i].second.rhs.category == CGR_PROJECTILE)
                 hit.insert(clds[i].second.rhs);
             collides.push_back(clds[i].second);
         }

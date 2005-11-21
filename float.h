@@ -19,6 +19,10 @@ public:
         x( in_x ), y( in_y ) { };
 };
 
+inline Float2 operator-(const Float2 &lhs) {
+    return Float2(-lhs.x, -lhs.y);
+}
+
 inline Float2 operator+(const Float2 &lhs, const Float2 &rhs) {
     return Float2(lhs.x + rhs.x, lhs.y + rhs.y);
 }
@@ -170,5 +174,6 @@ inline Float4 boxaround(const Float2 &lhs, float radius) {
 bool linelineintersect( const Float4 &lhs, const Float4 &rhs );
 float linelineintersectpos( const Float4 &lhs, const Float4 &rhs );
 
+Float2 rotate(const Float2 &in, float ang);
 
 #endif

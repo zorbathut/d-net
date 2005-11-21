@@ -591,6 +591,13 @@ Coord getPerimeter(const vector<Coord2> &are) {
     }
     return totperi;
 }
+Coord4 getBoundBox(const vector<Coord2> &are) {
+    Coord4 bbox = startCBoundBox();
+    for(int i = 0; i < are.size(); i++)
+        addToBoundBox(&bbox, are[i]);
+    CHECK(bbox.isNormalized());
+    return bbox;
+}
 
 bool colinear(const Coord4 &line, const Coord2 &pt) {
     Coord koord = distanceFromLine(line, pt);

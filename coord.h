@@ -327,6 +327,7 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
 Coord getArea(const vector<Coord2> &are);
 Coord2 getCentroid(const vector<Coord2> &are);
 Coord getPerimeter(const vector<Coord2> &are);
+Coord4 getBoundBox(const vector<Coord2> &are);
 
 bool colinear(const Coord4 &line, const Coord2 &pt);
 

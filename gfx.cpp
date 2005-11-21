@@ -258,10 +258,10 @@ void drawLinePath( const vector<Coord2> &iverts, float weight, bool loop ) {
 		drawLine( verts[i], verts[i + 1], weight );
 };
 
-void drawTranslatedLinePath(const vector<Float2> &verts, Float2 delta, float weight) {
+void drawTransformedLinePath(const vector<Float2> &verts, float angle, Float2 transform, float weight) {
     vector<Float2> transed;
     for(int i = 0; i < verts.size(); i++)
-        transed.push_back(verts[i] + delta);
+        transed.push_back(rotate(verts[i], angle) + transform);
     drawLinePath(transed, weight, true);
 };
 
