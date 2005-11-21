@@ -55,14 +55,18 @@ void HierarchyNode::checkConsistency() const {
     // check that displaymode is within bounds
     CHECK(displaymode >= 0 && displaymode < HNDM_LAST);
     
+    bool gottype = false;
+    
     // categories don't have a cost and aren't buyable
     if(type == HNT_CATEGORY) {
+        gottype = true;
         CHECK(displaymode != HNDM_COST);
         CHECK(!buyable);
     }
     
     // weapons all have costs and are buyable
     if(type == HNT_WEAPON) {
+        gottype = true;
         CHECK(displaymode == HNDM_COST);
         CHECK(buyable);
         CHECK(weapon);
@@ -72,20 +76,36 @@ void HierarchyNode::checkConsistency() const {
     
     // upgrades all are unique and are buyable
     if(type == HNT_UPGRADE) {
+        gottype = true;
         CHECK(displaymode == HNDM_COSTUNIQUE);
         CHECK(buyable);
+        CHECK(quantity == 1);
         CHECK(upgrade);
     } else {
         CHECK(!upgrade);
     }
     
+    // glory devices all are unique and are buyable
+    if(type == HNT_GLORY) {
+        gottype = true;
+        CHECK(displaymode == HNDM_COSTUNIQUE);
+        CHECK(buyable);
+        CHECK(glory);
+    } else {
+        CHECK(!glory);
+    }
+    
     // the "done" token has no cost or other display but is "buyable"
     if(type == HNT_DONE) {
+        gottype = true;
         CHECK(displaymode == HNDM_BLANK);
         CHECK(buyable);
+        CHECK(quantity == 1);
         CHECK(name == "done");
         CHECK(cost == 0);
     }
+    
+    CHECK(gottype);
     
     // if it's buyable, it has a cost
     if(buyable) {
@@ -124,6 +144,7 @@ HierarchyNode::HierarchyNode() {
     cat_restrictiontype = -1;
     weapon = NULL;
     upgrade = NULL;
+    glory = NULL;
 }
 
 HierarchyNode *findNamedNode(const string &in, int postcut) {
@@ -250,10 +271,7 @@ void parseItemFile(const string &fname) {
             HierarchyNode tnode;
             tnode.name = tokenize(name, ".").back();
             tnode.type = HierarchyNode::HNT_UPGRADE;
-            if(chunk.kv.count("exclusive") && atoi(chunk.consume("exclusive").c_str()))
-                tnode.displaymode = HierarchyNode::HNDM_COSTUNIQUE;
-            else
-                tnode.displaymode = HierarchyNode::HNDM_COST;
+            tnode.displaymode = HierarchyNode::HNDM_COSTUNIQUE;
             tnode.buyable = true;
             tnode.quantity = 1;
             CHECK(mountpoint->quantity == 1 || mountpoint->quantity == -1);
@@ -349,7 +367,7 @@ void parseItemFile(const string &fname) {
             HierarchyNode tnode;
             tnode.name = tokenize(name, ".").back();
             tnode.type = HierarchyNode::HNT_GLORY;
-            tnode.displaymode = HierarchyNode::HNDM_COST;
+            tnode.displaymode = HierarchyNode::HNDM_COSTUNIQUE;
             tnode.buyable = true;
             tnode.quantity = 1;
             tnode.cost = atoi(chunk.consume("cost").c_str());

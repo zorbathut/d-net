@@ -30,7 +30,6 @@ upgrade {
     name=ROOT.Upgrades.Debughull
     cost=0
     hull=100
-    exclusive=1
     debug=1
 }
 
@@ -38,7 +37,6 @@ upgrade {
     name=ROOT.Upgrades.Debugengine
     cost=0
     engine=100
-    exclusive=1
     debug=1
 }
 
@@ -46,6 +44,5 @@ upgrade {
     name=ROOT.Upgrades.Debughandling
     cost=0
     handling=100
-    exclusive=1
     debug=1
 }

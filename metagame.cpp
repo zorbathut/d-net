@@ -86,7 +86,9 @@ void Shop::renderNode(const HierarchyNode &node, int depth) const {
         {
             int dispmode = node.branches[i].displaymode;
             if(dispmode == HierarchyNode::HNDM_COSTUNIQUE) {
-                if(!player->hasUpgrade(node.branches[i].upgrade))
+                if(node.branches[i].type == HierarchyNode::HNT_WEAPON && !player->hasUpgrade(node.branches[i].upgrade))
+                    dispmode = HierarchyNode::HNDM_COST;
+                if(node.branches[i].type == HierarchyNode::HNT_GLORY && player->glory != node.branches[i].glory)
                     dispmode = HierarchyNode::HNDM_COST;
             }
             if(dispmode == HierarchyNode::HNDM_BLANK) {
@@ -114,26 +116,37 @@ bool Shop::runTick(const Keystates &keys) {
         curloc.back()++;
     curloc.back() += getCategoryNode().branches.size();
     curloc.back() %= getCategoryNode().branches.size();
+    
     if(keys.f.repeat && getCurNode().buyable) {
+        // Player is trying to buy something!
+        
+        // First check to see if we're allowed to buy it
         bool canBuy = false;
-        if(player->cash >= getCurNode().cost)
+        if(getCurNode().type == HierarchyNode::HNT_DONE) {
             canBuy = true;
-        if(getCurNode().type == HierarchyNode::HNT_WEAPON && player->weapon != getCurNode().weapon && player->cash + player->resellAmmoValue() >= getCurNode().cost)
-            canBuy = true;
+        } else if(getCurNode().type == HierarchyNode::HNT_UPGRADE) {
+            if(player->cash >= getCurNode().cost && !player->hasUpgrade(getCurNode().upgrade))
+                canBuy = true;
+        } else if(getCurNode().type == HierarchyNode::HNT_WEAPON) {
+            if(player->cash >= getCurNode().cost)
+                canBuy = true;
+            if(player->weapon != getCurNode().weapon && player->cash + player->resellAmmoValue() >= getCurNode().cost)
+                canBuy = true;
+        } else if(getCurNode().type == HierarchyNode::HNT_GLORY) {
+            if(player->cash >= getCurNode().cost && getCurNode().glory != player->glory)
+                canBuy = true;
+        } else {
+            CHECK(0);
+        }
+        
+        // If so, buy it
         if(canBuy) {
             player->cash -= getCurNode().cost;
             if(getCurNode().type == HierarchyNode::HNT_DONE) {
                 return true;
             } else if(getCurNode().type == HierarchyNode::HNT_UPGRADE) {
-                bool allowbuy = true;
-                if(getCurNode().displaymode == HierarchyNode::HNDM_COSTUNIQUE && player->hasUpgrade(getCurNode().upgrade))
-                    allowbuy = false;
-                if(allowbuy) {
-                    player->upgrades.push_back(getCurNode().upgrade);
-                    player->reCalculate();
-                } else {
-                    player->cash += getCurNode().cost;
-                }
+                player->upgrades.push_back(getCurNode().upgrade);
+                player->reCalculate();
             } else if(getCurNode().type == HierarchyNode::HNT_WEAPON) {
                 if(player->weapon != getCurNode().weapon) {
                     if(player->shotsLeft != -1)
@@ -144,10 +157,13 @@ bool Shop::runTick(const Keystates &keys) {
                 player->shotsLeft += getCurNode().quantity;
                 if(player->weapon == defaultWeapon())
                     player->shotsLeft = -1;
+            } else if(getCurNode().type == HierarchyNode::HNT_GLORY) {
+                player->glory = getCurNode().glory;
             } else {
                 CHECK(0);
             }
         }
+        
     }
     return false;
 }
