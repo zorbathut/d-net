@@ -132,7 +132,7 @@ public:
 class Projectile {
 public:
 
-    void tick();
+    void tick(vector<GfxEffects> *gfx);
     void render() const;
 
 	void addCollision( Collider *collider ) const;

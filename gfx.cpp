@@ -58,16 +58,21 @@ Color colorFromString(const string &str) {
     return Color(atof(toki[0].c_str()), atof(toki[1].c_str()), atof(toki[2].c_str()));
 }
 
-Color operator*( const Color &lhs, float rhs ) {
-    return Color(lhs.r * rhs, lhs.g * rhs, lhs.b * rhs);
-}
-Color operator/( const Color &lhs, float rhs ) {
-    return Color(lhs.r / rhs, lhs.g / rhs, lhs.b / rhs);
-}
-Color operator+( const Color &lhs, const Color &rhs ) {
+Color operator+(const Color &lhs, const Color &rhs) {
     return Color(lhs.r + rhs.r, lhs.g + rhs.g, lhs.b + rhs.b);
 }
-    
+Color operator*(const Color &lhs, float rhs) {
+    return Color(lhs.r * rhs, lhs.g * rhs, lhs.b * rhs);
+}
+Color operator/(const Color &lhs, float rhs) {
+    return Color(lhs.r / rhs, lhs.g / rhs, lhs.b / rhs);
+}
+
+const Color &operator+=(Color &lhs, const Color &rhs) {
+    lhs = lhs + rhs;
+    return lhs;
+}
+
 static float map_sx;
 static float map_sy;
 static float map_ex;
@@ -135,6 +140,7 @@ int getAccumulatedClusterCount() {
 void beginLineCluster(float weight) {
     CHECK(glGetError() == GL_NO_ERROR);
     CHECK(curWeight == -1.f);
+    CHECK(weight != -1.f);
     glLineWidth( weight / map_zoom * getResolutionY() );   // GL uses pixels internally for this unit, so I have to translate from game-meters
     CHECK(glGetError() == GL_NO_ERROR);
     glBegin(GL_LINES);
@@ -150,6 +156,7 @@ void finishLineCluster() {
         lineCount = 0;
     }
     CHECK(glGetError() == GL_NO_ERROR);
+    glLineWidth(1);
 }
 
 void initFrame() {

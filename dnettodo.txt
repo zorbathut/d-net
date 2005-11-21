@@ -1,8 +1,8 @@
-- Spark trail for missiles
 - Post-death bombardment :)
 - Move getDifference into its own file
 - Certificates and discounts
 - Next generation of weapons
+- Speed up wall difference in nasty situations (i.e. glory devices in corners)
 - Scrollable bars
 - Weapon info screen
 - Weapon change system

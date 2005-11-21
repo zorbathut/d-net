@@ -393,7 +393,7 @@ Tank::Tank() {
     weaponCooldown = 0;
 }
 
-void Projectile::tick() {
+void Projectile::tick(vector<GfxEffects> *gfxe) {
     CHECK(live);
     CHECK(age != -1);
     pos += movement();
@@ -404,6 +404,20 @@ void Projectile::tick() {
     } else if(projtype->motion == PM_MISSILE) {
         if(age > 10)
             missile_sidedist /= 1.2;
+        GfxEffects ngfe;
+        ngfe.point_pos = pos.toFloat() + lasttail.toFloat() - movement().toFloat(); // projectiles get a free tick ATM
+        ngfe.life = 10;
+        ngfe.type = GfxEffects::EFFECT_POINT;
+        ngfe.color = projtype->color;
+        for( int i = 0; i < 2; i++ ) {
+            float dir = frand() * 2 * PI;
+            ngfe.point_vel = makeAngle(dir) / 3;
+            ngfe.point_vel *= 1.0 - frand() * frand();
+            ngfe.point_vel += movement().toFloat();
+            ngfe.point_vel += missile_accel().toFloat() * -3 * abs(powerRand(2));
+            ngfe.color = Color(1.0, 0.9, 0.6);
+            gfxe->push_back( ngfe );
+        }
     } else if(projtype->motion == PM_AIRBRAKE) {
         airbrake_velocity *= 0.95;
         if(airbrake_liveness() <= 0)
@@ -445,11 +459,12 @@ void Projectile::impact(Coord2 pos, Tank *target, const vector<pair<float, Tank 
     
     GfxEffects ngfe;
     ngfe.point_pos = pos.toFloat();
-    ngfe.life = 10;
+    ngfe.life = 6;
     ngfe.type = GfxEffects::EFFECT_POINT;
-    for( int i = 0; i < 3; i++ ) {
+    ngfe.color = projtype->color;
+    for( int i = 0; i < 6; i++ ) {
         float dir = frand() * 2 * PI;
-        ngfe.point_vel = makeAngle(dir) / 5;
+        ngfe.point_vel = makeAngle(dir) / 3;
         ngfe.point_vel *= 1.0 - frand() * frand();
         gfxe->push_back( ngfe );
     }
@@ -459,7 +474,6 @@ void Projectile::impact(Coord2 pos, Tank *target, const vector<pair<float, Tank 
         dbgf.type = GfxEffects::EFFECT_CIRCLE;
         dbgf.circle_center = pos.toFloat();
         dbgf.circle_radius = projtype->warhead->radiusfalloff;
-        dbgf.color = projtype->color;
         dbgf.life = 5;
         gfxe->push_back(dbgf);
     }
@@ -500,7 +514,7 @@ Coord2 Projectile::nexttail() const {
     if(projtype->motion == PM_NORMAL) {
         return -movement();
     } else if(projtype->motion == PM_MISSILE) {
-        return -missile_accel();
+        return Coord2(makeAngle(d) * -2);
     } else if(projtype->motion == PM_AIRBRAKE) {
         return Coord2(-makeAngle(d) * (airbrake_velocity + 2));
     } else {
@@ -751,7 +765,7 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
                 projectiles[j].erase(projectiles[j].begin() + k);
                 k--;
             } else {
-            	projectiles[j][k].tick();
+            	projectiles[j][k].tick(&gfxeffects);
                 if(!projectiles[j][k].isLive()) {   // in case it dies in its tick
                     projectiles[j].erase(projectiles[j].begin() + k);
                     k--;
@@ -862,7 +876,7 @@ void Game::renderToScreen() const {
 	for( int i = 0; i < projectiles.size(); i++ )
 		for( int j = 0; j < projectiles[ i ].size(); j++ )
 			projectiles[ i ][ j ].render();
-	for( int i = 0; i < gfxeffects.size(); i++ )
+    for( int i = 0; i < gfxeffects.size(); i++ )
 		gfxeffects[ i ].render();
 	gamemap.render();
 	collider.render();
