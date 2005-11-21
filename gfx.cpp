@@ -258,6 +258,13 @@ void drawLinePath( const vector<Coord2> &iverts, float weight, bool loop ) {
 		drawLine( verts[i], verts[i + 1], weight );
 };
 
+void drawTranslatedLinePath(const vector<Float2> &verts, Float2 delta, float weight) {
+    vector<Float2> transed;
+    for(int i = 0; i < verts.size(); i++)
+        transed.push_back(verts[i] + delta);
+    drawLinePath(transed, weight, true);
+};
+
 void drawSolid(const Float4 &box) {
     CHECK(box.isNormalized());
     finishLineCluster();

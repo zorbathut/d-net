@@ -431,3 +431,6 @@ const HierarchyNode &itemDbRoot() {
 const IDBWeapon *defaultWeapon() {
     return defweapon;
 }
+const IDBGlory *defaultGlory() {
+    return defglory;
+}

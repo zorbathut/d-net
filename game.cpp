@@ -4,6 +4,7 @@
 #include <cmath>
 #include <vector>
 #include <algorithm>
+#include <numeric>
 using namespace std;
 
 #include <GL/gl.h>
@@ -54,6 +55,7 @@ Player::Player() {
     cash = FLAGS_startingcash;
     reCalculate();
     weapon = defaultWeapon();
+    glory = defaultGlory();
     shotsLeft = -1;
 }
 
@@ -73,6 +75,8 @@ void GfxEffects::render() const {
         drawCircle(circle_center, circle_radius, 0.1f);
     } else if(type == EFFECT_TEXT) {
         drawText(text_data, text_size, text_pos + text_vel * age);
+    } else if(type == EFFECT_PATH) {
+        drawTranslatedLinePath(path_path, path_start + path_vel * age, 0.1f);
     } else {
         CHECK(0);
     }
@@ -302,18 +306,68 @@ bool Tank::takeDamage( float damage ) {
 void Tank::genEffects(vector<GfxEffects> *gfxe, vector<Projectile> *projectiles) {
 	if( spawnShards ) {
 		vector<Coord2> tv = getTankVertices( pos, d );
-		for( int i = 0; i < tv.size(); i++ ) {
-			GfxEffects ngfe;
-			ngfe.line_pos = Float4(tv[i].x.toFloat(), tv[i].y.toFloat(), tv[(i + 1) % tv.size()].x.toFloat(), tv[(i + 1) % tv.size()].y.toFloat());
-			float cx = ( ngfe.line_pos.sx + ngfe.line_pos.ex ) / 2;
-			float cy = ( ngfe.line_pos.sy + ngfe.line_pos.ey ) / 2;
-			ngfe.line_vel.sx = ngfe.line_vel.ex = cx - pos.x.toFloat();
-			ngfe.line_vel.sy = ngfe.line_vel.ey = cy - pos.y.toFloat();
-			ngfe.line_vel /= 5;
-			ngfe.life = 15;
-            ngfe.type = GfxEffects::EFFECT_LINE;
-			gfxe->push_back( ngfe );
-		}
+        Coord2 centr = getCentroid(tv);
+        Coord tva = getArea(tv);
+        
+        for(int i = 0; i < tv.size(); i++)
+            tv[i] -= centr;
+        
+        const IDBGlory *glory = player->glory;
+        
+        vector<float> ang;
+        {
+            int ct = int(frand() * (glory->maxsplits - glory->minsplits)) + glory->minsplits;
+            for(int i = 0; i < ct; i++)
+                ang.push_back(frand() * (glory->maxsplitsize - glory->minsplitsize) + glory->minsplitsize);
+            for(int i = 1; i < ang.size(); i++)
+                ang[i] += ang[i - 1];
+            float angtot = accumulate(ang.begin(), ang.end(), 0.0f);
+            float shift = frand() * PI * 2;
+            for(int i = 0; i < ang.size(); i++) {
+                ang[i] *= PI * 2 / angtot;
+                ang[i] += shift;
+            }
+        }
+        
+        vector<vector<Coord2> > chunks;
+        for(int i = 0; i < ang.size(); i++) {
+            int j = (i + 1) % ang.size();
+            float ned = ang[j];
+            if(ned > ang[i])
+                ned -= 2 * PI;
+            dprintf("Splitting from %f to %f\n", ang[i], ned);
+            vector<Coord2> intersecty;
+            intersecty.push_back(Coord2(0, 0));
+            float kang = ang[i];
+            do {
+                intersecty.push_back(makeAngle(Coord(kang)) * 100);
+                kang -= 0.5;
+                if(kang < ned)
+                    kang = ned;
+            } while(kang > ned);
+            intersecty.push_back(makeAngle(Coord(ned)) * 100);
+            reverse(intersecty.begin(), intersecty.end());
+            
+            vector<vector<Coord2> > thischunk = getDifference(tv, intersecty);
+            CHECK(thischunk.size() == 1);
+            chunks.push_back(thischunk[0]);
+        }
+        
+        for(int i = 0; i < chunks.size(); i++) {
+            Coord2 subcentroid = getCentroid(chunks[i]);
+            vector<Float2> vf2;
+            for(int j = 0; j < chunks[i].size(); j++)
+                vf2.push_back((chunks[i][j] - subcentroid).toFloat());
+            Coord2 vel = normalize(subcentroid) / 10 * tva / getArea(chunks[i]);
+            GfxEffects ngfe;
+            ngfe.type = GfxEffects::EFFECT_PATH;
+            ngfe.path_path = vf2;
+            ngfe.path_start = (centr + subcentroid).toFloat();
+            ngfe.path_vel = vel.toFloat();
+            ngfe.life = 30;
+            gfxe->push_back(ngfe);
+        }
+        
 		spawnShards = false;
 	}
 }

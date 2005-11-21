@@ -26,7 +26,7 @@ public:
     const IDBWeapon *weapon;
     int shotsLeft;
 
-    const IDBGlory *warhead;
+    const IDBGlory *glory;
 
     Color color;
     Dvec2 faction_symb;
@@ -56,7 +56,7 @@ public:
 	bool dead() const;
 
     int type;
-    enum { EFFECT_POINT, EFFECT_LINE, EFFECT_CIRCLE, EFFECT_TEXT };
+    enum { EFFECT_POINT, EFFECT_LINE, EFFECT_CIRCLE, EFFECT_TEXT, EFFECT_PATH };
     
     int life;
     int age;
@@ -74,6 +74,10 @@ public:
     Float2 text_vel;
     float text_size;
     string text_data;
+    
+    vector<Float2> path_path;
+    Float2 path_start;
+    Float2 path_vel;
 
 	GfxEffects();
 

@@ -105,6 +105,8 @@ public:
 void initItemdb();
 
 const HierarchyNode &itemDbRoot();
+
 const IDBWeapon *defaultWeapon();
+const IDBGlory *defaultGlory();
 
 #endif

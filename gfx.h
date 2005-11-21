@@ -75,6 +75,8 @@ void drawLinePath( const vector<float> &verts, float weight, bool loop );
 void drawLinePath( const vector<Float2> &verts, float weight, bool loop );
 void drawLinePath( const vector<Coord2> &verts, float weight, bool loop );
 
+void drawTranslatedLinePath(const vector<Float2> &verts, Float2 delta, float weight);
+
 void drawBox( const Float4 &locs, float weight );
 void drawBoxAround( float x, float y, float rad, float weight );
 

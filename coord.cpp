@@ -573,6 +573,16 @@ Coord getArea(const vector<Coord2> &are) {
     totare /= 2;
     return totare;
 }
+Coord2 getCentroid(const vector<Coord2> &are) {
+    Coord2 centroid(0, 0);
+    for(int i = 0; i < are.size(); i++) {
+        int j = (i + 1) % are.size();
+        Coord common = (are[i].x * are[j].y - are[j].x * are[i].y);
+        centroid += (are[i] + are[j]) * common;
+    }
+    centroid /= 6 * getArea(are);
+    return centroid;
+}
 Coord getPerimeter(const vector<Coord2> &are) {
     Coord totperi = 0;
     for(int i = 0; i < are.size(); i++) {
