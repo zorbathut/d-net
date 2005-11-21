@@ -12,6 +12,7 @@ warhead {
 projectile {
     name=projectile.laser
     velocity=600
+    color=0.6, 0.9, 1.0
     warhead=warhead.laser
 }
 

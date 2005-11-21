@@ -20,6 +20,8 @@ public:
     Color(float in_r, float in_g, float in_b);
 };
 
+Color colorFromString(const string &str);
+
 Color operator*( const Color &lhs, float rhs );
 Color operator/( const Color &lhs, float rhs );
 Color operator+( const Color &lhs, const Color &rhs );

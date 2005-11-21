@@ -13,6 +13,7 @@ hierarchy {
 projectile {
     name=projectile.tracer
     velocity=600
+    color=1.0, 0.3, 0.3
     warhead=warhead.null
     debug=1
 }

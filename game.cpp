@@ -419,11 +419,11 @@ void Projectile::render() const {
     CHECK(live);
     CHECK(age != -1);
     if(projtype->motion == PM_NORMAL) {
-        setColor(1.0, 1.0, 1.0);
+        setColor(projtype->color);
     } else if(projtype->motion == PM_MISSILE) {
-        setColor(1.0, 1.0, 1.0);
+        setColor(projtype->color);
     } else if(projtype->motion == PM_AIRBRAKE) {
-        setColor(airbrake_liveness(), airbrake_liveness(), airbrake_liveness());
+        setColor(projtype->color * airbrake_liveness());
     } else {
         CHECK(0);
     }

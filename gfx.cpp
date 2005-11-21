@@ -52,13 +52,11 @@ Color::Color() { };
 Color::Color(float in_r, float in_g, float in_b) :
     r(in_r), g(in_g), b(in_b) { };
 
-static float map_sx;
-static float map_sy;
-static float map_ex;
-static float map_ey;
-static float map_zoom;
-
-static map< char, vector< vector< pair< int, int > > > > fontdata;
+Color colorFromString(const string &str) {
+    vector<string> toki = tokenize(str, " ,");
+    CHECK(toki.size() == 3);
+    return Color(atof(toki[0].c_str()), atof(toki[1].c_str()), atof(toki[2].c_str()));
+}
 
 Color operator*( const Color &lhs, float rhs ) {
     return Color(lhs.r * rhs, lhs.g * rhs, lhs.b * rhs);
@@ -69,6 +67,14 @@ Color operator/( const Color &lhs, float rhs ) {
 Color operator+( const Color &lhs, const Color &rhs ) {
     return Color(lhs.r + rhs.r, lhs.g + rhs.g, lhs.b + rhs.b);
 }
+    
+static float map_sx;
+static float map_sy;
+static float map_ex;
+static float map_ey;
+static float map_zoom;
+
+static map< char, vector< vector< pair< int, int > > > > fontdata;
 
 void initGfx() {
     {

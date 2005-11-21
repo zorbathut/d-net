@@ -1,6 +1,8 @@
 #ifndef DNET_ITEMDB
 #define DNET_ITEMDB
 
+#include "gfx.h"
+
 #include <string>
 #include <vector>
 
@@ -33,6 +35,7 @@ struct IDBProjectile {
 public:
     int motion;
     float velocity;
+    Color color;
     const IDBWarhead *warhead;
 
     float getDamagePerShot() const;

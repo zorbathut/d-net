@@ -13,6 +13,7 @@ warhead {
 projectile {
     name=projectile.wallripper
     velocity=60
+    color=1.0, 0.3, 0.3
     warhead=warhead.wallripper
 }
 
@@ -26,6 +27,7 @@ warhead {
 projectile {
     name=projectile.autocannon
     velocity=120
+    color=1.0, 0.9, 0.6
     warhead=warhead.autocannon
 }
 

@@ -1,4 +1,3 @@
-- Better tank explosions
 - Get rid of loop in drawLine, use a different function
 - Post-death bombardment :)
 - Move getDifference into its own file

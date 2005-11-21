@@ -13,6 +13,7 @@ warhead {
 projectile {
     name=projectile.glory.basic
     velocity=40
+    color=1.0, 0.8, 0.3
     motion=airbrake
     warhead=warhead.glory
 }
@@ -20,6 +21,7 @@ projectile {
 projectile {
     name=projectile.glory.range
     velocity=80
+    color=1.0, 0.8, 0.3
     motion=airbrake
     warhead=warhead.glory
 }
