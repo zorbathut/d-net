@@ -55,22 +55,23 @@ const HierarchyNode &Shop::getCategoryNode() const {
     return getStepNode(curloc.size() - 1);
 }
 
+const float sl_hoffset = 1.5;
+const float sl_voffset = 5;
+
+const float sl_fontsize = 2;
+const float sl_boxborder = 0.5;
+const float sl_itemheight = 4;
+
+const float sl_boxwidth = 42;
+
+const float sl_pricehpos = 29;
+
+const float sl_boxthick = 0.1;
+
 void Shop::renderNode(const HierarchyNode &node, int depth) const {
     CHECK(depth < 3 || node.branches.size() == 0);
-    const float hoffset = 1.5;
-    const float voffset = 5;
-
-    const float fontsize = 2;
-    const float boxborder = 0.5;
-    const float itemheight = 4;
-
-    const float boxwidth = 42;
     
-    const float pricehpos = 29;
-
-    const float boxthick = 0.1;
-    
-    float hoffbase = hoffset + ( boxwidth + hoffset ) * depth;
+    float hoffbase = sl_hoffset + ( sl_boxwidth + sl_hoffset ) * depth;
     
     for(int i = 0; i < node.branches.size(); i++) {
         if(depth < curloc.size() && curloc[depth] == i) {
@@ -79,25 +80,25 @@ void Shop::renderNode(const HierarchyNode &node, int depth) const {
         } else {
             setColor(0.3, 0.3, 0.3);
         }
-        drawSolid( Float4( hoffbase, voffset + i * itemheight, hoffbase + boxwidth, voffset + i * itemheight + fontsize + boxborder * 2 ) );
-        drawBox( Float4( hoffbase, voffset + i * itemheight, hoffbase + boxwidth, voffset + i * itemheight + fontsize + boxborder * 2 ), boxthick );
+        drawSolid( Float4( hoffbase, sl_voffset + i * sl_itemheight, hoffbase + sl_boxwidth, sl_voffset + i * sl_itemheight + sl_fontsize + sl_boxborder * 2 ) );
+        drawBox( Float4( hoffbase, sl_voffset + i * sl_itemheight, hoffbase + sl_boxwidth, sl_voffset + i * sl_itemheight + sl_fontsize + sl_boxborder * 2 ), sl_boxthick );
         setColor(1.0, 1.0, 1.0);
-        drawText( node.branches[i].name.c_str(), fontsize, hoffbase + boxborder, voffset + i * itemheight + boxborder );
+        drawText( node.branches[i].name.c_str(), sl_fontsize, hoffbase + sl_boxborder, sl_voffset + i * sl_itemheight + sl_boxborder );
         {
             int dispmode = node.branches[i].displaymode;
             if(dispmode == HierarchyNode::HNDM_COSTUNIQUE) {
-                if(node.branches[i].type == HierarchyNode::HNT_WEAPON && !player->hasUpgrade(node.branches[i].upgrade))
+                if(node.branches[i].type == HierarchyNode::HNT_UPGRADE && !player->hasUpgrade(node.branches[i].upgrade))
                     dispmode = HierarchyNode::HNDM_COST;
                 if(node.branches[i].type == HierarchyNode::HNT_GLORY && player->glory != node.branches[i].glory)
                     dispmode = HierarchyNode::HNDM_COST;
             }
             if(dispmode == HierarchyNode::HNDM_BLANK) {
             } else if(dispmode == HierarchyNode::HNDM_COST) {
-                drawText( StringPrintf("%6d", node.branches[i].cost), fontsize, hoffbase + pricehpos, voffset + i * itemheight + boxborder );
+                drawText( StringPrintf("%6d", node.branches[i].cost), sl_fontsize, hoffbase + sl_pricehpos, sl_voffset + i * sl_itemheight + sl_boxborder );
             } else if(dispmode == HierarchyNode::HNDM_PACK) {
-                drawText( StringPrintf("%dpk", node.branches[i].quantity), fontsize, hoffbase + pricehpos, voffset + i * itemheight + boxborder );
+                drawText( StringPrintf("%dpk", node.branches[i].quantity), sl_fontsize, hoffbase + sl_pricehpos, sl_voffset + i * sl_itemheight + sl_boxborder );
             } else if(dispmode == HierarchyNode::HNDM_COSTUNIQUE) {
-                drawText("bought", fontsize, hoffbase + pricehpos, voffset + i * itemheight + boxborder);
+                drawText("bought", sl_fontsize, hoffbase + sl_pricehpos, sl_voffset + i * sl_itemheight + sl_boxborder);
             } else {
                 CHECK(0);
             }
@@ -198,11 +199,15 @@ void Shop::renderToScreen() const {
         drawDvec2(player->faction_symb, Float4(ofs, ofs, 125 - ofs, 100 - ofs), 0.5);
     }
     renderNode(itemDbRoot(), 0);
+    float hudstart = itemDbRoot().branches.size() * sl_itemheight + sl_voffset + sl_boxborder;
     if(getCurNode().type == HierarchyNode::HNT_WEAPON) {
-        drawText("damage per second", 2, 1.5, 17.5);
-        drawText(StringPrintf("%20.4f", getCurNode().weapon->getDamagePerSecond()), 2, 1.5, 20.5);
-        drawText("cost per damage", 2, 1.5, 23.5);
-        drawText(StringPrintf("%20.4f", getCurNode().weapon->getCostPerDamage()), 2, 1.5, 26.5);
+        drawText("damage per second", 2, 1.5, hudstart);
+        drawText(StringPrintf("%20.4f", getCurNode().weapon->getDamagePerSecond()), 2, 1.5, hudstart + 3);
+        drawText("cost per damage", 2, 1.5, hudstart + 6);
+        drawText(StringPrintf("%20.4f", getCurNode().weapon->getCostPerDamage()), 2, 1.5, hudstart + 9);
+    } else if(getCurNode().type == HierarchyNode::HNT_GLORY) {
+        drawText("total average damage", 2, 1.5, hudstart);
+        drawText(StringPrintf("%20.4f", getCurNode().glory->getAverageDamage()), 2, 1.5, hudstart + 3);
     }
 }
 

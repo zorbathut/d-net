@@ -44,6 +44,10 @@ float IDBWeapon::getCostPerDamage() const {
     return costpershot / getDamagePerShot();
 }
 
+float IDBGlory::getAverageDamage() const {
+    return (minsplits + maxsplits) / 2.0 * shotspersplit * projectile->getDamagePerShot();
+}
+
 void HierarchyNode::checkConsistency() const {
     dprintf("Consistency scan entering %s\n", name.c_str());
     // all nodes need a name

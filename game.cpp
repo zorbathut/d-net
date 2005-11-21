@@ -43,6 +43,7 @@ void Player::reCalculate() {
 }
 
 bool Player::hasUpgrade(const IDBUpgrade *upg) const {
+    CHECK(upg);
     return count(upgrades.begin(), upgrades.end(), upg);
 }
 
@@ -337,7 +338,6 @@ void Tank::genEffects(vector<GfxEffects> *gfxe, vector<Projectile> *projectiles)
             float ned = ang[j];
             if(ned > ang[i])
                 ned -= 2 * PI;
-            dprintf("Splitting from %f to %f\n", ang[i], ned);
             vector<Coord2> intersecty;
             intersecty.push_back(Coord2(0, 0));
             float kang = ang[i];
@@ -374,11 +374,9 @@ void Tank::genEffects(vector<GfxEffects> *gfxe, vector<Projectile> *projectiles)
             gfxe->push_back(ngfe);
         }
         
-        dprintf("%d projs\n", projectiles->size());
         for(int i = 0; i < ang.size(); i++)
             for(int j = 0; j < glory->shotspersplit; j++)
                 projectiles->push_back(Projectile(centr, ang[i] + powerRand(2) / 10, glory->projectile, this));
-        dprintf("%d projs end\n", projectiles->size());
         
 		spawnShards = false;
 	}
@@ -461,6 +459,7 @@ void Projectile::impact(Coord2 pos, Tank *target, const vector<pair<float, Tank 
         dbgf.type = GfxEffects::EFFECT_CIRCLE;
         dbgf.circle_center = pos.toFloat();
         dbgf.circle_radius = projtype->warhead->radiusfalloff;
+        dbgf.color = projtype->color;
         dbgf.life = 5;
         gfxe->push_back(dbgf);
     }

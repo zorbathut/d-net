@@ -1,6 +1,7 @@
 - Get rid of loop in drawLine, use a different function
 - Post-death bombardment :)
 - Move getDifference into its own file
+- Certificates and discounts
 - Next generation of weapons
 - Scrollable bars
 - Weapon info screen

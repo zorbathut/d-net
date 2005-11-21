@@ -67,6 +67,8 @@ public:
     const IDBProjectile *projectile;
 
     int shotspersplit;
+
+    float getAverageDamage() const;
 };
 
 struct IDBUpgrade {
