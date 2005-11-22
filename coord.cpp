@@ -50,7 +50,7 @@ Float4 Coord4::toFloat() const { return Float4(sx.toFloat(), sy.toFloat(), ex.to
  * Computational geometry
  */
 
-Coord len(const Coord2 &in) { return imp_len<Coords>(in); };
+Coord len(const Coord2 &in) { return Coord(len(in.toFloat())); };
 Coord2 normalize(const Coord2 &in) { return imp_normalize<Coords>(in); };
 
 Coord getAngle(const Coord2 &in) { return imp_getAngle<Coords>(in); };
@@ -265,6 +265,30 @@ void splice(map<Coord2, DualLink> *vertx, const DualLink &lines, const Coord2 &j
     CHECK(junctadded == 0 || junctadded == 2);
 }
 
+vector<vector<Coord2> > createSplitLines(const map<Coord2, DualLink> &vertx) {
+    CHECK(checkConsistent(vertx));
+    vector<vector<Coord2> > rv;
+    for(int i = 0; i < 2; i++) {
+        vector<Coord2> trv;
+        for(map<Coord2, DualLink>::const_iterator itr = vertx.begin(); itr != vertx.end(); itr++) {
+            if(itr->second.live[i]) {
+                Coord2 start = itr->first;
+                Coord2 now = itr->first;
+                do {
+                    Coord2 next = getLink(vertx, now).links[i][1];
+                    CHECK(getLink(vertx, next).live[i]);
+                    CHECK(getLink(vertx, next).links[i][0] == now);
+                    trv.push_back(now);
+                    now = next;
+                } while(now != start);
+                break;
+            }
+        }
+        rv.push_back(trv);
+    }
+    return rv;
+}
+
 vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Coord2> &rhs) {
     #if 0       // Pre-split debugging
     {
@@ -428,7 +452,11 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
                             if(dist < Coord(0.000001f)) {
                                 // One of these already exists, so a line must go through it
                                 // but we're planning to merge, so a line must only go through one of 'em
-                                CHECK(vertx[closest].live[0] != vertx[closest].live[1]);
+                                if(!(vertx[closest].live[0] != vertx[closest].live[1])) {
+                                    CHECK(0);
+                                    return createSplitLines(vertx);
+                                    CHECK(vertx[closest].live[0] != vertx[closest].live[1]);
+                                }
                                 int usedlin = vertx[closest].live[1];
                                 
                                 CHECK(!vertx[closest].live[!usedlin]);
@@ -495,26 +523,7 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
     CHECK(checkConsistent(vertx));
     #if 0   // This code intercepts the "split" version and returns it as the results - good for debugging
     {
-        vector<vector<Coord2> > rv;
-        for(int i = 0; i < 2; i++) {
-            vector<Coord2> trv;
-            for(map<Coord2, DualLink>::const_iterator itr = vertx.begin(); itr != vertx.end(); itr++) {
-                if(itr->second.live[i]) {
-                    Coord2 start = itr->first;
-                    Coord2 now = itr->first;
-                    do {
-                        Coord2 next = getLink(vertx, now).links[i][1];
-                        CHECK(getLink(vertx, next).live[i]);
-                        CHECK(getLink(vertx, next).links[i][0] == now);
-                        trv.push_back(now);
-                        now = next;
-                    } while(now != start);
-                    break;
-                }
-            }
-            rv.push_back(trv);
-        }
-        return rv;
+        return createSplitLines(vertx);
     }
     #endif
     {

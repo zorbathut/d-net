@@ -1,7 +1,7 @@
 
 deploy {
-    name=deploy.autocannon
-    anglevariance=0.08
+    name=deploy.wallripper
+    anglevariance=3.14159
 }
 
 warhead {
@@ -15,6 +15,11 @@ projectile {
     velocity=60
     color=1.0, 0.3, 0.3
     warhead=warhead.wallripper
+}
+
+deploy {
+    name=deploy.autocannon
+    anglevariance=0.08
 }
 
 warhead {

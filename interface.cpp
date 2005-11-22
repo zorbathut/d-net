@@ -164,18 +164,52 @@ vector<string> parseHackyFile(string fname) {
 
 void InterfaceMain::render() const {
     
-    #if 0   // Code used for checking the validity of getDifference :)
+    #if 1   // Code used for checking the validity of getDifference :)
     {
         
+        dprintf("Frame!\n");
+        
+        string lhs[30] = {
+    "0000001a34a94b3b", "ffffffed5c5384ee",
+    "0000001ab17e92da", "ffffffed260c1977",
+    "0000001ae76af121", "ffffffed35e466cd",
+    "0000001ae9fa3bcb", "ffffffed0d7cdc5f",
+    "0000001af5d43af2", "ffffffed0855a440",
+    "0000001aeaaf6e09", "ffffffed0250bf12",
+    "0000001af055a664", "ffffffeca924b164",
+    "0000001b7137d79f", "ffffffecf2ce6d83",
+    "0000001bb3ac699d", "ffffffecb1803866",
+    "0000001b28b1c61d", "ffffffed98cd0573",
+    "0000001b5f00f2e0", "ffffffed7f0abdad",
+    "0000001b00e11500", "ffffffedc0f2d90e",
+    "0000001b05eab187", "ffffffedc9a14f0a",
+    "0000001a8e48e1c8", "ffffffed5b0b1a01",
+    "0000001a4bec55e2", "ffffffeda05d91b0",
+};
+string rhs[8] = {
+    "0000001b5b2e7019", "ffffffedea9c92ee",
+    "00000019ee262d19", "ffffffed1c1616ce",
+    "0000001afdb6b899", "ffffffec04190eee",
+    "0000001beb533019", "ffffffece691db0e",
+};
+
+vector<Coord2> diff[2];
+
+        for(int i = 0; i < sizeof(lhs) / sizeof(*lhs); i += 2)
+            diff[0].push_back(Coord2(coordExplicit(lhs[i]), coordExplicit(lhs[i + 1])));
+        for(int i = 0; i < sizeof(rhs) / sizeof(*rhs); i += 2)
+            diff[1].push_back(Coord2(coordExplicit(rhs[i]), coordExplicit(rhs[i + 1])));
+        /*
         vector<string> lhs = parseHackyFile("lhs.txt");
         vector<string> rhs = parseHackyFile("rhs.txt");
+    
+vector<Coord2> diff[2];
         
-        vector<Coord2> diff[2];
         
         for(int i = 0; i < lhs.size(); i += 2)
             diff[0].push_back(Coord2(coordExplicit(lhs[i]), coordExplicit(lhs[i + 1])));
         for(int i = 0; i < rhs.size(); i += 2)
-            diff[1].push_back(Coord2(coordExplicit(rhs[i]), coordExplicit(rhs[i + 1])));
+            diff[1].push_back(Coord2(coordExplicit(rhs[i]), coordExplicit(rhs[i + 1])));*/
         
         //dprintf("%d vs %d\n", whichSide(Coord4(diff[1][3], diff[1][2]), diff[0][
 
