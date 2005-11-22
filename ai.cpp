@@ -65,11 +65,15 @@ void doMegaEnumWorker(const HierarchyNode &rt, vector<pair<int, vector<Controlle
         }
     } else if(rt.type == HierarchyNode::HNT_WEAPON) {
         weps->push_back(make_pair(rt.cost, path));
-    } else if(rt.type == HierarchyNode::HNT_UPGRADE) {
+    } else if(rt.type == HierarchyNode::HNT_UPGRADE) {  // TODO: don't buy stuff if you already have it :)
         upgs->push_back(make_pair(make_pair(rt.cost, rt.upgrade), path));
+    } else if(rt.type == HierarchyNode::HNT_GLORY) {
+        upgs->push_back(make_pair(make_pair(rt.cost, (IDBUpgrade*)NULL), path));
     } else if(rt.type == HierarchyNode::HNT_DONE) {
         CHECK(done->size() == 0);
         *done = path;
+    } else {
+        CHECK(0);
     }
 }
 
@@ -119,7 +123,7 @@ void Ai::updateShop(const Player *player) {
     int weapcash = player->cash;
     while(upgcash) {
         for(int i = 0; i < upgs.size(); i++) {
-            if(player->hasUpgrade(upgs[i].first.second)) {
+            if(upgs[i].first.second && player->hasUpgrade(upgs[i].first.second)) {
                 upgs.erase(upgs.begin() + i);
                 i--;
             }
@@ -142,7 +146,7 @@ void Ai::updateShop(const Player *player) {
         dlim = int(dlim * rng.frand());
         int amount = 1;
         if(weps[dlim].first) {
-            amount = weapcash / weps[dlim].first;
+            amount = min(weapcash / weps[dlim].first, 20);
         }
         appendPurchases(&shopQueue, weps[dlim].second, amount);
     }
@@ -150,8 +154,12 @@ void Ai::updateShop(const Player *player) {
     shopQueue.push_back(makeController(0, 0, 1));
     //for(int i = 0; i < shopQueue.size(); i++)
         //dprintf("%f %f %d\n", shopQueue[i].x, shopQueue[i].y, shopQueue[i].keys[0].down);
-    for(int i = 1; i < shopQueue.size(); i += 2)
-        shopQueue.insert(shopQueue.begin() + i, makeController(0, 0, 0));
+    deque<Controller> realShopQueue;
+    for(int i = 0; i < shopQueue.size(); i++) {
+        realShopQueue.push_back(shopQueue[i]);
+        realShopQueue.push_back(makeController(0, 0, 0));
+    }
+    swap(shopQueue, realShopQueue);
     shopdone = true;
     updateShop(player);
 }

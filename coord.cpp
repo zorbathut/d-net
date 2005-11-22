@@ -312,12 +312,24 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
     //dprintf("Passed\n");
     vector<LiveLink> links;
     for(map<Coord2, DualLink>::iterator itr = vertx.begin(); itr != vertx.end(); itr++) {
+        /*
+        dprintf("%f, %f:\n", itr->first.x.toFloat(), itr->first.y.toFloat());
+        for(int i = 0; i < 2; i++) {
+            if(itr->second.live[i]) {
+                dprintf("    %f, %f --> this --> %f, %f",
+                            itr->second.links[i][0].x.toFloat(), itr->second.links[i][0].y.toFloat(),
+                            itr->second.links[i][1].x.toFloat(), itr->second.links[i][1].y.toFloat());
+            } else {
+                dprintf("    NULL");
+            }
+        }*/
         //dprintf("Looping, %d live links\n", links.size());
         // First we check if any lines need to be split at this point
         for(int i = 0; i < links.size(); i++) {
             if(itr->first == links[i].end)
                 continue;
             if(links[i].end != itr->first && colinear(Coord4(links[i].start, links[i].end), itr->first)) {
+                
                 /*
                 dprintf("COLINEAR  %f %f  %f %f  %f %f\n",
                         links[i].start.x.toFloat(), links[i].start.y.toFloat(),
@@ -328,6 +340,7 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
                         itr->first.x.rawstr().c_str(), itr->first.y.rawstr().c_str(),
                         links[i].end.x.rawstr().c_str(), links[i].end.y.rawstr().c_str());
                 */
+                
                 for(int j = 0; j < 2; j++) {
                     if(vertx[links[i].start].live[j] && !vertx[itr->first].live[j]) {
                         for(int k = 0; k < 2; k++) {
@@ -341,16 +354,26 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
                                 vertx[links[i].end].links[j][!k] = itr->first;
                             }
                         }
+                        CHECK(links[i].end != itr->first);
+                        links[i].end = itr->first;
                     }
                 }
-                links[i].end = itr->first;
             }
         }
         // Next we remove all the links that end at this point
         for(int i = 0; i < links.size(); i++) {
-            if(links[i].end <= itr->first) {
+            if(links[i].end == itr->first) {
+                bool found = false;            
+                for(int p = 0; p < 2; p++)
+                    for(int k = 0; k < 2; k++)
+                        if(itr->second.links[p][k] == links[i].start)
+                            found = true;
+                CHECK(found);
+                //CHECK(checkConsistent(vertx));
+                //dprintf("Removing link %f,%f %f,%f\n", links[i].start.x.toFloat(), links[i].start.y.toFloat(), links[i].end.x.toFloat(), links[i].end.y.toFloat());
                 links.erase(links.begin() + i);
                 i--;
+                
             }
         }
         //dprintf("Culled, %d live links\n", links.size());
@@ -455,12 +478,15 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
             for(int k = 0; k < 2; k++) {
                 if(itr->second.links[p][k] < itr->first)
                     continue;
+                //dprintf("Adding link\n");
                 LiveLink nll;
                 nll.start = itr->first;
                 nll.end = itr->second.links[p][k];
                 links.push_back(nll);
             }
         }
+        //dprintf("%d\n", links.size());
+        CHECK(links.size() % 2 == 0);
         //dprintf("Unlooped, %d links\n", links.size());
     }
     CHECK(links.size() == 0);
@@ -498,16 +524,6 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
             set<pair<bool, Coord2> > seen;
             for(map<Coord2, DualLink>::const_iterator itr = vertx.begin(); itr != vertx.end(); itr++) {
                 if(itr->second.live[0] && !inPath((itr->first + itr->second.links[0][1]) / 2, rhs) && !(itr->second.live[1] && itr->second.links[0][1] == itr->second.links[1][1])) {
-                    //dprintf("seeding %f, %f\n", itr->second.links[0][1].x.toFloat(), itr->second.links[0][1].y.toFloat());
-                    //dprintf("from %f, %f\n", itr->first.x.toFloat(), itr->first.y.toFloat());
-                    //dprintf("%f, %f link compare to %f, %f\n", itr->second.links[0][1].x.toFloat(), itr->second.links[0][1].y.toFloat(), itr->second.links[1][1].x.toFloat(), itr->second.links[1][1].y.toFloat());
-                    //{
-                        //if(!vertx[itr->second.links[0][1]].live[1]) {
-                            //Coord2 tp = (itr->second.links[0][1] + vertx[itr->second.links[0][1]].links[0][1]) / 2;
-                            //dprintf("%s, %s\n", tp.x.rawstr().c_str(), tp.y.rawstr().c_str());
-                            //CHECK(roughInPath(tp, rhs, false));
-                        //}
-                    //}
                     seeds.insert(itr->second.links[0][1]);
                 }
             }

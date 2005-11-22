@@ -554,7 +554,6 @@ Projectile::Projectile(const Coord2 &in_pos, float in_d, const IDBProjectile *in
         missile_sidedist = powerRand(2) * 0.25;
     } else if(projtype->motion == PM_AIRBRAKE) {
         airbrake_velocity = (powerRand(2) / 4 + 1) * projtype->velocity;
-        dprintf("ABV is %f, pv is %f\n", airbrake_velocity, projtype->velocity);
     } else {
         CHECK(0);
     }

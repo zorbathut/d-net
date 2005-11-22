@@ -149,34 +149,32 @@ void InterfaceMain::ai(const vector<Ai *> &ai) const {
 }
 
 #include "dvec2.h"
+#include <fstream>
+
+using namespace std;
+
+vector<string> parseHackyFile(string fname) {
+    ifstream ifs(fname.c_str());
+    string tmp;
+    vector<string> rv;
+    while(ifs >> tmp)
+        rv.push_back(tmp);
+    return rv;
+}
 
 void InterfaceMain::render() const {
     
     #if 0   // Code used for checking the validity of getDifference :)
     {
         
-        string lhs[6] = {
-            "fffffffd80000000", "fffffffdd5555471",
-            "0000000280000000", "fffffffdd5555471",
-            "0000000000000000", "000000045555571b",
-        };
-        string rhs[16] = {
-            "0000005f1b0c2400", "0000001ee6d5d400",
-            "0000005f1b0c2400", "0000001ee6d5d400",
-            "0000004484af3c00", "00000048d64bf400",
-            "0000001975cf6000", "00000060b4606c00",
-            "ffffffe7cecca000", "0000006107921400",
-            "ffffffbc70e3f400", "00000049ba4cb400",
-            "ffffffa14e96d400", "0000002024d98c00",
-            "0000000000000000", "0000000000000000",
-        };
-
-
+        vector<string> lhs = parseHackyFile("lhs.txt");
+        vector<string> rhs = parseHackyFile("rhs.txt");
+        
         vector<Coord2> diff[2];
         
-        for(int i = 0; i < sizeof(lhs) / sizeof(*lhs); i += 2)
+        for(int i = 0; i < lhs.size(); i += 2)
             diff[0].push_back(Coord2(coordExplicit(lhs[i]), coordExplicit(lhs[i + 1])));
-        for(int i = 0; i < sizeof(rhs) / sizeof(*rhs); i += 2)
+        for(int i = 0; i < rhs.size(); i += 2)
             diff[1].push_back(Coord2(coordExplicit(rhs[i]), coordExplicit(rhs[i + 1])));
         
         //dprintf("%d vs %d\n", whichSide(Coord4(diff[1][3], diff[1][2]), diff[0][
@@ -190,6 +188,10 @@ void InterfaceMain::render() const {
                 addToBoundBox(&bbox, getBoundBox(res[i]));
             
             pair<Float2, float> fin = fitInside(bbox.toFloat(), Float4(20, 10, 80, 90));
+            //fin.first.x = 14419.463867;
+            //fin.first.y = 6681.636230;
+            //fin.second = 14.588518;
+
             for(int i = 0; i < res.size(); i++) {
                 
                 for(int j = 0; j < res[i].size(); j++) {
@@ -200,7 +202,7 @@ void InterfaceMain::render() const {
                     setColor(1.0, 0.3, 0.3);
                 else
                     setColor(0.3, 1.0, 0.3);
-                drawLinePath(res[i], 0.1, true);
+                drawLineLoop(res[i], 0.1);
                 for(int j = 0; j < res[i].size(); j++)
                     drawCircle(res[i][j].toFloat(), 1, 0.1);
             }
