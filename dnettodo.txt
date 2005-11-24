@@ -1,5 +1,6 @@
 - AI shouldn't try to buy the glory device it already owns
 - Modify firerate
+- Sound, yo
 - Post-death bombardment :)
 - Improve explosion effects (missile, etc)
 - Move getDifference into its own file

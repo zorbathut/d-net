@@ -230,19 +230,25 @@ bool checkConsistent(const map<Coord2, DualLink> &vertx) {
     return true;
 }
 
-void printState(const map<Coord2, DualLink> &vertx) {
-    //return;
-    for(map<Coord2, DualLink>::const_iterator itr = vertx.begin(); itr != vertx.end(); itr++) {
-        dprintf("%f, %f:\n", itr->first.x.toFloat(), itr->first.y.toFloat());
-        for(int i = 0; i < 2; i++) {
-            if(itr->second.live[i]) {
-                dprintf("    %f, %f --> this --> %f, %f",
-                            itr->second.links[i][0].x.toFloat(), itr->second.links[i][0].y.toFloat(),
-                            itr->second.links[i][1].x.toFloat(), itr->second.links[i][1].y.toFloat());
-            } else {
-                dprintf("    NULL");
-            }
+void printNode(const Coord2 &coord, const DualLink &link) {
+    dprintf("%f, %f (%s, %s):\n", coord.x.toFloat(), coord.y.toFloat(), coord.x.rawstr().c_str(), coord.y.rawstr().c_str());
+    for(int i = 0; i < 2; i++) {
+        if(link.live[i]) {
+            dprintf("    %f, %f --> this --> %f, %f",
+                        link.links[i][0].x.toFloat(), link.links[i][0].y.toFloat(),
+                        link.links[i][1].x.toFloat(), link.links[i][1].y.toFloat());
+            dprintf("    %s, %s --> this --> %s, %s",
+                        link.links[i][0].x.rawstr().c_str(), link.links[i][0].y.rawstr().c_str(),
+                        link.links[i][1].x.rawstr().c_str(), link.links[i][1].y.rawstr().c_str());
+        } else {
+            dprintf("    NULL");
         }
+    }
+}
+
+void printState(const map<Coord2, DualLink> &vertx) {
+    for(map<Coord2, DualLink>::const_iterator itr = vertx.begin(); itr != vertx.end(); itr++) {
+        printNode(itr->first, itr->second);
     }
 }
 
@@ -298,7 +304,7 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
         return rv;
     }
     #endif
-    GetDifferenceHandler CrashHandler(lhs, rhs);
+    //GetDifferenceHandler CrashHandler(lhs, rhs);
     bool lhsInside = !pathReversed(lhs);
     CHECK(!pathReversed(rhs));
     {
@@ -320,7 +326,50 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
         CHECK(state == PR_INTERSECT);
     }
     map<Coord2, DualLink> vertx;
-    const vector<Coord2> tv[2] = {lhs, rhs};
+    vector<Coord2> tv[2] = {lhs, rhs};
+    while(1) {
+        const Coord mergebounds = Coord(0.00001f);
+        bool changed = false;
+        vector<Coord2> allvtx = tv[0];
+        allvtx.insert(allvtx.end(), tv[1].begin(), tv[1].end());
+        sort(allvtx.begin(), allvtx.end());
+        allvtx.erase(unique(allvtx.begin(), allvtx.end()), allvtx.end());
+        for(int i = 0; i < allvtx.size() && !changed; i++) {
+            for(int d = -1; d <= 1 && !changed; d += 2) {
+                for(int j = i + d; j >= 0 && j < allvtx.size() && !changed; j += d) {
+                    if(abs(allvtx[i].x - allvtx[j].x) > mergebounds)
+                        break;
+                    if(len(allvtx[i] - allvtx[j]) < mergebounds) {
+                        dprintf("Holy crap, merging! %s,%s vs %s,%s (diff %s,%s) (ofs %d, %d)\n",
+                                allvtx[i].x.rawstr().c_str(), allvtx[i].y.rawstr().c_str(),
+                                allvtx[j].x.rawstr().c_str(), allvtx[j].y.rawstr().c_str(),
+                                abs(allvtx[i].x - allvtx[j].x).rawstr().c_str(),
+                                abs(allvtx[i].y - allvtx[j].y).rawstr().c_str(),
+                                i, j);
+                        Coord2 dest = (allvtx[i] + allvtx[j]) / 2;
+                        int foundcount = 0;
+                        for(int p = 0; p < 2; p++) {
+                            for(int n = 0; n < tv[p].size(); n++) {
+                                if(tv[p][n] == allvtx[i] || tv[p][n] == allvtx[j]) {
+                                    tv[p][n] = dest;
+                                    foundcount++;
+                                }
+                            }
+                        }
+                        CHECK(foundcount >= 2);
+                        allvtx.erase(allvtx.begin() + i);
+                        if(j > i)
+                            j--;
+                        allvtx.erase(allvtx.begin() + j);
+                        allvtx.push_back(dest);
+                        changed = true;
+                    }
+                }
+            }
+        }
+        if(!changed)
+            break;
+    }
     //dprintf("Early parsing\n");
     for(int k = 0; k < 2; k++) {
         for(int i = 0; i < tv[k].size(); i++) {
@@ -336,17 +385,8 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
     //dprintf("Passed\n");
     vector<LiveLink> links;
     for(map<Coord2, DualLink>::iterator itr = vertx.begin(); itr != vertx.end(); itr++) {
-        /*
-        dprintf("%f, %f:\n", itr->first.x.toFloat(), itr->first.y.toFloat());
-        for(int i = 0; i < 2; i++) {
-            if(itr->second.live[i]) {
-                dprintf("    %f, %f --> this --> %f, %f",
-                            itr->second.links[i][0].x.toFloat(), itr->second.links[i][0].y.toFloat(),
-                            itr->second.links[i][1].x.toFloat(), itr->second.links[i][1].y.toFloat());
-            } else {
-                dprintf("    NULL");
-            }
-        }*/
+        
+        //printNode(itr->first, itr->second);
         //dprintf("Looping, %d live links\n", links.size());
         // First we check if any lines need to be split at this point
         for(int i = 0; i < links.size(); i++) {
@@ -401,6 +441,21 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
             }
         }
         //dprintf("Culled, %d live links\n", links.size());
+        // Next we combine any vertices linked from this one that are really really close
+        /*for(int i = 0; i < 2; i++) {
+            if(!itr->second.live[i])
+                continue;
+            for(int j = 0; j < 2; j++) {
+                dprintf("%s\n", len(itr->second.links[i][j] - itr->first).rawstr().c_str());
+                if(len(itr->second.links[i][j] - itr->first) < Coord(0.00001f)) {
+                    dprintf("Combining close nodes\n");
+                    vertx[itr->second.links[i][j]].live[i] = false;
+                    vertx[vertx[itr->second.links[i][j]].links[i][j]].links[i][!j] = itr->first;
+                    itr->second.links[i][j] = vertx[itr->second.links[i][j]].links[i][j];
+                }
+            }
+        }
+        dprintf("Done combining\n");*/
         // Now we calculate intersections from this point
         for(int p = 0; p < 2; p++) {
             if(!itr->second.live[p])
@@ -436,7 +491,8 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
                                 links[i].start.x.rawstr().c_str(), links[i].start.y.rawstr().c_str(), links[i].end.x.rawstr().c_str(), links[i].end.y.rawstr().c_str(),
                                 itr->first.x.rawstr().c_str(), itr->first.y.rawstr().c_str(),
                                 itr->second.links[p][k].x.rawstr().c_str(), itr->second.links[p][k].y.rawstr().c_str());
-                        dprintf("%s %s\n", junct.x.rawstr().c_str(), junct.y.rawstr().c_str());*/
+                        dprintf("%s %s\n", junct.x.rawstr().c_str(), junct.y.rawstr().c_str());
+                        */
                         {
                             Coord2 closest;
                             Coord dist = 1000000000;
@@ -453,8 +509,11 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
                                 // One of these already exists, so a line must go through it
                                 // but we're planning to merge, so a line must only go through one of 'em
                                 if(!(vertx[closest].live[0] != vertx[closest].live[1])) {
-                                    CHECK(0);
-                                    return createSplitLines(vertx);
+                                    //CHECK(0);
+                                    // TODO: Check to see if this is adjacent to the target, and if so, just roll those together
+                                    //dprintf("Junct: %s %s\n", junct.x.rawstr().c_str(), junct.y.rawstr().c_str());
+                                    printNode(itr->first, itr->second);
+                                    printNode(closest, vertx[closest]);
                                     CHECK(vertx[closest].live[0] != vertx[closest].live[1]);
                                 }
                                 int usedlin = vertx[closest].live[1];

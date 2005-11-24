@@ -40,6 +40,7 @@ public:
     Coord(const Coord &rhs) : d(rhs.d) { };
     Coord(int rhs) { d = (long long)rhs << 32; }
     explicit Coord(float rhs) { d = (long long)(rhs * (1LL << 32)); }
+    explicit Coord(double rhs) { d = (long long)(rhs * (1LL << 32)); }
     
     float toFloat() const { return (float)d / ( 1LL << 32 ); }
     int toInt() const { CHECK(Coord(int(d >> 32)).d == d); return d >> 32; }
