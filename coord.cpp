@@ -304,7 +304,7 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
         return rv;
     }
     #endif
-    //GetDifferenceHandler CrashHandler(lhs, rhs);
+    GetDifferenceHandler CrashHandler(lhs, rhs);
     bool lhsInside = !pathReversed(lhs);
     CHECK(!pathReversed(rhs));
     {
@@ -355,7 +355,11 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
                                     foundcount++;
                                 }
                             }
+                            tv[p].erase(unique(tv[p].begin(), tv[p].end()), tv[p].end());
+                            while(tv[p].back() == tv[p][0])
+                                tv[p].pop_back();
                         }
+                        
                         CHECK(foundcount >= 2);
                         allvtx.erase(allvtx.begin() + i);
                         if(j > i)

@@ -41,8 +41,8 @@ weapon {
     cost=0
     default=1
     firerate=30
-    deploy=deploy.autocannon
-    projectile=projectile.autocannon
+    deploy=deploy.wallripper
+    projectile=projectile.wallripper
 }
 
 weapon {
