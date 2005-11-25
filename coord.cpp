@@ -332,6 +332,8 @@ vector<vector<Coord2> > mergeAndSplit(const vector<Coord2> &in) {
     }
 }
 
+const int megaverbose = 0;
+
 vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Coord2> &rhs) {
     #if 0      // Pre-split debugging
     {
@@ -447,7 +449,8 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
                         itr->first.x.rawstr().c_str(), itr->first.y.rawstr().c_str(),
                         links[i].end.x.rawstr().c_str(), links[i].end.y.rawstr().c_str());
                 */
-                
+                if(megaverbose)
+                    dprintf("  Combining colinear\n");
                 for(int j = 0; j < 2; j++) {
                     if(vertx[links[i].start].live[j] && !vertx[itr->first].live[j]) {
                         for(int k = 0; k < 2; k++) {
@@ -477,7 +480,8 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
                             found = true;
                 CHECK(found);
                 //CHECK(checkConsistent(vertx));
-                //dprintf("Removing link %f,%f %f,%f\n", links[i].start.x.toFloat(), links[i].start.y.toFloat(), links[i].end.x.toFloat(), links[i].end.y.toFloat());
+                if(megaverbose)
+                    dprintf("  Removing link %f,%f %f,%f\n", links[i].start.x.toFloat(), links[i].start.y.toFloat(), links[i].end.x.toFloat(), links[i].end.y.toFloat());
                 links.erase(links.begin() + i);
                 i--;
                 
@@ -542,15 +546,18 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
                             for(int lin = 0; lin < 2; lin++) {
                                 for(int nod = 0; nod < 2; nod++) {
                                     Coord2 diff = lines.links[lin][nod] - junct;
-                                    if(len(diff) < dist) {
+                                    if(len(diff) < dist && lines.links[lin][nod] >= itr->first) {
                                         dist = len(diff);
                                         closest = lines.links[lin][nod];
                                     }
                                 }
                             }
                             if(dist < Coord(0.000001f)) {
+                                if(megaverbose)
+                                    dprintf("  Merging to %s, %s from %s, %s\n", closest.x.rawstr().c_str(), closest.y.rawstr().c_str(), itr->first.x.rawstr().c_str(), itr->first.y.rawstr().c_str());
                                 // One of these already exists, so a line must go through it
                                 // but we're planning to merge, so a line must only go through one of 'em
+                                CHECK(closest >= itr->first);
                                 if(!(vertx[closest].live[0] != vertx[closest].live[1])) {
                                     //CHECK(0);
                                     // TODO: Check to see if this is adjacent to the target, and if so, just roll those together
@@ -565,6 +572,7 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
                                 CHECK(vertx[closest].live[usedlin]);
                                 
                                 splice(&vertx, lines, closest, !usedlin);
+                                printState(vertx);
                                 
                                 links[i].end = closest;
                                 
@@ -572,6 +580,9 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
                                 continue;
                             }
                         }
+                        
+                        if(megaverbose)
+                            dprintf("  Splitting");
 
                         if(junct.x < itr->first.x) {
                             CHECK((itr->first.x - junct.x) < Coord(0.00001f));   // damn accuracy
@@ -604,14 +615,14 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
             for(int k = 0; k < 2; k++) {
                 if(itr->second.links[p][k] < itr->first)
                     continue;
-                //dprintf("Adding link\n");
+                if(megaverbose)
+                    dprintf("  Adding link\n");
                 LiveLink nll;
                 nll.start = itr->first;
                 nll.end = itr->second.links[p][k];
                 links.push_back(nll);
             }
         }
-        //dprintf("%d\n", links.size());
         CHECK(links.size() % 2 == 0);
         //dprintf("Unlooped, %d links\n", links.size());
     }

@@ -164,7 +164,7 @@ vector<string> parseHackyFile(string fname) {
 
 void InterfaceMain::render() const {
     
-    #if 1   // Code used for checking the validity of getDifference :)
+    #if 0   // Code used for checking the validity of getDifference :)
     {
         #if 1
         dprintf("Frame!\n");
@@ -218,8 +218,7 @@ void InterfaceMain::render() const {
             //bbox.sy -= 5;
             //bbox.ex += 5;
             //bbox.ey += 5;
-            //for(int i = 0; i < res.size(); i++)
-               //addToBoundBox(&bbox, getBoundBox(res[i]));
+            for(int i = 0; i < res.size(); i++) addToBoundBox(&bbox, getBoundBox(res[i]));
             /*
             bbox.sx = Coord(24.146805 - 0.000003);
             bbox.ex = Coord(24.146805 + 0.000003);
