@@ -218,8 +218,12 @@ void InterfaceMain::render() const {
         
         if(res.size()) {
             Coord4 bbox = getBoundBox(res[0]);
+            bbox.sx -= 5;
+            bbox.sy -= 5;
+            bbox.ex += 5;
+            bbox.ey += 5;
             //for(int i = 0; i < res.size(); i++)
-             //   addToBoundBox(&bbox, getBoundBox(res[i]));
+               //addToBoundBox(&bbox, getBoundBox(res[i]));
             /*
             bbox.sx = Coord(24.146805 - 0.000003);
             bbox.ex = Coord(24.146805 + 0.000003);
@@ -227,9 +231,11 @@ void InterfaceMain::render() const {
             bbox.ey = Coord(-130.315548 + 0.000003);*/
 
             pair<Float2, float> fin = fitInside(bbox.toFloat(), Float4(20, 10, 80, 90));
-            fin.first.x = -1463.562378;
-            fin.first.y = 8045.325195;
-            fin.second = 61.439281;
+            fin.first.x = 689.983521;
+            fin.first.y = -279.923828;
+            fin.second = 5.672042;
+            
+            dprintf("%f, %f, %f\n", fin.first.x, fin.first.y, fin.second);
 
             for(int i = 0; i < res.size(); i++) {
                 

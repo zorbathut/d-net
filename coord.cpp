@@ -295,8 +295,45 @@ vector<vector<Coord2> > createSplitLines(const map<Coord2, DualLink> &vertx) {
     return rv;
 }
 
+vector<vector<Coord2> > mergeAndSplit(const vector<Coord2> &in) {
+    if(set<Coord2>(in.begin(), in.end()).size() != in.size()) {
+        dprintf("Loop detected, going insane");
+        Coord2 dupe;
+        {
+            set<Coord2> tvta;
+            for(int i = 0; i < in.size(); i++) {
+                if(tvta.count(in[i]))
+                    dupe = in[i];
+                tvta.insert(in[i]);
+            }
+            if(tvta.size() == in.size()) {
+                dprintf("what the christ");
+                CHECK(0);
+            }
+        }
+        for(int i = 0; i < in.size(); i++) {
+            if(in[i] == dupe) {
+                vector<Coord2> cl;
+                vector<vector<Coord2> > acu;
+                for(int k = 1; k <= in.size(); k++) {
+                    cl.push_back(in[(i + k) % in.size()]);
+                    if(in[(i + k) % in.size()] == dupe) {
+                        acu.push_back(cl);
+                        cl.clear();
+                    }
+                }
+                CHECK(cl.size() == 0);
+                return acu;
+            }
+        }
+        CHECK(0);
+    } else {
+        return vector<vector<Coord2> >(1, in);
+    }
+}
+
 vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Coord2> &rhs) {
-    #if 0       // Pre-split debugging
+    #if 0      // Pre-split debugging
     {
         vector<vector<Coord2> > rv;
         rv.push_back(lhs);
@@ -307,6 +344,7 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
     GetDifferenceHandler CrashHandler(lhs, rhs);
     bool lhsInside = !pathReversed(lhs);
     CHECK(!pathReversed(rhs));
+    #if 1
     {
         int state = getPathRelation(lhs, rhs);
         if(state == PR_SEPARATE)
@@ -347,20 +385,19 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
                                 abs(allvtx[i].y - allvtx[j].y).rawstr().c_str(),
                                 i, j);
                         Coord2 dest = (allvtx[i] + allvtx[j]) / 2;
-                        int foundcount = 0;
+                        int foundcount[2] = {0, 0};
                         for(int p = 0; p < 2; p++) {
                             for(int n = 0; n < tv[p].size(); n++) {
                                 if(tv[p][n] == allvtx[i] || tv[p][n] == allvtx[j]) {
                                     tv[p][n] = dest;
-                                    foundcount++;
+                                    foundcount[p]++;
                                 }
                             }
                             tv[p].erase(unique(tv[p].begin(), tv[p].end()), tv[p].end());
                             while(tv[p].back() == tv[p][0])
                                 tv[p].pop_back();
                         }
-                        
-                        CHECK(foundcount >= 2);
+                        CHECK(foundcount[0] + foundcount[1] >= 2);
                         allvtx.erase(allvtx.begin() + i);
                         if(j > i)
                             j--;
@@ -374,6 +411,8 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
         if(!changed)
             break;
     }
+    CHECK(set<Coord2>(tv[0].begin(), tv[0].end()).size() == tv[0].size());
+    CHECK(set<Coord2>(tv[1].begin(), tv[1].end()).size() == tv[1].size());
     //dprintf("Early parsing\n");
     for(int k = 0; k < 2; k++) {
         for(int i = 0; i < tv[k].size(); i++) {
@@ -589,67 +628,103 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
         return createSplitLines(vertx);
     }
     #endif
+    
+    vector<vector<Coord2> > rv;
     {
-        vector<vector<Coord2> > rv;
-        {
-            set<Coord2> seeds;
-            set<pair<bool, Coord2> > seen;
-            for(map<Coord2, DualLink>::const_iterator itr = vertx.begin(); itr != vertx.end(); itr++) {
-                if(itr->second.live[0] && !inPath((itr->first + itr->second.links[0][1]) / 2, rhs) && !(itr->second.live[1] && itr->second.links[0][1] == itr->second.links[1][1])) {
-                    seeds.insert(itr->second.links[0][1]);
-                }
-            }
-            for(set<Coord2>::iterator itr = seeds.begin(); itr != seeds.end(); itr++) {
-                if(seen.count(make_pair(false, *itr)))
-                    continue;
-                vector<Coord2> tpath;
-                pair<bool, Coord2> now(false, *itr);
-                //dprintf("Seeding at %f, %f\n", now.second.x.toFloat(), now.second.y.toFloat());
-                while(!seen.count(now)) {
-                    seen.insert(now);
-                    tpath.push_back(now.second);
-                    /*
-                    dprintf("  %f, %f, %d:\n", now.second.x.toFloat(), now.second.y.toFloat(), now.first);
-                    for(int i = 0; i < 2; i++) {
-                        if(vertx[now.second].live[i]) {
-                            dprintf("    %f, %f --> this --> %f, %f",
-                                        vertx[now.second].links[i][0].x.toFloat(), vertx[now.second].links[i][0].y.toFloat(),
-                                        vertx[now.second].links[i][1].x.toFloat(), vertx[now.second].links[i][1].y.toFloat());
-                        } else {
-                            dprintf("    NULL");
-                        }
-                    }*/
-                    if(!now.first) {
-                        // came in off a lhs path - switch to rhs if there is one, and if it doesn't immediately leave the valid area
-                        if(vertx[now.second].live[1] && inPath((now.second + vertx[now.second].links[1][0]) / 2, lhs) == lhsInside) {
-                            CHECK(inPath((now.second + vertx[now.second].links[1][0]) / 2, lhs) == lhsInside);
-                            now = make_pair(true, vertx[now.second].links[1][0]);
-                        } else {
-                            CHECK(vertx[now.second].live[0]);
-                            if(!vertx[now.second].live[1] || vertx[now.second].links[0][1] != vertx[now.second].links[1][0]) // parallel links cause some problems
-                                CHECK(roughInPath((now.second + vertx[now.second].links[0][1]) / 2, rhs, false));
-                            now = make_pair(false, vertx[now.second].links[0][1]);
-                        }
-                    } else {
-                        // came in off a rhs path - switch to lhs if there is one
-                        if(vertx[now.second].live[0] && !inPath((now.second + vertx[now.second].links[0][1]) / 2, rhs)) {
-                            CHECK(!inPath((now.second + vertx[now.second].links[0][1]) / 2, rhs));
-                            now = make_pair(false, vertx[now.second].links[0][1]);
-                        } else {
-                            CHECK(vertx[now.second].live[1]);
-                            if(!vertx[now.second].live[0] || vertx[now.second].links[0][1] != vertx[now.second].links[1][0]) // parallel links cause some problems
-                                CHECK(roughInPath((now.second + vertx[now.second].links[1][0]) / 2, lhs, lhsInside));
-                            now = make_pair(true, vertx[now.second].links[1][0]);
-                        }
-                    }
-                }
-                //dprintf("Built path of %d vertices\n", tpath.size());
-                if(tpath.size() > 2)
-                    rv.push_back(tpath);
+        set<Coord2> seeds;
+        set<pair<bool, Coord2> > seen;
+        for(map<Coord2, DualLink>::const_iterator itr = vertx.begin(); itr != vertx.end(); itr++) {
+            if(itr->second.live[0] && !inPath((itr->first + itr->second.links[0][1]) / 2, rhs) && !(itr->second.live[1] && itr->second.links[0][1] == itr->second.links[1][1])) {
+                seeds.insert(itr->second.links[0][1]);
             }
         }
-        return rv;
+        for(set<Coord2>::iterator itr = seeds.begin(); itr != seeds.end(); itr++) {
+            if(seen.count(make_pair(false, *itr)))
+                continue;
+            vector<Coord2> tpath;
+            pair<bool, Coord2> now(false, *itr);
+            //dprintf("Seeding at %f, %f\n", now.second.x.toFloat(), now.second.y.toFloat());
+            while(!seen.count(now)) {
+                seen.insert(now);
+                tpath.push_back(now.second);
+                /*
+                dprintf("  %f, %f, %d:\n", now.second.x.toFloat(), now.second.y.toFloat(), now.first);
+                for(int i = 0; i < 2; i++) {
+                    if(vertx[now.second].live[i]) {
+                        dprintf("    %f, %f --> this --> %f, %f",
+                                    vertx[now.second].links[i][0].x.toFloat(), vertx[now.second].links[i][0].y.toFloat(),
+                                    vertx[now.second].links[i][1].x.toFloat(), vertx[now.second].links[i][1].y.toFloat());
+                    } else {
+                        dprintf("    NULL");
+                    }
+                }*/
+                if(!now.first) {
+                    // came in off a lhs path - switch to rhs if there is one, and if it doesn't immediately leave the valid area
+                    if(vertx[now.second].live[1] && inPath((now.second + vertx[now.second].links[1][0]) / 2, lhs) == lhsInside) {
+                        CHECK(inPath((now.second + vertx[now.second].links[1][0]) / 2, lhs) == lhsInside);
+                        now = make_pair(true, vertx[now.second].links[1][0]);
+                    } else {
+                        CHECK(vertx[now.second].live[0]);
+                        if(!vertx[now.second].live[1] || vertx[now.second].links[0][1] != vertx[now.second].links[1][0]) // parallel links cause some problems
+                            CHECK(roughInPath((now.second + vertx[now.second].links[0][1]) / 2, rhs, false));
+                        now = make_pair(false, vertx[now.second].links[0][1]);
+                    }
+                } else {
+                    // came in off a rhs path - switch to lhs if there is one
+                    if(vertx[now.second].live[0] && !inPath((now.second + vertx[now.second].links[0][1]) / 2, rhs)) {
+                        CHECK(!inPath((now.second + vertx[now.second].links[0][1]) / 2, rhs));
+                        now = make_pair(false, vertx[now.second].links[0][1]);
+                    } else {
+                        CHECK(vertx[now.second].live[1]);
+                        if(!vertx[now.second].live[0] || vertx[now.second].links[0][1] != vertx[now.second].links[1][0]) // parallel links cause some problems
+                            CHECK(roughInPath((now.second + vertx[now.second].links[1][0]) / 2, lhs, lhsInside));
+                        now = make_pair(true, vertx[now.second].links[1][0]);
+                    }
+                }
+            }
+            //dprintf("Built path of %d vertices\n", tpath.size());
+            if(tpath.size() > 2)
+                rv.push_back(tpath);
+        }
     }
+    #else
+    vector<vector<Coord2> > rv(1,lhs);
+    #endif
+    vector<vector<Coord2> > rrv;
+    bool gotReversedPath = false;
+    int rvpathID = -1;
+    vector<vector<Coord2> > rvpt;
+    for(int i = 0; i < rv.size(); i++) {
+        vector<vector<Coord2> > mas = mergeAndSplit(rv[i]);
+        for(int j = 0; j < mas.size(); j++) {
+            if(lhsInside) {
+                if(pathReversed(mas[j])) {
+                    dprintf("Holy fuck, this path is screwed up!\n");
+                } else {
+                    rrv.push_back(mas[j]);
+                }
+            } else {
+                if(pathReversed(mas[j])) {
+                    CHECK(!gotReversedPath);
+                    rvpathID = rrv.size();
+                    rrv.push_back(mas[j]);
+                    gotReversedPath = true;
+                } else {
+                    rvpt.push_back(mas[j]);
+                }
+            }
+        }
+    }
+    if(!lhsInside) {
+        CHECK(rvpathID != -1);
+        for(int k = 0; k < rvpt.size(); k++) {
+            if(inPath(getCentroid(rvpt[k]), rrv[rvpathID])) {
+                rrv.push_back(rvpt[k]);
+            }
+        }
+    }
+    return rrv;
+
 }
 
 Coord getArea(const vector<Coord2> &are) {

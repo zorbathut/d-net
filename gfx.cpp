@@ -255,8 +255,10 @@ void drawLineLoop(const vector<Float2> &verts, float weight) {
 };
 void drawLineLoop(const vector<Coord2> &verts, float weight) {
     CHECK(verts.size() >= 1);
-	for(int i = 0; i < verts.size(); i++)
+	for(int i = 0; i < verts.size(); i++) {
 		drawLine(verts[i], verts[(i + 1) % verts.size()], weight);
+        //drawLine(verts[i], (verts[i] + verts[(i + 1) % verts.size()]) / 2, weight * 2);
+    }
 };
 
 void drawTransformedLinePath(const vector<Float2> &verts, float angle, Float2 transform, float weight) {
