@@ -578,13 +578,9 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
                             junct.x = itr->first.x;
                         }
                         if(junct <= itr->first) {
-                            if(junct == itr->first)
-                                dprintf("EQUIVALENCY? wtf!");
-                            dprintf("%f,%f vs %f,%f\n", itr->first.x.toFloat(), itr->first.y.toFloat(), junct.x.toFloat(), junct.y.toFloat());
-                            dprintf("%s %s vs %s %s\n", itr->first.x.rawstr().c_str(), itr->first.y.rawstr().c_str(), junct.x.rawstr().c_str(), junct.y.rawstr().c_str());
-                            dprintf("%s\n", ofs.rawstr().c_str());
-                            dprintf("%f\n", ofs.toFloat());
-                            CHECK(0);
+                            // goddamn it
+                            dprintf("Stupid vertical lines fuck everything up!\n");
+                            junct.x = coordExplicit(junct.x.raw() + 1);
                         }
 
                         CHECK(vertx[junct].live[0] == false);

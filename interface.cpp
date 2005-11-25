@@ -164,34 +164,30 @@ vector<string> parseHackyFile(string fname) {
 
 void InterfaceMain::render() const {
     
-    #if 0   // Code used for checking the validity of getDifference :)
+    #if 1   // Code used for checking the validity of getDifference :)
     {
-        #if 0
+        #if 1
         dprintf("Frame!\n");
         
-        string lhs[30] = {
-            "0000001a34a94b3b", "ffffffed5c5384ee",
-            "0000001ab17e92da", "ffffffed260c1977",
-            "0000001ae76af121", "ffffffed35e466cd",
-            "0000001ae9fa3bcb", "ffffffed0d7cdc5f",
-            "0000001af5d43af2", "ffffffed0855a440",
-            "0000001aeaaf6e09", "ffffffed0250bf12",
-            "0000001af055a664", "ffffffeca924b164",
-            "0000001b7137d79f", "ffffffecf2ce6d83",
-            "0000001bb3ac699d", "ffffffecb1803866",
-            "0000001b28b1c61d", "ffffffed98cd0573",
-            "0000001b5f00f2e0", "ffffffed7f0abdad",
-            "0000001b00e11500", "ffffffedc0f2d90e",
-            "0000001b05eab187", "ffffffedc9a14f0a",
-            "0000001a8e48e1c8", "ffffffed5b0b1a01",
-            "0000001a4bec55e2", "ffffffeda05d91b0",
+        string lhs[20] = {
+        "0000000800000000", "ffffffec00000000",
+        "0000001c00000000", "ffffffec00000000",
+        "0000001c00000000", "fffffff0df34f603",
+        "0000001bee247099", "fffffff08dd0f7cb",
+        "0000001bb74d3415", "fffffff0c56130e0",
+        "0000001af388f8bc", "fffffff05a888f79",
+        "0000001aafff1d80", "fffffff0892b2bf8",
+        "0000001a00000000", "fffffff02d0fe37d",
+        "0000001a00000000", "ffffffee00000000",
+        "0000000800000000", "ffffffee00000000",
         };
         string rhs[8] = {
-            "0000001b5b2e7019", "ffffffedea9c92ee",
-            "00000019ee262d19", "ffffffed1c1616ce",
-            "0000001afdb6b899", "ffffffec04190eee",
-            "0000001beb533019", "ffffffece691db0e",
+        "0000001ceeff1d6f", "fffffff13af30ab7",
+        "0000001bda2925ef", "fffffff1dc652f37",
+        "0000001b153b896f", "fffffff079209eb7",
+        "0000001bfffffc6f", "ffffffefdf350a37",
         };
+
         
         vector<Coord2> diff[2];
 
@@ -217,11 +213,11 @@ void InterfaceMain::render() const {
         vector<vector<Coord2> > res = getDifference(diff[0], diff[1]);
         
         if(res.size()) {
-            Coord4 bbox = getBoundBox(res[0]);
-            bbox.sx -= 5;
-            bbox.sy -= 5;
-            bbox.ex += 5;
-            bbox.ey += 5;
+            Coord4 bbox = getBoundBox(diff[1]);
+            //bbox.sx -= 5;
+            //bbox.sy -= 5;
+            //bbox.ex += 5;
+            //bbox.ey += 5;
             //for(int i = 0; i < res.size(); i++)
                //addToBoundBox(&bbox, getBoundBox(res[i]));
             /*
@@ -231,9 +227,9 @@ void InterfaceMain::render() const {
             bbox.ey = Coord(-130.315548 + 0.000003);*/
 
             pair<Float2, float> fin = fitInside(bbox.toFloat(), Float4(20, 10, 80, 90));
-            fin.first.x = 689.983521;
-            fin.first.y = -279.923828;
-            fin.second = 5.672042;
+            //fin.first.x = 689.983521;
+            //fin.first.y = -279.923828;
+            //fin.second = 5.672042;
             
             dprintf("%f, %f, %f\n", fin.first.x, fin.first.y, fin.second);
 
