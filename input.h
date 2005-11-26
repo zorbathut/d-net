@@ -80,6 +80,7 @@ public:
     float ax[2];
     int axmode;
     Button u,d,l,r,f;
+    float udlrax[2];
 
     void nullMove();
 

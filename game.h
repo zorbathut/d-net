@@ -147,8 +147,6 @@ public:
 
 private:
     
-    void dealDamage(float dmg, Tank *target);
-    
     Coord2 movement() const;
 
     Coord2 nexttail() const;
@@ -179,6 +177,20 @@ private:
 
 };
 
+class BombardmentState {
+public:
+    enum { BS_OFF, BS_SPAWNING, BS_ACTIVE, BS_FIRING, BS_COOLDOWN, BS_LAST };
+    Coord2 loc;
+    int timer;
+    int state;
+    
+    BombardmentState() {
+        loc = Coord2(0, 0);
+        timer = 0;
+        state = BS_OFF;
+    }
+};
+
 class Game {
 public:
 
@@ -198,9 +210,10 @@ private:
 	int frameNm;
     int framesSinceOneLeft;
 
-	vector< Tank > players;
-	vector< vector< Projectile > > projectiles;
-	vector< GfxEffects > gfxeffects;
+	vector<Tank> players;
+    vector<BombardmentState> bombards;
+	vector<vector<Projectile> > projectiles;
+	vector<GfxEffects> gfxeffects;
 	Gamemap gamemap;
 
 	Collider collider;

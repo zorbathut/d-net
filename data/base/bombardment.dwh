@@ -8,9 +8,9 @@ warhead {
 
 warhead {
     name=warhead.bombardment.bomb
-    radiusdamage=0.5
+    radiusdamage=1
     radiusfalloff=8
-    wallremovalradius=1
+    wallremovalradius=2
 }
 
 bombardment {
@@ -20,8 +20,8 @@ bombardment {
     
     warhead=warhead.bombardment.minibomb
     
-    lockdelay=240
-    unlockdelay=240
+    lockdelay=180
+    unlockdelay=180
 }
 
 bombardment {
@@ -30,6 +30,6 @@ bombardment {
     
     warhead=warhead.bombardment.bomb
     
-    lockdelay=240
-    unlockdelay=240
+    lockdelay=180
+    unlockdelay=180
 }

@@ -2,6 +2,7 @@
 - Modify firerate
 - Sound, yo
 - Post-death bombardment :)
+- Color for warheads
 - Improve explosion effects (missile, etc)
 - Move getDifference into its own file
 - Certificates and discounts

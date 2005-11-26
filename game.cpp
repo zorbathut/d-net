@@ -22,6 +22,51 @@ DEFINE_bool(verboseCollisions, false, "Verbose collisions");
 DEFINE_bool(debugGraphics, false, "Enable various debug graphics");
 DEFINE_int(startingcash, 1000, "Cash to start with");
 
+void dealDamage(float dmg, Tank *target, Player *owner, float damagecredit, bool killcredit) {
+    if(target->player == owner)
+        return; // friendly fire exception
+    if(target->takeDamage(dmg) && killcredit)
+        owner->kills++;
+    owner->damageDone += dmg * damagecredit;
+};
+
+void detonateWarhead(const IDBWarhead *warhead, Coord2 pos, Tank *impact, Player *owner, const vector<pair<float, Tank *> > &adjacency, vector<GfxEffects> *gfxe, Gamemap *gm, float damagecredit, bool killcredit) {
+    
+    if(impact)
+        dealDamage(warhead->impactdamage, impact, owner, damagecredit, killcredit);
+    
+    for(int i = 0; i < adjacency.size(); i++) {
+        if(adjacency[i].first < warhead->radiusfalloff)
+            dealDamage(warhead->radiusdamage / warhead->radiusfalloff * ( warhead->radiusfalloff - adjacency[i].first), adjacency[i].second, owner, damagecredit, killcredit);
+    }
+    
+    GfxEffects ngfe;
+    ngfe.point_pos = pos.toFloat();
+    ngfe.life = 6;
+    ngfe.type = GfxEffects::EFFECT_POINT;
+    ngfe.color = Color(1.0, 1.0, 1.0);
+    for( int i = 0; i < 6; i++ ) {
+        float dir = frand() * 2 * PI;
+        ngfe.point_vel = makeAngle(dir) / 3;
+        ngfe.point_vel *= 1.0 - frand() * frand();
+        gfxe->push_back( ngfe );
+    }
+    
+    if(warhead->radiusfalloff > 0) {
+        GfxEffects dbgf;
+        dbgf.type = GfxEffects::EFFECT_CIRCLE;
+        dbgf.circle_center = pos.toFloat();
+        dbgf.circle_radius = warhead->radiusfalloff;
+        dbgf.life = 5;
+        gfxe->push_back(dbgf);
+    }
+    
+    if(warhead->wallremovalradius > 0 && frand() < warhead->wallremovalchance) {
+        gm->removeWalls(pos, warhead->wallremovalradius);
+    }
+
+};
+
 void Player::reCalculate() {
     maxHealth = 20;
     turnSpeed = 2.f / FPS;
@@ -450,53 +495,14 @@ void Projectile::impact(Coord2 pos, Tank *target, const vector<pair<float, Tank 
     if(!live)
         return;
     
-    if(target)
-        dealDamage(projtype->warhead->impactdamage, target);
-    
-    for(int i = 0; i < adjacency.size(); i++) {
-        if(adjacency[i].first < projtype->warhead->radiusfalloff)
-            dealDamage(projtype->warhead->radiusdamage / projtype->warhead->radiusfalloff * ( projtype->warhead->radiusfalloff - adjacency[i].first), adjacency[i].second);
-    }
-    
-    GfxEffects ngfe;
-    ngfe.point_pos = pos.toFloat();
-    ngfe.life = 6;
-    ngfe.type = GfxEffects::EFFECT_POINT;
-    ngfe.color = projtype->color;
-    for( int i = 0; i < 6; i++ ) {
-        float dir = frand() * 2 * PI;
-        ngfe.point_vel = makeAngle(dir) / 3;
-        ngfe.point_vel *= 1.0 - frand() * frand();
-        gfxe->push_back( ngfe );
-    }
-    
-    if(projtype->warhead->radiusfalloff > 0) {
-        GfxEffects dbgf;
-        dbgf.type = GfxEffects::EFFECT_CIRCLE;
-        dbgf.circle_center = pos.toFloat();
-        dbgf.circle_radius = projtype->warhead->radiusfalloff;
-        dbgf.life = 5;
-        gfxe->push_back(dbgf);
-    }
-    
-    if(projtype->warhead->wallremovalradius > 0 && frand() < projtype->warhead->wallremovalchance) {
-        gm->removeWalls(pos, projtype->warhead->wallremovalradius);
-    }
-    
+    detonateWarhead(projtype->warhead, pos, target, owner->player, adjacency, gfxe, gm, 1.0, true);
+
     live = false;
 };
 
 bool Projectile::isLive() const {
     return live;
 }
-
-void Projectile::dealDamage(float dmg, Tank *target) {
-    if(target == owner)
-        return; // friendly fire exception
-    if(target->takeDamage(dmg))
-        owner->player->kills++;
-    owner->player->damageDone += dmg;
-};
 
 Coord2 Projectile::movement() const {
     if(projtype->motion == PM_NORMAL) {
@@ -774,6 +780,42 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
         }
     }
     
+    for(int j = 0; j < bombards.size(); j++) {
+        CHECK(bombards[j].state >= 0 && bombards[j].state < BombardmentState::BS_LAST);
+        if(bombards[j].state == BombardmentState::BS_OFF) {
+            if(!players[j].live) {
+                // if the player is dead and the bombard isn't initialized
+                bombards[j].loc = players[j].pos;
+                bombards[j].state = BombardmentState::BS_SPAWNING;
+                bombards[j].timer = 60 * 6;
+            }
+        } else if(bombards[j].state == BombardmentState::BS_SPAWNING) {
+            bombards[j].timer--;
+            if(bombards[j].timer <= 0)
+                bombards[j].state = BombardmentState::BS_ACTIVE;
+        } else if(bombards[j].state == BombardmentState::BS_ACTIVE) {
+            bombards[j].loc.x += Coord(deadzone(keys[j].udlrax[0], keys[j].udlrax[1], 0, 0.2) / 2);
+            bombards[j].loc.y += Coord(-deadzone(keys[j].udlrax[1], keys[j].udlrax[0], 0, 0.2) / 2);
+            if(keys[j].f.down) {
+                bombards[j].state = BombardmentState::BS_FIRING;
+                bombards[j].timer = players[j].player->bombardment->lockdelay;
+            }
+        } else if(bombards[j].state == BombardmentState::BS_FIRING) {
+            bombards[j].timer--;
+            if(bombards[j].timer <= 0) {
+                detonateWarhead(players[j].player->bombardment->warhead, bombards[j].loc, NULL, players[j].player, genTankDistance(bombards[j].loc), &gfxeffects, &gamemap, 1.0, false);
+                bombards[j].state = BombardmentState::BS_COOLDOWN;
+                bombards[j].timer = players[j].player->bombardment->unlockdelay;
+            }
+        } else if(bombards[j].state == BombardmentState::BS_COOLDOWN) {
+            bombards[j].timer--;
+            if(bombards[j].timer <= 0)
+                bombards[j].state = BombardmentState::BS_ACTIVE;
+        } else {
+            CHECK(0);
+        }
+    }  
+    
 	for( int i = 0; i < players.size(); i++ ) {
 		players[ i ].tick(keys[i]);
         players[ i ].weaponCooldown--;
@@ -878,6 +920,22 @@ void Game::renderToScreen() const {
 			projectiles[ i ][ j ].render();
     for( int i = 0; i < gfxeffects.size(); i++ )
 		gfxeffects[ i ].render();
+    for(int i = 0; i < bombards.size(); i++) {
+        if(bombards[i].state == BombardmentState::BS_OFF) {
+        } else if(bombards[i].state == BombardmentState::BS_SPAWNING) {
+        } else if(bombards[i].state == BombardmentState::BS_ACTIVE) {
+            setColor(players[i].player->color);
+            drawCircle(bombards[i].loc.toFloat(), 4, 0.1);
+        } else if(bombards[i].state == BombardmentState::BS_FIRING) {
+            setColor(Color(1.0, 1.0, 1.0));
+            drawCircle(bombards[i].loc.toFloat(), 4, 0.1);
+        } else if(bombards[i].state == BombardmentState::BS_COOLDOWN) {
+            setColor(players[i].player->color * 0.5);
+            drawCircle(bombards[i].loc.toFloat(), 4, 0.1);
+        } else {
+            CHECK(0);
+        }
+    }
 	gamemap.render();
 	collider.render();
     {
@@ -933,7 +991,8 @@ Game::Game(vector<Player> *in_playerdata, const Level &lev) {
     CHECK(in_playerdata);
 	frameNm = 0;
     players.clear();
-	players.resize( in_playerdata->size() );
+	players.resize(in_playerdata->size());
+    bombards.resize(in_playerdata->size());
     for(int i = 0; i < players.size(); i++) {
         players[i].init(&(*in_playerdata)[i]);
     }
@@ -961,15 +1020,11 @@ Game::Game(vector<Player> *in_playerdata, const Level &lev) {
     
     gamemap = Gamemap(lev);
     
-    dprintf("ginit\n");
-    
     pair<Float2, Float2> z = getMapZoom(gamemap.getBounds());
     zoom_center = z.first;
     zoom_size = z.second;
     
     zoom_speed = Float2(0, 0);
-    
-    dprintf("gedone\n");
 
 };
 

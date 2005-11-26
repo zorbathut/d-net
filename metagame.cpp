@@ -478,6 +478,8 @@ vector<Keystates> Metagame::genKeystates(const vector<Controller> &keys, const v
             } else {
                 CHECK(0);
             }
+            kst[pid].udlrax[0] = keys[i].x;
+            kst[pid].udlrax[1] = keys[i].y;
             CHECK(keys[i].x >= -1 && keys[i].x <= 1);
             CHECK(keys[i].y >= -1 && keys[i].y <= 1);
             pid++;
