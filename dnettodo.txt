@@ -1,7 +1,5 @@
-- AI shouldn't try to buy the glory device it already owns
 - Modify firerate
 - Sound, yo
-- Post-death bombardment :)
 - Color for projectiles
 - Improve explosion effects (missile, etc)
 - Move getDifference into its own file
@@ -10,6 +8,7 @@
 - Speed up wall difference in nasty situations (i.e. glory devices in corners)
 - Speed up wall placement in all situations (that annoying caching thing with gamemap, I guess)
 - Make explosion removals include the focus point
+- AI shouldn't try to buy the glory device it already owns
 - Scrollable bars
 - Weapon info screen
 - Weapon change system

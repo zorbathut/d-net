@@ -766,19 +766,19 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
     
     collider.finishProcess();
 
-	for(int j = 0; j < projectiles.size(); j++) {
-		for(int k = 0; k < projectiles[ j ].size(); k++) {
-            if(!projectiles[j][k].isLive()) {
-                projectiles[j].erase(projectiles[j].begin() + k);
-                k--;
-            } else {
-            	projectiles[j][k].tick(&gfxeffects);
-                if(!projectiles[j][k].isLive()) {   // in case it dies in its tick
-                    projectiles[j].erase(projectiles[j].begin() + k);
-                    k--;
+    {
+        vector<vector<Projectile> > newProjectiles(projectiles.size());
+        for(int j = 0; j < projectiles.size(); j++) {
+            for(int k = 0; k < projectiles[ j ].size(); k++) {
+                if(projectiles[j][k].isLive()) {
+                    projectiles[j][k].tick(&gfxeffects);
+                    if(!projectiles[j][k].isLive())   // in case it dies in its tick
+                        continue;
+                    newProjectiles[j].push_back(projectiles[j][k]);
                 }
             }
         }
+        projectiles.swap(newProjectiles);
     }
     
     for(int j = 0; j < bombards.size(); j++) {
