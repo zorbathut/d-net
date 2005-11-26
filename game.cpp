@@ -901,6 +901,26 @@ void Game::ai(const vector<Ai *> &ais) const {
     }
 }
 
+void drawCirclePieces(const Coord2 &cloc, float solidity, float rad) {
+    Float2 loc = cloc.toFloat();
+    for(int i = 0; i < 3; i++) {
+        float core = PI / 2 * 3 + (PI * 2 / 3 * i);
+        float span = PI * 2 / 6 + PI * 2 / 6 * solidity;
+        vector<Float2> path;
+        for(int k = 0; k <= 10; k++)
+            path.push_back(makeAngle(core - span / 2 + span / 10 * k) * rad + loc);
+        drawLinePath(path, 0.1);
+    }
+}
+
+void drawCrosses(const Coord2 &cloc, float rad) {
+    Float2 loc = cloc.toFloat();
+    for(int i = 0; i < 3; i++) {
+        float core = PI / 2 * 3 + (PI * 2 / 3 * i);
+        drawLine(makeAngle(core) * rad * 1.25 + loc, makeAngle(core) * rad * 0.75 + loc, 0.1);
+    }
+}
+
 void Game::renderToScreen() const {
     {
         const float availScreen = 0.9;
@@ -924,14 +944,22 @@ void Game::renderToScreen() const {
         if(bombards[i].state == BombardmentState::BS_OFF) {
         } else if(bombards[i].state == BombardmentState::BS_SPAWNING) {
         } else if(bombards[i].state == BombardmentState::BS_ACTIVE) {
-            setColor(players[i].player->color);
-            drawCircle(bombards[i].loc.toFloat(), 4, 0.1);
-        } else if(bombards[i].state == BombardmentState::BS_FIRING) {
-            setColor(Color(1.0, 1.0, 1.0));
-            drawCircle(bombards[i].loc.toFloat(), 4, 0.1);
-        } else if(bombards[i].state == BombardmentState::BS_COOLDOWN) {
             setColor(players[i].player->color * 0.5);
-            drawCircle(bombards[i].loc.toFloat(), 4, 0.1);
+            drawCirclePieces(bombards[i].loc, 0.3, 4);
+            drawCrosses(bombards[i].loc, 4);
+        } else if(bombards[i].state == BombardmentState::BS_FIRING) {
+            setColor(players[i].player->color * 0.25);
+            drawCirclePieces(bombards[i].loc, 0.3, 4);
+            drawCrosses(bombards[i].loc, 4);
+            setColor(Color(1.0, 1.0, 1.0));
+            float ps = (float)bombards[i].timer / players[i].player->bombardment->lockdelay;
+            drawCirclePieces(bombards[i].loc, 1 - ps, 4 * ps);
+        } else if(bombards[i].state == BombardmentState::BS_COOLDOWN) {
+            setColor(players[i].player->color * 0.25);
+            drawCirclePieces(bombards[i].loc, 0.3, 4);
+            drawCrosses(bombards[i].loc, 4);
+            float ps = (float)bombards[i].timer / players[i].player->bombardment->unlockdelay;
+            drawCirclePieces(bombards[i].loc, ps, 4 * (1 - ps));
         } else {
             CHECK(0);
         }
@@ -1033,6 +1061,10 @@ vector<pair<float, Tank *> > Game::genTankDistance(const Coord2 &center) {
     for(int i = 0; i < players.size(); i++) {
         if(players[i].live) {
             vector<Coord2> tv = players[i].getTankVertices(players[i].pos, players[i].d);
+            if(inPath(center, tv)) {
+                rv.push_back(make_pair(0, &players[i]));
+                continue;
+            }
             float closest = 1e10;
             for(int j = 0; j < tv.size(); j++) {
                 float tdist = distanceFromLine(Coord4(tv[j], tv[(j + 1) % tv.size()]), center).toFloat();
