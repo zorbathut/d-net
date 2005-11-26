@@ -572,7 +572,6 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
                                 CHECK(vertx[closest].live[usedlin]);
                                 
                                 splice(&vertx, lines, closest, !usedlin);
-                                printState(vertx);
                                 
                                 links[i].end = closest;
                                 
@@ -712,10 +711,19 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
                 }
             } else {
                 if(pathReversed(mas[j])) {
-                    CHECK(!gotReversedPath);
-                    rvpathID = rrv.size();
-                    rrv.push_back(mas[j]);
-                    gotReversedPath = true;
+                    if(gotReversedPath) {
+                        Coord rva = abs(getArea(rrv[rvpathID]));
+                        Coord masa = abs(getArea(mas[j]));
+                        dprintf("Battle! %f area versus %f area, which inside-out path will survive!", rva.toFloat(), masa.toFloat());
+                        if(rva < masa) {
+                            rrv[rvpathID] = mas[j];
+                        }
+                    } else {
+                        CHECK(!gotReversedPath);
+                        rvpathID = rrv.size();
+                        rrv.push_back(mas[j]);
+                        gotReversedPath = true;
+                    }
                 } else {
                     rvpt.push_back(mas[j]);
                 }

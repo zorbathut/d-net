@@ -2,13 +2,14 @@
 - Modify firerate
 - Sound, yo
 - Post-death bombardment :)
-- Color for warheads
+- Color for projectiles
 - Improve explosion effects (missile, etc)
 - Move getDifference into its own file
 - Certificates and discounts
 - Next generation of weapons
 - Speed up wall difference in nasty situations (i.e. glory devices in corners)
 - Speed up wall placement in all situations (that annoying caching thing with gamemap, I guess)
+- Make explosion removals include the focus point
 - Scrollable bars
 - Weapon info screen
 - Weapon change system

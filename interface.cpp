@@ -169,26 +169,19 @@ void InterfaceMain::render() const {
         #if 1
         dprintf("Frame!\n");
         
-        string lhs[20] = {
-        "0000000800000000", "ffffffec00000000",
-        "0000001c00000000", "ffffffec00000000",
-        "0000001c00000000", "fffffff0df34f603",
-        "0000001bee247099", "fffffff08dd0f7cb",
-        "0000001bb74d3415", "fffffff0c56130e0",
-        "0000001af388f8bc", "fffffff05a888f79",
-        "0000001aafff1d80", "fffffff0892b2bf8",
-        "0000001a00000000", "fffffff02d0fe37d",
-        "0000001a00000000", "ffffffee00000000",
-        "0000000800000000", "ffffffee00000000",
+        string lhs[210] = {
+         "ffffff92386515c5", "ffffff9bffffe0a5",
+         "ffffff8f01c19d97", "ffffff9bffffe348",
+         "ffffff8ec5b20e07", "ffffff9b05d4114c",
+         "ffffff8dfc4ecdc7", "ffffff9bf3b797dc",
+         "ffffff8e0b79b005", "ffffff9bffffe412",
         };
-        string rhs[8] = {
-        "0000001ceeff1d6f", "fffffff13af30ab7",
-        "0000001bda2925ef", "fffffff1dc652f37",
-        "0000001b153b896f", "fffffff079209eb7",
-        "0000001bfffffc6f", "ffffffefdf350a37",
+        string rhs[6] = {
+         "fffffff088bfed82", "ffffff9bffff9414",
+         "ffffffee8a09ab82", "ffffff9be659a734",
+         "ffffffeede48b482", "ffffff9b4101f614",
         };
 
-        
         vector<Coord2> diff[2];
 
         for(int i = 0; i < sizeof(lhs) / sizeof(*lhs); i += 2)
@@ -206,19 +199,17 @@ void InterfaceMain::render() const {
         for(int i = 0; i < rhs.size(); i += 2)
             diff[1].push_back(Coord2(coordExplicit(rhs[i]), coordExplicit(rhs[i + 1])));
 #endif
-        
-        //dprintf("%d vs %d\n", whichSide(Coord4(diff[1][3], diff[1][2]), diff[0][
 
 
         vector<vector<Coord2> > res = getDifference(diff[0], diff[1]);
         
         if(res.size()) {
             Coord4 bbox = getBoundBox(diff[1]);
-            //bbox.sx -= 5;
-            //bbox.sy -= 5;
-            //bbox.ex += 5;
-            //bbox.ey += 5;
-            for(int i = 0; i < res.size(); i++) addToBoundBox(&bbox, getBoundBox(res[i]));
+            bbox.sx -= 20;
+            bbox.sy -= 20;
+            bbox.ex += 20;
+            bbox.ey += 20;
+            //for(int i = 0; i < res.size(); i++) addToBoundBox(&bbox, getBoundBox(res[i]));
             /*
             bbox.sx = Coord(24.146805 - 0.000003);
             bbox.ex = Coord(24.146805 + 0.000003);
