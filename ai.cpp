@@ -69,6 +69,8 @@ void doMegaEnumWorker(const HierarchyNode &rt, vector<pair<int, vector<Controlle
         upgs->push_back(make_pair(make_pair(rt.cost, rt.upgrade), path));
     } else if(rt.type == HierarchyNode::HNT_GLORY) {
         upgs->push_back(make_pair(make_pair(rt.cost, (IDBUpgrade*)NULL), path));
+    } else if(rt.type == HierarchyNode::HNT_BOMBARDMENT) {
+        upgs->push_back(make_pair(make_pair(rt.cost, (IDBUpgrade*)NULL), path));
     } else if(rt.type == HierarchyNode::HNT_DONE) {
         CHECK(done->size() == 0);
         *done = path;
@@ -146,7 +148,7 @@ void Ai::updateShop(const Player *player) {
         dlim = int(dlim * rng.frand());
         int amount = 1;
         if(weps[dlim].first) {
-            amount = min(weapcash / weps[dlim].first, 20);
+            amount = min(weapcash / weps[dlim].first, 100);
         }
         appendPurchases(&shopQueue, weps[dlim].second, amount);
     }
@@ -219,16 +221,35 @@ void Ai::updateGame(const vector<vector<Coord2> > &collide, const vector<Tank> &
         nextKeys.x = targetdir.x;
         nextKeys.y = targetdir.y;
     } else if(gamemode == AGM_BACKUP) {
-        Float2 nx(-fsin(players[me].d), -fcos(players[me].d));
+        Float2 nx(-makeAngle(players[me].d));
         nx.x += (rng.frand() - 0.5) / 100;
         nx.y += (rng.frand() - 0.5) / 100;
         nx = normalize(nx);
         nextKeys.x = nx.x;
-        nextKeys.y = nx.y;
+        nextKeys.y = -nx.y;
     }
     if(rng.frand() < 0.001)
         firing = !firing;
     nextKeys.keys[0].down = firing;
+}
+
+void Ai::updateBombardment(const vector<Tank> &players, Coord2 mypos) {
+    Coord2 clopos(0, 0);
+    Coord clodist = 1000000;
+    for(int i = 0; i < players.size(); i++) {
+        if(players[i].live && len(players[i].pos - mypos) < clodist) {
+            clodist = len(players[i].pos - mypos);
+            clopos = players[i].pos;
+        }
+    }
+    Coord2 dir = clopos - mypos;
+    if(len(dir) != 0)
+        dir = normalize(dir);
+    nextKeys.x = dir.x.toFloat();
+    nextKeys.y = -dir.y.toFloat();
+    nextKeys.keys[0].down = false;
+    if(clodist < 10)
+        nextKeys.keys[0].down = (rng.frand() < 0.02);
 }
 
 void Ai::updateWaitingForReport() {

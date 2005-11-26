@@ -685,7 +685,8 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
         
     }
     
-    collider.reset(players.size(), COM_PROJECTILE, gamemap.getBounds());
+    const Coord4 gmb = gamemap.getBounds();
+    collider.reset(players.size(), COM_PROJECTILE, gmb);
     
     // stuff!
     /*
@@ -794,8 +795,12 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
             if(bombards[j].timer <= 0)
                 bombards[j].state = BombardmentState::BS_ACTIVE;
         } else if(bombards[j].state == BombardmentState::BS_ACTIVE) {
-            bombards[j].loc.x += Coord(deadzone(keys[j].udlrax[0], keys[j].udlrax[1], 0, 0.2) / 2);
-            bombards[j].loc.y += Coord(-deadzone(keys[j].udlrax[1], keys[j].udlrax[0], 0, 0.2) / 2);
+            bombards[j].loc.x += Coord(deadzone(keys[j].udlrax[0], keys[j].udlrax[1], 0, 0.2));
+            bombards[j].loc.y += Coord(-deadzone(keys[j].udlrax[1], keys[j].udlrax[0], 0, 0.2));
+            bombards[j].loc.x = max(bombards[j].loc.x, gmb.sx);
+            bombards[j].loc.y = max(bombards[j].loc.y, gmb.sy);
+            bombards[j].loc.x = min(bombards[j].loc.x, gmb.ex);
+            bombards[j].loc.y = min(bombards[j].loc.y, gmb.ey);
             if(keys[j].f.down) {
                 bombards[j].state = BombardmentState::BS_FIRING;
                 bombards[j].timer = players[j].player->bombardment->lockdelay;
@@ -896,8 +901,12 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
 void Game::ai(const vector<Ai *> &ais) const {
     CHECK(ais.size() == players.size());
     for(int i = 0; i < ais.size(); i++) {
-        if(ais[i])
-            ais[i]->updateGame(gamemap.getCollide(), players, i);
+        if(ais[i]) {
+            if(players[i].live)
+                ais[i]->updateGame(gamemap.getCollide(), players, i);
+            else
+                ais[i]->updateBombardment(players, bombards[i].loc);
+        }
     }
 }
 
