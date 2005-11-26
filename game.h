@@ -27,6 +27,7 @@ public:
     int shotsLeft;
 
     const IDBGlory *glory;
+    const IDBBombardment *bombardment;
 
     Color color;
     Dvec2 faction_symb;

@@ -78,13 +78,21 @@ public:
     int handling;
 };
 
+struct IDBBombardment {
+public:
+    const IDBWarhead *warhead;
+
+    int lockdelay;
+    int unlockdelay;
+};
+
 struct HierarchyNode {
 public:
     vector<HierarchyNode> branches;
 
     string name;
 
-    enum {HNT_CATEGORY, HNT_WEAPON, HNT_UPGRADE, HNT_GLORY, HNT_DONE, HNT_LAST};
+    enum {HNT_CATEGORY, HNT_WEAPON, HNT_UPGRADE, HNT_GLORY, HNT_BOMBARDMENT, HNT_DONE, HNT_LAST};
     int type;
 
     enum {HNDM_BLANK, HNDM_COST, HNDM_PACK, HNDM_COSTUNIQUE, HNDM_LAST};
@@ -96,6 +104,7 @@ public:
     const IDBWeapon *weapon;
     const IDBUpgrade *upgrade;
     const IDBGlory *glory;
+    const IDBBombardment *bombardment;
     
     int quantity;
     
@@ -113,5 +122,6 @@ const HierarchyNode &itemDbRoot();
 
 const IDBWeapon *defaultWeapon();
 const IDBGlory *defaultGlory();
+const IDBBombardment *defaultBombardment();
 
 #endif

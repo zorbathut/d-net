@@ -44,7 +44,7 @@ glory {
 
 glory {
     name=ROOT.Glory Devices.Shaped Charges
-    cost=12000
+    cost=2000
     
     deploy=deploy.glory
     projectile=projectile.glory.range

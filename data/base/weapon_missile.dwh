@@ -22,7 +22,7 @@ projectile {
 
 weapon {
     name=ROOT.Weapons.Missile.Missile
-    cost=1000
+    cost=100
     firerate=40
     deploy=deploy.missile
     projectile=projectile.missile
@@ -30,7 +30,7 @@ weapon {
 
 weapon {
     name=ROOT.Weapons.Missile.Missile II
-    cost=1800
+    cost=180
     firerate=30
     deploy=deploy.missile
     projectile=projectile.missile
@@ -38,7 +38,7 @@ weapon {
 
 weapon {
     name=ROOT.Weapons.Missile.Missile III
-    cost=2500
+    cost=250
     firerate=24
     deploy=deploy.missile
     projectile=projectile.missile
@@ -46,7 +46,7 @@ weapon {
 
 weapon {
     name=ROOT.Weapons.Missile.Missile IV
-    cost=4000
+    cost=400
     firerate=20
     deploy=deploy.missile
     projectile=projectile.missile
@@ -54,7 +54,7 @@ weapon {
 
 weapon {
     name=ROOT.Weapons.Missile.Missile V
-    cost=6000
+    cost=600
     firerate=16
     deploy=deploy.missile
     projectile=projectile.missile
@@ -62,7 +62,7 @@ weapon {
 
 weapon {
     name=ROOT.Weapons.Missile.Missile VI
-    cost=8500
+    cost=850
     firerate=14
     deploy=deploy.missile
     projectile=projectile.missile

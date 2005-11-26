@@ -91,6 +91,8 @@ void Shop::renderNode(const HierarchyNode &node, int depth) const {
                     dispmode = HierarchyNode::HNDM_COST;
                 if(node.branches[i].type == HierarchyNode::HNT_GLORY && player->glory != node.branches[i].glory)
                     dispmode = HierarchyNode::HNDM_COST;
+                if(node.branches[i].type == HierarchyNode::HNT_BOMBARDMENT && player->bombardment != node.branches[i].bombardment)
+                    dispmode = HierarchyNode::HNDM_COST;
             }
             if(dispmode == HierarchyNode::HNDM_BLANK) {
             } else if(dispmode == HierarchyNode::HNDM_COST) {
@@ -136,6 +138,9 @@ bool Shop::runTick(const Keystates &keys) {
         } else if(getCurNode().type == HierarchyNode::HNT_GLORY) {
             if(player->cash >= getCurNode().cost && getCurNode().glory != player->glory)
                 canBuy = true;
+        } else if(getCurNode().type == HierarchyNode::HNT_BOMBARDMENT) {
+            if(player->cash >= getCurNode().cost && getCurNode().bombardment != player->bombardment)
+                canBuy = true;
         } else {
             CHECK(0);
         }
@@ -160,6 +165,8 @@ bool Shop::runTick(const Keystates &keys) {
                     player->shotsLeft = -1;
             } else if(getCurNode().type == HierarchyNode::HNT_GLORY) {
                 player->glory = getCurNode().glory;
+            } else if(getCurNode().type == HierarchyNode::HNT_BOMBARDMENT) {
+                player->bombardment = getCurNode().bombardment;
             } else {
                 CHECK(0);
             }

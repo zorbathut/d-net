@@ -1,0 +1,35 @@
+
+warhead {
+    name=warhead.bombardment.minibomb
+    radiusdamage=0.3
+    radiusfalloff=3
+    wallremovalradius=0.5
+}
+
+warhead {
+    name=warhead.bombardment.bomb
+    radiusdamage=0.5
+    radiusfalloff=8
+    wallremovalradius=1
+}
+
+bombardment {
+    name=ROOT.Bombardment.Minibomb
+    cost=0
+    default=1
+    
+    warhead=warhead.bombardment.minibomb
+    
+    lockdelay=240
+    unlockdelay=240
+}
+
+bombardment {
+    name=ROOT.Bombardment.Bomb
+    cost=2500
+    
+    warhead=warhead.bombardment.bomb
+    
+    lockdelay=240
+    unlockdelay=240
+}

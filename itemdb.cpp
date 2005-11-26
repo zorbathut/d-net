@@ -14,9 +14,11 @@ static map<string, IDBProjectile> projclasses;
 static map<string, IDBWeapon> weaponclasses;
 static map<string, IDBUpgrade> upgradeclasses;
 static map<string, IDBGlory> gloryclasses;
+static map<string, IDBBombardment> bombardmentclasses;
 
 static const IDBWeapon *defweapon = NULL;
 static const IDBGlory *defglory = NULL;
+static const IDBBombardment *defbombardment = NULL;
 
 DEFINE_bool(debugitems, false, "Enable debug items");
 
@@ -93,10 +95,22 @@ void HierarchyNode::checkConsistency() const {
     if(type == HNT_GLORY) {
         gottype = true;
         CHECK(displaymode == HNDM_COSTUNIQUE);
+        CHECK(quantity == 1);
         CHECK(buyable);
         CHECK(glory);
     } else {
         CHECK(!glory);
+    }
+    
+    // bombardment devices all are unique and are buyable
+    if(type == HNT_BOMBARDMENT) {
+        gottype = true;
+        CHECK(displaymode == HNDM_COSTUNIQUE);
+        CHECK(quantity == 1);
+        CHECK(buyable);
+        CHECK(bombardment);
+    } else {
+        CHECK(!bombardment);
     }
     
     // the "done" token has no cost or other display but is "buyable"
@@ -121,6 +135,10 @@ void HierarchyNode::checkConsistency() const {
     // all things that are buyable have quantities
     if(buyable)
         CHECK(quantity > 0);
+    
+    // if it's marked as UNIQUE, its quantity is 1
+    if(displaymode == HNDM_COSTUNIQUE)
+        CHECK(quantity == 1);
     
     // it may have no restriction or a valid restriction
     CHECK(cat_restrictiontype == -1 || cat_restrictiontype >= 0 && cat_restrictiontype < HNT_LAST);
@@ -149,6 +167,7 @@ HierarchyNode::HierarchyNode() {
     weapon = NULL;
     upgrade = NULL;
     glory = NULL;
+    bombardment = NULL;
 }
 
 HierarchyNode *findNamedNode(const string &in, int postcut) {
@@ -218,6 +237,8 @@ void parseItemFile(const string &fname) {
                     tnode.cat_restrictiontype = HierarchyNode::HNT_UPGRADE;
                 } else if(chunk.kv["type"] == "glory") {
                     tnode.cat_restrictiontype = HierarchyNode::HNT_GLORY;
+                } else if(chunk.kv["type"] == "bombardment") {
+                    tnode.cat_restrictiontype = HierarchyNode::HNT_BOMBARDMENT;
                 } else {
                     dprintf("Unknown restriction type in hierarchy node: %s\n", chunk.kv["type"].c_str());
                     CHECK(0);
@@ -401,6 +422,37 @@ void parseItemFile(const string &fname) {
                 defglory = &gloryclasses[name];
             }
             
+        } else if(chunk.category == "bombardment") {
+            
+            string name = chunk.consume("name");
+            CHECK(bombardmentclasses.count(name) == 0);
+            
+            HierarchyNode *mountpoint = findNamedNode(name, 1);
+            HierarchyNode tnode;
+            tnode.name = tokenize(name, ".").back();
+            tnode.type = HierarchyNode::HNT_BOMBARDMENT;
+            tnode.displaymode = HierarchyNode::HNDM_COSTUNIQUE;
+            tnode.buyable = true;
+            tnode.quantity = 1;
+            tnode.cost = atoi(chunk.consume("cost").c_str());
+            tnode.cat_restrictiontype = HierarchyNode::HNT_BOMBARDMENT;
+            CHECK(mountpoint->cat_restrictiontype == -1 || tnode.cat_restrictiontype == mountpoint->cat_restrictiontype);
+            
+            tnode.bombardment = &bombardmentclasses[name];
+            mountpoint->branches.push_back(tnode);
+
+            string warheadclass = chunk.consume("warhead");
+            CHECK(warheadclasses.count(warheadclass));
+            bombardmentclasses[name].warhead = &warheadclasses[warheadclass];
+
+            bombardmentclasses[name].lockdelay = atoi(chunk.consume("lockdelay").c_str());
+            bombardmentclasses[name].unlockdelay = atoi(chunk.consume("unlockdelay").c_str());
+
+            if(chunk.kv.count("default") && atoi(chunk.consume("default").c_str())) {
+                CHECK(!defbombardment);
+                defbombardment = &bombardmentclasses[name];
+            }
+            
         } else {
             CHECK(0);
         }
@@ -456,4 +508,7 @@ const IDBWeapon *defaultWeapon() {
 }
 const IDBGlory *defaultGlory() {
     return defglory;
+}
+const IDBBombardment *defaultBombardment() {
+    return defbombardment;
 }

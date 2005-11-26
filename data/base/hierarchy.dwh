@@ -13,6 +13,11 @@ hierarchy {
     type=glory
 }
 
+hierarchy {
+    name=ROOT.Bombardment
+    type=bombardment
+}
+
 upgrade {
     name=ROOT.Upgrades.Hull I
     cost=2000
@@ -21,7 +26,7 @@ upgrade {
 
 upgrade {
     name=ROOT.Upgrades.Hull II
-    cost=30000
+    cost=10000
     hull=20
 }
 
@@ -33,7 +38,7 @@ upgrade {
 
 upgrade {
     name=ROOT.Upgrades.Engine II
-    cost=30000
+    cost=10000
     engine=20
 }
 
@@ -45,6 +50,6 @@ upgrade {
 
 upgrade {
     name=ROOT.Upgrades.Handling II
-    cost=30000
+    cost=10000
     handling=20
 }

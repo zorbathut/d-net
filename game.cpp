@@ -57,6 +57,7 @@ Player::Player() {
     reCalculate();
     weapon = defaultWeapon();
     glory = defaultGlory();
+    bombardment = defaultBombardment();
     shotsLeft = -1;
 }
 
