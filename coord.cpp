@@ -360,7 +360,7 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
             return rv;
         }
         if(state == PR_LHSENCLOSE) {
-            dprintf("LHS Enclose! intersection ignored");
+            //dprintf("LHS Enclose! intersection ignored");
             return vector<vector<Coord2> >(1, lhs);
         }
         CHECK(state == PR_INTERSECT);

@@ -159,21 +159,28 @@ void MainLoop() {
 		rendering += bencher.ticksElapsed();
 		timer.frameDone();
 		frameNumber++;
-		if( frako % 60 == 0 ) {
-			long long tot = timer.getFrameTicks() * 60;
-			//long long tot = polling + ticking + waiting + rendering;
-			dprintf( "%4d polling", int( polling * 1000 / tot ) );
-			dprintf( "%4d ticking", int( ticking * 1000 / tot ) );
-			dprintf( "%4d waiting", int( waiting * 1000 / tot ) );
-			dprintf( "%4d rendering", int( rendering * 1000 / tot ) );
-            dprintf( "%4d skipped", skipped );
-            dprintf( "%f clusters/frame last 60 frames", getAccumulatedClusterCount() / float(60 - skipped));
-			polling = 0;
-			ticking = 0;
-			waiting = 0;
-			rendering = 0;
-            skipped = 0;
-		}
+        {
+            int frameSplit;
+            if(ffwd)
+                frameSplit = 600;
+            else
+                frameSplit = 60;
+            if( frako % frameSplit == 0 ) {
+                long long tot = timer.getFrameTicks() * frameSplit;
+                //long long tot = polling + ticking + waiting + rendering;
+                dprintf( "%4d polling", int( polling * 1000 / tot ) );
+                dprintf( "%4d ticking", int( ticking * 1000 / tot ) );
+                dprintf( "%4d waiting", int( waiting * 1000 / tot ) );
+                dprintf( "%4d rendering", int( rendering * 1000 / tot ) );
+                dprintf( "%4d skipped", skipped );
+                dprintf( "%f clusters/frame last %d frames", getAccumulatedClusterCount() / float(frameSplit - skipped), frameSplit);
+                polling = 0;
+                ticking = 0;
+                waiting = 0;
+                rendering = 0;
+                skipped = 0;
+            }
+        }
         frako++;
 	}
     dprintf("Control shutdown\n");

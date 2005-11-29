@@ -1037,12 +1037,9 @@ Game::Game(vector<Player> *in_playerdata, const Level &lev) {
         // place players
         CHECK(lev.playerStarts.count(players.size()));
         vector<pair<Coord2, float> > pstart = lev.playerStarts.find(players.size())->second;
-        for(int i = 0; i < pstart.size(); i++)
-            dprintf("possible: %f, %f, %f\n", pstart[i].first.x.toFloat(), pstart[i].first.y.toFloat(), pstart[i].second);
         for(int i = 0; i < players.size(); i++) {
             int loc = int(frand() * pstart.size());
             CHECK(loc >= 0 && loc < pstart.size());
-            dprintf("loc %d, %f %f %f\n", loc, pstart[loc].first.x.toFloat(), pstart[loc].first.y.toFloat(), pstart[loc].second);
             players[i].pos = Coord2(pstart[loc].first);
             players[i].d = pstart[loc].second;
             pstart.erase(pstart.begin() + loc);
