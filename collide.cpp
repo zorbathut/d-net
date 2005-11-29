@@ -353,7 +353,7 @@ void Collider::token( const Coord4 &line, const Coord4 &direction ) {
             dprintf("%f, %f, %f, %f\n", line.sx.toFloat(), line.sy.toFloat(), line.ex.toFloat(), line.ey.toFloat());
             dprintf("%f, %f, %f, %f\n", direction.sx.toFloat(), direction.sy.toFloat(), direction.ex.toFloat(), direction.ey.toFloat());
             dprintf("-----\n");
-            dprintf("Area bounds: %f,%f %f,%f\n", zxs * MATRIX_RES, zys * MATRIX_RES, zxe * MATRIX_RES, zye * MATRIX_RES);
+            dprintf("Area bounds: %f,%f %f,%f\n", (zxs * MATRIX_RES).toFloat(), (zys * MATRIX_RES).toFloat(), (zxe * MATRIX_RES).toFloat(), (zye * MATRIX_RES).toFloat());
             CHECK(0);
         }
         for(int x = txs; x < txe; x++)
@@ -418,6 +418,10 @@ bool Collider::checkSimpleCollision(int category, int gid, const vector<Coord4> 
         addToBoundBox(&area, line[i].ex, line[i].ey);
     }
     Coord4 pa = area;
+    area.sx -= MATRIX_RES / 4;
+    area.sy -= MATRIX_RES / 4;
+    area.ex += MATRIX_RES / 4;
+    area.ey += MATRIX_RES / 4;
     area = snapToEnclosingGrid(area, MATRIX_RES);
     int txs = max((area.sx / MATRIX_RES).toInt(), zxs);
     int tys = max((area.sy / MATRIX_RES).toInt(), zys);
