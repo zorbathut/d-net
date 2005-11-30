@@ -540,6 +540,7 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
                                 itr->second.links[p][k].x.rawstr().c_str(), itr->second.links[p][k].y.rawstr().c_str());
                         dprintf("%s %s\n", junct.x.rawstr().c_str(), junct.y.rawstr().c_str());
                         */
+                        
                         {
                             Coord2 closest;
                             Coord dist = 1000000000;
@@ -561,7 +562,7 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
                                 if(!(vertx[closest].live[0] != vertx[closest].live[1])) {
                                     //CHECK(0);
                                     // TODO: Check to see if this is adjacent to the target, and if so, just roll those together
-                                    //dprintf("Junct: %s %s\n", junct.x.rawstr().c_str(), junct.y.rawstr().c_str());
+                                    dprintf("Junct: %s %s\n", junct.x.rawstr().c_str(), junct.y.rawstr().c_str());
                                     printNode(itr->first, itr->second);
                                     printNode(closest, vertx[closest]);
                                     CHECK(vertx[closest].live[0] != vertx[closest].live[1]);

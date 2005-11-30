@@ -71,6 +71,11 @@ void Gamemap::removeWalls(Coord2 center, float radius) {
             inters.push_back(center + makeAngle(Coord(rv[i])) * Coord(radius));
     }
     CHECK(!pathReversed(inters));
+    if(set<Coord2>(inters.begin(), inters.end()).size() != inters.size()) {
+        // We've gotten two duplicate points, start over from scratch!
+        removeWalls(center, radius);
+        return;
+    }
     for(int i = 0; i < paths.size(); i++) {
         vector<vector<Coord2> > ntp = getDifference(paths[i], inters);
         for(int i = 0; i < ntp.size(); i++) {

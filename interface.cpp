@@ -166,7 +166,7 @@ void InterfaceMain::render() const {
     
     #if 0   // Code used for checking the validity of getDifference :)
     {
-        #if 1
+        #if 0
         dprintf("Frame!\n");
         
         string lhs[210] = {
@@ -205,10 +205,10 @@ void InterfaceMain::render() const {
         
         if(res.size()) {
             Coord4 bbox = getBoundBox(diff[1]);
-            bbox.sx -= 20;
-            bbox.sy -= 20;
-            bbox.ex += 20;
-            bbox.ey += 20;
+            //bbox.sx -= 20;
+            //bbox.sy -= 20;
+            //bbox.ex += 20;
+            //bbox.ey += 20;
             //for(int i = 0; i < res.size(); i++) addToBoundBox(&bbox, getBoundBox(res[i]));
             /*
             bbox.sx = Coord(24.146805 - 0.000003);

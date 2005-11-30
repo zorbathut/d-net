@@ -6,7 +6,7 @@ deploy {
 
 warhead {
     name=warhead.glory
-    impactdamage=0.3
+    impactdamage=0.75
     #wallremovalradius=0.5
 }
 
@@ -39,7 +39,7 @@ glory {
     minsplitsize=1
     maxsplitsize=2
     
-    shotspersplit=10
+    shotspersplit=4
 }
 
 glory {
@@ -54,5 +54,5 @@ glory {
     minsplitsize=1
     maxsplitsize=2
     
-    shotspersplit=20
+    shotspersplit=8
 }

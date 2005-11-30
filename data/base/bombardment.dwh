@@ -20,16 +20,16 @@ bombardment {
     
     warhead=warhead.bombardment.minibomb
     
-    lockdelay=180
-    unlockdelay=180
+    lockdelay=120
+    unlockdelay=60
 }
 
 bombardment {
     name=ROOT.Bombardment.Bomb
-    cost=2500
+    cost=1500
     
     warhead=warhead.bombardment.bomb
     
-    lockdelay=180
-    unlockdelay=180
+    lockdelay=120
+    unlockdelay=60
 }

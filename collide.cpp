@@ -353,6 +353,10 @@ void Collider::token( const Coord4 &line, const Coord4 &direction ) {
             dprintf("%f, %f, %f, %f\n", line.sx.toFloat(), line.sy.toFloat(), line.ex.toFloat(), line.ey.toFloat());
             dprintf("%f, %f, %f, %f\n", direction.sx.toFloat(), direction.sy.toFloat(), direction.ex.toFloat(), direction.ey.toFloat());
             dprintf("-----\n");
+            dprintf("%s, %s, %s, %s\n", area.sx.rawstr().c_str(), area.sy.rawstr().c_str(), area.ex.rawstr().c_str(), area.ey.rawstr().c_str());
+            dprintf("%s, %s, %s, %s\n", line.sx.rawstr().c_str(), line.sy.rawstr().c_str(), line.ex.rawstr().c_str(), line.ey.rawstr().c_str());
+            dprintf("%s, %s, %s, %s\n", direction.sx.rawstr().c_str(), direction.sy.rawstr().c_str(), direction.ex.rawstr().c_str(), direction.ey.rawstr().c_str());
+            dprintf("-----\n");
             dprintf("Area bounds: %f,%f %f,%f\n", (zxs * MATRIX_RES).toFloat(), (zys * MATRIX_RES).toFloat(), (zxe * MATRIX_RES).toFloat(), (zye * MATRIX_RES).toFloat());
             CHECK(0);
         }
