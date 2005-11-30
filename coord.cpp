@@ -193,7 +193,7 @@ const DualLink &getLink(const map<Coord2, DualLink> &vertx, Coord2 node) {
     return vertx.find(node)->second;
 }
 
-bool checkConsistent(const map<Coord2, DualLink> &vertx) {
+bool checkConsistent(const map<Coord2, DualLink> &vertx, const vector<LiveLink> &links) {
     for(int i = 0; i < 2; i++) {
         int seen = 0;
         for(map<Coord2, DualLink>::const_iterator itr = vertx.begin(); itr != vertx.end(); itr++)
@@ -226,6 +226,14 @@ bool checkConsistent(const map<Coord2, DualLink> &vertx) {
                 break;
             }
         }
+    }
+    for(int i = 0; i < links.size(); i++) {
+        bool validated = false;
+        for(int v = 0; v < 2; v++)
+            for(int d = 0; d < 2; d++)
+                if(getLink(vertx, links[i].start).live[v] && getLink(vertx, links[i].start).links[v][d] == links[i].end)
+                    validated = true;
+        CHECK(validated);
     }
     return true;
 }
@@ -272,7 +280,10 @@ void splice(map<Coord2, DualLink> *vertx, const DualLink &lines, const Coord2 &j
 }
 
 vector<vector<Coord2> > createSplitLines(const map<Coord2, DualLink> &vertx) {
-    CHECK(checkConsistent(vertx));
+    {
+        vector<LiveLink> llv;
+        CHECK(checkConsistent(vertx, llv));
+    }
     vector<vector<Coord2> > rv;
     for(int i = 0; i < 2; i++) {
         vector<Coord2> trv;
@@ -343,7 +354,7 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
         return rv;
     }
     #endif
-    GetDifferenceHandler CrashHandler(lhs, rhs);
+    //GetDifferenceHandler CrashHandler(lhs, rhs);
     bool lhsInside = !pathReversed(lhs);
     CHECK(!pathReversed(rhs));
     #if 1
@@ -426,10 +437,15 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
     }
     //dprintf("First consistency\n");
     //printState(vertx);
-    CHECK(checkConsistent(vertx));
     //dprintf("Passed\n");
     vector<LiveLink> links;
+    CHECK(checkConsistent(vertx, links));
     for(map<Coord2, DualLink>::iterator itr = vertx.begin(); itr != vertx.end(); itr++) {
+        
+        if(!itr->second.live[0] && !itr->second.live[1]) {
+            dprintf("Dead node\n");
+            continue;
+        }
         
         //printNode(itr->first, itr->second);
         //dprintf("Looping, %d live links\n", links.size());
@@ -449,10 +465,12 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
                         itr->first.x.rawstr().c_str(), itr->first.y.rawstr().c_str(),
                         links[i].end.x.rawstr().c_str(), links[i].end.y.rawstr().c_str());
                 */
+                
                 if(megaverbose)
                     dprintf("  Combining colinear\n");
                 for(int j = 0; j < 2; j++) {
                     if(vertx[links[i].start].live[j] && !vertx[itr->first].live[j]) {
+                        // If this main node has a certain path, and the interior node doesn't . . .
                         for(int k = 0; k < 2; k++) {
                             if(vertx[links[i].start].links[j][k] == links[i].end) {
                                 CHECK(!vertx[itr->first].live[j]);
@@ -479,7 +497,7 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
                         if(itr->second.links[p][k] == links[i].start)
                             found = true;
                 CHECK(found);
-                //CHECK(checkConsistent(vertx));
+                //CHECK(checkConsistent(vertx, links));
                 if(megaverbose)
                     dprintf("  Removing link %f,%f %f,%f\n", links[i].start.x.toFloat(), links[i].start.y.toFloat(), links[i].end.x.toFloat(), links[i].end.y.toFloat());
                 links.erase(links.begin() + i);
@@ -560,24 +578,53 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
                                 // but we're planning to merge, so a line must only go through one of 'em
                                 CHECK(closest >= itr->first);
                                 if(!(vertx[closest].live[0] != vertx[closest].live[1])) {
-                                    //CHECK(0);
-                                    // TODO: Check to see if this is adjacent to the target, and if so, just roll those together
-                                    dprintf("Junct: %s %s\n", junct.x.rawstr().c_str(), junct.y.rawstr().c_str());
-                                    printNode(itr->first, itr->second);
-                                    printNode(closest, vertx[closest]);
-                                    CHECK(vertx[closest].live[0] != vertx[closest].live[1]);
+                                    // Whups, we've got a bit of a problem - we're merging with a point that already exists.
+                                    // Solution: Check to see if that point is next to our current one, and if it is, eliminate the current one.
+                                    CHECK(vertx[closest].live[0] && vertx[closest].live[1]);
+                                    int changed = 0;
+                                    for(int q = 0; q < 2; q++) {
+                                        for(int w = 0; w < 2; w++) {
+                                            Coord2 nexus = lines.links[q][w];
+                                            for(int v = 0; v < 2; v++) {
+                                                if(!itr->second.live[v])
+                                                    continue;
+                                                for(int m = 0; m < 2; m++) {
+                                                    // Define nexus = lines.links[q][w]
+                                                    // What we should have is vertx[nexus].links[v][!m] -> nexus -> vertx[nexus].links[v][m]
+                                                    // and this should be the *same* as closest -> nexus -> lines.links[q][!w]
+                                                    if(vertx[nexus].links[v][!m] != closest)
+                                                        continue;
+                                                    if(vertx[nexus].links[v][m] != lines.links[q][!w])
+                                                        continue;
+                                                        
+                                                    changed++;
+                                                    // Now we splice this together to be vertx[nexus].links[v][!m] -> vertx[nexus].links[v][m]
+                                                    vertx[nexus].live[v] = false;
+                                                    vertx[vertx[nexus].links[v][!m]].links[v][m] = vertx[nexus].links[v][m];
+                                                    vertx[vertx[nexus].links[v][m]].links[v][!m] = vertx[nexus].links[v][!m];
+                                                    // and we're done
+                                                }
+                                            }
+                                        }
+                                    }
+                                    dprintf("Crazy collective splice at %d\n", changed);
+                                    CHECK(changed);
+                                    CHECK(checkConsistent(vertx, links));
+                                    //return createSplitLines(vertx);
+                                    continue;
+                                } else {
+                                    int usedlin = vertx[closest].live[1];
+                                    
+                                    CHECK(!vertx[closest].live[!usedlin]);
+                                    CHECK(vertx[closest].live[usedlin]);
+                                    
+                                    splice(&vertx, lines, closest, !usedlin);
+                                    
+                                    links[i].end = closest;
+                                    
+                                    //CHECK(checkConsistent(vertx, links));
+                                    continue;
                                 }
-                                int usedlin = vertx[closest].live[1];
-                                
-                                CHECK(!vertx[closest].live[!usedlin]);
-                                CHECK(vertx[closest].live[usedlin]);
-                                
-                                splice(&vertx, lines, closest, !usedlin);
-                                
-                                links[i].end = closest;
-                                
-                                //CHECK(checkConsistent(vertx));
-                                continue;
                             }
                         }
                         
@@ -599,7 +646,7 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
                         splice(&vertx, lines, junct, 0);
                         splice(&vertx, lines, junct, 1);
                         
-                        //CHECK(checkConsistent(vertx));
+                        //CHECK(checkConsistent(vertx, links));
                         
                         links[i].end = junct;
                     }
@@ -607,7 +654,7 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
             }
         }
         //dprintf("Intersected\n");
-        //CHECK(checkConsistent(vertx));
+        //CHECK(checkConsistent(vertx, links));
         // Now we add new links from this point
         for(int p = 0; p < 2; p++) {
             if(!itr->second.live[p])
@@ -629,7 +676,7 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
     CHECK(links.size() == 0);
     //dprintf("Done\n");
     //printState(vertx);
-    CHECK(checkConsistent(vertx));
+    CHECK(checkConsistent(vertx, links));
     #if 0   // This code intercepts the "split" version and returns it as the results - good for debugging
     {
         return createSplitLines(vertx);
