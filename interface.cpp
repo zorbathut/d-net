@@ -280,8 +280,8 @@ void InterfaceMain::render() const {
             const int textymax = int(crosshair / textsize);
             const int textxmax = 2;
             const float textxofs = crosshair / textxmax;
-            for(int i = 0; i < inptest_controls.size() * 4; i++) {
-                const Controller &ct = inptest_controls[i % inptest_controls.size()];
+            for(int i = 0; i < inptest_controls.size(); i++) {
+                const Controller &ct = inptest_controls[i];
                 float x = (i % wid) * xsiz;
                 float y = (i / wid) * ysiz + 300;
                 Float4 chbox(x + bord, y + bord, x + bord + crosshair, y + bord + crosshair);
