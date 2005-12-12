@@ -1,7 +1,9 @@
+- Improved method for turning CrashHandler on or off
 - Level save snapshots
 - dnd compression
 - Axes choice for tank mode
 - Laser power increase
+- Consistent-ize line width effects
 - Rebalance low-power weapons a little? Make missiles a bit weaker?
 - Fix input test
 - Fix glory device slowdowns
@@ -34,5 +36,3 @@
 - Implement tweekvalues
 
 http://www.itchstudios.com/psg/ - Dafred's artist
-
-

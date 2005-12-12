@@ -343,6 +343,27 @@ vector<vector<Coord2> > mergeAndSplit(const vector<Coord2> &in) {
     }
 }
 
+void deloop(vector<Coord2> *in) {
+	CHECK(in->size() >= 3);
+	while(1) {
+		bool found = false;
+		for(int i = 0; i < in->size(); i++) {
+			if((*in)[i] == (*in)[(i + 2) % in->size()]) {
+				int rma = i;
+				int rmb = (i + 1) % in->size();
+				if(rma < rmb)
+					swap(rma, rmb);
+				in->erase(in->begin() + rma);
+				in->erase(in->begin() + rmb);
+				found = true;
+				dprintf("Delooped!\n");
+			}
+		}
+		if(!found)
+			break;
+	}
+}
+
 const int megaverbose = 0;
 
 vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Coord2> &rhs) {
@@ -354,7 +375,7 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
         return rv;
     }
     #endif
-    //GetDifferenceHandler CrashHandler(lhs, rhs);
+    GetDifferenceHandler CrashHandler(lhs, rhs);
     bool lhsInside = !pathReversed(lhs);
     CHECK(!pathReversed(rhs));
     #if 1
@@ -424,6 +445,17 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
         if(!changed)
             break;
     }
+		deloop(&tv[0]);
+		deloop(&tv[1]);
+		if(set<Coord2>(tv[0].begin(), tv[0].end()).size() != tv[0].size()) {
+			map<Coord2, int> ct;
+			for(int i = 0; i < tv[0].size(); i++) {
+				ct[tv[0][i]]++;
+				dprintf("%s, %s\n", tv[0][i].x.rawstr().c_str(), tv[0][i].y.rawstr().c_str());
+				if(ct[tv[0][i]] > 1)
+					dprintf("Dupe at %s, %s\n", tv[0][i].x.rawstr().c_str(), tv[0][i].y.rawstr().c_str());
+			}
+		}
     CHECK(set<Coord2>(tv[0].begin(), tv[0].end()).size() == tv[0].size());
     CHECK(set<Coord2>(tv[1].begin(), tv[1].end()).size() == tv[1].size());
     //dprintf("Early parsing\n");

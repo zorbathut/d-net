@@ -164,7 +164,7 @@ vector<string> parseHackyFile(string fname) {
 
 void InterfaceMain::render() const {
     
-    #if 1   // Code used for checking the validity of getDifference :)
+    #if 0   // Code used for checking the validity of getDifference :)
     {
         #if 0
         dprintf("Frame!\n");

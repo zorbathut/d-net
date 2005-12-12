@@ -4,7 +4,7 @@
 #include <string>
 #include <vector> // remove when cpath.h and fpath.h are created
 
-#include "cfcommon.h"
+#include "cfcommon.h"#include "debug.h"
 
 using namespace std;
 
