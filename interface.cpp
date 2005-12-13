@@ -258,9 +258,9 @@ void InterfaceMain::render() const {
   if(interface_mode == IFM_S_MAINMENU) {
     mainmenu.render();
     setColor(0.5, 0.5, 0.5);
-    drawText("Player one  arrow keys and uiojkl", 3, 2, 30);
-    drawText("Player two  wasd     and rtyfgh", 3, 2, 34);
-    drawText("Menu    arrow keys and u", 3, 2, 38);
+    drawText("Player one    arrow keys and uiojkl", 3, 2, 30);
+    drawText("Player two    wasd       and rtyfgh", 3, 2, 34);
+    drawText("Menu          arrow keys and u", 3, 2, 38);
     if(grid) {
       setColor(1.0, 1.0, 1.0);
       drawGrid(1, 0.01);

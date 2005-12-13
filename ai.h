@@ -10,6 +10,17 @@
 
 using namespace std;
 
+struct PlayerMenuState {  // TODO: get rid of this
+public:
+  int playerkey;
+  int playersymbol;
+  Float2 playerpos;
+  int playermode;
+
+  PlayerMenuState();
+  PlayerMenuState(Float2 cent);
+};
+
 class Ai {
 private:
   enum { AGM_APPROACH, AGM_RETREAT, AGM_WANDER, AGM_BACKUP };
@@ -26,7 +37,7 @@ private:
 public:
   
   void updatePregame();
-  void updateCharacterChoice(const vector<Float4> &factions, const vector<int> &playerfact, Float2 pos, int mode, int me);
+  void updateCharacterChoice(const vector<Float4> &factions, const vector<PlayerMenuState> &players, int me);
   void updateShop(const Player *player);
   void updateGame(const vector<vector<Coord2> > &collide, const vector<Tank> &players, int me);
   void updateBombardment(const vector<Tank> &players, Coord2 mypos);

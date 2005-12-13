@@ -35,6 +35,8 @@ public:
   Shop(Player *player);
 };
 
+// TODO: bring PlayerMenuState back in from ai.h
+
 class Metagame {
   
   int mode;
@@ -42,14 +44,12 @@ class Metagame {
   
   enum { MGM_PLAYERCHOOSE, MGM_SHOP, MGM_PLAY };
   int currentShop;
-
-  vector< int > playerkey;
-  vector< int > playersymbol;
-  vector< Float2 > playerpos;
-  vector< int > playermode;
+  
+  vector<PlayerMenuState> pms;  // heh.
   
   vector<Dvec2> symbols;
   vector<Float4> symbolpos;
+  vector<int> symboltaken;
   
   vector<Level> levels;
   
@@ -73,8 +73,6 @@ public:
   void renderToScreen() const;
   void ai(const vector<Ai *> &ai) const;
   bool runTick( const vector< Controller > &keys );
-
-  vector<Keystates> genKeystates(const vector<Controller> &keys, const vector<int> &modes);
 
   void calculateLrStats();
   void drawMultibar(const vector<float> &sizes, const Float4 &dimensions) const;

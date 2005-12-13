@@ -1,5 +1,6 @@
+- Clean up PlayerMenuState
 - Axes choice for tank mode
-- Consistent-ize line width effects
+- Consistent-ize line width effects, colors, rendering in general
 - Fix glory device slowdowns
 - Modify firerate
 - Sound, yo
