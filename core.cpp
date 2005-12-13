@@ -19,6 +19,7 @@ using namespace std;
 #include "inputsnag.h"
 
 DEFINE_string(writeTarget, "data/dump", "Prefix for file dump");
+DEFINE_int(writeTargetCheckpoint, 2000000000, "Write target checkpoint frequency"); // currently disabled
 
 DEFINE_int(fastForwardTo, 0, "Fastforward rendering to this frame");
 
@@ -31,9 +32,9 @@ long long rendering = 0;
 
 void MainLoop() {
 
-    sfrand(time(NULL));
-    
-    interfaceInit();
+  sfrand(time(NULL));
+
+  interfaceInit();
 
 	Timer timer;
 	Timer bencher;
@@ -51,33 +52,6 @@ void MainLoop() {
   }
   
   FILE *outfile = NULL;
-  
-  if(FLAGS_writeTarget != "" && controls_recordable()) {
-    string fname = FLAGS_writeTarget;
-    char timestampbuf[ 128 ];
-    time_t ctmt = time(NULL);
-    strftime(timestampbuf, sizeof(timestampbuf), "-%Y%m%d-%H%M%S.dnd", gmtime(&ctmt));
-    dprintf("%s\n", timestampbuf);
-    fname += timestampbuf;
-    outfile = fopen(fname.c_str(), "wb");
-    if(outfile) {
-      int dat = 3;
-      fwrite(&dat, 1, sizeof(dat), outfile);
-      dat = frandseed();
-      fwrite(&dat, 1, sizeof(dat), outfile);
-      dat = controllers.size();
-      fwrite(&dat, 1, sizeof(dat), outfile);
-      for(int i = 0; i < controllers.size(); i++) {
-        dat = controllers[i].keys.size();
-        fwrite(&dat, 1, sizeof(dat), outfile);
-        dat = controllers[i].axes.size();
-        fwrite(&dat, 1, sizeof(dat), outfile);
-      }
-      fflush(outfile);
-    } else {
-      dprintf("Outfile %s couldn't be opened! Not writing dump.", fname.c_str());
-    }
-  }
   
   int skipped = 0;
   
@@ -117,7 +91,36 @@ void MainLoop() {
 		CHECK(controllers.size() == origcontrollers.size());
 		for(int i = 0; i < controllers.size(); i++)
 			CHECK(controllers[i].keys.size() == origcontrollers[i].keys.size());
-    {
+    if(FLAGS_writeTarget != "" && controls_recordable()) {
+      if(frameNumber % FLAGS_writeTargetCheckpoint == 0) {
+        if(outfile)
+          fclose(outfile);
+        
+        string fname = FLAGS_writeTarget;
+        char timestampbuf[ 128 ];
+        time_t ctmt = time(NULL);
+        strftime(timestampbuf, sizeof(timestampbuf), "%Y%m%d-%H%M%S.dnd", gmtime(&ctmt));
+        fname = StringPrintf("%s-%010d-%s", fname.c_str(), frameNumber, timestampbuf);
+        dprintf("%s\n", fname.c_str());
+        outfile = fopen(fname.c_str(), "wb");
+        if(outfile) {
+          int dat = 3;
+          fwrite(&dat, 1, sizeof(dat), outfile);
+          dat = frandseed();
+          fwrite(&dat, 1, sizeof(dat), outfile);
+          dat = controllers.size();
+          fwrite(&dat, 1, sizeof(dat), outfile);
+          for(int i = 0; i < controllers.size(); i++) {
+            dat = controllers[i].keys.size();
+            fwrite(&dat, 1, sizeof(dat), outfile);
+            dat = controllers[i].axes.size();
+            fwrite(&dat, 1, sizeof(dat), outfile);
+          }
+          fflush(outfile);
+        } else {
+          dprintf("Outfile %s couldn't be opened! Not writing dump", fname.c_str());
+        }
+      }
       if(outfile) {
         for(int i = 0; i < controllers.size(); i++) {
           fwrite(&controllers[i].x, 1, sizeof(controllers[i].x), outfile);
