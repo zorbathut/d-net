@@ -1,6 +1,5 @@
 - Axes choice for tank mode
 - Consistent-ize line width effects
-- Rebalance low-power weapons a little? Make missiles a bit weaker?
 - Fix glory device slowdowns
 - Cheapen bombardment, more gradual upgrades
 - Improve colors (brighten blue, make whites more distinct - gamma slider?)

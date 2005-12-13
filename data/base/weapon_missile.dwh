@@ -7,7 +7,7 @@ deploy {
 warhead {
     name=warhead.missile
     impactdamage=0.5
-    radiusdamage=1.5
+    radiusdamage=1.2
     radiusfalloff=4
     wallremovalradius=1
 }
