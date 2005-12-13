@@ -12,29 +12,29 @@ using namespace std;
 
 class Ai {
 private:
-    enum { AGM_APPROACH, AGM_RETREAT, AGM_WANDER, AGM_BACKUP };
-    deque<Controller> shopQueue;
-    Controller nextKeys;
-    Rng rng;
-    bool shopdone;
-    
-    int gamemode;
-    int targetplayer;
-    Float2 targetdir;
-    bool firing;
-    
+  enum { AGM_APPROACH, AGM_RETREAT, AGM_WANDER, AGM_BACKUP };
+  deque<Controller> shopQueue;
+  Controller nextKeys;
+  Rng rng;
+  bool shopdone;
+  
+  int gamemode;
+  int targetplayer;
+  Float2 targetdir;
+  bool firing;
+  
 public:
-    
-    void updatePregame();
-    void updateCharacterChoice(const vector<Float4> &factions, const vector<int> &playerfact, Float2 pos, int mode, int me);
-    void updateShop(const Player *player);
-    void updateGame(const vector<vector<Coord2> > &collide, const vector<Tank> &players, int me);
-    void updateBombardment(const vector<Tank> &players, Coord2 mypos);
-    void updateWaitingForReport();
+  
+  void updatePregame();
+  void updateCharacterChoice(const vector<Float4> &factions, const vector<int> &playerfact, Float2 pos, int mode, int me);
+  void updateShop(const Player *player);
+  void updateGame(const vector<vector<Coord2> > &collide, const vector<Tank> &players, int me);
+  void updateBombardment(const vector<Tank> &players, Coord2 mypos);
+  void updateWaitingForReport();
 
-    Controller getNextKeys() const;
+  Controller getNextKeys() const;
 
-    Ai();
+  Ai();
 
 };
 

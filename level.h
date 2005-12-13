@@ -11,13 +11,13 @@ using namespace std;
 
 class Level {
 public:
-    vector<vector<Coord2> > paths;
+  vector<vector<Coord2> > paths;
 
-    set<int> playersValid;
+  set<int> playersValid;
 
-    map<int, vector<pair<Coord2, float> > > playerStarts;
+  map<int, vector<pair<Coord2, float> > > playerStarts;
 
-    void makeProperSolids();
+  void makeProperSolids();
 
 };
 

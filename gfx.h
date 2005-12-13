@@ -14,10 +14,10 @@ using namespace std;
  
 struct Color {
 public:
-    float r, g, b;
+  float r, g, b;
 
-    Color();
-    Color(float in_r, float in_g, float in_b);
+  Color();
+  Color(float in_r, float in_g, float in_b);
 };
 
 Color colorFromString(const string &str);

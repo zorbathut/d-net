@@ -13,86 +13,86 @@ using namespace std;
 
 struct CollideId {
 public:
-    int category;
-    int bucket;
-    int item;
+  int category;
+  int bucket;
+  int item;
 
-    CollideId() { };
-    CollideId(pair<int, int> catbuck, int in_item) : category(catbuck.first), bucket(catbuck.second), item(in_item) { };
-    CollideId(const CollideId &rhs) : category(rhs.category), bucket(rhs.bucket), item(rhs.item) { };
+  CollideId() { };
+  CollideId(pair<int, int> catbuck, int in_item) : category(catbuck.first), bucket(catbuck.second), item(in_item) { };
+  CollideId(const CollideId &rhs) : category(rhs.category), bucket(rhs.bucket), item(rhs.item) { };
 };
 
 inline bool operator<(const CollideId &lhs, const CollideId &rhs) {
-    if(lhs.category != rhs.category) return lhs.category < rhs.category;
-    if(lhs.bucket != rhs.bucket) return lhs.bucket < rhs.bucket;
-    if(lhs.item != rhs.item) return lhs.item < rhs.item;
-    return false;
+  if(lhs.category != rhs.category) return lhs.category < rhs.category;
+  if(lhs.bucket != rhs.bucket) return lhs.bucket < rhs.bucket;
+  if(lhs.item != rhs.item) return lhs.item < rhs.item;
+  return false;
 }
 inline bool operator>(const CollideId &lhs, const CollideId &rhs) {
-    return rhs < lhs;
+  return rhs < lhs;
 }
 
 inline bool operator==(const CollideId &lhs, const CollideId &rhs) {
-    if(lhs.category != rhs.category) return false;
-    if(lhs.bucket != rhs.bucket) return false;
-    if(lhs.item != rhs.item) return false;
-    return true;
+  if(lhs.category != rhs.category) return false;
+  if(lhs.bucket != rhs.bucket) return false;
+  if(lhs.item != rhs.item) return false;
+  return true;
 }
 inline bool operator!=(const CollideId &lhs, const CollideId &rhs) {
-    return !(lhs == rhs);
+  return !(lhs == rhs);
 }
 
 struct CollideData {
 public:
-    CollideId lhs;
-    CollideId rhs;
-    Coord2 loc;
+  CollideId lhs;
+  CollideId rhs;
+  Coord2 loc;
 
-    CollideData() { };
-    CollideData(const CollideId &in_lhs, const CollideId &in_rhs, const Coord2 &in_loc) : lhs(in_lhs), rhs(in_rhs), loc(in_loc) { };
-    CollideData(const CollideData &in_rhs) : lhs(in_rhs.lhs), rhs(in_rhs.rhs), loc(in_rhs.loc) { };
+  CollideData() { };
+  CollideData(const CollideId &in_lhs, const CollideId &in_rhs, const Coord2 &in_loc) : lhs(in_lhs), rhs(in_rhs), loc(in_loc) { };
+  CollideData(const CollideData &in_rhs) : lhs(in_rhs.lhs), rhs(in_rhs.rhs), loc(in_rhs.loc) { };
 };
 
 inline bool operator<(const CollideData &lhs, const CollideData &rhs) {
-    if(lhs.lhs != rhs.lhs) return lhs.lhs < rhs.lhs;
-    if(lhs.rhs != rhs.rhs) return lhs.rhs < rhs.rhs;
-    if(lhs.loc != rhs.loc) return lhs.loc < rhs.loc;
-    return false;
+  if(lhs.lhs != rhs.lhs) return lhs.lhs < rhs.lhs;
+  if(lhs.rhs != rhs.rhs) return lhs.rhs < rhs.rhs;
+  if(lhs.loc != rhs.loc) return lhs.loc < rhs.loc;
+  return false;
 }
 inline bool operator>(const CollideData &lhs, const CollideData &rhs) {
-    return rhs < lhs;
+  return rhs < lhs;
 }
 
 inline bool operator==(const CollideData &lhs, const CollideData &rhs) {
-    if(lhs.lhs != rhs.lhs) return false;
-    if(lhs.rhs != rhs.rhs) return false;
-    if(lhs.loc != rhs.loc) return false;
-    return true;
+  if(lhs.lhs != rhs.lhs) return false;
+  if(lhs.rhs != rhs.rhs) return false;
+  if(lhs.loc != rhs.loc) return false;
+  return true;
 }
 
 class ColliderZone {
 private:
-    vector< pair< int, vector< pair< int, pair< Coord4, Coord4 > > > > > items;
-    int lastItem;
+  vector< pair< int, vector< pair< int, pair< Coord4, Coord4 > > > > > items;
+  int lastItem;
 
-    int players;
+  int players;
 public:
 
-    void addToken(int groupid, int token, const Coord4 &line, const Coord4 &direction);
+  void addToken(int groupid, int token, const Coord4 &line, const Coord4 &direction);
 
-    void clearGroup(int groupid);
+  void clearGroup(int groupid);
 
-    bool checkSimpleCollision(int groupid, const vector<Coord4> &line, const char *collidematrix) const;
+  bool checkSimpleCollision(int groupid, const vector<Coord4> &line, const char *collidematrix) const;
 
-    void processSimple(vector<pair<Coord, CollideData> > *clds, const char *collidematrix) const;
-    void processMotion(vector<pair<Coord, CollideData> > *clds, const char *collidematrix) const;
+  void processSimple(vector<pair<Coord, CollideData> > *clds, const char *collidematrix) const;
+  void processMotion(vector<pair<Coord, CollideData> > *clds, const char *collidematrix) const;
 
-    void render(const Coord4 &bbox) const;
+  void render(const Coord4 &bbox) const;
 
-    void reset();
+  void reset();
 
-    ColliderZone();
-    ColliderZone(int players);
+  ColliderZone();
+  ColliderZone(int players);
 };
 
 enum {COM_PLAYER, COM_PROJECTILE};
@@ -101,55 +101,55 @@ enum {CGR_WALL, CGR_PLAYER, CGR_PROJECTILE};
 class Collider {
 public:
 
-	void reset(int players, int mode, const Coord4 &bounds);
+  void reset(int players, int mode, const Coord4 &bounds);
 
-    void startToken( int toki );
-	void token(const Coord4 &line, const Coord4 &direction);
-    void token(const Coord4 &line);
+  void startToken( int toki );
+  void token(const Coord4 &line, const Coord4 &direction);
+  void token(const Coord4 &line);
 
-	void addThingsToGroup( int category, int gid, bool log = false);
-	void endAddThingsToGroup();
+  void addThingsToGroup( int category, int gid, bool log = false);
+  void endAddThingsToGroup();
 
-    void clearGroup(int category, int gid);
+  void clearGroup(int category, int gid);
 
-    bool checkSimpleCollision(int category, int gid, const vector<Coord4> &line) const;
+  bool checkSimpleCollision(int category, int gid, const vector<Coord4> &line) const;
 
-    void processSimple();
-	void processMotion();
+  void processSimple();
+  void processMotion();
 
-    bool next();
-    const CollideData &getData() const;
+  bool next();
+  const CollideData &getData() const;
 
-    void finishProcess();
+  void finishProcess();
 
-	Collider();
-	~Collider();
+  Collider();
+  ~Collider();
 
-	void render() const;
+  void render() const;
 
 private:
-	
-    enum { CSTA_UNINITTED, CSTA_WAIT, CSTA_ADD, CSTA_PROCESSED };
-    
-	int state;
-    bool log;
+  
+  enum { CSTA_UNINITTED, CSTA_WAIT, CSTA_ADD, CSTA_PROCESSED };
+  
+  int state;
+  bool log;
 
-    int curcollide;
-    
-    int zxs;
-    int zys;
-    int zxe;
-    int zye;
-    vector<vector<ColliderZone> > zone;
-    
-    vector< CollideData > collides;
+  int curcollide;
+  
+  int zxs;
+  int zys;
+  int zxe;
+  int zye;
+  vector<vector<ColliderZone> > zone;
+  
+  vector< CollideData > collides;
 
-    int curpush;
-    int curtoken;
+  int curpush;
+  int curtoken;
 
-    int players;
-    
-    vector<char> collidematrix;
+  int players;
+  
+  vector<char> collidematrix;
 
 };
 

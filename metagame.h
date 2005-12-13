@@ -15,74 +15,74 @@ using namespace std;
 
 class Shop {
 private:
-    Player *player;
+  Player *player;
 
-    vector<int> curloc;
+  vector<int> curloc;
 
-    const HierarchyNode &getStepNode(int step) const;
+  const HierarchyNode &getStepNode(int step) const;
 
-    const HierarchyNode &getCurNode() const;
-    const HierarchyNode &getCategoryNode() const;
+  const HierarchyNode &getCurNode() const;
+  const HierarchyNode &getCategoryNode() const;
 
-    void renderNode(const HierarchyNode &node, int depth) const;
+  void renderNode(const HierarchyNode &node, int depth) const;
 
 public:
-    bool runTick( const Keystates &keys );
-    void ai(Ai *ai) const;
-    void renderToScreen() const;
+  bool runTick( const Keystates &keys );
+  void ai(Ai *ai) const;
+  void renderToScreen() const;
 
-    Shop();
-    Shop(Player *player);
+  Shop();
+  Shop(Player *player);
 };
 
 class Metagame {
-    
-    int mode;
-    int gameround;
-    
-    enum { MGM_PLAYERCHOOSE, MGM_SHOP, MGM_PLAY };
-    int currentShop;
+  
+  int mode;
+  int gameround;
+  
+  enum { MGM_PLAYERCHOOSE, MGM_SHOP, MGM_PLAY };
+  int currentShop;
 
-    vector< int > playerkey;
-    vector< int > playersymbol;
-    vector< Float2 > playerpos;
-    vector< int > playermode;
-    
-    vector<Dvec2> symbols;
-    vector<Float4> symbolpos;
-    
-    vector<Level> levels;
-    
-    Game game;
-    
-    Shop shop;
-    
-    vector<Player> playerdata;
-    
-    vector<vector<float> > lrCategory;
-    vector<float> lrPlayer;
-    vector<int> lrCash;
-    vector<bool> checked;
-    
-    vector<int> fireHeld;
-    
-    int roundsBetweenShop;
+  vector< int > playerkey;
+  vector< int > playersymbol;
+  vector< Float2 > playerpos;
+  vector< int > playermode;
+  
+  vector<Dvec2> symbols;
+  vector<Float4> symbolpos;
+  
+  vector<Level> levels;
+  
+  Game game;
+  
+  Shop shop;
+  
+  vector<Player> playerdata;
+  
+  vector<vector<float> > lrCategory;
+  vector<float> lrPlayer;
+  vector<int> lrCash;
+  vector<bool> checked;
+  
+  vector<int> fireHeld;
+  
+  int roundsBetweenShop;
 
 public:
 
-	void renderToScreen() const;
-    void ai(const vector<Ai *> &ai) const;
-	bool runTick( const vector< Controller > &keys );
+  void renderToScreen() const;
+  void ai(const vector<Ai *> &ai) const;
+  bool runTick( const vector< Controller > &keys );
 
-    vector<Keystates> genKeystates(const vector<Controller> &keys, const vector<int> &modes);
+  vector<Keystates> genKeystates(const vector<Controller> &keys, const vector<int> &modes);
 
-    void calculateLrStats();
-    void drawMultibar(const vector<float> &sizes, const Float4 &dimensions) const;
+  void calculateLrStats();
+  void drawMultibar(const vector<float> &sizes, const Float4 &dimensions) const;
 
-    void findLevels(int playercount);
+  void findLevels(int playercount);
 
-    Metagame();
-	Metagame(int playercount, int roundsBetweenShop);
+  Metagame();
+  Metagame(int playercount, int roundsBetweenShop);
 
 };
 

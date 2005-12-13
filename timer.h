@@ -4,21 +4,21 @@
 class Timer {
 public:
 
-	void waitForNextFrame();
-	bool skipFrame();
-    int framesBehind();
-	void frameDone();
+  void waitForNextFrame();
+  bool skipFrame();
+  int framesBehind();
+  void frameDone();
 
-	long long ticksElapsed();
-	long long getFrameTicks();
+  long long ticksElapsed();
+  long long getFrameTicks();
 
-	Timer();
+  Timer();
 
 private:
 
-	int frameNum;
-	long long ticksPerFrame;
-	long long ticksOffset;
+  int frameNum;
+  long long ticksPerFrame;
+  long long ticksOffset;
 
 };
 

@@ -10,22 +10,22 @@ using namespace std;
 
 struct IDBDeploy {
 public:
-    
-    float anglevariance;
+  
+  float anglevariance;
 
-    float getDamagePerShotMultiplier() const;
+  float getDamagePerShotMultiplier() const;
 
 };
 
 struct IDBWarhead {
 public:
-    float impactdamage;
-    float radiusdamage;
-    float radiusfalloff;
-    float wallremovalradius;
-    float wallremovalchance;
+  float impactdamage;
+  float radiusdamage;
+  float radiusfalloff;
+  float wallremovalradius;
+  float wallremovalchance;
 
-    float getDamagePerShot() const;
+  float getDamagePerShot() const;
 
 };
 
@@ -33,87 +33,87 @@ enum { PM_NORMAL, PM_MISSILE, PM_AIRBRAKE };
 
 struct IDBProjectile {
 public:
-    int motion;
-    float velocity;
-    Color color;
-    const IDBWarhead *warhead;
+  int motion;
+  float velocity;
+  Color color;
+  const IDBWarhead *warhead;
 
-    float getDamagePerShot() const;
+  float getDamagePerShot() const;
 
 };
 
 struct IDBWeapon {
 public:
-    int firerate;
-    float costpershot;
-    string name;
-    const IDBDeploy *deploy;
-    const IDBProjectile *projectile;
+  int firerate;
+  float costpershot;
+  string name;
+  const IDBDeploy *deploy;
+  const IDBProjectile *projectile;
 
-    float getDamagePerShot() const;
-    float getDamagePerSecond() const;
-    float getCostPerDamage() const;
+  float getDamagePerShot() const;
+  float getDamagePerSecond() const;
+  float getCostPerDamage() const;
 
 };
 
 struct IDBGlory {
 public:
-    int minsplits;
-    int maxsplits;
-    int minsplitsize;
-    int maxsplitsize;
+  int minsplits;
+  int maxsplits;
+  int minsplitsize;
+  int maxsplitsize;
 
-    const IDBDeploy *deploy;
-    const IDBProjectile *projectile;
+  const IDBDeploy *deploy;
+  const IDBProjectile *projectile;
 
-    int shotspersplit;
+  int shotspersplit;
 
-    float getAverageDamage() const;
+  float getAverageDamage() const;
 };
 
 struct IDBUpgrade {
 public:
-    int hull;
-    int engine;
-    int handling;
+  int hull;
+  int engine;
+  int handling;
 };
 
 struct IDBBombardment {
 public:
-    const IDBWarhead *warhead;
+  const IDBWarhead *warhead;
 
-    int lockdelay;
-    int unlockdelay;
+  int lockdelay;
+  int unlockdelay;
 };
 
 struct HierarchyNode {
 public:
-    vector<HierarchyNode> branches;
+  vector<HierarchyNode> branches;
 
-    string name;
+  string name;
 
-    enum {HNT_CATEGORY, HNT_WEAPON, HNT_UPGRADE, HNT_GLORY, HNT_BOMBARDMENT, HNT_DONE, HNT_LAST};
-    int type;
+  enum {HNT_CATEGORY, HNT_WEAPON, HNT_UPGRADE, HNT_GLORY, HNT_BOMBARDMENT, HNT_DONE, HNT_LAST};
+  int type;
 
-    enum {HNDM_BLANK, HNDM_COST, HNDM_PACK, HNDM_COSTUNIQUE, HNDM_LAST};
-    int displaymode;
+  enum {HNDM_BLANK, HNDM_COST, HNDM_PACK, HNDM_COSTUNIQUE, HNDM_LAST};
+  int displaymode;
 
-    bool buyable;
-    int cost;
-    
-    const IDBWeapon *weapon;
-    const IDBUpgrade *upgrade;
-    const IDBGlory *glory;
-    const IDBBombardment *bombardment;
-    
-    int quantity;
-    
-    int cat_restrictiontype;
-    
-    void checkConsistency() const;
-    
-    HierarchyNode();
-    
+  bool buyable;
+  int cost;
+  
+  const IDBWeapon *weapon;
+  const IDBUpgrade *upgrade;
+  const IDBGlory *glory;
+  const IDBBombardment *bombardment;
+  
+  int quantity;
+  
+  int cat_restrictiontype;
+  
+  void checkConsistency() const;
+  
+  HierarchyNode();
+  
 };
 
 void initItemdb();

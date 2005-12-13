@@ -11,39 +11,39 @@ using namespace std;
 
 class Collider;
 class Ai;
-    
+  
 class Tank;
 class Projectile;
 
 class Player {
 public:
 
-    float maxHealth;
-    float turnSpeed;
-    Coord maxSpeed;
+  float maxHealth;
+  float turnSpeed;
+  Coord maxSpeed;
 
-    vector<const IDBUpgrade *> upgrades;
-    const IDBWeapon *weapon;
-    int shotsLeft;
+  vector<const IDBUpgrade *> upgrades;
+  const IDBWeapon *weapon;
+  int shotsLeft;
 
-    const IDBGlory *glory;
-    const IDBBombardment *bombardment;
+  const IDBGlory *glory;
+  const IDBBombardment *bombardment;
 
-    Color color;
-    Dvec2 faction_symb;
+  Color color;
+  Dvec2 faction_symb;
 
-    int cash;
+  int cash;
 
-    void reCalculate();
-    bool hasUpgrade(const IDBUpgrade *upg) const;
+  void reCalculate();
+  bool hasUpgrade(const IDBUpgrade *upg) const;
 
-    int resellAmmoValue() const;
+  int resellAmmoValue() const;
 
-    float damageDone;
-    int kills;
-    int wins;
+  float damageDone;
+  int kills;
+  int wins;
 
-    Player();
+  Player();
 
 };
 
@@ -52,178 +52,178 @@ public:
 class GfxEffects {
 public:
 
-	void move();
-	void render() const;
-	bool dead() const;
+  void move();
+  void render() const;
+  bool dead() const;
 
-    int type;
-    enum { EFFECT_POINT, EFFECT_LINE, EFFECT_CIRCLE, EFFECT_TEXT, EFFECT_PATH };
-    
-    int life;
-    int age;
-    Color color;
-    
-    Float2 point_pos;
-    Float2 point_vel;
-    
-    Float2 circle_center;
-    float circle_radius;
-    
-	Float4 line_pos;
-	Float4 line_vel;
+  int type;
+  enum { EFFECT_POINT, EFFECT_LINE, EFFECT_CIRCLE, EFFECT_TEXT, EFFECT_PATH };
+  
+  int life;
+  int age;
+  Color color;
+  
+  Float2 point_pos;
+  Float2 point_vel;
+  
+  Float2 circle_center;
+  float circle_radius;
+  
+  Float4 line_pos;
+  Float4 line_vel;
 
-    Float2 text_pos;
-    Float2 text_vel;
-    float text_size;
-    string text_data;
-    
-    vector<Float2> path_path;
-    Float2 path_pos_start;
-    Float2 path_pos_vel;
-    Float2 path_pos_acc;
-    float path_ang_start;
-    float path_ang_vel;
-    float path_ang_acc;
+  Float2 text_pos;
+  Float2 text_vel;
+  float text_size;
+  string text_data;
+  
+  vector<Float2> path_path;
+  Float2 path_pos_start;
+  Float2 path_pos_vel;
+  Float2 path_pos_acc;
+  float path_ang_start;
+  float path_ang_vel;
+  float path_ang_acc;
 
-	GfxEffects();
+  GfxEffects();
 
 };
 
 class Tank {
 public:
-    
-    void init(Player *player);
-    
-	void tick(const Keystates &kst);
-	void render( int tankid ) const;
+  
+  void init(Player *player);
+  
+  void tick(const Keystates &kst);
+  void render( int tankid ) const;
 
-	void addCollision( Collider *collider, const Keystates &kst ) const;
+  void addCollision( Collider *collider, const Keystates &kst ) const;
 
-	Tank();
+  Tank();
 
-    vector<Coord4> getCurrentCollide() const;
-    vector<Coord4> getNextCollide(const Keystates &keys) const;
+  vector<Coord4> getCurrentCollide() const;
+  vector<Coord4> getNextCollide(const Keystates &keys) const;
 
-	vector<Coord2> getTankVertices( Coord2 pos, float td ) const;
-	Coord2 getFiringPoint() const;
+  vector<Coord2> getTankVertices( Coord2 pos, float td ) const;
+  Coord2 getFiringPoint() const;
 
-    pair<Coord2, float> getDeltaAfterMovement( const Keystates &keys, Coord2 pos, float d ) const;
+  pair<Coord2, float> getDeltaAfterMovement( const Keystates &keys, Coord2 pos, float d ) const;
 
-	bool takeDamage( float amount ); // returns true on kill
-	void genEffects(vector< GfxEffects > *gfxe, vector<Projectile> *projectiles);
-    
-    bool initted;
-	
-	Coord2 pos;
-	float d;
+  bool takeDamage( float amount ); // returns true on kill
+  void genEffects(vector< GfxEffects > *gfxe, vector<Projectile> *projectiles);
+  
+  bool initted;
+  
+  Coord2 pos;
+  float d;
 
-	bool spawnShards;
-	bool live;
+  bool spawnShards;
+  bool live;
 
-	float health;
-    
-    Keystates keys;
-    
-    Player *player;
-    
-    int weaponCooldown;
+  float health;
+  
+  Keystates keys;
+  
+  Player *player;
+  
+  int weaponCooldown;
 
 };
 
 class Projectile {
 public:
 
-    void tick(vector<GfxEffects> *gfx);
-    void render() const;
+  void tick(vector<GfxEffects> *gfx);
+  void render() const;
 
-	void addCollision( Collider *collider ) const;
+  void addCollision( Collider *collider ) const;
 
-	void impact(Coord2 pos, Tank *target, const vector<pair<float, Tank *> > &adjacency, vector<GfxEffects> *gfxe, Gamemap *gm);
+  void impact(Coord2 pos, Tank *target, const vector<pair<float, Tank *> > &adjacency, vector<GfxEffects> *gfxe, Gamemap *gm);
 
-    bool isLive() const;
+  bool isLive() const;
 
-    Projectile();   // does not start in usable state
-    Projectile(const Coord2 &pos, float d, const IDBProjectile *projtype, Tank *owner);
+  Projectile();   // does not start in usable state
+  Projectile(const Coord2 &pos, float d, const IDBProjectile *projtype, Tank *owner);
 
 private:
-    
-    Coord2 movement() const;
+  
+  Coord2 movement() const;
 
-    Coord2 nexttail() const;
+  Coord2 nexttail() const;
 
-    // Missile velocity is a factor of three things:
-    // (1) Acceleration - constantly increases
-    // (2) Backdrop - a constant value
-    // (3) Sidedrop - approaches a constant offset
-    Coord2 missile_accel() const;
-    Coord2 missile_backdrop() const;
-    Coord2 missile_sidedrop() const;
-    float missile_sidedist;
+  // Missile velocity is a factor of three things:
+  // (1) Acceleration - constantly increases
+  // (2) Backdrop - a constant value
+  // (3) Sidedrop - approaches a constant offset
+  Coord2 missile_accel() const;
+  Coord2 missile_backdrop() const;
+  Coord2 missile_sidedrop() const;
+  float missile_sidedist;
 
-    float airbrake_liveness() const;
-    float airbrake_velocity;
+  float airbrake_liveness() const;
+  float airbrake_velocity;
 
-	Coord2 pos;
-	float d;
+  Coord2 pos;
+  float d;
 
-    Coord2 lasttail;
+  Coord2 lasttail;
 
-    int age;
-    
-    const IDBProjectile *projtype;
-    Tank *owner;
-    
-    bool live;
+  int age;
+  
+  const IDBProjectile *projtype;
+  Tank *owner;
+  
+  bool live;
 
 };
 
 class BombardmentState {
 public:
-    enum { BS_OFF, BS_SPAWNING, BS_ACTIVE, BS_FIRING, BS_COOLDOWN, BS_LAST };
-    Coord2 loc;
-    int timer;
-    int state;
-    
-    BombardmentState() {
-        loc = Coord2(0, 0);
-        timer = 0;
-        state = BS_OFF;
-    }
+  enum { BS_OFF, BS_SPAWNING, BS_ACTIVE, BS_FIRING, BS_COOLDOWN, BS_LAST };
+  Coord2 loc;
+  int timer;
+  int state;
+  
+  BombardmentState() {
+    loc = Coord2(0, 0);
+    timer = 0;
+    state = BS_OFF;
+  }
 };
 
 class Game {
 public:
 
-	bool runTick( const vector< Keystates > &keys );
-    void ai(const vector<Ai *> &ais) const;
-    void renderToScreen() const;
+  bool runTick( const vector< Keystates > &keys );
+  void ai(const vector<Ai *> &ais) const;
+  void renderToScreen() const;
 
-    float firepowerSpent;
+  float firepowerSpent;
 
-    Game();
-	Game(vector<Player> *playerdata, const Level &level);
+  Game();
+  Game(vector<Player> *playerdata, const Level &level);
 
 private:
-    
-    vector<pair<float, Tank *> > genTankDistance(const Coord2 &center);
+  
+  vector<pair<float, Tank *> > genTankDistance(const Coord2 &center);
 
-	int frameNm;
-    int framesSinceOneLeft;
+  int frameNm;
+  int framesSinceOneLeft;
 
-	vector<Tank> players;
-    vector<BombardmentState> bombards;
-	vector<vector<Projectile> > projectiles;
-	vector<GfxEffects> gfxeffects;
-	Gamemap gamemap;
+  vector<Tank> players;
+  vector<BombardmentState> bombards;
+  vector<vector<Projectile> > projectiles;
+  vector<GfxEffects> gfxeffects;
+  Gamemap gamemap;
 
-	Collider collider;
+  Collider collider;
 
-    vector<char> tankHighlight;
+  vector<char> tankHighlight;
 
-    Float2 zoom_center;
-    Float2 zoom_size;
+  Float2 zoom_center;
+  Float2 zoom_size;
 
-    Float2 zoom_speed;
+  Float2 zoom_speed;
 
 };
 

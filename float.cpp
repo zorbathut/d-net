@@ -5,13 +5,13 @@
 
 class Floats {
 public:
-    typedef float T1;
-    typedef Float2 T2;
-    typedef Float4 T4;
-    
-    static float atan2(float a, float b) { return ::atan2(a, b); }
-    static float sin(float a) { return fsin(a); };
-    static float cos(float a) { return fcos(a); };
+  typedef float T1;
+  typedef Float2 T2;
+  typedef Float4 T4;
+  
+  static float atan2(float a, float b) { return ::atan2(a, b); }
+  static float sin(float a) { return fsin(a); };
+  static float cos(float a) { return fcos(a); };
 };
 
 /*************
@@ -48,5 +48,5 @@ bool linelineintersect( const Float4 &lhs, const Float4 &rhs ) { return imp_line
 float linelineintersectpos( const Float4 &lhs, const Float4 &rhs ) { return imp_linelineintersectpos<Floats>(lhs, rhs); };
 
 Float2 rotate(const Float2 &in, float ang) {
-    return makeAngle(getAngle(in) + ang) * len(in);
+  return makeAngle(getAngle(in) + ang) * len(in);
 }

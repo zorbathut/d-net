@@ -12,21 +12,21 @@ using namespace std;
 class Gamemap {
 public:
 
-	void render() const;
-	void addCollide( Collider *collide ) const;
+  void render() const;
+  void addCollide( Collider *collide ) const;
 
-    const vector<vector<Coord2> > &getCollide() const;
+  const vector<vector<Coord2> > &getCollide() const;
 
-    Coord4 getBounds() const;
+  Coord4 getBounds() const;
 
-    void removeWalls(Coord2 center, float radius);
+  void removeWalls(Coord2 center, float radius);
 
-    Gamemap();
-	Gamemap(const Level &level);
+  Gamemap();
+  Gamemap(const Level &level);
 
 private:
 
-    vector<vector<Coord2> > paths;
+  vector<vector<Coord2> > paths;
 
 };
 
