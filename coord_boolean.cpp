@@ -221,6 +221,10 @@ void deloop(vector<Coord2> *in) {
 
 const int megaverbose = 0;
 
+Coord2 truncate(const Coord2 &c2, int bits) {
+  return Coord2((c2.x + (coordExplicit(1) << (bits - 1))) >> bits << bits, (c2.y + (coordExplicit(1) << (bits - 1))) >> bits << bits);
+}
+
 vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Coord2> &rhs) {
   #if 0    // Pre-split debugging
   {
@@ -254,6 +258,14 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
   }
   map<Coord2, DualLink> vertx;
   vector<Coord2> tv[2] = {lhs, rhs};
+  {
+    // Let's be crazy and strip off a few bits of precision.
+    for(int i = 0; i < 2; i++) {
+      for(int k = 0; k < tv[i].size(); k++) {
+        tv[i][k] = truncate(tv[i][k], 12);
+      }
+    }
+  }
   while(1) {
     const Coord mergebounds = Coord(0.00001f);
     bool changed = false;
@@ -340,9 +352,13 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
     for(int i = 0; i < links.size(); i++) {
       if(itr->first == links[i].end)
         continue;
+      //{
+        //Coord dist = distanceFromLine(Coord4(links[i].start, links[i].end), itr->first);
+        //if(dist < Coord(0.01))
+          //dprintf("Colin %f at vert %s %s\n", dist.toFloat(), itr->first.x.rawstr().c_str(), itr->first.y.rawstr().c_str());
+      //}
       if(links[i].end != itr->first && colinear(Coord4(links[i].start, links[i].end), itr->first)) {
         
-        /*
         dprintf("COLINEAR  %f %f  %f %f  %f %f\n",
             links[i].start.x.toFloat(), links[i].start.y.toFloat(),
             itr->first.x.toFloat(), itr->first.y.toFloat(),
@@ -351,7 +367,6 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
             links[i].start.x.rawstr().c_str(), links[i].start.y.rawstr().c_str(),
             itr->first.x.rawstr().c_str(), itr->first.y.rawstr().c_str(),
             links[i].end.x.rawstr().c_str(), links[i].end.y.rawstr().c_str());
-        */
         
         if(megaverbose)
           dprintf("  Combining colinear\n");
@@ -601,24 +616,24 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
         }*/
         if(!now.first) {
           // came in off a lhs path - switch to rhs if there is one, and if it doesn't immediately leave the valid area
-          if(vertx[now.second].live[1] && inPath((now.second + vertx[now.second].links[1][0]) / 2, lhs) == lhsInside) {
-            CHECK(inPath((now.second + vertx[now.second].links[1][0]) / 2, lhs) == lhsInside);
+          if(vertx[now.second].live[1] && inPath((now.second + vertx[now.second].links[1][0]) / 2, tv[0]) == lhsInside) {
+            CHECK(inPath((now.second + vertx[now.second].links[1][0]) / 2, tv[0]) == lhsInside);
             now = make_pair(true, vertx[now.second].links[1][0]);
           } else {
             CHECK(vertx[now.second].live[0]);
             if(!vertx[now.second].live[1] || vertx[now.second].links[0][1] != vertx[now.second].links[1][0]) // parallel links cause some problems
-              CHECK(roughInPath((now.second + vertx[now.second].links[0][1]) / 2, rhs, false));
+              CHECK(roughInPath((now.second + vertx[now.second].links[0][1]) / 2, tv[1], false));
             now = make_pair(false, vertx[now.second].links[0][1]);
           }
         } else {
           // came in off a rhs path - switch to lhs if there is one
-          if(vertx[now.second].live[0] && !inPath((now.second + vertx[now.second].links[0][1]) / 2, rhs)) {
-            CHECK(!inPath((now.second + vertx[now.second].links[0][1]) / 2, rhs));
+          if(vertx[now.second].live[0] && !inPath((now.second + vertx[now.second].links[0][1]) / 2, tv[1])) {
+            CHECK(!inPath((now.second + vertx[now.second].links[0][1]) / 2, tv[1]));
             now = make_pair(false, vertx[now.second].links[0][1]);
           } else {
             CHECK(vertx[now.second].live[1]);
             if(!vertx[now.second].live[0] || vertx[now.second].links[0][1] != vertx[now.second].links[1][0]) // parallel links cause some problems
-              CHECK(roughInPath((now.second + vertx[now.second].links[1][0]) / 2, lhs, lhsInside));
+              CHECK(roughInPath((now.second + vertx[now.second].links[1][0]) / 2, tv[0], lhsInside));
             now = make_pair(true, vertx[now.second].links[1][0]);
           }
         }
@@ -629,7 +644,7 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
     }
   }
   #else
-  vector<vector<Coord2> > rv(1,lhs);
+  vector<vector<Coord2> > rv(1,tv[0]);
   #endif
   vector<vector<Coord2> > rrv;
   bool gotReversedPath = false;

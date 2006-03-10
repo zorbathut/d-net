@@ -23,6 +23,8 @@ class Coord {
   friend inline Coord operator-(const Coord &lhs, const Coord &rhs);
   friend inline Coord operator*(const Coord &lhs, const Coord &rhs);
   friend inline Coord operator/(const Coord &lhs, const Coord &rhs);
+  friend inline Coord operator<<(const Coord &lhs, int rhs);
+  friend inline Coord operator>>(const Coord &lhs, int rhs);
   friend inline bool operator==(const Coord &lhs, const Coord &rhs);
   friend inline bool operator!=(const Coord &lhs, const Coord &rhs);
   friend inline bool operator<(const Coord &lhs, const Coord &rhs);
@@ -87,6 +89,14 @@ inline Coord operator+(const Coord &lhs, const Coord &rhs) {
 
 inline Coord operator-(const Coord &lhs, const Coord &rhs) {
   return coordExplicit(lhs.d - rhs.d);
+}
+
+inline Coord operator<<(const Coord &lhs, int rhs) {
+  return coordExplicit(lhs.d << rhs);
+}
+
+inline Coord operator>>(const Coord &lhs, int rhs) {
+  return coordExplicit(lhs.d >> rhs);
 }
 
 inline Coord floor(const Coord &in) {

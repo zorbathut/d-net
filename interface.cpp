@@ -225,6 +225,8 @@ void InterfaceMain::render() const {
 
       for(int i = 0; i < res.size(); i++) {
         
+        vector<Coord2> reso = res[i];
+        
         for(int j = 0; j < res[i].size(); j++) {
           res[i][j] *= Coord(fin.second);
           res[i][j] += Coord2(fin.first);
@@ -234,8 +236,11 @@ void InterfaceMain::render() const {
         else
           setColor(0.3, 1.0, 0.3);
         drawLineLoop(res[i], 0.1);
-        for(int j = 0; j < res[i].size(); j++)
+        for(int j = 0; j < res[i].size(); j++) {
           drawCircle(res[i][j].toFloat(), 1, 0.1);
+          drawText(reso[j].x.rawstr(), 1, res[i][j].toFloat().x + 1, res[i][j].toFloat().y + 1);
+          drawText(reso[j].y.rawstr(), 1, res[i][j].toFloat().x + 1, res[i][j].toFloat().y + 2.1);
+        }
       }
       /*
       setColor(1.0, 1.0, 1.0);
