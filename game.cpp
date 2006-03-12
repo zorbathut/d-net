@@ -396,6 +396,16 @@ void Tank::genEffects(vector<GfxEffects> *gfxe, vector<Projectile> *projectiles)
       intersecty.push_back(makeAngle(Coord(ned)) * 100);
       reverse(intersecty.begin(), intersecty.end());
       vector<vector<Coord2> > thischunk = getDifference(tv, intersecty);
+      if(thischunk.size() != 1) {
+        // Sometimes precision hates us and we end up with a tiny minichunk left over
+        for(int i = 0; i < thischunk.size(); i++) {
+          dprintf("%f\n", getArea(thischunk[i]).toFloat());
+          if(getArea(thischunk[i]) < Coord(0.00001)) {
+            thischunk.erase(thischunk.begin() + i);
+            i--;
+          }
+        }
+      }
       CHECK(thischunk.size() == 1);
       chunks.push_back(thischunk[0]);
     }

@@ -166,22 +166,29 @@ void InterfaceMain::render() const {
   
   #if 0   // Code used for checking the validity of getDifference :)
   {
-    #if 0
-    dprintf("Frame!\n");
+    #if 1
+    //dprintf("Frame!\n");
+      
+    string lhs[6] = {
+     "fffffffe59a45201", "00000002de13a7cb",
+     "fffffffd65680741", "fffffffdf59810cb",
+     "0000000440f3a6be", "ffffffff2c54476a",
+    };
+    string rhs[24] = {
+     "0000006229a7cc00", "ffffffeceb4a2900",
+     "00000057091ae400", "000000313e0b1200",
+     "00000034fdeee800", "00000054ce07f800",
+     "00000005ab55dec0", "00000063d6d3c400",
+     "ffffffd4f2ea5800", "0000005a422f3400",
+     "ffffffaf192a2c00", "0000003ac74d6000",
+     "ffffff9cccac7c00", "0000000c9eb18500",
+     "ffffffa2cc995c00", "ffffffdbc195fa00",
+     "ffffffbfb8a2f400", "ffffffb365432c00",
+     "ffffffec102e4400", "ffffff9e01eda000",
+     "0000001da7770a00", "ffffffa07f7d4000",
+     "0000000000000000", "0000000000000000",
+    };
     
-    string lhs[210] = {
-     "ffffff92386515c5", "ffffff9bffffe0a5",
-     "ffffff8f01c19d97", "ffffff9bffffe348",
-     "ffffff8ec5b20e07", "ffffff9b05d4114c",
-     "ffffff8dfc4ecdc7", "ffffff9bf3b797dc",
-     "ffffff8e0b79b005", "ffffff9bffffe412",
-    };
-    string rhs[6] = {
-     "fffffff088bfed82", "ffffff9bffff9414",
-     "ffffffee8a09ab82", "ffffff9be659a734",
-     "ffffffeede48b482", "ffffff9b4101f614",
-    };
-
     vector<Coord2> diff[2];
 
     for(int i = 0; i < sizeof(lhs) / sizeof(*lhs); i += 2)
@@ -204,7 +211,7 @@ void InterfaceMain::render() const {
     vector<vector<Coord2> > res = getDifference(diff[0], diff[1]);
     
     if(res.size()) {
-      Coord4 bbox = getBoundBox(diff[1]);
+      Coord4 bbox = getBoundBox(diff[0]);
       //bbox.sx -= 20;
       //bbox.sy -= 20;
       //bbox.ex += 20;

@@ -235,6 +235,8 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
   }
   #endif
   GetDifferenceHandler CrashHandler(lhs, rhs);
+  //if(frameNumber == 921696)
+    //CrashHandler();
   bool lhsInside = !pathReversed(lhs);
   CHECK(!pathReversed(rhs));
   #if 1
