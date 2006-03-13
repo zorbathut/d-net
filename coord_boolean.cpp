@@ -213,6 +213,11 @@ void deloop(vector<Coord2> *in) {
         found = true;
         dprintf("Delooped!\n");
       }
+      if((*in)[i] == (*in)[(i + 1) % in->size()]) {
+        in->erase(in->begin() + i);
+        found = true;
+        dprintf("Deduped!\n");
+      }
     }
     if(!found)
       break;
@@ -314,17 +319,17 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
     if(!changed)
       break;
   }
-    deloop(&tv[0]);
-    deloop(&tv[1]);
-    if(set<Coord2>(tv[0].begin(), tv[0].end()).size() != tv[0].size()) {
-      map<Coord2, int> ct;
-      for(int i = 0; i < tv[0].size(); i++) {
-        ct[tv[0][i]]++;
-        dprintf("%s, %s\n", tv[0][i].x.rawstr().c_str(), tv[0][i].y.rawstr().c_str());
-        if(ct[tv[0][i]] > 1)
-          dprintf("Dupe at %s, %s\n", tv[0][i].x.rawstr().c_str(), tv[0][i].y.rawstr().c_str());
-      }
+  deloop(&tv[0]);
+  deloop(&tv[1]);
+  if(set<Coord2>(tv[0].begin(), tv[0].end()).size() != tv[0].size()) {
+    map<Coord2, int> ct;
+    for(int i = 0; i < tv[0].size(); i++) {
+      ct[tv[0][i]]++;
+      dprintf("%s, %s\n", tv[0][i].x.rawstr().c_str(), tv[0][i].y.rawstr().c_str());
+      if(ct[tv[0][i]] > 1)
+        dprintf("Dupe at %s, %s\n", tv[0][i].x.rawstr().c_str(), tv[0][i].y.rawstr().c_str());
     }
+  }
   CHECK(set<Coord2>(tv[0].begin(), tv[0].end()).size() == tv[0].size());
   CHECK(set<Coord2>(tv[1].begin(), tv[1].end()).size() == tv[1].size());
   //dprintf("Early parsing\n");

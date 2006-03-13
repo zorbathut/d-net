@@ -169,26 +169,28 @@ void InterfaceMain::render() const {
     #if 1
     //dprintf("Frame!\n");
       
-    string lhs[6] = {
-     "fffffffe59a45201", "00000002de13a7cb",
-     "fffffffd65680741", "fffffffdf59810cb",
-     "0000000440f3a6be", "ffffffff2c54476a",
+    string lhs[28] = {
+     "fffffffbffffc000", "ffffffd800000000",
+     "00000012e04ef000", "ffffffd800000000",
+     "00000012b2964000", "ffffffd81532f000",
+     "00000013db8d9000", "ffffffd848e4f000",
+     "0000000c00000000", "ffffffe800000000",
+     "0000000c000031b3", "0000000d481372c0",
+     "0000000b0230e000", "0000000d731e6000",
+     "0000000c00003000", "0000000e94889000",
+     "0000000c0000336d", "0000000e94888a6f",
+     "0000000c00004000", "0000001800000000",
+     "0000001400008000", "0000002800000000",
+     "fffffffbffffc000", "0000002800000000",
+     "00000003ffffe000", "0000001800000000",
+     "00000003ffffe000", "ffffffe800000000",
     };
-    string rhs[24] = {
-     "0000006229a7cc00", "ffffffeceb4a2900",
-     "00000057091ae400", "000000313e0b1200",
-     "00000034fdeee800", "00000054ce07f800",
-     "00000005ab55dec0", "00000063d6d3c400",
-     "ffffffd4f2ea5800", "0000005a422f3400",
-     "ffffffaf192a2c00", "0000003ac74d6000",
-     "ffffff9cccac7c00", "0000000c9eb18500",
-     "ffffffa2cc995c00", "ffffffdbc195fa00",
-     "ffffffbfb8a2f400", "ffffffb365432c00",
-     "ffffffec102e4400", "ffffff9e01eda000",
-     "0000001da7770a00", "ffffffa07f7d4000",
-     "0000000000000000", "0000000000000000",
+    string rhs[6] = {
+     "000000113def3b5a", "0000002245a5c550",
+     "0000001003a40b5a", "0000002223eba850",
+     "00000011b1c8505a", "000000213ccc0d10",
     };
-    
+
     vector<Coord2> diff[2];
 
     for(int i = 0; i < sizeof(lhs) / sizeof(*lhs); i += 2)
