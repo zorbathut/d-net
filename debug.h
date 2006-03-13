@@ -1,18 +1,40 @@
 #ifndef DNET_DEBUG
 #define DNET_DEBUG
 
+#include <string>   // exists only for StackString
+
+using namespace std;
+
 /*************
  * CHECK/TEST macros
  */
+ 
+class StackPrinter {
+public:
+  virtual void Print() const = 0;
+
+  StackPrinter();
+  virtual ~StackPrinter();
+};
+
+class StackString : public StackPrinter {
+public:
+  void Print() const;
+
+  StackString(const string &str);
+
+private:
+  string str_;
+};
  
 int dprintf( const char *bort, ... ) __attribute__((format(printf,1,2)));
 
 extern int frameNumber;
 
 void CrashHandler();
-
+void PrintDebugStack();
 void crash() __attribute__((__noreturn__));
-#define CHECK(x) while(1) { if(!(x)) { dprintf("Error at %d, %s:%d - %s\n", frameNumber, __FILE__, __LINE__, #x); CrashHandler(); crash(); } break; }
+#define CHECK(x) while(1) { if(!(x)) { dprintf("Error at %d, %s:%d - %s\n", frameNumber, __FILE__, __LINE__, #x); CrashHandler(); PrintDebugStack(); crash(); } break; }
 #define TEST(x) CHECK(x)
 #define printf FAILURE
 

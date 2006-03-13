@@ -608,6 +608,7 @@ void doInterp(float *curcenter, const float *nowcenter, float *curzoom, const fl
 }
 
 bool Game::runTick( const vector< Keystates > &rkeys ) {
+  StackString sst("Frame runtick");
   
   if(!ffwd && FLAGS_verboseCollisions)
     dprintf("Ticking\n");
@@ -638,6 +639,7 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
   // I think this works.
   
   {
+    StackString sst("Player movement collider");
     
     collider.reset(players.size(), COM_PLAYER, gamemap.getBounds());
     
@@ -696,85 +698,90 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
   }
   
   const Coord4 gmb = gamemap.getBounds();
-  collider.reset(players.size(), COM_PROJECTILE, gmb);
   
-  // stuff!
-  /*
   {
-    string ope;
-    for(int i = 0; i < stopped.size(); i++) {
-      CHECK(stopped[i] + notstopped[i] == 1);
-      ope += stopped[i] + '0';
+    StackString sst("Main collider");
+    
+    collider.reset(players.size(), COM_PROJECTILE, gmb);
+    
+    // stuff!
+    /*
+    {
+      string ope;
+      for(int i = 0; i < stopped.size(); i++) {
+        CHECK(stopped[i] + notstopped[i] == 1);
+        ope += stopped[i] + '0';
+      }
+      dprintf("%s\n", ope.c_str());
     }
-    dprintf("%s\n", ope.c_str());
-  }
-  */
-  
-  collider.addThingsToGroup(CGR_WALL, 0);
-  collider.startToken(0);
-  gamemap.addCollide(&collider);
-  collider.endAddThingsToGroup();
-  
-  for(int j = 0; j < players.size(); j++) {
-    collider.addThingsToGroup(CGR_PLAYER, j);
+    */
+    
+    collider.addThingsToGroup(CGR_WALL, 0);
     collider.startToken(0);
-    players[j].addCollision(&collider, keys[j]);
+    gamemap.addCollide(&collider);
     collider.endAddThingsToGroup();
-  }
-
-  for( int j = 0; j < projectiles.size(); j++ ) {
-    collider.addThingsToGroup(CGR_PROJECTILE, j);
-    for( int k = 0; k < projectiles[ j ].size(); k++ ) {
-      collider.startToken(k);
-      projectiles[ j ][ k ].addCollision( &collider );
+    
+    for(int j = 0; j < players.size(); j++) {
+      collider.addThingsToGroup(CGR_PLAYER, j);
+      collider.startToken(0);
+      players[j].addCollision(&collider, keys[j]);
+      collider.endAddThingsToGroup();
     }
-    collider.endAddThingsToGroup();
-  }
   
-  collider.processMotion();
-  
-  while( collider.next() ) {
-    //dprintf( "Collision!\n" );
-    //dprintf( "Timestamp %f\n", collider.getCurrentTimestamp().toFloat() );
-    //dprintf( "%d,%d,%d vs %d,%d,%d\n", collider.getLhs().first.first, collider.getLhs().first.second, collider.getLhs().second, collider.getRhs().first.first, collider.getRhs().first.second, collider.getRhs().second );
-    CollideId lhs = collider.getData().lhs;
-    CollideId rhs = collider.getData().rhs;
-    if( lhs > rhs ) swap( lhs, rhs );
-    if( lhs.category == CGR_WALL && rhs.category == CGR_WALL ) {
-      // wall-wall collision, wtf?
-      CHECK(0);
-    } else if( lhs.category == CGR_WALL && rhs.category == CGR_PLAYER ) {
-      // wall-tank collision, should never happen
-      CHECK(0);
-    } else if( lhs.category == CGR_WALL && rhs.category == CGR_PROJECTILE ) {
-      // wall-projectile collision - kill projectile
-      projectiles[ rhs.bucket ][ rhs.item ].impact(collider.getData().loc, NULL, genTankDistance(collider.getData().loc), &gfxeffects, &gamemap);
-    } else if( lhs.category == CGR_PLAYER && rhs.category == CGR_PLAYER ) {
-      // tank-tank collision, should never happen
-      CHECK(0);
-    } else if( lhs.category == CGR_PLAYER && rhs.category == CGR_PROJECTILE ) {
-      // tank-projectile collision - kill projectile, do damage
-      projectiles[ rhs.bucket ][ rhs.item ].impact(collider.getData().loc, &players[ lhs.bucket ], genTankDistance(collider.getData().loc), &gfxeffects, &gamemap);
-    } else if( lhs.category == CGR_PROJECTILE && rhs.category == CGR_PROJECTILE ) {
-      // projectile-projectile collision - kill both projectiles
-      // also do radius damage, and do it fairly dammit
-      bool lft = frand() < 0.5;
-      
-      if(lft)
-        projectiles[ lhs.bucket ][ lhs.item ].impact(collider.getData().loc, NULL, genTankDistance(collider.getData().loc), &gfxeffects, &gamemap);
-      
-      projectiles[ rhs.bucket ][ rhs.item ].impact(collider.getData().loc, NULL, genTankDistance(collider.getData().loc), &gfxeffects, &gamemap);
-      
-      if(!lft)
-        projectiles[ lhs.bucket ][ lhs.item ].impact(collider.getData().loc, NULL, genTankDistance(collider.getData().loc), &gfxeffects, &gamemap);
-      
-    } else {
-      // nothing meaningful, should totally never happen, what the hell is going on here, who are you, and why are you in my apartment
-      CHECK(0);
+    for( int j = 0; j < projectiles.size(); j++ ) {
+      collider.addThingsToGroup(CGR_PROJECTILE, j);
+      for( int k = 0; k < projectiles[ j ].size(); k++ ) {
+        collider.startToken(k);
+        projectiles[ j ][ k ].addCollision( &collider );
+      }
+      collider.endAddThingsToGroup();
     }
+    
+    collider.processMotion();
+    
+    while( collider.next() ) {
+      //dprintf( "Collision!\n" );
+      //dprintf( "Timestamp %f\n", collider.getCurrentTimestamp().toFloat() );
+      //dprintf( "%d,%d,%d vs %d,%d,%d\n", collider.getLhs().first.first, collider.getLhs().first.second, collider.getLhs().second, collider.getRhs().first.first, collider.getRhs().first.second, collider.getRhs().second );
+      CollideId lhs = collider.getData().lhs;
+      CollideId rhs = collider.getData().rhs;
+      if( lhs > rhs ) swap( lhs, rhs );
+      if( lhs.category == CGR_WALL && rhs.category == CGR_WALL ) {
+        // wall-wall collision, wtf?
+        CHECK(0);
+      } else if( lhs.category == CGR_WALL && rhs.category == CGR_PLAYER ) {
+        // wall-tank collision, should never happen
+        CHECK(0);
+      } else if( lhs.category == CGR_WALL && rhs.category == CGR_PROJECTILE ) {
+        // wall-projectile collision - kill projectile
+        projectiles[ rhs.bucket ][ rhs.item ].impact(collider.getData().loc, NULL, genTankDistance(collider.getData().loc), &gfxeffects, &gamemap);
+      } else if( lhs.category == CGR_PLAYER && rhs.category == CGR_PLAYER ) {
+        // tank-tank collision, should never happen
+        CHECK(0);
+      } else if( lhs.category == CGR_PLAYER && rhs.category == CGR_PROJECTILE ) {
+        // tank-projectile collision - kill projectile, do damage
+        projectiles[ rhs.bucket ][ rhs.item ].impact(collider.getData().loc, &players[ lhs.bucket ], genTankDistance(collider.getData().loc), &gfxeffects, &gamemap);
+      } else if( lhs.category == CGR_PROJECTILE && rhs.category == CGR_PROJECTILE ) {
+        // projectile-projectile collision - kill both projectiles
+        // also do radius damage, and do it fairly dammit
+        bool lft = frand() < 0.5;
+        
+        if(lft)
+          projectiles[ lhs.bucket ][ lhs.item ].impact(collider.getData().loc, NULL, genTankDistance(collider.getData().loc), &gfxeffects, &gamemap);
+        
+        projectiles[ rhs.bucket ][ rhs.item ].impact(collider.getData().loc, NULL, genTankDistance(collider.getData().loc), &gfxeffects, &gamemap);
+        
+        if(!lft)
+          projectiles[ lhs.bucket ][ lhs.item ].impact(collider.getData().loc, NULL, genTankDistance(collider.getData().loc), &gfxeffects, &gamemap);
+        
+      } else {
+        // nothing meaningful, should totally never happen, what the hell is going on here, who are you, and why are you in my apartment
+        CHECK(0);
+      }
+    }
+    
+    collider.finishProcess();
   }
-  
-  collider.finishProcess();
 
   {
     vector<vector<Projectile> > newProjectiles(projectiles.size());

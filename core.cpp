@@ -58,6 +58,7 @@ void MainLoop() {
   frameNumber = 0;    // it's -1 before this point
     
 	while( !quit ) {
+    StackString sst(StringPrintf("Frame %d loop", frameNumber));
     ffwd = ( frameNumber < FLAGS_fastForwardTo );
     if(frameNumber == FLAGS_fastForwardTo)
       timer = Timer();    // so we don't end up sitting there for aeons waiting for another frame

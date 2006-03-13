@@ -19,6 +19,29 @@ using namespace std;
 
 int frameNumber = -1;
 
+static vector<StackPrinter*> dbgstack;
+
+StackPrinter::StackPrinter() {
+  dbgstack.push_back(this);
+}
+StackPrinter::~StackPrinter() {
+  CHECK(dbgstack.back() == this);
+  dbgstack.pop_back();
+}
+
+void StackString::Print() const {
+  dprintf("  %s", str_.c_str());
+}
+StackString::StackString(const string &str) : str_(str) { };
+
+void PrintDebugStack() {
+  for(int i = (int)dbgstack.size() - 1; i >= 0; i--) {
+    dprintf("Stack entry:\n");
+    dbgstack[i]->Print();
+  }
+  dprintf("End of stack\n");
+}
+
 void CrashHandler() { };
 
 void crash() {
