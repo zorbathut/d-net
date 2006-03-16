@@ -162,11 +162,14 @@ vector<string> parseHackyFile(string fname) {
   return rv;
 }
 
+extern bool dumpBooleanDetail;
+
 void InterfaceMain::render() const {
   
   #if 0   // Code used for checking the validity of getDifference :)
   {
-    #if 1
+    dumpBooleanDetail = false;
+    #if 0
     //dprintf("Frame!\n");
       
     string lhs[28] = {
@@ -213,7 +216,7 @@ void InterfaceMain::render() const {
     vector<vector<Coord2> > res = getDifference(diff[0], diff[1]);
     
     if(res.size()) {
-      Coord4 bbox = getBoundBox(diff[0]);
+      Coord4 bbox = getBoundBox(diff[1]);
       //bbox.sx -= 20;
       //bbox.sy -= 20;
       //bbox.ex += 20;

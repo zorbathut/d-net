@@ -101,7 +101,7 @@ void MainLoop() {
         char timestampbuf[ 128 ];
         time_t ctmt = time(NULL);
         strftime(timestampbuf, sizeof(timestampbuf), "%Y%m%d-%H%M%S.dnd", gmtime(&ctmt));
-        fname = StringPrintf("%s-%010d-%s", fname.c_str(), frameNumber, timestampbuf);
+        fname = StringPrintf("%s-%s-%010d", fname.c_str(), timestampbuf, frameNumber);
         dprintf("%s\n", fname.c_str());
         outfile = fopen(fname.c_str(), "wb");
         if(outfile) {

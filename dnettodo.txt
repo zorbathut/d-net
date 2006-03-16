@@ -1,6 +1,7 @@
 - "Debug stack trace"
 - Fix annoying out of bounds
 - Make it so absolute can drive backwards
+- Rebuild spectacularly broken boolean system
 - Clean up PlayerMenuState
 - Axes choice for tank mode
 - Consistent-ize line width effects, colors, rendering in general

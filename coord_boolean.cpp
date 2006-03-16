@@ -1,5 +1,6 @@
 
 #include "coord.h"
+#include "util.h"
 
 #include <vector>
 #include <set>
@@ -7,7 +8,9 @@
 
 using namespace std;
 
-class GetDifferenceHandler {
+bool dumpBooleanDetail = true;
+
+class GetDifferenceHandler : public StackPrinter {
 public:
   
   const vector<Coord2> &lhs;
@@ -16,14 +19,19 @@ public:
   GetDifferenceHandler(const vector<Coord2> &in_lhs, const vector<Coord2> &in_rhs) : lhs(in_lhs), rhs(in_rhs) { };
   
   void dsp(const vector<Coord2> &inp, string title) const {
-    dprintf("string %s[%d] = {", title.c_str(), inp.size() * 2);
+    dprintf("  string %s[%d] = {", title.c_str(), inp.size() * 2);
     for(int i = 0; i < inp.size(); i++)
-      dprintf("  \"%s\", \"%s\",", inp[i].x.rawstr().c_str(), inp[i].y.rawstr().c_str());
-    dprintf("};");
+      dprintf("    \"%s\", \"%s\",", inp[i].x.rawstr().c_str(), inp[i].y.rawstr().c_str());
+    dprintf("  };");
   }
-  void operator()() const {
-    dsp(lhs, "lhs");
-    dsp(rhs, "rhs");
+  virtual void Print() const {
+    if(dumpBooleanDetail) {
+      dprintf("  Coord error! Data follows:");
+      dsp(lhs, "lhs");
+      dsp(rhs, "rhs");
+    } else {
+      dprintf("  Coord error! Not dumping.");
+    }
   }
 };
 
@@ -41,7 +49,26 @@ class LiveLink {
 public:
   Coord2 start;
   Coord2 end;
+
+  string bigstring() const {
+    return StringPrintf("%s %s %s %s", start.x.rawstr().c_str(), start.y.rawstr().c_str(), end.x.rawstr().c_str(), end.y.rawstr().c_str());
+  }
+  static string bignullstring() {
+    LiveLink foo;
+    foo.start = Coord2(0, 0);
+    foo.end = Coord2(0, 0);
+    return foo.bigstring();
+  }
 };
+
+bool operator<(const LiveLink &lhs, const LiveLink &rhs) {
+  if(lhs.start != rhs.start) return lhs.start < rhs.start;
+  return lhs.end < rhs.end;
+}
+
+bool operator==(const LiveLink &lhs, const LiveLink &rhs) {
+  return lhs.start == rhs.start && lhs.end == rhs.end;
+}
 
 const DualLink &getLink(const map<Coord2, DualLink> &vertx, Coord2 node) {
   CHECK(vertx.count(node) == 1);
@@ -88,10 +115,62 @@ bool checkConsistent(const map<Coord2, DualLink> &vertx, const vector<LiveLink> 
       for(int d = 0; d < 2; d++)
         if(getLink(vertx, links[i].start).live[v] && getLink(vertx, links[i].start).links[v][d] == links[i].end)
           validated = true;
-    CHECK(validated);
+    if(!validated) {
+      dprintf("Current live link doesn't match up in any expected way");
+      return false;
+    }
   }
   return true;
 }
+
+void checkLineConsistency(const map<Coord2, DualLink> &vertx, const vector<LiveLink> &links, const Coord2 &cpos) {
+  vector<LiveLink> corrlinks;
+  for(map<Coord2, DualLink>::const_iterator itr = vertx.begin(); itr != vertx.end(); itr++) {
+    for(int i = 0; i < 2; i++) {
+      if(itr->second.live[i]) {
+        for(int s = 0; s < 2; s++) {
+          Coord2 ptz[2];
+          ptz[0] = itr->second.links[i][s];
+          ptz[1] = itr->first;
+          sort(ptz, ptz + 2);
+          if(ptz[0] <= cpos && ptz[1] > cpos) {
+            LiveLink ll;
+            ll.start = ptz[0];
+            ll.end = ptz[1];
+            corrlinks.push_back(ll);
+          }
+        }
+      }
+    }
+  }
+  vector<LiveLink> tlinks = links;
+  
+  sort(corrlinks.begin(), corrlinks.end());
+  corrlinks.erase(unique(corrlinks.begin(), corrlinks.end()), corrlinks.end());
+  
+  sort(tlinks.begin(), tlinks.end());
+  CHECK(unique(tlinks.begin(), tlinks.end()) == tlinks.end());
+  
+  if(corrlinks != tlinks) {
+    int crlp = 0;
+    int tlp = 0;
+    dprintf("Here is %s %s\n", cpos.x.rawstr().c_str(), cpos.y.rawstr().c_str());
+    while(crlp != corrlinks.size() && tlp != tlinks.size()) {
+      if(crlp != corrlinks.size() && tlp != tlinks.size() && corrlinks[crlp] == tlinks[tlp]) {
+        dprintf("%s <==> %s\n", corrlinks[crlp].bigstring().c_str(), tlinks[tlp].bigstring().c_str());
+        crlp++;
+        tlp++;
+      } else if(tlp == tlinks.size() || crlp != corrlinks.size() && corrlinks[crlp] < tlinks[tlp]) {
+        dprintf("%s <=== %s\n", corrlinks[crlp].bigstring().c_str(), LiveLink::bignullstring().c_str());
+        crlp++;
+      } else {
+        dprintf("%s ===> %s\n", LiveLink::bignullstring().c_str(), tlinks[tlp].bigstring().c_str());
+        tlp++;
+      }
+    }
+    CHECK(0);
+  }
+};
 
 void printNode(const Coord2 &coord, const DualLink &link) {
   dprintf("%f, %f (%s, %s):\n", coord.x.toFloat(), coord.y.toFloat(), coord.x.rawstr().c_str(), coord.y.rawstr().c_str());
@@ -239,7 +318,7 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
     return rv;
   }
   #endif
-  GetDifferenceHandler CrashHandler(lhs, rhs);
+  GetDifferenceHandler gdhst(lhs, rhs);
   //if(frameNumber == 921696)
     //CrashHandler();
   bool lhsInside = !pathReversed(lhs);
@@ -487,38 +566,85 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
                 // but we're planning to merge, so a line must only go through one of 'em
                 CHECK(closest >= itr->first);
                 if(!(vertx[closest].live[0] != vertx[closest].live[1])) {
+                  dprintf("Crazy collective splice\n");
                   // Whups, we've got a bit of a problem - we're merging with a point that already exists.
-                  // Solution: Check to see if that point is next to our current one, and if it is, eliminate the current one.
+                  // This can happen (for example) when we have a long horizontal line and we're making an extremely
+                  // sharp angle on a vertical V.
+                  // Note that we've already, in theory, created a point at one intersection of the V and the horizontal line.
+                  // Solution: Check to see if we're forming a V, and if we are, chop off the top of it.
                   CHECK(vertx[closest].live[0] && vertx[closest].live[1]);
                   int changed = 0;
                   for(int q = 0; q < 2; q++) {
                     for(int w = 0; w < 2; w++) {
+                      // This would be the point of the V.
                       Coord2 nexus = lines.links[q][w];
                       for(int v = 0; v < 2; v++) {
                         if(!itr->second.live[v])
                             continue;
                         for(int m = 0; m < 2; m++) {
-                            // Define nexus = lines.links[q][w]
                             // What we should have is vertx[nexus].links[v][!m] -> nexus -> vertx[nexus].links[v][m]
-                            // and this should be the *same* as closest -> nexus -> lines.links[q][!w]
+                            // and this should be the *same* as closest -> lines.links[q][w] -> lines.links[q][!w]
+                            // This is also the same as V-horiz-intersection -> V-point -> other-point
                             if(vertx[nexus].links[v][!m] != closest)
                                 continue;
                             if(vertx[nexus].links[v][m] != lines.links[q][!w])
                                 continue;
-                                
+                            
+                            CHECK(changed == 0);
                             changed++;
-                            // Now we splice this together to be vertx[nexus].links[v][!m] -> vertx[nexus].links[v][m]
+                            
+                            // Now we splice this together to be vertx[nexus].links[v][!m] -> vertx[nexus].links[v][m],
+                            // effectively chopping off the tip of the v entirely
                             vertx[nexus].live[v] = false;
                             vertx[vertx[nexus].links[v][!m]].links[v][m] = vertx[nexus].links[v][m];
                             vertx[vertx[nexus].links[v][m]].links[v][!m] = vertx[nexus].links[v][!m];
+                            
+                            // And update our links
+                            if(!q) {
+                              // If q is false, we've spliced links[i].start and links[i].end
+                              if(!w) {
+                                // lines.links[q][w] == links[i].start
+                                // lines.links[q][!w] == links[i].end
+                                // links[i].start is now missing, so this line should vanish, along with the other one that starts here
+                                CHECK(vertx[links[i].start].live[0] == false && vertx[links[i].start].live[1] == false);
+                                int removed = 0;
+                                for(int k = 0; k < links.size(); k++) {
+                                  if(links[k].start == lines.links[q][w]) {
+                                    links.erase(links.begin() + k);
+                                    if(k <= i)
+                                      i--;
+                                    k--;
+                                    removed++;
+                                  }
+                                }
+                                CHECK(removed == 2);
+                                CHECK(closest > itr->first);  // since otherwise we need to add more lines
+                              } else {
+                                // lines.links[q][w] == links[i].end
+                                // lines.links[q][!w] == links[i].start
+                                // links[i].end is now missing, so this line should truncate itself down to the new start pos
+                                // unless that new start position is the current vertex, in which case it should just go away
+                                if(closest != itr->first) {
+                                  links[i].end = closest;
+                                } else {
+                                  links.erase(links.begin() + i);
+                                  i--;
+                                }
+                              }
+                            } else {
+                              // Otherwise, we've spliced itr->first and itr->second.links[p][k], and I'm not even sure that makes sense
+                              CHECK(0);
+                            }
+                            
                             // and we're done
                         }
                       }
                     }
                   }
-                  dprintf("Crazy collective splice at %d\n", changed);
-                  CHECK(changed);
+                  CHECK(changed == 1);
+                  
                   CHECK(checkConsistent(vertx, links));
+                  dprintf("Collective splice is sane\n");
                   //return createSplitLines(vertx);
                   continue;
                 } else {
@@ -548,6 +674,7 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
               // goddamn it
               dprintf("Stupid vertical lines fuck everything up!\n");
               junct.x = coordExplicit(junct.x.raw() + 1);
+              CHECK(junct > itr->first);
             }
 
             CHECK(vertx[junct].live[0] == false);
@@ -555,9 +682,9 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
             splice(&vertx, lines, junct, 0);
             splice(&vertx, lines, junct, 1);
             
-            //CHECK(checkConsistent(vertx, links));
-            
             links[i].end = junct;
+            
+            //CHECK(checkConsistent(vertx, links));
           }
         }
       }
@@ -579,8 +706,9 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
         links.push_back(nll);
       }
     }
-    CHECK(links.size() % 2 == 0);
+    checkLineConsistency(vertx, links, itr->first);
     //dprintf("Unlooped, %d links\n", links.size());
+    CHECK(links.size() % 2 == 0);
   }
   CHECK(links.size() == 0);
   //dprintf("Done\n");

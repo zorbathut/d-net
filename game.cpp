@@ -643,12 +643,17 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
     
     collider.reset(players.size(), COM_PLAYER, gamemap.getBounds());
     
-    collider.addThingsToGroup(CGR_WALL, 0);
-    collider.startToken(0);
-    gamemap.addCollide(&collider);
-    collider.endAddThingsToGroup();
+    {
+      StackString sst("Adding walls");
+    
+      collider.addThingsToGroup(CGR_WALL, 0);
+      collider.startToken(0);
+      gamemap.addCollide(&collider);
+      collider.endAddThingsToGroup();
+    }
     
     for(int j = 0; j < players.size(); j++) {
+      StackString sst(StringPrintf("Adding player %d", j));
       collider.addThingsToGroup(CGR_PLAYER, j);
       collider.startToken(0);
       players[j].addCollision(&collider, keys[j]);
@@ -685,6 +690,7 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
       if(collider.checkSimpleCollision(CGR_PLAYER, playerorder[i], newpos)) {
         keys[playerorder[i]].nullMove();
       } else {
+        StackString sst(StringPrintf("Moving player %d, status live %d", playerorder[i], players[playerorder[i]].live));
         collider.clearGroup(CGR_PLAYER, playerorder[i]);
         collider.addThingsToGroup(CGR_PLAYER, playerorder[i]);
         collider.startToken(0);

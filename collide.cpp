@@ -297,6 +297,10 @@ void Collider::reset(int in_players, int mode, const Coord4 &bounds) {
   zys = (zbounds.sy / MATRIX_RES).toInt();
   zxe = (zbounds.ex / MATRIX_RES).toInt();
   zye = (zbounds.ey / MATRIX_RES).toInt();
+  zxs--;
+  zys--;
+  zxe++;
+  zye++;  // Add a little slop
   zone.resize(zxe - zxs);
   for(int i = 0; i < zone.size(); i++) {
     for(int j = 0; j < zone[i].size(); j++)
