@@ -9,10 +9,10 @@ all: d-net.exe
 
 include $(SOURCES:=.d)
 
-d-net.exe: $(SOURCES:=.o)
+d-net.exe: $(SOURCES:=.o) makefile
 	$(CPP) -o $@ $(SOURCES:=.o) $(LINKFLAGS) 
 
-asm: $(SOURCES:=.S)
+asm: $(SOURCES:=.S) makefile
 
 clean:
 	rm -rf *.o *.exe *.d *.S
@@ -37,13 +37,13 @@ package: d-net.exe
 	cd deploy ; zip -9 -r `date +x:/d-net/dnet%G%m%d%H%M%S.zip` *
 	rm -rf deploy
 
-%.o: %.cpp
+%.o: %.cpp makefile
 	$(CPP) $(CPPFLAGS) -c -o $@ $<
 
-%.S: %.cpp
+%.S: %.cpp makefile
 	$(CPP) $(CPPFLAGS) -c -g -Wa,-a,-ad $< > $@
 
-%.d: %.cpp
+%.d: %.cpp makefile
 	bash -ec '$(CPP) $(CPPFLAGS) -MM $< | sed "s!$*.o!$*.o $@!g" > $@'
 	
 stats:

@@ -200,6 +200,8 @@ public:
   Coord2(float ix, float iy) : x(ix), y(iy) { };
   Coord2(const Coord2 &rhs) : x(rhs.x), y(rhs.y) { };
   explicit Coord2(const Float2 &rhs);
+  
+  string rawstr() const;
 };
 
 inline Coord2 operator+(const Coord2 &lhs, const Coord2 &rhs) {
@@ -278,6 +280,8 @@ public:
   Coord4(const Coord2 &s, const Coord2 &e) : sx(s.x), sy(s.y), ex(e.x), ey(e.y) { };
   Coord4(const Coord4 &rhs) : sx(rhs.sx), sy(rhs.sy), ex(rhs.ex), ey(rhs.ey) { };
   Coord4(float isx, float isy, float iex, float iey) : sx(isx), sy(isy), ex(iex), ey(iey) { };
+  
+  string rawstr() const;
 };
 
 inline Coord4 operator+(const Coord4 &lhs, const Coord4 &rhs) {
@@ -357,6 +361,10 @@ void expandBoundBox(Coord4 *bbox, Coord factor);
 /*************
  * Math
  */
+
+inline bool isinside(const Coord4 &lhs, const Coord2 &rhs) {
+  return !(rhs.x < lhs.sx || rhs.x >= lhs.ex || rhs.y < lhs.sy || rhs.y >= lhs.ey);
+}
 
 inline Coord4 snapToEnclosingGrid(Coord4 orig, Coord grid) {
   orig.sx = ceil(orig.sx/grid - 1) * grid;

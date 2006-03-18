@@ -2,13 +2,16 @@
 - Make it so absolute can drive backwards
 - Clean up PlayerMenuState
 - Axes choice for tank mode
+- "Winner list"
 - Consistent-ize line width effects, colors, rendering in general
 - Fix glory device slowdowns
 - Modify firerate
 - Sound, yo
+- Halos?
 - Color for projectile impacts
 - Improve explosion effects (missile, etc)
 - Certificates and discounts
+- Training
 - Next generation of weapons
 - Speed up wall difference in nasty situations (i.e. glory devices in corners)
 - Speed up wall placement in all situations (that annoying caching thing with gamemap, I guess)

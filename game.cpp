@@ -638,6 +638,8 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
   
   // I think this works.
   
+  const Coord4 gmb = gamemap.getBounds();
+  
   {
     StackString sst("Player movement collider");
     
@@ -653,7 +655,14 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
     }
     
     for(int j = 0; j < players.size(); j++) {
-      StackString sst(StringPrintf("Adding player %d", j));
+      if(!players[j].live)
+        continue;
+      StackString sst(StringPrintf("Adding player %d, status live %d", j, players[j].live));
+      //CHECK(inPath(players[j].pos, gamemap.getCollide()[0]));
+      if(!isinside(gmb, players[j].pos)) {
+        dprintf("%s vs %s\n", players[j].pos.rawstr().c_str(), gmb.rawstr().c_str());
+        CHECK(0);
+      }
       collider.addThingsToGroup(CGR_PLAYER, j);
       collider.startToken(0);
       players[j].addCollision(&collider, keys[j]);
@@ -670,7 +679,9 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
     {
       vector<int> playersleft;
       for(int i = 0; i < players.size(); i++)
-        playersleft.push_back(i);
+        if(players[i].live)
+          playersleft.push_back(i);
+      // TODO: turn this into random-shuffle using my deterministic seed
       while(playersleft.size()) {
         int pt = int(frand() * playersleft.size());
         CHECK(pt >= 0 && pt < playersleft.size());
@@ -679,7 +690,6 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
       }
     }
     
-    CHECK(playerorder.size() == players.size());
     for(int i = 0; i < playerorder.size(); i++) {
       
       CHECK(count(playerorder.begin(), playerorder.end(), playerorder[i]) == 1);
@@ -691,6 +701,8 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
         keys[playerorder[i]].nullMove();
       } else {
         StackString sst(StringPrintf("Moving player %d, status live %d", playerorder[i], players[playerorder[i]].live));
+        //CHECK(inPath(players[playerorder[i]].getDeltaAfterMovement(keys[playerorder[i]], players[playerorder[i]].pos, players[playerorder[i]].d).first, gamemap.getCollide()[0]));
+        CHECK(isinside(gmb, players[playerorder[i]].getDeltaAfterMovement(keys[playerorder[i]], players[playerorder[i]].pos, players[playerorder[i]].d).first));
         collider.clearGroup(CGR_PLAYER, playerorder[i]);
         collider.addThingsToGroup(CGR_PLAYER, playerorder[i]);
         collider.startToken(0);
@@ -702,8 +714,6 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
     }
     
   }
-  
-  const Coord4 gmb = gamemap.getBounds();
   
   {
     StackString sst("Main collider");

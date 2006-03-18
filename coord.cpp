@@ -43,8 +43,14 @@ Coord coordExplicit(const string &lhs) {
 
 Float2 Coord2::toFloat() const { return Float2(x.toFloat(), y.toFloat()); }
 Coord2::Coord2(const Float2 &rhs) : x(rhs.x), y(rhs.y) { };
+string Coord2::rawstr() const {
+  return StringPrintf("%s %s", x.rawstr().c_str(), y.rawstr().c_str());
+}
 
 Float4 Coord4::toFloat() const { return Float4(sx.toFloat(), sy.toFloat(), ex.toFloat(), ey.toFloat()); }
+string Coord4::rawstr() const {
+  return StringPrintf("%s %s %s %s", sx.rawstr().c_str(), sy.rawstr().c_str(), ex.rawstr().c_str(), ey.rawstr().c_str());
+}
 
 /*************
  * Computational geometry

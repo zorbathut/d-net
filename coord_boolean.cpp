@@ -309,6 +309,9 @@ Coord2 truncate(const Coord2 &c2, int bits) {
   return Coord2((c2.x + (coordExplicit(1) << (bits - 1))) >> bits << bits, (c2.y + (coordExplicit(1) << (bits - 1))) >> bits << bits);
 }
 
+//DEFINE_string(getdiffstorage, "", "Where to store an archive of all the getDifference calls for profiling purposes");
+//FILE *gds = NULL;
+
 vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Coord2> &rhs) {
   #if 0    // Pre-split debugging
   {
@@ -352,6 +355,7 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
       }
     }
   }
+  /*  // I don't think this is necessary anymore because of the truncation
   while(1) {
     const Coord mergebounds = Coord(0.00001f);
     bool changed = false;
@@ -398,6 +402,7 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
     if(!changed)
       break;
   }
+  */
   deloop(&tv[0]);
   deloop(&tv[1]);
   if(set<Coord2>(tv[0].begin(), tv[0].end()).size() != tv[0].size()) {
@@ -706,7 +711,7 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
         links.push_back(nll);
       }
     }
-    checkLineConsistency(vertx, links, itr->first);
+    //checkLineConsistency(vertx, links, itr->first);
     //dprintf("Unlooped, %d links\n", links.size());
     CHECK(links.size() % 2 == 0);
   }
