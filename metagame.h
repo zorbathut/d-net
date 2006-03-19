@@ -6,12 +6,13 @@
 #include "gfx.h"
 #include "itemdb.h"
 #include "level.h"
-#include "ai.h"
 
 #include <vector>
 #include <string>
 
 using namespace std;
+
+class Ai;
 
 class Shop {
 private:
@@ -35,7 +36,16 @@ public:
   Shop(Player *player);
 };
 
-// TODO: bring PlayerMenuState back in from ai.h
+struct PlayerMenuState {
+public:
+  int playerkey;
+  int playersymbol;
+  Float2 playerpos;
+  int playermode;
+
+  PlayerMenuState();
+  PlayerMenuState(Float2 cent);
+};
 
 class Metagame {
   

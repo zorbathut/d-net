@@ -5,21 +5,11 @@
 #include "util.h"
 #include "game.h"
 #include "rng.h"
+#include "metagame.h"
 
 #include <deque>
 
 using namespace std;
-
-struct PlayerMenuState {  // TODO: get rid of this
-public:
-  int playerkey;
-  int playersymbol;
-  Float2 playerpos;
-  int playermode;
-
-  PlayerMenuState();
-  PlayerMenuState(Float2 cent);
-};
 
 class Ai {
 private:

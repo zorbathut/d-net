@@ -1,7 +1,6 @@
-- Fix annoying out of bounds
-- Make it so absolute can drive backwards
 - Clean up PlayerMenuState
 - Axes choice for tank mode
+- Improved absolute customization
 - "Winner list"
 - Consistent-ize line width effects, colors, rendering in general
 - Fix glory device slowdowns

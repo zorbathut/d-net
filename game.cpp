@@ -257,10 +257,21 @@ pair<Coord2, float> Tank::getDeltaAfterMovement( const Keystates &keys, Coord2 p
         if(dd > 1)
           dd = 1;
         dv = min(sqrt(xpd * xpd + ypd * ypd), 1.f);
-        if(abs(desdir) > PI / 3 && abs(desdir) < PI / 3 * 2)
+        // Various states:
+        // abs(desdir) / PI
+        // 0 .. 0.333 - drive forwards
+        // 0.333 .. 0.666 - do not drive
+        // 0.666 .. 1.0 - drive backwards, don't turn
+        if(abs(desdir) < PI / 3)
+          ;
+        else if(abs(desdir) < PI / 3 * 2)
           dv = 0; // if we're near right angles, stop
-        else if(abs(desdir) > PI / 2)
+        else if(abs(desdir) < PI / 10 * 9)
           dv = -dv;   // if we're merely backwards, go backwards
+        else {  // if we're straight backwards, don't turn
+          dv = -dv;
+          dd = 0;
+        }
       }
     } else {
       dd = deadzone(keys.ax[0], keys.ax[1], 0.2, 0);
