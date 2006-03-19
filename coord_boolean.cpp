@@ -462,8 +462,8 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
         if(megaverbose)
           dprintf("  Combining colinear\n");
         for(int j = 0; j < 2; j++) {
-          if(vertx[links[i].start].live[j] && !vertx[itr->first].live[j]) {
-            // If this main node has a certain path, and the interior node doesn't . . .
+          if(vertx[links[i].start].live[j] && vertx[links[i].end].live[j] && !vertx[itr->first].live[j]) {
+            // If there exists a line that passes through this vertex, and this vertex isn't on it . . .
             for(int k = 0; k < 2; k++) {
               if(vertx[links[i].start].links[j][k] == links[i].end) {
                 CHECK(!vertx[itr->first].live[j]);
