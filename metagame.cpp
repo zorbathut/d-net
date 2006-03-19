@@ -229,34 +229,34 @@ Shop::Shop(Player *in_player) {
 }
 
 PlayerMenuState::PlayerMenuState() {
-  playerkey = 10000;
-  playersymbol = 12;
-  playerpos = Float2(0,0);
-  playermode = -30;   // values that are likely to break stuff badly
+  firekey = 10000;
+  symbol = 100;
+  compasspos = Float2(0,0);
+  axismode = -30;   // values that are likely to break stuff badly
 }
 
 PlayerMenuState::PlayerMenuState(Float2 cent) {
-  playerkey = -1;
-  playersymbol = -1;
-  playerpos = cent;
-  playermode = KSAX_UDLR;
+  firekey = -1;
+  symbol = -1;
+  compasspos = cent;
+  axismode = KSAX_UDLR;
 }
 
 vector<Keystates> genKeystates(const vector<Controller> &keys, const vector<PlayerMenuState> &modes) {
   vector<Keystates> kst;
   int pid = 0;
   for(int i = 0; i < modes.size(); i++) {
-    if(modes[i].playerkey != -1) {
+    if(modes[i].firekey != -1) {
       kst.push_back(Keystates());
       kst[pid].u = keys[i].u;
       kst[pid].d = keys[i].d;
       kst[pid].l = keys[i].l;
       kst[pid].r = keys[i].r;
-      kst[pid].f = keys[i].keys[modes[i].playerkey];
-      kst[pid].axmode = modes[i].playermode;
+      kst[pid].f = keys[i].keys[modes[i].firekey];
+      kst[pid].axmode = modes[i].axismode;
       if(kst[pid].axmode == KSAX_UDLR || kst[pid].axmode == KSAX_ABSOLUTE) {
-        kst[pid].ax[0] = keys[i].x;
-        kst[pid].ax[1] = keys[i].y;
+        kst[pid].ax[0] = keys[i].menu.x;
+        kst[pid].ax[1] = keys[i].menu.y;
       } else if(kst[pid].axmode == KSAX_TANK) {
         CHECK(keys[i].axes.size() >= 4);
         kst[pid].ax[0] = keys[i].axes[1];
@@ -264,10 +264,10 @@ vector<Keystates> genKeystates(const vector<Controller> &keys, const vector<Play
       } else {
         CHECK(0);
       }
-      kst[pid].udlrax[0] = keys[i].x;
-      kst[pid].udlrax[1] = keys[i].y;
-      CHECK(keys[i].x >= -1 && keys[i].x <= 1);
-      CHECK(keys[i].y >= -1 && keys[i].y <= 1);
+      kst[pid].udlrax[0] = keys[i].menu.x;
+      kst[pid].udlrax[1] = keys[i].menu.y;
+      CHECK(keys[i].menu.x >= -1 && keys[i].menu.x <= 1);
+      CHECK(keys[i].menu.y >= -1 && keys[i].menu.y <= 1);
       pid++;
     }
   }
@@ -278,44 +278,43 @@ bool Metagame::runTick( const vector< Controller > &keys ) {
   CHECK(keys.size() == pms.size());
   if(mode == MGM_PLAYERCHOOSE) {
     for(int i = 0; i < keys.size(); i++) {
-      if(pms[i].playersymbol == -1) { // if player hasn't chosen symbol yet
+      if(pms[i].symbol == -1) { // if player hasn't chosen symbol yet
         fireHeld[i] = 0;
-        pms[i].playerpos.x += deadzone(keys[i].x, keys[i].y, 0, 0.2) * 4;
-        pms[i].playerpos.y -= deadzone(keys[i].y, keys[i].x, 0, 0.2) * 4;
+        pms[i].compasspos += deadzone(keys[i].menu, 0, 0.2) * 4;
         int targetInside = -1;
         for(int j = 0; j < symbolpos.size(); j++)
-          if(isinside(symbolpos[j], pms[i].playerpos) && symboltaken[j] == -1)
+          if(isinside(symbolpos[j], pms[i].compasspos) && symboltaken[j] == -1)
             targetInside = j;
         if(targetInside != -1) {            
           for(int j = 0; j < keys[i].keys.size(); j++) {
             if(keys[i].keys[j].repeat) {
-              pms[i].playersymbol = targetInside;
-              pms[i].playerkey = j;
+              pms[i].symbol = targetInside;
+              pms[i].firekey = j;
               symboltaken[targetInside] = i;
             }
           }
         }
       } else {  // if player has chosen symbol
         {
-          int opm = pms[i].playermode;
+          int opm = pms[i].axismode;
           if(keys[i].l.repeat) {
             do {
-              pms[i].playermode--;
-              pms[i].playermode += KSAX_END;
-              pms[i].playermode %= KSAX_END;
-            } while(ksax_minaxis[pms[i].playermode] > keys[i].axes.size());
+              pms[i].axismode--;
+              pms[i].axismode += KSAX_END;
+              pms[i].axismode %= KSAX_END;
+            } while(ksax_minaxis[pms[i].axismode] > keys[i].axes.size());
           }
           if(keys[i].r.repeat) {
             do {
-              pms[i].playermode++;
-              pms[i].playermode += KSAX_END;
-              pms[i].playermode %= KSAX_END;
-            } while(ksax_minaxis[pms[i].playermode] > keys[i].axes.size());
+              pms[i].axismode++;
+              pms[i].axismode += KSAX_END;
+              pms[i].axismode %= KSAX_END;
+            } while(ksax_minaxis[pms[i].axismode] > keys[i].axes.size());
           }
-          if(pms[i].playermode != opm)
+          if(pms[i].axismode != opm)
             fireHeld[i] = 0;  // just for a bit of added safety
         }
-        if(pms[i].playerkey != -1 && keys[i].keys[pms[i].playerkey].down) {
+        if(pms[i].firekey != -1 && keys[i].keys[pms[i].firekey].down) {
           fireHeld[i]++;
         } else {
           fireHeld[i] = 0;
@@ -332,9 +331,9 @@ bool Metagame::runTick( const vector< Controller > &keys ) {
         playerdata.resize(count(fireHeld.begin(), fireHeld.end(), 60));
         int pid = 0;
         for(int i = 0; i < pms.size(); i++) {
-          if(pms[i].playersymbol != -1) {
-            playerdata[pid].color = factions[pms[i].playersymbol].color;
-            playerdata[pid].faction_symb = symbols[pms[i].playersymbol];
+          if(pms[i].symbol != -1) {
+            playerdata[pid].color = factions[pms[i].symbol].color;
+            playerdata[pid].faction_symb = symbols[pms[i].symbol];
             pid++;
           }
         }
@@ -394,7 +393,7 @@ vector<Ai *> distillAi(const vector<Ai *> &ai, const vector<PlayerMenuState> &pl
   CHECK(ai.size() == players.size());
   vector<Ai *> rv;
   for(int i = 0; i < players.size(); i++)
-    if(players[i].playersymbol != -1)
+    if(players[i].symbol != -1)
       rv.push_back(ai[i]);
   return rv;
 }
@@ -426,24 +425,24 @@ void Metagame::renderToScreen() const {
     setZoom(0, 0, 600);
     setColor(1.0, 1.0, 1.0);
     for(int i = 0; i < pms.size(); i++) {
-      if(pms[i].playersymbol == -1) {
+      if(pms[i].symbol == -1) {
         setColor(1.0, 1.0, 1.0);
         char bf[16];
         sprintf(bf, "p%d", i);
-        drawLine(pms[i].playerpos.x, pms[i].playerpos.y - 15, pms[i].playerpos.x, pms[i].playerpos.y - 5, 1.0);
-        drawLine(pms[i].playerpos.x, pms[i].playerpos.y + 15, pms[i].playerpos.x, pms[i].playerpos.y + 5, 1.0);
-        drawLine(pms[i].playerpos.x - 15, pms[i].playerpos.y, pms[i].playerpos.x - 5, pms[i].playerpos.y, 1.0);
-        drawLine(pms[i].playerpos.x +15, pms[i].playerpos.y, pms[i].playerpos.x + 5, pms[i].playerpos.y, 1.0);
-        drawText(bf, 20, pms[i].playerpos.x + 5, pms[i].playerpos.y + 5);
+        drawLine(pms[i].compasspos.x, pms[i].compasspos.y - 15, pms[i].compasspos.x, pms[i].compasspos.y - 5, 1.0);
+        drawLine(pms[i].compasspos.x, pms[i].compasspos.y + 15, pms[i].compasspos.x, pms[i].compasspos.y + 5, 1.0);
+        drawLine(pms[i].compasspos.x - 15, pms[i].compasspos.y, pms[i].compasspos.x - 5, pms[i].compasspos.y, 1.0);
+        drawLine(pms[i].compasspos.x +15, pms[i].compasspos.y, pms[i].compasspos.x + 5, pms[i].compasspos.y, 1.0);
+        drawText(bf, 20, pms[i].compasspos.x + 5, pms[i].compasspos.y + 5);
       } else {
-        setColor(factions[pms[i].playersymbol].color);
+        setColor(factions[pms[i].symbol].color);
         float ye = min(600. / pms.size(), 100.);
         Float4 box( 0, ye * i, ye, ye + ye * i );
-        drawDvec2(symbols[pms[i].playersymbol], Float4(box.sx + ye / 10, box.sy + ye / 10, box.ex - ye / 10, box.ey - ye / 10), 1.0);
+        drawDvec2(symbols[pms[i].symbol], Float4(box.sx + ye / 10, box.sy + ye / 10, box.ex - ye / 10, box.ey - ye / 10), 1.0);
         setColor(Color(1.0, 1.0, 1.0) / 60 * fireHeld[i]);
         drawRect(Float4(box.sx + ye / 20, box.sy + ye / 20, box.ex - ye / 20, box.ey - ye / 20), 1);
         setColor(Color(0.8, 0.8, 0.8));
-        drawText(ksax_names[pms[i].playermode], 20, ye, ye * (i + 1. / 20));
+        drawText(ksax_names[pms[i].axismode], 20, ye, ye * (i + 1. / 20));
       }
     }
     CHECK(symbols.size() == factioncount);

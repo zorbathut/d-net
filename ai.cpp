@@ -4,36 +4,33 @@
 #include "itemdb.h"
 
 void Ai::updatePregame() {
-  nextKeys.x = nextKeys.y = 0;
+  nextKeys.menu = Float2(0, 0);
   nextKeys.keys[0].down = true;
 }
 
 void Ai::updateCharacterChoice(const vector<Float4> &factions, const vector<PlayerMenuState> &players, int you) {
-  if(players[you].playersymbol == -1) {
+  if(players[you].symbol == -1) {
     int targfact = you;
     if(targfact >= factions.size() || targfact < 0)
       targfact = -1;
     if(targfact == -1) {
-      nextKeys.x = nextKeys.y = 0;
+      nextKeys.menu = Float2(0, 0);
       nextKeys.keys[0].down = true;
       return;
     }
     Float2 targpt = Float2((factions[targfact].sx + factions[targfact].ex) / 2, (factions[targfact].sy + factions[targfact].ey) / 2);
     //dprintf("player %d: target %f %f, pos %f %f\n", you, targpt.x, targpt.y, pos.x, pos.y);
-    targpt -= players[you].playerpos;
+    targpt -= players[you].compasspos;
     if(len(targpt) != 0)
       targpt = normalize(targpt);
-    nextKeys.x = targpt.x;
-    nextKeys.y = -targpt.y;
-    nextKeys.keys[0].down = isinside(factions[targfact], players[you].playerpos);
-  } else if(players[you].playermode != KSAX_ABSOLUTE) {
-    nextKeys.x = 1.0;
-    nextKeys.y = 0;
+    nextKeys.menu = Float2(targpt.x, targpt.y);
+    nextKeys.keys[0].down = isinside(factions[targfact], players[you].compasspos);
+  } else if(players[you].axismode != KSAX_ABSOLUTE) {
+    nextKeys.menu = Float2(1.0, 0);
     nextKeys.keys[0].down = false;
   } else {
-    CHECK(players[you].playermode == KSAX_ABSOLUTE);
-    nextKeys.x = 0;
-    nextKeys.y = 0;
+    CHECK(players[you].axismode == KSAX_ABSOLUTE);
+    nextKeys.menu = Float2(0, 0);
     nextKeys.keys[0].down = true;
   }
 }
@@ -41,8 +38,7 @@ void Ai::updateCharacterChoice(const vector<Float4> &factions, const vector<Play
 Controller makeController(float x, float y, bool key) {
   Controller rv;
   rv.keys.resize(1);
-  rv.x = x;
-  rv.y = y;
+  rv.menu = Float2(x, y);
   rv.keys[0].down = key;
   return rv;
 }
@@ -83,7 +79,7 @@ void doMegaEnum(const HierarchyNode &rt, vector<pair<int, vector<Controller> > >
 vector<Controller> reversecontroller(const vector<Controller> &in) {
   vector<Controller> rv;
   for(int i = 0; i < in.size(); i++)
-    rv.push_back(makeController(-in[i].x, -in[i].y, in[i].keys[0].down));
+    rv.push_back(makeController(-in[i].menu.x, -in[i].menu.y, in[i].keys[0].down));
   reverse(rv.begin(), rv.end());
   return rv;
 }
@@ -197,8 +193,7 @@ void Ai::updateGame(const vector<vector<Coord2> > &collide, const vector<Tank> &
     enepos.y *= -1;
     if(len(enepos) > 0)
       enepos = normalize(enepos);
-    nextKeys.x = enepos.x;
-    nextKeys.y = enepos.y;
+    nextKeys.menu = enepos;
   } else if(gamemode == AGM_RETREAT) {
     Float2 enepos = players[targetplayer].pos.toFloat();
     enepos -= mypos;
@@ -207,18 +202,15 @@ void Ai::updateGame(const vector<vector<Coord2> > &collide, const vector<Tank> &
     
     if(len(enepos) > 0)
       enepos = normalize(enepos);
-    nextKeys.x = enepos.x;
-    nextKeys.y = enepos.y;
+    nextKeys.menu = enepos;
   } else if(gamemode == AGM_WANDER) {
-    nextKeys.x = targetdir.x;
-    nextKeys.y = targetdir.y;
+    nextKeys.menu = targetdir;
   } else if(gamemode == AGM_BACKUP) {
     Float2 nx(-makeAngle(players[me].d));
     nx.x += (rng.frand() - 0.5) / 100;
     nx.y += (rng.frand() - 0.5) / 100;
     nx = normalize(nx);
-    nextKeys.x = nx.x;
-    nextKeys.y = -nx.y;
+    nextKeys.menu = nx;
   }
   if(rng.frand() < 0.001)
     firing = !firing;
@@ -237,15 +229,14 @@ void Ai::updateBombardment(const vector<Tank> &players, Coord2 mypos) {
   Coord2 dir = clopos - mypos;
   if(len(dir) != 0)
     dir = normalize(dir);
-  nextKeys.x = dir.x.toFloat();
-  nextKeys.y = -dir.y.toFloat();
+  nextKeys.menu = dir.toFloat();
   nextKeys.keys[0].down = false;
   if(clodist < 10)
     nextKeys.keys[0].down = (rng.frand() < 0.02);
 }
 
 void Ai::updateWaitingForReport() {
-  nextKeys.x = nextKeys.y = 0;
+  nextKeys.menu = Float2(0, 0);
   nextKeys.keys[0].down = true;
 }
 

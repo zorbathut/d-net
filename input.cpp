@@ -43,8 +43,7 @@ void Button::newState(bool pushed) {
 }
 
 void Controller::newState(const Controller &nst) {
-  x = nst.x;
-  y = nst.y;
+  menu = nst.menu;
   axes = nst.axes;
   u.newState(nst.u);
   d.newState(nst.d);
@@ -56,7 +55,7 @@ void Controller::newState(const Controller &nst) {
 }
 
 Controller::Controller() {
-  x = y = 0;
+  menu = Float2(0, 0);
 }
 
 void Keystates::nullMove() {
@@ -69,12 +68,14 @@ Keystates::Keystates() {
   axmode = KSAX_UDLR;
 }
 
-
-
 float deadzone(float t, float o, float absdead, float tdead) {
   if(abs(t) < absdead)
     return 0;
   if(t*t + o*o < tdead*tdead)
     return 0;
   return t;
+}
+
+Float2 deadzone(const Float2 &mov, float absdead, float tdead) {
+  return Float2(deadzone(mov.x, mov.y, absdead, tdead), deadzone(mov.y, mov.x, absdead, tdead));
 }

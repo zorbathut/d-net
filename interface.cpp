@@ -100,10 +100,10 @@ bool InterfaceMain::tick(const vector< Controller > &control) {
   
   for(int i = 0; i < control.size(); i++) {
     CHECK(control[i].keys.size() >= 1);
-    kst[i].u.newState(control[i].y > .5);
-    kst[i].d.newState(control[i].y < -.5);
-    kst[i].r.newState(control[i].x > .5);
-    kst[i].l.newState(control[i].x < -.5);
+    kst[i].u.newState(control[i].menu.y > .5);
+    kst[i].d.newState(control[i].menu.y < -.5);
+    kst[i].r.newState(control[i].menu.x > .5);
+    kst[i].l.newState(control[i].menu.x < -.5);
     bool aButtonPushed = false;
     for(int j = 0; j < control[i].keys.size(); j++)
       if(control[i].keys[j].push)
@@ -310,7 +310,7 @@ void InterfaceMain::render() const {
         drawLine(Float4(chbox.ex, chbox.sy, chbox.ex, chbox.sy + crosshair / 4), 0.1);
         drawLine(Float4(chbox.ex, chbox.ey, chbox.ex - crosshair / 4, chbox.ey), 0.1);
         drawLine(Float4(chbox.ex, chbox.ey, chbox.ex, chbox.ey - crosshair / 4), 0.1);
-        drawCrosshair(ct.x * crosshairc + bord + crosshairc + x, -ct.y * crosshairc + bord + crosshairc + y, crosshair / 4, 0.1);
+        drawCrosshair(ct.menu.x * crosshairc + bord + crosshairc + x, -ct.menu.y * crosshairc + bord + crosshairc + y, crosshair / 4, 0.1);
         float textx = x + bord * 3 + crosshair;
         float texty = y + bord;
         int ctxt = 0;

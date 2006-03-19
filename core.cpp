@@ -124,8 +124,8 @@ void MainLoop() {
       }
       if(outfile) {
         for(int i = 0; i < controllers.size(); i++) {
-          fwrite(&controllers[i].x, 1, sizeof(controllers[i].x), outfile);
-          fwrite(&controllers[i].y, 1, sizeof(controllers[i].y), outfile);
+          fwrite(&controllers[i].menu.x, 1, sizeof(controllers[i].menu.x), outfile);
+          fwrite(&controllers[i].menu.y, 1, sizeof(controllers[i].menu.y), outfile);
           fwrite(&controllers[i].u.down, 1, sizeof(controllers[i].u.down), outfile);
           fwrite(&controllers[i].d.down, 1, sizeof(controllers[i].d.down), outfile);
           fwrite(&controllers[i].l.down, 1, sizeof(controllers[i].l.down), outfile);

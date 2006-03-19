@@ -3,6 +3,8 @@
 
 #include <vector>
 
+#include "float.h"
+
 using namespace std;
 
 /*************
@@ -45,8 +47,7 @@ inline bool operator!=(const Button &lhs, const Button &rhs) {
 
 class Controller {
 public:
-  float x;
-  float y;
+  Float2 menu;
   Button u;
   Button d;
   Button l;
@@ -61,8 +62,7 @@ public:
 
 // this is not meant to be meaningful
 inline bool operator<(const Controller &lhs, const Controller &rhs) {
-  if(lhs.x != rhs.x) return lhs.x < rhs.x;
-  if(lhs.y != rhs.y) return lhs.y < rhs.y;
+  if(lhs.menu != rhs.menu) return lhs.menu < rhs.menu;
   if(lhs.u != rhs.u) return lhs.u < rhs.u;
   if(lhs.d != rhs.d) return lhs.d < rhs.d;
   if(lhs.l != rhs.l) return lhs.l < rhs.l;
@@ -92,5 +92,6 @@ public:
  */
 
 float deadzone(float t, float o, float absdead, float tdead);
+Float2 deadzone(const Float2 &mov, float absdead, float tdead);
 
 #endif

@@ -38,10 +38,10 @@ public:
 
 struct PlayerMenuState {
 public:
-  int playerkey;
-  int playersymbol;
-  Float2 playerpos;
-  int playermode;
+  int firekey;
+  int symbol;
+  Float2 compasspos;
+  int axismode;
 
   PlayerMenuState();
   PlayerMenuState(Float2 cent);

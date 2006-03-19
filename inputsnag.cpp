@@ -132,8 +132,8 @@ vector<Controller> controls_next() {
   
   if(infile) {
     for(int i = 0; i < now.size(); i++) {
-      fread(&now[i].x, 1, sizeof(now[i].x), infile);
-      fread(&now[i].y, 1, sizeof(now[i].y), infile);
+      fread(&now[i].menu.x, 1, sizeof(now[i].menu.x), infile);
+      fread(&now[i].menu.y, 1, sizeof(now[i].menu.y), infile);
       fread(&now[i].u.down, 1, sizeof(now[i].u.down), infile);
       fread(&now[i].d.down, 1, sizeof(now[i].d.down), infile);
       fread(&now[i].l.down, 1, sizeof(now[i].l.down), infile);
@@ -159,8 +159,8 @@ vector<Controller> controls_next() {
     for(int i = 0; i < now.size(); i++) {
       if(sources[i].first == CIP_JOYSTICK) {
         int jstarget = sources[i].second;
-        now[i].x = SDL_JoystickGetAxis(joysticks[jstarget], 0) / 32768.0f;
-        now[i].y = -(SDL_JoystickGetAxis(joysticks[jstarget], 1) / 32768.0f);
+        now[i].menu.x = SDL_JoystickGetAxis(joysticks[jstarget], 0) / 32768.0f;
+        now[i].menu.y = -(SDL_JoystickGetAxis(joysticks[jstarget], 1) / 32768.0f);
         for(int j = 0; j < now[i].keys.size(); j++)
           now[i].keys[j].down = SDL_JoystickGetButton(joysticks[jstarget], j);
         for(int j = 0; j < now[i].axes.size(); j++) {
@@ -177,25 +177,25 @@ vector<Controller> controls_next() {
   
   for(int i = 0; i < now.size(); i++) {
     if(sources[i].first == CIP_KEYBOARD) {
-      now[i].x = now[i].r.down - now[i].l.down;
-      now[i].y = now[i].u.down - now[i].d.down;
-      now[i].axes[0] = now[i].x;
-      now[i].axes[1] = now[i].y;
+      now[i].menu.x = now[i].r.down - now[i].l.down;
+      now[i].menu.y = now[i].u.down - now[i].d.down;
+      now[i].axes[0] = now[i].menu.x;
+      now[i].axes[1] = now[i].menu.y;
     } else if(sources[i].first == CIP_JOYSTICK || sources[i].first == CIP_AI) {
-      if(now[i].x < -0.7) {
+      if(now[i].menu.x < -0.7) {
         now[i].r.down = false;
         now[i].l.down = true;
-      } else if(now[i].x > 0.7) {
+      } else if(now[i].menu.x > 0.7) {
         now[i].r.down = true;
         now[i].l.down = false;
       } else {
         now[i].r.down = false;
         now[i].l.down = false;
       }
-      if(now[i].y < -0.7) {
+      if(now[i].menu.y < -0.7) {
         now[i].u.down = false;
         now[i].d.down = true;
-      } else if(now[i].y > 0.7) {
+      } else if(now[i].menu.y > 0.7) {
         now[i].u.down = true;
         now[i].d.down = false;
       } else {
@@ -204,8 +204,8 @@ vector<Controller> controls_next() {
       }
       if(sources[i].first == CIP_AI) {
         now[i].axes.resize(2);
-        now[i].axes[0] = now[i].x;
-        now[i].axes[1] = now[i].y;
+        now[i].axes[0] = now[i].menu.x;
+        now[i].axes[1] = now[i].menu.y;
       }
     } else if(sources[i].first == CIP_PRERECORD) {
     } else {
@@ -220,8 +220,8 @@ vector<Controller> controls_next() {
   }
   
   for(int i = 0; i < last.size(); i++) {
-    CHECK(last[i].x >= -1 && last[i].x <= 1);
-    CHECK(last[i].y >= -1 && last[i].y <= 1);
+    CHECK(last[i].menu.x >= -1 && last[i].menu.x <= 1);
+    CHECK(last[i].menu.y >= -1 && last[i].menu.y <= 1);
   }
   
   return last;
