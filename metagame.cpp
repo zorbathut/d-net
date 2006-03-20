@@ -12,13 +12,13 @@
 
 using namespace std;
 
-class Faction {
+class FactionSource {
 public:
   string filename;
   Color color;
 };
 
-const Faction factions[] = {
+const FactionSource faction_src[] = {
   { "data/faction_f.dv2", Color(1.0, 1.0, 1.0) }, // omega
   
   { "data/faction_a.dv2", Color(1.0, 0.0, 0.0) }, // pitchfork
@@ -35,7 +35,7 @@ const Faction factions[] = {
   { "data/faction_l.dv2", Color(1.0, 0.4, 0.6) } // poison
 };
 
-const int factioncount = sizeof(factions) / sizeof(Faction);
+const int factioncount = sizeof(faction_src) / sizeof(FactionSource);
 
 const HierarchyNode &Shop::getStepNode(int step) const {
   CHECK(step >= 0 && step <= curloc.size());
@@ -229,6 +229,9 @@ Shop::Shop(Player *in_player) {
 }
 
 PlayerMenuState::PlayerMenuState() {
+  settingmode = -12345;
+  choicemode = -12345;
+  
   firekey = 10000;
   symbol = 100;
   compasspos = Float2(0,0);
@@ -236,10 +239,17 @@ PlayerMenuState::PlayerMenuState() {
 }
 
 PlayerMenuState::PlayerMenuState(Float2 cent) {
+  settingmode = SETTING_COMPASS;
+  choicemode = CHOICE_FIRSTPASS;
+  
   firekey = -1;
   symbol = -1;
   compasspos = cent;
   axismode = KSAX_UDLR;
+}
+
+bool PlayerMenuState::readyToPlay() const {
+  return settingmode == SETTING_READY && fireHeld == 60;
 }
 
 vector<Keystates> genKeystates(const vector<Controller> &keys, const vector<PlayerMenuState> &modes) {
@@ -274,66 +284,90 @@ vector<Keystates> genKeystates(const vector<Controller> &keys, const vector<Play
   return kst;
 }
 
+void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<FactionState> &factions) {
+  if(pms->settingmode == SETTING_COMPASS) { // if player hasn't chosen symbol yet
+    pms->fireHeld = 0;
+    {
+      Float2 dir = deadzone(keys.menu, 0, 0.2) * 4;
+      dir.y *= -1;
+      pms->compasspos += dir;
+    }
+    int targetInside = -1;
+    for(int j = 0; j < factions.size(); j++) {
+      if(isinside(factions[j].symbolpos, pms->compasspos) && !factions[j].symboltaken) {
+        CHECK(targetInside == -1);
+        targetInside = j;
+      }
+    }
+    if(targetInside != -1) {            
+      for(int j = 0; j < keys.keys.size(); j++) {
+        if(keys.keys[j].repeat) {
+          pms->symbol = targetInside;
+          pms->firekey = j;
+          pms->settingmode = SETTING_READY;
+          factions[targetInside].symboltaken = true;
+        }
+      }
+    }
+  } else if(pms->settingmode == SETTING_READY) {  // if player has chosen symbol
+    {
+      int opm = pms->axismode;
+      if(keys.l.repeat) {
+        do {
+          pms->axismode--;
+          pms->axismode += KSAX_END;
+          pms->axismode %= KSAX_END;
+        } while(ksax_minaxis[pms->axismode] > keys.axes.size());
+      }
+      if(keys.r.repeat) {
+        do {
+          pms->axismode++;
+          pms->axismode += KSAX_END;
+          pms->axismode %= KSAX_END;
+        } while(ksax_minaxis[pms->axismode] > keys.axes.size());
+      }
+      if(pms->axismode != opm)
+        pms->fireHeld = 0;  // just for a bit of added safety
+    }
+    if(pms->firekey != -1 && keys.keys[pms->firekey].down) {
+      pms->fireHeld++;
+    } else {
+      pms->fireHeld = 0;
+    }
+    if(pms->fireHeld > 60)
+      pms->fireHeld = 60;
+  } else {
+    CHECK(0);
+  }
+}
+
+void runSettingRender(const Float2 &center, PlayerMenuState *pms) {
+}
+
 bool Metagame::runTick( const vector< Controller > &keys ) {
   CHECK(keys.size() == pms.size());
   if(mode == MGM_PLAYERCHOOSE) {
-    for(int i = 0; i < keys.size(); i++) {
-      if(pms[i].symbol == -1) { // if player hasn't chosen symbol yet
-        fireHeld[i] = 0;
-        pms[i].compasspos += deadzone(keys[i].menu, 0, 0.2) * 4;
-        int targetInside = -1;
-        for(int j = 0; j < symbolpos.size(); j++)
-          if(isinside(symbolpos[j], pms[i].compasspos) && symboltaken[j] == -1)
-            targetInside = j;
-        if(targetInside != -1) {            
-          for(int j = 0; j < keys[i].keys.size(); j++) {
-            if(keys[i].keys[j].repeat) {
-              pms[i].symbol = targetInside;
-              pms[i].firekey = j;
-              symboltaken[targetInside] = i;
-            }
-          }
-        }
-      } else {  // if player has chosen symbol
-        {
-          int opm = pms[i].axismode;
-          if(keys[i].l.repeat) {
-            do {
-              pms[i].axismode--;
-              pms[i].axismode += KSAX_END;
-              pms[i].axismode %= KSAX_END;
-            } while(ksax_minaxis[pms[i].axismode] > keys[i].axes.size());
-          }
-          if(keys[i].r.repeat) {
-            do {
-              pms[i].axismode++;
-              pms[i].axismode += KSAX_END;
-              pms[i].axismode %= KSAX_END;
-            } while(ksax_minaxis[pms[i].axismode] > keys[i].axes.size());
-          }
-          if(pms[i].axismode != opm)
-            fireHeld[i] = 0;  // just for a bit of added safety
-        }
-        if(pms[i].firekey != -1 && keys[i].keys[pms[i].firekey].down) {
-          fireHeld[i]++;
-        } else {
-          fireHeld[i] = 0;
-        }
-        if(fireHeld[i] > 60)
-          fireHeld[i] = 60;
-      }
-    }
+    for(int i = 0; i < keys.size(); i++)
+      runSettingTick(keys[i], &pms[i], factions);
     {
-      if(count(fireHeld.begin(), fireHeld.end(), 60) == symboltaken.size() - count(symboltaken.begin(), symboltaken.end(), -1) && count(fireHeld.begin(), fireHeld.end(), 60) >= 2) {
+      int readyusers = 0;
+      int chosenusers = 0;
+      for(int i = 0; i < pms.size(); i++) {
+        if(pms[i].readyToPlay())
+          readyusers++;
+        if(pms[i].settingmode != SETTING_COMPASS)
+          chosenusers++;
+      }
+      if(readyusers == chosenusers && chosenusers >= 2) {
         mode = MGM_SHOP;
         currentShop = 0;
         playerdata.clear();
-        playerdata.resize(count(fireHeld.begin(), fireHeld.end(), 60));
+        playerdata.resize(readyusers);
         int pid = 0;
         for(int i = 0; i < pms.size(); i++) {
           if(pms[i].symbol != -1) {
-            playerdata[pid].color = factions[pms[i].symbol].color;
-            playerdata[pid].faction_symb = symbols[pms[i].symbol];
+            playerdata[pid].color = faction_src[pms[i].symbol].color;
+            playerdata[pid].faction_symb = factions[pms[i].symbol].symbols;
             pid++;
           }
         }
@@ -403,7 +437,7 @@ void Metagame::ai(const vector<Ai *> &ai) const {
   if(mode == MGM_PLAYERCHOOSE) {
     for(int i = 0; i < ai.size(); i++)
       if(ai[i])
-        ai[i]->updateCharacterChoice(symbolpos, pms, i);
+        ai[i]->updateCharacterChoice(factions, pms, i);
   } else if(mode == MGM_SHOP) {
     if(currentShop == -1) {
       for(int i = 0; i < ai.size(); i++)
@@ -425,7 +459,7 @@ void Metagame::renderToScreen() const {
     setZoom(0, 0, 600);
     setColor(1.0, 1.0, 1.0);
     for(int i = 0; i < pms.size(); i++) {
-      if(pms[i].symbol == -1) {
+      if(pms[i].settingmode == SETTING_COMPASS) {
         setColor(1.0, 1.0, 1.0);
         char bf[16];
         sprintf(bf, "p%d", i);
@@ -434,28 +468,28 @@ void Metagame::renderToScreen() const {
         drawLine(pms[i].compasspos.x - 15, pms[i].compasspos.y, pms[i].compasspos.x - 5, pms[i].compasspos.y, 1.0);
         drawLine(pms[i].compasspos.x +15, pms[i].compasspos.y, pms[i].compasspos.x + 5, pms[i].compasspos.y, 1.0);
         drawText(bf, 20, pms[i].compasspos.x + 5, pms[i].compasspos.y + 5);
-      } else {
-        setColor(factions[pms[i].symbol].color);
+      } else if(pms[i].settingmode == SETTING_READY) {
+        setColor(faction_src[pms[i].symbol].color);
         float ye = min(600. / pms.size(), 100.);
         Float4 box( 0, ye * i, ye, ye + ye * i );
-        drawDvec2(symbols[pms[i].symbol], Float4(box.sx + ye / 10, box.sy + ye / 10, box.ex - ye / 10, box.ey - ye / 10), 1.0);
-        setColor(Color(1.0, 1.0, 1.0) / 60 * fireHeld[i]);
+        drawDvec2(factions[pms[i].symbol].symbols, Float4(box.sx + ye / 10, box.sy + ye / 10, box.ex - ye / 10, box.ey - ye / 10), 1.0);
+        setColor(Color(1.0, 1.0, 1.0) / 60 * pms[i].fireHeld);
         drawRect(Float4(box.sx + ye / 20, box.sy + ye / 20, box.ex - ye / 20, box.ey - ye / 20), 1);
         setColor(Color(0.8, 0.8, 0.8));
         drawText(ksax_names[pms[i].axismode], 20, ye, ye * (i + 1. / 20));
+      } else {
+        CHECK(0);
       }
     }
-    CHECK(symbols.size() == factioncount);
-    for(int i = 0; i < symbols.size(); i++) {
-      if(symboltaken[i] == -1) {
-        setColor(factions[i].color);
-        drawDvec2(symbols[i], symbolpos[i], 1.0);
+    CHECK(factions.size() == factioncount);
+    for(int i = 0; i < factions.size(); i++) {
+      if(!factions[i].symboltaken) {
+        setColor(faction_src[i].color);
+        drawDvec2(factions[i].symbols, factions[i].symbolpos, 1.0);
       }
     }
-    if(count(symboltaken.begin(), symboltaken.end(), -1) <= symboltaken.size() - 2) {
-      setColor(1.0, 1.0, 1.0);
-      drawText("hold fire to begin", 20, 120, 560);
-    }
+    setColor(1.0, 1.0, 1.0);
+    drawText("choose a faction and hold fire to begin", 20, 120, 560);
   } else if(mode == MGM_SHOP) {
     if(currentShop == -1) {
       setZoom(0, 0, 600);
@@ -586,28 +620,28 @@ Metagame::Metagame() {
 
 Metagame::Metagame(int playercount, int in_roundsBetweenShop) {
 
-  const Float2 cent(450, 300);
+  const Float2 cent(400, 300);
   
   roundsBetweenShop = in_roundsBetweenShop;
   CHECK(roundsBetweenShop >= 1);
   
   pms.clear();
   pms.resize(playercount, PlayerMenuState(cent));
-  fireHeld.resize(playercount);
   
   for(int i = 0; i < factioncount; i++) {
-    symbols.push_back(loadDvec2(factions[i].filename));
+    FactionState fs;
+    fs.symbols = loadDvec2(faction_src[i].filename);
+    fs.symboltaken = false;
+    factions.push_back(fs);
   }
   
   for(int i = 0; i < 4; i++) {
-    symbolpos.push_back( boxaround( makeAngle(PI * 2 * i / 4) * 100 + cent, 50 ) );
+    factions[i].symbolpos = boxaround( makeAngle(PI * 2 * i / 4) * 100 + cent, 50 );
   }
   
-  for(int i = 4; i < symbols.size(); i++) {
-    symbolpos.push_back( boxaround( makeAngle(PI * 2 * ( i - 4 ) / ( symbols.size() - 4 )) * 225 + cent, 50 ) );
+  for(int i = 4; i < factions.size(); i++) {
+    factions[i].symbolpos = boxaround( makeAngle(PI * 2 * ( i - 4 ) / ( factions.size() - 4 )) * 225 + cent, 50 );
   }
-  
-  symboltaken.resize(symbols.size(), -1);
   
   mode = MGM_PLAYERCHOOSE;
   

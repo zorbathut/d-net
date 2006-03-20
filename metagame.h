@@ -36,15 +36,37 @@ public:
   Shop(Player *player);
 };
 
+// Here's some notes about the "choose your options" set of screens!
+// First we prompt the player for "fire/accept" and "weapon/cancel" buttons.
+// Then we prompt the player for axis type, with graphics.
+// Then we prompt the player to choose which axes he wants to use.
+// Then we let the player customize his system (if there is customization involved - there may not be.)
+// Then we unlock the menu, and allow them to hold "ready" in much the same way as they currently do.
+// I think this works.
+enum { SETTING_COMPASS, SETTING_BUTTONS, SETTING_AXISTYPE, SETTING_AXISCHOOSE, SETTING_CUSTOMIZE, SETTING_READY };
+enum { CHOICE_FIRSTPASS, CHOICE_ACTIVE, CHOICE_IDLE };
+
 struct PlayerMenuState {
 public:
+  int settingmode;
+  int choicemode;
+  
   int firekey;
-  int symbol;
+  int symbol;   // TODO: change to faction
   Float2 compasspos;
   int axismode;
 
+  int fireHeld;
+  bool readyToPlay() const;
+
   PlayerMenuState();
   PlayerMenuState(Float2 cent);
+};
+
+struct FactionState {
+  Dvec2 symbols;
+  Float4 symbolpos;
+  bool symboltaken;
 };
 
 class Metagame {
@@ -57,9 +79,7 @@ class Metagame {
   
   vector<PlayerMenuState> pms;  // heh.
   
-  vector<Dvec2> symbols;
-  vector<Float4> symbolpos;
-  vector<int> symboltaken;
+  vector<FactionState> factions;
   
   vector<Level> levels;
   
@@ -73,8 +93,6 @@ class Metagame {
   vector<float> lrPlayer;
   vector<int> lrCash;
   vector<bool> checked;
-  
-  vector<int> fireHeld;
   
   int roundsBetweenShop;
 

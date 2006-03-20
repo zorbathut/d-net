@@ -8,7 +8,7 @@ void Ai::updatePregame() {
   nextKeys.keys[0].down = true;
 }
 
-void Ai::updateCharacterChoice(const vector<Float4> &factions, const vector<PlayerMenuState> &players, int you) {
+void Ai::updateCharacterChoice(const vector<FactionState> &factions, const vector<PlayerMenuState> &players, int you) {
   if(players[you].symbol == -1) {
     int targfact = you;
     if(targfact >= factions.size() || targfact < 0)
@@ -18,13 +18,13 @@ void Ai::updateCharacterChoice(const vector<Float4> &factions, const vector<Play
       nextKeys.keys[0].down = true;
       return;
     }
-    Float2 targpt = Float2((factions[targfact].sx + factions[targfact].ex) / 2, (factions[targfact].sy + factions[targfact].ey) / 2);
+    Float2 targpt = Float2((factions[targfact].symbolpos.sx + factions[targfact].symbolpos.ex) / 2, (factions[targfact].symbolpos.sy + factions[targfact].symbolpos.ey) / 2);
     //dprintf("player %d: target %f %f, pos %f %f\n", you, targpt.x, targpt.y, pos.x, pos.y);
     targpt -= players[you].compasspos;
     if(len(targpt) != 0)
       targpt = normalize(targpt);
-    nextKeys.menu = Float2(targpt.x, targpt.y);
-    nextKeys.keys[0].down = isinside(factions[targfact], players[you].compasspos);
+    nextKeys.menu = Float2(targpt.x, -targpt.y);
+    nextKeys.keys[0].down = isinside(factions[targfact].symbolpos, players[you].compasspos);
   } else if(players[you].axismode != KSAX_ABSOLUTE) {
     nextKeys.menu = Float2(1.0, 0);
     nextKeys.keys[0].down = false;
@@ -230,6 +230,7 @@ void Ai::updateBombardment(const vector<Tank> &players, Coord2 mypos) {
   if(len(dir) != 0)
     dir = normalize(dir);
   nextKeys.menu = dir.toFloat();
+  nextKeys.menu.y *= -1;
   nextKeys.keys[0].down = false;
   if(clodist < 10)
     nextKeys.keys[0].down = (rng.frand() < 0.02);
