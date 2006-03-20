@@ -9,7 +9,7 @@ void Ai::updatePregame() {
 }
 
 void Ai::updateCharacterChoice(const vector<FactionState> &factions, const vector<PlayerMenuState> &players, int you) {
-  if(players[you].symbol == -1) {
+  if(players[you].faction == -1) {
     int targfact = you;
     if(targfact >= factions.size() || targfact < 0)
       targfact = -1;
@@ -18,13 +18,13 @@ void Ai::updateCharacterChoice(const vector<FactionState> &factions, const vecto
       nextKeys.keys[0].down = true;
       return;
     }
-    Float2 targpt = Float2((factions[targfact].symbolpos.sx + factions[targfact].symbolpos.ex) / 2, (factions[targfact].symbolpos.sy + factions[targfact].symbolpos.ey) / 2);
+    Float2 targpt = (factions[targfact].location.s() + factions[targfact].location.e()) / 2;
     //dprintf("player %d: target %f %f, pos %f %f\n", you, targpt.x, targpt.y, pos.x, pos.y);
     targpt -= players[you].compasspos;
     if(len(targpt) != 0)
       targpt = normalize(targpt);
     nextKeys.menu = Float2(targpt.x, -targpt.y);
-    nextKeys.keys[0].down = isinside(factions[targfact].symbolpos, players[you].compasspos);
+    nextKeys.keys[0].down = isinside(factions[targfact].location, players[you].compasspos);
   } else if(players[you].axismode != KSAX_ABSOLUTE) {
     nextKeys.menu = Float2(1.0, 0);
     nextKeys.keys[0].down = false;

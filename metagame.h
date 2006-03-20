@@ -52,7 +52,7 @@ public:
   int choicemode;
   
   int firekey;
-  int symbol;   // TODO: change to faction
+  int faction;   // TODO: change to faction
   Float2 compasspos;
   int axismode;
 
@@ -64,9 +64,9 @@ public:
 };
 
 struct FactionState {
-  Dvec2 symbols;
-  Float4 symbolpos;
-  bool symboltaken;
+  Dvec2 icon;
+  Float4 location;
+  bool taken;
 };
 
 class Metagame {

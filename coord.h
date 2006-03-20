@@ -273,6 +273,13 @@ public:
     return sx <= ex && sy <= ey;
   }
   
+  Coord2 s() const {
+    return Coord2(sx, sy);
+  }
+  Coord2 e() const {
+    return Coord2(ex, ey);
+  }
+  
   Float4 toFloat() const;
 
   Coord4() { };

@@ -233,7 +233,7 @@ PlayerMenuState::PlayerMenuState() {
   choicemode = -12345;
   
   firekey = 10000;
-  symbol = 100;
+  faction = 100;
   compasspos = Float2(0,0);
   axismode = -30;   // values that are likely to break stuff badly
 }
@@ -243,7 +243,7 @@ PlayerMenuState::PlayerMenuState(Float2 cent) {
   choicemode = CHOICE_FIRSTPASS;
   
   firekey = -1;
-  symbol = -1;
+  faction = -1;
   compasspos = cent;
   axismode = KSAX_UDLR;
 }
@@ -285,7 +285,7 @@ vector<Keystates> genKeystates(const vector<Controller> &keys, const vector<Play
 }
 
 void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<FactionState> &factions) {
-  if(pms->settingmode == SETTING_COMPASS) { // if player hasn't chosen symbol yet
+  if(pms->settingmode == SETTING_COMPASS) { // if player hasn't chosen faction yet
     pms->fireHeld = 0;
     {
       Float2 dir = deadzone(keys.menu, 0, 0.2) * 4;
@@ -294,7 +294,7 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
     }
     int targetInside = -1;
     for(int j = 0; j < factions.size(); j++) {
-      if(isinside(factions[j].symbolpos, pms->compasspos) && !factions[j].symboltaken) {
+      if(isinside(factions[j].location, pms->compasspos) && !factions[j].taken) {
         CHECK(targetInside == -1);
         targetInside = j;
       }
@@ -302,14 +302,14 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
     if(targetInside != -1) {            
       for(int j = 0; j < keys.keys.size(); j++) {
         if(keys.keys[j].repeat) {
-          pms->symbol = targetInside;
+          pms->faction = targetInside;
           pms->firekey = j;
           pms->settingmode = SETTING_READY;
-          factions[targetInside].symboltaken = true;
+          factions[targetInside].taken = true;
         }
       }
     }
-  } else if(pms->settingmode == SETTING_READY) {  // if player has chosen symbol
+  } else if(pms->settingmode == SETTING_READY) {  // if player has chosen faction
     {
       int opm = pms->axismode;
       if(keys.l.repeat) {
@@ -365,9 +365,9 @@ bool Metagame::runTick( const vector< Controller > &keys ) {
         playerdata.resize(readyusers);
         int pid = 0;
         for(int i = 0; i < pms.size(); i++) {
-          if(pms[i].symbol != -1) {
-            playerdata[pid].color = faction_src[pms[i].symbol].color;
-            playerdata[pid].faction_symb = factions[pms[i].symbol].symbols;
+          if(pms[i].faction != -1) {
+            playerdata[pid].color = faction_src[pms[i].faction].color;
+            playerdata[pid].faction_symb = factions[pms[i].faction].icon;
             pid++;
           }
         }
@@ -427,7 +427,7 @@ vector<Ai *> distillAi(const vector<Ai *> &ai, const vector<PlayerMenuState> &pl
   CHECK(ai.size() == players.size());
   vector<Ai *> rv;
   for(int i = 0; i < players.size(); i++)
-    if(players[i].symbol != -1)
+    if(players[i].faction != -1)
       rv.push_back(ai[i]);
   return rv;
 }
@@ -469,10 +469,10 @@ void Metagame::renderToScreen() const {
         drawLine(pms[i].compasspos.x +15, pms[i].compasspos.y, pms[i].compasspos.x + 5, pms[i].compasspos.y, 1.0);
         drawText(bf, 20, pms[i].compasspos.x + 5, pms[i].compasspos.y + 5);
       } else if(pms[i].settingmode == SETTING_READY) {
-        setColor(faction_src[pms[i].symbol].color);
+        setColor(faction_src[pms[i].faction].color);
         float ye = min(600. / pms.size(), 100.);
         Float4 box( 0, ye * i, ye, ye + ye * i );
-        drawDvec2(factions[pms[i].symbol].symbols, Float4(box.sx + ye / 10, box.sy + ye / 10, box.ex - ye / 10, box.ey - ye / 10), 1.0);
+        drawDvec2(factions[pms[i].faction].icon, Float4(box.sx + ye / 10, box.sy + ye / 10, box.ex - ye / 10, box.ey - ye / 10), 1.0);
         setColor(Color(1.0, 1.0, 1.0) / 60 * pms[i].fireHeld);
         drawRect(Float4(box.sx + ye / 20, box.sy + ye / 20, box.ex - ye / 20, box.ey - ye / 20), 1);
         setColor(Color(0.8, 0.8, 0.8));
@@ -483,9 +483,9 @@ void Metagame::renderToScreen() const {
     }
     CHECK(factions.size() == factioncount);
     for(int i = 0; i < factions.size(); i++) {
-      if(!factions[i].symboltaken) {
+      if(!factions[i].taken) {
         setColor(faction_src[i].color);
-        drawDvec2(factions[i].symbols, factions[i].symbolpos, 1.0);
+        drawDvec2(factions[i].icon, factions[i].location, 1.0);
       }
     }
     setColor(1.0, 1.0, 1.0);
@@ -630,17 +630,17 @@ Metagame::Metagame(int playercount, int in_roundsBetweenShop) {
   
   for(int i = 0; i < factioncount; i++) {
     FactionState fs;
-    fs.symbols = loadDvec2(faction_src[i].filename);
-    fs.symboltaken = false;
+    fs.icon = loadDvec2(faction_src[i].filename);
+    fs.taken = false;
     factions.push_back(fs);
   }
   
   for(int i = 0; i < 4; i++) {
-    factions[i].symbolpos = boxaround( makeAngle(PI * 2 * i / 4) * 100 + cent, 50 );
+    factions[i].location = boxaround( makeAngle(PI * 2 * i / 4) * 100 + cent, 50 );
   }
   
   for(int i = 4; i < factions.size(); i++) {
-    factions[i].symbolpos = boxaround( makeAngle(PI * 2 * ( i - 4 ) / ( factions.size() - 4 )) * 225 + cent, 50 );
+    factions[i].location = boxaround( makeAngle(PI * 2 * ( i - 4 ) / ( factions.size() - 4 )) * 225 + cent, 50 );
   }
   
   mode = MGM_PLAYERCHOOSE;

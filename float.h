@@ -76,11 +76,6 @@ inline bool operator<(const Float2 &lhs, const Float2 &rhs) {
 class Float4 {
 public:
   float sx, sy, ex, ey;
-  Float4() { };
-  Float4(const Float2 &s, const Float2 &e) :
-    sx(s.x), sy(s.y), ex(e.x), ey(e.y) { };
-  Float4( float in_sx, float in_sy, float in_ex, float in_ey ) :
-    sx( in_sx ), sy( in_sy ), ex( in_ex ), ey( in_ey ) { };
 
   inline Float4 normalize() const {
     Float4 cp = *this;
@@ -101,6 +96,19 @@ public:
   bool isNormalized() const {
     return sx <= ex && sy <= ey;
   }
+  
+  Float2 s() const {
+    return Float2(sx, sy);
+  }
+  Float2 e() const {
+    return Float2(ex, ey);
+  }
+  
+  Float4() { };
+  Float4(const Float2 &s, const Float2 &e) :
+    sx(s.x), sy(s.y), ex(e.x), ey(e.y) { };
+  Float4( float in_sx, float in_sy, float in_ex, float in_ey ) :
+    sx( in_sx ), sy( in_sy ), ex( in_ex ), ey( in_ey ) { };
 };
 
 inline Float4 operator+( const Float4 &lhs, const Float4 &rhs ) {

@@ -1,4 +1,5 @@
 - Basic new config
+- Rendering change to render lines by default, segments as the exception
 - Factions from file
 - Axes choice for tank mode
 - Improved absolute customization
