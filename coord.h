@@ -369,7 +369,7 @@ void expandBoundBox(Coord4 *bbox, Coord factor);
  * Math
  */
 
-inline bool isinside(const Coord4 &lhs, const Coord2 &rhs) {
+inline bool isInside(const Coord4 &lhs, const Coord2 &rhs) {
   return !(rhs.x < lhs.sx || rhs.x >= lhs.ex || rhs.y < lhs.sy || rhs.y >= lhs.ey);
 }
 

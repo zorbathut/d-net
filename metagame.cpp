@@ -183,7 +183,7 @@ void Shop::ai(Ai *ais) const {
 
 void Shop::renderToScreen() const {
   CHECK(player);
-  clearFrame(player->color * 0.05 + Color(0.05, 0.05, 0.05));
+  clearFrame(player->faction->color * 0.05 + Color(0.05, 0.05, 0.05));
   setColor(1.0, 1.0, 1.0);
   setZoom(0, 0, 100);
   {
@@ -200,10 +200,10 @@ void Shop::renderToScreen() const {
     }
     drawText(bf, 2, 1, 1);
   }
-  setColor(player->color * 0.5);
+  setColor(player->faction->color * 0.5);
   {
     const float ofs = 8;
-    drawDvec2(player->faction_symb, Float4(ofs, ofs, 125 - ofs, 100 - ofs), 0.5);
+    drawDvec2(player->faction->icon, Float4(ofs, ofs, 125 - ofs, 100 - ofs), 0.5);
   }
   renderNode(itemDbRoot(), 0);
   float hudstart = itemDbRoot().branches.size() * sl_itemheight + sl_voffset + sl_boxborder;
@@ -233,7 +233,7 @@ PlayerMenuState::PlayerMenuState() {
   choicemode = -12345;
   
   firekey = 10000;
-  faction = 100;
+  faction = NULL;
   compasspos = Float2(0,0);
   axismode = -30;   // values that are likely to break stuff badly
 }
@@ -243,7 +243,7 @@ PlayerMenuState::PlayerMenuState(Float2 cent) {
   choicemode = CHOICE_FIRSTPASS;
   
   firekey = -1;
-  faction = -1;
+  faction = NULL;
   compasspos = cent;
   axismode = KSAX_UDLR;
 }
@@ -294,7 +294,7 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
     }
     int targetInside = -1;
     for(int j = 0; j < factions.size(); j++) {
-      if(isinside(factions[j].location, pms->compasspos) && !factions[j].taken) {
+      if(isInside(factions[j].compass_location, pms->compasspos) && !factions[j].taken) {
         CHECK(targetInside == -1);
         targetInside = j;
       }
@@ -302,7 +302,7 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
     if(targetInside != -1) {            
       for(int j = 0; j < keys.keys.size(); j++) {
         if(keys.keys[j].repeat) {
-          pms->faction = targetInside;
+          pms->faction = &factions[targetInside];
           pms->firekey = j;
           pms->settingmode = SETTING_READY;
           factions[targetInside].taken = true;
@@ -341,7 +341,28 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
   }
 }
 
-void runSettingRender(const Float2 &center, PlayerMenuState *pms) {
+void runSettingRender(const PlayerMenuState &pms) {
+  if(pms.settingmode != SETTING_COMPASS)
+    CHECK(pms.faction);
+  if(pms.settingmode == SETTING_COMPASS) {
+    setColor(1.0, 1.0, 1.0);
+    //char bf[16];
+    //sprintf(bf, "p%d", i);
+    drawLine(pms.compasspos.x, pms.compasspos.y - 15, pms.compasspos.x, pms.compasspos.y - 5, 1.0);
+    drawLine(pms.compasspos.x, pms.compasspos.y + 15, pms.compasspos.x, pms.compasspos.y + 5, 1.0);
+    drawLine(pms.compasspos.x - 15, pms.compasspos.y, pms.compasspos.x - 5, pms.compasspos.y, 1.0);
+    drawLine(pms.compasspos.x +15, pms.compasspos.y, pms.compasspos.x + 5, pms.compasspos.y, 1.0);
+    //drawText(bf, 20, pms.compasspos.x + 5, pms.compasspos.y + 5);
+  } else if(pms.settingmode == SETTING_READY) {
+    setColor(pms.faction->color);
+    drawDvec2(pms.faction->icon, squareInside(pms.faction->compass_location), 1.0);
+    setColor(Color(1.0, 1.0, 1.0) / 60 * pms.fireHeld);
+    drawRect(pms.faction->compass_location, 1);
+    setColor(Color(0.8, 0.8, 0.8));
+    drawText(ksax_names[pms.axismode], 20, pms.faction->compass_location.ex, pms.faction->compass_location.ey);
+  } else {
+    CHECK(0);
+  }
 }
 
 bool Metagame::runTick( const vector< Controller > &keys ) {
@@ -365,9 +386,8 @@ bool Metagame::runTick( const vector< Controller > &keys ) {
         playerdata.resize(readyusers);
         int pid = 0;
         for(int i = 0; i < pms.size(); i++) {
-          if(pms[i].faction != -1) {
-            playerdata[pid].color = faction_src[pms[i].faction].color;
-            playerdata[pid].faction_symb = factions[pms[i].faction].icon;
+          if(pms[i].faction) {
+            playerdata[pid].faction = pms[i].faction;
             pid++;
           }
         }
@@ -427,7 +447,7 @@ vector<Ai *> distillAi(const vector<Ai *> &ai, const vector<PlayerMenuState> &pl
   CHECK(ai.size() == players.size());
   vector<Ai *> rv;
   for(int i = 0; i < players.size(); i++)
-    if(players[i].faction != -1)
+    if(players[i].faction)
       rv.push_back(ai[i]);
   return rv;
 }
@@ -459,33 +479,13 @@ void Metagame::renderToScreen() const {
     setZoom(0, 0, 600);
     setColor(1.0, 1.0, 1.0);
     for(int i = 0; i < pms.size(); i++) {
-      if(pms[i].settingmode == SETTING_COMPASS) {
-        setColor(1.0, 1.0, 1.0);
-        char bf[16];
-        sprintf(bf, "p%d", i);
-        drawLine(pms[i].compasspos.x, pms[i].compasspos.y - 15, pms[i].compasspos.x, pms[i].compasspos.y - 5, 1.0);
-        drawLine(pms[i].compasspos.x, pms[i].compasspos.y + 15, pms[i].compasspos.x, pms[i].compasspos.y + 5, 1.0);
-        drawLine(pms[i].compasspos.x - 15, pms[i].compasspos.y, pms[i].compasspos.x - 5, pms[i].compasspos.y, 1.0);
-        drawLine(pms[i].compasspos.x +15, pms[i].compasspos.y, pms[i].compasspos.x + 5, pms[i].compasspos.y, 1.0);
-        drawText(bf, 20, pms[i].compasspos.x + 5, pms[i].compasspos.y + 5);
-      } else if(pms[i].settingmode == SETTING_READY) {
-        setColor(faction_src[pms[i].faction].color);
-        float ye = min(600. / pms.size(), 100.);
-        Float4 box( 0, ye * i, ye, ye + ye * i );
-        drawDvec2(factions[pms[i].faction].icon, Float4(box.sx + ye / 10, box.sy + ye / 10, box.ex - ye / 10, box.ey - ye / 10), 1.0);
-        setColor(Color(1.0, 1.0, 1.0) / 60 * pms[i].fireHeld);
-        drawRect(Float4(box.sx + ye / 20, box.sy + ye / 20, box.ex - ye / 20, box.ey - ye / 20), 1);
-        setColor(Color(0.8, 0.8, 0.8));
-        drawText(ksax_names[pms[i].axismode], 20, ye, ye * (i + 1. / 20));
-      } else {
-        CHECK(0);
-      }
+      runSettingRender(pms[i]);
     }
     CHECK(factions.size() == factioncount);
     for(int i = 0; i < factions.size(); i++) {
       if(!factions[i].taken) {
         setColor(faction_src[i].color);
-        drawDvec2(factions[i].icon, factions[i].location, 1.0);
+        drawDvec2(factions[i].icon, squareInside(factions[i].compass_location), 1.0);
       }
     }
     setColor(1.0, 1.0, 1.0);
@@ -512,8 +512,8 @@ void Metagame::renderToScreen() const {
       float increment = 800.0 / notdone;
       for(int i = 0; i < checked.size(); i++) {
         if(!checked[i]) {
-          setColor(playerdata[i].color);
-          drawDvec2(playerdata[i].faction_symb, Float4(cpos * increment, 440, (cpos + 1) * increment, 580), 1);
+          setColor(playerdata[i].faction->color);
+          drawDvec2(playerdata[i].faction->icon, Float4(cpos * increment, 440, (cpos + 1) * increment, 580), 1);
           cpos++;
         }
       }
@@ -593,7 +593,7 @@ void Metagame::drawMultibar(const vector<float> &sizes, const Float4 &dimensions
   float per = width / total;
   float cpos = dimensions.sx;
   for(int i = 0; i < sizes.size(); i++) {
-    setColor(playerdata[i].color);
+    setColor(playerdata[i].faction->color);
     float epos = cpos + sizes[i] * per;
     drawShadedRect(Float4(cpos, dimensions.sy, epos, dimensions.ey), 1, 6);
     cpos = epos;
@@ -632,15 +632,20 @@ Metagame::Metagame(int playercount, int in_roundsBetweenShop) {
     FactionState fs;
     fs.icon = loadDvec2(faction_src[i].filename);
     fs.taken = false;
+    fs.color = faction_src[i].color;
     factions.push_back(fs);
   }
   
+  Float4 factionbox = Float4(-160, -100, 160, 100) * 0.5;
+  
   for(int i = 0; i < 4; i++) {
-    factions[i].location = boxaround( makeAngle(PI * 2 * i / 4) * 100 + cent, 50 );
+    Float2 loc = makeAngle(PI * 2 * i / 4) * 100 + cent;
+    factions[i].compass_location = factionbox + Float4(loc, loc);
   }
   
   for(int i = 4; i < factions.size(); i++) {
-    factions[i].location = boxaround( makeAngle(PI * 2 * ( i - 4 ) / ( factions.size() - 4 )) * 225 + cent, 50 );
+    Float2 loc = makeAngle(PI * 2 * ( i - 4 ) / ( factions.size() - 4 )) * 225 + cent;
+    factions[i].compass_location = factionbox + Float4(loc, loc);
   }
   
   mode = MGM_PLAYERCHOOSE;

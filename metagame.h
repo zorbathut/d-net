@@ -52,7 +52,7 @@ public:
   int choicemode;
   
   int firekey;
-  int faction;   // TODO: change to faction
+  FactionState *faction;
   Float2 compasspos;
   int axismode;
 
@@ -61,12 +61,6 @@ public:
 
   PlayerMenuState();
   PlayerMenuState(Float2 cent);
-};
-
-struct FactionState {
-  Dvec2 icon;
-  Float4 location;
-  bool taken;
 };
 
 class Metagame {

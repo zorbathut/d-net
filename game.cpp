@@ -97,7 +97,7 @@ int Player::resellAmmoValue() const {
 }
 
 Player::Player() {
-  color = Color(0.5, 0.5, 0.5);
+  faction = NULL;
   cash = FLAGS_startingcash;
   reCalculate();
   weapon = defaultWeapon();
@@ -160,7 +160,7 @@ void Tank::render( int tankid ) const {
   if( !live )
     return;
 
-  setColor(player->color);
+  setColor(player->faction->color);
 
   drawLineLoop(getTankVertices(pos, d), 0.2);
 };
@@ -437,7 +437,7 @@ void Tank::genEffects(vector<GfxEffects> *gfxe, vector<Projectile> *projectiles)
       ngfe.path_ang_vel = powerRand(2) / 20;
       ngfe.path_ang_acc = -ngfe.path_ang_vel / 30;
       ngfe.life = 30;
-      ngfe.color = player->color;
+      ngfe.color = player->faction->color;
       gfxe->push_back(ngfe);
     }
     
@@ -670,7 +670,7 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
         continue;
       StackString sst(StringPrintf("Adding player %d, status live %d", j, players[j].live));
       //CHECK(inPath(players[j].pos, gamemap.getCollide()[0]));
-      if(!isinside(gmb, players[j].pos)) {
+      if(!isInside(gmb, players[j].pos)) {
         dprintf("%s vs %s\n", players[j].pos.rawstr().c_str(), gmb.rawstr().c_str());
         CHECK(0);
       }
@@ -713,7 +713,7 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
       } else {
         StackString sst(StringPrintf("Moving player %d, status live %d", playerorder[i], players[playerorder[i]].live));
         //CHECK(inPath(players[playerorder[i]].getDeltaAfterMovement(keys[playerorder[i]], players[playerorder[i]].pos, players[playerorder[i]].d).first, gamemap.getCollide()[0]));
-        CHECK(isinside(gmb, players[playerorder[i]].getDeltaAfterMovement(keys[playerorder[i]], players[playerorder[i]].pos, players[playerorder[i]].d).first));
+        CHECK(isInside(gmb, players[playerorder[i]].getDeltaAfterMovement(keys[playerorder[i]], players[playerorder[i]].pos, players[playerorder[i]].d).first));
         collider.clearGroup(CGR_PLAYER, playerorder[i]);
         collider.addThingsToGroup(CGR_PLAYER, playerorder[i]);
         collider.startToken(0);
@@ -997,18 +997,18 @@ void Game::renderToScreen() const {
     if(bombards[i].state == BombardmentState::BS_OFF) {
     } else if(bombards[i].state == BombardmentState::BS_SPAWNING) {
     } else if(bombards[i].state == BombardmentState::BS_ACTIVE) {
-      setColor(players[i].player->color * 0.5);
+      setColor(players[i].player->faction->color * 0.5);
       drawCirclePieces(bombards[i].loc, 0.3, 4);
       drawCrosses(bombards[i].loc, 4);
     } else if(bombards[i].state == BombardmentState::BS_FIRING) {
-      setColor(players[i].player->color * 0.25);
+      setColor(players[i].player->faction->color * 0.25);
       drawCirclePieces(bombards[i].loc, 0.3, 4);
       drawCrosses(bombards[i].loc, 4);
       setColor(Color(1.0, 1.0, 1.0));
       float ps = (float)bombards[i].timer / players[i].player->bombardment->lockdelay;
       drawCirclePieces(bombards[i].loc, 1 - ps, 4 * ps);
     } else if(bombards[i].state == BombardmentState::BS_COOLDOWN) {
-      setColor(players[i].player->color * 0.25);
+      setColor(players[i].player->faction->color * 0.25);
       drawCirclePieces(bombards[i].loc, 0.3, 4);
       drawCrosses(bombards[i].loc, 4);
       float ps = (float)bombards[i].timer / players[i].player->bombardment->unlockdelay;
@@ -1030,7 +1030,7 @@ void Game::renderToScreen() const {
       if(i)
         drawLine(Float4(loffset, 0, loffset, 10), 0.1);
       if(players[i].live) {
-        setColor(players[i].player->color);
+        setColor(players[i].player->faction->color);
         float barl = loffset + 1;
         float bare = (roffset - 1) - (loffset + 1);
         bare /= players[i].player->maxHealth;

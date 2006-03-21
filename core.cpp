@@ -56,6 +56,8 @@ void MainLoop() {
   int skipped = 0;
   
   frameNumber = 0;    // it's -1 before this point
+  
+  time_t starttime = time(NULL);
     
 	while( !quit ) {
     StackString sst(StringPrintf("Frame %d loop", frameNumber));
@@ -164,7 +166,6 @@ void MainLoop() {
 		}
 		rendering += bencher.ticksElapsed();
 		timer.frameDone();
-		frameNumber++;
     {
       int frameSplit;
       if(ffwd)
@@ -174,12 +175,13 @@ void MainLoop() {
       if( frako % frameSplit == 0 ) {
         long long tot = timer.getFrameTicks() * frameSplit;
         //long long tot = polling + ticking + waiting + rendering;
-        dprintf( "%4d polling", int( polling * 1000 / tot ) );
-        dprintf( "%4d ticking", int( ticking * 1000 / tot ) );
-        dprintf( "%4d waiting", int( waiting * 1000 / tot ) );
-        dprintf( "%4d rendering", int( rendering * 1000 / tot ) );
-        dprintf( "%4d skipped", skipped );
-        dprintf( "%f clusters/frame last %d frames", getAccumulatedClusterCount() / float(frameSplit - skipped), frameSplit);
+        dprintf("%4d polling", int(polling * 1000 / tot));
+        dprintf("%4d ticking", int(ticking * 1000 / tot));
+        dprintf("%4d waiting", int(waiting * 1000 / tot));
+        dprintf("%4d rendering", int(rendering * 1000 / tot));
+        dprintf("%4d skipped", skipped);
+        dprintf("%f clusters/frame last %d frames", getAccumulatedClusterCount() / float(frameSplit - skipped), frameSplit);
+        dprintf("%d frames in %ld seconds, %.2fx overall (%.2f hours gametime)", frameNumber, time(NULL) - starttime, (frameNumber / 60.) / (time(NULL) - starttime), frameNumber / 60. / 60 / 60);
         polling = 0;
         ticking = 0;
         waiting = 0;
@@ -187,6 +189,7 @@ void MainLoop() {
         skipped = 0;
       }
     }
+    frameNumber++;
     frako++;
 	}
   dprintf("Control shutdown\n");

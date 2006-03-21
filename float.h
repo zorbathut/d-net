@@ -104,6 +104,10 @@ public:
     return Float2(ex, ey);
   }
   
+  Float2 midpoint() const {
+    return (s() + e()) / 2;
+  }
+  
   Float4() { };
   Float4(const Float2 &s, const Float2 &e) :
     sx(s.x), sy(s.y), ex(e.x), ey(e.y) { };
@@ -171,11 +175,11 @@ void expandBoundBox(Float4 *bbox, float factor);
 
 inline int round(float in) { return int(floor(in + 0.5)); }
 
-inline bool isinside(const Float4 &lhs, const Float2 &rhs) {
+inline bool isInside(const Float4 &lhs, const Float2 &rhs) {
   return !(rhs.x < lhs.sx || rhs.x >= lhs.ex || rhs.y < lhs.sy || rhs.y >= lhs.ey);
 }
 
-inline Float4 boxaround(const Float2 &lhs, float radius) {
+inline Float4 boxAround(const Float2 &lhs, float radius) {
   return Float4(lhs.x - radius, lhs.y - radius, lhs.x + radius, lhs.y + radius);
 }
 
@@ -183,5 +187,8 @@ bool linelineintersect( const Float4 &lhs, const Float4 &rhs );
 float linelineintersectpos( const Float4 &lhs, const Float4 &rhs );
 
 Float2 rotate(const Float2 &in, float ang);
+
+// square inscribed in the rect
+Float4 squareInside(const Float4 &in);
 
 #endif

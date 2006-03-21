@@ -15,6 +15,15 @@ class Ai;
 class Tank;
 class Projectile;
 
+struct FactionState {
+  Dvec2 icon;
+  Color color;
+  
+  // Only used in metagame
+  bool taken;
+  Float4 compass_location;
+};
+
 class Player {
 public:
 
@@ -29,8 +38,7 @@ public:
   const IDBGlory *glory;
   const IDBBombardment *bombardment;
 
-  Color color;
-  Dvec2 faction_symb;
+  FactionState *faction;
 
   int cash;
 

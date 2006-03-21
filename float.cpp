@@ -50,3 +50,8 @@ float linelineintersectpos( const Float4 &lhs, const Float4 &rhs ) { return imp_
 Float2 rotate(const Float2 &in, float ang) {
   return makeAngle(getAngle(in) + ang) * len(in);
 }
+
+Float4 squareInside(const Float4 &in) {
+  float minwid = min(in.ex - in.sx, in.ey - in.sy);
+  return boxAround(in.midpoint(), minwid / 2);
+};
