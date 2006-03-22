@@ -231,7 +231,12 @@ Shop::Shop(Player *in_player) {
 PlayerMenuState::PlayerMenuState() {
   settingmode = -12345;
   choicemode = -12345;
+
+  setting_button_current = -1;
+  setting_button_reading = false;
   
+  memset(buttons, -1, sizeof(buttons));
+
   firekey = 10000;
   faction = NULL;
   compasspos = Float2(0,0);
@@ -241,6 +246,11 @@ PlayerMenuState::PlayerMenuState() {
 PlayerMenuState::PlayerMenuState(Float2 cent) {
   settingmode = SETTING_COMPASS;
   choicemode = CHOICE_FIRSTPASS;
+  
+  setting_button_current = 0;
+  setting_button_reading = true;
+  
+  memset(buttons, -1, sizeof(buttons));
   
   firekey = -1;
   faction = NULL;
@@ -285,6 +295,7 @@ vector<Keystates> genKeystates(const vector<Controller> &keys, const vector<Play
 }
 
 void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<FactionState> &factions) {
+  CHECK(pms->choicemode != CHOICE_IDLE);
   if(pms->settingmode == SETTING_COMPASS) { // if player hasn't chosen faction yet
     pms->fireHeld = 0;
     {
@@ -295,7 +306,7 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
     int targetInside = -1;
     for(int j = 0; j < factions.size(); j++) {
       if(isInside(factions[j].compass_location, pms->compasspos) && !factions[j].taken) {
-        CHECK(targetInside == -1);
+        //CHECK(targetInside == -1);
         targetInside = j;
       }
     }
@@ -304,9 +315,65 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
         if(keys.keys[j].repeat) {
           pms->faction = &factions[targetInside];
           pms->firekey = j;
-          pms->settingmode = SETTING_READY;
+          pms->settingmode = SETTING_BUTTONS;
+          pms->choicemode = CHOICE_FIRSTPASS; // Because it is.
           factions[targetInside].taken = true;
         }
+      }
+    }
+  } else if(pms->settingmode == SETTING_BUTTONS) {
+    if(pms->setting_button_current == -1) {
+      pms->setting_button_current = 0;
+      pms->setting_button_reading = (pms->choicemode == CHOICE_FIRSTPASS);
+    }
+    if(pms->setting_button_reading) {
+      CHECK(pms->choicemode != CHOICE_IDLE);
+      for(int i = 0; i < keys.keys.size(); i++) {
+        if(keys.keys[i].push) {
+          int j;
+          for(j = 0; j < button_count; j++) {
+            if(pms->buttons[j] == i) {
+              swap(pms->buttons[j], pms->buttons[pms->setting_button_current]);
+              break;
+            }
+          }
+          if(j == button_count)
+            pms->buttons[pms->setting_button_current] = i;
+          if(pms->choicemode == CHOICE_FIRSTPASS) {
+            pms->setting_button_current++;
+          } else {
+            pms->setting_button_reading = false;
+          }
+          break;
+        }
+      }
+      if(pms->setting_button_current == button_count) {
+        // Done with the first pass here
+        pms->settingmode++;
+        pms->setting_button_current = -1;
+      }
+    } else {
+      CHECK(pms->choicemode == CHOICE_ACTIVE);
+      if(keys.u.repeat)
+        pms->setting_button_current--;
+      if(keys.d.repeat)
+        pms->setting_button_current++;
+      pms->setting_button_current += button_count;
+      pms->setting_button_current %= button_count;
+      // We accept anything for this (besides cancel) because the user might not know what their accept button is at the moment
+      // Maybe add a "done" button at the bottom?
+      bool somethingpushed = false;
+      for(int i = 0; i < keys.keys.size(); i++) {
+        if(i == pms->buttons[BUTTON_CANCEL])
+          continue;
+        if(keys.keys[i].push)
+          somethingpushed = true;
+      }
+      if(somethingpushed)
+        pms->setting_button_reading = true;
+      if(keys.keys[pms->buttons[BUTTON_CANCEL]].push) {
+        pms->choicemode = CHOICE_IDLE;
+        pms->setting_button_current = -1;
       }
     }
   } else if(pms->settingmode == SETTING_READY) {  // if player has chosen faction
@@ -353,13 +420,75 @@ void runSettingRender(const PlayerMenuState &pms) {
     drawLine(pms.compasspos.x - 15, pms.compasspos.y, pms.compasspos.x - 5, pms.compasspos.y, 1.0);
     drawLine(pms.compasspos.x +15, pms.compasspos.y, pms.compasspos.x + 5, pms.compasspos.y, 1.0);
     //drawText(bf, 20, pms.compasspos.x + 5, pms.compasspos.y + 5);
-  } else if(pms.settingmode == SETTING_READY) {
+  } else if(pms.settingmode >= SETTING_BUTTONS && pms.settingmode < SETTING_LAST) {
+
+    const Float4 drawzone = pms.faction->compass_location;
+    
+    // Basic math!
+    // compiletime constants
+    const int textline_size = 7;  // How many times larger a line of text is than the border
+    const int textline_count = 6; // How many lines we're going to have
+    const int border_size = 2;
+    const int divider_size = 3;
+    const int units = textline_size * textline_count + textline_count - 1 + border_size * 2 + divider_size; // X lines, plus dividers (textline_count-1), plus the top and bottom borders (4), plus the increased divider from categories to data (2)
+    // runtime constants
+    const float unitsize = drawzone.y_span() / units;
+    const float border = unitsize * border_size;
+    const float xstart = drawzone.sx + unitsize * border_size;
+    const float xend = drawzone.ex - unitsize * border_size;
+    float ystarts[textline_count];
+    ystarts[0] = drawzone.sy + unitsize * border_size;
+    for(int i = 1; i < textline_count; i++)
+      ystarts[i] = drawzone.sy + unitsize * (border_size + divider_size + i - 1) + unitsize * textline_size * i;
+    
+    setColor(Color(1.0, 1.0, 1.0));
+    {
+      vector<Float2> rectish;
+      rectish.push_back(Float2(drawzone.sx + border, drawzone.sy));
+      rectish.push_back(Float2(drawzone.ex - border, drawzone.sy));
+      rectish.push_back(Float2(drawzone.ex, drawzone.sy + border));
+      rectish.push_back(Float2(drawzone.ex, drawzone.ey - border));
+      rectish.push_back(Float2(drawzone.ex - border, drawzone.ey));
+      rectish.push_back(Float2(drawzone.sx + border, drawzone.ey));
+      rectish.push_back(Float2(drawzone.sx, drawzone.ey - border));
+      rectish.push_back(Float2(drawzone.sx, drawzone.sy + border));
+      drawLineLoop(rectish, 1.0);
+    }
+    
+    {
+      // Topic line!
+      setColor(pms.faction->color);
+      drawDvec2(pms.faction->icon, Float4(xstart, ystarts[0], xstart + unitsize * textline_size, ystarts[0] + unitsize * textline_size), 0.5);
+      
+      const int activescale = 4;
+      float txstart = xstart + unitsize * textline_size;
+      float title_units = (xend - txstart) / (setting_real_count - 1 + activescale);
+      
+      int units = 0;
+    
+      for(int i = 0; i < setting_real_count; i++) {
+        bool active = (i + setting_first == pms.settingmode);
+        
+        int tunits = active ? activescale : 1;
+        string text = active ? setting_names[setting_first + i] : string() + setting_names[setting_first + i][0];
+        setColor(active ? Color(1.0, 1.0, 1.0) : Color(0.5, 0.5, 0.5));
+        
+        drawJustifiedText(text, textline_size * unitsize, title_units * (units + tunits / 2.) + txstart, ystarts[0], TEXT_CENTER, TEXT_MIN);
+        
+        units += tunits;
+      }
+      
+      CHECK(units == setting_real_count - 1 + activescale);
+      
+    }
+    
+  /*} else if(pms.settingmode == SETTING_READY) {
     setColor(pms.faction->color);
     drawDvec2(pms.faction->icon, squareInside(pms.faction->compass_location), 1.0);
     setColor(Color(1.0, 1.0, 1.0) / 60 * pms.fireHeld);
     drawRect(pms.faction->compass_location, 1);
     setColor(Color(0.8, 0.8, 0.8));
-    drawText(ksax_names[pms.axismode], 20, pms.faction->compass_location.ex, pms.faction->compass_location.ey);
+    drawText(ksax_names[pms.axismode], 20, pms.faction->compass_location.ex, pms.faction->compass_location.ey);*/
   } else {
     CHECK(0);
   }

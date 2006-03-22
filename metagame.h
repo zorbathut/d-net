@@ -43,13 +43,27 @@ public:
 // Then we let the player customize his system (if there is customization involved - there may not be.)
 // Then we unlock the menu, and allow them to hold "ready" in much the same way as they currently do.
 // I think this works.
-enum { SETTING_COMPASS, SETTING_BUTTONS, SETTING_AXISTYPE, SETTING_AXISCHOOSE, SETTING_CUSTOMIZE, SETTING_READY };
+enum { SETTING_COMPASS, SETTING_BUTTONS, SETTING_AXISTYPE, SETTING_AXISCHOOSE, SETTING_CUSTOMIZE, SETTING_READY, SETTING_LAST };
+const char * const setting_names[] = { "NULL", "Keys", "Mode", "Axis", "Cust", "Ready" };
+
+const int setting_first = SETTING_BUTTONS;
+const int setting_real_count = SETTING_LAST - setting_first;
+
 enum { CHOICE_FIRSTPASS, CHOICE_ACTIVE, CHOICE_IDLE };
+
+enum { BUTTON_ACCEPT, BUTTON_CANCEL };
+const char * const button_names[] = { "Fire/Accept", "Weapon/Cancel" };
+const int button_count = sizeof(button_names) / sizeof(*button_names);
 
 struct PlayerMenuState {
 public:
   int settingmode;
   int choicemode;
+
+  int setting_button_current;
+  bool setting_button_reading;
+
+  int buttons[button_count];
   
   int firekey;
   FactionState *faction;

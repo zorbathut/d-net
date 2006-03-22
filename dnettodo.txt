@@ -1,4 +1,6 @@
 - Basic new config
+- Buy menu flicker?
+- Holy crap! Self-intersecting! Cry!
 - Rendering change to render lines by default, segments as the exception
 - Factions from file
 - Axes choice for tank mode

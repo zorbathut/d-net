@@ -104,6 +104,13 @@ public:
     return Float2(ex, ey);
   }
   
+  float x_span() const {
+    return ey - sy;
+  }
+  float y_span() const {
+    return ey - sy;
+  }
+  
   Float2 midpoint() const {
     return (s() + e()) / 2;
   }

@@ -18,10 +18,10 @@ clean:
 	rm -rf *.o *.exe *.d *.S
 	
 run: d-net.exe
-	d-net.exe --nofullscreen --debugitems --startingcash=1000000
+	d-net.exe --nofullscreen --debugitems --startingCash=1000000
 
 ai: d-net.exe
-	d-net.exe --nofullscreen --aiCount=12 --fastForwardTo=100000000
+	d-net.exe --nofullscreen --aiCount=12 --fastForwardTo=100000000 --terminateAfter=600 --startingCash=100000000
 
 vecedit: d-net.exe
 	d-net.exe --vecedit --nofullscreen

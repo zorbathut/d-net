@@ -172,28 +172,22 @@ void InterfaceMain::render() const {
     #if 0
     //dprintf("Frame!\n");
       
-    string lhs[28] = {
-     "fffffffbffffc000", "ffffffd800000000",
-     "00000012e04ef000", "ffffffd800000000",
-     "00000012b2964000", "ffffffd81532f000",
-     "00000013db8d9000", "ffffffd848e4f000",
-     "0000000c00000000", "ffffffe800000000",
-     "0000000c000031b3", "0000000d481372c0",
-     "0000000b0230e000", "0000000d731e6000",
-     "0000000c00003000", "0000000e94889000",
-     "0000000c0000336d", "0000000e94888a6f",
-     "0000000c00004000", "0000001800000000",
-     "0000001400008000", "0000002800000000",
-     "fffffffbffffc000", "0000002800000000",
-     "00000003ffffe000", "0000001800000000",
-     "00000003ffffe000", "ffffffe800000000",
+    string lhs[112] = {
+      "000000191e1ea000", "ffffffd80d1c3000",
+      "0000001947f7b000", "ffffffd713098000",
+      "0000001976ba1000", "ffffffd7b7758000",
+      "0000001a61a85000", "ffffffd7b6f25000",
+      "0000001ad274f000", "ffffffd8a21d1000",
+      "000000246d566000", "ffffffdb3be4b000",
     };
-    string rhs[6] = {
-     "000000113def3b5a", "0000002245a5c550",
-     "0000001003a40b5a", "0000002223eba850",
-     "00000011b1c8505a", "000000213ccc0d10",
+    string rhs[10] = {
+      "0000002645af8784", "ffffffdbdf1d9178",
+      "00000024cdd0ca84", "ffffffdc1edb9d78",
+      "0000002471775184", "ffffffdb27db9eb8",
+      "0000002542ed5a44", "ffffffda5a056478",
+      "0000002650c48a84", "ffffffdae14b6178",
     };
-
+    
     vector<Coord2> diff[2];
 
     for(int i = 0; i < sizeof(lhs) / sizeof(*lhs); i += 2)
@@ -216,7 +210,7 @@ void InterfaceMain::render() const {
     vector<vector<Coord2> > res = getDifference(diff[0], diff[1]);
     
     if(res.size()) {
-      Coord4 bbox = getBoundBox(diff[1]);
+      Coord4 bbox = getBoundBox(diff[0]);
       //bbox.sx -= 20;
       //bbox.sy -= 20;
       //bbox.ex += 20;

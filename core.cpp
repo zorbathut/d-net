@@ -22,6 +22,7 @@ DEFINE_string(writeTarget, "data/dump", "Prefix for file dump");
 DEFINE_int(writeTargetCheckpoint, 2000000000, "Write target checkpoint frequency"); // currently disabled
 
 DEFINE_int(fastForwardTo, 0, "Fastforward rendering to this frame");
+DEFINE_int(terminateAfter, -1, "Terminate execution after this many seconds");
 
 DEFINE_bool(frameskip, true, "Enable or disable frameskipping");
 
@@ -56,7 +57,7 @@ void MainLoop() {
   int skipped = 0;
   
   frameNumber = 0;    // it's -1 before this point
-  
+
   time_t starttime = time(NULL);
     
 	while( !quit ) {
@@ -88,7 +89,7 @@ void MainLoop() {
 					break;
 			}
 		}
-		if(quit)
+		if(quit || FLAGS_terminateAfter != -1 && time(NULL) - starttime >= FLAGS_terminateAfter)
       break;
 		controllers = controls_next();
 		CHECK(controllers.size() == origcontrollers.size());

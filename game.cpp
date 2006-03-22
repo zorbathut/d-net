@@ -20,7 +20,7 @@ using namespace std;
 
 DEFINE_bool(verboseCollisions, false, "Verbose collisions");
 DEFINE_bool(debugGraphics, false, "Enable various debug graphics");
-DEFINE_int(startingcash, 1000, "Cash to start with");
+DEFINE_int(startingCash, 1000, "Cash to start with");
 
 void dealDamage(float dmg, Tank *target, Player *owner, float damagecredit, bool killcredit) {
   if(target->player == owner)
@@ -98,7 +98,7 @@ int Player::resellAmmoValue() const {
 
 Player::Player() {
   faction = NULL;
-  cash = FLAGS_startingcash;
+  cash = FLAGS_startingCash;
   reCalculate();
   weapon = defaultWeapon();
   glory = defaultGlory();
