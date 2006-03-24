@@ -471,7 +471,7 @@ void runSettingRender(const PlayerMenuState &pms) {
         
         int tunits = active ? activescale : 1;
         string text = active ? setting_names[setting_first + i] : string() + setting_names[setting_first + i][0];
-        setColor(active ? Color(1.0, 1.0, 1.0) : Color(0.5, 0.5, 0.5));
+        setColor((active && pms.choicemode == CHOICE_IDLE) ? Color(1.0, 1.0, 1.0) : Color(0.5, 0.5, 0.5));
         
         drawJustifiedText(text, textline_size * unitsize, title_units * (units + tunits / 2.) + txstart, ystarts[0], TEXT_CENTER, TEXT_MIN);
         
@@ -482,13 +482,32 @@ void runSettingRender(const PlayerMenuState &pms) {
       
     }
     
-  /*} else if(pms.settingmode == SETTING_READY) {
-    setColor(pms.faction->color);
-    drawDvec2(pms.faction->icon, squareInside(pms.faction->compass_location), 1.0);
-    setColor(Color(1.0, 1.0, 1.0) / 60 * pms.fireHeld);
-    drawRect(pms.faction->compass_location, 1);
-    setColor(Color(0.8, 0.8, 0.8));
-    drawText(ksax_names[pms.axismode], 20, pms.faction->compass_location.ex, pms.faction->compass_location.ey);*/
+    if(pms.settingmode == SETTING_BUTTONS) {
+      CHECK(button_count == 2); // just 'cause I'll need to redo spacing after these
+      for(int i = 0; i < button_count; i++) {
+        if(pms.setting_button_current == i && !pms.setting_button_reading) {
+          setColor(Color(1.0, 1.0, 1.0));
+        } else {
+          setColor(Color(0.5, 0.5, 0.5));
+        }
+        drawText(button_names_a[i], textline_size * unitsize, xstart, ystarts[2 + i * 2]);
+        drawText(button_names_b[i], textline_size * unitsize, xstart, ystarts[3 + i * 2]);
+        string btext;
+        if(pms.setting_button_current == i && pms.setting_button_reading) {
+          btext = "[ ]";
+          setColor(Color(1.0, 1.0, 1.0));
+        } else if(pms.buttons[i] == -1) {
+          btext = "";
+        } else {
+          btext = StringPrintf("B%02d", pms.buttons[i]);
+          setColor(Color(0.5, 0.5, 0.5));
+        }
+        drawJustifiedText(btext.c_str(), textline_size * unitsize, xend, ystarts[3 + i * 2], TEXT_MAX, TEXT_MIN);
+      }
+    } else {
+      CHECK(0);
+    }
+    
   } else {
     CHECK(0);
   }

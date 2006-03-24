@@ -796,6 +796,7 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
       if(lhsInside) {
         if(pathReversed(mas[j])) {
           dprintf("Holy fuck, this path is screwed up!\n");
+          CHECK(0);
         } else {
           rrv.push_back(mas[j]);
         }

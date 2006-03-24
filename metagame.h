@@ -52,8 +52,9 @@ const int setting_real_count = SETTING_LAST - setting_first;
 enum { CHOICE_FIRSTPASS, CHOICE_ACTIVE, CHOICE_IDLE };
 
 enum { BUTTON_ACCEPT, BUTTON_CANCEL };
-const char * const button_names[] = { "Fire/Accept", "Weapon/Cancel" };
-const int button_count = sizeof(button_names) / sizeof(*button_names);
+const char * const button_names_a[] = { "Fire/", "Weapon/" };
+const char * const button_names_b[] = { "  Accept", "  Cancel" };
+const int button_count = sizeof(button_names_a) / sizeof(*button_names_a);
 
 struct PlayerMenuState {
 public:
