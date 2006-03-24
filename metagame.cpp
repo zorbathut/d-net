@@ -235,6 +235,8 @@ PlayerMenuState::PlayerMenuState() {
   setting_button_current = -1;
   setting_button_reading = false;
   
+  setting_axistype = 1237539;
+  
   memset(buttons, -1, sizeof(buttons));
 
   firekey = 10000;
@@ -250,6 +252,8 @@ PlayerMenuState::PlayerMenuState(Float2 cent) {
   setting_button_current = 0;
   setting_button_reading = true;
   
+  setting_axistype = 0;
+  
   memset(buttons, -1, sizeof(buttons));
   
   firekey = -1;
@@ -260,6 +264,14 @@ PlayerMenuState::PlayerMenuState(Float2 cent) {
 
 bool PlayerMenuState::readyToPlay() const {
   return settingmode == SETTING_READY && fireHeld == 60;
+}
+
+void PlayerMenuState::traverse_axistype(int delta, int axes) {
+  do {
+    setting_axistype += delta;
+    setting_axistype += KSAX_END;
+    setting_axistype %= KSAX_END;
+  } while(ksax_minaxis[setting_axistype] > axes);
 }
 
 vector<Keystates> genKeystates(const vector<Controller> &keys, const vector<PlayerMenuState> &modes) {
@@ -331,12 +343,18 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
       for(int i = 0; i < keys.keys.size(); i++) {
         if(keys.keys[i].push) {
           int j;
+          bool noopify = false;
           for(j = 0; j < button_count; j++) {
             if(pms->buttons[j] == i) {
-              swap(pms->buttons[j], pms->buttons[pms->setting_button_current]);
+              if(pms->buttons[pms->setting_button_current] != -1)
+                swap(pms->buttons[j], pms->buttons[pms->setting_button_current]);
+              else
+                noopify = true;
               break;
             }
           }
+          if(noopify)
+            continue;
           if(j == button_count)
             pms->buttons[pms->setting_button_current] = i;
           if(pms->choicemode == CHOICE_FIRSTPASS) {
@@ -376,33 +394,31 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
         pms->setting_button_current = -1;
       }
     }
-  } else if(pms->settingmode == SETTING_READY) {  // if player has chosen faction
-    {
-      int opm = pms->axismode;
-      if(keys.l.repeat) {
-        do {
-          pms->axismode--;
-          pms->axismode += KSAX_END;
-          pms->axismode %= KSAX_END;
-        } while(ksax_minaxis[pms->axismode] > keys.axes.size());
+  } else if(pms->settingmode == SETTING_AXISTYPE) {
+    if(pms->choicemode == CHOICE_IDLE) {
+      if(keys.keys[pms->buttons[BUTTON_ACCEPT]].push) {
+        pms->choicemode = CHOICE_ACTIVE;
       }
-      if(keys.r.repeat) {
-        do {
-          pms->axismode++;
-          pms->axismode += KSAX_END;
-          pms->axismode %= KSAX_END;
-        } while(ksax_minaxis[pms->axismode] > keys.axes.size());
-      }
-      if(pms->axismode != opm)
-        pms->fireHeld = 0;  // just for a bit of added safety
-    }
-    if(pms->firekey != -1 && keys.keys[pms->firekey].down) {
-      pms->fireHeld++;
+      // deal with moving
     } else {
-      pms->fireHeld = 0;
+      if(keys.l.push)
+        pms->traverse_axistype(-1, keys.axes.size());
+      if(keys.r.push)
+        pms->traverse_axistype(1, keys.axes.size());
+      if(pms->choicemode == CHOICE_ACTIVE) {
+        if(keys.keys[pms->buttons[BUTTON_ACCEPT]].push || keys.keys[pms->buttons[BUTTON_CANCEL]].push) {
+          pms->choicemode = CHOICE_IDLE;
+        }
+      } else if(pms->choicemode == CHOICE_FIRSTPASS) {
+        if(keys.keys[pms->buttons[BUTTON_ACCEPT]].push) {
+          pms->settingmode++;
+        }
+      } else {
+        CHECK(0);
+      }
     }
-    if(pms->fireHeld > 60)
-      pms->fireHeld = 60;
+  } else if(pms->settingmode == SETTING_CUSTOMIZE) {
+  } else if(pms->settingmode == SETTING_READY) {
   } else {
     CHECK(0);
   }
@@ -504,10 +520,20 @@ void runSettingRender(const PlayerMenuState &pms) {
         }
         drawJustifiedText(btext.c_str(), textline_size * unitsize, xend, ystarts[3 + i * 2], TEXT_MAX, TEXT_MIN);
       }
+    } else if(pms.settingmode == SETTING_AXISTYPE) {
+      if(pms.choicemode != CHOICE_IDLE)
+        setColor(Color(1.0, 1.0, 1.0));
+      else
+        setColor(Color(0.5, 0.5, 0.5));
+      drawJustifiedText(ksax_names[pms.setting_axistype], textline_size * unitsize, (xstart + xend) / 2, ystarts[2], TEXT_CENTER, TEXT_MIN);
+      // TODO: make these blink?
+      // TODO: better pictorial representations
+      drawJustifiedText("<", textline_size * unitsize, xstart, ystarts[2], TEXT_MIN, TEXT_MIN);
+      drawJustifiedText(">", textline_size * unitsize, xend, ystarts[2], TEXT_MAX, TEXT_MIN);
     } else {
       CHECK(0);
     }
-    
+
   } else {
     CHECK(0);
   }

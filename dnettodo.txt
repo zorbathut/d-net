@@ -1,4 +1,6 @@
 - Basic new config
+- Better pictorial representations for axis types
+- Absolute config
 - Buy menu flicker?
 - Holy crap! Self-intersecting! Cry!
 - Rendering change to render lines by default, segments as the exception

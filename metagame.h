@@ -64,6 +64,9 @@ public:
   int setting_button_current;
   bool setting_button_reading;
 
+  int setting_axistype;
+  void traverse_axistype(int delta, int axes);
+
   int buttons[button_count];
   
   int firekey;
