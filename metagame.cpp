@@ -246,7 +246,7 @@ PlayerMenuState::PlayerMenuState() {
 }
 
 PlayerMenuState::PlayerMenuState(Float2 cent) {
-  settingmode = SETTING_COMPASS;
+  settingmode = SETTING_BUTTONS;
   choicemode = CHOICE_FIRSTPASS;
   
   setting_button_current = 0;
@@ -263,7 +263,7 @@ PlayerMenuState::PlayerMenuState(Float2 cent) {
 }
 
 bool PlayerMenuState::readyToPlay() const {
-  return settingmode == SETTING_READY && fireHeld == 60;
+  return faction && settingmode == SETTING_READY && fireHeld == 60;
 }
 
 void PlayerMenuState::traverse_axistype(int delta, int axes) {
@@ -308,7 +308,7 @@ vector<Keystates> genKeystates(const vector<Controller> &keys, const vector<Play
 
 void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<FactionState> &factions) {
   CHECK(pms->choicemode != CHOICE_IDLE);
-  if(pms->settingmode == SETTING_COMPASS) { // if player hasn't chosen faction yet
+  if(!pms->faction) { // if player hasn't chosen faction yet
     pms->fireHeld = 0;
     {
       Float2 dir = deadzone(keys.menu, 0, 0.2) * 4;
@@ -333,100 +333,101 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
         }
       }
     }
-  } else if(pms->settingmode == SETTING_BUTTONS) {
-    if(pms->setting_button_current == -1) {
-      pms->setting_button_current = 0;
-      pms->setting_button_reading = (pms->choicemode == CHOICE_FIRSTPASS);
-    }
-    if(pms->setting_button_reading) {
-      CHECK(pms->choicemode != CHOICE_IDLE);
-      for(int i = 0; i < keys.keys.size(); i++) {
-        if(keys.keys[i].push) {
-          int j;
-          bool noopify = false;
-          for(j = 0; j < button_count; j++) {
-            if(pms->buttons[j] == i) {
-              if(pms->buttons[pms->setting_button_current] != -1)
-                swap(pms->buttons[j], pms->buttons[pms->setting_button_current]);
-              else
-                noopify = true;
-              break;
+  } else {
+    CHECK(pms->faction);
+    if(pms->settingmode == SETTING_BUTTONS) {
+      if(pms->setting_button_current == -1) {
+        pms->setting_button_current = 0;
+        pms->setting_button_reading = (pms->choicemode == CHOICE_FIRSTPASS);
+      }
+      if(pms->setting_button_reading) {
+        CHECK(pms->choicemode != CHOICE_IDLE);
+        for(int i = 0; i < keys.keys.size(); i++) {
+          if(keys.keys[i].push) {
+            int j;
+            bool noopify = false;
+            for(j = 0; j < button_count; j++) {
+              if(pms->buttons[j] == i) {
+                if(pms->buttons[pms->setting_button_current] != -1)
+                  swap(pms->buttons[j], pms->buttons[pms->setting_button_current]);
+                else
+                  noopify = true;
+                break;
+              }
             }
+            if(noopify)
+              continue;
+            if(j == button_count)
+              pms->buttons[pms->setting_button_current] = i;
+            if(pms->choicemode == CHOICE_FIRSTPASS) {
+              pms->setting_button_current++;
+            } else {
+              pms->setting_button_reading = false;
+            }
+            break;
           }
-          if(noopify)
-            continue;
-          if(j == button_count)
-            pms->buttons[pms->setting_button_current] = i;
-          if(pms->choicemode == CHOICE_FIRSTPASS) {
-            pms->setting_button_current++;
-          } else {
-            pms->setting_button_reading = false;
-          }
-          break;
         }
-      }
-      if(pms->setting_button_current == button_count) {
-        // Done with the first pass here
-        pms->settingmode++;
-        pms->setting_button_current = -1;
-      }
-    } else {
-      CHECK(pms->choicemode == CHOICE_ACTIVE);
-      if(keys.u.repeat)
-        pms->setting_button_current--;
-      if(keys.d.repeat)
-        pms->setting_button_current++;
-      pms->setting_button_current += button_count;
-      pms->setting_button_current %= button_count;
-      // We accept anything for this (besides cancel) because the user might not know what their accept button is at the moment
-      // Maybe add a "done" button at the bottom?
-      bool somethingpushed = false;
-      for(int i = 0; i < keys.keys.size(); i++) {
-        if(i == pms->buttons[BUTTON_CANCEL])
-          continue;
-        if(keys.keys[i].push)
-          somethingpushed = true;
-      }
-      if(somethingpushed)
-        pms->setting_button_reading = true;
-      if(keys.keys[pms->buttons[BUTTON_CANCEL]].push) {
-        pms->choicemode = CHOICE_IDLE;
-        pms->setting_button_current = -1;
-      }
-    }
-  } else if(pms->settingmode == SETTING_AXISTYPE) {
-    if(pms->choicemode == CHOICE_IDLE) {
-      if(keys.keys[pms->buttons[BUTTON_ACCEPT]].push) {
-        pms->choicemode = CHOICE_ACTIVE;
-      }
-      // deal with moving
-    } else {
-      if(keys.l.push)
-        pms->traverse_axistype(-1, keys.axes.size());
-      if(keys.r.push)
-        pms->traverse_axistype(1, keys.axes.size());
-      if(pms->choicemode == CHOICE_ACTIVE) {
-        if(keys.keys[pms->buttons[BUTTON_ACCEPT]].push || keys.keys[pms->buttons[BUTTON_CANCEL]].push) {
-          pms->choicemode = CHOICE_IDLE;
-        }
-      } else if(pms->choicemode == CHOICE_FIRSTPASS) {
-        if(keys.keys[pms->buttons[BUTTON_ACCEPT]].push) {
+        if(pms->setting_button_current == button_count) {
+          // Done with the first pass here
           pms->settingmode++;
+          pms->setting_button_current = -1;
         }
       } else {
-        CHECK(0);
+        CHECK(pms->choicemode == CHOICE_ACTIVE);
+        if(keys.u.repeat)
+          pms->setting_button_current--;
+        if(keys.d.repeat)
+          pms->setting_button_current++;
+        pms->setting_button_current += button_count;
+        pms->setting_button_current %= button_count;
+        // We accept anything for this (besides cancel) because the user might not know what their accept button is at the moment
+        // Maybe add a "done" button at the bottom?
+        bool somethingpushed = false;
+        for(int i = 0; i < keys.keys.size(); i++) {
+          if(i == pms->buttons[BUTTON_CANCEL])
+            continue;
+          if(keys.keys[i].push)
+            somethingpushed = true;
+        }
+        if(somethingpushed)
+          pms->setting_button_reading = true;
+        if(keys.keys[pms->buttons[BUTTON_CANCEL]].push) {
+          pms->choicemode = CHOICE_IDLE;
+          pms->setting_button_current = -1;
+        }
       }
+    } else if(pms->settingmode == SETTING_AXISTYPE) {
+      if(pms->choicemode == CHOICE_IDLE) {
+        if(keys.keys[pms->buttons[BUTTON_ACCEPT]].push) {
+          pms->choicemode = CHOICE_ACTIVE;
+        }
+        // deal with moving
+      } else {
+        if(keys.l.push)
+          pms->traverse_axistype(-1, keys.axes.size());
+        if(keys.r.push)
+          pms->traverse_axistype(1, keys.axes.size());
+        if(pms->choicemode == CHOICE_ACTIVE) {
+          if(keys.keys[pms->buttons[BUTTON_ACCEPT]].push || keys.keys[pms->buttons[BUTTON_CANCEL]].push) {
+            pms->choicemode = CHOICE_IDLE;
+          }
+        } else if(pms->choicemode == CHOICE_FIRSTPASS) {
+          if(keys.keys[pms->buttons[BUTTON_ACCEPT]].push) {
+            pms->settingmode++;
+          }
+        } else {
+          CHECK(0);
+        }
+      }
+    //} else if(pms->settingmode == SETTING_READY) {
+    } else {
+      CHECK(0);
     }
-  //} else if(pms->settingmode == SETTING_READY) {
-  } else {
-    CHECK(0);
   }
 }
 
 void runSettingRender(const PlayerMenuState &pms) {
-  if(pms.settingmode != SETTING_COMPASS)
-    CHECK(pms.faction);
-  if(pms.settingmode == SETTING_COMPASS) {
+  if(!pms.faction) {
     setColor(1.0, 1.0, 1.0);
     //char bf[16];
     //sprintf(bf, "p%d", i);
@@ -435,8 +436,7 @@ void runSettingRender(const PlayerMenuState &pms) {
     drawLine(pms.compasspos.x - 15, pms.compasspos.y, pms.compasspos.x - 5, pms.compasspos.y, 1.0);
     drawLine(pms.compasspos.x +15, pms.compasspos.y, pms.compasspos.x + 5, pms.compasspos.y, 1.0);
     //drawText(bf, 20, pms.compasspos.x + 5, pms.compasspos.y + 5);
-  } else if(pms.settingmode >= SETTING_BUTTONS && pms.settingmode < SETTING_LAST) {
-
+  } else {
     const Float4 drawzone = pms.faction->compass_location;
     
     // Basic math!
@@ -477,15 +477,15 @@ void runSettingRender(const PlayerMenuState &pms) {
       
       const int activescale = 4;
       float txstart = xstart + unitsize * textline_size;
-      float title_units = (xend - txstart) / (setting_real_count - 1 + activescale);
+      float title_units = (xend - txstart) / (SETTING_LAST - 1 + activescale);
       
       int units = 0;
     
-      for(int i = 0; i < setting_real_count; i++) {
-        bool active = (i + setting_first == pms.settingmode);
+      for(int i = 0; i < SETTING_LAST; i++) {
+        bool active = (i == pms.settingmode);
         
         int tunits = active ? activescale : 1;
-        string text = active ? setting_names[setting_first + i] : string() + setting_names[setting_first + i][0];
+        string text = active ? setting_names[i] : string() + setting_names[i][0];
         setColor((active && pms.choicemode == CHOICE_IDLE) ? Color(1.0, 1.0, 1.0) : Color(0.5, 0.5, 0.5));
         
         drawJustifiedText(text, textline_size * unitsize, title_units * (units + tunits / 2.) + txstart, ystarts[0], TEXT_CENTER, TEXT_MIN);
@@ -493,7 +493,7 @@ void runSettingRender(const PlayerMenuState &pms) {
         units += tunits;
       }
       
-      CHECK(units == setting_real_count - 1 + activescale);
+      CHECK(units == SETTING_LAST - 1 + activescale);
       
     }
     
@@ -532,9 +532,6 @@ void runSettingRender(const PlayerMenuState &pms) {
     } else {
       CHECK(0);
     }
-
-  } else {
-    CHECK(0);
   }
 }
 
@@ -549,7 +546,7 @@ bool Metagame::runTick( const vector< Controller > &keys ) {
       for(int i = 0; i < pms.size(); i++) {
         if(pms[i].readyToPlay())
           readyusers++;
-        if(pms[i].settingmode != SETTING_COMPASS)
+        if(pms[i].faction)
           chosenusers++;
       }
       if(readyusers == chosenusers && chosenusers >= 2) {

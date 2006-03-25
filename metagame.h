@@ -46,11 +46,8 @@ public:
 /*
 enum { SETTING_COMPASS, SETTING_BUTTONS, SETTING_AXISTYPE, SETTING_AXISCHOOSE, SETTING_CUSTOMIZE, SETTING_READY, SETTING_LAST };
 const char * const setting_names[] = { "NULL", "Keys", "Mode", "Axis", "Cust", "Ready" };*/
-enum { SETTING_COMPASS, SETTING_BUTTONS, SETTING_AXISTYPE, SETTING_READY, SETTING_LAST };
+enum { SETTING_BUTTONS, SETTING_AXISTYPE, SETTING_READY, SETTING_LAST };
 const char * const setting_names[] = { "NULL", "Keys", "Mode", "Ready" };
-
-const int setting_first = SETTING_BUTTONS;
-const int setting_real_count = SETTING_LAST - setting_first;
 
 enum { CHOICE_FIRSTPASS, CHOICE_ACTIVE, CHOICE_IDLE };
 
@@ -61,6 +58,9 @@ const int button_count = sizeof(button_names_a) / sizeof(*button_names_a);
 
 struct PlayerMenuState {
 public:
+  Float2 compasspos;
+  FactionState *faction;
+
   int settingmode;
   int choicemode;
 
@@ -73,8 +73,6 @@ public:
   int buttons[button_count];
   
   int firekey;
-  FactionState *faction;
-  Float2 compasspos;
   int axismode;
 
   int fireHeld;
