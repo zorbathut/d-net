@@ -307,7 +307,6 @@ vector<Keystates> genKeystates(const vector<Controller> &keys, const vector<Play
 }
 
 void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<FactionState> &factions) {
-  CHECK(pms->choicemode != CHOICE_IDLE);
   if(!pms->faction) { // if player hasn't chosen faction yet
     pms->fireHeld = 0;
     {
@@ -334,8 +333,28 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
       }
     }
   } else {
-    CHECK(pms->faction);
-    if(pms->settingmode == SETTING_BUTTONS) {
+    if(pms->choicemode == CHOICE_IDLE) {
+      CHECK(pms->faction);
+      if(keys.l.push)
+        pms->settingmode--;
+      if(keys.r.push)
+        pms->settingmode++;
+      if(pms->settingmode < 0)
+        pms->settingmode = 0;
+      if(pms->settingmode >= SETTING_LAST)
+        pms->settingmode = SETTING_LAST;
+      bool accept = keys.keys[pms->buttons[BUTTON_ACCEPT]].push || keys.d.push;
+      if(accept && pms->settingmode != SETTING_READY)
+        pms->choicemode = CHOICE_ACTIVE;
+      if(accept && pms->settingmode == SETTING_READY)
+        pms->fireHeld++;
+      else
+        pms->fireHeld--;
+      if(pms->fireHeld < 0)
+        pms->fireHeld = 0;
+      if(pms->fireHeld > 60)
+        pms->fireHeld = 60;
+    } else if(pms->settingmode == SETTING_BUTTONS) {
       if(pms->setting_button_current == -1) {
         pms->setting_button_current = 0;
         pms->setting_button_reading = (pms->choicemode == CHOICE_FIRSTPASS);
@@ -378,8 +397,8 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
           pms->setting_button_current--;
         if(keys.d.repeat)
           pms->setting_button_current++;
-        pms->setting_button_current += button_count;
-        pms->setting_button_current %= button_count;
+        if(pms->setting_button_current >= button_count)
+          pms->setting_button_current = button_count - 1;
         // We accept anything for this (besides cancel) because the user might not know what their accept button is at the moment
         // Maybe add a "done" button at the bottom?
         bool somethingpushed = false;
@@ -389,37 +408,31 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
           if(keys.keys[i].push)
             somethingpushed = true;
         }
-        if(somethingpushed)
+        if(somethingpushed) {
           pms->setting_button_reading = true;
-        if(keys.keys[pms->buttons[BUTTON_CANCEL]].push) {
+        } else if(keys.keys[pms->buttons[BUTTON_CANCEL]].push || pms->setting_button_current == -1) {
           pms->choicemode = CHOICE_IDLE;
           pms->setting_button_current = -1;
         }
       }
     } else if(pms->settingmode == SETTING_AXISTYPE) {
-      if(pms->choicemode == CHOICE_IDLE) {
+      if(keys.l.push)
+        pms->traverse_axistype(-1, keys.axes.size());
+      if(keys.r.push)
+        pms->traverse_axistype(1, keys.axes.size());
+      if(pms->choicemode == CHOICE_ACTIVE) {
+        if(keys.keys[pms->buttons[BUTTON_ACCEPT]].push || keys.keys[pms->buttons[BUTTON_CANCEL]].push || keys.u.push) {
+          pms->choicemode = CHOICE_IDLE;
+        }
+      } else if(pms->choicemode == CHOICE_FIRSTPASS) {
         if(keys.keys[pms->buttons[BUTTON_ACCEPT]].push) {
-          pms->choicemode = CHOICE_ACTIVE;
+          pms->settingmode++;
         }
-        // deal with moving
       } else {
-        if(keys.l.push)
-          pms->traverse_axistype(-1, keys.axes.size());
-        if(keys.r.push)
-          pms->traverse_axistype(1, keys.axes.size());
-        if(pms->choicemode == CHOICE_ACTIVE) {
-          if(keys.keys[pms->buttons[BUTTON_ACCEPT]].push || keys.keys[pms->buttons[BUTTON_CANCEL]].push) {
-            pms->choicemode = CHOICE_IDLE;
-          }
-        } else if(pms->choicemode == CHOICE_FIRSTPASS) {
-          if(keys.keys[pms->buttons[BUTTON_ACCEPT]].push) {
-            pms->settingmode++;
-          }
-        } else {
-          CHECK(0);
-        }
+        CHECK(0);
       }
-    //} else if(pms->settingmode == SETTING_READY) {
+    } else if(pms->settingmode == SETTING_READY) {
+      pms->choicemode = CHOICE_IDLE; // There is no other option! Idle is the only possibility! Bow down before your god!
     } else {
       CHECK(0);
     }
@@ -438,6 +451,7 @@ void runSettingRender(const PlayerMenuState &pms) {
     //drawText(bf, 20, pms.compasspos.x + 5, pms.compasspos.y + 5);
   } else {
     const Float4 drawzone = pms.faction->compass_location;
+    //const float fadeFactor = (60 - pms.fireHeld) / 60.;
     
     // Basic math!
     // compiletime constants
@@ -529,6 +543,11 @@ void runSettingRender(const PlayerMenuState &pms) {
       // TODO: better pictorial representations
       drawJustifiedText("<", textline_size * unitsize, xstart, ystarts[2], TEXT_MIN, TEXT_MIN);
       drawJustifiedText(">", textline_size * unitsize, xend, ystarts[2], TEXT_MAX, TEXT_MIN);
+    } else if(pms.settingmode == SETTING_READY) {
+      setColor(Color(0.5, 0.5, 0.5));
+      const char * const text[] = {"Push fire", "when ready.", "Let go", "to cancel.", "< > to config"};
+      for(int i = 0; i < 5; i++)
+        drawJustifiedText(text[i], textline_size * unitsize, (xstart + xend) / 2, ystarts[i + 1], TEXT_CENTER, TEXT_MIN);
     } else {
       CHECK(0);
     }

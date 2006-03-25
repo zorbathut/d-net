@@ -47,7 +47,7 @@ public:
 enum { SETTING_COMPASS, SETTING_BUTTONS, SETTING_AXISTYPE, SETTING_AXISCHOOSE, SETTING_CUSTOMIZE, SETTING_READY, SETTING_LAST };
 const char * const setting_names[] = { "NULL", "Keys", "Mode", "Axis", "Cust", "Ready" };*/
 enum { SETTING_BUTTONS, SETTING_AXISTYPE, SETTING_READY, SETTING_LAST };
-const char * const setting_names[] = { "NULL", "Keys", "Mode", "Ready" };
+const char * const setting_names[] = { "Keys", "Mode", "Ready" };
 
 enum { CHOICE_FIRSTPASS, CHOICE_ACTIVE, CHOICE_IDLE };
 
