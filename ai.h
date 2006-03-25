@@ -37,6 +37,10 @@ public:
 
   Ai();
 
+private:
+  
+  void zeroNextKeys();
+
 };
 
 #endif

@@ -51,10 +51,9 @@ const char * const setting_names[] = { "Keys", "Mode", "Ready" };
 
 enum { CHOICE_FIRSTPASS, CHOICE_ACTIVE, CHOICE_IDLE };
 
-enum { BUTTON_ACCEPT, BUTTON_CANCEL };
+enum { BUTTON_ACCEPT, BUTTON_CANCEL, BUTTON_LAST };
 const char * const button_names_a[] = { "Fire/", "Weapon/" };
 const char * const button_names_b[] = { "  Accept", "  Cancel" };
-const int button_count = sizeof(button_names_a) / sizeof(*button_names_a);
 
 struct PlayerMenuState {
 public:
@@ -70,11 +69,8 @@ public:
   int setting_axistype;
   void traverse_axistype(int delta, int axes);
 
-  int buttons[button_count];
+  int buttons[BUTTON_LAST];
   
-  int firekey;
-  int axismode;
-
   int fireHeld;
   bool readyToPlay() const;
 

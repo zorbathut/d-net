@@ -4,11 +4,13 @@
 #include "itemdb.h"
 
 void Ai::updatePregame() {
+  zeroNextKeys();
   nextKeys.menu = Float2(0, 0);
   nextKeys.keys[0].down = true;
 }
 
 void Ai::updateCharacterChoice(const vector<FactionState> &factions, const vector<PlayerMenuState> &players, int you) {
+  zeroNextKeys();
   if(!players[you].faction) {
     int targfact = you;
     if(targfact >= factions.size() || targfact < 0)
@@ -23,21 +25,27 @@ void Ai::updateCharacterChoice(const vector<FactionState> &factions, const vecto
       targpt = normalize(targpt);
     nextKeys.menu = Float2(targpt.x, -targpt.y);
     nextKeys.keys[0].down = isInside(factions[targfact].compass_location, players[you].compasspos);
-  } else if(players[you].axismode != KSAX_ABSOLUTE) {
-    nextKeys.menu = Float2(1.0, 0);
-    nextKeys.keys[0].down = false;
+  } else if(players[you].settingmode == SETTING_BUTTONS) {
+    nextKeys.keys[players[you].setting_button_current].down = frameNumber % 2;
+  } else if(players[you].settingmode == SETTING_AXISTYPE) {
+    if(players[you].setting_axistype != KSAX_ABSOLUTE)
+      nextKeys.menu = Float2(1.0, 0);
+    else
+      nextKeys.keys[BUTTON_ACCEPT].down = true;
+  } else if(players[you].settingmode == SETTING_READY) {
+    nextKeys.keys[BUTTON_ACCEPT].down = true;
   } else {
-    CHECK(players[you].axismode == KSAX_ABSOLUTE);
-    nextKeys.menu = Float2(0, 0);
-    nextKeys.keys[0].down = true;
+    CHECK(0);
   }
 }
 
 Controller makeController(float x, float y, bool key) {
   Controller rv;
-  rv.keys.resize(1);
+  rv.keys.resize(BUTTON_LAST);
   rv.menu = Float2(x, y);
   rv.keys[0].down = key;
+  for(int i = 1; i < BUTTON_LAST; i++)
+    rv.keys[i].down = key;
   return rv;
 }
 
@@ -91,6 +99,7 @@ void appendPurchases(deque<Controller> *dest, const vector<Controller> &src, int
 }
 
 void Ai::updateShop(const Player *player) {
+  zeroNextKeys();
   if(shopQueue.size()) {
     nextKeys = shopQueue[0];
     shopQueue.pop_front();
@@ -153,6 +162,7 @@ void Ai::updateShop(const Player *player) {
 }
 
 void Ai::updateGame(const vector<vector<Coord2> > &collide, const vector<Tank> &players, int me) {
+  zeroNextKeys();
   if(shopdone || rng.frand() < 0.01) {
     // find a tank, because approach and retreat both need one
     int targtank;
@@ -216,6 +226,7 @@ void Ai::updateGame(const vector<vector<Coord2> > &collide, const vector<Tank> &
 }
 
 void Ai::updateBombardment(const vector<Tank> &players, Coord2 mypos) {
+  zeroNextKeys();
   Coord2 clopos(0, 0);
   Coord clodist = 1000000;
   for(int i = 0; i < players.size(); i++) {
@@ -235,6 +246,7 @@ void Ai::updateBombardment(const vector<Tank> &players, Coord2 mypos) {
 }
 
 void Ai::updateWaitingForReport() {
+  zeroNextKeys();
   nextKeys.menu = Float2(0, 0);
   nextKeys.keys[0].down = true;
 }
@@ -244,7 +256,14 @@ Controller Ai::getNextKeys() const {
 }
 
 Ai::Ai() {
-  nextKeys.keys.resize(1);
+  nextKeys.keys.resize(BUTTON_LAST);
   shopdone = false;
   firing = false;
 }
+
+void Ai::zeroNextKeys() {
+  nextKeys.menu = Float2(0, 0);
+  for(int i = 0; i < nextKeys.keys.size(); i++)
+    nextKeys.keys[i].down = false;
+}
+

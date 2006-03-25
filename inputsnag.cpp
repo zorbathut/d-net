@@ -59,7 +59,7 @@ vector<Controller> controls_init() {
     dprintf("AIs initialized\n");
     for(int i = 0; i < FLAGS_aiCount; i++) {
       sources.push_back(make_pair((int)CIP_AI, i));
-      now[i].keys.resize(1);
+      now[i].keys.resize(BUTTON_LAST);
       now[i].axes.resize(2);
     }
   } else {

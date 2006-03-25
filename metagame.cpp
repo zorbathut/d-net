@@ -239,10 +239,8 @@ PlayerMenuState::PlayerMenuState() {
   
   memset(buttons, -1, sizeof(buttons));
 
-  firekey = 10000;
   faction = NULL;
   compasspos = Float2(0,0);
-  axismode = -30;   // values that are likely to break stuff badly
 }
 
 PlayerMenuState::PlayerMenuState(Float2 cent) {
@@ -256,10 +254,8 @@ PlayerMenuState::PlayerMenuState(Float2 cent) {
   
   memset(buttons, -1, sizeof(buttons));
   
-  firekey = -1;
   faction = NULL;
   compasspos = cent;
-  axismode = KSAX_UDLR;
 }
 
 bool PlayerMenuState::readyToPlay() const {
@@ -278,14 +274,14 @@ vector<Keystates> genKeystates(const vector<Controller> &keys, const vector<Play
   vector<Keystates> kst;
   int pid = 0;
   for(int i = 0; i < modes.size(); i++) {
-    if(modes[i].firekey != -1) {
+    if(modes[i].faction) {
       kst.push_back(Keystates());
       kst[pid].u = keys[i].u;
       kst[pid].d = keys[i].d;
       kst[pid].l = keys[i].l;
       kst[pid].r = keys[i].r;
-      kst[pid].f = keys[i].keys[modes[i].firekey];
-      kst[pid].axmode = modes[i].axismode;
+      kst[pid].f = keys[i].keys[modes[i].buttons[BUTTON_ACCEPT]];
+      kst[pid].axmode = modes[i].setting_axistype;
       if(kst[pid].axmode == KSAX_UDLR || kst[pid].axmode == KSAX_ABSOLUTE) {
         kst[pid].ax[0] = keys[i].menu.x;
         kst[pid].ax[1] = keys[i].menu.y;
@@ -325,7 +321,6 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
       for(int j = 0; j < keys.keys.size(); j++) {
         if(keys.keys[j].repeat) {
           pms->faction = &factions[targetInside];
-          pms->firekey = j;
           pms->settingmode = SETTING_BUTTONS;
           pms->choicemode = CHOICE_FIRSTPASS; // Because it is.
           factions[targetInside].taken = true;
@@ -343,7 +338,7 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
         pms->settingmode = 0;
       if(pms->settingmode >= SETTING_LAST)
         pms->settingmode = SETTING_LAST;
-      bool accept = keys.keys[pms->buttons[BUTTON_ACCEPT]].push || keys.d.push;
+      bool accept = keys.keys[pms->buttons[BUTTON_ACCEPT]].down || keys.d.down;
       if(accept && pms->settingmode != SETTING_READY)
         pms->choicemode = CHOICE_ACTIVE;
       if(accept && pms->settingmode == SETTING_READY)
@@ -365,7 +360,7 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
           if(keys.keys[i].push) {
             int j;
             bool noopify = false;
-            for(j = 0; j < button_count; j++) {
+            for(j = 0; j < BUTTON_LAST; j++) {
               if(pms->buttons[j] == i) {
                 if(pms->buttons[pms->setting_button_current] != -1)
                   swap(pms->buttons[j], pms->buttons[pms->setting_button_current]);
@@ -376,7 +371,7 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
             }
             if(noopify)
               continue;
-            if(j == button_count)
+            if(j == BUTTON_LAST)
               pms->buttons[pms->setting_button_current] = i;
             if(pms->choicemode == CHOICE_FIRSTPASS) {
               pms->setting_button_current++;
@@ -386,7 +381,7 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
             break;
           }
         }
-        if(pms->setting_button_current == button_count) {
+        if(pms->setting_button_current == BUTTON_LAST) {
           // Done with the first pass here
           pms->settingmode++;
           pms->setting_button_current = -1;
@@ -397,8 +392,8 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
           pms->setting_button_current--;
         if(keys.d.repeat)
           pms->setting_button_current++;
-        if(pms->setting_button_current >= button_count)
-          pms->setting_button_current = button_count - 1;
+        if(pms->setting_button_current >= BUTTON_LAST)
+          pms->setting_button_current = BUTTON_LAST - 1;
         // We accept anything for this (besides cancel) because the user might not know what their accept button is at the moment
         // Maybe add a "done" button at the bottom?
         bool somethingpushed = false;
@@ -451,7 +446,7 @@ void runSettingRender(const PlayerMenuState &pms) {
     //drawText(bf, 20, pms.compasspos.x + 5, pms.compasspos.y + 5);
   } else {
     const Float4 drawzone = pms.faction->compass_location;
-    //const float fadeFactor = (60 - pms.fireHeld) / 60.;
+    const float fadeFactor = (60 - pms.fireHeld) / 60.;
     
     // Basic math!
     // compiletime constants
@@ -470,7 +465,7 @@ void runSettingRender(const PlayerMenuState &pms) {
     for(int i = 1; i < textline_count; i++)
       ystarts[i] = drawzone.sy + unitsize * (border_size + divider_size + i - 1) + unitsize * textline_size * i;
     
-    setColor(Color(1.0, 1.0, 1.0));
+    setColor(Color(1.0, 1.0, 1.0) * fadeFactor);
     {
       vector<Float2> rectish;
       rectish.push_back(Float2(drawzone.sx + border, drawzone.sy));
@@ -486,7 +481,7 @@ void runSettingRender(const PlayerMenuState &pms) {
     
     {
       // Topic line!
-      setColor(pms.faction->color);
+      setColor(pms.faction->color * fadeFactor);
       drawDvec2(pms.faction->icon, Float4(xstart, ystarts[0], xstart + unitsize * textline_size, ystarts[0] + unitsize * textline_size), 0.5);
       
       const int activescale = 4;
@@ -500,7 +495,7 @@ void runSettingRender(const PlayerMenuState &pms) {
         
         int tunits = active ? activescale : 1;
         string text = active ? setting_names[i] : string() + setting_names[i][0];
-        setColor((active && pms.choicemode == CHOICE_IDLE) ? Color(1.0, 1.0, 1.0) : Color(0.5, 0.5, 0.5));
+        setColor(((active && pms.choicemode == CHOICE_IDLE) ? Color(1.0, 1.0, 1.0) : Color(0.5, 0.5, 0.5)) * fadeFactor);
         
         drawJustifiedText(text, textline_size * unitsize, title_units * (units + tunits / 2.) + txstart, ystarts[0], TEXT_CENTER, TEXT_MIN);
         
@@ -512,39 +507,39 @@ void runSettingRender(const PlayerMenuState &pms) {
     }
     
     if(pms.settingmode == SETTING_BUTTONS) {
-      CHECK(button_count == 2); // just 'cause I'll need to redo spacing after these
-      for(int i = 0; i < button_count; i++) {
+      CHECK(BUTTON_LAST == 2); // just 'cause I'll need to redo spacing after these
+      for(int i = 0; i < BUTTON_LAST; i++) {
         if(pms.setting_button_current == i && !pms.setting_button_reading) {
-          setColor(Color(1.0, 1.0, 1.0));
+          setColor(Color(1.0, 1.0, 1.0) * fadeFactor);
         } else {
-          setColor(Color(0.5, 0.5, 0.5));
+          setColor(Color(0.5, 0.5, 0.5) * fadeFactor);
         }
         drawText(button_names_a[i], textline_size * unitsize, xstart, ystarts[2 + i * 2]);
         drawText(button_names_b[i], textline_size * unitsize, xstart, ystarts[3 + i * 2]);
         string btext;
         if(pms.setting_button_current == i && pms.setting_button_reading) {
           btext = "[ ]";
-          setColor(Color(1.0, 1.0, 1.0));
+          setColor(Color(1.0, 1.0, 1.0) * fadeFactor);
         } else if(pms.buttons[i] == -1) {
           btext = "";
         } else {
           btext = StringPrintf("B%02d", pms.buttons[i]);
-          setColor(Color(0.5, 0.5, 0.5));
+          setColor(Color(0.5, 0.5, 0.5) * fadeFactor);
         }
         drawJustifiedText(btext.c_str(), textline_size * unitsize, xend, ystarts[3 + i * 2], TEXT_MAX, TEXT_MIN);
       }
     } else if(pms.settingmode == SETTING_AXISTYPE) {
       if(pms.choicemode != CHOICE_IDLE)
-        setColor(Color(1.0, 1.0, 1.0));
+        setColor(Color(1.0, 1.0, 1.0) * fadeFactor);
       else
-        setColor(Color(0.5, 0.5, 0.5));
+        setColor(Color(0.5, 0.5, 0.5) * fadeFactor);
       drawJustifiedText(ksax_names[pms.setting_axistype], textline_size * unitsize, (xstart + xend) / 2, ystarts[2], TEXT_CENTER, TEXT_MIN);
       // TODO: make these blink?
       // TODO: better pictorial representations
       drawJustifiedText("<", textline_size * unitsize, xstart, ystarts[2], TEXT_MIN, TEXT_MIN);
       drawJustifiedText(">", textline_size * unitsize, xend, ystarts[2], TEXT_MAX, TEXT_MIN);
     } else if(pms.settingmode == SETTING_READY) {
-      setColor(Color(0.5, 0.5, 0.5));
+      setColor(Color(0.5, 0.5, 0.5) * fadeFactor);
       const char * const text[] = {"Push fire", "when ready.", "Let go", "to cancel.", "< > to config"};
       for(int i = 0; i < 5; i++)
         drawJustifiedText(text[i], textline_size * unitsize, (xstart + xend) / 2, ystarts[i + 1], TEXT_CENTER, TEXT_MIN);
@@ -677,8 +672,6 @@ void Metagame::renderToScreen() const {
         drawDvec2(factions[i].icon, squareInside(factions[i].compass_location), 1.0);
       }
     }
-    setColor(1.0, 1.0, 1.0);
-    drawText("choose a faction and hold fire to begin", 20, 120, 560);
   } else if(mode == MGM_SHOP) {
     if(currentShop == -1) {
       setZoom(0, 0, 600);
