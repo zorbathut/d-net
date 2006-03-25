@@ -43,8 +43,11 @@ public:
 // Then we let the player customize his system (if there is customization involved - there may not be.)
 // Then we unlock the menu, and allow them to hold "ready" in much the same way as they currently do.
 // I think this works.
+/*
 enum { SETTING_COMPASS, SETTING_BUTTONS, SETTING_AXISTYPE, SETTING_AXISCHOOSE, SETTING_CUSTOMIZE, SETTING_READY, SETTING_LAST };
-const char * const setting_names[] = { "NULL", "Keys", "Mode", "Axis", "Cust", "Ready" };
+const char * const setting_names[] = { "NULL", "Keys", "Mode", "Axis", "Cust", "Ready" };*/
+enum { SETTING_COMPASS, SETTING_BUTTONS, SETTING_AXISTYPE, SETTING_READY, SETTING_LAST };
+const char * const setting_names[] = { "NULL", "Keys", "Mode", "Ready" };
 
 const int setting_first = SETTING_BUTTONS;
 const int setting_real_count = SETTING_LAST - setting_first;

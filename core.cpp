@@ -103,8 +103,8 @@ void MainLoop() {
         string fname = FLAGS_writeTarget;
         char timestampbuf[ 128 ];
         time_t ctmt = time(NULL);
-        strftime(timestampbuf, sizeof(timestampbuf), "%Y%m%d-%H%M%S.dnd", gmtime(&ctmt));
-        fname = StringPrintf("%s-%s-%010d", fname.c_str(), timestampbuf, frameNumber);
+        strftime(timestampbuf, sizeof(timestampbuf), "%Y%m%d-%H%M%S", gmtime(&ctmt));
+        fname = StringPrintf("%s-%s-%010d.dnd", fname.c_str(), timestampbuf, frameNumber);
         dprintf("%s\n", fname.c_str());
         outfile = fopen(fname.c_str(), "wb");
         if(outfile) {

@@ -417,8 +417,7 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
         CHECK(0);
       }
     }
-  } else if(pms->settingmode == SETTING_CUSTOMIZE) {
-  } else if(pms->settingmode == SETTING_READY) {
+  //} else if(pms->settingmode == SETTING_READY) {
   } else {
     CHECK(0);
   }
