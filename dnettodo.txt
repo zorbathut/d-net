@@ -1,4 +1,8 @@
 - Basic new config
+- Need that self-intersecting test badly
+- Double-buffering?
+- Extricate coord.h and float.h from more headers
+- Auto coord-to-float converter (CoordFloat?)
 - Better pictorial representations for axis types
 - Absolute config
 - Buy menu flicker?

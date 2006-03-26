@@ -195,11 +195,16 @@ void printState(const map<Coord2, DualLink> &vertx) {
 }
 
 void splice(map<Coord2, DualLink> *vertx, const DualLink &lines, const Coord2 &junct, int curve) {
+  /*
+  for(int x = 0; x < 2; x++)
+    for(int y = 0; y < 2; y++)
+      printNode(lines.links[x][y], (*vertx)[lines.links[x][y]]);
+  */
   int junctadded = 0;
   for(int iline = 0; iline < 2; iline++) {
     for(int inode = 0; inode < 2; inode++) {
       for(int boe = 0; boe < 2; boe++) {
-        if((*vertx)[lines.links[iline][inode]].links[curve][boe] == lines.links[iline][!inode]) {
+        if((*vertx)[lines.links[iline][inode]].links[curve][boe] == lines.links[iline][!inode] && (*vertx)[lines.links[iline][inode]].live[curve]) {
           CHECK((*vertx)[junct].live[curve] == false || junctadded == 1);
           CHECK(junctadded == 0 || junctadded == 1);
           (*vertx)[junct].live[curve] = true;
@@ -425,6 +430,7 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
       vertx[tv[k][i]].live[k] = true;
     }
   }
+  //return createSplitLines(vertx);
   //dprintf("First consistency\n");
   //printState(vertx);
   //dprintf("Passed\n");
@@ -458,6 +464,8 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
             links[i].start.x.rawstr().c_str(), links[i].start.y.rawstr().c_str(),
             itr->first.x.rawstr().c_str(), itr->first.y.rawstr().c_str(),
             links[i].end.x.rawstr().c_str(), links[i].end.y.rawstr().c_str());
+        
+        return createSplitLines(vertx);
         
         if(megaverbose)
           dprintf("  Combining colinear\n");
@@ -681,21 +689,29 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
               junct.x = coordExplicit(junct.x.raw() + 1);
               CHECK(junct > itr->first);
             }
-
+            
+            if(!dumpBooleanDetail)
+              CHECK(checkConsistent(vertx, links));
+            
             CHECK(vertx[junct].live[0] == false);
             CHECK(vertx[junct].live[1] == false);
+            
+            //dprintf("a%d\n", k++);
+            return createSplitLines(vertx);
             splice(&vertx, lines, junct, 0);
+            //dprintf("b%d\n", k++);
             splice(&vertx, lines, junct, 1);
+            //dprintf("c%d\n", k++);
             
             links[i].end = junct;
             
-            //CHECK(checkConsistent(vertx, links));
+            if(!dumpBooleanDetail)
+              CHECK(checkConsistent(vertx, links));
           }
         }
       }
     }
     //dprintf("Intersected\n");
-    //CHECK(checkConsistent(vertx, links));
     // Now we add new links from this point
     for(int p = 0; p < 2; p++) {
       if(!itr->second.live[p])
@@ -711,8 +727,11 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
         links.push_back(nll);
       }
     }
-    //checkLineConsistency(vertx, links, itr->first);
-    //dprintf("Unlooped, %d links\n", links.size());
+    if(!dumpBooleanDetail) {
+      //CHECK(checkConsistent(vertx, links));
+      //checkLineConsistency(vertx, links, itr->first);
+      //dprintf("Unlooped, %d links\n", links.size());
+    }
     CHECK(links.size() % 2 == 0);
   }
   CHECK(links.size() == 0);

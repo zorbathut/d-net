@@ -200,6 +200,14 @@ void setZoom( float in_sx, float in_sy, float in_ey ) {
   map_ex = map_sx + map_zoom * 4 / 3;
 }
 
+void setZoomAround(const Coord4 &bbox) {
+  Coord2 center = bbox.midpoint();
+  Coord zoomtop = bbox.y_span() / 2;
+  Coord zoomside = bbox.x_span() / 2;
+  Coord zoomtopfinal = max(zoomtop, zoomside / 4 * 3);
+  setZoom((center.x - zoomtopfinal * 4 / 3).toFloat(), (center.y - zoomtopfinal).toFloat(), (center.y + zoomtopfinal).toFloat());
+}
+
 float getZoomSx() { return map_sx; }
 float getZoomSy() { return map_sy; }
 float getZoomEx() { return map_ex; }
@@ -347,6 +355,9 @@ void drawCircle(const Float2 &center, float radius, float weight) {
   for(int i = 0; i < 16; i++)
     verts.push_back(makeAngle(i * PI / 8) * radius + center);
   drawLineLoop(verts, weight);
+}
+void drawCircle(const Coord2 &center, Coord radius, Coord weight) {
+  drawCircle(center.toFloat(), radius.toFloat(), weight.toFloat());
 }
 
 void drawPoint(float x, float y, float weight) {

@@ -44,6 +44,7 @@ void clearFrame(const Color &color);
 
 void initFrame();
 void setZoom( float sx, float sy, float ey );
+void setZoomAround(const Coord4 &bbox);
 
 float getZoomSx();
 float getZoomSy();
@@ -91,6 +92,7 @@ void drawCurve( const Float4 &ptah, const Float4 &ptbh, float weight );
 void drawCurveControls( const Float4 &ptah, const Float4 &ptbh, float spacing, float weight );
 
 void drawCircle( const Float2 &center, float radius, float weight );
+void drawCircle( const Coord2 &center, Coord radius, Coord weight );
 
 void drawText( const char *txt, float scale, float sx, float sy );
 void drawText( const string &txt, float scale, float sx, float sy );

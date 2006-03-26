@@ -87,6 +87,147 @@ public:
 
 };
 
+void InterfaceMain::ai(const vector<Ai *> &ai) const {
+  if(interface_mode == IFM_S_MAINMENU) {
+    for(int i = 0; i < ai.size(); i++)
+      if(ai[i])
+        ai[i]->updatePregame();
+  } else if(interface_mode == IFM_S_PLAYING) {
+    game.ai(ai);
+  }
+}
+
+#define GETDIFFERENCE_DEBUG 0 // Code used for checking the validity of getDifference :)
+
+#if GETDIFFERENCE_DEBUG
+
+#include "dvec2.h"
+#include <fstream>
+
+using namespace std;
+
+vector<string> parseHackyFile(string fname) {
+  ifstream ifs(fname.c_str());
+  string tmp;
+  vector<string> rv;
+  while(ifs >> tmp)
+    rv.push_back(tmp);
+  return rv;
+}
+
+extern bool dumpBooleanDetail;
+
+Controller ct;
+
+bool InterfaceMain::tick(const vector< Controller > &control) {
+  ct = control[0];
+  return false;
+  
+}
+
+void InterfaceMain::render() const {
+  
+  dumpBooleanDetail = false;
+  
+  #if 0
+  //dprintf("Frame!\n");
+    
+  string lhs[112] = {
+    "000000191e1ea000", "ffffffd80d1c3000",
+    "0000001947f7b000", "ffffffd713098000",
+    "0000001976ba1000", "ffffffd7b7758000",
+    "0000001a61a85000", "ffffffd7b6f25000",
+    "0000001ad274f000", "ffffffd8a21d1000",
+    "000000246d566000", "ffffffdb3be4b000",
+  };
+  string rhs[10] = {
+    "0000002645af8784", "ffffffdbdf1d9178",
+    "00000024cdd0ca84", "ffffffdc1edb9d78",
+    "0000002471775184", "ffffffdb27db9eb8",
+    "0000002542ed5a44", "ffffffda5a056478",
+    "0000002650c48a84", "ffffffdae14b6178",
+  };
+  
+  vector<Coord2> diff[2];
+
+  for(int i = 0; i < sizeof(lhs) / sizeof(*lhs); i += 2)
+    diff[0].push_back(Coord2(coordExplicit(lhs[i]), coordExplicit(lhs[i + 1])));
+  for(int i = 0; i < sizeof(rhs) / sizeof(*rhs); i += 2)
+    diff[1].push_back(Coord2(coordExplicit(rhs[i]), coordExplicit(rhs[i + 1])));
+#else
+  vector<string> lhs = parseHackyFile("lhs.txt");
+  vector<string> rhs = parseHackyFile("rhs.txt");
+
+  vector<Coord2> diff[2];
+  
+  for(int i = 0; i < lhs.size(); i += 2)
+    diff[0].push_back(Coord2(coordExplicit(lhs[i]), coordExplicit(lhs[i + 1])));
+  for(int i = 0; i < rhs.size(); i += 2)
+    diff[1].push_back(Coord2(coordExplicit(rhs[i]), coordExplicit(rhs[i + 1])));
+#endif
+
+  vector<vector<Coord2> > res = getDifference(diff[0], diff[1]);
+  
+  dprintf("%d\n", res.size());
+  
+  if(res.size()) {
+    Coord4 bbox = getBoundBox(diff[1]);
+    static pair<Coord2, Coord> zoom = make_pair(bbox.midpoint(), bbox.y_span() / 2);
+    
+    if(ct.l.down)
+      zoom.first.x -= zoom.second / 50;
+    if(ct.r.down)
+      zoom.first.x += zoom.second / 50;
+    if(ct.u.down)
+      zoom.first.y -= zoom.second / 50;
+    if(ct.d.down)
+      zoom.first.y += zoom.second / 50;
+    
+    if(ct.keys[0].down)
+      zoom.second /= Coord(1.1);
+    if(ct.keys[1].down)
+      zoom.second *= Coord(1.1);
+    
+    dprintf("%s", bbox.rawstr().c_str());
+    setZoom(-1.25, -1.0, 1.0);
+
+    for(int i = 0; i < res.size(); i++) {
+      
+      vector<Coord2> nres;
+      for(int j = 0; j < res[i].size(); j++)
+        nres.push_back((res[i][j] - zoom.first) / zoom.second);
+  
+      if(i == 0)
+        setColor(1.0, 0.3, 0.3);
+      else
+        setColor(0.3, 1.0, 0.3);
+      drawLineLoop(nres, 0.003);
+      for(int j = 0; j < res[i].size(); j++) {
+        drawCircle(nres[j], Coord(0.03), Coord(0.003));
+        //drawText(res[j].x.rawstr(), 1, nres[i][j].toFloat().x + 1, nres[i][j].toFloat().y + 1);
+        //drawText(res[j].y.rawstr(), 1, nres[i][j].toFloat().x + 1, nres[i][j].toFloat().y + 2.1);
+      }
+    }
+    /*
+    setColor(1.0, 1.0, 1.0);
+    drawCircle(Float2(6.026120, -32.951839) * fin.second + Float2(fin.first.first, fin.first.second), 2.0, 0.1);
+    drawCircle(Float2(6.904762, -33.830498) * fin.second + Float2(fin.first.first, fin.first.second), 2.0, 0.1);
+    drawCircle(Float2(6.904793, -33.830513) * fin.second + Float2(fin.first.first, fin.first.second), 2.0, 0.1);*/
+  }
+
+
+  /*
+  drawCircle(diff[0][3].toFloat() * fin.second + Float2(fin.first.first, fin.first.second), 2.0, 0.1);
+  
+  dprintf("%d\n", whichSide(Coord4(diff[1][1], diff[1][0]), diff[0][3]));
+  dprintf("%d\n", whichSide(Coord4(diff[1][1], diff[1][0]), diff[0][2]));*/
+
+  //CHECK(0);
+  
+};
+
+#else
+
 bool InterfaceMain::tick(const vector< Controller > &control) {
   
   inptest_controls = control;
@@ -138,133 +279,7 @@ bool InterfaceMain::tick(const vector< Controller > &control) {
   
 }
 
-void InterfaceMain::ai(const vector<Ai *> &ai) const {
-  if(interface_mode == IFM_S_MAINMENU) {
-    for(int i = 0; i < ai.size(); i++)
-      if(ai[i])
-        ai[i]->updatePregame();
-  } else if(interface_mode == IFM_S_PLAYING) {
-    game.ai(ai);
-  }
-}
-
-#include "dvec2.h"
-#include <fstream>
-
-using namespace std;
-
-vector<string> parseHackyFile(string fname) {
-  ifstream ifs(fname.c_str());
-  string tmp;
-  vector<string> rv;
-  while(ifs >> tmp)
-    rv.push_back(tmp);
-  return rv;
-}
-
-extern bool dumpBooleanDetail;
-
 void InterfaceMain::render() const {
-  
-  #if 0   // Code used for checking the validity of getDifference :)
-  {
-    dumpBooleanDetail = false;
-    #if 0
-    //dprintf("Frame!\n");
-      
-    string lhs[112] = {
-      "000000191e1ea000", "ffffffd80d1c3000",
-      "0000001947f7b000", "ffffffd713098000",
-      "0000001976ba1000", "ffffffd7b7758000",
-      "0000001a61a85000", "ffffffd7b6f25000",
-      "0000001ad274f000", "ffffffd8a21d1000",
-      "000000246d566000", "ffffffdb3be4b000",
-    };
-    string rhs[10] = {
-      "0000002645af8784", "ffffffdbdf1d9178",
-      "00000024cdd0ca84", "ffffffdc1edb9d78",
-      "0000002471775184", "ffffffdb27db9eb8",
-      "0000002542ed5a44", "ffffffda5a056478",
-      "0000002650c48a84", "ffffffdae14b6178",
-    };
-    
-    vector<Coord2> diff[2];
-
-    for(int i = 0; i < sizeof(lhs) / sizeof(*lhs); i += 2)
-      diff[0].push_back(Coord2(coordExplicit(lhs[i]), coordExplicit(lhs[i + 1])));
-    for(int i = 0; i < sizeof(rhs) / sizeof(*rhs); i += 2)
-      diff[1].push_back(Coord2(coordExplicit(rhs[i]), coordExplicit(rhs[i + 1])));
-#else
-    vector<string> lhs = parseHackyFile("lhs.txt");
-    vector<string> rhs = parseHackyFile("rhs.txt");
-  
-    vector<Coord2> diff[2];
-    
-    for(int i = 0; i < lhs.size(); i += 2)
-      diff[0].push_back(Coord2(coordExplicit(lhs[i]), coordExplicit(lhs[i + 1])));
-    for(int i = 0; i < rhs.size(); i += 2)
-      diff[1].push_back(Coord2(coordExplicit(rhs[i]), coordExplicit(rhs[i + 1])));
-#endif
-
-
-    vector<vector<Coord2> > res = getDifference(diff[0], diff[1]);
-    
-    if(res.size()) {
-      Coord4 bbox = getBoundBox(diff[0]);
-      //bbox.sx -= 20;
-      //bbox.sy -= 20;
-      //bbox.ex += 20;
-      //bbox.ey += 20;
-      //for(int i = 0; i < res.size(); i++) addToBoundBox(&bbox, getBoundBox(res[i]));
-      /*
-      bbox.sx = Coord(24.146805 - 0.000003);
-      bbox.ex = Coord(24.146805 + 0.000003);
-      bbox.sy = Coord(-130.315548 - 0.000003);
-      bbox.ey = Coord(-130.315548 + 0.000003);*/
-
-      pair<Float2, float> fin = fitInside(bbox.toFloat(), Float4(20, 10, 80, 90));
-      //fin.first.x = 689.983521;
-      //fin.first.y = -279.923828;
-      //fin.second = 5.672042;
-      
-      dprintf("%f, %f, %f\n", fin.first.x, fin.first.y, fin.second);
-
-      for(int i = 0; i < res.size(); i++) {
-        
-        vector<Coord2> reso = res[i];
-        
-        for(int j = 0; j < res[i].size(); j++) {
-          res[i][j] *= Coord(fin.second);
-          res[i][j] += Coord2(fin.first);
-        }
-        if(i == 0)
-          setColor(1.0, 0.3, 0.3);
-        else
-          setColor(0.3, 1.0, 0.3);
-        drawLineLoop(res[i], 0.1);
-        for(int j = 0; j < res[i].size(); j++) {
-          drawCircle(res[i][j].toFloat(), 1, 0.1);
-          drawText(reso[j].x.rawstr(), 1, res[i][j].toFloat().x + 1, res[i][j].toFloat().y + 1);
-          drawText(reso[j].y.rawstr(), 1, res[i][j].toFloat().x + 1, res[i][j].toFloat().y + 2.1);
-        }
-      }
-      /*
-      setColor(1.0, 1.0, 1.0);
-      drawCircle(Float2(6.026120, -32.951839) * fin.second + Float2(fin.first.first, fin.first.second), 2.0, 0.1);
-      drawCircle(Float2(6.904762, -33.830498) * fin.second + Float2(fin.first.first, fin.first.second), 2.0, 0.1);
-      drawCircle(Float2(6.904793, -33.830513) * fin.second + Float2(fin.first.first, fin.first.second), 2.0, 0.1);*/
-    }
-
-
-    /*
-    drawCircle(diff[0][3].toFloat() * fin.second + Float2(fin.first.first, fin.first.second), 2.0, 0.1);
-    
-    dprintf("%d\n", whichSide(Coord4(diff[1][1], diff[1][0]), diff[0][3]));
-    dprintf("%d\n", whichSide(Coord4(diff[1][1], diff[1][0]), diff[0][2]));*/
-
-    //CHECK(0);
-  }
-  #endif
   
   if(interface_mode == IFM_S_MAINMENU) {
     mainmenu.render();
@@ -337,6 +352,7 @@ void InterfaceMain::render() const {
   }
   
 };
+#endif
 
 InterfaceMain::InterfaceMain() {
   interface_mode = IFM_S_MAINMENU;

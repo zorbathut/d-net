@@ -280,6 +280,17 @@ public:
     return Coord2(ex, ey);
   }
   
+  Coord x_span() const {
+    return ey - sy;
+  }
+  Coord y_span() const {
+    return ey - sy;
+  }
+  
+  Coord2 midpoint() const {
+    return (s() + e()) / 2;
+  }
+  
   Float4 toFloat() const;
 
   Coord4() { };
@@ -371,6 +382,10 @@ void expandBoundBox(Coord4 *bbox, Coord factor);
 
 inline bool isInside(const Coord4 &lhs, const Coord2 &rhs) {
   return !(rhs.x < lhs.sx || rhs.x >= lhs.ex || rhs.y < lhs.sy || rhs.y >= lhs.ey);
+}
+
+inline Coord4 boxAround(const Coord2 &lhs, Coord radius) {
+  return Coord4(lhs.x - radius, lhs.y - radius, lhs.x + radius, lhs.y + radius);
 }
 
 inline Coord4 snapToEnclosingGrid(Coord4 orig, Coord grid) {
