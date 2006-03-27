@@ -26,7 +26,8 @@ void Ai::updateCharacterChoice(const vector<FactionState> &factions, const vecto
     nextKeys.menu = Float2(targpt.x, -targpt.y);
     nextKeys.keys[0].down = isInside(factions[targfact].compass_location, players[you].compasspos);
   } else if(players[you].settingmode == SETTING_BUTTONS) {
-    nextKeys.keys[players[you].setting_button_current].down = frameNumber % 2;
+    if(players[you].setting_button_current >= 0 && players[you].setting_button_current < nextKeys.keys.size())
+      nextKeys.keys[players[you].setting_button_current].down = frameNumber % 2;
   } else if(players[you].settingmode == SETTING_AXISTYPE) {
     if(players[you].setting_axistype != KSAX_ABSOLUTE)
       nextKeys.menu = Float2(1.0, 0);

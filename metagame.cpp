@@ -443,10 +443,9 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
         pms->settingmode = 0;
       if(pms->settingmode >= SETTING_LAST)
         pms->settingmode = SETTING_LAST - 1;
-      bool accept = keys.keys[pms->buttons[BUTTON_ACCEPT]].down || keys.d.down;
-      if(accept && pms->settingmode != SETTING_READY)
+      if((keys.keys[pms->buttons[BUTTON_ACCEPT]].push || keys.d.down) && pms->settingmode != SETTING_READY)
         pms->choicemode = CHOICE_ACTIVE;
-      if(accept && pms->settingmode == SETTING_READY)
+      if((keys.keys[pms->buttons[BUTTON_ACCEPT]].down || keys.d.down) && pms->settingmode == SETTING_READY)
         pms->fireHeld += 2;
       if(pms->fireHeld > 60)
         pms->fireHeld = 60;
@@ -579,7 +578,7 @@ void runSettingRender(const PlayerMenuState &pms) {
       vector<vector<string> > names;
       for(int i = 0; i < BUTTON_LAST; i++) {
         vector<string> tix;
-        tix.push_back(StringPrintf("%d", i));
+        tix.push_back(ksax_axis_names[pms.setting_axistype][i]);
         names.push_back(tix);
       }
       standardButtonRender(ystarts, textline_count, xstart, xend, textline_size * unitsize, pms.axes, names, pms.setting_axis_current, pms.setting_axis_reading, fadeFactor, 'X');
