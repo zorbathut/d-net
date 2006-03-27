@@ -1,4 +1,3 @@
-- Axes choice for tank mode
 - Faction layout improved
 - Factions from file
 - "Winner list"

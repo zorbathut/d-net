@@ -290,16 +290,8 @@ vector<Keystates> genKeystates(const vector<Controller> &keys, const vector<Play
       kst[pid].r = keys[i].r;
       kst[pid].f = keys[i].keys[modes[i].buttons[BUTTON_ACCEPT]];
       kst[pid].axmode = modes[i].setting_axistype;
-      if(kst[pid].axmode == KSAX_UDLR || kst[pid].axmode == KSAX_ABSOLUTE) {
-        kst[pid].ax[0] = keys[i].menu.x;
-        kst[pid].ax[1] = keys[i].menu.y;
-      } else if(kst[pid].axmode == KSAX_TANK) {
-        CHECK(keys[i].axes.size() >= 4);
-        kst[pid].ax[0] = keys[i].axes[1];
-        kst[pid].ax[1] = keys[i].axes[2];
-      } else {
-        CHECK(0);
-      }
+      for(int j = 0; j < 2; j++)
+        kst[pid].ax[j] = keys[i].axes[modes[i].axes[j]];
       kst[pid].udlrax[0] = keys[i].menu.x;
       kst[pid].udlrax[1] = keys[i].menu.y;
       CHECK(keys[i].menu.x >= -1 && keys[i].menu.x <= 1);

@@ -33,6 +33,11 @@ void Ai::updateCharacterChoice(const vector<FactionState> &factions, const vecto
       nextKeys.menu = Float2(1.0, 0);
     else
       nextKeys.keys[BUTTON_ACCEPT].down = true;
+  } else if(players[you].settingmode == SETTING_AXISCHOOSE) {
+    if(players[you].setting_axis_current == 0)
+      nextKeys.menu.x = 1.0;
+    if(players[you].setting_axis_current == 1)
+      nextKeys.menu.y = 1.0;
   } else if(players[you].settingmode == SETTING_READY) {
     nextKeys.keys[BUTTON_ACCEPT].down = true;
   } else {

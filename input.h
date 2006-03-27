@@ -75,7 +75,7 @@ enum { KSAX_UDLR, KSAX_ABSOLUTE, KSAX_TANK, KSAX_END };
 const char *const ksax_names[] = { "UDLR", "ABSOLUTE", "TANK" };
 const int ksax_minaxis[] = {2, 2, 2}; // yeah okay shut up the code still works
 
-const char *const ksax_axis_names[KSAX_END][2] = { {"Drive", "Turn"}, {"X", "Y"}, {"Left", "Right"} };
+const char *const ksax_axis_names[KSAX_END][2] = { {"Turn", "Drive"}, {"X", "Y"}, {"Left", "Right"} };
 
 class Keystates {
 public:
