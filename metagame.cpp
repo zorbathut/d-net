@@ -232,13 +232,17 @@ PlayerMenuState::PlayerMenuState() {
   settingmode = -12345;
   choicemode = -12345;
 
-  setting_button_current = -1;
+  setting_button_current = -1123;
   setting_button_reading = false;
+  
+  setting_axis_current = -1123;
+  setting_axis_reading = false;
   
   setting_axistype = 1237539;
   
   memset(buttons, -1, sizeof(buttons));
-
+  memset(axes, -1, sizeof(axes));
+  
   faction = NULL;
   compasspos = Float2(0,0);
 }
@@ -247,12 +251,16 @@ PlayerMenuState::PlayerMenuState(Float2 cent) {
   settingmode = SETTING_BUTTONS;
   choicemode = CHOICE_FIRSTPASS;
   
-  setting_button_current = 0;
+  setting_button_current = -1;
   setting_button_reading = true;
+  
+  setting_axis_current = -1;
+  setting_axis_reading = true;
   
   setting_axistype = 0;
   
   memset(buttons, -1, sizeof(buttons));
+  memset(axes, -1, sizeof(axes));
   
   faction = NULL;
   compasspos = cent;
@@ -302,6 +310,100 @@ vector<Keystates> genKeystates(const vector<Controller> &keys, const vector<Play
   return kst;
 }
 
+void standardButtonTick(int *outkeys, int outkeycount, int *current_button, bool *current_mode, const Controller &keys, const vector<bool> &triggers, PlayerMenuState *pms) {
+  if(*current_button == -1) {
+    *current_button = 0;
+    *current_mode = (pms->choicemode == CHOICE_FIRSTPASS);
+  }
+  CHECK(*current_button >= 0 && *current_button < outkeycount);
+  if(*current_mode) {
+    CHECK(pms->choicemode != CHOICE_IDLE);
+    for(int i = 0; i < triggers.size(); i++) {
+      if(triggers[i]) {
+        int j;
+        bool noopify = false;
+        for(j = 0; j < outkeycount; j++) {
+          if(outkeys[j] == i) {
+            if(outkeys[*current_button] != -1)
+              swap(outkeys[j], outkeys[*current_button]);
+            else
+              noopify = true;
+            break;
+          }
+        }
+        if(noopify)
+          continue;
+        if(j == BUTTON_LAST)
+          outkeys[*current_button] = i;
+        if(pms->choicemode == CHOICE_FIRSTPASS) {
+          (*current_button)++;
+        } else {
+          *current_mode = false;
+        }
+        break;
+      }
+    }
+    if(*current_button == outkeycount) {
+      // Done with the first pass here - this can only happen if the choice if FIRSTPASS
+      CHECK(pms->choicemode == CHOICE_FIRSTPASS);
+      pms->settingmode++;
+      (*current_button) = -1;
+    }
+  } else {
+    CHECK(pms->choicemode == CHOICE_ACTIVE);
+    if(keys.u.repeat)
+      (*current_button)--;
+    if(keys.d.repeat)
+      (*current_button)++;
+    if(*current_button >= outkeycount)
+      *current_button = outkeycount - 1;
+    // We accept anything for this (besides cancel) because the user might not know what their accept button is at the moment
+    // Maybe add a "done" button at the bottom?
+    bool somethingpushed = false;
+    for(int i = 0; i < keys.keys.size(); i++) {
+      if(i == pms->buttons[BUTTON_CANCEL])
+        continue;
+      if(keys.keys[i].push)
+        somethingpushed = true;
+    }
+    if(somethingpushed) {
+      (*current_mode) = true;
+    } else if(keys.keys[pms->buttons[BUTTON_CANCEL]].push || (*current_button) == -1) {
+      pms->choicemode = CHOICE_IDLE;
+      (*current_button) = -1;
+    }
+  }
+}
+
+void standardButtonRender(const float *ystarts, int yscount, float xstart, float xend, float textsize, const int *buttons, const vector<vector<string> > &names, int sel_button, bool sel_button_reading, float fadeFactor, char prefixchar) {
+  int linesneeded = 0;
+  for(int i = 0; i < names.size(); i++)
+    linesneeded += names[i].size();
+  CHECK(linesneeded <= yscount - 1);
+  int cy = 1 + (yscount - linesneeded + 1) / 2;
+  for(int i = 0; i < names.size(); i++) {
+    if(sel_button == i && !sel_button_reading) {
+      setColor(Color(1.0, 1.0, 1.0) * fadeFactor);
+    } else {
+      setColor(Color(0.5, 0.5, 0.5) * fadeFactor);
+    }
+    for(int j = 0; j < names[i].size(); j++)
+      drawText(names[i][j], textsize, xstart, ystarts[cy++]);
+    string btext;
+    if(sel_button == i && sel_button_reading) {
+      btext = "[ ]";
+      setColor(Color(1.0, 1.0, 1.0) * fadeFactor);
+    } else if(buttons[i] == -1) {
+      btext = "";
+    } else {
+      btext = StringPrintf("%c%02d", prefixchar, buttons[i]);
+      setColor(Color(0.5, 0.5, 0.5) * fadeFactor);
+    }
+    drawJustifiedText(btext.c_str(), textsize, xend, ystarts[cy - 1], TEXT_MAX, TEXT_MIN);
+  }
+  CHECK(cy <= yscount);
+}
+
 void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<FactionState> &factions) {
   if(!pms->faction) { // if player hasn't chosen faction yet
     pms->fireHeld = 0;
@@ -328,6 +430,9 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
       }
     }
   } else {
+    pms->fireHeld -= 1;
+    if(pms->fireHeld < 0)
+        pms->fireHeld = 0;
     if(pms->choicemode == CHOICE_IDLE) {
       CHECK(pms->faction);
       if(keys.l.push)
@@ -337,79 +442,19 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
       if(pms->settingmode < 0)
         pms->settingmode = 0;
       if(pms->settingmode >= SETTING_LAST)
-        pms->settingmode = SETTING_LAST;
+        pms->settingmode = SETTING_LAST - 1;
       bool accept = keys.keys[pms->buttons[BUTTON_ACCEPT]].down || keys.d.down;
       if(accept && pms->settingmode != SETTING_READY)
         pms->choicemode = CHOICE_ACTIVE;
       if(accept && pms->settingmode == SETTING_READY)
-        pms->fireHeld++;
-      else
-        pms->fireHeld--;
-      if(pms->fireHeld < 0)
-        pms->fireHeld = 0;
+        pms->fireHeld += 2;
       if(pms->fireHeld > 60)
         pms->fireHeld = 60;
     } else if(pms->settingmode == SETTING_BUTTONS) {
-      if(pms->setting_button_current == -1) {
-        pms->setting_button_current = 0;
-        pms->setting_button_reading = (pms->choicemode == CHOICE_FIRSTPASS);
-      }
-      if(pms->setting_button_reading) {
-        CHECK(pms->choicemode != CHOICE_IDLE);
-        for(int i = 0; i < keys.keys.size(); i++) {
-          if(keys.keys[i].push) {
-            int j;
-            bool noopify = false;
-            for(j = 0; j < BUTTON_LAST; j++) {
-              if(pms->buttons[j] == i) {
-                if(pms->buttons[pms->setting_button_current] != -1)
-                  swap(pms->buttons[j], pms->buttons[pms->setting_button_current]);
-                else
-                  noopify = true;
-                break;
-              }
-            }
-            if(noopify)
-              continue;
-            if(j == BUTTON_LAST)
-              pms->buttons[pms->setting_button_current] = i;
-            if(pms->choicemode == CHOICE_FIRSTPASS) {
-              pms->setting_button_current++;
-            } else {
-              pms->setting_button_reading = false;
-            }
-            break;
-          }
-        }
-        if(pms->setting_button_current == BUTTON_LAST) {
-          // Done with the first pass here
-          pms->settingmode++;
-          pms->setting_button_current = -1;
-        }
-      } else {
-        CHECK(pms->choicemode == CHOICE_ACTIVE);
-        if(keys.u.repeat)
-          pms->setting_button_current--;
-        if(keys.d.repeat)
-          pms->setting_button_current++;
-        if(pms->setting_button_current >= BUTTON_LAST)
-          pms->setting_button_current = BUTTON_LAST - 1;
-        // We accept anything for this (besides cancel) because the user might not know what their accept button is at the moment
-        // Maybe add a "done" button at the bottom?
-        bool somethingpushed = false;
-        for(int i = 0; i < keys.keys.size(); i++) {
-          if(i == pms->buttons[BUTTON_CANCEL])
-            continue;
-          if(keys.keys[i].push)
-            somethingpushed = true;
-        }
-        if(somethingpushed) {
-          pms->setting_button_reading = true;
-        } else if(keys.keys[pms->buttons[BUTTON_CANCEL]].push || pms->setting_button_current == -1) {
-          pms->choicemode = CHOICE_IDLE;
-          pms->setting_button_current = -1;
-        }
-      }
+      vector<bool> triggers;
+      for(int i = 0; i < keys.keys.size(); i++)
+        triggers.push_back(keys.keys[i].push);
+      standardButtonTick(pms->buttons, BUTTON_LAST, &pms->setting_button_current, &pms->setting_button_reading, keys, triggers, pms);
     } else if(pms->settingmode == SETTING_AXISTYPE) {
       if(keys.l.push)
         pms->traverse_axistype(-1, keys.axes.size());
@@ -426,6 +471,11 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
       } else {
         CHECK(0);
       }
+    } else if(pms->settingmode == SETTING_AXISCHOOSE) {
+      vector<bool> triggers;
+      for(int i = 0; i < keys.axes.size(); i++)
+        triggers.push_back(abs(keys.axes[i]) > 0.9);
+      standardButtonTick(pms->axes, 2, &pms->setting_axis_current, &pms->setting_axis_reading, keys, triggers, pms);
     } else if(pms->settingmode == SETTING_READY) {
       pms->choicemode = CHOICE_IDLE; // There is no other option! Idle is the only possibility! Bow down before your god!
     } else {
@@ -505,29 +555,16 @@ void runSettingRender(const PlayerMenuState &pms) {
       CHECK(units == SETTING_LAST - 1 + activescale);
       
     }
-    
+
     if(pms.settingmode == SETTING_BUTTONS) {
-      CHECK(BUTTON_LAST == 2); // just 'cause I'll need to redo spacing after these
+      vector<vector<string> > names;
       for(int i = 0; i < BUTTON_LAST; i++) {
-        if(pms.setting_button_current == i && !pms.setting_button_reading) {
-          setColor(Color(1.0, 1.0, 1.0) * fadeFactor);
-        } else {
-          setColor(Color(0.5, 0.5, 0.5) * fadeFactor);
-        }
-        drawText(button_names_a[i], textline_size * unitsize, xstart, ystarts[2 + i * 2]);
-        drawText(button_names_b[i], textline_size * unitsize, xstart, ystarts[3 + i * 2]);
-        string btext;
-        if(pms.setting_button_current == i && pms.setting_button_reading) {
-          btext = "[ ]";
-          setColor(Color(1.0, 1.0, 1.0) * fadeFactor);
-        } else if(pms.buttons[i] == -1) {
-          btext = "";
-        } else {
-          btext = StringPrintf("B%02d", pms.buttons[i]);
-          setColor(Color(0.5, 0.5, 0.5) * fadeFactor);
-        }
-        drawJustifiedText(btext.c_str(), textline_size * unitsize, xend, ystarts[3 + i * 2], TEXT_MAX, TEXT_MIN);
+        vector<string> tix;
+        tix.push_back(button_names_a[i]);
+        tix.push_back(button_names_b[i]);
+        names.push_back(tix);
       }
+      standardButtonRender(ystarts, textline_count, xstart, xend, textline_size * unitsize, pms.buttons, names, pms.setting_button_current, pms.setting_button_reading, fadeFactor, 'B');
     } else if(pms.settingmode == SETTING_AXISTYPE) {
       if(pms.choicemode != CHOICE_IDLE)
         setColor(Color(1.0, 1.0, 1.0) * fadeFactor);
@@ -538,6 +575,14 @@ void runSettingRender(const PlayerMenuState &pms) {
       // TODO: better pictorial representations
       drawJustifiedText("<", textline_size * unitsize, xstart, ystarts[2], TEXT_MIN, TEXT_MIN);
       drawJustifiedText(">", textline_size * unitsize, xend, ystarts[2], TEXT_MAX, TEXT_MIN);
+    } else if(pms.settingmode == SETTING_AXISCHOOSE) {
+      vector<vector<string> > names;
+      for(int i = 0; i < BUTTON_LAST; i++) {
+        vector<string> tix;
+        tix.push_back(StringPrintf("%d", i));
+        names.push_back(tix);
+      }
+      standardButtonRender(ystarts, textline_count, xstart, xend, textline_size * unitsize, pms.axes, names, pms.setting_axis_current, pms.setting_axis_reading, fadeFactor, 'X');
     } else if(pms.settingmode == SETTING_READY) {
       setColor(Color(0.5, 0.5, 0.5) * fadeFactor);
       const char * const text[] = {"Push fire", "when ready.", "Let go", "to cancel.", "< > to config"};

@@ -46,8 +46,8 @@ public:
 /*
 enum { SETTING_COMPASS, SETTING_BUTTONS, SETTING_AXISTYPE, SETTING_AXISCHOOSE, SETTING_CUSTOMIZE, SETTING_READY, SETTING_LAST };
 const char * const setting_names[] = { "NULL", "Keys", "Mode", "Axis", "Cust", "Ready" };*/
-enum { SETTING_BUTTONS, SETTING_AXISTYPE, SETTING_READY, SETTING_LAST };
-const char * const setting_names[] = { "Keys", "Mode", "Ready" };
+enum { SETTING_BUTTONS, SETTING_AXISTYPE, SETTING_AXISCHOOSE, SETTING_READY, SETTING_LAST };
+const char * const setting_names[] = { "Keys", "Mode", "Axis", "Ready" };
 
 enum { CHOICE_FIRSTPASS, CHOICE_ACTIVE, CHOICE_IDLE };
 
@@ -65,11 +65,14 @@ public:
 
   int setting_button_current;
   bool setting_button_reading;
+  int buttons[BUTTON_LAST];
+
+  int setting_axis_current;
+  bool setting_axis_reading;
+  int axes[2];  // Right now, everything uses 2 axes.
 
   int setting_axistype;
   void traverse_axistype(int delta, int axes);
-
-  int buttons[BUTTON_LAST];
   
   int fireHeld;
   bool readyToPlay() const;

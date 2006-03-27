@@ -1,25 +1,18 @@
-- Basic new config
-- Need that self-intersecting test badly
-- Double-buffering?
+- Axes choice for tank mode
+- Faction layout improved
+- Factions from file
+- "Winner list"
+- Fix glory device slowdowns (if there is one)
+- Modify firerate
+- Rendering change to render lines by default, segments as the exception
+- Buy menu flicker? Double-buffering?
 - Extricate coord.h and float.h from more headers
 - Auto coord-to-float converter (CoordFloat?)
-- Better pictorial representations for axis types
-- Absolute config
-- Buy menu flicker?
-- Holy crap! Self-intersecting! Cry!
-- Rendering change to render lines by default, segments as the exception
-- Factions from file
-- Axes choice for tank mode
-- Improved absolute customization
-- "Winner list"
-- Consistent-ize line width effects, colors, rendering in general
-- Fix glory device slowdowns
-- Modify firerate
 - Sound, yo
 - Halos?
 - Color for projectile impacts
-- Factions
 - Game setting choice arena
+- Meaningful factions
 - Improve explosion effects (missile, etc)
 - Certificates and discounts
 - Training
@@ -34,6 +27,10 @@
 - OSD for weapon type
 - Many many more weapons
 
+- Better pictorial representations for axis types
+- Absolute mode config
+- Holy crap! Self-intersecting! Cry!
+- Consistent-ize line width effects, colors, rendering in general
 - Level save snapshots - how should this work? I'm still not sure.
 - dnd compression - this is going to rely on level save snapshots
 
