@@ -65,7 +65,7 @@ void Gamemap::removeWalls(Coord2 center, float radius) {
     float ofs = frand() * 2 * PI / vct;
     float maxofs = 2 * PI / vct / 2;
     for(int i = 0; i < vct; i++) {
-      rv.push_back(i * 2 * PI / vct + ofs + powerRand(2) * maxofs);
+      rv.push_back(i * 2 * PI / vct + ofs + gaussian_scaled(2) * maxofs);
     }
     for(int i = 0; i < rv.size(); i++)
       inters.push_back(center + makeAngle(Coord(rv[i])) * Coord(radius));

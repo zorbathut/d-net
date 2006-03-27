@@ -21,7 +21,7 @@ run: d-net.exe
 	d-net.exe --nofullscreen --debugitems --startingCash=1000000
 
 ai: d-net.exe
-	d-net.exe --nofullscreen --aiCount=12 --fastForwardTo=100000000 --terminateAfter=600 --startingCash=100000000
+	while ./d-net.exe --nofullscreen --aiCount=12 --fastForwardTo=100000000 --terminateAfter=600 --startingCash=100000000 ; do echo Cycle. ; done
 
 vecedit: d-net.exe
 	d-net.exe --vecedit --nofullscreen

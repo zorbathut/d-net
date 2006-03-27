@@ -434,7 +434,7 @@ void Tank::genEffects(vector<GfxEffects> *gfxe, vector<Projectile> *projectiles)
       ngfe.path_pos_vel = vel.toFloat();
       ngfe.path_pos_acc = -ngfe.path_pos_vel / 30;
       ngfe.path_ang_start = 0;
-      ngfe.path_ang_vel = powerRand(2) / 20;
+      ngfe.path_ang_vel = gaussian() / 20;
       ngfe.path_ang_acc = -ngfe.path_ang_vel / 30;
       ngfe.life = 30;
       ngfe.color = player->faction->color;
@@ -443,7 +443,7 @@ void Tank::genEffects(vector<GfxEffects> *gfxe, vector<Projectile> *projectiles)
     
     for(int i = 0; i < ang.size(); i++)
       for(int j = 0; j < glory->shotspersplit; j++)
-        projectiles->push_back(Projectile(centr, ang[i] + powerRand(2) / 10, glory->projectile, this));
+        projectiles->push_back(Projectile(centr, ang[i] + gaussian() / 10, glory->projectile, this));
     
     spawnShards = false;
   }
@@ -481,7 +481,7 @@ void Projectile::tick(vector<GfxEffects> *gfxe) {
       ngfe.point_vel = makeAngle(dir) / 3;
       ngfe.point_vel *= 1.0 - frand() * frand();
       ngfe.point_vel += movement().toFloat();
-      ngfe.point_vel += missile_accel().toFloat() * -3 * abs(powerRand(2));
+      ngfe.point_vel += missile_accel().toFloat() * -3 * abs(gaussian());
       ngfe.color = Color(1.0, 0.9, 0.6);
       gfxe->push_back( ngfe );
     }
@@ -579,9 +579,9 @@ Projectile::Projectile(const Coord2 &in_pos, float in_d, const IDBProjectile *in
   
   if(projtype->motion == PM_NORMAL) {
   } else if(projtype->motion == PM_MISSILE) {
-    missile_sidedist = powerRand(2) * 0.25;
+    missile_sidedist = gaussian() * 0.25;
   } else if(projtype->motion == PM_AIRBRAKE) {
-    airbrake_velocity = (powerRand(2) / 4 + 1) * projtype->velocity;
+    airbrake_velocity = (gaussian() / 4 + 1) * projtype->velocity;
   } else {
     CHECK(0);
   }
@@ -873,7 +873,7 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
   for( int i = 0; i < players.size(); i++ ) {
     if( players[ i ].live && keys[ i ].f.down && players[ i ].weaponCooldown <= 0 ) {
       firepowerSpent +=players[ i ].player->weapon->costpershot;
-      projectiles[ i ].push_back(Projectile(players[ i ].getFiringPoint(), players[ i ].d + players[i].player->weapon->deploy->anglevariance * powerRand(2), players[ i ].player->weapon->projectile, &players[ i ]));
+      projectiles[ i ].push_back(Projectile(players[ i ].getFiringPoint(), players[ i ].d + players[i].player->weapon->deploy->anglestddev * gaussian(), players[ i ].player->weapon->projectile, &players[ i ]));
       players[ i ].weaponCooldown = players[ i ].player->weapon->firerate;
       if(players[i].player->shotsLeft != -1)
         players[i].player->shotsLeft--;

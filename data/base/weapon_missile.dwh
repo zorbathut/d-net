@@ -1,7 +1,6 @@
 
 deploy {
     name=deploy.missile
-    anglevariance=0
 }
 
 warhead {

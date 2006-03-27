@@ -20,6 +20,8 @@ void sfrand(int seed);
 float frand();
 int frandseed(); // only valid until frand() is called
 
-float powerRand(float pw); // returns (-1,1) with the given power
+float gaussian(); // returns gaussian distribution with a standard deviation of 1
+float gaussian(float maxgauss);  // returns gaussian distribution with a standard deviation of 1, maximum deviation of max (just chops off the probability curve)
+float gaussian_scaled(float maxgauss); // returns gaussian(maxgauss) / maxgauss
 
 #endif

@@ -52,9 +52,29 @@ void sfrand(int seed) { syncrng.sfrand(seed); };
 float frand() { return syncrng.frand(); };
 int frandseed() { return syncrng.frandseed(); };
 
-float powerRand(float pw) {
-  float stp = pow(frand(), pw);
-  if(frand() < 0.5)
-    stp = -stp;
-  return stp;
+float gaussian() {
+  float x1, x2, w, y1;
+  
+  do {
+    x1 = 2.0 * frand() - 1.0;
+    x2 = 2.0 * frand() - 1.0;
+    w = x1 * x1 + x2 * x2;
+  } while ( w >= 1.0 );
+  
+  w = sqrt( (-2.0 * log( w ) ) / w );
+  y1 = x1 * w;
+  
+  return y1;
+}
+
+float gaussian(float maxgauss) {
+  while(1) {
+    float gauss = gaussian();
+    if(abs(gauss) <= maxgauss)
+      return gauss;
+  }
+}
+
+float gaussian_scaled(float maxgauss) {
+  return gaussian(maxgauss) / maxgauss;
 }

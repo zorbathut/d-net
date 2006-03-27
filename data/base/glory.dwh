@@ -1,7 +1,7 @@
 
 deploy {
     name=deploy.glory
-    anglevariance=0.2
+    anglestddev=0.2
 }
 
 warhead {

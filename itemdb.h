@@ -11,7 +11,7 @@ using namespace std;
 struct IDBDeploy {
 public:
   
-  float anglevariance;
+  float anglestddev;
 
   float getDamagePerShotMultiplier() const;
 

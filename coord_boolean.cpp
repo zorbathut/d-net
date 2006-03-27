@@ -697,7 +697,6 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
             CHECK(vertx[junct].live[1] == false);
             
             //dprintf("a%d\n", k++);
-            return createSplitLines(vertx);
             splice(&vertx, lines, junct, 0);
             //dprintf("b%d\n", k++);
             splice(&vertx, lines, junct, 1);

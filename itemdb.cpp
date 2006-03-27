@@ -354,8 +354,9 @@ void parseItemFile(const string &fname) {
       
       deployclasses[name];
       
-      if(chunk.kv.count("anglevariance"))
-        deployclasses[name].anglevariance = atof(chunk.consume("anglevariance").c_str());
+      deployclasses[name].anglestddev = 0;
+      if(chunk.kv.count("anglestddev"))
+        deployclasses[name].anglestddev = atof(chunk.consume("anglestddev").c_str());
       
     } else if(chunk.category == "warhead") {
       string name = chunk.consume("name");
