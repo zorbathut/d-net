@@ -1,7 +1,7 @@
 
 deploy {
     name=deploy.laser
-    anglestddev=0.01
+    anglestddev=0.008
 }
 
 warhead {

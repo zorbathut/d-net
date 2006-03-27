@@ -19,7 +19,7 @@ projectile {
 
 deploy {
     name=deploy.autocannon
-    anglestddev=0.03
+    anglestddev=0.025
 }
 
 warhead {
