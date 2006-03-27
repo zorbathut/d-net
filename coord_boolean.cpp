@@ -317,6 +317,8 @@ Coord2 truncate(const Coord2 &c2, int bits) {
 //DEFINE_string(getdiffstorage, "", "Where to store an archive of all the getDifference calls for profiling purposes");
 //FILE *gds = NULL;
 
+bool getDifferenceInstaCrashy = false;
+
 vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Coord2> &rhs) {
   #if 0    // Pre-split debugging
   {
@@ -327,6 +329,8 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
   }
   #endif
   GetDifferenceHandler gdhst(lhs, rhs);
+  if(getDifferenceInstaCrashy)
+    CHECK(0);
   //if(frameNumber == 921696)
     //CrashHandler();
   bool lhsInside = !pathReversed(lhs);
@@ -464,8 +468,6 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
             links[i].start.x.rawstr().c_str(), links[i].start.y.rawstr().c_str(),
             itr->first.x.rawstr().c_str(), itr->first.y.rawstr().c_str(),
             links[i].end.x.rawstr().c_str(), links[i].end.y.rawstr().c_str());
-        
-        return createSplitLines(vertx);
         
         if(megaverbose)
           dprintf("  Combining colinear\n");

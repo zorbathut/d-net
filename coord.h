@@ -355,6 +355,7 @@ bool pathReversed(const vector<Coord2> &path);
 enum { PR_SEPARATE, PR_INTERSECT, PR_LHSENCLOSE, PR_RHSENCLOSE };
 int getPathRelation(const vector<Coord2> &lhs, const vector<Coord2> &rhs);
 
+extern bool getDifferenceInstaCrashy;
 vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Coord2> &rhs);
 
 Coord getArea(const vector<Coord2> &are);
