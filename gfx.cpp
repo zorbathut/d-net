@@ -208,6 +208,10 @@ void setZoomAround(const Coord4 &bbox) {
   setZoom((center.x - zoomtopfinal * 4 / 3).toFloat(), (center.y - zoomtopfinal).toFloat(), (center.y + zoomtopfinal).toFloat());
 }
 
+void setZoomCenter(float cx, float cy, float radius_y) {
+  setZoom(cx - radius_y * 4 / 3, cy - radius_y, cy + radius_y);
+}
+
 float getZoomSx() { return map_sx; }
 float getZoomSy() { return map_sy; }
 float getZoomEx() { return map_ex; }

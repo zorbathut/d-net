@@ -588,6 +588,7 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
                   // Note that we've already, in theory, created a point at one intersection of the V and the horizontal line.
                   // Solution: Check to see if we're forming a V, and if we are, chop off the top of it.
                   CHECK(vertx[closest].live[0] && vertx[closest].live[1]);
+                  
                   int changed = 0;
                   for(int q = 0; q < 2; q++) {
                     for(int w = 0; w < 2; w++) {

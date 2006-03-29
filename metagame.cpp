@@ -35,7 +35,7 @@ const FactionSource faction_src[] = {
   { "data/faction_l.dv2", Color(1.0, 0.4, 0.6) } // poison
 };
 
-const int factioncount = sizeof(faction_src) / sizeof(FactionSource);
+const int faction_src_count = sizeof(faction_src) / sizeof(FactionSource);
 
 const HierarchyNode &Shop::getStepNode(int step) const {
   CHECK(step >= 0 && step <= curloc.size());
@@ -400,7 +400,7 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
   if(!pms->faction) { // if player hasn't chosen faction yet
     pms->fireHeld = 0;
     {
-      Float2 dir = deadzone(keys.menu, 0, 0.2) * 4;
+      Float2 dir = deadzone(keys.menu, 0, 0.2) * 0.01;
       dir.y *= -1;
       pms->compasspos += dir;
     }
@@ -480,10 +480,10 @@ void runSettingRender(const PlayerMenuState &pms) {
     setColor(1.0, 1.0, 1.0);
     //char bf[16];
     //sprintf(bf, "p%d", i);
-    drawLine(pms.compasspos.x, pms.compasspos.y - 15, pms.compasspos.x, pms.compasspos.y - 5, 1.0);
-    drawLine(pms.compasspos.x, pms.compasspos.y + 15, pms.compasspos.x, pms.compasspos.y + 5, 1.0);
-    drawLine(pms.compasspos.x - 15, pms.compasspos.y, pms.compasspos.x - 5, pms.compasspos.y, 1.0);
-    drawLine(pms.compasspos.x +15, pms.compasspos.y, pms.compasspos.x + 5, pms.compasspos.y, 1.0);
+    drawLine(pms.compasspos.x, pms.compasspos.y - 0.06, pms.compasspos.x, pms.compasspos.y - 0.02, 0.004);
+    drawLine(pms.compasspos.x, pms.compasspos.y + 0.06, pms.compasspos.x, pms.compasspos.y + 0.02, 0.004);
+    drawLine(pms.compasspos.x - 0.06, pms.compasspos.y, pms.compasspos.x - 0.02, pms.compasspos.y, 0.004);
+    drawLine(pms.compasspos.x +0.06, pms.compasspos.y, pms.compasspos.x + 0.02, pms.compasspos.y, 0.004);
     //drawText(bf, 20, pms.compasspos.x + 5, pms.compasspos.y + 5);
   } else {
     const Float4 drawzone = pms.faction->compass_location;
@@ -517,13 +517,13 @@ void runSettingRender(const PlayerMenuState &pms) {
       rectish.push_back(Float2(drawzone.sx + border, drawzone.ey));
       rectish.push_back(Float2(drawzone.sx, drawzone.ey - border));
       rectish.push_back(Float2(drawzone.sx, drawzone.sy + border));
-      drawLineLoop(rectish, 1.0);
+      drawLineLoop(rectish, 0.002);
     }
     
     {
       // Topic line!
       setColor(pms.faction->color * fadeFactor);
-      drawDvec2(pms.faction->icon, Float4(xstart, ystarts[0], xstart + unitsize * textline_size, ystarts[0] + unitsize * textline_size), 0.5);
+      drawDvec2(pms.faction->icon, Float4(xstart, ystarts[0], xstart + unitsize * textline_size, ystarts[0] + unitsize * textline_size), 0.003);
       
       const int activescale = 4;
       float txstart = xstart + unitsize * textline_size;
@@ -696,16 +696,17 @@ void Metagame::ai(const vector<Ai *> &ai) const {
 
 void Metagame::renderToScreen() const {
   if(mode == MGM_PLAYERCHOOSE) {
-    setZoom(0, 0, 600);
+    setZoomCenter(0, 0, 1.1);
     setColor(1.0, 1.0, 1.0);
+    //drawRect(Float4(-(4./3), -1, (4./3), 1), 0.001);
     for(int i = 0; i < pms.size(); i++) {
       runSettingRender(pms[i]);
     }
-    CHECK(factions.size() == factioncount);
     for(int i = 0; i < factions.size(); i++) {
       if(!factions[i].taken) {
-        setColor(faction_src[i].color);
-        drawDvec2(factions[i].icon, squareInside(factions[i].compass_location), 1.0);
+        setColor(factions[i].color);
+        drawDvec2(factions[i].icon, squareInside(factions[i].compass_location), 0.003);
+        //drawRect(factions[i].compass_location, 0.003);
       }
     }
   } else if(mode == MGM_SHOP) {
@@ -836,34 +837,86 @@ void Metagame::findLevels(int playercount) {
 Metagame::Metagame() {
 }
 
-Metagame::Metagame(int playercount, int in_roundsBetweenShop) {
+class distanceFrom {
+  public:
+  
+  int ycenter_;
+  distanceFrom(int ycenter) : ycenter_(ycenter) { };
+  
+  float dist(pair<int, int> dt) const {
+    return dt.first * dt.first * PHI * PHI + dt.second * dt.second;
+  }
+  
+  bool operator()(pair<int, int> lhs, pair<int, int> rhs) const {
+    return dist(lhs) < dist(rhs);
+  }
+};
 
-  const Float2 cent(400, 300);
+pair<Float4, vector<Float2> > getFactionCenters(int fcount) {
+  for(int rows = 1; ; rows++) {
+    float y_size = 2. / rows;
+    float x_size = y_size * PHI;
+  
+    // the granularity of x_bounds is actually one half x
+    int x_bounds = (int)((4./3.) / x_size * 2) - 1;
+    {
+      float xbt = (x_bounds + 2) * x_size / 2;
+      dprintf("x_bounds is a total of %f, %f in each direction", xbt, xbt / 2);
+    }
+    
+    int center_y = -!(rows % 2);
+    
+    int starrow = -(rows - 1) / 2;
+    int endrow = rows / 2 + 1;
+    CHECK(endrow - starrow == rows);
+    dprintf("%d is %d to %d\n", rows, starrow, endrow);
+    
+    vector<pair<int, int> > icents;
+    
+    for(int i = starrow; i < endrow; i++)
+      for(int j = -x_bounds; j <= x_bounds; j++)
+        if(!(j % 2) == !(i % 2) && (i || j))
+          icents.push_back(make_pair(j, center_y + i * 2));
+    
+    sort(icents.begin(), icents.end(), distanceFrom(center_y));
+    icents.erase(unique(icents.begin(), icents.end()), icents.end());
+    dprintf("At %d generated %d\n", rows, icents.size());
+    if(icents.size() >= fcount) {
+      pair<Float4, vector<Float2> > rv;
+      rv.first = Float4(-x_size / 2, -y_size / 2, x_size / 2, y_size / 2);
+      rv.first *= 0.9;
+      for(int i = 0; i < fcount; i++) {
+        rv.second.push_back(Float2(icents[i].first * x_size / 2, icents[i].second * y_size / 2));
+        Float4 synth = rv.first + rv.second.back();
+        CHECK(abs(synth.sx) <= 4./3);
+        CHECK(abs(synth.ex) <= 4./3);
+      }
+      CHECK(rv.second.size() == fcount);
+      return rv;
+    }
+  }
+}
+
+
+Metagame::Metagame(int playercount, int in_roundsBetweenShop) {
   
   roundsBetweenShop = in_roundsBetweenShop;
   CHECK(roundsBetweenShop >= 1);
   
   pms.clear();
-  pms.resize(playercount, PlayerMenuState(cent));
+  pms.resize(playercount, PlayerMenuState(Float2(0, 0)));
   
-  for(int i = 0; i < factioncount; i++) {
+  pair<Float4, vector<Float2> > factcents = getFactionCenters(faction_src_count);
+  for(int i = 0; i < factcents.second.size(); i++)
+    dprintf("%f, %f\n", factcents.second[i].x, factcents.second[i].y);
+  
+  for(int i = 0; i < factcents.second.size(); i++) {
     FactionState fs;
-    fs.icon = loadDvec2(faction_src[i].filename);
+    fs.icon = loadDvec2(faction_src[i % faction_src_count].filename);
     fs.taken = false;
-    fs.color = faction_src[i].color;
+    fs.color = faction_src[i % faction_src_count].color;
+    fs.compass_location = factcents.first + factcents.second[i];
     factions.push_back(fs);
-  }
-  
-  Float4 factionbox = Float4(-160, -100, 160, 100) * 0.5;
-  
-  for(int i = 0; i < 4; i++) {
-    Float2 loc = makeAngle(PI * 2 * i / 4) * 100 + cent;
-    factions[i].compass_location = factionbox + Float4(loc, loc);
-  }
-  
-  for(int i = 4; i < factions.size(); i++) {
-    Float2 loc = makeAngle(PI * 2 * ( i - 4 ) / ( factions.size() - 4 )) * 225 + cent;
-    factions[i].compass_location = factionbox + Float4(loc, loc);
   }
   
   mode = MGM_PLAYERCHOOSE;

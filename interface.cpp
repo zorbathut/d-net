@@ -129,7 +129,7 @@ void InterfaceMain::render() const {
   
   dumpBooleanDetail = false;
   
-  #if 1
+  #if 0
   //dprintf("Frame!\n");
     
    string lhs[6] = {

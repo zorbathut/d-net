@@ -128,6 +128,7 @@ inline Float4 operator+( const Float4 &lhs, const Float4 &rhs ) {
 inline Float4 operator*( const Float4 &lhs, float rhs ) {
   return Float4( lhs.sx * rhs, lhs.sy * rhs, lhs.ex * rhs, lhs.ey * rhs );
 }
+
 inline const Float4 &operator*=( Float4 &lhs, float rhs ) {
   lhs.sx *= rhs;
   lhs.sy *= rhs;
@@ -141,6 +142,10 @@ inline Float4 &operator/=( Float4 &lhs, float rhs ) {
   lhs.ex /= rhs;
   lhs.ey /= rhs;
   return lhs;
+}
+
+inline Float4 operator+( const Float4 &lhs, const Float2 &rhs ) {
+  return Float4( lhs.sx + rhs.x, lhs.sy + rhs.y, lhs.ex + rhs.x, lhs.ey + rhs.y );
 }
 
 inline bool operator==( const Float4 &lhs, const Float4 &rhs ) {
