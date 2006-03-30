@@ -25,7 +25,9 @@ public:
 
 };
 
-istream &getLineStripped(istream &ifs, string &out);
-istream &getkvData(istream &ifs, kvData &out);
+istream &getLineStripped(istream &ifs, string *out);
+istream &getkvData(istream &ifs, kvData *out);
+
+char fromHex(char in);
 
 #endif

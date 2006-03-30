@@ -53,9 +53,15 @@ Color::Color(float in_r, float in_g, float in_b) :
   r(in_r), g(in_g), b(in_b) { };
 
 Color colorFromString(const string &str) {
-  vector<string> toki = tokenize(str, " ,");
-  CHECK(toki.size() == 3);
-  return Color(atof(toki[0].c_str()), atof(toki[1].c_str()), atof(toki[2].c_str()));
+  if(str.size() == 3) {
+    // 08f style color
+    return Color(fromHex(str[0]) / 15., fromHex(str[1]) / 15., fromHex(str[2]) / 15.);
+  } else {
+    // 1.0, 0.3, 0.194 style color
+    vector<string> toki = tokenize(str, " ,");
+    CHECK(toki.size() == 3);
+    return Color(atof(toki[0].c_str()), atof(toki[1].c_str()), atof(toki[2].c_str()));
+  }
 }
 
 Color operator+(const Color &lhs, const Color &rhs) {
@@ -86,7 +92,7 @@ void initGfx() {
     ifstream font("data/font.txt");
     string line;
     CHECK(font);
-    while(getLineStripped(font, line)) {
+    while(getLineStripped(font, &line)) {
       dprintf("Parsing font character \"%s\"\n", line.c_str());
       vector<string> first = tokenize(line, ":");
       if(first.size() == 1)

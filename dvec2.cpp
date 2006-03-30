@@ -364,7 +364,7 @@ Dvec2 loadDvec2(const string &fname) {
   kvData dat;
   ifstream fil(fname.c_str());
   CHECK(fil);
-  while(getkvData(fil, dat)) {
+  while(getkvData(fil, &dat)) {
     if(dat.category == "path") {
       VectorPath nvp;
       sscanf(dat.consume("center").c_str(), "%f,%f", &nvp.centerx, &nvp.centery);

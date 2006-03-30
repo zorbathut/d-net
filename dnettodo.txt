@@ -1,5 +1,5 @@
-- Faction layout improved
 - Factions from file
+- Intersection error handling, not just crashing
 - "Winner list"
 - Fix glory device slowdowns (if there is one)
 - Modify firerate

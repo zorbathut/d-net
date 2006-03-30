@@ -210,7 +210,7 @@ void parseItemFile(const string &fname) {
   ifstream tfil(fname.c_str());
   CHECK(tfil);
   kvData chunk;
-  while(getkvData(tfil, chunk)) {
+  while(getkvData(tfil, &chunk)) {
     dprintf("%s\n", chunk.debugOutput().c_str());
     if(chunk.kv.count("debug") && atoi(chunk.consume("debug").c_str()) && !FLAGS_debugitems) {
       dprintf("Debug only, skipping\n");
@@ -476,7 +476,7 @@ void initItemdb() {
   string basepath = "data/base/";
   ifstream manifest((basepath + "manifest").c_str());
   string line;
-  while(getLineStripped(manifest, line)) {
+  while(getLineStripped(manifest, &line)) {
     dprintf("%s\n", line.c_str());
     parseItemFile(basepath + line);
   }

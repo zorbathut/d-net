@@ -55,35 +55,35 @@ void kvData::shouldBeDone() const {
   CHECK(isDone());
 }
 
-istream &getLineStripped(istream &ifs, string &out) {
-  while(getline(ifs, out)) {
-    out = string(out.begin(), find(out.begin(), out.end(), '#'));
-    while(out.size() && isspace(*out.begin()))
-      out.erase(out.begin());
-    while(out.size() && isspace(out[out.size()-1]))
-      out.erase(out.end() - 1);
-    if(out.size())
+istream &getLineStripped(istream &ifs, string *out) {
+  while(getline(ifs, *out)) {
+    *out = string(out->begin(), find(out->begin(), out->end(), '#'));
+    while(out->size() && isspace(*out->begin()))
+      out->erase(out->begin());
+    while(out->size() && isspace((*out)[out->size()-1]))
+      out->erase(out->end() - 1);
+    if(out->size())
       return ifs;
   }
   return ifs;
 }
 
-istream &getkvData(istream &ifs, kvData &out) {
-  out.kv.clear();
-  out.category.clear();
+istream &getkvData(istream &ifs, kvData *out) {
+  out->kv.clear();
+  out->category.clear();
   {
     string line;
-    getLineStripped(ifs, line);
+    getLineStripped(ifs, &line);
     if(!ifs)
       return ifs; // only way to return failure without an assert
     vector<string> tok = tokenize(line, " ");
     CHECK(tok.size() == 2);
     CHECK(tok[1] == "{");
-    out.category = tok[0];
+    out->category = tok[0];
   }
   {
     string line;
-    while(getLineStripped(ifs, line)) {
+    while(getLineStripped(ifs, &line)) {
       if(line == "}")
         return ifs;
       vector<string> tok = tokenize(line, "=");
@@ -93,12 +93,22 @@ istream &getkvData(istream &ifs, kvData &out) {
         dat = "";
       else
         dat = tok[1];
-      if(!out.kv.count(tok[0]))
-        out.kv[tok[0]] = dat;
+      if(!out->kv.count(tok[0]))
+        out->kv[tok[0]] = dat;
       else
-        out.kv[tok[0]] += "\n" + dat;
+        out->kv[tok[0]] += "\n" + dat;
     }
   }
   CHECK(0);
   return ifs; // this will be failure
+}
+
+char fromHex(char in) {
+  in = tolower(in);
+  if(isdigit(in))
+    return in - '0';
+  else if(in >= 'a' && in <= 'f')
+    return in - 'a' + 10;
+  else
+    CHECK(0);
 }

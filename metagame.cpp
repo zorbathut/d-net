@@ -12,31 +12,6 @@
 
 using namespace std;
 
-class FactionSource {
-public:
-  string filename;
-  Color color;
-};
-
-const FactionSource faction_src[] = {
-  { "data/faction_f.dv2", Color(1.0, 1.0, 1.0) }, // omega
-  
-  { "data/faction_a.dv2", Color(1.0, 0.0, 0.0) }, // pitchfork
-  { "data/faction_e.dv2", Color(0.0, 1.0, 0.0) }, // serpent
-  { "data/faction_h.dv2", Color(0.0, 0.0, 1.0) }, // ocean
-  
-  { "data/faction_b.dv2", Color(1.0, 1.0, 0.0) }, // lightning
-  { "data/faction_c.dv2", Color(0.0, 1.0, 1.0) }, // H
-  { "data/faction_d.dv2", Color(1.0, 0.0, 1.0) }, // compass
-  { "data/faction_g.dv2", Color(0.5, 0.5, 1.0) }, // buzzsaw
-  { "data/faction_i.dv2", Color(1.0, 0.5, 0.5) }, // zen
-  { "data/faction_j.dv2", Color(1.0, 0.5, 0.0) }, // pincer
-  { "data/faction_k.dv2", Color(0.0, 0.6, 1.0) }, // hourglass
-  { "data/faction_l.dv2", Color(1.0, 0.4, 0.6) } // poison
-};
-
-const int faction_src_count = sizeof(faction_src) / sizeof(FactionSource);
-
 const HierarchyNode &Shop::getStepNode(int step) const {
   CHECK(step >= 0 && step <= curloc.size());
   const HierarchyNode *cnode = &itemDbRoot();
@@ -823,7 +798,7 @@ void Metagame::findLevels(int playercount) {
   if(!levels.size()) {
     ifstream ifs("data/levels/levellist.txt");
     string line;
-    while(getLineStripped(ifs, line)) {
+    while(getLineStripped(ifs, &line)) {
       Level lev = loadLevel("data/levels/" + line);
       if(lev.playersValid.count(playercount))
         levels.push_back(lev);
@@ -906,18 +881,28 @@ Metagame::Metagame(int playercount, int in_roundsBetweenShop) {
   pms.clear();
   pms.resize(playercount, PlayerMenuState(Float2(0, 0)));
   
-  pair<Float4, vector<Float2> > factcents = getFactionCenters(faction_src_count);
-  for(int i = 0; i < factcents.second.size(); i++)
-    dprintf("%f, %f\n", factcents.second[i].x, factcents.second[i].y);
-  
-  for(int i = 0; i < factcents.second.size(); i++) {
-    FactionState fs;
-    fs.icon = loadDvec2(faction_src[i % faction_src_count].filename);
-    fs.taken = false;
-    fs.color = faction_src[i % faction_src_count].color;
-    fs.compass_location = factcents.first + factcents.second[i];
-    factions.push_back(fs);
+  {
+    ifstream istr("data/factions");
+    kvData kvd;
+    while(getkvData(istr, &kvd)) {
+      CHECK(kvd.category == "faction");
+      
+      FactionState fs;
+      
+      kvd.consume("name");
+      
+      fs.icon = loadDvec2("data/" + kvd.consume("file"));
+      fs.taken = false;
+      fs.color = colorFromString(kvd.consume("color"));
+      // fs.compass_location will be written later
+      
+      factions.push_back(fs);
+    }
   }
+  
+  pair<Float4, vector<Float2> > factcents = getFactionCenters(factions.size());
+  for(int i = 0; i < factcents.second.size(); i++)
+    factions[i].compass_location = factcents.first + factcents.second[i];
   
   mode = MGM_PLAYERCHOOSE;
   
