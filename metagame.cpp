@@ -882,7 +882,7 @@ Metagame::Metagame(int playercount, int in_roundsBetweenShop) {
   pms.resize(playercount, PlayerMenuState(Float2(0, 0)));
   
   {
-    ifstream istr("data/factions");
+    ifstream istr("data/fact");
     kvData kvd;
     while(getkvData(istr, &kvd)) {
       CHECK(kvd.category == "faction");
