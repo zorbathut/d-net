@@ -1,20 +1,21 @@
 
 faction {
+  name=pitchfork
+  file=pitchfork.dv2
+  color=f00
+}
+
+
+faction {
   name=omega
   file=omega.dv2
   color=fff
 }
 
 faction {
-  name=pitchfork
-  file=pitchfork.dv2
-  color=f00
-}
-
-faction {
   name=serpent
   file=serpent.dv2
-  color=0f0
+  color=0a0
 }
 
 faction {
@@ -38,7 +39,7 @@ faction {
 faction {
   name=compass
   file=compass.dv2
-  color=f0f
+  color=f4f
 }
 
 faction {
@@ -56,7 +57,13 @@ faction {
 faction {
   name=pincer
   file=pincer.dv2
-  color=f80
+  color=fa2
+}
+
+faction {
+  name=poison
+  file=poison.dv2
+  color=f5a
 }
 
 faction {
@@ -68,5 +75,23 @@ faction {
 faction {
   name=poison
   file=poison.dv2
-  color=f6a
+  color=888
+}
+
+faction {
+  name=poison
+  file=poison.dv2
+  color=af5
+}
+
+faction {
+  name=poison
+  file=poison.dv2
+  color=fb8
+}
+
+faction {
+  name=poison
+  file=poison.dv2
+  color=a35
 }
