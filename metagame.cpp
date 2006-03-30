@@ -882,7 +882,7 @@ Metagame::Metagame(int playercount, int in_roundsBetweenShop) {
   pms.resize(playercount, PlayerMenuState(Float2(0, 0)));
   
   {
-    ifstream istr("data/fact");
+    ifstream istr("data/factions/list");
     kvData kvd;
     while(getkvData(istr, &kvd)) {
       CHECK(kvd.category == "faction");
@@ -891,7 +891,7 @@ Metagame::Metagame(int playercount, int in_roundsBetweenShop) {
       
       kvd.consume("name");
       
-      fs.icon = loadDvec2("data/" + kvd.consume("file"));
+      fs.icon = loadDvec2("data/factions/" + kvd.consume("file"));
       fs.taken = false;
       fs.color = colorFromString(kvd.consume("color"));
       // fs.compass_location will be written later

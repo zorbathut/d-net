@@ -1,72 +1,72 @@
 
 faction {
   name=omega
-  file=faction_f.dv2
+  file=omega.dv2
   color=fff
 }
 
 faction {
   name=pitchfork
-  file=faction_a.dv2
+  file=pitchfork.dv2
   color=f00
 }
 
 faction {
   name=serpent
-  file=faction_e.dv2
+  file=serpent.dv2
   color=0f0
 }
 
 faction {
   name=ocean
-  file=faction_h.dv2
+  file=ocean.dv2
   color=00f
 }
 
 faction {
   name=lightning
-  file=faction_b.dv2
+  file=lightning.dv2
   color=ff0
 }
 
 faction {
   name=H
-  file=faction_c.dv2
+  file=h.dv2
   color=0ff
 }
 
 faction {
   name=compass
-  file=faction_d.dv2
+  file=compass.dv2
   color=f0f
 }
 
 faction {
   name=buzzsaw
-  file=faction_g.dv2
+  file=buzzsaw.dv2
   color=88f
 }
 
 faction {
   name=zen
-  file=faction_i.dv2
+  file=zen.dv2
   color=f88
 }
 
 faction {
   name=pincer
-  file=faction_j.dv2
+  file=pincer.dv2
   color=f80
 }
 
 faction {
   name=hourglass
-  file=faction_k.dv2
+  file=hourglass.dv2
   color=09f
 }
 
 faction {
   name=poison
-  file=faction_l.dv2
+  file=poison.dv2
   color=f6a
 }
