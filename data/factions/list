@@ -79,8 +79,8 @@ faction {
 }
 
 faction {
-  name=poison
-  file=poison.dv2
+  name=trees
+  file=trees.dv2
   color=af5
 }
 
