@@ -356,10 +356,16 @@ bool vecEditTick(const Controller &keys) {
     zoompow--;
   if(keys.keys[1].repeat)
     zoompow++;
-  if(keys.keys[2].repeat)
+  
+  bool gridchanged = false;
+  if(keys.keys[2].repeat) {
     gridpow--;
-  if(keys.keys[3].repeat)
+    gridchanged = true;
+  }
+  if(keys.keys[3].repeat) {
     gridpow++;
+    gridchanged = true;
+  }
   
   zoom = pow(2., zoompow);
   grid = pow(2., gridpow);
@@ -585,6 +591,10 @@ bool vecEditTick(const Controller &keys) {
     if(keys.r.repeat) cursor_x += grid;
     if(keys.u.repeat) cursor_y -= grid;
     if(keys.d.repeat) cursor_y += grid;
+    if(gridchanged) {
+      cursor_x = floor((cursor_x + grid / 2) / grid) * grid;
+      cursor_y = floor((cursor_y + grid / 2) / grid) * grid;
+    }
     {
       int imx, imy;
       int button = SDL_GetRelativeMouseState(&imx, &imy);
