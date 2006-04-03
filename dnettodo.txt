@@ -1,6 +1,7 @@
+- Faction names
 - Way overbuying stuff, what's going on?
-- Two more factions
 - "Winner list"
+- Faction text
 - Fix glory device slowdowns (if there is one)
 - Modify firerate
 - Rendering change to render lines by default, segments as the exception

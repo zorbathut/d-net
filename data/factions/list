@@ -85,13 +85,13 @@ faction {
 }
 
 faction {
-  name=poison
-  file=poison.dv2
+  name=bone
+  file=bone.dv2
   color=fb8
 }
 
 faction {
-  name=poison
-  file=poison.dv2
+  name=spike
+  file=spike.dv2
   color=a35
 }
