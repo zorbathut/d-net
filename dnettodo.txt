@@ -1,4 +1,4 @@
-- Faction names
+- Faction names useful
 - Way overbuying stuff, what's going on?
 - "Winner list"
 - Faction text

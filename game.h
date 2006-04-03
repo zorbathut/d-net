@@ -18,6 +18,8 @@ class Projectile;
 struct FactionState {
   Dvec2 icon;
   Color color;
+  string name;
+  vector<string> name_lines;
   
   // Only used in metagame
   bool taken;

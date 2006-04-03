@@ -466,11 +466,11 @@ void runSettingRender(const PlayerMenuState &pms) {
     
     // Basic math!
     // compiletime constants
-    const int textline_size = 7;  // How many times larger a line of text is than the border
+    const int textline_size = 7;  // How many times larger a line of text is than its divider
     const int textline_count = 6; // How many lines we're going to have
     const int border_size = 2;
     const int divider_size = 3;
-    const int units = textline_size * textline_count + textline_count - 1 + border_size * 2 + divider_size; // X lines, plus dividers (textline_count-1), plus the top and bottom borders (4), plus the increased divider from categories to data (2)
+    const int units = textline_size * textline_count + textline_count - 1 + border_size * 2 + divider_size; // X lines, plus dividers (textline_count-1), plus the top and bottom borders, plus the increased divider from categories to data
     // runtime constants
     const float unitsize = drawzone.y_span() / units;
     const float border = unitsize * border_size;
@@ -480,6 +480,17 @@ void runSettingRender(const PlayerMenuState &pms) {
     ystarts[0] = drawzone.sy + unitsize * border_size;
     for(int i = 1; i < textline_count; i++)
       ystarts[i] = drawzone.sy + unitsize * (border_size + divider_size + i - 1) + unitsize * textline_size * i;
+    
+    {
+      const float nameFade = pow(1.0 - fadeFactor, 2);
+      setColor(pms.faction->color * nameFade);
+      
+      vector<string> text = pms.faction->name_lines;
+      text.push_back("");
+      text.push_back("Ready");
+      
+      drawJustifiedMultiText(text, textline_size * unitsize, unitsize, drawzone.midpoint(), TEXT_CENTER, TEXT_CENTER);
+    }
     
     setColor(Color(1.0, 1.0, 1.0) * fadeFactor);
     {
@@ -889,12 +900,30 @@ Metagame::Metagame(int playercount, int in_roundsBetweenShop) {
       
       FactionState fs;
       
-      kvd.consume("name");
-      
       fs.icon = loadDvec2("data/factions/" + kvd.consume("file"));
       fs.taken = false;
       fs.color = colorFromString(kvd.consume("color"));
+      fs.name = kvd.consume("name");
+      
+      {
+        vector<int> lines = sti(tokenize(kvd.consume("lines"), " "));
+        vector<string> words = tokenize(fs.name, " ");
+        CHECK(words.size() == accumulate(lines.begin(), lines.end(), 0));
+        int cword = 0;
+        for(int i = 0; i < lines.size(); i++) {
+          string acu;
+          for(int j = 0; j < lines[i]; j++) {
+            if(j)
+              acu += " ";
+            acu += words[cword++];
+          }
+          fs.name_lines.push_back(acu);
+        }
+      }
+      
       // fs.compass_location will be written later
+      
+      CHECK(kvd.isDone());
       
       factions.push_back(fs);
     }

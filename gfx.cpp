@@ -407,20 +407,42 @@ void drawText(const string &txt, float scale, const Float2 &pos) {
 
 void drawJustifiedText(const string &txt, float scale, float sx, float sy, int xps, int yps) {
   float lscale = scale / 9;
+  
   float wid = lscale * ( 8 * txt.size() - 3 );
   if(xps == TEXT_MIN) {
   } else if(xps == TEXT_CENTER) {
     sx -= wid / 2;
   } else if(xps == TEXT_MAX) {
     sx -= wid;
+  } else {
+    CHECK(0);
   }
+  
   if(yps == TEXT_MIN) {
   } else if(yps == TEXT_CENTER) {
     sy -= lscale * 9 / 2;
   } else if(yps == TEXT_MAX) {
     sy -= lscale * 9;
+  } else {
+    CHECK(0);
   }
+  
   drawText(txt, scale, sx, sy);
+}
+
+void drawJustifiedMultiText(const vector<string> &txt, float letterscale, float gapscale, Float2 pos, int xps, int yps) {
+  float hei = txt.size() * letterscale + (txt.size() - 1) * gapscale;
+  if(yps == TEXT_MIN) {
+  } else if(yps == TEXT_CENTER) {
+    pos.y -= hei / 2;
+  } else if(yps == TEXT_MAX) {
+    pos.y -= hei;
+  }
+  
+  for(int i = 0; i < txt.size(); i++) {
+    drawJustifiedText(txt[i], letterscale, pos.x, pos.y, xps, TEXT_MIN);
+    pos.y += letterscale + gapscale;
+  }
 }
 
 void drawVectorPath(const VectorPath &vecob, const pair<Float2, float> &coord, float weight) {

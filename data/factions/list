@@ -1,97 +1,113 @@
 
 faction {
   name=Disciples of Lucifer
+  lines=1 2
   file=pitchfork.dv2
   color=f00
 }
 
 
 faction {
-  name=Final Solution Limited
+  name=Final Solutions Limited
+  lines=1 1 1
   file=omega.dv2
   color=fff
 }
 
 faction {
   name=Serpent's Strike
+  lines=1 1
   file=serpent.dv2
   color=0a0
 }
 
 faction {
   name=Aquear
+  lines=1
   file=ocean.dv2
   color=00f
 }
 
 faction {
-  name=Academy of Minerva
+  name=Academy of Hermes
+  lines=1 2
   file=lightning.dv2
   color=ff0
 }
 
 faction {
   name=Rational Warriors
+  lines=1 1
   file=h.dv2
   color=0ff
 }
 
 faction {
   name=Security Transport Inc
+  lines=1 2
   file=compass.dv2
   color=f4f
 }
 
 faction {
   name=Jason's Juggernauts
+  lines=1 1
   file=buzzsaw.dv2
   color=88f
 }
 
 faction {
   name=Korath Dynasty
+  lines=1 1
   file=zen.dv2
   color=f88
 }
 
 faction {
   name=Tribes of the Amazon
+  lines=2 2
   file=pincer.dv2
   color=fa2
 }
 
 faction {
   name=Alchemist's Kindred
+  lines=1 1
   file=poison.dv2
   color=f5a
 }
 
 faction {
   name=Catalysts of Mortality
+  lines=2 1
   file=hourglass.dv2
   color=09f
 }
 
 faction {
   name=Hephaestus Heavy Construction
+  lines=1 1 1
   file=barriers.dv2
   color=888
 }
 
 faction {
   name=Sons of Earth
+  lines=2 1
   file=trees.dv2
   color=af5
 }
 
 faction {
   name=Dust's Legacy
+  lines=1 1
   file=bone.dv2
   color=fb8
 }
 
 faction {
   name=Tricksters
+  lines=1
   file=spike.dv2
   color=a35
 }
