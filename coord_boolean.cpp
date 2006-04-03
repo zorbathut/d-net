@@ -45,6 +45,13 @@ public:
   }
 };
 
+class GDException {
+public:
+  void operator()(const string &fname, int line) {
+    throw make_pair(fname, line);
+  }
+};
+
 class LiveLink {
 public:
   Coord2 start;
@@ -319,7 +326,7 @@ Coord2 truncate(const Coord2 &c2, int bits) {
 
 bool getDifferenceInstaCrashy = false;
 
-vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Coord2> &rhs) {
+vector<vector<Coord2> > getDifferenceCore(const vector<Coord2> &lhs, const vector<Coord2> &rhs) {
   #if 0    // Pre-split debugging
   {
     vector<vector<Coord2> > rv;
@@ -329,10 +336,9 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
   }
   #endif
   GetDifferenceHandler gdhst(lhs, rhs);
+  GDException CrashHandler;
   if(getDifferenceInstaCrashy)
     CHECK(0);
-  //if(frameNumber == 921696)
-    //CrashHandler();
   bool lhsInside = !pathReversed(lhs);
   CHECK(!pathReversed(rhs));
   #if 1
@@ -853,3 +859,34 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
   return rrv;
 
 }
+
+#include "parse.h"  // Only for the KVD stuff here
+
+vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Coord2> &rhs) {
+  try {
+    return getDifferenceCore(lhs, rhs);
+  } catch(pair<string, int> gde) {
+    dprintf("MASSIVE COORD BOOLEAN FAILURE! HOLY CRAPFUCK! EVERYTHING IS DYING!");
+    kvData kvd;
+    kvd.category = "coordfailure";
+    for(int i = 0; i < lhs.size(); i++) {
+      if(i)
+        kvd.kv["lhs"] += '\n';
+      kvd.kv["lhs"] += lhs[i].rawstr();
+    }
+    for(int i = 0; i < rhs.size(); i++) {
+      if(i)
+        kvd.kv["rhs"] += '\n';
+      kvd.kv["rhs"] += rhs[i].rawstr();
+    }
+    kvd.kv["crash_loc"] = StringPrintf("%s:%d", gde.first.c_str(), gde.second);
+    string dat = stringFromKvData(kvd);
+    
+    FILE *fil = fopen("data/coordfailure", "a");
+    fwrite(dat.c_str(), dat.size(), 1, fil);
+    fclose(fil);
+    
+    dprintf("And now it's resuming.\n");
+    return vector<vector<Coord2> >(1, lhs);
+  }
+};

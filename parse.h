@@ -28,6 +28,8 @@ public:
 istream &getLineStripped(istream &ifs, string *out);
 istream &getkvData(istream &ifs, kvData *out);
 
+string stringFromKvData(const kvData &kvd);
+
 char fromHex(char in);
 
 #endif

@@ -1,5 +1,5 @@
-- Factions from file
-- Intersection error handling, not just crashing
+- Way overbuying stuff, what's going on?
+- Two more factions
 - "Winner list"
 - Fix glory device slowdowns (if there is one)
 - Modify firerate

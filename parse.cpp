@@ -103,6 +103,30 @@ istream &getkvData(istream &ifs, kvData *out) {
   return ifs; // this will be failure
 }
 
+string stringFromKvData(const kvData &kvd) {
+  string rv;
+  rv += StringPrintf("%s {\n", kvd.category.c_str());
+  for(map<string, string>::const_iterator itr = kvd.kv.begin(); itr != kvd.kv.end(); itr++) {
+    vector<string> remu = tokenize(itr->second, "\n");
+    for(int i = 0; i < remu.size(); i++) {
+      for(int j = 0; j < remu[i].size(); j++) {
+        CHECK(remu[i][j] != '=');
+        CHECK(remu[i][j] != '#');
+        if(isalpha(remu[i][j]))
+          continue;
+        if(isdigit(remu[i][j]))
+          continue;
+        if(remu[i][j] >= 32 && remu[i][j] <= 126)
+          continue;
+        CHECK(0);
+      }
+      rv += StringPrintf("  %s=%s\n", itr->first.c_str(), remu[i].c_str());
+    }
+  }
+  rv += "}\n";
+  return rv;
+}
+
 char fromHex(char in) {
   in = tolower(in);
   if(isdigit(in))

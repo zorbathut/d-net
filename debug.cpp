@@ -42,7 +42,7 @@ void PrintDebugStack() {
   dprintf("End of stack\n");
 }
 
-void CrashHandler() { };
+void CrashHandler(const char *fname, int line) { };
 
 void crash() {
   *(int*)0 = 0;

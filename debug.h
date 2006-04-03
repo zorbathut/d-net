@@ -31,10 +31,10 @@ int dprintf( const char *bort, ... ) __attribute__((format(printf,1,2)));
 
 extern int frameNumber;
 
-void CrashHandler();
+void CrashHandler(const char *fname, int line);
 void PrintDebugStack();
 void crash() __attribute__((__noreturn__));
-#define CHECK(x) while(1) { if(!(x)) { dprintf("Error at %d, %s:%d - %s\n", frameNumber, __FILE__, __LINE__, #x); CrashHandler(); PrintDebugStack(); crash(); } break; }
+#define CHECK(x) while(1) { if(!(x)) { dprintf("Error at %d, %s:%d - %s\n", frameNumber, __FILE__, __LINE__, #x); PrintDebugStack(); CrashHandler(__FILE__, __LINE__); crash(); } break; }
 #define TEST(x) CHECK(x)
 #define printf FAILURE
 
