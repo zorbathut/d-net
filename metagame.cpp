@@ -625,7 +625,8 @@ bool Metagame::runTick( const vector< Controller > &keys ) {
           playerdata[i].wins = 0;
         }
         findLevels(playerdata.size());
-        game = Game(&playerdata, levels[int(frand() * levels.size())]);
+        game = Game(&playerdata, levels[int(frand() * levels.size())], &win_history);
+        CHECK(win_history.size() == gameround);
       }
     }
   } else if(mode == MGM_PLAY) {
@@ -639,7 +640,7 @@ bool Metagame::runTick( const vector< Controller > &keys ) {
         checked.resize(playerdata.size());
       } else {
         float firepower = game.firepowerSpent;
-        game = Game(&playerdata, levels[int(frand() * levels.size())]);
+        game = Game(&playerdata, levels[int(frand() * levels.size())], &win_history);
         game.firepowerSpent = firepower;
       }
     }

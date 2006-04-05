@@ -21,6 +21,7 @@ using namespace std;
 DEFINE_bool(verboseCollisions, false, "Verbose collisions");
 DEFINE_bool(debugGraphics, false, "Enable various debug graphics");
 DEFINE_int(startingCash, 1000, "Cash to start with");
+DECLARE_int(rounds_per_store);
 
 void dealDamage(float dmg, Tank *target, Player *owner, float damagecredit, bool killcredit) {
   if(target->player == owner)
@@ -934,10 +935,18 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
   }
 
   if(framesSinceOneLeft / FPS >= 3) {
+    int winplayer = -1;
     for(int i = 0; i < players.size(); i++) {
-      if(players[i].live)
+      if(players[i].live) {
         players[i].player->wins++;
+        CHECK(winplayer == -1);
+        winplayer = i;
+      }
     }
+    if(winplayer == -1)
+      wins->push_back(NULL);
+    else
+      wins->push_back(players[winplayer].player->faction);
     return true;
   } else {
     return false;
@@ -1066,13 +1075,63 @@ void Game::renderToScreen() const {
       drawJustifiedText("GO", 40, 133.3 / 2, 100.0 / 2, TEXT_CENTER, TEXT_CENTER);
     }
   }
+  {
+    /*
+    vector<FactionState *> genExampleFacts(const vector<Tank> &plays, int ct);
+    static vector<FactionState *> fact = genExampleFacts(players, 50);
+    wins->swap(fact);*/
+    
+    setZoom(0, 0, 1);
+    
+    const float iconwidth = 0.02;
+    const float iconborder = 0.001;
+    const float lineborder = iconborder * 2;
+    const float lineextra = 0.005;
+    
+    Float2 spos(0.01, 0.11);
+    
+    for(int i = 0; i < wins->size(); i++) {
+      if(i % FLAGS_rounds_per_store == 0 && i) {
+        setColor(Color(1.0, 1.0, 1.0));
+        spos.x += lineborder;
+        drawLine(spos.x, spos.y - lineextra, spos.x, spos.y + iconwidth + lineextra, 0.0002);
+        spos.x += lineborder;
+      }
+      if((*wins)[i]) {
+        setColor((*wins)[i]->color);
+        drawDvec2((*wins)[i]->icon, Float4(spos.x + iconborder, spos.y + iconborder, spos.x + iconwidth - iconborder, spos.y + iconwidth - iconborder), 0.0002);
+      }
+      spos.x += iconwidth;
+    }
+    
+    //wins->swap(fact);
+  }
 };
+
+vector<FactionState *> genExampleFacts(const vector<Tank> &plays, int ct) {
+  vector<FactionState *> feet;
+  for(int i = 0; i < ct; i++) {
+    int rv = rand() % (plays.size() + 1);
+    if(rv == plays.size()) {
+      if(rand() % 3 == 0) {
+        feet.push_back(NULL);
+      } else {
+        i--;
+        continue;
+      }
+    } else
+      feet.push_back(plays[rv].player->faction);
+  }
+  return feet;
+}
 
 Game::Game() {
 }
 
-Game::Game(vector<Player> *in_playerdata, const Level &lev) {
+Game::Game(vector<Player> *in_playerdata, const Level &lev, vector<FactionState *> *in_wins) {
   CHECK(in_playerdata);
+  CHECK(in_wins);
+  wins = in_wins;
   frameNm = 0;
   players.clear();
   players.resize(in_playerdata->size());

@@ -1,5 +1,4 @@
-- A LION on failure
-- "Winner list"
+- Quick entry for "Debug mode"
 - Fix glory device slowdowns (if there is one)
 - Modify firerate
 - Rendering change to render lines by default, segments as the exception
@@ -8,6 +7,9 @@
 - Auto coord-to-float converter (CoordFloat?)
 - Sound, yo
 - Halos?
+- Winner list works with lots and lots of rounds
+- Winner list better special effects
+- Winner list better "null" icon
 - Color for projectile impacts
 - Game setting choice arena
 - Meaningful factions

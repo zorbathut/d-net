@@ -211,7 +211,7 @@ public:
   float firepowerSpent;
 
   Game();
-  Game(vector<Player> *playerdata, const Level &level);
+  Game(vector<Player> *playerdata, const Level &level, vector<FactionState *> *wins);
 
 private:
   
@@ -234,6 +234,8 @@ private:
   Float2 zoom_size;
 
   Float2 zoom_speed;
+
+  vector<FactionState *> *wins;
 
 };
 

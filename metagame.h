@@ -106,6 +106,8 @@ class Metagame {
   vector<int> lrCash;
   vector<bool> checked;
   
+  vector<FactionState *> win_history;
+  
   int roundsBetweenShop;
 
 public:
