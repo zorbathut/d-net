@@ -532,7 +532,7 @@ void runSettingRender(const PlayerMenuState &pms) {
       CHECK(units == SETTING_LAST - 1 + activescale);
       
     }
-
+    
     if(pms.settingmode == SETTING_BUTTONS) {
       vector<vector<string> > names;
       for(int i = 0; i < BUTTON_LAST; i++) {
@@ -820,10 +820,6 @@ void Metagame::findLevels(int playercount) {
   }
 }
 
-// not a valid state
-Metagame::Metagame() {
-}
-
 class distanceFrom {
   public:
   
@@ -884,6 +880,7 @@ pair<Float4, vector<Float2> > getFactionCenters(int fcount) {
   }
 }
 
+DEFINE_int(debugControllers, 0, "Number of controllers to set to debug defaults");
 
 Metagame::Metagame(int playercount, int in_roundsBetweenShop) {
   
@@ -937,5 +934,35 @@ Metagame::Metagame(int playercount, int in_roundsBetweenShop) {
   mode = MGM_PLAYERCHOOSE;
   
   gameround = 0;
+  
+  CHECK(FLAGS_debugControllers >= 0 && FLAGS_debugControllers <= 2);
+  CHECK(factions.size() >= FLAGS_debugControllers);
+  
+  if(FLAGS_debugControllers >= 1) {
+    CHECK(pms.size() >= 1); // better be
+    pms[0].faction = &factions[0];
+    factions[0].taken = true;
+    pms[0].settingmode = SETTING_READY;
+    pms[0].choicemode = CHOICE_IDLE;
+    pms[0].buttons[0] = 4;
+    pms[0].buttons[1] = 8;
+    pms[0].axes[0] = 0;
+    pms[0].axes[1] = 1;
+    pms[0].setting_axistype = KSAX_UDLR;
+    pms[0].fireHeld = 0;
+  }
+  if(FLAGS_debugControllers >= 2) {
+    CHECK(pms.size() >= 2); // better be
+    pms[1].faction = &factions[1];
+    factions[1].taken = true;
+    pms[1].settingmode = SETTING_READY;
+    pms[1].choicemode = CHOICE_IDLE;
+    pms[1].buttons[0] = 4;
+    pms[1].buttons[1] = 1;
+    pms[1].axes[0] = 0;
+    pms[1].axes[1] = 1;
+    pms[1].setting_axistype = KSAX_ABSOLUTE;
+    pms[1].fireHeld = 0;
+  }
 
 }

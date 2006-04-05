@@ -72,7 +72,7 @@ class InterfaceMain {
   bool inptest;
   vector<Controller> inptest_controls;
   
-  Metagame game;
+  Metagame *game;
   
   StdMenu mainmenu;
   
@@ -83,7 +83,9 @@ public:
   bool tick(const vector< Controller > &control);
   void ai(const vector<Ai *> &ais) const;
   void render() const;
+
   InterfaceMain();
+  ~InterfaceMain();
 
 };
 
@@ -93,7 +95,7 @@ void InterfaceMain::ai(const vector<Ai *> &ai) const {
       if(ai[i])
         ai[i]->updatePregame();
   } else if(interface_mode == IFM_S_PLAYING) {
-    game.ai(ai);
+    game->ai(ai);
   }
 }
 
@@ -263,7 +265,7 @@ bool InterfaceMain::tick(const vector< Controller > &control) {
     int mrv;
     mrv = mainmenu.tick(kst[0]);
     if(mrv == IFM_M_NEWGAME) {
-      game = Metagame(control.size(), FLAGS_rounds_per_store);
+      game = new Metagame(control.size(), FLAGS_rounds_per_store);
       interface_mode = IFM_S_PLAYING;
     } else if(mrv == IFM_M_EXIT) {
       return true;
@@ -275,7 +277,7 @@ bool InterfaceMain::tick(const vector< Controller > &control) {
       CHECK(mrv == -1);
     }
   } else if(interface_mode == IFM_S_PLAYING) {
-    if(game.runTick(control)) {
+    if(game->runTick(control)) {
       interface_mode = IFM_S_MAINMENU;
     }
   } else {
@@ -361,7 +363,7 @@ void InterfaceMain::render() const {
       }
     }
   } else if(interface_mode == IFM_S_PLAYING) {
-    game.renderToScreen();
+    game->renderToScreen();
   } else {
     CHECK(0);
   }
@@ -377,6 +379,11 @@ InterfaceMain::InterfaceMain() {
   mainmenu.pushMenuItem("Exit", IFM_M_EXIT);
   grid = false;
   inptest = false;
+  game = NULL;
+}
+
+InterfaceMain::~InterfaceMain() {
+  delete game;
 }
 
 InterfaceMain ifm;

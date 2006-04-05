@@ -16,9 +16,12 @@ asm: $(SOURCES:=.S) makefile
 
 clean:
 	rm -rf *.o *.exe *.d *.S
-	
+
+testrun: d-net.exe
+	d-net.exe --nofullscreen --debugitems --startingCash=1000000000 --debugControllers=2
+
 run: d-net.exe
-	d-net.exe --nofullscreen --debugitems --startingCash=1000000
+	d-net.exe --nofullscreen
 
 ai: d-net.exe
 	while ./d-net.exe --nofullscreen --aiCount=12 --fastForwardTo=100000000 --terminateAfter=600 --startingCash=100000000 ; do echo Cycle. ; done

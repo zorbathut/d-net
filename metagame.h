@@ -112,18 +112,21 @@ class Metagame {
 
 public:
 
+  Metagame(int playercount, int roundsBetweenShop);
+
   void renderToScreen() const;
   void ai(const vector<Ai *> &ai) const;
   bool runTick( const vector< Controller > &keys );
 
+private:
+  
   void calculateLrStats();
   void drawMultibar(const vector<float> &sizes, const Float4 &dimensions) const;
 
   void findLevels(int playercount);
 
-  Metagame();
-  Metagame(int playercount, int roundsBetweenShop);
-
+  void operator=(const Metagame &rhs);
+  Metagame(const Metagame &rhs);  // do not implement, fuckers
 };
 
 #endif
