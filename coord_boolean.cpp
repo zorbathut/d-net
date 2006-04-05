@@ -862,6 +862,8 @@ vector<vector<Coord2> > getDifferenceCore(const vector<Coord2> &lhs, const vecto
 
 #include "parse.h"  // Only for the KVD stuff here
 
+int lastFailedFrame = -1000;
+
 vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Coord2> &rhs) {
   try {
     return getDifferenceCore(lhs, rhs);
@@ -887,6 +889,7 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
     fclose(fil);
     
     dprintf("And now it's resuming.\n");
+    lastFailedFrame = frameNumber;
     return vector<vector<Coord2> >(1, lhs);
   }
 };

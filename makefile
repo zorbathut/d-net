@@ -27,6 +27,7 @@ vecedit: d-net.exe
 	d-net.exe --vecedit --nofullscreen
     
 package: d-net.exe
+	rm \\\\192.168.100.2\\www-data\\d-net\\Dnet\ Latest\ Version.zip
 	mkdir deploy
 	cp d-net.exe deploy
 	cp c:/cygwin/usr/local/bin/SDL.dll deploy

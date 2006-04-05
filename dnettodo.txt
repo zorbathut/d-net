@@ -1,3 +1,4 @@
+- A LION on failure
 - "Winner list"
 - Fix glory device slowdowns (if there is one)
 - Modify firerate
