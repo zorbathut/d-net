@@ -207,6 +207,23 @@ void ColliderZone::addToken(int groupid, int token, const Coord4 &line, const Co
   }
   items[fd].second.push_back(make_pair(token, make_pair(line, direction)));
 }
+void ColliderZone::clearToken(int groupid, int token) {
+  for(int i = 0; i < lastItem; i++) {
+    if(items[i].first == groupid) {
+      int tid;
+      for(tid = 0; tid < items[i].second.size(); tid++)
+        if(items[i].second[tid].first == token)
+          break;
+      if(tid == items[i].second.size()) // Nothing!
+        break;
+      vector< pair< int, pair< Coord4, Coord4 > > > gnu(items[i].second.begin(), items[i].second.begin() + tid);
+      for( ; tid < items[i].second.size(); tid++)
+        if(items[i].second[tid].first != token)
+          gnu.push_back(items[i].second[tid]);
+      gnu.swap(items[i].second);
+    }
+  }
+}
 
 void ColliderZone::clearGroup(int groupid) {
   for(int fd = 0; fd < items.size(); fd++)
@@ -272,11 +289,31 @@ void ColliderZone::render(const Coord4 &bbox) const {
   drawRect(tbx.toFloat(), 0.5);
 }
 
-void ColliderZone::reset() {
+void ColliderZone::reset(int wallid) {
+  int wallchunk = -1;
+  for(int i = 0; i < lastItem; i++) {
+    if(items[i].first == wallid) {
+      CHECK(wallchunk == -1);
+      wallchunk = i;
+    } else {
+      items[i].second.clear();
+    }
+  }
+  if(wallchunk != -1) {
+    swap(items[wallchunk], items[0]);
+    lastItem = 1;
+  } else {
+    lastItem = 0;
+  }
+}
+
+void ColliderZone::full_reset() {
   lastItem = 0;
   for(int i = 0; i < items.size(); i++)
     items[i].second.clear();
 }
+
+
 
 ColliderZone::ColliderZone() {
   lastItem = 0;
@@ -286,25 +323,36 @@ ColliderZone::ColliderZone(int in_players) {
   lastItem = 0;
 }
 
-void Collider::reset(int in_players, int mode, const Coord4 &bounds) {
-  CHECK( state == CSTA_UNINITTED || state == CSTA_WAIT );
-  
-  players = in_players;
+void Collider::resetNonwalls(int mode, const Coord4 &bounds) {
+  CHECK(state == CSTA_UNINITTED || state == CSTA_WAIT);
   
   Coord4 zbounds = snapToEnclosingGrid(bounds, MATRIX_RES);
   
-  zxs = (zbounds.sx / MATRIX_RES).toInt();
-  zys = (zbounds.sy / MATRIX_RES).toInt();
-  zxe = (zbounds.ex / MATRIX_RES).toInt();
-  zye = (zbounds.ey / MATRIX_RES).toInt();
-  zxs--;
-  zys--;
-  zxe++;
-  zye++;  // Add a little slop
+  int nzxs = (zbounds.sx / MATRIX_RES).toInt();
+  int nzys = (zbounds.sy / MATRIX_RES).toInt();
+  int nzxe = (zbounds.ex / MATRIX_RES).toInt();
+  int nzye = (zbounds.ey / MATRIX_RES).toInt();
+  if(nzxs != zxs || nzys != zys || nzxe != zxe || nzye != zye) {
+    CHECK(!full_reset);
+    dprintf("Full collider reset!");
+    full_reset = true;
+    zxs = nzxs;
+    zys = nzys;
+    zxe = nzxe;
+    zye = nzye;
+  }
+  
+  int walltoken = getIndex(players, CGR_WALL, 0);
+  
   zone.resize(zxe - zxs);
   for(int i = 0; i < zone.size(); i++) {
-    for(int j = 0; j < zone[i].size(); j++)
-      zone[i][j].reset();
+    for(int j = 0; j < zone[i].size(); j++) {
+      if(full_reset) {
+        zone[i][j].full_reset();
+      } else {
+        zone[i][j].reset(walltoken);
+      }
+    }
     zone[i].resize(zye - zys, ColliderZone(players));
   }
   
@@ -331,6 +379,11 @@ void Collider::reset(int in_players, int mode, const Coord4 &bounds) {
   }*/
   
   state = CSTA_WAIT;
+}
+bool Collider::consumeFullReset() {
+  bool rv = full_reset;
+  full_reset = false;
+  return rv;
 }
 
 void Collider::startToken( int toki ) {
@@ -394,6 +447,11 @@ void Collider::token(const Coord4 &line) {
   } else {
     CHECK(0);
   }
+}
+void Collider::clearToken(int toki) {
+  for(int i = 0; i < zone.size(); i++)
+    for(int j = 0; j < zone[i].size(); j++)
+      zone[i][j].clearToken(curpush, toki);
 }
 
 void Collider::addThingsToGroup( int category, int gid, bool ilog ) {
@@ -513,7 +571,8 @@ void Collider::finishProcess() {
   state = CSTA_WAIT;
 }
 
-Collider::Collider() { state = CSTA_UNINITTED; curpush = -1; curtoken = -1; log = false; };
+Collider::Collider() { state = -30; curpush = -1; curtoken = -1; log = false; full_reset = false; };
+Collider::Collider(int playercount) { state = CSTA_UNINITTED; curpush = -1; curtoken = -1; log = false; full_reset = false; players = playercount; };
 Collider::~Collider() { };
 
 DECLARE_bool(debugGraphics);

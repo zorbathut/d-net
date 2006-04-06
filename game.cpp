@@ -658,15 +658,12 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
   {
     StackString sst("Player movement collider");
     
-    collider.reset(players.size(), COM_PLAYER, gamemap.getBounds());
+    collider.resetNonwalls(COM_PLAYER, gamemap.getBounds());
     
     {
       StackString sst("Adding walls");
     
-      collider.addThingsToGroup(CGR_WALL, 0);
-      collider.startToken(0);
-      gamemap.addCollide(&collider);
-      collider.endAddThingsToGroup();
+      gamemap.updateCollide(&collider);
     }
     
     for(int j = 0; j < players.size(); j++) {
@@ -733,7 +730,7 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
   {
     StackString sst("Main collider");
     
-    collider.reset(players.size(), COM_PROJECTILE, gmb);
+    collider.resetNonwalls(COM_PROJECTILE, gmb);
     
     // stuff!
     /*
@@ -747,10 +744,7 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
     }
     */
     
-    collider.addThingsToGroup(CGR_WALL, 0);
-    collider.startToken(0);
-    gamemap.addCollide(&collider);
-    collider.endAddThingsToGroup();
+    gamemap.updateCollide(&collider);
     
     for(int j = 0; j < players.size(); j++) {
       collider.addThingsToGroup(CGR_PLAYER, j);
@@ -959,7 +953,7 @@ void Game::ai(const vector<Ai *> &ais) const {
   for(int i = 0; i < ais.size(); i++) {
     if(ais[i]) {
       if(players[i].live)
-        ais[i]->updateGame(gamemap.getCollide(), players, i);
+        ais[i]->updateGame(players, i);
       else
         ais[i]->updateBombardment(players, bombards[i].loc);
     }
@@ -1166,6 +1160,7 @@ Game::Game(vector<Player> *in_playerdata, const Level &lev, vector<FactionState 
   
   zoom_speed = Float2(0, 0);
 
+  collider = Collider(players.size());
 };
 
 vector<pair<float, Tank *> > Game::genTankDistance(const Coord2 &center) {

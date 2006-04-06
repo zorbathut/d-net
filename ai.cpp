@@ -167,7 +167,7 @@ void Ai::updateShop(const Player *player) {
   updateShop(player);
 }
 
-void Ai::updateGame(const vector<vector<Coord2> > &collide, const vector<Tank> &players, int me) {
+void Ai::updateGame(const vector<Tank> &players, int me) {
   zeroNextKeys();
   if(shopdone || rng.frand() < 0.01) {
     // find a tank, because approach and retreat both need one

@@ -13,9 +13,9 @@ class Gamemap {
 public:
 
   void render() const;
-  void addCollide( Collider *collide ) const;
+  void updateCollide( Collider *collide );
 
-  const vector<vector<Coord2> > &getCollide() const;
+  //const vector<vector<Coord2> > &getCollide() const;
 
   Coord4 getBounds() const;
 
@@ -26,7 +26,7 @@ public:
 
 private:
 
-  vector<vector<Coord2> > paths;
+  vector<pair<int, vector<Coord2> > > paths;
 
 };
 

@@ -29,7 +29,7 @@ public:
   void updatePregame();
   void updateCharacterChoice(const vector<FactionState> &factions, const vector<PlayerMenuState> &players, int me);
   void updateShop(const Player *player);
-  void updateGame(const vector<vector<Coord2> > &collide, const vector<Tank> &players, int me);
+  void updateGame(const vector<Tank> &players, int me);
   void updateBombardment(const vector<Tank> &players, Coord2 mypos);
   void updateWaitingForReport();
 

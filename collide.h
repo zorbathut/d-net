@@ -79,6 +79,7 @@ private:
 public:
 
   void addToken(int groupid, int token, const Coord4 &line, const Coord4 &direction);
+  void clearToken(int groupid, int token);
 
   void clearGroup(int groupid);
 
@@ -89,7 +90,8 @@ public:
 
   void render(const Coord4 &bbox) const;
 
-  void reset();
+  void reset(int wallid);
+  void full_reset();
 
   ColliderZone();
   ColliderZone(int players);
@@ -101,13 +103,15 @@ enum {CGR_WALL, CGR_PLAYER, CGR_PROJECTILE};
 class Collider {
 public:
 
-  void reset(int players, int mode, const Coord4 &bounds);
+  void resetNonwalls(int mode, const Coord4 &bounds);
+  bool consumeFullReset();
 
   void startToken( int toki );
   void token(const Coord4 &line, const Coord4 &direction);
   void token(const Coord4 &line);
+  void clearToken(int tokid);
 
-  void addThingsToGroup( int category, int gid, bool log = false);
+  void addThingsToGroup(int category, int gid, bool log = false);
   void endAddThingsToGroup();
 
   void clearGroup(int category, int gid);
@@ -123,6 +127,7 @@ public:
   void finishProcess();
 
   Collider();
+  Collider(int players);
   ~Collider();
 
   void render() const;
@@ -133,6 +138,8 @@ private:
   
   int state;
   bool log;
+  
+  bool full_reset;
 
   int curcollide;
   
