@@ -1,5 +1,3 @@
-- Fix the damn performance issues
-- Fix glory device slowdowns (if there is one)
 - Modify firerate
 - Rendering change to render lines by default, segments as the exception
 - Buy menu flicker? Double-buffering?

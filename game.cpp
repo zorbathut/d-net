@@ -447,7 +447,7 @@ void Tank::genEffects(vector<GfxEffects> *gfxe, vector<Projectile> *projectiles)
     
     for(int i = 0; i < ang.size(); i++)
       for(int j = 0; j < glory->shotspersplit; j++)
-        projectiles->push_back(Projectile(centr, ang[i] + gaussian() / 10, glory->projectile, this));
+        projectiles->push_back(Projectile(centr, ang[i] + gaussian_scaled(2) / 8, glory->projectile, this));
     
     spawnShards = false;
   }
@@ -510,7 +510,7 @@ void Projectile::render() const {
   } else {
     CHECK(0);
   }
-  drawLine(Coord4(pos, pos + lasttail), 0.1);
+  drawLine(Coord4(pos, pos + lasttail), projtype->width);
 };
 void Projectile::addCollision( Collider *collider ) const {
   CHECK(live);
@@ -585,7 +585,7 @@ Projectile::Projectile(const Coord2 &in_pos, float in_d, const IDBProjectile *in
   } else if(projtype->motion == PM_MISSILE) {
     missile_sidedist = gaussian() * 0.25;
   } else if(projtype->motion == PM_AIRBRAKE) {
-    airbrake_velocity = (gaussian() / 4 + 1) * projtype->velocity;
+    airbrake_velocity = (gaussian_scaled(2) / 4 + 1) * projtype->velocity;
   } else {
     CHECK(0);
   }
@@ -909,6 +909,24 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
     players[ i ].weaponCooldown--;
     players[ i ].genEffects(&gfxeffects, &projectiles[i]);
   }
+  
+  #if 0 // This hideous hack produces pretty fireworks
+  {   
+    static Tank boomy;
+    static Player boomyplay;
+    static FactionState boomyfact;
+    boomy.spawnShards = true;
+    boomy.player = &boomyplay;
+    boomyplay.glory = defaultGlory();
+    float border = 40;
+    boomy.pos.x = Coord(frand()) * (gmb.x_span() - border * 2) + gmb.sx + border;
+    boomy.pos.y = Coord(frand()) * (gmb.y_span() - border * 2) + gmb.sy + border;
+    boomy.d = 0;
+    boomyplay.faction = &boomyfact;
+    boomyfact.color = Color(1.0, 1.0, 1.0);
+    boomy.genEffects(&gfxeffects, &projectiles[0]);
+  }
+  #endif
   
   {
     int playersleft = 0;

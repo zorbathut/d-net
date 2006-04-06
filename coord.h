@@ -281,7 +281,7 @@ public:
   }
   
   Coord x_span() const {
-    return ey - sy;
+    return ex - sx;
   }
   Coord y_span() const {
     return ey - sy;

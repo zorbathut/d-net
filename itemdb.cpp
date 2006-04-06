@@ -325,9 +325,14 @@ void parseItemFile(const string &fname) {
       CHECK(projclasses.count(name) == 0);
 
       projclasses[name].motion = PM_NORMAL;
+      projclasses[name].width = 0.1;
       
       projclasses[name].velocity = atof(chunk.consume("velocity").c_str()) / FPS;
       projclasses[name].color = colorFromString(chunk.consume("color"));
+      
+      if(chunk.kv.count("width")) {
+        projclasses[name].width = atof(chunk.consume("width").c_str());
+      }
       
       if(chunk.kv.count("motion")) {
         string motion = chunk.consume("motion");

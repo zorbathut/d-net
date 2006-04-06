@@ -36,6 +36,7 @@ public:
   int motion;
   float velocity;
   Color color;
+  float width; // visual effect only
   const IDBWarhead *warhead;
 
   float getDamagePerShot() const;
