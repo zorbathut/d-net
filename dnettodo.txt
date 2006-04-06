@@ -1,3 +1,6 @@
+- Winner list vertical bar if at the beginning of a shop cycle
+- Store dnds in a saner place
+- Fix the damn performance issues
 - Fix glory device slowdowns (if there is one)
 - Modify firerate
 - Rendering change to render lines by default, segments as the exception
@@ -21,6 +24,7 @@
 - Make explosion removals include the focus point
 - AI shouldn't try to buy the glory device it already owns
 - Scrollable bars
+- Multishop
 - Weapon info screen
 - Weapon change system
 - OSD for weapon type

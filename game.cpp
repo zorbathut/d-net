@@ -1091,17 +1091,17 @@ void Game::renderToScreen() const {
     Float2 spos(0.01, 0.11);
     
     for(int i = 0; i < wins->size(); i++) {
-      if(i % FLAGS_rounds_per_store == 0 && i) {
-        setColor(Color(1.0, 1.0, 1.0));
-        spos.x += lineborder;
-        drawLine(spos.x, spos.y - lineextra, spos.x, spos.y + iconwidth + lineextra, 0.0002);
-        spos.x += lineborder;
-      }
       if((*wins)[i]) {
         setColor((*wins)[i]->color);
         drawDvec2((*wins)[i]->icon, Float4(spos.x + iconborder, spos.y + iconborder, spos.x + iconwidth - iconborder, spos.y + iconwidth - iconborder), 0.0002);
       }
       spos.x += iconwidth;
+      if(i % FLAGS_rounds_per_store == FLAGS_rounds_per_store - 1) {
+        setColor(Color(1.0, 1.0, 1.0));
+        spos.x += lineborder;
+        drawLine(spos.x, spos.y - lineextra, spos.x, spos.y + iconwidth + lineextra, 0.0002);
+        spos.x += lineborder;
+      }
     }
     
     //wins->swap(fact);
