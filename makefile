@@ -24,6 +24,9 @@ run: d-net.exe
 	d-net.exe --nofullscreen
 
 ai: d-net.exe
+	d-net.exe --nofullscreen --aiCount=12 --fastForwardTo=100000000
+
+ailoop: d-net.exe
 	while ./d-net.exe --nofullscreen --aiCount=12 --fastForwardTo=100000000 --terminateAfter=6000000 --startingCash=100000000 ; do echo Cycle. ; done
 
 vecedit: d-net.exe
