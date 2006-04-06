@@ -1,5 +1,3 @@
-- Winner list vertical bar if at the beginning of a shop cycle
-- Store dnds in a saner place
 - Fix the damn performance issues
 - Fix glory device slowdowns (if there is one)
 - Modify firerate

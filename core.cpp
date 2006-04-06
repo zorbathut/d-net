@@ -18,7 +18,7 @@ using namespace std;
 #include "rng.h"
 #include "inputsnag.h"
 
-DEFINE_string(writeTarget, "data/dump", "Prefix for file dump");
+DEFINE_string(writeTarget, "dumps/dump", "Prefix for file dump");
 DEFINE_int(writeTargetCheckpoint, 2000000000, "Write target checkpoint frequency"); // currently disabled
 
 DEFINE_int(fastForwardTo, 0, "Fastforward rendering to this frame");

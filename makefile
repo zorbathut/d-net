@@ -35,8 +35,10 @@ package: d-net.exe
 	cp d-net.exe deploy
 	cp c:/cygwin/usr/local/bin/SDL.dll deploy
 	cp -r data deploy
+	mkdir deploy/dumps
+	cp dumps/readme.txt deploy/dumps
+	rm -f deploy/data/coordfailure
 	cd deploy ; rm -rf `find | grep .svn`
-	cd deploy/data ; rm -f *.dnd
 	strip deploy/d-net.exe
 	cd deploy ; zip -9 -r \\\\192.168.100.2\\www-data\\d-net\\Dnet\ Latest\ Version.zip *  # This is really too many backslashes.
 	cp \\\\192.168.100.2\\www-data\\d-net\\Dnet\ Latest\ Version.zip `date +\\\\\\\\192.168.100.2\\\\www-data\\\\d-net\\\\dnet%G%m%d%H%M%S.zip` # This is really too many backslashes.
