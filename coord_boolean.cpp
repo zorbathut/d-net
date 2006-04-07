@@ -83,6 +83,7 @@ const DualLink &getLink(const map<Coord2, DualLink> &vertx, Coord2 node) {
 }
 
 bool checkConsistent(const map<Coord2, DualLink> &vertx, const vector<LiveLink> &links) {
+  GDException CrashHandler;
   for(int i = 0; i < 2; i++) {
     int seen = 0;
     for(map<Coord2, DualLink>::const_iterator itr = vertx.begin(); itr != vertx.end(); itr++)
@@ -131,6 +132,7 @@ bool checkConsistent(const map<Coord2, DualLink> &vertx, const vector<LiveLink> 
 }
 
 void checkLineConsistency(const map<Coord2, DualLink> &vertx, const vector<LiveLink> &links, const Coord2 &cpos) {
+  GDException CrashHandler;
   vector<LiveLink> corrlinks;
   for(map<Coord2, DualLink>::const_iterator itr = vertx.begin(); itr != vertx.end(); itr++) {
     for(int i = 0; i < 2; i++) {
@@ -202,6 +204,7 @@ void printState(const map<Coord2, DualLink> &vertx) {
 }
 
 void splice(map<Coord2, DualLink> *vertx, const DualLink &lines, const Coord2 &junct, int curve) {
+  GDException CrashHandler;
   /*
   for(int x = 0; x < 2; x++)
     for(int y = 0; y < 2; y++)
@@ -226,6 +229,7 @@ void splice(map<Coord2, DualLink> *vertx, const DualLink &lines, const Coord2 &j
 }
 
 vector<vector<Coord2> > createSplitLines(const map<Coord2, DualLink> &vertx) {
+  GDException CrashHandler;
   {
     vector<LiveLink> llv;
     CHECK(checkConsistent(vertx, llv));
@@ -253,6 +257,7 @@ vector<vector<Coord2> > createSplitLines(const map<Coord2, DualLink> &vertx) {
 }
 
 vector<vector<Coord2> > mergeAndSplit(const vector<Coord2> &in) {
+  GDException CrashHandler;
   if(set<Coord2>(in.begin(), in.end()).size() != in.size()) {
     dprintf("Loop detected, going insane");
     Coord2 dupe;
