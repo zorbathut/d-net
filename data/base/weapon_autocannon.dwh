@@ -40,7 +40,7 @@ weapon {
     name=ROOT.Weapons.Autocannon.Autocannon
     cost=0
     default=1
-    firerate=30
+    firerate=2
     deploy=deploy.autocannon
     projectile=projectile.autocannon
 }
@@ -48,7 +48,7 @@ weapon {
 weapon {
     name=ROOT.Weapons.Autocannon.Autocannon II
     cost=60
-    firerate=24
+    firerate=2.5
     deploy=deploy.autocannon
     projectile=projectile.autocannon
 }
@@ -56,7 +56,7 @@ weapon {
 weapon {
     name=ROOT.Weapons.Autocannon.Autocannon III
     cost=100
-    firerate=20
+    firerate=3
     deploy=deploy.autocannon
     projectile=projectile.autocannon
 }
@@ -64,7 +64,7 @@ weapon {
 weapon {
     name=ROOT.Weapons.Autocannon.Autocannon IV
     cost=180
-    firerate=15
+    firerate=4
     deploy=deploy.autocannon
     projectile=projectile.autocannon
 }
@@ -72,7 +72,7 @@ weapon {
 weapon {
     name=ROOT.Weapons.Autocannon.Autocannon V
     cost=300
-    firerate=12
+    firerate=5
     deploy=deploy.autocannon
     projectile=projectile.autocannon
 }
@@ -80,7 +80,7 @@ weapon {
 weapon {
     name=ROOT.Weapons.Autocannon.Autocannon VI
     cost=500
-    firerate=10
+    firerate=6
     deploy=deploy.autocannon
     projectile=projectile.autocannon
 }

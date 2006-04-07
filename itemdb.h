@@ -45,7 +45,7 @@ public:
 
 struct IDBWeapon {
 public:
-  int firerate;
+  float firerate;
   float costpershot;
   string name;
   const IDBDeploy *deploy;
@@ -55,6 +55,7 @@ public:
   float getDamagePerSecond() const;
   float getCostPerDamage() const;
 
+  int framesForCooldown() const;
 };
 
 struct IDBGlory {

@@ -6,6 +6,7 @@
 #include "parse.h"
 #include "util.h"
 #include "args.h"
+#include "rng.h"
 
 static HierarchyNode root;
 static map<string, IDBDeploy> deployclasses;
@@ -39,11 +40,16 @@ float IDBWeapon::getDamagePerShot() const {
 }
 
 float IDBWeapon::getDamagePerSecond() const {
-  return getDamagePerShot() * 60 / firerate;
+  return getDamagePerShot() * firerate;
 }
 
 float IDBWeapon::getCostPerDamage() const {
   return costpershot / getDamagePerShot();
+}
+
+int IDBWeapon::framesForCooldown() const {
+  float frames_per_shot = FPS / firerate;
+  return (int)floor(frames_per_shot) + (frand() < (frames_per_shot - floor(frames_per_shot)));
 }
 
 float IDBGlory::getAverageDamage() const {
@@ -270,7 +276,7 @@ void parseItemFile(const string &fname) {
       tnode.weapon = &weaponclasses[name];
       mountpoint->branches.push_back(tnode);
       
-      weaponclasses[name].firerate = atoi(chunk.consume("firerate").c_str());
+      weaponclasses[name].firerate = atof(chunk.consume("firerate").c_str());
       weaponclasses[name].costpershot = (float)tnode.cost / tnode.quantity;
       weaponclasses[name].name = tnode.name;
 

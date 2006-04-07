@@ -872,7 +872,7 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
     if( players[ i ].live && keys[ i ].f.down && players[ i ].weaponCooldown <= 0 ) {
       firepowerSpent +=players[ i ].player->weapon->costpershot;
       projectiles[ i ].push_back(Projectile(players[ i ].getFiringPoint(), players[ i ].d + players[i].player->weapon->deploy->anglestddev * gaussian(), players[ i ].player->weapon->projectile, &players[ i ]));
-      players[ i ].weaponCooldown = players[ i ].player->weapon->firerate;
+      players[ i ].weaponCooldown = players[ i ].player->weapon->framesForCooldown();
       if(players[i].player->shotsLeft != -1)
         players[i].player->shotsLeft--;
       if(players[i].player->shotsLeft == 0) {
