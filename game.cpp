@@ -1140,7 +1140,8 @@ vector<FactionState *> genExampleFacts(const vector<Tank> &plays, int ct) {
 Game::Game() {
 }
 
-Game::Game(vector<Player> *in_playerdata, const Level &lev, vector<FactionState *> *in_wins) {
+Game::Game(vector<Player> *in_playerdata, const Level &lev, vector<FactionState *> *in_wins, int game_mode) {
+  CHECK(game_mode == GMODE_NORMAL);
   CHECK(in_playerdata);
   CHECK(in_wins);
   wins = in_wins;

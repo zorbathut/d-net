@@ -201,6 +201,8 @@ public:
   }
 };
 
+enum {GMODE_NORMAL, GMODE_CHOICE};
+
 class Game {
 public:
 
@@ -211,7 +213,7 @@ public:
   float firepowerSpent;
 
   Game();
-  Game(vector<Player> *playerdata, const Level &level, vector<FactionState *> *wins);
+  Game(vector<Player> *playerdata, const Level &level, vector<FactionState *> *wins, int gamemode);
 
 private:
   
