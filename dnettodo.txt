@@ -1,13 +1,4 @@
-- Rendering change to render lines by default, segments as the exception
-- Buy menu flicker? Double-buffering?
-- Extricate coord.h and float.h from more headers
-- Auto coord-to-float converter (CoordFloat?)
-- Sound, yo
-- Halos?
-- Winner list works with lots and lots of rounds
-- Winner list better special effects
-- Winner list better "null" icon
-- Color for projectile impacts
+---- Major work path
 - Game setting choice arena
 - Meaningful factions
 - Improve explosion effects (missile, etc)
@@ -25,6 +16,19 @@
 - OSD for weapon type
 - Many many more weapons
 
+---- Maintenance, minor bugfix, braindead
+- Auto coord-to-float converter (CoordFloat?)
+- Rendering change to render lines by default, segments as the exception
+- Buy menu flicker? Double-buffering?
+- Extricate coord.h and float.h from more headers
+- Winner list works with lots and lots of rounds
+- Winner list better special effects
+- Winner list better "null" icon
+- Color for projectile impacts
+
+---- Major but unimportant
+- Halos?
+- Sound, yo
 - Better pictorial representations for axis types
 - Absolute mode config
 - Holy crap! Self-intersecting! Cry!
