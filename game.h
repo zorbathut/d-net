@@ -114,7 +114,7 @@ public:
   void init(Player *player);
   
   void tick(const Keystates &kst);
-  void render( int tankid ) const;
+  void render() const;
 
   void addCollision( Collider *collider, const Keystates &kst ) const;
 

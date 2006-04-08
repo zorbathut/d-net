@@ -163,13 +163,32 @@ void Tank::tick(const Keystates &kst) {
   
 };
 
-void Tank::render( int tankid ) const {
+void Tank::render() const {
   if( !live )
     return;
 
-  setColor(player->faction->color);
-
-  drawLineLoop(getTankVertices(pos, d), 0.2);
+  vector<Coord2> tankverts = getTankVertices(pos, d);
+  vector<Coord2> smtankverts;
+  Coord2 centr = getCentroid(tankverts);
+  for(int i = 0; i < tankverts.size(); i++)
+    smtankverts.push_back((tankverts[i] - centr) * Coord(0.5) + centr);
+  
+  Color main;
+  Color small;
+  
+  main = player->faction->color;
+  small = team->color;
+  
+  if(team->swap_colors)
+    swap(main, small);
+  
+  small = small * 0.5;
+  
+  setColor(main);
+  drawLineLoop(tankverts, 0.2);
+  
+  setColor(small);
+  drawLineLoop(smtankverts, 0.2);
 };
 
 vector<Coord4> Tank::getCurrentCollide() const {
@@ -888,7 +907,7 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
   }
 
   for( int i = 0; i < players.size(); i++ ) {
-    if( players[ i ].live && keys[ i ].f.down && players[ i ].weaponCooldown <= 0 ) {
+    if( players[ i ].live && keys[ i ].f.down && players[ i ].weaponCooldown <= 0 && players[i].team->weapons_enabled ) {
       firepowerSpent +=players[ i ].player->weapon->costpershot;
       projectiles[ i ].push_back(Projectile(players[ i ].getFiringPoint(), players[ i ].d + players[i].player->weapon->deploy->anglestddev * gaussian(), players[ i ].player->weapon->projectile, &players[ i ]));
       players[ i ].weaponCooldown = players[ i ].player->weapon->framesForCooldown();
@@ -1047,7 +1066,7 @@ void Game::renderToScreen() const {
     setZoom(origin.x, origin.y, origin.y + pzoom);
   }
   for( int i = 0; i < players.size(); i++ ) {
-    players[ i ].render( i );
+    players[ i ].render();
     if(tankHighlight[i]) {
       setColor(1.0, 1.0, 1.0);
       drawJustifiedText(StringPrintf("P%d", i), 2, players[i].pos.x.toFloat(), players[i].pos.y.toFloat(), TEXT_CENTER, TEXT_CENTER);
@@ -1085,7 +1104,7 @@ void Game::renderToScreen() const {
   gamemap.render();
   collider.render();
   for(int i = 0; i < zones.size(); i++) {
-    setColor(zones[i].second);
+    setColor(zones[i].second * 0.3);
     drawLineLoop(zones[i].first, 1.0);
   }
   {
@@ -1257,7 +1276,7 @@ void Game::initChoice(vector<Player> *in_playerdata) {
     paths = getDifference(lpi, cut);
   }
   
-  Color zonecol[4] = {Color(0.1, 0.1, 0.1), Color(0, 0, 0.3), Color(0, 0.2, 0), Color(0.2, 0, 0)};
+  Color zonecol[4] = {Color(0.6, 0.6, 0.6), Color(0.3, 0.3, 1.0), Color(0, 1.0, 0), Color(1.0, 0, 0)};
   CHECK(paths.size() == (sizeof(zonecol) / sizeof(*zonecol)));
   for(int i = 0; i < paths.size(); i++) {
     zones.push_back(make_pair(paths[i], zonecol[i]));
