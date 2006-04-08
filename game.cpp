@@ -987,13 +987,14 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
   #endif
   
   {
-    int playersleft = 0;
+    set<Team *> liveteams;
     for(int i = 0; i < players.size(); i++) {
       if(players[i].live)
-        playersleft++;
+        liveteams.insert(players[i].team);
     }
-    if(playersleft <= 1) {
-      framesSinceOneLeft++;
+    if(liveteams.size() <= 1) {
+      if(zones.size() != 4 || liveteams.size() != 1 || liveteams.count(&teams[4]) == 0)   // nasty hackery for choice mode
+        framesSinceOneLeft++;
     }
   }
 
@@ -1005,19 +1006,22 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
   }
 
   if(framesSinceOneLeft / FPS >= 3) {
-    int winplayer = -1;
-    for(int i = 0; i < players.size(); i++) {
-      if(players[i].live) {
-        players[i].player->wins++;
-        CHECK(winplayer == -1);
-        winplayer = i;
-      }
-    }
-    if(wins) {
+    if(zones.size() == 0) {
+      int winplayer = -1;
+      for(int i = 0; i < players.size(); i++) {
+        if(players[i].live) {
+          players[i].player->wins++;
+          CHECK(winplayer == -1);
+          winplayer = i;
+        }
+      }  
       if(winplayer == -1)
         wins->push_back(NULL);
       else
         wins->push_back(players[winplayer].player->faction);
+    } else if(zones.size() == 4) {
+    } else {
+      CHECK(0);
     }
     return true;
   } else {
@@ -1209,6 +1213,12 @@ void Game::initCommon(vector<Player> *in_playerdata, const Level &lev) {
   
   players.clear();
   bombards.clear();
+  zones.clear();
+  teams.clear();
+  projectiles.clear();
+  gfxeffects.clear();
+  tankHighlight.clear();  // yeesh
+  
   players.resize(in_playerdata->size());
   bombards.resize(in_playerdata->size());
   
