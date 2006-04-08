@@ -387,6 +387,7 @@ void Collider::resetNonwalls(int mode, const Coord4 &bounds, const vector<int> &
   }*/
   
   state = CSTA_WAIT;
+  
 }
 bool Collider::consumeFullReset() {
   bool rv = full_reset;

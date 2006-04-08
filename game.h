@@ -102,6 +102,10 @@ public:
 class Team {
 public:
   bool weapons_enabled;
+  Color color;
+  bool swap_colors;
+
+  Team();
 };
 
 class Tank {
@@ -130,6 +134,9 @@ public:
   bool initted;
 
   Team *team;
+  
+  int zone_current;
+  int zone_frames;
 
   Coord2 pos;
   float d;
@@ -242,6 +249,8 @@ private:
   Gamemap gamemap;
 
   Collider collider;
+
+  vector<pair<vector<Coord2>, Color> > zones;
 
   vector<char> tankHighlight;
 

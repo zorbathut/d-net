@@ -625,7 +625,8 @@ bool Metagame::runTick( const vector< Controller > &keys ) {
           playerdata[i].wins = 0;
         }
         findLevels(playerdata.size());
-        game.initStandard(&playerdata, levels[int(frand() * levels.size())], &win_history);
+        game.initChoice(&playerdata);
+        //game.initStandard(&playerdata, levels[int(frand() * levels.size())], &win_history);
         CHECK(win_history.size() == gameround);
       }
     }

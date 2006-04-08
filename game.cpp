@@ -140,6 +140,12 @@ GfxEffects::GfxEffects() {
   color = Color(1.0, 1.0, 1.0);
 }
 
+Team::Team() {
+  weapons_enabled = true;
+  color = Color(0, 0, 0);
+  swap_colors = false;
+}
+
 void Tank::init(Player *in_player) {
   CHECK(in_player);
   CHECK(!player);
@@ -462,6 +468,8 @@ Tank::Tank() {
   player = NULL;
   initted = false;
   weaponCooldown = 0;
+  zone_current = -1;
+  zone_frames = 0;
 }
 
 void Projectile::tick(vector<GfxEffects> *gfxe) {
@@ -919,6 +927,26 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
   for( int i = 0; i < players.size(); i++ ) {
     players[ i ].weaponCooldown--;
     players[ i ].genEffects(&gfxeffects, &projectiles[i]);
+    if(players[i].live) {
+      int inzone = -1;
+      for(int j = 0; j < zones.size(); j++)
+        if(inPath(players[i].pos, zones[j].first))
+          inzone = j;
+      if(players[i].zone_current != inzone) {
+        players[i].zone_current = inzone;
+        players[i].zone_frames = 0;
+      }
+      players[i].zone_frames++;
+    }
+  }
+  
+  // This is a bit ugly - this only happens in choice mode
+  if(zones.size() == 4) {
+    for(int i = 0; i < players.size(); i++) {
+      if(players[i].zone_current != -1 && players[i].zone_frames >= 120 && players[i].team == &teams[4]) {
+        players[i].team = &teams[players[i].zone_current];
+      }
+    }
   }
   
   #if 0 // This hideous hack produces pretty fireworks
@@ -1056,6 +1084,10 @@ void Game::renderToScreen() const {
   }
   gamemap.render();
   collider.render();
+  for(int i = 0; i < zones.size(); i++) {
+    setColor(zones[i].second);
+    drawLineLoop(zones[i].first, 1.0);
+  }
   {
     setZoom( 0, 0, 100 );
     setColor(1.0, 1.0, 1.0);
@@ -1100,7 +1132,7 @@ void Game::renderToScreen() const {
       drawJustifiedText("GO", 40, 133.3 / 2, 100.0 / 2, TEXT_CENTER, TEXT_CENTER);
     }
   }
-  {
+  if(wins) {
     /*
     vector<FactionState *> genExampleFacts(const vector<Tank> &plays, int ct);
     static vector<FactionState *> fact = genExampleFacts(players, 50);
@@ -1200,6 +1232,7 @@ void Game::initCommon(vector<Player> *in_playerdata, const Level &lev) {
 
 void Game::initChoice(vector<Player> *in_playerdata) {
   Level lev = loadLevel("data/levels_special/choice_4.dv2");
+  lev.playerStarts.clear();
   for(int i = 0; i < in_playerdata->size(); i++) {
     float ang = PI * 2 * i / in_playerdata->size();
     lev.playerStarts[in_playerdata->size()].push_back(make_pair(makeAngle(Coord(ang)) * 20, ang));
@@ -1211,8 +1244,27 @@ void Game::initChoice(vector<Player> *in_playerdata) {
   for(int i = 0; i < players.size(); i++)
     players[i].team = &teams[4];
   
-  for(int i = 0; i < 4; i++)
-    teams[i].weapons_enabled = true;
+  vector<vector<Coord2> > paths;
+  {
+    const float dist = 170;
+    vector<Coord2> cut;
+    cut.push_back(Coord2(0, dist));
+    cut.push_back(Coord2(-dist, 0));
+    cut.push_back(Coord2(0, -dist));
+    cut.push_back(Coord2(dist, 0));
+    vector<Coord2> lpi = lev.paths[0];
+    reverse(lpi.begin(), lpi.end());
+    paths = getDifference(lpi, cut);
+  }
+  
+  Color zonecol[4] = {Color(0.1, 0.1, 0.1), Color(0, 0, 0.3), Color(0, 0.2, 0), Color(0.2, 0, 0)};
+  CHECK(paths.size() == (sizeof(zonecol) / sizeof(*zonecol)));
+  for(int i = 0; i < paths.size(); i++) {
+    zones.push_back(make_pair(paths[i], zonecol[i]));
+    teams[i].color = zonecol[i];
+    teams[i].swap_colors = true;
+  }
+  
   teams[4].weapons_enabled = false;
 }
 
@@ -1223,10 +1275,8 @@ void Game::initStandard(vector<Player> *in_playerdata, const Level &lev, vector<
   wins = in_wins;
   
   teams.resize(players.size());
-  for(int i = 0; i < players.size(); i++) {
+  for(int i = 0; i < players.size(); i++)
     players[i].team = &teams[i];
-    teams[i].weapons_enabled = true;
-  }
 };
 
 vector<pair<float, Tank *> > Game::genTankDistance(const Coord2 &center) {

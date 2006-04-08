@@ -8,3 +8,16 @@ path {
   node= --- | -132.000000,-20.000000 | ---
 }
 
+entity {
+  type=tank start location
+  coord=0.000000,0.000000
+  numerator=0
+  denominator=1
+}
+
+entity {
+  type=tank start location
+  coord=1.000000,0.000000
+  numerator=0
+  denominator=1
+}
