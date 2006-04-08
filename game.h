@@ -99,6 +99,11 @@ public:
 
 };
 
+class Team {
+public:
+  bool weapons_enabled;
+};
+
 class Tank {
 public:
   
@@ -123,7 +128,9 @@ public:
   void genEffects(vector< GfxEffects > *gfxe, vector<Projectile> *projectiles);
   
   bool initted;
-  
+
+  Team *team;
+
   Coord2 pos;
   float d;
 
@@ -205,6 +212,9 @@ enum {GMODE_NORMAL, GMODE_CHOICE};
 
 class Game {
 public:
+  
+  void initStandard(vector<Player> *playerdata, const Level &level, vector<FactionState *> *wins);
+  void initChoice(vector<Player> *playerdata);
 
   bool runTick( const vector< Keystates > &keys );
   void ai(const vector<Ai *> &ais) const;
@@ -213,14 +223,17 @@ public:
   float firepowerSpent;
 
   Game();
-  Game(vector<Player> *playerdata, const Level &level, vector<FactionState *> *wins, int gamemode);
 
 private:
+  
+  void initCommon(vector<Player> *playerdata, const Level &level);
   
   vector<pair<float, Tank *> > genTankDistance(const Coord2 &center);
 
   int frameNm;
   int framesSinceOneLeft;
+
+  vector<Team> teams;
 
   vector<Tank> players;
   vector<BombardmentState> bombards;
@@ -238,6 +251,9 @@ private:
   Float2 zoom_speed;
 
   vector<FactionState *> *wins;
+  
+  Game(const Game &rhs);      // do not implement
+  void operator=(const Game &rhs);
 
 };
 

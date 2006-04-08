@@ -169,25 +169,34 @@ pair< int, int > reverseIndex( int players, int index ) {
     CHECK(0);
 }
 
-bool canCollidePlayer( int players, int indexa, int indexb ) {
+bool canCollidePlayer(int players, int indexa, int indexb, const vector<int> &teams) {
   pair<int, int> ar = reverseIndex(players, indexa);
   pair<int, int> br = reverseIndex(players, indexb);
-  // Two things can't collide if they're part of the same ownership group
+  // Two things can't collide if they're part of the same ownership group (ignoring walls which are different)
   if(ar.second == br.second && ar.first != CGR_WALL && br.first != CGR_WALL)
     return false;
   // Nothing can collide with itself
   if(ar == br)
     return false;
+  // Projectiles on the same team don't collide
+  if(ar.first == CGR_PROJECTILE && br.first == CGR_PROJECTILE && teams[ar.second] == teams[br.second])
+    return false;
   return true;
 }
-bool canCollideProjectile( int players, int indexa, int indexb ) {
+bool canCollideProjectile(int players, int indexa, int indexb, const vector<int> &teams) {
   pair<int, int> ar = reverseIndex(players, indexa);
   pair<int, int> br = reverseIndex(players, indexb);
-  // Two things can't collide if they're part of the same ownership group
+  // Two things can't collide if they're part of the same ownership group (ignoring walls which are different)
   if(ar.second == br.second && ar.first != CGR_WALL && br.first != CGR_WALL)
+    return false;
+  // Nothing can collide with itself
+  if(ar == br)
     return false;
   // Two things can't collide if neither of them are a projectile
   if(ar.first != CGR_PROJECTILE && br.first != CGR_PROJECTILE)
+    return false;
+  // Projectiles on the same team don't collide
+  if(ar.first == CGR_PROJECTILE && br.first == CGR_PROJECTILE && teams[ar.second] == teams[br.second])
     return false;
   // That's pretty much all.
   return true;
@@ -313,8 +322,6 @@ void ColliderZone::full_reset() {
     items[i].second.clear();
 }
 
-
-
 ColliderZone::ColliderZone() {
   lastItem = 0;
 };
@@ -323,8 +330,9 @@ ColliderZone::ColliderZone(int in_players) {
   lastItem = 0;
 }
 
-void Collider::resetNonwalls(int mode, const Coord4 &bounds) {
+void Collider::resetNonwalls(int mode, const Coord4 &bounds, const vector<int> &teams) {
   CHECK(state == CSTA_UNINITTED || state == CSTA_WAIT);
+  CHECK(teams.size() == players);
   
   Coord4 zbounds = snapToEnclosingGrid(bounds, MATRIX_RES);
   
@@ -361,11 +369,11 @@ void Collider::resetNonwalls(int mode, const Coord4 &bounds) {
   if(mode == COM_PLAYER) {
     for(int i = 0; i < players * 2 + 1; i++)
       for(int j = 0; j < players * 2 + 1; j++)
-        collidematrix.push_back(canCollidePlayer(players, i, j));
+        collidematrix.push_back(canCollidePlayer(players, i, j, teams));
   } else if(mode == COM_PROJECTILE) {
     for(int i = 0; i < players * 2 + 1; i++)
       for(int j = 0; j < players * 2 + 1; j++)
-        collidematrix.push_back(canCollideProjectile(players, i, j));
+        collidematrix.push_back(canCollideProjectile(players, i, j, teams));
   } else {
     CHECK(0);
   }

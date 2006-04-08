@@ -103,7 +103,7 @@ enum {CGR_WALL, CGR_PLAYER, CGR_PROJECTILE};
 class Collider {
 public:
 
-  void resetNonwalls(int mode, const Coord4 &bounds);
+  void resetNonwalls(int mode, const Coord4 &bounds, const vector<int> &teams);
   bool consumeFullReset();
 
   void startToken( int toki );

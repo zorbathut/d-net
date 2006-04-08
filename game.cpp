@@ -23,15 +23,15 @@ DEFINE_bool(debugGraphics, false, "Enable various debug graphics");
 DEFINE_int(startingCash, 1000, "Cash to start with");
 DECLARE_int(rounds_per_store);
 
-void dealDamage(float dmg, Tank *target, Player *owner, float damagecredit, bool killcredit) {
-  if(target->player == owner)
+void dealDamage(float dmg, Tank *target, Tank *owner, float damagecredit, bool killcredit) {
+  if(target->team == owner->team)
     return; // friendly fire exception
   if(target->takeDamage(dmg) && killcredit)
-    owner->kills++;
-  owner->damageDone += dmg * damagecredit;
+    owner->player->kills++;
+  owner->player->damageDone += dmg * damagecredit;
 };
 
-void detonateWarhead(const IDBWarhead *warhead, Coord2 pos, Tank *impact, Player *owner, const vector<pair<float, Tank *> > &adjacency, vector<GfxEffects> *gfxe, Gamemap *gm, float damagecredit, bool killcredit) {
+void detonateWarhead(const IDBWarhead *warhead, Coord2 pos, Tank *impact, Tank *owner, const vector<pair<float, Tank *> > &adjacency, vector<GfxEffects> *gfxe, Gamemap *gm, float damagecredit, bool killcredit) {
   
   if(impact)
     dealDamage(warhead->impactdamage, impact, owner, damagecredit, killcredit);
@@ -520,7 +520,7 @@ void Projectile::impact(Coord2 pos, Tank *target, const vector<pair<float, Tank 
   if(!live)
     return;
   
-  detonateWarhead(projtype->warhead, pos, target, owner->player, adjacency, gfxe, gm, 1.0, true);
+  detonateWarhead(projtype->warhead, pos, target, owner, adjacency, gfxe, gm, 1.0, true);
 
   live = false;
 };
@@ -654,20 +654,26 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
   // I think this works.
   
   const Coord4 gmb = gamemap.getBounds();
+  vector<int> teamids;
+  {
+    map<Team*, int> fez;
+    for(int i = 0; i < players.size(); i++) {
+      if(!fez.count(players[i].team))
+        fez[players[i].team] = fez.size();
+      teamids.push_back(fez[players[i].team]);
+    }
+  }
   
   {
     StackString sst("Player movement collider");
     
-    collider.resetNonwalls(COM_PLAYER, gamemap.getBounds());
+    collider.resetNonwalls(COM_PLAYER, gamemap.getBounds(), teamids);
     
     {
       StackString sst("Adding walls");
     
       gamemap.updateCollide(&collider);
     }
-    
-    if(frameNumber > 19300)
-      dprintf("%s vs %s\n", players[1].pos.rawstr().c_str(), gmb.rawstr().c_str());
     
     for(int j = 0; j < players.size(); j++) {
       if(!players[j].live)
@@ -735,7 +741,7 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
   {
     StackString sst("Main collider");
     
-    collider.resetNonwalls(COM_PROJECTILE, gmb);
+    collider.resetNonwalls(COM_PROJECTILE, gmb, teamids);
     
     // stuff!
     /*
@@ -855,7 +861,7 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
     } else if(bombards[j].state == BombardmentState::BS_FIRING) {
       bombards[j].timer--;
       if(bombards[j].timer <= 0) {
-        detonateWarhead(players[j].player->bombardment->warhead, bombards[j].loc, NULL, players[j].player, genTankDistance(bombards[j].loc), &gfxeffects, &gamemap, 1.0, false);
+        detonateWarhead(players[j].player->bombardment->warhead, bombards[j].loc, NULL, &players[j], genTankDistance(bombards[j].loc), &gfxeffects, &gamemap, 1.0, false);
         bombards[j].state = BombardmentState::BS_COOLDOWN;
         bombards[j].timer = players[j].player->bombardment->unlockdelay;
       }
@@ -960,10 +966,12 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
         winplayer = i;
       }
     }
-    if(winplayer == -1)
-      wins->push_back(NULL);
-    else
-      wins->push_back(players[winplayer].player->faction);
+    if(wins) {
+      if(winplayer == -1)
+        wins->push_back(NULL);
+      else
+        wins->push_back(players[winplayer].player->faction);
+    }
     return true;
   } else {
     return false;
@@ -1145,15 +1153,18 @@ vector<FactionState *> genExampleFacts(const vector<Tank> &plays, int ct) {
 Game::Game() {
 }
 
-Game::Game(vector<Player> *in_playerdata, const Level &lev, vector<FactionState *> *in_wins, int game_mode) {
-  CHECK(game_mode == GMODE_NORMAL);
+void Game::initCommon(vector<Player> *in_playerdata, const Level &lev) {
   CHECK(in_playerdata);
-  CHECK(in_wins);
-  wins = in_wins;
-  frameNm = 0;
+  
   players.clear();
+  bombards.clear();
   players.resize(in_playerdata->size());
   bombards.resize(in_playerdata->size());
+  
+  wins = NULL;
+  
+  gamemap = Gamemap(lev);
+  
   for(int i = 0; i < players.size(); i++) {
     players[i].init(&(*in_playerdata)[i]);
   }
@@ -1170,13 +1181,13 @@ Game::Game(vector<Player> *in_playerdata, const Level &lev, vector<FactionState 
     }
   }
 
-  projectiles.resize( in_playerdata->size() );
+  frameNm = 0;
   framesSinceOneLeft = 0;
   firepowerSpent = 0;
   
-  tankHighlight.resize(players.size());
+  projectiles.resize(in_playerdata->size());
   
-  gamemap = Gamemap(lev);
+  tankHighlight.resize(players.size());
   
   pair<Float2, Float2> z = getMapZoom(gamemap.getBounds());
   zoom_center = z.first;
@@ -1185,6 +1196,37 @@ Game::Game(vector<Player> *in_playerdata, const Level &lev, vector<FactionState 
   zoom_speed = Float2(0, 0);
 
   collider = Collider(players.size());
+}
+
+void Game::initChoice(vector<Player> *in_playerdata) {
+  Level lev = loadLevel("data/levels_special/choice_4.dv2");
+  for(int i = 0; i < in_playerdata->size(); i++) {
+    float ang = PI * 2 * i / in_playerdata->size();
+    lev.playerStarts[in_playerdata->size()].push_back(make_pair(makeAngle(Coord(ang)) * 20, ang));
+  }
+  
+  initCommon(in_playerdata, lev);
+  
+  teams.resize(5);
+  for(int i = 0; i < players.size(); i++)
+    players[i].team = &teams[4];
+  
+  for(int i = 0; i < 4; i++)
+    teams[i].weapons_enabled = true;
+  teams[4].weapons_enabled = false;
+}
+
+void Game::initStandard(vector<Player> *in_playerdata, const Level &lev, vector<FactionState *> *in_wins) {
+  initCommon(in_playerdata, lev);
+  
+  CHECK(in_wins);
+  wins = in_wins;
+  
+  teams.resize(players.size());
+  for(int i = 0; i < players.size(); i++) {
+    players[i].team = &teams[i];
+    teams[i].weapons_enabled = true;
+  }
 };
 
 vector<pair<float, Tank *> > Game::genTankDistance(const Coord2 &center) {
