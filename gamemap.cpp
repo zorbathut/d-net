@@ -78,8 +78,10 @@ void Gamemap::updateCollide(Collider *collider) {
 Coord4 Gamemap::getBounds() const {
   Coord4 bounds = startCBoundBox();
   for(int i = 0; i < paths.size(); i++) {
-    for(int j = 0; j < paths[i].second.size(); j++) {
-      addToBoundBox(&bounds, paths[i].second[j]);
+    if(!isAvailable(paths[i].first)) {
+      for(int j = 0; j < paths[i].second.size(); j++) {
+        addToBoundBox(&bounds, paths[i].second[j]);
+      }
     }
   }
   CHECK(bounds.isNormalized());
@@ -131,6 +133,17 @@ void Gamemap::removeWalls(Coord2 center, float radius) {
       }
     }
   }
+}
+
+void Gamemap::checkConsistency() const {
+  int reversed = 0;
+  for(int i = 0; i < paths.size(); i++)
+    if(!isAvailable(paths[i].first))
+      reversed += pathReversed(paths[i].second);
+  
+  CHECK(reversed == 1);
+  
+  // TODO: check intersection?
 }
 
 Gamemap::Gamemap() { };

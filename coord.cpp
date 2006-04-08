@@ -148,9 +148,9 @@ int getPathRelation(const vector<Coord2> &lhs, const vector<Coord2> &rhs) {
     return PR_RHSENCLOSE;
   } else if(!lir && ril) {
     return PR_LHSENCLOSE;
-  } else if(lir && ril && getArea(lhs) < getArea(rhs)) {
+  } else if(lir && ril && abs(getArea(lhs)) < abs(getArea(rhs))) {
     return PR_RHSENCLOSE;
-  } else if(lir && ril && getArea(lhs) > getArea(rhs)) {
+  } else if(lir && ril && abs(getArea(lhs)) > abs(getArea(rhs))) {
     return PR_LHSENCLOSE;
   } else {
     // dammit, don't send the same two paths! we deny!

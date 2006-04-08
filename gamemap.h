@@ -21,6 +21,8 @@ public:
 
   void removeWalls(Coord2 center, float radius);
 
+  void checkConsistency() const;
+  
   Gamemap();
   Gamemap(const Level &level);
 

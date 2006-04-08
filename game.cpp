@@ -666,13 +666,18 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
       gamemap.updateCollide(&collider);
     }
     
+    if(frameNumber > 19300)
+      dprintf("%s vs %s\n", players[1].pos.rawstr().c_str(), gmb.rawstr().c_str());
+    
     for(int j = 0; j < players.size(); j++) {
       if(!players[j].live)
         continue;
       StackString sst(StringPrintf("Adding player %d, status live %d", j, players[j].live));
       //CHECK(inPath(players[j].pos, gamemap.getCollide()[0]));
       if(!isInside(gmb, players[j].pos)) {
+        StackString sst("Critical error, running tests");
         dprintf("%s vs %s\n", players[j].pos.rawstr().c_str(), gmb.rawstr().c_str());
+        gamemap.checkConsistency();
         CHECK(0);
       }
       collider.addThingsToGroup(CGR_PLAYER, j);

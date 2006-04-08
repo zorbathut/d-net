@@ -104,6 +104,7 @@ void InterfaceMain::ai(const vector<Ai *> &ai) const {
 #if GETDIFFERENCE_DEBUG
 
 #include "dvec2.h"
+#include "parse.h"
 #include <fstream>
 
 using namespace std;
@@ -127,11 +128,32 @@ bool InterfaceMain::tick(const vector< Controller > &control) {
   
 }
 
+vector<Coord2> parseKvdCoords(const string &dat) {
+  vector<string> tok = tokenize(dat, " \n\r");
+  CHECK(tok.size() % 2 == 0);
+  vector<Coord2> rv;
+  for(int i = 0; i < tok.size(); i += 2)
+    rv.push_back(Coord2(coordExplicit(tok[i]), coordExplicit(tok[i + 1])));
+  return rv;
+}
+
 void InterfaceMain::render() const {
   
   dumpBooleanDetail = false;
   
-  #if 0
+  vector<Coord2> diff[2];
+  
+#if 1
+  {
+    ifstream dv("dvlr.txt");
+    kvData kvd;
+    CHECK(getkvData(dv, &kvd));
+    CHECK(kvd.category == "coordfailure");
+    
+    diff[0] = parseKvdCoords(kvd.consume("lhs"));
+    diff[1] = parseKvdCoords(kvd.consume("rhs"));
+  }
+#elif 0
   //dprintf("Frame!\n");
     
    string lhs[6] = {
@@ -156,9 +178,6 @@ void InterfaceMain::render() const {
      "0000000000000000", "0000000000000000",
    };
 
-  
-  vector<Coord2> diff[2];
-
   for(int i = 0; i < sizeof(lhs) / sizeof(*lhs); i += 2)
     diff[0].push_back(Coord2(coordExplicit(lhs[i]), coordExplicit(lhs[i + 1])));
   for(int i = 0; i < sizeof(rhs) / sizeof(*rhs); i += 2)
@@ -166,8 +185,6 @@ void InterfaceMain::render() const {
 #else
   vector<string> lhs = parseHackyFile("lhs.txt");
   vector<string> rhs = parseHackyFile("rhs.txt");
-
-  vector<Coord2> diff[2];
   
   for(int i = 0; i < lhs.size(); i += 2)
     diff[0].push_back(Coord2(coordExplicit(lhs[i]), coordExplicit(lhs[i + 1])));
@@ -181,7 +198,7 @@ void InterfaceMain::render() const {
   
   if(res.size()) {
     Coord4 bbox = getBoundBox(diff[1]);
-    static pair<Coord2, Coord> zoom = make_pair(bbox.midpoint(), bbox.y_span() / 2);
+    static pair<Coord2, Coord> zoom = make_pair(bbox.midpoint(), bbox.y_span() / 2 * Coord(1.1));
     
     if(ct.l.down)
       zoom.first.x -= zoom.second / 50;

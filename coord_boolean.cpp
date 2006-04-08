@@ -48,7 +48,8 @@ public:
 class GDException {
 public:
   void operator()(const string &fname, int line) {
-    throw make_pair(fname, line);
+    if(!dumpBooleanDetail)
+      throw make_pair(fname, line);
   }
 };
 
@@ -83,7 +84,6 @@ const DualLink &getLink(const map<Coord2, DualLink> &vertx, Coord2 node) {
 }
 
 bool checkConsistent(const map<Coord2, DualLink> &vertx, const vector<LiveLink> &links) {
-  GDException CrashHandler;
   for(int i = 0; i < 2; i++) {
     int seen = 0;
     for(map<Coord2, DualLink>::const_iterator itr = vertx.begin(); itr != vertx.end(); itr++)
