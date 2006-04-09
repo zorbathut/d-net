@@ -602,7 +602,10 @@ bool Metagame::runTick( const vector< Controller > &keys ) {
     }
   } else if(mode == MGM_FACTIONTYPE) {
     if(game.runTick(genKeystates(keys, pms))) {
-      // Faction settings here!
+      faction_mode = game.winningTeam();
+      if(faction_mode == -1)
+        faction_mode = 0;
+      CHECK(faction_mode >= 0 && faction_mode < FACTION_LAST);
       for(int i = 0; i < playerdata.size(); i++) {
         playerdata[i].damageDone = 0;
         playerdata[i].kills = 0;
@@ -637,7 +640,7 @@ bool Metagame::runTick( const vector< Controller > &keys ) {
         }
         findLevels(playerdata.size());
         //game.initChoice(&playerdata);
-        game.initStandard(&playerdata, levels[int(frand() * levels.size())], &win_history);
+        game.initStandard(&playerdata, levels[int(frand() * levels.size())], &win_history, faction_mode);
         CHECK(win_history.size() == gameround);
       }
     }
@@ -652,7 +655,7 @@ bool Metagame::runTick( const vector< Controller > &keys ) {
         checked.resize(playerdata.size());
       } else {
         float firepower = game.firepowerSpent;
-        game.initStandard(&playerdata, levels[int(frand() * levels.size())], &win_history);
+        game.initStandard(&playerdata, levels[int(frand() * levels.size())], &win_history, faction_mode);
         game.firepowerSpent = firepower;
       }
     }
@@ -905,6 +908,7 @@ DEFINE_int(debugControllers, 0, "Number of controllers to set to debug defaults"
 
 Metagame::Metagame(int playercount, int in_roundsBetweenShop) {
   
+  faction_mode = -1;
   roundsBetweenShop = in_roundsBetweenShop;
   CHECK(roundsBetweenShop >= 1);
   

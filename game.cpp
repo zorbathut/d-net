@@ -1225,7 +1225,7 @@ void Game::renderToScreen() const {
   }
 };
 
-vector<FactionState *> genExampleFacts(const vector<Tank> &plays, int ct) {
+/*vector<FactionState *> genExampleFacts(const vector<Tank> &plays, int ct) {
   vector<FactionState *> feet;
   for(int i = 0; i < ct; i++) {
     int rv = rand() % (plays.size() + 1);
@@ -1240,13 +1240,17 @@ vector<FactionState *> genExampleFacts(const vector<Tank> &plays, int ct) {
       feet.push_back(plays[rv].player->faction);
   }
   return feet;
+}*/
+
+int Game::winningTeam() const {
 }
 
 Game::Game() {
 }
 
-void Game::initCommon(vector<Player> *in_playerdata, const Level &lev) {
+void Game::initCommon(vector<Player> *in_playerdata, const Level &lev, int factionmode) {
   CHECK(in_playerdata);
+  CHECK(factionmode >= 0 && factionmode < FACTION_LAST);
   
   players.clear();
   bombards.clear();
@@ -1304,7 +1308,7 @@ void Game::initChoice(vector<Player> *in_playerdata) {
     lev.playerStarts[in_playerdata->size()].push_back(make_pair(makeAngle(Coord(ang)) * 20, ang));
   }
   
-  initCommon(in_playerdata, lev);
+  initCommon(in_playerdata, lev, FACTION_NULL);
   
   teams.resize(5);
   for(int i = 0; i < players.size(); i++)
@@ -1334,8 +1338,8 @@ void Game::initChoice(vector<Player> *in_playerdata) {
   teams[4].weapons_enabled = false;
 }
 
-void Game::initStandard(vector<Player> *in_playerdata, const Level &lev, vector<FactionState *> *in_wins) {
-  initCommon(in_playerdata, lev);
+void Game::initStandard(vector<Player> *in_playerdata, const Level &lev, vector<FactionState *> *in_wins, int factionmode) {
+  initCommon(in_playerdata, lev, factionmode);
   
   CHECK(in_wins);
   wins = in_wins;

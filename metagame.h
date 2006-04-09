@@ -86,6 +86,8 @@ class Metagame {
   int mode;
   int gameround;
   
+  int faction_mode;
+  
   enum { MGM_PLAYERCHOOSE, MGM_FACTIONTYPE, MGM_SHOP, MGM_PLAY };
   int currentShop;
   

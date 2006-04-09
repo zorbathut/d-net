@@ -216,16 +216,19 @@ public:
 };
 
 enum {GMODE_NORMAL, GMODE_CHOICE};
+enum {FACTION_NULL, FACTION_SMALL, FACTION_MEDIUM, FACTION_BIG, FACTION_LAST};
 
 class Game {
 public:
   
-  void initStandard(vector<Player> *playerdata, const Level &level, vector<FactionState *> *wins);
+  void initStandard(vector<Player> *playerdata, const Level &level, vector<FactionState *> *wins, int factionmode);
   void initChoice(vector<Player> *playerdata);
 
   bool runTick( const vector< Keystates > &keys );
   void ai(const vector<Ai *> &ais) const;
   void renderToScreen() const;
+
+  int winningTeam() const;
 
   float firepowerSpent;
 
@@ -233,7 +236,7 @@ public:
 
 private:
   
-  void initCommon(vector<Player> *playerdata, const Level &level);
+  void initCommon(vector<Player> *playerdata, const Level &level, int factionmode);
   
   vector<pair<float, Tank *> > genTankDistance(const Coord2 &center);
 

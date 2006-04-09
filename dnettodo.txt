@@ -1,6 +1,8 @@
 ---- Major work path
 - Game setting choice arena
   - Delays
+  - Make it do something
+  - Better defenses
 - Meaningful factions
 - Improve explosion effects (missile, etc)
 - Certificates and discounts
