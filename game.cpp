@@ -20,15 +20,14 @@ using namespace std;
 
 DEFINE_bool(verboseCollisions, false, "Verbose collisions");
 DEFINE_bool(debugGraphics, false, "Enable various debug graphics");
-DEFINE_int(startingCash, 1000, "Cash to start with");
 DECLARE_int(rounds_per_store);
 
 void dealDamage(float dmg, Tank *target, Tank *owner, float damagecredit, bool killcredit) {
   if(target->team == owner->team)
     return; // friendly fire exception
   if(target->takeDamage(dmg) && killcredit)
-    owner->player->kills++;
-  owner->player->damageDone += dmg * damagecredit;
+    owner->player->addKill();
+  owner->player->addDamage(dmg * damagecredit);
 };
 
 void detonateWarhead(const IDBWarhead *warhead, Coord2 pos, Tank *impact, Tank *owner, const vector<pair<float, Tank *> > &adjacency, vector<GfxEffects> *gfxe, Gamemap *gm, float damagecredit, bool killcredit) {
@@ -67,45 +66,6 @@ void detonateWarhead(const IDBWarhead *warhead, Coord2 pos, Tank *impact, Tank *
   }
 
 };
-
-void Player::reCalculate() {
-  maxHealth = 20;
-  turnSpeed = 2.f / FPS;
-  maxSpeed = Coord(24) / FPS;
-  int healthMult = 100;
-  int turnMult = 100;
-  int speedMult = 100;
-  for(int i = 0; i < upgrades.size(); i++) {
-    healthMult += upgrades[i]->hull;
-    turnMult += upgrades[i]->handling;
-    speedMult += upgrades[i]->engine;
-  }
-  maxHealth *= healthMult;
-  maxHealth /= 100;
-  turnSpeed *= turnMult;
-  turnSpeed /= 100;
-  maxSpeed *= speedMult;
-  maxSpeed /= 100;
-}
-
-bool Player::hasUpgrade(const IDBUpgrade *upg) const {
-  CHECK(upg);
-  return count(upgrades.begin(), upgrades.end(), upg);
-}
-
-int Player::resellAmmoValue() const {
-  return int(shotsLeft * weapon->costpershot * 0.8);
-}
-
-Player::Player() {
-  faction = NULL;
-  cash = FLAGS_startingCash;
-  reCalculate();
-  weapon = defaultWeapon();
-  glory = defaultGlory();
-  bombardment = defaultBombardment();
-  shotsLeft = -1;
-}
 
 void GfxEffects::move() {
   CHECK(life != -1);
@@ -150,7 +110,7 @@ void Tank::init(Player *in_player) {
   CHECK(in_player);
   CHECK(!player);
   player = in_player;
-  health = player->maxHealth;
+  health = player->maxHealth();
   initted = true;
 }
 
@@ -176,7 +136,7 @@ void Tank::render() const {
   Color main;
   Color small;
   
-  main = player->faction->color;
+  main = player->getFaction()->color;
   small = team->color;
   
   if(team->swap_colors)
@@ -277,7 +237,7 @@ pair<Coord2, float> Tank::getDeltaAfterMovement( const Keystates &keys, Coord2 p
         desdir += 2 * PI;
         if(desdir > PI)
           desdir -= 2 * PI;
-        dd = desdir / player->turnSpeed;
+        dd = desdir / player->turnSpeed();
         if(dd < -1)
           dd = -1;
         if(dd > 1)
@@ -368,9 +328,9 @@ pair<Coord2, float> Tank::getDeltaAfterMovement( const Keystates &keys, Coord2 p
   
   Coord cdv(dv);
 
-  pos += makeAngle(Coord(d)) * player->maxSpeed * cdv;
+  pos += makeAngle(Coord(d)) * player->maxSpeed() * cdv;
 
-  d += player->turnSpeed * dd;
+  d += player->turnSpeed() * dd;
   d += 2*PI;
   d = fmod( d, 2*(float)PI );
   
@@ -397,7 +357,7 @@ void Tank::genEffects(vector<GfxEffects> *gfxe, vector<Projectile> *projectiles)
     for(int i = 0; i < tv.size(); i++)
       tv[i] -= centr;
     
-    const IDBGlory *glory = player->glory;
+    const IDBGlory *glory = player->getGlory();
     
     vector<float> ang;
     {
@@ -466,7 +426,7 @@ void Tank::genEffects(vector<GfxEffects> *gfxe, vector<Projectile> *projectiles)
       ngfe.path_ang_vel = gaussian() / 20;
       ngfe.path_ang_acc = -ngfe.path_ang_vel / 30;
       ngfe.life = 30;
-      ngfe.color = player->faction->color;
+      ngfe.color = player->getFaction()->color;
       gfxe->push_back(ngfe);
     }
     
@@ -883,14 +843,14 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
       bombards[j].loc.y = min(bombards[j].loc.y, gmb.ey);
       if(keys[j].f.down) {
         bombards[j].state = BombardmentState::BS_FIRING;
-        bombards[j].timer = players[j].player->bombardment->lockdelay;
+        bombards[j].timer = players[j].player->getBombardment()->lockdelay;
       }
     } else if(bombards[j].state == BombardmentState::BS_FIRING) {
       bombards[j].timer--;
       if(bombards[j].timer <= 0) {
-        detonateWarhead(players[j].player->bombardment->warhead, bombards[j].loc, NULL, &players[j], genTankDistance(bombards[j].loc), &gfxeffects, &gamemap, 1.0, false);
+        detonateWarhead(players[j].player->getBombardment()->warhead, bombards[j].loc, NULL, &players[j], genTankDistance(bombards[j].loc), &gfxeffects, &gamemap, 1.0, false);
         bombards[j].state = BombardmentState::BS_COOLDOWN;
-        bombards[j].timer = players[j].player->bombardment->unlockdelay;
+        bombards[j].timer = players[j].player->getBombardment()->unlockdelay;
       }
     } else if(bombards[j].state == BombardmentState::BS_COOLDOWN) {
       bombards[j].timer--;
@@ -908,17 +868,11 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
 
   for( int i = 0; i < players.size(); i++ ) {
     if( players[ i ].live && keys[ i ].f.down && players[ i ].weaponCooldown <= 0 && players[i].team->weapons_enabled ) {
-      firepowerSpent +=players[ i ].player->weapon->costpershot;
-      projectiles[ i ].push_back(Projectile(players[ i ].getFiringPoint(), players[ i ].d + players[i].player->weapon->deploy->anglestddev * gaussian(), players[ i ].player->weapon->projectile, &players[ i ]));
-      players[ i ].weaponCooldown = players[ i ].player->weapon->framesForCooldown();
-      if(players[i].player->shotsLeft != -1)
-        players[i].player->shotsLeft--;
-      if(players[i].player->shotsLeft == 0) {
-        players[i].player->weapon = defaultWeapon();
-        players[i].player->shotsLeft = -1;
-      }
+      projectiles[ i ].push_back(Projectile(players[ i ].getFiringPoint(), players[ i ].d + players[i].player->getWeapon()->deploy->anglestddev * gaussian(), players[ i ].player->getWeapon()->projectile, &players[ i ]));
+      players[ i ].weaponCooldown = players[ i ].player->getWeapon()->framesForCooldown();
+      firepowerSpent += players[i].player->shotFired();
       {
-        string slv = StringPrintf("%d", players[i].player->shotsLeft);
+        string slv = StringPrintf("%d", players[i].player->shotsLeft());
         if(count(slv.begin(), slv.end(), '0') == slv.size() - 1) {
           GfxEffects nge;
           nge.type = GfxEffects::EFFECT_TEXT;
@@ -1010,7 +964,7 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
       int winplayer = -1;
       for(int i = 0; i < players.size(); i++) {
         if(players[i].live) {
-          players[i].player->wins++;
+          players[i].player->addWin();
           CHECK(winplayer == -1);
           winplayer = i;
         }
@@ -1018,7 +972,7 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
       if(winplayer == -1)
         wins->push_back(NULL);
       else
-        wins->push_back(players[winplayer].player->faction);
+        wins->push_back(players[winplayer].player->getFaction());
     } else if(zones.size() == 4) {
     } else {
       CHECK(0);
@@ -1085,21 +1039,21 @@ void Game::renderToScreen() const {
     if(bombards[i].state == BombardmentState::BS_OFF) {
     } else if(bombards[i].state == BombardmentState::BS_SPAWNING) {
     } else if(bombards[i].state == BombardmentState::BS_ACTIVE) {
-      setColor(players[i].player->faction->color * 0.5);
+      setColor(players[i].player->getFaction()->color * 0.5);
       drawCirclePieces(bombards[i].loc, 0.3, 4);
       drawCrosses(bombards[i].loc, 4);
     } else if(bombards[i].state == BombardmentState::BS_FIRING) {
-      setColor(players[i].player->faction->color * 0.25);
+      setColor(players[i].player->getFaction()->color * 0.25);
       drawCirclePieces(bombards[i].loc, 0.3, 4);
       drawCrosses(bombards[i].loc, 4);
       setColor(Color(1.0, 1.0, 1.0));
-      float ps = (float)bombards[i].timer / players[i].player->bombardment->lockdelay;
+      float ps = (float)bombards[i].timer / players[i].player->getBombardment()->lockdelay;
       drawCirclePieces(bombards[i].loc, 1 - ps, 4 * ps);
     } else if(bombards[i].state == BombardmentState::BS_COOLDOWN) {
-      setColor(players[i].player->faction->color * 0.25);
+      setColor(players[i].player->getFaction()->color * 0.25);
       drawCirclePieces(bombards[i].loc, 0.3, 4);
       drawCrosses(bombards[i].loc, 4);
-      float ps = (float)bombards[i].timer / players[i].player->bombardment->unlockdelay;
+      float ps = (float)bombards[i].timer / players[i].player->getBombardment()->unlockdelay;
       drawCirclePieces(bombards[i].loc, ps, 4 * (1 - ps));
     } else {
       CHECK(0);
@@ -1159,17 +1113,17 @@ void Game::renderToScreen() const {
       if(i)
         drawLine(Float4(loffset, 0, loffset, 10), 0.1);
       if(players[i].live) {
-        setColor(players[i].player->faction->color);
+        setColor(players[i].player->getFaction()->color);
         float barl = loffset + 1;
         float bare = (roffset - 1) - (loffset + 1);
-        bare /= players[i].player->maxHealth;
+        bare /= players[i].player->maxHealth();
         bare *= players[i].health;
         drawShadedRect(Float4(barl, 2, barl + bare, 6), 0.1, 2);
         string ammotext;
-        if(players[i].player->shotsLeft == -1) {
+        if(players[i].player->shotsLeft() == -1) {
           ammotext = "inf";
         } else {
-          ammotext = StringPrintf("%d", players[i].player->shotsLeft);
+          ammotext = StringPrintf("%d", players[i].player->shotsLeft());
         }
         drawText(ammotext, 2, barl, 7);
       }
@@ -1243,6 +1197,16 @@ void Game::renderToScreen() const {
 }*/
 
 int Game::winningTeam() const {
+  Team *winteam = NULL;
+  for(int i = 0; i < players.size(); i++) {
+    if(players[i].live) {
+      CHECK(winteam == NULL || winteam == players[i].team);
+      winteam = players[i].team;
+    }
+  }
+  if(!winteam)
+    return -1;
+  return winteam - &teams[0];
 }
 
 Game::Game() {
@@ -1338,7 +1302,7 @@ void Game::initChoice(vector<Player> *in_playerdata) {
   teams[4].weapons_enabled = false;
 }
 
-void Game::initStandard(vector<Player> *in_playerdata, const Level &lev, vector<FactionState *> *in_wins, int factionmode) {
+void Game::initStandard(vector<Player> *in_playerdata, const Level &lev, vector<const FactionState *> *in_wins, int factionmode) {
   initCommon(in_playerdata, lev, factionmode);
   
   CHECK(in_wins);

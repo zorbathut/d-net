@@ -5,6 +5,7 @@
 #include "gfx.h"
 #include "itemdb.h"
 #include "coord.h"
+#include "player.h"
 
 #include <vector>
 using namespace std;
@@ -14,48 +15,6 @@ class Ai;
   
 class Tank;
 class Projectile;
-
-struct FactionState {
-  Dvec2 icon;
-  Color color;
-  string name;
-  vector<string> name_lines;
-  
-  // Only used in metagame
-  bool taken;
-  Float4 compass_location;
-};
-
-class Player {
-public:
-
-  float maxHealth;
-  float turnSpeed;
-  Coord maxSpeed;
-
-  vector<const IDBUpgrade *> upgrades;
-  const IDBWeapon *weapon;
-  int shotsLeft;
-
-  const IDBGlory *glory;
-  const IDBBombardment *bombardment;
-
-  FactionState *faction;
-
-  int cash;
-
-  void reCalculate();
-  bool hasUpgrade(const IDBUpgrade *upg) const;
-
-  int resellAmmoValue() const;
-
-  float damageDone;
-  int kills;
-  int wins;
-
-  Player();
-
-};
 
 // there's a lot of redundancy here, but ATM I don't care
 // I'm not really sure whether inheritance will honestly be better thanks to allocation overhead, though
@@ -221,7 +180,7 @@ enum {FACTION_NULL, FACTION_SMALL, FACTION_MEDIUM, FACTION_BIG, FACTION_LAST};
 class Game {
 public:
   
-  void initStandard(vector<Player> *playerdata, const Level &level, vector<FactionState *> *wins, int factionmode);
+  void initStandard(vector<Player> *playerdata, const Level &level, vector<const FactionState *> *wins, int factionmode);
   void initChoice(vector<Player> *playerdata);
 
   bool runTick( const vector< Keystates > &keys );
@@ -262,7 +221,7 @@ private:
 
   Float2 zoom_speed;
 
-  vector<FactionState *> *wins;
+  vector<const FactionState *> *wins;
   
   Game(const Game &rhs);      // do not implement
   void operator=(const Game &rhs);

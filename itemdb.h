@@ -8,6 +8,20 @@
 
 using namespace std;
 
+class Player;
+
+// TODO: get this standardized
+struct FactionState {
+  Dvec2 icon;
+  Color color;
+  string name;
+  vector<string> name_lines;
+  
+  // Only used in metagame
+  bool taken;
+  Float4 compass_location;
+};
+
 struct IDBDeploy {
 public:
   
@@ -45,11 +59,14 @@ public:
 
 struct IDBWeapon {
 public:
-  float firerate;
-  float costpershot;
   string name;
+
+  float firerate;
   const IDBDeploy *deploy;
   const IDBProjectile *projectile;
+
+  int base_cost;
+  int quantity;
 
   float getDamagePerShot() const;
   float getDamagePerSecond() const;
@@ -70,6 +87,8 @@ public:
 
   int shotspersplit;
 
+  int base_cost;
+
   float getAverageDamage() const;
 };
 
@@ -78,6 +97,8 @@ public:
   int hull;
   int engine;
   int handling;
+
+  int base_cost;
 };
 
 struct IDBBombardment {
@@ -86,6 +107,8 @@ public:
 
   int lockdelay;
   int unlockdelay;
+
+  int base_cost;
 };
 
 struct HierarchyNode {
@@ -101,14 +124,14 @@ public:
   int displaymode;
 
   bool buyable;
-  int cost;
+  
+  int cost(const Player *player) const;
+  int pack;
   
   const IDBWeapon *weapon;
   const IDBUpgrade *upgrade;
   const IDBGlory *glory;
   const IDBBombardment *bombardment;
-  
-  int quantity;
   
   int cat_restrictiontype;
   

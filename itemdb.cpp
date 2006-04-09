@@ -7,6 +7,7 @@
 #include "util.h"
 #include "args.h"
 #include "rng.h"
+#include "player.h"
 
 static HierarchyNode root;
 static map<string, IDBDeploy> deployclasses;
@@ -28,23 +29,28 @@ float IDBDeploy::getDamagePerShotMultiplier() const {
 }
 
 float IDBWarhead::getDamagePerShot() const {
-  return impactdamage + radiusdamage;
+  return -1;
+  //return impactdamage + radiusdamage;
 }
 
 float IDBProjectile::getDamagePerShot() const {
-  return warhead->getDamagePerShot();
+  return -1;
+  //return warhead->getDamagePerShot();
 }
 
 float IDBWeapon::getDamagePerShot() const {
-  return deploy->getDamagePerShotMultiplier() * projectile->getDamagePerShot();
+  return -1;
+  //return deploy->getDamagePerShotMultiplier() * projectile->getDamagePerShot();
 }
 
 float IDBWeapon::getDamagePerSecond() const {
-  return getDamagePerShot() * firerate;
+  return -1;
+  //return getDamagePerShot() * firerate;
 }
 
 float IDBWeapon::getCostPerDamage() const {
-  return costpershot / getDamagePerShot();
+  return -1;
+  //return costpershot / getDamagePerShot();
 }
 
 int IDBWeapon::framesForCooldown() const {
@@ -56,6 +62,20 @@ float IDBGlory::getAverageDamage() const {
   return (minsplits + maxsplits) / 2.0 * shotspersplit * projectile->getDamagePerShot();
 }
 
+int HierarchyNode::cost(const Player *player) const {
+  if(type == HNT_WEAPON) {
+    return player->costWeapon(weapon);
+  } else if(type == HNT_UPGRADE) {
+    return player->costUpgrade(upgrade);
+  } else if(type == HNT_GLORY) {
+    return player->costGlory(glory);
+  } else if(type == HNT_BOMBARDMENT) {
+    return player->costBombardment(bombardment);
+  } else {
+    CHECK(0);
+  }
+}
+  
 void HierarchyNode::checkConsistency() const {
   dprintf("Consistency scan entering %s\n", name.c_str());
   // all nodes need a name
@@ -91,7 +111,7 @@ void HierarchyNode::checkConsistency() const {
     gottype = true;
     CHECK(displaymode == HNDM_COSTUNIQUE);
     CHECK(buyable);
-    CHECK(quantity == 1);
+    CHECK(pack == 1);
     CHECK(upgrade);
   } else {
     CHECK(!upgrade);
@@ -101,7 +121,7 @@ void HierarchyNode::checkConsistency() const {
   if(type == HNT_GLORY) {
     gottype = true;
     CHECK(displaymode == HNDM_COSTUNIQUE);
-    CHECK(quantity == 1);
+    CHECK(pack == 1);
     CHECK(buyable);
     CHECK(glory);
   } else {
@@ -112,7 +132,7 @@ void HierarchyNode::checkConsistency() const {
   if(type == HNT_BOMBARDMENT) {
     gottype = true;
     CHECK(displaymode == HNDM_COSTUNIQUE);
-    CHECK(quantity == 1);
+    CHECK(pack == 1);
     CHECK(buyable);
     CHECK(bombardment);
   } else {
@@ -124,27 +144,19 @@ void HierarchyNode::checkConsistency() const {
     gottype = true;
     CHECK(displaymode == HNDM_BLANK);
     CHECK(buyable);
-    CHECK(quantity == 1);
+    CHECK(pack == 1);
     CHECK(name == "done");
-    CHECK(cost == 0);
   }
   
   CHECK(gottype);
   
-  // if it's buyable, it has a cost
-  if(buyable) {
-    CHECK(cost >= 0);
-  } else {
-    CHECK(cost == -1);
-  }
-  
   // all things that are buyable have quantities
   if(buyable)
-    CHECK(quantity > 0);
+    CHECK(pack > 0);
   
   // if it's marked as UNIQUE, its quantity is 1
   if(displaymode == HNDM_COSTUNIQUE)
-    CHECK(quantity == 1);
+    CHECK(pack == 1);
   
   // it may have no restriction or a valid restriction
   CHECK(cat_restrictiontype == -1 || cat_restrictiontype >= 0 && cat_restrictiontype < HNT_LAST);
@@ -167,8 +179,7 @@ HierarchyNode::HierarchyNode() {
   type = HNT_LAST;
   displaymode = HNDM_LAST;
   buyable = false;
-  cost = -1;
-  quantity = -1;
+  pack = -1;
   cat_restrictiontype = -1;
   weapon = NULL;
   upgrade = NULL;
@@ -230,11 +241,11 @@ void parseItemFile(const string &fname) {
       tnode.type = HierarchyNode::HNT_CATEGORY;
       if(chunk.kv.count("pack")) {
         tnode.displaymode = HierarchyNode::HNDM_PACK;
-        tnode.quantity = atoi(chunk.consume("pack").c_str());
-        CHECK(mountpoint->quantity == -1);
+        tnode.pack = atoi(chunk.consume("pack").c_str());
+        CHECK(mountpoint->pack == -1);
       } else {
         tnode.displaymode = HierarchyNode::HNDM_BLANK;
-        tnode.quantity = mountpoint->quantity;
+        tnode.pack = mountpoint->pack;
       }
       if(chunk.kv.count("type")) {
         if(chunk.kv["type"] == "weapon") {
@@ -268,17 +279,18 @@ void parseItemFile(const string &fname) {
       tnode.type = HierarchyNode::HNT_WEAPON;
       tnode.displaymode = HierarchyNode::HNDM_COST;
       tnode.buyable = true;
-      tnode.quantity = mountpoint->quantity;
-      CHECK(tnode.quantity >= 1);
-      tnode.cost = atoi(chunk.consume("cost").c_str());
+      tnode.pack = mountpoint->pack;
       tnode.cat_restrictiontype = HierarchyNode::HNT_WEAPON;
       CHECK(mountpoint->cat_restrictiontype == -1 || tnode.cat_restrictiontype == mountpoint->cat_restrictiontype);
       tnode.weapon = &weaponclasses[name];
       mountpoint->branches.push_back(tnode);
       
-      weaponclasses[name].firerate = atof(chunk.consume("firerate").c_str());
-      weaponclasses[name].costpershot = (float)tnode.cost / tnode.quantity;
       weaponclasses[name].name = tnode.name;
+      weaponclasses[name].firerate = atof(chunk.consume("firerate").c_str());
+      weaponclasses[name].base_cost = atoi(chunk.consume("cost").c_str());
+      weaponclasses[name].quantity = mountpoint->pack;
+      
+      CHECK(mountpoint->pack >= 1);
 
       string projclass = chunk.consume("projectile");
       CHECK(projclasses.count(projclass));
@@ -304,13 +316,14 @@ void parseItemFile(const string &fname) {
       tnode.type = HierarchyNode::HNT_UPGRADE;
       tnode.displaymode = HierarchyNode::HNDM_COSTUNIQUE;
       tnode.buyable = true;
-      tnode.quantity = 1;
-      CHECK(mountpoint->quantity == 1 || mountpoint->quantity == -1);
-      tnode.cost = atoi(chunk.consume("cost").c_str());
+      tnode.pack = 1;
+      CHECK(mountpoint->pack == 1 || mountpoint->pack == -1);
       tnode.cat_restrictiontype = HierarchyNode::HNT_UPGRADE;
       CHECK(mountpoint->cat_restrictiontype == -1 || tnode.cat_restrictiontype == mountpoint->cat_restrictiontype);
       tnode.upgrade = &upgradeclasses[name];
       mountpoint->branches.push_back(tnode);
+      
+      upgradeclasses[name].base_cost = atoi(chunk.consume("cost").c_str());
       
       if(chunk.kv.count("hull"))
         upgradeclasses[name].hull = atoi(chunk.consume("hull").c_str());
@@ -407,13 +420,14 @@ void parseItemFile(const string &fname) {
       tnode.type = HierarchyNode::HNT_GLORY;
       tnode.displaymode = HierarchyNode::HNDM_COSTUNIQUE;
       tnode.buyable = true;
-      tnode.quantity = 1;
-      tnode.cost = atoi(chunk.consume("cost").c_str());
+      tnode.pack = 1;
       tnode.cat_restrictiontype = HierarchyNode::HNT_GLORY;
       CHECK(mountpoint->cat_restrictiontype == -1 || tnode.cat_restrictiontype == mountpoint->cat_restrictiontype);
       
       tnode.glory = &gloryclasses[name];
       mountpoint->branches.push_back(tnode);
+      
+      gloryclasses[name].base_cost = atoi(chunk.consume("cost").c_str());
       
       string projclass = chunk.consume("projectile");
       CHECK(projclasses.count(projclass));
@@ -445,8 +459,7 @@ void parseItemFile(const string &fname) {
       tnode.type = HierarchyNode::HNT_BOMBARDMENT;
       tnode.displaymode = HierarchyNode::HNDM_COSTUNIQUE;
       tnode.buyable = true;
-      tnode.quantity = 1;
-      tnode.cost = atoi(chunk.consume("cost").c_str());
+      tnode.pack = 1;
       tnode.cat_restrictiontype = HierarchyNode::HNT_BOMBARDMENT;
       CHECK(mountpoint->cat_restrictiontype == -1 || tnode.cat_restrictiontype == mountpoint->cat_restrictiontype);
       
@@ -455,6 +468,9 @@ void parseItemFile(const string &fname) {
 
       string warheadclass = chunk.consume("warhead");
       CHECK(warheadclasses.count(warheadclass));
+      
+      bombardmentclasses[name].base_cost = atoi(chunk.consume("cost").c_str());
+      
       bombardmentclasses[name].warhead = &warheadclasses[warheadclass];
 
       bombardmentclasses[name].lockdelay = atoi(chunk.consume("lockdelay").c_str());
@@ -499,8 +515,7 @@ void initItemdb() {
     tnode.type = HierarchyNode::HNT_DONE;
     tnode.displaymode = HierarchyNode::HNDM_BLANK;
     tnode.buyable = true;
-    tnode.cost = 0;
-    tnode.quantity = 1;
+    tnode.pack = 1;
     root.branches.push_back(tnode);
   }
   

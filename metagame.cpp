@@ -64,16 +64,16 @@ void Shop::renderNode(const HierarchyNode &node, int depth) const {
       if(dispmode == HierarchyNode::HNDM_COSTUNIQUE) {
         if(node.branches[i].type == HierarchyNode::HNT_UPGRADE && !player->hasUpgrade(node.branches[i].upgrade))
           dispmode = HierarchyNode::HNDM_COST;
-        if(node.branches[i].type == HierarchyNode::HNT_GLORY && player->glory != node.branches[i].glory)
+        if(node.branches[i].type == HierarchyNode::HNT_GLORY && !player->hasGlory(node.branches[i].glory))
           dispmode = HierarchyNode::HNDM_COST;
-        if(node.branches[i].type == HierarchyNode::HNT_BOMBARDMENT && player->bombardment != node.branches[i].bombardment)
+        if(node.branches[i].type == HierarchyNode::HNT_BOMBARDMENT && !player->hasBombardment(node.branches[i].bombardment))
           dispmode = HierarchyNode::HNDM_COST;
       }
       if(dispmode == HierarchyNode::HNDM_BLANK) {
       } else if(dispmode == HierarchyNode::HNDM_COST) {
-        drawText( StringPrintf("%6d", node.branches[i].cost), sl_fontsize, hoffbase + sl_pricehpos, sl_voffset + i * sl_itemheight + sl_boxborder );
+        drawText( StringPrintf("%6d", node.branches[i].cost(player)), sl_fontsize, hoffbase + sl_pricehpos, sl_voffset + i * sl_itemheight + sl_boxborder );
       } else if(dispmode == HierarchyNode::HNDM_PACK) {
-        drawText( StringPrintf("%dpk", node.branches[i].quantity), sl_fontsize, hoffbase + sl_pricehpos, sl_voffset + i * sl_itemheight + sl_boxborder );
+        drawText( StringPrintf("%dpk", node.branches[i].pack), sl_fontsize, hoffbase + sl_pricehpos, sl_voffset + i * sl_itemheight + sl_boxborder );
       } else if(dispmode == HierarchyNode::HNDM_COSTUNIQUE) {
         drawText("bought", sl_fontsize, hoffbase + sl_pricehpos, sl_voffset + i * sl_itemheight + sl_boxborder);
       } else {
@@ -103,18 +103,16 @@ bool Shop::runTick(const Keystates &keys) {
     if(getCurNode().type == HierarchyNode::HNT_DONE) {
       canBuy = true;
     } else if(getCurNode().type == HierarchyNode::HNT_UPGRADE) {
-      if(player->cash >= getCurNode().cost && !player->hasUpgrade(getCurNode().upgrade))
+      if(player->canBuyUpgrade(getCurNode().upgrade))
         canBuy = true;
     } else if(getCurNode().type == HierarchyNode::HNT_WEAPON) {
-      if(player->cash >= getCurNode().cost)
-        canBuy = true;
-      if(player->weapon != getCurNode().weapon && player->cash + player->resellAmmoValue() >= getCurNode().cost)
+      if(player->canBuyWeapon(getCurNode().weapon))
         canBuy = true;
     } else if(getCurNode().type == HierarchyNode::HNT_GLORY) {
-      if(player->cash >= getCurNode().cost && getCurNode().glory != player->glory)
+      if(player->canBuyGlory(getCurNode().glory))
         canBuy = true;
     } else if(getCurNode().type == HierarchyNode::HNT_BOMBARDMENT) {
-      if(player->cash >= getCurNode().cost && getCurNode().bombardment != player->bombardment)
+      if(player->canBuyBombardment(getCurNode().bombardment))
         canBuy = true;
     } else {
       CHECK(0);
@@ -122,26 +120,16 @@ bool Shop::runTick(const Keystates &keys) {
     
     // If so, buy it
     if(canBuy) {
-      player->cash -= getCurNode().cost;
       if(getCurNode().type == HierarchyNode::HNT_DONE) {
         return true;
       } else if(getCurNode().type == HierarchyNode::HNT_UPGRADE) {
-        player->upgrades.push_back(getCurNode().upgrade);
-        player->reCalculate();
+        player->buyUpgrade(getCurNode().upgrade);
       } else if(getCurNode().type == HierarchyNode::HNT_WEAPON) {
-        if(player->weapon != getCurNode().weapon) {
-          if(player->shotsLeft != -1)
-            player->cash += player->resellAmmoValue();
-          player->weapon = getCurNode().weapon;
-          player->shotsLeft = 0;
-        }
-        player->shotsLeft += getCurNode().quantity;
-        if(player->weapon == defaultWeapon())
-          player->shotsLeft = -1;
+        player->buyWeapon(getCurNode().weapon);
       } else if(getCurNode().type == HierarchyNode::HNT_GLORY) {
-        player->glory = getCurNode().glory;
+        player->buyGlory(getCurNode().glory);
       } else if(getCurNode().type == HierarchyNode::HNT_BOMBARDMENT) {
-        player->bombardment = getCurNode().bombardment;
+        player->buyBombardment(getCurNode().bombardment);
       } else {
         CHECK(0);
       }
@@ -158,27 +146,27 @@ void Shop::ai(Ai *ais) const {
 
 void Shop::renderToScreen() const {
   CHECK(player);
-  clearFrame(player->faction->color * 0.05 + Color(0.05, 0.05, 0.05));
+  clearFrame(player->getFaction()->color * 0.05 + Color(0.05, 0.05, 0.05));
   setColor(1.0, 1.0, 1.0);
   setZoom(0, 0, 100);
   {
     char bf[128];
-    sprintf(bf, "cash onhand %6d", player->cash);
+    sprintf(bf, "cash onhand %6d", player->getCash());
     drawText(bf, 2, 80, 1);
   }
   {
     char bf[128];
-    if(player->shotsLeft == -1) {
-      sprintf(bf, "%10s infinite ammo", player->weapon->name.c_str());
+    if(player->shotsLeft() == -1) {
+      sprintf(bf, "%10s infinite ammo", player->getWeapon()->name.c_str());
     } else {
-      sprintf(bf, "%15s %4d shots %6d resell", player->weapon->name.c_str(), player->shotsLeft, player->resellAmmoValue());
+      sprintf(bf, "%15s %4d shots %6d resell", player->getWeapon()->name.c_str(), player->shotsLeft(), player->resellAmmoValue());
     }
     drawText(bf, 2, 1, 1);
   }
-  setColor(player->faction->color * 0.5);
+  setColor(player->getFaction()->color * 0.5);
   {
     const float ofs = 8;
-    drawDvec2(player->faction->icon, Float4(ofs, ofs, 125 - ofs, 100 - ofs), 0.5);
+    drawDvec2(player->getFaction()->icon, Float4(ofs, ofs, 125 - ofs, 100 - ofs), 0.5);
   }
   renderNode(itemDbRoot(), 0);
   float hudstart = itemDbRoot().branches.size() * sl_itemheight + sl_voffset + sl_boxborder;
@@ -589,10 +577,11 @@ bool Metagame::runTick( const vector< Controller > &keys ) {
         mode = MGM_FACTIONTYPE;
         playerdata.clear();
         playerdata.resize(readyusers);
+        findLevels(playerdata.size());
         int pid = 0;
         for(int i = 0; i < pms.size(); i++) {
           if(pms[i].faction) {
-            playerdata[pid].faction = pms[i].faction;
+            playerdata[pid] = Player(pms[i].faction);
             pid++;
           }
         }
@@ -607,10 +596,10 @@ bool Metagame::runTick( const vector< Controller > &keys ) {
         faction_mode = 0;
       CHECK(faction_mode >= 0 && faction_mode < FACTION_LAST);
       for(int i = 0; i < playerdata.size(); i++) {
-        playerdata[i].damageDone = 0;
-        playerdata[i].kills = 0;
-        playerdata[i].wins = 0;
-      }
+        playerdata[i].consumeKills();
+        playerdata[i].consumeWins();
+        playerdata[i].consumeDamage();
+      } // throw away all the accumulated score data from factions
       mode = MGM_SHOP;
       currentShop = 0;
       shop = Shop(&playerdata[0]);
@@ -623,7 +612,7 @@ bool Metagame::runTick( const vector< Controller > &keys ) {
           checked[i] = true;
       if(count(checked.begin(), checked.end(), false) == 0) {
         for(int i = 0; i < playerdata.size(); i++)
-          playerdata[i].cash += lrCash[i];
+          playerdata[i].addCash(lrCash[i]);
         currentShop = 0;
         shop = Shop(&playerdata[0]);
       }
@@ -633,12 +622,6 @@ bool Metagame::runTick( const vector< Controller > &keys ) {
         shop = Shop(&playerdata[currentShop]);
       } else {
         mode = MGM_PLAY;
-        for(int i = 0; i < playerdata.size(); i++) {
-          playerdata[i].damageDone = 0;
-          playerdata[i].kills = 0;
-          playerdata[i].wins = 0;
-        }
-        findLevels(playerdata.size());
         //game.initChoice(&playerdata);
         game.initStandard(&playerdata, levels[int(frand() * levels.size())], &win_history, faction_mode);
         CHECK(win_history.size() == gameround);
@@ -742,8 +725,8 @@ void Metagame::renderToScreen() const {
       float increment = 800.0 / notdone;
       for(int i = 0; i < checked.size(); i++) {
         if(!checked[i]) {
-          setColor(playerdata[i].faction->color);
-          drawDvec2(playerdata[i].faction->icon, Float4(cpos * increment, 440, (cpos + 1) * increment, 580), 1);
+          setColor(playerdata[i].getFaction()->color);
+          drawDvec2(playerdata[i].getFaction()->icon, Float4(cpos * increment, 440, (cpos + 1) * increment, 580), 1);
           cpos++;
         }
       }
@@ -765,11 +748,11 @@ void Metagame::renderToScreen() const {
 void Metagame::calculateLrStats() {
   vector<vector<float> > values(4);
   for(int i = 0; i < playerdata.size(); i++) {
-    values[0].push_back(playerdata[i].damageDone);
-    values[1].push_back(playerdata[i].kills);
-    values[2].push_back(playerdata[i].wins);
+    values[0].push_back(playerdata[i].consumeDamage());
+    values[1].push_back(playerdata[i].consumeKills());
+    values[2].push_back(playerdata[i].consumeWins());
     values[3].push_back(1);
-    dprintf("%d: %f %d %d", i, playerdata[i].damageDone, playerdata[i].kills, playerdata[i].wins);
+    dprintf("%d: %f %f %f", i, values[0].back(), values[1].back(), values[2].back());
   }
   vector<float> totals(values.size());
   for(int j = 0; j < totals.size(); j++) {
@@ -823,7 +806,7 @@ void Metagame::drawMultibar(const vector<float> &sizes, const Float4 &dimensions
   float per = width / total;
   float cpos = dimensions.sx;
   for(int i = 0; i < sizes.size(); i++) {
-    setColor(playerdata[i].faction->color);
+    setColor(playerdata[i].getFaction()->color);
     float epos = cpos + sizes[i] * per;
     drawShadedRect(Float4(cpos, dimensions.sy, epos, dimensions.ey), 1, 6);
     cpos = epos;

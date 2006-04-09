@@ -55,22 +55,22 @@ Controller makeController(float x, float y, bool key) {
   return rv;
 }
 
-void doMegaEnumWorker(const HierarchyNode &rt, vector<pair<int, vector<Controller> > > *weps, vector<pair<pair<int, const IDBUpgrade*>, vector<Controller> > > *upgs, vector<Controller> *done, vector<Controller> path) {
+void doMegaEnumWorker(const HierarchyNode &rt, vector<pair<int, vector<Controller> > > *weps, vector<pair<pair<int, const IDBUpgrade*>, vector<Controller> > > *upgs, vector<Controller> *done, vector<Controller> path, const Player *player) {
   if(rt.type == HierarchyNode::HNT_CATEGORY) {
     path.push_back(makeController(1, 0, 0));
     for(int i = 0; i < rt.branches.size(); i++) {
       if(i)
         path.push_back(makeController(0, -1, 0));
-      doMegaEnumWorker(rt.branches[i], weps, upgs, done, path);
+      doMegaEnumWorker(rt.branches[i], weps, upgs, done, path, player);
     }
   } else if(rt.type == HierarchyNode::HNT_WEAPON) {
-    weps->push_back(make_pair(rt.cost, path));
+    weps->push_back(make_pair(player->costWeapon(rt.weapon), path));
   } else if(rt.type == HierarchyNode::HNT_UPGRADE) {  // TODO: don't buy stuff if you already have it :)
-    upgs->push_back(make_pair(make_pair(rt.cost, rt.upgrade), path));
+    upgs->push_back(make_pair(make_pair(player->costUpgrade(rt.upgrade), rt.upgrade), path));
   } else if(rt.type == HierarchyNode::HNT_GLORY) {
-    upgs->push_back(make_pair(make_pair(rt.cost, (IDBUpgrade*)NULL), path));
+    upgs->push_back(make_pair(make_pair(player->costGlory(rt.glory), (IDBUpgrade*)NULL), path));
   } else if(rt.type == HierarchyNode::HNT_BOMBARDMENT) {
-    upgs->push_back(make_pair(make_pair(rt.cost, (IDBUpgrade*)NULL), path));
+    upgs->push_back(make_pair(make_pair(player->costBombardment(rt.bombardment), (IDBUpgrade*)NULL), path));
   } else if(rt.type == HierarchyNode::HNT_DONE) {
     CHECK(done->size() == 0);
     *done = path;
@@ -79,12 +79,12 @@ void doMegaEnumWorker(const HierarchyNode &rt, vector<pair<int, vector<Controlle
   }
 }
 
-void doMegaEnum(const HierarchyNode &rt, vector<pair<int, vector<Controller> > > *weps, vector<pair<pair<int, const IDBUpgrade*>, vector<Controller> > > *upgs, vector<Controller> *done) {
+void doMegaEnum(const HierarchyNode &rt, vector<pair<int, vector<Controller> > > *weps, vector<pair<pair<int, const IDBUpgrade*>, vector<Controller> > > *upgs, vector<Controller> *done, const Player *player) {
   for(int i = 0; i < rt.branches.size(); i++) {
     vector<Controller> tvd;
     for(int j = 0; j < i; j++)
       tvd.push_back(makeController(0, -1, 0));
-    doMegaEnumWorker(rt.branches[i], weps, upgs, done, tvd);
+    doMegaEnumWorker(rt.branches[i], weps, upgs, done, tvd, player);
   }
 }
 
@@ -116,14 +116,14 @@ void Ai::updateShop(const Player *player) {
   vector<pair<int, vector<Controller> > > weps;
   vector<pair<pair<int, const IDBUpgrade *>, vector<Controller> > > upgs;
   vector<Controller> done;
-  doMegaEnum(rt, &weps, &upgs, &done);
+  doMegaEnum(rt, &weps, &upgs, &done, player);
   dprintf("%d weps, %d upgs, %d donesize\n", weps.size(), upgs.size(), done.size());
   CHECK(weps.size());
   CHECK(done.size());
   sort(weps.begin(), weps.end());
   sort(upgs.begin(), upgs.end());
-  int upgcash = player->cash / 2;
-  int weapcash = player->cash;
+  int upgcash = player->getCash() / 2;
+  int weapcash = player->getCash();
   while(upgcash) {
     for(int i = 0; i < upgs.size(); i++) {
       if(upgs[i].first.second && player->hasUpgrade(upgs[i].first.second)) {
