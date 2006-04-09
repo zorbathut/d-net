@@ -86,7 +86,7 @@ class Metagame {
   int mode;
   int gameround;
   
-  enum { MGM_PLAYERCHOOSE, MGM_SHOP, MGM_PLAY };
+  enum { MGM_PLAYERCHOOSE, MGM_FACTIONTYPE, MGM_SHOP, MGM_PLAY };
   int currentShop;
   
   vector<PlayerMenuState> pms;  // heh.

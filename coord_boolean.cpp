@@ -48,7 +48,7 @@ public:
 class GDException {
 public:
   void operator()(const string &fname, int line) {
-    if(!dumpBooleanDetail)
+    if(dumpBooleanDetail)
       throw make_pair(fname, line);
   }
 };

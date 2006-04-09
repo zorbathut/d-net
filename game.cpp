@@ -1105,12 +1105,49 @@ void Game::renderToScreen() const {
       CHECK(0);
     }
   }
+  
   gamemap.render();
   collider.render();
+  
   for(int i = 0; i < zones.size(); i++) {
     setColor(zones[i].second * 0.3);
     drawLineLoop(zones[i].first, 1.0);
   }
+  if(zones.size() == 4) { // this is all really fucking ugly
+    vector<vector<string> > zonenames;
+    {
+      vector<string> foo;
+      
+      foo.push_back("No Bonuses");
+      foo.push_back("No Penalties");
+      zonenames.push_back(foo);
+      foo.clear();
+      
+      foo.push_back("Small Bonuses");
+      foo.push_back("No Penalties");
+      zonenames.push_back(foo);
+      foo.clear();
+      
+      foo.push_back("Medium Bonuses");
+      foo.push_back("Small Penalties");
+      zonenames.push_back(foo);
+      foo.clear();
+      
+      foo.push_back("Large Bonuses");
+      foo.push_back("Medium Penalties");
+      zonenames.push_back(foo);
+      foo.clear();
+    }
+      
+    for(int i = 0; i < zones.size(); i++) {
+      setColor(zones[i].second);
+      Float2 pos = getCentroid(zones[i].first).toFloat();
+      pos.x *= 2;
+      pos.y *= 1.4;
+      drawJustifiedMultiText(zonenames[i], 10, 2, pos, TEXT_CENTER, TEXT_CENTER);
+    }
+  }
+    
   {
     setZoom( 0, 0, 100 );
     setColor(1.0, 1.0, 1.0);

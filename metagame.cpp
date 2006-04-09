@@ -586,8 +586,7 @@ bool Metagame::runTick( const vector< Controller > &keys ) {
           chosenusers++;
       }
       if(readyusers == chosenusers && chosenusers >= 2) {
-        mode = MGM_SHOP;
-        currentShop = 0;
+        mode = MGM_FACTIONTYPE;
         playerdata.clear();
         playerdata.resize(readyusers);
         int pid = 0;
@@ -598,8 +597,20 @@ bool Metagame::runTick( const vector< Controller > &keys ) {
           }
         }
         CHECK(pid == playerdata.size());
-        shop = Shop(&playerdata[0]);
+        game.initChoice(&playerdata);
       }
+    }
+  } else if(mode == MGM_FACTIONTYPE) {
+    if(game.runTick(genKeystates(keys, pms))) {
+      // Faction settings here!
+      for(int i = 0; i < playerdata.size(); i++) {
+        playerdata[i].damageDone = 0;
+        playerdata[i].kills = 0;
+        playerdata[i].wins = 0;
+      }
+      mode = MGM_SHOP;
+      currentShop = 0;
+      shop = Shop(&playerdata[0]);
     }
   } else if(mode == MGM_SHOP) {
     vector<Keystates> ki = genKeystates(keys, pms);
@@ -625,8 +636,8 @@ bool Metagame::runTick( const vector< Controller > &keys ) {
           playerdata[i].wins = 0;
         }
         findLevels(playerdata.size());
-        game.initChoice(&playerdata);
-        //game.initStandard(&playerdata, levels[int(frand() * levels.size())], &win_history);
+        //game.initChoice(&playerdata);
+        game.initStandard(&playerdata, levels[int(frand() * levels.size())], &win_history);
         CHECK(win_history.size() == gameround);
       }
     }
@@ -666,6 +677,8 @@ void Metagame::ai(const vector<Ai *> &ai) const {
     for(int i = 0; i < ai.size(); i++)
       if(ai[i])
         ai[i]->updateCharacterChoice(factions, pms, i);
+  } else if(mode == MGM_FACTIONTYPE) {
+    game.ai(distillAi(ai, pms));
   } else if(mode == MGM_SHOP) {
     if(currentShop == -1) {
       for(int i = 0; i < ai.size(); i++)
@@ -696,6 +709,13 @@ void Metagame::renderToScreen() const {
         drawDvec2(factions[i].icon, squareInside(factions[i].compass_location), 0.003);
         //drawRect(factions[i].compass_location, 0.003);
       }
+    }
+  } else if(mode == MGM_FACTIONTYPE) {
+    game.renderToScreen();
+    if(!controls_users()) {    
+      setColor(1.0, 1.0, 1.0);
+      setZoom(0, 0, 100);
+      drawText(StringPrintf("faction setting round"), 2, 5, 82);
     }
   } else if(mode == MGM_SHOP) {
     if(currentShop == -1) {
