@@ -1,11 +1,9 @@
-
 faction {
   name=Disciples of Lucifer
   lines=1 2
   file=pitchfork.dv2
   color=f00
 }
-
 
 faction {
   name=Final Solutions Limited

@@ -1302,7 +1302,7 @@ void Game::initChoice(vector<Player> *in_playerdata) {
   teams[4].weapons_enabled = false;
 }
 
-void Game::initStandard(vector<Player> *in_playerdata, const Level &lev, vector<const FactionState *> *in_wins, int factionmode) {
+void Game::initStandard(vector<Player> *in_playerdata, const Level &lev, vector<const IDBFaction *> *in_wins, int factionmode) {
   initCommon(in_playerdata, lev, factionmode);
   
   CHECK(in_wins);

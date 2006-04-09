@@ -2,6 +2,7 @@
 #include "itemdb.h"
 
 #include <fstream>
+#include <numeric>
 
 #include "parse.h"
 #include "util.h"
@@ -17,6 +18,7 @@ static map<string, IDBWeapon> weaponclasses;
 static map<string, IDBUpgrade> upgradeclasses;
 static map<string, IDBGlory> gloryclasses;
 static map<string, IDBBombardment> bombardmentclasses;
+static vector<IDBFaction> factions;
 
 static const IDBWeapon *defweapon = NULL;
 static const IDBGlory *defglory = NULL;
@@ -481,6 +483,32 @@ void parseItemFile(const string &fname) {
         defbombardment = &bombardmentclasses[name];
       }
       
+    } else if(chunk.category == "faction") {
+      
+      IDBFaction fact;
+      
+      fact.icon = loadDvec2("data/base/faction_icons/" + chunk.consume("file"));
+      fact.color = colorFromString(chunk.consume("color"));
+      fact.name = chunk.consume("name");
+      
+      {
+        vector<int> lines = sti(tokenize(chunk.consume("lines"), " "));
+        vector<string> words = tokenize(fact.name, " ");
+        CHECK(words.size() == accumulate(lines.begin(), lines.end(), 0));
+        int cword = 0;
+        for(int i = 0; i < lines.size(); i++) {
+          string acu;
+          for(int j = 0; j < lines[i]; j++) {
+            if(j)
+              acu += " ";
+            acu += words[cword++];
+          }
+          fact.name_lines.push_back(acu);
+        }
+      }
+      
+      factions.push_back(fact);
+    
     } else {
       CHECK(0);
     }
@@ -539,3 +567,7 @@ const IDBGlory *defaultGlory() {
 const IDBBombardment *defaultBombardment() {
   return defbombardment;
 }
+const vector<IDBFaction> &factionList() {
+  return factions;
+}
+

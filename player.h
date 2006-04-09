@@ -31,7 +31,7 @@ public:
   bool hasBombardment(const IDBBombardment *in_bombardment) const;
   bool hasWeapon(const IDBWeapon *in_weap) const;
 
-  const FactionState *getFaction() const;
+  const IDBFaction *getFaction() const;
   const IDBGlory *getGlory() const;
   const IDBBombardment *getBombardment() const;
   const IDBWeapon *getWeapon() const;
@@ -59,7 +59,7 @@ public:
   int shotsLeft() const;
 
   Player();
-  Player(const FactionState *fact);
+  Player(const IDBFaction *fact);
 
 private:
   
@@ -75,8 +75,7 @@ private:
 
   const IDBGlory *glory;
   const IDBBombardment *bombardment;
-
-  const FactionState *faction;
+  const IDBFaction *faction;
 
   int cash;
 

@@ -13,6 +13,13 @@
 using namespace std;
 
 class Ai;
+  
+class FactionState {
+public:
+  bool taken;
+  Float4 compass_location;
+  const IDBFaction *faction;
+};
 
 class Shop {
 private:
@@ -108,7 +115,7 @@ class Metagame {
   vector<int> lrCash;
   vector<bool> checked;
   
-  vector<const FactionState *> win_history;
+  vector<const IDBFaction *> win_history;
   
   int roundsBetweenShop;
 

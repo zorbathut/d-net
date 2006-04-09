@@ -3,7 +3,6 @@
   - Delays
   - Make it do something
   - Better defenses
-- Move player into player.cpp player.h
 - Move factions into base, IDBFaction
 - Meaningful factions
 - Improve explosion effects (missile, etc)

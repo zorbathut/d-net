@@ -1,9 +1,22 @@
-hierarchy.dwh
+
+# Base stuff that's commonly used
 common.dwh
+
+# Basic framework for our buy categories
+hierarchy.dwh
+
+# Weaponry
 weapon.dwh
 weapon_autocannon.dwh
 weapon_laser.dwh
 weapon_missile.dwh
+
+# Miscellaneous
 glory.dwh
 bombardment.dwh
+
+# Non-buy-mode "items"
+factions.dwh
+
+# Debug stuff
 debug.dwh

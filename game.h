@@ -180,7 +180,7 @@ enum {FACTION_NULL, FACTION_SMALL, FACTION_MEDIUM, FACTION_BIG, FACTION_LAST};
 class Game {
 public:
   
-  void initStandard(vector<Player> *playerdata, const Level &level, vector<const FactionState *> *wins, int factionmode);
+  void initStandard(vector<Player> *playerdata, const Level &level, vector<const IDBFaction *> *wins, int factionmode);
   void initChoice(vector<Player> *playerdata);
 
   bool runTick( const vector< Keystates > &keys );
@@ -221,7 +221,7 @@ private:
 
   Float2 zoom_speed;
 
-  vector<const FactionState *> *wins;
+  vector<const IDBFaction *> *wins;
   
   Game(const Game &rhs);      // do not implement
   void operator=(const Game &rhs);

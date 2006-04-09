@@ -10,16 +10,12 @@ using namespace std;
 
 class Player;
 
-// TODO: get this standardized
-struct FactionState {
+struct IDBFaction {
+public:
   Dvec2 icon;
   Color color;
   string name;
   vector<string> name_lines;
-  
-  // Only used in metagame
-  bool taken;
-  Float4 compass_location;
 };
 
 struct IDBDeploy {
@@ -28,7 +24,6 @@ public:
   float anglestddev;
 
   float getDamagePerShotMultiplier() const;
-
 };
 
 struct IDBWarhead {
@@ -148,5 +143,6 @@ const HierarchyNode &itemDbRoot();
 const IDBWeapon *defaultWeapon();
 const IDBGlory *defaultGlory();
 const IDBBombardment *defaultBombardment();
+const vector<IDBFaction> &factionList();
 
 #endif

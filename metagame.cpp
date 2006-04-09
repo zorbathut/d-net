@@ -471,9 +471,9 @@ void runSettingRender(const PlayerMenuState &pms) {
     
     {
       const float nameFade = pow(1.0 - fadeFactor, 2);
-      setColor(pms.faction->color * nameFade);
+      setColor(pms.faction->faction->color * nameFade);
       
-      vector<string> text = pms.faction->name_lines;
+      vector<string> text = pms.faction->faction->name_lines;
       text.push_back("");
       text.push_back("Ready");
       
@@ -496,11 +496,11 @@ void runSettingRender(const PlayerMenuState &pms) {
     
     {
       // Topic line!
-      setColor(pms.faction->color * fadeFactor);
-      drawDvec2(pms.faction->icon, Float4(xstart, ystarts[0], xstart + unitsize * textline_size, ystarts[0] + unitsize * textline_size), 0.003);
+      setColor(pms.faction->faction->color * fadeFactor);
+      drawDvec2(pms.faction->faction->icon, Float4(xstart, ystarts[0], xstart + unitsize * textline_size, ystarts[0] + unitsize * textline_size), 0.003);
       
       const int activescale = 4;
-      float txstart = xstart + unitsize * textline_size;
+      float txstart = xstart + unitsize * textline_size + border * 2;
       float title_units = (xend - txstart) / (SETTING_LAST - 1 + activescale);
       
       int units = 0;
@@ -581,7 +581,7 @@ bool Metagame::runTick( const vector< Controller > &keys ) {
         int pid = 0;
         for(int i = 0; i < pms.size(); i++) {
           if(pms[i].faction) {
-            playerdata[pid] = Player(pms[i].faction);
+            playerdata[pid] = Player(pms[i].faction->faction);
             pid++;
           }
         }
@@ -691,8 +691,8 @@ void Metagame::renderToScreen() const {
     }
     for(int i = 0; i < factions.size(); i++) {
       if(!factions[i].taken) {
-        setColor(factions[i].color);
-        drawDvec2(factions[i].icon, squareInside(factions[i].compass_location), 0.003);
+        setColor(factions[i].faction->color);
+        drawDvec2(factions[i].faction->icon, squareInside(factions[i].compass_location), 0.003);
         //drawRect(factions[i].compass_location, 0.003);
       }
     }
@@ -899,38 +899,13 @@ Metagame::Metagame(int playercount, int in_roundsBetweenShop) {
   pms.resize(playercount, PlayerMenuState(Float2(0, 0)));
   
   {
-    ifstream istr("data/factions/list");
-    kvData kvd;
-    while(getkvData(istr, &kvd)) {
-      CHECK(kvd.category == "faction");
-      
+    const vector<IDBFaction> &facts = factionList();
+    
+    for(int i = 0; i < facts.size(); i++) {
       FactionState fs;
-      
-      fs.icon = loadDvec2("data/factions/" + kvd.consume("file"));
       fs.taken = false;
-      fs.color = colorFromString(kvd.consume("color"));
-      fs.name = kvd.consume("name");
-      
-      {
-        vector<int> lines = sti(tokenize(kvd.consume("lines"), " "));
-        vector<string> words = tokenize(fs.name, " ");
-        CHECK(words.size() == accumulate(lines.begin(), lines.end(), 0));
-        int cword = 0;
-        for(int i = 0; i < lines.size(); i++) {
-          string acu;
-          for(int j = 0; j < lines[i]; j++) {
-            if(j)
-              acu += " ";
-            acu += words[cword++];
-          }
-          fs.name_lines.push_back(acu);
-        }
-      }
-      
+      fs.faction = &facts[i];
       // fs.compass_location will be written later
-      
-      CHECK(kvd.isDone());
-      
       factions.push_back(fs);
     }
   }

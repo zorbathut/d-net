@@ -75,7 +75,7 @@ bool Player::hasGlory(const IDBGlory *in_glory) const { return glory == in_glory
 bool Player::hasBombardment(const IDBBombardment *in_bombardment) const { return bombardment == in_bombardment; };
 bool Player::hasWeapon(const IDBWeapon *in_weap) const { return weapon == in_weap; };
 
-const FactionState *Player::getFaction() const { return faction; };
+const IDBFaction *Player::getFaction() const { return faction; };
 const IDBGlory *Player::getGlory() const { return glory; };
 const IDBBombardment *Player::getBombardment() const { return bombardment; }
 const IDBWeapon *Player::getWeapon() const { return weapon; };
@@ -138,7 +138,7 @@ Player::Player() {
   shots_left = -2;
 }
 
-Player::Player(const FactionState *fact) {
+Player::Player(const IDBFaction *fact) {
   faction = fact;
   cash = FLAGS_startingCash;
   reCalculate();
