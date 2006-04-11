@@ -17,7 +17,7 @@ private:
   deque<Controller> shopQueue;
   Controller nextKeys;
   Rng rng;
-  bool shopdone;
+public: bool shopdone;
   
   int gamemode;
   int targetplayer;

@@ -602,6 +602,7 @@ bool Metagame::runTick( const vector< Controller > &keys ) {
       } // throw away all the accumulated score data from factions
       mode = MGM_SHOP;
       currentShop = 0;
+      dprintf("entering shop %d at %d\n", 0, frameNumber);
       shop = Shop(&playerdata[0]);
     }
   } else if(mode == MGM_SHOP) {
@@ -614,11 +615,13 @@ bool Metagame::runTick( const vector< Controller > &keys ) {
         for(int i = 0; i < playerdata.size(); i++)
           playerdata[i].addCash(lrCash[i]);
         currentShop = 0;
+        dprintf("entering shop %d at %d\n", 0, frameNumber);
         shop = Shop(&playerdata[0]);
       }
     } else if(shop.runTick(ki[currentShop])) {
       currentShop++;
       if(currentShop != playerdata.size()) {
+        dprintf("entering shop %d at %d\n", currentShop, frameNumber);
         shop = Shop(&playerdata[currentShop]);
       } else {
         mode = MGM_PLAY;

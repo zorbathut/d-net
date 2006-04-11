@@ -29,16 +29,19 @@ void Ai::updateCharacterChoice(const vector<FactionState> &factions, const vecto
     if(players[you].setting_button_current >= 0 && players[you].setting_button_current < nextKeys.keys.size())
       nextKeys.keys[players[you].setting_button_current].down = frameNumber % 2;
   } else if(players[you].settingmode == SETTING_AXISTYPE) {
-    if(players[you].setting_axistype != KSAX_ABSOLUTE)
-      nextKeys.menu = Float2(1.0, 0);
-    else
-      nextKeys.keys[BUTTON_ACCEPT].down = true;
+    if(frameNumber % 2 == 0) {
+      if(players[you].setting_axistype != KSAX_ABSOLUTE)
+        nextKeys.menu = Float2(1.0, 0);
+      else
+        nextKeys.keys[BUTTON_ACCEPT].down = true;
+    }
   } else if(players[you].settingmode == SETTING_AXISCHOOSE) {
     if(players[you].setting_axis_current == 0)
       nextKeys.menu.x = 1.0;
     if(players[you].setting_axis_current == 1)
       nextKeys.menu.y = 1.0;
   } else if(players[you].settingmode == SETTING_READY) {
+    CHECK(players[you].setting_axistype == KSAX_ABSOLUTE);
     nextKeys.keys[BUTTON_ACCEPT].down = true;
   } else {
     CHECK(0);
@@ -159,8 +162,9 @@ void Ai::updateShop(const Player *player) {
     //dprintf("%f %f %d\n", shopQueue[i].x, shopQueue[i].y, shopQueue[i].keys[0].down);
   deque<Controller> realShopQueue;
   for(int i = 0; i < shopQueue.size(); i++) {
+    for(int k = 0; k < 1; k++)
+      realShopQueue.push_back(makeController(0, 0, 0));
     realShopQueue.push_back(shopQueue[i]);
-    realShopQueue.push_back(makeController(0, 0, 0));
   }
   swap(shopQueue, realShopQueue);
   shopdone = true;
@@ -169,6 +173,7 @@ void Ai::updateShop(const Player *player) {
 
 void Ai::updateGame(const vector<Tank> &players, int me) {
   zeroNextKeys();
+  CHECK(shopQueue.size() == 0);
   if(shopdone || rng.frand() < 0.01) {
     // find a tank, because approach and retreat both need one
     int targtank;

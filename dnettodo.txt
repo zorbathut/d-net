@@ -3,7 +3,8 @@
   - Delays
   - Make it do something
   - Better defenses
-- Move factions into base, IDBFaction
+  - Weapons disabled applies to bombardment
+  - Better "failure" handling for choice
 - Meaningful factions
 - Improve explosion effects (missile, etc)
 - Certificates and discounts
