@@ -196,8 +196,8 @@ void Ai::updateGame(const vector<Tank> &players, int me) {
       targetplayer = targtank;
     } else if(neai < 0.9) {
       gamemode = AGM_WANDER;
-      targetdir.x = rng.frand();
-      targetdir.y = rng.frand();
+      targetdir.x = rng.frand() - 0.5;
+      targetdir.y = rng.frand() - 0.5;
       targetdir = normalize(targetdir);
     } else {
       gamemode = AGM_BACKUP;

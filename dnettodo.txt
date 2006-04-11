@@ -1,9 +1,10 @@
 ---- Major work path
+- Make money 64-bit
 - Game setting choice arena
   - Delays
   - Make it do something
   - Better defenses
-  - Weapons disabled applies to bombardment
+  - Bombardment teams, more complex team damage?
   - Better "failure" handling for choice
 - Meaningful factions
 - Improve explosion effects (missile, etc)
