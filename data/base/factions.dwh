@@ -1,5 +1,13 @@
 adjustment {
   name=adjustment.lucifer.high
+  
+  damage_proj=20
+  damage_snipe=20
+  damage_explode=20
+  damage_trap=20
+  damage_exotic=20
+  
+  tank_armor=-20
 }
 
 faction { # extra damage on all weapons
@@ -12,6 +20,10 @@ faction { # extra damage on all weapons
 
 adjustment {
   name=adjustment.final.high
+  
+  discount_weapon=20
+  
+  discount_training=-20
 }
 
 faction { # cheaper weapons
@@ -24,6 +36,13 @@ faction { # cheaper weapons
 
 adjustment {
   name=adjustment.serpent.high
+  
+  tank_speed=20
+  tank_turn=20
+  
+  tank_armor=-10
+  damage_trap=-20
+  damage_exotic=-20
 }
 
 faction { # faster turn, faster movement
@@ -36,6 +55,22 @@ faction { # faster turn, faster movement
 
 adjustment {
   name=adjustment.aquear.high
+  
+  damage_proj=5
+  damage_snipe=5
+  damage_explode=5
+  damage_trap=5
+  damage_exotic=5
+  discount_weapon=5
+  discount_training=5
+  discount_upgrade=5
+  discount_tank=5
+  discount_license=5
+  waste_reduction=5
+  tank_firerate=5
+  tank_speed=5
+  tank_turn=5
+  tank_armor=5
 }
 
 faction { # increased everything 
@@ -48,6 +83,10 @@ faction { # increased everything
 
 adjustment {
   name=adjustment.academy.high
+  
+  tank_speed=50
+  
+  discount_tank=-30
 }
 
 faction { # much faster movement
@@ -60,6 +99,11 @@ faction { # much faster movement
 
 adjustment {
   name=adjustment.rational.high
+  
+  discount_training=30
+  
+  damage_explode=-20
+  damage_exotic=-20
 }
 
 faction { # Cheaper training
@@ -72,6 +116,13 @@ faction { # Cheaper training
 
 adjustment {
   name=adjustment.security.high
+  
+  damage_trap=20
+  tank_speed=10
+  tank_armor=10
+  
+  damage_snipe=-20
+  tank_turn=-10
 }
 
 faction { # Extra damage to trap weapons, speed/armor bonus
@@ -84,6 +135,13 @@ faction { # Extra damage to trap weapons, speed/armor bonus
 
 adjustment {
   name=adjustment.juggernauts.high
+  
+  discount_license=100
+  
+  tank_firerate=-5
+  tank_speed=-5
+  tank_turn=-5
+  tank_armor=-5
 }
 
 faction { # Cheaper/free licensing
@@ -96,6 +154,11 @@ faction { # Cheaper/free licensing
 
 adjustment {
   name=adjustment.dynasty.high
+  
+  discount_tank=40
+  discount_upgrade=20
+  
+  discount_license=-40
 }
 
 faction { # Cheaper tanks
@@ -108,6 +171,10 @@ faction { # Cheaper tanks
 
 adjustment {
   name=adjustment.amazon.high
+  
+  damage_proj=50
+  
+  discount_upgrade=-30
 }
 
 faction { # Extra damage to projectile weapons
@@ -120,6 +187,11 @@ faction { # Extra damage to projectile weapons
 
 adjustment {
   name=adjustment.kindred.high
+  
+  discount_upgrade=30
+  
+  damage_proj=-5
+  damage_snipe=-5
 }
 
 faction { # Cheaper upgrades
@@ -132,6 +204,10 @@ faction { # Cheaper upgrades
 
 adjustment {
   name=adjustment.catalysts.high
+  
+  damage_explode=75
+  
+  tank_firerate=-20
 }
 
 faction { # Extra damage to explosions
@@ -144,6 +220,11 @@ faction { # Extra damage to explosions
 
 adjustment {
   name=adjustment.hepaestus.high
+  
+  tank_armor=50
+  
+  tank_speed=-30
+  tank_turn=-30
 }
 
 faction { # Heavy armor
@@ -156,6 +237,11 @@ faction { # Heavy armor
 
 adjustment {
   name=adjustment.sons.high
+  
+  waste_reduction=50
+  
+  damage_trap=-20
+  damage_explode=-20
 }
 
 faction { # Higher resell value
@@ -168,6 +254,11 @@ faction { # Higher resell value
 
 adjustment {
   name=adjustment.dust.high
+  
+  damage_snipe=50
+  
+  discount_license=-10
+  tank_armor=-10
 }
 
 faction { # Extra damage to energy weapons
@@ -180,6 +271,12 @@ faction { # Extra damage to energy weapons
 
 adjustment {
   name=adjustment.tricksters.high
+  
+  damage_trap=50
+  damage_exotic=50
+  
+  discount_training=-20
+  tank_firerate=-10
 }
 
 faction { # Extra damage to trap/exotic weapons

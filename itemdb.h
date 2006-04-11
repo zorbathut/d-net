@@ -12,7 +12,23 @@ class Player;
   
 struct IDBAdjustment {
 public:
-  // lol boogers lol
+  int damage_proj;
+  int damage_snipe;
+  int damage_explode;
+  int damage_trap;
+  int damage_exotic;
+  int discount_weapon;
+  int discount_training;
+  int discount_upgrade;
+  int discount_license;
+  int discount_tank;
+  int waste_reduction;
+  int tank_firerate;
+  int tank_speed;
+  int tank_turn;
+  int tank_armor;
+
+  IDBAdjustment();
 };
 
 struct IDBFaction {

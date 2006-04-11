@@ -27,6 +27,10 @@ static const IDBBombardment *defbombardment = NULL;
 
 DEFINE_bool(debugitems, false, "Enable debug items");
 
+IDBAdjustment::IDBAdjustment() {
+  memset(this, 0, sizeof(*this));
+}
+
 float IDBDeploy::getDamagePerShotMultiplier() const {
   return 1.0f;
 }
@@ -491,7 +495,36 @@ void parseItemFile(const string &fname) {
       
       adjustmentclasses[name];
       
-      // wheeeeeee!
+      if(chunk.kv.count("damage_proj"))
+        adjustmentclasses[name].damage_proj = atoi(chunk.consume("damage_proj").c_str());
+      if(chunk.kv.count("damage_snipe"))
+        adjustmentclasses[name].damage_snipe = atoi(chunk.consume("damage_snipe").c_str());
+      if(chunk.kv.count("damage_explode"))
+        adjustmentclasses[name].damage_explode = atoi(chunk.consume("damage_explode").c_str());
+      if(chunk.kv.count("damage_trap"))
+        adjustmentclasses[name].damage_trap = atoi(chunk.consume("damage_trap").c_str());
+      if(chunk.kv.count("damage_exotic"))
+        adjustmentclasses[name].damage_exotic = atoi(chunk.consume("damage_exotic").c_str());
+      if(chunk.kv.count("discount_weapon"))
+        adjustmentclasses[name].discount_weapon = atoi(chunk.consume("discount_weapon").c_str());
+      if(chunk.kv.count("discount_training"))
+        adjustmentclasses[name].discount_training = atoi(chunk.consume("discount_training").c_str());
+      if(chunk.kv.count("discount_upgrade"))
+        adjustmentclasses[name].discount_upgrade = atoi(chunk.consume("discount_upgrade").c_str());
+      if(chunk.kv.count("discount_license"))
+        adjustmentclasses[name].discount_license = atoi(chunk.consume("discount_license").c_str());
+      if(chunk.kv.count("discount_tank"))
+        adjustmentclasses[name].discount_tank = atoi(chunk.consume("discount_tank").c_str());
+      if(chunk.kv.count("waste_reduction"))
+        adjustmentclasses[name].waste_reduction = atoi(chunk.consume("waste_reduction").c_str());
+      if(chunk.kv.count("tank_firerate"))
+        adjustmentclasses[name].tank_firerate = atoi(chunk.consume("tank_firerate").c_str());
+      if(chunk.kv.count("tank_speed"))
+        adjustmentclasses[name].tank_speed = atoi(chunk.consume("tank_speed").c_str());
+      if(chunk.kv.count("tank_turn"))
+        adjustmentclasses[name].tank_turn = atoi(chunk.consume("tank_turn").c_str());
+      if(chunk.kv.count("tank_armor"))
+        adjustmentclasses[name].tank_armor = atoi(chunk.consume("tank_armor").c_str());
       
     } else if(chunk.category == "faction") {
       
