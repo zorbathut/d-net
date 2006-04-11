@@ -18,6 +18,7 @@ static map<string, IDBWeapon> weaponclasses;
 static map<string, IDBUpgrade> upgradeclasses;
 static map<string, IDBGlory> gloryclasses;
 static map<string, IDBBombardment> bombardmentclasses;
+static map<string, IDBAdjustment> adjustmentclasses;
 static vector<IDBFaction> factions;
 
 static const IDBWeapon *defweapon = NULL;
@@ -483,6 +484,15 @@ void parseItemFile(const string &fname) {
         defbombardment = &bombardmentclasses[name];
       }
       
+    } else if(chunk.category == "adjustment") {
+      
+      string name = chunk.consume("name");
+      CHECK(adjustmentclasses.count(name) == 0);
+      
+      adjustmentclasses[name];
+      
+      // wheeeeeee!
+      
     } else if(chunk.category == "faction") {
       
       IDBFaction fact;
@@ -506,6 +516,12 @@ void parseItemFile(const string &fname) {
           fact.name_lines.push_back(acu);
         }
       }
+      
+      string adjustment = chunk.consume("adjustment") +  ".high";
+      CHECK(adjustmentclasses.count(adjustment));
+      for(int i = 0; i < 3; i++)
+        fact.adjustment[i] = &adjustmentclasses["null"]; // wheeeeeeeee
+      fact.adjustment[3] = &adjustmentclasses[adjustment];
       
       factions.push_back(fact);
     

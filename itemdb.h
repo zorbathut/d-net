@@ -9,12 +9,19 @@
 using namespace std;
 
 class Player;
+  
+struct IDBAdjustment {
+public:
+  // lol boogers lol
+};
 
 struct IDBFaction {
 public:
   Dvec2 icon;
   Color color;
   string name;
+  IDBAdjustment *adjustment[4];
+
   vector<string> name_lines;
 };
 

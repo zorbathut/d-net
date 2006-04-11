@@ -1,111 +1,191 @@
-faction {
+adjustment {
+  name=adjustment.lucifer.high
+}
+
+faction { # extra damage on all weapons
   name=Disciples of Lucifer
   lines=1 2
   file=pitchfork.dv2
   color=f00
+  adjustment=adjustment.lucifer
 }
 
-faction {
+adjustment {
+  name=adjustment.final.high
+}
+
+faction { # cheaper weapons
   name=Final Solutions Limited
   lines=1 1 1
   file=omega.dv2
   color=fff
+  adjustment=adjustment.final
 }
 
-faction {
+adjustment {
+  name=adjustment.serpent.high
+}
+
+faction { # faster turn, faster movement
   name=Serpent's Strike
   lines=1 1
   file=serpent.dv2
   color=0a0
+  adjustment=adjustment.serpent
 }
 
-faction {
+adjustment {
+  name=adjustment.aquear.high
+}
+
+faction { # increased everything 
   name=Aquear
   lines=1
   file=ocean.dv2
   color=00f
+  adjustment=adjustment.aquear
 }
 
-faction {
+adjustment {
+  name=adjustment.academy.high
+}
+
+faction { # much faster movement
   name=Academy of Hermes
   lines=1 2
   file=lightning.dv2
   color=ff0
+  adjustment=adjustment.academy
 }
 
-faction {
+adjustment {
+  name=adjustment.rational.high
+}
+
+faction { # Cheaper training
   name=Rational Warriors
   lines=1 1
   file=h.dv2
   color=0ff
+  adjustment=adjustment.rational
 }
 
-faction {
+adjustment {
+  name=adjustment.security.high
+}
+
+faction { # Extra damage to trap weapons, speed/armor bonus
   name=Security Transport Inc
   lines=1 2
   file=compass.dv2
   color=f4f
+  adjustment=adjustment.security
 }
 
-faction {
+adjustment {
+  name=adjustment.juggernauts.high
+}
+
+faction { # Cheaper/free licensing
   name=Jason's Juggernauts
   lines=1 1
   file=buzzsaw.dv2
   color=88f
+  adjustment=adjustment.juggernauts
 }
 
-faction {
+adjustment {
+  name=adjustment.dynasty.high
+}
+
+faction { # Cheaper tanks
   name=Korath Dynasty
   lines=1 1
   file=zen.dv2
   color=f88
+  adjustment=adjustment.dynasty
 }
 
-faction {
+adjustment {
+  name=adjustment.amazon.high
+}
+
+faction { # Extra damage to projectile weapons
   name=Tribes of the Amazon
   lines=2 2
   file=pincer.dv2
   color=fa2
+  adjustment=adjustment.amazon
 }
 
-faction {
+adjustment {
+  name=adjustment.kindred.high
+}
+
+faction { # Cheaper upgrades
   name=Alchemist's Kindred
   lines=1 1
   file=poison.dv2
   color=f5a
+  adjustment=adjustment.kindred
 }
 
-faction {
+adjustment {
+  name=adjustment.catalysts.high
+}
+
+faction { # Extra damage to explosions
   name=Catalysts of Mortality
   lines=2 1
   file=hourglass.dv2
   color=09f
+  adjustment=adjustment.catalysts
 }
 
-faction {
+adjustment {
+  name=adjustment.hepaestus.high
+}
+
+faction { # Heavy armor
   name=Hephaestus Heavy Construction
   lines=1 1 1
   file=barriers.dv2
   color=888
+  adjustment=adjustment.hepaestus
 }
 
-faction {
+adjustment {
+  name=adjustment.sons.high
+}
+
+faction { # Higher resell value
   name=Sons of Earth
   lines=2 1
   file=trees.dv2
   color=af5
+  adjustment=adjustment.sons
 }
 
-faction {
+adjustment {
+  name=adjustment.dust.high
+}
+
+faction { # Extra damage to energy weapons
   name=Dust's Legacy
   lines=1 1
   file=bone.dv2
   color=fb8
+  adjustment=adjustment.dust
 }
 
-faction {
+adjustment {
+  name=adjustment.tricksters.high
+}
+
+faction { # Extra damage to trap/exotic weapons
   name=Tricksters
   lines=1
   file=spike.dv2
   color=a35
+  adjustment=adjustment.tricksters
 }

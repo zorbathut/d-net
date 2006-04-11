@@ -443,10 +443,12 @@ void runSettingRender(const PlayerMenuState &pms) {
     setColor(1.0, 1.0, 1.0);
     //char bf[16];
     //sprintf(bf, "p%d", i);
-    drawLine(pms.compasspos.x, pms.compasspos.y - 0.06, pms.compasspos.x, pms.compasspos.y - 0.02, 0.004);
-    drawLine(pms.compasspos.x, pms.compasspos.y + 0.06, pms.compasspos.x, pms.compasspos.y + 0.02, 0.004);
-    drawLine(pms.compasspos.x - 0.06, pms.compasspos.y, pms.compasspos.x - 0.02, pms.compasspos.y, 0.004);
-    drawLine(pms.compasspos.x +0.06, pms.compasspos.y, pms.compasspos.x + 0.02, pms.compasspos.y, 0.004);
+    if(pms.compasspos.x != 0 || pms.compasspos.y != 0) {
+      drawLine(pms.compasspos.x, pms.compasspos.y - 0.06, pms.compasspos.x, pms.compasspos.y - 0.02, 0.004);
+      drawLine(pms.compasspos.x, pms.compasspos.y + 0.06, pms.compasspos.x, pms.compasspos.y + 0.02, 0.004);
+      drawLine(pms.compasspos.x - 0.06, pms.compasspos.y, pms.compasspos.x - 0.02, pms.compasspos.y, 0.004);
+      drawLine(pms.compasspos.x + 0.06, pms.compasspos.y, pms.compasspos.x + 0.02, pms.compasspos.y, 0.004);
+    }
     //drawText(bf, 20, pms.compasspos.x + 5, pms.compasspos.y + 5);
   } else {
     const Float4 drawzone = pms.faction->compass_location;
