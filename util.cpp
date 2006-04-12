@@ -5,6 +5,7 @@
 #include <stdarg.h>
 
 #include <numeric>
+#include <sstream>
 
 using namespace std;
 
@@ -30,6 +31,12 @@ string StringPrintf( const char *bort, ... ) {
   return string(buf.begin(), buf.begin() + done);
 
 };
+
+string stringFromLongdouble(long double x) {
+  stringstream str;
+  str << x;
+  return str.str();
+}
 
 /*************
  * Matrixtastic
@@ -165,7 +172,7 @@ Transform2d t2d_rotate(float rads) {
 }
 
 string Money::textual() const {
-  return StringPrintf("%d", (int)money);
+  return stringFromLongdouble(money);
 }
 
 float Money::toFloat() const {

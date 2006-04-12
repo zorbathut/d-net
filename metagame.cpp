@@ -762,8 +762,13 @@ void Metagame::calculateLrStats() {
       chunkTotal++;
   }
   dprintf("%d, %f\n", gameround, game.firepowerSpent);
-  float totalReturn = 75 * pow(1.08, gameround) * playerdata.size() * roundsBetweenShop + game.firepowerSpent * 0.8;
-  dprintf("Total cash is %f", totalReturn);
+  long double totalReturn = 75 * powl(1.08, gameround) * playerdata.size() * roundsBetweenShop + game.firepowerSpent * 0.8;
+  dprintf("Total cash is %s", stringFromLongdouble(totalReturn).c_str());
+  
+  if(totalReturn > 1e3000) {
+    totalReturn = 1e3000;
+    dprintf("Adjusted to 1e3000\n");
+  }
   
   for(int i = 0; i < playerdata.size(); i++) {
     for(int j = 0; j < totals.size(); j++) {

@@ -29,6 +29,8 @@ string StringPrintf( const char *bort, ... ) __attribute__((format(printf,1,2)))
 #undef PFDEFINED
 #endif
 
+string stringFromLongdouble(long double ld);
+
 /*************
  * Matrixtastic
  */
