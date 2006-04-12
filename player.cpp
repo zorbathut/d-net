@@ -17,10 +17,10 @@ Coord Player::maxSpeed() const {
   return max_speed;
 }
 
-int Player::costUpgrade(const IDBUpgrade *in_upg) const { return in_upg->base_cost; };
-int Player::costGlory(const IDBGlory *in_glory) const { return in_glory->base_cost; };
-int Player::costBombardment(const IDBBombardment *in_bombardment) const { return in_bombardment->base_cost; };
-int Player::costWeapon(const IDBWeapon *in_weap) const { return in_weap->base_cost; };
+Money Player::costUpgrade(const IDBUpgrade *in_upg) const { return in_upg->base_cost; };
+Money Player::costGlory(const IDBGlory *in_glory) const { return in_glory->base_cost; };
+Money Player::costBombardment(const IDBBombardment *in_bombardment) const { return in_bombardment->base_cost; };
+Money Player::costWeapon(const IDBWeapon *in_weap) const { return in_weap->base_cost; };
 
 bool Player::canBuyUpgrade(const IDBUpgrade *in_upg) const { return !hasUpgrade(in_upg) && costUpgrade(in_upg) <= cash; }; 
 bool Player::canBuyGlory(const IDBGlory *in_glory) const { return !hasGlory(in_glory) && costGlory(in_glory) <= cash; };
@@ -80,16 +80,16 @@ const IDBGlory *Player::getGlory() const { return glory; };
 const IDBBombardment *Player::getBombardment() const { return bombardment; }
 const IDBWeapon *Player::getWeapon() const { return weapon; };
 
-int Player::resellAmmoValue() const {
-  return (int)((float)costWeapon(weapon) / weapon->quantity * shotsLeft() * 0.8);
+Money Player::resellAmmoValue() const {
+  return costWeapon(weapon) * shotsLeft() * 10 / (8 * weapon->quantity);
 }
 
-int Player::getCash() const {
+Money Player::getCash() const {
   return cash;
 }
-void Player::addCash(int amount) {
-  CHECK(amount >= 0);
-  dprintf("Adding %d bucks!\n", amount);
+void Player::addCash(Money amount) {
+  CHECK(amount.toFloat() >= 0);
+  dprintf("Adding %s bucks!\n", amount.textual().c_str());
   cash += amount;
 }
 
@@ -112,10 +112,9 @@ float Player::consumeDamage() {
   damageDone = 0;
   return dd;
 }
-  
 
 float Player::shotFired() {
-  float cost = (float)costWeapon(weapon) / weapon->quantity;
+  float cost = costWeapon(weapon).toFloat() / weapon->quantity;
   if(shots_left != -1)
     shots_left--;
   if(shots_left == 0) {
@@ -130,7 +129,7 @@ int Player::shotsLeft() const {
 }
 
 Player::Player() {
-  cash = -1;
+  cash = Money(-1);
   faction = NULL;
   weapon = NULL;
   glory = NULL;
@@ -140,7 +139,7 @@ Player::Player() {
 
 Player::Player(const IDBFaction *fact) {
   faction = fact;
-  cash = FLAGS_startingCash;
+  cash = Money(FLAGS_startingCash);
   reCalculate();
   weapon = defaultWeapon();
   glory = defaultGlory();

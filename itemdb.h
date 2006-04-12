@@ -83,7 +83,7 @@ public:
   const IDBDeploy *deploy;
   const IDBProjectile *projectile;
 
-  int base_cost;
+  Money base_cost;
   int quantity;
 
   float getDamagePerShot() const;
@@ -105,7 +105,7 @@ public:
 
   int shotspersplit;
 
-  int base_cost;
+  Money base_cost;
 
   float getAverageDamage() const;
 };
@@ -116,7 +116,7 @@ public:
   int engine;
   int handling;
 
-  int base_cost;
+  Money base_cost;
 };
 
 struct IDBBombardment {
@@ -126,7 +126,7 @@ public:
   int lockdelay;
   int unlockdelay;
 
-  int base_cost;
+  Money base_cost;
 };
 
 struct HierarchyNode {
@@ -143,7 +143,7 @@ public:
 
   bool buyable;
   
-  int cost(const Player *player) const;
+  Money cost(const Player *player) const;
   int pack;
   
   const IDBWeapon *weapon;

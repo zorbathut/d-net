@@ -69,7 +69,7 @@ float IDBGlory::getAverageDamage() const {
   return (minsplits + maxsplits) / 2.0 * shotspersplit * projectile->getDamagePerShot();
 }
 
-int HierarchyNode::cost(const Player *player) const {
+Money HierarchyNode::cost(const Player *player) const {
   if(type == HNT_WEAPON) {
     return player->costWeapon(weapon);
   } else if(type == HNT_UPGRADE) {
@@ -294,7 +294,7 @@ void parseItemFile(const string &fname) {
       
       weaponclasses[name].name = tnode.name;
       weaponclasses[name].firerate = atof(chunk.consume("firerate").c_str());
-      weaponclasses[name].base_cost = atoi(chunk.consume("cost").c_str());
+      weaponclasses[name].base_cost = moneyFromString(chunk.consume("cost"));
       weaponclasses[name].quantity = mountpoint->pack;
       
       CHECK(mountpoint->pack >= 1);
@@ -330,7 +330,7 @@ void parseItemFile(const string &fname) {
       tnode.upgrade = &upgradeclasses[name];
       mountpoint->branches.push_back(tnode);
       
-      upgradeclasses[name].base_cost = atoi(chunk.consume("cost").c_str());
+      upgradeclasses[name].base_cost = moneyFromString(chunk.consume("cost"));
       
       if(chunk.kv.count("hull"))
         upgradeclasses[name].hull = atoi(chunk.consume("hull").c_str());
@@ -434,7 +434,7 @@ void parseItemFile(const string &fname) {
       tnode.glory = &gloryclasses[name];
       mountpoint->branches.push_back(tnode);
       
-      gloryclasses[name].base_cost = atoi(chunk.consume("cost").c_str());
+      gloryclasses[name].base_cost = moneyFromString(chunk.consume("cost"));
       
       string projclass = chunk.consume("projectile");
       CHECK(projclasses.count(projclass));
@@ -476,7 +476,7 @@ void parseItemFile(const string &fname) {
       string warheadclass = chunk.consume("warhead");
       CHECK(warheadclasses.count(warheadclass));
       
-      bombardmentclasses[name].base_cost = atoi(chunk.consume("cost").c_str());
+      bombardmentclasses[name].base_cost = moneyFromString(chunk.consume("cost"));
       
       bombardmentclasses[name].warhead = &warheadclasses[warheadclass];
 

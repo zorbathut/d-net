@@ -63,4 +63,45 @@ Transform2d t2d_identity();
 Transform2d t2d_flip(bool h, bool v, bool d);
 Transform2d t2d_rotate(float rads);
 
+/*************
+ * Cashola
+ */
+
+class Money { // Like my hat?
+private:
+
+  long double money;
+
+public:
+  string textual() const;
+
+  float toFloat() const;
+
+  Money();
+  explicit Money(float in);
+  explicit Money(int in);
+
+  // These should not be used by anything outside util.cpp.
+  long double raw() const;
+  explicit Money(long double in);
+};  // It's made of money!
+
+Money operator+(const Money &lhs, const Money &rhs);
+Money operator-(const Money &lhs, const Money &rhs);
+
+Money operator*(const Money &lhs, int rhs);
+int operator/(const Money &lhs, const Money &rhs);
+Money operator/(const Money &lhs, int rhs);
+
+const Money &operator+=(Money &lhs, const Money &rhs);
+const Money &operator-=(Money &lhs, const Money &rhs);
+
+bool operator==(const Money &lhs, const Money &rhs);
+bool operator<(const Money &lhs, const Money &rhs);
+bool operator<=(const Money &lhs, const Money &rhs);
+bool operator>(const Money &lhs, const Money &rhs);
+bool operator>=(const Money &lhs, const Money &rhs);
+
+Money moneyFromString(const string &rhs);
+
 #endif

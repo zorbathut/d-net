@@ -11,10 +11,10 @@ public:
   float turnSpeed() const;
   Coord maxSpeed() const;
 
-  int costUpgrade(const IDBUpgrade *in_upg) const;
-  int costGlory(const IDBGlory *in_glory) const;
-  int costBombardment(const IDBBombardment *in_bombardment) const;
-  int costWeapon(const IDBWeapon *in_weap) const;
+  Money costUpgrade(const IDBUpgrade *in_upg) const;
+  Money costGlory(const IDBGlory *in_glory) const;
+  Money costBombardment(const IDBBombardment *in_bombardment) const;
+  Money costWeapon(const IDBWeapon *in_weap) const;
 
   bool canBuyUpgrade(const IDBUpgrade *in_upg) const;
   bool canBuyGlory(const IDBGlory *in_glory) const;
@@ -36,10 +36,10 @@ public:
   const IDBBombardment *getBombardment() const;
   const IDBWeapon *getWeapon() const;
 
-  int resellAmmoValue() const;
+  Money resellAmmoValue() const;
   
-  int getCash() const;
-  void addCash(int amount); // this is really designed *solely* for the income phase
+  Money getCash() const;
+  void addCash(Money amount); // this is really designed *solely* for the income phase
 
   void addKill();
   void addWin();
@@ -77,7 +77,7 @@ private:
   const IDBBombardment *bombardment;
   const IDBFaction *faction;
 
-  int cash;
+  Money cash;
 
   float damageDone;
   int kills;

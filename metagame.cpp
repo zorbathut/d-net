@@ -71,7 +71,7 @@ void Shop::renderNode(const HierarchyNode &node, int depth) const {
       }
       if(dispmode == HierarchyNode::HNDM_BLANK) {
       } else if(dispmode == HierarchyNode::HNDM_COST) {
-        drawText( StringPrintf("%6d", node.branches[i].cost(player)), sl_fontsize, hoffbase + sl_pricehpos, sl_voffset + i * sl_itemheight + sl_boxborder );
+        drawText( StringPrintf("%6s", node.branches[i].cost(player).textual().c_str()), sl_fontsize, hoffbase + sl_pricehpos, sl_voffset + i * sl_itemheight + sl_boxborder );
       } else if(dispmode == HierarchyNode::HNDM_PACK) {
         drawText( StringPrintf("%dpk", node.branches[i].pack), sl_fontsize, hoffbase + sl_pricehpos, sl_voffset + i * sl_itemheight + sl_boxborder );
       } else if(dispmode == HierarchyNode::HNDM_COSTUNIQUE) {
@@ -149,17 +149,13 @@ void Shop::renderToScreen() const {
   clearFrame(player->getFaction()->color * 0.05 + Color(0.05, 0.05, 0.05));
   setColor(1.0, 1.0, 1.0);
   setZoom(0, 0, 100);
+  drawText(StringPrintf("cash onhand %s", player->getCash().textual().c_str()), 2, 80, 1);
   {
-    char bf[128];
-    sprintf(bf, "cash onhand %6d", player->getCash());
-    drawText(bf, 2, 80, 1);
-  }
-  {
-    char bf[128];
+    string bf;
     if(player->shotsLeft() == -1) {
-      sprintf(bf, "%10s infinite ammo", player->getWeapon()->name.c_str());
+      bf = StringPrintf("%10s infinite ammo", player->getWeapon()->name.c_str());
     } else {
-      sprintf(bf, "%15s %4d shots %6d resell", player->getWeapon()->name.c_str(), player->shotsLeft(), player->resellAmmoValue());
+      bf = StringPrintf("%15s %4d shots %6s resell", player->getWeapon()->name.c_str(), player->shotsLeft(), player->resellAmmoValue().textual().c_str());
     }
     drawText(bf, 2, 1, 1);
   }
@@ -561,7 +557,7 @@ void runSettingRender(const PlayerMenuState &pms) {
   }
 }
 
-bool Metagame::runTick( const vector< Controller > &keys ) {
+bool Metagame::runTick(const vector<Controller> &keys) {
   CHECK(keys.size() == pms.size());
   if(mode == MGM_PLAYERCHOOSE) {
     for(int i = 0; i < keys.size(); i++)
@@ -786,9 +782,9 @@ void Metagame::calculateLrStats() {
   }
   // playercash now stores percentages for players
   
-  vector<int> playercashresult(playerdata.size());
+  vector<Money> playercashresult(playerdata.size());
   for(int i = 0; i < playercash.size(); i++) {
-    playercashresult[i] = int(playercash[i] * totalReturn);
+    playercashresult[i] = Money(playercash[i] * totalReturn);
   }
   // playercashresult now stores cashola for players
   

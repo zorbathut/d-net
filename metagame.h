@@ -112,7 +112,7 @@ class Metagame {
   
   vector<vector<float> > lrCategory;
   vector<float> lrPlayer;
-  vector<int> lrCash;
+  vector<Money> lrCash;
   vector<bool> checked;
   
   vector<const IDBFaction *> win_history;

@@ -3,6 +3,35 @@
 
 #include "itemdb.h"
 
+// these are not meant to be meaningful
+inline bool operator<(const Button &lhs, const Button &rhs) {
+  if(lhs.down != rhs.down) return lhs.down < rhs.down;
+  if(lhs.up != rhs.up) return lhs.up < rhs.up;
+  if(lhs.push != rhs.push) return lhs.push < rhs.push;
+  if(lhs.release != rhs.release) return lhs.release < rhs.release;
+  if(lhs.repeat != rhs.repeat) return lhs.repeat < rhs.repeat;
+  if(lhs.dur != rhs.dur) return lhs.dur < rhs.dur;
+  if(lhs.sincerep != rhs.sincerep) return lhs.sincerep < rhs.sincerep;
+  return false;
+}
+
+inline bool operator==(const Button &lhs, const Button &rhs) {
+  return !(lhs < rhs) && !(rhs < lhs);
+}
+inline bool operator!=(const Button &lhs, const Button &rhs) {
+  return !(lhs == rhs);
+}
+
+inline bool operator<(const Controller &lhs, const Controller &rhs) {
+  if(lhs.menu != rhs.menu) return lhs.menu < rhs.menu;
+  if(lhs.u != rhs.u) return lhs.u < rhs.u;
+  if(lhs.d != rhs.d) return lhs.d < rhs.d;
+  if(lhs.l != rhs.l) return lhs.l < rhs.l;
+  if(lhs.r != rhs.r) return lhs.r < rhs.r;
+  if(lhs.keys != rhs.keys) return lhs.keys < rhs.keys;
+  return false;
+}
+
 void Ai::updatePregame() {
   zeroNextKeys();
   nextKeys.menu = Float2(0, 0);
@@ -58,7 +87,7 @@ Controller makeController(float x, float y, bool key) {
   return rv;
 }
 
-void doMegaEnumWorker(const HierarchyNode &rt, vector<pair<int, vector<Controller> > > *weps, vector<pair<pair<int, const IDBUpgrade*>, vector<Controller> > > *upgs, vector<Controller> *done, vector<Controller> path, const Player *player) {
+void doMegaEnumWorker(const HierarchyNode &rt, vector<pair<Money, vector<Controller> > > *weps, vector<pair<pair<Money, const IDBUpgrade*>, vector<Controller> > > *upgs, vector<Controller> *done, vector<Controller> path, const Player *player) {
   if(rt.type == HierarchyNode::HNT_CATEGORY) {
     path.push_back(makeController(1, 0, 0));
     for(int i = 0; i < rt.branches.size(); i++) {
@@ -82,7 +111,7 @@ void doMegaEnumWorker(const HierarchyNode &rt, vector<pair<int, vector<Controlle
   }
 }
 
-void doMegaEnum(const HierarchyNode &rt, vector<pair<int, vector<Controller> > > *weps, vector<pair<pair<int, const IDBUpgrade*>, vector<Controller> > > *upgs, vector<Controller> *done, const Player *player) {
+void doMegaEnum(const HierarchyNode &rt, vector<pair<Money, vector<Controller> > > *weps, vector<pair<pair<Money, const IDBUpgrade*>, vector<Controller> > > *upgs, vector<Controller> *done, const Player *player) {
   for(int i = 0; i < rt.branches.size(); i++) {
     vector<Controller> tvd;
     for(int j = 0; j < i; j++)
@@ -116,8 +145,8 @@ void Ai::updateShop(const Player *player) {
   }
   CHECK(!shopdone);
   const HierarchyNode &rt = itemDbRoot();
-  vector<pair<int, vector<Controller> > > weps;
-  vector<pair<pair<int, const IDBUpgrade *>, vector<Controller> > > upgs;
+  vector<pair<Money, vector<Controller> > > weps;
+  vector<pair<pair<Money, const IDBUpgrade *>, vector<Controller> > > upgs;
   vector<Controller> done;
   doMegaEnum(rt, &weps, &upgs, &done, player);
   dprintf("%d weps, %d upgs, %d donesize\n", weps.size(), upgs.size(), done.size());
@@ -125,9 +154,9 @@ void Ai::updateShop(const Player *player) {
   CHECK(done.size());
   sort(weps.begin(), weps.end());
   sort(upgs.begin(), upgs.end());
-  int upgcash = player->getCash() / 2;
-  int weapcash = player->getCash();
-  while(upgcash) {
+  Money upgcash = player->getCash() / 2;
+  Money weapcash = player->getCash();
+  while(upgcash.toFloat() > 0) {
     for(int i = 0; i < upgs.size(); i++) {
       if(upgs[i].first.second && player->hasUpgrade(upgs[i].first.second)) {
         upgs.erase(upgs.begin() + i);
@@ -145,13 +174,13 @@ void Ai::updateShop(const Player *player) {
     appendPurchases(&shopQueue, upgs[dlim].second, 1);
     upgs.erase(upgs.begin() + dlim);
   }
-  if(weapcash) {
+  if(weapcash.toFloat() > 0) {
     int dlim = 0;
     while(dlim < weps.size() && weps[dlim].first <= weapcash)
       dlim++;
     dlim = int(dlim * rng.frand());
     int amount = 1;
-    if(weps[dlim].first) {
+    if(weps[dlim].first.toFloat() > 0) {
       amount = min(weapcash / weps[dlim].first, 100);
     }
     appendPurchases(&shopQueue, weps[dlim].second, amount);
@@ -169,6 +198,7 @@ void Ai::updateShop(const Player *player) {
   swap(shopQueue, realShopQueue);
   shopdone = true;
   updateShop(player);
+  dprintf("shop prepared");
 }
 
 void Ai::updateGame(const vector<Tank> &players, int me) {

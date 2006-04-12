@@ -10,6 +10,26 @@ using namespace std;
 
 bool ffwd = false;
 
+string StringPrintf( const char *bort, ... ) {
+
+  static vector< char > buf(2);
+  va_list args;
+
+  int done = 0;
+  do {
+    if( done )
+      buf.resize( buf.size() * 2 );
+    va_start( args, bort );
+    done = vsnprintf( &(buf[ 0 ]), buf.size() - 1,  bort, args );
+    CHECK( done < (int)buf.size() );
+    va_end( args );
+  } while( done == buf.size() - 1 || done == -1);
+
+  CHECK( done < (int)buf.size() );
+
+  return string(buf.begin(), buf.begin() + done);
+
+};
 
 /*************
  * Matrixtastic
@@ -144,23 +164,51 @@ Transform2d t2d_rotate(float rads) {
   return o;
 }
 
-string StringPrintf( const char *bort, ... ) {
+string Money::textual() const {
+  return StringPrintf("%d", (int)money);
+}
 
-  static vector< char > buf(2);
-  va_list args;
+float Money::toFloat() const {
+  return money;
+}
 
-  int done = 0;
-  do {
-    if( done )
-      buf.resize( buf.size() * 2 );
-    va_start( args, bort );
-    done = vsnprintf( &(buf[ 0 ]), buf.size() - 1,  bort, args );
-    CHECK( done < (int)buf.size() );
-    va_end( args );
-  } while( done == buf.size() - 1 || done == -1);
+Money::Money() { };
+Money::Money(float in) { money = in; };
+Money::Money(int in) { money = in; };
 
-  CHECK( done < (int)buf.size() );
+long double Money::raw() const { return money; };
+Money::Money(long double in) { money = in; };
 
-  return string(buf.begin(), buf.begin() + done);
+Money operator+(const Money &lhs, const Money &rhs) {
+  return Money(lhs.raw() + rhs.raw()); }
+ Money operator-(const Money &lhs, const Money &rhs) {
+  return Money(lhs.raw() - rhs.raw()); }
 
-};
+Money operator*(const Money &lhs, int rhs) {
+  return Money(lhs.raw() * rhs); }
+int operator/(const Money &lhs, const Money &rhs) {
+  return int(lhs.raw() / rhs.raw()); }
+Money operator/(const Money &lhs, int rhs) {
+  return Money(lhs.raw() / rhs); }
+
+const Money &operator+=(Money &lhs, const Money &rhs) {
+  lhs = lhs + rhs; return lhs; }
+const Money &operator-=(Money &lhs, const Money &rhs) {
+  lhs = lhs - rhs; return lhs; }
+
+bool operator==(const Money &lhs, const Money &rhs) {
+  return lhs.raw() == rhs.raw(); }
+bool operator<(const Money &lhs, const Money &rhs) {
+  return lhs.raw() < rhs.raw(); }
+bool operator<=(const Money &lhs, const Money &rhs) {
+  return lhs < rhs || lhs == rhs; }
+bool operator>(const Money &lhs, const Money &rhs) {
+  return rhs < lhs; }
+bool operator>=(const Money &lhs, const Money &rhs) {
+  return rhs <= lhs; }
+
+Money moneyFromString(const string &rhs) {
+  CHECK(rhs.size() < 10);
+  return Money(atoi(rhs.c_str()));
+}
+
