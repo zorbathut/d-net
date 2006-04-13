@@ -1,49 +1,67 @@
 
 deploy {
-    name=deploy.debug
-    debug=1
+  name=deploy.debug
+  debug=1
 }
 
 hierarchy {
-    name=ROOT.Weapons.Debug
-    pack=100000
-    debug=1
+  name=ROOT.Weapons.Debug
+  pack=100000
+  debug=1
 }
 
 projectile {
-    name=projectile.tracer
-    velocity=600
-    color=1.0, 0.3, 0.3
-    warhead=warhead.null
-    debug=1
+  name=projectile.tracer
+  velocity=600
+  color=1.0, 0.3, 0.3
+  warhead=warhead.null
+  debug=1
 }
 
 weapon {
-    name=ROOT.Weapons.Debug.Tracer
-    cost=0
-    firerate=1
-    projectile=projectile.tracer
-    deploy=deploy.debug
-    debug=1
+  name=ROOT.Weapons.Debug.Tracer
+  cost=0
+  firerate=1
+  projectile=projectile.tracer
+  deploy=deploy.debug
+  debug=1
+}
+
+adjustment {
+  name=adjustment.crazyhull
+  tank_armor=100
+  debug=1
+}
+
+adjustment {
+  name=adjustment.crazyengine
+  tank_speed=100
+  debug=1
+}
+
+adjustment {
+  name=adjustment.crazyhandling
+  tank_turn=100
+  debug=1
 }
 
 upgrade {
-    name=ROOT.Upgrades.Debughull
-    cost=0
-    hull=100
-    debug=1
+  name=ROOT.Upgrades.Debughull
+  cost=0
+  adjustment=adjustment.crazyhull
+  debug=1
 }
 
 upgrade {
-    name=ROOT.Upgrades.Debugengine
-    cost=0
-    engine=100
-    debug=1
+  name=ROOT.Upgrades.Debugengine
+  cost=0
+  adjustment=adjustment.crazyengine
+  debug=1
 }
 
 upgrade {
-    name=ROOT.Upgrades.Debughandling
-    cost=0
-    handling=100
-    debug=1
+  name=ROOT.Upgrades.Debughandling
+  cost=0
+  adjustment=adjustment.crazyhandling
+  debug=1
 }

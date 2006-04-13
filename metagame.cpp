@@ -153,9 +153,9 @@ void Shop::renderToScreen() const {
   {
     string bf;
     if(player->shotsLeft() == -1) {
-      bf = StringPrintf("%10s infinite ammo", player->getWeapon()->name.c_str());
+      bf = StringPrintf("%10s infinite ammo", player->getWeapon().name().c_str());
     } else {
-      bf = StringPrintf("%15s %4d shots %6s resell", player->getWeapon()->name.c_str(), player->shotsLeft(), player->resellAmmoValue().textual().c_str());
+      bf = StringPrintf("%15s %4d shots %6s resell", player->getWeapon().name().c_str(), player->shotsLeft(), player->resellAmmoValue().textual().c_str());
     }
     drawText(bf, 2, 1, 1);
   }

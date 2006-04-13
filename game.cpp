@@ -30,14 +30,14 @@ void dealDamage(float dmg, Tank *target, Tank *owner, float damagecredit, bool k
   owner->player->addDamage(dmg * damagecredit);
 };
 
-void detonateWarhead(const IDBWarhead *warhead, Coord2 pos, Tank *impact, Tank *owner, const vector<pair<float, Tank *> > &adjacency, vector<GfxEffects> *gfxe, Gamemap *gm, float damagecredit, bool killcredit) {
+void detonateWarhead(const IDBWarheadAdjust &warhead, Coord2 pos, Tank *impact, Tank *owner, const vector<pair<float, Tank *> > &adjacency, vector<GfxEffects> *gfxe, Gamemap *gm, float damagecredit, bool killcredit) {
   
   if(impact)
-    dealDamage(warhead->impactdamage, impact, owner, damagecredit, killcredit);
+    dealDamage(warhead.impactdamage(), impact, owner, damagecredit, killcredit);
   
   for(int i = 0; i < adjacency.size(); i++) {
-    if(adjacency[i].first < warhead->radiusfalloff)
-      dealDamage(warhead->radiusdamage / warhead->radiusfalloff * ( warhead->radiusfalloff - adjacency[i].first), adjacency[i].second, owner, damagecredit, killcredit);
+    if(adjacency[i].first < warhead.radiusfalloff())
+      dealDamage(warhead.radiusdamage() / warhead.radiusfalloff() * ( warhead.radiusfalloff() - adjacency[i].first), adjacency[i].second, owner, damagecredit, killcredit);
   }
   
   GfxEffects ngfe;
@@ -52,17 +52,17 @@ void detonateWarhead(const IDBWarhead *warhead, Coord2 pos, Tank *impact, Tank *
     gfxe->push_back( ngfe );
   }
   
-  if(warhead->radiusfalloff > 0) {
+  if(warhead.radiusfalloff() > 0) {
     GfxEffects dbgf;
     dbgf.type = GfxEffects::EFFECT_CIRCLE;
     dbgf.circle_center = pos.toFloat();
-    dbgf.circle_radius = warhead->radiusfalloff;
+    dbgf.circle_radius = warhead.radiusfalloff();
     dbgf.life = 5;
     gfxe->push_back(dbgf);
   }
   
-  if(warhead->wallremovalradius > 0 && frand() < warhead->wallremovalchance) {
-    gm->removeWalls(pos, warhead->wallremovalradius);
+  if(warhead.wallremovalradius() > 0 && frand() < warhead.wallremovalchance()) {
+    gm->removeWalls(pos, warhead.wallremovalradius());
   }
 
 };
@@ -110,7 +110,7 @@ void Tank::init(Player *in_player) {
   CHECK(in_player);
   CHECK(!player);
   player = in_player;
-  health = player->maxHealth();
+  health = player->getTank().maxHealth();
   initted = true;
 }
 
@@ -237,7 +237,7 @@ pair<Coord2, float> Tank::getDeltaAfterMovement( const Keystates &keys, Coord2 p
         desdir += 2 * PI;
         if(desdir > PI)
           desdir -= 2 * PI;
-        dd = desdir / player->turnSpeed();
+        dd = desdir / player->getTank().turnSpeed();
         if(dd < -1)
           dd = -1;
         if(dd > 1)
@@ -328,9 +328,9 @@ pair<Coord2, float> Tank::getDeltaAfterMovement( const Keystates &keys, Coord2 p
   
   Coord cdv(dv);
 
-  pos += makeAngle(Coord(d)) * player->maxSpeed() * cdv;
+  pos += makeAngle(Coord(d)) * Coord(player->getTank().maxSpeed()) * cdv;
 
-  d += player->turnSpeed() * dd;
+  d += player->getTank().turnSpeed() * dd;
   d += 2*PI;
   d = fmod( d, 2*(float)PI );
   
@@ -357,14 +357,14 @@ void Tank::genEffects(vector<GfxEffects> *gfxe, vector<Projectile> *projectiles)
     for(int i = 0; i < tv.size(); i++)
       tv[i] -= centr;
     
-    const IDBGlory *glory = player->getGlory();
+    const IDBGloryAdjust &glory = player->getGlory();
     
     vector<float> ang;
     {
-      int ct = int(frand() * (glory->maxsplits - glory->minsplits + 1)) + glory->minsplits;
-      CHECK(ct <= glory->maxsplits && ct >= glory->minsplits);
+      int ct = int(frand() * (glory.maxsplits() - glory.minsplits() + 1)) + glory.minsplits();
+      CHECK(ct <= glory.maxsplits() && ct >= glory.minsplits());
       for(int i = 0; i < ct; i++)
-        ang.push_back(frand() * (glory->maxsplitsize - glory->minsplitsize) + glory->minsplitsize);
+        ang.push_back(frand() * (glory.maxsplitsize() - glory.minsplitsize()) + glory.minsplitsize());
       for(int i = 1; i < ang.size(); i++)
         ang[i] += ang[i - 1];
       float angtot = accumulate(ang.begin(), ang.end(), 0.0f);
@@ -431,8 +431,8 @@ void Tank::genEffects(vector<GfxEffects> *gfxe, vector<Projectile> *projectiles)
     }
     
     for(int i = 0; i < ang.size(); i++)
-      for(int j = 0; j < glory->shotspersplit; j++)
-        projectiles->push_back(Projectile(centr, ang[i] + gaussian_scaled(2) / 8, glory->projectile, this));
+      for(int j = 0; j < glory.shotspersplit(); j++)
+        projectiles->push_back(Projectile(centr, ang[i] + gaussian_scaled(2) / 8, glory.projectile(), this));
     
     spawnShards = false;
   }
@@ -458,15 +458,15 @@ void Projectile::tick(vector<GfxEffects> *gfxe) {
   lasttail = nexttail();
   age++;
   
-  if(projtype->motion == PM_NORMAL) {
-  } else if(projtype->motion == PM_MISSILE) {
+  if(projtype.motion() == PM_NORMAL) {
+  } else if(projtype.motion() == PM_MISSILE) {
     if(age > 10)
       missile_sidedist /= 1.2;
     GfxEffects ngfe;
     ngfe.point_pos = pos.toFloat() + lasttail.toFloat() - movement().toFloat(); // projectiles get a free tick ATM
     ngfe.life = 10;
     ngfe.type = GfxEffects::EFFECT_POINT;
-    ngfe.color = projtype->color;
+    ngfe.color = projtype.color();
     for( int i = 0; i < 2; i++ ) {
       float dir = frand() * 2 * PI;
       ngfe.point_vel = makeAngle(dir) / 3;
@@ -474,9 +474,9 @@ void Projectile::tick(vector<GfxEffects> *gfxe) {
       ngfe.point_vel += movement().toFloat();
       ngfe.point_vel += missile_accel().toFloat() * -3 * abs(gaussian());
       ngfe.color = Color(1.0, 0.9, 0.6);
-      gfxe->push_back( ngfe );
+      gfxe->push_back(ngfe);
     }
-  } else if(projtype->motion == PM_AIRBRAKE) {
+  } else if(projtype.motion() == PM_AIRBRAKE) {
     airbrake_velocity *= 0.95;
     if(airbrake_liveness() <= 0)
       live = false;
@@ -488,16 +488,16 @@ void Projectile::tick(vector<GfxEffects> *gfxe) {
 void Projectile::render() const {
   CHECK(live);
   CHECK(age != -1);
-  if(projtype->motion == PM_NORMAL) {
-    setColor(projtype->color);
-  } else if(projtype->motion == PM_MISSILE) {
-    setColor(projtype->color);
-  } else if(projtype->motion == PM_AIRBRAKE) {
-    setColor(projtype->color * airbrake_liveness());
+  if(projtype.motion() == PM_NORMAL) {
+    setColor(projtype.color());
+  } else if(projtype.motion() == PM_MISSILE) {
+    setColor(projtype.color());
+  } else if(projtype.motion() == PM_AIRBRAKE) {
+    setColor(projtype.color() * airbrake_liveness());
   } else {
     CHECK(0);
   }
-  drawLine(Coord4(pos, pos + lasttail), projtype->width);
+  drawLine(Coord4(pos, pos + lasttail), projtype.width());
 };
 void Projectile::addCollision( Collider *collider ) const {
   CHECK(live);
@@ -507,7 +507,7 @@ void Projectile::impact(Coord2 pos, Tank *target, const vector<pair<float, Tank 
   if(!live)
     return;
   
-  detonateWarhead(projtype->warhead, pos, target, owner, adjacency, gfxe, gm, 1.0, true);
+  detonateWarhead(projtype.warhead(), pos, target, owner, adjacency, gfxe, gm, 1.0, true);
 
   live = false;
 };
@@ -517,11 +517,11 @@ bool Projectile::isLive() const {
 }
 
 Coord2 Projectile::movement() const {
-  if(projtype->motion == PM_NORMAL) {
-    return makeAngle(Coord(d)) * Coord(projtype->velocity);
-  } else if(projtype->motion == PM_MISSILE) {
+  if(projtype.motion() == PM_NORMAL) {
+    return makeAngle(Coord(d)) * Coord(projtype.velocity());
+  } else if(projtype.motion() == PM_MISSILE) {
     return missile_accel() + missile_backdrop() + missile_sidedrop();
-  } else if(projtype->motion == PM_AIRBRAKE) {
+  } else if(projtype.motion() == PM_AIRBRAKE) {
     return Coord2(makeAngle(d) * airbrake_velocity);
   } else {
     CHECK(0);
@@ -530,11 +530,11 @@ Coord2 Projectile::movement() const {
 }
 
 Coord2 Projectile::nexttail() const {
-  if(projtype->motion == PM_NORMAL) {
+  if(projtype.motion() == PM_NORMAL) {
     return -movement();
-  } else if(projtype->motion == PM_MISSILE) {
+  } else if(projtype.motion() == PM_MISSILE) {
     return Coord2(makeAngle(d) * -2);
-  } else if(projtype->motion == PM_AIRBRAKE) {
+  } else if(projtype.motion() == PM_AIRBRAKE) {
     return Coord2(-makeAngle(d) * (airbrake_velocity + 2));
   } else {
     CHECK(0);
@@ -542,7 +542,7 @@ Coord2 Projectile::nexttail() const {
 }
 
 Coord2 Projectile::missile_accel() const {
-  return makeAngle(Coord(d)) * Coord(projtype->velocity) * age / 60;
+  return makeAngle(Coord(d)) * Coord(projtype.velocity()) * age / 60;
 }
 Coord2 Projectile::missile_backdrop() const {
   return makeAngle(Coord(d)) / 120;
@@ -555,24 +555,23 @@ float Projectile::airbrake_liveness() const {
   return 1.0 - (age / 60.0);
 }
 
-Projectile::Projectile() {
+Projectile::Projectile() : projtype(NULL, NULL) {
   live = false;
   age = -1;
 }
-Projectile::Projectile(const Coord2 &in_pos, float in_d, const IDBProjectile *in_projtype, Tank *in_owner) {
+Projectile::Projectile(const Coord2 &in_pos, float in_d, const IDBProjectileAdjust &in_projtype, Tank *in_owner) : projtype(in_projtype) {
   pos = in_pos;
   d = in_d;
-  projtype = in_projtype;
   owner = in_owner;
   age = 0;
   live = true;
   lasttail = Coord2(0, 0);
   
-  if(projtype->motion == PM_NORMAL) {
-  } else if(projtype->motion == PM_MISSILE) {
+  if(projtype.motion() == PM_NORMAL) {
+  } else if(projtype.motion() == PM_MISSILE) {
     missile_sidedist = gaussian() * 0.25;
-  } else if(projtype->motion == PM_AIRBRAKE) {
-    airbrake_velocity = (gaussian_scaled(2) / 4 + 1) * projtype->velocity;
+  } else if(projtype.motion() == PM_AIRBRAKE) {
+    airbrake_velocity = (gaussian_scaled(2) / 4 + 1) * projtype.velocity();
   } else {
     CHECK(0);
   }
@@ -621,7 +620,7 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
   tankHighlight.resize(players.size());
   
   vector< Keystates > keys = rkeys;
-  if(frameNm < 180) {
+  if(frameNm < frameNmToStart && freezeUntilStart) {
     for(int i = 0; i < keys.size(); i++) {
       if(keys[i].f.down)
         tankHighlight[i] = true;
@@ -843,14 +842,14 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
       bombards[j].loc.y = min(bombards[j].loc.y, gmb.ey);
       if(keys[j].f.down) {
         bombards[j].state = BombardmentState::BS_FIRING;
-        bombards[j].timer = players[j].player->getBombardment()->lockdelay;
+        bombards[j].timer = players[j].player->getBombardment().lockdelay();
       }
     } else if(bombards[j].state == BombardmentState::BS_FIRING) {
       bombards[j].timer--;
       if(bombards[j].timer <= 0) {
-        detonateWarhead(players[j].player->getBombardment()->warhead, bombards[j].loc, NULL, &players[j], genTankDistance(bombards[j].loc), &gfxeffects, &gamemap, 1.0, false);
+        detonateWarhead(players[j].player->getBombardment().warhead(), bombards[j].loc, NULL, &players[j], genTankDistance(bombards[j].loc), &gfxeffects, &gamemap, 1.0, false);
         bombards[j].state = BombardmentState::BS_COOLDOWN;
-        bombards[j].timer = players[j].player->getBombardment()->unlockdelay;
+        bombards[j].timer = players[j].player->getBombardment().unlockdelay();
       }
     } else if(bombards[j].state == BombardmentState::BS_COOLDOWN) {
       bombards[j].timer--;
@@ -867,9 +866,9 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
   }
 
   for( int i = 0; i < players.size(); i++ ) {
-    if( players[ i ].live && keys[ i ].f.down && players[ i ].weaponCooldown <= 0 && players[i].team->weapons_enabled ) {
-      projectiles[ i ].push_back(Projectile(players[ i ].getFiringPoint(), players[ i ].d + players[i].player->getWeapon()->deploy->anglestddev * gaussian(), players[ i ].player->getWeapon()->projectile, &players[ i ]));
-      players[ i ].weaponCooldown = players[ i ].player->getWeapon()->framesForCooldown();
+    if(players[ i ].live && keys[ i ].f.down && players[ i ].weaponCooldown <= 0 && players[i].team->weapons_enabled && frameNm >= frameNmToStart && frameNmToStart != -1) {
+      projectiles[ i ].push_back(Projectile(players[ i ].getFiringPoint(), players[ i ].d + players[i].player->getWeapon().deploy().anglestddev() * gaussian(), players[ i ].player->getWeapon().projectile(), &players[ i ]));
+      players[ i ].weaponCooldown = players[ i ].player->getWeapon().framesForCooldown();
       firepowerSpent += players[i].player->shotFired();
       {
         string slv = StringPrintf("%d", players[i].player->shotsLeft());
@@ -918,6 +917,8 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
     for(int i = 0; i < players.size(); i++) {
       if(players[i].zone_current != -1 && players[i].zone_frames >= 120 && players[i].team == &teams[4]) {
         players[i].team = &teams[players[i].zone_current];
+        if(frameNmToStart == -1)
+          frameNmToStart = frameNm + 60 * 6;
       }
     }
   }
@@ -1047,13 +1048,13 @@ void Game::renderToScreen() const {
       drawCirclePieces(bombards[i].loc, 0.3, 4);
       drawCrosses(bombards[i].loc, 4);
       setColor(Color(1.0, 1.0, 1.0));
-      float ps = (float)bombards[i].timer / players[i].player->getBombardment()->lockdelay;
+      float ps = (float)bombards[i].timer / players[i].player->getBombardment().lockdelay();
       drawCirclePieces(bombards[i].loc, 1 - ps, 4 * ps);
     } else if(bombards[i].state == BombardmentState::BS_COOLDOWN) {
       setColor(players[i].player->getFaction()->color * 0.25);
       drawCirclePieces(bombards[i].loc, 0.3, 4);
       drawCrosses(bombards[i].loc, 4);
-      float ps = (float)bombards[i].timer / players[i].player->getBombardment()->unlockdelay;
+      float ps = (float)bombards[i].timer / players[i].player->getBombardment().unlockdelay();
       drawCirclePieces(bombards[i].loc, ps, 4 * (1 - ps));
     } else {
       CHECK(0);
@@ -1116,7 +1117,7 @@ void Game::renderToScreen() const {
         setColor(players[i].player->getFaction()->color);
         float barl = loffset + 1;
         float bare = (roffset - 1) - (loffset + 1);
-        bare /= players[i].player->maxHealth();
+        bare /= players[i].player->getTank().maxHealth();
         bare *= players[i].health;
         drawShadedRect(Float4(barl, 2, barl + bare, 6), 0.1, 2);
         string ammotext;
@@ -1128,9 +1129,12 @@ void Game::renderToScreen() const {
         drawText(ammotext, 2, barl, 7);
       }
     }
-    if(frameNm < 180) {
+    if(frameNmToStart == -1) {
       setColor(1.0, 1.0, 1.0);
-      int fleft = 180 - frameNm;
+      drawJustifiedText("Choose team", 8, 133.3 / 2, 100.0 / 2, TEXT_CENTER, TEXT_CENTER);
+    } else if(frameNm < frameNmToStart) {
+      setColor(1.0, 1.0, 1.0);
+      int fleft = frameNmToStart - frameNm;
       int s;
       if(frameNm % 60 < 5) {
         s = 15;
@@ -1140,7 +1144,7 @@ void Game::renderToScreen() const {
         s = 8;
       }
       drawJustifiedText(StringPrintf("Ready %d.%02d", fleft / 60, fleft % 60), s, 133.3 / 2, 100.0 / 2, TEXT_CENTER, TEXT_CENTER);
-    } else if(frameNm < 240) {
+    } else if(frameNm < frameNmToStart + 60) {
       float dens = (240.0 - frameNm) / 60;
       setColor(dens, dens, dens);
       drawJustifiedText("GO", 40, 133.3 / 2, 100.0 / 2, TEXT_CENTER, TEXT_CENTER);
@@ -1300,6 +1304,9 @@ void Game::initChoice(vector<Player> *in_playerdata) {
   }
   
   teams[4].weapons_enabled = false;
+  
+  frameNmToStart = -1;
+  freezeUntilStart = false;
 }
 
 void Game::initStandard(vector<Player> *in_playerdata, const Level &lev, vector<const IDBFaction *> *in_wins, int factionmode) {
@@ -1311,6 +1318,9 @@ void Game::initStandard(vector<Player> *in_playerdata, const Level &lev, vector<
   teams.resize(players.size());
   for(int i = 0; i < players.size(); i++)
     players[i].team = &teams[i];
+  
+  frameNmToStart = 180;
+  freezeUntilStart = true;
 };
 
 vector<pair<float, Tank *> > Game::genTankDistance(const Coord2 &center) {

@@ -3,13 +3,9 @@
 
 #include "itemdb.h"
 #include "coord.h"
-
+  
 class Player {
 public:
-  
-  float maxHealth() const;
-  float turnSpeed() const;
-  Coord maxSpeed() const;
 
   Money costUpgrade(const IDBUpgrade *in_upg) const;
   Money costGlory(const IDBGlory *in_glory) const;
@@ -32,9 +28,11 @@ public:
   bool hasWeapon(const IDBWeapon *in_weap) const;
 
   const IDBFaction *getFaction() const;
-  const IDBGlory *getGlory() const;
-  const IDBBombardment *getBombardment() const;
-  const IDBWeapon *getWeapon() const;
+  
+  IDBGloryAdjust getGlory() const;
+  IDBBombardmentAdjust getBombardment() const;
+  IDBWeaponAdjust getWeapon() const;
+  IDBTankAdjust getTank() const;
 
   Money resellAmmoValue() const;
   
@@ -49,13 +47,7 @@ public:
   int consumeWins();
   float consumeDamage();
   
-  float shotFired(); // dump ammo shot, do any weapon changing needed, return value
-  /* if(players[i].player->shotsLeft != -1)
-        players[i].player->shotsLeft--;
-      if(players[i].player->shotsLeft == 0) {
-        players[i].player->weapon = defaultWeapon();
-        players[i].player->shotsLeft = -1;
-      } */
+  float shotFired();
   int shotsLeft() const;
 
   Player();
@@ -65,10 +57,6 @@ private:
   
   void reCalculate();
 
-  float max_health;
-  float turn_speed;
-  Coord max_speed;
-
   vector<const IDBUpgrade *> upgrades;
   const IDBWeapon *weapon;
   int shots_left;
@@ -76,6 +64,8 @@ private:
   const IDBGlory *glory;
   const IDBBombardment *bombardment;
   const IDBFaction *faction;
+
+  IDBAdjustment adjustment;
 
   Money cash;
 

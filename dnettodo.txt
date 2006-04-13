@@ -1,10 +1,9 @@
 ---- Major work path
 - Game setting choice arena
-  - Delays
   - Make it do something
+    - Better "failure" handling for choice
   - Better defenses
   - Bombardment teams, more complex team damage?
-  - Better "failure" handling for choice
 - Meaningful factions
 - Improve explosion effects (missile, etc)
 - Certificates and discounts

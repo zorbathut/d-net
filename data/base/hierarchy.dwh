@@ -1,55 +1,70 @@
 hierarchy {
-    name=ROOT.Weapons
-    type=weapon
+  name=ROOT.Weapons
+  type=weapon
 }
 
 hierarchy {
-    name=ROOT.Upgrades
-    type=upgrade
+  name=ROOT.Upgrades
+  type=upgrade
 }
 
 hierarchy {
-    name=ROOT.Glory Devices
-    type=glory
+  name=ROOT.Glory Devices
+  type=glory
 }
 
 hierarchy {
-    name=ROOT.Bombardment
-    type=bombardment
+  name=ROOT.Bombardment
+  type=bombardment
+}
+
+adjustment {
+  name=adjustment.hull
+  tank_armor=20
 }
 
 upgrade {
-    name=ROOT.Upgrades.Hull I
-    cost=2000
-    hull=20
+  name=ROOT.Upgrades.Hull I
+  cost=2000
+  adjustment=adjustment.hull
 }
 
 upgrade {
-    name=ROOT.Upgrades.Hull II
-    cost=10000
-    hull=20
+  name=ROOT.Upgrades.Hull II
+  cost=10000
+  adjustment=adjustment.hull
+}
+
+adjustment {
+  name=adjustment.engine
+  tank_speed=20
 }
 
 upgrade {
-    name=ROOT.Upgrades.Engine I
-    cost=2000
-    engine=20
+  name=ROOT.Upgrades.Engine I
+  cost=2000
+  adjustment=adjustment.engine
 }
 
 upgrade {
-    name=ROOT.Upgrades.Engine II
-    cost=10000
-    engine=20
+  name=ROOT.Upgrades.Engine II
+  cost=10000
+  adjustment=adjustment.engine
+}
+
+adjustment {
+  name=adjustment.handling
+  tank_turn=20
 }
 
 upgrade {
-    name=ROOT.Upgrades.Handling I
-    cost=2000
-    handling=20
+  name=ROOT.Upgrades.Handling I
+  cost=2000
+  adjustment=adjustment.handling
 }
 
 upgrade {
-    name=ROOT.Upgrades.Handling II
-    cost=10000
-    handling=20
+  name=ROOT.Upgrades.Handling II
+  cost=10000
+  adjustment=adjustment.handling
 }

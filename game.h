@@ -126,7 +126,7 @@ public:
   bool isLive() const;
 
   Projectile();   // does not start in usable state
-  Projectile(const Coord2 &pos, float d, const IDBProjectile *projtype, Tank *owner);
+  Projectile(const Coord2 &pos, float d, const IDBProjectileAdjust &projtype, Tank *owner);
 
 private:
   
@@ -153,7 +153,7 @@ private:
 
   int age;
   
-  const IDBProjectile *projtype;
+  IDBProjectileAdjust projtype;
   Tank *owner;
   
   bool live;
@@ -200,6 +200,8 @@ private:
   vector<pair<float, Tank *> > genTankDistance(const Coord2 &center);
 
   int frameNm;
+  int frameNmToStart;
+  bool freezeUntilStart;
   int framesSinceOneLeft;
 
   vector<Team> teams;

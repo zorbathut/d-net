@@ -27,8 +27,21 @@ static const IDBBombardment *defbombardment = NULL;
 
 DEFINE_bool(debugitems, false, "Enable debug items");
 
+void IDBAdjustment::debugDump() {
+  dprintf("IDBAdjustment debug dump");
+  for(int i = 0; i < LAST; i++)
+    if(adjusts[i])
+      dprintf("%12s: %d", adjust_text[i], adjusts[i]);
+}
+
 IDBAdjustment::IDBAdjustment() {
-  memset(this, 0, sizeof(*this));
+  memset(adjusts, 0, sizeof(adjusts));
+}
+
+const IDBAdjustment &operator+=(IDBAdjustment &lhs, const IDBAdjustment &rhs) {
+  for(int i = 0; i < IDBAdjustment::LAST; i++)
+    lhs.adjusts[i] += rhs.adjusts[i];
+  return lhs;
 }
 
 float IDBDeploy::getDamagePerShotMultiplier() const {
@@ -331,19 +344,9 @@ void parseItemFile(const string &fname) {
       mountpoint->branches.push_back(tnode);
       
       upgradeclasses[name].base_cost = moneyFromString(chunk.consume("cost"));
-      
-      if(chunk.kv.count("hull"))
-        upgradeclasses[name].hull = atoi(chunk.consume("hull").c_str());
-      else
-        upgradeclasses[name].hull = 0;
-      if(chunk.kv.count("engine"))
-        upgradeclasses[name].engine = atoi(chunk.consume("engine").c_str());
-      else
-        upgradeclasses[name].engine = 0;
-      if(chunk.kv.count("handling"))
-        upgradeclasses[name].handling = atoi(chunk.consume("handling").c_str());
-      else
-        upgradeclasses[name].handling = 0;
+      string adjustment = chunk.consume("adjustment");
+      CHECK(adjustmentclasses.count(adjustment));
+      upgradeclasses[name].adjustment = &adjustmentclasses[adjustment];
 
     } else if(chunk.category == "projectile") {
       string name = chunk.consume("name");
@@ -495,36 +498,11 @@ void parseItemFile(const string &fname) {
       
       adjustmentclasses[name];
       
-      if(chunk.kv.count("damage_proj"))
-        adjustmentclasses[name].damage_proj = atoi(chunk.consume("damage_proj").c_str());
-      if(chunk.kv.count("damage_snipe"))
-        adjustmentclasses[name].damage_snipe = atoi(chunk.consume("damage_snipe").c_str());
-      if(chunk.kv.count("damage_explode"))
-        adjustmentclasses[name].damage_explode = atoi(chunk.consume("damage_explode").c_str());
-      if(chunk.kv.count("damage_trap"))
-        adjustmentclasses[name].damage_trap = atoi(chunk.consume("damage_trap").c_str());
-      if(chunk.kv.count("damage_exotic"))
-        adjustmentclasses[name].damage_exotic = atoi(chunk.consume("damage_exotic").c_str());
-      if(chunk.kv.count("discount_weapon"))
-        adjustmentclasses[name].discount_weapon = atoi(chunk.consume("discount_weapon").c_str());
-      if(chunk.kv.count("discount_training"))
-        adjustmentclasses[name].discount_training = atoi(chunk.consume("discount_training").c_str());
-      if(chunk.kv.count("discount_upgrade"))
-        adjustmentclasses[name].discount_upgrade = atoi(chunk.consume("discount_upgrade").c_str());
-      if(chunk.kv.count("discount_license"))
-        adjustmentclasses[name].discount_license = atoi(chunk.consume("discount_license").c_str());
-      if(chunk.kv.count("discount_tank"))
-        adjustmentclasses[name].discount_tank = atoi(chunk.consume("discount_tank").c_str());
-      if(chunk.kv.count("waste_reduction"))
-        adjustmentclasses[name].waste_reduction = atoi(chunk.consume("waste_reduction").c_str());
-      if(chunk.kv.count("tank_firerate"))
-        adjustmentclasses[name].tank_firerate = atoi(chunk.consume("tank_firerate").c_str());
-      if(chunk.kv.count("tank_speed"))
-        adjustmentclasses[name].tank_speed = atoi(chunk.consume("tank_speed").c_str());
-      if(chunk.kv.count("tank_turn"))
-        adjustmentclasses[name].tank_turn = atoi(chunk.consume("tank_turn").c_str());
-      if(chunk.kv.count("tank_armor"))
-        adjustmentclasses[name].tank_armor = atoi(chunk.consume("tank_armor").c_str());
+      CHECK(sizeof(adjust_text) / sizeof(*adjust_text) == IDBAdjustment::LAST);
+      
+      for(int i = 0; i < IDBAdjustment::LAST; i++)
+        if(chunk.kv.count(adjust_text[i]))
+          adjustmentclasses[name].adjusts[i] = atoi(chunk.consume(adjust_text[i]).c_str());
       
     } else if(chunk.category == "faction") {
       

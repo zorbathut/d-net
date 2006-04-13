@@ -5,18 +5,6 @@
 
 DEFINE_int(startingCash, 1000, "Cash to start with");
 
-float Player::maxHealth() const {
-  return max_health;
-}
-
-float Player::turnSpeed() const {
-  return turn_speed;
-}
-
-Coord Player::maxSpeed() const {
-  return max_speed;
-}
-
 Money Player::costUpgrade(const IDBUpgrade *in_upg) const { return in_upg->base_cost; };
 Money Player::costGlory(const IDBGlory *in_glory) const { return in_glory->base_cost; };
 Money Player::costBombardment(const IDBBombardment *in_bombardment) const { return in_bombardment->base_cost; };
@@ -75,10 +63,17 @@ bool Player::hasGlory(const IDBGlory *in_glory) const { return glory == in_glory
 bool Player::hasBombardment(const IDBBombardment *in_bombardment) const { return bombardment == in_bombardment; };
 bool Player::hasWeapon(const IDBWeapon *in_weap) const { return weapon == in_weap; };
 
-const IDBFaction *Player::getFaction() const { return faction; };
-const IDBGlory *Player::getGlory() const { return glory; };
-const IDBBombardment *Player::getBombardment() const { return bombardment; }
-const IDBWeapon *Player::getWeapon() const { return weapon; };
+const IDBFaction *Player::getFaction() const {
+  return faction; };
+
+IDBGloryAdjust Player::getGlory() const {
+  return IDBGloryAdjust(glory, &adjustment); };
+IDBBombardmentAdjust Player::getBombardment() const {
+  return IDBBombardmentAdjust(bombardment, &adjustment); };
+IDBWeaponAdjust Player::getWeapon() const {
+  return IDBWeaponAdjust(weapon, &adjustment); };
+IDBTankAdjust Player::getTank() const {
+  return IDBTankAdjust(NULL, &adjustment); };
 
 Money Player::resellAmmoValue() const {
   return costWeapon(weapon) * shotsLeft() * 10 / (8 * weapon->quantity);
@@ -148,21 +143,8 @@ Player::Player(const IDBFaction *fact) {
 }
 
 void Player::reCalculate() {
-  max_health = 20;
-  turn_speed = 2.f / FPS;
-  max_speed = Coord(24) / FPS;
-  int healthMult = 100;
-  int turnMult = 100;
-  int speedMult = 100;
-  for(int i = 0; i < upgrades.size(); i++) {
-    healthMult += upgrades[i]->hull;
-    turnMult += upgrades[i]->handling;
-    speedMult += upgrades[i]->engine;
-  }
-  max_health *= healthMult;
-  max_health /= 100;
-  turn_speed *= turnMult;
-  turn_speed /= 100;
-  max_speed *= speedMult;
-  max_speed /= 100;
+  adjustment = *faction->adjustment[0];
+  for(int i = 0; i < upgrades.size(); i++)
+    adjustment += *upgrades[i]->adjustment;
+  adjustment.debugDump();
 }
