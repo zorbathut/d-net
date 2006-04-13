@@ -1,5 +1,4 @@
 ---- Major work path
-- Make money 64-bit
 - Game setting choice arena
   - Delays
   - Make it do something

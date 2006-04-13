@@ -194,7 +194,7 @@ Money operator+(const Money &lhs, const Money &rhs) {
 Money operator*(const Money &lhs, int rhs) {
   return Money(lhs.raw() * rhs); }
 int operator/(const Money &lhs, const Money &rhs) {
-  return int(lhs.raw() / rhs.raw()); }
+  return int(min(lhs.raw() / rhs.raw(), 2000000000.L)); }
 Money operator/(const Money &lhs, int rhs) {
   return Money(lhs.raw() / rhs); }
 

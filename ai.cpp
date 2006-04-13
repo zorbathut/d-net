@@ -180,9 +180,9 @@ void Ai::updateShop(const Player *player) {
       dlim++;
     dlim = int(dlim * rng.frand());
     int amount = 1;
-    if(weps[dlim].first.toFloat() > 0) {
+    if(weps[dlim].first.toFloat() > 0)
       amount = min(weapcash / weps[dlim].first, 100);
-    }
+    dprintf("Buying %d of stuff\n", amount);
     appendPurchases(&shopQueue, weps[dlim].second, amount);
   }
   shopQueue.insert(shopQueue.end(), done.begin(), done.end());
