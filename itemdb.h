@@ -137,9 +137,9 @@ struct IDBDeployAdjust {
   const IDBAdjustment *adjust;
   
 public:
-  float anglestddev() const { return idb->anglestddev; };
+  float anglestddev() const;
 
-  IDBDeployAdjust(const IDBDeploy *in_idb, const IDBAdjustment *in_adjust) { idb = in_idb; adjust = in_adjust; };
+  IDBDeployAdjust(const IDBDeploy *in_idb, const IDBAdjustment *in_adjust);
 };
 
 struct IDBWarheadAdjust {
@@ -147,15 +147,15 @@ struct IDBWarheadAdjust {
   const IDBAdjustment *adjust;
   
 public:
-  float impactdamage() const { return idb->impactdamage; };
+  float impactdamage() const;
 
-  float radiusdamage() const { return idb->radiusdamage; };
-  float radiusfalloff() const { return idb->radiusfalloff; };
+  float radiusdamage() const;
+  float radiusfalloff() const;
   
-  float wallremovalradius() const { return idb->wallremovalradius; };
-  float wallremovalchance() const { return idb->wallremovalchance; };
+  float wallremovalradius() const;
+  float wallremovalchance() const;
 
-  IDBWarheadAdjust(const IDBWarhead *in_idb, const IDBAdjustment *in_adjust) { idb = in_idb; adjust = in_adjust; };
+  IDBWarheadAdjust(const IDBWarhead *in_idb, const IDBAdjustment *in_adjust);
 };
 
 struct IDBProjectileAdjust {
@@ -163,15 +163,15 @@ struct IDBProjectileAdjust {
   const IDBAdjustment *adjust;
   
 public:
-  int motion() const { return idb->motion; };
-  float velocity() const { return idb->velocity; };
+  int motion() const;
+  float velocity() const;
 
-  IDBWarheadAdjust warhead() const { return IDBWarheadAdjust(idb->warhead, adjust); };
+  IDBWarheadAdjust warhead() const;
 
-  Color color() const { return idb->color; };
-  float width() const { return idb->width; };
+  Color color() const;
+  float width() const;
 
-  IDBProjectileAdjust(const IDBProjectile *in_idb, const IDBAdjustment *in_adjust) { idb = in_idb; adjust = in_adjust; };
+  IDBProjectileAdjust(const IDBProjectile *in_idb, const IDBAdjustment *in_adjust);
 };
 
 struct IDBWeaponAdjust {
@@ -179,14 +179,14 @@ struct IDBWeaponAdjust {
   const IDBAdjustment *adjust;
 
 public:
-  const string &name() const { return idb->name; };
+  const string &name() const;
 
-  IDBDeployAdjust deploy() const { return IDBDeployAdjust(idb->deploy, adjust); };
-  IDBProjectileAdjust projectile() const { return IDBProjectileAdjust(idb->projectile, adjust); };
+  IDBDeployAdjust deploy() const;
+  IDBProjectileAdjust projectile() const;
 
-  int framesForCooldown() const { return idb->framesForCooldown(); };
+  int framesForCooldown() const;
 
-  IDBWeaponAdjust(const IDBWeapon *in_idb, const IDBAdjustment *in_adjust) { idb = in_idb; adjust = in_adjust; };
+  IDBWeaponAdjust(const IDBWeapon *in_idb, const IDBAdjustment *in_adjust);
 };
 
 struct IDBGloryAdjust {
@@ -194,16 +194,16 @@ struct IDBGloryAdjust {
   const IDBAdjustment *adjust;
 
 public:
-  int minsplits() const { return idb->minsplits; };
-  int maxsplits() const { return idb->maxsplits; };
+  int minsplits() const;
+  int maxsplits() const;
 
-  int minsplitsize() const { return idb->minsplitsize; };
-  int maxsplitsize() const { return idb->maxsplitsize; };
+  int minsplitsize() const;
+  int maxsplitsize() const;
 
-  int shotspersplit() const { return idb->shotspersplit; };
-  IDBProjectileAdjust projectile() const { return IDBProjectileAdjust(idb->projectile, adjust); };
+  int shotspersplit() const;
+  IDBProjectileAdjust projectile() const;
 
-  IDBGloryAdjust(const IDBGlory *in_idb, const IDBAdjustment *in_adjust) { idb = in_idb; adjust = in_adjust; };
+  IDBGloryAdjust(const IDBGlory *in_idb, const IDBAdjustment *in_adjust);
 };
 
 struct IDBUpgradeAdjust {
@@ -212,7 +212,7 @@ struct IDBUpgradeAdjust {
 
 public:
   
-  IDBUpgradeAdjust(const IDBUpgrade *in_idb, const IDBAdjustment *in_adjust) { idb = in_idb; adjust = in_adjust; };
+  IDBUpgradeAdjust(const IDBUpgrade *in_idb, const IDBAdjustment *in_adjust);
 };
 
 struct IDBBombardmentAdjust {
@@ -220,12 +220,12 @@ struct IDBBombardmentAdjust {
   const IDBAdjustment *adjust;
 
 public:
-  int lockdelay() const { return idb->lockdelay; };
-  int unlockdelay() const { return idb->unlockdelay; };
+  int lockdelay() const;
+  int unlockdelay() const;
 
-  IDBWarheadAdjust warhead() const { return IDBWarheadAdjust(idb->warhead, adjust); };
+  IDBWarheadAdjust warhead() const;
 
-  IDBBombardmentAdjust(const IDBBombardment *in_idb, const IDBAdjustment *in_adjust) { idb = in_idb; adjust = in_adjust; };
+  IDBBombardmentAdjust(const IDBBombardment *in_idb, const IDBAdjustment *in_adjust);
 };
 
 struct IDBTankAdjust {
@@ -233,11 +233,11 @@ struct IDBTankAdjust {
   const IDBAdjustment *adjust;
 
 public:
-  float maxHealth() const { return 20; };
-  float turnSpeed() const { return 2.f / FPS; };
-  float maxSpeed() const { return 24.f / FPS; };
+  float maxHealth() const;
+  float turnSpeed() const;
+  float maxSpeed() const;
 
-  IDBTankAdjust(const IDBTank *in_idb, const IDBAdjustment *in_adjust) { idb = in_idb; adjust = in_adjust; };
+  IDBTankAdjust(const IDBTank *in_idb, const IDBAdjustment *in_adjust);
 };
 
 /*************

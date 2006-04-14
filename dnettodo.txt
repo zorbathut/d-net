@@ -1,10 +1,11 @@
 ---- Major work path
+- Meaningful factions
+- Winner list works with lots and lots of rounds
 - Game setting choice arena
   - Make it do something
     - Better "failure" handling for choice
   - Better defenses
   - Bombardment teams, more complex team damage?
-- Meaningful factions
 - Improve explosion effects (missile, etc)
 - Certificates and discounts
 - Training
@@ -25,7 +26,6 @@
 - Rendering change to render lines by default, segments as the exception
 - Buy menu flicker? Double-buffering?
 - Extricate coord.h and float.h from more headers
-- Winner list works with lots and lots of rounds
 - Winner list better special effects
 - Winner list better "null" icon
 - Color for projectile impacts
