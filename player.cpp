@@ -132,8 +132,10 @@ Player::Player() {
   shots_left = -2;
 }
 
-Player::Player(const IDBFaction *fact) {
+Player::Player(const IDBFaction *fact, int in_factionmode) {
   faction = fact;
+  factionmode = in_factionmode;
+  CHECK(factionmode >= 0 && factionmode < FACTIONMODE_LAST);
   cash = Money(FLAGS_startingCash);
   reCalculate();
   weapon = defaultWeapon();
@@ -143,7 +145,7 @@ Player::Player(const IDBFaction *fact) {
 }
 
 void Player::reCalculate() {
-  adjustment = *faction->adjustment[0];
+  adjustment = *faction->adjustment[factionmode];
   for(int i = 0; i < upgrades.size(); i++)
     adjustment += *upgrades[i]->adjustment;
   adjustment.debugDump();

@@ -3,6 +3,8 @@
 
 #include "itemdb.h"
 #include "coord.h"
+
+enum { FACTIONMODE_NONE, FACTIONMODE_MINOR, FACTIONMODE_MEDIUM, FACTIONMODE_MAJOR, FACTIONMODE_LAST };
   
 class Player {
 public:
@@ -51,7 +53,7 @@ public:
   int shotsLeft() const;
 
   Player();
-  Player(const IDBFaction *fact);
+  Player(const IDBFaction *fact, int factionmode);
 
 private:
   
@@ -64,6 +66,7 @@ private:
   const IDBGlory *glory;
   const IDBBombardment *bombardment;
   const IDBFaction *faction;
+  int factionmode;
 
   IDBAdjustment adjustment;
 

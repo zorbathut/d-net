@@ -1,11 +1,11 @@
 adjustment {
   name=adjustment.lucifer.high
   
-  damage_proj=20
-  damage_snipe=20
-  damage_explode=20
-  damage_trap=20
-  damage_exotic=20
+  damage_kinetic=30
+  damage_energy=30
+  damage_explosive=30
+  damage_trap=30
+  damage_exotic=30
   
   tank_armor=-20
 }
@@ -37,8 +37,8 @@ faction { # cheaper weapons
 adjustment {
   name=adjustment.serpent.high
   
-  tank_speed=20
-  tank_turn=20
+  tank_speed=30
+  tank_turn=30
   
   tank_armor=-10
   damage_trap=-20
@@ -56,9 +56,9 @@ faction { # faster turn, faster movement
 adjustment {
   name=adjustment.aquear.high
   
-  damage_proj=5
-  damage_snipe=5
-  damage_explode=5
+  damage_kinetic=5
+  damage_energy=5
+  damage_explosive=5
   damage_trap=5
   damage_exotic=5
   discount_weapon=5
@@ -102,7 +102,7 @@ adjustment {
   
   discount_training=30
   
-  damage_explode=-20
+  damage_explosive=-20
   damage_exotic=-20
 }
 
@@ -121,7 +121,7 @@ adjustment {
   tank_speed=10
   tank_armor=10
   
-  damage_snipe=-20
+  damage_energy=-20
   tank_turn=-10
 }
 
@@ -172,7 +172,7 @@ faction { # Cheaper tanks
 adjustment {
   name=adjustment.amazon.high
   
-  damage_proj=50
+  damage_kinetic=50
   
   discount_upgrade=-30
 }
@@ -190,8 +190,8 @@ adjustment {
   
   discount_upgrade=30
   
-  damage_proj=-5
-  damage_snipe=-5
+  damage_kinetic=-5
+  damage_energy=-5
 }
 
 faction { # Cheaper upgrades
@@ -205,7 +205,7 @@ faction { # Cheaper upgrades
 adjustment {
   name=adjustment.catalysts.high
   
-  damage_explode=75
+  damage_explosive=75
   
   tank_firerate=-20
 }
@@ -241,7 +241,7 @@ adjustment {
   waste_reduction=50
   
   damage_trap=-20
-  damage_explode=-20
+  damage_explosive=-20
 }
 
 faction { # Higher resell value
@@ -255,7 +255,7 @@ faction { # Higher resell value
 adjustment {
   name=adjustment.dust.high
   
-  damage_snipe=50
+  damage_energy=50
   
   discount_license=-10
   tank_armor=-10

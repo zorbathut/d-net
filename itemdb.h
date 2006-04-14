@@ -14,13 +14,15 @@ class Player;
  * Basic data items
  */
 
-const char * const adjust_text[] = { "damage_proj", "damage_snipe", "damage_explode", "damage_trap", "damage_exotic", "discount_weapon", "discount_training", "discount_upgrade", "discount_license", "discount_tank", "waste_reduction", "tank_firerate", "tank_speed", "tank_turn", "tank_armor" };
+const char * const adjust_text[] = { "damage_kinetic", "damage_energy", "damage_explosive", "damage_trap", "damage_exotic", "discount_weapon", "discount_training", "discount_upgrade", "discount_license", "discount_tank", "waste_reduction", "tank_firerate", "tank_speed", "tank_turn", "tank_armor" };
 
 struct IDBAdjustment {
 public:
-  enum { DAMAGE_PROJ, DAMAGE_SNIPE, DAMAGE_EXPLODE, DAMAGE_TRAP, DAMAGE_EXOTIC, DISCOUNT_WEAPON, DISCOUNT_TRAINING, DISCOUNT_UPGRADE, DISCOUNT_LICENSE, DISCOUNT_TANK, WASTE_REDUCTION, TANK_FIRERATE, TANK_SPEED, TANK_TURN, TANK_ARMOR, LAST };
+  enum { DAMAGE_KINETIC, DAMAGE_ENERGY, DAMAGE_EXPLOSIVE, DAMAGE_TRAP, DAMAGE_EXOTIC, DISCOUNT_WEAPON, DISCOUNT_TRAINING, DISCOUNT_UPGRADE, DISCOUNT_LICENSE, DISCOUNT_TANK, WASTE_REDUCTION, TANK_FIRERATE, TANK_SPEED, TANK_TURN, TANK_ARMOR, LAST };
   
   int adjusts[LAST];
+  
+  float adjustmentfactor(int type) const;
 
   void debugDump();
 
@@ -54,6 +56,8 @@ public:
   float radiusfalloff;
   float wallremovalradius;
   float wallremovalchance;
+  
+  int type;
 
   float getDamagePerShot() const;
 
@@ -87,8 +91,6 @@ public:
   float getDamagePerShot() const;
   float getDamagePerSecond() const;
   float getCostPerDamage() const;
-
-  int framesForCooldown() const;
 };
 
 struct IDBGlory {

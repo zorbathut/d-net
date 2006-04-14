@@ -579,7 +579,7 @@ bool Metagame::runTick(const vector<Controller> &keys) {
         int pid = 0;
         for(int i = 0; i < pms.size(); i++) {
           if(pms[i].faction) {
-            playerdata[pid] = Player(pms[i].faction->faction);
+            playerdata[pid] = Player(pms[i].faction->faction, 0);
             pid++;
           }
         }
@@ -593,11 +593,14 @@ bool Metagame::runTick(const vector<Controller> &keys) {
       if(faction_mode == -1)
         faction_mode = 0;
       CHECK(faction_mode >= 0 && faction_mode < FACTION_LAST);
-      for(int i = 0; i < playerdata.size(); i++) {
-        playerdata[i].consumeKills();
-        playerdata[i].consumeWins();
-        playerdata[i].consumeDamage();
-      } // throw away all the accumulated score data from factions
+      int pid = 0;  // Reset players
+      for(int i = 0; i < pms.size(); i++) {
+        if(pms[i].faction) {
+          playerdata[pid] = Player(pms[i].faction->faction, faction_mode);
+          pid++;
+        }
+      }
+      CHECK(pid == playerdata.size());
       mode = MGM_SHOP;
       currentShop = 0;
       shop = Shop(&playerdata[0]);

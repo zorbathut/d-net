@@ -44,6 +44,11 @@ const IDBAdjustment &operator+=(IDBAdjustment &lhs, const IDBAdjustment &rhs) {
   return lhs;
 }
 
+float IDBAdjustment::adjustmentfactor(int type) const {
+  CHECK(type >= 0 && type < LAST);
+  return (float)(adjusts[type] + 100) / 100;
+}
+
 float IDBDeploy::getDamagePerShotMultiplier() const {
   return 1.0f;
 }
@@ -71,11 +76,6 @@ float IDBWeapon::getDamagePerSecond() const {
 float IDBWeapon::getCostPerDamage() const {
   return -1;
   //return costpershot / getDamagePerShot();
-}
-
-int IDBWeapon::framesForCooldown() const {
-  float frames_per_shot = FPS / firerate;
-  return (int)floor(frames_per_shot) + (frand() < (frames_per_shot - floor(frames_per_shot)));
 }
 
 float IDBGlory::getAverageDamage() const {
@@ -402,6 +402,21 @@ void parseItemFile(const string &fname) {
       warheadclasses[name].radiusfalloff = -1;
       warheadclasses[name].wallremovalradius = 0;
       warheadclasses[name].wallremovalchance = 1;
+      
+      string type = chunk.consume("type");
+      if(type == "kinetic") {
+        warheadclasses[name].type = IDBAdjustment::DAMAGE_KINETIC;
+      } else if(type == "energy") {
+        warheadclasses[name].type = IDBAdjustment::DAMAGE_ENERGY;
+      } else if(type == "explosive") {
+        warheadclasses[name].type = IDBAdjustment::DAMAGE_EXPLOSIVE;
+      } else if(type == "trap") {
+        warheadclasses[name].type = IDBAdjustment::DAMAGE_TRAP;
+      } else if(type == "exotic") {
+        warheadclasses[name].type = IDBAdjustment::DAMAGE_EXOTIC;
+      } else {
+        CHECK(0);
+      }
       
       if(chunk.kv.count("impactdamage"))
         warheadclasses[name].impactdamage = atof(chunk.consume("impactdamage").c_str());

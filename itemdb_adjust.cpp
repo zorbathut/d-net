@@ -1,6 +1,8 @@
 
 #include "itemdb.h"
 
+#include "rng.h"
+
 /*************
  * IDBDeployAdjust
  */
@@ -13,9 +15,9 @@ IDBDeployAdjust::IDBDeployAdjust(const IDBDeploy *in_idb, const IDBAdjustment *i
  * IDBWarheadAdjust
  */
 
-float IDBWarheadAdjust::impactdamage() const { return idb->impactdamage; };
+float IDBWarheadAdjust::impactdamage() const { return idb->impactdamage * adjust->adjustmentfactor(idb->type); };
 
-float IDBWarheadAdjust::radiusdamage() const { return idb->radiusdamage; };
+float IDBWarheadAdjust::radiusdamage() const { return idb->radiusdamage * adjust->adjustmentfactor(idb->type); };
 float IDBWarheadAdjust::radiusfalloff() const { return idb->radiusfalloff; };
 
 float IDBWarheadAdjust::wallremovalradius() const { return idb->wallremovalradius; };
@@ -46,7 +48,10 @@ const string &IDBWeaponAdjust::name() const { return idb->name; };
 IDBDeployAdjust IDBWeaponAdjust::deploy() const { return IDBDeployAdjust(idb->deploy, adjust); };
 IDBProjectileAdjust IDBWeaponAdjust::projectile() const { return IDBProjectileAdjust(idb->projectile, adjust); };
 
-int IDBWeaponAdjust::framesForCooldown() const { return idb->framesForCooldown(); };
+int IDBWeaponAdjust::framesForCooldown() const { 
+  float frames_per_shot = FPS / (idb->firerate * adjust->adjustmentfactor(IDBAdjustment::TANK_FIRERATE));
+  return (int)floor(frames_per_shot) + (frand() < (frames_per_shot - floor(frames_per_shot)));
+}
 
 IDBWeaponAdjust::IDBWeaponAdjust(const IDBWeapon *in_idb, const IDBAdjustment *in_adjust) { idb = in_idb; adjust = in_adjust; };
 
@@ -86,8 +91,8 @@ IDBBombardmentAdjust::IDBBombardmentAdjust(const IDBBombardment *in_idb, const I
  * IDBTankAdjust
  */
 
-float IDBTankAdjust::maxHealth() const { return 20; };
-float IDBTankAdjust::turnSpeed() const { return 2.f / FPS; };
-float IDBTankAdjust::maxSpeed() const { return 24.f / FPS; };
+float IDBTankAdjust::maxHealth() const { return 20 * adjust->adjustmentfactor(IDBAdjustment::TANK_ARMOR); };
+float IDBTankAdjust::turnSpeed() const { return 2.f / FPS * adjust->adjustmentfactor(IDBAdjustment::TANK_TURN); };
+float IDBTankAdjust::maxSpeed() const { return 24.f / FPS * adjust->adjustmentfactor(IDBAdjustment::TANK_SPEED); };
 
 IDBTankAdjust::IDBTankAdjust(const IDBTank *in_idb, const IDBAdjustment *in_adjust) { idb = in_idb; adjust = in_adjust; };

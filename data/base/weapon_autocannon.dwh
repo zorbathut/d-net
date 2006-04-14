@@ -7,6 +7,7 @@ deploy {
 warhead {
     name=warhead.wallripper
     impactdamage=1
+    type=exotic
     wallremovalradius=3
 }
 
@@ -25,6 +26,7 @@ deploy {
 warhead {
     name=warhead.autocannon
     impactdamage=1
+    type=kinetic
     wallremovalradius=0.5
     wallremovalchance=0.05
 }
