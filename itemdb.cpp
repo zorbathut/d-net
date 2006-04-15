@@ -49,48 +49,15 @@ float IDBAdjustment::adjustmentfactor(int type) const {
   return (float)(adjusts[type] + 100) / 100;
 }
 
-float IDBDeploy::getDamagePerShotMultiplier() const {
-  return 1.0f;
-}
-
-float IDBWarhead::getDamagePerShot() const {
-  return -1;
-  //return impactdamage + radiusdamage;
-}
-
-float IDBProjectile::getDamagePerShot() const {
-  return -1;
-  //return warhead->getDamagePerShot();
-}
-
-float IDBWeapon::getDamagePerShot() const {
-  return -1;
-  //return deploy->getDamagePerShotMultiplier() * projectile->getDamagePerShot();
-}
-
-float IDBWeapon::getDamagePerSecond() const {
-  return -1;
-  //return getDamagePerShot() * firerate;
-}
-
-float IDBWeapon::getCostPerDamage() const {
-  return -1;
-  //return costpershot / getDamagePerShot();
-}
-
-float IDBGlory::getAverageDamage() const {
-  return (minsplits + maxsplits) / 2.0 * shotspersplit * projectile->getDamagePerShot();
-}
-
 Money HierarchyNode::cost(const Player *player) const {
   if(type == HNT_WEAPON) {
-    return player->costWeapon(weapon);
+    return player->adjustWeapon(weapon).cost();
   } else if(type == HNT_UPGRADE) {
-    return player->costUpgrade(upgrade);
+    return player->adjustUpgrade(upgrade).cost();
   } else if(type == HNT_GLORY) {
-    return player->costGlory(glory);
+    return player->adjustGlory(glory).cost();
   } else if(type == HNT_BOMBARDMENT) {
-    return player->costBombardment(bombardment);
+    return player->adjustBombardment(bombardment).cost();
   } else {
     CHECK(0);
   }

@@ -1,9 +1,8 @@
 ---- Major work path
-- Meaningful factions
+- More meaningful factions, shop displays
 - Winner list works with lots and lots of rounds
 - Game setting choice arena
-  - Make it do something
-    - Better "failure" handling for choice
+  - Better "failure" handling for choice
   - Better defenses
   - Bombardment teams, more complex team damage?
 - Improve explosion effects (missile, etc)

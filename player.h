@@ -9,10 +9,10 @@ enum { FACTIONMODE_NONE, FACTIONMODE_MINOR, FACTIONMODE_MEDIUM, FACTIONMODE_MAJO
 class Player {
 public:
 
-  Money costUpgrade(const IDBUpgrade *in_upg) const;
-  Money costGlory(const IDBGlory *in_glory) const;
-  Money costBombardment(const IDBBombardment *in_bombardment) const;
-  Money costWeapon(const IDBWeapon *in_weap) const;
+  IDBUpgradeAdjust adjustUpgrade(const IDBUpgrade *in_upg) const;
+  IDBGloryAdjust adjustGlory(const IDBGlory *in_upg) const;
+  IDBBombardmentAdjust adjustBombardment(const IDBBombardment *in_upg) const;
+  IDBWeaponAdjust adjustWeapon(const IDBWeapon *in_upg) const;
 
   bool canBuyUpgrade(const IDBUpgrade *in_upg) const;
   bool canBuyGlory(const IDBGlory *in_glory) const;

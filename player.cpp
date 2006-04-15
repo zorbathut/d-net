@@ -5,39 +5,39 @@
 
 DEFINE_int(startingCash, 1000, "Cash to start with");
 
-Money Player::costUpgrade(const IDBUpgrade *in_upg) const { return in_upg->base_cost; };
-Money Player::costGlory(const IDBGlory *in_glory) const { return in_glory->base_cost; };
-Money Player::costBombardment(const IDBBombardment *in_bombardment) const { return in_bombardment->base_cost; };
-Money Player::costWeapon(const IDBWeapon *in_weap) const { return in_weap->base_cost; };
+IDBUpgradeAdjust Player::adjustUpgrade(const IDBUpgrade *in_upg) const { return IDBUpgradeAdjust(in_upg, &adjustment); };
+IDBGloryAdjust Player::adjustGlory(const IDBGlory *in_upg) const { return IDBGloryAdjust(in_upg, &adjustment); };
+IDBBombardmentAdjust Player::adjustBombardment(const IDBBombardment *in_upg) const { return IDBBombardmentAdjust(in_upg, &adjustment); };
+IDBWeaponAdjust Player::adjustWeapon(const IDBWeapon *in_upg) const { return IDBWeaponAdjust(in_upg, &adjustment); };
 
-bool Player::canBuyUpgrade(const IDBUpgrade *in_upg) const { return !hasUpgrade(in_upg) && costUpgrade(in_upg) <= cash; }; 
-bool Player::canBuyGlory(const IDBGlory *in_glory) const { return !hasGlory(in_glory) && costGlory(in_glory) <= cash; };
-bool Player::canBuyBombardment(const IDBBombardment *in_bombardment) const { return !hasBombardment(in_bombardment) && costBombardment(in_bombardment) <= cash; };
+bool Player::canBuyUpgrade(const IDBUpgrade *in_upg) const { return !hasUpgrade(in_upg) && adjustUpgrade(in_upg).cost() <= cash; }; 
+bool Player::canBuyGlory(const IDBGlory *in_glory) const { return !hasGlory(in_glory) && adjustGlory(in_glory).cost() <= cash; };
+bool Player::canBuyBombardment(const IDBBombardment *in_bombardment) const { return !hasBombardment(in_bombardment) && adjustBombardment(in_bombardment).cost() <= cash; };
 bool Player::canBuyWeapon(const IDBWeapon *in_weap) const {
   if(weapon == in_weap) {
-    return costWeapon(in_weap) <= cash;
+    return adjustWeapon(in_weap).cost() <= cash;
   } else {
-    return costWeapon(in_weap) <= cash + resellAmmoValue();
+    return adjustWeapon(in_weap).cost() <= cash + resellAmmoValue();
   }
 }
 
 void Player::buyUpgrade(const IDBUpgrade *in_upg) {
-  CHECK(cash >= costUpgrade(in_upg));
+  CHECK(cash >= adjustUpgrade(in_upg).cost());
   CHECK(canBuyUpgrade(in_upg));
-  cash -= costUpgrade(in_upg);
+  cash -= adjustUpgrade(in_upg).cost();
   upgrades.push_back(in_upg);
   reCalculate();
 }
 void Player::buyGlory(const IDBGlory *in_glory) {
-  CHECK(cash >= costGlory(in_glory));
+  CHECK(cash >= adjustGlory(in_glory).cost());
   CHECK(canBuyGlory(in_glory));
-  cash -= costGlory(in_glory);
+  cash -= adjustGlory(in_glory).cost();
   glory = in_glory;
 }
 void Player::buyBombardment(const IDBBombardment *in_bombardment) {
-  CHECK(cash >= costBombardment(in_bombardment));
+  CHECK(cash >= adjustBombardment(in_bombardment).cost());
   CHECK(canBuyBombardment(in_bombardment));
-  cash -= costBombardment(in_bombardment);
+  cash -= adjustBombardment(in_bombardment).cost() ;
   bombardment = in_bombardment;
 }
 void Player::buyWeapon(const IDBWeapon *in_weap) {
@@ -52,7 +52,7 @@ void Player::buyWeapon(const IDBWeapon *in_weap) {
     if(weapon == defaultWeapon())
       shots_left = -1;
   }
-  cash -= costWeapon(in_weap);
+  cash -= adjustWeapon(in_weap).cost();
 }
 
 bool Player::hasUpgrade(const IDBUpgrade *in_upg) const {
@@ -76,7 +76,7 @@ IDBTankAdjust Player::getTank() const {
   return IDBTankAdjust(NULL, &adjustment); };
 
 Money Player::resellAmmoValue() const {
-  return costWeapon(weapon) * shotsLeft() * 10 / (8 * weapon->quantity);
+  return adjustWeapon(weapon).cost() * shotsLeft() * 10 / (8 * weapon->quantity);
 }
 
 Money Player::getCash() const {
@@ -109,7 +109,7 @@ float Player::consumeDamage() {
 }
 
 float Player::shotFired() {
-  float cost = costWeapon(weapon).toFloat() / weapon->quantity;
+  float cost = adjustWeapon(weapon).cost().toFloat() / weapon->quantity;
   if(shots_left != -1)
     shots_left--;
   if(shots_left == 0) {

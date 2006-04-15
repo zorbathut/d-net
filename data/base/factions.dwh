@@ -66,7 +66,7 @@ adjustment {
   discount_upgrade=5
   discount_tank=5
   discount_license=5
-  waste_reduction=5
+  recycle_bonus=5
   tank_firerate=5
   tank_speed=5
   tank_turn=5
@@ -238,7 +238,7 @@ faction { # Heavy armor
 adjustment {
   name=adjustment.sons.high
   
-  waste_reduction=50
+  recycle_bonus=200
   
   damage_trap=-20
   damage_explosive=-20

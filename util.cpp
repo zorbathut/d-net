@@ -180,22 +180,26 @@ float Money::toFloat() const {
 }
 
 Money::Money() { };
-Money::Money(float in) { money = in; };
+Money::Money(float in) { money = floor(in + 0.5); };
 Money::Money(int in) { money = in; };
 
 long double Money::raw() const { return money; };
-Money::Money(long double in) { money = in; };
+Money::Money(long double in) { money = floor(in + 0.5); };
 
 Money operator+(const Money &lhs, const Money &rhs) {
   return Money(lhs.raw() + rhs.raw()); }
  Money operator-(const Money &lhs, const Money &rhs) {
   return Money(lhs.raw() - rhs.raw()); }
 
+Money operator*(const Money &lhs, float rhs) {
+  return Money(lhs.raw() * rhs); }
 Money operator*(const Money &lhs, int rhs) {
   return Money(lhs.raw() * rhs); }
 int operator/(const Money &lhs, const Money &rhs) {
   return int(min(lhs.raw() / rhs.raw(), 2000000000.L)); }
 Money operator/(const Money &lhs, int rhs) {
+  return Money(lhs.raw() / rhs); }
+Money operator/(const Money &lhs, float rhs) {
   return Money(lhs.raw() / rhs); }
 
 const Money &operator+=(Money &lhs, const Money &rhs) {

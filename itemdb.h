@@ -14,11 +14,11 @@ class Player;
  * Basic data items
  */
 
-const char * const adjust_text[] = { "damage_kinetic", "damage_energy", "damage_explosive", "damage_trap", "damage_exotic", "discount_weapon", "discount_training", "discount_upgrade", "discount_license", "discount_tank", "waste_reduction", "tank_firerate", "tank_speed", "tank_turn", "tank_armor" };
+const char * const adjust_text[] = { "damage_kinetic", "damage_energy", "damage_explosive", "damage_trap", "damage_exotic", "discount_weapon", "discount_training", "discount_upgrade", "discount_license", "discount_tank", "recycle_bonus", "tank_firerate", "tank_speed", "tank_turn", "tank_armor" };
 
 struct IDBAdjustment {
 public:
-  enum { DAMAGE_KINETIC, DAMAGE_ENERGY, DAMAGE_EXPLOSIVE, DAMAGE_TRAP, DAMAGE_EXOTIC, DISCOUNT_WEAPON, DISCOUNT_TRAINING, DISCOUNT_UPGRADE, DISCOUNT_LICENSE, DISCOUNT_TANK, WASTE_REDUCTION, TANK_FIRERATE, TANK_SPEED, TANK_TURN, TANK_ARMOR, LAST };
+  enum { DAMAGE_KINETIC, DAMAGE_ENERGY, DAMAGE_EXPLOSIVE, DAMAGE_TRAP, DAMAGE_EXOTIC, DISCOUNT_WEAPON, DISCOUNT_TRAINING, DISCOUNT_UPGRADE, DISCOUNT_LICENSE, DISCOUNT_TANK, RECYCLE_BONUS, TANK_FIRERATE, TANK_SPEED, TANK_TURN, TANK_ARMOR, LAST };
   
   int adjusts[LAST];
   
@@ -45,8 +45,6 @@ struct IDBDeploy {
 public:
   
   float anglestddev;
-
-  float getDamagePerShotMultiplier() const;
 };
 
 struct IDBWarhead {
@@ -58,9 +56,6 @@ public:
   float wallremovalchance;
   
   int type;
-
-  float getDamagePerShot() const;
-
 };
 
 enum { PM_NORMAL, PM_MISSILE, PM_AIRBRAKE };
@@ -72,9 +67,6 @@ public:
   Color color;
   float width; // visual effect only
   const IDBWarhead *warhead;
-
-  float getDamagePerShot() const;
-
 };
 
 struct IDBWeapon {
@@ -87,10 +79,6 @@ public:
 
   Money base_cost;
   int quantity;
-
-  float getDamagePerShot() const;
-  float getDamagePerSecond() const;
-  float getCostPerDamage() const;
 };
 
 struct IDBGlory {
@@ -106,8 +94,6 @@ public:
   int shotspersplit;
 
   Money base_cost;
-
-  float getAverageDamage() const;
 };
 
 struct IDBUpgrade {
@@ -140,6 +126,8 @@ struct IDBDeployAdjust {
   
 public:
   float anglestddev() const;
+  
+  float stats_damagePerShotMultiplier() const;
 
   IDBDeployAdjust(const IDBDeploy *in_idb, const IDBAdjustment *in_adjust);
 };
@@ -156,6 +144,8 @@ public:
   
   float wallremovalradius() const;
   float wallremovalchance() const;
+  
+  float stats_damagePerShot() const;
 
   IDBWarheadAdjust(const IDBWarhead *in_idb, const IDBAdjustment *in_adjust);
 };
@@ -172,6 +162,8 @@ public:
 
   Color color() const;
   float width() const;
+  
+  float stats_damagePerShot() const;
 
   IDBProjectileAdjust(const IDBProjectile *in_idb, const IDBAdjustment *in_adjust);
 };
@@ -187,6 +179,11 @@ public:
   IDBProjectileAdjust projectile() const;
 
   int framesForCooldown() const;
+  Money cost() const;
+  
+  float stats_damagePerShot() const;
+  float stats_damagePerSecond() const;
+  float stats_costPerDamage() const;
 
   IDBWeaponAdjust(const IDBWeapon *in_idb, const IDBAdjustment *in_adjust);
 };
@@ -204,7 +201,11 @@ public:
 
   int shotspersplit() const;
   IDBProjectileAdjust projectile() const;
+  
+  Money cost() const;
 
+  float stats_averageDamage() const;
+  
   IDBGloryAdjust(const IDBGlory *in_idb, const IDBAdjustment *in_adjust);
 };
 
@@ -213,7 +214,9 @@ struct IDBUpgradeAdjust {
   const IDBAdjustment *adjust;
 
 public:
-  
+
+  Money cost() const;
+
   IDBUpgradeAdjust(const IDBUpgrade *in_idb, const IDBAdjustment *in_adjust);
 };
 
@@ -226,6 +229,8 @@ public:
   int unlockdelay() const;
 
   IDBWarheadAdjust warhead() const;
+  
+  Money cost() const;
 
   IDBBombardmentAdjust(const IDBBombardment *in_idb, const IDBAdjustment *in_adjust);
 };

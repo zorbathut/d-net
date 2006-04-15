@@ -71,9 +71,9 @@ void Shop::renderNode(const HierarchyNode &node, int depth) const {
       }
       if(dispmode == HierarchyNode::HNDM_BLANK) {
       } else if(dispmode == HierarchyNode::HNDM_COST) {
-        drawText( StringPrintf("%6s", node.branches[i].cost(player).textual().c_str()), sl_fontsize, hoffbase + sl_pricehpos, sl_voffset + i * sl_itemheight + sl_boxborder );
+        drawText(StringPrintf("%6s", node.branches[i].cost(player).textual().c_str()), sl_fontsize, hoffbase + sl_pricehpos, sl_voffset + i * sl_itemheight + sl_boxborder);
       } else if(dispmode == HierarchyNode::HNDM_PACK) {
-        drawText( StringPrintf("%dpk", node.branches[i].pack), sl_fontsize, hoffbase + sl_pricehpos, sl_voffset + i * sl_itemheight + sl_boxborder );
+        drawText(StringPrintf("%dpk", node.branches[i].pack), sl_fontsize, hoffbase + sl_pricehpos, sl_voffset + i * sl_itemheight + sl_boxborder);
       } else if(dispmode == HierarchyNode::HNDM_COSTUNIQUE) {
         drawText("bought", sl_fontsize, hoffbase + sl_pricehpos, sl_voffset + i * sl_itemheight + sl_boxborder);
       } else {
@@ -168,12 +168,12 @@ void Shop::renderToScreen() const {
   float hudstart = itemDbRoot().branches.size() * sl_itemheight + sl_voffset + sl_boxborder;
   if(getCurNode().type == HierarchyNode::HNT_WEAPON) {
     drawText("damage per second", 2, 1.5, hudstart);
-    drawText(StringPrintf("%20.4f", getCurNode().weapon->getDamagePerSecond()), 2, 1.5, hudstart + 3);
+    drawText(StringPrintf("%20.4f", player->adjustWeapon(getCurNode().weapon).stats_damagePerSecond()), 2, 1.5, hudstart + 3);
     drawText("cost per damage", 2, 1.5, hudstart + 6);
-    drawText(StringPrintf("%20.4f", getCurNode().weapon->getCostPerDamage()), 2, 1.5, hudstart + 9);
+    drawText(StringPrintf("%20.4f", player->adjustWeapon(getCurNode().weapon).stats_costPerDamage()), 2, 1.5, hudstart + 9);
   } else if(getCurNode().type == HierarchyNode::HNT_GLORY) {
     drawText("total average damage", 2, 1.5, hudstart);
-    drawText(StringPrintf("%20.4f", getCurNode().glory->getAverageDamage()), 2, 1.5, hudstart + 3);
+    drawText(StringPrintf("%20.4f", player->adjustGlory(getCurNode().glory).stats_averageDamage()), 2, 1.5, hudstart + 3);
   }
 }
 
