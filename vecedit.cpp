@@ -223,7 +223,7 @@ void renderSinglePath(int path, float intense, int widgetlevel) {
       ), Float4(
         p.centerx + p.vpath[n].x + p.vpath[n].curvlx,   p.centery + p.vpath[n].y + p.vpath[n].curvly,
         p.centerx + p.vpath[n].x,             p.centery + p.vpath[n].y
-      ), 0.1);
+      ), 50, 0.1);
     }
   }
   

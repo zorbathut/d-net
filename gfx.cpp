@@ -136,11 +136,22 @@ void initGfx() {
 float curWeight = -1.f;
 int lineCount = 0;
 int clusterCount = 0;
+int lpFailure = 0;
+int lpSuccess = 0;
+int lastStats = 0;
 
-int getAccumulatedClusterCount() {
-  int tempcount = clusterCount;
+static Color curcolor;
+static Color clearcolor;
+const Float2 invPoint(-1234e12, 394e9);
+Float2 lastPoint = invPoint;
+
+string printGraphicsStats() {
+  string gstat = StringPrintf("%f average clusters over %d frames, %d/%d strip hit (%.2f%%)", clusterCount / float(frameNumber - lastStats), frameNumber - lastStats, lpSuccess, lpFailure + lpSuccess, lpSuccess / float(lpFailure + lpSuccess) * 100);
   clusterCount = 0;
-  return tempcount;
+  lpFailure = 0;
+  lpSuccess = 0;
+  lastStats = frameNumber;
+  return gstat;
 }
 
 void beginLineCluster(float weight) {
@@ -149,9 +160,10 @@ void beginLineCluster(float weight) {
   CHECK(weight != -1.f);
   glLineWidth( weight / map_zoom * getResolutionY() );   // GL uses pixels internally for this unit, so I have to translate from game-meters
   CHECK(glGetError() == GL_NO_ERROR);
-  glBegin(GL_LINES);
+  glBegin(GL_LINE_STRIP);
   curWeight = weight;
   lineCount = 0;
+  lastPoint = invPoint;
   clusterCount++;
 }
 
@@ -179,9 +191,6 @@ void initFrame() {
   clearFrame(Color(0.1, 0.1, 0.1));
   CHECK(glGetError() == GL_NO_ERROR);
 }
-
-static Color curcolor;
-static Color clearcolor;
 
 void clearFrame(const Color &color) {
   finishLineCluster();
@@ -244,8 +253,18 @@ void drawLine( float sx, float sy, float ex, float ey, float weight ) {
     finishLineCluster();
     beginLineCluster(weight);
   }
-  localVertex2f(sx, sy);
+  if(lastPoint != Float2(sx, sy)) {
+    glColor3f(0, 0, 0);
+    localVertex2f(lastPoint.x, lastPoint.y);
+    localVertex2f(sx, sy);
+    glColor3f(curcolor.r, curcolor.g, curcolor.b);
+    localVertex2f(sx, sy);
+    lpFailure++;
+  } else {
+    lpSuccess++;
+  }
   localVertex2f(ex, ey);
+  lastPoint = Float2(ex, ey);
   lineCount++;
 }
 void drawLine(const Float2 &s, const Float2 &e, float weight) {
@@ -344,10 +363,10 @@ float bezinterp(float x0, float x1, float x2, float x3, float t) {
   return ax * t * t * t + bx * t * t + cx * t + x0;
 }
 
-void drawCurve(const Float4 &ptah, const Float4 &ptbh, float weight) {
+void drawCurve(const Float4 &ptah, const Float4 &ptbh, int midpoints, float weight) {
   vector<Float2> verts;
-  for(int i = 0; i <= 100; i++)
-    verts.push_back(Float2(bezinterp(ptah.sx, ptah.ex, ptbh.sx, ptbh.ex, i / 100.0), bezinterp(ptah.sy, ptah.ey, ptbh.sy, ptbh.ey, i / 100.0)));
+  for(int i = 0; i <= midpoints; i++)
+    verts.push_back(Float2(bezinterp(ptah.sx, ptah.ex, ptbh.sx, ptbh.ex, i / (float)midpoints), bezinterp(ptah.sy, ptah.ey, ptbh.sy, ptbh.ey, i / (float)midpoints)));
   drawLinePath(verts, weight);
 }
 
@@ -445,7 +464,7 @@ void drawJustifiedMultiText(const vector<string> &txt, float letterscale, float 
   }
 }
 
-void drawVectorPath(const VectorPath &vecob, const pair<Float2, float> &coord, float weight) {
+void drawVectorPath(const VectorPath &vecob, const pair<Float2, float> &coord, int midpoints, float weight) {
   for(int i = 0; i < vecob.vpath.size(); i++) {
     int j = (i + 1) % vecob.vpath.size();
     CHECK(vecob.vpath[i].curvr == vecob.vpath[j].curvl);
@@ -480,26 +499,26 @@ void drawVectorPath(const VectorPath &vecob, const pair<Float2, float> &coord, f
     rcx += coord.first.x;
     rcy += coord.first.y;
     if(vecob.vpath[i].curvr) {
-      drawCurve(Float4(lx, ly, lcx, lcy), Float4(rcx, rcy, rx, ry), weight);
+      drawCurve(Float4(lx, ly, lcx, lcy), Float4(rcx, rcy, rx, ry), midpoints, weight);
     } else {
       drawLine(Float4(lx, ly, rx, ry), weight);
     }
   }
 }
 
-void drawVectorPath(const VectorPath &vecob, const Float4 &bounds, float weight) {
+void drawVectorPath(const VectorPath &vecob, const Float4 &bounds, int midpoints, float weight) {
   CHECK(bounds.isNormalized());
-  drawVectorPath(vecob, fitInside(bounds, vecob.boundingBox()), weight);
+  drawVectorPath(vecob, fitInside(bounds, vecob.boundingBox()), midpoints, weight);
 }
 
-void drawDvec2(const Dvec2 &vecob, const Float4 &bounds, float weight) {
+void drawDvec2(const Dvec2 &vecob, const Float4 &bounds, int midpoints, float weight) {
   CHECK(vecob.entities.size() == 0);
   pair<Float2, float> dimens = fitInside(vecob.boundingBox(), bounds);
   //dprintf("fit %f,%f,%f,%f into %f,%f,%f,%f, got %f,%f, %f\n", vecob.boundingBox().sx, vecob.boundingBox().sy,
       //vecob.boundingBox().ex, vecob.boundingBox().ey, bounds.sx, bounds.sy, bounds.ex, bounds.ey,
       //dimens.first.first, dimens.first.second, dimens.second);
   for(int i = 0; i < vecob.paths.size(); i++)
-    drawVectorPath(vecob.paths[i], dimens, weight);
+    drawVectorPath(vecob.paths[i], dimens, midpoints, weight);
 }
 
 void drawSpokes(float x, float y, int dupes, int numer, int denom, float len, float weight) {

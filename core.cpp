@@ -181,7 +181,7 @@ void MainLoop() {
         dprintf("%4d waiting", int(waiting * 1000 / tot));
         dprintf("%4d rendering", int(rendering * 1000 / tot));
         dprintf("%4d skipped", skipped);
-        dprintf("%f clusters/frame last %d frames", getAccumulatedClusterCount() / float(frameSplit - skipped), frameSplit);
+        dprintf("%s", printGraphicsStats().c_str());
         dprintf("%d frames in %ld seconds, %.2fx overall (%.2f hours gametime)", frameNumber, time(NULL) - starttime, (frameNumber / 60.) / (time(NULL) - starttime), frameNumber / 60. / 60 / 60);
         polling = 0;
         ticking = 0;

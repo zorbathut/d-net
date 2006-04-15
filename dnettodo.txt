@@ -1,5 +1,4 @@
 ---- Major work path
-- Winner list works with lots and lots of rounds
 - Game setting choice arena
   - Better "failure" handling for choice
   - Better defenses
@@ -21,7 +20,6 @@
 
 ---- Maintenance, minor bugfix, braindead
 - Auto coord-to-float converter (CoordFloat?)
-- Rendering change to render lines by default, segments as the exception
 - Buy menu flicker? Double-buffering?
 - Extricate coord.h and float.h from more headers
 - Winner list better special effects

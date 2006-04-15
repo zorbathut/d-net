@@ -162,7 +162,7 @@ void Shop::renderToScreen() const {
   setColor(player->getFaction()->color * 0.5);
   {
     const float ofs = 8;
-    drawDvec2(player->getFaction()->icon, Float4(ofs, ofs, 125 - ofs, 100 - ofs), 0.5);
+    drawDvec2(player->getFaction()->icon, Float4(ofs, ofs, 125 - ofs, 100 - ofs), 50, 0.5);
   }
   renderNode(itemDbRoot(), 0);
   float hudstart = itemDbRoot().branches.size() * sl_itemheight + sl_voffset + sl_boxborder;
@@ -495,7 +495,7 @@ void runSettingRender(const PlayerMenuState &pms) {
     {
       // Topic line!
       setColor(pms.faction->faction->color * fadeFactor);
-      drawDvec2(pms.faction->faction->icon, Float4(xstart, ystarts[0], xstart + unitsize * textline_size, ystarts[0] + unitsize * textline_size), 0.003);
+      drawDvec2(pms.faction->faction->icon, Float4(xstart, ystarts[0], xstart + unitsize * textline_size, ystarts[0] + unitsize * textline_size), 50, 0.003);
       
       const int activescale = 4;
       float txstart = xstart + unitsize * textline_size + border * 2;
@@ -693,7 +693,7 @@ void Metagame::renderToScreen() const {
     for(int i = 0; i < factions.size(); i++) {
       if(!factions[i].taken) {
         setColor(factions[i].faction->color);
-        drawDvec2(factions[i].faction->icon, squareInside(factions[i].compass_location), 0.003);
+        drawDvec2(factions[i].faction->icon, squareInside(factions[i].compass_location), 50, 0.003);
         //drawRect(factions[i].compass_location, 0.003);
       }
     }
@@ -727,7 +727,7 @@ void Metagame::renderToScreen() const {
       for(int i = 0; i < checked.size(); i++) {
         if(!checked[i]) {
           setColor(playerdata[i].getFaction()->color);
-          drawDvec2(playerdata[i].getFaction()->icon, Float4(cpos * increment, 440, (cpos + 1) * increment, 580), 1);
+          drawDvec2(playerdata[i].getFaction()->icon, Float4(cpos * increment, 440, (cpos + 1) * increment, 580), 50, 1);
           cpos++;
         }
       }

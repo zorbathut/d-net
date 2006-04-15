@@ -1153,7 +1153,7 @@ void Game::renderToScreen() const {
   if(wins) {
     
     /*vector<const IDBFaction *> genExampleFacts(const vector<Tank> &plays, int ct);
-    static vector<const IDBFaction *> fact = genExampleFacts(players, 500);
+    static vector<const IDBFaction *> fact = genExampleFacts(players, 5000);
     wins->swap(fact);*/
     
     setZoom(0, 0, 1);
@@ -1188,7 +1188,7 @@ void Game::renderToScreen() const {
         for(map<const IDBFaction *, int>::iterator itr = fc.begin(); itr != fc.end(); itr++) {
           setColor(itr->first->color);
           for(int j = 0; j < itr->second; j++)
-            drawDvec2(itr->first->icon, Float4(spos.x + iconborder, spos.y + iconborder + hei * j, spos.x + iconwidth - iconborder, spos.y + iconwidth - iconborder + hei * j), 0.0002);
+            drawDvec2(itr->first->icon, Float4(spos.x + iconborder, spos.y + iconborder + hei * j, spos.x + iconwidth - iconborder, spos.y + iconwidth - iconborder + hei * j), 10, 0.0002);
           spos.x += iconwidth;
         }
         spos.x += lineborder;
@@ -1199,7 +1199,7 @@ void Game::renderToScreen() const {
       for(int j = i; j < wins->size(); j++) {
         if((*wins)[j]) {
           setColor((*wins)[j]->color);
-          drawDvec2((*wins)[j]->icon, Float4(spos.x + iconborder, spos.y + iconborder, spos.x + iconwidth - iconborder, spos.y + iconwidth - iconborder), 0.0002);
+          drawDvec2((*wins)[j]->icon, Float4(spos.x + iconborder, spos.y + iconborder, spos.x + iconwidth - iconborder, spos.y + iconwidth - iconborder), 10, 0.0002);
         } else {
           setColor(Color(0.5, 0.5, 0.5));
           drawLine(Float4(spos.x + iconwidth - iconborder * 2, spos.y + iconborder * 2, spos.x + iconborder * 2, spos.y + iconwidth - iconborder * 2), 0.0002);

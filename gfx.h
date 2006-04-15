@@ -38,7 +38,7 @@ int getResolutionY();
 void resDown();
 
 void initGfx();
-int getAccumulatedClusterCount();
+string printGraphicsStats();
 
 void clearFrame(const Color &color);
 
@@ -89,8 +89,8 @@ void drawRectAround( float x, float y, float rad, float weight );
 
 void drawShadedRect(const Float4 &locs, float weight, float shadedens);
 
-void drawCurve( const Float4 &ptah, const Float4 &ptbh, float weight );
-void drawCurveControls( const Float4 &ptah, const Float4 &ptbh, float spacing, float weight );
+void drawCurve(const Float4 &ptah, const Float4 &ptbh, int midpoints, float weight);
+void drawCurveControls(const Float4 &ptah, const Float4 &ptbh, float spacing, float weight);
 
 void drawCircle( const Float2 &center, float radius, float weight );
 void drawCircle( const Coord2 &center, Coord radius, Coord weight );
@@ -106,11 +106,10 @@ void drawJustifiedMultiText(const vector<string> &txt, float letterscale, float 
 
 // VectorPath objects have their own local coordinate system - this scales it by whatever, then translates its origin to the new origin.
 // It is not necessarily an upper-left corner origin (it's more likely to be center, but that's not guaranteed either)
-void drawVectorPath(const VectorPath &vecob, const pair<pair<float, float>, float> &coord, float weight);
+void drawVectorPath(const VectorPath &vecob, const pair<pair<float, float>, float> &coord, int midpoints, float weight);
+void drawVectorPath(const VectorPath &vecob, const Float4 &bounds, int midpoints, float weight);
 
-void drawVectorPath(const VectorPath &vecob, const Float4 &bounds, float weight);
-
-void drawDvec2(const Dvec2 &vecob, const Float4 &bounds, float weight);
+void drawDvec2(const Dvec2 &vecob, const Float4 &bounds, int midpoints, float weight);
 
 void drawSpokes(float x, float y, int dupes, int numer, int denom, float len, float weight);
 void drawGrid(float spacing, float width);
