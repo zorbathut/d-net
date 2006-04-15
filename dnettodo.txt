@@ -1,5 +1,4 @@
 ---- Major work path
-- More meaningful factions, shop displays
 - Winner list works with lots and lots of rounds
 - Game setting choice arena
   - Better "failure" handling for choice

@@ -1151,9 +1151,9 @@ void Game::renderToScreen() const {
     }
   }
   if(wins) {
-    /*
-    vector<FactionState *> genExampleFacts(const vector<Tank> &plays, int ct);
-    static vector<FactionState *> fact = genExampleFacts(players, 50);
+    
+    /*vector<const IDBFaction *> genExampleFacts(const vector<Tank> &plays, int ct);
+    static vector<const IDBFaction *> fact = genExampleFacts(players, 500);
     wins->swap(fact);*/
     
     setZoom(0, 0, 1);
@@ -1165,26 +1165,64 @@ void Game::renderToScreen() const {
     
     Float2 spos(0.01, 0.11);
     
-    for(int i = 0; i < wins->size(); i++) {
-      if((*wins)[i]) {
-        setColor((*wins)[i]->color);
-        drawDvec2((*wins)[i]->icon, Float4(spos.x + iconborder, spos.y + iconborder, spos.x + iconwidth - iconborder, spos.y + iconwidth - iconborder), 0.0002);
+    for(int i = 0; i < wins->size(); i += 6) {
+      map<const IDBFaction *, int> fc;
+      int smax = 0;
+      for(int j = 0; j < i; j++) {
+        fc[(*wins)[j]]++;
+        smax = max(smax, fc[(*wins)[j]]);
       }
-      spos.x += iconwidth;
-      if(i % FLAGS_rounds_per_store == FLAGS_rounds_per_store - 1) {
-        setColor(Color(1.0, 1.0, 1.0));
+      fc.erase(NULL);
+      
+      float width = 0.02;
+      if(fc.size())
+        width += (iconwidth + iconborder * 2) * fc.size() + lineborder * 2;
+      width += (iconwidth + iconborder * 2) * (wins->size() - i) + lineborder * 2 * ((wins->size() - i) / 6);
+      
+      if(width >= 1.33)
+        continue;
+      
+      float hei = min(iconwidth, iconwidth * 6 / smax);
+      
+      if(i) {
+        for(map<const IDBFaction *, int>::iterator itr = fc.begin(); itr != fc.end(); itr++) {
+          setColor(itr->first->color);
+          for(int j = 0; j < itr->second; j++)
+            drawDvec2(itr->first->icon, Float4(spos.x + iconborder, spos.y + iconborder + hei * j, spos.x + iconwidth - iconborder, spos.y + iconwidth - iconborder + hei * j), 0.0002);
+          spos.x += iconwidth;
+        }
         spos.x += lineborder;
         drawLine(spos.x, spos.y - lineextra, spos.x, spos.y + iconwidth + lineextra, 0.0002);
         spos.x += lineborder;
       }
+          
+      for(int j = i; j < wins->size(); j++) {
+        if((*wins)[j]) {
+          setColor((*wins)[j]->color);
+          drawDvec2((*wins)[j]->icon, Float4(spos.x + iconborder, spos.y + iconborder, spos.x + iconwidth - iconborder, spos.y + iconwidth - iconborder), 0.0002);
+        } else {
+          setColor(Color(0.5, 0.5, 0.5));
+          drawLine(Float4(spos.x + iconwidth - iconborder * 2, spos.y + iconborder * 2, spos.x + iconborder * 2, spos.y + iconwidth - iconborder * 2), 0.0002);
+        }
+        spos.x += iconwidth;
+        if(j % FLAGS_rounds_per_store == FLAGS_rounds_per_store - 1) {
+          setColor(Color(1.0, 1.0, 1.0));
+          spos.x += lineborder;
+          drawLine(spos.x, spos.y - lineextra, spos.x, spos.y + iconwidth + lineextra, 0.0002);
+          spos.x += lineborder;
+        }
+      }
+      
+      break;
     }
     
     //wins->swap(fact);
   }
 };
 
-/*vector<FactionState *> genExampleFacts(const vector<Tank> &plays, int ct) {
-  vector<FactionState *> feet;
+/*
+vector<const IDBFaction *> genExampleFacts(const vector<Tank> &plays, int ct) {
+  vector<const IDBFaction *> feet;
   for(int i = 0; i < ct; i++) {
     int rv = rand() % (plays.size() + 1);
     if(rv == plays.size()) {
@@ -1195,7 +1233,7 @@ void Game::renderToScreen() const {
         continue;
       }
     } else
-      feet.push_back(plays[rv].player->faction);
+      feet.push_back(plays[rv].player->getFaction());
   }
   return feet;
 }*/
