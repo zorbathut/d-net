@@ -1,7 +1,5 @@
 ---- Major work path
 - Game setting choice arena
-  - Better "failure" handling for choice
-  - Better defenses
   - Bombardment teams, more complex team damage?
 - Faction info screen on startup
 - Improve explosion effects (missile, etc)

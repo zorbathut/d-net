@@ -1253,6 +1253,13 @@ int Game::winningTeam() const {
   return winteam - &teams[0];
 }
 
+vector<int> Game::teamBreakdown() const {
+  vector<int> teamsize(teams.size());
+  for(int i = 0; i < players.size(); i++)
+    teamsize[players[i].team - &teams[0]]++;
+  return teamsize;
+}
+
 Game::Game() {
 }
 

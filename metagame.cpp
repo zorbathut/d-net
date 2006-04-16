@@ -594,8 +594,17 @@ bool Metagame::runTick(const vector<Controller> &keys) {
   } else if(mode == MGM_FACTIONTYPE) {
     if(game.runTick(genKeystates(keys, pms))) {
       faction_mode = game.winningTeam();
-      if(faction_mode == -1)
-        faction_mode = 0;
+      if(faction_mode == -1) {
+        vector<int> teams = game.teamBreakdown();
+        CHECK(teams.size() == 5);
+        teams.erase(teams.begin() + 4);
+        int smalteam = *min_element(teams.begin(), teams.end());
+        vector<int> smalteams;
+        for(int i = 0; i < teams.size(); i++)
+          if(teams[i] == smalteam)
+            smalteams.push_back(i);
+        faction_mode = smalteams[int(frand() * smalteams.size())];
+      }
       CHECK(faction_mode >= 0 && faction_mode < FACTION_LAST);
       int pid = 0;  // Reset players
       for(int i = 0; i < pms.size(); i++) {

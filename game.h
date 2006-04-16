@@ -188,6 +188,7 @@ public:
   void renderToScreen() const;
 
   int winningTeam() const;
+  vector<int> teamBreakdown() const;
 
   float firepowerSpent;
 
