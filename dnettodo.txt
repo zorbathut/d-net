@@ -1,6 +1,4 @@
 ---- Major work path
-- Better description of axis types
-- Faction recycling ability
 - Game setting choice arena
   - Better "failure" handling for choice
   - Better defenses

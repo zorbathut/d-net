@@ -76,7 +76,9 @@ IDBTankAdjust Player::getTank() const {
   return IDBTankAdjust(NULL, &adjustment); };
 
 Money Player::resellAmmoValue() const {
-  return adjustWeapon(weapon).cost() * shotsLeft() * 10 / (8 * weapon->quantity);
+  float shares = 1 * adjustment.adjustmentfactor(IDBAdjustment::RECYCLE_BONUS);
+  float ratio = shares / (shares + 0.2);
+  return adjustWeapon(weapon).cost() * shotsLeft() * ratio / weapon->quantity;
 }
 
 Money Player::getCash() const {
