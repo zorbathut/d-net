@@ -65,7 +65,7 @@ void Keystates::nullMove() {
 
 Keystates::Keystates() {
   ax[0] = ax[1] = 0;
-  axmode = KSAX_UDLR;
+  axmode = KSAX_STEERING;
 }
 
 float deadzone(float t, float o, float absdead, float tdead) {

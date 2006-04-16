@@ -19,7 +19,7 @@ using namespace std;
 #include "inputsnag.h"
 
 DEFINE_string(writeTarget, "dumps/dump", "Prefix for file dump");
-DEFINE_int(writeTargetCheckpoint, 2000000000, "Write target checkpoint frequency"); // currently disabled
+//DEFINE_int(writeTargetCheckpoint, 2000000000, "Write target checkpoint frequency"); // currently disabled
 
 DEFINE_int(fastForwardTo, 0, "Fastforward rendering to this frame");
 DEFINE_int(terminateAfter, -1, "Terminate execution after this many seconds");
@@ -96,7 +96,7 @@ void MainLoop() {
 		for(int i = 0; i < controllers.size(); i++)
 			CHECK(controllers[i].keys.size() == origcontrollers[i].keys.size());
     if(FLAGS_writeTarget != "" && controls_recordable()) {
-      if(frameNumber % FLAGS_writeTargetCheckpoint == 0) {
+      if(frameNumber == 0) {
         if(outfile)
           fclose(outfile);
         

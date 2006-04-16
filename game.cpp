@@ -223,7 +223,7 @@ pair<Coord2, float> Tank::getDeltaAfterMovement( const Keystates &keys, Coord2 p
    if(keys.axmode == KSAX_TANK) {
     dl = deadzone(keys.ax[0], keys.ax[1], 0.2, 0);
     dr = deadzone(keys.ax[1], keys.ax[0], 0.2, 0);
-   } else if(keys.axmode == KSAX_ABSOLUTE || keys.axmode == KSAX_UDLR) {
+   } else if(keys.axmode == KSAX_ABSOLUTE || keys.axmode == KSAX_STEERING) {
     float dd;
     float dv;
     if(keys.axmode == KSAX_ABSOLUTE) {
@@ -1174,10 +1174,12 @@ void Game::renderToScreen() const {
       }
       fc.erase(NULL);
       
+      int winrup = wins->size() / 6 * 6 + 6;
+      
       float width = 0.02;
       if(fc.size())
         width += (iconwidth + iconborder * 2) * fc.size() + lineborder * 2;
-      width += (iconwidth + iconborder * 2) * (wins->size() - i) + lineborder * 2 * ((wins->size() - i) / 6);
+      width += (iconwidth + iconborder * 2) * (winrup - i) + lineborder * 2 * ((winrup - i) / 6);
       
       if(width >= 1.33)
         continue;

@@ -538,6 +538,10 @@ void runSettingRender(const PlayerMenuState &pms) {
       // TODO: better pictorial representations
       drawJustifiedText("<", textline_size * unitsize, xstart, ystarts[2], TEXT_MIN, TEXT_MIN);
       drawJustifiedText(">", textline_size * unitsize, xend, ystarts[2], TEXT_MAX, TEXT_MIN);
+      
+      setColor(Color(0.5, 0.5, 0.5) * fadeFactor);
+      drawJustifiedText(ksax_descriptions[pms.setting_axistype][0], textline_size * unitsize, (xstart + xend) / 2, ystarts[4], TEXT_CENTER, TEXT_MIN);
+      drawJustifiedText(ksax_descriptions[pms.setting_axistype][1], textline_size * unitsize, (xstart + xend) / 2, ystarts[5], TEXT_CENTER, TEXT_MIN);
     } else if(pms.settingmode == SETTING_AXISCHOOSE) {
       vector<vector<string> > names;
       for(int i = 0; i < BUTTON_LAST; i++) {
@@ -937,7 +941,7 @@ Metagame::Metagame(int playercount, int in_roundsBetweenShop) {
     pms[0].buttons[1] = 8;
     pms[0].axes[0] = 0;
     pms[0].axes[1] = 1;
-    pms[0].setting_axistype = KSAX_UDLR;
+    pms[0].setting_axistype = KSAX_STEERING;
     pms[0].fireHeld = 0;
   }
   if(FLAGS_debugControllers >= 2) {

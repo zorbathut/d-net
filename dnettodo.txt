@@ -1,4 +1,6 @@
 ---- Major work path
+- Better description of axis types
+- Faction recycling ability
 - Game setting choice arena
   - Better "failure" handling for choice
   - Better defenses
@@ -29,7 +31,6 @@
 ---- Major but unimportant
 - Halos?
 - Sound, yo
-- Better pictorial representations for axis types
 - Absolute mode config
 - Holy crap! Self-intersecting! Cry!
 - Consistent-ize line width effects, colors, rendering in general

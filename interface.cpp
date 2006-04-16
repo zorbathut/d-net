@@ -400,7 +400,9 @@ InterfaceMain::InterfaceMain() {
 }
 
 InterfaceMain::~InterfaceMain() {
+  dprintf("Deleting metagame\n");
   delete game;
+  dprintf("Metagame deleted\n");
 }
 
 InterfaceMain ifm;
