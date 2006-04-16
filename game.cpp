@@ -1324,7 +1324,7 @@ void Game::initChoice(vector<Player> *in_playerdata) {
   
   vector<vector<Coord2> > paths;
   {
-    const float dist = 170;
+    const float dist = 160;
     vector<Coord2> cut;
     cut.push_back(Coord2(0, dist));
     cut.push_back(Coord2(-dist, 0));
