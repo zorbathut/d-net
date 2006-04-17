@@ -1151,8 +1151,8 @@ void Game::renderToScreen() const {
     }
   }
   if(wins) {
-    
-    /*vector<const IDBFaction *> genExampleFacts(const vector<Tank> &plays, int ct);
+    /*
+    vector<const IDBFaction *> genExampleFacts(const vector<Tank> &plays, int ct);
     static vector<const IDBFaction *> fact = genExampleFacts(players, 5000);
     wins->swap(fact);*/
     
@@ -1191,6 +1191,7 @@ void Game::renderToScreen() const {
           setColor(itr->first->color);
           for(int j = 0; j < itr->second; j++)
             drawDvec2(itr->first->icon, Float4(spos.x + iconborder, spos.y + iconborder + hei * j, spos.x + iconwidth - iconborder, spos.y + iconwidth - iconborder + hei * j), 10, 0.0002);
+          drawLine(spos.x + iconborder + iconborder, spos.y + hei * itr->second + iconwidth, spos.x + iconwidth - iconborder - iconborder, spos.y + hei * itr->second + iconwidth, 0.0002);
           spos.x += iconwidth;
         }
         spos.x += lineborder;

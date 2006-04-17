@@ -1,6 +1,5 @@
 ---- Major work path
-- Game setting choice arena
-  - Bombardment teams, more complex team damage?
+- Multiweapon
 - Faction info screen on startup
 - Improve explosion effects (missile, etc)
 - Certificates and discounts
