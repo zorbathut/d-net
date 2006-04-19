@@ -1191,7 +1191,8 @@ void Game::renderToScreen() const {
           setColor(itr->first->color);
           for(int j = 0; j < itr->second; j++)
             drawDvec2(itr->first->icon, Float4(spos.x + iconborder, spos.y + iconborder + hei * j, spos.x + iconwidth - iconborder, spos.y + iconwidth - iconborder + hei * j), 10, 0.0002);
-          drawLine(spos.x + iconborder + iconborder, spos.y + hei * itr->second + iconwidth, spos.x + iconwidth - iconborder - iconborder, spos.y + hei * itr->second + iconwidth, 0.0002);
+          float linehei = spos.y + hei * (itr->second - 1) + iconwidth;
+          drawLine(spos.x + iconborder + iconborder, linehei, spos.x + iconwidth - iconborder - iconborder, linehei, 0.0002);
           spos.x += iconwidth;
         }
         spos.x += lineborder;
