@@ -810,14 +810,20 @@ vector<vector<Coord2> > getDifferenceCore(const vector<Coord2> &lhs, const vecto
           }
         }
       }
-      //dprintf("Built path of %d vertices\n", tpath.size());
-      if(tpath.size() > 2)
+      if(tpath.size() > 2) {
+        CHECK(now.second == tpath[0]);  // this is a "fix" for a bug that's happened in the past.
         rv.push_back(tpath);
+      }
     }
   }
   #else
   vector<vector<Coord2> > rv(1,tv[0]);
   #endif
+  
+  #if 0
+  return rv;
+  #endif
+
   vector<vector<Coord2> > rrv;
   bool gotReversedPath = false;
   int rvpathID = -1;
