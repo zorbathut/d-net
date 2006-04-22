@@ -1160,6 +1160,7 @@ void Game::renderToScreen() const {
     
     const float iconwidth = 0.02;
     const float iconborder = 0.001;
+    const float comboborder=0.0015;
     const float lineborder = iconborder * 2;
     const float lineextra = 0.005;
     
@@ -1178,8 +1179,8 @@ void Game::renderToScreen() const {
       
       float width = 0.02;
       if(fc.size())
-        width += (iconwidth + iconborder * 2) * fc.size() + lineborder * 2;
-      width += (iconwidth + iconborder * 2) * (winrup - i) + lineborder * 2 * ((winrup - i) / 6);
+        width += iconwidth * fc.size() + lineborder * 2;
+      width += iconwidth * (winrup - i) + lineborder * 2 * ((winrup - i) / 6);
       
       if(width >= 1.33)
         continue;
@@ -1190,7 +1191,7 @@ void Game::renderToScreen() const {
         for(map<const IDBFaction *, int>::iterator itr = fc.begin(); itr != fc.end(); itr++) {
           setColor(itr->first->color);
           for(int j = 0; j < itr->second; j++)
-            drawDvec2(itr->first->icon, Float4(spos.x + iconborder, spos.y + iconborder + hei * j, spos.x + iconwidth - iconborder, spos.y + iconwidth - iconborder + hei * j), 10, 0.0002);
+            drawDvec2(itr->first->icon, Float4(spos.x + comboborder, spos.y + comboborder + hei * j, spos.x + iconwidth - comboborder, spos.y + iconwidth - comboborder + hei * j), 10, 0.0002);
           float linehei = spos.y + hei * (itr->second - 1) + iconwidth;
           drawLine(spos.x + iconborder + iconborder, linehei, spos.x + iconwidth - iconborder - iconborder, linehei, 0.0002);
           spos.x += iconwidth;
