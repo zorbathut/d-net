@@ -1,4 +1,10 @@
 ---- Major work path
+- Fix first money income
+- Add icons to result screen
+- Remove zero-length bars
+- Add inverted axes
+- Add "test your control" mode
+- See if I can make the config screen a bit simpler somehow
 - Multiweapon
 - Faction info screen on startup
 - Improve explosion effects (missile, etc)
