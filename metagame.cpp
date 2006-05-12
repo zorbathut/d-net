@@ -617,6 +617,10 @@ bool Metagame::runTick(const vector<Controller> &keys) {
       mode = MGM_SHOP;
       currentShop = 0;
       shop = Shop(&playerdata[0]);
+      
+      calculateLrStats();
+      lrCash.clear();
+      lrCash.resize(playerdata.size());
     }
   } else if(mode == MGM_SHOP) {
     vector<Keystates> ki = genKeystates(keys, pms);

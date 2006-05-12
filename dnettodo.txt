@@ -1,5 +1,4 @@
 ---- Major work path
-- Fix first money income
 - Add icons to result screen
 - Remove zero-length bars
 - Add inverted axes
