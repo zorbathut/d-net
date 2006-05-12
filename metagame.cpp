@@ -829,6 +829,8 @@ void Metagame::drawMultibar(const vector<float> &sizes, const Float4 &dimensions
   float per = width / total;
   float cpos = dimensions.sx;
   for(int i = 0; i < sizes.size(); i++) {
+    if(sizes[i] == 0)
+      continue;
     setColor(playerdata[i].getFaction()->color);
     float epos = cpos + sizes[i] * per;
     drawShadedRect(Float4(cpos, dimensions.sy, epos, dimensions.ey), 1, 6);

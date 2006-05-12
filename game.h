@@ -198,6 +198,7 @@ private:
   
   void initCommon(vector<Player> *playerdata, const Level &level, int factionmode);
   
+  void addTankStatusText(int tankid, const string &text, float duration);
   vector<pair<float, Tank *> > genTankDistance(const Coord2 &center);
 
   int frameNm;

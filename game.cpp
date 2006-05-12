@@ -872,16 +872,8 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
       firepowerSpent += players[i].player->shotFired();
       {
         string slv = StringPrintf("%d", players[i].player->shotsLeft());
-        if(count(slv.begin(), slv.end(), '0') == slv.size() - 1) {
-          GfxEffects nge;
-          nge.type = GfxEffects::EFFECT_TEXT;
-          nge.life = 30;
-          nge.text_pos = players[i].pos.toFloat() + Float2(4, -4);
-          nge.text_vel = Float2(0, -0.1);
-          nge.text_size = 2.5;
-          nge.text_data = slv;
-          gfxeffects.push_back(nge);
-        }
+        if(count(slv.begin(), slv.end(), '0') == slv.size() - 1)
+          addTankStatusText(i, slv, 0.5);
       }
     }
   }
@@ -915,7 +907,15 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
   // This is a bit ugly - this only happens in choice mode
   if(zones.size() == 4) {
     for(int i = 0; i < players.size(); i++) {
-      if(players[i].zone_current != -1 && players[i].zone_frames >= 120 && players[i].team == &teams[4]) {
+      if(players[i].zone_current != -1 && (players[i].zone_frames - 1) % 60 == 0 && players[i].team == &teams[4]) {
+        int secleft = (181 - players[i].zone_frames) / 60;
+        if(secleft) {
+          addTankStatusText(i, StringPrintf("%d second%s to join team", secleft, (secleft == 1 ? "" : "s")), 1);
+        } else {
+          addTankStatusText(i, StringPrintf("team joined"), 1);
+        }
+      }
+      if(players[i].zone_current != -1 && players[i].zone_frames > 180 && players[i].team == &teams[4]) {
         players[i].team = &teams[players[i].zone_current];
         if(frameNmToStart == -1)
           frameNmToStart = frameNm + 60 * 6;
@@ -1394,4 +1394,15 @@ vector<pair<float, Tank *> > Game::genTankDistance(const Coord2 &center) {
     }
   }
   return rv;
+}
+
+void Game::addTankStatusText(int tankid, const string &text, float duration) {
+  GfxEffects nge;
+  nge.type = GfxEffects::EFFECT_TEXT;
+  nge.life = int(duration * 60);
+  nge.text_pos = players[tankid].pos.toFloat() + Float2(4, -4);
+  nge.text_vel = Float2(0, -0.1);
+  nge.text_size = 2.5;
+  nge.text_data = text;
+  gfxeffects.push_back(nge);
 }

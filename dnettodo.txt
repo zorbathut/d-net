@@ -1,6 +1,5 @@
 ---- Major work path
 - Add icons to result screen
-- Remove zero-length bars
 - Add inverted axes
 - Add "test your control" mode
 - See if I can make the config screen a bit simpler somehow
