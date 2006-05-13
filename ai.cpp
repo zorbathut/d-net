@@ -289,7 +289,7 @@ void Ai::updateBombardment(const vector<Tank> &players, Coord2 mypos) {
 void Ai::updateWaitingForReport() {
   zeroNextKeys();
   nextKeys.menu = Float2(0, 0);
-  //nextKeys.keys[0].down = true;
+  nextKeys.keys[0].down = true;
 }
 
 Controller Ai::getNextKeys() const {

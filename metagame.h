@@ -77,6 +77,7 @@ public:
   int setting_axis_current;
   bool setting_axis_reading;
   int axes[2];  // Right now, everything uses 2 axes.
+  bool axes_invert[2];
 
   int setting_axistype;
   void traverse_axistype(int delta, int axes);

@@ -249,8 +249,11 @@ vector<Keystates> genKeystates(const vector<Controller> &keys, const vector<Play
       kst[pid].r = keys[i].r;
       kst[pid].f = keys[i].keys[modes[i].buttons[BUTTON_ACCEPT]];
       kst[pid].axmode = modes[i].setting_axistype;
-      for(int j = 0; j < 2; j++)
+      for(int j = 0; j < 2; j++) {
         kst[pid].ax[j] = keys[i].axes[modes[i].axes[j]];
+        if(modes[i].axes_invert[j])
+          kst[pid].ax[j] *= -1;
+      }
       kst[pid].udlrax[0] = keys[i].menu.x;
       kst[pid].udlrax[1] = keys[i].menu.y;
       CHECK(keys[i].menu.x >= -1 && keys[i].menu.x <= 1);
@@ -261,7 +264,7 @@ vector<Keystates> genKeystates(const vector<Controller> &keys, const vector<Play
   return kst;
 }
 
-void standardButtonTick(int *outkeys, int outkeycount, int *current_button, bool *current_mode, const Controller &keys, const vector<bool> &triggers, PlayerMenuState *pms) {
+void standardButtonTick(int *outkeys, bool *outinvert, int outkeycount, int *current_button, bool *current_mode, const Controller &keys, const vector<float> &triggers, PlayerMenuState *pms) {
   if(*current_button == -1) {
     *current_button = 0;
     *current_mode = (pms->choicemode == CHOICE_FIRSTPASS);
@@ -270,22 +273,30 @@ void standardButtonTick(int *outkeys, int outkeycount, int *current_button, bool
   if(*current_mode) {
     CHECK(pms->choicemode != CHOICE_IDLE);
     for(int i = 0; i < triggers.size(); i++) {
-      if(triggers[i]) {
+      if(abs(triggers[i]) > 0.9) {
         int j;
         bool noopify = false;
         for(j = 0; j < outkeycount; j++) {
           if(outkeys[j] == i) {
-            if(outkeys[*current_button] != -1)
+            if(outkeys[*current_button] != -1) {
               swap(outkeys[j], outkeys[*current_button]);
-            else
+              if(outinvert) {
+                swap(outinvert[j], outinvert[*current_button]);
+                outinvert[*current_button] = (triggers[i] < 0);
+              }
+            } else {
               noopify = true;
+            }
             break;
           }
         }
         if(noopify)
           continue;
-        if(j == BUTTON_LAST)
+        if(j == BUTTON_LAST) {
           outkeys[*current_button] = i;
+          if(outinvert)
+            outinvert[*current_button] = (triggers[i] < 0);
+        }
         if(pms->choicemode == CHOICE_FIRSTPASS) {
           (*current_button)++;
         } else {
@@ -326,7 +337,7 @@ void standardButtonTick(int *outkeys, int outkeycount, int *current_button, bool
   }
 }
 
-void standardButtonRender(const float *ystarts, int yscount, float xstart, float xend, float textsize, const int *buttons, const vector<vector<string> > &names, int sel_button, bool sel_button_reading, float fadeFactor, char prefixchar) {
+void standardButtonRender(const float *ystarts, int yscount, float xstart, float xend, float textsize, const int *buttons, const bool *inverts, const vector<vector<string> > &names, int sel_button, bool sel_button_reading, float fadeFactor, char prefixchar) {
   int linesneeded = 0;
   for(int i = 0; i < names.size(); i++)
     linesneeded += names[i].size();
@@ -342,12 +353,20 @@ void standardButtonRender(const float *ystarts, int yscount, float xstart, float
       drawText(names[i][j], textsize, xstart, ystarts[cy++]);
     string btext;
     if(sel_button == i && sel_button_reading) {
-      btext = "[ ]";
+      btext = "???";
       setColor(Color(1.0, 1.0, 1.0) * fadeFactor);
     } else if(buttons[i] == -1) {
       btext = "";
     } else {
-      btext = StringPrintf("%c%02d", prefixchar, buttons[i]);
+      if(prefixchar == 'B') {
+        CHECK(!inverts);
+        btext = StringPrintf("%c%02d", prefixchar, buttons[i]);
+      } else if(prefixchar == 'X') {
+        CHECK(inverts);
+        btext = StringPrintf("%c%d%c", prefixchar, buttons[i], inverts[i] ? '-' : '+');
+      } else {
+        CHECK(0);
+      }
       setColor(Color(0.5, 0.5, 0.5) * fadeFactor);
     }
     drawJustifiedText(btext.c_str(), textsize, xend, ystarts[cy - 1], TEXT_MAX, TEXT_MIN);
@@ -401,10 +420,10 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
       if(pms->fireHeld > 60)
         pms->fireHeld = 60;
     } else if(pms->settingmode == SETTING_BUTTONS) {
-      vector<bool> triggers;
+      vector<float> triggers;
       for(int i = 0; i < keys.keys.size(); i++)
         triggers.push_back(keys.keys[i].push);
-      standardButtonTick(pms->buttons, BUTTON_LAST, &pms->setting_button_current, &pms->setting_button_reading, keys, triggers, pms);
+      standardButtonTick(pms->buttons, NULL, BUTTON_LAST, &pms->setting_button_current, &pms->setting_button_reading, keys, triggers, pms);
     } else if(pms->settingmode == SETTING_AXISTYPE) {
       if(keys.l.push)
         pms->traverse_axistype(-1, keys.axes.size());
@@ -422,10 +441,10 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
         CHECK(0);
       }
     } else if(pms->settingmode == SETTING_AXISCHOOSE) {
-      vector<bool> triggers;
+      vector<float> triggers;
       for(int i = 0; i < keys.axes.size(); i++)
-        triggers.push_back(abs(keys.axes[i]) > 0.9);
-      standardButtonTick(pms->axes, 2, &pms->setting_axis_current, &pms->setting_axis_reading, keys, triggers, pms);
+        triggers.push_back(keys.axes[i]);
+      standardButtonTick(pms->axes, pms->axes_invert, 2, &pms->setting_axis_current, &pms->setting_axis_reading, keys, triggers, pms);
     } else if(pms->settingmode == SETTING_READY) {
       pms->choicemode = CHOICE_IDLE; // There is no other option! Idle is the only possibility! Bow down before your god!
     } else {
@@ -527,7 +546,7 @@ void runSettingRender(const PlayerMenuState &pms) {
         tix.push_back(button_names_b[i]);
         names.push_back(tix);
       }
-      standardButtonRender(ystarts, textline_count, xstart, xend, textline_size * unitsize, pms.buttons, names, pms.setting_button_current, pms.setting_button_reading, fadeFactor, 'B');
+      standardButtonRender(ystarts, textline_count, xstart, xend, textline_size * unitsize, pms.buttons, NULL, names, pms.setting_button_current, pms.setting_button_reading, fadeFactor, 'B');
     } else if(pms.settingmode == SETTING_AXISTYPE) {
       if(pms.choicemode != CHOICE_IDLE)
         setColor(Color(1.0, 1.0, 1.0) * fadeFactor);
@@ -549,7 +568,7 @@ void runSettingRender(const PlayerMenuState &pms) {
         tix.push_back(ksax_axis_names[pms.setting_axistype][i]);
         names.push_back(tix);
       }
-      standardButtonRender(ystarts, textline_count, xstart, xend, textline_size * unitsize, pms.axes, names, pms.setting_axis_current, pms.setting_axis_reading, fadeFactor, 'X');
+      standardButtonRender(ystarts, textline_count, xstart, xend, textline_size * unitsize, pms.axes, pms.axes_invert, names, pms.setting_axis_current, pms.setting_axis_reading, fadeFactor, 'X');
     } else if(pms.settingmode == SETTING_READY) {
       setColor(Color(0.5, 0.5, 0.5) * fadeFactor);
       const char * const text[] = {"Push fire", "when ready.", "Let go", "to cancel.", "< > to config"};
@@ -965,6 +984,8 @@ Metagame::Metagame(int playercount, int in_roundsBetweenShop) {
     pms[0].buttons[1] = 8;
     pms[0].axes[0] = 0;
     pms[0].axes[1] = 1;
+    pms[0].axes_invert[0] = false;
+    pms[0].axes_invert[1] = false;
     pms[0].setting_axistype = KSAX_STEERING;
     pms[0].fireHeld = 0;
   }
@@ -978,6 +999,8 @@ Metagame::Metagame(int playercount, int in_roundsBetweenShop) {
     pms[1].buttons[1] = 1;
     pms[1].axes[0] = 0;
     pms[1].axes[1] = 1;
+    pms[1].axes_invert[0] = false;
+    pms[1].axes_invert[1] = false;
     pms[1].setting_axistype = KSAX_ABSOLUTE;
     pms[1].fireHeld = 0;
   }
