@@ -730,11 +730,11 @@ void Metagame::renderToScreen() const {
       drawText("wins", 30, 20, 140);
       drawText("base", 30, 20, 200);
       drawText("totals", 30, 20, 320);
-      drawMultibar(lrCategory[0], Float4(200, 20, 700, 50));
-      drawMultibar(lrCategory[1], Float4(200, 80, 700, 110));
-      drawMultibar(lrCategory[2], Float4(200, 140, 700, 170));
-      drawMultibar(lrCategory[3], Float4(200, 200, 700, 230));
-      drawMultibar(lrPlayer, Float4(200, 320, 700, 350));
+      drawMultibar(lrCategory[0], Float4(200, 20, 700, 60));
+      drawMultibar(lrCategory[1], Float4(200, 80, 700, 120));
+      drawMultibar(lrCategory[2], Float4(200, 140, 700, 180));
+      drawMultibar(lrCategory[3], Float4(200, 200, 700, 240));
+      drawMultibar(lrPlayer, Float4(200, 320, 700, 360));
       setColor(1.0, 1.0, 1.0);
       drawJustifiedText("waiting", 30, 400, 400, TEXT_CENTER, TEXT_MIN);
       int notdone = count(checked.begin(), checked.end(), false);
@@ -744,7 +744,7 @@ void Metagame::renderToScreen() const {
       for(int i = 0; i < checked.size(); i++) {
         if(!checked[i]) {
           setColor(playerdata[i].getFaction()->color);
-          drawDvec2(playerdata[i].getFaction()->icon, Float4(cpos * increment, 440, (cpos + 1) * increment, 580), 50, 1);
+          drawDvec2(playerdata[i].getFaction()->icon, boxAround(Float2((cpos + 0.5) * increment, float(440 / 580) / 2), min(increment, float(580 - 440)) / 2), 50, 1);
           cpos++;
         }
       }
@@ -820,20 +820,29 @@ void Metagame::calculateLrStats() {
 }
 
 void Metagame::drawMultibar(const vector<float> &sizes, const Float4 &dimensions) const {
+  CHECK(sizes.size() == playerdata.size());
   float total = accumulate(sizes.begin(), sizes.end(), 0.0);
   if(total < 1e-6) {
     dprintf("multibar failed, total is %f\n", total);
     return;
   }
+  vector<pair<float, int> > order;
+  for(int i = 0; i < sizes.size(); i++)
+    order.push_back(make_pair(sizes[i], i));
+  sort(order.begin(), order.end());
+  reverse(order.begin(), order.end());
   float width = dimensions.ex - dimensions.sx;
   float per = width / total;
   float cpos = dimensions.sx;
-  for(int i = 0; i < sizes.size(); i++) {
-    if(sizes[i] == 0)
+  float barbottom = (dimensions.ey - dimensions.sy) * 3 / 4 + dimensions.sy;
+  float iconsize = (dimensions.ey - dimensions.sy) / 4 * 0.9;
+  for(int i = 0; i < order.size(); i++) {
+    if(order[i].first == 0)
       continue;
-    setColor(playerdata[i].getFaction()->color);
-    float epos = cpos + sizes[i] * per;
-    drawShadedRect(Float4(cpos, dimensions.sy, epos, dimensions.ey), 1, 6);
+    setColor(playerdata[order[i].second].getFaction()->color);
+    float epos = cpos + order[i].first * per;
+    drawShadedRect(Float4(cpos, dimensions.sy, epos, barbottom), 1, 6);
+    drawDvec2(playerdata[order[i].second].getFaction()->icon, boxAround(Float2((cpos + epos) / 2, (dimensions.ey + (dimensions.ey - iconsize)) / 2), iconsize / 2), 20, 0.1);
     cpos = epos;
   }
 }
