@@ -174,7 +174,7 @@ public:
   }
 };
 
-enum {GMODE_NORMAL, GMODE_CHOICE};
+enum {GMODE_STANDARD, GMODE_CHOICE, GMODE_DEMO, GMODE_LAST};
 enum {FACTION_NULL, FACTION_SMALL, FACTION_MEDIUM, FACTION_BIG, FACTION_LAST};
 
 class Game {
@@ -182,6 +182,7 @@ public:
   
   void initStandard(vector<Player> *playerdata, const Level &level, vector<const IDBFaction *> *wins, int factionmode);
   void initChoice(vector<Player> *playerdata);
+  void initDemo(Player *playerdata, const Float4 &bounds);
 
   bool runTick( const vector< Keystates > &keys );
   void ai(const vector<Ai *> &ais) const;
@@ -196,7 +197,7 @@ public:
 
 private:
   
-  void initCommon(vector<Player> *playerdata, const Level &level, int factionmode);
+  void initCommon(const vector<Player*> &playerdata, const Level &level, int factionmode);
   
   void addTankStatusText(int tankid, const string &text, float duration);
   vector<pair<float, Tank *> > genTankDistance(const Coord2 &center);
@@ -224,6 +225,8 @@ private:
   Float2 zoom_size;
 
   Float2 zoom_speed;
+  
+  int gamemode;
 
   vector<const IDBFaction *> *wins;
   

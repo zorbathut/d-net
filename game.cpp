@@ -1264,11 +1264,12 @@ vector<int> Game::teamBreakdown() const {
 }
 
 Game::Game() {
+  gamemode = GMODE_LAST;
 }
 
-void Game::initCommon(vector<Player> *in_playerdata, const Level &lev, int factionmode) {
-  CHECK(in_playerdata);
+void Game::initCommon(const vector<Player*> &in_playerdata, const Level &lev, int factionmode) {
   CHECK(factionmode >= 0 && factionmode < FACTION_LAST);
+  CHECK(gamemode >= 0 && gamemode < GMODE_LAST);
   
   players.clear();
   bombards.clear();
@@ -1278,15 +1279,16 @@ void Game::initCommon(vector<Player> *in_playerdata, const Level &lev, int facti
   gfxeffects.clear();
   tankHighlight.clear();  // yeesh
   
-  players.resize(in_playerdata->size());
-  bombards.resize(in_playerdata->size());
+  players.resize(in_playerdata.size());
+  bombards.resize(in_playerdata.size());
   
   wins = NULL;
   
   gamemap = Gamemap(lev);
   
   for(int i = 0; i < players.size(); i++) {
-    players[i].init(&(*in_playerdata)[i]);
+    CHECK(in_playerdata[i]);
+    players[i].init(in_playerdata[i]);
   }
   {
     // place players
@@ -1305,7 +1307,7 @@ void Game::initCommon(vector<Player> *in_playerdata, const Level &lev, int facti
   framesSinceOneLeft = 0;
   firepowerSpent = 0;
   
-  projectiles.resize(in_playerdata->size());
+  projectiles.resize(in_playerdata.size());
   
   tankHighlight.resize(players.size());
   
@@ -1318,15 +1320,38 @@ void Game::initCommon(vector<Player> *in_playerdata, const Level &lev, int facti
   collider = Collider(players.size());
 }
 
+void Game::initStandard(vector<Player> *in_playerdata, const Level &lev, vector<const IDBFaction *> *in_wins, int factionmode) {
+  gamemode = GMODE_STANDARD;
+  
+  vector<Player*> playerdata;
+  for(int i = 0; i < in_playerdata->size(); i++)
+    playerdata.push_back(&(*in_playerdata)[i]);
+  initCommon(playerdata, lev, factionmode);
+  
+  CHECK(in_wins);
+  wins = in_wins;
+  
+  teams.resize(players.size());
+  for(int i = 0; i < players.size(); i++)
+    players[i].team = &teams[i];
+  
+  frameNmToStart = 180;
+  freezeUntilStart = true;
+};
+
 void Game::initChoice(vector<Player> *in_playerdata) {
+  gamemode = GMODE_CHOICE;
+  
   Level lev = loadLevel("data/levels_special/choice_4.dv2");
   lev.playerStarts.clear();
+  vector<Player*> playerdata;
   for(int i = 0; i < in_playerdata->size(); i++) {
     float ang = PI * 2 * i / in_playerdata->size();
     lev.playerStarts[in_playerdata->size()].push_back(make_pair(makeAngle(Coord(ang)) * 20, ang));
+    playerdata.push_back(&(*in_playerdata)[i]);
   }
   
-  initCommon(in_playerdata, lev, FACTION_NULL);
+  initCommon(playerdata, lev, FACTION_NULL);
   
   teams.resize(5);
   for(int i = 0; i < players.size(); i++)
@@ -1359,19 +1384,29 @@ void Game::initChoice(vector<Player> *in_playerdata) {
   freezeUntilStart = false;
 }
 
-void Game::initStandard(vector<Player> *in_playerdata, const Level &lev, vector<const IDBFaction *> *in_wins, int factionmode) {
-  initCommon(in_playerdata, lev, factionmode);
+void Game::initDemo(Player *in_playerdata, const Float4 &bounds) {
+  gamemode = GMODE_DEMO;
   
-  CHECK(in_wins);
-  wins = in_wins;
+  Level lev;
   
-  teams.resize(players.size());
-  for(int i = 0; i < players.size(); i++)
-    players[i].team = &teams[i];
+  {
+    vector<Coord2> path;
+    path.push_back(Coord2(bounds.sx, bounds.sy));
+    path.push_back(Coord2(bounds.sx, bounds.ey));
+    path.push_back(Coord2(bounds.ex, bounds.ey));
+    path.push_back(Coord2(bounds.ex, bounds.sy));
+    lev.paths.push_back(path);
+  }
   
-  frameNmToStart = 180;
-  freezeUntilStart = true;
-};
+  {
+    lev.playersValid.insert(1);
+    lev.playerStarts[1].push_back(make_pair(bounds.midpoint(), 0));
+  }
+  
+  vector<Player*> playerdata;
+  playerdata.push_back(in_playerdata);
+  initCommon(playerdata, lev, FACTION_NULL);
+}
 
 vector<pair<float, Tank *> > Game::genTankDistance(const Coord2 &center) {
   vector<pair<float, Tank *> > rv;
