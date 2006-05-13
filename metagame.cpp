@@ -744,7 +744,7 @@ void Metagame::renderToScreen() const {
       for(int i = 0; i < checked.size(); i++) {
         if(!checked[i]) {
           setColor(playerdata[i].getFaction()->color);
-          drawDvec2(playerdata[i].getFaction()->icon, boxAround(Float2((cpos + 0.5) * increment, float(440 / 580) / 2), min(increment, float(580 - 440)) / 2), 50, 1);
+          drawDvec2(playerdata[i].getFaction()->icon, boxAround(Float2((cpos + 0.5) * increment, float(440 + 580) / 2), min(increment * 0.95f, float(580 - 440)) / 2), 50, 1);
           cpos++;
         }
       }
