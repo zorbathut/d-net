@@ -109,7 +109,7 @@ void deinitSystem() {
 
 };
 
-int main( int argc, char **argv ) {
+int main(int argc, char **argv) {
   
   StackString sst("Main");
 

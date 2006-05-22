@@ -69,6 +69,8 @@ void Ai::updateCharacterChoice(const vector<FactionState> &factions, const vecto
       nextKeys.menu.x = 1.0;
     if(players[you].setting_axis_current == 1)
       nextKeys.menu.y = 1.0;
+  } else if(players[you].settingmode == SETTING_TEST) {
+    nextKeys.keys[BUTTON_CANCEL].down = true;
   } else if(players[you].settingmode == SETTING_READY) {
     CHECK(players[you].setting_axistype == KSAX_ABSOLUTE);
     nextKeys.keys[BUTTON_ACCEPT].down = true;

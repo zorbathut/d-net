@@ -105,7 +105,7 @@ public:
   }
   
   float x_span() const {
-    return ey - sy;
+    return ex - sx;
   }
   float y_span() const {
     return ey - sy;

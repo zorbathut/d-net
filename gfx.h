@@ -47,14 +47,19 @@ void setZoom( float sx, float sy, float ey );
 void setZoomAround(const Coord4 &bbox);
 void setZoomCenter(float cx, float cy, float radius_y);
 
-float getZoomSx();
-float getZoomSy();
-float getZoomEx();
-float getZoomEy();
-float getZoomDx();
-float getZoomDy();
+float getAspect();
 
 void deinitFrame();
+
+/*************
+ * Window
+ */
+
+class GfxWindow {
+public:
+  GfxWindow(const Float4 &bounds);
+  ~GfxWindow();
+};
 
 /*************
  * Primitives

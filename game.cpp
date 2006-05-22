@@ -923,7 +923,7 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
     }
   }
   
-  #if 0 // This hideous hack produces pretty fireworks
+  #if 0 // This hideous hack produces pretty yet deadly fireworks
   {   
     static Tank boomy;
     static Player boomyplay;
@@ -960,7 +960,7 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
     doInterp(&zoom_center.y, &z.first.y, &zoom_size.y, &z.second.y, &zoom_speed.y);
   }
 
-  if(framesSinceOneLeft / FPS >= 3) {
+  if(framesSinceOneLeft / FPS >= 3 && gamemode != GMODE_DEMO) {
     if(zones.size() == 0) {
       int winplayer = -1;
       for(int i = 0; i < players.size(); i++) {
@@ -1018,12 +1018,16 @@ void drawCrosses(const Coord2 &cloc, float rad) {
 }
 
 void Game::renderToScreen() const {
+
+  // Set up zooming for everything that happens in gamespace
   {
-    const float availScreen = 0.9;
-    float pzoom = max(zoom_size.y / availScreen, zoom_size.x / 4 * 3);
-    Float2 origin(zoom_center.x - pzoom * 4 / 3 / 2, zoom_center.y - pzoom * (1.0 - availScreen / 2));
+    const float availScreen = (gamemode == GMODE_DEMO ? 1.0 : 0.9);
+    float pzoom = max(zoom_size.y / availScreen, zoom_size.x / getAspect());
+    Float2 origin(zoom_center.x - pzoom * getAspect() / 2, zoom_center.y - pzoom * (1.0 - availScreen / 2));
     setZoom(origin.x, origin.y, origin.y + pzoom);
   }
+  
+  // Tanks
   for( int i = 0; i < players.size(); i++ ) {
     players[ i ].render();
     if(tankHighlight[i]) {
@@ -1031,6 +1035,8 @@ void Game::renderToScreen() const {
       drawJustifiedText(StringPrintf("P%d", i), 2, players[i].pos.x.toFloat(), players[i].pos.y.toFloat(), TEXT_CENTER, TEXT_CENTER);
     }
   }
+  
+  // Projectiles, graphics effects, and bombardments
   for( int i = 0; i < projectiles.size(); i++ )
     for( int j = 0; j < projectiles[ i ].size(); j++ )
       projectiles[ i ][ j ].render();
@@ -1061,9 +1067,11 @@ void Game::renderToScreen() const {
     }
   }
   
+  // Game map and collider, if we're drawing one
   gamemap.render();
   collider.render();
   
+  // This is where we draw the zones and zone text (which is indeed in gamespace)
   for(int i = 0; i < zones.size(); i++) {
     setColor(zones[i].second * 0.3);
     drawLineLoop(zones[i].first, 1.0);
@@ -1102,33 +1110,40 @@ void Game::renderToScreen() const {
       drawJustifiedMultiText(zonenames[i], 10, 2, pos, TEXT_CENTER, TEXT_CENTER);
     }
   }
-    
-  {
+  
+  // Here's everything outside gamespace
+  if(gamemode != GMODE_DEMO) {
     setZoom( 0, 0, 100 );
-    setColor(1.0, 1.0, 1.0);
-    drawLine(Float4(0, 10, getZoomEx(), 10), 0.1);
-    for(int i = 0; i < players.size(); i++) {
+    
+    // Player health
+    {
       setColor(1.0, 1.0, 1.0);
-      float loffset = getZoomEx() / players.size() * i;
-      float roffset = getZoomEx() / players.size() * ( i + 1 );
-      if(i)
-        drawLine(Float4(loffset, 0, loffset, 10), 0.1);
-      if(players[i].live) {
-        setColor(players[i].player->getFaction()->color);
-        float barl = loffset + 1;
-        float bare = (roffset - 1) - (loffset + 1);
-        bare /= players[i].player->getTank().maxHealth();
-        bare *= players[i].health;
-        drawShadedRect(Float4(barl, 2, barl + bare, 6), 0.1, 2);
-        string ammotext;
-        if(players[i].player->shotsLeft() == -1) {
-          ammotext = "inf";
-        } else {
-          ammotext = StringPrintf("%d", players[i].player->shotsLeft());
+      drawLine(Float4(0, 10, (400./3.), 10), 0.1);
+      for(int i = 0; i < players.size(); i++) {
+        setColor(1.0, 1.0, 1.0);
+        float loffset = (400./3.) / players.size() * i;
+        float roffset = (400./3.) / players.size() * ( i + 1 );
+        if(i)
+          drawLine(Float4(loffset, 0, loffset, 10), 0.1);
+        if(players[i].live) {
+          setColor(players[i].player->getFaction()->color);
+          float barl = loffset + 1;
+          float bare = (roffset - 1) - (loffset + 1);
+          bare /= players[i].player->getTank().maxHealth();
+          bare *= players[i].health;
+          drawShadedRect(Float4(barl, 2, barl + bare, 6), 0.1, 2);
+          string ammotext;
+          if(players[i].player->shotsLeft() == -1) {
+            ammotext = "inf";
+          } else {
+            ammotext = StringPrintf("%d", players[i].player->shotsLeft());
+          }
+          drawText(ammotext, 2, barl, 7);
         }
-        drawText(ammotext, 2, barl, 7);
       }
     }
+    
+    // The giant overlay text for countdowns
     if(frameNmToStart == -1) {
       setColor(1.0, 1.0, 1.0);
       drawJustifiedText("Choose team", 8, 133.3 / 2, 100.0 / 2, TEXT_CENTER, TEXT_CENTER);
@@ -1149,80 +1164,83 @@ void Game::renderToScreen() const {
       setColor(dens, dens, dens);
       drawJustifiedText("GO", 40, 133.3 / 2, 100.0 / 2, TEXT_CENTER, TEXT_CENTER);
     }
-  }
-  if(wins) {
-    /*
-    vector<const IDBFaction *> genExampleFacts(const vector<Tank> &plays, int ct);
-    static vector<const IDBFaction *> fact = genExampleFacts(players, 5000);
-    wins->swap(fact);*/
     
-    setZoom(0, 0, 1);
-    
-    const float iconwidth = 0.02;
-    const float iconborder = 0.001;
-    const float comboborder=0.0015;
-    const float lineborder = iconborder * 2;
-    const float lineextra = 0.005;
-    
-    Float2 spos(0.01, 0.11);
-    
-    for(int i = 0; i < wins->size(); i += 6) {
-      map<const IDBFaction *, int> fc;
-      int smax = 0;
-      for(int j = 0; j < i; j++) {
-        fc[(*wins)[j]]++;
-        smax = max(smax, fc[(*wins)[j]]);
-      }
-      fc.erase(NULL);
+    // Our win ticker
+    if(wins) {
+      /*
+      vector<const IDBFaction *> genExampleFacts(const vector<Tank> &plays, int ct);
+      static vector<const IDBFaction *> fact = genExampleFacts(players, 5000);
+      wins->swap(fact);*/
       
-      int winrup = wins->size() / 6 * 6 + 6;
+      setZoom(0, 0, 1);
       
-      float width = 0.02;
-      if(fc.size())
-        width += iconwidth * fc.size() + lineborder * 2;
-      width += iconwidth * (winrup - i) + lineborder * 2 * ((winrup - i) / 6);
+      const float iconwidth = 0.02;
+      const float iconborder = 0.001;
+      const float comboborder=0.0015;
+      const float lineborder = iconborder * 2;
+      const float lineextra = 0.005;
       
-      if(width >= 1.33)
-        continue;
+      Float2 spos(0.01, 0.11);
       
-      float hei = min(iconwidth, iconwidth * 6 / smax);
-      
-      if(i) {
-        for(map<const IDBFaction *, int>::iterator itr = fc.begin(); itr != fc.end(); itr++) {
-          setColor(itr->first->color);
-          for(int j = 0; j < itr->second; j++)
-            drawDvec2(itr->first->icon, Float4(spos.x + comboborder, spos.y + comboborder + hei * j, spos.x + iconwidth - comboborder, spos.y + iconwidth - comboborder + hei * j), 10, 0.0002);
-          float linehei = spos.y + hei * (itr->second - 1) + iconwidth;
-          drawLine(spos.x + iconborder + iconborder, linehei, spos.x + iconwidth - iconborder - iconborder, linehei, 0.0002);
-          spos.x += iconwidth;
+      for(int i = 0; i < wins->size(); i += 6) {
+        map<const IDBFaction *, int> fc;
+        int smax = 0;
+        for(int j = 0; j < i; j++) {
+          fc[(*wins)[j]]++;
+          smax = max(smax, fc[(*wins)[j]]);
         }
-        spos.x += lineborder;
-        drawLine(spos.x, spos.y - lineextra, spos.x, spos.y + iconwidth + lineextra, 0.0002);
-        spos.x += lineborder;
-      }
-          
-      for(int j = i; j < wins->size(); j++) {
-        if((*wins)[j]) {
-          setColor((*wins)[j]->color);
-          drawDvec2((*wins)[j]->icon, Float4(spos.x + iconborder, spos.y + iconborder, spos.x + iconwidth - iconborder, spos.y + iconwidth - iconborder), 10, 0.0002);
-        } else {
-          setColor(Color(0.5, 0.5, 0.5));
-          drawLine(Float4(spos.x + iconwidth - iconborder * 2, spos.y + iconborder * 2, spos.x + iconborder * 2, spos.y + iconwidth - iconborder * 2), 0.0002);
-        }
-        spos.x += iconwidth;
-        if(j % FLAGS_rounds_per_store == FLAGS_rounds_per_store - 1) {
-          setColor(Color(1.0, 1.0, 1.0));
+        fc.erase(NULL);
+        
+        int winrup = wins->size() / 6 * 6 + 6;
+        
+        float width = 0.02;
+        if(fc.size())
+          width += iconwidth * fc.size() + lineborder * 2;
+        width += iconwidth * (winrup - i) + lineborder * 2 * ((winrup - i) / 6);
+        
+        if(width >= 1.33)
+          continue;
+        
+        float hei = min(iconwidth, iconwidth * 6 / smax);
+        
+        if(i) {
+          for(map<const IDBFaction *, int>::iterator itr = fc.begin(); itr != fc.end(); itr++) {
+            setColor(itr->first->color);
+            for(int j = 0; j < itr->second; j++)
+              drawDvec2(itr->first->icon, Float4(spos.x + comboborder, spos.y + comboborder + hei * j, spos.x + iconwidth - comboborder, spos.y + iconwidth - comboborder + hei * j), 10, 0.0002);
+            float linehei = spos.y + hei * (itr->second - 1) + iconwidth;
+            drawLine(spos.x + iconborder + iconborder, linehei, spos.x + iconwidth - iconborder - iconborder, linehei, 0.0002);
+            spos.x += iconwidth;
+          }
           spos.x += lineborder;
           drawLine(spos.x, spos.y - lineextra, spos.x, spos.y + iconwidth + lineextra, 0.0002);
           spos.x += lineborder;
         }
+            
+        for(int j = i; j < wins->size(); j++) {
+          if((*wins)[j]) {
+            setColor((*wins)[j]->color);
+            drawDvec2((*wins)[j]->icon, Float4(spos.x + iconborder, spos.y + iconborder, spos.x + iconwidth - iconborder, spos.y + iconwidth - iconborder), 10, 0.0002);
+          } else {
+            setColor(Color(0.5, 0.5, 0.5));
+            drawLine(Float4(spos.x + iconwidth - iconborder * 2, spos.y + iconborder * 2, spos.x + iconborder * 2, spos.y + iconwidth - iconborder * 2), 0.0002);
+          }
+          spos.x += iconwidth;
+          if(j % FLAGS_rounds_per_store == FLAGS_rounds_per_store - 1) {
+            setColor(Color(1.0, 1.0, 1.0));
+            spos.x += lineborder;
+            drawLine(spos.x, spos.y - lineextra, spos.x, spos.y + iconwidth + lineextra, 0.0002);
+            spos.x += lineborder;
+          }
+        }
+        
+        break;
       }
       
-      break;
+      //wins->swap(fact);
     }
-    
-    //wins->swap(fact);
   }
+  
 };
 
 /*
@@ -1318,6 +1336,13 @@ void Game::initCommon(const vector<Player*> &in_playerdata, const Level &lev, in
   zoom_speed = Float2(0, 0);
 
   collider = Collider(players.size());
+  
+  teams.resize(players.size());
+  for(int i = 0; i < players.size(); i++)
+    players[i].team = &teams[i];
+  
+  frameNmToStart = -1000;
+  freezeUntilStart = false;
 }
 
 void Game::initStandard(vector<Player> *in_playerdata, const Level &lev, vector<const IDBFaction *> *in_wins, int factionmode) {
@@ -1330,10 +1355,6 @@ void Game::initStandard(vector<Player> *in_playerdata, const Level &lev, vector<
   
   CHECK(in_wins);
   wins = in_wins;
-  
-  teams.resize(players.size());
-  for(int i = 0; i < players.size(); i++)
-    players[i].team = &teams[i];
   
   frameNmToStart = 180;
   freezeUntilStart = true;
@@ -1400,7 +1421,7 @@ void Game::initDemo(Player *in_playerdata, const Float4 &bounds) {
   
   {
     lev.playersValid.insert(1);
-    lev.playerStarts[1].push_back(make_pair(bounds.midpoint(), 0));
+    lev.playerStarts[1].push_back(make_pair(bounds.midpoint(), PI / 2 * 3));
   }
   
   vector<Player*> playerdata;

@@ -16,6 +16,18 @@ using namespace std;
 
 DEFINE_int(resolution_x, -1, "X resolution (Y is X/4*3), -1 for autodetect");
 
+class GfxWindowState {
+public:
+  float saved_sx;
+  float saved_sy;
+  float saved_ey;
+
+  Float4 newbounds;
+
+  GfxWindow *gfxw;
+};
+static vector<GfxWindowState> windows;
+
 void setDefaultResolution(int width, int height, bool fullscreen) {
   dprintf("Current detected resolution: %d/%d\n", width, height);
   if(FLAGS_resolution_x == -1) {
@@ -85,6 +97,10 @@ static float map_ex;
 static float map_ey;
 static float map_zoom;
 
+static float map_saved_sx;
+static float map_saved_sy;
+static float map_saved_ey;
+
 static map< char, vector< vector< pair< int, int > > > > fontdata;
 
 void initGfx() {
@@ -130,6 +146,17 @@ void initGfx() {
     GLfloat flipy[16]= { (5.0/4.0) / (4.0/3.0), 0, 0, 0,   0, -1, 0, 0,   0, 0, 1, 0,  0, 0, 0, 1 };
     glMultMatrixf(flipy);
     glTranslatef(0, -1, 0);
+  }
+  {
+    GfxWindowState gfws;
+    gfws.saved_sx = 0;
+    gfws.saved_sy = 0;
+    gfws.saved_ey = 1;
+
+    gfws.newbounds = Float4(0, 0, 4.0/3.0, 1);
+    gfws.gfxw = NULL;
+    
+    windows.push_back(gfws);
   }
 }
 
@@ -206,11 +233,52 @@ void deinitFrame() {
   CHECK(glGetError() == GL_NO_ERROR);
 }
 
-void setZoom( float in_sx, float in_sy, float in_ey ) {
+GfxWindow::GfxWindow(const Float4 &bounds) {
+  GfxWindowState gfws;
+  gfws.saved_sx = map_saved_sx;
+  gfws.saved_sy = map_saved_sy;
+  gfws.saved_ey = map_saved_ey;
+
+  // newbounds is the location on the screen that the new bounds fill
+  gfws.newbounds = Float4((bounds.sx - map_sx) / map_zoom, (bounds.sy - map_sy) / map_zoom, (bounds.ex - map_sx) / map_zoom, (bounds.ey - map_sy) / map_zoom);
+  
+  gfws.gfxw = this;
+  
+  windows.push_back(gfws);
+  
+  // We should also be making the opengl window call here, but for now I am lazy
+}
+GfxWindow::~GfxWindow() {
+  CHECK(windows.size() > 1);
+  CHECK(windows.back().gfxw == this);
+  float tmap_sx = windows.back().saved_sx;
+  float tmap_sy = windows.back().saved_sy;
+  float tmap_ey = windows.back().saved_ey;
+  windows.pop_back();
+  setZoom(tmap_sx, tmap_sy, tmap_ey);
+}
+
+void setZoom(float in_sx, float in_sy, float in_ey) {
   finishLineCluster();
-  map_sx = in_sx;
-  map_sy = in_sy;
-  map_zoom = in_ey - in_sy;
+  
+  map_saved_sx = in_sx;
+  map_saved_sy = in_sy;
+  map_saved_ey = in_ey;
+  
+  float real_sy = in_sy - ((in_ey - in_sy) / windows.back().newbounds.y_span() * windows.back().newbounds.sy);
+  float real_sx = in_sx - ((in_ey - in_sy) / windows.back().newbounds.y_span() * windows.back().newbounds.sx);
+  float real_ey = real_sy + (in_ey - in_sy) / windows.back().newbounds.y_span();
+  
+  /*
+  dprintf("Zoom - input was %f,%f,%f, converted to %f,%f,%f\n", in_sx, in_sy, in_ey, real_sx, real_sy, real_ey);
+  dprintf("aspect is %f\n", getAspect());
+  dprintf("%f, %f\n", windows.back().newbounds.x_span(), windows.back().newbounds.y_span());
+  dprintf("%f, %f, %f, %f\n", windows.back().newbounds.sx, windows.back().newbounds.sy, windows.back().newbounds.ex, windows.back().newbounds.ey);
+  dprintf("%d\n", windows.size());*/
+  
+  map_sx = real_sx;
+  map_sy = real_sy;
+  map_zoom = real_ey - real_sy;
   map_ey = map_sy + map_zoom;
   map_ex = map_sx + map_zoom * 4 / 3;
 }
@@ -219,20 +287,15 @@ void setZoomAround(const Coord4 &bbox) {
   Coord2 center = bbox.midpoint();
   Coord zoomtop = bbox.y_span() / 2;
   Coord zoomside = bbox.x_span() / 2;
-  Coord zoomtopfinal = max(zoomtop, zoomside / 4 * 3);
-  setZoom((center.x - zoomtopfinal * 4 / 3).toFloat(), (center.y - zoomtopfinal).toFloat(), (center.y + zoomtopfinal).toFloat());
+  Coord zoomtopfinal = max(zoomtop, zoomside / (Coord)getAspect());
+  setZoom((center.x - zoomtopfinal * (Coord)getAspect()).toFloat(), (center.y - zoomtopfinal).toFloat(), (center.y + zoomtopfinal).toFloat());
 }
 
 void setZoomCenter(float cx, float cy, float radius_y) {
-  setZoom(cx - radius_y * 4 / 3, cy - radius_y, cy + radius_y);
+  setZoom(cx - radius_y * getAspect(), cy - radius_y, cy + radius_y);
 }
 
-float getZoomSx() { return map_sx; }
-float getZoomSy() { return map_sy; }
-float getZoomEx() { return map_ex; }
-float getZoomEy() { return map_ey; }
-float getZoomDx() { return map_ex - map_sx; }
-float getZoomDy() { return map_ey - map_sy; }
+float getAspect() { return windows.back().newbounds.x_span() / windows.back().newbounds.y_span(); };
 
 void setColor( float r, float g, float b ) {
   glColor3f( r, g, b );

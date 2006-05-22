@@ -243,30 +243,31 @@ void PlayerMenuState::traverse_axistype(int delta, int axes) {
   } while(ksax_minaxis[setting_axistype] > axes);
 }
 
+Keystates genKeystate(const Controller &keys, const PlayerMenuState &pms) {
+  Keystates kst;
+  kst.u = keys.u;
+  kst.d = keys.d;
+  kst.l = keys.l;
+  kst.r = keys.r;
+  kst.f = keys.keys[pms.buttons[BUTTON_ACCEPT]];
+  kst.axmode = pms.setting_axistype;
+  for(int j = 0; j < 2; j++) {
+    kst.ax[j] = keys.axes[pms.axes[j]];
+    if(pms.axes_invert[j])
+      kst.ax[j] *= -1;
+  }
+  kst.udlrax[0] = keys.menu.x;
+  kst.udlrax[1] = keys.menu.y;
+  CHECK(keys.menu.x >= -1 && keys.menu.x <= 1);
+  CHECK(keys.menu.y >= -1 && keys.menu.y <= 1);
+  return kst;
+}
+
 vector<Keystates> genKeystates(const vector<Controller> &keys, const vector<PlayerMenuState> &modes) {
   vector<Keystates> kst;
-  int pid = 0;
-  for(int i = 0; i < modes.size(); i++) {
-    if(modes[i].faction) {
-      kst.push_back(Keystates());
-      kst[pid].u = keys[i].u;
-      kst[pid].d = keys[i].d;
-      kst[pid].l = keys[i].l;
-      kst[pid].r = keys[i].r;
-      kst[pid].f = keys[i].keys[modes[i].buttons[BUTTON_ACCEPT]];
-      kst[pid].axmode = modes[i].setting_axistype;
-      for(int j = 0; j < 2; j++) {
-        kst[pid].ax[j] = keys[i].axes[modes[i].axes[j]];
-        if(modes[i].axes_invert[j])
-          kst[pid].ax[j] *= -1;
-      }
-      kst[pid].udlrax[0] = keys[i].menu.x;
-      kst[pid].udlrax[1] = keys[i].menu.y;
-      CHECK(keys[i].menu.x >= -1 && keys[i].menu.x <= 1);
-      CHECK(keys[i].menu.y >= -1 && keys[i].menu.y <= 1);
-      pid++;
-    }
-  }
+  for(int i = 0; i < modes.size(); i++)
+    if(modes[i].faction)
+      kst.push_back(genKeystate(keys[i], modes[i]));
   return kst;
 }
 
@@ -499,7 +500,7 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
     }
   }
   
-  /* this is kind of hacky */
+  // this is kind of hacky
   if(pms->settingmode == SETTING_TEST && !pms->test_game) {
     CHECK(!pms->test_player);
     
@@ -515,6 +516,20 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
     
     pms->test_game = new Game();
     pms->test_game->initDemo(pms->test_player, boundy);
+  }
+  
+  // so is this
+  if(pms->settingmode == SETTING_TEST) {
+    if(pms->choicemode == CHOICE_IDLE) {
+      vector<Keystates> kst(1);
+      CHECK(!pms->test_game->runTick(kst));
+    } else if(pms->choicemode == CHOICE_ACTIVE || pms->choicemode == CHOICE_FIRSTPASS) {
+      vector<Keystates> kst;
+      kst.push_back(genKeystate(keys, *pms));
+      CHECK(!pms->test_game->runTick(kst));
+    } else {
+      CHECK(0);
+    }
   }
 }
 
@@ -614,11 +629,18 @@ void runSettingRender(const PlayerMenuState &pms) {
       CHECK(ksax_axis_names[pms.setting_axistype].size() == BUTTON_LAST);
       standardButtonRender(&rin.ystarts[0], rin.textline_count, rin.xstart, rin.xend, rin.textline_size * rin.unitsize, pms.axes, pms.axes_invert, ksax_axis_names[pms.setting_axistype], pms.setting_axis_current, pms.setting_axis_reading, fadeFactor, 'X');
     } else if(pms.settingmode == SETTING_TEST) {
-      /* wewt */
+      setColor(Color(0.5, 0.5, 0.5) * fadeFactor);
+      if(pms.choicemode == CHOICE_IDLE) {
+        drawJustifiedText("Fire to test", rin.textline_size * rin.unitsize, (rin.xstart + rin.xend) / 2, rin.ystarts[7], TEXT_CENTER, TEXT_MIN);
+      } else {
+        drawJustifiedText("Cancel when done", rin.textline_size * rin.unitsize, (rin.xstart + rin.xend) / 2, rin.ystarts[7], TEXT_CENTER, TEXT_MIN);
+      }
+      GfxWindow gfxw(Float4(rin.xstart, rin.ystarts[1], rin.xend, rin.ystarts[7]));
+      pms.test_game->renderToScreen();
     } else if(pms.settingmode == SETTING_READY) {
       setColor(Color(0.5, 0.5, 0.5) * fadeFactor);
-      const char * const text[] = {"Push fire", "when ready.", "Let go", "to cancel.", "< > to config"};
-      for(int i = 0; i < 5; i++)
+      const char * const text[] = {"Hold fire when", "ready. Let go", "to cancel.", "", "Move left/right to", "change config."};
+      for(int i = 0; i < 6; i++)
         drawJustifiedText(text[i], rin.textline_size * rin.unitsize, (rin.xstart + rin.xend) / 2, rin.ystarts[i + 2], TEXT_CENTER, TEXT_MIN);
     } else {
       CHECK(0);
@@ -705,7 +727,6 @@ bool Metagame::runTick(const vector<Controller> &keys) {
         shop = Shop(&playerdata[currentShop]);
       } else {
         mode = MGM_PLAY;
-        //game.initChoice(&playerdata);
         game.initStandard(&playerdata, levels[int(frand() * levels.size())], &win_history, faction_mode);
         CHECK(win_history.size() == gameround);
       }
