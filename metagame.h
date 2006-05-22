@@ -53,8 +53,8 @@ public:
 /*
 enum { SETTING_COMPASS, SETTING_BUTTONS, SETTING_AXISTYPE, SETTING_AXISCHOOSE, SETTING_CUSTOMIZE, SETTING_READY, SETTING_LAST };
 const char * const setting_names[] = { "NULL", "Keys", "Mode", "Axis", "Cust", "Ready" };*/
-enum { SETTING_BUTTONS, SETTING_AXISTYPE, SETTING_AXISCHOOSE, SETTING_READY, SETTING_LAST };
-const char * const setting_names[] = { "Keys", "Mode", "Axis", "Ready" };
+enum { SETTING_BUTTONS, SETTING_AXISTYPE, SETTING_AXISCHOOSE, SETTING_TEST, SETTING_READY, SETTING_LAST };
+const char * const setting_names[] = { "Keys", "Mode", "Axis", "Test", "Ready" };
 
 enum { CHOICE_FIRSTPASS, CHOICE_ACTIVE, CHOICE_IDLE };
 
@@ -81,6 +81,9 @@ public:
 
   int setting_axistype;
   void traverse_axistype(int delta, int axes);
+
+  Game *test_game;
+  Player *test_player;
   
   int fireHeld;
   bool readyToPlay() const;

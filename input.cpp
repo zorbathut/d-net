@@ -121,7 +121,7 @@ vector<vector<vector<string> > > ksax_axis_names_gen() {
     {
       vector<string> thisax;
       thisax.push_back("Right tread");
-      thisax.push_back("  forwarwd");
+      thisax.push_back("  forward");
       thisset.push_back(thisax);
     }
     rv.push_back(thisset);

@@ -148,6 +148,14 @@ inline Float4 operator+( const Float4 &lhs, const Float2 &rhs ) {
   return Float4( lhs.sx + rhs.x, lhs.sy + rhs.y, lhs.ex + rhs.x, lhs.ey + rhs.y );
 }
 
+inline Float4 &operator-=(Float4 &lhs, const Float2 &rhs) {
+  lhs.sx -= rhs.x;
+  lhs.sy -= rhs.y;
+  lhs.ex -= rhs.x;
+  lhs.ey -= rhs.y;
+  return lhs;
+}
+
 inline bool operator==( const Float4 &lhs, const Float4 &rhs ) {
   return lhs.sx == rhs.sx && lhs.sy == rhs.sy && lhs.ex == rhs.ex && lhs.ey == rhs.ey;
 }
