@@ -79,3 +79,52 @@ float deadzone(float t, float o, float absdead, float tdead) {
 Float2 deadzone(const Float2 &mov, float absdead, float tdead) {
   return Float2(deadzone(mov.x, mov.y, absdead, tdead), deadzone(mov.y, mov.x, absdead, tdead));
 }
+
+vector<vector<vector<string> > > ksax_axis_names_gen() {
+  vector<vector<vector<string> > > rv;
+  {
+    vector<vector<string> > thisset;
+    {
+      vector<string> thisax;
+      thisax.push_back("Turn right");
+      thisset.push_back(thisax);
+    }
+    {
+      vector<string> thisax;
+      thisax.push_back("Drive forward");
+      thisset.push_back(thisax);
+    }
+    rv.push_back(thisset);
+  }
+  {
+    vector<vector<string> > thisset;
+    {
+      vector<string> thisax;
+      thisax.push_back("Move \"up\"");
+      thisset.push_back(thisax);
+    }
+    {
+      vector<string> thisax;
+      thisax.push_back("Move \"right\"");
+      thisset.push_back(thisax);
+    }
+    rv.push_back(thisset);
+  }
+  {
+    vector<vector<string> > thisset;
+    {
+      vector<string> thisax;
+      thisax.push_back("Left tread");
+      thisax.push_back("  forward");
+      thisset.push_back(thisax);
+    }
+    {
+      vector<string> thisax;
+      thisax.push_back("Right tread");
+      thisax.push_back("  forwarwd");
+      thisset.push_back(thisax);
+    }
+    rv.push_back(thisset);
+  }
+  return rv;
+}

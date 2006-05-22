@@ -472,7 +472,7 @@ void runSettingRender(const PlayerMenuState &pms) {
     // Basic math!
     // compiletime constants
     const int textline_size = 7;  // How many times larger a line of text is than its divider
-    const int textline_count = 6; // How many lines we're going to have
+    const int textline_count = 8; // How many lines we're going to have
     const int border_size = 2;
     const int divider_size = 3;
     const int units = textline_size * textline_count + textline_count - 1 + border_size * 2 + divider_size; // X lines, plus dividers (textline_count-1), plus the top and bottom borders, plus the increased divider from categories to data
@@ -562,13 +562,8 @@ void runSettingRender(const PlayerMenuState &pms) {
       drawJustifiedText(ksax_descriptions[pms.setting_axistype][0], textline_size * unitsize, (xstart + xend) / 2, ystarts[4], TEXT_CENTER, TEXT_MIN);
       drawJustifiedText(ksax_descriptions[pms.setting_axistype][1], textline_size * unitsize, (xstart + xend) / 2, ystarts[5], TEXT_CENTER, TEXT_MIN);
     } else if(pms.settingmode == SETTING_AXISCHOOSE) {
-      vector<vector<string> > names;
-      for(int i = 0; i < BUTTON_LAST; i++) {
-        vector<string> tix;
-        tix.push_back(ksax_axis_names[pms.setting_axistype][i]);
-        names.push_back(tix);
-      }
-      standardButtonRender(ystarts, textline_count, xstart, xend, textline_size * unitsize, pms.axes, pms.axes_invert, names, pms.setting_axis_current, pms.setting_axis_reading, fadeFactor, 'X');
+      CHECK(ksax_axis_names[pms.setting_axistype].size() == BUTTON_LAST);
+      standardButtonRender(ystarts, textline_count, xstart, xend, textline_size * unitsize, pms.axes, pms.axes_invert, ksax_axis_names[pms.setting_axistype], pms.setting_axis_current, pms.setting_axis_reading, fadeFactor, 'X');
     } else if(pms.settingmode == SETTING_READY) {
       setColor(Color(0.5, 0.5, 0.5) * fadeFactor);
       const char * const text[] = {"Push fire", "when ready.", "Let go", "to cancel.", "< > to config"};

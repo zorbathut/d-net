@@ -46,7 +46,8 @@ enum { KSAX_STEERING, KSAX_ABSOLUTE, KSAX_TANK, KSAX_END };
 const char *const ksax_names[] = { "STEERING", "ABSOLUTE", "TANK" };
 const int ksax_minaxis[] = {2, 2, 2}; // yeah okay shut up the code still works
 
-const char *const ksax_axis_names[KSAX_END][2] = { {"Turn", "Drive"}, {"X", "Y"}, {"Left", "Right"} };
+vector<vector<vector<string> > > ksax_axis_names_gen();
+const vector<vector<vector<string> > > ksax_axis_names = ksax_axis_names_gen(); // sigh.
 const char *const ksax_descriptions[KSAX_END][2] = { {"Turn axis and", "movement axis"}, {"Tank goes in", "axis direction"}, {"Independent", "tread control"} };
 
 class Keystates {
