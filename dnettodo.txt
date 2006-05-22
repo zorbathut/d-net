@@ -1,6 +1,6 @@
 ---- Major work path
-- Add inverted axes
 - Add "test your control" mode
+- Improved win sum system
 - See if I can make the config screen a bit simpler somehow
 - Multiweapon
 - Faction info screen on startup
