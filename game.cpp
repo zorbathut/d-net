@@ -869,11 +869,17 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
     if(players[i].live) {
       if(keys[i].change.repeat) {
         players[i].player->cycleWeapon();
+        addTankStatusText(i, players[i].player->getWeapon().name(), 2);
       }
       if(keys[i].fire.down && players[i].weaponCooldown <= 0 && players[i].team->weapons_enabled && frameNm >= frameNmToStart && frameNmToStart != -1) {
         projectiles[i].push_back(Projectile(players[i].getFiringPoint(), players[i].d + players[i].player->getWeapon().deploy().anglestddev() * gaussian(), players[i].player->getWeapon().projectile(), &players[i]));
         players[i].weaponCooldown = players[i].player->getWeapon().framesForCooldown();
+        // hack here to detect weapon out-of-ammo
+        string lastname = players[i].player->getWeapon().name();
         firepowerSpent += players[i].player->shotFired();
+        if(players[i].player->getWeapon().name() != lastname) {
+          addTankStatusText(i, players[i].player->getWeapon().name(), 2);
+        }
         {
           string slv = StringPrintf("%d", players[i].player->shotsLeft());
           if(count(slv.begin(), slv.end(), '0') == slv.size() - 1)

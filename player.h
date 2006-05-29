@@ -64,7 +64,7 @@ private:
 
   vector<const IDBUpgrade *> upgrades;
 
-  map<const IDBWeapon *, int> weapons;
+  map<pair<string, const IDBWeapon *>, int> weapons;
   const IDBWeapon *curweapon;
 
   const IDBGlory *glory;

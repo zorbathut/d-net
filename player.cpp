@@ -38,8 +38,8 @@ void Player::buyBombardment(const IDBBombardment *in_bombardment) {
 }
 void Player::buyWeapon(const IDBWeapon *in_weap) {
   CHECK(canBuyWeapon(in_weap));
-  if(weapons[in_weap] != -1)
-    weapons[in_weap] += in_weap->quantity;
+  if(weapons[make_pair(in_weap->name, in_weap)] != -1)
+    weapons[make_pair(in_weap->name, in_weap)] += in_weap->quantity;
   cash -= adjustWeapon(in_weap).cost();
 }
 
@@ -63,13 +63,13 @@ IDBTankAdjust Player::getTank() const {
 IDBWeaponAdjust Player::getWeapon() const {
   return IDBWeaponAdjust(curweapon, &adjustment); };
 void Player::cycleWeapon() {
-  CHECK(weapons.count(curweapon));
-  map<const IDBWeapon *, int>::iterator itr = weapons.find(curweapon);
+  map<pair<string, const IDBWeapon *>, int>::iterator itr = weapons.find(make_pair(curweapon->name, curweapon));
+  CHECK(itr != weapons.end());
   itr++;
   if(itr == weapons.end())
-    curweapon = weapons.begin()->first;
+    curweapon = weapons.begin()->first.second;
   else
-    curweapon = itr->first;
+    curweapon = itr->first.second;
 }
 
   /*
@@ -109,22 +109,23 @@ float Player::consumeDamage() {
 }
 
 float Player::shotFired() {
-  CHECK(weapons.count(curweapon));
+  CHECK(weapons.count(make_pair(curweapon->name, curweapon)));
   float cost = adjustWeapon(curweapon).cost().toFloat() / curweapon->quantity;
-  if(weapons[curweapon] != -1)
-    weapons[curweapon]--;
-  if(weapons[curweapon] == 0) {
+  int *ammo = &weapons[make_pair(curweapon->name, curweapon)];
+  if(*ammo != -1)
+    (*ammo)--;
+  if(*ammo == 0) {
     const IDBWeapon *oldwep = curweapon;
     cycleWeapon();
     CHECK(curweapon != oldwep);
-    weapons.erase(oldwep);
+    weapons.erase(make_pair(oldwep->name, oldwep));
   }
   return cost;
 };
 
 int Player::shotsLeft() const {
-  CHECK(weapons.count(curweapon));
-  return weapons.find(curweapon)->second;
+  CHECK(weapons.count(make_pair(curweapon->name, curweapon)));
+  return weapons.find(make_pair(curweapon->name, curweapon))->second;
 }
 
 Player::Player() {
@@ -140,7 +141,7 @@ Player::Player(const IDBFaction *fact, int in_factionmode) {
   CHECK(factionmode >= 0 && factionmode < FACTIONMODE_LAST);
   cash = Money(FLAGS_startingCash);
   reCalculate();
-  weapons[defaultWeapon()] = -1;
+  buyWeapon(defaultWeapon());
   curweapon = defaultWeapon();
   glory = defaultGlory();
   bombardment = defaultBombardment();
