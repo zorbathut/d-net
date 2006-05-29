@@ -54,7 +54,9 @@ class Keystates {
 public:
   float ax[2];
   int axmode;
-  Button u,d,l,r,f;
+  Button u,d,l,r;
+  Button fire;
+  Button change;
   float udlrax[2];
 
   void nullMove();

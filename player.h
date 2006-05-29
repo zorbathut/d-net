@@ -1,6 +1,10 @@
 #ifndef DNET_PLAYER
 #define DNET_PLAYER
 
+#include <map>
+
+using namespace std;
+
 #include "itemdb.h"
 #include "coord.h"
 
@@ -27,16 +31,15 @@ public:
   bool hasUpgrade(const IDBUpgrade *in_upg) const;
   bool hasGlory(const IDBGlory *in_glory) const;
   bool hasBombardment(const IDBBombardment *in_bombardment) const;
-  bool hasWeapon(const IDBWeapon *in_weap) const;
 
   const IDBFaction *getFaction() const;
   
   IDBGloryAdjust getGlory() const;
   IDBBombardmentAdjust getBombardment() const;
-  IDBWeaponAdjust getWeapon() const;
   IDBTankAdjust getTank() const;
 
-  Money resellAmmoValue() const;
+  IDBWeaponAdjust getWeapon() const;
+  void cycleWeapon();
   
   Money getCash() const;
   void addCash(Money amount); // this is really designed *solely* for the income phase
@@ -60,8 +63,9 @@ private:
   void reCalculate();
 
   vector<const IDBUpgrade *> upgrades;
-  const IDBWeapon *weapon;
-  int shots_left;
+
+  map<const IDBWeapon *, int> weapons;
+  const IDBWeapon *curweapon;
 
   const IDBGlory *glory;
   const IDBBombardment *bombardment;

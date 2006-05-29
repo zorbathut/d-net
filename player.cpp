@@ -14,11 +14,7 @@ bool Player::canBuyUpgrade(const IDBUpgrade *in_upg) const { return !hasUpgrade(
 bool Player::canBuyGlory(const IDBGlory *in_glory) const { return !hasGlory(in_glory) && adjustGlory(in_glory).cost() <= cash; };
 bool Player::canBuyBombardment(const IDBBombardment *in_bombardment) const { return !hasBombardment(in_bombardment) && adjustBombardment(in_bombardment).cost() <= cash; };
 bool Player::canBuyWeapon(const IDBWeapon *in_weap) const {
-  if(weapon == in_weap) {
-    return adjustWeapon(in_weap).cost() <= cash;
-  } else {
-    return adjustWeapon(in_weap).cost() <= cash + resellAmmoValue();
-  }
+  return adjustWeapon(in_weap).cost() <= cash;
 }
 
 void Player::buyUpgrade(const IDBUpgrade *in_upg) {
@@ -42,16 +38,8 @@ void Player::buyBombardment(const IDBBombardment *in_bombardment) {
 }
 void Player::buyWeapon(const IDBWeapon *in_weap) {
   CHECK(canBuyWeapon(in_weap));
-  if(weapon == in_weap) {
-    if(shots_left != -1)
-      shots_left += in_weap->quantity;
-  } else {
-    cash += resellAmmoValue();
-    weapon = in_weap;
-    shots_left = in_weap->quantity;
-    if(weapon == defaultWeapon())
-      shots_left = -1;
-  }
+  if(weapons[in_weap] != -1)
+    weapons[in_weap] += in_weap->quantity;
   cash -= adjustWeapon(in_weap).cost();
 }
 
@@ -61,7 +49,6 @@ bool Player::hasUpgrade(const IDBUpgrade *in_upg) const {
 }
 bool Player::hasGlory(const IDBGlory *in_glory) const { return glory == in_glory; };
 bool Player::hasBombardment(const IDBBombardment *in_bombardment) const { return bombardment == in_bombardment; };
-bool Player::hasWeapon(const IDBWeapon *in_weap) const { return weapon == in_weap; };
 
 const IDBFaction *Player::getFaction() const {
   return faction; };
@@ -70,16 +57,27 @@ IDBGloryAdjust Player::getGlory() const {
   return IDBGloryAdjust(glory, &adjustment); };
 IDBBombardmentAdjust Player::getBombardment() const {
   return IDBBombardmentAdjust(bombardment, &adjustment); };
-IDBWeaponAdjust Player::getWeapon() const {
-  return IDBWeaponAdjust(weapon, &adjustment); };
 IDBTankAdjust Player::getTank() const {
   return IDBTankAdjust(NULL, &adjustment); };
 
+IDBWeaponAdjust Player::getWeapon() const {
+  return IDBWeaponAdjust(curweapon, &adjustment); };
+void Player::cycleWeapon() {
+  CHECK(weapons.count(curweapon));
+  map<const IDBWeapon *, int>::iterator itr = weapons.find(curweapon);
+  itr++;
+  if(itr == weapons.end())
+    curweapon = weapons.begin()->first;
+  else
+    curweapon = itr->first;
+}
+
+  /*
 Money Player::resellAmmoValue() const {
   float shares = 1 * adjustment.adjustmentfactor(IDBAdjustment::RECYCLE_BONUS);
   float ratio = shares / (shares + 0.2);
   return adjustWeapon(weapon).cost() * shotsLeft() * ratio / weapon->quantity;
-}
+}*/
 
 Money Player::getCash() const {
   return cash;
@@ -111,27 +109,29 @@ float Player::consumeDamage() {
 }
 
 float Player::shotFired() {
-  float cost = adjustWeapon(weapon).cost().toFloat() / weapon->quantity;
-  if(shots_left != -1)
-    shots_left--;
-  if(shots_left == 0) {
-    weapon = defaultWeapon();
-    shots_left = -1;
+  CHECK(weapons.count(curweapon));
+  float cost = adjustWeapon(curweapon).cost().toFloat() / curweapon->quantity;
+  if(weapons[curweapon] != -1)
+    weapons[curweapon]--;
+  if(weapons[curweapon] == 0) {
+    const IDBWeapon *oldwep = curweapon;
+    cycleWeapon();
+    CHECK(curweapon != oldwep);
+    weapons.erase(oldwep);
   }
   return cost;
 };
 
 int Player::shotsLeft() const {
-  return shots_left;
+  CHECK(weapons.count(curweapon));
+  return weapons.find(curweapon)->second;
 }
 
 Player::Player() {
   cash = Money(-1);
   faction = NULL;
-  weapon = NULL;
   glory = NULL;
   bombardment = NULL;
-  shots_left = -2;
 }
 
 Player::Player(const IDBFaction *fact, int in_factionmode) {
@@ -140,10 +140,10 @@ Player::Player(const IDBFaction *fact, int in_factionmode) {
   CHECK(factionmode >= 0 && factionmode < FACTIONMODE_LAST);
   cash = Money(FLAGS_startingCash);
   reCalculate();
-  weapon = defaultWeapon();
+  weapons[defaultWeapon()] = -1;
+  curweapon = defaultWeapon();
   glory = defaultGlory();
   bombardment = defaultBombardment();
-  shots_left = -1;
 }
 
 void Player::reCalculate() {

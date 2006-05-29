@@ -35,7 +35,7 @@ void StdMenu::pushMenuItem(const string &name, int triggeraction) {
 }
 
 int StdMenu::tick(const Keystates &keys) {
-  if(keys.f.down)
+  if(keys.fire.down)
     return items[cpos].second;
   if(keys.u.repeat)
     cpos--;
@@ -275,7 +275,8 @@ bool InterfaceMain::tick(const vector< Controller > &control) {
     for(int j = 0; j < control[i].keys.size(); j++)
       if(control[i].keys[j].push)
         aButtonPushed = true;
-    kst[i].f.newState(aButtonPushed);
+    kst[i].fire.newState(aButtonPushed);
+    kst[i].change.newState(false);
   }
   
   if(interface_mode == IFM_S_MAINMENU) {

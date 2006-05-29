@@ -95,7 +95,7 @@ bool Shop::runTick(const Keystates &keys) {
   curloc.back() += getCategoryNode().branches.size();
   curloc.back() %= getCategoryNode().branches.size();
   
-  if(keys.f.repeat && getCurNode().buyable) {
+  if(keys.fire.repeat && getCurNode().buyable) {
     // Player is trying to buy something!
     
     // First check to see if we're allowed to buy it
@@ -151,13 +151,7 @@ void Shop::renderToScreen() const {
   setZoom(0, 0, 100);
   drawText(StringPrintf("cash onhand %s", player->getCash().textual().c_str()), 2, 80, 1);
   {
-    string bf;
-    if(player->shotsLeft() == -1) {
-      bf = StringPrintf("%10s infinite ammo", player->getWeapon().name().c_str());
-    } else {
-      bf = StringPrintf("%15s %4d shots %6s resell", player->getWeapon().name().c_str(), player->shotsLeft(), player->resellAmmoValue().textual().c_str());
-    }
-    drawText(bf, 2, 1, 1);
+    drawText("there's like guns and shit here", 2, 1, 1);
   }
   setColor(player->getFaction()->color * 0.5);
   {
@@ -249,7 +243,8 @@ Keystates genKeystate(const Controller &keys, const PlayerMenuState &pms) {
   kst.d = keys.d;
   kst.l = keys.l;
   kst.r = keys.r;
-  kst.f = keys.keys[pms.buttons[BUTTON_ACCEPT]];
+  kst.fire = keys.keys[pms.buttons[BUTTON_ACCEPT]];
+  kst.change = keys.keys[pms.buttons[BUTTON_CANCEL]];
   kst.axmode = pms.setting_axistype;
   for(int j = 0; j < 2; j++) {
     kst.ax[j] = keys.axes[pms.axes[j]];
@@ -712,8 +707,9 @@ bool Metagame::runTick(const vector<Controller> &keys) {
   } else if(mode == MGM_SHOP) {
     vector<Keystates> ki = genKeystates(keys, pms);
     if(currentShop == -1) {
+      // this is a bit hacky - SHOP mode when currentShop is -1 is the "show results" screen
       for(int i = 0; i < ki.size(); i++)
-        if(ki[i].f.repeat)
+        if(ki[i].fire.repeat)
           checked[i] = true;
       if(count(checked.begin(), checked.end(), false) == 0) {
         for(int i = 0; i < playerdata.size(); i++)
@@ -722,6 +718,7 @@ bool Metagame::runTick(const vector<Controller> &keys) {
         shop = Shop(&playerdata[0]);
       }
     } else if(shop.runTick(ki[currentShop])) {
+      // and here's our actual shop - the tickrunning happens in the conditional, this is just what happens if it's time to change shops
       currentShop++;
       if(currentShop != playerdata.size()) {
         shop = Shop(&playerdata[currentShop]);

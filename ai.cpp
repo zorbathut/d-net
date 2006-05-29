@@ -266,6 +266,7 @@ void Ai::updateGame(const vector<Tank> &players, int me) {
   if(rng.frand() < 0.001)
     firing = !firing;
   nextKeys.keys[0].down = firing;
+  nextKeys.keys[1].down = (rng.frand() < 0.001);  // weapon switch
 }
 
 void Ai::updateBombardment(const vector<Tank> &players, Coord2 mypos) {

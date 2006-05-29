@@ -187,7 +187,7 @@ void Tank::addCollision(Collider *collider, const Keystates &keys) const {
   pair<Coord2, float> newpos = getDeltaAfterMovement( keys, pos, d );
   vector<Coord2> newtankpts = getTankVertices( newpos.first, newpos.second );
   for( int i = 0; i < newtankpts.size(); i++ )
-    newtankpts[ i ] -= tankpts[ i ];
+    newtankpts[i] -= tankpts[i];
   for( int i = 0; i < 3; i++ )
     collider->token(Coord4(tankpts[i], tankpts[(i + 1) % 3]), Coord4(newtankpts[i], newtankpts[(i + 1) % 3]));
 };
@@ -206,7 +206,7 @@ vector<Coord2> Tank::getTankVertices( Coord2 pos, float td ) const {
   Coord2 yt = makeAngle(Coord(td) - COORDPI / 2);
   vector<Coord2> rv;
   for( int i = 0; i < 3; i++ )
-    rv.push_back(Coord2(pos.x + tank_coords[ i ][ 0 ] * xt.x + tank_coords[ i ][ 1 ] * xt.y, pos.y + tank_coords[ i ][ 1 ] * yt.y + tank_coords[ i ][ 0 ] * yt.x));
+    rv.push_back(Coord2(pos.x + tank_coords[i][ 0 ] * xt.x + tank_coords[i][ 1 ] * xt.y, pos.y + tank_coords[i][ 1 ] * yt.y + tank_coords[i][ 0 ] * yt.x));
   return rv;
 };
 
@@ -622,10 +622,10 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
   vector< Keystates > keys = rkeys;
   if(frameNm < frameNmToStart && freezeUntilStart) {
     for(int i = 0; i < keys.size(); i++) {
-      if(keys[i].f.down)
+      if(keys[i].fire.down)
         tankHighlight[i] = true;
       keys[i].nullMove();
-      keys[i].f = Button();
+      keys[i].fire = Button();
     }
   }
   
@@ -840,7 +840,7 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
       bombards[j].loc.y = max(bombards[j].loc.y, gmb.sy);
       bombards[j].loc.x = min(bombards[j].loc.x, gmb.ex);
       bombards[j].loc.y = min(bombards[j].loc.y, gmb.ey);
-      if(keys[j].f.down) {
+      if(keys[j].fire.down) {
         bombards[j].state = BombardmentState::BS_FIRING;
         bombards[j].timer = players[j].player->getBombardment().lockdelay();
       }
@@ -861,19 +861,24 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
   }  
   
   for( int i = 0; i < players.size(); i++ ) {
-    players[ i ].tick(keys[i]);
-    players[ i ].weaponCooldown--;
+    players[i].tick(keys[i]);
+    players[i].weaponCooldown--;
   }
 
   for( int i = 0; i < players.size(); i++ ) {
-    if(players[ i ].live && keys[ i ].f.down && players[ i ].weaponCooldown <= 0 && players[i].team->weapons_enabled && frameNm >= frameNmToStart && frameNmToStart != -1) {
-      projectiles[ i ].push_back(Projectile(players[ i ].getFiringPoint(), players[ i ].d + players[i].player->getWeapon().deploy().anglestddev() * gaussian(), players[ i ].player->getWeapon().projectile(), &players[ i ]));
-      players[ i ].weaponCooldown = players[ i ].player->getWeapon().framesForCooldown();
-      firepowerSpent += players[i].player->shotFired();
-      {
-        string slv = StringPrintf("%d", players[i].player->shotsLeft());
-        if(count(slv.begin(), slv.end(), '0') == slv.size() - 1)
-          addTankStatusText(i, slv, 0.5);
+    if(players[i].live) {
+      if(keys[i].change.repeat) {
+        players[i].player->cycleWeapon();
+      }
+      if(keys[i].fire.down && players[i].weaponCooldown <= 0 && players[i].team->weapons_enabled && frameNm >= frameNmToStart && frameNmToStart != -1) {
+        projectiles[i].push_back(Projectile(players[i].getFiringPoint(), players[i].d + players[i].player->getWeapon().deploy().anglestddev() * gaussian(), players[i].player->getWeapon().projectile(), &players[i]));
+        players[i].weaponCooldown = players[i].player->getWeapon().framesForCooldown();
+        firepowerSpent += players[i].player->shotFired();
+        {
+          string slv = StringPrintf("%d", players[i].player->shotsLeft());
+          if(count(slv.begin(), slv.end(), '0') == slv.size() - 1)
+            addTankStatusText(i, slv, 0.5);
+        }
       }
     }
   }
@@ -881,16 +886,16 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
   {
     vector< GfxEffects > neffects;
     for( int i = 0; i < gfxeffects.size(); i++ ) {
-      gfxeffects[ i ].move();
-      if( !gfxeffects[ i ].dead() )
-        neffects.push_back( gfxeffects[ i ] );
+      gfxeffects[i].move();
+      if( !gfxeffects[i].dead() )
+        neffects.push_back( gfxeffects[i] );
     }
     swap( neffects, gfxeffects );
   }
 
   for( int i = 0; i < players.size(); i++ ) {
-    players[ i ].weaponCooldown--;
-    players[ i ].genEffects(&gfxeffects, &projectiles[i]);
+    players[i].weaponCooldown--;
+    players[i].genEffects(&gfxeffects, &projectiles[i]);
     if(players[i].live) {
       int inzone = -1;
       for(int j = 0; j < zones.size(); j++)
@@ -1029,19 +1034,19 @@ void Game::renderToScreen() const {
   
   // Tanks
   for( int i = 0; i < players.size(); i++ ) {
-    players[ i ].render();
+    players[i].render();
     if(tankHighlight[i]) {
       setColor(1.0, 1.0, 1.0);
-      drawJustifiedText(StringPrintf("P%d", i), 2, players[i].pos.x.toFloat(), players[i].pos.y.toFloat(), TEXT_CENTER, TEXT_CENTER);
+      drawJustifiedText(StringPrintf("P%d", i), 3, players[i].pos.x.toFloat(), players[i].pos.y.toFloat(), TEXT_CENTER, TEXT_CENTER);
     }
   }
   
   // Projectiles, graphics effects, and bombardments
   for( int i = 0; i < projectiles.size(); i++ )
-    for( int j = 0; j < projectiles[ i ].size(); j++ )
-      projectiles[ i ][ j ].render();
+    for( int j = 0; j < projectiles[i].size(); j++ )
+      projectiles[i][ j ].render();
   for( int i = 0; i < gfxeffects.size(); i++ )
-    gfxeffects[ i ].render();
+    gfxeffects[i].render();
   for(int i = 0; i < bombards.size(); i++) {
     if(bombards[i].state == BombardmentState::BS_OFF) {
     } else if(bombards[i].state == BombardmentState::BS_SPAWNING) {
