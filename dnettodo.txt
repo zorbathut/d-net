@@ -1,10 +1,16 @@
 ---- Major work path
 - Multiweapon
-- Faction info screen on startup
-- Improve explosion effects (missile, etc)
+  - Modified buying screen with wider columns
+  - Both buying and selling
+- Dual weapon
+  - Better control config
+  - "Switch mode" in buying screen
+- New tanks
 - Certificates and discounts
 - Training
 - Next generation of weapons
+- Faction info screen on startup
+- Improve explosion effects (missile, etc)
 - Speed up wall difference in nasty situations (i.e. glory devices in corners)
 - Speed up wall placement in all situations (that annoying caching thing with gamemap, I guess)
 - Make explosion removals include the focus point
