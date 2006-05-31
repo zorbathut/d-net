@@ -27,12 +27,16 @@ private:
 
   vector<int> curloc;
 
+  float xofs;
+
   const HierarchyNode &getStepNode(int step) const;
 
   const HierarchyNode &getCurNode() const;
   const HierarchyNode &getCategoryNode() const;
 
-  void renderNode(const HierarchyNode &node, int depth, int xpos) const;
+  void doTableUpdate();
+  void doTableRender() const;
+  void renderNode(const HierarchyNode &node, int depth) const;
 
 public:
   bool runTick( const Keystates &keys );
