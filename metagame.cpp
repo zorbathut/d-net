@@ -50,10 +50,28 @@ const float sl_boxthick = 0.1;
 void Shop::renderNode(const HierarchyNode &node, int depth) const {
   float hoffbase = sl_hoffset + (sl_boxwidth + sl_hoffset) * (depth - xofs);
   
-  for(int i = 0; i < node.branches.size(); i++) {
-    if(depth < curloc.size() && curloc[depth] == i) {
+  vector<pair<int, float> > rendpos;
+  if(depth == curloc.size() || depth + 1 == curloc.size()) {
+    // then we render this normally, or actually "approaching normal"
+    for(int i = 0; i < node.branches.size(); i++)
+      rendpos.push_back(make_pair(i, sl_voffset + i * sl_itemheight));
+  } else {
+    // we condense in some way, with crazy animations, woo!
+    for(int i = 0; i < curloc[depth]; i++)
+      rendpos.push_back(make_pair(i, sl_voffset + (i * sl_itemheight) / 2));
+    for(int i = node.branches.size() - 1; i > curloc[depth]; i--)
+      rendpos.push_back(make_pair(i, sl_voffset + (i * sl_itemheight) / 2));
+    rendpos.push_back(make_pair(curloc[depth], sl_voffset + (curloc[depth] * sl_itemheight) / 2));
+  }
+  
+  if(depth < curloc.size())
+    renderNode(node.branches[curloc[depth]], depth + 1);
+  
+  for(int j = 0; j < rendpos.size(); j++) {
+    const int itemid = rendpos[j].first;
+    // highlight if this one is in our "active path"
+    if(depth < curloc.size() && curloc[depth] == itemid) {
       setColor(1.0, 1.0, 1.0);
-      renderNode(node.branches[i], depth + 1);
     } else {
       setColor(0.3, 0.3, 0.3);
     }
@@ -65,27 +83,27 @@ void Shop::renderNode(const HierarchyNode &node, int depth) const {
       if(xend - xstart < sl_boxwidth * 0.01)
         continue;   // if we can only see 1% of this box, just don't show any of it - gets rid of some ugly rendering edge cases
     }
-    drawSolid(Float4( hoffbase, sl_voffset + i * sl_itemheight, hoffbase + sl_boxwidth, sl_voffset + i * sl_itemheight + sl_fontsize + sl_boxborder * 2 ));
-    drawRect(Float4( hoffbase, sl_voffset + i * sl_itemheight, hoffbase + sl_boxwidth, sl_voffset + i * sl_itemheight + sl_fontsize + sl_boxborder * 2 ), sl_boxthick);
+    drawSolid(Float4(hoffbase, rendpos[j].second, hoffbase + sl_boxwidth, rendpos[j].second + sl_fontsize + sl_boxborder * 2));
+    drawRect(Float4(hoffbase, rendpos[j].second, hoffbase + sl_boxwidth, rendpos[j].second + sl_fontsize + sl_boxborder * 2), sl_boxthick);
     setColor(1.0, 1.0, 1.0);
-    drawText(node.branches[i].name.c_str(), sl_fontsize, hoffbase + sl_boxborder, sl_voffset + i * sl_itemheight + sl_boxborder);
+    drawText(node.branches[itemid].name.c_str(), sl_fontsize, hoffbase + sl_boxborder, rendpos[j].second + sl_boxborder);
     {
-      int dispmode = node.branches[i].displaymode;
+      int dispmode = node.branches[itemid].displaymode;
       if(dispmode == HierarchyNode::HNDM_COSTUNIQUE) {
-        if(node.branches[i].type == HierarchyNode::HNT_UPGRADE && !player->hasUpgrade(node.branches[i].upgrade))
+        if(node.branches[itemid].type == HierarchyNode::HNT_UPGRADE && !player->hasUpgrade(node.branches[itemid].upgrade))
           dispmode = HierarchyNode::HNDM_COST;
-        if(node.branches[i].type == HierarchyNode::HNT_GLORY && !player->hasGlory(node.branches[i].glory))
+        if(node.branches[itemid].type == HierarchyNode::HNT_GLORY && !player->hasGlory(node.branches[itemid].glory))
           dispmode = HierarchyNode::HNDM_COST;
-        if(node.branches[i].type == HierarchyNode::HNT_BOMBARDMENT && !player->hasBombardment(node.branches[i].bombardment))
+        if(node.branches[itemid].type == HierarchyNode::HNT_BOMBARDMENT && !player->hasBombardment(node.branches[itemid].bombardment))
           dispmode = HierarchyNode::HNDM_COST;
       }
       if(dispmode == HierarchyNode::HNDM_BLANK) {
       } else if(dispmode == HierarchyNode::HNDM_COST) {
-        drawText(StringPrintf("%6s", node.branches[i].cost(player).textual().c_str()), sl_fontsize, hoffbase + sl_pricehpos, sl_voffset + i * sl_itemheight + sl_boxborder);
+        drawText(StringPrintf("%6s", node.branches[itemid].cost(player).textual().c_str()), sl_fontsize, hoffbase + sl_pricehpos, rendpos[j].second + sl_boxborder);
       } else if(dispmode == HierarchyNode::HNDM_PACK) {
-        drawText(StringPrintf("%dpk", node.branches[i].pack), sl_fontsize, hoffbase + sl_pricehpos, sl_voffset + i * sl_itemheight + sl_boxborder);
+        drawText(StringPrintf("%dpk", node.branches[itemid].pack), sl_fontsize, hoffbase + sl_pricehpos, rendpos[j].second + sl_boxborder);
       } else if(dispmode == HierarchyNode::HNDM_COSTUNIQUE) {
-        drawText("bought", sl_fontsize, hoffbase + sl_pricehpos, sl_voffset + i * sl_itemheight + sl_boxborder);
+        drawText("bought", sl_fontsize, hoffbase + sl_pricehpos, rendpos[j].second + sl_boxborder);
       } else {
         CHECK(0);
       }

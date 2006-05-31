@@ -1,6 +1,5 @@
 ---- Major work path
 - Multiweapon
-  - Modified buying screen with wider columns
   - Both buying and selling
 - Dual weapon
   - Better control config
