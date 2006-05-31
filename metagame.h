@@ -32,7 +32,7 @@ private:
   const HierarchyNode &getCurNode() const;
   const HierarchyNode &getCategoryNode() const;
 
-  void renderNode(const HierarchyNode &node, int depth) const;
+  void renderNode(const HierarchyNode &node, int depth, int xpos) const;
 
 public:
   bool runTick( const Keystates &keys );

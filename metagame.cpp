@@ -12,6 +12,8 @@
 
 using namespace std;
 
+DEFINE_int(factionMode, -1, "Faction mode to skip faction choice battle");
+
 const HierarchyNode &Shop::getStepNode(int step) const {
   CHECK(step >= 0 && step <= curloc.size());
   const HierarchyNode *cnode = &itemDbRoot();
@@ -30,6 +32,8 @@ const HierarchyNode &Shop::getCategoryNode() const {
   return getStepNode(curloc.size() - 1);
 }
 
+const float sl_totalwidth = 133;
+
 const float sl_hoffset = 1.5;
 const float sl_voffset = 5;
 
@@ -37,47 +41,49 @@ const float sl_fontsize = 2;
 const float sl_boxborder = 0.5;
 const float sl_itemheight = 4;
 
-const float sl_boxwidth = 42;
+const float sl_boxwidth = (sl_totalwidth - sl_hoffset * 3) / 2;
 
-const float sl_pricehpos = 29;
+const float sl_pricehpos = sl_boxwidth / 4 * 3;
 
 const float sl_boxthick = 0.1;
 
-void Shop::renderNode(const HierarchyNode &node, int depth) const {
+void Shop::renderNode(const HierarchyNode &node, int depth, int xpos) const {
   CHECK(depth < 3 || node.branches.size() == 0);
   
-  float hoffbase = sl_hoffset + ( sl_boxwidth + sl_hoffset ) * depth;
+  float hoffbase = sl_hoffset + ( sl_boxwidth + sl_hoffset ) * xpos;
   
   for(int i = 0; i < node.branches.size(); i++) {
     if(depth < curloc.size() && curloc[depth] == i) {
       setColor(1.0, 1.0, 1.0);
-      renderNode(node.branches[i], depth + 1);
+      renderNode(node.branches[i], depth + 1, xpos + 1);
     } else {
       setColor(0.3, 0.3, 0.3);
     }
-    drawSolid(Float4( hoffbase, sl_voffset + i * sl_itemheight, hoffbase + sl_boxwidth, sl_voffset + i * sl_itemheight + sl_fontsize + sl_boxborder * 2 ));
-    drawRect(Float4( hoffbase, sl_voffset + i * sl_itemheight, hoffbase + sl_boxwidth, sl_voffset + i * sl_itemheight + sl_fontsize + sl_boxborder * 2 ), sl_boxthick);
-    setColor(1.0, 1.0, 1.0);
-    drawText(node.branches[i].name.c_str(), sl_fontsize, hoffbase + sl_boxborder, sl_voffset + i * sl_itemheight + sl_boxborder);
-    {
-      int dispmode = node.branches[i].displaymode;
-      if(dispmode == HierarchyNode::HNDM_COSTUNIQUE) {
-        if(node.branches[i].type == HierarchyNode::HNT_UPGRADE && !player->hasUpgrade(node.branches[i].upgrade))
-          dispmode = HierarchyNode::HNDM_COST;
-        if(node.branches[i].type == HierarchyNode::HNT_GLORY && !player->hasGlory(node.branches[i].glory))
-          dispmode = HierarchyNode::HNDM_COST;
-        if(node.branches[i].type == HierarchyNode::HNT_BOMBARDMENT && !player->hasBombardment(node.branches[i].bombardment))
-          dispmode = HierarchyNode::HNDM_COST;
-      }
-      if(dispmode == HierarchyNode::HNDM_BLANK) {
-      } else if(dispmode == HierarchyNode::HNDM_COST) {
-        drawText(StringPrintf("%6s", node.branches[i].cost(player).textual().c_str()), sl_fontsize, hoffbase + sl_pricehpos, sl_voffset + i * sl_itemheight + sl_boxborder);
-      } else if(dispmode == HierarchyNode::HNDM_PACK) {
-        drawText(StringPrintf("%dpk", node.branches[i].pack), sl_fontsize, hoffbase + sl_pricehpos, sl_voffset + i * sl_itemheight + sl_boxborder);
-      } else if(dispmode == HierarchyNode::HNDM_COSTUNIQUE) {
-        drawText("bought", sl_fontsize, hoffbase + sl_pricehpos, sl_voffset + i * sl_itemheight + sl_boxborder);
-      } else {
-        CHECK(0);
+    if(xpos == 0 || xpos == 1) {
+      drawSolid(Float4( hoffbase, sl_voffset + i * sl_itemheight, hoffbase + sl_boxwidth, sl_voffset + i * sl_itemheight + sl_fontsize + sl_boxborder * 2 ));
+      drawRect(Float4( hoffbase, sl_voffset + i * sl_itemheight, hoffbase + sl_boxwidth, sl_voffset + i * sl_itemheight + sl_fontsize + sl_boxborder * 2 ), sl_boxthick);
+      setColor(1.0, 1.0, 1.0);
+      drawText(node.branches[i].name.c_str(), sl_fontsize, hoffbase + sl_boxborder, sl_voffset + i * sl_itemheight + sl_boxborder);
+      {
+        int dispmode = node.branches[i].displaymode;
+        if(dispmode == HierarchyNode::HNDM_COSTUNIQUE) {
+          if(node.branches[i].type == HierarchyNode::HNT_UPGRADE && !player->hasUpgrade(node.branches[i].upgrade))
+            dispmode = HierarchyNode::HNDM_COST;
+          if(node.branches[i].type == HierarchyNode::HNT_GLORY && !player->hasGlory(node.branches[i].glory))
+            dispmode = HierarchyNode::HNDM_COST;
+          if(node.branches[i].type == HierarchyNode::HNT_BOMBARDMENT && !player->hasBombardment(node.branches[i].bombardment))
+            dispmode = HierarchyNode::HNDM_COST;
+        }
+        if(dispmode == HierarchyNode::HNDM_BLANK) {
+        } else if(dispmode == HierarchyNode::HNDM_COST) {
+          drawText(StringPrintf("%6s", node.branches[i].cost(player).textual().c_str()), sl_fontsize, hoffbase + sl_pricehpos, sl_voffset + i * sl_itemheight + sl_boxborder);
+        } else if(dispmode == HierarchyNode::HNDM_PACK) {
+          drawText(StringPrintf("%dpk", node.branches[i].pack), sl_fontsize, hoffbase + sl_pricehpos, sl_voffset + i * sl_itemheight + sl_boxborder);
+        } else if(dispmode == HierarchyNode::HNDM_COSTUNIQUE) {
+          drawText("bought", sl_fontsize, hoffbase + sl_pricehpos, sl_voffset + i * sl_itemheight + sl_boxborder);
+        } else {
+          CHECK(0);
+        }
       }
     }
   }
@@ -158,7 +164,7 @@ void Shop::renderToScreen() const {
     const float ofs = 8;
     drawDvec2(player->getFaction()->icon, Float4(ofs, ofs, 125 - ofs, 100 - ofs), 50, 0.5);
   }
-  renderNode(itemDbRoot(), 0);
+  renderNode(itemDbRoot(), 0, min(0, (1 - (int)curloc.size()) + !getCurNode().branches.size()));
   float hudstart = itemDbRoot().branches.size() * sl_itemheight + sl_voffset + sl_boxborder;
   if(getCurNode().type == HierarchyNode::HNT_WEAPON) {
     drawText("damage per second", 2, 1.5, hudstart);
@@ -674,8 +680,11 @@ bool Metagame::runTick(const vector<Controller> &keys) {
       }
     }
   } else if(mode == MGM_FACTIONTYPE) {
-    if(game.runTick(genKeystates(keys, pms))) {
-      faction_mode = game.winningTeam();
+    if(game.runTick(genKeystates(keys, pms)) || FLAGS_factionMode != -1) {
+      if(FLAGS_factionMode != -1)
+        faction_mode = FLAGS_factionMode;
+      else
+        faction_mode = game.winningTeam();
       if(faction_mode == -1) {
         vector<int> teams = game.teamBreakdown();
         CHECK(teams.size() == 5);
