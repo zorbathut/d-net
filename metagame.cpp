@@ -51,17 +51,17 @@ void Shop::renderNode(const HierarchyNode &node, int depth) const {
   float hoffbase = sl_hoffset + (sl_boxwidth + sl_hoffset) * (depth - xofs);
   
   vector<pair<int, float> > rendpos;
-  if(depth == curloc.size() || depth + 1 == curloc.size()) {
-    // then we render this normally, or actually "approaching normal"
-    for(int i = 0; i < node.branches.size(); i++)
-      rendpos.push_back(make_pair(i, sl_voffset + i * sl_itemheight));
-  } else {
-    // we condense in some way, with crazy animations, woo!
-    for(int i = 0; i < curloc[depth]; i++)
-      rendpos.push_back(make_pair(i, sl_voffset + (i * sl_itemheight) / 2));
-    for(int i = node.branches.size() - 1; i > curloc[depth]; i--)
-      rendpos.push_back(make_pair(i, sl_voffset + (i * sl_itemheight) / 2));
-    rendpos.push_back(make_pair(curloc[depth], sl_voffset + (curloc[depth] * sl_itemheight) / 2));
+  {
+    int desiredfront;
+    if(curloc.size() <= depth)
+      desiredfront = 0;
+    else
+      desiredfront = curloc[depth];
+    for(int i = 0; i < desiredfront; i++)
+      rendpos.push_back(make_pair(i, sl_voffset + (i * sl_itemheight) * expandy[depth]));
+    for(int i = node.branches.size() - 1; i > desiredfront; i--)
+      rendpos.push_back(make_pair(i, sl_voffset + (i * sl_itemheight) * expandy[depth]));
+    rendpos.push_back(make_pair(desiredfront, sl_voffset + (desiredfront * sl_itemheight) * expandy[depth]));
   }
   
   if(depth < curloc.size())
@@ -177,16 +177,28 @@ void Shop::ai(Ai *ais) const {
 
 const float framechange = 0.2;
 
-void Shop::doTableUpdate() {
-  float nxofs = max((int)curloc.size() - 1 - !getCurNode().branches.size(), 0);
-  if(abs(xofs - nxofs) <= framechange)
-    xofs = nxofs;
-  else if(xofs < nxofs)
-    xofs += framechange;
-  else if(xofs > nxofs)
-    xofs -= framechange;
+void approach(float *write, float target, float delta) {
+  if(abs(*write - target) <= delta)
+    *write = target;
+  else if(*write < target)
+    *write += delta;
+  else if(*write > target)
+    *write -= delta;
   else
     CHECK(0);  // oh god bear is driving car
+}
+
+void Shop::doTableUpdate() {
+  float nxofs = max((int)curloc.size() - 1 - !getCurNode().branches.size(), 0);
+  approach(&xofs, nxofs, framechange);
+
+  int sz = max(expandy.size(), curloc.size() + 1);
+  expandy.resize(sz, 1.0);
+  vector<float> nexpandy(sz, 1.0);
+  if(!getCurNode().branches.size())
+    nexpandy[curloc.size() - 2] = 0.0;
+  for(int i = 0; i < expandy.size(); i++)
+    approach(&expandy[i], nexpandy[i], framechange);
 };
 
 void Shop::doTableRender() const {
@@ -228,6 +240,7 @@ Shop::Shop() {
 Shop::Shop(Player *in_player) {
   player = in_player;
   curloc.push_back(0);
+  expandy.resize(2, 1.0); // not really ideal but hey
   xofs = 0;
 }
 

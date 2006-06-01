@@ -28,6 +28,7 @@ private:
   vector<int> curloc;
 
   float xofs;
+  vector<float> expandy;
 
   const HierarchyNode &getStepNode(int step) const;
 
