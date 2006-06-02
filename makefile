@@ -18,7 +18,7 @@ clean:
 	rm -rf *.o *.exe *.d *.S
 
 testrun: d-net.exe
-	d-net.exe --nofullscreen --debugitems --startingCash=1000000000 --debugControllers=2 --factionMode=0
+	d-net.exe --nofullscreen --debugitems --startingCash=100000 --debugControllers=2 --factionMode=0
 
 run: d-net.exe
 	d-net.exe --nofullscreen

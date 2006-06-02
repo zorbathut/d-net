@@ -49,6 +49,12 @@ float IDBAdjustment::adjustmentfactor(int type) const {
   return (float)(adjusts[type] + 100) / 100;
 }
 
+float IDBAdjustment::recyclevalue() const {
+  float shares = 1 * adjustmentfactor(IDBAdjustment::RECYCLE_BONUS);
+  float ratio = shares / (shares + 1.0);
+  return ratio;
+}
+
 Money HierarchyNode::cost(const Player *player) const {
   if(type == HNT_WEAPON) {
     return player->adjustWeapon(weapon).cost();
@@ -62,7 +68,21 @@ Money HierarchyNode::cost(const Player *player) const {
     CHECK(0);
   }
 }
-  
+
+Money HierarchyNode::sellvalue(const Player *player) const {
+  if(type == HNT_WEAPON) {
+    return player->adjustWeapon(weapon).sellcost(min(pack, player->ammoCount(weapon)));
+  } else if(type == HNT_UPGRADE) {
+    return player->adjustUpgrade(upgrade).sellcost();
+  } else if(type == HNT_GLORY) {
+    return player->adjustGlory(glory).sellcost();
+  } else if(type == HNT_BOMBARDMENT) {
+    return player->adjustBombardment(bombardment).sellcost();
+  } else {
+    CHECK(0);
+  }
+}
+
 void HierarchyNode::checkConsistency() const {
   dprintf("Consistency scan entering %s\n", name.c_str());
   // all nodes need a name

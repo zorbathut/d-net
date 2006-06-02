@@ -43,6 +43,14 @@ void Player::buyWeapon(const IDBWeapon *in_weap) {
   cash -= adjustWeapon(in_weap).cost();
 }
 
+void Player::sellWeapon(const IDBWeapon *in_weap) {
+  CHECK(weapons.count(make_pair(in_weap->name, in_weap)));
+  CHECK(weapons[make_pair(in_weap->name, in_weap)] > 0);
+  int sold = min(ammoCount(in_weap), in_weap->quantity);
+  cash += adjustWeapon(in_weap).sellcost(sold);
+  consumeAmmo(in_weap, sold);
+}
+
 bool Player::hasUpgrade(const IDBUpgrade *in_upg) const {
   CHECK(in_upg);
   return count(upgrades.begin(), upgrades.end(), in_upg);
@@ -77,13 +85,6 @@ void Player::cycleWeapon() {
     curweapon = itr->first.second;
 }
 
-  /*
-Money Player::resellAmmoValue() const {
-  float shares = 1 * adjustment.adjustmentfactor(IDBAdjustment::RECYCLE_BONUS);
-  float ratio = shares / (shares + 0.2);
-  return adjustWeapon(weapon).cost() * shotsLeft() * ratio / weapon->quantity;
-}*/
-
 Money Player::getCash() const {
   return cash;
 }
@@ -116,15 +117,8 @@ float Player::consumeDamage() {
 float Player::shotFired() {
   CHECK(weapons.count(make_pair(curweapon->name, curweapon)));
   float cost = adjustWeapon(curweapon).cost().toFloat() / curweapon->quantity;
-  int *ammo = &weapons[make_pair(curweapon->name, curweapon)];
-  if(*ammo != -1)
-    (*ammo)--;
-  if(*ammo == 0) {
-    const IDBWeapon *oldwep = curweapon;
-    cycleWeapon();
-    CHECK(curweapon != oldwep);
-    weapons.erase(make_pair(oldwep->name, oldwep));
-  }
+  if(ammoCount(curweapon) != -1)
+    consumeAmmo(curweapon, 1);
   return cost;
 };
 
@@ -157,4 +151,16 @@ void Player::reCalculate() {
   for(int i = 0; i < upgrades.size(); i++)
     adjustment += *upgrades[i]->adjustment;
   adjustment.debugDump();
+}
+
+void Player::consumeAmmo(const IDBWeapon *weapon, int count) {
+  int *ammo = &weapons[make_pair(weapon->name, weapon)];
+  CHECK(*ammo >= count);
+  (*ammo) -= count;
+  if(*ammo == 0) {
+    if(curweapon == weapon)
+      cycleWeapon();
+    CHECK(curweapon != weapon);
+    weapons.erase(make_pair(weapon->name, weapon));
+  }
 }

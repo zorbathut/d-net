@@ -31,6 +31,7 @@ private:
   vector<float> expandy;
 
   bool selling;
+  bool disabled;  // when we switch, we wait for them to let go of the button
 
   const HierarchyNode &getStepNode(int step) const;
 

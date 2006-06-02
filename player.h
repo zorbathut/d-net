@@ -28,6 +28,8 @@ public:
   void buyBombardment(const IDBBombardment *in_bombardment);
   void buyWeapon(const IDBWeapon *in_weap);
 
+  void sellWeapon(const IDBWeapon *in_weap);
+
   bool hasUpgrade(const IDBUpgrade *in_upg) const;
   bool hasGlory(const IDBGlory *in_glory) const;
   bool hasBombardment(const IDBBombardment *in_bombardment) const;
@@ -62,6 +64,7 @@ public:
 private:
   
   void reCalculate();
+  void consumeAmmo(const IDBWeapon *weapon, int count);
 
   vector<const IDBUpgrade *> upgrades;
 

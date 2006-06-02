@@ -59,6 +59,7 @@ int IDBWeaponAdjust::framesForCooldown() const {
   return (int)floor(frames_per_shot) + (frand() < (frames_per_shot - floor(frames_per_shot)));
 }
 Money IDBWeaponAdjust::cost() const { return idb->base_cost / adjust->adjustmentfactor(IDBAdjustment::DISCOUNT_WEAPON); };
+Money IDBWeaponAdjust::sellcost(int amount) const { return cost() * adjust->recyclevalue() * amount / idb->quantity; };
 
 float IDBWeaponAdjust::stats_damagePerShot() const { return deploy().stats_damagePerShotMultiplier() * projectile().stats_damagePerShot(); }
 float IDBWeaponAdjust::stats_damagePerSecond() const { return stats_damagePerShot() * idb->firerate; }
@@ -80,6 +81,7 @@ int IDBGloryAdjust::shotspersplit() const { return idb->shotspersplit; };
 IDBProjectileAdjust IDBGloryAdjust::projectile() const { return IDBProjectileAdjust(idb->projectile, adjust); };
 
 Money IDBGloryAdjust::cost() const { return idb->base_cost; };
+Money IDBGloryAdjust::sellcost() const { return cost() * adjust->recyclevalue(); };
 
 float IDBGloryAdjust::stats_averageDamage() const { return (minsplits() + maxsplits()) / 2.0 * shotspersplit() * projectile().stats_damagePerShot(); }
 
@@ -90,6 +92,7 @@ IDBGloryAdjust::IDBGloryAdjust(const IDBGlory *in_idb, const IDBAdjustment *in_a
  */
 
 Money IDBUpgradeAdjust::cost() const { return idb->base_cost / adjust->adjustmentfactor(IDBAdjustment::DISCOUNT_UPGRADE); };
+Money IDBUpgradeAdjust::sellcost() const { return cost() * adjust->recyclevalue(); };
 
 IDBUpgradeAdjust::IDBUpgradeAdjust(const IDBUpgrade *in_idb, const IDBAdjustment *in_adjust) { idb = in_idb; adjust = in_adjust; };
 
@@ -103,6 +106,7 @@ int IDBBombardmentAdjust::unlockdelay() const { return idb->unlockdelay; };
 IDBWarheadAdjust IDBBombardmentAdjust::warhead() const { return IDBWarheadAdjust(idb->warhead, adjust); };
 
 Money IDBBombardmentAdjust::cost() const { return idb->base_cost; };
+Money IDBBombardmentAdjust::sellcost() const { return cost() * adjust->recyclevalue(); };
 
 IDBBombardmentAdjust::IDBBombardmentAdjust(const IDBBombardment *in_idb, const IDBAdjustment *in_adjust) { idb = in_idb; adjust = in_adjust; };
 

@@ -238,7 +238,7 @@ faction { # Heavy armor
 adjustment {
   name=adjustment.sons.high
   
-  recycle_bonus=200
+  recycle_bonus=400
   
   damage_trap=-20
   damage_explosive=-20

@@ -215,7 +215,7 @@ void initFrame() {
   glEnable( GL_BLEND );
   glBlendFunc( GL_SRC_ALPHA, GL_ONE );
   //glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-  clearFrame(Color(0.1, 0.1, 0.1));
+  clearFrame(Color(0.05, 0.05, 0.05));
   CHECK(glGetError() == GL_NO_ERROR);
 }
 

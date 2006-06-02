@@ -23,6 +23,7 @@ public:
   int adjusts[LAST];
   
   float adjustmentfactor(int type) const;
+  float recyclevalue() const; // this is annoyingly different
 
   void debugDump();
 
@@ -180,6 +181,7 @@ public:
 
   int framesForCooldown() const;
   Money cost() const;
+  Money sellcost(int shots) const;
   
   float stats_damagePerShot() const;
   float stats_damagePerSecond() const;
@@ -203,6 +205,7 @@ public:
   IDBProjectileAdjust projectile() const;
   
   Money cost() const;
+  Money sellcost() const;
 
   float stats_averageDamage() const;
   
@@ -216,6 +219,7 @@ struct IDBUpgradeAdjust {
 public:
 
   Money cost() const;
+  Money sellcost() const;
 
   IDBUpgradeAdjust(const IDBUpgrade *in_idb, const IDBAdjustment *in_adjust);
 };
@@ -231,6 +235,7 @@ public:
   IDBWarheadAdjust warhead() const;
   
   Money cost() const;
+  Money sellcost() const;
 
   IDBBombardmentAdjust(const IDBBombardment *in_idb, const IDBAdjustment *in_adjust);
 };
@@ -266,6 +271,7 @@ public:
   bool buyable;
   
   Money cost(const Player *player) const;
+  Money sellvalue(const Player *player) const;
   int pack;
   
   const IDBWeapon *weapon;
