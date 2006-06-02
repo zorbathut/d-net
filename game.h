@@ -26,7 +26,7 @@ public:
   bool dead() const;
 
   int type;
-  enum { EFFECT_POINT, EFFECT_LINE, EFFECT_CIRCLE, EFFECT_TEXT, EFFECT_PATH };
+  enum {EFFECT_POINT, EFFECT_LINE, EFFECT_CIRCLE, EFFECT_TEXT, EFFECT_PATH, EFFECT_PING};
   
   int life;
   int age;
@@ -53,6 +53,10 @@ public:
   float path_ang_start;
   float path_ang_vel;
   float path_ang_acc;
+  
+  Float2 ping_pos;
+  float ping_radius_d;
+  float ping_thickness_d;
 
   GfxEffects();
 
@@ -218,8 +222,6 @@ private:
   Collider collider;
 
   vector<pair<vector<Coord2>, Color> > zones;
-
-  vector<char> tankHighlight;
 
   Float2 zoom_center;
   Float2 zoom_size;

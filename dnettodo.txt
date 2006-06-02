@@ -27,6 +27,8 @@
 - Slide-along-walls track simulation?
 
 ---- Maintenance, minor bugfix, braindead
+- gfxeffects "life" in seconds, not frames
+- gfxeffects construction helper funcs
 - Auto coord-to-float converter (CoordFloat?)
 - Buy menu flicker? Double-buffering?
 - Extricate coord.h and float.h from more headers

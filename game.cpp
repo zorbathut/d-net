@@ -85,6 +85,8 @@ void GfxEffects::render() const {
     drawText(text_data, text_size, text_pos + text_vel * age);
   } else if(type == EFFECT_PATH) {
     drawTransformedLinePath(path_path, path_ang_start + path_ang_vel * age + path_ang_acc * age * age / 2, path_pos_start + path_pos_vel * age + path_pos_acc * age * age / 2, 0.1f);
+  } else if(type == EFFECT_PING) {
+    drawCircle(ping_pos, ping_radius_d * age / 60, ping_thickness_d * age / 60);
   } else {
     CHECK(0);
   }
@@ -616,14 +618,19 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
   
   frameNm++;
   
-  tankHighlight.clear();
-  tankHighlight.resize(players.size());
-  
   vector< Keystates > keys = rkeys;
   if(frameNm < frameNmToStart && freezeUntilStart) {
     for(int i = 0; i < keys.size(); i++) {
-      if(keys[i].fire.down)
-        tankHighlight[i] = true;
+      if(keys[i].fire.push) {
+        GfxEffects ngfe;
+        ngfe.type = GfxEffects::EFFECT_PING;
+        ngfe.ping_pos = players[i].pos.toFloat();
+        ngfe.ping_radius_d = 200;
+        ngfe.ping_thickness_d = 8;
+        ngfe.life = 30;
+        ngfe.color = players[i].player->getFaction()->color;
+        gfxeffects.push_back(ngfe);
+      }
       keys[i].nullMove();
       keys[i].fire = Button();
     }
@@ -1041,10 +1048,6 @@ void Game::renderToScreen() const {
   // Tanks
   for( int i = 0; i < players.size(); i++ ) {
     players[i].render();
-    if(tankHighlight[i]) {
-      setColor(1.0, 1.0, 1.0);
-      drawJustifiedText(StringPrintf("P%d", i), 3, players[i].pos.x.toFloat(), players[i].pos.y.toFloat(), TEXT_CENTER, TEXT_CENTER);
-    }
   }
   
   // Projectiles, graphics effects, and bombardments
@@ -1306,7 +1309,6 @@ void Game::initCommon(const vector<Player*> &in_playerdata, const Level &lev, in
   teams.clear();
   projectiles.clear();
   gfxeffects.clear();
-  tankHighlight.clear();  // yeesh
   
   players.resize(in_playerdata.size());
   bombards.resize(in_playerdata.size());
@@ -1337,8 +1339,6 @@ void Game::initCommon(const vector<Player*> &in_playerdata, const Level &lev, in
   firepowerSpent = 0;
   
   projectiles.resize(in_playerdata.size());
-  
-  tankHighlight.resize(players.size());
   
   pair<Float2, Float2> z = getMapZoom(gamemap.getBounds());
   zoom_center = z.first;
