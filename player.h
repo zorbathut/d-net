@@ -31,6 +31,7 @@ public:
   bool hasUpgrade(const IDBUpgrade *in_upg) const;
   bool hasGlory(const IDBGlory *in_glory) const;
   bool hasBombardment(const IDBBombardment *in_bombardment) const;
+  int ammoCount(const IDBWeapon *in_weapon) const;
 
   const IDBFaction *getFaction() const;
   

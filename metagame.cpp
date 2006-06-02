@@ -44,6 +44,7 @@ const float sl_itemheight = 4;
 const float sl_boxwidth = (sl_totalwidth - sl_hoffset * 3) / 2;
 
 const float sl_pricehpos = sl_boxwidth / 4 * 3;
+const float sl_quanthpos = sl_boxwidth / 5 * 3;
 
 const float sl_boxthick = 0.1;
 
@@ -51,7 +52,7 @@ void Shop::renderNode(const HierarchyNode &node, int depth) const {
   float hoffbase = sl_hoffset + (sl_boxwidth + sl_hoffset) * (depth - xofs);
   
   vector<pair<int, float> > rendpos;
-  {
+  if(node.branches.size()) {
     int desiredfront;
     if(curloc.size() <= depth)
       desiredfront = 0;
@@ -106,6 +107,15 @@ void Shop::renderNode(const HierarchyNode &node, int depth) const {
         drawText("bought", sl_fontsize, hoffbase + sl_pricehpos, rendpos[j].second + sl_boxborder);
       } else {
         CHECK(0);
+      }
+    }
+    {
+      if(node.branches[itemid].type == HierarchyNode::HNT_WEAPON) {
+        if(player->ammoCount(node.branches[itemid].weapon) == -1) {
+          drawText(StringPrintf("%5s", "UNL"), sl_fontsize, hoffbase + sl_quanthpos, rendpos[j].second + sl_boxborder);
+        } else if(player->ammoCount(node.branches[itemid].weapon) > 0) {
+          drawText(StringPrintf("%5d", player->ammoCount(node.branches[itemid].weapon)), sl_fontsize, hoffbase + sl_quanthpos, rendpos[j].second + sl_boxborder);
+        }
       }
     }
   }
@@ -195,7 +205,7 @@ void Shop::doTableUpdate() {
   int sz = max(expandy.size(), curloc.size() + 1);
   expandy.resize(sz, 1.0);
   vector<float> nexpandy(sz, 1.0);
-  if(!getCurNode().branches.size())
+  if(!getCurNode().branches.size() && curloc.size() >= 2)
     nexpandy[curloc.size() - 2] = 0.0;
   for(int i = 0; i < expandy.size(); i++)
     approach(&expandy[i], nexpandy[i], framechange);
@@ -242,6 +252,7 @@ Shop::Shop(Player *in_player) {
   curloc.push_back(0);
   expandy.resize(2, 1.0); // not really ideal but hey
   xofs = 0;
+  selling = false;
 }
 
 PlayerMenuState::PlayerMenuState() {

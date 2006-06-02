@@ -473,7 +473,7 @@ void drawText(const char *txt, float scale, float sx, float sy) {
       vector<Float2> verts;
       for(int j = 0; j < pathdat[i].size(); j++)
         verts.push_back(Float2(sx + pathdat[i][j].first * scale, sy + pathdat[i][j].second * scale));
-      drawLinePath(verts, scale / 5);
+      drawLinePath(verts, scale / 4);
     }
     sx += scale * 8;
   }

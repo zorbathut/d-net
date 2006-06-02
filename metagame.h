@@ -30,6 +30,8 @@ private:
   float xofs;
   vector<float> expandy;
 
+  bool selling;
+
   const HierarchyNode &getStepNode(int step) const;
 
   const HierarchyNode &getCurNode() const;

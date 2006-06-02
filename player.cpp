@@ -49,6 +49,11 @@ bool Player::hasUpgrade(const IDBUpgrade *in_upg) const {
 }
 bool Player::hasGlory(const IDBGlory *in_glory) const { return glory == in_glory; };
 bool Player::hasBombardment(const IDBBombardment *in_bombardment) const { return bombardment == in_bombardment; };
+int Player::ammoCount(const IDBWeapon *in_weapon) const {
+  if(!weapons.count(make_pair(in_weapon->name, in_weapon)))
+    return 0;
+  return weapons.find(make_pair(in_weapon->name, in_weapon))->second;
+}
 
 const IDBFaction *Player::getFaction() const {
   return faction; };
@@ -141,7 +146,7 @@ Player::Player(const IDBFaction *fact, int in_factionmode) {
   CHECK(factionmode >= 0 && factionmode < FACTIONMODE_LAST);
   cash = Money(FLAGS_startingCash);
   reCalculate();
-  buyWeapon(defaultWeapon());
+  weapons[make_pair(defaultWeapon()->name, defaultWeapon())] = -1;
   curweapon = defaultWeapon();
   glory = defaultGlory();
   bombardment = defaultBombardment();
