@@ -629,6 +629,11 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
       vector<float> triggers;
       for(int i = 0; i < keys.keys.size(); i++)
         triggers.push_back(keys.keys[i].push);
+      
+      vector<int> groups(BUTTON_LAST);
+      groups[BUTTON_ACCEPT] = 1;
+      groups[BUTTON_CANCEL] = 1;
+      
       standardButtonTick(pms->buttons, NULL, BUTTON_LAST, &pms->setting_button_current, &pms->setting_button_reading, keys, triggers, pms);
     } else if(pms->settingmode == SETTING_AXISTYPE) {
       if(keys.l.push)
@@ -650,6 +655,9 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
       vector<float> triggers;
       for(int i = 0; i < keys.axes.size(); i++)
         triggers.push_back(keys.axes[i]);
+      
+      vector<int> groups(ksax_axis_names[pms->setting_axistype].size(), 0);
+      
       standardButtonTick(pms->axes, pms->axes_invert, 2, &pms->setting_axis_current, &pms->setting_axis_reading, keys, triggers, pms);
     } else if(pms->settingmode == SETTING_TEST) {
       if(keys.keys[pms->buttons[BUTTON_CANCEL]].push) {
@@ -775,9 +783,6 @@ void runSettingRender(const PlayerMenuState &pms) {
         tix.push_back(button_names[i]);
         names.push_back(tix);
       }
-      vector<int> groups(BUTTON_LAST);
-      groups[BUTTON_ACCEPT] = 1;
-      groups[BUTTON_CANCEL] = 1;
       
       StandardButtonRenderData sbrd;
       sbrd.rin = &rin;
