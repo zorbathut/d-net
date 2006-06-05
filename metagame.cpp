@@ -492,41 +492,62 @@ void standardButtonTick(int *outkeys, bool *outinvert, int outkeycount, int *cur
   }
 }
 
-void standardButtonRender(const float *ystarts, int yscount, float xstart, float xend, float textsize, const int *buttons, const bool *inverts, const vector<vector<string> > &names, int sel_button, bool sel_button_reading, float fadeFactor, char prefixchar) {
+struct StandardButtonRenderData {
+  float xstart;
+  float xend;
+  
+  const float *ystarts;
+  int yscount;
+  
+  float textsize;
+  
+  const int *buttons;
+  const bool *inverts;
+  
+  const vector<vector<string> > *names;
+  
+  int sel_button;
+  bool sel_button_reading;
+  
+  float fadeFactor;
+  char prefixchar;
+};
+
+void standardButtonRender(const StandardButtonRenderData &sbrd) {
   int linesneeded = 0;
-  for(int i = 0; i < names.size(); i++)
-    linesneeded += names[i].size();
-  CHECK(linesneeded <= yscount - 1);
-  int cy = 1 + (yscount - linesneeded + 1) / 2;
-  for(int i = 0; i < names.size(); i++) {
-    if(sel_button == i && !sel_button_reading) {
-      setColor(Color(1.0, 1.0, 1.0) * fadeFactor);
+  for(int i = 0; i < sbrd.names->size(); i++)
+    linesneeded += (*sbrd.names)[i].size();
+  CHECK(linesneeded <= sbrd.yscount - 1);
+  int cy = 1 + (sbrd.yscount - linesneeded + 1) / 2;
+  for(int i = 0; i < (*sbrd.names).size(); i++) {
+    if(sbrd.sel_button == i && !sbrd.sel_button_reading) {
+      setColor(Color(1.0, 1.0, 1.0) * sbrd.fadeFactor);
     } else {
-      setColor(Color(0.5, 0.5, 0.5) * fadeFactor);
+      setColor(Color(0.5, 0.5, 0.5) * sbrd.fadeFactor);
     }
-    for(int j = 0; j < names[i].size(); j++)
-      drawText(names[i][j], textsize, xstart, ystarts[cy++]);
+    for(int j = 0; j < (*sbrd.names)[i].size(); j++)
+      drawText((*sbrd.names)[i][j], sbrd.textsize, sbrd.xstart, sbrd.ystarts[cy++]);
     string btext;
-    if(sel_button == i && sel_button_reading) {
+    if(sbrd.sel_button == i && sbrd.sel_button_reading) {
       btext = "???";
-      setColor(Color(1.0, 1.0, 1.0) * fadeFactor);
-    } else if(buttons[i] == -1) {
+      setColor(Color(1.0, 1.0, 1.0) * sbrd.fadeFactor);
+    } else if(sbrd.buttons[i] == -1) {
       btext = "";
     } else {
-      if(prefixchar == 'B') {
-        CHECK(!inverts);
-        btext = StringPrintf("%c%02d", prefixchar, buttons[i]);
-      } else if(prefixchar == 'X') {
-        CHECK(inverts);
-        btext = StringPrintf("%c%d%c", prefixchar, buttons[i], inverts[i] ? '-' : '+');
+      if(sbrd.prefixchar == 'B') {
+        CHECK(!sbrd.inverts);
+        btext = StringPrintf("%c%02d", sbrd.prefixchar, sbrd.buttons[i]);
+      } else if(sbrd.prefixchar == 'X') {
+        CHECK(sbrd.inverts);
+        btext = StringPrintf("%c%d%c", sbrd.prefixchar, sbrd.buttons[i], sbrd.inverts[i] ? '-' : '+');
       } else {
         CHECK(0);
       }
-      setColor(Color(0.5, 0.5, 0.5) * fadeFactor);
+      setColor(Color(0.5, 0.5, 0.5) * sbrd.fadeFactor);
     }
-    drawJustifiedText(btext.c_str(), textsize, xend, ystarts[cy - 1], TEXT_MAX, TEXT_MIN);
+    drawJustifiedText(btext.c_str(), sbrd.textsize, sbrd.xend, sbrd.ystarts[cy - 1], TEXT_MAX, TEXT_MIN);
   }
-  CHECK(cy <= yscount);
+  CHECK(cy <= sbrd.yscount);
 }
 
 class RenderInfo {
@@ -754,11 +775,28 @@ void runSettingRender(const PlayerMenuState &pms) {
       vector<vector<string> > names;
       for(int i = 0; i < BUTTON_LAST; i++) {
         vector<string> tix;
-        tix.push_back(button_names_a[i]);
-        tix.push_back(button_names_b[i]);
+        tix.push_back(button_names[i]);
         names.push_back(tix);
       }
-      standardButtonRender(&rin.ystarts[0], rin.textline_count, rin.xstart, rin.xend, rin.textline_size * rin.unitsize, pms.buttons, NULL, names, pms.setting_button_current, pms.setting_button_reading, fadeFactor, 'B');
+      vector<int> groups(BUTTON_LAST);
+      groups[BUTTON_ACCEPT] = 1;
+      groups[BUTTON_CANCEL] = 1;
+      
+      StandardButtonRenderData sbrd;
+      sbrd.ystarts = &rin.ystarts[0];
+      sbrd.yscount = rin.textline_count;
+      sbrd.xstart = rin.xstart;
+      sbrd.xend = rin.xend;
+      sbrd.textsize = rin.textline_size * rin.unitsize;
+      sbrd.buttons = pms.buttons;
+      sbrd.inverts = NULL;
+      sbrd.names = &names;
+      sbrd.sel_button = pms.setting_button_current;
+      sbrd.sel_button_reading = pms.setting_button_reading;
+      sbrd.fadeFactor = fadeFactor;
+      sbrd.prefixchar = 'B';
+      
+      standardButtonRender(sbrd);
     } else if(pms.settingmode == SETTING_AXISTYPE) {
       if(pms.choicemode != CHOICE_IDLE)
         setColor(Color(1.0, 1.0, 1.0) * fadeFactor);
@@ -775,7 +813,22 @@ void runSettingRender(const PlayerMenuState &pms) {
       // TODO: better pictorial representations
     } else if(pms.settingmode == SETTING_AXISCHOOSE) {
       CHECK(ksax_axis_names[pms.setting_axistype].size() == BUTTON_LAST);
-      standardButtonRender(&rin.ystarts[0], rin.textline_count, rin.xstart, rin.xend, rin.textline_size * rin.unitsize, pms.axes, pms.axes_invert, ksax_axis_names[pms.setting_axistype], pms.setting_axis_current, pms.setting_axis_reading, fadeFactor, 'X');
+      
+      StandardButtonRenderData sbrd;
+      sbrd.ystarts = &rin.ystarts[0];
+      sbrd.yscount = rin.textline_count;
+      sbrd.xstart = rin.xstart;
+      sbrd.xend = rin.xend;
+      sbrd.textsize = rin.textline_size * rin.unitsize;
+      sbrd.buttons = pms.axes;
+      sbrd.inverts = pms.axes_invert;
+      sbrd.names = &ksax_axis_names[pms.setting_axistype];
+      sbrd.sel_button = pms.setting_axis_current;
+      sbrd.sel_button_reading = pms.setting_axis_reading;
+      sbrd.fadeFactor = fadeFactor;
+      sbrd.prefixchar = 'X';
+      
+      standardButtonRender(sbrd);
     } else if(pms.settingmode == SETTING_TEST) {
       setColor(Color(0.5, 0.5, 0.5) * fadeFactor);
       if(pms.choicemode == CHOICE_IDLE) {

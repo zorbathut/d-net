@@ -66,9 +66,11 @@ const char * const setting_names[] = { "Keys", "Mode", "Axis", "Test", "Ready" }
 
 enum { CHOICE_FIRSTPASS, CHOICE_ACTIVE, CHOICE_IDLE };
 
+//enum { BUTTON_ACCEPT, BUTTON_CANCEL, BUTTON_FIRE1, BUTTON_FIRE2, BUTTON_SWITCH1, BUTTON_SWITCH2, BUTTON_LAST };
+//const char * const button_names[] = { "Accept", "Cancel", "Fire 1", "Fire 2", "Switch 1", "Switch 2" };
+
 enum { BUTTON_ACCEPT, BUTTON_CANCEL, BUTTON_LAST };
-const char * const button_names_a[] = { "Fire/", "Weapon/" };
-const char * const button_names_b[] = { "  Accept", "  Cancel" };
+const char * const button_names[] = { "Fire/", "Weapon/" };
 
 struct PlayerMenuState {
 public:

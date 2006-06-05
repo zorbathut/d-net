@@ -1,5 +1,4 @@
 ---- Major work path
-- Selling things that aren't weapons
 - Dual weapon
   - Better control config
   - "Switch mode" in buying screen

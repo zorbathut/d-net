@@ -50,6 +50,8 @@ vector<vector<vector<string> > > ksax_axis_names_gen();
 const vector<vector<vector<string> > > ksax_axis_names = ksax_axis_names_gen(); // sigh.
 const char *const ksax_descriptions[KSAX_END][2] = { {"Turn axis and", "movement axis"}, {"Tank goes in", "axis direction"}, {"Independent", "tread control"} };
 
+#define FIRECOUNT 2
+
 class Keystates {
 public:
   float ax[2];
