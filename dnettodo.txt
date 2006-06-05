@@ -1,10 +1,9 @@
 ---- Major work path
-- Multiweapon
-  - Both buying and selling
+- Selling things that aren't weapons
 - Dual weapon
   - Better control config
   - "Switch mode" in buying screen
-- New tanks
+- New tanks, "tank base weapon"
 - Certificates and discounts
 - Training
 - Next generation of weapons

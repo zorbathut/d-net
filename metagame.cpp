@@ -108,25 +108,38 @@ void Shop::renderNode(const HierarchyNode &node, int depth) const {
     }
     // Figure out how we want to display the "cost" text
     if(!selling) {
-      int dispmode = node.branches[itemid].displaymode;
-      if(dispmode == HierarchyNode::HNDM_COSTUNIQUE) {
-        if(node.branches[itemid].type == HierarchyNode::HNT_UPGRADE && !player->hasUpgrade(node.branches[itemid].upgrade))
-          dispmode = HierarchyNode::HNDM_COST;
-        if(node.branches[itemid].type == HierarchyNode::HNT_GLORY && !player->hasGlory(node.branches[itemid].glory))
-          dispmode = HierarchyNode::HNDM_COST;
-        if(node.branches[itemid].type == HierarchyNode::HNT_BOMBARDMENT && !player->hasBombardment(node.branches[itemid].bombardment))
-          dispmode = HierarchyNode::HNDM_COST;
+      string display = "";
+      const int dispmode = node.branches[itemid].displaymode;
+      
+      // If it's "unique", we check to see if it's already been bought. If it has, we show what state it's in.
+      if(!display.size() && dispmode == HierarchyNode::HNDM_COSTUNIQUE) {
+        int state = 0;
+        if(node.branches[itemid].type == HierarchyNode::HNT_UPGRADE)
+          state = player->stateUpgrade(node.branches[itemid].upgrade);
+        else if(node.branches[itemid].type == HierarchyNode::HNT_GLORY)
+          state = player->stateGlory(node.branches[itemid].glory);
+        else if(node.branches[itemid].type == HierarchyNode::HNT_BOMBARDMENT)
+          state = player->stateBombardment(node.branches[itemid].bombardment);
+        else
+          CHECK(0);
+        if(state == ITEMSTATE_UNOWNED) {
+        } else if(state == ITEMSTATE_BOUGHT) {
+          display = "bought";
+        } else if(state == ITEMSTATE_EQUIPPED) {
+          display = "equipped";
+        }
       }
-      if(dispmode == HierarchyNode::HNDM_BLANK) {
-      } else if(dispmode == HierarchyNode::HNDM_COST) {
-        drawText(StringPrintf("%6s", node.branches[itemid].cost(player).textual().c_str()), sl_fontsize, hoffbase + sl_pricehpos, rendpos[j].second + sl_boxborder);
-      } else if(dispmode == HierarchyNode::HNDM_PACK) {
-        drawText(StringPrintf("%dpk", node.branches[itemid].pack), sl_fontsize, hoffbase + sl_pricehpos, rendpos[j].second + sl_boxborder);
-      } else if(dispmode == HierarchyNode::HNDM_COSTUNIQUE) {
-        drawText("bought", sl_fontsize, hoffbase + sl_pricehpos, rendpos[j].second + sl_boxborder);
-      } else {
-        CHECK(0);
-      }
+      
+      // If it's not unique, or it is and it just hasn't been bought, we show the cost.
+      if(!display.size() && (dispmode == HierarchyNode::HNDM_COST || dispmode == HierarchyNode::HNDM_COSTUNIQUE))
+        display = StringPrintf("%6s", node.branches[itemid].cost(player).textual().c_str());
+      
+      // If it's a pack, we show pack quantities.
+      if(!display.size() && dispmode == HierarchyNode::HNDM_PACK)
+        display = StringPrintf("%dpk", node.branches[itemid].pack);
+      
+      // Draw what we've got.
+      drawText(display, sl_fontsize, hoffbase + sl_pricehpos, rendpos[j].second + sl_boxborder);
     } else {
       int dispmode = node.branches[itemid].displaymode;
       if(dispmode == HierarchyNode::HNDM_COSTUNIQUE) {
@@ -202,41 +215,29 @@ bool Shop::runTick(const Keystates &keys) {
       if(getCurNode().buyable) {
         // Player is trying to buy something!
         
-        // First check to see if we're allowed to buy it
-        bool canBuy = false;
         if(getCurNode().type == HierarchyNode::HNT_DONE) {
-          canBuy = true;
+          return true;
         } else if(getCurNode().type == HierarchyNode::HNT_UPGRADE) {
-          if(player->canBuyUpgrade(getCurNode().upgrade))
-            canBuy = true;
+          if(player->stateUpgrade(getCurNode().upgrade) != ITEMSTATE_UNOWNED)
+            ;
+            //player->equipUpgrade(getCurNode().upgrade);
+          else if(player->canBuyUpgrade(getCurNode().upgrade))
+            player->buyUpgrade(getCurNode().upgrade);
         } else if(getCurNode().type == HierarchyNode::HNT_WEAPON) {
           if(player->canBuyWeapon(getCurNode().weapon))
-            canBuy = true;
+            player->buyWeapon(getCurNode().weapon);
         } else if(getCurNode().type == HierarchyNode::HNT_GLORY) {
-          if(player->canBuyGlory(getCurNode().glory))
-            canBuy = true;
+          if(player->stateGlory(getCurNode().glory) != ITEMSTATE_UNOWNED)
+            player->equipGlory(getCurNode().glory);
+          else if(player->canBuyGlory(getCurNode().glory))
+            player->buyGlory(getCurNode().glory);
         } else if(getCurNode().type == HierarchyNode::HNT_BOMBARDMENT) {
-          if(player->canBuyBombardment(getCurNode().bombardment))
-            canBuy = true;
+          if(player->stateBombardment(getCurNode().bombardment) != ITEMSTATE_UNOWNED)
+            player->equipBombardment(getCurNode().bombardment);
+          else if(player->canBuyBombardment(getCurNode().bombardment))
+            player->buyBombardment(getCurNode().bombardment);
         } else {
           CHECK(0);
-        }
-        
-        // If so, buy it
-        if(canBuy) {
-          if(getCurNode().type == HierarchyNode::HNT_DONE) {
-            return true;
-          } else if(getCurNode().type == HierarchyNode::HNT_UPGRADE) {
-            player->buyUpgrade(getCurNode().upgrade);
-          } else if(getCurNode().type == HierarchyNode::HNT_WEAPON) {
-            player->buyWeapon(getCurNode().weapon);
-          } else if(getCurNode().type == HierarchyNode::HNT_GLORY) {
-            player->buyGlory(getCurNode().glory);
-          } else if(getCurNode().type == HierarchyNode::HNT_BOMBARDMENT) {
-            player->buyBombardment(getCurNode().bombardment);
-          } else {
-            CHECK(0);
-          }
         }
       }
     } else {
@@ -292,8 +293,10 @@ void Shop::renderToScreen() const {
   setColor(1.0, 1.0, 1.0);
   setZoom(0, 0, 100);
   drawText(StringPrintf("cash onhand %s", player->getCash().textual().c_str()), 2, 80, 1);
-  {
-    drawText("there's like guns and shit here", 2, 1, 1);
+  if(selling) {
+    drawText("    Selling equipment", 2, 1, 1);
+  } else {
+    drawText("    Buying equipment", 2, 1, 1);
   }
   setColor(player->getFaction()->color * 0.5);
   {

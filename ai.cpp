@@ -160,7 +160,7 @@ void Ai::updateShop(const Player *player) {
   Money weapcash = player->getCash();
   while(upgcash.toFloat() > 0) {
     for(int i = 0; i < upgs.size(); i++) {
-      if(upgs[i].first.second && player->hasUpgrade(upgs[i].first.second)) {
+      if(upgs[i].first.second && player->stateUpgrade(upgs[i].first.second) == ITEMSTATE_EQUIPPED) {
         upgs.erase(upgs.begin() + i);
         i--;
       }

@@ -9,7 +9,8 @@ using namespace std;
 #include "coord.h"
 
 enum { FACTIONMODE_NONE, FACTIONMODE_MINOR, FACTIONMODE_MEDIUM, FACTIONMODE_MAJOR, FACTIONMODE_LAST };
-  
+enum { ITEMSTATE_UNOWNED, ITEMSTATE_BOUGHT, ITEMSTATE_EQUIPPED };
+
 class Player {
 public:
 
@@ -28,11 +29,16 @@ public:
   void buyBombardment(const IDBBombardment *in_bombardment);
   void buyWeapon(const IDBWeapon *in_weap);
 
-  void sellWeapon(const IDBWeapon *in_weap);
+  // must already be bought
+  void equipGlory(const IDBGlory *in_glory);
+  void equipBombardment(const IDBBombardment *in_bombardment);
+  void equipWeapon(const IDBWeapon *in_weap);
 
-  bool hasUpgrade(const IDBUpgrade *in_upg) const;
-  bool hasGlory(const IDBGlory *in_glory) const;
-  bool hasBombardment(const IDBBombardment *in_bombardment) const;
+  void sellWeapon(const IDBWeapon *in_weap);
+  
+  int stateUpgrade(const IDBUpgrade *in_upg) const; // ATM this will only return UNOWNED or EQUIPPED
+  int stateGlory(const IDBGlory *in_glory) const;
+  int stateBombardment(const IDBBombardment *in_bombardment) const;
   int ammoCount(const IDBWeapon *in_weapon) const;
 
   const IDBFaction *getFaction() const;
@@ -68,11 +74,13 @@ private:
 
   vector<const IDBUpgrade *> upgrades;
 
+  // First item is equipped
+  vector<const IDBGlory *> glory;
+  vector<const IDBBombardment *> bombardment;
+
   map<pair<string, const IDBWeapon *>, int> weapons;
   const IDBWeapon *curweapon;
 
-  const IDBGlory *glory;
-  const IDBBombardment *bombardment;
   const IDBFaction *faction;
   int factionmode;
 
