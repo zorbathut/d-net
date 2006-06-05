@@ -492,14 +492,44 @@ void standardButtonTick(int *outkeys, bool *outinvert, int outkeycount, int *cur
   }
 }
 
-struct StandardButtonRenderData {
+class RenderInfo {
+public:
+  // Basic math!
+  // compiletime constants
+  static const int textline_size = 7;  // How many times larger a line of text is than its divider
+  static const int textline_count = 8; // How many lines we're going to have
+  static const int border_size = 2;
+  static const int divider_size = 3;
+  static const int units = textline_size * textline_count + textline_count - 1 + border_size * 2 + divider_size; // X lines, plus dividers (textline_count-1), plus the top and bottom borders, plus the increased divider from categories to data
+
+  // runtime constants
+  Float4 drawzone;
+  float unitsize;
+  float border;
   float xstart;
   float xend;
-  
-  const float *ystarts;
-  int yscount;
-  
+  vector<float> ystarts;
+
   float textsize;
+    
+  RenderInfo(const Float4 &in_dz) {
+    drawzone = in_dz;    
+
+    // runtime constants
+    unitsize = drawzone.y_span() / units;
+    border = unitsize * border_size;
+    xstart = drawzone.sx + unitsize * border_size;
+    xend = drawzone.ex - unitsize * border_size;
+    ystarts.resize(textline_count);
+    ystarts[0] = drawzone.sy + unitsize * border_size;
+    textsize = unitsize * textline_size;
+    for(int i = 1; i < textline_count; i++)
+      ystarts[i] = drawzone.sy + unitsize * (border_size + divider_size + i - 1) + textsize * i;
+  }
+};
+
+struct StandardButtonRenderData {
+  const RenderInfo *rin;
   
   const int *buttons;
   const bool *inverts;
@@ -517,8 +547,8 @@ void standardButtonRender(const StandardButtonRenderData &sbrd) {
   int linesneeded = 0;
   for(int i = 0; i < sbrd.names->size(); i++)
     linesneeded += (*sbrd.names)[i].size();
-  CHECK(linesneeded <= sbrd.yscount - 1);
-  int cy = 1 + (sbrd.yscount - linesneeded + 1) / 2;
+  CHECK(linesneeded <= sbrd.rin->ystarts.size() - 1);
+  int cy = 1 + (sbrd.rin->ystarts.size()  - linesneeded + 1) / 2;
   for(int i = 0; i < (*sbrd.names).size(); i++) {
     if(sbrd.sel_button == i && !sbrd.sel_button_reading) {
       setColor(Color(1.0, 1.0, 1.0) * sbrd.fadeFactor);
@@ -526,7 +556,7 @@ void standardButtonRender(const StandardButtonRenderData &sbrd) {
       setColor(Color(0.5, 0.5, 0.5) * sbrd.fadeFactor);
     }
     for(int j = 0; j < (*sbrd.names)[i].size(); j++)
-      drawText((*sbrd.names)[i][j], sbrd.textsize, sbrd.xstart, sbrd.ystarts[cy++]);
+      drawText((*sbrd.names)[i][j], sbrd.rin->textsize, sbrd.rin->xstart, sbrd.rin->ystarts[cy++]);
     string btext;
     if(sbrd.sel_button == i && sbrd.sel_button_reading) {
       btext = "???";
@@ -545,43 +575,10 @@ void standardButtonRender(const StandardButtonRenderData &sbrd) {
       }
       setColor(Color(0.5, 0.5, 0.5) * sbrd.fadeFactor);
     }
-    drawJustifiedText(btext.c_str(), sbrd.textsize, sbrd.xend, sbrd.ystarts[cy - 1], TEXT_MAX, TEXT_MIN);
+    drawJustifiedText(btext.c_str(), sbrd.rin->textsize, sbrd.rin->xend, sbrd.rin->ystarts[cy - 1], TEXT_MAX, TEXT_MIN);
   }
-  CHECK(cy <= sbrd.yscount);
+  CHECK(cy <= sbrd.rin->ystarts.size());
 }
-
-class RenderInfo {
-public:
-  // Basic math!
-  // compiletime constants
-  static const int textline_size = 7;  // How many times larger a line of text is than its divider
-  static const int textline_count = 8; // How many lines we're going to have
-  static const int border_size = 2;
-  static const int divider_size = 3;
-  static const int units = textline_size * textline_count + textline_count - 1 + border_size * 2 + divider_size; // X lines, plus dividers (textline_count-1), plus the top and bottom borders, plus the increased divider from categories to data
-
-  // runtime constants
-  Float4 drawzone;
-  float unitsize;
-  float border;
-  float xstart;
-  float xend;
-  vector<float> ystarts;
-    
-  RenderInfo(const Float4 &in_dz) {
-    drawzone = in_dz;    
-
-    // runtime constants
-    unitsize = drawzone.y_span() / units;
-    border = unitsize * border_size;
-    xstart = drawzone.sx + unitsize * border_size;
-    xend = drawzone.ex - unitsize * border_size;
-    ystarts.resize(textline_count);
-    ystarts[0] = drawzone.sy + unitsize * border_size;
-    for(int i = 1; i < textline_count; i++)
-      ystarts[i] = drawzone.sy + unitsize * (border_size + divider_size + i - 1) + unitsize * textline_size * i;
-  }
-};
 
 void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<FactionState> &factions) {
   if(!pms->faction) { // if player hasn't chosen faction yet
@@ -727,7 +724,7 @@ void runSettingRender(const PlayerMenuState &pms) {
       text.push_back("");
       text.push_back("Ready");
       
-      drawJustifiedMultiText(text, rin.textline_size * rin.unitsize, rin.unitsize, rin.drawzone.midpoint(), TEXT_CENTER, TEXT_CENTER);
+      drawJustifiedMultiText(text, rin.textsize, rin.unitsize, rin.drawzone.midpoint(), TEXT_CENTER, TEXT_CENTER);
     }
     
     setColor(Color(1.0, 1.0, 1.0) * fadeFactor);
@@ -747,10 +744,10 @@ void runSettingRender(const PlayerMenuState &pms) {
     {
       // Topic line!
       setColor(pms.faction->faction->color * fadeFactor);
-      drawDvec2(pms.faction->faction->icon, Float4(rin.xstart, rin.ystarts[0], rin.xstart + rin.unitsize * rin.textline_size, rin.ystarts[0] + rin.unitsize * rin.textline_size), 50, 0.003);
+      drawDvec2(pms.faction->faction->icon, Float4(rin.xstart, rin.ystarts[0], rin.xstart + rin.textsize, rin.ystarts[0] + rin.textsize), 50, 0.003);
       
       const int activescale = 4;
-      float txstart = rin.xstart + rin.unitsize * rin.textline_size + rin.border * 2;
+      float txstart = rin.xstart + rin.textsize + rin.border * 2;
       float title_units = (rin.xend - txstart) / (SETTING_LAST - 1 + activescale);
       
       int units = 0;
@@ -762,7 +759,7 @@ void runSettingRender(const PlayerMenuState &pms) {
         string text = active ? setting_names[i] : string() + setting_names[i][0];
         setColor(((active && pms.choicemode == CHOICE_IDLE) ? Color(1.0, 1.0, 1.0) : Color(0.5, 0.5, 0.5)) * fadeFactor);
         
-        drawJustifiedText(text, rin.textline_size * rin.unitsize, title_units * (units + tunits / 2.) + txstart, rin.ystarts[0], TEXT_CENTER, TEXT_MIN);
+        drawJustifiedText(text, rin.textsize, title_units * (units + tunits / 2.) + txstart, rin.ystarts[0], TEXT_CENTER, TEXT_MIN);
         
         units += tunits;
       }
@@ -783,11 +780,7 @@ void runSettingRender(const PlayerMenuState &pms) {
       groups[BUTTON_CANCEL] = 1;
       
       StandardButtonRenderData sbrd;
-      sbrd.ystarts = &rin.ystarts[0];
-      sbrd.yscount = rin.textline_count;
-      sbrd.xstart = rin.xstart;
-      sbrd.xend = rin.xend;
-      sbrd.textsize = rin.textline_size * rin.unitsize;
+      sbrd.rin = &rin;
       sbrd.buttons = pms.buttons;
       sbrd.inverts = NULL;
       sbrd.names = &names;
@@ -802,24 +795,20 @@ void runSettingRender(const PlayerMenuState &pms) {
         setColor(Color(1.0, 1.0, 1.0) * fadeFactor);
       else
         setColor(Color(0.5, 0.5, 0.5) * fadeFactor);
-      drawJustifiedText(ksax_names[pms.setting_axistype], rin.textline_size * rin.unitsize, (rin.xstart + rin.xend) / 2, rin.ystarts[2], TEXT_CENTER, TEXT_MIN);
+      drawJustifiedText(ksax_names[pms.setting_axistype], rin.textsize, (rin.xstart + rin.xend) / 2, rin.ystarts[2], TEXT_CENTER, TEXT_MIN);
       
       setColor(Color(0.5, 0.5, 0.5) * fadeFactor);
-      drawJustifiedText(ksax_descriptions[pms.setting_axistype][0], rin.textline_size * rin.unitsize, (rin.xstart + rin.xend) / 2, rin.ystarts[4], TEXT_CENTER, TEXT_MIN);
-      drawJustifiedText(ksax_descriptions[pms.setting_axistype][1], rin.textline_size * rin.unitsize, (rin.xstart + rin.xend) / 2, rin.ystarts[5], TEXT_CENTER, TEXT_MIN);
+      drawJustifiedText(ksax_descriptions[pms.setting_axistype][0], rin.textsize, (rin.xstart + rin.xend) / 2, rin.ystarts[4], TEXT_CENTER, TEXT_MIN);
+      drawJustifiedText(ksax_descriptions[pms.setting_axistype][1], rin.textsize, (rin.xstart + rin.xend) / 2, rin.ystarts[5], TEXT_CENTER, TEXT_MIN);
       
-      drawJustifiedText("l/r changes mode", rin.textline_size * rin.unitsize, (rin.xstart + rin.xend) / 2, rin.ystarts[7], TEXT_CENTER, TEXT_MIN);
+      drawJustifiedText("l/r changes mode", rin.textsize, (rin.xstart + rin.xend) / 2, rin.ystarts[7], TEXT_CENTER, TEXT_MIN);
       
       // TODO: better pictorial representations
     } else if(pms.settingmode == SETTING_AXISCHOOSE) {
       CHECK(ksax_axis_names[pms.setting_axistype].size() == BUTTON_LAST);
       
       StandardButtonRenderData sbrd;
-      sbrd.ystarts = &rin.ystarts[0];
-      sbrd.yscount = rin.textline_count;
-      sbrd.xstart = rin.xstart;
-      sbrd.xend = rin.xend;
-      sbrd.textsize = rin.textline_size * rin.unitsize;
+      sbrd.rin = &rin;
       sbrd.buttons = pms.axes;
       sbrd.inverts = pms.axes_invert;
       sbrd.names = &ksax_axis_names[pms.setting_axistype];
@@ -832,9 +821,9 @@ void runSettingRender(const PlayerMenuState &pms) {
     } else if(pms.settingmode == SETTING_TEST) {
       setColor(Color(0.5, 0.5, 0.5) * fadeFactor);
       if(pms.choicemode == CHOICE_IDLE) {
-        drawJustifiedText("Fire to test", rin.textline_size * rin.unitsize, (rin.xstart + rin.xend) / 2, rin.ystarts[7], TEXT_CENTER, TEXT_MIN);
+        drawJustifiedText("Fire to test", rin.textsize, (rin.xstart + rin.xend) / 2, rin.ystarts[7], TEXT_CENTER, TEXT_MIN);
       } else {
-        drawJustifiedText("Cancel when done", rin.textline_size * rin.unitsize, (rin.xstart + rin.xend) / 2, rin.ystarts[7], TEXT_CENTER, TEXT_MIN);
+        drawJustifiedText("Cancel when done", rin.textsize, (rin.xstart + rin.xend) / 2, rin.ystarts[7], TEXT_CENTER, TEXT_MIN);
       }
       GfxWindow gfxw(Float4(rin.xstart, rin.ystarts[1], rin.xend, rin.ystarts[7]));
       pms.test_game->renderToScreen();
@@ -842,7 +831,7 @@ void runSettingRender(const PlayerMenuState &pms) {
       setColor(Color(0.5, 0.5, 0.5) * fadeFactor);
       const char * const text[] = {"Hold fire when", "ready. Let go", "to cancel.", "", "Move left/right to", "change config."};
       for(int i = 0; i < 6; i++)
-        drawJustifiedText(text[i], rin.textline_size * rin.unitsize, (rin.xstart + rin.xend) / 2, rin.ystarts[i + 2], TEXT_CENTER, TEXT_MIN);
+        drawJustifiedText(text[i], rin.textsize, (rin.xstart + rin.xend) / 2, rin.ystarts[i + 2], TEXT_CENTER, TEXT_MIN);
     } else {
       CHECK(0);
     }
