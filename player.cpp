@@ -13,9 +13,11 @@ IDBWeaponAdjust Player::adjustWeapon(const IDBWeapon *in_upg) const { return IDB
 bool Player::canBuyUpgrade(const IDBUpgrade *in_upg) const { return stateUpgrade(in_upg) == ITEMSTATE_UNOWNED && adjustUpgrade(in_upg).cost() <= cash; }; 
 bool Player::canBuyGlory(const IDBGlory *in_glory) const { return stateGlory(in_glory) == ITEMSTATE_UNOWNED && adjustGlory(in_glory).cost() <= cash; };
 bool Player::canBuyBombardment(const IDBBombardment *in_bombardment) const { return stateBombardment(in_bombardment) == ITEMSTATE_UNOWNED && adjustBombardment(in_bombardment).cost() <= cash; };
-bool Player::canBuyWeapon(const IDBWeapon *in_weap) const {
-  return adjustWeapon(in_weap).cost() <= cash;
-}
+bool Player::canBuyWeapon(const IDBWeapon *in_weap) const { return adjustWeapon(in_weap).cost() <= cash; }
+
+bool Player::canSellGlory(const IDBGlory *in_glory) const { return hasGlory(in_glory) && in_glory != defaultGlory(); };
+bool Player::canSellBombardment(const IDBBombardment *in_bombardment) const { return hasBombardment(in_bombardment) && in_bombardment != defaultBombardment(); };
+bool Player::canSellWeapon(const IDBWeapon *in_weap) const { return ammoCount(in_weap) > 0; }
 
 void Player::buyUpgrade(const IDBUpgrade *in_upg) {
   CHECK(cash >= adjustUpgrade(in_upg).cost());
@@ -54,13 +56,31 @@ void Player::equipBombardment(const IDBBombardment *in_bombardment) {
   swap(*find(bombardment.begin(), bombardment.end(), in_bombardment), bombardment[0]);
 }
 
+void Player::sellGlory(const IDBGlory *in_glory) {
+  CHECK(canSellGlory(in_glory));
+  glory.erase(find(glory.begin(), glory.end(), in_glory));
+  cash += adjustGlory(in_glory).sellcost();
+  CHECK(glory.size() != 0);
+}
+void Player::sellBombardment(const IDBBombardment *in_bombardment) {
+  CHECK(canSellBombardment(in_bombardment));
+  bombardment.erase(find(bombardment.begin(), bombardment.end(), in_bombardment));
+  cash += adjustBombardment(in_bombardment).sellcost();
+  CHECK(bombardment.size() != 0);
+}
 void Player::sellWeapon(const IDBWeapon *in_weap) {
+  CHECK(canSellWeapon(in_weap));
   CHECK(weapons.count(make_pair(in_weap->name, in_weap)));
   CHECK(weapons[make_pair(in_weap->name, in_weap)] > 0);
+
   int sold = min(ammoCount(in_weap), in_weap->quantity);
   cash += adjustWeapon(in_weap).sellcost(sold);
   consumeAmmo(in_weap, sold);
 }
+
+int Player::hasUpgrade(const IDBUpgrade *in_upg) const { return stateUpgrade(in_upg) != ITEMSTATE_UNOWNED; }
+int Player::hasGlory(const IDBGlory *in_glory) const { return stateGlory(in_glory) != ITEMSTATE_UNOWNED; }
+int Player::hasBombardment(const IDBBombardment *in_bombardment) const { return stateBombardment(in_bombardment) != ITEMSTATE_UNOWNED; }
 
 int Player::stateUpgrade(const IDBUpgrade *in_upg) const {
   CHECK(in_upg);

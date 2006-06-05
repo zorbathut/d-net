@@ -24,6 +24,10 @@ public:
   bool canBuyBombardment(const IDBBombardment *in_bombardment) const;
   bool canBuyWeapon(const IDBWeapon *in_weap) const;
 
+  bool canSellGlory(const IDBGlory *in_glory) const;
+  bool canSellBombardment(const IDBBombardment *in_bombardment) const;
+  bool canSellWeapon(const IDBWeapon *in_weap) const;
+
   void buyUpgrade(const IDBUpgrade *in_upg);
   void buyGlory(const IDBGlory *in_glory);
   void buyBombardment(const IDBBombardment *in_bombardment);
@@ -34,7 +38,13 @@ public:
   void equipBombardment(const IDBBombardment *in_bombardment);
   void equipWeapon(const IDBWeapon *in_weap);
 
+  void sellGlory(const IDBGlory *in_glory);
+  void sellBombardment(const IDBBombardment *in_bombardment);
   void sellWeapon(const IDBWeapon *in_weap);
+  
+  int hasUpgrade(const IDBUpgrade *in_upg) const; // ATM this will only return UNOWNED or EQUIPPED
+  int hasGlory(const IDBGlory *in_glory) const;
+  int hasBombardment(const IDBBombardment *in_bombardment) const;
   
   int stateUpgrade(const IDBUpgrade *in_upg) const; // ATM this will only return UNOWNED or EQUIPPED
   int stateGlory(const IDBGlory *in_glory) const;

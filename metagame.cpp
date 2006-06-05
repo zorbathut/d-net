@@ -143,16 +143,16 @@ void Shop::renderNode(const HierarchyNode &node, int depth) const {
     } else {
       int dispmode = node.branches[itemid].displaymode;
       if(dispmode == HierarchyNode::HNDM_COSTUNIQUE) {
-        /*  // Reactivate these once I'm allowing these to be sold
-        if(node.branches[itemid].type == HierarchyNode::HNT_UPGRADE && player->hasUpgrade(node.branches[itemid].upgrade))
+        // Upgrades can't be sold
+        //if(node.branches[itemid].type == HierarchyNode::HNT_UPGRADE && player->canSellUpgrade(node.branches[itemid].upgrade))
+          //dispmode = HierarchyNode::HNDM_COST;
+        if(node.branches[itemid].type == HierarchyNode::HNT_GLORY && player->canSellGlory(node.branches[itemid].glory))
           dispmode = HierarchyNode::HNDM_COST;
-        if(node.branches[itemid].type == HierarchyNode::HNT_GLORY && player->hasGlory(node.branches[itemid].glory))
+        if(node.branches[itemid].type == HierarchyNode::HNT_BOMBARDMENT && player->canSellBombardment(node.branches[itemid].bombardment))
           dispmode = HierarchyNode::HNDM_COST;
-        if(node.branches[itemid].type == HierarchyNode::HNT_BOMBARDMENT && player->hasBombardment(node.branches[itemid].bombardment))
-          dispmode = HierarchyNode::HNDM_COST; */
       } else if(dispmode == HierarchyNode::HNDM_COST) {
         CHECK(node.branches[itemid].type == HierarchyNode::HNT_WEAPON);
-        if(player->ammoCount(node.branches[itemid].weapon) <= 0) {
+        if(player->canSellWeapon(node.branches[itemid].weapon)) {
           dispmode = HierarchyNode::HNDM_COSTUNIQUE;
         }
       }
@@ -241,8 +241,12 @@ bool Shop::runTick(const Keystates &keys) {
         }
       }
     } else {
-      if(getCurNode().type == HierarchyNode::HNT_WEAPON && player->ammoCount(getCurNode().weapon) > 0) {
+      if(getCurNode().type == HierarchyNode::HNT_WEAPON && player->canSellWeapon(getCurNode().weapon)) {
         player->sellWeapon(getCurNode().weapon);
+      } else if(getCurNode().type == HierarchyNode::HNT_GLORY && player->canSellGlory(getCurNode().glory)) {
+        player->sellGlory(getCurNode().glory);
+      } else if(getCurNode().type == HierarchyNode::HNT_BOMBARDMENT && player->canSellBombardment(getCurNode().bombardment)) {
+        player->sellBombardment(getCurNode().bombardment);
       }
     }
   }
