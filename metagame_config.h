@@ -1,10 +1,12 @@
 #ifndef DNET_METAGAME_CONFIG
 #define DNET_METAGAME_CONFIG
 
-#include "float.h"
 #include "itemdb.h"
-#include "game.h"
-#include "player.h"
+#include "input.h"
+
+// These are only really used for the "test" screen, and I don't want this to be considered a "full dependency" because it kind of isn't.
+class Game;
+class Player;
 
 class FactionState {
 public:

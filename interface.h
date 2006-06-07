@@ -6,7 +6,6 @@
 using namespace std;
 
 #include "input.h"
-#include "ai.h"
 
 class Ai;
 

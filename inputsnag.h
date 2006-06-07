@@ -8,7 +8,6 @@ using namespace std;
 #include <SDL.h>
 
 #include "input.h"
-#include "ai.h"
 
 class Ai;
 

@@ -4,6 +4,7 @@
 #include "gfx.h"
 #include "args.h"
 #include "rng.h"
+#include "collide.h"
 
 DECLARE_bool(debugGraphics);
 

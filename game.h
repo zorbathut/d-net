@@ -1,14 +1,14 @@
 #ifndef DNET_GAME
 #define DNET_GAME
 
-#include "gamemap.h"
-#include "gfx.h"
-#include "itemdb.h"
-#include "coord.h"
-#include "player.h"
-
 #include <vector>
+
 using namespace std;
+
+#include "gamemap.h"
+#include "player.h"
+#include "input.h"
+#include "collide.h"
 
 class Collider;
 class Ai;

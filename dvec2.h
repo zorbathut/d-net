@@ -4,12 +4,14 @@
 #include <string>
 #include <vector>
 
-#include "input.h"
-#include "util.h"
 #include "float.h"
 
 using namespace std;
 
+// these are only needed if you're planning to edit the dvec2
+class Button;
+class Transform2d;
+  
 class Parameter {
 public:
   

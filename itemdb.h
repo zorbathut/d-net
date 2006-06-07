@@ -1,7 +1,8 @@
 #ifndef DNET_ITEMDB
 #define DNET_ITEMDB
 
-#include "gfx.h"
+#include "util.h"
+#include "dvec2.h"
 
 #include <string>
 #include <vector>

@@ -1,11 +1,7 @@
 #ifndef DNET_METAGAME
 #define DNET_METAGAME
 
-#include "util.h"
 #include "game.h"
-#include "gfx.h"
-#include "itemdb.h"
-#include "level.h"
 #include "metagame_config.h"
 
 #include <vector>

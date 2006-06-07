@@ -1,6 +1,9 @@
 
 #include "metagame_config.h"
 
+#include "gfx.h"
+#include "game.h"
+
 PlayerMenuState::PlayerMenuState() {
   settingmode = -12345;
   choicemode = -12345;

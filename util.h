@@ -1,15 +1,9 @@
 #ifndef DNET_UTIL
 #define DNET_UTIL
 
-#include <utility>
-#include <algorithm>
-#include <vector>
-#include <cmath>
+#include <string>
 
 using namespace std;
-
-#include "const.h"
-#include "debug.h"
 
 extern bool ffwd;
 
@@ -107,5 +101,25 @@ bool operator>(const Money &lhs, const Money &rhs);
 bool operator>=(const Money &lhs, const Money &rhs);
 
 Money moneyFromString(const string &rhs);
+
+/*************
+ * Color struct
+ */
+ 
+struct Color {
+public:
+  float r, g, b;
+
+  Color();
+  Color(float in_r, float in_g, float in_b);
+};
+
+Color colorFromString(const string &str);
+
+Color operator+(const Color &lhs, const Color &rhs);
+Color operator*(const Color &lhs, float rhs);
+Color operator/(const Color &lhs, float rhs);
+
+const Color &operator+=(Color &lhs, const Color &rhs);
 
 #endif

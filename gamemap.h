@@ -1,21 +1,19 @@
 #ifndef DNET_GAMEMAP
 #define DNET_GAMEMAP
 
-#include "collide.h"
 #include "level.h"
-#include "coord.h"
 
 #include <vector>
 
 using namespace std;
 
+class Collider;
+
 class Gamemap {
 public:
 
   void render() const;
-  void updateCollide( Collider *collide );
-
-  //const vector<vector<Coord2> > &getCollide() const;
+  void updateCollide(Collider *collide);
 
   Coord4 getBounds() const;
 
