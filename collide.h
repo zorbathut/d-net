@@ -6,7 +6,6 @@
 #include <set>
 using namespace std;
 
-#include "util.h"
 #include "coord.h"
 
 #define ENABLE_COLLIDE_DEBUG_VIS
