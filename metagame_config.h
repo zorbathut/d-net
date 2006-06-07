@@ -18,12 +18,6 @@ const char * const setting_names[] = { "Keys", "Mode", "Axis", "Test", "Ready" }
 
 enum { CHOICE_FIRSTPASS, CHOICE_ACTIVE, CHOICE_IDLE };
 
-//enum { BUTTON_ACCEPT, BUTTON_CANCEL, BUTTON_FIRE1, BUTTON_FIRE2, BUTTON_SWITCH1, BUTTON_SWITCH2, BUTTON_LAST };
-//const char * const button_names[] = { "Accept", "Cancel", "Fire 1", "Fire 2", "Switch 1", "Switch 2" };
-
-enum { BUTTON_ACCEPT, BUTTON_CANCEL, BUTTON_LAST };
-const char * const button_names[] = { "Fire/", "Weapon/" };
-
 struct PlayerMenuState {
 public:
   Float2 compasspos;
@@ -34,12 +28,12 @@ public:
 
   int setting_button_current;
   bool setting_button_reading;
-  int buttons[BUTTON_LAST];
+  vector<int> buttons;
 
   int setting_axis_current;
   bool setting_axis_reading;
-  int axes[2];  // Right now, everything uses 2 axes.
-  bool axes_invert[2];
+  vector<int> axes;
+  vector<char> axes_invert;
 
   int setting_axistype;
   void traverse_axistype(int delta, int axes);

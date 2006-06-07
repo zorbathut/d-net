@@ -8,6 +8,8 @@ using namespace std;
 #include "input.h"
 #include "ai.h"
 
+class Ai;
+
 void interfaceInit();
 bool interfaceRunTick( const vector< Controller > &control );
 void interfaceRunAi(const vector<Ai *> &ais);

@@ -1,14 +1,16 @@
 #ifndef DNET_INPUTSNAG
 #define DNET_INPUTSNAG
 
-#include "input.h"
-#include "ai.h"
-
-#include <SDL.h>
-
 #include <vector>
 
 using namespace std;
+
+#include <SDL.h>
+
+#include "input.h"
+#include "ai.h"
+
+class Ai;
 
 vector<Controller> controls_init();
 void controls_key(const SDL_KeyboardEvent *key);

@@ -16,9 +16,6 @@ PlayerMenuState::PlayerMenuState() {
   test_game = NULL;
   test_player = NULL;
   
-  memset(buttons, -1, sizeof(buttons));
-  memset(axes, -1, sizeof(axes));
-  
   faction = NULL;
   compasspos = Float2(0,0);
 }
@@ -38,8 +35,9 @@ PlayerMenuState::PlayerMenuState(Float2 cent) {
   test_game = NULL;
   test_player = NULL;
   
-  memset(buttons, -1, sizeof(buttons));
-  memset(axes, -1, sizeof(axes));
+  buttons.resize(BUTTON_LAST, -1);
+  axes.resize(2, -1);
+  axes_invert.resize(axes.size(), false);
   
   faction = NULL;
   compasspos = cent;
@@ -86,7 +84,7 @@ vector<Keystates> genKeystates(const vector<Controller> &keys, const vector<Play
   return kst;
 }
 
-void standardButtonTick(int *outkeys, bool *outinvert, int outkeycount, int *current_button, bool *current_mode, const Controller &keys, const vector<float> &triggers, PlayerMenuState *pms) {
+void standardButtonTick(int *outkeys, char *outinvert, int outkeycount, int *current_button, bool *current_mode, const Controller &keys, const vector<float> &triggers, PlayerMenuState *pms) {
   if(*current_button == -1) {
     *current_button = 0;
     *current_mode = (pms->choicemode == CHOICE_FIRSTPASS);
@@ -198,8 +196,8 @@ public:
 struct StandardButtonRenderData {
   const RenderInfo *rin;
   
-  const int *buttons;
-  const bool *inverts;
+  const vector<int> *buttons;
+  const vector<char> *inverts;
   
   const vector<vector<string> > *names;
   
@@ -228,15 +226,15 @@ void standardButtonRender(const StandardButtonRenderData &sbrd) {
     if(sbrd.sel_button == i && sbrd.sel_button_reading) {
       btext = "???";
       setColor(Color(1.0, 1.0, 1.0) * sbrd.fadeFactor);
-    } else if(sbrd.buttons[i] == -1) {
+    } else if((*sbrd.buttons)[i] == -1) {
       btext = "";
     } else {
       if(sbrd.prefixchar == 'B') {
         CHECK(!sbrd.inverts);
-        btext = StringPrintf("%c%02d", sbrd.prefixchar, sbrd.buttons[i]);
+        btext = StringPrintf("%c%02d", sbrd.prefixchar, (*sbrd.buttons)[i]);
       } else if(sbrd.prefixchar == 'X') {
         CHECK(sbrd.inverts);
-        btext = StringPrintf("%c%d%c", sbrd.prefixchar, sbrd.buttons[i], sbrd.inverts[i] ? '-' : '+');
+        btext = StringPrintf("%c%d%c", sbrd.prefixchar, (*sbrd.buttons)[i], (*sbrd.inverts)[i] ? '-' : '+');
       } else {
         CHECK(0);
       }
@@ -301,7 +299,7 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
       groups[BUTTON_ACCEPT] = 1;
       groups[BUTTON_CANCEL] = 1;
       
-      standardButtonTick(pms->buttons, NULL, BUTTON_LAST, &pms->setting_button_current, &pms->setting_button_reading, keys, triggers, pms);
+      standardButtonTick(&pms->buttons[0], NULL, BUTTON_LAST, &pms->setting_button_current, &pms->setting_button_reading, keys, triggers, pms);
     } else if(pms->settingmode == SETTING_AXISTYPE) {
       if(keys.l.push)
         pms->traverse_axistype(-1, keys.axes.size());
@@ -325,7 +323,7 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
       
       vector<int> groups(ksax_axis_names[pms->setting_axistype].size(), 0);
       
-      standardButtonTick(pms->axes, pms->axes_invert, 2, &pms->setting_axis_current, &pms->setting_axis_reading, keys, triggers, pms);
+      standardButtonTick(&pms->axes[0], &pms->axes_invert[0], 2, &pms->setting_axis_current, &pms->setting_axis_reading, keys, triggers, pms);
     } else if(pms->settingmode == SETTING_TEST) {
       if(keys.keys[pms->buttons[BUTTON_CANCEL]].push) {
         if(pms->choicemode == CHOICE_FIRSTPASS) {
@@ -453,7 +451,7 @@ void runSettingRender(const PlayerMenuState &pms) {
       
       StandardButtonRenderData sbrd;
       sbrd.rin = &rin;
-      sbrd.buttons = pms.buttons;
+      sbrd.buttons = &pms.buttons;
       sbrd.inverts = NULL;
       sbrd.names = &names;
       sbrd.sel_button = pms.setting_button_current;
@@ -481,8 +479,8 @@ void runSettingRender(const PlayerMenuState &pms) {
       
       StandardButtonRenderData sbrd;
       sbrd.rin = &rin;
-      sbrd.buttons = pms.axes;
-      sbrd.inverts = pms.axes_invert;
+      sbrd.buttons = &pms.axes;
+      sbrd.inverts = &pms.axes_invert;
       sbrd.names = &ksax_axis_names[pms.setting_axistype];
       sbrd.sel_button = pms.setting_axis_current;
       sbrd.sel_button_reading = pms.setting_axis_reading;

@@ -5,6 +5,7 @@
 #include "args.h"
 #include "vecedit.h"
 #include "coord.h"
+#include "ai.h"
 
 #include <string>
 #include <vector>

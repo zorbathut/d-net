@@ -50,6 +50,9 @@ vector<vector<vector<string> > > ksax_axis_names_gen();
 const vector<vector<vector<string> > > ksax_axis_names = ksax_axis_names_gen(); // sigh.
 const char *const ksax_descriptions[KSAX_END][2] = { {"Turn axis and", "movement axis"}, {"Tank goes in", "axis direction"}, {"Independent", "tread control"} };
 
+enum { BUTTON_ACCEPT, BUTTON_CANCEL, BUTTON_LAST };
+const char * const button_names[] = { "Fire/", "Weapon/" };
+
 #define FIRECOUNT 2
 
 class Keystates {

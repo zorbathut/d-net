@@ -2,12 +2,15 @@
 #define DNET_AI
 
 #include "input.h"
-#include "util.h"
-#include "game.h"
 #include "rng.h"
-#include "metagame.h"
 
 #include <deque>
+
+class FactionState;
+class PlayerMenuState;
+class Player;
+class Tank;
+class Coord2;
 
 using namespace std;
 

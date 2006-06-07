@@ -5,6 +5,7 @@
 #include "rng.h"
 #include "inputsnag.h"
 #include "args.h"
+#include "ai.h"
 
 #include <string>
 #include <numeric>

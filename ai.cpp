@@ -1,6 +1,11 @@
 
 #include "ai.h"
 
+#include "input.h"
+#include "util.h"
+#include "game.h"
+#include "rng.h"
+#include "metagame.h"
 #include "itemdb.h"
 
 // these are not meant to be meaningful

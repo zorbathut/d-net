@@ -1,7 +1,10 @@
 
 #include "inputsnag.h"
+
 #include "args.h"
 #include "rng.h"
+#include "ai.h"
+#include "input.h"
 
 #include <utility>
 
