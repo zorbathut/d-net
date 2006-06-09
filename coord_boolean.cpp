@@ -1,6 +1,7 @@
 
 #include "coord.h"
 #include "util.h"
+#include "debug.h"
 #include "parse.h"  // Only for the KVD failure handling
 
 #include <vector>

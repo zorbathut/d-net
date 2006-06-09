@@ -2,8 +2,10 @@
 #define DNET_INPUT
 
 #include <vector>
-
+#include <string>
 #include "float.h"
+using namespace std;
+
 
 using namespace std;
 
