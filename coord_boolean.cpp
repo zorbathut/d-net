@@ -1,6 +1,7 @@
 
 #include "coord.h"
 #include "util.h"
+#include "parse.h"  // Only for the KVD failure handling
 
 #include <vector>
 #include <set>
@@ -870,8 +871,6 @@ vector<vector<Coord2> > getDifferenceCore(const vector<Coord2> &lhs, const vecto
   return rrv;
 
 }
-
-#include "parse.h"  // Only for the KVD stuff here
 
 int lastFailedFrame = -1000;
 

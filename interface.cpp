@@ -104,9 +104,9 @@ void InterfaceMain::ai(const vector<Ai *> &ai) const {
 
 #if GETDIFFERENCE_DEBUG
 
-#include "dvec2.h"
-#include "parse.h"
-#include <fstream>
+include "dvec2.h"
+include "parse.h" // fix these
+include <fstream>
 
 using namespace std;
 

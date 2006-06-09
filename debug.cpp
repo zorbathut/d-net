@@ -1,14 +1,6 @@
 
 #include "debug.h"
 
-#ifdef printf
-#undef printf
-#endif
-
-#ifdef dprintf
-#undef dprintf
-#endif
-
 #include "os.h"
 
 #include <cstdio>
