@@ -3,6 +3,8 @@
 
 #include "args.h"
 
+using namespace std;
+
 DEFINE_int(startingCash, 1000, "Cash to start with");
 
 IDBUpgradeAdjust Player::adjustUpgrade(const IDBUpgrade *in_upg) const { return IDBUpgradeAdjust(in_upg, &adjustment); };

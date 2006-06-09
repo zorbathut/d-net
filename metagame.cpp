@@ -1,15 +1,15 @@
 
 #include "metagame.h"
-#include "gfx.h"
-#include "parse.h"
-#include "rng.h"
-#include "inputsnag.h"
-#include "args.h"
-#include "ai.h"
 
-#include <string>
-#include <numeric>
+#include "ai.h"
+#include "args.h"
+#include "gfx.h"
+#include "inputsnag.h"
+#include "parse.h"
+#include "player.h"
+
 #include <fstream>
+#include <numeric>
 
 using namespace std;
 

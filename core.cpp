@@ -1,22 +1,17 @@
 
-#include <iostream>
-#include <vector>
-using namespace std;
-
-#include <SDL.h>
-#include <GL/gl.h>
-#include <GL/glu.h>
-
 #include "core.h"
-#include "main.h"
-#include "interface.h"
-#include "timer.h"
+
+#include "args.h"
 #include "debug.h"
 #include "gfx.h"
-#include "util.h"
-#include "args.h"
-#include "rng.h"
 #include "inputsnag.h"
+#include "interface.h"
+#include "rng.h"
+#include "timer.h"
+
+#include <SDL.h>
+
+using namespace std;
 
 DEFINE_string(writeTarget, "dumps/dump", "Prefix for file dump");
 //DEFINE_int(writeTargetCheckpoint, 2000000000, "Write target checkpoint frequency"); // currently disabled

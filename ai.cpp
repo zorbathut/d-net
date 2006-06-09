@@ -1,12 +1,11 @@
 
 #include "ai.h"
 
-#include "input.h"
-#include "util.h"
 #include "game.h"
-#include "rng.h"
-#include "metagame.h"
-#include "itemdb.h"
+#include "metagame_config.h"
+#include "player.h"
+
+using namespace std;
 
 // these are not meant to be meaningful
 inline bool operator<(const Button &lhs, const Button &rhs) {

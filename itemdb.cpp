@@ -1,14 +1,15 @@
 
 #include "itemdb.h"
 
+#include "args.h"
+#include "const.h"
+#include "parse.h"
+#include "player.h"
+
 #include <fstream>
 #include <numeric>
 
-#include "parse.h"
-#include "util.h"
-#include "args.h"
-#include "rng.h"
-#include "player.h"
+using namespace std;
 
 static HierarchyNode root;
 static map<string, IDBDeploy> deployclasses;

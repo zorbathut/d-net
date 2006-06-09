@@ -2,9 +2,10 @@
 #include "timer.h"
 
 #include "const.h"
-#include "debug.h"
 
 #include <SDL.h>
+
+using namespace std;
 
 static long long cpc() {
   return SDL_GetTicks();

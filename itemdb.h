@@ -1,11 +1,8 @@
 #ifndef DNET_ITEMDB
 #define DNET_ITEMDB
 
-#include "util.h"
 #include "dvec2.h"
-
-#include <string>
-#include <vector>
+#include "util.h"
 
 using namespace std;
 

@@ -1,6 +1,8 @@
 
 #include "cfcommon.h"
 
+using namespace std;
+
 /*************
  * Fast sin/cos
  */

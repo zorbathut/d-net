@@ -1,6 +1,7 @@
 
 #include "input.h"
-#include "util.h"
+
+using namespace std;
 
 /*************
  * User input

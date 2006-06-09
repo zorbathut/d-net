@@ -4,9 +4,6 @@
 #include "game.h"
 #include "metagame_config.h"
 
-#include <vector>
-#include <string>
-
 using namespace std;
 
 class Ai;

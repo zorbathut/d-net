@@ -1,11 +1,9 @@
 #ifndef DNET_INTERFACE
 #define DNET_INTERFACE
 
-#include <vector>
+#include "input.h"
 
 using namespace std;
-
-#include "input.h"
 
 class Ai;
 

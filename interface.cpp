@@ -1,14 +1,12 @@
 
 #include "interface.h"
-#include "metagame.h"
-#include "gfx.h"
-#include "args.h"
-#include "vecedit.h"
-#include "coord.h"
-#include "ai.h"
 
-#include <string>
-#include <vector>
+#include "ai.h"
+#include "args.h"
+#include "gfx.h"
+#include "metagame.h"
+#include "player.h"
+#include "vecedit.h"
 
 using namespace std;
 
@@ -108,7 +106,6 @@ include "dvec2.h"
 include "parse.h" // fix these
 include <fstream>
 
-using namespace std;
 
 vector<string> parseHackyFile(string fname) {
   ifstream ifs(fname.c_str());

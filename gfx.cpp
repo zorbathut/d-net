@@ -1,18 +1,14 @@
 
 #include "gfx.h"
-
-#include <cmath>
-#include <fstream>
-#include <map>
-#include <vector>
-using namespace std;
-
-#include <SDL.h>
-#include <GL/gl.h>
-
-#include "util.h"
-#include "parse.h"
 #include "args.h"
+#include "parse.h"
+
+#include <fstream>
+
+#include <GL/gl.h>
+#include <SDL.h>
+
+using namespace std;
 
 DEFINE_int(resolution_x, -1, "X resolution (Y is X/4*3), -1 for autodetect");
 

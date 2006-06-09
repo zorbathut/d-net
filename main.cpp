@@ -1,21 +1,15 @@
 
-#include "main.h"
-#include "const.h"
-
-#include <iostream>
-using namespace std;
-
-#include <SDL.h>
-#include <GL/gl.h>
-#include <GL/glu.h>
-
+#include "args.h"
 #include "core.h"
 #include "debug.h"
-#include "util.h"
-#include "args.h"
 #include "gfx.h"
 #include "itemdb.h"
 #include "os.h"
+
+#include <GL/glu.h>
+#include <SDL.h>
+
+using namespace std;
 
 #define SCREEN_DEPTH  16
 SDL_Surface * MainWindow = NULL;

@@ -1,10 +1,12 @@
 
 #include "gamemap.h"
 
-#include "gfx.h"
 #include "args.h"
-#include "rng.h"
 #include "collide.h"
+#include "gfx.h"
+#include "rng.h"
+
+using namespace std;
 
 DECLARE_bool(debugGraphics);
 

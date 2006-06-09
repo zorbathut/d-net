@@ -1,22 +1,15 @@
 
 #include "game.h"
 
-#include <cmath>
-#include <vector>
-#include <algorithm>
-#include <numeric>
-using namespace std;
-
-#include <GL/gl.h>
-
+#include "ai.h"
+#include "args.h"
 #include "debug.h"
 #include "gfx.h"
-#include "const.h"
-#include "collide.h"
-#include "util.h"
-#include "args.h"
-#include "rng.h"
-#include "ai.h"
+#include "player.h"
+
+#include <numeric>
+
+using namespace std;
 
 DEFINE_bool(verboseCollisions, false, "Verbose collisions");
 DEFINE_bool(debugGraphics, false, "Enable various debug graphics");

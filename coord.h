@@ -1,10 +1,9 @@
 #ifndef DNET_COORD
 #define DNET_COORD
 
-#include <string>
-#include <vector> // remove when cpath.h and fpath.h are created
+#include "cfcommon.h"
 
-#include "cfcommon.h"#include "debug.h"
+#include <vector>
 
 using namespace std;
 

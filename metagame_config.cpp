@@ -1,8 +1,11 @@
 
 #include "metagame_config.h"
 
-#include "gfx.h"
 #include "game.h"
+#include "gfx.h"
+#include "player.h"
+
+using namespace std;
 
 PlayerMenuState::PlayerMenuState() {
   settingmode = -12345;

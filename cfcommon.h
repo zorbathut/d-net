@@ -1,9 +1,9 @@
 #ifndef DNET_CFCOMMON
 #define DNET_CFCOMMON
 
-#include <cmath>
-
 #include "const.h"
+
+#include <cmath>
 
 using namespace std;
 

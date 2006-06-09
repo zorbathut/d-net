@@ -1,12 +1,11 @@
 #ifndef DNET_GFX
 #define DNET_GFX
 
-#include <vector>
-using namespace std;
-
-#include "util.h"
 #include "coord.h"
 #include "dvec2.h"
+#include "util.h"
+
+using namespace std;
 
 /*************
  * Setup and statistics

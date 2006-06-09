@@ -1,8 +1,9 @@
 
 #include "args.h"
 
-#include "util.h"
 #include "debug.h"
+
+using namespace std;
 
 map< string, LinkageData > &getLinkageSingleton() {
   static map< string, LinkageData > singy;

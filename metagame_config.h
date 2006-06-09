@@ -1,8 +1,10 @@
 #ifndef DNET_METAGAME_CONFIG
 #define DNET_METAGAME_CONFIG
 
-#include "itemdb.h"
 #include "input.h"
+#include "itemdb.h"
+
+using namespace std;
 
 // These are only really used for the "test" screen, and I don't want this to be considered a "full dependency" because it kind of isn't.
 class Game;

@@ -1,8 +1,8 @@
 
 #include "rng.h"
+
 #include "debug.h"
 
-#include <ctime>
 #include <cmath>
 
 using namespace std;

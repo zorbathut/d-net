@@ -1,14 +1,12 @@
 
 #include "util.h"
-#include "debug.h"
+
 #include "parse.h"
 
-#include <stdarg.h>
-
-#include <numeric>
-#include <sstream>
-#include <vector>
 #include <cmath>
+#include <sstream>
+
+#include <stdarg.h>
 
 using namespace std;
 

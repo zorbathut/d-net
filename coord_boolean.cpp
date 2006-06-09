@@ -1,12 +1,11 @@
 
 #include "coord.h"
-#include "util.h"
-#include "debug.h"
-#include "parse.h"  // Only for the KVD failure handling
 
-#include <vector>
+#include "debug.h"
+#include "parse.h"
+#include "util.h"
+
 #include <set>
-#include <map>
 
 using namespace std;
 

@@ -1,10 +1,10 @@
 #ifndef DNET_COMPOSITE_IMP
 #define DNET_COMPOSITE_IMP
 
-#include <cmath>
-#include <algorithm>
-
 #include "debug.h"
+
+#include <algorithm>
+#include <cmath>
 
 using namespace std;
 

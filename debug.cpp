@@ -3,10 +3,10 @@
 
 #include "os.h"
 
-#include <cstdio>
 #include <vector>
+
 #include <stdarg.h>
-#include <assert.h>
+
 using namespace std;
 
 int frameNumber = -1;

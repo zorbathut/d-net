@@ -1,9 +1,8 @@
 
 #include "level.h"
+
 #include "dvec2.h"
 #include "util.h"
-
-#include <string>
 
 using namespace std;
 

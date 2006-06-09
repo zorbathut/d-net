@@ -1,14 +1,12 @@
 
 #include "vecedit.h"
-#include "gfx.h"
-#include "game.h" // currently just for Tank
-#include "parse.h"
-#include <SDL.h>
 
-#include <vector>
-#include <string>
+#include "game.h"
+#include "gfx.h"
+
 #include <stack>
-#include <fstream>
+
+#include <SDL.h>
 
 using namespace std;
 

@@ -1,9 +1,8 @@
 #ifndef DNET_FLOAT
 #define DNET_FLOAT
 
+#include <cmath>
 #include <utility>
-
-#include "cfcommon.h"
 
 using namespace std;
 

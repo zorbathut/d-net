@@ -1,16 +1,12 @@
 
 #include "collide.h"
 
-#include <algorithm>
-#include <cmath>
-
-using namespace std;
-
-#include "debug.h"
-#include "rng.h"
-#include "util.h"
 #include "args.h"
 #include "gfx.h"
+
+#include <set>
+
+using namespace std;
 
 DECLARE_bool(verboseCollisions);
 

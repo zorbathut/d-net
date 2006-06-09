@@ -1,12 +1,11 @@
 #ifndef DNET_PLAYER
 #define DNET_PLAYER
 
+#include "itemdb.h"
+
 #include <map>
 
 using namespace std;
-
-#include "itemdb.h"
-#include "coord.h"
 
 enum { FACTIONMODE_NONE, FACTIONMODE_MINOR, FACTIONMODE_MEDIUM, FACTIONMODE_MAJOR, FACTIONMODE_LAST };
 enum { ITEMSTATE_UNOWNED, ITEMSTATE_BOUGHT, ITEMSTATE_EQUIPPED };

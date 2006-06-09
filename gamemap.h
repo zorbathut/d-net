@@ -3,8 +3,6 @@
 
 #include "level.h"
 
-#include <vector>
-
 using namespace std;
 
 class Collider;

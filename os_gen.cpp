@@ -1,7 +1,9 @@
 
 #include "os.h"
 
-#include <windows.h>
+#include <string>
+
+using namespace std;
 
 void outputDebugString(const string &str) {
 }

@@ -1,11 +1,10 @@
 #ifndef DNET_INPUT
 #define DNET_INPUT
 
-#include <vector>
-#include <string>
 #include "float.h"
-using namespace std;
 
+#include <string>
+#include <vector>
 
 using namespace std;
 

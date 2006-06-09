@@ -1,7 +1,7 @@
 #ifndef DNET_DEBUG
 #define DNET_DEBUG
 
-#include <string>   // exists only for StackString
+#include <string>
 
 using namespace std;
 

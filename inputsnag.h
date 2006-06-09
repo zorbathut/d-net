@@ -1,11 +1,9 @@
 #ifndef DNET_INPUTSNAG
 #define DNET_INPUTSNAG
 
-#include <vector>
+#include "input.h"
 
 using namespace std;
-
-#include "input.h"
 
 class Ai;
 class SDL_KeyboardEvent;

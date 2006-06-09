@@ -3,9 +3,8 @@
 
 #include "coord.h"
 
-#include <vector>
-#include <set>
 #include <map>
+#include <set>
 
 using namespace std;
 

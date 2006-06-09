@@ -1,12 +1,9 @@
 #ifndef DNET_COLLIDE
 #define DNET_COLLIDE
 
-#include <vector>
-#include <map>
-#include <set>
-using namespace std;
-
 #include "coord.h"
+
+using namespace std;
 
 #define ENABLE_COLLIDE_DEBUG_VIS
 

@@ -1,11 +1,8 @@
 
 #include "coord.h"
 
-#include <map>
-#include <set>
-
-#include "float.h"
 #include "composite-imp.h"
+#include "float.h"
 #include "util.h"
 
 using namespace std;

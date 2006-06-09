@@ -5,7 +5,8 @@
 #include "rng.h"
 
 #include <deque>
-#include <string>
+
+using namespace std;
 
 class FactionState;
 class PlayerMenuState;
@@ -13,7 +14,6 @@ class Player;
 class Tank;
 class Coord2;
 
-using namespace std;
 
 class Ai {
 private:

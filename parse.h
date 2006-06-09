@@ -1,9 +1,8 @@
 #ifndef DNET_PARSE
 #define DNET_PARSE
 
-#include <iostream>
-#include <string>
 #include <map>
+#include <string>
 #include <vector>
 
 using namespace std;
