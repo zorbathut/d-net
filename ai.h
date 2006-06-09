@@ -5,6 +5,7 @@
 #include "rng.h"
 
 #include <deque>
+#include <string>
 
 class FactionState;
 class PlayerMenuState;
