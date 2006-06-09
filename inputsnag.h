@@ -5,11 +5,10 @@
 
 using namespace std;
 
-#include <SDL.h>
-
 #include "input.h"
 
 class Ai;
+class SDL_KeyboardEvent;
 
 vector<Controller> controls_init();
 void controls_key(const SDL_KeyboardEvent *key);

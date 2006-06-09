@@ -4,7 +4,7 @@
 #include "const.h"
 #include "debug.h"
 
-#include "SDL.h"
+#include <SDL.h>
 
 static long long cpc() {
   return SDL_GetTicks();

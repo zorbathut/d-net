@@ -7,6 +7,7 @@
 #include "input.h"
 
 #include <utility>
+#include <SDL.h>
 
 using namespace std;
 
