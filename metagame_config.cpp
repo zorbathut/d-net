@@ -4,6 +4,7 @@
 #include "game.h"
 #include "gfx.h"
 #include "player.h"
+#include "debug.h"
 
 using namespace std;
 
@@ -47,6 +48,11 @@ PlayerMenuState::PlayerMenuState(Float2 cent) {
   
   faction = NULL;
   compasspos = cent;
+}
+
+PlayerMenuState::~PlayerMenuState() {
+  delete test_game;
+  delete test_player;
 }
 
 bool PlayerMenuState::readyToPlay() const {
@@ -133,6 +139,8 @@ struct StandardButtonTickData {
   int *current_button;
   bool *current_mode;
   
+  const int *groups;
+  
   Controller keys;
   const vector<float> *triggers;
   
@@ -146,6 +154,7 @@ struct StandardButtonRenderData {
   const vector<char> *inverts;
   
   const vector<vector<string> > *names;
+  const int *groups;
   
   int sel_button;
   bool sel_button_reading;
@@ -155,6 +164,7 @@ struct StandardButtonRenderData {
 };
 
 void standardButtonTick(StandardButtonTickData *sbtd) {
+  StackString sstr("standardButtonTick");
   if(*sbtd->current_button == -1) {
     *sbtd->current_button = 0;
     *sbtd->current_mode = (sbtd->pms->choicemode == CHOICE_FIRSTPASS);
@@ -166,6 +176,9 @@ void standardButtonTick(StandardButtonTickData *sbtd) {
       if(abs((*sbtd->triggers)[i]) > 0.9) {
         int j;
         bool noopify = false;
+        
+        // Step 1: If this button has been chosen somewhere else, and
+        // we're not choosing this button for the first time, swap 'em (TODO: go back?)
         for(j = 0; j < sbtd->outkeys->size(); j++) {
           if((*sbtd->outkeys)[j] == i) {
             if((*sbtd->outkeys)[*sbtd->current_button] != -1) {
@@ -175,6 +188,7 @@ void standardButtonTick(StandardButtonTickData *sbtd) {
                 (*sbtd->outinvert)[*sbtd->current_button] = ((*sbtd->triggers)[i] < 0);
               }
             } else {
+              // If we *are* choosing this button for the first time, cancel everything.
               noopify = true;
             }
             break;
@@ -182,11 +196,12 @@ void standardButtonTick(StandardButtonTickData *sbtd) {
         }
         if(noopify)
           continue;
-        if(j == BUTTON_LAST) {
-          (*sbtd->outkeys)[*sbtd->current_button] = i;
-          if(sbtd->outinvert)
-            (*sbtd->outinvert)[*sbtd->current_button] = ((*sbtd->triggers)[i] < 0);
-        }
+        
+        // If that wasn't true, then our button is being chosen for the first time.
+        CHECK(j == sbtd->outkeys->size());
+        (*sbtd->outkeys)[*sbtd->current_button] = i;
+        if(sbtd->outinvert)
+          (*sbtd->outinvert)[*sbtd->current_button] = ((*sbtd->triggers)[i] < 0);
         if(sbtd->pms->choicemode == CHOICE_FIRSTPASS) {
           (*sbtd->current_button)++;
         } else {
@@ -196,6 +211,8 @@ void standardButtonTick(StandardButtonTickData *sbtd) {
       }
     }
     if(*sbtd->current_button == sbtd->outkeys->size()) {
+      dprintf("Done with pass\n");
+      dprintf("%d, %d\n", (*sbtd->outkeys)[0], (*sbtd->outkeys)[1]);
       // Done with the first pass here - this can only happen if the choice if FIRSTPASS
       CHECK(sbtd->pms->choicemode == CHOICE_FIRSTPASS);
       sbtd->pms->settingmode++;
@@ -228,17 +245,35 @@ void standardButtonTick(StandardButtonTickData *sbtd) {
 }
 
 void standardButtonRender(const StandardButtonRenderData &sbrd) {
+  StackString sstr("standardButtonRender");
+  CHECK(sbrd.rin);
+  CHECK(sbrd.buttons);
+  CHECK(sbrd.names);
+  CHECK(sbrd.groups);
   int linesneeded = 0;
   for(int i = 0; i < sbrd.names->size(); i++)
     linesneeded += (*sbrd.names)[i].size();
+  {
+    set<int> grid(sbrd.groups, sbrd.groups + sbrd.buttons->size());
+    assert(grid.size() > 0);
+    linesneeded += grid.size() - 1;
+    vector<int> grod(sbrd.groups, sbrd.groups + sbrd.buttons->size());
+    grod.erase(unique(grod.begin(), grod.end()), grod.end());
+    CHECK(grod.size() == grid.size());
+  }
   CHECK(linesneeded <= sbrd.rin->ystarts.size() - 1);
-  int cy = 1 + (sbrd.rin->ystarts.size()  - linesneeded + 1) / 2;
+  int cy = (sbrd.rin->ystarts.size() - linesneeded + 1) / 2;
+  CHECK(cy + linesneeded <= sbrd.rin->ystarts.size());
   for(int i = 0; i < (*sbrd.names).size(); i++) {
     if(sbrd.sel_button == i && !sbrd.sel_button_reading) {
       setColor(Color(1.0, 1.0, 1.0) * sbrd.fadeFactor);
     } else {
       setColor(Color(0.5, 0.5, 0.5) * sbrd.fadeFactor);
     }
+    if(i && sbrd.groups[i-1] != sbrd.groups[i])
+      cy++;
+    CHECK(i < sbrd.names->size());
+    CHECK(cy < sbrd.rin->ystarts.size());
     for(int j = 0; j < (*sbrd.names)[i].size(); j++)
       drawText((*sbrd.names)[i][j], sbrd.rin->textsize, sbrd.rin->xstart, sbrd.rin->ystarts[cy++]);
     string btext;
@@ -265,7 +300,9 @@ void standardButtonRender(const StandardButtonRenderData &sbrd) {
 }
 
 void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<FactionState> &factions) {
+  StackString sstr("runSettingTick");
   if(!pms->faction) { // if player hasn't chosen faction yet
+    StackString sstr("chfact");
     pms->fireHeld = 0;
     {
       Float2 dir = deadzone(keys.menu, 0, 0.2) * 0.01;
@@ -290,6 +327,7 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
       }
     }
   } else {
+    StackString sstr("proc");
     pms->fireHeld -= 1;
     if(pms->fireHeld < 0)
         pms->fireHeld = 0;
@@ -323,6 +361,7 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
       sbtd.outinvert = NULL;
       sbtd.current_button = &pms->setting_button_current;
       sbtd.current_mode = &pms->setting_button_reading;
+      sbtd.groups = button_groups;
       sbtd.keys = keys;
       sbtd.triggers = &triggers;
       sbtd.pms = pms;
@@ -345,17 +384,17 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
         CHECK(0);
       }
     } else if(pms->settingmode == SETTING_AXISCHOOSE) {
+      StackString sstr("SAX");
       vector<float> triggers;
       for(int i = 0; i < keys.axes.size(); i++)
         triggers.push_back(keys.axes[i]);
-      
-      vector<int> groups(ksax_axis_names[pms->setting_axistype].size(), 0);
       
       StandardButtonTickData sbtd;      
       sbtd.outkeys = &pms->axes;
       sbtd.outinvert = &pms->axes_invert;
       sbtd.current_button = &pms->setting_axis_current;
       sbtd.current_mode = &pms->setting_axis_reading;
+      sbtd.groups = axis_groups;
       sbtd.keys = keys;
       sbtd.triggers = &triggers;
       sbtd.pms = pms;
@@ -376,40 +415,47 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
     }
   }
   
-  // this is kind of hacky
-  if(pms->settingmode == SETTING_TEST && !pms->test_game) {
-    CHECK(!pms->test_player);
+  {
+    StackString sstr("hacky");
     
-    pms->test_player = new Player(pms->faction->faction, 0);
+    // this is kind of hacky
+    if(pms->settingmode == SETTING_TEST && !pms->test_game) {
+      StackString sstr("init");
+      CHECK(!pms->test_player);
+      
+      pms->test_player = new Player(pms->faction->faction, 0);
+      
+      const RenderInfo rin(pms->faction->compass_location);
+      
+      Float4 boundy = Float4(rin.xstart, rin.ystarts[1], rin.xend, rin.ystarts[7]);
+      boundy -= boundy.midpoint();
+      
+      float mn = min(boundy.x_span(), boundy.y_span());
+      boundy *= (100 / mn);
+      
+      pms->test_game = new Game();
+      pms->test_game->initDemo(pms->test_player, boundy);
+    }
     
-    const RenderInfo rin(pms->faction->compass_location);
-    
-    Float4 boundy = Float4(rin.xstart, rin.ystarts[1], rin.xend, rin.ystarts[7]);
-    boundy -= boundy.midpoint();
-    
-    float mn = min(boundy.x_span(), boundy.y_span());
-    boundy *= (100 / mn);
-    
-    pms->test_game = new Game();
-    pms->test_game->initDemo(pms->test_player, boundy);
-  }
-  
-  // so is this
-  if(pms->settingmode == SETTING_TEST) {
-    if(pms->choicemode == CHOICE_IDLE) {
-      vector<Keystates> kst(1);
-      CHECK(!pms->test_game->runTick(kst));
-    } else if(pms->choicemode == CHOICE_ACTIVE || pms->choicemode == CHOICE_FIRSTPASS) {
-      vector<Keystates> kst;
-      kst.push_back(genKeystate(keys, *pms));
-      CHECK(!pms->test_game->runTick(kst));
-    } else {
-      CHECK(0);
+    // so is this
+    if(pms->settingmode == SETTING_TEST) {
+      StackString sstr("run");
+      if(pms->choicemode == CHOICE_IDLE) {
+        vector<Keystates> kst(1);
+        CHECK(!pms->test_game->runTick(kst));
+      } else if(pms->choicemode == CHOICE_ACTIVE || pms->choicemode == CHOICE_FIRSTPASS) {
+        vector<Keystates> kst;
+        kst.push_back(genKeystate(keys, *pms));
+        CHECK(!pms->test_game->runTick(kst));
+      } else {
+        CHECK(0);
+      }
     }
   }
 }
 
 void runSettingRender(const PlayerMenuState &pms) {
+  StackString sstr("runSettingRender");
   if(!pms.faction) {
     setColor(1.0, 1.0, 1.0);
     //char bf[16];
@@ -491,6 +537,7 @@ void runSettingRender(const PlayerMenuState &pms) {
       sbrd.buttons = &pms.buttons;
       sbrd.inverts = NULL;
       sbrd.names = &names;
+      sbrd.groups = button_groups;
       sbrd.sel_button = pms.setting_button_current;
       sbrd.sel_button_reading = pms.setting_button_reading;
       sbrd.fadeFactor = fadeFactor;
@@ -512,13 +559,12 @@ void runSettingRender(const PlayerMenuState &pms) {
       
       // TODO: better pictorial representations
     } else if(pms.settingmode == SETTING_AXISCHOOSE) {
-      CHECK(ksax_axis_names[pms.setting_axistype].size() == BUTTON_LAST);
-      
       StandardButtonRenderData sbrd;
       sbrd.rin = &rin;
       sbrd.buttons = &pms.axes;
       sbrd.inverts = &pms.axes_invert;
       sbrd.names = &ksax_axis_names[pms.setting_axistype];
+      sbrd.groups = axis_groups;
       sbrd.sel_button = pms.setting_axis_current;
       sbrd.sel_button_reading = pms.setting_axis_reading;
       sbrd.fadeFactor = fadeFactor;

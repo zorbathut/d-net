@@ -43,13 +43,14 @@ public:
   void traverse_axistype(int delta, int axes);
 
   Game *test_game;
-  Player *test_player;
+  Player *test_player;  // Ideally these should not be copied, or should be refcounted or something funky
   
   int fireHeld;
   bool readyToPlay() const;
 
   PlayerMenuState();
   PlayerMenuState(Float2 cent);
+  ~PlayerMenuState();
 };
 
 vector<Keystates> genKeystates(const vector<Controller> &keys, const vector<PlayerMenuState> &modes);
