@@ -56,14 +56,19 @@ enum { BUTTON_ACCEPT, BUTTON_CANCEL, BUTTON_FIRE1, BUTTON_FIRE2, BUTTON_SWITCH1,
 const char * const button_names[] = { "Accept", "Cancel", "Fire 1", "Fire 2", "Switch 1", "Switch 2" };
 const int button_groups[] = { 0, 0, 1, 1, 1, 1 };
 
+#define SIMUL_WEAPONS 2 // This is assumed and CHECKed in many places, with the following line: CHECK(SIMUL_WEAPONS == 2); // SWCheck
+
 class Keystates {
 public:
   float ax[2];
   int axmode;
   Button u,d,l,r;
-  Button fire;
-  Button change;
+  Button fire[SIMUL_WEAPONS];
+  Button change[SIMUL_WEAPONS];
+  
   float udlrax[2];
+  Button accept;
+  Button cancel;
 
   void nullMove();
 

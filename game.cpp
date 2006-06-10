@@ -614,7 +614,7 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
   vector< Keystates > keys = rkeys;
   if(frameNm < frameNmToStart && freezeUntilStart) {
     for(int i = 0; i < keys.size(); i++) {
-      if(keys[i].fire.push) {
+      if(keys[i].accept.push || keys[i].fire[0].push) {
         GfxEffects ngfe;
         ngfe.type = GfxEffects::EFFECT_PING;
         ngfe.ping_pos = players[i].pos.toFloat();
@@ -625,7 +625,8 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
         gfxeffects.push_back(ngfe);
       }
       keys[i].nullMove();
-      keys[i].fire = Button();
+      for(int j = 0; j < SIMUL_WEAPONS; j++)
+        keys[i].fire[j] = Button();
     }
   }
   
@@ -840,7 +841,8 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
       bombards[j].loc.y = max(bombards[j].loc.y, gmb.sy);
       bombards[j].loc.x = min(bombards[j].loc.x, gmb.ex);
       bombards[j].loc.y = min(bombards[j].loc.y, gmb.ey);
-      if(keys[j].fire.down) {
+      CHECK(SIMUL_WEAPONS == 2); // SWCheck
+      if(keys[j].fire[0].down || keys[j].fire[1].down) {
         bombards[j].state = BombardmentState::BS_FIRING;
         bombards[j].timer = players[j].player->getBombardment().lockdelay();
       }
@@ -867,11 +869,13 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
 
   for( int i = 0; i < players.size(); i++ ) {
     if(players[i].live) {
-      if(keys[i].change.repeat) {
+      // SWChangeOpt
+      if(keys[i].change[0].repeat) {
         players[i].player->cycleWeapon();
         addTankStatusText(i, players[i].player->getWeapon().name(), 2);
       }
-      if(keys[i].fire.down && players[i].weaponCooldown <= 0 && players[i].team->weapons_enabled && frameNm >= frameNmToStart && frameNmToStart != -1) {
+      // SWChangeOpt
+      if(keys[i].fire[0].down && players[i].weaponCooldown <= 0 && players[i].team->weapons_enabled && frameNm >= frameNmToStart && frameNmToStart != -1) {
         projectiles[i].push_back(Projectile(players[i].getFiringPoint(), players[i].d + players[i].player->getWeapon().deploy().anglestddev() * gaussian(), players[i].player->getWeapon().projectile(), &players[i]));
         players[i].weaponCooldown = players[i].player->getWeapon().framesForCooldown();
         // hack here to detect weapon out-of-ammo

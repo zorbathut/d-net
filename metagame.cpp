@@ -188,11 +188,11 @@ bool Shop::runTick(const Keystates &keys) {
   Button change;
   
   if(0) { // change this to if(selling) for "sell button" behavior
-    buy = keys.change;
-    change = keys.fire;
+    buy = keys.cancel;
+    change = keys.accept;
   } else {
-    buy = keys.fire;
-    change = keys.change;
+    buy = keys.accept;
+    change = keys.cancel;
   }
   
   if(disabled) {
@@ -404,7 +404,7 @@ bool Metagame::runTick(const vector<Controller> &keys) {
     if(currentShop == -1) {
       // this is a bit hacky - SHOP mode when currentShop is -1 is the "show results" screen
       for(int i = 0; i < ki.size(); i++)
-        if(ki[i].fire.repeat)
+        if(ki[i].accept.repeat)
           checked[i] = true;
       if(count(checked.begin(), checked.end(), false) == 0) {
         for(int i = 0; i < playerdata.size(); i++)

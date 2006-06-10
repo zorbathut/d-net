@@ -73,8 +73,13 @@ Keystates genKeystate(const Controller &keys, const PlayerMenuState &pms) {
   kst.d = keys.d;
   kst.l = keys.l;
   kst.r = keys.r;
-  kst.fire = keys.keys[pms.buttons[BUTTON_ACCEPT]];
-  kst.change = keys.keys[pms.buttons[BUTTON_CANCEL]];
+  CHECK(SIMUL_WEAPONS == 2); // SWCheck
+  kst.accept = keys.keys[pms.buttons[BUTTON_ACCEPT]];
+  kst.cancel = keys.keys[pms.buttons[BUTTON_CANCEL]];
+  kst.fire[0] = keys.keys[pms.buttons[BUTTON_FIRE1]];
+  kst.fire[1] = keys.keys[pms.buttons[BUTTON_FIRE2]];
+  kst.change[0] = keys.keys[pms.buttons[BUTTON_SWITCH1]];
+  kst.change[1] = keys.keys[pms.buttons[BUTTON_SWITCH2]];
   kst.axmode = pms.setting_axistype;
   for(int j = 0; j < 2; j++) {
     kst.ax[j] = keys.axes[pms.axes[j]];
