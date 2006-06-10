@@ -188,7 +188,8 @@ Player::Player(const IDBFaction *fact, int in_factionmode) {
 }
 
 void Player::reCalculate() {
-  adjustment = *faction->adjustment[factionmode];
+  //adjustment = *faction->adjustment[factionmode];
+  adjustment = *faction->adjustment[0]; // because factions aren't really useful yet
   for(int i = 0; i < upgrades.size(); i++)
     adjustment += *upgrades[i]->adjustment;
   adjustment.debugDump();
