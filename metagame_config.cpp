@@ -185,6 +185,8 @@ void standardButtonTick(StandardButtonTickData *sbtd) {
         // Step 1: If this button has been chosen somewhere else, and
         // we're not choosing this button for the first time, swap 'em (TODO: go back?)
         for(j = 0; j < sbtd->outkeys->size(); j++) {
+          if(sbtd->groups[j] != sbtd->groups[*sbtd->current_button])
+            continue;
           if((*sbtd->outkeys)[j] == i) {
             if((*sbtd->outkeys)[*sbtd->current_button] != -1) {
               swap((*sbtd->outkeys)[j], (*sbtd->outkeys)[*sbtd->current_button]);
@@ -203,10 +205,12 @@ void standardButtonTick(StandardButtonTickData *sbtd) {
           continue;
         
         // If that wasn't true, then our button is being chosen for the first time.
-        CHECK(j == sbtd->outkeys->size());
-        (*sbtd->outkeys)[*sbtd->current_button] = i;
-        if(sbtd->outinvert)
-          (*sbtd->outinvert)[*sbtd->current_button] = ((*sbtd->triggers)[i] < 0);
+        if(j == sbtd->outkeys->size()) {
+          (*sbtd->outkeys)[*sbtd->current_button] = i;
+          if(sbtd->outinvert)
+            (*sbtd->outinvert)[*sbtd->current_button] = ((*sbtd->triggers)[i] < 0);
+        }
+        
         if(sbtd->pms->choicemode == CHOICE_FIRSTPASS) {
           (*sbtd->current_button)++;
         } else {
@@ -229,7 +233,7 @@ void standardButtonTick(StandardButtonTickData *sbtd) {
       (*sbtd->current_button)--;
     if(sbtd->keys.d.repeat)
       (*sbtd->current_button)++;
-    if(*sbtd->current_button >= sbtd->outkeys->size())
+    if(*sbtd->current_button >= (int)sbtd->outkeys->size())
       *sbtd->current_button = sbtd->outkeys->size() - 1;
     // We accept anything for this (besides cancel) because the user might not know what their accept button is at the moment
     // Maybe add a "done" button at the bottom?
