@@ -90,79 +90,6 @@ vector<Keystates> genKeystates(const vector<Controller> &keys, const vector<Play
   return kst;
 }
 
-void standardButtonTick(int *outkeys, char *outinvert, int outkeycount, int *current_button, bool *current_mode, const Controller &keys, const vector<float> &triggers, PlayerMenuState *pms) {
-  if(*current_button == -1) {
-    *current_button = 0;
-    *current_mode = (pms->choicemode == CHOICE_FIRSTPASS);
-  }
-  CHECK(*current_button >= 0 && *current_button < outkeycount);
-  if(*current_mode) {
-    CHECK(pms->choicemode != CHOICE_IDLE);
-    for(int i = 0; i < triggers.size(); i++) {
-      if(abs(triggers[i]) > 0.9) {
-        int j;
-        bool noopify = false;
-        for(j = 0; j < outkeycount; j++) {
-          if(outkeys[j] == i) {
-            if(outkeys[*current_button] != -1) {
-              swap(outkeys[j], outkeys[*current_button]);
-              if(outinvert) {
-                swap(outinvert[j], outinvert[*current_button]);
-                outinvert[*current_button] = (triggers[i] < 0);
-              }
-            } else {
-              noopify = true;
-            }
-            break;
-          }
-        }
-        if(noopify)
-          continue;
-        if(j == BUTTON_LAST) {
-          outkeys[*current_button] = i;
-          if(outinvert)
-            outinvert[*current_button] = (triggers[i] < 0);
-        }
-        if(pms->choicemode == CHOICE_FIRSTPASS) {
-          (*current_button)++;
-        } else {
-          *current_mode = false;
-        }
-        break;
-      }
-    }
-    if(*current_button == outkeycount) {
-      // Done with the first pass here - this can only happen if the choice if FIRSTPASS
-      CHECK(pms->choicemode == CHOICE_FIRSTPASS);
-      pms->settingmode++;
-      (*current_button) = -1;
-    }
-  } else {
-    CHECK(pms->choicemode == CHOICE_ACTIVE);
-    if(keys.u.repeat)
-      (*current_button)--;
-    if(keys.d.repeat)
-      (*current_button)++;
-    if(*current_button >= outkeycount)
-      *current_button = outkeycount - 1;
-    // We accept anything for this (besides cancel) because the user might not know what their accept button is at the moment
-    // Maybe add a "done" button at the bottom?
-    bool somethingpushed = false;
-    for(int i = 0; i < keys.keys.size(); i++) {
-      if(i == pms->buttons[BUTTON_CANCEL])
-        continue;
-      if(keys.keys[i].push)
-        somethingpushed = true;
-    }
-    if(somethingpushed) {
-      (*current_mode) = true;
-    } else if(keys.keys[pms->buttons[BUTTON_CANCEL]].push || (*current_button) == -1) {
-      pms->choicemode = CHOICE_IDLE;
-      (*current_button) = -1;
-    }
-  }
-}
-
 class RenderInfo {
 public:
   // Basic math!
@@ -199,6 +126,19 @@ public:
   }
 };
 
+struct StandardButtonTickData {
+  vector<int> *outkeys;
+  vector<char> *outinvert;
+  
+  int *current_button;
+  bool *current_mode;
+  
+  Controller keys;
+  const vector<float> *triggers;
+  
+  PlayerMenuState *pms;
+};
+
 struct StandardButtonRenderData {
   const RenderInfo *rin;
   
@@ -213,6 +153,79 @@ struct StandardButtonRenderData {
   float fadeFactor;
   char prefixchar;
 };
+
+void standardButtonTick(StandardButtonTickData *sbtd) {
+  if(*sbtd->current_button == -1) {
+    *sbtd->current_button = 0;
+    *sbtd->current_mode = (sbtd->pms->choicemode == CHOICE_FIRSTPASS);
+  }
+  CHECK(*sbtd->current_button >= 0 && *sbtd->current_button < sbtd->outkeys->size());
+  if(*sbtd->current_mode) {
+    CHECK(sbtd->pms->choicemode != CHOICE_IDLE);
+    for(int i = 0; i < sbtd->triggers->size(); i++) {
+      if(abs((*sbtd->triggers)[i]) > 0.9) {
+        int j;
+        bool noopify = false;
+        for(j = 0; j < sbtd->outkeys->size(); j++) {
+          if((*sbtd->outkeys)[j] == i) {
+            if((*sbtd->outkeys)[*sbtd->current_button] != -1) {
+              swap((*sbtd->outkeys)[j], (*sbtd->outkeys)[*sbtd->current_button]);
+              if(sbtd->outinvert) {
+                swap((*sbtd->outinvert)[j], (*sbtd->outinvert)[*sbtd->current_button]);
+                (*sbtd->outinvert)[*sbtd->current_button] = ((*sbtd->triggers)[i] < 0);
+              }
+            } else {
+              noopify = true;
+            }
+            break;
+          }
+        }
+        if(noopify)
+          continue;
+        if(j == BUTTON_LAST) {
+          (*sbtd->outkeys)[*sbtd->current_button] = i;
+          if(sbtd->outinvert)
+            (*sbtd->outinvert)[*sbtd->current_button] = ((*sbtd->triggers)[i] < 0);
+        }
+        if(sbtd->pms->choicemode == CHOICE_FIRSTPASS) {
+          (*sbtd->current_button)++;
+        } else {
+          *sbtd->current_mode = false;
+        }
+        break;
+      }
+    }
+    if(*sbtd->current_button == sbtd->outkeys->size()) {
+      // Done with the first pass here - this can only happen if the choice if FIRSTPASS
+      CHECK(sbtd->pms->choicemode == CHOICE_FIRSTPASS);
+      sbtd->pms->settingmode++;
+      (*sbtd->current_button) = -1;
+    }
+  } else {
+    CHECK(sbtd->pms->choicemode == CHOICE_ACTIVE);
+    if(sbtd->keys.u.repeat)
+      (*sbtd->current_button)--;
+    if(sbtd->keys.d.repeat)
+      (*sbtd->current_button)++;
+    if(*sbtd->current_button >= sbtd->outkeys->size())
+      *sbtd->current_button = sbtd->outkeys->size() - 1;
+    // We accept anything for this (besides cancel) because the user might not know what their accept button is at the moment
+    // Maybe add a "done" button at the bottom?
+    bool somethingpushed = false;
+    for(int i = 0; i < sbtd->keys.keys.size(); i++) {
+      if(i == sbtd->pms->buttons[BUTTON_CANCEL])
+        continue;
+      if(sbtd->keys.keys[i].push)
+        somethingpushed = true;
+    }
+    if(somethingpushed) {
+      (*sbtd->current_mode) = true;
+    } else if(sbtd->keys.keys[sbtd->pms->buttons[BUTTON_CANCEL]].push || (*sbtd->current_button) == -1) {
+      sbtd->pms->choicemode = CHOICE_IDLE;
+      (*sbtd->current_button) = -1;
+    }
+  }
+}
 
 void standardButtonRender(const StandardButtonRenderData &sbrd) {
   int linesneeded = 0;
@@ -304,8 +317,17 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
       vector<int> groups(BUTTON_LAST);
       groups[BUTTON_ACCEPT] = 1;
       groups[BUTTON_CANCEL] = 1;
+
+      StandardButtonTickData sbtd;      
+      sbtd.outkeys = &pms->buttons;
+      sbtd.outinvert = NULL;
+      sbtd.current_button = &pms->setting_button_current;
+      sbtd.current_mode = &pms->setting_button_reading;
+      sbtd.keys = keys;
+      sbtd.triggers = &triggers;
+      sbtd.pms = pms;
       
-      standardButtonTick(&pms->buttons[0], NULL, BUTTON_LAST, &pms->setting_button_current, &pms->setting_button_reading, keys, triggers, pms);
+      standardButtonTick(&sbtd);
     } else if(pms->settingmode == SETTING_AXISTYPE) {
       if(keys.l.push)
         pms->traverse_axistype(-1, keys.axes.size());
@@ -329,7 +351,16 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
       
       vector<int> groups(ksax_axis_names[pms->setting_axistype].size(), 0);
       
-      standardButtonTick(&pms->axes[0], &pms->axes_invert[0], 2, &pms->setting_axis_current, &pms->setting_axis_reading, keys, triggers, pms);
+      StandardButtonTickData sbtd;      
+      sbtd.outkeys = &pms->axes;
+      sbtd.outinvert = &pms->axes_invert;
+      sbtd.current_button = &pms->setting_axis_current;
+      sbtd.current_mode = &pms->setting_axis_reading;
+      sbtd.keys = keys;
+      sbtd.triggers = &triggers;
+      sbtd.pms = pms;
+      
+      standardButtonTick(&sbtd);
     } else if(pms->settingmode == SETTING_TEST) {
       if(keys.keys[pms->buttons[BUTTON_CANCEL]].push) {
         if(pms->choicemode == CHOICE_FIRSTPASS) {
