@@ -153,7 +153,7 @@ void Shop::renderNode(const HierarchyNode &node, int depth) const {
           dispmode = HierarchyNode::HNDM_COST;
       } else if(dispmode == HierarchyNode::HNDM_COST) {
         CHECK(node.branches[itemid].type == HierarchyNode::HNT_WEAPON);
-        if(player->canSellWeapon(node.branches[itemid].weapon)) {
+        if(!player->canSellWeapon(node.branches[itemid].weapon)) {
           dispmode = HierarchyNode::HNDM_COSTUNIQUE;
         }
       }
@@ -741,6 +741,11 @@ Metagame::Metagame(int playercount, int in_roundsBetweenShop) {
     pms[0].choicemode = CHOICE_IDLE;
     pms[0].buttons[0] = 4;
     pms[0].buttons[1] = 8;
+    pms[0].buttons[2] = 4;
+    pms[0].buttons[3] = 8;
+    pms[0].buttons[4] = 5;
+    pms[0].buttons[5] = 9;
+    CHECK(pms[0].buttons.size() == 6);
     pms[0].axes[0] = 0;
     pms[0].axes[1] = 1;
     pms[0].axes_invert[0] = false;
@@ -754,8 +759,13 @@ Metagame::Metagame(int playercount, int in_roundsBetweenShop) {
     factions[1].taken = true;
     pms[1].settingmode = SETTING_READY;
     pms[1].choicemode = CHOICE_IDLE;
-    pms[1].buttons[0] = 4;
-    pms[1].buttons[1] = 1;
+    pms[1].buttons[0] = 2;
+    pms[1].buttons[1] = 5;
+    pms[1].buttons[2] = 2;
+    pms[1].buttons[3] = 5;
+    pms[1].buttons[4] = 1;
+    pms[1].buttons[5] = 5;
+    CHECK(pms[1].buttons.size() == 6);
     pms[1].axes[0] = 0;
     pms[1].axes[1] = 1;
     pms[1].axes_invert[0] = false;

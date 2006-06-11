@@ -583,7 +583,7 @@ void runSettingRender(const PlayerMenuState &pms) {
     } else if(pms.settingmode == SETTING_TEST) {
       setColor(Color(0.5, 0.5, 0.5) * fadeFactor);
       if(pms.choicemode == CHOICE_IDLE) {
-        drawJustifiedText("Fire to test", rin.textsize, (rin.xstart + rin.xend) / 2, rin.ystarts[7], TEXT_CENTER, TEXT_MIN);
+        drawJustifiedText("Accept to test", rin.textsize, (rin.xstart + rin.xend) / 2, rin.ystarts[7], TEXT_CENTER, TEXT_MIN);
       } else {
         drawJustifiedText("Cancel when done", rin.textsize, (rin.xstart + rin.xend) / 2, rin.ystarts[7], TEXT_CENTER, TEXT_MIN);
       }
@@ -591,7 +591,7 @@ void runSettingRender(const PlayerMenuState &pms) {
       pms.test_game->renderToScreen();
     } else if(pms.settingmode == SETTING_READY) {
       setColor(Color(0.5, 0.5, 0.5) * fadeFactor);
-      const char * const text[] = {"Hold fire when", "ready. Let go", "to cancel.", "", "Move left/right to", "change config."};
+      const char * const text[] = {"Hold accept when", "ready. Let go", "to cancel.", "", "Move left/right to", "change config."};
       for(int i = 0; i < 6; i++)
         drawJustifiedText(text[i], rin.textsize, (rin.xstart + rin.xend) / 2, rin.ystarts[i + 2], TEXT_CENTER, TEXT_MIN);
     } else {
