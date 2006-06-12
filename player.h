@@ -55,9 +55,6 @@ public:
   IDBGloryAdjust getGlory() const;
   IDBBombardmentAdjust getBombardment() const;
   IDBTankAdjust getTank() const;
-
-  IDBWeaponAdjust getWeapon() const;
-  void cycleWeapon();
   
   Money getCash() const;
   void addCash(Money amount); // this is really designed *solely* for the income phase
@@ -69,9 +66,11 @@ public:
   int consumeKills();
   int consumeWins();
   float consumeDamage();
-  
-  float shotFired();
-  int shotsLeft() const;
+
+  IDBWeaponAdjust getWeapon(int id) const;
+  void cycleWeapon(int id);
+  float shotFired(int id);  // Fire a single shot. Returns the value of that shot.This could likely be done better.
+  int shotsLeft(int id) const;
 
   Player();
   Player(const IDBFaction *fact, int factionmode);
@@ -88,7 +87,7 @@ private:
   vector<const IDBBombardment *> bombardment;
 
   map<pair<string, const IDBWeapon *>, int> weapons;
-  const IDBWeapon *curweapon;
+  vector<const IDBWeapon *> curweapons;
 
   const IDBFaction *faction;
   int factionmode;

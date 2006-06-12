@@ -58,8 +58,11 @@ IDBDeployAdjust IDBWeaponAdjust::deploy() const { return IDBDeployAdjust(idb->de
 IDBProjectileAdjust IDBWeaponAdjust::projectile() const { return IDBProjectileAdjust(idb->projectile, adjust); };
 
 int IDBWeaponAdjust::framesForCooldown() const { 
-  float frames_per_shot = FPS / (idb->firerate * adjust->adjustmentfactor(IDBAdjustment::TANK_FIRERATE));
+  float frames_per_shot = firerate();
   return (int)floor(frames_per_shot) + (frand() < (frames_per_shot - floor(frames_per_shot)));
+}
+float IDBWeaponAdjust::firerate() const {
+  return FPS / (idb->firerate * adjust->adjustmentfactor(IDBAdjustment::TANK_FIRERATE));
 }
 Money IDBWeaponAdjust::cost() const { return idb->base_cost / adjust->adjustmentfactor(IDBAdjustment::DISCOUNT_WEAPON); };
 Money IDBWeaponAdjust::sellcost(int amount) const { return cost() * adjust->recyclevalue() * amount / idb->quantity; };

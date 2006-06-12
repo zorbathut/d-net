@@ -2,6 +2,7 @@
 #define DNET_INPUT
 
 #include "float.h"
+#include "const.h"
 
 #include <string>
 #include <vector>
@@ -55,8 +56,6 @@ const int axis_groups[] = { 0, 0 };
 enum { BUTTON_ACCEPT, BUTTON_CANCEL, BUTTON_FIRE1, BUTTON_FIRE2, BUTTON_SWITCH1, BUTTON_SWITCH2, BUTTON_LAST };
 const char * const button_names[] = { "Menu Accept", "Menu Cancel", "Fire 1", "Fire 2", "Switch 1", "Switch 2" };
 const int button_groups[] = { 0, 0, 1, 1, 1, 1 };
-
-#define SIMUL_WEAPONS 2 // This is assumed and CHECKed in many places, with the following line: CHECK(SIMUL_WEAPONS == 2); // SWCheck
 
 class Keystates {
 public:

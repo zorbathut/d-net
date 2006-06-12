@@ -862,33 +862,62 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
     }
   }  
   
-  for( int i = 0; i < players.size(); i++ ) {
+  for(int i = 0; i < players.size(); i++) {
     players[i].tick(keys[i]);
     players[i].weaponCooldown--;
   }
 
-  for( int i = 0; i < players.size(); i++ ) {
+  for(int i = 0; i < players.size(); i++) {
+    StackString sst(StringPrintf("Player weaponry %d", i));
     if(players[i].live) {
-      // SWChangeOpt
-      if(keys[i].change[0].repeat) {
-        players[i].player->cycleWeapon();
-        addTankStatusText(i, players[i].player->getWeapon().name(), 2);
+      for(int j = 0; j < SIMUL_WEAPONS; j++) {
+        if(keys[i].change[j].push) {
+          StackString sst(StringPrintf("Switching"));
+          players[i].player->cycleWeapon(j);
+          addTankStatusText(i, players[i].player->getWeapon(j).name(), 2);
+        }
       }
-      // SWChangeOpt
-      if(keys[i].fire[0].down && players[i].weaponCooldown <= 0 && players[i].team->weapons_enabled && frameNm >= frameNmToStart && frameNmToStart != -1) {
-        projectiles[i].push_back(Projectile(players[i].getFiringPoint(), players[i].d + players[i].player->getWeapon().deploy().anglestddev() * gaussian(), players[i].player->getWeapon().projectile(), &players[i]));
-        players[i].weaponCooldown = players[i].player->getWeapon().framesForCooldown();
-        // hack here to detect weapon out-of-ammo
-        string lastname = players[i].player->getWeapon().name();
-        firepowerSpent += players[i].player->shotFired();
-        if(players[i].player->getWeapon().name() != lastname) {
-          addTankStatusText(i, players[i].player->getWeapon().name(), 2);
+    
+      if(players[i].weaponCooldown <= 0 && players[i].team->weapons_enabled && frameNm >= frameNmToStart && frameNmToStart != -1) {
+        StackString sst(StringPrintf("Firetesting"));
+        // The player can fire, so let's find out if he does
+        vector<pair<float, int> > weps;
+        for(int j = 0; j < SIMUL_WEAPONS; j++) {
+          if(keys[i].fire[j].down) {
+            weps.push_back(make_pair(1 / players[i].player->getWeapon(j).firerate(), j));
+          }
         }
-        {
-          string slv = StringPrintf("%d", players[i].player->shotsLeft());
-          if(count(slv.begin(), slv.end(), '0') == slv.size() - 1)
-            addTankStatusText(i, slv, 0.5);
+        if(!weps.size())
+          continue; // No firing!
+        
+        float tot = 0;
+        for(int j = 0; j < weps.size(); j++)
+          tot += weps[j].first;
+        tot = frand() * tot;
+        for(int j = 0; j < weps.size(); j++) {
+          tot -= weps[j].first;
+          if(tot < 0) {
+            // Blam!
+            IDBWeaponAdjust weapon = players[i].player->getWeapon(weps[j].second);
+            
+            projectiles[i].push_back(Projectile(players[i].getFiringPoint(), players[i].d + weapon.deploy().anglestddev() * gaussian(), weapon.projectile(), &players[i]));
+            players[i].weaponCooldown = weapon.framesForCooldown();
+            // hack here to detect weapon out-of-ammo
+            string lastname = weapon.name();
+            firepowerSpent += players[i].player->shotFired(weps[j].second);
+            if(weapon.name() != lastname) {
+              addTankStatusText(i, weapon.name(), 2);
+            }
+            
+            {
+              string slv = StringPrintf("%d", players[i].player->shotsLeft(weps[j].second));
+              if(count(slv.begin(), slv.end(), '0') == slv.size() - 1)
+                addTankStatusText(i, slv, 0.5);
+            }
+            break;
+          }
         }
+        CHECK(tot < 0);
       }
     }
   }
@@ -1144,10 +1173,11 @@ void Game::renderToScreen() const {
           bare *= players[i].health;
           drawShadedRect(Float4(barl, 2, barl + bare, 6), 0.1, 2);
           string ammotext;
-          if(players[i].player->shotsLeft() == -1) {
+          // TODO: Multiweapon!
+          if(players[i].player->shotsLeft(0) == -1) {
             ammotext = "inf";
           } else {
-            ammotext = StringPrintf("%d", players[i].player->shotsLeft());
+            ammotext = StringPrintf("%d", players[i].player->shotsLeft(0));
           }
           drawText(ammotext, 2, barl, 7);
         }

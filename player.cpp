@@ -2,6 +2,7 @@
 #include "player.h"
 
 #include "args.h"
+#include "const.h"
 
 using namespace std;
 
@@ -116,16 +117,16 @@ IDBBombardmentAdjust Player::getBombardment() const {
 IDBTankAdjust Player::getTank() const {
   return IDBTankAdjust(NULL, &adjustment); };
 
-IDBWeaponAdjust Player::getWeapon() const {
-  return IDBWeaponAdjust(curweapon, &adjustment); };
-void Player::cycleWeapon() {
-  map<pair<string, const IDBWeapon *>, int>::iterator itr = weapons.find(make_pair(curweapon->name, curweapon));
+IDBWeaponAdjust Player::getWeapon(int id) const {
+  return IDBWeaponAdjust(curweapons[id], &adjustment); };
+void Player::cycleWeapon(int id) {
+  map<pair<string, const IDBWeapon *>, int>::iterator itr = weapons.find(make_pair(curweapons[id]->name, curweapons[id]));
   CHECK(itr != weapons.end());
   itr++;
   if(itr == weapons.end())
-    curweapon = weapons.begin()->first.second;
+    curweapons[id] = weapons.begin()->first.second;
   else
-    curweapon = itr->first.second;
+    curweapons[id] = itr->first.second;
 }
 
 Money Player::getCash() const {
@@ -157,17 +158,17 @@ float Player::consumeDamage() {
   return dd;
 }
 
-float Player::shotFired() {
-  CHECK(weapons.count(make_pair(curweapon->name, curweapon)));
-  float cost = adjustWeapon(curweapon).cost().toFloat() / curweapon->quantity;
-  if(ammoCount(curweapon) != -1)
-    consumeAmmo(curweapon, 1);
+float Player::shotFired(int id) {
+  CHECK(weapons.count(make_pair(curweapons[id]->name, curweapons[id])));
+  float cost = adjustWeapon(curweapons[id]).cost().toFloat() / curweapons[id]->quantity;
+  if(ammoCount(curweapons[id]) != -1)
+    consumeAmmo(curweapons[id], 1);
   return cost;
 };
 
-int Player::shotsLeft() const {
-  CHECK(weapons.count(make_pair(curweapon->name, curweapon)));
-  return weapons.find(make_pair(curweapon->name, curweapon))->second;
+int Player::shotsLeft(int id) const {
+  CHECK(weapons.count(make_pair(curweapons[id]->name, curweapons[id])));
+  return weapons.find(make_pair(curweapons[id]->name, curweapons[id]))->second;
 }
 
 Player::Player() {
@@ -182,7 +183,7 @@ Player::Player(const IDBFaction *fact, int in_factionmode) {
   cash = Money(FLAGS_startingCash);
   reCalculate();
   weapons[make_pair(defaultWeapon()->name, defaultWeapon())] = -1;
-  curweapon = defaultWeapon();
+  curweapons.resize(SIMUL_WEAPONS, defaultWeapon());
   glory.push_back(defaultGlory());
   bombardment.push_back(defaultBombardment());
 }
@@ -200,9 +201,12 @@ void Player::consumeAmmo(const IDBWeapon *weapon, int count) {
   CHECK(*ammo >= count);
   (*ammo) -= count;
   if(*ammo == 0) {
-    if(curweapon == weapon)
-      cycleWeapon();
-    CHECK(curweapon != weapon);
+    for(int i = 0; i < curweapons.size(); i++) {
+      if(curweapons[i] == weapon) {
+        cycleWeapon(i);
+        CHECK(curweapons[i] != weapon); // fix this
+      }
+    }
     weapons.erase(make_pair(weapon->name, weapon));
   }
 }

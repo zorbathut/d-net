@@ -178,6 +178,7 @@ public:
   IDBProjectileAdjust projectile() const;
 
   int framesForCooldown() const;
+  float firerate() const;
   Money cost() const;
   Money sellcost(int shots) const;
   
