@@ -1,13 +1,16 @@
 ---- Major work path
 - Dual weapon
-  - Better control config
+  - Better balancing
   - "Switch mode" in buying screen
+  - Improved GUI for results
+- Logarithmic turning
+- Improve explosion effects (missile, glory device)
+- New weapons
 - New tanks, "tank base weapon"
+- Next generation of weapons
 - Certificates and discounts
 - Training
-- Next generation of weapons
 - Faction info screen on startup
-- Improve explosion effects (missile, etc)
 - Speed up wall difference in nasty situations (i.e. glory devices in corners)
 - Speed up wall placement in all situations (that annoying caching thing with gamemap, I guess)
 - Make explosion removals include the focus point
