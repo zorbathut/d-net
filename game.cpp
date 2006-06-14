@@ -442,6 +442,7 @@ Tank::Tank() {
   player = NULL;
   initted = false;
   weaponCooldown = 0;
+  memset(weaponCooldownSubvals, 0, sizeof(weaponCooldownSubvals)); // if you're not using IEEE floats, get a new computer.
   zone_current = -1;
   zone_frames = 0;
 }
@@ -881,43 +882,53 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
       if(players[i].weaponCooldown <= 0 && players[i].team->weapons_enabled && frameNm >= frameNmToStart && frameNmToStart != -1) {
         StackString sst(StringPrintf("Firetesting"));
         // The player can fire, so let's find out if he does
-        vector<pair<float, int> > weps;
+        
+        // weaponCooldownSubvals is maintained in here.
+        // Every "fire" attempt, we find the weapon with the lowest subval. We subtract that from all active weapons (thereby making that value 0),
+        // then we add the seconds-until-next-shot to that one. Any non-active weapons are clamped to 0 on the theory that the player is hammering
+        // that button and really wants it to fire.
+        
+        float rlev = 1e20; // uh, no
+        int curfire = -1;
         for(int j = 0; j < SIMUL_WEAPONS; j++) {
           if(keys[i].fire[j].down) {
-            weps.push_back(make_pair(1 / players[i].player->getWeapon(j).firerate(), j));
+            if(rlev > players[i].weaponCooldownSubvals[j]) {
+              rlev = players[i].weaponCooldownSubvals[j];
+              curfire = j;
+            }
+          } else {
+            players[i].weaponCooldownSubvals[j] = 0;
           }
         }
-        if(!weps.size())
-          continue; // No firing!
+        CHECK(rlev >= 0);
         
-        float tot = 0;
-        for(int j = 0; j < weps.size(); j++)
-          tot += weps[j].first;
-        tot = frand() * tot;
-        for(int j = 0; j < weps.size(); j++) {
-          tot -= weps[j].first;
-          if(tot < 0) {
-            // Blam!
-            IDBWeaponAdjust weapon = players[i].player->getWeapon(weps[j].second);
-            
-            projectiles[i].push_back(Projectile(players[i].getFiringPoint(), players[i].d + weapon.deploy().anglestddev() * gaussian(), weapon.projectile(), &players[i]));
-            players[i].weaponCooldown = weapon.framesForCooldown();
-            // hack here to detect weapon out-of-ammo
-            string lastname = weapon.name();
-            firepowerSpent += players[i].player->shotFired(weps[j].second);
-            if(weapon.name() != lastname) {
-              addTankStatusText(i, weapon.name(), 2);
-            }
-            
-            {
-              string slv = StringPrintf("%d", players[i].player->shotsLeft(weps[j].second));
-              if(count(slv.begin(), slv.end(), '0') == slv.size() - 1)
-                addTankStatusText(i, slv, 0.5);
-            }
-            break;
+        if(curfire != -1) {
+          // We're firing something!
+          
+          for(int j = 0; j < SIMUL_WEAPONS; j++) {
+            players[i].weaponCooldownSubvals[j] = max(players[i].weaponCooldownSubvals[j] - rlev, (float)0);
+          }
+          
+          players[i].weaponCooldownSubvals[curfire] = players[i].player->getWeapon(curfire).firerate();
+          
+          // Blam!
+          IDBWeaponAdjust weapon = players[i].player->getWeapon(curfire);
+          
+          projectiles[i].push_back(Projectile(players[i].getFiringPoint(), players[i].d + weapon.deploy().anglestddev() * gaussian(), weapon.projectile(), &players[i]));
+          players[i].weaponCooldown = weapon.framesForCooldown();
+          // hack here to detect weapon out-of-ammo
+          string lastname = weapon.name();
+          firepowerSpent += players[i].player->shotFired(curfire);
+          if(weapon.name() != lastname) {
+            addTankStatusText(i, weapon.name(), 2);
+          }
+          
+          {
+            string slv = StringPrintf("%d", players[i].player->shotsLeft(curfire));
+            if(count(slv.begin(), slv.end(), '0') == slv.size() - 1)
+              addTankStatusText(i, slv, 0.5);
           }
         }
-        CHECK(tot < 0);
       }
     }
   }

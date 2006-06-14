@@ -112,6 +112,7 @@ public:
   Player *player;
   
   int weaponCooldown;
+  float weaponCooldownSubvals[SIMUL_WEAPONS];
 
 };
 
