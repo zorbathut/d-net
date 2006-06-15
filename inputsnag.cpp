@@ -216,9 +216,8 @@ vector<Controller> controls_next() {
 
   // Now we do the deltas
   
-  for(int i = 0; i < now.size(); i++) {
+  for(int i = 0; i < now.size(); i++)
     last[i].newState(now[i]);
-  }
   
   for(int i = 0; i < last.size(); i++) {
     CHECK(last[i].menu.x >= -1 && last[i].menu.x <= 1);

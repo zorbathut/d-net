@@ -19,10 +19,9 @@ void Button::newState(const Button &other) {
 }
 
 void Button::newState(bool pushed) {
-  if(pushed == down) {
-    push = false;
-    release = false;
-  } else {
+  push = false;
+  release = false;
+  if(pushed != down) {
     dur = 0;
     sincerep = 0;
     if(pushed) {

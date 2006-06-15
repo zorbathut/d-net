@@ -6,6 +6,6 @@
 #define PHI 1.61803399f
 #define COORDPI Coord(PI)
 
-#define SIMUL_WEAPONS 2 // This is assumed and CHECKed in many places, with the following line: CHECK(SIMUL_WEAPONS == 2); // SWCheck
+#define SIMUL_WEAPONS 2 // This is assumed and CHECKed in many places
 
 #endif

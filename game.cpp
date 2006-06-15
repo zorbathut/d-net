@@ -842,7 +842,7 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
       bombards[j].loc.y = max(bombards[j].loc.y, gmb.sy);
       bombards[j].loc.x = min(bombards[j].loc.x, gmb.ex);
       bombards[j].loc.y = min(bombards[j].loc.y, gmb.ey);
-      CHECK(SIMUL_WEAPONS == 2); // SWCheck
+      CHECK(SIMUL_WEAPONS == 2);
       if(keys[j].fire[0].down || keys[j].fire[1].down) {
         bombards[j].state = BombardmentState::BS_FIRING;
         bombards[j].timer = players[j].player->getBombardment().lockdelay();
@@ -1182,15 +1182,20 @@ void Game::renderToScreen() const {
           float bare = (roffset - 1) - (loffset + 1);
           bare /= players[i].player->getTank().maxHealth();
           bare *= players[i].health;
-          drawShadedRect(Float4(barl, 2, barl + bare, 6), 0.1, 2);
-          string ammotext;
-          // TODO: Multiweapon!
-          if(players[i].player->shotsLeft(0) == -1) {
-            ammotext = "inf";
-          } else {
-            ammotext = StringPrintf("%d", players[i].player->shotsLeft(0));
+          drawShadedRect(Float4(barl, 2, barl + bare, 7), 0.1, 2);
+          
+          string ammotext[SIMUL_WEAPONS];
+          for(int j = 0; j < SIMUL_WEAPONS; j++) {
+            if(players[i].player->shotsLeft(j) == -1) {
+              ammotext[j] = "inf";
+            } else {
+              ammotext[j] = StringPrintf("%d", players[i].player->shotsLeft(j));
+            }
           }
-          drawText(ammotext, 2, barl, 7);
+          
+          CHECK(SIMUL_WEAPONS == 2);
+          drawJustifiedText(ammotext[0], 1.5, loffset + 1, 7.75, TEXT_MIN, TEXT_MIN);
+          drawJustifiedText(ammotext[1], 1.5, roffset - 1, 7.75, TEXT_MAX, TEXT_MIN);
         }
       }
     }

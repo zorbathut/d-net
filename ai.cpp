@@ -87,9 +87,10 @@ Controller makeController(float x, float y, bool key) {
   Controller rv;
   rv.keys.resize(BUTTON_LAST);
   rv.menu = Float2(x, y);
+  for(int i = 0; i < BUTTON_LAST; i++)
+    rv.keys[i].down = 0;
   rv.keys[0].down = key;
-  for(int i = 1; i < BUTTON_LAST; i++)
-    rv.keys[i].down = key;
+  rv.keys[2].down = key;  // it is truly best not to ask
   return rv;
 }
 
@@ -267,10 +268,12 @@ void Ai::updateGame(const vector<Tank> &players, int me) {
     nx = normalize(nx);
     nextKeys.menu = nx;
   }
-  if(rng.frand() < 0.001)
-    firing = !firing;
-  nextKeys.keys[0].down = firing;
-  nextKeys.keys[1].down = (rng.frand() < 0.001);  // weapon switch
+  for(int i = 0; i < SIMUL_WEAPONS; i++) {
+    if(rng.frand() < 0.001)
+      firing[i] = !firing[i];
+    nextKeys.keys[BUTTON_FIRE1 + i].down = firing;
+    nextKeys.keys[BUTTON_SWITCH1 + i].down = (rng.frand() < 0.001);  // weapon switch
+  }
 }
 
 void Ai::updateBombardment(const vector<Tank> &players, Coord2 mypos) {
@@ -288,9 +291,9 @@ void Ai::updateBombardment(const vector<Tank> &players, Coord2 mypos) {
     dir = normalize(dir);
   nextKeys.menu = dir.toFloat();
   nextKeys.menu.y *= -1;
-  nextKeys.keys[0].down = false;
+  nextKeys.keys[BUTTON_FIRE1].down = false;
   if(clodist < 10)
-    nextKeys.keys[0].down = (rng.frand() < 0.02);
+    nextKeys.keys[BUTTON_FIRE1].down = (rng.frand() < 0.02);
 }
 
 void Ai::updateWaitingForReport() {
@@ -306,7 +309,7 @@ Controller Ai::getNextKeys() const {
 Ai::Ai() {
   nextKeys.keys.resize(BUTTON_LAST);
   shopdone = false;
-  firing = false;
+  memset(firing, 0, sizeof(firing));
 }
 
 void Ai::zeroNextKeys() {

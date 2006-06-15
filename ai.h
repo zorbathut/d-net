@@ -26,7 +26,7 @@ public: bool shopdone;
   int gamemode;
   int targetplayer;
   Float2 targetdir;
-  bool firing;
+  bool firing[SIMUL_WEAPONS];
   
 public:
   
