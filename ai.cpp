@@ -10,7 +10,6 @@ using namespace std;
 // these are not meant to be meaningful
 inline bool operator<(const Button &lhs, const Button &rhs) {
   if(lhs.down != rhs.down) return lhs.down < rhs.down;
-  if(lhs.up != rhs.up) return lhs.up < rhs.up;
   if(lhs.push != rhs.push) return lhs.push < rhs.push;
   if(lhs.release != rhs.release) return lhs.release < rhs.release;
   if(lhs.repeat != rhs.repeat) return lhs.repeat < rhs.repeat;

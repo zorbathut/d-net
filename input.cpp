@@ -9,7 +9,6 @@ using namespace std;
  
 Button::Button() {
   down = push = release = repeat = false;
-  up = true;
   dur = 0;
   sincerep = 0;
 }
@@ -30,7 +29,6 @@ void Button::newState(bool pushed) {
       release = true;
     }
     down = pushed;
-    up = !pushed;
   }
   repeat = false;
   dur++;

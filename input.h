@@ -16,7 +16,6 @@ using namespace std;
 class Button {
 public:
   bool down;
-  bool up;
   bool push;
   bool release;
   bool repeat;
