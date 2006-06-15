@@ -168,7 +168,7 @@ float Player::shotFired(int id) {
 
 int Player::shotsLeft(int id) const {
   CHECK(weapons.count(make_pair(curweapons[id]->name, curweapons[id])));
-  return weapons.find(make_pair(curweapons[id]->name, curweapons[id]))->second;
+  return ammoCount(curweapons[id]);
 }
 
 Player::Player() {
