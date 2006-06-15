@@ -84,9 +84,11 @@ bool Metagame::runTick(const vector<Controller> &keys) {
     vector<Keystates> ki = genKeystates(keys, pms);
     if(currentShop == -1) {
       // this is a bit hacky - SHOP mode when currentShop is -1 is the "show results" screen
-      for(int i = 0; i < ki.size(); i++)
-        if(ki[i].accept.repeat)
+      for(int i = 0; i < ki.size(); i++) {
+        CHECK(SIMUL_WEAPONS == 2);
+        if(ki[i].accept.push || ki[i].fire[0].push || ki[i].fire[1].push)
           checked[i] = true;
+      }
       if(count(checked.begin(), checked.end(), false) == 0) {
         for(int i = 0; i < playerdata.size(); i++)
           playerdata[i].addCash(lrCash[i]);

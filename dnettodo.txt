@@ -1,8 +1,6 @@
 ---- Major work path
 - Dual weapon
   - Improved GUI for ammo
-  - What's wrong with bombardment?
-  - Allow fire or menu for results screen?
   - "Switch mode" in buying screen
 - "Kill graph"
 - Logarithmic turning
