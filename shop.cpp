@@ -6,12 +6,13 @@
 
 const HierarchyNode &Shop::getStepNode(int step) const {
   CHECK(step >= 0 && step <= curloc.size());
-  const HierarchyNode *cnode = &itemDbRoot();
-  for(int i = 0; i < step; i++) {
-    CHECK(curloc[i] >= 0 && curloc[i] < cnode->branches.size());
-    cnode = &cnode->branches[curloc[i]];
+  if(step == 0) {
+    return itemDbRoot();
+  } else {
+    const HierarchyNode &nd = getStepNode(step - 1);
+    CHECK(curloc[step - 1] >= 0 && curloc[step - 1] < nd.branches.size());
+    return nd.branches[curloc[step - 1]]; // TODO: normalize step here
   }
-  return *cnode;
 }
 
 const HierarchyNode &Shop::getCurNode() const {

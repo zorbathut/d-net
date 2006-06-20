@@ -18,6 +18,11 @@ hierarchy {
   type=bombardment
 }
 
+hierarchy {
+  name=ROOT.Equip Weapons
+  type=equip
+}
+
 adjustment {
   name=adjustment.hull
   tank_armor=20

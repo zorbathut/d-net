@@ -8,6 +8,8 @@ class Ai;
 
 class Shop {
 private:
+  HierarchyNode dynamic_equip;
+
   Player *player;
 
   vector<int> curloc;

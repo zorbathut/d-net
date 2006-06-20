@@ -264,6 +264,8 @@ void parseItemFile(const string &fname) {
           tnode.cat_restrictiontype = HierarchyNode::HNT_GLORY;
         } else if(chunk.kv["type"] == "bombardment") {
           tnode.cat_restrictiontype = HierarchyNode::HNT_BOMBARDMENT;
+        } else if(chunk.kv["type"] == "equip") {
+          tnode.cat_restrictiontype = HierarchyNode::HNT_EQUIP;
         } else {
           dprintf("Unknown restriction type in hierarchy node: %s\n", chunk.kv["type"].c_str());
           CHECK(0);

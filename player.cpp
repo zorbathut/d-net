@@ -45,7 +45,6 @@ void Weaponmanager::addAmmo(const IDBWeapon *weap, int count) {
 void Weaponmanager::removeAmmo(const IDBWeapon *weap, int count) {
   CHECK(count > 0);
   CHECK(weapons.count(weap));
-  dprintf("RAM %s %d %d\n", weap->name.c_str(), weapons[weap], count);
   CHECK(weapons[weap] > 0 && weapons[weap] >= count);
   if(weapons[weap] == count) {
     weapons.erase(weap);
@@ -83,6 +82,7 @@ void Weaponmanager::setWeaponEquipBit(const IDBWeapon *weapon, int id, bool bit)
     CHECK(weapons.count(weapon));
     weaponops[id].push_back(weapon);
     sort(weaponops[id].begin(), weaponops[id].end());
+    curweapons[id] = weapon; // equip it
   } else {
     if(curweapons[id] == weapon)
       cycleWeapon(id);
@@ -255,15 +255,6 @@ float Player::shotFired(int id) {
 int Player::shotsLeft(int id) const {
   return weapons.ammoCountSlot(id);  
 }
-
-/*
-vector<const IDBWeapon *> Player::getAvailableWeapons() const {
-}
-void Player::setWeaponEquipBit(const IDBWeapon *weapon, bool id) const {
-}
-bool Player::getWeaponEquipBit(const IDBWeapon *weapon, int id) const {
-}
-*/
 
 Player::Player() {
   cash = Money(-1);
