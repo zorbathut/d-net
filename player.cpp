@@ -4,9 +4,108 @@
 #include "args.h"
 #include "const.h"
 
+#include <set>
+
 using namespace std;
 
 DEFINE_int(startingCash, 1000, "Cash to start with");
+
+bool IDBWeaponNameSorter::operator()(const IDBWeapon *lhs, const IDBWeapon *rhs) const {
+  return lhs->name < rhs->name;
+}
+  
+void Weaponmanager::cycleWeapon(int id) {
+  CHECK(weaponops[id].size());
+  vector<const IDBWeapon *>::iterator itr = find(weaponops[id].begin(), weaponops[id].end(), curweapons[id]);
+  CHECK(itr != weaponops[id].end());
+  itr++;
+  if(itr == weaponops[id].end()) {
+    curweapons[id] = weaponops[id][0];
+  } else {
+    curweapons[id] = *itr;
+  }
+}
+float Weaponmanager::shotFired(int id) {
+  float val = curweapons[id]->base_cost.toFloat() / curweapons[id]->quantity;
+  if(ammoCountSlot(id) != UNLIMITED_AMMO)
+    removeAmmo(curweapons[id], 1);
+  return val;
+}
+
+void Weaponmanager::addAmmo(const IDBWeapon *weap, int count) {
+  CHECK(count > 0 || count == UNLIMITED_AMMO);
+  if(weapons.count(weap)) {
+    CHECK(count != UNLIMITED_AMMO);
+    weapons[weap] += count;
+  } else {
+    weapons[weap] = count;
+    setWeaponEquipBit(weap, 0, true);
+  }
+}
+void Weaponmanager::removeAmmo(const IDBWeapon *weap, int count) {
+  CHECK(count > 0);
+  CHECK(weapons.count(weap));
+  CHECK(weapons[weap] > 0 && weapons[weap] >= count);
+  if(weapons[weap] == count) {
+    weapons.erase(weap);
+    for(int i = 0; i < weaponops.size(); i++) {
+      setWeaponEquipBit(weap, i, false);
+    }
+  } else {
+    weapons[weap] -= count;
+  }
+}
+
+int Weaponmanager::ammoCount(const IDBWeapon *weap) const {
+  if(weapons.count(weap))
+    return weapons.find(weap)->second;
+  return 0;
+}
+
+int Weaponmanager::ammoCountSlot(int id) const {
+  return ammoCount(curweapons[id]);
+}
+const IDBWeapon *Weaponmanager::getWeaponSlot(int id) const {
+  return curweapons[id];
+}
+
+vector<const IDBWeapon *> Weaponmanager::getAvailableWeapons() const {
+  set<const IDBWeapon *, IDBWeaponNameSorter> seet;
+  for(int i = 0; i < weaponops.size(); i++)
+    seet.insert(weaponops[i].begin(), weaponops[i].end());
+  return vector<const IDBWeapon *>(seet.begin(), seet.end());
+}
+void Weaponmanager::setWeaponEquipBit(const IDBWeapon *weapon, int id, bool bit) {
+  if(count(weaponops[id].begin(), weaponops[id].end(), weapon) == bit)
+    return;
+  if(bit == true) {
+    CHECK(weapons.count(weapon));
+    weaponops[id].push_back(weapon);
+    sort(weaponops[id].begin(), weaponops[id].end());
+  } else {
+    if(curweapons[id] == weapon)
+      cycleWeapon(id);
+    if(curweapons[id] == weapon) {
+      CHECK(weaponops[id].size() == 1);
+      weaponops[id].push_back(defaultWeapon());
+      cycleWeapon(id);
+    }
+    CHECK(curweapons[id] != weapon);
+    
+    // We're simply removing, so no need to sort.
+    // If we added a default weapon, it's now the only item in here, so, again, no need to sort.
+    weaponops[id].erase(find(weaponops[id].begin(), weaponops[id].end(), weapon));
+  }
+}
+bool Weaponmanager::getWeaponEquipBit(const IDBWeapon *weapon, int id) const {
+  return count(weaponops[id].begin(), weaponops[id].end(), weapon);
+}
+
+Weaponmanager::Weaponmanager() {
+  weaponops.resize(SIMUL_WEAPONS, vector<const IDBWeapon*>(1, defaultWeapon()));
+  addAmmo(defaultWeapon(), UNLIMITED_AMMO);
+  curweapons.resize(SIMUL_WEAPONS, defaultWeapon());
+}
 
 IDBUpgradeAdjust Player::adjustUpgrade(const IDBUpgrade *in_upg) const { return IDBUpgradeAdjust(in_upg, &adjustment); };
 IDBGloryAdjust Player::adjustGlory(const IDBGlory *in_upg) const { return IDBGloryAdjust(in_upg, &adjustment); };
@@ -45,8 +144,7 @@ void Player::buyBombardment(const IDBBombardment *in_bombardment) {
 }
 void Player::buyWeapon(const IDBWeapon *in_weap) {
   CHECK(canBuyWeapon(in_weap));
-  if(weapons[make_pair(in_weap->name, in_weap)] != -1)
-    weapons[make_pair(in_weap->name, in_weap)] += in_weap->quantity;
+  weapons.addAmmo(in_weap, in_weap->quantity);
   cash -= adjustWeapon(in_weap).cost();
 }
 
@@ -73,12 +171,11 @@ void Player::sellBombardment(const IDBBombardment *in_bombardment) {
 }
 void Player::sellWeapon(const IDBWeapon *in_weap) {
   CHECK(canSellWeapon(in_weap));
-  CHECK(weapons.count(make_pair(in_weap->name, in_weap)));
-  CHECK(weapons[make_pair(in_weap->name, in_weap)] > 0);
+  CHECK(weapons.ammoCount(in_weap) > 0);
 
-  int sold = min(ammoCount(in_weap), in_weap->quantity);
+  int sold = min(weapons.ammoCount(in_weap), in_weap->quantity);
   cash += adjustWeapon(in_weap).sellcost(sold);
-  consumeAmmo(in_weap, sold);
+  weapons.removeAmmo(in_weap, sold);
 }
 
 int Player::hasUpgrade(const IDBUpgrade *in_upg) const { return stateUpgrade(in_upg) != ITEMSTATE_UNOWNED; }
@@ -102,9 +199,7 @@ int Player::stateBombardment(const IDBBombardment *in_bombardment) const {
   return count(bombardment.begin(), bombardment.end(), in_bombardment) * ITEMSTATE_BOUGHT;
 }
 int Player::ammoCount(const IDBWeapon *in_weapon) const {
-  if(!weapons.count(make_pair(in_weapon->name, in_weapon)))
-    return 0;
-  return weapons.find(make_pair(in_weapon->name, in_weapon))->second;
+  return weapons.ammoCount(in_weapon);
 }
 
 const IDBFaction *Player::getFaction() const {
@@ -118,15 +213,9 @@ IDBTankAdjust Player::getTank() const {
   return IDBTankAdjust(NULL, &adjustment); };
 
 IDBWeaponAdjust Player::getWeapon(int id) const {
-  return IDBWeaponAdjust(curweapons[id], &adjustment); };
+  return IDBWeaponAdjust(weapons.getWeaponSlot(id), &adjustment); };
 void Player::cycleWeapon(int id) {
-  map<pair<string, const IDBWeapon *>, int>::iterator itr = weapons.find(make_pair(curweapons[id]->name, curweapons[id]));
-  CHECK(itr != weapons.end());
-  itr++;
-  if(itr == weapons.end())
-    curweapons[id] = weapons.begin()->first.second;
-  else
-    curweapons[id] = itr->first.second;
+  weapons.cycleWeapon(id);
 }
 
 Money Player::getCash() const {
@@ -159,17 +248,21 @@ float Player::consumeDamage() {
 }
 
 float Player::shotFired(int id) {
-  CHECK(weapons.count(make_pair(curweapons[id]->name, curweapons[id])));
-  float cost = adjustWeapon(curweapons[id]).cost().toFloat() / curweapons[id]->quantity;
-  if(ammoCount(curweapons[id]) != -1)
-    consumeAmmo(curweapons[id], 1);
-  return cost;
+  return weapons.shotFired(id) / adjustment.adjustmentfactor(IDBAdjustment::DISCOUNT_WEAPON);
 };
 
 int Player::shotsLeft(int id) const {
-  CHECK(weapons.count(make_pair(curweapons[id]->name, curweapons[id])));
-  return ammoCount(curweapons[id]);
+  return weapons.ammoCountSlot(id);  
 }
+
+/*
+vector<const IDBWeapon *> Player::getAvailableWeapons() const {
+}
+void Player::setWeaponEquipBit(const IDBWeapon *weapon, bool id) const {
+}
+bool Player::getWeaponEquipBit(const IDBWeapon *weapon, int id) const {
+}
+*/
 
 Player::Player() {
   cash = Money(-1);
@@ -182,8 +275,6 @@ Player::Player(const IDBFaction *fact, int in_factionmode) {
   CHECK(factionmode >= 0 && factionmode < FACTIONMODE_LAST);
   cash = Money(FLAGS_startingCash);
   reCalculate();
-  weapons[make_pair(defaultWeapon()->name, defaultWeapon())] = -1;
-  curweapons.resize(SIMUL_WEAPONS, defaultWeapon());
   glory.push_back(defaultGlory());
   bombardment.push_back(defaultBombardment());
 }
@@ -194,19 +285,4 @@ void Player::reCalculate() {
   for(int i = 0; i < upgrades.size(); i++)
     adjustment += *upgrades[i]->adjustment;
   adjustment.debugDump();
-}
-
-void Player::consumeAmmo(const IDBWeapon *weapon, int count) {
-  int *ammo = &weapons[make_pair(weapon->name, weapon)];
-  CHECK(*ammo >= count);
-  (*ammo) -= count;
-  if(*ammo == 0) {
-    for(int i = 0; i < curweapons.size(); i++) {
-      if(curweapons[i] == weapon) {
-        cycleWeapon(i);
-        CHECK(curweapons[i] != weapon); // fix this
-      }
-    }
-    weapons.erase(make_pair(weapon->name, weapon));
-  }
 }

@@ -1,7 +1,5 @@
 ---- Major work path
-- Dual weapon
-  - Improved GUI for ammo
-  - "Switch mode" in buying screen
+- "Switch mode" in buying screen
 - "Kill graph"
 - Logarithmic turning
 - Improve explosion effects (missile, glory device)

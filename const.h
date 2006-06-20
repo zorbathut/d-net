@@ -8,4 +8,6 @@
 
 #define SIMUL_WEAPONS 2 // This is assumed and CHECKed in many places
 
+#define UNLIMITED_AMMO -1938
+
 #endif

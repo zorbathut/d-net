@@ -10,6 +10,36 @@ using namespace std;
 enum { FACTIONMODE_NONE, FACTIONMODE_MINOR, FACTIONMODE_MEDIUM, FACTIONMODE_MAJOR, FACTIONMODE_LAST };
 enum { ITEMSTATE_UNOWNED, ITEMSTATE_BOUGHT, ITEMSTATE_EQUIPPED };
 
+class IDBWeaponNameSorter {
+public:
+  bool operator()(const IDBWeapon *lhs, const IDBWeapon *rhs) const;
+};
+
+class Weaponmanager {
+private:
+  map<const IDBWeapon *, int, IDBWeaponNameSorter> weapons;
+  vector<vector<const IDBWeapon *> > weaponops;
+  vector<const IDBWeapon *> curweapons;
+  
+public:
+  void cycleWeapon(int id);
+  float shotFired(int id);  // Fire a single shot. Returns the cost of that shot. This could likely be done better.
+
+  void addAmmo(const IDBWeapon *weap, int count);
+  void removeAmmo(const IDBWeapon *weap, int count);
+
+  int ammoCount(const IDBWeapon *weap) const;
+  
+  int ammoCountSlot(int id) const;  
+  const IDBWeapon *getWeaponSlot(int id) const;
+  
+  vector<const IDBWeapon *> getAvailableWeapons() const;
+  void setWeaponEquipBit(const IDBWeapon *weapon, int id, bool bit);
+  bool getWeaponEquipBit(const IDBWeapon *weapon, int id) const;
+
+  Weaponmanager();
+};
+
 class Player {
 public:
 
@@ -48,7 +78,6 @@ public:
   int stateUpgrade(const IDBUpgrade *in_upg) const; // ATM this will only return UNOWNED or EQUIPPED
   int stateGlory(const IDBGlory *in_glory) const;
   int stateBombardment(const IDBBombardment *in_bombardment) const;
-  int ammoCount(const IDBWeapon *in_weapon) const;
 
   const IDBFaction *getFaction() const;
   
@@ -69,8 +98,13 @@ public:
 
   IDBWeaponAdjust getWeapon(int id) const;
   void cycleWeapon(int id);
-  float shotFired(int id);  // Fire a single shot. Returns the value of that shot.This could likely be done better.
+  float shotFired(int id);  // Fire a single shot. Returns the cost of that shot. This could likely be done better.
   int shotsLeft(int id) const;
+  int ammoCount(const IDBWeapon *in_weapon) const;
+  
+  vector<IDBWeaponAdjust> getAvailableWeapons() const;
+  void setWeaponEquipBit(const IDBWeapon *weapon, bool id) const;
+  bool getWeaponEquipBit(const IDBWeapon *weapon, int id) const;
 
   Player();
   Player(const IDBFaction *fact, int factionmode);
@@ -78,16 +112,14 @@ public:
 private:
   
   void reCalculate();
-  void consumeAmmo(const IDBWeapon *weapon, int count);
 
   vector<const IDBUpgrade *> upgrades;
+
+  Weaponmanager weapons;
 
   // First item is equipped
   vector<const IDBGlory *> glory;
   vector<const IDBBombardment *> bombardment;
-
-  map<pair<string, const IDBWeapon *>, int> weapons;
-  vector<const IDBWeapon *> curweapons;
 
   const IDBFaction *faction;
   int factionmode;

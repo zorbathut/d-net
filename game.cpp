@@ -1186,7 +1186,7 @@ void Game::renderToScreen() const {
           
           string ammotext[SIMUL_WEAPONS];
           for(int j = 0; j < SIMUL_WEAPONS; j++) {
-            if(players[i].player->shotsLeft(j) == -1) {
+            if(players[i].player->shotsLeft(j) == UNLIMITED_AMMO) {
               ammotext[j] = "inf";
             } else {
               ammotext[j] = StringPrintf("%d", players[i].player->shotsLeft(j));
