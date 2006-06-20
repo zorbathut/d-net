@@ -45,6 +45,7 @@ void Weaponmanager::addAmmo(const IDBWeapon *weap, int count) {
 void Weaponmanager::removeAmmo(const IDBWeapon *weap, int count) {
   CHECK(count > 0);
   CHECK(weapons.count(weap));
+  dprintf("RAM %s %d %d\n", weap->name.c_str(), weapons[weap], count);
   CHECK(weapons[weap] > 0 && weapons[weap] >= count);
   if(weapons[weap] == count) {
     weapons.erase(weap);
@@ -115,7 +116,7 @@ IDBWeaponAdjust Player::adjustWeapon(const IDBWeapon *in_upg) const { return IDB
 bool Player::canBuyUpgrade(const IDBUpgrade *in_upg) const { return stateUpgrade(in_upg) == ITEMSTATE_UNOWNED && adjustUpgrade(in_upg).cost() <= cash; }; 
 bool Player::canBuyGlory(const IDBGlory *in_glory) const { return stateGlory(in_glory) == ITEMSTATE_UNOWNED && adjustGlory(in_glory).cost() <= cash; };
 bool Player::canBuyBombardment(const IDBBombardment *in_bombardment) const { return stateBombardment(in_bombardment) == ITEMSTATE_UNOWNED && adjustBombardment(in_bombardment).cost() <= cash; };
-bool Player::canBuyWeapon(const IDBWeapon *in_weap) const { return adjustWeapon(in_weap).cost() <= cash; }
+bool Player::canBuyWeapon(const IDBWeapon *in_weap) const { return adjustWeapon(in_weap).cost() <= cash && in_weap != defaultWeapon(); }
 
 bool Player::canSellGlory(const IDBGlory *in_glory) const { return hasGlory(in_glory) && in_glory != defaultGlory(); };
 bool Player::canSellBombardment(const IDBBombardment *in_bombardment) const { return hasBombardment(in_bombardment) && in_bombardment != defaultBombardment(); };
