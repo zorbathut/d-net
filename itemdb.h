@@ -261,10 +261,10 @@ public:
 
   string name;
 
-  enum {HNT_CATEGORY, HNT_WEAPON, HNT_UPGRADE, HNT_GLORY, HNT_BOMBARDMENT, HNT_EQUIP, HNT_DONE, HNT_LAST};
+  enum {HNT_CATEGORY, HNT_WEAPON, HNT_UPGRADE, HNT_GLORY, HNT_BOMBARDMENT, HNT_EQUIP, HNT_EQUIPWEAPON, HNT_DONE, HNT_LAST};
   int type;
 
-  enum {HNDM_BLANK, HNDM_COST, HNDM_PACK, HNDM_COSTUNIQUE, HNDM_LAST};
+  enum {HNDM_BLANK, HNDM_COST, HNDM_PACK, HNDM_COSTUNIQUE, HNDM_EQUIP, HNDM_LAST};
   int displaymode;
 
   bool buyable;
@@ -277,6 +277,8 @@ public:
   const IDBUpgrade *upgrade;
   const IDBGlory *glory;
   const IDBBombardment *bombardment;
+  
+  const IDBWeapon *equipweapon;
   
   int cat_restrictiontype;
   

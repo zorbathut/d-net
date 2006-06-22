@@ -8,7 +8,7 @@ class Ai;
 
 class Shop {
 private:
-  HierarchyNode dynamic_equip;
+  mutable HierarchyNode dynamic_equip;
 
   Player *player;
 
@@ -20,10 +20,13 @@ private:
   bool selling;
   bool disabled;  // when we switch, we wait for them to let go of the button
 
+  const HierarchyNode &normalize(const HierarchyNode &item) const;
+  
   const HierarchyNode &getStepNode(int step) const;
 
-  const HierarchyNode &getCurNode() const;
   const HierarchyNode &getCategoryNode() const;
+  const HierarchyNode &getCurNode() const;
+
 
   void doTableUpdate();
   void doTableRender() const;

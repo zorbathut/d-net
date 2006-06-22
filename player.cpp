@@ -199,9 +199,6 @@ int Player::stateBombardment(const IDBBombardment *in_bombardment) const {
     return ITEMSTATE_EQUIPPED;
   return count(bombardment.begin(), bombardment.end(), in_bombardment) * ITEMSTATE_BOUGHT;
 }
-int Player::ammoCount(const IDBWeapon *in_weapon) const {
-  return weapons.ammoCount(in_weapon);
-}
 
 const IDBFaction *Player::getFaction() const {
   return faction; };
@@ -250,10 +247,22 @@ float Player::consumeDamage() {
 
 float Player::shotFired(int id) {
   return weapons.shotFired(id) / adjustment.adjustmentfactor(IDBAdjustment::DISCOUNT_WEAPON);
-};
-
+}
 int Player::shotsLeft(int id) const {
   return weapons.ammoCountSlot(id);  
+}
+int Player::ammoCount(const IDBWeapon *in_weapon) const {
+  return weapons.ammoCount(in_weapon);
+}
+
+vector<const IDBWeapon *> Player::getAvailableWeapons() const {
+  return weapons.getAvailableWeapons();
+}
+void Player::setWeaponEquipBit(const IDBWeapon *weapon, int id, bool bit) {
+  return weapons.setWeaponEquipBit(weapon, id, bit);
+}
+bool Player::getWeaponEquipBit(const IDBWeapon *weapon, int id) const {
+  return weapons.getWeaponEquipBit(weapon, id);
 }
 
 Player::Player() {

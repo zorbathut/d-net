@@ -102,8 +102,8 @@ public:
   int shotsLeft(int id) const;
   int ammoCount(const IDBWeapon *in_weapon) const;
   
-  vector<IDBWeaponAdjust> getAvailableWeapons() const;
-  void setWeaponEquipBit(const IDBWeapon *weapon, bool id) const;
+  vector<const IDBWeapon *> getAvailableWeapons() const;
+  void setWeaponEquipBit(const IDBWeapon *weapon, int id, bool bit);
   bool getWeaponEquipBit(const IDBWeapon *weapon, int id) const;
 
   Player();

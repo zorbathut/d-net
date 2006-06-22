@@ -4,6 +4,27 @@
 #include "ai.h"
 #include "gfx.h"
 
+const HierarchyNode &Shop::normalize(const HierarchyNode &item) const {
+  if(item.type == HierarchyNode::HNT_EQUIP) {
+    dynamic_equip = item;
+    vector<const IDBWeapon *> weaps = player->getAvailableWeapons();
+    for(int i = 0; i < weaps.size(); i++) {
+      HierarchyNode hod;
+      hod.type = HierarchyNode::HNT_EQUIPWEAPON;
+      hod.cat_restrictiontype = HierarchyNode::HNT_EQUIPWEAPON;
+      hod.displaymode = HierarchyNode::HNDM_EQUIP;
+      hod.buyable = true;
+      hod.name = weaps[i]->name;
+      hod.pack = 1;
+      hod.equipweapon = weaps[i];
+      dynamic_equip.branches.push_back(hod);
+    }
+    dynamic_equip.checkConsistency();
+    return dynamic_equip;
+  }
+  return item;
+}
+
 const HierarchyNode &Shop::getStepNode(int step) const {
   CHECK(step >= 0 && step <= curloc.size());
   if(step == 0) {
@@ -11,7 +32,7 @@ const HierarchyNode &Shop::getStepNode(int step) const {
   } else {
     const HierarchyNode &nd = getStepNode(step - 1);
     CHECK(curloc[step - 1] >= 0 && curloc[step - 1] < nd.branches.size());
-    return nd.branches[curloc[step - 1]]; // TODO: normalize step here
+    return normalize(nd.branches[curloc[step - 1]]);
   }
 }
 
@@ -57,7 +78,7 @@ void Shop::renderNode(const HierarchyNode &node, int depth) const {
   }
   
   if(depth < curloc.size())
-    renderNode(node.branches[curloc[depth]], depth + 1);
+    renderNode(normalize(node.branches[curloc[depth]]), depth + 1);
   
   for(int j = 0; j < rendpos.size(); j++) {
     const int itemid = rendpos[j].first;
@@ -100,6 +121,7 @@ void Shop::renderNode(const HierarchyNode &node, int depth) const {
     // Figure out how we want to display the "cost" text
     if(!selling) {
       string display = "";
+      bool displayset = false;
       const int dispmode = node.branches[itemid].displaymode;
       
       // If it's "unique", we check to see if it's already been bought. If it has, we show what state it's in.
@@ -116,18 +138,31 @@ void Shop::renderNode(const HierarchyNode &node, int depth) const {
         if(state == ITEMSTATE_UNOWNED) {
         } else if(state == ITEMSTATE_BOUGHT) {
           display = "bought";
+          displayset = true;
         } else if(state == ITEMSTATE_EQUIPPED) {
           display = "equipped";
+          displayset = true;
         }
       }
       
       // If it's not unique, or it is and it just hasn't been bought, we show the cost.
-      if(!display.size() && (dispmode == HierarchyNode::HNDM_COST || dispmode == HierarchyNode::HNDM_COSTUNIQUE))
+      if(!displayset && (dispmode == HierarchyNode::HNDM_COST || dispmode == HierarchyNode::HNDM_COSTUNIQUE)) {
         display = StringPrintf("%6s", node.branches[itemid].cost(player).textual().c_str());
+        displayset = true;
+      }
       
       // If it's a pack, we show pack quantities.
-      if(!display.size() && dispmode == HierarchyNode::HNDM_PACK)
+      if(!displayset && dispmode == HierarchyNode::HNDM_PACK) {
         display = StringPrintf("%dpk", node.branches[itemid].pack);
+        displayset = true;
+      }
+      
+      // If it's blank we do fucking nothing
+      if(dispmode == HierarchyNode::HNDM_BLANK) {
+        displayset = true;
+      }
+      
+      CHECK(displayset);
       
       // Draw what we've got.
       drawText(display, sl_fontsize, hoffbase + sl_pricehpos, rendpos[j].second + sl_boxborder);

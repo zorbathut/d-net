@@ -85,7 +85,7 @@ Money HierarchyNode::sellvalue(const Player *player) const {
 }
 
 void HierarchyNode::checkConsistency() const {
-  dprintf("Consistency scan entering %s\n", name.c_str());
+  //dprintf("Consistency scan entering %s\n", name.c_str());
   // all nodes need a name
   CHECK(name.size());
   
@@ -147,6 +147,25 @@ void HierarchyNode::checkConsistency() const {
     CHECK(!bombardment);
   }
   
+  // the equip item restricts on EQUIPWEAPON but is not buyable
+  if(type == HNT_EQUIP) {
+    gottype = true;
+    CHECK(displaymode == HNDM_BLANK);
+    CHECK(!buyable);
+    CHECK(cat_restrictiontype == HNT_EQUIPWEAPON);
+  }
+  
+  // the equipweapon item must have a weapon and is "buyable"
+  if(type == HNT_EQUIPWEAPON) {
+    gottype = true;
+    CHECK(displaymode == HNDM_EQUIP);
+    CHECK(buyable);
+    CHECK(pack == 1);
+    CHECK(equipweapon);
+  } else {
+    CHECK(!equipweapon);
+  }
+  
   // the "done" token has no cost or other display but is "buyable"
   if(type == HNT_DONE) {
     gottype = true;
@@ -169,8 +188,8 @@ void HierarchyNode::checkConsistency() const {
   // it may have no restriction or a valid restriction
   CHECK(cat_restrictiontype == -1 || cat_restrictiontype >= 0 && cat_restrictiontype < HNT_LAST);
   
-  // if it's not a category, it shouldn't have branches
-  CHECK(type == HNT_CATEGORY || branches.size() == 0);
+  // if it's not a category or an equip, it shouldn't have branches
+  CHECK(type == HNT_CATEGORY || type == HNT_EQUIP || branches.size() == 0);
   
   // last, check the consistency of everything recursively
   for(int i = 0; i < branches.size(); i++) {
@@ -180,7 +199,7 @@ void HierarchyNode::checkConsistency() const {
     }
     branches[i].checkConsistency();
   }
-  dprintf("Consistency scan leaving %s\n", name.c_str());
+  //dprintf("Consistency scan leaving %s\n", name.c_str());
 }
 
 HierarchyNode::HierarchyNode() {
@@ -193,6 +212,7 @@ HierarchyNode::HierarchyNode() {
   upgrade = NULL;
   glory = NULL;
   bombardment = NULL;
+  equipweapon = NULL;
 }
 
 HierarchyNode *findNamedNode(const string &in, int postcut) {
@@ -264,8 +284,6 @@ void parseItemFile(const string &fname) {
           tnode.cat_restrictiontype = HierarchyNode::HNT_GLORY;
         } else if(chunk.kv["type"] == "bombardment") {
           tnode.cat_restrictiontype = HierarchyNode::HNT_BOMBARDMENT;
-        } else if(chunk.kv["type"] == "equip") {
-          tnode.cat_restrictiontype = HierarchyNode::HNT_EQUIP;
         } else {
           dprintf("Unknown restriction type in hierarchy node: %s\n", chunk.kv["type"].c_str());
           CHECK(0);
@@ -540,6 +558,21 @@ void parseItemFile(const string &fname) {
       fact.adjustment[3] = &adjustmentclasses[adjustment];
       
       factions.push_back(fact);
+      
+    } else if(chunk.category == "equip") {
+      
+      string name = chunk.consume("name");
+      CHECK(bombardmentclasses.count(name) == 0);
+      
+      HierarchyNode *mountpoint = findNamedNode(name, 1);
+      HierarchyNode tnode;
+      tnode.name = tokenize(name, ".").back();
+      tnode.type = HierarchyNode::HNT_EQUIP;
+      tnode.displaymode = HierarchyNode::HNDM_BLANK;
+      tnode.cat_restrictiontype = HierarchyNode::HNT_EQUIPWEAPON;
+      CHECK(mountpoint->cat_restrictiontype == -1 || tnode.cat_restrictiontype == mountpoint->cat_restrictiontype);
+      
+      mountpoint->branches.push_back(tnode);
     
     } else {
       CHECK(0);

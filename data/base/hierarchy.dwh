@@ -18,9 +18,8 @@ hierarchy {
   type=bombardment
 }
 
-hierarchy {
+equip {
   name=ROOT.Equip Weapons
-  type=equip
 }
 
 adjustment {
