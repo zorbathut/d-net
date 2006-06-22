@@ -157,6 +157,22 @@ void Shop::renderNode(const HierarchyNode &node, int depth) const {
         displayset = true;
       }
       
+      // If it's an Equip, we show equip data.
+      // This is rendered somewhat differently.
+      if(dispmode == HierarchyNode::HNDM_EQUIP) {
+        for(int i = 0; i < SIMUL_WEAPONS; i++) {
+          if(player->getWeaponEquipBit(node.branches[itemid].equipweapon, i) != WEB_UNEQUIPPED) {
+            if(player->getWeaponEquipBit(node.branches[itemid].equipweapon, i) == WEB_ACTIVE) {
+              setColor(1.0, 0.8, 0.8);
+            } else {
+              setColor(0.6, 0.6, 0.6);
+            }
+            drawText(StringPrintf("%d", i + 1), sl_fontsize, hoffbase + sl_pricehpos + sl_fontsize * i * 2, rendpos[j].second + sl_boxborder);
+          }
+        }
+        displayset = true;
+      }
+      
       // If it's blank we do fucking nothing
       if(dispmode == HierarchyNode::HNDM_BLANK) {
         displayset = true;
@@ -190,6 +206,7 @@ void Shop::renderNode(const HierarchyNode &node, int depth) const {
       } else if(dispmode == HierarchyNode::HNDM_PACK) {
         drawText(StringPrintf("%dpk", node.branches[itemid].pack), sl_fontsize, hoffbase + sl_pricehpos, rendpos[j].second + sl_boxborder);
       } else if(dispmode == HierarchyNode::HNDM_COSTUNIQUE) {
+      } else if(dispmode == HierarchyNode::HNDM_EQUIP) {
       } else {
         CHECK(0);
       }
@@ -209,70 +226,83 @@ bool Shop::runTick(const Keystates &keys) {
   curloc.back() += getCategoryNode().branches.size();
   curloc.back() %= getCategoryNode().branches.size();
   
-  Button buy;
-  Button change;
-  
-  if(0) { // change this to if(selling) for "sell button" behavior
-    buy = keys.cancel;
-    change = keys.accept;
+  if(getCurNode().type == HierarchyNode::HNT_EQUIPWEAPON) {
+    // EquipWeapon works differently
+    selling = false;
+    
+    for(int i = 0; i < SIMUL_WEAPONS; i++) {
+      if(keys.fire[i].push) {
+        player->setWeaponEquipBit(getCurNode().equipweapon, i, !player->getWeaponEquipBit(getCurNode().equipweapon, i));
+      }
+    }
   } else {
-    buy = keys.accept;
-    change = keys.cancel;
-  }
-  
-  if(disabled) {
-    if(!buy.down && !change.down) {
-      disabled = false;
+    
+    Button buy;
+    Button change;
+    
+    if(0) { // change this to if(selling) for "sell button" behavior
+      buy = keys.cancel;
+      change = keys.accept;
     } else {
+      buy = keys.accept;
+      change = keys.cancel;
+    }
+    
+    if(disabled) {
+      if(!buy.down && !change.down) {
+        disabled = false;
+      } else {
+        buy = Button();
+        change = Button();
+      }
+    }
+    
+    if(change.push) {
+      selling = !selling;
+      disabled = true;
       buy = Button();
       change = Button();
     }
-  }
+    
+    if(buy.repeat) {
+      if(!selling) {
+        if(getCurNode().buyable) {
+          // Player is trying to buy something!
+          
+          if(getCurNode().type == HierarchyNode::HNT_DONE) {
+            return true;
+          } else if(getCurNode().type == HierarchyNode::HNT_UPGRADE) {
+            if(player->stateUpgrade(getCurNode().upgrade) != ITEMSTATE_UNOWNED)
+              ;
+              //player->equipUpgrade(getCurNode().upgrade);
+            else if(player->canBuyUpgrade(getCurNode().upgrade))
+              player->buyUpgrade(getCurNode().upgrade);
+          } else if(getCurNode().type == HierarchyNode::HNT_WEAPON) {
+            if(player->canBuyWeapon(getCurNode().weapon))
+              player->buyWeapon(getCurNode().weapon);
+          } else if(getCurNode().type == HierarchyNode::HNT_GLORY) {
+            if(player->stateGlory(getCurNode().glory) != ITEMSTATE_UNOWNED)
+              player->equipGlory(getCurNode().glory);
+            else if(player->canBuyGlory(getCurNode().glory))
+              player->buyGlory(getCurNode().glory);
+          } else if(getCurNode().type == HierarchyNode::HNT_BOMBARDMENT) {
+            if(player->stateBombardment(getCurNode().bombardment) != ITEMSTATE_UNOWNED)
+              player->equipBombardment(getCurNode().bombardment);
+            else if(player->canBuyBombardment(getCurNode().bombardment))
+              player->buyBombardment(getCurNode().bombardment);
+          } else {
+            CHECK(0);
+          }
   
-  if(change.push) {
-    selling = !selling;
-    disabled = true;
-    buy = Button();
-    change = Button();
-  }
-  
-  if(buy.repeat) {
-    if(!selling) {
-      if(getCurNode().buyable) {
-        // Player is trying to buy something!
-        
-        if(getCurNode().type == HierarchyNode::HNT_DONE) {
-          return true;
-        } else if(getCurNode().type == HierarchyNode::HNT_UPGRADE) {
-          if(player->stateUpgrade(getCurNode().upgrade) != ITEMSTATE_UNOWNED)
-            ;
-            //player->equipUpgrade(getCurNode().upgrade);
-          else if(player->canBuyUpgrade(getCurNode().upgrade))
-            player->buyUpgrade(getCurNode().upgrade);
-        } else if(getCurNode().type == HierarchyNode::HNT_WEAPON) {
-          if(player->canBuyWeapon(getCurNode().weapon))
-            player->buyWeapon(getCurNode().weapon);
-        } else if(getCurNode().type == HierarchyNode::HNT_GLORY) {
-          if(player->stateGlory(getCurNode().glory) != ITEMSTATE_UNOWNED)
-            player->equipGlory(getCurNode().glory);
-          else if(player->canBuyGlory(getCurNode().glory))
-            player->buyGlory(getCurNode().glory);
-        } else if(getCurNode().type == HierarchyNode::HNT_BOMBARDMENT) {
-          if(player->stateBombardment(getCurNode().bombardment) != ITEMSTATE_UNOWNED)
-            player->equipBombardment(getCurNode().bombardment);
-          else if(player->canBuyBombardment(getCurNode().bombardment))
-            player->buyBombardment(getCurNode().bombardment);
-        } else {
-          CHECK(0);
         }
-      }
-    } else {
-      if(getCurNode().type == HierarchyNode::HNT_WEAPON && player->canSellWeapon(getCurNode().weapon)) {
-        player->sellWeapon(getCurNode().weapon);
-      } else if(getCurNode().type == HierarchyNode::HNT_GLORY && player->canSellGlory(getCurNode().glory)) {
-        player->sellGlory(getCurNode().glory);
-      } else if(getCurNode().type == HierarchyNode::HNT_BOMBARDMENT && player->canSellBombardment(getCurNode().bombardment)) {
-        player->sellBombardment(getCurNode().bombardment);
+      } else {
+        if(getCurNode().type == HierarchyNode::HNT_WEAPON && player->canSellWeapon(getCurNode().weapon)) {
+          player->sellWeapon(getCurNode().weapon);
+        } else if(getCurNode().type == HierarchyNode::HNT_GLORY && player->canSellGlory(getCurNode().glory)) {
+          player->sellGlory(getCurNode().glory);
+        } else if(getCurNode().type == HierarchyNode::HNT_BOMBARDMENT && player->canSellBombardment(getCurNode().bombardment)) {
+          player->sellBombardment(getCurNode().bombardment);
+        }
       }
     }
   }

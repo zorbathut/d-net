@@ -9,6 +9,7 @@ using namespace std;
 
 enum { FACTIONMODE_NONE, FACTIONMODE_MINOR, FACTIONMODE_MEDIUM, FACTIONMODE_MAJOR, FACTIONMODE_LAST };
 enum { ITEMSTATE_UNOWNED, ITEMSTATE_BOUGHT, ITEMSTATE_EQUIPPED };
+enum { WEB_UNEQUIPPED, WEB_EQUIPPED, WEB_ACTIVE };
 
 class IDBWeaponNameSorter {
 public:
@@ -35,7 +36,7 @@ public:
   
   vector<const IDBWeapon *> getAvailableWeapons() const;
   void setWeaponEquipBit(const IDBWeapon *weapon, int id, bool bit);
-  bool getWeaponEquipBit(const IDBWeapon *weapon, int id) const;
+  int getWeaponEquipBit(const IDBWeapon *weapon, int id) const;
 
   Weaponmanager();
 };
@@ -104,7 +105,7 @@ public:
   
   vector<const IDBWeapon *> getAvailableWeapons() const;
   void setWeaponEquipBit(const IDBWeapon *weapon, int id, bool bit);
-  bool getWeaponEquipBit(const IDBWeapon *weapon, int id) const;
+  int getWeaponEquipBit(const IDBWeapon *weapon, int id) const;
 
   Player();
   Player(const IDBFaction *fact, int factionmode);

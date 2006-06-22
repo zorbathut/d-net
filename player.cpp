@@ -50,6 +50,7 @@ void Weaponmanager::removeAmmo(const IDBWeapon *weap, int count) {
     weapons.erase(weap);
     for(int i = 0; i < weaponops.size(); i++) {
       setWeaponEquipBit(weap, i, false);
+      CHECK(curweapons[i] != weap);
     }
   } else {
     weapons[weap] -= count;
@@ -71,8 +72,8 @@ const IDBWeapon *Weaponmanager::getWeaponSlot(int id) const {
 
 vector<const IDBWeapon *> Weaponmanager::getAvailableWeapons() const {
   set<const IDBWeapon *, IDBWeaponNameSorter> seet;
-  for(int i = 0; i < weaponops.size(); i++)
-    seet.insert(weaponops[i].begin(), weaponops[i].end());
+  for(map<const IDBWeapon *, int, IDBWeaponNameSorter>::const_iterator itr = weapons.begin(); itr != weapons.end(); itr++)
+    seet.insert(itr->first);
   return vector<const IDBWeapon *>(seet.begin(), seet.end());
 }
 void Weaponmanager::setWeaponEquipBit(const IDBWeapon *weapon, int id, bool bit) {
@@ -84,13 +85,23 @@ void Weaponmanager::setWeaponEquipBit(const IDBWeapon *weapon, int id, bool bit)
     sort(weaponops[id].begin(), weaponops[id].end());
     curweapons[id] = weapon; // equip it
   } else {
+    // If we're removing the current weapon, switch to the next weapon first.
     if(curweapons[id] == weapon)
       cycleWeapon(id);
+    
+    // If we're still removing the current weapon, we only have one weapon.
     if(curweapons[id] == weapon) {
+      // If that weapon is our default weapon, give up.
+      if(curweapons[id] == defaultWeapon())
+        return;
+      
+      // Otherwise, add the default weapon and then cycle again.
       CHECK(weaponops[id].size() == 1);
       weaponops[id].push_back(defaultWeapon());
       cycleWeapon(id);
     }
+
+    // At this point, we must not be removing the current weapon.
     CHECK(curweapons[id] != weapon);
     
     // We're simply removing, so no need to sort.
@@ -98,8 +109,8 @@ void Weaponmanager::setWeaponEquipBit(const IDBWeapon *weapon, int id, bool bit)
     weaponops[id].erase(find(weaponops[id].begin(), weaponops[id].end(), weapon));
   }
 }
-bool Weaponmanager::getWeaponEquipBit(const IDBWeapon *weapon, int id) const {
-  return count(weaponops[id].begin(), weaponops[id].end(), weapon);
+int Weaponmanager::getWeaponEquipBit(const IDBWeapon *weapon, int id) const {
+  return count(weaponops[id].begin(), weaponops[id].end(), weapon) + (curweapons[id] == weapon);
 }
 
 Weaponmanager::Weaponmanager() {
@@ -261,7 +272,7 @@ vector<const IDBWeapon *> Player::getAvailableWeapons() const {
 void Player::setWeaponEquipBit(const IDBWeapon *weapon, int id, bool bit) {
   return weapons.setWeaponEquipBit(weapon, id, bit);
 }
-bool Player::getWeaponEquipBit(const IDBWeapon *weapon, int id) const {
+int Player::getWeaponEquipBit(const IDBWeapon *weapon, int id) const {
   return weapons.getWeaponEquipBit(weapon, id);
 }
 
