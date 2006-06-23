@@ -1,5 +1,5 @@
 ---- Major work path
-- "Switch mode" in buying screen
+- Weapon info screen
 - "Kill graph"
 - Logarithmic turning
 - Improve explosion effects (missile, glory device)
@@ -15,13 +15,9 @@
 - AI shouldn't try to buy the glory device it already owns
 - Scrollable bars
 - Multishop
-- Weapon info screen
-- Weapon change system
-- OSD for weapon type
 - Many many more weapons
 
 ---- Things that take thought and musing
-- See if I can make the config screen a bit simpler somehow
 - Improved win sum system
 - Slide-along-walls track simulation?
 
