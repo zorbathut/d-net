@@ -3,6 +3,7 @@
 
 #include "player.h"
 #include "input.h"
+#include "shop_info.h"
 
 class Ai;
 
@@ -13,6 +14,7 @@ private:
   Player *player;
 
   vector<int> curloc;
+  vector<int> lastloc;
 
   float xofs;
   vector<float> expandy;
@@ -20,13 +22,14 @@ private:
   bool selling;
   bool disabled;  // when we switch, we wait for them to let go of the button
 
+  ShopInfo cshopinf;
+
   const HierarchyNode &normalize(const HierarchyNode &item) const;
   
   const HierarchyNode &getStepNode(int step) const;
 
   const HierarchyNode &getCategoryNode() const;
   const HierarchyNode &getCurNode() const;
-
 
   void doTableUpdate();
   void doTableRender() const;
@@ -38,7 +41,12 @@ public:
   void renderToScreen() const;
 
   Shop();
-  Shop(Player *player);
+
+  void init(Player *player);
+
+private:
+  Shop(const Shop &rhs);
+  void operator=(const Shop &rhs);
 };
 
 #endif

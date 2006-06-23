@@ -109,6 +109,7 @@ void doMegaEnumWorker(const HierarchyNode &rt, vector<pair<Money, vector<Control
     upgs->push_back(make_pair(make_pair(player->adjustGlory(rt.glory).cost(), (IDBUpgrade*)NULL), path));
   } else if(rt.type == HierarchyNode::HNT_BOMBARDMENT) {
     upgs->push_back(make_pair(make_pair(player->adjustBombardment(rt.bombardment).cost(), (IDBUpgrade*)NULL), path));
+  } else if(rt.type == HierarchyNode::HNT_EQUIP) {
   } else if(rt.type == HierarchyNode::HNT_DONE) {
     CHECK(done->size() == 0);
     *done = path;

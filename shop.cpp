@@ -226,6 +226,12 @@ bool Shop::runTick(const Keystates &keys) {
   curloc.back() += getCategoryNode().branches.size();
   curloc.back() %= getCategoryNode().branches.size();
   
+  if(curloc != lastloc) {
+    lastloc = curloc;
+    if(getCurNode().type == HierarchyNode::HNT_WEAPON)
+      cshopinf.init(getCurNode().weapon, player);
+  }
+  
   if(getCurNode().type == HierarchyNode::HNT_EQUIPWEAPON) {
     // EquipWeapon works differently
     selling = false;
@@ -381,7 +387,11 @@ Shop::Shop() {
   player = NULL;
 }
 
-Shop::Shop(Player *in_player) {
+void Shop::init(Player *in_player) {
+  curloc.clear();
+  expandy.clear();
+  lastloc.clear();
+  
   player = in_player;
   curloc.push_back(0);
   expandy.resize(2, 1.0); // not really ideal but hey

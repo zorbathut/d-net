@@ -74,7 +74,7 @@ bool Metagame::runTick(const vector<Controller> &keys) {
       CHECK(pid == playerdata.size());
       mode = MGM_SHOP;
       currentShop = 0;
-      shop = Shop(&playerdata[0]);
+      shop.init(&playerdata[0]);
       
       calculateLrStats();
       lrCash.clear();
@@ -93,13 +93,13 @@ bool Metagame::runTick(const vector<Controller> &keys) {
         for(int i = 0; i < playerdata.size(); i++)
           playerdata[i].addCash(lrCash[i]);
         currentShop = 0;
-        shop = Shop(&playerdata[0]);
+        shop.init(&playerdata[0]);
       }
     } else if(shop.runTick(ki[currentShop])) {
       // and here's our actual shop - the tickrunning happens in the conditional, this is just what happens if it's time to change shops
       currentShop++;
       if(currentShop != playerdata.size()) {
-        shop = Shop(&playerdata[currentShop]);
+        shop.init(&playerdata[currentShop]);
       } else {
         mode = MGM_PLAY;
         game.initStandard(&playerdata, levels[int(frand() * levels.size())], &win_history, faction_mode);
