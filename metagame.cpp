@@ -175,6 +175,13 @@ void Metagame::renderToScreen() const {
         //drawRect(factions[i].compass_location, 0.003);
       }
     }
+    setColor(1.0, 1.0, 1.0);
+    {
+      vector<string> txt;
+      txt.push_back("select your");
+      txt.push_back("faction");
+      drawJustifiedMultiText(txt, 0.05, 0.005, Float2(0, 0), TEXT_CENTER, TEXT_CENTER);
+    }
   } else if(mode == MGM_FACTIONTYPE) {
     game.renderToScreen();
     if(!controls_users()) {    
