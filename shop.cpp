@@ -58,6 +58,10 @@ const float sl_boxwidth = (sl_totalwidth - sl_hoffset * 3) / 2;
 const float sl_pricehpos = sl_boxwidth / 4 * 3;
 const float sl_quanthpos = sl_boxwidth / 5 * 3;
 
+const float sl_demowidth = sl_boxwidth * 3 / 5;
+const float sl_demoxstart = sl_hoffset + sl_boxwidth * 1 / 5;
+const float sl_demoystart = 50;
+
 const float sl_boxthick = 0.1;
 
 void Shop::renderNode(const HierarchyNode &node, int depth) const {
@@ -314,6 +318,10 @@ bool Shop::runTick(const Keystates &keys) {
   }
   
   doTableUpdate();
+  if(getCurNode().type == HierarchyNode::HNT_WEAPON) {
+    CHECK(curloc == lastloc);
+    cshopinf.runTick();
+  }
   
   return false;
 }
@@ -379,6 +387,12 @@ void Shop::renderToScreen() const {
   } else if(getCurNode().type == HierarchyNode::HNT_GLORY) {
     drawText("total average damage", 2, 1.5, hudstart);
     drawText(StringPrintf("%20.4f", player->adjustGlory(getCurNode().glory).stats_averageDamage()), 2, 1.5, hudstart + 3);
+  }
+  
+  if(getCurNode().type == HierarchyNode::HNT_WEAPON) {
+    CHECK(curloc == lastloc);
+    GfxWindow gfxw(Float4(sl_demoxstart, sl_demoystart, sl_demoxstart + sl_demowidth, sl_demoystart + sl_demowidth));
+    cshopinf.renderFrame();
   }
 }
 
