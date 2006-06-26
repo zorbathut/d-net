@@ -1,65 +1,65 @@
 
 deploy {
-    name=deploy.laser
-    anglestddev=0.008
+  name=deploy.laser
+  anglestddev=0.008
 }
 
 warhead {
-    name=warhead.laser
-    impactdamage=0.4 energy
+  name=warhead.laser
+  impactdamage=0.4 energy
 }
 
 projectile {
-    name=projectile.laser
-    velocity=600
-    color=0.6, 0.9, 1.0
-    warhead=warhead.laser
+  name=projectile.laser
+  velocity=600
+  color=0.6, 0.9, 1.0
+  warhead=warhead.laser
 }
 
 weapon {
-    name=ROOT.Weapons.Laser.Laser
-    cost=100
-    firerate=6
-    deploy=deploy.laser
-    projectile=projectile.laser
+  name=ROOT.Weapons.Laser.Laser
+  cost=100
+  firerate=6
+  deploy=deploy.laser
+  projectile=projectile.laser
 }
 
 weapon {
-    name=ROOT.Weapons.Laser.Laser II
-    cost=140
-    firerate=8
-    deploy=deploy.laser
-    projectile=projectile.laser
+  name=ROOT.Weapons.Laser.Laser II
+  cost=140
+  firerate=8
+  deploy=deploy.laser
+  projectile=projectile.laser
 }
 
 weapon {
-    name=ROOT.Weapons.Laser.Laser III
-    cost=180
-    firerate=10
-    deploy=deploy.laser
-    projectile=projectile.laser
+  name=ROOT.Weapons.Laser.Laser III
+  cost=180
+  firerate=10
+  deploy=deploy.laser
+  projectile=projectile.laser
 }
 
 weapon {
-    name=ROOT.Weapons.Laser.Laser IV
-    cost=250
-    firerate=12
-    deploy=deploy.laser
-    projectile=projectile.laser
+  name=ROOT.Weapons.Laser.Laser IV
+  cost=250
+  firerate=12
+  deploy=deploy.laser
+  projectile=projectile.laser
 }
 
 weapon {
-    name=ROOT.Weapons.Laser.Laser V
-    cost=350
-    firerate=15
-    deploy=deploy.laser
-    projectile=projectile.laser
+  name=ROOT.Weapons.Laser.Laser V
+  cost=350
+  firerate=15
+  deploy=deploy.laser
+  projectile=projectile.laser
 }
 
 weapon {
-    name=ROOT.Weapons.Laser.Laser VI
-    cost=480
-    firerate=20
-    deploy=deploy.laser
-    projectile=projectile.laser
+  name=ROOT.Weapons.Laser.Laser VI
+  cost=480
+  firerate=20
+  deploy=deploy.laser
+  projectile=projectile.laser
 }

@@ -1,35 +1,35 @@
 
 warhead {
-    name=warhead.bombardment.minibomb
-    radiusdamage=0.3 explosive
-    radiusfalloff=3
-    wallremovalradius=0.5
+  name=warhead.bombardment.minibomb
+  radiusdamage=0.3 explosive
+  radiusfalloff=3
+  wallremovalradius=0.5
 }
 
 warhead {
-    name=warhead.bombardment.bomb
-    radiusdamage=1 explosive
-    radiusfalloff=8
-    wallremovalradius=2
+  name=warhead.bombardment.bomb
+  radiusdamage=1 explosive
+  radiusfalloff=8
+  wallremovalradius=2
 }
 
 bombardment {
-    name=ROOT.Bombardment.Minibomb
-    cost=0
-    default=1
-    
-    warhead=warhead.bombardment.minibomb
-    
-    lockdelay=120
-    unlockdelay=60
+  name=ROOT.Bombardment.Minibomb
+  cost=0
+  default=1
+  
+  warhead=warhead.bombardment.minibomb
+  
+  lockdelay=120
+  unlockdelay=60
 }
 
 bombardment {
-    name=ROOT.Bombardment.Bomb
-    cost=1500
-    
-    warhead=warhead.bombardment.bomb
-    
-    lockdelay=120
-    unlockdelay=60
+  name=ROOT.Bombardment.Bomb
+  cost=1500
+  
+  warhead=warhead.bombardment.bomb
+  
+  lockdelay=120
+  unlockdelay=60
 }

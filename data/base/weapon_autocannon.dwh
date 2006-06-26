@@ -1,67 +1,67 @@
 
 deploy {
-    name=deploy.autocannon
-    anglestddev=0.025
+  name=deploy.autocannon
+  anglestddev=0.025
 }
 
 warhead {
-    name=warhead.autocannon
-    impactdamage=1 kinetic
-    wallremovalradius=0.5
-    wallremovalchance=0.05
+  name=warhead.autocannon
+  impactdamage=1 kinetic
+  wallremovalradius=0.5
+  wallremovalchance=0.05
 }
 
 projectile {
-    name=projectile.autocannon
-    velocity=120
-    color=1.0, 0.9, 0.6
-    warhead=warhead.autocannon
+  name=projectile.autocannon
+  velocity=120
+  color=1.0, 0.9, 0.6
+  warhead=warhead.autocannon
 }
 
 weapon {
-    name=ROOT.Weapons.Autocannon.Autocannon
-    cost=60
-    firerate=5
-    deploy=deploy.autocannon
-    projectile=projectile.autocannon
+  name=ROOT.Weapons.Autocannon.Autocannon
+  cost=60
+  firerate=5
+  deploy=deploy.autocannon
+  projectile=projectile.autocannon
 }
 
 weapon {
-    name=ROOT.Weapons.Autocannon.Autocannon II
-    cost=100
-    firerate=6
-    deploy=deploy.autocannon
-    projectile=projectile.autocannon
+  name=ROOT.Weapons.Autocannon.Autocannon II
+  cost=100
+  firerate=6
+  deploy=deploy.autocannon
+  projectile=projectile.autocannon
 }
 
 weapon {
-    name=ROOT.Weapons.Autocannon.Autocannon III
-    cost=180
-    firerate=8
-    deploy=deploy.autocannon
-    projectile=projectile.autocannon
+  name=ROOT.Weapons.Autocannon.Autocannon III
+  cost=180
+  firerate=8
+  deploy=deploy.autocannon
+  projectile=projectile.autocannon
 }
 
 weapon {
-    name=ROOT.Weapons.Autocannon.Autocannon IV
-    cost=300
-    firerate=10
-    deploy=deploy.autocannon
-    projectile=projectile.autocannon
+  name=ROOT.Weapons.Autocannon.Autocannon IV
+  cost=300
+  firerate=10
+  deploy=deploy.autocannon
+  projectile=projectile.autocannon
 }
 
 weapon {
-    name=ROOT.Weapons.Autocannon.Autocannon V
-    cost=450
-    firerate=12
-    deploy=deploy.autocannon
-    projectile=projectile.autocannon
+  name=ROOT.Weapons.Autocannon.Autocannon V
+  cost=450
+  firerate=12
+  deploy=deploy.autocannon
+  projectile=projectile.autocannon
 }
 
 weapon {
-    name=ROOT.Weapons.Autocannon.Autocannon VI
-    cost=650
-    firerate=14
-    deploy=deploy.autocannon
-    projectile=projectile.autocannon
+  name=ROOT.Weapons.Autocannon.Autocannon VI
+  cost=650
+  firerate=14
+  deploy=deploy.autocannon
+  projectile=projectile.autocannon
 }

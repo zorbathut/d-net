@@ -1,14 +1,14 @@
 hierarchy {
-    name=ROOT.Weapons.Autocannon
-    pack=100
+  name=ROOT.Weapons.Autocannon
+  pack=100
 }
 
 hierarchy {
-    name=ROOT.Weapons.Laser
-    pack=100
+  name=ROOT.Weapons.Laser
+  pack=100
 }
 
 hierarchy {
-    name=ROOT.Weapons.Missile
-    pack=100
+  name=ROOT.Weapons.Missile
+  pack=100
 }

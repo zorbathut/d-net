@@ -1,68 +1,68 @@
 
 deploy {
-    name=deploy.missile
+  name=deploy.missile
 }
 
 warhead {
-    name=warhead.missile
-    impactdamage=0.5 explosive
-    radiusdamage=1.2 explosive
-    radiusfalloff=4
-    wallremovalradius=1
+  name=warhead.missile
+  impactdamage=0.5 explosive
+  radiusdamage=1.2 explosive
+  radiusfalloff=4
+  wallremovalradius=1
 }
 
 projectile {
-    name=projectile.missile
-    velocity=180
-    color=0.9, 0.95, 1.0
-    motion=missile
-    warhead=warhead.missile
+  name=projectile.missile
+  velocity=180
+  color=0.9, 0.95, 1.0
+  motion=missile
+  warhead=warhead.missile
 }
 
 weapon {
-    name=ROOT.Weapons.Missile.Missile
-    cost=100
-    firerate=3
-    deploy=deploy.missile
-    projectile=projectile.missile
+  name=ROOT.Weapons.Missile.Missile
+  cost=100
+  firerate=3
+  deploy=deploy.missile
+  projectile=projectile.missile
 }
 
 weapon {
-    name=ROOT.Weapons.Missile.Missile II
-    cost=180
-    firerate=4
-    deploy=deploy.missile
-    projectile=projectile.missile
+  name=ROOT.Weapons.Missile.Missile II
+  cost=180
+  firerate=4
+  deploy=deploy.missile
+  projectile=projectile.missile
 }
 
 weapon {
-    name=ROOT.Weapons.Missile.Missile III
-    cost=250
-    firerate=6
-    deploy=deploy.missile
-    projectile=projectile.missile
+  name=ROOT.Weapons.Missile.Missile III
+  cost=250
+  firerate=6
+  deploy=deploy.missile
+  projectile=projectile.missile
 }
 
 weapon {
-    name=ROOT.Weapons.Missile.Missile IV
-    cost=400
-    firerate=8
-    deploy=deploy.missile
-    projectile=projectile.missile
+  name=ROOT.Weapons.Missile.Missile IV
+  cost=400
+  firerate=8
+  deploy=deploy.missile
+  projectile=projectile.missile
 }
 
 weapon {
-    name=ROOT.Weapons.Missile.Missile V
-    cost=600
-    firerate=10
-    deploy=deploy.missile
-    projectile=projectile.missile
+  name=ROOT.Weapons.Missile.Missile V
+  cost=600
+  firerate=10
+  deploy=deploy.missile
+  projectile=projectile.missile
 }
 
 weapon {
-    name=ROOT.Weapons.Missile.Missile VI
-    cost=850
-    firerate=12
-    deploy=deploy.missile
-    projectile=projectile.missile
+  name=ROOT.Weapons.Missile.Missile VI
+  cost=850
+  firerate=12
+  deploy=deploy.missile
+  projectile=projectile.missile
 }

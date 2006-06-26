@@ -1,27 +1,27 @@
 
 deploy {
-    name=deploy.sparker
-    anglestddev=0.030
+  name=deploy.sparker
+  anglestddev=0.030
 }
 
 warhead {
-    name=warhead.sparker
-    impactdamage=0.4 kinetic
-    impactdamage=0.4 energy
-    impactdamage=0.4 explosive
+  name=warhead.sparker
+  impactdamage=0.4 kinetic
+  impactdamage=0.4 energy
+  impactdamage=0.4 explosive
 }
 
 projectile {
-    name=projectile.sparker
-    velocity=150
-    color=1.0, 1.0, 1.0
-    warhead=warhead.sparker
+  name=projectile.sparker
+  velocity=150
+  color=1.0, 1.0, 1.0
+  warhead=warhead.sparker
 }
 
 weapon {
-    name=Sparker
-    firerate=3
-    default=1
-    deploy=deploy.sparker
-    projectile=projectile.sparker
+  name=Sparker
+  firerate=3
+  default=1
+  deploy=deploy.sparker
+  projectile=projectile.sparker
 }
