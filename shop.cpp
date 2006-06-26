@@ -380,10 +380,12 @@ void Shop::renderToScreen() const {
   doTableRender();
   float hudstart = itemDbRoot().branches.size() * sl_itemheight + sl_voffset + sl_boxborder;
   if(getCurNode().type == HierarchyNode::HNT_WEAPON) {
-    drawText("damage per second", 2, 1.5, hudstart);
+    drawText("theoretical dps", 2, 1.5, hudstart);
     drawText(StringPrintf("%20.4f", player->adjustWeapon(getCurNode().weapon).stats_damagePerSecond()), 2, 1.5, hudstart + 3);
     drawText("cost per damage", 2, 1.5, hudstart + 6);
     drawText(StringPrintf("%20.4f", player->adjustWeapon(getCurNode().weapon).stats_costPerDamage()), 2, 1.5, hudstart + 9);
+    drawText("cost per second", 2, 1.5, hudstart + 12);
+    drawText(StringPrintf("%20.4f", player->adjustWeapon(getCurNode().weapon).stats_costPerSecond()), 2, 1.5, hudstart + 15);
   } else if(getCurNode().type == HierarchyNode::HNT_GLORY) {
     drawText("total average damage", 2, 1.5, hudstart);
     drawText(StringPrintf("%20.4f", player->adjustGlory(getCurNode().glory).stats_averageDamage()), 2, 1.5, hudstart + 3);

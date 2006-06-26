@@ -86,6 +86,7 @@ Money IDBWeaponAdjust::sellcost(int amount) const { return cost() * adjust->recy
 float IDBWeaponAdjust::stats_damagePerShot() const { return deploy().stats_damagePerShotMultiplier() * projectile().stats_damagePerShot(); }
 float IDBWeaponAdjust::stats_damagePerSecond() const { return stats_damagePerShot() * firerate(); }
 float IDBWeaponAdjust::stats_costPerDamage() const { return cost().toFloat() / idb->quantity / stats_damagePerShot(); }
+float IDBWeaponAdjust::stats_costPerSecond() const { return cost().toFloat() / idb->quantity * firerate(); }
 
 IDBWeaponAdjust::IDBWeaponAdjust(const IDBWeapon *in_idb, const IDBAdjustment *in_adjust) { idb = in_idb; adjust = in_adjust; };
 

@@ -185,6 +185,7 @@ public:
   float stats_damagePerShot() const;
   float stats_damagePerSecond() const;
   float stats_costPerDamage() const;
+  float stats_costPerSecond() const;
 
   IDBWeaponAdjust(const IDBWeapon *in_idb, const IDBAdjustment *in_adjust);
 };
