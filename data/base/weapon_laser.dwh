@@ -6,8 +6,7 @@ deploy {
 
 warhead {
     name=warhead.laser
-    impactdamage=0.4
-    type=energy
+    impactdamage=0.4 energy
 }
 
 projectile {

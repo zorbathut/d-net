@@ -1,17 +1,15 @@
 
 warhead {
     name=warhead.bombardment.minibomb
-    radiusdamage=0.3
+    radiusdamage=0.3 explosive
     radiusfalloff=3
-    type=explosive
     wallremovalradius=0.5
 }
 
 warhead {
     name=warhead.bombardment.bomb
-    radiusdamage=1
+    radiusdamage=1 explosive
     radiusfalloff=8
-    type=explosive
     wallremovalradius=2
 }
 

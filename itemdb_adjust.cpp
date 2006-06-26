@@ -20,9 +20,16 @@ IDBDeployAdjust::IDBDeployAdjust(const IDBDeploy *in_idb, const IDBAdjustment *i
  * IDBWarheadAdjust
  */
 
-float IDBWarheadAdjust::impactdamage() const { return idb->impactdamage * adjust->adjustmentfactor(idb->type); };
+float IDBWarheadAdjust::accumulate(const float *damage) const {
+  float acc = 0;
+  for(int i = 0; i < IDBAdjustment::DAMAGE_LAST; i++)
+    acc += damage[i] * adjust->adjustmentfactor(i);
+  return acc;
+}
 
-float IDBWarheadAdjust::radiusdamage() const { return idb->radiusdamage * adjust->adjustmentfactor(idb->type); };
+float IDBWarheadAdjust::impactdamage() const { return accumulate(idb->impactdamage); };
+
+float IDBWarheadAdjust::radiusdamage() const { return accumulate(idb->radiusdamage); };
 float IDBWarheadAdjust::radiusfalloff() const { return idb->radiusfalloff; };
 
 float IDBWarheadAdjust::wallremovalradius() const { return idb->wallremovalradius; };

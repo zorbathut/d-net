@@ -251,6 +251,30 @@ bool prefixed(const string &label, const string &prefix) {
   return true;
 }
 
+void parseDamagecode(const string &str, float *arr) {
+  vector<string> toki = tokenize(str, "\n");
+  CHECK(toki.size() >= 1);
+  for(int i = 0; i < toki.size(); i++) {
+    vector<string> qoki = tokenize(toki[i], " ");
+    CHECK(qoki.size() == 2);
+    int bucket = -1;
+    if(qoki[1] == "kinetic")
+      bucket = IDBAdjustment::DAMAGE_KINETIC;
+    else if(qoki[1] == "energy")
+      bucket = IDBAdjustment::DAMAGE_ENERGY;
+    else if(qoki[1] == "explosive")
+      bucket = IDBAdjustment::DAMAGE_EXPLOSIVE;
+    else if(qoki[1] == "trap")
+      bucket = IDBAdjustment::DAMAGE_TRAP;
+    else if(qoki[1] == "exotic")
+      bucket = IDBAdjustment::DAMAGE_EXOTIC;
+    else
+      CHECK(0);
+    CHECK(arr[bucket] == 0);
+    arr[bucket] = atof(qoki[0].c_str());
+  }
+}
+
 void parseItemFile(const string &fname) {
   ifstream tfil(fname.c_str());
   CHECK(tfil);
@@ -405,34 +429,19 @@ void parseItemFile(const string &fname) {
       CHECK(prefixed(name, "warhead"));
       CHECK(warheadclasses.count(name) == 0);
       
-      warheadclasses[name].impactdamage = 0;
-      warheadclasses[name].radiusdamage = 0;
+      memset(warheadclasses[name].impactdamage, 0, sizeof(warheadclasses[name].impactdamage));
+      memset(warheadclasses[name].radiusdamage, 0, sizeof(warheadclasses[name].radiusdamage));
       warheadclasses[name].radiusfalloff = -1;
       warheadclasses[name].wallremovalradius = 0;
       warheadclasses[name].wallremovalchance = 1;
       
-      string type = chunk.consume("type");
-      if(type == "kinetic") {
-        warheadclasses[name].type = IDBAdjustment::DAMAGE_KINETIC;
-      } else if(type == "energy") {
-        warheadclasses[name].type = IDBAdjustment::DAMAGE_ENERGY;
-      } else if(type == "explosive") {
-        warheadclasses[name].type = IDBAdjustment::DAMAGE_EXPLOSIVE;
-      } else if(type == "trap") {
-        warheadclasses[name].type = IDBAdjustment::DAMAGE_TRAP;
-      } else if(type == "exotic") {
-        warheadclasses[name].type = IDBAdjustment::DAMAGE_EXOTIC;
-      } else {
-        CHECK(0);
-      }
-      
       if(chunk.kv.count("impactdamage"))
-        warheadclasses[name].impactdamage = atof(chunk.consume("impactdamage").c_str());
+        parseDamagecode(chunk.consume("impactdamage"), warheadclasses[name].impactdamage);
       
       CHECK(chunk.kv.count("radiusfalloff") == chunk.kv.count("radiusdamage"));
       
       if(chunk.kv.count("radiusdamage")) {
-        warheadclasses[name].radiusdamage = atof(chunk.consume("radiusdamage").c_str());
+        parseDamagecode(chunk.consume("radiusdamage"), warheadclasses[name].radiusdamage);
         warheadclasses[name].radiusfalloff = atof(chunk.consume("radiusfalloff").c_str());
       }
       

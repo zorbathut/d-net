@@ -1,32 +1,12 @@
 
 deploy {
-    name=deploy.wallripper
-    anglestddev=3.14159
-}
-
-warhead {
-    name=warhead.wallripper
-    impactdamage=1
-    type=exotic
-    wallremovalradius=3
-}
-
-projectile {
-    name=projectile.wallripper
-    velocity=60
-    color=1.0, 0.3, 0.3
-    warhead=warhead.wallripper
-}
-
-deploy {
     name=deploy.autocannon
     anglestddev=0.025
 }
 
 warhead {
     name=warhead.autocannon
-    impactdamage=1
-    type=kinetic
+    impactdamage=1 kinetic
     wallremovalradius=0.5
     wallremovalchance=0.05
 }
@@ -41,22 +21,14 @@ projectile {
 weapon {
     name=ROOT.Weapons.Autocannon.Autocannon
     cost=0
+    firerate=5
     default=1
-    firerate=4
     deploy=deploy.autocannon
     projectile=projectile.autocannon
 }
 
 weapon {
     name=ROOT.Weapons.Autocannon.Autocannon II
-    cost=60
-    firerate=5
-    deploy=deploy.autocannon
-    projectile=projectile.autocannon
-}
-
-weapon {
-    name=ROOT.Weapons.Autocannon.Autocannon III
     cost=100
     firerate=6
     deploy=deploy.autocannon
@@ -64,7 +36,7 @@ weapon {
 }
 
 weapon {
-    name=ROOT.Weapons.Autocannon.Autocannon IV
+    name=ROOT.Weapons.Autocannon.Autocannon III
     cost=180
     firerate=8
     deploy=deploy.autocannon
@@ -72,7 +44,7 @@ weapon {
 }
 
 weapon {
-    name=ROOT.Weapons.Autocannon.Autocannon V
+    name=ROOT.Weapons.Autocannon.Autocannon IV
     cost=300
     firerate=10
     deploy=deploy.autocannon
@@ -80,9 +52,17 @@ weapon {
 }
 
 weapon {
-    name=ROOT.Weapons.Autocannon.Autocannon VI
+    name=ROOT.Weapons.Autocannon.Autocannon V
     cost=450
     firerate=12
+    deploy=deploy.autocannon
+    projectile=projectile.autocannon
+}
+
+weapon {
+    name=ROOT.Weapons.Autocannon.Autocannon VI
+    cost=650
+    firerate=14
     deploy=deploy.autocannon
     projectile=projectile.autocannon
 }
