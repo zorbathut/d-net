@@ -631,6 +631,13 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
     }
   }
   
+  if(gamemode == GMODE_DEMO) {
+    // EVERYONE IS INVINCIBLE
+    for(int i = 0; i < players.size(); i++) {
+      players[i].health = 1000000000;
+    }
+  }
+  
   // first we deal with moving the players around
   // we shuffle the player order randomly, then move players in that order
   // if the player can't move where they want to, they simply don't move
@@ -1015,7 +1022,7 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
     doInterp(&zoom_center.y, &z.first.y, &zoom_size.y, &z.second.y, &zoom_speed.y);
   }
 
-  if(framesSinceOneLeft / FPS >= 3 && gamemode != GMODE_DEMO) {
+  if(framesSinceOneLeft / FPS >= 3 && gamemode != GMODE_TEST && gamemode != GMODE_DEMO) {
     if(zones.size() == 0) {
       int winplayer = -1;
       for(int i = 0; i < players.size(); i++) {
@@ -1076,7 +1083,7 @@ void Game::renderToScreen() const {
 
   // Set up zooming for everything that happens in gamespace
   {
-    const float availScreen = (gamemode == GMODE_DEMO ? 1.0 : 0.9);
+    const float availScreen = ((gamemode == GMODE_TEST || gamemode == GMODE_DEMO)? 1.0 : 0.9);
     float pzoom = max(zoom_size.y / availScreen, zoom_size.x / getAspect());
     Float2 origin(zoom_center.x - pzoom * getAspect() / 2, zoom_center.y - pzoom * (1.0 - availScreen / 2));
     setZoom(origin.x, origin.y, origin.y + pzoom);
@@ -1163,7 +1170,7 @@ void Game::renderToScreen() const {
   }
   
   // Here's everything outside gamespace
-  if(gamemode != GMODE_DEMO) {
+  if(gamemode != GMODE_TEST && gamemode != GMODE_DEMO) {
     setZoom( 0, 0, 100 );
     
     // Player health
@@ -1342,8 +1349,7 @@ Game::Game() {
   gamemode = GMODE_LAST;
 }
 
-void Game::initCommon(const vector<Player*> &in_playerdata, const Level &lev, int factionmode) {
-  CHECK(factionmode >= 0 && factionmode < FACTION_LAST);
+void Game::initCommon(const vector<Player*> &in_playerdata, const Level &lev) {
   CHECK(gamemode >= 0 && gamemode < GMODE_LAST);
   
   players.clear();
@@ -1399,13 +1405,13 @@ void Game::initCommon(const vector<Player*> &in_playerdata, const Level &lev, in
   freezeUntilStart = false;
 }
 
-void Game::initStandard(vector<Player> *in_playerdata, const Level &lev, vector<const IDBFaction *> *in_wins, int factionmode) {
+void Game::initStandard(vector<Player> *in_playerdata, const Level &lev, vector<const IDBFaction *> *in_wins) {
   gamemode = GMODE_STANDARD;
   
   vector<Player*> playerdata;
   for(int i = 0; i < in_playerdata->size(); i++)
     playerdata.push_back(&(*in_playerdata)[i]);
-  initCommon(playerdata, lev, factionmode);
+  initCommon(playerdata, lev);
   
   CHECK(in_wins);
   wins = in_wins;
@@ -1426,7 +1432,7 @@ void Game::initChoice(vector<Player> *in_playerdata) {
     playerdata.push_back(&(*in_playerdata)[i]);
   }
   
-  initCommon(playerdata, lev, FACTION_NULL);
+  initCommon(playerdata, lev);
   
   teams.resize(5);
   for(int i = 0; i < players.size(); i++)
@@ -1460,7 +1466,7 @@ void Game::initChoice(vector<Player> *in_playerdata) {
 }
 
 void Game::initTest(Player *in_playerdata, const Float4 &bounds) {
-  gamemode = GMODE_DEMO;
+  gamemode = GMODE_TEST;
   
   Level lev;
   
@@ -1480,7 +1486,38 @@ void Game::initTest(Player *in_playerdata, const Float4 &bounds) {
   
   vector<Player*> playerdata;
   playerdata.push_back(in_playerdata);
-  initCommon(playerdata, lev, FACTION_NULL);
+  initCommon(playerdata, lev);
+}
+
+void Game::initDemo(vector<Player> *in_playerdata, float boxradi, const float *xps, const float *yps) {
+  gamemode = GMODE_DEMO;
+  
+  Level lev;
+  
+  {
+    vector<Coord2> path;
+    path.push_back(Coord2(-boxradi, -boxradi));
+    path.push_back(Coord2(-boxradi, boxradi));
+    path.push_back(Coord2(boxradi, boxradi));
+    path.push_back(Coord2(boxradi, -boxradi));
+    lev.paths.push_back(path);
+  }
+  
+  {
+    lev.playersValid.insert(in_playerdata->size());
+    for(int i = 0; i < in_playerdata->size(); i++)
+      lev.playerStarts[in_playerdata->size()].push_back(make_pair(Coord2(0, 0), PI / 2 * 3));
+    // these get pretty much ignored anyway
+  }
+  
+  vector<Player*> playerdata;
+  for(int i = 0; i < in_playerdata->size(); i++)
+    playerdata.push_back(&(*in_playerdata)[i]);
+  
+  initCommon(playerdata, lev);
+  
+  for(int i = 0; i < players.size(); i++)
+    players[i].pos = Coord2(xps[i], yps[i]);
 }
 
 vector<pair<float, Tank *> > Game::genTankDistance(const Coord2 &center) {

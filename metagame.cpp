@@ -102,7 +102,7 @@ bool Metagame::runTick(const vector<Controller> &keys) {
         shop.init(&playerdata[currentShop]);
       } else {
         mode = MGM_PLAY;
-        game.initStandard(&playerdata, levels[int(frand() * levels.size())], &win_history, faction_mode);
+        game.initStandard(&playerdata, levels[int(frand() * levels.size())], &win_history);
         CHECK(win_history.size() == gameround);
       }
     }
@@ -116,8 +116,9 @@ bool Metagame::runTick(const vector<Controller> &keys) {
         checked.clear();
         checked.resize(playerdata.size());
       } else {
+        // store the firepower, restart the game, and add firepower to it (kind of kludgy)
         float firepower = game.firepowerSpent;
-        game.initStandard(&playerdata, levels[int(frand() * levels.size())], &win_history, faction_mode);
+        game.initStandard(&playerdata, levels[int(frand() * levels.size())], &win_history);
         game.firepowerSpent = firepower;
       }
     }
