@@ -14,7 +14,7 @@ weapon_missile.dwh
 # Miscellaneous
 glory.dwh
 bombardment.dwh
-#tank.dwh
+tank.dwh
 
 # Non-buy-mode "items"
 factions.dwh

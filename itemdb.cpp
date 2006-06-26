@@ -215,6 +215,14 @@ HierarchyNode::HierarchyNode() {
   equipweapon = NULL;
 }
 
+bool isMountedNode(const string &in) {
+  vector<string> toks = tokenize(in, ".");
+  CHECK(toks.size());
+  if(toks[0] != "ROOT")
+    CHECK(toks.size() == 1);
+  return toks[0] == "ROOT";
+}
+
 HierarchyNode *findNamedNode(const string &in, int postcut) {
   vector<string> toks = tokenize(in, ".");
   CHECK(toks.size());
@@ -325,24 +333,32 @@ void parseItemFile(const string &fname) {
       string name = chunk.consume("name");
       CHECK(weaponclasses.count(name) == 0);
       
-      HierarchyNode *mountpoint = findNamedNode(name, 1);
-      HierarchyNode tnode;
-      tnode.name = tokenize(name, ".").back();
-      tnode.type = HierarchyNode::HNT_WEAPON;
-      tnode.displaymode = HierarchyNode::HNDM_COST;
-      tnode.buyable = true;
-      tnode.pack = mountpoint->pack;
-      tnode.cat_restrictiontype = HierarchyNode::HNT_WEAPON;
-      CHECK(mountpoint->cat_restrictiontype == -1 || tnode.cat_restrictiontype == mountpoint->cat_restrictiontype);
-      tnode.weapon = &weaponclasses[name];
-      mountpoint->branches.push_back(tnode);
+      const string informal_name = tokenize(name, ".").back();
       
-      weaponclasses[name].name = tnode.name;
+      if(isMountedNode(name)) {
+        HierarchyNode *mountpoint = findNamedNode(name, 1);
+        HierarchyNode tnode;
+        tnode.name = informal_name;
+        tnode.type = HierarchyNode::HNT_WEAPON;
+        tnode.displaymode = HierarchyNode::HNDM_COST;
+        tnode.buyable = true;
+        tnode.pack = mountpoint->pack;
+        tnode.cat_restrictiontype = HierarchyNode::HNT_WEAPON;
+        CHECK(mountpoint->cat_restrictiontype == -1 || tnode.cat_restrictiontype == mountpoint->cat_restrictiontype);
+        tnode.weapon = &weaponclasses[name];
+        mountpoint->branches.push_back(tnode);
+        
+        CHECK(mountpoint->pack >= 1);
+        weaponclasses[name].quantity = mountpoint->pack;
+        weaponclasses[name].base_cost = moneyFromString(chunk.consume("cost"));
+      } else {
+        CHECK(chunk.kv.count("default"));
+        weaponclasses[name].quantity = 100; // why not?
+        weaponclasses[name].base_cost = Money(0);
+      }
+      
+      weaponclasses[name].name = informal_name;
       weaponclasses[name].firerate = atof(chunk.consume("firerate").c_str());
-      weaponclasses[name].base_cost = moneyFromString(chunk.consume("cost"));
-      weaponclasses[name].quantity = mountpoint->pack;
-      
-      CHECK(mountpoint->pack >= 1);
 
       string projclass = chunk.consume("projectile");
       CHECK(projclasses.count(projclass));

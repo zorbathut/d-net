@@ -20,9 +20,8 @@ projectile {
 
 weapon {
     name=ROOT.Weapons.Autocannon.Autocannon
-    cost=0
+    cost=60
     firerate=5
-    default=1
     deploy=deploy.autocannon
     projectile=projectile.autocannon
 }
