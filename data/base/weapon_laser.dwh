@@ -51,7 +51,7 @@ weapon {
 
 weapon {
     name=ROOT.Weapons.Laser.Laser V
-    cost=400
+    cost=350
     firerate=15
     deploy=deploy.laser
     projectile=projectile.laser
@@ -59,8 +59,8 @@ weapon {
 
 weapon {
     name=ROOT.Weapons.Laser.Laser VI
-    cost=550
-    firerate=18
+    cost=480
+    firerate=20
     deploy=deploy.laser
     projectile=projectile.laser
 }

@@ -81,7 +81,7 @@ weapon {
 
 weapon {
     name=ROOT.Weapons.Autocannon.Autocannon VI
-    cost=500
+    cost=450
     firerate=12
     deploy=deploy.autocannon
     projectile=projectile.autocannon
