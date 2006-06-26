@@ -20,9 +20,7 @@ void ShopInfo::init(const IDBWeapon *weap, const Player *player) {
   for(int i = 0; i < players.size(); i++) {
     players[i] = Player(&factionList()[i], 0); // TODO: make this be the right faction mode
     players[i].addCash(Money(1000000000));
-    if(weap != defaultWeapon())
-      for(int j = 0; j < 1000; j++)
-        players[i].buyWeapon(weap);
+    players[i].forceAcquireWeapon(weap, 1000000);
   }
   
   game.initDemo(&players, 20 * moot, xpses, ypses);

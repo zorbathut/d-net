@@ -19,10 +19,11 @@ static map<string, IDBWeapon> weaponclasses;
 static map<string, IDBUpgrade> upgradeclasses;
 static map<string, IDBGlory> gloryclasses;
 static map<string, IDBBombardment> bombardmentclasses;
+static map<string, IDBTank> tankclasses;
 static map<string, IDBAdjustment> adjustmentclasses;
 static vector<IDBFaction> factions;
 
-static const IDBWeapon *defweapon = NULL;
+static const IDBTank *deftank = NULL;
 static const IDBGlory *defglory = NULL;
 static const IDBBombardment *defbombardment = NULL;
 
@@ -147,6 +148,17 @@ void HierarchyNode::checkConsistency() const {
     CHECK(!bombardment);
   }
   
+  // tanks all are unique and are buyable
+  if(type == HNT_TANK) {
+    gottype = true;
+    CHECK(displaymode == HNDM_COSTUNIQUE);
+    CHECK(pack == 1);
+    CHECK(buyable);
+    CHECK(tank);
+  } else {
+    CHECK(!tank);
+  }
+  
   // the equip item restricts on EQUIPWEAPON but is not buyable
   if(type == HNT_EQUIP) {
     gottype = true;
@@ -212,6 +224,7 @@ HierarchyNode::HierarchyNode() {
   upgrade = NULL;
   glory = NULL;
   bombardment = NULL;
+  tank = NULL;
   equipweapon = NULL;
 }
 
@@ -316,6 +329,8 @@ void parseItemFile(const string &fname) {
           tnode.cat_restrictiontype = HierarchyNode::HNT_GLORY;
         } else if(chunk.kv["type"] == "bombardment") {
           tnode.cat_restrictiontype = HierarchyNode::HNT_BOMBARDMENT;
+        } else if(chunk.kv["type"] == "tank") {
+          tnode.cat_restrictiontype = HierarchyNode::HNT_TANK;
         } else {
           dprintf("Unknown restriction type in hierarchy node: %s\n", chunk.kv["type"].c_str());
           CHECK(0);
@@ -351,8 +366,9 @@ void parseItemFile(const string &fname) {
         CHECK(mountpoint->pack >= 1);
         weaponclasses[name].quantity = mountpoint->pack;
         weaponclasses[name].base_cost = moneyFromString(chunk.consume("cost"));
+        CHECK(weaponclasses[name].base_cost > Money(0));
       } else {
-        CHECK(chunk.kv.count("default"));
+        CHECK(!chunk.kv.count("cost"));
         weaponclasses[name].quantity = 100; // why not?
         weaponclasses[name].base_cost = Money(0);
       }
@@ -367,11 +383,6 @@ void parseItemFile(const string &fname) {
       string deployclass = chunk.consume("deploy");
       CHECK(deployclasses.count(deployclass));
       weaponclasses[name].deploy = &deployclasses[deployclass];
-      
-      if(chunk.kv.count("default") && atoi(chunk.consume("default").c_str())) {
-        CHECK(!defweapon);
-        defweapon = &weaponclasses[name];
-      }
       
     } else if(chunk.category == "upgrade") {
       
@@ -539,6 +550,42 @@ void parseItemFile(const string &fname) {
         defbombardment = &bombardmentclasses[name];
       }
       
+    } else if(chunk.category == "tank") {
+      
+      string name = chunk.consume("name");
+      CHECK(tankclasses.count(name) == 0);
+      
+      HierarchyNode *mountpoint = findNamedNode(name, 1);
+      HierarchyNode tnode;
+      tnode.name = tokenize(name, ".").back();
+      tnode.type = HierarchyNode::HNT_TANK;
+      tnode.displaymode = HierarchyNode::HNDM_COSTUNIQUE;
+      tnode.buyable = true;
+      tnode.pack = 1;
+      tnode.cat_restrictiontype = HierarchyNode::HNT_TANK;
+      CHECK(mountpoint->cat_restrictiontype == -1 || tnode.cat_restrictiontype == mountpoint->cat_restrictiontype);
+      
+      tnode.tank = &tankclasses[name];
+      mountpoint->branches.push_back(tnode);
+      
+      
+      
+      string weapon = chunk.consume("weapon");
+      CHECK(weaponclasses.count(weapon));
+      
+      tankclasses[name].weapon = &weaponclasses[weapon];
+      
+      tankclasses[name].health = atof(chunk.consume("health").c_str());
+      tankclasses[name].handling = atof(chunk.consume("handling").c_str());
+      tankclasses[name].engine = atof(chunk.consume("engine").c_str());
+      
+      tankclasses[name].base_cost = moneyFromString(chunk.consume("cost"));
+      
+      if(chunk.kv.count("default") && atoi(chunk.consume("default").c_str())) {
+        CHECK(!deftank);
+        deftank = &tankclasses[name];
+      }
+      
     } else if(chunk.category == "adjustment") {
       
       string name = chunk.consume("name");
@@ -638,8 +685,9 @@ void initItemdb() {
   }
   
   dprintf("done loading, consistency check\n");
-  CHECK(defweapon);
+  CHECK(deftank);
   CHECK(defglory);
+  CHECK(defbombardment);
   root.checkConsistency();
   dprintf("Consistency check is awesome!\n");
 }
@@ -648,13 +696,16 @@ const HierarchyNode &itemDbRoot() {
   return root;
 }
 
-const IDBWeapon *defaultWeapon() {
-  return defweapon;
+const IDBTank *defaultTank() {
+  CHECK(deftank);
+  return deftank;
 }
 const IDBGlory *defaultGlory() {
+  CHECK(defglory);
   return defglory;
 }
 const IDBBombardment *defaultBombardment() {
+  CHECK(defbombardment);
   return defbombardment;
 }
 const vector<IDBFaction> &factionList() {

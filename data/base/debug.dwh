@@ -20,7 +20,7 @@ projectile {
 
 weapon {
   name=ROOT.Weapons.Debug.Tracer
-  cost=0
+  cost=1
   firerate=1
   projectile=projectile.tracer
   deploy=deploy.debug

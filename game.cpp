@@ -88,7 +88,6 @@ bool GfxEffects::dead() const {
   return age >= life;
 }
 
-
 GfxEffects::GfxEffects() {
   age = 0;
   life = -1;
@@ -237,7 +236,7 @@ pair<Coord2, float> Tank::getDeltaAfterMovement( const Keystates &keys, Coord2 p
         desdir += 2 * PI;
         if(desdir > PI)
           desdir -= 2 * PI;
-        dd = desdir / player->getTank().turnSpeed();
+        dd = desdir / player->getTank().turnSpeed() / FPS;
         if(dd < -1)
           dd = -1;
         if(dd > 1)
@@ -328,9 +327,9 @@ pair<Coord2, float> Tank::getDeltaAfterMovement( const Keystates &keys, Coord2 p
   
   Coord cdv(dv);
 
-  pos += makeAngle(Coord(d)) * Coord(player->getTank().maxSpeed()) * cdv;
+  pos += makeAngle(Coord(d)) * Coord(player->getTank().maxSpeed() / FPS) * cdv;
 
-  d += player->getTank().turnSpeed() * dd;
+  d += player->getTank().turnSpeed() / FPS * dd;
   d += 2*PI;
   d = fmod( d, 2*(float)PI );
   

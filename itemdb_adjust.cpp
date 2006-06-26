@@ -144,8 +144,11 @@ IDBBombardmentAdjust::IDBBombardmentAdjust(const IDBBombardment *in_idb, const I
  * IDBTankAdjust
  */
 
-float IDBTankAdjust::maxHealth() const { return 20 * adjust->adjustmentfactor(IDBAdjustment::TANK_ARMOR); };
-float IDBTankAdjust::turnSpeed() const { return 2.f / FPS * adjust->adjustmentfactor(IDBAdjustment::TANK_TURN); };
-float IDBTankAdjust::maxSpeed() const { return 24.f / FPS * adjust->adjustmentfactor(IDBAdjustment::TANK_SPEED); };
+Money IDBTankAdjust::cost() const { return idb->base_cost / adjust->adjustmentfactor(IDBAdjustment::DISCOUNT_TANK); };
+Money IDBTankAdjust::sellcost() const { return cost() * adjust->recyclevalue(); };
+
+float IDBTankAdjust::maxHealth() const { return idb->health * adjust->adjustmentfactor(IDBAdjustment::TANK_ARMOR); };
+float IDBTankAdjust::turnSpeed() const { return idb->handling * adjust->adjustmentfactor(IDBAdjustment::TANK_TURN); };
+float IDBTankAdjust::maxSpeed() const { return idb->engine * adjust->adjustmentfactor(IDBAdjustment::TANK_SPEED); };
 
 IDBTankAdjust::IDBTankAdjust(const IDBTank *in_idb, const IDBAdjustment *in_adjust) { idb = in_idb; adjust = in_adjust; };

@@ -43,9 +43,9 @@ void Weaponmanager::addAmmo(const IDBWeapon *weap, int count) {
   }
 }
 void Weaponmanager::removeAmmo(const IDBWeapon *weap, int count) {
-  CHECK(count > 0);
+  CHECK(count > 0 || count == UNLIMITED_AMMO);
   CHECK(weapons.count(weap));
-  CHECK(weapons[weap] > 0 && weapons[weap] >= count);
+  CHECK((weapons[weap] > 0 && weapons[weap] >= count) || (weapons[weap] == UNLIMITED_AMMO && count == UNLIMITED_AMMO));
   if(weapons[weap] == count) {
     weapons.erase(weap);
     for(int i = 0; i < weaponops.size(); i++) {
@@ -82,7 +82,7 @@ void Weaponmanager::setWeaponEquipBit(const IDBWeapon *weapon, int id, bool bit)
   if(bit == true) {
     CHECK(weapons.count(weapon));
     weaponops[id].push_back(weapon);
-    sort(weaponops[id].begin(), weaponops[id].end());
+    sort(weaponops[id].begin(), weaponops[id].end(), IDBWeaponNameSorter());
     curweapons[id] = weapon; // equip it
   } else {
     // If we're removing the current weapon, switch to the next weapon first.
@@ -92,12 +92,12 @@ void Weaponmanager::setWeaponEquipBit(const IDBWeapon *weapon, int id, bool bit)
     // If we're still removing the current weapon, we only have one weapon.
     if(curweapons[id] == weapon) {
       // If that weapon is our default weapon, give up.
-      if(curweapons[id] == defaultWeapon())
+      if(curweapons[id] == defaultweapon)
         return;
       
       // Otherwise, add the default weapon and then cycle again.
       CHECK(weaponops[id].size() == 1);
-      weaponops[id].push_back(defaultWeapon());
+      weaponops[id].push_back(defaultweapon);
       cycleWeapon(id);
     }
 
@@ -113,25 +113,53 @@ int Weaponmanager::getWeaponEquipBit(const IDBWeapon *weapon, int id) const {
   return count(weaponops[id].begin(), weaponops[id].end(), weapon) + (curweapons[id] == weapon);
 }
 
-Weaponmanager::Weaponmanager() {
-  weaponops.resize(SIMUL_WEAPONS, vector<const IDBWeapon*>(1, defaultWeapon()));
-  addAmmo(defaultWeapon(), UNLIMITED_AMMO);
-  curweapons.resize(SIMUL_WEAPONS, defaultWeapon());
+void Weaponmanager::changeDefaultWeapon(const IDBWeapon *weapon) {
+  if(weapon == defaultweapon)
+    return; // just don't bother
+  
+  // If the old default weapon is equipped somewhere, switch it with the new default weapon.
+  // If the old default weapon is active somewhere, switch it with the new default weapon.
+  for(int i = 0; i < curweapons.size(); i++) {
+    if(count(weaponops[i].begin(), weaponops[i].end(), defaultweapon)) {
+      *find(weaponops[i].begin(), weaponops[i].end(), defaultweapon) = weapon;
+      sort(weaponops[i].begin(), weaponops[i].end(), IDBWeaponNameSorter());
+      if(curweapons[i] == defaultweapon)
+        curweapons[i] = weapon;
+    }
+    CHECK(getWeaponEquipBit(defaultweapon, i) == WEB_UNEQUIPPED);
+  }
+  
+  removeAmmo(defaultweapon, UNLIMITED_AMMO);
+  CHECK(!weapons.count(weapon));
+  weapons[weapon] = UNLIMITED_AMMO; // so we don't accidentally equip it somewhere
+  
+  defaultweapon = weapon;
+}
+  
+  
+Weaponmanager::Weaponmanager(const IDBWeapon *weapon) {
+  defaultweapon = weapon;
+  weaponops.resize(SIMUL_WEAPONS, vector<const IDBWeapon*>(1, defaultweapon));
+  addAmmo(defaultweapon, UNLIMITED_AMMO);
+  curweapons.resize(SIMUL_WEAPONS, defaultweapon);
 }
 
 IDBUpgradeAdjust Player::adjustUpgrade(const IDBUpgrade *in_upg) const { return IDBUpgradeAdjust(in_upg, &adjustment); };
 IDBGloryAdjust Player::adjustGlory(const IDBGlory *in_upg) const { return IDBGloryAdjust(in_upg, &adjustment); };
 IDBBombardmentAdjust Player::adjustBombardment(const IDBBombardment *in_upg) const { return IDBBombardmentAdjust(in_upg, &adjustment); };
 IDBWeaponAdjust Player::adjustWeapon(const IDBWeapon *in_upg) const { return IDBWeaponAdjust(in_upg, &adjustment); };
+IDBTankAdjust Player::adjustTank(const IDBTank *in_upg) const { return IDBTankAdjust(in_upg, &adjustment); };
 
 bool Player::canBuyUpgrade(const IDBUpgrade *in_upg) const { return stateUpgrade(in_upg) == ITEMSTATE_UNOWNED && adjustUpgrade(in_upg).cost() <= cash; }; 
 bool Player::canBuyGlory(const IDBGlory *in_glory) const { return stateGlory(in_glory) == ITEMSTATE_UNOWNED && adjustGlory(in_glory).cost() <= cash; };
 bool Player::canBuyBombardment(const IDBBombardment *in_bombardment) const { return stateBombardment(in_bombardment) == ITEMSTATE_UNOWNED && adjustBombardment(in_bombardment).cost() <= cash; };
-bool Player::canBuyWeapon(const IDBWeapon *in_weap) const { return adjustWeapon(in_weap).cost() <= cash && in_weap != defaultWeapon(); }
+bool Player::canBuyWeapon(const IDBWeapon *in_weap) const { return adjustWeapon(in_weap).cost() <= cash && in_weap->base_cost > Money(0); }
+bool Player::canBuyTank(const IDBTank *in_tank) const { return stateTank(in_tank) == ITEMSTATE_UNOWNED && adjustTank(in_tank).cost() <= cash; };
 
 bool Player::canSellGlory(const IDBGlory *in_glory) const { return hasGlory(in_glory) && in_glory != defaultGlory(); };
 bool Player::canSellBombardment(const IDBBombardment *in_bombardment) const { return hasBombardment(in_bombardment) && in_bombardment != defaultBombardment(); };
 bool Player::canSellWeapon(const IDBWeapon *in_weap) const { return ammoCount(in_weap) > 0; }
+bool Player::canSellTank(const IDBTank *in_tank) const { return hasTank(in_tank) && tank.size() > 1; }  // yes, you can sell your default tank
 
 void Player::buyUpgrade(const IDBUpgrade *in_upg) {
   CHECK(cash >= adjustUpgrade(in_upg).cost());
@@ -159,6 +187,17 @@ void Player::buyWeapon(const IDBWeapon *in_weap) {
   weapons.addAmmo(in_weap, in_weap->quantity);
   cash -= adjustWeapon(in_weap).cost();
 }
+void Player::buyTank(const IDBTank *in_tank) {
+  CHECK(cash >= adjustTank(in_tank).cost());
+  CHECK(canBuyTank(in_tank));
+  cash -= adjustTank(in_tank).cost() ;
+  tank.push_back(in_tank);
+  equipTank(in_tank);
+}
+
+void Player::forceAcquireWeapon(const IDBWeapon *in_weap, int count) {
+  weapons.addAmmo(in_weap, count);
+}
 
 void Player::equipGlory(const IDBGlory *in_glory) {
   CHECK(count(glory.begin(), glory.end(), in_glory));
@@ -167,6 +206,13 @@ void Player::equipGlory(const IDBGlory *in_glory) {
 void Player::equipBombardment(const IDBBombardment *in_bombardment) {
   CHECK(count(bombardment.begin(), bombardment.end(), in_bombardment));
   swap(*find(bombardment.begin(), bombardment.end(), in_bombardment), bombardment[0]);
+}
+void Player::equipTank(const IDBTank *in_tank) {
+  CHECK(count(tank.begin(), tank.end(), in_tank));
+  if(tank[0] != in_tank) {
+    swap(*find(tank.begin(), tank.end(), in_tank), tank[0]);
+    weapons.changeDefaultWeapon(in_tank->weapon);
+  }
 }
 
 void Player::sellGlory(const IDBGlory *in_glory) {
@@ -189,10 +235,21 @@ void Player::sellWeapon(const IDBWeapon *in_weap) {
   cash += adjustWeapon(in_weap).sellcost(sold);
   weapons.removeAmmo(in_weap, sold);
 }
+void Player::sellTank(const IDBTank *in_tank) {
+  CHECK(canSellTank(in_tank));
+  CHECK(tank.size() > 1);
+  
+  if(tank[0] == in_tank)
+    equipTank(tank[1]);
 
-int Player::hasUpgrade(const IDBUpgrade *in_upg) const { return stateUpgrade(in_upg) != ITEMSTATE_UNOWNED; }
-int Player::hasGlory(const IDBGlory *in_glory) const { return stateGlory(in_glory) != ITEMSTATE_UNOWNED; }
-int Player::hasBombardment(const IDBBombardment *in_bombardment) const { return stateBombardment(in_bombardment) != ITEMSTATE_UNOWNED; }
+  tank.erase(find(tank.begin(), tank.end(), in_tank));
+  cash += adjustTank(in_tank).sellcost();
+}
+
+bool Player::hasUpgrade(const IDBUpgrade *in_upg) const { return stateUpgrade(in_upg) != ITEMSTATE_UNOWNED; }
+bool Player::hasGlory(const IDBGlory *in_glory) const { return stateGlory(in_glory) != ITEMSTATE_UNOWNED; }
+bool Player::hasBombardment(const IDBBombardment *in_bombardment) const { return stateBombardment(in_bombardment) != ITEMSTATE_UNOWNED; }
+bool Player::hasTank(const IDBTank *in_tank) const { return stateTank(in_tank) != ITEMSTATE_UNOWNED; }
 
 int Player::stateUpgrade(const IDBUpgrade *in_upg) const {
   CHECK(in_upg);
@@ -210,6 +267,12 @@ int Player::stateBombardment(const IDBBombardment *in_bombardment) const {
     return ITEMSTATE_EQUIPPED;
   return count(bombardment.begin(), bombardment.end(), in_bombardment) * ITEMSTATE_BOUGHT;
 }
+int Player::stateTank(const IDBTank *in_tank) const {
+  CHECK(tank.size() >= 1);
+  if(tank[0] == in_tank)
+    return ITEMSTATE_EQUIPPED;
+  return count(tank.begin(), tank.end(), in_tank) * ITEMSTATE_BOUGHT;
+}
 
 const IDBFaction *Player::getFaction() const {
   return faction; };
@@ -219,7 +282,7 @@ IDBGloryAdjust Player::getGlory() const {
 IDBBombardmentAdjust Player::getBombardment() const {
   return IDBBombardmentAdjust(bombardment[0], &adjustment); };
 IDBTankAdjust Player::getTank() const {
-  return IDBTankAdjust(NULL, &adjustment); };
+  return IDBTankAdjust(tank[0], &adjustment); };
 
 IDBWeaponAdjust Player::getWeapon(int id) const {
   return IDBWeaponAdjust(weapons.getWeaponSlot(id), &adjustment); };
@@ -276,12 +339,12 @@ int Player::getWeaponEquipBit(const IDBWeapon *weapon, int id) const {
   return weapons.getWeaponEquipBit(weapon, id);
 }
 
-Player::Player() {
+Player::Player() : weapons(NULL) { // this kind of works with the weapon manager
   cash = Money(-1);
   faction = NULL;
 }
 
-Player::Player(const IDBFaction *fact, int in_factionmode) {
+Player::Player(const IDBFaction *fact, int in_factionmode) : weapons(defaultTank()->weapon) {
   faction = fact;
   factionmode = in_factionmode;
   CHECK(factionmode >= 0 && factionmode < FACTIONMODE_LAST);
@@ -289,6 +352,7 @@ Player::Player(const IDBFaction *fact, int in_factionmode) {
   reCalculate();
   glory.push_back(defaultGlory());
   bombardment.push_back(defaultBombardment());
+  tank.push_back(defaultTank());
 }
 
 void Player::reCalculate() {

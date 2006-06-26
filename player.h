@@ -21,6 +21,8 @@ private:
   map<const IDBWeapon *, int, IDBWeaponNameSorter> weapons;
   vector<vector<const IDBWeapon *> > weaponops;
   vector<const IDBWeapon *> curweapons;
+
+  const IDBWeapon *defaultweapon;
   
 public:
   void cycleWeapon(int id);
@@ -38,7 +40,9 @@ public:
   void setWeaponEquipBit(const IDBWeapon *weapon, int id, bool bit);
   int getWeaponEquipBit(const IDBWeapon *weapon, int id) const;
 
-  Weaponmanager();
+  void changeDefaultWeapon(const IDBWeapon *weapon);
+
+  Weaponmanager(const IDBWeapon *weapon);
 };
 
 class Player {
@@ -48,37 +52,46 @@ public:
   IDBGloryAdjust adjustGlory(const IDBGlory *in_upg) const;
   IDBBombardmentAdjust adjustBombardment(const IDBBombardment *in_upg) const;
   IDBWeaponAdjust adjustWeapon(const IDBWeapon *in_upg) const;
+  IDBTankAdjust adjustTank(const IDBTank *in_upg) const;
 
   bool canBuyUpgrade(const IDBUpgrade *in_upg) const;
   bool canBuyGlory(const IDBGlory *in_glory) const;
   bool canBuyBombardment(const IDBBombardment *in_bombardment) const;
   bool canBuyWeapon(const IDBWeapon *in_weap) const;
+  bool canBuyTank(const IDBTank *in_tank) const;
 
   bool canSellGlory(const IDBGlory *in_glory) const;
   bool canSellBombardment(const IDBBombardment *in_bombardment) const;
   bool canSellWeapon(const IDBWeapon *in_weap) const;
+  bool canSellTank(const IDBTank *in_tank) const;
 
   void buyUpgrade(const IDBUpgrade *in_upg);
   void buyGlory(const IDBGlory *in_glory);
   void buyBombardment(const IDBBombardment *in_bombardment);
   void buyWeapon(const IDBWeapon *in_weap);
+  void buyTank(const IDBTank *in_tank);
+
+  void forceAcquireWeapon(const IDBWeapon *in_weap, int count); // Allows you to acquire any weapon. Does not do sanity checks. Should not be used for anything involving meaningful game logic!
 
   // must already be bought
   void equipGlory(const IDBGlory *in_glory);
   void equipBombardment(const IDBBombardment *in_bombardment);
-  void equipWeapon(const IDBWeapon *in_weap);
+  void equipTank(const IDBTank *in_tank);
 
   void sellGlory(const IDBGlory *in_glory);
   void sellBombardment(const IDBBombardment *in_bombardment);
   void sellWeapon(const IDBWeapon *in_weap);
+  void sellTank(const IDBTank *in_tank);
   
-  int hasUpgrade(const IDBUpgrade *in_upg) const; // ATM this will only return UNOWNED or EQUIPPED
-  int hasGlory(const IDBGlory *in_glory) const;
-  int hasBombardment(const IDBBombardment *in_bombardment) const;
+  bool hasUpgrade(const IDBUpgrade *in_upg) const; // ATM this will only return UNOWNED or EQUIPPED
+  bool hasGlory(const IDBGlory *in_glory) const;
+  bool hasBombardment(const IDBBombardment *in_bombardment) const;
+  bool hasTank(const IDBTank *in_tank) const;
   
   int stateUpgrade(const IDBUpgrade *in_upg) const; // ATM this will only return UNOWNED or EQUIPPED
   int stateGlory(const IDBGlory *in_glory) const;
   int stateBombardment(const IDBBombardment *in_bombardment) const;
+  int stateTank(const IDBTank *in_tank) const;
 
   const IDBFaction *getFaction() const;
   
@@ -121,6 +134,7 @@ private:
   // First item is equipped
   vector<const IDBGlory *> glory;
   vector<const IDBBombardment *> bombardment;
+  vector<const IDBTank *> tank;
 
   const IDBFaction *faction;
   int factionmode;

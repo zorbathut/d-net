@@ -112,6 +112,14 @@ public:
 };
 
 struct IDBTank {
+public:
+  float health;
+  float handling;
+  float engine;
+
+  const IDBWeapon *weapon;
+
+  Money base_cost;
 };
 
 /*************
@@ -250,6 +258,9 @@ public:
   float turnSpeed() const;
   float maxSpeed() const;
 
+  Money cost() const;
+  Money sellcost() const;
+
   IDBTankAdjust(const IDBTank *in_idb, const IDBAdjustment *in_adjust);
 };
 
@@ -263,7 +274,7 @@ public:
 
   string name;
 
-  enum {HNT_CATEGORY, HNT_WEAPON, HNT_UPGRADE, HNT_GLORY, HNT_BOMBARDMENT, HNT_EQUIP, HNT_EQUIPWEAPON, HNT_DONE, HNT_LAST};
+  enum {HNT_CATEGORY, HNT_WEAPON, HNT_UPGRADE, HNT_GLORY, HNT_BOMBARDMENT, HNT_TANK, HNT_EQUIP, HNT_EQUIPWEAPON, HNT_DONE, HNT_LAST};
   int type;
 
   enum {HNDM_BLANK, HNDM_COST, HNDM_PACK, HNDM_COSTUNIQUE, HNDM_EQUIP, HNDM_LAST};
@@ -279,6 +290,7 @@ public:
   const IDBUpgrade *upgrade;
   const IDBGlory *glory;
   const IDBBombardment *bombardment;
+  const IDBTank *tank;
   
   const IDBWeapon *equipweapon;
   
@@ -298,7 +310,7 @@ void initItemdb();
 
 const HierarchyNode &itemDbRoot();
 
-const IDBWeapon *defaultWeapon();
+const IDBTank *defaultTank();
 const IDBGlory *defaultGlory();
 const IDBBombardment *defaultBombardment();
 const vector<IDBFaction> &factionList();

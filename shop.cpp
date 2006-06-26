@@ -137,6 +137,8 @@ void Shop::renderNode(const HierarchyNode &node, int depth) const {
           state = player->stateGlory(node.branches[itemid].glory);
         else if(node.branches[itemid].type == HierarchyNode::HNT_BOMBARDMENT)
           state = player->stateBombardment(node.branches[itemid].bombardment);
+        else if(node.branches[itemid].type == HierarchyNode::HNT_TANK)
+          state = player->stateTank(node.branches[itemid].tank);
         else
           CHECK(0);
         if(state == ITEMSTATE_UNOWNED) {
@@ -300,6 +302,11 @@ bool Shop::runTick(const Keystates &keys) {
               player->equipBombardment(getCurNode().bombardment);
             else if(player->canBuyBombardment(getCurNode().bombardment))
               player->buyBombardment(getCurNode().bombardment);
+          } else if(getCurNode().type == HierarchyNode::HNT_TANK) {
+            if(player->stateTank(getCurNode().tank) != ITEMSTATE_UNOWNED)
+              player->equipTank(getCurNode().tank);
+            else if(player->canBuyTank(getCurNode().tank))
+              player->buyTank(getCurNode().tank);
           } else {
             CHECK(0);
           }
@@ -312,6 +319,8 @@ bool Shop::runTick(const Keystates &keys) {
           player->sellGlory(getCurNode().glory);
         } else if(getCurNode().type == HierarchyNode::HNT_BOMBARDMENT && player->canSellBombardment(getCurNode().bombardment)) {
           player->sellBombardment(getCurNode().bombardment);
+        } else if(getCurNode().type == HierarchyNode::HNT_TANK && player->canSellTank(getCurNode().tank)) {
+          player->sellTank(getCurNode().tank);
         }
       }
     }

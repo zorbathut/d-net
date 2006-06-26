@@ -21,7 +21,19 @@ projectile {
 weapon {
   name=Sparker
   firerate=3
-  default=1
   deploy=deploy.sparker
   projectile=projectile.sparker
+}
+
+tank {
+  name=ROOT.Tanks.OPEC II
+
+  health=20
+  handling=2
+  engine=24
+  weapon=Sparker
+  
+  cost=20000
+  
+  default=1
 }

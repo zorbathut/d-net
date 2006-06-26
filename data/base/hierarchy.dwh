@@ -18,6 +18,11 @@ hierarchy {
   type=bombardment
 }
 
+hierarchy {
+  name=ROOT.Tanks
+  type=tank
+}
+
 equip {
   name=ROOT.Equip Weapons
 }

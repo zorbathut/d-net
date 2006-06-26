@@ -1,5 +1,5 @@
 ---- Major work path
-- New tanks, "tank base weapon"
+- Fix early missiles
 - New weapons
 - "Kill graph"
 - Upgrade info screen
