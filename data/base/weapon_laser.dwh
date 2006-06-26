@@ -20,7 +20,7 @@ projectile {
 weapon {
     name=ROOT.Weapons.Laser.Laser
     cost=100
-    firerate=3
+    firerate=6
     deploy=deploy.laser
     projectile=projectile.laser
 }
@@ -28,7 +28,7 @@ weapon {
 weapon {
     name=ROOT.Weapons.Laser.Laser II
     cost=140
-    firerate=4
+    firerate=8
     deploy=deploy.laser
     projectile=projectile.laser
 }
@@ -36,7 +36,7 @@ weapon {
 weapon {
     name=ROOT.Weapons.Laser.Laser III
     cost=180
-    firerate=5
+    firerate=10
     deploy=deploy.laser
     projectile=projectile.laser
 }
@@ -44,7 +44,7 @@ weapon {
 weapon {
     name=ROOT.Weapons.Laser.Laser IV
     cost=250
-    firerate=6
+    firerate=12
     deploy=deploy.laser
     projectile=projectile.laser
 }
@@ -52,7 +52,7 @@ weapon {
 weapon {
     name=ROOT.Weapons.Laser.Laser V
     cost=400
-    firerate=7.5
+    firerate=15
     deploy=deploy.laser
     projectile=projectile.laser
 }
@@ -60,7 +60,7 @@ weapon {
 weapon {
     name=ROOT.Weapons.Laser.Laser VI
     cost=550
-    firerate=9
+    firerate=18
     deploy=deploy.laser
     projectile=projectile.laser
 }

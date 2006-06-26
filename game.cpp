@@ -107,6 +107,8 @@ void Tank::init(Player *in_player) {
   player = in_player;
   health = player->getTank().maxHealth();
   initted = true;
+  framesSinceDamage = -1;
+  damageTaken = 0;
 }
 
 void Tank::tick(const Keystates &kst) {
@@ -115,6 +117,9 @@ void Tank::tick(const Keystates &kst) {
   
   pos = newpos.first;
   d = newpos.second;
+  
+  if(framesSinceDamage != -1)
+    framesSinceDamage++;
   
 };
 
@@ -335,6 +340,9 @@ pair<Coord2, float> Tank::getDeltaAfterMovement( const Keystates &keys, Coord2 p
 
 bool Tank::takeDamage( float damage ) {
   health -= damage;
+  damageTaken += damage;
+  if(framesSinceDamage == -1)
+    framesSinceDamage = 0;
   if( health <= 0 && live ) {
     live = false;
     spawnShards = true;
@@ -870,10 +878,8 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
     }
   }  
   
-  for(int i = 0; i < tanks.size(); i++) {
+  for(int i = 0; i < tanks.size(); i++)
     tanks[i].tick(keys[i]);
-    tanks[i].weaponCooldown--;
-  }
 
   for(int i = 0; i < tanks.size(); i++) {
     StackString sst(StringPrintf("Player weaponry %d", i));
@@ -916,7 +922,7 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
             tanks[i].weaponCooldownSubvals[j] = max(tanks[i].weaponCooldownSubvals[j] - rlev, (float)0);
           }
           
-          tanks[i].weaponCooldownSubvals[curfire] = tanks[i].player->getWeapon(curfire).firerate();
+          tanks[i].weaponCooldownSubvals[curfire] = FPS / tanks[i].player->getWeapon(curfire).firerate();
           
           // Blam!
           IDBWeaponAdjust weapon = tanks[i].player->getWeapon(curfire);
@@ -1129,12 +1135,14 @@ void Game::renderToScreen() const {
   gamemap.render();
   collider.render();
   
-  // This is where we draw the zones and zone text (which is indeed in gamespace)
+  // This is where we draw the zones
   for(int i = 0; i < zones.size(); i++) {
     setColor(zones[i].second * 0.3);
     drawLineLoop(zones[i].first, 1.0);
   }
-  if(zones.size() == 4) { // this is all really fucking ugly
+  
+  // Here's the text for choice mode
+  if(gamemode == GMODE_CHOICE) {
     vector<vector<string> > zonenames;
     {
       vector<string> foo;
@@ -1166,6 +1174,16 @@ void Game::renderToScreen() const {
       pos.x *= 2;
       pos.y *= 1.4;
       drawJustifiedMultiText(zonenames[i], 10, 2, pos, TEXT_CENTER, TEXT_CENTER);
+    }
+  }
+  
+  // Here is the DPS numbers
+  if(gamemode == GMODE_DEMO) {
+    setColor(1.0, 1.0, 1.0);
+    for(int i = 0; i < tanks.size(); i++) {
+      if(tanks[i].framesSinceDamage > 0) {
+        drawJustifiedText(StringPrintf("%.2f DPS", tanks[i].damageTaken / tanks[i].framesSinceDamage * FPS), 10, tanks[i].pos.x.toFloat() - 5, tanks[i].pos.y.toFloat() - 5, TEXT_MAX, TEXT_MAX);
+      }
     }
   }
   
@@ -1343,6 +1361,10 @@ vector<int> Game::teamBreakdown() const {
   for(int i = 0; i < tanks.size(); i++)
     teamsize[tanks[i].team - &teams[0]]++;
   return teamsize;
+}
+
+int Game::frameCount() const {
+  return frameNm;
 }
 
 Game::Game() {

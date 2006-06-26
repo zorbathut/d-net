@@ -77,19 +77,19 @@ public:
   void tick(const Keystates &kst);
   void render() const;
 
-  void addCollision( Collider *collider, const Keystates &kst ) const;
+  void addCollision(Collider *collider, const Keystates &kst) const;
 
   Tank();
 
   vector<Coord4> getCurrentCollide() const;
   vector<Coord4> getNextCollide(const Keystates &keys) const;
 
-  vector<Coord2> getTankVertices( Coord2 pos, float td ) const;
+  vector<Coord2> getTankVertices(Coord2 pos, float td) const;
   Coord2 getFiringPoint() const;
 
-  pair<Coord2, float> getDeltaAfterMovement( const Keystates &keys, Coord2 pos, float d ) const;
+  pair<Coord2, float> getDeltaAfterMovement(const Keystates &keys, Coord2 pos, float d) const;
 
-  bool takeDamage( float amount ); // returns true on kill
+  bool takeDamage(float amount); // returns true on kill
   void genEffects(vector< GfxEffects > *gfxe, vector<Projectile> *projectiles);
   
   bool initted;
@@ -113,6 +113,10 @@ public:
   
   int weaponCooldown;
   float weaponCooldownSubvals[SIMUL_WEAPONS];
+
+  // these exist for the DPS calculations in 
+  int framesSinceDamage;
+  float damageTaken;
 
 };
 
@@ -194,6 +198,8 @@ public:
 
   int winningTeam() const;
   vector<int> teamBreakdown() const;
+
+  int frameCount() const;
 
   float firepowerSpent;
 

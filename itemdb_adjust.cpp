@@ -57,18 +57,34 @@ const string &IDBWeaponAdjust::name() const { return idb->name; };
 IDBDeployAdjust IDBWeaponAdjust::deploy() const { return IDBDeployAdjust(idb->deploy, adjust); };
 IDBProjectileAdjust IDBWeaponAdjust::projectile() const { return IDBProjectileAdjust(idb->projectile, adjust); };
 
-int IDBWeaponAdjust::framesForCooldown() const { 
-  float frames_per_shot = firerate();
+int framesForCooldownEngine(float frames_per_shot) {
   return (int)floor(frames_per_shot) + (frand() < (frames_per_shot - floor(frames_per_shot)));
+};
+
+struct FFCETester {
+  FFCETester() {
+    const float framn = 2;
+    const float gole = framn * 1000;
+    int tfram = 0;
+    for(int i = 0; i < 1000; i++)
+      tfram += framesForCooldownEngine(framn);
+    dprintf("tfram test: should be %dish, is %d\n", int(gole), tfram);
+    
+    CHECK(tfram > gole * .9 && tfram < gole * 1.1);
+  }
+} test;
+
+int IDBWeaponAdjust::framesForCooldown() const { 
+  return framesForCooldownEngine(FPS / firerate());
 }
 float IDBWeaponAdjust::firerate() const {
-  return FPS / (idb->firerate * adjust->adjustmentfactor(IDBAdjustment::TANK_FIRERATE));
+  return idb->firerate * adjust->adjustmentfactor(IDBAdjustment::TANK_FIRERATE);
 }
 Money IDBWeaponAdjust::cost() const { return idb->base_cost / adjust->adjustmentfactor(IDBAdjustment::DISCOUNT_WEAPON); };
 Money IDBWeaponAdjust::sellcost(int amount) const { return cost() * adjust->recyclevalue() * amount / idb->quantity; };
 
 float IDBWeaponAdjust::stats_damagePerShot() const { return deploy().stats_damagePerShotMultiplier() * projectile().stats_damagePerShot(); }
-float IDBWeaponAdjust::stats_damagePerSecond() const { return stats_damagePerShot() * idb->firerate; }
+float IDBWeaponAdjust::stats_damagePerSecond() const { return stats_damagePerShot() * firerate(); }
 float IDBWeaponAdjust::stats_costPerDamage() const { return cost().toFloat() / idb->quantity / stats_damagePerShot(); }
 
 IDBWeaponAdjust::IDBWeaponAdjust(const IDBWeapon *in_idb, const IDBAdjustment *in_adjust) { idb = in_idb; adjust = in_adjust; };
