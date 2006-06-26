@@ -443,7 +443,7 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
       boundy *= (100 / mn);
       
       pms->test_game = new Game();
-      pms->test_game->initDemo(pms->test_player, boundy);
+      pms->test_game->initTest(pms->test_player, boundy);
     }
     
     // so is this

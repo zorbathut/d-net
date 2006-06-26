@@ -185,7 +185,7 @@ public:
   
   void initStandard(vector<Player> *playerdata, const Level &level, vector<const IDBFaction *> *wins, int factionmode);
   void initChoice(vector<Player> *playerdata);
-  void initDemo(Player *playerdata, const Float4 &bounds);
+  void initTest(Player *playerdata, const Float4 &bounds);
 
   bool runTick( const vector< Keystates > &keys );
   void ai(const vector<Ai *> &ais) const;

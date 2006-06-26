@@ -1459,7 +1459,7 @@ void Game::initChoice(vector<Player> *in_playerdata) {
   freezeUntilStart = false;
 }
 
-void Game::initDemo(Player *in_playerdata, const Float4 &bounds) {
+void Game::initTest(Player *in_playerdata, const Float4 &bounds) {
   gamemode = GMODE_DEMO;
   
   Level lev;
