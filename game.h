@@ -213,7 +213,7 @@ private:
 
   vector<Team> teams;
 
-  vector<Tank> players;
+  vector<Tank> tanks;
   vector<BombardmentState> bombards;
   vector<vector<Projectile> > projectiles;
   vector<GfxEffects> gfxeffects;
