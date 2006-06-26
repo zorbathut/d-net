@@ -1,5 +1,9 @@
 ---- Major work path
 - Fix early missiles
+- Add a second and third tank
+- New tank graphics
+- Add tank sell deprecation
+- Rig up upgrades to be tank-specific
 - New weapons
 - "Kill graph"
 - Upgrade info screen
