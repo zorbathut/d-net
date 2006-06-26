@@ -1,11 +1,12 @@
 ---- Major work path
-- Weapon info screen
+- New tanks, "tank base weapon"
+- New weapons
 - "Kill graph"
+- Upgrade info screen
+- Bombardment info screen
+- Glory device info screen
 - Logarithmic turning
 - Improve explosion effects (missile, glory device)
-- New weapons
-- New tanks, "tank base weapon"
-- Next generation of weapons
 - Certificates and discounts
 - Training
 - Faction info screen on startup
