@@ -1,28 +1,28 @@
 
 deploy {
-  name=deploy.sparker
+  name=deploy.sparker1
   anglestddev=0.030
 }
 
 warhead {
-  name=warhead.sparker
+  name=warhead.sparker1
   impactdamage=0.4 kinetic
   impactdamage=0.4 energy
   impactdamage=0.4 explosive
 }
 
 projectile {
-  name=projectile.sparker
+  name=projectile.sparker1
   velocity=150
   color=1.0, 1.0, 1.0
-  warhead=warhead.sparker
+  warhead=warhead.sparker1
 }
 
 weapon {
   name=Sparker
   firerate=3
-  deploy=deploy.sparker
-  projectile=projectile.sparker
+  deploy=deploy.sparker1
+  projectile=projectile.sparker1
 }
 
 tank {
@@ -36,4 +36,53 @@ tank {
   cost=20000
   
   default=1
+}
+
+
+deploy {
+  name=deploy.sparker2
+  anglestddev=0.020
+}
+
+warhead {
+  name=warhead.sparker2
+  impactdamage=0.8 kinetic
+  impactdamage=0.8 energy
+  impactdamage=0.8 explosive
+}
+
+projectile {
+  name=projectile.sparker2
+  velocity=180
+  color=1.0, 1.0, 1.0
+  warhead=warhead.sparker2
+}
+
+weapon {
+  name=Sparker II
+  firerate=5
+  deploy=deploy.sparker2
+  projectile=projectile.sparker2
+}
+
+tank {
+  name=ROOT.Tanks.ROXO I
+
+  health=110
+  handling=1.8
+  engine=20
+  weapon=Sparker II
+  
+  cost=20000
+}
+
+tank {
+  name=ROOT.Tanks.CARAT I
+
+  health=80
+  handling=2.4
+  engine=30
+  weapon=Sparker II
+  
+  cost=20000
 }

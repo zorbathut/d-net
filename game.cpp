@@ -236,7 +236,7 @@ pair<Coord2, float> Tank::getDeltaAfterMovement( const Keystates &keys, Coord2 p
         desdir += 2 * PI;
         if(desdir > PI)
           desdir -= 2 * PI;
-        dd = desdir / player->getTank().turnSpeed() / FPS;
+        dd = desdir / (player->getTank().turnSpeed() / FPS);
         if(dd < -1)
           dd = -1;
         if(dd > 1)

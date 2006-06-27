@@ -34,6 +34,8 @@ private:
   void doTableUpdate();
   void doTableRender() const;
   void renderNode(const HierarchyNode &node, int depth) const;
+  
+  void drawWeaponStats(const IDBWeapon *weap) const;
 
 public:
   bool runTick(const Keystates &keys);

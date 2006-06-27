@@ -64,6 +64,8 @@ const float sl_demoystart = 50;
 
 const float sl_boxthick = 0.1;
 
+const float sl_hudstart = 15;
+
 void Shop::renderNode(const HierarchyNode &node, int depth) const {
   float hoffbase = sl_hoffset + (sl_boxwidth + sl_hoffset) * (depth - xofs);
   
@@ -198,6 +200,8 @@ void Shop::renderNode(const HierarchyNode &node, int depth) const {
           dispmode = HierarchyNode::HNDM_COST;
         if(node.branches[itemid].type == HierarchyNode::HNT_BOMBARDMENT && player->canSellBombardment(node.branches[itemid].bombardment))
           dispmode = HierarchyNode::HNDM_COST;
+        if(node.branches[itemid].type == HierarchyNode::HNT_TANK && player->canSellTank(node.branches[itemid].tank))
+          dispmode = HierarchyNode::HNDM_COST;
       } else if(dispmode == HierarchyNode::HNDM_COST) {
         CHECK(node.branches[itemid].type == HierarchyNode::HNT_WEAPON);
         if(!player->canSellWeapon(node.branches[itemid].weapon)) {
@@ -236,6 +240,8 @@ bool Shop::runTick(const Keystates &keys) {
     lastloc = curloc;
     if(getCurNode().type == HierarchyNode::HNT_WEAPON)
       cshopinf.init(getCurNode().weapon, player);
+    else if(getCurNode().type == HierarchyNode::HNT_EQUIPWEAPON)
+      cshopinf.init(getCurNode().equipweapon, player);
   }
   
   if(getCurNode().type == HierarchyNode::HNT_EQUIPWEAPON) {
@@ -327,7 +333,8 @@ bool Shop::runTick(const Keystates &keys) {
   }
   
   doTableUpdate();
-  if(getCurNode().type == HierarchyNode::HNT_WEAPON) {
+  
+  if(getCurNode().type == HierarchyNode::HNT_WEAPON || getCurNode().type == HierarchyNode::HNT_EQUIPWEAPON) {
     CHECK(curloc == lastloc);
     cshopinf.runTick();
   }
@@ -370,6 +377,20 @@ void Shop::doTableRender() const {
   renderNode(itemDbRoot(), 0);
 };
 
+void Shop::drawWeaponStats(const IDBWeapon *weapon) const {
+  drawText("theoretical dps", 2, 1.5, sl_hudstart);
+  drawText(StringPrintf("%20.4f", player->adjustWeapon(weapon).stats_damagePerSecond()), 2, 1.5, sl_hudstart + 3);
+  drawText("cost per damage", 2, 1.5, sl_hudstart + 6);
+  drawText(StringPrintf("%20.4f", player->adjustWeapon(weapon).stats_costPerDamage()), 2, 1.5, sl_hudstart + 9);
+  drawText("cost per second", 2, 1.5, sl_hudstart + 12);
+  drawText(StringPrintf("%20.4f", player->adjustWeapon(weapon).stats_costPerSecond()), 2, 1.5, sl_hudstart + 15);
+  
+  // NOTE: technically this doesn't check that this shopinf is for the weapon
+  CHECK(curloc == lastloc);
+  GfxWindow gfxw(Float4(sl_demoxstart, sl_demoystart, sl_demoxstart + sl_demowidth, sl_demoystart + sl_demowidth));
+  cshopinf.renderFrame();
+}
+
 void Shop::renderToScreen() const {
   CHECK(player);
   clearFrame(player->getFaction()->color * 0.05 + Color(0.02, 0.02, 0.02));
@@ -387,23 +408,14 @@ void Shop::renderToScreen() const {
     drawDvec2(player->getFaction()->icon, Float4(ofs, ofs, 125 - ofs, 100 - ofs), 50, 0.5);
   }
   doTableRender();
-  float hudstart = itemDbRoot().branches.size() * sl_itemheight + sl_voffset + sl_boxborder;
+
   if(getCurNode().type == HierarchyNode::HNT_WEAPON) {
-    drawText("theoretical dps", 2, 1.5, hudstart);
-    drawText(StringPrintf("%20.4f", player->adjustWeapon(getCurNode().weapon).stats_damagePerSecond()), 2, 1.5, hudstart + 3);
-    drawText("cost per damage", 2, 1.5, hudstart + 6);
-    drawText(StringPrintf("%20.4f", player->adjustWeapon(getCurNode().weapon).stats_costPerDamage()), 2, 1.5, hudstart + 9);
-    drawText("cost per second", 2, 1.5, hudstart + 12);
-    drawText(StringPrintf("%20.4f", player->adjustWeapon(getCurNode().weapon).stats_costPerSecond()), 2, 1.5, hudstart + 15);
+    drawWeaponStats(getCurNode().weapon);
+  } else if(getCurNode().type == HierarchyNode::HNT_EQUIPWEAPON) {
+    drawWeaponStats(getCurNode().equipweapon);
   } else if(getCurNode().type == HierarchyNode::HNT_GLORY) {
-    drawText("total average damage", 2, 1.5, hudstart);
-    drawText(StringPrintf("%20.4f", player->adjustGlory(getCurNode().glory).stats_averageDamage()), 2, 1.5, hudstart + 3);
-  }
-  
-  if(getCurNode().type == HierarchyNode::HNT_WEAPON) {
-    CHECK(curloc == lastloc);
-    GfxWindow gfxw(Float4(sl_demoxstart, sl_demoystart, sl_demoxstart + sl_demowidth, sl_demoystart + sl_demowidth));
-    cshopinf.renderFrame();
+    drawText("total average damage", 2, 1.5, sl_hudstart);
+    drawText(StringPrintf("%20.4f", player->adjustGlory(getCurNode().glory).stats_averageDamage()), 2, 1.5, sl_hudstart + 3);
   }
 }
 

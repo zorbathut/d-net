@@ -66,6 +66,8 @@ Money HierarchyNode::cost(const Player *player) const {
     return player->adjustGlory(glory).cost();
   } else if(type == HNT_BOMBARDMENT) {
     return player->adjustBombardment(bombardment).cost();
+  } else if(type == HNT_TANK) {
+    return player->adjustTank(tank).cost();
   } else {
     CHECK(0);
   }
@@ -80,6 +82,8 @@ Money HierarchyNode::sellvalue(const Player *player) const {
     return player->adjustGlory(glory).sellcost();
   } else if(type == HNT_BOMBARDMENT) {
     return player->adjustBombardment(bombardment).sellcost();
+  } else if(type == HNT_TANK) {
+    return player->adjustTank(tank).sellcost();
   } else {
     CHECK(0);
   }

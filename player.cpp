@@ -159,7 +159,7 @@ bool Player::canBuyTank(const IDBTank *in_tank) const { return stateTank(in_tank
 bool Player::canSellGlory(const IDBGlory *in_glory) const { return hasGlory(in_glory) && in_glory != defaultGlory(); };
 bool Player::canSellBombardment(const IDBBombardment *in_bombardment) const { return hasBombardment(in_bombardment) && in_bombardment != defaultBombardment(); };
 bool Player::canSellWeapon(const IDBWeapon *in_weap) const { return ammoCount(in_weap) > 0; }
-bool Player::canSellTank(const IDBTank *in_tank) const { return hasTank(in_tank) && tank.size() > 1; }  // yes, you can sell your default tank
+bool Player::canSellTank(const IDBTank *in_tank) const { return hasTank(in_tank) && in_tank != defaultTank(); }  // yes, you can sell your default tank
 
 void Player::buyUpgrade(const IDBUpgrade *in_upg) {
   CHECK(cash >= adjustUpgrade(in_upg).cost());
