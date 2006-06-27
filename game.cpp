@@ -204,8 +204,9 @@ vector<Coord2> Tank::getTankVertices( Coord2 pos, float td ) const {
   Coord2 xt = makeAngle(Coord(td));
   Coord2 yt = makeAngle(Coord(td) - COORDPI / 2);
   vector<Coord2> rv;
-  for( int i = 0; i < 3; i++ )
-    rv.push_back(Coord2(pos.x + tank_coords[i][ 0 ] * xt.x + tank_coords[i][ 1 ] * xt.y, pos.y + tank_coords[i][ 1 ] * yt.y + tank_coords[i][ 0 ] * yt.x));
+  IDBTankAdjust idbta = player->getTank();
+  for(int i = 0; i < idbta.vertices().size(); i++)
+    rv.push_back(Coord2(pos.x + idbta.vertices()[i].x * xt.x + idbta.vertices()[i].y * xt.y, pos.y + idbta.vertices()[i].y * yt.y + idbta.vertices()[i].x * yt.x));
   return rv;
 };
 

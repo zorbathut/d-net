@@ -155,25 +155,8 @@ int getPathRelation(const vector<Coord2> &lhs, const vector<Coord2> &rhs) {
   }
 }
 
-Coord getArea(const vector<Coord2> &are) {
-  Coord totare = 0;
-  for(int i = 0; i < are.size(); i++) {
-    int j = (i + 1) % are.size();
-    totare += are[i].x * are[j].y - are[j].x * are[i].y;
-  }
-  totare /= 2;
-  return totare;
-}
-Coord2 getCentroid(const vector<Coord2> &are) {
-  Coord2 centroid(0, 0);
-  for(int i = 0; i < are.size(); i++) {
-    int j = (i + 1) % are.size();
-    Coord common = (are[i].x * are[j].y - are[j].x * are[i].y);
-    centroid += (are[i] + are[j]) * common;
-  }
-  centroid /= 6 * getArea(are);
-  return centroid;
-}
+Coord getArea(const vector<Coord2> &are) { return imp_getArea<Coords>(are); }
+Coord2 getCentroid(const vector<Coord2> &are) { return imp_getCentroid<Coords>(are); }
 Coord getPerimeter(const vector<Coord2> &are) {
   Coord totperi = 0;
   for(int i = 0; i < are.size(); i++) {

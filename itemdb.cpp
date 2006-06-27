@@ -572,8 +572,6 @@ void parseItemFile(const string &fname) {
       tnode.tank = &tankclasses[name];
       mountpoint->branches.push_back(tnode);
       
-      
-      
       string weapon = chunk.consume("weapon");
       CHECK(weaponclasses.count(weapon));
       
@@ -582,6 +580,19 @@ void parseItemFile(const string &fname) {
       tankclasses[name].health = atof(chunk.consume("health").c_str());
       tankclasses[name].handling = atof(chunk.consume("handling").c_str());
       tankclasses[name].engine = atof(chunk.consume("engine").c_str());
+      
+      {
+        vector<string> vtx = tokenize(chunk.consume("vertices"), "\n");
+        CHECK(vtx.size() >= 3); // triangle is the minimum, no linetanks please
+        for(int i = 0; i < vtx.size(); i++) {
+          vector<string> vti = tokenize(vtx[i], " ");
+          CHECK(vti.size() == 2);
+          tankclasses[name].vertices.push_back(Coord2(atof(vti[0].c_str()), atof(vti[1].c_str())));
+        }
+        Coord2 centr = getCentroid(tankclasses[name].vertices);
+        for(int i = 0; i < tankclasses[name].vertices.size(); i++)
+          tankclasses[name].vertices[i] -= centr;
+      }
       
       tankclasses[name].base_cost = moneyFromString(chunk.consume("cost"));
       

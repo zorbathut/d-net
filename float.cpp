@@ -32,6 +32,8 @@ int whichSide( const Float4 &f4, const Float2 &pta ) { return imp_whichSide<Floa
 
 pair<Float2, float> fitInside(const Float4 &objbounds, const Float4 &goalbounds) { return imp_fitInside<Floats>(objbounds, goalbounds); }
 
+Float2 getCentroid(const vector<Float2> &are) { return imp_getCentroid<Floats>(are); }
+
 /*************
  * Bounding box
  */

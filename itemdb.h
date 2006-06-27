@@ -2,6 +2,7 @@
 #define DNET_ITEMDB
 
 #include "dvec2.h"
+#include "coord.h"
 #include "util.h"
 
 using namespace std;
@@ -118,6 +119,7 @@ public:
   float engine;
 
   const IDBWeapon *weapon;
+  vector<Coord2> vertices;
 
   Money base_cost;
 };
@@ -257,6 +259,8 @@ public:
   float maxHealth() const;
   float turnSpeed() const;
   float maxSpeed() const;
+
+  const vector<Coord2> &vertices() const;
 
   Money cost() const;
   Money sellcost() const;

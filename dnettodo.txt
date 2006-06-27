@@ -1,12 +1,13 @@
 ---- Major work path
-- New tank graphics
-- Add tank sell deprecation
 - Rig up upgrades to be tank-specific
-- New weapons
-- "Kill graph"
+- Add tank sell deprecation
 - Upgrade info screen
 - Bombardment info screen
 - Glory device info screen
+- Tank info screen
+- Flavor text
+- New weapons
+- "Kill graph"
 - Logarithmic turning
 - Improve explosion effects (missile, glory device)
 - Certificates and discounts

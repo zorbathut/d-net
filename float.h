@@ -3,6 +3,7 @@
 
 #include <cmath>
 #include <utility>
+#include <vector>
 
 using namespace std;
 
@@ -175,6 +176,8 @@ float linelineintersectpos( const Float4 &lhs, const Float4 &rhs );
 int whichSide( const Float4 &f4, const Float2 &pta );
 
 pair<Float2, float> fitInside(const Float4 &objbounds, const Float4 &goalbounds);
+
+Float2 getCentroid(const vector<Float2> &are);
 
 /*************
  * Bounding box

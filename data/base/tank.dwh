@@ -36,6 +36,10 @@ tank {
   cost=20000
   
   default=1
+  
+  vertices=6.5 0
+  vertices=0 -2.5
+  vertices=0 2.5
 }
 
 
@@ -74,6 +78,12 @@ tank {
   weapon=Sparker II
   
   cost=20000
+  
+  vertices=6.5 0
+  vertices=4 -1.5
+  vertices=0 -2.5
+  vertices=0 2.5
+  vertices=4 1.5
 }
 
 tank {
@@ -85,4 +95,9 @@ tank {
   weapon=Sparker II
   
   cost=20000
+  
+  vertices=6.5 0
+  vertices=0 -2.25
+  vertices=0.5 0
+  vertices=0 2.25
 }
