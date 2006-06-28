@@ -50,9 +50,9 @@ deploy {
 
 warhead {
   name=warhead.sparker2
-  impactdamage=0.8 kinetic
-  impactdamage=0.8 energy
-  impactdamage=0.8 explosive
+  impactdamage=0.6 kinetic
+  impactdamage=0.6 energy
+  impactdamage=0.6 explosive
 }
 
 projectile {

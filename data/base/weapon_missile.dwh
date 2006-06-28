@@ -54,7 +54,7 @@ weapon {
 weapon {
   name=ROOT.Weapons.Missile.Missile V
   cost=600
-  firerate=10
+  firerate=9.5
   deploy=deploy.missile
   projectile=projectile.missile
 }
@@ -62,7 +62,7 @@ weapon {
 weapon {
   name=ROOT.Weapons.Missile.Missile VI
   cost=850
-  firerate=12
+  firerate=11
   deploy=deploy.missile
   projectile=projectile.missile
 }
