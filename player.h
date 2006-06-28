@@ -45,6 +45,15 @@ public:
   Weaponmanager(const IDBWeapon *weapon);
 };
 
+class TankEquipment {
+public:
+  const IDBTank *tank;
+  vector<const IDBUpgrade *> upgrades;
+
+  TankEquipment();
+  TankEquipment(const IDBTank *tank);
+};
+
 class Player {
 public:
 
@@ -127,14 +136,12 @@ private:
   
   void reCalculate();
 
-  vector<const IDBUpgrade *> upgrades;
-
   Weaponmanager weapons;
 
   // First item is equipped
   vector<const IDBGlory *> glory;
   vector<const IDBBombardment *> bombardment;
-  vector<const IDBTank *> tank;
+  vector<TankEquipment> tank;
 
   const IDBFaction *faction;
   int factionmode;

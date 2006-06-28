@@ -1,6 +1,5 @@
 ---- Major work path
 - Rig up upgrades to be tank-specific
-- Add tank sell deprecation
 - Upgrade info screen
 - Bombardment info screen
 - Glory device info screen
@@ -34,6 +33,9 @@
 - Winner list better special effects
 - Winner list better "null" icon
 - Color for projectile impacts
+
+---- Things that may or may not be needed
+- Add tank sell deprecation
 
 ---- Major but unimportant
 - Halos?
