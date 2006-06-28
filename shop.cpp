@@ -288,7 +288,8 @@ bool Shop::runTick(const Keystates &keys) {
           // Player is trying to buy something!
           
           if(getCurNode().type == HierarchyNode::HNT_DONE) {
-            return true;
+            if(player->canContinue())
+              return true;
           } else if(getCurNode().type == HierarchyNode::HNT_UPGRADE) {
             if(player->stateUpgrade(getCurNode().upgrade) != ITEMSTATE_UNOWNED)
               ;

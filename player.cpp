@@ -161,7 +161,7 @@ bool Player::canBuyTank(const IDBTank *in_tank) const { return stateTank(in_tank
 bool Player::canSellGlory(const IDBGlory *in_glory) const { return hasGlory(in_glory) && in_glory != defaultGlory(); };
 bool Player::canSellBombardment(const IDBBombardment *in_bombardment) const { return hasBombardment(in_bombardment) && in_bombardment != defaultBombardment(); };
 bool Player::canSellWeapon(const IDBWeapon *in_weap) const { return ammoCount(in_weap) > 0; }
-bool Player::canSellTank(const IDBTank *in_tank) const { return hasTank(in_tank) && in_tank != defaultTank(); }  // yes, you can sell your default tank
+bool Player::canSellTank(const IDBTank *in_tank) const { return hasTank(in_tank); }  // yes, you can sell all your tanks!
 
 Money Player::sellTankValue(const IDBTank *in_tank) const {
   CHECK(hasTank(in_tank));
@@ -234,8 +234,8 @@ void Player::equipTank(const IDBTank *in_tank) {
     CHECK(ps < tank.size());
     swap(tank[ps], tank[0]);
     weapons.changeDefaultWeapon(in_tank->weapon);
-    reCalculate();
   }
+  reCalculate();  // it is possible we used to use the null tank
 }
 
 void Player::sellGlory(const IDBGlory *in_glory) {
@@ -260,9 +260,8 @@ void Player::sellWeapon(const IDBWeapon *in_weap) {
 }
 void Player::sellTank(const IDBTank *in_tank) {
   CHECK(canSellTank(in_tank));
-  CHECK(tank.size() > 1);
   
-  if(tank[0].tank == in_tank)
+  if(tank[0].tank == in_tank && tank.size() >= 2)
     equipTank(tank[1].tank);
 
   int ps;
@@ -270,8 +269,9 @@ void Player::sellTank(const IDBTank *in_tank) {
     if(tank[ps].tank == in_tank)
       break;
   CHECK(ps < tank.size());
+  cash += sellTankValue(in_tank);
   tank.erase(tank.begin() + ps);
-  cash += adjustTank(in_tank).sellcost();
+  reCalculate(); // just in case we got rid of the last tank
 }
 
 bool Player::hasUpgrade(const IDBUpgrade *in_upg) const { return stateUpgrade(in_upg) != ITEMSTATE_UNOWNED; }
@@ -280,30 +280,42 @@ bool Player::hasBombardment(const IDBBombardment *in_bombardment) const { return
 bool Player::hasTank(const IDBTank *in_tank) const { return stateTank(in_tank) != ITEMSTATE_UNOWNED; }
 
 int Player::stateUpgrade(const IDBUpgrade *in_upg) const {
+  if(tank.size() == 0)
+    return ITEMSTATE_UNAVAILABLE;
   CHECK(in_upg);
-  return count(tank[0].upgrades.begin(), tank[0].upgrades.end(), in_upg) * ITEMSTATE_EQUIPPED; // can't be bought without being equipped, heh
+  if(count(tank[0].upgrades.begin(), tank[0].upgrades.end(), in_upg))
+    return ITEMSTATE_EQUIPPED; // can't be bought without being equipped, heh
+  return ITEMSTATE_UNOWNED;
 }
 int Player::stateGlory(const IDBGlory *in_glory) const {
   CHECK(glory.size() >= 1);
   if(glory[0] == in_glory)
     return ITEMSTATE_EQUIPPED;
-  return count(glory.begin(), glory.end(), in_glory) * ITEMSTATE_BOUGHT;
+  if(count(glory.begin(), glory.end(), in_glory))
+    return ITEMSTATE_BOUGHT;
+  return ITEMSTATE_UNOWNED;
 }
 int Player::stateBombardment(const IDBBombardment *in_bombardment) const {
   CHECK(bombardment.size() >= 1);
   if(bombardment[0] == in_bombardment)
     return ITEMSTATE_EQUIPPED;
-  return count(bombardment.begin(), bombardment.end(), in_bombardment) * ITEMSTATE_BOUGHT;
-}
-int Player::stateTank(const IDBTank *in_tank) const {
-  CHECK(tank.size() >= 1);
-  if(tank[0].tank == in_tank)
-    return ITEMSTATE_EQUIPPED;
-  for(int i = 0; i < tank.size(); i++)
-    if(tank[i].tank == in_tank)
-      return ITEMSTATE_BOUGHT;
+  if(count(bombardment.begin(), bombardment.end(), in_bombardment))
+    return ITEMSTATE_BOUGHT;
   return ITEMSTATE_UNOWNED;
 }
+int Player::stateTank(const IDBTank *in_tank) const {
+  if(tank.size()) {
+    if(tank[0].tank == in_tank)
+      return ITEMSTATE_EQUIPPED;
+    for(int i = 0; i < tank.size(); i++)
+      if(tank[i].tank == in_tank)
+        return ITEMSTATE_BOUGHT;
+  }
+  return ITEMSTATE_UNOWNED;
+}
+
+bool Player::canContinue() const {
+  return tank.size(); }
 
 const IDBFaction *Player::getFaction() const {
   return faction; };

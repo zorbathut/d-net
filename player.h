@@ -8,7 +8,7 @@
 using namespace std;
 
 enum { FACTIONMODE_NONE, FACTIONMODE_MINOR, FACTIONMODE_MEDIUM, FACTIONMODE_MAJOR, FACTIONMODE_LAST };
-enum { ITEMSTATE_UNOWNED, ITEMSTATE_BOUGHT, ITEMSTATE_EQUIPPED };
+enum { ITEMSTATE_UNOWNED, ITEMSTATE_BOUGHT, ITEMSTATE_EQUIPPED, ITEMSTATE_UNAVAILABLE };
 enum { WEB_UNEQUIPPED, WEB_EQUIPPED, WEB_ACTIVE };
 
 class IDBWeaponNameSorter {
@@ -103,6 +103,8 @@ public:
   int stateGlory(const IDBGlory *in_glory) const;
   int stateBombardment(const IDBBombardment *in_bombardment) const;
   int stateTank(const IDBTank *in_tank) const;
+  
+  bool canContinue() const;
 
   const IDBFaction *getFaction() const;
   

@@ -6,6 +6,9 @@ CARAT II
 ROXO I
 ROXO II
 
+PIRE I
+PIRE II
+
 Speed
 Turning
 Armor
