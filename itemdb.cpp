@@ -83,7 +83,7 @@ Money HierarchyNode::sellvalue(const Player *player) const {
   } else if(type == HNT_BOMBARDMENT) {
     return player->adjustBombardment(bombardment).sellcost();
   } else if(type == HNT_TANK) {
-    return player->adjustTank(tank).sellcost();
+    return player->sellTankValue(tank);
   } else {
     CHECK(0);
   }

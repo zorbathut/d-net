@@ -163,6 +163,21 @@ bool Player::canSellBombardment(const IDBBombardment *in_bombardment) const { re
 bool Player::canSellWeapon(const IDBWeapon *in_weap) const { return ammoCount(in_weap) > 0; }
 bool Player::canSellTank(const IDBTank *in_tank) const { return hasTank(in_tank) && in_tank != defaultTank(); }  // yes, you can sell your default tank
 
+Money Player::sellTankValue(const IDBTank *in_tank) const {
+  CHECK(hasTank(in_tank));
+  int ps;
+  for(ps = 0; ps < tank.size(); ps++)
+    if(tank[ps].tank == in_tank)
+      break;
+  CHECK(ps < tank.size());
+  
+  Money acu = Money(0);
+  acu += adjustTank(in_tank).sellcost();
+  for(int i = 0; i < tank[ps].upgrades.size(); i++)
+    acu += adjustUpgrade(tank[ps].upgrades[i]).sellcost();
+  return acu;
+}
+
 void Player::buyUpgrade(const IDBUpgrade *in_upg) {
   CHECK(cash >= adjustUpgrade(in_upg).cost());
   CHECK(canBuyUpgrade(in_upg));
@@ -372,11 +387,11 @@ Player::Player(const IDBFaction *fact, int in_factionmode) : weapons(defaultTank
 }
 
 void Player::reCalculate() {
-  CHECK(tank.size());
   CHECK(faction);
   //adjustment = *faction->adjustment[factionmode];
   adjustment = *faction->adjustment[0]; // because factions aren't really useful yet
-  for(int i = 0; i < tank[0].upgrades.size(); i++)
-    adjustment += *tank[0].upgrades[i]->adjustment;
+  if(tank.size())
+    for(int i = 0; i < tank[0].upgrades.size(); i++)
+      adjustment += *tank[0].upgrades[i]->adjustment;
   adjustment.debugDump();
 }

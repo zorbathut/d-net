@@ -74,6 +74,8 @@ public:
   bool canSellWeapon(const IDBWeapon *in_weap) const;
   bool canSellTank(const IDBTank *in_tank) const;
 
+  Money sellTankValue(const IDBTank *in_tank) const;
+
   void buyUpgrade(const IDBUpgrade *in_upg);
   void buyGlory(const IDBGlory *in_glory);
   void buyBombardment(const IDBBombardment *in_bombardment);

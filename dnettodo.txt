@@ -1,5 +1,5 @@
 ---- Major work path
-- Rig up upgrades to be tank-specific
+- Add tank sell upgrade value
 - Upgrade info screen
 - Bombardment info screen
 - Glory device info screen
