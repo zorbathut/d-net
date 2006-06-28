@@ -1,20 +1,3 @@
-OPEC II
-
-CARAT I
-CARAT II
-
-ROXO I
-ROXO II
-
-PIRE I
-PIRE II
-
-Speed
-Turning
-Armor
-Power
-
-
 Connections - both 5%
 Market Membership - both 5%
 Reconditioning - resell 10%

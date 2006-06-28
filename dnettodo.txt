@@ -1,5 +1,5 @@
 ---- Major work path
-- Add tank sell upgrade value
+- Scaled upgrade costs
 - Upgrade info screen
 - Bombardment info screen
 - Glory device info screen
