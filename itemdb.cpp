@@ -595,6 +595,11 @@ void parseItemFile(const string &fname) {
       }
       
       tankclasses[name].base_cost = moneyFromString(chunk.consume("cost"));
+      if(chunk.kv.count("upgrade_base")) {
+        tankclasses[name].upgrade_base = moneyFromString(chunk.consume("upgrade_base"));
+      } else {
+        tankclasses[name].upgrade_base = tankclasses[name].base_cost;
+      }
       
       if(chunk.kv.count("default") && atoi(chunk.consume("default").c_str())) {
         CHECK(!deftank);

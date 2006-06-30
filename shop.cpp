@@ -150,6 +150,9 @@ void Shop::renderNode(const HierarchyNode &node, int depth) const {
         } else if(state == ITEMSTATE_EQUIPPED) {
           display = "equipped";
           displayset = true;
+        } else if(state == ITEMSTATE_UNAVAILABLE) {
+          display = "unavail";
+          displayset = true;
         }
       }
       

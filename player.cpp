@@ -146,7 +146,11 @@ Weaponmanager::Weaponmanager(const IDBWeapon *weapon) {
 TankEquipment::TankEquipment() { tank = NULL; }
 TankEquipment::TankEquipment(const IDBTank *in_tank) { tank = in_tank; }
 
-IDBUpgradeAdjust Player::adjustUpgrade(const IDBUpgrade *in_upg) const { return IDBUpgradeAdjust(in_upg, &adjustment); };
+IDBUpgradeAdjust Player::adjustUpgrade(const IDBUpgrade *in_upg) const {
+  CHECK(tank.size());
+  return IDBUpgradeAdjust(in_upg, tank[0].tank, &adjustment);
+};
+
 IDBGloryAdjust Player::adjustGlory(const IDBGlory *in_upg) const { return IDBGloryAdjust(in_upg, &adjustment); };
 IDBBombardmentAdjust Player::adjustBombardment(const IDBBombardment *in_upg) const { return IDBBombardmentAdjust(in_upg, &adjustment); };
 IDBWeaponAdjust Player::adjustWeapon(const IDBWeapon *in_upg) const { return IDBWeaponAdjust(in_upg, &adjustment); };

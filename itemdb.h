@@ -122,6 +122,7 @@ public:
   vector<Coord2> vertices;
 
   Money base_cost;
+  Money upgrade_base;
 };
 
 /*************
@@ -226,13 +227,14 @@ public:
 struct IDBUpgradeAdjust {
   const IDBUpgrade *idb;
   const IDBAdjustment *adjust;
+  const IDBTank *tank;
 
 public:
 
   Money cost() const;
   Money sellcost() const;
 
-  IDBUpgradeAdjust(const IDBUpgrade *in_idb, const IDBAdjustment *in_adjust);
+  IDBUpgradeAdjust(const IDBUpgrade *in_idb, const IDBTank *in_tank, const IDBAdjustment *in_adjust);
 };
 
 struct IDBBombardmentAdjust {

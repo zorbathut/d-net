@@ -124,7 +124,7 @@ IDBGloryAdjust::IDBGloryAdjust(const IDBGlory *in_idb, const IDBAdjustment *in_a
 Money IDBUpgradeAdjust::cost() const { return idb->base_cost / adjust->adjustmentfactor(IDBAdjustment::DISCOUNT_UPGRADE); };
 Money IDBUpgradeAdjust::sellcost() const { return cost() * adjust->recyclevalue(); };
 
-IDBUpgradeAdjust::IDBUpgradeAdjust(const IDBUpgrade *in_idb, const IDBAdjustment *in_adjust) { idb = in_idb; adjust = in_adjust; };
+IDBUpgradeAdjust::IDBUpgradeAdjust(const IDBUpgrade *in_idb, const IDBTank *in_tank, const IDBAdjustment *in_adjust) { idb = in_idb; tank = in_tank; adjust = in_adjust; };
 
 /*************
  * IDBBombardmentAdjust
