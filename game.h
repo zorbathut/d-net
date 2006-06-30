@@ -26,7 +26,7 @@ public:
   int type;
   enum {EFFECT_POINT, EFFECT_LINE, EFFECT_CIRCLE, EFFECT_TEXT, EFFECT_PATH, EFFECT_PING};
   
-  int life;
+  float life;
   int age;
   Color color;
   

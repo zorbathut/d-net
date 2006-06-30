@@ -35,7 +35,7 @@ void detonateWarhead(const IDBWarheadAdjust &warhead, Coord2 pos, Tank *impact, 
   
   GfxEffects ngfe;
   ngfe.point_pos = pos.toFloat();
-  ngfe.life = 6;
+  ngfe.life = 0.1;
   ngfe.type = GfxEffects::EFFECT_POINT;
   ngfe.color = Color(1.0, 1.0, 1.0);
   for( int i = 0; i < 6; i++ ) {
@@ -50,7 +50,7 @@ void detonateWarhead(const IDBWarheadAdjust &warhead, Coord2 pos, Tank *impact, 
     dbgf.type = GfxEffects::EFFECT_CIRCLE;
     dbgf.circle_center = pos.toFloat();
     dbgf.circle_radius = warhead.radiusfalloff();
-    dbgf.life = 5;
+    dbgf.life = 0.09;
     gfxe->push_back(dbgf);
   }
   
@@ -66,7 +66,7 @@ void GfxEffects::move() {
 }
 void GfxEffects::render() const {
   CHECK(life != -1);
-  float apercent = 1.0f - (float)age / life;
+  float apercent = 1.0f - ((float)age / FPS) / life;
   setColor(color * apercent);
   if(type == EFFECT_LINE) {
     drawLine(line_pos + line_vel * age, 0.1f);
@@ -85,7 +85,7 @@ void GfxEffects::render() const {
   }
 }
 bool GfxEffects::dead() const {
-  return age >= life;
+  return ((float)age / FPS) >= life;
 }
 
 GfxEffects::GfxEffects() {
@@ -428,7 +428,7 @@ void Tank::genEffects(vector<GfxEffects> *gfxe, vector<Projectile> *projectiles)
       ngfe.path_ang_start = 0;
       ngfe.path_ang_vel = gaussian() / 20;
       ngfe.path_ang_acc = -ngfe.path_ang_vel / 30;
-      ngfe.life = 30;
+      ngfe.life = 0.5;
       ngfe.color = player->getFaction()->color;
       gfxe->push_back(ngfe);
     }
@@ -468,7 +468,7 @@ void Projectile::tick(vector<GfxEffects> *gfxe) {
       missile_sidedist /= 1.2;
     GfxEffects ngfe;
     ngfe.point_pos = pos.toFloat() + lasttail.toFloat() - movement().toFloat(); // projectiles get a free tick ATM
-    ngfe.life = 10;
+    ngfe.life = 0.17;
     ngfe.type = GfxEffects::EFFECT_POINT;
     ngfe.color = projtype.color();
     for( int i = 0; i < 2; i++ ) {
@@ -629,7 +629,7 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
         ngfe.ping_pos = tanks[i].pos.toFloat();
         ngfe.ping_radius_d = 200;
         ngfe.ping_thickness_d = 8;
-        ngfe.life = 30;
+        ngfe.life = 0.5;
         ngfe.color = tanks[i].player->getFaction()->color;
         gfxeffects.push_back(ngfe);
       }
@@ -1568,7 +1568,7 @@ vector<pair<float, Tank *> > Game::genTankDistance(const Coord2 &center) {
 void Game::addTankStatusText(int tankid, const string &text, float duration) {
   GfxEffects nge;
   nge.type = GfxEffects::EFFECT_TEXT;
-  nge.life = int(duration * 60);
+  nge.life = duration;
   nge.text_pos = tanks[tankid].pos.toFloat() + Float2(4, -4);
   nge.text_vel = Float2(0, -0.1);
   nge.text_size = 2.5;
