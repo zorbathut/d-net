@@ -1,5 +1,5 @@
 
-#include "shop_info.h"
+#include "shop_demo.h"
 
 #include "gfx.h"
 #include "debug.h"

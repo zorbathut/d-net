@@ -3,7 +3,7 @@
 
 #include "player.h"
 #include "input.h"
-#include "shop_info.h"
+#include "shop_demo.h"
 
 class Ai;
 
