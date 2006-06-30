@@ -1,7 +1,6 @@
 ---- Major work path
-- Scaled upgrade costs
-- Upgrade info screen
 - Bombardment info screen
+- Upgrade info screen
 - Glory device info screen
 - Tank info screen
 - Flavor text
