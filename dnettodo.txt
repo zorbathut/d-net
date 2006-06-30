@@ -5,24 +5,22 @@
 - Tank info screen
 - Flavor text
 - New weapons
-- "Kill graph"
+- Next-gen collision/storage system on grid
 - Logarithmic turning
 - Improve explosion effects (missile, glory device)
 - Certificates and discounts
 - Training
+- Implants
 - Faction info screen on startup
-- Speed up wall difference in nasty situations (i.e. glory devices in corners)
-- Speed up wall placement in all situations (that annoying caching thing with gamemap, I guess)
 - Make explosion removals include the focus point
 - AI shouldn't try to buy the glory device it already owns
-- Scrollable bars
 - Multishop
 - Many many more weapons
 
 ---- Things that take thought and musing
 - Improved win sum system - what does this mean again?
-- Special unique bonuses (turned the most, closest to death, most/least accurate, traveler, tunneler, deadeye, kamikaze)
 - Slide-along-walls track simulation?
+- "Kill graph"
 
 ---- Maintenance, minor bugfix, braindead
 - gfxeffects construction helper funcs
@@ -35,6 +33,7 @@
 
 ---- Things that may or may not be needed
 - Add tank sell deprecation
+- Special unique bonuses (turned the most, closest to death, most/least accurate, traveler, tunneler, deadeye, kamikaze)
 
 ---- Major but unimportant
 - Halos?

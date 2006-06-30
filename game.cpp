@@ -191,15 +191,6 @@ void Tank::addCollision(Collider *collider, const Keystates &keys) const {
     collider->token(Coord4(tankpts[i], tankpts[(i + 1) % 3]), Coord4(newtankpts[i], newtankpts[(i + 1) % 3]));
 };
 
-const float tank_width = 5;
-const float tank_length = tank_width*1.3;
-
-const Coord tank_coords[3][2] =  {
-  {Coord(-tank_length / 3), Coord(-tank_width / 2)},
-  {Coord(-tank_length / 3), Coord(tank_width / 2)},
-  {Coord(tank_length * 2 / 3), Coord(0)}
-};
-
 vector<Coord2> Tank::getTankVertices( Coord2 pos, float td ) const {
   Coord2 xt = makeAngle(Coord(td));
   Coord2 yt = makeAngle(Coord(td) - COORDPI / 2);
