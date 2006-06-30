@@ -47,21 +47,21 @@ adjustment {
 
 upgrade {
   name=ROOT.Upgrades.Debughull
-  cost=0
+  costmult=0
   adjustment=adjustment.crazyhull
   debug=1
 }
 
 upgrade {
   name=ROOT.Upgrades.Debugengine
-  cost=0
+  costmult=0
   adjustment=adjustment.crazyengine
   debug=1
 }
 
 upgrade {
   name=ROOT.Upgrades.Debughandling
-  cost=0
+  costmult=0
   adjustment=adjustment.crazyhandling
   debug=1
 }

@@ -1,0 +1,51 @@
+
+adjustment {
+  name=adjustment.hull
+  tank_armor=20
+}
+
+upgrade {
+  name=ROOT.Upgrades.Hull I
+  costmult=1
+  adjustment=adjustment.hull
+}
+
+upgrade {
+  name=ROOT.Upgrades.Hull II
+  costmult=3
+  adjustment=adjustment.hull
+}
+
+adjustment {
+  name=adjustment.engine
+  tank_speed=20
+}
+
+upgrade {
+  name=ROOT.Upgrades.Engine I
+  costmult=1
+  adjustment=adjustment.engine
+}
+
+upgrade {
+  name=ROOT.Upgrades.Engine II
+  costmult=3
+  adjustment=adjustment.engine
+}
+
+adjustment {
+  name=adjustment.handling
+  tank_turn=20
+}
+
+upgrade {
+  name=ROOT.Upgrades.Handling I
+  costmult=1
+  adjustment=adjustment.handling
+}
+
+upgrade {
+  name=ROOT.Upgrades.Handling II
+  costmult=3
+  adjustment=adjustment.handling
+}

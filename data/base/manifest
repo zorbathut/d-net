@@ -12,6 +12,7 @@ weapon_laser.dwh
 weapon_missile.dwh
 
 # Miscellaneous
+upgrades.dwh
 glory.dwh
 bombardment.dwh
 tank.dwh

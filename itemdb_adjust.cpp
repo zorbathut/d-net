@@ -121,7 +121,7 @@ IDBGloryAdjust::IDBGloryAdjust(const IDBGlory *in_idb, const IDBAdjustment *in_a
  * IDBUpgradeAdjust
  */
 
-Money IDBUpgradeAdjust::cost() const { return idb->base_cost / adjust->adjustmentfactor(IDBAdjustment::DISCOUNT_UPGRADE); };
+Money IDBUpgradeAdjust::cost() const { return tank->upgrade_base * idb->costmult / adjust->adjustmentfactor(IDBAdjustment::DISCOUNT_UPGRADE); };  // yes, it's based off the tank base cost, not the tank adjusted cost
 Money IDBUpgradeAdjust::sellcost() const { return cost() * adjust->recyclevalue(); };
 
 IDBUpgradeAdjust::IDBUpgradeAdjust(const IDBUpgrade *in_idb, const IDBTank *in_tank, const IDBAdjustment *in_adjust) { idb = in_idb; tank = in_tank; adjust = in_adjust; };

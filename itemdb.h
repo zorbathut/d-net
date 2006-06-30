@@ -99,7 +99,7 @@ struct IDBUpgrade {
 public:
   IDBAdjustment *adjustment;
 
-  Money base_cost;
+  int costmult;
 };
 
 struct IDBBombardment {

@@ -406,7 +406,7 @@ void parseItemFile(const string &fname) {
       tnode.upgrade = &upgradeclasses[name];
       mountpoint->branches.push_back(tnode);
       
-      upgradeclasses[name].base_cost = moneyFromString(chunk.consume("cost"));
+      upgradeclasses[name].costmult = atoi(chunk.consume("costmult").c_str());
       string adjustment = chunk.consume("adjustment");
       CHECK(adjustmentclasses.count(adjustment));
       upgradeclasses[name].adjustment = &adjustmentclasses[adjustment];
