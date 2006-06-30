@@ -204,7 +204,12 @@ vector<Coord2> Tank::getTankVertices( Coord2 pos, float td ) const {
 Coord2 Tank::getFiringPoint() const {
   Coord2 xt = makeAngle(Coord(d));
   Coord2 yt = makeAngle(Coord(d) - COORDPI / 2);
-  return Coord2( pos.x + tank_coords[ 2 ][ 0 ] * xt.x + tank_coords[ 2 ][ 1 ] * xt.y, pos.y + tank_coords[ 2 ][ 1 ] * yt.y + tank_coords[ 2 ][ 0 ] * yt.x );
+  Coord2 best(0, 0);
+  IDBTankAdjust idbta = player->getTank();
+  for(int i = 0; i < idbta.vertices().size(); i++)
+    if(idbta.vertices()[i].x > best.x)
+      best = idbta.vertices()[i];
+  return Coord2( pos.x + best.x * xt.x + best.y * xt.y, pos.y + best.y * yt.y + best.x * yt.x );
 };
 
 pair<Coord2, float> Tank::getDeltaAfterMovement( const Keystates &keys, Coord2 pos, float d ) const {
