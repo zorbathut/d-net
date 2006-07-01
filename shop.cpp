@@ -246,6 +246,8 @@ bool Shop::runTick(const Keystates &keys) {
       cshopinf.init(getCurNode().weapon, player);
     else if(getCurNode().type == HierarchyNode::HNT_EQUIPWEAPON)
       cshopinf.init(getCurNode().equipweapon, player);
+    else if(getCurNode().type == HierarchyNode::HNT_GLORY)
+      cshopinf.init(getCurNode().glory, player);
   }
   
   if(getCurNode().type == HierarchyNode::HNT_EQUIPWEAPON) {
@@ -401,13 +403,8 @@ void Shop::renderToScreen() const {
   doTableRender();
 
   CHECK(curloc == lastloc);
-  if(getCurNode().type == HierarchyNode::HNT_WEAPON) {
+  if(getCurNode().type == HierarchyNode::HNT_WEAPON || getCurNode().type == HierarchyNode::HNT_EQUIPWEAPON || getCurNode().type == HierarchyNode::HNT_GLORY) {
     cshopinf.renderFrame(Float4(sl_hoffset, sl_hudstart, sl_hoffset + sl_boxwidth, sl_hudend), sl_fontsize, Float4(sl_demoxstart, sl_demoystart, sl_demoxstart + sl_demowidth, sl_demoystart + sl_demowidth));
-  } else if(getCurNode().type == HierarchyNode::HNT_EQUIPWEAPON) {
-    cshopinf.renderFrame(Float4(sl_hoffset, sl_hudstart, sl_hoffset + sl_boxwidth, sl_hudend), sl_fontsize, Float4(sl_demoxstart, sl_demoystart, sl_demoxstart + sl_demowidth, sl_demoystart + sl_demowidth));
-  } else if(getCurNode().type == HierarchyNode::HNT_GLORY) {
-    drawText("total average damage", 2, 1.5, sl_hudstart);
-    drawText(StringPrintf("%20.4f", player->adjustGlory(getCurNode().glory).stats_averageDamage()), 2, 1.5, sl_hudstart + 3);
   }
 }
 
