@@ -82,6 +82,16 @@ void ShopInfo::renderFrame(Float4 bounds, float fontsize, Float4 inset) const {
     drawText(StringPrintf("%12.0f seconds", player->adjustBombardment(bombardment).lockdelay()), fontsize, bounds.sx, bounds.sy + fontshift * lineid++);
     drawText("cooldown", fontsize, bounds.sx, bounds.sy + fontshift * lineid++);
     drawText(StringPrintf("%12.0f seconds", player->adjustBombardment(bombardment).unlockdelay()), fontsize, bounds.sx, bounds.sy + fontshift * lineid++);
+  } else if(upgrade) {
+    int lineid = 0;
+    
+    for(int i = 0; i < IDBAdjustment::LAST; i++) {
+      if(upgrade->adjustment->adjustmentfactor(i) != 1.0) {
+        drawText(adjust_human[i], fontsize, bounds.sx, bounds.sy + fontshift * lineid++);
+        bool adjmult = !player->hasUpgrade(upgrade);
+        drawText(StringPrintf("                  +%4.2f%% (%4.2f%%)", upgrade->adjustment->adjustmentfactor(i) * 100 - 100, (player->getAdjust().adjustmentfactor(i) + upgrade->adjustment->adjustmentfactor(i) * adjmult) * 100 - 100 * adjmult), fontsize, bounds.sx, bounds.sy + fontshift * lineid++);
+      }
+    }
   } else {
     drawText("unintted", fontsize, bounds.sx, bounds.sy);
     //CHECK(0);

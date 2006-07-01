@@ -132,6 +132,8 @@ public:
   vector<const IDBWeapon *> getAvailableWeapons() const;
   void setWeaponEquipBit(const IDBWeapon *weapon, int id, bool bit);
   int getWeaponEquipBit(const IDBWeapon *weapon, int id) const;
+  
+  IDBAdjustment getAdjust() const;
 
   Player();
   Player(const IDBFaction *fact, int factionmode);

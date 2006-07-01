@@ -386,6 +386,10 @@ int Player::getWeaponEquipBit(const IDBWeapon *weapon, int id) const {
   return weapons.getWeaponEquipBit(weapon, id);
 }
 
+IDBAdjustment Player::getAdjust() const {
+  return adjustment;
+}
+
 Player::Player() : weapons(NULL) { // this kind of works with the weapon manager
   cash = Money(-1);
   faction = NULL;
