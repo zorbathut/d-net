@@ -106,8 +106,8 @@ struct IDBBombardment {
 public:
   const IDBWarhead *warhead;
 
-  int lockdelay;
-  int unlockdelay;
+  float lockdelay;
+  float unlockdelay;
 
   Money base_cost;
 };
@@ -242,8 +242,8 @@ struct IDBBombardmentAdjust {
   const IDBAdjustment *adjust;
 
 public:
-  int lockdelay() const;
-  int unlockdelay() const;
+  float lockdelay() const;
+  float unlockdelay() const;
 
   IDBWarheadAdjust warhead() const;
   

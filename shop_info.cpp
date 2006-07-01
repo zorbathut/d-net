@@ -73,6 +73,15 @@ void ShopInfo::renderFrame(Float4 bounds, float fontsize, Float4 inset) const {
     
     drawText("total average damage", fontsize, bounds.sx, bounds.sy + fontshift * lineid++);
     drawText(StringPrintf("%20.4f", player->adjustGlory(glory).stats_averageDamage()), fontsize, bounds.sx, bounds.sy + fontshift * lineid++);
+  } else if(bombardment) {
+    int lineid = 0;
+    
+    drawText("damage per hit", fontsize, bounds.sx, bounds.sy + fontshift * lineid++);
+    drawText(StringPrintf("%20.4f", player->adjustBombardment(bombardment).warhead().stats_damagePerShot()), fontsize, bounds.sx, bounds.sy + fontshift * lineid++);
+    drawText("firing delay", fontsize, bounds.sx, bounds.sy + fontshift * lineid++);
+    drawText(StringPrintf("%12.0f seconds", (float)player->adjustBombardment(bombardment).lockdelay() / FPS), fontsize, bounds.sx, bounds.sy + fontshift * lineid++);
+    drawText("cooldown", fontsize, bounds.sx, bounds.sy + fontshift * lineid++);
+    drawText(StringPrintf("%12.0f seconds", (float)player->adjustBombardment(bombardment).unlockdelay() / FPS), fontsize, bounds.sx, bounds.sy + fontshift * lineid++);
   } else {
     drawText("unintted", fontsize, bounds.sx, bounds.sy);
     //CHECK(0);

@@ -546,8 +546,8 @@ void parseItemFile(const string &fname) {
       
       bombardmentclasses[name].warhead = &warheadclasses[warheadclass];
 
-      bombardmentclasses[name].lockdelay = atoi(chunk.consume("lockdelay").c_str());
-      bombardmentclasses[name].unlockdelay = atoi(chunk.consume("unlockdelay").c_str());
+      bombardmentclasses[name].lockdelay = atof(chunk.consume("lockdelay").c_str());
+      bombardmentclasses[name].unlockdelay = atof(chunk.consume("unlockdelay").c_str());
 
       if(chunk.kv.count("default") && atoi(chunk.consume("default").c_str())) {
         CHECK(!defbombardment);
