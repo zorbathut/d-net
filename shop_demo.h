@@ -1,12 +1,12 @@
-#ifndef DNET_SHOPINFO
-#define DNET_SHOPINFO
+#ifndef DNET_SHOPDEMO
+#define DNET_SHOPDEMO
 
 #include "player.h"
 #include "game.h"
 
-class ShopInfo {
+class ShopDemo {
 public:
-  ShopInfo();
+  ShopDemo();
 
   void init(const IDBWeapon *weap, const Player *player);
   
@@ -18,8 +18,8 @@ private:
   Game game;
   vector<Player> players;
 
-  ShopInfo(const ShopInfo &rhs);
-  void operator=(const ShopInfo &rhs);
+  ShopDemo(const ShopDemo &rhs);
+  void operator=(const ShopDemo &rhs);
 };
 
 #endif

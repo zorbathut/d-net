@@ -13,7 +13,6 @@
 - Implants
 - Faction info screen on startup
 - Make explosion removals include the focus point
-- AI shouldn't try to buy the glory device it already owns
 - Multishop
 - Many many more weapons
 
@@ -25,6 +24,7 @@
 ---- Maintenance, minor bugfix, braindead
 - gfxeffects construction helper funcs
 - Auto coord-to-float converter (CoordFloat?)
+- AI shouldn't try to buy the glory device it already owns
 - Buy menu flicker? Double-buffering?
 - Extricate coord.h and float.h from more headers
 - Winner list better special effects

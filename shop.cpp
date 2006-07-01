@@ -65,6 +65,7 @@ const float sl_demoystart = 50;
 const float sl_boxthick = 0.1;
 
 const float sl_hudstart = 15;
+const float sl_hudend = 95;
 
 void Shop::renderNode(const HierarchyNode &node, int depth) const {
   float hoffbase = sl_hoffset + (sl_boxwidth + sl_hoffset) * (depth - xofs);
@@ -381,20 +382,6 @@ void Shop::doTableRender() const {
   renderNode(itemDbRoot(), 0);
 };
 
-void Shop::drawWeaponStats(const IDBWeapon *weapon) const {
-  drawText("theoretical dps", 2, 1.5, sl_hudstart);
-  drawText(StringPrintf("%20.4f", player->adjustWeapon(weapon).stats_damagePerSecond()), 2, 1.5, sl_hudstart + 3);
-  drawText("cost per damage", 2, 1.5, sl_hudstart + 6);
-  drawText(StringPrintf("%20.4f", player->adjustWeapon(weapon).stats_costPerDamage()), 2, 1.5, sl_hudstart + 9);
-  drawText("cost per second", 2, 1.5, sl_hudstart + 12);
-  drawText(StringPrintf("%20.4f", player->adjustWeapon(weapon).stats_costPerSecond()), 2, 1.5, sl_hudstart + 15);
-  
-  // NOTE: technically this doesn't check that this shopinf is for the weapon
-  CHECK(curloc == lastloc);
-  GfxWindow gfxw(Float4(sl_demoxstart, sl_demoystart, sl_demoxstart + sl_demowidth, sl_demoystart + sl_demowidth));
-  cshopinf.renderFrame();
-}
-
 void Shop::renderToScreen() const {
   CHECK(player);
   clearFrame(player->getFaction()->color * 0.05 + Color(0.02, 0.02, 0.02));
@@ -413,10 +400,11 @@ void Shop::renderToScreen() const {
   }
   doTableRender();
 
+  CHECK(curloc == lastloc);
   if(getCurNode().type == HierarchyNode::HNT_WEAPON) {
-    drawWeaponStats(getCurNode().weapon);
+    cshopinf.renderFrame(Float4(sl_hoffset, sl_hudstart, sl_hoffset + sl_boxwidth, sl_hudend), sl_fontsize, Float4(sl_demoxstart, sl_demoystart, sl_demoxstart + sl_demowidth, sl_demoystart + sl_demowidth));
   } else if(getCurNode().type == HierarchyNode::HNT_EQUIPWEAPON) {
-    drawWeaponStats(getCurNode().equipweapon);
+    cshopinf.renderFrame(Float4(sl_hoffset, sl_hudstart, sl_hoffset + sl_boxwidth, sl_hudend), sl_fontsize, Float4(sl_demoxstart, sl_demoystart, sl_demoxstart + sl_demowidth, sl_demoystart + sl_demowidth));
   } else if(getCurNode().type == HierarchyNode::HNT_GLORY) {
     drawText("total average damage", 2, 1.5, sl_hudstart);
     drawText(StringPrintf("%20.4f", player->adjustGlory(getCurNode().glory).stats_averageDamage()), 2, 1.5, sl_hudstart + 3);

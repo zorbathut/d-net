@@ -3,7 +3,7 @@
 
 #include "player.h"
 #include "input.h"
-#include "shop_demo.h"
+#include "shop_info.h"
 
 class Ai;
 
@@ -34,8 +34,6 @@ private:
   void doTableUpdate();
   void doTableRender() const;
   void renderNode(const HierarchyNode &node, int depth) const;
-  
-  void drawWeaponStats(const IDBWeapon *weap) const;
 
 public:
   bool runTick(const Keystates &keys);
