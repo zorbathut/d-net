@@ -20,8 +20,8 @@ bombardment {
   
   warhead=warhead.bombardment.minibomb
   
-  lockdelay=120
-  unlockdelay=60
+  lockdelay=2
+  unlockdelay=1
 }
 
 bombardment {
@@ -30,6 +30,6 @@ bombardment {
   
   warhead=warhead.bombardment.bomb
   
-  lockdelay=120
-  unlockdelay=60
+  lockdelay=2
+  unlockdelay=1
 }
