@@ -248,6 +248,12 @@ bool Shop::runTick(const Keystates &keys) {
       cshopinf.init(getCurNode().equipweapon, player);
     else if(getCurNode().type == HierarchyNode::HNT_GLORY)
       cshopinf.init(getCurNode().glory, player);
+    else if(getCurNode().type == HierarchyNode::HNT_BOMBARDMENT)
+      cshopinf.init(getCurNode().bombardment, player);
+    else if(getCurNode().type == HierarchyNode::HNT_UPGRADE)
+      cshopinf.init(getCurNode().upgrade, player);
+    else if(getCurNode().type == HierarchyNode::HNT_TANK)
+      cshopinf.init(getCurNode().tank, player);
   }
   
   if(getCurNode().type == HierarchyNode::HNT_EQUIPWEAPON) {
@@ -403,7 +409,7 @@ void Shop::renderToScreen() const {
   doTableRender();
 
   CHECK(curloc == lastloc);
-  if(getCurNode().type == HierarchyNode::HNT_WEAPON || getCurNode().type == HierarchyNode::HNT_EQUIPWEAPON || getCurNode().type == HierarchyNode::HNT_GLORY) {
+  if(getCurNode().type == HierarchyNode::HNT_WEAPON || getCurNode().type == HierarchyNode::HNT_EQUIPWEAPON || getCurNode().type == HierarchyNode::HNT_GLORY || getCurNode().type == HierarchyNode::HNT_BOMBARDMENT || getCurNode().type == HierarchyNode::HNT_UPGRADE || getCurNode().type == HierarchyNode::HNT_TANK) {
     cshopinf.renderFrame(Float4(sl_hoffset, sl_hudstart, sl_hoffset + sl_boxwidth, sl_hudend), sl_fontsize, Float4(sl_demoxstart, sl_demoystart, sl_demoxstart + sl_demowidth, sl_demoystart + sl_demowidth));
   }
 }

@@ -1,8 +1,8 @@
 ---- Major work path
 - Bombardment info screen
 - Upgrade info screen
-- Glory device info screen
 - Tank info screen
+- Glory device demo screen
 - Flavor text
 - New weapons
 - Next-gen collision/storage system on grid

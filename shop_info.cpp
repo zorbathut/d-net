@@ -10,6 +10,9 @@ ShopInfo::ShopInfo() {
 void ShopInfo::null() {
   weapon = NULL;
   glory = NULL;
+  bombardment = NULL;
+  upgrade = NULL;
+  tank = NULL;
   player = NULL;
 }
 
@@ -25,6 +28,24 @@ void ShopInfo::init(const IDBGlory *in_glory, const Player *in_player) {
   player = in_player;
   // no working demo atm
 }
+void ShopInfo::init(const IDBBombardment *in_bombardment, const Player *in_player) {
+  null();
+  bombardment = in_bombardment;
+  player = in_player;
+  // no working demo atm
+}
+void ShopInfo::init(const IDBUpgrade *in_upgrade, const Player *in_player) {
+  null();
+  upgrade = in_upgrade;
+  player = in_player;
+  // no working demo atm
+}
+void ShopInfo::init(const IDBTank *in_tank, const Player *in_player) {
+  null();
+  tank = in_tank;
+  player = in_player;
+  // no working demo atm
+}
   
 void ShopInfo::runTick() {
   if(weapon)
@@ -32,7 +53,7 @@ void ShopInfo::runTick() {
 }
   
 void ShopInfo::renderFrame(Float4 bounds, float fontsize, Float4 inset) const {
-  CHECK(bool(weapon) + bool(glory) == 1);
+  CHECK(bool(weapon) + bool(glory) + bool(bombardment) + bool(upgrade) + bool(tank) == 1);
   
   const float fontshift = fontsize * 1.5;
   if(weapon) {
@@ -53,6 +74,7 @@ void ShopInfo::renderFrame(Float4 bounds, float fontsize, Float4 inset) const {
     drawText("total average damage", fontsize, bounds.sx, bounds.sy + fontshift * lineid++);
     drawText(StringPrintf("%20.4f", player->adjustGlory(glory).stats_averageDamage()), fontsize, bounds.sx, bounds.sy + fontshift * lineid++);
   } else {
-    CHECK(0);
+    drawText("unintted", fontsize, bounds.sx, bounds.sy);
+    //CHECK(0);
   }
 }
