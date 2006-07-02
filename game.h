@@ -114,7 +114,7 @@ public:
   int weaponCooldown;
   float weaponCooldownSubvals[SIMUL_WEAPONS];
 
-  // these exist for the DPS calculations in 
+  // these exist for the DPS calculations in demo mode
   int framesSinceDamage;
   float damageTaken;
 
@@ -235,6 +235,8 @@ private:
   Float2 zoom_speed;
   
   int gamemode;
+  
+  float demomode_boxradi; // used for the clearscreen
 
   vector<const IDBFaction *> *wins;
   

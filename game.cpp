@@ -1091,6 +1091,11 @@ void Game::renderToScreen() const {
     setZoom(origin.x, origin.y, origin.y + pzoom);
   }
   
+  // In demo mode, clear the background
+  if(gamemode == GMODE_DEMO) {
+    drawSolid(Float4(-demomode_boxradi, -demomode_boxradi, demomode_boxradi, demomode_boxradi));
+  }
+  
   // Tanks
   for( int i = 0; i < tanks.size(); i++ ) {
     tanks[i].render();
@@ -1536,6 +1541,8 @@ void Game::initDemo(vector<Player> *in_playerdata, float boxradi, const float *x
   
   for(int i = 0; i < tanks.size(); i++)
     tanks[i].pos = Coord2(xps[i], yps[i]);
+  
+  demomode_boxradi = boxradi;
 }
 
 vector<pair<float, Tank *> > Game::genTankDistance(const Coord2 &center) {

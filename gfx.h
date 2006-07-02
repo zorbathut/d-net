@@ -55,7 +55,7 @@ void drawLine( const Coord4 &loc, float weight );
 
 void drawPoint( float x, float y, float weight );
 
-void drawSolid(const Float4 &box);
+void drawSolid(const Float4 &box);  // Background color only, and intentionally so
 
 /*************
  * Composites
