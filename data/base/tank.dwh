@@ -71,20 +71,19 @@ weapon {
 }
 
 tank {
-  name=ROOT.Tanks.ROXO I
+  name=ROOT.Tanks.CARAT I
 
-  health=110
-  handling=1.8
-  engine=20
+  health=80
+  handling=2.4
+  engine=30
   weapon=Sparker II
   
   cost=20000
   
-  vertices=6.8 0
-  vertices=4 -1.9
-  vertices=0 -2.8
-  vertices=0 2.8
-  vertices=4 1.9
+  vertices=6.5 0
+  vertices=0 -2.25
+  vertices=0.5 0
+  vertices=0 2.25
 }
 
 tank {
@@ -105,17 +104,18 @@ tank {
 }
 
 tank {
-  name=ROOT.Tanks.CARAT I
+  name=ROOT.Tanks.ROXO I
 
-  health=80
-  handling=2.4
-  engine=30
+  health=110
+  handling=1.8
+  engine=20
   weapon=Sparker II
   
   cost=20000
   
-  vertices=6.5 0
-  vertices=0 -2.25
-  vertices=0.5 0
-  vertices=0 2.25
+  vertices=6.8 0
+  vertices=4 -1.9
+  vertices=0 -2.8
+  vertices=0 2.8
+  vertices=4 1.9
 }

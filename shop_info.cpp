@@ -92,6 +92,15 @@ void ShopInfo::renderFrame(Float4 bounds, float fontsize, Float4 inset) const {
         drawText(StringPrintf("                  +%4.2f%% (%4.2f%%)", upgrade->adjustment->adjustmentfactor(i) * 100 - 100, (player->getAdjust().adjustmentfactor(i) + upgrade->adjustment->adjustmentfactor(i) * adjmult) * 100 - 100 * adjmult), fontsize, bounds.sx, bounds.sy + fontshift * lineid++);
       }
     }
+  } else if(tank) {
+    int lineid = 0;
+    
+    drawText("max health", fontsize, bounds.sx, bounds.sy + fontshift * lineid++);
+    drawText(StringPrintf("%12.0fcm equiv", player->adjustTank(tank).maxHealth()), fontsize, bounds.sx, bounds.sy + fontshift * lineid++);
+    drawText("turn speed", fontsize, bounds.sx, bounds.sy + fontshift * lineid++);
+    drawText(StringPrintf("%14.1f rad/s", player->adjustTank(tank).turnSpeed()), fontsize, bounds.sx, bounds.sy + fontshift * lineid++);
+    drawText("forward speed", fontsize, bounds.sx, bounds.sy + fontshift * lineid++);
+    drawText(StringPrintf("%16.0f m/s", player->adjustTank(tank).maxSpeed()), fontsize, bounds.sx, bounds.sy + fontshift * lineid++);
   } else {
     drawText("unintted", fontsize, bounds.sx, bounds.sy);
     //CHECK(0);
