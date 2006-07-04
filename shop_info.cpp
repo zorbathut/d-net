@@ -105,39 +105,36 @@ void ShopInfo::renderFrame(Float4 bounds, float fontsize, Float4 inset) const {
     GfxWindow gfxw(inset);
     demo.renderFrame();
   } else if(glory) {
-    int lineid = 0;
-    
-    drawText("total average damage", fontsize, bounds.sx, bounds.sy + fontshift * lineid++);
-    drawText(StringPrintf("%20.4f", player->adjustGlory(glory).stats_averageDamage()), fontsize, bounds.sx, bounds.sy + fontshift * lineid++);
+    {
+      ShopKVPrinter kvp(bounds, fontsize, fontshift);
+      
+      kvp.print("total average damage", StringPrintf("%.2f", player->adjustGlory(glory).stats_averageDamage()));
+    }
   } else if(bombardment) {
-    int lineid = 0;
-    
-    drawText("damage per hit", fontsize, bounds.sx, bounds.sy + fontshift * lineid++);
-    drawText(StringPrintf("%20.4f", player->adjustBombardment(bombardment).warhead().stats_damagePerShot()), fontsize, bounds.sx, bounds.sy + fontshift * lineid++);
-    drawText("firing delay", fontsize, bounds.sx, bounds.sy + fontshift * lineid++);
-    drawText(StringPrintf("%12.0f seconds", player->adjustBombardment(bombardment).lockdelay()), fontsize, bounds.sx, bounds.sy + fontshift * lineid++);
-    drawText("cooldown", fontsize, bounds.sx, bounds.sy + fontshift * lineid++);
-    drawText(StringPrintf("%12.0f seconds", player->adjustBombardment(bombardment).unlockdelay()), fontsize, bounds.sx, bounds.sy + fontshift * lineid++);
+    {
+      ShopKVPrinter kvp(bounds, fontsize, fontshift);
+      kvp.print("damage per hit", StringPrintf(adjust_format[IDBAdjustment::DAMAGE_KINETIC], player->adjustBombardment(bombardment).warhead().stats_damagePerShot()));
+      kvp.print("firing delay", StringPrintf("%.1f seconds", player->adjustBombardment(bombardment).lockdelay()));
+      kvp.print("cooldown", StringPrintf("%.1f second", player->adjustBombardment(bombardment).unlockdelay()));
+    }
   } else if(upgrade) {
-    int lineid = 0;
-    
-    for(int i = 0; i < IDBAdjustment::LAST; i++) {
-      if(upgrade->adjustment->adjustmentfactor(i) != 1.0) {
-        // %s -> %s (%4.2f%%) %s
-        drawText(adjust_human[i], fontsize, bounds.sx, bounds.sy + fontshift * lineid++);
-        //bool adjmult = !player->hasUpgrade(upgrade);
-        drawText(StringPrintf("%s -> %s (%4.2f%%)%s", getUpgradeBefore(i).c_str(), getUpgradeAfter(i).c_str(), upgrade->adjustment->adjustmentfactor(i) * 100 - 100, adjust_unit[i]), fontsize, bounds.sx, bounds.sy + fontshift * lineid++);
+    {
+      ShopKVPrinter kvp(bounds, fontsize, fontshift);
+      
+      for(int i = 0; i < IDBAdjustment::LAST; i++) {
+        if(upgrade->adjustment->adjustmentfactor(i) != 1.0) {
+          kvp.print(adjust_human[i], StringPrintf("%s -> %s (%4.2f%%)%s", getUpgradeBefore(i).c_str(), getUpgradeAfter(i).c_str(), upgrade->adjustment->adjustmentfactor(i) * 100 - 100, adjust_unit[i]));
+        }
       }
     }
   } else if(tank) {
-    int lineid = 0;
-    
-    drawText("max health", fontsize, bounds.sx, bounds.sy + fontshift * lineid++);
-    drawText(StringPrintf("%12.0fcm equiv", player->adjustTank(tank).maxHealth()), fontsize, bounds.sx, bounds.sy + fontshift * lineid++);
-    drawText("turn speed", fontsize, bounds.sx, bounds.sy + fontshift * lineid++);
-    drawText(StringPrintf("%14.1f rad/s", player->adjustTank(tank).turnSpeed()), fontsize, bounds.sx, bounds.sy + fontshift * lineid++);
-    drawText("forward speed", fontsize, bounds.sx, bounds.sy + fontshift * lineid++);
-    drawText(StringPrintf("%16.0f m/s", player->adjustTank(tank).maxSpeed()), fontsize, bounds.sx, bounds.sy + fontshift * lineid++);
+    {
+      ShopKVPrinter kvp(bounds, fontsize, fontshift);
+      
+      kvp.print("max health", StringPrintf("%.1fcm equiv", player->adjustTank(tank).maxHealth()));
+      kvp.print("turn speed", StringPrintf("%.2f rad/s", player->adjustTank(tank).turnSpeed()));
+      kvp.print("forward speed", StringPrintf("%.2f m/s", player->adjustTank(tank).maxSpeed()));
+    }
   } else {
     drawText("unintted", fontsize, bounds.sx, bounds.sy);
     //CHECK(0);
