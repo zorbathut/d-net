@@ -113,9 +113,9 @@ void ShopInfo::renderFrame(Float4 bounds, float fontsize, Float4 inset) const {
   if(weapon) {
     {
       ShopKVPrinter kvp(bounds, fontsize, fontshift);
-      kvp.print("theoretical dps", StringPrintf(adjust_format[IDBAdjustment::DAMAGE_KINETIC], player->adjustWeapon(weapon).stats_damagePerSecond()));
-      kvp.print("cost per damage", StringPrintf("%.2f", player->adjustWeapon(weapon).stats_costPerDamage()));
-      kvp.print("cost per second", StringPrintf("%.2f", player->adjustWeapon(weapon).stats_costPerSecond()));
+      kvp.print("theoretical dps", prettyFloatFormat(player->adjustWeapon(weapon).stats_damagePerSecond()));
+      kvp.print("cost per damage", prettyFloatFormat(player->adjustWeapon(weapon).stats_costPerDamage()));
+      kvp.print("cost per second", prettyFloatFormat(player->adjustWeapon(weapon).stats_costPerSecond()));
     }
     
     GfxWindow gfxw(inset);
@@ -124,14 +124,14 @@ void ShopInfo::renderFrame(Float4 bounds, float fontsize, Float4 inset) const {
     {
       ShopKVPrinter kvp(bounds, fontsize, fontshift);
       
-      kvp.print("total average damage", StringPrintf("%.2f", player->adjustGlory(glory).stats_averageDamage()));
+      kvp.print("total average damage", prettyFloatFormat(player->adjustGlory(glory).stats_averageDamage()));
     }
   } else if(bombardment) {
     {
       ShopKVPrinter kvp(bounds, fontsize, fontshift);
-      kvp.print("damage per hit", StringPrintf(adjust_format[IDBAdjustment::DAMAGE_KINETIC], player->adjustBombardment(bombardment).warhead().stats_damagePerShot()));
-      kvp.print("firing delay", StringPrintf("%.1f seconds", player->adjustBombardment(bombardment).lockdelay()));
-      kvp.print("cooldown", StringPrintf("%.1f second", player->adjustBombardment(bombardment).unlockdelay()));
+      kvp.print("damage per hit", prettyFloatFormat(player->adjustBombardment(bombardment).warhead().stats_damagePerShot()));
+      kvp.print("firing delay", prettyFloatFormat(player->adjustBombardment(bombardment).lockdelay()) + " seconds");
+      kvp.print("cooldown", prettyFloatFormat(player->adjustBombardment(bombardment).unlockdelay()) + " second");
     }
   } else if(upgrade) {
     {
@@ -139,7 +139,7 @@ void ShopInfo::renderFrame(Float4 bounds, float fontsize, Float4 inset) const {
       
       for(int i = 0; i < IDBAdjustment::LAST; i++) {
         if(upgrade->adjustment->adjustmentfactor(i) != 1.0) {
-          kvp.print(adjust_human[i], StringPrintf("%s -> %s (%4.2f%%)%s", getUpgradeBefore(i).c_str(), getUpgradeAfter(i).c_str(), upgrade->adjustment->adjustmentfactor(i) * 100 - 100, adjust_unit[i]));
+          kvp.print(adjust_human[i], StringPrintf("%s -> %s (%s%%)%s", getUpgradeBefore(i).c_str(), getUpgradeAfter(i).c_str(), prettyFloatFormat(upgrade->adjustment->adjustmentfactor(i) * 100 - 100).c_str(), adjust_unit[i]));
         }
       }
     }
@@ -147,9 +147,9 @@ void ShopInfo::renderFrame(Float4 bounds, float fontsize, Float4 inset) const {
     {
       ShopKVPrinter kvp(bounds, fontsize, fontshift);
       
-      kvp.print("max health", StringPrintf("%.1fcm equiv", player->adjustTank(tank).maxHealth()));
-      kvp.print("turn speed", StringPrintf("%.2f rad/s", player->adjustTank(tank).turnSpeed()));
-      kvp.print("forward speed", StringPrintf("%.2f m/s", player->adjustTank(tank).maxSpeed()));
+      kvp.print("max health", prettyFloatFormat(player->adjustTank(tank).maxHealth()) + " cme");
+      kvp.print("turn speed", prettyFloatFormat(player->adjustTank(tank).turnSpeed()) + " rad/s");
+      kvp.print("forward speed", prettyFloatFormat(player->adjustTank(tank).maxSpeed()) + " m/s");
     }
   } else {
     CHECK(0);
@@ -159,32 +159,32 @@ void ShopInfo::renderFrame(Float4 bounds, float fontsize, Float4 inset) const {
 string ShopInfo::getUpgradeBefore(int cat) const {
   if(cat == IDBAdjustment::TANK_SPEED) {
     Player tplayer = getUnupgradedPlayer();
-    return StringPrintf(adjust_format[IDBAdjustment::TANK_SPEED], tplayer.getTank().maxSpeed());
+    return prettyFloatFormat(tplayer.getTank().maxSpeed());
   } else if(cat == IDBAdjustment::TANK_TURN) {
     Player tplayer = getUnupgradedPlayer();
-    return StringPrintf(adjust_format[IDBAdjustment::TANK_TURN], tplayer.getTank().turnSpeed());
+    return prettyFloatFormat(tplayer.getTank().turnSpeed());
   } else if(cat == IDBAdjustment::TANK_ARMOR) {
     Player tplayer = getUnupgradedPlayer();
-    return StringPrintf(adjust_format[IDBAdjustment::TANK_ARMOR], tplayer.getTank().maxHealth());
+    return prettyFloatFormat(tplayer.getTank().maxHealth());
   } else {
     // fallback
-    return StringPrintf("%4f.0", player->getAdjust().adjustmentfactor(cat) * 100);
+    return prettyFloatFormat(player->getAdjust().adjustmentfactor(cat) * 100);
   }
 }
 
 string ShopInfo::getUpgradeAfter(int cat) const {
   if(cat == IDBAdjustment::TANK_SPEED) {
     Player tplayer = getUpgradedPlayer();
-    return StringPrintf(adjust_format[IDBAdjustment::TANK_SPEED], tplayer.getTank().maxSpeed());
+    return prettyFloatFormat(tplayer.getTank().maxSpeed());
   } else if(cat == IDBAdjustment::TANK_TURN) {
     Player tplayer = getUpgradedPlayer();
-    return StringPrintf(adjust_format[IDBAdjustment::TANK_TURN], tplayer.getTank().turnSpeed());
+    return prettyFloatFormat(tplayer.getTank().turnSpeed());
   } else if(cat == IDBAdjustment::TANK_ARMOR) {
     Player tplayer = getUpgradedPlayer();
-    return StringPrintf(adjust_format[IDBAdjustment::TANK_ARMOR], tplayer.getTank().maxHealth());
+    return prettyFloatFormat(tplayer.getTank().maxHealth());
   } else {
     // fallback
-    return StringPrintf("%4f.0", (player->getAdjust().adjustmentfactor(cat) + upgrade->adjustment->adjustmentfactor(cat)) * 100 - 100);
+    return prettyFloatFormat((player->getAdjust().adjustmentfactor(cat) + upgrade->adjustment->adjustmentfactor(cat)) * 100 - 100);
   }
 }
 

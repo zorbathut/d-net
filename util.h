@@ -24,6 +24,7 @@ string StringPrintf( const char *bort, ... ) __attribute__((format(printf,1,2)))
 #endif
 
 string stringFromLongdouble(long double ld);
+string prettyFloatFormat(float v);  // this formats it to have four numeric digits. requires 1 <= n < 10000.
 
 /*************
  * Matrixtastic

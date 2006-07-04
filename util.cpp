@@ -39,6 +39,21 @@ string stringFromLongdouble(long double x) {
   return str.str();
 }
 
+string prettyFloatFormat(float v) {
+  if(!(1 <= v && v < 10000)) {
+    dprintf("err: %f\n", v);
+  }
+  string borf = StringPrintf("%.4f", v);
+  int digic = 0;
+  int cps = 0;
+  while(digic != 4 && cps < borf.size()) {
+    if(isdigit(borf[cps]))
+      digic++;
+    cps++;
+  }
+  return string(borf.begin(), borf.begin() + cps);
+}
+
 /*************
  * Matrixtastic
  */
