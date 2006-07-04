@@ -452,10 +452,12 @@ void drawText(const string &txt, float scale, const Float2 &pos) {
   drawText(txt.c_str(), scale, pos.x, pos.y);
 }
 
+float getTextWidth(const string &txt, float scale) {
+  return (scale / 9) * ( 8 * txt.size() - 3 );
+}
+
 void drawJustifiedText(const string &txt, float scale, float sx, float sy, int xps, int yps) {
-  float lscale = scale / 9;
-  
-  float wid = lscale * ( 8 * txt.size() - 3 );
+  float wid = getTextWidth(txt, scale);
   if(xps == TEXT_MIN) {
   } else if(xps == TEXT_CENTER) {
     sx -= wid / 2;
@@ -467,9 +469,9 @@ void drawJustifiedText(const string &txt, float scale, float sx, float sy, int x
   
   if(yps == TEXT_MIN) {
   } else if(yps == TEXT_CENTER) {
-    sy -= lscale * 9 / 2;
+    sy -= scale / 2;
   } else if(yps == TEXT_MAX) {
-    sy -= lscale * 9;
+    sy -= scale;
   } else {
     CHECK(0);
   }

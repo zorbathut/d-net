@@ -10,6 +10,9 @@ public:
   void print(const string &key, const string &value);
 
 private:
+  bool twolinemode() const;
+  Float4 activebounds() const;
+
   vector<pair<string, string> > pairz;
 
   Float4 bounds;
@@ -24,21 +27,34 @@ ShopKVPrinter::ShopKVPrinter(Float4 in_bounds, float in_fontsize, float in_lines
 };
 
 ShopKVPrinter::~ShopKVPrinter() {
-  Float4 activerkt(bounds.sx + fontsize / 3, bounds.sy + fontsize / 3, bounds.ex - fontsize / 3, bounds.ey - fontsize / 3);
-  Float4 rkt(activerkt.sx - fontsize / 3, activerkt.sy - fontsize / 3, activerkt.ex + fontsize / 3, activerkt.sy + (pairz.size() - 1) * linesize + fontsize + fontsize / 3);
+  Float4 activerkt = activebounds();
+  int step = twolinemode() + 1;
+  Float4 rkt(activerkt.sx - fontsize / 3, activerkt.sy - fontsize / 3, activerkt.ex + fontsize / 3, activerkt.sy + (pairz.size() * step - 1) * linesize + fontsize + fontsize / 3);
   drawSolid(rkt);
   setColor(0.3, 0.3, 0.3);
   drawRect(rkt, 0.1);
   setColor(1.0, 1.0, 1.0);
   for(int i = 0; i < pairz.size(); i++) {
-    drawText(pairz[i].first, fontsize, activerkt.sx, activerkt.sy + linesize * i);
-    drawJustifiedText(pairz[i].second, fontsize, activerkt.ex, activerkt.sy + linesize * i, TEXT_MAX, TEXT_MIN);
+    drawText(pairz[i].first, fontsize, activerkt.sx, activerkt.sy + linesize * i * step);
+    drawJustifiedText(pairz[i].second, fontsize, activerkt.ex, activerkt.sy + linesize * (i * step + twolinemode()), TEXT_MAX, TEXT_MIN);
   }
 };
 
 void ShopKVPrinter::print(const string &key, const string &value) {
   pairz.push_back(make_pair(key, value));
 };
+
+bool ShopKVPrinter::twolinemode() const {
+  float wid = activebounds().x_span();
+  for(int i = 0; i < pairz.size(); i++)
+    if(getTextWidth(pairz[i].first, fontsize) + getTextWidth(pairz[i].second, fontsize) + getTextWidth("  ", fontsize) > wid)
+      return true;
+  return false;
+}
+
+Float4 ShopKVPrinter::activebounds() const {
+  return Float4(bounds.sx + fontsize / 3, bounds.sy + fontsize / 3, bounds.ex - fontsize / 3, bounds.ey - fontsize / 3);
+}
   
 ShopInfo::ShopInfo() {
   weapon = NULL;
@@ -136,8 +152,7 @@ void ShopInfo::renderFrame(Float4 bounds, float fontsize, Float4 inset) const {
       kvp.print("forward speed", StringPrintf("%.2f m/s", player->adjustTank(tank).maxSpeed()));
     }
   } else {
-    drawText("unintted", fontsize, bounds.sx, bounds.sy);
-    //CHECK(0);
+    CHECK(0);
   }
 }
 
