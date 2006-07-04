@@ -2,6 +2,44 @@
 #include "shop_info.h"
 #include "gfx.h"
 
+class ShopKVPrinter {
+public:
+  ShopKVPrinter(Float4 bounds, float fontsize, float linesize);
+  ~ShopKVPrinter();
+  
+  void print(const string &key, const string &value);
+
+private:
+  vector<pair<string, string> > pairz;
+
+  Float4 bounds;
+  float fontsize;
+  float linesize;
+};
+
+ShopKVPrinter::ShopKVPrinter(Float4 in_bounds, float in_fontsize, float in_linesize) {
+  bounds = in_bounds;
+  fontsize = in_fontsize;
+  linesize = in_linesize;
+};
+
+ShopKVPrinter::~ShopKVPrinter() {
+  Float4 activerkt(bounds.sx + fontsize / 3, bounds.sy + fontsize / 3, bounds.ex - fontsize / 3, bounds.ey - fontsize / 3);
+  Float4 rkt(activerkt.sx - fontsize / 3, activerkt.sy - fontsize / 3, activerkt.ex + fontsize / 3, activerkt.sy + (pairz.size() - 1) * linesize + fontsize + fontsize / 3);
+  drawSolid(rkt);
+  setColor(0.3, 0.3, 0.3);
+  drawRect(rkt, 0.1);
+  setColor(1.0, 1.0, 1.0);
+  for(int i = 0; i < pairz.size(); i++) {
+    drawText(pairz[i].first, fontsize, activerkt.sx, activerkt.sy + linesize * i);
+    drawJustifiedText(pairz[i].second, fontsize, activerkt.ex, activerkt.sy + linesize * i, TEXT_MAX, TEXT_MIN);
+  }
+};
+
+void ShopKVPrinter::print(const string &key, const string &value) {
+  pairz.push_back(make_pair(key, value));
+};
+  
 ShopInfo::ShopInfo() {
   weapon = NULL;
   player = NULL;
@@ -51,20 +89,18 @@ void ShopInfo::runTick() {
   if(weapon)
     demo.runTick();
 }
-  
+
 void ShopInfo::renderFrame(Float4 bounds, float fontsize, Float4 inset) const {
   CHECK(bool(weapon) + bool(glory) + bool(bombardment) + bool(upgrade) + bool(tank) == 1);
   
   const float fontshift = fontsize * 1.5;
   if(weapon) {
-    int lineid = 0;
-    
-    drawText("theoretical dps", fontsize, bounds.sx, bounds.sy + fontshift * lineid++);
-    drawText(StringPrintf("%20.4f", player->adjustWeapon(weapon).stats_damagePerSecond()), fontsize, bounds.sx, bounds.sy + fontshift * lineid++);
-    drawText("cost per damage", fontsize, bounds.sx, bounds.sy + fontshift * lineid++);
-    drawText(StringPrintf("%20.4f", player->adjustWeapon(weapon).stats_costPerDamage()), fontsize, bounds.sx, bounds.sy + fontshift * lineid++);
-    drawText("cost per second", fontsize, bounds.sx, bounds.sy + fontshift * lineid++);
-    drawText(StringPrintf("%20.4f", player->adjustWeapon(weapon).stats_costPerSecond()), fontsize, bounds.sx, bounds.sy + fontshift * lineid++);
+    {
+      ShopKVPrinter kvp(bounds, fontsize, fontshift);
+      kvp.print("theoretical dps", StringPrintf(adjust_format[IDBAdjustment::DAMAGE_KINETIC], player->adjustWeapon(weapon).stats_damagePerSecond()));
+      kvp.print("cost per damage", StringPrintf("%.2f", player->adjustWeapon(weapon).stats_costPerDamage()));
+      kvp.print("cost per second", StringPrintf("%.2f", player->adjustWeapon(weapon).stats_costPerSecond()));
+    }
     
     GfxWindow gfxw(inset);
     demo.renderFrame();
