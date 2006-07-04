@@ -82,7 +82,12 @@ public:
   void buyWeapon(const IDBWeapon *in_weap);
   void buyTank(const IDBTank *in_tank);
 
-  void forceAcquireWeapon(const IDBWeapon *in_weap, int count); // Allows you to acquire any weapon. Does not do sanity checks. Should not be used for anything involving meaningful game logic!
+  // Allows you to acquire things. Does not do sanity checks. Should not be used for anything involving meaningful game logic!
+  void forceAcquireWeapon(const IDBWeapon *in_weap, int count);
+  void forceAcquireUpgrade(const IDBUpgrade *in_upg);
+  
+  // Allows you to remove things, even things which are not meant to be removed
+  void forceRemoveUpgrade(const IDBUpgrade *in_upg);
 
   // must already be bought
   void equipGlory(const IDBGlory *in_glory);

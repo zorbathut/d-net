@@ -614,6 +614,9 @@ void parseItemFile(const string &fname) {
       adjustmentclasses[name];
       
       CHECK(sizeof(adjust_text) / sizeof(*adjust_text) == IDBAdjustment::LAST);
+      CHECK(sizeof(adjust_human) / sizeof(*adjust_human) == IDBAdjustment::LAST);
+      CHECK(sizeof(adjust_unit) / sizeof(*adjust_unit) == IDBAdjustment::LAST);
+      CHECK(sizeof(adjust_format) / sizeof(*adjust_format) == IDBAdjustment::LAST);
       
       for(int i = 0; i < IDBAdjustment::LAST; i++)
         if(chunk.kv.count(adjust_text[i]))

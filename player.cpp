@@ -220,6 +220,20 @@ void Player::buyTank(const IDBTank *in_tank) {
 void Player::forceAcquireWeapon(const IDBWeapon *in_weap, int count) {
   weapons.addAmmo(in_weap, count);
 }
+void Player::forceAcquireUpgrade(const IDBUpgrade *in_upg) {
+  CHECK(!hasUpgrade(in_upg));
+  CHECK(tank.size() >= 1);
+  tank[0].upgrades.push_back(in_upg);
+  reCalculate();
+}
+
+// Allows you to remove things, even things which are not meant to be removed
+void Player::forceRemoveUpgrade(const IDBUpgrade *in_upg) {
+  CHECK(hasUpgrade(in_upg));
+  CHECK(tank.size() >= 1);
+  tank[0].upgrades.erase(find(tank[0].upgrades.begin(), tank[0].upgrades.end(), in_upg));
+  reCalculate();
+}
 
 void Player::equipGlory(const IDBGlory *in_glory) {
   CHECK(count(glory.begin(), glory.end(), in_glory));

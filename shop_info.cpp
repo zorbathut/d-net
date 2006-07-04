@@ -87,9 +87,10 @@ void ShopInfo::renderFrame(Float4 bounds, float fontsize, Float4 inset) const {
     
     for(int i = 0; i < IDBAdjustment::LAST; i++) {
       if(upgrade->adjustment->adjustmentfactor(i) != 1.0) {
+        // %s -> %s (%4.2f%%) %s
         drawText(adjust_human[i], fontsize, bounds.sx, bounds.sy + fontshift * lineid++);
-        bool adjmult = !player->hasUpgrade(upgrade);
-        drawText(StringPrintf("                  +%4.2f%% (%4.2f%%)", upgrade->adjustment->adjustmentfactor(i) * 100 - 100, (player->getAdjust().adjustmentfactor(i) + upgrade->adjustment->adjustmentfactor(i) * adjmult) * 100 - 100 * adjmult), fontsize, bounds.sx, bounds.sy + fontshift * lineid++);
+        //bool adjmult = !player->hasUpgrade(upgrade);
+        drawText(StringPrintf("%s -> %s (%4.2f%%)%s", getUpgradeBefore(i).c_str(), getUpgradeAfter(i).c_str(), upgrade->adjustment->adjustmentfactor(i) * 100 - 100, adjust_unit[i]), fontsize, bounds.sx, bounds.sy + fontshift * lineid++);
       }
     }
   } else if(tank) {
@@ -106,3 +107,50 @@ void ShopInfo::renderFrame(Float4 bounds, float fontsize, Float4 inset) const {
     //CHECK(0);
   }
 }
+
+string ShopInfo::getUpgradeBefore(int cat) const {
+  if(cat == IDBAdjustment::TANK_SPEED) {
+    Player tplayer = getUnupgradedPlayer();
+    return StringPrintf(adjust_format[IDBAdjustment::TANK_SPEED], tplayer.getTank().maxSpeed());
+  } else if(cat == IDBAdjustment::TANK_TURN) {
+    Player tplayer = getUnupgradedPlayer();
+    return StringPrintf(adjust_format[IDBAdjustment::TANK_TURN], tplayer.getTank().turnSpeed());
+  } else if(cat == IDBAdjustment::TANK_ARMOR) {
+    Player tplayer = getUnupgradedPlayer();
+    return StringPrintf(adjust_format[IDBAdjustment::TANK_ARMOR], tplayer.getTank().maxHealth());
+  } else {
+    // fallback
+    return StringPrintf("%4f.0", player->getAdjust().adjustmentfactor(cat) * 100);
+  }
+}
+
+string ShopInfo::getUpgradeAfter(int cat) const {
+  if(cat == IDBAdjustment::TANK_SPEED) {
+    Player tplayer = getUpgradedPlayer();
+    return StringPrintf(adjust_format[IDBAdjustment::TANK_SPEED], tplayer.getTank().maxSpeed());
+  } else if(cat == IDBAdjustment::TANK_TURN) {
+    Player tplayer = getUpgradedPlayer();
+    return StringPrintf(adjust_format[IDBAdjustment::TANK_TURN], tplayer.getTank().turnSpeed());
+  } else if(cat == IDBAdjustment::TANK_ARMOR) {
+    Player tplayer = getUpgradedPlayer();
+    return StringPrintf(adjust_format[IDBAdjustment::TANK_ARMOR], tplayer.getTank().maxHealth());
+  } else {
+    // fallback
+    return StringPrintf("%4f.0", (player->getAdjust().adjustmentfactor(cat) + upgrade->adjustment->adjustmentfactor(cat)) * 100 - 100);
+  }
+}
+
+Player ShopInfo::getUnupgradedPlayer() const {
+  Player ploy = *player;
+  if(ploy.hasUpgrade(upgrade))
+    ploy.forceRemoveUpgrade(upgrade);
+  return ploy;
+}
+
+Player ShopInfo::getUpgradedPlayer() const {
+  Player ploy = *player;
+  if(!ploy.hasUpgrade(upgrade))
+    ploy.forceAcquireUpgrade(upgrade);
+  return ploy;
+}
+

@@ -20,6 +20,12 @@ private:
   
   void null();
 
+  string getUpgradeBefore(int cat) const;
+  string getUpgradeAfter(int cat) const;
+
+  Player getUnupgradedPlayer() const;
+  Player getUpgradedPlayer() const;
+
   ShopDemo demo;
 
   const IDBWeapon *weapon;

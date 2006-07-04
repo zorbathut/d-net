@@ -15,6 +15,8 @@ class Player;
 
 const char * const adjust_text[] = { "damage_kinetic", "damage_energy", "damage_explosive", "damage_trap", "damage_exotic", "discount_weapon", "discount_training", "discount_upgrade", "discount_license", "discount_tank", "recycle_bonus", "tank_firerate", "tank_speed", "tank_turn", "tank_armor" };
 const char * const adjust_human[] = {"Kinetic damage", "Energy damage", "Explosive damage", "Trap damage", "Exotic damage", "Weapon discount", "Training discount", "Upgrade discount", "License discount", "Tank discount", "Recycle bonus", "Tank firerate", "Tank speed", "Tank turning", "Tank armor" };
+const char * const adjust_unit[] = {" KP", " KJ", " T TNT equiv", " KFS", " flux", "", "", "", "", "", "", "", " m/s", " rad/s", " cm equiv" };
+const char * const adjust_format[] = {"%4.1f", "%4.1f", "%4.1f", "%4.1f", "%4.1f", "%4.1f", "%4.1f", "%4.1f", "%4.1f", "%4.1f", "%4.1f", "%4.1f", "%4.1f", "%4.2f", "%4.1f"};
 
 struct IDBAdjustment {
 public:
