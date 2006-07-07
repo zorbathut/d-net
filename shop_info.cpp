@@ -150,6 +150,7 @@ void ShopInfo::renderFrame(Float4 bounds, float fontsize, Float4 inset) const {
       kvp.print("max health", prettyFloatFormat(player->adjustTank(tank).maxHealth()) + " cme");
       kvp.print("turn speed", prettyFloatFormat(player->adjustTank(tank).turnSpeed()) + " rad/s");
       kvp.print("forward speed", prettyFloatFormat(player->adjustTank(tank).maxSpeed()) + " m/s");
+      kvp.print("mass", prettyFloatFormat(player->adjustTank(tank).mass()) + " tons");
     }
   } else {
     CHECK(0);

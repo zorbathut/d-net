@@ -119,6 +119,7 @@ public:
   float health;
   float handling;
   float engine;
+  float mass;
 
   const IDBWeapon *weapon;
   vector<Coord2> vertices;
@@ -263,6 +264,8 @@ public:
   float maxHealth() const;
   float turnSpeed() const;
   float maxSpeed() const;
+
+  float mass() const;
 
   const vector<Coord2> &vertices() const;
 

@@ -31,6 +31,8 @@ tank {
   health=20
   handling=2
   engine=24
+  mass=50
+  
   weapon=Sparker
   
   cost=0
@@ -76,6 +78,9 @@ tank {
   health=80
   handling=2.4
   engine=30
+  
+  mass=40
+  
   weapon=Sparker II
   
   cost=20000
@@ -92,6 +97,9 @@ tank {
   health=95
   handling=2
   engine=24
+  
+  mass=60
+  
   weapon=Sparker II
   
   cost=20000
@@ -109,6 +117,9 @@ tank {
   health=110
   handling=1.8
   engine=20
+  
+  mass=100
+  
   weapon=Sparker II
   
   cost=20000

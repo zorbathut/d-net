@@ -151,6 +151,8 @@ float IDBTankAdjust::maxHealth() const { return idb->health * adjust->adjustment
 float IDBTankAdjust::turnSpeed() const { return idb->handling * adjust->adjustmentfactor(IDBAdjustment::TANK_TURN); };
 float IDBTankAdjust::maxSpeed() const { return idb->engine * adjust->adjustmentfactor(IDBAdjustment::TANK_SPEED); };
 
+float IDBTankAdjust::mass() const { return idb->mass; };    // BAM
+
 const vector<Coord2> &IDBTankAdjust::vertices() const { return idb->vertices; };
 
 IDBTankAdjust::IDBTankAdjust(const IDBTank *in_idb, const IDBAdjustment *in_adjust) { idb = in_idb; adjust = in_adjust; };

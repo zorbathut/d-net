@@ -580,6 +580,7 @@ void parseItemFile(const string &fname) {
       tankclasses[name].health = atof(chunk.consume("health").c_str());
       tankclasses[name].handling = atof(chunk.consume("handling").c_str());
       tankclasses[name].engine = atof(chunk.consume("engine").c_str());
+      tankclasses[name].mass = atof(chunk.consume("mass").c_str());
       
       {
         vector<string> vtx = tokenize(chunk.consume("vertices"), "\n");

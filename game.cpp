@@ -305,8 +305,8 @@ pair<float, float> Tank::getNextInertia(const Keystates &keys) const {
     }
   }
 
-  dl = approach(inertia.first, dl, 1.0 / 10);
-  dr = approach(inertia.second, dr, 1.0 / 10);
+  dl = approach(inertia.first, dl, 500 / player->getTank().mass() / FPS);  // 50 tons is 1/10 sec
+  dr = approach(inertia.second, dr, 500 / player->getTank().mass() / FPS);
   
   return make_pair(dl, dr);
 }
