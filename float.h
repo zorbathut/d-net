@@ -213,4 +213,15 @@ Float2 rotate(const Float2 &in, float ang);
 // square inscribed in the rect
 Float4 squareInside(const Float4 &in);
 
+inline float approach(float start, float target, float delta) {
+  if(abs(start - target) <= delta)
+    return target;
+  else if(start < target)
+    return start + delta;
+  else if(start > target)
+    return start - delta;
+  else
+    CHECK(0);  // oh god bear is driving car how can this be
+}
+
 #endif

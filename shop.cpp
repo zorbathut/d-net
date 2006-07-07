@@ -362,20 +362,9 @@ void Shop::ai(Ai *ais) const {
 
 const float framechange = 0.2;
 
-void approach(float *write, float target, float delta) {
-  if(abs(*write - target) <= delta)
-    *write = target;
-  else if(*write < target)
-    *write += delta;
-  else if(*write > target)
-    *write -= delta;
-  else
-    CHECK(0);  // oh god bear is driving car
-}
-
 void Shop::doTableUpdate() {
   float nxofs = max((int)curloc.size() - 1 - !getCurNode().branches.size(), 0);
-  approach(&xofs, nxofs, framechange);
+  xofs = approach(xofs, nxofs, framechange);
 
   int sz = max(expandy.size(), curloc.size() + 1);
   expandy.resize(sz, 1.0);
@@ -383,7 +372,7 @@ void Shop::doTableUpdate() {
   if(!getCurNode().branches.size() && curloc.size() >= 2)
     nexpandy[curloc.size() - 2] = 0.0;
   for(int i = 0; i < expandy.size(); i++)
-    approach(&expandy[i], nexpandy[i], framechange);
+    expandy[i] = approach(expandy[i], nexpandy[i], framechange);
 };
 
 void Shop::doTableRender() const {

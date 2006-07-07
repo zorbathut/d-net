@@ -87,6 +87,7 @@ public:
   vector<Coord2> getTankVertices(Coord2 pos, float td) const;
   Coord2 getFiringPoint() const;
 
+  pair<float, float> getNextInertia(const Keystates &keys) const;
   pair<Coord2, float> getDeltaAfterMovement(const Keystates &keys, Coord2 pos, float d) const;
 
   bool takeDamage(float amount); // returns true on kill
@@ -101,6 +102,7 @@ public:
 
   Coord2 pos;
   float d;
+  pair<float, float> inertia;
 
   bool spawnShards;
   bool live;

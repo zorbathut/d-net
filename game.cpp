@@ -112,10 +112,12 @@ void Tank::init(Player *in_player) {
 
 void Tank::tick(const Keystates &kst) {
   
-  pair<Coord2, float> newpos = getDeltaAfterMovement( kst, pos, d );
+  pair<Coord2, float> newpos = getDeltaAfterMovement(kst, pos, d);
   
   pos = newpos.first;
   d = newpos.second;
+  
+  inertia = getNextInertia(kst);
   
   if(framesSinceDamage != -1)
     framesSinceDamage++;
@@ -151,10 +153,10 @@ void Tank::render() const {
 };
 
 vector<Coord4> Tank::getCurrentCollide() const {
-  if( !live )
+  if(!live)
     return vector<Coord4>();
 
-  vector<Coord2> tankpts = getTankVertices( pos, d );
+  vector<Coord2> tankpts = getTankVertices(pos, d);
   vector<Coord4> rv;
   for(int i = 0; i < tankpts.size(); i++) {
     int j = (i + 1) % tankpts.size();
@@ -164,11 +166,11 @@ vector<Coord4> Tank::getCurrentCollide() const {
 };
 
 vector<Coord4> Tank::getNextCollide(const Keystates &keys) const {
-  if( !live )
+  if(!live)
     return vector<Coord4>();
 
-  pair<Coord2, float> newpos = getDeltaAfterMovement( keys, pos, d );
-  vector<Coord2> tankpts = getTankVertices( newpos.first, newpos.second );
+  pair<Coord2, float> newpos = getDeltaAfterMovement(keys, pos, d);
+  vector<Coord2> tankpts = getTankVertices(newpos.first, newpos.second);
   vector<Coord4> rv;
   for(int i = 0; i < tankpts.size(); i++) {
     int j = (i + 1) % tankpts.size();
@@ -183,12 +185,13 @@ void Tank::addCollision(Collider *collider, const Keystates &keys) const {
     return;
 
   vector<Coord2> tankpts = getTankVertices( pos, d );
-  pair<Coord2, float> newpos = getDeltaAfterMovement( keys, pos, d );
-  vector<Coord2> newtankpts = getTankVertices( newpos.first, newpos.second );
+  pair<Coord2, float> newpos = getDeltaAfterMovement(keys, pos, d);
+  vector<Coord2> newtankpts = getTankVertices(newpos.first, newpos.second);
+  CHECK(tankpts.size() == newtankpts.size());
   for( int i = 0; i < newtankpts.size(); i++ )
     newtankpts[i] -= tankpts[i];
-  for( int i = 0; i < 3; i++ )
-    collider->token(Coord4(tankpts[i], tankpts[(i + 1) % 3]), Coord4(newtankpts[i], newtankpts[(i + 1) % 3]));
+  for( int i = 0; i < tankpts.size(); i++ )
+    collider->token(Coord4(tankpts[i], tankpts[(i + 1) % tankpts.size()]), Coord4(newtankpts[i], newtankpts[(i + 1) % tankpts.size()]));
 };
 
 vector<Coord2> Tank::getTankVertices( Coord2 pos, float td ) const {
@@ -212,14 +215,14 @@ Coord2 Tank::getFiringPoint() const {
   return Coord2( pos.x + best.x * xt.x + best.y * xt.y, pos.y + best.y * yt.y + best.x * yt.x );
 };
 
-pair<Coord2, float> Tank::getDeltaAfterMovement( const Keystates &keys, Coord2 pos, float d ) const {
+pair<float, float> Tank::getNextInertia(const Keystates &keys) const {
   
   float dl;
   float dr;
-   if(keys.axmode == KSAX_TANK) {
+  if(keys.axmode == KSAX_TANK) {
     dl = deadzone(keys.ax[0], keys.ax[1], 0.2, 0);
     dr = deadzone(keys.ax[1], keys.ax[0], 0.2, 0);
-   } else if(keys.axmode == KSAX_ABSOLUTE || keys.axmode == KSAX_STEERING) {
+  } else if(keys.axmode == KSAX_ABSOLUTE || keys.axmode == KSAX_STEERING) {
     float dd;
     float dv;
     if(keys.axmode == KSAX_ABSOLUTE) {
@@ -259,6 +262,7 @@ pair<Coord2, float> Tank::getDeltaAfterMovement( const Keystates &keys, Coord2 p
       dd = deadzone(keys.ax[0], keys.ax[1], 0.2, 0);
       dv = deadzone(keys.ax[1], keys.ax[0], 0.2, 0);
     }
+    
     // What aspects do we want here?
     // If dv is zero, we turn at full speed.
     // If dd is zero, we move at full speed.
@@ -301,6 +305,19 @@ pair<Coord2, float> Tank::getDeltaAfterMovement( const Keystates &keys, Coord2 p
     }
   }
 
+  //dl = approach(inertia.first, dl, 1.0 / 6);
+  //dr = approach(inertia.second, dr, 1.0 / 6);
+  
+  return make_pair(dl, dr);
+}
+
+pair<Coord2, float> Tank::getDeltaAfterMovement(const Keystates &keys, Coord2 pos, float d) const {
+  
+  pair<float, float> inert = getNextInertia(keys);
+  
+  float dl = inert.first;
+  float dr = inert.second;
+
   float dv = (dr + dl) / 2;
   float dd = (dl - dr) / 2;
   
@@ -330,7 +347,7 @@ pair<Coord2, float> Tank::getDeltaAfterMovement( const Keystates &keys, Coord2 p
   d += 2*PI;
   d = fmod( d, 2*(float)PI );
   
-  return make_pair( pos, d );
+  return make_pair(pos, d);
   
 }
 
@@ -444,6 +461,7 @@ Tank::Tank() {
   spawnShards = false;
   health = -47283;
   player = NULL;
+  inertia = make_pair(0.f, 0.f);
   initted = false;
   weaponCooldown = 0;
   memset(weaponCooldownSubvals, 0, sizeof(weaponCooldownSubvals)); // if you're not using IEEE floats, get a new computer.
@@ -718,6 +736,11 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
       CHECK(playerorder[i] >= 0 && playerorder[i] < tanks.size());
       
       vector<Coord4> newpos = tanks[playerorder[i]].getNextCollide(keys[playerorder[i]]);
+      {
+        Tank test = tanks[playerorder[i]];
+        test.tick(keys[playerorder[i]]);
+        CHECK(newpos == test.getCurrentCollide());
+      }
       
       if(collider.checkSimpleCollision(CGR_PLAYER, playerorder[i], newpos)) {
         keys[playerorder[i]].nullMove();
@@ -741,18 +764,6 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
     StackString sst("Main collider");
     
     collider.resetNonwalls(COM_PROJECTILE, gmb, teamids);
-    
-    // stuff!
-    /*
-    {
-      string ope;
-      for(int i = 0; i < stopped.size(); i++) {
-        CHECK(stopped[i] + notstopped[i] == 1);
-        ope += stopped[i] + '0';
-      }
-      dprintf("%s\n", ope.c_str());
-    }
-    */
     
     gamemap.updateCollide(&collider);
     
