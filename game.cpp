@@ -112,7 +112,7 @@ void Tank::init(Player *in_player) {
 
 void Tank::tick(const Keystates &kst) {
   
-  pair<Coord2, float> newpos = getDeltaAfterMovement(kst, pos, d);
+  pair<Coord2, float> newpos = getNextPosition(kst);
   
   pos = newpos.first;
   d = newpos.second;
@@ -169,7 +169,7 @@ vector<Coord4> Tank::getNextCollide(const Keystates &keys) const {
   if(!live)
     return vector<Coord4>();
 
-  pair<Coord2, float> newpos = getDeltaAfterMovement(keys, pos, d);
+  pair<Coord2, float> newpos = getNextPosition(keys);
   vector<Coord2> tankpts = getTankVertices(newpos.first, newpos.second);
   vector<Coord4> rv;
   for(int i = 0; i < tankpts.size(); i++) {
@@ -185,7 +185,7 @@ void Tank::addCollision(Collider *collider, const Keystates &keys) const {
     return;
 
   vector<Coord2> tankpts = getTankVertices( pos, d );
-  pair<Coord2, float> newpos = getDeltaAfterMovement(keys, pos, d);
+  pair<Coord2, float> newpos = getNextPosition(keys);
   vector<Coord2> newtankpts = getTankVertices(newpos.first, newpos.second);
   CHECK(tankpts.size() == newtankpts.size());
   for( int i = 0; i < newtankpts.size(); i++ )
@@ -305,13 +305,16 @@ pair<float, float> Tank::getNextInertia(const Keystates &keys) const {
     }
   }
 
-  //dl = approach(inertia.first, dl, 1.0 / 6);
-  //dr = approach(inertia.second, dr, 1.0 / 6);
+  dl = approach(inertia.first, dl, 1.0 / 10);
+  dr = approach(inertia.second, dr, 1.0 / 10);
   
   return make_pair(dl, dr);
 }
 
-pair<Coord2, float> Tank::getDeltaAfterMovement(const Keystates &keys, Coord2 pos, float d) const {
+pair<Coord2, float> Tank::getNextPosition(const Keystates &keys) const {
+  
+  Coord2 npos = pos;
+  float nd = d;
   
   pair<float, float> inert = getNextInertia(keys);
   
@@ -341,13 +344,13 @@ pair<Coord2, float> Tank::getDeltaAfterMovement(const Keystates &keys, Coord2 po
   
   Coord cdv(dv);
 
-  pos += makeAngle(Coord(d)) * Coord(player->getTank().maxSpeed() / FPS) * cdv;
+  npos += makeAngle(Coord(nd)) * Coord(player->getTank().maxSpeed() / FPS) * cdv;
 
-  d += player->getTank().turnSpeed() / FPS * dd;
-  d += 2*PI;
-  d = fmod( d, 2*(float)PI );
+  nd += player->getTank().turnSpeed() / FPS * dd;
+  nd += 2*PI;
+  nd = fmod(nd, 2*(float)PI);
   
-  return make_pair(pos, d);
+  return make_pair(npos, nd);
   
 }
 
@@ -743,11 +746,12 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
       }
       
       if(collider.checkSimpleCollision(CGR_PLAYER, playerorder[i], newpos)) {
+        tanks[playerorder[i]].inertia = make_pair(0.f, 0.f);  // wham!
         keys[playerorder[i]].nullMove();
       } else {
         StackString sst(StringPrintf("Moving player %d, status live %d", playerorder[i], tanks[playerorder[i]].live));
-        //CHECK(inPath(tanks[playerorder[i]].getDeltaAfterMovement(keys[playerorder[i]], tanks[playerorder[i]].pos, tanks[playerorder[i]].d).first, gamemap.getCollide()[0]));
-        CHECK(isInside(gmb, tanks[playerorder[i]].getDeltaAfterMovement(keys[playerorder[i]], tanks[playerorder[i]].pos, tanks[playerorder[i]].d).first));
+        //CHECK(inPath(tanks[playerorder[i]].getNextPosition(keys[playerorder[i]], tanks[playerorder[i]].pos, tanks[playerorder[i]].d).first, gamemap.getCollide()[0]));
+        CHECK(isInside(gmb, tanks[playerorder[i]].getNextPosition(keys[playerorder[i]]).first));
         collider.clearGroup(CGR_PLAYER, playerorder[i]);
         collider.addThingsToGroup(CGR_PLAYER, playerorder[i]);
         collider.startToken(0);

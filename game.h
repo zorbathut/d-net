@@ -88,7 +88,7 @@ public:
   Coord2 getFiringPoint() const;
 
   pair<float, float> getNextInertia(const Keystates &keys) const;
-  pair<Coord2, float> getDeltaAfterMovement(const Keystates &keys, Coord2 pos, float d) const;
+  pair<Coord2, float> getNextPosition(const Keystates &keys) const;
 
   bool takeDamage(float amount); // returns true on kill
   void genEffects(vector< GfxEffects > *gfxe, vector<Projectile> *projectiles);
