@@ -1,5 +1,4 @@
 ---- Major work path
-- Inertia and mass
 - Glory device demo screen
 - Bombardment demo screen
 - Upgrade demo screen
