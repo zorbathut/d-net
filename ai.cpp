@@ -35,6 +35,11 @@ inline bool operator<(const Controller &lhs, const Controller &rhs) {
   return false;
 }
 
+void Ai::updateIdle() {
+  updateKeys(CORE);
+  zeroNextKeys();
+}
+
 void Ai::updatePregame() {
   updateKeys(CORE);
   
@@ -113,6 +118,8 @@ void doMegaEnumWorker(const HierarchyNode &rt, vector<pair<Money, vector<Control
     upgs->push_back(make_pair(make_pair(player->adjustGlory(rt.glory).cost(), (IDBUpgrade*)NULL), path));
   } else if(rt.type == HierarchyNode::HNT_BOMBARDMENT) {
     upgs->push_back(make_pair(make_pair(player->adjustBombardment(rt.bombardment).cost(), (IDBUpgrade*)NULL), path));
+  } else if(rt.type == HierarchyNode::HNT_TANK) {
+    upgs->push_back(make_pair(make_pair(player->adjustTank(rt.tank).cost(), (IDBUpgrade*)NULL), path));
   } else if(rt.type == HierarchyNode::HNT_EQUIP) {
   } else if(rt.type == HierarchyNode::HNT_DONE) {
     CHECK(done->size() == 0);
@@ -230,10 +237,27 @@ void Ai::updateWaitingForReport() {
 }
 
 Controller Ai::getNextKeys() const {
-  if(curframe != frameNumber - 1)
+  if(curframe != frameNumber)
     dprintf("%d, %d\n", curframe, frameNumber);
-  CHECK(curframe == frameNumber - 1);
-  return nextKeys;
+  CHECK(curframe == frameNumber);
+  
+  if(source == CORE) {
+    return nextKeys;
+  } else if(source == GAME) {
+    Keystates kst = gai.getNextKeys();
+    Controller kont;
+    kont.keys.resize(BUTTON_LAST);
+    kont.menu = kst.udlrax;
+    kont.keys[BUTTON_ACCEPT] = kst.accept;
+    kont.keys[BUTTON_CANCEL] = kst.cancel;
+    for(int i = 0; i < SIMUL_WEAPONS; i++) {
+      kont.keys[BUTTON_FIRE1 + i] = kst.fire[i];
+      kont.keys[BUTTON_SWITCH1 + i] = kst.change[i];
+    }
+    return kont;
+  } else {
+    CHECK(0);
+  }
 }
 
 Ai::Ai() {
@@ -250,7 +274,8 @@ void Ai::zeroNextKeys() {
 }
 
 void Ai::updateKeys(int desiredsource) {
-  CHECK(curframe != frameNumber);
+  if(curframe >= frameNumber)
+    dprintf("Weird frame inconsistency in AI on frame %d\n", curframe);
   curframe = frameNumber;
   source = desiredsource;
 }

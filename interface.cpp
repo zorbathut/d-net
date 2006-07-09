@@ -7,6 +7,7 @@
 #include "metagame.h"
 #include "player.h"
 #include "vecedit.h"
+#include "debug.h"
 
 using namespace std;
 
@@ -87,16 +88,6 @@ public:
   ~InterfaceMain();
 
 };
-
-void InterfaceMain::ai(const vector<Ai *> &ai) const {
-  if(interface_mode == IFM_S_MAINMENU) {
-    for(int i = 0; i < ai.size(); i++)
-      if(ai[i])
-        ai[i]->updatePregame();
-  } else if(interface_mode == IFM_S_PLAYING) {
-    game->ai(ai);
-  }
-}
 
 #define GETDIFFERENCE_DEBUG 0 // Code used for checking the validity of getDifference :)
 
@@ -253,6 +244,7 @@ void InterfaceMain::render() const {
 #else
 
 bool InterfaceMain::tick(const vector< Controller > &control) {
+  StackString stp("Interface ticking");
   
   inptest_controls = control;
   
@@ -308,9 +300,21 @@ bool InterfaceMain::tick(const vector< Controller > &control) {
   
 }
 
+void InterfaceMain::ai(const vector<Ai *> &ai) const {
+  StackString stp("Interface AI");
+  if(interface_mode == IFM_S_MAINMENU) {
+    for(int i = 0; i < ai.size(); i++)
+      if(ai[i])
+        ai[i]->updatePregame();
+  } else if(interface_mode == IFM_S_PLAYING) {
+    game->ai(ai);
+  }
+}
+
 extern int lastFailedFrame;
 
 void InterfaceMain::render() const {
+  StackString stp("Interface rendering");
   
   if(lastFailedFrame + 600 > frameNumber) {
     setZoomCenter(0, 0, 100);

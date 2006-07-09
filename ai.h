@@ -29,7 +29,9 @@ private:
   int curframe;
   
 public:
-  
+ 
+  void updateIdle();
+
   void updatePregame();
   void updateCharacterChoice(const vector<FactionState> &factions, const vector<PlayerMenuState> &players, int me);
   void updateShop(const Player *player);

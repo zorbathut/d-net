@@ -3,6 +3,7 @@
 
 #include "ai.h"
 #include "args.h"
+#include "debug.h"
 
 #include <SDL.h>
 
@@ -130,6 +131,7 @@ void controls_key(const SDL_KeyboardEvent *key) {
 }
 
 vector<Controller> controls_next() {
+  StackString sst("Controls");
   
   if(infile) {
     for(int i = 0; i < now.size(); i++) {

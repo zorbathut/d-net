@@ -8,6 +8,7 @@
 #include "parse.h"
 #include "player.h"
 #include "shop.h"
+#include "debug.h"
 
 #include <fstream>
 #include <numeric>
@@ -19,6 +20,7 @@ DEFINE_int(factionMode, -1, "Faction mode to skip faction choice battle");
 bool Metagame::runTick(const vector<Controller> &keys) {
   CHECK(keys.size() == pms.size());
   if(mode == MGM_PLAYERCHOOSE) {
+    StackString stp("Playerchoose");
     for(int i = 0; i < keys.size(); i++)
       runSettingTick(keys[i], &pms[i], factions);
     {
@@ -47,6 +49,7 @@ bool Metagame::runTick(const vector<Controller> &keys) {
       }
     }
   } else if(mode == MGM_FACTIONTYPE) {
+    StackString stp("Factiontype");
     if(game.runTick(genKeystates(keys, pms)) || FLAGS_factionMode != -1) {
       if(FLAGS_factionMode != -1)
         faction_mode = FLAGS_factionMode;
@@ -83,6 +86,7 @@ bool Metagame::runTick(const vector<Controller> &keys) {
   } else if(mode == MGM_SHOP) {
     vector<Keystates> ki = genKeystates(keys, pms);
     if(currentShop == -1) {
+      StackString stp("Results");
       // this is a bit hacky - SHOP mode when currentShop is -1 is the "show results" screen
       for(int i = 0; i < ki.size(); i++) {
         CHECK(SIMUL_WEAPONS == 2);
@@ -96,6 +100,7 @@ bool Metagame::runTick(const vector<Controller> &keys) {
         shop.init(&playerdata[0]);
       }
     } else if(shop.runTick(ki[currentShop])) {
+      StackString stp("Shop");
       // and here's our actual shop - the tickrunning happens in the conditional, this is just what happens if it's time to change shops
       currentShop++;
       if(currentShop != playerdata.size()) {
@@ -107,6 +112,7 @@ bool Metagame::runTick(const vector<Controller> &keys) {
       }
     }
   } else if(mode == MGM_PLAY) {
+    StackString stp("Play");
     if(game.runTick(genKeystates(keys, pms))) {
       gameround++;
       if(gameround % roundsBetweenShop == 0) {
@@ -146,6 +152,7 @@ vector<GameAi *> distillGameAi(const vector<Ai *> &in_ai, const vector<PlayerMen
 }
   
 void Metagame::ai(const vector<Ai *> &ai) const {
+  StackString stp("Metagame AI");
   CHECK(ai.size() == pms.size());
   if(mode == MGM_PLAYERCHOOSE) {
     for(int i = 0; i < ai.size(); i++)
@@ -161,6 +168,9 @@ void Metagame::ai(const vector<Ai *> &ai) const {
     } else {
       CHECK(currentShop >= 0 && currentShop < playerdata.size());
       shop.ai(distillAi(ai, pms)[currentShop]);
+      for(int i = 0; i < ai.size(); i++)
+        if(ai[i] && i != currentShop)
+          ai[i]->updateIdle();
     }
   } else if(mode == MGM_PLAY) {
     game.ai(distillGameAi(ai, pms));
@@ -171,6 +181,7 @@ void Metagame::ai(const vector<Ai *> &ai) const {
 
 void Metagame::renderToScreen() const {
   if(mode == MGM_PLAYERCHOOSE) {
+    StackString stp("Playerchoose");
     setZoomCenter(0, 0, 1.1);
     setColor(1.0, 1.0, 1.0);
     //drawRect(Float4(-(4./3), -1, (4./3), 1), 0.001);
@@ -192,6 +203,7 @@ void Metagame::renderToScreen() const {
       drawJustifiedMultiText(txt, 0.05, 0.005, Float2(0, 0), TEXT_CENTER, TEXT_CENTER);
     }
   } else if(mode == MGM_FACTIONTYPE) {
+    StackString stp("Factiontype");
     game.renderToScreen();
     if(!controls_users()) {    
       setColor(1.0, 1.0, 1.0);
@@ -200,6 +212,7 @@ void Metagame::renderToScreen() const {
     }
   } else if(mode == MGM_SHOP) {
     if(currentShop == -1) {
+      StackString stp("Results");
       setZoom(0, 0, 600);
       setColor(1.0, 1.0, 1.0);
       drawText("damage", 30, 20, 20);
@@ -226,9 +239,11 @@ void Metagame::renderToScreen() const {
         }
       }
     } else {
+      StackString stp("Shop");
       shop.renderToScreen();
     }
   } else if(mode == MGM_PLAY) {
+    StackString stp("Play");
     game.renderToScreen();
     if(!controls_users()) {    
       setColor(1.0, 1.0, 1.0);

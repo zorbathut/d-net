@@ -87,6 +87,7 @@ void MainLoop() {
 		}
 		if(quit || FLAGS_terminateAfter != -1 && time(NULL) - starttime >= FLAGS_terminateAfter)
       break;
+    interfaceRunAi(controls_ai());  // has to be before controls
 		controllers = controls_next();
 		CHECK(controllers.size() == origcontrollers.size());
 		for(int i = 0; i < controllers.size(); i++)
@@ -141,7 +142,6 @@ void MainLoop() {
 		bencher = Timer();
     if(interfaceRunTick( controllers ))
       quit = true;
-    interfaceRunAi(controls_ai());
 		ticking += bencher.ticksElapsed();
 		bencher = Timer();
     if(frameNumber >= FLAGS_fastForwardTo) {
