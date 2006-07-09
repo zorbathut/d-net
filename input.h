@@ -60,11 +60,11 @@ class Keystates {
 public:
   float ax[2];
   int axmode;
-  Button u,d,l,r;
   Button fire[SIMUL_WEAPONS];
   Button change[SIMUL_WEAPONS];
   
-  float udlrax[2];
+  Float2 udlrax;
+  Button u,d,l,r;
   Button accept;
   Button cancel;
 

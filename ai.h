@@ -3,6 +3,7 @@
 
 #include "input.h"
 #include "rng.h"
+#include "game_ai.h"
 
 #include <deque>
 
@@ -14,27 +15,25 @@ class Player;
 class Tank;
 class Coord2;
 
-
 class Ai {
 private:
-  enum { AGM_APPROACH, AGM_RETREAT, AGM_WANDER, AGM_BACKUP };
   deque<Controller> shopQueue;
   Controller nextKeys;
   Rng rng;
-public: bool shopdone;
-  
-  int gamemode;
-  int targetplayer;
-  Float2 targetdir;
-  bool firing[SIMUL_WEAPONS];
+  GameAi gai;
+
+  bool shopdone;
+
+  enum { UNKNOWN, CORE, GAME };
+  int source;
+  int curframe;
   
 public:
   
   void updatePregame();
   void updateCharacterChoice(const vector<FactionState> &factions, const vector<PlayerMenuState> &players, int me);
   void updateShop(const Player *player);
-  void updateGame(const vector<Tank> &players, int me);
-  void updateBombardment(const vector<Tank> &players, Coord2 mypos);
+  GameAi &getGameAi();
   void updateWaitingForReport();
 
   Controller getNextKeys() const;
@@ -44,6 +43,7 @@ public:
 private:
   
   void zeroNextKeys();
+  void updateKeys(int desiredsource);
 
 };
 

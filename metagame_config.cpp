@@ -86,8 +86,7 @@ Keystates genKeystate(const Controller &keys, const PlayerMenuState &pms) {
     if(pms.axes_invert[j])
       kst.ax[j] *= -1;
   }
-  kst.udlrax[0] = keys.menu.x;
-  kst.udlrax[1] = keys.menu.y;
+  kst.udlrax = keys.menu;
   CHECK(keys.menu.x >= -1 && keys.menu.x <= 1);
   CHECK(keys.menu.y >= -1 && keys.menu.y <= 1);
   return kst;

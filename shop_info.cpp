@@ -86,7 +86,7 @@ void ShopInfo::init(const IDBBombardment *in_bombardment, const Player *in_playe
   null();
   bombardment = in_bombardment;
   player = in_player;
-  // no working demo atm
+//  demo.init(bombardment, player);
 }
 void ShopInfo::init(const IDBUpgrade *in_upgrade, const Player *in_player) {
   null();

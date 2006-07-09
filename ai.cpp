@@ -36,12 +36,16 @@ inline bool operator<(const Controller &lhs, const Controller &rhs) {
 }
 
 void Ai::updatePregame() {
+  updateKeys(CORE);
+  
   zeroNextKeys();
   nextKeys.menu = Float2(0, 0);
   nextKeys.keys[0].down = true;
 }
 
 void Ai::updateCharacterChoice(const vector<FactionState> &factions, const vector<PlayerMenuState> &players, int you) {
+  updateKeys(CORE);
+  
   zeroNextKeys();
   if(!players[you].faction) {
     int targfact = you;
@@ -144,6 +148,8 @@ void appendPurchases(deque<Controller> *dest, const vector<Controller> &src, int
 }
 
 void Ai::updateShop(const Player *player) {
+  updateKeys(CORE);
+  
   zeroNextKeys();
   if(shopQueue.size()) {
     nextKeys = shopQueue[0];
@@ -208,108 +214,33 @@ void Ai::updateShop(const Player *player) {
   dprintf("shop prepared");
 }
 
-void Ai::updateGame(const vector<Tank> &players, int me) {
-  zeroNextKeys();
-  CHECK(shopQueue.size() == 0);
-  if(shopdone || rng.frand() < 0.01) {
-    // find a tank, because approach and retreat both need one
-    int targtank;
-    {
-      vector<int> validtargets;
-      for(int i = 0; i < players.size(); i++)
-        if(i != me && players[i].live)
-          validtargets.push_back(i);
-      if(validtargets.size() == 0)
-        validtargets.push_back(me);
-      targtank = validtargets[int(validtargets.size() * rng.frand())];
-    }
-    
-    float neai = rng.frand();
-    if(neai < 0.6) {
-      gamemode = AGM_APPROACH;
-      targetplayer = targtank;
-    } else if(neai < 0.7) {
-      gamemode = AGM_RETREAT;
-      targetplayer = targtank;
-    } else if(neai < 0.9) {
-      gamemode = AGM_WANDER;
-      targetdir.x = rng.frand() - 0.5;
-      targetdir.y = rng.frand() - 0.5;
-      targetdir = normalize(targetdir);
-    } else {
-      gamemode = AGM_BACKUP;
-    }
-    //dprintf("Tank %d changing plan, %d\n", me, gamemode);
-    shopdone = false;
-  }
-  Float2 mypos = players[me].pos.toFloat();
-  if(gamemode == AGM_APPROACH) {
-    Float2 enepos = players[targetplayer].pos.toFloat();
-    enepos -= mypos;
-    enepos.y *= -1;
-    if(len(enepos) > 0)
-      enepos = normalize(enepos);
-    nextKeys.menu = enepos;
-  } else if(gamemode == AGM_RETREAT) {
-    Float2 enepos = players[targetplayer].pos.toFloat();
-    enepos -= mypos;
-    enepos.y *= -1;
-    enepos *= -1;
-    
-    if(len(enepos) > 0)
-      enepos = normalize(enepos);
-    nextKeys.menu = enepos;
-  } else if(gamemode == AGM_WANDER) {
-    nextKeys.menu = targetdir;
-  } else if(gamemode == AGM_BACKUP) {
-    Float2 nx(-makeAngle(players[me].d));
-    nx.x += (rng.frand() - 0.5) / 100;
-    nx.y += (rng.frand() - 0.5) / 100;
-    nx = normalize(nx);
-    nextKeys.menu = nx;
-  }
-  for(int i = 0; i < SIMUL_WEAPONS; i++) {
-    if(rng.frand() < 0.001)
-      firing[i] = !firing[i];
-    nextKeys.keys[BUTTON_FIRE1 + i].down = firing;
-    nextKeys.keys[BUTTON_SWITCH1 + i].down = (rng.frand() < 0.001);  // weapon switch
-  }
-}
-
-void Ai::updateBombardment(const vector<Tank> &players, Coord2 mypos) {
-  zeroNextKeys();
-  Coord2 clopos(0, 0);
-  Coord clodist = 1000000;
-  for(int i = 0; i < players.size(); i++) {
-    if(players[i].live && len(players[i].pos - mypos) < clodist) {
-      clodist = len(players[i].pos - mypos);
-      clopos = players[i].pos;
-    }
-  }
-  Coord2 dir = clopos - mypos;
-  if(len(dir) != 0)
-    dir = normalize(dir);
-  nextKeys.menu = dir.toFloat();
-  nextKeys.menu.y *= -1;
-  nextKeys.keys[BUTTON_FIRE1].down = false;
-  if(clodist < 10)
-    nextKeys.keys[BUTTON_FIRE1].down = (rng.frand() < 0.02);
+GameAi &Ai::getGameAi() {
+  updateKeys(GAME);
+  
+  shopdone = false;
+  return gai;
 }
 
 void Ai::updateWaitingForReport() {
+  updateKeys(CORE);
+  
   zeroNextKeys();
   nextKeys.menu = Float2(0, 0);
   nextKeys.keys[0].down = true;
 }
 
 Controller Ai::getNextKeys() const {
+  if(curframe != frameNumber - 1)
+    dprintf("%d, %d\n", curframe, frameNumber);
+  CHECK(curframe == frameNumber - 1);
   return nextKeys;
 }
 
 Ai::Ai() {
   nextKeys.keys.resize(BUTTON_LAST);
   shopdone = false;
-  memset(firing, 0, sizeof(firing));
+  source = UNKNOWN;
+  curframe = -1;
 }
 
 void Ai::zeroNextKeys() {
@@ -318,3 +249,8 @@ void Ai::zeroNextKeys() {
     nextKeys.keys[i].down = false;
 }
 
+void Ai::updateKeys(int desiredsource) {
+  CHECK(curframe != frameNumber);
+  curframe = frameNumber;
+  source = desiredsource;
+}

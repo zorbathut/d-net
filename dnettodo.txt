@@ -1,6 +1,6 @@
 ---- Major work path
-- Glory device demo screen
 - Bombardment demo screen
+- Glory device demo screen
 - Upgrade demo screen
 - Tank demo screen(s)
 - Flavor text

@@ -136,6 +136,14 @@ vector<Ai *> distillAi(const vector<Ai *> &ai, const vector<PlayerMenuState> &pl
       rv.push_back(ai[i]);
   return rv;
 }
+
+vector<GameAi *> distillGameAi(const vector<Ai *> &in_ai, const vector<PlayerMenuState> &players) {
+  vector<Ai *> ai = distillAi(in_ai, players);
+  vector<GameAi *> rv;
+  for(int i = 0; i < ai.size(); i++)
+    rv.push_back(&ai[i]->getGameAi());
+  return rv;
+}
   
 void Metagame::ai(const vector<Ai *> &ai) const {
   CHECK(ai.size() == pms.size());
@@ -144,7 +152,7 @@ void Metagame::ai(const vector<Ai *> &ai) const {
       if(ai[i])
         ai[i]->updateCharacterChoice(factions, pms, i);
   } else if(mode == MGM_FACTIONTYPE) {
-    game.ai(distillAi(ai, pms));
+    game.ai(distillGameAi(ai, pms));
   } else if(mode == MGM_SHOP) {
     if(currentShop == -1) {
       for(int i = 0; i < ai.size(); i++)
@@ -155,7 +163,7 @@ void Metagame::ai(const vector<Ai *> &ai) const {
       shop.ai(distillAi(ai, pms)[currentShop]);
     }
   } else if(mode == MGM_PLAY) {
-    game.ai(distillAi(ai, pms));
+    game.ai(distillGameAi(ai, pms));
   } else {
     CHECK(0);
   }

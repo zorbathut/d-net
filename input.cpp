@@ -63,7 +63,7 @@ void Keystates::nullMove() {
 
 Keystates::Keystates() {
   ax[0] = ax[1] = 0;
-  udlrax[0] = udlrax[1] = 0;
+  udlrax = Float2(0, 0);
   axmode = KSAX_STEERING;
 }
 

@@ -1,7 +1,7 @@
 
 #include "game.h"
 
-#include "ai.h"
+#include "game_ai.h"
 #include "args.h"
 #include "debug.h"
 #include "gfx.h"
@@ -862,8 +862,11 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
       if(bombards[j].timer <= 0)
         bombards[j].state = BombardmentState::BS_ACTIVE;
     } else if(bombards[j].state == BombardmentState::BS_ACTIVE) {
-      bombards[j].loc.x += Coord(deadzone(keys[j].udlrax[0], keys[j].udlrax[1], 0, 0.2));
-      bombards[j].loc.y += Coord(-deadzone(keys[j].udlrax[1], keys[j].udlrax[0], 0, 0.2));
+      Float2 deaded = deadzone(keys[j].udlrax, 0, 0.2);
+      if(len(deaded) > 1)
+        deaded /= len(deaded);
+      deaded.y *= -1;
+      bombards[j].loc += Coord2(deaded);
       bombards[j].loc.x = max(bombards[j].loc.x, gmb.sx);
       bombards[j].loc.y = max(bombards[j].loc.y, gmb.sy);
       bombards[j].loc.x = min(bombards[j].loc.x, gmb.ex);
@@ -1064,7 +1067,7 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
 
 };
 
-void Game::ai(const vector<Ai *> &ais) const {
+void Game::ai(const vector<GameAi *> &ais) const {
   CHECK(ais.size() == tanks.size());
   for(int i = 0; i < ais.size(); i++) {
     if(ais[i]) {

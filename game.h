@@ -9,7 +9,7 @@
 using namespace std;
 
 class Collider;
-class Ai;
+class GameAi;
   
 class Tank;
 class Projectile;
@@ -194,8 +194,8 @@ public:
   void initTest(Player *playerdata, const Float4 &bounds);
   void initDemo(vector<Player> *playerdata, float boxradi, const float *xps, const float *yps);
 
-  bool runTick( const vector< Keystates > &keys );
-  void ai(const vector<Ai *> &ais) const;
+  bool runTick(const vector<Keystates> &keys);
+  void ai(const vector<GameAi *> &ais) const;
   void renderToScreen() const;
 
   int winningTeam() const;
