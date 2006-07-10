@@ -226,6 +226,9 @@ void Player::forceAcquireUpgrade(const IDBUpgrade *in_upg) {
   tank[0].upgrades.push_back(in_upg);
   reCalculate();
 }
+void Player::forceAcquireBombardment(const IDBBombardment *in_bombard) {
+  bombardment.insert(bombardment.begin(), in_bombard);
+}
 
 // Allows you to remove things, even things which are not meant to be removed
 void Player::forceRemoveUpgrade(const IDBUpgrade *in_upg) {

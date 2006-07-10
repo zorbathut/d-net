@@ -7,6 +7,7 @@
 class ShopDemo {
 public:
   void init(const IDBWeapon *weap, const Player *player);
+  void init(const IDBBombardment *weap, const Player *player);
   
   void runTick();
   void renderFrame() const;
@@ -19,6 +20,8 @@ private:
   Game game;
   vector<Player> players;
   vector<smart_ptr<GameAi> > ais;
+
+  const int *progression;
 
   // don't use
   ShopDemo(const ShopDemo &rhs);

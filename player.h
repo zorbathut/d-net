@@ -85,6 +85,7 @@ public:
   // Allows you to acquire things. Does not do sanity checks. Should not be used for anything involving meaningful game logic!
   void forceAcquireWeapon(const IDBWeapon *in_weap, int count);
   void forceAcquireUpgrade(const IDBUpgrade *in_upg);
+  void forceAcquireBombardment(const IDBBombardment *in_bombard);
   
   // Allows you to remove things, even things which are not meant to be removed
   void forceRemoveUpgrade(const IDBUpgrade *in_upg);

@@ -855,7 +855,10 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
         // if the player is dead and the bombard isn't initialized
         bombards[j].loc = tanks[j].pos;
         bombards[j].state = BombardmentState::BS_SPAWNING;
-        bombards[j].timer = 60 * 6;
+        if(gamemode == GMODE_DEMO)
+          bombards[j].timer = 0;
+        else
+          bombards[j].timer = 60 * 6;
       }
     } else if(bombards[j].state == BombardmentState::BS_SPAWNING) {
       bombards[j].timer--;
@@ -1530,7 +1533,7 @@ void Game::initTest(Player *in_playerdata, const Float4 &bounds) {
   initCommon(playerdata, lev);
 }
 
-void Game::initDemo(vector<Player> *in_playerdata, float boxradi, const float *xps, const float *yps) {
+void Game::initDemo(vector<Player> *in_playerdata, float boxradi, const float *xps, const float *yps, const int *modes) {
   gamemode = GMODE_DEMO;
   
   Level lev;
@@ -1559,6 +1562,14 @@ void Game::initDemo(vector<Player> *in_playerdata, float boxradi, const float *x
   
   for(int i = 0; i < tanks.size(); i++)
     tanks[i].pos = Coord2(xps[i], yps[i]);
+  
+  demomode_playermodes.clear();
+  for(int i = 0; i < tanks.size(); i++) {
+    CHECK(modes[i] >= 0 && modes[i] < DEMOPLAYER_LAST);
+    demomode_playermodes.push_back(modes[i]);
+    if(modes[i] == DEMOPLAYER_BOMBSIGHT)
+      tanks[i].live = false;
+  }
   
   demomode_boxradi = boxradi;
 }

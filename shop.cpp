@@ -347,10 +347,8 @@ bool Shop::runTick(const Keystates &keys) {
   
   doTableUpdate();
   
-  if(getCurNode().type == HierarchyNode::HNT_WEAPON || getCurNode().type == HierarchyNode::HNT_EQUIPWEAPON) {
-    CHECK(curloc == lastloc);
+  if(curloc == lastloc)
     cshopinf.runTick();
-  }
   
   return false;
 }

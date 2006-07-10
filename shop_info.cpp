@@ -86,12 +86,12 @@ void ShopInfo::init(const IDBBombardment *in_bombardment, const Player *in_playe
   null();
   bombardment = in_bombardment;
   player = in_player;
-  //demo.init(bombardment, player);
+  demo.init(bombardment, player);
 }
 void ShopInfo::init(const IDBUpgrade *in_upgrade, const Player *in_player) {
   null();
   upgrade = in_upgrade;
-  player = in_player;
+  player = in_player; 
   // no working demo atm
 }
 void ShopInfo::init(const IDBTank *in_tank, const Player *in_player) {
@@ -102,7 +102,7 @@ void ShopInfo::init(const IDBTank *in_tank, const Player *in_player) {
 }
   
 void ShopInfo::runTick() {
-  if(weapon)
+  if(weapon || bombardment)
     demo.runTick();
 }
 
@@ -133,6 +133,9 @@ void ShopInfo::renderFrame(Float4 bounds, float fontsize, Float4 inset) const {
       kvp.print("firing delay", prettyFloatFormat(player->adjustBombardment(bombardment).lockdelay()) + " seconds");
       kvp.print("cooldown", prettyFloatFormat(player->adjustBombardment(bombardment).unlockdelay()) + " second");
     }
+    
+    GfxWindow gfxw(inset);
+    demo.renderFrame();
   } else if(upgrade) {
     {
       ShopKVPrinter kvp(bounds, fontsize, fontshift);

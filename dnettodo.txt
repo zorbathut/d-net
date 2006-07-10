@@ -1,5 +1,7 @@
 ---- Major work path
 - Bombardment demo screen
+- Wrap GameAi
+- Improve explosion effects (missile, glory device)
 - Glory device demo screen
 - Upgrade demo screen
 - Tank demo screen(s)
@@ -7,7 +9,6 @@
 - New weapons
 - Next-gen collision/storage system on grid
 - Logarithmic turning
-- Improve explosion effects (missile, glory device)
 - Certificates and discounts
 - Training
 - Implants
