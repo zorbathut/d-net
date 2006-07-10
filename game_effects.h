@@ -40,5 +40,6 @@ smart_ptr<GfxEffects> GfxCircle(Float2 center, float radius, float life, Color c
 smart_ptr<GfxEffects> GfxText(Float2 pos, Float2 vel, float size, string text, float life, Color color);
 smart_ptr<GfxEffects> GfxPath(vector<Float2> path, Float2 pos_start, Float2 pos_vel, Float2 pos_acc, float ang_start, float ang_vel, float ang_acc, float life, Color color);
 smart_ptr<GfxEffects> GfxPing(Float2 pos, float radius_d, float thickness_d, float life, Color color);
+smart_ptr<GfxEffects> GfxBlast(Float2 center, float radius);
 
 #endif

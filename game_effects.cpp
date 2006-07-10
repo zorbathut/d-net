@@ -3,6 +3,7 @@
 
 #include "const.h"
 #include "gfx.h"
+#include "rng.h"
 
 void GfxEffects::tick() {
   CHECK(life != -1);
@@ -136,3 +137,35 @@ private:
 smart_ptr<GfxEffects> GfxPing(Float2 pos, float radius_d, float thickness_d, float life, Color color) {
   return smart_ptr<GfxEffects>(new GfxEffectsPing(pos, radius_d, thickness_d, life, color)); }
 
+class GfxEffectsBlast : public GfxEffects {
+public:
+
+  virtual void render() const {
+    const float desarea = radius * radius * PI * getAgeFactor();
+    const float desrad = sqrt(desarea / PI);
+    const int vertx = 16;
+    for(int i = 0; i < 5; i++) {
+      if(!i) {
+        setColor(Color(1.0, 0.8, 0.2) * (1.0 - getAgeFactor()));
+      } else {
+        setColor(Color(1.0, 0.2, 0.0) * (1.0 - getAgeFactor()));
+      }
+      const float ofs = unsync_frand() * 2 * PI / vertx;
+      const float chaos = len(makeAngle(1 * PI * 2 / vertx) - makeAngle(0)) * desrad / 2;
+      vector<Float2> pex;
+      for(int j = 0; j < vertx; j++)
+        pex.push_back(center + makeAngle(j * PI * 2 / vertx + ofs) * desrad + Float2(unsync_symfrand(), unsync_symfrand()) * chaos);
+      drawLineLoop(pex, 0.1);
+    }
+  }
+
+  GfxEffectsBlast(Float2 in_center, float in_radius) : GfxEffects(sqrt(in_radius) * 0.1, Color(1.0, 1.0, 1.0)), center(in_center), radius(in_radius) { };
+
+private:
+  
+  Float2 center;
+  float radius;
+};
+  
+smart_ptr<GfxEffects> GfxBlast(Float2 center, float radius) {
+  return smart_ptr<GfxEffects>(new GfxEffectsBlast(center, radius)); }

@@ -7,7 +7,7 @@
 
 using namespace std;
 
-static Rng desyncrng(time(NULL));
+static Rng unsyncrng(time(NULL));
 
 void Rng::sfrand(int in_seed) {
   dprintf("Seeding random generator with %d\n", in_seed);
@@ -36,7 +36,7 @@ Rng::Rng() {
   sync = 1;
   seed = 1;
   start = false;
-  sfrand(desyncrng.rand());
+  sfrand(unsyncrng.rand());
 }
 
 Rng::Rng(int in_seed) {
@@ -77,4 +77,15 @@ float gaussian(float maxgauss) {
 
 float gaussian_scaled(float maxgauss) {
   return gaussian(maxgauss) / maxgauss;
+}
+
+float unsync_frand() {
+  return unsyncrng.frand();
+}
+
+float unsync_symfrand() {
+  if(unsync_frand() < 0.5)
+    return unsync_frand();
+  else
+    return -unsync_frand();
 }

@@ -24,4 +24,7 @@ float gaussian(); // returns gaussian distribution with a standard deviation of 
 float gaussian(float maxgauss);  // returns gaussian distribution with a standard deviation of 1, maximum deviation of max (just chops off the probability curve)
 float gaussian_scaled(float maxgauss); // returns gaussian(maxgauss) / maxgauss
 
+float unsync_frand(); // [0,1)
+float unsync_symfrand();  // (-1,1)
+
 #endif
