@@ -8,7 +8,7 @@ warhead {
 
 warhead {
   name=warhead.bombardment.bomb
-  radiusdamage=1 explosive
+  radiusdamage=2 explosive
   radiusfalloff=8
   wallremovalradius=2
 }

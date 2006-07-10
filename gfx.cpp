@@ -417,11 +417,11 @@ void drawCircle(const Coord2 &center, Coord radius, Coord weight) {
   drawCircle(center.toFloat(), radius.toFloat(), weight.toFloat());
 }
 
-void drawPoint(float x, float y, float weight) {
+void drawPoint(const Float2 &pos, float weight) {
   finishLineCluster();
   glPointSize( weight / map_zoom * getResolutionY() );   // GL uses pixels internally for this unit, so I have to translate from game-meters
   glBegin( GL_POINTS );
-  glVertex2f( ( x - map_sx ) / map_zoom, ( y - map_sy ) / map_zoom );
+  glVertex2f( ( pos.x - map_sx ) / map_zoom, ( pos.y - map_sy ) / map_zoom );
   glEnd();
 }
 

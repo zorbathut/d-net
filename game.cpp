@@ -23,7 +23,7 @@ void dealDamage(float dmg, Tank *target, Tank *owner, float damagecredit, bool k
   owner->player->addDamage(dmg * damagecredit);
 };
 
-void detonateWarhead(const IDBWarheadAdjust &warhead, Coord2 pos, Tank *impact, Tank *owner, const vector<pair<float, Tank *> > &adjacency, vector<GfxEffects> *gfxe, Gamemap *gm, float damagecredit, bool killcredit) {
+void detonateWarhead(const IDBWarheadAdjust &warhead, Coord2 pos, Tank *impact, Tank *owner, const vector<pair<float, Tank *> > &adjacency, vector<smart_ptr<GfxEffects> > *gfxe, Gamemap *gm, float damagecredit, bool killcredit) {
   
   if(impact)
     dealDamage(warhead.impactdamage(), impact, owner, damagecredit, killcredit);
@@ -33,66 +33,17 @@ void detonateWarhead(const IDBWarheadAdjust &warhead, Coord2 pos, Tank *impact, 
       dealDamage(warhead.radiusdamage() / warhead.radiusfalloff() * ( warhead.radiusfalloff() - adjacency[i].first), adjacency[i].second, owner, damagecredit, killcredit);
   }
   
-  GfxEffects ngfe;
-  ngfe.point_pos = pos.toFloat();
-  ngfe.life = 0.1;
-  ngfe.type = GfxEffects::EFFECT_POINT;
-  ngfe.color = Color(1.0, 1.0, 1.0);
-  for( int i = 0; i < 6; i++ ) {
-    float dir = frand() * 2 * PI;
-    ngfe.point_vel = makeAngle(dir) / 3;
-    ngfe.point_vel *= 1.0 - frand() * frand();
-    gfxe->push_back( ngfe );
-  }
+  for( int i = 0; i < 6; i++ )
+    gfxe->push_back(GfxPoint(pos.toFloat(),  (makeAngle(frand() * 2 * PI) / 3) * (1.0 - frand() * frand()), 0.1, Color(1.0, 1.0, 1.0)));
   
-  if(warhead.radiusfalloff() > 0) {
-    GfxEffects dbgf;
-    dbgf.type = GfxEffects::EFFECT_CIRCLE;
-    dbgf.circle_center = pos.toFloat();
-    dbgf.circle_radius = warhead.radiusfalloff();
-    dbgf.life = 0.09;
-    gfxe->push_back(dbgf);
-  }
+  if(warhead.radiusfalloff() > 0)
+    gfxe->push_back(GfxCircle(pos.toFloat(), warhead.radiusfalloff(), 0.09, Color(1.0, 1.0, 1.0)));
   
   if(warhead.wallremovalradius() > 0 && frand() < warhead.wallremovalchance()) {
     gm->removeWalls(pos, warhead.wallremovalradius());
   }
 
 };
-
-void GfxEffects::move() {
-  CHECK(life != -1);
-  age++;
-}
-void GfxEffects::render() const {
-  CHECK(life != -1);
-  float apercent = 1.0f - ((float)age / FPS) / life;
-  setColor(color * apercent);
-  if(type == EFFECT_LINE) {
-    drawLine(line_pos + line_vel * age, 0.1f);
-  } else if(type == EFFECT_POINT) {
-    drawPoint(point_pos.x + point_vel.x * age, point_pos.y + point_vel.y * age, 0.1f);
-  } else if(type == EFFECT_CIRCLE) {
-    drawCircle(circle_center, circle_radius, 0.1f);
-  } else if(type == EFFECT_TEXT) {
-    drawText(text_data, text_size, text_pos + text_vel * age);
-  } else if(type == EFFECT_PATH) {
-    drawTransformedLinePath(path_path, path_ang_start + path_ang_vel * age + path_ang_acc * age * age / 2, path_pos_start + path_pos_vel * age + path_pos_acc * age * age / 2, 0.1f);
-  } else if(type == EFFECT_PING) {
-    drawCircle(ping_pos, ping_radius_d * age / 60, ping_thickness_d * age / 60);
-  } else {
-    CHECK(0);
-  }
-}
-bool GfxEffects::dead() const {
-  return ((float)age / FPS) >= life;
-}
-
-GfxEffects::GfxEffects() {
-  age = 0;
-  life = -1;
-  color = Color(1.0, 1.0, 1.0);
-}
 
 Team::Team() {
   weapons_enabled = true;
@@ -367,8 +318,8 @@ bool Tank::takeDamage( float damage ) {
   return false;
 };
 
-void Tank::genEffects(vector<GfxEffects> *gfxe, vector<Projectile> *projectiles) {
-  if( spawnShards ) {
+void Tank::genEffects(vector<smart_ptr<GfxEffects> > *gfxe, vector<Projectile> *projectiles) {
+  if(spawnShards) {
     vector<Coord2> tv = getTankVertices( pos, d );
     Coord2 centr = getCentroid(tv);
     Coord tva = getArea(tv);
@@ -435,18 +386,9 @@ void Tank::genEffects(vector<GfxEffects> *gfxe, vector<Projectile> *projectiles)
       for(int j = 0; j < chunks[i].size(); j++)
         vf2.push_back((chunks[i][j] - subcentroid).toFloat());
       Coord2 vel = normalize(subcentroid) / 10 * tva / getArea(chunks[i]);
-      GfxEffects ngfe;
-      ngfe.type = GfxEffects::EFFECT_PATH;
-      ngfe.path_path = vf2;
-      ngfe.path_pos_start = (centr + subcentroid).toFloat();
-      ngfe.path_pos_vel = vel.toFloat();
-      ngfe.path_pos_acc = -ngfe.path_pos_vel / 30;
-      ngfe.path_ang_start = 0;
-      ngfe.path_ang_vel = gaussian() / 20;
-      ngfe.path_ang_acc = -ngfe.path_ang_vel / 30;
-      ngfe.life = 0.5;
-      ngfe.color = player->getFaction()->color;
-      gfxe->push_back(ngfe);
+      Float2 path_pos_vel = vel.toFloat();
+      float path_ang_vel = gaussian() / 20;
+      gfxe->push_back(GfxPath(vf2, (centr + subcentroid).toFloat(), path_pos_vel, -path_pos_vel / 30, 0, path_ang_vel, -path_ang_vel / 30, 0.5, player->getFaction()->color));
     }
     
     for(int i = 0; i < ang.size(); i++)
@@ -472,7 +414,7 @@ Tank::Tank() {
   zone_frames = 0;
 }
 
-void Projectile::tick(vector<GfxEffects> *gfxe) {
+void Projectile::tick(vector<smart_ptr<GfxEffects> > *gfxe) {
   CHECK(live);
   CHECK(age != -1);
   pos += movement();
@@ -483,19 +425,13 @@ void Projectile::tick(vector<GfxEffects> *gfxe) {
   } else if(projtype.motion() == PM_MISSILE) {
     if(age > 10)
       missile_sidedist /= 1.2;
-    GfxEffects ngfe;
-    ngfe.point_pos = pos.toFloat() + lasttail.toFloat() - movement().toFloat(); // projectiles get a free tick ATM
-    ngfe.life = 0.17;
-    ngfe.type = GfxEffects::EFFECT_POINT;
-    ngfe.color = projtype.color();
-    for( int i = 0; i < 2; i++ ) {
+    for(int i = 0; i < 2; i++) {
       float dir = frand() * 2 * PI;
-      ngfe.point_vel = makeAngle(dir) / 3;
-      ngfe.point_vel *= 1.0 - frand() * frand();
-      ngfe.point_vel += movement().toFloat();
-      ngfe.point_vel += missile_accel().toFloat() * -3 * abs(gaussian());
-      ngfe.color = Color(1.0, 0.9, 0.6);
-      gfxe->push_back(ngfe);
+      Float2 pv = makeAngle(dir) / 3;
+      pv *= 1.0 - frand() * frand();
+      pv += movement().toFloat();
+      pv += missile_accel().toFloat() * -3 * abs(gaussian());
+      gfxe->push_back(GfxPoint(pos.toFloat() + lasttail.toFloat() - movement().toFloat(), pv, 0.17, Color(1.0, 0.9, 0.6)));
     }
   } else if(projtype.motion() == PM_AIRBRAKE) {
     airbrake_velocity *= 0.95;
@@ -524,7 +460,7 @@ void Projectile::addCollision( Collider *collider ) const {
   CHECK(live);
   collider->token( Coord4( pos, pos + lasttail ), Coord4( movement(), movement() + nexttail() ) );
 };
-void Projectile::impact(Coord2 pos, Tank *target, const vector<pair<float, Tank *> > &adjacency, vector<GfxEffects> *gfxe, Gamemap *gm) {
+void Projectile::impact(Coord2 pos, Tank *target, const vector<pair<float, Tank *> > &adjacency, vector<smart_ptr<GfxEffects> > *gfxe, Gamemap *gm) {
   if(!live)
     return;
   
@@ -640,16 +576,8 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
   vector< Keystates > keys = rkeys;
   if(frameNm < frameNmToStart && freezeUntilStart) {
     for(int i = 0; i < keys.size(); i++) {
-      if(keys[i].accept.push || keys[i].fire[0].push) {
-        GfxEffects ngfe;
-        ngfe.type = GfxEffects::EFFECT_PING;
-        ngfe.ping_pos = tanks[i].pos.toFloat();
-        ngfe.ping_radius_d = 200;
-        ngfe.ping_thickness_d = 8;
-        ngfe.life = 0.5;
-        ngfe.color = tanks[i].player->getFaction()->color;
-        gfxeffects.push_back(ngfe);
-      }
+      if(keys[i].accept.push || keys[i].fire[0].push)
+        gfxeffects.push_back(GfxPing(tanks[i].pos.toFloat(), 200, 8, 0.5, tanks[i].player->getFaction()->color));
       keys[i].nullMove();
       for(int j = 0; j < SIMUL_WEAPONS; j++)
         keys[i].fire[j] = Button();
@@ -964,16 +892,16 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
   }
 
   {
-    vector< GfxEffects > neffects;
-    for( int i = 0; i < gfxeffects.size(); i++ ) {
-      gfxeffects[i].move();
-      if( !gfxeffects[i].dead() )
-        neffects.push_back( gfxeffects[i] );
+    vector<smart_ptr<GfxEffects> > neffects;
+    for(int i = 0; i < gfxeffects.size(); i++) {
+      gfxeffects[i]->tick();
+      if(!gfxeffects[i]->dead())
+        neffects.push_back(gfxeffects[i]);
     }
-    swap( neffects, gfxeffects );
+    swap(neffects, gfxeffects);
   }
 
-  for( int i = 0; i < tanks.size(); i++ ) {
+  for(int i = 0; i < tanks.size(); i++) {
     tanks[i].weaponCooldown--;
     tanks[i].genEffects(&gfxeffects, &projectiles[i]);
     if(tanks[i].live) {
@@ -1123,11 +1051,11 @@ void Game::renderToScreen() const {
   }
   
   // Projectiles, graphics effects, and bombardments
-  for( int i = 0; i < projectiles.size(); i++ )
-    for( int j = 0; j < projectiles[i].size(); j++ )
-      projectiles[i][ j ].render();
-  for( int i = 0; i < gfxeffects.size(); i++ )
-    gfxeffects[i].render();
+  for(int i = 0; i < projectiles.size(); i++)
+    for(int j = 0; j < projectiles[i].size(); j++)
+      projectiles[i][j].render();
+  for(int i = 0; i < gfxeffects.size(); i++)
+    gfxeffects[i]->render();
   for(int i = 0; i < bombards.size(); i++) {
     if(bombards[i].state == BombardmentState::BS_OFF) {
     } else if(bombards[i].state == BombardmentState::BS_SPAWNING) {
@@ -1598,12 +1526,5 @@ vector<pair<float, Tank *> > Game::genTankDistance(const Coord2 &center) {
 }
 
 void Game::addTankStatusText(int tankid, const string &text, float duration) {
-  GfxEffects nge;
-  nge.type = GfxEffects::EFFECT_TEXT;
-  nge.life = duration;
-  nge.text_pos = tanks[tankid].pos.toFloat() + Float2(4, -4);
-  nge.text_vel = Float2(0, -0.1);
-  nge.text_size = 2.5;
-  nge.text_data = text;
-  gfxeffects.push_back(nge);
+  gfxeffects.push_back(GfxText(tanks[tankid].pos.toFloat() + Float2(4, -4), Float2(0, -0.1), 2.5, text, duration, Color(1.0, 1.0, 1.0)));
 }

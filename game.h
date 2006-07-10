@@ -5,6 +5,7 @@
 #include "gamemap.h"
 #include "input.h"
 #include "itemdb.h"
+#include "game_effects.h"
 
 using namespace std;
 
@@ -13,53 +14,6 @@ class GameAi;
   
 class Tank;
 class Projectile;
-
-
-// there's a lot of redundancy here, but ATM I don't care
-// I'm not really sure whether inheritance will honestly be better thanks to allocation overhead, though
-class GfxEffects {
-public:
-
-  void move();
-  void render() const;
-  bool dead() const;
-
-  int type;
-  enum {EFFECT_POINT, EFFECT_LINE, EFFECT_CIRCLE, EFFECT_TEXT, EFFECT_PATH, EFFECT_PING};
-  
-  float life;
-  int age;
-  Color color;
-  
-  Float2 point_pos;
-  Float2 point_vel;
-  
-  Float2 circle_center;
-  float circle_radius;
-  
-  Float4 line_pos;
-  Float4 line_vel;
-
-  Float2 text_pos;
-  Float2 text_vel;
-  float text_size;
-  string text_data;
-  
-  vector<Float2> path_path;
-  Float2 path_pos_start;
-  Float2 path_pos_vel;
-  Float2 path_pos_acc;
-  float path_ang_start;
-  float path_ang_vel;
-  float path_ang_acc;
-  
-  Float2 ping_pos;
-  float ping_radius_d;
-  float ping_thickness_d;
-
-  GfxEffects();
-
-};
 
 class Team {
 public:
@@ -92,7 +46,7 @@ public:
   pair<Coord2, float> getNextPosition(const Keystates &keys) const;
 
   bool takeDamage(float amount); // returns true on kill
-  void genEffects(vector< GfxEffects > *gfxe, vector<Projectile> *projectiles);
+  void genEffects(vector<smart_ptr<GfxEffects> > *gfxe, vector<Projectile> *projectiles);
   
   bool initted;
 
@@ -126,12 +80,12 @@ public:
 class Projectile {
 public:
 
-  void tick(vector<GfxEffects> *gfx);
+  void tick(vector<smart_ptr<GfxEffects> > *gfx);
   void render() const;
 
   void addCollision( Collider *collider ) const;
 
-  void impact(Coord2 pos, Tank *target, const vector<pair<float, Tank *> > &adjacency, vector<GfxEffects> *gfxe, Gamemap *gm);
+  void impact(Coord2 pos, Tank *target, const vector<pair<float, Tank *> > &adjacency, vector<smart_ptr<GfxEffects> > *gfxe, Gamemap *gm);
 
   bool isLive() const;
 
@@ -226,7 +180,7 @@ private:
   vector<Tank> tanks;
   vector<BombardmentState> bombards;
   vector<vector<Projectile> > projectiles;
-  vector<GfxEffects> gfxeffects;
+  vector<smart_ptr<GfxEffects> > gfxeffects;
   Gamemap gamemap;
 
   Collider collider;

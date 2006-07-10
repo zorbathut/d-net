@@ -22,7 +22,7 @@ string printGraphicsStats();
 void clearFrame(const Color &color);
 
 void initFrame();
-void setZoom( float sx, float sy, float ey );
+void setZoom(float sx, float sy, float ey);
 void setZoomAround(const Coord4 &bbox);
 void setZoomCenter(float cx, float cy, float radius_y);
 
@@ -44,16 +44,16 @@ public:
  * Primitives
  */
  
-void setColor( float r, float g, float b );
-void setColor( const Color &color );
+void setColor(float r, float g, float b);
+void setColor(const Color &color);
 
-void drawLine( float sx, float sy, float ex, float ey, float weight );
-void drawLine( const Float2 &s, const Float2 &e, float weight );
-void drawLine( const Coord2 &s, const Coord2 &e, float weight );
-void drawLine( const Float4 &loc, float weight );
-void drawLine( const Coord4 &loc, float weight );
+void drawLine(float sx, float sy, float ex, float ey, float weight);
+void drawLine(const Float2 &s, const Float2 &e, float weight);
+void drawLine(const Coord2 &s, const Coord2 &e, float weight);
+void drawLine(const Float4 &loc, float weight);
+void drawLine(const Coord4 &loc, float weight);
 
-void drawPoint( float x, float y, float weight );
+void drawPoint(const Float2 &pos, float weight);
 
 void drawSolid(const Float4 &box);  // Background color only, and intentionally so
 
@@ -61,27 +61,27 @@ void drawSolid(const Float4 &box);  // Background color only, and intentionally 
  * Composites
  */
 
-void drawLinePath( const vector<Float2> &verts, float weight);
+void drawLinePath(const vector<Float2> &verts, float weight);
 
-void drawLineLoop( const vector<Float2> &verts, float weight);
-void drawLineLoop( const vector<Coord2> &verts, float weight);
+void drawLineLoop(const vector<Float2> &verts, float weight);
+void drawLineLoop(const vector<Coord2> &verts, float weight);
 
 void drawTransformedLinePath(const vector<Float2> &verts, float angle, Float2 translate, float weight);
 
 void drawRect(const Float4 &rect, float weight);
-void drawRectAround( float x, float y, float rad, float weight );
+void drawRectAround(float x, float y, float rad, float weight);
 
 void drawShadedRect(const Float4 &locs, float weight, float shadedens);
 
 void drawCurve(const Float4 &ptah, const Float4 &ptbh, int midpoints, float weight);
 void drawCurveControls(const Float4 &ptah, const Float4 &ptbh, float spacing, float weight);
 
-void drawCircle( const Float2 &center, float radius, float weight );
-void drawCircle( const Coord2 &center, Coord radius, Coord weight );
+void drawCircle(const Float2 &center, float radius, float weight);
+void drawCircle(const Coord2 &center, Coord radius, Coord weight);
 
-void drawText( const char *txt, float scale, float sx, float sy );
-void drawText( const string &txt, float scale, float sx, float sy );
-void drawText( const string &txt, float scale, const Float2 &pos );
+void drawText(const char *txt, float scale, float sx, float sy);
+void drawText(const string &txt, float scale, float sx, float sy);
+void drawText(const string &txt, float scale, const Float2 &pos);
 
 float getTextWidth(const string &txt, float scale);
 
