@@ -22,11 +22,18 @@ public:
   Keystates getNextKeys() const;
 
   GameAi();
+  virtual ~GameAi();
 
 protected:
   
   void zeroNextKeys();
   void normalizeNext();
+
+private:
+  
+  // do not implement
+  GameAi(const GameAi &foo);
+  GameAi &operator=(const GameAi &foo);
 
 };
 

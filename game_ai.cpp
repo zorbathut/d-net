@@ -18,5 +18,5 @@ void GameAi::normalizeNext() {
   // AFAIK u, d, l, r aren't used, so I'm not going to bother with them ATM
 }
 
-GameAi::GameAi() {
-}
+GameAi::GameAi() { }
+GameAi::~GameAi() { }

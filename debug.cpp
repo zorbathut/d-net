@@ -24,7 +24,9 @@ StackPrinter::~StackPrinter() {
 void StackString::Print() const {
   dprintf("  %s", str_.c_str());
 }
-StackString::StackString(const string &str) : str_(str) { };
+StackString::StackString(const string &str) : str_(str) {
+  //dprintf("%s\n", str.c_str());
+};
 
 void PrintDebugStack() {
   for(int i = (int)dbgstack.size() - 1; i >= 0; i--) {

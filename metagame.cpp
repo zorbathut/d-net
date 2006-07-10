@@ -146,8 +146,13 @@ vector<Ai *> distillAi(const vector<Ai *> &ai, const vector<PlayerMenuState> &pl
 vector<GameAi *> distillGameAi(const vector<Ai *> &in_ai, const vector<PlayerMenuState> &players) {
   vector<Ai *> ai = distillAi(in_ai, players);
   vector<GameAi *> rv;
-  for(int i = 0; i < ai.size(); i++)
-    rv.push_back(&ai[i]->getGameAi());
+  for(int i = 0; i < ai.size(); i++) {
+    if(ai[i]) {
+      rv.push_back(&ai[i]->getGameAi());
+    } else {
+      rv.push_back(NULL);
+    }
+  }
   return rv;
 }
   

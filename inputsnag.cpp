@@ -4,6 +4,7 @@
 #include "ai.h"
 #include "args.h"
 #include "debug.h"
+#include "util.h"
 
 #include <SDL.h>
 
@@ -17,7 +18,7 @@ enum { CIP_KEYBOARD, CIP_JOYSTICK, CIP_AI, CIP_PRERECORD };
 
 static vector<pair<int, int> > sources;
 static vector<SDL_Joystick *> joysticks;
-static vector<Ai> ai;
+static vector<smart_ptr<Ai> > ai;
 static FILE *infile = NULL;
 
 static vector<Controller> last;
@@ -57,7 +58,7 @@ vector<Controller> controls_init() {
     now.resize(FLAGS_aiCount);
     dprintf("Creating AIs\n");
     for(int i = 0; i < FLAGS_aiCount; i++)
-      ai.push_back(Ai()); // to get our random number generators out of sync
+      ai.push_back(smart_ptr<Ai>(new Ai()));
     dprintf("AIs initialized\n");
     for(int i = 0; i < FLAGS_aiCount; i++) {
       sources.push_back(make_pair((int)CIP_AI, i));
@@ -156,7 +157,7 @@ vector<Controller> controls_next() {
     CHECK(cpos == ftell(infile));
   } else if(FLAGS_aiCount) {
     for(int i = 0; i < FLAGS_aiCount; i++)
-      now[i] = ai[i].getNextKeys();
+      now[i] = ai[i]->getNextKeys();
   } else {
     SDL_JoystickUpdate();
     for(int i = 0; i < now.size(); i++) {
@@ -234,7 +235,7 @@ vector<Ai *> controls_ai() {
   if(FLAGS_aiCount) {
     vector<Ai *> ais;
     for(int i = 0; i < ai.size(); i++)
-      ais.push_back(&ai[i]);
+      ais.push_back(ai[i].get());
     return ais;
   } else {
     return vector<Ai *>(now.size());

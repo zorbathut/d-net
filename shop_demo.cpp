@@ -3,13 +3,35 @@
 
 #include "gfx.h"
 #include "debug.h"
+#include "game_ai.h"
 
-ShopDemo::ShopDemo() { };
+class GameAiNull : public GameAi {
+public:
+  void updateGame(const vector<Tank> &players, int me) {
+    zeroNextKeys();
+    normalizeNext();
+  }
+  void updateBombardment(const vector<Tank> &players, Coord2 mypos) {
+    CHECK(0);
+  }
+};
+
+class GameAiFiring : public GameAi {
+public:
+  void updateGame(const vector<Tank> &players, int me) {
+    zeroNextKeys();
+    nextKeys.fire[0].down = true;
+    normalizeNext();
+  }
+  void updateBombardment(const vector<Tank> &players, Coord2 mypos) {
+    CHECK(0);
+  }
+};
 
 const float moot = 8;
 
-const float xpses[] = { -10 * moot, -10 * moot, 0 * moot, 0 * moot, 10 * moot, 10 * moot };
-const float ypses[] = { 15 * moot, -15 * moot, 15 * moot, -5 * moot, 15 * moot, 5 * moot };
+const float weapons_xpses[] = { -10 * moot, -10 * moot, 0 * moot, 0 * moot, 10 * moot, 10 * moot };
+const float weapons_ypses[] = { 15 * moot, -15 * moot, 15 * moot, -5 * moot, 15 * moot, 5 * moot };
 
 void ShopDemo::init(const IDBWeapon *weap, const Player *player) {
   StackString sst("Initting demo weapon shop");
@@ -23,7 +45,13 @@ void ShopDemo::init(const IDBWeapon *weap, const Player *player) {
     players[i].forceAcquireWeapon(weap, 1000000);
   }
   
-  game.initDemo(&players, 20 * moot, xpses, ypses);
+  ais.clear();
+  for(int i = 0; i < 3; i++) {
+    ais.push_back(smart_ptr<GameAi>(new GameAiFiring));
+    ais.push_back(smart_ptr<GameAi>(new GameAiNull));
+  }
+  
+  game.initDemo(&players, 20 * moot, weapons_xpses, weapons_ypses);
   
   int s = clock();
   //for(int i = 0; i < 60; i++)
@@ -41,12 +69,16 @@ int mult(int frams) {
 }
 
 void ShopDemo::runTick() {
-  vector<Keystates> keese(6);
-  for(int i = 0; i < 6; i++)
-    if(i % 2 == 0)
-      keese[i].fire[0].down = true;
-  for(int i = 0; i < mult(game.frameCount()); i++)
-    game.runTick(keese);
+  vector<GameAi *> tai;
+  for(int i = 0; i < ais.size(); i++)
+    tai.push_back(ais[i].get());
+  for(int i = 0; i < mult(game.frameCount()); i++) {
+    game.ai(tai);
+    vector<Keystates> kist;
+    for(int i = 0; i < tai.size(); i++)
+      kist.push_back(tai[i]->getNextKeys());
+    game.runTick(kist);
+  }
 };
 
 void ShopDemo::renderFrame() const {
@@ -56,3 +88,6 @@ void ShopDemo::renderFrame() const {
   if(mult(game.frameCount()) != 1)
     drawJustifiedText(StringPrintf("%dx", mult(game.frameCount())), 0.1, 0, 1, TEXT_MIN, TEXT_MAX);
 };
+
+ShopDemo::ShopDemo() { };
+ShopDemo::~ShopDemo() { };
