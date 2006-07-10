@@ -241,7 +241,7 @@ private:
   int gamemode;
   
   vector<int> demomode_playermodes;
-  float demomode_boxradi; // used for the clearscreen
+  float demomode_boxradi; // used for the clearscreen and font sizes
 
   vector<const IDBFaction *> *wins;
   

@@ -1204,7 +1204,7 @@ void Game::renderToScreen() const {
     setColor(1.0, 1.0, 1.0);
     for(int i = 0; i < tanks.size(); i++) {
       if(tanks[i].framesSinceDamage > 0) {
-        drawJustifiedText(StringPrintf("%.2f DPS", tanks[i].damageTaken / tanks[i].framesSinceDamage * FPS), 10, tanks[i].pos.x.toFloat() - 5, tanks[i].pos.y.toFloat() - 5, TEXT_MAX, TEXT_MAX);
+        drawJustifiedText(StringPrintf("%.2f DPS", tanks[i].damageTaken / tanks[i].framesSinceDamage * FPS), demomode_boxradi / 15, tanks[i].pos.x.toFloat() - 5, tanks[i].pos.y.toFloat() - 5, TEXT_MAX, TEXT_MAX);
       }
     }
   }
