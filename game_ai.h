@@ -10,26 +10,20 @@ class Tank;
 class Coord2;
 
 class GameAi {
-private:
-  enum { AGM_APPROACH, AGM_RETREAT, AGM_WANDER, AGM_BACKUP };
+protected:
   Keystates nextKeys;
   Rng rng;
   
-  int gamemode;
-  int targetplayer;
-  Float2 targetdir;
-  bool firing[SIMUL_WEAPONS];
-  
 public:
   
-  virtual void updateGame(const vector<Tank> &players, int me);
-  virtual void updateBombardment(const vector<Tank> &players, Coord2 mypos);
+  virtual void updateGame(const vector<Tank> &players, int me) = 0;
+  virtual void updateBombardment(const vector<Tank> &players, Coord2 mypos) = 0;
 
   Keystates getNextKeys() const;
 
   GameAi();
 
-private:
+protected:
   
   void zeroNextKeys();
   void normalizeNext();

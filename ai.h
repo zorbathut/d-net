@@ -14,13 +14,30 @@ class PlayerMenuState;
 class Player;
 class Tank;
 class Coord2;
+  
+class GameAiStandard : public GameAi {
+private:
+  enum { AGM_APPROACH, AGM_RETREAT, AGM_WANDER, AGM_BACKUP };
+  
+  int gamemode;
+  int targetplayer;
+  Float2 targetdir;
+  bool firing[SIMUL_WEAPONS];
+  
+public:
+  
+  virtual void updateGame(const vector<Tank> &players, int me);
+  virtual void updateBombardment(const vector<Tank> &players, Coord2 mypos);
+
+  GameAiStandard();
+};
 
 class Ai {
 private:
   deque<Controller> shopQueue;
   Controller nextKeys;
   Rng rng;
-  GameAi gai;
+  GameAiStandard gai;
 
   bool shopdone;
 
