@@ -34,7 +34,7 @@ void detonateWarhead(const IDBWarheadAdjust &warhead, Coord2 pos, Tank *impact, 
   }
   
   for(int i = 0; i < 6; i++)
-    gfxe->push_back(GfxPoint(pos.toFloat(),  (makeAngle(frand() * 2 * PI) / 3) * (1.0 - frand() * frand()), 0.1, Color(1.0, 1.0, 1.0)));
+    gfxe->push_back(GfxPoint(pos.toFloat(),  (makeAngle(frand() * 2 * PI) * 20) * (1.0 - frand() * frand()), 0.1, Color(1.0, 1.0, 1.0)));
   
   if(warhead.radiusfalloff() > 0)
     gfxe->push_back(GfxCircle(pos.toFloat(), warhead.radiusfalloff(), 0.09, Color(1.0, 1.0, 1.0)));
@@ -388,7 +388,7 @@ void Tank::genEffects(vector<smart_ptr<GfxEffects> > *gfxe, vector<Projectile> *
       Coord2 vel = normalize(subcentroid) / 10 * tva / getArea(chunks[i]);
       Float2 path_pos_vel = vel.toFloat();
       float path_ang_vel = gaussian() / 20;
-      gfxe->push_back(GfxPath(vf2, (centr + subcentroid).toFloat(), path_pos_vel, -path_pos_vel / 30, 0, path_ang_vel, -path_ang_vel / 30, 0.5, player->getFaction()->color));
+      gfxe->push_back(GfxPath(vf2, (centr + subcentroid).toFloat(), path_pos_vel * 60, -path_pos_vel * 60, 0, path_ang_vel * 60, -path_ang_vel * 60, 0.5, player->getFaction()->color));
     }
     
     for(int i = 0; i < ang.size(); i++)
@@ -431,6 +431,7 @@ void Projectile::tick(vector<smart_ptr<GfxEffects> > *gfxe) {
       pv *= 1.0 - frand() * frand();
       pv += movement().toFloat();
       pv += missile_accel().toFloat() * -3 * abs(gaussian());
+      pv *= 60; // this is an actual 60, converting it from my previous movement-per-frame to movement-per-second
       gfxe->push_back(GfxPoint(pos.toFloat() + lasttail.toFloat() - movement().toFloat(), pv, 0.17, Color(1.0, 0.9, 0.6)));
     }
   } else if(projtype.motion() == PM_AIRBRAKE) {
@@ -1526,5 +1527,5 @@ vector<pair<float, Tank *> > Game::genTankDistance(const Coord2 &center) {
 }
 
 void Game::addTankStatusText(int tankid, const string &text, float duration) {
-  gfxeffects.push_back(GfxText(tanks[tankid].pos.toFloat() + Float2(4, -4), Float2(0, -0.1), 2.5, text, duration, Color(1.0, 1.0, 1.0)));
+  gfxeffects.push_back(GfxText(tanks[tankid].pos.toFloat() + Float2(4, -4), Float2(0, -6), 2.5, text, duration, Color(1.0, 1.0, 1.0)));
 }

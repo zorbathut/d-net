@@ -21,7 +21,6 @@
 - "Kill graph"
 
 ---- Maintenance, minor bugfix, braindead
-- Consistentize effects to seconds
 - Auto coord-to-float converter (CoordFloat?)
 - AI shouldn't try to buy the glory device it already owns
 - Buy menu flicker? Double-buffering?

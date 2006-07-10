@@ -16,7 +16,7 @@ Color GfxEffects::getColor() const {
   return color;
 }
 float GfxEffects::getAge() const {
-  return age;
+  return (float)age / FPS;
 }
 float GfxEffects::getAgeFactor() const {
   return ((float)age / FPS) / life;
@@ -121,7 +121,7 @@ public:
 
   virtual void render() const {
     setBaseColor();
-    drawCircle(pos, radius_d * getAge() / FPS, thickness_d * getAge() / FPS);
+    drawCircle(pos, radius_d * getAge(), thickness_d * getAge());
   }
 
   GfxEffectsPing(Float2 in_pos, float in_radius_d, float in_thickness_d, float life, Color color) : GfxEffects(life, color), pos(in_pos), radius_d(in_radius_d), thickness_d(in_thickness_d) { };
