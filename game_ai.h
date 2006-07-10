@@ -10,14 +10,10 @@ class Tank;
 class Coord2;
 
 class GameAi {
-protected:
-  Keystates nextKeys;
-  Rng rng;
-  
 public:
   
-  virtual void updateGame(const vector<Tank> &players, int me) = 0;
-  virtual void updateBombardment(const vector<Tank> &players, Coord2 mypos) = 0;
+  void updateGame(const vector<Tank> &players, int me);
+  void updateBombardment(const vector<Tank> &players, Coord2 mypos);
 
   Keystates getNextKeys() const;
 
@@ -25,11 +21,17 @@ public:
   virtual ~GameAi();
 
 protected:
-  
+
+  Keystates nextKeys;
+  Rng rng;
+
   void zeroNextKeys();
   void normalizeNext();
 
 private:
+  
+  virtual void updateGameWork(const vector<Tank> &players, int me) = 0;
+  virtual void updateBombardmentWork(const vector<Tank> &players, Coord2 mypos) = 0;
   
   // do not implement
   GameAi(const GameAi &foo);

@@ -6,24 +6,20 @@
 #include "game_ai.h"
 
 class GameAiNull : public GameAi {
-public:
-  void updateGame(const vector<Tank> &players, int me) {
-    zeroNextKeys();
-    normalizeNext();
+private:
+  void updateGameWork(const vector<Tank> &players, int me) {
   }
-  void updateBombardment(const vector<Tank> &players, Coord2 mypos) {
+  void updateBombardmentWork(const vector<Tank> &players, Coord2 mypos) {
     CHECK(0);
   }
 };
 
 class GameAiFiring : public GameAi {
-public:
-  void updateGame(const vector<Tank> &players, int me) {
-    zeroNextKeys();
+private:
+  void updateGameWork(const vector<Tank> &players, int me) {
     nextKeys.fire[0].down = true;
-    normalizeNext();
   }
-  void updateBombardment(const vector<Tank> &players, Coord2 mypos) {
+  void updateBombardmentWork(const vector<Tank> &players, Coord2 mypos) {
     CHECK(0);
   }
 };
@@ -50,13 +46,10 @@ class GameAiScatterbombing : public GameAi {
   bool fired;
   Coord2 target;
   
-public:
-  void updateGame(const vector<Tank> &players, int me) {
+  void updateGameWork(const vector<Tank> &players, int me) {
     CHECK(0);
   }
-  void updateBombardment(const vector<Tank> &players, Coord2 mypos) {
-    zeroNextKeys();
-    
+  void updateBombardmentWork(const vector<Tank> &players, Coord2 mypos) {
     if(fired) {
       fired = false;
       target = players[targetid].pos + Coord2(randomDisc(rng) * rad);
@@ -73,9 +66,9 @@ public:
       nextKeys.fire[0].down = true;
       fired = true;
     }
-    normalizeNext();
   }
   
+public:
   GameAiScatterbombing(int in_targetid, float in_rad) { targetid = in_targetid; rad = in_rad; fired = true; }
 };
 

@@ -3,6 +3,17 @@
 
 #include "game.h"
 
+void GameAi::updateGame(const vector<Tank> &players, int me) {
+  zeroNextKeys();
+  updateGameWork(players, me);
+  normalizeNext();
+}
+void GameAi::updateBombardment(const vector<Tank> &players, Coord2 mypos) {
+  zeroNextKeys();
+  updateBombardmentWork(players, mypos);
+  normalizeNext();
+}
+
 Keystates GameAi::getNextKeys() const {
   return nextKeys;
 }

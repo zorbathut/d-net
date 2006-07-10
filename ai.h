@@ -24,10 +24,10 @@ private:
   Float2 targetdir;
   bool firing[SIMUL_WEAPONS];
   
+  virtual void updateGameWork(const vector<Tank> &players, int me);
+  virtual void updateBombardmentWork(const vector<Tank> &players, Coord2 mypos);
+
 public:
-  
-  virtual void updateGame(const vector<Tank> &players, int me);
-  virtual void updateBombardment(const vector<Tank> &players, Coord2 mypos);
 
   GameAiStandard();
 };

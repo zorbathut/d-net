@@ -1,6 +1,4 @@
 ---- Major work path
-- Bombardment demo screen
-- Wrap GameAi
 - Improve explosion effects (missile, glory device)
 - Glory device demo screen
 - Upgrade demo screen

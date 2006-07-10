@@ -7,8 +7,7 @@
 
 using namespace std;
 
-void GameAiStandard::updateGame(const vector<Tank> &players, int me) {
-  zeroNextKeys();
+void GameAiStandard::updateGameWork(const vector<Tank> &players, int me) {
   if(rng.frand() < 0.01) {
     // find a tank, because approach and retreat both need one
     int targtank;
@@ -70,12 +69,9 @@ void GameAiStandard::updateGame(const vector<Tank> &players, int me) {
     nextKeys.fire[i].down = firing;
     nextKeys.change[i].down = (rng.frand() < 0.001);  // weapon switch
   }
-  
-  normalizeNext();
 }
 
-void GameAiStandard::updateBombardment(const vector<Tank> &players, Coord2 mypos) {
-  zeroNextKeys();
+void GameAiStandard::updateBombardmentWork(const vector<Tank> &players, Coord2 mypos) {
   Coord2 clopos(0, 0);
   Coord clodist = 1000000;
   for(int i = 0; i < players.size(); i++) {
