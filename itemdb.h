@@ -91,6 +91,7 @@ public:
 
   const IDBDeploy *deploy;
   const IDBProjectile *projectile;
+  const IDBWarhead *core;
 
   int shotspersplit;
 
@@ -218,6 +219,7 @@ public:
 
   int shotspersplit() const;
   IDBProjectileAdjust projectile() const;
+  IDBWarheadAdjust core() const;
   
   Money cost() const;
   Money sellcost() const;

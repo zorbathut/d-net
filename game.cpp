@@ -318,7 +318,7 @@ bool Tank::takeDamage(float damage) {
   return false;
 };
 
-void Tank::genEffects(vector<smart_ptr<GfxEffects> > *gfxe, vector<Projectile> *projectiles) {
+void Tank::genEffects(vector<smart_ptr<GfxEffects> > *gfxe, vector<Projectile> *projectiles, const vector<pair<float, Tank *> > &adjacency, Gamemap *gm) {
   if(spawnShards) {
     vector<Coord2> tv = getTankVertices(pos, d);
     Coord2 centr = getCentroid(tv);
@@ -394,6 +394,8 @@ void Tank::genEffects(vector<smart_ptr<GfxEffects> > *gfxe, vector<Projectile> *
     for(int i = 0; i < ang.size(); i++)
       for(int j = 0; j < glory.shotspersplit(); j++)
         projectiles->push_back(Projectile(centr, ang[i] + gaussian_scaled(2) / 8, glory.projectile(), this));
+    
+    detonateWarhead(glory.core(), centr, NULL, this, adjacency, gfxe, gm, 1.0, true);
     
     spawnShards = false;
   }
@@ -904,7 +906,7 @@ bool Game::runTick(const vector< Keystates > &rkeys) {
 
   for(int i = 0; i < tanks.size(); i++) {
     tanks[i].weaponCooldown--;
-    tanks[i].genEffects(&gfxeffects, &projectiles[i]);
+    tanks[i].genEffects(&gfxeffects, &projectiles[i], genTankDistance(tanks[i].pos), &gamemap);
     if(tanks[i].live) {
       int inzone = -1;
       for(int j = 0; j < zones.size(); j++)

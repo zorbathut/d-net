@@ -1,5 +1,4 @@
 ---- Major work path
-- Improve explosion effects (missile, glory device)
 - Glory device demo screen
 - Upgrade demo screen
 - Tank demo screen(s)

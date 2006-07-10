@@ -46,7 +46,7 @@ public:
   pair<Coord2, float> getNextPosition(const Keystates &keys) const;
 
   bool takeDamage(float amount); // returns true on kill
-  void genEffects(vector<smart_ptr<GfxEffects> > *gfxe, vector<Projectile> *projectiles);
+  void genEffects(vector<smart_ptr<GfxEffects> > *gfxe, vector<Projectile> *projectiles, const vector<pair<float, Tank *> > &adjacency, Gamemap *gm);
   
   bool initted;
 

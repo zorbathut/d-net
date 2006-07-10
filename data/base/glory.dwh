@@ -5,7 +5,7 @@ deploy {
 }
 
 warhead {
-  name=warhead.glory
+  name=warhead.glory.projectile
   impactdamage=0.75 explosive
   #wallremovalradius=0.5
 }
@@ -16,16 +16,14 @@ projectile {
   velocity=40
   color=1.0, 0.8, 0.3
   motion=airbrake
-  warhead=warhead.glory
+  warhead=warhead.glory.projectile
 }
 
-projectile {
-  name=projectile.glory.range
-  width=0.6
-  velocity=80
-  color=1.0, 0.8, 0.3
-  motion=airbrake
-  warhead=warhead.glory
+warhead {
+  name=warhead.glory.basic.core
+  radiusdamage=4.0 explosive
+  radiusfalloff=6
+  wallremovalradius=2
 }
 
 glory {
@@ -35,6 +33,7 @@ glory {
   
   deploy=deploy.glory
   projectile=projectile.glory.basic
+  core=warhead.glory.basic.core
   
   minsplits=2
   maxsplits=4
@@ -44,12 +43,29 @@ glory {
   shotspersplit=4
 }
 
+projectile {
+  name=projectile.glory.shaped
+  width=0.6
+  velocity=80
+  color=1.0, 0.8, 0.3
+  motion=airbrake
+  warhead=warhead.glory.projectile
+}
+
+warhead {
+  name=warhead.glory.shaped.core
+  radiusdamage=8.0 explosive
+  radiusfalloff=12
+  wallremovalradius=6
+}
+
 glory {
   name=ROOT.Glory Devices.Shaped Charges
   cost=2000
   
   deploy=deploy.glory
-  projectile=projectile.glory.range
+  projectile=projectile.glory.shaped
+  core=warhead.glory.shaped.core
   
   minsplits=3
   maxsplits=5

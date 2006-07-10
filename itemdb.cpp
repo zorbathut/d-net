@@ -509,6 +509,10 @@ void parseItemFile(const string &fname) {
       string deployclass = chunk.consume("deploy");
       CHECK(deployclasses.count(deployclass));
       gloryclasses[name].deploy = &deployclasses[deployclass];
+      
+      string coreclass = chunk.consume("core");
+      CHECK(warheadclasses.count(coreclass));
+      gloryclasses[name].core = &warheadclasses[coreclass];
 
       gloryclasses[name].minsplits = atoi(chunk.consume("minsplits").c_str());
       gloryclasses[name].maxsplits = atoi(chunk.consume("maxsplits").c_str());
