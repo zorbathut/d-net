@@ -83,7 +83,7 @@ public:
   void tick(vector<smart_ptr<GfxEffects> > *gfx);
   void render() const;
 
-  void addCollision( Collider *collider ) const;
+  void addCollision(Collider *collider) const;
 
   void impact(Coord2 pos, Tank *target, const vector<pair<float, Tank *> > &adjacency, vector<smart_ptr<GfxEffects> > *gfxe, Gamemap *gm);
 

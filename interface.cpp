@@ -418,7 +418,7 @@ void interfaceInit() {
   ifm = InterfaceMain();
 }
 
-bool interfaceRunTick( const vector< Controller > &control ) {
+bool interfaceRunTick(const vector< Controller > &control) {
   if(FLAGS_vecedit) {
     return vecEditTick(control[0]);
   } else {

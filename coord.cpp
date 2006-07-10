@@ -59,7 +59,7 @@ Coord2 normalize(const Coord2 &in) { return imp_normalize<Coords>(in); };
 Coord getAngle(const Coord2 &in) { return imp_getAngle<Coords>(in); };
 Coord2 makeAngle(const Coord &in) { return imp_makeAngle<Coords>(in); };
 
-int whichSide( const Coord4 &f4, const Coord2 &pta ) { return imp_whichSide<Coords>(f4, pta); };
+int whichSide(const Coord4 &f4, const Coord2 &pta) { return imp_whichSide<Coords>(f4, pta); };
 
 Coord distanceFromLine(const Coord4 &line, const Coord2 &pt) {
   Coord u = ((pt.x - line.sx) * (line.ex - line.sx) + (pt.y - line.sy) * (line.ey - line.sy)) / ((line.ex - line.sx) * (line.ex - line.sx) + (line.ey - line.sy) * (line.ey - line.sy));
@@ -194,5 +194,5 @@ void expandBoundBox(Coord4 *bbox, Coord factor) { return imp_expandBoundBox<Coor
  * Math
  */
 
-bool linelineintersect( const Coord4 &lhs, const Coord4 &rhs ) { return imp_linelineintersect<Coords>(lhs, rhs); };
-Coord linelineintersectpos( const Coord4 &lhs, const Coord4 &rhs ) { return imp_linelineintersectpos<Coords>(lhs, rhs); };
+bool linelineintersect(const Coord4 &lhs, const Coord4 &rhs) { return imp_linelineintersect<Coords>(lhs, rhs); };
+Coord linelineintersectpos(const Coord4 &lhs, const Coord4 &rhs) { return imp_linelineintersectpos<Coords>(lhs, rhs); };

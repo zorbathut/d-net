@@ -16,7 +16,7 @@ extern bool ffwd;
 #undef printf
 #endif
 
-string StringPrintf( const char *bort, ... ) __attribute__((format(printf,1,2)));
+string StringPrintf(const char *bort, ...) __attribute__((format(printf,1,2)));
 
 #ifdef PFDEFINED
 #define printf FAILURE

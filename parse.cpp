@@ -7,24 +7,24 @@
 
 using namespace std;
 
-vector< string > tokenize( const string &in, const string &kar ) {
+vector< string > tokenize(const string &in, const string &kar) {
   string::const_iterator cp = in.begin();
   vector< string > oot;
-  while( cp != in.end() ) {
-    while( cp != in.end() && count( kar.begin(), kar.end(), *cp ) )
+  while(cp != in.end()) {
+    while(cp != in.end() && count(kar.begin(), kar.end(), *cp))
       cp++;
-    if( cp != in.end() )
-      oot.push_back( string( cp, find_first_of( cp, in.end(), kar.begin(), kar.end() ) ) );
-    cp = find_first_of( cp, in.end(), kar.begin(), kar.end() );
+    if(cp != in.end())
+      oot.push_back(string(cp, find_first_of(cp, in.end(), kar.begin(), kar.end())));
+    cp = find_first_of(cp, in.end(), kar.begin(), kar.end());
   };
   return oot;
 };
 
-vector< int > sti( const vector< string > &foo ) {
+vector< int > sti(const vector< string > &foo) {
   int i;
   vector< int > bar;
-  for( i = 0; i < foo.size(); i++ ) {
-    bar.push_back( atoi( foo[ i ].c_str() ) );
+  for(i = 0; i < foo.size(); i++) {
+    bar.push_back(atoi(foo[i].c_str()));
   }
   return bar;
 };

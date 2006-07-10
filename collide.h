@@ -102,7 +102,7 @@ public:
   void resetNonwalls(int mode, const Coord4 &bounds, const vector<int> &teams);
   bool consumeFullReset();
 
-  void startToken( int toki );
+  void startToken(int toki);
   void token(const Coord4 &line, const Coord4 &direction);
   void token(const Coord4 &line);
   void clearToken(int tokid);

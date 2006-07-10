@@ -8,7 +8,7 @@ using namespace std;
 class Ai;
 
 void interfaceInit();
-bool interfaceRunTick( const vector< Controller > &control );
+bool interfaceRunTick(const vector< Controller > &control);
 void interfaceRunAi(const vector<Ai *> &ais);
 void interfaceRenderToScreen();
 

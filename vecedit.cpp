@@ -68,7 +68,7 @@ void saveEntity(int i, FILE *outfile) {
 void saveDv2() {
   FILE *outfile;
   {
-    char timestampbuf[ 128 ];
+    char timestampbuf[128];
     time_t ctmt = time(NULL);
     strftime(timestampbuf, sizeof(timestampbuf), "%Y%m%d-%H%M%S.dv2", gmtime(&ctmt));
     dprintf("%s\n", timestampbuf);
@@ -102,7 +102,7 @@ int entity_position = -1;
 int gui_vpos = 0;
 
 float dsq(float xa, float ya, float xb, float yb) {
-  return ( xa - xb ) * ( xa - xb ) + ( ya - yb ) * ( ya - yb );
+  return (xa - xb) * (xa - xb) + (ya - yb) * (ya - yb);
 }
 
 float distSquared(float x, float y, int path, int node) {
@@ -218,10 +218,10 @@ void renderSinglePath(int path, float intense, int widgetlevel) {
       drawCurve(Float4(
         p.centerx + p.vpath[i].x,             p.centery + p.vpath[i].y,
         p.centerx + p.vpath[i].x + p.vpath[i].curvrx,   p.centery + p.vpath[i].y + p.vpath[i].curvry
-      ), Float4(
+), Float4(
         p.centerx + p.vpath[n].x + p.vpath[n].curvlx,   p.centery + p.vpath[n].y + p.vpath[n].curvly,
         p.centerx + p.vpath[n].x,             p.centery + p.vpath[n].y
-      ), 50, 0.1);
+), 50, 0.1);
     }
   }
   

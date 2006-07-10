@@ -12,22 +12,22 @@ using namespace std;
 
 bool ffwd = false;
 
-string StringPrintf( const char *bort, ... ) {
+string StringPrintf(const char *bort, ...) {
 
   static vector< char > buf(2);
   va_list args;
 
   int done = 0;
   do {
-    if( done )
-      buf.resize( buf.size() * 2 );
-    va_start( args, bort );
-    done = vsnprintf( &(buf[ 0 ]), buf.size() - 1,  bort, args );
-    CHECK( done < (int)buf.size() );
-    va_end( args );
-  } while( done == buf.size() - 1 || done == -1);
+    if(done)
+      buf.resize(buf.size() * 2);
+    va_start(args, bort);
+    done = vsnprintf(&(buf[0]), buf.size() - 1,  bort, args);
+    CHECK(done < (int)buf.size());
+    va_end(args);
+  } while(done == buf.size() - 1 || done == -1);
 
-  CHECK( done < (int)buf.size() );
+  CHECK(done < (int)buf.size());
 
   return string(buf.begin(), buf.begin() + done);
 
@@ -144,7 +144,7 @@ void Transform2d::display() const {
 Transform2d::Transform2d() {
   for(int i = 0; i < 3; i++)
     for(int j = 0; j < 3; j++)
-      m[i][j] = ( i == j );
+      m[i][j] = (i == j);
 }
 
 Transform2d operator*(const Transform2d &lhs, const Transform2d &rhs) {

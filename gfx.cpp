@@ -150,7 +150,7 @@ void beginLineCluster(float weight) {
   CHECK(glGetError() == GL_NO_ERROR);
   CHECK(curWeight == -1.f);
   CHECK(weight != -1.f);
-  glLineWidth( weight / map_zoom * getResolutionY() );   // GL uses pixels internally for this unit, so I have to translate from game-meters
+  glLineWidth(weight / map_zoom * getResolutionY());   // GL uses pixels internally for this unit, so I have to translate from game-meters
   CHECK(glGetError() == GL_NO_ERROR);
   glBegin(GL_LINE_STRIP);
   curWeight = weight;
@@ -171,22 +171,22 @@ void finishLineCluster() {
 
 void initFrame() {
   CHECK(curWeight == -1.f);
-  glEnable( GL_POINT_SMOOTH );
-  glEnable( GL_LINE_SMOOTH );
-  glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
-  glHint( GL_POINT_SMOOTH_HINT, GL_NICEST );
-  //glHint( GL_LINE_SMOOTH_HINT, GL_FASTEST );
-  //glHint( GL_POINT_SMOOTH_HINT, GL_FASTEST );
-  glEnable( GL_BLEND );
-  glBlendFunc( GL_SRC_ALPHA, GL_ONE );
-  //glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+  glEnable(GL_POINT_SMOOTH);
+  glEnable(GL_LINE_SMOOTH);
+  glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+  glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
+  //glHint(GL_LINE_SMOOTH_HINT, GL_FASTEST);
+  //glHint(GL_POINT_SMOOTH_HINT, GL_FASTEST);
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+  //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   clearFrame(Color(0.05, 0.05, 0.05));
   CHECK(glGetError() == GL_NO_ERROR);
 }
 
 void clearFrame(const Color &color) {
   finishLineCluster();
-  glClearColor( color.r, color.g, color.b, 0.0f );
+  glClearColor(color.r, color.g, color.b, 0.0f);
   glClear(GL_COLOR_BUFFER_BIT);
   clearcolor = color;
 }
@@ -262,8 +262,8 @@ void setZoomCenter(float cx, float cy, float radius_y) {
 
 float getAspect() { return windows.back().newbounds.x_span() / windows.back().newbounds.y_span(); };
 
-void setColor( float r, float g, float b ) {
-  glColor3f( r, g, b );
+void setColor(float r, float g, float b) {
+  glColor3f(r, g, b);
   curcolor = Color(r, g, b);
 }
 
@@ -272,10 +272,10 @@ void setColor(const Color &color) {
 }
 
 void localVertex2f(float x, float y) {
-  glVertex2f( ( x - map_sx ) / map_zoom, ( y - map_sy ) / map_zoom );
+  glVertex2f((x - map_sx) / map_zoom, (y - map_sy) / map_zoom);
 }
 
-void drawLine( float sx, float sy, float ex, float ey, float weight ) {
+void drawLine(float sx, float sy, float ex, float ey, float weight) {
   CHECK(weight > 0);
   if(weight != curWeight || lineCount > 1000) {
     finishLineCluster();
@@ -301,10 +301,10 @@ void drawLine(const Float2 &s, const Float2 &e, float weight) {
 void drawLine(const Coord2 &s, const Coord2 &e, float weight) {
   drawLine(s.toFloat(), e.toFloat(), weight);
 }
-void drawLine( const Float4 &pos, float weight ) {
-  drawLine( pos.sx, pos.sy, pos.ex, pos.ey, weight );
+void drawLine(const Float4 &pos, float weight) {
+  drawLine(pos.sx, pos.sy, pos.ex, pos.ey, weight);
 }
-void drawLine( const Coord4 &loc, float weight ) {
+void drawLine(const Coord4 &loc, float weight) {
   drawLine(loc.toFloat(), weight);
 }
 
@@ -338,19 +338,19 @@ void drawSolid(const Float4 &box) {
   finishLineCluster();
   CHECK(glGetError() == GL_NO_ERROR);
   glColor3f(clearcolor.r, clearcolor.g, clearcolor.b);
-  glBlendFunc( GL_ONE, GL_ZERO );
+  glBlendFunc(GL_ONE, GL_ZERO);
   glBegin(GL_TRIANGLE_STRIP);
   localVertex2f(box.sx, box.sy);
   localVertex2f(box.sx, box.ey);
   localVertex2f(box.ex, box.sy);
   localVertex2f(box.ex, box.ey);
   glEnd();
-  glBlendFunc( GL_SRC_ALPHA, GL_ONE );
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE);
   CHECK(glGetError() == GL_NO_ERROR);
   setColor(curcolor);
 }
 
-void drawRect( const Float4 &rect, float weight ) {
+void drawRect(const Float4 &rect, float weight) {
   vector<Float2> verts;
   verts.push_back(Float2(rect.sx, rect.sy));
   verts.push_back(Float2(rect.sx, rect.ey));
@@ -385,8 +385,8 @@ void drawShadedRect(const Float4 &locs, float weight, float shadedens) {
 }
 
 float bezinterp(float x0, float x1, float x2, float x3, float t) {
-  float cx = 3 * ( x1 - x0 );
-  float bx = 3 * ( x2 - x1 ) - cx;
+  float cx = 3 * (x1 - x0);
+  float bx = 3 * (x2 - x1) - cx;
   float ax = x3 - x0 - cx - bx;
   return ax * t * t * t + bx * t * t + cx * t + x0;
 }
@@ -399,12 +399,12 @@ void drawCurve(const Float4 &ptah, const Float4 &ptbh, int midpoints, float weig
 }
 
 void drawCurveControls(const Float4 &ptah, const Float4 &ptbh, float spacing, float weight) {
-  drawRectAround( ptah.sx, ptah.sy, spacing, weight );
-  drawRectAround( ptah.ex, ptah.ey, spacing, weight );
-  drawRectAround( ptbh.sx, ptbh.sy, spacing, weight );
-  drawRectAround( ptbh.ex, ptbh.ey, spacing, weight );
-  drawLine( ptah, weight );
-  drawLine( ptbh, weight );
+  drawRectAround(ptah.sx, ptah.sy, spacing, weight);
+  drawRectAround(ptah.ex, ptah.ey, spacing, weight);
+  drawRectAround(ptbh.sx, ptbh.sy, spacing, weight);
+  drawRectAround(ptbh.ex, ptbh.ey, spacing, weight);
+  drawLine(ptah, weight);
+  drawLine(ptbh, weight);
 }
 
 void drawCircle(const Float2 &center, float radius, float weight) {
@@ -419,9 +419,9 @@ void drawCircle(const Coord2 &center, Coord radius, Coord weight) {
 
 void drawPoint(const Float2 &pos, float weight) {
   finishLineCluster();
-  glPointSize( weight / map_zoom * getResolutionY() );   // GL uses pixels internally for this unit, so I have to translate from game-meters
-  glBegin( GL_POINTS );
-  glVertex2f( ( pos.x - map_sx ) / map_zoom, ( pos.y - map_sy ) / map_zoom );
+  glPointSize(weight / map_zoom * getResolutionY());   // GL uses pixels internally for this unit, so I have to translate from game-meters
+  glBegin(GL_POINTS);
+  glVertex2f((pos.x - map_sx) / map_zoom, (pos.y - map_sy) / map_zoom);
   glEnd();
 }
 
@@ -453,7 +453,7 @@ void drawText(const string &txt, float scale, const Float2 &pos) {
 }
 
 float getTextWidth(const string &txt, float scale) {
-  return (scale / 9) * ( 8 * txt.size() - 3 );
+  return (scale / 9) * (8 * txt.size() - 3);
 }
 
 void drawJustifiedText(const string &txt, float scale, float sx, float sy, int xps, int yps) {

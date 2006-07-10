@@ -17,25 +17,25 @@ SDL_Surface * MainWindow = NULL;
 DEFINE_bool(fullscreen, true, "Fullscreen");
 DEFINE_bool(help, false, "Get help");
 
-int GetVideoFlags( void ) {
+int GetVideoFlags(void) {
 
   int videoflags = 0;
 
   videoflags = SDL_OPENGL | SDL_HWPALETTE/* | SDL_RESIZABLE*/;
 
   const SDL_VideoInfo *videoinfo = SDL_GetVideoInfo();
-  CHECK( videoinfo );
-  if( videoinfo->hw_available )
+  CHECK(videoinfo);
+  if(videoinfo->hw_available)
     videoflags |= SDL_HWSURFACE;
   else {
-    dprintf( "WARNING: Software surface\n" );
+    dprintf("WARNING: Software surface\n");
     videoflags |= SDL_SWSURFACE;
   }
   
-  if( videoinfo->blit_hw ) {
+  if(videoinfo->blit_hw) {
     videoflags |= SDL_HWACCEL;
   } else {
-    dprintf( "WARNING: Software blit\n" );
+    dprintf("WARNING: Software blit\n");
   }
   
   if(FLAGS_fullscreen)
@@ -45,23 +45,23 @@ int GetVideoFlags( void ) {
 
 }
 
-bool MakeWindow( const char * strWindowName, int width, int height ) {
+bool MakeWindow(const char * strWindowName, int width, int height) {
   
   dprintf("Attempting to make window %d/%d\n", width, height);
 
-  CHECK( height > 0 );
-  CHECK( width > 0 );
+  CHECK(height > 0);
+  CHECK(width > 0);
   
-  MainWindow = SDL_SetVideoMode( width, height, SCREEN_DEPTH, GetVideoFlags() );
+  MainWindow = SDL_SetVideoMode(width, height, SCREEN_DEPTH, GetVideoFlags());
   if(!MainWindow)
     return false;
 
-  SDL_WM_SetCaption( strWindowName, strWindowName );     // set the window caption (first argument) and icon caption (2nd arg)
+  SDL_WM_SetCaption(strWindowName, strWindowName);     // set the window caption (first argument) and icon caption (2nd arg)
 
-  glViewport( 0, 0, width, height );
+  glViewport(0, 0, width, height);
 
   glLoadIdentity();
-  glOrtho( 0, 1.25, 0, 1, 1.0, -1.0 );  
+  glOrtho(0, 1.25, 0, 1, 1.0, -1.0);  
   
   return true;
 
@@ -88,12 +88,12 @@ void GetStartingResolution() {
 
 void initSystem() {
 
-  CHECK(SDL_Init( SDL_INIT_VIDEO ) >= 0);
+  CHECK(SDL_Init(SDL_INIT_VIDEO) >= 0);
   CHECK(SDL_InitSubSystem(SDL_INIT_JOYSTICK) >= 0);
 
   SetupOgl();
   GetStartingResolution();
-  while(!MakeWindow( "Devastation Net", getResolutionX(), getResolutionY() ))
+  while(!MakeWindow("Devastation Net", getResolutionX(), getResolutionY()))
     resDown();
 };
 
@@ -107,7 +107,7 @@ int main(int argc, char **argv) {
   
   StackString sst("Main");
 
-  dprintf( "Init\n" );
+  dprintf("Init\n");
   
   initFlags(argc, argv);
   if(FLAGS_help) {
@@ -123,15 +123,15 @@ int main(int argc, char **argv) {
   initSystem();
   initGfx();
 
-  dprintf( "Loop\n" );
+  dprintf("Loop\n");
 
   MainLoop();
 
-  dprintf( "Deinit\n" );
+  dprintf("Deinit\n");
 
   deinitSystem();
 
-  dprintf( "Done\n" );
+  dprintf("Done\n");
   
   return 0;
 }

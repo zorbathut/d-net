@@ -13,7 +13,7 @@ DECLARE_bool(verboseCollisions);
 const Coord NOCOLLIDE = Coord(-1000000000);
 const Coord MATRIX_RES = 20;
 
-pair< Coord, Coord > getLineCollision( const Coord4 &linepos, const Coord4 &linevel, const Coord4 &ptposvel ) {
+pair< Coord, Coord > getLineCollision(const Coord4 &linepos, const Coord4 &linevel, const Coord4 &ptposvel) {
   Coord x1d = linepos.sx;
   Coord y1d = linepos.sy;
   Coord x2d = linepos.ex;
@@ -29,105 +29,105 @@ pair< Coord, Coord > getLineCollision( const Coord4 &linepos, const Coord4 &line
   Coord a = -x3v*y1v-x1v*y2v+x3v*y2v+x2v*y1v+x1v*y3v-x2v*y3v;
   Coord b = x2v*y1d-x3v*y1d+x2d*y1v-x3d*y1v-x1v*y2d+x3v*y2d-x1d*y2v+x3d*y2v+x1v*y3d-x2v*y3d+x1d*y3v-x2d*y3v;
   Coord c = x2d*y1d-x3d*y1d-x1d*y2d+x3d*y2d+x1d*y3d-x2d*y3d;
-  //dprintf( "a is %f, b is %f, c is %f\n", a, b, c );
+  //dprintf("a is %f, b is %f, c is %f\n", a, b, c);
   Coord sqrii = b * b - 4 * a * c;
-  //dprintf( "sqrii is %f\n", sqrii );
+  //dprintf("sqrii is %f\n", sqrii);
   Coord a2 = 2 * a;
-  //dprintf( "a2 is %f\n", a2 );
-  if( sqrii < 0 )
-    return make_pair( NOCOLLIDE, NOCOLLIDE );
+  //dprintf("a2 is %f\n", a2);
+  if(sqrii < 0)
+    return make_pair(NOCOLLIDE, NOCOLLIDE);
   pair< Coord, Coord > rv;
-  if( abs(a2) < Coord(0.00001f) ) {
-    if( b == 0 ) {
-      return make_pair( NOCOLLIDE, NOCOLLIDE );
+  if(abs(a2) < Coord(0.00001f)) {
+    if(b == 0) {
+      return make_pair(NOCOLLIDE, NOCOLLIDE);
     }
     rv.first = -c / b;
     rv.second = NOCOLLIDE;
   } else {
-    Coord sqrit = sqrt( sqrii );
-    rv.first = ( -b + sqrit ) / a2;
-    rv.second = ( -b - sqrit ) / a2;
+    Coord sqrit = sqrt(sqrii);
+    rv.first = (-b + sqrit) / a2;
+    rv.second = (-b - sqrit) / a2;
   }
   {
-    if( rv.first != NOCOLLIDE ) {
-      if(!(abs( a * rv.first * rv.first + b * rv.first + c ) < 1000000))
-        dprintf( "debugtest: %f resolves to %f (%f, %f, %f, %f)\n", rv.first.toFloat(), (a * rv.first * rv.first + b * rv.first + c).toFloat(), a.toFloat(), b.toFloat(), c.toFloat(), rv.first.toFloat() );
-      CHECK( abs( a * rv.first * rv.first + b * rv.first + c ) < 1000000 );
+    if(rv.first != NOCOLLIDE) {
+      if(!(abs(a * rv.first * rv.first + b * rv.first + c) < 1000000))
+        dprintf("debugtest: %f resolves to %f (%f, %f, %f, %f)\n", rv.first.toFloat(), (a * rv.first * rv.first + b * rv.first + c).toFloat(), a.toFloat(), b.toFloat(), c.toFloat(), rv.first.toFloat());
+      CHECK(abs(a * rv.first * rv.first + b * rv.first + c) < 1000000);
     }
-    if( rv.second != NOCOLLIDE ) {
-      if(!(abs( a * rv.second * rv.second + b * rv.second + c ) < 1000000))
-        dprintf( "debugtest: %f resolves to %f (%f, %f, %f, %f)\n", rv.second.toFloat(), (a * rv.second * rv.second + b * rv.second + c).toFloat(), a.toFloat(), b.toFloat(), c.toFloat(), rv.second.toFloat() );
-      CHECK( abs( a * rv.second * rv.second + b * rv.second + c ) < 1000000 );
+    if(rv.second != NOCOLLIDE) {
+      if(!(abs(a * rv.second * rv.second + b * rv.second + c) < 1000000))
+        dprintf("debugtest: %f resolves to %f (%f, %f, %f, %f)\n", rv.second.toFloat(), (a * rv.second * rv.second + b * rv.second + c).toFloat(), a.toFloat(), b.toFloat(), c.toFloat(), rv.second.toFloat());
+      CHECK(abs(a * rv.second * rv.second + b * rv.second + c) < 1000000);
     }
   }
   return rv;
 }
 
-Coord sqr( Coord x ) {
+Coord sqr(Coord x) {
   return x * x;
 }
 
-Coord getu( const Coord4 &linepos, const Coord4 &linevel, const Coord4 &ptposvel, Coord t ) {
+Coord getu(const Coord4 &linepos, const Coord4 &linevel, const Coord4 &ptposvel, Coord t) {
   Coord x1 = linepos.sx + linevel.sx * t;
   Coord y1 = linepos.sy + linevel.sy * t;
   Coord x2 = linepos.ex + linevel.ex * t;
   Coord y2 = linepos.ey + linevel.ey * t;
   Coord x3 = ptposvel.sx + ptposvel.ex * t;
   Coord y3 = ptposvel.sy + ptposvel.ey * t;
-  return ( ( x3 - x1 ) * ( x2 - x1 ) + ( y3 - y1 ) * ( y2 - y1 ) ) / ( sqr( x2 - x1 ) + sqr( y2 - y1 ) );
+  return ((x3 - x1) * (x2 - x1) + (y3 - y1) * (y2 - y1)) / ( sqr( x2 - x1) + sqr( y2 - y1));
 }
 
-pair<Coord, Coord2> getCollision( const Coord4 &l1p, const Coord4 &l1v, const Coord4 &l2p, const Coord4 &l2v ) {
+pair<Coord, Coord2> getCollision(const Coord4 &l1p, const Coord4 &l1v, const Coord4 &l2p, const Coord4 &l2v) {
   Coord cBc = NOCOLLIDE;
   Coord2 pos;
   Coord4 temp;
-  for( int i = 0; i < 4; i++ ) {
+  for(int i = 0; i < 4; i++) {
     const Coord4 *linepos;
     const Coord4 *linevel;
     const Coord4 *ptposvel;
-    switch( i ) {
+    switch(i) {
       case 0:
         linepos = &l1p;
         linevel = &l1v;
-        temp = Coord4( l2p.sx, l2p.sy, l2v.sx, l2v.sy );
+        temp = Coord4(l2p.sx, l2p.sy, l2v.sx, l2v.sy);
         ptposvel = &temp;
         break;
       case 1:
         linepos = &l1p;
         linevel = &l1v;
-        temp = Coord4( l2p.ex, l2p.ey, l2v.ex, l2v.ey );
+        temp = Coord4(l2p.ex, l2p.ey, l2v.ex, l2v.ey);
         ptposvel = &temp;
         break;
       case 2:
         linepos = &l2p;
         linevel = &l2v;
-        temp = Coord4( l1p.sx, l1p.sy, l1v.sx, l1v.sy );
+        temp = Coord4(l1p.sx, l1p.sy, l1v.sx, l1v.sy);
         ptposvel = &temp;
         break;
       case 3:
         linepos = &l2p;
         linevel = &l2v;
-        temp = Coord4( l1p.ex, l1p.ey, l1v.ex, l1v.ey );
+        temp = Coord4(l1p.ex, l1p.ey, l1v.ex, l1v.ey);
         ptposvel = &temp;
         break;
       default:
-        CHECK( 0 );
+        CHECK(0);
     }
-    pair< Coord, Coord > tbv = getLineCollision( *linepos, *linevel, *ptposvel );
+    pair< Coord, Coord > tbv = getLineCollision(*linepos, *linevel, *ptposvel);
     Coord2 tpos;
-    for( int j = 0; j < 2; j++ ) {
+    for(int j = 0; j < 2; j++) {
       Coord tt;
-      if( j ) {
+      if(j) {
         tt = tbv.second;
       } else {
         tt = tbv.first;
       }
-      //if( verbosified && tt != NOCOLLIDE )
-        //dprintf( "%d, %d is %f\n", i, j, tt );
-      if( tt < 0 || tt > 1 || ( cBc != NOCOLLIDE && tt > cBc ) )
+      //if(verbosified && tt != NOCOLLIDE)
+        //dprintf("%d, %d is %f\n", i, j, tt);
+      if(tt < 0 || tt > 1 || (cBc != NOCOLLIDE && tt > cBc))
         continue;
-      Coord u = getu( *linepos, *linevel, *ptposvel, tt );
-      if( u < 0 || u > 1 )
+      Coord u = getu(*linepos, *linevel, *ptposvel, tt);
+      if(u < 0 || u > 1)
         continue;
       cBc = tt;
       Coord4 cline = *linepos + *linevel * tt;
@@ -140,7 +140,7 @@ pair<Coord, Coord2> getCollision( const Coord4 &l1p, const Coord4 &l1v, const Co
 inline int getIndexCount(int players) {
   return players * 2 + 1;
 }
-int getIndex( int players, int category, int gid ) {
+int getIndex(int players, int category, int gid) {
   if(category == CGR_WALL) {
     CHECK(gid == 0);
     return 0;
@@ -154,7 +154,7 @@ int getIndex( int players, int category, int gid ) {
     return 0;
   }
 }
-pair< int, int > reverseIndex( int players, int index ) {
+pair< int, int > reverseIndex(int players, int index) {
   if(index == 0)
     return make_pair(int(CGR_WALL), 0);
   else if(index < players + 1)
@@ -222,7 +222,7 @@ void ColliderZone::clearToken(int groupid, int token) {
       if(tid == items[i].second.size()) // Nothing!
         break;
       vector< pair< int, pair< Coord4, Coord4 > > > gnu(items[i].second.begin(), items[i].second.begin() + tid);
-      for( ; tid < items[i].second.size(); tid++)
+      for(; tid < items[i].second.size(); tid++)
         if(items[i].second[tid].first != token)
           gnu.push_back(items[i].second[tid]);
       gnu.swap(items[i].second);
@@ -241,8 +241,8 @@ bool ColliderZone::checkSimpleCollision(int groupid, const vector<Coord4> &line,
      if(!collidematrix[groupid * getIndexCount(players) + items[x].first])
       continue;
     const vector< pair< int, pair< Coord4, Coord4 > > > &tx = items[x].second;
-    for( int xa = 0; xa < tx.size(); xa++ ) {
-      for( int ya = 0; ya < line.size(); ya++ ) {
+    for(int xa = 0; xa < tx.size(); xa++) {
+      for(int ya = 0; ya < line.size(); ya++) {
         if(linelineintersect(tx[xa].second.first, line[ya]))
           return true;
       }
@@ -252,14 +252,14 @@ bool ColliderZone::checkSimpleCollision(int groupid, const vector<Coord4> &line,
 }
 
 void ColliderZone::processSimple(vector<pair<Coord, CollideData> > *clds, const char *collidematrix) const {
-  for( int x = 0; x < lastItem; x++ ) {
-    for( int y = x + 1; y < lastItem; y++ ) {
+  for(int x = 0; x < lastItem; x++) {
+    for(int y = x + 1; y < lastItem; y++) {
       if(!collidematrix[items[x].first * getIndexCount(players) + items[y].first])
         continue;
       const vector< pair< int, pair< Coord4, Coord4 > > > &tx = items[x].second;
       const vector< pair< int, pair< Coord4, Coord4 > > > &ty = items[y].second;
-      for( int xa = 0; xa < tx.size(); xa++ ) {
-        for( int ya = 0; ya < ty.size(); ya++ ) {
+      for(int xa = 0; xa < tx.size(); xa++) {
+        for(int ya = 0; ya < ty.size(); ya++) {
           if(linelineintersect(tx[xa].second.first, ty[ya].second.first))
             clds->push_back(make_pair(0, CollideData(CollideId(reverseIndex(players, items[x].first), tx[xa].first), CollideId(reverseIndex(players, items[y].first), ty[ya].first), Coord2())));
         }
@@ -268,18 +268,18 @@ void ColliderZone::processSimple(vector<pair<Coord, CollideData> > *clds, const 
   }
 }
 void ColliderZone::processMotion(vector<pair<Coord, CollideData> > *clds, const char *collidematrix) const {
-  for( int x = 0; x < lastItem; x++ ) {
-    for( int y = x + 1; y < lastItem; y++ ) {
+  for(int x = 0; x < lastItem; x++) {
+    for(int y = x + 1; y < lastItem; y++) {
       if(!collidematrix[items[x].first * getIndexCount(players) + items[y].first])
         continue;
       const vector< pair< int, pair< Coord4, Coord4 > > > &tx = items[x].second;
       const vector< pair< int, pair< Coord4, Coord4 > > > &ty = items[y].second;
-      for( int xa = 0; xa < tx.size(); xa++ ) {
-        for( int ya = 0; ya < ty.size(); ya++ ) {
-          pair<Coord, Coord2> tcol = getCollision( tx[ xa ].second.first, tx[ xa ].second.second, ty[ ya ].second.first, ty[ ya ].second.second );
-          if( tcol.first == NOCOLLIDE )
+      for(int xa = 0; xa < tx.size(); xa++) {
+        for(int ya = 0; ya < ty.size(); ya++) {
+          pair<Coord, Coord2> tcol = getCollision(tx[xa].second.first, tx[xa].second.second, ty[ya].second.first, ty[ya].second.second);
+          if(tcol.first == NOCOLLIDE)
           	continue;
-          CHECK( tcol.first >= 0 && tcol.first <= 1 );
+          CHECK(tcol.first >= 0 && tcol.first <= 1);
           clds->push_back(make_pair(tcol.first, CollideData(CollideId(reverseIndex(players, items[x].first), tx[xa].first), CollideId(reverseIndex(players, items[y].first), ty[ya].first), tcol.second)));
         }
       }
@@ -378,7 +378,7 @@ void Collider::resetNonwalls(int mode, const Coord4 &bounds, const vector<int> &
   for(int i = 0; i < players * 2 + 1; i++) {
     string tp;
     for(int j = 0; j < players * 2 + 1; j++)
-      tp += collidematrix[j + i * ( players * 2 + 1 )] + '0';
+      tp += collidematrix[j + i * (players * 2 + 1)] + '0';
     dprintf("%s\n", tp.c_str());
   }*/
   
@@ -391,13 +391,13 @@ bool Collider::consumeFullReset() {
   return rv;
 }
 
-void Collider::startToken( int toki ) {
-  CHECK( state == CSTA_ADD && curpush != -1 );
+void Collider::startToken(int toki) {
+  CHECK(state == CSTA_ADD && curpush != -1);
   curtoken = toki;
 }
-void Collider::token( const Coord4 &line, const Coord4 &direction ) {
-  if( state == CSTA_ADD ) {
-    CHECK( state == CSTA_ADD && curpush != -1 && curtoken != -1 );
+void Collider::token(const Coord4 &line, const Coord4 &direction) {
+  if(state == CSTA_ADD) {
+    CHECK(state == CSTA_ADD && curpush != -1 && curtoken != -1);
     Coord4 area = startCBoundBox();
     addToBoundBox(&area, line.sx, line.sy);
     addToBoundBox(&area, line.ex, line.ey);
@@ -431,8 +431,8 @@ void Collider::token( const Coord4 &line, const Coord4 &direction ) {
 }
 
 void Collider::token(const Coord4 &line) {
-  if( state == CSTA_ADD ) {
-    CHECK( state == CSTA_ADD && curpush != -1 && curtoken != -1 );
+  if(state == CSTA_ADD) {
+    CHECK(state == CSTA_ADD && curpush != -1 && curtoken != -1);
     Coord4 area(min(line.sx, line.ex), min(line.sy, line.ey), max(line.sx, line.ex), max(line.sy, line.ey));
     area = snapToEnclosingGrid(area, MATRIX_RES);
     int txs = max((area.sx / MATRIX_RES).toInt(), zxs);
@@ -459,14 +459,14 @@ void Collider::clearToken(int toki) {
       zone[i][j].clearToken(curpush, toki);
 }
 
-void Collider::addThingsToGroup( int category, int gid, bool ilog ) {
-  CHECK( state == CSTA_WAIT && curpush == -1 && curtoken == -1 );
+void Collider::addThingsToGroup(int category, int gid, bool ilog) {
+  CHECK(state == CSTA_WAIT && curpush == -1 && curtoken == -1);
   state = CSTA_ADD;
   log = ilog;
   curpush = getIndex(players, category, gid);
 }
 void Collider::endAddThingsToGroup() {
-  CHECK( state == CSTA_ADD && curpush != -1 );
+  CHECK(state == CSTA_ADD && curpush != -1);
   state = CSTA_WAIT;
   log = false;
   curpush = -1;
@@ -513,7 +513,7 @@ bool Collider::checkSimpleCollision(int category, int gid, const vector<Coord4> 
 }
 
 void Collider::processSimple() {
-  CHECK( state == CSTA_WAIT );
+  CHECK(state == CSTA_WAIT);
   state = CSTA_PROCESSED;
   collides.clear();
   curcollide = -1;
@@ -529,7 +529,7 @@ void Collider::processSimple() {
   clds.erase(unique(clds.begin(), clds.end()), clds.end());
 }
 void Collider::processMotion() {
-  CHECK( state == CSTA_WAIT );
+  CHECK(state == CSTA_WAIT);
   state = CSTA_PROCESSED;
   collides.clear();
   curcollide = -1;

@@ -7,8 +7,8 @@
 
 using namespace std;
 
-vector< string > tokenize( const string &in, const string &kar );
-vector< int > sti( const vector< string > &foo );
+vector< string > tokenize(const string &in, const string &kar);
+vector< int > sti(const vector< string > &foo);
   
 class kvData {
 public:

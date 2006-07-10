@@ -16,16 +16,16 @@ static long long cpf() {
 };
 
 void Timer::waitForNextFrame() {
-  while( cpc() < frameNum * ticksPerFrame + ticksOffset )
+  while(cpc() < frameNum * ticksPerFrame + ticksOffset)
     ;
 };
 
 bool Timer::skipFrame() {
-  return cpc() > ( frameNum + 2 ) * ticksPerFrame + ticksOffset;
+  return cpc() > (frameNum + 2) * ticksPerFrame + ticksOffset;
 };
 
 int Timer::framesBehind() {
-  return ( cpc() - ticksOffset ) / ticksPerFrame - frameNum;
+  return (cpc() - ticksOffset) / ticksPerFrame - frameNum;
 }
 
 void Timer::frameDone() {

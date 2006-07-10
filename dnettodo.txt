@@ -21,7 +21,6 @@
 - "Kill graph"
 
 ---- Maintenance, minor bugfix, braindead
-- Change "( " to "(" etc
 - Consistentize effects to seconds
 - Auto coord-to-float converter (CoordFloat?)
 - AI shouldn't try to buy the glory device it already owns

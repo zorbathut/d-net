@@ -28,7 +28,7 @@ Float2 normalize(const Float2 &in) { return imp_normalize<Floats>(in); }
 float getAngle(const Float2 &in) { return imp_getAngle<Floats>(in); };
 Float2 makeAngle(const float &in) { return imp_makeAngle<Floats>(in); };
 
-int whichSide( const Float4 &f4, const Float2 &pta ) { return imp_whichSide<Floats>(f4, pta); };
+int whichSide(const Float4 &f4, const Float2 &pta) { return imp_whichSide<Floats>(f4, pta); };
 
 pair<Float2, float> fitInside(const Float4 &objbounds, const Float4 &goalbounds) { return imp_fitInside<Floats>(objbounds, goalbounds); }
 
@@ -50,8 +50,8 @@ void expandBoundBox(Float4 *bbox, float factor) { return imp_expandBoundBox<Floa
  * Math
  */
 
-bool linelineintersect( const Float4 &lhs, const Float4 &rhs ) { return imp_linelineintersect<Floats>(lhs, rhs); };
-float linelineintersectpos( const Float4 &lhs, const Float4 &rhs ) { return imp_linelineintersectpos<Floats>(lhs, rhs); };
+bool linelineintersect(const Float4 &lhs, const Float4 &rhs) { return imp_linelineintersect<Floats>(lhs, rhs); };
+float linelineintersectpos(const Float4 &lhs, const Float4 &rhs) { return imp_linelineintersectpos<Floats>(lhs, rhs); };
 
 Float2 rotate(const Float2 &in, float ang) {
   return makeAngle(getAngle(in) + ang) * len(in);

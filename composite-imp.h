@@ -31,7 +31,7 @@ template <typename T> Type2 imp_makeAngle(const Type1 &in) {
   return Type2(T::cos(in), T::sin(in));
 }
 
-template <typename T> int imp_whichSide( const Type4 &f4, const Type2 &pta ) {
+template <typename T> int imp_whichSide(const Type4 &f4, const Type2 &pta) {
   Type1 ax = f4.ex - f4.sx;
   Type1 ay = f4.ey - f4.sy;
   Type1 bx = pta.x - f4.sx;
@@ -39,8 +39,8 @@ template <typename T> int imp_whichSide( const Type4 &f4, const Type2 &pta ) {
   swap(ax, ay);
   ax *= -1;
   Type1 rv = ax * bx + ay * by;
-  if( rv < 0 ) return -1;
-  else if( rv > 0 ) return 1;
+  if(rv < 0) return -1;
+  else if(rv > 0) return 1;
   else return 0;
 }
 
@@ -70,8 +70,8 @@ template <typename T> void imp_addToBoundBox(Type4 *bbox, const Type4 &rect) {
 template <typename T> void imp_expandBoundBox(Type4 *bbox, Type1 factor) {
   Type1 x = bbox->ex - bbox->sx;
   Type1 y = bbox->ey - bbox->sy;
-  Type1 xc = ( bbox->sx + bbox->ex ) / 2;
-  Type1 yc = ( bbox->sy + bbox->ey ) / 2;
+  Type1 xc = (bbox->sx + bbox->ex) / 2;
+  Type1 yc = (bbox->sy + bbox->ey) / 2;
   x *= factor;
   y *= factor;
   x /= 2;
@@ -97,28 +97,28 @@ template <typename T> pair<Type2, float> imp_fitInside(const Type4 &objbounds, c
   return make_pair(Type2(goalx - objx * scale, goaly - objy * scale), scale);
 }
 
-template <typename T> bool imp_linelineintersect( Type1 x1, Type1 y1, Type1 x2, Type1 y2, Type1 x3, Type1 y3, Type1 x4, Type1 y4 ) {
-  Type1 denom = ( y4 - y3 ) * ( x2 - x1 ) - ( x4 - x3 ) * ( y2 - y1 );
+template <typename T> bool imp_linelineintersect(Type1 x1, Type1 y1, Type1 x2, Type1 y2, Type1 x3, Type1 y3, Type1 x4, Type1 y4) {
+  Type1 denom = (y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1);
   if(denom == 0)
     return false;
-  Type1 ua = ( ( x4 - x3 ) * ( y1 - y3 ) - ( y4 - y3 ) * ( x1 - x3 ) ) / denom;
-  Type1 ub = ( ( x2 - x1 ) * ( y1 - y3 ) - ( y2 - y1 ) * ( x1 - x3 ) ) / denom;
+  Type1 ua = ((x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3)) / denom;
+  Type1 ub = ((x2 - x1) * (y1 - y3) - (y2 - y1) * (x1 - x3)) / denom;
   return ua > 0 && ua < 1 && ub > 0 && ub < 1;
 }
-template <typename T> bool imp_linelineintersect( const Type4 &lhs, const Type4 &rhs ) {
-  return imp_linelineintersect<T>( lhs.sx, lhs.sy, lhs.ex, lhs.ey, rhs.sx, rhs.sy, rhs.ex, rhs.ey );
+template <typename T> bool imp_linelineintersect(const Type4 &lhs, const Type4 &rhs) {
+  return imp_linelineintersect<T>(lhs.sx, lhs.sy, lhs.ex, lhs.ey, rhs.sx, rhs.sy, rhs.ex, rhs.ey);
 }
-template <typename T> Type1 imp_linelineintersectpos( Type1 x1, Type1 y1, Type1 x2, Type1 y2, Type1 x3, Type1 y3, Type1 x4, Type1 y4 ) {
-  Type1 denom = ( y4 - y3 ) * ( x2 - x1 ) - ( x4 - x3 ) * ( y2 - y1 );
-  Type1 ua = ( ( x4 - x3 ) * ( y1 - y3 ) - ( y4 - y3 ) * ( x1 - x3 ) ) / denom;
-  Type1 ub = ( ( x2 - x1 ) * ( y1 - y3 ) - ( y2 - y1 ) * ( x1 - x3 ) ) / denom;
-  if( ua > 0 && ua < 1 && ub > 0 && ub < 1 )
+template <typename T> Type1 imp_linelineintersectpos(Type1 x1, Type1 y1, Type1 x2, Type1 y2, Type1 x3, Type1 y3, Type1 x4, Type1 y4) {
+  Type1 denom = (y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1);
+  Type1 ua = ((x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3)) / denom;
+  Type1 ub = ((x2 - x1) * (y1 - y3) - (y2 - y1) * (x1 - x3)) / denom;
+  if(ua > 0 && ua < 1 && ub > 0 && ub < 1)
     return ua;
   else
     return 2;
 }
-template <typename T> Type1 imp_linelineintersectpos( const Type4 &lhs, const Type4 &rhs ) {
-  return imp_linelineintersectpos<T>( lhs.sx, lhs.sy, lhs.ex, lhs.ey, rhs.sx, rhs.sy, rhs.ex, rhs.ey );
+template <typename T> Type1 imp_linelineintersectpos(const Type4 &lhs, const Type4 &rhs) {
+  return imp_linelineintersectpos<T>(lhs.sx, lhs.sy, lhs.ex, lhs.ey, rhs.sx, rhs.sy, rhs.ex, rhs.ey);
 }
 
 

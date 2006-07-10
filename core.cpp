@@ -56,15 +56,15 @@ void MainLoop() {
 
   time_t starttime = time(NULL);
     
-	while( !quit ) {
+	while(!quit) {
     StackString sst(StringPrintf("Frame %d loop", frameNumber));
-    ffwd = ( frameNumber < FLAGS_fastForwardTo );
+    ffwd = (frameNumber < FLAGS_fastForwardTo);
     if(frameNumber == FLAGS_fastForwardTo)
       timer = Timer();    // so we don't end up sitting there for aeons waiting for another frame
 		bencher = Timer();
 		SDL_Event event;
-		while( SDL_PollEvent( &event ) ) {
-			switch( event.type ) {
+		while(SDL_PollEvent(&event)) {
+			switch(event.type) {
         case SDL_QUIT:
 					quit = true;
           break;
@@ -73,12 +73,12 @@ void MainLoop() {
 				case SDL_KEYUP:
           if(event.key.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE)
             quit = true;
-					controls_key( &event.key );
+					controls_key(&event.key);
 					break;
 
 				case SDL_VIDEORESIZE:
-					CHECK( 0 );
-					//CreateWindow( "Destruction Net", event.resize.w, event.resize.h );
+					CHECK(0);
+					//CreateWindow("Destruction Net", event.resize.w, event.resize.h);
 					break;
 
 				default:
@@ -98,7 +98,7 @@ void MainLoop() {
           fclose(outfile);
         
         string fname = FLAGS_writeTarget;
-        char timestampbuf[ 128 ];
+        char timestampbuf[128];
         time_t ctmt = time(NULL);
         strftime(timestampbuf, sizeof(timestampbuf), "%Y%m%d-%H%M%S", gmtime(&ctmt));
         fname = StringPrintf("%s-%s-%010d.dnd", fname.c_str(), timestampbuf, frameNumber);
@@ -140,7 +140,7 @@ void MainLoop() {
     }
 		polling += bencher.ticksElapsed();
 		bencher = Timer();
-    if(interfaceRunTick( controllers ))
+    if(interfaceRunTick(controllers))
       quit = true;
 		ticking += bencher.ticksElapsed();
 		bencher = Timer();
@@ -169,7 +169,7 @@ void MainLoop() {
         frameSplit = 600;
       else
         frameSplit = 60;
-      if( frako % frameSplit == 0 ) {
+      if(frako % frameSplit == 0) {
         long long tot = timer.getFrameTicks() * frameSplit;
         //long long tot = polling + ticking + waiting + rendering;
         dprintf("%4d polling", int(polling * 1000 / tot));

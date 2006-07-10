@@ -43,7 +43,7 @@ void crash() {
   while(1);
 }
 
-int dprintf( const char *bort, ... ) {
+int dprintf(const char *bort, ...) {
 
   // this is duplicated code with StringPrintf - I should figure out a way of combining these
   static vector< char > buf(2);
@@ -51,17 +51,17 @@ int dprintf( const char *bort, ... ) {
 
   int done = 0;
   do {
-    if( done )
-      buf.resize( buf.size() * 2 );
-    va_start( args, bort );
-    done = vsnprintf( &(buf[ 0 ]), buf.size() - 1,  bort, args );
-    assert( done < (int)buf.size() );
-    va_end( args );
-  } while( done == buf.size() - 1 || done == -1);
+    if(done)
+      buf.resize(buf.size() * 2);
+    va_start(args, bort);
+    done = vsnprintf(&(buf[0]), buf.size() - 1,  bort, args);
+    assert(done < (int)buf.size());
+    va_end(args);
+  } while(done == buf.size() - 1 || done == -1);
 
-  assert( done < (int)buf.size() );
+  assert(done < (int)buf.size());
 
-  outputDebugString( &(buf[ 0 ]) );
+  outputDebugString(&(buf[0]));
 
   return 0;
 

@@ -46,7 +46,7 @@ public:
 
   void renderToScreen() const;
   void ai(const vector<Ai *> &ai) const;
-  bool runTick( const vector< Controller > &keys );
+  bool runTick(const vector< Controller > &keys);
 
 private:
   

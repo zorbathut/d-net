@@ -43,7 +43,7 @@ public:
   explicit Coord(float rhs) { d = (long long)(rhs * (1LL << 32)); }
   explicit Coord(double rhs) { d = (long long)(rhs * (1LL << 32)); }
   
-  float toFloat() const { return (float)d / ( 1LL << 32 ); }
+  float toFloat() const { return (float)d / (1LL << 32); }
   int toInt() const { CHECK(Coord(int(d >> 32)).d == d); return d >> 32; }
   long long raw() const { return d; };
   string rawstr() const;
@@ -133,8 +133,8 @@ inline Coord operator/(const Coord &lhs, const Coord &rhs) {
   Coord rv = coordExplicit(
   (long long)(
       ((long double)lhs.d / (long double)rhs.d) * (1LL << 32)
-    )
-  );
+)
+);
   //dprintf("  %f %f %f %d\n", lhs.toFloat(), rhs.toFloat(), rv.toFloat(), 1234);
   //dprintf("  %lld %lld %lld %d\n", lhs.d, rhs.d, rv.d, 1234);
   //dprintf("op/ out!\n");
@@ -335,10 +335,10 @@ Coord2 normalize(const Coord2 &in);
 Coord getAngle(const Coord2 &in);
 Coord2 makeAngle(const Coord &in);
 
-bool linelineintersect( const Coord4 &lhs, const Coord4 &rhs );
-Coord linelineintersectpos( const Coord4 &lhs, const Coord4 &rhs );
+bool linelineintersect(const Coord4 &lhs, const Coord4 &rhs);
+Coord linelineintersectpos(const Coord4 &lhs, const Coord4 &rhs);
 
-int whichSide( const Coord4 &f4, const Coord2 &pta );
+int whichSide(const Coord4 &f4, const Coord2 &pta);
 
 pair<Coord2, float> fitInside(const Coord4 &objbounds, const Coord4 &goalbounds);
 
@@ -396,8 +396,8 @@ inline Coord4 snapToEnclosingGrid(Coord4 orig, Coord grid) {
   return orig;
 }
 
-bool linelineintersect( const Coord4 &lhs, const Coord4 &rhs );
-Coord linelineintersectpos( const Coord4 &lhs, const Coord4 &rhs );
+bool linelineintersect(const Coord4 &lhs, const Coord4 &rhs);
+Coord linelineintersectpos(const Coord4 &lhs, const Coord4 &rhs);
 
 #endif
 

@@ -27,7 +27,7 @@ private:
   string str_;
 };
  
-int dprintf( const char *bort, ... ) __attribute__((format(printf,1,2)));
+int dprintf(const char *bort, ...) __attribute__((format(printf,1,2)));
 
 extern int frameNumber;
 

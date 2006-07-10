@@ -30,10 +30,10 @@ void detonateWarhead(const IDBWarheadAdjust &warhead, Coord2 pos, Tank *impact, 
   
   for(int i = 0; i < adjacency.size(); i++) {
     if(adjacency[i].first < warhead.radiusfalloff())
-      dealDamage(warhead.radiusdamage() / warhead.radiusfalloff() * ( warhead.radiusfalloff() - adjacency[i].first), adjacency[i].second, owner, damagecredit, killcredit);
+      dealDamage(warhead.radiusdamage() / warhead.radiusfalloff() * (warhead.radiusfalloff() - adjacency[i].first), adjacency[i].second, owner, damagecredit, killcredit);
   }
   
-  for( int i = 0; i < 6; i++ )
+  for(int i = 0; i < 6; i++)
     gfxe->push_back(GfxPoint(pos.toFloat(),  (makeAngle(frand() * 2 * PI) / 3) * (1.0 - frand() * frand()), 0.1, Color(1.0, 1.0, 1.0)));
   
   if(warhead.radiusfalloff() > 0)
@@ -76,7 +76,7 @@ void Tank::tick(const Keystates &kst) {
 };
 
 void Tank::render() const {
-  if( !live )
+  if(!live)
     return;
 
   vector<Coord2> tankverts = getTankVertices(pos, d);
@@ -132,20 +132,20 @@ vector<Coord4> Tank::getNextCollide(const Keystates &keys) const {
 
 void Tank::addCollision(Collider *collider, const Keystates &keys) const {
   
-  if( !live )
+  if(!live)
     return;
 
-  vector<Coord2> tankpts = getTankVertices( pos, d );
+  vector<Coord2> tankpts = getTankVertices(pos, d);
   pair<Coord2, float> newpos = getNextPosition(keys);
   vector<Coord2> newtankpts = getTankVertices(newpos.first, newpos.second);
   CHECK(tankpts.size() == newtankpts.size());
-  for( int i = 0; i < newtankpts.size(); i++ )
+  for(int i = 0; i < newtankpts.size(); i++)
     newtankpts[i] -= tankpts[i];
-  for( int i = 0; i < tankpts.size(); i++ )
+  for(int i = 0; i < tankpts.size(); i++)
     collider->token(Coord4(tankpts[i], tankpts[(i + 1) % tankpts.size()]), Coord4(newtankpts[i], newtankpts[(i + 1) % tankpts.size()]));
 };
 
-vector<Coord2> Tank::getTankVertices( Coord2 pos, float td ) const {
+vector<Coord2> Tank::getTankVertices(Coord2 pos, float td) const {
   Coord2 xt = makeAngle(Coord(td));
   Coord2 yt = makeAngle(Coord(td) - COORDPI / 2);
   vector<Coord2> rv;
@@ -163,7 +163,7 @@ Coord2 Tank::getFiringPoint() const {
   for(int i = 0; i < idbta.vertices().size(); i++)
     if(idbta.vertices()[i].x > best.x)
       best = idbta.vertices()[i];
-  return Coord2( pos.x + best.x * xt.x + best.y * xt.y, pos.y + best.y * yt.y + best.x * yt.x );
+  return Coord2(pos.x + best.x * xt.x + best.y * xt.y, pos.y + best.y * yt.y + best.x * yt.x);
 };
 
 pair<float, float> Tank::getNextInertia(const Keystates &keys) const {
@@ -305,12 +305,12 @@ pair<Coord2, float> Tank::getNextPosition(const Keystates &keys) const {
   
 }
 
-bool Tank::takeDamage( float damage ) {
+bool Tank::takeDamage(float damage) {
   health -= damage;
   damageTaken += damage;
   if(framesSinceDamage == -1)
     framesSinceDamage = 0;
-  if( health <= 0 && live ) {
+  if(health <= 0 && live) {
     live = false;
     spawnShards = true;
     return true;
@@ -320,7 +320,7 @@ bool Tank::takeDamage( float damage ) {
 
 void Tank::genEffects(vector<smart_ptr<GfxEffects> > *gfxe, vector<Projectile> *projectiles) {
   if(spawnShards) {
-    vector<Coord2> tv = getTankVertices( pos, d );
+    vector<Coord2> tv = getTankVertices(pos, d);
     Coord2 centr = getCentroid(tv);
     Coord tva = getArea(tv);
     
@@ -456,9 +456,9 @@ void Projectile::render() const {
   }
   drawLine(Coord4(pos, pos + lasttail), projtype.width());
 };
-void Projectile::addCollision( Collider *collider ) const {
+void Projectile::addCollision(Collider *collider) const {
   CHECK(live);
-  collider->token( Coord4( pos, pos + lasttail ), Coord4( movement(), movement() + nexttail() ) );
+  collider->token(Coord4(pos, pos + lasttail), Coord4(movement(), movement() + nexttail()));
 };
 void Projectile::impact(Coord2 pos, Tank *target, const vector<pair<float, Tank *> > &adjacency, vector<smart_ptr<GfxEffects> > *gfxe, Gamemap *gm) {
   if(!live)
@@ -565,7 +565,7 @@ void doInterp(float *curcenter, const float *nowcenter, float *curzoom, const fl
   }
 }
 
-bool Game::runTick( const vector< Keystates > &rkeys ) {
+bool Game::runTick(const vector< Keystates > &rkeys) {
   StackString sst("Frame runtick");
   
   if(!ffwd && FLAGS_verboseCollisions)
@@ -706,51 +706,51 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
       collider.endAddThingsToGroup();
     }
   
-    for( int j = 0; j < projectiles.size(); j++ ) {
+    for(int j = 0; j < projectiles.size(); j++) {
       collider.addThingsToGroup(CGR_PROJECTILE, j);
-      for( int k = 0; k < projectiles[ j ].size(); k++ ) {
+      for(int k = 0; k < projectiles[j].size(); k++) {
         collider.startToken(k);
-        projectiles[ j ][ k ].addCollision( &collider );
+        projectiles[j][k].addCollision(&collider);
       }
       collider.endAddThingsToGroup();
     }
     
     collider.processMotion();
     
-    while( collider.next() ) {
-      //dprintf( "Collision!\n" );
-      //dprintf( "Timestamp %f\n", collider.getCurrentTimestamp().toFloat() );
-      //dprintf( "%d,%d,%d vs %d,%d,%d\n", collider.getLhs().first.first, collider.getLhs().first.second, collider.getLhs().second, collider.getRhs().first.first, collider.getRhs().first.second, collider.getRhs().second );
+    while(collider.next()) {
+      //dprintf("Collision!\n");
+      //dprintf("Timestamp %f\n", collider.getCurrentTimestamp().toFloat());
+      //dprintf("%d,%d,%d vs %d,%d,%d\n", collider.getLhs().first.first, collider.getLhs().first.second, collider.getLhs().second, collider.getRhs().first.first, collider.getRhs().first.second, collider.getRhs().second);
       CollideId lhs = collider.getData().lhs;
       CollideId rhs = collider.getData().rhs;
-      if( lhs > rhs ) swap( lhs, rhs );
-      if( lhs.category == CGR_WALL && rhs.category == CGR_WALL ) {
+      if(lhs > rhs) swap(lhs, rhs);
+      if(lhs.category == CGR_WALL && rhs.category == CGR_WALL) {
         // wall-wall collision, wtf?
         CHECK(0);
-      } else if( lhs.category == CGR_WALL && rhs.category == CGR_PLAYER ) {
+      } else if(lhs.category == CGR_WALL && rhs.category == CGR_PLAYER) {
         // wall-tank collision, should never happen
         CHECK(0);
-      } else if( lhs.category == CGR_WALL && rhs.category == CGR_PROJECTILE ) {
+      } else if(lhs.category == CGR_WALL && rhs.category == CGR_PROJECTILE) {
         // wall-projectile collision - kill projectile
-        projectiles[ rhs.bucket ][ rhs.item ].impact(collider.getData().loc, NULL, genTankDistance(collider.getData().loc), &gfxeffects, &gamemap);
-      } else if( lhs.category == CGR_PLAYER && rhs.category == CGR_PLAYER ) {
+        projectiles[rhs.bucket][rhs.item].impact(collider.getData().loc, NULL, genTankDistance(collider.getData().loc), &gfxeffects, &gamemap);
+      } else if(lhs.category == CGR_PLAYER && rhs.category == CGR_PLAYER) {
         // tank-tank collision, should never happen
         CHECK(0);
-      } else if( lhs.category == CGR_PLAYER && rhs.category == CGR_PROJECTILE ) {
+      } else if(lhs.category == CGR_PLAYER && rhs.category == CGR_PROJECTILE) {
         // tank-projectile collision - kill projectile, do damage
-        projectiles[ rhs.bucket ][ rhs.item ].impact(collider.getData().loc, &tanks[ lhs.bucket ], genTankDistance(collider.getData().loc), &gfxeffects, &gamemap);
-      } else if( lhs.category == CGR_PROJECTILE && rhs.category == CGR_PROJECTILE ) {
+        projectiles[rhs.bucket][rhs.item].impact(collider.getData().loc, &tanks[lhs.bucket], genTankDistance(collider.getData().loc), &gfxeffects, &gamemap);
+      } else if(lhs.category == CGR_PROJECTILE && rhs.category == CGR_PROJECTILE) {
         // projectile-projectile collision - kill both projectiles
         // also do radius damage, and do it fairly dammit
         bool lft = frand() < 0.5;
         
         if(lft)
-          projectiles[ lhs.bucket ][ lhs.item ].impact(collider.getData().loc, NULL, genTankDistance(collider.getData().loc), &gfxeffects, &gamemap);
+          projectiles[lhs.bucket][lhs.item].impact(collider.getData().loc, NULL, genTankDistance(collider.getData().loc), &gfxeffects, &gamemap);
         
-        projectiles[ rhs.bucket ][ rhs.item ].impact(collider.getData().loc, NULL, genTankDistance(collider.getData().loc), &gfxeffects, &gamemap);
+        projectiles[rhs.bucket][rhs.item].impact(collider.getData().loc, NULL, genTankDistance(collider.getData().loc), &gfxeffects, &gamemap);
         
         if(!lft)
-          projectiles[ lhs.bucket ][ lhs.item ].impact(collider.getData().loc, NULL, genTankDistance(collider.getData().loc), &gfxeffects, &gamemap);
+          projectiles[lhs.bucket][lhs.item].impact(collider.getData().loc, NULL, genTankDistance(collider.getData().loc), &gfxeffects, &gamemap);
         
       } else {
         // nothing meaningful, should totally never happen, what the hell is going on here, who are you, and why are you in my apartment
@@ -764,7 +764,7 @@ bool Game::runTick( const vector< Keystates > &rkeys ) {
   {
     vector<vector<Projectile> > newProjectiles(projectiles.size());
     for(int j = 0; j < projectiles.size(); j++) {
-      for(int k = 0; k < projectiles[ j ].size(); k++) {
+      for(int k = 0; k < projectiles[j].size(); k++) {
         if(projectiles[j][k].isLive()) {
           projectiles[j][k].tick(&gfxeffects);
           if(!projectiles[j][k].isLive())   // in case it dies in its tick
@@ -1046,7 +1046,7 @@ void Game::renderToScreen() const {
   }
   
   // Tanks
-  for( int i = 0; i < tanks.size(); i++ ) {
+  for(int i = 0; i < tanks.size(); i++) {
     tanks[i].render();
   }
   
@@ -1139,7 +1139,7 @@ void Game::renderToScreen() const {
   
   // Here's everything outside gamespace
   if(gamemode != GMODE_TEST && gamemode != GMODE_DEMO) {
-    setZoom( 0, 0, 100 );
+    setZoom(0, 0, 100);
     
     // Player health
     {
@@ -1148,7 +1148,7 @@ void Game::renderToScreen() const {
       for(int i = 0; i < tanks.size(); i++) {
         setColor(1.0, 1.0, 1.0);
         float loffset = (400./3.) / tanks.size() * i;
-        float roffset = (400./3.) / tanks.size() * ( i + 1 );
+        float roffset = (400./3.) / tanks.size() * (i + 1);
         if(i)
           drawLine(Float4(loffset, 0, loffset, 10), 0.1);
         if(tanks[i].live) {

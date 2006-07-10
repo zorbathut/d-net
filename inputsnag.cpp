@@ -10,7 +10,7 @@
 
 using namespace std;
 
-DEFINE_string( readTarget, "", "File to replay from" );
+DEFINE_string(readTarget, "", "File to replay from");
 
 DEFINE_int(aiCount, 0, "Number of AIs");
 
@@ -123,11 +123,11 @@ void controls_key(const SDL_KeyboardEvent *key) {
       }
     }
   }
-  if( !ps )
+  if(!ps)
     return;
-  if( key->type == SDL_KEYUP )
+  if(key->type == SDL_KEYUP)
     *ps = 0;
-  if( key->type == SDL_KEYDOWN )
+  if(key->type == SDL_KEYDOWN)
     *ps = 1;
 }
 
