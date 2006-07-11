@@ -58,6 +58,7 @@ void Tank::init(Player *in_player) {
   health = player->getTank().maxHealth();
   initted = true;
   framesSinceDamage = -1;
+  damageTakenPreviousHits = 0;
   damageTaken = 0;
 }
 
@@ -1134,8 +1135,18 @@ void Game::renderToScreen() const {
   if(gamemode == GMODE_DEMO) {
     setColor(1.0, 1.0, 1.0);
     for(int i = 0; i < tanks.size(); i++) {
-      if(tanks[i].framesSinceDamage > 0) {
-        drawJustifiedText(StringPrintf("%.2f DPS", tanks[i].damageTaken / tanks[i].framesSinceDamage * FPS), demomode_boxradi / 15, tanks[i].pos.x.toFloat() - 5, tanks[i].pos.y.toFloat() - 5, TEXT_MAX, TEXT_MAX);
+      if(demomode_playermodes[i] == DEMOPLAYER_DPS) {
+        if(tanks[i].framesSinceDamage > 0) {
+          drawJustifiedText(StringPrintf("%.2f DPS", tanks[i].damageTaken / tanks[i].framesSinceDamage * FPS), demomode_boxradi / 15, tanks[i].pos.x.toFloat() - 5, tanks[i].pos.y.toFloat() - 5, TEXT_MAX, TEXT_MAX);
+        }
+      } else if(demomode_playermodes[i] == DEMOPLAYER_DPH) {
+        if(demomode_hits) {
+          drawJustifiedText(StringPrintf("%.2f DPH", tanks[i].damageTakenPreviousHits / demomode_hits), demomode_boxradi / 15, tanks[i].pos.x.toFloat() - 5, tanks[i].pos.y.toFloat() - 5, TEXT_MAX, TEXT_MAX);
+        }
+      } else if(demomode_playermodes[i] == DEMOPLAYER_BOMBSIGHT) {
+      } else if(demomode_playermodes[i] == DEMOPLAYER_QUIET) {
+      } else {
+        CHECK(0);
       }
     }
   }
@@ -1320,6 +1331,26 @@ int Game::frameCount() const {
   return frameNm;
 }
 
+void Game::addStatHit() {
+  bool addahit = false;
+  if(demomode_hits)
+    addahit = true;
+  else
+    for(int i = 0; i < tanks.size(); i++)
+      if(demomode_playermodes[i] == DEMOPLAYER_DPH && tanks[i].damageTaken != 0)
+        addahit = true;
+  
+  if(addahit) {
+    for(int i = 0; i < tanks.size(); i++) {
+      if(demomode_playermodes[i] == DEMOPLAYER_DPH) {
+        tanks[i].damageTakenPreviousHits += tanks[i].damageTaken;
+        tanks[i].damageTaken = 0;
+      }
+    }
+    demomode_hits++;
+  }
+}
+
 Game::Game() {
   gamemode = GMODE_LAST;
 }
@@ -1378,6 +1409,8 @@ void Game::initCommon(const vector<Player*> &in_playerdata, const Level &lev) {
   
   frameNmToStart = -1000;
   freezeUntilStart = false;
+  
+  demomode_hits = 0;
 }
 
 void Game::initStandard(vector<Player> *in_playerdata, const Level &lev, vector<const IDBFaction *> *in_wins) {

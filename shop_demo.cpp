@@ -168,9 +168,11 @@ void ShopDemo::runTick() {
       for(int i = 0; i < bombardment_scatterers.size(); i++)
         if(!bombardment_scatterers[i]->readytofire())
           notready = true;
-      if(!notready)
+      if(!notready) {
         for(int i = 0; i < bombardment_scatterers.size(); i++)
           bombardment_scatterers[i]->bombsaway();
+        game.addStatHit();
+      }
     }
     
     game.ai(tai);

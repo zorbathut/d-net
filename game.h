@@ -71,8 +71,13 @@ public:
   int weaponCooldown;
   float weaponCooldownSubvals[SIMUL_WEAPONS];
 
-  // these exist for the DPS calculations in demo mode
+  // these exist for the DPS calculations
   int framesSinceDamage;
+  
+  // this exists for the DPH calculations
+  float damageTakenPreviousHits;
+  
+  // this exists for both :D
   float damageTaken;
 
 };
@@ -159,6 +164,8 @@ public:
 
   int frameCount() const;
 
+  void addStatHit();  // used for damage-per-hit calculations
+
   float firepowerSpent;
 
   Game();
@@ -196,6 +203,8 @@ private:
   
   vector<int> demomode_playermodes;
   float demomode_boxradi; // used for the clearscreen and font sizes
+  
+  int demomode_hits;
 
   vector<const IDBFaction *> *wins;
   
