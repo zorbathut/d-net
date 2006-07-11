@@ -5,6 +5,8 @@
 #include "debug.h"
 #include "game_ai.h"
 
+enum {DEMOMODE_WEAPON, DEMOMODE_BOMBARDMENT, DEMOMODE_LAST};
+
 class GameAiNull : public GameAi {
 private:
   void updateGameWork(const vector<Tank> &players, int me) {
@@ -43,18 +45,20 @@ class GameAiScatterbombing : public GameAi {
   int targetid;
   float rad;
   
-  bool fired;
   Coord2 target;
+  
+  bool ready;
+  bool bombing;
   
   void updateGameWork(const vector<Tank> &players, int me) {
     CHECK(0);
   }
   void updateBombardmentWork(const vector<Tank> &players, Coord2 mypos) {
-    if(fired) {
-      fired = false;
+    if(ready == false && bombing == true) {
       target = players[targetid].pos + Coord2(randomDisc(rng) * rad);
+      bombing = false;
     }
-
+    
     Coord2 dir = target - mypos;
     //if(targetid == 6)
       //dprintf("%f\n", len(dir).toFloat());
@@ -63,13 +67,25 @@ class GameAiScatterbombing : public GameAi {
     nextKeys.udlrax = dir.toFloat();
     nextKeys.udlrax.y *= -1;
     if(len(target - mypos).toFloat() < 0.2) {
+      ready = true;
+    }
+    if(bombing) {
       nextKeys.fire[0].down = true;
-      fired = true;
+      ready = false;
+      bombing = false;
+      target = players[targetid].pos + Coord2(randomDisc(rng) * rad);
     }
   }
   
 public:
-  GameAiScatterbombing(int in_targetid, float in_rad) { targetid = in_targetid; rad = in_rad; fired = true; }
+  bool readytofire() const {
+    return ready;
+  }
+  void bombsaway() {
+    bombing = true;
+  }
+  
+  GameAiScatterbombing(int in_targetid, float in_rad) { targetid = in_targetid; rad = in_rad; ready = false; bombing = true; }
 };
 
 const float weapons_xpses[] = { -80, -80, 0, 0, 80, 80 };
@@ -85,6 +101,7 @@ const int bombardment_progression[] = { 6000, 1200 };
 
 void ShopDemo::init(const IDBWeapon *weap, const Player *player) {
   StackString sst("Initting demo weapon shop");
+  mode = DEMOMODE_WEAPON;
   
   players.clear();
   players.resize(6);
@@ -108,6 +125,7 @@ void ShopDemo::init(const IDBWeapon *weap, const Player *player) {
 
 void ShopDemo::init(const IDBBombardment *bombard, const Player *player) {
   StackString sst("Initting demo bombardment shop");
+  mode = DEMOMODE_BOMBARDMENT;
   
   players.clear();
   players.resize(8);
@@ -119,9 +137,12 @@ void ShopDemo::init(const IDBBombardment *bombard, const Player *player) {
   }
   
   ais.clear();
+  bombardment_scatterers.clear();
   for(int i = 0; i < 4; i++) {
     ais.push_back(smart_ptr<GameAi>(new GameAiNull));
-    ais.push_back(smart_ptr<GameAi>(new GameAiScatterbombing(i * 2, pow((float)2, (float)i + 1))));
+    GameAiScatterbombing *gas = new GameAiScatterbombing(i * 2, pow((float)2, (float)i + 1));
+    ais.push_back(smart_ptr<GameAi>(gas));
+    bombardment_scatterers.push_back(gas);
   }
   
   game.initDemo(&players, 50, bombardment_xpses, bombardment_ypses, bombardment_mode);
@@ -142,6 +163,16 @@ void ShopDemo::runTick() {
   for(int i = 0; i < ais.size(); i++)
     tai.push_back(ais[i].get());
   for(int i = 0; i < mult(game.frameCount(), progression); i++) {
+    if(mode == DEMOMODE_BOMBARDMENT) {
+      bool notready = false;
+      for(int i = 0; i < bombardment_scatterers.size(); i++)
+        if(!bombardment_scatterers[i]->readytofire())
+          notready = true;
+      if(!notready)
+        for(int i = 0; i < bombardment_scatterers.size(); i++)
+          bombardment_scatterers[i]->bombsaway();
+    }
+    
     game.ai(tai);
     vector<Keystates> kist;
     for(int i = 0; i < tai.size(); i++)
