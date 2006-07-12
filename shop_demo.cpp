@@ -5,7 +5,7 @@
 #include "debug.h"
 #include "game_ai.h"
 
-enum {DEMOMODE_WEAPON, DEMOMODE_BOMBARDMENT, DEMOMODE_LAST};
+enum {DEMOMODE_WEAPON, DEMOMODE_BOMBARDMENT, DEMOMODE_GLORY, DEMOMODE_LAST};
 
 class GameAiNull : public GameAi {
 private:
@@ -88,6 +88,37 @@ public:
   GameAiScatterbombing(int in_targetid, float in_rad) { targetid = in_targetid; rad = in_rad; ready = false; bombing = true; }
 };
 
+class GameAiKamikaze : public GameAi {
+  int targetid;
+  float rad;
+  float lastrad;
+  
+  bool ready;
+  
+  void updateGameWork(const vector<Tank> &players, int me) {
+    float dist = len(players[targetid].pos - players[me].pos).toFloat();
+    if(dist <= rad || abs(dist - lastrad) < 0.0001) {
+      ready = true;
+    } else {
+      nextKeys.udlrax.y = 1;
+      nextKeys.axmode = KSAX_STEERING;
+      lastrad = dist;
+    }
+  }
+  void updateBombardmentWork(const vector<Tank> &players, Coord2 mypos) {
+  }
+  
+public:
+  bool readytoexplode() const {
+    return ready;
+  }
+  void exploded() {
+    ready = false;
+  }
+  
+  GameAiKamikaze(int in_targetid, float in_rad) { targetid = in_targetid; rad = in_rad; lastrad = 1e9; ready = false; }
+};
+
 const float weapons_xpses[] = { -80, -80, 0, 0, 80, 80 };
 const float weapons_ypses[] = { 120, -80, 120, -40, 120, 40 };
 const int weapons_mode[] = { DEMOPLAYER_QUIET, DEMOPLAYER_DPS, DEMOPLAYER_QUIET, DEMOPLAYER_DPS, DEMOPLAYER_QUIET, DEMOPLAYER_DPS };
@@ -96,8 +127,12 @@ const int weapons_progression[] = { 60, 600 };
 const float bombardment_xpses[] = { -30, -30, 30, 30, -30, -30, 30, 30 };
 const float bombardment_ypses[] = { -30, -30, -30, -30, 30, 30, 30, 30 };
 const int bombardment_mode[] = { DEMOPLAYER_DPH, DEMOPLAYER_BOMBSIGHT, DEMOPLAYER_DPH, DEMOPLAYER_BOMBSIGHT, DEMOPLAYER_DPH, DEMOPLAYER_BOMBSIGHT, DEMOPLAYER_DPH, DEMOPLAYER_BOMBSIGHT };
-const int bombardment_progression[] = { 6000, 1200 };
+const int bombardment_progression[] = { 6000, 0 };
 
+const float glory_xpses[] = { -50, -50, 50, 50, -50, -50, 50, 50 };
+const float glory_ypses[] = { -50, -50, -50, -50, 50, 50, 50, 50 };
+const int glory_mode[] = { DEMOPLAYER_DPH, DEMOPLAYER_QUIET, DEMOPLAYER_DPH, DEMOPLAYER_QUIET, DEMOPLAYER_DPH, DEMOPLAYER_QUIET, DEMOPLAYER_DPH, DEMOPLAYER_QUIET };
+const int glory_progression[] = { 6000, 0 };
 
 void ShopDemo::init(const IDBWeapon *weap, const Player *player) {
   StackString sst("Initting demo weapon shop");
@@ -150,6 +185,46 @@ void ShopDemo::init(const IDBBombardment *bombard, const Player *player) {
   progression = bombardment_progression;
 };
 
+void ShopDemo::init(const IDBGlory *glory, const Player *player) {
+  StackString sst("Initting demo glory shop");
+  mode = DEMOMODE_GLORY;
+  
+  players.clear();
+  players.resize(8);
+  CHECK(factionList().size() >= players.size());
+  for(int i = 0; i < players.size(); i++) {
+    players[i] = Player(&factionList()[i], 0); // TODO: make this be the right faction mode and the right faction data and the right tanks and upgrades and so forth
+    players[i].addCash(Money(1000000000));
+    players[i].forceAcquireGlory(glory);
+  }
+  
+  ais.clear();
+  glory_kamikazes.clear();
+  for(int i = 0; i < 4; i++) {
+    ais.push_back(smart_ptr<GameAi>(new GameAiNull));
+    GameAiKamikaze *gas = new GameAiKamikaze(i * 2, i ? i * 5 + 5 : 0);
+    ais.push_back(smart_ptr<GameAi>(gas));
+    glory_kamikazes.push_back(gas);
+  }
+  respawn = false;
+  
+  game.initDemo(&players, 100, glory_xpses, glory_ypses, glory_mode);
+  
+  progression = glory_progression;
+  
+  glory_respawnPlayers();
+};
+
+void ShopDemo::glory_respawnPlayers() {
+  for(int i = 0; i < players.size(); i += 2) {
+    Coord2 pos = game.queryPlayerLocation(i);
+    float facing = frand() * 2 * PI;
+    Coord2 dir = makeAngle(Coord(facing));
+    pos += dir * 40;
+    game.respawnPlayer(i + 1, pos, facing + PI);
+  }
+};
+
 int mult(int frams, const int *progression) {
   if(frams < progression[0])
     return 10;
@@ -172,6 +247,26 @@ void ShopDemo::runTick() {
         for(int i = 0; i < bombardment_scatterers.size(); i++)
           bombardment_scatterers[i]->bombsaway();
         game.addStatHit();
+      }
+    }
+    
+    if(mode == DEMOMODE_GLORY) {
+      if(respawn) {
+        glory_respawnPlayers();
+        respawn = false;
+      } else {
+        bool notready = false;
+        for(int i = 0; i < glory_kamikazes.size(); i++)
+          if(!glory_kamikazes[i]->readytoexplode())
+            notready = true;
+        if(!notready) {
+          for(int i = 0; i < glory_kamikazes.size(); i++) {
+            glory_kamikazes[i]->exploded();
+            game.kill(i * 2 + 1);
+          }
+          game.addStatHit();
+          respawn = true;
+        }
       }
     }
     

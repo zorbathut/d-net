@@ -5,11 +5,13 @@
 #include "game.h"
 
 class GameAiScatterbombing;
+class GameAiKamikaze;
 
 class ShopDemo {
 public:
   void init(const IDBWeapon *weap, const Player *player);
   void init(const IDBBombardment *weap, const Player *player);
+  void init(const IDBGlory *weap, const Player *player);
   
   void runTick();
   void renderFrame() const;
@@ -28,6 +30,10 @@ private:
   int mode;
 
   vector<GameAiScatterbombing *> bombardment_scatterers;
+
+  vector<GameAiKamikaze *> glory_kamikazes;
+  bool respawn;
+  void glory_respawnPlayers();
 
   // don't use
   ShopDemo(const ShopDemo &rhs);

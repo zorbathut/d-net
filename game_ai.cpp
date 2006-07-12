@@ -20,10 +20,10 @@ Keystates GameAi::getNextKeys() const {
 
 void GameAi::zeroNextKeys() {
   nextKeys = Keystates();
+  nextKeys.axmode = KSAX_ABSOLUTE;  // we put this here so we can override it
 }
 
 void GameAi::normalizeNext() {
-  nextKeys.axmode = KSAX_ABSOLUTE;
   nextKeys.ax[0] = nextKeys.udlrax.x;
   nextKeys.ax[1] = nextKeys.udlrax.y;
   // AFAIK u, d, l, r aren't used, so I'm not going to bother with them ATM

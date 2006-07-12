@@ -219,6 +219,7 @@ void Player::buyTank(const IDBTank *in_tank) {
 
 void Player::forceAcquireWeapon(const IDBWeapon *in_weap, int count) {
   weapons.addAmmo(in_weap, count);
+  CHECK(weapons.getWeaponSlot(0) == in_weap);
 }
 void Player::forceAcquireUpgrade(const IDBUpgrade *in_upg) {
   CHECK(!hasUpgrade(in_upg));
@@ -227,7 +228,16 @@ void Player::forceAcquireUpgrade(const IDBUpgrade *in_upg) {
   reCalculate();
 }
 void Player::forceAcquireBombardment(const IDBBombardment *in_bombard) {
-  bombardment.insert(bombardment.begin(), in_bombard);
+  bombardment.push_back(in_bombard);
+  equipBombardment(in_bombard);
+}
+void Player::forceAcquireGlory(const IDBGlory *in_glory) {
+  glory.push_back(in_glory);
+  equipGlory(in_glory);
+}
+void Player::forceAcquireTank(const IDBTank *in_tank) {
+  tank.push_back(TankEquipment(in_tank));
+  equipTank(in_tank);
 }
 
 // Allows you to remove things, even things which are not meant to be removed

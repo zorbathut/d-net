@@ -32,11 +32,12 @@
 - Add tank sell deprecation
 - Special unique bonuses (turned the most, closest to death, most/least accurate, traveler, tunneler, deadeye, kamikaze)
 
----- Major but unimportant
+---- Major but unimportant ATM
 - Halos?
 - Sound, yo
 - Absolute mode config
 - Holy crap! Self-intersecting! Cry!
+- Netplay (NOTE: shop demos change random state!)
 - Consistent-ize line width effects, colors, rendering in general
 - Level save snapshots - how should this work? I'm still not sure.
 - dnd compression - this is going to rely on level save snapshots

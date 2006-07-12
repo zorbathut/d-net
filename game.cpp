@@ -50,7 +50,7 @@ Team::Team() {
   color = Color(0, 0, 0);
   swap_colors = false;
 }
-
+  
 void Tank::init(Player *in_player) {
   CHECK(in_player);
   CHECK(!player);
@@ -591,7 +591,7 @@ bool Game::runTick(const vector< Keystates > &rkeys) {
   if(gamemode == GMODE_DEMO) {
     // EVERYONE IS INVINCIBLE
     for(int i = 0; i < tanks.size(); i++) {
-      tanks[i].health = 1000000000;
+      tanks[i].health = 100000000;
     }
   }
   
@@ -1329,6 +1329,27 @@ vector<int> Game::teamBreakdown() const {
 
 int Game::frameCount() const {
   return frameNm;
+}
+
+Coord2 Game::queryPlayerLocation(int id) const {
+  return tanks[id].pos;
+}
+
+void Game::kill(int id) {
+  CHECK(gamemode == GMODE_DEMO);
+  tanks[id].takeDamage(1000000000);
+}
+
+void Game::respawnPlayer(int id, Coord2 pos, float facing) {
+  CHECK(gamemode == GMODE_DEMO);
+  Player *play = tanks[id].player;
+  tanks[id] = Tank();
+  tanks[id].init(play);
+  tanks[id].pos = pos;
+  tanks[id].d = facing;
+  tanks[id].team = &teams[id];
+  bombards[id].state = BombardmentState::BS_OFF;
+  CHECK(tanks[id].live);
 }
 
 void Game::addStatHit() {

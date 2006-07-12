@@ -164,6 +164,11 @@ public:
 
   int frameCount() const;
 
+  // used for demos
+  Coord2 queryPlayerLocation(int id) const;
+  void kill(int id);
+  void respawnPlayer(int id, Coord2 pos, float facing);
+
   void addStatHit();  // used for damage-per-hit calculations
 
   float firepowerSpent;

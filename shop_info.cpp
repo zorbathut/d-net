@@ -80,7 +80,7 @@ void ShopInfo::init(const IDBGlory *in_glory, const Player *in_player) {
   null();
   glory = in_glory;
   player = in_player;
-  // no working demo atm
+  demo.init(glory, player);
 }
 void ShopInfo::init(const IDBBombardment *in_bombardment, const Player *in_player) {
   null();
@@ -102,7 +102,7 @@ void ShopInfo::init(const IDBTank *in_tank, const Player *in_player) {
 }
   
 void ShopInfo::runTick() {
-  if(weapon || bombardment)
+  if(weapon || bombardment || glory)
     demo.runTick();
 }
 
@@ -126,6 +126,9 @@ void ShopInfo::renderFrame(Float4 bounds, float fontsize, Float4 inset) const {
       
       kvp.print("total average damage", prettyFloatFormat(player->adjustGlory(glory).stats_averageDamage()));
     }
+    
+    GfxWindow gfxw(inset);
+    demo.renderFrame();
   } else if(bombardment) {
     {
       ShopKVPrinter kvp(bounds, fontsize, fontshift);
