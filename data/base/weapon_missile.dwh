@@ -1,4 +1,9 @@
 
+text {
+  name=text.weapon.missile
+  data=Explosives in a can. The missile is one of the most powerful low-tech systems developed and extremely popular for wholescale demolition. The rocket engine takes several seconds to reach full speed, making this weapon difficult to aim with.
+}
+
 deploy {
   name=deploy.missile
 }
@@ -25,6 +30,8 @@ weapon {
   firerate=3
   deploy=deploy.missile
   projectile=projectile.missile
+  
+  text=text.weapon.missile
 }
 
 weapon {
@@ -33,6 +40,8 @@ weapon {
   firerate=4
   deploy=deploy.missile
   projectile=projectile.missile
+  
+  text=text.weapon.missile
 }
 
 weapon {
@@ -41,6 +50,8 @@ weapon {
   firerate=6
   deploy=deploy.missile
   projectile=projectile.missile
+  
+  text=text.weapon.missile
 }
 
 weapon {
@@ -49,6 +60,8 @@ weapon {
   firerate=8
   deploy=deploy.missile
   projectile=projectile.missile
+  
+  text=text.weapon.missile
 }
 
 weapon {
@@ -57,6 +70,8 @@ weapon {
   firerate=9.5
   deploy=deploy.missile
   projectile=projectile.missile
+  
+  text=text.weapon.missile
 }
 
 weapon {
@@ -65,4 +80,6 @@ weapon {
   firerate=11
   deploy=deploy.missile
   projectile=projectile.missile
+  
+  text=text.weapon.missile
 }

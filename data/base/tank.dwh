@@ -1,4 +1,9 @@
 
+text {
+  name=text.weapon.sparker
+  data=The most infamous of junkyard weapons, the Sparker is a cobbled together monstrosity from whatever parts can be found. It is not powerful, accurate, nor rapid, but can serve if no other weapons are available.
+}
+
 deploy {
   name=deploy.sparker1
   anglestddev=0.030
@@ -23,6 +28,8 @@ weapon {
   firerate=3
   deploy=deploy.sparker1
   projectile=projectile.sparker1
+  
+  text=text.weapon.sparker
 }
 
 tank {
@@ -70,6 +77,8 @@ weapon {
   firerate=5
   deploy=deploy.sparker2
   projectile=projectile.sparker2
+  
+  text=text.weapon.sparker
 }
 
 tank {

@@ -12,6 +12,7 @@
 - Many many more weapons
 
 ---- Things that take thought and musing
+- Lowercase?
 - Glory device demo screen
 - Upgrade demo screen
 - Tank demo screen(s)

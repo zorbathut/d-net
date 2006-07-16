@@ -114,7 +114,7 @@ void ShopInfo::runTick() {
 }
 
 int wordsallowed(const vector<string> &left, float fontsize, float limit, const string &start) {
-  for(int i = 0; i < left.size(); i++) {
+  for(int i = 0; i <= left.size(); i++) {
     string v = start;
     for(int k = 0; k < i; k++) {
       if(k)
@@ -145,6 +145,7 @@ void drawShadedFormattedText(Float4 bounds, float fontsize, const string &text) 
           v += " ";
         v += left[k];
       }
+      CHECK(getTextWidth(v, fontsize) <= rkt.x_span());
       vlines.push_back(v);
       first = false;
       left.erase(left.begin(), left.begin() + wordsa);
