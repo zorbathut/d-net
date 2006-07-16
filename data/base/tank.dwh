@@ -32,6 +32,12 @@ weapon {
   text=text.weapon.sparker
 }
 
+text {
+  name=text.tank.opecii
+  data=The most powerful tank twenty years ago, the Opec II is now utterly obsolete. Many are still used in combat, usually in rebuilt and reconditioned form.
+  data=Upgrade ASAP.
+}
+
 tank {
   name=ROOT.Tanks.OPEC II
 
@@ -50,6 +56,8 @@ tank {
   vertices=6.5 0
   vertices=0 -2.5
   vertices=0 2.5
+  
+  text=text.tank.opecii
 }
 
 
@@ -81,6 +89,11 @@ weapon {
   text=text.weapon.sparker
 }
 
+text {
+  name=text.tank.carat
+  data=The Carat series was designed for warriors who value speed above everything. Lightweight but sturdy, Carat tanks can outmaneuver anything in their class.
+}
+
 tank {
   name=ROOT.Tanks.CARAT I
 
@@ -98,6 +111,13 @@ tank {
   vertices=0 -2.25
   vertices=0.5 0
   vertices=0 2.25
+  
+  text=text.tank.carat
+}
+
+text {
+  name=text.tank.pire
+  data=Tired of having to choose between slow tanks and flimsy tanks, the Pire's designer set out to make a tank with no weak points and produced a solid contender on the field. Unfortunately but inevitably it also has no strong points.
 }
 
 tank {
@@ -118,6 +138,13 @@ tank {
   vertices=0 -2.5
   vertices=0 2.5
   vertices=5.5 0.8
+  
+  text=text.tank.pire
+}
+
+text {
+  name=text.tank.roxo
+  data=Reinforced beyond previous records, the Roxo was, for a time, the world's heaviest tank. Soon surpassed by more advanced construction techniques, it is still unequaled among the lower-tech and cheaper tanks.
 }
 
 tank {
@@ -138,4 +165,6 @@ tank {
   vertices=0 -2.8
   vertices=0 2.8
   vertices=4 1.9
+  
+  text=text.tank.roxo
 }
