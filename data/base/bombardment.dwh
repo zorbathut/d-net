@@ -1,16 +1,14 @@
 
+text {
+  name=text.bombardment.minibomb
+  data=To combat audience boredom, the Destruction Zone staff provides a small arsenal of minibombs to drop on the arena from orbit. Both impact time and reload time are extremely high, and the bombs themselves do little damage.
+}
+
 warhead {
   name=warhead.bombardment.minibomb
   radiusdamage=0.3 explosive
   radiusfalloff=3
   wallremovalradius=0.5
-}
-
-warhead {
-  name=warhead.bombardment.bomb
-  radiusdamage=2 explosive
-  radiusfalloff=8
-  wallremovalradius=2
 }
 
 bombardment {
@@ -22,6 +20,20 @@ bombardment {
   
   lockdelay=2
   unlockdelay=1
+  
+  text=text.bombardment.minibomb
+}
+
+text {
+  name=text.bombardment.bomb
+  data=Improved warheads for the stock bomb launching system, these do significantly more damage in a larger blast radius. Be feared even after death.
+}
+
+warhead {
+  name=warhead.bombardment.bomb
+  radiusdamage=2 explosive
+  radiusfalloff=8
+  wallremovalradius=2
 }
 
 bombardment {
@@ -32,4 +44,6 @@ bombardment {
   
   lockdelay=2
   unlockdelay=1
+  
+  text=text.bombardment.bomb
 }

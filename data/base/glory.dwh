@@ -10,6 +10,11 @@ warhead {
   #wallremovalradius=0.5
 }
 
+text {
+  name=text.glory.basic
+  data=When destroyed, a tank's reactor core tends to detonate with impressive fireworks. Compared to tank armor, however, this explosion is not very impressive.
+}
+
 projectile {
   name=projectile.glory.basic
   width=0.6
@@ -41,6 +46,13 @@ glory {
   maxsplitsize=2
   
   shotspersplit=4
+  
+  text=text.glory.basic
+}
+
+text {
+  name=text.glory.shaped
+  data=Explosives added around the reactor core can turn an anemic reactor breach into a reasonably-sized bomb explosion, capable of killing only moderately damaged tanks.
 }
 
 projectile {
@@ -73,4 +85,6 @@ glory {
   maxsplitsize=2
   
   shotspersplit=8
+  
+  text=text.glory.shaped
 }

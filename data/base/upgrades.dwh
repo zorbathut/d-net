@@ -50,7 +50,7 @@ upgrade {
 
 text {
   name=text.tank.engine2
-  data=For the true racer, much of the engine can be replaced with higher-performance parts and an onboard computer can be added. All this, of course, has its cost.
+  data=For the true racer, much of the drivetrain can be replaced with higher-performance parts and an advanced transmission can be installed. All this, of course, has its cost.
 }
 
 upgrade {
