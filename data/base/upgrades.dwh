@@ -1,19 +1,33 @@
 
 adjustment {
   name=adjustment.hull
-  tank_armor=20
+  tank_armor=15
+}
+
+text {
+  name=text.tank.hull1
+  data=Reinforced armor and improved alloys lead to a greater damage capacity without any bad side effects.
 }
 
 upgrade {
   name=ROOT.Upgrades.Hull I
   costmult=1
   adjustment=adjustment.hull
+  
+  text=text.tank.hull1
+}
+
+text {
+  name=text.tank.hull2
+  data=Active adaptive shielding on the hull absorbs an even greater percentage of incoming firepower . . . for a price.
 }
 
 upgrade {
   name=ROOT.Upgrades.Hull II
   costmult=3
   adjustment=adjustment.hull
+  
+  text=text.tank.hull2
 }
 
 adjustment {
@@ -21,16 +35,30 @@ adjustment {
   tank_speed=20
 }
 
+text {
+  name=text.tank.engine1
+  data=Improved tuning, and a few aftermarket components, can make any engine perform a bit better.
+}
+
 upgrade {
   name=ROOT.Upgrades.Engine I
   costmult=1
   adjustment=adjustment.engine
+  
+  text=text.tank.engine1
+}
+
+text {
+  name=text.tank.engine2
+  data=For the true racer, much of the engine can be replaced with higher-performance parts and an onboard computer can be added. All this, of course, has its cost.
 }
 
 upgrade {
   name=ROOT.Upgrades.Engine II
   costmult=3
   adjustment=adjustment.engine
+  
+  text=text.tank.engine2
 }
 
 adjustment {
@@ -38,14 +66,28 @@ adjustment {
   tank_turn=20
 }
 
+text {
+  name=text.tank.handling1
+  data=Improved suspension and tread linkages lead to a significantly smaller turning radius.
+}
+
 upgrade {
   name=ROOT.Upgrades.Handling I
   costmult=1
   adjustment=adjustment.handling
+  
+  text=text.tank.handling1
+}
+
+text {
+  name=text.tank.handling2
+  data=Small focused graviton generators improve turning radius further by simply changing the direction of gravity. Not for the cheap.
 }
 
 upgrade {
   name=ROOT.Upgrades.Handling II
   costmult=3
   adjustment=adjustment.handling
+  
+  text=text.tank.handling2
 }
