@@ -1,7 +1,4 @@
 ---- Major work path
-- Glory device demo screen
-- Upgrade demo screen
-- Tank demo screen(s)
 - Flavor text
 - New weapons
 - Next-gen collision/storage system on grid
@@ -15,7 +12,9 @@
 - Many many more weapons
 
 ---- Things that take thought and musing
-- Improved win sum system - what does this mean again?
+- Glory device demo screen
+- Upgrade demo screen
+- Tank demo screen(s)
 - Slide-along-walls track simulation?
 - "Kill graph"
 
