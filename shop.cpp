@@ -64,7 +64,7 @@ const float sl_demoystart = 50;
 
 const float sl_boxthick = 0.1;
 
-const float sl_hudstart = 15;
+const float sl_hudstart = 10;
 const float sl_hudend = 95;
 
 void Shop::renderNode(const HierarchyNode &node, int depth) const {

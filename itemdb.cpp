@@ -21,7 +21,9 @@ static map<string, IDBGlory> gloryclasses;
 static map<string, IDBBombardment> bombardmentclasses;
 static map<string, IDBTank> tankclasses;
 static map<string, IDBAdjustment> adjustmentclasses;
+
 static vector<IDBFaction> factions;
+static map<string, string> text;
 
 static const IDBTank *deftank = NULL;
 static const IDBGlory *defglory = NULL;
@@ -388,6 +390,14 @@ void parseItemFile(const string &fname) {
       CHECK(deployclasses.count(deployclass));
       weaponclasses[name].deploy = &deployclasses[deployclass];
       
+      if(chunk.kv.count("text")) {
+        string textid = chunk.consume("text");
+        CHECK(text.count(textid));
+        weaponclasses[name].text = &text[textid];
+      } else {
+        weaponclasses[name].text = NULL;
+      }
+      
     } else if(chunk.category == "upgrade") {
       
       string name = chunk.consume("name");
@@ -410,6 +420,14 @@ void parseItemFile(const string &fname) {
       string adjustment = chunk.consume("adjustment");
       CHECK(adjustmentclasses.count(adjustment));
       upgradeclasses[name].adjustment = &adjustmentclasses[adjustment];
+      
+      if(chunk.kv.count("text")) {
+        string textid = chunk.consume("text");
+        CHECK(text.count(textid));
+        upgradeclasses[name].text = &text[textid];
+      } else {
+        upgradeclasses[name].text = NULL;
+      }
 
     } else if(chunk.category == "projectile") {
       string name = chunk.consume("name");
@@ -443,7 +461,7 @@ void parseItemFile(const string &fname) {
       string warheadclass = chunk.consume("warhead");
       CHECK(warheadclasses.count(warheadclass));
       projclasses[name].warhead = &warheadclasses[warheadclass];
-      
+
     } else if(chunk.category == "deploy") {
       string name = chunk.consume("name");
       CHECK(prefixed(name, "deploy"));
@@ -525,6 +543,14 @@ void parseItemFile(const string &fname) {
         defglory = &gloryclasses[name];
       }
       
+      if(chunk.kv.count("text")) {
+        string textid = chunk.consume("text");
+        CHECK(text.count(textid));
+        gloryclasses[name].text = &text[textid];
+      } else {
+        gloryclasses[name].text = NULL;
+      }
+
     } else if(chunk.category == "bombardment") {
       
       string name = chunk.consume("name");
@@ -558,6 +584,14 @@ void parseItemFile(const string &fname) {
         defbombardment = &bombardmentclasses[name];
       }
       
+      if(chunk.kv.count("text")) {
+        string textid = chunk.consume("text");
+        CHECK(text.count(textid));
+        bombardmentclasses[name].text = &text[textid];
+      } else {
+        bombardmentclasses[name].text = NULL;
+      }
+
     } else if(chunk.category == "tank") {
       
       string name = chunk.consume("name");
@@ -611,6 +645,14 @@ void parseItemFile(const string &fname) {
         deftank = &tankclasses[name];
       }
       
+      if(chunk.kv.count("text")) {
+        string textid = chunk.consume("text");
+        CHECK(text.count(textid));
+        tankclasses[name].text = &text[textid];
+      } else {
+        tankclasses[name].text = NULL;
+      }
+
     } else if(chunk.category == "adjustment") {
       
       string name = chunk.consume("name");
@@ -656,8 +698,16 @@ void parseItemFile(const string &fname) {
         fact.adjustment[i] = &adjustmentclasses["null"]; // wheeeeeeeee
       fact.adjustment[3] = &adjustmentclasses[adjustment];
       
-      factions.push_back(fact);
+      if(chunk.kv.count("text")) {
+        string textid = chunk.consume("text");
+        CHECK(text.count(textid));
+        fact.text = &text[textid];
+      } else {
+        fact.text = NULL;
+      }
       
+      factions.push_back(fact);
+
     } else if(chunk.category == "equip") {
       
       string name = chunk.consume("name");
@@ -672,7 +722,13 @@ void parseItemFile(const string &fname) {
       CHECK(mountpoint->cat_restrictiontype == -1 || tnode.cat_restrictiontype == mountpoint->cat_restrictiontype);
       
       mountpoint->branches.push_back(tnode);
-    
+      
+    } else if(chunk.category == "text") {
+      string name = chunk.consume("name");
+      CHECK(text.count(name) == 0);
+      CHECK(strncmp(name.c_str(), "text.", 5) == 0);
+      text[name] = chunk.consume("data");
+      // yay
     } else {
       CHECK(0);
     }

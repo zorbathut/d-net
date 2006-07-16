@@ -1,6 +1,8 @@
 
 #include "shop_info.h"
+
 #include "gfx.h"
+#include "parse.h"
 
 class ShopKVPrinter {
 public:
@@ -74,30 +76,35 @@ void ShopInfo::init(const IDBWeapon *in_weapon, const Player *in_player) {
   null();
   weapon = in_weapon;
   player = in_player;
+  text = in_weapon->text;
   demo.init(weapon, player);
 }
 void ShopInfo::init(const IDBGlory *in_glory, const Player *in_player) {
   null();
   glory = in_glory;
   player = in_player;
+  text = in_glory->text;
   demo.init(glory, player);
 }
 void ShopInfo::init(const IDBBombardment *in_bombardment, const Player *in_player) {
   null();
   bombardment = in_bombardment;
   player = in_player;
+  text = in_bombardment->text;
   demo.init(bombardment, player);
 }
 void ShopInfo::init(const IDBUpgrade *in_upgrade, const Player *in_player) {
   null();
   upgrade = in_upgrade;
   player = in_player; 
+  text = in_upgrade->text;
   // no working demo atm
 }
 void ShopInfo::init(const IDBTank *in_tank, const Player *in_player) {
   null();
   tank = in_tank;
   player = in_player;
+  text = in_tank->text;
   // no working demo atm
 }
   
@@ -106,8 +113,63 @@ void ShopInfo::runTick() {
     demo.runTick();
 }
 
+int wordsallowed(const vector<string> &left, float fontsize, float limit, const string &start) {
+  for(int i = 0; i < left.size(); i++) {
+    string v = start;
+    for(int k = 0; k < i; k++) {
+      if(k)
+        v += " ";
+      v += left[k];
+    }
+    if(getTextWidth(v, fontsize) > limit)
+      return i - 1;
+  }
+  return left.size();
+}
+
+void drawShadedFormattedText(Float4 bounds, float fontsize, const string &text) {
+  float linesize = fontsize * 1.5;
+  Float4 rkt(bounds.sx + fontsize / 3, bounds.sy + fontsize / 3, bounds.ex - fontsize / 3, bounds.sy + fontsize / 3);
+    
+  vector<string> lines = tokenize(text, "\n");
+  vector<string> vlines;
+  for(int i = 0; i < lines.size(); i++) {
+    vector<string> left = tokenize(lines[i], " ");
+    bool first = true;
+    while(left.size()) {
+      int wordsa = wordsallowed(left, fontsize, rkt.x_span(), first ? "   " : "");
+      CHECK(wordsa > 0 && wordsa <= left.size());
+      string v = first ? "   " : "";
+      for(int k = 0; k < wordsa; k++) {
+        if(k)
+          v += " ";
+        v += left[k];
+      }
+      vlines.push_back(v);
+      first = false;
+      left.erase(left.begin(), left.begin() + wordsa);
+    }
+  }
+  
+  rkt.ey = rkt.sy + (vlines.size() - 1) * linesize + fontsize;
+  
+  Float4 box(rkt.sx - fontsize / 3, rkt.sy - fontsize / 3, rkt.ex + fontsize / 3, rkt.ey + fontsize / 3);
+  
+  drawSolid(box);
+  setColor(0.3, 0.3, 0.3);
+  drawRect(box, 0.1);
+  setColor(1.0, 1.0, 1.0);
+  for(int i = 0; i < vlines.size(); i++)
+    drawText(vlines[i], fontsize, rkt.sx, rkt.sy + linesize * i);
+}
+
 void ShopInfo::renderFrame(Float4 bounds, float fontsize, Float4 inset) const {
   CHECK(bool(weapon) + bool(glory) + bool(bombardment) + bool(upgrade) + bool(tank) == 1);
+  
+  if(text)
+    drawShadedFormattedText(bounds, fontsize, *text);
+  
+  bounds.sy += 25;
   
   const float fontshift = fontsize * 1.5;
   if(weapon) {

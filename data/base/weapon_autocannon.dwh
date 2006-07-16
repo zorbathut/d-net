@@ -1,4 +1,9 @@
 
+text {
+  name=text.weapon.autocannon
+  data=Standard 44mm armor-piercing kinetic delivery systems. These weapons are rather inaccurate and not terribly fast-firing, but pack incredible power at short range.
+}
+
 deploy {
   name=deploy.autocannon
   anglestddev=0.025
@@ -24,6 +29,8 @@ weapon {
   firerate=5
   deploy=deploy.autocannon
   projectile=projectile.autocannon
+  
+  text=text.weapon.autocannon
 }
 
 weapon {
@@ -32,6 +39,8 @@ weapon {
   firerate=6
   deploy=deploy.autocannon
   projectile=projectile.autocannon
+  
+  text=text.weapon.autocannon
 }
 
 weapon {
@@ -40,6 +49,8 @@ weapon {
   firerate=8
   deploy=deploy.autocannon
   projectile=projectile.autocannon
+  
+  text=text.weapon.autocannon
 }
 
 weapon {
@@ -48,6 +59,8 @@ weapon {
   firerate=10
   deploy=deploy.autocannon
   projectile=projectile.autocannon
+  
+  text=text.weapon.autocannon
 }
 
 weapon {
@@ -56,6 +69,8 @@ weapon {
   firerate=12
   deploy=deploy.autocannon
   projectile=projectile.autocannon
+  
+  text=text.weapon.autocannon
 }
 
 weapon {
@@ -64,4 +79,6 @@ weapon {
   firerate=14
   deploy=deploy.autocannon
   projectile=projectile.autocannon
+  
+  text=text.weapon.autocannon
 }

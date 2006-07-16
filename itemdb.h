@@ -42,6 +42,8 @@ public:
   IDBAdjustment *adjustment[4];
 
   vector<string> name_lines;
+
+  const string *text;
 };
 
 struct IDBDeploy {
@@ -80,6 +82,8 @@ public:
 
   Money base_cost;
   int quantity;
+
+  const string *text;
 };
 
 struct IDBGlory {
@@ -96,6 +100,8 @@ public:
   int shotspersplit;
 
   Money base_cost;
+
+  const string *text;
 };
 
 struct IDBUpgrade {
@@ -103,6 +109,8 @@ public:
   IDBAdjustment *adjustment;
 
   int costmult;
+
+  const string *text;
 };
 
 struct IDBBombardment {
@@ -113,6 +121,8 @@ public:
   float unlockdelay;
 
   Money base_cost;
+
+  const string *text;
 };
 
 struct IDBTank {
@@ -127,6 +137,8 @@ public:
 
   Money base_cost;
   Money upgrade_base;
+
+  const string *text;
 };
 
 /*************

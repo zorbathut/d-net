@@ -28,6 +28,8 @@ void setZoomCenter(float cx, float cy, float radius_y);
 
 float getAspect();
 
+bool frameRunning();
+
 void deinitFrame();
 
 /*************

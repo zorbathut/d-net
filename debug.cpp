@@ -2,6 +2,7 @@
 #include "debug.h"
 
 #include "os.h"
+#include "gfx.h"
 
 #include <vector>
 
@@ -36,7 +37,10 @@ void PrintDebugStack() {
   dprintf("End of stack\n");
 }
 
-void CrashHandler(const char *fname, int line) { };
+void CrashHandler(const char *fname, int line) {
+  if(frameRunning())
+    deinitFrame();
+};
 
 void crash() {
   *(int*)0 = 0;

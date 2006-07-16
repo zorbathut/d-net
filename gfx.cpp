@@ -169,7 +169,10 @@ void finishLineCluster() {
   glLineWidth(1);
 }
 
+static bool frame_running = false;
+
 void initFrame() {
+  CHECK(!frame_running);
   CHECK(curWeight == -1.f);
   glEnable(GL_POINT_SMOOTH);
   glEnable(GL_LINE_SMOOTH);
@@ -182,6 +185,7 @@ void initFrame() {
   //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   clearFrame(Color(0.05, 0.05, 0.05));
   CHECK(glGetError() == GL_NO_ERROR);
+  frame_running = true;
 }
 
 void clearFrame(const Color &color) {
@@ -191,11 +195,17 @@ void clearFrame(const Color &color) {
   clearcolor = color;
 }
 
+bool frameRunning() {
+  return frame_running;
+}
+
 void deinitFrame() {
+  CHECK(frame_running);
   finishLineCluster();
   glFlush();
   SDL_GL_SwapBuffers(); 
   CHECK(glGetError() == GL_NO_ERROR);
+  frame_running = false;
 }
 
 GfxWindow::GfxWindow(const Float4 &bounds) {
@@ -453,6 +463,8 @@ void drawText(const string &txt, float scale, const Float2 &pos) {
 }
 
 float getTextWidth(const string &txt, float scale) {
+  if(txt.size() == 0)
+    return 0;
   return (scale / 9) * (8 * txt.size() - 3);
 }
 

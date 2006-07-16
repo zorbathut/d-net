@@ -19,6 +19,7 @@
 - "Kill graph"
 
 ---- Maintenance, minor bugfix, braindead
+- Enforce prefixes? projectile.blah etc etc etc
 - Auto coord-to-float converter (CoordFloat?)
 - AI shouldn't try to buy the glory device it already owns
 - Buy menu flicker? Double-buffering?

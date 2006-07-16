@@ -36,6 +36,8 @@ private:
 
   const Player *player;
 
+  const string *text;
+
   ShopInfo(const ShopInfo &rhs);
   void operator=(const ShopInfo &rhs);
 };
