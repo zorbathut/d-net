@@ -176,118 +176,115 @@ character {
 
 character {
   id=g
-  path=5,8 1,8 0,7 0,5 1,4 4,4 5,5 5,9 4,10 0,10
+  path=5,8 1,8 0,7 0,5 1,4 4,4 5,5 5,9 4,10 1,10
 }
-
-# beginning of unfinished section
 
 character {
   id=h
   path=0,0 0,9
-  path=6,0 6,9
-  path=0,4 6,4
+  path=0,5 1,4 4,4 5,5 5,9
 }
 
 character {
   id=i
-  path=2,0 4,0
-  path=2,9 4,9
-  path=3,0 3,9
+  path=3,4 3,9
+  path=3,2 3,3
 }
 
 character {
   id=j
-  path=4,0 6,0 6,7 4,9 2,9 0,7
+  path=3,4 3,8 2,9
+  path=3,2 3,3
 }
 
 character {
   id=k
   path=0,0 0,9
-  path=4,0 0,4 5,9
+  path=2,4 0,6 3,9
 }
 
 character {
   id=l
-  path=0,0 0,9 6,9
+  path=0,0 0,7 2,9
 }
 
 character {
   id=m
-  path=0,9 0,0 3,3 6,0 6,9
+  path=0,4 0,9
+  path=0,5 1,4 2,4 3,5 4,4 5,4 6,5 6,9
+  path=3,5 3,9
 }
 
 character {
   id=n
-  path=0,9 0,0 6,6
-  path=6,0 6,9
+  path=0,4 0,9
+  path=0,5 1,4 3,4 4,5 4,9
 }
 
 character {
   id=o
-  path=6,2 4,0 2,0 0,2 0,7 2,9 4,9 6,7 6,2
+  path=1,4 0,5 0,8 1,9 4,9 5,8 5,5 4,4 1,4
 }
 
 character {
   id=p
-  path=0,9 0,0 3,0 5,2 5,3 4,4 0,4
+  path=0,10 0,5 1,4 4,4 5,5 5,7 4,8 0,8
 }
 
 character {
   id=q
-  path=6,2 4,0 2,0 0,2 0,7 2,9 4,9 6,7 6,2
-  path=4,7 6,9
+  path=5,10 5,5 4,4 1,4 0,5 0,7 1,8 5,8
 }
 
 character {
   id=r
-  path=0,9 0,0 3,0 5,2 5,3 4,4 0,4 5,9
+  path=0,4 0,9
+  path=0,6 2,4 5,4
 }
 
 character {
   id=s
-  path=6,0 1,0 0,1 0,2 2,4 4,4 6,6 6,7 4,9 0,9
+  path=5,4 1,4 0,5 1,6 4,6 5,7 5,8 4,9 0,9
 }
 
 character {
   id=t
-  path=0,0 6,0
-  path=3,0 3,9
+  path=3,0 3,7 5,9
+  path=2,4 4,4
 }
 
 character {
   id=u
-  path=0,0 0,7 2,9 4,9 6,7 6,0
+  path=0,4 0,8 1,9 4,9 5,8 5,4
 }
 
 character {
   id=v
-  path=0,0 0,6 3,9 6,6 6,0
+  path=0,4 0,7 2,9 4,7 4,4
 }
 
 character {
   id=w
-  path=0,0 0,7 2,9 3,8 4,9 6,7 6,0
-  path=3,5 3,8
+  path=0,4 0,8 1,9 2,9 3,8 4,9 5,9 6,8 6,4
+  path=3,8 3,5
 }
 
 character {
   id=x
-  path=0,0 0,1 6,7 6,9
-  path=6,0 6,1 0,7 0,9
+  path=0,4 5,9
+  path=5,4 0,9
 }
 
 character {
   id=y
-  path=0,0 3,3 6,0
-  path=3,3 3,9
+  path=0,4 0,7 1,8 4,8 5,7 5,4
+  path=5,7 5,9 4,10 1,10
 }
 
 character {
   id=z
-  path=0,0 6,0 6,1 0,7 0,9 6,9
+  path=0,4 5,4 0,9 5,9
 }
-
-# End of unfinished section
 
 character {
   id=0
@@ -359,7 +356,7 @@ character {
 
 character {
   id=.
-  path=2,7 2,9
+  path=2,8 2,9
 }
 
 character {
@@ -443,7 +440,7 @@ character {
 character {
   id=?
   path=0,2 2,0 4,0 6,2 6,3 3,6
-  path=3,7 3,9
+  path=3,8 3,9
 }
 
 character {

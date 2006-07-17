@@ -329,7 +329,7 @@ void InterfaceMain::render() const {
     drawText("Player two    wasd       and rtyfgh", 3, 2, 34);
     drawText("Menu          arrow keys and u", 3, 2, 38);
     drawText("ABCDEFGHIJKLMNOPQRSTUVWXYZ", 3, 2, 46);
-    drawText("abcdefghijklmonpqrstuvwxyz", 3, 2, 50);
+    drawText("abcdefghijklmnopqrstuvwxyz", 3, 2, 50);
     drawText("THE QUICK BROWN FOX JUMPS OVER THE LAZY DOG", 3, 2, 54);
     drawText("The quick brown fox jumps over the lazy dog", 3, 2, 58);
     if(grid) {
