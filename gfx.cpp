@@ -431,7 +431,7 @@ void drawPoint(const Float2 &pos, float weight) {
 void drawText(const char *txt, float scale, float sx, float sy) {
   scale /= 9;
   for(int i = 0; txt[i]; i++) {
-    char kar = toupper(txt[i]);
+    char kar = txt[i];
     if(!fontdata.count(kar)) {
       dprintf("Can't find font for character \"%c\"", kar);
       CHECK(0);

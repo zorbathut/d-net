@@ -145,6 +145,155 @@ character {
 }
 
 character {
+  id=a
+  path=5,9 5,5 4,4 1,4 0,5 0,8 1,9 3,9 5,7
+}
+
+# beginning of unfinished section
+
+character {
+  id=b
+  path=0,0 4,0 6,2 6,3 4,5 6,7 6,8 5,9 0,9 0,0
+  path=0,5 4,5
+}
+
+character {
+  id=c
+  path=6,2 4,0 2,0 0,2 0,7 2,9 4,9 6,7
+}
+
+character {
+  id=d
+  path=0,0 4,0 6,2 6,7 4,9 0,9 0,0
+}
+
+character {
+  id=e
+  path=6,0 0,0 0,9 6,9
+  path=0,5 5,5
+}
+
+character {
+  id=f
+  path=6,0 0,0 0,9
+  path=0,5 5,5
+}
+
+character {
+  id=g
+  path=6,2 4,0 2,0 0,2 0,7 2,9 4,9 6,7 6,5 4,5
+}
+
+character {
+  id=h
+  path=0,0 0,9
+  path=6,0 6,9
+  path=0,5 6,5
+}
+
+character {
+  id=i
+  path=2,0 4,0
+  path=2,9 4,9
+  path=3,0 3,9
+}
+
+character {
+  id=j
+  path=4,0 6,0 6,7 4,9 2,9 0,7
+}
+
+character {
+  id=k
+  path=0,0 0,9
+  path=5,0 0,5 4,9
+}
+
+character {
+  id=l
+  path=0,0 0,9 6,9
+}
+
+character {
+  id=m
+  path=0,9 0,0 3,3 6,0 6,9
+}
+
+character {
+  id=n
+  path=0,9 0,0 6,6
+  path=6,0 6,9
+}
+
+character {
+  id=o
+  path=6,2 4,0 2,0 0,2 0,7 2,9 4,9 6,7 6,2
+}
+
+character {
+  id=p
+  path=0,9 0,0 4,0 6,2 6,3 4,5 0,5
+}
+
+character {
+  id=q
+  path=6,2 4,0 2,0 0,2 0,7 2,9 4,9 6,7 6,2
+  path=4,7 6,9
+}
+
+character {
+  id=r
+  path=0,9 0,0 4,0 6,2 6,3 4,5 0,5
+  path=2,5 6,9
+}
+
+character {
+  id=s
+  path=6,0 2,0 0,2 0,3 2,5 4,5 6,7 6,8 5,9 0,9
+}
+
+character {
+  id=t
+  path=0,0 6,0
+  path=3,0 3,9
+}
+
+character {
+  id=u
+  path=0,0 0,7 2,9 4,9 6,7 6,0
+}
+
+character {
+  id=v
+  path=0,0 0,6 3,9 6,6 6,0
+}
+
+character {
+  id=w
+  path=0,0 0,7 2,9 3,8 4,9 6,7 6,0
+  path=3,5 3,8
+}
+
+character {
+  id=x
+  path=0,0 0,2 6,8 6,9
+  path=6,0 6,2 0,8 0,9
+}
+
+character {
+  id=y
+  path=0,0 3,3 6,0
+  path=3,3 3,9
+}
+
+character {
+  id=z
+  path=0,0 6,0 6,2 0,8 0,9 6,9
+}
+
+# End of unfinished section
+
+character {
   id=0
   path=6,2 4,0 2,0 0,2 0,7 2,9 4,9 6,7 6,2
   path=2,4 4,6
