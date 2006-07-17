@@ -86,6 +86,17 @@ public:
       }
     }
     
+    if(sx == 1000 && ex == -1000) {
+      CHECK(art.size() == 0);
+      sx = 0;
+      ex = 4;
+    } else {
+      ex++;
+      if(ex <= sx)
+        dprintf("%d, %d", sx, ex);
+      CHECK(ex > sx);
+    }
+    
     for(int i = 0; i < art.size(); i++)
       for(int j = 0; j < art[i].size(); j++)
         art[i][j].first -= sx;
@@ -475,6 +486,8 @@ void drawCircle(const Coord2 &center, Coord radius, Coord weight) {
  * Text operations
  */
 
+const int betweenletter = 1;
+
 void drawText(const char *txt, float scale, float sx, float sy) {
   scale /= 9;
   for(int i = 0; txt[i]; i++) {
@@ -483,14 +496,14 @@ void drawText(const char *txt, float scale, float sx, float sy) {
       dprintf("Can't find font for character \"%c\"", kar);
       CHECK(0);
     }
-    const vector<vector<pair<int, int> > > &pathdat = fontdata[kar].art;
-    for(int i = 0; i < pathdat.size(); i++) {
+    const FontCharacter &pathdat = fontdata[kar];
+    for(int i = 0; i < pathdat.art.size(); i++) {
       vector<Float2> verts;
-      for(int j = 0; j < pathdat[i].size(); j++)
-        verts.push_back(Float2(sx + pathdat[i][j].first * scale, sy + pathdat[i][j].second * scale));
+      for(int j = 0; j < pathdat.art[i].size(); j++)
+        verts.push_back(Float2(sx + pathdat.art[i][j].first * scale, sy + pathdat.art[i][j].second * scale));
       drawLinePath(verts, scale / 4);
     }
-    sx += scale * 8;
+    sx += scale * (pathdat.width + betweenletter);
   }
 }
 
@@ -503,9 +516,13 @@ void drawText(const string &txt, float scale, const Float2 &pos) {
 }
 
 float getTextWidth(const string &txt, float scale) {
-  if(txt.size() == 0)
-    return 0;
-  return (scale / 9) * (8 * txt.size() - 3);
+  const float point = scale / 9;
+  float acum = point * (txt.size() - 1) * betweenletter;
+  for(int i = 0; i < txt.size(); i++) {
+    CHECK(fontdata.count(txt[i]));
+    acum += point * fontdata[txt[i]].width;
+  }
+  return acum;
 }
 
 void drawJustifiedText(const string &txt, float scale, float sx, float sy, int xps, int yps) {
