@@ -144,42 +144,42 @@ character {
 
 character {
   id=a
-  path=5,9 5,5 4,4 1,4 0,5 0,8 1,9 3,9 5,7
+  #path=5,9 5,5 4,4 1,4 0,5 0,8 1,9 3,9 5,7
+  path=0,4 4,4 5,5 5,9 1,9 0,8 0,7 1,6 5,6
 }
-
-# beginning of unfinished section
 
 character {
   id=b
-  path=0,4 0,0 3,0 5,2 5,3 4,4 0,4 0,9 4,9 6,7 6,6 4,4
+  path=0,0 0,8 1,9 4,9 5,8 5,5 4,4 1,4 0,5
 }
 
 character {
   id=c
-  path=6,2 4,0 2,0 0,2 0,7 2,9 4,9 6,7
+  path=5,5 4,4 1,4 0,5 0,8 1,9 4,9 5,8
 }
 
 character {
   id=d
-  path=0,0 4,0 6,2 6,7 4,9 0,9 0,0
+  path=5,0 5,8 4,9 1,9 0,8 0,5 1,4 4,4 5,5
 }
 
 character {
   id=e
-  path=6,0 0,0 0,9 6,9
-  path=0,4 5,4
+  path=0,6 5,6 5,5 4,4 1,4 0,5 0,8 1,9 4,9 5,8
 }
 
 character {
   id=f
-  path=6,0 0,0 0,9
-  path=0,4 5,4
+  path=3,9 3,2 5,0
+  path=2,4 4,4
 }
 
 character {
   id=g
-  path=6,2 4,0 2,0 0,2 0,7 2,9 4,9 6,7 6,4 4,4
+  path=5,8 1,8 0,7 0,5 1,4 4,4 5,5 5,9 4,10 0,10
 }
+
+# beginning of unfinished section
 
 character {
   id=h
