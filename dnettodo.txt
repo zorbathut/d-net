@@ -1,4 +1,5 @@
 ---- Major work path
+- Lowercase?
 - New weapons
 - Next-gen collision/storage system on grid
 - Logarithmic turning
@@ -11,7 +12,6 @@
 
 ---- Things that take thought and musing
 - Remove bombardment from 2 player, make it cheaper for 3 and 4?
-- Lowercase?
 - Glory device demo screen
 - Upgrade demo screen
 - Tank demo screen(s)
