@@ -12,6 +12,10 @@ using namespace std;
 
 DEFINE_int(resolution_x, -1, "X resolution (Y is X/4*3), -1 for autodetect");
 
+/*************
+ * Infrastructure
+ */
+ 
 class GfxWindowState {
 public:
   float saved_sx;
@@ -66,10 +70,35 @@ static float map_saved_sx;
 static float map_saved_sy;
 static float map_saved_ey;
 
-static map< char, vector< vector< pair< int, int > > > > fontdata;
+class FontCharacter {
+public:
+  vector<vector<pair<int, int> > > art;
+  int width;
+
+  void normalize() {
+    int sx = 1000;
+    int ex = -1000;
+    
+    for(int i = 0; i < art.size(); i++) {
+      for(int j = 0; j < art[i].size(); j++) {
+        sx = min(sx, art[i][j].first);
+        ex = max(ex, art[i][j].first);
+      }
+    }
+    
+    for(int i = 0; i < art.size(); i++)
+      for(int j = 0; j < art[i].size(); j++)
+        art[i][j].first -= sx;
+    width = ex - sx;
+  }
+};
+
+static map<char, FontCharacter> fontdata;
 
 void initGfx() {
+  // Load fonts
   {
+    CHECK(fontdata.size() == 0);
     ifstream font("data/font.txt");
     CHECK(font);
     kvData kvd;
@@ -96,16 +125,22 @@ void initGfx() {
           tpath.push_back(make_pair(out[0], out[1]));
         }
         CHECK(tpath.size() >= 2);
-        fontdata[id[0]].push_back(tpath);
+        fontdata[id[0]].art.push_back(tpath);
       }
+      fontdata[id[0]].normalize();
     }
   }
+  
+  // Set up our OpenGL translation so we have the right image size
   {
     GLfloat flipy[16]= { (5.0/4.0) / (4.0/3.0), 0, 0, 0,   0, -1, 0, 0,   0, 0, 1, 0,  0, 0, 0, 1 };
     glMultMatrixf(flipy);
     glTranslatef(0, -1, 0);
   }
+  
+  // Set up our windowing system
   {
+    CHECK(windows.size() == 0);
     GfxWindowState gfws;
     gfws.saved_sx = 0;
     gfws.saved_sy = 0;
@@ -226,6 +261,10 @@ GfxWindow::~GfxWindow() {
   setZoom(tmap_sx, tmap_sy, tmap_ey);
 }
 
+/*************
+ * Primitives
+ */
+
 void setZoom(float in_sx, float in_sy, float in_ey) {
   finishLineCluster();
   
@@ -311,6 +350,35 @@ void drawLine(const Coord4 &loc, float weight) {
   drawLine(loc.toFloat(), weight);
 }
 
+void drawSolid(const Float4 &box) {
+  CHECK(box.isNormalized());
+  finishLineCluster();
+  CHECK(glGetError() == GL_NO_ERROR);
+  glColor3f(clearcolor.r, clearcolor.g, clearcolor.b);
+  glBlendFunc(GL_ONE, GL_ZERO);
+  glBegin(GL_TRIANGLE_STRIP);
+  localVertex2f(box.sx, box.sy);
+  localVertex2f(box.sx, box.ey);
+  localVertex2f(box.ex, box.sy);
+  localVertex2f(box.ex, box.ey);
+  glEnd();
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+  CHECK(glGetError() == GL_NO_ERROR);
+  setColor(curcolor);
+}
+
+void drawPoint(const Float2 &pos, float weight) {
+  finishLineCluster();
+  glPointSize(weight / map_zoom * getResolutionY());   // GL uses pixels internally for this unit, so I have to translate from game-meters
+  glBegin(GL_POINTS);
+  glVertex2f((pos.x - map_sx) / map_zoom, (pos.y - map_sy) / map_zoom);
+  glEnd();
+}
+
+/*************
+ * Simple objects
+ */
+
 void drawLinePath(const vector<Float2> &verts, float weight) {
   CHECK(verts.size() >= 1);
   for(int i = 0; i < verts.size() - 1; i++)
@@ -335,23 +403,6 @@ void drawTransformedLinePath(const vector<Float2> &verts, float angle, Float2 tr
     transed.push_back(rotate(verts[i], angle) + transform);
   drawLineLoop(transed, weight);
 };
-
-void drawSolid(const Float4 &box) {
-  CHECK(box.isNormalized());
-  finishLineCluster();
-  CHECK(glGetError() == GL_NO_ERROR);
-  glColor3f(clearcolor.r, clearcolor.g, clearcolor.b);
-  glBlendFunc(GL_ONE, GL_ZERO);
-  glBegin(GL_TRIANGLE_STRIP);
-  localVertex2f(box.sx, box.sy);
-  localVertex2f(box.sx, box.ey);
-  localVertex2f(box.ex, box.sy);
-  localVertex2f(box.ex, box.ey);
-  glEnd();
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-  CHECK(glGetError() == GL_NO_ERROR);
-  setColor(curcolor);
-}
 
 void drawRect(const Float4 &rect, float weight) {
   vector<Float2> verts;
@@ -420,13 +471,9 @@ void drawCircle(const Coord2 &center, Coord radius, Coord weight) {
   drawCircle(center.toFloat(), radius.toFloat(), weight.toFloat());
 }
 
-void drawPoint(const Float2 &pos, float weight) {
-  finishLineCluster();
-  glPointSize(weight / map_zoom * getResolutionY());   // GL uses pixels internally for this unit, so I have to translate from game-meters
-  glBegin(GL_POINTS);
-  glVertex2f((pos.x - map_sx) / map_zoom, (pos.y - map_sy) / map_zoom);
-  glEnd();
-}
+/*************
+ * Text operations
+ */
 
 void drawText(const char *txt, float scale, float sx, float sy) {
   scale /= 9;
@@ -436,7 +483,7 @@ void drawText(const char *txt, float scale, float sx, float sy) {
       dprintf("Can't find font for character \"%c\"", kar);
       CHECK(0);
     }
-    const vector<vector<pair<int, int> > > &pathdat = fontdata[kar];
+    const vector<vector<pair<int, int> > > &pathdat = fontdata[kar].art;
     for(int i = 0; i < pathdat.size(); i++) {
       vector<Float2> verts;
       for(int j = 0; j < pathdat[i].size(); j++)
@@ -499,6 +546,10 @@ void drawJustifiedMultiText(const vector<string> &txt, float letterscale, float 
   }
 }
 
+/*************
+ * Vector path operations
+ */
+
 void drawVectorPath(const VectorPath &vecob, const pair<Float2, float> &coord, int midpoints, float weight) {
   for(int i = 0; i < vecob.vpath.size(); i++) {
     int j = (i + 1) % vecob.vpath.size();
@@ -555,6 +606,10 @@ void drawDvec2(const Dvec2 &vecob, const Float4 &bounds, int midpoints, float we
   for(int i = 0; i < vecob.paths.size(); i++)
     drawVectorPath(vecob.paths[i], dimens, midpoints, weight);
 }
+
+/*************
+ * Miscellaneous operations
+ */
 
 void drawSpokes(float x, float y, int dupes, int numer, int denom, float len, float weight) {
   for(int i = 0; i < dupes; i++) {
