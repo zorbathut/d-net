@@ -70,56 +70,36 @@ static map< char, vector< vector< pair< int, int > > > > fontdata;
 
 void initGfx() {
   {
-    ofstream newfi("newfont.txt");
     ifstream font("data/font.txt");
-    string line;
     CHECK(font);
-    while(getLineStripped(font, &line)) {
-      dprintf("Parsing font character \"%s\"\n", line.c_str());
-      vector<string> first = tokenize(line, ":");
-      vector<string> fig = first;
-      if(first.size() == 1)
-        first.push_back("");
-      CHECK(first.size() == 2);
-      if(first.size() == 2) {
-        if(first[0] == "colon")
-          first[0] = ":";
-        if(first[0] == "hash")
-          first[0] = "#";
-        if(first[0] == "space")
-          first[0] = " ";
-        CHECK(first[0].size() == 1);
-        vector< string > paths = tokenize(first[1], "|");
-        newfi << "character {\n";
-        newfi << "  id=" << fig[0] << "\n";
-        for(int i = 0; i < paths.size(); i++) {
-          while(paths[i].size() && isspace(paths[i][0]))
-            paths[i].erase(paths[i].begin());
-          while(paths[i].size() && isspace(paths[i][paths[i].size() - 1]))
-            paths[i].resize(paths[i].size() - 1);
-          newfi << "  path=" << paths[i] << "\n";
+    kvData kvd;
+    while(getkvData(font, &kvd)) {
+      CHECK(kvd.category == "character");
+      CHECK(kvd.kv.count("id"));
+      string id = kvd.consume("id");
+      if(id == "hash")
+        id = "#";
+      if(id == "space")
+        id = " ";
+      CHECK(id.size() == 1);
+      vector<string> paths = tokenize(kvd.consume("path"), "\n");
+      
+      CHECK(!fontdata.count(id[0]));
+      fontdata[id[0]]; // creates it for "space", which will have no paths
+      for(int i = 0; i < paths.size(); i++) {
+        vector<string> order = tokenize(paths[i], " ");
+        CHECK(order.size() >= 2);
+        vector<pair<int, int> > tpath;
+        for(int j = 0; j < order.size(); j++) {
+          vector<int> out = sti(tokenize(order[j], ","));
+          CHECK(out.size() == 2);
+          tpath.push_back(make_pair(out[0], out[1]));
         }
-        newfi << "}\n\n";
-        CHECK(!fontdata.count(first[0][0]));
-        fontdata[first[0][0]]; // creates it
-        for(int i = 0; i < paths.size(); i++) {
-          vector< string > order = tokenize(paths[i], " ");
-          CHECK(order.size() != 1);
-          vector< pair< int, int > > tpath;
-          for(int j = 0; j < order.size(); j++) {
-            vector< int > out = sti(tokenize(order[j], ","));
-            CHECK(out.size() == 2);
-            tpath.push_back(make_pair(out[0], out[1]));
-          }
-          if(tpath.size()) {
-            CHECK(tpath.size() >= 2);
-            fontdata[first[0][0]].push_back(tpath);
-          }
-        }
+        CHECK(tpath.size() >= 2);
+        fontdata[id[0]].push_back(tpath);
       }
     }
   }
-  CHECK(0);
   {
     GLfloat flipy[16]= { (5.0/4.0) / (4.0/3.0), 0, 0, 0,   0, -1, 0, 0,   0, 0, 1, 0,  0, 0, 0, 1 };
     glMultMatrixf(flipy);
