@@ -55,7 +55,7 @@ const float sl_itemheight = 4;
 
 const float sl_boxwidth = (sl_totalwidth - sl_hoffset * 3) / 2;
 
-const float sl_pricehpos = sl_boxwidth / 4 * 3;
+const float sl_pricehpos = sl_boxwidth / 8 * 7;
 const float sl_quanthpos = sl_boxwidth / 5 * 3;
 
 const float sl_demowidth = sl_boxwidth * 3 / 5;
@@ -119,9 +119,9 @@ void Shop::renderNode(const HierarchyNode &node, int depth) const {
     {
       if(node.branches[itemid].type == HierarchyNode::HNT_WEAPON) {
         if(player->ammoCount(node.branches[itemid].weapon) == -1) {
-          drawText(StringPrintf("%5s", "UNL"), sl_fontsize, hoffbase + sl_quanthpos, rendpos[j].second + sl_boxborder);
+          drawJustifiedText(StringPrintf("%s", "UNL"), sl_fontsize, hoffbase + sl_quanthpos, rendpos[j].second + sl_boxborder, TEXT_MAX, TEXT_MIN);
         } else if(player->ammoCount(node.branches[itemid].weapon) > 0) {
-          drawText(StringPrintf("%5d", player->ammoCount(node.branches[itemid].weapon)), sl_fontsize, hoffbase + sl_quanthpos, rendpos[j].second + sl_boxborder);
+          drawJustifiedText(StringPrintf("%d", player->ammoCount(node.branches[itemid].weapon)), sl_fontsize, hoffbase + sl_quanthpos, rendpos[j].second + sl_boxborder, TEXT_MAX, TEXT_MIN);
         }
       }
     }
@@ -146,20 +146,20 @@ void Shop::renderNode(const HierarchyNode &node, int depth) const {
           CHECK(0);
         if(state == ITEMSTATE_UNOWNED) {
         } else if(state == ITEMSTATE_BOUGHT) {
-          display = "bought";
+          display = "Bought";
           displayset = true;
         } else if(state == ITEMSTATE_EQUIPPED) {
-          display = "equipped";
+          display = "Equipped";
           displayset = true;
         } else if(state == ITEMSTATE_UNAVAILABLE) {
-          display = "unavail";
+          display = "Unavailable";
           displayset = true;
         }
       }
       
       // If it's not unique, or it is and it just hasn't been bought, we show the cost.
       if(!displayset && (dispmode == HierarchyNode::HNDM_COST || dispmode == HierarchyNode::HNDM_COSTUNIQUE)) {
-        display = StringPrintf("%6s", node.branches[itemid].cost(player).textual().c_str());
+        display = StringPrintf("%s", node.branches[itemid].cost(player).textual().c_str());
         displayset = true;
       }
       
@@ -193,7 +193,7 @@ void Shop::renderNode(const HierarchyNode &node, int depth) const {
       CHECK(displayset);
       
       // Draw what we've got.
-      drawText(display, sl_fontsize, hoffbase + sl_pricehpos, rendpos[j].second + sl_boxborder);
+      drawJustifiedText(display, sl_fontsize, hoffbase + sl_pricehpos, rendpos[j].second + sl_boxborder, TEXT_MAX, TEXT_MIN);
     } else {
       int dispmode = node.branches[itemid].displaymode;
       if(dispmode == HierarchyNode::HNDM_COSTUNIQUE) {
@@ -216,7 +216,7 @@ void Shop::renderNode(const HierarchyNode &node, int depth) const {
       if(dispmode == HierarchyNode::HNDM_BLANK) {
       } else if(dispmode == HierarchyNode::HNDM_COST) {
         setColor(1.0, 0.3, 0.3);
-        drawText(StringPrintf("%6s", node.branches[itemid].sellvalue(player).textual().c_str()), sl_fontsize, hoffbase + sl_pricehpos, rendpos[j].second + sl_boxborder);
+        drawJustifiedText(StringPrintf("%s", node.branches[itemid].sellvalue(player).textual().c_str()), sl_fontsize, hoffbase + sl_pricehpos, rendpos[j].second + sl_boxborder, TEXT_MAX, TEXT_MIN);
       } else if(dispmode == HierarchyNode::HNDM_PACK) {
         drawText(StringPrintf("%dpk", node.branches[itemid].pack), sl_fontsize, hoffbase + sl_pricehpos, rendpos[j].second + sl_boxborder);
       } else if(dispmode == HierarchyNode::HNDM_COSTUNIQUE) {

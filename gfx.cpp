@@ -138,7 +138,14 @@ void initGfx() {
         CHECK(tpath.size() >= 2);
         fontdata[id[0]].art.push_back(tpath);
       }
-      fontdata[id[0]].normalize();
+      
+      if(kvd.kv.count("width")) {
+        fontdata[id[0]].width = atoi(kvd.consume("width").c_str());
+      } else {
+        fontdata[id[0]].normalize();
+      }
+      
+      kvd.shouldBeDone();
     }
   }
   
