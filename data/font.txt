@@ -1,13 +1,12 @@
 character {
   id=A
   path=0,9 0,2 2,0 4,0 6,2 6,9
-  path=0,5 6,5
+  path=0,4 6,4
 }
 
 character {
   id=B
-  path=0,0 4,0 6,2 6,3 4,5 6,7 6,8 5,9 0,9 0,0
-  path=0,5 4,5
+  path=0,4 0,0 3,0 5,2 5,3 4,4 0,4 0,9 4,9 6,7 6,6 4,4
 }
 
 character {
@@ -23,25 +22,25 @@ character {
 character {
   id=E
   path=6,0 0,0 0,9 6,9
-  path=0,5 5,5
+  path=0,4 5,4
 }
 
 character {
   id=F
   path=6,0 0,0 0,9
-  path=0,5 5,5
+  path=0,4 5,4
 }
 
 character {
   id=G
-  path=6,2 4,0 2,0 0,2 0,7 2,9 4,9 6,7 6,5 4,5
+  path=6,2 4,0 2,0 0,2 0,7 2,9 4,9 6,7 6,4 4,4
 }
 
 character {
   id=H
   path=0,0 0,9
   path=6,0 6,9
-  path=0,5 6,5
+  path=0,4 6,4
 }
 
 character {
@@ -59,7 +58,7 @@ character {
 character {
   id=K
   path=0,0 0,9
-  path=5,0 0,5 4,9
+  path=4,0 0,4 5,9
 }
 
 character {
@@ -85,7 +84,7 @@ character {
 
 character {
   id=P
-  path=0,9 0,0 4,0 6,2 6,3 4,5 0,5
+  path=0,9 0,0 3,0 5,2 5,3 4,4 0,4
 }
 
 character {
@@ -96,13 +95,12 @@ character {
 
 character {
   id=R
-  path=0,9 0,0 4,0 6,2 6,3 4,5 0,5
-  path=2,5 6,9
+  path=0,9 0,0 3,0 5,2 5,3 4,4 0,4 5,9
 }
 
 character {
   id=S
-  path=6,0 2,0 0,2 0,3 2,5 4,5 6,7 6,8 5,9 0,9
+  path=6,0 1,0 0,1 0,2 2,4 4,4 6,6 6,7 4,9 0,9
 }
 
 character {
@@ -129,8 +127,8 @@ character {
 
 character {
   id=X
-  path=0,0 0,2 6,8 6,9
-  path=6,0 6,2 0,8 0,9
+  path=0,0 0,1 6,7 6,9
+  path=6,0 6,1 0,7 0,9
 }
 
 character {
@@ -141,7 +139,7 @@ character {
 
 character {
   id=Z
-  path=0,0 6,0 6,2 0,8 0,9 6,9
+  path=0,0 6,0 6,1 0,7 0,9 6,9
 }
 
 character {
@@ -153,8 +151,7 @@ character {
 
 character {
   id=b
-  path=0,0 4,0 6,2 6,3 4,5 6,7 6,8 5,9 0,9 0,0
-  path=0,5 4,5
+  path=0,4 0,0 3,0 5,2 5,3 4,4 0,4 0,9 4,9 6,7 6,6 4,4
 }
 
 character {
@@ -170,25 +167,25 @@ character {
 character {
   id=e
   path=6,0 0,0 0,9 6,9
-  path=0,5 5,5
+  path=0,4 5,4
 }
 
 character {
   id=f
   path=6,0 0,0 0,9
-  path=0,5 5,5
+  path=0,4 5,4
 }
 
 character {
   id=g
-  path=6,2 4,0 2,0 0,2 0,7 2,9 4,9 6,7 6,5 4,5
+  path=6,2 4,0 2,0 0,2 0,7 2,9 4,9 6,7 6,4 4,4
 }
 
 character {
   id=h
   path=0,0 0,9
   path=6,0 6,9
-  path=0,5 6,5
+  path=0,4 6,4
 }
 
 character {
@@ -206,7 +203,7 @@ character {
 character {
   id=k
   path=0,0 0,9
-  path=5,0 0,5 4,9
+  path=4,0 0,4 5,9
 }
 
 character {
@@ -232,7 +229,7 @@ character {
 
 character {
   id=p
-  path=0,9 0,0 4,0 6,2 6,3 4,5 0,5
+  path=0,9 0,0 3,0 5,2 5,3 4,4 0,4
 }
 
 character {
@@ -243,13 +240,12 @@ character {
 
 character {
   id=r
-  path=0,9 0,0 4,0 6,2 6,3 4,5 0,5
-  path=2,5 6,9
+  path=0,9 0,0 3,0 5,2 5,3 4,4 0,4 5,9
 }
 
 character {
   id=s
-  path=6,0 2,0 0,2 0,3 2,5 4,5 6,7 6,8 5,9 0,9
+  path=6,0 1,0 0,1 0,2 2,4 4,4 6,6 6,7 4,9 0,9
 }
 
 character {
@@ -276,8 +272,8 @@ character {
 
 character {
   id=x
-  path=0,0 0,2 6,8 6,9
-  path=6,0 6,2 0,8 0,9
+  path=0,0 0,1 6,7 6,9
+  path=6,0 6,1 0,7 0,9
 }
 
 character {
@@ -288,7 +284,7 @@ character {
 
 character {
   id=z
-  path=0,0 6,0 6,2 0,8 0,9 6,9
+  path=0,0 6,0 6,1 0,7 0,9 6,9
 }
 
 # End of unfinished section
