@@ -79,6 +79,7 @@ Float2 deadzone(const Float2 &mov, float absdead, float tdead) {
   return Float2(deadzone(mov.x, mov.y, absdead, tdead), deadzone(mov.y, mov.x, absdead, tdead));
 }
 
+// This is all legacy stuff because we used to need two lines for some axis descriptions. I'm leaving it in because, hey, why not.
 vector<vector<vector<string> > > ksax_axis_names_gen() {
   vector<vector<vector<string> > > rv;
   {
@@ -113,14 +114,12 @@ vector<vector<vector<string> > > ksax_axis_names_gen() {
     vector<vector<string> > thisset;
     {
       vector<string> thisax;
-      thisax.push_back("Left tread");
-      thisax.push_back("  forward");
+      thisax.push_back("Left tread forward");
       thisset.push_back(thisax);
     }
     {
       vector<string> thisax;
-      thisax.push_back("Right tread");
-      thisax.push_back("  forward");
+      thisax.push_back("Right tread forward");
       thisset.push_back(thisax);
     }
     rv.push_back(thisset);
