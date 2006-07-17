@@ -837,7 +837,7 @@ bool Game::runTick(const vector< Keystates > &rkeys) {
         if(keys[i].change[j].push) {
           StackString sst(StringPrintf("Switching"));
           tanks[i].player->cycleWeapon(j);
-          addTankStatusText(i, tanks[i].player->getWeapon(j).name(), 2);
+          addTankStatusText(i, tanks[i].player->getWeapon(j).name(), 1);
         }
       }
     
@@ -888,7 +888,7 @@ bool Game::runTick(const vector< Keystates > &rkeys) {
           {
             string slv = StringPrintf("%d", tanks[i].player->shotsLeft(curfire));
             if(count(slv.begin(), slv.end(), '0') == slv.size() - 1)
-              addTankStatusText(i, slv, 0.5);
+              addTankStatusText(i, slv, 1);
           }
         }
       }
@@ -927,9 +927,9 @@ bool Game::runTick(const vector< Keystates > &rkeys) {
       if(tanks[i].zone_current != -1 && (tanks[i].zone_frames - 1) % 60 == 0 && tanks[i].team == &teams[4]) {
         int secleft = (181 - tanks[i].zone_frames) / 60;
         if(secleft) {
-          addTankStatusText(i, StringPrintf("%d second%s to join team", secleft, (secleft == 1 ? "" : "s")), 1);
+          addTankStatusText(i, StringPrintf("%d second%s to join team", secleft, (secleft == 1 ? "" : "s")), 1.5);
         } else {
-          addTankStatusText(i, StringPrintf("team joined"), 1);
+          addTankStatusText(i, StringPrintf("Team joined"), 2);
         }
       }
       if(tanks[i].zone_current != -1 && tanks[i].zone_frames > 180 && tanks[i].team == &teams[4]) {
@@ -1036,10 +1036,10 @@ void drawCrosses(const Coord2 &cloc, float rad) {
 
 void Game::renderToScreen() const {
 
+  const float availScreen = ((gamemode == GMODE_TEST || gamemode == GMODE_DEMO)? 1.0 : 0.9);
+  const float pzoom = max(zoom_size.y / availScreen, zoom_size.x / getAspect());
   // Set up zooming for everything that happens in gamespace
   {
-    const float availScreen = ((gamemode == GMODE_TEST || gamemode == GMODE_DEMO)? 1.0 : 0.9);
-    float pzoom = max(zoom_size.y / availScreen, zoom_size.x / getAspect());
     Float2 origin(zoom_center.x - pzoom * getAspect() / 2, zoom_center.y - pzoom * (1.0 - availScreen / 2));
     setZoom(origin.x, origin.y, origin.y + pzoom);
   }
@@ -1176,7 +1176,7 @@ void Game::renderToScreen() const {
           string ammotext[SIMUL_WEAPONS];
           for(int j = 0; j < SIMUL_WEAPONS; j++) {
             if(tanks[i].player->shotsLeft(j) == UNLIMITED_AMMO) {
-              ammotext[j] = "inf";
+              ammotext[j] = "Inf";
             } else {
               ammotext[j] = StringPrintf("%d", tanks[i].player->shotsLeft(j));
             }
@@ -1583,5 +1583,5 @@ vector<pair<float, Tank *> > Game::genTankDistance(const Coord2 &center) {
 }
 
 void Game::addTankStatusText(int tankid, const string &text, float duration) {
-  gfxeffects.push_back(GfxText(tanks[tankid].pos.toFloat() + Float2(4, -4), Float2(0, -6), 2.5, text, duration, Color(1.0, 1.0, 1.0)));
+  gfxeffects.push_back(GfxText(tanks[tankid].pos.toFloat() + Float2(4, -4), Float2(0, -6), zoom_size.y / 80, text, duration, Color(1.0, 1.0, 1.0)));
 }
