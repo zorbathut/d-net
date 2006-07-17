@@ -563,7 +563,7 @@ void runSettingRender(const PlayerMenuState &pms) {
       drawJustifiedText(ksax_descriptions[pms.setting_axistype][0], rin.textsize, (rin.xstart + rin.xend) / 2, rin.ystarts[4], TEXT_CENTER, TEXT_MIN);
       drawJustifiedText(ksax_descriptions[pms.setting_axistype][1], rin.textsize, (rin.xstart + rin.xend) / 2, rin.ystarts[5], TEXT_CENTER, TEXT_MIN);
       
-      drawJustifiedText("l/r changes mode", rin.textsize, (rin.xstart + rin.xend) / 2, rin.ystarts[7], TEXT_CENTER, TEXT_MIN);
+      drawJustifiedText("L/R changes mode", rin.textsize, (rin.xstart + rin.xend) / 2, rin.ystarts[7], TEXT_CENTER, TEXT_MIN);
       
       // TODO: better pictorial representations
     } else if(pms.settingmode == SETTING_AXISCHOOSE) {

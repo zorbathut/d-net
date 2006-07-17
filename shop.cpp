@@ -382,7 +382,7 @@ void Shop::renderToScreen() const {
   clearFrame(player->getFaction()->color * 0.05 + Color(0.02, 0.02, 0.02));
   setColor(1.0, 1.0, 1.0);
   setZoom(0, 0, 100);
-  drawText(StringPrintf("cash onhand %s", player->getCash().textual().c_str()), 2, 80, 1);
+  drawText(StringPrintf("Cash available %s", player->getCash().textual().c_str()), 2, 80, 1);
   if(selling) {
     drawText("    Selling equipment", 2, 1, 1);
   } else {

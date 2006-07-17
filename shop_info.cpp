@@ -176,9 +176,9 @@ void ShopInfo::renderFrame(Float4 bounds, float fontsize, Float4 inset) const {
   if(weapon) {
     {
       ShopKVPrinter kvp(bounds, fontsize, fontshift);
-      kvp.print("theoretical dps", prettyFloatFormat(player->adjustWeapon(weapon).stats_damagePerSecond()));
-      kvp.print("cost per damage", prettyFloatFormat(player->adjustWeapon(weapon).stats_costPerDamage()));
-      kvp.print("cost per second", prettyFloatFormat(player->adjustWeapon(weapon).stats_costPerSecond()));
+      kvp.print("Theoretical DPS", prettyFloatFormat(player->adjustWeapon(weapon).stats_damagePerSecond()));
+      kvp.print("Cost per damage", prettyFloatFormat(player->adjustWeapon(weapon).stats_costPerDamage()));
+      kvp.print("Cost per second", prettyFloatFormat(player->adjustWeapon(weapon).stats_costPerSecond()));
     }
     
     GfxWindow gfxw(inset);
@@ -187,7 +187,7 @@ void ShopInfo::renderFrame(Float4 bounds, float fontsize, Float4 inset) const {
     {
       ShopKVPrinter kvp(bounds, fontsize, fontshift);
       
-      kvp.print("total average damage", prettyFloatFormat(player->adjustGlory(glory).stats_averageDamage()));
+      kvp.print("Total average damage", prettyFloatFormat(player->adjustGlory(glory).stats_averageDamage()));
     }
     
     GfxWindow gfxw(inset);
@@ -195,9 +195,9 @@ void ShopInfo::renderFrame(Float4 bounds, float fontsize, Float4 inset) const {
   } else if(bombardment) {
     {
       ShopKVPrinter kvp(bounds, fontsize, fontshift);
-      kvp.print("damage per hit", prettyFloatFormat(player->adjustBombardment(bombardment).warhead().stats_damagePerShot()));
-      kvp.print("firing delay", prettyFloatFormat(player->adjustBombardment(bombardment).lockdelay()) + " seconds");
-      kvp.print("cooldown", prettyFloatFormat(player->adjustBombardment(bombardment).unlockdelay()) + " second");
+      kvp.print("Damage per hit", prettyFloatFormat(player->adjustBombardment(bombardment).warhead().stats_damagePerShot()));
+      kvp.print("Firing delay", prettyFloatFormat(player->adjustBombardment(bombardment).lockdelay()) + " seconds");
+      kvp.print("Cooldown", prettyFloatFormat(player->adjustBombardment(bombardment).unlockdelay()) + " second");
     }
     
     GfxWindow gfxw(inset);
@@ -216,10 +216,10 @@ void ShopInfo::renderFrame(Float4 bounds, float fontsize, Float4 inset) const {
     {
       ShopKVPrinter kvp(bounds, fontsize, fontshift);
       
-      kvp.print("max health", prettyFloatFormat(player->adjustTank(tank).maxHealth()) + " cme");
-      kvp.print("turn speed", prettyFloatFormat(player->adjustTank(tank).turnSpeed()) + " rad/s");
-      kvp.print("forward speed", prettyFloatFormat(player->adjustTank(tank).maxSpeed()) + " m/s");
-      kvp.print("mass", prettyFloatFormat(player->adjustTank(tank).mass()) + " tons");
+      kvp.print("Max health", prettyFloatFormat(player->adjustTank(tank).maxHealth()) + " cme");
+      kvp.print("Turn speed", prettyFloatFormat(player->adjustTank(tank).turnSpeed()) + " rad/s");
+      kvp.print("Forward speed", prettyFloatFormat(player->adjustTank(tank).maxSpeed()) + " m/s");
+      kvp.print("Mass", prettyFloatFormat(player->adjustTank(tank).mass()) + " tons");
     }
   } else {
     CHECK(0);

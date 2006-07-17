@@ -487,6 +487,7 @@ void drawCircle(const Coord2 &center, Coord radius, Coord weight) {
  */
 
 const int betweenletter = 1;
+const float thickness = 0.33;
 
 void drawText(const char *txt, float scale, float sx, float sy) {
   scale /= 9;
@@ -501,7 +502,7 @@ void drawText(const char *txt, float scale, float sx, float sy) {
       vector<Float2> verts;
       for(int j = 0; j < pathdat.art[i].size(); j++)
         verts.push_back(Float2(sx + pathdat.art[i][j].first * scale, sy + pathdat.art[i][j].second * scale));
-      drawLinePath(verts, scale / 4);
+      drawLinePath(verts, scale * thickness);
     }
     sx += scale * (pathdat.width + betweenletter);
   }
@@ -516,6 +517,8 @@ void drawText(const string &txt, float scale, const Float2 &pos) {
 }
 
 float getTextWidth(const string &txt, float scale) {
+  if(txt.size() == 0)
+    return 0;
   const float point = scale / 9;
   float acum = point * (txt.size() - 1) * betweenletter;
   for(int i = 0; i < txt.size(); i++) {
