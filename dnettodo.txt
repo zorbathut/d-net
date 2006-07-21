@@ -2,6 +2,7 @@
 - Minelayer
 - EMP emitter
 - Pull glory explody into its own deploy?
+- Combine radius and width in projectile?
 - New weapons
 - Next-gen collision/storage system on grid
 - Logarithmic turning

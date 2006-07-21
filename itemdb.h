@@ -64,12 +64,13 @@ public:
   float wallremovalchance;
 };
 
-enum { PM_NORMAL, PM_MISSILE, PM_AIRBRAKE, PM_LAST };
+enum {PM_NORMAL, PM_MISSILE, PM_AIRBRAKE, PM_MINE, PM_LAST};
 
 struct IDBProjectile {
 public:
   int motion;
   float velocity;
+  float radius; // not just visual effect
   Color color;
   float width; // visual effect only
   const IDBWarhead *warhead;

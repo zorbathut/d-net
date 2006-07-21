@@ -437,7 +437,6 @@ void parseItemFile(const string &fname) {
       projclasses[name].motion = PM_NORMAL;
       projclasses[name].width = 0.1;
       
-      projclasses[name].velocity = atof(chunk.consume("velocity").c_str()) / FPS;
       projclasses[name].color = colorFromString(chunk.consume("color"));
       
       if(chunk.kv.count("width")) {
@@ -452,11 +451,18 @@ void parseItemFile(const string &fname) {
           projclasses[name].motion = PM_MISSILE;
         } else if(motion == "airbrake") {
           projclasses[name].motion = PM_AIRBRAKE;
+        } else if(motion == "mine") {
+          projclasses[name].motion = PM_MINE;
+          projclasses[name].radius = atof(chunk.consume("radius").c_str());
         } else {
           dprintf("Unknown projectile motion: %s\n", motion.c_str());
           CHECK(0);
         }
       }
+      
+      projclasses[name].velocity = 0;
+      if(projclasses[name].motion != PM_MINE)
+        projclasses[name].velocity = atof(chunk.consume("velocity").c_str()) / FPS;
       
       string warheadclass = chunk.consume("warhead");
       CHECK(warheadclasses.count(warheadclass));
