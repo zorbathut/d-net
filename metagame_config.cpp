@@ -295,7 +295,7 @@ void standardButtonRender(const StandardButtonRenderData &sbrd) {
       drawText((*sbrd.names)[i][j], sbrd.rin->textsize, sbrd.rin->xstart, sbrd.rin->ystarts[cy++]);
     string btext;
     if(sbrd.sel_button == i && sbrd.sel_button_reading) {
-      btext = "???";
+      btext = "?";
       setColor(selected_text * sbrd.fadeFactor);
     } else if((*sbrd.buttons)[i] == -1) {
       btext = "";
@@ -526,7 +526,7 @@ void runSettingRender(const PlayerMenuState &pms) {
 	
       if(pms.choicemode == CHOICE_FIRSTPASS) {
         setColor(selected_text * fadeFactor);
-        drawJustifiedText(setting_names_detailed[pms.settingmode], rin.textsize, (txstart + rin.drawzone.ex) / 2, rin.ystarts[0], TEXT_CENTER, TEXT_MIN);
+        drawJustifiedText(setting_names_detailed[pms.settingmode], rin.textsize, (rin.drawzone.sx + rin.drawzone.ex) / 2, rin.ystarts[0], TEXT_CENTER, TEXT_MIN);
       } else {
         const int activescale = 4;
         float title_units = (rin.xend - txstart) / (SETTING_LAST - 1 + activescale);

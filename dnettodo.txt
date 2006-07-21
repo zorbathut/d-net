@@ -2,6 +2,8 @@
 - Glory device 180deg? wtf?
 - Test mode doesn't fade properly in config
 - Add rainbows and unicorns <3
+- Set your keys/buttons
+- Bound the faction cursors to onscreen
 - Make Korath and snake slightly smaller
 - Minelayer
 - EMP emitter
