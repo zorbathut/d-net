@@ -338,12 +338,14 @@ void Tank::genEffects(vector<smart_ptr<GfxEffects> > *gfxe, vector<Projectile> *
         ang.push_back(frand() * (glory.maxsplitsize() - glory.minsplitsize()) + glory.minsplitsize());
       for(int i = 1; i < ang.size(); i++)
         ang[i] += ang[i - 1];
-      float angtot = accumulate(ang.begin(), ang.end(), 0.0f);
+      float angtot = ang.back();
       float shift = frand() * PI * 2;
       for(int i = 0; i < ang.size(); i++) {
         ang[i] *= PI * 2 / angtot;
         ang[i] += shift;
+        //dprintf("%f\n", ang[i]);
       }
+      //dprintf("---");
     }
     
     vector<vector<Coord2> > chunks;

@@ -461,10 +461,10 @@ Metagame::Metagame(int playercount, int in_roundsBetweenShop) {
     pms[0].choicemode = CHOICE_IDLE;
     pms[0].buttons[0] = 4;
     pms[0].buttons[1] = 8;
-    pms[0].buttons[2] = 4;
-    pms[0].buttons[3] = 8;
-    pms[0].buttons[4] = 5;
-    pms[0].buttons[5] = 9;
+    pms[0].buttons[2] = 5;
+    pms[0].buttons[3] = 9;
+    pms[0].buttons[4] = 8;
+    pms[0].buttons[5] = 4;
     CHECK(pms[0].buttons.size() == 6);
     pms[0].axes[0] = 0;
     pms[0].axes[1] = 1;
@@ -481,10 +481,10 @@ Metagame::Metagame(int playercount, int in_roundsBetweenShop) {
     pms[1].choicemode = CHOICE_IDLE;
     pms[1].buttons[0] = 2;
     pms[1].buttons[1] = 5;
-    pms[1].buttons[2] = 2;
+    pms[1].buttons[2] = 1;
     pms[1].buttons[3] = 5;
-    pms[1].buttons[4] = 1;
-    pms[1].buttons[5] = 5;
+    pms[1].buttons[4] = 5;
+    pms[1].buttons[5] = 2;
     CHECK(pms[1].buttons.size() == 6);
     pms[1].axes[0] = 0;
     pms[1].axes[1] = 1;

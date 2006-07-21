@@ -43,7 +43,7 @@ glory {
   minsplits=2
   maxsplits=4
   minsplitsize=1
-  maxsplitsize=2
+  maxsplitsize=5
   
   shotspersplit=4
   
@@ -82,7 +82,7 @@ glory {
   minsplits=3
   maxsplits=5
   minsplitsize=1
-  maxsplitsize=2
+  maxsplitsize=5
   
   shotspersplit=8
   
