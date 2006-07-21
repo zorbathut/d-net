@@ -494,7 +494,7 @@ void drawCircle(const Coord2 &center, Coord radius, Coord weight) {
  */
 
 const int betweenletter = 1;
-const float thickness = 0.33;
+const float thickness = 0.5;
 
 void drawText(const char *txt, float scale, float sx, float sy) {
   scale /= 9;

@@ -106,12 +106,12 @@ static const Color unselected_text = Color(0.7, 0.7, 0.4);
 class RenderInfo {
 public:
   // Basic math!
-  // compiletime constants
-  static const int textline_size = 5;  // How many times larger a line of text is than its divider
+  static const float textline_size;  // How many times larger a line of text is than its divider
+  static const float border_size;
+  static const float divider_size;	// Division between tabs and content
+  static const float units;
+
   static const int textline_count = 8; // How many lines we're going to have
-  static const int border_size = 2;
-  static const int divider_size = 4;	// Division between tabs and content
-  static const int units = textline_size * textline_count + textline_count - 1 + border_size * 2 + divider_size; // X lines, plus dividers (textline_count-1), plus the top and bottom borders, plus the increased divider from categories to data
 
   // runtime constants
   Float4 drawzone;
@@ -138,6 +138,12 @@ public:
       ystarts[i] = drawzone.sy + unitsize * (border_size + divider_size + i - 1) + textsize * i;
   }
 };
+
+// compiletime constants
+const float RenderInfo::textline_size = 3;  // How many times larger a line of text is than its divider
+const float RenderInfo::border_size = 1.5;
+const float RenderInfo::divider_size = 3;	// Division between tabs and content
+const float RenderInfo::units = textline_size * textline_count + textline_count - 1 + border_size * 2 + divider_size; // X lines, plus dividers (textline_count-1), plus the top and bottom borders, plus the increased divider from categories to data
 
 struct StandardButtonTickData {
   vector<int> *outkeys;
