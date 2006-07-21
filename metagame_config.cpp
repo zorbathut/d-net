@@ -515,26 +515,32 @@ void runSettingRender(const PlayerMenuState &pms) {
       // Topic line!
       setColor(pms.faction->faction->color * fadeFactor);
       drawDvec2(pms.faction->faction->icon, Float4(rin.xstart, rin.ystarts[0], rin.xstart + rin.textsize, rin.ystarts[0] + rin.textsize), 50, 0.003);
-      
-      const int activescale = 4;
+
       float txstart = rin.xstart + rin.textsize + rin.border * 2;
-      float title_units = (rin.xend - txstart) / (SETTING_LAST - 1 + activescale);
+	
+      if(pms.choicemode == CHOICE_FIRSTPASS) {
+        setColor(selected_text * fadeFactor);
+        drawJustifiedText(setting_names_detailed[pms.settingmode], rin.textsize, (txstart + rin.drawzone.ex) / 2, rin.ystarts[0], TEXT_CENTER, TEXT_MIN);
+      } else {
+        const int activescale = 4;
+        float title_units = (rin.xend - txstart) / (SETTING_LAST - 1 + activescale);
+        
+        int units = 0;
       
-      int units = 0;
-    
-      for(int i = 0; i < SETTING_LAST; i++) {
-        bool active = (i == pms.settingmode);
+        for(int i = 0; i < SETTING_LAST; i++) {
+          bool active = (i == pms.settingmode);
+          
+          int tunits = active ? activescale : 1;
+          string text = active ? setting_names[i] : string() + setting_names[i][0];
+          setColor(((active && pms.choicemode == CHOICE_IDLE) ? selected_text : unselected_text) * fadeFactor);
+          
+          drawJustifiedText(text, rin.textsize, title_units * (units + tunits / 2.) + txstart, rin.ystarts[0], TEXT_CENTER, TEXT_MIN);
+          
+          units += tunits;
+        }
         
-        int tunits = active ? activescale : 1;
-        string text = active ? setting_names[i] : string() + setting_names[i][0];
-        setColor(((active && pms.choicemode == CHOICE_IDLE) ? Color(1.0, 1.0, 1.0) : unselected_text) * fadeFactor);
-        
-        drawJustifiedText(text, rin.textsize, title_units * (units + tunits / 2.) + txstart, rin.ystarts[0], TEXT_CENTER, TEXT_MIN);
-        
-        units += tunits;
+        CHECK(units == SETTING_LAST - 1 + activescale);
       }
-      
-      CHECK(units == SETTING_LAST - 1 + activescale);
       
     }
     

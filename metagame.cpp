@@ -196,7 +196,7 @@ void Metagame::renderToScreen() const {
     for(int i = 0; i < factions.size(); i++) {
       if(!factions[i].taken) {
         setColor(factions[i].faction->color);
-        drawDvec2(factions[i].faction->icon, squareInside(factions[i].compass_location), 50, 0.003);
+        drawDvec2(factions[i].faction->icon, boxAround(factions[i].compass_location.midpoint(), factions[i].compass_location.y_span() / 2 * 0.9), 50, 0.003);
         //drawRect(factions[i].compass_location, 0.003);
       }
     }
