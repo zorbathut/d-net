@@ -2,6 +2,7 @@
 - Glory device 180deg? wtf?
 - Test mode doesn't fade properly in config
 - Add rainbows and unicorns <3
+- Make Korath and snake slightly smaller
 - Minelayer
 - EMP emitter
 - Pull glory explody into its own deploy?

@@ -283,6 +283,6 @@ faction { # Extra damage to trap/exotic weapons
   name=Tricksters
   lines=1
   file=spike.dv2
-  color=a35
+  color=b46
   adjustment=adjustment.tricksters
 }
