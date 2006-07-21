@@ -1,6 +1,7 @@
 
 #include "util.h"
 
+#include "debug.h"
 #include "parse.h"
 
 #include <cmath>

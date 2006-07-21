@@ -3,6 +3,8 @@
 
 #include "cfcommon.h"
 
+#include "debug.h"
+
 #include <vector>
 
 using namespace std;

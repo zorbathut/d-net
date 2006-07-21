@@ -1,6 +1,8 @@
 #ifndef DNET_FLOAT
 #define DNET_FLOAT
 
+#include "debug.h"
+
 #include <cmath>
 #include <utility>
 #include <vector>

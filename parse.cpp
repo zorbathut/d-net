@@ -1,6 +1,7 @@
 
 #include "parse.h"
 
+#include "debug.h"
 #include "util.h"
 
 #include <iostream>
