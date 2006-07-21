@@ -165,7 +165,7 @@ faction { # Cheaper tanks
   name=Korath Dynasty
   lines=1 1
   file=zen.dv2
-  color=f73
+  color=f51
   adjustment=adjustment.dynasty
 }
 

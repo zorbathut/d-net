@@ -1,6 +1,7 @@
 ---- Major work path
 - Glory device 180deg? wtf?
 - Test mode doesn't fade properly in config
+- Add rainbows and unicorns <3
 - Minelayer
 - EMP emitter
 - Pull glory explody into its own deploy?
