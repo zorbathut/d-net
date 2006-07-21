@@ -6,6 +6,7 @@ text {
 
 deploy {
   name=deploy.laser
+  type=forward
   anglestddev=0.008
 }
 
@@ -16,6 +17,7 @@ warhead {
 
 projectile {
   name=projectile.laser
+  motion=normal
   velocity=600
   color=0.6, 0.9, 1.0
   warhead=warhead.laser

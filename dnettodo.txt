@@ -1,4 +1,7 @@
 ---- Major work path
+- Minelayer
+- EMP emitter
+- Pull glory explody into its own deploy?
 - New weapons
 - Next-gen collision/storage system on grid
 - Logarithmic turning
@@ -23,6 +26,7 @@
 - AI shouldn't try to buy the glory device it already owns
 - Buy menu flicker? Double-buffering?
 - Extricate coord.h and float.h from more headers
+- De-inline stuff in coord.h and float.h
 - Winner list better special effects
 - Winner list better "null" icon
 - Color for projectile impacts

@@ -38,13 +38,16 @@ void PrintDebugStack() {
 }
 
 void CrashHandler(const char *fname, int line) {
-  if(frameRunning())
+  dprintf("cashing\n");
+  if(frameRunning()) {
+    dprintf("Frame running, aborting");
     deinitFrame();
+  }
+  dprintf("end cashing\n");
 };
 
 void crash() {
-  *(int*)0 = 0;
-  while(1);
+  exit(1); 
 }
 
 int dprintf(const char *bort, ...) {

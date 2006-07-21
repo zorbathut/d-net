@@ -6,6 +6,8 @@ text {
 
 deploy {
   name=deploy.missile
+  type=forward
+  anglestddev=0.002
 }
 
 warhead {

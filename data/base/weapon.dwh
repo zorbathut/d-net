@@ -12,3 +12,8 @@ hierarchy {
   name=ROOT.Weapons.Missile
   pack=100
 }
+
+hierarchy {
+  name=ROOT.Weapons.Mine
+  pack=100
+}

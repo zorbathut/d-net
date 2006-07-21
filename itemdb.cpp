@@ -190,7 +190,7 @@ void HierarchyNode::checkConsistency() const {
     CHECK(displaymode == HNDM_BLANK);
     CHECK(buyable);
     CHECK(pack == 1);
-    CHECK(name == "done");
+    CHECK(name == "Done");
   }
   
   CHECK(gottype);
@@ -468,6 +468,19 @@ void parseItemFile(const string &fname) {
       CHECK(deployclasses.count(name) == 0);
       
       deployclasses[name];
+      
+      deployclasses[name].type = DT_FORWARD;
+      if(chunk.kv.count("type")) {
+        string type = chunk.consume("type");
+        if(type == "forward") {
+          deployclasses[name].type = DT_FORWARD;
+        } else if(type == "centroid") {
+          deployclasses[name].type = DT_CENTROID;
+          CHECK(!chunk.kv.count("anglestddev"));
+        } else {
+          CHECK(0);
+        }
+      }
       
       deployclasses[name].anglestddev = 0;
       if(chunk.kv.count("anglestddev"))
@@ -759,7 +772,7 @@ void initItemdb() {
   {
     // add our hardcoded "done" token
     HierarchyNode tnode;
-    tnode.name = "done";
+    tnode.name = "Done";
     tnode.type = HierarchyNode::HNT_DONE;
     tnode.displaymode = HierarchyNode::HNDM_BLANK;
     tnode.buyable = true;
