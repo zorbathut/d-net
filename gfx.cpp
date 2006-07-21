@@ -558,7 +558,8 @@ void drawJustifiedText(const string &txt, float scale, float sx, float sy, int x
   drawText(txt, scale, sx, sy);
 }
 
-void drawJustifiedMultiText(const vector<string> &txt, float letterscale, float gapscale, Float2 pos, int xps, int yps) {
+void drawJustifiedMultiText(const vector<string> &txt, float letterscale, Float2 pos, int xps, int yps) {
+  float gapscale = letterscale / 3;
   float hei = txt.size() * letterscale + (txt.size() - 1) * gapscale;
   if(yps == TEXT_MIN) {
   } else if(yps == TEXT_CENTER) {

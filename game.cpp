@@ -1127,7 +1127,7 @@ void Game::renderToScreen() const {
       Float2 pos = getCentroid(zones[i].first).toFloat();
       pos.x *= 2;
       pos.y *= 1.4;
-      drawJustifiedMultiText(zonenames[i], 10, 2, pos, TEXT_CENTER, TEXT_CENTER);
+      drawJustifiedMultiText(zonenames[i], 10, pos, TEXT_CENTER, TEXT_CENTER);
     }
   }
   

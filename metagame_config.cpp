@@ -497,7 +497,7 @@ void runSettingRender(const PlayerMenuState &pms) {
       text.push_back("");
       text.push_back("Ready");
       
-      drawJustifiedMultiText(text, rin.textsize, rin.unitsize, rin.drawzone.midpoint(), TEXT_CENTER, TEXT_CENTER);
+      drawJustifiedMultiText(text, rin.textsize, rin.drawzone.midpoint(), TEXT_CENTER, TEXT_CENTER);
     }
     
     setColor(Color(1.0, 1.0, 1.0) * fadeFactor);
@@ -608,9 +608,9 @@ void runSettingRender(const PlayerMenuState &pms) {
       pms.test_game->renderToScreen();
     } else if(pms.settingmode == SETTING_READY) {
       setColor(unselected_text * fadeFactor);
-      const char * const text[] = {"Hold accept when", "ready to start. Let", "go to cancel.", "", "Move left/right to", "change your options."};
+      const char * const text[] = {"Move left/right over", "K-M-D-T to change options.", "", "Hold accept when", "ready to start. Let", "go of button to cancel."};
       for(int i = 0; i < 6; i++)
-        drawJustifiedText(text[i], rin.textsize, (rin.xstart + rin.xend) / 2, rin.ystarts[i + 2], TEXT_CENTER, TEXT_MIN);
+        drawJustifiedText(text[i], rin.textsize, (rin.xstart + rin.xend) / 2, rin.ystarts[i + 1], TEXT_CENTER, TEXT_MIN);
     } else {
       CHECK(0);
     }

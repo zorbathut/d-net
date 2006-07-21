@@ -203,10 +203,10 @@ void Metagame::renderToScreen() const {
     setColor(1.0, 1.0, 1.0);
     {
       vector<string> txt;
-      txt.push_back("Select your");
-      txt.push_back("faction and choose");
-      txt.push_back("your keys");
-      drawJustifiedMultiText(txt, 0.05, 0.005, Float2(0, 0), TEXT_CENTER, TEXT_CENTER);
+      txt.push_back("Select your faction");
+      txt.push_back("icon and configure");
+      txt.push_back("your controller");
+      drawJustifiedMultiText(txt, 0.05, Float2(0, 0), TEXT_CENTER, TEXT_CENTER);
     }
   } else if(mode == MGM_FACTIONTYPE) {
     StackString stp("Factiontype");

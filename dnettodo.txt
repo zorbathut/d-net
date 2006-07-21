@@ -5,6 +5,8 @@
 - Set your keys/buttons
 - Bound the faction cursors to onscreen
 - Make Korath and snake slightly smaller
+- Consistentize menu colors
+- Absolute mode 90 degrees off?
 - Minelayer
 - EMP emitter
 - Pull glory explody into its own deploy?

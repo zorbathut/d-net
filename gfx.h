@@ -90,7 +90,7 @@ float getTextWidth(const string &txt, float scale);
 enum { TEXT_MIN, TEXT_CENTER, TEXT_MAX };
 
 void drawJustifiedText(const string &txt, float scale, float sx, float sy, int xps, int yps);
-void drawJustifiedMultiText(const vector<string> &txt, float letterscale, float gapscale, Float2 pos, int xps, int yps);
+void drawJustifiedMultiText(const vector<string> &txt, float letterscale, Float2 pos, int xps, int yps);
 
 // VectorPath objects have their own local coordinate system - this scales it by whatever, then translates its origin to the new origin.
 // It is not necessarily an upper-left corner origin (it's more likely to be center, but that's not guaranteed either)
