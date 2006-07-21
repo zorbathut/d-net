@@ -100,14 +100,17 @@ vector<Keystates> genKeystates(const vector<Controller> &keys, const vector<Play
   return kst;
 }
 
+static const Color selected_text = Color(0.7, 1.0, 0.6);
+static const Color unselected_text = Color(0.7, 0.7, 0.4);
+
 class RenderInfo {
 public:
   // Basic math!
   // compiletime constants
-  static const int textline_size = 7;  // How many times larger a line of text is than its divider
+  static const int textline_size = 5;  // How many times larger a line of text is than its divider
   static const int textline_count = 8; // How many lines we're going to have
   static const int border_size = 2;
-  static const int divider_size = 3;
+  static const int divider_size = 4;	// Division between tabs and content
   static const int units = textline_size * textline_count + textline_count - 1 + border_size * 2 + divider_size; // X lines, plus dividers (textline_count-1), plus the top and bottom borders, plus the increased divider from categories to data
 
   // runtime constants
@@ -274,9 +277,9 @@ void standardButtonRender(const StandardButtonRenderData &sbrd) {
   CHECK(cy + linesneeded <= sbrd.rin->ystarts.size());
   for(int i = 0; i < (*sbrd.names).size(); i++) {
     if(sbrd.sel_button == i && !sbrd.sel_button_reading) {
-      setColor(Color(1.0, 1.0, 1.0) * sbrd.fadeFactor);
+      setColor(selected_text * sbrd.fadeFactor);
     } else {
-      setColor(Color(0.6, 0.6, 0.6) * sbrd.fadeFactor);
+      setColor(unselected_text * sbrd.fadeFactor);
     }
     if(i && sbrd.groups[i-1] != sbrd.groups[i])
       cy++;
@@ -287,7 +290,7 @@ void standardButtonRender(const StandardButtonRenderData &sbrd) {
     string btext;
     if(sbrd.sel_button == i && sbrd.sel_button_reading) {
       btext = "???";
-      setColor(Color(1.0, 1.0, 1.0) * sbrd.fadeFactor);
+      setColor(selected_text * sbrd.fadeFactor);
     } else if((*sbrd.buttons)[i] == -1) {
       btext = "";
     } else {
@@ -300,7 +303,7 @@ void standardButtonRender(const StandardButtonRenderData &sbrd) {
       } else {
         CHECK(0);
       }
-      setColor(Color(0.6, 0.6, 0.6) * sbrd.fadeFactor);
+      setColor(unselected_text * sbrd.fadeFactor);
     }
     drawJustifiedText(btext.c_str(), sbrd.rin->textsize, sbrd.rin->xend, sbrd.rin->ystarts[cy - 1], TEXT_MAX, TEXT_MIN);
   }
@@ -502,7 +505,7 @@ void runSettingRender(const PlayerMenuState &pms) {
       rectish.push_back(Float2(rin.drawzone.sx + rin.border, rin.drawzone.ey));
       rectish.push_back(Float2(rin.drawzone.sx, rin.drawzone.ey - rin.border));
       rectish.push_back(Float2(rin.drawzone.sx, rin.drawzone.sy + rin.border));
-      drawLineLoop(rectish, 0.002);
+      drawLineLoop(rectish, 0.003);
     }
     
     {
@@ -521,7 +524,7 @@ void runSettingRender(const PlayerMenuState &pms) {
         
         int tunits = active ? activescale : 1;
         string text = active ? setting_names[i] : string() + setting_names[i][0];
-        setColor(((active && pms.choicemode == CHOICE_IDLE) ? Color(1.0, 1.0, 1.0) : Color(0.6, 0.6, 0.6)) * fadeFactor);
+        setColor(((active && pms.choicemode == CHOICE_IDLE) ? Color(1.0, 1.0, 1.0) : unselected_text) * fadeFactor);
         
         drawJustifiedText(text, rin.textsize, title_units * (units + tunits / 2.) + txstart, rin.ystarts[0], TEXT_CENTER, TEXT_MIN);
         
@@ -554,12 +557,12 @@ void runSettingRender(const PlayerMenuState &pms) {
       standardButtonRender(sbrd);
     } else if(pms.settingmode == SETTING_AXISTYPE) {
       if(pms.choicemode != CHOICE_IDLE)
-        setColor(Color(1.0, 1.0, 1.0) * fadeFactor);
+        setColor(selected_text * fadeFactor);
       else
-        setColor(Color(0.6, 0.6, 0.6) * fadeFactor);
+        setColor(unselected_text * fadeFactor);
       drawJustifiedText(ksax_names[pms.setting_axistype], rin.textsize, (rin.xstart + rin.xend) / 2, rin.ystarts[2], TEXT_CENTER, TEXT_MIN);
       
-      setColor(Color(0.6, 0.6, 0.6) * fadeFactor);
+      setColor(unselected_text * fadeFactor);
       drawJustifiedText(ksax_descriptions[pms.setting_axistype][0], rin.textsize, (rin.xstart + rin.xend) / 2, rin.ystarts[4], TEXT_CENTER, TEXT_MIN);
       drawJustifiedText(ksax_descriptions[pms.setting_axistype][1], rin.textsize, (rin.xstart + rin.xend) / 2, rin.ystarts[5], TEXT_CENTER, TEXT_MIN);
       
@@ -580,7 +583,7 @@ void runSettingRender(const PlayerMenuState &pms) {
       
       standardButtonRender(sbrd);
     } else if(pms.settingmode == SETTING_TEST) {
-      setColor(Color(0.6, 0.6, 0.6) * fadeFactor);
+      setColor(unselected_text * fadeFactor);
       if(pms.choicemode == CHOICE_IDLE) {
         drawJustifiedText("Push accept to test", rin.textsize, (rin.xstart + rin.xend) / 2, rin.ystarts[7], TEXT_CENTER, TEXT_MIN);
       } else {
@@ -589,7 +592,7 @@ void runSettingRender(const PlayerMenuState &pms) {
       GfxWindow gfxw(Float4(rin.xstart, rin.ystarts[1], rin.xend, rin.ystarts[7]));
       pms.test_game->renderToScreen();
     } else if(pms.settingmode == SETTING_READY) {
-      setColor(Color(0.6, 0.6, 0.6) * fadeFactor);
+      setColor(unselected_text * fadeFactor);
       const char * const text[] = {"Hold accept when", "ready to start. Let", "go to cancel.", "", "Move left/right to", "change your options."};
       for(int i = 0; i < 6; i++)
         drawJustifiedText(text[i], rin.textsize, (rin.xstart + rin.xend) / 2, rin.ystarts[i + 2], TEXT_CENTER, TEXT_MIN);

@@ -1,4 +1,5 @@
 ---- Major work path
+- Glory device 180deg? wtf?
 - Minelayer
 - EMP emitter
 - Pull glory explody into its own deploy?
