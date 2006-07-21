@@ -111,6 +111,8 @@ struct Color {
 public:
   float r, g, b;
 
+  float getHue() const;
+
   Color();
   Color(float in_r, float in_g, float in_b);
 };

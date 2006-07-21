@@ -243,6 +243,18 @@ Money moneyFromString(const string &rhs) {
 Color::Color() { };
 Color::Color(float in_r, float in_g, float in_b) :
   r(in_r), g(in_g), b(in_b) { };
+  
+float Color::getHue() const {
+  float mx = max(r, max(g, b));
+  float mn = min(r, min(g, b));
+  if(mx == mn)
+    return -1; // wheeee
+  if(mx == r && g >= b) return 60 * (g - b) / (mx - mn) + 0;
+  if(mx == r && g < b) return 60 * (g - b) / (mx - mn) + 360;
+  if(mx == g) return 60 * (b - r) / (mx - mn) + 120;
+  if(mx == b) return 60 * (r - g) / (mx - mn) + 240;
+  CHECK(0);
+}
 
 Color colorFromString(const string &str) {
   if(str.size() == 3) {

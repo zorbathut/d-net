@@ -443,8 +443,20 @@ Metagame::Metagame(int playercount, int in_roundsBetweenShop) {
   }
   
   pair<Float4, vector<Float2> > factcents = getFactionCenters(factions.size());
+  
+  // technically with both of these vectors I should be using a custom comparator but I'm really fucking lazy
+  vector<pair<float, Float2> > centangs;
   for(int i = 0; i < factcents.second.size(); i++)
-    factions[i].compass_location = factcents.first + factcents.second[i];
+    centangs.push_back(make_pair(getAngle(factcents.second[i]), factcents.second[i]));
+  sort(centangs.begin(), centangs.end());
+  
+  vector<pair<float, int> > facthues;
+  for(int i = 0; i < factions.size(); i++)
+    facthues.push_back(make_pair(factions[i].faction->color.getHue(), i));
+  sort(facthues.begin(), facthues.end());
+  
+  for(int i = 0; i < facthues.size(); i++)
+    factions[facthues[i].second].compass_location = factcents.first + centangs[i].second;
   
   mode = MGM_PLAYERCHOOSE;
   
