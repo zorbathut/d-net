@@ -165,7 +165,7 @@ faction { # Cheaper tanks
   name=Korath Dynasty
   lines=1 1
   file=zen.dv2
-  color=f88
+  color=f73
   adjustment=adjustment.dynasty
 }
 
@@ -181,14 +181,14 @@ faction { # Extra damage to projectile weapons
   name=Tribes of the Amazon
   lines=2 2
   file=pincer.dv2
-  color=fa2
+  color=fb2
   adjustment=adjustment.amazon
 }
 
 adjustment {
   name=adjustment.kindred.high
   
-  discount_upgrade=30
+  discount_upgrade=40
   
   damage_kinetic=-5
   damage_energy=-5
@@ -198,7 +198,7 @@ faction { # Cheaper upgrades
   name=Alchemist's Kindred
   lines=1 1
   file=poison.dv2
-  color=f5a
+  color=63f
   adjustment=adjustment.kindred
 }
 
