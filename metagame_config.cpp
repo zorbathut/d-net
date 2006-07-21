@@ -326,6 +326,20 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
       dir.y *= -1;
       pms->compasspos += dir;
     }
+    {
+      Float4 bbx = startFBoundBox();
+      for(int j = 0; j < factions.size(); j++)
+        addToBoundBox(&bbx, factions[j].compass_location);
+      CHECK(bbx.isNormalized());
+      if(pms->compasspos.x < bbx.sx)
+        pms->compasspos.x = bbx.sx;
+      if(pms->compasspos.y < bbx.sy)
+        pms->compasspos.y = bbx.sy;
+      if(pms->compasspos.x > bbx.ex)
+        pms->compasspos.x = bbx.ex;
+      if(pms->compasspos.y > bbx.ey)
+        pms->compasspos.y = bbx.ey;
+    }
     int targetInside = -1;
     for(int j = 0; j < factions.size(); j++) {
       if(isInside(factions[j].compass_location, pms->compasspos) && !factions[j].taken) {

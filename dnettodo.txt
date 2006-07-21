@@ -1,6 +1,5 @@
 ---- Major work path
-- Set your keys/buttons
-- Bound the faction cursors to onscreen
+- Change how deadzone works
 - Make Korath and snake slightly smaller
 - Consistentize menu colors
 - Absolute mode 90 degrees off?
@@ -27,6 +26,7 @@
 - "Kill graph"
 
 ---- Maintenance, minor bugfix, braindead
+- Set your keys/buttons
 - Enforce prefixes? projectile.blah etc etc etc
 - Auto coord-to-float converter (CoordFloat?)
 - AI shouldn't try to buy the glory device it already owns
