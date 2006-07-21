@@ -21,6 +21,7 @@ public:
   float saved_sx;
   float saved_sy;
   float saved_ey;
+  float fade;
 
   Float4 newbounds;
 
@@ -163,6 +164,7 @@ void initGfx() {
     gfws.saved_sx = 0;
     gfws.saved_sy = 0;
     gfws.saved_ey = 1;
+    gfws.fade = 1;
 
     gfws.newbounds = Float4(0, 0, 4.0/3.0, 1);
     gfws.gfxw = NULL;
@@ -254,11 +256,12 @@ void deinitFrame() {
   frame_running = false;
 }
 
-GfxWindow::GfxWindow(const Float4 &bounds) {
+GfxWindow::GfxWindow(const Float4 &bounds, float fade) {
   GfxWindowState gfws;
   gfws.saved_sx = map_saved_sx;
   gfws.saved_sy = map_saved_sy;
   gfws.saved_ey = map_saved_ey;
+  gfws.fade = windows.back().fade * fade;
 
   // newbounds is the location on the screen that the new bounds fill
   gfws.newbounds = Float4((bounds.sx - map_sx) / map_zoom, (bounds.sy - map_sy) / map_zoom, (bounds.ex - map_sx) / map_zoom, (bounds.ey - map_sy) / map_zoom);
@@ -323,6 +326,9 @@ void setZoomCenter(float cx, float cy, float radius_y) {
 float getAspect() { return windows.back().newbounds.x_span() / windows.back().newbounds.y_span(); };
 
 void setColor(float r, float g, float b) {
+  r *= windows.back().fade;
+  g *= windows.back().fade;
+  b *= windows.back().fade;
   glColor3f(r, g, b);
   curcolor = Color(r, g, b);
 }

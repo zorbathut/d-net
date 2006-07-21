@@ -172,6 +172,7 @@ void ShopInfo::renderFrame(Float4 bounds, float fontsize, Float4 inset) const {
   
   bounds.sy += 25;
   
+  bool windowize = false;
   const float fontshift = fontsize * 1.5;
   if(weapon) {
     {
@@ -181,8 +182,7 @@ void ShopInfo::renderFrame(Float4 bounds, float fontsize, Float4 inset) const {
       kvp.print("Cost per second", prettyFloatFormat(player->adjustWeapon(weapon).stats_costPerSecond()));
     }
     
-    GfxWindow gfxw(inset);
-    demo.renderFrame();
+    windowize = true;
   } else if(glory) {
     {
       ShopKVPrinter kvp(bounds, fontsize, fontshift);
@@ -190,8 +190,7 @@ void ShopInfo::renderFrame(Float4 bounds, float fontsize, Float4 inset) const {
       kvp.print("Total average damage", prettyFloatFormat(player->adjustGlory(glory).stats_averageDamage()));
     }
     
-    GfxWindow gfxw(inset);
-    demo.renderFrame();
+    windowize = true;
   } else if(bombardment) {
     {
       ShopKVPrinter kvp(bounds, fontsize, fontshift);
@@ -200,8 +199,7 @@ void ShopInfo::renderFrame(Float4 bounds, float fontsize, Float4 inset) const {
       kvp.print("Cooldown", prettyFloatFormat(player->adjustBombardment(bombardment).unlockdelay()) + " second");
     }
     
-    GfxWindow gfxw(inset);
-    demo.renderFrame();
+    windowize = true;
   } else if(upgrade) {
     {
       ShopKVPrinter kvp(bounds, fontsize, fontshift);
@@ -223,6 +221,11 @@ void ShopInfo::renderFrame(Float4 bounds, float fontsize, Float4 inset) const {
     }
   } else {
     CHECK(0);
+  }
+  
+  if(windowize) {
+    GfxWindow gfxw(inset, 1.0);
+    demo.renderFrame();
   }
 }
 

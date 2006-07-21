@@ -604,7 +604,7 @@ void runSettingRender(const PlayerMenuState &pms) {
       } else {
         drawJustifiedText("Push cancel when done", rin.textsize, (rin.xstart + rin.xend) / 2, rin.ystarts[7], TEXT_CENTER, TEXT_MIN);
       }
-      GfxWindow gfxw(Float4(rin.xstart, rin.ystarts[1], rin.xend, rin.ystarts[7]));
+      GfxWindow gfxw(Float4(rin.xstart, rin.ystarts[1], rin.xend, rin.ystarts[7]), fadeFactor);
       pms.test_game->renderToScreen();
     } else if(pms.settingmode == SETTING_READY) {
       setColor(unselected_text * fadeFactor);

@@ -38,7 +38,7 @@ void deinitFrame();
 
 class GfxWindow {
 public:
-  GfxWindow(const Float4 &bounds);
+  GfxWindow(const Float4 &bounds, float fade);
   ~GfxWindow();
 };
 
