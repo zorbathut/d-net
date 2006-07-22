@@ -183,8 +183,8 @@ Controller makeController(float x, float y, bool key) {
   rv.menu = Float2(x, y);
   for(int i = 0; i < BUTTON_LAST; i++)
     rv.keys[i].down = 0;
-  rv.keys[0].down = key;
-  rv.keys[2].down = key;  // it is truly best not to ask
+  rv.keys[BUTTON_FIRE1].down = key;
+  rv.keys[BUTTON_ACCEPT].down = key;  // it is truly best not to ask
   return rv;
 }
 
