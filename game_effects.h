@@ -3,8 +3,9 @@
 
 #include <vector>
 
-#include "util.h"
+#include "color.h"
 #include "float.h"
+#include "util.h"
   
 // there's a lot of redundancy here, but ATM I don't care
 // I'm not really sure whether inheritance will honestly be better thanks to allocation overhead, though

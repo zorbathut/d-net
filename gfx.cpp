@@ -2,6 +2,7 @@
 #include "gfx.h"
 #include "args.h"
 #include "parse.h"
+#include "util.h"
 
 #include <fstream>
 

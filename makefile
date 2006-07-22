@@ -1,5 +1,5 @@
 
-SOURCES = main core game timer debug gfx collide gamemap util rng args interface vecedit metagame itemdb parse dvec2 input level coord ai inputsnag os_win32 float cfcommon coord_boolean player itemdb_adjust metagame_config shop shop_demo shop_info game_ai game_effects
+SOURCES = main core game timer debug gfx collide gamemap util rng args interface vecedit metagame itemdb parse dvec2 input level coord ai inputsnag os_win32 float cfcommon coord_boolean player itemdb_adjust metagame_config shop shop_demo shop_info game_ai game_effects color
 CPPFLAGS = `sdl-config --cflags` -mno-cygwin -DVECTOR_PARANOIA -Wall -Wno-sign-compare -Wno-uninitialized -O2 #-g -pg
 LINKFLAGS = `sdl-config --libs` -lglu32 -lopengl32 -lm -mno-cygwin -O2 #-g -pg
 
@@ -57,7 +57,7 @@ package: d-net.exe
 	nice bash -ec '$(CPP) $(CPPFLAGS) -MM $< | sed "s!$*.o!$*.o $@!g" > $@'
 	
 stats:
-	@echo Graphics: `cat gfx.h gfx.cpp game_effects.h game_effects.cpp | wc -l` loc
+	@echo Graphics: `cat gfx.h gfx.cpp game_effects.h game_effects.cpp color.h color.cpp| wc -l` loc
 	@echo Collisions: `cat collide.h collide.cpp | wc -l` loc
 	@echo Game mechanics: `cat game.h game.cpp gamemap.h gamemap.cpp level.cpp level.h player.cpp player.h | wc -l` loc
 	@echo Item hierarchy: `cat itemdb.h itemdb.cpp parse.h parse.cpp itemdb_adjust.cpp | wc -l` loc

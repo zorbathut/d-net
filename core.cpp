@@ -8,6 +8,7 @@
 #include "interface.h"
 #include "rng.h"
 #include "timer.h"
+#include "util.h"
 
 #include <SDL.h>
 

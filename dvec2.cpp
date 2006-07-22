@@ -4,6 +4,7 @@
 #include "gfx.h"
 #include "input.h"
 #include "parse.h"
+#include "util.h"
 
 #include <fstream>
 

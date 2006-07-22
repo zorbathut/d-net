@@ -3,6 +3,7 @@
 
 #include "dvec2.h"
 #include "coord.h"
+#include "color.h"
 #include "util.h"
 
 using namespace std;
