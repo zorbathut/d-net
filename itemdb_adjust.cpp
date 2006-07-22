@@ -10,6 +10,8 @@ using namespace std;
  * IDBDeployAdjust
  */
  
+int IDBDeployAdjust::type() const { return idb->type; };
+
 float IDBDeployAdjust::anglestddev() const { return idb->anglestddev; };
 
 float IDBDeployAdjust::stats_damagePerShotMultiplier() const { return 1; }; // IN ALL POSSIBLE CASES

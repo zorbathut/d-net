@@ -155,6 +155,8 @@ struct IDBDeployAdjust {
   const IDBAdjustment *adjust;
   
 public:
+  int type() const;
+
   float anglestddev() const;
   
   float stats_damagePerShotMultiplier() const;
