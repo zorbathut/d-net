@@ -1,5 +1,4 @@
 ---- Major work path
-- Consistentize menu colors
 - Minelayer
 - EMP emitter
 - Pull glory explody into its own deploy?

@@ -89,19 +89,10 @@ void Shop::renderNode(const HierarchyNode &node, int depth) const {
   
   for(int j = 0; j < rendpos.size(); j++) {
     const int itemid = rendpos[j].first;
-    // highlight if this one is in our "active path"
-    if(depth < curloc.size() && curloc[depth] == itemid) {
-      if(selling) {
-        setColor(1.0, 0.3, 0.3);
-      } else {
-        setColor(1.0, 1.0, 1.0);
-      }
+    if(selling) {
+      setColor(Color(0.8, 0, 0));
     } else {
-      if(selling) {
-        setColor(0.3, 0.05, 0.05);
-      } else {
-        setColor(0.3, 0.3, 0.3);
-      }
+      setColor(C::gray(0.5));
     }
     {
       float xstart = hoffbase;
@@ -113,7 +104,12 @@ void Shop::renderNode(const HierarchyNode &node, int depth) const {
     }
     drawSolid(Float4(hoffbase, rendpos[j].second, hoffbase + sl_boxwidth, rendpos[j].second + sl_fontsize + sl_boxborder * 2));
     drawRect(Float4(hoffbase, rendpos[j].second, hoffbase + sl_boxwidth, rendpos[j].second + sl_fontsize + sl_boxborder * 2), sl_boxthick);
-    setColor(1.0, 1.0, 1.0);
+    // highlight if this one is in our "active path"
+    if(depth < curloc.size() && curloc[depth] == itemid) {
+      setColor(C::active_text);
+    } else {
+      setColor(C::inactive_text);
+    }
     drawText(node.branches[itemid].name.c_str(), sl_fontsize, hoffbase + sl_boxborder, rendpos[j].second + sl_boxborder);
     // Display ammo count
     {
@@ -218,7 +214,7 @@ void Shop::renderNode(const HierarchyNode &node, int depth) const {
         setColor(1.0, 0.3, 0.3);
         drawJustifiedText(StringPrintf("%s", node.branches[itemid].sellvalue(player).textual().c_str()), sl_fontsize, hoffbase + sl_pricehpos, rendpos[j].second + sl_boxborder, TEXT_MAX, TEXT_MIN);
       } else if(dispmode == HierarchyNode::HNDM_PACK) {
-        drawText(StringPrintf("%dpk", node.branches[itemid].pack), sl_fontsize, hoffbase + sl_pricehpos, rendpos[j].second + sl_boxborder);
+        drawJustifiedText(StringPrintf("%dpk", node.branches[itemid].pack), sl_fontsize, hoffbase + sl_pricehpos, rendpos[j].second + sl_boxborder, TEXT_MAX, TEXT_MIN);
       } else if(dispmode == HierarchyNode::HNDM_COSTUNIQUE) {
       } else if(dispmode == HierarchyNode::HNDM_EQUIP) {
       } else {

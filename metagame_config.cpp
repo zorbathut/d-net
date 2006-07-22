@@ -100,9 +100,6 @@ vector<Keystates> genKeystates(const vector<Controller> &keys, const vector<Play
   return kst;
 }
 
-static const Color selected_text = Color(0.7, 1.0, 0.6);
-static const Color unselected_text = Color(0.7, 0.7, 0.4);
-
 class RenderInfo {
 public:
   // Basic math!
@@ -283,9 +280,9 @@ void standardButtonRender(const StandardButtonRenderData &sbrd) {
   CHECK(cy + linesneeded <= sbrd.rin->ystarts.size());
   for(int i = 0; i < (*sbrd.names).size(); i++) {
     if(sbrd.sel_button == i && !sbrd.sel_button_reading) {
-      setColor(selected_text * sbrd.fadeFactor);
+      setColor(C::active_text * sbrd.fadeFactor);
     } else {
-      setColor(unselected_text * sbrd.fadeFactor);
+      setColor(C::inactive_text * sbrd.fadeFactor);
     }
     if(i && sbrd.groups[i-1] != sbrd.groups[i])
       cy++;
@@ -296,7 +293,7 @@ void standardButtonRender(const StandardButtonRenderData &sbrd) {
     string btext;
     if(sbrd.sel_button == i && sbrd.sel_button_reading) {
       btext = "?";
-      setColor(selected_text * sbrd.fadeFactor);
+      setColor(C::active_text * sbrd.fadeFactor);
     } else if((*sbrd.buttons)[i] == -1) {
       btext = "";
     } else {
@@ -309,7 +306,7 @@ void standardButtonRender(const StandardButtonRenderData &sbrd) {
       } else {
         CHECK(0);
       }
-      setColor(unselected_text * sbrd.fadeFactor);
+      setColor(C::inactive_text * sbrd.fadeFactor);
     }
     drawJustifiedText(btext.c_str(), sbrd.rin->textsize, sbrd.rin->xend, sbrd.rin->ystarts[cy - 1], TEXT_MAX, TEXT_MIN);
   }
@@ -539,7 +536,7 @@ void runSettingRender(const PlayerMenuState &pms) {
       float txstart = rin.xstart + rin.textsize + rin.border * 2;
 	
       if(pms.choicemode == CHOICE_FIRSTPASS) {
-        setColor(selected_text * fadeFactor);
+        setColor(C::active_text * fadeFactor);
         drawJustifiedText(setting_names_detailed[pms.settingmode], rin.textsize, (rin.drawzone.sx + rin.drawzone.ex) / 2, rin.ystarts[0], TEXT_CENTER, TEXT_MIN);
       } else {
         const int activescale = 4;
@@ -552,7 +549,7 @@ void runSettingRender(const PlayerMenuState &pms) {
           
           int tunits = active ? activescale : 1;
           string text = active ? setting_names[i] : string() + setting_names[i][0];
-          setColor(((active && pms.choicemode == CHOICE_IDLE) ? selected_text : unselected_text) * fadeFactor);
+          setColor(((active && pms.choicemode == CHOICE_IDLE) ? C::active_text : C::inactive_text) * fadeFactor);
           
           drawJustifiedText(text, rin.textsize, title_units * (units + tunits / 2.) + txstart, rin.ystarts[0], TEXT_CENTER, TEXT_MIN);
           
@@ -586,12 +583,12 @@ void runSettingRender(const PlayerMenuState &pms) {
       standardButtonRender(sbrd);
     } else if(pms.settingmode == SETTING_AXISTYPE) {
       if(pms.choicemode != CHOICE_IDLE)
-        setColor(selected_text * fadeFactor);
+        setColor(C::active_text * fadeFactor);
       else
-        setColor(unselected_text * fadeFactor);
+        setColor(C::inactive_text * fadeFactor);
       drawJustifiedText(ksax_names[pms.setting_axistype], rin.textsize, (rin.xstart + rin.xend) / 2, rin.ystarts[2], TEXT_CENTER, TEXT_MIN);
       
-      setColor(unselected_text * fadeFactor);
+      setColor(C::inactive_text * fadeFactor);
       drawJustifiedText(ksax_descriptions[pms.setting_axistype][0], rin.textsize, (rin.xstart + rin.xend) / 2, rin.ystarts[4], TEXT_CENTER, TEXT_MIN);
       drawJustifiedText(ksax_descriptions[pms.setting_axistype][1], rin.textsize, (rin.xstart + rin.xend) / 2, rin.ystarts[5], TEXT_CENTER, TEXT_MIN);
       
@@ -612,7 +609,7 @@ void runSettingRender(const PlayerMenuState &pms) {
       
       standardButtonRender(sbrd);
     } else if(pms.settingmode == SETTING_TEST) {
-      setColor(unselected_text * fadeFactor);
+      setColor(C::inactive_text * fadeFactor);
       if(pms.choicemode == CHOICE_IDLE) {
         drawJustifiedText("Push accept to test", rin.textsize, (rin.xstart + rin.xend) / 2, rin.ystarts[7], TEXT_CENTER, TEXT_MIN);
       } else {
@@ -621,7 +618,7 @@ void runSettingRender(const PlayerMenuState &pms) {
       GfxWindow gfxw(Float4(rin.xstart, rin.ystarts[1], rin.xend, rin.ystarts[7]), fadeFactor);
       pms.test_game->renderToScreen();
     } else if(pms.settingmode == SETTING_READY) {
-      setColor(unselected_text * fadeFactor);
+      setColor(C::inactive_text * fadeFactor);
       const char * const text[] = {"Move left/right over", "K-M-D-T to change options.", "", "Hold accept when", "ready to start. Let", "go of button to cancel."};
       for(int i = 0; i < 6; i++)
         drawJustifiedText(text[i], rin.textsize, (rin.xstart + rin.xend) / 2, rin.ystarts[i + 1], TEXT_CENTER, TEXT_MIN);
