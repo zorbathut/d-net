@@ -1,6 +1,4 @@
 ---- Major work path
-- Minelayer
-- Fix up radius/width somehow
 - Abstract out tank manipulations into game_tank
 - EMP emitter
 - Tank mode demo screen(s)

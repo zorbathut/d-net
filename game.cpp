@@ -472,7 +472,7 @@ void Projectile::render(const vector<Coord2> &tposes) const {
   } else {
     CHECK(0);
   }
-  drawLine(Coord4(pos, pos + lasttail), projtype.width());
+  drawLine(Coord4(pos, pos + lasttail), projtype.thickness_visual());
 };
 void Projectile::addCollision(Collider *collider) const {
   CHECK(live);
@@ -548,7 +548,7 @@ vector<Coord2> Projectile::mine_polys() const {
     expfact *= 3;
     expfact += 1;
     expfact /= 4;
-    rv.push_back(Coord2(makeAngle(i * 2 * PI / rad + mine_facing) * projtype.radius() * expfact) + pos);
+    rv.push_back(Coord2(makeAngle(i * 2 * PI / rad + mine_facing) * projtype.radius_physical() * expfact) + pos);
   }
   return rv;
 }
