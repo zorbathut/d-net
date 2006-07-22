@@ -358,12 +358,17 @@ Float4 Dvec2::boundingBox() const {
   return bb;
 }
 
+Dvec2::Dvec2() {
+  scale = 1.0;
+}
+
 Dvec2 loadDvec2(const string &fname) {
   dprintf("Loading %s\n", fname.c_str());
   Dvec2 rv;
   kvData dat;
   ifstream fil(fname.c_str());
   CHECK(fil);
+  bool got_params = false;
   while(getkvData(fil, &dat)) {
     if(dat.category == "path") {
       VectorPath nvp;
@@ -412,6 +417,10 @@ Dvec2 loadDvec2(const string &fname) {
         if(dat.kv.count(ne.params[i].name))
           ne.params[i].parseTextRep(dat.consume(ne.params[i].name));
       rv.entities.push_back(ne);
+    } else if(dat.category == "params") {
+      CHECK(!got_params);
+      got_params = true;
+      rv.scale = atof(dat.consume("scale").c_str());
     } else {
       CHECK(0);
     }

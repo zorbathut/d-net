@@ -144,6 +144,10 @@ public:
   vector<VectorPath> paths;
   vector<Entity> entities;
 
+  float scale;
+
+  Dvec2();
+
   Float4 boundingBox() const;
 };
 
