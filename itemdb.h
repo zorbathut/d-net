@@ -194,6 +194,7 @@ public:
 
   Color color() const;
   float width() const;
+  float radius() const;
   
   float stats_damagePerShot() const;
 

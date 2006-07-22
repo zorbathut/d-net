@@ -27,7 +27,7 @@ projectile {
 }
 
 weapon {
-  name=ROOT.Weapons.Missile.Missile
+  name=ROOT.Weapons.Missile.Missile I
   cost=100
   firerate=3
   deploy=deploy.missile

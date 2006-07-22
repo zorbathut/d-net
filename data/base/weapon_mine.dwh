@@ -25,7 +25,7 @@ projectile {
 }
 
 weapon {
-  name=ROOT.Weapons.Mine
+  name=ROOT.Weapons.Mine.Minelayer I
   cost=100
   firerate=1
   deploy=deploy.mine

@@ -50,6 +50,7 @@ IDBWarheadAdjust IDBProjectileAdjust::warhead() const { return IDBWarheadAdjust(
 
 Color IDBProjectileAdjust::color() const { return idb->color; };
 float IDBProjectileAdjust::width() const { return idb->width; };
+float IDBProjectileAdjust::radius() const { return idb->radius; };
 
 float IDBProjectileAdjust::stats_damagePerShot() const { return warhead().stats_damagePerShot(); };
 

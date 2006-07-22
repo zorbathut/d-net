@@ -24,7 +24,7 @@ projectile {
 }
 
 weapon {
-  name=ROOT.Weapons.Laser.Laser
+  name=ROOT.Weapons.Laser.Laser I
   cost=100
   firerate=6
   deploy=deploy.laser

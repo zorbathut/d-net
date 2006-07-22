@@ -443,6 +443,7 @@ void Projectile::tick(vector<smart_ptr<GfxEffects> > *gfxe) {
     airbrake_velocity *= 0.95;
     if(airbrake_liveness() <= 0)
       live = false;
+  } else if(projtype.motion() == PM_MINE) {
   } else {
     CHECK(0);
   }
@@ -457,6 +458,9 @@ void Projectile::render() const {
     setColor(projtype.color());
   } else if(projtype.motion() == PM_AIRBRAKE) {
     setColor(projtype.color() * airbrake_liveness());
+  } else if(projtype.motion() == PM_MINE) {
+    setColor(C::gray(1.0));
+    drawCircle(pos.toFloat(), projtype.radius(), 0.1);
   } else {
     CHECK(0);
   }
@@ -464,7 +468,14 @@ void Projectile::render() const {
 };
 void Projectile::addCollision(Collider *collider) const {
   CHECK(live);
-  collider->token(Coord4(pos, pos + lasttail), Coord4(movement(), movement() + nexttail()));
+  if(projtype.motion() == PM_MINE) {
+    const int rad = 8;
+    for(int i = 0; i < rad; i++) {
+      collider->token(Coord4(Coord2(makeAngle(i * 2 * PI / rad) * projtype.radius()) + pos, Coord2(makeAngle((i + 1) * 2 * PI / rad) * projtype.radius()) + pos), Coord4(0, 0, 0, 0));
+    }
+  } else {
+    collider->token(Coord4(pos, pos + lasttail), Coord4(movement(), movement() + nexttail()));
+  }
 };
 void Projectile::impact(Coord2 pos, Tank *target, const vector<pair<float, Tank *> > &adjacency, vector<smart_ptr<GfxEffects> > *gfxe, Gamemap *gm) {
   if(!live)
@@ -486,6 +497,8 @@ Coord2 Projectile::movement() const {
     return missile_accel() + missile_backdrop() + missile_sidedrop();
   } else if(projtype.motion() == PM_AIRBRAKE) {
     return Coord2(makeAngle(d) * airbrake_velocity);
+  } else if(projtype.motion() == PM_MINE) {
+    return Coord2(0, 0);
   } else {
     CHECK(0);
   }
@@ -499,6 +512,8 @@ Coord2 Projectile::nexttail() const {
     return Coord2(makeAngle(d) * -2);
   } else if(projtype.motion() == PM_AIRBRAKE) {
     return Coord2(-makeAngle(d) * (airbrake_velocity + 2));
+  } else if(projtype.motion() == PM_MINE) {
+    return Coord2(0, 0);
   } else {
     CHECK(0);
   }
@@ -535,6 +550,8 @@ Projectile::Projectile(const Coord2 &in_pos, float in_d, const IDBProjectileAdju
     missile_sidedist = gaussian() * 0.25;
   } else if(projtype.motion() == PM_AIRBRAKE) {
     airbrake_velocity = (gaussian_scaled(2) / 4 + 1) * projtype.velocity();
+  } else if(projtype.motion() == PM_MINE) {
+    // heh.
   } else {
     CHECK(0);
   }
