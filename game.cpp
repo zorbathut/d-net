@@ -460,7 +460,7 @@ void Projectile::render() const {
     setColor(projtype.color() * airbrake_liveness());
   } else if(projtype.motion() == PM_MINE) {
     setColor(C::gray(1.0));
-    drawCircle(pos.toFloat(), projtype.radius(), 0.1);
+    drawLineLoop(mine_polys(), 0.1);
   } else {
     CHECK(0);
   }
@@ -469,10 +469,9 @@ void Projectile::render() const {
 void Projectile::addCollision(Collider *collider) const {
   CHECK(live);
   if(projtype.motion() == PM_MINE) {
-    const int rad = 8;
-    for(int i = 0; i < rad; i++) {
-      collider->token(Coord4(Coord2(makeAngle(i * 2 * PI / rad) * projtype.radius()) + pos, Coord2(makeAngle((i + 1) * 2 * PI / rad) * projtype.radius()) + pos), Coord4(0, 0, 0, 0));
-    }
+    vector<Coord2> ite = mine_polys();
+    for(int i = 0; i < ite.size(); i++)
+      collider->token(Coord4(ite[i], ite[(i + 1) % ite.size()]), Coord4(0, 0, 0, 0));
   } else {
     collider->token(Coord4(pos, pos + lasttail), Coord4(movement(), movement() + nexttail()));
   }
@@ -533,6 +532,19 @@ float Projectile::airbrake_liveness() const {
   return 1.0 - (age / 60.0);
 }
 
+vector<Coord2> Projectile::mine_polys() const {
+  vector<Coord2> rv;
+  const int rad = 12;
+  for(int i = 0; i < rad; i++) {
+    float expfact = (i % 2);
+    expfact *= 3;
+    expfact += 1;
+    expfact /= 4;
+    rv.push_back(Coord2(makeAngle(i * 2 * PI / rad + mine_facing) * projtype.radius() * expfact) + pos);
+  }
+  return rv;
+}
+
 Projectile::Projectile() : projtype(NULL, NULL) {
   live = false;
   age = -1;
@@ -551,7 +563,7 @@ Projectile::Projectile(const Coord2 &in_pos, float in_d, const IDBProjectileAdju
   } else if(projtype.motion() == PM_AIRBRAKE) {
     airbrake_velocity = (gaussian_scaled(2) / 4 + 1) * projtype.velocity();
   } else if(projtype.motion() == PM_MINE) {
-    // heh.
+    mine_facing = frand() * 2 * PI;
   } else {
     CHECK(0);
   }

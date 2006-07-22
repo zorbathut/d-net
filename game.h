@@ -115,6 +115,9 @@ private:
   float airbrake_liveness() const;
   float airbrake_velocity;
 
+  vector<Coord2> mine_polys() const;
+  float mine_facing;
+
   Coord2 pos;
   float d;
 
