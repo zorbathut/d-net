@@ -77,7 +77,8 @@ public:
  * Utility funcs
  */
 
-float deadzone(float t, float o, float absdead, float tdead);
-Float2 deadzone(const Float2 &mov, float absdead, float tdead);
+enum { DEADZONE_ABSOLUTE, DEADZONE_CENTER };
+float deadzone(float t, float o, int dztype, float tdead);
+Float2 deadzone(const Float2 &mov, int dztype, float tdead);
 
 #endif

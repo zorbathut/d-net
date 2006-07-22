@@ -322,7 +322,7 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
     StackString sstr("chfact");
     pms->fireHeld = 0;
     {
-      Float2 dir = deadzone(keys.menu, 0, 0.2) * 0.01;
+      Float2 dir = deadzone(keys.menu, DEADZONE_CENTER, 0.2) * 0.01;
       dir.y *= -1;
       pms->compasspos += dir;
     }

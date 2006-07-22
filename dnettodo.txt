@@ -1,5 +1,4 @@
 ---- Major work path
-- Change how deadzone works
 - Make Korath and snake slightly smaller
 - Consistentize menu colors
 - Absolute mode 90 degrees off?

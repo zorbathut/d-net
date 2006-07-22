@@ -172,14 +172,14 @@ pair<float, float> Tank::getNextInertia(const Keystates &keys) const {
   float dl;
   float dr;
   if(keys.axmode == KSAX_TANK) {
-    dl = deadzone(keys.ax[0], keys.ax[1], 0.2, 0);
-    dr = deadzone(keys.ax[1], keys.ax[0], 0.2, 0);
+    dl = deadzone(keys.ax[0], keys.ax[1], DEADZONE_ABSOLUTE, 0.2);
+    dr = deadzone(keys.ax[1], keys.ax[0], DEADZONE_ABSOLUTE, 0.2);
   } else if(keys.axmode == KSAX_ABSOLUTE || keys.axmode == KSAX_STEERING) {
     float dd;
     float dv;
     if(keys.axmode == KSAX_ABSOLUTE) {
-      float xpd = deadzone(keys.ax[0], keys.ax[1], 0, 0.2);
-      float ypd = deadzone(keys.ax[1], keys.ax[0], 0, 0.2);
+      float xpd = deadzone(keys.ax[0], keys.ax[1], DEADZONE_CENTER, 0.2);
+      float ypd = deadzone(keys.ax[1], keys.ax[0], DEADZONE_CENTER, 0.2);
       if(xpd == 0 && ypd == 0) {
         dv = dd = 0;
       } else {
@@ -211,8 +211,8 @@ pair<float, float> Tank::getNextInertia(const Keystates &keys) const {
         }
       }
     } else {
-      dd = deadzone(keys.ax[0], keys.ax[1], 0.2, 0);
-      dv = deadzone(keys.ax[1], keys.ax[0], 0.2, 0);
+      dd = deadzone(keys.ax[0], keys.ax[1], DEADZONE_ABSOLUTE, 0.2);
+      dv = deadzone(keys.ax[1], keys.ax[0], DEADZONE_ABSOLUTE, 0.2);
     }
     
     // What aspects do we want here?
@@ -799,7 +799,7 @@ bool Game::runTick(const vector< Keystates > &rkeys) {
       if(bombards[j].timer <= 0)
         bombards[j].state = BombardmentState::BS_ACTIVE;
     } else if(bombards[j].state == BombardmentState::BS_ACTIVE) {
-      Float2 deaded = deadzone(keys[j].udlrax, 0, 0.2);
+      Float2 deaded = deadzone(keys[j].udlrax, DEADZONE_CENTER, 0.2);
       if(len(deaded) > 1)
         deaded /= len(deaded);
       deaded.y *= -1;
