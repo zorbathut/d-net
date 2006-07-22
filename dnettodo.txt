@@ -1,6 +1,5 @@
 ---- Major work path
 - Consistentize menu colors
-- Absolute mode 90 degrees off?
 - Minelayer
 - EMP emitter
 - Pull glory explody into its own deploy?

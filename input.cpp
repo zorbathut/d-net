@@ -111,12 +111,12 @@ vector<vector<vector<string> > > ksax_axis_names_gen() {
     vector<vector<string> > thisset;
     {
       vector<string> thisax;
-      thisax.push_back("Move \"up\"");
+      thisax.push_back("Move \"right\"");
       thisset.push_back(thisax);
     }
     {
       vector<string> thisax;
-      thisax.push_back("Move \"right\"");
+      thisax.push_back("Move \"up\"");
       thisset.push_back(thisax);
     }
     rv.push_back(thisset);
