@@ -86,7 +86,7 @@ class Projectile {
 public:
 
   void tick(vector<smart_ptr<GfxEffects> > *gfx);
-  void render() const;
+  void render(const vector<Coord2> &tposes) const;
 
   void addCollision(Collider *collider) const;
 

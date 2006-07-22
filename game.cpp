@@ -449,7 +449,7 @@ void Projectile::tick(vector<smart_ptr<GfxEffects> > *gfxe) {
   }
 }
 
-void Projectile::render() const {
+void Projectile::render(const vector<Coord2> &tposes) const {
   CHECK(live);
   CHECK(age != -1);
   if(projtype.motion() == PM_NORMAL) {
@@ -459,8 +459,16 @@ void Projectile::render() const {
   } else if(projtype.motion() == PM_AIRBRAKE) {
     setColor(projtype.color() * airbrake_liveness());
   } else if(projtype.motion() == PM_MINE) {
-    setColor(C::gray(1.0));
-    drawLineLoop(mine_polys(), 0.1);
+    const float radarrange = 30;
+    float closest = 1000;
+    for(int i = 0; i < tposes.size(); i++)
+      if(len(tposes[i] - pos).toFloat() < closest)
+        closest = len(tposes[i] - pos).toFloat();
+    if(closest < radarrange) {
+      setColor(C::gray((radarrange - closest) / radarrange));
+      drawLineLoop(mine_polys(), 0.1);
+    }
+    return;
   } else {
     CHECK(0);
   }
@@ -1098,11 +1106,21 @@ void Game::renderToScreen() const {
   }
   
   // Projectiles, graphics effects, and bombardments
-  for(int i = 0; i < projectiles.size(); i++)
-    for(int j = 0; j < projectiles[i].size(); j++)
-      projectiles[i][j].render();
+  {
+    // mines need these to know how far away they are from something
+    vector<Coord2> tankposes;
+    for(int i = 0; i < tanks.size(); i++)
+      if(tanks[i].live)
+        tankposes.push_back(tanks[i].pos);
+    
+    for(int i = 0; i < projectiles.size(); i++)
+      for(int j = 0; j < projectiles[i].size(); j++)
+        projectiles[i][j].render(tankposes);
+  }
+  
   for(int i = 0; i < gfxeffects.size(); i++)
     gfxeffects[i]->render();
+  
   for(int i = 0; i < bombards.size(); i++) {
     if(bombards[i].state == BombardmentState::BS_OFF) {
     } else if(bombards[i].state == BombardmentState::BS_SPAWNING) {

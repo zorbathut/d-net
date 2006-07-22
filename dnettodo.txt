@@ -1,7 +1,9 @@
 ---- Major work path
 - Minelayer
 - Fix up radius/width somehow
+- Abstract out tank manipulations into game_tank
 - EMP emitter
+- Tank mode demo screen(s)
 - Pull glory explody into its own deploy?
 - Combine radius and width in projectile?
 - New weapons
@@ -19,7 +21,6 @@
 - Remove bombardment from 2 player, make it cheaper for 3 and 4?
 - Glory device demo screen
 - Upgrade demo screen
-- Tank demo screen(s)
 - Slide-along-walls track simulation?
 - "Kill graph"
 
