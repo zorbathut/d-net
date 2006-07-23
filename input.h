@@ -45,7 +45,6 @@ public:
 
 enum { KSAX_STEERING, KSAX_ABSOLUTE, KSAX_TANK, KSAX_END };
 const char *const ksax_names[] = { "STEERING", "ABSOLUTE", "TANK" };
-const int ksax_minaxis[] = {2, 2, 2}; // yeah okay shut up the code still works
 
 vector<vector<vector<string> > > ksax_axis_names_gen();
 const vector<vector<vector<string> > > ksax_axis_names = ksax_axis_names_gen(); // sigh.

@@ -8,6 +8,7 @@
 
 using namespace std;
 
+// brokenated :D
 PlayerMenuState::PlayerMenuState() {
   settingmode = -12345;
   choicemode = -12345;
@@ -19,6 +20,7 @@ PlayerMenuState::PlayerMenuState() {
   setting_axis_reading = false;
   
   setting_axistype = 1237539;
+  setting_axistype_curchoice = 458237;
   
   test_game = NULL;
   test_player = NULL;
@@ -37,7 +39,8 @@ PlayerMenuState::PlayerMenuState(Float2 cent) {
   setting_axis_current = -1;
   setting_axis_reading = true;
   
-  setting_axistype = 0;
+  setting_axistype = -1;
+  setting_axistype_curchoice = 0;
   
   test_game = NULL;
   test_player = NULL;
@@ -57,14 +60,6 @@ PlayerMenuState::~PlayerMenuState() {
 
 bool PlayerMenuState::readyToPlay() const {
   return faction && settingmode == SETTING_READY && fireHeld == 60;
-}
-
-void PlayerMenuState::traverse_axistype(int delta, int axes) {
-  do {
-    setting_axistype += delta;
-    setting_axistype += KSAX_END;
-    setting_axistype %= KSAX_END;
-  } while(ksax_minaxis[setting_axistype] > axes);
 }
 
 Keystates genKeystate(const Controller &keys, const PlayerMenuState &pms) {
@@ -396,16 +391,30 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
       
       standardButtonTick(&sbtd);
     } else if(pms->settingmode == SETTING_AXISTYPE) {
-      if(keys.l.push)
-        pms->traverse_axistype(-1, keys.axes.size());
-      if(keys.r.push)
-        pms->traverse_axistype(1, keys.axes.size());
+      bool closing = false;
+      
+      if(keys.u.push)
+        pms->setting_axistype_curchoice--;
+      if(keys.d.push)
+        pms->setting_axistype_curchoice++;
+      if(pms->setting_axistype_curchoice < 0) {
+        closing = true;
+        pms->setting_axistype_curchoice = 0;
+      }
+      if(pms->setting_axistype_curchoice >= KSAX_END * 2)
+        pms->setting_axistype_curchoice = KSAX_END * 2 - 1;
+      
+      if(keys.keys[pms->buttons[BUTTON_ACCEPT]].push)
+        pms->setting_axistype = pms->setting_axistype_curchoice / 2;
+      
       if(pms->choicemode == CHOICE_ACTIVE) {
-        if(keys.keys[pms->buttons[BUTTON_ACCEPT]].push || keys.keys[pms->buttons[BUTTON_CANCEL]].push || keys.u.push) {
+        if(keys.keys[pms->buttons[BUTTON_ACCEPT]].push || keys.keys[pms->buttons[BUTTON_CANCEL]].push || closing) {
+          pms->setting_axistype_curchoice = 0;
           pms->choicemode = CHOICE_IDLE;
         }
       } else if(pms->choicemode == CHOICE_FIRSTPASS) {
         if(keys.keys[pms->buttons[BUTTON_ACCEPT]].push) {
+          pms->setting_axistype_curchoice = 0;
           pms->settingmode++;
         }
       } else {
@@ -582,17 +591,22 @@ void runSettingRender(const PlayerMenuState &pms) {
       
       standardButtonRender(sbrd);
     } else if(pms.settingmode == SETTING_AXISTYPE) {
-      if(pms.choicemode != CHOICE_IDLE)
+      for(int i = 0; i < KSAX_END * 2; i++) {
+        if(pms.choicemode != CHOICE_IDLE && pms.setting_axistype_curchoice == i)
+          setColor(C::active_text * fadeFactor);
+        else
+          setColor(C::inactive_text * fadeFactor);
+        
+        if(i % 2 == 0)
+          drawText(ksax_names[i / 2], rin.textsize, rin.xstart + rin.textsize * 2, rin.ystarts[i + 2]);
+        else
+          drawText("(demo)", rin.textsize, rin.xstart + rin.textsize * 3, rin.ystarts[i + 2]);
+      }
+      
+      if(pms.setting_axistype != -1) {
         setColor(C::active_text * fadeFactor);
-      else
-        setColor(C::inactive_text * fadeFactor);
-      drawJustifiedText(ksax_names[pms.setting_axistype], rin.textsize, (rin.xstart + rin.xend) / 2, rin.ystarts[2], TEXT_CENTER, TEXT_MIN);
-      
-      setColor(C::inactive_text * fadeFactor);
-      drawJustifiedText(ksax_descriptions[pms.setting_axistype][0], rin.textsize, (rin.xstart + rin.xend) / 2, rin.ystarts[4], TEXT_CENTER, TEXT_MIN);
-      drawJustifiedText(ksax_descriptions[pms.setting_axistype][1], rin.textsize, (rin.xstart + rin.xend) / 2, rin.ystarts[5], TEXT_CENTER, TEXT_MIN);
-      
-      drawJustifiedText("L/R changes mode", rin.textsize, (rin.xstart + rin.xend) / 2, rin.ystarts[7], TEXT_CENTER, TEXT_MIN);
+        drawText(">", rin.textsize, rin.xstart, rin.ystarts[pms.setting_axistype * 2 + 2]);
+      }
       
       // TODO: better pictorial representations
     } else if(pms.settingmode == SETTING_AXISCHOOSE) {

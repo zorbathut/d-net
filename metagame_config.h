@@ -41,7 +41,7 @@ public:
   vector<char> axes_invert;
 
   int setting_axistype;
-  void traverse_axistype(int delta, int axes);
+  int setting_axistype_curchoice;
 
   Game *test_game;
   Player *test_player;  // Ideally these should not be copied, or should be refcounted or something funky

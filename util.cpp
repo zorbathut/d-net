@@ -41,7 +41,7 @@ string stringFromLongdouble(long double x) {
 }
 
 string prettyFloatFormat(float v) {
-  if(!(0.01 <= v && v < 10000)) {
+  if(!(0.01 <= v && v < 10000) && v != 0.0) {
     dprintf("err: %f\n", v);
   }
   string borf = StringPrintf("%.4f", v);

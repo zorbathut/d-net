@@ -1,38 +1,38 @@
 ---- Major work path
-- Abstract out tank manipulations into game_tank
+- Logarithmic turning
+- Mine demo
 - EMP emitter
 - Tank mode demo screen(s)
 - Pull glory explody into its own deploy?
-- Combine radius and width in projectile?
-- New weapons
 - Next-gen collision/storage system on grid
-- Logarithmic turning
-- Training/certificates/discounts
-- Implants
+- Next-gen weapons
 - Faction info screen on startup
-- Make explosion removals include the focus point
-- Multishop
+- Training/certificates/discounts
+- Gradual shop spawning
 - Many many more weapons
+- Implants
+- Multishop
 
 ---- Things that take thought and musing
 - Improve win ticker so it displays overall totals somewhere maybe
 - Remove bombardment from 2 player, make it cheaper for 3 and 4?
-- Glory device demo screen
 - Upgrade demo screen
 - Slide-along-walls track simulation?
 - "Kill graph"
 
 ---- Maintenance, minor bugfix, braindead
-- Set your keys/buttons
+- Abstract out tank manipulations into game_tank?
+- Set your keys/buttons changing
 - Enforce prefixes? projectile.blah etc etc etc
 - Auto coord-to-float converter (CoordFloat?)
-- AI shouldn't try to buy the glory device it already owns
+- AI shouldn't try to buy the items it already owns/smarter about shops
 - Buy menu flicker? Double-buffering?
 - Extricate coord.h and float.h from more headers
 - De-inline stuff in coord.h and float.h
 - Winner list better special effects
 - Winner list better "null" icon
 - Color for projectile impacts
+- Make explosion removals include the focus point
 
 ---- Things that may or may not be needed
 - Add tank sell deprecation
