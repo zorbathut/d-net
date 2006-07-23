@@ -1,8 +1,9 @@
 ---- Major work path
+- Tank mode demo screen(s)
+- Move grayscales to the left/right of the giant unicorn rainbow <3
 - Logarithmic turning
 - Mine demo
 - EMP emitter
-- Tank mode demo screen(s)
 - Pull glory explody into its own deploy?
 - Next-gen collision/storage system on grid
 - Next-gen weapons

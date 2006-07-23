@@ -22,9 +22,6 @@ PlayerMenuState::PlayerMenuState() {
   setting_axistype = 1237539;
   setting_axistype_curchoice = 458237;
   
-  test_game = NULL;
-  test_player = NULL;
-  
   faction = NULL;
   compasspos = Float2(0,0);
 }
@@ -42,9 +39,6 @@ PlayerMenuState::PlayerMenuState(Float2 cent) {
   setting_axistype = -1;
   setting_axistype_curchoice = 0;
   
-  test_game = NULL;
-  test_player = NULL;
-  
   buttons.resize(BUTTON_LAST, -1);
   axes.resize(2, -1);
   axes_invert.resize(axes.size(), false);
@@ -53,10 +47,7 @@ PlayerMenuState::PlayerMenuState(Float2 cent) {
   compasspos = cent;
 }
 
-PlayerMenuState::~PlayerMenuState() {
-  delete test_game;
-  delete test_player;
-}
+PlayerMenuState::~PlayerMenuState() { }
 
 bool PlayerMenuState::readyToPlay() const {
   return faction && settingmode == SETTING_READY && fireHeld == 60;
@@ -456,11 +447,11 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
     StackString sstr("hacky");
     
     // this is kind of hacky
-    if(pms->settingmode == SETTING_TEST && !pms->test_game) {
+    if(pms->settingmode == SETTING_TEST && pms->test_game.empty()) {
       StackString sstr("init");
-      CHECK(!pms->test_player);
+      CHECK(pms->test_player.empty());
       
-      pms->test_player = new Player(pms->faction->faction, 0);
+      pms->test_player.reset(new Player(pms->faction->faction, 0));
       
       const RenderInfo rin(pms->faction->compass_location);
       
@@ -470,8 +461,8 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
       float mn = min(boundy.x_span(), boundy.y_span());
       boundy *= (100 / mn);
       
-      pms->test_game = new Game();
-      pms->test_game->initTest(pms->test_player, boundy);
+      pms->test_game.reset(new Game());
+      pms->test_game->initTest(pms->test_player.get(), boundy);
     }
     
     // so is this

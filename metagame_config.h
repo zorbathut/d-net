@@ -43,8 +43,12 @@ public:
   int setting_axistype;
   int setting_axistype_curchoice;
 
-  Game *test_game;
-  Player *test_player;  // Ideally these should not be copied, or should be refcounted or something funky
+  int setting_axistype_demo_curframe;
+  smart_ptr<Game> setting_axistype_demo_game;
+  smart_ptr<Player> setting_axistype_demo_player;
+
+  smart_ptr<Game> test_game;
+  smart_ptr<Player> test_player;  // Ideally these should not be copied, or should be refcounted or something funky
   
   int fireHeld;
   bool readyToPlay() const;

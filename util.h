@@ -132,6 +132,10 @@ public:
     }
   }
   
+  bool empty() const {
+    return !ptr;
+  }
+  
   T *get() {
     CHECK(ptr);
     return ptr;
