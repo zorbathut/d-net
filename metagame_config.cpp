@@ -319,6 +319,50 @@ void standardButtonRender(const StandardButtonRenderData &sbrd) {
   CHECK(cy <= sbrd.rin->ystarts.size());
 }
 
+class GameAiAxisRotater : public GameAi {
+private:
+  int ax_type;
+  int target_ax;
+  int frames;
+
+  void updateGameWork(const vector<Tank> &players, int me) {
+    frames++;
+    float speed;
+    if(frames / 180 % 4 == 0) {
+      speed = 1;
+    } else if(frames / 180 % 4 == 1) {
+      speed = 0;
+    } else if(frames / 180 % 4 == 2) {
+      speed = -1;
+    } else if(frames / 180 % 4 == 3) {
+      speed = 0;
+    } else {
+      CHECK(0);
+    }
+    
+    if(target_ax == 0) {
+      nextKeys.udlrax.x = speed;
+    } else if(target_ax == 1) {
+      nextKeys.udlrax.y = speed;
+    } else {
+      CHECK(0);
+    }
+    
+    nextKeys.axmode = ax_type;
+  }
+  void updateBombardmentWork(const vector<Tank> &players, Coord2 mypos) {
+    CHECK(0);
+  }
+
+public:
+  GameAiAxisRotater(int in_target_ax, int in_ax_type) {
+    CHECK(in_target_ax >= 0 && in_target_ax < 2);
+    target_ax = in_target_ax;
+    frames = 0;
+    ax_type = in_ax_type;
+  };
+};
+
 void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<FactionState> &factions) {
   StackString sstr("runSettingTick");
   if(!pms->faction) { // if player hasn't chosen faction yet
@@ -528,12 +572,27 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
       
       if(categ == -1) {
         pms->setting_axistype_demo_ai.reset();
-      } else if(categ == 0 && pms->setting_axistype_demo_curframe == 0) {
-        // gorm
+      } else if(categ == KSAX_STEERING && pms->setting_axistype_demo_curframe == 0) {
+        pms->setting_axistype_demo_ai.reset(new GameAiAxisRotater(1, categ));
       } else {
         CHECK(0);
       }
       pms->setting_axistype_demo_aiframe = pms->setting_axistype_demo_curframe;
+    }
+    
+    // wooooo go hack
+    if(!pms->setting_axistype_demo_ai.empty()) {
+      CHECK(!pms->setting_axistype_demo_game.empty());
+      CHECK(!pms->setting_axistype_demo_player.empty());
+      
+      vector<GameAi *> tai;
+      tai.push_back(pms->setting_axistype_demo_ai.get());
+  
+      pms->setting_axistype_demo_game->ai(tai);
+      vector<Keystates> kist;
+      for(int i = 0; i < tai.size(); i++)
+        kist.push_back(tai[i]->getNextKeys());
+      pms->setting_axistype_demo_game->runTick(kist);
     }
   }
 }
@@ -655,8 +714,9 @@ void runSettingRender(const PlayerMenuState &pms) {
         drawText(">", rin.textsize, rin.xstart, rin.ystarts[pms.setting_axistype * 2 + 2]);
       }
     } else if(pms.settingmode == SETTING_AXISTYPE && pms.setting_axistype_demo_curframe != -1) {
-      setColor(C::active_text * fadeFactor);
-      drawText(StringPrintf("borf %d", pms.setting_axistype_demo_curframe), rin.textsize, rin.xstart, rin.ystarts[3]);
+      CHECK(!pms.setting_axistype_demo_game.empty());
+      GfxWindow gfxw(Float4(rin.xstart, rin.ystarts[1], rin.xend, rin.ystarts[7]), fadeFactor);
+      pms.setting_axistype_demo_game->renderToScreen();
     } else if(pms.settingmode == SETTING_AXISCHOOSE) {
       StandardButtonRenderData sbrd;
       sbrd.rin = &rin;
