@@ -8,84 +8,6 @@
 
 using namespace std;
 
-// brokenated :D
-PlayerMenuState::PlayerMenuState() {
-  settingmode = -12345;
-  choicemode = -12345;
-
-  setting_button_current = -1123;
-  setting_button_reading = false;
-  
-  setting_axis_current = -1123;
-  setting_axis_reading = false;
-  
-  setting_axistype = 1237539;
-  setting_axistype_curchoice = 458237;
-  
-  faction = NULL;
-  compasspos = Float2(0,0);
-}
-
-PlayerMenuState::PlayerMenuState(Float2 cent) {
-  settingmode = SETTING_BUTTONS;
-  choicemode = CHOICE_FIRSTPASS;
-  
-  setting_button_current = -1;
-  setting_button_reading = true;
-  
-  setting_axis_current = -1;
-  setting_axis_reading = true;
-  
-  setting_axistype = -1;
-  setting_axistype_curchoice = 0;
-  
-  buttons.resize(BUTTON_LAST, -1);
-  axes.resize(2, -1);
-  axes_invert.resize(axes.size(), false);
-  
-  faction = NULL;
-  compasspos = cent;
-}
-
-PlayerMenuState::~PlayerMenuState() { }
-
-bool PlayerMenuState::readyToPlay() const {
-  return faction && settingmode == SETTING_READY && fireHeld == 60;
-}
-
-Keystates genKeystate(const Controller &keys, const PlayerMenuState &pms) {
-  Keystates kst;
-  kst.u = keys.u;
-  kst.d = keys.d;
-  kst.l = keys.l;
-  kst.r = keys.r;
-  CHECK(SIMUL_WEAPONS == 2);
-  kst.accept = keys.keys[pms.buttons[BUTTON_ACCEPT]];
-  kst.cancel = keys.keys[pms.buttons[BUTTON_CANCEL]];
-  kst.fire[0] = keys.keys[pms.buttons[BUTTON_FIRE1]];
-  kst.fire[1] = keys.keys[pms.buttons[BUTTON_FIRE2]];
-  kst.change[0] = keys.keys[pms.buttons[BUTTON_SWITCH1]];
-  kst.change[1] = keys.keys[pms.buttons[BUTTON_SWITCH2]];
-  kst.axmode = pms.setting_axistype;
-  for(int j = 0; j < 2; j++) {
-    kst.ax[j] = keys.axes[pms.axes[j]];
-    if(pms.axes_invert[j])
-      kst.ax[j] *= -1;
-  }
-  kst.udlrax = keys.menu;
-  CHECK(keys.menu.x >= -1 && keys.menu.x <= 1);
-  CHECK(keys.menu.y >= -1 && keys.menu.y <= 1);
-  return kst;
-}
-
-vector<Keystates> genKeystates(const vector<Controller> &keys, const vector<PlayerMenuState> &modes) {
-  vector<Keystates> kst;
-  for(int i = 0; i < modes.size(); i++)
-    if(modes[i].faction)
-      kst.push_back(genKeystate(keys[i], modes[i]));
-  return kst;
-}
-
 class RenderInfo {
 public:
   // Basic math!
@@ -127,6 +49,103 @@ const float RenderInfo::textline_size = 3;  // How many times larger a line of t
 const float RenderInfo::border_size = 1.5;
 const float RenderInfo::divider_size = 3;	// Division between tabs and content
 const float RenderInfo::units = textline_size * textline_count + textline_count - 1 + border_size * 2 + divider_size; // X lines, plus dividers (textline_count-1), plus the top and bottom borders, plus the increased divider from categories to data
+
+// brokenated :D
+PlayerMenuState::PlayerMenuState() {
+  settingmode = -12345;
+  choicemode = -12345;
+
+  setting_button_current = -1123;
+  setting_button_reading = false;
+  
+  setting_axis_current = -1123;
+  setting_axis_reading = false;
+  
+  setting_axistype = 1237539;
+  setting_axistype_curchoice = 458237;
+  
+  faction = NULL;
+  compasspos = Float2(0,0);
+}
+
+PlayerMenuState::PlayerMenuState(Float2 cent) {
+  settingmode = SETTING_BUTTONS;
+  choicemode = CHOICE_FIRSTPASS;
+  
+  setting_button_current = -1;
+  setting_button_reading = true;
+  
+  setting_axis_current = -1;
+  setting_axis_reading = true;
+  
+  setting_axistype = -1;
+  setting_axistype_curchoice = 0;
+  setting_axistype_demo_curframe = -1;
+  
+  buttons.resize(BUTTON_LAST, -1);
+  axes.resize(2, -1);
+  axes_invert.resize(axes.size(), false);
+  
+  faction = NULL;
+  compasspos = cent;
+}
+
+PlayerMenuState::~PlayerMenuState() { }
+
+void PlayerMenuState::createNewAxistypeDemo() {
+  setting_axistype_demo_player.reset();
+  setting_axistype_demo_game.reset();
+  
+  setting_axistype_demo_player.reset(new Player(faction->faction, 0));
+  
+  const RenderInfo rin(faction->compass_location);
+  
+  Float4 boundy = Float4(rin.xstart, rin.ystarts[1], rin.xend, rin.ystarts[7]);
+  boundy -= boundy.midpoint();
+  
+  float mn = min(boundy.x_span(), boundy.y_span());
+  boundy *= (100 / mn);
+  
+  setting_axistype_demo_game.reset(new Game());
+  setting_axistype_demo_game->initTest(setting_axistype_demo_player.get(), boundy);
+}
+
+bool PlayerMenuState::readyToPlay() const {
+  return faction && settingmode == SETTING_READY && fireHeld == 60;
+}
+
+Keystates genKeystate(const Controller &keys, const PlayerMenuState &pms) {
+  Keystates kst;
+  kst.u = keys.u;
+  kst.d = keys.d;
+  kst.l = keys.l;
+  kst.r = keys.r;
+  CHECK(SIMUL_WEAPONS == 2);
+  kst.accept = keys.keys[pms.buttons[BUTTON_ACCEPT]];
+  kst.cancel = keys.keys[pms.buttons[BUTTON_CANCEL]];
+  kst.fire[0] = keys.keys[pms.buttons[BUTTON_FIRE1]];
+  kst.fire[1] = keys.keys[pms.buttons[BUTTON_FIRE2]];
+  kst.change[0] = keys.keys[pms.buttons[BUTTON_SWITCH1]];
+  kst.change[1] = keys.keys[pms.buttons[BUTTON_SWITCH2]];
+  kst.axmode = pms.setting_axistype;
+  for(int j = 0; j < 2; j++) {
+    kst.ax[j] = keys.axes[pms.axes[j]];
+    if(pms.axes_invert[j])
+      kst.ax[j] *= -1;
+  }
+  kst.udlrax = keys.menu;
+  CHECK(keys.menu.x >= -1 && keys.menu.x <= 1);
+  CHECK(keys.menu.y >= -1 && keys.menu.y <= 1);
+  return kst;
+}
+
+vector<Keystates> genKeystates(const vector<Controller> &keys, const vector<PlayerMenuState> &modes) {
+  vector<Keystates> kst;
+  for(int i = 0; i < modes.size(); i++)
+    if(modes[i].faction)
+      kst.push_back(genKeystate(keys[i], modes[i]));
+  return kst;
+}
 
 struct StandardButtonTickData {
   vector<int> *outkeys;
@@ -381,7 +400,7 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
       sbtd.pms = pms;
       
       standardButtonTick(&sbtd);
-    } else if(pms->settingmode == SETTING_AXISTYPE) {
+    } else if(pms->settingmode == SETTING_AXISTYPE && pms->setting_axistype_demo_curframe == -1) {
       bool closing = false;
       
       if(keys.u.push)
@@ -395,22 +414,38 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
       if(pms->setting_axistype_curchoice >= KSAX_END * 2)
         pms->setting_axistype_curchoice = KSAX_END * 2 - 1;
       
-      if(keys.keys[pms->buttons[BUTTON_ACCEPT]].push)
-        pms->setting_axistype = pms->setting_axistype_curchoice / 2;
-      
-      if(pms->choicemode == CHOICE_ACTIVE) {
-        if(keys.keys[pms->buttons[BUTTON_ACCEPT]].push || keys.keys[pms->buttons[BUTTON_CANCEL]].push || closing) {
-          pms->setting_axistype_curchoice = 0;
-          pms->choicemode = CHOICE_IDLE;
+      if(keys.keys[pms->buttons[BUTTON_ACCEPT]].push) {
+        if(pms->setting_axistype_curchoice % 2 == 0) {
+          pms->setting_axistype = pms->setting_axistype_curchoice / 2;
+        } else {
+          pms->setting_axistype_demo_curframe = 0;
+          pms->createNewAxistypeDemo();
         }
-      } else if(pms->choicemode == CHOICE_FIRSTPASS) {
-        if(keys.keys[pms->buttons[BUTTON_ACCEPT]].push) {
-          pms->setting_axistype_curchoice = 0;
-          pms->settingmode++;
-        }
-      } else {
-        CHECK(0);
       }
+      
+      if(pms->setting_axistype_demo_curframe == -1) {
+        if(pms->choicemode == CHOICE_ACTIVE) {
+          if(keys.keys[pms->buttons[BUTTON_ACCEPT]].push || keys.keys[pms->buttons[BUTTON_CANCEL]].push || closing) {
+            pms->setting_axistype_curchoice = 0;
+            pms->choicemode = CHOICE_IDLE;
+          }
+        } else if(pms->choicemode == CHOICE_FIRSTPASS) {
+          if(keys.keys[pms->buttons[BUTTON_ACCEPT]].push) {
+            pms->setting_axistype_curchoice = 0;
+            pms->settingmode++;
+          }
+        } else {
+          CHECK(0);
+        }
+      }
+    } else if(pms->settingmode == SETTING_AXISTYPE && pms->setting_axistype_demo_curframe != -1) {
+      
+      if(keys.keys[pms->buttons[BUTTON_ACCEPT]].push)
+        pms->setting_axistype_demo_curframe++;
+      
+      if(keys.keys[pms->buttons[BUTTON_CANCEL]].push)
+        pms->setting_axistype_demo_curframe = -1;
+      
     } else if(pms->settingmode == SETTING_AXISCHOOSE) {
       StackString sstr("SAX");
       vector<float> triggers;
@@ -581,7 +616,7 @@ void runSettingRender(const PlayerMenuState &pms) {
       sbrd.prefixchar = 'B';
       
       standardButtonRender(sbrd);
-    } else if(pms.settingmode == SETTING_AXISTYPE) {
+    } else if(pms.settingmode == SETTING_AXISTYPE && pms.setting_axistype_demo_curframe == -1) {
       for(int i = 0; i < KSAX_END * 2; i++) {
         if(pms.choicemode != CHOICE_IDLE && pms.setting_axistype_curchoice == i)
           setColor(C::active_text * fadeFactor);
@@ -598,8 +633,9 @@ void runSettingRender(const PlayerMenuState &pms) {
         setColor(C::active_text * fadeFactor);
         drawText(">", rin.textsize, rin.xstart, rin.ystarts[pms.setting_axistype * 2 + 2]);
       }
-      
-      // TODO: better pictorial representations
+    } else if(pms.settingmode == SETTING_AXISTYPE && pms.setting_axistype_demo_curframe != -1) {
+      setColor(C::active_text * fadeFactor);
+      drawText(StringPrintf("borf %d", pms.setting_axistype_demo_curframe), rin.textsize, rin.xstart, rin.ystarts[3]);
     } else if(pms.settingmode == SETTING_AXISCHOOSE) {
       StandardButtonRenderData sbrd;
       sbrd.rin = &rin;

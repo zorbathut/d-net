@@ -46,6 +46,7 @@ public:
   int setting_axistype_demo_curframe;
   smart_ptr<Game> setting_axistype_demo_game;
   smart_ptr<Player> setting_axistype_demo_player;
+  void createNewAxistypeDemo();
 
   smart_ptr<Game> test_game;
   smart_ptr<Player> test_player;  // Ideally these should not be copied, or should be refcounted or something funky
