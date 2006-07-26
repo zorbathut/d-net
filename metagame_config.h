@@ -9,6 +9,7 @@ using namespace std;
 // These are only really used for the "test" screen, and I don't want this to be considered a "full dependency" because it kind of isn't.
 class Game;
 class Player;
+class GameAi;
 
 class FactionState {
 public:
@@ -44,8 +45,10 @@ public:
   int setting_axistype_curchoice;
 
   int setting_axistype_demo_curframe;
+  int setting_axistype_demo_aiframe;
   smart_ptr<Game> setting_axistype_demo_game;
   smart_ptr<Player> setting_axistype_demo_player;
+  smart_ptr<GameAi> setting_axistype_demo_ai;
   void createNewAxistypeDemo();
 
   smart_ptr<Game> test_game;

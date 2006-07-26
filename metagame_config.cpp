@@ -5,6 +5,7 @@
 #include "gfx.h"
 #include "player.h"
 #include "debug.h"
+#include "game_ai.h"
 
 using namespace std;
 
@@ -513,6 +514,26 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
       } else {
         CHECK(0);
       }
+    }
+    
+    // oh yeah real hacky now
+    if(pms->setting_axistype_demo_curframe != pms->setting_axistype_demo_aiframe) {
+      int categ;
+      if(pms->setting_axistype_curchoice % 2 == 0) {
+        CHECK(pms->setting_axistype_demo_curframe == -1);
+        categ = -1;
+      } else {
+        categ = pms->setting_axistype_curchoice / 2;
+      }
+      
+      if(categ == -1) {
+        pms->setting_axistype_demo_ai.reset();
+      } else if(categ == 0 && pms->setting_axistype_demo_curframe == 0) {
+        // gorm
+      } else {
+        CHECK(0);
+      }
+      pms->setting_axistype_demo_aiframe = pms->setting_axistype_demo_curframe;
     }
   }
 }
