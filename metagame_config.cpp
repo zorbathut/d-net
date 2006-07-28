@@ -714,8 +714,9 @@ void runSettingRender(const PlayerMenuState &pms) {
         drawText(">", rin.textsize, rin.xstart, rin.ystarts[pms.setting_axistype * 2 + 2]);
       }
     } else if(pms.settingmode == SETTING_AXISTYPE && pms.setting_axistype_demo_curframe != -1) {
+      
       CHECK(!pms.setting_axistype_demo_game.empty());
-      GfxWindow gfxw(Float4(rin.xstart, rin.ystarts[1], rin.xend, rin.ystarts[7]), fadeFactor);
+      GfxWindow gfxw(Float4(rin.xend - (rin.ystarts[7] - rin.ystarts[1]), rin.ystarts[1], rin.xend, rin.ystarts[7]), fadeFactor);
       pms.setting_axistype_demo_game->renderToScreen();
     } else if(pms.settingmode == SETTING_AXISCHOOSE) {
       StandardButtonRenderData sbrd;
