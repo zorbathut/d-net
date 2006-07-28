@@ -1,5 +1,6 @@
 ---- Major work path
 - Tank mode demo screen(s)
+- Game inheritance/abstraction?
 - Move grayscales to the left/right of the giant unicorn rainbow <3
 - Logarithmic turning
 - Mine demo

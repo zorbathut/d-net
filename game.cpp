@@ -1028,7 +1028,7 @@ bool Game::runTick(const vector< Keystates > &rkeys) {
     doInterp(&zoom_center.y, &z.first.y, &zoom_size.y, &z.second.y, &zoom_speed.y);
   }
 
-  if(framesSinceOneLeft / FPS >= 3 && gamemode != GMODE_TEST && gamemode != GMODE_DEMO) {
+  if(framesSinceOneLeft / FPS >= 3 && gamemode != GMODE_TEST && gamemode != GMODE_DEMO && gamemode != GMODE_CENTERED_DEMO) {
     if(zones.size() == 0) {
       int winplayer = -1;
       for(int i = 0; i < tanks.size(); i++) {
@@ -1087,7 +1087,7 @@ void drawCrosses(const Coord2 &cloc, float rad) {
 
 void Game::renderToScreen() const {
 
-  const float availScreen = ((gamemode == GMODE_TEST || gamemode == GMODE_DEMO)? 1.0 : 0.9);
+  const float availScreen = ((gamemode == GMODE_TEST || gamemode == GMODE_DEMO || gamemode == GMODE_CENTERED_DEMO)? 1.0 : 0.9);
   const float pzoom = max(zoom_size.y / availScreen, zoom_size.x / getAspect());
   // Set up zooming for everything that happens in gamespace
   {
@@ -1213,7 +1213,7 @@ void Game::renderToScreen() const {
   }
   
   // Here's everything outside gamespace
-  if(gamemode != GMODE_TEST && gamemode != GMODE_DEMO) {
+  if(gamemode != GMODE_TEST && gamemode != GMODE_DEMO && gamemode != GMODE_CENTERED_DEMO) {
     setZoom(0, 0, 100);
     
     // Player health
@@ -1618,6 +1618,31 @@ void Game::initDemo(vector<Player> *in_playerdata, float boxradi, const float *x
   }
   
   demomode_boxradi = boxradi;
+}
+
+void Game::initCenteredDemo(Player *in_playerdata, float zoom) {
+  gamemode = GMODE_CENTERED_DEMO;
+  
+  centereddemo_zoom = zoom;
+  
+  Level lev;  
+  {
+    vector<Coord2> path;
+    path.push_back(Coord2(-1000, -1000));
+    path.push_back(Coord2(-1000, 1000));
+    path.push_back(Coord2(1000, 1000));
+    path.push_back(Coord2(1000, -1000));
+    lev.paths.push_back(path);
+  }
+  
+  {
+    lev.playersValid.insert(1);
+    lev.playerStarts[1].push_back(make_pair(Coord2(0, 0), PI / 2 * 3));
+  }
+  
+  vector<Player*> playerdata;
+  playerdata.push_back(in_playerdata);
+  initCommon(playerdata, lev);
 }
 
 vector<pair<float, Tank *> > Game::genTankDistance(const Coord2 &center) {

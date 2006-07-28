@@ -146,7 +146,7 @@ public:
   }
 };
 
-enum {GMODE_STANDARD, GMODE_CHOICE, GMODE_TEST, GMODE_DEMO, GMODE_LAST};
+enum {GMODE_STANDARD, GMODE_CHOICE, GMODE_TEST, GMODE_DEMO, GMODE_CENTERED_DEMO, GMODE_LAST};
 enum {FACTION_NULL, FACTION_SMALL, FACTION_MEDIUM, FACTION_BIG, FACTION_LAST};
 enum {DEMOPLAYER_QUIET, DEMOPLAYER_DPS, DEMOPLAYER_DPH, DEMOPLAYER_BOMBSIGHT, DEMOPLAYER_LAST};
 
@@ -157,6 +157,7 @@ public:
   void initChoice(vector<Player> *playerdata);
   void initTest(Player *playerdata, const Float4 &bounds);
   void initDemo(vector<Player> *playerdata, float boxradi, const float *xps, const float *yps, const int *modes);
+  void initCenteredDemo(Player *playerdata, float zoom);
 
   bool runTick(const vector<Keystates> &keys);
   void ai(const vector<GameAi *> &ais) const;
@@ -211,6 +212,8 @@ private:
   
   vector<int> demomode_playermodes;
   float demomode_boxradi; // used for the clearscreen and font sizes
+  
+  float centereddemo_zoom;
   
   int demomode_hits;
 
