@@ -1,4 +1,7 @@
 ---- Major work path
+- Centereddemo scaling
+- Centereddemo grid
+- Window cropping
 - Tank mode demo screen(s)
 - Game inheritance/abstraction?
 - Move grayscales to the left/right of the giant unicorn rainbow <3
