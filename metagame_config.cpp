@@ -112,7 +112,7 @@ void PlayerMenuState::createNewAxistypeDemo() {
   setting_axistype_demo_game.reset(new Game());
   setting_axistype_demo_game->initCenteredDemo(setting_axistype_demo_player.get(), 50);
   
-  setting_axistype_demo_ai.reset(new GameAiAxisRotater(GameAiAxisRotater::Config(false, false), KSAX_STEERING));
+  setting_axistype_demo_ai.reset(new GameAiAxisRotater(GameAiAxisRotater::steeringConfig(false, false)));
 }
 
 bool PlayerMenuState::readyToPlay() const {
@@ -323,17 +323,23 @@ void standardButtonRender(const StandardButtonRenderData &sbrd) {
   CHECK(cy <= sbrd.rin->ystarts.size());
 }
 
-int GameAiAxisRotater::Randomater::next() {
+float GameAiAxisRotater::Randomater::next() {
   if(fleft <= 0) {
-    vector<int> opts;
-    opts.push_back(1);
-    opts.push_back(0);
-    opts.push_back(-1);
-    opts.erase(find(opts.begin(), opts.end(), current));
-    current = opts[int(frand() * 2)];
+    if(smooth) {
+      current = frand() * 2 - 1;
+    } else {
+      vector<float> opts;
+      opts.push_back(1);
+      opts.push_back(0);
+      opts.push_back(-1);
+      opts.erase(find(opts.begin(), opts.end(), current));
+      current = opts[int(frand() * opts.size())];
+    }
     fleft = int(frand() * 120 + 120);
-    if(current == 0)
-      fleft /= 2;
+    if(!smooth) {
+      if(current == 0)
+        fleft /= 2;
+    }
   }
   fleft--;
   return current;
@@ -345,16 +351,27 @@ GameAiAxisRotater::Randomater::Randomater() {
 }
 
 void GameAiAxisRotater::updateGameWork(const vector<Tank> &players, int me) {
-  for(int i = 0; i < 2; i++) {
-    if(config.ax[i])
-      next[i] = approach(next[i], rands[i].next(), 0.05);
-    else
-      next[i] = approach(next[i], 0, 0.05);
+  StackString sstr("udg");
+  if(config.type == KSAX_STEERING) {
+    CHECK(rands.size() == 2);
+    for(int i = 0; i < 2; i++) {
+      if(config.ax[i])
+        next[i] = approach(next[i], rands[i].next(), 0.05);
+      else
+        next[i] = approach(next[i], 0, 0.05);
+    }
+  } else if(config.type == KSAX_ABSOLUTE) {
+    CHECK(rands.size() == 1);
+    Float2 ps = makeAngle(rands[0].next() * PI);
+    next[0] = approach(next[0], ps.x, 0.05);
+    next[1] = approach(next[1], ps.y, 0.05);
+  } else {
+    CHECK(0);
   }
   
   nextKeys.udlrax = getControls();
 
-  nextKeys.axmode = ax_type;
+  nextKeys.axmode = config.type;
 }
 
 void GameAiAxisRotater::updateBombardmentWork(const vector<Tank> &players, Coord2 mypos) {
@@ -363,17 +380,40 @@ void GameAiAxisRotater::updateBombardmentWork(const vector<Tank> &players, Coord
 
 void GameAiAxisRotater::updateConfig(const Config &conf) {
   config = conf;
+  if(config.type == KSAX_STEERING) {
+    rands.resize(2);
+    rands[0].smooth = false;
+    rands[1].smooth = false;
+  } else if(config.type == KSAX_ABSOLUTE) {
+    rands.resize(1);
+    rands[0].smooth = true;
+  } else {
+    CHECK(0);
+  }
+}
+
+GameAiAxisRotater::Config GameAiAxisRotater::steeringConfig(bool ax0, bool ax1) {
+  Config conf;
+  conf.type = KSAX_STEERING;
+  conf.ax[0] = ax0;
+  conf.ax[1] = ax1;
+  return conf;
+}
+GameAiAxisRotater::Config GameAiAxisRotater::absoluteConfig() {
+  Config conf;
+  conf.type = KSAX_ABSOLUTE;
+  conf.ax[0] = true;
+  conf.ax[1] = true;
+  return conf;
 }
 
 Float2 GameAiAxisRotater::getControls() const {
   return Float2(next[0], next[1]);
 }
 
-GameAiAxisRotater::GameAiAxisRotater(const GameAiAxisRotater::Config &conf, int in_ax_type) {
-  rands.resize(2);
+GameAiAxisRotater::GameAiAxisRotater(const GameAiAxisRotater::Config &conf) {
   next.resize(2, 0.);
-  config = conf;
-  ax_type = in_ax_type;
+  updateConfig(conf);
 };
 
 void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<FactionState> &factions) {
@@ -560,7 +600,7 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
     
     // so is this
     if(pms->settingmode == SETTING_TEST) {
-      StackString sstr("run");
+      StackString sstr("runtest");
       if(pms->choicemode == CHOICE_IDLE) {
         vector<Keystates> kst(1);
         CHECK(!pms->test_game->runTick(kst));
@@ -587,12 +627,20 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
       if(categ == -1) {
         pms->setting_axistype_demo_ai.reset();
       } else if(categ == KSAX_STEERING && pms->setting_axistype_demo_curframe == 0) {
-        pms->setting_axistype_demo_ai->updateConfig(GameAiAxisRotater::Config(false, true));
+        pms->setting_axistype_demo_ai->updateConfig(GameAiAxisRotater::steeringConfig(false, true));
       } else if(categ == KSAX_STEERING && pms->setting_axistype_demo_curframe == 1) {
-        pms->setting_axistype_demo_ai->updateConfig(GameAiAxisRotater::Config(true, false));
+        pms->setting_axistype_demo_ai->updateConfig(GameAiAxisRotater::steeringConfig(true, false));
       } else if(categ == KSAX_STEERING && pms->setting_axistype_demo_curframe == 2) {
-        pms->setting_axistype_demo_ai->updateConfig(GameAiAxisRotater::Config(true, true));
+        pms->setting_axistype_demo_ai->updateConfig(GameAiAxisRotater::steeringConfig(true, true));
       } else if(categ == KSAX_STEERING && pms->setting_axistype_demo_curframe == 3) {
+        pms->setting_axistype_demo_curframe = -1;
+        pms->setting_axistype_demo_ai.reset();
+        pms->setting_axistype_demo_player.reset();
+        pms->setting_axistype_demo_game.reset();
+      } else if(categ == KSAX_ABSOLUTE && pms->setting_axistype_demo_curframe == 0) {
+        pms->setting_axistype_demo_ai->updateConfig(GameAiAxisRotater::absoluteConfig());
+      } else if(categ == KSAX_ABSOLUTE && pms->setting_axistype_demo_curframe == 1) {
+      } else if(categ == KSAX_ABSOLUTE && pms->setting_axistype_demo_curframe == 2) {
         pms->setting_axistype_demo_curframe = -1;
         pms->setting_axistype_demo_ai.reset();
         pms->setting_axistype_demo_player.reset();
@@ -605,18 +653,25 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
     
     // wooooo go hack
     if(!pms->setting_axistype_demo_ai.empty()) {
-      StackString sstr("run");
+      StackString sstr("rundemo");
       CHECK(!pms->setting_axistype_demo_game.empty());
       CHECK(!pms->setting_axistype_demo_player.empty());
-      
-      vector<GameAi *> tai;
-      tai.push_back(pms->setting_axistype_demo_ai.get());
   
-      pms->setting_axistype_demo_game->ai(tai);
-      vector<Keystates> kist;
-      for(int i = 0; i < tai.size(); i++)
-        kist.push_back(tai[i]->getNextKeys());
-      pms->setting_axistype_demo_game->runTick(kist);
+      vector<Keystates> kist;      
+      
+      {
+        StackString sstr("ai");
+        vector<GameAi *> tai;
+        tai.push_back(pms->setting_axistype_demo_ai.get());
+        pms->setting_axistype_demo_game->ai(tai);
+        for(int i = 0; i < tai.size(); i++)
+          kist.push_back(tai[i]->getNextKeys());
+      }
+  
+      {
+        StackString sstr("game");
+        pms->setting_axistype_demo_game->runTick(kist);
+      }
     }
   }
 }
@@ -764,19 +819,30 @@ void runSettingRender(const PlayerMenuState &pms) {
       } else if(pms.setting_axistype_curchoice / 2 == KSAX_STEERING && pms.setting_axistype_demo_curframe == 2) {      
         drawText("Combine these", rin.textsize, rin.xstart, rin.ystarts[1]);
         drawText("to drive around", rin.textsize, rin.xstart, rin.ystarts[2]);
+      } else if(pms.setting_axistype_curchoice / 2 == KSAX_ABSOLUTE && pms.setting_axistype_demo_curframe == 0) {
+        drawText("Move controller", rin.textsize, rin.xstart, rin.ystarts[1]);
+        drawText("towards where", rin.textsize, rin.xstart, rin.ystarts[2]);
+        drawText("you want the", rin.textsize, rin.xstart, rin.ystarts[3]);
+        drawText("tank to go.", rin.textsize, rin.xstart, rin.ystarts[4]);
+      } else if(pms.setting_axistype_curchoice / 2 == KSAX_ABSOLUTE && pms.setting_axistype_demo_curframe == 1) {      
+        drawText("The computer", rin.textsize, rin.xstart, rin.ystarts[1]);
+        drawText("will try to", rin.textsize, rin.xstart, rin.ystarts[2]);
+        drawText("turn your tank", rin.textsize, rin.xstart, rin.ystarts[3]);
+        drawText("in that direction.", rin.textsize, rin.xstart, rin.ystarts[4]);
       } else {
         CHECK(0);
       }
       
       setColor(C::active_text * fadeFactor);
-      if(pms.setting_axistype_demo_curframe != 2) {
-        drawJustifiedText("Push accept to continue", rin.textsize, (rin.xstart + rin.xend) / 2, rin.ystarts[7], TEXT_CENTER, TEXT_MIN);
-      } else {
+      if(pms.setting_axistype_curchoice / 2 == KSAX_STEERING && pms.setting_axistype_demo_curframe == 2 ||
+         pms.setting_axistype_curchoice / 2 == KSAX_ABSOLUTE && pms.setting_axistype_demo_curframe == 1) {
         drawJustifiedText("Push accept to return", rin.textsize, (rin.xstart + rin.xend) / 2, rin.ystarts[7], TEXT_CENTER, TEXT_MIN);
+      } else {
+        drawJustifiedText("Push accept to continue", rin.textsize, (rin.xstart + rin.xend) / 2, rin.ystarts[7], TEXT_CENTER, TEXT_MIN);
       }
       
       setColor(C::gray(1.0) * fadeFactor);
-      if(pms.setting_axistype_curchoice / 2 == KSAX_STEERING) {
+      if(pms.setting_axistype_curchoice / 2 == KSAX_STEERING || pms.setting_axistype_curchoice / 2 == KSAX_ABSOLUTE) {
         drawRect(controllerwindow, 0.0001);
         Float2 cont = pms.setting_axistype_demo_ai->getControls();
         const float widgetsize = 0.005;
@@ -787,7 +853,6 @@ void runSettingRender(const PlayerMenuState &pms) {
         cont /= 2;
         drawShadedRect(boxAround(Float2((livecwind.ex - livecwind.sx) * cont.x + livecwind.sx, (livecwind.ey - livecwind.sy) * cont.y + livecwind.sy), widgetsize), 0.00001, widgetsize);
       }
-        
       
     } else if(pms.settingmode == SETTING_AXISCHOOSE) {
       StandardButtonRenderData sbrd;

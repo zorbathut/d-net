@@ -12,25 +12,22 @@ class Game;
 class Player;
   
 class GameAiAxisRotater : public GameAi { // todo: get this dependency out
-public:
+private:
   class Config {
   public:
+    int type;
+  
     bool ax[2];
-  
-    Config() { };
-    Config(bool in_ax0, bool in_ax1) {
-      ax[0] = in_ax0;
-      ax[1] = in_ax1;
-    }
   };
-  
-private:
+
   class Randomater {
-    int current;
+    float current;
     int fleft;
     
   public:
-    int next();
+    bool smooth;
+  
+    float next();
     Randomater();
   };
   
@@ -39,16 +36,17 @@ private:
   
   Config config;
 
-  int ax_type;
-
   void updateGameWork(const vector<Tank> &players, int me);
   void updateBombardmentWork(const vector<Tank> &players, Coord2 mypos);
 public:
   
+  static Config steeringConfig(bool ax0, bool ax1);
+  static Config absoluteConfig();
+  
   void updateConfig(const Config &conf);
   Float2 getControls() const;
 
-  GameAiAxisRotater(const Config &conf, int in_ax_type);
+  GameAiAxisRotater(const Config &conf);
 };
 
 class FactionState {
