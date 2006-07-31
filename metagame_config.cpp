@@ -109,6 +109,8 @@ void PlayerMenuState::createNewAxistypeDemo() {
   
   setting_axistype_demo_game.reset(new Game());
   setting_axistype_demo_game->initCenteredDemo(setting_axistype_demo_player.get(), 50);
+  
+  setting_axistype_demo_ai.reset(new GameAiAxisRotater(GameAiAxisRotater::Config(false, false), KSAX_STEERING));
 }
 
 bool PlayerMenuState::readyToPlay() const {
@@ -342,7 +344,7 @@ GameAiAxisRotater::Randomater::Randomater() {
 
 void GameAiAxisRotater::updateGameWork(const vector<Tank> &players, int me) {
   for(int i = 0; i < 2; i++) {
-    if(listen[i])
+    if(config.ax[i])
       next[i] = approach(next[i], rands[i].next(), 0.05);
     else
       next[i] = approach(next[i], 0, 0.05);
@@ -358,11 +360,14 @@ void GameAiAxisRotater::updateBombardmentWork(const vector<Tank> &players, Coord
   CHECK(0);
 }
 
-GameAiAxisRotater::GameAiAxisRotater(bool in_axis0, bool in_axis1, int in_ax_type) {
+void GameAiAxisRotater::updateConfig(const Config &conf) {
+  config = conf;
+}
+
+GameAiAxisRotater::GameAiAxisRotater(const GameAiAxisRotater::Config &conf, int in_ax_type) {
   rands.resize(2);
   next.resize(2, 0.);
-  listen.push_back(in_axis0);
-  listen.push_back(in_axis1);
+  config = conf;
   ax_type = in_ax_type;
 };
 
@@ -577,11 +582,11 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
       if(categ == -1) {
         pms->setting_axistype_demo_ai.reset();
       } else if(categ == KSAX_STEERING && pms->setting_axistype_demo_curframe == 0) {
-        pms->setting_axistype_demo_ai.reset(new GameAiAxisRotater(false, true, categ));
+        pms->setting_axistype_demo_ai->updateConfig(GameAiAxisRotater::Config(false, true));
       } else if(categ == KSAX_STEERING && pms->setting_axistype_demo_curframe == 1) {
-        pms->setting_axistype_demo_ai.reset(new GameAiAxisRotater(true, false, categ));
+        pms->setting_axistype_demo_ai->updateConfig(GameAiAxisRotater::Config(true, false));
       } else if(categ == KSAX_STEERING && pms->setting_axistype_demo_curframe == 2) {
-        pms->setting_axistype_demo_ai.reset(new GameAiAxisRotater(true, true, categ));
+        pms->setting_axistype_demo_ai->updateConfig(GameAiAxisRotater::Config(true, true));
       } else if(categ == KSAX_STEERING && pms->setting_axistype_demo_curframe == 3) {
         pms->setting_axistype_demo_curframe = -1;
         pms->setting_axistype_demo_ai.reset();
