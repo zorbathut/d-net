@@ -1635,11 +1635,12 @@ void Game::initCenteredDemo(Player *in_playerdata, float zoom) {
   
   Level lev;  
   {
+    const float size = 100;
     vector<Coord2> path;
-    path.push_back(Coord2(-1000, -1000));
-    path.push_back(Coord2(-1000, 1000));
-    path.push_back(Coord2(1000, 1000));
-    path.push_back(Coord2(1000, -1000));
+    path.push_back(Coord2(-size, -size));
+    path.push_back(Coord2(-size, size));
+    path.push_back(Coord2(size, size));
+    path.push_back(Coord2(size, -size));
     lev.paths.push_back(path);
   }
   
