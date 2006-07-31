@@ -870,7 +870,8 @@ void runSettingRender(const PlayerMenuState &pms) {
       } else if(pms.setting_axistype_curchoice / 2 == KSAX_TANK && pms.setting_axistype_demo_curframe == 2) {
         drawText("Move both sticks", rin.textsize, rin.xstart, rin.ystarts[1]);
         drawText("forward to move", rin.textsize, rin.xstart, rin.ystarts[2]);
-        drawText("your tank forward.", rin.textsize, rin.xstart, rin.ystarts[3]);
+        drawText("your tank", rin.textsize, rin.xstart, rin.ystarts[3]);
+        drawText("forward.", rin.textsize, rin.xstart, rin.ystarts[4]);
       } else if(pms.setting_axistype_curchoice / 2 == KSAX_TANK && pms.setting_axistype_demo_curframe == 3) {
         drawText("Experiment with", rin.textsize, rin.xstart, rin.ystarts[1]);
         drawText("tank mode for", rin.textsize, rin.xstart, rin.ystarts[2]);
@@ -889,17 +890,25 @@ void runSettingRender(const PlayerMenuState &pms) {
         drawJustifiedText("Push accept to continue", rin.textsize, (rin.xstart + rin.xend) / 2, rin.ystarts[7], TEXT_CENTER, TEXT_MIN);
       }
       
+      const float widgetsize = 0.005;
+      Float2 cont = pms.setting_axistype_demo_ai->getControls();
+      cont.x += 1;
+      cont.y += 1;
+      cont /= 2;
+    
       setColor(C::gray(1.0) * fadeFactor);
-      if(true || pms.setting_axistype_curchoice / 2 == KSAX_STEERING || pms.setting_axistype_curchoice / 2 == KSAX_ABSOLUTE) {
+      if(pms.setting_axistype_curchoice / 2 == KSAX_STEERING || pms.setting_axistype_curchoice / 2 == KSAX_ABSOLUTE) {
         drawRect(controllerwindow, 0.0001);
-        Float2 cont = pms.setting_axistype_demo_ai->getControls();
-        const float widgetsize = 0.005;
         const Float4 livecwind = Float4(controllerwindow.sx + widgetsize, controllerwindow.sy + widgetsize, controllerwindow.ex - widgetsize, controllerwindow.ey - widgetsize);
-        cont.y *= -1;
-        cont.x += 1;
-        cont.y += 1;
-        cont /= 2;
-        drawShadedRect(boxAround(Float2((livecwind.ex - livecwind.sx) * cont.x + livecwind.sx, (livecwind.ey - livecwind.sy) * cont.y + livecwind.sy), widgetsize), 0.00001, widgetsize);
+        drawShadedRect(boxAround(Float2((livecwind.ex - livecwind.sx) * cont.x + livecwind.sx, (livecwind.sy - livecwind.ey) * cont.y + livecwind.ey), widgetsize), 0.00001, widgetsize);
+      } else if(pms.setting_axistype_curchoice / 2 == KSAX_TANK) {
+        const float xshift = widgetsize * 5;
+        const float ys = controllerwindow.sy + widgetsize;
+        const float ye = controllerwindow.ey - widgetsize;
+        drawRect(Float4(controllerwindow.ex - xshift, controllerwindow.sy, controllerwindow.ex - xshift + widgetsize, controllerwindow.ey), 0.0001);
+        drawRect(Float4(controllerwindow.ex - widgetsize, controllerwindow.sy, controllerwindow.ex, controllerwindow.ey), 0.0001);
+        drawShadedRect(boxAround(Float2(controllerwindow.ex - xshift + widgetsize / 2, (ys - ye) * cont.x + ye), widgetsize), 0.00001, widgetsize);
+        drawShadedRect(boxAround(Float2(controllerwindow.ex - widgetsize / 2, (ys - ye) * cont.y + ye), widgetsize), 0.00001, widgetsize);
       } else {
         CHECK(0);
       }
