@@ -319,62 +319,51 @@ void standardButtonRender(const StandardButtonRenderData &sbrd) {
   CHECK(cy <= sbrd.rin->ystarts.size());
 }
 
-class GameAiAxisRotater : public GameAi {
-private:
-  class Randomater {
-    int current;
-    int fleft;
-    
-  public:
-    int next() {
-      if(fleft <= 0) {
-        vector<int> opts;
-        opts.push_back(1);
-        opts.push_back(0);
-        opts.push_back(-1);
-        opts.erase(find(opts.begin(), opts.end(), current));
-        current = opts[int(frand() * 2)];
-        fleft = int(frand() * 120 + 120);
-        if(current == 0)
-          fleft /= 2;
-      }
-      fleft--;
-      return current;
-    }
-    Randomater() {
-      current = 0;
-      fleft = 0;
-    }
-  };
+int GameAiAxisRotater::Randomater::next() {
+  if(fleft <= 0) {
+    vector<int> opts;
+    opts.push_back(1);
+    opts.push_back(0);
+    opts.push_back(-1);
+    opts.erase(find(opts.begin(), opts.end(), current));
+    current = opts[int(frand() * 2)];
+    fleft = int(frand() * 120 + 120);
+    if(current == 0)
+      fleft /= 2;
+  }
+  fleft--;
+  return current;
+}
+
+GameAiAxisRotater::Randomater::Randomater() {
+  current = 0;
+  fleft = 0;
+}
+
+void GameAiAxisRotater::updateGameWork(const vector<Tank> &players, int me) {
+  for(int i = 0; i < 2; i++) {
+    if(listen[i])
+      next[i] = approach(next[i], rands[i].next(), 0.05);
+    else
+      next[i] = approach(next[i], 0, 0.05);
+  }
   
-  vector<Randomater> rands;
-  vector<bool> listen;
+  nextKeys.udlrax.x = next[0];
+  nextKeys.udlrax.y = next[1];
 
-  int ax_type;
+  nextKeys.axmode = ax_type;
+}
 
-  void updateGameWork(const vector<Tank> &players, int me) {
-    for(int i = 0; i < 2; i++) {
-      float *v;
-      if(i == 0)
-        v = &nextKeys.udlrax.x;
-      else
-        v = &nextKeys.udlrax.y;
-      if(listen[i])
-        *v = rands[i].next();
-    }
-    nextKeys.axmode = ax_type;
-  }
-  void updateBombardmentWork(const vector<Tank> &players, Coord2 mypos) {
-    CHECK(0);
-  }
+void GameAiAxisRotater::updateBombardmentWork(const vector<Tank> &players, Coord2 mypos) {
+  CHECK(0);
+}
 
-public:
-  GameAiAxisRotater(bool in_axis0, bool in_axis1, int in_ax_type) {
-    rands.resize(2);
-    listen.push_back(in_axis0);
-    listen.push_back(in_axis1);
-    ax_type = in_ax_type;
-  };
+GameAiAxisRotater::GameAiAxisRotater(bool in_axis0, bool in_axis1, int in_ax_type) {
+  rands.resize(2);
+  next.resize(2, 0.);
+  listen.push_back(in_axis0);
+  listen.push_back(in_axis1);
+  ax_type = in_ax_type;
 };
 
 void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<FactionState> &factions) {
@@ -576,6 +565,7 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
     
     // oh yeah real hacky now
     if(pms->setting_axistype_demo_curframe != pms->setting_axistype_demo_aiframe) {
+      StackString sstr("aiinit");
       int categ;
       if(pms->setting_axistype_curchoice % 2 == 0) {
         CHECK(pms->setting_axistype_demo_curframe == -1);
@@ -592,6 +582,11 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
         pms->setting_axistype_demo_ai.reset(new GameAiAxisRotater(true, false, categ));
       } else if(categ == KSAX_STEERING && pms->setting_axistype_demo_curframe == 2) {
         pms->setting_axistype_demo_ai.reset(new GameAiAxisRotater(true, true, categ));
+      } else if(categ == KSAX_STEERING && pms->setting_axistype_demo_curframe == 3) {
+        pms->setting_axistype_demo_curframe = -1;
+        pms->setting_axistype_demo_ai.reset();
+        pms->setting_axistype_demo_player.reset();
+        pms->setting_axistype_demo_game.reset();
       } else {
         CHECK(0);
       }
@@ -600,6 +595,7 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
     
     // wooooo go hack
     if(!pms->setting_axistype_demo_ai.empty()) {
+      StackString sstr("run");
       CHECK(!pms->setting_axistype_demo_game.empty());
       CHECK(!pms->setting_axistype_demo_player.empty());
       

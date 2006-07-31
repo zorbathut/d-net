@@ -3,13 +3,37 @@
 
 #include "input.h"
 #include "itemdb.h"
+#include "game_ai.h"
 
 using namespace std;
 
 // These are only really used for the "test" screen, and I don't want this to be considered a "full dependency" because it kind of isn't.
 class Game;
 class Player;
-class GameAi;
+  
+class GameAiAxisRotater : public GameAi { // todo: get this dependency out
+private:
+  class Randomater {
+    int current;
+    int fleft;
+    
+  public:
+    int next();
+    Randomater();
+  };
+  
+  vector<Randomater> rands;
+  vector<bool> listen;
+  vector<float> next;
+
+  int ax_type;
+
+  void updateGameWork(const vector<Tank> &players, int me);
+  void updateBombardmentWork(const vector<Tank> &players, Coord2 mypos);
+
+public:
+  GameAiAxisRotater(bool in_axis0, bool in_axis1, int in_ax_type);
+};
 
 class FactionState {
 public:
@@ -48,7 +72,7 @@ public:
   int setting_axistype_demo_aiframe;
   smart_ptr<Game> setting_axistype_demo_game;
   smart_ptr<Player> setting_axistype_demo_player;
-  smart_ptr<GameAi> setting_axistype_demo_ai;
+  smart_ptr<GameAiAxisRotater> setting_axistype_demo_ai;
   void createNewAxistypeDemo();
 
   smart_ptr<Game> test_game;
