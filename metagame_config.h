@@ -18,6 +18,7 @@ private:
     int type;
   
     bool ax[2];
+    int tax[2];
   };
 
   class Randomater {
@@ -42,6 +43,7 @@ public:
   
   static Config steeringConfig(bool ax0, bool ax1);
   static Config absoluteConfig();
+  static Config tankConfig(int axlsrc, int axrsrc);
   
   void updateConfig(const Config &conf);
   Float2 getControls() const;

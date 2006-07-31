@@ -365,6 +365,14 @@ void GameAiAxisRotater::updateGameWork(const vector<Tank> &players, int me) {
     Float2 ps = makeAngle(rands[0].next() * PI);
     next[0] = approach(next[0], ps.x, 0.05);
     next[1] = approach(next[1], ps.y, 0.05);
+  } else if(config.type == KSAX_TANK) {
+    CHECK(rands.size() == 2);
+    for(int i = 0; i < 2; i++) {
+      if(config.tax[i] == -1)
+        next[i] = approach(next[i], 0, 0.05);
+      else
+        next[i] = approach(next[i], rands[config.tax[i]].next(), 0.05);
+    }
   } else {
     CHECK(0);
   }
@@ -380,7 +388,7 @@ void GameAiAxisRotater::updateBombardmentWork(const vector<Tank> &players, Coord
 
 void GameAiAxisRotater::updateConfig(const Config &conf) {
   config = conf;
-  if(config.type == KSAX_STEERING) {
+  if(config.type == KSAX_STEERING || config.type == KSAX_TANK) {
     rands.resize(2);
     rands[0].smooth = false;
     rands[1].smooth = false;
@@ -402,8 +410,15 @@ GameAiAxisRotater::Config GameAiAxisRotater::steeringConfig(bool ax0, bool ax1) 
 GameAiAxisRotater::Config GameAiAxisRotater::absoluteConfig() {
   Config conf;
   conf.type = KSAX_ABSOLUTE;
-  conf.ax[0] = true;
-  conf.ax[1] = true;
+  return conf;
+}
+GameAiAxisRotater::Config GameAiAxisRotater::tankConfig(int axlsrc, int axrsrc) {
+  Config conf;
+  conf.type = KSAX_TANK;
+  conf.tax[0] = axlsrc;
+  conf.tax[1] = axrsrc;
+  for(int i = 0; i < 2; i++)
+    CHECK(conf.tax[i] >= -1 && conf.tax[i] < 2);
   return conf;
 }
 
@@ -414,7 +429,7 @@ Float2 GameAiAxisRotater::getControls() const {
 GameAiAxisRotater::GameAiAxisRotater(const GameAiAxisRotater::Config &conf) {
   next.resize(2, 0.);
   updateConfig(conf);
-};
+}
 
 void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<FactionState> &factions) {
   StackString sstr("runSettingTick");
@@ -645,6 +660,19 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
         pms->setting_axistype_demo_ai.reset();
         pms->setting_axistype_demo_player.reset();
         pms->setting_axistype_demo_game.reset();
+      } else if(categ == KSAX_TANK && pms->setting_axistype_demo_curframe == 0) {
+        pms->setting_axistype_demo_ai->updateConfig(GameAiAxisRotater::tankConfig(0, -1));
+      } else if(categ == KSAX_TANK && pms->setting_axistype_demo_curframe == 1) {
+        pms->setting_axistype_demo_ai->updateConfig(GameAiAxisRotater::tankConfig(-1, 1));
+      } else if(categ == KSAX_TANK && pms->setting_axistype_demo_curframe == 2) {
+        pms->setting_axistype_demo_ai->updateConfig(GameAiAxisRotater::tankConfig(1, 1));
+      } else if(categ == KSAX_TANK && pms->setting_axistype_demo_curframe == 3) {
+        pms->setting_axistype_demo_ai->updateConfig(GameAiAxisRotater::tankConfig(0, 1));
+      } else if(categ == KSAX_TANK && pms->setting_axistype_demo_curframe == 4) {
+        pms->setting_axistype_demo_curframe = -1;
+        pms->setting_axistype_demo_ai.reset();
+        pms->setting_axistype_demo_player.reset();
+        pms->setting_axistype_demo_game.reset();
       } else {
         CHECK(0);
       }
@@ -811,38 +839,58 @@ void runSettingRender(const PlayerMenuState &pms) {
         drawText("forward and", rin.textsize, rin.xstart, rin.ystarts[2]);
         drawText("back to drive", rin.textsize, rin.xstart, rin.ystarts[3]);
         drawText("forward and", rin.textsize, rin.xstart, rin.ystarts[4]);
-        drawText("back", rin.textsize, rin.xstart, rin.ystarts[5]);
-      } else if(pms.setting_axistype_curchoice / 2 == KSAX_STEERING && pms.setting_axistype_demo_curframe == 1) {      
+        drawText("back.", rin.textsize, rin.xstart, rin.ystarts[5]);
+      } else if(pms.setting_axistype_curchoice / 2 == KSAX_STEERING && pms.setting_axistype_demo_curframe == 1) {
         drawText("Move controller", rin.textsize, rin.xstart, rin.ystarts[1]);
         drawText("side to side", rin.textsize, rin.xstart, rin.ystarts[2]);
-        drawText("to turn", rin.textsize, rin.xstart, rin.ystarts[3]);
-      } else if(pms.setting_axistype_curchoice / 2 == KSAX_STEERING && pms.setting_axistype_demo_curframe == 2) {      
+        drawText("to turn.", rin.textsize, rin.xstart, rin.ystarts[3]);
+      } else if(pms.setting_axistype_curchoice / 2 == KSAX_STEERING && pms.setting_axistype_demo_curframe == 2) {
         drawText("Combine these", rin.textsize, rin.xstart, rin.ystarts[1]);
-        drawText("to drive around", rin.textsize, rin.xstart, rin.ystarts[2]);
+        drawText("to drive around.", rin.textsize, rin.xstart, rin.ystarts[2]);
       } else if(pms.setting_axistype_curchoice / 2 == KSAX_ABSOLUTE && pms.setting_axistype_demo_curframe == 0) {
         drawText("Move controller", rin.textsize, rin.xstart, rin.ystarts[1]);
         drawText("towards where", rin.textsize, rin.xstart, rin.ystarts[2]);
         drawText("you want the", rin.textsize, rin.xstart, rin.ystarts[3]);
         drawText("tank to go.", rin.textsize, rin.xstart, rin.ystarts[4]);
-      } else if(pms.setting_axistype_curchoice / 2 == KSAX_ABSOLUTE && pms.setting_axistype_demo_curframe == 1) {      
+      } else if(pms.setting_axistype_curchoice / 2 == KSAX_ABSOLUTE && pms.setting_axistype_demo_curframe == 1) {
         drawText("The computer", rin.textsize, rin.xstart, rin.ystarts[1]);
         drawText("will try to", rin.textsize, rin.xstart, rin.ystarts[2]);
         drawText("turn your tank", rin.textsize, rin.xstart, rin.ystarts[3]);
         drawText("in that direction.", rin.textsize, rin.xstart, rin.ystarts[4]);
+      } else if(pms.setting_axistype_curchoice / 2 == KSAX_TANK && pms.setting_axistype_demo_curframe == 0) {
+        drawText("Control treads", rin.textsize, rin.xstart, rin.ystarts[1]);
+        drawText("independently.", rin.textsize, rin.xstart, rin.ystarts[2]);
+        drawText("Your left stick", rin.textsize, rin.xstart, rin.ystarts[3]);
+        drawText("moves your left", rin.textsize, rin.xstart, rin.ystarts[4]);
+        drawText("tank tread.", rin.textsize, rin.xstart, rin.ystarts[5]);
+      } else if(pms.setting_axistype_curchoice / 2 == KSAX_TANK && pms.setting_axistype_demo_curframe == 1) {
+        drawText("Your right stick", rin.textsize, rin.xstart, rin.ystarts[1]);
+        drawText("moves your right", rin.textsize, rin.xstart, rin.ystarts[2]);
+        drawText("tank tread.", rin.textsize, rin.xstart, rin.ystarts[3]);
+      } else if(pms.setting_axistype_curchoice / 2 == KSAX_TANK && pms.setting_axistype_demo_curframe == 2) {
+        drawText("Move both sticks", rin.textsize, rin.xstart, rin.ystarts[1]);
+        drawText("forward to move", rin.textsize, rin.xstart, rin.ystarts[2]);
+        drawText("your tank forward.", rin.textsize, rin.xstart, rin.ystarts[3]);
+      } else if(pms.setting_axistype_curchoice / 2 == KSAX_TANK && pms.setting_axistype_demo_curframe == 3) {
+        drawText("Experiment with", rin.textsize, rin.xstart, rin.ystarts[1]);
+        drawText("tank mode for", rin.textsize, rin.xstart, rin.ystarts[2]);
+        drawText("very precise", rin.textsize, rin.xstart, rin.ystarts[3]);
+        drawText("tank control.", rin.textsize, rin.xstart, rin.ystarts[4]);
       } else {
         CHECK(0);
       }
       
       setColor(C::active_text * fadeFactor);
       if(pms.setting_axistype_curchoice / 2 == KSAX_STEERING && pms.setting_axistype_demo_curframe == 2 ||
-         pms.setting_axistype_curchoice / 2 == KSAX_ABSOLUTE && pms.setting_axistype_demo_curframe == 1) {
+         pms.setting_axistype_curchoice / 2 == KSAX_ABSOLUTE && pms.setting_axistype_demo_curframe == 1 ||
+         pms.setting_axistype_curchoice / 2 == KSAX_TANK && pms.setting_axistype_demo_curframe == 3) {
         drawJustifiedText("Push accept to return", rin.textsize, (rin.xstart + rin.xend) / 2, rin.ystarts[7], TEXT_CENTER, TEXT_MIN);
       } else {
         drawJustifiedText("Push accept to continue", rin.textsize, (rin.xstart + rin.xend) / 2, rin.ystarts[7], TEXT_CENTER, TEXT_MIN);
       }
       
       setColor(C::gray(1.0) * fadeFactor);
-      if(pms.setting_axistype_curchoice / 2 == KSAX_STEERING || pms.setting_axistype_curchoice / 2 == KSAX_ABSOLUTE) {
+      if(true || pms.setting_axistype_curchoice / 2 == KSAX_STEERING || pms.setting_axistype_curchoice / 2 == KSAX_ABSOLUTE) {
         drawRect(controllerwindow, 0.0001);
         Float2 cont = pms.setting_axistype_demo_ai->getControls();
         const float widgetsize = 0.005;
@@ -852,6 +900,8 @@ void runSettingRender(const PlayerMenuState &pms) {
         cont.y += 1;
         cont /= 2;
         drawShadedRect(boxAround(Float2((livecwind.ex - livecwind.sx) * cont.x + livecwind.sx, (livecwind.ey - livecwind.sy) * cont.y + livecwind.sy), widgetsize), 0.00001, widgetsize);
+      } else {
+        CHECK(0);
       }
       
     } else if(pms.settingmode == SETTING_AXISCHOOSE) {
