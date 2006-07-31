@@ -654,15 +654,14 @@ void drawSpokes(float x, float y, int dupes, int numer, int denom, float len, fl
   }
 }
 
+static float roundUpGrid(float val, float spacing) {
+  return ceil(val / spacing) * spacing;
+};
+
 void drawGrid(float spacing, float size) {
-  CHECK(map_sx <= 0 && map_ex >= 0 && map_sy <= 0 && map_ey >= 0);
-  for(float s = 0; s < map_ex; s += spacing)
+  for(float s = roundUpGrid(map_sx, spacing); s < roundUpGrid(map_ex, spacing); s += spacing)
     drawLine(s, map_sy, s, map_ey, size);
-  for(float s = -spacing; s > map_sx; s -= spacing)
-    drawLine(s, map_sy, s, map_ey, size);
-  for(float s = 0; s < map_ey; s += spacing)
-    drawLine(map_sx, s, map_ex, s, size);
-  for(float s = -spacing; s > map_sy; s -= spacing)
+  for(float s = roundUpGrid(map_sy, spacing); s < roundUpGrid(map_ey, spacing); s += spacing)
     drawLine(map_sx, s, map_ex, s, size);
 }
 

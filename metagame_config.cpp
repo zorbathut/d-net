@@ -108,7 +108,7 @@ void PlayerMenuState::createNewAxistypeDemo() {
   boundy *= (100 / mn);
   
   setting_axistype_demo_game.reset(new Game());
-  setting_axistype_demo_game->initCenteredDemo(setting_axistype_demo_player.get(), 20);
+  setting_axistype_demo_game->initCenteredDemo(setting_axistype_demo_player.get(), 50);
 }
 
 bool PlayerMenuState::readyToPlay() const {

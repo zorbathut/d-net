@@ -1087,12 +1087,20 @@ void drawCrosses(const Coord2 &cloc, float rad) {
 
 void Game::renderToScreen() const {
 
-  const float availScreen = ((gamemode == GMODE_TEST || gamemode == GMODE_DEMO || gamemode == GMODE_CENTERED_DEMO)? 1.0 : 0.9);
-  const float pzoom = max(zoom_size.y / availScreen, zoom_size.x / getAspect());
-  // Set up zooming for everything that happens in gamespace
-  {
-    Float2 origin(zoom_center.x - pzoom * getAspect() / 2, zoom_center.y - pzoom * (1.0 - availScreen / 2));
-    setZoom(origin.x, origin.y, origin.y + pzoom);
+  if(gamemode != GMODE_CENTERED_DEMO) {
+    const float availScreen = ((gamemode == GMODE_TEST || gamemode == GMODE_DEMO) ? 1.0 : 0.9);
+    const float pzoom = max(zoom_size.y / availScreen, zoom_size.x / getAspect());
+    // Set up zooming for everything that happens in gamespace
+    {
+      Float2 origin(zoom_center.x - pzoom * getAspect() / 2, zoom_center.y - pzoom * (1.0 - availScreen / 2));
+      setZoom(origin.x, origin.y, origin.y + pzoom);
+    }
+  } else {
+    CHECK(tanks[0].live);
+    setZoom(tanks[0].pos.x.toFloat() - centereddemo_zoom / 2, tanks[0].pos.y.toFloat() - centereddemo_zoom / 2, tanks[0].pos.y.toFloat() + centereddemo_zoom / 2);
+    
+    setColor(C::gray(0.5));
+    drawGrid(10, 0.1);
   }
   
   // In demo mode, clear the background
