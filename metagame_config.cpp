@@ -735,8 +735,36 @@ void runSettingRender(const PlayerMenuState &pms) {
     } else if(pms.settingmode == SETTING_AXISTYPE && pms.setting_axistype_demo_curframe != -1) {
       
       CHECK(!pms.setting_axistype_demo_game.empty());
-      GfxWindow gfxw(Float4(rin.xend - (rin.ystarts[7] - rin.ystarts[1]), rin.ystarts[1], rin.xend, rin.ystarts[7]), fadeFactor);
-      pms.setting_axistype_demo_game->renderToScreen();
+      {
+        GfxWindow gfxw(Float4(rin.xend - (rin.ystarts[7] - rin.ystarts[1]), rin.ystarts[1], rin.xend, rin.ystarts[7]), fadeFactor);
+        pms.setting_axistype_demo_game->renderToScreen();
+      }
+      
+      setColor(C::inactive_text * fadeFactor);
+      if(pms.setting_axistype_curchoice / 2 == KSAX_STEERING && pms.setting_axistype_demo_curframe == 0) {
+        drawText("Move controller", rin.textsize, rin.xstart, rin.ystarts[1]);
+        drawText("forward and", rin.textsize, rin.xstart, rin.ystarts[2]);
+        drawText("back to drive", rin.textsize, rin.xstart, rin.ystarts[3]);
+        drawText("forward and", rin.textsize, rin.xstart, rin.ystarts[4]);
+        drawText("back", rin.textsize, rin.xstart, rin.ystarts[5]);
+      } else if(pms.setting_axistype_curchoice / 2 == KSAX_STEERING && pms.setting_axistype_demo_curframe == 1) {      
+        drawText("Move controller", rin.textsize, rin.xstart, rin.ystarts[1]);
+        drawText("side to side", rin.textsize, rin.xstart, rin.ystarts[2]);
+        drawText("to turn", rin.textsize, rin.xstart, rin.ystarts[3]);
+      } else if(pms.setting_axistype_curchoice / 2 == KSAX_STEERING && pms.setting_axistype_demo_curframe == 2) {      
+        drawText("Combine these", rin.textsize, rin.xstart, rin.ystarts[1]);
+        drawText("to drive around", rin.textsize, rin.xstart, rin.ystarts[2]);
+      } else {
+        CHECK(0);
+      }
+      
+      setColor(C::active_text * fadeFactor);
+      if(pms.setting_axistype_demo_curframe != 2) {
+        drawJustifiedText("Push accept to continue", rin.textsize, (rin.xstart + rin.xend) / 2, rin.ystarts[7], TEXT_CENTER, TEXT_MIN);
+      } else {
+        drawJustifiedText("Push accept to return", rin.textsize, (rin.xstart + rin.xend) / 2, rin.ystarts[7], TEXT_CENTER, TEXT_MIN);
+      }
+      
     } else if(pms.settingmode == SETTING_AXISCHOOSE) {
       StandardButtonRenderData sbrd;
       sbrd.rin = &rin;
