@@ -308,9 +308,15 @@ pair<Coord2, float> Tank::getNextPosition(const Keystates &keys) const {
 
 bool Tank::takeDamage(float damage) {
   health -= damage;
-  damageTaken += damage;
-  if(framesSinceDamage == -1)
+  
+  // We halve the first "damage" to do a better job of estimating damage.
+  if(framesSinceDamage == -1) {
     framesSinceDamage = 0;
+    damageTaken += damage / 2;
+  } else {
+    damageTaken += damage;
+  }
+  
   if(health <= 0 && live) {
     live = false;
     spawnShards = true;
