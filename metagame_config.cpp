@@ -321,33 +321,47 @@ void standardButtonRender(const StandardButtonRenderData &sbrd) {
 
 class GameAiAxisRotater : public GameAi {
 private:
+  class Randomater {
+    int current;
+    int fleft;
+    
+  public:
+    int next() {
+      if(fleft <= 0) {
+        vector<int> opts;
+        opts.push_back(1);
+        opts.push_back(0);
+        opts.push_back(-1);
+        opts.erase(find(opts.begin(), opts.end(), current));
+        current = opts[int(frand() * 2)];
+        fleft = int(frand() * 120 + 120);
+        if(current == 0)
+          fleft /= 2;
+      }
+      fleft--;
+      return current;
+    }
+    Randomater() {
+      current = 0;
+      fleft = 0;
+    }
+  };
+  
+  vector<Randomater> rands;
+  vector<bool> listen;
+
   int ax_type;
-  int target_ax;
-  int frames;
 
   void updateGameWork(const vector<Tank> &players, int me) {
-    frames++;
-    float speed;
-    if(frames / 180 % 4 == 0) {
-      speed = 1;
-    } else if(frames / 180 % 4 == 1) {
-      speed = 0;
-    } else if(frames / 180 % 4 == 2) {
-      speed = -1;
-    } else if(frames / 180 % 4 == 3) {
-      speed = 0;
-    } else {
-      CHECK(0);
+    for(int i = 0; i < 2; i++) {
+      float *v;
+      if(i == 0)
+        v = &nextKeys.udlrax.x;
+      else
+        v = &nextKeys.udlrax.y;
+      if(listen[i])
+        *v = rands[i].next();
     }
-    
-    if(target_ax == 0) {
-      nextKeys.udlrax.x = speed;
-    } else if(target_ax == 1) {
-      nextKeys.udlrax.y = speed;
-    } else {
-      CHECK(0);
-    }
-    
     nextKeys.axmode = ax_type;
   }
   void updateBombardmentWork(const vector<Tank> &players, Coord2 mypos) {
@@ -355,10 +369,10 @@ private:
   }
 
 public:
-  GameAiAxisRotater(int in_target_ax, int in_ax_type) {
-    CHECK(in_target_ax >= 0 && in_target_ax < 2);
-    target_ax = in_target_ax;
-    frames = 0;
+  GameAiAxisRotater(bool in_axis0, bool in_axis1, int in_ax_type) {
+    rands.resize(2);
+    listen.push_back(in_axis0);
+    listen.push_back(in_axis1);
     ax_type = in_ax_type;
   };
 };
@@ -573,7 +587,11 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
       if(categ == -1) {
         pms->setting_axistype_demo_ai.reset();
       } else if(categ == KSAX_STEERING && pms->setting_axistype_demo_curframe == 0) {
-        pms->setting_axistype_demo_ai.reset(new GameAiAxisRotater(1, categ));
+        pms->setting_axistype_demo_ai.reset(new GameAiAxisRotater(false, true, categ));
+      } else if(categ == KSAX_STEERING && pms->setting_axistype_demo_curframe == 1) {
+        pms->setting_axistype_demo_ai.reset(new GameAiAxisRotater(true, false, categ));
+      } else if(categ == KSAX_STEERING && pms->setting_axistype_demo_curframe == 2) {
+        pms->setting_axistype_demo_ai.reset(new GameAiAxisRotater(true, true, categ));
       } else {
         CHECK(0);
       }
