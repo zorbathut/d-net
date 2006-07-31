@@ -27,6 +27,8 @@ public:
   Float4 newbounds;
 
   GfxWindow *gfxw;
+
+  void setScissor() const;
 };
 static vector<GfxWindowState> windows;
 
@@ -225,6 +227,7 @@ void initFrame() {
   CHECK(curWeight == -1.f);
   glEnable(GL_POINT_SMOOTH);
   glEnable(GL_LINE_SMOOTH);
+  glEnable(GL_SCISSOR_TEST);
   glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
   glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
   //glHint(GL_LINE_SMOOTH_HINT, GL_FASTEST);
@@ -271,7 +274,9 @@ GfxWindow::GfxWindow(const Float4 &bounds, float fade) {
   
   windows.push_back(gfws);
   
-  // We should also be making the opengl window call here, but for now I am lazy
+  finishLineCluster();
+  
+  windows.back().setScissor();
 }
 GfxWindow::~GfxWindow() {
   CHECK(windows.size() > 1);
@@ -281,6 +286,16 @@ GfxWindow::~GfxWindow() {
   float tmap_ey = windows.back().saved_ey;
   windows.pop_back();
   setZoom(tmap_sx, tmap_sy, tmap_ey);
+  
+  windows.back().setScissor();
+}
+
+void GfxWindowState::setScissor() const { // yes, the Y's are correct - the screen coordinates are (0,0)-(1,1.3333).
+  int sx = int(getResolutionY() * newbounds.sx);
+  int sy = int(getResolutionY() * newbounds.sy);
+  int ex = int(ceil(getResolutionY() * newbounds.ex));
+  int ey = int(ceil(getResolutionY() * newbounds.ey));
+  glScissor(sx, getResolutionY() - ey, ex - sx, ey - sy);
 }
 
 /*************
