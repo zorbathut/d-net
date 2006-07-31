@@ -28,6 +28,7 @@ public:
   vector<float> ystarts;
 
   float textsize;
+  float textborder;
     
   RenderInfo(const Float4 &in_dz) {
     drawzone = in_dz;    
@@ -42,6 +43,7 @@ public:
     textsize = unitsize * textline_size;
     for(int i = 1; i < textline_count; i++)
       ystarts[i] = drawzone.sy + unitsize * (border_size + divider_size + i - 1) + textsize * i;
+    textborder = textsize / textline_size;
   }
 };
 
@@ -350,8 +352,7 @@ void GameAiAxisRotater::updateGameWork(const vector<Tank> &players, int me) {
       next[i] = approach(next[i], 0, 0.05);
   }
   
-  nextKeys.udlrax.x = next[0];
-  nextKeys.udlrax.y = next[1];
+  nextKeys.udlrax = getControls();
 
   nextKeys.axmode = ax_type;
 }
@@ -362,6 +363,10 @@ void GameAiAxisRotater::updateBombardmentWork(const vector<Tank> &players, Coord
 
 void GameAiAxisRotater::updateConfig(const Config &conf) {
   config = conf;
+}
+
+Float2 GameAiAxisRotater::getControls() const {
+  return Float2(next[0], next[1]);
 }
 
 GameAiAxisRotater::GameAiAxisRotater(const GameAiAxisRotater::Config &conf, int in_ax_type) {
@@ -734,9 +739,14 @@ void runSettingRender(const PlayerMenuState &pms) {
       }
     } else if(pms.settingmode == SETTING_AXISTYPE && pms.setting_axistype_demo_curframe != -1) {
       
+      const float demowindowwidth = rin.ystarts[6] - rin.ystarts[1] + rin.textsize;
+      const Float4 demowindow = Float4(rin.xend - demowindowwidth, rin.ystarts[1], rin.xend, rin.ystarts[1] + demowindowwidth);
+      const float controllerwindowwidth = rin.ystarts[6] - rin.ystarts[5] + rin.textsize;
+      const Float4 controllerwindow = Float4(demowindow.sx - rin.textborder - controllerwindowwidth, rin.ystarts[5], demowindow.sx - rin.textborder, rin.ystarts[5] + controllerwindowwidth);
+      
       CHECK(!pms.setting_axistype_demo_game.empty());
       {
-        GfxWindow gfxw(Float4(rin.xend - (rin.ystarts[7] - rin.ystarts[1]), rin.ystarts[1], rin.xend, rin.ystarts[7]), fadeFactor);
+        GfxWindow gfxw(demowindow, fadeFactor);
         pms.setting_axistype_demo_game->renderToScreen();
       }
       
@@ -764,6 +774,20 @@ void runSettingRender(const PlayerMenuState &pms) {
       } else {
         drawJustifiedText("Push accept to return", rin.textsize, (rin.xstart + rin.xend) / 2, rin.ystarts[7], TEXT_CENTER, TEXT_MIN);
       }
+      
+      setColor(C::gray(1.0) * fadeFactor);
+      if(pms.setting_axistype_curchoice / 2 == KSAX_STEERING) {
+        drawRect(controllerwindow, 0.0001);
+        Float2 cont = pms.setting_axistype_demo_ai->getControls();
+        const float widgetsize = 0.005;
+        const Float4 livecwind = Float4(controllerwindow.sx + widgetsize, controllerwindow.sy + widgetsize, controllerwindow.ex - widgetsize, controllerwindow.ey - widgetsize);
+        cont.y *= -1;
+        cont.x += 1;
+        cont.y += 1;
+        cont /= 2;
+        drawShadedRect(boxAround(Float2((livecwind.ex - livecwind.sx) * cont.x + livecwind.sx, (livecwind.ey - livecwind.sy) * cont.y + livecwind.sy), widgetsize), 0.00001, widgetsize);
+      }
+        
       
     } else if(pms.settingmode == SETTING_AXISCHOOSE) {
       StandardButtonRenderData sbrd;

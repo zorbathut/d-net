@@ -46,6 +46,7 @@ private:
 public:
   
   void updateConfig(const Config &conf);
+  Float2 getControls() const;
 
   GameAiAxisRotater(const Config &conf, int in_ax_type);
 };
