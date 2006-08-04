@@ -581,6 +581,7 @@ Projectile::Projectile(const Coord2 &in_pos, float in_d, const IDBProjectileAdju
     airbrake_velocity = (gaussian_scaled(2) / 4 + 1) * projtype.velocity();
   } else if(projtype.motion() == PM_MINE) {
     mine_facing = frand() * 2 * PI;
+  } else if(projtype.motion() == PM_INSTANT) {
   } else {
     CHECK(0);
   }
@@ -936,7 +937,15 @@ bool Game::runTick(const vector< Keystates > &rkeys) {
             CHECK(0);
           }
           
-          projectiles[i].push_back(Projectile(startpos, startdir + weapon.deploy().anglestddev() * gaussian(), weapon.projectile(), &tanks[i]));
+          {
+            Projectile proj(startpos, startdir + weapon.deploy().anglestddev() * gaussian(), weapon.projectile(), &tanks[i]);
+            if(weapon.projectile().motion() == PM_INSTANT) {
+              proj.impact(startpos, NULL, genTankDistance(startpos), &gfxeffects, &gamemap);
+            } else {
+              projectiles[i].push_back(proj);
+            }
+          }
+          
           tanks[i].weaponCooldown = weapon.framesForCooldown();
           // hack here to detect weapon out-of-ammo
           string lastname = weapon.name();

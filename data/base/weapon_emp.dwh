@@ -1,0 +1,28 @@
+
+text {
+  name=text.weapon.emp
+  data=A focused burst of electromagnetic energy damages tank armor and electronics at close range. These weapons include a limited-use compensation and shielding package designed to protect a tank from its own weapon.
+  data=NOTE: This weapon is utterly unbalanced. Proceed at your own risk/reward.
+}
+
+warhead {
+  name=warhead.emp
+  radiusdamage=3.0 exotic
+  radiusfalloff=12
+}
+
+projectile {
+  name=projectile.emp
+  motion=instant
+  warhead=warhead.emp
+}
+
+weapon {
+  name=ROOT.Weapons.EMP.EMP I
+  cost=100
+  firerate=4
+  deploy=deploy.centroid
+  projectile=projectile.emp
+  
+  text=text.weapon.emp
+}

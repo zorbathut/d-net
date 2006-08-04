@@ -449,8 +449,6 @@ void parseItemFile(const string &fname) {
       projclasses[name].motion = PM_NORMAL;
       projclasses[name].thickness_visual = 0.1;
       
-      projclasses[name].color = colorFromString(chunk.consume("color"));
-      
       if(chunk.kv.count("thickness_visual")) {
         projclasses[name].thickness_visual = atof(chunk.consume("thickness_visual").c_str());
       }
@@ -474,8 +472,12 @@ void parseItemFile(const string &fname) {
         }
       }
       
+      projclasses[name].color = C::gray(1.0);
+      if(projclasses[name].motion != PM_INSTANT)
+        projclasses[name].color = colorFromString(chunk.consume("color"));
+      
       projclasses[name].velocity = 0;
-      if(projclasses[name].motion != PM_MINE)
+      if(projclasses[name].motion != PM_MINE && projclasses[name].motion != PM_INSTANT)
         projclasses[name].velocity = atof(chunk.consume("velocity").c_str()) / FPS;
       
       string warheadclass = chunk.consume("warhead");

@@ -11,6 +11,7 @@ weapon_autocannon.dwh
 weapon_laser.dwh
 weapon_missile.dwh
 weapon_mine.dwh
+weapon_emp.dwh
 
 # Miscellaneous
 upgrades.dwh
