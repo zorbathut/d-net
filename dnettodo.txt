@@ -1,5 +1,4 @@
 ---- Major work path
-- Mine demo
 - EMP emitter
 - Pull glory explody into its own deploy?
 - Next-gen collision/storage system on grid

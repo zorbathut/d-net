@@ -119,43 +119,99 @@ public:
   GameAiKamikaze(int in_targetid, float in_rad) { targetid = in_targetid; rad = in_rad; lastrad = 1e9; ready = false; }
 };
 
+class GameAiCircling : public GameAi {
+  bool firing;
+  float dist;
+  
+  void updateGameWork(const vector<Tank> &players, int me) {
+    nextKeys.axmode = KSAX_STEERING;
+    nextKeys.udlrax.y = 1;
+    if(len(players[me].pos).toFloat() > dist + 2)
+      nextKeys.udlrax.x += 0.5;
+    if(len(players[me].pos).toFloat() < dist - 2)
+      nextKeys.udlrax.x += -0.5;
+    float angdif = players[me].d - getAngle(players[me].pos).toFloat() - PI / 2;
+    while(angdif < PI) angdif += PI * 2;
+    while(angdif > PI) angdif -= PI * 2;
+    if(angdif < -0.1)
+      nextKeys.udlrax.x += 0.5;
+    if(angdif > 0.1)
+      nextKeys.udlrax.x -= 0.5;
+    if(abs(nextKeys.udlrax.x) == 0.5)
+      nextKeys.udlrax.x *= 1.5;
+    nextKeys.fire[0].down = firing;
+  }
+  void updateBombardmentWork(const vector<Tank> &players, Coord2 mypos) {
+    CHECK(0);
+  }
+  
+public:
+  GameAiCircling(float in_dist, bool in_firing) { dist = in_dist; firing = in_firing; }
+};
+
 const float weapons_xpses[] = { -80, -80, 0, 0, 80, 80 };
 const float weapons_ypses[] = { 120, -80, 120, -40, 120, 40 };
 const int weapons_mode[] = { DEMOPLAYER_QUIET, DEMOPLAYER_DPS, DEMOPLAYER_QUIET, DEMOPLAYER_DPS, DEMOPLAYER_QUIET, DEMOPLAYER_DPS };
 const int weapons_progression[] = { 60, 600 };
 
+const float mines_circle = 60;
+const float mines_xpses[] = { 0, 0 };
+const float mines_ypses[] = { -mines_circle, mines_circle };
+const float mines_facing[] = { 0, PI };
+const int mines_mode[] = { DEMOPLAYER_DPH, DEMOPLAYER_QUIET };
+const int mines_progression[] = { 6000, 0 };
+
 const float bombardment_xpses[] = { -30, -30, 30, 30, -30, -30, 30, 30 };
 const float bombardment_ypses[] = { -30, -30, -30, -30, 30, 30, 30, 30 };
-const int bombardment_mode[] = { DEMOPLAYER_DPH, DEMOPLAYER_BOMBSIGHT, DEMOPLAYER_DPH, DEMOPLAYER_BOMBSIGHT, DEMOPLAYER_DPH, DEMOPLAYER_BOMBSIGHT, DEMOPLAYER_DPH, DEMOPLAYER_BOMBSIGHT };
+const int bombardment_mode[] = { DEMOPLAYER_DPC, DEMOPLAYER_BOMBSIGHT, DEMOPLAYER_DPC, DEMOPLAYER_BOMBSIGHT, DEMOPLAYER_DPC, DEMOPLAYER_BOMBSIGHT, DEMOPLAYER_DPC, DEMOPLAYER_BOMBSIGHT };
 const int bombardment_progression[] = { 6000, 0 };
 
 const float glory_xpses[] = { -50, -50, 50, 50, -50, -50, 50, 50 };
 const float glory_ypses[] = { -50, -50, -50, -50, 50, 50, 50, 50 };
-const int glory_mode[] = { DEMOPLAYER_DPH, DEMOPLAYER_QUIET, DEMOPLAYER_DPH, DEMOPLAYER_QUIET, DEMOPLAYER_DPH, DEMOPLAYER_QUIET, DEMOPLAYER_DPH, DEMOPLAYER_QUIET };
+const int glory_mode[] = { DEMOPLAYER_DPC, DEMOPLAYER_QUIET, DEMOPLAYER_DPC, DEMOPLAYER_QUIET, DEMOPLAYER_DPC, DEMOPLAYER_QUIET, DEMOPLAYER_DPC, DEMOPLAYER_QUIET };
 const int glory_progression[] = { 6000, 0 };
 
 void ShopDemo::init(const IDBWeapon *weap, const Player *player) {
   StackString sst("Initting demo weapon shop");
   mode = DEMOMODE_WEAPON;
   
-  players.clear();
-  players.resize(6);
-  CHECK(factionList().size() >= players.size());
-  for(int i = 0; i < players.size(); i++) {
-    players[i] = Player(&factionList()[i], 0); // TODO: make this be the right faction mode
-    players[i].addCash(Money(1000000000));
-    players[i].forceAcquireWeapon(weap, 1000000);
+  if(weap->demomode == WDM_FIRINGRANGE) {
+    players.clear();
+    players.resize(6);
+    CHECK(factionList().size() >= players.size());
+    for(int i = 0; i < players.size(); i++) {
+      players[i] = Player(&factionList()[i], 0); // TODO: make this be the right faction mode and stats
+      players[i].forceAcquireWeapon(weap, 1000000);
+    }
+    
+    ais.clear();
+    for(int i = 0; i < 3; i++) {
+      ais.push_back(smart_ptr<GameAi>(new GameAiFiring));
+      ais.push_back(smart_ptr<GameAi>(new GameAiNull));
+    }
+    
+    game.initDemo(&players, 160, weapons_xpses, weapons_ypses, NULL, weapons_mode);
+    
+    progression = weapons_progression;
+  } else if(weap->demomode == WDM_MINES) {
+    players.clear();
+    players.resize(2);
+    CHECK(factionList().size() >= players.size());
+    for(int i = 0; i < players.size(); i++) {
+      players[i] = Player(&factionList()[i], 0); // TODO: make this be the right faction mode and stats
+      players[i].forceAcquireWeapon(weap, 1000000);
+    }
+    
+    ais.clear();  
+    ais.push_back(smart_ptr<GameAi>(new GameAiCircling(mines_circle, 0)));
+    ais.push_back(smart_ptr<GameAi>(new GameAiCircling(mines_circle, 1)));
+    
+    game.initDemo(&players, 100, mines_xpses, mines_ypses, mines_facing, mines_mode);
+    
+    progression = mines_progression;
+  } else {
+    CHECK(0);
   }
-  
-  ais.clear();
-  for(int i = 0; i < 3; i++) {
-    ais.push_back(smart_ptr<GameAi>(new GameAiFiring));
-    ais.push_back(smart_ptr<GameAi>(new GameAiNull));
-  }
-  
-  game.initDemo(&players, 160, weapons_xpses, weapons_ypses, weapons_mode);
-  
-  progression = weapons_progression;
 };
 
 void ShopDemo::init(const IDBBombardment *bombard, const Player *player) {
@@ -180,7 +236,7 @@ void ShopDemo::init(const IDBBombardment *bombard, const Player *player) {
     bombardment_scatterers.push_back(gas);
   }
   
-  game.initDemo(&players, 50, bombardment_xpses, bombardment_ypses, bombardment_mode);
+  game.initDemo(&players, 50, bombardment_xpses, bombardment_ypses, NULL, bombardment_mode);
   
   progression = bombardment_progression;
 };
@@ -208,7 +264,7 @@ void ShopDemo::init(const IDBGlory *glory, const Player *player) {
   }
   respawn = false;
   
-  game.initDemo(&players, 100, glory_xpses, glory_ypses, glory_mode);
+  game.initDemo(&players, 100, glory_xpses, glory_ypses, NULL, glory_mode);
   
   progression = glory_progression;
   
@@ -246,7 +302,7 @@ void ShopDemo::runTick() {
       if(!notready) {
         for(int i = 0; i < bombardment_scatterers.size(); i++)
           bombardment_scatterers[i]->bombsaway();
-        game.addStatHit();
+        game.addStatCycle();
       }
     }
     
@@ -264,7 +320,7 @@ void ShopDemo::runTick() {
             glory_kamikazes[i]->exploded();
             game.kill(i * 2 + 1);
           }
-          game.addStatHit();
+          game.addStatCycle();
           respawn = true;
         }
       }

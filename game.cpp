@@ -59,6 +59,7 @@ void Tank::init(Player *in_player) {
   initted = true;
   framesSinceDamage = -1;
   damageTakenPreviousHits = 0;
+  damageEvents = 0;
   damageTaken = 0;
 }
 
@@ -308,6 +309,8 @@ pair<Coord2, float> Tank::getNextPosition(const Keystates &keys) const {
 
 bool Tank::takeDamage(float damage) {
   health -= damage;
+  
+  damageEvents++;
   
   // We halve the first "damage" to do a better job of estimating damage.
   if(framesSinceDamage == -1) {
@@ -1214,9 +1217,13 @@ void Game::renderToScreen() const {
         if(tanks[i].framesSinceDamage > 0) {
           drawJustifiedText(StringPrintf("%.2f DPS", tanks[i].damageTaken / tanks[i].framesSinceDamage * FPS), demomode_boxradi / 15, tanks[i].pos.x.toFloat() - 5, tanks[i].pos.y.toFloat() - 5, TEXT_MAX, TEXT_MAX);
         }
-      } else if(demomode_playermodes[i] == DEMOPLAYER_DPH) {
+      } else if(demomode_playermodes[i] == DEMOPLAYER_DPC) {
         if(demomode_hits) {
           drawJustifiedText(StringPrintf("%.2f DPH", tanks[i].damageTakenPreviousHits / demomode_hits), demomode_boxradi / 15, tanks[i].pos.x.toFloat() - 5, tanks[i].pos.y.toFloat() - 5, TEXT_MAX, TEXT_MAX);
+        }
+      } else if(demomode_playermodes[i] == DEMOPLAYER_DPH) {
+        if(tanks[i].damageEvents) {
+          drawJustifiedText(StringPrintf("%.2f DPH", tanks[i].damageTaken / tanks[i].damageEvents), demomode_boxradi / 15, tanks[i].pos.x.toFloat() - 5, tanks[i].pos.y.toFloat() - 5, TEXT_MAX, TEXT_MAX);
         }
       } else if(demomode_playermodes[i] == DEMOPLAYER_BOMBSIGHT) {
       } else if(demomode_playermodes[i] == DEMOPLAYER_QUIET) {
@@ -1427,18 +1434,18 @@ void Game::respawnPlayer(int id, Coord2 pos, float facing) {
   CHECK(tanks[id].live);
 }
 
-void Game::addStatHit() {
+void Game::addStatCycle() {
   bool addahit = false;
   if(demomode_hits)
     addahit = true;
   else
     for(int i = 0; i < tanks.size(); i++)
-      if(demomode_playermodes[i] == DEMOPLAYER_DPH && tanks[i].damageTaken != 0)
+      if(demomode_playermodes[i] == DEMOPLAYER_DPC && tanks[i].damageTaken != 0)
         addahit = true;
   
   if(addahit) {
     for(int i = 0; i < tanks.size(); i++) {
-      if(demomode_playermodes[i] == DEMOPLAYER_DPH) {
+      if(demomode_playermodes[i] == DEMOPLAYER_DPC) {
         tanks[i].damageTakenPreviousHits += tanks[i].damageTaken;
         tanks[i].damageTaken = 0;
       }
@@ -1593,7 +1600,7 @@ void Game::initTest(Player *in_playerdata, const Float4 &bounds) {
   initCommon(playerdata, lev);
 }
 
-void Game::initDemo(vector<Player> *in_playerdata, float boxradi, const float *xps, const float *yps, const int *modes) {
+void Game::initDemo(vector<Player> *in_playerdata, float boxradi, const float *xps, const float *yps, const float *facing, const int *modes) {
   gamemode = GMODE_DEMO;
   
   Level lev;
@@ -1620,8 +1627,11 @@ void Game::initDemo(vector<Player> *in_playerdata, float boxradi, const float *x
   
   initCommon(playerdata, lev);
   
-  for(int i = 0; i < tanks.size(); i++)
+  for(int i = 0; i < tanks.size(); i++) {
     tanks[i].pos = Coord2(xps[i], yps[i]);
+    if(facing)
+      tanks[i].d = facing[i];
+  }
   
   demomode_playermodes.clear();
   for(int i = 0; i < tanks.size(); i++) {

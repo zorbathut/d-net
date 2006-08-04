@@ -71,13 +71,16 @@ public:
   int weaponCooldown;
   float weaponCooldownSubvals[SIMUL_WEAPONS];
 
-  // these exist for the DPS calculations
+  // this exists for the DPS calculations
   int framesSinceDamage;
   
-  // this exists for the DPH calculations
+  // this exists for the DPC calculations
   float damageTakenPreviousHits;
   
-  // this exists for both :D
+  // this exists for the DPH calculations
+  int damageEvents;
+  
+  // this exists for all :D
   float damageTaken;
 
 };
@@ -148,7 +151,7 @@ public:
 
 enum {GMODE_STANDARD, GMODE_CHOICE, GMODE_TEST, GMODE_DEMO, GMODE_CENTERED_DEMO, GMODE_LAST};
 enum {FACTION_NULL, FACTION_SMALL, FACTION_MEDIUM, FACTION_BIG, FACTION_LAST};
-enum {DEMOPLAYER_QUIET, DEMOPLAYER_DPS, DEMOPLAYER_DPH, DEMOPLAYER_BOMBSIGHT, DEMOPLAYER_LAST};
+enum {DEMOPLAYER_QUIET, DEMOPLAYER_DPS, DEMOPLAYER_DPH, DEMOPLAYER_DPC, DEMOPLAYER_BOMBSIGHT, DEMOPLAYER_LAST};
 
 class Game {
 public:
@@ -156,7 +159,7 @@ public:
   void initStandard(vector<Player> *playerdata, const Level &level, vector<const IDBFaction *> *wins);
   void initChoice(vector<Player> *playerdata);
   void initTest(Player *playerdata, const Float4 &bounds);
-  void initDemo(vector<Player> *playerdata, float boxradi, const float *xps, const float *yps, const int *modes);
+  void initDemo(vector<Player> *playerdata, float boxradi, const float *xps, const float *yps, const float *facing, const int *modes);
   void initCenteredDemo(Player *playerdata, float zoom);
 
   bool runTick(const vector<Keystates> &keys);
@@ -173,7 +176,7 @@ public:
   void kill(int id);
   void respawnPlayer(int id, Coord2 pos, float facing);
 
-  void addStatHit();  // used for damage-per-hit calculations
+  void addStatCycle();  // used for damage-per-cycle calculations
 
   float firepowerSpent;
 
