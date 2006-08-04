@@ -1,5 +1,4 @@
 ---- Major work path
-- Logarithmic turning
 - Mine demo
 - EMP emitter
 - Pull glory explody into its own deploy?
