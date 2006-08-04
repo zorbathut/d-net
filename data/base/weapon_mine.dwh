@@ -2,6 +2,7 @@
 text {
   name=text.weapon.mine
   data=This simple piece of equipment drops high explosive land mines with touch sensors. Land mines are hard to detect and will only be visible when near a tank. Basic land mines are also equipped with friend-or-foe sensors to avoid friendly fire.
+  data=NOTE: This weapon is utterly unbalanced. Proceed at your own risk/reward.
 }
 
 deploy {
@@ -34,3 +35,15 @@ weapon {
   demo=mines
   text=text.weapon.mine
 }
+
+weapon {
+  name=ROOT.Weapons.Mine.Minelayer II
+  cost=500
+  firerate=4
+  deploy=deploy.mine
+  projectile=projectile.mine
+  
+  demo=mines
+  text=text.weapon.mine
+}
+
