@@ -442,21 +442,40 @@ Metagame::Metagame(int playercount, int in_roundsBetweenShop) {
     }
   }
   
-  pair<Float4, vector<Float2> > factcents = getFactionCenters(factions.size());
-  
-  // technically with both of these vectors I should be using a custom comparator but I'm really fucking lazy
-  vector<pair<float, Float2> > centangs;
-  for(int i = 0; i < factcents.second.size(); i++)
-    centangs.push_back(make_pair(getAngle(factcents.second[i]), factcents.second[i]));
-  sort(centangs.begin(), centangs.end());
-  
-  vector<pair<float, int> > facthues;
-  for(int i = 0; i < factions.size(); i++)
-    facthues.push_back(make_pair(factions[i].faction->color.getHue(), i));
-  sort(facthues.begin(), facthues.end());
-  
-  for(int i = 0; i < facthues.size(); i++)
-    factions[facthues[i].second].compass_location = factcents.first + centangs[i].second;
+  {
+    pair<Float4, vector<Float2> > factcents = getFactionCenters(factions.size());
+    
+    vector<Float2> centgrays;
+    // technically with both of these vectors I should be using a custom comparator but I'm really fucking lazy
+    vector<pair<float, Float2> > centangs;
+    for(int i = 0; i < factcents.second.size(); i++) {
+      if(factcents.second[i].y != 0) {
+        centangs.push_back(make_pair(getAngle(factcents.second[i]), factcents.second[i]));
+      } else {
+        centgrays.push_back(factcents.second[i]);
+      }
+    }
+    sort(centangs.begin(), centangs.end());
+    
+    vector<int> factgrays;
+    vector<pair<float, int> > facthues;
+    for(int i = 0; i < factions.size(); i++) {
+      if(factions[i].faction->color.getHue() != -1) {
+        facthues.push_back(make_pair(factions[i].faction->color.getHue(), i));
+      } else {
+        factgrays.push_back(i);
+      }
+    }
+    sort(facthues.begin(), facthues.end());
+    
+    CHECK(centgrays.size() == factgrays.size());
+    CHECK(centangs.size() == facthues.size());  // this is kind of flimsy
+    
+    for(int i = 0; i < facthues.size(); i++)
+      factions[facthues[i].second].compass_location = factcents.first + centangs[i].second;
+    for(int i = 0; i < factgrays.size(); i++)
+      factions[factgrays[i]].compass_location = factcents.first + centgrays[i];
+  }
   
   mode = MGM_PLAYERCHOOSE;
   
