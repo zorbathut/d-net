@@ -2,3 +2,8 @@
 warhead {
   name=warhead.null
 }
+
+deploy {
+  name=deploy.centroid
+  type=centroid
+}
