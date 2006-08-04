@@ -52,7 +52,7 @@ enum { DT_FORWARD, DT_CENTROID, DT_LAST };
 struct IDBDeploy {
 public:
   int type;
-  
+
   float anglestddev;
 };
 
@@ -65,7 +65,7 @@ public:
   float wallremovalchance;
 };
 
-enum {PM_NORMAL, PM_MISSILE, PM_AIRBRAKE, PM_MINE, PM_LAST};
+enum {PM_NORMAL, PM_MISSILE, PM_AIRBRAKE, PM_MINE, PM_INSTANT, PM_LAST};
 
 struct IDBProjectile {
 public:

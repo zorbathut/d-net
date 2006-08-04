@@ -466,6 +466,8 @@ void parseItemFile(const string &fname) {
         } else if(motion == "mine") {
           projclasses[name].motion = PM_MINE;
           projclasses[name].radius_physical = atof(chunk.consume("radius_physical").c_str());
+        } else if(motion == "instant") {
+          projclasses[name].motion = PM_INSTANT;
         } else {
           dprintf("Unknown projectile motion: %s\n", motion.c_str());
           CHECK(0);
