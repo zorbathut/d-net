@@ -1,5 +1,5 @@
 ---- Major work path
-- EMP emitter
+- EMP emitter blue
 - Pull glory explody into its own deploy?
 - Next-gen collision/storage system on grid
 - Next-gen weapons

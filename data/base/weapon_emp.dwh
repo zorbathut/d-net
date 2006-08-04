@@ -8,7 +8,7 @@ text {
 warhead {
   name=warhead.emp
   radiusdamage=3.0 exotic
-  radiusfalloff=12
+  radiusfalloff=10
 }
 
 projectile {
@@ -19,8 +19,28 @@ projectile {
 
 weapon {
   name=ROOT.Weapons.EMP.EMP I
-  cost=100
-  firerate=4
+  cost=200
+  firerate=3
+  deploy=deploy.centroid
+  projectile=projectile.emp
+  
+  text=text.weapon.emp
+}
+
+weapon {
+  name=ROOT.Weapons.EMP.EMP II
+  cost=500
+  firerate=5
+  deploy=deploy.centroid
+  projectile=projectile.emp
+  
+  text=text.weapon.emp
+}
+
+weapon {
+  name=ROOT.Weapons.EMP.EMP III
+  cost=1400
+  firerate=8
   deploy=deploy.centroid
   projectile=projectile.emp
   
