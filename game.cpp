@@ -172,8 +172,8 @@ pair<float, float> Tank::getNextInertia(const Keystates &keys) const {
   float dl;
   float dr;
   if(keys.axmode == KSAX_TANK) {
-    dl = deadzone(keys.ax[0], keys.ax[1], DEADZONE_ABSOLUTE, 0.2);
-    dr = deadzone(keys.ax[1], keys.ax[0], DEADZONE_ABSOLUTE, 0.2);
+    dl = prepower(deadzone(keys.ax[0], keys.ax[1], DEADZONE_ABSOLUTE, 0.2));
+    dr = prepower(deadzone(keys.ax[1], keys.ax[0], DEADZONE_ABSOLUTE, 0.2));
   } else if(keys.axmode == KSAX_ABSOLUTE || keys.axmode == KSAX_STEERING) {
     float dd;
     float dv;
@@ -194,7 +194,7 @@ pair<float, float> Tank::getNextInertia(const Keystates &keys) const {
         if(dd > 1)
           dd = 1;
         dv = min(sqrt(xpd * xpd + ypd * ypd), 1.f);
-        // Various states:
+        // Various states (these numbers are wrong):
         // abs(desdir) / PI
         // 0 .. 0.333 - drive forwards
         // 0.333 .. 0.666 - do not drive
@@ -211,8 +211,8 @@ pair<float, float> Tank::getNextInertia(const Keystates &keys) const {
         }
       }
     } else {
-      dd = deadzone(keys.ax[0], keys.ax[1], DEADZONE_ABSOLUTE, 0.2);
-      dv = deadzone(keys.ax[1], keys.ax[0], DEADZONE_ABSOLUTE, 0.2);
+      dd = prepower(deadzone(keys.ax[0], keys.ax[1], DEADZONE_ABSOLUTE, 0.2));
+      dv = prepower(deadzone(keys.ax[1], keys.ax[0], DEADZONE_ABSOLUTE, 0.2));
     }
     
     // What aspects do we want here?

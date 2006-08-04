@@ -79,5 +79,6 @@ public:
 enum { DEADZONE_ABSOLUTE, DEADZONE_CENTER };
 float deadzone(float t, float o, int dztype, float tdead);
 Float2 deadzone(const Float2 &mov, int dztype, float tdead);
+float prepower(float in);
 
 #endif
