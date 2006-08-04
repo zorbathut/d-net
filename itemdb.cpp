@@ -398,6 +398,18 @@ void parseItemFile(const string &fname) {
         weaponclasses[name].text = NULL;
       }
       
+      weaponclasses[name].demomode = WDM_FIRINGRANGE;
+      if(chunk.kv.count("demo")) {
+        if(chunk.kv["demo"] == "firingrange") {
+          weaponclasses[name].demomode = WDM_FIRINGRANGE;
+        } else if(chunk.kv["demo"] == "mines") {
+          weaponclasses[name].demomode = WDM_MINES;
+        } else {
+          CHECK(0);
+        }
+        chunk.consume("demo");
+      }
+      
     } else if(chunk.category == "upgrade") {
       
       string name = chunk.consume("name");

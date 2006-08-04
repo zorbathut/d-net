@@ -31,5 +31,6 @@ weapon {
   deploy=deploy.mine
   projectile=projectile.mine
   
+  demo=mines
   text=text.weapon.mine
 }

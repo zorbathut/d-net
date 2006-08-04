@@ -79,6 +79,7 @@ public:
   const IDBWarhead *warhead;
 };
 
+enum { WDM_FIRINGRANGE, WDM_MINES, WDM_LAST };
 struct IDBWeapon {
 public:
   string name;
@@ -90,6 +91,7 @@ public:
   Money base_cost;
   int quantity;
 
+  int demomode;
   const string *text;
 };
 
