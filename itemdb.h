@@ -59,8 +59,12 @@ public:
 struct IDBWarhead {
 public:
   float impactdamage[IDBAdjustment::DAMAGE_LAST];
+
   float radiusdamage[IDBAdjustment::DAMAGE_LAST];
   float radiusfalloff;
+  Color radiuscolor_bright;
+  Color radiuscolor_dim;
+
   float wallremovalradius;
   float wallremovalchance;
 };
@@ -179,6 +183,8 @@ public:
 
   float radiusdamage() const;
   float radiusfalloff() const;
+  Color radiuscolor_bright() const;
+  Color radiuscolor_dim() const;
   
   float wallremovalradius() const;
   float wallremovalchance() const;

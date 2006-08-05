@@ -146,9 +146,9 @@ public:
     const int vertx = 16;
     for(int i = 0; i < 5; i++) {
       if(!i) {
-        setColor(Color(1.0, 0.8, 0.2) * (1.0 - getAgeFactor()));
+        setColor(bright * (1.0 - getAgeFactor()));
       } else {
-        setColor(Color(1.0, 0.2, 0.0) * (1.0 - getAgeFactor()));
+        setColor(dim * (1.0 - getAgeFactor()));
       }
       const float ofs = unsync_frand() * 2 * PI / vertx;
       const float chaos = len(makeAngle(1 * PI * 2 / vertx) - makeAngle(0)) * desrad / 2;
@@ -159,13 +159,15 @@ public:
     }
   }
 
-  GfxEffectsBlast(Float2 in_center, float in_radius) : GfxEffects(sqrt(in_radius) * 0.1, Color(1.0, 1.0, 1.0)), center(in_center), radius(in_radius) { };
+  GfxEffectsBlast(Float2 in_center, float in_radius, Color in_bright, Color in_dim) : GfxEffects(sqrt(in_radius) * 0.1, Color(1.0, 1.0, 1.0)), center(in_center), radius(in_radius), bright(in_bright), dim(in_dim) { };
 
 private:
   
   Float2 center;
   float radius;
+  Color bright;
+  Color dim;
 };
   
-smart_ptr<GfxEffects> GfxBlast(Float2 center, float radius) {
-  return smart_ptr<GfxEffects>(new GfxEffectsBlast(center, radius)); }
+smart_ptr<GfxEffects> GfxBlast(Float2 center, float radius, Color bright, Color dim) {
+  return smart_ptr<GfxEffects>(new GfxEffectsBlast(center, radius, bright, dim)); }

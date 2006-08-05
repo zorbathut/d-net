@@ -37,7 +37,7 @@ void detonateWarhead(const IDBWarheadAdjust &warhead, Coord2 pos, Tank *impact, 
     gfxe->push_back(GfxPoint(pos.toFloat(),  (makeAngle(frand() * 2 * PI) * 20) * (1.0 - frand() * frand()), 0.1, Color(1.0, 1.0, 1.0)));
   
   if(warhead.radiusfalloff() > 0)
-    gfxe->push_back(GfxBlast(pos.toFloat(), warhead.radiusfalloff()));
+    gfxe->push_back(GfxBlast(pos.toFloat(), warhead.radiusfalloff(), warhead.radiuscolor_bright(), warhead.radiuscolor_dim()));
   
   if(warhead.wallremovalradius() > 0 && frand() < warhead.wallremovalchance()) {
     gm->removeWalls(pos, warhead.wallremovalradius());

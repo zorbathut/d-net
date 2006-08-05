@@ -524,9 +524,15 @@ void parseItemFile(const string &fname) {
       
       CHECK(chunk.kv.count("radiusfalloff") == chunk.kv.count("radiusdamage"));
       
+      warheadclasses[name].radiuscolor_bright = Color(1.0, 0.8, 0.2);
+      warheadclasses[name].radiuscolor_dim = Color(1.0, 0.2, 0.0);
       if(chunk.kv.count("radiusdamage")) {
         parseDamagecode(chunk.consume("radiusdamage"), warheadclasses[name].radiusdamage);
         warheadclasses[name].radiusfalloff = atof(chunk.consume("radiusfalloff").c_str());
+        if(chunk.kv.count("radiuscolor_bright")) {
+          warheadclasses[name].radiuscolor_bright = colorFromString(chunk.consume("radiuscolor_bright"));
+          warheadclasses[name].radiuscolor_dim = colorFromString(chunk.consume("radiuscolor_dim"));
+        } // no, you can't just overload one, dammit
       }
       
       if(chunk.kv.count("wallremovalradius"))

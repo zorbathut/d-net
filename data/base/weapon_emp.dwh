@@ -9,6 +9,8 @@ warhead {
   name=warhead.emp
   radiusdamage=3.0 exotic
   radiusfalloff=10
+  radiuscolor_bright=88f
+  radiuscolor_dim=018
 }
 
 projectile {

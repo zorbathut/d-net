@@ -36,6 +36,8 @@ float IDBWarheadAdjust::radiusfalloff() const { return idb->radiusfalloff; };
 
 float IDBWarheadAdjust::wallremovalradius() const { return idb->wallremovalradius; };
 float IDBWarheadAdjust::wallremovalchance() const { return idb->wallremovalchance; };
+Color IDBWarheadAdjust::radiuscolor_bright() const { return idb->radiuscolor_bright; };
+Color IDBWarheadAdjust::radiuscolor_dim() const { return idb->radiuscolor_dim; };
 
 float IDBWarheadAdjust::stats_damagePerShot() const { return impactdamage() + radiusdamage(); };
 
