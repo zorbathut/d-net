@@ -458,7 +458,7 @@ void Projectile::tick(vector<smart_ptr<GfxEffects> > *gfxe) {
   }
 }
 
-void Projectile::render(const vector<Coord2> &tposes) const {
+void Projectile::render(const vector<Coord2> &tankposes) const {
   CHECK(live);
   CHECK(age != -1);
   if(projtype.motion() == PM_NORMAL) {
@@ -470,9 +470,9 @@ void Projectile::render(const vector<Coord2> &tposes) const {
   } else if(projtype.motion() == PM_MINE) {
     const float radarrange = 30;
     float closest = 1000;
-    for(int i = 0; i < tposes.size(); i++)
-      if(len(tposes[i] - pos).toFloat() < closest)
-        closest = len(tposes[i] - pos).toFloat();
+    for(int i = 0; i < tankposes.size(); i++)
+      if(len(tankposes[i] - pos).toFloat() < closest)
+        closest = len(tankposes[i] - pos).toFloat();
     if(closest < radarrange) {
       setColor(C::gray((radarrange - closest) / radarrange));
       drawLineLoop(mine_polys(), 0.1);

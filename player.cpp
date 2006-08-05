@@ -39,7 +39,8 @@ void Weaponmanager::addAmmo(const IDBWeapon *weap, int count) {
     weapons[weap] += count;
   } else {
     weapons[weap] = count;
-    setWeaponEquipBit(weap, 0, true);
+    for(int i = 0; i < SIMUL_WEAPONS; i++)
+      setWeaponEquipBit(weap, i, true);
   }
 }
 void Weaponmanager::removeAmmo(const IDBWeapon *weap, int count) {
