@@ -1,5 +1,4 @@
 ---- Major work path
-- Normalize controller to circle?
 - Bombardment boosting
 - Mine collision slowdown problems
 - Mine duration
@@ -20,6 +19,7 @@
 - Implants
 
 ---- Things that take thought and musing
+- Normalize controller to circle?
 - Game inheritance/abstraction?
 - Make DPS a little less flickery
 - Improve win ticker so it displays overall totals somewhere maybe
