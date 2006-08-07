@@ -1,13 +1,16 @@
 ---- Major work path
-- Pull glory explody into its own deploy?
+- Mines more expensive
+- Exponential cash starting adjustment
+- Mine collision slowdown
+- Gradual shop spawning
+- Multishop
 - Next-gen collision/storage system on grid
+- Pull glory explody into its own deploy?
 - Next-gen weapons
 - Faction info screen on startup
 - Training/certificates/discounts
-- Gradual shop spawning
 - Many many more weapons
 - Implants
-- Multishop
 
 ---- Things that take thought and musing
 - Game inheritance/abstraction?
