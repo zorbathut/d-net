@@ -16,4 +16,6 @@ bool controls_users();
 bool controls_recordable();
 void controls_shutdown();
 
+void controls_render(int id, Float2 origin);
+
 #endif

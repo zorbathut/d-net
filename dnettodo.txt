@@ -1,6 +1,4 @@
 ---- Major work path
-- Larger periods
-- Disable faction mode choice (for now)
 - Normalize controller to circle?
 - Bombardment boosting
 - Mine collision slowdown problems

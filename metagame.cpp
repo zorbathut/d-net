@@ -15,7 +15,8 @@
 
 using namespace std;
 
-DEFINE_int(factionMode, -1, "Faction mode to skip faction choice battle");
+DEFINE_int(factionMode, 0, "Faction mode to skip faction choice battle");
+// Change to -1 to enable faction mode battle
 
 bool Metagame::runTick(const vector<Controller> &keys) {
   CHECK(keys.size() == pms.size());
