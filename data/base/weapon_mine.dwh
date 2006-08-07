@@ -22,8 +22,8 @@ projectile {
 
 weapon {
   name=ROOT.Weapons.Mine.Minelayer I
-  cost=100
-  firerate=1
+  cost=300
+  firerate=0.5
   deploy=deploy.centroid
   projectile=projectile.mine
   
@@ -37,6 +37,7 @@ weapon {
   firerate=4
   deploy=deploy.centroid
   projectile=projectile.mine
+  debug=1
   
   demo=mines
   text=text.weapon.mine

@@ -1,8 +1,10 @@
 ---- Major work path
-- Mines more expensive
 - Exponential cash starting adjustment
+- Bombardment boosting
+- Game joining, quitting, reconfiguring, 
 - Mine collision slowdown
 - Gradual shop spawning
+- Cached stats
 - Multishop
 - Next-gen collision/storage system on grid
 - Pull glory explody into its own deploy?
