@@ -157,8 +157,8 @@ void Ai::updateCharacterChoice(const vector<FactionState> &factions, const vecto
       nextKeys.keys[players[you].setting_button_current].down = frameNumber % 2;
   } else if(players[you].settingmode == SETTING_AXISTYPE) {
     if(frameNumber % 2 == 0) {
-      if(players[you].setting_axistype != KSAX_ABSOLUTE)
-        nextKeys.menu = Float2(1.0, 0);
+      if(players[you].setting_axistype_curchoice != KSAX_ABSOLUTE * 2)
+        nextKeys.menu = Float2(0, -1.0);
       else
         nextKeys.keys[BUTTON_ACCEPT].down = true;
     }
