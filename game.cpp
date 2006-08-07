@@ -562,7 +562,7 @@ vector<Coord2> Projectile::mine_polys() const {
   return rv;
 }
 
-Projectile::Projectile() : projtype(NULL, NULL) {
+Projectile::Projectile() : projtype(NULL, IDBAdjustment()) {
   live = false;
   age = -1;
 }

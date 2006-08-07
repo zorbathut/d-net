@@ -160,7 +160,7 @@ public:
 
 struct IDBDeployAdjust {
   const IDBDeploy *idb;
-  const IDBAdjustment *adjust;
+  IDBAdjustment adjust;
   
 public:
   int type() const;
@@ -169,12 +169,12 @@ public:
   
   float stats_damagePerShotMultiplier() const;
 
-  IDBDeployAdjust(const IDBDeploy *in_idb, const IDBAdjustment *in_adjust);
+  IDBDeployAdjust(const IDBDeploy *in_idb, const IDBAdjustment &in_adjust);
 };
 
 struct IDBWarheadAdjust {
   const IDBWarhead *idb;
-  const IDBAdjustment *adjust;
+  IDBAdjustment adjust;
   
   float accumulate(const float *damage) const;
   
@@ -191,12 +191,12 @@ public:
   
   float stats_damagePerShot() const;
 
-  IDBWarheadAdjust(const IDBWarhead *in_idb, const IDBAdjustment *in_adjust);
+  IDBWarheadAdjust(const IDBWarhead *in_idb, const IDBAdjustment &in_adjust);
 };
 
 struct IDBProjectileAdjust {
   const IDBProjectile *idb;
-  const IDBAdjustment *adjust;
+  IDBAdjustment adjust;
   
 public:
   int motion() const;
@@ -210,12 +210,12 @@ public:
   
   float stats_damagePerShot() const;
 
-  IDBProjectileAdjust(const IDBProjectile *in_idb, const IDBAdjustment *in_adjust);
+  IDBProjectileAdjust(const IDBProjectile *in_idb, const IDBAdjustment &in_adjust);
 };
 
 struct IDBWeaponAdjust {
   const IDBWeapon *idb;
-  const IDBAdjustment *adjust;
+  IDBAdjustment adjust;
 
 public:
   const string &name() const;
@@ -233,12 +233,12 @@ public:
   float stats_costPerDamage() const;
   float stats_costPerSecond() const;
 
-  IDBWeaponAdjust(const IDBWeapon *in_idb, const IDBAdjustment *in_adjust);
+  IDBWeaponAdjust(const IDBWeapon *in_idb, const IDBAdjustment &in_adjust);
 };
 
 struct IDBGloryAdjust {
   const IDBGlory *idb;
-  const IDBAdjustment *adjust;
+  IDBAdjustment adjust;
 
 public:
   int minsplits() const;
@@ -256,12 +256,12 @@ public:
 
   float stats_averageDamage() const;
   
-  IDBGloryAdjust(const IDBGlory *in_idb, const IDBAdjustment *in_adjust);
+  IDBGloryAdjust(const IDBGlory *in_idb, const IDBAdjustment &in_adjust);
 };
 
 struct IDBUpgradeAdjust {
   const IDBUpgrade *idb;
-  const IDBAdjustment *adjust;
+  IDBAdjustment adjust;
   const IDBTank *tank;
 
 public:
@@ -269,12 +269,12 @@ public:
   Money cost() const;
   Money sellcost() const;
 
-  IDBUpgradeAdjust(const IDBUpgrade *in_idb, const IDBTank *in_tank, const IDBAdjustment *in_adjust);
+  IDBUpgradeAdjust(const IDBUpgrade *in_idb, const IDBTank *in_tank, const IDBAdjustment &in_adjust);
 };
 
 struct IDBBombardmentAdjust {
   const IDBBombardment *idb;
-  const IDBAdjustment *adjust;
+  IDBAdjustment adjust;
   int blevel;
 
 public:
@@ -286,12 +286,12 @@ public:
   Money cost() const;
   Money sellcost() const;
 
-  IDBBombardmentAdjust(const IDBBombardment *in_idb, const IDBAdjustment *in_adjust, int blevel);
+  IDBBombardmentAdjust(const IDBBombardment *in_idb, const IDBAdjustment &in_adjust, int blevel);
 };
 
 struct IDBTankAdjust {
   const IDBTank *idb;
-  const IDBAdjustment *adjust;
+  IDBAdjustment adjust;
 
 public:
   float maxHealth() const;
@@ -305,7 +305,7 @@ public:
   Money cost() const;
   Money sellcost() const;
 
-  IDBTankAdjust(const IDBTank *in_idb, const IDBAdjustment *in_adjust);
+  IDBTankAdjust(const IDBTank *in_idb, const IDBAdjustment &in_adjust);
 };
 
 /*************

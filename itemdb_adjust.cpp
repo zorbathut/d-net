@@ -16,7 +16,7 @@ float IDBDeployAdjust::anglestddev() const { return idb->anglestddev; };
 
 float IDBDeployAdjust::stats_damagePerShotMultiplier() const { return 1; }; // IN ALL POSSIBLE CASES
 
-IDBDeployAdjust::IDBDeployAdjust(const IDBDeploy *in_idb, const IDBAdjustment *in_adjust) { idb = in_idb; adjust = in_adjust; };
+IDBDeployAdjust::IDBDeployAdjust(const IDBDeploy *in_idb, const IDBAdjustment &in_adjust) { idb = in_idb; adjust = in_adjust; };
 
 /*************
  * IDBWarheadAdjust
@@ -25,7 +25,7 @@ IDBDeployAdjust::IDBDeployAdjust(const IDBDeploy *in_idb, const IDBAdjustment *i
 float IDBWarheadAdjust::accumulate(const float *damage) const {
   float acc = 0;
   for(int i = 0; i < IDBAdjustment::DAMAGE_LAST; i++)
-    acc += damage[i] * adjust->adjustmentfactor(i);
+    acc += damage[i] * adjust.adjustmentfactor(i);
   return acc;
 }
 
@@ -41,7 +41,7 @@ Color IDBWarheadAdjust::radiuscolor_dim() const { return idb->radiuscolor_dim; }
 
 float IDBWarheadAdjust::stats_damagePerShot() const { return impactdamage() + radiusdamage(); };
 
-IDBWarheadAdjust::IDBWarheadAdjust(const IDBWarhead *in_idb, const IDBAdjustment *in_adjust) { idb = in_idb; adjust = in_adjust; };
+IDBWarheadAdjust::IDBWarheadAdjust(const IDBWarhead *in_idb, const IDBAdjustment &in_adjust) { idb = in_idb; adjust = in_adjust; };
 
 /*************
  * IDBProjectileAdjust
@@ -58,7 +58,7 @@ float IDBProjectileAdjust::thickness_visual() const { return idb->thickness_visu
 
 float IDBProjectileAdjust::stats_damagePerShot() const { return warhead().stats_damagePerShot(); };
 
-IDBProjectileAdjust::IDBProjectileAdjust(const IDBProjectile *in_idb, const IDBAdjustment *in_adjust) { idb = in_idb; adjust = in_adjust; };
+IDBProjectileAdjust::IDBProjectileAdjust(const IDBProjectile *in_idb, const IDBAdjustment &in_adjust) { idb = in_idb; adjust = in_adjust; };
 
 /*************
  * IDBWeaponAdjust
@@ -90,17 +90,17 @@ int IDBWeaponAdjust::framesForCooldown() const {
   return framesForCooldownEngine(FPS / firerate());
 }
 float IDBWeaponAdjust::firerate() const {
-  return idb->firerate * adjust->adjustmentfactor(IDBAdjustment::TANK_FIRERATE);
+  return idb->firerate * adjust.adjustmentfactor(IDBAdjustment::TANK_FIRERATE);
 }
-Money IDBWeaponAdjust::cost() const { return idb->base_cost / adjust->adjustmentfactor(IDBAdjustment::DISCOUNT_WEAPON); };
-Money IDBWeaponAdjust::sellcost(int amount) const { return cost() * adjust->recyclevalue() * amount / idb->quantity; };
+Money IDBWeaponAdjust::cost() const { return idb->base_cost / adjust.adjustmentfactor(IDBAdjustment::DISCOUNT_WEAPON); };
+Money IDBWeaponAdjust::sellcost(int amount) const { return cost() * adjust.recyclevalue() * amount / idb->quantity; };
 
 float IDBWeaponAdjust::stats_damagePerShot() const { return deploy().stats_damagePerShotMultiplier() * projectile().stats_damagePerShot(); }
 float IDBWeaponAdjust::stats_damagePerSecond() const { return stats_damagePerShot() * firerate(); }
 float IDBWeaponAdjust::stats_costPerDamage() const { return cost().toFloat() / idb->quantity / stats_damagePerShot(); }
 float IDBWeaponAdjust::stats_costPerSecond() const { return cost().toFloat() / idb->quantity * firerate(); }
 
-IDBWeaponAdjust::IDBWeaponAdjust(const IDBWeapon *in_idb, const IDBAdjustment *in_adjust) { idb = in_idb; adjust = in_adjust; };
+IDBWeaponAdjust::IDBWeaponAdjust(const IDBWeapon *in_idb, const IDBAdjustment &in_adjust) { idb = in_idb; adjust = in_adjust; };
 
 /*************
  * IDBGloryAdjust
@@ -117,20 +117,20 @@ IDBProjectileAdjust IDBGloryAdjust::projectile() const { return IDBProjectileAdj
 IDBWarheadAdjust IDBGloryAdjust::core() const { return IDBWarheadAdjust(idb->core, adjust); };
 
 Money IDBGloryAdjust::cost() const { return idb->base_cost; };
-Money IDBGloryAdjust::sellcost() const { return cost() * adjust->recyclevalue(); };
+Money IDBGloryAdjust::sellcost() const { return cost() * adjust.recyclevalue(); };
 
 float IDBGloryAdjust::stats_averageDamage() const { return (minsplits() + maxsplits()) / 2.0 * shotspersplit() * projectile().stats_damagePerShot() + core().stats_damagePerShot(); }
 
-IDBGloryAdjust::IDBGloryAdjust(const IDBGlory *in_idb, const IDBAdjustment *in_adjust) { idb = in_idb; adjust = in_adjust; };
+IDBGloryAdjust::IDBGloryAdjust(const IDBGlory *in_idb, const IDBAdjustment &in_adjust) { idb = in_idb; adjust = in_adjust; };
 
 /*************
  * IDBUpgradeAdjust
  */
 
-Money IDBUpgradeAdjust::cost() const { return tank->upgrade_base * idb->costmult / adjust->adjustmentfactor(IDBAdjustment::DISCOUNT_UPGRADE); };  // yes, it's based off the tank base cost, not the tank adjusted cost
-Money IDBUpgradeAdjust::sellcost() const { return cost() * adjust->recyclevalue(); };
+Money IDBUpgradeAdjust::cost() const { return tank->upgrade_base * idb->costmult / adjust.adjustmentfactor(IDBAdjustment::DISCOUNT_UPGRADE); };  // yes, it's based off the tank base cost, not the tank adjusted cost
+Money IDBUpgradeAdjust::sellcost() const { return cost() * adjust.recyclevalue(); };
 
-IDBUpgradeAdjust::IDBUpgradeAdjust(const IDBUpgrade *in_idb, const IDBTank *in_tank, const IDBAdjustment *in_adjust) { idb = in_idb; tank = in_tank; adjust = in_adjust; };
+IDBUpgradeAdjust::IDBUpgradeAdjust(const IDBUpgrade *in_idb, const IDBTank *in_tank, const IDBAdjustment &in_adjust) { idb = in_idb; tank = in_tank; adjust = in_adjust; };
 
 /*************
  * IDBBombardmentAdjust
@@ -142,23 +142,23 @@ float IDBBombardmentAdjust::unlockdelay() const { return idb->unlockdelay; };
 IDBWarheadAdjust IDBBombardmentAdjust::warhead() const { return IDBWarheadAdjust(idb->warhead, adjust); };
 
 Money IDBBombardmentAdjust::cost() const { return idb->base_cost; };
-Money IDBBombardmentAdjust::sellcost() const { return cost() * adjust->recyclevalue(); };
+Money IDBBombardmentAdjust::sellcost() const { return cost() * adjust.recyclevalue(); };
 
-IDBBombardmentAdjust::IDBBombardmentAdjust(const IDBBombardment *in_idb, const IDBAdjustment *in_adjust, int in_bombardlevel) { idb = in_idb; adjust = in_adjust; blevel = in_bombardlevel; };
+IDBBombardmentAdjust::IDBBombardmentAdjust(const IDBBombardment *in_idb, const IDBAdjustment &in_adjust, int in_bombardlevel) { idb = in_idb; adjust = in_adjust; blevel = in_bombardlevel; };
 
 /*************
  * IDBTankAdjust
  */
 
-Money IDBTankAdjust::cost() const { return idb->base_cost / adjust->adjustmentfactor(IDBAdjustment::DISCOUNT_TANK); };
-Money IDBTankAdjust::sellcost() const { return cost() * adjust->recyclevalue(); };
+Money IDBTankAdjust::cost() const { return idb->base_cost / adjust.adjustmentfactor(IDBAdjustment::DISCOUNT_TANK); };
+Money IDBTankAdjust::sellcost() const { return cost() * adjust.recyclevalue(); };
 
-float IDBTankAdjust::maxHealth() const { return idb->health * adjust->adjustmentfactor(IDBAdjustment::TANK_ARMOR); };
-float IDBTankAdjust::turnSpeed() const { return idb->handling * adjust->adjustmentfactor(IDBAdjustment::TANK_TURN); };
-float IDBTankAdjust::maxSpeed() const { return idb->engine * adjust->adjustmentfactor(IDBAdjustment::TANK_SPEED); };
+float IDBTankAdjust::maxHealth() const { return idb->health * adjust.adjustmentfactor(IDBAdjustment::TANK_ARMOR); };
+float IDBTankAdjust::turnSpeed() const { return idb->handling * adjust.adjustmentfactor(IDBAdjustment::TANK_TURN); };
+float IDBTankAdjust::maxSpeed() const { return idb->engine * adjust.adjustmentfactor(IDBAdjustment::TANK_SPEED); };
 
 float IDBTankAdjust::mass() const { return idb->mass; };    // BAM
 
 const vector<Coord2> &IDBTankAdjust::vertices() const { return idb->vertices; };
 
-IDBTankAdjust::IDBTankAdjust(const IDBTank *in_idb, const IDBAdjustment *in_adjust) { idb = in_idb; adjust = in_adjust; };
+IDBTankAdjust::IDBTankAdjust(const IDBTank *in_idb, const IDBAdjustment &in_adjust) { idb = in_idb; adjust = in_adjust; };

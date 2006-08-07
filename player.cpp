@@ -149,13 +149,13 @@ TankEquipment::TankEquipment(const IDBTank *in_tank) { tank = in_tank; }
 
 IDBUpgradeAdjust Player::adjustUpgrade(const IDBUpgrade *in_upg) const {
   CHECK(tank.size());
-  return IDBUpgradeAdjust(in_upg, tank[0].tank, &adjustment);
+  return IDBUpgradeAdjust(in_upg, tank[0].tank, adjustment);
 };
 
-IDBGloryAdjust Player::adjustGlory(const IDBGlory *in_upg) const { return IDBGloryAdjust(in_upg, &adjustment); };
-IDBBombardmentAdjust Player::adjustBombardment(const IDBBombardment *in_upg, int bombard_level) const { return IDBBombardmentAdjust(in_upg, &adjustment, bombard_level); };
-IDBWeaponAdjust Player::adjustWeapon(const IDBWeapon *in_upg) const { return IDBWeaponAdjust(in_upg, &adjustment); };
-IDBTankAdjust Player::adjustTank(const IDBTank *in_upg) const { return IDBTankAdjust(in_upg, &adjustment); };
+IDBGloryAdjust Player::adjustGlory(const IDBGlory *in_upg) const { return IDBGloryAdjust(in_upg, adjustment); };
+IDBBombardmentAdjust Player::adjustBombardment(const IDBBombardment *in_upg, int bombard_level) const { return IDBBombardmentAdjust(in_upg, adjustment, bombard_level); };
+IDBWeaponAdjust Player::adjustWeapon(const IDBWeapon *in_upg) const { return IDBWeaponAdjust(in_upg, adjustment); };
+IDBTankAdjust Player::adjustTank(const IDBTank *in_upg) const { return IDBTankAdjust(in_upg, adjustment); };
 
 bool Player::canBuyUpgrade(const IDBUpgrade *in_upg) const { return stateUpgrade(in_upg) == ITEMSTATE_UNOWNED && adjustUpgrade(in_upg).cost() <= cash; }; 
 bool Player::canBuyGlory(const IDBGlory *in_glory) const { return stateGlory(in_glory) == ITEMSTATE_UNOWNED && adjustGlory(in_glory).cost() <= cash; };
@@ -353,14 +353,14 @@ const IDBFaction *Player::getFaction() const {
   return faction; };
 
 IDBGloryAdjust Player::getGlory() const {
-  return IDBGloryAdjust(glory[0], &adjustment); };
+  return adjustGlory(glory[0]); };
 IDBBombardmentAdjust Player::getBombardment(int bombard_level) const {
-  return IDBBombardmentAdjust(bombardment[0], &adjustment, bombard_level); };
+  return adjustBombardment(bombardment[0], bombard_level); };
 IDBTankAdjust Player::getTank() const {
-  return IDBTankAdjust(tank[0].tank, &adjustment); };
+  return adjustTank(tank[0].tank); };
 
 IDBWeaponAdjust Player::getWeapon(int id) const {
-  return IDBWeaponAdjust(weapons.getWeaponSlot(id), &adjustment); };
+  return adjustWeapon(weapons.getWeaponSlot(id)); };
 void Player::cycleWeapon(int id) {
   weapons.cycleWeapon(id);
 }

@@ -152,7 +152,7 @@ tank {
 
   health=110
   handling=1.8
-  engine=20
+  engine=18
   
   mass=100
   
