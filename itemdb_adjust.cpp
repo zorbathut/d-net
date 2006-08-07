@@ -144,7 +144,7 @@ IDBWarheadAdjust IDBBombardmentAdjust::warhead() const { return IDBWarheadAdjust
 Money IDBBombardmentAdjust::cost() const { return idb->base_cost; };
 Money IDBBombardmentAdjust::sellcost() const { return cost() * adjust->recyclevalue(); };
 
-IDBBombardmentAdjust::IDBBombardmentAdjust(const IDBBombardment *in_idb, const IDBAdjustment *in_adjust) { idb = in_idb; adjust = in_adjust; };
+IDBBombardmentAdjust::IDBBombardmentAdjust(const IDBBombardment *in_idb, const IDBAdjustment *in_adjust, int in_bombardlevel) { idb = in_idb; adjust = in_adjust; blevel = in_bombardlevel; };
 
 /*************
  * IDBTankAdjust

@@ -153,7 +153,7 @@ IDBUpgradeAdjust Player::adjustUpgrade(const IDBUpgrade *in_upg) const {
 };
 
 IDBGloryAdjust Player::adjustGlory(const IDBGlory *in_upg) const { return IDBGloryAdjust(in_upg, &adjustment); };
-IDBBombardmentAdjust Player::adjustBombardment(const IDBBombardment *in_upg) const { return IDBBombardmentAdjust(in_upg, &adjustment); };
+IDBBombardmentAdjust Player::adjustBombardment(const IDBBombardment *in_upg, int bombard_level) const { return IDBBombardmentAdjust(in_upg, &adjustment, bombard_level); };
 IDBWeaponAdjust Player::adjustWeapon(const IDBWeapon *in_upg) const { return IDBWeaponAdjust(in_upg, &adjustment); };
 IDBTankAdjust Player::adjustTank(const IDBTank *in_upg) const { return IDBTankAdjust(in_upg, &adjustment); };
 
@@ -354,8 +354,8 @@ const IDBFaction *Player::getFaction() const {
 
 IDBGloryAdjust Player::getGlory() const {
   return IDBGloryAdjust(glory[0], &adjustment); };
-IDBBombardmentAdjust Player::getBombardment() const {
-  return IDBBombardmentAdjust(bombardment[0], &adjustment); };
+IDBBombardmentAdjust Player::getBombardment(int bombard_level) const {
+  return IDBBombardmentAdjust(bombardment[0], &adjustment, bombard_level); };
 IDBTankAdjust Player::getTank() const {
   return IDBTankAdjust(tank[0].tank, &adjustment); };
 

@@ -275,6 +275,7 @@ public:
 struct IDBBombardmentAdjust {
   const IDBBombardment *idb;
   const IDBAdjustment *adjust;
+  int blevel;
 
 public:
   float lockdelay() const;
@@ -285,7 +286,7 @@ public:
   Money cost() const;
   Money sellcost() const;
 
-  IDBBombardmentAdjust(const IDBBombardment *in_idb, const IDBAdjustment *in_adjust);
+  IDBBombardmentAdjust(const IDBBombardment *in_idb, const IDBAdjustment *in_adjust, int blevel);
 };
 
 struct IDBTankAdjust {

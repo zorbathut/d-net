@@ -858,14 +858,14 @@ bool Game::runTick(const vector< Keystates > &rkeys) {
       CHECK(SIMUL_WEAPONS == 2);
       if(keys[j].fire[0].down || keys[j].fire[1].down) {
         bombards[j].state = BombardmentState::BS_FIRING;
-        bombards[j].timer = round(tanks[j].player->getBombardment().lockdelay() * FPS);
+        bombards[j].timer = round(tanks[j].player->getBombardment((int)bombardment_tier).lockdelay() * FPS);
       }
     } else if(bombards[j].state == BombardmentState::BS_FIRING) {
       bombards[j].timer--;
       if(bombards[j].timer <= 0) {
-        detonateWarhead(tanks[j].player->getBombardment().warhead(), bombards[j].loc, NULL, &tanks[j], genTankDistance(bombards[j].loc), &gfxeffects, &gamemap, 1.0, false);
+        detonateWarhead(tanks[j].player->getBombardment((int)bombardment_tier).warhead(), bombards[j].loc, NULL, &tanks[j], genTankDistance(bombards[j].loc), &gfxeffects, &gamemap, 1.0, false);
         bombards[j].state = BombardmentState::BS_COOLDOWN;
-        bombards[j].timer = round(tanks[j].player->getBombardment().unlockdelay() * FPS);
+        bombards[j].timer = round(tanks[j].player->getBombardment((int)bombardment_tier).unlockdelay() * FPS);
       }
     } else if(bombards[j].state == BombardmentState::BS_COOLDOWN) {
       bombards[j].timer--;
@@ -1162,13 +1162,13 @@ void Game::renderToScreen() const {
       drawCirclePieces(bombards[i].loc, 0.3, 4);
       drawCrosses(bombards[i].loc, 4);
       setColor(Color(1.0, 1.0, 1.0));
-      float ps = (float)bombards[i].timer / (tanks[i].player->getBombardment().lockdelay() * FPS);
+      float ps = (float)bombards[i].timer / (tanks[i].player->getBombardment((int)bombardment_tier).lockdelay() * FPS);
       drawCirclePieces(bombards[i].loc, 1 - ps, 4 * ps);
     } else if(bombards[i].state == BombardmentState::BS_COOLDOWN) {
       setColor(tanks[i].player->getFaction()->color * 0.25);
       drawCirclePieces(bombards[i].loc, 0.3, 4);
       drawCrosses(bombards[i].loc, 4);
-      float ps = (float)bombards[i].timer / (tanks[i].player->getBombardment().unlockdelay() * FPS);
+      float ps = (float)bombards[i].timer / (tanks[i].player->getBombardment((int)bombardment_tier).unlockdelay() * FPS);
       drawCirclePieces(bombards[i].loc, ps, 4 * (1 - ps));
     } else {
       CHECK(0);

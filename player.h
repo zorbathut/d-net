@@ -59,7 +59,7 @@ public:
 
   IDBUpgradeAdjust adjustUpgrade(const IDBUpgrade *in_upg) const;
   IDBGloryAdjust adjustGlory(const IDBGlory *in_upg) const;
-  IDBBombardmentAdjust adjustBombardment(const IDBBombardment *in_upg) const;
+  IDBBombardmentAdjust adjustBombardment(const IDBBombardment *in_upg, int bombard_level = -1) const;
   IDBWeaponAdjust adjustWeapon(const IDBWeapon *in_upg) const;
   IDBTankAdjust adjustTank(const IDBTank *in_upg) const;
 
@@ -117,7 +117,7 @@ public:
   const IDBFaction *getFaction() const;
   
   IDBGloryAdjust getGlory() const;
-  IDBBombardmentAdjust getBombardment() const;
+  IDBBombardmentAdjust getBombardment(int bombard_level) const;
   IDBTankAdjust getTank() const;
   
   Money getCash() const;
