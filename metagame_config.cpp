@@ -558,6 +558,7 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
       
       if(keys.keys[pms->buttons[BUTTON_CANCEL]].push)
         pms->setting_axistype_demo_curframe = -1;
+
       
     } else if(pms->settingmode == SETTING_AXISCHOOSE) {
       StackString sstr("SAX");
@@ -641,6 +642,7 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
       
       if(categ == -1) {
         pms->setting_axistype_demo_ai.reset();
+      } else if(pms->setting_axistype_demo_curframe == -1) {
       } else if(categ == KSAX_STEERING && pms->setting_axistype_demo_curframe == 0) {
         pms->setting_axistype_demo_ai->updateConfig(GameAiAxisRotater::steeringConfig(false, true));
       } else if(categ == KSAX_STEERING && pms->setting_axistype_demo_curframe == 1) {
@@ -649,17 +651,11 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
         pms->setting_axistype_demo_ai->updateConfig(GameAiAxisRotater::steeringConfig(true, true));
       } else if(categ == KSAX_STEERING && pms->setting_axistype_demo_curframe == 3) {
         pms->setting_axistype_demo_curframe = -1;
-        pms->setting_axistype_demo_ai.reset();
-        pms->setting_axistype_demo_player.reset();
-        pms->setting_axistype_demo_game.reset();
       } else if(categ == KSAX_ABSOLUTE && pms->setting_axistype_demo_curframe == 0) {
         pms->setting_axistype_demo_ai->updateConfig(GameAiAxisRotater::absoluteConfig());
       } else if(categ == KSAX_ABSOLUTE && pms->setting_axistype_demo_curframe == 1) {
       } else if(categ == KSAX_ABSOLUTE && pms->setting_axistype_demo_curframe == 2) {
         pms->setting_axistype_demo_curframe = -1;
-        pms->setting_axistype_demo_ai.reset();
-        pms->setting_axistype_demo_player.reset();
-        pms->setting_axistype_demo_game.reset();
       } else if(categ == KSAX_TANK && pms->setting_axistype_demo_curframe == 0) {
         pms->setting_axistype_demo_ai->updateConfig(GameAiAxisRotater::tankConfig(0, -1));
       } else if(categ == KSAX_TANK && pms->setting_axistype_demo_curframe == 1) {
@@ -670,12 +666,16 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
         pms->setting_axistype_demo_ai->updateConfig(GameAiAxisRotater::tankConfig(0, 1));
       } else if(categ == KSAX_TANK && pms->setting_axistype_demo_curframe == 4) {
         pms->setting_axistype_demo_curframe = -1;
-        pms->setting_axistype_demo_ai.reset();
-        pms->setting_axistype_demo_player.reset();
-        pms->setting_axistype_demo_game.reset();
       } else {
         CHECK(0);
       }
+      
+      if(pms->setting_axistype_demo_curframe == -1) {
+        pms->setting_axistype_demo_ai.reset();
+        pms->setting_axistype_demo_player.reset();
+        pms->setting_axistype_demo_game.reset();
+      }
+      
       pms->setting_axistype_demo_aiframe = pms->setting_axistype_demo_curframe;
     }
     
