@@ -32,9 +32,9 @@ float IDBWarheadAdjust::accumulate(const float *damage) const {
 float IDBWarheadAdjust::impactdamage() const { return accumulate(idb->impactdamage); };
 
 float IDBWarheadAdjust::radiusdamage() const { return accumulate(idb->radiusdamage); };
-float IDBWarheadAdjust::radiusfalloff() const { return idb->radiusfalloff; };
+float IDBWarheadAdjust::radiusfalloff() const { return adjust.adjustmentfactor(IDBAdjustment::WARHEAD_RADIUS_FALLOFF) * idb->radiusfalloff; };
 
-float IDBWarheadAdjust::wallremovalradius() const { return idb->wallremovalradius; };
+float IDBWarheadAdjust::wallremovalradius() const { return adjust.adjustmentfactor(IDBAdjustment::WARHEAD_RADIUS_FALLOFF) * idb->wallremovalradius; };  // just 'cause :)
 float IDBWarheadAdjust::wallremovalchance() const { return idb->wallremovalchance; };
 Color IDBWarheadAdjust::radiuscolor_bright() const { return idb->radiuscolor_bright; };
 Color IDBWarheadAdjust::radiuscolor_dim() const { return idb->radiuscolor_dim; };
@@ -139,12 +139,23 @@ IDBUpgradeAdjust::IDBUpgradeAdjust(const IDBUpgrade *in_idb, const IDBTank *in_t
 float IDBBombardmentAdjust::lockdelay() const { return idb->lockdelay; };
 float IDBBombardmentAdjust::unlockdelay() const { return idb->unlockdelay; };
 
-IDBWarheadAdjust IDBBombardmentAdjust::warhead() const { return IDBWarheadAdjust(idb->warhead, adjust); };
+IDBWarheadAdjust IDBBombardmentAdjust::warhead() const { CHECK(valid_level); return IDBWarheadAdjust(idb->warhead, adjust); };
 
 Money IDBBombardmentAdjust::cost() const { return idb->base_cost; };
 Money IDBBombardmentAdjust::sellcost() const { return cost() * adjust.recyclevalue(); };
 
-IDBBombardmentAdjust::IDBBombardmentAdjust(const IDBBombardment *in_idb, const IDBAdjustment &in_adjust, int in_bombardlevel) { idb = in_idb; adjust = in_adjust; blevel = in_bombardlevel; };
+IDBBombardmentAdjust::IDBBombardmentAdjust(const IDBBombardment *in_idb, const IDBAdjustment &in_adjust, int in_bombardlevel) {
+  idb = in_idb; adjust = in_adjust;
+  if(in_bombardlevel != -1) {
+    CHECK(in_bombardlevel >= 0);
+    valid_level = true;
+    for(int i = 0; i < IDBAdjustment::DAMAGE_LAST; i++)
+      adjust.adjusts[i] += 25 * in_bombardlevel;
+    adjust.adjusts[IDBAdjustment::WARHEAD_RADIUS_FALLOFF] += 20 * in_bombardlevel;
+  } else {
+    valid_level = false;
+  }
+};
 
 /*************
  * IDBTankAdjust

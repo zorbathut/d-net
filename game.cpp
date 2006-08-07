@@ -1305,7 +1305,7 @@ void Game::renderToScreen() const {
     }
     
     // Bombardment level text
-    if(bombardment_tier != 1.0) {
+    if(bombardment_tier != 0) {
       setColor(C::gray(1.0));
       drawText(StringPrintf("Bombardment level %d, %.0fs until next level", (int)floor(bombardment_tier) + 1, getTimeUntilBombardmentUpgrade()), 2, 2, 96);
     }
@@ -1477,6 +1477,8 @@ float Game::getBombardmentIncreasePerSec() const {
   for(int i = 0; i < bombards.size(); i++)
     if(bombards[i].state != BombardmentState::BS_OFF && bombards[i].state != BombardmentState::BS_SPAWNING)
       bombardy++;
+  if(!bombardy)
+    return 0;
   return 1 / (15 / ((float)bombardy / tanks.size()));
 }
   
