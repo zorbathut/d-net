@@ -219,6 +219,10 @@ private:
   float centereddemo_zoom;
   
   int demomode_hits;
+  
+  float bombardment_tier;
+  float getBombardmentIncreasePerSec() const;
+  float getTimeUntilBombardmentUpgrade() const;
 
   vector<const IDBFaction *> *wins;
   

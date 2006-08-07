@@ -1045,6 +1045,9 @@ bool Game::runTick(const vector< Keystates > &rkeys) {
     doInterp(&zoom_center.x, &z.first.x, &zoom_size.x, &z.second.x, &zoom_speed.x);
     doInterp(&zoom_center.y, &z.first.y, &zoom_size.y, &z.second.y, &zoom_speed.y);
   }
+  
+  if(gamemode == GMODE_STANDARD)
+    bombardment_tier += getBombardmentIncreasePerSec() / FPS;
 
   if(framesSinceOneLeft / FPS >= 3 && gamemode != GMODE_TEST && gamemode != GMODE_DEMO && gamemode != GMODE_CENTERED_DEMO) {
     if(zones.size() == 0) {
@@ -1282,10 +1285,10 @@ void Game::renderToScreen() const {
     
     // The giant overlay text for countdowns
     if(frameNmToStart == -1) {
-      setColor(1.0, 1.0, 1.0);
+      setColor(C::gray(1.0));
       drawJustifiedText("Choose team", 8, 133.3 / 2, 100.0 / 2, TEXT_CENTER, TEXT_CENTER);
     } else if(frameNm < frameNmToStart) {
-      setColor(1.0, 1.0, 1.0);
+      setColor(C::gray(1.0));
       int fleft = frameNmToStart - frameNm;
       int s;
       if(frameNm % 60 < 5) {
@@ -1297,10 +1300,17 @@ void Game::renderToScreen() const {
       }
       drawJustifiedText(StringPrintf("Ready %d.%02d", fleft / 60, fleft % 60), s, 133.3 / 2, 100.0 / 2, TEXT_CENTER, TEXT_CENTER);
     } else if(frameNm < frameNmToStart + 60) {
-      float dens = (240.0 - frameNm) / 60;
-      setColor(dens, dens, dens);
+      setColor(C::gray((240.0 - frameNm) / 60));
       drawJustifiedText("GO", 40, 133.3 / 2, 100.0 / 2, TEXT_CENTER, TEXT_CENTER);
     }
+    
+    // Bombardment level text
+    if(bombardment_tier != 1.0) {
+      setColor(C::gray(1.0));
+      drawText(StringPrintf("Bombardment level %d, %.0fs until next level", (int)floor(bombardment_tier) + 1, getTimeUntilBombardmentUpgrade()), 2, 2, 96);
+    }
+    
+    setZoom(0, 0, 1);
     
     // Our win ticker
     if(wins) {
@@ -1308,8 +1318,6 @@ void Game::renderToScreen() const {
       vector<const IDBFaction *> genExampleFacts(const vector<Tank> &plays, int ct);
       static vector<const IDBFaction *> fact = genExampleFacts(tanks, 5000);
       wins->swap(fact);*/
-      
-      setZoom(0, 0, 1);
       
       const float iconwidth = 0.02;
       const float iconborder = 0.001;
@@ -1376,6 +1384,7 @@ void Game::renderToScreen() const {
       
       //wins->swap(fact);
     }
+
   }
   
 };
@@ -1463,6 +1472,18 @@ void Game::addStatCycle() {
   }
 }
 
+float Game::getBombardmentIncreasePerSec() const {
+  int bombardy = 0;
+  for(int i = 0; i < bombards.size(); i++)
+    if(bombards[i].state != BombardmentState::BS_OFF && bombards[i].state != BombardmentState::BS_SPAWNING)
+      bombardy++;
+  return 1 / (15 / ((float)bombardy / tanks.size()));
+}
+  
+float Game::getTimeUntilBombardmentUpgrade() const {
+  return (floor(bombardment_tier + 1) - bombardment_tier) / getBombardmentIncreasePerSec();
+}
+
 Game::Game() {
   gamemode = GMODE_LAST;
 }
@@ -1518,6 +1539,8 @@ void Game::initCommon(const vector<Player*> &in_playerdata, const Level &lev) {
   teams.resize(tanks.size());
   for(int i = 0; i < tanks.size(); i++)
     tanks[i].team = &teams[i];
+  
+  bombardment_tier = 0;
   
   frameNmToStart = -1000;
   freezeUntilStart = false;

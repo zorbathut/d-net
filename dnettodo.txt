@@ -1,5 +1,6 @@
 ---- Major work path
 - Bombardment boosting
+- Swap accept/cancel
 - Mine collision slowdown problems
 - Mine duration
 - Better mine demo
