@@ -486,19 +486,19 @@ Metagame::Metagame(int playercount, int in_roundsBetweenShop) {
   
   CHECK(FLAGS_debugControllers >= 0 && FLAGS_debugControllers <= 2);
   CHECK(factions.size() >= FLAGS_debugControllers);
-  
+
   if(FLAGS_debugControllers >= 1) {
     CHECK(pms.size() >= 1); // better be
     pms[0].faction = &factions[0];
     factions[0].taken = true;
     pms[0].settingmode = SETTING_READY;
     pms[0].choicemode = CHOICE_IDLE;
-    pms[0].buttons[0] = 4;
-    pms[0].buttons[1] = 8;
-    pms[0].buttons[2] = 5;
-    pms[0].buttons[3] = 9;
-    pms[0].buttons[4] = 8;
-    pms[0].buttons[5] = 4;
+    pms[0].buttons[BUTTON_FIRE1] = 4;
+    pms[0].buttons[BUTTON_FIRE2] = 8;
+    pms[0].buttons[BUTTON_SWITCH1] = 5;
+    pms[0].buttons[BUTTON_SWITCH2] = 9;
+    pms[0].buttons[BUTTON_ACCEPT] = 4;
+    pms[0].buttons[BUTTON_CANCEL] = 8;
     CHECK(pms[0].buttons.size() == 6);
     pms[0].axes[0] = 0;
     pms[0].axes[1] = 1;
@@ -513,12 +513,12 @@ Metagame::Metagame(int playercount, int in_roundsBetweenShop) {
     factions[1].taken = true;
     pms[1].settingmode = SETTING_READY;
     pms[1].choicemode = CHOICE_IDLE;
-    pms[1].buttons[0] = 2;
-    pms[1].buttons[1] = 5;
-    pms[1].buttons[2] = 1;
-    pms[1].buttons[3] = 5;
-    pms[1].buttons[4] = 5;
-    pms[1].buttons[5] = 2;
+    pms[1].buttons[BUTTON_FIRE1] = 2;
+    pms[1].buttons[BUTTON_FIRE2] = 5;
+    pms[1].buttons[BUTTON_SWITCH1] = 1;
+    pms[1].buttons[BUTTON_SWITCH2] = 5;
+    pms[1].buttons[BUTTON_ACCEPT] = 2;
+    pms[1].buttons[BUTTON_CANCEL] = 5;
     CHECK(pms[1].buttons.size() == 6);
     pms[1].axes[0] = 0;
     pms[1].axes[1] = 1;
