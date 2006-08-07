@@ -1,10 +1,17 @@
 ---- Major work path
-- Exponential cash starting adjustment
+- Larger periods
+- Disable faction mode choice (for now)
+- Normalize controller to circle?
 - Bombardment boosting
-- Game joining, quitting, reconfiguring, 
-- Mine collision slowdown
+- Mine collision slowdown problems
+- Mine duration
+- Better mine demo
+- EMP demo
 - Gradual shop spawning
+- Cash breakdown in final results
+  - Test exponential cash starting adjustment
 - Cached stats
+- Game joining, quitting, reconfiguring, hibernating
 - Multishop
 - Next-gen collision/storage system on grid
 - Pull glory explody into its own deploy?

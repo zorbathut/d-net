@@ -261,6 +261,8 @@ void Metagame::renderToScreen() const {
   }
 }
 
+DECLARE_int(startingCash);  // defaults to 1000 atm
+
 void Metagame::calculateLrStats() {
   vector<vector<float> > values(4);
   for(int i = 0; i < playerdata.size(); i++) {
@@ -280,7 +282,7 @@ void Metagame::calculateLrStats() {
       chunkTotal++;
   }
   dprintf("%d, %f\n", gameround, game.firepowerSpent);
-  long double totalReturn = 75 * powl(1.08, gameround) * playerdata.size() * roundsBetweenShop + game.firepowerSpent * 0.8;
+  long double totalReturn = (75 / 1000 * FLAGS_startingCash) * powl(1.08, gameround) * playerdata.size() * roundsBetweenShop + game.firepowerSpent * 0.8;
   dprintf("Total cash is %s", stringFromLongdouble(totalReturn).c_str());
   
   if(totalReturn > 1e3000) {
