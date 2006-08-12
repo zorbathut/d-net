@@ -412,7 +412,7 @@ Shop::Shop() {
   player = NULL;
 }
 
-void Shop::init(Player *in_player) {
+void Shop::init(Player *in_player, bool miniature) {
   curloc.clear();
   expandy.clear();
   lastloc.clear();

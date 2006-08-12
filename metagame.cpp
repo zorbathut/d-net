@@ -78,7 +78,7 @@ bool Metagame::runTick(const vector<Controller> &keys) {
       CHECK(pid == playerdata.size());
       mode = MGM_SHOP;
       currentShop = 0;
-      shop.init(&playerdata[0]);
+      shop.init(&playerdata[0], true);
       
       calculateLrStats();
       lrCash.clear();
@@ -98,14 +98,14 @@ bool Metagame::runTick(const vector<Controller> &keys) {
         for(int i = 0; i < playerdata.size(); i++)
           playerdata[i].addCash(lrCash[i]);
         currentShop = 0;
-        shop.init(&playerdata[0]);
+        shop.init(&playerdata[0], true);
       }
     } else if(shop.runTick(ki[currentShop])) {
       StackString stp("Shop");
       // and here's our actual shop - the tickrunning happens in the conditional, this is just what happens if it's time to change shops
       currentShop++;
       if(currentShop != playerdata.size()) {
-        shop.init(&playerdata[currentShop]);
+        shop.init(&playerdata[currentShop], true);
       } else {
         mode = MGM_PLAY;
         game.initStandard(&playerdata, levels[int(frand() * levels.size())], &win_history);
@@ -255,7 +255,28 @@ void Metagame::renderToScreen() const {
       drawLine(Float4(0, divider_pos, 140, divider_pos), 0.1);
       
       GfxWindow gfxw(Float4(0, 0, 133.333, divider_pos), 1.0);
-      shop.renderToScreen();
+      
+      setZoom(Float4(0, 0, getAspect(), 1.0));
+      
+      drawLine(Float4(0, 0.5, getAspect(), 0.5), 0.001);
+      drawLine(Float4(getAspect() / 2, 0, getAspect() / 2, 1), 0.001);
+      
+      {
+        GfxWindow gfxw2(Float4(0, 0, getAspect() / 2, 0.5), 1.0);
+        shop.renderToScreen();
+      }
+      {
+        GfxWindow gfxw2(Float4(getAspect() / 2, 0, getAspect(), 0.5), 1.0);
+        shop.renderToScreen();
+      }
+      {
+        GfxWindow gfxw2(Float4(0, 0.5, getAspect() / 2, 1), 1.0);
+        shop.renderToScreen();
+      }
+      {
+        GfxWindow gfxw2(Float4(getAspect() / 2, 0.5, getAspect(), 1), 1.0);
+        shop.renderToScreen();
+      }
     }
   } else if(mode == MGM_PLAY) {
     StackString stp("Play");

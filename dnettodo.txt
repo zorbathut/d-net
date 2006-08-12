@@ -1,6 +1,4 @@
 ---- Major work path
-- Eliminate more old zooms
-- Shop work with arbitrary rects
 - Shop small mode
 - Multishop
 - Mine collision slowdown problems

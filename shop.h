@@ -42,7 +42,7 @@ public:
 
   Shop();
 
-  void init(Player *player);
+  void init(Player *player, bool miniature);
 
 private:
   Shop(const Shop &rhs);
