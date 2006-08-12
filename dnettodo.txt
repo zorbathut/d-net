@@ -1,5 +1,4 @@
 ---- Major work path
-- Windowing and new zoom for the Game drawing
 - Eliminate more old zooms
 - Shop work with arbitrary rects
 - Shop small mode

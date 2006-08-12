@@ -247,6 +247,14 @@ void Metagame::renderToScreen() const {
       }
     } else {
       StackString stp("Shop");
+      
+      const float divider_pos = 90;
+      
+      setZoom(Float4(0, 0, 133.333, 100));
+      setColor(1.0, 1.0, 1.0);
+      drawLine(Float4(0, divider_pos, 140, divider_pos), 0.1);
+      
+      GfxWindow gfxw(Float4(0, 0, 133.333, divider_pos), 1.0);
       shop.renderToScreen();
     }
   } else if(mode == MGM_PLAY) {

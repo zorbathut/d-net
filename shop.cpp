@@ -375,9 +375,9 @@ void Shop::doTableRender() const {
 
 void Shop::renderToScreen() const {
   CHECK(player);
-  clearFrame(player->getFaction()->color * 0.05 + Color(0.02, 0.02, 0.02));
+  //clearFrame(player->getFaction()->color * 0.05 + Color(0.02, 0.02, 0.02));
   setColor(1.0, 1.0, 1.0);
-  setZoom(Float4(0, 0, 133.333, 100));
+  setZoom(Float4(0, 0, 133.333, 133.333 / getAspect()));
   drawText(StringPrintf("Cash available %s", player->getCash().textual().c_str()), 2, 80, 1);
   if(selling) {
     drawText("    Selling equipment", 2, 1, 1);
@@ -386,8 +386,14 @@ void Shop::renderToScreen() const {
   }
   setColor(player->getFaction()->color * 0.5);
   {
-    const float ofs = 8;
-    drawDvec2(player->getFaction()->icon, Float4(ofs, ofs, 125 - ofs, 100 - ofs), 50, 0.5);
+    const float ofs = 0.08;
+    Float4 pos = getZoom();
+    const float diff = pos.y_span() * ofs;
+    pos.sx += diff;
+    pos.sy += diff;
+    pos.ex -= diff;
+    pos.ey -= diff;
+    drawDvec2(player->getFaction()->icon, pos, 50, 0.5);
   }
   doTableRender();
 
