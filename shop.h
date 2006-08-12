@@ -35,6 +35,7 @@ public:
   vector<float> expandy;
   
   ShopLayout();
+  ShopLayout(bool miniature);
 };
 
 class Shop {

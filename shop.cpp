@@ -5,15 +5,25 @@
 #include "gfx.h"
 
 ShopLayout::ShopLayout() {
+  // not valid
+}
+
+ShopLayout::ShopLayout(bool miniature) {
+  if(!miniature) {
+    fontsize = 2;
+    boxborder = 0.5;
+    itemheight = 4;
+  } else {
+    fontsize = 3;
+    boxborder = 0.75;
+    itemheight = 6;
+  }
+  
   totalwidth = 133.334;
   
   hoffset = 1.5;
   voffset = 5;
-  
-  fontsize = 2;
-  boxborder = 0.5;
-  itemheight = 4;
-  
+    
   boxwidth = (totalwidth - hoffset * 3) / 2;
   
   pricehpos = boxwidth / 8 * 7;
@@ -243,17 +253,17 @@ bool Shop::runTick(const Keystates &keys) {
   if(curloc != lastloc) {
     lastloc = curloc;
     if(getCurNode().type == HierarchyNode::HNT_WEAPON)
-      cshopinf.init(getCurNode().weapon, player);
+      cshopinf.init(getCurNode().weapon, player, miniature);
     else if(getCurNode().type == HierarchyNode::HNT_EQUIPWEAPON)
-      cshopinf.init(getCurNode().equipweapon, player);
+      cshopinf.init(getCurNode().equipweapon, player, miniature);
     else if(getCurNode().type == HierarchyNode::HNT_GLORY)
-      cshopinf.init(getCurNode().glory, player);
+      cshopinf.init(getCurNode().glory, player, miniature);
     else if(getCurNode().type == HierarchyNode::HNT_BOMBARDMENT)
-      cshopinf.init(getCurNode().bombardment, player);
+      cshopinf.init(getCurNode().bombardment, player, miniature);
     else if(getCurNode().type == HierarchyNode::HNT_UPGRADE)
-      cshopinf.init(getCurNode().upgrade, player);
+      cshopinf.init(getCurNode().upgrade, player, miniature);
     else if(getCurNode().type == HierarchyNode::HNT_TANK)
-      cshopinf.init(getCurNode().tank, player);
+      cshopinf.init(getCurNode().tank, player, miniature);
   }
   
   if(getCurNode().type == HierarchyNode::HNT_EQUIPWEAPON) {
@@ -427,4 +437,5 @@ void Shop::init(Player *in_player, bool in_miniature) {
   disabled = false;
   
   miniature = in_miniature;
+  slay = ShopLayout(miniature);
 }

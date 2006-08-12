@@ -72,36 +72,41 @@ void ShopInfo::null() {
   player = NULL;
 }
 
-void ShopInfo::init(const IDBWeapon *in_weapon, const Player *in_player) {
+void ShopInfo::init(const IDBWeapon *in_weapon, const Player *in_player, bool in_miniature) {
   null();
+  miniature = in_miniature;
   weapon = in_weapon;
   player = in_player;
   text = in_weapon->text;
   demo.init(weapon, player);
 }
-void ShopInfo::init(const IDBGlory *in_glory, const Player *in_player) {
+void ShopInfo::init(const IDBGlory *in_glory, const Player *in_player, bool in_miniature) {
   null();
+  miniature = in_miniature;
   glory = in_glory;
   player = in_player;
   text = in_glory->text;
   demo.init(glory, player);
 }
-void ShopInfo::init(const IDBBombardment *in_bombardment, const Player *in_player) {
+void ShopInfo::init(const IDBBombardment *in_bombardment, const Player *in_player, bool in_miniature) {
   null();
+  miniature = in_miniature;
   bombardment = in_bombardment;
   player = in_player;
   text = in_bombardment->text;
   demo.init(bombardment, player);
 }
-void ShopInfo::init(const IDBUpgrade *in_upgrade, const Player *in_player) {
+void ShopInfo::init(const IDBUpgrade *in_upgrade, const Player *in_player, bool in_miniature) {
   null();
+  miniature = in_miniature;
   upgrade = in_upgrade;
   player = in_player; 
   text = in_upgrade->text;
   // no working demo atm
 }
-void ShopInfo::init(const IDBTank *in_tank, const Player *in_player) {
+void ShopInfo::init(const IDBTank *in_tank, const Player *in_player, bool in_miniature) {
   null();
+  miniature = in_miniature;
   tank = in_tank;
   player = in_player;
   text = in_tank->text;
@@ -109,8 +114,9 @@ void ShopInfo::init(const IDBTank *in_tank, const Player *in_player) {
 }
   
 void ShopInfo::runTick() {
-  if(weapon || bombardment || glory)
-    demo.runTick();
+  if(!miniature)
+    if(weapon || bombardment || glory)
+      demo.runTick();
 }
 
 int wordsallowed(const vector<string> &left, float fontsize, float limit, const string &start) {
@@ -167,7 +173,7 @@ void drawShadedFormattedText(Float4 bounds, float fontsize, const string &text) 
 void ShopInfo::renderFrame(Float4 bounds, float fontsize, Float4 inset) const {
   CHECK(bool(weapon) + bool(glory) + bool(bombardment) + bool(upgrade) + bool(tank) == 1);
   
-  if(text)
+  if(text && !miniature)
     drawShadedFormattedText(bounds, fontsize, *text);
   
   bounds.sy += 25;
@@ -223,7 +229,7 @@ void ShopInfo::renderFrame(Float4 bounds, float fontsize, Float4 inset) const {
     CHECK(0);
   }
   
-  if(windowize) {
+  if(!miniature && windowize) {
     GfxWindow gfxw(inset, 1.0);
     demo.renderFrame();
   }
