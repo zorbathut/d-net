@@ -27,6 +27,8 @@ void setZoomAround(const Coord4 &bbox);
 void setZoomCenter(float cx, float cy, float radius_y);
 void setZoomVertical(float sx, float sy, float ey);
 
+Float4 getZoom();
+
 float getAspect();
 
 bool frameRunning();

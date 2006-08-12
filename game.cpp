@@ -1107,140 +1107,146 @@ void drawCrosses(const Coord2 &cloc, float rad) {
 }
 
 void Game::renderToScreen() const {
-
-  if(gamemode != GMODE_CENTERED_DEMO) {
-    const float availScreen = ((gamemode == GMODE_TEST || gamemode == GMODE_DEMO) ? 1.0 : 0.9);
-    const float pzoom = max(zoom_size.y / availScreen, zoom_size.x / getAspect());
-    // Set up zooming for everything that happens in gamespace
-    {
-      Float2 origin(zoom_center.x - pzoom * getAspect() / 2, zoom_center.y - pzoom * (1.0 - availScreen / 2));
-      setZoomVertical(origin.x, origin.y, origin.y + pzoom);
-    }
-  } else {
-    CHECK(tanks[0].live);
-    setZoomVertical(tanks[0].pos.x.toFloat() - centereddemo_zoom / 2, tanks[0].pos.y.toFloat() - centereddemo_zoom / 2, tanks[0].pos.y.toFloat() + centereddemo_zoom / 2);
-    
-    setColor(C::gray(0.5));
-    drawGrid(10, 0.1);
-  }
   
-  // In demo mode, clear the background
-  if(gamemode == GMODE_DEMO) {
-    drawSolid(Float4(-demomode_boxradi, -demomode_boxradi, demomode_boxradi, demomode_boxradi));
-  }
-  
-  // Tanks
-  for(int i = 0; i < tanks.size(); i++) {
-    tanks[i].render();
-  }
-  
-  // Projectiles, graphics effects, and bombardments
   {
-    // mines need these to know how far away they are from something
-    vector<Coord2> tankposes;
-    for(int i = 0; i < tanks.size(); i++)
-      if(tanks[i].live)
-        tankposes.push_back(tanks[i].pos);
+    // Set up zooming for everything that happens in gamespace
+    setZoom(Float4(0, 0, getAspect(), 1));
+    bool hasStatus = false;
+    if(gamemode == GMODE_STANDARD || gamemode == GMODE_CHOICE)
+      hasStatus = true;
     
-    for(int i = 0; i < projectiles.size(); i++)
-      for(int j = 0; j < projectiles[i].size(); j++)
-        projectiles[i][j].render(tankposes);
-  }
-  
-  for(int i = 0; i < gfxeffects.size(); i++)
-    gfxeffects[i]->render();
-  
-  for(int i = 0; i < bombards.size(); i++) {
-    if(bombards[i].state == BombardmentState::BS_OFF) {
-    } else if(bombards[i].state == BombardmentState::BS_SPAWNING) {
-    } else if(bombards[i].state == BombardmentState::BS_ACTIVE) {
-      setColor(tanks[i].player->getFaction()->color * 0.5);
-      drawCirclePieces(bombards[i].loc, 0.3, 4);
-      drawCrosses(bombards[i].loc, 4);
-    } else if(bombards[i].state == BombardmentState::BS_FIRING) {
-      setColor(tanks[i].player->getFaction()->color * 0.25);
-      drawCirclePieces(bombards[i].loc, 0.3, 4);
-      drawCrosses(bombards[i].loc, 4);
-      setColor(Color(1.0, 1.0, 1.0));
-      float ps = (float)bombards[i].timer / (tanks[i].player->getBombardment((int)bombardment_tier).lockdelay() * FPS);
-      drawCirclePieces(bombards[i].loc, 1 - ps, 4 * ps);
-    } else if(bombards[i].state == BombardmentState::BS_COOLDOWN) {
-      setColor(tanks[i].player->getFaction()->color * 0.25);
-      drawCirclePieces(bombards[i].loc, 0.3, 4);
-      drawCrosses(bombards[i].loc, 4);
-      float ps = (float)bombards[i].timer / (tanks[i].player->getBombardment((int)bombardment_tier).unlockdelay() * FPS);
-      drawCirclePieces(bombards[i].loc, ps, 4 * (1 - ps));
+    smart_ptr<GfxWindow> gfxw;
+    
+    if(gamemode != GMODE_CENTERED_DEMO) {
+      gfxw.reset(new GfxWindow(Float4(0, hasStatus?0.1:0, getAspect(), 1), 1.0));
+      
+      setZoomAround(Coord4(zoom_center.x - zoom_size.x / 2, zoom_center.y - zoom_size.y / 2, zoom_center.x + zoom_size.x / 2, zoom_center.y + zoom_size.y / 2));
     } else {
-      CHECK(0);
+      CHECK(tanks[0].live);
+      setZoomVertical(tanks[0].pos.x.toFloat() - centereddemo_zoom / 2, tanks[0].pos.y.toFloat() - centereddemo_zoom / 2, tanks[0].pos.y.toFloat() + centereddemo_zoom / 2);
+      
+      setColor(C::gray(0.5));
+      drawGrid(10, 0.1);
     }
-  }
-  
-  // Game map and collider, if we're drawing one
-  gamemap.render();
-  collider.render();
-  
-  // This is where we draw the zones
-  for(int i = 0; i < zones.size(); i++) {
-    setColor(zones[i].second * 0.3);
-    drawLineLoop(zones[i].first, 1.0);
-  }
-  
-  // Here's the text for choice mode
-  if(gamemode == GMODE_CHOICE) {
-    vector<vector<string> > zonenames;
-    {
-      vector<string> foo;
-      
-      foo.push_back("No Bonuses");
-      foo.push_back("No Penalties");
-      zonenames.push_back(foo);
-      foo.clear();
-      
-      foo.push_back("Small Bonuses");
-      foo.push_back("No Penalties");
-      zonenames.push_back(foo);
-      foo.clear();
-      
-      foo.push_back("Medium Bonuses");
-      foo.push_back("Small Penalties");
-      zonenames.push_back(foo);
-      foo.clear();
-      
-      foo.push_back("Large Bonuses");
-      foo.push_back("Medium Penalties");
-      zonenames.push_back(foo);
-      foo.clear();
+    
+    // In demo mode, clear the background
+    if(gamemode == GMODE_DEMO) {
+      drawSolid(Float4(-demomode_boxradi, -demomode_boxradi, demomode_boxradi, demomode_boxradi));
     }
-      
-    for(int i = 0; i < zones.size(); i++) {
-      setColor(zones[i].second);
-      Float2 pos = getCentroid(zones[i].first).toFloat();
-      pos.x *= 2;
-      pos.y *= 1.4;
-      drawJustifiedMultiText(zonenames[i], 10, pos, TEXT_CENTER, TEXT_CENTER);
-    }
-  }
-  
-  // Here is the DPS numbers
-  if(gamemode == GMODE_DEMO) {
-    setColor(1.0, 1.0, 1.0);
+    
+    // Tanks
     for(int i = 0; i < tanks.size(); i++) {
-      if(demomode_playermodes[i] == DEMOPLAYER_DPS) {
-        if(tanks[i].framesSinceDamage > 0) {
-          drawJustifiedText(StringPrintf("%.2f DPS", tanks[i].damageTaken / tanks[i].framesSinceDamage * FPS), demomode_boxradi / 15, tanks[i].pos.x.toFloat() - 5, tanks[i].pos.y.toFloat() - 5, TEXT_MAX, TEXT_MAX);
-        }
-      } else if(demomode_playermodes[i] == DEMOPLAYER_DPC) {
-        if(demomode_hits) {
-          drawJustifiedText(StringPrintf("%.2f DPH", tanks[i].damageTakenPreviousHits / demomode_hits), demomode_boxradi / 15, tanks[i].pos.x.toFloat() - 5, tanks[i].pos.y.toFloat() - 5, TEXT_MAX, TEXT_MAX);
-        }
-      } else if(demomode_playermodes[i] == DEMOPLAYER_DPH) {
-        if(tanks[i].damageEvents) {
-          drawJustifiedText(StringPrintf("%.2f DPH", tanks[i].damageTaken / tanks[i].damageEvents), demomode_boxradi / 15, tanks[i].pos.x.toFloat() - 5, tanks[i].pos.y.toFloat() - 5, TEXT_MAX, TEXT_MAX);
-        }
-      } else if(demomode_playermodes[i] == DEMOPLAYER_BOMBSIGHT) {
-      } else if(demomode_playermodes[i] == DEMOPLAYER_QUIET) {
+      tanks[i].render();
+    }
+    
+    // Projectiles, graphics effects, and bombardments
+    {
+      // mines need these to know how far away they are from something
+      vector<Coord2> tankposes;
+      for(int i = 0; i < tanks.size(); i++)
+        if(tanks[i].live)
+          tankposes.push_back(tanks[i].pos);
+      
+      for(int i = 0; i < projectiles.size(); i++)
+        for(int j = 0; j < projectiles[i].size(); j++)
+          projectiles[i][j].render(tankposes);
+    }
+    
+    for(int i = 0; i < gfxeffects.size(); i++)
+      gfxeffects[i]->render();
+    
+    for(int i = 0; i < bombards.size(); i++) {
+      if(bombards[i].state == BombardmentState::BS_OFF) {
+      } else if(bombards[i].state == BombardmentState::BS_SPAWNING) {
+      } else if(bombards[i].state == BombardmentState::BS_ACTIVE) {
+        setColor(tanks[i].player->getFaction()->color * 0.5);
+        drawCirclePieces(bombards[i].loc, 0.3, 4);
+        drawCrosses(bombards[i].loc, 4);
+      } else if(bombards[i].state == BombardmentState::BS_FIRING) {
+        setColor(tanks[i].player->getFaction()->color * 0.25);
+        drawCirclePieces(bombards[i].loc, 0.3, 4);
+        drawCrosses(bombards[i].loc, 4);
+        setColor(Color(1.0, 1.0, 1.0));
+        float ps = (float)bombards[i].timer / (tanks[i].player->getBombardment((int)bombardment_tier).lockdelay() * FPS);
+        drawCirclePieces(bombards[i].loc, 1 - ps, 4 * ps);
+      } else if(bombards[i].state == BombardmentState::BS_COOLDOWN) {
+        setColor(tanks[i].player->getFaction()->color * 0.25);
+        drawCirclePieces(bombards[i].loc, 0.3, 4);
+        drawCrosses(bombards[i].loc, 4);
+        float ps = (float)bombards[i].timer / (tanks[i].player->getBombardment((int)bombardment_tier).unlockdelay() * FPS);
+        drawCirclePieces(bombards[i].loc, ps, 4 * (1 - ps));
       } else {
         CHECK(0);
+      }
+    }
+    
+    // Game map and collider, if we're drawing one
+    gamemap.render();
+    collider.render();
+    
+    // This is where we draw the zones
+    for(int i = 0; i < zones.size(); i++) {
+      setColor(zones[i].second * 0.3);
+      drawLineLoop(zones[i].first, 1.0);
+    }
+    
+    // Here's the text for choice mode
+    if(gamemode == GMODE_CHOICE) {
+      vector<vector<string> > zonenames;
+      {
+        vector<string> foo;
+        
+        foo.push_back("No Bonuses");
+        foo.push_back("No Penalties");
+        zonenames.push_back(foo);
+        foo.clear();
+        
+        foo.push_back("Small Bonuses");
+        foo.push_back("No Penalties");
+        zonenames.push_back(foo);
+        foo.clear();
+        
+        foo.push_back("Medium Bonuses");
+        foo.push_back("Small Penalties");
+        zonenames.push_back(foo);
+        foo.clear();
+        
+        foo.push_back("Large Bonuses");
+        foo.push_back("Medium Penalties");
+        zonenames.push_back(foo);
+        foo.clear();
+      }
+        
+      for(int i = 0; i < zones.size(); i++) {
+        setColor(zones[i].second);
+        Float2 pos = getCentroid(zones[i].first).toFloat();
+        pos.x *= 2;
+        pos.y *= 1.4;
+        drawJustifiedMultiText(zonenames[i], 10, pos, TEXT_CENTER, TEXT_CENTER);
+      }
+    }
+    
+    // Here is the DPS numbers
+    if(gamemode == GMODE_DEMO) {
+      setColor(1.0, 1.0, 1.0);
+      for(int i = 0; i < tanks.size(); i++) {
+        if(demomode_playermodes[i] == DEMOPLAYER_DPS) {
+          if(tanks[i].framesSinceDamage > 0) {
+            drawJustifiedText(StringPrintf("%.2f DPS", tanks[i].damageTaken / tanks[i].framesSinceDamage * FPS), demomode_boxradi / 15, tanks[i].pos.x.toFloat() - 5, tanks[i].pos.y.toFloat() - 5, TEXT_MAX, TEXT_MAX);
+          }
+        } else if(demomode_playermodes[i] == DEMOPLAYER_DPC) {
+          if(demomode_hits) {
+            drawJustifiedText(StringPrintf("%.2f DPH", tanks[i].damageTakenPreviousHits / demomode_hits), demomode_boxradi / 15, tanks[i].pos.x.toFloat() - 5, tanks[i].pos.y.toFloat() - 5, TEXT_MAX, TEXT_MAX);
+          }
+        } else if(demomode_playermodes[i] == DEMOPLAYER_DPH) {
+          if(tanks[i].damageEvents) {
+            drawJustifiedText(StringPrintf("%.2f DPH", tanks[i].damageTaken / tanks[i].damageEvents), demomode_boxradi / 15, tanks[i].pos.x.toFloat() - 5, tanks[i].pos.y.toFloat() - 5, TEXT_MAX, TEXT_MAX);
+          }
+        } else if(demomode_playermodes[i] == DEMOPLAYER_BOMBSIGHT) {
+        } else if(demomode_playermodes[i] == DEMOPLAYER_QUIET) {
+        } else {
+          CHECK(0);
+        }
       }
     }
   }

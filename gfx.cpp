@@ -69,6 +69,7 @@ static float map_sy;
 static float map_ex;
 static float map_ey;
 static float map_zoom;
+static Float4 map_bounds;
 
 static float map_saved_sx;
 static float map_saved_sy;
@@ -330,6 +331,8 @@ void setZoomVertical(float in_sx, float in_sy, float in_ey) {
   map_saved_sy = in_sy;
   map_saved_ey = in_ey;
   
+  map_bounds = Float4(in_sx, in_sy, in_sx + (in_ey - in_sy) * getAspect(), in_ey);
+  
   float real_sy = in_sy - ((in_ey - in_sy) / windows.back().newbounds.y_span() * windows.back().newbounds.sy);
   float real_sx = in_sx - ((in_ey - in_sy) / windows.back().newbounds.y_span() * windows.back().newbounds.sx);
   float real_ey = real_sy + (in_ey - in_sy) / windows.back().newbounds.y_span();
@@ -348,6 +351,7 @@ void setZoomVertical(float in_sx, float in_sy, float in_ey) {
   map_ex = map_sx + map_zoom * 4 / 3;
 }
 
+Float4 getZoom() { return map_bounds; };
 float getAspect() { return windows.back().newbounds.x_span() / windows.back().newbounds.y_span(); };
 
 void setColor(float r, float g, float b) {
