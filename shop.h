@@ -8,31 +8,58 @@
 class Ai;
   
 class ShopLayout {
+private:
+  float int_totalwidth;
+  
+  float int_hoffset;
+  float int_voffset;
+  
+  float int_fontsize;
+  float int_boxborder;
+  float int_itemheight;
+  
+  float int_boxwidth;
+  
+  float int_pricehpos;
+  float int_quanthpos;
+  
+  float int_demowidth;
+  float int_demoxstart;
+  float int_demoystart;
+  
+  float int_boxthick;
+  
+  float int_hudstart;
+  float int_hudend;
+  
+  vector<float> int_expandy;
+  
 public:
-  float totalwidth;
   
-  float hoffset;
-  float voffset;
+  float totalwidth() const { return int_totalwidth; }
   
-  float fontsize;
-  float boxborder;
-  float itemheight;
+  float hoffset() const { return int_hoffset; };
+  float voffset() const { return int_voffset; };
   
-  float boxwidth;
+  float fontsize() const { return int_fontsize; };
+  float boxborder() const { return int_boxborder; };
+  float itemheight() const { return int_itemheight; };
   
-  float pricehpos;
-  float quanthpos;
+  float boxwidth() const { return int_boxwidth; };
   
-  float demowidth;
-  float demoxstart;
-  float demoystart;
+  float pricehpos() const { return int_pricehpos; };
+  float quanthpos() const { return int_quanthpos; };
   
-  float boxthick;
+  float demowidth() const { return int_demowidth; };
+  float demoxstart() const { return int_demoxstart; };
+  float demoystart() const { return int_demoystart; };
   
-  float hudstart;
-  float hudend;
+  float boxthick() const { return int_boxthick; };
   
-  vector<float> expandy;
+  float hudstart() const { return int_hudstart; };
+  float hudend() const { return int_hudend; };
+  
+  float expandy(int tier) const { return int_expandy[tier]; };
   
   void updateExpandy(int depth, bool this_branches);
   
