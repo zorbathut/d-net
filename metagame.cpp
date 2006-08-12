@@ -214,26 +214,26 @@ void Metagame::renderToScreen() const {
     game.renderToScreen();
     if(!controls_users()) {    
       setColor(1.0, 1.0, 1.0);
-      setZoom(0, 0, 100);
+      setZoom(Float4(0, 0, 133.333, 100));
       drawText(StringPrintf("faction setting round"), 2, 5, 82);
     }
   } else if(mode == MGM_SHOP) {
     if(currentShop == -1) {
       StackString stp("Results");
-      setZoom(0, 0, 600);
+      setZoom(Float4(0, 0, 800, 600));
       setColor(1.0, 1.0, 1.0);
-      drawText("damage", 30, 20, 20);
-      drawText("kills", 30, 20, 80);
-      drawText("wins", 30, 20, 140);
-      drawText("base", 30, 20, 200);
-      drawText("totals", 30, 20, 320);
+      drawText("Damage", 30, 20, 20);
+      drawText("Kills", 30, 20, 80);
+      drawText("Wins", 30, 20, 140);
+      drawText("Base", 30, 20, 200);
+      drawText("Totals", 30, 20, 320);
       drawMultibar(lrCategory[0], Float4(200, 20, 700, 60));
       drawMultibar(lrCategory[1], Float4(200, 80, 700, 120));
       drawMultibar(lrCategory[2], Float4(200, 140, 700, 180));
       drawMultibar(lrCategory[3], Float4(200, 200, 700, 240));
       drawMultibar(lrPlayer, Float4(200, 320, 700, 360));
       setColor(1.0, 1.0, 1.0);
-      drawJustifiedText("waiting", 30, 400, 400, TEXT_CENTER, TEXT_MIN);
+      drawJustifiedText("Waiting for", 30, 400, 400, TEXT_CENTER, TEXT_MIN);
       int notdone = count(checked.begin(), checked.end(), false);
       CHECK(notdone);
       int cpos = 0;
@@ -254,7 +254,7 @@ void Metagame::renderToScreen() const {
     game.renderToScreen();
     if(!controls_users()) {    
       setColor(1.0, 1.0, 1.0);
-      setZoom(0, 0, 100);
+      setZoom(Float4(0, 0, 133.333, 100));
       drawText(StringPrintf("round %d", gameround), 2, 5, 82);
     }
   } else {

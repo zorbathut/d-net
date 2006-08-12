@@ -194,9 +194,9 @@ void ShopInfo::renderFrame(Float4 bounds, float fontsize, Float4 inset) const {
   } else if(bombardment) {
     {
       ShopKVPrinter kvp(bounds, fontsize, fontshift);
-      kvp.print("Damage per hit", prettyFloatFormat(player->adjustBombardment(bombardment).warhead().stats_damagePerShot()));
-      kvp.print("Firing delay", prettyFloatFormat(player->adjustBombardment(bombardment).lockdelay()) + " seconds");
-      kvp.print("Cooldown", prettyFloatFormat(player->adjustBombardment(bombardment).unlockdelay()) + " second");
+      kvp.print("Damage per hit", prettyFloatFormat(player->adjustBombardment(bombardment, 0).warhead().stats_damagePerShot()));
+      kvp.print("Firing delay", prettyFloatFormat(player->adjustBombardment(bombardment, 0).lockdelay()) + " seconds");
+      kvp.print("Cooldown", prettyFloatFormat(player->adjustBombardment(bombardment, 0).unlockdelay()) + " second");
     }
     
     windowize = true;

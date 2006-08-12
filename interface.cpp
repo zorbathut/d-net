@@ -47,7 +47,7 @@ int StdMenu::tick(const Keystates &keys) {
 }
 
 void StdMenu::render() const {
-  setZoom(0, 0, 100);
+  setZoom(Float4(0, 0, 133.3333, 100));
   for(int i = 0; i < items.size(); i++) {
     if(i == cpos) {
       setColor(1.0, 1.0, 1.0);
@@ -333,7 +333,7 @@ void InterfaceMain::render() const {
       drawGrid(1, 0.01);
     }
     if(inptest) {
-      setZoom(0, 0, 600);
+      setZoom(Float4(0, 0, 800, 600));
       setColor(1.0, 1.0, 1.0);
       const float xsiz = 100;
       const float bord = xsiz / 25;

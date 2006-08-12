@@ -311,7 +311,7 @@ void renderSingleEntity(int p, int widgetlevel) {
     setColor(1.0, 0.3, 0.3);
     drawLineLoop(Tank().getTankVertices(Coord2(Coord(ent.x), Coord(ent.y)), (float)ent.params[0].bi_val / ent.params[1].bi_val * 2 * PI), 0.2);
     if(widgetlevel >= 1) {
-      setZoom(0, 0, 100);
+      setZoom(Float4(0, 0, 133.333, 100));
       for(int i = 0; i < ent.params.size(); i++) {
         if(entity_position == i) {
           setColor(1.0, 1.0, 1.0);
@@ -320,7 +320,7 @@ void renderSingleEntity(int p, int widgetlevel) {
         }
         ent.params[i].render(2, 12 + 3 * i, 2);
       }
-      setZoom(-zoom*1.25, -zoom, zoom);
+      setZoom(Float4(-zoom * 1.333, -zoom, zoom * 1.333, zoom));
     }
   } else {
     CHECK(0);
@@ -334,10 +334,10 @@ void renderEntities() {
 }
 
 void guiText(const string &in) {
-  setZoom(0, 0, 100);
+  setZoom(Float4(0, 0, 133.333, 100));
   drawText(in, 2, 2, gui_vpos);
   gui_vpos += 3;
-  setZoom(-zoom*1.25, -zoom, zoom);
+  setZoom(Float4(-zoom * 1.333, -zoom, zoom * 1.333, zoom));
 }
 
 bool vecEditTick(const Controller &keys) {
@@ -655,7 +655,7 @@ bool vecEditTick(const Controller &keys) {
 }
 
 void vecEditRender() {
-  setZoom(0, 0, 100);
+  setZoom(Float4(0, 0, 133.333, 100));
   setColor(1.0f, 1.0f, 1.0f);
   gui_vpos = 2;
   guiText(StringPrintf("%s mode - 78 90 for zoom+grid (%f, %f)", ed_names[modestack.top()], zoom, grid));

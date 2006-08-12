@@ -1114,11 +1114,11 @@ void Game::renderToScreen() const {
     // Set up zooming for everything that happens in gamespace
     {
       Float2 origin(zoom_center.x - pzoom * getAspect() / 2, zoom_center.y - pzoom * (1.0 - availScreen / 2));
-      setZoom(origin.x, origin.y, origin.y + pzoom);
+      setZoomVertical(origin.x, origin.y, origin.y + pzoom);
     }
   } else {
     CHECK(tanks[0].live);
-    setZoom(tanks[0].pos.x.toFloat() - centereddemo_zoom / 2, tanks[0].pos.y.toFloat() - centereddemo_zoom / 2, tanks[0].pos.y.toFloat() + centereddemo_zoom / 2);
+    setZoomVertical(tanks[0].pos.x.toFloat() - centereddemo_zoom / 2, tanks[0].pos.y.toFloat() - centereddemo_zoom / 2, tanks[0].pos.y.toFloat() + centereddemo_zoom / 2);
     
     setColor(C::gray(0.5));
     drawGrid(10, 0.1);
@@ -1247,7 +1247,7 @@ void Game::renderToScreen() const {
   
   // Here's everything outside gamespace
   if(gamemode != GMODE_TEST && gamemode != GMODE_DEMO && gamemode != GMODE_CENTERED_DEMO) {
-    setZoom(0, 0, 100);
+    setZoom(Float4(0, 0, 133.333, 100));
     
     // Player health
     {
@@ -1310,7 +1310,7 @@ void Game::renderToScreen() const {
       drawText(StringPrintf("Bombardment level %d, %.0fs until next level", (int)floor(bombardment_tier) + 1, getTimeUntilBombardmentUpgrade()), 2, 2, 96);
     }
     
-    setZoom(0, 0, 1);
+    setZoom(Float4(0, 0, 1.33333, 1));
     
     // Our win ticker
     if(wins) {

@@ -319,7 +319,7 @@ void Ai::updateWaitingForReport() {
   
   zeroNextKeys();
   nextKeys.menu = Float2(0, 0);
-  nextKeys.keys[0].down = true;
+  nextKeys.keys[0].down = frameNumber % 2;
 }
 
 Controller Ai::getNextKeys() const {

@@ -336,7 +336,7 @@ void ShopDemo::runTick() {
 
 void ShopDemo::renderFrame() const {
   game.renderToScreen();
-  setZoom(0, 0, 1);
+  setZoom(Float4(0, 0, 1, 1));
   setColor(1, 1, 1);
   if(mult(game.frameCount(), progression) != 1)
     drawJustifiedText(StringPrintf("%dx", mult(game.frameCount(), progression)), 0.1, 0, 1, TEXT_MIN, TEXT_MAX);

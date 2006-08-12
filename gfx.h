@@ -22,9 +22,10 @@ string printGraphicsStats();
 void clearFrame(const Color &color);
 
 void initFrame();
-void setZoom(float sx, float sy, float ey);
+void setZoom(const Float4 &box);
 void setZoomAround(const Coord4 &bbox);
 void setZoomCenter(float cx, float cy, float radius_y);
+void setZoomVertical(float sx, float sy, float ey);
 
 float getAspect();
 

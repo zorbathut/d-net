@@ -1,4 +1,9 @@
 ---- Major work path
+- Windowing and new zoom for the Game drawing
+- Eliminate more old zooms
+- Shop work with arbitrary rects
+- Shop small mode
+- Multishop
 - Mine collision slowdown problems
 - Mine duration
 - Better mine demo
@@ -8,7 +13,6 @@
   - Test exponential cash starting adjustment
 - Cached stats
 - Game joining, quitting, reconfiguring, hibernating
-- Multishop
 - Next-gen collision/storage system on grid
 - Pull glory explody into its own deploy?
 - Next-gen weapons

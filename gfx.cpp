@@ -285,7 +285,7 @@ GfxWindow::~GfxWindow() {
   float tmap_sy = windows.back().saved_sy;
   float tmap_ey = windows.back().saved_ey;
   windows.pop_back();
-  setZoom(tmap_sx, tmap_sy, tmap_ey);
+  setZoomVertical(tmap_sx, tmap_sy, tmap_ey);
   
   windows.back().setScissor();
 }
@@ -302,7 +302,28 @@ void GfxWindowState::setScissor() const { // yes, the Y's are correct - the scre
  * Primitives
  */
 
-void setZoom(float in_sx, float in_sy, float in_ey) {
+void setZoom(const Float4 &fl4) {
+  float rat = fl4.x_span() / fl4.y_span() / getAspect();
+  if(rat < 0.999 || rat > 1.001) {
+    dprintf("rat is %f\n", rat);
+    CHECK(0);
+  }
+  setZoomVertical(fl4.sx, fl4.sy, fl4.ey);
+}
+
+void setZoomAround(const Coord4 &bbox) {
+  Coord2 center = bbox.midpoint();
+  Coord zoomtop = bbox.y_span() / 2;
+  Coord zoomside = bbox.x_span() / 2;
+  Coord zoomtopfinal = max(zoomtop, zoomside / (Coord)getAspect());
+  setZoomVertical((center.x - zoomtopfinal * (Coord)getAspect()).toFloat(), (center.y - zoomtopfinal).toFloat(), (center.y + zoomtopfinal).toFloat());
+}
+
+void setZoomCenter(float cx, float cy, float radius_y) {
+  setZoomVertical(cx - radius_y * getAspect(), cy - radius_y, cy + radius_y);
+}
+
+void setZoomVertical(float in_sx, float in_sy, float in_ey) {
   finishLineCluster();
   
   map_saved_sx = in_sx;
@@ -325,18 +346,6 @@ void setZoom(float in_sx, float in_sy, float in_ey) {
   map_zoom = real_ey - real_sy;
   map_ey = map_sy + map_zoom;
   map_ex = map_sx + map_zoom * 4 / 3;
-}
-
-void setZoomAround(const Coord4 &bbox) {
-  Coord2 center = bbox.midpoint();
-  Coord zoomtop = bbox.y_span() / 2;
-  Coord zoomside = bbox.x_span() / 2;
-  Coord zoomtopfinal = max(zoomtop, zoomside / (Coord)getAspect());
-  setZoom((center.x - zoomtopfinal * (Coord)getAspect()).toFloat(), (center.y - zoomtopfinal).toFloat(), (center.y + zoomtopfinal).toFloat());
-}
-
-void setZoomCenter(float cx, float cy, float radius_y) {
-  setZoom(cx - radius_y * getAspect(), cy - radius_y, cy + radius_y);
 }
 
 float getAspect() { return windows.back().newbounds.x_span() / windows.back().newbounds.y_span(); };
