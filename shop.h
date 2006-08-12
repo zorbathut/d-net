@@ -6,12 +6,43 @@
 #include "shop_info.h"
 
 class Ai;
+  
+class ShopLayout {
+public:
+  float sl_totalwidth;
+  
+  float sl_hoffset;
+  float sl_voffset;
+  
+  float sl_fontsize;
+  float sl_boxborder;
+  float sl_itemheight;
+  
+  float sl_boxwidth;
+  
+  float sl_pricehpos;
+  float sl_quanthpos;
+  
+  float sl_demowidth;
+  float sl_demoxstart;
+  float sl_demoystart;
+  
+  float sl_boxthick;
+  
+  float sl_hudstart;
+  float sl_hudend;
+  
+  ShopLayout();
+};
 
 class Shop {
 private:
   mutable HierarchyNode dynamic_equip;
+  bool miniature;
 
   Player *player;
+
+  ShopLayout slay;
 
   vector<int> curloc;
   vector<int> lastloc;
