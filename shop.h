@@ -34,6 +34,8 @@ public:
   
   vector<float> expandy;
   
+  void updateExpandy(int depth, bool this_branches);
+  
   ShopLayout();
   ShopLayout(bool miniature);
 };

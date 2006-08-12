@@ -41,6 +41,18 @@ ShopLayout::ShopLayout(bool miniature) {
   expandy.resize(2, 1.0); // not really ideal but hey
 }
 
+const float framechange = 0.2;
+
+void ShopLayout::updateExpandy(int depth, bool this_branches) {
+  int sz = max((int)expandy.size(), depth + 1);
+  expandy.resize(sz, 1.0);
+  vector<float> nexpandy(sz, 1.0);
+  if(!this_branches && depth >= 2)
+    nexpandy[depth - 2] = 0.0;
+  for(int i = 0; i < expandy.size(); i++)
+    expandy[i] = approach(expandy[i], nexpandy[i], framechange);
+}
+
 const HierarchyNode &Shop::normalize(const HierarchyNode &item) const {
   if(item.type == HierarchyNode::HNT_EQUIP) {
     dynamic_equip = item;
@@ -368,19 +380,11 @@ void Shop::ai(Ai *ais) const {
     ais->updateShop(player);
 }
 
-const float framechange = 0.2;
-
 void Shop::doTableUpdate() {
   float nxofs = max((int)curloc.size() - 1 - !getCurNode().branches.size(), 0);
   xofs = approach(xofs, nxofs, framechange);
 
-  int sz = max(slay.expandy.size(), curloc.size() + 1);
-  slay.expandy.resize(sz, 1.0);
-  vector<float> nexpandy(sz, 1.0);
-  if(!getCurNode().branches.size() && curloc.size() >= 2)
-    nexpandy[curloc.size() - 2] = 0.0;
-  for(int i = 0; i < slay.expandy.size(); i++)
-    slay.expandy[i] = approach(slay.expandy[i], nexpandy[i], framechange);
+  slay.updateExpandy(curloc.size(), getCurNode().branches.size());
 };
 
 void Shop::doTableRender() const {
