@@ -32,6 +32,7 @@ private:
   float int_hudstart;
   float int_hudend;
   
+  float int_xofs;
   vector<float> int_expandy;
   
 public:
@@ -59,6 +60,7 @@ public:
   float hudstart() const { return int_hudstart; };
   float hudend() const { return int_hudend; };
   
+  float xofs() const { return int_xofs; };
   float expandy(int tier) const { return int_expandy[tier]; };
   
   void updateExpandy(int depth, bool this_branches);
@@ -79,8 +81,6 @@ private:
   vector<int> curloc;
   vector<int> lastloc;
 
-  float xofs;
-
   bool selling;
   bool disabled;  // when we switch, we wait for them to let go of the button
 
@@ -93,7 +93,6 @@ private:
   const HierarchyNode &getCategoryNode() const;
   const HierarchyNode &getCurNode() const;
 
-  void doTableUpdate();
   void doTableRender() const;
   void renderNode(const HierarchyNode &node, int depth) const;
 

@@ -38,12 +38,16 @@ ShopLayout::ShopLayout(bool miniature) {
   int_hudstart = 10;
   int_hudend = 95;
   
+  int_xofs = 0;
   int_expandy.resize(2, 1.0); // not really ideal but hey
 }
 
 const float framechange = 0.2;
 
 void ShopLayout::updateExpandy(int depth, bool this_branches) {
+  float nxofs = max(depth - 1 - !this_branches, 0);
+  int_xofs = approach(int_xofs, nxofs, framechange);
+  
   int sz = max((int)int_expandy.size(), depth + 1);
   int_expandy.resize(sz, 1.0);
   vector<float> nexpandy(sz, 1.0);
@@ -94,7 +98,7 @@ const HierarchyNode &Shop::getCategoryNode() const {
 }
 
 void Shop::renderNode(const HierarchyNode &node, int depth) const {
-  float hoffbase = slay.hoffset() + (slay.boxwidth() + slay.hoffset()) * (depth - xofs);
+  float hoffbase = slay.hoffset() + (slay.boxwidth() + slay.hoffset()) * (depth - slay.xofs());
   
   vector<pair<int, float> > rendpos;
   if(node.branches.size()) {
@@ -367,7 +371,7 @@ bool Shop::runTick(const Keystates &keys) {
     }
   }
   
-  doTableUpdate();
+  slay.updateExpandy(curloc.size(), getCurNode().branches.size());
   
   if(curloc == lastloc)
     cshopinf.runTick();
@@ -380,12 +384,6 @@ void Shop::ai(Ai *ais) const {
     ais->updateShop(player);
 }
 
-void Shop::doTableUpdate() {
-  float nxofs = max((int)curloc.size() - 1 - !getCurNode().branches.size(), 0);
-  xofs = approach(xofs, nxofs, framechange);
-
-  slay.updateExpandy(curloc.size(), getCurNode().branches.size());
-};
 
 void Shop::doTableRender() const {
   renderNode(itemDbRoot(), 0);
@@ -436,7 +434,6 @@ void Shop::init(Player *in_player, bool in_miniature) {
   
   player = in_player;
   curloc.push_back(0);
-  xofs = 0;
   selling = false;
   disabled = false;
   
