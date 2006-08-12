@@ -5,28 +5,30 @@
 #include "gfx.h"
 
 ShopLayout::ShopLayout() {
-  sl_totalwidth = 133.334;
+  totalwidth = 133.334;
   
-  sl_hoffset = 1.5;
-  sl_voffset = 5;
+  hoffset = 1.5;
+  voffset = 5;
   
-  sl_fontsize = 2;
-  sl_boxborder = 0.5;
-  sl_itemheight = 4;
+  fontsize = 2;
+  boxborder = 0.5;
+  itemheight = 4;
   
-  sl_boxwidth = (sl_totalwidth - sl_hoffset * 3) / 2;
+  boxwidth = (totalwidth - hoffset * 3) / 2;
   
-  sl_pricehpos = sl_boxwidth / 8 * 7;
-  sl_quanthpos = sl_boxwidth / 5 * 3;
+  pricehpos = boxwidth / 8 * 7;
+  quanthpos = boxwidth / 5 * 3;
   
-  sl_demowidth = sl_boxwidth * 3 / 5;
-  sl_demoxstart = sl_hoffset + sl_boxwidth * 1 / 5;
-  sl_demoystart = 50;
+  demowidth = boxwidth * 3 / 5;
+  demoxstart = hoffset + boxwidth * 1 / 5;
+  demoystart = 50;
   
-  sl_boxthick = 0.1;
+  boxthick = 0.1;
   
-  sl_hudstart = 10;
-  sl_hudend = 95;
+  hudstart = 10;
+  hudend = 95;
+  
+  expandy.resize(2, 1.0); // not really ideal but hey
 }
 
 const HierarchyNode &Shop::normalize(const HierarchyNode &item) const {
@@ -70,7 +72,7 @@ const HierarchyNode &Shop::getCategoryNode() const {
 }
 
 void Shop::renderNode(const HierarchyNode &node, int depth) const {
-  float hoffbase = slay.sl_hoffset + (slay.sl_boxwidth + slay.sl_hoffset) * (depth - xofs);
+  float hoffbase = slay.hoffset + (slay.boxwidth + slay.hoffset) * (depth - xofs);
   
   vector<pair<int, float> > rendpos;
   if(node.branches.size()) {
@@ -80,10 +82,10 @@ void Shop::renderNode(const HierarchyNode &node, int depth) const {
     else
       desiredfront = curloc[depth];
     for(int i = 0; i < desiredfront; i++)
-      rendpos.push_back(make_pair(i, slay.sl_voffset + (i * slay.sl_itemheight) * expandy[depth]));
+      rendpos.push_back(make_pair(i, slay.voffset + (i * slay.itemheight) * slay.expandy[depth]));
     for(int i = node.branches.size() - 1; i > desiredfront; i--)
-      rendpos.push_back(make_pair(i, slay.sl_voffset + (i * slay.sl_itemheight) * expandy[depth]));
-    rendpos.push_back(make_pair(desiredfront, slay.sl_voffset + (desiredfront * slay.sl_itemheight) * expandy[depth]));
+      rendpos.push_back(make_pair(i, slay.voffset + (i * slay.itemheight) * slay.expandy[depth]));
+    rendpos.push_back(make_pair(desiredfront, slay.voffset + (desiredfront * slay.itemheight) * slay.expandy[depth]));
   }
   
   if(depth < curloc.size())
@@ -98,28 +100,28 @@ void Shop::renderNode(const HierarchyNode &node, int depth) const {
     }
     {
       float xstart = hoffbase;
-      float xend = hoffbase + slay.sl_boxwidth;
+      float xend = hoffbase + slay.boxwidth;
       xend = min(xend, 133.334f);
       xstart = max(xstart, 0.f);
-      if(xend - xstart < slay.sl_boxwidth * 0.01)
+      if(xend - xstart < slay.boxwidth * 0.01)
         continue;   // if we can only see 1% of this box, just don't show any of it - gets rid of some ugly rendering edge cases
     }
-    drawSolid(Float4(hoffbase, rendpos[j].second, hoffbase + slay.sl_boxwidth, rendpos[j].second + slay.sl_fontsize + slay.sl_boxborder * 2));
-    drawRect(Float4(hoffbase, rendpos[j].second, hoffbase + slay.sl_boxwidth, rendpos[j].second + slay.sl_fontsize + slay.sl_boxborder * 2), slay.sl_boxthick);
+    drawSolid(Float4(hoffbase, rendpos[j].second, hoffbase + slay.boxwidth, rendpos[j].second + slay.fontsize + slay.boxborder * 2));
+    drawRect(Float4(hoffbase, rendpos[j].second, hoffbase + slay.boxwidth, rendpos[j].second + slay.fontsize + slay.boxborder * 2), slay.boxthick);
     // highlight if this one is in our "active path"
     if(depth < curloc.size() && curloc[depth] == itemid) {
       setColor(C::active_text);
     } else {
       setColor(C::inactive_text);
     }
-    drawText(node.branches[itemid].name.c_str(), slay.sl_fontsize, hoffbase + slay.sl_boxborder, rendpos[j].second + slay.sl_boxborder);
+    drawText(node.branches[itemid].name.c_str(), slay.fontsize, hoffbase + slay.boxborder, rendpos[j].second + slay.boxborder);
     // Display ammo count
     {
       if(node.branches[itemid].type == HierarchyNode::HNT_WEAPON) {
         if(player->ammoCount(node.branches[itemid].weapon) == -1) {
-          drawJustifiedText(StringPrintf("%s", "UNL"), slay.sl_fontsize, hoffbase + slay.sl_quanthpos, rendpos[j].second + slay.sl_boxborder, TEXT_MAX, TEXT_MIN);
+          drawJustifiedText(StringPrintf("%s", "UNL"), slay.fontsize, hoffbase + slay.quanthpos, rendpos[j].second + slay.boxborder, TEXT_MAX, TEXT_MIN);
         } else if(player->ammoCount(node.branches[itemid].weapon) > 0) {
-          drawJustifiedText(StringPrintf("%d", player->ammoCount(node.branches[itemid].weapon)), slay.sl_fontsize, hoffbase + slay.sl_quanthpos, rendpos[j].second + slay.sl_boxborder, TEXT_MAX, TEXT_MIN);
+          drawJustifiedText(StringPrintf("%d", player->ammoCount(node.branches[itemid].weapon)), slay.fontsize, hoffbase + slay.quanthpos, rendpos[j].second + slay.boxborder, TEXT_MAX, TEXT_MIN);
         }
       }
     }
@@ -177,7 +179,7 @@ void Shop::renderNode(const HierarchyNode &node, int depth) const {
             } else {
               setColor(0.6, 0.6, 0.6);
             }
-            drawText(StringPrintf("%d", i + 1), slay.sl_fontsize, hoffbase + slay.sl_pricehpos + slay.sl_fontsize * i * 2, rendpos[j].second + slay.sl_boxborder);
+            drawText(StringPrintf("%d", i + 1), slay.fontsize, hoffbase + slay.pricehpos + slay.fontsize * i * 2, rendpos[j].second + slay.boxborder);
           }
         }
         displayset = true;
@@ -191,7 +193,7 @@ void Shop::renderNode(const HierarchyNode &node, int depth) const {
       CHECK(displayset);
       
       // Draw what we've got.
-      drawJustifiedText(display, slay.sl_fontsize, hoffbase + slay.sl_pricehpos, rendpos[j].second + slay.sl_boxborder, TEXT_MAX, TEXT_MIN);
+      drawJustifiedText(display, slay.fontsize, hoffbase + slay.pricehpos, rendpos[j].second + slay.boxborder, TEXT_MAX, TEXT_MIN);
     } else {
       int dispmode = node.branches[itemid].displaymode;
       if(dispmode == HierarchyNode::HNDM_COSTUNIQUE) {
@@ -214,9 +216,9 @@ void Shop::renderNode(const HierarchyNode &node, int depth) const {
       if(dispmode == HierarchyNode::HNDM_BLANK) {
       } else if(dispmode == HierarchyNode::HNDM_COST) {
         setColor(1.0, 0.3, 0.3);
-        drawJustifiedText(StringPrintf("%s", node.branches[itemid].sellvalue(player).textual().c_str()), slay.sl_fontsize, hoffbase + slay.sl_pricehpos, rendpos[j].second + slay.sl_boxborder, TEXT_MAX, TEXT_MIN);
+        drawJustifiedText(StringPrintf("%s", node.branches[itemid].sellvalue(player).textual().c_str()), slay.fontsize, hoffbase + slay.pricehpos, rendpos[j].second + slay.boxborder, TEXT_MAX, TEXT_MIN);
       } else if(dispmode == HierarchyNode::HNDM_PACK) {
-        drawJustifiedText(StringPrintf("%dpk", node.branches[itemid].pack), slay.sl_fontsize, hoffbase + slay.sl_pricehpos, rendpos[j].second + slay.sl_boxborder, TEXT_MAX, TEXT_MIN);
+        drawJustifiedText(StringPrintf("%dpk", node.branches[itemid].pack), slay.fontsize, hoffbase + slay.pricehpos, rendpos[j].second + slay.boxborder, TEXT_MAX, TEXT_MIN);
       } else if(dispmode == HierarchyNode::HNDM_COSTUNIQUE) {
       } else if(dispmode == HierarchyNode::HNDM_EQUIP) {
       } else {
@@ -362,13 +364,13 @@ void Shop::doTableUpdate() {
   float nxofs = max((int)curloc.size() - 1 - !getCurNode().branches.size(), 0);
   xofs = approach(xofs, nxofs, framechange);
 
-  int sz = max(expandy.size(), curloc.size() + 1);
-  expandy.resize(sz, 1.0);
+  int sz = max(slay.expandy.size(), curloc.size() + 1);
+  slay.expandy.resize(sz, 1.0);
   vector<float> nexpandy(sz, 1.0);
   if(!getCurNode().branches.size() && curloc.size() >= 2)
     nexpandy[curloc.size() - 2] = 0.0;
-  for(int i = 0; i < expandy.size(); i++)
-    expandy[i] = approach(expandy[i], nexpandy[i], framechange);
+  for(int i = 0; i < slay.expandy.size(); i++)
+    slay.expandy[i] = approach(slay.expandy[i], nexpandy[i], framechange);
 };
 
 void Shop::doTableRender() const {
@@ -380,11 +382,11 @@ void Shop::renderToScreen() const {
   //clearFrame(player->getFaction()->color * 0.05 + Color(0.02, 0.02, 0.02));
   setColor(1.0, 1.0, 1.0);
   setZoom(Float4(0, 0, 133.333, 133.333 / getAspect()));
-  drawText(StringPrintf("Cash available %s", player->getCash().textual().c_str()), slay.sl_fontsize, 80, 1);
+  drawText(StringPrintf("Cash available %s", player->getCash().textual().c_str()), slay.fontsize, 80, 1);
   if(selling) {
-    drawText("    Selling equipment", slay.sl_fontsize, 1, 1);
+    drawText("    Selling equipment", slay.fontsize, 1, 1);
   } else {
-    drawText("    Buying equipment", slay.sl_fontsize, 1, 1);
+    drawText("    Buying equipment", slay.fontsize, 1, 1);
   }
   setColor(player->getFaction()->color * 0.5);
   {
@@ -404,7 +406,7 @@ void Shop::renderToScreen() const {
   } else {
     CHECK(curloc == lastloc);
     if(getCurNode().type == HierarchyNode::HNT_WEAPON || getCurNode().type == HierarchyNode::HNT_EQUIPWEAPON || getCurNode().type == HierarchyNode::HNT_GLORY || getCurNode().type == HierarchyNode::HNT_BOMBARDMENT || getCurNode().type == HierarchyNode::HNT_UPGRADE || getCurNode().type == HierarchyNode::HNT_TANK) {
-      cshopinf.renderFrame(Float4(slay.sl_hoffset, slay.sl_hudstart, slay.sl_hoffset + slay.sl_boxwidth, slay.sl_hudend), slay.sl_fontsize, Float4(slay.sl_demoxstart, slay.sl_demoystart, slay.sl_demoxstart + slay.sl_demowidth, slay.sl_demoystart + slay.sl_demowidth));
+      cshopinf.renderFrame(Float4(slay.hoffset, slay.hudstart, slay.hoffset + slay.boxwidth, slay.hudend), slay.fontsize, Float4(slay.demoxstart, slay.demoystart, slay.demoxstart + slay.demowidth, slay.demoystart + slay.demowidth));
     }
   }
 }
@@ -416,12 +418,10 @@ Shop::Shop() {
 
 void Shop::init(Player *in_player, bool in_miniature) {
   curloc.clear();
-  expandy.clear();
   lastloc.clear();
   
   player = in_player;
   curloc.push_back(0);
-  expandy.resize(2, 1.0); // not really ideal but hey
   xofs = 0;
   selling = false;
   disabled = false;

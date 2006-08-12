@@ -9,28 +9,30 @@ class Ai;
   
 class ShopLayout {
 public:
-  float sl_totalwidth;
+  float totalwidth;
   
-  float sl_hoffset;
-  float sl_voffset;
+  float hoffset;
+  float voffset;
   
-  float sl_fontsize;
-  float sl_boxborder;
-  float sl_itemheight;
+  float fontsize;
+  float boxborder;
+  float itemheight;
   
-  float sl_boxwidth;
+  float boxwidth;
   
-  float sl_pricehpos;
-  float sl_quanthpos;
+  float pricehpos;
+  float quanthpos;
   
-  float sl_demowidth;
-  float sl_demoxstart;
-  float sl_demoystart;
+  float demowidth;
+  float demoxstart;
+  float demoystart;
   
-  float sl_boxthick;
+  float boxthick;
   
-  float sl_hudstart;
-  float sl_hudend;
+  float hudstart;
+  float hudend;
+  
+  vector<float> expandy;
   
   ShopLayout();
 };
@@ -48,7 +50,6 @@ private:
   vector<int> lastloc;
 
   float xofs;
-  vector<float> expandy;
 
   bool selling;
   bool disabled;  // when we switch, we wait for them to let go of the button
