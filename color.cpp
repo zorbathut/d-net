@@ -1,6 +1,7 @@
 
 #include "color.h"
 
+#include "debug.h"
 #include "parse.h"
 
 Color::Color() { };
