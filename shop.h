@@ -41,6 +41,8 @@ public:
   
   Float4 box(int depth) const;
   
+  Float2 description(int depth) const;
+  
   Float4 hud() const;
   Float4 demo() const;
   

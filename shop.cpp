@@ -8,6 +8,10 @@ Float4 ShopLayout::box(int depth) const {
   return Float4(hoffbase(depth), 0, hoffbase(depth) + int_boxwidth, int_fontsize + int_boxborder * 2);
 }
 
+Float2 ShopLayout::description(int depth) const {
+  return Float2(hoffbase(depth) + int_boxborder, int_boxborder);
+}
+
 Float4 ShopLayout::hud() const {
   return Float4(int_hoffset, int_hudstart, int_hoffset + int_boxwidth, int_hudend);
 }
@@ -155,7 +159,7 @@ void Shop::renderNode(const HierarchyNode &node, int depth) const {
     } else {
       setColor(C::inactive_text);
     }
-    drawText(node.branches[itemid].name.c_str(), slay.fontsize(), hoffbase + slay.boxborder(), rendpos[j].second.y + slay.boxborder());
+    drawText(node.branches[itemid].name.c_str(), slay.fontsize(), slay.description(depth) + rendpos[j].second);
     // Display ammo count
     {
       if(node.branches[itemid].type == HierarchyNode::HNT_WEAPON) {
