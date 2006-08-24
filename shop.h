@@ -37,10 +37,12 @@ private:
   
 public:
   
-  float totalwidth() const { return int_totalwidth; }
+  float voffset() const { return int_voffset; };
+  
+  Float4 hud() const;
+  Float4 demo() const;
   
   float hoffset() const { return int_hoffset; };
-  float voffset() const { return int_voffset; };
   
   float fontsize() const { return int_fontsize; };
   float boxborder() const { return int_boxborder; };
@@ -51,14 +53,7 @@ public:
   float pricehpos() const { return int_pricehpos; };
   float quanthpos() const { return int_quanthpos; };
   
-  float demowidth() const { return int_demowidth; };
-  float demoxstart() const { return int_demoxstart; };
-  float demoystart() const { return int_demoystart; };
-  
   float boxthick() const { return int_boxthick; };
-  
-  float hudstart() const { return int_hudstart; };
-  float hudend() const { return int_hudend; };
   
   float xofs() const { return int_xofs; };
   float expandy(int tier) const { return int_expandy[tier]; };

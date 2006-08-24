@@ -4,6 +4,13 @@
 #include "ai.h"
 #include "gfx.h"
 
+Float4 ShopLayout::hud() const {
+  return Float4(int_hoffset, int_hudstart, int_hoffset + int_boxwidth, int_hudend);
+}
+Float4 ShopLayout::demo() const {
+  return Float4(int_demoxstart, int_demoystart, int_demoxstart + int_demowidth, int_demoystart + int_demowidth);
+}
+
 ShopLayout::ShopLayout() {
   // not valid
 }
@@ -418,7 +425,7 @@ void Shop::renderToScreen() const {
   } else {
     CHECK(curloc == lastloc);
     if(getCurNode().type == HierarchyNode::HNT_WEAPON || getCurNode().type == HierarchyNode::HNT_EQUIPWEAPON || getCurNode().type == HierarchyNode::HNT_GLORY || getCurNode().type == HierarchyNode::HNT_BOMBARDMENT || getCurNode().type == HierarchyNode::HNT_UPGRADE || getCurNode().type == HierarchyNode::HNT_TANK) {
-      cshopinf.renderFrame(Float4(slay.hoffset(), slay.hudstart(), slay.hoffset() + slay.boxwidth(), slay.hudend()), slay.fontsize(), Float4(slay.demoxstart(), slay.demoystart(), slay.demoxstart() + slay.demowidth(), slay.demoystart() + slay.demowidth()));
+      cshopinf.renderFrame(slay.hud(), slay.fontsize(), slay.demo());
     }
   }
 }
