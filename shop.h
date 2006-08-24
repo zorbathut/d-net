@@ -42,7 +42,7 @@ public:
   Float4 hud() const;
   Float4 demo() const;
   
-  float hoffset() const { return int_hoffset; };
+  float hoffbase(int depth) const;
   
   float fontsize() const { return int_fontsize; };
   float boxborder() const { return int_boxborder; };

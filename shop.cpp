@@ -11,6 +11,10 @@ Float4 ShopLayout::demo() const {
   return Float4(int_demoxstart, int_demoystart, int_demoxstart + int_demowidth, int_demoystart + int_demowidth);
 }
 
+float ShopLayout::hoffbase(int depth) const {
+  return int_hoffset + (int_boxwidth + int_hoffset) * (depth - int_xofs);
+}
+
 ShopLayout::ShopLayout() {
   // not valid
 }
@@ -105,7 +109,7 @@ const HierarchyNode &Shop::getCategoryNode() const {
 }
 
 void Shop::renderNode(const HierarchyNode &node, int depth) const {
-  float hoffbase = slay.hoffset() + (slay.boxwidth() + slay.hoffset()) * (depth - slay.xofs());
+  float hoffbase = slay.hoffbase(depth);
   
   vector<pair<int, float> > rendpos;
   if(node.branches.size()) {
