@@ -39,6 +39,8 @@ public:
   
   float voffset() const { return int_voffset; };
   
+  Float4 box(int depth) const;
+  
   Float4 hud() const;
   Float4 demo() const;
   

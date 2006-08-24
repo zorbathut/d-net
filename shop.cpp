@@ -4,6 +4,10 @@
 #include "ai.h"
 #include "gfx.h"
 
+Float4 ShopLayout::box(int depth) const {
+  return Float4(hoffbase(depth), 0, hoffbase(depth) + int_boxwidth, int_fontsize + int_boxborder * 2);
+}
+
 Float4 ShopLayout::hud() const {
   return Float4(int_hoffset, int_hudstart, int_hoffset + int_boxwidth, int_hudend);
 }
@@ -111,7 +115,7 @@ const HierarchyNode &Shop::getCategoryNode() const {
 void Shop::renderNode(const HierarchyNode &node, int depth) const {
   float hoffbase = slay.hoffbase(depth);
   
-  vector<pair<int, float> > rendpos;
+  vector<pair<int, Float2> > rendpos;
   if(node.branches.size()) {
     int desiredfront;
     if(curloc.size() <= depth)
@@ -119,10 +123,10 @@ void Shop::renderNode(const HierarchyNode &node, int depth) const {
     else
       desiredfront = curloc[depth];
     for(int i = 0; i < desiredfront; i++)
-      rendpos.push_back(make_pair(i, slay.voffset() + (i * slay.itemheight()) * slay.expandy(depth)));
+      rendpos.push_back(make_pair(i, Float2(0, slay.voffset() + (i * slay.itemheight()) * slay.expandy(depth))));
     for(int i = node.branches.size() - 1; i > desiredfront; i--)
-      rendpos.push_back(make_pair(i, slay.voffset() + (i * slay.itemheight()) * slay.expandy(depth)));
-    rendpos.push_back(make_pair(desiredfront, slay.voffset() + (desiredfront * slay.itemheight()) * slay.expandy(depth)));
+      rendpos.push_back(make_pair(i, Float2(0, slay.voffset() + (i * slay.itemheight()) * slay.expandy(depth))));
+    rendpos.push_back(make_pair(desiredfront, Float2(0, slay.voffset() + (desiredfront * slay.itemheight()) * slay.expandy(depth))));
   }
   
   if(depth < curloc.size())
@@ -143,22 +147,22 @@ void Shop::renderNode(const HierarchyNode &node, int depth) const {
       if(xend - xstart < slay.boxwidth() * 0.01)
         continue;   // if we can only see 1% of this box, just don't show any of it - gets rid of some ugly rendering edge cases
     }
-    drawSolid(Float4(hoffbase, rendpos[j].second, hoffbase + slay.boxwidth(), rendpos[j].second + slay.fontsize() + slay.boxborder() * 2));
-    drawRect(Float4(hoffbase, rendpos[j].second, hoffbase + slay.boxwidth(), rendpos[j].second + slay.fontsize() + slay.boxborder() * 2), slay.boxthick());
+    drawSolid(slay.box(depth) + rendpos[j].second);
+    drawRect(slay.box(depth) + rendpos[j].second, slay.boxthick());
     // highlight if this one is in our "active path"
     if(depth < curloc.size() && curloc[depth] == itemid) {
       setColor(C::active_text);
     } else {
       setColor(C::inactive_text);
     }
-    drawText(node.branches[itemid].name.c_str(), slay.fontsize(), hoffbase + slay.boxborder(), rendpos[j].second + slay.boxborder());
+    drawText(node.branches[itemid].name.c_str(), slay.fontsize(), hoffbase + slay.boxborder(), rendpos[j].second.y + slay.boxborder());
     // Display ammo count
     {
       if(node.branches[itemid].type == HierarchyNode::HNT_WEAPON) {
         if(player->ammoCount(node.branches[itemid].weapon) == -1) {
-          drawJustifiedText(StringPrintf("%s", "UNL"), slay.fontsize(), hoffbase + slay.quanthpos(), rendpos[j].second + slay.boxborder(), TEXT_MAX, TEXT_MIN);
+          drawJustifiedText(StringPrintf("%s", "UNL"), slay.fontsize(), hoffbase + slay.quanthpos(), rendpos[j].second.y + slay.boxborder(), TEXT_MAX, TEXT_MIN);
         } else if(player->ammoCount(node.branches[itemid].weapon) > 0) {
-          drawJustifiedText(StringPrintf("%d", player->ammoCount(node.branches[itemid].weapon)), slay.fontsize(), hoffbase + slay.quanthpos(), rendpos[j].second + slay.boxborder(), TEXT_MAX, TEXT_MIN);
+          drawJustifiedText(StringPrintf("%d", player->ammoCount(node.branches[itemid].weapon)), slay.fontsize(), hoffbase + slay.quanthpos(), rendpos[j].second.y + slay.boxborder(), TEXT_MAX, TEXT_MIN);
         }
       }
     }
@@ -216,7 +220,7 @@ void Shop::renderNode(const HierarchyNode &node, int depth) const {
             } else {
               setColor(0.6, 0.6, 0.6);
             }
-            drawText(StringPrintf("%d", i + 1), slay.fontsize(), hoffbase + slay.pricehpos() + slay.fontsize() * i * 2, rendpos[j].second + slay.boxborder());
+            drawText(StringPrintf("%d", i + 1), slay.fontsize(), hoffbase + slay.pricehpos() + slay.fontsize() * i * 2, rendpos[j].second.y + slay.boxborder());
           }
         }
         displayset = true;
@@ -230,7 +234,7 @@ void Shop::renderNode(const HierarchyNode &node, int depth) const {
       CHECK(displayset);
       
       // Draw what we've got.
-      drawJustifiedText(display, slay.fontsize(), hoffbase + slay.pricehpos(), rendpos[j].second + slay.boxborder(), TEXT_MAX, TEXT_MIN);
+      drawJustifiedText(display, slay.fontsize(), hoffbase + slay.pricehpos(), rendpos[j].second.y + slay.boxborder(), TEXT_MAX, TEXT_MIN);
     } else {
       int dispmode = node.branches[itemid].displaymode;
       if(dispmode == HierarchyNode::HNDM_COSTUNIQUE) {
@@ -253,9 +257,9 @@ void Shop::renderNode(const HierarchyNode &node, int depth) const {
       if(dispmode == HierarchyNode::HNDM_BLANK) {
       } else if(dispmode == HierarchyNode::HNDM_COST) {
         setColor(1.0, 0.3, 0.3);
-        drawJustifiedText(StringPrintf("%s", node.branches[itemid].sellvalue(player).textual().c_str()), slay.fontsize(), hoffbase + slay.pricehpos(), rendpos[j].second + slay.boxborder(), TEXT_MAX, TEXT_MIN);
+        drawJustifiedText(StringPrintf("%s", node.branches[itemid].sellvalue(player).textual().c_str()), slay.fontsize(), hoffbase + slay.pricehpos(), rendpos[j].second.y + slay.boxborder(), TEXT_MAX, TEXT_MIN);
       } else if(dispmode == HierarchyNode::HNDM_PACK) {
-        drawJustifiedText(StringPrintf("%dpk", node.branches[itemid].pack), slay.fontsize(), hoffbase + slay.pricehpos(), rendpos[j].second + slay.boxborder(), TEXT_MAX, TEXT_MIN);
+        drawJustifiedText(StringPrintf("%dpk", node.branches[itemid].pack), slay.fontsize(), hoffbase + slay.pricehpos(), rendpos[j].second.y + slay.boxborder(), TEXT_MAX, TEXT_MIN);
       } else if(dispmode == HierarchyNode::HNDM_COSTUNIQUE) {
       } else if(dispmode == HierarchyNode::HNDM_EQUIP) {
       } else {
