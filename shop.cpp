@@ -14,6 +14,9 @@ Float2 ShopLayout::description(int depth) const {
 Float2 ShopLayout::quantity(int depth) const {
   return Float2(hoffbase(depth) + int_quanthpos, int_boxborder);
 }
+Float2 ShopLayout::equipbit(int depth, int id) const {
+  return Float2(hoffbase(depth) + int_pricehpos - int_fontsize + int_fontsize * id * 2, int_boxborder);
+}
 
 Float4 ShopLayout::hud() const {
   return Float4(int_hoffset, int_hudstart, int_hoffset + int_boxwidth, int_hudend);
@@ -227,7 +230,7 @@ void Shop::renderNode(const HierarchyNode &node, int depth) const {
             } else {
               setColor(0.6, 0.6, 0.6);
             }
-            drawText(StringPrintf("%d", i + 1), slay.fontsize(), hoffbase + slay.pricehpos() + slay.fontsize() * i * 2, rendpos[j].second.y + slay.boxborder());
+            drawText(StringPrintf("%d", i + 1), slay.fontsize(), slay.equipbit(depth, i) + rendpos[j].second);
           }
         }
         displayset = true;

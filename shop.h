@@ -43,6 +43,7 @@ public:
   
   Float2 description(int depth) const;
   Float2 quantity(int depth) const;
+  Float2 equipbit(int depth, int id) const;
   
   Float4 hud() const;
   Float4 demo() const;
