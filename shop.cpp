@@ -14,6 +14,9 @@ Float2 ShopLayout::description(int depth) const {
 Float2 ShopLayout::quantity(int depth) const {
   return Float2(hoffbase(depth) + int_quanthpos, int_boxborder);
 }
+Float2 ShopLayout::price(int depth) const {
+  return Float2(hoffbase(depth) + int_pricehpos, int_boxborder);
+}
 Float2 ShopLayout::equipbit(int depth, int id) const {
   return Float2(hoffbase(depth) + int_pricehpos - int_fontsize + int_fontsize * id * 2, int_boxborder);
 }
@@ -244,13 +247,11 @@ void Shop::renderNode(const HierarchyNode &node, int depth) const {
       CHECK(displayset);
       
       // Draw what we've got.
-      drawJustifiedText(display, slay.fontsize(), hoffbase + slay.pricehpos(), rendpos[j].second.y + slay.boxborder(), TEXT_MAX, TEXT_MIN);
+      drawJustifiedText(display, slay.fontsize(), slay.price(depth) + rendpos[j].second, TEXT_MAX, TEXT_MIN);
     } else {
       int dispmode = node.branches[itemid].displaymode;
       if(dispmode == HierarchyNode::HNDM_COSTUNIQUE) {
         // Upgrades can't be sold
-        //if(node.branches[itemid].type == HierarchyNode::HNT_UPGRADE && player->canSellUpgrade(node.branches[itemid].upgrade))
-          //dispmode = HierarchyNode::HNDM_COST;
         if(node.branches[itemid].type == HierarchyNode::HNT_GLORY && player->canSellGlory(node.branches[itemid].glory))
           dispmode = HierarchyNode::HNDM_COST;
         if(node.branches[itemid].type == HierarchyNode::HNT_BOMBARDMENT && player->canSellBombardment(node.branches[itemid].bombardment))
@@ -267,9 +268,9 @@ void Shop::renderNode(const HierarchyNode &node, int depth) const {
       if(dispmode == HierarchyNode::HNDM_BLANK) {
       } else if(dispmode == HierarchyNode::HNDM_COST) {
         setColor(1.0, 0.3, 0.3);
-        drawJustifiedText(StringPrintf("%s", node.branches[itemid].sellvalue(player).textual().c_str()), slay.fontsize(), hoffbase + slay.pricehpos(), rendpos[j].second.y + slay.boxborder(), TEXT_MAX, TEXT_MIN);
+        drawJustifiedText(StringPrintf("%s", node.branches[itemid].sellvalue(player).textual().c_str()), slay.fontsize(), slay.price(depth) + rendpos[j].second, TEXT_MAX, TEXT_MIN);
       } else if(dispmode == HierarchyNode::HNDM_PACK) {
-        drawJustifiedText(StringPrintf("%dpk", node.branches[itemid].pack), slay.fontsize(), hoffbase + slay.pricehpos(), rendpos[j].second.y + slay.boxborder(), TEXT_MAX, TEXT_MIN);
+        drawJustifiedText(StringPrintf("%dpk", node.branches[itemid].pack), slay.fontsize(), slay.price(depth) + rendpos[j].second, TEXT_MAX, TEXT_MIN);
       } else if(dispmode == HierarchyNode::HNDM_COSTUNIQUE) {
       } else if(dispmode == HierarchyNode::HNDM_EQUIP) {
       } else {

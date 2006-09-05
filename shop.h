@@ -43,6 +43,7 @@ public:
   
   Float2 description(int depth) const;
   Float2 quantity(int depth) const;
+  Float2 price(int depth) const;
   Float2 equipbit(int depth, int id) const;
   
   Float4 hud() const;
@@ -55,9 +56,7 @@ public:
   float itemheight() const { return int_itemheight; };
   
   float boxwidth() const { return int_boxwidth; };
-  
-  float pricehpos() const { return int_pricehpos; };
-  
+    
   float boxthick() const { return int_boxthick; };
   
   float xofs() const { return int_xofs; };
