@@ -52,14 +52,12 @@ public:
   float hoffbase(int depth) const;
   
   float fontsize() const { return int_fontsize; };
-  float boxborder() const { return int_boxborder; };
   float itemheight() const { return int_itemheight; };
   
   float boxwidth() const { return int_boxwidth; };
     
   float boxthick() const { return int_boxthick; };
   
-  float xofs() const { return int_xofs; };
   float expandy(int tier) const { return int_expandy[tier]; };
   
   void updateExpandy(int depth, bool this_branches);
