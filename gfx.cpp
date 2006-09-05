@@ -570,27 +570,31 @@ float getTextWidth(const string &txt, float scale) {
   return acum;
 }
 
-void drawJustifiedText(const string &txt, float scale, float sx, float sy, int xps, int yps) {
+void drawJustifiedText(const string &txt, float scale, float x, float y, int xps, int yps) {
+  drawJustifiedText(txt, scale, Float2(x, y), xps, yps);
+}
+
+void drawJustifiedText(const string &txt, float scale, Float2 pos, int xps, int yps) {
   float wid = getTextWidth(txt, scale);
   if(xps == TEXT_MIN) {
   } else if(xps == TEXT_CENTER) {
-    sx -= wid / 2;
+    pos.x -= wid / 2;
   } else if(xps == TEXT_MAX) {
-    sx -= wid;
+    pos.x -= wid;
   } else {
     CHECK(0);
   }
   
   if(yps == TEXT_MIN) {
   } else if(yps == TEXT_CENTER) {
-    sy -= scale / 2;
+    pos.y -= scale / 2;
   } else if(yps == TEXT_MAX) {
-    sy -= scale;
+    pos.y -= scale;
   } else {
     CHECK(0);
   }
   
-  drawText(txt, scale, sx, sy);
+  drawText(txt, scale, pos);
 }
 
 void drawJustifiedMultiText(const vector<string> &txt, float letterscale, Float2 pos, int xps, int yps) {

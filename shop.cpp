@@ -11,6 +11,9 @@ Float4 ShopLayout::box(int depth) const {
 Float2 ShopLayout::description(int depth) const {
   return Float2(hoffbase(depth) + int_boxborder, int_boxborder);
 }
+Float2 ShopLayout::quantity(int depth) const {
+  return Float2(hoffbase(depth) + int_quanthpos, int_boxborder);
+}
 
 Float4 ShopLayout::hud() const {
   return Float4(int_hoffset, int_hudstart, int_hoffset + int_boxwidth, int_hudend);
@@ -164,9 +167,9 @@ void Shop::renderNode(const HierarchyNode &node, int depth) const {
     {
       if(node.branches[itemid].type == HierarchyNode::HNT_WEAPON) {
         if(player->ammoCount(node.branches[itemid].weapon) == -1) {
-          drawJustifiedText(StringPrintf("%s", "UNL"), slay.fontsize(), hoffbase + slay.quanthpos(), rendpos[j].second.y + slay.boxborder(), TEXT_MAX, TEXT_MIN);
+          drawJustifiedText(StringPrintf("%s", "UNL"), slay.fontsize(), slay.quantity(depth) + rendpos[j].second, TEXT_MAX, TEXT_MIN);
         } else if(player->ammoCount(node.branches[itemid].weapon) > 0) {
-          drawJustifiedText(StringPrintf("%d", player->ammoCount(node.branches[itemid].weapon)), slay.fontsize(), hoffbase + slay.quanthpos(), rendpos[j].second.y + slay.boxborder(), TEXT_MAX, TEXT_MIN);
+          drawJustifiedText(StringPrintf("%d", player->ammoCount(node.branches[itemid].weapon)), slay.fontsize(), slay.quantity(depth) + rendpos[j].second, TEXT_MAX, TEXT_MIN);
         }
       }
     }

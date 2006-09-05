@@ -42,6 +42,7 @@ public:
   Float4 box(int depth) const;
   
   Float2 description(int depth) const;
+  Float2 quantity(int depth) const;
   
   Float4 hud() const;
   Float4 demo() const;
@@ -55,7 +56,6 @@ public:
   float boxwidth() const { return int_boxwidth; };
   
   float pricehpos() const { return int_pricehpos; };
-  float quanthpos() const { return int_quanthpos; };
   
   float boxthick() const { return int_boxthick; };
   
