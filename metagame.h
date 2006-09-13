@@ -16,7 +16,7 @@ class Metagame {
   
   int faction_mode;
   
-  enum { MGM_PLAYERCHOOSE, MGM_FACTIONTYPE, MGM_SHOP, MGM_PLAY };
+  enum { MGM_PLAYERCHOOSE, MGM_FACTIONTYPE, MGM_TWEEN, MGM_PLAY };
   int currentShop;
   
   vector<PlayerMenuState> pms;  // heh.
@@ -49,6 +49,9 @@ public:
   bool runTick(const vector< Controller > &keys);
 
 private:
+  
+  bool tweenTick(const vector< Controller > &keys); // returns true when done
+  void tweenRender() const;
   
   void calculateLrStats();
   void drawMultibar(const vector<float> &sizes, const Float4 &dimensions) const;

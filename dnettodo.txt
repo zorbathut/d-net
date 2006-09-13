@@ -1,15 +1,15 @@
 ---- Major work path
-- Shop small mode
 - Multishop
+- Game joining, quitting, reconfiguring, hibernating
 - Mine collision slowdown problems
 - Mine duration
 - Better mine demo
 - EMP demo
 - Gradual shop spawning
+  - Remove bombardment from 2 player, make it cheaper for 3 and 4
 - Cash breakdown in final results
   - Test exponential cash starting adjustment
 - Cached stats
-- Game joining, quitting, reconfiguring, hibernating
 - Next-gen collision/storage system on grid
 - Pull glory explody into its own deploy?
 - Next-gen weapons
@@ -23,7 +23,6 @@
 - Game inheritance/abstraction?
 - Make DPS a little less flickery
 - Improve win ticker so it displays overall totals somewhere maybe
-- Remove bombardment from 2 player, make it cheaper for 3 and 4?
 - Demo screen for upgrades
 - Slide-along-walls track simulation?
 - "Kill graph"
@@ -43,6 +42,7 @@
 - Make explosion removals include the focus point
 
 ---- Things that may or may not be needed
+- Move stuff in tank small mode around a bit
 - Add tank sell deprecation
 - Special unique bonuses (turned the most, closest to death, most/least accurate, traveler, tunneler, deadeye, kamikaze)
 

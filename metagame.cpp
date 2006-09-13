@@ -76,7 +76,7 @@ bool Metagame::runTick(const vector<Controller> &keys) {
         }
       }
       CHECK(pid == playerdata.size());
-      mode = MGM_SHOP;
+      mode = MGM_TWEEN;
       currentShop = 0;
       shop.init(&playerdata[0], true);
       
@@ -84,40 +84,14 @@ bool Metagame::runTick(const vector<Controller> &keys) {
       lrCash.clear();
       lrCash.resize(playerdata.size());
     }
-  } else if(mode == MGM_SHOP) {
-    vector<Keystates> ki = genKeystates(keys, pms);
-    if(currentShop == -1) {
-      StackString stp("Results");
-      // this is a bit hacky - SHOP mode when currentShop is -1 is the "show results" screen
-      for(int i = 0; i < ki.size(); i++) {
-        CHECK(SIMUL_WEAPONS == 2);
-        if(ki[i].accept.push || ki[i].fire[0].push || ki[i].fire[1].push)
-          checked[i] = true;
-      }
-      if(count(checked.begin(), checked.end(), false) == 0) {
-        for(int i = 0; i < playerdata.size(); i++)
-          playerdata[i].addCash(lrCash[i]);
-        currentShop = 0;
-        shop.init(&playerdata[0], true);
-      }
-    } else if(shop.runTick(ki[currentShop])) {
-      StackString stp("Shop");
-      // and here's our actual shop - the tickrunning happens in the conditional, this is just what happens if it's time to change shops
-      currentShop++;
-      if(currentShop != playerdata.size()) {
-        shop.init(&playerdata[currentShop], true);
-      } else {
-        mode = MGM_PLAY;
-        game.initStandard(&playerdata, levels[int(frand() * levels.size())], &win_history);
-        CHECK(win_history.size() == gameround);
-      }
-    }
+  } else if(mode == MGM_TWEEN) {
+    tweenTick(keys);
   } else if(mode == MGM_PLAY) {
     StackString stp("Play");
     if(game.runTick(genKeystates(keys, pms))) {
       gameround++;
       if(gameround % roundsBetweenShop == 0) {
-        mode = MGM_SHOP;
+        mode = MGM_TWEEN;
         currentShop = -1;
         calculateLrStats();
         checked.clear();
@@ -166,7 +140,7 @@ void Metagame::ai(const vector<Ai *> &ai) const {
         ai[i]->updateCharacterChoice(factions, pms, i);
   } else if(mode == MGM_FACTIONTYPE) {
     game.ai(distillGameAi(ai, pms));
-  } else if(mode == MGM_SHOP) {
+  } else if(mode == MGM_TWEEN) {
     if(currentShop == -1) {
       for(int i = 0; i < ai.size(); i++)
         if(ai[i])
@@ -217,67 +191,8 @@ void Metagame::renderToScreen() const {
       setZoom(Float4(0, 0, 133.333, 100));
       drawText(StringPrintf("faction setting round"), 2, 5, 82);
     }
-  } else if(mode == MGM_SHOP) {
-    if(currentShop == -1) {
-      StackString stp("Results");
-      setZoom(Float4(0, 0, 800, 600));
-      setColor(1.0, 1.0, 1.0);
-      drawText("Damage", 30, 20, 20);
-      drawText("Kills", 30, 20, 80);
-      drawText("Wins", 30, 20, 140);
-      drawText("Base", 30, 20, 200);
-      drawText("Totals", 30, 20, 320);
-      drawMultibar(lrCategory[0], Float4(200, 20, 700, 60));
-      drawMultibar(lrCategory[1], Float4(200, 80, 700, 120));
-      drawMultibar(lrCategory[2], Float4(200, 140, 700, 180));
-      drawMultibar(lrCategory[3], Float4(200, 200, 700, 240));
-      drawMultibar(lrPlayer, Float4(200, 320, 700, 360));
-      setColor(1.0, 1.0, 1.0);
-      drawJustifiedText("Waiting for", 30, 400, 400, TEXT_CENTER, TEXT_MIN);
-      int notdone = count(checked.begin(), checked.end(), false);
-      CHECK(notdone);
-      int cpos = 0;
-      float increment = 800.0 / notdone;
-      for(int i = 0; i < checked.size(); i++) {
-        if(!checked[i]) {
-          setColor(playerdata[i].getFaction()->color);
-          drawDvec2(playerdata[i].getFaction()->icon, boxAround(Float2((cpos + 0.5) * increment, float(440 + 580) / 2), min(increment * 0.95f, float(580 - 440)) / 2), 50, 1);
-          cpos++;
-        }
-      }
-    } else {
-      StackString stp("Shop");
-      
-      const float divider_pos = 90;
-      
-      setZoom(Float4(0, 0, 133.333, 100));
-      setColor(1.0, 1.0, 1.0);
-      drawLine(Float4(0, divider_pos, 140, divider_pos), 0.1);
-      
-      GfxWindow gfxw(Float4(0, 0, 133.333, divider_pos), 1.0);
-      
-      setZoom(Float4(0, 0, getAspect(), 1.0));
-      
-      drawLine(Float4(0, 0.5, getAspect(), 0.5), 0.001);
-      drawLine(Float4(getAspect() / 2, 0, getAspect() / 2, 1), 0.001);
-      
-      {
-        GfxWindow gfxw2(Float4(0, 0, getAspect() / 2, 0.5), 1.0);
-        shop.renderToScreen();
-      }
-      {
-        GfxWindow gfxw2(Float4(getAspect() / 2, 0, getAspect(), 0.5), 1.0);
-        shop.renderToScreen();
-      }
-      {
-        GfxWindow gfxw2(Float4(0, 0.5, getAspect() / 2, 1), 1.0);
-        shop.renderToScreen();
-      }
-      {
-        GfxWindow gfxw2(Float4(getAspect() / 2, 0.5, getAspect(), 1), 1.0);
-        shop.renderToScreen();
-      }
-    }
+  } else if(mode == MGM_TWEEN) {
+    tweenRender();
   } else if(mode == MGM_PLAY) {
     StackString stp("Play");
     game.renderToScreen();
