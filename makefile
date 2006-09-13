@@ -10,7 +10,7 @@ all: d-net.exe
 include $(SOURCES:=.d)
 
 d-net.exe: $(SOURCES:=.o) makefile
-	nice $(CPP) -o $@ $(SOURCES:=.o) $(LINKFLAGS) 
+	$(CPP) -o $@ $(SOURCES:=.o) $(LINKFLAGS) 
 
 asm: $(SOURCES:=.S) makefile
 
@@ -48,13 +48,13 @@ package: d-net.exe
 	rm -rf deploy
 
 %.o: %.cpp makefile
-	nice $(CPP) $(CPPFLAGS) -c -o $@ $<
+	$(CPP) $(CPPFLAGS) -c -o $@ $<
 
 %.S: %.cpp makefile
-	nice $(CPP) $(CPPFLAGS) -c -g -Wa,-a,-ad $< > $@
+	$(CPP) $(CPPFLAGS) -c -g -Wa,-a,-ad $< > $@
 
 %.d: %.cpp makefile
-	nice bash -ec '$(CPP) $(CPPFLAGS) -MM $< | sed "s!$*.o!$*.o $@!g" > $@'
+	bash -ec '$(CPP) $(CPPFLAGS) -MM $< | sed "s!$*.o!$*.o $@!g" > $@'
 	
 stats:
 	@echo Graphics: `cat gfx.h gfx.cpp game_effects.h game_effects.cpp color.h color.cpp| wc -l` loc
