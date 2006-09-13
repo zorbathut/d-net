@@ -1,10 +1,27 @@
+How is *this* going to work?
+
+Things it needs to do:
+
+* Coordinate player choices
+* Split up into 4 screens on demand
+* Degenerate into 1 screen on demand
+* Do complicated things based on the mode it's in
+
+
+So:
+
+* Keep status arrays and such
+* For various modes, render shit differently
+* Functions for the various contexts
+
+
 ---- Major work path
 - Profit breakdown in final results
   - Test exponential cash starting adjustment
 - Multishop
 - Game joining, quitting, reconfiguring, hibernating
 - Mine collision slowdown problems
-- Mine duration
+- Mine halflife
 - Better mine demo
 - EMP demo
 - Gradual shop spawning

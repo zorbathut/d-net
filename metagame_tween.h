@@ -45,12 +45,23 @@ private:
   vector<bool> checked;
   
   // Tween layout info
-  Shop shop;
-  int currentShop;
+  struct Slot {
+    enum { CHOOSE, SHOP, RESULTS, EMPTY };
+    int type;
+    int pid;
+    Shop shop;
+  };
+  Slot slot;
+  int slot_count; // 1 or 4
   
   // Round count data
   int roundsbetweenshop;
   int shopcycles;
+  
+  // Zone functions
+  void chooseInit(int pid, int loc);
+  bool chooseTick(const vector<Controller> &keys);
+  void chooseRender();
 
   // Helper functions
   void drawMultibar(const vector<float> &sizes, const Float4 &dimensions) const;
