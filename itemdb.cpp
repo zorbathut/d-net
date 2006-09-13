@@ -302,6 +302,470 @@ void parseDamagecode(const string &str, float *arr) {
   }
 }
 
+void parseHierarchy(kvData *chunk) {
+  HierarchyNode *mountpoint = findNamedNode(chunk->kv["name"], 1);
+  HierarchyNode tnode;
+  tnode.name = tokenize(chunk->consume("name"), ".").back();
+  dprintf("name: %s\n", tnode.name.c_str());
+  tnode.type = HierarchyNode::HNT_CATEGORY;
+  if(chunk->kv.count("pack")) {
+    tnode.displaymode = HierarchyNode::HNDM_PACK;
+    tnode.pack = atoi(chunk->consume("pack").c_str());
+    CHECK(mountpoint->pack == -1);
+  } else {
+    tnode.displaymode = HierarchyNode::HNDM_BLANK;
+    tnode.pack = mountpoint->pack;
+  }
+  if(chunk->kv.count("type")) {
+    if(chunk->kv["type"] == "weapon") {
+      tnode.cat_restrictiontype = HierarchyNode::HNT_WEAPON;
+    } else if(chunk->kv["type"] == "upgrade") {
+      tnode.cat_restrictiontype = HierarchyNode::HNT_UPGRADE;
+    } else if(chunk->kv["type"] == "glory") {
+      tnode.cat_restrictiontype = HierarchyNode::HNT_GLORY;
+    } else if(chunk->kv["type"] == "bombardment") {
+      tnode.cat_restrictiontype = HierarchyNode::HNT_BOMBARDMENT;
+    } else if(chunk->kv["type"] == "tank") {
+      tnode.cat_restrictiontype = HierarchyNode::HNT_TANK;
+    } else {
+      dprintf("Unknown restriction type in hierarchy node: %s\n", chunk->kv["type"].c_str());
+      CHECK(0);
+    }
+    chunk->consume("type");
+  }
+  if(tnode.cat_restrictiontype == -1) {
+    tnode.cat_restrictiontype = mountpoint->cat_restrictiontype;
+  }
+  CHECK(mountpoint->cat_restrictiontype == -1 || tnode.cat_restrictiontype == mountpoint->cat_restrictiontype);
+  mountpoint->branches.push_back(tnode);
+}
+
+void parseWeapon(kvData *chunk) {
+  string name = chunk->consume("name");
+  CHECK(weaponclasses.count(name) == 0);
+  
+  const string informal_name = tokenize(name, ".").back();
+  
+  if(isMountedNode(name)) {
+    HierarchyNode *mountpoint = findNamedNode(name, 1);
+    HierarchyNode tnode;
+    tnode.name = informal_name;
+    tnode.type = HierarchyNode::HNT_WEAPON;
+    tnode.displaymode = HierarchyNode::HNDM_COST;
+    tnode.buyable = true;
+    tnode.pack = mountpoint->pack;
+    tnode.cat_restrictiontype = HierarchyNode::HNT_WEAPON;
+    CHECK(mountpoint->cat_restrictiontype == -1 || tnode.cat_restrictiontype == mountpoint->cat_restrictiontype);
+    tnode.weapon = &weaponclasses[name];
+    mountpoint->branches.push_back(tnode);
+    
+    CHECK(mountpoint->pack >= 1);
+    weaponclasses[name].quantity = mountpoint->pack;
+    weaponclasses[name].base_cost = moneyFromString(chunk->consume("cost"));
+    CHECK(weaponclasses[name].base_cost > Money(0));
+  } else {
+    CHECK(!chunk->kv.count("cost"));
+    weaponclasses[name].quantity = 100; // why not?
+    weaponclasses[name].base_cost = Money(0);
+  }
+  
+  weaponclasses[name].name = informal_name;
+  weaponclasses[name].firerate = atof(chunk->consume("firerate").c_str());
+
+  string projclass = chunk->consume("projectile");
+  CHECK(projclasses.count(projclass));
+  weaponclasses[name].projectile = &projclasses[projclass];
+
+  string deployclass = chunk->consume("deploy");
+  CHECK(deployclasses.count(deployclass));
+  weaponclasses[name].deploy = &deployclasses[deployclass];
+  
+  if(chunk->kv.count("text")) {
+    string textid = chunk->consume("text");
+    CHECK(text.count(textid));
+    weaponclasses[name].text = &text[textid];
+  } else {
+    weaponclasses[name].text = NULL;
+  }
+  
+  weaponclasses[name].demomode = WDM_FIRINGRANGE;
+  if(chunk->kv.count("demo")) {
+    if(chunk->kv["demo"] == "firingrange") {
+      weaponclasses[name].demomode = WDM_FIRINGRANGE;
+    } else if(chunk->kv["demo"] == "mines") {
+      weaponclasses[name].demomode = WDM_MINES;
+    } else {
+      CHECK(0);
+    }
+    chunk->consume("demo");
+  }
+}
+
+void parseUpgrade(kvData *chunk) {
+  string name = chunk->consume("name");
+  CHECK(upgradeclasses.count(name) == 0);
+  
+  HierarchyNode *mountpoint = findNamedNode(name, 1);
+  HierarchyNode tnode;
+  tnode.name = tokenize(name, ".").back();
+  tnode.type = HierarchyNode::HNT_UPGRADE;
+  tnode.displaymode = HierarchyNode::HNDM_COSTUNIQUE;
+  tnode.buyable = true;
+  tnode.pack = 1;
+  CHECK(mountpoint->pack == 1 || mountpoint->pack == -1);
+  tnode.cat_restrictiontype = HierarchyNode::HNT_UPGRADE;
+  CHECK(mountpoint->cat_restrictiontype == -1 || tnode.cat_restrictiontype == mountpoint->cat_restrictiontype);
+  tnode.upgrade = &upgradeclasses[name];
+  mountpoint->branches.push_back(tnode);
+  
+  upgradeclasses[name].costmult = atoi(chunk->consume("costmult").c_str());
+  string adjustment = chunk->consume("adjustment");
+  CHECK(adjustmentclasses.count(adjustment));
+  upgradeclasses[name].adjustment = &adjustmentclasses[adjustment];
+  
+  if(chunk->kv.count("text")) {
+    string textid = chunk->consume("text");
+    CHECK(text.count(textid));
+    upgradeclasses[name].text = &text[textid];
+  } else {
+    upgradeclasses[name].text = NULL;
+  }
+}
+
+void parseProjectile(kvData *chunk) {
+  string name = chunk->consume("name");
+  CHECK(prefixed(name, "projectile"));
+  CHECK(projclasses.count(name) == 0);
+
+  projclasses[name].motion = PM_NORMAL;
+  projclasses[name].thickness_visual = 0.1;
+  
+  if(chunk->kv.count("thickness_visual")) {
+    projclasses[name].thickness_visual = atof(chunk->consume("thickness_visual").c_str());
+  }
+  
+  if(chunk->kv.count("motion")) {
+    string motion = chunk->consume("motion");
+    if(motion == "normal") {
+      projclasses[name].motion = PM_NORMAL;
+    } else if(motion == "missile") {
+      projclasses[name].motion = PM_MISSILE;
+    } else if(motion == "airbrake") {
+      projclasses[name].motion = PM_AIRBRAKE;
+    } else if(motion == "mine") {
+      projclasses[name].motion = PM_MINE;
+      projclasses[name].radius_physical = atof(chunk->consume("radius_physical").c_str());
+    } else if(motion == "instant") {
+      projclasses[name].motion = PM_INSTANT;
+    } else {
+      dprintf("Unknown projectile motion: %s\n", motion.c_str());
+      CHECK(0);
+    }
+  }
+  
+  projclasses[name].color = C::gray(1.0);
+  if(projclasses[name].motion != PM_INSTANT)
+    projclasses[name].color = colorFromString(chunk->consume("color"));
+  
+  projclasses[name].velocity = 0;
+  if(projclasses[name].motion != PM_MINE && projclasses[name].motion != PM_INSTANT)
+    projclasses[name].velocity = atof(chunk->consume("velocity").c_str()) / FPS;
+  
+  string warheadclass = chunk->consume("warhead");
+  CHECK(warheadclasses.count(warheadclass));
+  projclasses[name].warhead = &warheadclasses[warheadclass];
+}
+
+void parseDeploy(kvData *chunk) {
+  string name = chunk->consume("name");
+  CHECK(prefixed(name, "deploy"));
+  CHECK(deployclasses.count(name) == 0);
+  
+  deployclasses[name];
+  
+  deployclasses[name].type = DT_FORWARD;
+  if(chunk->kv.count("type")) {
+    string type = chunk->consume("type");
+    if(type == "forward") {
+      deployclasses[name].type = DT_FORWARD;
+    } else if(type == "centroid") {
+      deployclasses[name].type = DT_CENTROID;
+      CHECK(!chunk->kv.count("anglestddev"));
+    } else {
+      CHECK(0);
+    }
+  }
+  
+  deployclasses[name].anglestddev = 0;
+  if(chunk->kv.count("anglestddev"))
+    deployclasses[name].anglestddev = atof(chunk->consume("anglestddev").c_str());
+}
+
+void parseWarhead(kvData *chunk) {
+  string name = chunk->consume("name");
+  CHECK(prefixed(name, "warhead"));
+  CHECK(warheadclasses.count(name) == 0);
+  
+  memset(warheadclasses[name].impactdamage, 0, sizeof(warheadclasses[name].impactdamage));
+  memset(warheadclasses[name].radiusdamage, 0, sizeof(warheadclasses[name].radiusdamage));
+  warheadclasses[name].radiusfalloff = -1;
+  warheadclasses[name].wallremovalradius = 0;
+  warheadclasses[name].wallremovalchance = 1;
+  
+  if(chunk->kv.count("impactdamage"))
+    parseDamagecode(chunk->consume("impactdamage"), warheadclasses[name].impactdamage);
+  
+  CHECK(chunk->kv.count("radiusfalloff") == chunk->kv.count("radiusdamage"));
+  
+  warheadclasses[name].radiuscolor_bright = Color(1.0, 0.8, 0.2);
+  warheadclasses[name].radiuscolor_dim = Color(1.0, 0.2, 0.0);
+  if(chunk->kv.count("radiusdamage")) {
+    parseDamagecode(chunk->consume("radiusdamage"), warheadclasses[name].radiusdamage);
+    warheadclasses[name].radiusfalloff = atof(chunk->consume("radiusfalloff").c_str());
+    if(chunk->kv.count("radiuscolor_bright")) {
+      warheadclasses[name].radiuscolor_bright = colorFromString(chunk->consume("radiuscolor_bright"));
+      warheadclasses[name].radiuscolor_dim = colorFromString(chunk->consume("radiuscolor_dim"));
+    } // no, you can't just overload one, dammit
+  }
+  
+  if(chunk->kv.count("wallremovalradius"))
+    warheadclasses[name].wallremovalradius = atof(chunk->consume("wallremovalradius").c_str());
+  
+  if(chunk->kv.count("wallremovalchance"))
+    warheadclasses[name].wallremovalchance = atof(chunk->consume("wallremovalchance").c_str());
+}
+
+void parseGlory(kvData *chunk) {
+  string name = chunk->consume("name");
+  CHECK(gloryclasses.count(name) == 0);
+  
+  HierarchyNode *mountpoint = findNamedNode(name, 1);
+  HierarchyNode tnode;
+  tnode.name = tokenize(name, ".").back();
+  tnode.type = HierarchyNode::HNT_GLORY;
+  tnode.displaymode = HierarchyNode::HNDM_COSTUNIQUE;
+  tnode.buyable = true;
+  tnode.pack = 1;
+  tnode.cat_restrictiontype = HierarchyNode::HNT_GLORY;
+  CHECK(mountpoint->cat_restrictiontype == -1 || tnode.cat_restrictiontype == mountpoint->cat_restrictiontype);
+  
+  tnode.glory = &gloryclasses[name];
+  mountpoint->branches.push_back(tnode);
+  
+  gloryclasses[name].base_cost = moneyFromString(chunk->consume("cost"));
+  
+  string projclass = chunk->consume("projectile");
+  CHECK(projclasses.count(projclass));
+  gloryclasses[name].projectile = &projclasses[projclass];
+
+  string deployclass = chunk->consume("deploy");
+  CHECK(deployclasses.count(deployclass));
+  gloryclasses[name].deploy = &deployclasses[deployclass];
+  
+  string coreclass = chunk->consume("core");
+  CHECK(warheadclasses.count(coreclass));
+  gloryclasses[name].core = &warheadclasses[coreclass];
+
+  gloryclasses[name].minsplits = atoi(chunk->consume("minsplits").c_str());
+  gloryclasses[name].maxsplits = atoi(chunk->consume("maxsplits").c_str());
+  gloryclasses[name].minsplitsize = atoi(chunk->consume("minsplitsize").c_str());
+  gloryclasses[name].maxsplitsize = atoi(chunk->consume("maxsplitsize").c_str());
+  gloryclasses[name].shotspersplit = atoi(chunk->consume("shotspersplit").c_str());
+  
+  if(chunk->kv.count("default") && atoi(chunk->consume("default").c_str())) {
+    CHECK(!defglory);
+    defglory = &gloryclasses[name];
+  }
+  
+  if(chunk->kv.count("text")) {
+    string textid = chunk->consume("text");
+    CHECK(text.count(textid));
+    gloryclasses[name].text = &text[textid];
+  } else {
+    gloryclasses[name].text = NULL;
+  }
+}
+
+void parseBombardment(kvData *chunk) {
+  string name = chunk->consume("name");
+  CHECK(bombardmentclasses.count(name) == 0);
+  
+  HierarchyNode *mountpoint = findNamedNode(name, 1);
+  HierarchyNode tnode;
+  tnode.name = tokenize(name, ".").back();
+  tnode.type = HierarchyNode::HNT_BOMBARDMENT;
+  tnode.displaymode = HierarchyNode::HNDM_COSTUNIQUE;
+  tnode.buyable = true;
+  tnode.pack = 1;
+  tnode.cat_restrictiontype = HierarchyNode::HNT_BOMBARDMENT;
+  CHECK(mountpoint->cat_restrictiontype == -1 || tnode.cat_restrictiontype == mountpoint->cat_restrictiontype);
+  
+  tnode.bombardment = &bombardmentclasses[name];
+  mountpoint->branches.push_back(tnode);
+
+  string warheadclass = chunk->consume("warhead");
+  CHECK(warheadclasses.count(warheadclass));
+  
+  bombardmentclasses[name].base_cost = moneyFromString(chunk->consume("cost"));
+  
+  bombardmentclasses[name].warhead = &warheadclasses[warheadclass];
+
+  bombardmentclasses[name].lockdelay = atof(chunk->consume("lockdelay").c_str());
+  bombardmentclasses[name].unlockdelay = atof(chunk->consume("unlockdelay").c_str());
+
+  if(chunk->kv.count("default") && atoi(chunk->consume("default").c_str())) {
+    CHECK(!defbombardment);
+    defbombardment = &bombardmentclasses[name];
+  }
+  
+  if(chunk->kv.count("text")) {
+    string textid = chunk->consume("text");
+    CHECK(text.count(textid));
+    bombardmentclasses[name].text = &text[textid];
+  } else {
+    bombardmentclasses[name].text = NULL;
+  }
+}
+
+void parseTank(kvData *chunk) {
+  string name = chunk->consume("name");
+  CHECK(tankclasses.count(name) == 0);
+  
+  HierarchyNode *mountpoint = findNamedNode(name, 1);
+  HierarchyNode tnode;
+  tnode.name = tokenize(name, ".").back();
+  tnode.type = HierarchyNode::HNT_TANK;
+  tnode.displaymode = HierarchyNode::HNDM_COSTUNIQUE;
+  tnode.buyable = true;
+  tnode.pack = 1;
+  tnode.cat_restrictiontype = HierarchyNode::HNT_TANK;
+  CHECK(mountpoint->cat_restrictiontype == -1 || tnode.cat_restrictiontype == mountpoint->cat_restrictiontype);
+  
+  tnode.tank = &tankclasses[name];
+  mountpoint->branches.push_back(tnode);
+  
+  string weapon = chunk->consume("weapon");
+  CHECK(weaponclasses.count(weapon));
+  
+  tankclasses[name].weapon = &weaponclasses[weapon];
+  
+  tankclasses[name].health = atof(chunk->consume("health").c_str());
+  tankclasses[name].handling = atof(chunk->consume("handling").c_str());
+  tankclasses[name].engine = atof(chunk->consume("engine").c_str());
+  tankclasses[name].mass = atof(chunk->consume("mass").c_str());
+  
+  {
+    vector<string> vtx = tokenize(chunk->consume("vertices"), "\n");
+    CHECK(vtx.size() >= 3); // triangle is the minimum, no linetanks please
+    for(int i = 0; i < vtx.size(); i++) {
+      vector<string> vti = tokenize(vtx[i], " ");
+      CHECK(vti.size() == 2);
+      tankclasses[name].vertices.push_back(Coord2(atof(vti[0].c_str()), atof(vti[1].c_str())));
+    }
+    Coord2 centr = getCentroid(tankclasses[name].vertices);
+    for(int i = 0; i < tankclasses[name].vertices.size(); i++)
+      tankclasses[name].vertices[i] -= centr;
+  }
+  
+  tankclasses[name].base_cost = moneyFromString(chunk->consume("cost"));
+  if(chunk->kv.count("upgrade_base")) {
+    tankclasses[name].upgrade_base = moneyFromString(chunk->consume("upgrade_base"));
+  } else {
+    tankclasses[name].upgrade_base = tankclasses[name].base_cost;
+  }
+  
+  if(chunk->kv.count("default") && atoi(chunk->consume("default").c_str())) {
+    CHECK(!deftank);
+    deftank = &tankclasses[name];
+  }
+  
+  if(chunk->kv.count("text")) {
+    string textid = chunk->consume("text");
+    CHECK(text.count(textid));
+    tankclasses[name].text = &text[textid];
+  } else {
+    tankclasses[name].text = NULL;
+  }
+}
+
+void parseAdjustment(kvData *chunk) {
+  string name = chunk->consume("name");
+  CHECK(adjustmentclasses.count(name) == 0);
+  
+  adjustmentclasses[name];
+  
+  CHECK(sizeof(adjust_text) / sizeof(*adjust_text) == IDBAdjustment::LAST);
+  CHECK(sizeof(adjust_human) / sizeof(*adjust_human) == IDBAdjustment::LAST);
+  CHECK(sizeof(adjust_unit) / sizeof(*adjust_unit) == IDBAdjustment::LAST);
+  
+  for(int i = 0; i < IDBAdjustment::LAST; i++)
+    if(chunk->kv.count(adjust_text[i]))
+      adjustmentclasses[name].adjusts[i] = atoi(chunk->consume(adjust_text[i]).c_str());
+}
+
+void parseFaction(kvData *chunk) {
+  IDBFaction fact;
+  
+  fact.icon = loadDvec2("data/base/faction_icons/" + chunk->consume("file"));
+  fact.color = colorFromString(chunk->consume("color"));
+  fact.name = chunk->consume("name");
+  
+  {
+    vector<int> lines = sti(tokenize(chunk->consume("lines"), " "));
+    vector<string> words = tokenize(fact.name, " ");
+    CHECK(words.size() == accumulate(lines.begin(), lines.end(), 0));
+    int cword = 0;
+    for(int i = 0; i < lines.size(); i++) {
+      string acu;
+      for(int j = 0; j < lines[i]; j++) {
+        if(j)
+          acu += " ";
+        acu += words[cword++];
+      }
+      fact.name_lines.push_back(acu);
+    }
+  }
+  
+  string adjustment = chunk->consume("adjustment") +  ".high";
+  CHECK(adjustmentclasses.count(adjustment));
+  for(int i = 0; i < 3; i++)
+    fact.adjustment[i] = &adjustmentclasses["null"]; // wheeeeeeeee
+  fact.adjustment[3] = &adjustmentclasses[adjustment];
+  
+  if(chunk->kv.count("text")) {
+    string textid = chunk->consume("text");
+    CHECK(text.count(textid));
+    fact.text = &text[textid];
+  } else {
+    fact.text = NULL;
+  }
+  
+  factions.push_back(fact);
+}
+
+void parseEquip(kvData *chunk) {
+  string name = chunk->consume("name");
+  CHECK(bombardmentclasses.count(name) == 0);
+  
+  HierarchyNode *mountpoint = findNamedNode(name, 1);
+  HierarchyNode tnode;
+  tnode.name = tokenize(name, ".").back();
+  tnode.type = HierarchyNode::HNT_EQUIP;
+  tnode.displaymode = HierarchyNode::HNDM_BLANK;
+  tnode.cat_restrictiontype = HierarchyNode::HNT_EQUIPWEAPON;
+  CHECK(mountpoint->cat_restrictiontype == -1 || tnode.cat_restrictiontype == mountpoint->cat_restrictiontype);
+  
+  mountpoint->branches.push_back(tnode);
+}
+
+void parseText(kvData *chunk) {
+  string name = chunk->consume("name");
+  CHECK(text.count(name) == 0);
+  CHECK(strncmp(name.c_str(), "text.", 5) == 0);
+  text[name] = chunk->consume("data");
+  // yay
+}
+
 void parseItemFile(const string &fname) {
   ifstream tfil(fname.c_str());
   CHECK(tfil);
@@ -313,463 +777,31 @@ void parseItemFile(const string &fname) {
       continue;
     }
     if(chunk.category == "hierarchy") {
-      HierarchyNode *mountpoint = findNamedNode(chunk.kv["name"], 1);
-      HierarchyNode tnode;
-      tnode.name = tokenize(chunk.consume("name"), ".").back();
-      dprintf("name: %s\n", tnode.name.c_str());
-      tnode.type = HierarchyNode::HNT_CATEGORY;
-      if(chunk.kv.count("pack")) {
-        tnode.displaymode = HierarchyNode::HNDM_PACK;
-        tnode.pack = atoi(chunk.consume("pack").c_str());
-        CHECK(mountpoint->pack == -1);
-      } else {
-        tnode.displaymode = HierarchyNode::HNDM_BLANK;
-        tnode.pack = mountpoint->pack;
-      }
-      if(chunk.kv.count("type")) {
-        if(chunk.kv["type"] == "weapon") {
-          tnode.cat_restrictiontype = HierarchyNode::HNT_WEAPON;
-        } else if(chunk.kv["type"] == "upgrade") {
-          tnode.cat_restrictiontype = HierarchyNode::HNT_UPGRADE;
-        } else if(chunk.kv["type"] == "glory") {
-          tnode.cat_restrictiontype = HierarchyNode::HNT_GLORY;
-        } else if(chunk.kv["type"] == "bombardment") {
-          tnode.cat_restrictiontype = HierarchyNode::HNT_BOMBARDMENT;
-        } else if(chunk.kv["type"] == "tank") {
-          tnode.cat_restrictiontype = HierarchyNode::HNT_TANK;
-        } else {
-          dprintf("Unknown restriction type in hierarchy node: %s\n", chunk.kv["type"].c_str());
-          CHECK(0);
-        }
-        chunk.consume("type");
-      }
-      if(tnode.cat_restrictiontype == -1) {
-        tnode.cat_restrictiontype = mountpoint->cat_restrictiontype;
-      }
-      CHECK(mountpoint->cat_restrictiontype == -1 || tnode.cat_restrictiontype == mountpoint->cat_restrictiontype);
-      mountpoint->branches.push_back(tnode);
-
+      parseHierarchy(&chunk);
     } else if(chunk.category == "weapon") {
-      
-      string name = chunk.consume("name");
-      CHECK(weaponclasses.count(name) == 0);
-      
-      const string informal_name = tokenize(name, ".").back();
-      
-      if(isMountedNode(name)) {
-        HierarchyNode *mountpoint = findNamedNode(name, 1);
-        HierarchyNode tnode;
-        tnode.name = informal_name;
-        tnode.type = HierarchyNode::HNT_WEAPON;
-        tnode.displaymode = HierarchyNode::HNDM_COST;
-        tnode.buyable = true;
-        tnode.pack = mountpoint->pack;
-        tnode.cat_restrictiontype = HierarchyNode::HNT_WEAPON;
-        CHECK(mountpoint->cat_restrictiontype == -1 || tnode.cat_restrictiontype == mountpoint->cat_restrictiontype);
-        tnode.weapon = &weaponclasses[name];
-        mountpoint->branches.push_back(tnode);
-        
-        CHECK(mountpoint->pack >= 1);
-        weaponclasses[name].quantity = mountpoint->pack;
-        weaponclasses[name].base_cost = moneyFromString(chunk.consume("cost"));
-        CHECK(weaponclasses[name].base_cost > Money(0));
-      } else {
-        CHECK(!chunk.kv.count("cost"));
-        weaponclasses[name].quantity = 100; // why not?
-        weaponclasses[name].base_cost = Money(0);
-      }
-      
-      weaponclasses[name].name = informal_name;
-      weaponclasses[name].firerate = atof(chunk.consume("firerate").c_str());
-
-      string projclass = chunk.consume("projectile");
-      CHECK(projclasses.count(projclass));
-      weaponclasses[name].projectile = &projclasses[projclass];
-
-      string deployclass = chunk.consume("deploy");
-      CHECK(deployclasses.count(deployclass));
-      weaponclasses[name].deploy = &deployclasses[deployclass];
-      
-      if(chunk.kv.count("text")) {
-        string textid = chunk.consume("text");
-        CHECK(text.count(textid));
-        weaponclasses[name].text = &text[textid];
-      } else {
-        weaponclasses[name].text = NULL;
-      }
-      
-      weaponclasses[name].demomode = WDM_FIRINGRANGE;
-      if(chunk.kv.count("demo")) {
-        if(chunk.kv["demo"] == "firingrange") {
-          weaponclasses[name].demomode = WDM_FIRINGRANGE;
-        } else if(chunk.kv["demo"] == "mines") {
-          weaponclasses[name].demomode = WDM_MINES;
-        } else {
-          CHECK(0);
-        }
-        chunk.consume("demo");
-      }
-      
+      parseWeapon(&chunk);
     } else if(chunk.category == "upgrade") {
-      
-      string name = chunk.consume("name");
-      CHECK(upgradeclasses.count(name) == 0);
-      
-      HierarchyNode *mountpoint = findNamedNode(name, 1);
-      HierarchyNode tnode;
-      tnode.name = tokenize(name, ".").back();
-      tnode.type = HierarchyNode::HNT_UPGRADE;
-      tnode.displaymode = HierarchyNode::HNDM_COSTUNIQUE;
-      tnode.buyable = true;
-      tnode.pack = 1;
-      CHECK(mountpoint->pack == 1 || mountpoint->pack == -1);
-      tnode.cat_restrictiontype = HierarchyNode::HNT_UPGRADE;
-      CHECK(mountpoint->cat_restrictiontype == -1 || tnode.cat_restrictiontype == mountpoint->cat_restrictiontype);
-      tnode.upgrade = &upgradeclasses[name];
-      mountpoint->branches.push_back(tnode);
-      
-      upgradeclasses[name].costmult = atoi(chunk.consume("costmult").c_str());
-      string adjustment = chunk.consume("adjustment");
-      CHECK(adjustmentclasses.count(adjustment));
-      upgradeclasses[name].adjustment = &adjustmentclasses[adjustment];
-      
-      if(chunk.kv.count("text")) {
-        string textid = chunk.consume("text");
-        CHECK(text.count(textid));
-        upgradeclasses[name].text = &text[textid];
-      } else {
-        upgradeclasses[name].text = NULL;
-      }
-
+      parseUpgrade(&chunk);
     } else if(chunk.category == "projectile") {
-      string name = chunk.consume("name");
-      CHECK(prefixed(name, "projectile"));
-      CHECK(projclasses.count(name) == 0);
-
-      projclasses[name].motion = PM_NORMAL;
-      projclasses[name].thickness_visual = 0.1;
-      
-      if(chunk.kv.count("thickness_visual")) {
-        projclasses[name].thickness_visual = atof(chunk.consume("thickness_visual").c_str());
-      }
-      
-      if(chunk.kv.count("motion")) {
-        string motion = chunk.consume("motion");
-        if(motion == "normal") {
-          projclasses[name].motion = PM_NORMAL;
-        } else if(motion == "missile") {
-          projclasses[name].motion = PM_MISSILE;
-        } else if(motion == "airbrake") {
-          projclasses[name].motion = PM_AIRBRAKE;
-        } else if(motion == "mine") {
-          projclasses[name].motion = PM_MINE;
-          projclasses[name].radius_physical = atof(chunk.consume("radius_physical").c_str());
-        } else if(motion == "instant") {
-          projclasses[name].motion = PM_INSTANT;
-        } else {
-          dprintf("Unknown projectile motion: %s\n", motion.c_str());
-          CHECK(0);
-        }
-      }
-      
-      projclasses[name].color = C::gray(1.0);
-      if(projclasses[name].motion != PM_INSTANT)
-        projclasses[name].color = colorFromString(chunk.consume("color"));
-      
-      projclasses[name].velocity = 0;
-      if(projclasses[name].motion != PM_MINE && projclasses[name].motion != PM_INSTANT)
-        projclasses[name].velocity = atof(chunk.consume("velocity").c_str()) / FPS;
-      
-      string warheadclass = chunk.consume("warhead");
-      CHECK(warheadclasses.count(warheadclass));
-      projclasses[name].warhead = &warheadclasses[warheadclass];
-
+      parseProjectile(&chunk);
     } else if(chunk.category == "deploy") {
-      string name = chunk.consume("name");
-      CHECK(prefixed(name, "deploy"));
-      CHECK(deployclasses.count(name) == 0);
-      
-      deployclasses[name];
-      
-      deployclasses[name].type = DT_FORWARD;
-      if(chunk.kv.count("type")) {
-        string type = chunk.consume("type");
-        if(type == "forward") {
-          deployclasses[name].type = DT_FORWARD;
-        } else if(type == "centroid") {
-          deployclasses[name].type = DT_CENTROID;
-          CHECK(!chunk.kv.count("anglestddev"));
-        } else {
-          CHECK(0);
-        }
-      }
-      
-      deployclasses[name].anglestddev = 0;
-      if(chunk.kv.count("anglestddev"))
-        deployclasses[name].anglestddev = atof(chunk.consume("anglestddev").c_str());
-      
+      parseDeploy(&chunk);
     } else if(chunk.category == "warhead") {
-      string name = chunk.consume("name");
-      CHECK(prefixed(name, "warhead"));
-      CHECK(warheadclasses.count(name) == 0);
-      
-      memset(warheadclasses[name].impactdamage, 0, sizeof(warheadclasses[name].impactdamage));
-      memset(warheadclasses[name].radiusdamage, 0, sizeof(warheadclasses[name].radiusdamage));
-      warheadclasses[name].radiusfalloff = -1;
-      warheadclasses[name].wallremovalradius = 0;
-      warheadclasses[name].wallremovalchance = 1;
-      
-      if(chunk.kv.count("impactdamage"))
-        parseDamagecode(chunk.consume("impactdamage"), warheadclasses[name].impactdamage);
-      
-      CHECK(chunk.kv.count("radiusfalloff") == chunk.kv.count("radiusdamage"));
-      
-      warheadclasses[name].radiuscolor_bright = Color(1.0, 0.8, 0.2);
-      warheadclasses[name].radiuscolor_dim = Color(1.0, 0.2, 0.0);
-      if(chunk.kv.count("radiusdamage")) {
-        parseDamagecode(chunk.consume("radiusdamage"), warheadclasses[name].radiusdamage);
-        warheadclasses[name].radiusfalloff = atof(chunk.consume("radiusfalloff").c_str());
-        if(chunk.kv.count("radiuscolor_bright")) {
-          warheadclasses[name].radiuscolor_bright = colorFromString(chunk.consume("radiuscolor_bright"));
-          warheadclasses[name].radiuscolor_dim = colorFromString(chunk.consume("radiuscolor_dim"));
-        } // no, you can't just overload one, dammit
-      }
-      
-      if(chunk.kv.count("wallremovalradius"))
-        warheadclasses[name].wallremovalradius = atof(chunk.consume("wallremovalradius").c_str());
-      
-      if(chunk.kv.count("wallremovalchance"))
-        warheadclasses[name].wallremovalchance = atof(chunk.consume("wallremovalchance").c_str());
-
+      parseWarhead(&chunk);
     } else if(chunk.category == "glory") {
-      
-      string name = chunk.consume("name");
-      CHECK(gloryclasses.count(name) == 0);
-      
-      HierarchyNode *mountpoint = findNamedNode(name, 1);
-      HierarchyNode tnode;
-      tnode.name = tokenize(name, ".").back();
-      tnode.type = HierarchyNode::HNT_GLORY;
-      tnode.displaymode = HierarchyNode::HNDM_COSTUNIQUE;
-      tnode.buyable = true;
-      tnode.pack = 1;
-      tnode.cat_restrictiontype = HierarchyNode::HNT_GLORY;
-      CHECK(mountpoint->cat_restrictiontype == -1 || tnode.cat_restrictiontype == mountpoint->cat_restrictiontype);
-      
-      tnode.glory = &gloryclasses[name];
-      mountpoint->branches.push_back(tnode);
-      
-      gloryclasses[name].base_cost = moneyFromString(chunk.consume("cost"));
-      
-      string projclass = chunk.consume("projectile");
-      CHECK(projclasses.count(projclass));
-      gloryclasses[name].projectile = &projclasses[projclass];
-
-      string deployclass = chunk.consume("deploy");
-      CHECK(deployclasses.count(deployclass));
-      gloryclasses[name].deploy = &deployclasses[deployclass];
-      
-      string coreclass = chunk.consume("core");
-      CHECK(warheadclasses.count(coreclass));
-      gloryclasses[name].core = &warheadclasses[coreclass];
-
-      gloryclasses[name].minsplits = atoi(chunk.consume("minsplits").c_str());
-      gloryclasses[name].maxsplits = atoi(chunk.consume("maxsplits").c_str());
-      gloryclasses[name].minsplitsize = atoi(chunk.consume("minsplitsize").c_str());
-      gloryclasses[name].maxsplitsize = atoi(chunk.consume("maxsplitsize").c_str());
-      gloryclasses[name].shotspersplit = atoi(chunk.consume("shotspersplit").c_str());
-      
-      if(chunk.kv.count("default") && atoi(chunk.consume("default").c_str())) {
-        CHECK(!defglory);
-        defglory = &gloryclasses[name];
-      }
-      
-      if(chunk.kv.count("text")) {
-        string textid = chunk.consume("text");
-        CHECK(text.count(textid));
-        gloryclasses[name].text = &text[textid];
-      } else {
-        gloryclasses[name].text = NULL;
-      }
-
+      parseGlory(&chunk);
     } else if(chunk.category == "bombardment") {
-      
-      string name = chunk.consume("name");
-      CHECK(bombardmentclasses.count(name) == 0);
-      
-      HierarchyNode *mountpoint = findNamedNode(name, 1);
-      HierarchyNode tnode;
-      tnode.name = tokenize(name, ".").back();
-      tnode.type = HierarchyNode::HNT_BOMBARDMENT;
-      tnode.displaymode = HierarchyNode::HNDM_COSTUNIQUE;
-      tnode.buyable = true;
-      tnode.pack = 1;
-      tnode.cat_restrictiontype = HierarchyNode::HNT_BOMBARDMENT;
-      CHECK(mountpoint->cat_restrictiontype == -1 || tnode.cat_restrictiontype == mountpoint->cat_restrictiontype);
-      
-      tnode.bombardment = &bombardmentclasses[name];
-      mountpoint->branches.push_back(tnode);
-
-      string warheadclass = chunk.consume("warhead");
-      CHECK(warheadclasses.count(warheadclass));
-      
-      bombardmentclasses[name].base_cost = moneyFromString(chunk.consume("cost"));
-      
-      bombardmentclasses[name].warhead = &warheadclasses[warheadclass];
-
-      bombardmentclasses[name].lockdelay = atof(chunk.consume("lockdelay").c_str());
-      bombardmentclasses[name].unlockdelay = atof(chunk.consume("unlockdelay").c_str());
-
-      if(chunk.kv.count("default") && atoi(chunk.consume("default").c_str())) {
-        CHECK(!defbombardment);
-        defbombardment = &bombardmentclasses[name];
-      }
-      
-      if(chunk.kv.count("text")) {
-        string textid = chunk.consume("text");
-        CHECK(text.count(textid));
-        bombardmentclasses[name].text = &text[textid];
-      } else {
-        bombardmentclasses[name].text = NULL;
-      }
-
+      parseBombardment(&chunk);
     } else if(chunk.category == "tank") {
-      
-      string name = chunk.consume("name");
-      CHECK(tankclasses.count(name) == 0);
-      
-      HierarchyNode *mountpoint = findNamedNode(name, 1);
-      HierarchyNode tnode;
-      tnode.name = tokenize(name, ".").back();
-      tnode.type = HierarchyNode::HNT_TANK;
-      tnode.displaymode = HierarchyNode::HNDM_COSTUNIQUE;
-      tnode.buyable = true;
-      tnode.pack = 1;
-      tnode.cat_restrictiontype = HierarchyNode::HNT_TANK;
-      CHECK(mountpoint->cat_restrictiontype == -1 || tnode.cat_restrictiontype == mountpoint->cat_restrictiontype);
-      
-      tnode.tank = &tankclasses[name];
-      mountpoint->branches.push_back(tnode);
-      
-      string weapon = chunk.consume("weapon");
-      CHECK(weaponclasses.count(weapon));
-      
-      tankclasses[name].weapon = &weaponclasses[weapon];
-      
-      tankclasses[name].health = atof(chunk.consume("health").c_str());
-      tankclasses[name].handling = atof(chunk.consume("handling").c_str());
-      tankclasses[name].engine = atof(chunk.consume("engine").c_str());
-      tankclasses[name].mass = atof(chunk.consume("mass").c_str());
-      
-      {
-        vector<string> vtx = tokenize(chunk.consume("vertices"), "\n");
-        CHECK(vtx.size() >= 3); // triangle is the minimum, no linetanks please
-        for(int i = 0; i < vtx.size(); i++) {
-          vector<string> vti = tokenize(vtx[i], " ");
-          CHECK(vti.size() == 2);
-          tankclasses[name].vertices.push_back(Coord2(atof(vti[0].c_str()), atof(vti[1].c_str())));
-        }
-        Coord2 centr = getCentroid(tankclasses[name].vertices);
-        for(int i = 0; i < tankclasses[name].vertices.size(); i++)
-          tankclasses[name].vertices[i] -= centr;
-      }
-      
-      tankclasses[name].base_cost = moneyFromString(chunk.consume("cost"));
-      if(chunk.kv.count("upgrade_base")) {
-        tankclasses[name].upgrade_base = moneyFromString(chunk.consume("upgrade_base"));
-      } else {
-        tankclasses[name].upgrade_base = tankclasses[name].base_cost;
-      }
-      
-      if(chunk.kv.count("default") && atoi(chunk.consume("default").c_str())) {
-        CHECK(!deftank);
-        deftank = &tankclasses[name];
-      }
-      
-      if(chunk.kv.count("text")) {
-        string textid = chunk.consume("text");
-        CHECK(text.count(textid));
-        tankclasses[name].text = &text[textid];
-      } else {
-        tankclasses[name].text = NULL;
-      }
-
+      parseTank(&chunk);
     } else if(chunk.category == "adjustment") {
-      
-      string name = chunk.consume("name");
-      CHECK(adjustmentclasses.count(name) == 0);
-      
-      adjustmentclasses[name];
-      
-      CHECK(sizeof(adjust_text) / sizeof(*adjust_text) == IDBAdjustment::LAST);
-      CHECK(sizeof(adjust_human) / sizeof(*adjust_human) == IDBAdjustment::LAST);
-      CHECK(sizeof(adjust_unit) / sizeof(*adjust_unit) == IDBAdjustment::LAST);
-      
-      for(int i = 0; i < IDBAdjustment::LAST; i++)
-        if(chunk.kv.count(adjust_text[i]))
-          adjustmentclasses[name].adjusts[i] = atoi(chunk.consume(adjust_text[i]).c_str());
-      
+      parseAdjustment(&chunk);
     } else if(chunk.category == "faction") {
-      
-      IDBFaction fact;
-      
-      fact.icon = loadDvec2("data/base/faction_icons/" + chunk.consume("file"));
-      fact.color = colorFromString(chunk.consume("color"));
-      fact.name = chunk.consume("name");
-      
-      {
-        vector<int> lines = sti(tokenize(chunk.consume("lines"), " "));
-        vector<string> words = tokenize(fact.name, " ");
-        CHECK(words.size() == accumulate(lines.begin(), lines.end(), 0));
-        int cword = 0;
-        for(int i = 0; i < lines.size(); i++) {
-          string acu;
-          for(int j = 0; j < lines[i]; j++) {
-            if(j)
-              acu += " ";
-            acu += words[cword++];
-          }
-          fact.name_lines.push_back(acu);
-        }
-      }
-      
-      string adjustment = chunk.consume("adjustment") +  ".high";
-      CHECK(adjustmentclasses.count(adjustment));
-      for(int i = 0; i < 3; i++)
-        fact.adjustment[i] = &adjustmentclasses["null"]; // wheeeeeeeee
-      fact.adjustment[3] = &adjustmentclasses[adjustment];
-      
-      if(chunk.kv.count("text")) {
-        string textid = chunk.consume("text");
-        CHECK(text.count(textid));
-        fact.text = &text[textid];
-      } else {
-        fact.text = NULL;
-      }
-      
-      factions.push_back(fact);
-
+      parseFaction(&chunk);
     } else if(chunk.category == "equip") {
-      
-      string name = chunk.consume("name");
-      CHECK(bombardmentclasses.count(name) == 0);
-      
-      HierarchyNode *mountpoint = findNamedNode(name, 1);
-      HierarchyNode tnode;
-      tnode.name = tokenize(name, ".").back();
-      tnode.type = HierarchyNode::HNT_EQUIP;
-      tnode.displaymode = HierarchyNode::HNDM_BLANK;
-      tnode.cat_restrictiontype = HierarchyNode::HNT_EQUIPWEAPON;
-      CHECK(mountpoint->cat_restrictiontype == -1 || tnode.cat_restrictiontype == mountpoint->cat_restrictiontype);
-      
-      mountpoint->branches.push_back(tnode);
-      
+      parseEquip(&chunk);
     } else if(chunk.category == "text") {
-      string name = chunk.consume("name");
-      CHECK(text.count(name) == 0);
-      CHECK(strncmp(name.c_str(), "text.", 5) == 0);
-      text[name] = chunk.consume("data");
-      // yay
+      parseText(&chunk);
     } else {
       CHECK(0);
     }
