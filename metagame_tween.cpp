@@ -47,18 +47,18 @@ bool PersistentData::tick(const vector< Controller > &keys) {
         }
         CHECK(pid == playerdata.size());
         
-        slot.pid = 0;
-        slot.type = Slot::RESULTS;
-        slot.shop.init(&playerdata[0], true);  // this is so hideous
+        slot[0].pid = 0;
+        slot[0].type = Slot::RESULTS;
+        slot[0].shop.init(&playerdata[0], true);  // this is so hideous
         return true;
       }
     }
   } else if(mode == TM_SHOP) {
     vector<Keystates> ki = genKeystates(keys);
-    if(slot.pid == -1) {
-      CHECK(slot.type == Slot::RESULTS);
+    if(slot[0].pid == -1) {
+      CHECK(slot[0].type == Slot::RESULTS);
       StackString stp("Results");
-      // this is a bit hacky - SHOP mode when slot.pid is -1 is the "show results" screen
+      // this is a bit hacky - SHOP mode when slot[0].pid is -1 is the "show results" screen
       for(int i = 0; i < ki.size(); i++) {
         CHECK(SIMUL_WEAPONS == 2);
         if(ki[i].accept.push || ki[i].fire[0].push || ki[i].fire[1].push)
@@ -67,19 +67,19 @@ bool PersistentData::tick(const vector< Controller > &keys) {
       if(count(checked.begin(), checked.end(), false) == 0) {
         for(int i = 0; i < playerdata.size(); i++)
           playerdata[i].addCash(lrCash[i]);
-        slot.pid = 0;
-        slot.type = Slot::SHOP;
-        slot.shop.init(&playerdata[0], true);
+        slot[0].pid = 0;
+        slot[0].type = Slot::SHOP;
+        slot[0].shop.init(&playerdata[0], true);
       }
-    } else if(slot.shop.runTick(ki[slot.pid])) {
+    } else if(slot[0].shop.runTick(ki[slot[0].pid])) {
       StackString stp("Shop");
       // and here's our actual shop - the tickrunning happens in the conditional, this is just what happens if it's time to change shops
-      slot.pid++;
-      if(slot.pid != playerdata.size()) {
-        slot.shop.init(&playerdata[slot.pid], true);
+      slot[0].pid++;
+      if(slot[0].pid != playerdata.size()) {
+        slot[0].shop.init(&playerdata[slot[0].pid], true);
       } else {
-        slot.pid = -1;
-        slot.type = Slot::RESULTS;
+        slot[0].pid = -1;
+        slot[0].type = Slot::RESULTS;
         return true;
       }
     }
@@ -114,7 +114,7 @@ void PersistentData::render() const {
       drawJustifiedMultiText(txt, 0.05, Float2(0, 0), TEXT_CENTER, TEXT_CENTER);
     }
   } else if(mode == TM_SHOP) {
-    if(slot.pid == -1) {
+    if(slot[0].pid == -1) {
       StackString stp("Results");
       setZoom(Float4(0, 0, 800, 600));
       setColor(1.0, 1.0, 1.0);
@@ -159,19 +159,19 @@ void PersistentData::render() const {
       
       {
         GfxWindow gfxw2(Float4(0, 0, getAspect() / 2, 0.5), 1.0);
-        slot.shop.renderToScreen();
+        slot[0].shop.renderToScreen();
       }
       {
         GfxWindow gfxw2(Float4(getAspect() / 2, 0, getAspect(), 0.5), 1.0);
-        slot.shop.renderToScreen();
+        slot[0].shop.renderToScreen();
       }
       {
         GfxWindow gfxw2(Float4(0, 0.5, getAspect() / 2, 1), 1.0);
-        slot.shop.renderToScreen();
+        slot[0].shop.renderToScreen();
       }
       {
         GfxWindow gfxw2(Float4(getAspect() / 2, 0.5, getAspect(), 1), 1.0);
-        slot.shop.renderToScreen();
+        slot[0].shop.renderToScreen();
       }
     }
   } else {
@@ -194,15 +194,15 @@ void PersistentData::ai(const vector<Ai *> &ais) const {
       if(ais[i])
         ais[i]->updateCharacterChoice(factions, pms, i);
   } else if(mode == TM_SHOP) {
-    if(slot.pid == -1) {
+    if(slot[0].pid == -1) {
       for(int i = 0; i < ais.size(); i++)
         if(ais[i])
           ais[i]->updateWaitingForReport();
     } else {
-      CHECK(slot.pid >= 0 && slot.pid < playerdata.size());
-      slot.shop.ai(distillAi(ais)[slot.pid]);
+      CHECK(slot[0].pid >= 0 && slot[0].pid < playerdata.size());
+      slot[0].shop.ai(distillAi(ais)[slot[0].pid]);
       for(int i = 0; i < ais.size(); i++)
-        if(ais[i] && i != slot.pid)
+        if(ais[i] && i != slot[0].pid)
           ais[i]->updateIdle();
     }
   } else {

@@ -51,13 +51,13 @@ private:
     int pid;
     Shop shop;
   };
-  Slot slot;
+  Slot slot[4];
   int slot_count; // 1 or 4
   
   // Round count data
   int roundsbetweenshop;
   int shopcycles;
-  
+
   // Zone functions
   void chooseInit(int pid, int loc);
   bool chooseTick(const vector<Controller> &keys);
