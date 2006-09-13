@@ -1,6 +1,4 @@
 ---- Major work path
-- Split up ItemDB humongo function
-- Stop reloading files in findLevels
 - Profit breakdown in final results
   - Test exponential cash starting adjustment
 - Multishop
@@ -44,6 +42,7 @@
 - Make explosion removals include the focus point
 
 ---- Things that may or may not be needed
+- Stop reloading files in findLevels
 - Move stuff in tank small mode around a bit
 - Add tank sell deprecation
 - Special unique bonuses (turned the most, closest to death, most/least accurate, traveler, tunneler, deadeye, kamikaze)
