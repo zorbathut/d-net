@@ -307,11 +307,11 @@ void Ai::updateShop(const Player *player) {
   dprintf("shop prepared");
 }
 
-GameAi &Ai::getGameAi() {
+GameAi *Ai::getGameAi() {
   updateKeys(GAME);
   
   shopdone = false;
-  return gai;
+  return &gai;
 }
 
 void Ai::updateWaitingForReport() {

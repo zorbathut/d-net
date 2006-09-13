@@ -96,13 +96,13 @@ public:
   
   int fireHeld;
   bool readyToPlay() const;
+  
+  Keystates genKeystate(const Controller &keys) const;
 
   PlayerMenuState();
   PlayerMenuState(Float2 cent);
   ~PlayerMenuState();
 };
-
-vector<Keystates> genKeystates(const vector<Controller> &keys, const vector<PlayerMenuState> &modes);
 
 void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<FactionState> &factions);
 void runSettingRender(const PlayerMenuState &pms);

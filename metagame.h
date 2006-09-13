@@ -2,8 +2,7 @@
 #define DNET_METAGAME
 
 #include "game.h"
-#include "metagame_config.h"
-#include "shop.h"
+#include "metagame_tween.h"
 
 using namespace std;
 
@@ -11,33 +10,21 @@ class Ai;
 
 class Metagame {
   
+  enum { MGM_PLAYERCHOOSE, MGM_FACTIONTYPE, MGM_TWEEN, MGM_PLAY };
   int mode;
-  int gameround;
   
   int faction_mode;
+  vector<Player> faction_mode_players;
+  // these are the players we use for faction_mode so we don't modify existing players
   
-  enum { MGM_PLAYERCHOOSE, MGM_FACTIONTYPE, MGM_TWEEN, MGM_PLAY };
-  int currentShop;
-  
-  vector<PlayerMenuState> pms;  // heh.
-  
-  vector<FactionState> factions;
+  PersistentData persistent;
   
   vector<Level> levels;
   
   Game game;
-  
-  Shop shop;
-  
-  vector<Player> playerdata;
-  
-  vector<vector<float> > lrCategory;
-  vector<float> lrPlayer;
-  vector<Money> lrCash;
-  vector<bool> checked;
-  
   vector<const IDBFaction *> win_history;
   
+  int gameround;
   int roundsBetweenShop;
 
 public:
@@ -49,12 +36,6 @@ public:
   bool runTick(const vector< Controller > &keys);
 
 private:
-  
-  bool tweenTick(const vector< Controller > &keys); // returns true when done
-  void tweenRender() const;
-  
-  void calculateLrStats();
-  void drawMultibar(const vector<float> &sizes, const Float4 &dimensions) const;
 
   void findLevels(int playercount);
 

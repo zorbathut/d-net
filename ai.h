@@ -52,7 +52,7 @@ public:
   void updatePregame();
   void updateCharacterChoice(const vector<FactionState> &factions, const vector<PlayerMenuState> &players, int me);
   void updateShop(const Player *player);
-  GameAi &getGameAi();
+  GameAi *getGameAi();
   void updateWaitingForReport();
 
   Controller getNextKeys() const;

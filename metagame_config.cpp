@@ -119,36 +119,28 @@ bool PlayerMenuState::readyToPlay() const {
   return faction && settingmode == SETTING_READY && fireHeld == 60;
 }
 
-Keystates genKeystate(const Controller &keys, const PlayerMenuState &pms) {
+Keystates PlayerMenuState::genKeystate(const Controller &keys) const {
   Keystates kst;
   kst.u = keys.u;
   kst.d = keys.d;
   kst.l = keys.l;
   kst.r = keys.r;
   CHECK(SIMUL_WEAPONS == 2);
-  kst.accept = keys.keys[pms.buttons[BUTTON_ACCEPT]];
-  kst.cancel = keys.keys[pms.buttons[BUTTON_CANCEL]];
-  kst.fire[0] = keys.keys[pms.buttons[BUTTON_FIRE1]];
-  kst.fire[1] = keys.keys[pms.buttons[BUTTON_FIRE2]];
-  kst.change[0] = keys.keys[pms.buttons[BUTTON_SWITCH1]];
-  kst.change[1] = keys.keys[pms.buttons[BUTTON_SWITCH2]];
-  kst.axmode = pms.setting_axistype;
+  kst.accept = keys.keys[buttons[BUTTON_ACCEPT]];
+  kst.cancel = keys.keys[buttons[BUTTON_CANCEL]];
+  kst.fire[0] = keys.keys[buttons[BUTTON_FIRE1]];
+  kst.fire[1] = keys.keys[buttons[BUTTON_FIRE2]];
+  kst.change[0] = keys.keys[buttons[BUTTON_SWITCH1]];
+  kst.change[1] = keys.keys[buttons[BUTTON_SWITCH2]];
+  kst.axmode = setting_axistype;
   for(int j = 0; j < 2; j++) {
-    kst.ax[j] = keys.axes[pms.axes[j]];
-    if(pms.axes_invert[j])
+    kst.ax[j] = keys.axes[axes[j]];
+    if(axes_invert[j])
       kst.ax[j] *= -1;
   }
   kst.udlrax = keys.menu;
   CHECK(keys.menu.x >= -1 && keys.menu.x <= 1);
   CHECK(keys.menu.y >= -1 && keys.menu.y <= 1);
-  return kst;
-}
-
-vector<Keystates> genKeystates(const vector<Controller> &keys, const vector<PlayerMenuState> &modes) {
-  vector<Keystates> kst;
-  for(int i = 0; i < modes.size(); i++)
-    if(modes[i].faction)
-      kst.push_back(genKeystate(keys[i], modes[i]));
   return kst;
 }
 
@@ -622,7 +614,7 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
         CHECK(!pms->test_game->runTick(kst));
       } else if(pms->choicemode == CHOICE_ACTIVE || pms->choicemode == CHOICE_FIRSTPASS) {
         vector<Keystates> kst;
-        kst.push_back(genKeystate(keys, *pms));
+        kst.push_back(pms->genKeystate(keys));
         CHECK(!pms->test_game->runTick(kst));
       } else {
         CHECK(0);

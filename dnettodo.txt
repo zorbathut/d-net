@@ -1,4 +1,8 @@
 ---- Major work path
+- Split up ItemDB humongo function
+- Stop reloading files in findLevels
+- Profit breakdown in final results
+  - Test exponential cash starting adjustment
 - Multishop
 - Game joining, quitting, reconfiguring, hibernating
 - Mine collision slowdown problems
@@ -7,8 +11,6 @@
 - EMP demo
 - Gradual shop spawning
   - Remove bombardment from 2 player, make it cheaper for 3 and 4
-- Cash breakdown in final results
-  - Test exponential cash starting adjustment
 - Cached stats
 - Next-gen collision/storage system on grid
 - Pull glory explody into its own deploy?
