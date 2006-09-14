@@ -61,6 +61,7 @@ bool Metagame::runTick(const vector<Controller> &keys) {
   } else if(mode == MGM_TWEEN) {
     if(persistent.tick(keys)) {
       mode = MGM_PLAY;
+
       findLevels(persistent.players().size());  // player count may have changed. TODO: make this suck less
       game.initStandard(&persistent.players(), levels[int(frand() * levels.size())], &win_history);
       CHECK(win_history.size() == gameround);
@@ -139,7 +140,7 @@ void Metagame::findLevels(int playercount) {
       if(lev.playersValid.count(playercount))
         levels.push_back(lev);
     }
-    dprintf("Got %d usable levels\n", levels.size());
+    dprintf("Got %d usable levels for %d\n", levels.size(), playercount);
     CHECK(levels.size());
   }
 }

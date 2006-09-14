@@ -18,76 +18,66 @@ vector<Player> &PersistentData::players() {
 }
 
 bool PersistentData::tick(const vector< Controller > &keys) {
-  dprintf("tickinate\n");
   CHECK(keys.size() == pms.size());
   
+  // First: traverse and empty.
+  for(int i = 0; i < slot_count; i++) {
+    if(slot[i].type == Slot::EMPTY)
+      continue;
+    bool clear;
+    if(slot[i].pid == -1) {
+      clear = tickSlot(i, keys);
+    } else {
+      clear = tickSlot(i, vector<Controller>(1, keys[slot[i].pid]));
+    }
+    if(clear)
+      slot[i].type = Slot::EMPTY;
+  }
+  
+  // Next: deal with empty slots depending on our mode.
+  
   if(mode == TM_PLAYERCHOOSE) {
-    StackString stp("Playerchoose");
-    for(int i = 0; i < keys.size(); i++)
-      runSettingTick(keys[i], &pms[i], factions);
-    {
+    CHECK(slot_count == 1);
+    if(slot[0].type == Slot::EMPTY) {
+      mode = TM_SHOP;
+        
       int readyusers = 0;
-      int chosenusers = 0;
-      for(int i = 0; i < pms.size(); i++) {
+      for(int i = 0; i < pms.size(); i++)
         if(pms[i].readyToPlay())
           readyusers++;
-        if(pms[i].faction)
-          chosenusers++;
-      }
-      if(readyusers == chosenusers && chosenusers >= 2) {
-        mode = TM_SHOP;
-        
-        playerdata.clear();
-        playerdata.resize(readyusers);
-        int pid = 0;
-        for(int i = 0; i < pms.size(); i++) {
-          if(pms[i].faction) {
-            playerdata[pid] = Player(pms[i].faction->faction, 0);
-            pid++;
-          }
+      CHECK(readyusers >= 2);
+
+      playerdata.clear();
+      playerdata.resize(readyusers);
+      int pid = 0;
+      for(int i = 0; i < pms.size(); i++) {
+        if(pms[i].faction) {
+          playerdata[pid] = Player(pms[i].faction->faction, 0);
+          pid++;
         }
-        CHECK(pid == playerdata.size());
-        
-        slot[0].pid = 0;
-        slot[0].type = Slot::SHOP;
-        slot[0].shop.init(&playerdata[0], true);  // this is so hideous
-        return true;
       }
+      CHECK(pid == playerdata.size());
+
+      slot[0].pid = 0;
+      slot[0].type = Slot::SHOP;
+      slot[0].shop.init(&playerdata[0], true);  // this is so hideous
+
+      return true;
     }
   } else if(mode == TM_SHOP) {
-    vector<Keystates> ki = genKeystates(keys);
-    if(slot[0].pid == -1) {
-      CHECK(slot[0].type == Slot::RESULTS);
-      StackString stp("Results");
-      // this is a bit hacky - SHOP mode when slot[0].pid is -1 is the "show results" screen
-      for(int i = 0; i < ki.size(); i++) {
-        CHECK(SIMUL_WEAPONS == 2);
-        if(ki[i].accept.push || ki[i].fire[0].push || ki[i].fire[1].push)
-          checked[i] = true;
-      }
-      if(count(checked.begin(), checked.end(), false) == 0) {
-        for(int i = 0; i < playerdata.size(); i++)
-          playerdata[i].addCash(lrCash[i]);
-        slot[0].pid = 0;
-        slot[0].type = Slot::SHOP;
-        slot[0].shop.init(&playerdata[0], true);
-      }
-    } else if(slot[0].shop.runTick(ki[slot[0].pid])) {
-      StackString stp("Shop");
-      // and here's our actual shop - the tickrunning happens in the conditional, this is just what happens if it's time to change shops
+    CHECK(slot_count == 1);
+    if(slot[0].type == Slot::EMPTY) {
+      dprintf("Updating pid from %d\n", slot[0].pid);
       slot[0].pid++;
-      if(slot[0].pid != playerdata.size()) {
-        slot[0].shop.init(&playerdata[slot[0].pid], true);
-      } else {
-        slot[0].pid = -1;
-        slot[0].type = Slot::RESULTS;
+      dprintf("Pid is now %d compared to %d\n", slot[0].pid, playerdata.size());
+      if(slot[0].pid == playerdata.size())
         return true;
-      }
+      slot[0].type = Slot::SHOP;
+      slot[0].shop.init(&playerdata[slot[0].pid], true);
     }
   } else {
     CHECK(0);
   }
-  dprintf("detickinate\n");
   return false;
 }
 
@@ -128,6 +118,64 @@ void PersistentData::render() const {
   } else {
     CHECK(0);
   }
+}
+
+bool PersistentData::tickSlot(int slotid, const vector<Controller> &keys) {
+  CHECK(slotid >= 0 && slotid < 4);
+  Slot &slt = slot[slotid];
+  if(slt.type == Slot::CHOOSE) {
+    StackString stp("Playerchoose");
+    CHECK(slt.pid == -1);
+    CHECK(keys.size() > 1);
+
+    for(int i = 0; i < keys.size(); i++)
+      runSettingTick(keys[i], &pms[i], factions);
+    
+    {
+      int readyusers = 0;
+      int chosenusers = 0;
+      for(int i = 0; i < pms.size(); i++) {
+        if(pms[i].readyToPlay())
+          readyusers++;
+        if(pms[i].faction)
+          chosenusers++;
+      }
+      if(readyusers == chosenusers && chosenusers >= 2)
+        return true;
+    }
+  } else if(slt.type == Slot::RESULTS) {
+    CHECK(slotid == 0);
+    CHECK(slt.pid == -1);
+    CHECK(keys.size() > 1);
+    vector<Keystates> ki = genKeystates(keys);
+    CHECK(slt.type == Slot::RESULTS);
+    StackString stp("Results");
+    // this is a bit hacky - SHOP mode when slot[0].pid is -1 is the "show results" screen
+    for(int i = 0; i < ki.size(); i++) {
+      CHECK(SIMUL_WEAPONS == 2);
+      if(ki[i].accept.push || ki[i].fire[0].push || ki[i].fire[1].push)
+        checked[i] = true;
+    }
+    if(count(checked.begin(), checked.end(), false) == 0) {
+      for(int i = 0; i < playerdata.size(); i++)
+        playerdata[i].addCash(lrCash[i]);
+      slot[0].pid = 0;
+      slot[0].type = Slot::SHOP;
+      slot[0].shop.init(&playerdata[0], true);
+    }
+  } else if(slt.type == Slot::SHOP) {
+    StackString stp("Shop");
+    CHECK(slt.pid >= 0 && slt.pid < pms.size());
+    CHECK(keys.size() == 1);
+    
+    // TODO: this is horrific
+    Keystates thesekeys = genKeystates(vector<Controller>(playerdata.size(), keys[0]))[slt.pid];
+    
+    return slt.shop.runTick(thesekeys);
+  } else {
+    CHECK(0);
+  }
+  return false;
 }
 
 void PersistentData::renderSlot(int slotid) const {
@@ -296,6 +344,9 @@ void PersistentData::divvyCash(float firepowerSpent) {
   lrPlayer = playercash;
   lrCash = playercashresult;
   
+  slot_count = 1;
+  slot[0].type = Slot::RESULTS;
+  slot[0].pid = -1;
 }
 
 void PersistentData::drawMultibar(const vector<float> &sizes, const Float4 &dimensions) const {
@@ -494,6 +545,7 @@ PersistentData::PersistentData(int playercount, int in_roundsbetweenshop) {
     slot[i].type = Slot::EMPTY;
   
   slot[0].type = Slot::CHOOSE;
+  slot[0].pid = -1;
   
   slot_count = 1;
 }

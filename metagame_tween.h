@@ -11,7 +11,6 @@ public:
 
   vector<Keystates> genKeystates(const vector<Controller> &keys) const;
 
-  void ai(const vector<Ai *> &ais) const;
   vector<Ai *> distillAi(const vector<Ai *> &ais) const;
 
   // State accessors
@@ -19,13 +18,11 @@ public:
 
   // Main loop
   bool tick(const vector< Controller > &keys);
+  void ai(const vector<Ai *> &ais) const;
   void render() const;
 
-  // Slot functions
-  void renderSlot(int slotid) const;
-
   // Triggers
-  void divvyCash(float firepowerSpent);
+  void divvyCash(float firepowerSpent); // also sets to "result" mode
 
   // Constructor
   PersistentData(int playercount, int roundsbetweenshop);
@@ -61,10 +58,9 @@ private:
   int roundsbetweenshop;
   int shopcycles;
 
-  // Zone functions
-  void chooseInit(int pid, int loc);
-  bool chooseTick(const vector<Controller> &keys);
-  void chooseRender();
+  // Slot functions
+  bool tickSlot(int slotid, const vector<Controller> &controllers);
+  void renderSlot(int slotid) const;
 
   // Helper functions
   void drawMultibar(const vector<float> &sizes, const Float4 &dimensions) const;
