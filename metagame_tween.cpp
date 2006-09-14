@@ -471,21 +471,6 @@ PersistentData::PersistentData(int playercount, int in_roundsbetweenshop) {
     pms[1].setting_axistype = KSAX_ABSOLUTE;
     pms[1].fireHeld = 0;
   }
+  
+  slot[0].type = Slot::RESULTS;
 }
-/*
-
-
-vector<GameAi *> distillGameAi(const vector<Ai *> &in_ai, const vector<PlayerMenuState> &players) {
-  vector<Ai *> ai = distillAi(in_ai, players);
-  vector<GameAi *> rv;
-  for(int i = 0; i < ai.size(); i++) {
-    if(ai[i]) {
-      rv.push_back(&ai[i]->getGameAi());
-    } else {
-      rv.push_back(NULL);
-    }
-  }
-  return rv;
-}
-*/
-
