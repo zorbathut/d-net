@@ -18,6 +18,7 @@ vector<Player> &PersistentData::players() {
 }
 
 bool PersistentData::tick(const vector< Controller > &keys) {
+  dprintf("tickinate\n");
   CHECK(keys.size() == pms.size());
   
   if(mode == TM_PLAYERCHOOSE) {
@@ -48,7 +49,7 @@ bool PersistentData::tick(const vector< Controller > &keys) {
         CHECK(pid == playerdata.size());
         
         slot[0].pid = 0;
-        slot[0].type = Slot::RESULTS;
+        slot[0].type = Slot::SHOP;
         slot[0].shop.init(&playerdata[0], true);  // this is so hideous
         return true;
       }
@@ -86,11 +87,53 @@ bool PersistentData::tick(const vector< Controller > &keys) {
   } else {
     CHECK(0);
   }
+  dprintf("detickinate\n");
   return false;
 }
 
 void PersistentData::render() const {
-  if(mode == TM_PLAYERCHOOSE) {
+  if(slot_count == 1) {
+    renderSlot(0);
+  } else if(slot_count == 4) {
+    
+    const float divider_pos = 90;
+    
+    setZoom(Float4(0, 0, 133.333, 100));
+    setColor(1.0, 1.0, 1.0);
+    drawLine(Float4(0, divider_pos, 140, divider_pos), 0.1);
+    
+    GfxWindow gfxw(Float4(0, 0, 133.333, divider_pos), 1.0);
+    
+    setZoom(Float4(0, 0, getAspect(), 1.0));
+    
+    drawLine(Float4(0, 0.5, getAspect(), 0.5), 0.001);
+    drawLine(Float4(getAspect() / 2, 0, getAspect() / 2, 1), 0.001);
+    
+    {
+      GfxWindow gfxw2(Float4(0, 0, getAspect() / 2, 0.5), 1.0);
+      renderSlot(0);
+    }
+    {
+      GfxWindow gfxw2(Float4(getAspect() / 2, 0, getAspect(), 0.5), 1.0);
+      renderSlot(1);
+    }
+    {
+      GfxWindow gfxw2(Float4(0, 0.5, getAspect() / 2, 1), 1.0);
+      renderSlot(2);
+    }
+    {
+      GfxWindow gfxw2(Float4(getAspect() / 2, 0.5, getAspect(), 1), 1.0);
+      renderSlot(3);
+    }
+  } else {
+    CHECK(0);
+  }
+}
+
+void PersistentData::renderSlot(int slotid) const {
+  CHECK(slotid >= 0 && slotid < 4);
+  const Slot &slt = slot[slotid];
+  if(slt.type == Slot::CHOOSE) {
     StackString stp("Playerchoose");
     setZoomCenter(0, 0, 1.1);
     setColor(1.0, 1.0, 1.0);
@@ -113,67 +156,41 @@ void PersistentData::render() const {
       txt.push_back("your controller");
       drawJustifiedMultiText(txt, 0.05, Float2(0, 0), TEXT_CENTER, TEXT_CENTER);
     }
-  } else if(mode == TM_SHOP) {
-    if(slot[0].pid == -1) {
-      StackString stp("Results");
-      setZoom(Float4(0, 0, 800, 600));
-      setColor(1.0, 1.0, 1.0);
-      drawText("Damage", 30, 20, 20);
-      drawText("Kills", 30, 20, 80);
-      drawText("Wins", 30, 20, 140);
-      drawText("Base", 30, 20, 200);
-      drawText("Totals", 30, 20, 320);
-      drawMultibar(lrCategory[0], Float4(200, 20, 700, 60));
-      drawMultibar(lrCategory[1], Float4(200, 80, 700, 120));
-      drawMultibar(lrCategory[2], Float4(200, 140, 700, 180));
-      drawMultibar(lrCategory[3], Float4(200, 200, 700, 240));
-      drawMultibar(lrPlayer, Float4(200, 320, 700, 360));
-      setColor(1.0, 1.0, 1.0);
-      drawJustifiedText("Waiting for", 30, 400, 400, TEXT_CENTER, TEXT_MIN);
-      int notdone = count(checked.begin(), checked.end(), false);
-      CHECK(notdone);
-      int cpos = 0;
-      float increment = 800.0 / notdone;
-      for(int i = 0; i < checked.size(); i++) {
-        if(!checked[i]) {
-          setColor(playerdata[i].getFaction()->color);
-          drawDvec2(playerdata[i].getFaction()->icon, boxAround(Float2((cpos + 0.5) * increment, float(440 + 580) / 2), min(increment * 0.95f, float(580 - 440)) / 2), 50, 1);
-          cpos++;
-        }
-      }
-    } else {
-      StackString stp("Shop");
-      
-      const float divider_pos = 90;
-      
-      setZoom(Float4(0, 0, 133.333, 100));
-      setColor(1.0, 1.0, 1.0);
-      drawLine(Float4(0, divider_pos, 140, divider_pos), 0.1);
-      
-      GfxWindow gfxw(Float4(0, 0, 133.333, divider_pos), 1.0);
-      
-      setZoom(Float4(0, 0, getAspect(), 1.0));
-      
-      drawLine(Float4(0, 0.5, getAspect(), 0.5), 0.001);
-      drawLine(Float4(getAspect() / 2, 0, getAspect() / 2, 1), 0.001);
-      
-      {
-        GfxWindow gfxw2(Float4(0, 0, getAspect() / 2, 0.5), 1.0);
-        slot[0].shop.renderToScreen();
-      }
-      {
-        GfxWindow gfxw2(Float4(getAspect() / 2, 0, getAspect(), 0.5), 1.0);
-        slot[0].shop.renderToScreen();
-      }
-      {
-        GfxWindow gfxw2(Float4(0, 0.5, getAspect() / 2, 1), 1.0);
-        slot[0].shop.renderToScreen();
-      }
-      {
-        GfxWindow gfxw2(Float4(getAspect() / 2, 0.5, getAspect(), 1), 1.0);
-        slot[0].shop.renderToScreen();
+  } else if(slt.type == Slot::SHOP) {
+    StackString stp("Shop");
+    slt.shop.renderToScreen();
+  } else if(slt.type == Slot::RESULTS) {
+    StackString stp("Results");
+    CHECK(lrCategory.size()); // make sure we *have* results
+    setZoom(Float4(0, 0, 800, 600));
+    setColor(1.0, 1.0, 1.0);
+    drawText("Damage", 30, 20, 20);
+    drawText("Kills", 30, 20, 80);
+    drawText("Wins", 30, 20, 140);
+    drawText("Base", 30, 20, 200);
+    drawText("Totals", 30, 20, 320);
+    drawMultibar(lrCategory[0], Float4(200, 20, 700, 60));
+    drawMultibar(lrCategory[1], Float4(200, 80, 700, 120));
+    drawMultibar(lrCategory[2], Float4(200, 140, 700, 180));
+    drawMultibar(lrCategory[3], Float4(200, 200, 700, 240));
+    drawMultibar(lrPlayer, Float4(200, 320, 700, 360));
+    setColor(1.0, 1.0, 1.0);
+    drawJustifiedText("Waiting for", 30, 400, 400, TEXT_CENTER, TEXT_MIN);
+    int notdone = count(checked.begin(), checked.end(), false);
+    CHECK(notdone);
+    int cpos = 0;
+    float increment = 800.0 / notdone;
+    for(int i = 0; i < checked.size(); i++) {
+      if(!checked[i]) {
+        setColor(playerdata[i].getFaction()->color);
+        drawDvec2(playerdata[i].getFaction()->icon, boxAround(Float2((cpos + 0.5) * increment, float(440 + 580) / 2), min(increment * 0.95f, float(580 - 440)) / 2), 50, 1);
+        cpos++;
       }
     }
+  } else if(slt.type == Slot::EMPTY) {
+    setZoomCenter(0, 0, 1);
+    setColor(C::gray(0.2));
+    drawJustifiedText("zooooom", 0.1, Float2(0, 0), TEXT_CENTER, TEXT_CENTER);
   } else {
     CHECK(0);
   }
@@ -472,5 +489,11 @@ PersistentData::PersistentData(int playercount, int in_roundsbetweenshop) {
     pms[1].fireHeld = 0;
   }
   
-  slot[0].type = Slot::RESULTS;
+  CHECK(sizeof(slot) / sizeof(*slot) == 4);
+  for(int i = 0; i < 4; i++)
+    slot[i].type = Slot::EMPTY;
+  
+  slot[0].type = Slot::CHOOSE;
+  
+  slot_count = 1;
 }

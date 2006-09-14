@@ -21,6 +21,9 @@ public:
   bool tick(const vector< Controller > &keys);
   void render() const;
 
+  // Slot functions
+  void renderSlot(int slotid) const;
+
   // Triggers
   void divvyCash(float firepowerSpent);
 

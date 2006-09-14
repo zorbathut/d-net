@@ -32,6 +32,7 @@ bool Metagame::runTick(const vector<Controller> &keys) {
     }
   } else if(mode == MGM_FACTIONTYPE) {
     StackString stp("Factiontype");
+    dprintf("factiontype tick");
     if(FLAGS_factionMode != -1 || game.runTick(persistent.genKeystates(keys))) {
       if(FLAGS_factionMode != -1)
         faction_mode = FLAGS_factionMode;
@@ -92,7 +93,10 @@ void Metagame::ai(const vector<Ai *> &ai) const {
     vector<Ai *> rai = persistent.distillAi(ai);
     vector<GameAi *> gai;
     for(int i = 0; i < rai.size(); i++)
-      gai.push_back(rai[i]->getGameAi());
+      if(rai[i])
+        gai.push_back(rai[i]->getGameAi());
+      else
+        gai.push_back(NULL);
     game.ai(gai);
   } else {
     CHECK(0);
@@ -126,6 +130,7 @@ void Metagame::renderToScreen() const {
 }
 
 void Metagame::findLevels(int playercount) {
+  levels.clear();
   if(!levels.size()) {
     ifstream ifs("data/levels/levellist.txt");
     string line;

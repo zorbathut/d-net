@@ -391,7 +391,6 @@ void InterfaceMain::render() const {
   } else {
     CHECK(0);
   }
-  
 };
 #endif
 
