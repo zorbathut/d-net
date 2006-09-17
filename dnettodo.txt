@@ -16,9 +16,10 @@ So:
 
 
 ---- Major work path
+- Multishop
+- Stack trace
 - Profit breakdown in final results
   - Test exponential cash starting adjustment
-- Multishop
 - Game joining, quitting, reconfiguring, hibernating
 - Mine collision slowdown problems
 - Mine halflife
