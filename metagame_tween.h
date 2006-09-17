@@ -29,7 +29,7 @@ public:
 
 private:
   // Persistent state (used for recognizing PLAYERCHOOSE mode only)
-  enum { TM_PLAYERCHOOSE, TM_SHOP };
+  enum { TM_PLAYERCHOOSE, TM_RESULTS, TM_SHOP };
   int mode;
   
   // Player data
@@ -57,6 +57,22 @@ private:
   // Round count data
   int roundsbetweenshop;
   int shopcycles;
+  
+  // Shop player state
+  void initForShop();
+    // Persistent
+    vector<bool> sps_shopped;
+    vector<bool> sps_ingame;
+
+    // State
+    enum { SPS_CHOOSING, SPS_ACTIVE, SPS_PENDING, SPS_DONE };
+    vector<int> sps_playermode;
+
+    // Choosing only
+    vector<Float2> sps_playerpos;
+    
+    // Pending only
+    vector<int> sps_pending_goal;
 
   // Slot functions
   bool tickSlot(int slotid, const vector<Controller> &controllers);

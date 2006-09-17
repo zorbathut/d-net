@@ -18,8 +18,8 @@ vector<Player> &PersistentData::players() {
   return playerdata;
 }
 
-const char * const tween_textlabels[] = {"Leave/join game", "Quick shop", "Full shop", "Settings", "Done"};
-enum { TTL_LEAVEJOIN, TTL_QUICKSHOP, TTL_FULLSHOP, TTL_SETTINGS, TTL_DONE, TTL_LAST };
+const char * const tween_textlabels[] = {"Leave/join game", "Full shop", "Quick shop", "Settings", "Done"};
+enum { TTL_LEAVEJOIN, TTL_FULLSHOP, TTL_QUICKSHOP, TTL_SETTINGS, TTL_DONE, TTL_LAST };
 
 bool PersistentData::tick(const vector< Controller > &keys) {
   CHECK(keys.size() == pms.size());
@@ -43,8 +43,6 @@ bool PersistentData::tick(const vector< Controller > &keys) {
   if(mode == TM_PLAYERCHOOSE) {
     CHECK(slot_count == 1);
     if(slot[0].type == Slot::EMPTY) {
-      mode = TM_SHOP;
-        
       int readyusers = 0;
       for(int i = 0; i < pms.size(); i++)
         if(pms[i].readyToPlay())
@@ -61,8 +59,14 @@ bool PersistentData::tick(const vector< Controller > &keys) {
         }
       }
       CHECK(pid == playerdata.size());
+      
+      initForShop();
       return true;
     }
+  } else if(mode == TM_RESULTS) {
+    CHECK(slot_count == 1);
+    if(slot[0].type == Slot::EMPTY)
+      initForShop();
   } else if(mode == TM_SHOP) {
     /*
     CHECK(slot_count == 1);
@@ -84,7 +88,7 @@ bool PersistentData::tick(const vector< Controller > &keys) {
 void PersistentData::render() const {
   smart_ptr<GfxWindow> gfxwpos;
   
-  if(mode == TM_SHOP) {
+  if(mode == TM_SHOP && slot[0].type != Slot::RESULTS) {
     const float divider_ypos = 87;
     const float ticker_ypos = 90;
     
@@ -138,6 +142,26 @@ void PersistentData::render() const {
   }
 }
 
+void PersistentData::initForShop() {
+  mode = TM_SHOP;
+  
+  sps_shopped.clear();
+  sps_shopped.resize(pms.size(), false);
+  
+  sps_ingame.resize(pms.size());
+  for(int i = 0; i < sps_ingame.size(); i++)
+    sps_ingame[i] = !!pms[i].faction;
+  
+  sps_playermode.clear();
+  sps_playermode.resize(pms.size(), SPS_CHOOSING);
+  
+  sps_playerpos.clear();
+  sps_playerpos.resize(pms.size(), Float2(133.333 / 2, 95));  // TODO: base this on the constants
+  
+  sps_pending_goal.clear();
+  sps_pending_goal.resize(pms.size(), -1);
+}
+
 bool PersistentData::tickSlot(int slotid, const vector<Controller> &keys) {
   CHECK(slotid >= 0 && slotid < 4);
   Slot &slt = slot[slotid];
@@ -177,9 +201,7 @@ bool PersistentData::tickSlot(int slotid, const vector<Controller> &keys) {
     if(count(checked.begin(), checked.end(), false) == 0) {
       for(int i = 0; i < playerdata.size(); i++)
         playerdata[i].addCash(lrCash[i]);
-      slot[0].pid = 0;
-      slot[0].type = Slot::SHOP;
-      slot[0].shop.init(&playerdata[0], true);
+      return true;
     }
   } else if(slt.type == Slot::SHOP) {
     StackString stp("Shop");
