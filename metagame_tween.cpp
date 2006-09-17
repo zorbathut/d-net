@@ -112,12 +112,12 @@ void PersistentData::render() const {
     
     // Draw our framework
     setZoom(Float4(0, 0, 133.333, 100));
-    setColor(C::gray(1.0));
+    setColor(C::active_text);
     drawLine(Float4(0, divider_ypos, 140, divider_ypos), 0.1);
     drawLine(Float4(0, ticker_ypos, 140, ticker_ypos), 0.1);
     
     // Draw our text descriptions
-    setColor(C::gray(0.8));
+    setColor(C::inactive_text);
     drawJustifiedText("Next - ", ticker_text_size, Float2(ticker_queue_border, (divider_ypos + ticker_ypos) / 2), TEXT_MIN, TEXT_CENTER);
     drawJustifiedText("- Not ready", ticker_text_size, Float2(133.333 - ticker_waiting_border, (divider_ypos + ticker_ypos) / 2), TEXT_MAX, TEXT_CENTER);
     
@@ -128,9 +128,18 @@ void PersistentData::render() const {
     }
     
     // Draw our crosshairs
-    for(int i = 0; i < sps_playermode.size(); i++)
-      if(sps_playermode[i] == SPS_CHOOSING)
-        drawCrosshair(sps_playerpos[i].x, sps_playerpos[i].y, ticker_text_size, 0.001);
+    for(int i = 0; i < sps_playermode.size(); i++) {
+      if(sps_playermode[i] == SPS_CHOOSING) {
+        if(pms[i].faction)
+          setColor(pms[i].faction->faction->color);
+        else
+          setColor(C::gray(0.8));
+        drawCrosshair(sps_playerpos[i].x, sps_playerpos[i].y, ticker_text_size, 0.1);
+        if(pms[i].faction)
+          drawDvec2(pms[i].faction->faction->icon, Float4(0, 0, ticker_text_size, ticker_text_size) + sps_playerpos[i] + Float2(ticker_text_size, ticker_text_size) / 10, 10, 0.001);
+      }
+    }
+        
     
     gfxwpos.reset(new GfxWindow(Float4(0, 0, 133.333, divider_ypos), 1.0));
     
