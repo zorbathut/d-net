@@ -57,14 +57,10 @@ bool PersistentData::tick(const vector< Controller > &keys) {
         }
       }
       CHECK(pid == playerdata.size());
-
-      slot[0].pid = 0;
-      slot[0].type = Slot::SHOP;
-      slot[0].shop.init(&playerdata[0], true);  // this is so hideous
-
       return true;
     }
   } else if(mode == TM_SHOP) {
+    /*
     CHECK(slot_count == 1);
     if(slot[0].type == Slot::EMPTY) {
       dprintf("Updating pid from %d\n", slot[0].pid);
@@ -74,7 +70,7 @@ bool PersistentData::tick(const vector< Controller > &keys) {
         return true;
       slot[0].type = Slot::SHOP;
       slot[0].shop.init(&playerdata[slot[0].pid], true);
-    }
+    }*/
   } else {
     CHECK(0);
   }
@@ -82,20 +78,33 @@ bool PersistentData::tick(const vector< Controller > &keys) {
 }
 
 void PersistentData::render() const {
+  smart_ptr<GfxWindow> gfxwpos;
+  
+  if(mode == TM_SHOP) {
+    const float divider_ypos = 87;
+    const float ticker_ypos = 90;
+    
+    const float ticker_text_size = 2;
+    const float ticker_queue_border = 1;
+    const float ticker_waiting_border = 1;
+    
+    setZoom(Float4(0, 0, 133.333, 100));
+    setColor(C::gray(1.0));
+    drawLine(Float4(0, divider_ypos, 140, divider_ypos), 0.1);
+    drawLine(Float4(0, ticker_ypos, 140, ticker_ypos), 0.1);
+    
+    setColor(C::gray(0.8));
+    drawJustifiedText("Next - ", ticker_text_size, Float2(ticker_queue_border, (divider_ypos + ticker_ypos) / 2), TEXT_MIN, TEXT_CENTER);
+    drawJustifiedText("- Not ready", ticker_text_size, Float2(133.333 - ticker_waiting_border, (divider_ypos + ticker_ypos) / 2), TEXT_MAX, TEXT_CENTER);
+    
+    gfxwpos.reset(new GfxWindow(Float4(0, 0, 133.333, divider_ypos), 1.0));
+    
+    setZoom(Float4(0, 0, getAspect(), 1.0));
+  }
+  
   if(slot_count == 1) {
     renderSlot(0);
   } else if(slot_count == 4) {
-    
-    const float divider_pos = 90;
-    
-    setZoom(Float4(0, 0, 133.333, 100));
-    setColor(1.0, 1.0, 1.0);
-    drawLine(Float4(0, divider_pos, 140, divider_pos), 0.1);
-    
-    GfxWindow gfxw(Float4(0, 0, 133.333, divider_pos), 1.0);
-    
-    setZoom(Float4(0, 0, getAspect(), 1.0));
-    
     drawLine(Float4(0, 0.5, getAspect(), 0.5), 0.001);
     drawLine(Float4(getAspect() / 2, 0, getAspect() / 2, 1), 0.001);
     
