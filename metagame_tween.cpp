@@ -68,6 +68,20 @@ bool PersistentData::tick(const vector< Controller > &keys) {
     if(slot[0].type == Slot::EMPTY)
       initForShop();
   } else if(mode == TM_SHOP) {
+    // Various complications and such!
+    
+    // First: Traverse all players and update them as necessary.
+    for(int i = 0; i < sps_playermode.size(); i++) {
+      if(sps_playermode[i] == SPS_IDLE || sps_playermode[i] == SPS_CHOOSING) {
+        Float2 dz = deadzone(keys[i].menu, DEADZONE_CENTER, 0.2) / 2;
+        sps_playerpos[i].x += dz.x;
+        sps_playerpos[i].y -= dz.y;
+        sps_playerpos[i] = clamp(sps_playerpos[i], Float4(0, 90, 133.333, 100));
+        if(keys[i].l.down || keys[i].r.down || keys[i].u.down || keys[i].d.down)
+          sps_playermode[i] = SPS_CHOOSING;
+      }
+    }
+    
     /*
     CHECK(slot_count == 1);
     if(slot[0].type == Slot::EMPTY) {
@@ -96,19 +110,27 @@ void PersistentData::render() const {
     const float ticker_queue_border = 1;
     const float ticker_waiting_border = 1;
     
+    // Draw our framework
     setZoom(Float4(0, 0, 133.333, 100));
     setColor(C::gray(1.0));
     drawLine(Float4(0, divider_ypos, 140, divider_ypos), 0.1);
     drawLine(Float4(0, ticker_ypos, 140, ticker_ypos), 0.1);
     
+    // Draw our text descriptions
     setColor(C::gray(0.8));
     drawJustifiedText("Next - ", ticker_text_size, Float2(ticker_queue_border, (divider_ypos + ticker_ypos) / 2), TEXT_MIN, TEXT_CENTER);
     drawJustifiedText("- Not ready", ticker_text_size, Float2(133.333 - ticker_waiting_border, (divider_ypos + ticker_ypos) / 2), TEXT_MAX, TEXT_CENTER);
     
+    // Draw our text labels
     for(int i = 0; i < TTL_LAST; i++) {
       vector<string> lines = tokenize(tween_textlabels[i], " ");
       drawJustifiedMultiText(lines, ticker_text_size, Float2(133.333 / (TTL_LAST * 2) * (i * 2 + 1), (ticker_ypos + 100) / 2), TEXT_CENTER, TEXT_CENTER);
     }
+    
+    // Draw our crosshairs
+    for(int i = 0; i < sps_playermode.size(); i++)
+      if(sps_playermode[i] == SPS_CHOOSING)
+        drawCrosshair(sps_playerpos[i].x, sps_playerpos[i].y, ticker_text_size, 0.001);
     
     gfxwpos.reset(new GfxWindow(Float4(0, 0, 133.333, divider_ypos), 1.0));
     
@@ -153,7 +175,10 @@ void PersistentData::initForShop() {
     sps_ingame[i] = !!pms[i].faction;
   
   sps_playermode.clear();
-  sps_playermode.resize(pms.size(), SPS_CHOOSING);
+  sps_playermode.resize(pms.size(), SPS_IDLE);
+  for(int i = 0; i < sps_ingame.size(); i++)
+    if(sps_ingame[i])
+      sps_playermode[i] = SPS_CHOOSING;
   
   sps_playerpos.clear();
   sps_playerpos.resize(pms.size(), Float2(133.333 / 2, 95));  // TODO: base this on the constants

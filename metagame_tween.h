@@ -65,7 +65,7 @@ private:
     vector<bool> sps_ingame;
 
     // State
-    enum { SPS_CHOOSING, SPS_ACTIVE, SPS_PENDING, SPS_DONE };
+    enum { SPS_IDLE, SPS_CHOOSING, SPS_PENDING, SPS_ACTIVE, SPS_DONE };
     vector<int> sps_playermode;
 
     // Choosing only

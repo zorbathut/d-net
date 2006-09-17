@@ -9,6 +9,15 @@
 
 using namespace std;
 
+inline float clamp(float x, float min, float max) {
+  CHECK(min <= max);
+  if(x < min)
+    return min;
+  if(x > max)
+    return max;
+  return x;
+}
+
 /*************
  * Float2/Float4 classes and operators
  */
@@ -73,7 +82,6 @@ inline bool operator!=(const Float2 &lhs, const Float2 &rhs) {
 inline bool operator<(const Float2 &lhs, const Float2 &rhs) {
   return lhs.x < rhs.x || lhs.x == rhs.x && lhs.y < rhs.y;
 }
-
 
 class Float4 {
 public:
@@ -160,6 +168,10 @@ inline Float4 &operator-=(Float4 &lhs, const Float2 &rhs) {
 
 inline bool operator==(const Float4 &lhs, const Float4 &rhs) {
   return lhs.sx == rhs.sx && lhs.sy == rhs.sy && lhs.ex == rhs.ex && lhs.ey == rhs.ey;
+}
+
+inline Float2 clamp(const Float2 &val, const Float4 &bounds) {
+  return Float2(clamp(val.x, bounds.sx, bounds.ex), clamp(val.y, bounds.sy, bounds.ey));
 }
 
 /*************
