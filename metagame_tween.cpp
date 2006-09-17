@@ -10,6 +10,13 @@
 
 using namespace std;
 
+const float divider_ypos = 87;
+const float ticker_ypos = 90;
+
+const float ticker_text_size = 2;
+const float ticker_queue_border = 1;
+const float ticker_waiting_border = 1;
+
 bool PersistentData::isPlayerChoose() const {
   return mode == TM_PLAYERCHOOSE;
 }
@@ -70,18 +77,82 @@ bool PersistentData::tick(const vector< Controller > &keys) {
   } else if(mode == TM_SHOP) {
     // Various complications and such!
     
-    // First: Traverse all players and update them as necessary.
+    // First: calculate our ugly ranges for the text labels.
+    vector<pair<float, float> > ranges;
+    for(int i = 0; i < TTL_LAST; i++) {
+      vector<string> lines = tokenize(tween_textlabels[i], " ");
+      const float pivot = 133.333 / (TTL_LAST * 2) * (i * 2 + 1);
+      
+      float mwid = 0;
+      for(int i = 0; i < lines.size(); i++)
+        mwid = max(mwid, getTextWidth(lines[i], ticker_text_size));
+      mwid += 2;
+      
+      ranges.push_back(make_pair(pivot - mwid / 2, pivot + mwid / 2)); 
+    }
+    
+    // Second: Traverse all players and update them as necessary.
     for(int i = 0; i < sps_playermode.size(); i++) {
-      if(sps_playermode[i] == SPS_IDLE || sps_playermode[i] == SPS_CHOOSING) {
+      // Subfirst: See if the player's no longer idle.
+      if(sps_playermode[i] == SPS_IDLE) {
+        if(keys[i].l.down || keys[i].r.down || keys[i].u.down || keys[i].d.down)
+          sps_playermode[i] = SPS_CHOOSING;
+      }
+      
+      // Subsecond: Move the cursor.
+      if(sps_playermode[i] == SPS_CHOOSING) {
         Float2 dz = deadzone(keys[i].menu, DEADZONE_CENTER, 0.2) / 2;
         sps_playerpos[i].x += dz.x;
         sps_playerpos[i].y -= dz.y;
         sps_playerpos[i] = clamp(sps_playerpos[i], Float4(0, 90, 133.333, 100));
-        if(keys[i].l.down || keys[i].r.down || keys[i].u.down || keys[i].d.down)
+      }
+      
+      // Subthird: Do various things depending on the player's current mode
+      if(sps_playermode[i] == SPS_IDLE) {
+      } else if(sps_playermode[i] == SPS_CHOOSING) {
+        bool accept = false;
+        if(pms[i].faction) {
+          accept = pms[i].genKeystate(keys[i]).accept.push;
+        } else {
+          for(int j = 0; j < keys[i].keys.size(); j++)
+            if(keys[i].keys[j].push)
+              accept = true;
+        }
+        if(accept) {
+          for(int j = 0; j < ranges.size(); j++) {
+            if(sps_playerpos[i].x == clamp(sps_playerpos[i].x, ranges[j].first, ranges[j].second)) {
+              //TTL_LEAVEJOIN, TTL_FULLSHOP, TTL_QUICKSHOP, TTL_SETTINGS, TTL_DONE
+              dprintf("Player %d chose %d\n", i, j);
+            }
+          }
+        }
+      } else if(sps_playermode[i] == SPS_PENDING) {
+        bool cancel = false;
+        if(pms[i].faction) {
+          cancel = pms[i].genKeystate(keys[i]).cancel.push;
+        } else {
+          for(int j = 0; j < keys[i].keys.size(); j++)
+            if(keys[i].keys[j].push)
+              cancel = true;
+        }
+        if(cancel) {
+          dprintf("Player %d cancelling\n", i);
+      } else if(sps_playermode[i] == SPS_ACTIVE) {
+        // TODO: iterate over items, see if this player is finished
+      } else if(sps_playermode[i] == SPS_DONE) {
+        CHECK(pms[i].faction);
+        if(pms[i].genKeystate(keys[i]).cancel.push)
           sps_playermode[i] = SPS_CHOOSING;
+      } else {
+        CHECK(0);
       }
     }
-    
+  }
+  
+  // Third: Update queues and start new processes
+  
+  // Fourth: end if we're all done!
+
     /*
     CHECK(slot_count == 1);
     if(slot[0].type == Slot::EMPTY) {
@@ -103,13 +174,6 @@ void PersistentData::render() const {
   smart_ptr<GfxWindow> gfxwpos;
   
   if(mode == TM_SHOP && slot[0].type != Slot::RESULTS) {
-    const float divider_ypos = 87;
-    const float ticker_ypos = 90;
-    
-    const float ticker_text_size = 2;
-    const float ticker_queue_border = 1;
-    const float ticker_waiting_border = 1;
-    
     // Draw our framework
     setZoom(Float4(0, 0, 133.333, 100));
     setColor(C::active_text);
@@ -124,7 +188,8 @@ void PersistentData::render() const {
     // Draw our text labels
     for(int i = 0; i < TTL_LAST; i++) {
       vector<string> lines = tokenize(tween_textlabels[i], " ");
-      drawJustifiedMultiText(lines, ticker_text_size, Float2(133.333 / (TTL_LAST * 2) * (i * 2 + 1), (ticker_ypos + 100) / 2), TEXT_CENTER, TEXT_CENTER);
+      const float pivot = 133.333 / (TTL_LAST * 2) * (i * 2 + 1);
+      drawJustifiedMultiText(lines, ticker_text_size, Float2(pivot, (ticker_ypos + 100) / 2), TEXT_CENTER, TEXT_CENTER);
     }
     
     // Draw our crosshairs
@@ -139,7 +204,6 @@ void PersistentData::render() const {
           drawDvec2(pms[i].faction->faction->icon, Float4(0, 0, ticker_text_size, ticker_text_size) + sps_playerpos[i] + Float2(ticker_text_size, ticker_text_size) / 10, 10, 0.001);
       }
     }
-        
     
     gfxwpos.reset(new GfxWindow(Float4(0, 0, 133.333, divider_ypos), 1.0));
     
