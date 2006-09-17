@@ -6,6 +6,7 @@
 #include "args.h"
 #include "gfx.h"
 #include "ai.h"
+#include "parse.h"
 
 using namespace std;
 
@@ -16,6 +17,9 @@ bool PersistentData::isPlayerChoose() const {
 vector<Player> &PersistentData::players() {
   return playerdata;
 }
+
+const char * const tween_textlabels[] = {"Leave/join game", "Quick shop", "Full shop", "Settings", "Done"};
+enum { TTL_LEAVEJOIN, TTL_QUICKSHOP, TTL_FULLSHOP, TTL_SETTINGS, TTL_DONE, TTL_LAST };
 
 bool PersistentData::tick(const vector< Controller > &keys) {
   CHECK(keys.size() == pms.size());
@@ -96,6 +100,11 @@ void PersistentData::render() const {
     setColor(C::gray(0.8));
     drawJustifiedText("Next - ", ticker_text_size, Float2(ticker_queue_border, (divider_ypos + ticker_ypos) / 2), TEXT_MIN, TEXT_CENTER);
     drawJustifiedText("- Not ready", ticker_text_size, Float2(133.333 - ticker_waiting_border, (divider_ypos + ticker_ypos) / 2), TEXT_MAX, TEXT_CENTER);
+    
+    for(int i = 0; i < TTL_LAST; i++) {
+      vector<string> lines = tokenize(tween_textlabels[i], " ");
+      drawJustifiedMultiText(lines, ticker_text_size, Float2(133.333 / (TTL_LAST * 2) * (i * 2 + 1), (ticker_ypos + 100) / 2), TEXT_CENTER, TEXT_CENTER);
+    }
     
     gfxwpos.reset(new GfxWindow(Float4(0, 0, 133.333, divider_ypos), 1.0));
     
