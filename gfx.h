@@ -91,7 +91,6 @@ float getTextWidth(const string &txt, float scale);
 
 enum { TEXT_MIN, TEXT_CENTER, TEXT_MAX };
 
-void drawJustifiedText(const string &txt, float scale, float sx, float sy, int xps, int yps);
 void drawJustifiedText(const string &txt, float scale, Float2 pos, int xps, int yps);
 void drawJustifiedMultiText(const vector<string> &txt, float letterscale, Float2 pos, int xps, int yps);
 

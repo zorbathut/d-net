@@ -310,7 +310,7 @@ void standardButtonRender(const StandardButtonRenderData &sbrd) {
       }
       setColor(C::inactive_text * sbrd.fadeFactor);
     }
-    drawJustifiedText(btext.c_str(), sbrd.rin->textsize, sbrd.rin->xend, sbrd.rin->ystarts[cy - 1], TEXT_MAX, TEXT_MIN);
+    drawJustifiedText(btext.c_str(), sbrd.rin->textsize, Float2(sbrd.rin->xend, sbrd.rin->ystarts[cy - 1]), TEXT_MAX, TEXT_MIN);
   }
   CHECK(cy <= sbrd.rin->ystarts.size());
 }
@@ -751,7 +751,7 @@ void runSettingRender(const PlayerMenuState &pms) {
 	
       if(pms.choicemode == CHOICE_FIRSTPASS) {
         setColor(C::active_text * fadeFactor);
-        drawJustifiedText(setting_names_detailed[pms.settingmode], rin.textsize, (rin.drawzone.sx + rin.drawzone.ex) / 2, rin.ystarts[0], TEXT_CENTER, TEXT_MIN);
+        drawJustifiedText(setting_names_detailed[pms.settingmode], rin.textsize, Float2((rin.drawzone.sx + rin.drawzone.ex) / 2, rin.ystarts[0]), TEXT_CENTER, TEXT_MIN);
       } else {
         const int activescale = 4;
         float title_units = (rin.xend - txstart) / (SETTING_LAST - 1 + activescale);
@@ -765,7 +765,7 @@ void runSettingRender(const PlayerMenuState &pms) {
           string text = active ? setting_names[i] : string() + setting_names[i][0];
           setColor(((active && pms.choicemode == CHOICE_IDLE) ? C::active_text : C::inactive_text) * fadeFactor);
           
-          drawJustifiedText(text, rin.textsize, title_units * (units + tunits / 2.) + txstart, rin.ystarts[0], TEXT_CENTER, TEXT_MIN);
+          drawJustifiedText(text, rin.textsize, Float2(title_units * (units + tunits / 2.) + txstart, rin.ystarts[0]), TEXT_CENTER, TEXT_MIN);
           
           units += tunits;
         }
@@ -877,9 +877,9 @@ void runSettingRender(const PlayerMenuState &pms) {
       if(pms.setting_axistype_curchoice / 2 == KSAX_STEERING && pms.setting_axistype_demo_curframe == 2 ||
          pms.setting_axistype_curchoice / 2 == KSAX_ABSOLUTE && pms.setting_axistype_demo_curframe == 1 ||
          pms.setting_axistype_curchoice / 2 == KSAX_TANK && pms.setting_axistype_demo_curframe == 3) {
-        drawJustifiedText("Push accept to return", rin.textsize, (rin.xstart + rin.xend) / 2, rin.ystarts[7], TEXT_CENTER, TEXT_MIN);
+        drawJustifiedText("Push accept to return", rin.textsize, Float2((rin.xstart + rin.xend) / 2, rin.ystarts[7]), TEXT_CENTER, TEXT_MIN);
       } else {
-        drawJustifiedText("Push accept to continue", rin.textsize, (rin.xstart + rin.xend) / 2, rin.ystarts[7], TEXT_CENTER, TEXT_MIN);
+        drawJustifiedText("Push accept to continue", rin.textsize, Float2((rin.xstart + rin.xend) / 2, rin.ystarts[7]), TEXT_CENTER, TEXT_MIN);
       }
       
       const float widgetsize = 0.005;
@@ -921,9 +921,9 @@ void runSettingRender(const PlayerMenuState &pms) {
     } else if(pms.settingmode == SETTING_TEST) {
       setColor(C::inactive_text * fadeFactor);
       if(pms.choicemode == CHOICE_IDLE) {
-        drawJustifiedText("Push accept to test", rin.textsize, (rin.xstart + rin.xend) / 2, rin.ystarts[7], TEXT_CENTER, TEXT_MIN);
+        drawJustifiedText("Push accept to test", rin.textsize, Float2((rin.xstart + rin.xend) / 2, rin.ystarts[7]), TEXT_CENTER, TEXT_MIN);
       } else {
-        drawJustifiedText("Push cancel when done", rin.textsize, (rin.xstart + rin.xend) / 2, rin.ystarts[7], TEXT_CENTER, TEXT_MIN);
+        drawJustifiedText("Push cancel when done", rin.textsize, Float2((rin.xstart + rin.xend) / 2, rin.ystarts[7]), TEXT_CENTER, TEXT_MIN);
       }
       GfxWindow gfxw(Float4(rin.xstart, rin.ystarts[1], rin.xend, rin.ystarts[7]), fadeFactor);
       pms.test_game->renderToScreen();
@@ -931,7 +931,7 @@ void runSettingRender(const PlayerMenuState &pms) {
       setColor(C::inactive_text * fadeFactor);
       const char * const text[] = {"Move left/right over", "K-M-D-T to change options.", "", "Hold accept when", "ready to start. Let", "go of button to cancel."};
       for(int i = 0; i < 6; i++)
-        drawJustifiedText(text[i], rin.textsize, (rin.xstart + rin.xend) / 2, rin.ystarts[i + 1], TEXT_CENTER, TEXT_MIN);
+        drawJustifiedText(text[i], rin.textsize, Float2((rin.xstart + rin.xend) / 2, rin.ystarts[i + 1]), TEXT_CENTER, TEXT_MIN);
     } else {
       CHECK(0);
     }

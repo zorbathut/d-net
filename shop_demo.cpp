@@ -339,7 +339,7 @@ void ShopDemo::renderFrame() const {
   setZoom(Float4(0, 0, 1, 1));
   setColor(1, 1, 1);
   if(mult(game.frameCount(), progression) != 1)
-    drawJustifiedText(StringPrintf("%dx", mult(game.frameCount(), progression)), 0.1, 0, 1, TEXT_MIN, TEXT_MAX);
+    drawJustifiedText(StringPrintf("%dx", mult(game.frameCount(), progression)), 0.1, Float2(0, 1), TEXT_MIN, TEXT_MAX);
 };
 
 ShopDemo::ShopDemo() { };

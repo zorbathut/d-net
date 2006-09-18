@@ -432,7 +432,7 @@ void PersistentData::renderSlot(int slotid) const {
     drawMultibar(lrCategory[3], Float4(200, 200, 700, 240));
     drawMultibar(lrPlayer, Float4(200, 320, 700, 360));
     setColor(1.0, 1.0, 1.0);
-    drawJustifiedText("Waiting for", 30, 400, 400, TEXT_CENTER, TEXT_MIN);
+    drawJustifiedText("Waiting for", 30, Float2(400, 400), TEXT_CENTER, TEXT_MIN);
     int notdone = count(checked.begin(), checked.end(), false);
     CHECK(notdone);
     int cpos = 0;

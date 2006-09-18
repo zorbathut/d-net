@@ -319,7 +319,7 @@ void InterfaceMain::render() const {
   if(lastFailedFrame + 600 > frameNumber) {
     setZoomCenter(0, 0, 100);
     setColor(1.0, 1.0, 1.0);
-    drawJustifiedText("A Lion", 30, 0, 0, TEXT_CENTER, TEXT_CENTER);
+    drawJustifiedText("A Lion", 30, Float2(0, 0), TEXT_CENTER, TEXT_CENTER);
   }
   
   if(interface_mode == IFM_S_MAINMENU) {

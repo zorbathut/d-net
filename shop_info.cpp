@@ -38,7 +38,7 @@ ShopKVPrinter::~ShopKVPrinter() {
   setColor(1.0, 1.0, 1.0);
   for(int i = 0; i < pairz.size(); i++) {
     drawText(pairz[i].first, fontsize, Float2(activerkt.sx, activerkt.sy + linesize * i * step));
-    drawJustifiedText(pairz[i].second, fontsize, activerkt.ex, activerkt.sy + linesize * (i * step + twolinemode()), TEXT_MAX, TEXT_MIN);
+    drawJustifiedText(pairz[i].second, fontsize, Float2(activerkt.ex, activerkt.sy + linesize * (i * step + twolinemode())), TEXT_MAX, TEXT_MIN);
   }
 };
 

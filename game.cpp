@@ -1232,15 +1232,15 @@ void Game::renderToScreen() const {
       for(int i = 0; i < tanks.size(); i++) {
         if(demomode_playermodes[i] == DEMOPLAYER_DPS) {
           if(tanks[i].framesSinceDamage > 0) {
-            drawJustifiedText(StringPrintf("%.2f DPS", tanks[i].damageTaken / tanks[i].framesSinceDamage * FPS), demomode_boxradi / 15, tanks[i].pos.x.toFloat() - 5, tanks[i].pos.y.toFloat() - 5, TEXT_MAX, TEXT_MAX);
+            drawJustifiedText(StringPrintf("%.2f DPS", tanks[i].damageTaken / tanks[i].framesSinceDamage * FPS), demomode_boxradi / 15, tanks[i].pos.toFloat() - Float2(5, 5), TEXT_MAX, TEXT_MAX);
           }
         } else if(demomode_playermodes[i] == DEMOPLAYER_DPC) {
           if(demomode_hits) {
-            drawJustifiedText(StringPrintf("%.2f DPH", tanks[i].damageTakenPreviousHits / demomode_hits), demomode_boxradi / 15, tanks[i].pos.x.toFloat() - 5, tanks[i].pos.y.toFloat() - 5, TEXT_MAX, TEXT_MAX);
+            drawJustifiedText(StringPrintf("%.2f DPH", tanks[i].damageTakenPreviousHits / demomode_hits), demomode_boxradi / 15, tanks[i].pos.toFloat() - Float2(5, 5), TEXT_MAX, TEXT_MAX);
           }
         } else if(demomode_playermodes[i] == DEMOPLAYER_DPH) {
           if(tanks[i].damageEvents) {
-            drawJustifiedText(StringPrintf("%.2f DPH", tanks[i].damageTaken / tanks[i].damageEvents), demomode_boxradi / 15, tanks[i].pos.x.toFloat() - 5, tanks[i].pos.y.toFloat() - 5, TEXT_MAX, TEXT_MAX);
+            drawJustifiedText(StringPrintf("%.2f DPH", tanks[i].damageTaken / tanks[i].damageEvents), demomode_boxradi / 15, tanks[i].pos.toFloat() - Float2(5, 5), TEXT_MAX, TEXT_MAX);
           }
         } else if(demomode_playermodes[i] == DEMOPLAYER_BOMBSIGHT) {
         } else if(demomode_playermodes[i] == DEMOPLAYER_QUIET) {
@@ -1283,8 +1283,8 @@ void Game::renderToScreen() const {
           }
           
           CHECK(SIMUL_WEAPONS == 2);
-          drawJustifiedText(ammotext[0], 1.5, loffset + 1, 7.75, TEXT_MIN, TEXT_MIN);
-          drawJustifiedText(ammotext[1], 1.5, roffset - 1, 7.75, TEXT_MAX, TEXT_MIN);
+          drawJustifiedText(ammotext[0], 1.5, Float2(loffset + 1, 7.75), TEXT_MIN, TEXT_MIN);
+          drawJustifiedText(ammotext[1], 1.5, Float2(roffset - 1, 7.75), TEXT_MAX, TEXT_MIN);
         }
       }
     }
@@ -1292,7 +1292,7 @@ void Game::renderToScreen() const {
     // The giant overlay text for countdowns
     if(frameNmToStart == -1) {
       setColor(C::gray(1.0));
-      drawJustifiedText("Choose team", 8, 133.3 / 2, 100.0 / 2, TEXT_CENTER, TEXT_CENTER);
+      drawJustifiedText("Choose team", 8, Float2(133.3, 100) / 2, TEXT_CENTER, TEXT_CENTER);
     } else if(frameNm < frameNmToStart) {
       setColor(C::gray(1.0));
       int fleft = frameNmToStart - frameNm;
@@ -1304,10 +1304,10 @@ void Game::renderToScreen() const {
       } else {
         s = 8;
       }
-      drawJustifiedText(StringPrintf("Ready %d.%02d", fleft / 60, fleft % 60), s, 133.3 / 2, 100.0 / 2, TEXT_CENTER, TEXT_CENTER);
+      drawJustifiedText(StringPrintf("Ready %d.%02d", fleft / 60, fleft % 60), s, Float2(133.3, 100) / 2, TEXT_CENTER, TEXT_CENTER);
     } else if(frameNm < frameNmToStart + 60) {
       setColor(C::gray((240.0 - frameNm) / 60));
-      drawJustifiedText("GO", 40, 133.3 / 2, 100.0 / 2, TEXT_CENTER, TEXT_CENTER);
+      drawJustifiedText("GO", 40, Float2(133.3, 100) / 2, TEXT_CENTER, TEXT_CENTER);
     }
     
     // Bombardment level text
