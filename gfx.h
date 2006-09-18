@@ -107,6 +107,7 @@ void drawSpokes(float x, float y, int dupes, int numer, int denom, float len, fl
 void drawGrid(float spacing, float width);
 
 void drawCrosshair(float x, float y, float rad, float weight);
+void drawCrosshair(const Float2 &pos, float rad, float weight);
 
 
 #endif

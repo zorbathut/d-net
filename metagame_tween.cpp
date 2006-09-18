@@ -235,6 +235,29 @@ void PersistentData::render() const {
       drawJustifiedMultiText(lines, ticker_text_size, Float2(pivot, (ticker_ypos + 100) / 2), TEXT_CENTER, TEXT_CENTER);
     }
     
+    // Draw our queues
+    {
+      bool furtherbuffer = false;
+      for(int i = 0; i < sps_queue.size(); i++) {
+        Float4 drawpos = Float4(0, 0, ticker_text_size, ticker_text_size) + Float2(getTextWidth("Next - ", ticker_text_size) + ticker_queue_border + (i + furtherbuffer * 0.4) * ticker_text_size * 1.2, (divider_ypos + ticker_ypos) / 2 - ticker_text_size / 2);
+        if(i && !furtherbuffer && ((sps_queue[i].second == TTL_FULLSHOP) != (sps_queue[i - 1].second == TTL_FULLSHOP))) {
+          setColor(C::gray(0.7));
+          drawLine(Float2(drawpos.sx, drawpos.sy), Float2(drawpos.sx, drawpos.ey), 0.1);
+          furtherbuffer = true;
+          i--;
+          continue; // ahahahah so evil
+        }
+        FactionState *fs = pms[sps_queue[i].first].faction;
+        if(fs) {
+          setColor(fs->faction->color);
+          drawDvec2(fs->faction->icon, drawpos, 10, 0.001);
+        } else {
+          setColor(C::gray(0.8));
+          drawCrosshair(drawpos.midpoint(), ticker_text_size / 2, 0.1);
+        }
+      }
+    }
+    
     if(btt_notify) {
       setColor(btt_notify->color);
       drawJustifiedText("Use shop first", ticker_text_size, Float2(133.333 - ticker_waiting_border, ticker_ypos + 0.5), TEXT_MAX, TEXT_MIN);

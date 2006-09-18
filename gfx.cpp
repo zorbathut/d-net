@@ -701,3 +701,7 @@ void drawCrosshair(float x, float y, float rad, float weight) {
   drawLine(x - rad, y, x + rad, y, weight);
   drawLine(x, y - rad, x, y + rad, weight);
 }
+
+void drawCrosshair(const Float2 &pos, float rad, float weight) {
+  drawCrosshair(pos.x, pos.y, rad, weight);
+}
