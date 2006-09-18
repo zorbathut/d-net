@@ -330,6 +330,37 @@ void PersistentData::render() const {
       }
     }
     
+    // Draw our ready-or-not-ready
+    {
+      vector<const IDBFaction *> nrfactions;
+      for(int i = 0; i < pms.size(); i++) {
+        bool ready = false;
+        
+        if(sps_playermode[i] == SPS_DONE)
+          ready = true;
+        
+        if(!pms[i].faction && sps_playermode[i] == SPS_IDLE)
+          ready = true;
+        
+        if(!pms[i].faction && sps_playermode[i] == SPS_CHOOSING)
+          ready = true;
+        
+        if(!ready)
+          nrfactions.push_back(pms[i].faction->faction);
+      }
+      
+      for(int i = 0; i < nrfactions.size(); i++) {
+        Float4 drawpos = Float4(-ticker_text_size, 0, 0, ticker_text_size) + Float2(133.333 - ticker_waiting_border - getTextWidth("- Not ready", ticker_text_size) - (i + 1) * ticker_text_size * 1.2 + ticker_text_size, (divider_ypos + ticker_ypos) / 2 - ticker_text_size / 2);
+        if(nrfactions[i]) {
+          setColor(nrfactions[i]->color);
+          drawDvec2(nrfactions[i]->icon, drawpos, 10, 0.001);
+        } else {
+          setColor(C::gray(0.8));
+          drawCrosshair(drawpos.midpoint(), ticker_text_size / 2, 0.1);
+        }
+      }
+    }
+    
     if(btt_notify) {
       setColor(btt_notify->color);
       drawJustifiedText("Use shop first", ticker_text_size, Float2(133.333 - ticker_waiting_border, ticker_ypos + 0.5), TEXT_MAX, TEXT_MIN);
