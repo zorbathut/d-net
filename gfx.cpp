@@ -520,9 +520,6 @@ void drawCircle(const Float2 &center, float radius, float weight) {
     verts.push_back(makeAngle(i * PI / 8) * radius + center);
   drawLineLoop(verts, weight);
 }
-void drawCircle(const Coord2 &center, Coord radius, Coord weight) {
-  drawCircle(center.toFloat(), radius.toFloat(), weight.toFloat());
-}
 
 /*************
  * Text operations

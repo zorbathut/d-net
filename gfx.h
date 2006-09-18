@@ -83,7 +83,6 @@ void drawCurve(const Float4 &ptah, const Float4 &ptbh, int midpoints, float weig
 void drawCurveControls(const Float4 &ptah, const Float4 &ptbh, float spacing, float weight);
 
 void drawCircle(const Float2 &center, float radius, float weight);
-void drawCircle(const Coord2 &center, Coord radius, Coord weight);
 
 void drawText(const string &txt, float scale, const Float2 &pos);
 
