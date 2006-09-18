@@ -531,9 +531,14 @@ void drawCircle(const Coord2 &center, Coord radius, Coord weight) {
 const int betweenletter = 1;
 const float thickness = 0.5;
 
-void drawText(const char *txt, float scale, float sx, float sy) {
+void drawText(const string &txt, float scale, float sx, float sy) {
+  drawText(txt, scale, Float2(sx, sy));
+}
+
+void drawText(const string &txt, float scale, const Float2 &pos) {
+  float sx = pos.x;
   scale /= 9;
-  for(int i = 0; txt[i]; i++) {
+  for(int i = 0; i < txt.size(); i++) {
     char kar = txt[i];
     if(!fontdata.count(kar)) {
       dprintf("Can't find font for character \"%c\"", kar);
@@ -543,19 +548,11 @@ void drawText(const char *txt, float scale, float sx, float sy) {
     for(int i = 0; i < pathdat.art.size(); i++) {
       vector<Float2> verts;
       for(int j = 0; j < pathdat.art[i].size(); j++)
-        verts.push_back(Float2(sx + pathdat.art[i][j].first * scale, sy + pathdat.art[i][j].second * scale));
+        verts.push_back(Float2(sx + pathdat.art[i][j].first * scale, pos.y + pathdat.art[i][j].second * scale));
       drawLinePath(verts, scale * thickness);
     }
     sx += scale * (pathdat.width + betweenletter);
   }
-}
-
-void drawText(const string &txt, float scale, float sx, float sy) {
-  drawText(txt.c_str(), scale, sx, sy);
-}
-
-void drawText(const string &txt, float scale, const Float2 &pos) {
-  drawText(txt.c_str(), scale, pos.x, pos.y);
 }
 
 float getTextWidth(const string &txt, float scale) {
