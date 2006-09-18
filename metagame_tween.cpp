@@ -99,75 +99,75 @@ bool PersistentData::tick(const vector< Controller > &keys) {
     }
     
     // Second: Traverse all players and update them as necessary.
-    for(int i = 0; i < sps_playermode.size(); i++) {
+    for(int player = 0; player < sps_playermode.size(); player++) {
       // Subfirst: See if the player's no longer idle.
-      if(sps_playermode[i] == SPS_IDLE) {
-        if(keys[i].l.down || keys[i].r.down || keys[i].u.down || keys[i].d.down)
-          sps_playermode[i] = SPS_CHOOSING;
+      if(sps_playermode[player] == SPS_IDLE) {
+        if(keys[player].l.down || keys[player].r.down || keys[player].u.down || keys[player].d.down)
+          sps_playermode[player] = SPS_CHOOSING;
       }
       
       // Subsecond: Move the cursor.
-      if(sps_playermode[i] == SPS_CHOOSING) {
-        Float2 dz = deadzone(keys[i].menu, DEADZONE_CENTER, 0.2) / 2;
-        sps_playerpos[i].x += dz.x;
-        sps_playerpos[i].y -= dz.y;
-        sps_playerpos[i] = clamp(sps_playerpos[i], Float4(0, 90, 133.333, 100));
+      if(sps_playermode[player] == SPS_CHOOSING) {
+        Float2 dz = deadzone(keys[player].menu, DEADZONE_CENTER, 0.2) / 2;
+        sps_playerpos[player].x += dz.x;
+        sps_playerpos[player].y -= dz.y;
+        sps_playerpos[player] = clamp(sps_playerpos[player], Float4(0, 90, 133.333, 100));
       }
       
       // Subthird: Do various things depending on the player's current mode
-      if(sps_playermode[i] == SPS_IDLE) {
-      } else if(sps_playermode[i] == SPS_CHOOSING) {
+      if(sps_playermode[player] == SPS_IDLE) {
+      } else if(sps_playermode[player] == SPS_CHOOSING) {
         bool accept = false;
-        if(pms[i].faction) {
-          accept = pms[i].genKeystate(keys[i]).accept.push;
+        if(pms[player].faction) {
+          accept = pms[player].genKeystate(keys[player]).accept.push;
         } else {
-          for(int j = 0; j < keys[i].keys.size(); j++)
-            if(keys[i].keys[j].push)
+          for(int j = 0; j < keys[player].keys.size(); j++)
+            if(keys[player].keys[j].push)
               accept = true;
         }
         if(accept) {
           for(int j = 0; j < ranges.size(); j++) {
-            if(sps_playerpos[i].x == clamp(sps_playerpos[i].x, ranges[j].first, ranges[j].second)) {
-              if(sps_ingame[i]) {
+            if(sps_playerpos[player].x == clamp(sps_playerpos[player].x, ranges[j].first, ranges[j].second)) {
+              if(sps_ingame[player]) {
                 if(j == TTL_DONE) {
-                  if(!sps_shopped[i]) {
-                    btt_notify = pms[i].faction->faction;
+                  if(!sps_shopped[player]) {
+                    btt_notify = pms[player].faction->faction;
                     btt_frames_left = 180;
                   } else {
-                    sps_playermode[i] = SPS_DONE;
+                    sps_playermode[player] = SPS_DONE;
                   }
                 } else {
-                  sps_playermode[i] = SPS_PENDING;
-                  sps_pending_goal[i] = j;
-                  sps_queue.push_back(make_pair(i, j));
+                  sps_playermode[player] = SPS_PENDING;
+                  sps_pending_goal[player] = j;
+                  sps_queue.push_back(make_pair(player, j));
                 }
               } else {
                 if(j == TTL_LEAVEJOIN) {
-                  sps_playermode[i] = SPS_PENDING;
-                  sps_pending_goal[i] = j;
-                  sps_queue.push_back(make_pair(i, j));
+                  sps_playermode[player] = SPS_PENDING;
+                  sps_pending_goal[player] = j;
+                  sps_queue.push_back(make_pair(player, j));
                 }
                 // otherwise we just ignore it
               }
             }
           }
         }
-      } else if(sps_playermode[i] == SPS_PENDING) {
+      } else if(sps_playermode[player] == SPS_PENDING) {
         bool cancel = false;
-        if(pms[i].faction) {
-          cancel = pms[i].genKeystate(keys[i]).cancel.push;
+        if(pms[player].faction) {
+          cancel = pms[player].genKeystate(keys[player]).cancel.push;
         } else {
-          for(int j = 0; j < keys[i].keys.size(); j++)
-            if(keys[i].keys[j].push)
+          for(int j = 0; j < keys[player].keys.size(); j++)
+            if(keys[player].keys[j].push)
               cancel = true;
         }
         if(cancel) {
-          sps_playermode[i] = SPS_CHOOSING;
-          sps_pending_goal[i] = -1;
+          sps_playermode[player] = SPS_CHOOSING;
+          sps_pending_goal[player] = -1;
           
           bool found = false;
           for(int j = 0; j < sps_queue.size(); j++) {
-            if(sps_queue[j].first == i) {
+            if(sps_queue[j].first == player) {
               CHECK(!found);
               found = true;
               sps_queue.erase(sps_queue.begin() + j);
@@ -176,14 +176,14 @@ bool PersistentData::tick(const vector< Controller > &keys) {
           }
           CHECK(found);
         }
-      } else if(sps_playermode[i] == SPS_ACTIVE) {
+      } else if(sps_playermode[player] == SPS_ACTIVE) {
         // TODO: iterate over items, see if this player is finished
-      } else if(sps_playermode[i] == SPS_DONE) {
-        CHECK(pms[i].faction);
-        if(pms[i].genKeystate(keys[i]).cancel.push)
-          sps_playermode[i] = SPS_CHOOSING;
+      } else if(sps_playermode[player] == SPS_DONE) {
+        CHECK(pms[player].faction);
+        if(pms[player].genKeystate(keys[player]).cancel.push)
+          sps_playermode[player] = SPS_CHOOSING;
       } else {
-        dprintf("Player %d is %d\n", i, sps_playermode[i]);
+        dprintf("Player %d is %d\n", player, sps_playermode[player]);
         CHECK(0);
       }
     }
