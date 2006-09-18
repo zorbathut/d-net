@@ -121,8 +121,25 @@ bool PersistentData::tick(const vector< Controller > &keys) {
         if(accept) {
           for(int j = 0; j < ranges.size(); j++) {
             if(sps_playerpos[i].x == clamp(sps_playerpos[i].x, ranges[j].first, ranges[j].second)) {
-              //TTL_LEAVEJOIN, TTL_FULLSHOP, TTL_QUICKSHOP, TTL_SETTINGS, TTL_DONE
-              dprintf("Player %d chose %d\n", i, j);
+              if(sps_ingame[i]) {
+                if(j == TTL_DONE) {
+                  if(!sps_shopped[i]) {
+                    btt_notify = pms[i].faction->faction;
+                    btt_frames_left = 180;
+                  } else {
+                    sps_playermode[i] = SPS_DONE;
+                  }
+                } else {
+                  sps_playermode[i] = SPS_PENDING;
+                  sps_pending_goal[i] = j;
+                }
+              } else {
+                if(j == TTL_LEAVEJOIN) {
+                  sps_playermode[i] = SPS_PENDING;
+                  sps_pending_goal[i] = j;
+                }
+                // otherwise we just ignore it
+              }
             }
           }
         }
@@ -136,7 +153,9 @@ bool PersistentData::tick(const vector< Controller > &keys) {
               cancel = true;
         }
         if(cancel) {
-          dprintf("Player %d cancelling\n", i);
+          sps_playermode[i] = SPS_CHOOSING;
+          sps_pending_goal[i] = -1;
+        }
       } else if(sps_playermode[i] == SPS_ACTIVE) {
         // TODO: iterate over items, see if this player is finished
       } else if(sps_playermode[i] == SPS_DONE) {
@@ -144,15 +163,14 @@ bool PersistentData::tick(const vector< Controller > &keys) {
         if(pms[i].genKeystate(keys[i]).cancel.push)
           sps_playermode[i] = SPS_CHOOSING;
       } else {
+        dprintf("Player %d is %d\n", i, sps_playermode[i]);
         CHECK(0);
       }
     }
-  }
-  
-  // Third: Update queues and start new processes
-  
-  // Fourth: end if we're all done!
-
+    
+    // Third: Update queues and start new processes
+    
+    // Fourth: end if we're all done!
     /*
     CHECK(slot_count == 1);
     if(slot[0].type == Slot::EMPTY) {
@@ -164,6 +182,10 @@ bool PersistentData::tick(const vector< Controller > &keys) {
       slot[0].type = Slot::SHOP;
       slot[0].shop.init(&playerdata[slot[0].pid], true);
     }*/
+    
+    btt_frames_left--;
+    if(btt_frames_left <= 0)
+      btt_notify = NULL;
   } else {
     CHECK(0);
   }
@@ -190,6 +212,11 @@ void PersistentData::render() const {
       vector<string> lines = tokenize(tween_textlabels[i], " ");
       const float pivot = 133.333 / (TTL_LAST * 2) * (i * 2 + 1);
       drawJustifiedMultiText(lines, ticker_text_size, Float2(pivot, (ticker_ypos + 100) / 2), TEXT_CENTER, TEXT_CENTER);
+    }
+    
+    if(btt_notify) {
+      setColor(btt_notify->color);
+      drawJustifiedText("Use shop first", ticker_text_size, Float2(133.333 - ticker_waiting_border, ticker_ypos + 0.5), TEXT_MAX, TEXT_MIN);
     }
     
     // Draw our crosshairs
@@ -686,4 +713,7 @@ PersistentData::PersistentData(int playercount, int in_roundsbetweenshop) {
   slot[0].pid = -1;
   
   slot_count = 1;
+  
+  btt_notify = NULL;
+  btt_frames_left = 0;
 }

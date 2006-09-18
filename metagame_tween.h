@@ -73,6 +73,9 @@ private:
     
     // Pending only
     vector<int> sps_pending_goal;
+    
+    const IDBFaction *btt_notify;
+    int btt_frames_left;
 
   // Slot functions
   bool tickSlot(int slotid, const vector<Controller> &controllers);
