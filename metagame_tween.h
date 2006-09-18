@@ -35,6 +35,7 @@ private:
   // Player data
   vector<Player> playerdata;
   vector<PlayerMenuState> pms;  // heh.
+  vector<int> playerid; // from pms to playerdata ID
   
   vector<FactionState> factions;
   
@@ -46,7 +47,7 @@ private:
   
   // Tween layout info
   struct Slot {
-    enum { CHOOSE, SHOP, RESULTS, EMPTY };
+    enum { CHOOSE, SHOP, RESULTS, QUITCONFIRM, SETTINGS, EMPTY };
     int type;
     int pid;
     Shop shop;
@@ -72,8 +73,6 @@ private:
     vector<Float2> sps_playerpos;
     
     // Pending only
-    vector<int> sps_pending_goal;
-    
     vector<pair<int, int> > sps_queue;
     
     const IDBFaction *btt_notify;

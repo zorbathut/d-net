@@ -48,8 +48,10 @@ bool PersistentData::tick(const vector< Controller > &keys) {
     } else {
       clear = tickSlot(i, vector<Controller>(1, keys[slot[i].pid]));
     }
-    if(clear)
+    if(clear) {
       slot[i].type = Slot::EMPTY;
+      slot[i].pid = -1;
+    }
   }
   
   // Next: deal with empty slots depending on our mode.
@@ -63,12 +65,14 @@ bool PersistentData::tick(const vector< Controller > &keys) {
           readyusers++;
       CHECK(readyusers >= 2);
 
+      // TODO: shuffle this
       playerdata.clear();
       playerdata.resize(readyusers);
       int pid = 0;
       for(int i = 0; i < pms.size(); i++) {
         if(pms[i].faction) {
           playerdata[pid] = Player(pms[i].faction->faction, 0);
+          playerid[i] = pid;
           pid++;
         }
       }
@@ -138,13 +142,11 @@ bool PersistentData::tick(const vector< Controller > &keys) {
                   }
                 } else {
                   sps_playermode[player] = SPS_PENDING;
-                  sps_pending_goal[player] = j;
                   sps_queue.push_back(make_pair(player, j));
                 }
               } else {
                 if(j == TTL_LEAVEJOIN) {
                   sps_playermode[player] = SPS_PENDING;
-                  sps_pending_goal[player] = j;
                   sps_queue.push_back(make_pair(player, j));
                 }
                 // otherwise we just ignore it
@@ -163,7 +165,6 @@ bool PersistentData::tick(const vector< Controller > &keys) {
         }
         if(cancel) {
           sps_playermode[player] = SPS_CHOOSING;
-          sps_pending_goal[player] = -1;
           
           bool found = false;
           for(int j = 0; j < sps_queue.size(); j++) {
@@ -177,8 +178,18 @@ bool PersistentData::tick(const vector< Controller > &keys) {
           CHECK(found);
         }
       } else if(sps_playermode[player] == SPS_ACTIVE) {
-        // TODO: iterate over items, see if this player is finished
+        // Iterate over items, see if this player is finished
+        bool foundrunning = false;
+        for(int i = 0; i < slot_count; i++) {
+          if(slot[i].pid == player) {
+            CHECK(slot[i].type != Slot::EMPTY);
+            foundrunning = true;
+          }
+        }
+        if(!foundrunning)
+          sps_playermode[player] = SPS_CHOOSING;
       } else if(sps_playermode[player] == SPS_DONE) {
+        // Let the player cancel
         CHECK(pms[player].faction);
         if(pms[player].genKeystate(keys[player]).cancel.push)
           sps_playermode[player] = SPS_CHOOSING;
@@ -190,8 +201,69 @@ bool PersistentData::tick(const vector< Controller > &keys) {
     
     // Third: Update queues and start new processes
     sort(sps_queue.begin(), sps_queue.end(), QueueSorter());
+    // For each item in the queue, try to jam it somewhere.
+    while(sps_queue.size()) {
+      CHECK(sps_playermode[sps_queue[0].first] == SPS_PENDING);
+      const int desired_slots = (sps_queue[0].second == TTL_FULLSHOP ? 1 : 4);
+      
+      // Do we need to change modes?
+      if(slot_count != desired_slots) {
+        // See if any slot is still in use.
+        bool not_empty = false;
+        for(int i = 0; i < slot_count; i++)
+          if(slot[i].type != Slot::EMPTY)
+            not_empty = true;
+        if(not_empty)
+          break;  // Ain't gonna happen.
+        slot_count = desired_slots;
+      }
+      
+      CHECK(slot_count == desired_slots);
+      
+      int empty = -1;
+      for(int i = 0; i < slot_count; i++) {
+        if(slot[i].type == Slot::EMPTY) {
+          empty = i;
+          break;
+        }
+      }
+      if(empty == -1)
+        break;  // No empty slots.
+      
+      // Okay we've got an empty slot.
+      CHECK(slot[empty].type == Slot::EMPTY);
+      slot[empty].pid = sps_queue[0].first;
+      if(sps_queue[0].second == TTL_LEAVEJOIN && !pms[sps_queue[0].first].faction) {
+        slot[empty].type = Slot::CHOOSE;
+      } else if(sps_queue[0].second == TTL_LEAVEJOIN && pms[sps_queue[0].first].faction) {
+        slot[empty].type = Slot::QUITCONFIRM;
+      } else if(sps_queue[0].second == TTL_FULLSHOP) {
+        slot[empty].type = Slot::SHOP;
+        slot[empty].shop.init(&playerdata[playerid[sps_queue[0].first]], false);
+      } else if(sps_queue[0].second == TTL_QUICKSHOP) {
+        slot[empty].type = Slot::SHOP;
+        slot[empty].shop.init(&playerdata[playerid[sps_queue[0].first]], true);
+      } else if(sps_queue[0].second == TTL_SETTINGS) {
+        slot[empty].type = Slot::SETTINGS;
+      } else {
+        CHECK(0);
+      }
+      
+      sps_playermode[sps_queue[0].first] = SPS_ACTIVE;
+      sps_queue.erase(sps_queue.begin());
+    }
     
-    // Fourth: end if we're all done!
+    // Fourth: If we're empty, reset to 1 item.
+    {
+      bool notempty = false;
+      for(int i = 0; i < slot_count; i++)
+        if(slot[i].type != Slot::EMPTY)
+          notempty = true;
+      if(!notempty)
+        slot_count = 1;
+    }
+    
+    // Fifth: end if we're all done!
     /*
     CHECK(slot_count == 1);
     if(slot[0].type == Slot::EMPTY) {
@@ -284,6 +356,7 @@ void PersistentData::render() const {
   if(slot_count == 1) {
     renderSlot(0);
   } else if(slot_count == 4) {
+    setColor(C::active_text);
     drawLine(Float4(0, 0.5, getAspect(), 0.5), 0.001);
     drawLine(Float4(getAspect() / 2, 0, getAspect() / 2, 1), 0.001);
     
@@ -326,9 +399,6 @@ void PersistentData::initForShop() {
   
   sps_playerpos.clear();
   sps_playerpos.resize(pms.size(), Float2(133.333 / 2, 95));  // TODO: base this on the constants
-  
-  sps_pending_goal.clear();
-  sps_pending_goal.resize(pms.size(), -1);
 }
 
 bool PersistentData::tickSlot(int slotid, const vector<Controller> &keys) {
@@ -485,10 +555,18 @@ void PersistentData::ai(const vector<Ai *> &ais) const {
 }
 
 vector<Keystates> PersistentData::genKeystates(const vector<Controller> &keys) const {
-  vector<Keystates> kst;
-  for(int i = 0; i < pms.size(); i++)
-    if(pms[i].faction)
-      kst.push_back(pms[i].genKeystate(keys[i]));
+  vector<Keystates> kst(playerdata.size());
+  int ct = 0;
+  set<int> kstd;
+  for(int i = 0; i < pms.size(); i++) {
+    if(pms[i].faction) {
+      kst[playerid[i]] = pms[i].genKeystate(keys[i]);
+      ct++;
+      kstd.insert(playerid[i]);
+    }
+  }
+  CHECK(kstd.size() == ct);
+  CHECK(ct == kst.size());
   return kst;
 }
 
@@ -653,6 +731,7 @@ PersistentData::PersistentData(int playercount, int in_roundsbetweenshop) {
   
   pms.clear();
   pms.resize(playercount, PlayerMenuState(Float2(0, 0)));
+  playerid.resize(playercount, -1);
   
   {
     const vector<IDBFaction> &facts = factionList();
@@ -750,8 +829,10 @@ PersistentData::PersistentData(int playercount, int in_roundsbetweenshop) {
   }
   
   CHECK(sizeof(slot) / sizeof(*slot) == 4);
-  for(int i = 0; i < 4; i++)
+  for(int i = 0; i < 4; i++) {
     slot[i].type = Slot::EMPTY;
+    slot[i].pid = -1;
+  }
   
   slot[0].type = Slot::CHOOSE;
   slot[0].pid = -1;
