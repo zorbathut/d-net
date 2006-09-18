@@ -25,8 +25,8 @@ vector<Player> &PersistentData::players() {
   return playerdata;
 }
 
-const char * const tween_textlabels[] = {"Leave/join game", "Full shop", "Quick shop", "Settings", "Done"};
-enum { TTL_LEAVEJOIN, TTL_FULLSHOP, TTL_QUICKSHOP, TTL_SETTINGS, TTL_DONE, TTL_LAST };
+const char * const tween_textlabels[] = {"Leave/join game", "Settings", "Full shop", "Quick shop", "Done"};
+enum { TTL_LEAVEJOIN, TTL_SETTINGS, TTL_FULLSHOP, TTL_QUICKSHOP, TTL_DONE, TTL_LAST };
 
 class QueueSorter {
 public:
@@ -263,22 +263,14 @@ bool PersistentData::tick(const vector< Controller > &keys) {
         slot_count = 1;
     }
     
-    // Fifth: end if we're all done!
-    /*
-    CHECK(slot_count == 1);
-    if(slot[0].type == Slot::EMPTY) {
-      dprintf("Updating pid from %d\n", slot[0].pid);
-      slot[0].pid++;
-      dprintf("Pid is now %d compared to %d\n", slot[0].pid, playerdata.size());
-      if(slot[0].pid == playerdata.size())
-        return true;
-      slot[0].type = Slot::SHOP;
-      slot[0].shop.init(&playerdata[slot[0].pid], true);
-    }*/
-    
     btt_frames_left--;
     if(btt_frames_left <= 0)
       btt_notify = NULL;
+    
+    // Are we done?
+    if(getUnfinishedFactions().size() == 0)
+      return true;
+    
   } else {
     CHECK(0);
   }
@@ -414,7 +406,7 @@ void PersistentData::initForShop() {
       sps_playermode[i] = SPS_CHOOSING;
   
   sps_playerpos.clear();
-  sps_playerpos.resize(pms.size(), Float2(133.333 / 2, 95));  // TODO: base this on the constants
+  sps_playerpos.resize(pms.size(), Float2(133.333 / (TTL_LAST * 2) * (TTL_QUICKSHOP * 2 + 1), 95));  // TODO: base this on the constants
 }
 
 bool PersistentData::tickSlot(int slotid, const vector<Controller> &keys) {
@@ -578,7 +570,13 @@ void PersistentData::ai(const vector<Ai *> &ais) const {
     for(int i = 0; i < ais.size(); i++)
       if(ais[i])
         ais[i]->updateCharacterChoice(factions, pms, i);
+  } else if(mode == TM_RESULTS) {
+    for(int i = 0; i < ais.size(); i++)
+      if(ais[i])
+        ais[i]->updateWaitingForReport();
   } else if(mode == TM_SHOP) {
+    // TODO: this will be complicated
+    /*
     if(slot[0].pid == -1) {
       for(int i = 0; i < ais.size(); i++)
         if(ais[i])
@@ -589,7 +587,7 @@ void PersistentData::ai(const vector<Ai *> &ais) const {
       for(int i = 0; i < ais.size(); i++)
         if(ais[i] && i != slot[0].pid)
           ais[i]->updateIdle();
-    }
+    }*/
   } else {
     CHECK(0);
   }
@@ -672,6 +670,7 @@ void PersistentData::divvyCash(float firepowerSpent) {
   lrPlayer = playercash;
   lrCash = playercashresult;
   
+  mode = TM_RESULTS;
   slot_count = 1;
   slot[0].type = Slot::RESULTS;
   slot[0].pid = -1;

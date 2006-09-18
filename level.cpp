@@ -7,7 +7,7 @@
 using namespace std;
 
 Level loadLevel(const string &str) {
-  dprintf("Loading %s\n", str.c_str());
+  //dprintf("Loading %s\n", str.c_str());
   Level rv;
   Dvec2 dv = loadDvec2(str);
   for(int i = 0; i < dv.paths.size(); i++) {
@@ -30,7 +30,7 @@ Level loadLevel(const string &str) {
       rtp.push_back(Coord2(tp[i]));
     rv.paths.push_back(rtp);
   }
-  dprintf("%d paths parsed\n", rv.paths.size());
+  //dprintf("%d paths parsed\n", rv.paths.size());
   CHECK(rv.paths.size() == dv.paths.size());
   {
     map<int, int> entallow;
@@ -45,7 +45,7 @@ Level loadLevel(const string &str) {
     }
     for(map<int, int>::iterator itr = entallow.begin(); itr != entallow.end(); itr++) {
       if(itr->second >= itr->first) {
-        dprintf("Entities valid for %d players, got %d starts", itr->first, itr->second);
+        //dprintf("Entities valid for %d players, got %d starts", itr->first, itr->second);
         rv.playersValid.insert(itr->first);
         for(int i = 0; i < dv.entities.size(); i++) {
           CHECK(dv.entities[i].getParameter("numerator") && dv.entities[i].getParameter("denominator"));
@@ -68,7 +68,7 @@ void Level::makeProperSolids() {
   }
   sort(starts.begin(), starts.end());
   starts.erase(unique(starts.begin(), starts.end()), starts.end());
-  dprintf("%d unique starts\n", starts.size());
+  //dprintf("%d unique starts\n", starts.size());
   vector<int> startsin(paths.size());
   for(int i = 0; i < paths.size(); i++) {
     for(int j = 0; j < starts.size(); j++) {
@@ -84,10 +84,10 @@ void Level::makeProperSolids() {
   for(int i = 0; i < startsin.size(); i++) {
     bool tanksin = (startsin[i] != 0);
     Coord2 ptin = getPointIn(paths[i]);
-    dprintf("tanks is %d, IP is %d\n", tanksin, inPath(ptin, paths[i]));
+    //dprintf("tanks is %d, IP is %d\n", tanksin, inPath(ptin, paths[i]));
     bool toggle = (tanksin != (inPath(ptin, paths[i]) == -1));
     if(toggle) {
-      dprintf("Toggling\n");
+      //dprintf("Toggling\n");
       reverse(paths[i].begin(), paths[i].end());
     }
   }

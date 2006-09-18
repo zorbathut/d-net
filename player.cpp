@@ -432,6 +432,10 @@ Player::Player(const IDBFaction *fact, int in_factionmode) : weapons(defaultTank
   bombardment.push_back(defaultBombardment());
   tank.push_back(defaultTank());
   reCalculate();
+  
+  kills = 0;
+  wins = 0;
+  damageDone = 0;
 }
 
 void Player::reCalculate() {
