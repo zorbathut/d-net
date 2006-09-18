@@ -81,6 +81,7 @@ private:
   // Slot functions
   bool tickSlot(int slotid, const vector<Controller> &controllers);
   void renderSlot(int slotid) const;
+  vector<const IDBFaction *> getUnfinishedFactions() const;
 
   // Helper functions
   void drawMultibar(const vector<float> &sizes, const Float4 &dimensions) const;

@@ -332,22 +332,7 @@ void PersistentData::render() const {
     
     // Draw our ready-or-not-ready
     {
-      vector<const IDBFaction *> nrfactions;
-      for(int i = 0; i < pms.size(); i++) {
-        bool ready = false;
-        
-        if(sps_playermode[i] == SPS_DONE)
-          ready = true;
-        
-        if(!pms[i].faction && sps_playermode[i] == SPS_IDLE)
-          ready = true;
-        
-        if(!pms[i].faction && sps_playermode[i] == SPS_CHOOSING)
-          ready = true;
-        
-        if(!ready)
-          nrfactions.push_back(pms[i].faction->faction);
-      }
+      vector<const IDBFaction *> nrfactions = getUnfinishedFactions();
       
       for(int i = 0; i < nrfactions.size(); i++) {
         Float4 drawpos = Float4(-ticker_text_size, 0, 0, ticker_text_size) + Float2(133.333 - ticker_waiting_border - getTextWidth("- Not ready", ticker_text_size) - (i + 1) * ticker_text_size * 1.2 + ticker_text_size, (divider_ypos + ticker_ypos) / 2 - ticker_text_size / 2);
@@ -481,7 +466,12 @@ bool PersistentData::tickSlot(int slotid, const vector<Controller> &keys) {
     // TODO: this is horrific
     Keystates thesekeys = genKeystates(vector<Controller>(playerdata.size(), keys[0]))[slt.pid];
     
-    return slt.shop.runTick(thesekeys);
+    bool srt = slt.shop.runTick(thesekeys);
+    
+    if(srt)
+      sps_shopped[slt.pid] = true;
+    
+    return srt;
   } else {
     CHECK(0);
   }
@@ -552,6 +542,26 @@ void PersistentData::renderSlot(int slotid) const {
   } else {
     CHECK(0);
   }
+}
+
+vector<const IDBFaction *> PersistentData::getUnfinishedFactions() const {
+  vector<const IDBFaction *> nrfactions;
+  for(int i = 0; i < pms.size(); i++) {
+    bool ready = false;
+    
+    if(sps_playermode[i] == SPS_DONE)
+      ready = true;
+    
+    if(!pms[i].faction && sps_playermode[i] == SPS_IDLE)
+      ready = true;
+    
+    if(!pms[i].faction && sps_playermode[i] == SPS_CHOOSING)
+      ready = true;
+    
+    if(!ready)
+      nrfactions.push_back(pms[i].faction->faction);
+  }
+  return nrfactions;
 }
 
 vector<Ai *> PersistentData::distillAi(const vector<Ai *> &ai) const {
