@@ -421,11 +421,11 @@ void PersistentData::renderSlot(int slotid) const {
     CHECK(lrCategory.size()); // make sure we *have* results
     setZoom(Float4(0, 0, 800, 600));
     setColor(1.0, 1.0, 1.0);
-    drawText("Damage", 30, 20, 20);
-    drawText("Kills", 30, 20, 80);
-    drawText("Wins", 30, 20, 140);
-    drawText("Base", 30, 20, 200);
-    drawText("Totals", 30, 20, 320);
+    drawText("Damage", 30, Float2(20, 20));
+    drawText("Kills", 30, Float2(20, 80));
+    drawText("Wins", 30, Float2(20, 140));
+    drawText("Base", 30, Float2(20, 200));
+    drawText("Totals", 30, Float2(20, 320));
     drawMultibar(lrCategory[0], Float4(200, 20, 700, 60));
     drawMultibar(lrCategory[1], Float4(200, 80, 700, 120));
     drawMultibar(lrCategory[2], Float4(200, 140, 700, 180));

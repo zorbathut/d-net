@@ -37,7 +37,7 @@ ShopKVPrinter::~ShopKVPrinter() {
   drawRect(rkt, 0.1);
   setColor(1.0, 1.0, 1.0);
   for(int i = 0; i < pairz.size(); i++) {
-    drawText(pairz[i].first, fontsize, activerkt.sx, activerkt.sy + linesize * i * step);
+    drawText(pairz[i].first, fontsize, Float2(activerkt.sx, activerkt.sy + linesize * i * step));
     drawJustifiedText(pairz[i].second, fontsize, activerkt.ex, activerkt.sy + linesize * (i * step + twolinemode()), TEXT_MAX, TEXT_MIN);
   }
 };
@@ -170,7 +170,7 @@ void drawShadedFormattedText(Float4 bounds, float fontsize, const string &text) 
   drawRect(box, 0.1);
   setColor(1.0, 1.0, 1.0);
   for(int i = 0; i < vlines.size(); i++)
-    drawText(vlines[i], fontsize, rkt.sx, rkt.sy + linesize * i);
+    drawText(vlines[i], fontsize, Float2(rkt.sx, rkt.sy + linesize * i));
 }
 
 void ShopInfo::renderFrame(Float4 bounds, float fontsize, Float4 inset) const {

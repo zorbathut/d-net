@@ -156,7 +156,7 @@ void MainLoop() {
       if(!controls_users()) {
         setColor(1.0, 1.0, 1.0);
         setZoom(Float4(0, 0, 133.333, 100));
-        drawText(StringPrintf("%d", frameNumber), 10, 5, 85);
+        drawText(StringPrintf("%d", frameNumber), 10, Float2(5, 85));
       }
 			deinitFrame();
 		} else {

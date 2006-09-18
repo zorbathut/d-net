@@ -291,7 +291,7 @@ void standardButtonRender(const StandardButtonRenderData &sbrd) {
     CHECK(i < sbrd.names->size());
     CHECK(cy < sbrd.rin->ystarts.size());
     for(int j = 0; j < (*sbrd.names)[i].size(); j++)
-      drawText((*sbrd.names)[i][j], sbrd.rin->textsize, sbrd.rin->xstart, sbrd.rin->ystarts[cy++]);
+      drawText((*sbrd.names)[i][j], sbrd.rin->textsize, Float2(sbrd.rin->xstart, sbrd.rin->ystarts[cy++]));
     string btext;
     if(sbrd.sel_button == i && sbrd.sel_button_reading) {
       btext = "?";
@@ -708,7 +708,7 @@ void runSettingRender(const PlayerMenuState &pms) {
       drawLine(pms.compasspos.x - 0.06, pms.compasspos.y, pms.compasspos.x - 0.02, pms.compasspos.y, 0.004);
       drawLine(pms.compasspos.x + 0.06, pms.compasspos.y, pms.compasspos.x + 0.02, pms.compasspos.y, 0.004);
     }
-    //drawText(bf, 20, pms.compasspos.x + 5, pms.compasspos.y + 5);
+    //drawText(bf, 20, Float2(pms.compasspos.x + 5, pms.compasspos.y + 5));
   } else {
     
     const RenderInfo rin(pms.faction->compass_location);
@@ -803,14 +803,14 @@ void runSettingRender(const PlayerMenuState &pms) {
           setColor(C::inactive_text * fadeFactor);
         
         if(i % 2 == 0)
-          drawText(ksax_names[i / 2], rin.textsize, rin.xstart + rin.textsize * 2, rin.ystarts[i + 2]);
+          drawText(ksax_names[i / 2], rin.textsize, Float2(rin.xstart + rin.textsize * 2, rin.ystarts[i + 2]));
         else
-          drawText("(demo)", rin.textsize, rin.xstart + rin.textsize * 3, rin.ystarts[i + 2]);
+          drawText("(demo)", rin.textsize, Float2(rin.xstart + rin.textsize * 3, rin.ystarts[i + 2]));
       }
       
       if(pms.setting_axistype != -1) {
         setColor(C::active_text * fadeFactor);
-        drawText(">", rin.textsize, rin.xstart, rin.ystarts[pms.setting_axistype * 2 + 2]);
+        drawText(">", rin.textsize, Float2(rin.xstart, rin.ystarts[pms.setting_axistype * 2 + 2]));
       }
     } else if(pms.settingmode == SETTING_AXISTYPE && pms.setting_axistype_demo_curframe != -1) {
       
@@ -827,48 +827,48 @@ void runSettingRender(const PlayerMenuState &pms) {
       
       setColor(C::inactive_text * fadeFactor);
       if(pms.setting_axistype_curchoice / 2 == KSAX_STEERING && pms.setting_axistype_demo_curframe == 0) {
-        drawText("Move controller", rin.textsize, rin.xstart, rin.ystarts[1]);
-        drawText("forward and", rin.textsize, rin.xstart, rin.ystarts[2]);
-        drawText("back to drive", rin.textsize, rin.xstart, rin.ystarts[3]);
-        drawText("forward and", rin.textsize, rin.xstart, rin.ystarts[4]);
-        drawText("back.", rin.textsize, rin.xstart, rin.ystarts[5]);
+        drawText("Move controller", rin.textsize, Float2(rin.xstart, rin.ystarts[1]));
+        drawText("forward and", rin.textsize, Float2(rin.xstart, rin.ystarts[2]));
+        drawText("back to drive", rin.textsize, Float2(rin.xstart, rin.ystarts[3]));
+        drawText("forward and", rin.textsize, Float2(rin.xstart, rin.ystarts[4]));
+        drawText("back.", rin.textsize, Float2(rin.xstart, rin.ystarts[5]));
       } else if(pms.setting_axistype_curchoice / 2 == KSAX_STEERING && pms.setting_axistype_demo_curframe == 1) {
-        drawText("Move controller", rin.textsize, rin.xstart, rin.ystarts[1]);
-        drawText("side to side", rin.textsize, rin.xstart, rin.ystarts[2]);
-        drawText("to turn.", rin.textsize, rin.xstart, rin.ystarts[3]);
+        drawText("Move controller", rin.textsize, Float2(rin.xstart, rin.ystarts[1]));
+        drawText("side to side", rin.textsize, Float2(rin.xstart, rin.ystarts[2]));
+        drawText("to turn.", rin.textsize, Float2(rin.xstart, rin.ystarts[3]));
       } else if(pms.setting_axistype_curchoice / 2 == KSAX_STEERING && pms.setting_axistype_demo_curframe == 2) {
-        drawText("Combine these", rin.textsize, rin.xstart, rin.ystarts[1]);
-        drawText("to drive around.", rin.textsize, rin.xstart, rin.ystarts[2]);
+        drawText("Combine these", rin.textsize, Float2(rin.xstart, rin.ystarts[1]));
+        drawText("to drive around.", rin.textsize, Float2(rin.xstart, rin.ystarts[2]));
       } else if(pms.setting_axistype_curchoice / 2 == KSAX_ABSOLUTE && pms.setting_axistype_demo_curframe == 0) {
-        drawText("Move controller", rin.textsize, rin.xstart, rin.ystarts[1]);
-        drawText("towards where", rin.textsize, rin.xstart, rin.ystarts[2]);
-        drawText("you want the", rin.textsize, rin.xstart, rin.ystarts[3]);
-        drawText("tank to go.", rin.textsize, rin.xstart, rin.ystarts[4]);
+        drawText("Move controller", rin.textsize, Float2(rin.xstart, rin.ystarts[1]));
+        drawText("towards where", rin.textsize, Float2(rin.xstart, rin.ystarts[2]));
+        drawText("you want the", rin.textsize, Float2(rin.xstart, rin.ystarts[3]));
+        drawText("tank to go.", rin.textsize, Float2(rin.xstart, rin.ystarts[4]));
       } else if(pms.setting_axistype_curchoice / 2 == KSAX_ABSOLUTE && pms.setting_axistype_demo_curframe == 1) {
-        drawText("The computer", rin.textsize, rin.xstart, rin.ystarts[1]);
-        drawText("will try to", rin.textsize, rin.xstart, rin.ystarts[2]);
-        drawText("turn your tank", rin.textsize, rin.xstart, rin.ystarts[3]);
-        drawText("in that direction.", rin.textsize, rin.xstart, rin.ystarts[4]);
+        drawText("The computer", rin.textsize, Float2(rin.xstart, rin.ystarts[1]));
+        drawText("will try to", rin.textsize, Float2(rin.xstart, rin.ystarts[2]));
+        drawText("turn your tank", rin.textsize, Float2(rin.xstart, rin.ystarts[3]));
+        drawText("in that direction.", rin.textsize, Float2(rin.xstart, rin.ystarts[4]));
       } else if(pms.setting_axistype_curchoice / 2 == KSAX_TANK && pms.setting_axistype_demo_curframe == 0) {
-        drawText("Control treads", rin.textsize, rin.xstart, rin.ystarts[1]);
-        drawText("independently.", rin.textsize, rin.xstart, rin.ystarts[2]);
-        drawText("Your left stick", rin.textsize, rin.xstart, rin.ystarts[3]);
-        drawText("moves your left", rin.textsize, rin.xstart, rin.ystarts[4]);
-        drawText("tank tread.", rin.textsize, rin.xstart, rin.ystarts[5]);
+        drawText("Control treads", rin.textsize, Float2(rin.xstart, rin.ystarts[1]));
+        drawText("independently.", rin.textsize, Float2(rin.xstart, rin.ystarts[2]));
+        drawText("Your left stick", rin.textsize, Float2(rin.xstart, rin.ystarts[3]));
+        drawText("moves your left", rin.textsize, Float2(rin.xstart, rin.ystarts[4]));
+        drawText("tank tread.", rin.textsize, Float2(rin.xstart, rin.ystarts[5]));
       } else if(pms.setting_axistype_curchoice / 2 == KSAX_TANK && pms.setting_axistype_demo_curframe == 1) {
-        drawText("Your right stick", rin.textsize, rin.xstart, rin.ystarts[1]);
-        drawText("moves your right", rin.textsize, rin.xstart, rin.ystarts[2]);
-        drawText("tank tread.", rin.textsize, rin.xstart, rin.ystarts[3]);
+        drawText("Your right stick", rin.textsize, Float2(rin.xstart, rin.ystarts[1]));
+        drawText("moves your right", rin.textsize, Float2(rin.xstart, rin.ystarts[2]));
+        drawText("tank tread.", rin.textsize, Float2(rin.xstart, rin.ystarts[3]));
       } else if(pms.setting_axistype_curchoice / 2 == KSAX_TANK && pms.setting_axistype_demo_curframe == 2) {
-        drawText("Move both sticks", rin.textsize, rin.xstart, rin.ystarts[1]);
-        drawText("forward to move", rin.textsize, rin.xstart, rin.ystarts[2]);
-        drawText("your tank", rin.textsize, rin.xstart, rin.ystarts[3]);
-        drawText("forward.", rin.textsize, rin.xstart, rin.ystarts[4]);
+        drawText("Move both sticks", rin.textsize, Float2(rin.xstart, rin.ystarts[1]));
+        drawText("forward to move", rin.textsize, Float2(rin.xstart, rin.ystarts[2]));
+        drawText("your tank", rin.textsize, Float2(rin.xstart, rin.ystarts[3]));
+        drawText("forward.", rin.textsize, Float2(rin.xstart, rin.ystarts[4]));
       } else if(pms.setting_axistype_curchoice / 2 == KSAX_TANK && pms.setting_axistype_demo_curframe == 3) {
-        drawText("Experiment with", rin.textsize, rin.xstart, rin.ystarts[1]);
-        drawText("tank mode for", rin.textsize, rin.xstart, rin.ystarts[2]);
-        drawText("very precise", rin.textsize, rin.xstart, rin.ystarts[3]);
-        drawText("tank control.", rin.textsize, rin.xstart, rin.ystarts[4]);
+        drawText("Experiment with", rin.textsize, Float2(rin.xstart, rin.ystarts[1]));
+        drawText("tank mode for", rin.textsize, Float2(rin.xstart, rin.ystarts[2]));
+        drawText("very precise", rin.textsize, Float2(rin.xstart, rin.ystarts[3]));
+        drawText("tank control.", rin.textsize, Float2(rin.xstart, rin.ystarts[4]));
       } else {
         CHECK(0);
       }

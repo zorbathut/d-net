@@ -1313,7 +1313,7 @@ void Game::renderToScreen() const {
     // Bombardment level text
     if(bombardment_tier != 0) {
       setColor(C::gray(1.0));
-      drawText(StringPrintf("Bombardment level %d, %.0fs until next level", (int)floor(bombardment_tier) + 1, getTimeUntilBombardmentUpgrade()), 2, 2, 96);
+      drawText(StringPrintf("Bombardment level %d, %.0fs until next level", (int)floor(bombardment_tier) + 1, getTimeUntilBombardmentUpgrade()), 2, Float2(2, 96));
     }
     
     setZoom(Float4(0, 0, 1.33333, 1));

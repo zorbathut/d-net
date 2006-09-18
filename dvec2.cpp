@@ -38,7 +38,7 @@ void Parameter::render(float x, float y, float h) const {
   } else {
     CHECK(0);
   }
-  drawText(prefix, h, x, y);
+  drawText(prefix, h, Float2(x, y));
 }
 
 string Parameter::dumpTextRep() const {

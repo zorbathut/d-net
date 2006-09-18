@@ -54,7 +54,7 @@ void StdMenu::render() const {
     } else {
       setColor(0.5, 0.5, 0.5);
     }
-    drawText(items[i].first.c_str(), 5, 2, 2 + 6 * i);
+    drawText(items[i].first.c_str(), 5, Float2(2, 2 + 6 * i));
   }
 }
 
@@ -219,8 +219,8 @@ void InterfaceMain::render() const {
       drawLineLoop(nres, 0.003);
       for(int j = 0; j < res[i].size(); j++) {
         drawCircle(nres[j], Coord(0.03), Coord(0.003));
-        //drawText(res[j].x.rawstr(), 1, nres[i][j].toFloat().x + 1, nres[i][j].toFloat().y + 1);
-        //drawText(res[j].y.rawstr(), 1, nres[i][j].toFloat().x + 1, nres[i][j].toFloat().y + 2.1);
+        //drawText(res[j].x.rawstr(), 1, Float2(nres[i][j].toFloat().x + 1, nres[i][j].toFloat().y + 1));
+        //drawText(res[j].y.rawstr(), 1, Float2(nres[i][j].toFloat().x + 1, nres[i][j].toFloat().y + 2.1));
       }
     }
     /*
@@ -325,9 +325,9 @@ void InterfaceMain::render() const {
   if(interface_mode == IFM_S_MAINMENU) {
     mainmenu.render();
     setColor(0.5, 0.5, 0.5);
-    drawText("Player one uses arrow keys and UIOJKL", 3, 2, 30);
-    drawText("Player two uses wasd and RTYFGH", 3, 2, 34);
-    drawText("Arrow keys to choose menu items, U to select", 3, 2, 38);
+    drawText("Player one uses arrow keys and UIOJKL", 3, Float2(2, 30));
+    drawText("Player two uses wasd and RTYFGH", 3, Float2(2, 34));
+    drawText("Arrow keys to choose menu items, U to select", 3, Float2(2, 38));
     if(grid) {
       setColor(1.0, 1.0, 1.0);
       drawGrid(1, 0.01);
@@ -379,7 +379,7 @@ void InterfaceMain::render() const {
               tbd = StringPrintf("%d", j);
             }
             if(tbd != "") {
-              drawText(tbd, textrsize, textx + ctxt / textymax * textxofs, texty + (ctxt % textymax) * textsize);
+              drawText(tbd, textrsize, Float2(textx + ctxt / textymax * textxofs, texty + (ctxt % textymax) * textsize));
               ctxt++;
             }
           }

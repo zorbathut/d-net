@@ -113,7 +113,7 @@ void Metagame::renderToScreen() const {
     if(!controls_users()) {    
       setColor(1.0, 1.0, 1.0);
       setZoom(Float4(0, 0, 133.333, 100));
-      drawText(StringPrintf("faction setting round"), 2, 5, 82);
+      drawText(StringPrintf("faction setting round"), 2, Float2(5, 82));
     }
   } else if(mode == MGM_TWEEN) {
     persistent.render();
@@ -123,7 +123,7 @@ void Metagame::renderToScreen() const {
     if(!controls_users()) {    
       setColor(1.0, 1.0, 1.0);
       setZoom(Float4(0, 0, 133.333, 100));
-      drawText(StringPrintf("round %d", gameround), 2, 5, 82);
+      drawText(StringPrintf("round %d", gameround), 2, Float2(5, 82));
     }
   } else {
     CHECK(0);

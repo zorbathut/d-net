@@ -420,11 +420,11 @@ void Shop::renderToScreen() const {
   //clearFrame(player->getFaction()->color * 0.05 + Color(0.02, 0.02, 0.02));
   setColor(1.0, 1.0, 1.0);
   setZoom(Float4(0, 0, 133.333, 133.333 / getAspect()));
-  drawText(StringPrintf("Cash available %s", player->getCash().textual().c_str()), slay.fontsize(), 80, 1);
+  drawText(StringPrintf("Cash available %s", player->getCash().textual().c_str()), slay.fontsize(), Float2(80, 1));
   if(selling) {
-    drawText("    Selling equipment", slay.fontsize(), 1, 1);
+    drawText("    Selling equipment", slay.fontsize(), Float2(1, 1));
   } else {
-    drawText("    Buying equipment", slay.fontsize(), 1, 1);
+    drawText("    Buying equipment", slay.fontsize(), Float2(1, 1));
   }
   setColor(player->getFaction()->color * 0.5);
   {

@@ -335,7 +335,7 @@ void renderEntities() {
 
 void guiText(const string &in) {
   setZoom(Float4(0, 0, 133.333, 100));
-  drawText(in, 2, 2, gui_vpos);
+  drawText(in, 2, Float2(2, gui_vpos));
   gui_vpos += 3;
   setZoom(Float4(-zoom * 1.333, -zoom, zoom * 1.333, zoom));
 }
