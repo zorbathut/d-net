@@ -74,6 +74,8 @@ private:
     // Pending only
     vector<int> sps_pending_goal;
     
+    vector<pair<int, int> > sps_queue;
+    
     const IDBFaction *btt_notify;
     int btt_frames_left;
 

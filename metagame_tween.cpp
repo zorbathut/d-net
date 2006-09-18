@@ -28,6 +28,13 @@ vector<Player> &PersistentData::players() {
 const char * const tween_textlabels[] = {"Leave/join game", "Full shop", "Quick shop", "Settings", "Done"};
 enum { TTL_LEAVEJOIN, TTL_FULLSHOP, TTL_QUICKSHOP, TTL_SETTINGS, TTL_DONE, TTL_LAST };
 
+class QueueSorter {
+public:
+  bool operator()(const pair<int, int> &lhs, const pair<int, int> &rhs) {
+    return (lhs.second == TTL_FULLSHOP) < (rhs.second == TTL_FULLSHOP);
+  }
+};
+
 bool PersistentData::tick(const vector< Controller > &keys) {
   CHECK(keys.size() == pms.size());
   
@@ -132,11 +139,13 @@ bool PersistentData::tick(const vector< Controller > &keys) {
                 } else {
                   sps_playermode[i] = SPS_PENDING;
                   sps_pending_goal[i] = j;
+                  sps_queue.push_back(make_pair(i, j));
                 }
               } else {
                 if(j == TTL_LEAVEJOIN) {
                   sps_playermode[i] = SPS_PENDING;
                   sps_pending_goal[i] = j;
+                  sps_queue.push_back(make_pair(i, j));
                 }
                 // otherwise we just ignore it
               }
@@ -155,6 +164,17 @@ bool PersistentData::tick(const vector< Controller > &keys) {
         if(cancel) {
           sps_playermode[i] = SPS_CHOOSING;
           sps_pending_goal[i] = -1;
+          
+          bool found = false;
+          for(int j = 0; j < sps_queue.size(); j++) {
+            if(sps_queue[j].first == i) {
+              CHECK(!found);
+              found = true;
+              sps_queue.erase(sps_queue.begin() + j);
+              j--;
+            }
+          }
+          CHECK(found);
         }
       } else if(sps_playermode[i] == SPS_ACTIVE) {
         // TODO: iterate over items, see if this player is finished
@@ -169,6 +189,7 @@ bool PersistentData::tick(const vector< Controller > &keys) {
     }
     
     // Third: Update queues and start new processes
+    sort(sps_queue.begin(), sps_queue.end(), QueueSorter());
     
     // Fourth: end if we're all done!
     /*
