@@ -694,11 +694,7 @@ void drawGrid(float spacing, float size) {
     drawLine(map_sx, s, map_ex, s, size);
 }
 
-void drawCrosshair(float x, float y, float rad, float weight) {
-  drawLine(x - rad, y, x + rad, y, weight);
-  drawLine(x, y - rad, x, y + rad, weight);
-}
-
-void drawCrosshair(const Float2 &pos, float rad, float weight) {
-  drawCrosshair(pos.x, pos.y, rad, weight);
+void drawCrosshair(const CFC2 &pos, float rad, float weight) {
+  drawLine(pos->x - rad, pos->y, pos->x + rad, pos->y, weight);
+  drawLine(pos->x, pos->y - rad, pos->x, pos->y + rad, weight);
 }

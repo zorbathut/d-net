@@ -4,6 +4,7 @@
 #include "coord.h"
 #include "dvec2.h"
 #include "color.h"
+#include "cfc.h"
 
 using namespace std;
 
@@ -104,8 +105,6 @@ void drawDvec2(const Dvec2 &vecob, const Float4 &bounds, int midpoints, float we
 void drawSpokes(float x, float y, int dupes, int numer, int denom, float len, float weight);
 void drawGrid(float spacing, float width);
 
-void drawCrosshair(float x, float y, float rad, float weight);
-void drawCrosshair(const Float2 &pos, float rad, float weight);
-
+void drawCrosshair(const CFC2 &pos, float rad, float weight);
 
 #endif

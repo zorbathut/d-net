@@ -270,7 +270,7 @@ void PersistentData::render() const {
           setColor(pms[i].faction->faction->color);
         else
           setColor(C::gray(0.8));
-        drawCrosshair(sps_playerpos[i].x, sps_playerpos[i].y, ticker_text_size, 0.1);
+        drawCrosshair(Float2(sps_playerpos[i].x, sps_playerpos[i].y), ticker_text_size, 0.1);
         if(pms[i].faction)
           drawDvec2(pms[i].faction->faction->icon, Float4(0, 0, ticker_text_size, ticker_text_size) + sps_playerpos[i] + Float2(ticker_text_size, ticker_text_size) / 10, 10, 0.001);
       }
