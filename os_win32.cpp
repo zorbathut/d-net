@@ -64,21 +64,53 @@ void dumpStackTrace() {
     StackTracer<2>::printStack(&stack);
   }
 
-  string line = "addr2line -e d-net.exe ";
-  for(int i = 0; i < stack.size(); i++)
-    line += StringPrintf("%p ", stack[i]);
-  line += "> addr2linetmp.txt";
-  int rv = system(line.c_str());
-  if(!rv) {
-    {
-      ifstream ifs("addr2linetmp.txt");
-      string lin;
-      while(getline(ifs, lin))
-        dprintf("  %s", lin.c_str());
+  vector<pair<string, string> > tokens;
+  {
+    string line = "addr2line -f -e d-net.exe ";
+    for(int i = 0; i < stack.size(); i++)
+      line += StringPrintf("%p ", stack[i]);
+    line += "> addr2linetmp.txt";
+    int rv = system(line.c_str());
+    if(!rv) {
+      {
+        ifstream ifs("addr2linetmp.txt");
+        string lin;
+        while(getline(ifs, lin)) {
+          string tlin;
+          getline(ifs, tlin);
+          tokens.push_back(make_pair(lin, tlin));
+        }
+      }
+      unlink("addr2linetmp.txt");
+    } else {
+      dprintf("Couldn't call addr2line\n");
+      return;
     }
-    unlink("addr2linetmp.txt");
-  } else {
-    dprintf("Couldn't call addr2line\n");
+  }
+  
+  {
+    string line = "c++filt -n -s gnu-v3 ";
+    for(int i = 0; i < tokens.size(); i++)
+      line += tokens[i].first + " ";
+    line += "> cppfilttmp.txt";
+    int rv = system(line.c_str());
+    if(!rv) {
+      {
+        ifstream ifs("cppfilttmp.txt");
+        string lin;
+        int ct = 0;
+        while(getline(ifs, lin)) {
+          if(lin.size() && lin[0] == '_')
+            lin.erase(lin.begin());
+          dprintf("  %s - %s", tokens[ct].second.c_str(), lin.c_str());
+          ct++;
+        }
+      }
+      unlink("cppfilttmp.txt");
+    } else {
+      dprintf("Couldn't call c++filt\n");
+      return;
+    }
   }
   dprintf("\n");
 }
