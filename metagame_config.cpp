@@ -740,7 +740,7 @@ void runSettingRender(const PlayerMenuState &pms) {
     }
     
     setColor(Color(0.3, 0.3, 0.3) * fadeFactor);
-    drawLine(Float4(rin.drawzone.sx, (rin.ystarts[0] + rin.textsize + rin.ystarts[1]) / 2, rin.drawzone.ex, (rin.ystarts[0] + rin.textsize + rin.ystarts[1]) / 2), 0.001);
+    drawLine(Float4(rin.drawzone.sx, (rin.ystarts[0] + rin.textsize + rin.ystarts[1]) / 2, rin.drawzone.ex, (rin.ystarts[0] + rin.textsize + rin.ystarts[1]) / 2), 0.003);
     
     {
       // Topic line!

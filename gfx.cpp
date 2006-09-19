@@ -312,12 +312,12 @@ void setZoom(const Float4 &fl4) {
   setZoomVertical(fl4.sx, fl4.sy, fl4.ey);
 }
 
-void setZoomAround(const Coord4 &bbox) {
-  Coord2 center = bbox.midpoint();
-  Coord zoomtop = bbox.y_span() / 2;
-  Coord zoomside = bbox.x_span() / 2;
-  Coord zoomtopfinal = max(zoomtop, zoomside / (Coord)getAspect());
-  setZoomVertical((center.x - zoomtopfinal * (Coord)getAspect()).toFloat(), (center.y - zoomtopfinal).toFloat(), (center.y + zoomtopfinal).toFloat());
+void setZoomAround(const CFC4 &bbox) {
+  Float2 center = bbox->midpoint();
+  float zoomtop = bbox->y_span() / 2;
+  float zoomside = bbox->x_span() / 2;
+  float zoomtopfinal = max(zoomtop, zoomside / getAspect());
+  setZoomVertical(center.x - zoomtopfinal * getAspect(), center.y - zoomtopfinal, center.y + zoomtopfinal);
 }
 
 void setZoomCenter(float cx, float cy, float radius_y) {

@@ -245,6 +245,7 @@ bool PersistentData::tick(const vector< Controller > &keys) {
         slot[empty].shop.init(&playerdata[playerid[sps_queue[0].first]], true);
       } else if(sps_queue[0].second == TTL_SETTINGS) {
         slot[empty].type = Slot::SETTINGS;
+        pms[sps_queue[0].first].fireHeld = 0;
       } else {
         CHECK(0);
       }
@@ -464,6 +465,11 @@ bool PersistentData::tickSlot(int slotid, const vector<Controller> &keys) {
       sps_shopped[slt.pid] = true;
     
     return srt;
+  } else if(slt.type == Slot::SETTINGS) {
+    CHECK(slt.pid >= 0 && slt.pid < pms.size());
+    CHECK(keys.size() == 1);
+    runSettingTick(keys[0], &pms[slt.pid], factions);
+    return pms[slt.pid].readyToPlay();
   } else {
     CHECK(0);
   }
@@ -528,9 +534,13 @@ void PersistentData::renderSlot(int slotid) const {
       }
     }
   } else if(slt.type == Slot::EMPTY) {
-    setZoomCenter(0, 0, 1);
-    setColor(C::gray(0.2));
-    drawJustifiedText("zooooom", 0.1, Float2(0, 0), TEXT_CENTER, TEXT_CENTER);
+  } else if(slt.type == Slot::SETTINGS) {
+    CHECK(slt.pid >= 0 && slt.pid < pms.size());
+    const FactionState &tfs = *pms[slt.pid].faction;
+    Float2 sizes(tfs.compass_location.x_span(), tfs.compass_location.y_span());
+    Float2 mp = tfs.compass_location.midpoint();
+    setZoomAround(Float4(mp.x - sizes.x, mp.y - sizes.y, mp.x + sizes.x, mp.y + sizes.y));
+    runSettingRender(pms[slt.pid]);
   } else {
     CHECK(0);
   }
