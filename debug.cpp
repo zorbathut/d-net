@@ -35,6 +35,7 @@ void PrintDebugStack() {
     dbgstack[i]->Print();
   }
   dprintf("End of stack\n");
+  dumpStackTrace();
 }
 
 void CrashHandler(const char *fname, int line) {

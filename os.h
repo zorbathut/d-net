@@ -9,4 +9,6 @@ void outputDebugString(const string &str);
 
 pair<int, int> getCurrentScreenSize();
 
+void dumpStackTrace();
+
 #endif
