@@ -223,7 +223,6 @@ bool PersistentData::tick(const vector< Controller > &keys) {
       sort(sps_queue.begin(), sps_queue.end(), QueueSorter(pms));
       // For each item in the queue, try to jam it somewhere.
       while(sps_queue.size()) {
-        break;
         CHECK(sps_playermode[sps_queue[0].first] == SPS_PENDING);
         const int desired_slots = (sps_queue[0].second == TTL_FULLSHOP ? 1 : 4);
         
@@ -291,7 +290,7 @@ bool PersistentData::tick(const vector< Controller > &keys) {
       btt_notify = NULL;
     
     // Are we done?
-    if(getUnfinishedFactions().size() == 0)
+    if(getUnfinishedFactions().size() == 0 && playerdata.size() >= 2)
       return true;
     
   } else {
@@ -492,6 +491,7 @@ bool PersistentData::tickSlot(int slotid, const vector<Controller> &keys) {
     CHECK(keys.size() == 1);
     runSettingTick(keys[0], &pms[slt.pid], factions);
     return pms[slt.pid].readyToPlay();
+  } else if(slt.type == Slot::QUITCONFIRM) {
   } else {
     CHECK(0);
   }
@@ -563,6 +563,7 @@ void PersistentData::renderSlot(int slotid) const {
     Float2 mp = tfs.compass_location.midpoint();
     setZoomAround(Float4(mp.x - sizes.x, mp.y - sizes.y, mp.x + sizes.x, mp.y + sizes.y));
     runSettingRender(pms[slt.pid]);
+  } else if(slt.type == Slot::QUITCONFIRM) {
   } else {
     CHECK(0);
   }
@@ -584,11 +585,12 @@ vector<const IDBFaction *> PersistentData::getUnfinishedFactions() const {
     if(!pms[i].faction && sps_playermode[i] == SPS_CHOOSING)
       ready = true;
     
-    if(!ready)
+    if(!ready) {
       if(pms[i].faction)
         nrfactions.push_back(pms[i].faction->faction);
       else
         nrfactions.push_back(NULL);
+    }
   }
   return nrfactions;
 }
