@@ -566,8 +566,32 @@ void PersistentData::renderSlot(int slotid) const {
     runSettingRender(pms[slt.pid]);
   } else if(slt.type == Slot::QUITCONFIRM) {
     setZoomCenter(0, 0, 10);
-    setColor(C::active_text);
-    drawFormattedText("Are you sure you want to destroy your tank and possessions and quit the game?", 1, Float4(-12, -7, 12, 7));
+    {
+      setColor(pms[slt.pid].faction->faction->color * 0.5);
+      const float ofs = 0.08;
+      Float4 pos = getZoom();
+      const float diff = pos.y_span() * ofs;
+      pos.sx += diff;
+      pos.sy += diff;
+      pos.ex -= diff;
+      pos.ey -= diff;
+      drawDvec2(pms[slt.pid].faction->faction->icon, pos, 50, 0.2);
+    }
+    
+    {
+      string areyousuretext = "Are you sure you want to destroy your tank and possessions and quit the game?";
+      Float4 zone = Float4(-12, -7, 12, 7);
+      float height = getFormattedTextHeight(areyousuretext, 1, zone.x_span());
+      
+      Float4 box = extend(Float4(zone.sx, zone.sy, zone.ex, zone.sy + height), 0.4);
+      drawSolid(box);
+      setColor(C::inactive_text);
+      drawRect(box, 0.05);
+      
+      setColor(C::active_text);
+      drawFormattedText(areyousuretext, 1, zone);
+    }
+    
     for(int i = 0; i < 5; i++) {
       if(sps_quitconfirm[slt.pid] == i) {
         setColor(C::active_text);

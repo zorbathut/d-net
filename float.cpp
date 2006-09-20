@@ -61,3 +61,7 @@ Float4 squareInside(const Float4 &in) {
   float minwid = min(in.ex - in.sx, in.ey - in.sy);
   return boxAround(in.midpoint(), minwid / 2);
 };
+
+Float4 extend(const Float4 &in, float amount) {
+  return Float4(in.sx - amount, in.sy - amount, in.ex + amount, in.ey + amount);
+};

@@ -426,8 +426,8 @@ void Shop::renderToScreen() const {
   } else {
     drawText("    Buying equipment", slay.fontsize(), Float2(1, 1));
   }
-  setColor(player->getFaction()->color * 0.5);
   {
+    setColor(player->getFaction()->color * 0.5);
     const float ofs = 0.08;
     Float4 pos = getZoom();
     const float diff = pos.y_span() * ofs;

@@ -20,6 +20,7 @@
 - Implants
 
 ---- Things that take thought and musing
+- Tweekvalues?
 - Normalize controller to circle?
 - Game inheritance/abstraction?
 - Make DPS a little less flickery

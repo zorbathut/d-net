@@ -238,4 +238,6 @@ inline float approach(float start, float target, float delta) {
     CHECK(0);  // oh god bear is driving car how can this be
 }
 
+Float4 extend(const Float4 &in, float amount);
+
 #endif
