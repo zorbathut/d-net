@@ -592,6 +592,13 @@ void PersistentData::renderSlot(int slotid) const {
       drawFormattedText(areyousuretext, 1, zone);
     }
     
+    {
+      Float4 box = extend(Float4(-12, 0, 12, 5 * 1.5 - .5), 0.4);
+      drawSolid(box);
+      setColor(C::inactive_text);
+      drawRect(box, 0.05);
+    }
+    
     for(int i = 0; i < 5; i++) {
       if(sps_quitconfirm[slt.pid] == i) {
         setColor(C::active_text);
