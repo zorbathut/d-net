@@ -26,16 +26,32 @@ vector<Player> &PersistentData::players() {
 }
 
 const char * const tween_textlabels[] = {"Leave/join game", "Settings", "Full shop", "Quick shop", "Done"};
-enum { TTL_LEAVEJOIN, TTL_SETTINGS, TTL_FULLSHOP, TTL_QUICKSHOP, TTL_DONE, TTL_LAST };
+enum { TTL_LEAVEJOIN, TTL_SETTINGS, TTL_FULLSHOP, TTL_QUICKSHOP, TTL_DONE, TTL_LAST }; 
 
 class QueueSorter {
+  const vector<PlayerMenuState> *pms;
+  
+  int precedence(pair<int, int> item) const {
+    if(item.second == TTL_FULLSHOP)
+      return 2;
+    if(item.second == TTL_LEAVEJOIN && (*pms)[item.first].faction)
+      return 0;
+    return 1;
+  }
+  
 public:
-  bool operator()(const pair<int, int> &lhs, const pair<int, int> &rhs) {
-    return (lhs.second == TTL_FULLSHOP) < (rhs.second == TTL_FULLSHOP);
+  bool operator()(const pair<int, int> &lhs, const pair<int, int> &rhs) const {
+    return precedence(lhs) < precedence(rhs);
+  }
+  
+  QueueSorter(const vector<PlayerMenuState> &pmsv) {
+    pms = &pmsv;
+    CHECK(pms);
   }
 };
 
 bool PersistentData::tick(const vector< Controller > &keys) {
+  StackString sps("Persistentdata tick");
   CHECK(keys.size() == pms.size());
   
   // First: traverse and empty.
@@ -86,6 +102,7 @@ bool PersistentData::tick(const vector< Controller > &keys) {
     if(slot[0].type == Slot::EMPTY)
       initForShop();
   } else if(mode == TM_SHOP) {
+    StackString sps(StringPrintf("Shop specific"));
     // Various complications and such!
     
     // First: calculate our ugly ranges for the text labels.
@@ -104,6 +121,7 @@ bool PersistentData::tick(const vector< Controller > &keys) {
     
     // Second: Traverse all players and update them as necessary.
     for(int player = 0; player < sps_playermode.size(); player++) {
+      StackString sps(StringPrintf("Traversing player %d", player));
       // Subfirst: See if the player's no longer idle.
       if(sps_playermode[player] == SPS_IDLE) {
         if(keys[player].l.down || keys[player].r.down || keys[player].u.down || keys[player].d.down)
@@ -200,58 +218,62 @@ bool PersistentData::tick(const vector< Controller > &keys) {
     }
     
     // Third: Update queues and start new processes
-    sort(sps_queue.begin(), sps_queue.end(), QueueSorter());
-    // For each item in the queue, try to jam it somewhere.
-    while(sps_queue.size()) {
-      CHECK(sps_playermode[sps_queue[0].first] == SPS_PENDING);
-      const int desired_slots = (sps_queue[0].second == TTL_FULLSHOP ? 1 : 4);
-      
-      // Do we need to change modes?
-      if(slot_count != desired_slots) {
-        // See if any slot is still in use.
-        bool not_empty = false;
-        for(int i = 0; i < slot_count; i++)
-          if(slot[i].type != Slot::EMPTY)
-            not_empty = true;
-        if(not_empty)
-          break;  // Ain't gonna happen.
-        slot_count = desired_slots;
-      }
-      
-      CHECK(slot_count == desired_slots);
-      
-      int empty = -1;
-      for(int i = 0; i < slot_count; i++) {
-        if(slot[i].type == Slot::EMPTY) {
-          empty = i;
-          break;
+    {
+      StackString sps(StringPrintf("Queueing"));
+      sort(sps_queue.begin(), sps_queue.end(), QueueSorter(pms));
+      // For each item in the queue, try to jam it somewhere.
+      while(sps_queue.size()) {
+        break;
+        CHECK(sps_playermode[sps_queue[0].first] == SPS_PENDING);
+        const int desired_slots = (sps_queue[0].second == TTL_FULLSHOP ? 1 : 4);
+        
+        // Do we need to change modes?
+        if(slot_count != desired_slots) {
+          // See if any slot is still in use.
+          bool not_empty = false;
+          for(int i = 0; i < slot_count; i++)
+            if(slot[i].type != Slot::EMPTY)
+              not_empty = true;
+          if(not_empty)
+            break;  // Ain't gonna happen.
+          slot_count = desired_slots;
         }
+        
+        CHECK(slot_count == desired_slots);
+        
+        int empty = -1;
+        for(int i = 0; i < slot_count; i++) {
+          if(slot[i].type == Slot::EMPTY) {
+            empty = i;
+            break;
+          }
+        }
+        if(empty == -1)
+          break;  // No empty slots.
+        
+        // Okay we've got an empty slot.
+        CHECK(slot[empty].type == Slot::EMPTY);
+        slot[empty].pid = sps_queue[0].first;
+        if(sps_queue[0].second == TTL_LEAVEJOIN && !pms[sps_queue[0].first].faction) {
+          slot[empty].type = Slot::CHOOSE;
+        } else if(sps_queue[0].second == TTL_LEAVEJOIN && pms[sps_queue[0].first].faction) {
+          slot[empty].type = Slot::QUITCONFIRM;
+        } else if(sps_queue[0].second == TTL_FULLSHOP) {
+          slot[empty].type = Slot::SHOP;
+          slot[empty].shop.init(&playerdata[playerid[sps_queue[0].first]], false);
+        } else if(sps_queue[0].second == TTL_QUICKSHOP) {
+          slot[empty].type = Slot::SHOP;
+          slot[empty].shop.init(&playerdata[playerid[sps_queue[0].first]], true);
+        } else if(sps_queue[0].second == TTL_SETTINGS) {
+          slot[empty].type = Slot::SETTINGS;
+          pms[sps_queue[0].first].fireHeld = 0;
+        } else {
+          CHECK(0);
+        }
+        
+        sps_playermode[sps_queue[0].first] = SPS_ACTIVE;
+        sps_queue.erase(sps_queue.begin());
       }
-      if(empty == -1)
-        break;  // No empty slots.
-      
-      // Okay we've got an empty slot.
-      CHECK(slot[empty].type == Slot::EMPTY);
-      slot[empty].pid = sps_queue[0].first;
-      if(sps_queue[0].second == TTL_LEAVEJOIN && !pms[sps_queue[0].first].faction) {
-        slot[empty].type = Slot::CHOOSE;
-      } else if(sps_queue[0].second == TTL_LEAVEJOIN && pms[sps_queue[0].first].faction) {
-        slot[empty].type = Slot::QUITCONFIRM;
-      } else if(sps_queue[0].second == TTL_FULLSHOP) {
-        slot[empty].type = Slot::SHOP;
-        slot[empty].shop.init(&playerdata[playerid[sps_queue[0].first]], false);
-      } else if(sps_queue[0].second == TTL_QUICKSHOP) {
-        slot[empty].type = Slot::SHOP;
-        slot[empty].shop.init(&playerdata[playerid[sps_queue[0].first]], true);
-      } else if(sps_queue[0].second == TTL_SETTINGS) {
-        slot[empty].type = Slot::SETTINGS;
-        pms[sps_queue[0].first].fireHeld = 0;
-      } else {
-        CHECK(0);
-      }
-      
-      sps_playermode[sps_queue[0].first] = SPS_ACTIVE;
-      sps_queue.erase(sps_queue.begin());
     }
     
     // Fourth: If we're empty, reset to 1 item.
@@ -547,6 +569,8 @@ void PersistentData::renderSlot(int slotid) const {
 }
 
 vector<const IDBFaction *> PersistentData::getUnfinishedFactions() const {
+  StackString sst("guf");
+  
   vector<const IDBFaction *> nrfactions;
   for(int i = 0; i < pms.size(); i++) {
     bool ready = false;
@@ -561,7 +585,10 @@ vector<const IDBFaction *> PersistentData::getUnfinishedFactions() const {
       ready = true;
     
     if(!ready)
-      nrfactions.push_back(pms[i].faction->faction);
+      if(pms[i].faction)
+        nrfactions.push_back(pms[i].faction->faction);
+      else
+        nrfactions.push_back(NULL);
   }
   return nrfactions;
 }

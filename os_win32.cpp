@@ -9,8 +9,22 @@
 #include <vector>
 #include <unistd.h>
 #include <windows.h>
+#include <signal.h>
 
 using namespace std;
+
+typedef void (*sighandler_t)(int);
+
+class SignalHandler {
+public:
+  static void signal_h(int signum) {
+    CHECK(0);
+  }
+  
+  SignalHandler() {
+    signal(SIGSEGV, &signal_h);
+  }
+} sighandler;
 
 void outputDebugString(const string &str) {
   OutputDebugString(str.c_str());
