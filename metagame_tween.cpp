@@ -493,6 +493,15 @@ bool PersistentData::tickSlot(int slotid, const vector<Controller> &keys) {
     runSettingTick(keys[0], &pms[slt.pid], factions);
     return pms[slt.pid].readyToPlay();
   } else if(slt.type == Slot::QUITCONFIRM) {
+    CHECK(slt.pid >= 0 && slt.pid < pms.size());
+    CHECK(keys.size() == 1);
+    if(keys[0].u.repeat)
+      sps_quitconfirm[slt.pid]--;
+    if(keys[0].d.repeat)
+      sps_quitconfirm[slt.pid]++;
+    
+    sps_quitconfirm[slt.pid] += 5;
+    sps_quitconfirm[slt.pid] %= 5;
   } else {
     CHECK(0);
   }
