@@ -257,6 +257,7 @@ bool PersistentData::tick(const vector< Controller > &keys) {
           slot[empty].type = Slot::CHOOSE;
         } else if(sps_queue[0].second == TTL_LEAVEJOIN && pms[sps_queue[0].first].faction) {
           slot[empty].type = Slot::QUITCONFIRM;
+          sps_quitconfirm[sps_queue[0].first] = 0;
         } else if(sps_queue[0].second == TTL_FULLSHOP) {
           slot[empty].type = Slot::SHOP;
           slot[empty].shop.init(&playerdata[playerid[sps_queue[0].first]], false);
@@ -564,6 +565,22 @@ void PersistentData::renderSlot(int slotid) const {
     setZoomAround(Float4(mp.x - sizes.x, mp.y - sizes.y, mp.x + sizes.x, mp.y + sizes.y));
     runSettingRender(pms[slt.pid]);
   } else if(slt.type == Slot::QUITCONFIRM) {
+    setZoomCenter(0, 0, 10);
+    setColor(C::active_text);
+    drawFormattedText("Are you sure you want to destroy your tank and possessions and quit the game?", 1, Float4(-12, -7, 12, 7));
+    for(int i = 0; i < 5; i++) {
+      if(sps_quitconfirm[slt.pid] == i) {
+        setColor(C::active_text);
+      } else {
+        setColor(C::inactive_text);
+      }
+      
+      if(i == 3) {
+        drawText("Yes, quit", 1, Float2(-12, i * 1.5));
+      } else {
+        drawText("No", 1, Float2(-12, i * 1.5));
+      }
+    }
   } else {
     CHECK(0);
   }
@@ -811,6 +828,7 @@ PersistentData::PersistentData(int playercount, int in_roundsbetweenshop) {
   pms.clear();
   pms.resize(playercount, PlayerMenuState(Float2(0, 0)));
   playerid.resize(playercount, -1);
+  sps_quitconfirm.resize(playercount, 0);
   
   {
     const vector<IDBFaction> &facts = factionList();

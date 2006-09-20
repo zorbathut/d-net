@@ -87,11 +87,14 @@ void drawCircle(const Float2 &center, float radius, float weight);
 void drawText(const string &txt, float scale, const Float2 &pos);
 
 float getTextWidth(const string &txt, float scale);
+float getFormattedTextHeight(const string &txt, float scale, float width);
 
 enum { TEXT_MIN, TEXT_CENTER, TEXT_MAX };
 
 void drawJustifiedText(const string &txt, float scale, Float2 pos, int xps, int yps);
 void drawJustifiedMultiText(const vector<string> &txt, float letterscale, Float2 pos, int xps, int yps);
+
+void drawFormattedText(const string &txt, float scale, Float4 bounds);
 
 // VectorPath objects have their own local coordinate system - this scales it by whatever, then translates its origin to the new origin.
 // It is not necessarily an upper-left corner origin (it's more likely to be center, but that's not guaranteed either)

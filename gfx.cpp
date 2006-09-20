@@ -564,6 +564,47 @@ float getTextWidth(const string &txt, float scale) {
   return acum;
 }
 
+int snatchLine(const vector<string> &left, float fontsize, float limit) {
+  for(int i = 0; i <= left.size(); i++) {
+    string v;
+    for(int k = 0; k < i; k++) {
+      if(k)
+        v += " ";
+      v += left[k];
+    }
+    if(getTextWidth(v, fontsize) > limit)
+      return i - 1;
+  }
+  return left.size();
+}
+
+vector<string> formatText(const string &txt, float fontsize, float width) {
+  vector<string> vlines;
+  vector<string> left = tokenize(txt, " ");
+  while(left.size()) {
+    int wordsa = snatchLine(left, fontsize, width);
+    CHECK(wordsa > 0 && wordsa <= left.size());
+    string v;
+    for(int k = 0; k < wordsa; k++) {
+      if(k)
+        v += " ";
+      v += left[k];
+    }
+    CHECK(getTextWidth(v, fontsize) <= width);
+    vlines.push_back(v);
+    left.erase(left.begin(), left.begin() + wordsa);
+  }
+  return vlines;
+}
+
+float getFormattedTextHeight(const string &txt, float fontsize, float width) {
+  const float linesize = fontsize * 1.5;
+  const vector<string> text = formatText(txt, fontsize, width);
+  if(text.size() == 0)
+    return 0;
+  return (text.size() - 1) * linesize + fontsize;
+}
+
 void drawJustifiedText(const string &txt, float scale, Float2 pos, int xps, int yps) {
   float wid = getTextWidth(txt, scale);
   if(xps == TEXT_MIN) {
@@ -588,7 +629,7 @@ void drawJustifiedText(const string &txt, float scale, Float2 pos, int xps, int 
 }
 
 void drawJustifiedMultiText(const vector<string> &txt, float letterscale, Float2 pos, int xps, int yps) {
-  float gapscale = letterscale / 3;
+  float gapscale = letterscale / 2;
   float hei = txt.size() * letterscale + (txt.size() - 1) * gapscale;
   if(yps == TEXT_MIN) {
   } else if(yps == TEXT_CENTER) {
@@ -601,6 +642,11 @@ void drawJustifiedMultiText(const vector<string> &txt, float letterscale, Float2
     drawJustifiedText(txt[i], letterscale, pos, xps, TEXT_MIN);
     pos.y += letterscale + gapscale;
   }
+}
+
+void drawFormattedText(const string &txt, float scale, Float4 bounds) {
+  const vector<string> lines = formatText(txt, scale, bounds.x_span());
+  drawJustifiedMultiText(lines, scale, Float2(bounds.sx, bounds.sy), TEXT_MIN, TEXT_MIN);
 }
 
 /*************

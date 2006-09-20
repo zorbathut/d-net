@@ -68,6 +68,9 @@ private:
     // State
     enum { SPS_IDLE, SPS_CHOOSING, SPS_PENDING, SPS_ACTIVE, SPS_DONE };
     vector<int> sps_playermode;
+    
+    // Quitconfirm cursor location
+    vector<int> sps_quitconfirm;
 
     // Choosing only
     vector<Float2> sps_playerpos;
