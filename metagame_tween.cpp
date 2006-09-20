@@ -260,10 +260,10 @@ bool PersistentData::tick(const vector< Controller > &keys) {
           sps_quitconfirm[sps_queue[0].first] = 0;
         } else if(sps_queue[0].second == TTL_FULLSHOP) {
           slot[empty].type = Slot::SHOP;
-          slot[empty].shop.init(&playerdata[playerid[sps_queue[0].first]], false);
+          slot[empty].shop.init(false);
         } else if(sps_queue[0].second == TTL_QUICKSHOP) {
           slot[empty].type = Slot::SHOP;
-          slot[empty].shop.init(&playerdata[playerid[sps_queue[0].first]], true);
+          slot[empty].shop.init(true);
         } else if(sps_queue[0].second == TTL_SETTINGS) {
           slot[empty].type = Slot::SETTINGS;
           pms[sps_queue[0].first].fireHeld = 0;
@@ -481,7 +481,7 @@ bool PersistentData::tickSlot(int slotid, const vector<Controller> &keys) {
     // TODO: this is horrific
     Keystates thesekeys = genKeystates(vector<Controller>(playerdata.size(), keys[0]))[slt.pid];
     
-    bool srt = slt.shop.runTick(thesekeys);
+    bool srt = slt.shop.runTick(thesekeys, &playerdata[playerid[slt.pid]]);
     
     if(srt)
       sps_shopped[slt.pid] = true;
@@ -493,15 +493,29 @@ bool PersistentData::tickSlot(int slotid, const vector<Controller> &keys) {
     runSettingTick(keys[0], &pms[slt.pid], factions);
     return pms[slt.pid].readyToPlay();
   } else if(slt.type == Slot::QUITCONFIRM) {
+    // TODO: also horrific
+    Keystates thesekeys = genKeystates(vector<Controller>(playerdata.size(), keys[0]))[slt.pid];
+    
     CHECK(slt.pid >= 0 && slt.pid < pms.size());
     CHECK(keys.size() == 1);
-    if(keys[0].u.repeat)
+    if(thesekeys.u.repeat)
       sps_quitconfirm[slt.pid]--;
-    if(keys[0].d.repeat)
+    if(thesekeys.d.repeat)
       sps_quitconfirm[slt.pid]++;
     
     sps_quitconfirm[slt.pid] += 5;
     sps_quitconfirm[slt.pid] %= 5;
+    
+    if(thesekeys.cancel.push)
+      return true;
+    
+    if(thesekeys.accept.push) {
+      if(sps_quitconfirm[slt.pid] == 3) {
+        // DESTROY
+        // This presents problems! Argh!
+      }
+      return true;
+    }
   } else {
     CHECK(0);
   }
@@ -536,7 +550,7 @@ void PersistentData::renderSlot(int slotid) const {
     }
   } else if(slt.type == Slot::SHOP) {
     StackString stp("Shop");
-    slt.shop.renderToScreen();
+    slt.shop.renderToScreen(&playerdata[playerid[slt.pid]]);
   } else if(slt.type == Slot::RESULTS) {
     StackString stp("Results");
     CHECK(lrCategory.size()); // make sure we *have* results

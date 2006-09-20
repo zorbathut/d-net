@@ -71,8 +71,6 @@ private:
   mutable HierarchyNode dynamic_equip;
   bool miniature;
 
-  Player *player;
-
   ShopLayout slay;
 
   vector<int> curloc;
@@ -83,24 +81,24 @@ private:
 
   ShopInfo cshopinf;
 
-  const HierarchyNode &normalize(const HierarchyNode &item) const;
+  const HierarchyNode &normalize(const HierarchyNode &item, const Player *player) const;
   
-  const HierarchyNode &getStepNode(int step) const;
+  const HierarchyNode &getStepNode(int step, const Player *player) const;
 
-  const HierarchyNode &getCategoryNode() const;
-  const HierarchyNode &getCurNode() const;
+  const HierarchyNode &getCategoryNode(const Player *player) const;
+  const HierarchyNode &getCurNode(const Player *player) const;
 
-  void doTableRender() const;
-  void renderNode(const HierarchyNode &node, int depth) const;
+  void doTableRender(const Player *player) const;
+  void renderNode(const HierarchyNode &node, int depth, const Player *player) const;
 
 public:
-  bool runTick(const Keystates &keys);
-  void ai(Ai *ai) const;
-  void renderToScreen() const;
+  bool runTick(const Keystates &keys, Player *player);
+  void ai(Ai *ai, const Player *player) const;
+  void renderToScreen(const Player *player) const;
+
+  void init(bool miniature);
 
   Shop();
-
-  void init(Player *player, bool miniature);
 
 private:
   Shop(const Shop &rhs);

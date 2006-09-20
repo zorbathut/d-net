@@ -1,9 +1,11 @@
 ---- Major work path
+- game.h persistence cleanup
 - Multishop
-- gfx.h extensive use of CoordFloat
+  - Game joining, quitting, reconfiguring, hibernating
+  - Fix AI
+- ShopDemo realignment, right now it's too far down
 - Profit breakdown in final results
   - Test exponential cash starting adjustment
-- Game joining, quitting, reconfiguring, hibernating
 - Mine collision slowdown problems
 - Mine halflife
 - Better mine demo
