@@ -7,9 +7,8 @@
 
 using namespace std;
 
-// These are only really used for the "test" screen, and I don't want this to be considered a "full dependency" because it kind of isn't.
-class Game;
-class Player;
+// This is only really used for the "test" screen, and I don't want this to be considered a "full dependency" because it kind of isn't.
+class GamePackage;
   
 class GameAiAxisRotater : public GameAi { // todo: get this dependency out
 private:
@@ -86,13 +85,11 @@ public:
 
   int setting_axistype_demo_curframe;
   int setting_axistype_demo_aiframe;
-  smart_ptr<Game> setting_axistype_demo_game;
-  smart_ptr<Player> setting_axistype_demo_player;
+  smart_ptr<GamePackage> setting_axistype_demo;
   smart_ptr<GameAiAxisRotater> setting_axistype_demo_ai;
   void createNewAxistypeDemo();
 
-  smart_ptr<Game> test_game;
-  smart_ptr<Player> test_player;  // Ideally these should not be copied, or should be refcounted or something funky
+  smart_ptr<GamePackage> test_game;
   
   int fireHeld;
   bool readyToPlay() const;

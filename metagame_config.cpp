@@ -96,10 +96,11 @@ PlayerMenuState::PlayerMenuState(Float2 cent) {
 PlayerMenuState::~PlayerMenuState() { }
 
 void PlayerMenuState::createNewAxistypeDemo() {
-  setting_axistype_demo_player.reset();
-  setting_axistype_demo_game.reset();
+  setting_axistype_demo.reset();
   
-  setting_axistype_demo_player.reset(new Player(faction->faction, 0));
+  setting_axistype_demo.reset(new GamePackage);
+  
+  setting_axistype_demo->players.push_back(Player(faction->faction, 0));
   
   const RenderInfo rin(faction->compass_location);
   
@@ -109,8 +110,7 @@ void PlayerMenuState::createNewAxistypeDemo() {
   float mn = min(boundy.x_span(), boundy.y_span());
   boundy *= (100 / mn);
   
-  setting_axistype_demo_game.reset(new Game());
-  setting_axistype_demo_game->initCenteredDemo(setting_axistype_demo_player.get(), 50);
+  setting_axistype_demo->game.initCenteredDemo(&setting_axistype_demo->players[0], 50);
   
   setting_axistype_demo_ai.reset(new GameAiAxisRotater(GameAiAxisRotater::steeringConfig(false, false)));
 }
@@ -590,9 +590,10 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
     // this is kind of hacky
     if(pms->settingmode == SETTING_TEST && pms->test_game.empty()) {
       StackString sstr("init");
-      CHECK(pms->test_player.empty());
       
-      pms->test_player.reset(new Player(pms->faction->faction, 0));
+      pms->test_game.reset(new GamePackage);
+      
+      pms->test_game->players.push_back(Player(pms->faction->faction, 0));
       
       const RenderInfo rin(pms->faction->compass_location);
       
@@ -602,8 +603,7 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
       float mn = min(boundy.x_span(), boundy.y_span());
       boundy *= (100 / mn);
       
-      pms->test_game.reset(new Game());
-      pms->test_game->initTest(pms->test_player.get(), boundy);
+      pms->test_game->game.initTest(&pms->test_game->players[0], boundy);
     }
     
     // so is this
@@ -664,8 +664,7 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
       
       if(pms->setting_axistype_demo_curframe == -1) {
         pms->setting_axistype_demo_ai.reset();
-        pms->setting_axistype_demo_player.reset();
-        pms->setting_axistype_demo_game.reset();
+        pms->setting_axistype_demo.reset();
       }
       
       pms->setting_axistype_demo_aiframe = pms->setting_axistype_demo_curframe;
@@ -674,8 +673,7 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
     // wooooo go hack
     if(!pms->setting_axistype_demo_ai.empty()) {
       StackString sstr("rundemo");
-      CHECK(!pms->setting_axistype_demo_game.empty());
-      CHECK(!pms->setting_axistype_demo_player.empty());
+      CHECK(!pms->setting_axistype_demo.empty());
   
       vector<Keystates> kist;      
       
@@ -683,14 +681,14 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
         StackString sstr("ai");
         vector<GameAi *> tai;
         tai.push_back(pms->setting_axistype_demo_ai.get());
-        pms->setting_axistype_demo_game->ai(tai);
+        pms->setting_axistype_demo->game.ai(tai);
         for(int i = 0; i < tai.size(); i++)
           kist.push_back(tai[i]->getNextKeys());
       }
   
       {
         StackString sstr("game");
-        pms->setting_axistype_demo_game->runTick(kist);
+        pms->setting_axistype_demo->runTick(kist);
       }
     }
   }
@@ -819,10 +817,10 @@ void runSettingRender(const PlayerMenuState &pms) {
       const float controllerwindowwidth = rin.ystarts[6] - rin.ystarts[5] + rin.textsize;
       const Float4 controllerwindow = Float4(demowindow.sx - rin.textborder - controllerwindowwidth, rin.ystarts[5], demowindow.sx - rin.textborder, rin.ystarts[5] + controllerwindowwidth);
       
-      CHECK(!pms.setting_axistype_demo_game.empty());
+      CHECK(!pms.setting_axistype_demo.empty());
       {
         GfxWindow gfxw(demowindow, fadeFactor);
-        pms.setting_axistype_demo_game->renderToScreen();
+        pms.setting_axistype_demo->renderToScreen();
       }
       
       setColor(C::inactive_text * fadeFactor);

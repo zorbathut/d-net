@@ -24,6 +24,9 @@ bool PersistentData::isPlayerChoose() const {
 vector<Player> &PersistentData::players() {
   return playerdata;
 }
+const vector<Player> &PersistentData::players() const {
+  return playerdata;
+}
 
 const char * const tween_textlabels[] = {"Leave/join game", "Settings", "Full shop", "Quick shop", "Done"};
 enum { TTL_LEAVEJOIN, TTL_SETTINGS, TTL_FULLSHOP, TTL_QUICKSHOP, TTL_DONE, TTL_LAST }; 

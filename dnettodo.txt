@@ -1,5 +1,8 @@
 ---- Major work path
 - game.h persistence cleanup
+- Abstract out tank manipulations into game_tank?
+- GameAccessors class
+- store accumulation in Tank, not Player, for a round
 - Multishop
   - Game joining, quitting, reconfiguring, hibernating
   - Fix AI
@@ -32,7 +35,6 @@
 - "Kill graph"
 
 ---- Maintenance, minor bugfix, braindead
-- Abstract out tank manipulations into game_tank?
 - Set your keys/buttons changing
 - Enforce prefixes? projectile.blah etc etc etc
 - AI shouldn't try to buy the items it already owns/smarter about shops

@@ -8,6 +8,7 @@ class PersistentData {
 public:
   // Player data and reorganization functions
   vector<Player> &players();
+  const vector<Player> &players() const;
 
   vector<Keystates> genKeystates(const vector<Controller> &keys) const;
 

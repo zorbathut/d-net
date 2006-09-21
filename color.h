@@ -23,6 +23,8 @@ Color operator/(const Color &lhs, float rhs);
 
 const Color &operator+=(Color &lhs, const Color &rhs);
 
+bool operator==(const Color &lhs, const Color &rhs);
+
 namespace C {
   inline Color gray(float v) { return Color(v, v, v); }
   

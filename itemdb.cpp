@@ -48,6 +48,13 @@ const IDBAdjustment &operator+=(IDBAdjustment &lhs, const IDBAdjustment &rhs) {
   return lhs;
 }
 
+bool operator==(const IDBAdjustment &lhs, const IDBAdjustment &rhs) {
+  for(int i = 0; i < IDBAdjustment::LAST; i++)
+    if(lhs.adjusts[i] != rhs.adjusts[i])
+      return false;
+  return true;
+}
+
 float IDBAdjustment::adjustmentfactor(int type) const {
   CHECK(type >= 0 && type < LAST);
   return (float)(adjusts[type] + 100) / 100;

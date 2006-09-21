@@ -24,13 +24,27 @@ public:
   Team();
 };
 
+class TPP {
+private:
+  Tank *tank_int;
+  Player *player_int;
+
+public:
+  
+  Tank *tank() { return tank_int; };
+  Player *player() { return player_int; };
+  
+  operator void*() { CHECK(!tank_int == !player_int); return (void*)tank_int; };
+  TPP(Tank *tank, Player *player) : tank_int(tank), player_int(player) { CHECK(!tank_int == !player_int); };
+};
+
 class Tank {
 public:
   
-  void init(Player *player);
+  void init(IDBTankAdjust tank, Color color);
   
   void tick(const Keystates &kst);
-  void render() const;
+  void render(const vector<Team> &teams) const;
 
   void addCollision(Collider *collider, const Keystates &kst) const;
 
@@ -46,11 +60,12 @@ public:
   pair<Coord2, float> getNextPosition(const Keystates &keys) const;
 
   bool takeDamage(float amount); // returns true on kill
-  void genEffects(vector<smart_ptr<GfxEffects> > *gfxe, vector<Projectile> *projectiles, const vector<pair<float, Tank *> > &adjacency, Gamemap *gm);
-  
-  bool initted;
+  void genEffects(vector<smart_ptr<GfxEffects> > *gfxe, vector<Projectile> *projectiles, const vector<pair<float, TPP> > &adjacency, Gamemap *gm, Player *player, int id);
 
-  Team *team;
+  IDBTankAdjust tank;
+  Color color;
+  
+  int team;
   
   int zone_current;
   int zone_frames;
@@ -65,8 +80,6 @@ public:
   float health;
   
   Keystates keys;
-  
-  Player *player;
   
   int weaponCooldown;
   float weaponCooldownSubvals[SIMUL_WEAPONS];
@@ -93,12 +106,12 @@ public:
 
   void addCollision(Collider *collider) const;
 
-  void impact(Coord2 pos, Tank *target, const vector<pair<float, Tank *> > &adjacency, vector<smart_ptr<GfxEffects> > *gfxe, Gamemap *gm);
+  void impact(Coord2 pos, TPP target, const vector<pair<float, TPP> > &adjacency, vector<smart_ptr<GfxEffects> > *gfxe, Gamemap *gm, const vector<TPP> &players);
 
   bool isLive() const;
 
   Projectile();   // does not start in usable state
-  Projectile(const Coord2 &pos, float d, const IDBProjectileAdjust &projtype, Tank *owner);
+  Projectile(const Coord2 &pos, float d, const IDBProjectileAdjust &projtype, int in_owner);
 
 private:
   
@@ -129,7 +142,7 @@ private:
   int age;
   
   IDBProjectileAdjust projtype;
-  Tank *owner;
+  int owner;
   
   bool live;
 
@@ -162,9 +175,9 @@ public:
   void initDemo(vector<Player> *playerdata, float boxradi, const float *xps, const float *yps, const float *facing, const int *modes);
   void initCenteredDemo(Player *playerdata, float zoom);
 
-  bool runTick(const vector<Keystates> &keys);
+  bool runTick(const vector<Keystates> &keys, const vector<Player *> &players);
   void ai(const vector<GameAi *> &ais) const;
-  void renderToScreen() const;
+  void renderToScreen(const vector<const Player *> &players) const;
 
   int winningTeam() const;
   vector<int> teamBreakdown() const;
@@ -187,7 +200,7 @@ private:
   void initCommon(const vector<Player*> &playerdata, const Level &level);
   
   void addTankStatusText(int tankid, const string &text, float duration);
-  vector<pair<float, Tank *> > genTankDistance(const Coord2 &center);
+  vector<pair<float, TPP> > genTankDistance(const Coord2 &center, const vector<Player *> &players);
 
   int frameNm;
   int frameNmToStart;
@@ -229,6 +242,15 @@ private:
   Game(const Game &rhs);      // do not implement
   void operator=(const Game &rhs);
 
+};
+
+class GamePackage {
+public:
+  vector<Player> players;
+  Game game;
+
+  bool runTick(const vector<Keystates> &keys);
+  void renderToScreen() const;
 };
 
 #endif

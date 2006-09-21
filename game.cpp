@@ -15,15 +15,15 @@ DEFINE_bool(verboseCollisions, false, "Verbose collisions");
 DEFINE_bool(debugGraphics, false, "Enable various debug graphics");
 DECLARE_int(rounds_per_store);
 
-void dealDamage(float dmg, Tank *target, Tank *owner, float damagecredit, bool killcredit) {
-  if(target->team == owner->team)
+void dealDamage(float dmg, TPP target, TPP owner, float damagecredit, bool killcredit) {
+  if(target.tank()->team == owner.tank()->team)
     return; // friendly fire exception
-  if(target->takeDamage(dmg) && killcredit)
-    owner->player->addKill();
-  owner->player->addDamage(dmg * damagecredit);
+  if(target.tank()->takeDamage(dmg) && killcredit)
+    owner.player()->addKill();
+  owner.player()->addDamage(dmg * damagecredit);
 };
 
-void detonateWarhead(const IDBWarheadAdjust &warhead, Coord2 pos, Tank *impact, Tank *owner, const vector<pair<float, Tank *> > &adjacency, vector<smart_ptr<GfxEffects> > *gfxe, Gamemap *gm, float damagecredit, bool killcredit) {
+void detonateWarhead(const IDBWarheadAdjust &warhead, Coord2 pos, TPP impact, TPP owner, const vector<pair<float, TPP> > &adjacency, vector<smart_ptr<GfxEffects> > *gfxe, Gamemap *gm, float damagecredit, bool killcredit) {
   
   if(impact)
     dealDamage(warhead.impactdamage(), impact, owner, damagecredit, killcredit);
@@ -51,12 +51,10 @@ Team::Team() {
   swap_colors = false;
 }
   
-void Tank::init(Player *in_player) {
-  CHECK(in_player);
-  CHECK(!player);
-  player = in_player;
-  health = player->getTank().maxHealth();
-  initted = true;
+void Tank::init(IDBTankAdjust in_tank, Color in_color) {
+  tank = in_tank;
+  color = in_color;
+  health = in_tank.maxHealth();
   framesSinceDamage = -1;
   damageTakenPreviousHits = 0;
   damageEvents = 0;
@@ -77,7 +75,7 @@ void Tank::tick(const Keystates &kst) {
   
 };
 
-void Tank::render() const {
+void Tank::render(const vector<Team> &teams) const {
   if(!live)
     return;
 
@@ -90,10 +88,10 @@ void Tank::render() const {
   Color main;
   Color small;
   
-  main = player->getFaction()->color;
-  small = team->color;
+  main = color;
+  small = teams[team].color;
   
-  if(team->swap_colors)
+  if(teams[team].swap_colors)
     swap(main, small);
   
   small = small * 0.5;
@@ -151,9 +149,8 @@ vector<Coord2> Tank::getTankVertices(Coord2 pos, float td) const {
   Coord2 xt = makeAngle(Coord(td));
   Coord2 yt = makeAngle(Coord(td) - COORDPI / 2);
   vector<Coord2> rv;
-  IDBTankAdjust idbta = player->getTank();
-  for(int i = 0; i < idbta.vertices().size(); i++)
-    rv.push_back(Coord2(pos.x + idbta.vertices()[i].x * xt.x + idbta.vertices()[i].y * xt.y, pos.y + idbta.vertices()[i].y * yt.y + idbta.vertices()[i].x * yt.x));
+  for(int i = 0; i < tank.vertices().size(); i++)
+    rv.push_back(Coord2(pos.x + tank.vertices()[i].x * xt.x + tank.vertices()[i].y * xt.y, pos.y + tank.vertices()[i].y * yt.y + tank.vertices()[i].x * yt.x));
   return rv;
 };
 
@@ -161,10 +158,9 @@ Coord2 Tank::getFiringPoint() const {
   Coord2 xt = makeAngle(Coord(d));
   Coord2 yt = makeAngle(Coord(d) - COORDPI / 2);
   Coord2 best(0, 0);
-  IDBTankAdjust idbta = player->getTank();
-  for(int i = 0; i < idbta.vertices().size(); i++)
-    if(idbta.vertices()[i].x > best.x)
-      best = idbta.vertices()[i];
+  for(int i = 0; i < tank.vertices().size(); i++)
+    if(tank.vertices()[i].x > best.x)
+      best = tank.vertices()[i];
   return Coord2(pos.x + best.x * xt.x + best.y * xt.y, pos.y + best.y * yt.y + best.x * yt.x);
 };
 
@@ -189,7 +185,7 @@ pair<float, float> Tank::getNextInertia(const Keystates &keys) const {
         desdir += 2 * PI;
         if(desdir > PI)
           desdir -= 2 * PI;
-        dd = desdir / (player->getTank().turnSpeed() / FPS);
+        dd = desdir / (tank.turnSpeed() / FPS);
         if(dd < -1)
           dd = -1;
         if(dd > 1)
@@ -258,8 +254,8 @@ pair<float, float> Tank::getNextInertia(const Keystates &keys) const {
     }
   }
 
-  dl = approach(inertia.first, dl, 500 / player->getTank().mass() / FPS);  // 50 tons is 1/10 sec
-  dr = approach(inertia.second, dr, 500 / player->getTank().mass() / FPS);
+  dl = approach(inertia.first, dl, 500 / tank.mass() / FPS);  // 50 tons is 1/10 sec
+  dr = approach(inertia.second, dr, 500 / tank.mass() / FPS);
   
   return make_pair(dl, dr);
 }
@@ -297,9 +293,9 @@ pair<Coord2, float> Tank::getNextPosition(const Keystates &keys) const {
   
   Coord cdv(dv);
 
-  npos += makeAngle(Coord(nd)) * Coord(player->getTank().maxSpeed() / FPS) * cdv;
+  npos += makeAngle(Coord(nd)) * Coord(tank.maxSpeed() / FPS) * cdv;
 
-  nd += player->getTank().turnSpeed() / FPS * dd;
+  nd += tank.turnSpeed() / FPS * dd;
   nd += 2*PI;
   nd = fmod(nd, 2*(float)PI);
   
@@ -328,7 +324,7 @@ bool Tank::takeDamage(float damage) {
   return false;
 };
 
-void Tank::genEffects(vector<smart_ptr<GfxEffects> > *gfxe, vector<Projectile> *projectiles, const vector<pair<float, Tank *> > &adjacency, Gamemap *gm) {
+void Tank::genEffects(vector<smart_ptr<GfxEffects> > *gfxe, vector<Projectile> *projectiles, const vector<pair<float, TPP> > &adjacency, Gamemap *gm, Player *player, int id) {
   if(spawnShards) {
     vector<Coord2> tv = getTankVertices(pos, d);
     Coord2 centr = getCentroid(tv);
@@ -405,23 +401,21 @@ void Tank::genEffects(vector<smart_ptr<GfxEffects> > *gfxe, vector<Projectile> *
     
     for(int i = 0; i < ang.size(); i++)
       for(int j = 0; j < glory.shotspersplit(); j++)
-        projectiles->push_back(Projectile(centr, ang[i] + gaussian_scaled(2) / 8, glory.projectile(), this));
+        projectiles->push_back(Projectile(centr, ang[i] + gaussian_scaled(2) / 8, glory.projectile(), id));
     
-    detonateWarhead(glory.core(), centr, NULL, this, adjacency, gfxe, gm, 1.0, true);
+    detonateWarhead(glory.core(), centr, TPP(NULL, NULL), TPP(this, player), adjacency, gfxe, gm, 1.0, true);
     
     spawnShards = false;
   }
 }
 
-Tank::Tank() {
+Tank::Tank() : tank(NULL, IDBAdjustment()) /* do not fucking use this */ {
   pos = Coord2(0, 0);
   d = 0;
   live = true;
   spawnShards = false;
   health = -47283;
-  player = NULL;
   inertia = make_pair(0.f, 0.f);
-  initted = false;
   weaponCooldown = 0;
   memset(weaponCooldownSubvals, 0, sizeof(weaponCooldownSubvals)); // if you're not using IEEE floats, get a new computer.
   zone_current = -1;
@@ -493,11 +487,11 @@ void Projectile::addCollision(Collider *collider) const {
     collider->token(Coord4(pos, pos + lasttail), Coord4(movement(), movement() + nexttail()));
   }
 };
-void Projectile::impact(Coord2 pos, Tank *target, const vector<pair<float, Tank *> > &adjacency, vector<smart_ptr<GfxEffects> > *gfxe, Gamemap *gm) {
+void Projectile::impact(Coord2 pos, TPP target, const vector<pair<float, TPP> > &adjacency, vector<smart_ptr<GfxEffects> > *gfxe, Gamemap *gm, const vector<TPP> &players) {
   if(!live)
     return;
   
-  detonateWarhead(projtype.warhead(), pos, target, owner, adjacency, gfxe, gm, 1.0, true);
+  detonateWarhead(projtype.warhead(), pos, target, players[owner], adjacency, gfxe, gm, 1.0, true);
 
   live = false;
 };
@@ -566,7 +560,7 @@ Projectile::Projectile() : projtype(NULL, IDBAdjustment()) {
   live = false;
   age = -1;
 }
-Projectile::Projectile(const Coord2 &in_pos, float in_d, const IDBProjectileAdjust &in_projtype, Tank *in_owner) : projtype(in_projtype) {
+Projectile::Projectile(const Coord2 &in_pos, float in_d, const IDBProjectileAdjust &in_projtype, int in_owner) : projtype(in_projtype) {
   pos = in_pos;
   d = in_d;
   owner = in_owner;
@@ -618,8 +612,20 @@ void doInterp(float *curcenter, const float *nowcenter, float *curzoom, const fl
   }
 }
 
-bool Game::runTick(const vector< Keystates > &rkeys) {
+bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &players) {
   StackString sst("Frame runtick");
+  
+  CHECK(rkeys.size() == players.size());
+  CHECK(players.size() == tanks.size());
+  
+  vector<TPP> tpps;
+  for(int i = 0; i < tanks.size(); i++) {
+    // Abstraction hack test
+    CHECK(tanks[i].color == players[i]->getFaction()->color);
+    CHECK(tanks[i].tank == players[i]->getTank());
+    
+    tpps.push_back(TPP(&tanks[i], players[i]));
+  }
   
   if(!ffwd && FLAGS_verboseCollisions)
     dprintf("Ticking\n");
@@ -630,7 +636,7 @@ bool Game::runTick(const vector< Keystates > &rkeys) {
   if(frameNm < frameNmToStart && freezeUntilStart) {
     for(int i = 0; i < keys.size(); i++) {
       if(keys[i].accept.push || keys[i].fire[0].push)
-        gfxeffects.push_back(GfxPing(tanks[i].pos.toFloat(), 200, 8, 0.5, tanks[i].player->getFaction()->color));
+        gfxeffects.push_back(GfxPing(tanks[i].pos.toFloat(), 200, 8, 0.5, tanks[i].color));
       keys[i].nullMove();
       for(int j = 0; j < SIMUL_WEAPONS; j++)
         keys[i].fire[j] = Button();
@@ -657,12 +663,8 @@ bool Game::runTick(const vector< Keystates > &rkeys) {
   const Coord4 gmb = gamemap.getBounds();
   vector<int> teamids;
   {
-    map<Team*, int> fez;
-    for(int i = 0; i < tanks.size(); i++) {
-      if(!fez.count(tanks[i].team))
-        fez[tanks[i].team] = fez.size();
-      teamids.push_back(fez[tanks[i].team]);
-    }
+    for(int i = 0; i < tanks.size(); i++)
+      teamids.push_back(tanks[i].team);
   }
   
   {
@@ -785,25 +787,25 @@ bool Game::runTick(const vector< Keystates > &rkeys) {
         CHECK(0);
       } else if(lhs.category == CGR_WALL && rhs.category == CGR_PROJECTILE) {
         // wall-projectile collision - kill projectile
-        projectiles[rhs.bucket][rhs.item].impact(collider.getData().loc, NULL, genTankDistance(collider.getData().loc), &gfxeffects, &gamemap);
+        projectiles[rhs.bucket][rhs.item].impact(collider.getData().loc, TPP(NULL, NULL), genTankDistance(collider.getData().loc, players), &gfxeffects, &gamemap, tpps);
       } else if(lhs.category == CGR_PLAYER && rhs.category == CGR_PLAYER) {
         // tank-tank collision, should never happen
         CHECK(0);
       } else if(lhs.category == CGR_PLAYER && rhs.category == CGR_PROJECTILE) {
         // tank-projectile collision - kill projectile, do damage
-        projectiles[rhs.bucket][rhs.item].impact(collider.getData().loc, &tanks[lhs.bucket], genTankDistance(collider.getData().loc), &gfxeffects, &gamemap);
+        projectiles[rhs.bucket][rhs.item].impact(collider.getData().loc, TPP(&tanks[lhs.bucket], players[lhs.bucket]), genTankDistance(collider.getData().loc, players), &gfxeffects, &gamemap, tpps);
       } else if(lhs.category == CGR_PROJECTILE && rhs.category == CGR_PROJECTILE) {
         // projectile-projectile collision - kill both projectiles
         // also do radius damage, and do it fairly dammit
         bool lft = frand() < 0.5;
         
         if(lft)
-          projectiles[lhs.bucket][lhs.item].impact(collider.getData().loc, NULL, genTankDistance(collider.getData().loc), &gfxeffects, &gamemap);
+          projectiles[lhs.bucket][lhs.item].impact(collider.getData().loc, TPP(NULL, NULL), genTankDistance(collider.getData().loc, players), &gfxeffects, &gamemap, tpps);
         
-        projectiles[rhs.bucket][rhs.item].impact(collider.getData().loc, NULL, genTankDistance(collider.getData().loc), &gfxeffects, &gamemap);
+        projectiles[rhs.bucket][rhs.item].impact(collider.getData().loc, TPP(NULL, NULL), genTankDistance(collider.getData().loc, players), &gfxeffects, &gamemap, tpps);
         
         if(!lft)
-          projectiles[lhs.bucket][lhs.item].impact(collider.getData().loc, NULL, genTankDistance(collider.getData().loc), &gfxeffects, &gamemap);
+          projectiles[lhs.bucket][lhs.item].impact(collider.getData().loc, TPP(NULL, NULL), genTankDistance(collider.getData().loc, players), &gfxeffects, &gamemap, tpps);
         
       } else {
         // nothing meaningful, should totally never happen, what the hell is going on here, who are you, and why are you in my apartment
@@ -858,14 +860,14 @@ bool Game::runTick(const vector< Keystates > &rkeys) {
       CHECK(SIMUL_WEAPONS == 2);
       if(keys[j].fire[0].down || keys[j].fire[1].down) {
         bombards[j].state = BombardmentState::BS_FIRING;
-        bombards[j].timer = round(tanks[j].player->getBombardment((int)bombardment_tier).lockdelay() * FPS);
+        bombards[j].timer = round(players[j]->getBombardment((int)bombardment_tier).lockdelay() * FPS);
       }
     } else if(bombards[j].state == BombardmentState::BS_FIRING) {
       bombards[j].timer--;
       if(bombards[j].timer <= 0) {
-        detonateWarhead(tanks[j].player->getBombardment((int)bombardment_tier).warhead(), bombards[j].loc, NULL, &tanks[j], genTankDistance(bombards[j].loc), &gfxeffects, &gamemap, 1.0, false);
+        detonateWarhead(players[j]->getBombardment((int)bombardment_tier).warhead(), bombards[j].loc, TPP(0, 0), tpps[j], genTankDistance(bombards[j].loc, players), &gfxeffects, &gamemap, 1.0, false);
         bombards[j].state = BombardmentState::BS_COOLDOWN;
-        bombards[j].timer = round(tanks[j].player->getBombardment((int)bombardment_tier).unlockdelay() * FPS);
+        bombards[j].timer = round(players[j]->getBombardment((int)bombardment_tier).unlockdelay() * FPS);
       }
     } else if(bombards[j].state == BombardmentState::BS_COOLDOWN) {
       bombards[j].timer--;
@@ -885,12 +887,12 @@ bool Game::runTick(const vector< Keystates > &rkeys) {
       for(int j = 0; j < SIMUL_WEAPONS; j++) {
         if(keys[i].change[j].push) {
           StackString sst(StringPrintf("Switching"));
-          tanks[i].player->cycleWeapon(j);
-          addTankStatusText(i, tanks[i].player->getWeapon(j).name(), 1);
+          players[i]->cycleWeapon(j);
+          addTankStatusText(i, players[i]->getWeapon(j).name(), 1);
         }
       }
     
-      if(tanks[i].weaponCooldown <= 0 && tanks[i].team->weapons_enabled && frameNm >= frameNmToStart && frameNmToStart != -1) {
+      if(tanks[i].weaponCooldown <= 0 && teams[tanks[i].team].weapons_enabled && frameNm >= frameNmToStart && frameNmToStart != -1) {
         StackString sst(StringPrintf("Firetesting"));
         // The player can fire, so let's find out if he does
         
@@ -920,10 +922,10 @@ bool Game::runTick(const vector< Keystates > &rkeys) {
             tanks[i].weaponCooldownSubvals[j] = max(tanks[i].weaponCooldownSubvals[j] - rlev, (float)0);
           }
           
-          tanks[i].weaponCooldownSubvals[curfire] = FPS / tanks[i].player->getWeapon(curfire).firerate();
+          tanks[i].weaponCooldownSubvals[curfire] = FPS / players[i]->getWeapon(curfire).firerate();
           
           // Blam!
-          IDBWeaponAdjust weapon = tanks[i].player->getWeapon(curfire);
+          IDBWeaponAdjust weapon = players[i]->getWeapon(curfire);
           
           Coord2 startpos;
           float startdir;
@@ -938,9 +940,9 @@ bool Game::runTick(const vector< Keystates > &rkeys) {
           }
           
           {
-            Projectile proj(startpos, startdir + weapon.deploy().anglestddev() * gaussian(), weapon.projectile(), &tanks[i]);
+            Projectile proj(startpos, startdir + weapon.deploy().anglestddev() * gaussian(), weapon.projectile(), i);
             if(weapon.projectile().motion() == PM_INSTANT) {
-              proj.impact(startpos, NULL, genTankDistance(startpos), &gfxeffects, &gamemap);
+              proj.impact(startpos, TPP(NULL, NULL), genTankDistance(startpos, players), &gfxeffects, &gamemap, tpps);
             } else {
               projectiles[i].push_back(proj);
             }
@@ -949,13 +951,13 @@ bool Game::runTick(const vector< Keystates > &rkeys) {
           tanks[i].weaponCooldown = weapon.framesForCooldown();
           // hack here to detect weapon out-of-ammo
           string lastname = weapon.name();
-          firepowerSpent += tanks[i].player->shotFired(curfire);
+          firepowerSpent += players[i]->shotFired(curfire);
           if(weapon.name() != lastname) {
             addTankStatusText(i, weapon.name(), 2);
           }
           
           {
-            string slv = StringPrintf("%d", tanks[i].player->shotsLeft(curfire));
+            string slv = StringPrintf("%d", players[i]->shotsLeft(curfire));
             if(count(slv.begin(), slv.end(), '0') == slv.size() - 1)
               addTankStatusText(i, slv, 1);
           }
@@ -976,7 +978,7 @@ bool Game::runTick(const vector< Keystates > &rkeys) {
 
   for(int i = 0; i < tanks.size(); i++) {
     tanks[i].weaponCooldown--;
-    tanks[i].genEffects(&gfxeffects, &projectiles[i], genTankDistance(tanks[i].pos), &gamemap);
+    tanks[i].genEffects(&gfxeffects, &projectiles[i], genTankDistance(tanks[i].pos, players), &gamemap, players[i], i);
     if(tanks[i].live) {
       int inzone = -1;
       for(int j = 0; j < zones.size(); j++)
@@ -992,8 +994,9 @@ bool Game::runTick(const vector< Keystates > &rkeys) {
   
   // This is a bit ugly - this only happens in choice mode
   if(zones.size() == 4) {
+    CHECK(teams.size() == 5);
     for(int i = 0; i < tanks.size(); i++) {
-      if(tanks[i].zone_current != -1 && (tanks[i].zone_frames - 1) % 60 == 0 && tanks[i].team == &teams[4]) {
+      if(tanks[i].zone_current != -1 && (tanks[i].zone_frames - 1) % 60 == 0 && tanks[i].team == 4) {
         int secleft = (181 - tanks[i].zone_frames) / 60;
         if(secleft) {
           addTankStatusText(i, StringPrintf("%d second%s to join team", secleft, (secleft == 1 ? "" : "s")), 1.5);
@@ -1001,8 +1004,8 @@ bool Game::runTick(const vector< Keystates > &rkeys) {
           addTankStatusText(i, StringPrintf("Team joined"), 2);
         }
       }
-      if(tanks[i].zone_current != -1 && tanks[i].zone_frames > 180 && tanks[i].team == &teams[4]) {
-        tanks[i].team = &teams[tanks[i].zone_current];
+      if(tanks[i].zone_current != -1 && tanks[i].zone_frames > 180 && tanks[i].team == 4) {
+        tanks[i].team = tanks[i].zone_current;
         if(frameNmToStart == -1)
           frameNmToStart = frameNm + 60 * 6;
       }
@@ -1028,13 +1031,13 @@ bool Game::runTick(const vector< Keystates > &rkeys) {
   #endif
   
   {
-    set<Team *> liveteams;
+    set<int> liveteams;
     for(int i = 0; i < tanks.size(); i++) {
       if(tanks[i].live)
         liveteams.insert(tanks[i].team);
     }
     if(liveteams.size() <= 1) {
-      if(zones.size() != 4 || liveteams.size() != 1 || liveteams.count(&teams[4]) == 0)   // nasty hackery for choice mode
+      if(zones.size() != 4 || liveteams.size() != 1 || liveteams.count(4) == 0)   // nasty hackery for choice mode
         framesSinceOneLeft++;
     }
   }
@@ -1054,7 +1057,7 @@ bool Game::runTick(const vector< Keystates > &rkeys) {
       int winplayer = -1;
       for(int i = 0; i < tanks.size(); i++) {
         if(tanks[i].live) {
-          tanks[i].player->addWin();
+          players[i]->addWin();
           CHECK(winplayer == -1);
           winplayer = i;
         }
@@ -1062,7 +1065,7 @@ bool Game::runTick(const vector< Keystates > &rkeys) {
       if(winplayer == -1)
         wins->push_back(NULL);
       else
-        wins->push_back(tanks[winplayer].player->getFaction());
+        wins->push_back(players[winplayer]->getFaction());
     } else if(zones.size() == 4) {
     } else {
       CHECK(0);
@@ -1106,7 +1109,7 @@ void drawCrosses(const Coord2 &cloc, float rad) {
   }
 }
 
-void Game::renderToScreen() const {
+void Game::renderToScreen(const vector<const Player *> &players) const {
   
   {
     // Set up zooming for everything that happens in gamespace
@@ -1136,7 +1139,7 @@ void Game::renderToScreen() const {
     
     // Tanks
     for(int i = 0; i < tanks.size(); i++) {
-      tanks[i].render();
+      tanks[i].render(teams);
     }
     
     // Projectiles, graphics effects, and bombardments
@@ -1159,21 +1162,21 @@ void Game::renderToScreen() const {
       if(bombards[i].state == BombardmentState::BS_OFF) {
       } else if(bombards[i].state == BombardmentState::BS_SPAWNING) {
       } else if(bombards[i].state == BombardmentState::BS_ACTIVE) {
-        setColor(tanks[i].player->getFaction()->color * 0.5);
+        setColor(tanks[i].color * 0.5);
         drawCirclePieces(bombards[i].loc, 0.3, 4);
         drawCrosses(bombards[i].loc, 4);
       } else if(bombards[i].state == BombardmentState::BS_FIRING) {
-        setColor(tanks[i].player->getFaction()->color * 0.25);
+        setColor(tanks[i].color * 0.25);
         drawCirclePieces(bombards[i].loc, 0.3, 4);
         drawCrosses(bombards[i].loc, 4);
         setColor(Color(1.0, 1.0, 1.0));
-        float ps = (float)bombards[i].timer / (tanks[i].player->getBombardment((int)bombardment_tier).lockdelay() * FPS);
+        float ps = (float)bombards[i].timer / (players[i]->getBombardment((int)bombardment_tier).lockdelay() * FPS);
         drawCirclePieces(bombards[i].loc, 1 - ps, 4 * ps);
       } else if(bombards[i].state == BombardmentState::BS_COOLDOWN) {
-        setColor(tanks[i].player->getFaction()->color * 0.25);
+        setColor(tanks[i].color * 0.25);
         drawCirclePieces(bombards[i].loc, 0.3, 4);
         drawCrosses(bombards[i].loc, 4);
-        float ps = (float)bombards[i].timer / (tanks[i].player->getBombardment((int)bombardment_tier).unlockdelay() * FPS);
+        float ps = (float)bombards[i].timer / (players[i]->getBombardment((int)bombardment_tier).unlockdelay() * FPS);
         drawCirclePieces(bombards[i].loc, ps, 4 * (1 - ps));
       } else {
         CHECK(0);
@@ -1266,19 +1269,19 @@ void Game::renderToScreen() const {
         if(i)
           drawLine(Float4(loffset, 0, loffset, 10), 0.1);
         if(tanks[i].live) {
-          setColor(tanks[i].player->getFaction()->color);
+          setColor(players[i]->getFaction()->color);
           float barl = loffset + 1;
           float bare = (roffset - 1) - (loffset + 1);
-          bare /= tanks[i].player->getTank().maxHealth();
+          bare /= players[i]->getTank().maxHealth();
           bare *= tanks[i].health;
           drawShadedRect(Float4(barl, 2, barl + bare, 7), 0.1, 2);
           
           string ammotext[SIMUL_WEAPONS];
           for(int j = 0; j < SIMUL_WEAPONS; j++) {
-            if(tanks[i].player->shotsLeft(j) == UNLIMITED_AMMO) {
+            if(players[i]->shotsLeft(j) == UNLIMITED_AMMO) {
               ammotext[j] = "Inf";
             } else {
-              ammotext[j] = StringPrintf("%d", tanks[i].player->shotsLeft(j));
+              ammotext[j] = StringPrintf("%d", players[i]->shotsLeft(j));
             }
           }
           
@@ -1414,22 +1417,20 @@ vector<const IDBFaction *> genExampleFacts(const vector<Tank> &plays, int ct) {
 }*/
 
 int Game::winningTeam() const {
-  Team *winteam = NULL;
+  int winteam = -1;
   for(int i = 0; i < tanks.size(); i++) {
     if(tanks[i].live) {
-      CHECK(winteam == NULL || winteam == tanks[i].team);
+      CHECK(winteam == -1 || winteam == tanks[i].team);
       winteam = tanks[i].team;
     }
   }
-  if(!winteam)
-    return -1;
-  return winteam - &teams[0];
+  return winteam;
 }
 
 vector<int> Game::teamBreakdown() const {
   vector<int> teamsize(teams.size());
   for(int i = 0; i < tanks.size(); i++)
-    teamsize[tanks[i].team - &teams[0]]++;
+    teamsize[tanks[i].team]++;
   return teamsize;
 }
 
@@ -1448,12 +1449,14 @@ void Game::kill(int id) {
 
 void Game::respawnPlayer(int id, Coord2 pos, float facing) {
   CHECK(gamemode == GMODE_DEMO);
-  Player *play = tanks[id].player;
+  IDBTankAdjust tank = tanks[id].tank;
+  Color color = tanks[id].color;
   tanks[id] = Tank();
-  tanks[id].init(play);
+  tanks[id].init(tank, color);
   tanks[id].pos = pos;
   tanks[id].d = facing;
-  tanks[id].team = &teams[id];
+  tanks[id].team = id;
+  
   bombards[id].state = BombardmentState::BS_OFF;
   CHECK(tanks[id].live);
 }
@@ -1515,7 +1518,7 @@ void Game::initCommon(const vector<Player*> &in_playerdata, const Level &lev) {
   
   for(int i = 0; i < tanks.size(); i++) {
     CHECK(in_playerdata[i]);
-    tanks[i].init(in_playerdata[i]);
+    tanks[i].init(in_playerdata[i]->getTank(), in_playerdata[i]->getFaction()->color);
   }
   {
     // place tanks
@@ -1546,7 +1549,7 @@ void Game::initCommon(const vector<Player*> &in_playerdata, const Level &lev) {
   
   teams.resize(tanks.size());
   for(int i = 0; i < tanks.size(); i++)
-    tanks[i].team = &teams[i];
+    tanks[i].team = i;
   
   bombardment_tier = 0;
   
@@ -1587,7 +1590,7 @@ void Game::initChoice(vector<Player> *in_playerdata) {
   
   teams.resize(5);
   for(int i = 0; i < tanks.size(); i++)
-    tanks[i].team = &teams[4];
+    tanks[i].team = 4;
   
   vector<vector<Coord2> > paths;
   {
@@ -1710,13 +1713,13 @@ void Game::initCenteredDemo(Player *in_playerdata, float zoom) {
   initCommon(playerdata, lev);
 }
 
-vector<pair<float, Tank *> > Game::genTankDistance(const Coord2 &center) {
-  vector<pair<float, Tank *> > rv;
+vector<pair<float, TPP> > Game::genTankDistance(const Coord2 &center, const vector<Player *> &players) {
+  vector<pair<float, TPP> > rv;
   for(int i = 0; i < tanks.size(); i++) {
     if(tanks[i].live) {
       vector<Coord2> tv = tanks[i].getTankVertices(tanks[i].pos, tanks[i].d);
       if(inPath(center, tv)) {
-        rv.push_back(make_pair(0, &tanks[i]));
+        rv.push_back(make_pair(0, TPP(&tanks[i], players[i])));
         continue;
       }
       float closest = 1e10;
@@ -1727,7 +1730,7 @@ vector<pair<float, Tank *> > Game::genTankDistance(const Coord2 &center) {
       }
       CHECK(closest < 1e10);
       CHECK(closest >= 0);
-      rv.push_back(make_pair(closest, &tanks[i]));
+      rv.push_back(make_pair(closest, TPP(&tanks[i], players[i])));
     }
   }
   return rv;
@@ -1735,4 +1738,18 @@ vector<pair<float, Tank *> > Game::genTankDistance(const Coord2 &center) {
 
 void Game::addTankStatusText(int tankid, const string &text, float duration) {
   gfxeffects.push_back(GfxText(tanks[tankid].pos.toFloat() + Float2(4, -4), Float2(0, -6), zoom_size.y / 80, text, duration, Color(1.0, 1.0, 1.0)));
+}
+
+bool GamePackage::runTick(const vector<Keystates> &keys) {
+  vector<Player*> ppt;
+  for(int i = 0; i < players.size(); i++)
+    ppt.push_back(&players[i]);
+  return game.runTick(keys, ppt);
+}
+
+void GamePackage::renderToScreen() const {
+  vector<const Player*> ppt;
+  for(int i = 0; i < players.size(); i++)
+    ppt.push_back(&players[i]);
+  return game.renderToScreen(ppt);
 }

@@ -173,3 +173,7 @@ float IDBTankAdjust::mass() const { return idb->mass; };    // BAM
 const vector<Coord2> &IDBTankAdjust::vertices() const { return idb->vertices; };
 
 IDBTankAdjust::IDBTankAdjust(const IDBTank *in_idb, const IDBAdjustment &in_adjust) { idb = in_idb; adjust = in_adjust; };
+
+bool operator==(const IDBTankAdjust &lhs, const IDBTankAdjust &rhs) {
+  return lhs.idb == rhs.idb && lhs.adjust == rhs.adjust;
+}

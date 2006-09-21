@@ -33,7 +33,12 @@ bool Metagame::runTick(const vector<Controller> &keys) {
   } else if(mode == MGM_FACTIONTYPE) {
     StackString stp("Factiontype");
     dprintf("factiontype tick");
-    if(FLAGS_factionMode != -1 || game.runTick(persistent.genKeystates(keys))) {
+    vector<Player *> ppt;
+    {
+      for(int i = 0; i < persistent.players().size(); i++)
+        ppt.push_back(&persistent.players()[i]);
+    }
+    if(FLAGS_factionMode != -1 || game.runTick(persistent.genKeystates(keys), ppt)) {
       if(FLAGS_factionMode != -1)
         faction_mode = FLAGS_factionMode;
       else
@@ -68,7 +73,12 @@ bool Metagame::runTick(const vector<Controller> &keys) {
     }
   } else if(mode == MGM_PLAY) {
     StackString stp("Play");
-    if(game.runTick(persistent.genKeystates(keys))) {
+    vector<Player *> ppt;
+    {
+      for(int i = 0; i < persistent.players().size(); i++)
+        ppt.push_back(&persistent.players()[i]);
+    }
+    if(game.runTick(persistent.genKeystates(keys), ppt)) {
       gameround++;
       if(gameround % roundsBetweenShop == 0) {
         mode = MGM_TWEEN;
@@ -109,7 +119,12 @@ void Metagame::renderToScreen() const {
     persistent.render();
   } else if(mode == MGM_FACTIONTYPE) {
     StackString stp("Factiontype");
-    game.renderToScreen();
+    vector<const Player *> ppt;
+    {
+      for(int i = 0; i < persistent.players().size(); i++)
+        ppt.push_back(&persistent.players()[i]);
+    }
+    game.renderToScreen(ppt);
     if(!controls_users()) {    
       setColor(1.0, 1.0, 1.0);
       setZoom(Float4(0, 0, 133.333, 100));
@@ -119,7 +134,12 @@ void Metagame::renderToScreen() const {
     persistent.render();
   } else if(mode == MGM_PLAY) {
     StackString stp("Play");
-    game.renderToScreen();
+    vector<const Player *> ppt;
+    {
+      for(int i = 0; i < persistent.players().size(); i++)
+        ppt.push_back(&persistent.players()[i]);
+    }
+    game.renderToScreen(ppt);
     if(!controls_users()) {    
       setColor(1.0, 1.0, 1.0);
       setZoom(Float4(0, 0, 133.333, 100));

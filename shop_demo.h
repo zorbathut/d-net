@@ -21,8 +21,7 @@ public:
 
 private:
 
-  Game game;
-  vector<Player> players;
+  GamePackage game;
   vector<smart_ptr<GameAi> > ais;
 
   const int *progression;

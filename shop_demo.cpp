@@ -176,12 +176,12 @@ void ShopDemo::init(const IDBWeapon *weap, const Player *player) {
   mode = DEMOMODE_WEAPON;
   
   if(weap->demomode == WDM_FIRINGRANGE) {
-    players.clear();
-    players.resize(6);
-    CHECK(factionList().size() >= players.size());
-    for(int i = 0; i < players.size(); i++) {
-      players[i] = Player(&factionList()[i], 0); // TODO: make this be the right faction mode and stats
-      players[i].forceAcquireWeapon(weap, 1000000);
+    game.players.clear();
+    game.players.resize(6);
+    CHECK(factionList().size() >= game.players.size());
+    for(int i = 0; i < game.players.size(); i++) {
+      game.players[i] = Player(&factionList()[i], 0); // TODO: make this be the right faction mode and stats
+      game.players[i].forceAcquireWeapon(weap, 1000000);
     }
     
     ais.clear();
@@ -190,23 +190,23 @@ void ShopDemo::init(const IDBWeapon *weap, const Player *player) {
       ais.push_back(smart_ptr<GameAi>(new GameAiNull));
     }
     
-    game.initDemo(&players, 160, weapons_xpses, weapons_ypses, NULL, weapons_mode);
+    game.game.initDemo(&game.players, 160, weapons_xpses, weapons_ypses, NULL, weapons_mode);
     
     progression = weapons_progression;
   } else if(weap->demomode == WDM_MINES) {
-    players.clear();
-    players.resize(2);
-    CHECK(factionList().size() >= players.size());
-    for(int i = 0; i < players.size(); i++) {
-      players[i] = Player(&factionList()[i], 0); // TODO: make this be the right faction mode and stats
-      players[i].forceAcquireWeapon(weap, 1000000);
+    game.players.clear();
+    game.players.resize(2);
+    CHECK(factionList().size() >= game.players.size());
+    for(int i = 0; i < game.players.size(); i++) {
+      game.players[i] = Player(&factionList()[i], 0); // TODO: make this be the right faction mode and stats
+      game.players[i].forceAcquireWeapon(weap, 1000000);
     }
     
     ais.clear();  
     ais.push_back(smart_ptr<GameAi>(new GameAiCircling(mines_circle, 0)));
     ais.push_back(smart_ptr<GameAi>(new GameAiCircling(mines_circle, 1)));
     
-    game.initDemo(&players, 100, mines_xpses, mines_ypses, mines_facing, mines_mode);
+    game.game.initDemo(&game.players, 100, mines_xpses, mines_ypses, mines_facing, mines_mode);
     
     progression = mines_progression;
   } else {
@@ -218,13 +218,13 @@ void ShopDemo::init(const IDBBombardment *bombard, const Player *player) {
   StackString sst("Initting demo bombardment shop");
   mode = DEMOMODE_BOMBARDMENT;
   
-  players.clear();
-  players.resize(8);
-  CHECK(factionList().size() >= players.size());
-  for(int i = 0; i < players.size(); i++) {
-    players[i] = Player(&factionList()[i], 0); // TODO: make this be the right faction mode and the right faction data and the right tanks and upgrades and so forth
-    players[i].addCash(Money(1000000000));
-    players[i].forceAcquireBombardment(bombard);
+  game.players.clear();
+  game.players.resize(8);
+  CHECK(factionList().size() >= game.players.size());
+  for(int i = 0; i < game.players.size(); i++) {
+    game.players[i] = Player(&factionList()[i], 0); // TODO: make this be the right faction mode and the right faction data and the right tanks and upgrades and so forth
+    game.players[i].addCash(Money(1000000000));
+    game.players[i].forceAcquireBombardment(bombard);
   }
   
   ais.clear();
@@ -236,7 +236,7 @@ void ShopDemo::init(const IDBBombardment *bombard, const Player *player) {
     bombardment_scatterers.push_back(gas);
   }
   
-  game.initDemo(&players, 50, bombardment_xpses, bombardment_ypses, NULL, bombardment_mode);
+  game.game.initDemo(&game.players, 50, bombardment_xpses, bombardment_ypses, NULL, bombardment_mode);
   
   progression = bombardment_progression;
 };
@@ -245,13 +245,13 @@ void ShopDemo::init(const IDBGlory *glory, const Player *player) {
   StackString sst("Initting demo glory shop");
   mode = DEMOMODE_GLORY;
   
-  players.clear();
-  players.resize(8);
-  CHECK(factionList().size() >= players.size());
-  for(int i = 0; i < players.size(); i++) {
-    players[i] = Player(&factionList()[i], 0); // TODO: make this be the right faction mode and the right faction data and the right tanks and upgrades and so forth
-    players[i].addCash(Money(1000000000));
-    players[i].forceAcquireGlory(glory);
+  game.players.clear();
+  game.players.resize(8);
+  CHECK(factionList().size() >= game.players.size());
+  for(int i = 0; i < game.players.size(); i++) {
+    game.players[i] = Player(&factionList()[i], 0); // TODO: make this be the right faction mode and the right faction data and the right tanks and upgrades and so forth
+    game.players[i].addCash(Money(1000000000));
+    game.players[i].forceAcquireGlory(glory);
   }
   
   ais.clear();
@@ -264,7 +264,7 @@ void ShopDemo::init(const IDBGlory *glory, const Player *player) {
   }
   respawn = false;
   
-  game.initDemo(&players, 100, glory_xpses, glory_ypses, NULL, glory_mode);
+  game.game.initDemo(&game.players, 100, glory_xpses, glory_ypses, NULL, glory_mode);
   
   progression = glory_progression;
   
@@ -272,12 +272,12 @@ void ShopDemo::init(const IDBGlory *glory, const Player *player) {
 };
 
 void ShopDemo::glory_respawnPlayers() {
-  for(int i = 0; i < players.size(); i += 2) {
-    Coord2 pos = game.queryPlayerLocation(i);
+  for(int i = 0; i < game.players.size(); i += 2) {
+    Coord2 pos = game.game.queryPlayerLocation(i);
     float facing = frand() * 2 * PI;
     Coord2 dir = makeAngle(Coord(facing));
     pos += dir * 40;
-    game.respawnPlayer(i + 1, pos, facing + PI);
+    game.game.respawnPlayer(i + 1, pos, facing + PI);
   }
 };
 
@@ -293,7 +293,7 @@ void ShopDemo::runTick() {
   vector<GameAi *> tai;
   for(int i = 0; i < ais.size(); i++)
     tai.push_back(ais[i].get());
-  for(int i = 0; i < mult(game.frameCount(), progression); i++) {
+  for(int i = 0; i < mult(game.game.frameCount(), progression); i++) {
     if(mode == DEMOMODE_BOMBARDMENT) {
       bool notready = false;
       for(int i = 0; i < bombardment_scatterers.size(); i++)
@@ -302,7 +302,7 @@ void ShopDemo::runTick() {
       if(!notready) {
         for(int i = 0; i < bombardment_scatterers.size(); i++)
           bombardment_scatterers[i]->bombsaway();
-        game.addStatCycle();
+        game.game.addStatCycle();
       }
     }
     
@@ -318,15 +318,15 @@ void ShopDemo::runTick() {
         if(!notready) {
           for(int i = 0; i < glory_kamikazes.size(); i++) {
             glory_kamikazes[i]->exploded();
-            game.kill(i * 2 + 1);
+            game.game.kill(i * 2 + 1);
           }
-          game.addStatCycle();
+          game.game.addStatCycle();
           respawn = true;
         }
       }
     }
     
-    game.ai(tai);
+    game.game.ai(tai);
     vector<Keystates> kist;
     for(int i = 0; i < tai.size(); i++)
       kist.push_back(tai[i]->getNextKeys());
@@ -338,8 +338,8 @@ void ShopDemo::renderFrame() const {
   game.renderToScreen();
   setZoom(Float4(0, 0, 1, 1));
   setColor(1, 1, 1);
-  if(mult(game.frameCount(), progression) != 1)
-    drawJustifiedText(StringPrintf("%dx", mult(game.frameCount(), progression)), 0.1, Float2(0, 1), TEXT_MIN, TEXT_MAX);
+  if(mult(game.game.frameCount(), progression) != 1)
+    drawJustifiedText(StringPrintf("%dx", mult(game.game.frameCount(), progression)), 0.1, Float2(0, 1), TEXT_MIN, TEXT_MAX);
 };
 
 ShopDemo::ShopDemo() { };

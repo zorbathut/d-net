@@ -34,6 +34,7 @@ public:
 };
 
 const IDBAdjustment &operator+=(IDBAdjustment &lhs, const IDBAdjustment &rhs);
+bool operator==(const IDBAdjustment &lhs, const IDBAdjustment &rhs);
 
 struct IDBFaction {
 public:
@@ -293,6 +294,7 @@ struct IDBTankAdjust {
   const IDBTank *idb;
   IDBAdjustment adjust;
 
+  friend bool operator==(const IDBTankAdjust &, const IDBTankAdjust &);
 public:
   float maxHealth() const;
   float turnSpeed() const;
@@ -307,6 +309,7 @@ public:
 
   IDBTankAdjust(const IDBTank *in_idb, const IDBAdjustment &in_adjust);
 };
+bool operator==(const IDBTankAdjust &lhs, const IDBTankAdjust &rhs);  // This could exist for others as well, it just doesn't yet.
 
 /*************
  * Hierarchy items
