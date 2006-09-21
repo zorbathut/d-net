@@ -153,7 +153,7 @@ bool PersistentData::tick(const vector< Controller > &keys) {
         if(accept) {
           for(int j = 0; j < ranges.size(); j++) {
             if(sps_playerpos[player].x == clamp(sps_playerpos[player].x, ranges[j].first, ranges[j].second)) {
-              if(sps_ingame[player]) {
+              if(pms[player].faction) {
                 if(j == TTL_DONE) {
                   if(!sps_shopped[player]) {
                     btt_notify = pms[player].faction->faction;
@@ -421,14 +421,10 @@ void PersistentData::initForShop() {
   sps_shopped.clear();
   sps_shopped.resize(pms.size(), false);
   
-  sps_ingame.resize(pms.size());
-  for(int i = 0; i < sps_ingame.size(); i++)
-    sps_ingame[i] = !!pms[i].faction;
-  
   sps_playermode.clear();
   sps_playermode.resize(pms.size(), SPS_IDLE);
-  for(int i = 0; i < sps_ingame.size(); i++)
-    if(sps_ingame[i])
+  for(int i = 0; i < pms.size(); i++)
+    if(pms[i].faction)
       sps_playermode[i] = SPS_CHOOSING;
   
   sps_playerpos.clear();
@@ -482,7 +478,7 @@ bool PersistentData::tickSlot(int slotid, const vector<Controller> &keys) {
     CHECK(keys.size() == 1);
     
     // TODO: this is horrific
-    Keystates thesekeys = genKeystates(vector<Controller>(playerdata.size(), keys[0]))[slt.pid];
+    Keystates thesekeys = genKeystates(vector<Controller>(pms.size(), keys[0]))[playerid[slt.pid]];
     
     bool srt = slt.shop.runTick(thesekeys, &playerdata[playerid[slt.pid]]);
     
@@ -497,7 +493,7 @@ bool PersistentData::tickSlot(int slotid, const vector<Controller> &keys) {
     return pms[slt.pid].readyToPlay();
   } else if(slt.type == Slot::QUITCONFIRM) {
     // TODO: also horrific
-    Keystates thesekeys = genKeystates(vector<Controller>(playerdata.size(), keys[0]))[slt.pid];
+    Keystates thesekeys = genKeystates(vector<Controller>(pms.size(), keys[0]))[playerid[slt.pid]];
     
     CHECK(slt.pid >= 0 && slt.pid < pms.size());
     CHECK(keys.size() == 1);
@@ -515,7 +511,17 @@ bool PersistentData::tickSlot(int slotid, const vector<Controller> &keys) {
     if(thesekeys.accept.push) {
       if(sps_quitconfirm[slt.pid] == 3) {
         // DESTROY
-        // This presents problems! Argh!
+        dprintf("DESTROY %d\n", playerdata.size());
+        int spid = playerid[slt.pid];
+        pms[playerid[slt.pid]].faction->taken = false;
+        playerid[slt.pid] = -1;
+        sps_shopped[slt.pid] = false;
+        pms[slt.pid] = PlayerMenuState();
+        playerdata.erase(playerdata.begin() + spid);
+        for(int i = 0; i < playerid.size(); i++)
+          if(playerid[i] > spid)
+            playerid[i]--;
+        dprintf("DESTROY %d\n", playerdata.size());
       }
       return true;
     }

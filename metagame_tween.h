@@ -64,7 +64,6 @@ private:
   void initForShop();
     // Persistent
     vector<bool> sps_shopped;
-    vector<bool> sps_ingame;
 
     // State
     enum { SPS_IDLE, SPS_CHOOSING, SPS_PENDING, SPS_ACTIVE, SPS_DONE };
