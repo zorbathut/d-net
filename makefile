@@ -1,5 +1,5 @@
 
-SOURCES = main core game timer debug gfx collide gamemap util rng args interface vecedit metagame itemdb parse dvec2 input level coord ai inputsnag os_win32 float cfcommon coord_boolean player itemdb_adjust metagame_config shop shop_demo shop_info game_ai game_effects color metagame_tween cfc game_tank
+SOURCES = main core game timer debug gfx collide gamemap util rng args interface vecedit metagame itemdb parse dvec2 input level coord ai inputsnag os_win32 float cfcommon coord_boolean player itemdb_adjust metagame_config shop shop_demo shop_info game_ai game_effects color metagame_tween cfc game_tank game_util
 CPPFLAGS = `sdl-config --cflags` -mno-cygwin -DVECTOR_PARANOIA -Wall -Wno-sign-compare -Wno-uninitialized -g #-pg
 LINKFLAGS = `sdl-config --libs` -lglu32 -lopengl32 -lm -mno-cygwin -g #-pg
 
@@ -59,7 +59,7 @@ package: d-net.exe
 stats:
 	@echo Graphics: `cat gfx.h gfx.cpp game_effects.h game_effects.cpp color.h color.cpp| wc -l` loc
 	@echo Collisions: `cat collide.h collide.cpp | wc -l` loc
-	@echo Game mechanics: `cat game.h game.cpp gamemap.h gamemap.cpp level.cpp level.h player.cpp player.h game_tank.cpp game_tank.h | wc -l` loc
+	@echo Game mechanics: `cat game.h game.cpp gamemap.h gamemap.cpp level.cpp level.h player.cpp player.h game_tank.cpp game_tank.h game_util.cpp game_util.h | wc -l` loc
 	@echo Item hierarchy: `cat itemdb.h itemdb.cpp parse.h parse.cpp itemdb_adjust.cpp | wc -l` loc
 	@echo UI: `cat interface.h interface.cpp metagame.h metagame.cpp metagame_config.cpp metagame_config.h shop.cpp shop.h shop_demo.cpp shop_demo.h shop_info.cpp shop_info.h game_ai.h game_ai.cpp metagame_tween.cpp metagame_tween.h | wc -l` loc
 	@echo Framework: `cat core.h core.cpp main.h main.cpp input.h input.cpp inputsnag.h inputsnag.cpp os.h os_gen.cpp os_win32.cpp debug.h debug.cpp | wc -l` loc
