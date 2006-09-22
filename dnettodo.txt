@@ -1,12 +1,12 @@
 ---- Major work path
 - Profit breakdown in final results
-- Mine collision slowdown problems
 - Mine halflife
+- Mine collision slowdown problems
+- Cached shop demo stats
 - Better mine demo
 - EMP demo
 - Gradual shop spawning
   - Remove bombardment from 2 player, make it cheaper for 3 and 4
-- Cached stats
 - Next-gen collision/storage system on grid
 - Pull glory explody into its own deploy?
 - Next-gen weapons
@@ -42,7 +42,7 @@
 ---- Things that may or may not be needed
 - Stop reloading files in findLevels
 - Move stuff in tank small mode around a bit
-- Add tank sell deprecation
+- Add tank sell depreciation
 - Special unique bonuses (turned the most, closest to death, most/least accurate, traveler, tunneler, deadeye, kamikaze)
 
 ---- Major but unimportant ATM

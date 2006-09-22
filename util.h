@@ -75,6 +75,7 @@ public:
   float toFloat() const;
 
   Money();
+  explicit Money(double in);
   explicit Money(float in);
   explicit Money(int in);
 

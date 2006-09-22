@@ -44,6 +44,8 @@ private:
   vector<vector<float> > lrCategory;
   vector<float> lrPlayer;
   vector<Money> lrCash;
+  Money lrBaseCash;
+  Money lrFirepower;
   vector<bool> checked;
   
   Money newPlayerStartingCash;

@@ -197,6 +197,7 @@ float Money::toFloat() const {
 }
 
 Money::Money() { };
+Money::Money(double in) { money = floor(in + 0.5); };
 Money::Money(float in) { money = floor(in + 0.5); };
 Money::Money(int in) { money = in; };
 
