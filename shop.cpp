@@ -59,7 +59,7 @@ ShopLayout::ShopLayout(bool miniature) {
   
   int_demowidth = int_boxwidth * 3 / 5;
   int_demoxstart = int_hoffset + int_boxwidth * 1 / 5;
-  int_demoystart = 50;
+  int_demoystart = 45;
   
   int_boxthick = 0.1;
   
