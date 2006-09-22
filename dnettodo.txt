@@ -1,6 +1,6 @@
 ---- Major work path
-- Profit breakdown in final results
 - Mine halflife
+- Mine deployment range
 - Mine collision slowdown problems
 - Cached shop demo stats
 - Better mine demo

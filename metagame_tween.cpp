@@ -590,18 +590,45 @@ void PersistentData::renderSlot(int slotid) const {
     CHECK(lrCategory.size()); // make sure we *have* results
     setZoom(Float4(0, 0, 800, 600));
     setColor(1.0, 1.0, 1.0);
-    drawText("Damage", 30, Float2(20, 20));
-    drawText("Kills", 30, Float2(20, 80));
-    drawText("Wins", 30, Float2(20, 140));
-    drawText("Base", 30, Float2(20, 200));
-    drawText("Totals", 30, Float2(20, 320));
-    drawMultibar(lrCategory[0], Float4(200, 20, 700, 60));
-    drawMultibar(lrCategory[1], Float4(200, 80, 700, 120));
-    drawMultibar(lrCategory[2], Float4(200, 140, 700, 180));
-    drawMultibar(lrCategory[3], Float4(200, 200, 700, 240));
-    drawMultibar(lrPlayer, Float4(200, 320, 700, 360));
+    
+    float cury = 10;
+    
     setColor(1.0, 1.0, 1.0);
-    drawJustifiedText("Waiting for", 30, Float2(400, 400), TEXT_CENTER, TEXT_MIN);
+    drawJustifiedText(StringPrintf("Base income: %s", lrBaseCash.textual().c_str()), 10, Float2(40 , cury), TEXT_MIN, TEXT_MIN);
+    drawJustifiedText(StringPrintf("Firepower bonus: %s", lrFirepower.textual().c_str()), 10, Float2(760, cury), TEXT_MAX, TEXT_MIN);
+    cury += 30;
+    
+    setColor(1.0, 1.0, 1.0);
+    drawText("Damage", 30, Float2(40, cury));
+    drawMultibar(lrCategory[0], Float4(200, cury, 760, cury + 40));
+    cury += 60;
+    
+    setColor(1.0, 1.0, 1.0);
+    drawText("Kills", 30, Float2(40, cury));
+    drawMultibar(lrCategory[1], Float4(200, cury, 760, cury + 40));
+    cury += 60;
+    
+    setColor(1.0, 1.0, 1.0);
+    drawText("Wins", 30, Float2(40, cury));
+    drawMultibar(lrCategory[2], Float4(200, cury, 760, cury + 40));
+    cury += 60;
+    
+    setColor(1.0, 1.0, 1.0);
+    drawText("Base", 30, Float2(40, cury));
+    drawMultibar(lrCategory[3], Float4(200, cury, 760, cury + 40));
+    cury += 60;
+    
+    cury += 40;
+    
+    setColor(1.0, 1.0, 1.0);
+    drawText("Totals", 30, Float2(40, cury));
+    drawMultibar(lrPlayer, Float4(200, cury, 760, cury + 40));
+    cury += 60;
+    
+    setColor(1.0, 1.0, 1.0);
+    drawJustifiedText("Waiting for", 30, Float2(400, cury), TEXT_CENTER, TEXT_MIN);
+    cury += 40;
+    
     int notdone = count(checked.begin(), checked.end(), false);
     CHECK(notdone);
     int cpos = 0;
@@ -609,7 +636,7 @@ void PersistentData::renderSlot(int slotid) const {
     for(int i = 0; i < checked.size(); i++) {
       if(!checked[i]) {
         setColor(playerdata[i].getFaction()->color);
-        drawDvec2(playerdata[i].getFaction()->icon, boxAround(Float2((cpos + 0.5) * increment, float(440 + 580) / 2), min(increment * 0.95f, float(580 - 440)) / 2), 50, 1);
+        drawDvec2(playerdata[i].getFaction()->icon, boxAround(Float2((cpos + 0.5) * increment, float(cury + 580) / 2), min(increment * 0.95f, float(580 - cury)) / 2), 50, 1);
         cpos++;
       }
     }
