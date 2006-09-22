@@ -122,6 +122,7 @@ public:
   
   Money getCash() const;
   void addCash(Money amount); // this is really designed *solely* for the income phase
+  void setCash(Money amount); // And this is really designed *solely* for joining a game in progres
 
   void addKill();
   void addWin();
@@ -142,6 +143,8 @@ public:
   int getWeaponEquipBit(const IDBWeapon *weapon, int id) const;
   
   IDBAdjustment getAdjust() const;
+  
+  Money totalValue() const;
 
   Player();
   Player(const IDBFaction *fact, int factionmode);

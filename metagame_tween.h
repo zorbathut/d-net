@@ -46,6 +46,8 @@ private:
   vector<Money> lrCash;
   vector<bool> checked;
   
+  Money newPlayerStartingCash;
+  
   // Tween layout info
   struct Slot {
     enum { CHOOSE, SINGLECHOOSE, SHOP, RESULTS, QUITCONFIRM, SETTINGS, EMPTY };

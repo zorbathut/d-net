@@ -69,6 +69,8 @@ bool Metagame::runTick(const vector<Controller> &keys) {
 
       findLevels(persistent.players().size());  // player count may have changed. TODO: make this suck less
       game.initStandard(&persistent.players(), levels[int(frand() * levels.size())], &win_history);
+      if(win_history.size() != gameround)
+        dprintf("%d, %d\n", win_history.size(), gameround);
       CHECK(win_history.size() == gameround);
     }
   } else if(mode == MGM_PLAY) {
@@ -172,5 +174,6 @@ Metagame::Metagame(int playercount, int in_roundsBetweenShop) :
       
   faction_mode = -1;
   roundsBetweenShop = in_roundsBetweenShop;
+  gameround = 0;
   CHECK(roundsBetweenShop >= 1);
 }

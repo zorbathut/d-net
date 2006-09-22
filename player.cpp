@@ -373,6 +373,10 @@ void Player::addCash(Money amount) {
   dprintf("Adding %s bucks!\n", amount.textual().c_str());
   cash += amount;
 }
+void Player::setCash(Money amount) {
+  CHECK(cash == Money(FLAGS_startingCash)); // owned
+  cash = amount;
+}
 
 void Player::addKill() { kills++; }
 void Player::addWin() { wins++; }
@@ -416,6 +420,33 @@ int Player::getWeaponEquipBit(const IDBWeapon *weapon, int id) const {
 
 IDBAdjustment Player::getAdjust() const {
   return adjustment;
+}
+/*
+  Weaponmanager weapons;
+
+  // First item is equipped
+  vector<const IDBGlory *> glory;
+  vector<const IDBBombardment *> bombardment;
+  vector<TankEquipment> tank;
+*/
+Money Player::totalValue() const {
+  // Let us total the player's net worth.
+  Money worth = cash;
+  
+  for(int i = 0; i < glory.size(); i++)
+    worth += adjustGlory(glory[i]).sellcost();
+  
+  for(int i = 0; i < bombardment.size(); i++)
+    worth += adjustBombardment(bombardment[i]).sellcost();
+  
+  for(int i = 0; i < tank.size(); i++)
+    worth += sellTankValue(tank[i].tank);
+  
+  vector<const IDBWeapon *> weps = weapons.getAvailableWeapons();
+  for(int i = 0; i < weps.size(); i++)
+    worth += adjustWeapon(weps[i]).sellcost(weapons.ammoCount(weps[i]));
+  
+  return worth;
 }
 
 Player::Player() : weapons(NULL) { // this kind of works with the weapon manager

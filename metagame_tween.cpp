@@ -17,6 +17,8 @@ const float ticker_text_size = 2;
 const float ticker_queue_border = 1;
 const float ticker_waiting_border = 1;
 
+DECLARE_int(startingCash);  // defaults to 1000 atm
+
 bool PersistentData::isPlayerChoose() const {
   return mode == TM_PLAYERCHOOSE;
 }
@@ -84,7 +86,6 @@ bool PersistentData::tick(const vector< Controller > &keys) {
           readyusers++;
       CHECK(readyusers >= 2);
 
-      // TODO: shuffle this
       playerdata.clear();
       playerdata.resize(readyusers);
       int pid = 0;
@@ -391,8 +392,18 @@ void PersistentData::render() const {
     renderSlot(0);
   } else if(slot_count == 4) {
     setColor(C::active_text);
-    drawLine(Float4(0, 0.5, getAspect(), 0.5), 0.001);
-    drawLine(Float4(getAspect() / 2, 0, getAspect() / 2, 1), 0.001);
+    
+    if(slot[0].type != Slot::EMPTY || slot[1].type != Slot::EMPTY)
+      drawLine(Float4(getAspect() / 2, 0, getAspect() / 2, 0.5), 0.001);
+    
+    if(slot[2].type != Slot::EMPTY || slot[3].type != Slot::EMPTY)
+      drawLine(Float4(getAspect() / 2, 0.5, getAspect() / 2, 1), 0.001);
+    
+    if(slot[0].type != Slot::EMPTY || slot[2].type != Slot::EMPTY)
+      drawLine(Float4(0, 0.5, getAspect() / 2, 0.5), 0.001);
+    
+    if(slot[1].type != Slot::EMPTY || slot[3].type != Slot::EMPTY)
+      drawLine(Float4(getAspect() / 2, 0.5, getAspect(), 0.5), 0.001);
     
     {
       GfxWindow gfxw2(Float4(0, 0, getAspect() / 2, 0.5), 1.0);
@@ -460,10 +471,11 @@ bool PersistentData::tickSlot(int slotid, const vector<Controller> &keys) {
     CHECK(keys.size() == 1);
 
     runSettingTick(keys[0], &pms[slt.pid], factions);
-    
+
     if(pms[slt.pid].faction) {
       playerid[slt.pid] = playerdata.size();
       playerdata.push_back(Player(pms[slt.pid].faction->faction, 0));
+      playerdata.back().setCash(newPlayerStartingCash);
       slot[slotid].type = Slot::SETTINGS;
     }
   } else if(slt.type == Slot::RESULTS) {
@@ -473,7 +485,6 @@ bool PersistentData::tickSlot(int slotid, const vector<Controller> &keys) {
     vector<Keystates> ki = genKeystates(keys);
     CHECK(slt.type == Slot::RESULTS);
     StackString stp("Results");
-    // this is a bit hacky - SHOP mode when slot[0].pid is -1 is the "show results" screen
     for(int i = 0; i < ki.size(); i++) {
       CHECK(SIMUL_WEAPONS == 2);
       if(ki[i].accept.push || ki[i].fire[0].push || ki[i].fire[1].push)
@@ -489,10 +500,7 @@ bool PersistentData::tickSlot(int slotid, const vector<Controller> &keys) {
     CHECK(slt.pid >= 0 && slt.pid < pms.size());
     CHECK(keys.size() == 1);
     
-    // TODO: this is horrific
-    Keystates thesekeys = genKeystates(vector<Controller>(pms.size(), keys[0]))[playerid[slt.pid]];
-    
-    bool srt = slt.shop.runTick(thesekeys, &playerdata[playerid[slt.pid]]);
+    bool srt = slt.shop.runTick(pms[slt.pid].genKeystate(keys[0]), &playerdata[playerid[slt.pid]]);
     
     if(srt)
       sps_shopped[slt.pid] = true;
@@ -504,8 +512,7 @@ bool PersistentData::tickSlot(int slotid, const vector<Controller> &keys) {
     runSettingTick(keys[0], &pms[slt.pid], factions);
     return pms[slt.pid].readyToPlay();
   } else if(slt.type == Slot::QUITCONFIRM) {
-    // TODO: also horrific
-    Keystates thesekeys = genKeystates(vector<Controller>(pms.size(), keys[0]))[playerid[slt.pid]];
+    Keystates thesekeys = pms[slt.pid].genKeystate(keys[0]);
     
     CHECK(slt.pid >= 0 && slt.pid < pms.size());
     CHECK(keys.size() == 1);
@@ -556,7 +563,7 @@ void PersistentData::renderSlot(int slotid) const {
     for(int i = 0; i < factions.size(); i++) {
       if(!factions[i].taken) {
         setColor(factions[i].faction->color);
-        drawDvec2(factions[i].faction->icon, boxAround(factions[i].compass_location.midpoint(), factions[i].compass_location.y_span() / 2 * 0.9), 50, 0.003);
+        drawDvec2(factions[i].faction->icon, boxAround(factions[i].compass_location.midpoint(), factions[i].compass_location.y_span() / 2 * 0.9), 50, 0.004);
       }
     }
     setColor(1.0, 1.0, 1.0);
@@ -576,7 +583,7 @@ void PersistentData::renderSlot(int slotid) const {
     for(int i = 0; i < factions.size(); i++) {
       if(!factions[i].taken) {
         setColor(factions[i].faction->color);
-        drawDvec2(factions[i].faction->icon, boxAround(factions[i].compass_location.midpoint(), factions[i].compass_location.y_span() / 2 * 0.9), 50, 0.003);
+        drawDvec2(factions[i].faction->icon, boxAround(factions[i].compass_location.midpoint(), factions[i].compass_location.y_span() / 2 * 0.9), 50, 0.008);
       }
     }
     setColor(1.0, 1.0, 1.0);
@@ -757,8 +764,6 @@ vector<Keystates> PersistentData::genKeystates(const vector<Controller> &keys) c
   return kst;
 }
 
-DECLARE_int(startingCash);  // defaults to 1000 atm
-
 void PersistentData::divvyCash(float firepowerSpent) {
   shopcycles++;
   
@@ -783,7 +788,7 @@ void PersistentData::divvyCash(float firepowerSpent) {
       chunkTotal++;
   }
   dprintf("%d, %f\n", shopcycles, firepowerSpent);
-  long double totalReturn = (75 / 1000 * FLAGS_startingCash) * powl(1.08, roundsbetweenshop * shopcycles) * playerdata.size() * roundsbetweenshop + firepowerSpent * 0.8;
+  long double totalReturn = (75. / 1000 * FLAGS_startingCash) * powl(1.08, roundsbetweenshop * shopcycles) * playerdata.size() * roundsbetweenshop + firepowerSpent * 0.8;
   dprintf("Total cash is %s", stringFromLongdouble(totalReturn).c_str());
   
   if(totalReturn > 1e3000) {
@@ -822,6 +827,13 @@ void PersistentData::divvyCash(float firepowerSpent) {
   slot_count = 1;
   slot[0].type = Slot::RESULTS;
   slot[0].pid = -1;
+  
+  newPlayerStartingCash = playerdata[0].totalValue() + lrCash[0];
+  for(int i = 0; i < playerdata.size(); i++) {
+    newPlayerStartingCash = min(newPlayerStartingCash, playerdata[i].totalValue() + lrCash[i]);
+    dprintf("Total value of %d: %s\n", i, (playerdata[i].totalValue()+ lrCash[i]).textual().c_str());
+  }
+  newPlayerStartingCash = max(newPlayerStartingCash, Money(FLAGS_startingCash));
 }
 
 void PersistentData::drawMultibar(const vector<float> &sizes, const Float4 &dimensions) const {
@@ -1030,4 +1042,6 @@ PersistentData::PersistentData(int playercount, int in_roundsbetweenshop) {
   
   btt_notify = NULL;
   btt_frames_left = 0;
+  
+  newPlayerStartingCash = Money(FLAGS_startingCash);
 }

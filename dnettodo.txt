@@ -1,9 +1,7 @@
 ---- Major work path
-- game.h persistence cleanup
 - GameAccessors class
 - store accumulation in Tank, not Player, for a round
 - Multishop
-  - Game joining, quitting, reconfiguring, hibernating
   - Fix AI
 - ShopDemo realignment, right now it's too far down
 - Profit breakdown in final results
