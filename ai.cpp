@@ -177,6 +177,44 @@ void Ai::updateCharacterChoice(const vector<FactionState> &factions, const vecto
   }
 }
 
+void Ai::updateTween(bool live, bool pending, Float2 playerpos, bool shopped, pair<float, float> fullshoprange, pair<float, float> quickshoprange, pair<float, float> donerange) {
+  updateKeys(CORE);
+  
+  zeroNextKeys();
+  
+  if(!live)
+    return;
+  
+  if(shoptarget == -1)
+    shoptarget = (rng.rand() % 4 != 0);
+  
+  if(pending) {
+    nextKeys.keys[BUTTON_CANCEL].down = (rng.rand() % 100 == 0);
+    return;
+  }
+  
+  pair<float, float> approach;
+  if(shopped) {
+    approach = donerange;
+  } else if(shoptarget == 0) {
+    approach = fullshoprange;
+  } else if(shoptarget == 1) {
+    approach = quickshoprange;
+  } else {
+    CHECK(0);
+  }
+  
+  if(clamp(playerpos.x, approach.first, approach.second) == playerpos.x) {
+    nextKeys.keys[BUTTON_ACCEPT].down = true;
+    return;
+  }
+  
+  if(playerpos.x < approach.first)
+    nextKeys.menu.x = 1;
+  if(playerpos.x > approach.second)
+    nextKeys.menu.x = -1;
+}
+
 Controller makeController(float x, float y, bool key) {
   Controller rv;
   rv.keys.resize(BUTTON_LAST);
@@ -311,6 +349,7 @@ GameAi *Ai::getGameAi() {
   updateKeys(GAME);
   
   shopdone = false;
+  shoptarget = -1;
   return &gai;
 }
 
@@ -351,6 +390,7 @@ Ai::Ai() {
   shopdone = false;
   source = UNKNOWN;
   curframe = -1;
+  shoptarget = -1;
 }
 
 void Ai::zeroNextKeys() {

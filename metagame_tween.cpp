@@ -110,18 +110,7 @@ bool PersistentData::tick(const vector< Controller > &keys) {
     // Various complications and such!
     
     // First: calculate our ugly ranges for the text labels.
-    vector<pair<float, float> > ranges;
-    for(int i = 0; i < TTL_LAST; i++) {
-      vector<string> lines = tokenize(tween_textlabels[i], " ");
-      const float pivot = 133.333 / (TTL_LAST * 2) * (i * 2 + 1);
-      
-      float mwid = 0;
-      for(int i = 0; i < lines.size(); i++)
-        mwid = max(mwid, getTextWidth(lines[i], ticker_text_size));
-      mwid += 2;
-      
-      ranges.push_back(make_pair(pivot - mwid / 2, pivot + mwid / 2)); 
-    }
+    vector<pair<float, float> > ranges = getRanges();
     
     // Second: Traverse all players and update them as necessary.
     for(int player = 0; player < sps_playermode.size(); player++) {
@@ -730,19 +719,22 @@ void PersistentData::ai(const vector<Ai *> &ais) const {
       if(ais[i])
         ais[i]->updateWaitingForReport();
   } else if(mode == TM_SHOP) {
-    // TODO: this will be complicated
-    /*
-    if(slot[0].pid == -1) {
-      for(int i = 0; i < ais.size(); i++)
-        if(ais[i])
-          ais[i]->updateWaitingForReport();
-    } else {
-      CHECK(slot[0].pid >= 0 && slot[0].pid < playerdata.size());
-      slot[0].shop.ai(distillAi(ais)[slot[0].pid]);
-      for(int i = 0; i < ais.size(); i++)
-        if(ais[i] && i != slot[0].pid)
-          ais[i]->updateIdle();
-    }*/
+    vector<pair<float, float> > ranges = getRanges();
+    
+    vector<bool> dun(ais.size(), false);
+    for(int i = 0; i < slot_count; i++) {
+      if(slot[i].type != Slot::EMPTY) {
+        CHECK(slot[i].pid != -1); // blah
+        CHECK(!dun[slot[i].pid]);
+        dun[slot[i].pid] = true;
+        if(slot[i].type == Slot::SHOP)
+          slot[i].shop.ai(ais[slot[i].pid], &playerdata[slot[i].pid]);
+      }
+    }
+    for(int i = 0; i < dun.size(); i++) {
+      if(!dun[i] && ais[i])
+        ais[i]->updateTween(!!pms[i].faction, sps_playermode[i] == SPS_PENDING, sps_playerpos[i], sps_shopped[i], ranges[TTL_FULLSHOP], ranges[TTL_QUICKSHOP], ranges[TTL_DONE]);
+    }
   } else {
     CHECK(0);
   }
@@ -834,6 +826,22 @@ void PersistentData::divvyCash(float firepowerSpent) {
     dprintf("Total value of %d: %s\n", i, (playerdata[i].totalValue()+ lrCash[i]).textual().c_str());
   }
   newPlayerStartingCash = max(newPlayerStartingCash, Money(FLAGS_startingCash));
+}
+
+vector<pair<float, float> > PersistentData::getRanges() const {
+  vector<pair<float, float> > ranges;
+  for(int i = 0; i < TTL_LAST; i++) {
+    vector<string> lines = tokenize(tween_textlabels[i], " ");
+    const float pivot = 133.333 / (TTL_LAST * 2) * (i * 2 + 1);
+    
+    float mwid = 0;
+    for(int i = 0; i < lines.size(); i++)
+      mwid = max(mwid, getTextWidth(lines[i], ticker_text_size));
+    mwid += 2;
+    
+    ranges.push_back(make_pair(pivot - mwid / 2, pivot + mwid / 2)); 
+  }
+  return ranges;
 }
 
 void PersistentData::drawMultibar(const vector<float> &sizes, const Float4 &dimensions) const {

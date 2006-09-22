@@ -41,6 +41,8 @@ private:
 
   bool shopdone;
 
+  int shoptarget;
+
   enum { UNKNOWN, CORE, GAME };
   int source;
   int curframe;
@@ -51,6 +53,7 @@ public:
 
   void updatePregame();
   void updateCharacterChoice(const vector<FactionState> &factions, const vector<PlayerMenuState> &players, int me);
+  void updateTween(bool live, bool pending, Float2 playerpos, bool shopped, pair<float, float> fullshoprange, pair<float, float> quickshoprange, pair<float, float> donerange);
   void updateShop(const Player *player);
   GameAi *getGameAi();
   void updateWaitingForReport();
