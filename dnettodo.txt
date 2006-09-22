@@ -1,6 +1,5 @@
 ---- Major work path
 - game.h persistence cleanup
-- Abstract out tank manipulations into game_tank?
 - GameAccessors class
 - store accumulation in Tank, not Player, for a round
 - Multishop

@@ -53,25 +53,7 @@ const float RenderInfo::border_size = 1.5;
 const float RenderInfo::divider_size = 3;	// Division between tabs and content
 const float RenderInfo::units = textline_size * textline_count + textline_count - 1 + border_size * 2 + divider_size; // X lines, plus dividers (textline_count-1), plus the top and bottom borders, plus the increased divider from categories to data
 
-// brokenated :D
 PlayerMenuState::PlayerMenuState() {
-  settingmode = -12345;
-  choicemode = -12345;
-
-  setting_button_current = -1123;
-  setting_button_reading = false;
-  
-  setting_axis_current = -1123;
-  setting_axis_reading = false;
-  
-  setting_axistype = 1237539;
-  setting_axistype_curchoice = 458237;
-  
-  faction = NULL;
-  compasspos = Float2(0,0);
-}
-
-PlayerMenuState::PlayerMenuState(Float2 cent) {
   settingmode = SETTING_BUTTONS;
   choicemode = CHOICE_FIRSTPASS;
   
@@ -90,7 +72,7 @@ PlayerMenuState::PlayerMenuState(Float2 cent) {
   axes_invert.resize(axes.size(), false);
   
   faction = NULL;
-  compasspos = cent;
+  compasspos = Float2(0, 0);
 }
 
 PlayerMenuState::~PlayerMenuState() { }

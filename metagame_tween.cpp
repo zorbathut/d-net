@@ -257,7 +257,7 @@ bool PersistentData::tick(const vector< Controller > &keys) {
         CHECK(slot[empty].type == Slot::EMPTY);
         slot[empty].pid = sps_queue[0].first;
         if(sps_queue[0].second == TTL_LEAVEJOIN && !pms[sps_queue[0].first].faction) {
-          slot[empty].type = Slot::CHOOSE;
+          slot[empty].type = Slot::SINGLECHOOSE;
         } else if(sps_queue[0].second == TTL_LEAVEJOIN && pms[sps_queue[0].first].faction) {
           slot[empty].type = Slot::QUITCONFIRM;
           sps_quitconfirm[sps_queue[0].first] = 0;
@@ -454,6 +454,18 @@ bool PersistentData::tickSlot(int slotid, const vector<Controller> &keys) {
       if(readyusers == chosenusers && chosenusers >= 2)
         return true;
     }
+  } else if(slt.type == Slot::SINGLECHOOSE) {
+    StackString stp("Singlechoose");
+    CHECK(slt.pid != -1);
+    CHECK(keys.size() == 1);
+
+    runSettingTick(keys[0], &pms[slt.pid], factions);
+    
+    if(pms[slt.pid].faction) {
+      playerid[slt.pid] = playerdata.size();
+      playerdata.push_back(Player(pms[slt.pid].faction->faction, 0));
+      slot[slotid].type = Slot::SETTINGS;
+    }
   } else if(slt.type == Slot::RESULTS) {
     CHECK(slotid == 0);
     CHECK(slt.pid == -1);
@@ -513,7 +525,7 @@ bool PersistentData::tickSlot(int slotid, const vector<Controller> &keys) {
         // DESTROY
         dprintf("DESTROY %d\n", playerdata.size());
         int spid = playerid[slt.pid];
-        pms[playerid[slt.pid]].faction->taken = false;
+        pms[slt.pid].faction->taken = false;
         playerid[slt.pid] = -1;
         sps_shopped[slt.pid] = false;
         pms[slt.pid] = PlayerMenuState();
@@ -538,7 +550,6 @@ void PersistentData::renderSlot(int slotid) const {
     StackString stp("Playerchoose");
     setZoomCenter(0, 0, 1.1);
     setColor(1.0, 1.0, 1.0);
-    //drawRect(Float4(-(4./3), -1, (4./3), 1), 0.001);
     for(int i = 0; i < pms.size(); i++) {
       runSettingRender(pms[i]);
     }
@@ -546,7 +557,6 @@ void PersistentData::renderSlot(int slotid) const {
       if(!factions[i].taken) {
         setColor(factions[i].faction->color);
         drawDvec2(factions[i].faction->icon, boxAround(factions[i].compass_location.midpoint(), factions[i].compass_location.y_span() / 2 * 0.9), 50, 0.003);
-        //drawRect(factions[i].compass_location, 0.003);
       }
     }
     setColor(1.0, 1.0, 1.0);
@@ -556,6 +566,25 @@ void PersistentData::renderSlot(int slotid) const {
       txt.push_back("icon and configure");
       txt.push_back("your controller");
       drawJustifiedMultiText(txt, 0.05, Float2(0, 0), TEXT_CENTER, TEXT_CENTER);
+    }
+  } else if(slt.type == Slot::SINGLECHOOSE) {
+    StackString stp("Singlechoose");
+    CHECK(slt.pid >= 0 && slt.pid < pms.size());
+    setZoomCenter(0, 0, 1.1);
+    setColor(1.0, 1.0, 1.0);
+    runSettingRender(pms[slt.pid]);
+    for(int i = 0; i < factions.size(); i++) {
+      if(!factions[i].taken) {
+        setColor(factions[i].faction->color);
+        drawDvec2(factions[i].faction->icon, boxAround(factions[i].compass_location.midpoint(), factions[i].compass_location.y_span() / 2 * 0.9), 50, 0.003);
+      }
+    }
+    setColor(1.0, 1.0, 1.0);
+    {
+      vector<string> txt;
+      txt.push_back("Choose");
+      txt.push_back("your faction");
+      drawJustifiedMultiText(txt, 0.08, Float2(0, 0), TEXT_CENTER, TEXT_CENTER);
     }
   } else if(slt.type == Slot::SHOP) {
     StackString stp("Shop");
@@ -889,7 +918,7 @@ PersistentData::PersistentData(int playercount, int in_roundsbetweenshop) {
   roundsbetweenshop = in_roundsbetweenshop;
   
   pms.clear();
-  pms.resize(playercount, PlayerMenuState(Float2(0, 0)));
+  pms.resize(playercount);
   playerid.resize(playercount, -1);
   sps_quitconfirm.resize(playercount, 0);
   

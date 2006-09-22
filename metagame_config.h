@@ -97,7 +97,6 @@ public:
   Keystates genKeystate(const Controller &keys) const;
 
   PlayerMenuState();
-  PlayerMenuState(Float2 cent);
   ~PlayerMenuState();
 };
 
