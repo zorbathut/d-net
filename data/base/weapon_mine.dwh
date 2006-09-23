@@ -16,6 +16,7 @@ projectile {
   name=projectile.mine
   motion=mine
   radius_physical=1
+  halflife=6
   color=1.0, 1.0, 1.0
   warhead=warhead.mine
 }

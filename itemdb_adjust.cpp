@@ -56,6 +56,8 @@ IDBWarheadAdjust IDBProjectileAdjust::warhead() const { return IDBWarheadAdjust(
 Color IDBProjectileAdjust::color() const { return idb->color; };
 float IDBProjectileAdjust::thickness_visual() const { return idb->thickness_visual; };
 
+float IDBProjectileAdjust::halflife() const { return idb->halflife; };
+
 float IDBProjectileAdjust::stats_damagePerShot() const { return warhead().stats_damagePerShot(); };
 
 IDBProjectileAdjust::IDBProjectileAdjust(const IDBProjectile *in_idb, const IDBAdjustment &in_adjust) { idb = in_idb; adjust = in_adjust; };

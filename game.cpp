@@ -254,12 +254,16 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
     vector<vector<Projectile> > newProjectiles(projectiles.size());
     for(int j = 0; j < projectiles.size(); j++) {
       for(int k = 0; k < projectiles[j].size(); k++) {
-        if(projectiles[j][k].isLive()) {
-          projectiles[j][k].tick(&gfxeffects);
-          if(!projectiles[j][k].isLive())   // in case it dies in its tick
-            continue;
-          newProjectiles[j].push_back(projectiles[j][k]);
-        }
+        if(projectiles[j][k].isLive() && projectiles[j][k].isDetonating())
+          projectiles[j][k].impact(projectiles[j][k].warheadposition(), TPP(NULL, NULL), genTankDistance(projectiles[j][k].warheadposition(), players), &gfxeffects, &gamemap, tpps);
+        if(!projectiles[j][k].isLive())
+          continue;
+        projectiles[j][k].tick(&gfxeffects);
+        if(projectiles[j][k].isLive() && projectiles[j][k].isDetonating())
+          projectiles[j][k].impact(projectiles[j][k].warheadposition(), TPP(NULL, NULL), genTankDistance(projectiles[j][k].warheadposition(), players), &gfxeffects, &gamemap, tpps);
+        if(!projectiles[j][k].isLive())
+          continue;
+        newProjectiles[j].push_back(projectiles[j][k]);
       }
     }
     projectiles.swap(newProjectiles);

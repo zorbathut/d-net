@@ -66,6 +66,8 @@ void Projectile::tick(vector<smart_ptr<GfxEffects> > *gfxe) {
     if(airbrake_liveness() <= 0)
       live = false;
   } else if(projtype.motion() == PM_MINE) {
+    if(frand() > pow(0.5f, 1 / (projtype.halflife() * FPS)))
+      detonating = true;
   } else {
     CHECK(0);
   }
@@ -106,6 +108,11 @@ void Projectile::addCollision(Collider *collider) const {
     collider->token(Coord4(pos, pos + lasttail), Coord4(movement(), movement() + nexttail()));
   }
 };
+
+Coord2 Projectile::warheadposition() const {
+  return pos;
+}
+
 void Projectile::impact(Coord2 pos, TPP target, const vector<pair<float, TPP> > &adjacency, vector<smart_ptr<GfxEffects> > *gfxe, Gamemap *gm, const vector<TPP> &players) {
   if(!live)
     return;
@@ -117,6 +124,10 @@ void Projectile::impact(Coord2 pos, TPP target, const vector<pair<float, TPP> > 
 
 bool Projectile::isLive() const {
   return live;
+}
+
+bool Projectile::isDetonating() const {
+  return detonating;
 }
 
 Coord2 Projectile::movement() const {
@@ -185,6 +196,7 @@ Projectile::Projectile(const Coord2 &in_pos, float in_d, const IDBProjectileAdju
   owner = in_owner;
   age = 0;
   live = true;
+  detonating = false;
   lasttail = Coord2(0, 0);
   
   if(projtype.motion() == PM_NORMAL) {

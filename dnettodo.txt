@@ -1,7 +1,6 @@
 ---- Major work path
-- Mine halflife
 - Mine deployment range
-- Mine collision slowdown problems
+- Mine collision slowdown problems - is this CPU or rendering? Also why the hell is rendering going so slowly
 - Cached shop demo stats
 - Better mine demo
 - EMP demo

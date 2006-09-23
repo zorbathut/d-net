@@ -81,6 +81,8 @@ public:
   Color color;
   float thickness_visual;
 
+  float halflife;
+
   const IDBWarhead *warhead;
 };
 
@@ -208,6 +210,8 @@ public:
 
   Color color() const;
   float thickness_visual() const;
+
+  float halflife() const;
   
   float stats_damagePerShot() const;
 

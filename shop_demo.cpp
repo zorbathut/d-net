@@ -159,7 +159,7 @@ const float mines_xpses[] = { 0, 0 };
 const float mines_ypses[] = { -mines_circle, mines_circle };
 const float mines_facing[] = { 0, PI };
 const int mines_mode[] = { DEMOPLAYER_DPH, DEMOPLAYER_QUIET };
-const int mines_progression[] = { 6000, 0 };
+const int mines_progression[] = { 600, 0 };
 
 const float bombardment_xpses[] = { -30, -30, 30, 30, -30, -30, 30, 30 };
 const float bombardment_ypses[] = { -30, -30, -30, -30, 30, 30, 30, 30 };

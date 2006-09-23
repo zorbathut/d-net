@@ -38,10 +38,12 @@ public:
   void render(const vector<Coord2> &tposes) const;
 
   void addCollision(Collider *collider) const;
+  Coord2 warheadposition() const;
 
   void impact(Coord2 pos, TPP target, const vector<pair<float, TPP> > &adjacency, vector<smart_ptr<GfxEffects> > *gfxe, Gamemap *gm, const vector<TPP> &players);
 
   bool isLive() const;
+  bool isDetonating() const;
 
   Projectile();   // does not start in usable state
   Projectile(const Coord2 &pos, float d, const IDBProjectileAdjust &projtype, int in_owner);
@@ -78,6 +80,7 @@ private:
   int owner;
   
   bool live;
+  bool detonating;
 
 };
 

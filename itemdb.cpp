@@ -462,6 +462,7 @@ void parseProjectile(kvData *chunk) {
     } else if(motion == "mine") {
       projclasses[name].motion = PM_MINE;
       projclasses[name].radius_physical = atof(chunk->consume("radius_physical").c_str());
+      projclasses[name].halflife = atof(chunk->consume("halflife").c_str());
     } else if(motion == "instant") {
       projclasses[name].motion = PM_INSTANT;
     } else {
