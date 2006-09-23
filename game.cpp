@@ -668,16 +668,16 @@ void Game::renderToScreen(const vector<const Player *> &players) const {
       setColor(1.0, 1.0, 1.0);
       for(int i = 0; i < tanks.size(); i++) {
         if(demomode_playermodes[i] == DEMOPLAYER_DPS) {
-          if(tanks[i].framesSinceDamage > 0) {
-            drawJustifiedText(StringPrintf("%.2f DPS", tanks[i].damageTaken / tanks[i].framesSinceDamage * FPS), demomode_boxradi / 15, tanks[i].pos.toFloat() - Float2(5, 5), TEXT_MAX, TEXT_MAX);
+          if(tanks[i].getDPS() > 0) {
+            drawJustifiedText(StringPrintf("%.2f DPS", tanks[i].getDPS()), demomode_boxradi / 15, tanks[i].pos.toFloat() - Float2(5, 5), TEXT_MAX, TEXT_MAX);
           }
         } else if(demomode_playermodes[i] == DEMOPLAYER_DPC) {
           if(demomode_hits) {
-            drawJustifiedText(StringPrintf("%.2f DPH", tanks[i].damageTakenPreviousHits / demomode_hits), demomode_boxradi / 15, tanks[i].pos.toFloat() - Float2(5, 5), TEXT_MAX, TEXT_MAX);
+            drawJustifiedText(StringPrintf("%.2f DPH", tanks[i].getDPC(demomode_hits)), demomode_boxradi / 15, tanks[i].pos.toFloat() - Float2(5, 5), TEXT_MAX, TEXT_MAX);
           }
         } else if(demomode_playermodes[i] == DEMOPLAYER_DPH) {
-          if(tanks[i].damageEvents) {
-            drawJustifiedText(StringPrintf("%.2f DPH", tanks[i].damageTaken / tanks[i].damageEvents), demomode_boxradi / 15, tanks[i].pos.toFloat() - Float2(5, 5), TEXT_MAX, TEXT_MAX);
+          if(tanks[i].getDPH() > 0) {
+            drawJustifiedText(StringPrintf("%.2f DPH", tanks[i].getDPH()), demomode_boxradi / 15, tanks[i].pos.toFloat() - Float2(5, 5), TEXT_MAX, TEXT_MAX);
           }
         } else if(demomode_playermodes[i] == DEMOPLAYER_BOMBSIGHT) {
         } else if(demomode_playermodes[i] == DEMOPLAYER_QUIET) {
@@ -901,14 +901,13 @@ void Game::addStatCycle() {
     addahit = true;
   else
     for(int i = 0; i < tanks.size(); i++)
-      if(demomode_playermodes[i] == DEMOPLAYER_DPC && tanks[i].damageTaken != 0)
+      if(demomode_playermodes[i] == DEMOPLAYER_DPC && tanks[i].hasTakenDamage())
         addahit = true;
   
   if(addahit) {
     for(int i = 0; i < tanks.size(); i++) {
       if(demomode_playermodes[i] == DEMOPLAYER_DPC) {
-        tanks[i].damageTakenPreviousHits += tanks[i].damageTaken;
-        tanks[i].damageTaken = 0;
+        tanks[i].addCycle();
       }
     }
     demomode_hits++;

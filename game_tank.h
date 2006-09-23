@@ -14,8 +14,6 @@ public:
 
   void addCollision(Collider *collider, const Keystates &kst) const;
 
-  Tank();
-
   vector<Coord4> getCurrentCollide() const;
   vector<Coord4> getNextCollide(const Keystates &keys) const;
 
@@ -27,6 +25,15 @@ public:
 
   bool takeDamage(float amount); // returns true on kill
   void genEffects(vector<smart_ptr<GfxEffects> > *gfxe, vector<Projectile> *projectiles, const vector<pair<float, TPP> > &adjacency, Gamemap *gm, Player *player, int id);
+
+  float getDPS() const;
+  float getDPH() const;
+  float getDPC(int cycles) const;
+  
+  bool hasTakenDamage() const;
+  void addCycle();
+
+  Tank();
 
   IDBTankAdjust tank;
   Color color;
@@ -50,6 +57,7 @@ public:
   int weaponCooldown;
   float weaponCooldownSubvals[SIMUL_WEAPONS];
 
+private:
   // this exists for the DPS calculations
   int framesSinceDamage;
   

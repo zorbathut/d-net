@@ -362,6 +362,27 @@ void Tank::genEffects(vector<smart_ptr<GfxEffects> > *gfxe, vector<Projectile> *
   }
 }
 
+float Tank::getDPS() const {
+  return damageTaken / framesSinceDamage * FPS;
+}
+
+float Tank::getDPH() const {
+  return damageTaken / damageEvents;
+}
+
+float Tank::getDPC(int cycles) const {
+  return damageTakenPreviousHits / cycles;
+}
+
+bool Tank::hasTakenDamage() const {
+  return damageTaken != 0;
+}
+
+void Tank::addCycle() {
+  damageTakenPreviousHits += damageTaken;
+  damageTaken = 0;
+}
+
 Tank::Tank() : tank(NULL, IDBAdjustment()) /* do not fucking use this */ {
   pos = Coord2(0, 0);
   d = 0;
