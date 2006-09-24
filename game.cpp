@@ -982,7 +982,7 @@ void Game::initCommon(const vector<Player*> &in_playerdata, const Level &lev) {
   
   zoom_speed = Float2(0, 0);
 
-  collider = Collider(tanks.size());
+  collider = Collider(tanks.size(), Coord(20));
   
   teams.resize(tanks.size());
   for(int i = 0; i < tanks.size(); i++)
@@ -1148,6 +1148,8 @@ void Game::initCenteredDemo(Player *in_playerdata, float zoom) {
   vector<Player*> playerdata;
   playerdata.push_back(in_playerdata);
   initCommon(playerdata, lev);
+  
+  collider = Collider(tanks.size(), Coord(1000));
 }
 
 vector<pair<float, TPP> > Game::genTankDistance(const Coord2 &center, const vector<Player *> &players) {

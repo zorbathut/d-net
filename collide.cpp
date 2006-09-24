@@ -11,7 +11,6 @@ using namespace std;
 DECLARE_bool(verboseCollisions);
 
 const Coord NOCOLLIDE = Coord(-1000000000);
-const Coord MATRIX_RES = 20;
 
 pair< Coord, Coord > getLineCollision(const Coord4 &linepos, const Coord4 &linevel, const Coord4 &ptposvel) {
   Coord x1d = linepos.sx;
@@ -330,12 +329,12 @@ void Collider::resetNonwalls(int mode, const Coord4 &bounds, const vector<int> &
   CHECK(state == CSTA_UNINITTED || state == CSTA_WAIT);
   CHECK(teams.size() == players);
   
-  Coord4 zbounds = snapToEnclosingGrid(bounds, MATRIX_RES);
+  Coord4 zbounds = snapToEnclosingGrid(bounds, resolution);
   
-  int nzxs = (zbounds.sx / MATRIX_RES).toInt();
-  int nzys = (zbounds.sy / MATRIX_RES).toInt();
-  int nzxe = (zbounds.ex / MATRIX_RES).toInt();
-  int nzye = (zbounds.ey / MATRIX_RES).toInt();
+  int nzxs = (zbounds.sx / resolution).toInt();
+  int nzys = (zbounds.sy / resolution).toInt();
+  int nzxe = (zbounds.ex / resolution).toInt();
+  int nzye = (zbounds.ey / resolution).toInt();
   if(nzxs != zxs || nzys != zys || nzxe != zxe || nzye != zye) {
     CHECK(!full_reset);
     dprintf("Full collider reset!");
@@ -403,11 +402,11 @@ void Collider::token(const Coord4 &line, const Coord4 &direction) {
     addToBoundBox(&area, line.ex, line.ey);
     addToBoundBox(&area, line.sx + direction.sx, line.sy + direction.sy);
     addToBoundBox(&area, line.ex + direction.ex, line.ey + direction.ey);
-    area = snapToEnclosingGrid(area, MATRIX_RES);
-    int txs = max((area.sx / MATRIX_RES).toInt(), zxs);
-    int tys = max((area.sy / MATRIX_RES).toInt(), zys);
-    int txe = min((area.ex / MATRIX_RES).toInt(), zxe);
-    int tye = min((area.ey / MATRIX_RES).toInt(), zye);
+    area = snapToEnclosingGrid(area, resolution);
+    int txs = max((area.sx / resolution).toInt(), zxs);
+    int tys = max((area.sy / resolution).toInt(), zys);
+    int txe = min((area.ex / resolution).toInt(), zxe);
+    int tye = min((area.ey / resolution).toInt(), zye);
     if(!(txs < zxe && tys < zye && txe > zxs && tye > zys)) {
       dprintf("%d, %d, %d, %d\n", txs, tys, txe, tye);
       dprintf("%d, %d, %d, %d\n", zxs, zys, zxe, zye);
@@ -419,7 +418,7 @@ void Collider::token(const Coord4 &line, const Coord4 &direction) {
       dprintf("%s, %s, %s, %s\n", line.sx.rawstr().c_str(), line.sy.rawstr().c_str(), line.ex.rawstr().c_str(), line.ey.rawstr().c_str());
       dprintf("%s, %s, %s, %s\n", direction.sx.rawstr().c_str(), direction.sy.rawstr().c_str(), direction.ex.rawstr().c_str(), direction.ey.rawstr().c_str());
       dprintf("-----\n");
-      dprintf("Area bounds: %f,%f %f,%f\n", (zxs * MATRIX_RES).toFloat(), (zys * MATRIX_RES).toFloat(), (zxe * MATRIX_RES).toFloat(), (zye * MATRIX_RES).toFloat());
+      dprintf("Area bounds: %f,%f %f,%f\n", (zxs * resolution).toFloat(), (zys * resolution).toFloat(), (zxe * resolution).toFloat(), (zye * resolution).toFloat());
       CHECK(0);
     }
     for(int x = txs; x < txe; x++)
@@ -434,11 +433,11 @@ void Collider::token(const Coord4 &line) {
   if(state == CSTA_ADD) {
     CHECK(state == CSTA_ADD && curpush != -1 && curtoken != -1);
     Coord4 area(min(line.sx, line.ex), min(line.sy, line.ey), max(line.sx, line.ex), max(line.sy, line.ey));
-    area = snapToEnclosingGrid(area, MATRIX_RES);
-    int txs = max((area.sx / MATRIX_RES).toInt(), zxs);
-    int tys = max((area.sy / MATRIX_RES).toInt(), zys);
-    int txe = min((area.ex / MATRIX_RES).toInt(), zxe);
-    int tye = min((area.ey / MATRIX_RES).toInt(), zye);
+    area = snapToEnclosingGrid(area, resolution);
+    int txs = max((area.sx / resolution).toInt(), zxs);
+    int tys = max((area.sy / resolution).toInt(), zys);
+    int txe = min((area.ex / resolution).toInt(), zxe);
+    int tye = min((area.ey / resolution).toInt(), zye);
     if(!(txs < zxe && tys < zye && txe > zxs && tye > zys)) {
       dprintf("%d, %d, %d, %d\n", txs, tys, txe, tye);
       dprintf("%d, %d, %d, %d\n", zxs, zys, zxe, zye);
@@ -489,15 +488,15 @@ bool Collider::checkSimpleCollision(int category, int gid, const vector<Coord4> 
     addToBoundBox(&area, line[i].ex, line[i].ey);
   }
   Coord4 pa = area;
-  area.sx -= MATRIX_RES / 4;
-  area.sy -= MATRIX_RES / 4;
-  area.ex += MATRIX_RES / 4;
-  area.ey += MATRIX_RES / 4;
-  area = snapToEnclosingGrid(area, MATRIX_RES);
-  int txs = max((area.sx / MATRIX_RES).toInt(), zxs);
-  int tys = max((area.sy / MATRIX_RES).toInt(), zys);
-  int txe = min((area.ex / MATRIX_RES).toInt(), zxe);
-  int tye = min((area.ey / MATRIX_RES).toInt(), zye);
+  area.sx -= resolution / 4;
+  area.sy -= resolution / 4;
+  area.ex += resolution / 4;
+  area.ey += resolution / 4;
+  area = snapToEnclosingGrid(area, resolution);
+  int txs = max((area.sx / resolution).toInt(), zxs);
+  int tys = max((area.sy / resolution).toInt(), zys);
+  int txe = min((area.ex / resolution).toInt(), zxe);
+  int tye = min((area.ey / resolution).toInt(), zye);
   if(!(txs < zxe && tys < zye && txe > zxs && tye > zys)) {
     dprintf("%d, %d, %d, %d\n", txs, tys, txe, tye);
     dprintf("%d, %d, %d, %d\n", zxs, zys, zxe, zye);
@@ -576,8 +575,8 @@ void Collider::finishProcess() {
   state = CSTA_WAIT;
 }
 
-Collider::Collider() { state = -30; curpush = -1; curtoken = -1; log = false; full_reset = false; };
-Collider::Collider(int playercount) { state = CSTA_UNINITTED; curpush = -1; curtoken = -1; log = false; full_reset = false; players = playercount; };
+Collider::Collider() { state = -30; curpush = -1; curtoken = -1; log = false; full_reset = false; resolution = 0; };
+Collider::Collider(int playercount, Coord res) { state = CSTA_UNINITTED; curpush = -1; curtoken = -1; log = false; full_reset = false; players = playercount; resolution = res; };
 Collider::~Collider() { };
 
 DECLARE_bool(debugGraphics);
@@ -586,7 +585,7 @@ void Collider::render() const {
   if(FLAGS_debugGraphics) {
     for(int i = 0; i < zone.size(); i++)
       for(int j = 0; j < zone[i].size(); j++)
-        zone[i][j].render(Coord4((zxs + i) * MATRIX_RES, (zys + j) * MATRIX_RES, (zxs + i + 1) * MATRIX_RES, (zys + j + 1) * MATRIX_RES));
+        zone[i][j].render(Coord4((zxs + i) * resolution, (zys + j) * resolution, (zxs + i + 1) * resolution, (zys + j + 1) * resolution));
   }
 };
 

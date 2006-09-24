@@ -123,7 +123,7 @@ public:
   void finishProcess();
 
   Collider();
-  Collider(int players);
+  Collider(int players, Coord resolution);
   ~Collider();
 
   void render() const;
@@ -134,6 +134,8 @@ private:
   
   int state;
   bool log;
+  
+  Coord resolution;
   
   bool full_reset;
 
