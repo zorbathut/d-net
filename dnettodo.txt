@@ -1,8 +1,6 @@
 ---- Major work path
-- Insert a bunch of null controllers in the front
 - What's with the slowdowns?
   - Demo mode especially
-- Fix that crash glitch with shops
 - Mine deployment range
 - Mine collision slowdown problems - is this CPU or rendering? Also why the hell is rendering going so slowly
 - Cached shop demo stats
