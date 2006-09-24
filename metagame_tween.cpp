@@ -756,7 +756,7 @@ void PersistentData::ai(const vector<Ai *> &ais) const {
         CHECK(!dun[slot[i].pid]);
         dun[slot[i].pid] = true;
         if(slot[i].type == Slot::SHOP)
-          slot[i].shop.ai(ais[slot[i].pid], &playerdata[slot[i].pid]);
+          slot[i].shop.ai(ais[slot[i].pid], &playerdata[playerid[slot[i].pid]]);
       }
     }
     for(int i = 0; i < dun.size(); i++) {
