@@ -7,6 +7,7 @@
 #include "gfx.h"
 #include "ai.h"
 #include "parse.h"
+#include "inputsnag.h"
 
 using namespace std;
 
@@ -1025,45 +1026,48 @@ PersistentData::PersistentData(int playercount, int in_roundsbetweenshop) {
   CHECK(FLAGS_debugControllers >= 0 && FLAGS_debugControllers <= 2);
   CHECK(factions.size() >= FLAGS_debugControllers);
 
+  int cdbc = controls_primary_id();
   if(FLAGS_debugControllers >= 1) {
     CHECK(pms.size() >= 1); // better be
-    pms[0].faction = &factions[0];
-    factions[0].taken = true;
-    pms[0].settingmode = SETTING_READY;
-    pms[0].choicemode = CHOICE_IDLE;
-    pms[0].buttons[BUTTON_FIRE1] = 4;
-    pms[0].buttons[BUTTON_FIRE2] = 8;
-    pms[0].buttons[BUTTON_SWITCH1] = 5;
-    pms[0].buttons[BUTTON_SWITCH2] = 9;
-    pms[0].buttons[BUTTON_ACCEPT] = 4;
-    pms[0].buttons[BUTTON_CANCEL] = 8;
-    CHECK(pms[0].buttons.size() == 6);
-    pms[0].axes[0] = 0;
-    pms[0].axes[1] = 1;
-    pms[0].axes_invert[0] = false;
-    pms[0].axes_invert[1] = false;
-    pms[0].setting_axistype = KSAX_STEERING;
-    pms[0].fireHeld = 0;
+    pms[cdbc].faction = &factions[13];
+    factions[13].taken = true;
+    pms[cdbc].settingmode = SETTING_READY;
+    pms[cdbc].choicemode = CHOICE_IDLE;
+    pms[cdbc].buttons[BUTTON_FIRE1] = 4;
+    pms[cdbc].buttons[BUTTON_FIRE2] = 8;
+    pms[cdbc].buttons[BUTTON_SWITCH1] = 5;
+    pms[cdbc].buttons[BUTTON_SWITCH2] = 9;
+    pms[cdbc].buttons[BUTTON_ACCEPT] = 4;
+    pms[cdbc].buttons[BUTTON_CANCEL] = 8;
+    CHECK(pms[cdbc].buttons.size() == 6);
+    pms[cdbc].axes[0] = 0;
+    pms[cdbc].axes[1] = 1;
+    pms[cdbc].axes_invert[0] = false;
+    pms[cdbc].axes_invert[1] = false;
+    pms[cdbc].setting_axistype = KSAX_STEERING;
+    pms[cdbc].fireHeld = 0;
+    cdbc++;
   }
   if(FLAGS_debugControllers >= 2) {
     CHECK(pms.size() >= 2); // better be
-    pms[1].faction = &factions[1];
-    factions[1].taken = true;
-    pms[1].settingmode = SETTING_READY;
-    pms[1].choicemode = CHOICE_IDLE;
-    pms[1].buttons[BUTTON_FIRE1] = 2;
-    pms[1].buttons[BUTTON_FIRE2] = 5;
-    pms[1].buttons[BUTTON_SWITCH1] = 1;
-    pms[1].buttons[BUTTON_SWITCH2] = 5;
-    pms[1].buttons[BUTTON_ACCEPT] = 2;
-    pms[1].buttons[BUTTON_CANCEL] = 5;
-    CHECK(pms[1].buttons.size() == 6);
-    pms[1].axes[0] = 0;
-    pms[1].axes[1] = 1;
-    pms[1].axes_invert[0] = false;
-    pms[1].axes_invert[1] = false;
-    pms[1].setting_axistype = KSAX_ABSOLUTE;
-    pms[1].fireHeld = 0;
+    pms[cdbc].faction = &factions[8];
+    factions[8].taken = true;
+    pms[cdbc].settingmode = SETTING_READY;
+    pms[cdbc].choicemode = CHOICE_IDLE;
+    pms[cdbc].buttons[BUTTON_FIRE1] = 2;
+    pms[cdbc].buttons[BUTTON_FIRE2] = 5;
+    pms[cdbc].buttons[BUTTON_SWITCH1] = 1;
+    pms[cdbc].buttons[BUTTON_SWITCH2] = 5;
+    pms[cdbc].buttons[BUTTON_ACCEPT] = 2;
+    pms[cdbc].buttons[BUTTON_CANCEL] = 5;
+    CHECK(pms[cdbc].buttons.size() == 6);
+    pms[cdbc].axes[0] = 0;
+    pms[cdbc].axes[1] = 1;
+    pms[cdbc].axes_invert[0] = false;
+    pms[cdbc].axes_invert[1] = false;
+    pms[cdbc].setting_axistype = KSAX_ABSOLUTE;
+    pms[cdbc].fireHeld = 0;
+    cdbc++;
   }
   
   CHECK(sizeof(slot) / sizeof(*slot) == 4);

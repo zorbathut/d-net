@@ -8,6 +8,7 @@
 #include "player.h"
 #include "vecedit.h"
 #include "debug.h"
+#include "inputsnag.h"
 
 using namespace std;
 
@@ -275,7 +276,7 @@ bool InterfaceMain::tick(const vector< Controller > &control) {
   
   if(interface_mode == IFM_S_MAINMENU) {
     int mrv;
-    mrv = mainmenu.tick(kst[0]);
+    mrv = mainmenu.tick(kst[controls_primary_id()]);
     if(mrv == IFM_M_NEWGAME) {
       game = new Metagame(control.size(), FLAGS_rounds_per_store);
       interface_mode = IFM_S_PLAYING;
@@ -419,7 +420,7 @@ void interfaceInit() {
 
 bool interfaceRunTick(const vector< Controller > &control) {
   if(FLAGS_vecedit) {
-    return vecEditTick(control[0]);
+    return vecEditTick(control[controls_primary_id()]);
   } else {
     return ifm.tick(control);
   }

@@ -13,8 +13,9 @@ using namespace std;
 DEFINE_string(readTarget, "", "File to replay from");
 
 DEFINE_int(aiCount, 0, "Number of AIs");
+DEFINE_int(nullControllers, 0, "Null controllers to insert in front");
 
-enum { CIP_KEYBOARD, CIP_JOYSTICK, CIP_AI, CIP_PRERECORD };
+enum { CIP_KEYBOARD, CIP_JOYSTICK, CIP_AI, CIP_PRERECORD, CIP_NULL };
 
 static vector<pair<int, int> > sources;
 static vector<SDL_Joystick *> joysticks;
@@ -66,20 +67,30 @@ vector<Controller> controls_init() {
       now[i].axes.resize(2);
     }
   } else {
+    now.resize(FLAGS_nullControllers);
+    for(int i = 0; i < FLAGS_nullControllers; i++) {
+      sources.push_back(make_pair((int)CIP_NULL, 0));
+      now[i].axes.resize(2);
+      now[i].keys.resize(4);
+    }
+    
     // Keyboard init
     sources.push_back(make_pair((int)CIP_KEYBOARD, 0));
     sources.push_back(make_pair((int)CIP_KEYBOARD, 1));
     
-    now.resize(2);
-    now[0].keys.resize(baseplayersize[0]);
-    now[0].axes.resize(2);
-    now[1].keys.resize(baseplayersize[1]);
-    now[1].axes.resize(2);
+    {
+      Controller ct;
+      ct.axes.resize(2);
+      
+      ct.keys.resize(baseplayersize[0]);
+      now.push_back(ct);
+      
+      ct.keys.resize(baseplayersize[1]);
+      now.push_back(ct);
+    }
     
     // Joystick init
     dprintf("%d joysticks detected\n", SDL_NumJoysticks());
-    
-    now.resize(2 + SDL_NumJoysticks());
   
     for(int i = 0; i < SDL_NumJoysticks(); i++) {
       dprintf("Opening %d: %s\n", i, SDL_JoystickName(i));
@@ -93,8 +104,10 @@ vector<Controller> controls_init() {
     
     for(int i = 0; i < joysticks.size(); i++) {
       sources.push_back(make_pair((int)CIP_JOYSTICK, i));
-      now[i + 2].keys.resize(SDL_JoystickNumButtons(joysticks[i]));
-      now[i + 2].axes.resize(SDL_JoystickNumAxes(joysticks[i]));
+      Controller ct;
+      ct.axes.resize(SDL_JoystickNumAxes(joysticks[i]));
+      ct.keys.resize(SDL_JoystickNumButtons(joysticks[i]));
+      now.push_back(ct);
     }
   }
   CHECK(sources.size() != 0);
@@ -111,15 +124,15 @@ void controls_key(const SDL_KeyboardEvent *key) {
     for(int j = 0; j < baseplayersize[i]; j++) {
       if(key->keysym.sym == baseplayermap[i][j]) {
         if(j == 0)
-          ps = &now[i].u.down;
+          ps = &now[FLAGS_nullControllers + i].u.down;
         else if(j == 1)
-          ps = &now[i].d.down;
+          ps = &now[FLAGS_nullControllers + i].d.down;
         else if(j == 2)
-          ps = &now[i].l.down;
+          ps = &now[FLAGS_nullControllers + i].l.down;
         else if(j == 3)
-          ps = &now[i].r.down;
+          ps = &now[FLAGS_nullControllers + i].r.down;
         else
-          ps = &now[i].keys[j-4].down;
+          ps = &now[FLAGS_nullControllers + i].keys[j-4].down;
       }
     }
   }
@@ -211,7 +224,7 @@ vector<Controller> controls_next() {
         now[i].axes[0] = now[i].menu.x;
         now[i].axes[1] = now[i].menu.y;
       }
-    } else if(sources[i].first == CIP_PRERECORD) {
+    } else if(sources[i].first == CIP_PRERECORD || sources[i].first == CIP_NULL) {
     } else {
       CHECK(0);
     }
@@ -254,4 +267,8 @@ void controls_shutdown() {
     SDL_JoystickClose(joysticks[i]);
   if(infile)
     fclose(infile);
+}
+
+int controls_primary_id() {
+  return FLAGS_nullControllers;
 }

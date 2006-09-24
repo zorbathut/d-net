@@ -16,4 +16,6 @@ bool controls_users();
 bool controls_recordable();
 void controls_shutdown();
 
+int controls_primary_id();
+
 #endif
