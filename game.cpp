@@ -60,6 +60,7 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
     
     tpps.push_back(TPP(&tanks[i], players[i]));
   }
+  GameImpactContext gic(&tpps, &gfxeffects, &gamemap);
   
   if(!ffwd && FLAGS_verboseCollisions)
     dprintf("Ticking\n");
@@ -221,25 +222,25 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
         CHECK(0);
       } else if(lhs.category == CGR_WALL && rhs.category == CGR_PROJECTILE) {
         // wall-projectile collision - kill projectile
-        projectiles[rhs.bucket][rhs.item].impact(collider.getData().loc, TPP(NULL, NULL), genTankDistance(collider.getData().loc, players), &gfxeffects, &gamemap, tpps);
+        projectiles[rhs.bucket][rhs.item].impact(collider.getData().loc, TPP(NULL, NULL), gic);
       } else if(lhs.category == CGR_PLAYER && rhs.category == CGR_PLAYER) {
         // tank-tank collision, should never happen
         CHECK(0);
       } else if(lhs.category == CGR_PLAYER && rhs.category == CGR_PROJECTILE) {
         // tank-projectile collision - kill projectile, do damage
-        projectiles[rhs.bucket][rhs.item].impact(collider.getData().loc, TPP(&tanks[lhs.bucket], players[lhs.bucket]), genTankDistance(collider.getData().loc, players), &gfxeffects, &gamemap, tpps);
+        projectiles[rhs.bucket][rhs.item].impact(collider.getData().loc, TPP(&tanks[lhs.bucket], players[lhs.bucket]), gic);
       } else if(lhs.category == CGR_PROJECTILE && rhs.category == CGR_PROJECTILE) {
         // projectile-projectile collision - kill both projectiles
         // also do radius damage, and do it fairly dammit
         bool lft = frand() < 0.5;
         
         if(lft)
-          projectiles[lhs.bucket][lhs.item].impact(collider.getData().loc, TPP(NULL, NULL), genTankDistance(collider.getData().loc, players), &gfxeffects, &gamemap, tpps);
+          projectiles[lhs.bucket][lhs.item].impact(collider.getData().loc, TPP(NULL, NULL), gic);
         
-        projectiles[rhs.bucket][rhs.item].impact(collider.getData().loc, TPP(NULL, NULL), genTankDistance(collider.getData().loc, players), &gfxeffects, &gamemap, tpps);
+        projectiles[rhs.bucket][rhs.item].impact(collider.getData().loc, TPP(NULL, NULL), gic);
         
         if(!lft)
-          projectiles[lhs.bucket][lhs.item].impact(collider.getData().loc, TPP(NULL, NULL), genTankDistance(collider.getData().loc, players), &gfxeffects, &gamemap, tpps);
+          projectiles[lhs.bucket][lhs.item].impact(collider.getData().loc, TPP(NULL, NULL), gic);
         
       } else {
         // nothing meaningful, should totally never happen, what the hell is going on here, who are you, and why are you in my apartment
@@ -255,12 +256,12 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
     for(int j = 0; j < projectiles.size(); j++) {
       for(int k = 0; k < projectiles[j].size(); k++) {
         if(projectiles[j][k].isLive() && projectiles[j][k].isDetonating())
-          projectiles[j][k].impact(projectiles[j][k].warheadposition(), TPP(NULL, NULL), genTankDistance(projectiles[j][k].warheadposition(), players), &gfxeffects, &gamemap, tpps);
+          projectiles[j][k].impact(projectiles[j][k].warheadposition(), TPP(NULL, NULL), gic);
         if(!projectiles[j][k].isLive())
           continue;
         projectiles[j][k].tick(&gfxeffects);
         if(projectiles[j][k].isLive() && projectiles[j][k].isDetonating())
-          projectiles[j][k].impact(projectiles[j][k].warheadposition(), TPP(NULL, NULL), genTankDistance(projectiles[j][k].warheadposition(), players), &gfxeffects, &gamemap, tpps);
+          projectiles[j][k].impact(projectiles[j][k].warheadposition(), TPP(NULL, NULL), gic);
         if(!projectiles[j][k].isLive())
           continue;
         newProjectiles[j].push_back(projectiles[j][k]);
@@ -303,7 +304,7 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
     } else if(bombards[j].state == BombardmentState::BS_FIRING) {
       bombards[j].timer--;
       if(bombards[j].timer <= 0) {
-        detonateWarhead(players[j]->getBombardment((int)bombardment_tier).warhead(), bombards[j].loc, TPP(0, 0), tpps[j], genTankDistance(bombards[j].loc, players), &gfxeffects, &gamemap, 1.0, false);
+        detonateWarhead(players[j]->getBombardment((int)bombardment_tier).warhead(), bombards[j].loc, TPP(0, 0), tpps[j], gic, 1.0, false);
         bombards[j].state = BombardmentState::BS_COOLDOWN;
         bombards[j].timer = round(players[j]->getBombardment((int)bombardment_tier).unlockdelay() * FPS);
       }
@@ -380,7 +381,7 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
           {
             Projectile proj(startpos, startdir + weapon.deploy().anglestddev() * gaussian(), weapon.projectile(), i);
             if(weapon.projectile().motion() == PM_INSTANT) {
-              proj.impact(startpos, TPP(NULL, NULL), genTankDistance(startpos, players), &gfxeffects, &gamemap, tpps);
+              proj.impact(startpos, TPP(NULL, NULL), gic);
             } else {
               projectiles[i].push_back(proj);
             }
@@ -416,7 +417,7 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
 
   for(int i = 0; i < tanks.size(); i++) {
     tanks[i].weaponCooldown--;
-    tanks[i].genEffects(&gfxeffects, &projectiles[i], genTankDistance(tanks[i].pos, players), &gamemap, players[i], i);
+    tanks[i].genEffects(gic, &projectiles[i], i);
     if(tanks[i].live) {
       int inzone = -1;
       for(int j = 0; j < zones.size(); j++)
@@ -1150,29 +1151,6 @@ void Game::initCenteredDemo(Player *in_playerdata, float zoom) {
   initCommon(playerdata, lev);
   
   collider = Collider(tanks.size(), Coord(1000));
-}
-
-vector<pair<float, TPP> > Game::genTankDistance(const Coord2 &center, const vector<Player *> &players) {
-  vector<pair<float, TPP> > rv;
-  for(int i = 0; i < tanks.size(); i++) {
-    if(tanks[i].live) {
-      vector<Coord2> tv = tanks[i].getTankVertices(tanks[i].pos, tanks[i].d);
-      if(inPath(center, tv)) {
-        rv.push_back(make_pair(0, TPP(&tanks[i], players[i])));
-        continue;
-      }
-      float closest = 1e10;
-      for(int j = 0; j < tv.size(); j++) {
-        float tdist = distanceFromLine(Coord4(tv[j], tv[(j + 1) % tv.size()]), center).toFloat();
-        if(tdist < closest)
-          closest = tdist;
-      }
-      CHECK(closest < 1e10);
-      CHECK(closest >= 0);
-      rv.push_back(make_pair(closest, TPP(&tanks[i], players[i])));
-    }
-  }
-  return rv;
 }
 
 void Game::addTankStatusText(int tankid, const string &text, float duration) {

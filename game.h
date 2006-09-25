@@ -67,7 +67,6 @@ private:
   void initCommon(const vector<Player*> &playerdata, const Level &level);
   
   void addTankStatusText(int tankid, const string &text, float duration);
-  vector<pair<float, TPP> > genTankDistance(const Coord2 &center, const vector<Player *> &players);
 
   int frameNm;
   int frameNmToStart;

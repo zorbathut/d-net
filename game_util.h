@@ -24,11 +24,23 @@ private:
 
 public:
   
-  Tank *tank() { return tank_int; };
-  Player *player() { return player_int; };
+  Tank *tank() const { return tank_int; };
+  Player *player() const { return player_int; };    // This is just a pointer class, there's no such thing as CTPP currently.
   
   operator void*() { CHECK(!tank_int == !player_int); return (void*)tank_int; };
   TPP(Tank *tank, Player *player) : tank_int(tank), player_int(player) { CHECK(!tank_int == !player_int); };
+};
+
+
+class GameImpactContext {
+public:
+  const vector<TPP> *players;
+  vector<smart_ptr<GfxEffects> > *effects;
+  Gamemap *gamemap;
+
+  vector<pair<float, TPP> > getAdjacency(const Coord2 &pos) const;
+
+  GameImpactContext(const vector<TPP> *players, vector<smart_ptr<GfxEffects> > *effects, Gamemap *gamemap) : players(players), effects(effects), gamemap(gamemap) { };
 };
 
 class Projectile {
@@ -40,7 +52,7 @@ public:
   void addCollision(Collider *collider) const;
   Coord2 warheadposition() const;
 
-  void impact(Coord2 pos, TPP target, const vector<pair<float, TPP> > &adjacency, vector<smart_ptr<GfxEffects> > *gfxe, Gamemap *gm, const vector<TPP> &players);
+  void impact(Coord2 pos, TPP target, const GameImpactContext &gic);
 
   bool isLive() const;
   bool isDetonating() const;
@@ -84,6 +96,6 @@ private:
 
 };
 
-void detonateWarhead(const IDBWarheadAdjust &warhead, Coord2 pos, TPP impact, TPP owner, const vector<pair<float, TPP> > &adjacency, vector<smart_ptr<GfxEffects> > *gfxe, Gamemap *gm, float damagecredit, bool killcredit);
+void detonateWarhead(const IDBWarheadAdjust &warhead, Coord2 pos, TPP impact, TPP owner, const GameImpactContext &gic, float damagecredit, bool killcredit);
 
 #endif

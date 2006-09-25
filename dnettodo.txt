@@ -1,4 +1,6 @@
 ---- Major work path
+- Unique IDs for projectiles
+- Collision rewrite
 - Mine deployment range
 - Mine collision slowdown problems - is this CPU or rendering? Also why the hell is rendering going so slowly
 - Cached shop demo stats

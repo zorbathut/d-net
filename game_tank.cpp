@@ -277,7 +277,10 @@ bool Tank::takeDamage(float damage) {
   return false;
 };
 
-void Tank::genEffects(vector<smart_ptr<GfxEffects> > *gfxe, vector<Projectile> *projectiles, const vector<pair<float, TPP> > &adjacency, Gamemap *gm, Player *player, int id) {
+void Tank::genEffects(const GameImpactContext &gic, vector<Projectile> *projectiles, int id) {
+  CHECK((*gic.players)[id].tank() == this);
+  const Player *player = (*gic.players)[id].player();
+  
   if(spawnShards) {
     vector<Coord2> tv = getTankVertices(pos, d);
     Coord2 centr = getCentroid(tv);
@@ -349,14 +352,14 @@ void Tank::genEffects(vector<smart_ptr<GfxEffects> > *gfxe, vector<Projectile> *
       Coord2 vel = normalize(subcentroid) / 10 * tva / getArea(chunks[i]);
       Float2 path_pos_vel = vel.toFloat();
       float path_ang_vel = gaussian() / 20;
-      gfxe->push_back(GfxPath(vf2, (centr + subcentroid).toFloat(), path_pos_vel * 60, -path_pos_vel * 60, 0, path_ang_vel * 60, -path_ang_vel * 60, 0.5, player->getFaction()->color));
+      gic.effects->push_back(GfxPath(vf2, (centr + subcentroid).toFloat(), path_pos_vel * 60, -path_pos_vel * 60, 0, path_ang_vel * 60, -path_ang_vel * 60, 0.5, player->getFaction()->color));
     }
     
     for(int i = 0; i < ang.size(); i++)
       for(int j = 0; j < glory.shotspersplit(); j++)
         projectiles->push_back(Projectile(centr, ang[i] + gaussian_scaled(2) / 8, glory.projectile(), id));
     
-    detonateWarhead(glory.core(), centr, TPP(NULL, NULL), TPP(this, player), adjacency, gfxe, gm, 1.0, true);
+    detonateWarhead(glory.core(), centr, TPP(NULL, NULL), (*gic.players)[id], gic, 1.0, true);
     
     spawnShards = false;
   }

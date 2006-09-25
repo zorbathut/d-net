@@ -5,6 +5,29 @@
 #include "rng.h"
 #include "gfx.h"
 
+vector<pair<float, TPP> > GameImpactContext::getAdjacency(const Coord2 &center) const {
+  vector<pair<float, TPP> > rv;
+  for(int i = 0; i < players->size(); i++) {
+    if((*players)[i].tank()->live) {
+      vector<Coord2> tv = (*players)[i].tank()->getTankVertices((*players)[i].tank()->pos, (*players)[i].tank()->d);
+      if(inPath(center, tv)) {
+        rv.push_back(make_pair(0, (*players)[i]));
+        continue;
+      }
+      float closest = 1e10;
+      for(int j = 0; j < tv.size(); j++) {
+        float tdist = distanceFromLine(Coord4(tv[j], tv[(j + 1) % tv.size()]), center).toFloat();
+        if(tdist < closest)
+          closest = tdist;
+      }
+      CHECK(closest < 1e10);
+      CHECK(closest >= 0);
+      rv.push_back(make_pair(closest, (*players)[i]));
+    }
+  }
+  return rv;
+}
+
 void dealDamage(float dmg, TPP target, TPP owner, float damagecredit, bool killcredit) {
   if(target.tank()->team == owner.tank()->team)
     return; // friendly fire exception
@@ -13,24 +36,27 @@ void dealDamage(float dmg, TPP target, TPP owner, float damagecredit, bool killc
   owner.player()->addDamage(dmg * damagecredit);
 };
 
-void detonateWarhead(const IDBWarheadAdjust &warhead, Coord2 pos, TPP impact, TPP owner, const vector<pair<float, TPP> > &adjacency, vector<smart_ptr<GfxEffects> > *gfxe, Gamemap *gm, float damagecredit, bool killcredit) {
+void detonateWarhead(const IDBWarheadAdjust &warhead, Coord2 pos, TPP impact, TPP owner, const GameImpactContext &gic, float damagecredit, bool killcredit) {
   
   if(impact)
     dealDamage(warhead.impactdamage(), impact, owner, damagecredit, killcredit);
   
-  for(int i = 0; i < adjacency.size(); i++) {
-    if(adjacency[i].first < warhead.radiusfalloff())
-      dealDamage(warhead.radiusdamage() / warhead.radiusfalloff() * (warhead.radiusfalloff() - adjacency[i].first), adjacency[i].second, owner, damagecredit, killcredit);
+  if(warhead.radiusfalloff() >= 0) {
+    vector<pair<float, TPP> > adjacency = gic.getAdjacency(pos);
+    for(int i = 0; i < adjacency.size(); i++) {
+      if(adjacency[i].first < warhead.radiusfalloff())
+        dealDamage(warhead.radiusdamage() / warhead.radiusfalloff() * (warhead.radiusfalloff() - adjacency[i].first), adjacency[i].second, owner, damagecredit, killcredit);
+    }
   }
   
   for(int i = 0; i < 6; i++)
-    gfxe->push_back(GfxPoint(pos.toFloat(),  (makeAngle(frand() * 2 * PI) * 20) * (1.0 - frand() * frand()), 0.1, Color(1.0, 1.0, 1.0)));
+    gic.effects->push_back(GfxPoint(pos.toFloat(),  (makeAngle(frand() * 2 * PI) * 20) * (1.0 - frand() * frand()), 0.1, Color(1.0, 1.0, 1.0)));
   
   if(warhead.radiusfalloff() > 0)
-    gfxe->push_back(GfxBlast(pos.toFloat(), warhead.radiusfalloff(), warhead.radiuscolor_bright(), warhead.radiuscolor_dim()));
+    gic.effects->push_back(GfxBlast(pos.toFloat(), warhead.radiusfalloff(), warhead.radiuscolor_bright(), warhead.radiuscolor_dim()));
   
   if(warhead.wallremovalradius() > 0 && frand() < warhead.wallremovalchance()) {
-    gm->removeWalls(pos, warhead.wallremovalradius());
+    gic.gamemap->removeWalls(pos, warhead.wallremovalradius());
   }
 
 };
@@ -113,11 +139,11 @@ Coord2 Projectile::warheadposition() const {
   return pos;
 }
 
-void Projectile::impact(Coord2 pos, TPP target, const vector<pair<float, TPP> > &adjacency, vector<smart_ptr<GfxEffects> > *gfxe, Gamemap *gm, const vector<TPP> &players) {
+void Projectile::impact(Coord2 pos, TPP target, const GameImpactContext &gic) {
   if(!live)
     return;
   
-  detonateWarhead(projtype.warhead(), pos, target, players[owner], adjacency, gfxe, gm, 1.0, true);
+  detonateWarhead(projtype.warhead(), pos, target, (*gic.players)[owner], gic, 1.0, true);
 
   live = false;
 };
