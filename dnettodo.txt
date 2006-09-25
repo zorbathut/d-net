@@ -1,6 +1,4 @@
 ---- Major work path
-- What's with the slowdowns?
-  - Demo mode especially
 - Mine deployment range
 - Mine collision slowdown problems - is this CPU or rendering? Also why the hell is rendering going so slowly
 - Cached shop demo stats

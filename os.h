@@ -11,4 +11,6 @@ pair<int, int> getCurrentScreenSize();
 
 void dumpStackTrace();
 
+bool isUnoptimized();
+
 #endif

@@ -70,11 +70,12 @@ bool testInlined() {
 }
  
 void dumpStackTrace() {
-  dprintf("Stacktracing\n");
   vector<const void *> stack;
   if(testInlined()) {
+    dprintf("Stacktracing (inlined)\n");
     StackTracer<1>::printStack(&stack);
   } else {
+    dprintf("Stacktracing\n");
     StackTracer<2>::printStack(&stack);
   }
 
@@ -127,6 +128,10 @@ void dumpStackTrace() {
     }
   }
   dprintf("\n");
+}
+
+bool isUnoptimized() {
+  return !testInlined();
 }
 
 #endif

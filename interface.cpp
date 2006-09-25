@@ -9,6 +9,7 @@
 #include "vecedit.h"
 #include "debug.h"
 #include "inputsnag.h"
+#include "os.h"
 
 using namespace std;
 
@@ -386,6 +387,11 @@ void InterfaceMain::render() const {
           }
         }
       }
+    }
+    if(isUnoptimized()) {
+      setZoom(Float4(0, 0, 133.3333, 100));
+      setColor(Color(1.0, 0.3, 0.3));
+      drawText("Optimizations disabled!", 6, Float2(1, 1));
     }
   } else if(interface_mode == IFM_S_PLAYING) {
     game->renderToScreen();
