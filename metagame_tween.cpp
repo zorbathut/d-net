@@ -553,7 +553,7 @@ void PersistentData::renderSlot(int slotid) const {
     for(int i = 0; i < factions.size(); i++) {
       if(!factions[i].taken) {
         setColor(factions[i].faction->color);
-        drawDvec2(factions[i].faction->icon, boxAround(factions[i].compass_location.midpoint(), factions[i].compass_location.y_span() / 2 * 0.9), 50, 0.004);
+        drawDvec2(factions[i].faction->icon, boxAround(factions[i].compass_location.midpoint(), factions[i].compass_location.y_span() / 2 * 0.9), 20, 0.004);
       }
     }
     setColor(1.0, 1.0, 1.0);

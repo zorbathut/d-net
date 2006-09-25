@@ -14,6 +14,68 @@ using namespace std;
 DEFINE_int(resolution_x, -1, "X resolution (Y is X/4*3), -1 for autodetect");
 
 /*************
+ * Expensive object pool
+ */
+
+template<typename T> class Pool {
+public:
+  T *acquire() {
+    if(!poolitems.empty()) {
+      T *item = poolitems.back();
+      poolitems.pop_back();
+      return item;
+    } else {
+      return new T;
+    }
+  }
+  void free(T *item) {
+    poolitems.push_back(item);
+  }
+  
+  Pool() { }
+  ~Pool() {
+    for(int i = 0; i < poolitems.size(); i++)
+      delete poolitems[i];
+  }
+  
+private:
+  vector<T*> poolitems;
+
+  // do not implement
+  void operator=(const Pool &obj);
+  Pool(const Pool &obj);
+};
+
+template<typename T> class PoolObj {
+public:
+  T *operator->() {
+    return item;
+  }
+  T &operator*() {
+    return *item;
+  }
+
+  PoolObj() {
+    item = pool.acquire();
+  }
+  ~PoolObj() {
+    item->clear();
+    pool.free(item);
+  }
+
+private:
+  T *item;
+
+  static Pool<T> pool;
+
+  // do not implement
+  void operator=(const PoolObj &obj);
+  PoolObj(const PoolObj &obj);
+};
+
+template<typename T> Pool<T> PoolObj<T>::pool;
+  
+/*************
  * Infrastructure
  */
  
@@ -183,6 +245,8 @@ int clusterCount = 0;
 int lpFailure = 0;
 int lpSuccess = 0;
 int lastStats = 0;
+int renderedFrameId = 0;
+int totalLineCount = 0;
 
 static Color curcolor;
 static Color clearcolor;
@@ -190,11 +254,12 @@ const Float2 invPoint(-1234e12, 394e9);
 Float2 lastPoint = invPoint;
 
 string printGraphicsStats() {
-  string gstat = StringPrintf("%f average clusters over %d frames, %d/%d strip hit (%.2f%%)", clusterCount / float(frameNumber - lastStats), frameNumber - lastStats, lpSuccess, lpFailure + lpSuccess, lpSuccess / float(lpFailure + lpSuccess) * 100);
+  string gstat = StringPrintf("%.2f/%.2f average clust/lines in %d frames, %d/%d strip hit (%.2f%%)", clusterCount / float(renderedFrameId - lastStats), totalLineCount / float(renderedFrameId - lastStats), renderedFrameId - lastStats, lpSuccess, lpFailure + lpSuccess, lpSuccess / float(lpFailure + lpSuccess) * 100);
   clusterCount = 0;
+  totalLineCount = 0;
   lpFailure = 0;
   lpSuccess = 0;
-  lastStats = frameNumber;
+  lastStats = renderedFrameId;
   return gstat;
 }
 
@@ -258,6 +323,7 @@ void deinitFrame() {
   glFlush();
   SDL_GL_SwapBuffers(); 
   CHECK(glGetError() == GL_NO_ERROR);
+  renderedFrameId++;
   frame_running = false;
 }
 
@@ -366,7 +432,7 @@ void setColor(const Color &color) {
   setColor(color.r, color.g, color.b);
 }
 
-void localVertex2f(float x, float y) {
+inline void localVertex2f(float x, float y) {
   glVertex2f((x - map_sx) / map_zoom, (y - map_sy) / map_zoom);
 }
 
@@ -389,6 +455,7 @@ void drawLine(float sx, float sy, float ex, float ey, float weight) {
   localVertex2f(ex, ey);
   lastPoint = Float2(ex, ey);
   lineCount++;
+  totalLineCount++;
 }
 void drawLine(const Float2 &s, const Float2 &e, float weight) {
   drawLine(s.x, s.y, e.x, e.y, weight);
@@ -451,19 +518,19 @@ void drawLineLoop(const vector<Coord2> &verts, float weight) {
 };
 
 void drawTransformedLinePath(const vector<Float2> &verts, float angle, Float2 transform, float weight) {
-  vector<Float2> transed;
+  PoolObj<vector<Float2> > transed;
   for(int i = 0; i < verts.size(); i++)
-    transed.push_back(rotate(verts[i], angle) + transform);
-  drawLineLoop(transed, weight);
+    transed->push_back(rotate(verts[i], angle) + transform);
+  drawLineLoop(*transed, weight);
 };
 
 void drawRect(const Float4 &rect, float weight) {
-  vector<Float2> verts;
-  verts.push_back(Float2(rect.sx, rect.sy));
-  verts.push_back(Float2(rect.sx, rect.ey));
-  verts.push_back(Float2(rect.ex, rect.ey));
-  verts.push_back(Float2(rect.ex, rect.sy));
-  drawLineLoop(verts, weight);
+  PoolObj<vector<Float2> > verts;
+  verts->push_back(Float2(rect.sx, rect.sy));
+  verts->push_back(Float2(rect.sx, rect.ey));
+  verts->push_back(Float2(rect.ex, rect.ey));
+  verts->push_back(Float2(rect.ex, rect.sy));
+  drawLineLoop(*verts, weight);
 }
 
 void drawRectAround(float x, float y, float rad, float weight) {
@@ -499,10 +566,10 @@ float bezinterp(float x0, float x1, float x2, float x3, float t) {
 }
 
 void drawCurve(const Float4 &ptah, const Float4 &ptbh, int midpoints, float weight) {
-  vector<Float2> verts;
+  PoolObj<vector<Float2> > verts;
   for(int i = 0; i <= midpoints; i++)
-    verts.push_back(Float2(bezinterp(ptah.sx, ptah.ex, ptbh.sx, ptbh.ex, i / (float)midpoints), bezinterp(ptah.sy, ptah.ey, ptbh.sy, ptbh.ey, i / (float)midpoints)));
-  drawLinePath(verts, weight);
+    verts->push_back(Float2(bezinterp(ptah.sx, ptah.ex, ptbh.sx, ptbh.ex, i / (float)midpoints), bezinterp(ptah.sy, ptah.ey, ptbh.sy, ptbh.ey, i / (float)midpoints)));
+  drawLinePath(*verts, weight);
 }
 
 void drawCurveControls(const Float4 &ptah, const Float4 &ptbh, float spacing, float weight) {
@@ -515,10 +582,10 @@ void drawCurveControls(const Float4 &ptah, const Float4 &ptbh, float spacing, fl
 }
 
 void drawCircle(const Float2 &center, float radius, float weight) {
-  vector<Float2> verts;
+  PoolObj<vector<Float2> > verts;
   for(int i = 0; i < 16; i++)
-    verts.push_back(makeAngle(i * PI / 8) * radius + center);
-  drawLineLoop(verts, weight);
+    verts->push_back(makeAngle(i * PI / 8) * radius + center);
+  drawLineLoop(*verts, weight);
 }
 
 /*************
@@ -543,10 +610,10 @@ void drawText(const string &txt, float scale, const Float2 &pos) {
     }
     const FontCharacter &pathdat = fontdata[kar];
     for(int i = 0; i < pathdat.art.size(); i++) {
-      vector<Float2> verts;
+      PoolObj<vector<Float2> > verts;
       for(int j = 0; j < pathdat.art[i].size(); j++)
-        verts.push_back(Float2(sx + pathdat.art[i][j].first * scale, pos.y + pathdat.art[i][j].second * scale));
-      drawLinePath(verts, scale * thickness);
+        verts->push_back(Float2(sx + pathdat.art[i][j].first * scale, pos.y + pathdat.art[i][j].second * scale));
+      drawLinePath(*verts, scale * thickness);
     }
     sx += scale * (pathdat.width + betweenletter);
   }
