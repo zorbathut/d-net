@@ -17,30 +17,15 @@ public:
   Team();
 };
 
-class TPP {
-private:
-  Tank *tank_int;
-  Player *player_int;
-
-public:
-  
-  Tank *tank() const { return tank_int; };
-  Player *player() const { return player_int; };    // This is just a pointer class, there's no such thing as CTPP currently.
-  
-  operator void*() { CHECK(!tank_int == !player_int); return (void*)tank_int; };
-  TPP(Tank *tank, Player *player) : tank_int(tank), player_int(player) { CHECK(!tank_int == !player_int); };
-};
-
-
 class GameImpactContext {
 public:
-  const vector<TPP> *players;
+  vector<Tank> *players;
   vector<smart_ptr<GfxEffects> > *effects;
   Gamemap *gamemap;
 
   vector<pair<float, Tank *> > getAdjacency(const Coord2 &pos) const;
 
-  GameImpactContext(const vector<TPP> *players, vector<smart_ptr<GfxEffects> > *effects, Gamemap *gamemap) : players(players), effects(effects), gamemap(gamemap) { };
+  GameImpactContext(vector<Tank> *players, vector<smart_ptr<GfxEffects> > *effects, Gamemap *gamemap) : players(players), effects(effects), gamemap(gamemap) { };
 };
 
 class Projectile {
@@ -52,7 +37,7 @@ public:
   void addCollision(Collider *collider) const;
   Coord2 warheadposition() const;
 
-  void impact(Coord2 pos, TPP target, const GameImpactContext &gic);
+  void impact(Coord2 pos, Tank *target, const GameImpactContext &gic);
 
   bool isLive() const;
   bool isDetonating() const;

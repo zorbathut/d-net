@@ -8,10 +8,10 @@
 vector<pair<float, Tank *> > GameImpactContext::getAdjacency(const Coord2 &center) const {
   vector<pair<float, Tank *> > rv;
   for(int i = 0; i < players->size(); i++) {
-    if((*players)[i].tank()->live) {
-      vector<Coord2> tv = (*players)[i].tank()->getTankVertices((*players)[i].tank()->pos, (*players)[i].tank()->d);
+    if((*players)[i].live) {
+      vector<Coord2> tv = (*players)[i].getTankVertices((*players)[i].pos, (*players)[i].d);
       if(inPath(center, tv)) {
-        rv.push_back(make_pair(0, (*players)[i].tank()));
+        rv.push_back(make_pair(0, &(*players)[i]));
         continue;
       }
       float closest = 1e10;
@@ -22,7 +22,7 @@ vector<pair<float, Tank *> > GameImpactContext::getAdjacency(const Coord2 &cente
       }
       CHECK(closest < 1e10);
       CHECK(closest >= 0);
-      rv.push_back(make_pair(closest, (*players)[i].tank()));
+      rv.push_back(make_pair(closest, &(*players)[i]));
     }
   }
   return rv;
@@ -139,11 +139,11 @@ Coord2 Projectile::warheadposition() const {
   return pos;
 }
 
-void Projectile::impact(Coord2 pos, TPP target, const GameImpactContext &gic) {
+void Projectile::impact(Coord2 pos, Tank *target, const GameImpactContext &gic) {
   if(!live)
     return;
   
-  detonateWarhead(projtype.warhead(), pos, target.tank(), (*gic.players)[owner].tank(), gic, 1.0, true);
+  detonateWarhead(projtype.warhead(), pos, target, &(*gic.players)[owner], gic, 1.0, true);
 
   live = false;
 };

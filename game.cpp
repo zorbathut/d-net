@@ -51,16 +51,8 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
   
   CHECK(rkeys.size() == players.size());
   CHECK(players.size() == tanks.size());
-  
-  vector<TPP> tpps;
-  for(int i = 0; i < tanks.size(); i++) {
-    // Abstraction hack test
-    CHECK(tanks[i].color == players[i]->getFaction()->color);
-    CHECK(tanks[i].tank == players[i]->getTank());
-    
-    tpps.push_back(TPP(&tanks[i], players[i]));
-  }
-  GameImpactContext gic(&tpps, &gfxeffects, &gamemap);
+
+  GameImpactContext gic(&tanks, &gfxeffects, &gamemap);
   
   if(!ffwd && FLAGS_verboseCollisions)
     dprintf("Ticking\n");
@@ -222,25 +214,25 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
         CHECK(0);
       } else if(lhs.category == CGR_WALL && rhs.category == CGR_PROJECTILE) {
         // wall-projectile collision - kill projectile
-        projectiles[rhs.bucket][rhs.item].impact(collider.getData().loc, TPP(NULL, NULL), gic);
+        projectiles[rhs.bucket][rhs.item].impact(collider.getData().loc, NULL, gic);
       } else if(lhs.category == CGR_PLAYER && rhs.category == CGR_PLAYER) {
         // tank-tank collision, should never happen
         CHECK(0);
       } else if(lhs.category == CGR_PLAYER && rhs.category == CGR_PROJECTILE) {
         // tank-projectile collision - kill projectile, do damage
-        projectiles[rhs.bucket][rhs.item].impact(collider.getData().loc, TPP(&tanks[lhs.bucket], players[lhs.bucket]), gic);
+        projectiles[rhs.bucket][rhs.item].impact(collider.getData().loc, &tanks[lhs.bucket], gic);
       } else if(lhs.category == CGR_PROJECTILE && rhs.category == CGR_PROJECTILE) {
         // projectile-projectile collision - kill both projectiles
         // also do radius damage, and do it fairly dammit
         bool lft = frand() < 0.5;
         
         if(lft)
-          projectiles[lhs.bucket][lhs.item].impact(collider.getData().loc, TPP(NULL, NULL), gic);
+          projectiles[lhs.bucket][lhs.item].impact(collider.getData().loc, NULL, gic);
         
-        projectiles[rhs.bucket][rhs.item].impact(collider.getData().loc, TPP(NULL, NULL), gic);
+        projectiles[rhs.bucket][rhs.item].impact(collider.getData().loc, NULL, gic);
         
         if(!lft)
-          projectiles[lhs.bucket][lhs.item].impact(collider.getData().loc, TPP(NULL, NULL), gic);
+          projectiles[lhs.bucket][lhs.item].impact(collider.getData().loc, NULL, gic);
         
       } else {
         // nothing meaningful, should totally never happen, what the hell is going on here, who are you, and why are you in my apartment
@@ -256,12 +248,12 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
     for(int j = 0; j < projectiles.size(); j++) {
       for(int k = 0; k < projectiles[j].size(); k++) {
         if(projectiles[j][k].isLive() && projectiles[j][k].isDetonating())
-          projectiles[j][k].impact(projectiles[j][k].warheadposition(), TPP(NULL, NULL), gic);
+          projectiles[j][k].impact(projectiles[j][k].warheadposition(), NULL, gic);
         if(!projectiles[j][k].isLive())
           continue;
         projectiles[j][k].tick(&gfxeffects);
         if(projectiles[j][k].isLive() && projectiles[j][k].isDetonating())
-          projectiles[j][k].impact(projectiles[j][k].warheadposition(), TPP(NULL, NULL), gic);
+          projectiles[j][k].impact(projectiles[j][k].warheadposition(), NULL, gic);
         if(!projectiles[j][k].isLive())
           continue;
         newProjectiles[j].push_back(projectiles[j][k]);
@@ -381,7 +373,7 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
           {
             Projectile proj(startpos, startdir + weapon.deploy().anglestddev() * gaussian(), weapon.projectile(), i);
             if(weapon.projectile().motion() == PM_INSTANT) {
-              proj.impact(startpos, TPP(NULL, NULL), gic);
+              proj.impact(startpos, NULL, gic);
             } else {
               projectiles[i].push_back(proj);
             }
@@ -417,7 +409,7 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
 
   for(int i = 0; i < tanks.size(); i++) {
     tanks[i].weaponCooldown--;
-    tanks[i].genEffects(gic, &projectiles[i], i);
+    tanks[i].genEffects(gic, &projectiles[i], players[i], i);
     if(tanks[i].live) {
       int inzone = -1;
       for(int j = 0; j < zones.size(); j++)
