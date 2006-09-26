@@ -378,9 +378,8 @@ void Player::setCash(Money amount) {
   cash = amount;
 }
 
-void Player::addKill() { kills++; }
+void Player::accumulateStats(int in_kills, float damage) { damageDone += damage; kills += in_kills; }
 void Player::addWin() { wins++; }
-void Player::addDamage(float damage) { damageDone += damage; }
 
 int Player::consumeKills() {
   int ki = kills;

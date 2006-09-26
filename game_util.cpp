@@ -32,8 +32,8 @@ void dealDamage(float dmg, TPP target, TPP owner, float damagecredit, bool killc
   if(target.tank()->team == owner.tank()->team)
     return; // friendly fire exception
   if(target.tank()->takeDamage(dmg) && killcredit)
-    owner.player()->addKill();
-  owner.player()->addDamage(dmg * damagecredit);
+    owner.tank()->addKill();
+  owner.tank()->addDamage(dmg * damagecredit);
 };
 
 void detonateWarhead(const IDBWarheadAdjust &warhead, Coord2 pos, TPP impact, TPP owner, const GameImpactContext &gic, float damagecredit, bool killcredit) {

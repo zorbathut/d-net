@@ -124,9 +124,8 @@ public:
   void addCash(Money amount); // this is really designed *solely* for the income phase
   void setCash(Money amount); // And this is really designed *solely* for joining a game in progres
 
-  void addKill();
+  void accumulateStats(int kills, float damage);
   void addWin();
-  void addDamage(float damage);
 
   int consumeKills();
   int consumeWins();

@@ -12,6 +12,9 @@ void Tank::init(IDBTankAdjust in_tank, Color in_color) {
   damageTakenPreviousHits = 0;
   damageEvents = 0;
   damageTaken = 0;
+  
+  damageDealt = 0;
+  kills = 0;
 }
 
 void Tank::tick(const Keystates &kst) {
@@ -384,6 +387,19 @@ bool Tank::hasTakenDamage() const {
 void Tank::addCycle() {
   damageTakenPreviousHits += damageTaken;
   damageTaken = 0;
+}
+
+void Tank::addDamage(float amount) {
+  damageDealt += amount;
+}
+void Tank::addKill() {
+  kills++;
+}
+
+void Tank::addAccumulatedScores(Player *player) {
+  player->accumulateStats(damageDealt, kills);
+  damageDealt = 0;
+  kills = 0;
 }
 
 Tank::Tank() : tank(NULL, IDBAdjustment()) /* do not fucking use this */ {

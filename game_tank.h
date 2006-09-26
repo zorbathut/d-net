@@ -32,6 +32,11 @@ public:
   
   bool hasTakenDamage() const;
   void addCycle();
+  
+  void addDamage(float amount);
+  void addKill();
+  
+  void addAccumulatedScores(Player *player);
 
   Tank();
 
@@ -69,6 +74,9 @@ private:
   
   // this exists for all :D
   float damageTaken;
+
+  float damageDealt;
+  int kills;
 
 };
 

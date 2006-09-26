@@ -500,7 +500,8 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
           CHECK(winplayer == -1);
           winplayer = i;
         }
-      }  
+        tanks[i].addAccumulatedScores(players[i]);
+      }
       if(winplayer == -1)
         wins->push_back(NULL);
       else
