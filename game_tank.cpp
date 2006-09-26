@@ -281,7 +281,7 @@ bool Tank::takeDamage(float damage) {
 };
 
 void Tank::genEffects(const GameImpactContext &gic, vector<Projectile> *projectiles, const Player *player, int id) {
-  CHECK(&(*gic.players)[id] == this);
+  CHECK(gic.players[id] == this);
   
   if(spawnShards) {
     vector<Coord2> tv = getTankVertices(pos, d);
@@ -361,7 +361,7 @@ void Tank::genEffects(const GameImpactContext &gic, vector<Projectile> *projecti
       for(int j = 0; j < glory.shotspersplit(); j++)
         projectiles->push_back(Projectile(centr, ang[i] + gaussian_scaled(2) / 8, glory.projectile(), id));
     
-    detonateWarhead(glory.core(), centr, NULL, &(*gic.players)[id], gic, 1.0, true);
+    detonateWarhead(glory.core(), centr, NULL, gic.players[id], gic, 1.0, true);
     
     spawnShards = false;
   }

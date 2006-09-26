@@ -19,13 +19,13 @@ public:
 
 class GameImpactContext {
 public:
-  vector<Tank> *players;
+  const vector<Tank *> players;
   vector<smart_ptr<GfxEffects> > *effects;
   Gamemap *gamemap;
 
   vector<pair<float, Tank *> > getAdjacency(const Coord2 &pos) const;
 
-  GameImpactContext(vector<Tank> *players, vector<smart_ptr<GfxEffects> > *effects, Gamemap *gamemap) : players(players), effects(effects), gamemap(gamemap) { };
+  GameImpactContext(vector<Tank> *players, vector<smart_ptr<GfxEffects> > *effects, Gamemap *gamemap);
 };
 
 class Projectile {

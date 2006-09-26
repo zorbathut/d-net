@@ -7,11 +7,11 @@
 
 vector<pair<float, Tank *> > GameImpactContext::getAdjacency(const Coord2 &center) const {
   vector<pair<float, Tank *> > rv;
-  for(int i = 0; i < players->size(); i++) {
-    if((*players)[i].live) {
-      vector<Coord2> tv = (*players)[i].getTankVertices((*players)[i].pos, (*players)[i].d);
+  for(int i = 0; i < players.size(); i++) {
+    if(players[i]->live) {
+      vector<Coord2> tv = players[i]->getTankVertices(players[i]->pos, players[i]->d);
       if(inPath(center, tv)) {
-        rv.push_back(make_pair(0, &(*players)[i]));
+        rv.push_back(make_pair(0, players[i]));
         continue;
       }
       float closest = 1e10;
@@ -22,7 +22,7 @@ vector<pair<float, Tank *> > GameImpactContext::getAdjacency(const Coord2 &cente
       }
       CHECK(closest < 1e10);
       CHECK(closest >= 0);
-      rv.push_back(make_pair(closest, &(*players)[i]));
+      rv.push_back(make_pair(closest, players[i]));
     }
   }
   return rv;
@@ -66,6 +66,15 @@ Team::Team() {
   color = Color(0, 0, 0);
   swap_colors = false;
 }
+
+static vector<Tank*> ptrize(vector<Tank> *players) {
+  vector<Tank*> ptrs;
+  for(int i = 0; i < players->size(); i++)
+    ptrs.push_back(&(*players)[i]);
+  return ptrs;
+}
+
+GameImpactContext::GameImpactContext(vector<Tank> *players, vector<smart_ptr<GfxEffects> > *effects, Gamemap *gamemap) : players(ptrize(players)), effects(effects), gamemap(gamemap) { };
 
 void Projectile::tick(vector<smart_ptr<GfxEffects> > *gfxe) {
   CHECK(live);
@@ -143,7 +152,7 @@ void Projectile::impact(Coord2 pos, Tank *target, const GameImpactContext &gic) 
   if(!live)
     return;
   
-  detonateWarhead(projtype.warhead(), pos, target, &(*gic.players)[owner], gic, 1.0, true);
+  detonateWarhead(projtype.warhead(), pos, target, gic.players[owner], gic, 1.0, true);
 
   live = false;
 };
