@@ -77,7 +77,7 @@ private:
 
   vector<Tank> tanks;
   vector<BombardmentState> bombards;
-  vector<vector<Projectile> > projectiles;
+  vector<ProjectilePack> projectiles;
   vector<smart_ptr<GfxEffects> > gfxeffects;
   Gamemap gamemap;
 

@@ -24,7 +24,7 @@ public:
   pair<Coord2, float> getNextPosition(const Keystates &keys) const;
 
   bool takeDamage(float amount); // returns true on kill
-  void genEffects(const GameImpactContext &gic, vector<Projectile> *projectiles, const Player *player, int id);
+  void genEffects(const GameImpactContext &gic, ProjectilePack *projectiles, const Player *player, int id);
 
   float getDPS() const;
   float getDPH() const;

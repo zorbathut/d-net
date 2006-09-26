@@ -246,3 +246,56 @@ Projectile::Projectile(const Coord2 &in_pos, float in_d, const IDBProjectileAdju
     CHECK(0);
   }
 }
+
+Projectile &ProjectilePack::find(int id) {
+  CHECK(projectiles.count(id));
+  return projectiles[id];
+}
+void ProjectilePack::add(const Projectile &proj) {
+  int did = -1;
+  if(aid.size()) {
+    did = aid.back();
+    aid.pop_back();
+  } else {
+    did = projectiles.size();
+  }
+  CHECK(!projectiles.count(did));
+  projectiles[did] = proj;
+}
+
+void ProjectilePack::addCollisions(Collider *collider, int owner) const {
+  collider->addThingsToGroup(CGR_PROJECTILE, owner);
+  for(map<int, Projectile>::const_iterator itr = projectiles.begin(); itr != projectiles.end(); ++itr) {
+    collider->startToken(itr->first);
+    itr->second.addCollision(collider);
+  }
+  collider->endAddThingsToGroup();
+}
+
+void ProjectilePack::tick(vector<smart_ptr<GfxEffects> > *gfxe, const GameImpactContext &gic) {
+  for(map<int, Projectile>::iterator itr = projectiles.begin(); itr != projectiles.end(); ) {
+    // the logic here is kind of grim, sorry about this
+    if(itr->second.isLive() && itr->second.isDetonating())
+      itr->second.impact(itr->second.warheadposition(), NULL, gic);
+    if(itr->second.isLive()) {
+      itr->second.tick(gfxe);
+      if(itr->second.isLive() && itr->second.isDetonating())
+        itr->second.impact(itr->second.warheadposition(), NULL, gic);
+      if(itr->second.isLive()) {
+        ++itr;
+        continue;
+      }
+    }
+    
+    CHECK(!itr->second.isLive());
+    aid.push_back(itr->first);
+    map<int, Projectile>::iterator titr = itr;
+    ++itr;
+    projectiles.erase(titr);
+  }
+}
+
+void ProjectilePack::render(const vector<Coord2> &tankpos) const {
+  for(map<int, Projectile>::const_iterator itr = projectiles.begin(); itr != projectiles.end(); ++itr)
+    itr->second.render(tankpos);
+}

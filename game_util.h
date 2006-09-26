@@ -78,7 +78,25 @@ private:
   
   bool live;
   bool detonating;
+};
 
+class ProjectilePack {
+public:
+  
+  Projectile &find(int id);
+  void add(const Projectile &proj);
+
+  void addCollisions(Collider *collider, int owner) const;
+  void tick(vector<smart_ptr<GfxEffects> > *gfxe, const GameImpactContext &gic);
+  void render(const vector<Coord2> &tankpos) const;
+
+private:
+  class PPCD {
+  public:
+    bool operator()(const Projectile &lhs, const Projectile &rhs) const;
+  };
+  map<int, Projectile> projectiles;
+  vector<int> aid;
 };
 
 void detonateWarhead(const IDBWarheadAdjust &warhead, Coord2 pos, Tank *impact, Tank *owner, const GameImpactContext &gic, float damagecredit, bool killcredit);

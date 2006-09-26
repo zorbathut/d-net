@@ -189,12 +189,7 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
     }
   
     for(int j = 0; j < projectiles.size(); j++) {
-      collider.addThingsToGroup(CGR_PROJECTILE, j);
-      for(int k = 0; k < projectiles[j].size(); k++) {
-        collider.startToken(k);
-        projectiles[j][k].addCollision(&collider);
-      }
-      collider.endAddThingsToGroup();
+      projectiles[j].addCollisions(&collider, j);
     }
     
     collider.processMotion();
@@ -214,25 +209,25 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
         CHECK(0);
       } else if(lhs.category == CGR_WALL && rhs.category == CGR_PROJECTILE) {
         // wall-projectile collision - kill projectile
-        projectiles[rhs.bucket][rhs.item].impact(collider.getData().loc, NULL, gic);
+        projectiles[rhs.bucket].find(rhs.item).impact(collider.getData().loc, NULL, gic);
       } else if(lhs.category == CGR_PLAYER && rhs.category == CGR_PLAYER) {
         // tank-tank collision, should never happen
         CHECK(0);
       } else if(lhs.category == CGR_PLAYER && rhs.category == CGR_PROJECTILE) {
         // tank-projectile collision - kill projectile, do damage
-        projectiles[rhs.bucket][rhs.item].impact(collider.getData().loc, &tanks[lhs.bucket], gic);
+        projectiles[rhs.bucket].find(rhs.item).impact(collider.getData().loc, &tanks[lhs.bucket], gic);
       } else if(lhs.category == CGR_PROJECTILE && rhs.category == CGR_PROJECTILE) {
         // projectile-projectile collision - kill both projectiles
         // also do radius damage, and do it fairly dammit
         bool lft = frand() < 0.5;
         
         if(lft)
-          projectiles[lhs.bucket][lhs.item].impact(collider.getData().loc, NULL, gic);
+          projectiles[lhs.bucket].find(lhs.item).impact(collider.getData().loc, NULL, gic);
         
-        projectiles[rhs.bucket][rhs.item].impact(collider.getData().loc, NULL, gic);
+        projectiles[rhs.bucket].find(rhs.item).impact(collider.getData().loc, NULL, gic);
         
         if(!lft)
-          projectiles[lhs.bucket][lhs.item].impact(collider.getData().loc, NULL, gic);
+          projectiles[lhs.bucket].find(lhs.item).impact(collider.getData().loc, NULL, gic);
         
       } else {
         // nothing meaningful, should totally never happen, what the hell is going on here, who are you, and why are you in my apartment
@@ -243,23 +238,8 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
     collider.finishProcess();
   }
 
-  {
-    vector<vector<Projectile> > newProjectiles(projectiles.size());
-    for(int j = 0; j < projectiles.size(); j++) {
-      for(int k = 0; k < projectiles[j].size(); k++) {
-        if(projectiles[j][k].isLive() && projectiles[j][k].isDetonating())
-          projectiles[j][k].impact(projectiles[j][k].warheadposition(), NULL, gic);
-        if(!projectiles[j][k].isLive())
-          continue;
-        projectiles[j][k].tick(&gfxeffects);
-        if(projectiles[j][k].isLive() && projectiles[j][k].isDetonating())
-          projectiles[j][k].impact(projectiles[j][k].warheadposition(), NULL, gic);
-        if(!projectiles[j][k].isLive())
-          continue;
-        newProjectiles[j].push_back(projectiles[j][k]);
-      }
-    }
-    projectiles.swap(newProjectiles);
+  for(int j = 0; j < projectiles.size(); j++) {
+    projectiles[j].tick(&gfxeffects, gic);
   }
   
   for(int j = 0; j < bombards.size(); j++) {
@@ -375,7 +355,7 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
             if(weapon.projectile().motion() == PM_INSTANT) {
               proj.impact(startpos, NULL, gic);
             } else {
-              projectiles[i].push_back(proj);
+              projectiles[i].add(proj);
             }
           }
           
@@ -583,8 +563,7 @@ void Game::renderToScreen(const vector<const Player *> &players) const {
           tankposes.push_back(tanks[i].pos);
       
       for(int i = 0; i < projectiles.size(); i++)
-        for(int j = 0; j < projectiles[i].size(); j++)
-          projectiles[i][j].render(tankposes);
+        projectiles[i].render(tankposes);
     }
     
     for(int i = 0; i < gfxeffects.size(); i++)

@@ -57,3 +57,17 @@
 - dnd compression - this is going to rely on level save snapshots
 
 http://www.itchstudios.com/psg/ - Dafred's artist
+
+
+
+--- New collision notes
+
+Okay, first off. Collision objects are mapped as "owner, type, ID". Each of these is handled as a group. Some of them are temporary, some are persistent, this is determined on a case-by-case basis by some kind of flag. Temporary ones vanish after one frame, persistent ones stick around until they're explicitly removed.
+
+From owner/type/ID I need to be able to get the actual item. So, Projectile should become map<pair<int, int>, Projectile>? And then I need vector<ProjectileIDer>.
+
+Alternatively, vector<ProjectilePack> where ProjectilePack includes both the IDer and a map<int, Projectile>. Or a set<Projectile> with a neat comparator.
+
+This gets passed into the Collider, which stores data in map<OwnerType, map<ID, vector<pair<Coord4, Coord4> > > > or whatever. This is traversed roughly the same way as it is right now.
+
+Eugh.
