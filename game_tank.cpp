@@ -362,7 +362,7 @@ void Tank::genEffects(const GameImpactContext &gic, vector<Projectile> *projecti
       for(int j = 0; j < glory.shotspersplit(); j++)
         projectiles->push_back(Projectile(centr, ang[i] + gaussian_scaled(2) / 8, glory.projectile(), id));
     
-    detonateWarhead(glory.core(), centr, TPP(NULL, NULL), (*gic.players)[id], gic, 1.0, true);
+    detonateWarhead(glory.core(), centr, NULL, (*gic.players)[id].tank(), gic, 1.0, true);
     
     spawnShards = false;
   }
@@ -397,7 +397,7 @@ void Tank::addKill() {
 }
 
 void Tank::addAccumulatedScores(Player *player) {
-  player->accumulateStats(damageDealt, kills);
+  player->accumulateStats(kills, damageDealt);
   damageDealt = 0;
   kills = 0;
 }

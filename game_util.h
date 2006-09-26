@@ -38,7 +38,7 @@ public:
   vector<smart_ptr<GfxEffects> > *effects;
   Gamemap *gamemap;
 
-  vector<pair<float, TPP> > getAdjacency(const Coord2 &pos) const;
+  vector<pair<float, Tank *> > getAdjacency(const Coord2 &pos) const;
 
   GameImpactContext(const vector<TPP> *players, vector<smart_ptr<GfxEffects> > *effects, Gamemap *gamemap) : players(players), effects(effects), gamemap(gamemap) { };
 };
@@ -96,6 +96,6 @@ private:
 
 };
 
-void detonateWarhead(const IDBWarheadAdjust &warhead, Coord2 pos, TPP impact, TPP owner, const GameImpactContext &gic, float damagecredit, bool killcredit);
+void detonateWarhead(const IDBWarheadAdjust &warhead, Coord2 pos, Tank *impact, Tank *owner, const GameImpactContext &gic, float damagecredit, bool killcredit);
 
 #endif

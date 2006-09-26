@@ -5,13 +5,13 @@
 #include "rng.h"
 #include "gfx.h"
 
-vector<pair<float, TPP> > GameImpactContext::getAdjacency(const Coord2 &center) const {
-  vector<pair<float, TPP> > rv;
+vector<pair<float, Tank *> > GameImpactContext::getAdjacency(const Coord2 &center) const {
+  vector<pair<float, Tank *> > rv;
   for(int i = 0; i < players->size(); i++) {
     if((*players)[i].tank()->live) {
       vector<Coord2> tv = (*players)[i].tank()->getTankVertices((*players)[i].tank()->pos, (*players)[i].tank()->d);
       if(inPath(center, tv)) {
-        rv.push_back(make_pair(0, (*players)[i]));
+        rv.push_back(make_pair(0, (*players)[i].tank()));
         continue;
       }
       float closest = 1e10;
@@ -22,27 +22,27 @@ vector<pair<float, TPP> > GameImpactContext::getAdjacency(const Coord2 &center) 
       }
       CHECK(closest < 1e10);
       CHECK(closest >= 0);
-      rv.push_back(make_pair(closest, (*players)[i]));
+      rv.push_back(make_pair(closest, (*players)[i].tank()));
     }
   }
   return rv;
 }
 
-void dealDamage(float dmg, TPP target, TPP owner, float damagecredit, bool killcredit) {
-  if(target.tank()->team == owner.tank()->team)
+void dealDamage(float dmg, Tank *target, Tank *owner, float damagecredit, bool killcredit) {
+  if(target->team == owner->team)
     return; // friendly fire exception
-  if(target.tank()->takeDamage(dmg) && killcredit)
-    owner.tank()->addKill();
-  owner.tank()->addDamage(dmg * damagecredit);
+  if(target->takeDamage(dmg) && killcredit)
+    owner->addKill();
+  owner->addDamage(dmg * damagecredit);
 };
 
-void detonateWarhead(const IDBWarheadAdjust &warhead, Coord2 pos, TPP impact, TPP owner, const GameImpactContext &gic, float damagecredit, bool killcredit) {
+void detonateWarhead(const IDBWarheadAdjust &warhead, Coord2 pos, Tank *impact, Tank *owner, const GameImpactContext &gic, float damagecredit, bool killcredit) {
   
   if(impact)
     dealDamage(warhead.impactdamage(), impact, owner, damagecredit, killcredit);
   
   if(warhead.radiusfalloff() >= 0) {
-    vector<pair<float, TPP> > adjacency = gic.getAdjacency(pos);
+    vector<pair<float, Tank *> > adjacency = gic.getAdjacency(pos);
     for(int i = 0; i < adjacency.size(); i++) {
       if(adjacency[i].first < warhead.radiusfalloff())
         dealDamage(warhead.radiusdamage() / warhead.radiusfalloff() * (warhead.radiusfalloff() - adjacency[i].first), adjacency[i].second, owner, damagecredit, killcredit);
@@ -143,7 +143,7 @@ void Projectile::impact(Coord2 pos, TPP target, const GameImpactContext &gic) {
   if(!live)
     return;
   
-  detonateWarhead(projtype.warhead(), pos, target, (*gic.players)[owner], gic, 1.0, true);
+  detonateWarhead(projtype.warhead(), pos, target.tank(), (*gic.players)[owner].tank(), gic, 1.0, true);
 
   live = false;
 };

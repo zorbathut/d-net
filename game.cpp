@@ -304,7 +304,7 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
     } else if(bombards[j].state == BombardmentState::BS_FIRING) {
       bombards[j].timer--;
       if(bombards[j].timer <= 0) {
-        detonateWarhead(players[j]->getBombardment((int)bombardment_tier).warhead(), bombards[j].loc, TPP(0, 0), tpps[j], gic, 1.0, false);
+        detonateWarhead(players[j]->getBombardment((int)bombardment_tier).warhead(), bombards[j].loc, NULL, &tanks[j], gic, 1.0, false);
         bombards[j].state = BombardmentState::BS_COOLDOWN;
         bombards[j].timer = round(players[j]->getBombardment((int)bombardment_tier).unlockdelay() * FPS);
       }
