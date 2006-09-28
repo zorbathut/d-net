@@ -184,8 +184,8 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
     collider.processMotion();
     
     while(collider.next()) {
-      dprintf("Collision!\n");
-      dprintf("%d,%d,%d vs %d,%d,%d\n", collider.getCollision().lhs.category, collider.getCollision().lhs.bucket, collider.getCollision().lhs.item, collider.getCollision().rhs.category, collider.getCollision().rhs.bucket, collider.getCollision().rhs.item);
+      //dprintf("Collision!\n");
+      //dprintf("%d,%d,%d vs %d,%d,%d\n", collider.getCollision().lhs.category, collider.getCollision().lhs.bucket, collider.getCollision().lhs.item, collider.getCollision().rhs.category, collider.getCollision().rhs.bucket, collider.getCollision().rhs.item);
       CollideId lhs = collider.getCollision().lhs;
       CollideId rhs = collider.getCollision().rhs;
       if(rhs < lhs) swap(lhs, rhs);
