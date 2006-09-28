@@ -1,6 +1,4 @@
 ---- Major work path
-- Mine collision slowdown problems
-- Make shop thicker
 - Move projectile into game_projectile.*
 - Collision/subtraction grid
 - Mine deployment range
@@ -14,7 +12,8 @@
 - Faction info screen on startup
 - Training/certificates/discounts
 - Many many more weapons
-- Implants
+- Make small text thicker
+- Implants?
 
 ---- Things that take thought and musing
 - GameAccessors class

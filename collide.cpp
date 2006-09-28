@@ -78,6 +78,23 @@ Coord getu(const Coord4 &linepos, const Coord4 &linevel, const Coord4 &ptposvel,
 }
 
 pair<Coord, Coord2> getCollision(const Coord4 &l1p, const Coord4 &l1v, const Coord4 &l2p, const Coord4 &l2v) {
+  {
+    Coord4 l1bb = startCBoundBox();
+    addToBoundBox(&l1bb, l1p.sx, l1p.sy);
+    addToBoundBox(&l1bb, l1p.ex, l1p.ey);
+    addToBoundBox(&l1bb, l1p.sx + l1v.sx, l1p.sy + l1v.sy);
+    addToBoundBox(&l1bb, l1p.ex + l1v.ex, l1p.ey + l1v.ey);
+    
+    Coord4 l2bb = startCBoundBox();
+    addToBoundBox(&l2bb, l2p.sx, l2p.sy);
+    addToBoundBox(&l2bb, l2p.ex, l2p.ey);
+    addToBoundBox(&l2bb, l2p.sx + l2v.sx, l2p.sy + l2v.sy);
+    addToBoundBox(&l2bb, l2p.ex + l2v.ex, l2p.ey + l2v.ey);
+    
+    if(!boxBoxIntersect(l1bb, l2bb))
+      return make_pair(NOCOLLIDE, Coord2());
+  }
+  
   Coord cBc = NOCOLLIDE;
   Coord2 pos;
   Coord4 temp;
