@@ -3,8 +3,8 @@
 
 #include <map>
 #include <string>
-
 using namespace std;
+
 
 #define DECLARE_string(id) \
   extern string FLAGS_##id;

@@ -2,6 +2,7 @@
 #define DNET_CFC
 
 #include "float.h"
+using namespace std;
 
 class Coord;
 class Coord2;

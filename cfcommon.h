@@ -2,10 +2,10 @@
 #define DNET_CFCOMMON
 
 #include "const.h"
-
 #include <cmath>
-
 using namespace std;
+
+
 
 /*************
  * Fast sin/cos

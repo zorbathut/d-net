@@ -1,5 +1,5 @@
 ---- Major work path
-- Move projectile into game_projectile.*
+- Tanks drive through each other? What madness is this?
 - Collision/subtraction grid
 - Mine deployment range
 - Cached shop demo stats

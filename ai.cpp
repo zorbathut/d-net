@@ -1,11 +1,11 @@
 
 #include "ai.h"
-
 #include "game.h"
 #include "metagame_config.h"
 #include "player.h"
-
 using namespace std;
+
+
 
 void GameAiStandard::updateGameWork(const vector<Tank> &players, int me) {
   if(rng.frand() < 0.01) {

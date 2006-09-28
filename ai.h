@@ -1,13 +1,13 @@
 #ifndef DNET_AI
 #define DNET_AI
 
+#include "game_ai.h"
 #include "input.h"
 #include "rng.h"
-#include "game_ai.h"
-
 #include <deque>
-
 using namespace std;
+
+
 
 class FactionState;
 class PlayerMenuState;

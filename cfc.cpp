@@ -1,7 +1,8 @@
 
 #include "cfc.h"
-
 #include "coord.h"
+using namespace std;
+
 
 CFC::CFC(const Coord &c) {
   v = c.toFloat();
