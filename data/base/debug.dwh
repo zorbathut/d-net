@@ -50,6 +50,23 @@ weapon {
   debug=1
 }
 
+projectile {
+  name=projectile.permamine
+  motion=mine
+  radius_physical=1
+  halflife=1000000
+  color=1.0, 1.0, 1.0
+  warhead=warhead.mine
+}
+
+weapon {
+  name=ROOT.Weapons.Debug.Permamine
+  cost=1
+  firerate=30
+  deploy=deploy.centroid
+  projectile=projectile.permamine
+}
+
 adjustment {
   name=adjustment.crazyhull
   tank_armor=100
