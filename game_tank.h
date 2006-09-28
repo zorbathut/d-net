@@ -12,7 +12,7 @@ public:
   void tick(const Keystates &kst);
   void render(const vector<Team> &teams) const;
 
-  void addCollision(Collider *collider, const Keystates &kst) const;
+  void addCollision(Collider *collider, const Keystates &kst, int owner) const;
 
   vector<Coord4> getCurrentCollide() const;
   vector<Coord4> getNextCollide(const Keystates &keys) const;

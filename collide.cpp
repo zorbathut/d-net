@@ -3,6 +3,7 @@
 
 #include "args.h"
 #include "gfx.h"
+#include "util.h"
 
 #include <set>
 
@@ -12,7 +13,7 @@ DECLARE_bool(verboseCollisions);
 
 const Coord NOCOLLIDE = Coord(-1000000000);
 
-pair< Coord, Coord > getLineCollision(const Coord4 &linepos, const Coord4 &linevel, const Coord4 &ptposvel) {
+pair<Coord, Coord> getLineCollision(const Coord4 &linepos, const Coord4 &linevel, const Coord4 &ptposvel) {
   Coord x1d = linepos.sx;
   Coord y1d = linepos.sy;
   Coord x2d = linepos.ex;
@@ -136,26 +137,30 @@ pair<Coord, Coord2> getCollision(const Coord4 &l1p, const Coord4 &l1v, const Coo
   return make_pair(cBc, pos);
 }
 
-inline int getIndexCount(int players) {
+inline int getCategoryCount(int players) {
   return players * 2 + 1;
 }
-int getIndex(int players, int category, int gid) {
+inline int getPlayerCount(int index) {
+  CHECK(index % 2);
+  return index / 2;
+}
+int getCategoryFromPlayers(int players, int category, int bucket) {
   if(category == CGR_WALL) {
-    CHECK(gid == 0);
+    CHECK(bucket == CGR_WALLOWNER);
     return 0;
   } else if(category == CGR_PLAYER) {
-    CHECK(gid >= 0 && gid < players);
-    return gid + 1;
+    CHECK(bucket >= 0 && bucket < players);
+    return bucket + 1;
   } else if(category == CGR_PROJECTILE) {
-    CHECK(gid >= 0 && gid < players);
-    return players + gid + 1;
+    CHECK(bucket >= 0 && bucket < players);
+    return players + bucket + 1;
   } else {
     return 0;
   }
 }
-pair< int, int > reverseIndex(int players, int index) {
+pair<int, int> reverseCategoryFromPlayers(int players, int index) {
   if(index == 0)
-    return make_pair(int(CGR_WALL), 0);
+    return make_pair(int(CGR_WALL), CGR_WALLOWNER);
   else if(index < players + 1)
     return make_pair(int(CGR_PLAYER), index - 1);
   else if(index < players * 2 + 1)
@@ -163,10 +168,13 @@ pair< int, int > reverseIndex(int players, int index) {
   else
     CHECK(0);
 }
+pair<int, int> reverseCategoryFromPC(int playercount, int index) {
+  return reverseCategoryFromPlayers(getPlayerCount(playercount), index);
+}
 
 bool canCollidePlayer(int players, int indexa, int indexb, const vector<int> &teams) {
-  pair<int, int> ar = reverseIndex(players, indexa);
-  pair<int, int> br = reverseIndex(players, indexb);
+  pair<int, int> ar = reverseCategoryFromPlayers(players, indexa);
+  pair<int, int> br = reverseCategoryFromPlayers(players, indexb);
   // Two things can't collide if they're part of the same ownership group (ignoring walls which are different)
   if(ar.second == br.second && ar.first != CGR_WALL && br.first != CGR_WALL)
     return false;
@@ -179,8 +187,8 @@ bool canCollidePlayer(int players, int indexa, int indexb, const vector<int> &te
   return true;
 }
 bool canCollideProjectile(int players, int indexa, int indexb, const vector<int> &teams) {
-  pair<int, int> ar = reverseIndex(players, indexa);
-  pair<int, int> br = reverseIndex(players, indexb);
+  pair<int, int> ar = reverseCategoryFromPlayers(players, indexa);
+  pair<int, int> br = reverseCategoryFromPlayers(players, indexb);
   // Two things can't collide if they're part of the same ownership group (ignoring walls which are different)
   if(ar.second == br.second && ar.first != CGR_WALL && br.first != CGR_WALL)
     return false;
@@ -197,167 +205,161 @@ bool canCollideProjectile(int players, int indexa, int indexb, const vector<int>
   return true;
 }
 
-void ColliderZone::addToken(int groupid, int token, const Coord4 &line, const Coord4 &direction) {
-  int fd = 0;
-  for(fd = 0; fd < lastItem; fd++)
-    if(items[fd].first == groupid)
-      break;
-  if(fd == lastItem) {
-    lastItem++;
-    if(fd == items.size())
-      items.push_back(make_pair(groupid, vector< pair< int, pair< Coord4, Coord4 > > >()));
-    else
-      items[fd].first = groupid;
-  }
-  items[fd].second.push_back(make_pair(token, make_pair(line, direction)));
+inline bool operator==(const CollideId &lhs, const CollideId &rhs) {
+  if(lhs.category != rhs.category) return false;
+  if(lhs.bucket != rhs.bucket) return false;
+  if(lhs.item != rhs.item) return false;
+  return true;
 }
-void ColliderZone::clearToken(int groupid, int token) {
-  for(int i = 0; i < lastItem; i++) {
-    if(items[i].first == groupid) {
-      int tid;
-      for(tid = 0; tid < items[i].second.size(); tid++)
-        if(items[i].second[tid].first == token)
-          break;
-      if(tid == items[i].second.size()) // Nothing!
-        break;
-      vector< pair< int, pair< Coord4, Coord4 > > > gnu(items[i].second.begin(), items[i].second.begin() + tid);
-      for(; tid < items[i].second.size(); tid++)
-        if(items[i].second[tid].first != token)
-          gnu.push_back(items[i].second[tid]);
-      gnu.swap(items[i].second);
+
+inline bool operator!=(const CollideId &lhs, const CollideId &rhs) {
+  return !(lhs == rhs);
+}
+
+inline bool operator<(const CollideData &lhs, const CollideData &rhs) {
+  if(lhs.lhs != rhs.lhs) return lhs.lhs < rhs.lhs;
+  if(lhs.rhs != rhs.rhs) return lhs.rhs < rhs.rhs;
+  if(lhs.pos != rhs.pos) return lhs.pos < rhs.pos;
+  return false;
+}
+
+inline bool operator==(const CollideData &lhs, const CollideData &rhs) {
+  if(lhs.lhs != rhs.lhs) return false;
+  if(lhs.rhs != rhs.rhs) return false;
+  if(lhs.pos != rhs.pos) return false;
+  return true;
+}
+
+void CollideZone::setCategoryCount(int size) {
+  CHECK(!items.size());
+  items.resize(size);
+}
+
+void CollideZone::clean(const set<pair<int, int> > &persistent) {
+  CHECK(items.size());
+  for(int i = 0; i < items.size(); i++) {
+    for(map<int, vector<pair<Coord4, Coord4> > >::iterator itr = items[i].begin(); itr != items[i].end(); ) {
+      if(persistent.count(make_pair(i, itr->first))) {
+        itr++;
+      } else {
+        map<int, vector<pair<Coord4, Coord4> > >::iterator titr = itr;
+        itr++;
+        items[i].erase(titr);
+      }
     }
   }
 }
 
-void ColliderZone::clearGroup(int groupid) {
-  for(int fd = 0; fd < items.size(); fd++)
-    if(items[fd].first == groupid)
-      items[fd].second.clear();
+void CollideZone::addToken(int groupid, int token, const Coord4 &line, const Coord4 &direction) {
+  items[groupid][token].push_back(make_pair(line, direction));
+}
+void CollideZone::dumpGroup(int category, int group) {
+  items[category].erase(group);
 }
 
-bool ColliderZone::checkSimpleCollision(int groupid, const vector<Coord4> &line, const char *collidematrix) const {
-  for(int x = 0; x < lastItem; x++) {
-     if(!collidematrix[groupid * getIndexCount(players) + items[x].first])
+bool CollideZone::checkSimpleCollision(int groupid, const vector<Coord4> &line, const char *collidematrix) const {
+  for(int i = 0; i < items.size(); i++) {
+    if(!collidematrix[groupid * items.size() + i])
       continue;
-    const vector< pair< int, pair< Coord4, Coord4 > > > &tx = items[x].second;
-    for(int xa = 0; xa < tx.size(); xa++) {
-      for(int ya = 0; ya < line.size(); ya++) {
-        if(linelineintersect(tx[xa].second.first, line[ya]))
-          return true;
+    for(map<int, vector<pair<Coord4, Coord4> > >::const_iterator itr = items[i].begin(); itr != items[i].end(); ++itr) {
+      const vector<pair<Coord4, Coord4> > &tx = itr->second;
+      for(int xa = 0; xa < tx.size(); xa++) {
+        for(int ya = 0; ya < line.size(); ya++) {
+          if(linelineintersect(tx[xa].first, line[ya]))
+            return true;
+        }
       }
     }
   }
   return false;
 }
 
-void ColliderZone::processSimple(vector<pair<Coord, CollideData> > *clds, const char *collidematrix) const {
-  for(int x = 0; x < lastItem; x++) {
-    for(int y = x + 1; y < lastItem; y++) {
-      if(!collidematrix[items[x].first * getIndexCount(players) + items[y].first])
+void CollideZone::processSimple(vector<pair<Coord, CollideData> > *clds, const char *collidematrix) const {
+  for(int x = 0; x < items.size(); x++) {
+    for(int y = x + 1; y < items.size(); y++) {
+      if(!collidematrix[x * items.size() + y])
         continue;
-      const vector< pair< int, pair< Coord4, Coord4 > > > &tx = items[x].second;
-      const vector< pair< int, pair< Coord4, Coord4 > > > &ty = items[y].second;
-      for(int xa = 0; xa < tx.size(); xa++) {
-        for(int ya = 0; ya < ty.size(); ya++) {
-          if(linelineintersect(tx[xa].second.first, ty[ya].second.first))
-            clds->push_back(make_pair(0, CollideData(CollideId(reverseIndex(players, items[x].first), tx[xa].first), CollideId(reverseIndex(players, items[y].first), ty[ya].first), Coord2())));
+      for(map<int, vector<pair<Coord4, Coord4> > >::const_iterator xitr = items[x].begin(); xitr != items[x].end(); ++xitr) {
+        for(map<int, vector<pair<Coord4, Coord4> > >::const_iterator yitr = items[y].begin(); yitr != items[y].end(); ++yitr) {
+          const vector<pair<Coord4, Coord4> > &tx = xitr->second;
+          const vector<pair<Coord4, Coord4> > &ty = yitr->second;
+          for(int xa = 0; xa < tx.size(); xa++) {
+            for(int ya = 0; ya < ty.size(); ya++) {
+              if(linelineintersect(tx[xa].first, ty[ya].first)) {
+                clds->push_back(make_pair(0, CollideData(CollideId(reverseCategoryFromPC(items.size(), x), xitr->first), CollideId(reverseCategoryFromPC(items.size(), y), yitr->first), Coord2())));
+              }
+            }
+          }
         }
       }
     }
   }
 }
-void ColliderZone::processMotion(vector<pair<Coord, CollideData> > *clds, const char *collidematrix) const {
-  for(int x = 0; x < lastItem; x++) {
-    for(int y = x + 1; y < lastItem; y++) {
-      if(!collidematrix[items[x].first * getIndexCount(players) + items[y].first])
+void CollideZone::processMotion(vector<pair<Coord, CollideData> > *clds, const char *collidematrix) const {
+  for(int x = 0; x < items.size(); x++) {
+    for(int y = x + 1; y < items.size(); y++) {
+      if(!collidematrix[x * items.size() + y])
         continue;
-      const vector< pair< int, pair< Coord4, Coord4 > > > &tx = items[x].second;
-      const vector< pair< int, pair< Coord4, Coord4 > > > &ty = items[y].second;
-      for(int xa = 0; xa < tx.size(); xa++) {
-        for(int ya = 0; ya < ty.size(); ya++) {
-          pair<Coord, Coord2> tcol = getCollision(tx[xa].second.first, tx[xa].second.second, ty[ya].second.first, ty[ya].second.second);
-          if(tcol.first == NOCOLLIDE)
-          	continue;
-          CHECK(tcol.first >= 0 && tcol.first <= 1);
-          clds->push_back(make_pair(tcol.first, CollideData(CollideId(reverseIndex(players, items[x].first), tx[xa].first), CollideId(reverseIndex(players, items[y].first), ty[ya].first), tcol.second)));
+      for(map<int, vector<pair<Coord4, Coord4> > >::const_iterator xitr = items[x].begin(); xitr != items[x].end(); ++xitr) {
+        for(map<int, vector<pair<Coord4, Coord4> > >::const_iterator yitr = items[y].begin(); yitr != items[y].end(); ++yitr) {
+          const vector<pair<Coord4, Coord4> > &tx = xitr->second;
+          const vector<pair<Coord4, Coord4> > &ty = yitr->second;
+          for(int xa = 0; xa < tx.size(); xa++) {
+            for(int ya = 0; ya < ty.size(); ya++) {
+              pair<Coord, Coord2> tcol = getCollision(tx[xa].first, tx[xa].second, ty[ya].first, ty[ya].second);
+              if(tcol.first == NOCOLLIDE)
+                continue;
+              CHECK(tcol.first >= 0 && tcol.first <= 1);
+              clds->push_back(make_pair(tcol.first, CollideData(CollideId(reverseCategoryFromPC(items.size(), x), xitr->first), CollideId(reverseCategoryFromPC(items.size(), y), yitr->first), tcol.second)));
+            }
+          }
         }
       }
     }
   }
 }
 
-void ColliderZone::render(const Coord4 &bbox) const {
-  Coord4 tbx = bbox;
-  expandBoundBox(&tbx, Coord(0.8f));
-  setColor(Color(1.0, 1.0, 1.0) * 0.2 * items.size());
-  drawRect(tbx.toFloat(), 0.5);
-}
-
-void ColliderZone::reset(int wallid) {
-  int wallchunk = -1;
-  for(int i = 0; i < lastItem; i++) {
-    if(items[i].first == wallid) {
-      CHECK(wallchunk == -1);
-      wallchunk = i;
-    } else {
-      items[i].second.clear();
-    }
-  }
-  if(wallchunk != -1) {
-    swap(items[wallchunk], items[0]);
-    lastItem = 1;
-  } else {
-    lastItem = 0;
-  }
-}
-
-void ColliderZone::full_reset() {
-  lastItem = 0;
+void CollideZone::render() const {
   for(int i = 0; i < items.size(); i++)
-    items[i].second.clear();
-}
+    for(map<int, vector<pair<Coord4, Coord4> > >::const_iterator itr = items[i].begin(); itr != items[i].end(); itr++)
+      for(int j = 0; j < itr->second.size(); j++)
+        drawLine(itr->second[j].first, 1);
+}  
 
-ColliderZone::ColliderZone() {
-  lastItem = 0;
-};
-ColliderZone::ColliderZone(int in_players) {
-  players = in_players;
-  lastItem = 0;
-}
-
-void Collider::resetNonwalls(int mode, const Coord4 &bounds, const vector<int> &teams) {
-  CHECK(state == CSTA_UNINITTED || state == CSTA_WAIT);
+void Collider::cleanup(int mode, const Coord4 &bounds, const vector<int> &teams) {
+  CHECK(state == CSTA_WAITING);
   CHECK(teams.size() == players);
   
   Coord4 zbounds = snapToEnclosingGrid(bounds, resolution);
   
-  int nzxs = (zbounds.sx / resolution).toInt();
-  int nzys = (zbounds.sy / resolution).toInt();
-  int nzxe = (zbounds.ex / resolution).toInt();
-  int nzye = (zbounds.ey / resolution).toInt();
-  if(nzxs != zxs || nzys != zys || nzxe != zxe || nzye != zye) {
-    CHECK(!full_reset);
-    dprintf("Full collider reset!");
-    full_reset = true;
-    zxs = nzxs;
-    zys = nzys;
-    zxe = nzxe;
-    zye = nzye;
-  }
-  
-  int walltoken = getIndex(players, CGR_WALL, 0);
-  
-  zone.resize(zxe - zxs);
-  for(int i = 0; i < zone.size(); i++) {
-    for(int j = 0; j < zone[i].size(); j++) {
-      if(full_reset) {
-        zone[i][j].full_reset();
-      } else {
-        zone[i][j].reset(walltoken);
+  int nsx = (zbounds.sx / resolution).toInt();
+  int nsy = (zbounds.sy / resolution).toInt();
+  int nex = (zbounds.ex / resolution).toInt();
+  int ney = (zbounds.ey / resolution).toInt();
+  if(nsx != sx || nsy != sy || nex != ex || ney != ey) {
+    dprintf("Rescaling!\n");
+    {
+      vector<CollideZone> ncz((nex - nsx) * (ney - nsy));
+      for(int nx = nsx; nx < nex; nx++) {
+        for(int ny = nsy; ny < ney; ny++) {
+          if(nx >= sx && nx < ex && ny >= sy && ny < ey) {
+            swap(zones[cmap(nx, ny)], ncz[(nx - nsx) * (ney - nsy) + ny - nsy]);
+          } else {
+            ncz[(nx - nsx) * (ney - nsy) + ny - nsy].setCategoryCount(getCategoryCount(players));
+          }
+        }
       }
+      swap(ncz, zones);
     }
-    zone[i].resize(zye - zys, ColliderZone(players));
+    
+    sx = nsx;
+    sy = nsy;
+    ex = nex;
+    ey = ney;
   }
+  
+  for(int i = 0; i < zones.size(); i++)
+    zones[i].clean(persistent);
   
   collidematrix.clear();
   
@@ -372,111 +374,62 @@ void Collider::resetNonwalls(int mode, const Coord4 &bounds, const vector<int> &
   } else {
     CHECK(0);
   }
-  
+}
+
+void Collider::addToken(const CollideId &cid, const Coord4 &line, const Coord4 &direction) {
+  CHECK(state == CSTA_WAITING);
+
+  Coord4 area = startCBoundBox();
+  addToBoundBox(&area, line.sx, line.sy);
+  addToBoundBox(&area, line.ex, line.ey);
+  addToBoundBox(&area, line.sx + direction.sx, line.sy + direction.sy);
+  addToBoundBox(&area, line.ex + direction.ex, line.ey + direction.ey);
+  area = snapToEnclosingGrid(area, resolution);
+  int tsx = max((area.sx / resolution).toInt(), sx);
+  int tsy = max((area.sy / resolution).toInt(), sy);
+  int tex = min((area.ex / resolution).toInt(), ex);
+  int tey = min((area.ey / resolution).toInt(), ey);
+  CHECK(tsx < ex && tsy < ey && tex >= sx && tey >= sy);
   /*
-  for(int i = 0; i < players * 2 + 1; i++) {
-    string tp;
-    for(int j = 0; j < players * 2 + 1; j++)
-      tp += collidematrix[j + i * (players * 2 + 1)] + '0';
-    dprintf("%s\n", tp.c_str());
-  }*/
-  
-  state = CSTA_WAIT;
-  
-}
-bool Collider::consumeFullReset() {
-  bool rv = full_reset;
-  full_reset = false;
-  return rv;
-}
-
-void Collider::startToken(int toki) {
-  CHECK(state == CSTA_ADD && curpush != -1);
-  curtoken = toki;
-}
-void Collider::token(const Coord4 &line, const Coord4 &direction) {
-  if(state == CSTA_ADD) {
-    CHECK(state == CSTA_ADD && curpush != -1 && curtoken != -1);
-    Coord4 area = startCBoundBox();
-    addToBoundBox(&area, line.sx, line.sy);
-    addToBoundBox(&area, line.ex, line.ey);
-    addToBoundBox(&area, line.sx + direction.sx, line.sy + direction.sy);
-    addToBoundBox(&area, line.ex + direction.ex, line.ey + direction.ey);
-    area = snapToEnclosingGrid(area, resolution);
-    int txs = max((area.sx / resolution).toInt(), zxs);
-    int tys = max((area.sy / resolution).toInt(), zys);
-    int txe = min((area.ex / resolution).toInt(), zxe);
-    int tye = min((area.ey / resolution).toInt(), zye);
-    if(!(txs < zxe && tys < zye && txe > zxs && tye > zys)) {
-      dprintf("%d, %d, %d, %d\n", txs, tys, txe, tye);
-      dprintf("%d, %d, %d, %d\n", zxs, zys, zxe, zye);
-      dprintf("%f, %f, %f, %f\n", area.sx.toFloat(), area.sy.toFloat(), area.ex.toFloat(), area.ey.toFloat());
-      dprintf("%f, %f, %f, %f\n", line.sx.toFloat(), line.sy.toFloat(), line.ex.toFloat(), line.ey.toFloat());
-      dprintf("%f, %f, %f, %f\n", direction.sx.toFloat(), direction.sy.toFloat(), direction.ex.toFloat(), direction.ey.toFloat());
-      dprintf("-----\n");
-      dprintf("%s, %s, %s, %s\n", area.sx.rawstr().c_str(), area.sy.rawstr().c_str(), area.ex.rawstr().c_str(), area.ey.rawstr().c_str());
-      dprintf("%s, %s, %s, %s\n", line.sx.rawstr().c_str(), line.sy.rawstr().c_str(), line.ex.rawstr().c_str(), line.ey.rawstr().c_str());
-      dprintf("%s, %s, %s, %s\n", direction.sx.rawstr().c_str(), direction.sy.rawstr().c_str(), direction.ex.rawstr().c_str(), direction.ey.rawstr().c_str());
-      dprintf("-----\n");
-      dprintf("Area bounds: %f,%f %f,%f\n", (zxs * resolution).toFloat(), (zys * resolution).toFloat(), (zxe * resolution).toFloat(), (zye * resolution).toFloat());
-      CHECK(0);
-    }
-    for(int x = txs; x < txe; x++)
-      for(int y = tys; y < tye; y++)
-        zone[x - zxs][y - zys].addToken(curpush, curtoken, line, direction);
-  } else {
+  if(!(tsx < sx && tsy < sy && tex > ex && tey > ey)) {
+    dprintf("%d, %d, %d, %d\n", tsx, tsy, tex, tey);
+    dprintf("%d, %d, %d, %d\n", sx, sy, ex, ey);
+    dprintf("%f, %f, %f, %f\n", area.sx.toFloat(), area.sy.toFloat(), area.ex.toFloat(), area.ey.toFloat());
+    dprintf("%f, %f, %f, %f\n", line.sx.toFloat(), line.sy.toFloat(), line.ex.toFloat(), line.ey.toFloat());
+    dprintf("%f, %f, %f, %f\n", direction.sx.toFloat(), direction.sy.toFloat(), direction.ex.toFloat(), direction.ey.toFloat());
+    dprintf("-----\n");
+    dprintf("%s, %s, %s, %s\n", area.sx.rawstr().c_str(), area.sy.rawstr().c_str(), area.ex.rawstr().c_str(), area.ey.rawstr().c_str());
+    dprintf("%s, %s, %s, %s\n", line.sx.rawstr().c_str(), line.sy.rawstr().c_str(), line.ex.rawstr().c_str(), line.ey.rawstr().c_str());
+    dprintf("%s, %s, %s, %s\n", direction.sx.rawstr().c_str(), direction.sy.rawstr().c_str(), direction.ex.rawstr().c_str(), direction.ey.rawstr().c_str());
+    dprintf("-----\n");
+    dprintf("Area bounds: %f,%f %f,%f\n", (sx * resolution).toFloat(), (sy * resolution).toFloat(), (ex * resolution).toFloat(), (ey * resolution).toFloat());
     CHECK(0);
   }
+  */
+  int categ = getCategoryFromPlayers(players, cid.category, cid.bucket);
+  for(int x = tsx; x < tex; x++)
+    for(int y = tsy; y < tey; y++)
+      zones[cmap(x, y)].addToken(categ, cid.item, line, direction);
 }
 
-void Collider::token(const Coord4 &line) {
-  if(state == CSTA_ADD) {
-    CHECK(state == CSTA_ADD && curpush != -1 && curtoken != -1);
-    Coord4 area(min(line.sx, line.ex), min(line.sy, line.ey), max(line.sx, line.ex), max(line.sy, line.ey));
-    area = snapToEnclosingGrid(area, resolution);
-    int txs = max((area.sx / resolution).toInt(), zxs);
-    int tys = max((area.sy / resolution).toInt(), zys);
-    int txe = min((area.ex / resolution).toInt(), zxe);
-    int tye = min((area.ey / resolution).toInt(), zye);
-    if(!(txs < zxe && tys < zye && txe > zxs && tye > zys)) {
-      dprintf("%d, %d, %d, %d\n", txs, tys, txe, tye);
-      dprintf("%d, %d, %d, %d\n", zxs, zys, zxe, zye);
-      dprintf("%f, %f, %f, %f\n", area.sx.toFloat(), area.sy.toFloat(), area.ex.toFloat(), area.ey.toFloat());
-      dprintf("%f, %f, %f, %f\n", line.sx.toFloat(), line.sy.toFloat(), line.ex.toFloat(), line.ey.toFloat());
-      CHECK(0);
-    }
-    for(int x = txs; x < txe; x++)
-      for(int y = tys; y < tye; y++)
-        zone[x - zxs][y - zys].addToken(curpush, curtoken, line, Coord4(0, 0, 0, 0));
-  } else {
-    CHECK(0);
-  }
+void Collider::markPersistent(const CollideId &cid) {
+  CHECK(state == CSTA_WAITING);
+  
+  pair<int, int> tid(getCategoryFromPlayers(players, cid.category, cid.bucket), cid.item);
+  CHECK(!persistent.count(tid));
+  persistent.insert(tid);
 }
-void Collider::clearToken(int toki) {
-  for(int i = 0; i < zone.size(); i++)
-    for(int j = 0; j < zone[i].size(); j++)
-      zone[i][j].clearToken(curpush, toki);
+bool Collider::isPersistent(const CollideId &cid) {
+  pair<int, int> tid(getCategoryFromPlayers(players, cid.category, cid.bucket), cid.item);
+  return persistent.count(tid);
 }
-
-void Collider::addThingsToGroup(int category, int gid, bool ilog) {
-  CHECK(state == CSTA_WAIT && curpush == -1 && curtoken == -1);
-  state = CSTA_ADD;
-  log = ilog;
-  curpush = getIndex(players, category, gid);
-}
-void Collider::endAddThingsToGroup() {
-  CHECK(state == CSTA_ADD && curpush != -1);
-  state = CSTA_WAIT;
-  log = false;
-  curpush = -1;
-  curtoken = -1;
-}
-
-void Collider::clearGroup(int category, int gid) {
-  int groupid = getIndex(players, category, gid);
-  for(int i = 0; i < zone.size(); i++)
-    for(int j = 0; j < zone[i].size(); j++)
-      zone[i][j].clearGroup(groupid);
+void Collider::dumpGroup(const CollideId &cid) {
+  CHECK(state == CSTA_WAITING);
+  
+  int categ = getCategoryFromPlayers(players, cid.category, cid.bucket);
+  for(int i = 0; i < zones.size(); i++)
+    zones[i].dumpGroup(categ, cid.item);
+  persistent.erase(make_pair(categ, cid.item));
 }
 
 bool Collider::checkSimpleCollision(int category, int gid, const vector<Coord4> &line) const {
@@ -493,10 +446,12 @@ bool Collider::checkSimpleCollision(int category, int gid, const vector<Coord4> 
   area.ex += resolution / 4;
   area.ey += resolution / 4;
   area = snapToEnclosingGrid(area, resolution);
-  int txs = max((area.sx / resolution).toInt(), zxs);
-  int tys = max((area.sy / resolution).toInt(), zys);
-  int txe = min((area.ex / resolution).toInt(), zxe);
-  int tye = min((area.ey / resolution).toInt(), zye);
+  int tsx = max((area.sx / resolution).toInt(), sx);
+  int tsy = max((area.sy / resolution).toInt(), sy);
+  int tex = min((area.ex / resolution).toInt(), ex);
+  int tey = min((area.ey / resolution).toInt(), ey);
+  CHECK(tsx < ex && tsy < ey && tex >= sx && tey >= sy);
+  /*
   if(!(txs < zxe && tys < zye && txe > zxs && tye > zys)) {
     dprintf("%d, %d, %d, %d\n", txs, tys, txe, tye);
     dprintf("%d, %d, %d, %d\n", zxs, zys, zxe, zye);
@@ -504,15 +459,16 @@ bool Collider::checkSimpleCollision(int category, int gid, const vector<Coord4> 
     dprintf("%f, %f, %f, %f\n", pa.sx.toFloat(), pa.sy.toFloat(), pa.ex.toFloat(), pa.ey.toFloat());
     CHECK(0);
   }
-  for(int x = txs; x < txe; x++)
-    for(int y = tys; y < tye; y++)
-      if(zone[x - zxs][y - zys].checkSimpleCollision(getIndex(players, category, gid), line, &*collidematrix.begin()))
+  */
+  for(int x = tsx; x < tex; x++)
+    for(int y = tsy; y < tey; y++)
+      if(zones[cmap(x, y)].checkSimpleCollision(getCategoryFromPlayers(players, category, gid), line, &*collidematrix.begin()))
         return true;
   return false;
 }
 
 void Collider::processSimple() {
-  CHECK(state == CSTA_WAIT);
+  CHECK(state == CSTA_WAITING);
   state = CSTA_PROCESSED;
   collides.clear();
   curcollide = -1;
@@ -520,15 +476,14 @@ void Collider::processSimple() {
   vector<pair<Coord, CollideData> > clds;
   
   // TODO: Don't bother processing unique pairs more than once?
-  for(int i = 0; i < zone.size(); i++)
-    for(int j = 0; j < zone[i].size(); j++)
-      zone[i][j].processSimple(&clds, &*collidematrix.begin());
+  for(int i = 0; i < zones.size(); i++)
+    zones[i].processSimple(&clds, &*collidematrix.begin());
   
   sort(clds.begin(), clds.end());
   clds.erase(unique(clds.begin(), clds.end()), clds.end());
 }
 void Collider::processMotion() {
-  CHECK(state == CSTA_WAIT);
+  CHECK(state == CSTA_WAITING);
   state = CSTA_PROCESSED;
   collides.clear();
   curcollide = -1;
@@ -536,9 +491,8 @@ void Collider::processMotion() {
   vector<pair<Coord, CollideData> > clds;
   
   // TODO: Don't bother processing unique pairs more than once?
-  for(int i = 0; i < zone.size(); i++)
-    for(int j = 0; j < zone[i].size(); j++)
-      zone[i][j].processMotion(&clds, &*collidematrix.begin());
+  for(int i = 0; i < zones.size(); i++)
+    zones[i].processMotion(&clds, &*collidematrix.begin());
   
   sort(clds.begin(), clds.end());
   clds.erase(unique(clds.begin(), clds.end()), clds.end());
@@ -560,11 +514,13 @@ void Collider::processMotion() {
 }
 
 bool Collider::next() {
+  CHECK(state == CSTA_PROCESSED);
+  CHECK(curcollide == -1 || curcollide >= 0 && curcollide < collides.size());
   curcollide++;
   return curcollide < collides.size();
 }
-
-const CollideData &Collider::getData() const {
+  
+const CollideData &Collider::getCollision() const {
   CHECK(state == CSTA_PROCESSED);
   CHECK(curcollide >= 0 && curcollide < collides.size());
   return collides[curcollide];
@@ -572,20 +528,29 @@ const CollideData &Collider::getData() const {
 
 void Collider::finishProcess() {
   CHECK(state == CSTA_PROCESSED);
-  state = CSTA_WAIT;
+  state = CSTA_WAITING;
 }
 
-Collider::Collider() { state = -30; curpush = -1; curtoken = -1; log = false; full_reset = false; resolution = 0; };
-Collider::Collider(int playercount, Coord res) { state = CSTA_UNINITTED; curpush = -1; curtoken = -1; log = false; full_reset = false; players = playercount; resolution = res; };
+Collider::Collider(int players, Coord resolution) : players(players), resolution(resolution), state(CSTA_WAITING), sx(0), ex(0), sy(0), ey(0) { };
 Collider::~Collider() { };
 
 DECLARE_bool(debugGraphics);
-
 void Collider::render() const {
+}
+void Collider::renderAround(const Coord2 &kord) const {
   if(FLAGS_debugGraphics) {
-    for(int i = 0; i < zone.size(); i++)
-      for(int j = 0; j < zone[i].size(); j++)
-        zone[i][j].render(Coord4((zxs + i) * resolution, (zys + j) * resolution, (zxs + i + 1) * resolution, (zys + j + 1) * resolution));
+    setColor(Color(1.0, 0.4, 0.4));
+    int x = int(floor((kord.x / resolution).toFloat()));
+    int y = int(floor((kord.y / resolution).toFloat()));
+    for(int dx = -1; dx <= 1; dx++) {
+      for(int dy = -1; dy <= 1; dy++) {
+        int tx = x + dx;
+        int ty = y + dy;
+        if(tx < sx || ty < sy || tx >= ex || ty >= ey)
+          continue;
+        zones[cmap(tx, ty)].render();
+        drawText(StringPrintf("%d", cmap(tx, ty)), 3, Coord2(tx * resolution, ty * resolution).toFloat());
+      }
+    }
   }
-};
-
+}

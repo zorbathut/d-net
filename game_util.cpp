@@ -133,14 +133,14 @@ void Projectile::render(const vector<Coord2> &tankposes) const {
   }
   drawLine(Coord4(pos, pos + lasttail), projtype.thickness_visual());
 };
-void Projectile::addCollision(Collider *collider) const {
+void Projectile::addCollision(Collider *collider, int id) const {
   CHECK(live);
   if(projtype.motion() == PM_MINE) {
     vector<Coord2> ite = mine_polys();
     for(int i = 0; i < ite.size(); i++)
-      collider->token(Coord4(ite[i], ite[(i + 1) % ite.size()]), Coord4(0, 0, 0, 0));
+      collider->addToken(CollideId(CGR_PROJECTILE, owner, id), Coord4(ite[i], ite[(i + 1) % ite.size()]), Coord4(0, 0, 0, 0));
   } else {
-    collider->token(Coord4(pos, pos + lasttail), Coord4(movement(), movement() + nexttail()));
+    collider->addToken(CollideId(CGR_PROJECTILE, owner, id), Coord4(pos, pos + lasttail), Coord4(movement(), movement() + nexttail()));
   }
 };
 
@@ -264,12 +264,9 @@ void ProjectilePack::add(const Projectile &proj) {
 }
 
 void ProjectilePack::addCollisions(Collider *collider, int owner) const {
-  collider->addThingsToGroup(CGR_PROJECTILE, owner);
   for(map<int, Projectile>::const_iterator itr = projectiles.begin(); itr != projectiles.end(); ++itr) {
-    collider->startToken(itr->first);
-    itr->second.addCollision(collider);
+    itr->second.addCollision(collider, itr->first);
   }
-  collider->endAddThingsToGroup();
 }
 
 void ProjectilePack::tick(vector<smart_ptr<GfxEffects> > *gfxe, const GameImpactContext &gic) {

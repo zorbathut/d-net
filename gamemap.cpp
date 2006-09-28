@@ -48,34 +48,22 @@ void Gamemap::render() const {
 
 
 void Gamemap::updateCollide(Collider *collider) {
-  if(collider->consumeFullReset()) {
-    for(int i = 0; i < paths.size(); i++) {
-      if(isAvailable(paths[i].first)) {
-        paths[i].first = GMS_EMPTY;
-      } else {
-        paths[i].first = GMS_CHANGED;
-      }
-    }
-  }
-  
-  collider->addThingsToGroup(CGR_WALL, 0);
   for(int i = 0; i < paths.size(); i++) {
     if(paths[i].first == GMS_EMPTY) {
     } else if(paths[i].first == GMS_ERASED) {
-      collider->clearToken(i);
+      collider->dumpGroup(CollideId(CGR_WALL, CGR_WALLOWNER, i));
       paths[i].first = GMS_EMPTY;
     } else if(paths[i].first == GMS_UNCHANGED) {
     } else if(paths[i].first == GMS_CHANGED) {
-      collider->clearToken(i);
-      collider->startToken(i);
+      collider->dumpGroup(CollideId(CGR_WALL, CGR_WALLOWNER, i));
       for(int j = 0; j < paths[i].second.size(); j++) {
         int k = (j + 1) % paths[i].second.size();
-        collider->token(Coord4(paths[i].second[j], paths[i].second[k]));
+        collider->addToken(CollideId(CGR_WALL, CGR_WALLOWNER, i), Coord4(paths[i].second[j], paths[i].second[k]), Coord4(0, 0, 0, 0));
       }
+      collider->markPersistent(CollideId(CGR_WALL, CGR_WALLOWNER, i));
       paths[i].first = GMS_UNCHANGED;
     }
   }
-  collider->endAddThingsToGroup();
 }
 
 Coord4 Gamemap::getBounds() const {

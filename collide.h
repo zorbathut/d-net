@@ -3,6 +3,9 @@
 
 #include "coord.h"
 
+#include <set>
+#include <map>
+
 using namespace std;
 
 #define ENABLE_COLLIDE_DEBUG_VIS
@@ -14,7 +17,8 @@ public:
   int item;
 
   CollideId() { };
-  CollideId(pair<int, int> catbuck, int in_item) : category(catbuck.first), bucket(catbuck.second), item(in_item) { };
+  CollideId(int category, int bucket, int item) : category(category), bucket(bucket), item(item) { };
+  CollideId(pair<int, int> catbuck, int item) : category(catbuck.first), bucket(catbuck.second), item(item) { };
   CollideId(const CollideId &rhs) : category(rhs.category), bucket(rhs.bucket), item(rhs.item) { };
 };
 
@@ -24,93 +28,51 @@ inline bool operator<(const CollideId &lhs, const CollideId &rhs) {
   if(lhs.item != rhs.item) return lhs.item < rhs.item;
   return false;
 }
-inline bool operator>(const CollideId &lhs, const CollideId &rhs) {
-  return rhs < lhs;
-}
-
-inline bool operator==(const CollideId &lhs, const CollideId &rhs) {
-  if(lhs.category != rhs.category) return false;
-  if(lhs.bucket != rhs.bucket) return false;
-  if(lhs.item != rhs.item) return false;
-  return true;
-}
-inline bool operator!=(const CollideId &lhs, const CollideId &rhs) {
-  return !(lhs == rhs);
-}
 
 struct CollideData {
 public:
   CollideId lhs;
   CollideId rhs;
-  Coord2 loc;
+  Coord2 pos;
 
   CollideData() { };
-  CollideData(const CollideId &in_lhs, const CollideId &in_rhs, const Coord2 &in_loc) : lhs(in_lhs), rhs(in_rhs), loc(in_loc) { };
-  CollideData(const CollideData &in_rhs) : lhs(in_rhs.lhs), rhs(in_rhs.rhs), loc(in_rhs.loc) { };
+  CollideData(const CollideId &lhs, const CollideId &rhs, const Coord2 &pos) : lhs(lhs), rhs(rhs), pos(pos) { };
 };
 
-inline bool operator<(const CollideData &lhs, const CollideData &rhs) {
-  if(lhs.lhs != rhs.lhs) return lhs.lhs < rhs.lhs;
-  if(lhs.rhs != rhs.rhs) return lhs.rhs < rhs.rhs;
-  if(lhs.loc != rhs.loc) return lhs.loc < rhs.loc;
-  return false;
-}
-inline bool operator>(const CollideData &lhs, const CollideData &rhs) {
-  return rhs < lhs;
-}
-
-inline bool operator==(const CollideData &lhs, const CollideData &rhs) {
-  if(lhs.lhs != rhs.lhs) return false;
-  if(lhs.rhs != rhs.rhs) return false;
-  if(lhs.loc != rhs.loc) return false;
-  return true;
-}
-
-class ColliderZone {
+class CollideZone {
 private:
-  vector< pair< int, vector< pair< int, pair< Coord4, Coord4 > > > > > items;
-  int lastItem;
+  vector<map<int, vector<pair<Coord4, Coord4> > > > items;
 
-  int players;
 public:
+  
+  void setCategoryCount(int size);
 
-  void addToken(int groupid, int token, const Coord4 &line, const Coord4 &direction);
-  void clearToken(int groupid, int token);
+  void clean(const set<pair<int, int> > &persistent);
 
-  void clearGroup(int groupid);
+  void addToken(int category, int group, const Coord4 &line, const Coord4 &direction);
+  void dumpGroup(int category, int group);
 
   bool checkSimpleCollision(int groupid, const vector<Coord4> &line, const char *collidematrix) const;
 
   void processSimple(vector<pair<Coord, CollideData> > *clds, const char *collidematrix) const;
   void processMotion(vector<pair<Coord, CollideData> > *clds, const char *collidematrix) const;
 
-  void render(const Coord4 &bbox) const;
-
-  void reset(int wallid);
-  void full_reset();
-
-  ColliderZone();
-  ColliderZone(int players);
+  void render() const;
 };
 
 enum {COM_PLAYER, COM_PROJECTILE};
 enum {CGR_WALL, CGR_PLAYER, CGR_PROJECTILE};
+const int CGR_WALLOWNER = -1;
 
 class Collider {
 public:
 
-  void resetNonwalls(int mode, const Coord4 &bounds, const vector<int> &teams);
-  bool consumeFullReset();
+  void cleanup(int mode, const Coord4 &bounds, const vector<int> &teams);
 
-  void startToken(int toki);
-  void token(const Coord4 &line, const Coord4 &direction);
-  void token(const Coord4 &line);
-  void clearToken(int tokid);
-
-  void addThingsToGroup(int category, int gid, bool log = false);
-  void endAddThingsToGroup();
-
-  void clearGroup(int category, int gid);
+  void addToken(const CollideId &cid, const Coord4 &line, const Coord4 &direction);
+  void markPersistent(const CollideId &cid);
+  bool isPersistent(const CollideId &cid);
+  void dumpGroup(const CollideId &cid);
 
   bool checkSimpleCollision(int category, int gid, const vector<Coord4> &line) const;
 
@@ -118,44 +80,37 @@ public:
   void processMotion();
 
   bool next();
-  const CollideData &getData() const;
+  const CollideData &getCollision() const;
 
   void finishProcess();
 
-  Collider();
   Collider(int players, Coord resolution);
   ~Collider();
 
   void render() const;
+  void renderAround(const Coord2 &kord) const;
 
 private:
   
-  enum { CSTA_UNINITTED, CSTA_WAIT, CSTA_ADD, CSTA_PROCESSED };
+  enum { CSTA_WAITING, CSTA_PROCESSED };
   
-  int state;
-  bool log;
-  
+  // These probably shouldn't ever change
+  int players;
   Coord resolution;
   
-  bool full_reset;
-
-  int curcollide;
-  
-  int zxs;
-  int zys;
-  int zxe;
-  int zye;
-  vector<vector<ColliderZone> > zone;
-  
-  vector< CollideData > collides;
-
-  int curpush;
-  int curtoken;
-
-  int players;
-  
+  // State and per-process stuff
+  int state;
   vector<char> collidematrix;
-
+  
+  // Zone data and persistent flags
+  int sx, ex, sy, ey;
+  inline int cmap(int x, int y) const { return (x - sx) * (ey - sy) + y - sy; };
+  vector<CollideZone> zones;
+  set<pair<int, int> > persistent;
+  
+  // Output collides
+  vector<CollideData> collides;
+  int curcollide;
 };
 
 #endif

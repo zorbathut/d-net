@@ -97,7 +97,7 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
   {
     StackString sst("Player movement collider");
     
-    collider.resetNonwalls(COM_PLAYER, gamemap.getBounds(), teamids);
+    collider.cleanup(COM_PLAYER, gamemap.getBounds(), teamids);
     
     {
       StackString sst("Adding walls");
@@ -116,10 +116,7 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
         gamemap.checkConsistency();
         CHECK(0);
       }
-      collider.addThingsToGroup(CGR_PLAYER, j);
-      collider.startToken(0);
-      tanks[j].addCollision(&collider, keys[j]);
-      collider.endAddThingsToGroup();
+      tanks[j].addCollision(&collider, keys[j], j);
     }
     
     collider.processSimple();
@@ -162,12 +159,9 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
         StackString sst(StringPrintf("Moving player %d, status live %d", playerorder[i], tanks[playerorder[i]].live));
         //CHECK(inPath(tanks[playerorder[i]].getNextPosition(keys[playerorder[i]], tanks[playerorder[i]].pos, tanks[playerorder[i]].d).first, gamemap.getCollide()[0]));
         CHECK(isInside(gmb, tanks[playerorder[i]].getNextPosition(keys[playerorder[i]]).first));
-        collider.clearGroup(CGR_PLAYER, playerorder[i]);
-        collider.addThingsToGroup(CGR_PLAYER, playerorder[i]);
-        collider.startToken(0);
+        collider.dumpGroup(CollideId(CGR_PLAYER, i, 0));
         for(int j = 0; j < newpos.size(); j++)
-          collider.token(newpos[j], Coord4(0, 0, 0, 0));
-        collider.endAddThingsToGroup();
+          collider.addToken(CollideId(CGR_PLAYER, i, 0), newpos[j], Coord4(0, 0, 0, 0));
       }
 
     }
@@ -177,30 +171,24 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
   {
     StackString sst("Main collider");
     
-    collider.resetNonwalls(COM_PROJECTILE, gmb, teamids);
+    collider.cleanup(COM_PROJECTILE, gmb, teamids);
     
     gamemap.updateCollide(&collider);
     
-    for(int j = 0; j < tanks.size(); j++) {
-      collider.addThingsToGroup(CGR_PLAYER, j);
-      collider.startToken(0);
-      tanks[j].addCollision(&collider, keys[j]);
-      collider.endAddThingsToGroup();
-    }
+    for(int j = 0; j < tanks.size(); j++)
+      tanks[j].addCollision(&collider, keys[j], j);
   
-    for(int j = 0; j < projectiles.size(); j++) {
+    for(int j = 0; j < projectiles.size(); j++)
       projectiles[j].addCollisions(&collider, j);
-    }
     
     collider.processMotion();
     
     while(collider.next()) {
-      //dprintf("Collision!\n");
-      //dprintf("Timestamp %f\n", collider.getCurrentTimestamp().toFloat());
-      //dprintf("%d,%d,%d vs %d,%d,%d\n", collider.getLhs().first.first, collider.getLhs().first.second, collider.getLhs().second, collider.getRhs().first.first, collider.getRhs().first.second, collider.getRhs().second);
-      CollideId lhs = collider.getData().lhs;
-      CollideId rhs = collider.getData().rhs;
-      if(lhs > rhs) swap(lhs, rhs);
+      dprintf("Collision!\n");
+      dprintf("%d,%d,%d vs %d,%d,%d\n", collider.getCollision().lhs.category, collider.getCollision().lhs.bucket, collider.getCollision().lhs.item, collider.getCollision().rhs.category, collider.getCollision().rhs.bucket, collider.getCollision().rhs.item);
+      CollideId lhs = collider.getCollision().lhs;
+      CollideId rhs = collider.getCollision().rhs;
+      if(rhs < lhs) swap(lhs, rhs);
       if(lhs.category == CGR_WALL && rhs.category == CGR_WALL) {
         // wall-wall collision, wtf?
         CHECK(0);
@@ -209,25 +197,25 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
         CHECK(0);
       } else if(lhs.category == CGR_WALL && rhs.category == CGR_PROJECTILE) {
         // wall-projectile collision - kill projectile
-        projectiles[rhs.bucket].find(rhs.item).impact(collider.getData().loc, NULL, gic);
+        projectiles[rhs.bucket].find(rhs.item).impact(collider.getCollision().pos, NULL, gic);
       } else if(lhs.category == CGR_PLAYER && rhs.category == CGR_PLAYER) {
         // tank-tank collision, should never happen
         CHECK(0);
       } else if(lhs.category == CGR_PLAYER && rhs.category == CGR_PROJECTILE) {
         // tank-projectile collision - kill projectile, do damage
-        projectiles[rhs.bucket].find(rhs.item).impact(collider.getData().loc, &tanks[lhs.bucket], gic);
+        projectiles[rhs.bucket].find(rhs.item).impact(collider.getCollision().pos, &tanks[lhs.bucket], gic);
       } else if(lhs.category == CGR_PROJECTILE && rhs.category == CGR_PROJECTILE) {
         // projectile-projectile collision - kill both projectiles
         // also do radius damage, and do it fairly dammit
         bool lft = frand() < 0.5;
         
         if(lft)
-          projectiles[lhs.bucket].find(lhs.item).impact(collider.getData().loc, NULL, gic);
+          projectiles[lhs.bucket].find(lhs.item).impact(collider.getCollision().pos, NULL, gic);
         
-        projectiles[rhs.bucket].find(rhs.item).impact(collider.getData().loc, NULL, gic);
+        projectiles[rhs.bucket].find(rhs.item).impact(collider.getCollision().pos, NULL, gic);
         
         if(!lft)
-          projectiles[lhs.bucket].find(lhs.item).impact(collider.getData().loc, NULL, gic);
+          projectiles[lhs.bucket].find(lhs.item).impact(collider.getCollision().pos, NULL, gic);
         
       } else {
         // nothing meaningful, should totally never happen, what the hell is going on here, who are you, and why are you in my apartment
@@ -552,6 +540,8 @@ void Game::renderToScreen(const vector<const Player *> &players) const {
     // Tanks
     for(int i = 0; i < tanks.size(); i++) {
       tanks[i].render(teams);
+      // Debug graphics :D
+      collider.renderAround(tanks[i].pos);
     }
     
     // Projectiles, graphics effects, and bombardments
@@ -905,7 +895,7 @@ float Game::getTimeUntilBombardmentUpgrade() const {
   return (floor(bombardment_tier + 1) - bombardment_tier) / getBombardmentIncreasePerSec();
 }
 
-Game::Game() {
+Game::Game() : collider(0, 0) {
   gamemode = GMODE_LAST;
 }
 

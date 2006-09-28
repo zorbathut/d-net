@@ -34,7 +34,7 @@ public:
   void tick(vector<smart_ptr<GfxEffects> > *gfx);
   void render(const vector<Coord2> &tposes) const;
 
-  void addCollision(Collider *collider) const;
+  void addCollision(Collider *collider, int id) const;
   Coord2 warheadposition() const;
 
   void impact(Coord2 pos, Tank *target, const GameImpactContext &gic);
@@ -91,10 +91,6 @@ public:
   void render(const vector<Coord2> &tankpos) const;
 
 private:
-  class PPCD {
-  public:
-    bool operator()(const Projectile &lhs, const Projectile &rhs) const;
-  };
   map<int, Projectile> projectiles;
   vector<int> aid;
 };

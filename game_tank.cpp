@@ -86,7 +86,7 @@ vector<Coord4> Tank::getNextCollide(const Keystates &keys) const {
   return rv;
 };
 
-void Tank::addCollision(Collider *collider, const Keystates &keys) const {
+void Tank::addCollision(Collider *collider, const Keystates &keys, int owner) const {
   
   if(!live)
     return;
@@ -98,7 +98,7 @@ void Tank::addCollision(Collider *collider, const Keystates &keys) const {
   for(int i = 0; i < newtankpts.size(); i++)
     newtankpts[i] -= tankpts[i];
   for(int i = 0; i < tankpts.size(); i++)
-    collider->token(Coord4(tankpts[i], tankpts[(i + 1) % tankpts.size()]), Coord4(newtankpts[i], newtankpts[(i + 1) % tankpts.size()]));
+    collider->addToken(CollideId(CGR_PLAYER, owner, 0), Coord4(tankpts[i], tankpts[(i + 1) % tankpts.size()]), Coord4(newtankpts[i], newtankpts[(i + 1) % tankpts.size()]));
 };
 
 vector<Coord2> Tank::getTankVertices(Coord2 pos, float td) const {
