@@ -39,7 +39,6 @@ void CrashHandler(const char *fname, int line);
 void PrintDebugStack();
 void crash() __attribute__((__noreturn__));
 #define CHECK(x) do { if(!(x)) { dprintf("Error at %d, %s:%d - %s\n", frameNumber, __FILE__, __LINE__, #x); PrintDebugStack(); CrashHandler(__FILE__, __LINE__); crash(); } } while(0)
-#define TEST(x) CHECK(x)
 // And here would be the end
 
 #define printf FAILURE
