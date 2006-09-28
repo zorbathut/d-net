@@ -26,6 +26,8 @@ private:
   Player getUnupgradedPlayer() const;
   Player getUpgradedPlayer() const;
 
+  bool hasDemo() const;
+
   ShopDemo demo;
   bool miniature;
 

@@ -280,6 +280,10 @@ void Shop::renderNode(const HierarchyNode &node, int depth, const Player *player
   }
 }
 
+bool Shop::hasInfo(int type) const {
+  return type == HierarchyNode::HNT_WEAPON || type == HierarchyNode::HNT_EQUIPWEAPON || type == HierarchyNode::HNT_GLORY || type == HierarchyNode::HNT_BOMBARDMENT || type == HierarchyNode::HNT_UPGRADE || type == HierarchyNode::HNT_TANK;
+}
+
 bool Shop::runTick(const Keystates &keys, Player *player) {
   if(keys.l.repeat && curloc.size() > 1)
     curloc.pop_back();
@@ -399,7 +403,7 @@ bool Shop::runTick(const Keystates &keys, Player *player) {
   
   slay.updateExpandy(curloc.size(), getCurNode(player).branches.size());
   
-  if(curloc == lastloc)
+  if(curloc == lastloc && hasInfo(getCurNode(player).type))
     cshopinf.runTick();
   
   return false;
@@ -443,7 +447,7 @@ void Shop::renderToScreen(const Player *player) const {
     dprintf("Curloc isn't lastloc!");
   } else {
     CHECK(curloc == lastloc);
-    if(getCurNode(player).type == HierarchyNode::HNT_WEAPON || getCurNode(player).type == HierarchyNode::HNT_EQUIPWEAPON || getCurNode(player).type == HierarchyNode::HNT_GLORY || getCurNode(player).type == HierarchyNode::HNT_BOMBARDMENT || getCurNode(player).type == HierarchyNode::HNT_UPGRADE || getCurNode(player).type == HierarchyNode::HNT_TANK) {
+    if(hasInfo(getCurNode(player).type)) {
       cshopinf.renderFrame(slay.hud(), slay.fontsize(), slay.demo());
     }
   }

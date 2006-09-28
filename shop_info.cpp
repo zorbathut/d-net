@@ -117,9 +117,8 @@ void ShopInfo::init(const IDBTank *in_tank, const Player *in_player, bool in_min
 }
   
 void ShopInfo::runTick() {
-  if(!miniature)
-    if(weapon || bombardment || glory)
-      demo.runTick();
+  if(hasDemo())
+    demo.runTick();
 }
 
 int wordsallowed(const vector<string> &left, float fontsize, float limit, const string &start) {
@@ -184,55 +183,36 @@ void ShopInfo::renderFrame(Float4 bounds, float fontsize, Float4 inset) const {
   bool windowize = false;
   const float fontshift = fontsize * 1.5;
   if(weapon) {
-    {
-      ShopKVPrinter kvp(bounds, fontsize, fontshift);
-      kvp.print("Theoretical DPS", prettyFloatFormat(player->adjustWeapon(weapon).stats_damagePerSecond()));
-      kvp.print("Cost per damage", prettyFloatFormat(player->adjustWeapon(weapon).stats_costPerDamage()));
-      kvp.print("Cost per second", prettyFloatFormat(player->adjustWeapon(weapon).stats_costPerSecond()));
-    }
-    
-    windowize = true;
+    ShopKVPrinter kvp(bounds, fontsize, fontshift);
+    kvp.print("Theoretical DPS", prettyFloatFormat(player->adjustWeapon(weapon).stats_damagePerSecond()));
+    kvp.print("Cost per damage", prettyFloatFormat(player->adjustWeapon(weapon).stats_costPerDamage()));
+    kvp.print("Cost per second", prettyFloatFormat(player->adjustWeapon(weapon).stats_costPerSecond()));
   } else if(glory) {
-    {
-      ShopKVPrinter kvp(bounds, fontsize, fontshift);
-      
-      kvp.print("Total average damage", prettyFloatFormat(player->adjustGlory(glory).stats_averageDamage()));
-    }
-    
-    windowize = true;
+    ShopKVPrinter kvp(bounds, fontsize, fontshift);
+    kvp.print("Total average damage", prettyFloatFormat(player->adjustGlory(glory).stats_averageDamage()));
   } else if(bombardment) {
-    {
-      ShopKVPrinter kvp(bounds, fontsize, fontshift);
-      kvp.print("Damage per hit", prettyFloatFormat(player->adjustBombardment(bombardment, 0).warhead().stats_damagePerShot()));
-      kvp.print("Firing delay", prettyFloatFormat(player->adjustBombardment(bombardment, 0).lockdelay()) + " seconds");
-      kvp.print("Cooldown", prettyFloatFormat(player->adjustBombardment(bombardment, 0).unlockdelay()) + " second");
-    }
-    
-    windowize = true;
+    ShopKVPrinter kvp(bounds, fontsize, fontshift);
+    kvp.print("Damage per hit", prettyFloatFormat(player->adjustBombardment(bombardment, 0).warhead().stats_damagePerShot()));
+    kvp.print("Firing delay", prettyFloatFormat(player->adjustBombardment(bombardment, 0).lockdelay()) + " seconds");
+    kvp.print("Cooldown", prettyFloatFormat(player->adjustBombardment(bombardment, 0).unlockdelay()) + " second");
   } else if(upgrade) {
-    {
-      ShopKVPrinter kvp(bounds, fontsize, fontshift);
-      
-      for(int i = 0; i < IDBAdjustment::LAST; i++) {
-        if(upgrade->adjustment->adjustmentfactor(i) != 1.0) {
-          kvp.print(adjust_human[i], StringPrintf("%s -> %s (%s%%)%s", getUpgradeBefore(i).c_str(), getUpgradeAfter(i).c_str(), prettyFloatFormat(upgrade->adjustment->adjustmentfactor(i) * 100 - 100).c_str(), adjust_unit[i]));
-        }
+    ShopKVPrinter kvp(bounds, fontsize, fontshift);
+    for(int i = 0; i < IDBAdjustment::LAST; i++) {
+      if(upgrade->adjustment->adjustmentfactor(i) != 1.0) {
+        kvp.print(adjust_human[i], StringPrintf("%s -> %s (%s%%)%s", getUpgradeBefore(i).c_str(), getUpgradeAfter(i).c_str(), prettyFloatFormat(upgrade->adjustment->adjustmentfactor(i) * 100 - 100).c_str(), adjust_unit[i]));
       }
     }
   } else if(tank) {
-    {
-      ShopKVPrinter kvp(bounds, fontsize, fontshift);
-      
-      kvp.print("Max health", prettyFloatFormat(player->adjustTank(tank).maxHealth()) + " cme");
-      kvp.print("Turn speed", prettyFloatFormat(player->adjustTank(tank).turnSpeed()) + " rad/s");
-      kvp.print("Forward speed", prettyFloatFormat(player->adjustTank(tank).maxSpeed()) + " m/s");
-      kvp.print("Mass", prettyFloatFormat(player->adjustTank(tank).mass()) + " tons");
-    }
+    ShopKVPrinter kvp(bounds, fontsize, fontshift);
+    kvp.print("Max health", prettyFloatFormat(player->adjustTank(tank).maxHealth()) + " cme");
+    kvp.print("Turn speed", prettyFloatFormat(player->adjustTank(tank).turnSpeed()) + " rad/s");
+    kvp.print("Forward speed", prettyFloatFormat(player->adjustTank(tank).maxSpeed()) + " m/s");
+    kvp.print("Mass", prettyFloatFormat(player->adjustTank(tank).mass()) + " tons");
   } else {
     CHECK(0);
   }
   
-  if(!miniature && windowize) {
+  if(hasDemo()) {
     GfxWindow gfxw(inset, 1.0);
     demo.renderFrame();
   }
@@ -282,5 +262,9 @@ Player ShopInfo::getUpgradedPlayer() const {
   if(!ploy.hasUpgrade(upgrade))
     ploy.forceAcquireUpgrade(upgrade);
   return ploy;
+}
+
+bool ShopInfo::hasDemo() const {
+  return (weapon || glory || bombardment) && !miniature;
 }
 

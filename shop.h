@@ -90,6 +90,8 @@ private:
 
   void doTableRender(const Player *player) const;
   void renderNode(const HierarchyNode &node, int depth, const Player *player) const;
+  
+  bool hasInfo(int type) const;
 
 public:
   bool runTick(const Keystates &keys, Player *player);
