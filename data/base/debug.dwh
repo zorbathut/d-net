@@ -62,7 +62,7 @@ projectile {
 weapon {
   name=ROOT.Weapons.Debug.Permamine
   cost=1
-  firerate=30
+  firerate=60
   deploy=deploy.centroid
   projectile=projectile.permamine
 }

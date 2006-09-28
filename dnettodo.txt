@@ -1,5 +1,6 @@
 ---- Major work path
 - Mine collision slowdown problems
+- Make shop thicker
 - Move projectile into game_projectile.*
 - Collision/subtraction grid
 - Mine deployment range

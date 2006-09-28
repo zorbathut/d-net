@@ -138,35 +138,17 @@ pair<Coord, Coord2> getCollision(const Coord4 &l1p, const Coord4 &l1v, const Coo
 }
 
 inline int getCategoryCount(int players) {
-  return players * 2 + 1;
+  return players * 3 + 1;
 }
 inline int getPlayerCount(int index) {
-  CHECK(index % 2);
-  return index / 2;
+  CHECK(index % 3 == 1);
+  return index / 3;
 }
 int getCategoryFromPlayers(int players, int category, int bucket) {
-  if(category == CGR_WALL) {
-    CHECK(bucket == CGR_WALLOWNER);
-    return 0;
-  } else if(category == CGR_TANK) {
-    CHECK(bucket >= 0 && bucket < players);
-    return bucket + 1;
-  } else if(category == CGR_PROJECTILE) {
-    CHECK(bucket >= 0 && bucket < players);
-    return players + bucket + 1;
-  } else {
-    return 0;
-  }
+  return players * category + bucket;
 }
 pair<int, int> reverseCategoryFromPlayers(int players, int index) {
-  if(index == 0)
-    return make_pair(int(CGR_WALL), CGR_WALLOWNER);
-  else if(index < players + 1)
-    return make_pair(int(CGR_TANK), index - 1);
-  else if(index < players * 2 + 1)
-    return make_pair(int(CGR_PROJECTILE), index - players - 1);
-  else
-    CHECK(0);
+  return make_pair(index / players, index % players);
 }
 pair<int, int> reverseCategoryFromPC(int playercount, int index) {
   return reverseCategoryFromPlayers(getPlayerCount(playercount), index);
@@ -182,13 +164,15 @@ bool canCollidePlayer(int players, int indexa, int indexb, const vector<int> &te
   if(ar == br)
     return false;
   // Projectiles just don't collide
-  if(ar.first == CGR_PROJECTILE || br.first == CGR_PROJECTILE)
+  if(ar.first == CGR_PROJECTILE || br.first == CGR_PROJECTILE || ar.first == CGR_STATPROJECTILE || br.first == CGR_STATPROJECTILE)
     return false;
   return true;
 }
 bool canCollideProjectile(int players, int indexa, int indexb, const vector<int> &teams) {
   pair<int, int> ar = reverseCategoryFromPlayers(players, indexa);
   pair<int, int> br = reverseCategoryFromPlayers(players, indexb);
+  bool apr = (ar.first == CGR_PROJECTILE) || (ar.first == CGR_STATPROJECTILE);
+  bool bpr = (br.first == CGR_PROJECTILE) || (br.first == CGR_STATPROJECTILE);
   // Two things can't collide if they're part of the same ownership group (ignoring walls which are different)
   if(ar.second == br.second && ar.first != CGR_WALL && br.first != CGR_WALL)
     return false;
@@ -196,10 +180,13 @@ bool canCollideProjectile(int players, int indexa, int indexb, const vector<int>
   if(ar == br)
     return false;
   // Two things can't collide if neither of them are a projectile
-  if(ar.first != CGR_PROJECTILE && br.first != CGR_PROJECTILE)
+  if(!apr && !bpr)
     return false;
   // Projectiles on the same team don't collide
-  if(ar.first == CGR_PROJECTILE && br.first == CGR_PROJECTILE && teams[ar.second] == teams[br.second])
+  if(apr && bpr && (teams[ar.second] == teams[br.second]))
+    return false;
+  // Static "projectiles" and walls can't collide.
+  if((ar.first == CGR_WALL && br.first == CGR_STATPROJECTILE) || (ar.first == CGR_STATPROJECTILE && br.first == CGR_WALL))
     return false;
   // That's pretty much all.
   return true;
@@ -364,12 +351,12 @@ void Collider::cleanup(int mode, const Coord4 &bounds, const vector<int> &teams)
   collidematrix.clear();
   
   if(mode == COM_PLAYER) {
-    for(int i = 0; i < players * 2 + 1; i++)
-      for(int j = 0; j < players * 2 + 1; j++)
+    for(int i = 0; i < getCategoryCount(players); i++)
+      for(int j = 0; j < getCategoryCount(players); j++)
         collidematrix.push_back(canCollidePlayer(players, i, j, teams));
   } else if(mode == COM_PROJECTILE) {
-    for(int i = 0; i < players * 2 + 1; i++)
-      for(int j = 0; j < players * 2 + 1; j++)
+    for(int i = 0; i < getCategoryCount(players); i++)
+      for(int j = 0; j < getCategoryCount(players); j++)
         collidematrix.push_back(canCollideProjectile(players, i, j, teams));
   } else {
     CHECK(0);

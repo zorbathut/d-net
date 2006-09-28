@@ -138,8 +138,8 @@ void Projectile::firstCollide(Collider *collider, int id) const {
   if(projtype.motion() == PM_MINE) {
     vector<Coord2> ite = mine_polys();
     for(int i = 0; i < ite.size(); i++)
-      collider->addToken(CollideId(CGR_PROJECTILE, owner, id), Coord4(ite[i], ite[(i + 1) % ite.size()]), Coord4(0, 0, 0, 0));
-    collider->markPersistent(CollideId(CGR_PROJECTILE, owner, id));
+      collider->addToken(CollideId(CGR_STATPROJECTILE, owner, id), Coord4(ite[i], ite[(i + 1) % ite.size()]), Coord4(0, 0, 0, 0));
+    collider->markPersistent(CollideId(CGR_STATPROJECTILE, owner, id));
   }
 }
 
@@ -153,7 +153,7 @@ void Projectile::addCollision(Collider *collider, int id) const {
 
 void Projectile::collideCleanup(Collider *collider, int id) const {
   if(projtype.motion() == PM_MINE) {
-    collider->dumpGroup(CollideId(CGR_PROJECTILE, owner, id));
+    collider->dumpGroup(CollideId(CGR_STATPROJECTILE, owner, id));
   }
 }
 

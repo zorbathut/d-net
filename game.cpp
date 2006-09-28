@@ -188,22 +188,20 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
       //dprintf("%d,%d,%d vs %d,%d,%d\n", collider.getCollision().lhs.category, collider.getCollision().lhs.bucket, collider.getCollision().lhs.item, collider.getCollision().rhs.category, collider.getCollision().rhs.bucket, collider.getCollision().rhs.item);
       CollideId lhs = collider.getCollision().lhs;
       CollideId rhs = collider.getCollision().rhs;
+      if(lhs.category == CGR_STATPROJECTILE)
+        lhs.category = CGR_PROJECTILE;
+      if(rhs.category == CGR_STATPROJECTILE)
+        rhs.category = CGR_PROJECTILE;
       if(rhs < lhs) swap(lhs, rhs);
-      if(lhs.category == CGR_WALL && rhs.category == CGR_WALL) {
-        // wall-wall collision, wtf?
-        CHECK(0);
-      } else if(lhs.category == CGR_WALL && rhs.category == CGR_TANK) {
-        // wall-tank collision, should never happen
-        CHECK(0);
-      } else if(lhs.category == CGR_WALL && rhs.category == CGR_PROJECTILE) {
-        // wall-projectile collision - kill projectile
-        projectiles[rhs.bucket].find(rhs.item).impact(collider.getCollision().pos, NULL, gic);
-      } else if(lhs.category == CGR_TANK && rhs.category == CGR_TANK) {
+      if(lhs.category == CGR_TANK && rhs.category == CGR_TANK) {
         // tank-tank collision, should never happen
         CHECK(0);
       } else if(lhs.category == CGR_TANK && rhs.category == CGR_PROJECTILE) {
         // tank-projectile collision - kill projectile, do damage
         projectiles[rhs.bucket].find(rhs.item).impact(collider.getCollision().pos, &tanks[lhs.bucket], gic);
+      } else if(lhs.category == CGR_TANK && rhs.category == CGR_WALL) {
+        // tank-wall collision, should never happen
+        CHECK(0);
       } else if(lhs.category == CGR_PROJECTILE && rhs.category == CGR_PROJECTILE) {
         // projectile-projectile collision - kill both projectiles
         // also do radius damage, and do it fairly dammit
@@ -217,8 +215,15 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
         if(!lft)
           projectiles[lhs.bucket].find(lhs.item).impact(collider.getCollision().pos, NULL, gic);
         
+      } else if(lhs.category == CGR_PROJECTILE && rhs.category == CGR_WALL) {
+        // projectile-wall collision - kill projectile
+        projectiles[lhs.bucket].find(lhs.item).impact(collider.getCollision().pos, NULL, gic);
+      } else if(lhs.category == CGR_WALL && rhs.category == CGR_WALL) {
+        // wall-wall collision, wtf?
+        CHECK(0);
       } else {
         // nothing meaningful, should totally never happen, what the hell is going on here, who are you, and why are you in my apartment
+        dprintf("%d, %d\n", lhs.category, rhs.category);
         CHECK(0);
       }
     }
