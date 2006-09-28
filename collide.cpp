@@ -181,8 +181,8 @@ bool canCollidePlayer(int players, int indexa, int indexb, const vector<int> &te
   // Nothing can collide with itself
   if(ar == br)
     return false;
-  // Projectiles on the same team don't collide
-  if(ar.first == CGR_PROJECTILE && br.first == CGR_PROJECTILE && teams[ar.second] == teams[br.second])
+  // Projectiles just don't collide
+  if(ar.first == CGR_PROJECTILE || br.first == CGR_PROJECTILE)
     return false;
   return true;
 }

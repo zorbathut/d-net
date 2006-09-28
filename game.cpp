@@ -179,7 +179,7 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
       tanks[j].addCollision(&collider, keys[j], j);
   
     for(int j = 0; j < projectiles.size(); j++)
-      projectiles[j].addCollisions(&collider, j);
+      projectiles[j].updateCollisions(&collider, j);
     
     collider.processMotion();
     
@@ -227,7 +227,7 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
   }
 
   for(int j = 0; j < projectiles.size(); j++) {
-    projectiles[j].tick(&gfxeffects, gic);
+    projectiles[j].tick(&gfxeffects, &collider, gic);
   }
   
   for(int j = 0; j < bombards.size(); j++) {

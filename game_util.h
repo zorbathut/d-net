@@ -34,7 +34,10 @@ public:
   void tick(vector<smart_ptr<GfxEffects> > *gfx);
   void render(const vector<Coord2> &tposes) const;
 
+  void firstCollide(Collider *collider, int id) const;
   void addCollision(Collider *collider, int id) const;
+  void collideCleanup(Collider *collider, int id) const;
+
   Coord2 warheadposition() const;
 
   void impact(Coord2 pos, Tank *target, const GameImpactContext &gic);
@@ -86,13 +89,16 @@ public:
   Projectile &find(int id);
   void add(const Projectile &proj);
 
-  void addCollisions(Collider *collider, int owner) const;
-  void tick(vector<smart_ptr<GfxEffects> > *gfxe, const GameImpactContext &gic);
+  void updateCollisions(Collider *collider, int owner);
+  void tick(vector<smart_ptr<GfxEffects> > *gfxe, Collider *collider, const GameImpactContext &gic);
   void render(const vector<Coord2> &tankpos) const;
 
 private:
   map<int, Projectile> projectiles;
   vector<int> aid;
+
+  vector<int> newitems;
+  vector<int> cleanup;
 };
 
 void detonateWarhead(const IDBWarheadAdjust &warhead, Coord2 pos, Tank *impact, Tank *owner, const GameImpactContext &gic, float damagecredit, bool killcredit);

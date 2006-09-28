@@ -1,14 +1,14 @@
 ---- Major work path
-- Unique IDs for projectiles
-- Collision rewrite
+- Mine collision slowdown problems
+- CGR_PLAYER -> CGR_TANK
+- Move projectile into game_projectile.*
+- Collision/subtraction grid
 - Mine deployment range
-- Mine collision slowdown problems - is this CPU or rendering? Also why the hell is rendering going so slowly
 - Cached shop demo stats
 - Better mine demo
 - EMP demo
 - Gradual shop spawning
   - Remove bombardment from 2 player, make it cheaper for 3 and 4
-- Next-gen collision/storage system on grid
 - Pull glory explody into its own deploy?
 - Next-gen weapons
 - Faction info screen on startup
