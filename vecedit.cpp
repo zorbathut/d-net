@@ -91,6 +91,38 @@ void loadDv2() {
   entities = temp.entities;
 }
 
+
+void updateParameter(Parameter *param, const Button &l, const Button &r) {
+  if(param->type == Parameter::BOOLEAN) {
+    if(l.repeat || r.repeat)
+      param->bool_val = !param->bool_val;
+  } else if(param->type == Parameter::BOUNDED_INTEGER) {
+    if(l.repeat)
+      param->bi_val--;
+    if(r.repeat)
+      param->bi_val++;
+    if(param->bi_val < param->bi_low)
+      param->bi_val = param->bi_low;
+    if(param->bi_val >= param->bi_high)
+      param->bi_val = param->bi_high - 1;
+    CHECK(param->bi_val >= param->bi_low && param->bi_val < param->bi_high);
+  } else {
+    CHECK(0);
+  }
+}
+
+void renderParameter(const Parameter &param, float x, float y, float h) {
+  string prefix = StringPrintf("%12s: ", param.name.c_str());
+  if(param.type == Parameter::BOOLEAN) {
+    prefix += StringPrintf("%s", param.bool_val ? "true" : "false");
+  } else if(param.type == Parameter::BOUNDED_INTEGER) {
+    prefix += StringPrintf("%d", param.bi_val);
+  } else {
+    CHECK(0);
+  }
+  drawText(prefix, h, Float2(x, y));
+}
+
 int path_target = -1;
 int path_curnode = -1;
 int path_curhandle = -1;
@@ -317,7 +349,7 @@ void renderSingleEntity(int p, int widgetlevel) {
         } else {
           setColor(0.5, 0.5, 0.5);
         }
-        ent.params[i].render(2, 12 + 3 * i, 2);
+        renderParameter(ent.params[i], 2, 12 + 3 * i, 2);
       }
       setZoom(Float4(-zoom * 1.333, -zoom, zoom * 1.333, zoom));
     }
@@ -554,7 +586,7 @@ bool vecEditTick(const Controller &keys) {
       entity_position++;
     entity_position += entities[entity_target].params.size();
     entity_position %= entities[entity_target].params.size();
-    entities[entity_target].params[entity_position].update(keys.keys[8], keys.keys[10]);
+    updateParameter(&entities[entity_target].params[entity_position], keys.keys[8], keys.keys[10]);
     write_x = &entities[entity_target].x;
     write_y = &entities[entity_target].y;
   } else {

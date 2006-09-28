@@ -1,45 +1,13 @@
 
 #include "dvec2.h"
 
-#include "gfx.h"
-#include "input.h"
 #include "parse.h"
 #include "util.h"
+#include "const.h"
 
 #include <fstream>
 
 using namespace std;
-
-void Parameter::update(const Button &l, const Button &r) {
-  if(type == BOOLEAN) {
-    if(l.repeat || r.repeat)
-      bool_val = !bool_val;
-  } else if(type == BOUNDED_INTEGER) {
-    if(l.repeat)
-      bi_val--;
-    if(r.repeat)
-      bi_val++;
-    if(bi_val < bi_low)
-      bi_val = bi_low;
-    if(bi_val >= bi_high)
-      bi_val = bi_high - 1;
-    CHECK(bi_val >= bi_low && bi_val < bi_high);
-  } else {
-    CHECK(0);
-  }
-}
-
-void Parameter::render(float x, float y, float h) const {
-  string prefix = StringPrintf("%12s: ", name.c_str());
-  if(type == BOOLEAN) {
-    prefix += StringPrintf("%s", bool_val ? "true" : "false");
-  } else if(type == BOUNDED_INTEGER) {
-    prefix += StringPrintf("%d", bi_val);
-  } else {
-    CHECK(0);
-  }
-  drawText(prefix, h, Float2(x, y));
-}
 
 string Parameter::dumpTextRep() const {
   if(type == BOOLEAN) {

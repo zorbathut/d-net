@@ -8,7 +8,6 @@
 using namespace std;
 
 // these are only needed if you're planning to edit the dvec2
-class Button;
 class Transform2d;
   
 class Parameter {
@@ -28,9 +27,6 @@ public:
   int bi_def;
   int bi_low;
   int bi_high;
-  
-  void update(const Button &l, const Button &r);
-  void render(float x, float y, float h) const;
   
   string dumpTextRep() const;
   void parseTextRep(const string &in);
