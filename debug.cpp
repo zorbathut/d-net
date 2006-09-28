@@ -1,10 +1,10 @@
 
 #include "debug.h"
 
-#include "gfx.h"
 #include "os.h"
 
 #include <stdarg.h>
+#include <vector>
 
 using namespace std;
 
@@ -36,13 +36,20 @@ void PrintDebugStack() {
   dumpStackTrace();
 }
 
+void (*crashfunc)() = NULL;
+
+void registerCrashFunction(void (*fct)()) {
+  CHECK(!crashfunc);
+  crashfunc = fct;
+}
+void unregisterCrashFunction(void (*fct)()) {
+  CHECK(crashfunc == fct);
+  crashfunc = NULL;
+}
+
 void CrashHandler(const char *fname, int line) {
-  dprintf("cashing\n");
-  if(frameRunning()) {
-    dprintf("Frame running, aborting");
-    deinitFrame();
-  }
-  dprintf("end cashing\n");
+  if(crashfunc)
+    (*crashfunc)();
 };
 
 void crash() {

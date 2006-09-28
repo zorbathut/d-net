@@ -26,6 +26,9 @@ public:
 private:
   string str_;
 };
+
+void registerCrashFunction(void (*)());
+void unregisterCrashFunction(void (*)());
  
 // Almost everything after here is necessary for the vector header patch
 int dprintf(const char *bort, ...) __attribute__((format(printf,1,2)));

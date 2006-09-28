@@ -1,4 +1,6 @@
 ---- Major work path
+- get rid of TEST
+- undef CHECK/TEST in vector
 - Tanks drive through each other? What madness is this?
 - Collision/subtraction grid
 - Mine deployment range

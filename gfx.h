@@ -31,8 +31,6 @@ Float4 getZoom();
 
 float getAspect();
 
-bool frameRunning();
-
 void deinitFrame();
 
 /*************

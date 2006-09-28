@@ -5,6 +5,7 @@
 #include "coord.h"
 #include "parse.h"
 #include "util.h"
+#include "debug.h"
 
 #include <fstream>
 #include <GL/gl.h>
@@ -305,6 +306,8 @@ void initFrame() {
   clearFrame(Color(0.05, 0.05, 0.05));
   CHECK(glGetError() == GL_NO_ERROR);
   frame_running = true;
+  
+  registerCrashFunction(deinitFrame);
 }
 
 void clearFrame(const Color &color) {
@@ -319,6 +322,8 @@ bool frameRunning() {
 }
 
 void deinitFrame() {
+  unregisterCrashFunction(deinitFrame);
+  
   CHECK(frame_running);
   finishLineCluster();
   glFlush();
