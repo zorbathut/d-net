@@ -2,6 +2,7 @@
 #define DNET_COORD
 
 #include "cfcommon.h"
+#include "debug.h"
 
 #include <vector>
 

@@ -1,6 +1,7 @@
 
 #include "os.h"
 
+#include "debug.h"
 #include "util.h"
 
 #include <fstream>

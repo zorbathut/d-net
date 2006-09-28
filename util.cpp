@@ -1,6 +1,8 @@
 
 #include "util.h"
 
+#include "debug.h"
+
 #include <vector>
 #include <cmath>
 #include <sstream>
