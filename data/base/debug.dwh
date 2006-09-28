@@ -21,8 +21,31 @@ projectile {
 weapon {
   name=ROOT.Weapons.Debug.Tracer
   cost=1
-  firerate=1
+  firerate=60
   projectile=projectile.tracer
+  deploy=deploy.debug
+  debug=1
+}
+
+warhead {
+  name=warhead.shredder
+  wallremovalradius=2
+  debug=1
+}
+
+projectile {
+  name=projectile.shredder
+  velocity=600
+  color=1.0, 0.3, 0.3
+  warhead=warhead.shredder
+  debug=1
+}
+
+weapon {
+  name=ROOT.Weapons.Debug.Shredder
+  cost=1
+  firerate=60
+  projectile=projectile.shredder
   deploy=deploy.debug
   debug=1
 }
