@@ -148,7 +148,7 @@ int getCategoryFromPlayers(int players, int category, int bucket) {
   if(category == CGR_WALL) {
     CHECK(bucket == CGR_WALLOWNER);
     return 0;
-  } else if(category == CGR_PLAYER) {
+  } else if(category == CGR_TANK) {
     CHECK(bucket >= 0 && bucket < players);
     return bucket + 1;
   } else if(category == CGR_PROJECTILE) {
@@ -162,7 +162,7 @@ pair<int, int> reverseCategoryFromPlayers(int players, int index) {
   if(index == 0)
     return make_pair(int(CGR_WALL), CGR_WALLOWNER);
   else if(index < players + 1)
-    return make_pair(int(CGR_PLAYER), index - 1);
+    return make_pair(int(CGR_TANK), index - 1);
   else if(index < players * 2 + 1)
     return make_pair(int(CGR_PROJECTILE), index - players - 1);
   else

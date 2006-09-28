@@ -152,16 +152,16 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
         CHECK(newpos == test.getCurrentCollide());
       }
       
-      if(collider.checkSimpleCollision(CGR_PLAYER, playerorder[i], newpos)) {
+      if(collider.checkSimpleCollision(CGR_TANK, playerorder[i], newpos)) {
         tanks[playerorder[i]].inertia = make_pair(0.f, 0.f);  // wham!
         keys[playerorder[i]].nullMove();
       } else {
         StackString sst(StringPrintf("Moving player %d, status live %d", playerorder[i], tanks[playerorder[i]].live));
         //CHECK(inPath(tanks[playerorder[i]].getNextPosition(keys[playerorder[i]], tanks[playerorder[i]].pos, tanks[playerorder[i]].d).first, gamemap.getCollide()[0]));
         CHECK(isInside(gmb, tanks[playerorder[i]].getNextPosition(keys[playerorder[i]]).first));
-        collider.dumpGroup(CollideId(CGR_PLAYER, i, 0));
+        collider.dumpGroup(CollideId(CGR_TANK, i, 0));
         for(int j = 0; j < newpos.size(); j++)
-          collider.addToken(CollideId(CGR_PLAYER, i, 0), newpos[j], Coord4(0, 0, 0, 0));
+          collider.addToken(CollideId(CGR_TANK, i, 0), newpos[j], Coord4(0, 0, 0, 0));
       }
 
     }
@@ -192,16 +192,16 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
       if(lhs.category == CGR_WALL && rhs.category == CGR_WALL) {
         // wall-wall collision, wtf?
         CHECK(0);
-      } else if(lhs.category == CGR_WALL && rhs.category == CGR_PLAYER) {
+      } else if(lhs.category == CGR_WALL && rhs.category == CGR_TANK) {
         // wall-tank collision, should never happen
         CHECK(0);
       } else if(lhs.category == CGR_WALL && rhs.category == CGR_PROJECTILE) {
         // wall-projectile collision - kill projectile
         projectiles[rhs.bucket].find(rhs.item).impact(collider.getCollision().pos, NULL, gic);
-      } else if(lhs.category == CGR_PLAYER && rhs.category == CGR_PLAYER) {
+      } else if(lhs.category == CGR_TANK && rhs.category == CGR_TANK) {
         // tank-tank collision, should never happen
         CHECK(0);
-      } else if(lhs.category == CGR_PLAYER && rhs.category == CGR_PROJECTILE) {
+      } else if(lhs.category == CGR_TANK && rhs.category == CGR_PROJECTILE) {
         // tank-projectile collision - kill projectile, do damage
         projectiles[rhs.bucket].find(rhs.item).impact(collider.getCollision().pos, &tanks[lhs.bucket], gic);
       } else if(lhs.category == CGR_PROJECTILE && rhs.category == CGR_PROJECTILE) {

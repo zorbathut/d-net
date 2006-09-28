@@ -1,6 +1,5 @@
 ---- Major work path
 - Mine collision slowdown problems
-- CGR_PLAYER -> CGR_TANK
 - Move projectile into game_projectile.*
 - Collision/subtraction grid
 - Mine deployment range

@@ -61,7 +61,7 @@ public:
 };
 
 enum {COM_PLAYER, COM_PROJECTILE};
-enum {CGR_WALL, CGR_PLAYER, CGR_PROJECTILE};
+enum {CGR_WALL, CGR_TANK, CGR_PROJECTILE};
 const int CGR_WALLOWNER = -1;
 
 class Collider {
