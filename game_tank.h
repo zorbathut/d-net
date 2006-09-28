@@ -2,6 +2,7 @@
 #define DNET_GAME_TANK
 
 #include "game_util.h"
+#include "game_projectile.h"
 #include "input.h"
 
 class Tank {
