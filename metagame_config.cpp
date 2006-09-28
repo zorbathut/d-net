@@ -1,11 +1,11 @@
 
 #include "metagame_config.h"
 
+#include "debug.h"
 #include "game.h"
+#include "game_tank.h"
 #include "gfx.h"
 #include "player.h"
-#include "debug.h"
-#include "game_ai.h"
 
 using namespace std;
 

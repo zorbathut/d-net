@@ -1,13 +1,16 @@
 
 #include "metagame_tween.h"
 
-#include <numeric>
-
-#include "args.h"
-#include "gfx.h"
 #include "ai.h"
-#include "parse.h"
+#include "args.h"
+#include "debug.h"
+#include "game_tank.h"
+#include "gfx.h"
 #include "inputsnag.h"
+#include "parse.h"
+#include "player.h"
+
+#include <numeric>
 
 using namespace std;
 

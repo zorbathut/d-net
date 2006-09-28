@@ -3,15 +3,14 @@
 
 #include "ai.h"
 #include "args.h"
+#include "debug.h"
+#include "game_tank.h"
 #include "gfx.h"
 #include "inputsnag.h"
 #include "parse.h"
 #include "player.h"
-#include "shop.h"
-#include "debug.h"
 
 #include <fstream>
-#include <numeric>
 
 using namespace std;
 

@@ -1,9 +1,11 @@
 
 #include "game_projectile.h"
 
-#include "gfx.h"
 #include "collide.h"
+#include "gfx.h"
 #include "rng.h"
+
+using namespace std;
 
 void Projectile::tick(vector<smart_ptr<GfxEffects> > *gfxe) {
   CHECK(live);

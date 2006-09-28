@@ -3,7 +3,8 @@
 
 #include "game_tank.h"
 #include "rng.h"
-#include "gfx.h"
+
+using namespace std;
 
 vector<pair<float, Tank *> > GameImpactContext::getAdjacency(const Coord2 &center) const {
   vector<pair<float, Tank *> > rv;

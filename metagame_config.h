@@ -1,9 +1,8 @@
 #ifndef DNET_METAGAME_CONFIG
 #define DNET_METAGAME_CONFIG
 
-#include "input.h"
-#include "itemdb.h"
 #include "game_ai.h"
+#include "itemdb.h"
 
 using namespace std;
 

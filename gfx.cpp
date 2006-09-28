@@ -1,11 +1,12 @@
 
 #include "gfx.h"
+
 #include "args.h"
+#include "coord.h"
 #include "parse.h"
 #include "util.h"
 
 #include <fstream>
-
 #include <GL/gl.h>
 #include <SDL.h>
 

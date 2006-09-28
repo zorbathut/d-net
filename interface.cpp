@@ -3,13 +3,14 @@
 
 #include "ai.h"
 #include "args.h"
+#include "debug.h"
+#include "game_tank.h"
 #include "gfx.h"
+#include "inputsnag.h"
 #include "metagame.h"
+#include "os.h"
 #include "player.h"
 #include "vecedit.h"
-#include "debug.h"
-#include "inputsnag.h"
-#include "os.h"
 
 using namespace std;
 

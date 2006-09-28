@@ -2,12 +2,8 @@
 #define DNET_GAME
 
 #include "collide.h"
-#include "gamemap.h"
+#include "game_projectile.h"
 #include "input.h"
-#include "itemdb.h"
-#include "game_effects.h"
-#include "game_tank.h"
-#include "game_util.h"
 
 using namespace std;
 

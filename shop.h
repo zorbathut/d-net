@@ -1,9 +1,9 @@
 #ifndef DNET_SHOP
 #define DNET_SHOP
 
-#include "player.h"
-#include "input.h"
 #include "shop_info.h"
+
+using namespace std;
 
 class Ai;
   

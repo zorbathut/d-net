@@ -1,9 +1,10 @@
 #ifndef DNET_GAME_TANK
 #define DNET_GAME_TANK
 
-#include "game_util.h"
 #include "game_projectile.h"
 #include "input.h"
+
+using namespace std;
 
 class Tank {
 public:

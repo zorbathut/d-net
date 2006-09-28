@@ -1,15 +1,13 @@
 
 #include "os.h"
 
-#include "debug.h"
 #include "util.h"
 
-#include <string>
 #include <fstream>
 #include <vector>
+#include <signal.h>
 #include <unistd.h>
 #include <windows.h>
-#include <signal.h>
 
 using namespace std;
 

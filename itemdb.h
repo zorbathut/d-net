@@ -1,9 +1,9 @@
 #ifndef DNET_ITEMDB
 #define DNET_ITEMDB
 
-#include "dvec2.h"
-#include "coord.h"
 #include "color.h"
+#include "coord.h"
+#include "dvec2.h"
 #include "util.h"
 
 using namespace std;

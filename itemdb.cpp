@@ -2,7 +2,6 @@
 #include "itemdb.h"
 
 #include "args.h"
-#include "const.h"
 #include "parse.h"
 #include "player.h"
 

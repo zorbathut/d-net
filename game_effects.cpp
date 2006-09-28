@@ -5,6 +5,8 @@
 #include "gfx.h"
 #include "rng.h"
 
+using namespace std;
+
 void GfxEffects::tick() {
   CHECK(life != -1);
   age++;

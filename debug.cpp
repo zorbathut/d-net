@@ -1,10 +1,8 @@
 
 #include "debug.h"
 
-#include "os.h"
 #include "gfx.h"
-
-#include <vector>
+#include "os.h"
 
 #include <stdarg.h>
 

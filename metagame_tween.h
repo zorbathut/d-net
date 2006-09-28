@@ -4,6 +4,8 @@
 #include "metagame_config.h"
 #include "shop.h"
 
+using namespace std;
+
 class PersistentData {
 public:
   // Player data and reorganization functions

@@ -1,9 +1,9 @@
 #ifndef DNET_GAME_PROJECTILE
 #define DNET_GAME_PROJECTILE
 
-#include "game_effects.h"
-#include "coord.h"
 #include "game_util.h"
+
+using namespace std;
 
 class Collider;
 class Tank;

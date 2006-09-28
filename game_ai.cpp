@@ -1,7 +1,9 @@
 
 #include "game_ai.h"
 
-#include "game.h"
+#include "coord.h"
+
+using namespace std;
 
 void GameAi::updateGame(const vector<Tank> &players, int me) {
   zeroNextKeys();

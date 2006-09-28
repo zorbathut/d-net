@@ -3,6 +3,9 @@
 
 #include "ai.h"
 #include "gfx.h"
+#include "player.h"
+
+using namespace std;
 
 Float4 ShopLayout::box(int depth) const {
   return Float4(hoffbase(depth), 0, hoffbase(depth) + int_boxwidth, int_fontsize + int_boxborder * 2);

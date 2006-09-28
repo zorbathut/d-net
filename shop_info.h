@@ -3,6 +3,8 @@
 
 #include "shop_demo.h"
 
+using namespace std;
+
 class ShopInfo {
 public:
   ShopInfo();

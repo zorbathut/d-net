@@ -2,8 +2,8 @@
 #define DNET_DVEC2
 
 #include "float.h"
+
 #include <string>
-#include <vector>
 
 using namespace std;
 

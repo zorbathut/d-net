@@ -1,10 +1,11 @@
 #ifndef DNET_GAME_UTIL
 #define DNET_GAME_UTIL
 
-#include "player.h"
 #include "game_effects.h"
-#include "collide.h"
 #include "gamemap.h"
+#include "itemdb.h"
+
+using namespace std;
 
 class Tank;
 

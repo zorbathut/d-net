@@ -2,7 +2,6 @@
 #include "float.h"
 
 #include "cfcommon.h"
-
 #include "composite-imp.h"
 
 using namespace std;

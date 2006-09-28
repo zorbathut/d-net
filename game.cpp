@@ -1,13 +1,12 @@
 
 #include "game.h"
 
-#include "game_ai.h"
 #include "args.h"
 #include "debug.h"
+#include "game_ai.h"
+#include "game_tank.h"
 #include "gfx.h"
 #include "player.h"
-
-#include <numeric>
 
 using namespace std;
 

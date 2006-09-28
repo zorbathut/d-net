@@ -1,9 +1,13 @@
 
 #include "shop_demo.h"
 
-#include "gfx.h"
 #include "debug.h"
 #include "game_ai.h"
+#include "game_tank.h"
+#include "gfx.h"
+#include "player.h"
+
+using namespace std;
 
 enum {DEMOMODE_WEAPON, DEMOMODE_BOMBARDMENT, DEMOMODE_GLORY, DEMOMODE_LAST};
 

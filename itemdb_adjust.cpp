@@ -1,7 +1,6 @@
 
 #include "itemdb.h"
 
-#include "const.h"
 #include "rng.h"
 
 using namespace std;

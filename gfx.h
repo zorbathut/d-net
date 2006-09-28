@@ -1,10 +1,9 @@
 #ifndef DNET_GFX
 #define DNET_GFX
 
-#include "coord.h"
-#include "dvec2.h"
-#include "color.h"
 #include "cfc.h"
+#include "color.h"
+#include "dvec2.h"
 
 using namespace std;
 

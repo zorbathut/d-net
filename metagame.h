@@ -1,7 +1,6 @@
 #ifndef DNET_METAGAME
 #define DNET_METAGAME
 
-#include "game.h"
 #include "metagame_tween.h"
 
 using namespace std;

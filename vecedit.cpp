@@ -1,11 +1,10 @@
 
 #include "vecedit.h"
 
-#include "game.h"
+#include "game_tank.h"
 #include "gfx.h"
 
 #include <stack>
-
 #include <SDL.h>
 
 using namespace std;

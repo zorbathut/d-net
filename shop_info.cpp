@@ -3,6 +3,9 @@
 
 #include "gfx.h"
 #include "parse.h"
+#include "player.h"
+
+using namespace std;
 
 class ShopKVPrinter {
 public:
