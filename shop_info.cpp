@@ -180,7 +180,6 @@ void ShopInfo::renderFrame(Float4 bounds, float fontsize, Float4 inset) const {
   
   bounds.sy += 25;
   
-  bool windowize = false;
   const float fontshift = fontsize * 1.5;
   if(weapon) {
     ShopKVPrinter kvp(bounds, fontsize, fontshift);

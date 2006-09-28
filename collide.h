@@ -71,7 +71,6 @@ public:
 
   void addToken(const CollideId &cid, const Coord4 &line, const Coord4 &direction);
   void markPersistent(const CollideId &cid);
-  bool isPersistent(const CollideId &cid);
   void dumpGroup(const CollideId &cid);
 
   bool checkSimpleCollision(int category, int gid, const vector<Coord4> &line) const;

@@ -419,10 +419,6 @@ void Collider::markPersistent(const CollideId &cid) {
   CHECK(!persistent.count(tid));
   persistent.insert(tid);
 }
-bool Collider::isPersistent(const CollideId &cid) {
-  pair<int, int> tid(getCategoryFromPlayers(players, cid.category, cid.bucket), cid.item);
-  return persistent.count(tid);
-}
 void Collider::dumpGroup(const CollideId &cid) {
   CHECK(state == CSTA_WAITING);
   
