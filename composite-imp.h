@@ -60,12 +60,16 @@ template <typename T> void imp_addToBoundBox(Type4 *bbox, Type1 x, Type1 y) {
   bbox->ey = max(bbox->ey, y);
 };
 template <typename T> void imp_addToBoundBox(Type4 *bbox, const Type2 &point) {
-  addToBoundBox(bbox, point.x, point.y);
+  imp_addToBoundBox<T>(bbox, point.x, point.y);
 };
 template <typename T> void imp_addToBoundBox(Type4 *bbox, const Type4 &rect) {
   CHECK(rect.isNormalized());
-  addToBoundBox(bbox, rect.sx, rect.sy);
-  addToBoundBox(bbox, rect.ex, rect.ey);
+  imp_addToBoundBox<T>(bbox, rect.sx, rect.sy);
+  imp_addToBoundBox<T>(bbox, rect.ex, rect.ey);
+};
+template <typename T> void imp_addToBoundBox(Type4 *bbox, const vector<Type2> &rect) {
+  for(int i = 0; i < rect.size(); i++)
+    imp_addToBoundBox<T>(bbox, rect[i]);
 };
 
 template <typename T> void imp_expandBoundBox(Type4 *bbox, Type1 factor) {

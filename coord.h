@@ -374,6 +374,7 @@ Coord4 startCBoundBox();
 void addToBoundBox(Coord4 *bbox, Coord x, Coord y);
 void addToBoundBox(Coord4 *bbox, const Coord2 &point);
 void addToBoundBox(Coord4 *bbox, const Coord4 &rect);
+void addToBoundBox(Coord4 *bbox, const vector<Coord2> &line);
 
 void expandBoundBox(Coord4 *bbox, Coord factor);
 

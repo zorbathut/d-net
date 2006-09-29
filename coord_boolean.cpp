@@ -330,6 +330,12 @@ Coord2 truncate(const Coord2 &c2, int bits) {
 //DEFINE_string(getdiffstorage, "", "Where to store an archive of all the getDifference calls for profiling purposes");
 //FILE *gds = NULL;
 
+vector<Coord2> reversed(const vector<Coord2> &val) {
+  vector<Coord2> v = val;
+  reverse(v.begin(), v.end());
+  return v;
+}
+
 bool getDifferenceInstaCrashy = false;
 
 vector<vector<Coord2> > getDifferenceCore(const vector<Coord2> &lhs, const vector<Coord2> &rhs) {
@@ -341,31 +347,75 @@ vector<vector<Coord2> > getDifferenceCore(const vector<Coord2> &lhs, const vecto
     return rv;
   }
   #endif
+  bool lhsInside = !pathReversed(lhs);
+  bool rhsInside = !pathReversed(rhs);
+  #if 1
+  {
+    bool lhsInverted = !lhsInside;
+    bool rhsInverted = !rhsInside;
+    int state = getPathRelation(lhs, rhs);
+    if(state == PR_INTERSECT) {
+      // This case is actually interesting.
+    } else if(state == PR_SEPARATE) {
+      if(!lhsInverted && !rhsInverted) {
+        // LHS minus a completely unrelated RHS
+        return vector<vector<Coord2> >(1, lhs);
+      } else if(lhsInverted && !rhsInverted) {
+        // RHS is "contained within" LHS. Technically this should be a poly with two holes. In reality, we can't do that.
+        dprintf("LHS Enclose! (s01) intersection ignored");
+        return vector<vector<Coord2> >(1, lhs);
+      } else if(!lhsInverted && rhsInverted) {
+        // RHS conquers the universe, except for a small area which LHS isn't in.
+        return vector<vector<Coord2> >();
+      } else if(lhsInverted && rhsInverted) {
+        // RHS conquers the universe except for the inside of itself, which LHS fills. So we just return reverse-RHS.
+        return vector<vector<Coord2> >(1, reversed(rhs));
+      }
+      CHECK(0);
+    } else if(state == PR_RHSENCLOSE) {
+      if(!lhsInverted && !rhsInverted) {
+        // RHS encloses LHS and destroys it.
+        return vector<vector<Coord2> >();
+      } else if(lhsInverted && !rhsInverted) {
+        // LHS includes everything but a small amount, RHS chops a larger amount out of that.
+        return vector<vector<Coord2> >(1, reversed(rhs));
+      } else if(!lhsInverted && rhsInverted) {
+        // RHS includes everything but the area where, conveniently, LHS is located
+        return vector<vector<Coord2> >(1, lhs);
+      } else if(lhsInverted && rhsInverted) {
+        // This one is weird. In theory I should end up with a donut shape. In reality I'm just going to crash. This shouldn't ever happen.
+        CHECK(0);
+      }
+      CHECK(0);
+    } else if(state == PR_LHSENCLOSE) {
+      if(!lhsInverted && !rhsInverted) {
+        // RHS chops a hole out of a solid LHS. Ignore RHS, with warning.
+        dprintf("LHS Enclose! (l00) intersection ignored");
+        return vector<vector<Coord2> >(1, lhs);
+      } else if(lhsInverted && !rhsInverted) {
+        // LHS contains everything except what RHS is. So we just return LHS.
+        return vector<vector<Coord2> >(1, lhs);
+      } else if(!lhsInverted && rhsInverted) {
+        // LHS gets whittled down by a reversed RHS.
+        return vector<vector<Coord2> >(1, reversed(rhs));
+      } else if(lhsInverted && rhsInverted) {
+        // LHS contains almost everything. RHS contains *slightly strictly more*.
+        return vector<vector<Coord2> >();
+      }
+      CHECK(0);
+    } else {
+      CHECK(0);
+    }
+    
+    CHECK(state == PR_INTERSECT);
+  }
+  
+  // After this, errors are moderately expected.
   GetDifferenceHandler gdhst(lhs, rhs);
   GDException CrashHandler;
   if(getDifferenceInstaCrashy)
     CHECK(0);
-  bool lhsInside = !pathReversed(lhs);
-  CHECK(!pathReversed(rhs));
-  #if 1
-  {
-    int state = getPathRelation(lhs, rhs);
-    if(state == PR_SEPARATE)
-      return vector<vector<Coord2> >(1, lhs);
-    if(state == PR_RHSENCLOSE && !pathReversed(lhs))
-      return vector<vector<Coord2> >();
-    if(state == PR_RHSENCLOSE && pathReversed(lhs)) {
-      vector<vector<Coord2> > rv;
-      rv.push_back(rhs);
-      reverse(rv[0].begin(), rv[0].end());
-      return rv;
-    }
-    if(state == PR_LHSENCLOSE) {
-      //dprintf("LHS Enclose! intersection ignored");
-      return vector<vector<Coord2> >(1, lhs);
-    }
-    CHECK(state == PR_INTERSECT);
-  }
+  
   map<Coord2, DualLink> vertx;
   vector<Coord2> tv[2] = {lhs, rhs};
   {
