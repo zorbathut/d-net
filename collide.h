@@ -71,6 +71,8 @@ public:
   void addToken(const CollideId &cid, const Coord4 &line, const Coord4 &direction);
   void dumpGroup(const CollideId &cid);
 
+  int consumeAddedTokens() const;
+
   bool checkSimpleCollision(int category, int gid, const vector<Coord4> &line) const;
 
   void processMotion();
@@ -106,6 +108,9 @@ private:
   // Output collides
   vector<CollideData> collides;
   int curcollide;
+  
+  // Debug stuff
+  mutable int addedTokens;
 };
 
 #endif

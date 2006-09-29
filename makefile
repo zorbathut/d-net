@@ -1,7 +1,7 @@
 
 SOURCES = main core game timer debug gfx collide gamemap util rng args interface vecedit metagame itemdb parse dvec2 input level coord ai inputsnag os_win32 float cfcommon coord_boolean player itemdb_adjust metagame_config shop shop_demo shop_info game_ai game_effects color metagame_tween cfc game_tank game_util game_projectile
-CPPFLAGS = `sdl-config --cflags` -mno-cygwin -DVECTOR_PARANOIA -Wall -Wno-sign-compare -Wno-uninitialized -g -O2 -pg
-LINKFLAGS = `sdl-config --libs` -lglu32 -lopengl32 -lm -mno-cygwin -g -O2 -pg
+CPPFLAGS = `sdl-config --cflags` -mno-cygwin -DVECTOR_PARANOIA -Wall -Wno-sign-compare -Wno-uninitialized -g -O2 #-pg
+LINKFLAGS = `sdl-config --libs` -lglu32 -lopengl32 -lm -mno-cygwin -g -O2 #-pg
 
 CPP = g++
 
@@ -21,7 +21,7 @@ basicrun: d-net.exe
 	d-net.exe --nofullscreen --writeTarget=
 
 run: d-net.exe
-	d-net.exe --nofullscreen --debugitems --startingCash=100000 --debugControllers=2 --factionMode=0 --nullControllers=11 --writeTarget=
+	d-net.exe --nofullscreen --debugitems --startingCash=100000 --debugControllers=2 --factionMode=0 --nullControllers=11 --writeTarget= --debugGraphicsCollisions
 
 ai: d-net.exe
 	d-net.exe --nofullscreen --aiCount=12 --fastForwardTo=100000000 --factionMode=0

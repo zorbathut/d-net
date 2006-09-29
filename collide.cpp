@@ -400,6 +400,8 @@ void Collider::addToken(const CollideId &cid, const Coord4 &line, const Coord4 &
   for(int x = tsx; x < tex; x++)
     for(int y = tsy; y < tey; y++)
       zones[cmap(x, y)].addToken(categ, cid.item, line, direction);
+    
+  addedTokens++;
 }
 
 void Collider::dumpGroup(const CollideId &cid) {
@@ -409,6 +411,12 @@ void Collider::dumpGroup(const CollideId &cid) {
   for(int i = 0; i < zones.size(); i++)
     zones[i].dumpGroup(categ, cid.item);
   //persistent.erase(make_pair(categ, cid.item));
+}
+
+int Collider::consumeAddedTokens() const {
+  int adt = addedTokens;
+  addedTokens = 0;
+  return adt;
 }
 
 bool Collider::checkSimpleCollision(int category, int gid, const vector<Coord4> &line) const {

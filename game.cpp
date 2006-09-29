@@ -12,6 +12,7 @@ using namespace std;
 
 DEFINE_bool(verboseCollisions, false, "Verbose collisions");
 DEFINE_bool(debugGraphics, false, "Enable various debug graphics");
+DEFINE_bool(debugGraphicsCollisions, false, "Enable HUD for collision stats");
 DECLARE_int(rounds_per_store);
 
 // returns center and width/height
@@ -794,6 +795,12 @@ void Game::renderToScreen(const vector<const Player *> &players) const {
       }
       
       //wins->swap(fact);
+    }
+    
+    // Collision HUD
+    if(FLAGS_debugGraphicsCollisions || FLAGS_debugGraphics) {
+      setColor(Color(1.0, 1.0, 1.0));
+      drawText(StringPrintf("Collision tokens added: %d", collider.consumeAddedTokens()), 0.02, Float2(0.01, 0.14));
     }
 
   }
