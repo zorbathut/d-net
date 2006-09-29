@@ -141,6 +141,47 @@ void Gamemap::checkConsistency() const {
 Gamemap::Gamemap() { };
 Gamemap::Gamemap(const Level &lev) {
   CHECK(lev.paths.size());
+  
+  Coord4 bounds = startCBoundBox();
+  for(int i = 0; i < lev.paths.size(); i++) {
+    addToBoundBox(&bounds, lev.paths[i]);
+  }
+  CHECK(bounds.isNormalized());
+  
+  const Coord resolution = Coord(20);
+  bounds = snapToEnclosingGrid(bounds, resolution);
+  int sx = (bounds.sx / resolution).toInt() - 1;
+  int sy = (bounds.sy / resolution).toInt() - 1;
+  int ex = (bounds.ex / resolution).toInt() + 1;
+  int ey = (bounds.ey / resolution).toInt() + 1;
+  
+  for(int x = sx; x < ex; x++) {
+    for(int y = sy; y < ey; y++) {
+      Coord sxp = x * resolution;
+      Coord syp = y * resolution;
+      Coord exp = (x + 1) * resolution;
+      Coord eyp = (y + 1) * resolution;
+      vector<Coord2> outerpath;
+      outerpath.push_back(Coord2(sxp, syp));
+      outerpath.push_back(Coord2(sxp, eyp));
+      outerpath.push_back(Coord2(exp, eyp));
+      outerpath.push_back(Coord2(exp, syp));
+      for(int i = 0; i < lev.paths.size(); i++) {
+        vector<vector<Coord2> > resu = getDifference(lev.paths[i], outerpath);
+        for(int j = 0; j < resu.size(); j++) {
+          Coord4 bounds = startCBoundBox();
+          addToBoundBox(&bounds, resu[j]);
+          dprintf("%f,%f,%f,%f vs %f,%f,%f,%f\n", bounds.sx.toFloat(), bounds.sy.toFloat(), bounds.ex.toFloat(), bounds.ey.toFloat(), sxp.toFloat(), syp.toFloat(), exp.toFloat(), eyp.toFloat());
+          CHECK(bounds.sx >= sxp);
+          CHECK(bounds.sy >= syp);
+          CHECK(bounds.ex <= exp);
+          CHECK(bounds.ey <= eyp);
+          paths.push_back(make_pair((int)GMS_CHANGED, resu[j]));
+        }
+      }
+    }
+  }
+  
   for(int i = 0; i < lev.paths.size(); i++)
     paths.push_back(make_pair((int)GMS_CHANGED, lev.paths[i]));
 }

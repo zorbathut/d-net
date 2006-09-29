@@ -813,7 +813,7 @@ vector<vector<Coord2> > getDifferenceCore(const vector<Coord2> &lhs, const vecto
     set<Coord2> seeds;
     set<pair<bool, Coord2> > seen;
     for(map<Coord2, DualLink>::const_iterator itr = vertx.begin(); itr != vertx.end(); itr++) {
-      if(itr->second.live[0] && !inPath((itr->first + itr->second.links[0][1]) / 2, rhs) && !(itr->second.live[1] && itr->second.links[0][1] == itr->second.links[1][1])) {
+      if(itr->second.live[0] && inPath((itr->first + itr->second.links[0][1]) / 2, rhs) == !rhsInside && !(itr->second.live[1] && itr->second.links[0][1] == itr->second.links[1][1])) {
         seeds.insert(itr->second.links[0][1]);
       }
     }
@@ -845,12 +845,12 @@ vector<vector<Coord2> > getDifferenceCore(const vector<Coord2> &lhs, const vecto
           } else {
             CHECK(vertx[now.second].live[0]);
             if(!vertx[now.second].live[1] || vertx[now.second].links[0][1] != vertx[now.second].links[1][0]) // parallel links cause some problems
-              CHECK(roughInPath((now.second + vertx[now.second].links[0][1]) / 2, tv[1], false));
+              CHECK(roughInPath((now.second + vertx[now.second].links[0][1]) / 2, tv[1], !rhsInside));
             now = make_pair(false, vertx[now.second].links[0][1]);
           }
         } else {
-          // came in off a rhs path - switch to lhs if there is one
-          if(vertx[now.second].live[0] && !inPath((now.second + vertx[now.second].links[0][1]) / 2, tv[1])) {
+          // came in off a rhs path - switch to lhs if there is one, and it doesn't immediately enter rhs
+          if(vertx[now.second].live[0] && inPath((now.second + vertx[now.second].links[0][1]) / 2, tv[1]) == !rhsInside) {
             CHECK(!inPath((now.second + vertx[now.second].links[0][1]) / 2, tv[1]));
             now = make_pair(false, vertx[now.second].links[0][1]);
           } else {
@@ -881,36 +881,41 @@ vector<vector<Coord2> > getDifferenceCore(const vector<Coord2> &lhs, const vecto
   vector<vector<Coord2> > rvpt;
   for(int i = 0; i < rv.size(); i++) {
     vector<vector<Coord2> > mas = mergeAndSplit(rv[i]);
-    for(int j = 0; j < mas.size(); j++) {
-      if(lhsInside) {
-        if(pathReversed(mas[j])) {
-          dprintf("Holy fuck, this path is screwed up!\n");
-          CHECK(0);
-        } else {
-          rrv.push_back(mas[j]);
-        }
-      } else {
-        if(pathReversed(mas[j])) {
-          if(gotReversedPath) {
-            Coord rva = abs(getArea(rrv[rvpathID]));
-            Coord masa = abs(getArea(mas[j]));
-            dprintf("Battle! %f area versus %f area, which inside-out path will survive!", rva.toFloat(), masa.toFloat());
-            if(rva < masa) {
-              rrv[rvpathID] = mas[j];
-            }
+    if(!rhsInside) {
+      CHECK(mas.size() == 1); // otherwise something has kind of gone wrong
+      rrv.push_back(mas[0]);
+    } else {
+      for(int j = 0; j < mas.size(); j++) {
+        if(lhsInside) {
+          if(pathReversed(mas[j])) {
+            dprintf("Holy fuck, this path is screwed up!\n");
+            CHECK(0);
           } else {
-            CHECK(!gotReversedPath);
-            rvpathID = rrv.size();
             rrv.push_back(mas[j]);
-            gotReversedPath = true;
           }
         } else {
-          rvpt.push_back(mas[j]);
+          if(pathReversed(mas[j])) {
+            if(gotReversedPath) {
+              Coord rva = abs(getArea(rrv[rvpathID]));
+              Coord masa = abs(getArea(mas[j]));
+              dprintf("Battle! %f area versus %f area, which inside-out path will survive!", rva.toFloat(), masa.toFloat());
+              if(rva < masa) {
+                rrv[rvpathID] = mas[j];
+              }
+            } else {
+              CHECK(!gotReversedPath);
+              rvpathID = rrv.size();
+              rrv.push_back(mas[j]);
+              gotReversedPath = true;
+            }
+          } else {
+            rvpt.push_back(mas[j]);
+          }
         }
       }
     }
   }
-  if(!lhsInside) {
+  if(rhsInside && !lhsInside) {
     CHECK(rvpathID != -1);
     for(int k = 0; k < rvpt.size(); k++) {
       if(inPath(getCentroid(rvpt[k]), rrv[rvpathID])) {
