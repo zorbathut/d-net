@@ -276,27 +276,6 @@ bool CollideZone::checkSimpleCollision(int groupid, const vector<Coord4> &line, 
   return false;
 }
 
-void CollideZone::processSimple(vector<pair<Coord, CollideData> > *clds, const char *collidematrix) const {
-  for(int x = 0; x < items.size(); x++) {
-    for(int y = x + 1; y < items.size(); y++) {
-      if(!collidematrix[x * items.size() + y])
-        continue;
-      for(map<int, vector<pair<Coord4, Coord4> > >::const_iterator xitr = items[x].begin(); xitr != items[x].end(); ++xitr) {
-        for(map<int, vector<pair<Coord4, Coord4> > >::const_iterator yitr = items[y].begin(); yitr != items[y].end(); ++yitr) {
-          const vector<pair<Coord4, Coord4> > &tx = xitr->second;
-          const vector<pair<Coord4, Coord4> > &ty = yitr->second;
-          for(int xa = 0; xa < tx.size(); xa++) {
-            for(int ya = 0; ya < ty.size(); ya++) {
-              if(linelineintersect(tx[xa].first, ty[ya].first)) {
-                clds->push_back(make_pair(0, CollideData(CollideId(reverseCategoryFromPC(items.size(), x), xitr->first), CollideId(reverseCategoryFromPC(items.size(), y), yitr->first), Coord2())));
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-}
 void CollideZone::processMotion(vector<pair<Coord, CollideData> > *clds, const char *collidematrix) const {
   for(int x = 0; x < items.size(); x++) {
     for(int y = x + 1; y < items.size(); y++) {
@@ -365,17 +344,22 @@ void Collider::cleanup(int mode, const Coord4 &bounds, const vector<int> &teams)
   
   collidematrix.clear();
   
+  const int catcount = getCategoryCount(players);
   if(mode == COM_PLAYER) {
-    for(int i = 0; i < getCategoryCount(players); i++)
-      for(int j = 0; j < getCategoryCount(players); j++)
+    for(int i = 0; i < catcount; i++)
+      for(int j = 0; j < catcount; j++)
         collidematrix.push_back(canCollidePlayer(players, i, j, teams));
   } else if(mode == COM_PROJECTILE) {
-    for(int i = 0; i < getCategoryCount(players); i++)
-      for(int j = 0; j < getCategoryCount(players); j++)
+    for(int i = 0; i < catcount; i++)
+      for(int j = 0; j < catcount; j++)
         collidematrix.push_back(canCollideProjectile(players, i, j, teams));
   } else {
     CHECK(0);
   }
+  
+  for(int i = 0; i < catcount; i++)
+    for(int j = 0; j < catcount; j++)
+      CHECK(collidematrix[i * catcount + j] == collidematrix[j * catcount + i]);
 }
 
 void Collider::addToken(const CollideId &cid, const Coord4 &line, const Coord4 &direction) {
@@ -465,21 +449,6 @@ bool Collider::checkSimpleCollision(int category, int gid, const vector<Coord4> 
   return false;
 }
 
-void Collider::processSimple() {
-  CHECK(state == CSTA_WAITING);
-  state = CSTA_PROCESSED;
-  collides.clear();
-  curcollide = -1;
-  
-  vector<pair<Coord, CollideData> > clds;
-  
-  // TODO: Don't bother processing unique pairs more than once?
-  for(int i = 0; i < zones.size(); i++)
-    zones[i].processSimple(&clds, &*collidematrix.begin());
-  
-  sort(clds.begin(), clds.end());
-  clds.erase(unique(clds.begin(), clds.end()), clds.end());
-}
 void Collider::processMotion() {
   CHECK(state == CSTA_WAITING);
   state = CSTA_PROCESSED;

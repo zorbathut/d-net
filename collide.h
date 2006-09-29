@@ -54,7 +54,6 @@ public:
 
   bool checkSimpleCollision(int groupid, const vector<Coord4> &line, const char *collidematrix) const;
 
-  void processSimple(vector<pair<Coord, CollideData> > *clds, const char *collidematrix) const;
   void processMotion(vector<pair<Coord, CollideData> > *clds, const char *collidematrix) const;
 
   void render() const;
@@ -75,7 +74,6 @@ public:
 
   bool checkSimpleCollision(int category, int gid, const vector<Coord4> &line) const;
 
-  void processSimple();
   void processMotion();
 
   bool next();

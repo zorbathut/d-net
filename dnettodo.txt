@@ -1,5 +1,6 @@
 ---- Major work path
 - Tanks drive through each other? What madness is this?
+  - DIFF THIS DAMMIT you're breaking things intentionally
 - Collision/subtraction grid
 - Mine deployment range
 - Cached shop demo stats

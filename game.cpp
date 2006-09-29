@@ -118,11 +118,8 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
       tanks[j].addCollision(&collider, keys[j], j);
     }
     
-    collider.processSimple();
-    
-    CHECK(!collider.next());
-    
-    collider.finishProcess();
+    for(int j = 0; j < tanks.size(); j++)
+      CHECK(!collider.checkSimpleCollision(CGR_TANK, j, tanks[j].getCurrentCollide()));
     
     vector<int> playerorder;
     {
@@ -158,9 +155,9 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
         StackString sst(StringPrintf("Moving player %d, status live %d", playerorder[i], tanks[playerorder[i]].live));
         //CHECK(inPath(tanks[playerorder[i]].getNextPosition(keys[playerorder[i]], tanks[playerorder[i]].pos, tanks[playerorder[i]].d).first, gamemap.getCollide()[0]));
         CHECK(isInside(gmb, tanks[playerorder[i]].getNextPosition(keys[playerorder[i]]).first));
-        collider.dumpGroup(CollideId(CGR_TANK, i, 0));
+        collider.dumpGroup(CollideId(CGR_TANK, playerorder[i], 0));
         for(int j = 0; j < newpos.size(); j++)
-          collider.addToken(CollideId(CGR_TANK, i, 0), newpos[j], Coord4(0, 0, 0, 0));
+          collider.addToken(CollideId(CGR_TANK, playerorder[i], 0), newpos[j], Coord4(0, 0, 0, 0));
       }
 
     }
