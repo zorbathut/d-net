@@ -165,8 +165,13 @@ int getCategoryFromPlayers(int players, int category, int bucket) {
 pair<int, int> reverseCategoryFromPlayers(int players, int index) {
   return make_pair(index / players, index % players);
 }
-pair<int, int> reverseCategoryFromPC(int playercount, int index) {
-  return reverseCategoryFromPlayers(getPlayerCount(playercount), index);
+pair<int, int> reverseCategoryFromCC(int categorycount, int index) {
+  return reverseCategoryFromPlayers(getPlayerCount(categorycount), index);
+}
+
+bool isPersistentFromPlayers(int players, int index) {
+  int cat = reverseCategoryFromPlayers(players, index).first;
+  return cat == CGR_STATPROJECTILE || cat == CGR_WALL;
 }
 
 bool canCollidePlayer(int players, int indexa, int indexb, const vector<int> &teams) {
@@ -237,17 +242,11 @@ void CollideZone::setCategoryCount(int size) {
   items.resize(size);
 }
 
-void CollideZone::clean(const set<pair<int, int> > &persistent) {
+void CollideZone::clean(const char *persist) {
   CHECK(items.size());
   for(int i = 0; i < items.size(); i++) {
-    for(map<int, vector<pair<Coord4, Coord4> > >::iterator itr = items[i].begin(); itr != items[i].end(); ) {
-      if(persistent.count(make_pair(i, itr->first))) {
-        itr++;
-      } else {
-        map<int, vector<pair<Coord4, Coord4> > >::iterator titr = itr;
-        itr++;
-        items[i].erase(titr);
-      }
+    if(!persist[i]) {
+      items[i].clear();
     }
   }
 }
@@ -291,7 +290,7 @@ void CollideZone::processMotion(vector<pair<Coord, CollideData> > *clds, const c
               if(tcol.first == NOCOLLIDE)
                 continue;
               CHECK(tcol.first >= 0 && tcol.first <= 1);
-              clds->push_back(make_pair(tcol.first, CollideData(CollideId(reverseCategoryFromPC(items.size(), x), xitr->first), CollideId(reverseCategoryFromPC(items.size(), y), yitr->first), tcol.second)));
+              clds->push_back(make_pair(tcol.first, CollideData(CollideId(reverseCategoryFromCC(items.size(), x), xitr->first), CollideId(reverseCategoryFromCC(items.size(), y), yitr->first), tcol.second)));
             }
           }
         }
@@ -339,8 +338,13 @@ void Collider::cleanup(int mode, const Coord4 &bounds, const vector<int> &teams)
     ey = ney;
   }
   
-  for(int i = 0; i < zones.size(); i++)
-    zones[i].clean(persistent);
+  {
+    vector<char> persist;
+    for(int i = 0; i < getCategoryCount(players); i++)
+      persist.push_back(isPersistentFromPlayers(players, i));
+    for(int i = 0; i < zones.size(); i++)
+      zones[i].clean(&persist[0]);
+  }
   
   collidematrix.clear();
   
@@ -398,20 +402,13 @@ void Collider::addToken(const CollideId &cid, const Coord4 &line, const Coord4 &
       zones[cmap(x, y)].addToken(categ, cid.item, line, direction);
 }
 
-void Collider::markPersistent(const CollideId &cid) {
-  CHECK(state == CSTA_WAITING);
-  
-  pair<int, int> tid(getCategoryFromPlayers(players, cid.category, cid.bucket), cid.item);
-  CHECK(!persistent.count(tid));
-  persistent.insert(tid);
-}
 void Collider::dumpGroup(const CollideId &cid) {
   CHECK(state == CSTA_WAITING);
   
   int categ = getCategoryFromPlayers(players, cid.category, cid.bucket);
   for(int i = 0; i < zones.size(); i++)
     zones[i].dumpGroup(categ, cid.item);
-  persistent.erase(make_pair(categ, cid.item));
+  //persistent.erase(make_pair(categ, cid.item));
 }
 
 bool Collider::checkSimpleCollision(int category, int gid, const vector<Coord4> &line) const {

@@ -47,7 +47,7 @@ public:
   
   void setCategoryCount(int size);
 
-  void clean(const set<pair<int, int> > &persistent);
+  void clean(const char *persist);
 
   void addToken(int category, int group, const Coord4 &line, const Coord4 &direction);
   void dumpGroup(int category, int group);
@@ -69,7 +69,6 @@ public:
   void cleanup(int mode, const Coord4 &bounds, const vector<int> &teams);
 
   void addToken(const CollideId &cid, const Coord4 &line, const Coord4 &direction);
-  void markPersistent(const CollideId &cid);
   void dumpGroup(const CollideId &cid);
 
   bool checkSimpleCollision(int category, int gid, const vector<Coord4> &line) const;
@@ -103,7 +102,6 @@ private:
   int sx, ex, sy, ey;
   inline int cmap(int x, int y) const { return (x - sx) * (ey - sy) + y - sy; };
   vector<CollideZone> zones;
-  set<pair<int, int> > persistent;
   
   // Output collides
   vector<CollideData> collides;

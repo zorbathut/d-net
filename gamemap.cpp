@@ -60,7 +60,8 @@ void Gamemap::updateCollide(Collider *collider) {
         int k = (j + 1) % paths[i].second.size();
         collider->addToken(CollideId(CGR_WALL, CGR_WALLOWNER, i), Coord4(paths[i].second[j], paths[i].second[k]), Coord4(0, 0, 0, 0));
       }
-      collider->markPersistent(CollideId(CGR_WALL, CGR_WALLOWNER, i));
+      // implicit in CGR_WALL now, but leaving this in just for the time being
+      //collider->markPersistent(CollideId(CGR_WALL, CGR_WALLOWNER, i));
       paths[i].first = GMS_UNCHANGED;
     }
   }
