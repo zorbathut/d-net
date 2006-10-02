@@ -138,6 +138,9 @@ void Gamemap::checkConsistency() const {
   // TODO: check intersection?
 }
 
+const Coord resolution = Coord(20);
+const Coord offset = Coord(1.23456f); // Nasty hack to largely eliminate many border cases
+
 Gamemap::Gamemap() { };
 Gamemap::Gamemap(const Level &lev) {
   CHECK(lev.paths.size());
@@ -148,39 +151,41 @@ Gamemap::Gamemap(const Level &lev) {
   }
   CHECK(bounds.isNormalized());
   
-  const Coord resolution = Coord(20);
-  const Coord offset = Coord(1.23456f); // Nasty hack to largely eliminate many border cases
   bounds = bounds + Coord4(-offset, -offset, -offset, -offset);
   bounds = snapToEnclosingGrid(bounds, resolution);
-  int sx = (bounds.sx / resolution).toInt() - 1;
-  int sy = (bounds.sy / resolution).toInt() - 1;
-  int ex = (bounds.ex / resolution).toInt() + 1;
-  int ey = (bounds.ey / resolution).toInt() + 1;
+  sx = (bounds.sx / resolution).toInt() - 1;
+  sy = (bounds.sy / resolution).toInt() - 1;
+  ex = (bounds.ex / resolution).toInt() + 1;
+  ey = (bounds.ey / resolution).toInt() + 1;
 
   for(int x = sx; x < ex; x++) {
     for(int y = sy; y < ey; y++) {
-      Coord sxp = x * resolution + offset;
-      Coord syp = y * resolution + offset;
-      Coord exp = (x + 1) * resolution + offset;
-      Coord eyp = (y + 1) * resolution + offset;
+      Coord4 tile = getTileBounds(x, y);
       vector<Coord2> outerpath;
-      outerpath.push_back(Coord2(sxp, syp));
-      outerpath.push_back(Coord2(sxp, eyp));
-      outerpath.push_back(Coord2(exp, eyp));
-      outerpath.push_back(Coord2(exp, syp));
+      outerpath.push_back(Coord2(tile.sx, tile.sy));
+      outerpath.push_back(Coord2(tile.sx, tile.ey));
+      outerpath.push_back(Coord2(tile.ex, tile.ey));
+      outerpath.push_back(Coord2(tile.ex, tile.sy));
       for(int i = 0; i < lev.paths.size(); i++) {
         vector<vector<Coord2> > resu = getDifference(lev.paths[i], outerpath);
         for(int j = 0; j < resu.size(); j++) {
           Coord4 bounds = startCBoundBox();
           addToBoundBox(&bounds, resu[j]);
           //dprintf("%f,%f,%f,%f vs %f,%f,%f,%f\n", bounds.sx.toFloat(), bounds.sy.toFloat(), bounds.ex.toFloat(), bounds.ey.toFloat(), sxp.toFloat(), syp.toFloat(), exp.toFloat(), eyp.toFloat());
-          CHECK(bounds.sx >= sxp - Coord(0.0001));
-          CHECK(bounds.sy >= syp - Coord(0.0001));
-          CHECK(bounds.ex <= exp + Coord(0.0001));
-          CHECK(bounds.ey <= eyp + Coord(0.0001));
+          CHECK(bounds.sx >= tile.sx - Coord(0.0001));
+          CHECK(bounds.sy >= tile.sy - Coord(0.0001));
+          CHECK(bounds.ex <= tile.ex + Coord(0.0001));
+          CHECK(bounds.ey <= tile.ey + Coord(0.0001));
           paths.push_back(make_pair((int)GMS_CHANGED, resu[j]));
         }
       }
     }
   }
+}
+
+Coord4 Gamemap::getInternalBounds() const {
+  return Coord4(sx * resolution + offset, sy * resolution + offset, ex * resolution + offset, ey * resolution + offset);
+}
+Coord4 Gamemap::getTileBounds(int x, int y) const {
+  return Coord4(x * resolution + offset, y * resolution + offset, (x + 1) * resolution + offset, (y + 1) * resolution + offset);
 }
