@@ -1,5 +1,4 @@
 ---- Major work path
-- Coord failures :(
 - Collision/subtraction grid
   - Make hidden walls work
 - Case-insensitive args
