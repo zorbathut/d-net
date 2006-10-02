@@ -186,6 +186,7 @@ void Gamemap::removeWalls(Coord2 center, float radius) {
           if(ntp.size() == 1 && ntp[0] == paths[links[linid][i]].second)
             continue; // NO CHANGE!
           removePath(links[linid][i], tx, ty);
+          i--;
           for(int j = 0; j < ntp.size(); j++) {
             if(abs(getArea(ntp[j])) > 1 || getPerimeter(ntp[j]) > 2) {
               paths[addPath(tx, ty)].second = ntp[j];
@@ -194,6 +195,7 @@ void Gamemap::removeWalls(Coord2 center, float radius) {
         }
       }
     }
+    flushAdds();
   }
 }
 
@@ -271,7 +273,13 @@ int Gamemap::addPath(int x, int y) {
     paths.push_back(make_pair<int, vector<Coord2> >(GMS_EMPTY, vector<Coord2>()));
   }
   CHECK(isAvailable(paths[ite].first));
-  links[linkid(x, y)].push_back(ite);
+  nlinks.push_back(make_pair(linkid(x, y), ite));
   paths[ite].first = GMS_CHANGED;
   return ite;
+}
+
+void Gamemap::flushAdds() {
+  for(int i = 0; i < nlinks.size(); i++)
+    links[nlinks[i].first].push_back(nlinks[i].second);
+  nlinks.clear();
 }

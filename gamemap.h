@@ -33,7 +33,11 @@ private:
   void removePath(int x, int y, int id);
   int addPath(int x, int y);
 
+  void flushAdds();
+
   vector<vector<int> > links;
+  vector<pair<int, int> > nlinks;
+
   vector<int> available;
   vector<pair<int, vector<Coord2> > > paths;
 
