@@ -29,7 +29,8 @@ private:
   Coord4 getInternalBounds() const;
   Coord4 getTileBounds(int x, int y) const;
 
-  void removePath(int id);
+  int linkid(int x, int y) const;
+  void removePath(int x, int y, int id);
   int addPath(int x, int y);
 
   vector<vector<int> > links;

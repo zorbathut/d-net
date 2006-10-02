@@ -100,7 +100,6 @@ void Gamemap::removeWalls(Coord2 center, float radius) {
       bounds = bounds + Coord4(-offset, -offset, -offset, -offset);
       bounds = snapToEnclosingGrid(bounds, resolution);
       
-    
       int nsx = (bounds.sx / resolution).toInt();
       int nsy = (bounds.sy / resolution).toInt();
       int nex = (bounds.ex / resolution).toInt();
@@ -109,24 +108,41 @@ void Gamemap::removeWalls(Coord2 center, float radius) {
       CHECK(nsy <= sy);
       CHECK(nex >= ex);
       CHECK(ney >= ey);
-    
-      for(int x = nsx; x < nex; x++) {
-        for(int y = nsy; y < ney; y++) {
-          if(y < sy || y >= ey || x < sx || x >= ex) {
+      
+      {
+        vector<vector<int> > nlinks((nex - nsx) * (ney - nsy));
+        
+        for(int x = nsx; x < nex; x++)
+          for(int y = nsy; y < ney; y++)
+            if(y >= sy || y < ey || x >= sx || x < ex)
+              nlinks[(y - nsy) * (nex - nsx) + x - nsx].swap(links[linkid(x, y)]);
+          
+        links.swap(nlinks);
+      }
+      
+      int osx = sx;
+      int osy = sy;
+      int oex = ex;
+      int oey = ey;
+      
+      sx = nsx;
+      sy = nsy;
+      ex = nex;
+      ey = ney;
+      
+      for(int x = sx; x < ex; x++) {
+        for(int y = sy; y < ey; y++) {
+          if(y < osy || y >= oey || x < osx || x >= oex) {
             Coord4 tile = getTileBounds(x, y);
             vector<Coord2> innerpath;
             innerpath.push_back(Coord2(tile.sx, tile.sy));
             innerpath.push_back(Coord2(tile.ex, tile.sy));
             innerpath.push_back(Coord2(tile.ex, tile.ey));
             innerpath.push_back(Coord2(tile.sx, tile.ey));
-            paths.push_back(make_pair((int)GMS_CHANGED, innerpath));
+            paths[addPath(x, y)].second = innerpath;
           }
         }
       }
-      sx = nsx;
-      sy = nsy;
-      ex = nex;
-      ey = ney;
     }
   }
 
@@ -149,17 +165,31 @@ void Gamemap::removeWalls(Coord2 center, float radius) {
     return;
   }
   
-  for(int i = 0; i < paths.size(); i++) {
-    if(isAvailable(paths[i].first))
-      continue;
-    vector<vector<Coord2> > ntp = getDifference(paths[i].second, inters);
-    if(ntp.size() == 1 && ntp[0] == paths[i].second)
-      continue; // NO CHANGE!
-    removePath(i);
-    for(int j = 0; j < ntp.size(); j++) {
-      if(abs(getArea(ntp[j])) > 1 || getPerimeter(ntp[j]) > 2) {
-        int pos = addPath(0, 0);
-        paths[pos].second = ntp[j];
+  {
+    Coord4 bounds = startCBoundBox();
+    addToBoundBox(&bounds, inters);
+    bounds = snapToEnclosingGrid(bounds, resolution);
+    int nsx = (bounds.sx / resolution).toInt();
+    int nsy = (bounds.sy / resolution).toInt();
+    int nex = (bounds.ex / resolution).toInt();
+    int ney = (bounds.ey / resolution).toInt();
+    
+    for(int tx = nsx; tx < nex; tx++) {
+      for(int ty = nsy; ty < ney; ty++) {
+        int linid = linkid(tx, ty);
+        for(int i = 0; i < links[linid].size(); i++) {
+          CHECK(!isAvailable(paths[links[linid][i]].first));
+        
+          vector<vector<Coord2> > ntp = getDifference(paths[links[linid][i]].second, inters);
+          if(ntp.size() == 1 && ntp[0] == paths[links[linid][i]].second)
+            continue; // NO CHANGE!
+          removePath(links[linid][i], tx, ty);
+          for(int j = 0; j < ntp.size(); j++) {
+            if(abs(getArea(ntp[j])) > 1 || getPerimeter(ntp[j]) > 2) {
+              paths[addPath(tx, ty)].second = ntp[j];
+            }
+          }
+        }
       }
     }
   }
@@ -181,6 +211,7 @@ Gamemap::Gamemap(const Level &lev) {
   sy = (bounds.sy / resolution).toInt() - 1;
   ex = (bounds.ex / resolution).toInt() + 1;
   ey = (bounds.ey / resolution).toInt() + 1;
+  links.resize((ex - sx) * (ey - sy));
 
   for(int x = sx; x < ex; x++) {
     for(int y = sy; y < ey; y++) {
@@ -200,7 +231,7 @@ Gamemap::Gamemap(const Level &lev) {
           CHECK(bounds.sy >= tile.sy - Coord(0.0001));
           CHECK(bounds.ex <= tile.ex + Coord(0.0001));
           CHECK(bounds.ey <= tile.ey + Coord(0.0001));
-          paths.push_back(make_pair((int)GMS_CHANGED, resu[j]));
+          paths[addPath(x, y)].second = resu[j];
         }
       }
     }
@@ -214,8 +245,15 @@ Coord4 Gamemap::getTileBounds(int x, int y) const {
   return Coord4(x * resolution + offset, y * resolution + offset, (x + 1) * resolution + offset, (y + 1) * resolution + offset);
 }
 
-void Gamemap::removePath(int id) {
+int Gamemap::linkid(int x, int y) const {
+  return (y - sy) * (ex - sx) + x - sx;
+}
+
+void Gamemap::removePath(int id, int x, int y) {
   CHECK(!isAvailable(paths[id].first));
+  int lid = linkid(x, y);
+  CHECK(count(links[lid].begin(), links[lid].end(), id) == 1);
+  links[lid].erase(find(links[lid].begin(), links[lid].end(), id));
   paths[id].first = GMS_ERASED;
   paths[id].second.clear();
   available.push_back(id);
@@ -230,6 +268,8 @@ int Gamemap::addPath(int x, int y) {
     ite = paths.size();
     paths.push_back(make_pair<int, vector<Coord2> >(GMS_EMPTY, vector<Coord2>()));
   }
+  CHECK(isAvailable(paths[ite].first));
+  links[linkid(x, y)].push_back(ite);
   paths[ite].first = GMS_CHANGED;
   return ite;
 }
