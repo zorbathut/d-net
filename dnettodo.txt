@@ -1,9 +1,7 @@
 ---- Major work path
-- Collision/subtraction grid
-  - Make gamemap grid positioning work
-  - Make hidden walls work
 - Coord failures :(
-- Make explosions include the center
+- Collision/subtraction grid
+  - Make hidden walls work
 - Case-insensitive args
 - "Done" in sell mode should work
 - New user cash should start at "min to equal an existing playing", not "min if people were to sell everything"

@@ -160,8 +160,9 @@ void Gamemap::removeWalls(Coord2 center, float radius) {
       inters.push_back(center + makeAngle(Coord(rv[i])) * Coord(radius));
   }
   CHECK(!pathReversed(inters));
-  if(set<Coord2>(inters.begin(), inters.end()).size() != inters.size()) {
+  if(set<Coord2>(inters.begin(), inters.end()).size() != inters.size() || !inPath(center, inters)) {
     // We've gotten two duplicate points, start over from scratch!
+    // Alternatively, the center isn't included in the explosion.
     removeWalls(center, radius);
     return;
   }
