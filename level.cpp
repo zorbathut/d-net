@@ -3,11 +3,12 @@
 
 #include "dvec2.h"
 #include "util.h"
+#include "gamemap.h"
 
 using namespace std;
 
 Level loadLevel(const string &str) {
-  //dprintf("Loading %s\n", str.c_str());
+  dprintf("Loading %s\n", str.c_str());
   Level rv;
   Dvec2 dv = loadDvec2(str);
   for(int i = 0; i < dv.paths.size(); i++) {
@@ -56,6 +57,8 @@ Level loadLevel(const string &str) {
     }
   }
   rv.makeProperSolids();
+  
+  Gamemap gmp(rv);
   return rv;
 }
 

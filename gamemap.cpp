@@ -149,18 +149,20 @@ Gamemap::Gamemap(const Level &lev) {
   CHECK(bounds.isNormalized());
   
   const Coord resolution = Coord(20);
+  const Coord offset = Coord(1.23456f); // Nasty hack to largely eliminate many border cases
+  bounds = bounds + Coord4(-offset, -offset, -offset, -offset);
   bounds = snapToEnclosingGrid(bounds, resolution);
   int sx = (bounds.sx / resolution).toInt() - 1;
   int sy = (bounds.sy / resolution).toInt() - 1;
   int ex = (bounds.ex / resolution).toInt() + 1;
   int ey = (bounds.ey / resolution).toInt() + 1;
-  
+
   for(int x = sx; x < ex; x++) {
     for(int y = sy; y < ey; y++) {
-      Coord sxp = x * resolution;
-      Coord syp = y * resolution;
-      Coord exp = (x + 1) * resolution;
-      Coord eyp = (y + 1) * resolution;
+      Coord sxp = x * resolution + offset;
+      Coord syp = y * resolution + offset;
+      Coord exp = (x + 1) * resolution + offset;
+      Coord eyp = (y + 1) * resolution + offset;
       vector<Coord2> outerpath;
       outerpath.push_back(Coord2(sxp, syp));
       outerpath.push_back(Coord2(sxp, eyp));
@@ -171,17 +173,14 @@ Gamemap::Gamemap(const Level &lev) {
         for(int j = 0; j < resu.size(); j++) {
           Coord4 bounds = startCBoundBox();
           addToBoundBox(&bounds, resu[j]);
-          dprintf("%f,%f,%f,%f vs %f,%f,%f,%f\n", bounds.sx.toFloat(), bounds.sy.toFloat(), bounds.ex.toFloat(), bounds.ey.toFloat(), sxp.toFloat(), syp.toFloat(), exp.toFloat(), eyp.toFloat());
-          CHECK(bounds.sx >= sxp);
-          CHECK(bounds.sy >= syp);
-          CHECK(bounds.ex <= exp);
-          CHECK(bounds.ey <= eyp);
+          //dprintf("%f,%f,%f,%f vs %f,%f,%f,%f\n", bounds.sx.toFloat(), bounds.sy.toFloat(), bounds.ex.toFloat(), bounds.ey.toFloat(), sxp.toFloat(), syp.toFloat(), exp.toFloat(), eyp.toFloat());
+          CHECK(bounds.sx >= sxp - Coord(0.0001));
+          CHECK(bounds.sy >= syp - Coord(0.0001));
+          CHECK(bounds.ex <= exp + Coord(0.0001));
+          CHECK(bounds.ey <= eyp + Coord(0.0001));
           paths.push_back(make_pair((int)GMS_CHANGED, resu[j]));
         }
       }
     }
   }
-  
-  for(int i = 0; i < lev.paths.size(); i++)
-    paths.push_back(make_pair((int)GMS_CHANGED, lev.paths[i]));
 }

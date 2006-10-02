@@ -995,7 +995,8 @@ PersistentData::PersistentData(int playercount, int in_roundsbetweenshop) {
     vector<pair<float, Float2> > centangs;
     for(int i = 0; i < factcents.second.size(); i++) {
       if(factcents.second[i].y != 0) {
-        centangs.push_back(make_pair(getAngle(factcents.second[i]), factcents.second[i]));
+        bool neg = factcents.second[i].y > 0;
+        centangs.push_back(make_pair(getAngle(Float2(factcents.second[i].x, sqrt(abs(factcents.second[i].y)) * (neg * 2 - 1))), factcents.second[i]));
       } else {
         centgrays.push_back(factcents.second[i]);
       }

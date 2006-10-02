@@ -1,8 +1,13 @@
 ---- Major work path
-- Tanks drive through each other? What madness is this?
-  - DIFF THIS DAMMIT you're breaking things intentionally
 - Collision/subtraction grid
+- "Done" in sell mode should work
+- New user cash should start at "min to equal an existing playing", not "min if people were to sell everything"
+- Tank sell exploit, tank value based on equipped tank
+- Mine collide against each other
+- New tank hull strength not quite as absurd (*3 perhaps)
+- Projectiles no hit mines?
 - Mine deployment range
+- Mine deployment speed, quantity
 - Cached shop demo stats
 - Better mine demo
 - EMP demo

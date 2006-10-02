@@ -349,7 +349,7 @@ vector<vector<Coord2> > getDifferenceCore(const vector<Coord2> &lhs, const vecto
   #endif
   bool lhsInside = !pathReversed(lhs);
   bool rhsInside = !pathReversed(rhs);
-  #if 1
+  #if 1   // The main difference system
   {
     bool lhsInverted = !lhsInside;
     bool rhsInverted = !rhsInside;
@@ -522,6 +522,7 @@ vector<vector<Coord2> > getDifferenceCore(const vector<Coord2> &lhs, const vecto
       //}
       if(links[i].end != itr->first && colinear(Coord4(links[i].start, links[i].end), itr->first)) {
         
+        /*
         dprintf("COLINEAR  %f %f  %f %f  %f %f\n",
             links[i].start.x.toFloat(), links[i].start.y.toFloat(),
             itr->first.x.toFloat(), itr->first.y.toFloat(),
@@ -529,7 +530,7 @@ vector<vector<Coord2> > getDifferenceCore(const vector<Coord2> &lhs, const vecto
         dprintf("COLINEAR  %s %s  %s %s  %s %s\n",
             links[i].start.x.rawstr().c_str(), links[i].start.y.rawstr().c_str(),
             itr->first.x.rawstr().c_str(), itr->first.y.rawstr().c_str(),
-            links[i].end.x.rawstr().c_str(), links[i].end.y.rawstr().c_str());
+            links[i].end.x.rawstr().c_str(), links[i].end.y.rawstr().c_str());*/
         
         if(megaverbose)
           dprintf("  Combining colinear\n");
@@ -813,7 +814,23 @@ vector<vector<Coord2> > getDifferenceCore(const vector<Coord2> &lhs, const vecto
     set<Coord2> seeds;
     set<pair<bool, Coord2> > seen;
     for(map<Coord2, DualLink>::const_iterator itr = vertx.begin(); itr != vertx.end(); itr++) {
-      if(itr->second.live[0] && inPath((itr->first + itr->second.links[0][1]) / 2, rhs) == !rhsInside && !(itr->second.live[1] && itr->second.links[0][1] == itr->second.links[1][1])) {
+      if(itr->second.live[0] && !inPath((itr->first + itr->second.links[0][1]) / 2, rhs) == rhsInside) {
+        if(rhsInside && itr->second.live[1] && itr->second.links[0][1] == itr->second.links[1][1])
+          continue;
+        if(!rhsInside && itr->second.live[1] && itr->second.links[0][1] == itr->second.links[1][0])
+          continue;
+        
+        /*
+        dprintf("  %f, %f:\n", itr->first.x.toFloat(), itr->first.y.toFloat());
+        for(int i = 0; i < 2; i++) {
+          if(itr->second.live[i]) {
+            dprintf("  %f, %f --> this --> %f, %f",
+                  itr->second.links[i][0].x.toFloat(), itr->second.links[i][0].y.toFloat(),
+                  itr->second.links[i][1].x.toFloat(), itr->second.links[i][1].y.toFloat());
+          } else {
+            dprintf("  NULL");
+          }
+        }*/
         seeds.insert(itr->second.links[0][1]);
       }
     }
@@ -826,8 +843,8 @@ vector<vector<Coord2> > getDifferenceCore(const vector<Coord2> &lhs, const vecto
       while(!seen.count(now)) {
         seen.insert(now);
         tpath.push_back(now.second);
-        /*
-        dprintf("  %f, %f, %d:\n", now.second.x.toFloat(), now.second.y.toFloat(), now.first);
+        
+        /*dprintf("  %f, %f, %d:\n", now.second.x.toFloat(), now.second.y.toFloat(), now.first);
         for(int i = 0; i < 2; i++) {
           if(vertx[now.second].live[i]) {
             dprintf("  %f, %f --> this --> %f, %f",
@@ -850,8 +867,8 @@ vector<vector<Coord2> > getDifferenceCore(const vector<Coord2> &lhs, const vecto
           }
         } else {
           // came in off a rhs path - switch to lhs if there is one, and it doesn't immediately enter rhs
-          if(vertx[now.second].live[0] && inPath((now.second + vertx[now.second].links[0][1]) / 2, tv[1]) == !rhsInside) {
-            CHECK(!inPath((now.second + vertx[now.second].links[0][1]) / 2, tv[1]));
+          if(vertx[now.second].live[0] && !inPath((now.second + vertx[now.second].links[0][1]) / 2, tv[1]) == rhsInside) {
+            CHECK(!inPath((now.second + vertx[now.second].links[0][1]) / 2, tv[1]) == rhsInside);
             now = make_pair(false, vertx[now.second].links[0][1]);
           } else {
             CHECK(vertx[now.second].live[1]);
@@ -862,6 +879,7 @@ vector<vector<Coord2> > getDifferenceCore(const vector<Coord2> &lhs, const vecto
         }
       }
       if(tpath.size() > 2) {
+        //dprintf("Pushing\n");
         CHECK(now.second == tpath[0]);  // this is a "fix" for a bug that's happened in the past.
         rv.push_back(tpath);
       }

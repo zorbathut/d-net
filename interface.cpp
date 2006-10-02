@@ -96,9 +96,9 @@ public:
 
 #if GETDIFFERENCE_DEBUG
 
-include "dvec2.h"
-include "parse.h" // fix these
-include <fstream>
+#include "dvec2.h"
+#include "parse.h" // fix these
+#include <fstream>
 
 
 vector<string> parseHackyFile(string fname) {
@@ -115,9 +115,12 @@ extern bool dumpBooleanDetail;
 Controller ct;
 
 bool InterfaceMain::tick(const vector< Controller > &control) {
-  ct = control[0];
+  ct = control[controls_primary_id()];
   return false;
   
+}
+
+void InterfaceMain::ai(const vector<Ai *> &ai) const {
 }
 
 vector<Coord2> parseKvdCoords(const string &dat) {
@@ -135,7 +138,7 @@ void InterfaceMain::render() const {
   
   vector<Coord2> diff[2];
   
-#if 1
+#if 0
   {
     ifstream dv("dvlr.txt");
     kvData kvd;
@@ -145,29 +148,40 @@ void InterfaceMain::render() const {
     diff[0] = parseKvdCoords(kvd.consume("lhs"));
     diff[1] = parseKvdCoords(kvd.consume("rhs"));
   }
-#elif 0
+#elif 1
   //dprintf("Frame!\n");
     
-   string lhs[6] = {
-     "00000002a98bb4a0", "00000001f6be3497",
-     "fffffffdad7dd7a0", "000000025b2baed7",
-     "ffffffffa8f673cc", "fffffffbae161c90",
+   string lhs[48] = {
+     "ffffffa800000000", "ffffffd800000000",
+     "ffffff8800000000", "ffffffd800000000",
+     "ffffff8800000000", "0000002800000000",
+     "ffffffa800000000", "0000002800000000",
+     "ffffffb15be68000", "0000003835d24000",
+     "ffffffa15be68000", "00000053ec4d8000",
+     "ffffffe6a41a0000", "0000007bec4d0000",
+     "fffffff6a419f000", "0000006035d20000",
+     "000000095be6c000", "0000006035d20000",
+     "000000195be6e000", "0000007bec4d0000",
+     "0000005ea41a0000", "00000053ec4c8000",
+     "0000004ea41a0000", "0000003835d1c000",
+     "0000005800000000", "00000027ffff8000",
+     "0000007800000000", "00000027ffff4000",
+     "0000007800000000", "ffffffd7ffff4000",
+     "0000005800000000", "ffffffd7ffff8000",
+     "0000004ea4190000", "ffffffc7ca2d8000",
+     "0000005ea4190000", "ffffffac13b28000",
+     "000000195be58000", "ffffff8413b30000",
+     "000000095be5c000", "ffffff9fca2e0000",
+     "fffffff6a41a4000", "ffffff9fca2e0000",
+     "ffffffe6a41a8000", "ffffff8413b30000",
+     "ffffffa15be70000", "ffffffac13b28000",
+     "ffffffb15be70000", "ffffffc7ca2d8000",
    };
-   string rhs[28] = {
-     "fffffff827727300", "ffffff9c4eeabc00",
-     "00000023054f2400", "ffffffa255310000",
-     "0000004b7890d800", "ffffffbe64e39000",
-     "00000061b91e0800", "ffffffeac8405d00",
-     "000000600146d000", "0000001bfb9f8000",
-     "00000046b5eeec00", "00000046b5eeec00",
-     "0000001bfb9f8000", "000000600146d000",
-     "ffffffeac8405d00", "00000061b91e0800",
-     "ffffffbe64e39000", "0000004b7890d800",
-     "ffffffa255310000", "00000023054f2400",
-     "ffffff9d08ecb400", "fffffff1a696bd00",
-     "ffffffb022ee1c00", "ffffffc3d188ec00",
-     "ffffffd687da3600", "ffffffa500fdbc00",
-     "0000000000000000", "0000000000000000",
+   string rhs[8] = {
+     "0000006400000000", "0000001400000000",
+     "0000006400000000", "0000002800000000",
+     "0000007800000000", "0000002800000000",
+     "0000007800000000", "0000001400000000",
    };
 
   for(int i = 0; i < sizeof(lhs) / sizeof(*lhs); i += 2)
@@ -186,7 +200,7 @@ void InterfaceMain::render() const {
 
   vector<vector<Coord2> > res = getDifference(diff[0], diff[1]);
   
-  dprintf("%d\n", res.size());
+  //dprintf("%d\n", res.size());
   
   if(res.size()) {
     Coord4 bbox = getBoundBox(diff[1]);
@@ -206,8 +220,8 @@ void InterfaceMain::render() const {
     if(ct.keys[1].down)
       zoom.second *= Coord(1.1);
     
-    dprintf("%s", bbox.rawstr().c_str());
-    setZoom(-1.25, -1.0, 1.0);
+    //dprintf("%s", bbox.rawstr().c_str());
+    setZoomCenter(0, 0, 1);
 
     for(int i = 0; i < res.size(); i++) {
       
@@ -221,7 +235,9 @@ void InterfaceMain::render() const {
         setColor(0.3, 1.0, 0.3);
       drawLineLoop(nres, 0.003);
       for(int j = 0; j < res[i].size(); j++) {
-        drawCircle(nres[j], Coord(0.03), Coord(0.003));
+        drawCircle(nres[j].toFloat(), 0.03, 0.003);
+        drawText(StringPrintf("%f", res[i][j].x.toFloat()), 0.05, Float2(nres[j].toFloat().x + 0.05, nres[j].toFloat().y + 0.05));
+        drawText(StringPrintf("%f", res[i][j].y.toFloat()), 0.05, Float2(nres[j].toFloat().x + 0.05, nres[j].toFloat().y + 0.12));
         //drawText(res[j].x.rawstr(), 1, Float2(nres[i][j].toFloat().x + 1, nres[i][j].toFloat().y + 1));
         //drawText(res[j].y.rawstr(), 1, Float2(nres[i][j].toFloat().x + 1, nres[i][j].toFloat().y + 2.1));
       }
