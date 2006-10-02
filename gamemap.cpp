@@ -114,7 +114,7 @@ void Gamemap::removeWalls(Coord2 center, float radius) {
         
         for(int x = nsx; x < nex; x++)
           for(int y = nsy; y < ney; y++)
-            if(y >= sy || y < ey || x >= sx || x < ex)
+            if(y >= sy && y < ey && x >= sx && x < ex)
               nlinks[(y - nsy) * (nex - nsx) + x - nsx].swap(links[linkid(x, y)]);
           
         links.swap(nlinks);
@@ -134,6 +134,7 @@ void Gamemap::removeWalls(Coord2 center, float radius) {
         for(int y = sy; y < ey; y++) {
           if(y < osy || y >= oey || x < osx || x >= oex) {
             Coord4 tile = getTileBounds(x, y);
+            CHECK(links[linkid(x, y)].size() == 0);
             vector<Coord2> innerpath;
             innerpath.push_back(Coord2(tile.sx, tile.sy));
             innerpath.push_back(Coord2(tile.ex, tile.sy));
