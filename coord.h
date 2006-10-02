@@ -131,11 +131,7 @@ inline Coord operator*(const Coord &lhs, const Coord &rhs) {
 // TODO: improve?
 inline Coord operator/(const Coord &lhs, const Coord &rhs) {
   //dprintf("op/ in!\n");
-  Coord rv = coordExplicit(
-  (long long)(
-      ((long double)lhs.d / (long double)rhs.d) * (1LL << 32)
-)
-);
+  Coord rv = coordExplicit((long long)(((long double)lhs.d / (long double)rhs.d) * (1LL << 32)));
   //dprintf("  %f %f %f %d\n", lhs.toFloat(), rhs.toFloat(), rv.toFloat(), 1234);
   //dprintf("  %lld %lld %lld %d\n", lhs.d, rhs.d, rv.d, 1234);
   //dprintf("op/ out!\n");
@@ -391,10 +387,14 @@ inline Coord4 boxAround(const Coord2 &lhs, Coord radius) {
 }
 
 inline Coord4 snapToEnclosingGrid(Coord4 orig, Coord grid) {
-  orig.sx = ceil(orig.sx/grid - 1) * grid;
-  orig.sy = ceil(orig.sy/grid - 1) * grid;
+  orig.sx = floor(orig.sx/grid) * grid;
+  orig.sy = floor(orig.sy/grid) * grid;
   orig.ex = ceil(orig.ex/grid) * grid;
   orig.ey = ceil(orig.ey/grid) * grid;
+  if(orig.sx == orig.ex)
+    orig.ex += grid;
+  if(orig.sy == orig.ey)
+    orig.ey += grid;
   return orig;
 }
 

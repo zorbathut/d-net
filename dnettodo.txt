@@ -1,5 +1,8 @@
 ---- Major work path
 - Collision/subtraction grid
+  - Make gamemap grid positioning work
+  - Make hidden walls work
+- Case-insensitive args
 - "Done" in sell mode should work
 - New user cash should start at "min to equal an existing playing", not "min if people were to sell everything"
 - Tank sell exploit, tank value based on equipped tank
@@ -9,6 +12,7 @@
 - Mine deployment range
 - Mine deployment speed, quantity
 - Cached shop demo stats
+- Make equip a little more comprehensible
 - Better mine demo
 - EMP demo
 - Gradual shop spawning

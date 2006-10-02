@@ -80,7 +80,68 @@ Coord4 Gamemap::getBounds() const {
   return bounds;
 }
 
+const Coord resolution = Coord(20);
+const Coord offset = Coord(1.23456f); // Nasty hack to largely eliminate many border cases
+
 void Gamemap::removeWalls(Coord2 center, float radius) {
+  {
+    Coord4 bounds = startCBoundBox();
+    Coord4 ib = getInternalBounds();
+    addToBoundBox(&bounds, ib);
+    bounds = bounds + Coord4(-offset, -offset, -offset, -offset);
+    bounds = snapToEnclosingGrid(bounds, resolution);
+    int nsx = (bounds.sx / resolution).toInt();
+    int nsy = (bounds.sy / resolution).toInt();
+    int nex = (bounds.ex / resolution).toInt();
+    int ney = (bounds.ey / resolution).toInt();
+    CHECK(nsx == sx && nsy == sy && nex == ex && ney == ey);
+  }
+  {
+    Coord4 ib = getInternalBounds();
+    Coord cradius(radius);
+    if(center.x + cradius + 1 > ib.ex || center.x - cradius - 1 < ib.sx || center.y + cradius + 1 > ib.ey || center.y - cradius - 1 < ib.sy) {
+      dprintf("probin' at %f,%f %f", center.x.toFloat(), center.y.toFloat(), radius);
+      Coord4 bounds = startCBoundBox();
+    
+      addToBoundBox(&bounds, ib);
+      addToBoundBox(&bounds, center + Coord2(radius + 1, radius + 1));
+      addToBoundBox(&bounds, center - Coord2(radius + 1, radius + 1));
+      dprintf("%f, %f, %f, %f\n", bounds.sx.toFloat(), bounds.sy.toFloat(), bounds.ex.toFloat(), bounds.ey.toFloat());
+      dprintf("%f, %f, %f, %f\n", ib.sx.toFloat(), ib.sy.toFloat(), ib.ex.toFloat(), ib.ey.toFloat());
+    
+      bounds = bounds + Coord4(-offset, -offset, -offset, -offset);
+      bounds = snapToEnclosingGrid(bounds, resolution);
+      
+    
+      int nsx = (bounds.sx / resolution).toInt();
+      int nsy = (bounds.sy / resolution).toInt();
+      int nex = (bounds.ex / resolution).toInt();
+      int ney = (bounds.ey / resolution).toInt();
+      CHECK(nsx <= sx);
+      CHECK(nsy <= sy);
+      CHECK(nex >= ex);
+      CHECK(ney >= ey);
+    
+      for(int x = nsx; x < nex; x++) {
+        for(int y = nsy; y < ney; y++) {
+          if(y < sy || y >= ey || x < sx || x >= ex) {
+            Coord4 tile = getTileBounds(x, y);
+            vector<Coord2> innerpath;
+            innerpath.push_back(Coord2(tile.sx, tile.sy));
+            innerpath.push_back(Coord2(tile.ex, tile.sy));
+            innerpath.push_back(Coord2(tile.ex, tile.ey));
+            innerpath.push_back(Coord2(tile.sx, tile.ey));
+            paths.push_back(make_pair((int)GMS_CHANGED, innerpath));
+          }
+        }
+      }
+      sx = nsx;
+      sy = nsy;
+      ex = nex;
+      ey = ney;
+    }
+  }
+
   vector<Coord2> inters;
   {
     vector<float> rv;
@@ -137,9 +198,6 @@ void Gamemap::checkConsistency() const {
   
   // TODO: check intersection?
 }
-
-const Coord resolution = Coord(20);
-const Coord offset = Coord(1.23456f); // Nasty hack to largely eliminate many border cases
 
 Gamemap::Gamemap() { };
 Gamemap::Gamemap(const Level &lev) {
