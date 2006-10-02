@@ -113,7 +113,6 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
       if(!isInside(gmb, tanks[j].pos)) {
         StackString sst("Critical error, running tests");
         dprintf("%s vs %s\n", tanks[j].pos.rawstr().c_str(), gmb.rawstr().c_str());
-        gamemap.checkConsistency();
         CHECK(0);
       }
       tanks[j].addCollision(&collider, keys[j], j);

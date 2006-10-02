@@ -16,8 +16,6 @@ public:
   Coord4 getBounds() const;
 
   void removeWalls(Coord2 center, float radius);
-
-  void checkConsistency() const;
   
   Gamemap();
   Gamemap(const Level &level);
@@ -31,6 +29,11 @@ private:
   Coord4 getInternalBounds() const;
   Coord4 getTileBounds(int x, int y) const;
 
+  void removePath(int id);
+  int addPath(int x, int y);
+
+  vector<vector<int> > links;
+  vector<int> available;
   vector<pair<int, vector<Coord2> > > paths;
 
 };

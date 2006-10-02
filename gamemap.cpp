@@ -14,15 +14,12 @@ enum {GMS_EMPTY, GMS_ERASED, GMS_UNCHANGED, GMS_CHANGED};
 bool isAvailable(int state) {
   return state == GMS_EMPTY || state == GMS_ERASED;
 }
-bool isChanged(int state) {
-  return state == GMS_ERASED || state == GMS_CHANGED;
-}
 
 void Gamemap::render() const {
   CHECK(paths.size());
   setColor(0.5f, 0.5f, 0.5f);
   for(int i = 0; i < paths.size(); i++) {
-    if(paths[i].first == GMS_EMPTY)
+    if(isAvailable(paths[i].first))
       continue;
     drawLineLoop(paths[i].second, 0.5);
     /*
@@ -68,16 +65,7 @@ void Gamemap::updateCollide(Collider *collider) {
 }
 
 Coord4 Gamemap::getBounds() const {
-  Coord4 bounds = startCBoundBox();
-  for(int i = 0; i < paths.size(); i++) {
-    if(!isAvailable(paths[i].first)) {
-      for(int j = 0; j < paths[i].second.size(); j++) {
-        addToBoundBox(&bounds, paths[i].second[j]);
-      }
-    }
-  }
-  CHECK(bounds.isNormalized());
-  return bounds;
+  return getInternalBounds();
 }
 
 const Coord resolution = Coord(20);
@@ -161,42 +149,20 @@ void Gamemap::removeWalls(Coord2 center, float radius) {
     return;
   }
   
-  vector<int> lpaths;
-  for(int i = 0; i < paths.size(); i++)
-    if(!isAvailable(paths[i].first))
-      lpaths.push_back(i);
-  
-  int fillable = 0;
-  for(int i = 0; i < lpaths.size(); i++) {
-    int tpath = lpaths[i];
-    vector<vector<Coord2> > ntp = getDifference(paths[tpath].second, inters);
-    if(ntp.size() == 1 && ntp[0] == paths[tpath].second)
+  for(int i = 0; i < paths.size(); i++) {
+    if(isAvailable(paths[i].first))
+      continue;
+    vector<vector<Coord2> > ntp = getDifference(paths[i].second, inters);
+    if(ntp.size() == 1 && ntp[0] == paths[i].second)
       continue; // NO CHANGE!
-    paths[tpath].first = GMS_ERASED;
-    fillable = min(fillable, lpaths[i]);
+    removePath(i);
     for(int j = 0; j < ntp.size(); j++) {
       if(abs(getArea(ntp[j])) > 1 || getPerimeter(ntp[j]) > 2) {
-        while(fillable != paths.size() && !isAvailable(paths[fillable].first))
-          fillable++;
-        if(fillable == paths.size())
-          paths.push_back(make_pair((int)GMS_EMPTY, vector<Coord2>()));
-        CHECK(isAvailable(paths[fillable].first));
-        paths[fillable].first = GMS_CHANGED;
-        paths[fillable].second = ntp[j];
+        int pos = addPath(0, 0);
+        paths[pos].second = ntp[j];
       }
     }
   }
-}
-
-void Gamemap::checkConsistency() const {
-  int reversed = 0;
-  for(int i = 0; i < paths.size(); i++)
-    if(!isAvailable(paths[i].first))
-      reversed += pathReversed(paths[i].second);
-  
-  CHECK(reversed == 1);
-  
-  // TODO: check intersection?
 }
 
 Gamemap::Gamemap() { };
@@ -246,4 +212,24 @@ Coord4 Gamemap::getInternalBounds() const {
 }
 Coord4 Gamemap::getTileBounds(int x, int y) const {
   return Coord4(x * resolution + offset, y * resolution + offset, (x + 1) * resolution + offset, (y + 1) * resolution + offset);
+}
+
+void Gamemap::removePath(int id) {
+  CHECK(!isAvailable(paths[id].first));
+  paths[id].first = GMS_ERASED;
+  paths[id].second.clear();
+  available.push_back(id);
+}
+
+int Gamemap::addPath(int x, int y) {
+  int ite;
+  if(available.size()) {
+    ite = available.back();
+    available.pop_back();
+  } else {
+    ite = paths.size();
+    paths.push_back(make_pair<int, vector<Coord2> >(GMS_EMPTY, vector<Coord2>()));
+  }
+  paths[ite].first = GMS_CHANGED;
+  return ite;
 }
