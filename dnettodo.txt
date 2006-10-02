@@ -1,16 +1,21 @@
 ---- Major work path
 - Collision/subtraction grid
   - Make hidden walls work
+- Make collision EVEN FASTER
 - Case-insensitive args
 - "Done" in sell mode should work
-- New user cash should start at "min to equal an existing playing", not "min if people were to sell everything"
+- New user cash should start at "min to equal an existing player", not "min if people were to sell everything"
 - Tank sell exploit, tank value based on equipped tank
 - Mine collide against each other
 - New tank hull strength not quite as absurd (*3 perhaps)
 - Projectiles no hit mines?
+- Small fonts for settings tabs
+- Cached shop demo stats
+- Remove "base" in results
+- Global ping size based on level size
+- Force axes change when axis type is changed
 - Mine deployment range
 - Mine deployment speed, quantity
-- Cached shop demo stats
 - Make equip a little more comprehensible
 - Better mine demo
 - EMP demo
@@ -26,14 +31,13 @@
 
 ---- Things that take thought and musing
 - GameAccessors class
-- store accumulation in Tank, not Player, for a round
 - Tweekvalues?
 - Normalize controller to circle?
 - Game inheritance/abstraction?
 - Make DPS a little less flickery
 - Improve win ticker so it displays overall totals somewhere maybe
 - Demo screen for upgrades
-- Slide-along-walls track simulation?
+- Physics for both pushing and tank-stuck-on-walls
 - "Kill graph"
 
 ---- Maintenance, minor bugfix, braindead
@@ -62,20 +66,6 @@
 - Netplay (NOTE: shop demos change random state!)
 - Consistent-ize line width effects, colors, rendering in general
 - Level save snapshots - how should this work? I'm still not sure.
-- dnd compression - this is going to rely on level save snapshots
+  - dnd compression
 
 http://www.itchstudios.com/psg/ - Dafred's artist
-
-
-
---- New collision notes
-
-Okay, first off. Collision objects are mapped as "owner, type, ID". Each of these is handled as a group. Some of them are temporary, some are persistent, this is determined on a case-by-case basis by some kind of flag. Temporary ones vanish after one frame, persistent ones stick around until they're explicitly removed.
-
-From owner/type/ID I need to be able to get the actual item. So, Projectile should become map<pair<int, int>, Projectile>? And then I need vector<ProjectileIDer>.
-
-Alternatively, vector<ProjectilePack> where ProjectilePack includes both the IDer and a map<int, Projectile>. Or a set<Projectile> with a neat comparator.
-
-This gets passed into the Collider, which stores data in map<OwnerType, map<ID, vector<pair<Coord4, Coord4> > > > or whatever. This is traversed roughly the same way as it is right now.
-
-Eugh.
