@@ -391,7 +391,10 @@ bool Shop::runTick(const Keystates &keys, Player *player) {
   
         }
       } else {
-        if(getCurNode(player).type == HierarchyNode::HNT_WEAPON && player->canSellWeapon(getCurNode(player).weapon)) {
+        if(getCurNode(player).type == HierarchyNode::HNT_DONE) {
+          if(player->canContinue())
+            return true;
+        } else if(getCurNode(player).type == HierarchyNode::HNT_WEAPON && player->canSellWeapon(getCurNode(player).weapon)) {
           player->sellWeapon(getCurNode(player).weapon);
         } else if(getCurNode(player).type == HierarchyNode::HNT_GLORY && player->canSellGlory(getCurNode(player).glory)) {
           player->sellGlory(getCurNode(player).glory);
