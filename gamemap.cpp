@@ -19,9 +19,10 @@ void Gamemap::render() const {
   CHECK(paths.size());
   setColor(0.5f, 0.5f, 0.5f);
   for(int i = 0; i < paths.size(); i++) {
-    if(isAvailable(paths[i].first))
+    if(isAvailable(paths[i].state))
       continue;
-    drawLineLoop(paths[i].second, 0.5);
+    for(int j = 0; j < paths[i].renderpath.size(); j++)
+      drawLinePath(paths[i].renderpath[j], 0.5);
     /*
     if(FLAGS_debugGraphics) {
       for(int j = 0; j < paths[i].second.size(); j++) {
@@ -46,20 +47,20 @@ void Gamemap::render() const {
 
 void Gamemap::updateCollide(Collider *collider) {
   for(int i = 0; i < paths.size(); i++) {
-    if(paths[i].first == GMS_EMPTY) {
-    } else if(paths[i].first == GMS_ERASED) {
+    if(paths[i].state == GMS_EMPTY) {
+    } else if(paths[i].state == GMS_ERASED) {
       collider->dumpGroup(CollideId(CGR_WALL, CGR_WALLOWNER, i));
-      paths[i].first = GMS_EMPTY;
-    } else if(paths[i].first == GMS_UNCHANGED) {
-    } else if(paths[i].first == GMS_CHANGED) {
+      paths[i].state = GMS_EMPTY;
+    } else if(paths[i].state == GMS_UNCHANGED) {
+    } else if(paths[i].state == GMS_CHANGED) {
       collider->dumpGroup(CollideId(CGR_WALL, CGR_WALLOWNER, i));
-      for(int j = 0; j < paths[i].second.size(); j++) {
-        int k = (j + 1) % paths[i].second.size();
-        collider->addToken(CollideId(CGR_WALL, CGR_WALLOWNER, i), Coord4(paths[i].second[j], paths[i].second[k]), Coord4(0, 0, 0, 0));
+      for(int j = 0; j < paths[i].collisionpath.size(); j++) {
+        int k = (j + 1) % paths[i].collisionpath.size();
+        collider->addToken(CollideId(CGR_WALL, CGR_WALLOWNER, i), Coord4(paths[i].collisionpath[j], paths[i].collisionpath[k]), Coord4(0, 0, 0, 0));
       }
       // implicit in CGR_WALL now, but leaving this in just for the time being
       //collider->markPersistent(CollideId(CGR_WALL, CGR_WALLOWNER, i));
-      paths[i].first = GMS_UNCHANGED;
+      paths[i].state = GMS_UNCHANGED;
     }
   }
 }
@@ -143,7 +144,9 @@ void Gamemap::removeWalls(Coord2 center, float radius) {
             innerpath.push_back(Coord2(tile.ex, tile.sy));
             innerpath.push_back(Coord2(tile.ex, tile.ey));
             innerpath.push_back(Coord2(tile.sx, tile.ey));
-            paths[addPath(x, y)].second = innerpath;
+            int pid = addPath(x, y);
+            paths[pid].collisionpath = innerpath;
+            paths[pid].generateRenderPath();
           }
         }
       }
@@ -185,16 +188,18 @@ void Gamemap::removeWalls(Coord2 center, float radius) {
       for(int ty = nsy; ty < ney; ty++) {
         int linid = linkid(tx, ty);
         for(int i = 0; i < links[linid].size(); i++) {
-          CHECK(!isAvailable(paths[links[linid][i]].first));
+          CHECK(!isAvailable(paths[links[linid][i]].state));
         
-          vector<vector<Coord2> > ntp = getDifference(paths[links[linid][i]].second, inters);
-          if(ntp.size() == 1 && ntp[0] == paths[links[linid][i]].second)
+          vector<vector<Coord2> > ntp = getDifference(paths[links[linid][i]].collisionpath, inters);
+          if(ntp.size() == 1 && ntp[0] == paths[links[linid][i]].collisionpath)
             continue; // NO CHANGE!
           removePath(links[linid][i], tx, ty);
           i--;
           for(int j = 0; j < ntp.size(); j++) {
             if(abs(getArea(ntp[j])) > 1 || getPerimeter(ntp[j]) > 2) {
-              paths[addPath(tx, ty)].second = ntp[j];
+              int pid = addPath(tx, ty);
+              paths[pid].collisionpath = ntp[j];
+              paths[pid].generateRenderPath();
             }
           }
         }
@@ -242,7 +247,9 @@ Gamemap::Gamemap(const Level &lev) {
           CHECK(bounds.sy >= tile.sy - Coord(0.0001));
           CHECK(bounds.ex <= tile.ex + Coord(0.0001));
           CHECK(bounds.ey <= tile.ey + Coord(0.0001));
-          paths[addPath(x, y)].second = resu[j];
+          int pid = addPath(x, y);
+          paths[pid].collisionpath = resu[j];
+          paths[pid].generateRenderPath();
         }
       }
     }
@@ -261,12 +268,13 @@ int Gamemap::linkid(int x, int y) const {
 }
 
 void Gamemap::removePath(int id, int x, int y) {
-  CHECK(!isAvailable(paths[id].first));
+  CHECK(!isAvailable(paths[id].state));
   int lid = linkid(x, y);
   CHECK(count(links[lid].begin(), links[lid].end(), id) == 1);
   links[lid].erase(find(links[lid].begin(), links[lid].end(), id));
-  paths[id].first = GMS_ERASED;
-  paths[id].second.clear();
+  paths[id].state = GMS_ERASED;
+  paths[id].collisionpath.clear();
+  paths[id].renderpath.clear();
   available.push_back(id);
 }
 
@@ -277,11 +285,12 @@ int Gamemap::addPath(int x, int y) {
     available.pop_back();
   } else {
     ite = paths.size();
-    paths.push_back(make_pair<int, vector<Coord2> >(GMS_EMPTY, vector<Coord2>()));
+    paths.resize(paths.size() + 1);
+    paths[ite].state = GMS_EMPTY;
   }
-  CHECK(isAvailable(paths[ite].first));
+  CHECK(isAvailable(paths[ite].state));
   nlinks.push_back(make_pair(linkid(x, y), ite));
-  paths[ite].first = GMS_CHANGED;
+  paths[ite].state = GMS_CHANGED;
   return ite;
 }
 
@@ -289,4 +298,10 @@ void Gamemap::flushAdds() {
   for(int i = 0; i < nlinks.size(); i++)
     links[nlinks[i].first].push_back(nlinks[i].second);
   nlinks.clear();
+}
+
+void Gamemap::Pathchunk::generateRenderPath() {
+  renderpath.clear();
+  renderpath.push_back(collisionpath);
+  renderpath[0].push_back(collisionpath[0]);
 }

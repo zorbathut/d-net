@@ -41,8 +41,15 @@ private:
   vector<vector<int> > links;
   vector<pair<int, int> > nlinks;
 
+  struct Pathchunk {
+    int state;
+    vector<Coord2> collisionpath;
+    vector<vector<Coord2> > renderpath;
+    void generateRenderPath();
+  };
+
   vector<int> available;
-  vector<pair<int, vector<Coord2> > > paths;
+  vector<Pathchunk> paths;
 
 };
 

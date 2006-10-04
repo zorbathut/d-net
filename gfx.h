@@ -65,6 +65,7 @@ void drawSolid(const Float4 &box);  // Background color only, and intentionally 
  */
 
 void drawLinePath(const vector<Float2> &verts, float weight);
+void drawLinePath(const vector<Coord2> &verts, float weight);
 
 void drawLineLoop(const vector<Float2> &verts, float weight);
 void drawLineLoop(const vector<Coord2> &verts, float weight);
