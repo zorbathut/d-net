@@ -1,6 +1,5 @@
 ---- Major work path
 - New tank hull strength not quite as absurd (*3 perhaps)
-- Projectiles no hit mines?
 - Small fonts for settings tabs
 - Cached shop demo stats
 - Remove "base" in results

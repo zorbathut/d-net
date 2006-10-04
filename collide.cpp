@@ -191,28 +191,29 @@ bool canCollidePlayer(int players, int indexa, int indexb, const vector<int> &te
 bool canCollideProjectile(int players, int indexa, int indexb, const vector<int> &teams) {
   pair<int, int> ar = reverseCategoryFromPlayers(players, indexa);
   pair<int, int> br = reverseCategoryFromPlayers(players, indexb);
-  bool apr = (ar.first == CGR_PROJECTILE) || (ar.first == CGR_STATPROJECTILE);
-  bool bpr = (br.first == CGR_PROJECTILE) || (br.first == CGR_STATPROJECTILE);
-  // Two things can't collide if they're part of the same ownership group (ignoring walls which are different)
+  // Let's make things slightly easier.
+  if(ar > br)
+    swap(ar, br);
+  // Two things can't collide if they're part of the same ownership group (ignoring walls which are different).
   if(ar.second == br.second && ar.first != CGR_WALL && br.first != CGR_WALL)
     return false;
-  // Nothing can collide with itself
+  // Nothing can collide with itself.
   if(ar == br)
     return false;
-  // Two things can't collide if neither of them are a projectile
-  if(!apr && !bpr)
-    return false;
-  // Two things also can't collide if they're both static projectiles
-  if(ar.first == CGR_STATPROJECTILE && br.first == CGR_STATPROJECTILE)
-    return false;
-  // Projectiles on the same team don't collide
-  if(apr && bpr && (teams[ar.second] == teams[br.second]))
-    return false;
-  // Static "projectiles" and walls can't collide.
-  if((ar.first == CGR_WALL && br.first == CGR_STATPROJECTILE) || (ar.first == CGR_STATPROJECTILE && br.first == CGR_WALL))
-    return false;
-  // That's pretty much all.
-  return true;
+  // Tanks can collide with projectiles.
+  if(ar.first == CGR_TANK && br.first == CGR_PROJECTILE)
+    return true;
+  // And with mines, as long as they're not on the same team.
+  if(ar.first == CGR_TANK && br.first == CGR_STATPROJECTILE && teams[ar.second] != teams[br.second])
+    return true;
+  // Projectiles can hit each other, as long as they're not on the same team.
+  if(ar.first == CGR_PROJECTILE && br.first == CGR_PROJECTILE && teams[ar.second] != teams[br.second])
+    return true;
+  // Projectiles can hit walls.
+  if(ar.first == CGR_PROJECTILE && br.first == CGR_WALL)
+    return true;
+  // That's it. Easy!
+  return false;
 }
 
 inline bool operator==(const CollideId &lhs, const CollideId &rhs) {
