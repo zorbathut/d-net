@@ -178,7 +178,7 @@ Money Player::sellTankValue(const IDBTank *in_tank) const {
   Money acu = Money(0);
   acu += adjustTank(in_tank).sellcost();
   for(int i = 0; i < tank[ps].upgrades.size(); i++)
-    acu += adjustUpgrade(tank[ps].upgrades[i]).sellcost();
+    acu += IDBUpgradeAdjust(tank[ps].upgrades[i], tank[ps].tank, adjustment).sellcost();
   return acu;
 }
 
