@@ -129,8 +129,8 @@ pair<float, float> Tank::getNextInertia(const Keystates &keys) const {
   float dl;
   float dr;
   if(keys.axmode == KSAX_TANK) {
-    dl = prepower(deadzone(keys.ax[0], keys.ax[1], DEADZONE_ABSOLUTE, 0.2));
-    dr = prepower(deadzone(keys.ax[1], keys.ax[0], DEADZONE_ABSOLUTE, 0.2));
+    dl = prepower(deadzone(keys.ax[0], keys.ax[1], DEADZONE_CENTER, 0.2));
+    dr = prepower(deadzone(keys.ax[1], keys.ax[0], DEADZONE_CENTER, 0.2));
   } else if(keys.axmode == KSAX_ABSOLUTE || keys.axmode == KSAX_STEERING) {
     float dd;
     float dv;
