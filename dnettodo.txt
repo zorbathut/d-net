@@ -1,5 +1,6 @@
 ---- Major work path
 - Case-insensitive args
+- Bombardment crosshairs brighter
 - "Done" in sell mode should work
 - New user cash should start at "min to equal an existing player", not "min if people were to sell everything"
 - Tank sell exploit, tank value based on equipped tank

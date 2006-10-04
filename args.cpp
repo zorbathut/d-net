@@ -5,6 +5,14 @@
 
 using namespace std;
 
+string canonize(const string &in) {
+  string tbx;
+  for(int i = 0; i < in.size(); i++)
+    if(isalpha(in[i]))
+      tbx.push_back(tolower(in[i]));
+  return tbx;
+}
+
 map< string, LinkageData > &getLinkageSingleton() {
   static map< string, LinkageData > singy;
   return singy;
@@ -17,7 +25,7 @@ ARGS_LinkageObject::ARGS_LinkageObject(const string &id, string *writeto, const 
   ld.type = LinkageData::LINKAGE_STRING;
   ld.str_def = def;
   ld.str_link = writeto;
-  links[id] = ld;
+  links[canonize(id)] = ld;
 }
 ARGS_LinkageObject::ARGS_LinkageObject(const string &id, int *writeto, int def, const string &descr) {
   map< string, LinkageData > &links = getLinkageSingleton();
@@ -26,7 +34,7 @@ ARGS_LinkageObject::ARGS_LinkageObject(const string &id, int *writeto, int def, 
   ld.type = LinkageData::LINKAGE_INT;
   ld.int_def = def;
   ld.int_link = writeto;
-  links[id] = ld;
+  links[canonize(id)] = ld;
 }
 ARGS_LinkageObject::ARGS_LinkageObject(const string &id, bool *writeto, bool def, const string &descr) {
   map< string, LinkageData > &links = getLinkageSingleton();
@@ -35,7 +43,7 @@ ARGS_LinkageObject::ARGS_LinkageObject(const string &id, bool *writeto, bool def
   ld.type = LinkageData::LINKAGE_BOOL;
   ld.bool_def = def;
   ld.bool_link = writeto;
-  links[id] = ld;
+  links[canonize(id)] = ld;
 }
 
 LinkageData::LinkageData() {
@@ -93,6 +101,8 @@ void initFlags(int argc, char *argv[]) {
     } else {
       realarg = arg;
     }
+    realarg = canonize(realarg);
+    
     if(!links.count(realarg)) {
       dprintf("Invalid commandline argument %s\n", arg);
       CHECK(0);
