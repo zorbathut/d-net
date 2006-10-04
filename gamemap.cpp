@@ -21,8 +21,13 @@ void Gamemap::render() const {
   for(int i = 0; i < paths.size(); i++) {
     if(isAvailable(paths[i].state))
       continue;
-    for(int j = 0; j < paths[i].renderpath.size(); j++)
-      drawLinePath(paths[i].renderpath[j], 0.5);
+    
+    if(frameNumber % 2 || 1) {
+      for(int j = 0; j < paths[i].renderpath.size(); j++)
+        drawLinePath(paths[i].renderpath[j], 0.5);
+    } else {
+      drawLineLoop(paths[i].collisionpath, 0.5);
+    }
     /*
     if(FLAGS_debugGraphics) {
       for(int j = 0; j < paths[i].second.size(); j++) {
@@ -178,6 +183,7 @@ void Gamemap::removeWalls(Coord2 center, float radius) {
   {
     Coord4 bounds = startCBoundBox();
     addToBoundBox(&bounds, inters);
+    bounds = bounds + Coord4(-offset, -offset, -offset, -offset);
     bounds = snapToEnclosingGrid(bounds, resolution);
     int nsx = (bounds.sx / resolution).toInt();
     int nsy = (bounds.sy / resolution).toInt();
@@ -300,8 +306,42 @@ void Gamemap::flushAdds() {
   nlinks.clear();
 }
 
+Coord diffFromBase(const Coord &x) {
+  Coord d = (x - offset) / resolution;
+  return abs(d - floor(d + Coord(0.5)));
+}
+
+bool onboundary(const Coord2 &x, const Coord2 &y) {
+  if(abs(x.x - y.x) < Coord(0.0001) && diffFromBase(x.x) < Coord(0.0001) && abs(x.y - y.y) > abs(x.x - y.x) * 10)
+    return true;
+  if(abs(x.y - y.y) < Coord(0.0001) && diffFromBase(x.y) < Coord(0.0001) && abs(x.x - y.x) > abs(x.y - y.y) * 10)
+    return true;
+  return false;
+}
+
 void Gamemap::Pathchunk::generateRenderPath() {
   renderpath.clear();
-  renderpath.push_back(collisionpath);
-  renderpath[0].push_back(collisionpath[0]);
+  {
+    vector<Coord2> cdd;
+    for(int i = 0; i < collisionpath.size(); i++) {
+      int j = (i + 1) % collisionpath.size();
+      if(!onboundary(collisionpath[i], collisionpath[j])) {
+        if(!cdd.size())
+          cdd.push_back(collisionpath[i]);
+        cdd.push_back(collisionpath[j]);
+      } else {
+        if(cdd.size()) {
+          CHECK(cdd.size() >= 2);
+          renderpath.push_back(cdd);
+          cdd.clear();
+        }
+      }
+    }
+    
+    if(cdd.size()) {
+      CHECK(cdd.size() >= 2);
+      renderpath.push_back(cdd);
+      cdd.clear();
+    }
+  }
 }
