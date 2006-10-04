@@ -1,5 +1,4 @@
 ---- Major work path
-- Make collision EVEN FASTER on large numbers of players
 - Case-insensitive args
 - "Done" in sell mode should work
 - New user cash should start at "min to equal an existing player", not "min if people were to sell everything"

@@ -237,32 +237,51 @@ inline bool operator==(const CollideData &lhs, const CollideData &rhs) {
   return true;
 }
 
+void CollideZone::makeSpaceFor(int id) {
+  if(catrefs[id] == -1) {
+    catrefs[id] = items.size();
+    items.resize(items.size() + 1);
+    items[catrefs[id]].first = id;
+  }
+}
+void CollideZone::wipe(int id) {
+  if(catrefs[id] != -1) {
+    swap(items[catrefs[id]], items[items.size() - 1]);
+    catrefs[items[catrefs[id]].first] = catrefs[id];
+    catrefs[id] = -1;
+    items.pop_back();
+  }
+}
+
 void CollideZone::setCategoryCount(int size) {
   CHECK(!items.size());
-  items.resize(size);
+  CHECK(!catrefs.size());
+  catrefs.resize(size, -1);
 }
 
 void CollideZone::clean(const char *persist) {
-  CHECK(items.size());
   for(int i = 0; i < items.size(); i++) {
-    if(!persist[i]) {
-      items[i].clear();
+    if(!persist[items[i].first]) {
+      wipe(items[i].first);
+      i--;
     }
   }
 }
 
 void CollideZone::addToken(int groupid, int token, const Coord4 &line, const Coord4 &direction) {
-  items[groupid][token].push_back(make_pair(line, direction));
+  makeSpaceFor(groupid);
+  items[catrefs[groupid]].second[token].push_back(make_pair(line, direction));
 }
 void CollideZone::dumpGroup(int category, int group) {
-  items[category].erase(group);
+  if(catrefs[category] != -1)
+    items[catrefs[category]].second.erase(group);
 }
 
 bool CollideZone::checkSimpleCollision(int groupid, const vector<Coord4> &line, const char *collidematrix) const {
   for(int i = 0; i < items.size(); i++) {
-    if(!collidematrix[groupid * items.size() + i])
+    if(!collidematrix[groupid * catrefs.size() + items[i].first])
       continue;
-    for(map<int, vector<pair<Coord4, Coord4> > >::const_iterator itr = items[i].begin(); itr != items[i].end(); ++itr) {
+    for(map<int, vector<pair<Coord4, Coord4> > >::const_iterator itr = items[i].second.begin(); itr != items[i].second.end(); ++itr) {
       const vector<pair<Coord4, Coord4> > &tx = itr->second;
       for(int xa = 0; xa < tx.size(); xa++) {
         for(int ya = 0; ya < line.size(); ya++) {
@@ -278,10 +297,10 @@ bool CollideZone::checkSimpleCollision(int groupid, const vector<Coord4> &line, 
 void CollideZone::processMotion(vector<pair<Coord, CollideData> > *clds, const char *collidematrix) const {
   for(int x = 0; x < items.size(); x++) {
     for(int y = x + 1; y < items.size(); y++) {
-      if(!collidematrix[x * items.size() + y])
+      if(!collidematrix[items[x].first * catrefs.size() + items[y].first])
         continue;
-      for(map<int, vector<pair<Coord4, Coord4> > >::const_iterator xitr = items[x].begin(); xitr != items[x].end(); ++xitr) {
-        for(map<int, vector<pair<Coord4, Coord4> > >::const_iterator yitr = items[y].begin(); yitr != items[y].end(); ++yitr) {
+      for(map<int, vector<pair<Coord4, Coord4> > >::const_iterator xitr = items[x].second.begin(); xitr != items[x].second.end(); ++xitr) {
+        for(map<int, vector<pair<Coord4, Coord4> > >::const_iterator yitr = items[y].second.begin(); yitr != items[y].second.end(); ++yitr) {
           const vector<pair<Coord4, Coord4> > &tx = xitr->second;
           const vector<pair<Coord4, Coord4> > &ty = yitr->second;
           for(int xa = 0; xa < tx.size(); xa++) {
@@ -290,7 +309,7 @@ void CollideZone::processMotion(vector<pair<Coord, CollideData> > *clds, const c
               if(tcol.first == NOCOLLIDE)
                 continue;
               CHECK(tcol.first >= 0 && tcol.first <= 1);
-              clds->push_back(make_pair(tcol.first, CollideData(CollideId(reverseCategoryFromCC(items.size(), x), xitr->first), CollideId(reverseCategoryFromCC(items.size(), y), yitr->first), tcol.second)));
+              clds->push_back(make_pair(tcol.first, CollideData(CollideId(reverseCategoryFromCC(catrefs.size(), items[x].first), xitr->first), CollideId(reverseCategoryFromCC(catrefs.size(), items[y].first), yitr->first), tcol.second)));
             }
           }
         }
@@ -301,7 +320,7 @@ void CollideZone::processMotion(vector<pair<Coord, CollideData> > *clds, const c
 
 void CollideZone::render() const {
   for(int i = 0; i < items.size(); i++)
-    for(map<int, vector<pair<Coord4, Coord4> > >::const_iterator itr = items[i].begin(); itr != items[i].end(); itr++)
+    for(map<int, vector<pair<Coord4, Coord4> > >::const_iterator itr = items[i].second.begin(); itr != items[i].second.end(); itr++)
       for(int j = 0; j < itr->second.size(); j++)
         drawLine(itr->second[j].first, 1);
 }  
@@ -408,7 +427,7 @@ void Collider::dumpGroup(const CollideId &cid) {
   CHECK(state == CSTA_WAITING);
   
   int categ = getCategoryFromPlayers(players, cid.category, cid.bucket);
-  for(int i = 0; i < zones.size(); i++)
+  for(int i = 0; i < zones.size(); i++) // todo: Get bounds from the caller?
     zones[i].dumpGroup(categ, cid.item);
   //persistent.erase(make_pair(categ, cid.item));
 }

@@ -41,7 +41,11 @@ public:
 
 class CollideZone {
 private:
-  vector<map<int, vector<pair<Coord4, Coord4> > > > items;
+  vector<pair<int, map<int, vector<pair<Coord4, Coord4> > > > > items;
+  vector<int> catrefs;
+
+  void makeSpaceFor(int id);
+  void wipe(int id);
 
 public:
   
