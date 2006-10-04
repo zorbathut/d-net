@@ -44,6 +44,7 @@ tank {
   health=20
   handling=2
   engine=24
+  
   mass=50
   
   weapon=Sparker
@@ -97,7 +98,7 @@ text {
 tank {
   name=ROOT.Tanks.CARAT I
 
-  health=80
+  health=55
   handling=2.4
   engine=30
   
@@ -123,7 +124,7 @@ text {
 tank {
   name=ROOT.Tanks.PIRE I
 
-  health=95
+  health=65
   handling=2
   engine=24
   
@@ -150,7 +151,7 @@ text {
 tank {
   name=ROOT.Tanks.ROXO I
 
-  health=110
+  health=75
   handling=1.8
   engine=18
   
