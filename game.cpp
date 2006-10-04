@@ -238,7 +238,7 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
     if(bombards[j].state == BombardmentState::BS_OFF) {
       if(!tanks[j].live) {
         // if the player is dead and the bombard isn't initialized
-        bombards[j].loc = tanks[j].pos;
+        bombards[j].pos = tanks[j].pos;
         bombards[j].state = BombardmentState::BS_SPAWNING;
         if(gamemode == GMODE_DEMO)
           bombards[j].timer = 0;
@@ -254,11 +254,11 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
       if(len(deaded) > 1)
         deaded /= len(deaded);
       deaded.y *= -1;
-      bombards[j].loc += Coord2(deaded);
-      bombards[j].loc.x = max(bombards[j].loc.x, gmb.sx);
-      bombards[j].loc.y = max(bombards[j].loc.y, gmb.sy);
-      bombards[j].loc.x = min(bombards[j].loc.x, gmb.ex);
-      bombards[j].loc.y = min(bombards[j].loc.y, gmb.ey);
+      bombards[j].pos += Coord2(deaded);
+      bombards[j].pos.x = max(bombards[j].pos.x, gmb.sx);
+      bombards[j].pos.y = max(bombards[j].pos.y, gmb.sy);
+      bombards[j].pos.x = min(bombards[j].pos.x, gmb.ex);
+      bombards[j].pos.y = min(bombards[j].pos.y, gmb.ey);
       CHECK(SIMUL_WEAPONS == 2);
       if(keys[j].fire[0].down || keys[j].fire[1].down) {
         bombards[j].state = BombardmentState::BS_FIRING;
@@ -267,7 +267,7 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
     } else if(bombards[j].state == BombardmentState::BS_FIRING) {
       bombards[j].timer--;
       if(bombards[j].timer <= 0) {
-        detonateWarhead(players[j]->getBombardment((int)bombardment_tier).warhead(), bombards[j].loc, NULL, &tanks[j], gic, 1.0, false);
+        detonateWarhead(players[j]->getBombardment((int)bombardment_tier).warhead(), bombards[j].pos, NULL, &tanks[j], gic, 1.0, false);
         bombards[j].state = BombardmentState::BS_COOLDOWN;
         bombards[j].timer = round(players[j]->getBombardment((int)bombardment_tier).unlockdelay() * FPS);
       }
@@ -285,15 +285,14 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
 
   for(int i = 0; i < tanks.size(); i++) {
     StackString sst(StringPrintf("Player weaponry %d", i));
-    if(tanks[i].live) {
-      for(int j = 0; j < SIMUL_WEAPONS; j++) {
-        if(keys[i].change[j].push) {
-          StackString sst(StringPrintf("Switching"));
-          players[i]->cycleWeapon(j);
-          addTankStatusText(i, players[i]->getWeapon(j).name(), 1);
-        }
+    for(int j = 0; j < SIMUL_WEAPONS; j++) {
+      if(keys[i].change[j].push) {
+        StackString sst(StringPrintf("Switching"));
+        players[i]->cycleWeapon(j);
+        addTankStatusText(i, players[i]->getWeapon(j).name(), 1);
       }
-    
+    }
+    if(tanks[i].live) {
       if(tanks[i].weaponCooldown <= 0 && teams[tanks[i].team].weapons_enabled && frameNm >= frameNmToStart && frameNmToStart != -1) {
         StackString sst(StringPrintf("Firetesting"));
         // The player can fire, so let's find out if he does
@@ -487,7 +486,7 @@ void Game::ai(const vector<GameAi *> &ais) const {
       if(tanks[i].live)
         ais[i]->updateGame(tanks, i);
       else
-        ais[i]->updateBombardment(tanks, bombards[i].loc);
+        ais[i]->updateBombardment(tanks, bombards[i].pos);
     }
   }
 }
@@ -567,21 +566,21 @@ void Game::renderToScreen(const vector<const Player *> &players) const {
       } else if(bombards[i].state == BombardmentState::BS_SPAWNING) {
       } else if(bombards[i].state == BombardmentState::BS_ACTIVE) {
         setColor(tanks[i].color * 0.8);
-        drawCirclePieces(bombards[i].loc, 0.3, 4);
-        drawCrosses(bombards[i].loc, 4);
+        drawCirclePieces(bombards[i].pos, 0.3, 4);
+        drawCrosses(bombards[i].pos, 4);
       } else if(bombards[i].state == BombardmentState::BS_FIRING) {
         setColor(tanks[i].color * 0.5);
-        drawCirclePieces(bombards[i].loc, 0.3, 4);
-        drawCrosses(bombards[i].loc, 4);
+        drawCirclePieces(bombards[i].pos, 0.3, 4);
+        drawCrosses(bombards[i].pos, 4);
         setColor(Color(1.0, 1.0, 1.0));
         float ps = (float)bombards[i].timer / (players[i]->getBombardment((int)bombardment_tier).lockdelay() * FPS);
-        drawCirclePieces(bombards[i].loc, 1 - ps, 4 * ps);
+        drawCirclePieces(bombards[i].pos, 1 - ps, 4 * ps);
       } else if(bombards[i].state == BombardmentState::BS_COOLDOWN) {
         setColor(tanks[i].color * 0.5);
-        drawCirclePieces(bombards[i].loc, 0.3, 4);
-        drawCrosses(bombards[i].loc, 4);
+        drawCirclePieces(bombards[i].pos, 0.3, 4);
+        drawCrosses(bombards[i].pos, 4);
         float ps = (float)bombards[i].timer / (players[i]->getBombardment((int)bombardment_tier).unlockdelay() * FPS);
-        drawCirclePieces(bombards[i].loc, ps, 4 * (1 - ps));
+        drawCirclePieces(bombards[i].pos, ps, 4 * (1 - ps));
       } else {
         CHECK(0);
       }
@@ -672,27 +671,29 @@ void Game::renderToScreen(const vector<const Player *> &players) const {
         float roffset = (400./3.) / tanks.size() * (i + 1);
         if(i)
           drawLine(Float4(loffset, 0, loffset, 10), 0.1);
+        
+        setColor(players[i]->getFaction()->color);
+        
         if(tanks[i].live) {
-          setColor(players[i]->getFaction()->color);
           float barl = loffset + 1;
           float bare = (roffset - 1) - (loffset + 1);
           bare /= players[i]->getTank().maxHealth();
           bare *= tanks[i].health;
           drawShadedRect(Float4(barl, 2, barl + bare, 7), 0.1, 2);
-          
-          string ammotext[SIMUL_WEAPONS];
-          for(int j = 0; j < SIMUL_WEAPONS; j++) {
-            if(players[i]->shotsLeft(j) == UNLIMITED_AMMO) {
-              ammotext[j] = "Inf";
-            } else {
-              ammotext[j] = StringPrintf("%d", players[i]->shotsLeft(j));
-            }
-          }
-          
-          CHECK(SIMUL_WEAPONS == 2);
-          drawJustifiedText(ammotext[0], 1.5, Float2(loffset + 1, 7.75), TEXT_MIN, TEXT_MIN);
-          drawJustifiedText(ammotext[1], 1.5, Float2(roffset - 1, 7.75), TEXT_MAX, TEXT_MIN);
         }
+          
+        string ammotext[SIMUL_WEAPONS];
+        for(int j = 0; j < SIMUL_WEAPONS; j++) {
+          if(players[i]->shotsLeft(j) == UNLIMITED_AMMO) {
+            ammotext[j] = "Inf";
+          } else {
+            ammotext[j] = StringPrintf("%d", players[i]->shotsLeft(j));
+          }
+        }
+        
+        CHECK(SIMUL_WEAPONS == 2);
+        drawJustifiedText(ammotext[0], 1.5, Float2(loffset + 1, 7.75), TEXT_MIN, TEXT_MIN);
+        drawJustifiedText(ammotext[1], 1.5, Float2(roffset - 1, 7.75), TEXT_MAX, TEXT_MIN);
       }
     }
     
@@ -1125,7 +1126,13 @@ void Game::initCenteredDemo(Player *in_playerdata, float zoom) {
 }
 
 void Game::addTankStatusText(int tankid, const string &text, float duration) {
-  gfxeffects.push_back(GfxText(tanks[tankid].pos.toFloat() + Float2(4, -4), Float2(0, -6), zoom_size.y / 80, text, duration, Color(1.0, 1.0, 1.0)));
+  Float2 pos;
+  if(tanks[tankid].live) {
+    pos = tanks[tankid].pos.toFloat();
+  } else {
+    pos = bombards[tankid].pos.toFloat();
+  }
+  gfxeffects.push_back(GfxText(pos + Float2(4, -4), Float2(0, -6), zoom_size.y / 80, text, duration, Color(1.0, 1.0, 1.0)));
 }
 
 bool GamePackage::runTick(const vector<Keystates> &keys) {

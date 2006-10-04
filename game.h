@@ -13,12 +13,12 @@ class GameAi;
 class BombardmentState {
 public:
   enum { BS_OFF, BS_SPAWNING, BS_ACTIVE, BS_FIRING, BS_COOLDOWN, BS_LAST };
-  Coord2 loc;
+  Coord2 pos;
   int timer;
   int state;
   
   BombardmentState() {
-    loc = Coord2(0, 0);
+    pos = Coord2(0, 0);
     timer = 0;
     state = BS_OFF;
   }
