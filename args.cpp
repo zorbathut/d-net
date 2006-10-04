@@ -101,6 +101,7 @@ void initFlags(int argc, char *argv[]) {
     } else {
       realarg = arg;
     }
+    
     realarg = canonize(realarg);
     
     if(!links.count(realarg)) {
