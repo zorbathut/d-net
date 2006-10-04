@@ -118,8 +118,10 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
       tanks[j].addCollision(&collider, keys[j], j);
     }
     
+    /*    // CPU-intensive :(
     for(int j = 0; j < tanks.size(); j++)
       CHECK(!collider.checkSimpleCollision(CGR_TANK, j, tanks[j].getCurrentCollide()));
+    */
     
     vector<int> playerorder;
     {
