@@ -202,6 +202,9 @@ bool canCollideProjectile(int players, int indexa, int indexb, const vector<int>
   // Two things can't collide if neither of them are a projectile
   if(!apr && !bpr)
     return false;
+  // Two things also can't collide if they're both static projectiles
+  if(ar.first == CGR_STATPROJECTILE && br.first == CGR_STATPROJECTILE)
+    return false;
   // Projectiles on the same team don't collide
   if(apr && bpr && (teams[ar.second] == teams[br.second]))
     return false;

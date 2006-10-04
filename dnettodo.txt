@@ -1,5 +1,4 @@
 ---- Major work path
-- Mine collide against each other
 - New tank hull strength not quite as absurd (*3 perhaps)
 - Projectiles no hit mines?
 - Small fonts for settings tabs
