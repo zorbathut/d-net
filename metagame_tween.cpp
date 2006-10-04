@@ -595,12 +595,12 @@ void PersistentData::renderSlot(int slotid) const {
     setZoom(Float4(0, 0, 800, 600));
     setColor(1.0, 1.0, 1.0);
     
-    float cury = 10;
+    float cury = 40;
     
     setColor(1.0, 1.0, 1.0);
-    drawJustifiedText(StringPrintf("Base income: %s", lrBaseCash.textual().c_str()), 10, Float2(40 , cury), TEXT_MIN, TEXT_MIN);
-    drawJustifiedText(StringPrintf("Firepower bonus: %s", lrFirepower.textual().c_str()), 10, Float2(760, cury), TEXT_MAX, TEXT_MIN);
-    cury += 30;
+    drawJustifiedText(StringPrintf("Base income: %s", lrBaseCash.textual().c_str()), 15, Float2(40 , cury), TEXT_MIN, TEXT_MIN);
+    drawJustifiedText(StringPrintf("Firepower bonus: %s", lrFirepower.textual().c_str()), 15, Float2(760, cury), TEXT_MAX, TEXT_MIN);
+    cury += 40;
     
     setColor(1.0, 1.0, 1.0);
     drawText("Damage", 30, Float2(40, cury));
@@ -617,17 +617,12 @@ void PersistentData::renderSlot(int slotid) const {
     drawMultibar(lrCategory[2], Float4(200, cury, 760, cury + 40));
     cury += 60;
     
-    setColor(1.0, 1.0, 1.0);
-    drawText("Base", 30, Float2(40, cury));
-    drawMultibar(lrCategory[3], Float4(200, cury, 760, cury + 40));
-    cury += 60;
-    
     cury += 40;
     
     setColor(1.0, 1.0, 1.0);
     drawText("Totals", 30, Float2(40, cury));
     drawMultibar(lrPlayer, Float4(200, cury, 760, cury + 40));
-    cury += 60;
+    cury += 100;
     
     setColor(1.0, 1.0, 1.0);
     drawJustifiedText("Waiting for", 30, Float2(400, cury), TEXT_CENTER, TEXT_MIN);

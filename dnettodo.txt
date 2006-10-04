@@ -1,9 +1,10 @@
 ---- Major work path
-- Small fonts for settings tabs
-- Cached shop demo stats
 - Remove "base" in results
 - Global ping size based on level size
 - Force axes change when axis type is changed
+- Glory device blasts hurt walls
+- Settings tabs scroll
+- Cached shop demo stats
 - Mine deployment range
 - Mine deployment speed, quantity
 - Make equip a little more comprehensible
