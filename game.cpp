@@ -87,7 +87,7 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
   
   // I think this works.
   
-  const Coord4 gmb = gamemap.getBounds();
+  const Coord4 gmb = gamemap.getCollisionBounds();
   vector<int> teamids;
   {
     for(int i = 0; i < tanks.size(); i++)
@@ -97,7 +97,7 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
   {
     StackString sst("Player movement collider");
     
-    collider.cleanup(COM_PLAYER, gamemap.getBounds(), teamids);
+    collider.cleanup(COM_PLAYER, gmb, teamids);
     
     {
       StackString sst("Adding walls");
@@ -443,7 +443,7 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
   }
 
   {
-    pair<Float2, Float2> z = getMapZoom(gamemap.getBounds());
+    pair<Float2, Float2> z = getMapZoom(gamemap.getRenderBounds());
     
     doInterp(&zoom_center.x, &z.first.x, &zoom_size.x, &z.second.x, &zoom_speed.x);
     doInterp(&zoom_center.y, &z.first.y, &zoom_size.y, &z.second.y, &zoom_speed.y);
@@ -946,7 +946,7 @@ void Game::initCommon(const vector<Player*> &in_playerdata, const Level &lev) {
   
   projectiles.resize(in_playerdata.size());
   
-  pair<Float2, Float2> z = getMapZoom(gamemap.getBounds());
+  pair<Float2, Float2> z = getMapZoom(gamemap.getRenderBounds());
   zoom_center = z.first;
   zoom_size = z.second;
   

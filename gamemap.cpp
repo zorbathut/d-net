@@ -64,7 +64,10 @@ void Gamemap::updateCollide(Collider *collider) {
   }
 }
 
-Coord4 Gamemap::getBounds() const {
+Coord4 Gamemap::getRenderBounds() const {
+  return render_bounds;
+}
+Coord4 Gamemap::getCollisionBounds() const {
   return getInternalBounds();
 }
 
@@ -167,6 +170,8 @@ void Gamemap::removeWalls(Coord2 center, float radius) {
     return;
   }
   
+  addToBoundBox(&render_bounds, inters);
+  
   {
     Coord4 bounds = startCBoundBox();
     addToBoundBox(&bounds, inters);
@@ -208,6 +213,8 @@ Gamemap::Gamemap(const Level &lev) {
     addToBoundBox(&bounds, lev.paths[i]);
   }
   CHECK(bounds.isNormalized());
+  
+  render_bounds = bounds;
   
   bounds = bounds + Coord4(-offset, -offset, -offset, -offset);
   bounds = snapToEnclosingGrid(bounds, resolution);

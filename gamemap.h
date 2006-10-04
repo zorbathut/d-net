@@ -13,7 +13,8 @@ public:
   void render() const;
   void updateCollide(Collider *collide);
 
-  Coord4 getBounds() const;
+  Coord4 getRenderBounds() const;
+  Coord4 getCollisionBounds() const;
 
   void removeWalls(Coord2 center, float radius);
   
@@ -25,6 +26,8 @@ private:
   int sy;
   int ex;
   int ey;
+
+  Coord4 render_bounds;
 
   Coord4 getInternalBounds() const;
   Coord4 getTileBounds(int x, int y) const;
