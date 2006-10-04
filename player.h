@@ -57,7 +57,8 @@ public:
 class Player {
 public:
 
-  IDBUpgradeAdjust adjustUpgrade(const IDBUpgrade *in_upg) const;
+  IDBUpgradeAdjust adjustUpgrade(const IDBUpgrade *in_upg, const IDBTank *in_tank) const;
+  IDBUpgradeAdjust adjustUpgradeForCurrentTank(const IDBUpgrade *in_upg) const;
   IDBGloryAdjust adjustGlory(const IDBGlory *in_upg) const;
   IDBBombardmentAdjust adjustBombardment(const IDBBombardment *in_upg, int bombard_level = -1) const;
   IDBWeaponAdjust adjustWeapon(const IDBWeapon *in_upg) const;
@@ -143,7 +144,7 @@ public:
   
   IDBAdjustment getAdjust() const;
   
-  Money totalValue() const;
+  Money totalValue() const; // Update this when more stuff is added to the player
 
   Player();
   Player(const IDBFaction *fact, int factionmode);

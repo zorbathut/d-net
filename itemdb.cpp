@@ -69,7 +69,7 @@ Money HierarchyNode::cost(const Player *player) const {
   if(type == HNT_WEAPON) {
     return player->adjustWeapon(weapon).cost();
   } else if(type == HNT_UPGRADE) {
-    return player->adjustUpgrade(upgrade).cost();
+    return player->adjustUpgradeForCurrentTank(upgrade).cost();
   } else if(type == HNT_GLORY) {
     return player->adjustGlory(glory).cost();
   } else if(type == HNT_BOMBARDMENT) {
@@ -84,8 +84,6 @@ Money HierarchyNode::cost(const Player *player) const {
 Money HierarchyNode::sellvalue(const Player *player) const {
   if(type == HNT_WEAPON) {
     return player->adjustWeapon(weapon).sellcost(min(pack, player->ammoCount(weapon)));
-  } else if(type == HNT_UPGRADE) {
-    return player->adjustUpgrade(upgrade).sellcost();
   } else if(type == HNT_GLORY) {
     return player->adjustGlory(glory).sellcost();
   } else if(type == HNT_BOMBARDMENT) {

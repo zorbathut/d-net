@@ -146,17 +146,20 @@ Weaponmanager::Weaponmanager(const IDBWeapon *weapon) {
 TankEquipment::TankEquipment() { tank = NULL; }
 TankEquipment::TankEquipment(const IDBTank *in_tank) { tank = in_tank; }
 
-IDBUpgradeAdjust Player::adjustUpgrade(const IDBUpgrade *in_upg) const {
+IDBUpgradeAdjust Player::adjustUpgrade(const IDBUpgrade *in_upg, const IDBTank *in_tank) const {
+  return IDBUpgradeAdjust(in_upg, in_tank, adjustment);
+}
+IDBUpgradeAdjust Player::adjustUpgradeForCurrentTank(const IDBUpgrade *in_upg) const {
   CHECK(tank.size());
-  return IDBUpgradeAdjust(in_upg, tank[0].tank, adjustment);
-};
+  return adjustUpgrade(in_upg, tank[0].tank);
+}
 
 IDBGloryAdjust Player::adjustGlory(const IDBGlory *in_upg) const { return IDBGloryAdjust(in_upg, adjustment); };
 IDBBombardmentAdjust Player::adjustBombardment(const IDBBombardment *in_upg, int bombard_level) const { return IDBBombardmentAdjust(in_upg, adjustment, bombard_level); };
 IDBWeaponAdjust Player::adjustWeapon(const IDBWeapon *in_upg) const { return IDBWeaponAdjust(in_upg, adjustment); };
 IDBTankAdjust Player::adjustTank(const IDBTank *in_upg) const { return IDBTankAdjust(in_upg, adjustment); };
 
-bool Player::canBuyUpgrade(const IDBUpgrade *in_upg) const { return stateUpgrade(in_upg) == ITEMSTATE_UNOWNED && adjustUpgrade(in_upg).cost() <= cash; }; 
+bool Player::canBuyUpgrade(const IDBUpgrade *in_upg) const { return stateUpgrade(in_upg) == ITEMSTATE_UNOWNED && adjustUpgradeForCurrentTank(in_upg).cost() <= cash; }; 
 bool Player::canBuyGlory(const IDBGlory *in_glory) const { return stateGlory(in_glory) == ITEMSTATE_UNOWNED && adjustGlory(in_glory).cost() <= cash; };
 bool Player::canBuyBombardment(const IDBBombardment *in_bombardment) const { return stateBombardment(in_bombardment) == ITEMSTATE_UNOWNED && adjustBombardment(in_bombardment).cost() <= cash; };
 bool Player::canBuyWeapon(const IDBWeapon *in_weap) const { return adjustWeapon(in_weap).cost() <= cash && in_weap->base_cost > Money(0); }
@@ -178,15 +181,15 @@ Money Player::sellTankValue(const IDBTank *in_tank) const {
   Money acu = Money(0);
   acu += adjustTank(in_tank).sellcost();
   for(int i = 0; i < tank[ps].upgrades.size(); i++)
-    acu += IDBUpgradeAdjust(tank[ps].upgrades[i], tank[ps].tank, adjustment).sellcost();
+    acu += adjustUpgrade(tank[ps].upgrades[i], tank[ps].tank).sellcost();
   return acu;
 }
 
 void Player::buyUpgrade(const IDBUpgrade *in_upg) {
-  CHECK(cash >= adjustUpgrade(in_upg).cost());
+  CHECK(cash >= adjustUpgradeForCurrentTank(in_upg).cost());
   CHECK(canBuyUpgrade(in_upg));
   CHECK(tank.size() >= 1);
-  cash -= adjustUpgrade(in_upg).cost();
+  cash -= adjustUpgradeForCurrentTank(in_upg).cost();
   tank[0].upgrades.push_back(in_upg);
   reCalculate();
 }
@@ -419,30 +422,27 @@ int Player::getWeaponEquipBit(const IDBWeapon *weapon, int id) const {
 IDBAdjustment Player::getAdjust() const {
   return adjustment;
 }
-/*
-  Weaponmanager weapons;
 
-  // First item is equipped
-  vector<const IDBGlory *> glory;
-  vector<const IDBBombardment *> bombardment;
-  vector<TankEquipment> tank;
-*/
 Money Player::totalValue() const {
   // Let us total the player's net worth.
   Money worth = cash;
   
   for(int i = 0; i < glory.size(); i++)
-    worth += adjustGlory(glory[i]).sellcost();
+    worth += adjustGlory(glory[i]).cost();
   
   for(int i = 0; i < bombardment.size(); i++)
-    worth += adjustBombardment(bombardment[i]).sellcost();
+    worth += adjustBombardment(bombardment[i]).cost();
   
-  for(int i = 0; i < tank.size(); i++)
-    worth += sellTankValue(tank[i].tank);
+  for(int i = 0; i < tank.size(); i++) {
+    worth += adjustTank(tank[i].tank).cost();
+    
+    for(int j = 0; j < tank[i].upgrades.size(); j++)
+      worth += adjustUpgrade(tank[i].upgrades[j], tank[i].tank).cost();
+  }
   
   vector<const IDBWeapon *> weps = weapons.getAvailableWeapons();
   for(int i = 0; i < weps.size(); i++)
-    worth += adjustWeapon(weps[i]).sellcost(weapons.ammoCount(weps[i]));
+    worth += adjustWeapon(weps[i]).cost() * weapons.ammoCount(weps[i]) / weps[i]->quantity;
   
   return worth;
 }

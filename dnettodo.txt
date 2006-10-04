@@ -1,5 +1,4 @@
 ---- Major work path
-- New user cash should start at "min to equal an existing player", not "min if people were to sell everything"
 - Mine collide against each other
 - New tank hull strength not quite as absurd (*3 perhaps)
 - Projectiles no hit mines?

@@ -237,7 +237,7 @@ void doMegaEnumWorker(const HierarchyNode &rt, vector<pair<Money, vector<Control
   } else if(rt.type == HierarchyNode::HNT_WEAPON) {
     weps->push_back(make_pair(player->adjustWeapon(rt.weapon).cost(), path));
   } else if(rt.type == HierarchyNode::HNT_UPGRADE) {  // TODO: don't buy stuff if you already have it :)
-    upgs->push_back(make_pair(make_pair(player->adjustUpgrade(rt.upgrade).cost(), rt.upgrade), path));
+    upgs->push_back(make_pair(make_pair(player->adjustUpgradeForCurrentTank(rt.upgrade).cost(), rt.upgrade), path));
   } else if(rt.type == HierarchyNode::HNT_GLORY) {
     upgs->push_back(make_pair(make_pair(player->adjustGlory(rt.glory).cost(), (IDBUpgrade*)NULL), path));
   } else if(rt.type == HierarchyNode::HNT_BOMBARDMENT) {
