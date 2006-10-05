@@ -60,7 +60,7 @@ enum { SETTING_BUTTONS, SETTING_AXISTYPE, SETTING_AXISCHOOSE, SETTING_TEST, SETT
 const char * const setting_names[] = { "Keys", "Mode", "Directions", "Test", "Ready" };
 const char * const setting_names_detailed[] = { "Set your keys", "Control mode", "Set directions", "Test controls", "Ready" };
 
-enum { CHOICE_FIRSTPASS, CHOICE_ACTIVE, CHOICE_IDLE };
+enum { CHOICE_FIRSTPASS, CHOICE_REAXIS, CHOICE_ACTIVE, CHOICE_IDLE };
 
 struct PlayerMenuState {
 public:

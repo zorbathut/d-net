@@ -1,8 +1,10 @@
 ---- Major work path
-- Force axes change when axis type is changed
 - Glory device blasts hurt walls
 - Settings tabs scroll
 - Cached shop demo stats
+- "Choose from UIOJKL" for keyboard players?
+- Single-frame glick when leaving test mode
+- "You need two players, idiot"
 - Mine deployment range
 - Mine deployment speed, quantity
 - Make equip a little more comprehensible

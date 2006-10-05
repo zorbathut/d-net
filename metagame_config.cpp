@@ -161,7 +161,7 @@ void standardButtonTick(StandardButtonTickData *sbtd) {
   StackString sstr("standardButtonTick");
   if(*sbtd->current_button == -1) {
     *sbtd->current_button = 0;
-    *sbtd->current_mode = (sbtd->pms->choicemode == CHOICE_FIRSTPASS);
+    *sbtd->current_mode = (sbtd->pms->choicemode == CHOICE_FIRSTPASS || sbtd->pms->choicemode == CHOICE_REAXIS);
   }
   CHECK(*sbtd->current_button >= 0 && *sbtd->current_button < sbtd->outkeys->size());
   if(*sbtd->current_mode) {
@@ -200,7 +200,7 @@ void standardButtonTick(StandardButtonTickData *sbtd) {
             (*sbtd->outinvert)[*sbtd->current_button] = ((*sbtd->triggers)[i] < 0);
         }
         
-        if(sbtd->pms->choicemode == CHOICE_FIRSTPASS) {
+        if(sbtd->pms->choicemode == CHOICE_FIRSTPASS || sbtd->pms->choicemode == CHOICE_REAXIS) {
           (*sbtd->current_button)++;
         } else {
           *sbtd->current_mode = false;
@@ -212,7 +212,7 @@ void standardButtonTick(StandardButtonTickData *sbtd) {
       dprintf("Done with pass\n");
       dprintf("%d, %d\n", (*sbtd->outkeys)[0], (*sbtd->outkeys)[1]);
       // Done with the first pass here - this can only happen if the choice if FIRSTPASS
-      CHECK(sbtd->pms->choicemode == CHOICE_FIRSTPASS);
+      CHECK(sbtd->pms->choicemode == CHOICE_FIRSTPASS || sbtd->pms->choicemode == CHOICE_REAXIS);
       sbtd->pms->settingmode++;
       (*sbtd->current_button) = -1;
     }
@@ -489,6 +489,7 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
       standardButtonTick(&sbtd);
     } else if(pms->settingmode == SETTING_AXISTYPE && pms->setting_axistype_demo_curframe == -1) {
       bool closing = false;
+      int lastaxis = pms->setting_axistype;
       
       if(keys.u.push)
         pms->setting_axistype_curchoice--;
@@ -504,15 +505,22 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
       if(keys.keys[pms->buttons[BUTTON_ACCEPT]].push) {
         if(pms->setting_axistype_curchoice % 2 == 0) {
           pms->setting_axistype = pms->setting_axistype_curchoice / 2;
+          pms->setting_axis_current = -1;
         } else {
           pms->setting_axistype_demo_curframe = 0;
           pms->createNewAxistypeDemo();
         }
       }
       
-      if(pms->setting_axistype_demo_curframe == -1) {
+      if(pms->setting_axistype_demo_curframe == -1) { // this only fails if we've gone into a demo mode
         if(pms->choicemode == CHOICE_ACTIVE) {
-          if(keys.keys[pms->buttons[BUTTON_ACCEPT]].push || keys.keys[pms->buttons[BUTTON_CANCEL]].push || closing) {
+          if(pms->setting_axis_current == -1 && lastaxis != pms->setting_axistype) {
+            pms->setting_axistype_curchoice = 0;
+            pms->settingmode++;
+            pms->choicemode = CHOICE_REAXIS;
+            pms->axes.clear();
+            pms->axes.resize(2, -1);
+          } else if(keys.keys[pms->buttons[BUTTON_ACCEPT]].push || keys.keys[pms->buttons[BUTTON_CANCEL]].push || closing) {
             pms->setting_axistype_curchoice = 0;
             pms->choicemode = CHOICE_IDLE;
           }
@@ -532,7 +540,6 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
       
       if(keys.keys[pms->buttons[BUTTON_CANCEL]].push)
         pms->setting_axistype_demo_curframe = -1;
-
       
     } else if(pms->settingmode == SETTING_AXISCHOOSE) {
       StackString sstr("SAX");
@@ -594,7 +601,7 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
       if(pms->choicemode == CHOICE_IDLE) {
         vector<Keystates> kst(1);
         CHECK(!pms->test_game->runTick(kst));
-      } else if(pms->choicemode == CHOICE_ACTIVE || pms->choicemode == CHOICE_FIRSTPASS) {
+      } else if(pms->choicemode == CHOICE_ACTIVE || pms->choicemode == CHOICE_FIRSTPASS || pms->choicemode == CHOICE_REAXIS) {
         vector<Keystates> kst;
         kst.push_back(pms->genKeystate(keys));
         CHECK(!pms->test_game->runTick(kst));
