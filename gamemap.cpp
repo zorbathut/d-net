@@ -81,6 +81,7 @@ const Coord resolution = Coord(20);
 const Coord offset = Coord(1.23456f); // Nasty hack to largely eliminate many border cases
 
 void Gamemap::removeWalls(Coord2 center, float radius) {
+  CHECK(nlinks.size() == 0);
   {
     Coord4 bounds = startCBoundBox();
     Coord4 ib = getInternalBounds();
@@ -260,6 +261,7 @@ Gamemap::Gamemap(const Level &lev) {
       }
     }
   }
+  flushAdds();
 }
 
 Coord4 Gamemap::getInternalBounds() const {

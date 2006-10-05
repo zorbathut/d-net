@@ -7,7 +7,7 @@ deploy {
 warhead {
   name=warhead.glory.projectile
   impactdamage=0.75 explosive
-  #wallremovalradius=0.5
+  wallremovalradius=1
 }
 
 text {
@@ -68,7 +68,7 @@ warhead {
   name=warhead.glory.shaped.core
   radiusdamage=8.0 explosive
   radiusfalloff=12
-  wallremovalradius=6
+  wallremovalradius=8
 }
 
 glory {

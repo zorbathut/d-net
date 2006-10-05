@@ -56,9 +56,8 @@ void detonateWarhead(const IDBWarheadAdjust &warhead, Coord2 pos, Tank *impact, 
   if(warhead.radiusfalloff() > 0)
     gic.effects->push_back(GfxBlast(pos.toFloat(), warhead.radiusfalloff(), warhead.radiuscolor_bright(), warhead.radiuscolor_dim()));
   
-  if(warhead.wallremovalradius() > 0 && frand() < warhead.wallremovalchance()) {
+  if(warhead.wallremovalradius() > 0 && frand() < warhead.wallremovalchance())
     gic.gamemap->removeWalls(pos, warhead.wallremovalradius());
-  }
 
 };
 
