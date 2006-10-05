@@ -6,39 +6,81 @@ text {
 }
 
 warhead {
-  name=warhead.mine
+  name=warhead.mine1
   radiusdamage=3.0 explosive
   radiusfalloff=6
   wallremovalradius=2
 }
 
 projectile {
-  name=projectile.mine
+  name=projectile.mine1
   motion=mine
   radius_physical=1
   halflife=6
   color=1.0, 1.0, 1.0
-  warhead=warhead.mine
+  warhead=warhead.mine1
 }
 
 weapon {
   name=ROOT.Weapons.Mine.Minelayer I
-  cost=300
-  firerate=0.5
+  cost=200
+  firerate=2
   deploy=deploy.minepath
-  projectile=projectile.mine
+  projectile=projectile.mine1
   
   demo=mines
   text=text.weapon.mine
 }
 
+warhead {
+  name=warhead.mine2
+  radiusdamage=6.0 explosive
+  radiusfalloff=7
+  wallremovalradius=3
+}
+
+projectile {
+  name=projectile.mine2
+  motion=mine
+  radius_physical=1.2
+  halflife=8
+  color=1.0, 1.0, 1.0
+  warhead=warhead.mine2
+}
+
 weapon {
   name=ROOT.Weapons.Mine.Minelayer II
-  cost=500
-  firerate=4
+  cost=600
+  firerate=2.5
   deploy=deploy.minepath
-  projectile=projectile.mine
-  debug=1
+  projectile=projectile.mine2
+  
+  demo=mines
+  text=text.weapon.mine
+}
+
+warhead {
+  name=warhead.mine3
+  radiusdamage=12.0 explosive
+  radiusfalloff=8
+  wallremovalradius=4
+}
+
+projectile {
+  name=projectile.mine3
+  motion=mine
+  radius_physical=1.4
+  halflife=10
+  color=1.0, 1.0, 1.0
+  warhead=warhead.mine3
+}
+
+weapon {
+  name=ROOT.Weapons.Mine.Minelayer III
+  cost=3000
+  firerate=3
+  deploy=deploy.minepath
+  projectile=projectile.mine3
   
   demo=mines
   text=text.weapon.mine
