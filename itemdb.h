@@ -48,7 +48,7 @@ public:
   const string *text;
 };
 
-enum { DT_FORWARD, DT_CENTROID, DT_LAST };
+enum { DT_FORWARD, DT_CENTROID, DT_MINEPATH, DT_LAST };
 
 struct IDBDeploy {
 public:

@@ -7,3 +7,8 @@ deploy {
   name=deploy.centroid
   type=centroid
 }
+
+deploy {
+  name=deploy.minepath
+  type=minepath
+}

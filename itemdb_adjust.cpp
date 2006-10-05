@@ -173,6 +173,7 @@ float IDBTankAdjust::mass() const { return idb->mass; };    // BAM
 
 const vector<Coord2> &IDBTankAdjust::vertices() const { return idb->vertices; };
 Coord2 IDBTankAdjust::firepoint() const { return idb->firepoint; };
+const vector<Coord2> &IDBTankAdjust::minepath() const { return idb->minepath; };
 
 IDBTankAdjust::IDBTankAdjust(const IDBTank *in_idb, const IDBAdjustment &in_adjust) { idb = in_idb; adjust = in_adjust; };
 

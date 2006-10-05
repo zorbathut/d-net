@@ -197,3 +197,7 @@ void expandBoundBox(Coord4 *bbox, Coord factor) { return imp_expandBoundBox<Coor
 
 bool linelineintersect(const Coord4 &lhs, const Coord4 &rhs) { return imp_linelineintersect<Coords>(lhs, rhs); };
 Coord linelineintersectpos(const Coord4 &lhs, const Coord4 &rhs) { return imp_linelineintersectpos<Coords>(lhs, rhs); };
+
+Coord2 lerp(const Coord2 &lhs, const Coord2 &rhs, Coord dist) {
+  return lhs + (rhs - lhs) * dist;
+}

@@ -486,24 +486,23 @@ void parseDeploy(kvData *chunk) {
   CHECK(prefixed(name, "deploy"));
   CHECK(deployclasses.count(name) == 0);
   
-  deployclasses[name];
-  
-  deployclasses[name].type = DT_FORWARD;
-  if(chunk->kv.count("type")) {
-    string type = chunk->consume("type");
-    if(type == "forward") {
-      deployclasses[name].type = DT_FORWARD;
-    } else if(type == "centroid") {
-      deployclasses[name].type = DT_CENTROID;
-      CHECK(!chunk->kv.count("anglestddev"));
-    } else {
-      CHECK(0);
-    }
-  }
-  
   deployclasses[name].anglestddev = 0;
-  if(chunk->kv.count("anglestddev"))
-    deployclasses[name].anglestddev = atof(chunk->consume("anglestddev").c_str());
+  
+  string type = "forward";
+  if(chunk->kv.count("type"))
+    type = chunk->consume("type");
+  
+  if(type == "forward") {
+    deployclasses[name].type = DT_FORWARD;
+    if(chunk->kv.count("anglestddev"))
+      deployclasses[name].anglestddev = atof(chunk->consume("anglestddev").c_str());
+  } else if(type == "centroid") {
+    deployclasses[name].type = DT_CENTROID;
+  } else if(type == "minepath") {
+    deployclasses[name].type = DT_MINEPATH;
+  } else {
+    CHECK(0);
+  }
 }
 
 void parseWarhead(kvData *chunk) {

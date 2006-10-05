@@ -21,6 +21,7 @@ public:
 
   vector<Coord2> getTankVertices(Coord2 pos, float td) const;
   Coord2 getFiringPoint() const;
+  Coord2 getMinePoint() const;
 
   pair<float, float> getNextInertia(const Keystates &keys) const;
   pair<Coord2, float> getNextPosition(const Keystates &keys) const;
@@ -79,6 +80,8 @@ private:
 
   float damageDealt;
   int kills;
+
+  Coord2 worldFromLocal(const Coord2 &loc) const;
 
 };
 

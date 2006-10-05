@@ -115,12 +115,25 @@ vector<Coord2> Tank::getTankVertices(Coord2 pos, float td) const {
 };
 
 Coord2 Tank::getFiringPoint() const {
-  Coord2 xt = makeAngle(Coord(d));
-  Coord2 yt = makeAngle(Coord(d) - COORDPI / 2);
-  Coord2 best(0, 0);
-  best = tank.firepoint();
-  return Coord2(pos.x + best.x * xt.x + best.y * xt.y, pos.y + best.y * yt.y + best.x * yt.x);
+  return worldFromLocal(tank.firepoint());
 };
+Coord2 Tank::getMinePoint() const {
+  Coord tlen = 0;
+  const vector<Coord2> &minepath = tank.minepath();
+  for(int i = 0; i < minepath.size() - 1; i++)
+    tlen += len(minepath[i] - minepath[i+1]);
+  CHECK(tlen > 0);
+  tlen = Coord(frand() * tlen.toFloat());
+  for(int i = 0; i < minepath.size() - 1; i++) {
+    if(tlen >= len(minepath[i] - minepath[i+1])) {
+      tlen -= len(minepath[i] - minepath[i+1]);
+    } else {
+      tlen /= len(minepath[i] - minepath[i+1]);
+      return worldFromLocal(lerp(minepath[i], minepath[i+1], tlen));
+    }
+  }
+  CHECK(0);
+}
 
 pair<float, float> Tank::getNextInertia(const Keystates &keys) const {
   
@@ -414,4 +427,10 @@ Tank::Tank() : tank(NULL, IDBAdjustment()) /* do not fucking use this */ {
   memset(weaponCooldownSubvals, 0, sizeof(weaponCooldownSubvals)); // if you're not using IEEE floats, get a new computer.
   zone_current = -1;
   zone_frames = 0;
+}
+
+Coord2 Tank::worldFromLocal(const Coord2 &coord) const {
+  Coord2 xt = makeAngle(Coord(d));
+  Coord2 yt = makeAngle(Coord(d) - COORDPI / 2);
+  return Coord2(pos.x + coord.x * xt.x + coord.y * xt.y, pos.y + coord.y * yt.y + coord.x * yt.x);
 }

@@ -336,6 +336,9 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
           } else if(weapon.deploy().type() == DT_CENTROID) {
             startpos = tanks[i].pos;
             startdir = tanks[i].d;
+          } else if(weapon.deploy().type() == DT_MINEPATH) {
+            startpos = tanks[i].getMinePoint();
+            startdir = tanks[i].d;
           } else {
             CHECK(0);
           }

@@ -64,7 +64,7 @@ weapon {
   name=ROOT.Weapons.Debug.Minesplatterer
   cost=1
   firerate=60
-  deploy=deploy.centroid
+  deploy=deploy.minepath
   projectile=projectile.minesplatterer
   debug=1
 }

@@ -405,5 +405,7 @@ inline bool boxBoxIntersect(const Coord4 &lhs, const Coord4 &rhs) {
   return !(lhs.sx > rhs.ex || lhs.ex < rhs.sx || lhs.sy > rhs.ey || lhs.ey < rhs.sy);
 }
 
+Coord2 lerp(const Coord2 &lhs, const Coord2 &rhs, Coord dist);
+
 #endif
 
