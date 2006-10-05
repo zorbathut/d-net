@@ -15,4 +15,120 @@ Army Surplus - high-end optimize 10%
 Specialty License - ultra-high-end enable 90%
 Research Facility - ultra-high-end optimize 10%
 
+ADEFIJKLNQUVWXYZ
 
+OPEC - base
+
+CARAT - fast
+PIRE - avg
+ROXO - heavy
+
+SEKA - added damage energy, trap, exotic, fast, not heavy
+MARI - bonus fire rate, slow, medium
+TUVU - added damage kinetic, explosive, added radius, medium, heavy
+
+GEPIN - reduced fire speed, reduced damage *, fast, heavy
+BORA - medium, medium
+HIMO - increased fire speed, increased damage *, slow, light
+
+KERAMI - increased damage energy, trap, fast, light
+XATIPE - increased damage kinetic, medium, medium
+DUMARO - increased damage explosive, exotic, slow, heavy
+
+OPEC            --------
+
+PRC I                      --------
+
+PRC II                                --------
+MTS I                                 --------
+
+MTS II                                           --------
+GBH I                                            --------
+
+GBH II                                                      ------
+KXD A                                                       ------
+KXD B                                                                -----
+KXD O                                                                        -----
+                Junkyard | Civilian | Professi | Military | Exotic | Ultra | Crazy
+
+KINETIC
+Autocannon      -------------
+AP Autocannon             ------------
+Hvy Autocannon                   -----------
+Sabot Shotgun                             -----------
+Blade Launcher                                    -----------
+C Cannon                                                  -----------
+Conversion Cannon                                                 ----------
+
+Largebore Cannon       -----------------------
+Frag Autocannon              ----------------------
+Frag Bomb                         ------------------------
+Proxfrag Autocannon                         ---------------------
+Metal Storm                                      --------------------------
+
+
+ENERGY
+Laser           -------------
+Megawatt Laser            ----------
+Gigawatt Laser                   -------------
+Plasma Cannon                             ------------
+Gamma Beam                                       ------------
+Fission Laser                                             -----------
+Conversion Laser                                                ------------
+
+Plasma Cutter
+Coherent Flash Bomb                   ----------------------
+Reflector Beam
+Lightning Gun                           ---------------------------
+
+EXPLOSIVE
+Missile
+HE Missile
+Cluster Missile
+Proximity Rocket
+Adaptive Shaped Rocket
+Mini-Nuke
+Conversion Missile
+
+Cluster Bombs                              --------------------
+Homing Missile
+Homing Cluster
+Megacluster Bomb
+
+TRAP
+Mine
+Tripwire
+Ion Beam
+Spider Mine
+Proximity Mine
+Proximity Cluster Bomb
+
+EXOTIC
+EMP
+Angel Cannon
+Chaos Bomb
+Flash Gun
+Reflection Bomb
+
+Omni-Graviton Refraction Emitter (OGRE)
+
+BOMBARDMENT
+Minibomb
+Bomb
+Megabomb
+Cluster Bomb
+Orbital Nuke
+Antimatter Drop
+
+Railgun
+Airstrike
+Laser Satellite
+EMP Cluster
+
+GLORY
+?
+Shaped Charges
+Core Explosive
+Overload Chip
+Kamikaze Warhead
+Immolation Device

@@ -1,8 +1,7 @@
 
 text {
   name=text.weapon.emp
-  data=A focused burst of electromagnetic energy damages tank armor and electronics at close range. These weapons include a limited-use compensation and shielding package designed to protect a tank from its own weapon.
-  data=NOTE: This weapon is utterly unbalanced. Proceed at your own risk/reward.
+  data=A focused burst of electromagnetic energy damages tank armor and electronics at close range. These purchases include a limited-use compensation and shielding package designed to protect a tank from its own weapon.
 }
 
 warhead {
