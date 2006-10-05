@@ -23,17 +23,17 @@ CARAT - fast
 PIRE - avg
 ROXO - heavy
 
-SEKA - added damage energy, trap, exotic, fast, not heavy
-MARI - bonus fire rate, slow, medium
-TUVU - added damage kinetic, explosive, added radius, medium, heavy
+SEKA - added damage energy, trap, exotic, fast, not heavy - bonus speed upgrade
+MARI - bonus fire rate, slow, medium - bonus damage upgrades
+TUVU - added damage kinetic, explosive, added radius, medium, heavy - bonus hull upgrade
 
-GEPIN - reduced fire speed, reduced damage *, fast, heavy
-BORA - medium, medium
-HIMO - increased fire speed, increased damage *, slow, light
+GEPIN - reduced fire speed, reduced damage *, fast, heavy - bonus damage, firespeed upgrades
+BORA - medium, medium - bonus damage, firespeed, speed, hull upgrades
+HIMO - increased fire speed, increased damage *, slow, light - bonus speed, hull upgrades
 
-KERAMI - increased damage energy, trap, fast, light
-XATIPE - increased damage kinetic, medium, medium
-DUMARO - increased damage explosive, exotic, slow, heavy
+KERAMI - increased damage energy, trap, fast, light - all bonus upgrades
+XATIPE - increased damage kinetic, medium, medium - all bonus upgrades
+DUMARO - increased damage explosive, exotic, slow, heavy - all bonus upgrades
 
 OPEC            --------
 
