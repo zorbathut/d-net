@@ -763,7 +763,7 @@ void runSettingRender(const PlayerMenuState &pms) {
         setColor(C::active_text * fadeFactor);
         drawJustifiedText(setting_names_detailed[pms.settingmode], rin.textsize, Float2((rin.drawzone.sx + rin.drawzone.ex) / 2, rin.ystarts[0]), TEXT_CENTER, TEXT_MIN);
       } else {
-        setColor(C::active_text);
+        setColor(C::active_text * fadeFactor);
         if(pms.choicemode == CHOICE_IDLE) {
           if(pms.settingmode > 0)
             drawJustifiedText("<", rin.textsize, Float2(txstart, rin.ystarts[0]), TEXT_MIN, TEXT_MIN);

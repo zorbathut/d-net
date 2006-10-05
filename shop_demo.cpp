@@ -156,7 +156,7 @@ public:
 const float weapons_xpses[] = { -80, -80, 0, 0, 80, 80 };
 const float weapons_ypses[] = { 120, -80, 120, -40, 120, 40 };
 const int weapons_mode[] = { DEMOPLAYER_QUIET, DEMOPLAYER_DPS, DEMOPLAYER_QUIET, DEMOPLAYER_DPS, DEMOPLAYER_QUIET, DEMOPLAYER_DPS };
-const int weapons_progression[] = { 60, 600 };
+const int weapons_progression[] = { 600, 0 };
 
 const float mines_circle = 60;
 const float mines_xpses[] = { 0, 0 };
@@ -343,7 +343,7 @@ void ShopDemo::renderFrame() const {
   setZoom(Float4(0, 0, 1, 1));
   setColor(1, 1, 1);
   if(mult(game.game.frameCount(), progression) != 1)
-    drawJustifiedText(StringPrintf("%dx", mult(game.game.frameCount(), progression)), 0.1, Float2(0, 1), TEXT_MIN, TEXT_MAX);
+    drawJustifiedText(StringPrintf("Fastforward %dx", mult(game.game.frameCount(), progression)), 0.05, Float2(0, 1), TEXT_MIN, TEXT_MAX);
 };
 
 ShopDemo::ShopDemo() { };
