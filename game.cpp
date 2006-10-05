@@ -63,7 +63,7 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
   if(frameNm < frameNmToStart && freezeUntilStart) {
     for(int i = 0; i < keys.size(); i++) {
       if(keys[i].accept.push || keys[i].fire[0].push)
-        gfxeffects.push_back(GfxPing(tanks[i].pos.toFloat(), 200, 8, 0.5, tanks[i].color));
+        gfxeffects.push_back(GfxPing(tanks[i].pos.toFloat(), zoom_size.y, zoom_size.y / 50, 0.5, tanks[i].color));
       keys[i].nullMove();
       for(int j = 0; j < SIMUL_WEAPONS; j++)
         keys[i].fire[j] = Button();

@@ -1,6 +1,4 @@
 ---- Major work path
-- Remove "base" in results
-- Global ping size based on level size
 - Force axes change when axis type is changed
 - Glory device blasts hurt walls
 - Settings tabs scroll

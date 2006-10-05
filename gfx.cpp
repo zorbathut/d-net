@@ -592,7 +592,7 @@ void drawCurveControls(const Float4 &ptah, const Float4 &ptbh, float spacing, fl
 
 void drawCircle(const Float2 &center, float radius, float weight) {
   PoolObj<vector<Float2> > verts;
-  for(int i = 0; i < 16; i++)
+  for(int i = 0; i < 64; i++)
     verts->push_back(makeAngle(i * PI / 8) * radius + center);
   drawLineLoop(*verts, weight);
 }
