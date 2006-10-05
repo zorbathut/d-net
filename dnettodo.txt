@@ -1,12 +1,10 @@
 ---- Major work path
-- Mine deployment range
-- Mine deployment speed, quantity
-- Move entire setup into the new Tween system?
-  - "Choose from UIOJKL" for keyboard players?
-  - "You need two players, idiot"
 - Make equip a little more comprehensible
 - Better mine demo
 - EMP demo
+- Move entire setup into the new Tween system?
+  - "Choose from UIOJKL" for keyboard players?
+  - "You need two players, idiot"
 - Gradual shop spawning
   - Remove bombardment from 2 player, make it cheaper for 3 and 4
 - Pull glory explody into its own deploy?
