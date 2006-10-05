@@ -662,10 +662,23 @@ void parseTank(kvData *chunk) {
   {
     vector<string> vtx = tokenize(chunk->consume("vertices"), "\n");
     CHECK(vtx.size() >= 3); // triangle is the minimum, no linetanks please
+    bool got_firepoint = false;
     for(int i = 0; i < vtx.size(); i++) {
       vector<string> vti = tokenize(vtx[i], " ");
-      CHECK(vti.size() == 2);
-      tankclasses[name].vertices.push_back(Coord2(atof(vti[0].c_str()), atof(vti[1].c_str())));
+      CHECK(vti.size() == 2 || vti.size() == 3);
+      Coord2 this_vertex = Coord2(atof(vti[0].c_str()), atof(vti[1].c_str()));
+      tankclasses[name].vertices.push_back(Coord2(this_vertex));
+      if(vti.size() == 3) {
+        if(vti[2] == "firepoint") {
+          CHECK(!got_firepoint);
+          tankclasses[name].fire_point = this_vertex;
+          got_firepoint = true;
+        } else if(vti[2] == "rear_begin") {
+        } else if(vti[2] == "rear_end") {
+        } else {
+          CHECK(0);
+        }
+      }
     }
     Coord2 centr = getCentroid(tankclasses[name].vertices);
     for(int i = 0; i < tankclasses[name].vertices.size(); i++)

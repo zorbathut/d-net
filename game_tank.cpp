@@ -118,9 +118,7 @@ Coord2 Tank::getFiringPoint() const {
   Coord2 xt = makeAngle(Coord(d));
   Coord2 yt = makeAngle(Coord(d) - COORDPI / 2);
   Coord2 best(0, 0);
-  for(int i = 0; i < tank.vertices().size(); i++)
-    if(tank.vertices()[i].x > best.x)
-      best = tank.vertices()[i];
+  best = tank.fire_point();
   return Coord2(pos.x + best.x * xt.x + best.y * xt.y, pos.y + best.y * yt.y + best.x * yt.x);
 };
 

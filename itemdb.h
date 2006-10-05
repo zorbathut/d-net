@@ -151,6 +151,8 @@ public:
   const IDBWeapon *weapon;
   vector<Coord2> vertices;
 
+  Coord2 fire_point;
+
   Money base_cost;
   Money upgrade_base;
 
@@ -307,6 +309,7 @@ public:
   float mass() const;
 
   const vector<Coord2> &vertices() const;
+  Coord2 fire_point() const;
 
   Money cost() const;
   Money sellcost() const;

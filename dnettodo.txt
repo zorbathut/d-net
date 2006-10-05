@@ -1,9 +1,9 @@
 ---- Major work path
+- Mine deployment range
+- Mine deployment speed, quantity
 - Move entire setup into the new Tween system?
   - "Choose from UIOJKL" for keyboard players?
   - "You need two players, idiot"
-- Mine deployment range
-- Mine deployment speed, quantity
 - Make equip a little more comprehensible
 - Better mine demo
 - EMP demo

@@ -172,6 +172,7 @@ float IDBTankAdjust::maxSpeed() const { return idb->engine * adjust.adjustmentfa
 float IDBTankAdjust::mass() const { return idb->mass; };    // BAM
 
 const vector<Coord2> &IDBTankAdjust::vertices() const { return idb->vertices; };
+Coord2 IDBTankAdjust::fire_point() const { return idb->fire_point; };
 
 IDBTankAdjust::IDBTankAdjust(const IDBTank *in_idb, const IDBAdjustment &in_adjust) { idb = in_idb; adjust = in_adjust; };
 
