@@ -1,5 +1,4 @@
 ---- Major work path
-- Rename font.txt
 - Move entire setup into the new Tween system?
   - "Choose from UIOJKL" for keyboard players?
   - "You need two players, idiot"

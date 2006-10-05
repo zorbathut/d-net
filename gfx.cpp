@@ -179,7 +179,7 @@ void initGfx() {
   // Load fonts
   {
     CHECK(fontdata.size() == 0);
-    ifstream font("data/font.txt");
+    ifstream font("data/font.dwh");
     CHECK(font);
     kvData kvd;
     while(getkvData(font, &kvd)) {
