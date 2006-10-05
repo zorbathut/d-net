@@ -93,6 +93,8 @@ public:
   int fireHeld;
   bool readyToPlay() const;
   
+  float headingXOffset;
+  
   Keystates genKeystate(const Controller &keys) const;
 
   PlayerMenuState();

@@ -73,6 +73,8 @@ PlayerMenuState::PlayerMenuState() {
   
   faction = NULL;
   compasspos = Float2(0, 0);
+  
+  headingXOffset = 0;
 }
 
 PlayerMenuState::~PlayerMenuState() { }
@@ -405,6 +407,21 @@ GameAiAxisRotater::GameAiAxisRotater(const GameAiAxisRotater::Config &conf) {
   updateConfig(conf);
 }
 
+vector<float> choiceTopicXpos() {
+  vector<float> rv;
+  float jtx = 0;
+  for(int i = 0; i < SETTING_LAST; i++) {
+    if(i)
+      jtx += getTextWidth(setting_names[i], 1) / 2;
+    
+    rv.push_back(jtx);
+    
+    jtx += getTextWidth(setting_names[i], 1) / 2;
+    jtx += 2;
+  }
+  return rv;
+}
+
 void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<FactionState> &factions) {
   StackString sstr("runSettingTick");
   if(!pms->faction) { // if player hasn't chosen faction yet
@@ -451,6 +468,12 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
     pms->fireHeld -= 1;
     if(pms->fireHeld < 0)
         pms->fireHeld = 0;
+    
+    {
+      vector<float> xpos = choiceTopicXpos();
+      pms->headingXOffset = approach(pms->headingXOffset, xpos[pms->settingmode], clamp(abs(pms->headingXOffset - xpos[pms->settingmode]) / 20, 0.02, 0.4));
+    }
+    
     if(pms->choicemode == CHOICE_IDLE) {
       CHECK(pms->faction);
       if(keys.l.push)
@@ -740,24 +763,23 @@ void runSettingRender(const PlayerMenuState &pms) {
         setColor(C::active_text * fadeFactor);
         drawJustifiedText(setting_names_detailed[pms.settingmode], rin.textsize, Float2((rin.drawzone.sx + rin.drawzone.ex) / 2, rin.ystarts[0]), TEXT_CENTER, TEXT_MIN);
       } else {
-        const int activescale = 4;
-        float title_units = (rin.xend - txstart) / (SETTING_LAST - 1 + activescale);
-        
-        int units = 0;
-      
-        for(int i = 0; i < SETTING_LAST; i++) {
-          bool active = (i == pms.settingmode);
-          
-          int tunits = active ? activescale : 1;
-          string text = active ? setting_names[i] : string() + setting_names[i][0];
-          setColor(((active && pms.choicemode == CHOICE_IDLE) ? C::active_text : C::inactive_text) * fadeFactor);
-          
-          drawJustifiedText(text, rin.textsize, Float2(title_units * (units + tunits / 2.) + txstart, rin.ystarts[0]), TEXT_CENTER, TEXT_MIN);
-          
-          units += tunits;
+        setColor(C::active_text);
+        if(pms.choicemode == CHOICE_IDLE) {
+          if(pms.settingmode > 0)
+            drawJustifiedText("<", rin.textsize, Float2(txstart, rin.ystarts[0]), TEXT_MIN, TEXT_MIN);
+          if(pms.settingmode < SETTING_LAST - 1)
+            drawJustifiedText(">", rin.textsize, Float2(rin.xend, rin.ystarts[0]), TEXT_MAX, TEXT_MIN);
         }
         
-        CHECK(units == SETTING_LAST - 1 + activescale);
+        GfxWindow gfxw(Float4(txstart + rin.textsize, rin.ystarts[0] - rin.textsize, rin.xend - rin.textsize, rin.ystarts[0] + rin.textsize * 2), fadeFactor);
+        setZoomCenter(pms.headingXOffset, 0, 3. / 2);
+        
+        vector<float> xpos = choiceTopicXpos();
+        
+        for(int i = 0; i < SETTING_LAST; i++) {
+          setColor(((i == pms.settingmode && pms.choicemode == CHOICE_IDLE) ? C::active_text : C::inactive_text));
+          drawJustifiedText(setting_names[i], 1, Float2(xpos[i], 0), TEXT_CENTER, TEXT_CENTER);
+        }
       }
       
     }
@@ -916,7 +938,7 @@ void runSettingRender(const PlayerMenuState &pms) {
       pms.test_game->renderToScreen();
     } else if(pms.settingmode == SETTING_READY) {
       setColor(C::inactive_text * fadeFactor);
-      const char * const text[] = {"Move left/right over", "K-M-D-T to change options.", "", "Hold accept when", "ready to start. Let", "go of button to cancel."};
+      const char * const text[] = {"Push left to", "change options.", "", "Hold \"accept\" when", "ready to start. Let", "go to cancel."};
       for(int i = 0; i < 6; i++)
         drawJustifiedText(text[i], rin.textsize, Float2((rin.xstart + rin.xend) / 2, rin.ystarts[i + 1]), TEXT_CENTER, TEXT_MIN);
     } else {

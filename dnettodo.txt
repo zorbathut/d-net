@@ -1,5 +1,4 @@
 ---- Major work path
-- Settings tabs scroll
 - Cached shop demo stats
 - "Choose from UIOJKL" for keyboard players?
 - Single-frame glick when leaving test mode
