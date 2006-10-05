@@ -853,6 +853,14 @@ void initItemdb() {
   dprintf("Consistency check is awesome!\n");
 }
 
+void generateCachedShops() {
+  FILE *ofil = fopen("data/shopcache.dwh", "w");
+  for(map<string, IDBWeapon>::const_iterator itr = weaponclasses.begin(); itr != weaponclasses.end(); itr++) {
+    dprintf("%s\n", itr->first.c_str());
+  }
+  fclose(ofil);
+}
+
 const HierarchyNode &itemDbRoot() {
   return root;
 }

@@ -1,8 +1,8 @@
 ---- Major work path
-- Cached shop demo stats
-- "Choose from UIOJKL" for keyboard players?
-- Single-frame glick when leaving test mode
-- "You need two players, idiot"
+- Rename font.txt
+- Move entire setup into the new Tween system?
+  - "Choose from UIOJKL" for keyboard players?
+  - "You need two players, idiot"
 - Mine deployment range
 - Mine deployment speed, quantity
 - Make equip a little more comprehensible
@@ -19,6 +19,8 @@
 - Implants?
 
 ---- Things that take thought and musing
+- Cached shop demo stats
+  - This is problematic because of all the various adjustments that can be on weapons
 - GameAccessors class
 - Tweekvalues?
 - Normalize controller to circle?

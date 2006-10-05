@@ -21,7 +21,7 @@ basicrun: d-net.exe
 	d-net.exe --nofullscreen --writeTarget=
 
 run: d-net.exe
-	d-net.exe --nofullscreen --debugitems --startingCash=100000 --debugControllers=2 --factionMode=0 --nullControllers=11 --writeTarget= --debugGraphicsCollisions
+	d-net.exe --nofullscreen --debugitems --startingCash=100000 --debugControllers=2 --factionMode=0 --nullControllers=11 --writeTarget=
 
 ai: d-net.exe
 	d-net.exe --nofullscreen --aiCount=12 --fastForwardTo=100000000 --factionMode=0
@@ -32,7 +32,7 @@ ailoop: d-net.exe
 vecedit: d-net.exe
 	d-net.exe --vecedit --nofullscreen
     
-package: d-net.exe
+package: d-net.exe data/shopcache.dwh
 	rm \\\\192.168.100.2\\www-data\\d-net\\Dnet\ Latest\ Version.zip
 	mkdir deploy
 	cp d-net.exe deploy
@@ -55,7 +55,10 @@ package: d-net.exe
 
 %.d: %.cpp makefile
 	nice bash -ec '$(CPP) $(CPPFLAGS) -MM $< | sed "s!$*.o!$*.o $@!g" > $@'
-	
+
+data/shopcache.dwh: d-net.exe
+	d-net.exe --generateCachedShops
+
 stats:
 	@echo Graphics: `cat gfx.h gfx.cpp game_effects.h game_effects.cpp color.h color.cpp| wc -l` loc
 	@echo Collisions: `cat collide.h collide.cpp | wc -l` loc

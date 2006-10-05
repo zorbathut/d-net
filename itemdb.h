@@ -354,6 +354,7 @@ public:
 };
 
 void initItemdb();
+void generateCachedShops();
 
 /*************
  * Accessors
