@@ -210,8 +210,11 @@ public:
   GameAiTraversing() { active = false; starting = false; }
 };
 
-const float weapons_xpses[] = { -80, -80, 0, 0, 80, 80 };
-const float weapons_ypses[] = { 120, -80, 120, -40, 120, 40 };
+const float weapons_xpses_normal[] = { -80, -80, 0, 0, 80, 80 };
+const float weapons_ypses_normal[] = { 120, -120, 120, -40, 120, 40 };
+const float weapons_xpses_melee[] = { -20, -20, 0, 0, 20, 23 };
+const float weapons_ypses_melee[] = { 6, -7, 6, -3, 6, 4 };
+const float weapons_facing[] = { PI * 3 / 2, PI / 2, PI * 3 / 2, PI / 2, PI * 3 / 2, PI / 2 };
 const int weapons_mode[] = { DEMOPLAYER_QUIET, DEMOPLAYER_DPS, DEMOPLAYER_QUIET, DEMOPLAYER_DPS, DEMOPLAYER_QUIET, DEMOPLAYER_DPS };
 const int weapons_progression[] = { 600, 0 };
 
@@ -250,7 +253,13 @@ void ShopDemo::init(const IDBWeapon *weap, const Player *player) {
       ais.push_back(smart_ptr<GameAi>(new GameAiNull));
     }
     
-    game.game.initDemo(&game.players, 160, weapons_xpses, weapons_ypses, NULL, weapons_mode);
+    if(weap->firingrange_distance == WFRD_NORMAL) {
+      game.game.initDemo(&game.players, 160, weapons_xpses_normal, weapons_ypses_normal, weapons_facing, weapons_mode);
+    } else if(weap->firingrange_distance == WFRD_MELEE) {
+      game.game.initDemo(&game.players, 40, weapons_xpses_melee, weapons_ypses_melee, weapons_facing, weapons_mode);
+    } else {
+      CHECK(0);
+    }
     
     progression = weapons_progression;
   } else if(weap->demomode == WDM_MINES) {

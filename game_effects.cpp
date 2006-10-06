@@ -157,7 +157,7 @@ public:
       vector<Float2> pex;
       for(int j = 0; j < vertx; j++)
         pex.push_back(center + makeAngle(j * PI * 2 / vertx + ofs) * desrad + Float2(unsync_symfrand(), unsync_symfrand()) * chaos);
-      drawLineLoop(pex, 0.1);
+      drawLineLoop(pex, 0.3);
     }
   }
 
