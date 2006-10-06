@@ -79,7 +79,7 @@ ShopLayout::ShopLayout(bool miniature) {
   int_xofs = 0;
   int_expandy.resize(2, 1.0); // not really ideal but hey
   
-  int_equipDiff = int_boxwidth / 5;
+  int_equipDiff = int_boxwidth / 4;
 }
 
 const float framechange = 0.2;
@@ -156,6 +156,41 @@ void Shop::renderNode(const HierarchyNode &node, int depth, const Player *player
   
   if(depth < curloc.size())
     renderNode(normalize(node.branches[curloc[depth]], player), depth + 1, player);
+  
+  if(node.type == HierarchyNode::HNT_EQUIP) {
+    float maxdown = -1000;
+    for(int i = 0; i < rendpos.size(); i++)
+      maxdown = max(maxdown, rendpos[i].second.y);
+    
+    for(int i = 0; i < 2; i++) {
+      setColor(C::gray(0.5));
+      Float4 box = slay.box(depth);
+      box = box + Float2(0, maxdown + box.y_span() * 3);
+      box.ex = box.sx + slay.equipDiff();
+      box.ey = box.sy + box.y_span() * 2;
+      
+      if(i)
+        box = box + Float2(slay.box(depth).x_span() - slay.equipDiff(), 0);
+      
+      drawSolid(box);
+      drawRect(box, slay.boxthick());
+      
+      setColor(C::inactive_text);
+      
+      vector<string> str;
+      str.push_back("?");
+      str.push_back("Weapon");
+      if(i == 0) {
+        str[0] = "Left";
+      } else if(i == 1) {
+        str[0] = "Right";
+      } else {
+        CHECK(0);
+      }
+      
+      drawJustifiedMultiText(str, slay.fontsize(), box.midpoint(), TEXT_CENTER, TEXT_CENTER);
+    }
+  }
   
   for(int j = 0; j < rendpos.size(); j++) {
     const int itemid = rendpos[j].first;
