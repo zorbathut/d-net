@@ -57,10 +57,10 @@ void Tank::render(const vector<Team> &teams) const {
   small = small * 0.5;
   
   setColor(main);
-  drawLineLoop(tankverts, 0.2);
+  drawLineLoop(tankverts, 0.5);
   
   setColor(small);
-  drawLineLoop(smtankverts, 0.2);
+  drawLineLoop(smtankverts, 0.5);
 };
 
 vector<Coord4> Tank::getCurrentCollide() const {
