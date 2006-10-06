@@ -392,16 +392,28 @@ void parseWeapon(kvData *chunk) {
     weaponclasses[name].text = NULL;
   }
   
-  weaponclasses[name].demomode = WDM_FIRINGRANGE;
-  if(chunk->kv.count("demo")) {
-    if(chunk->kv["demo"] == "firingrange") {
-      weaponclasses[name].demomode = WDM_FIRINGRANGE;
-    } else if(chunk->kv["demo"] == "mines") {
-      weaponclasses[name].demomode = WDM_MINES;
+  string demotype = "firingrange";
+  if(chunk->kv.count("demo"))
+    demotype = chunk->consume("demo");
+  
+  if(demotype == "firingrange") {
+    weaponclasses[name].demomode = WDM_FIRINGRANGE;
+    
+    string distance = "normal";
+    if(chunk->kv.count("firingrange_distance"))
+      distance = chunk->consume("firingrange_distance");
+    
+    if(distance == "normal") {
+      weaponclasses[name].firingrange_distance = WFRD_NORMAL;
+    } else if(distance == "melee") {
+      weaponclasses[name].firingrange_distance = WFRD_MELEE;
     } else {
       CHECK(0);
     }
-    chunk->consume("demo");
+  } else if(demotype == "mines") {
+    weaponclasses[name].demomode = WDM_MINES;
+  } else {
+    CHECK(0);
   }
 }
 

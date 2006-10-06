@@ -87,6 +87,7 @@ public:
 };
 
 enum { WDM_FIRINGRANGE, WDM_MINES, WDM_LAST };
+enum { WFRD_NORMAL, WFRD_MELEE };
 struct IDBWeapon {
 public:
   string name;
@@ -99,6 +100,8 @@ public:
   int quantity;
 
   int demomode;
+  int firingrange_distance;
+
   const string *text;
 };
 

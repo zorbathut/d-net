@@ -25,6 +25,9 @@ weapon {
   deploy=deploy.centroid
   projectile=projectile.emp
   
+  demo=firingrange
+  firingrange_distance=melee
+  
   text=text.weapon.emp
 }
 
@@ -35,6 +38,9 @@ weapon {
   deploy=deploy.centroid
   projectile=projectile.emp
   
+  demo=firingrange
+  firingrange_distance=melee
+  
   text=text.weapon.emp
 }
 
@@ -44,6 +50,9 @@ weapon {
   firerate=8
   deploy=deploy.centroid
   projectile=projectile.emp
+  
+  demo=firingrange
+  firingrange_distance=melee
   
   text=text.weapon.emp
 }

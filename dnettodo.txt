@@ -1,13 +1,15 @@
 ---- Major work path
 - EMP demo
 - Move entire setup into the new Tween system?
+  - Faction differences beforehand, with *all* controllers? This amuses me.
   - "Choose from UIOJKL" for keyboard players?
   - "You need two players, idiot"
+  - Faction info screen on startup
 - Gradual shop spawning
   - Remove bombardment from 2 player, make it cheaper for 3 and 4
 - Pull glory explody into its own deploy?
 - Next-gen weapons
-- Faction info screen on startup
+- Faction bonuses/penalties in demo screens
 - Training/certificates/discounts
 - Many many more weapons
 - Make small text thicker
