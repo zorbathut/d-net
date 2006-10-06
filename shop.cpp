@@ -35,6 +35,13 @@ float ShopLayout::hoffbase(int depth) const {
   return int_hoffset + (int_boxwidth + int_hoffset) * (depth - int_xofs);
 }
 
+Float2 ShopLayout::equip1(int depth) const {
+  return Float2(hoffbase(depth) + int_boxborder, int_boxborder);
+}
+Float2 ShopLayout::equip2(int depth) const {
+  return Float2(hoffbase(depth) + int_boxwidth - int_boxborder, int_boxborder);
+}
+
 ShopLayout::ShopLayout() {
   // not valid
 }
@@ -71,6 +78,8 @@ ShopLayout::ShopLayout(bool miniature) {
   
   int_xofs = 0;
   int_expandy.resize(2, 1.0); // not really ideal but hey
+  
+  int_equipDiff = int_boxwidth / 5;
 }
 
 const float framechange = 0.2;
@@ -163,14 +172,51 @@ void Shop::renderNode(const HierarchyNode &node, int depth, const Player *player
       if(xend - xstart < slay.boxwidth() * 0.01)
         continue;   // if we can only see 1% of this box, just don't show any of it - gets rid of some ugly rendering edge cases
     }
-    drawSolid(slay.box(depth) + rendpos[j].second);
-    drawRect(slay.box(depth) + rendpos[j].second, slay.boxthick());
+    
+    if(node.branches[itemid].displaymode == HierarchyNode::HNDM_EQUIP) {
+      // Equip rendering works dramatically different from others
+      Float4 box = slay.box(depth);
+      CHECK(SIMUL_WEAPONS == 2);
+      if(player->getWeaponEquipBit(node.branches[itemid].equipweapon, 0) == WEB_UNEQUIPPED)
+        box.sx += slay.equipDiff();
+      if(player->getWeaponEquipBit(node.branches[itemid].equipweapon, 1) == WEB_UNEQUIPPED)
+        box.ex -= slay.equipDiff();
+      
+      drawSolid(box + rendpos[j].second);
+      drawRect(box + rendpos[j].second, slay.boxthick());
+    } else {
+      drawSolid(slay.box(depth) + rendpos[j].second);
+      drawRect(slay.box(depth) + rendpos[j].second, slay.boxthick());
+    }
+    
     // highlight if this one is in our "active path"
     if(depth < curloc.size() && curloc[depth] == itemid) {
       setColor(C::active_text);
     } else {
       setColor(C::inactive_text);
     }
+    
+    if(node.branches[itemid].displaymode == HierarchyNode::HNDM_EQUIP) {
+      drawText(node.branches[itemid].name.c_str(), slay.fontsize(), slay.description(depth) + rendpos[j].second + Float2(slay.equipDiff(), 0));
+      
+      for(int i = 0; i < SIMUL_WEAPONS; i++) {
+        string text;
+        if(player->getWeaponEquipBit(node.branches[itemid].equipweapon, i) == WEB_EQUIPPED) {
+          setColor(C::inactive_text);
+          text = "Equip";
+        } else if(player->getWeaponEquipBit(node.branches[itemid].equipweapon, i) == WEB_ACTIVE) {
+          setColor(C::active_text);
+          text = "Active";
+        }
+        
+        if(i == 0)
+          drawJustifiedText(text, slay.fontsize(), slay.equip1(depth) + rendpos[j].second, TEXT_MIN, TEXT_MIN);
+        else
+          drawJustifiedText(text, slay.fontsize(), slay.equip2(depth) + rendpos[j].second, TEXT_MAX, TEXT_MIN);
+      }
+      continue;
+    }
+    
     drawText(node.branches[itemid].name.c_str(), slay.fontsize(), slay.description(depth) + rendpos[j].second);
     // Display ammo count
     {
@@ -226,20 +272,9 @@ void Shop::renderNode(const HierarchyNode &node, int depth, const Player *player
         displayset = true;
       }
       
-      // If it's an Equip, we show equip data.
-      // This is rendered somewhat differently.
+      // If it's an Equip, something has gone bizarrely wrong.
       if(dispmode == HierarchyNode::HNDM_EQUIP) {
-        for(int i = 0; i < SIMUL_WEAPONS; i++) {
-          if(player->getWeaponEquipBit(node.branches[itemid].equipweapon, i) != WEB_UNEQUIPPED) {
-            if(player->getWeaponEquipBit(node.branches[itemid].equipweapon, i) == WEB_ACTIVE) {
-              setColor(1.0, 0.8, 0.8);
-            } else {
-              setColor(0.6, 0.6, 0.6);
-            }
-            drawText(StringPrintf("%d", i + 1), slay.fontsize(), slay.equipbit(depth, i) + rendpos[j].second);
-          }
-        }
-        displayset = true;
+        CHECK(0);
       }
       
       // If it's blank we do fucking nothing

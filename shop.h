@@ -32,6 +32,8 @@ private:
   float int_hudstart;
   float int_hudend;
   
+  float int_equipDiff;
+  
   float int_xofs;
   vector<float> int_expandy;
   
@@ -61,6 +63,10 @@ public:
   float expandy(int tier) const { return int_expandy[tier]; };
   
   void updateExpandy(int depth, bool this_branches);
+  
+  float equipDiff() const { return int_equipDiff; };
+  Float2 equip1(int depth) const;
+  Float2 equip2(int depth) const;
   
   ShopLayout();
   ShopLayout(bool miniature);
