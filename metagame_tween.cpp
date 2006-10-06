@@ -432,7 +432,13 @@ void PersistentData::initForShop() {
       sps_playermode[i] = SPS_CHOOSING;
   
   sps_playerpos.clear();
-  sps_playerpos.resize(pms.size(), Float2(133.333 / (TTL_LAST * 2) * (TTL_QUICKSHOP * 2 + 1), 95));  // TODO: base this on the constants
+  for(int i = 0; i < pms.size(); i++) {
+    if(pms[i].faction) {
+      sps_playerpos.push_back(Float2(133.333 / (TTL_LAST * 2) * (TTL_QUICKSHOP * 2 + 1), 95));
+    } else {
+      sps_playerpos.push_back(Float2(133.333 / (TTL_LAST * 2) * (TTL_LEAVEJOIN * 2 + 1), 95));
+    }
+  }
 }
 
 bool PersistentData::tickSlot(int slotid, const vector<Controller> &keys) {
@@ -854,6 +860,11 @@ void PersistentData::divvyCash(float firepowerSpent) {
     dprintf("Total value of %d: %s\n", i, (playerdata[i].totalValue()+ lrCash[i]).textual().c_str());
   }
   newPlayerStartingCash = max(newPlayerStartingCash, Money(FLAGS_startingCash));
+}
+
+void PersistentData::startAtNormalShop() {
+  initForShop();
+  slot[0].type = Slot::EMPTY;
 }
 
 vector<pair<float, float> > PersistentData::getRanges() const {

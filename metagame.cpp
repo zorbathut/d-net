@@ -18,7 +18,6 @@ DEFINE_int(factionMode, 0, "Faction mode to skip faction choice battle");
 // Change to -1 to enable faction mode battle
 
 bool Metagame::runTick(const vector<Controller> &keys) {
-
   if(mode == MGM_PLAYERCHOOSE) {
     CHECK(persistent.isPlayerChoose());
     if(persistent.tick(keys)) {
@@ -168,10 +167,15 @@ void Metagame::findLevels(int playercount) {
 
 Metagame::Metagame(int playercount, int in_roundsBetweenShop) :
     persistent(playercount, in_roundsBetweenShop) {
-      
-  mode = MGM_PLAYERCHOOSE;
-      
-  faction_mode = -1;
+  
+  if(FLAGS_factionMode != -1) {
+    mode = MGM_TWEEN;
+    persistent.startAtNormalShop();
+  } else {
+    mode = MGM_PLAYERCHOOSE;
+  }
+  
+  faction_mode = FLAGS_factionMode;
   roundsBetweenShop = in_roundsBetweenShop;
   gameround = 0;
   CHECK(roundsBetweenShop >= 1);

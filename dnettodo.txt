@@ -1,7 +1,6 @@
 ---- Major work path
-- EMP demo
 - Move entire setup into the new Tween system?
-  - Faction differences beforehand, with *all* controllers? This amuses me.
+  - Tween setup changes if a Faction pass will be needed. If so, just "join/leave" and "done". If not, full shop.
   - "Choose from UIOJKL" for keyboard players?
   - "You need two players, idiot"
   - Faction info screen on startup

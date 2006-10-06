@@ -26,6 +26,7 @@ public:
 
   // Triggers
   void divvyCash(float firepowerSpent); // also sets to "result" mode
+  void startAtNormalShop();
 
   // Constructor
   PersistentData(int playercount, int roundsbetweenshop);
