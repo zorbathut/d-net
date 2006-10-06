@@ -81,40 +81,18 @@ bool PersistentData::tick(const vector< Controller > &keys) {
   
   // Next: deal with empty slots depending on our mode.
   
-  if(mode == TM_PLAYERCHOOSE) {
+  if(mode == TM_RESULTS) {
     CHECK(slot_count == 1);
     if(slot[0].type == Slot::EMPTY) {
-      int readyusers = 0;
-      for(int i = 0; i < pms.size(); i++)
-        if(pms[i].readyToPlay())
-          readyusers++;
-      CHECK(readyusers >= 2);
-
-      playerdata.clear();
-      playerdata.resize(readyusers);
-      int pid = 0;
-      for(int i = 0; i < pms.size(); i++) {
-        if(pms[i].faction) {
-          playerdata[pid] = Player(pms[i].faction->faction, 0);
-          playerid[i] = pid;
-          pid++;
-        }
-      }
-      CHECK(pid == playerdata.size());
-      
-      initForShop();
-      return true;
+      mode = TM_SHOP;
+      reset();
     }
-  } else if(mode == TM_RESULTS) {
-    CHECK(slot_count == 1);
-    if(slot[0].type == Slot::EMPTY)
-      initForShop();
-  } else if(mode == TM_SHOP) {
-    StackString sps(StringPrintf("Shop specific"));
+  } else if(mode == TM_SHOP || mode == TM_PLAYERCHOOSE) {
+    StackString sps(StringPrintf("Stdtween"));
     // Various complications and such!
     
     // First: calculate our ugly ranges for the text labels.
-    vector<pair<float, float> > ranges = getRanges();
+    vector<pair<int, pair<float, float> > > ranges = getRanges();
     
     // Second: Traverse all players and update them as necessary.
     for(int player = 0; player < sps_playermode.size(); player++) {
@@ -146,10 +124,10 @@ bool PersistentData::tick(const vector< Controller > &keys) {
         }
         if(accept) {
           for(int j = 0; j < ranges.size(); j++) {
-            if(sps_playerpos[player].x == clamp(sps_playerpos[player].x, ranges[j].first, ranges[j].second)) {
+            if(sps_playerpos[player].x == clamp(sps_playerpos[player].x, ranges[j].second.first, ranges[j].second.second)) {
               if(pms[player].faction) {
-                if(j == TTL_DONE) {
-                  if(!sps_shopped[player]) {
+                if(ranges[j].first == TTL_DONE) {
+                  if(!sps_shopped[player] && mode == TM_SHOP) {
                     btt_notify = pms[player].faction->faction;
                     btt_frames_left = 180;
                   } else {
@@ -157,12 +135,12 @@ bool PersistentData::tick(const vector< Controller > &keys) {
                   }
                 } else {
                   sps_playermode[player] = SPS_PENDING;
-                  sps_queue.push_back(make_pair(player, j));
+                  sps_queue.push_back(make_pair(player, ranges[j].first));
                 }
               } else {
-                if(j == TTL_LEAVEJOIN) {
+                if(ranges[j].first == TTL_LEAVEJOIN) {
                   sps_playermode[player] = SPS_PENDING;
-                  sps_queue.push_back(make_pair(player, j));
+                  sps_queue.push_back(make_pair(player, ranges[j].first));
                 }
                 // otherwise we just ignore it
               }
@@ -288,8 +266,11 @@ bool PersistentData::tick(const vector< Controller > &keys) {
       btt_notify = NULL;
     
     // Are we done?
-    if(getUnfinishedFactions().size() == 0 && playerdata.size() >= 2)
+    if(getUnfinishedFactions().size() == 0 && playerdata.size() >= 2) {
+      mode = TM_SHOP; // if we're in PLAYERCHOOSE mode, then reset() won't be able to get the shop item positions for existing units
+      reset();
       return true;
+    }
     
   } else {
     CHECK(0);
@@ -300,7 +281,7 @@ bool PersistentData::tick(const vector< Controller > &keys) {
 void PersistentData::render() const {
   smart_ptr<GfxWindow> gfxwpos;
   
-  if(mode == TM_SHOP && slot[0].type != Slot::RESULTS) {
+  if(slot[0].type != Slot::RESULTS) {
     // Draw our framework
     setZoom(Float4(0, 0, 133.333, 100));
     setColor(C::active_text);
@@ -313,10 +294,12 @@ void PersistentData::render() const {
     drawJustifiedText("- Not ready", ticker_text_size, Float2(133.333 - ticker_waiting_border, (divider_ypos + ticker_ypos) / 2), TEXT_MAX, TEXT_CENTER);
     
     // Draw our text labels
-    for(int i = 0; i < TTL_LAST; i++) {
-      vector<string> lines = tokenize(tween_textlabels[i], " ");
-      const float pivot = 133.333 / (TTL_LAST * 2) * (i * 2 + 1);
-      drawJustifiedMultiText(lines, ticker_text_size, Float2(pivot, (ticker_ypos + 100) / 2), TEXT_CENTER, TEXT_CENTER);
+    {
+      vector<pair<int, pair<float, float> > > rng = getRanges();
+      for(int i = 0; i < rng.size(); i++) {
+        vector<string> lines = tokenize(tween_textlabels[rng[i].first], " ");
+        drawJustifiedMultiText(lines, ticker_text_size, Float2((rng[i].second.first + rng[i].second.second) / 2, (ticker_ypos + 100) / 2), TEXT_CENTER, TEXT_CENTER);
+      }
     }
     
     // Draw our queues
@@ -419,9 +402,7 @@ void PersistentData::render() const {
   }
 }
 
-void PersistentData::initForShop() {
-  mode = TM_SHOP;
-  
+void PersistentData::reset() {
   sps_shopped.clear();
   sps_shopped.resize(pms.size(), false);
   
@@ -434,9 +415,9 @@ void PersistentData::initForShop() {
   sps_playerpos.clear();
   for(int i = 0; i < pms.size(); i++) {
     if(pms[i].faction) {
-      sps_playerpos.push_back(Float2(133.333 / (TTL_LAST * 2) * (TTL_QUICKSHOP * 2 + 1), 95));
+      sps_playerpos.push_back(targetCoords(TTL_QUICKSHOP));
     } else {
-      sps_playerpos.push_back(Float2(133.333 / (TTL_LAST * 2) * (TTL_LEAVEJOIN * 2 + 1), 95));
+      sps_playerpos.push_back(targetCoords(TTL_LEAVEJOIN));
     }
   }
 }
@@ -742,6 +723,10 @@ vector<Ai *> PersistentData::distillAi(const vector<Ai *> &ai) const {
 }
 
 void PersistentData::ai(const vector<Ai *> &ais) const {
+  for(int i = 0; i < ais.size(); i++)
+    CHECK(!ais[i]);
+  return;
+  /*
   if(mode == TM_PLAYERCHOOSE) {
     for(int i = 0; i < ais.size(); i++)
       if(ais[i])
@@ -751,7 +736,7 @@ void PersistentData::ai(const vector<Ai *> &ais) const {
       if(ais[i])
         ais[i]->updateWaitingForReport();
   } else if(mode == TM_SHOP) {
-    vector<pair<float, float> > ranges = getRanges();
+    vector<pair<int, pair<float, float> > > ranges = getRanges();
     
     vector<bool> dun(ais.size(), false);
     for(int i = 0; i < slot_count; i++) {
@@ -765,11 +750,11 @@ void PersistentData::ai(const vector<Ai *> &ais) const {
     }
     for(int i = 0; i < dun.size(); i++) {
       if(!dun[i] && ais[i])
-        ais[i]->updateTween(!!pms[i].faction, sps_playermode[i] == SPS_PENDING, sps_playerpos[i], sps_shopped[i], ranges[TTL_FULLSHOP], ranges[TTL_QUICKSHOP], ranges[TTL_DONE]);
+        ais[i]->updateTween(!!pms[i].faction, sps_playermode[i] == SPS_PENDING, sps_playerpos[i], sps_shopped[i], targetCoords(TTL_FULLSHOP), targetCoords(TTL_QUICKSHOP), ranges[TTL_DONE]);
     }
   } else {
     CHECK(0);
-  }
+  }*/
 }
 
 vector<Keystates> PersistentData::genKeystates(const vector<Controller> &keys) const {
@@ -863,26 +848,52 @@ void PersistentData::divvyCash(float firepowerSpent) {
 }
 
 void PersistentData::startAtNormalShop() {
-  initForShop();
+  mode = TM_SHOP;
+  reset();
   slot[0].type = Slot::EMPTY;
 }
 
-vector<pair<float, float> > PersistentData::getRanges() const {
-  vector<pair<float, float> > ranges;
-  for(int i = 0; i < TTL_LAST; i++) {
-    vector<string> lines = tokenize(tween_textlabels[i], " ");
-    const float pivot = 133.333 / (TTL_LAST * 2) * (i * 2 + 1);
+vector<pair<int, pair<float, float> > > PersistentData::getRanges() const {
+  vector<int> avails;
+  if(mode == TM_PLAYERCHOOSE) {
+    avails.push_back(TTL_LEAVEJOIN);
+    avails.push_back(TTL_SETTINGS);
+    avails.push_back(TTL_DONE);
+  } else if(mode == TM_SHOP) {
+    avails.push_back(TTL_LEAVEJOIN);
+    avails.push_back(TTL_SETTINGS);
+    avails.push_back(TTL_FULLSHOP);
+    avails.push_back(TTL_QUICKSHOP);
+    avails.push_back(TTL_DONE);
+  } else {
+    CHECK(0);
+  }
+  
+  vector<pair<int, pair<float, float> > > ranges;
+  for(int i = 0; i < avails.size(); i++) {
+    vector<string> lines = tokenize(tween_textlabels[avails[i]], " ");
+    const float pivot = 133.333 / (avails.size() * 2) * (i * 2 + 1);
     
     float mwid = 0;
-    for(int i = 0; i < lines.size(); i++)
-      mwid = max(mwid, getTextWidth(lines[i], ticker_text_size));
+    for(int j = 0; j < lines.size(); j++)
+      mwid = max(mwid, getTextWidth(lines[j], ticker_text_size));
     mwid += 2;
     
-    ranges.push_back(make_pair(pivot - mwid / 2, pivot + mwid / 2)); 
+    ranges.push_back(make_pair(avails[i], make_pair(pivot - mwid / 2, pivot + mwid / 2))); 
   }
   return ranges;
 }
 
+Float2 PersistentData::targetCoords(int target) const {
+  vector<pair<int, pair<float, float> > > rang = getRanges();
+  
+  for(int i = 0; i < rang.size(); i++)
+    if(rang[i].first == target)
+      return Float2((rang[i].second.first + rang[i].second.second) / 2, 95);
+
+  CHECK(0);
+}
+  
 void PersistentData::drawMultibar(const vector<float> &sizes, const Float4 &dimensions) const {
   CHECK(sizes.size() == playerdata.size());
   float total = accumulate(sizes.begin(), sizes.end(), 0.0);
@@ -910,8 +921,6 @@ void PersistentData::drawMultibar(const vector<float> &sizes, const Float4 &dime
     cpos = epos;
   }
 }
-
-DEFINE_int(debugControllers, 0, "Number of controllers to set to debug defaults");
 
 class distanceFrom {
   public:
@@ -972,6 +981,8 @@ pair<Float4, vector<Float2> > getFactionCenters(int fcount) {
     }
   }
 }
+
+DEFINE_int(debugControllers, 0, "Number of controllers to set to debug defaults");
 
 PersistentData::PersistentData(int playercount, int in_roundsbetweenshop) {
   roundsbetweenshop = in_roundsbetweenshop;
@@ -1086,13 +1097,12 @@ PersistentData::PersistentData(int playercount, int in_roundsbetweenshop) {
     slot[i].pid = -1;
   }
   
-  slot[0].type = Slot::CHOOSE;
-  slot[0].pid = -1;
-  
   slot_count = 1;
   
   btt_notify = NULL;
   btt_frames_left = 0;
   
   newPlayerStartingCash = Money(FLAGS_startingCash);
+  
+  reset();
 }

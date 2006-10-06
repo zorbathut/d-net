@@ -1,4 +1,5 @@
 ---- Major work path
+- factiontype tick
 - Move entire setup into the new Tween system?
   - Tween setup changes if a Faction pass will be needed. If so, just "join/leave" and "done". If not, full shop.
   - "Choose from UIOJKL" for keyboard players?

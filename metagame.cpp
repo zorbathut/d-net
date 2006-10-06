@@ -30,7 +30,6 @@ bool Metagame::runTick(const vector<Controller> &keys) {
     }
   } else if(mode == MGM_FACTIONTYPE) {
     StackString stp("Factiontype");
-    dprintf("factiontype tick");
     vector<Player *> ppt;
     {
       for(int i = 0; i < persistent.players().size(); i++)

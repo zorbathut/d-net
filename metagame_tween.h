@@ -32,7 +32,7 @@ public:
   PersistentData(int playercount, int roundsbetweenshop);
 
 private:
-  // Persistent state (used for recognizing PLAYERCHOOSE mode only)
+  // Persistent state
   enum { TM_PLAYERCHOOSE, TM_RESULTS, TM_SHOP };
   int mode;
   
@@ -68,7 +68,7 @@ private:
   int shopcycles;
   
   // Shop player state
-  void initForShop();
+  void reset();
     // Persistent
     vector<bool> sps_shopped;
 
@@ -93,7 +93,8 @@ private:
   void renderSlot(int slotid) const;
   vector<const IDBFaction *> getUnfinishedFactions() const;
     
-  vector<pair<float, float> > getRanges() const;
+  vector<pair<int, pair<float, float> > > getRanges() const;
+  Float2 targetCoords(int target) const;
 
   // Helper functions
   void drawMultibar(const vector<float> &sizes, const Float4 &dimensions) const;
