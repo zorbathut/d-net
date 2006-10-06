@@ -1,6 +1,4 @@
 ---- Major work path
-- Make equip a little more comprehensible
-- Better mine demo
 - EMP demo
 - Move entire setup into the new Tween system?
   - "Choose from UIOJKL" for keyboard players?

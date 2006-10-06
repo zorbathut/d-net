@@ -9,7 +9,7 @@
 
 using namespace std;
 
-enum {DEMOMODE_WEAPON, DEMOMODE_BOMBARDMENT, DEMOMODE_GLORY, DEMOMODE_LAST};
+enum {DEMOMODE_FIRINGRANGE, DEMOMODE_MINE, DEMOMODE_BOMBARDMENT, DEMOMODE_GLORY, DEMOMODE_LAST};
 
 class GameAiNull : public GameAi {
 private:
@@ -153,16 +153,72 @@ public:
   GameAiCircling(float in_dist, bool in_firing) { dist = in_dist; firing = in_firing; }
 };
 
+class GameAiMining : public GameAi {
+  int direction;
+  int frames_to_start;
+  void updateGameWork(const vector<Tank> &players, int me) {
+    if(direction == 2) {
+      direction = -((players[me].pos.x) / abs(players[me].pos.x)).toInt();
+      CHECK(abs(direction) == 1);
+      frames_to_start = int(frand() * 30);
+    }
+    if(direction == 0)
+      return;
+    if(players[me].pos.x * direction > 60) {
+      direction = 0;
+      return;
+    }
+    nextKeys.udlrax.x = direction;
+    nextKeys.fire[0].down = (frames_to_start <= 0);
+    frames_to_start--;
+  }
+  void updateBombardmentWork(const vector<Tank> &players, Coord2 mypos) {
+    CHECK(0);
+  }
+  
+public:
+  bool running() const { return direction; };
+  void start() { direction = 2; };
+  GameAiMining() { direction = 0; frames_to_start = 0; }
+};
+
+class GameAiTraversing : public GameAi {
+  Coord2 destination;
+  bool active;
+  bool starting;
+  void updateGameWork(const vector<Tank> &players, int me) {
+    if(starting) {
+      starting = false;
+      destination = Coord2(Coord(frand() * 80 - 40), abs(players[me].pos.y) / players[me].pos.y * -60);
+      active = true;
+    }
+    if(len(players[me].pos - destination) < 1) {
+      active = false;
+    }
+    if(!active)
+      return;
+    nextKeys.udlrax = normalize(destination - players[me].pos).toFloat();
+    nextKeys.udlrax.y *= -1;
+  }
+  void updateBombardmentWork(const vector<Tank> &players, Coord2 mypos) {
+    CHECK(0);
+  }
+  
+public:
+  bool running() const { return active; };
+  void start() { starting = true; };
+  GameAiTraversing() { active = false; starting = false; }
+};
+
 const float weapons_xpses[] = { -80, -80, 0, 0, 80, 80 };
 const float weapons_ypses[] = { 120, -80, 120, -40, 120, 40 };
 const int weapons_mode[] = { DEMOPLAYER_QUIET, DEMOPLAYER_DPS, DEMOPLAYER_QUIET, DEMOPLAYER_DPS, DEMOPLAYER_QUIET, DEMOPLAYER_DPS };
 const int weapons_progression[] = { 600, 0 };
 
-const float mines_circle = 60;
-const float mines_xpses[] = { 0, 0 };
-const float mines_ypses[] = { -mines_circle, mines_circle };
-const float mines_facing[] = { 0, PI };
-const int mines_mode[] = { DEMOPLAYER_DPH, DEMOPLAYER_QUIET };
+const float mines_xpses[] = { 0, -60, -60, -60, -60, -60, -60, -60, -60, -60 };
+const float mines_ypses[] = { -60, -40, -30, -20, -10, 0, 10, 20, 30, 40 };
+const float mines_facing[] = { PI / 2, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+const int mines_mode[] = { DEMOPLAYER_DPH, DEMOPLAYER_QUIET, DEMOPLAYER_QUIET, DEMOPLAYER_QUIET, DEMOPLAYER_QUIET, DEMOPLAYER_QUIET, DEMOPLAYER_QUIET, DEMOPLAYER_QUIET, DEMOPLAYER_QUIET, DEMOPLAYER_QUIET };
 const int mines_progression[] = { 600, 0 };
 
 const float bombardment_xpses[] = { -30, -30, 30, 30, -30, -30, 30, 30 };
@@ -177,9 +233,9 @@ const int glory_progression[] = { 6000, 0 };
 
 void ShopDemo::init(const IDBWeapon *weap, const Player *player) {
   StackString sst("Initting demo weapon shop");
-  mode = DEMOMODE_WEAPON;
   
   if(weap->demomode == WDM_FIRINGRANGE) {
+    mode = DEMOMODE_FIRINGRANGE;
     game.players.clear();
     game.players.resize(6);
     CHECK(factionList().size() >= game.players.size());
@@ -198,8 +254,9 @@ void ShopDemo::init(const IDBWeapon *weap, const Player *player) {
     
     progression = weapons_progression;
   } else if(weap->demomode == WDM_MINES) {
+    mode = DEMOMODE_MINE;
     game.players.clear();
-    game.players.resize(2);
+    game.players.resize(10);
     CHECK(factionList().size() >= game.players.size());
     for(int i = 0; i < game.players.size(); i++) {
       game.players[i] = Player(&factionList()[i], 0); // TODO: make this be the right faction mode and stats
@@ -207,10 +264,20 @@ void ShopDemo::init(const IDBWeapon *weap, const Player *player) {
     }
     
     ais.clear();  
-    ais.push_back(smart_ptr<GameAi>(new GameAiCircling(mines_circle, 0)));
-    ais.push_back(smart_ptr<GameAi>(new GameAiCircling(mines_circle, 1)));
+    mine_miners.clear();
+    {
+      GameAiTraversing *gat = new GameAiTraversing();
+      ais.push_back(smart_ptr<GameAi>(gat));
+      mine_traverser = gat;
+    }
+    for(int i = 1; i < game.players.size(); i++) {
+      GameAiMining *gam = new GameAiMining();
+      ais.push_back(smart_ptr<GameAi>(gam));
+      mine_miners.push_back(gam);
+    }
     
     game.game.initDemo(&game.players, 100, mines_xpses, mines_ypses, mines_facing, mines_mode);
+    mine_mined = false;
     
     progression = mines_progression;
   } else {
@@ -298,7 +365,26 @@ void ShopDemo::runTick() {
   for(int i = 0; i < ais.size(); i++)
     tai.push_back(ais[i].get());
   for(int i = 0; i < mult(game.game.frameCount(), progression); i++) {
-    if(mode == DEMOMODE_BOMBARDMENT) {
+    
+    if(mode == DEMOMODE_FIRINGRANGE) {
+    } else if(mode == DEMOMODE_MINE) {
+      if(!mine_mined) {
+        if(!mine_traverser->running()) {
+          for(int i = 0; i < mine_miners.size(); i++)
+            mine_miners[i]->start();
+          mine_mined = true;
+        }
+      } else {
+        bool srun = false;
+        for(int i = 0; i < mine_miners.size(); i++)
+          if(mine_miners[i]->running())
+            srun = true;
+        if(!srun) {
+          mine_traverser->start();
+          mine_mined = false;
+        }
+      }
+    } else if(mode == DEMOMODE_BOMBARDMENT) {
       bool notready = false;
       for(int i = 0; i < bombardment_scatterers.size(); i++)
         if(!bombardment_scatterers[i]->readytofire())
@@ -308,9 +394,7 @@ void ShopDemo::runTick() {
           bombardment_scatterers[i]->bombsaway();
         game.game.addStatCycle();
       }
-    }
-    
-    if(mode == DEMOMODE_GLORY) {
+    } else if(mode == DEMOMODE_GLORY) {
       if(respawn) {
         glory_respawnPlayers();
         respawn = false;
@@ -328,6 +412,8 @@ void ShopDemo::runTick() {
           respawn = true;
         }
       }
+    } else {
+      CHECK(0);
     }
     
     game.game.ai(tai);

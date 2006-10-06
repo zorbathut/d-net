@@ -7,6 +7,8 @@ using namespace std;
 
 class GameAiScatterbombing;
 class GameAiKamikaze;
+class GameAiMining;
+class GameAiTraversing;
 
 class ShopDemo {
 public:
@@ -34,6 +36,10 @@ private:
   vector<GameAiKamikaze *> glory_kamikazes;
   bool respawn;
   void glory_respawnPlayers();
+
+  bool mine_mined;
+  vector<GameAiMining *> mine_miners;
+  GameAiTraversing *mine_traverser;
 
   // don't use
   ShopDemo(const ShopDemo &rhs);
