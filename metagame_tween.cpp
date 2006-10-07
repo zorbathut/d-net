@@ -229,7 +229,7 @@ bool PersistentData::tick(const vector< Controller > &keys) {
         CHECK(slot[empty].type == Slot::EMPTY);
         slot[empty].pid = sps_queue[0].first;
         if(sps_queue[0].second == TTL_LEAVEJOIN && !pms[sps_queue[0].first].faction) {
-          slot[empty].type = Slot::SINGLECHOOSE;
+          slot[empty].type = Slot::CHOOSE;
         } else if(sps_queue[0].second == TTL_LEAVEJOIN && pms[sps_queue[0].first].faction) {
           slot[empty].type = Slot::QUITCONFIRM;
           sps_quitconfirm[sps_queue[0].first] = 0;
@@ -425,8 +425,8 @@ void PersistentData::reset() {
 bool PersistentData::tickSlot(int slotid, const vector<Controller> &keys) {
   CHECK(slotid >= 0 && slotid < 4);
   Slot &slt = slot[slotid];
-  if(slt.type == Slot::SINGLECHOOSE) {
-    StackString stp("Singlechoose");
+  if(slt.type == Slot::CHOOSE) {
+    StackString stp("CHOOSE");
     CHECK(slt.pid != -1);
     CHECK(keys.size() == 1);
 
@@ -513,8 +513,8 @@ bool PersistentData::tickSlot(int slotid, const vector<Controller> &keys) {
 void PersistentData::renderSlot(int slotid) const {
   CHECK(slotid >= 0 && slotid < 4);
   const Slot &slt = slot[slotid];
- if(slt.type == Slot::SINGLECHOOSE) {
-    StackString stp("Singlechoose");
+ if(slt.type == Slot::CHOOSE) {
+    StackString stp("choose");
     CHECK(slt.pid >= 0 && slt.pid < pms.size());
     setZoomCenter(0, 0, 1.1);
     setColor(1.0, 1.0, 1.0);

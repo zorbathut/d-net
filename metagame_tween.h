@@ -55,7 +55,7 @@ private:
   
   // Tween layout info
   struct Slot {
-    enum { SINGLECHOOSE, SHOP, RESULTS, QUITCONFIRM, SETTINGS, EMPTY };
+    enum { CHOOSE, SHOP, RESULTS, QUITCONFIRM, SETTINGS, EMPTY };
     int type;
     int pid;
     Shop shop;
