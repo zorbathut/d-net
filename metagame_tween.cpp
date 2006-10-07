@@ -425,27 +425,7 @@ void PersistentData::reset() {
 bool PersistentData::tickSlot(int slotid, const vector<Controller> &keys) {
   CHECK(slotid >= 0 && slotid < 4);
   Slot &slt = slot[slotid];
-  if(slt.type == Slot::CHOOSE) {
-    StackString stp("Playerchoose");
-    CHECK(slt.pid == -1);
-    CHECK(keys.size() > 1);
-
-    for(int i = 0; i < keys.size(); i++)
-      runSettingTick(keys[i], &pms[i], factions);
-    
-    {
-      int readyusers = 0;
-      int chosenusers = 0;
-      for(int i = 0; i < pms.size(); i++) {
-        if(pms[i].readyToPlay())
-          readyusers++;
-        if(pms[i].faction)
-          chosenusers++;
-      }
-      if(readyusers == chosenusers && chosenusers >= 2)
-        return true;
-    }
-  } else if(slt.type == Slot::SINGLECHOOSE) {
+  if(slt.type == Slot::SINGLECHOOSE) {
     StackString stp("Singlechoose");
     CHECK(slt.pid != -1);
     CHECK(keys.size() == 1);
@@ -454,7 +434,7 @@ bool PersistentData::tickSlot(int slotid, const vector<Controller> &keys) {
 
     if(pms[slt.pid].faction) {
       playerid[slt.pid] = playerdata.size();
-      playerdata.push_back(Player(pms[slt.pid].faction->faction, 0));
+      playerdata.push_back(Player(pms[slt.pid].faction->faction, 0)); // TODO: Make factions matter again
       playerdata.back().setCash(newPlayerStartingCash);
       slot[slotid].type = Slot::SETTINGS;
     }
@@ -533,28 +513,7 @@ bool PersistentData::tickSlot(int slotid, const vector<Controller> &keys) {
 void PersistentData::renderSlot(int slotid) const {
   CHECK(slotid >= 0 && slotid < 4);
   const Slot &slt = slot[slotid];
-  if(slt.type == Slot::CHOOSE) {
-    StackString stp("Playerchoose");
-    setZoomCenter(0, 0, 1.1);
-    setColor(1.0, 1.0, 1.0);
-    for(int i = 0; i < pms.size(); i++) {
-      runSettingRender(pms[i]);
-    }
-    for(int i = 0; i < factions.size(); i++) {
-      if(!factions[i].taken) {
-        setColor(factions[i].faction->color);
-        drawDvec2(factions[i].faction->icon, boxAround(factions[i].compass_location.midpoint(), factions[i].compass_location.y_span() / 2 * 0.9), 20, 0.004);
-      }
-    }
-    setColor(1.0, 1.0, 1.0);
-    {
-      vector<string> txt;
-      txt.push_back("Select your faction");
-      txt.push_back("icon and configure");
-      txt.push_back("your controller");
-      drawJustifiedMultiText(txt, 0.05, Float2(0, 0), TEXT_CENTER, TEXT_CENTER);
-    }
-  } else if(slt.type == Slot::SINGLECHOOSE) {
+ if(slt.type == Slot::SINGLECHOOSE) {
     StackString stp("Singlechoose");
     CHECK(slt.pid >= 0 && slt.pid < pms.size());
     setZoomCenter(0, 0, 1.1);
@@ -1046,7 +1005,22 @@ PersistentData::PersistentData(int playercount, int in_roundsbetweenshop) {
   
   CHECK(FLAGS_debugControllers >= 0 && FLAGS_debugControllers <= 2);
   CHECK(factions.size() >= FLAGS_debugControllers);
-
+  
+  CHECK(sizeof(slot) / sizeof(*slot) == 4);
+  for(int i = 0; i < 4; i++) {
+    slot[i].type = Slot::EMPTY;
+    slot[i].pid = -1;
+  }
+  
+  slot_count = 1;
+  
+  btt_notify = NULL;
+  btt_frames_left = 0;
+  
+  newPlayerStartingCash = Money(FLAGS_startingCash);
+  
+  reset();
+  
   int cdbc = controls_primary_id();
   if(FLAGS_debugControllers >= 1) {
     CHECK(pms.size() >= 1); // better be
@@ -1067,6 +1041,8 @@ PersistentData::PersistentData(int playercount, int in_roundsbetweenshop) {
     pms[cdbc].axes_invert[1] = false;
     pms[cdbc].setting_axistype = KSAX_STEERING;
     pms[cdbc].fireHeld = 0;
+    playerid[cdbc] = playerdata.size();
+    playerdata.push_back(Player(pms[cdbc].faction->faction, 0));
     cdbc++;
   }
   if(FLAGS_debugControllers >= 2) {
@@ -1088,21 +1064,8 @@ PersistentData::PersistentData(int playercount, int in_roundsbetweenshop) {
     pms[cdbc].axes_invert[1] = false;
     pms[cdbc].setting_axistype = KSAX_ABSOLUTE;
     pms[cdbc].fireHeld = 0;
+    playerid[cdbc] = playerdata.size();
+    playerdata.push_back(Player(pms[cdbc].faction->faction, 0));
     cdbc++;
   }
-  
-  CHECK(sizeof(slot) / sizeof(*slot) == 4);
-  for(int i = 0; i < 4; i++) {
-    slot[i].type = Slot::EMPTY;
-    slot[i].pid = -1;
-  }
-  
-  slot_count = 1;
-  
-  btt_notify = NULL;
-  btt_frames_left = 0;
-  
-  newPlayerStartingCash = Money(FLAGS_startingCash);
-  
-  reset();
 }

@@ -1,10 +1,12 @@
 ---- Major work path
-- factiontype tick
 - Move entire setup into the new Tween system?
-  - Tween setup changes if a Faction pass will be needed. If so, just "join/leave" and "done". If not, full shop.
-  - "Choose from UIOJKL" for keyboard players?
-  - "You need two players, idiot"
-  - Faction info screen on startup
+  - New config system, yet again
+    - "Choose from UIOJKL" for keyboard players?
+  - New faction choosing
+    - Faction info screen on startup
+  - Descriptive text on the start screen
+    - "You need two players, idiot"
+  - Exit by choosing "done" with a dead player?
 - Gradual shop spawning
   - Remove bombardment from 2 player, make it cheaper for 3 and 4
 - Pull glory explody into its own deploy?
