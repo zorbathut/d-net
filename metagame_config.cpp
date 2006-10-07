@@ -29,9 +29,13 @@ public:
 
   float textsize;
   float textborder;
+
+  float aspect;
     
-  RenderInfo(const Float4 &in_dz) {
-    drawzone = in_dz;    
+  RenderInfo() {
+    aspect = 1.532563;
+    
+    drawzone = Float4(0, 0, aspect, 1.0);     // maaaagic
 
     // runtime constants
     unitsize = drawzone.y_span() / units;
@@ -86,7 +90,7 @@ void PlayerMenuState::createNewAxistypeDemo() {
   
   setting_axistype_demo->players.push_back(Player(faction->faction, 0));
   
-  const RenderInfo rin(faction->compass_location);
+  const RenderInfo rin;
   
   Float4 boundy = Float4(rin.xstart, rin.ystarts[1], rin.xend, rin.ystarts[7]);
   boundy -= boundy.midpoint();
@@ -155,7 +159,6 @@ struct StandardButtonRenderData {
   int sel_button;
   bool sel_button_reading;
   
-  float fadeFactor;
   char prefixchar;
 };
 
@@ -266,9 +269,9 @@ void standardButtonRender(const StandardButtonRenderData &sbrd) {
   CHECK(cy + linesneeded <= sbrd.rin->ystarts.size());
   for(int i = 0; i < (*sbrd.names).size(); i++) {
     if(sbrd.sel_button == i && !sbrd.sel_button_reading) {
-      setColor(C::active_text * sbrd.fadeFactor);
+      setColor(C::active_text);
     } else {
-      setColor(C::inactive_text * sbrd.fadeFactor);
+      setColor(C::inactive_text);
     }
     if(i && sbrd.groups[i-1] != sbrd.groups[i])
       cy++;
@@ -279,7 +282,7 @@ void standardButtonRender(const StandardButtonRenderData &sbrd) {
     string btext;
     if(sbrd.sel_button == i && sbrd.sel_button_reading) {
       btext = "?";
-      setColor(C::active_text * sbrd.fadeFactor);
+      setColor(C::active_text);
     } else if((*sbrd.buttons)[i] == -1) {
       btext = "";
     } else {
@@ -292,7 +295,7 @@ void standardButtonRender(const StandardButtonRenderData &sbrd) {
       } else {
         CHECK(0);
       }
-      setColor(C::inactive_text * sbrd.fadeFactor);
+      setColor(C::inactive_text);
     }
     drawJustifiedText(btext.c_str(), sbrd.rin->textsize, Float2(sbrd.rin->xend, sbrd.rin->ystarts[cy - 1]), TEXT_MAX, TEXT_MIN);
   }
@@ -607,7 +610,7 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
       
       pms->test_game->players.push_back(Player(pms->faction->faction, 0));
       
-      const RenderInfo rin(pms->faction->compass_location);
+      const RenderInfo rin;
       
       Float4 boundy = Float4(rin.xstart, rin.ystarts[1], rin.xend, rin.ystarts[7]);
       boundy -= boundy.midpoint();
@@ -708,241 +711,204 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
 
 void runSettingRender(const PlayerMenuState &pms) {
   StackString sstr("runSettingRender");
-  if(!pms.faction) {
-    setColor(1.0, 1.0, 1.0);
-    //char bf[16];
-    //sprintf(bf, "p%d", i);
-    if(pms.compasspos.x != 0 || pms.compasspos.y != 0) {
-      drawLine(pms.compasspos.x, pms.compasspos.y - 0.06, pms.compasspos.x, pms.compasspos.y - 0.02, 0.004);
-      drawLine(pms.compasspos.x, pms.compasspos.y + 0.06, pms.compasspos.x, pms.compasspos.y + 0.02, 0.004);
-      drawLine(pms.compasspos.x - 0.06, pms.compasspos.y, pms.compasspos.x - 0.02, pms.compasspos.y, 0.004);
-      drawLine(pms.compasspos.x + 0.06, pms.compasspos.y, pms.compasspos.x + 0.02, pms.compasspos.y, 0.004);
-    }
-    //drawText(bf, 20, Float2(pms.compasspos.x + 5, pms.compasspos.y + 5));
-  } else {
-    
-    const RenderInfo rin(pms.faction->compass_location);
-    const float fadeFactor = (60 - pms.fireHeld) / 60.;
-    
-    {
-      const float nameFade = pow(1.0 - fadeFactor, 2);
-      setColor(pms.faction->faction->color * nameFade);
-      
-      vector<string> text = pms.faction->faction->name_lines;
-      text.push_back("");
-      text.push_back("Ready");
-      
-      drawJustifiedMultiText(text, rin.textsize, rin.drawzone.midpoint(), TEXT_CENTER, TEXT_CENTER);
-    }
-    
-    setColor(Color(1.0, 1.0, 1.0) * fadeFactor);
-    {
-      vector<Float2> rectish;
-      rectish.push_back(Float2(rin.drawzone.sx + rin.border, rin.drawzone.sy));
-      rectish.push_back(Float2(rin.drawzone.ex - rin.border, rin.drawzone.sy));
-      rectish.push_back(Float2(rin.drawzone.ex, rin.drawzone.sy + rin.border));
-      rectish.push_back(Float2(rin.drawzone.ex, rin.drawzone.ey - rin.border));
-      rectish.push_back(Float2(rin.drawzone.ex - rin.border, rin.drawzone.ey));
-      rectish.push_back(Float2(rin.drawzone.sx + rin.border, rin.drawzone.ey));
-      rectish.push_back(Float2(rin.drawzone.sx, rin.drawzone.ey - rin.border));
-      rectish.push_back(Float2(rin.drawzone.sx, rin.drawzone.sy + rin.border));
-      drawLineLoop(rectish, 0.003);
-    }
-    
-    setColor(Color(0.3, 0.3, 0.3) * fadeFactor);
-    drawLine(Float4(rin.drawzone.sx, (rin.ystarts[0] + rin.textsize + rin.ystarts[1]) / 2, rin.drawzone.ex, (rin.ystarts[0] + rin.textsize + rin.ystarts[1]) / 2), 0.003);
-    
-    {
-      // Topic line!
-      setColor(pms.faction->faction->color * fadeFactor);
-      drawDvec2(pms.faction->faction->icon, Float4(rin.xstart, rin.ystarts[0], rin.xstart + rin.textsize, rin.ystarts[0] + rin.textsize), 50, 0.003);
+  CHECK(pms.faction);
 
-      float txstart = rin.xstart + rin.textsize + rin.border * 2;
-	
-      if(pms.choicemode == CHOICE_FIRSTPASS) {
-        setColor(C::active_text * fadeFactor);
-        drawJustifiedText(setting_names_detailed[pms.settingmode], rin.textsize, Float2((rin.drawzone.sx + rin.drawzone.ex) / 2, rin.ystarts[0]), TEXT_CENTER, TEXT_MIN);
-      } else {
-        setColor(C::active_text * fadeFactor);
-        if(pms.choicemode == CHOICE_IDLE) {
-          if(pms.settingmode > 0)
-            drawJustifiedText("<", rin.textsize, Float2(txstart, rin.ystarts[0]), TEXT_MIN, TEXT_MIN);
-          if(pms.settingmode < SETTING_LAST - 1)
-            drawJustifiedText(">", rin.textsize, Float2(rin.xend, rin.ystarts[0]), TEXT_MAX, TEXT_MIN);
-        }
-        
-        GfxWindow gfxw(Float4(txstart + rin.textsize, rin.ystarts[0] - rin.textsize, rin.xend - rin.textsize, rin.ystarts[0] + rin.textsize * 2), fadeFactor);
-        setZoomCenter(pms.headingXOffset, 0, 3. / 2);
-        
-        vector<float> xpos = choiceTopicXpos();
-        
-        for(int i = 0; i < SETTING_LAST; i++) {
-          setColor(((i == pms.settingmode && pms.choicemode == CHOICE_IDLE) ? C::active_text : C::inactive_text));
-          drawJustifiedText(setting_names[i], 1, Float2(xpos[i], 0), TEXT_CENTER, TEXT_CENTER);
-        }
+  setZoomVertical(0, 0, 1);
+  const RenderInfo rin;
+  
+  CHECK(abs((getAspect() / rin.aspect) - 1.0) < 0.0001);
+  
+  setColor(Color(0.3, 0.3, 0.3));
+  drawLine(Float4(rin.drawzone.sx, (rin.ystarts[0] + rin.textsize + rin.ystarts[1]) / 2, rin.drawzone.ex, (rin.ystarts[0] + rin.textsize + rin.ystarts[1]) / 2), 0.003);
+  
+  {
+    // Topic line!
+    setColor(pms.faction->faction->color);
+    drawDvec2(pms.faction->faction->icon, Float4(rin.xstart, rin.ystarts[0], rin.xstart + rin.textsize, rin.ystarts[0] + rin.textsize), 50, 0.003);
+
+    float txstart = rin.xstart + rin.textsize + rin.border * 2;
+
+    if(pms.choicemode == CHOICE_FIRSTPASS) {
+      setColor(C::active_text);
+      drawJustifiedText(setting_names_detailed[pms.settingmode], rin.textsize, Float2((rin.drawzone.sx + rin.drawzone.ex) / 2, rin.ystarts[0]), TEXT_CENTER, TEXT_MIN);
+    } else {
+      setColor(C::active_text);
+      if(pms.choicemode == CHOICE_IDLE) {
+        if(pms.settingmode > 0)
+          drawJustifiedText("<", rin.textsize, Float2(txstart, rin.ystarts[0]), TEXT_MIN, TEXT_MIN);
+        if(pms.settingmode < SETTING_LAST - 1)
+          drawJustifiedText(">", rin.textsize, Float2(rin.xend, rin.ystarts[0]), TEXT_MAX, TEXT_MIN);
       }
       
+      GfxWindow gfxw(Float4(txstart + rin.textsize, rin.ystarts[0] - rin.textsize, rin.xend - rin.textsize, rin.ystarts[0] + rin.textsize * 2), 1.0);
+      setZoomCenter(pms.headingXOffset, 0, 3. / 2);
+      
+      vector<float> xpos = choiceTopicXpos();
+      
+      for(int i = 0; i < SETTING_LAST; i++) {
+        setColor(((i == pms.settingmode && pms.choicemode == CHOICE_IDLE) ? C::active_text : C::inactive_text));
+        drawJustifiedText(setting_names[i], 1, Float2(xpos[i], 0), TEXT_CENTER, TEXT_CENTER);
+      }
     }
     
-    if(pms.settingmode == SETTING_BUTTONS) {
-      vector<vector<string> > names;
-      for(int i = 0; i < BUTTON_LAST; i++) {
-        vector<string> tix;
-        tix.push_back(button_names[i]);
-        names.push_back(tix);
-      }
-      
-      StandardButtonRenderData sbrd;
-      sbrd.rin = &rin;
-      sbrd.buttons = &pms.buttons;
-      sbrd.inverts = NULL;
-      sbrd.names = &names;
-      sbrd.groups = button_groups;
-      sbrd.sel_button = pms.setting_button_current;
-      sbrd.sel_button_reading = pms.setting_button_reading;
-      sbrd.fadeFactor = fadeFactor;
-      sbrd.prefixchar = 'B';
-      
-      standardButtonRender(sbrd);
-    } else if(pms.settingmode == SETTING_AXISTYPE && pms.setting_axistype_demo_curframe == -1) {
-      for(int i = 0; i < KSAX_END * 2; i++) {
-        if(pms.choicemode != CHOICE_IDLE && pms.setting_axistype_curchoice == i)
-          setColor(C::active_text * fadeFactor);
-        else
-          setColor(C::inactive_text * fadeFactor);
-        
-        if(i % 2 == 0)
-          drawText(ksax_names[i / 2], rin.textsize, Float2(rin.xstart + rin.textsize * 2, rin.ystarts[i + 2]));
-        else
-          drawText("(demo)", rin.textsize, Float2(rin.xstart + rin.textsize * 3, rin.ystarts[i + 2]));
-      }
-      
-      if(pms.setting_axistype != -1) {
-        setColor(C::active_text * fadeFactor);
-        drawText(">", rin.textsize, Float2(rin.xstart, rin.ystarts[pms.setting_axistype * 2 + 2]));
-      }
-    } else if(pms.settingmode == SETTING_AXISTYPE && pms.setting_axistype_demo_curframe != -1) {
-      
-      const float demowindowwidth = rin.ystarts[6] - rin.ystarts[1] + rin.textsize;
-      const Float4 demowindow = Float4(rin.xend - demowindowwidth, rin.ystarts[1], rin.xend, rin.ystarts[1] + demowindowwidth);
-      const float controllerwindowwidth = rin.ystarts[6] - rin.ystarts[5] + rin.textsize;
-      const Float4 controllerwindow = Float4(demowindow.sx - rin.textborder - controllerwindowwidth, rin.ystarts[5], demowindow.sx - rin.textborder, rin.ystarts[5] + controllerwindowwidth);
-      
-      CHECK(!pms.setting_axistype_demo.empty());
-      {
-        GfxWindow gfxw(demowindow, fadeFactor);
-        pms.setting_axistype_demo->renderToScreen();
-      }
-      
-      setColor(C::inactive_text * fadeFactor);
-      if(pms.setting_axistype_curchoice / 2 == KSAX_STEERING && pms.setting_axistype_demo_curframe == 0) {
-        drawText("Move controller", rin.textsize, Float2(rin.xstart, rin.ystarts[1]));
-        drawText("forward and", rin.textsize, Float2(rin.xstart, rin.ystarts[2]));
-        drawText("back to drive", rin.textsize, Float2(rin.xstart, rin.ystarts[3]));
-        drawText("forward and", rin.textsize, Float2(rin.xstart, rin.ystarts[4]));
-        drawText("back.", rin.textsize, Float2(rin.xstart, rin.ystarts[5]));
-      } else if(pms.setting_axistype_curchoice / 2 == KSAX_STEERING && pms.setting_axistype_demo_curframe == 1) {
-        drawText("Move controller", rin.textsize, Float2(rin.xstart, rin.ystarts[1]));
-        drawText("side to side", rin.textsize, Float2(rin.xstart, rin.ystarts[2]));
-        drawText("to turn.", rin.textsize, Float2(rin.xstart, rin.ystarts[3]));
-      } else if(pms.setting_axistype_curchoice / 2 == KSAX_STEERING && pms.setting_axistype_demo_curframe == 2) {
-        drawText("Combine these", rin.textsize, Float2(rin.xstart, rin.ystarts[1]));
-        drawText("to drive around.", rin.textsize, Float2(rin.xstart, rin.ystarts[2]));
-      } else if(pms.setting_axistype_curchoice / 2 == KSAX_ABSOLUTE && pms.setting_axistype_demo_curframe == 0) {
-        drawText("Move controller", rin.textsize, Float2(rin.xstart, rin.ystarts[1]));
-        drawText("towards where", rin.textsize, Float2(rin.xstart, rin.ystarts[2]));
-        drawText("you want the", rin.textsize, Float2(rin.xstart, rin.ystarts[3]));
-        drawText("tank to go.", rin.textsize, Float2(rin.xstart, rin.ystarts[4]));
-      } else if(pms.setting_axistype_curchoice / 2 == KSAX_ABSOLUTE && pms.setting_axistype_demo_curframe == 1) {
-        drawText("The computer", rin.textsize, Float2(rin.xstart, rin.ystarts[1]));
-        drawText("will try to", rin.textsize, Float2(rin.xstart, rin.ystarts[2]));
-        drawText("turn your tank", rin.textsize, Float2(rin.xstart, rin.ystarts[3]));
-        drawText("in that direction.", rin.textsize, Float2(rin.xstart, rin.ystarts[4]));
-      } else if(pms.setting_axistype_curchoice / 2 == KSAX_TANK && pms.setting_axistype_demo_curframe == 0) {
-        drawText("Control treads", rin.textsize, Float2(rin.xstart, rin.ystarts[1]));
-        drawText("independently.", rin.textsize, Float2(rin.xstart, rin.ystarts[2]));
-        drawText("Your left stick", rin.textsize, Float2(rin.xstart, rin.ystarts[3]));
-        drawText("moves your left", rin.textsize, Float2(rin.xstart, rin.ystarts[4]));
-        drawText("tank tread.", rin.textsize, Float2(rin.xstart, rin.ystarts[5]));
-      } else if(pms.setting_axistype_curchoice / 2 == KSAX_TANK && pms.setting_axistype_demo_curframe == 1) {
-        drawText("Your right stick", rin.textsize, Float2(rin.xstart, rin.ystarts[1]));
-        drawText("moves your right", rin.textsize, Float2(rin.xstart, rin.ystarts[2]));
-        drawText("tank tread.", rin.textsize, Float2(rin.xstart, rin.ystarts[3]));
-      } else if(pms.setting_axistype_curchoice / 2 == KSAX_TANK && pms.setting_axistype_demo_curframe == 2) {
-        drawText("Move both sticks", rin.textsize, Float2(rin.xstart, rin.ystarts[1]));
-        drawText("forward to move", rin.textsize, Float2(rin.xstart, rin.ystarts[2]));
-        drawText("your tank", rin.textsize, Float2(rin.xstart, rin.ystarts[3]));
-        drawText("forward.", rin.textsize, Float2(rin.xstart, rin.ystarts[4]));
-      } else if(pms.setting_axistype_curchoice / 2 == KSAX_TANK && pms.setting_axistype_demo_curframe == 3) {
-        drawText("Experiment with", rin.textsize, Float2(rin.xstart, rin.ystarts[1]));
-        drawText("tank mode for", rin.textsize, Float2(rin.xstart, rin.ystarts[2]));
-        drawText("very precise", rin.textsize, Float2(rin.xstart, rin.ystarts[3]));
-        drawText("tank control.", rin.textsize, Float2(rin.xstart, rin.ystarts[4]));
-      } else {
-        CHECK(0);
-      }
-      
-      setColor(C::active_text * fadeFactor);
-      if(pms.setting_axistype_curchoice / 2 == KSAX_STEERING && pms.setting_axistype_demo_curframe == 2 ||
-         pms.setting_axistype_curchoice / 2 == KSAX_ABSOLUTE && pms.setting_axistype_demo_curframe == 1 ||
-         pms.setting_axistype_curchoice / 2 == KSAX_TANK && pms.setting_axistype_demo_curframe == 3) {
-        drawJustifiedText("Push accept to return", rin.textsize, Float2((rin.xstart + rin.xend) / 2, rin.ystarts[7]), TEXT_CENTER, TEXT_MIN);
-      } else {
-        drawJustifiedText("Push accept to continue", rin.textsize, Float2((rin.xstart + rin.xend) / 2, rin.ystarts[7]), TEXT_CENTER, TEXT_MIN);
-      }
-      
-      const float widgetsize = 0.005;
-      Float2 cont = pms.setting_axistype_demo_ai->getControls();
-      cont.x += 1;
-      cont.y += 1;
-      cont /= 2;
+  }
+  
+  if(pms.settingmode == SETTING_BUTTONS) {
+    vector<vector<string> > names;
+    for(int i = 0; i < BUTTON_LAST; i++) {
+      vector<string> tix;
+      tix.push_back(button_names[i]);
+      names.push_back(tix);
+    }
     
-      setColor(C::gray(1.0) * fadeFactor);
-      if(pms.setting_axistype_curchoice / 2 == KSAX_STEERING || pms.setting_axistype_curchoice / 2 == KSAX_ABSOLUTE) {
-        drawRect(controllerwindow, 0.0001);
-        const Float4 livecwind = Float4(controllerwindow.sx + widgetsize, controllerwindow.sy + widgetsize, controllerwindow.ex - widgetsize, controllerwindow.ey - widgetsize);
-        drawShadedRect(boxAround(Float2((livecwind.ex - livecwind.sx) * cont.x + livecwind.sx, (livecwind.sy - livecwind.ey) * cont.y + livecwind.ey), widgetsize), 0.00001, widgetsize);
-      } else if(pms.setting_axistype_curchoice / 2 == KSAX_TANK) {
-        const float xshift = widgetsize * 5;
-        const float ys = controllerwindow.sy + widgetsize;
-        const float ye = controllerwindow.ey - widgetsize;
-        drawRect(Float4(controllerwindow.ex - xshift, controllerwindow.sy, controllerwindow.ex - xshift + widgetsize, controllerwindow.ey), 0.0001);
-        drawRect(Float4(controllerwindow.ex - widgetsize, controllerwindow.sy, controllerwindow.ex, controllerwindow.ey), 0.0001);
-        drawShadedRect(boxAround(Float2(controllerwindow.ex - xshift + widgetsize / 2, (ys - ye) * cont.x + ye), widgetsize), 0.00001, widgetsize);
-        drawShadedRect(boxAround(Float2(controllerwindow.ex - widgetsize / 2, (ys - ye) * cont.y + ye), widgetsize), 0.00001, widgetsize);
-      } else {
-        CHECK(0);
-      }
+    StandardButtonRenderData sbrd;
+    sbrd.rin = &rin;
+    sbrd.buttons = &pms.buttons;
+    sbrd.inverts = NULL;
+    sbrd.names = &names;
+    sbrd.groups = button_groups;
+    sbrd.sel_button = pms.setting_button_current;
+    sbrd.sel_button_reading = pms.setting_button_reading;
+    sbrd.prefixchar = 'B';
+    
+    standardButtonRender(sbrd);
+  } else if(pms.settingmode == SETTING_AXISTYPE && pms.setting_axistype_demo_curframe == -1) {
+    for(int i = 0; i < KSAX_END * 2; i++) {
+      if(pms.choicemode != CHOICE_IDLE && pms.setting_axistype_curchoice == i)
+        setColor(C::active_text);
+      else
+        setColor(C::inactive_text);
       
-    } else if(pms.settingmode == SETTING_AXISCHOOSE) {
-      StandardButtonRenderData sbrd;
-      sbrd.rin = &rin;
-      sbrd.buttons = &pms.axes;
-      sbrd.inverts = &pms.axes_invert;
-      sbrd.names = &ksax_axis_names[pms.setting_axistype];
-      sbrd.groups = axis_groups;
-      sbrd.sel_button = pms.setting_axis_current;
-      sbrd.sel_button_reading = pms.setting_axis_reading;
-      sbrd.fadeFactor = fadeFactor;
-      sbrd.prefixchar = 'X';
-      
-      standardButtonRender(sbrd);
-    } else if(pms.settingmode == SETTING_TEST) {
-      setColor(C::inactive_text * fadeFactor);
-      if(pms.choicemode == CHOICE_IDLE) {
-        drawJustifiedText("Push accept to test", rin.textsize, Float2((rin.xstart + rin.xend) / 2, rin.ystarts[7]), TEXT_CENTER, TEXT_MIN);
-      } else {
-        drawJustifiedText("Push cancel when done", rin.textsize, Float2((rin.xstart + rin.xend) / 2, rin.ystarts[7]), TEXT_CENTER, TEXT_MIN);
-      }
-      GfxWindow gfxw(Float4(rin.xstart, rin.ystarts[1], rin.xend, rin.ystarts[7]), fadeFactor);
-      pms.test_game->renderToScreen();
-    } else if(pms.settingmode == SETTING_READY) {
-      setColor(C::inactive_text * fadeFactor);
-      const char * const text[] = {"Push left to", "change options.", "", "Hold \"accept\" when", "ready to start. Let", "go to cancel."};
-      for(int i = 0; i < 6; i++)
-        drawJustifiedText(text[i], rin.textsize, Float2((rin.xstart + rin.xend) / 2, rin.ystarts[i + 1]), TEXT_CENTER, TEXT_MIN);
+      if(i % 2 == 0)
+        drawText(ksax_names[i / 2], rin.textsize, Float2(rin.xstart + rin.textsize * 2, rin.ystarts[i + 2]));
+      else
+        drawText("(demo)", rin.textsize, Float2(rin.xstart + rin.textsize * 3, rin.ystarts[i + 2]));
+    }
+    
+    if(pms.setting_axistype != -1) {
+      setColor(C::active_text);
+      drawText(">", rin.textsize, Float2(rin.xstart, rin.ystarts[pms.setting_axistype * 2 + 2]));
+    }
+  } else if(pms.settingmode == SETTING_AXISTYPE && pms.setting_axistype_demo_curframe != -1) {
+    
+    const float demowindowwidth = rin.ystarts[6] - rin.ystarts[1] + rin.textsize;
+    const Float4 demowindow = Float4(rin.xend - demowindowwidth, rin.ystarts[1], rin.xend, rin.ystarts[1] + demowindowwidth);
+    const float controllerwindowwidth = rin.ystarts[6] - rin.ystarts[5] + rin.textsize;
+    const Float4 controllerwindow = Float4(demowindow.sx - rin.textborder - controllerwindowwidth, rin.ystarts[5], demowindow.sx - rin.textborder, rin.ystarts[5] + controllerwindowwidth);
+    
+    CHECK(!pms.setting_axistype_demo.empty());
+    {
+      GfxWindow gfxw(demowindow, 1.0);
+      pms.setting_axistype_demo->renderToScreen();
+    }
+    
+    setColor(C::inactive_text);
+    if(pms.setting_axistype_curchoice / 2 == KSAX_STEERING && pms.setting_axistype_demo_curframe == 0) {
+      drawText("Move controller", rin.textsize, Float2(rin.xstart, rin.ystarts[1]));
+      drawText("forward and", rin.textsize, Float2(rin.xstart, rin.ystarts[2]));
+      drawText("back to drive", rin.textsize, Float2(rin.xstart, rin.ystarts[3]));
+      drawText("forward and", rin.textsize, Float2(rin.xstart, rin.ystarts[4]));
+      drawText("back.", rin.textsize, Float2(rin.xstart, rin.ystarts[5]));
+    } else if(pms.setting_axistype_curchoice / 2 == KSAX_STEERING && pms.setting_axistype_demo_curframe == 1) {
+      drawText("Move controller", rin.textsize, Float2(rin.xstart, rin.ystarts[1]));
+      drawText("side to side", rin.textsize, Float2(rin.xstart, rin.ystarts[2]));
+      drawText("to turn.", rin.textsize, Float2(rin.xstart, rin.ystarts[3]));
+    } else if(pms.setting_axistype_curchoice / 2 == KSAX_STEERING && pms.setting_axistype_demo_curframe == 2) {
+      drawText("Combine these", rin.textsize, Float2(rin.xstart, rin.ystarts[1]));
+      drawText("to drive around.", rin.textsize, Float2(rin.xstart, rin.ystarts[2]));
+    } else if(pms.setting_axistype_curchoice / 2 == KSAX_ABSOLUTE && pms.setting_axistype_demo_curframe == 0) {
+      drawText("Move controller", rin.textsize, Float2(rin.xstart, rin.ystarts[1]));
+      drawText("towards where", rin.textsize, Float2(rin.xstart, rin.ystarts[2]));
+      drawText("you want the", rin.textsize, Float2(rin.xstart, rin.ystarts[3]));
+      drawText("tank to go.", rin.textsize, Float2(rin.xstart, rin.ystarts[4]));
+    } else if(pms.setting_axistype_curchoice / 2 == KSAX_ABSOLUTE && pms.setting_axistype_demo_curframe == 1) {
+      drawText("The computer", rin.textsize, Float2(rin.xstart, rin.ystarts[1]));
+      drawText("will try to", rin.textsize, Float2(rin.xstart, rin.ystarts[2]));
+      drawText("turn your tank", rin.textsize, Float2(rin.xstart, rin.ystarts[3]));
+      drawText("in that direction.", rin.textsize, Float2(rin.xstart, rin.ystarts[4]));
+    } else if(pms.setting_axistype_curchoice / 2 == KSAX_TANK && pms.setting_axistype_demo_curframe == 0) {
+      drawText("Control treads", rin.textsize, Float2(rin.xstart, rin.ystarts[1]));
+      drawText("independently.", rin.textsize, Float2(rin.xstart, rin.ystarts[2]));
+      drawText("Your left stick", rin.textsize, Float2(rin.xstart, rin.ystarts[3]));
+      drawText("moves your left", rin.textsize, Float2(rin.xstart, rin.ystarts[4]));
+      drawText("tank tread.", rin.textsize, Float2(rin.xstart, rin.ystarts[5]));
+    } else if(pms.setting_axistype_curchoice / 2 == KSAX_TANK && pms.setting_axistype_demo_curframe == 1) {
+      drawText("Your right stick", rin.textsize, Float2(rin.xstart, rin.ystarts[1]));
+      drawText("moves your right", rin.textsize, Float2(rin.xstart, rin.ystarts[2]));
+      drawText("tank tread.", rin.textsize, Float2(rin.xstart, rin.ystarts[3]));
+    } else if(pms.setting_axistype_curchoice / 2 == KSAX_TANK && pms.setting_axistype_demo_curframe == 2) {
+      drawText("Move both sticks", rin.textsize, Float2(rin.xstart, rin.ystarts[1]));
+      drawText("forward to move", rin.textsize, Float2(rin.xstart, rin.ystarts[2]));
+      drawText("your tank", rin.textsize, Float2(rin.xstart, rin.ystarts[3]));
+      drawText("forward.", rin.textsize, Float2(rin.xstart, rin.ystarts[4]));
+    } else if(pms.setting_axistype_curchoice / 2 == KSAX_TANK && pms.setting_axistype_demo_curframe == 3) {
+      drawText("Experiment with", rin.textsize, Float2(rin.xstart, rin.ystarts[1]));
+      drawText("tank mode for", rin.textsize, Float2(rin.xstart, rin.ystarts[2]));
+      drawText("very precise", rin.textsize, Float2(rin.xstart, rin.ystarts[3]));
+      drawText("tank control.", rin.textsize, Float2(rin.xstart, rin.ystarts[4]));
     } else {
       CHECK(0);
     }
+    
+    setColor(C::active_text);
+    if(pms.setting_axistype_curchoice / 2 == KSAX_STEERING && pms.setting_axistype_demo_curframe == 2 ||
+       pms.setting_axistype_curchoice / 2 == KSAX_ABSOLUTE && pms.setting_axistype_demo_curframe == 1 ||
+       pms.setting_axistype_curchoice / 2 == KSAX_TANK && pms.setting_axistype_demo_curframe == 3) {
+      drawJustifiedText("Push accept to return", rin.textsize, Float2((rin.xstart + rin.xend) / 2, rin.ystarts[7]), TEXT_CENTER, TEXT_MIN);
+    } else {
+      drawJustifiedText("Push accept to continue", rin.textsize, Float2((rin.xstart + rin.xend) / 2, rin.ystarts[7]), TEXT_CENTER, TEXT_MIN);
+    }
+    
+    const float widgetsize = 0.005;
+    Float2 cont = pms.setting_axistype_demo_ai->getControls();
+    cont.x += 1;
+    cont.y += 1;
+    cont /= 2;
+  
+    setColor(C::gray(1.0));
+    if(pms.setting_axistype_curchoice / 2 == KSAX_STEERING || pms.setting_axistype_curchoice / 2 == KSAX_ABSOLUTE) {
+      drawRect(controllerwindow, 0.0001);
+      const Float4 livecwind = Float4(controllerwindow.sx + widgetsize, controllerwindow.sy + widgetsize, controllerwindow.ex - widgetsize, controllerwindow.ey - widgetsize);
+      drawShadedRect(boxAround(Float2((livecwind.ex - livecwind.sx) * cont.x + livecwind.sx, (livecwind.sy - livecwind.ey) * cont.y + livecwind.ey), widgetsize), 0.00001, widgetsize);
+    } else if(pms.setting_axistype_curchoice / 2 == KSAX_TANK) {
+      const float xshift = widgetsize * 5;
+      const float ys = controllerwindow.sy + widgetsize;
+      const float ye = controllerwindow.ey - widgetsize;
+      drawRect(Float4(controllerwindow.ex - xshift, controllerwindow.sy, controllerwindow.ex - xshift + widgetsize, controllerwindow.ey), 0.0001);
+      drawRect(Float4(controllerwindow.ex - widgetsize, controllerwindow.sy, controllerwindow.ex, controllerwindow.ey), 0.0001);
+      drawShadedRect(boxAround(Float2(controllerwindow.ex - xshift + widgetsize / 2, (ys - ye) * cont.x + ye), widgetsize), 0.00001, widgetsize);
+      drawShadedRect(boxAround(Float2(controllerwindow.ex - widgetsize / 2, (ys - ye) * cont.y + ye), widgetsize), 0.00001, widgetsize);
+    } else {
+      CHECK(0);
+    }
+    
+  } else if(pms.settingmode == SETTING_AXISCHOOSE) {
+    StandardButtonRenderData sbrd;
+    sbrd.rin = &rin;
+    sbrd.buttons = &pms.axes;
+    sbrd.inverts = &pms.axes_invert;
+    sbrd.names = &ksax_axis_names[pms.setting_axistype];
+    sbrd.groups = axis_groups;
+    sbrd.sel_button = pms.setting_axis_current;
+    sbrd.sel_button_reading = pms.setting_axis_reading;
+    sbrd.prefixchar = 'X';
+    
+    standardButtonRender(sbrd);
+  } else if(pms.settingmode == SETTING_TEST) {
+    setColor(C::inactive_text);
+    if(pms.choicemode == CHOICE_IDLE) {
+      drawJustifiedText("Push accept to test", rin.textsize, Float2((rin.xstart + rin.xend) / 2, rin.ystarts[7]), TEXT_CENTER, TEXT_MIN);
+    } else {
+      drawJustifiedText("Push cancel when done", rin.textsize, Float2((rin.xstart + rin.xend) / 2, rin.ystarts[7]), TEXT_CENTER, TEXT_MIN);
+    }
+    GfxWindow gfxw(Float4(rin.xstart, rin.ystarts[1], rin.xend, rin.ystarts[7]), 1.0);
+    pms.test_game->renderToScreen();
+  } else if(pms.settingmode == SETTING_READY) {
+    setColor(C::inactive_text);
+    const char * const text[] = {"Push left to", "change options.", "", "Hold \"accept\" when", "ready to start. Let", "go to cancel."};
+    for(int i = 0; i < 6; i++)
+      drawJustifiedText(text[i], rin.textsize, Float2((rin.xstart + rin.xend) / 2, rin.ystarts[i + 1]), TEXT_CENTER, TEXT_MIN);
+  } else {
+    CHECK(0);
   }
 }

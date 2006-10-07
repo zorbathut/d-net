@@ -513,12 +513,10 @@ bool PersistentData::tickSlot(int slotid, const vector<Controller> &keys) {
 void PersistentData::renderSlot(int slotid) const {
   CHECK(slotid >= 0 && slotid < 4);
   const Slot &slt = slot[slotid];
- if(slt.type == Slot::CHOOSE) {
+  if(slt.type == Slot::CHOOSE) {
     StackString stp("choose");
     CHECK(slt.pid >= 0 && slt.pid < pms.size());
     setZoomCenter(0, 0, 1.1);
-    setColor(1.0, 1.0, 1.0);
-    runSettingRender(pms[slt.pid]);
     for(int i = 0; i < factions.size(); i++) {
       if(!factions[i].taken) {
         setColor(factions[i].faction->color);
@@ -531,6 +529,12 @@ void PersistentData::renderSlot(int slotid) const {
       txt.push_back("Choose");
       txt.push_back("your faction");
       drawJustifiedMultiText(txt, 0.08, Float2(0, 0), TEXT_CENTER, TEXT_CENTER);
+    }
+    if(pms[slt.pid].compasspos.x != 0 || pms[slt.pid].compasspos.y != 0) {
+      drawLine(pms[slt.pid].compasspos.x, pms[slt.pid].compasspos.y - 0.06, pms[slt.pid].compasspos.x, pms[slt.pid].compasspos.y - 0.02, 0.004);
+      drawLine(pms[slt.pid].compasspos.x, pms[slt.pid].compasspos.y + 0.06, pms[slt.pid].compasspos.x, pms[slt.pid].compasspos.y + 0.02, 0.004);
+      drawLine(pms[slt.pid].compasspos.x - 0.06, pms[slt.pid].compasspos.y, pms[slt.pid].compasspos.x - 0.02, pms[slt.pid].compasspos.y, 0.004);
+      drawLine(pms[slt.pid].compasspos.x + 0.06, pms[slt.pid].compasspos.y, pms[slt.pid].compasspos.x + 0.02, pms[slt.pid].compasspos.y, 0.004);
     }
   } else if(slt.type == Slot::SHOP) {
     StackString stp("Shop");
