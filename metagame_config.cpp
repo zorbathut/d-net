@@ -17,7 +17,7 @@ public:
   static const float divider_size;	// Division between tabs and content
   static const float units;
 
-  static const int textline_count = 8; // How many lines we're going to have
+  static const int textline_count = 16; // How many lines we're going to have
 
   // runtime constants
   Float4 drawzone;
