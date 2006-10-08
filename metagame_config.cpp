@@ -31,8 +31,12 @@ public:
   float textsize;
   float textborder;
 
+  float tab_top;
+  float tab_bottom;
+  float expansion_bottom;
+
   float aspect;
-    
+  
   RenderInfo() {
     aspect = 1.532563;
     
@@ -41,14 +45,18 @@ public:
     // runtime constants
     unitsize = drawzone.y_span() / units;
     border = unitsize * border_size;
-    xstart = drawzone.sx + unitsize * border_size;
-    xend = drawzone.ex - unitsize * border_size;
+    xstart = drawzone.sx + border;
+    xend = drawzone.ex - border;
     ystarts.resize(textline_count);
     ystarts[0] = drawzone.sy + unitsize * (border_size + top_border_extra_size);
     textsize = unitsize * textline_size;
     for(int i = 1; i < textline_count; i++)
       ystarts[i] = ystarts[0] + unitsize * (divider_size + i - 1) + textsize * i;
     textborder = textsize / textline_size;
+    
+    tab_top = drawzone.sy + unitsize * border_size;
+    tab_bottom = ystarts[0] + textsize + border;
+    expansion_bottom = ystarts[1] - border;
   }
 };
 
@@ -79,8 +87,6 @@ PlayerMenuState::PlayerMenuState() {
   
   faction = NULL;
   compasspos = Float2(0, 0);
-  
-  headingXOffset = 0;
 }
 
 PlayerMenuState::~PlayerMenuState() { }
@@ -412,18 +418,27 @@ GameAiAxisRotater::GameAiAxisRotater(const GameAiAxisRotater::Config &conf) {
   updateConfig(conf);
 }
 
-vector<float> choiceTopicXpos() {
-  vector<float> rv;
+vector<pair<float, float> > choiceTopicXpos(float sx, float ex, float textsize) {
+  vector<pair<float, float> > rv;
   float jtx = 0;
   for(int i = 0; i < SETTING_LAST; i++) {
-    if(i)
-      jtx += getTextWidth(setting_names[i], 1) / 2;
     
-    rv.push_back(jtx);
-    
-    jtx += getTextWidth(setting_names[i], 1) / 2;
-    jtx += 2;
+    float sps = jtx;
+    jtx += getTextWidth(setting_names[i], textsize);
+    rv.push_back(make_pair(sps, jtx));
+    jtx += textsize * 2;
   }
+  
+  float wid = rv.back().second;
+  if(wid > ex - sx)
+    dprintf("%f, %f\n", wid, ex - sx);
+  CHECK(wid <= ex - sx);
+  float shift = (ex - sx - wid) / 2 + sx;
+  for(int i = 0; i < rv.size(); i++) {
+    rv[i].first += shift;
+    rv[i].second += shift;
+  }
+  
   return rv;
 }
 
@@ -473,11 +488,6 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
     pms->fireHeld -= 1;
     if(pms->fireHeld < 0)
         pms->fireHeld = 0;
-    
-    {
-      vector<float> xpos = choiceTopicXpos();
-      pms->headingXOffset = approach(pms->headingXOffset, xpos[pms->settingmode], clamp(abs(pms->headingXOffset - xpos[pms->settingmode]) / 20, 0.02, 0.4));
-    }
     
     if(pms->choicemode == CHOICE_IDLE) {
       CHECK(pms->faction);
@@ -720,9 +730,6 @@ void runSettingRender(const PlayerMenuState &pms) {
   
   CHECK(abs((getAspect() / rin.aspect) - 1.0) < 0.0001);
   
-  setColor(Color(0.3, 0.3, 0.3));
-  drawLine(Float4(rin.drawzone.sx, (rin.ystarts[0] + rin.textsize + rin.ystarts[1]) / 2, rin.drawzone.ex, (rin.ystarts[0] + rin.textsize + rin.ystarts[1]) / 2), 0.003);
-  
   {
     // Topic line!
     setColor(pms.faction->faction->color);
@@ -730,29 +737,23 @@ void runSettingRender(const PlayerMenuState &pms) {
 
     float txstart = rin.xstart + rin.textsize + rin.border * 2;
 
-    if(pms.choicemode == CHOICE_FIRSTPASS) {
-      setColor(C::active_text);
-      drawJustifiedText(setting_names_detailed[pms.settingmode], rin.textsize, Float2((rin.drawzone.sx + rin.drawzone.ex) / 2, rin.ystarts[0]), TEXT_CENTER, TEXT_MIN);
-    } else {
-      setColor(C::active_text);
-      if(pms.choicemode == CHOICE_IDLE) {
-        if(pms.settingmode > 0)
-          drawJustifiedText("<", rin.textsize, Float2(txstart, rin.ystarts[0]), TEXT_MIN, TEXT_MIN);
-        if(pms.settingmode < SETTING_LAST - 1)
-          drawJustifiedText(">", rin.textsize, Float2(rin.xend, rin.ystarts[0]), TEXT_MAX, TEXT_MIN);
-      }
-      
-      GfxWindow gfxw(Float4(txstart + rin.textsize, rin.ystarts[0] - rin.textsize, rin.xend - rin.textsize, rin.ystarts[0] + rin.textsize * 2), 1.0);
-      setZoomCenter(pms.headingXOffset, 0, 3. / 2);
-      
-      vector<float> xpos = choiceTopicXpos();
-      
-      for(int i = 0; i < SETTING_LAST; i++) {
-        setColor(((i == pms.settingmode && pms.choicemode == CHOICE_IDLE) ? C::active_text : C::inactive_text));
-        drawJustifiedText(setting_names[i], 1, Float2(xpos[i], 0), TEXT_CENTER, TEXT_CENTER);
-      }
+    vector<pair<float, float> > xpos = choiceTopicXpos(txstart, rin.xend, rin.textsize);
+    for(int i = 0; i < SETTING_LAST; i++) {
+      setColor(((i == pms.settingmode && pms.choicemode == CHOICE_IDLE) ? C::active_text : C::inactive_text));
+      drawText(setting_names[i], rin.textsize, Float2(xpos[i].first, rin.ystarts[0]));
     }
     
+    setColor(C::active_text);
+    // left to right
+    const float thick = 0.003;
+    vector<Float2> path;
+    path.push_back(Float2(0, rin.expansion_bottom));
+    path.push_back(Float2(xpos[pms.settingmode].first - rin.border, rin.tab_bottom));
+    path.push_back(Float2(xpos[pms.settingmode].first - rin.border, rin.tab_top));
+    path.push_back(Float2(xpos[pms.settingmode].second + rin.border, rin.tab_top));
+    path.push_back(Float2(xpos[pms.settingmode].second + rin.border, rin.tab_bottom));
+    path.push_back(Float2(rin.aspect, rin.expansion_bottom));
+    drawLinePath(path, thick);
   }
   
   if(pms.settingmode == SETTING_BUTTONS) {
