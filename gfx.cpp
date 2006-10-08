@@ -477,16 +477,25 @@ void drawLine(const Coord4 &loc, float weight) {
 }
 
 void drawSolid(const Float4 &box) {
-  CHECK(box.isNormalized());
+  PoolObj<vector<Float2> > bochs;
+  bochs->push_back(Float2(box.sx, box.sy));
+  bochs->push_back(Float2(box.sx, box.ey));
+  bochs->push_back(Float2(box.ex, box.ey));
+  bochs->push_back(Float2(box.ex, box.sy));
+  drawSolidLoop(*bochs);
+}
+
+void drawSolidLoop(const vector<Float2> &verts) {
+  for(int i = 0; i < verts.size(); i++)
+    CHECK(inPath((verts[i] + verts[(i + 1) % verts.size()] + verts[(i + 2) % verts.size()]) / 3, verts));
+  
   finishLineCluster();
   CHECK(glGetError() == GL_NO_ERROR);
   glColor3f(clearcolor.r, clearcolor.g, clearcolor.b);
   glBlendFunc(GL_ONE, GL_ZERO);
-  glBegin(GL_TRIANGLE_STRIP);
-  localVertex2f(box.sx, box.sy);
-  localVertex2f(box.sx, box.ey);
-  localVertex2f(box.ex, box.sy);
-  localVertex2f(box.ex, box.ey);
+  glBegin(GL_TRIANGLE_FAN);
+  for(int i = 0; i < verts.size(); i++)
+    localVertex2f(verts[i].x, verts[i].y);
   glEnd();
   glBlendFunc(GL_SRC_ALPHA, GL_ONE);
   CHECK(glGetError() == GL_NO_ERROR);

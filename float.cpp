@@ -15,7 +15,10 @@ public:
   static float atan2(float a, float b) { return ::atan2(a, b); }
   static float sin(float a) { return fsin(a); };
   static float cos(float a) { return fcos(a); };
+  
+  static const float tPI;
 };
+const float Floats::tPI = PI;
 
 /*************
  * Computational geometry
@@ -32,6 +35,10 @@ int whichSide(const Float4 &f4, const Float2 &pta) { return imp_whichSide<Floats
 pair<Float2, float> fitInside(const Float4 &objbounds, const Float4 &goalbounds) { return imp_fitInside<Floats>(objbounds, goalbounds); }
 
 Float2 getCentroid(const vector<Float2> &are) { return imp_getCentroid<Floats>(are); }
+
+int inPath(const Float2 &point, const vector<Float2> &path) {
+  return imp_inPath<Floats>(point, path);
+};
 
 /*************
  * Bounding box

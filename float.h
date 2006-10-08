@@ -192,6 +192,8 @@ pair<Float2, float> fitInside(const Float4 &objbounds, const Float4 &goalbounds)
 
 Float2 getCentroid(const vector<Float2> &are);
 
+int inPath(const Float2 &point, const vector<Float2> &path);
+
 /*************
  * Bounding box
  */

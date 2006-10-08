@@ -4,6 +4,7 @@
 #include "composite-imp.h"
 #include "float.h"
 #include "util.h"
+#include "const.h"
 
 using namespace std;
 
@@ -16,7 +17,10 @@ public:
   static Coord atan2(Coord a, Coord b) { return Coord(float(::atan2(a.toFloat(), b.toFloat()))); }
   static Coord sin(Coord a) { return cfsin(a); };
   static Coord cos(Coord a) { return cfcos(a); };
+  
+  static const Coord tPI;
 };
+const Coord Coords::tPI = COORDPI;
 
 string Coord::rawstr() const {
   return StringPrintf("%08x%08x", (unsigned int)(d >> 32), (unsigned int)d);
@@ -70,33 +74,7 @@ Coord distanceFromLine(const Coord4 &line, const Coord2 &pt) {
 }
 
 int inPath(const Coord2 &point, const vector<Coord2> &path) {
-  CHECK(path.size());
-  Coord accum = 0;
-  Coord cpt = getAngle(path.back() - point);
-  for(int i = 0; i < path.size(); i++) {
-    Coord npt = getAngle(path[i] - point);
-    //dprintf("%f to %f, %f\n", cpt.toFloat(), npt.toFloat(), (npt-cpt).toFloat());
-    Coord diff = npt - cpt;
-    if(diff < -COORDPI)
-      diff += COORDPI * 2;
-    if(diff > COORDPI)
-      diff -= COORDPI * 2;
-    accum += diff;
-    cpt = npt;
-  }
-  accum /= COORDPI * 2;
-  int solidval = 1;
-  if(accum < 0) {
-    accum = -accum;
-    solidval = -1;
-  }
-  if(accum < Coord(0.5f)) {
-    CHECK(accum < Coord(0.0001f));
-    return 0;
-  } else {
-    CHECK(accum > Coord(0.9999f) && accum < Coord(1.0001f));
-    return solidval;
-  }
+  return imp_inPath<Coords>(point, path);
 };
 
 bool roughInPath(const Coord2 &point, const vector<Coord2> &path, int goal) {

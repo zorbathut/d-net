@@ -12,6 +12,7 @@ using namespace std;
 #define Type1 typename T::T1
 #define Type2 typename T::T2
 #define Type4 typename T::T4
+#define TPI T::tPI
 
 /*************
  * Angles
@@ -146,5 +147,35 @@ template <typename T> Type2 imp_getCentroid(const vector<Type2> &are) {
   centroid /= 6 * imp_getArea<T>(are);
   return centroid;
 }
+
+template <typename T> int imp_inPath(const Type2 &point, const vector<Type2> &path) {
+  CHECK(path.size());
+  Type1 accum = 0;
+  Type1 cpt = imp_getAngle<T>(path.back() - point);
+  for(int i = 0; i < path.size(); i++) {
+    Type1 npt = imp_getAngle<T>(path[i] - point);
+    //dprintf("%f to %f, %f\n", cpt.toFloat(), npt.toFloat(), (npt-cpt).toFloat());
+    Type1 diff = npt - cpt;
+    if(diff < -TPI)
+      diff += TPI * 2;
+    if(diff > TPI)
+      diff -= TPI * 2;
+    accum += diff;
+    cpt = npt;
+  }
+  accum /= TPI * 2;
+  int solidval = 1;
+  if(accum < 0) {
+    accum = -accum;
+    solidval = -1;
+  }
+  if(accum < Type1(0.5f)) {
+    CHECK(accum < Type1(0.0001f));
+    return 0;
+  } else {
+    CHECK(accum > Type1(0.9999f) && accum < Type1(1.0001f));
+    return solidval;
+  }
+};
 
 #endif
