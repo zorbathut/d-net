@@ -76,10 +76,7 @@ PlayerMenuState::PlayerMenuState() {
   choicemode = CHOICE_FIRSTPASS;
   
   setting_button_current = -1;
-  setting_button_reading = true;
-  
   setting_axis_current = -1;
-  setting_axis_reading = true;
   
   setting_axistype = -1;
   setting_axistype_curchoice = 0;
@@ -149,14 +146,16 @@ struct StandardButtonTickData {
   vector<char> *outinvert;
   
   int *current_button;
-  bool *current_mode;
+  ReadMode *current_mode;
+
+  bool require_trigger;
+  int accept_button;
+  int cancel_button;
   
   const int *groups;
   
   Controller keys;
   const vector<float> *triggers;
-  
-  PlayerMenuState *pms;
 };
 
 struct StandardButtonRenderData {
@@ -174,89 +173,109 @@ struct StandardButtonRenderData {
   char prefixchar;
 };
 
-void standardButtonTick(StandardButtonTickData *sbtd) {
-  StackString sstr("standardButtonTick");
-  if(*sbtd->current_button == -1) {
-    *sbtd->current_button = 0;
-    *sbtd->current_mode = (sbtd->pms->choicemode == CHOICE_FIRSTPASS || sbtd->pms->choicemode == CHOICE_REAXIS);
+bool changeButtons(vector<int> *buttons, vector<char> *inversions, const int *groups, int choice, int button, bool inverted) {
+  // Step 1: If this button has been chosen somewhere else, and we're not choosing this button for the first time, swap 'em (TODO: go back?)
+  for(int j = 0; j < buttons->size(); j++) {
+    if(groups[j] != groups[choice])
+      continue;
+    if((*buttons)[j] == button) {
+      if((*buttons)[choice] == -1) {
+        return false;
+      } else {
+        swap((*buttons)[j], (*buttons)[choice]);
+        if(inversions) {
+          swap((*inversions)[j], (*inversions)[choice]);
+          (*inversions)[choice] = inverted;
+        }
+        return true;
+      }
+      CHECK(0);
+    }
   }
-  CHECK(*sbtd->current_button >= 0 && *sbtd->current_button < sbtd->outkeys->size());
-  if(*sbtd->current_mode) {
-    CHECK(sbtd->pms->choicemode != CHOICE_IDLE);
-    for(int i = 0; i < sbtd->triggers->size(); i++) {
-      if(abs((*sbtd->triggers)[i]) > 0.9) {
-        int j;
-        bool noopify = false;
-        
-        // Step 1: If this button has been chosen somewhere else, and
-        // we're not choosing this button for the first time, swap 'em (TODO: go back?)
-        for(j = 0; j < sbtd->outkeys->size(); j++) {
-          if(sbtd->groups[j] != sbtd->groups[*sbtd->current_button])
-            continue;
-          if((*sbtd->outkeys)[j] == i) {
-            if((*sbtd->outkeys)[*sbtd->current_button] != -1) {
-              swap((*sbtd->outkeys)[j], (*sbtd->outkeys)[*sbtd->current_button]);
-              if(sbtd->outinvert) {
-                swap((*sbtd->outinvert)[j], (*sbtd->outinvert)[*sbtd->current_button]);
-                (*sbtd->outinvert)[*sbtd->current_button] = ((*sbtd->triggers)[i] < 0);
-              }
-            } else {
-              // If we *are* choosing this button for the first time, cancel everything.
-              noopify = true;
-            }
-            break;
+  
+  // If we got to this point, our button is being chosen for the first time.
+  (*buttons)[choice] = button;
+  if(inversions)
+    (*inversions)[choice] = inverted;
+  
+  return true;
+}
+
+bool standardButtonTick(StandardButtonTickData *sbtd) {
+  StackString sstr("standardButtonTick");
+  CHECK(sbtd->outkeys);
+  CHECK(sbtd->outkeys->size());
+  if(sbtd->outinvert)
+    CHECK(sbtd->outkeys->size() == sbtd->outinvert->size());
+  if(*sbtd->current_button == -1) {
+    if((*sbtd->outkeys)[0] == -1) {
+      *sbtd->current_mode = RM_SHUNTING;
+    } else {
+      *sbtd->current_mode = RM_IDLE;
+    }
+    *sbtd->current_button = 0;
+  }
+  CHECK(*sbtd->current_button >= 0 && *sbtd->current_button <= sbtd->outkeys->size());
+  if(*sbtd->current_mode != RM_IDLE) {
+    StackString sstr("rmidle");
+    for(int i = 0; i < sbtd->triggers->size(); i++) { // For each input button . . .
+      if(abs((*sbtd->triggers)[i]) > 0.9) { // If button was pushed . . .
+        if(changeButtons(sbtd->outkeys, sbtd->outinvert, sbtd->groups, *sbtd->current_button, i, (*sbtd->triggers)[i] < 0)) { // If button successfully changed . . .
+          if(*sbtd->current_mode == RM_SHUNTING) {
+            (*sbtd->current_button)++;
+          } else if(*sbtd->current_button == RM_CHOOSING) {
+            *sbtd->current_button = RM_IDLE;
+          } else {
+            CHECK(0);
           }
+          break;
         }
-        if(noopify)
-          continue;
-        
-        // If that wasn't true, then our button is being chosen for the first time.
-        if(j == sbtd->outkeys->size()) {
-          (*sbtd->outkeys)[*sbtd->current_button] = i;
-          if(sbtd->outinvert)
-            (*sbtd->outinvert)[*sbtd->current_button] = ((*sbtd->triggers)[i] < 0);
-        }
-        
-        if(sbtd->pms->choicemode == CHOICE_FIRSTPASS || sbtd->pms->choicemode == CHOICE_REAXIS) {
-          (*sbtd->current_button)++;
-        } else {
-          *sbtd->current_mode = false;
-        }
-        break;
       }
     }
-    if(*sbtd->current_button == sbtd->outkeys->size()) {
-      dprintf("Done with pass\n");
-      dprintf("%d, %d\n", (*sbtd->outkeys)[0], (*sbtd->outkeys)[1]);
-      // Done with the first pass here - this can only happen if the choice if FIRSTPASS
-      CHECK(sbtd->pms->choicemode == CHOICE_FIRSTPASS || sbtd->pms->choicemode == CHOICE_REAXIS);
-      sbtd->pms->settingmode++;
-      (*sbtd->current_button) = -1;
-    }
   } else {
-    CHECK(sbtd->pms->choicemode == CHOICE_ACTIVE);
+    StackString sstr("notidle");
     if(sbtd->keys.u.repeat)
       (*sbtd->current_button)--;
     if(sbtd->keys.d.repeat)
       (*sbtd->current_button)++;
-    if(*sbtd->current_button >= (int)sbtd->outkeys->size())
-      *sbtd->current_button = sbtd->outkeys->size() - 1;
-    // We accept anything for this (besides cancel) because the user might not know what their accept button is at the moment
-    // Maybe add a "done" button at the bottom?
-    bool somethingpushed = false;
-    for(int i = 0; i < sbtd->keys.keys.size(); i++) {
-      if(i == sbtd->pms->buttons[BUTTON_CANCEL])
-        continue;
-      if(sbtd->keys.keys[i].push)
-        somethingpushed = true;
+    *sbtd->current_button = modurot(*sbtd->current_button, sbtd->outkeys->size() + 1);
+    
+    if(*sbtd->current_button == sbtd->outkeys->size()) {
+      if(sbtd->keys.keys[sbtd->accept_button].push) {
+        *sbtd->current_button = -1;
+        return true;
+      }
     }
-    if(somethingpushed) {
-      (*sbtd->current_mode) = true;
-    } else if(sbtd->keys.keys[sbtd->pms->buttons[BUTTON_CANCEL]].push || (*sbtd->current_button) == -1) {
-      sbtd->pms->choicemode = CHOICE_IDLE;
-      (*sbtd->current_button) = -1;
+    
+    if(sbtd->require_trigger) {
+      // We accept anything for this (besides cancel) because the user might not know what their accept button is at the moment
+      bool somethingpushed = false;
+      for(int i = 0; i < sbtd->keys.keys.size(); i++) {
+        if(i == sbtd->cancel_button)
+          continue;
+        if(sbtd->keys.keys[i].push)
+          somethingpushed = true;
+      }
+      if(somethingpushed) {
+        (*sbtd->current_mode) = RM_CHOOSING;
+      } else if(sbtd->keys.keys[sbtd->cancel_button].push) {
+        *sbtd->current_button = -1;
+        return true;
+      }
+    } else {
+      for(int i = 0; i < sbtd->triggers->size(); i++) {
+        if(abs((*sbtd->triggers)[i]) > 0.9) {
+          changeButtons(sbtd->outkeys, sbtd->outinvert, sbtd->groups, *sbtd->current_button, i, (*sbtd->triggers)[i] < 0);
+        }
+      }
     }
   }
+  
+  if(*sbtd->current_button == sbtd->outkeys->size()) {
+    *sbtd->current_mode = RM_IDLE;
+  }
+  
+  return false;
 }
 
 void standardButtonRender(const StandardButtonRenderData &sbrd) {
@@ -523,10 +542,12 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
       sbtd.outinvert = NULL;
       sbtd.current_button = &pms->setting_button_current;
       sbtd.current_mode = &pms->setting_button_reading;
+      sbtd.require_trigger = false;
+      sbtd.accept_button = pms->buttons[BUTTON_ACCEPT];
+      sbtd.cancel_button = pms->buttons[BUTTON_CANCEL];
       sbtd.groups = button_groups;
       sbtd.keys = keys;
       sbtd.triggers = &triggers;
-      sbtd.pms = pms;
       
       standardButtonTick(&sbtd);
     } else if(pms->settingmode == SETTING_AXISTYPE && pms->setting_axistype_demo_curframe == -1) {
@@ -589,15 +610,18 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
       for(int i = 0; i < keys.axes.size(); i++)
         triggers.push_back(keys.axes[i]);
       
+      
       StandardButtonTickData sbtd;      
       sbtd.outkeys = &pms->axes;
       sbtd.outinvert = &pms->axes_invert;
       sbtd.current_button = &pms->setting_axis_current;
       sbtd.current_mode = &pms->setting_axis_reading;
+      sbtd.require_trigger = true;
+      sbtd.accept_button = pms->buttons[BUTTON_ACCEPT];
+      sbtd.cancel_button = pms->buttons[BUTTON_CANCEL];
       sbtd.groups = axis_groups;
       sbtd.keys = keys;
       sbtd.triggers = &triggers;
-      sbtd.pms = pms;
       
       standardButtonTick(&sbtd);
     } else if(pms->settingmode == SETTING_TEST) {

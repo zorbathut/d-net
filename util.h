@@ -182,4 +182,10 @@ public:
   }
 };
 
+/*************
+ * Misc
+ */
+
+int modurot(int val, int mod);
+
 #endif

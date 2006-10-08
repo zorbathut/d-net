@@ -61,6 +61,7 @@ const char * const setting_names[] = { "Keys", "Mode", "Directions", "Test", "Re
 
 enum { CHOICE_FIRSTPASS, CHOICE_REAXIS, CHOICE_ACTIVE, CHOICE_IDLE };
 
+enum ReadMode { RM_IDLE, RM_CHOOSING, RM_SHUNTING };
 struct PlayerMenuState {
 public:
   Float2 compasspos;
@@ -70,11 +71,11 @@ public:
   int choicemode;
 
   int setting_button_current;
-  bool setting_button_reading;
+  ReadMode setting_button_reading;
   vector<int> buttons;
 
   int setting_axis_current;
-  bool setting_axis_reading;
+  ReadMode setting_axis_reading;
   vector<int> axes;
   vector<char> axes_invert;
 

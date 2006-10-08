@@ -240,3 +240,12 @@ Money moneyFromString(const string &rhs) {
   return Money(atoi(rhs.c_str()));
 }
 
+/*************
+ * Misc
+ */
+
+int modurot(int val, int mod) {
+  if(val < 0)
+    val += abs(val) / mod * mod + mod;
+  return val % mod;
+}
