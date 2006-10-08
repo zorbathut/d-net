@@ -59,3 +59,23 @@
   - dnd compression
 
 http://www.itchstudios.com/psg/ - Dafred's artist
+
+-- how the fuck is this going to work
+Buttons
+	A
+	B
+	X
+	Y
+Control mode
+	Steering
+		(demo)
+	Absolute
+		(demo)
+	Tank
+		(demo)
+* axes
+	Blah
+	Baz
+Test
+	actual test
+Done

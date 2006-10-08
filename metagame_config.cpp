@@ -14,6 +14,7 @@ public:
   // Basic math!
   static const float textline_size;  // How many times larger a line of text is than its divider
   static const float border_size;
+  static const float top_border_extra_size;
   static const float divider_size;	// Division between tabs and content
   static const float units;
 
@@ -43,19 +44,20 @@ public:
     xstart = drawzone.sx + unitsize * border_size;
     xend = drawzone.ex - unitsize * border_size;
     ystarts.resize(textline_count);
-    ystarts[0] = drawzone.sy + unitsize * border_size;
+    ystarts[0] = drawzone.sy + unitsize * (border_size + top_border_extra_size);
     textsize = unitsize * textline_size;
     for(int i = 1; i < textline_count; i++)
-      ystarts[i] = drawzone.sy + unitsize * (border_size + divider_size + i - 1) + textsize * i;
+      ystarts[i] = ystarts[0] + unitsize * (divider_size + i - 1) + textsize * i;
     textborder = textsize / textline_size;
   }
 };
 
-// compiletime constants
+// compiletime constants. All values are in multiples of Divider.
 const float RenderInfo::textline_size = 3;  // How many times larger a line of text is than its divider
 const float RenderInfo::border_size = 1.5;
-const float RenderInfo::divider_size = 3;	// Division between tabs and content
-const float RenderInfo::units = textline_size * textline_count + textline_count - 1 + border_size * 2 + divider_size; // X lines, plus dividers (textline_count-1), plus the top and bottom borders, plus the increased divider from categories to data
+const float RenderInfo::top_border_extra_size = 1.5;
+const float RenderInfo::divider_size = 9;	// Division between tabs and content
+const float RenderInfo::units = textline_size * textline_count + textline_count - 1 + border_size * 2 + top_border_extra_size + divider_size; // X lines, plus dividers (textline_count-1), plus the top and bottom borders, plus the increased divider from categories to data
 
 PlayerMenuState::PlayerMenuState() {
   settingmode = SETTING_BUTTONS;
