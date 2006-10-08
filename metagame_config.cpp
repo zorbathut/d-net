@@ -19,6 +19,7 @@ public:
   static const float units;
 
   static const int textline_count = 16; // How many lines we're going to have
+  static const float linethick;
 
   // runtime constants
   Float4 drawzone;
@@ -40,7 +41,9 @@ public:
   RenderInfo() {
     aspect = 1.532563;
     
-    drawzone = Float4(0, 0, aspect, 1.0);     // maaaagic
+    const float roundaborder = 0.05;
+    
+    drawzone = Float4(roundaborder, roundaborder, aspect - roundaborder, 1.0 - roundaborder);     // maaaagic
 
     // runtime constants
     unitsize = drawzone.y_span() / units;
@@ -48,13 +51,13 @@ public:
     xstart = drawzone.sx + border;
     xend = drawzone.ex - border;
     ystarts.resize(textline_count);
-    ystarts[0] = drawzone.sy + unitsize * (border_size + top_border_extra_size);
+    ystarts[0] = drawzone.sy + unitsize * top_border_extra_size;
     textsize = unitsize * textline_size;
     for(int i = 1; i < textline_count; i++)
       ystarts[i] = ystarts[0] + unitsize * (divider_size + i - 1) + textsize * i;
     textborder = textsize / textline_size;
     
-    tab_top = drawzone.sy + unitsize * border_size;
+    tab_top = drawzone.sy;
     tab_bottom = ystarts[0] + textsize + border;
     expansion_bottom = ystarts[1] - border;
   }
@@ -64,8 +67,9 @@ public:
 const float RenderInfo::textline_size = 3;  // How many times larger a line of text is than its divider
 const float RenderInfo::border_size = 1.5;
 const float RenderInfo::top_border_extra_size = 1.5;
-const float RenderInfo::divider_size = 9;	// Division between tabs and content
-const float RenderInfo::units = textline_size * textline_count + textline_count - 1 + border_size * 2 + top_border_extra_size + divider_size; // X lines, plus dividers (textline_count-1), plus the top and bottom borders, plus the increased divider from categories to data
+const float RenderInfo::divider_size = 5;	// Division between tabs and content in dividers
+const float RenderInfo::units = textline_size * textline_count + textline_count - 1 + border_size + top_border_extra_size + divider_size; // X lines, plus dividers (textline_count-1), plus the top and bottom borders, plus the increased divider from categories to data
+const float RenderInfo::linethick = 0.003;
 
 PlayerMenuState::PlayerMenuState() {
   settingmode = SETTING_BUTTONS;
@@ -426,7 +430,7 @@ vector<pair<float, float> > choiceTopicXpos(float sx, float ex, float textsize) 
     float sps = jtx;
     jtx += getTextWidth(setting_names[i], textsize);
     rv.push_back(make_pair(sps, jtx));
-    jtx += textsize * 2;
+    jtx += textsize * 4;
   }
   
   float wid = rv.back().second;
@@ -732,10 +736,13 @@ void runSettingRender(const PlayerMenuState &pms) {
   
   {
     // Topic line!
+    /*
     setColor(pms.faction->faction->color);
     drawDvec2(pms.faction->faction->icon, Float4(rin.xstart, rin.ystarts[0], rin.xstart + rin.textsize, rin.ystarts[0] + rin.textsize), 50, 0.003);
 
-    float txstart = rin.xstart + rin.textsize + rin.border * 2;
+    float txstart = rin.xstart + rin.textsize + rin.border * 2;*/
+    
+    float txstart = rin.xstart;
 
     vector<pair<float, float> > xpos = choiceTopicXpos(txstart, rin.xend, rin.textsize);
     
@@ -744,32 +751,43 @@ void runSettingRender(const PlayerMenuState &pms) {
         if(abs(i - pms.settingmode) != dist)
           continue;
         
-        setColor(((i == pms.settingmode && pms.choicemode == CHOICE_IDLE) ? C::active_text : C::inactive_text));
-        
         // First, opacity for the bottom chunk
         {
           vector<Float2> path;
-          path.push_back(Float2(0, rin.expansion_bottom));
+          path.push_back(Float2(rin.drawzone.sx, rin.expansion_bottom));
           path.push_back(Float2(xpos[i].first - rin.border, rin.tab_bottom));
           path.push_back(Float2(xpos[i].second + rin.border, rin.tab_bottom));
-          path.push_back(Float2(rin.aspect, rin.expansion_bottom));
+          path.push_back(Float2(rin.drawzone.ex, rin.expansion_bottom));
           drawSolidLoop(path);
         }
+        
+        setColor(((i == pms.settingmode && pms.choicemode == CHOICE_IDLE) ? C::active_text : C::inactive_text));
         
         // Next, draw text
         drawText(setting_names[i], rin.textsize, Float2(xpos[i].first, rin.ystarts[0]));
         
+        setColor(i == pms.settingmode ? C::active_text : C::inactive_text);
+        
         // Now our actual path, left to right
-        const float thick = 0.003;
         vector<Float2> path;
-        path.push_back(Float2(0, rin.expansion_bottom));
+        path.push_back(Float2(rin.drawzone.sx, rin.expansion_bottom));
         path.push_back(Float2(xpos[i].first - rin.border, rin.tab_bottom));
         path.push_back(Float2(xpos[i].first - rin.border, rin.tab_top));
         path.push_back(Float2(xpos[i].second + rin.border, rin.tab_top));
         path.push_back(Float2(xpos[i].second + rin.border, rin.tab_bottom));
-        path.push_back(Float2(rin.aspect, rin.expansion_bottom));
-        drawLinePath(path, thick);
+        path.push_back(Float2(rin.drawzone.ex, rin.expansion_bottom));
+        drawLinePath(path, i == pms.settingmode ? rin.linethick : rin.linethick / 2);
       }
+    }
+    
+    setColor(C::active_text);
+    {
+      vector<Float2> path;
+      path.push_back(Float2(rin.drawzone.sx, rin.expansion_bottom));
+      path.push_back(Float2(rin.drawzone.sx, rin.drawzone.ey));
+      path.push_back(Float2(rin.drawzone.ex, rin.drawzone.ey));
+      path.push_back(Float2(rin.drawzone.ex, rin.expansion_bottom));
+      drawLinePath(path, rin.linethick);
     }
   }
   

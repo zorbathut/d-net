@@ -367,7 +367,7 @@ void PersistentData::render() const {
   if(slot_count == 1) {
     renderSlot(0);
   } else if(slot_count == 4) {
-    setColor(C::active_text);
+    setColor(C::inactive_text);
     
     if(slot[0].type != Slot::EMPTY || slot[1].type != Slot::EMPTY)
       drawLine(Float4(getAspect() / 2, 0, getAspect() / 2, 0.5), 0.001);
