@@ -346,8 +346,6 @@ bool roughInPath(const Coord2 &point, const vector<Coord2> &path, int goal);
 
 Coord2 getPointIn(const vector<Coord2> &path);
 
-bool pathReversed(const vector<Coord2> &path);
-
 enum { PR_SEPARATE, PR_INTERSECT, PR_LHSENCLOSE, PR_RHSENCLOSE };
 int getPathRelation(const vector<Coord2> &lhs, const vector<Coord2> &rhs);
 
@@ -358,6 +356,8 @@ Coord getArea(const vector<Coord2> &are);
 Coord2 getCentroid(const vector<Coord2> &are);
 Coord getPerimeter(const vector<Coord2> &are);
 Coord4 getBoundBox(const vector<Coord2> &are);
+
+bool pathReversed(const vector<Coord2> &path);
 
 bool colinear(const Coord4 &line, const Coord2 &pt);
 

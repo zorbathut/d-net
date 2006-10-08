@@ -738,22 +738,39 @@ void runSettingRender(const PlayerMenuState &pms) {
     float txstart = rin.xstart + rin.textsize + rin.border * 2;
 
     vector<pair<float, float> > xpos = choiceTopicXpos(txstart, rin.xend, rin.textsize);
-    for(int i = 0; i < SETTING_LAST; i++) {
-      setColor(((i == pms.settingmode && pms.choicemode == CHOICE_IDLE) ? C::active_text : C::inactive_text));
-      drawText(setting_names[i], rin.textsize, Float2(xpos[i].first, rin.ystarts[0]));
-    }
     
-    setColor(C::active_text);
-    // left to right
-    const float thick = 0.003;
-    vector<Float2> path;
-    path.push_back(Float2(0, rin.expansion_bottom));
-    path.push_back(Float2(xpos[pms.settingmode].first - rin.border, rin.tab_bottom));
-    path.push_back(Float2(xpos[pms.settingmode].first - rin.border, rin.tab_top));
-    path.push_back(Float2(xpos[pms.settingmode].second + rin.border, rin.tab_top));
-    path.push_back(Float2(xpos[pms.settingmode].second + rin.border, rin.tab_bottom));
-    path.push_back(Float2(rin.aspect, rin.expansion_bottom));
-    drawLinePath(path, thick);
+    for(int dist = xpos.size(); dist >= 0; --dist) {
+      for(int i = 0; i < xpos.size(); i++) {
+        if(abs(i - pms.settingmode) != dist)
+          continue;
+        
+        setColor(((i == pms.settingmode && pms.choicemode == CHOICE_IDLE) ? C::active_text : C::inactive_text));
+        
+        // First, opacity for the bottom chunk
+        {
+          vector<Float2> path;
+          path.push_back(Float2(xpos[i].first - rin.border, rin.tab_bottom));
+          path.push_back(Float2(xpos[i].first - rin.border, rin.tab_top));
+          path.push_back(Float2(xpos[i].second + rin.border, rin.tab_top));
+          path.push_back(Float2(xpos[i].second + rin.border, rin.tab_bottom));
+          drawSolidLoop(path);
+        }
+        
+        // Next, draw text
+        drawText(setting_names[i], rin.textsize, Float2(xpos[i].first, rin.ystarts[0]));
+        
+        // Now our actual path, left to rightleft to right
+        const float thick = 0.003;
+        vector<Float2> path;
+        path.push_back(Float2(0, rin.expansion_bottom));
+        path.push_back(Float2(xpos[i].first - rin.border, rin.tab_bottom));
+        path.push_back(Float2(xpos[i].first - rin.border, rin.tab_top));
+        path.push_back(Float2(xpos[i].second + rin.border, rin.tab_top));
+        path.push_back(Float2(xpos[i].second + rin.border, rin.tab_bottom));
+        path.push_back(Float2(rin.aspect, rin.expansion_bottom));
+        drawLinePath(path, thick);
+      }
+    }
   }
   
   if(pms.settingmode == SETTING_BUTTONS) {

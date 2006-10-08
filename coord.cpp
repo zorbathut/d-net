@@ -103,7 +103,7 @@ Coord2 getPointIn(const vector<Coord2> &path) {
 }
 
 bool pathReversed(const vector<Coord2> &path) {
-  return getArea(path) < 0;
+  return imp_pathReversed<Coords>(path);
 }
 
 int getPathRelation(const vector<Coord2> &lhs, const vector<Coord2> &rhs) {

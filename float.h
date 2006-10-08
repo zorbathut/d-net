@@ -194,6 +194,10 @@ Float2 getCentroid(const vector<Float2> &are);
 
 int inPath(const Float2 &point, const vector<Float2> &path);
 
+float getArea(const vector<Float2> &are);
+
+bool pathReversed(const vector<Float2> &path);
+
 /*************
  * Bounding box
  */

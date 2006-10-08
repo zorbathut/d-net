@@ -40,6 +40,14 @@ int inPath(const Float2 &point, const vector<Float2> &path) {
   return imp_inPath<Floats>(point, path);
 };
 
+bool pathReversed(const vector<Float2> &path) {
+  return imp_pathReversed<Floats>(path);
+}
+
+float getArea(const vector<Float2> &are) {
+  return imp_getArea<Floats>(are);
+}
+
 /*************
  * Bounding box
  */

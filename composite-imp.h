@@ -127,27 +127,6 @@ template <typename T> Type1 imp_linelineintersectpos(const Type4 &lhs, const Typ
   return imp_linelineintersectpos<T>(lhs.sx, lhs.sy, lhs.ex, lhs.ey, rhs.sx, rhs.sy, rhs.ex, rhs.ey);
 }
 
-
-template <typename T> Type1 imp_getArea(const vector<Type2> &are) {
-  Type1 totare = 0;
-  for(int i = 0; i < are.size(); i++) {
-    int j = (i + 1) % are.size();
-    totare += are[i].x * are[j].y - are[j].x * are[i].y;
-  }
-  totare /= 2;
-  return totare;
-}
-template <typename T> Type2 imp_getCentroid(const vector<Type2> &are) {
-  Type2 centroid(0, 0);
-  for(int i = 0; i < are.size(); i++) {
-    int j = (i + 1) % are.size();
-    Type1 common = (are[i].x * are[j].y - are[j].x * are[i].y);
-    centroid += (are[i] + are[j]) * common;
-  }
-  centroid /= 6 * imp_getArea<T>(are);
-  return centroid;
-}
-
 template <typename T> int imp_inPath(const Type2 &point, const vector<Type2> &path) {
   CHECK(path.size());
   Type1 accum = 0;
@@ -177,5 +156,31 @@ template <typename T> int imp_inPath(const Type2 &point, const vector<Type2> &pa
     return solidval;
   }
 };
+
+template <typename T> Type1 imp_getArea(const vector<Type2> &are) {
+  Type1 totare = 0;
+  for(int i = 0; i < are.size(); i++) {
+    int j = (i + 1) % are.size();
+    totare += are[i].x * are[j].y - are[j].x * are[i].y;
+  }
+  totare /= 2;
+  return totare;
+}
+
+template <typename T> Type2 imp_getCentroid(const vector<Type2> &are) {
+  Type2 centroid(0, 0);
+  for(int i = 0; i < are.size(); i++) {
+    int j = (i + 1) % are.size();
+    Type1 common = (are[i].x * are[j].y - are[j].x * are[i].y);
+    centroid += (are[i] + are[j]) * common;
+  }
+  centroid /= 6 * imp_getArea<T>(are);
+  return centroid;
+}
+
+template <typename T> bool imp_pathReversed(const vector<Type2> &path) {
+  return imp_getArea<T>(path) < 0;
+}
+
 
 #endif
