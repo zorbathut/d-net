@@ -749,17 +749,17 @@ void runSettingRender(const PlayerMenuState &pms) {
         // First, opacity for the bottom chunk
         {
           vector<Float2> path;
+          path.push_back(Float2(0, rin.expansion_bottom));
           path.push_back(Float2(xpos[i].first - rin.border, rin.tab_bottom));
-          path.push_back(Float2(xpos[i].first - rin.border, rin.tab_top));
-          path.push_back(Float2(xpos[i].second + rin.border, rin.tab_top));
           path.push_back(Float2(xpos[i].second + rin.border, rin.tab_bottom));
+          path.push_back(Float2(rin.aspect, rin.expansion_bottom));
           drawSolidLoop(path);
         }
         
         // Next, draw text
         drawText(setting_names[i], rin.textsize, Float2(xpos[i].first, rin.ystarts[0]));
         
-        // Now our actual path, left to rightleft to right
+        // Now our actual path, left to right
         const float thick = 0.003;
         vector<Float2> path;
         path.push_back(Float2(0, rin.expansion_bottom));

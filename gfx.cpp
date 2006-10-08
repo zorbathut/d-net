@@ -486,14 +486,6 @@ void drawSolid(const Float4 &box) {
 }
 
 void drawSolidLoop(const vector<Float2> &verts) {
-  if(!pathReversed(verts)) {
-    PoolObj<vector<Float2> > rev;
-    *rev = verts;
-    reverse(rev->begin(), rev->end());
-    drawSolidLoop(*rev);
-    return;
-  }
-    
   for(int i = 0; i < verts.size(); i++)
     CHECK(inPath((verts[i] + verts[(i + 1) % verts.size()] + verts[(i + 2) % verts.size()]) / 3, verts));
   
