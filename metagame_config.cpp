@@ -224,8 +224,8 @@ bool standardButtonTick(StandardButtonTickData *sbtd) {
         if(changeButtons(sbtd->outkeys, sbtd->outinvert, sbtd->groups, *sbtd->current_button, i, (*sbtd->triggers)[i] < 0)) { // If button successfully changed . . .
           if(*sbtd->current_mode == RM_SHUNTING) {
             (*sbtd->current_button)++;
-          } else if(*sbtd->current_button == RM_CHOOSING) {
-            *sbtd->current_button = RM_IDLE;
+          } else if(*sbtd->current_mode == RM_CHOOSING) {
+            *sbtd->current_mode = RM_IDLE;
           } else {
             CHECK(0);
           }
@@ -572,7 +572,15 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
       sbtd.keys = keys;
       sbtd.triggers = &triggers;
       
-      standardButtonTick(&sbtd);
+      if(standardButtonTick(&sbtd)) {
+        if(pms->choicemode == CHOICE_ACTIVE) {
+          pms->choicemode = CHOICE_IDLE;
+        } else if(pms->choicemode == CHOICE_FIRSTPASS) {
+          pms->settingmode++;
+        } else {
+          CHECK(0);
+        }
+      }
     } else if(pms->settingmode == SETTING_AXISTYPE && pms->setting_axistype_demo_curframe == -1) {
       bool closing = false;
       int lastaxis = pms->setting_axistype;
@@ -646,7 +654,15 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
       sbtd.keys = keys;
       sbtd.triggers = &triggers;
       
-      standardButtonTick(&sbtd);
+      if(standardButtonTick(&sbtd)) {
+        if(pms->choicemode == CHOICE_ACTIVE) {
+          pms->choicemode = CHOICE_IDLE;
+        } else if(pms->choicemode == CHOICE_FIRSTPASS || pms->choicemode == CHOICE_REAXIS) {
+          pms->settingmode++;
+        } else {
+          CHECK(0);
+        }
+      }
     } else if(pms->settingmode == SETTING_TEST) {
       if(keys.keys[pms->buttons[BUTTON_CANCEL]].push) {
         if(pms->choicemode == CHOICE_FIRSTPASS) {
