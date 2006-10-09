@@ -854,11 +854,6 @@ void runSettingRender(const PlayerMenuState &pms, const string &availdescr) {
     groups.push_back("Weapon buttons");
     groups.push_back("Menu buttons");
     
-    vector<string> text;
-    text.push_back("Select your button setup. Choose \"done\" when ready.");
-    if(availdescr.size())
-      text.push_back(availdescr);
-    
     StandardButtonRenderData sbrd;
     sbrd.rin = &rin;
     sbrd.buttons = &pms.buttons;
@@ -869,7 +864,9 @@ void runSettingRender(const PlayerMenuState &pms, const string &availdescr) {
     sbrd.sel_button = pms.setting_button_current;
     sbrd.sel_button_reading = pms.setting_button_reading;
     sbrd.prefix = "Key ";
-    sbrd.description = text;
+    sbrd.description.push_back("Select your button setup. Choose \"done\" when ready.");
+    if(availdescr.size())
+      sbrd.description.push_back(availdescr);
     
     standardButtonRender(sbrd);
   } else if(pms.settingmode == SETTING_AXISTYPE && pms.setting_axistype_demo_curframe == -1) {
@@ -996,6 +993,9 @@ void runSettingRender(const PlayerMenuState &pms, const string &availdescr) {
     sbrd.sel_button = pms.setting_axis_current;
     sbrd.sel_button_reading = pms.setting_axis_reading;
     sbrd.prefix = "Axis ";
+    sbrd.description.push_back("Configure your control directions. Select the entry,");
+    sbrd.description.push_back("then move your controller in the desired direction.");
+    sbrd.description.push_back("Choose \"done\" when ready.");
     
     standardButtonRender(sbrd);
   } else if(pms.settingmode == SETTING_TEST) {
