@@ -300,9 +300,10 @@ void standardButtonRender(const StandardButtonRenderData &sbrd) {
     if(sbrd.groupnames)
       linesneeded += grid.size();
   }
-  float xps = sbrd.rin->xstart;
+  float xps = sbrd.rin->xstart + sbrd.rin->textsize * 2;
+  float groupnamexps = xps;
   if(sbrd.groupnames)
-    xps += sbrd.rin->textsize * 2;
+    xps += sbrd.rin->textsize;
   CHECK(linesneeded <= sbrd.rin->ystarts.size() - 1 - sbrd.description.size());
   int scy = (sbrd.rin->ystarts.size() - linesneeded - sbrd.description.size() + 1) / 2;
   int cy = scy;
@@ -313,7 +314,7 @@ void standardButtonRender(const StandardButtonRenderData &sbrd) {
     if(sbrd.groupnames) {
       if(!i || sbrd.groups[i-1] != sbrd.groups[i])  {
         setColor(C::inactive_text);
-        drawText((*sbrd.groupnames)[sbrd.groups[i]], sbrd.rin->textsize, Float2(sbrd.rin->xstart, sbrd.rin->ystarts[cy++]));
+        drawText((*sbrd.groupnames)[sbrd.groups[i]], sbrd.rin->textsize, Float2(groupnamexps, sbrd.rin->ystarts[cy++]));
       }
     }
     if(sbrd.sel_button == i && !sbrd.sel_button_reading) {
@@ -339,7 +340,7 @@ void standardButtonRender(const StandardButtonRenderData &sbrd) {
       }
       setColor(C::inactive_text);
     }
-    drawJustifiedText(btext.c_str(), sbrd.rin->textsize, Float2(sbrd.rin->xend, sbrd.rin->ystarts[cy - 1]), TEXT_MAX, TEXT_MIN);
+    drawJustifiedText(btext.c_str(), sbrd.rin->textsize, Float2(sbrd.rin->xend - sbrd.rin->textsize * 2, sbrd.rin->ystarts[cy - 1]), TEXT_MAX, TEXT_MIN);
   }
   cy++;
   if(sbrd.sel_button == sbrd.names->size()) {
@@ -347,7 +348,7 @@ void standardButtonRender(const StandardButtonRenderData &sbrd) {
   } else {
     setColor(C::inactive_text);
   }
-  drawText("Done", sbrd.rin->textsize, Float2(sbrd.rin->xstart, sbrd.rin->ystarts[cy++]));
+  drawText("Done", sbrd.rin->textsize, Float2(groupnamexps, sbrd.rin->ystarts[cy++]));
   CHECK(cy == scy + linesneeded);
 
   setColor(C::inactive_text);
@@ -863,14 +864,14 @@ void runSettingRender(const PlayerMenuState &pms, const string &availdescr) {
     sbrd.groups = button_groups;
     sbrd.sel_button = pms.setting_button_current;
     sbrd.sel_button_reading = pms.setting_button_reading;
-    sbrd.prefix = "Key ";
+    sbrd.prefix = "Button ";
     sbrd.description.push_back("Select your button setup. Choose \"done\" when ready.");
     if(availdescr.size())
       sbrd.description.push_back(availdescr);
     
     standardButtonRender(sbrd);
   } else if(pms.settingmode == SETTING_AXISTYPE && pms.setting_axistype_demo_curframe == -1) {
-    int stopos = (rin.textline_count - 1 - KSAX_END * 2 - 2) / 2 + 1;
+    int stopos = (rin.textline_count - 1 - KSAX_END * 2 - 2 - 3) / 2 + 1;
     for(int i = 0; i < KSAX_END * 2 + 1; i++) {
       if(pms.choicemode != CHOICE_IDLE && pms.setting_axistype_curchoice == i)
         setColor(C::active_text);
@@ -885,10 +886,16 @@ void runSettingRender(const PlayerMenuState &pms, const string &availdescr) {
         drawText("(demo)", rin.textsize, Float2(rin.xstart + rin.textsize * 3, rin.ystarts[i + stopos]));
     }
     
+    
     if(pms.setting_axistype != -1) {
       setColor(C::active_text);
       drawText(">", rin.textsize, Float2(rin.xstart, rin.ystarts[pms.setting_axistype * 2 + stopos]));
     }
+    
+    setColor(C::inactive_text);
+    drawJustifiedText("Choose your tank control mode. Choose \"done\" when", rin.textsize, Float2((rin.xstart + rin.xend) / 2, rin.ystarts[rin.ystarts.size() - 3]), TEXT_CENTER, TEXT_MIN);
+    drawJustifiedText("ready. Choose \"demo\" for a demonstration of that", rin.textsize, Float2((rin.xstart + rin.xend) / 2, rin.ystarts[rin.ystarts.size() - 2]), TEXT_CENTER, TEXT_MIN);
+    drawJustifiedText("mode. If you're unsure, \"Steering\" is recommended.", rin.textsize, Float2((rin.xstart + rin.xend) / 2, rin.ystarts[rin.ystarts.size() - 1]), TEXT_CENTER, TEXT_MIN);
   } else if(pms.settingmode == SETTING_AXISTYPE && pms.setting_axistype_demo_curframe != -1) {
     
     const float demowindowwidth = rin.ystarts[6] - rin.ystarts[1] + rin.textsize;
