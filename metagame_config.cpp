@@ -165,6 +165,7 @@ struct StandardButtonRenderData {
   const vector<char> *inverts;
   
   const vector<vector<string> > *names;
+  const vector<string> *groupnames;
   const int *groups;
   
   int sel_button;
@@ -284,32 +285,47 @@ void standardButtonRender(const StandardButtonRenderData &sbrd) {
   CHECK(sbrd.buttons);
   CHECK(sbrd.names);
   CHECK(sbrd.groups);
-  int linesneeded = 0;
+  int linesneeded = 2;
   for(int i = 0; i < sbrd.names->size(); i++)
     linesneeded += (*sbrd.names)[i].size();
+  
   {
     set<int> grid(sbrd.groups, sbrd.groups + sbrd.buttons->size());
     assert(grid.size() > 0);
     linesneeded += grid.size() - 1;
+    
     vector<int> grod(sbrd.groups, sbrd.groups + sbrd.buttons->size());
     grod.erase(unique(grod.begin(), grod.end()), grod.end());
     CHECK(grod.size() == grid.size());
+    
+    if(sbrd.groupnames)
+      linesneeded += grid.size();
   }
+  float xps = sbrd.rin->xstart;
+  if(sbrd.groupnames)
+    xps += sbrd.rin->textsize * 2;
   CHECK(linesneeded <= sbrd.rin->ystarts.size() - 1);
-  int cy = (sbrd.rin->ystarts.size() - linesneeded + 1) / 2;
+  int scy = (sbrd.rin->ystarts.size() - linesneeded + 1) / 2;
+  int cy = scy;
   CHECK(cy + linesneeded <= sbrd.rin->ystarts.size());
-  for(int i = 0; i < (*sbrd.names).size(); i++) {
+  for(int i = 0; i < (*sbrd.names).size(); i++) {\
+    if(i && sbrd.groups[i-1] != sbrd.groups[i])
+      cy++;
+    if(sbrd.groupnames) {
+      if(!i || sbrd.groups[i-1] != sbrd.groups[i])  {
+        setColor(C::inactive_text);
+        drawText((*sbrd.groupnames)[sbrd.groups[i]], sbrd.rin->textsize, Float2(sbrd.rin->xstart, sbrd.rin->ystarts[cy++]));
+      }
+    }
     if(sbrd.sel_button == i && !sbrd.sel_button_reading) {
       setColor(C::active_text);
     } else {
       setColor(C::inactive_text);
     }
-    if(i && sbrd.groups[i-1] != sbrd.groups[i])
-      cy++;
     CHECK(i < sbrd.names->size());
     CHECK(cy < sbrd.rin->ystarts.size());
     for(int j = 0; j < (*sbrd.names)[i].size(); j++)
-      drawText((*sbrd.names)[i][j], sbrd.rin->textsize, Float2(sbrd.rin->xstart, sbrd.rin->ystarts[cy++]));
+      drawText((*sbrd.names)[i][j], sbrd.rin->textsize, Float2(xps, sbrd.rin->ystarts[cy++]));
     string btext;
     if(sbrd.sel_button == i && sbrd.sel_button_reading) {
       btext = "?";
@@ -330,7 +346,14 @@ void standardButtonRender(const StandardButtonRenderData &sbrd) {
     }
     drawJustifiedText(btext.c_str(), sbrd.rin->textsize, Float2(sbrd.rin->xend, sbrd.rin->ystarts[cy - 1]), TEXT_MAX, TEXT_MIN);
   }
-  CHECK(cy <= sbrd.rin->ystarts.size());
+  cy++;
+  if(sbrd.sel_button == sbrd.names->size()) {
+    setColor(C::active_text);
+  } else {
+    setColor(C::inactive_text);
+  }
+  drawText("Done", sbrd.rin->textsize, Float2(sbrd.rin->xstart, sbrd.rin->ystarts[cy++]));
+  CHECK(cy == scy + linesneeded);
 }
 
 float GameAiAxisRotater::Randomater::next() {
@@ -823,11 +846,16 @@ void runSettingRender(const PlayerMenuState &pms) {
       names.push_back(tix);
     }
     
+    vector<string> groups;
+    groups.push_back("Weapon buttons");
+    groups.push_back("Menu buttons");
+    
     StandardButtonRenderData sbrd;
     sbrd.rin = &rin;
     sbrd.buttons = &pms.buttons;
     sbrd.inverts = NULL;
     sbrd.names = &names;
+    sbrd.groupnames = &groups;
     sbrd.groups = button_groups;
     sbrd.sel_button = pms.setting_button_current;
     sbrd.sel_button_reading = pms.setting_button_reading;
@@ -950,6 +978,7 @@ void runSettingRender(const PlayerMenuState &pms) {
     sbrd.buttons = &pms.axes;
     sbrd.inverts = &pms.axes_invert;
     sbrd.names = &ksax_axis_names[pms.setting_axistype];
+    sbrd.groupnames = NULL;
     sbrd.groups = axis_groups;
     sbrd.sel_button = pms.setting_axis_current;
     sbrd.sel_button_reading = pms.setting_axis_reading;
