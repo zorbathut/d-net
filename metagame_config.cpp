@@ -786,11 +786,11 @@ void runSettingRender(const PlayerMenuState &pms) {
   
   {
     // Topic line!
-    /*
-    setColor(pms.faction->faction->color);
-    drawDvec2(pms.faction->faction->icon, Float4(rin.xstart, rin.ystarts[0], rin.xstart + rin.textsize, rin.ystarts[0] + rin.textsize), 50, 0.003);
-
-    float txstart = rin.xstart + rin.textsize + rin.border * 2;*/
+    
+    CHECK(pms.faction);
+    CHECK(pms.faction->faction);
+    setColor(pms.faction->faction->color * 0.2);
+    drawDvec2(pms.faction->faction->icon, squareInside(Float4(rin.xstart, rin.ystarts[2], rin.xend, rin.ystarts[rin.textline_count - 1])), 20, 0.01);
     
     float txstart = rin.xstart;
 
