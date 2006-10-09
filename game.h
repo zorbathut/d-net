@@ -88,8 +88,10 @@ private:
   
   int gamemode;
   
+  Float4 clear;
+  
   vector<int> demomode_playermodes;
-  float demomode_boxradi; // used for the clearscreen and font sizes
+  float demomode_boxradi; // used for font sizes
   
   float centereddemo_zoom;
   

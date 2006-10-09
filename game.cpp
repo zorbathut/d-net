@@ -537,9 +537,9 @@ void Game::renderToScreen(const vector<const Player *> &players) const {
       drawGrid(10, 0.1);
     }
     
-    // In demo mode, clear the background
-    if(gamemode == GMODE_DEMO) {
-      drawSolid(Float4(-demomode_boxradi, -demomode_boxradi, demomode_boxradi, demomode_boxradi));
+    // In most modes, clear the background
+    if(gamemode == GMODE_DEMO || gamemode == GMODE_CENTERED_DEMO || gamemode == GMODE_TEST) {
+      drawSolid(clear);
     }
     
     // Tanks
@@ -1054,6 +1054,8 @@ void Game::initTest(Player *in_playerdata, const Float4 &bounds) {
   vector<Player*> playerdata;
   playerdata.push_back(in_playerdata);
   initCommon(playerdata, lev);
+  
+  clear = bounds;
 }
 
 void Game::initDemo(vector<Player> *in_playerdata, float boxradi, const float *xps, const float *yps, const float *facing, const int *modes) {
@@ -1098,6 +1100,8 @@ void Game::initDemo(vector<Player> *in_playerdata, float boxradi, const float *x
   }
   
   demomode_boxradi = boxradi;
+  
+  clear = Float4(-boxradi, -boxradi, boxradi, boxradi);
 }
 
 void Game::initCenteredDemo(Player *in_playerdata, float zoom) {
@@ -1114,6 +1118,8 @@ void Game::initCenteredDemo(Player *in_playerdata, float zoom) {
     path.push_back(Coord2(size, size));
     path.push_back(Coord2(size, -size));
     lev.paths.push_back(path);
+    
+    clear = Float4(-size, -size, size, size);
   }
   
   {
