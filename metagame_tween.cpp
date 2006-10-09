@@ -241,7 +241,6 @@ bool PersistentData::tick(const vector< Controller > &keys) {
           slot[empty].shop.init(true);
         } else if(sps_queue[0].second == TTL_SETTINGS) {
           slot[empty].type = Slot::SETTINGS;
-          pms[sps_queue[0].first].fireHeld = 0;
         } else {
           CHECK(0);
         }
@@ -469,8 +468,7 @@ bool PersistentData::tickSlot(int slotid, const vector<Controller> &keys) {
   } else if(slt.type == Slot::SETTINGS) {
     CHECK(slt.pid >= 0 && slt.pid < pms.size());
     CHECK(keys.size() == 1);
-    runSettingTick(keys[0], &pms[slt.pid], factions);
-    return pms[slt.pid].readyToPlay();
+    return runSettingTick(keys[0], &pms[slt.pid], factions);
   } else if(slt.type == Slot::QUITCONFIRM) {
     Keystates thesekeys = pms[slt.pid].genKeystate(keys[0]);
     
@@ -1044,7 +1042,6 @@ PersistentData::PersistentData(int playercount, int in_roundsbetweenshop) {
     pms[cdbc].axes_invert[0] = false;
     pms[cdbc].axes_invert[1] = false;
     pms[cdbc].setting_axistype = KSAX_STEERING;
-    pms[cdbc].fireHeld = 0;
     playerid[cdbc] = playerdata.size();
     playerdata.push_back(Player(pms[cdbc].faction->faction, 0));
     cdbc++;
@@ -1067,7 +1064,6 @@ PersistentData::PersistentData(int playercount, int in_roundsbetweenshop) {
     pms[cdbc].axes_invert[0] = false;
     pms[cdbc].axes_invert[1] = false;
     pms[cdbc].setting_axistype = KSAX_ABSOLUTE;
-    pms[cdbc].fireHeld = 0;
     playerid[cdbc] = playerdata.size();
     playerdata.push_back(Player(pms[cdbc].faction->faction, 0));
     cdbc++;

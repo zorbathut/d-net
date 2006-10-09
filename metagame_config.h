@@ -57,7 +57,7 @@ public:
 };
 
 enum { SETTING_BUTTONS, SETTING_AXISTYPE, SETTING_AXISCHOOSE, SETTING_TEST, SETTING_READY, SETTING_LAST };
-const char * const setting_names[] = { "Keys", "Mode", "Directions", "Test", "Ready" };
+const char * const setting_names[] = { "Keys", "Mode", "Directions", "Test", "Done" };
 
 enum { CHOICE_FIRSTPASS, CHOICE_REAXIS, CHOICE_ACTIVE, CHOICE_IDLE };
 
@@ -90,16 +90,13 @@ public:
 
   smart_ptr<GamePackage> test_game;
   
-  int fireHeld;
-  bool readyToPlay() const;
-  
   Keystates genKeystate(const Controller &keys) const;
 
   PlayerMenuState();
   ~PlayerMenuState();
 };
 
-void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<FactionState> &factions);
+bool runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<FactionState> &factions);
 void runSettingRender(const PlayerMenuState &pms);
 
 #endif

@@ -112,10 +112,6 @@ void PlayerMenuState::createNewAxistypeDemo() {
   setting_axistype_demo_ai.reset(new GameAiAxisRotater(GameAiAxisRotater::steeringConfig(false, false)));
 }
 
-bool PlayerMenuState::readyToPlay() const {
-  return faction && settingmode == SETTING_READY && fireHeld == 60;
-}
-
 Keystates PlayerMenuState::genKeystate(const Controller &keys) const {
   Keystates kst;
   kst.u = keys.u;
@@ -488,11 +484,10 @@ vector<pair<float, float> > choiceTopicXpos(float sx, float ex, float textsize) 
   return rv;
 }
 
-void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<FactionState> &factions) {
+bool runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<FactionState> &factions) {
   StackString sstr("runSettingTick");
   if(!pms->faction) { // if player hasn't chosen faction yet
     StackString sstr("chfact");
-    pms->fireHeld = 0;
     {
       Float2 dir = deadzone(keys.menu, DEADZONE_CENTER, 0.2) * 0.01;
       dir.y *= -1;
@@ -531,9 +526,6 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
     }
   } else {
     StackString sstr("proc");
-    pms->fireHeld -= 1;
-    if(pms->fireHeld < 0)
-        pms->fireHeld = 0;
     
     if(pms->choicemode == CHOICE_IDLE) {
       CHECK(pms->faction);
@@ -545,12 +537,10 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
         pms->settingmode = 0;
       if(pms->settingmode >= SETTING_LAST)
         pms->settingmode = SETTING_LAST - 1;
-      if((keys.keys[pms->buttons[BUTTON_ACCEPT]].push || keys.d.down) && pms->settingmode != SETTING_READY)
+      if(keys.keys[pms->buttons[BUTTON_ACCEPT]].push && pms->settingmode == SETTING_READY)
+        return true;
+      if(keys.keys[pms->buttons[BUTTON_ACCEPT]].push)
         pms->choicemode = CHOICE_ACTIVE;
-      if((keys.keys[pms->buttons[BUTTON_ACCEPT]].down || keys.d.down) && pms->settingmode == SETTING_READY)
-        pms->fireHeld += 2;
-      if(pms->fireHeld > 60)
-        pms->fireHeld = 60;
     } else if(pms->settingmode == SETTING_BUTTONS) {
       vector<float> triggers;
       for(int i = 0; i < keys.keys.size(); i++)
@@ -786,6 +776,8 @@ void runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
       }
     }
   }
+  
+  return false;
 }
 
 void runSettingRender(const PlayerMenuState &pms) {
