@@ -169,7 +169,8 @@ struct StandardButtonRenderData {
   int sel_button;
   bool sel_button_reading;
   
-  char prefixchar;
+  string prefix;
+  vector<string> description;
 };
 
 bool changeButtons(vector<int> *buttons, vector<char> *inversions, const int *groups, int choice, int button, bool inverted) {
@@ -302,8 +303,8 @@ void standardButtonRender(const StandardButtonRenderData &sbrd) {
   float xps = sbrd.rin->xstart;
   if(sbrd.groupnames)
     xps += sbrd.rin->textsize * 2;
-  CHECK(linesneeded <= sbrd.rin->ystarts.size() - 1);
-  int scy = (sbrd.rin->ystarts.size() - linesneeded + 1) / 2;
+  CHECK(linesneeded <= sbrd.rin->ystarts.size() - 1 - sbrd.description.size());
+  int scy = (sbrd.rin->ystarts.size() - linesneeded - sbrd.description.size() + 1) / 2;
   int cy = scy;
   CHECK(cy + linesneeded <= sbrd.rin->ystarts.size());
   for(int i = 0; i < (*sbrd.names).size(); i++) {\
@@ -331,14 +332,10 @@ void standardButtonRender(const StandardButtonRenderData &sbrd) {
     } else if((*sbrd.buttons)[i] == -1) {
       btext = "";
     } else {
-      if(sbrd.prefixchar == 'B') {
-        CHECK(!sbrd.inverts);
-        btext = StringPrintf("%c%02d", sbrd.prefixchar, (*sbrd.buttons)[i]);
-      } else if(sbrd.prefixchar == 'X') {
-        CHECK(sbrd.inverts);
-        btext = StringPrintf("%c%d%c", sbrd.prefixchar, (*sbrd.buttons)[i], (*sbrd.inverts)[i] ? '-' : '+');
+      if(!sbrd.inverts) {
+        btext = StringPrintf("%s%d", sbrd.prefix.c_str(), (*sbrd.buttons)[i]);
       } else {
-        CHECK(0);
+        btext = StringPrintf("%s%d%c", sbrd.prefix.c_str(), (*sbrd.buttons)[i], (*sbrd.inverts)[i] ? '-' : '+');
       }
       setColor(C::inactive_text);
     }
@@ -352,6 +349,10 @@ void standardButtonRender(const StandardButtonRenderData &sbrd) {
   }
   drawText("Done", sbrd.rin->textsize, Float2(sbrd.rin->xstart, sbrd.rin->ystarts[cy++]));
   CHECK(cy == scy + linesneeded);
+
+  setColor(C::inactive_text);
+  for(int i = 0; i < sbrd.description.size(); i++)
+    drawJustifiedText(sbrd.description[i], sbrd.rin->textsize, Float2((sbrd.rin->xstart + sbrd.rin->xend) / 2, sbrd.rin->ystarts[sbrd.rin->ystarts.size() - sbrd.description.size() + i]), TEXT_CENTER, TEXT_MIN);
 }
 
 float GameAiAxisRotater::Randomater::next() {
@@ -775,7 +776,7 @@ bool runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
   return false;
 }
 
-void runSettingRender(const PlayerMenuState &pms) {
+void runSettingRender(const PlayerMenuState &pms, const string &availdescr) {
   StackString sstr("runSettingRender");
   CHECK(pms.faction);
 
@@ -853,6 +854,11 @@ void runSettingRender(const PlayerMenuState &pms) {
     groups.push_back("Weapon buttons");
     groups.push_back("Menu buttons");
     
+    vector<string> text;
+    text.push_back("Select your button setup. Choose \"done\" when ready.");
+    if(availdescr.size())
+      text.push_back(availdescr);
+    
     StandardButtonRenderData sbrd;
     sbrd.rin = &rin;
     sbrd.buttons = &pms.buttons;
@@ -862,7 +868,8 @@ void runSettingRender(const PlayerMenuState &pms) {
     sbrd.groups = button_groups;
     sbrd.sel_button = pms.setting_button_current;
     sbrd.sel_button_reading = pms.setting_button_reading;
-    sbrd.prefixchar = 'B';
+    sbrd.prefix = "Key ";
+    sbrd.description = text;
     
     standardButtonRender(sbrd);
   } else if(pms.settingmode == SETTING_AXISTYPE && pms.setting_axistype_demo_curframe == -1) {
@@ -988,7 +995,7 @@ void runSettingRender(const PlayerMenuState &pms) {
     sbrd.groups = axis_groups;
     sbrd.sel_button = pms.setting_axis_current;
     sbrd.sel_button_reading = pms.setting_axis_reading;
-    sbrd.prefixchar = 'X';
+    sbrd.prefix = "Axis ";
     
     standardButtonRender(sbrd);
   } else if(pms.settingmode == SETTING_TEST) {

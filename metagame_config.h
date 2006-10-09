@@ -98,6 +98,6 @@ public:
 };
 
 bool runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<FactionState> &factions);
-void runSettingRender(const PlayerMenuState &pms);
+void runSettingRender(const PlayerMenuState &pms, const string &availdescr);  // kind of grim, second parameter is text description of what buttons are available
 
 #endif

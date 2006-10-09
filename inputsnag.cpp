@@ -272,3 +272,12 @@ void controls_shutdown() {
 int controls_primary_id() {
   return FLAGS_nullControllers;
 }
+
+string controls_availdescr(int cid) {
+  if(sources[cid].first == CIP_KEYBOARD && sources[cid].second == 0)
+    return "Available buttons are 7890UIOPJKL;M,./";
+  else if(sources[cid].first == CIP_KEYBOARD && sources[cid].second == 1)
+    return "Available buttons are RTYFGHVBN";
+  else
+    return "";
+}

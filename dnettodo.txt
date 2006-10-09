@@ -60,22 +60,25 @@
 
 http://www.itchstudios.com/psg/ - Dafred's artist
 
--- how the fuck is this going to work
-Buttons
-	A
-	B
-	X
-	Y
-Control mode
-	Steering
-		(demo)
-	Absolute
-		(demo)
-	Tank
-		(demo)
-* axes
-	Blah
-	Baz
-Test
-	actual test
-Done
+--- whee
+
+Select your button setup. Choose "done" when ready.
+These keys are available for this player:
+7890UIOPJKLM
+
+Choose your tank control mode. Choose "done" when ready.
+Choose "demo" for a demonstration of that mode.
+If you're unsure, "Steering" is recommended.
+
+Configure your control directions. Select the entry,
+then move your controller in the desired direction.
+Choose "done" when ready.
+
+Test your tank controls.
+Push your "accept" button to test them out.
+Push your "cancel" button once you're done.
+
+You've finished setting up your controls. Push "accept"
+if you're finished. Go back and edit your settings if
+you are dissatisfied. You may return to change settings
+any time the shop is available.

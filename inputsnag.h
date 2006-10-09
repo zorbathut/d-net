@@ -17,5 +17,6 @@ bool controls_recordable();
 void controls_shutdown();
 
 int controls_primary_id();
+string controls_availdescr(int cid);
 
 #endif
