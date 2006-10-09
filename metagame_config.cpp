@@ -79,6 +79,8 @@ PlayerMenuState::PlayerMenuState() {
   setting_axis_current = -1;
   
   setting_axistype = -1;
+  setting_old_axistype = -1;
+  
   setting_axistype_curchoice = 0;
   setting_axistype_demo_curframe = -1;
   
@@ -549,7 +551,6 @@ bool runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
       vector<int> groups(BUTTON_LAST);
       groups[BUTTON_ACCEPT] = 1;
       groups[BUTTON_CANCEL] = 1;
-
       StandardButtonTickData sbtd;      
       sbtd.outkeys = &pms->buttons;
       sbtd.outinvert = NULL;
@@ -573,23 +574,19 @@ bool runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
       }
     } else if(pms->settingmode == SETTING_AXISTYPE && pms->setting_axistype_demo_curframe == -1) {
       bool closing = false;
-      int lastaxis = pms->setting_axistype;
       
       if(keys.u.push)
         pms->setting_axistype_curchoice--;
       if(keys.d.push)
         pms->setting_axistype_curchoice++;
-      if(pms->setting_axistype_curchoice < 0) {
-        closing = true;
-        pms->setting_axistype_curchoice = 0;
-      }
-      if(pms->setting_axistype_curchoice >= KSAX_END * 2)
-        pms->setting_axistype_curchoice = KSAX_END * 2 - 1;
+      
+      pms->setting_axistype_curchoice = modurot(pms->setting_axistype_curchoice, KSAX_END * 2 + 1);
       
       if(keys.keys[pms->buttons[BUTTON_ACCEPT]].push) {
-        if(pms->setting_axistype_curchoice % 2 == 0) {
+        if(pms->setting_axistype_curchoice == KSAX_END * 2) {
+          closing = true;
+        } else if(pms->setting_axistype_curchoice % 2 == 0) {
           pms->setting_axistype = pms->setting_axistype_curchoice / 2;
-          pms->setting_axis_current = -1;
         } else {
           pms->setting_axistype_demo_curframe = 0;
           pms->createNewAxistypeDemo();
@@ -597,24 +594,22 @@ bool runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
       }
       
       if(pms->setting_axistype_demo_curframe == -1) { // this only fails if we've gone into a demo mode
-        if(pms->choicemode == CHOICE_ACTIVE) {
-          if(pms->setting_axis_current == -1 && lastaxis != pms->setting_axistype) {
+        if(closing) {
+          if(pms->setting_old_axistype != pms->setting_axistype) {
+            pms->setting_old_axistype = pms->setting_axistype;
             pms->setting_axistype_curchoice = 0;
             pms->settingmode++;
-            pms->choicemode = CHOICE_REAXIS;
-            pms->axes.clear();
-            pms->axes.resize(2, -1);
-          } else if(keys.keys[pms->buttons[BUTTON_ACCEPT]].push || keys.keys[pms->buttons[BUTTON_CANCEL]].push || closing) {
-            pms->setting_axistype_curchoice = 0;
-            pms->choicemode = CHOICE_IDLE;
+            if(pms->choicemode == CHOICE_ACTIVE) {
+              pms->choicemode = CHOICE_REAXIS;
+              pms->axes.clear();
+              pms->axes.resize(2, -1);
+            }
+          } else {
+            if(pms->choicemode != CHOICE_FIRSTPASS) {
+              pms->setting_axistype_curchoice = 0;
+              pms->choicemode = CHOICE_IDLE;
+            }
           }
-        } else if(pms->choicemode == CHOICE_FIRSTPASS) {
-          if(keys.keys[pms->buttons[BUTTON_ACCEPT]].push) {
-            pms->setting_axistype_curchoice = 0;
-            pms->settingmode++;
-          }
-        } else {
-          CHECK(0);
         }
       }
     } else if(pms->settingmode == SETTING_AXISTYPE && pms->setting_axistype_demo_curframe != -1) {
@@ -871,21 +866,24 @@ void runSettingRender(const PlayerMenuState &pms) {
     
     standardButtonRender(sbrd);
   } else if(pms.settingmode == SETTING_AXISTYPE && pms.setting_axistype_demo_curframe == -1) {
-    for(int i = 0; i < KSAX_END * 2; i++) {
+    int stopos = (rin.textline_count - 1 - KSAX_END * 2 - 2) / 2 + 1;
+    for(int i = 0; i < KSAX_END * 2 + 1; i++) {
       if(pms.choicemode != CHOICE_IDLE && pms.setting_axistype_curchoice == i)
         setColor(C::active_text);
       else
         setColor(C::inactive_text);
       
-      if(i % 2 == 0)
-        drawText(ksax_names[i / 2], rin.textsize, Float2(rin.xstart + rin.textsize * 2, rin.ystarts[i + 2]));
+      if(i == KSAX_END * 2)
+        drawText("Done", rin.textsize, Float2(rin.xstart + rin.textsize * 2, rin.ystarts[i + stopos + 1]));
+      else if(i % 2 == 0)
+        drawText(ksax_names[i / 2], rin.textsize, Float2(rin.xstart + rin.textsize * 2, rin.ystarts[i + stopos]));
       else
-        drawText("(demo)", rin.textsize, Float2(rin.xstart + rin.textsize * 3, rin.ystarts[i + 2]));
+        drawText("(demo)", rin.textsize, Float2(rin.xstart + rin.textsize * 3, rin.ystarts[i + stopos]));
     }
     
     if(pms.setting_axistype != -1) {
       setColor(C::active_text);
-      drawText(">", rin.textsize, Float2(rin.xstart, rin.ystarts[pms.setting_axistype * 2 + 2]));
+      drawText(">", rin.textsize, Float2(rin.xstart, rin.ystarts[pms.setting_axistype * 2 + stopos]));
     }
   } else if(pms.settingmode == SETTING_AXISTYPE && pms.setting_axistype_demo_curframe != -1) {
     

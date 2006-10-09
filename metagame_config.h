@@ -81,6 +81,7 @@ public:
 
   int setting_axistype;
   int setting_axistype_curchoice;
+  int setting_old_axistype;
 
   int setting_axistype_demo_curframe;
   int setting_axistype_demo_aiframe;

@@ -1,7 +1,7 @@
 ---- Major work path
 - Move entire setup into the new Tween system?
   - New config system, yet again
-    - "Choose from UIOJKL" for keyboard players?
+  - "Choose from UIOJKL" for keyboard players?
   - New faction choosing
     - Faction info screen on startup
   - Descriptive text on the start screen
