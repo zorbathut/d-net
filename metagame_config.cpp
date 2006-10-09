@@ -678,7 +678,7 @@ bool runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
       
       const RenderInfo rin;
       
-      Float4 boundy = Float4(rin.xstart, rin.ystarts[1], rin.xend, rin.ystarts[7]);
+      Float4 boundy = Float4(rin.xstart + rin.textsize * 2, rin.ystarts[2], rin.xend - rin.textsize * 2, rin.ystarts[rin.textline_count - 4]);
       boundy -= boundy.midpoint();
       
       float mn = min(boundy.x_span(), boundy.y_span());
@@ -864,7 +864,7 @@ void runSettingRender(const PlayerMenuState &pms, const string &availdescr) {
     sbrd.groups = button_groups;
     sbrd.sel_button = pms.setting_button_current;
     sbrd.sel_button_reading = pms.setting_button_reading;
-    sbrd.prefix = "Button ";
+    sbrd.prefix = "Button #";
     sbrd.description.push_back("Select your button setup. Choose \"done\" when ready.");
     if(availdescr.size())
       sbrd.description.push_back(availdescr);
@@ -999,7 +999,7 @@ void runSettingRender(const PlayerMenuState &pms, const string &availdescr) {
     sbrd.groups = axis_groups;
     sbrd.sel_button = pms.setting_axis_current;
     sbrd.sel_button_reading = pms.setting_axis_reading;
-    sbrd.prefix = "Axis ";
+    sbrd.prefix = "Axis #";
     sbrd.description.push_back("Configure your control directions. Select the entry,");
     sbrd.description.push_back("then move your controller in the desired direction.");
     sbrd.description.push_back("Choose \"done\" when ready.");
@@ -1007,12 +1007,13 @@ void runSettingRender(const PlayerMenuState &pms, const string &availdescr) {
     standardButtonRender(sbrd);
   } else if(pms.settingmode == SETTING_TEST) {
     setColor(C::inactive_text);
+    drawJustifiedText("Test your tank controls.", rin.textsize, Float2((rin.xstart + rin.xend) / 2, rin.ystarts[rin.textline_count - 2]), TEXT_CENTER, TEXT_MIN);
     if(pms.choicemode == CHOICE_IDLE) {
-      drawJustifiedText("Push accept to test", rin.textsize, Float2((rin.xstart + rin.xend) / 2, rin.ystarts[7]), TEXT_CENTER, TEXT_MIN);
+      drawJustifiedText("Push your \"accept\" button to enter the test.", rin.textsize, Float2((rin.xstart + rin.xend) / 2, rin.ystarts[rin.textline_count - 1]), TEXT_CENTER, TEXT_MIN);
     } else {
-      drawJustifiedText("Push cancel when done", rin.textsize, Float2((rin.xstart + rin.xend) / 2, rin.ystarts[7]), TEXT_CENTER, TEXT_MIN);
+      drawJustifiedText("Push your \"cancel\" button once you're done.", rin.textsize, Float2((rin.xstart + rin.xend) / 2, rin.ystarts[rin.textline_count - 1]), TEXT_CENTER, TEXT_MIN);
     }
-    GfxWindow gfxw(Float4(rin.xstart, rin.ystarts[1], rin.xend, rin.ystarts[7]), 1.0);
+    GfxWindow gfxw(Float4(rin.xstart + rin.textsize * 2, rin.ystarts[2], rin.xend - rin.textsize * 2, rin.ystarts[rin.textline_count - 4]), 1.0);
     pms.test_game->renderToScreen();
   } else if(pms.settingmode == SETTING_READY) {
     setColor(C::inactive_text);
