@@ -971,7 +971,9 @@ void runSettingRender(const PlayerMenuState &pms, const string &availdescr) {
     }
     
     const float widgetsize = demowindowwidth / 16;
-    const float linesize = demowindowwidth / 50;
+    const float widgetthick = demowindowwidth / 100;
+    const float boxthick = demowindowwidth / 150;
+    const int sublines = 3;
     Float2 cont = pms.setting_axistype_demo_ai->getControls();
     cont.x += 1;
     cont.y += 1;
@@ -980,20 +982,23 @@ void runSettingRender(const PlayerMenuState &pms, const string &availdescr) {
     if(pms.setting_axistype_curchoice / 2 == KSAX_STEERING || pms.setting_axistype_curchoice / 2 == KSAX_ABSOLUTE) {
       setColor(C::inactive_text);
       drawSolid(controllerwindow);
-      drawRect(controllerwindow, linesize / 2);
+      drawRect(controllerwindow, boxthick);
       const Float4 livecwind = Float4(controllerwindow.sx + widgetsize, controllerwindow.sy + widgetsize, controllerwindow.ex - widgetsize, controllerwindow.ey - widgetsize);
       setColor(C::active_text);
-      const int sublines = 3;
       for(int i = 1; i <= sublines; i++)
-        drawRect(boxAround(Float2((livecwind.ex - livecwind.sx) * cont.x + livecwind.sx, (livecwind.sy - livecwind.ey) * cont.y + livecwind.ey), widgetsize / sublines * i), linesize / 2);
+        drawRect(boxAround(Float2((livecwind.ex - livecwind.sx) * cont.x + livecwind.sx, (livecwind.sy - livecwind.ey) * cont.y + livecwind.ey), widgetsize / sublines * i), widgetthick);
     } else if(pms.setting_axistype_curchoice / 2 == KSAX_TANK) {
       const float xshift = widgetsize * 5;
       const float ys = controllerwindow.sy + widgetsize;
       const float ye = controllerwindow.ey - widgetsize;
-      drawRect(Float4(controllerwindow.ex - xshift, controllerwindow.sy, controllerwindow.ex - xshift + widgetsize, controllerwindow.ey), 0.0001);
-      drawRect(Float4(controllerwindow.ex - widgetsize, controllerwindow.sy, controllerwindow.ex, controllerwindow.ey), 0.0001);
-      drawShadedRect(boxAround(Float2(controllerwindow.ex - xshift + widgetsize / 2, (ys - ye) * cont.x + ye), widgetsize), 0.00001, widgetsize);
-      drawShadedRect(boxAround(Float2(controllerwindow.ex - widgetsize / 2, (ys - ye) * cont.y + ye), widgetsize), 0.00001, widgetsize);
+      setColor(C::inactive_text);
+      drawRect(Float4(controllerwindow.ex - xshift, controllerwindow.sy, controllerwindow.ex - xshift + widgetsize, controllerwindow.ey), boxthick);
+      drawRect(Float4(controllerwindow.ex - widgetsize, controllerwindow.sy, controllerwindow.ex, controllerwindow.ey), boxthick);
+      setColor(C::active_text);
+      for(int i = 1; i <= sublines; i++)
+        drawRect(boxAround(Float2(controllerwindow.ex - xshift + widgetsize / 2, (ys - ye) * cont.x + ye), widgetsize / sublines * i), widgetthick);
+      for(int i = 1; i <= sublines; i++)
+        drawRect(boxAround(Float2(controllerwindow.ex - widgetsize / 2, (ys - ye) * cont.y + ye), widgetsize / sublines * i), widgetthick);
     } else {
       CHECK(0);
     }
