@@ -514,17 +514,34 @@ vector<vector<DemoSegment> > createDemoSegments() {
     vector<DemoSegment> ts;
     {
       DemoSegment tds;
+      tds.config = GameAiAxisRotater::steeringConfig(false, false);
+      tds.text.push_back("Steering mode allows you to pilot your tank with");
+      tds.text.push_back("the same controls as most top-down games.");
+      tds.text.push_back("");
+      tds.text.push_back("Watch what the demonstration");
+      tds.text.push_back("tank on the right does when the example");
+      tds.text.push_back("controller on the left moves.");
+      ts.push_back(tds);
+    }
+    {
+      DemoSegment tds;
       tds.config = GameAiAxisRotater::steeringConfig(false, true);
+      tds.text.push_back("Move your controller forwards and backwards");
+      tds.text.push_back("to move the tank forwards and backwards.");
       ts.push_back(tds);
     }
     {
       DemoSegment tds;
       tds.config = GameAiAxisRotater::steeringConfig(true, false);
+      tds.text.push_back("Move your controller left and right");
+      tds.text.push_back("to turn your tank left and right.");
       ts.push_back(tds);
     }
     {
       DemoSegment tds;
       tds.config = GameAiAxisRotater::steeringConfig(true, true);
+      tds.text.push_back("Move your controller left and right");
+      tds.text.push_back("to turn your tank left and right.");
       ts.push_back(tds);
     }
     rv.push_back(ts);
@@ -943,51 +960,10 @@ void runSettingRender(const PlayerMenuState &pms, const string &availdescr) {
     drawJustifiedText("Press your \"cancel\" button to abort the demo.", rin.textsize, Float2((rin.xstart + rin.xend) / 2, rin.ystarts[rin.ystarts.size() - 1]), TEXT_CENTER, TEXT_MIN);
     
     setColor(C::inactive_text);
-    if(pms.setting_axistype_curchoice / 2 == KSAX_STEERING && pms.setting_axistype_demo_cursegment == 0) {
-      drawText("Move controller", rin.textsize, Float2(rin.xstart, rin.ystarts[1]));
-      drawText("forward and", rin.textsize, Float2(rin.xstart, rin.ystarts[2]));
-      drawText("back to drive", rin.textsize, Float2(rin.xstart, rin.ystarts[3]));
-      drawText("forward and", rin.textsize, Float2(rin.xstart, rin.ystarts[4]));
-      drawText("back.", rin.textsize, Float2(rin.xstart, rin.ystarts[5]));
-    } else if(pms.setting_axistype_curchoice / 2 == KSAX_STEERING && pms.setting_axistype_demo_cursegment == 1) {
-      drawText("Move controller", rin.textsize, Float2(rin.xstart, rin.ystarts[1]));
-      drawText("side to side", rin.textsize, Float2(rin.xstart, rin.ystarts[2]));
-      drawText("to turn.", rin.textsize, Float2(rin.xstart, rin.ystarts[3]));
-    } else if(pms.setting_axistype_curchoice / 2 == KSAX_STEERING && pms.setting_axistype_demo_cursegment == 2) {
-      drawText("Combine these", rin.textsize, Float2(rin.xstart, rin.ystarts[1]));
-      drawText("to drive around.", rin.textsize, Float2(rin.xstart, rin.ystarts[2]));
-    } else if(pms.setting_axistype_curchoice / 2 == KSAX_ABSOLUTE && pms.setting_axistype_demo_cursegment == 0) {
-      drawText("Move controller", rin.textsize, Float2(rin.xstart, rin.ystarts[1]));
-      drawText("towards where", rin.textsize, Float2(rin.xstart, rin.ystarts[2]));
-      drawText("you want the", rin.textsize, Float2(rin.xstart, rin.ystarts[3]));
-      drawText("tank to go.", rin.textsize, Float2(rin.xstart, rin.ystarts[4]));
-    } else if(pms.setting_axistype_curchoice / 2 == KSAX_ABSOLUTE && pms.setting_axistype_demo_cursegment == 1) {
-      drawText("The computer", rin.textsize, Float2(rin.xstart, rin.ystarts[1]));
-      drawText("will try to", rin.textsize, Float2(rin.xstart, rin.ystarts[2]));
-      drawText("turn your tank", rin.textsize, Float2(rin.xstart, rin.ystarts[3]));
-      drawText("in that direction.", rin.textsize, Float2(rin.xstart, rin.ystarts[4]));
-    } else if(pms.setting_axistype_curchoice / 2 == KSAX_TANK && pms.setting_axistype_demo_cursegment == 0) {
-      drawText("Control treads", rin.textsize, Float2(rin.xstart, rin.ystarts[1]));
-      drawText("independently.", rin.textsize, Float2(rin.xstart, rin.ystarts[2]));
-      drawText("Your left stick", rin.textsize, Float2(rin.xstart, rin.ystarts[3]));
-      drawText("moves your left", rin.textsize, Float2(rin.xstart, rin.ystarts[4]));
-      drawText("tank tread.", rin.textsize, Float2(rin.xstart, rin.ystarts[5]));
-    } else if(pms.setting_axistype_curchoice / 2 == KSAX_TANK && pms.setting_axistype_demo_cursegment == 1) {
-      drawText("Your right stick", rin.textsize, Float2(rin.xstart, rin.ystarts[1]));
-      drawText("moves your right", rin.textsize, Float2(rin.xstart, rin.ystarts[2]));
-      drawText("tank tread.", rin.textsize, Float2(rin.xstart, rin.ystarts[3]));
-    } else if(pms.setting_axistype_curchoice / 2 == KSAX_TANK && pms.setting_axistype_demo_cursegment == 2) {
-      drawText("Move both sticks", rin.textsize, Float2(rin.xstart, rin.ystarts[1]));
-      drawText("forward to move", rin.textsize, Float2(rin.xstart, rin.ystarts[2]));
-      drawText("your tank", rin.textsize, Float2(rin.xstart, rin.ystarts[3]));
-      drawText("forward.", rin.textsize, Float2(rin.xstart, rin.ystarts[4]));
-    } else if(pms.setting_axistype_curchoice / 2 == KSAX_TANK && pms.setting_axistype_demo_cursegment == 3) {
-      drawText("Experiment with", rin.textsize, Float2(rin.xstart, rin.ystarts[1]));
-      drawText("tank mode for", rin.textsize, Float2(rin.xstart, rin.ystarts[2]));
-      drawText("very precise", rin.textsize, Float2(rin.xstart, rin.ystarts[3]));
-      drawText("tank control.", rin.textsize, Float2(rin.xstart, rin.ystarts[4]));
-    } else {
-      CHECK(0);
+    {
+      vector<string> descr = dsegments[pms.setting_axistype_curchoice / 2][pms.setting_axistype_demo_cursegment].text;
+      for(int i = 0; i < descr.size(); i++)
+        drawText(descr[i].c_str(), rin.textsize, Float2(rin.xstart, rin.ystarts[6 + i]));
     }
     
     const float widgetsize = 0.005;
