@@ -791,61 +791,15 @@ void runSettingRender(const PlayerMenuState &pms, const string &availdescr) {
   
   CHECK(abs((getAspect() / rin.aspect) - 1.0) < 0.0001);
   
+  // First we render the logo in the center
   {
-    // Topic line!
-    
     CHECK(pms.faction);
     CHECK(pms.faction->faction);
     setColor(pms.faction->faction->color * 0.2);
     drawDvec2(pms.faction->faction->icon, squareInside(Float4(rin.external_xstart, rin.ystarts[2], rin.external_xend, rin.ystarts[rin.textline_count - 1])), 20, 0.01);
-
-    vector<pair<float, float> > xpos = choiceTopicXpos(rin.external_xstart, rin.external_xend, rin.textsize);
-    
-    for(int dist = xpos.size(); dist >= 0; --dist) {
-      for(int i = 0; i < xpos.size(); i++) {
-        if(abs(i - pms.settingmode) != dist)
-          continue;
-        
-        // First, opacity for the bottom chunk
-        {
-          vector<Float2> path;
-          path.push_back(Float2(rin.drawzone.sx, rin.expansion_bottom));
-          path.push_back(Float2(xpos[i].first - rin.border, rin.tab_bottom));
-          path.push_back(Float2(xpos[i].second + rin.border, rin.tab_bottom));
-          path.push_back(Float2(rin.drawzone.ex, rin.expansion_bottom));
-          drawSolidLoop(path);
-        }
-        
-        setColor(((i == pms.settingmode && pms.choicemode == CHOICE_IDLE) ? C::active_text : C::inactive_text));
-        
-        // Next, draw text
-        drawText(setting_names[i], rin.textsize, Float2(xpos[i].first, rin.ystarts[0]));
-        
-        setColor(i == pms.settingmode ? C::active_text : C::inactive_text);
-        
-        // Now our actual path, left to right
-        vector<Float2> path;
-        path.push_back(Float2(rin.drawzone.sx, rin.expansion_bottom));
-        path.push_back(Float2(xpos[i].first - rin.border, rin.tab_bottom));
-        path.push_back(Float2(xpos[i].first - rin.border, rin.tab_top));
-        path.push_back(Float2(xpos[i].second + rin.border, rin.tab_top));
-        path.push_back(Float2(xpos[i].second + rin.border, rin.tab_bottom));
-        path.push_back(Float2(rin.drawzone.ex, rin.expansion_bottom));
-        drawLinePath(path, i == pms.settingmode ? rin.linethick : rin.linethick / 2);
-      }
-    }
-    
-    setColor(C::active_text);
-    {
-      vector<Float2> path;
-      path.push_back(Float2(rin.drawzone.sx, rin.expansion_bottom));
-      path.push_back(Float2(rin.drawzone.sx, rin.drawzone.ey));
-      path.push_back(Float2(rin.drawzone.ex, rin.drawzone.ey));
-      path.push_back(Float2(rin.drawzone.ex, rin.expansion_bottom));
-      drawLinePath(path, rin.linethick);
-    }
   }
-  
+
+  // Then we render our context-sensitive stuff, so it can be rendered over the logo as appropriate.
   if(pms.settingmode == SETTING_BUTTONS) {
     vector<vector<string> > names;
     for(int i = 0; i < BUTTON_LAST; i++) {
@@ -1027,5 +981,54 @@ void runSettingRender(const PlayerMenuState &pms, const string &availdescr) {
       drawJustifiedText(text[i], rin.textsize, Float2((rin.xstart + rin.xend) / 2, rin.ystarts[i + stp]), TEXT_CENTER, TEXT_MIN);
   } else {
     CHECK(0);
+  }
+  
+  // Finally, we render our topic line and box, so it can fit around the rest without getting accidentally erased by our bottom-of-box-erase code.
+  {
+    vector<pair<float, float> > xpos = choiceTopicXpos(rin.external_xstart, rin.external_xend, rin.textsize);
+    
+    for(int dist = xpos.size(); dist >= 0; --dist) {
+      for(int i = 0; i < xpos.size(); i++) {
+        if(abs(i - pms.settingmode) != dist)
+          continue;
+        
+        // First, opacity for the bottom chunk
+        {
+          vector<Float2> path;
+          path.push_back(Float2(rin.drawzone.sx, rin.expansion_bottom));
+          path.push_back(Float2(xpos[i].first - rin.border, rin.tab_bottom));
+          path.push_back(Float2(xpos[i].second + rin.border, rin.tab_bottom));
+          path.push_back(Float2(rin.drawzone.ex, rin.expansion_bottom));
+          drawSolidLoop(path);
+        }
+        
+        setColor(((i == pms.settingmode && pms.choicemode == CHOICE_IDLE) ? C::active_text : C::inactive_text));
+        
+        // Next, draw text
+        drawText(setting_names[i], rin.textsize, Float2(xpos[i].first, rin.ystarts[0]));
+        
+        setColor(i == pms.settingmode ? C::active_text : C::inactive_text);
+        
+        // Now our actual path, left to right
+        vector<Float2> path;
+        path.push_back(Float2(rin.drawzone.sx, rin.expansion_bottom));
+        path.push_back(Float2(xpos[i].first - rin.border, rin.tab_bottom));
+        path.push_back(Float2(xpos[i].first - rin.border, rin.tab_top));
+        path.push_back(Float2(xpos[i].second + rin.border, rin.tab_top));
+        path.push_back(Float2(xpos[i].second + rin.border, rin.tab_bottom));
+        path.push_back(Float2(rin.drawzone.ex, rin.expansion_bottom));
+        drawLinePath(path, i == pms.settingmode ? rin.linethick : rin.linethick / 2);
+      }
+    }
+    
+    setColor(C::active_text);
+    {
+      vector<Float2> path;
+      path.push_back(Float2(rin.drawzone.sx, rin.expansion_bottom));
+      path.push_back(Float2(rin.drawzone.sx, rin.drawzone.ey));
+      path.push_back(Float2(rin.drawzone.ex, rin.drawzone.ey));
+      path.push_back(Float2(rin.drawzone.ex, rin.expansion_bottom));
+      drawLinePath(path, rin.linethick);
+    }
   }
 }
