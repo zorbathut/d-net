@@ -803,7 +803,7 @@ void runSettingRender(const PlayerMenuState &pms, const string &availdescr) {
   {
     CHECK(pms.faction);
     CHECK(pms.faction->faction);
-    setColor(pms.faction->faction->color * 0.2);
+    setColor(pms.faction->faction->color * 0.5);
     drawDvec2(pms.faction->faction->icon, squareInside(Float4(rin.external_xstart, rin.ystarts[2], rin.external_xend, rin.ystarts[rin.textline_count - 1])), 20, 0.01);
   }
 
@@ -837,6 +837,7 @@ void runSettingRender(const PlayerMenuState &pms, const string &availdescr) {
     standardButtonRender(sbrd);
   } else if(pms.settingmode == SETTING_AXISTYPE && pms.setting_axistype_demo_curframe == -1) {
     int stopos = (rin.textline_count - 1 - KSAX_END * 2 - 2 - 3) / 2 + 1;
+    drawTextBoxAround(Float4(rin.xstart, rin.ystarts[stopos], rin.xend, rin.ystarts[stopos + KSAX_END * 2 + 1] + rin.textsize), rin.textsize);
     for(int i = 0; i < KSAX_END * 2 + 1; i++) {
       if(pms.choicemode != CHOICE_IDLE && pms.setting_axistype_curchoice == i)
         setColor(C::active_text);
@@ -857,6 +858,7 @@ void runSettingRender(const PlayerMenuState &pms, const string &availdescr) {
       drawText(">", rin.textsize, Float2(rin.xstart - rin.textsize, rin.ystarts[pms.setting_axistype * 2 + stopos]));
     }
     
+    drawBottomBlock(rin, 3);
     setColor(C::inactive_text);
     drawJustifiedText("Choose your tank control mode. Choose \"done\" when", rin.textsize, Float2((rin.xstart + rin.xend) / 2, rin.ystarts[rin.ystarts.size() - 3]), TEXT_CENTER, TEXT_MIN);
     drawJustifiedText("ready. Choose \"demo\" for a demonstration of that", rin.textsize, Float2((rin.xstart + rin.xend) / 2, rin.ystarts[rin.ystarts.size() - 2]), TEXT_CENTER, TEXT_MIN);

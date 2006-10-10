@@ -1,7 +1,6 @@
 ---- Major work path
 - Color push
 - Move entire setup into the new Tween system?
-  - Opaque backgrounds for text
   - Re-tune demos
   - New faction choosing
     - Faction info screen on startup
