@@ -4,6 +4,7 @@
 #include "cfc.h"
 #include "color.h"
 #include "dvec2.h"
+#include "noncopyable.h"
 
 using namespace std;
 
@@ -37,7 +38,7 @@ void deinitFrame();
  * Window
  */
 
-class GfxWindow {
+class GfxWindow : boost::noncopyable {
 public:
   GfxWindow(const Float4 &bounds, float fade);
   ~GfxWindow();
@@ -110,5 +111,15 @@ void drawSpokes(float x, float y, int dupes, int numer, int denom, float len, fl
 void drawGrid(float spacing, float width);
 
 void drawCrosshair(const CFC2 &pos, float rad, float weight);
+
+/*************
+ * Color stack
+ */
+
+class ColorStack : boost::noncopyable {
+public:
+  ColorStack(const Color &color);
+  ~ColorStack();
+};
 
 #endif

@@ -694,7 +694,7 @@ float getTextBoxBorder(float scale) { return scale / 3; }
 
 void drawTextBoxAround(const Float4 &bounds, float textscale) {
   float gtbb = getTextBoxBorder(textscale);
-  setColor(C::box_border);
+  ColorStack csc(C::box_border);
   drawSolid(Float4(bounds.sx - gtbb, bounds.sy - gtbb, bounds.ex + gtbb, bounds.ey + gtbb));
   drawRect(Float4(bounds.sx - gtbb, bounds.sy - gtbb, bounds.ex + gtbb, bounds.ey + gtbb), gtbb / 5);
 }
@@ -830,4 +830,15 @@ void drawGrid(float spacing, float size) {
 void drawCrosshair(const CFC2 &pos, float rad, float weight) {
   drawLine(pos->x - rad, pos->y, pos->x + rad, pos->y, weight);
   drawLine(pos->x, pos->y - rad, pos->x, pos->y + rad, weight);
+}
+
+vector<Color> cstack;
+
+ColorStack::ColorStack(const Color &color) {
+  cstack.push_back(curcolor);
+  setColor(color);
+}
+ColorStack::~ColorStack() {
+  setColor(cstack.back());
+  cstack.pop_back();
 }

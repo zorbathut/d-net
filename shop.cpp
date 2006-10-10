@@ -163,7 +163,6 @@ void Shop::renderNode(const HierarchyNode &node, int depth, const Player *player
       maxdown = max(maxdown, rendpos[i].second.y);
     
     for(int i = 0; i < 2; i++) {
-      setColor(C::gray(0.5));
       Float4 box = slay.box(depth);
       box = box + Float2(0, maxdown + box.y_span() * 3);
       box.ex = box.sx + slay.equipDiff();
@@ -172,6 +171,7 @@ void Shop::renderNode(const HierarchyNode &node, int depth, const Player *player
       if(i)
         box = box + Float2(slay.box(depth).x_span() - slay.equipDiff(), 0);
       
+      setColor(C::box_border);
       drawSolid(box);
       drawRect(box, slay.boxthick());
       

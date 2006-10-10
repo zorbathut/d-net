@@ -162,12 +162,9 @@ void drawShadedFormattedText(Float4 bounds, float fontsize, const string &text) 
   
   rkt.ey = rkt.sy + (vlines.size() - 1) * linesize + fontsize;
   
-  Float4 box(rkt.sx - fontsize / 3, rkt.sy - fontsize / 3, rkt.ex + fontsize / 3, rkt.ey + fontsize / 3);
+  drawTextBoxAround(rkt, fontsize);
   
-  drawSolid(box);
-  setColor(0.3, 0.3, 0.3);
-  drawRect(box, 0.1);
-  setColor(1.0, 1.0, 1.0);
+  setColor(C::inactive_text);
   for(int i = 0; i < vlines.size(); i++)
     drawText(vlines[i], fontsize, Float2(rkt.sx, rkt.sy + linesize * i));
 }
