@@ -88,6 +88,10 @@ void drawText(const string &txt, float scale, const Float2 &pos);
 float getTextWidth(const string &txt, float scale);
 float getFormattedTextHeight(const string &txt, float scale, float width);
 
+float getTextBoxBorder(float scale);
+
+void drawTextBoxAround(const Float4 &bounds, float textscale);
+
 enum { TEXT_MIN, TEXT_CENTER, TEXT_MAX };
 
 void drawJustifiedText(const string &txt, float scale, Float2 pos, int xps, int yps);

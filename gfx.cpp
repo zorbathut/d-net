@@ -690,6 +690,15 @@ float getFormattedTextHeight(const string &txt, float fontsize, float width) {
   return (text.size() - 1) * linesize + fontsize;
 }
 
+float getTextBoxBorder(float scale) { return scale / 3; }
+
+void drawTextBoxAround(const Float4 &bounds, float textscale) {
+  float gtbb = getTextBoxBorder(textscale);
+  setColor(C::box_border);
+  drawSolid(Float4(bounds.sx - gtbb, bounds.sy - gtbb, bounds.ex + gtbb, bounds.ey + gtbb));
+  drawRect(Float4(bounds.sx - gtbb, bounds.sy - gtbb, bounds.ex + gtbb, bounds.ey + gtbb), gtbb / 5);
+}
+
 void drawJustifiedText(const string &txt, float scale, Float2 pos, int xps, int yps) {
   float wid = getTextWidth(txt, scale);
   if(xps == TEXT_MIN) {

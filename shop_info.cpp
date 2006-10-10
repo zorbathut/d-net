@@ -34,11 +34,8 @@ ShopKVPrinter::ShopKVPrinter(Float4 in_bounds, float in_fontsize, float in_lines
 ShopKVPrinter::~ShopKVPrinter() {
   Float4 activerkt = activebounds();
   int step = twolinemode() + 1;
-  Float4 rkt(activerkt.sx - fontsize / 3, activerkt.sy - fontsize / 3, activerkt.ex + fontsize / 3, activerkt.sy + (pairz.size() * step - 1) * linesize + fontsize + fontsize / 3);
-  drawSolid(rkt);
-  setColor(0.3, 0.3, 0.3);
-  drawRect(rkt, 0.1);
-  setColor(1.0, 1.0, 1.0);
+  setColor(C::inactive_text);
+  drawTextBoxAround(Float4(activerkt.sx, activerkt.sy, activerkt.ex, activerkt.sy + (pairz.size() * step - 1) * linesize + fontsize), fontsize);
   for(int i = 0; i < pairz.size(); i++) {
     drawText(pairz[i].first, fontsize, Float2(activerkt.sx, activerkt.sy + linesize * i * step));
     drawJustifiedText(pairz[i].second, fontsize, Float2(activerkt.ex, activerkt.sy + linesize * (i * step + twolinemode())), TEXT_MAX, TEXT_MIN);
