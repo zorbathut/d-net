@@ -282,6 +282,13 @@ bool standardButtonTick(StandardButtonTickData *sbtd) {
   return false;
 }
 
+void drawBottomBlock(const RenderInfo &rin, int lines) {
+  float bottom_point = rin.ystarts[rin.textline_count - lines] - getTextBoxBorder(rin.textsize);
+  drawSolid(Float4(rin.drawzone.sx, bottom_point, rin.drawzone.ex, rin.drawzone.ey));
+  setColor(C::box_border);
+  drawLine(Float4(rin.drawzone.sx, bottom_point, rin.drawzone.ex, bottom_point), getTextBoxThickness(rin.textsize));
+}
+
 void standardButtonRender(const StandardButtonRenderData &sbrd) {
   StackString sstr("standardButtonRender");
   CHECK(sbrd.rin);
@@ -356,6 +363,7 @@ void standardButtonRender(const StandardButtonRenderData &sbrd) {
   drawText("Done", sbrd.rin->textsize, Float2(groupnamexps, sbrd.rin->ystarts[cy++]));
   CHECK(cy == scy + linesneeded);
 
+  drawBottomBlock(*sbrd.rin, sbrd.description.size());
   setColor(C::inactive_text);
   for(int i = 0; i < sbrd.description.size(); i++)
     drawJustifiedText(sbrd.description[i], sbrd.rin->textsize, Float2((sbrd.rin->xstart + sbrd.rin->xend) / 2, sbrd.rin->ystarts[sbrd.rin->ystarts.size() - sbrd.description.size() + i]), TEXT_CENTER, TEXT_MIN);
@@ -963,6 +971,7 @@ void runSettingRender(const PlayerMenuState &pms, const string &availdescr) {
     
     standardButtonRender(sbrd);
   } else if(pms.settingmode == SETTING_TEST) {
+    drawBottomBlock(rin, 2);
     setColor(C::inactive_text);
     drawJustifiedText("Test your tank controls.", rin.textsize, Float2((rin.xstart + rin.xend) / 2, rin.ystarts[rin.textline_count - 2]), TEXT_CENTER, TEXT_MIN);
     if(pms.choicemode == CHOICE_IDLE) {

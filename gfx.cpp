@@ -683,12 +683,13 @@ float getFormattedTextHeight(const string &txt, float fontsize, float width) {
 }
 
 float getTextBoxBorder(float scale) { return scale / 2; }
+float getTextBoxThickness(float scale) { return getTextBoxBorder(scale) / 5; }
 
 void drawTextBoxAround(const Float4 &bounds, float textscale) {
   float gtbb = getTextBoxBorder(textscale);
   ColorStack csc(C::box_border);
   drawSolid(Float4(bounds.sx - gtbb, bounds.sy - gtbb, bounds.ex + gtbb, bounds.ey + gtbb));
-  drawRect(Float4(bounds.sx - gtbb, bounds.sy - gtbb, bounds.ex + gtbb, bounds.ey + gtbb), gtbb / 5);
+  drawRect(Float4(bounds.sx - gtbb, bounds.sy - gtbb, bounds.ex + gtbb, bounds.ey + gtbb), getTextBoxThickness(textscale));
 }
 
 void drawJustifiedText(const string &txt, float scale, Float2 pos, int xps, int yps) {

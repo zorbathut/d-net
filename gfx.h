@@ -90,6 +90,7 @@ float getTextWidth(const string &txt, float scale);
 float getFormattedTextHeight(const string &txt, float scale, float width);
 
 float getTextBoxBorder(float scale);
+float getTextBoxThickness(float scale);
 
 void drawTextBoxAround(const Float4 &bounds, float textscale);
 
