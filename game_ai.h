@@ -3,13 +3,14 @@
 
 #include "input.h"
 #include "rng.h"
+#include "noncopyable.h"
 
 using namespace std;
 
 class Tank;
 class Coord2;
 
-class GameAi {
+class GameAi : boost::noncopyable{
 public:
   
   void updateGame(const vector<Tank> &players, int me);
@@ -32,11 +33,6 @@ private:
   
   virtual void updateGameWork(const vector<Tank> &players, int me) = 0;
   virtual void updateBombardmentWork(const vector<Tank> &players, Coord2 mypos) = 0;
-  
-  // do not implement
-  GameAi(const GameAi &foo);
-  GameAi &operator=(const GameAi &foo);
-
 };
 
 #endif

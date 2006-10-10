@@ -66,7 +66,7 @@ stats:
 	@echo Item hierarchy: `cat itemdb.h itemdb.cpp parse.h parse.cpp itemdb_adjust.cpp | wc -l` loc
 	@echo UI: `cat interface.h interface.cpp metagame.h metagame.cpp metagame_config.cpp metagame_config.h shop.cpp shop.h shop_demo.cpp shop_demo.h shop_info.cpp shop_info.h game_ai.h game_ai.cpp metagame_tween.cpp metagame_tween.h | wc -l` loc
 	@echo Framework: `cat core.h core.cpp main.cpp input.h input.cpp inputsnag.h inputsnag.cpp os.h os_gen.cpp os_win32.cpp debug.h debug.cpp | wc -l` loc
-	@echo Util: `cat timer.h timer.cpp util.h util.cpp args.h args.cpp rng.h rng.cpp coord.h coord.cpp float.h float.cpp cfcommon.h cfcommon.cpp coord_boolean.cpp cfc.h cfc.cpp | wc -l` loc
+	@echo Util: `cat timer.h timer.cpp util.h util.cpp args.h args.cpp rng.h rng.cpp coord.h coord.cpp float.h float.cpp cfcommon.h cfcommon.cpp coord_boolean.cpp cfc.h cfc.cpp noncopyable.h | wc -l` loc
 	@echo Vector system: `cat vecedit.h vecedit.cpp dvec2.h dvec2.cpp | wc -l` loc
 	@echo AI: `cat ai.h ai.cpp | wc -l` loc
 	@echo Total code: `cat *.h *.cpp makefile | wc -l` loc

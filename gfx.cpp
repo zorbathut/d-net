@@ -19,7 +19,7 @@ DEFINE_int(resolution_x, -1, "X resolution (Y is X/4*3), -1 for autodetect");
  * Expensive object pool
  */
 
-template<typename T> class Pool {
+template<typename T> class Pool : boost::noncopyable {
 public:
   T *acquire() {
     if(!poolitems.empty()) {
@@ -42,13 +42,9 @@ public:
   
 private:
   vector<T*> poolitems;
-
-  // do not implement
-  void operator=(const Pool &obj);
-  Pool(const Pool &obj);
 };
 
-template<typename T> class PoolObj {
+template<typename T> class PoolObj : boost::noncopyable{
 public:
   T *operator->() {
     return item;
@@ -69,10 +65,6 @@ private:
   T *item;
 
   static Pool<T> pool;
-
-  // do not implement
-  void operator=(const PoolObj &obj);
-  PoolObj(const PoolObj &obj);
 };
 
 template<typename T> Pool<T> PoolObj<T>::pool;
