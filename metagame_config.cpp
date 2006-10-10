@@ -19,6 +19,7 @@ public:
   static const float units;
 
   static const int textline_count = 16; // How many lines we're going to have
+  static const int demo_line_end = 6;
   static const float linethick;
 
   // runtime constants
@@ -29,6 +30,7 @@ public:
   float external_xend;
   float xstart;
   float xend;
+  float xcenter;
   vector<float> ystarts;
 
   float textsize;
@@ -57,6 +59,7 @@ public:
     textsize = unitsize * textline_size;
     xstart = external_xstart + textsize * 2;
     xend = external_xend - textsize * 2;
+    xcenter = (xstart + xend) / 2;
     for(int i = 1; i < textline_count; i++)
       ystarts[i] = ystarts[0] + unitsize * (divider_size + i - 1) + textsize * i;
     textborder = textsize / textline_size;
@@ -938,15 +941,14 @@ void runSettingRender(const PlayerMenuState &pms, const string &availdescr) {
     
     drawBottomBlock(rin, 3);
     setColor(C::inactive_text);
-    drawJustifiedText("Choose your tank control mode. Choose \"done\" when", rin.textsize, Float2((rin.xstart + rin.xend) / 2, rin.ystarts[rin.ystarts.size() - 3]), TEXT_CENTER, TEXT_MIN);
-    drawJustifiedText("ready. Choose \"demo\" for a demonstration of that", rin.textsize, Float2((rin.xstart + rin.xend) / 2, rin.ystarts[rin.ystarts.size() - 2]), TEXT_CENTER, TEXT_MIN);
-    drawJustifiedText("mode. If you're unsure, \"Steering\" is recommended.", rin.textsize, Float2((rin.xstart + rin.xend) / 2, rin.ystarts[rin.ystarts.size() - 1]), TEXT_CENTER, TEXT_MIN);
+    drawJustifiedText("Choose your tank control mode. Choose \"done\" when", rin.textsize, Float2(rin.xcenter, rin.ystarts[rin.ystarts.size() - 3]), TEXT_CENTER, TEXT_MIN);
+    drawJustifiedText("ready. Choose \"demo\" for a demonstration of that", rin.textsize, Float2(rin.xcenter, rin.ystarts[rin.ystarts.size() - 2]), TEXT_CENTER, TEXT_MIN);
+    drawJustifiedText("mode. If you're unsure, \"Steering\" is recommended.", rin.textsize, Float2(rin.xcenter, rin.ystarts[rin.ystarts.size() - 1]), TEXT_CENTER, TEXT_MIN);
   } else if(pms.settingmode == SETTING_AXISTYPE && pms.setting_axistype_demo_cursegment != -1) {
     
-    const float demowindowwidth = rin.ystarts[6] - rin.ystarts[1] + rin.textsize;
-    const Float4 demowindow = Float4(rin.xend - demowindowwidth, rin.ystarts[1], rin.xend, rin.ystarts[1] + demowindowwidth);
-    const float controllerwindowwidth = rin.ystarts[6] - rin.ystarts[5] + rin.textsize;
-    const Float4 controllerwindow = Float4(demowindow.sx - rin.textborder - controllerwindowwidth, rin.ystarts[5], demowindow.sx - rin.textborder, rin.ystarts[5] + controllerwindowwidth);
+    const float demowindowwidth = rin.ystarts[rin.demo_line_end] - rin.ystarts[1];
+    const Float4 demowindow = Float4(rin.xcenter + demowindowwidth * 0.5, rin.ystarts[1], rin.xcenter + demowindowwidth * 1.5, rin.ystarts[1] + demowindowwidth);
+    const Float4 controllerwindow = Float4(rin.xcenter - demowindowwidth * 1.5, rin.ystarts[1], rin.xcenter - demowindowwidth * 0.5, rin.ystarts[1] + demowindowwidth);
     
     CHECK(!pms.setting_axistype_demo.empty());
     {
@@ -956,16 +958,16 @@ void runSettingRender(const PlayerMenuState &pms, const string &availdescr) {
     
     drawBottomBlock(rin, 2);
     setColor(C::inactive_text);
-    drawJustifiedText("Press your \"accept\" button to continue the demo.", rin.textsize, Float2((rin.xstart + rin.xend) / 2, rin.ystarts[rin.ystarts.size() - 2]), TEXT_CENTER, TEXT_MIN);
-    drawJustifiedText("Press your \"cancel\" button to abort the demo.", rin.textsize, Float2((rin.xstart + rin.xend) / 2, rin.ystarts[rin.ystarts.size() - 1]), TEXT_CENTER, TEXT_MIN);
+    drawJustifiedText("Press your \"accept\" button to continue the demo.", rin.textsize, Float2(rin.xcenter, rin.ystarts[rin.ystarts.size() - 2]), TEXT_CENTER, TEXT_MIN);
+    drawJustifiedText("Press your \"cancel\" button to abort the demo.", rin.textsize, Float2(rin.xcenter, rin.ystarts[rin.ystarts.size() - 1]), TEXT_CENTER, TEXT_MIN);
     
     setColor(C::inactive_text);
     {
-      int startline = 7;
+      int startline = rin.demo_line_end + 1;
       vector<string> descr = dsegments[pms.setting_axistype_curchoice / 2][pms.setting_axistype_demo_cursegment].text;
       drawTextBoxAround(Float4(rin.xstart, rin.ystarts[startline], rin.xend, rin.ystarts[startline + descr.size() - 1] + rin.textsize), rin.textsize);
       for(int i = 0; i < descr.size(); i++)
-        drawJustifiedText(descr[i].c_str(), rin.textsize, Float2((rin.xstart + rin.xend) / 2, rin.ystarts[startline + i]), TEXT_CENTER, TEXT_MIN);
+        drawJustifiedText(descr[i].c_str(), rin.textsize, Float2(rin.xcenter, rin.ystarts[startline + i]), TEXT_CENTER, TEXT_MIN);
     }
     
     const float widgetsize = 0.005;
@@ -1010,11 +1012,11 @@ void runSettingRender(const PlayerMenuState &pms, const string &availdescr) {
   } else if(pms.settingmode == SETTING_TEST) {
     drawBottomBlock(rin, 2);
     setColor(C::inactive_text);
-    drawJustifiedText("Test your tank controls.", rin.textsize, Float2((rin.xstart + rin.xend) / 2, rin.ystarts[rin.textline_count - 2]), TEXT_CENTER, TEXT_MIN);
+    drawJustifiedText("Test your tank controls.", rin.textsize, Float2(rin.xcenter, rin.ystarts[rin.textline_count - 2]), TEXT_CENTER, TEXT_MIN);
     if(pms.choicemode == CHOICE_IDLE) {
-      drawJustifiedText("Push your \"accept\" button to enter the test.", rin.textsize, Float2((rin.xstart + rin.xend) / 2, rin.ystarts[rin.textline_count - 1]), TEXT_CENTER, TEXT_MIN);
+      drawJustifiedText("Push your \"accept\" button to enter the test.", rin.textsize, Float2(rin.xcenter, rin.ystarts[rin.textline_count - 1]), TEXT_CENTER, TEXT_MIN);
     } else {
-      drawJustifiedText("Push your \"cancel\" button once you're done.", rin.textsize, Float2((rin.xstart + rin.xend) / 2, rin.ystarts[rin.textline_count - 1]), TEXT_CENTER, TEXT_MIN);
+      drawJustifiedText("Push your \"cancel\" button once you're done.", rin.textsize, Float2(rin.xcenter, rin.ystarts[rin.textline_count - 1]), TEXT_CENTER, TEXT_MIN);
     }
     GfxWindow gfxw(Float4(rin.xstart, rin.ystarts[2], rin.xend, rin.ystarts[rin.textline_count - 4]), 1.0);
     pms.test_game->renderToScreen();
@@ -1024,7 +1026,7 @@ void runSettingRender(const PlayerMenuState &pms, const string &availdescr) {
     int stp = (rin.textline_count - 1 - sizeof(text) / sizeof(*text)) / 2;
     drawTextBoxAround(Float4(rin.xstart, rin.ystarts[stp], rin.xend, rin.ystarts[stp + sizeof(text) / sizeof(*text) - 1] + rin.textsize), rin.textsize);
     for(int i = 0; i < sizeof(text) / sizeof(*text); i++)
-      drawJustifiedText(text[i], rin.textsize, Float2((rin.xstart + rin.xend) / 2, rin.ystarts[i + stp]), TEXT_CENTER, TEXT_MIN);
+      drawJustifiedText(text[i], rin.textsize, Float2(rin.xcenter, rin.ystarts[i + stp]), TEXT_CENTER, TEXT_MIN);
   } else {
     CHECK(0);
   }
