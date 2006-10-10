@@ -10,15 +10,27 @@ using namespace std;
 class GamePackage;
   
 class GameAiAxisRotater : public GameAi { // todo: get this dependency out
-private:
+public:
+      
   class Config {
-  public:
+    friend class GameAiAxisRotater;
+    
     int type;
   
     bool ax[2];
     int tax[2];
   };
+  
+  static Config steeringConfig(bool ax0, bool ax1);
+  static Config absoluteConfig();
+  static Config tankConfig(int axlsrc, int axrsrc);
+  
+  void updateConfig(const Config &conf);
+  Float2 getControls() const;
 
+  GameAiAxisRotater(const Config &conf);
+  
+private:
   class Randomater {
     float current;
     int fleft;
@@ -37,16 +49,6 @@ private:
 
   void updateGameWork(const vector<Tank> &players, int me);
   void updateBombardmentWork(const vector<Tank> &players, Coord2 mypos);
-public:
-  
-  static Config steeringConfig(bool ax0, bool ax1);
-  static Config absoluteConfig();
-  static Config tankConfig(int axlsrc, int axrsrc);
-  
-  void updateConfig(const Config &conf);
-  Float2 getControls() const;
-
-  GameAiAxisRotater(const Config &conf);
 };
 
 class FactionState {
@@ -83,7 +85,7 @@ public:
   int setting_axistype_curchoice;
   int setting_old_axistype;
 
-  int setting_axistype_demo_curframe;
+  int setting_axistype_demo_cursegment;
   int setting_axistype_demo_aiframe;
   smart_ptr<GamePackage> setting_axistype_demo;
   smart_ptr<GameAiAxisRotater> setting_axistype_demo_ai;
