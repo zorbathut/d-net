@@ -525,6 +525,11 @@ void Game::renderToScreen(const vector<const Player *> &players) const {
     
     smart_ptr<GfxWindow> gfxw;
     
+    // In most modes, clear the background
+    if(gamemode == GMODE_DEMO || gamemode == GMODE_CENTERED_DEMO || gamemode == GMODE_TEST) {
+      drawSolid(clear);
+    }
+    
     if(gamemode != GMODE_CENTERED_DEMO) {
       gfxw.reset(new GfxWindow(Float4(0, hasStatus?0.1:0, getAspect(), 1), 1.0));
       
@@ -535,11 +540,6 @@ void Game::renderToScreen(const vector<const Player *> &players) const {
       
       setColor(C::gray(0.5));
       drawGrid(10, 0.1);
-    }
-    
-    // In most modes, clear the background
-    if(gamemode == GMODE_DEMO || gamemode == GMODE_CENTERED_DEMO || gamemode == GMODE_TEST) {
-      drawSolid(clear);
     }
     
     // Tanks
