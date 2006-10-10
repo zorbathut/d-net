@@ -916,7 +916,7 @@ void runSettingRender(const PlayerMenuState &pms, const string &availdescr) {
     
     if(pms.setting_axistype != -1) {
       setColor(C::active_text);
-      drawText(">", rin.textsize, Float2(rin.xstart - rin.textsize, rin.ystarts[pms.setting_axistype * 2 + stopos]));
+      drawJustifiedText("(chosen)", rin.textsize, Float2(rin.xend, rin.ystarts[pms.setting_axistype * 2 + stopos]), TEXT_MAX, TEXT_MIN);
     }
     
     drawBottomBlock(rin, 3);

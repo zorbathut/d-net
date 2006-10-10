@@ -1042,6 +1042,7 @@ PersistentData::PersistentData(int playercount, int in_roundsbetweenshop) {
     pms[cdbc].axes_invert[0] = false;
     pms[cdbc].axes_invert[1] = false;
     pms[cdbc].setting_axistype = KSAX_STEERING;
+    pms[cdbc].setting_old_axistype = KSAX_STEERING;
     playerid[cdbc] = playerdata.size();
     playerdata.push_back(Player(pms[cdbc].faction->faction, 0));
     cdbc++;
@@ -1064,6 +1065,7 @@ PersistentData::PersistentData(int playercount, int in_roundsbetweenshop) {
     pms[cdbc].axes_invert[0] = false;
     pms[cdbc].axes_invert[1] = false;
     pms[cdbc].setting_axistype = KSAX_ABSOLUTE;
+    pms[cdbc].setting_old_axistype = KSAX_ABSOLUTE;
     playerid[cdbc] = playerdata.size();
     playerdata.push_back(Player(pms[cdbc].faction->faction, 0));
     cdbc++;
