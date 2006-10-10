@@ -345,7 +345,7 @@ void standardButtonRender(const StandardButtonRenderData &sbrd) {
       }
       setColor(C::inactive_text);
     }
-    drawJustifiedText(btext.c_str(), sbrd.rin->textsize, Float2(sbrd.rin->xend - sbrd.rin->textsize * 2, sbrd.rin->ystarts[cy - 1]), TEXT_MAX, TEXT_MIN);
+    drawJustifiedText(btext.c_str(), sbrd.rin->textsize, Float2(sbrd.rin->xend, sbrd.rin->ystarts[cy - 1]), TEXT_MAX, TEXT_MIN);
   }
   cy++;
   if(sbrd.sel_button == sbrd.names->size()) {

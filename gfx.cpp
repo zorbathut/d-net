@@ -682,7 +682,7 @@ float getFormattedTextHeight(const string &txt, float fontsize, float width) {
   return (text.size() - 1) * linesize + fontsize;
 }
 
-float getTextBoxBorder(float scale) { return scale / 3; }
+float getTextBoxBorder(float scale) { return scale / 2; }
 
 void drawTextBoxAround(const Float4 &bounds, float textscale) {
   float gtbb = getTextBoxBorder(textscale);
