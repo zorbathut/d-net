@@ -961,9 +961,11 @@ void runSettingRender(const PlayerMenuState &pms, const string &availdescr) {
     
     setColor(C::inactive_text);
     {
+      int startline = 7;
       vector<string> descr = dsegments[pms.setting_axistype_curchoice / 2][pms.setting_axistype_demo_cursegment].text;
+      drawTextBoxAround(Float4(rin.xstart, rin.ystarts[startline], rin.xend, rin.ystarts[startline + descr.size() - 1] + rin.textsize), rin.textsize);
       for(int i = 0; i < descr.size(); i++)
-        drawText(descr[i].c_str(), rin.textsize, Float2(rin.xstart, rin.ystarts[6 + i]));
+        drawJustifiedText(descr[i].c_str(), rin.textsize, Float2((rin.xstart + rin.xend) / 2, rin.ystarts[startline + i]), TEXT_CENTER, TEXT_MIN);
     }
     
     const float widgetsize = 0.005;
