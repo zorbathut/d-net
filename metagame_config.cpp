@@ -373,7 +373,7 @@ void standardButtonRender(const StandardButtonRenderData &sbrd) {
 }
 
 float GameAiAxisRotater::Randomater::next() {
-  if(fleft <= 0) {
+  if(frameNumber >= fnext) {
     if(smooth) {
       current = frand() * 2 - 1;
     } else {
@@ -384,19 +384,19 @@ float GameAiAxisRotater::Randomater::next() {
       opts.erase(find(opts.begin(), opts.end(), current));
       current = opts[int(frand() * opts.size())];
     }
-    fleft = int(frand() * 120 + 120);
+    int shift = int(frand() * 120 + 120);
     if(!smooth) {
       if(current == 0)
-        fleft /= 2;
+        shift /= 2;
     }
+    fnext = frameNumber + shift;
   }
-  fleft--;
   return current;
 }
 
 GameAiAxisRotater::Randomater::Randomater() {
   current = 0;
-  fleft = 0;
+  fnext = 0;
 }
 
 void GameAiAxisRotater::updateGameWork(const vector<Tank> &players, int me) {
@@ -417,10 +417,12 @@ void GameAiAxisRotater::updateGameWork(const vector<Tank> &players, int me) {
   } else if(config.type == KSAX_TANK) {
     CHECK(rands.size() == 2);
     for(int i = 0; i < 2; i++) {
-      if(config.tax[i] == -1)
+      if(config.tax[i] == 0)
         next[i] = approach(next[i], 0, 0.05);
+      else if(config.tax[i] < 0)
+        next[i] = approach(next[i], -rands[-config.tax[i] - 1].next(), 0.05);
       else
-        next[i] = approach(next[i], rands[config.tax[i]].next(), 0.05);
+        next[i] = approach(next[i], rands[config.tax[i] - 1].next(), 0.05);
     }
   } else {
     CHECK(0);
@@ -467,7 +469,7 @@ GameAiAxisRotater::Config GameAiAxisRotater::tankConfig(int axlsrc, int axrsrc) 
   conf.tax[0] = axlsrc;
   conf.tax[1] = axrsrc;
   for(int i = 0; i < 2; i++)
-    CHECK(conf.tax[i] >= -1 && conf.tax[i] < 2);
+    CHECK(conf.tax[i] >= -2 && conf.tax[i] <= 2);
   return conf;
 }
 
@@ -554,12 +556,27 @@ vector<vector<DemoSegment> > createDemoSegments() {
     vector<DemoSegment> ts;
     {
       DemoSegment tds;
-      tds.config = GameAiAxisRotater::absoluteConfig();
+      tds.config = GameAiAxisRotater::steeringConfig(false, false);
+      tds.text.push_back("In absolute mode, moving your controller in a");
+      tds.text.push_back("direction makes your tank move that way.");
+      tds.text.push_back("");
+      tds.text.push_back("Watch what the demonstration");
+      tds.text.push_back("tank on the right does when the example");
+      tds.text.push_back("controller on the left moves.");
       ts.push_back(tds);
     }
     {
       DemoSegment tds;
       tds.config = GameAiAxisRotater::absoluteConfig();
+      tds.text.push_back("The computer will attempt to steer your tank in");
+      tds.text.push_back("the direction you want to go.");
+      ts.push_back(tds);
+    }
+    {
+      DemoSegment tds;
+      tds.config = GameAiAxisRotater::absoluteConfig();
+      tds.text.push_back("Moving the controller directly backwards will");
+      tds.text.push_back("allow you to drive backwards.");
       ts.push_back(tds);
     }
     rv.push_back(ts);
@@ -569,22 +586,46 @@ vector<vector<DemoSegment> > createDemoSegments() {
     vector<DemoSegment> ts;
     {
       DemoSegment tds;
-      tds.config = GameAiAxisRotater::tankConfig(0, -1);
+      tds.config = GameAiAxisRotater::tankConfig(0, 0);
+      tds.text.push_back("Tank mode gives you direct control over the");
+      tds.text.push_back("two tank treads.");
+      tds.text.push_back("");
+      tds.text.push_back("Watch what the demonstration");
+      tds.text.push_back("tank on the right does when the example");
+      tds.text.push_back("controller on the left moves.");
       ts.push_back(tds);
     }
     {
       DemoSegment tds;
-      tds.config = GameAiAxisRotater::tankConfig(-1, 1);
+      tds.config = GameAiAxisRotater::tankConfig(1, 0);
+      tds.text.push_back("Your left stick moves only your left tread.");
       ts.push_back(tds);
     }
     {
       DemoSegment tds;
-      tds.config = GameAiAxisRotater::tankConfig(1, 1);
+      tds.config = GameAiAxisRotater::tankConfig(0, 2);
+      tds.text.push_back("Your right stick moves only your right tread.");
       ts.push_back(tds);
     }
     {
       DemoSegment tds;
-      tds.config = GameAiAxisRotater::tankConfig(0, 1);
+      tds.config = GameAiAxisRotater::tankConfig(2, 2);
+      tds.text.push_back("Move both sticks forward or backwards to");
+      tds.text.push_back("drive directly forwards or backwards.");
+      ts.push_back(tds);
+    }
+    {
+      DemoSegment tds;
+      tds.config = GameAiAxisRotater::tankConfig(-2, 2);
+      tds.text.push_back("Move the sticks opposite of each other to");
+      tds.text.push_back("rotate quickly.");
+      ts.push_back(tds);
+    }
+    {
+      DemoSegment tds;
+      tds.config = GameAiAxisRotater::tankConfig(1, 2);
+      tds.text.push_back("Using the sticks in combination allows");
+      tds.text.push_back("you to maneuver.");
       ts.push_back(tds);
     }
     rv.push_back(ts);

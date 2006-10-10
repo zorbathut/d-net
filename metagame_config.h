@@ -33,7 +33,7 @@ public:
 private:
   class Randomater {
     float current;
-    int fleft;
+    int fnext;
     
   public:
     bool smooth;
