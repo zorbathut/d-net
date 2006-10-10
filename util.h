@@ -188,4 +188,9 @@ public:
 
 int modurot(int val, int mod);
 
+namespace detail {
+  template <typename type, ::std::size_t size> char (&array_size_impl(type(&)[size]))[size];
+}
+#define ARRAY_SIZE(array) sizeof(::detail::array_size_impl(array))
+
 #endif

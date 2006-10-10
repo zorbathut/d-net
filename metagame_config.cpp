@@ -312,6 +312,7 @@ void standardButtonRender(const StandardButtonRenderData &sbrd) {
   int scy = (sbrd.rin->ystarts.size() - linesneeded - sbrd.description.size() + 1) / 2;
   int cy = scy;
   CHECK(cy + linesneeded <= sbrd.rin->ystarts.size());
+  drawTextBoxAround(Float4(sbrd.rin->xstart, sbrd.rin->ystarts[scy], sbrd.rin->xend, sbrd.rin->ystarts[scy + linesneeded - 1] + sbrd.rin->textsize), sbrd.rin->textsize);
   for(int i = 0; i < (*sbrd.names).size(); i++) {\
     if(i && sbrd.groups[i-1] != sbrd.groups[i])
       cy++;
