@@ -25,6 +25,8 @@ public:
   Float4 drawzone;
   float unitsize;
   float border;
+  float external_xstart;
+  float external_xend;
   float xstart;
   float xend;
   vector<float> ystarts;
@@ -48,11 +50,13 @@ public:
     // runtime constants
     unitsize = drawzone.y_span() / units;
     border = unitsize * border_size;
-    xstart = drawzone.sx + border;
-    xend = drawzone.ex - border;
+    external_xstart = drawzone.sx + border;
+    external_xend = drawzone.ex - border;
     ystarts.resize(textline_count);
     ystarts[0] = drawzone.sy + unitsize * top_border_extra_size;
     textsize = unitsize * textline_size;
+    xstart = external_xstart + textsize * 2;
+    xend = external_xend - textsize * 2;
     for(int i = 1; i < textline_count; i++)
       ystarts[i] = ystarts[0] + unitsize * (divider_size + i - 1) + textsize * i;
     textborder = textsize / textline_size;
@@ -300,7 +304,7 @@ void standardButtonRender(const StandardButtonRenderData &sbrd) {
     if(sbrd.groupnames)
       linesneeded += grid.size();
   }
-  float xps = sbrd.rin->xstart + sbrd.rin->textsize * 2;
+  float xps = sbrd.rin->xstart;
   float groupnamexps = xps;
   if(sbrd.groupnames)
     xps += sbrd.rin->textsize;
@@ -678,7 +682,7 @@ bool runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
       
       const RenderInfo rin;
       
-      Float4 boundy = Float4(rin.xstart + rin.textsize * 2, rin.ystarts[2], rin.xend - rin.textsize * 2, rin.ystarts[rin.textline_count - 4]);
+      Float4 boundy = Float4(rin.xstart, rin.ystarts[2], rin.xend, rin.ystarts[rin.textline_count - 4]);
       boundy -= boundy.midpoint();
       
       float mn = min(boundy.x_span(), boundy.y_span());
@@ -792,11 +796,9 @@ void runSettingRender(const PlayerMenuState &pms, const string &availdescr) {
     CHECK(pms.faction);
     CHECK(pms.faction->faction);
     setColor(pms.faction->faction->color * 0.2);
-    drawDvec2(pms.faction->faction->icon, squareInside(Float4(rin.xstart, rin.ystarts[2], rin.xend, rin.ystarts[rin.textline_count - 1])), 20, 0.01);
-    
-    float txstart = rin.xstart;
+    drawDvec2(pms.faction->faction->icon, squareInside(Float4(rin.external_xstart, rin.ystarts[2], rin.external_xend, rin.ystarts[rin.textline_count - 1])), 20, 0.01);
 
-    vector<pair<float, float> > xpos = choiceTopicXpos(txstart, rin.xend, rin.textsize);
+    vector<pair<float, float> > xpos = choiceTopicXpos(rin.external_xstart, rin.external_xend, rin.textsize);
     
     for(int dist = xpos.size(); dist >= 0; --dist) {
       for(int i = 0; i < xpos.size(); i++) {
@@ -879,17 +881,17 @@ void runSettingRender(const PlayerMenuState &pms, const string &availdescr) {
         setColor(C::inactive_text);
       
       if(i == KSAX_END * 2)
-        drawText("Done", rin.textsize, Float2(rin.xstart + rin.textsize * 2, rin.ystarts[i + stopos + 1]));
+        drawText("Done", rin.textsize, Float2(rin.xstart, rin.ystarts[i + stopos + 1]));
       else if(i % 2 == 0)
-        drawText(ksax_names[i / 2], rin.textsize, Float2(rin.xstart + rin.textsize * 2, rin.ystarts[i + stopos]));
+        drawText(ksax_names[i / 2], rin.textsize, Float2(rin.xstart, rin.ystarts[i + stopos]));
       else
-        drawText("(demo)", rin.textsize, Float2(rin.xstart + rin.textsize * 3, rin.ystarts[i + stopos]));
+        drawText("(demo)", rin.textsize, Float2(rin.xstart + rin.textsize, rin.ystarts[i + stopos]));
     }
     
     
     if(pms.setting_axistype != -1) {
       setColor(C::active_text);
-      drawText(">", rin.textsize, Float2(rin.xstart, rin.ystarts[pms.setting_axistype * 2 + stopos]));
+      drawText(">", rin.textsize, Float2(rin.xstart - rin.textsize, rin.ystarts[pms.setting_axistype * 2 + stopos]));
     }
     
     setColor(C::inactive_text);
@@ -1013,13 +1015,13 @@ void runSettingRender(const PlayerMenuState &pms, const string &availdescr) {
     } else {
       drawJustifiedText("Push your \"cancel\" button once you're done.", rin.textsize, Float2((rin.xstart + rin.xend) / 2, rin.ystarts[rin.textline_count - 1]), TEXT_CENTER, TEXT_MIN);
     }
-    GfxWindow gfxw(Float4(rin.xstart + rin.textsize * 2, rin.ystarts[2], rin.xend - rin.textsize * 2, rin.ystarts[rin.textline_count - 4]), 1.0);
+    GfxWindow gfxw(Float4(rin.xstart, rin.ystarts[2], rin.xend, rin.ystarts[rin.textline_count - 4]), 1.0);
     pms.test_game->renderToScreen();
   } else if(pms.settingmode == SETTING_READY) {
     setColor(C::inactive_text);
     const char * const text[] = {"You've finished setting up your controls. Push ", "\"accept\" if you're finished. Go back and edit your", "settings if you are dissatisfied. You may return to", "change settings any time the shop is available."};
     int stp = (rin.textline_count - 1 - sizeof(text) / sizeof(*text)) / 2;
-    drawTextBoxAround(Float4(rin.xstart, rin.ystarts[stp], rin.xend, rin.ystarts[stp + sizeof(text) / sizeof(*text)]), rin.textsize);
+    drawTextBoxAround(Float4(rin.xstart, rin.ystarts[stp], rin.xend, rin.ystarts[stp + sizeof(text) / sizeof(*text) - 1] + rin.textsize), rin.textsize);
     for(int i = 0; i < sizeof(text) / sizeof(*text); i++)
       drawJustifiedText(text[i], rin.textsize, Float2((rin.xstart + rin.xend) / 2, rin.ystarts[i + stp]), TEXT_CENTER, TEXT_MIN);
   } else {
