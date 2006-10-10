@@ -501,40 +501,86 @@ vector<pair<float, float> > choiceTopicXpos(float sx, float ex, float textsize) 
   return rv;
 }
 
-int configDemoSegments(int type) {
-  if(type == KSAX_STEERING) {
-    return 3;
-  } else if(type == KSAX_ABSOLUTE) {
-    return 2;
-  } else if(type == KSAX_TANK) {
-    return 4;
-  } else {
-    CHECK(0);
+class DemoSegment {
+public:
+  GameAiAxisRotater::Config config;
+  vector<string> text;
+};
+
+vector<vector<DemoSegment> > createDemoSegments() {
+  vector<vector<DemoSegment> > rv;
+  {
+    CHECK(rv.size() == KSAX_STEERING);
+    vector<DemoSegment> ts;
+    {
+      DemoSegment tds;
+      tds.config = GameAiAxisRotater::steeringConfig(false, true);
+      ts.push_back(tds);
+    }
+    {
+      DemoSegment tds;
+      tds.config = GameAiAxisRotater::steeringConfig(true, false);
+      ts.push_back(tds);
+    }
+    {
+      DemoSegment tds;
+      tds.config = GameAiAxisRotater::steeringConfig(true, true);
+      ts.push_back(tds);
+    }
+    rv.push_back(ts);
   }
+  {
+    CHECK(rv.size() == KSAX_ABSOLUTE);
+    vector<DemoSegment> ts;
+    {
+      DemoSegment tds;
+      tds.config = GameAiAxisRotater::absoluteConfig();
+      ts.push_back(tds);
+    }
+    {
+      DemoSegment tds;
+      tds.config = GameAiAxisRotater::absoluteConfig();
+      ts.push_back(tds);
+    }
+    rv.push_back(ts);
+  }
+  {
+    CHECK(rv.size() == KSAX_TANK);
+    vector<DemoSegment> ts;
+    {
+      DemoSegment tds;
+      tds.config = GameAiAxisRotater::tankConfig(0, -1);
+      ts.push_back(tds);
+    }
+    {
+      DemoSegment tds;
+      tds.config = GameAiAxisRotater::tankConfig(-1, 1);
+      ts.push_back(tds);
+    }
+    {
+      DemoSegment tds;
+      tds.config = GameAiAxisRotater::tankConfig(1, 1);
+      ts.push_back(tds);
+    }
+    {
+      DemoSegment tds;
+      tds.config = GameAiAxisRotater::tankConfig(0, 1);
+      ts.push_back(tds);
+    }
+    rv.push_back(ts);
+  }
+  return rv;
+}
+
+const vector<vector<DemoSegment> > dsegments = createDemoSegments();
+
+int configDemoSegments(int type) {
+  return dsegments[type].size();
 }
 vector<string> configDemoText(int type, int segment);
 GameAiAxisRotater::Config configDemoRotater(int type, int segment) {
-  if(type == KSAX_STEERING && segment == 0) {
-    return GameAiAxisRotater::steeringConfig(false, true);
-  } else if(type == KSAX_STEERING && segment == 1) {
-    return GameAiAxisRotater::steeringConfig(true, false);
-  } else if(type == KSAX_STEERING && segment == 2) {
-    return GameAiAxisRotater::steeringConfig(true, true);
-  } else if(type == KSAX_ABSOLUTE && segment == 0) {
-    return GameAiAxisRotater::absoluteConfig();
-  } else if(type == KSAX_ABSOLUTE && segment == 1) {
-    return GameAiAxisRotater::absoluteConfig();
-  } else if(type == KSAX_TANK && segment == 0) {
-    return GameAiAxisRotater::tankConfig(0, -1);
-  } else if(type == KSAX_TANK && segment == 1) {
-    return GameAiAxisRotater::tankConfig(-1, 1);
-  } else if(type == KSAX_TANK && segment == 2) {
-    return GameAiAxisRotater::tankConfig(1, 1);
-  } else if(type == KSAX_TANK && segment == 3) {
-    return GameAiAxisRotater::tankConfig(0, 1);
-  } else {
-    CHECK(0);
-  }
+  return dsegments[type][segment].config;
+
 }
 
 bool runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<FactionState> &factions) {
