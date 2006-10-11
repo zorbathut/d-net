@@ -517,7 +517,7 @@ void drawCrosses(const Coord2 &cloc, float rad) {
 void Game::renderToScreen(const vector<const Player *> &players) const {
   
   {
-    // Set up zooming for everything that happens in gamespace
+    // Set up zooming for the gfx window, if necessary
     setZoom(Float4(0, 0, getAspect(), 1));
     bool hasStatus = false;
     if(gamemode == GMODE_STANDARD || gamemode == GMODE_CHOICE)
@@ -525,11 +525,7 @@ void Game::renderToScreen(const vector<const Player *> &players) const {
     
     smart_ptr<GfxWindow> gfxw;
     
-    // In most modes, clear the background
-    if(gamemode == GMODE_DEMO || gamemode == GMODE_CENTERED_DEMO || gamemode == GMODE_TEST) {
-      drawSolid(clear);
-    }
-    
+    // Possibly make the GFX window, and also make the actual zooming
     if(gamemode != GMODE_CENTERED_DEMO) {
       gfxw.reset(new GfxWindow(Float4(0, hasStatus?0.1:0, getAspect(), 1), 1.0));
       
@@ -537,7 +533,15 @@ void Game::renderToScreen(const vector<const Player *> &players) const {
     } else {
       CHECK(tanks[0].live);
       setZoomVertical(tanks[0].pos.x.toFloat() - centereddemo_zoom / 2, tanks[0].pos.y.toFloat() - centereddemo_zoom / 2, tanks[0].pos.y.toFloat() + centereddemo_zoom / 2);
-      
+    }
+    
+    // In most modes, clear the background
+    if(gamemode == GMODE_DEMO || gamemode == GMODE_CENTERED_DEMO || gamemode == GMODE_TEST) {
+      drawSolid(clear);
+    }
+    
+    // In centered-demo mode, draw the grid
+    if(gamemode == GMODE_CENTERED_DEMO) {
       setColor(C::gray(0.5));
       drawGrid(10, 0.1);
     }

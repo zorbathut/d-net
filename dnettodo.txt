@@ -1,7 +1,6 @@
 ---- Major work path
 - Color push
 - Move entire setup into the new Tween system?
-  - Test-mode occlusion is incorrect
   - Descriptive text on the start screen
     - "You need two players, idiot"
   - Exit by choosing "done" with a dead player?
