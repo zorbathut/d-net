@@ -123,7 +123,7 @@ void Metagame::renderToScreen() const {
       for(int i = 0; i < persistent.players().size(); i++)
         ppt.push_back(&persistent.players()[i]);
     }
-    game.renderToScreen(ppt);
+    game.renderToScreen(ppt, roundsBetweenShop);
     if(!controls_users()) {    
       setColor(1.0, 1.0, 1.0);
       setZoom(Float4(0, 0, 133.333, 100));
@@ -138,7 +138,7 @@ void Metagame::renderToScreen() const {
       for(int i = 0; i < persistent.players().size(); i++)
         ppt.push_back(&persistent.players()[i]);
     }
-    game.renderToScreen(ppt);
+    game.renderToScreen(ppt, roundsBetweenShop);
     if(!controls_users()) {    
       setColor(1.0, 1.0, 1.0);
       setZoom(Float4(0, 0, 133.333, 100));

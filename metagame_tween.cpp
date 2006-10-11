@@ -594,34 +594,34 @@ void PersistentData::renderSlot(int slotid) const {
     
     float cury = 40;
     
-    setColor(1.0, 1.0, 1.0);
+    setColor(C::inactive_text);
     drawJustifiedText(StringPrintf("Base income: %s", lrBaseCash.textual().c_str()), 15, Float2(40 , cury), TEXT_MIN, TEXT_MIN);
     drawJustifiedText(StringPrintf("Firepower bonus: %s", lrFirepower.textual().c_str()), 15, Float2(760, cury), TEXT_MAX, TEXT_MIN);
     cury += 40;
     
-    setColor(1.0, 1.0, 1.0);
+    setColor(C::inactive_text);
     drawText("Damage", 30, Float2(40, cury));
     drawMultibar(lrCategory[0], Float4(200, cury, 760, cury + 40));
     cury += 60;
     
-    setColor(1.0, 1.0, 1.0);
+    setColor(C::inactive_text);
     drawText("Kills", 30, Float2(40, cury));
     drawMultibar(lrCategory[1], Float4(200, cury, 760, cury + 40));
     cury += 60;
     
-    setColor(1.0, 1.0, 1.0);
+    setColor(C::inactive_text);
     drawText("Wins", 30, Float2(40, cury));
     drawMultibar(lrCategory[2], Float4(200, cury, 760, cury + 40));
     cury += 60;
     
     cury += 40;
     
-    setColor(1.0, 1.0, 1.0);
+    setColor(C::inactive_text);
     drawText("Totals", 30, Float2(40, cury));
     drawMultibar(lrPlayer, Float4(200, cury, 760, cury + 40));
     cury += 100;
     
-    setColor(1.0, 1.0, 1.0);
+    setColor(C::inactive_text);
     drawJustifiedText("Waiting for", 30, Float2(400, cury), TEXT_CENTER, TEXT_MIN);
     cury += 40;
     

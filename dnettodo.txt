@@ -1,6 +1,6 @@
 ---- Major work path
-- Appropriate colors on results screen
 - Projectile width
+- Combine game's roundsbetweenshop and winlist into a single package
 - Move entire setup into the new Tween system?
   - Exit by choosing "done" with a dead player?
   - New faction choosing

@@ -40,7 +40,7 @@ public:
 
   bool runTick(const vector<Keystates> &keys, const vector<Player *> &players);
   void ai(const vector<GameAi *> &ais) const;
-  void renderToScreen(const vector<const Player *> &players) const;
+  void renderToScreen(const vector<const Player *> &players, int rounds_per_shop) const;
 
   int winningTeam() const;
   vector<int> teamBreakdown() const;

@@ -13,7 +13,6 @@ using namespace std;
 DEFINE_bool(verboseCollisions, false, "Verbose collisions");
 DEFINE_bool(debugGraphics, false, "Enable various debug graphics");
 DEFINE_bool(debugGraphicsCollisions, false, "Enable HUD for collision stats");
-DECLARE_int(rounds_per_store);
 
 // returns center and width/height
 pair<Float2, Float2> getMapZoom(const Coord4 &mapbounds) {
@@ -514,7 +513,7 @@ void drawCrosses(const Coord2 &cloc, float rad) {
   }
 }
 
-void Game::renderToScreen(const vector<const Player *> &players) const {
+void Game::renderToScreen(const vector<const Player *> &players, int rounds_per_shop) const {
   
   {
     // Set up zooming for the gfx window, if necessary
@@ -792,7 +791,7 @@ void Game::renderToScreen(const vector<const Player *> &players) const {
             drawLine(Float4(spos.x + iconwidth - iconborder * 2, spos.y + iconborder * 2, spos.x + iconborder * 2, spos.y + iconwidth - iconborder * 2), 0.0002);
           }
           spos.x += iconwidth;
-          if(j % FLAGS_rounds_per_store == FLAGS_rounds_per_store - 1) {
+          if(j % rounds_per_shop == rounds_per_shop - 1) {
             setColor(Color(1.0, 1.0, 1.0));
             spos.x += lineborder;
             drawLine(spos.x, spos.y - lineextra, spos.x, spos.y + iconwidth + lineextra, 0.0002);
@@ -1159,5 +1158,5 @@ void GamePackage::renderToScreen() const {
   vector<const Player*> ppt;
   for(int i = 0; i < players.size(); i++)
     ppt.push_back(&players[i]);
-  return game.renderToScreen(ppt);
+  game.renderToScreen(ppt, 0);
 }
