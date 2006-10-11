@@ -1,8 +1,7 @@
 ---- Major work path
-- Color push
+- Appropriate colors on results screen
+- Projectile width
 - Move entire setup into the new Tween system?
-  - Descriptive text on the start screen
-    - "You need two players, idiot"
   - Exit by choosing "done" with a dead player?
   - New faction choosing
     - Faction info screen on startup
@@ -60,3 +59,16 @@
 http://www.itchstudios.com/psg/ - Dafred's artist
 
 --- whee
+
+Choose "join game" to add more players. At least two players are needed.
+
+Left keyboard player uses WASD for movement, RTYFGHVBN as buttons.
+
+Right keyboard player uses arrow keys for movement, 7890UIOPJKL;M,./ as buttons.
+
+Choose "Settings" to modify your controller settings.
+
+"Quick shop" lets four people buy things at once.
+"Full shop" gives weapon and upgrade demonstrations.
+
+Choose "done" when ready to play.
