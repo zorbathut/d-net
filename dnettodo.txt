@@ -1,5 +1,5 @@
 ---- Major work path
-- Make AI work again
+- Why are AIs clusterbombing stupidly?
 - UpdateCharacterChoice stops taking vectors
 - Move deploy/projectile combo into Launcher
 - Add effectiveness multiplier, data export

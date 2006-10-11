@@ -86,7 +86,8 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
   
   // I think this works.
   
-  const Coord4 gmb = gamemap.getCollisionBounds();
+  const Coord4 gmbc = gamemap.getCollisionBounds();
+  const Coord4 gmbr = gamemap.getRenderBounds();
   vector<int> teamids;
   {
     for(int i = 0; i < tanks.size(); i++)
@@ -96,7 +97,7 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
   {
     StackString sst("Player movement collider");
     
-    collider.cleanup(COM_PLAYER, gmb, teamids);
+    collider.cleanup(COM_PLAYER, gmbc, teamids);
     
     {
       StackString sst("Adding walls");
@@ -109,9 +110,9 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
         continue;
       StackString sst(StringPrintf("Adding player %d, status live %d", j, tanks[j].live));
       //CHECK(inPath(tanks[j].pos, gamemap.getCollide()[0]));
-      if(!isInside(gmb, tanks[j].pos)) {
+      if(!isInside(gmbc, tanks[j].pos)) {
         StackString sst("Critical error, running tests");
-        dprintf("%s vs %s\n", tanks[j].pos.rawstr().c_str(), gmb.rawstr().c_str());
+        dprintf("%s vs %s\n", tanks[j].pos.rawstr().c_str(), gmbc.rawstr().c_str());
         CHECK(0);
       }
       tanks[j].addCollision(&collider, keys[j], j);
@@ -155,7 +156,7 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
       } else {
         StackString sst(StringPrintf("Moving player %d, status live %d", playerorder[i], tanks[playerorder[i]].live));
         //CHECK(inPath(tanks[playerorder[i]].getNextPosition(keys[playerorder[i]], tanks[playerorder[i]].pos, tanks[playerorder[i]].d).first, gamemap.getCollide()[0]));
-        CHECK(isInside(gmb, tanks[playerorder[i]].getNextPosition(keys[playerorder[i]]).first));
+        CHECK(isInside(gmbc, tanks[playerorder[i]].getNextPosition(keys[playerorder[i]]).first));
         collider.dumpGroup(CollideId(CGR_TANK, playerorder[i], 0));
         for(int j = 0; j < newpos.size(); j++)
           collider.addToken(CollideId(CGR_TANK, playerorder[i], 0), newpos[j], Coord4(0, 0, 0, 0));
@@ -168,7 +169,7 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
   {
     StackString sst("Main collider");
     
-    collider.cleanup(COM_PROJECTILE, gmb, teamids);
+    collider.cleanup(COM_PROJECTILE, gmbc, teamids);
     
     gamemap.updateCollide(&collider);
     
@@ -254,10 +255,10 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
         deaded /= len(deaded);
       deaded.y *= -1;
       bombards[j].pos += Coord2(deaded);
-      bombards[j].pos.x = max(bombards[j].pos.x, gmb.sx);
-      bombards[j].pos.y = max(bombards[j].pos.y, gmb.sy);
-      bombards[j].pos.x = min(bombards[j].pos.x, gmb.ex);
-      bombards[j].pos.y = min(bombards[j].pos.y, gmb.ey);
+      bombards[j].pos.x = max(bombards[j].pos.x, gmbr.sx);
+      bombards[j].pos.y = max(bombards[j].pos.y, gmbr.sy);
+      bombards[j].pos.x = min(bombards[j].pos.x, gmbr.ex);
+      bombards[j].pos.y = min(bombards[j].pos.y, gmbr.ey);
       CHECK(SIMUL_WEAPONS == 2);
       if(keys[j].fire[0].down || keys[j].fire[1].down) {
         bombards[j].state = BombardmentState::BS_FIRING;
@@ -424,8 +425,8 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
     boomy.player = &boomyplay;
     boomyplay.glory = defaultGlory();
     float border = 40;
-    boomy.pos.x = Coord(frand()) * (gmb.x_span() - border * 2) + gmb.sx + border;
-    boomy.pos.y = Coord(frand()) * (gmb.y_span() - border * 2) + gmb.sy + border;
+    boomy.pos.x = Coord(frand()) * (gmbr.x_span() - border * 2) + gmbr.sx + border;
+    boomy.pos.y = Coord(frand()) * (gmbr.y_span() - border * 2) + gmbr.sy + border;
     boomy.d = 0;
     boomyplay.faction = &boomyfact;
     boomyfact.color = Color(1.0, 1.0, 1.0);
