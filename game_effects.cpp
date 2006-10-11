@@ -41,7 +41,7 @@ public:
 
   virtual void render() const {
     setBaseColor();
-    drawPoint(pos + vel * getAge(), 0.1f);
+    drawPoint(pos + vel * getAge(), 0.5f);
   }
 
   GfxEffectsPoint(Float2 in_pos, Float2 in_vel, float life, Color color) : GfxEffects(life, color), pos(in_pos), vel(in_vel) { };

@@ -1,5 +1,4 @@
 ---- Major work path
-- Projectile width
 - Combine game's roundsbetweenshop and winlist into a single package
 - Move entire setup into the new Tween system?
   - Exit by choosing "done" with a dead player?

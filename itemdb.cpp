@@ -454,7 +454,7 @@ void parseProjectile(kvData *chunk) {
   CHECK(projclasses.count(name) == 0);
 
   projclasses[name].motion = PM_NORMAL;
-  projclasses[name].thickness_visual = 0.1;
+  projclasses[name].thickness_visual = 0.3;
   
   if(chunk->kv.count("thickness_visual")) {
     projclasses[name].thickness_visual = atof(chunk->consume("thickness_visual").c_str());
