@@ -41,18 +41,16 @@
 
 ---- Things that may or may not be needed
 - Stop reloading files in findLevels
-- Move stuff in tank small mode around a bit
 - Add tank sell depreciation
 - Special unique bonuses (turned the most, closest to death, most/least accurate, traveler, tunneler, deadeye, kamikaze)
 
 ---- Major but unimportant ATM
-- Halos?
 - Sound, yo
 - Absolute mode config
 - Holy crap! Self-intersecting! Cry!
-- Netplay (NOTE: shop demos change random state!)
 - Consistent-ize line width effects, colors, rendering in general
-- Level save snapshots - how should this work? I'm still not sure.
+- Snapshots - how should this work? I'm still not sure.
+  - Netplay (NOTE: shop demos change random state!)
   - dnd compression
 
 http://www.itchstudios.com/psg/ - Dafred's artist
