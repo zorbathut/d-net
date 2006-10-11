@@ -732,38 +732,49 @@ vector<Ai *> PersistentData::distillAi(const vector<Ai *> &ai) const {
 }
 
 void PersistentData::ai(const vector<Ai *> &ais) const {
-  for(int i = 0; i < ais.size(); i++)
-    CHECK(!ais[i]);
-  return;
-  /*
-  if(mode == TM_PLAYERCHOOSE) {
-    for(int i = 0; i < ais.size(); i++)
-      if(ais[i])
-        ais[i]->updateCharacterChoice(factions, pms, i);
-  } else if(mode == TM_RESULTS) {
+  if(mode == TM_RESULTS) {
     for(int i = 0; i < ais.size(); i++)
       if(ais[i])
         ais[i]->updateWaitingForReport();
-  } else if(mode == TM_SHOP) {
-    vector<pair<int, pair<float, float> > > ranges = getRanges();
-    
+  } else if(mode == TM_SHOP || mode == TM_PLAYERCHOOSE) {
     vector<bool> dun(ais.size(), false);
     for(int i = 0; i < slot_count; i++) {
       if(slot[i].type != Slot::EMPTY) {
         CHECK(slot[i].pid != -1); // blah
         CHECK(!dun[slot[i].pid]);
         dun[slot[i].pid] = true;
-        if(slot[i].type == Slot::SHOP)
+        if(slot[i].type == Slot::SHOP) {
           slot[i].shop.ai(ais[slot[i].pid], &playerdata[playerid[slot[i].pid]]);
+        } else if(slot[i].type == Slot::CHOOSE || slot[i].type == Slot::SETTINGS) {
+          ais[slot[i].pid]->updateCharacterChoice(factions, pms, slot[i].pid);
+        } else {
+          CHECK(0);
+        }
       }
     }
     for(int i = 0; i < dun.size(); i++) {
-      if(!dun[i] && ais[i])
-        ais[i]->updateTween(!!pms[i].faction, sps_playermode[i] == SPS_PENDING, sps_playerpos[i], sps_shopped[i], targetCoords(TTL_FULLSHOP), targetCoords(TTL_QUICKSHOP), ranges[TTL_DONE]);
+      if(!dun[i] && ais[i]) {
+        Float2 joincoords;
+        Float2 fullshopcoords;
+        Float2 quickshopcoords;
+        bool shopped;
+        if(mode == TM_SHOP) {
+          joincoords = targetCoords(TTL_LEAVEJOIN);
+          fullshopcoords = targetCoords(TTL_FULLSHOP);
+          quickshopcoords = targetCoords(TTL_QUICKSHOP);
+          shopped = sps_shopped[i];
+        } else {
+          joincoords = targetCoords(TTL_JOIN);
+          fullshopcoords = Float2(0, 0);
+          quickshopcoords = Float2(0, 0);
+          shopped = true;
+        }
+        ais[i]->updateTween(!!pms[i].faction, sps_playermode[i] == SPS_PENDING, sps_playerpos[i], shopped, joincoords, fullshopcoords, quickshopcoords, targetCoords(TTL_DONE));
+      }
     }
   } else {
     CHECK(0);
-  }*/
+  }
 }
 
 vector<Keystates> PersistentData::genKeystates(const vector<Controller> &keys) const {

@@ -51,7 +51,7 @@ public:
 
   void updatePregame();
   void updateCharacterChoice(const vector<FactionState> &factions, const vector<PlayerMenuState> &players, int me);
-  void updateTween(bool live, bool pending, Float2 playerpos, bool shopped, pair<float, float> fullshoprange, pair<float, float> quickshoprange, pair<float, float> donerange);
+  void updateTween(bool live, bool pending, Float2 playerpos, bool shopped, Float2 joinrange, Float2 fullshoprange, Float2 quickshoprange, Float2 donerange);
   void updateShop(const Player *player);
   GameAi *getGameAi();
   void updateWaitingForReport();

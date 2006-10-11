@@ -177,42 +177,50 @@ void Ai::updateCharacterChoice(const vector<FactionState> &factions, const vecto
   }
 }
 
-void Ai::updateTween(bool live, bool pending, Float2 playerpos, bool shopped, pair<float, float> fullshoprange, pair<float, float> quickshoprange, pair<float, float> donerange) {
+void Ai::updateTween(bool live, bool pending, Float2 playerpos, bool shopped, Float2 joinrange, Float2 fullshoprange, Float2 quickshoprange, Float2 donerange) {
   updateKeys(CORE);
   
   zeroNextKeys();
   
-  if(!live)
-    return;
-  
-  if(shoptarget == -1)
-    shoptarget = (rng.rand() % 4 != 0);
+  if(shoptarget == -1) {
+    if(!live)
+      shoptarget = 0;
+    else if(rng.rand() % 4 == 1)
+      shoptarget = 1;
+    else
+      shoptarget = 2;
+  }
   
   if(pending) {
     nextKeys.keys[BUTTON_CANCEL].down = (rng.rand() % 100 == 0);
     return;
   }
   
-  pair<float, float> approach;
+  Float2 approach;
   if(shopped) {
     approach = donerange;
   } else if(shoptarget == 0) {
-    approach = fullshoprange;
+    approach = joinrange;
   } else if(shoptarget == 1) {
+    approach = fullshoprange;
+  } else if(shoptarget == 2) {
     approach = quickshoprange;
   } else {
     CHECK(0);
   }
   
-  if(clamp(playerpos.x, approach.first, approach.second) == playerpos.x) {
+  if(len(playerpos - approach) < 5) {
     nextKeys.keys[BUTTON_ACCEPT].down = true;
+    nextKeys.menu.x = rng.frand() * 2 - 1;
+    nextKeys.menu.y = rng.frand() * 2 - 1;
     return;
   }
   
-  if(playerpos.x < approach.first)
+  if(playerpos.x < approach.x)
     nextKeys.menu.x = 1;
-  if(playerpos.x > approach.second)
+  if(playerpos.x > approach.x)
     nextKeys.menu.x = -1;
+  // we just sort of ignore the y
 }
 
 Controller makeController(float x, float y, bool key) {
