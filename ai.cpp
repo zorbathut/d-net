@@ -155,23 +155,36 @@ void Ai::updateCharacterChoice(const vector<FactionState> &factions, const vecto
   } else if(players[you].settingmode == SETTING_BUTTONS) {
     if(players[you].setting_button_current >= 0 && players[you].setting_button_current < nextKeys.keys.size())
       nextKeys.keys[players[you].setting_button_current].down = frameNumber % 2;
+    else if(players[you].setting_button_current == nextKeys.keys.size())
+      nextKeys.keys[BUTTON_ACCEPT].down = frameNumber % 2;
   } else if(players[you].settingmode == SETTING_AXISTYPE) {
-    if(frameNumber % 2 == 0) {
-      if(players[you].setting_axistype_curchoice != KSAX_ABSOLUTE * 2)
-        nextKeys.menu = Float2(0, -1.0);
-      else
-        nextKeys.keys[BUTTON_ACCEPT].down = true;
+    if(players[you].setting_axistype != KSAX_ABSOLUTE) {
+      if(frameNumber % 2 == 0) {
+        if(players[you].setting_axistype_curchoice != KSAX_ABSOLUTE * 2)
+          nextKeys.menu = Float2(0, -1.0);
+        else
+          nextKeys.keys[BUTTON_ACCEPT].down = true;
+      }
+    } else {
+      if(frameNumber % 2 == 0) {
+        if(players[you].setting_axistype_curchoice != KSAX_END * 2)
+          nextKeys.menu = Float2(0, -1.0);
+        else
+          nextKeys.keys[BUTTON_ACCEPT].down = true;
+      }
     }
   } else if(players[you].settingmode == SETTING_AXISCHOOSE) {
     if(players[you].setting_axis_current == 0)
       nextKeys.menu.x = 1.0;
     if(players[you].setting_axis_current == 1)
       nextKeys.menu.y = 1.0;
+    if(players[you].setting_axis_current == 2)
+      nextKeys.keys[BUTTON_ACCEPT].down = true;
   } else if(players[you].settingmode == SETTING_TEST) {
     nextKeys.keys[BUTTON_CANCEL].down = true;
   } else if(players[you].settingmode == SETTING_READY) {
     CHECK(players[you].setting_axistype == KSAX_ABSOLUTE);
-    nextKeys.keys[BUTTON_ACCEPT].down = true;
+    nextKeys.keys[BUTTON_ACCEPT].down = frameNumber % 2;
   } else {
     CHECK(0);
   }
@@ -183,6 +196,7 @@ void Ai::updateTween(bool live, bool pending, Float2 playerpos, bool shopped, Fl
   zeroNextKeys();
   
   if(shoptarget == -1) {
+    nextKeys.menu.y = -1.0;
     if(!live)
       shoptarget = 0;
     else if(rng.rand() % 4 == 1)
@@ -209,10 +223,9 @@ void Ai::updateTween(bool live, bool pending, Float2 playerpos, bool shopped, Fl
     CHECK(0);
   }
   
-  if(len(playerpos - approach) < 5) {
-    nextKeys.keys[BUTTON_ACCEPT].down = true;
-    nextKeys.menu.x = rng.frand() * 2 - 1;
-    nextKeys.menu.y = rng.frand() * 2 - 1;
+  if(len(playerpos - approach) < 3) {
+    nextKeys.keys[BUTTON_ACCEPT].down = frameNumber % 2;
+    shoptarget = -1;
     return;
   }
   

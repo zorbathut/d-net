@@ -732,6 +732,7 @@ vector<Ai *> PersistentData::distillAi(const vector<Ai *> &ai) const {
 }
 
 void PersistentData::ai(const vector<Ai *> &ais) const {
+  StackString sst("persistent AI");
   if(mode == TM_RESULTS) {
     for(int i = 0; i < ais.size(); i++)
       if(ais[i])
@@ -746,8 +747,10 @@ void PersistentData::ai(const vector<Ai *> &ais) const {
         if(slot[i].type == Slot::SHOP) {
           slot[i].shop.ai(ais[slot[i].pid], &playerdata[playerid[slot[i].pid]]);
         } else if(slot[i].type == Slot::CHOOSE || slot[i].type == Slot::SETTINGS) {
-          ais[slot[i].pid]->updateCharacterChoice(factions, pms, slot[i].pid);
+          if(ais[slot[i].pid])
+            ais[slot[i].pid]->updateCharacterChoice(factions, pms, slot[i].pid);
         } else {
+          dprintf("%d\n", slot[i].type);
           CHECK(0);
         }
       }
