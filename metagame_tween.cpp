@@ -34,8 +34,8 @@ const vector<Player> &PersistentData::players() const {
   return playerdata;
 }
 
-const char * const tween_textlabels[] = {"Leave/join game", "Settings", "Full shop", "Quick shop", "Done"};
-enum { TTL_LEAVEJOIN, TTL_SETTINGS, TTL_FULLSHOP, TTL_QUICKSHOP, TTL_DONE, TTL_LAST }; 
+const char * const tween_textlabels[] = {"Leave/join game", "Leave game", "Join game", "Settings", "Full shop", "Quick shop", "Done"};
+enum { TTL_LEAVEJOIN, TTL_LEAVE, TTL_JOIN, TTL_SETTINGS, TTL_FULLSHOP, TTL_QUICKSHOP, TTL_DONE, TTL_LAST }; 
 
 class QueueSorter {
   const vector<PlayerMenuState> *pms;
@@ -43,7 +43,8 @@ class QueueSorter {
   int precedence(pair<int, int> item) const {
     if(item.second == TTL_FULLSHOP)
       return 2;
-    if(item.second == TTL_LEAVEJOIN && (*pms)[item.first].faction)
+    // Prioritize leaving or joining the game
+    if(item.second == TTL_LEAVEJOIN || item.second == TTL_JOIN || item.second == TTL_LEAVE)
       return 0;
     return 1;
   }
@@ -133,12 +134,13 @@ bool PersistentData::tick(const vector< Controller > &keys) {
                   } else {
                     sps_playermode[player] = SPS_DONE;
                   }
+                } else if(ranges[j].first == TTL_JOIN) {
                 } else {
                   sps_playermode[player] = SPS_PENDING;
                   sps_queue.push_back(make_pair(player, ranges[j].first));
                 }
               } else {
-                if(ranges[j].first == TTL_LEAVEJOIN) {
+                if(ranges[j].first == TTL_LEAVEJOIN || ranges[j].first == TTL_JOIN) {
                   sps_playermode[player] = SPS_PENDING;
                   sps_queue.push_back(make_pair(player, ranges[j].first));
                 }
@@ -233,6 +235,12 @@ bool PersistentData::tick(const vector< Controller > &keys) {
         } else if(sps_queue[0].second == TTL_LEAVEJOIN && pms[sps_queue[0].first].faction) {
           slot[empty].type = Slot::QUITCONFIRM;
           sps_quitconfirm[sps_queue[0].first] = 0;
+        } else if(sps_queue[0].second == TTL_LEAVE) {
+          CHECK(pms[sps_queue[0].first].faction);
+          slot[empty].type = Slot::QUITCONFIRM;
+        } else if(sps_queue[0].second == TTL_JOIN) {
+          CHECK(!pms[sps_queue[0].first].faction);
+          slot[empty].type = Slot::CHOOSE;
         } else if(sps_queue[0].second == TTL_FULLSHOP) {
           slot[empty].type = Slot::SHOP;
           slot[empty].shop.init(false);
@@ -415,6 +423,8 @@ void PersistentData::reset() {
   for(int i = 0; i < pms.size(); i++) {
     if(pms[i].faction) {
       sps_playerpos.push_back(targetCoords(TTL_QUICKSHOP));
+    } else if(mode == TM_PLAYERCHOOSE) {
+      sps_playerpos.push_back(targetCoords(TTL_JOIN));
     } else {
       sps_playerpos.push_back(targetCoords(TTL_LEAVEJOIN));
     }
@@ -817,7 +827,8 @@ void PersistentData::startAtNormalShop() {
 vector<pair<int, pair<float, float> > > PersistentData::getRanges() const {
   vector<int> avails;
   if(mode == TM_PLAYERCHOOSE) {
-    avails.push_back(TTL_LEAVEJOIN);
+    avails.push_back(TTL_LEAVE);
+    avails.push_back(TTL_JOIN);
     avails.push_back(TTL_SETTINGS);
     avails.push_back(TTL_DONE);
   } else if(mode == TM_SHOP) {

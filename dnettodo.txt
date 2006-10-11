@@ -1,11 +1,13 @@
 ---- Major work path
 - Color push
 - Move entire setup into the new Tween system?
-  - New faction choosing
-    - Faction info screen on startup
+  - Make sure debugcontrollers and faction -1 work
+  - Make sure cancel at various points in controller setup works
   - Descriptive text on the start screen
     - "You need two players, idiot"
   - Exit by choosing "done" with a dead player?
+  - New faction choosing
+    - Faction info screen on startup
 - Gradual shop spawning
   - Remove bombardment from 2 player, make it cheaper for 3 and 4
 - Pull glory explody into its own deploy?
@@ -60,24 +62,3 @@
 http://www.itchstudios.com/psg/ - Dafred's artist
 
 --- whee
-
-Select your button setup. Choose "done" when ready.
-These keys are available for this player:
-7890UIOPJKLM
-
-Choose your tank control mode. Choose "done" when ready.
-Choose "demo" for a demonstration of that mode.
-If you're unsure, "Steering" is recommended.
-
-Configure your control directions. Select the entry,
-then move your controller in the desired direction.
-Choose "done" when ready.
-
-Test your tank controls.
-Push your "accept" button to test them out.
-Push your "cancel" button once you're done.
-
-You've finished setting up your controls. Push "accept"
-if you're finished. Go back and edit your settings if
-you are dissatisfied. You may return to change settings
-any time the shop is available.
