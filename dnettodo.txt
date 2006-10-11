@@ -1,8 +1,7 @@
 ---- Major work path
 - Color push
 - Move entire setup into the new Tween system?
-  - Make sure debugcontrollers and faction -1 work
-  - Make sure cancel at various points in controller setup works
+  - Test-mode occlusion is incorrect
   - Descriptive text on the start screen
     - "You need two players, idiot"
   - Exit by choosing "done" with a dead player?

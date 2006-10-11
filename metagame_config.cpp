@@ -247,32 +247,32 @@ bool standardButtonTick(StandardButtonTickData *sbtd) {
       (*sbtd->current_button)++;
     *sbtd->current_button = modurot(*sbtd->current_button, sbtd->outkeys->size() + 1);
     
-    if(*sbtd->current_button == sbtd->outkeys->size()) {
+    if(*sbtd->current_button == sbtd->outkeys->size()) {    // If we're on "done" . . .
       if(sbtd->keys.keys[sbtd->accept_button].push) {
         *sbtd->current_button = -1;
         return true;
       }
-    }
-    
-    if(sbtd->require_trigger) {
-      // We accept anything for this (besides cancel) because the user might not know what their accept button is at the moment
-      bool somethingpushed = false;
-      for(int i = 0; i < sbtd->keys.keys.size(); i++) {
-        if(i == sbtd->cancel_button)
-          continue;
-        if(sbtd->keys.keys[i].push)
-          somethingpushed = true;
-      }
-      if(somethingpushed) {
-        (*sbtd->current_mode) = RM_CHOOSING;
-      } else if(sbtd->keys.keys[sbtd->cancel_button].push) {
-        *sbtd->current_button = -1;
-        return true;
-      }
-    } else {
-      for(int i = 0; i < sbtd->triggers->size(); i++) {
-        if(abs((*sbtd->triggers)[i]) > 0.9) {
-          changeButtons(sbtd->outkeys, sbtd->outinvert, sbtd->groups, *sbtd->current_button, i, (*sbtd->triggers)[i] < 0);
+    } else {   // If we're not on "done" . . .
+      if(sbtd->require_trigger) {
+        // We accept anything for this (besides cancel) because the user might not know what their accept button is at the moment
+        bool somethingpushed = false;
+        for(int i = 0; i < sbtd->keys.keys.size(); i++) {
+          if(i == sbtd->cancel_button)
+            continue;
+          if(sbtd->keys.keys[i].push)
+            somethingpushed = true;
+        }
+        if(somethingpushed) {
+          (*sbtd->current_mode) = RM_CHOOSING;
+        } else if(sbtd->keys.keys[sbtd->cancel_button].push) {
+          *sbtd->current_button = -1;
+          return true;
+        }
+      } else {
+        for(int i = 0; i < sbtd->triggers->size(); i++) {
+          if(abs((*sbtd->triggers)[i]) > 0.9) {
+            changeButtons(sbtd->outkeys, sbtd->outinvert, sbtd->groups, *sbtd->current_button, i, (*sbtd->triggers)[i] < 0);
+          }
         }
       }
     }
