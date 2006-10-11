@@ -482,10 +482,11 @@ void Game::ai(const vector<GameAi *> &ais) const {
   CHECK(ais.size() == tanks.size());
   for(int i = 0; i < ais.size(); i++) {
     if(ais[i]) {
-      if(tanks[i].live)
+      if(tanks[i].live) {
         ais[i]->updateGame(tanks, i);
-      else
+      } else {
         ais[i]->updateBombardment(tanks, bombards[i].pos);
+      }
     }
   }
 }

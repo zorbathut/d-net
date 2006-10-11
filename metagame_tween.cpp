@@ -724,10 +724,10 @@ vector<const IDBFaction *> PersistentData::getUnfinishedFactions() const {
 
 vector<Ai *> PersistentData::distillAi(const vector<Ai *> &ai) const {
   CHECK(ai.size() == pms.size());
-  vector<Ai *> rv;
+  vector<Ai *> rv(playerdata.size());
   for(int i = 0; i < pms.size(); i++)
     if(pms[i].faction)
-      rv.push_back(ai[i]);
+      rv[playerid[i]] = ai[i];
   return rv;
 }
 

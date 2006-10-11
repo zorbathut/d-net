@@ -196,7 +196,7 @@ void Ai::updateTween(bool live, bool pending, Float2 playerpos, bool shopped, Fl
   zeroNextKeys();
   
   if(shoptarget == -1) {
-    nextKeys.menu.y = -1.0;
+    nextKeys.menu.x = -1.0;
     if(!live)
       shoptarget = 0;
     else if(rng.rand() % 4 == 1)
