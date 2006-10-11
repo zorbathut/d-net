@@ -466,10 +466,6 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
         }
         tanks[i].addAccumulatedScores(players[i]);
       }
-      if(winplayer == -1)
-        wins->push_back(NULL);
-      else
-        wins->push_back(players[winplayer]->getFaction());
     } else if(zones.size() == 4) {
     } else {
       CHECK(0);
@@ -513,7 +509,7 @@ void drawCrosses(const Coord2 &cloc, float rad) {
   }
 }
 
-void Game::renderToScreen(const vector<const Player *> &players, int rounds_per_shop) const {
+void Game::renderToScreen(const vector<const Player *> &players, GameMetacontext gmc) const {
   
   {
     // Set up zooming for the gfx window, if necessary
@@ -733,12 +729,7 @@ void Game::renderToScreen(const vector<const Player *> &players, int rounds_per_
     setZoom(Float4(0, 0, 1.33333, 1));
     
     // Our win ticker
-    if(wins) {
-      /*
-      vector<const IDBFaction *> genExampleFacts(const vector<Tank> &plays, int ct);
-      static vector<const IDBFaction *> fact = genExampleFacts(tanks, 5000);
-      wins->swap(fact);*/
-      
+    if(gmc.hasMetacontext()) {
       const float iconwidth = 0.02;
       const float iconborder = 0.001;
       const float comboborder=0.0015;
@@ -747,16 +738,16 @@ void Game::renderToScreen(const vector<const Player *> &players, int rounds_per_
       
       Float2 spos(0.01, 0.11);
       
-      for(int i = 0; i < wins->size(); i += 6) {
+      for(int i = 0; i < gmc.getWins().size(); i += 6) {
         map<const IDBFaction *, int> fc;
         int smax = 0;
         for(int j = 0; j < i; j++) {
-          fc[(*wins)[j]]++;
-          smax = max(smax, fc[(*wins)[j]]);
+          fc[gmc.getWins()[j]]++;
+          smax = max(smax, fc[gmc.getWins()[j]]);
         }
         fc.erase(NULL);
         
-        int winrup = wins->size() / 6 * 6 + 6;
+        int winrup = gmc.getWins().size() / 6 * 6 + 6;
         
         float width = 0.02;
         if(fc.size())
@@ -782,16 +773,16 @@ void Game::renderToScreen(const vector<const Player *> &players, int rounds_per_
           spos.x += lineborder;
         }
             
-        for(int j = i; j < wins->size(); j++) {
-          if((*wins)[j]) {
-            setColor((*wins)[j]->color);
-            drawDvec2((*wins)[j]->icon, Float4(spos.x + iconborder, spos.y + iconborder, spos.x + iconwidth - iconborder, spos.y + iconwidth - iconborder), 10, 0.0002);
+        for(int j = i; j < gmc.getWins().size(); j++) {
+          if(gmc.getWins()[j]) {
+            setColor(gmc.getWins()[j]->color);
+            drawDvec2(gmc.getWins()[j]->icon, Float4(spos.x + iconborder, spos.y + iconborder, spos.x + iconwidth - iconborder, spos.y + iconwidth - iconborder), 10, 0.0002);
           } else {
             setColor(Color(0.5, 0.5, 0.5));
             drawLine(Float4(spos.x + iconwidth - iconborder * 2, spos.y + iconborder * 2, spos.x + iconborder * 2, spos.y + iconwidth - iconborder * 2), 0.0002);
           }
           spos.x += iconwidth;
-          if(j % rounds_per_shop == rounds_per_shop - 1) {
+          if(j % gmc.getRoundsPerShop() == gmc.getRoundsPerShop() - 1) {
             setColor(Color(1.0, 1.0, 1.0));
             spos.x += lineborder;
             drawLine(spos.x, spos.y - lineextra, spos.x, spos.y + iconwidth + lineextra, 0.0002);
@@ -801,8 +792,6 @@ void Game::renderToScreen(const vector<const Player *> &players, int rounds_per_
         
         break;
       }
-      
-      //wins->swap(fact);
     }
     
     // Collision HUD
@@ -814,24 +803,6 @@ void Game::renderToScreen(const vector<const Player *> &players, int rounds_per_
   }
   
 };
-
-/*
-vector<const IDBFaction *> genExampleFacts(const vector<Tank> &plays, int ct) {
-  vector<const IDBFaction *> feet;
-  for(int i = 0; i < ct; i++) {
-    int rv = rand() % (plays.size() + 1);
-    if(rv == plays.size()) {
-      if(rand() % 3 == 0) {
-        feet.push_back(NULL);
-      } else {
-        i--;
-        continue;
-      }
-    } else
-      feet.push_back(plays[rv].player->getFaction());
-  }
-  return feet;
-}*/
 
 int Game::winningTeam() const {
   int winteam = -1;
@@ -928,8 +899,6 @@ void Game::initCommon(const vector<Player*> &in_playerdata, const Level &lev) {
   tanks.resize(in_playerdata.size());
   bombards.resize(in_playerdata.size());
   
-  wins = NULL;
-  
   gamemap = Gamemap(lev);
   
   for(int i = 0; i < tanks.size(); i++) {
@@ -975,16 +944,13 @@ void Game::initCommon(const vector<Player*> &in_playerdata, const Level &lev) {
   demomode_hits = 0;
 }
 
-void Game::initStandard(vector<Player> *in_playerdata, const Level &lev, vector<const IDBFaction *> *in_wins) {
+void Game::initStandard(vector<Player> *in_playerdata, const Level &lev) {
   gamemode = GMODE_STANDARD;
   
   vector<Player*> playerdata;
   for(int i = 0; i < in_playerdata->size(); i++)
     playerdata.push_back(&(*in_playerdata)[i]);
   initCommon(playerdata, lev);
-  
-  CHECK(in_wins);
-  wins = in_wins;
   
   frameNmToStart = 180;
   freezeUntilStart = true;
@@ -1158,5 +1124,24 @@ void GamePackage::renderToScreen() const {
   vector<const Player*> ppt;
   for(int i = 0; i < players.size(); i++)
     ppt.push_back(&players[i]);
-  game.renderToScreen(ppt, 0);
+  game.renderToScreen(ppt, GameMetacontext());
 }
+
+const vector<const IDBFaction *> &GameMetacontext::getWins() const {
+  CHECK(wins);
+  return *wins;
+};
+int GameMetacontext::getRoundsPerShop() const {
+  CHECK(roundsPerShop != -1);
+  return roundsPerShop;
+};
+
+bool GameMetacontext::hasMetacontext() const {
+  CHECK(!wins == (roundsPerShop == -1));
+  return !!wins;
+}
+
+GameMetacontext::GameMetacontext() :
+    wins(NULL), roundsPerShop(-1) { };
+GameMetacontext::GameMetacontext(const vector<const IDBFaction *> &wins, int roundsPerShop) :
+    wins(&wins), roundsPerShop(roundsPerShop) { };

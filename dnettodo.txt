@@ -1,9 +1,9 @@
 ---- Major work path
-- Combine game's roundsbetweenshop and winlist into a single package
-- Move entire setup into the new Tween system?
-  - Exit by choosing "done" with a dead player?
-  - New faction choosing
-    - Faction info screen on startup
+- Make AI work again
+- Move deploy/projectile combo into Launcher
+- Add effectiveness multiplier, data export
+- New faction choosing
+  - Faction info screen on startup
 - Gradual shop spawning
   - Remove bombardment from 2 player, make it cheaper for 3 and 4
 - Pull glory explody into its own deploy?

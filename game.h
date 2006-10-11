@@ -29,10 +29,25 @@ enum {FACTION_NULL, FACTION_SMALL, FACTION_MEDIUM, FACTION_BIG, FACTION_LAST};
 enum {DEMOPLAYER_QUIET, DEMOPLAYER_DPS, DEMOPLAYER_DPH, DEMOPLAYER_DPC, DEMOPLAYER_BOMBSIGHT, DEMOPLAYER_LAST};
 // Damage per second, damage per hit, damage per cycle (with cycle sent to game.h manually)
 
+class GameMetacontext {
+private:
+  const vector<const IDBFaction *> *wins;
+  int roundsPerShop;
+
+public:
+  const vector<const IDBFaction *> &getWins() const;
+  int getRoundsPerShop() const;
+
+  bool hasMetacontext() const;
+
+  GameMetacontext();
+  GameMetacontext(const vector<const IDBFaction *> &wins, int roundsPerShop);
+};
+
 class Game {
 public:
   
-  void initStandard(vector<Player> *playerdata, const Level &level, vector<const IDBFaction *> *wins);
+  void initStandard(vector<Player> *playerdata, const Level &level);
   void initChoice(vector<Player> *playerdata);
   void initTest(Player *playerdata, const Float4 &bounds);
   void initDemo(vector<Player> *playerdata, float boxradi, const float *xps, const float *yps, const float *facing, const int *modes);
@@ -40,7 +55,7 @@ public:
 
   bool runTick(const vector<Keystates> &keys, const vector<Player *> &players);
   void ai(const vector<GameAi *> &ais) const;
-  void renderToScreen(const vector<const Player *> &players, int rounds_per_shop) const;
+  void renderToScreen(const vector<const Player *> &players, GameMetacontext gmc) const;
 
   int winningTeam() const;
   vector<int> teamBreakdown() const;
@@ -100,8 +115,6 @@ private:
   float bombardment_tier;
   float getBombardmentIncreasePerSec() const;
   float getTimeUntilBombardmentUpgrade() const;
-
-  vector<const IDBFaction *> *wins;
   
   Game(const Game &rhs);      // do not implement
   void operator=(const Game &rhs);

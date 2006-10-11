@@ -65,7 +65,7 @@ bool Metagame::runTick(const vector<Controller> &keys) {
       mode = MGM_PLAY;
 
       findLevels(persistent.players().size());  // player count may have changed. TODO: make this suck less
-      game.initStandard(&persistent.players(), levels[int(frand() * levels.size())], &win_history);
+      game.initStandard(&persistent.players(), levels[int(frand() * levels.size())]);
       if(win_history.size() != gameround)
         dprintf("%d, %d\n", win_history.size(), gameround);
       CHECK(win_history.size() == gameround);
@@ -78,14 +78,19 @@ bool Metagame::runTick(const vector<Controller> &keys) {
         ppt.push_back(&persistent.players()[i]);
     }
     if(game.runTick(persistent.genKeystates(keys), ppt)) {
+      if(game.winningTeam() == -1)
+        win_history.push_back(NULL);
+      else
+        win_history.push_back(ppt[game.winningTeam()]->getFaction());
       gameround++;
+      CHECK(gameround == win_history.size());
       if(gameround % roundsBetweenShop == 0) {
         mode = MGM_TWEEN;
         persistent.divvyCash(game.firepowerSpent);
       } else {
         // store the firepower, restart the game, and add firepower to it (kind of kludgy)
         float firepower = game.firepowerSpent;
-        game.initStandard(&persistent.players(), levels[int(frand() * levels.size())], &win_history);
+        game.initStandard(&persistent.players(), levels[int(frand() * levels.size())]);
         game.firepowerSpent = firepower;
       }
     }
@@ -123,7 +128,7 @@ void Metagame::renderToScreen() const {
       for(int i = 0; i < persistent.players().size(); i++)
         ppt.push_back(&persistent.players()[i]);
     }
-    game.renderToScreen(ppt, roundsBetweenShop);
+    game.renderToScreen(ppt, GameMetacontext());
     if(!controls_users()) {    
       setColor(1.0, 1.0, 1.0);
       setZoom(Float4(0, 0, 133.333, 100));
@@ -138,7 +143,7 @@ void Metagame::renderToScreen() const {
       for(int i = 0; i < persistent.players().size(); i++)
         ppt.push_back(&persistent.players()[i]);
     }
-    game.renderToScreen(ppt, roundsBetweenShop);
+    game.renderToScreen(ppt, GameMetacontext(win_history, roundsBetweenShop));
     if(!controls_users()) {    
       setColor(1.0, 1.0, 1.0);
       setZoom(Float4(0, 0, 133.333, 100));
