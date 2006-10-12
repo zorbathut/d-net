@@ -18,12 +18,23 @@ projectile {
   debug=1
 }
 
-weapon {
-  name=ROOT.Weapons.Debug.Tracer
-  cost=1
-  firerate=60
+launcher {
+  name=launcher.tracer
+  
   projectile=projectile.tracer
   deploy=deploy.debug
+  
+  debug=1
+}
+
+weapon {
+  name=ROOT.Weapons.Debug.Tracer
+  
+  cost=1
+  firerate=60
+  
+  launcher=launcher.tracer
+  
   debug=1
 }
 
@@ -41,12 +52,22 @@ projectile {
   debug=1
 }
 
+launcher {
+  name=launcher.shredder
+  
+  projectile=projectile.shredder
+  deploy=deploy.debug
+  
+  debug=1
+}
+
 weapon {
   name=ROOT.Weapons.Debug.Shredder
   cost=1
   firerate=60
-  projectile=projectile.shredder
-  deploy=deploy.debug
+  
+  launcher=launcher.shredder
+  
   debug=1
 }
 
@@ -60,12 +81,22 @@ projectile {
   debug=1
 }
 
+launcher {
+  name=launcher.minesplatterer
+  
+  projectile=projectile.minesplatterer
+  deploy=deploy.debug
+  
+  debug=1
+}
+
 weapon {
   name=ROOT.Weapons.Debug.Minesplatterer
   cost=1
   firerate=60
-  deploy=deploy.minepath
-  projectile=projectile.minesplatterer
+  
+  launcher=launcher.shredder
+  
   debug=1
 }
 

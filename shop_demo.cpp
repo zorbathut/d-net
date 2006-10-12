@@ -237,7 +237,7 @@ const int glory_progression[] = { 6000, 0 };
 void ShopDemo::init(const IDBWeapon *weap, const Player *player) {
   StackString sst("Initting demo weapon shop");
   
-  if(weap->demomode == WDM_FIRINGRANGE) {
+  if(weap->launcher->demomode == WDM_FIRINGRANGE) {
     mode = DEMOMODE_FIRINGRANGE;
     game.players.clear();
     game.players.resize(6);
@@ -253,16 +253,16 @@ void ShopDemo::init(const IDBWeapon *weap, const Player *player) {
       ais.push_back(smart_ptr<GameAi>(new GameAiNull));
     }
     
-    if(weap->firingrange_distance == WFRD_NORMAL) {
+    if(weap->launcher->firingrange_distance == WFRD_NORMAL) {
       game.game.initDemo(&game.players, 160, weapons_xpses_normal, weapons_ypses_normal, weapons_facing, weapons_mode);
-    } else if(weap->firingrange_distance == WFRD_MELEE) {
+    } else if(weap->launcher->firingrange_distance == WFRD_MELEE) {
       game.game.initDemo(&game.players, 40, weapons_xpses_melee, weapons_ypses_melee, weapons_facing, weapons_mode);
     } else {
       CHECK(0);
     }
     
     progression = weapons_progression;
-  } else if(weap->demomode == WDM_MINES) {
+  } else if(weap->launcher->demomode == WDM_MINES) {
     mode = DEMOMODE_MINE;
     game.players.clear();
     game.players.resize(10);

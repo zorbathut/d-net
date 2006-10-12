@@ -77,7 +77,7 @@ void ShopInfo::init(const IDBWeapon *in_weapon, const Player *in_player, bool in
   miniature = in_miniature;
   weapon = in_weapon;
   player = in_player;
-  text = in_weapon->text;
+  text = in_weapon->launcher->text;
   if(!miniature)
     demo.init(weapon, player);
 }

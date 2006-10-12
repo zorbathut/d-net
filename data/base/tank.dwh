@@ -23,13 +23,20 @@ projectile {
   warhead=warhead.sparker1
 }
 
-weapon {
-  name=Sparker
-  firerate=3
+launcher {
+  name=launcher.sparker1
+  
   deploy=deploy.sparker1
   projectile=projectile.sparker1
   
   text=text.weapon.sparker
+}
+
+weapon {
+  name=Sparker
+  firerate=3
+  
+  launcher=launcher.sparker1
 }
 
 text {
@@ -81,13 +88,20 @@ projectile {
   warhead=warhead.sparker2
 }
 
-weapon {
-  name=Sparker II
-  firerate=5
+launcher {
+  name=launcher.sparker2
+  
   deploy=deploy.sparker2
   projectile=projectile.sparker2
   
   text=text.weapon.sparker
+}
+
+weapon {
+  name=Sparker II
+  firerate=5
+  
+  launcher=launcher.sparker2
 }
 
 text {

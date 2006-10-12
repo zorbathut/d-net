@@ -1,6 +1,5 @@
 ---- Major work path
-- UpdateCharacterChoice stops taking vectors
-- Move deploy/projectile combo into Launcher
+- mega-redundant whateverclasses[name]
 - Add effectiveness multiplier, data export
 - New faction choosing
   - Faction info screen on startup

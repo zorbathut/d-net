@@ -62,13 +62,23 @@ float IDBProjectileAdjust::stats_damagePerShot() const { return warhead().stats_
 IDBProjectileAdjust::IDBProjectileAdjust(const IDBProjectile *in_idb, const IDBAdjustment &in_adjust) { idb = in_idb; adjust = in_adjust; };
 
 /*************
+ * IDBLauncherAdjust
+ */
+
+IDBDeployAdjust IDBLauncherAdjust::deploy() const { return IDBDeployAdjust(idb->deploy, adjust); };
+IDBProjectileAdjust IDBLauncherAdjust::projectile() const { return IDBProjectileAdjust(idb->projectile, adjust); };
+
+float IDBLauncherAdjust::stats_damagePerShot() const { return deploy().stats_damagePerShotMultiplier() * projectile().stats_damagePerShot(); }
+
+IDBLauncherAdjust::IDBLauncherAdjust(const IDBLauncher *in_idb, const IDBAdjustment &in_adjust) { idb = in_idb; adjust = in_adjust; };
+
+/*************
  * IDBWeaponAdjust
  */
 
 const string &IDBWeaponAdjust::name() const { return idb->name; };
 
-IDBDeployAdjust IDBWeaponAdjust::deploy() const { return IDBDeployAdjust(idb->deploy, adjust); };
-IDBProjectileAdjust IDBWeaponAdjust::projectile() const { return IDBProjectileAdjust(idb->projectile, adjust); };
+IDBLauncherAdjust IDBWeaponAdjust::launcher() const { return IDBLauncherAdjust(idb->launcher, adjust); };
 
 int framesForCooldownEngine(float frames_per_shot) {
   return (int)floor(frames_per_shot) + (frand() < (frames_per_shot - floor(frames_per_shot)));
@@ -96,9 +106,8 @@ float IDBWeaponAdjust::firerate() const {
 Money IDBWeaponAdjust::cost() const { return idb->base_cost / adjust.adjustmentfactor(IDBAdjustment::DISCOUNT_WEAPON); };
 Money IDBWeaponAdjust::sellcost(int amount) const { return cost() * adjust.recyclevalue() * amount / idb->quantity; };
 
-float IDBWeaponAdjust::stats_damagePerShot() const { return deploy().stats_damagePerShotMultiplier() * projectile().stats_damagePerShot(); }
-float IDBWeaponAdjust::stats_damagePerSecond() const { return stats_damagePerShot() * firerate(); }
-float IDBWeaponAdjust::stats_costPerDamage() const { return cost().toFloat() / idb->quantity / stats_damagePerShot(); }
+float IDBWeaponAdjust::stats_damagePerSecond() const { return launcher().stats_damagePerShot() * firerate(); }
+float IDBWeaponAdjust::stats_costPerDamage() const { return cost().toFloat() / idb->quantity / launcher().stats_damagePerShot(); }
 float IDBWeaponAdjust::stats_costPerSecond() const { return cost().toFloat() / idb->quantity * firerate(); }
 
 IDBWeaponAdjust::IDBWeaponAdjust(const IDBWeapon *in_idb, const IDBAdjustment &in_adjust) { idb = in_idb; adjust = in_adjust; };

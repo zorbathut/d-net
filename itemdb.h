@@ -88,21 +88,25 @@ public:
 
 enum { WDM_FIRINGRANGE, WDM_MINES, WDM_LAST };
 enum { WFRD_NORMAL, WFRD_MELEE };
+struct IDBLauncher {
+  const IDBDeploy *deploy;
+  const IDBProjectile *projectile;
+
+  int demomode;
+  int firingrange_distance;
+  
+  const string *text;
+};
+
 struct IDBWeapon {
 public:
   string name;
 
   float firerate;
-  const IDBDeploy *deploy;
-  const IDBProjectile *projectile;
+  IDBLauncher *launcher;
 
   Money base_cost;
   int quantity;
-
-  int demomode;
-  int firingrange_distance;
-
-  const string *text;
 };
 
 struct IDBGlory {
@@ -224,6 +228,19 @@ public:
   IDBProjectileAdjust(const IDBProjectile *in_idb, const IDBAdjustment &in_adjust);
 };
 
+struct IDBLauncherAdjust {
+  const IDBLauncher *idb;
+  IDBAdjustment adjust;
+
+public:
+  IDBDeployAdjust deploy() const;
+  IDBProjectileAdjust projectile() const;
+  
+  float stats_damagePerShot() const;
+
+  IDBLauncherAdjust(const IDBLauncher *in_idb, const IDBAdjustment &in_adjust);
+};
+
 struct IDBWeaponAdjust {
   const IDBWeapon *idb;
   IDBAdjustment adjust;
@@ -231,15 +248,13 @@ struct IDBWeaponAdjust {
 public:
   const string &name() const;
 
-  IDBDeployAdjust deploy() const;
-  IDBProjectileAdjust projectile() const;
+  IDBLauncherAdjust launcher() const;
 
   int framesForCooldown() const;
   float firerate() const;
   Money cost() const;
   Money sellcost(int shots) const;
-  
-  float stats_damagePerShot() const;
+
   float stats_damagePerSecond() const;
   float stats_costPerDamage() const;
   float stats_costPerSecond() const;

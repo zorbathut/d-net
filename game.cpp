@@ -330,13 +330,13 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
           
           Coord2 startpos;
           float startdir;
-          if(weapon.deploy().type() == DT_FORWARD) {
+          if(weapon.launcher().deploy().type() == DT_FORWARD) {
             startpos = tanks[i].getFiringPoint();
             startdir = tanks[i].d;
-          } else if(weapon.deploy().type() == DT_CENTROID) {
+          } else if(weapon.launcher().deploy().type() == DT_CENTROID) {
             startpos = tanks[i].pos;
             startdir = tanks[i].d;
-          } else if(weapon.deploy().type() == DT_MINEPATH) {
+          } else if(weapon.launcher().deploy().type() == DT_MINEPATH) {
             startpos = tanks[i].getMinePoint();
             startdir = tanks[i].d;
           } else {
@@ -344,8 +344,8 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
           }
           
           {
-            Projectile proj(startpos, startdir + weapon.deploy().anglestddev() * gaussian(), weapon.projectile(), i);
-            if(weapon.projectile().motion() == PM_INSTANT) {
+            Projectile proj(startpos, startdir + weapon.launcher().deploy().anglestddev() * gaussian(), weapon.launcher().projectile(), i);
+            if(weapon.launcher().projectile().motion() == PM_INSTANT) {
               proj.impact(startpos, NULL, gic);
             } else {
               projectiles[i].add(proj);

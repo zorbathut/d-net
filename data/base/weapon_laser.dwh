@@ -23,62 +23,65 @@ projectile {
   warhead=warhead.laser
 }
 
-weapon {
-  name=ROOT.Weapons.Laser.Laser I
-  cost=100
-  firerate=6
+launcher {
+  name=launcher.laser
+  
   deploy=deploy.laser
   projectile=projectile.laser
   
   text=text.weapon.laser
+}
+
+weapon {
+  name=ROOT.Weapons.Laser.Laser I
+  
+  cost=100
+  firerate=6
+  
+  launcher=launcher.laser
 }
 
 weapon {
   name=ROOT.Weapons.Laser.Laser II
+  
   cost=140
   firerate=8
-  deploy=deploy.laser
-  projectile=projectile.laser
   
-  text=text.weapon.laser
+  launcher=launcher.laser
 }
 
 weapon {
   name=ROOT.Weapons.Laser.Laser III
+  
   cost=180
   firerate=10
-  deploy=deploy.laser
-  projectile=projectile.laser
-  
-  text=text.weapon.laser
+
+  launcher=launcher.laser
 }
 
 weapon {
   name=ROOT.Weapons.Laser.Laser IV
+  
   cost=250
   firerate=12
-  deploy=deploy.laser
-  projectile=projectile.laser
-  
-  text=text.weapon.laser
+
+  launcher=launcher.laser
 }
 
 weapon {
   name=ROOT.Weapons.Laser.Laser V
+  
   cost=350
   firerate=15
-  deploy=deploy.laser
-  projectile=projectile.laser
-  
-  text=text.weapon.laser
+
+  launcher=launcher.laser
 }
 
 weapon {
   name=ROOT.Weapons.Laser.Laser VI
+  
   cost=480
   firerate=20
-  deploy=deploy.laser
-  projectile=projectile.laser
-  
-  text=text.weapon.laser
+
+  launcher=launcher.laser
 }

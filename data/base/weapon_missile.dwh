@@ -26,62 +26,65 @@ projectile {
   warhead=warhead.missile
 }
 
-weapon {
-  name=ROOT.Weapons.Missile.Missile I
-  cost=100
-  firerate=3
+launcher {
+  name=launcher.missile
+  
   deploy=deploy.missile
   projectile=projectile.missile
   
   text=text.weapon.missile
+}
+
+weapon {
+  name=ROOT.Weapons.Missile.Missile I
+  
+  cost=100
+  firerate=3
+  
+  launcher=launcher.missile
 }
 
 weapon {
   name=ROOT.Weapons.Missile.Missile II
+  
   cost=180
   firerate=4
-  deploy=deploy.missile
-  projectile=projectile.missile
   
-  text=text.weapon.missile
+  launcher=launcher.missile
 }
 
 weapon {
   name=ROOT.Weapons.Missile.Missile III
+  
   cost=250
   firerate=6
-  deploy=deploy.missile
-  projectile=projectile.missile
   
-  text=text.weapon.missile
+  launcher=launcher.missile
 }
 
 weapon {
   name=ROOT.Weapons.Missile.Missile IV
+  
   cost=400
   firerate=8
-  deploy=deploy.missile
-  projectile=projectile.missile
   
-  text=text.weapon.missile
+  launcher=launcher.missile
 }
 
 weapon {
   name=ROOT.Weapons.Missile.Missile V
+  
   cost=600
   firerate=9.5
-  deploy=deploy.missile
-  projectile=projectile.missile
   
-  text=text.weapon.missile
+  launcher=launcher.missile
 }
 
 weapon {
   name=ROOT.Weapons.Missile.Missile VI
+  
   cost=850
   firerate=11
-  deploy=deploy.missile
-  projectile=projectile.missile
   
-  text=text.weapon.missile
+  launcher=launcher.missile
 }

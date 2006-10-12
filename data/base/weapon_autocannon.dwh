@@ -25,62 +25,65 @@ projectile {
   warhead=warhead.autocannon
 }
 
-weapon {
-  name=ROOT.Weapons.Autocannon.Autocannon I
-  cost=60
-  firerate=5
+launcher {
+  name=launcher.autocannon
+  
   deploy=deploy.autocannon
   projectile=projectile.autocannon
   
   text=text.weapon.autocannon
+}
+
+weapon {
+  name=ROOT.Weapons.Autocannon.Autocannon I
+  
+  cost=60
+  firerate=5
+  
+  launcher=launcher.autocannon
 }
 
 weapon {
   name=ROOT.Weapons.Autocannon.Autocannon II
+  
   cost=100
   firerate=6
-  deploy=deploy.autocannon
-  projectile=projectile.autocannon
   
-  text=text.weapon.autocannon
+  launcher=launcher.autocannon
 }
 
 weapon {
   name=ROOT.Weapons.Autocannon.Autocannon III
+  
   cost=180
   firerate=8
-  deploy=deploy.autocannon
-  projectile=projectile.autocannon
   
-  text=text.weapon.autocannon
+  launcher=launcher.autocannon
 }
 
 weapon {
   name=ROOT.Weapons.Autocannon.Autocannon IV
+  
   cost=300
   firerate=10
-  deploy=deploy.autocannon
-  projectile=projectile.autocannon
   
-  text=text.weapon.autocannon
+  launcher=launcher.autocannon
 }
 
 weapon {
   name=ROOT.Weapons.Autocannon.Autocannon V
+  
   cost=450
   firerate=12
-  deploy=deploy.autocannon
-  projectile=projectile.autocannon
   
-  text=text.weapon.autocannon
+  launcher=launcher.autocannon
 }
 
 weapon {
   name=ROOT.Weapons.Autocannon.Autocannon VI
+  
   cost=650
   firerate=14
-  deploy=deploy.autocannon
-  projectile=projectile.autocannon
   
-  text=text.weapon.autocannon
+  launcher=launcher.autocannon
 }

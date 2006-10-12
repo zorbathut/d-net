@@ -21,15 +21,23 @@ projectile {
   warhead=warhead.mine1
 }
 
-weapon {
-  name=ROOT.Weapons.Mine.Minelayer I
-  cost=200
-  firerate=2
+launcher {
+  name=launcher.mine1
+  
   deploy=deploy.minepath
   projectile=projectile.mine1
   
   demo=mines
   text=text.weapon.mine
+}
+
+weapon {
+  name=ROOT.Weapons.Mine.Minelayer I
+  
+  cost=200
+  firerate=2
+
+  launcher=launcher.mine1
 }
 
 warhead {
@@ -48,15 +56,23 @@ projectile {
   warhead=warhead.mine2
 }
 
-weapon {
-  name=ROOT.Weapons.Mine.Minelayer II
-  cost=600
-  firerate=2.5
+launcher {
+  name=launcher.mine2
+  
   deploy=deploy.minepath
   projectile=projectile.mine2
   
   demo=mines
   text=text.weapon.mine
+}
+
+weapon {
+  name=ROOT.Weapons.Mine.Minelayer II
+  
+  cost=600
+  firerate=2.5
+  
+  launcher=launcher.mine2
 }
 
 warhead {
@@ -75,14 +91,22 @@ projectile {
   warhead=warhead.mine3
 }
 
-weapon {
-  name=ROOT.Weapons.Mine.Minelayer III
-  cost=3000
-  firerate=3
+launcher {
+  name=launcher.mine3
+  
   deploy=deploy.minepath
   projectile=projectile.mine3
   
   demo=mines
   text=text.weapon.mine
+}
+
+weapon {
+  name=ROOT.Weapons.Mine.Minelayer III
+  
+  cost=3000
+  firerate=3
+
+  launcher=launcher.mine3
 }
 

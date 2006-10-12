@@ -14,6 +14,7 @@ static HierarchyNode root;
 static map<string, IDBDeploy> deployclasses;
 static map<string, IDBWarhead> warheadclasses;
 static map<string, IDBProjectile> projclasses;
+static map<string, IDBLauncher> launcherclasses;
 static map<string, IDBWeapon> weaponclasses;
 static map<string, IDBUpgrade> upgradeclasses;
 static map<string, IDBGlory> gloryclasses;
@@ -344,6 +345,51 @@ void parseHierarchy(kvData *chunk) {
   mountpoint->branches.push_back(tnode);
 }
 
+void parseLauncher(kvData *chunk) {
+  string name = chunk->consume("name");
+  CHECK(launcherclasses.count(name) == 0);
+  
+  string projclass = chunk->consume("projectile");
+  CHECK(projclasses.count(projclass));
+  launcherclasses[name].projectile = &projclasses[projclass];
+
+  string deployclass = chunk->consume("deploy");
+  CHECK(deployclasses.count(deployclass));
+  launcherclasses[name].deploy = &deployclasses[deployclass];
+
+  if(chunk->kv.count("text")) {
+    string textid = chunk->consume("text");
+    CHECK(text.count(textid));
+    launcherclasses[name].text = &text[textid];
+  } else {
+    launcherclasses[name].text = NULL;
+  }
+  
+  string demotype = "firingrange";
+  if(chunk->kv.count("demo"))
+    demotype = chunk->consume("demo");
+    
+  if(demotype == "firingrange") {
+    launcherclasses[name].demomode = WDM_FIRINGRANGE;
+    
+    string distance = "normal";
+    if(chunk->kv.count("firingrange_distance"))
+      distance = chunk->consume("firingrange_distance");
+    
+    if(distance == "normal") {
+      launcherclasses[name].firingrange_distance = WFRD_NORMAL;
+    } else if(distance == "melee") {
+      launcherclasses[name].firingrange_distance = WFRD_MELEE;
+    } else {
+      CHECK(0);
+    }
+  } else if(demotype == "mines") {
+    launcherclasses[name].demomode = WDM_MINES;
+  } else {
+    CHECK(0);
+  }
+}
+
 void parseWeapon(kvData *chunk) {
   string name = chunk->consume("name");
   CHECK(weaponclasses.count(name) == 0);
@@ -375,46 +421,10 @@ void parseWeapon(kvData *chunk) {
   
   weaponclasses[name].name = informal_name;
   weaponclasses[name].firerate = atof(chunk->consume("firerate").c_str());
-
-  string projclass = chunk->consume("projectile");
-  CHECK(projclasses.count(projclass));
-  weaponclasses[name].projectile = &projclasses[projclass];
-
-  string deployclass = chunk->consume("deploy");
-  CHECK(deployclasses.count(deployclass));
-  weaponclasses[name].deploy = &deployclasses[deployclass];
   
-  if(chunk->kv.count("text")) {
-    string textid = chunk->consume("text");
-    CHECK(text.count(textid));
-    weaponclasses[name].text = &text[textid];
-  } else {
-    weaponclasses[name].text = NULL;
-  }
-  
-  string demotype = "firingrange";
-  if(chunk->kv.count("demo"))
-    demotype = chunk->consume("demo");
-  
-  if(demotype == "firingrange") {
-    weaponclasses[name].demomode = WDM_FIRINGRANGE;
-    
-    string distance = "normal";
-    if(chunk->kv.count("firingrange_distance"))
-      distance = chunk->consume("firingrange_distance");
-    
-    if(distance == "normal") {
-      weaponclasses[name].firingrange_distance = WFRD_NORMAL;
-    } else if(distance == "melee") {
-      weaponclasses[name].firingrange_distance = WFRD_MELEE;
-    } else {
-      CHECK(0);
-    }
-  } else if(demotype == "mines") {
-    weaponclasses[name].demomode = WDM_MINES;
-  } else {
-    CHECK(0);
-  }
+  string launcherclass = chunk->consume("launcher");
+  CHECK(launcherclasses.count(launcherclass));
+  weaponclasses[name].launcher = &launcherclasses[launcherclass];
 }
 
 void parseUpgrade(kvData *chunk) {
@@ -846,6 +856,8 @@ void parseItemFile(const string &fname) {
       parseEquip(&chunk);
     } else if(chunk.category == "text") {
       parseText(&chunk);
+    } else if(chunk.category == "launcher") {
+      parseLauncher(&chunk);
     } else {
       CHECK(0);
     }
