@@ -1,6 +1,5 @@
 ---- Major work path
-- Data export
-- Add effectiveness multiplier
+- IDBEfficiency, tune EMP appropriately
 - New faction choosing
   - Faction info screen on startup
 - Gradual shop spawning
