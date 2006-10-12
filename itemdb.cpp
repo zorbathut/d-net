@@ -922,11 +922,22 @@ void generateCachedShops() {
 }
 
 void generateWeaponStats() {
-  FILE *ofil = fopen("data/weapondump.dat", "w");
+  FILE *ofil = fopen("tools/weapondump.dat", "w");
   IDBAdjustment adj;
+  map<string, vector<pair<float, float> > > goof;
   for(map<string, IDBWeapon>::const_iterator itr = weaponclasses.begin(); itr != weaponclasses.end(); itr++) {
     IDBWeaponAdjust wa(&itr->second, adj);
-    dprintf("%s,%f,%f\n", itr->first.c_str(), wa.stats_damagePerSecond(), wa.stats_costPerSecond());
+    string name = wa.name();
+    name = string(name.c_str(), (const char*)strrchr(name.c_str(), ' '));
+    goof[name].push_back(make_pair(wa.stats_damagePerSecond(), wa.stats_costPerSecond()));
+  }
+  
+  for(map<string, vector<pair<float, float> > >::iterator itr = goof.begin(); itr != goof.end(); itr++) {
+    sort(itr->second.begin(), itr->second.end());
+    fprintf(ofil, "%s", itr->first.c_str());
+    for(int i = 0; i < itr->second.size(); i++)
+      fprintf(ofil, ",%f,%f", itr->second[i].first, itr->second[i].second);
+    fprintf(ofil, "\n");
   }
   fclose(ofil);
 }

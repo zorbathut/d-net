@@ -33,7 +33,7 @@ launcher {
 }
 
 weapon {
-  name=Sparker
+  name=Sparker I
   firerate=3
   
   launcher=launcher.sparker1
@@ -54,7 +54,7 @@ tank {
   
   mass=50
   
-  weapon=Sparker
+  weapon=Sparker I
   
   cost=0
   upgrade_base=2000
