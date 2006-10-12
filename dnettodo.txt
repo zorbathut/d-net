@@ -1,6 +1,6 @@
 ---- Major work path
-- mega-redundant whateverclasses[name]
-- Add effectiveness multiplier, data export
+- Data export
+- Add effectiveness multiplier
 - New faction choosing
   - Faction info screen on startup
 - Gradual shop spawning

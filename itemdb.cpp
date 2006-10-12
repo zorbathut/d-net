@@ -347,22 +347,24 @@ void parseHierarchy(kvData *chunk) {
 
 void parseLauncher(kvData *chunk) {
   string name = chunk->consume("name");
+  CHECK(prefixed(name, "launcher"));
   CHECK(launcherclasses.count(name) == 0);
+  IDBLauncher *titem = &launcherclasses[name];
   
   string projclass = chunk->consume("projectile");
   CHECK(projclasses.count(projclass));
-  launcherclasses[name].projectile = &projclasses[projclass];
+  titem->projectile = &projclasses[projclass];
 
   string deployclass = chunk->consume("deploy");
   CHECK(deployclasses.count(deployclass));
-  launcherclasses[name].deploy = &deployclasses[deployclass];
+  titem->deploy = &deployclasses[deployclass];
 
   if(chunk->kv.count("text")) {
     string textid = chunk->consume("text");
     CHECK(text.count(textid));
-    launcherclasses[name].text = &text[textid];
+    titem->text = &text[textid];
   } else {
-    launcherclasses[name].text = NULL;
+    titem->text = NULL;
   }
   
   string demotype = "firingrange";
@@ -370,21 +372,21 @@ void parseLauncher(kvData *chunk) {
     demotype = chunk->consume("demo");
     
   if(demotype == "firingrange") {
-    launcherclasses[name].demomode = WDM_FIRINGRANGE;
+    titem->demomode = WDM_FIRINGRANGE;
     
     string distance = "normal";
     if(chunk->kv.count("firingrange_distance"))
       distance = chunk->consume("firingrange_distance");
     
     if(distance == "normal") {
-      launcherclasses[name].firingrange_distance = WFRD_NORMAL;
+      titem->firingrange_distance = WFRD_NORMAL;
     } else if(distance == "melee") {
-      launcherclasses[name].firingrange_distance = WFRD_MELEE;
+      titem->firingrange_distance = WFRD_MELEE;
     } else {
       CHECK(0);
     }
   } else if(demotype == "mines") {
-    launcherclasses[name].demomode = WDM_MINES;
+    titem->demomode = WDM_MINES;
   } else {
     CHECK(0);
   }
@@ -393,6 +395,7 @@ void parseLauncher(kvData *chunk) {
 void parseWeapon(kvData *chunk) {
   string name = chunk->consume("name");
   CHECK(weaponclasses.count(name) == 0);
+  IDBWeapon *titem = &weaponclasses[name];
   
   const string informal_name = tokenize(name, ".").back();
   
@@ -410,26 +413,27 @@ void parseWeapon(kvData *chunk) {
     mountpoint->branches.push_back(tnode);
     
     CHECK(mountpoint->pack >= 1);
-    weaponclasses[name].quantity = mountpoint->pack;
-    weaponclasses[name].base_cost = moneyFromString(chunk->consume("cost"));
-    CHECK(weaponclasses[name].base_cost > Money(0));
+    titem->quantity = mountpoint->pack;
+    titem->base_cost = moneyFromString(chunk->consume("cost"));
+    CHECK(titem->base_cost > Money(0));
   } else {
     CHECK(!chunk->kv.count("cost"));
-    weaponclasses[name].quantity = 100; // why not?
-    weaponclasses[name].base_cost = Money(0);
+    titem->quantity = 100; // why not?
+    titem->base_cost = Money(0);
   }
   
-  weaponclasses[name].name = informal_name;
-  weaponclasses[name].firerate = atof(chunk->consume("firerate").c_str());
+  titem->name = informal_name;
+  titem->firerate = atof(chunk->consume("firerate").c_str());
   
   string launcherclass = chunk->consume("launcher");
   CHECK(launcherclasses.count(launcherclass));
-  weaponclasses[name].launcher = &launcherclasses[launcherclass];
+  titem->launcher = &launcherclasses[launcherclass];
 }
 
 void parseUpgrade(kvData *chunk) {
   string name = chunk->consume("name");
   CHECK(upgradeclasses.count(name) == 0);
+  IDBUpgrade *titem = &upgradeclasses[name];
   
   HierarchyNode *mountpoint = findNamedNode(name, 1);
   HierarchyNode tnode;
@@ -444,17 +448,17 @@ void parseUpgrade(kvData *chunk) {
   tnode.upgrade = &upgradeclasses[name];
   mountpoint->branches.push_back(tnode);
   
-  upgradeclasses[name].costmult = atoi(chunk->consume("costmult").c_str());
+  titem->costmult = atoi(chunk->consume("costmult").c_str());
   string adjustment = chunk->consume("adjustment");
   CHECK(adjustmentclasses.count(adjustment));
-  upgradeclasses[name].adjustment = &adjustmentclasses[adjustment];
+  titem->adjustment = &adjustmentclasses[adjustment];
   
   if(chunk->kv.count("text")) {
     string textid = chunk->consume("text");
     CHECK(text.count(textid));
-    upgradeclasses[name].text = &text[textid];
+    titem->text = &text[textid];
   } else {
-    upgradeclasses[name].text = NULL;
+    titem->text = NULL;
   }
 }
 
@@ -462,66 +466,68 @@ void parseProjectile(kvData *chunk) {
   string name = chunk->consume("name");
   CHECK(prefixed(name, "projectile"));
   CHECK(projclasses.count(name) == 0);
+  IDBProjectile *titem = &projclasses[name];
 
-  projclasses[name].motion = PM_NORMAL;
-  projclasses[name].thickness_visual = 0.3;
+  titem->motion = PM_NORMAL;
+  titem->thickness_visual = 0.3;
   
   if(chunk->kv.count("thickness_visual")) {
-    projclasses[name].thickness_visual = atof(chunk->consume("thickness_visual").c_str());
+    titem->thickness_visual = atof(chunk->consume("thickness_visual").c_str());
   }
   
   if(chunk->kv.count("motion")) {
     string motion = chunk->consume("motion");
     if(motion == "normal") {
-      projclasses[name].motion = PM_NORMAL;
+      titem->motion = PM_NORMAL;
     } else if(motion == "missile") {
-      projclasses[name].motion = PM_MISSILE;
+      titem->motion = PM_MISSILE;
     } else if(motion == "airbrake") {
-      projclasses[name].motion = PM_AIRBRAKE;
+      titem->motion = PM_AIRBRAKE;
     } else if(motion == "mine") {
-      projclasses[name].motion = PM_MINE;
-      projclasses[name].radius_physical = atof(chunk->consume("radius_physical").c_str());
-      projclasses[name].halflife = atof(chunk->consume("halflife").c_str());
+      titem->motion = PM_MINE;
+      titem->radius_physical = atof(chunk->consume("radius_physical").c_str());
+      titem->halflife = atof(chunk->consume("halflife").c_str());
     } else if(motion == "instant") {
-      projclasses[name].motion = PM_INSTANT;
+      titem->motion = PM_INSTANT;
     } else {
       dprintf("Unknown projectile motion: %s\n", motion.c_str());
       CHECK(0);
     }
   }
   
-  projclasses[name].color = C::gray(1.0);
-  if(projclasses[name].motion != PM_INSTANT)
-    projclasses[name].color = colorFromString(chunk->consume("color"));
+  titem->color = C::gray(1.0);
+  if(titem->motion != PM_INSTANT)
+    titem->color = colorFromString(chunk->consume("color"));
   
-  projclasses[name].velocity = 0;
-  if(projclasses[name].motion != PM_MINE && projclasses[name].motion != PM_INSTANT)
-    projclasses[name].velocity = atof(chunk->consume("velocity").c_str()) / FPS;
+  titem->velocity = 0;
+  if(titem->motion != PM_MINE && titem->motion != PM_INSTANT)
+    titem->velocity = atof(chunk->consume("velocity").c_str()) / FPS;
   
   string warheadclass = chunk->consume("warhead");
   CHECK(warheadclasses.count(warheadclass));
-  projclasses[name].warhead = &warheadclasses[warheadclass];
+  titem->warhead = &warheadclasses[warheadclass];
 }
 
 void parseDeploy(kvData *chunk) {
   string name = chunk->consume("name");
   CHECK(prefixed(name, "deploy"));
   CHECK(deployclasses.count(name) == 0);
+  IDBDeploy *titem = &deployclasses[name];
   
-  deployclasses[name].anglestddev = 0;
+  titem->anglestddev = 0;
   
   string type = "forward";
   if(chunk->kv.count("type"))
     type = chunk->consume("type");
   
   if(type == "forward") {
-    deployclasses[name].type = DT_FORWARD;
+    titem->type = DT_FORWARD;
     if(chunk->kv.count("anglestddev"))
-      deployclasses[name].anglestddev = atof(chunk->consume("anglestddev").c_str());
+      titem->anglestddev = atof(chunk->consume("anglestddev").c_str());
   } else if(type == "centroid") {
-    deployclasses[name].type = DT_CENTROID;
+    titem->type = DT_CENTROID;
   } else if(type == "minepath") {
-    deployclasses[name].type = DT_MINEPATH;
+    titem->type = DT_MINEPATH;
   } else {
     CHECK(0);
   }
@@ -531,39 +537,41 @@ void parseWarhead(kvData *chunk) {
   string name = chunk->consume("name");
   CHECK(prefixed(name, "warhead"));
   CHECK(warheadclasses.count(name) == 0);
+  IDBWarhead *titem = &warheadclasses[name];
   
-  memset(warheadclasses[name].impactdamage, 0, sizeof(warheadclasses[name].impactdamage));
-  memset(warheadclasses[name].radiusdamage, 0, sizeof(warheadclasses[name].radiusdamage));
-  warheadclasses[name].radiusfalloff = -1;
-  warheadclasses[name].wallremovalradius = 0;
-  warheadclasses[name].wallremovalchance = 1;
+  memset(titem->impactdamage, 0, sizeof(titem->impactdamage));
+  memset(titem->radiusdamage, 0, sizeof(titem->radiusdamage));
+  titem->radiusfalloff = -1;
+  titem->wallremovalradius = 0;
+  titem->wallremovalchance = 1;
   
   if(chunk->kv.count("impactdamage"))
-    parseDamagecode(chunk->consume("impactdamage"), warheadclasses[name].impactdamage);
+    parseDamagecode(chunk->consume("impactdamage"), titem->impactdamage);
   
   CHECK(chunk->kv.count("radiusfalloff") == chunk->kv.count("radiusdamage"));
   
-  warheadclasses[name].radiuscolor_bright = Color(1.0, 0.8, 0.2);
-  warheadclasses[name].radiuscolor_dim = Color(1.0, 0.2, 0.0);
+  titem->radiuscolor_bright = Color(1.0, 0.8, 0.2);
+  titem->radiuscolor_dim = Color(1.0, 0.2, 0.0);
   if(chunk->kv.count("radiusdamage")) {
-    parseDamagecode(chunk->consume("radiusdamage"), warheadclasses[name].radiusdamage);
-    warheadclasses[name].radiusfalloff = atof(chunk->consume("radiusfalloff").c_str());
+    parseDamagecode(chunk->consume("radiusdamage"), titem->radiusdamage);
+    titem->radiusfalloff = atof(chunk->consume("radiusfalloff").c_str());
     if(chunk->kv.count("radiuscolor_bright")) {
-      warheadclasses[name].radiuscolor_bright = colorFromString(chunk->consume("radiuscolor_bright"));
-      warheadclasses[name].radiuscolor_dim = colorFromString(chunk->consume("radiuscolor_dim"));
+      titem->radiuscolor_bright = colorFromString(chunk->consume("radiuscolor_bright"));
+      titem->radiuscolor_dim = colorFromString(chunk->consume("radiuscolor_dim"));
     } // no, you can't just overload one, dammit
   }
   
   if(chunk->kv.count("wallremovalradius"))
-    warheadclasses[name].wallremovalradius = atof(chunk->consume("wallremovalradius").c_str());
+    titem->wallremovalradius = atof(chunk->consume("wallremovalradius").c_str());
   
   if(chunk->kv.count("wallremovalchance"))
-    warheadclasses[name].wallremovalchance = atof(chunk->consume("wallremovalchance").c_str());
+    titem->wallremovalchance = atof(chunk->consume("wallremovalchance").c_str());
 }
 
 void parseGlory(kvData *chunk) {
   string name = chunk->consume("name");
   CHECK(gloryclasses.count(name) == 0);
+  IDBGlory *titem = &gloryclasses[name];
   
   HierarchyNode *mountpoint = findNamedNode(name, 1);
   HierarchyNode tnode;
@@ -578,25 +586,25 @@ void parseGlory(kvData *chunk) {
   tnode.glory = &gloryclasses[name];
   mountpoint->branches.push_back(tnode);
   
-  gloryclasses[name].base_cost = moneyFromString(chunk->consume("cost"));
+  titem->base_cost = moneyFromString(chunk->consume("cost"));
   
   string projclass = chunk->consume("projectile");
   CHECK(projclasses.count(projclass));
-  gloryclasses[name].projectile = &projclasses[projclass];
+  titem->projectile = &projclasses[projclass];
 
   string deployclass = chunk->consume("deploy");
   CHECK(deployclasses.count(deployclass));
-  gloryclasses[name].deploy = &deployclasses[deployclass];
+  titem->deploy = &deployclasses[deployclass];
   
   string coreclass = chunk->consume("core");
   CHECK(warheadclasses.count(coreclass));
-  gloryclasses[name].core = &warheadclasses[coreclass];
+  titem->core = &warheadclasses[coreclass];
 
-  gloryclasses[name].minsplits = atoi(chunk->consume("minsplits").c_str());
-  gloryclasses[name].maxsplits = atoi(chunk->consume("maxsplits").c_str());
-  gloryclasses[name].minsplitsize = atoi(chunk->consume("minsplitsize").c_str());
-  gloryclasses[name].maxsplitsize = atoi(chunk->consume("maxsplitsize").c_str());
-  gloryclasses[name].shotspersplit = atoi(chunk->consume("shotspersplit").c_str());
+  titem->minsplits = atoi(chunk->consume("minsplits").c_str());
+  titem->maxsplits = atoi(chunk->consume("maxsplits").c_str());
+  titem->minsplitsize = atoi(chunk->consume("minsplitsize").c_str());
+  titem->maxsplitsize = atoi(chunk->consume("maxsplitsize").c_str());
+  titem->shotspersplit = atoi(chunk->consume("shotspersplit").c_str());
   
   if(chunk->kv.count("default") && atoi(chunk->consume("default").c_str())) {
     CHECK(!defglory);
@@ -606,15 +614,16 @@ void parseGlory(kvData *chunk) {
   if(chunk->kv.count("text")) {
     string textid = chunk->consume("text");
     CHECK(text.count(textid));
-    gloryclasses[name].text = &text[textid];
+    titem->text = &text[textid];
   } else {
-    gloryclasses[name].text = NULL;
+    titem->text = NULL;
   }
 }
 
 void parseBombardment(kvData *chunk) {
   string name = chunk->consume("name");
   CHECK(bombardmentclasses.count(name) == 0);
+  IDBBombardment *titem = &bombardmentclasses[name];
   
   HierarchyNode *mountpoint = findNamedNode(name, 1);
   HierarchyNode tnode;
@@ -632,12 +641,12 @@ void parseBombardment(kvData *chunk) {
   string warheadclass = chunk->consume("warhead");
   CHECK(warheadclasses.count(warheadclass));
   
-  bombardmentclasses[name].base_cost = moneyFromString(chunk->consume("cost"));
+  titem->base_cost = moneyFromString(chunk->consume("cost"));
   
-  bombardmentclasses[name].warhead = &warheadclasses[warheadclass];
+  titem->warhead = &warheadclasses[warheadclass];
 
-  bombardmentclasses[name].lockdelay = atof(chunk->consume("lockdelay").c_str());
-  bombardmentclasses[name].unlockdelay = atof(chunk->consume("unlockdelay").c_str());
+  titem->lockdelay = atof(chunk->consume("lockdelay").c_str());
+  titem->unlockdelay = atof(chunk->consume("unlockdelay").c_str());
 
   if(chunk->kv.count("default") && atoi(chunk->consume("default").c_str())) {
     CHECK(!defbombardment);
@@ -647,15 +656,16 @@ void parseBombardment(kvData *chunk) {
   if(chunk->kv.count("text")) {
     string textid = chunk->consume("text");
     CHECK(text.count(textid));
-    bombardmentclasses[name].text = &text[textid];
+    titem->text = &text[textid];
   } else {
-    bombardmentclasses[name].text = NULL;
+    titem->text = NULL;
   }
 }
 
 void parseTank(kvData *chunk) {
   string name = chunk->consume("name");
   CHECK(tankclasses.count(name) == 0);
+  IDBTank *titem = &tankclasses[name];
   
   HierarchyNode *mountpoint = findNamedNode(name, 1);
   HierarchyNode tnode;
@@ -673,12 +683,12 @@ void parseTank(kvData *chunk) {
   string weapon = chunk->consume("weapon");
   CHECK(weaponclasses.count(weapon));
   
-  tankclasses[name].weapon = &weaponclasses[weapon];
+  titem->weapon = &weaponclasses[weapon];
   
-  tankclasses[name].health = atof(chunk->consume("health").c_str());
-  tankclasses[name].handling = atof(chunk->consume("handling").c_str());
-  tankclasses[name].engine = atof(chunk->consume("engine").c_str());
-  tankclasses[name].mass = atof(chunk->consume("mass").c_str());
+  titem->health = atof(chunk->consume("health").c_str());
+  titem->handling = atof(chunk->consume("handling").c_str());
+  titem->engine = atof(chunk->consume("engine").c_str());
+  titem->mass = atof(chunk->consume("mass").c_str());
   
   {
     vector<string> vtx = tokenize(chunk->consume("vertices"), "\n");
@@ -689,43 +699,43 @@ void parseTank(kvData *chunk) {
       vector<string> vti = tokenize(vtx[i], " ");
       CHECK(vti.size() == 2 || vti.size() == 3);
       Coord2 this_vertex = Coord2(atof(vti[0].c_str()), atof(vti[1].c_str()));
-      tankclasses[name].vertices.push_back(Coord2(this_vertex));
+      titem->vertices.push_back(Coord2(this_vertex));
       if(in_mine_path)
-        tankclasses[name].minepath.push_back(this_vertex);
+        titem->minepath.push_back(this_vertex);
       if(vti.size() == 3) {
         if(vti[2] == "firepoint") {
           CHECK(!got_firepoint);
-          tankclasses[name].firepoint = this_vertex;
+          titem->firepoint = this_vertex;
           got_firepoint = true;
         } else if(vti[2] == "rear_begin") {
           CHECK(!in_mine_path);
-          CHECK(!tankclasses[name].minepath.size());
+          CHECK(!titem->minepath.size());
           in_mine_path = true;
-          tankclasses[name].minepath.push_back(this_vertex);
+          titem->minepath.push_back(this_vertex);
         } else if(vti[2] == "rear_end") {
           CHECK(in_mine_path);
-          CHECK(tankclasses[name].minepath.size());
+          CHECK(titem->minepath.size());
           in_mine_path = false;
         } else {
           CHECK(0);
         }
       }
     }
-    CHECK(tankclasses[name].minepath.size() >= 2);
+    CHECK(titem->minepath.size() >= 2);
     
-    Coord2 centr = getCentroid(tankclasses[name].vertices);
-    for(int i = 0; i < tankclasses[name].vertices.size(); i++)
-      tankclasses[name].vertices[i] -= centr;
-    tankclasses[name].firepoint -= centr;
-    for(int i = 0; i < tankclasses[name].minepath.size(); i++)
-      tankclasses[name].minepath[i] -= centr;
+    Coord2 centr = getCentroid(titem->vertices);
+    for(int i = 0; i < titem->vertices.size(); i++)
+      titem->vertices[i] -= centr;
+    titem->firepoint -= centr;
+    for(int i = 0; i < titem->minepath.size(); i++)
+      titem->minepath[i] -= centr;
   }
   
-  tankclasses[name].base_cost = moneyFromString(chunk->consume("cost"));
+  titem->base_cost = moneyFromString(chunk->consume("cost"));
   if(chunk->kv.count("upgrade_base")) {
-    tankclasses[name].upgrade_base = moneyFromString(chunk->consume("upgrade_base"));
+    titem->upgrade_base = moneyFromString(chunk->consume("upgrade_base"));
   } else {
-    tankclasses[name].upgrade_base = tankclasses[name].base_cost;
+    titem->upgrade_base = titem->base_cost;
   }
   
   if(chunk->kv.count("default") && atoi(chunk->consume("default").c_str())) {
@@ -736,17 +746,16 @@ void parseTank(kvData *chunk) {
   if(chunk->kv.count("text")) {
     string textid = chunk->consume("text");
     CHECK(text.count(textid));
-    tankclasses[name].text = &text[textid];
+    titem->text = &text[textid];
   } else {
-    tankclasses[name].text = NULL;
+    titem->text = NULL;
   }
 }
 
 void parseAdjustment(kvData *chunk) {
   string name = chunk->consume("name");
   CHECK(adjustmentclasses.count(name) == 0);
-  
-  adjustmentclasses[name];
+  IDBAdjustment *titem = &adjustmentclasses[name];
   
   CHECK(sizeof(adjust_text) / sizeof(*adjust_text) == IDBAdjustment::LAST);
   CHECK(sizeof(adjust_human) / sizeof(*adjust_human) == IDBAdjustment::LAST);
@@ -754,7 +763,7 @@ void parseAdjustment(kvData *chunk) {
   
   for(int i = 0; i < IDBAdjustment::LAST; i++)
     if(chunk->kv.count(adjust_text[i]))
-      adjustmentclasses[name].adjusts[i] = atoi(chunk->consume(adjust_text[i]).c_str());
+      titem->adjusts[i] = atoi(chunk->consume(adjust_text[i]).c_str());
 }
 
 void parseFaction(kvData *chunk) {
