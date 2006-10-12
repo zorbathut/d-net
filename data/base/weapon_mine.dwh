@@ -7,7 +7,7 @@ text {
 
 warhead {
   name=warhead.mine1
-  radiusdamage=3.0 explosive
+  radiusdamage=4.0 explosive
   radiusfalloff=6
   wallremovalradius=2
 }
@@ -26,6 +26,8 @@ launcher {
   
   deploy=deploy.minepath
   projectile=projectile.mine1
+  
+  dps_efficiency=0.5
   
   demo=mines
   text=text.weapon.mine
@@ -62,6 +64,8 @@ launcher {
   deploy=deploy.minepath
   projectile=projectile.mine2
   
+  dps_efficiency=0.5
+  
   demo=mines
   text=text.weapon.mine
 }
@@ -96,6 +100,8 @@ launcher {
   
   deploy=deploy.minepath
   projectile=projectile.mine3
+  
+  dps_efficiency=0.5
   
   demo=mines
   text=text.weapon.mine

@@ -37,7 +37,7 @@ launcher {
 weapon {
   name=ROOT.Weapons.Laser.Laser I
   
-  cost=100
+  cost=60
   firerate=6
   
   launcher=launcher.laser
@@ -46,7 +46,7 @@ weapon {
 weapon {
   name=ROOT.Weapons.Laser.Laser II
   
-  cost=140
+  cost=120
   firerate=8
   
   launcher=launcher.laser
@@ -74,7 +74,7 @@ weapon {
   name=ROOT.Weapons.Laser.Laser V
   
   cost=350
-  firerate=15
+  firerate=16
 
   launcher=launcher.laser
 }

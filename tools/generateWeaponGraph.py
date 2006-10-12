@@ -10,8 +10,8 @@ for line in open("tools/weapondump.dat"):
     if(store == None):
       store = item
     else:
-      key = key + [float(store)]
-      value = value + [float(item)]
+      key = key + [float(item)]
+      value = value + [float(store)]
       store = None
   if(store != None):
     print "ERROR"
@@ -19,7 +19,6 @@ for line in open("tools/weapondump.dat"):
   plot(key, value, label = name)
 legend()
 loglog()
-axis(xmin=1, ymin=1)
-xlabel('DPS')
-ylabel('CPS')
+xlabel('CPS')
+ylabel('DPS')
 show()

@@ -50,7 +50,7 @@ weapon {
   name=ROOT.Weapons.Missile.Missile II
   
   cost=180
-  firerate=4
+  firerate=4.5
   
   launcher=launcher.missile
 }
@@ -59,7 +59,7 @@ weapon {
   name=ROOT.Weapons.Missile.Missile III
   
   cost=250
-  firerate=6
+  firerate=6.5
   
   launcher=launcher.missile
 }
@@ -77,7 +77,7 @@ weapon {
   name=ROOT.Weapons.Missile.Missile V
   
   cost=600
-  firerate=9.5
+  firerate=9
   
   launcher=launcher.missile
 }
@@ -86,7 +86,7 @@ weapon {
   name=ROOT.Weapons.Missile.Missile VI
   
   cost=850
-  firerate=11
+  firerate=10.5
   
   launcher=launcher.missile
 }
