@@ -378,6 +378,7 @@ public:
 
 void initItemdb();
 void generateCachedShops();
+void generateWeaponStats();
 
 /*************
  * Accessors

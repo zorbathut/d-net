@@ -921,6 +921,16 @@ void generateCachedShops() {
   fclose(ofil);
 }
 
+void generateWeaponStats() {
+  FILE *ofil = fopen("data/weapondump.dat", "w");
+  IDBAdjustment adj;
+  for(map<string, IDBWeapon>::const_iterator itr = weaponclasses.begin(); itr != weaponclasses.end(); itr++) {
+    IDBWeaponAdjust wa(&itr->second, adj);
+    dprintf("%s,%f,%f\n", itr->first.c_str(), wa.stats_damagePerSecond(), wa.stats_costPerSecond());
+  }
+  fclose(ofil);
+}
+
 const HierarchyNode &itemDbRoot() {
   return root;
 }

@@ -17,6 +17,7 @@ SDL_Surface * MainWindow = NULL;
 DEFINE_bool(fullscreen, true, "Fullscreen");
 DEFINE_bool(help, false, "Get help");
 DEFINE_bool(generateCachedShops, false, "Do all the work necessary to cache shops");
+DEFINE_bool(generateWeaponStats, false, "Do all the work necessary to dump weapon info");
 
 int GetVideoFlags(void) {
 
@@ -123,6 +124,11 @@ int main(int argc, char **argv) {
   
   if(FLAGS_generateCachedShops) {
     generateCachedShops();
+    return 0;
+  }
+  
+  if(FLAGS_generateWeaponStats) {
+    generateWeaponStats();
     return 0;
   }
 

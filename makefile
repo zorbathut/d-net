@@ -59,6 +59,10 @@ package: d-net.exe data/shopcache.dwh
 data/shopcache.dwh: d-net.exe
 	d-net.exe --generateCachedShops
 
+export: d-net.exe tools/generateWeaponGraph.py
+	d-net.exe --generateWeaponStats
+	/cygdrive/c/Python25/python.exe tools/generateWeaponGraph.py # this is not ideal
+
 stats:
 	@echo Graphics: `cat gfx.h gfx.cpp game_effects.h game_effects.cpp color.h color.cpp| wc -l` loc
 	@echo Collisions: `cat collide.h collide.cpp | wc -l` loc
