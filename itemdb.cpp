@@ -390,6 +390,10 @@ void parseLauncher(kvData *chunk) {
   } else {
     CHECK(0);
   }
+  
+  titem->dps_efficiency = 1.0;
+  if(chunk->kv.count("dps_efficiency"))
+    titem->dps_efficiency = atof(chunk->consume("dps_efficiency").c_str());
 }
 
 void parseWeapon(kvData *chunk) {
@@ -929,7 +933,8 @@ void generateWeaponStats() {
     IDBWeaponAdjust wa(&itr->second, adj);
     string name = wa.name();
     name = string(name.c_str(), (const char*)strrchr(name.c_str(), ' '));
-    goof[name].push_back(make_pair(wa.stats_damagePerSecond(), wa.stats_costPerSecond()));
+    if(wa.cost() > Money(0))
+      goof[name].push_back(make_pair(wa.stats_damagePerSecond() * itr->second.launcher->dps_efficiency, wa.stats_costPerSecond()));
   }
   
   for(map<string, vector<pair<float, float> > >::iterator itr = goof.begin(); itr != goof.end(); itr++) {

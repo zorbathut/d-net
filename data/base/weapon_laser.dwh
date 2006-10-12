@@ -29,6 +29,8 @@ launcher {
   deploy=deploy.laser
   projectile=projectile.laser
   
+  dps_efficiency=2
+  
   text=text.weapon.laser
 }
 

@@ -32,6 +32,8 @@ launcher {
   deploy=deploy.missile
   projectile=projectile.missile
   
+  dps_efficiency=0.8
+  
   text=text.weapon.missile
 }
 

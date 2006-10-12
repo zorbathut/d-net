@@ -95,6 +95,8 @@ struct IDBLauncher {
   int demomode;
   int firingrange_distance;
   
+  float dps_efficiency;
+  
   const string *text;
 };
 

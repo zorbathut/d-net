@@ -18,8 +18,8 @@ for line in open("tools/weapondump.dat"):
     fail
   plot(key, value, label = name)
 legend()
-semilogy()
-axis(xmin=0, ymin=1)
+loglog()
+axis(xmin=1, ymin=1)
 xlabel('DPS')
 ylabel('CPS')
 show()
