@@ -134,11 +134,11 @@ void Ai::updatePregame() {
   nextKeys.keys[0].down = true;
 }
 
-void Ai::updateCharacterChoice(const vector<FactionState> &factions, const vector<PlayerMenuState> &players, int you) {
+void Ai::updateCharacterChoice(const vector<FactionState> &factions, const PlayerMenuState &player, int you) {
   updateKeys(CORE);
   
   zeroNextKeys();
-  if(!players[you].faction) {
+  if(!player.faction) {
     int targfact = you;
     if(targfact >= factions.size() || targfact < 0)
       targfact = -1;
@@ -147,43 +147,43 @@ void Ai::updateCharacterChoice(const vector<FactionState> &factions, const vecto
       nextKeys.keys[0].down = true;
       return;
     }
-    Float2 targpt = factions[targfact].compass_location.midpoint() - players[you].compasspos;
+    Float2 targpt = factions[targfact].compass_location.midpoint() - player.compasspos;
     if(len(targpt) != 0)
       targpt = normalize(targpt);
     nextKeys.menu = Float2(targpt.x, -targpt.y);
-    nextKeys.keys[0].down = isInside(factions[targfact].compass_location, players[you].compasspos);
-  } else if(players[you].settingmode == SETTING_BUTTONS) {
-    if(players[you].setting_button_current >= 0 && players[you].setting_button_current < nextKeys.keys.size())
-      nextKeys.keys[players[you].setting_button_current].down = frameNumber % 2;
-    else if(players[you].setting_button_current == nextKeys.keys.size())
+    nextKeys.keys[0].down = isInside(factions[targfact].compass_location, player.compasspos);
+  } else if(player.settingmode == SETTING_BUTTONS) {
+    if(player.setting_button_current >= 0 && player.setting_button_current < nextKeys.keys.size())
+      nextKeys.keys[player.setting_button_current].down = frameNumber % 2;
+    else if(player.setting_button_current == nextKeys.keys.size())
       nextKeys.keys[BUTTON_ACCEPT].down = frameNumber % 2;
-  } else if(players[you].settingmode == SETTING_AXISTYPE) {
-    if(players[you].setting_axistype != KSAX_ABSOLUTE) {
+  } else if(player.settingmode == SETTING_AXISTYPE) {
+    if(player.setting_axistype != KSAX_ABSOLUTE) {
       if(frameNumber % 2 == 0) {
-        if(players[you].setting_axistype_curchoice != KSAX_ABSOLUTE * 2)
+        if(player.setting_axistype_curchoice != KSAX_ABSOLUTE * 2)
           nextKeys.menu = Float2(0, -1.0);
         else
           nextKeys.keys[BUTTON_ACCEPT].down = true;
       }
     } else {
       if(frameNumber % 2 == 0) {
-        if(players[you].setting_axistype_curchoice != KSAX_END * 2)
+        if(player.setting_axistype_curchoice != KSAX_END * 2)
           nextKeys.menu = Float2(0, -1.0);
         else
           nextKeys.keys[BUTTON_ACCEPT].down = true;
       }
     }
-  } else if(players[you].settingmode == SETTING_AXISCHOOSE) {
-    if(players[you].setting_axis_current == 0)
+  } else if(player.settingmode == SETTING_AXISCHOOSE) {
+    if(player.setting_axis_current == 0)
       nextKeys.menu.x = 1.0;
-    if(players[you].setting_axis_current == 1)
+    if(player.setting_axis_current == 1)
       nextKeys.menu.y = 1.0;
-    if(players[you].setting_axis_current == 2)
+    if(player.setting_axis_current == 2)
       nextKeys.keys[BUTTON_ACCEPT].down = true;
-  } else if(players[you].settingmode == SETTING_TEST) {
+  } else if(player.settingmode == SETTING_TEST) {
     nextKeys.keys[BUTTON_CANCEL].down = true;
-  } else if(players[you].settingmode == SETTING_READY) {
-    CHECK(players[you].setting_axistype == KSAX_ABSOLUTE);
+  } else if(player.settingmode == SETTING_READY) {
+    CHECK(player.setting_axistype == KSAX_ABSOLUTE);
     nextKeys.keys[BUTTON_ACCEPT].down = frameNumber % 2;
   } else {
     CHECK(0);
