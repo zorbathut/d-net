@@ -23,11 +23,17 @@ projectile {
   warhead=warhead.sparker1
 }
 
+stats {
+  name=stats.sparker
+}
+
 launcher {
   name=launcher.sparker1
   
   deploy=deploy.sparker1
   projectile=projectile.sparker1
+  
+  stats=stats.sparker
   
   text=text.weapon.sparker
 }
@@ -93,6 +99,8 @@ launcher {
   
   deploy=deploy.sparker2
   projectile=projectile.sparker2
+  
+  stats=stats.sparker
   
   text=text.weapon.sparker
 }

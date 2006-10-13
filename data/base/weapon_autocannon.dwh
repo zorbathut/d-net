@@ -25,11 +25,17 @@ projectile {
   warhead=warhead.autocannon
 }
 
+stats {
+  name=stats.autocannon
+}
+
 launcher {
   name=launcher.autocannon
   
   deploy=deploy.autocannon
   projectile=projectile.autocannon
+  
+  stats=stats.autocannon
   
   text=text.weapon.autocannon
 }

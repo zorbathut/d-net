@@ -23,13 +23,19 @@ projectile {
   warhead=warhead.laser
 }
 
+stats {
+  name=stats.laser
+  
+  dps_efficiency=2
+}
+
 launcher {
   name=launcher.laser
   
   deploy=deploy.laser
   projectile=projectile.laser
   
-  dps_efficiency=2
+  stats=stats.laser
   
   text=text.weapon.laser
 }

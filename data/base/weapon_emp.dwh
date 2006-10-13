@@ -18,6 +18,12 @@ projectile {
   warhead=warhead.emp
 }
 
+stats {
+  name=stats.emp
+  
+  cps_efficiency=3.0
+}
+
 launcher {
   name=launcher.emp
   
@@ -26,6 +32,8 @@ launcher {
 
   demo=firingrange
   firingrange_distance=melee
+  
+  stats=stats.emp
   
   text=text.weapon.emp
 }

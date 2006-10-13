@@ -14,6 +14,7 @@ static HierarchyNode root;
 static map<string, IDBDeploy> deployclasses;
 static map<string, IDBWarhead> warheadclasses;
 static map<string, IDBProjectile> projclasses;
+static map<string, IDBStats> statsclasses;
 static map<string, IDBLauncher> launcherclasses;
 static map<string, IDBWeapon> weaponclasses;
 static map<string, IDBUpgrade> upgradeclasses;
@@ -358,6 +359,10 @@ void parseLauncher(kvData *chunk) {
   string deployclass = chunk->consume("deploy");
   CHECK(deployclasses.count(deployclass));
   titem->deploy = &deployclasses[deployclass];
+  
+  string statsclass = chunk->consume("stats");
+  CHECK(statsclasses.count(statsclass));
+  titem->stats = &statsclasses[statsclass];
 
   if(chunk->kv.count("text")) {
     string textid = chunk->consume("text");
@@ -390,10 +395,21 @@ void parseLauncher(kvData *chunk) {
   } else {
     CHECK(0);
   }
-  
+}
+
+void parseStats(kvData *chunk) {
+  string name = chunk->consume("name");
+  CHECK(prefixed(name, "stats"));
+  CHECK(statsclasses.count(name) == 0);
+  IDBStats *titem = &statsclasses[name];
+    
   titem->dps_efficiency = 1.0;
   if(chunk->kv.count("dps_efficiency"))
     titem->dps_efficiency = atof(chunk->consume("dps_efficiency").c_str());
+  
+  titem->cps_efficiency = 1.0;
+  if(chunk->kv.count("cps_efficiency"))
+    titem->cps_efficiency = atof(chunk->consume("cps_efficiency").c_str());
 }
 
 void parseWeapon(kvData *chunk) {
@@ -871,6 +887,8 @@ void parseItemFile(const string &fname) {
       parseText(&chunk);
     } else if(chunk.category == "launcher") {
       parseLauncher(&chunk);
+    } else if(chunk.category == "stats") {
+      parseStats(&chunk);
     } else {
       CHECK(0);
     }
@@ -934,7 +952,7 @@ void generateWeaponStats() {
     string name = wa.name();
     name = string(name.c_str(), (const char*)strrchr(name.c_str(), ' '));
     if(wa.cost() > Money(0))
-      goof[name].push_back(make_pair(wa.stats_damagePerSecond() * itr->second.launcher->dps_efficiency, wa.stats_costPerSecond()));
+      goof[name].push_back(make_pair(wa.stats_damagePerSecond() * itr->second.launcher->stats->dps_efficiency, wa.stats_costPerSecond() * itr->second.launcher->stats->cps_efficiency));
   }
   
   for(map<string, vector<pair<float, float> > >::iterator itr = goof.begin(); itr != goof.end(); itr++) {

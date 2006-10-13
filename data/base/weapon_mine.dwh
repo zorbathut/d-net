@@ -21,13 +21,19 @@ projectile {
   warhead=warhead.mine1
 }
 
+stats {
+  name=stats.mine
+  
+  dps_efficiency=0.5
+}
+
 launcher {
   name=launcher.mine1
   
   deploy=deploy.minepath
   projectile=projectile.mine1
   
-  dps_efficiency=0.5
+  stats=stats.mine
   
   demo=mines
   text=text.weapon.mine
@@ -64,7 +70,7 @@ launcher {
   deploy=deploy.minepath
   projectile=projectile.mine2
   
-  dps_efficiency=0.5
+  stats=stats.mine
   
   demo=mines
   text=text.weapon.mine
@@ -101,7 +107,7 @@ launcher {
   deploy=deploy.minepath
   projectile=projectile.mine3
   
-  dps_efficiency=0.5
+  stats=stats.mine
   
   demo=mines
   text=text.weapon.mine
