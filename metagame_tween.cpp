@@ -407,8 +407,6 @@ void PersistentData::render() const {
   if(slot_count == 1) {
     renderSlot(0);
   } else if(slot_count == 4) {
-    setColor(C::inactive_text);
-    
     {
       GfxWindow gfxw2(Float4(0, 0, getAspect() / 2, 0.5), 1.0);
       renderSlot(0);
@@ -425,6 +423,8 @@ void PersistentData::render() const {
       GfxWindow gfxw2(Float4(getAspect() / 2, 0.5, getAspect(), 1), 1.0);
       renderSlot(3);
     }
+    
+    setColor(C::inactive_text);
     
     if(slot[0].type != Slot::EMPTY || slot[1].type != Slot::EMPTY)
       drawLine(Float4(getAspect() / 2, 0, getAspect() / 2, 0.5), 0.001);
