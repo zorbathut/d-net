@@ -1,5 +1,4 @@
 ---- Major work path
-- IDBEfficiency, tune EMP appropriately
 - New faction choosing
   - Faction info screen on startup
 - Gradual shop spawning
