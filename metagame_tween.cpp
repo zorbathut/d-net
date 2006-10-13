@@ -565,11 +565,11 @@ void PersistentData::renderSlot(int slotid) const {
     CHECK(slt.pid >= 0 && slt.pid < pms.size());
     setZoomVertical(0, 0, 1);
     
-    const float cdiv_x = 0.6;
+    const float div_x = 0.6;
     
     setColor(C::inactive_text);
-    drawLine(0, 0.5, div_x, 0.5, 0.001);
-    drawLine(div_x, 0, div_x, 1.0, 0.001);
+    drawLine(0, 0.5, div_x, 0.5, 0.003);
+    drawLine(div_x, 0, div_x, 1.0, 0.003);
     
     {
       GfxWindow gfxw(Float4(0, 0.5, div_x, 1), 1.0);
@@ -577,7 +577,7 @@ void PersistentData::renderSlot(int slotid) const {
       for(int i = 0; i < factions.size(); i++) {
         if(!factions[i].taken) {
           setColor(factions[i].faction->color);
-          drawDvec2(factions[i].faction->icon, boxAround(factions[i].compass_location.midpoint(), factions[i].compass_location.y_span() / 2 * 0.9), 50, 0.008);
+          drawDvec2(factions[i].faction->icon, boxAround(factions[i].compass_location.midpoint(), factions[i].compass_location.y_span() / 2 * 0.9), 50, 0.01);
         }
       }
       setColor(1.0, 1.0, 1.0);
@@ -596,6 +596,18 @@ void PersistentData::renderSlot(int slotid) const {
       drawLine(pms[slt.pid].compasspos.x - comouter, pms[slt.pid].compasspos.y, pms[slt.pid].compasspos.x - cominner, pms[slt.pid].compasspos.y, comthick);
       drawLine(pms[slt.pid].compasspos.x + comouter, pms[slt.pid].compasspos.y, pms[slt.pid].compasspos.x + cominner, pms[slt.pid].compasspos.y, comthick);
     }
+    
+    bool factdone = false;
+    for(int i = 0; i < factions.size(); i++) {
+      if(isInside(factions[i].compass_location, pms[slt.pid].compasspos)) {
+        CHECK(!factdone);
+        GfxWindow gfxw(Float4(0, 0, div_x, 0.5), 1.0);
+        setZoomCenter(0, 0, 1.0);
+        setColor(factions[i].faction->color);
+        drawDvec2(factions[i].faction->icon, boxAround(Float2(0, 0), 1), 50, 0.02);
+      }
+    }
+    
   } else if(slt.type == Slot::SHOP) {
     StackString stp("Shop");
     slt.shop.renderToScreen(&playerdata[playerid[slt.pid]]);
