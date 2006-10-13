@@ -744,11 +744,12 @@ void PersistentData::ai(const vector<Ai *> &ais) const {
         CHECK(slot[i].pid != -1); // blah
         CHECK(!dun[slot[i].pid]);
         dun[slot[i].pid] = true;
+        if(!ais[slot[i].pid])
+          continue;
         if(slot[i].type == Slot::SHOP) {
           slot[i].shop.ai(ais[slot[i].pid], &playerdata[playerid[slot[i].pid]]);
         } else if(slot[i].type == Slot::CHOOSE || slot[i].type == Slot::SETTINGS) {
-          if(ais[slot[i].pid])
-            ais[slot[i].pid]->updateCharacterChoice(factions, pms[slot[i].pid], slot[i].pid);
+          ais[slot[i].pid]->updateCharacterChoice(factions, pms[slot[i].pid], slot[i].pid);
         } else {
           dprintf("%d\n", slot[i].type);
           CHECK(0);

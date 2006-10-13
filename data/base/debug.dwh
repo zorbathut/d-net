@@ -18,11 +18,19 @@ projectile {
   debug=1
 }
 
+stats {
+  name=stats.debug
+  
+  debug=1
+}
+
 launcher {
   name=launcher.tracer
   
   projectile=projectile.tracer
   deploy=deploy.debug
+  
+  stats=stats.debug
   
   debug=1
 }
@@ -58,6 +66,8 @@ launcher {
   projectile=projectile.shredder
   deploy=deploy.debug
   
+  stats=stats.debug
+  
   debug=1
 }
 
@@ -86,6 +96,8 @@ launcher {
   
   projectile=projectile.minesplatterer
   deploy=deploy.debug
+  
+  stats=stats.debug
   
   debug=1
 }
