@@ -567,9 +567,9 @@ void PersistentData::renderSlot(int slotid) const {
     
     const float div_x = 0.6;
     
-    setColor(C::inactive_text);
-    drawLine(0, 0.5, div_x, 0.5, 0.003);
-    drawLine(div_x, 0, div_x, 1.0, 0.003);
+    setColor(C::active_text);
+    drawLine(0.05, 0.5, div_x, 0.5, 0.003);
+    drawLine(div_x, 0.05, div_x, 0.95, 0.003);
     
     {
       GfxWindow gfxw(Float4(0, 0.5, div_x, 1), 1.0);
@@ -601,10 +601,18 @@ void PersistentData::renderSlot(int slotid) const {
     for(int i = 0; i < factions.size(); i++) {
       if(isInside(factions[i].compass_location, pms[slt.pid].compasspos)) {
         CHECK(!factdone);
-        GfxWindow gfxw(Float4(0, 0, div_x, 0.5), 1.0);
-        setZoomCenter(0, 0, 1.0);
-        setColor(factions[i].faction->color);
-        drawDvec2(factions[i].faction->icon, boxAround(Float2(0, 0), 1), 50, 0.02);
+        {
+          GfxWindow gfxw(Float4(0, 0, div_x, 0.5), 1.0);
+          setZoomCenter(0, 0, 1.0);
+          setColor(factions[i].faction->color);
+          drawDvec2(factions[i].faction->icon, boxAround(Float2(0, 0), 1), 50, 0.02);
+        }
+        if(factions[i].faction->text) {
+          setColor(C::inactive_text);
+          GfxWindow gfxw(Float4(div_x, 0, getAspect(), 1.0), 1.0);
+          setZoomVertical(0, 0, 1);
+          drawParagraphedText(*factions[i].faction->text, 0.05, contract(getZoom(), 0.02));
+        }
       }
     }
     

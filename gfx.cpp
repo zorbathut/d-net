@@ -635,7 +635,10 @@ float getTextWidth(const string &txt, float scale) {
   const float point = scale / 9;
   float acum = point * (txt.size() - 1) * betweenletter;
   for(int i = 0; i < txt.size(); i++) {
-    CHECK(fontdata.count(txt[i]));
+    if(!fontdata.count(txt[i])) {
+      dprintf("Couldn't find character '%c'", txt[i]);
+      CHECK(0);
+    }
     acum += point * fontdata[txt[i]].width;
   }
   return acum;
@@ -655,28 +658,32 @@ int snatchLine(const vector<string> &left, float fontsize, float limit) {
   return left.size();
 }
 
-vector<string> formatText(const string &txt, float fontsize, float width) {
+vector<string> formatText(const string &txt, float fontsize, float width, const string &lineprefix) {
   vector<string> vlines;
-  vector<string> left = tokenize(txt, " ");
-  while(left.size()) {
-    int wordsa = snatchLine(left, fontsize, width);
-    CHECK(wordsa > 0 && wordsa <= left.size());
-    string v;
-    for(int k = 0; k < wordsa; k++) {
-      if(k)
-        v += " ";
-      v += left[k];
+  vector<string> paras = tokenize(txt, "\n");
+  for(int i = 0; i < paras.size(); i++) {
+    vector<string> left = tokenize(paras[i], " ");
+    left[0] = lineprefix + left[0];
+    while(left.size()) {
+      int wordsa = snatchLine(left, fontsize, width);
+      CHECK(wordsa > 0 && wordsa <= left.size());
+      string v;
+      for(int k = 0; k < wordsa; k++) {
+        if(k)
+          v += " ";
+        v += left[k];
+      }
+      CHECK(getTextWidth(v, fontsize) <= width);
+      vlines.push_back(v);
+      left.erase(left.begin(), left.begin() + wordsa);
     }
-    CHECK(getTextWidth(v, fontsize) <= width);
-    vlines.push_back(v);
-    left.erase(left.begin(), left.begin() + wordsa);
   }
   return vlines;
 }
 
 float getFormattedTextHeight(const string &txt, float fontsize, float width) {
   const float linesize = fontsize * 1.5;
-  const vector<string> text = formatText(txt, fontsize, width);
+  const vector<string> text = formatText(txt, fontsize, width, "");
   if(text.size() == 0)
     return 0;
   return (text.size() - 1) * linesize + fontsize;
@@ -732,7 +739,13 @@ void drawJustifiedMultiText(const vector<string> &txt, float letterscale, Float2
 }
 
 void drawFormattedText(const string &txt, float scale, Float4 bounds) {
-  const vector<string> lines = formatText(txt, scale, bounds.x_span());
+  CHECK(!count(txt.begin(), txt.end(), '\n'));
+  const vector<string> lines = formatText(txt, scale, bounds.x_span(), "");
+  drawJustifiedMultiText(lines, scale, Float2(bounds.sx, bounds.sy), TEXT_MIN, TEXT_MIN);
+}
+
+void drawParagraphedText(const string &txt, float scale, Float4 bounds) {
+  const vector<string> lines = formatText(txt, scale, bounds.x_span(), "  ");
   drawJustifiedMultiText(lines, scale, Float2(bounds.sx, bounds.sy), TEXT_MIN, TEXT_MIN);
 }
 

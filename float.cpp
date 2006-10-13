@@ -79,3 +79,6 @@ Float4 squareInside(const Float4 &in) {
 Float4 extend(const Float4 &in, float amount) {
   return Float4(in.sx - amount, in.sy - amount, in.ex + amount, in.ey + amount);
 };
+Float4 contract(const Float4 &in, float amount) {
+  return Float4(in.sx + amount, in.sy + amount, in.ex - amount, in.ey - amount);
+};

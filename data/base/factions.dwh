@@ -1,6 +1,5 @@
 adjustment {
   name=adjustment.lucifer.high
-  
   damage_kinetic=30
   damage_energy=30
   damage_explosive=30
@@ -10,11 +9,20 @@ adjustment {
   tank_armor=-20
 }
 
+text {
+  name=text.faction.lucifer
+  data=Pain and suffering, whee whee whee, suffering rocks, these guys are evil, ahoy!
+  data=Where's my sandwich
+}
+
 faction { # extra damage on all weapons
   name=Disciples of Lucifer
   lines=1 2
+  text=text.faction.lucifer
+  
   file=pitchfork.dv2
   color=f00
+  
   adjustment=adjustment.lucifer
 }
 

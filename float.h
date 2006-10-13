@@ -244,5 +244,6 @@ inline float approach(float start, float target, float delta) {
 }
 
 Float4 extend(const Float4 &in, float amount);
+Float4 contract(const Float4 &in, float amount);
 
 #endif
