@@ -611,7 +611,7 @@ void PersistentData::renderSlot(int slotid) const {
           setColor(C::inactive_text);
           GfxWindow gfxw(Float4(div_x, 0, getAspect(), 1.0), 1.0);
           setZoomVertical(0, 0, 1);
-          drawParagraphedText(*factions[i].faction->text, 0.05, contract(getZoom(), 0.02));
+          drawParagraphedText(*factions[i].faction->text, 0.04, contract(getZoom(), 0.02));
         }
       }
     }

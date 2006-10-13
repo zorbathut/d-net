@@ -11,8 +11,8 @@ adjustment {
 
 text {
   name=text.faction.lucifer
-  data=Pain and suffering, whee whee whee, suffering rocks, these guys are evil, ahoy!
-  data=Where's my sandwich
+  data=The Disciples of Lucifer are a recent Satanist cult which believes pain and suffering are the path to redemption. They care deeply for fellow humans and will do whatever it takes to save their souls. Even against their will.
+  data=This faction works hard to increase damage output for all weaponry. The increased warhead mass leaves less room for tank armor, which they gladly sacrifice in hopes that their own soul will be blessed.
 }
 
 faction { # extra damage on all weapons
