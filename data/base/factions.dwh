@@ -1,3 +1,10 @@
+
+text {
+  name=text.faction.lucifer
+  data=The Disciples of Lucifer are a recent Satanist cult which believes pain and suffering are the path to redemption. They care deeply for their fellow humans and will do whatever it takes to save the souls of their brethren.
+  data=This faction works hard to increase damage output for all weaponry. The increased warhead mass leaves less room for tank armor, which they gladly sacrifice in hopes that their own soul will be blessed.
+}
+
 adjustment {
   name=adjustment.lucifer.high
   damage_kinetic=30
@@ -7,12 +14,6 @@ adjustment {
   damage_exotic=30
   
   tank_armor=-20
-}
-
-text {
-  name=text.faction.lucifer
-  data=The Disciples of Lucifer are a recent Satanist cult which believes pain and suffering are the path to redemption. They care deeply for their fellow humans and will do whatever it takes to save the souls of their brethren.
-  data=This faction works hard to increase damage output for all weaponry. The increased warhead mass leaves less room for tank armor, which they gladly sacrifice in hopes that their own soul will be blessed.
 }
 
 faction { # extra damage on all weapons
@@ -26,18 +27,18 @@ faction { # extra damage on all weapons
   adjustment=adjustment.lucifer
 }
 
+text {
+  name=text.faction.final
+  data=Final Solutions Limited is Earth's leading supplier of largescale offensive machineries. Our products combine compact design, low prices, and maximum effectiveness. Contact a reseller today. (excerpt from Final Solutions Limited press kit)
+  data=The corporate backers for this group produce most of the world's weaponry. They contribute to D-Net largely for PR purposes. Their team gets a special corporate discount on all weaponry systems.
+}
+
 adjustment {
   name=adjustment.final.high
   
   discount_weapon=20
   
   discount_training=-20
-}
-
-text {
-  name=text.faction.final
-  data=Final Solutions Limited is Earth's leading supplier of largescale offensive machineries. Our products combine compact design, low prices, and maximum effectiveness. Contact a reseller today. (excerpt from Final Solutions Limited press kit)
-  data=The corporate backers for this group produce most of the world's weaponry. They contribute to D-Net largely for PR purposes. Their team gets a special corporate discount on all weaponry systems.
 }
 
 faction { # cheaper weapons
@@ -51,6 +52,12 @@ faction { # cheaper weapons
   adjustment=adjustment.final
 }
 
+text {
+  name=text.faction.serpent
+  data=Serpent's Strike is a group of former race engineers and drivers entering D-Net for fame and money. They believe that the best way to win fights is to not be where the firepower is.
+  data=Serpent tanks are fast and maneuverable. The tank's armor has been reduced slightly for even more speed. Serpent tanks are designed for precision strikes, and are not particularly good with trap and exotic weaponry.
+}
+
 adjustment {
   name=adjustment.serpent.high
   
@@ -60,12 +67,6 @@ adjustment {
   tank_armor=-10
   damage_trap=-20
   damage_exotic=-20
-}
-
-text {
-  name=text.faction.serpent
-  data=Serpent's Strike is a group of former race engineers and drivers entering D-Net for fame and money. They believe that the best way to win fights is to not be where the firepower is.
-  data=Serpent tanks are fast and maneuverable. The tank's armor has been reduced slightly for even more speed. Serpent tanks are designed for precision strikes, and are not particularly good with trap and exotic weaponry.
 }
 
 faction { # faster turn, faster movement
