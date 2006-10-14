@@ -965,6 +965,21 @@ void generateWeaponStats() {
   fclose(ofil);
 }
 
+void generateFactionStats() {
+  FILE *ofil = fopen("tools/factiondump.dat", "w");
+  CHECK(ofil);
+  for(int j = 0; j < IDBAdjustment::LAST; j++)
+    fprintf(ofil, "\t%s", adjust_text[j]);
+  fprintf(ofil, "\n");
+  for(int i = 0; i < factions.size(); i++) {
+    fprintf(ofil, "%s", factions[i].name.c_str());
+    for(int j = 0; j < IDBAdjustment::LAST; j++)
+      fprintf(ofil, "\t%d", factions[i].adjustment[3]->adjusts[j]);
+    fprintf(ofil, "\n");
+  }
+  fclose(ofil);
+}
+
 const HierarchyNode &itemDbRoot() {
   return root;
 }

@@ -18,6 +18,7 @@ DEFINE_bool(fullscreen, true, "Fullscreen");
 DEFINE_bool(help, false, "Get help");
 DEFINE_bool(generateCachedShops, false, "Do all the work necessary to cache shops");
 DEFINE_bool(generateWeaponStats, false, "Do all the work necessary to dump weapon info");
+DEFINE_bool(generateFactionStats, false, "Do all the work necessary to dump faction info");
 
 int GetVideoFlags(void) {
 
@@ -122,14 +123,26 @@ int main(int argc, char **argv) {
   
   initItemdb();
   
-  if(FLAGS_generateCachedShops) {
-    generateCachedShops();
-    return 0;
-  }
-  
-  if(FLAGS_generateWeaponStats) {
-    generateWeaponStats();
-    return 0;
+  {
+    bool generated = false;
+    
+    if(FLAGS_generateCachedShops) {
+      generateCachedShops();
+      generated = true;
+    }
+    
+    if(FLAGS_generateWeaponStats) {
+      generateWeaponStats();
+      generated = true;
+    }
+    
+    if(FLAGS_generateFactionStats) {
+      generateFactionStats();
+      generated = true;
+    }
+    
+    if(generated)
+      return 0;
   }
 
   initSystem();
