@@ -11,7 +11,7 @@ adjustment {
 
 text {
   name=text.faction.lucifer
-  data=The Disciples of Lucifer are a recent Satanist cult which believes pain and suffering are the path to redemption. They care deeply for fellow humans and will do whatever it takes to save their souls. Even against their will.
+  data=The Disciples of Lucifer are a recent Satanist cult which believes pain and suffering are the path to redemption. They care deeply for their fellow humans and will do whatever it takes to save the souls of their brethren.
   data=This faction works hard to increase damage output for all weaponry. The increased warhead mass leaves less room for tank armor, which they gladly sacrifice in hopes that their own soul will be blessed.
 }
 
@@ -34,11 +34,20 @@ adjustment {
   discount_training=-20
 }
 
+text {
+  name=text.faction.final
+  data=Final Solutions Limited is Earth's leading supplier of largescale offensive machineries. Our products combine compact design, low prices, and maximum effectiveness. Contact a reseller today. (excerpt from Final Solutions Limited press kit)
+  data=The corporate backers for this group produce most of the world's weaponry. They contribute to D-Net largely for PR purposes. Their team gets a special corporate discount on all weaponry systems.
+}
+
 faction { # cheaper weapons
   name=Final Solutions Limited
   lines=1 1 1
+  text=text.faction.final
+  
   file=omega.dv2
   color=fff
+  
   adjustment=adjustment.final
 }
 
