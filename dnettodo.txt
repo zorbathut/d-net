@@ -1,5 +1,4 @@
 ---- Major work path
-- Graphics glitch on tab culling in metagame_config
 - Say when the last demo screen is up
 - "Go back and edit" - explain how
 - Why does enter work for P1?

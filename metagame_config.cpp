@@ -1098,10 +1098,12 @@ void runSettingRender(const PlayerMenuState &pms, const string &availdescr) {
         // First, opacity for the bottom chunk
         {
           vector<Float2> path;
+          path.push_back(Float2(rin.drawzone.sx, rin.expansion_bottom + 0.01));
           path.push_back(Float2(rin.drawzone.sx, rin.expansion_bottom));
           path.push_back(Float2(xpos[i].first - rin.border, rin.tab_bottom));
           path.push_back(Float2(xpos[i].second + rin.border, rin.tab_bottom));
           path.push_back(Float2(rin.drawzone.ex, rin.expansion_bottom));
+          path.push_back(Float2(rin.drawzone.ex, rin.expansion_bottom + 0.01));
           drawSolidLoop(path);
         }
         
