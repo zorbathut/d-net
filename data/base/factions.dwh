@@ -80,6 +80,12 @@ faction { # faster turn, faster movement
   adjustment=adjustment.serpent
 }
 
+text {
+  name=text.faction.aquear
+  data=Little is known about Aquear. They forego press conferences and any photo opportunities. It is believed that Aquear consists of a race of beings from another solar system, although their motives are unclear.
+  data=Aquear appears to have generally high technology, and has used this to build tanks which are superior in every way to the average tank. However, they appear unable to specialize, and their tanks are not outstanding in any way.
+}
+
 adjustment {
   name=adjustment.aquear.high
   
@@ -100,12 +106,6 @@ adjustment {
   tank_armor=5
 }
 
-text {
-  name=text.faction.aquear
-  data=Little is known about Aquear. They forego press conferences and any photo opportunities. It is believed that Aquear consists of a race of beings from another solar system, although their motives are unclear.
-  data=Aquear appears to have generally high technology, and has used this to build tanks which are superior in every way to the average tank. However, they appear unable to specialize, and their tanks are not outstanding in any way.
-}
-
 faction { # increased everything 
   name=Aquear
   lines=1
@@ -115,6 +115,12 @@ faction { # increased everything
   color=00f
   
   adjustment=adjustment.aquear
+}
+
+text {
+  name=text.faction.hermes
+  data=The Academy of Hermes claims to be a research facility run by the actual Greek god. As unlikely as this sounds, their engines and drivetrains are literally second to none, breaking technology records regularly.
+  data=Hermes tanks are unbelievably quick, but the cutting-edge technology involved increases tank cost considerably. Hermes technology does not require any other compromises.
 }
 
 adjustment {
@@ -128,9 +134,17 @@ adjustment {
 faction { # much faster movement
   name=Academy of Hermes
   lines=1 2
+  text=text.faction.hermes
+  
   file=lightning.dv2
   color=ff0
+  
   adjustment=adjustment.academy
+}
+
+text {
+  name=text.faction.rational
+  data=hahahah I have no idea the strengths of these guys don't even exist anymore :(
 }
 
 adjustment {
@@ -145,8 +159,11 @@ adjustment {
 faction { # Cheaper training
   name=Rational Warriors
   lines=1 1
+  text=text.faction.rational
+  
   file=h.dv2
   color=0ff
+  
   adjustment=adjustment.rational
 }
 
