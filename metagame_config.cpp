@@ -363,7 +363,11 @@ void standardButtonRender(const StandardButtonRenderData &sbrd) {
   } else {
     setColor(C::inactive_text);
   }
-  drawText("Done", sbrd.rin->textsize, Float2(groupnamexps, sbrd.rin->ystarts[cy++]));
+  
+  if(sbrd.inverts)
+    drawText("Done", sbrd.rin->textsize, Float2(groupnamexps, sbrd.rin->ystarts[cy++]));
+  else
+    drawText("Done (use accept button)", sbrd.rin->textsize, Float2(groupnamexps, sbrd.rin->ystarts[cy++]));  // shut up
   CHECK(cy == scy + linesneeded);
 
   drawBottomBlock(*sbrd.rin, sbrd.description.size());

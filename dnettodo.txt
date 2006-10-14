@@ -1,4 +1,10 @@
 ---- Major work path
+- Graphics glitch on tab culling in metagame_config
+- Say when the last demo screen is up
+- "Go back and edit" - explain how
+- Why does enter work for P1?
+- Crash when blowing away huge walls with 50 or 10-width wallripper
+- Missing walls when doing same
 - Faction info screen on startup
   - Add text
   - Add abilities
@@ -29,7 +35,6 @@
 
 ---- Maintenance, minor bugfix, braindead
 - Set your keys/buttons changing
-- Enforce prefixes? projectile.blah etc etc etc
 - AI shouldn't try to buy the items it already owns/smarter about shops
 - Buy menu flicker? Double-buffering?
 - Extricate coord.h and float.h from more headers
@@ -37,7 +42,6 @@
 - Winner list better special effects
 - Winner list better "null" icon
 - Color for projectile impacts
-- Make explosion removals include the focus point
 
 ---- Things that may or may not be needed
 - Stop reloading files in findLevels
@@ -54,18 +58,3 @@
   - dnd compression
 
 http://www.itchstudios.com/psg/ - Dafred's artist
-
---- whee
-
-Choose "join game" to add more players. At least two players are needed.
-
-Left keyboard player uses WASD for movement, RTYFGHVBN as buttons.
-
-Right keyboard player uses arrow keys for movement, 7890UIOPJKL;M,./ as buttons.
-
-Choose "Settings" to modify your controller settings.
-
-"Quick shop" lets four people buy things at once.
-"Full shop" gives weapon and upgrade demonstrations.
-
-Choose "done" when ready to play.
