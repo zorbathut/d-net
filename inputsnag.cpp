@@ -29,7 +29,7 @@ int playerone[] = { SDLK_UP, SDLK_DOWN, SDLK_LEFT, SDLK_RIGHT, SDLK_7, SDLK_8, S
 int playertwo[] = { SDLK_w, SDLK_s, SDLK_a, SDLK_d, SDLK_r, SDLK_t, SDLK_y, SDLK_f, SDLK_g, SDLK_h, SDLK_v, SDLK_b, SDLK_n };
 
 int *baseplayermap[2] = { playerone, playertwo };
-int baseplayersize[2] = { sizeof(playerone) / sizeof(*playerone), sizeof(playertwo) / sizeof(*playertwo) };  
+int baseplayersize[2] = { ARRAY_SIZE(playerone) - 4, ARRAY_SIZE(playertwo) - 4 };  
 
 vector<Controller> controls_init() {
   CHECK(sources.size() == 0);

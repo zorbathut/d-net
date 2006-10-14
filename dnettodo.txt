@@ -1,5 +1,4 @@
 ---- Major work path
-- Why does enter work for P1?
 - Crash when blowing away huge walls with 50 or 10-width wallripper
 - Missing walls when doing same
 - Faction info screen on startup
