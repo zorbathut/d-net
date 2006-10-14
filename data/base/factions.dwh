@@ -62,11 +62,20 @@ adjustment {
   damage_exotic=-20
 }
 
+text {
+  name=text.faction.serpent
+  data=Serpent's Strike is a group of former race engineers and drivers entering D-Net for fame and money. They believe that the best way to win fights is to not be where the firepower is.
+  data=Serpent tanks are fast and maneuverable. The tank's armor has been reduced slightly for even more speed. Serpent tanks are designed for precision strikes, and are not particularly good with trap and exotic weaponry.
+}
+
 faction { # faster turn, faster movement
   name=Serpent's Strike
   lines=1 1
+  text=text.faction.serpent
+  
   file=serpent.dv2
   color=0a0
+  
   adjustment=adjustment.serpent
 }
 
@@ -90,11 +99,20 @@ adjustment {
   tank_armor=5
 }
 
+text {
+  name=text.faction.aquear
+  data=Little is known about Aquear. They forego press conferences and any photo opportunities. It is believed that Aquear consists of a race of beings from another solar system, although their motives are unclear.
+  data=Aquear appears to have generally high technology, and has used this to build tanks which are superior in every way to the average tank. However, they appear unable to specialize, and their tanks are not outstanding in any way.
+}
+
 faction { # increased everything 
   name=Aquear
   lines=1
+  text=text.faction.aquear
+  
   file=ocean.dv2
   color=00f
+  
   adjustment=adjustment.aquear
 }
 
