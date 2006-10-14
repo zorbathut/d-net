@@ -549,8 +549,9 @@ vector<vector<DemoSegment> > createDemoSegments() {
     {
       DemoSegment tds;
       tds.config = GameAiAxisRotater::steeringConfig(true, true);
-      tds.text.push_back("Move your controller left and right");
-      tds.text.push_back("to turn your tank left and right.");
+      tds.text.push_back("Combine these to drive around.");
+      tds.text.push_back("");
+      tds.text.push_back("This is the end of the demo.");
       ts.push_back(tds);
     }
     rv.push_back(ts);
@@ -581,6 +582,15 @@ vector<vector<DemoSegment> > createDemoSegments() {
       tds.config = GameAiAxisRotater::absoluteConfig();
       tds.text.push_back("Moving the controller directly backwards will");
       tds.text.push_back("allow you to drive backwards.");
+      ts.push_back(tds);
+    }
+    {
+      DemoSegment tds;
+      tds.config = GameAiAxisRotater::absoluteConfig();
+      tds.text.push_back("Absolute mode is easy to use, but occasionally");
+      tds.text.push_back("has trouble maneuvering or aiming precisely.");
+      tds.text.push_back("");
+      tds.text.push_back("This is the end of the demo.");
       ts.push_back(tds);
     }
     rv.push_back(ts);
@@ -630,6 +640,8 @@ vector<vector<DemoSegment> > createDemoSegments() {
       tds.config = GameAiAxisRotater::tankConfig(1, 2);
       tds.text.push_back("Using the sticks in combination allows");
       tds.text.push_back("you to maneuver.");
+      tds.text.push_back("");
+      tds.text.push_back("This is the end of the demo.");
       ts.push_back(tds);
     }
     rv.push_back(ts);
@@ -1001,10 +1013,16 @@ void runSettingRender(const PlayerMenuState &pms, const string &availdescr) {
       pms.setting_axistype_demo->renderToScreen();
     }
     
-    drawBottomBlock(rin, 2);
-    setColor(C::inactive_text);
-    drawJustifiedText("Press your \"accept\" button to continue the demo.", rin.textsize, Float2(rin.xcenter, rin.ystarts[rin.ystarts.size() - 2]), TEXT_CENTER, TEXT_MIN);
-    drawJustifiedText("Press your \"cancel\" button to abort the demo.", rin.textsize, Float2(rin.xcenter, rin.ystarts[rin.ystarts.size() - 1]), TEXT_CENTER, TEXT_MIN);
+    if(pms.setting_axistype_demo_cursegment == dsegments[pms.setting_axistype_curchoice / 2].size() - 1) {
+      drawBottomBlock(rin, 1);
+      setColor(C::inactive_text);
+      drawJustifiedText("Press \"accept\" or \"cancel\" to end the demo.", rin.textsize, Float2(rin.xcenter, rin.ystarts[rin.ystarts.size() - 1]), TEXT_CENTER, TEXT_MIN);
+    } else {
+      drawBottomBlock(rin, 2);
+      setColor(C::inactive_text);
+      drawJustifiedText("Press your \"accept\" button to continue the demo.", rin.textsize, Float2(rin.xcenter, rin.ystarts[rin.ystarts.size() - 2]), TEXT_CENTER, TEXT_MIN);
+      drawJustifiedText("Press your \"cancel\" button to abort the demo.", rin.textsize, Float2(rin.xcenter, rin.ystarts[rin.ystarts.size() - 1]), TEXT_CENTER, TEXT_MIN);
+    }
     
     setColor(C::inactive_text);
     {

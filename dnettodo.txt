@@ -1,5 +1,4 @@
 ---- Major work path
-- Say when the last demo screen is up
 - "Go back and edit" - explain how
 - Why does enter work for P1?
 - Crash when blowing away huge walls with 50 or 10-width wallripper
