@@ -143,7 +143,8 @@ faction { # much faster movement
 
 text {
   name=text.faction.rational
-  data=hahahah I have no idea the strengths of these guys don't even exist anymore :(
+  data=The Rational Warriors are a mercenary training group who believe in introspection and logic in battle. They pride themselves on their intelligence and ability to predict the tide of combat.
+  data=Not surprisingly, Rational Warriors find training and upgrades far cheaper than other factions. However, they avoid the unpredictable nature of explosives and exotic weapons.
 }
 
 adjustment {
@@ -167,23 +168,38 @@ faction { # Cheaper training
   adjustment=adjustment.rational
 }
 
+text {
+  name=text.faction.security
+  data="Security Transport Incorporated. Delivery guaranteed." Entering D-Net for advertising more than anything else, this shipping company is famous for getting packages through even the heaviest war zones intact.
+  data=Security Transport tanks are faster and tougher than most tanks on the field and have vastly improved trap systems to discourage pursuit. Most of their power core output goes to the engine, reducing laser damage significantly.
+}
+
 adjustment {
   name=adjustment.security.high
   
-  damage_trap=20
-  tank_speed=10
-  tank_armor=10
+  damage_trap=50
+  tank_speed=20
+  tank_armor=20
   
-  damage_energy=-20
+  damage_energy=-25
   tank_turn=-10
 }
 
 faction { # Extra damage to trap weapons, speed/armor bonus
   name=Security Transport Inc
   lines=1 2
+  text=text.faction.security
+  
   file=compass.dv2
   color=f4f
+  
   adjustment=adjustment.security
+}
+
+text {
+  name=text.faction.juggernauts
+  data=Jason's Juggernauts are the world's most feared mercenary squadron. They believe all problems can be solved with sufficient firepower. If the problem isn't solved, you haven't used enough firepower.
+  data=Their strength lies solely in warhead quantity, as their tanks are able to boost the fire rate of all weapons. Their battle-damaged tanks tend to be somewhat lacking in other abilities.
 }
 
 adjustment {
@@ -198,8 +214,11 @@ adjustment {
 faction { # Increased firerate
   name=Jason's Juggernauts
   lines=1 1
+  text=text.faction.juggernauts
+  
   file=buzzsaw.dv2
   color=88f
+  
   adjustment=adjustment.juggernauts
 }
 

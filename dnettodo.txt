@@ -1,5 +1,5 @@
 ---- Major work path
-- Faction info screen on startup, activate factions
+- Faction info screen on startup
   - Make sure negative recycle bonus works sanely
   - Add text
   - Add abilities
@@ -12,6 +12,7 @@
 - Next-gen weapons
 - Training
 - Implants
+- Activate factions
 - Many many more weapons
 - Make small text thicker
 
