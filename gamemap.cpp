@@ -156,6 +156,7 @@ void Gamemap::removeWalls(Coord2 center, float radius) {
           }
         }
       }
+      flushAdds();
     }
   }
 

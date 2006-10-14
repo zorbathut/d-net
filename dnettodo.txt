@@ -1,6 +1,4 @@
 ---- Major work path
-- Crash when blowing away huge walls with 50 or 10-width wallripper
-- Missing walls when doing same
 - Faction info screen on startup
   - Add text
   - Add abilities

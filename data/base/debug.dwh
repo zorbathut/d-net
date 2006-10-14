@@ -47,23 +47,49 @@ weapon {
 }
 
 warhead {
-  name=warhead.shredder
+  name=warhead.minishredder
   wallremovalradius=2
   debug=1
 }
 
+warhead {
+  name=warhead.megashredder
+  wallremovalradius=50
+  debug=1
+}
+
 projectile {
-  name=projectile.shredder
+  name=projectile.minishredder
   velocity=600
   color=1.0, 0.3, 0.3
-  warhead=warhead.shredder
+  warhead=warhead.minishredder
+  debug=1
+}
+
+
+projectile {
+  name=projectile.megashredder
+  velocity=600
+  color=1.0, 0.3, 0.3
+  warhead=warhead.megashredder
   debug=1
 }
 
 launcher {
-  name=launcher.shredder
+  name=launcher.minishredder
   
-  projectile=projectile.shredder
+  projectile=projectile.minishredder
+  deploy=deploy.debug
+  
+  stats=stats.debug
+  
+  debug=1
+}
+
+launcher {
+  name=launcher.megashredder
+  
+  projectile=projectile.megashredder
   deploy=deploy.debug
   
   stats=stats.debug
@@ -72,11 +98,21 @@ launcher {
 }
 
 weapon {
-  name=ROOT.Weapons.Debug.Shredder
+  name=ROOT.Weapons.Debug.Minishredder
   cost=1
   firerate=60
   
-  launcher=launcher.shredder
+  launcher=launcher.minishredder
+  
+  debug=1
+}
+
+weapon {
+  name=ROOT.Weapons.Debug.Megashredder
+  cost=1
+  firerate=60
+  
+  launcher=launcher.megashredder
   
   debug=1
 }
@@ -107,7 +143,7 @@ weapon {
   cost=1
   firerate=60
   
-  launcher=launcher.shredder
+  launcher=launcher.minesplatterer
   
   debug=1
 }
