@@ -599,7 +599,7 @@ void PersistentData::renderSlot(int slotid) const {
     
     bool factdone = false;
     for(int i = 0; i < factions.size(); i++) {
-      if(isInside(factions[i].compass_location, pms[slt.pid].compasspos)) {
+      if(!factions[i].taken && isInside(factions[i].compass_location, pms[slt.pid].compasspos)) {
         CHECK(!factdone);
         {
           GfxWindow gfxw(Float4(0, 0, div_x, 0.5), 1.0);

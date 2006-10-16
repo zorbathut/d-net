@@ -1,7 +1,6 @@
 ---- Major work path
 - Faction info screen on startup
-  - Add text
-  - No mouseover for chosen factions
+  - Add default text
   - Add abilities
   - Add icon fading
   - Add random faction
