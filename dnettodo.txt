@@ -1,11 +1,12 @@
 ---- Major work path
 - Faction info screen on startup
-  - Make sure negative recycle bonus works sanely
   - Add text
+  - No mouseover for chosen factions
   - Add abilities
   - Add icon fading
   - Add random faction
   - Faction bonuses/penalties in demo screens
+- Fix lots of redundant code in itemdb.cpp
 - Gradual shop spawning
   - Remove bombardment from 2 player, make it cheaper for 3 and 4
 - Pull glory explody into its own deploy?

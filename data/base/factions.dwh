@@ -222,6 +222,12 @@ faction { # Increased firerate
   adjustment=adjustment.juggernauts
 }
 
+text {
+  name=text.faction.dynasty
+  data=The Korath Dynasty is the world's oldest family business. The company works as an assembly contractor for other businesses, and prides themselves on efficiency and quality.
+  data=Korath Dynasty workers are skilled builders and integrators, resulting in lower prices for tanks and upgrades. Unfortunately, internal company politics makes it nearly impossible to resell un-needed components.
+}
+
 adjustment {
   name=adjustment.dynasty.high
   
@@ -234,9 +240,18 @@ adjustment {
 faction { # Cheaper tanks
   name=Korath Dynasty
   lines=1 1
+  text=text.faction.dynasty
+  
   file=zen.dv2
   color=f51
+  
   adjustment=adjustment.dynasty
+}
+
+text {
+  name=text.faction.amazon
+  data=The Tribes of the Amazon are a set of naturalistic groups inhabiting South America. They believe in primitive tools and living off the land. While they are a formidable faction, it is unclear why they have joined D-Net.
+  data=Amazonian tanks are built for extreme efficiency with simple projectile weapons. While the tanks themselves function surprisingly well, upgrading them is difficult at best.
 }
 
 adjustment {
@@ -250,26 +265,45 @@ adjustment {
 faction { # Extra damage to projectile weapons
   name=Tribes of the Amazon
   lines=2 2
+  text=text.faction.amazon
+  
   file=pincer.dv2
   color=fb2
+  
   adjustment=adjustment.amazon
+}
+
+text {
+  name=text.faction.kindred
+  data=Alchemist's Kindred is a research facility focusing on device re-use and upgrades. They are the world authority on aftermarket modifications.
+  data=Naturally, this faction gets upgrades far more cheaply than other factions. They also make somewhat more money off selling items. The Alchemists are less interested in single-purpose kinetic and energy weapons and spend less time practicing with them.
 }
 
 adjustment {
   name=adjustment.kindred.high
   
   discount_upgrade=40
+  recycle_bonus=100
   
-  damage_kinetic=-5
-  damage_energy=-5
+  damage_kinetic=-10
+  damage_energy=-10
 }
 
 faction { # Cheaper upgrades
   name=Alchemist's Kindred
   lines=1 1
+  text=text.faction.kindred
+  
   file=poison.dv2
   color=63f
+  
   adjustment=adjustment.kindred
+}
+
+text {
+  name=text.faction.catalysts
+  data=The Catalysts of Mortality can be best described as "psychopaths". It is believed that they entered D-Net solely to blow things up legally. They greatly enjoy heavy firepower and explosions.
+  data=This faction is infamous for packing more explosives into shells than was previously believed possible, increasing both damage and blast radius substantially. However, the added mass and size of explosives reduces fire rate of all weapons significantly.
 }
 
 adjustment {
@@ -284,13 +318,22 @@ adjustment {
 faction { # Extra damage to explosions
   name=Catalysts of Mortality
   lines=2 1
+  text=text.faction.catalysts
+  
   file=hourglass.dv2
   color=09f
+  
   adjustment=adjustment.catalysts
 }
 
+text {
+  name=text.faction.hephaestus
+  data=A relatively unknown company for several decades, Hephaestus Heavy Construction got its big break during the Orbital Wars. Only the heavily-built reinforced HHC starbases survived the firepower being slung around in orbit.
+  data=Since then HHC has continued its tradition of building the sturdiest structures possible. Their tanks are capable of withstanding incredible firepower, their only weakness being that they are relatively sluggish.
+}
+
 adjustment {
-  name=adjustment.hepaestus.high
+  name=adjustment.hephaestus.high
   
   tank_armor=50
   
@@ -301,9 +344,18 @@ adjustment {
 faction { # Heavy armor
   name=Hephaestus Heavy Construction
   lines=1 1 1
+  text=text.faction.hephaestus
+  
   file=barriers.dv2
   color=888
-  adjustment=adjustment.hepaestus
+  
+  adjustment=adjustment.hephaestus
+}
+
+text {
+  name=text.faction.sons
+  data=The Sons of Earth formed soon after the Greenpeace seal fiasco. They work hard at the environmentalist agenda and use D-Net as an advertising platform.
+  data=Their technology is focused towards reuse and recycling, resulting in incredible sell value for used items. While they avoid explosives and traps due to their uncontrolled nature, they continue to research "cleaner" weapons, leading to a significant advantage in exotic weaponry and training techniques.
 }
 
 adjustment {
@@ -320,9 +372,18 @@ adjustment {
 faction { # Higher resell value
   name=Sons of Earth
   lines=2 1
+  text=text.faction.sons
+  
   file=trees.dv2
   color=af5
+  
   adjustment=adjustment.sons
+}
+
+text {
+  name=text.faction.dust
+  data=Dust's Legacy is a high-tech nomadic tribe inhabiting the Greater Sahara Desert. It is believed that they use D-Net as a "survival of the fittest" competition, overall increasing the skills of their warriors.
+  data=Their technology and strengths have evolved out of the cheap solar power available in the desert, massively increasing power output of their energy weapons. Inability to get rare alloys and elements decreases their tank strength and explosive warhead radius.
 }
 
 adjustment {
@@ -337,9 +398,18 @@ adjustment {
 faction { # Extra damage to energy weapons
   name=Dust's Legacy
   lines=1 1
+  text=text.faction.dust
+  
   file=bone.dv2
   color=fb8
+  
   adjustment=adjustment.dust
+}
+
+text {
+  name=text.faction.tricksters
+  data=The Tricksters' origin is unknown. Many believe that they are a crime gang, either thieves or assassins, using D-Net as demonstration for their skills. However, there is no evidence for this.
+  data=The Tricksters prefer the use of nonstandard weapons, both trap weaponry and exotic weaponry. They seem to spend little time and effort on training and their tanks, while generally good, have fire rate problems.
 }
 
 adjustment {
@@ -355,7 +425,10 @@ adjustment {
 faction { # Extra damage to trap/exotic weapons
   name=Tricksters
   lines=1
+  text=text.faction.tricksters
+  
   file=spike.dv2
   color=b46
+  
   adjustment=adjustment.tricksters
 }
