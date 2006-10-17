@@ -1041,7 +1041,6 @@ pair<Float4, vector<Float2> > getFactionCenters(int fcount) {
     if(icents.size() >= fcount) {
       pair<Float4, vector<Float2> > rv;
       rv.first = Float4(-x_size / 2, -y_size / 2, x_size / 2, y_size / 2);
-      rv.first *= 0.9;
       for(int i = 0; i < fcount; i++) {
         rv.second.push_back(Float2(icents[i].first * x_size / 2, icents[i].second * y_size / 2));
         Float4 synth = rv.first + rv.second.back();

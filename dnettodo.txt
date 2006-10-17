@@ -1,6 +1,5 @@
 ---- Major work path
 - Faction info screen on startup
-  - Expand bounds to flush
   - Add abilities
   - Add icon fading
   - Add random faction
