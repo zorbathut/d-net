@@ -41,6 +41,7 @@ void IDBAdjustment::debugDump() {
 
 IDBAdjustment::IDBAdjustment() {
   memset(adjusts, 0, sizeof(adjusts));
+  memset(adjustlist, -1, sizeof(adjustlist));
 }
 
 const IDBAdjustment &operator+=(IDBAdjustment &lhs, const IDBAdjustment &rhs) {
@@ -781,13 +782,22 @@ void parseAdjustment(kvData *chunk) {
   CHECK(ARRAY_SIZE(adjust_human) == IDBAdjustment::COMBO_LAST);
   CHECK(ARRAY_SIZE(adjust_unit) == IDBAdjustment::LAST);
   
-  for(int i = 0; i < IDBAdjustment::LAST; i++)
-    if(chunk->kv.count(adjust_text[i]))
-      titem->adjusts[i] = atoi(chunk->consume(adjust_text[i]).c_str());
+  int cps = 0;
+  
+  for(int i = 0; i < IDBAdjustment::LAST; i++) {
+    if(chunk->kv.count(adjust_text[i])) {
+      CHECK(cps < ARRAY_SIZE(titem->adjustlist));
+      int value = atoi(chunk->consume(adjust_text[i]).c_str());
+      titem->adjusts[i] = value;
+      titem->adjustlist[cps++] = make_pair(i, value);
+    }
+  }
   
   for(int i = IDBAdjustment::LAST; i < IDBAdjustment::COMBO_LAST; i++) {
     if(chunk->kv.count(adjust_text[i])) {
+      CHECK(cps < ARRAY_SIZE(titem->adjustlist));
       int value = atoi(chunk->consume(adjust_text[i]).c_str());
+      titem->adjustlist[cps++] = make_pair(i, value);
       if(i == IDBAdjustment::DAMAGE_ALL) {
         for(int j = 0; j < IDBAdjustment::DAMAGE_LAST; j++) {
           CHECK(titem->adjusts[j] == 0);
