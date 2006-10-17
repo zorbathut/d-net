@@ -12,8 +12,8 @@ text {
 warhead {
   name=warhead.apautocannon
   impactdamage=4.5 kinetic
-  wallremovalradius=0.5
-  wallremovalchance=0.05
+  wallremovalradius=0.8
+  wallremovalchance=0.20
 }
 
 projectile {
@@ -41,7 +41,7 @@ launcher {
 }
 
 weapon {
-  name=ROOT.Weapons.AP Autocannon.AP Autocannon I
+  name=ROOT.Weapons.AP Autocannon.AP AC I
   
   cost=2000
   firerate=3
@@ -50,7 +50,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.AP Autocannon.AP Autocannon II
+  name=ROOT.Weapons.AP Autocannon.AP AC II
   
   cost=3000
   firerate=3.8
@@ -59,7 +59,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.AP Autocannon.AP Autocannon III
+  name=ROOT.Weapons.AP Autocannon.AP AC III
   
   cost=4500
   firerate=5
@@ -68,7 +68,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.AP Autocannon.AP Autocannon IV
+  name=ROOT.Weapons.AP Autocannon.AP AC IV
   
   cost=7000
   firerate=6.5
@@ -77,7 +77,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.AP Autocannon.AP Autocannon V
+  name=ROOT.Weapons.AP Autocannon.AP AC V
   
   cost=12000
   firerate=8.5
@@ -86,7 +86,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.AP Autocannon.AP Autocannon VI
+  name=ROOT.Weapons.AP Autocannon.AP AC VI
   
   cost=18000
   firerate=11
