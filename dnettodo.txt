@@ -1,4 +1,7 @@
 ---- Major work path
+- Projectile length
+- Projectile width
+- Parsing as multiples of default
 - Gradual shop spawning
 - Pull glory explody into its own deploy
 - Next-gen weapons

@@ -11,7 +11,7 @@ text {
 
 warhead {
   name=warhead.apautocannon
-  impactdamage=4.5 kinetic
+  impactdamage=4 kinetic
   wallremovalradius=0.8
   wallremovalchance=0.20
 }
@@ -19,7 +19,7 @@ warhead {
 projectile {
   name=projectile.apautocannon
   motion=normal
-  velocity=160
+  velocity=130
   thickness_visual=0.8  # 2x
   color=1.0, 0.9, 0.6
   warhead=warhead.apautocannon
@@ -27,6 +27,8 @@ projectile {
 
 stats {
   name=stats.apautocannon
+  
+  dps_efficiency=1.05  # wild guess
 }
 
 launcher {
