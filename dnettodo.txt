@@ -1,5 +1,4 @@
 ---- Major work path
-- Projectile length
 - Gradual shop spawning
 - Pull glory explody into its own deploy
 - Next-gen weapons

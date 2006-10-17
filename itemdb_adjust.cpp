@@ -48,6 +48,7 @@ IDBWarheadAdjust::IDBWarheadAdjust(const IDBWarhead *in_idb, const IDBAdjustment
 
 int IDBProjectileAdjust::motion() const { return idb->motion; };
 float IDBProjectileAdjust::velocity() const { return idb->velocity; };
+float IDBProjectileAdjust::length() const { return idb->length; };
 float IDBProjectileAdjust::radius_physical() const { return idb->radius_physical; };
 
 IDBWarheadAdjust IDBProjectileAdjust::warhead() const { return IDBWarheadAdjust(idb->warhead, adjust); };

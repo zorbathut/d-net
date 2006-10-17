@@ -16,7 +16,7 @@ void Projectile::tick(vector<smart_ptr<GfxEffects> > *gfxe) {
   
   if(projtype.motion() == PM_NORMAL) {
   } else if(projtype.motion() == PM_MISSILE) {
-    if(age > 10)
+    if(age > FPS / 6)
       missile_sidedist /= 1.2;
     for(int i = 0; i < 2; i++) {
       float dir = frand() * 2 * PI;
@@ -111,7 +111,7 @@ bool Projectile::isDetonating() const {
 
 Coord2 Projectile::movement() const {
   if(projtype.motion() == PM_NORMAL) {
-    return makeAngle(Coord(d)) * Coord(projtype.velocity());
+    return makeAngle(Coord(d)) * Coord(projtype.velocity() / FPS);
   } else if(projtype.motion() == PM_MISSILE) {
     return missile_accel() + missile_backdrop() + missile_sidedrop();
   } else if(projtype.motion() == PM_AIRBRAKE) {
@@ -125,11 +125,11 @@ Coord2 Projectile::movement() const {
 
 Coord2 Projectile::nexttail() const {
   if(projtype.motion() == PM_NORMAL) {
-    return -movement();
+    return Coord2(makeAngle(d) * -projtype.length());
   } else if(projtype.motion() == PM_MISSILE) {
-    return Coord2(makeAngle(d) * -2);
+    return Coord2(makeAngle(d) * -projtype.length());
   } else if(projtype.motion() == PM_AIRBRAKE) {
-    return Coord2(-makeAngle(d) * (airbrake_velocity + 2));
+    return Coord2(makeAngle(d) * -(airbrake_velocity + 2));
   } else if(projtype.motion() == PM_MINE) {
     return Coord2(0, 0);
   } else {
@@ -138,7 +138,7 @@ Coord2 Projectile::nexttail() const {
 }
 
 Coord2 Projectile::missile_accel() const {
-  return makeAngle(Coord(d)) * Coord(projtype.velocity()) * age / 60;
+  return makeAngle(Coord(d)) * Coord(projtype.velocity() / FPS) * age / FPS;
 }
 Coord2 Projectile::missile_backdrop() const {
   return makeAngle(Coord(d)) / 120;
@@ -148,7 +148,7 @@ Coord2 Projectile::missile_sidedrop() const {
 }
 
 float Projectile::airbrake_liveness() const {
-  return 1.0 - (age / 60.0);
+  return 1.0 - (age / float(FPS));
 }
 
 vector<Coord2> Projectile::mine_polys() const {

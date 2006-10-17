@@ -80,7 +80,8 @@ struct IDBProjectile {
 public:
   int motion;
   float velocity;
-  float radius_physical;  // some projectile types only support one of these, so I've split them
+  float length;
+  float radius_physical;
 
   Color color;
   float thickness_visual;
@@ -226,6 +227,7 @@ struct IDBProjectileAdjust {
 public:
   int motion() const;
   float velocity() const;
+  float length() const;
   float radius_physical() const;
 
   IDBWarheadAdjust warhead() const;

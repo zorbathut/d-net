@@ -21,6 +21,7 @@ projectile {
   motion=normal
   velocity=130
   thickness_visual=2x
+  length=2x
   color=1.0, 0.9, 0.6
   warhead=warhead.apautocannon
 }

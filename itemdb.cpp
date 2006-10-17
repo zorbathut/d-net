@@ -589,7 +589,17 @@ void parseProjectile(kvData *chunk) {
   
   titem->velocity = 0;
   if(titem->motion != PM_MINE && titem->motion != PM_INSTANT)
-    titem->velocity = atof(chunk->consume("velocity").c_str()) / FPS;
+    titem->velocity = atof(chunk->consume("velocity").c_str());
+  
+  if(titem->motion == PM_NORMAL) {
+    titem->length = parseWithDefault(chunk, "length", titem->velocity / 60);
+  } else if(titem->motion == PM_MISSILE) {
+    titem->length = parseWithDefault(chunk, "length", 2.0);
+  } else if(titem->motion == PM_AIRBRAKE || titem->motion == PM_INSTANT || titem->motion == PM_MINE) {
+    titem->length = 0;
+  } else {
+    CHECK(0);
+  }
   
   titem->warhead = parseSubclass(chunk->consume("warhead"), warheadclasses);
 }
