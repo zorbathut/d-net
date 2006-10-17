@@ -32,6 +32,45 @@ static const IDBBombardment *defbombardment = NULL;
 
 DEFINE_bool(debugitems, false, "Enable debug items");
 
+//const char * const adjust_text[] = { "damage_kinetic", "damage_energy", "damage_explosive", "damage_trap", "damage_exotic", "warhead_radius_falloff", "discount_weapon", "discount_training", "discount_upgrade", "discount_tank", "recycle_bonus", "tank_firerate", "tank_speed", "tank_turn", "tank_armor", "damage_all", "all" };
+
+string gendiffstring(int amount, const int (&arr)[11]) {
+  for(int i = 0; i < ARRAY_SIZE(arr); i++) {
+    if(amount <= arr[i]) {
+      if(i == 5)
+        return "~=";
+      return string(abs(5 - i), amount < 5 ? '-' : '+');
+    }
+  }
+  dprintf("%d\n", amount);
+  CHECK(0);
+}
+
+const int weapon_diffs[11] = {-50, -30, -20, -10, -5, 5, 10, 20, 35, 50, 75};
+const int discount_diffs[11] = {-50, -30, -20, -10, -5, 5, 10, 20, 35, 50, 75};
+const int tank_diffs[11] = {-50, -30, -20, -10, -5, 5, 10, 20, 35, 50, 75};
+const int warhead_diffs[11] = {-50, -30, -20, -10, -5, 5, 10, 20, 35, 50, 75};
+const int recycle_diffs[11] = {-200, -100, -50, -25, -5, 5, 50, 100, 200, 400};
+const int all_diffs[11] = {-50, -30, -20, -10, -1, 1, 10, 20, 35, 50, 75};
+
+string adjust_modifiertext(int id, int amount) {
+  if(id < IDBAdjustment::DAMAGE_LAST || id == IDBAdjustment::DAMAGE_ALL) {
+    return gendiffstring(amount, weapon_diffs);
+  } else if(id >= IDBAdjustment::DISCOUNT_BEGIN && id < IDBAdjustment::DISCOUNT_END) {
+    return gendiffstring(amount, discount_diffs);
+  } else if(id >= IDBAdjustment::TANK_BEGIN && id < IDBAdjustment::TANK_END) {
+    return gendiffstring(amount, tank_diffs);
+  } else if(id == IDBAdjustment::WARHEAD_RADIUS_FALLOFF) {
+    return gendiffstring(amount, warhead_diffs);
+  } else if(id == IDBAdjustment::ALL) {
+    return gendiffstring(amount, all_diffs);
+  } else if(id == IDBAdjustment::RECYCLE_BONUS) {
+    return gendiffstring(amount, recycle_diffs);
+  } else {
+    CHECK(0);
+  }
+}
+
 void IDBAdjustment::debugDump() {
   dprintf("IDBAdjustment debug dump");
   for(int i = 0; i < LAST; i++)

@@ -631,6 +631,44 @@ void PersistentData::renderSlot(int slotid) const {
         setZoomVertical(0, 0, 1);
         drawParagraphedText(*factions[fid].faction->text, 0.04, contract(getZoom(), 0.02));
       }
+      {
+        GfxWindow gfxw(Float4(0, 0, div_x, 0.5), 1.0);
+        int lines_needed = 9;
+        setZoomVertical(0, 0, 1.5 * lines_needed + 0.5);
+        float horzavail = getZoom().y_span() - 1.0;
+        const IDBAdjustment *idba = factions[fid].faction->adjustment[3];
+        float cpos = 0.5;
+        for(int i = 0; i < ARRAY_SIZE(idba->adjustlist); i++) {
+          if(idba->adjustlist[i].first == -1)
+            break;
+          vector<string> tlins;
+          string modifiertext = adjust_modifiertext(idba->adjustlist[i].first, idba->adjustlist[i].second);
+          if(getTextWidth(StringPrintf("%s  %s", adjust_human[idba->adjustlist[i].first], modifiertext.c_str()), 1.0) > horzavail) {
+            tlins = tokenize(adjust_human[idba->adjustlist[i].first], " ");
+          } else {
+            tlins.push_back(adjust_human[idba->adjustlist[i].first]);
+          }
+          for(int j = 1; j < tlins.size(); j++)
+            tlins[j] = "  " + tlins[j];
+          tlins[tlins.size() - 1] += StringPrintf("   %d", idba->adjustlist[i].second);
+          
+          setColor(C::inactive_text);
+          for(int j = 0; j < tlins.size(); j++) {
+            drawText(tlins[j], 1, Float2(0.5, cpos));
+            cpos += 1.5;
+          }
+          
+          if(modifiertext[0] == '+')
+            setColor(Color(0.1, 1.0, 0.1));
+          else if(modifiertext[0] == '-')
+            setColor(Color(1.0, 0.1, 0.1));
+          else if(modifiertext == "~=")
+            ;
+          else
+            CHECK(0);
+          drawJustifiedText(modifiertext, 1, Float2(getZoom().ex - 0.5, cpos - 1.5), TEXT_MAX, TEXT_MIN);
+        }
+      }
     }
     
   } else if(slt.type == Slot::SHOP) {
