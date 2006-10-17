@@ -1204,7 +1204,7 @@ PersistentData::PersistentData(int playercount, int in_roundsbetweenshop) {
   CHECK(FLAGS_debugControllers >= 0 && FLAGS_debugControllers <= 2);
   CHECK(factions.size() >= FLAGS_debugControllers);
   
-  CHECK(sizeof(slot) / sizeof(*slot) == 4);
+  CHECK(ARRAY_SIZE(slot) == 4);
   for(int i = 0; i < 4; i++) {
     slot[i].type = Slot::EMPTY;
     slot[i].pid = -1;

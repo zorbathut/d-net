@@ -990,7 +990,7 @@ void Game::initChoice(vector<Player> *in_playerdata) {
   }
   
   Color zonecol[4] = {Color(0.6, 0.6, 0.6), Color(0.3, 0.3, 1.0), Color(0, 1.0, 0), Color(1.0, 0, 0)};
-  CHECK(paths.size() == (sizeof(zonecol) / sizeof(*zonecol)));
+  CHECK(paths.size() == ARRAY_SIZE(zonecol));
   for(int i = 0; i < paths.size(); i++) {
     zones.push_back(make_pair(paths[i], zonecol[i]));
     teams[i].color = zonecol[i];

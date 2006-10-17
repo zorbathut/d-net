@@ -185,9 +185,9 @@ void InterfaceMain::render() const {
      "0000007800000000", "0000001400000000",
    };
 
-  for(int i = 0; i < sizeof(lhs) / sizeof(*lhs); i += 2)
+  for(int i = 0; i < ARRAY_SIZE(lhs); i += 2)
     diff[0].push_back(Coord2(coordExplicit(lhs[i]), coordExplicit(lhs[i + 1])));
-  for(int i = 0; i < sizeof(rhs) / sizeof(*rhs); i += 2)
+  for(int i = 0; i < ARRAY_SIZE(rhs); i += 2)
     diff[1].push_back(Coord2(coordExplicit(rhs[i]), coordExplicit(rhs[i + 1])));
 #else
   vector<string> lhs = parseHackyFile("lhs.txt");

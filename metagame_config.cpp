@@ -1109,9 +1109,9 @@ void runSettingRender(const PlayerMenuState &pms, const string &availdescr) {
   } else if(pms.settingmode == SETTING_READY) {
     setColor(C::inactive_text);
     const char * const text[] = {"You've finished setting up your controls. Push ", "\"accept\" if you're finished. Move your controller", "left and right to edit your settings if you", "are dissatisfied. You may return to change", "settings any time the shop is available."};
-    int stp = (rin.textline_count - 1 - sizeof(text) / sizeof(*text)) / 2;
-    drawTextBoxAround(Float4(rin.xstart, rin.ystarts[stp], rin.xend, rin.ystarts[stp + sizeof(text) / sizeof(*text) - 1] + rin.textsize), rin.textsize);
-    for(int i = 0; i < sizeof(text) / sizeof(*text); i++)
+    int stp = (rin.textline_count - 1 - ARRAY_SIZE(text)) / 2;
+    drawTextBoxAround(Float4(rin.xstart, rin.ystarts[stp], rin.xend, rin.ystarts[stp + ARRAY_SIZE(text) - 1] + rin.textsize), rin.textsize);
+    for(int i = 0; i < ARRAY_SIZE(text); i++)
       drawJustifiedText(text[i], rin.textsize, Float2(rin.xcenter, rin.ystarts[i + stp]), TEXT_CENTER, TEXT_MIN);
   } else {
     CHECK(0);

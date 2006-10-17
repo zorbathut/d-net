@@ -120,7 +120,7 @@ void controls_key(const SDL_KeyboardEvent *key) {
   if(FLAGS_aiCount)
     return;
   bool *ps = NULL;
-  for(int i = 0; i < sizeof(baseplayermap) / sizeof(*baseplayermap); i++) {
+  for(int i = 0; i < ARRAY_SIZE(baseplayermap); i++) {
     for(int j = 0; j < baseplayersize[i]; j++) {
       if(key->keysym.sym == baseplayermap[i][j]) {
         if(j == 0)

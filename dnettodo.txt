@@ -1,8 +1,5 @@
 ---- Major work path
-- Faction info screen on startup
-  - Add random faction
 - Fix lots of redundant code in itemdb.cpp
-- Replace sizeof with ARRAYSIZE
 - Gradual shop spawning
   - Remove bombardment from 2 player, make it cheaper for 3 and 4
 - Pull glory explody into its own deploy?
@@ -39,6 +36,7 @@
 - Color for projectile impacts
 
 ---- Things that may or may not be needed
+- Add random faction
 - Stop reloading files in findLevels
 - Add tank sell depreciation
 - Special unique bonuses (turned the most, closest to death, most/least accurate, traveler, tunneler, deadeye, kamikaze)

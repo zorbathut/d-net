@@ -111,7 +111,7 @@ int getResolutionY() {
 void resDown() {
   const int reses[] = { 1600, 1400, 1280, 1152, 1024, 800, 640, -1 };
   CHECK(FLAGS_resolution_x > 0);
-  for(int i = 0; i < sizeof(reses) / sizeof(*reses); i++) {
+  for(int i = 0; i < ARRAY_SIZE(reses); i++) {
     if(FLAGS_resolution_x > reses[i]) {
       FLAGS_resolution_x = reses[i];
       break;

@@ -374,8 +374,8 @@ void guiText(const string &in) {
 bool vecEditTick(const Controller &keys) {
   
   // various consistency checks
-  CHECK(sizeof(rf_names) / sizeof(*rf_names) == VECRF_END);
-  CHECK(sizeof(ed_names) / sizeof(*ed_names) == VECED_END);
+  CHECK(ARRAY_SIZE(rf_names) == VECRF_END);
+  CHECK(ARRAY_SIZE(ed_names) == VECED_END);
   
   if(modestack.size() == 0)   // get the whole shebang started
     modestack.push(VECED_EXAMINE);
