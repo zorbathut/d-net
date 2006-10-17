@@ -400,15 +400,63 @@ template<typename T> T *prepareName(kvData *chunk, map<string, T> *classes, stri
   return prepareName(chunk, classes, "", namestorage);
 }
 
-template<typename T> const T *parseSubclass(string name, const map<string, T> &classes) {
+template<typename T> const T *parseSubclass(const string &name, const map<string, T> &classes) {
   CHECK(classes.count(name));
   return &classes.find(name)->second;
 }
 
-template<typename T> const T *parseOptionalSubclass(kvData *chunk, string label, const map<string, T> &classes) {
+template<typename T> const T *parseOptionalSubclass(kvData *chunk, const string &label, const map<string, T> &classes) {
   if(!chunk->kv.count(label))
     return NULL;
   return parseSubclass(chunk->consume(label), classes);
+}
+
+template<typename T> T parseSingleItem(const string &val);
+
+template<> int parseSingleItem<int>(const string &val) {
+  for(int i = 0; i < val.size(); i++)
+    CHECK(isdigit(val[i]));
+  return atoi(val.c_str());
+}
+
+template<> float parseSingleItem<float>(const string &val) {
+  bool foundperiod = false;
+  for(int i = 0; i < val.size(); i++) {
+    if(val[i] == '.') {
+      CHECK(!foundperiod);
+      foundperiod = true;
+    } else {
+      CHECK(isdigit(val[i]));
+    }
+  }
+  return atof(val.c_str());
+}
+
+template<typename T> T parseWithDefault_processing(const string &val, T def) {
+  CHECK(val.size());
+  if(tolower(val[val.size() - 1]) == 'x') {
+    CHECK(val.size() >= 2);
+    CHECK(tolower(val[val.size() - 2]) != 'x');
+    T mult = parseWithDefault_processing(string(val.begin(), val.end() - 1), T(1));
+    return def * mult;
+  }
+  
+  return parseSingleItem<T>(val);
+}
+
+template<> string parseWithDefault_processing<string>(const string &val, string def) {
+  return val;
+}
+  
+template<typename T> T parseWithDefault(kvData *chunk, const string &label, T def) {
+  if(!chunk->kv.count(label))
+    return def;
+  string val = chunk->consume(label);
+  return parseWithDefault_processing(val, def);
+}
+
+string parseWithDefault(kvData *chunk, const string &label, const char *def) {
+  return parseWithDefault(chunk, label, string(def));
 }
 
 void parseLauncher(kvData *chunk) {
@@ -420,16 +468,11 @@ void parseLauncher(kvData *chunk) {
 
   titem->text = parseOptionalSubclass(chunk, "text", text);
   
-  string demotype = "firingrange";
-  if(chunk->kv.count("demo"))
-    demotype = chunk->consume("demo");
-    
+  string demotype = parseWithDefault(chunk, "demo", "firingrange");
   if(demotype == "firingrange") {
     titem->demomode = WDM_FIRINGRANGE;
     
-    string distance = "normal";
-    if(chunk->kv.count("firingrange_distance"))
-      distance = chunk->consume("firingrange_distance");
+    string distance = parseWithDefault(chunk, "firingrange_distance", "normal");
     
     if(distance == "normal") {
       titem->firingrange_distance = WFRD_NORMAL;
