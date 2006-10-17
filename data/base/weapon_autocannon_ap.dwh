@@ -2,6 +2,8 @@
 hierarchy {
   name=ROOT.Weapons.AP Autocannon
   pack=100
+  
+  spawncash=5000
 }
 
 text {

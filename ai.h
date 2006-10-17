@@ -12,6 +12,7 @@ class PlayerMenuState;
 class Player;
 class Tank;
 class Coord2;
+class HierarchyNode;
   
 class GameAiStandard : public GameAi {
 private:
@@ -52,7 +53,7 @@ public:
   void updatePregame();
   void updateCharacterChoice(const vector<FactionState> &factions, const PlayerMenuState &player, int me);
   void updateTween(bool live, bool pending, Float2 playerpos, bool shopped, Float2 joinrange, Float2 fullshoprange, Float2 quickshoprange, Float2 donerange);
-  void updateShop(const Player *player);
+  void updateShop(const Player *player, const HierarchyNode &hierarchy);
   GameAi *getGameAi();
   void updateWaitingForReport();
 

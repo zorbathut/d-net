@@ -490,7 +490,7 @@ bool Shop::runTick(const Keystates &keys, Player *player) {
 
 void Shop::ai(Ai *ais, const Player *player) const {
   if(ais)
-    ais->updateShop(player);
+    ais->updateShop(player, hierarchroot);
 }
 
 

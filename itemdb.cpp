@@ -278,6 +278,7 @@ HierarchyNode::HierarchyNode() {
   bombardment = NULL;
   tank = NULL;
   equipweapon = NULL;
+  spawncash = Money(0);
 }
 
 bool isMountedNode(const string &in) {
@@ -322,68 +323,6 @@ bool prefixed(const string &label, const string &prefix) {
   if(strncmp(label.c_str(), prefix.c_str(), prefix.size()))
     return false;
   return true;
-}
-
-void parseDamagecode(const string &str, float *arr) {
-  vector<string> toki = tokenize(str, "\n");
-  CHECK(toki.size() >= 1);
-  for(int i = 0; i < toki.size(); i++) {
-    vector<string> qoki = tokenize(toki[i], " ");
-    CHECK(qoki.size() == 2);
-    int bucket = -1;
-    if(qoki[1] == "kinetic")
-      bucket = IDBAdjustment::DAMAGE_KINETIC;
-    else if(qoki[1] == "energy")
-      bucket = IDBAdjustment::DAMAGE_ENERGY;
-    else if(qoki[1] == "explosive")
-      bucket = IDBAdjustment::DAMAGE_EXPLOSIVE;
-    else if(qoki[1] == "trap")
-      bucket = IDBAdjustment::DAMAGE_TRAP;
-    else if(qoki[1] == "exotic")
-      bucket = IDBAdjustment::DAMAGE_EXOTIC;
-    else
-      CHECK(0);
-    CHECK(arr[bucket] == 0);
-    arr[bucket] = atof(qoki[0].c_str());
-  }
-}
-
-void parseHierarchy(kvData *chunk) {
-  HierarchyNode *mountpoint = findNamedNode(chunk->kv["name"], 1);
-  HierarchyNode tnode;
-  tnode.name = tokenize(chunk->consume("name"), ".").back();
-  dprintf("name: %s\n", tnode.name.c_str());
-  tnode.type = HierarchyNode::HNT_CATEGORY;
-  if(chunk->kv.count("pack")) {
-    tnode.displaymode = HierarchyNode::HNDM_PACK;
-    tnode.pack = atoi(chunk->consume("pack").c_str());
-    CHECK(mountpoint->pack == -1);
-  } else {
-    tnode.displaymode = HierarchyNode::HNDM_BLANK;
-    tnode.pack = mountpoint->pack;
-  }
-  if(chunk->kv.count("type")) {
-    if(chunk->kv["type"] == "weapon") {
-      tnode.cat_restrictiontype = HierarchyNode::HNT_WEAPON;
-    } else if(chunk->kv["type"] == "upgrade") {
-      tnode.cat_restrictiontype = HierarchyNode::HNT_UPGRADE;
-    } else if(chunk->kv["type"] == "glory") {
-      tnode.cat_restrictiontype = HierarchyNode::HNT_GLORY;
-    } else if(chunk->kv["type"] == "bombardment") {
-      tnode.cat_restrictiontype = HierarchyNode::HNT_BOMBARDMENT;
-    } else if(chunk->kv["type"] == "tank") {
-      tnode.cat_restrictiontype = HierarchyNode::HNT_TANK;
-    } else {
-      dprintf("Unknown restriction type in hierarchy node: %s\n", chunk->kv["type"].c_str());
-      CHECK(0);
-    }
-    chunk->consume("type");
-  }
-  if(tnode.cat_restrictiontype == -1) {
-    tnode.cat_restrictiontype = mountpoint->cat_restrictiontype;
-  }
-  CHECK(mountpoint->cat_restrictiontype == -1 || tnode.cat_restrictiontype == mountpoint->cat_restrictiontype);
-  mountpoint->branches.push_back(tnode);
 }
 
 template<typename T> T *prepareName(kvData *chunk, map<string, T> *classes, const string &prefix = "", string *namestorage = NULL) {
@@ -465,6 +404,71 @@ string parseWithDefault(kvData *chunk, const string &label, const char *def) {
 }
 float parseWithDefault(kvData *chunk, const string &label, double def) {
   return parseWithDefault(chunk, label, float(def));
+}
+
+void parseDamagecode(const string &str, float *arr) {
+  vector<string> toki = tokenize(str, "\n");
+  CHECK(toki.size() >= 1);
+  for(int i = 0; i < toki.size(); i++) {
+    vector<string> qoki = tokenize(toki[i], " ");
+    CHECK(qoki.size() == 2);
+    int bucket = -1;
+    if(qoki[1] == "kinetic")
+      bucket = IDBAdjustment::DAMAGE_KINETIC;
+    else if(qoki[1] == "energy")
+      bucket = IDBAdjustment::DAMAGE_ENERGY;
+    else if(qoki[1] == "explosive")
+      bucket = IDBAdjustment::DAMAGE_EXPLOSIVE;
+    else if(qoki[1] == "trap")
+      bucket = IDBAdjustment::DAMAGE_TRAP;
+    else if(qoki[1] == "exotic")
+      bucket = IDBAdjustment::DAMAGE_EXOTIC;
+    else
+      CHECK(0);
+    CHECK(arr[bucket] == 0);
+    arr[bucket] = atof(qoki[0].c_str());
+  }
+}
+
+void parseHierarchy(kvData *chunk) {
+  HierarchyNode *mountpoint = findNamedNode(chunk->kv["name"], 1);
+  HierarchyNode tnode;
+  tnode.name = tokenize(chunk->consume("name"), ".").back();
+  dprintf("name: %s\n", tnode.name.c_str());
+  tnode.type = HierarchyNode::HNT_CATEGORY;
+  if(chunk->kv.count("pack")) {
+    tnode.displaymode = HierarchyNode::HNDM_PACK;
+    tnode.pack = atoi(chunk->consume("pack").c_str());
+    CHECK(mountpoint->pack == -1);
+  } else {
+    tnode.displaymode = HierarchyNode::HNDM_BLANK;
+    tnode.pack = mountpoint->pack;
+  }
+  if(chunk->kv.count("type")) {
+    if(chunk->kv["type"] == "weapon") {
+      tnode.cat_restrictiontype = HierarchyNode::HNT_WEAPON;
+    } else if(chunk->kv["type"] == "upgrade") {
+      tnode.cat_restrictiontype = HierarchyNode::HNT_UPGRADE;
+    } else if(chunk->kv["type"] == "glory") {
+      tnode.cat_restrictiontype = HierarchyNode::HNT_GLORY;
+    } else if(chunk->kv["type"] == "bombardment") {
+      tnode.cat_restrictiontype = HierarchyNode::HNT_BOMBARDMENT;
+    } else if(chunk->kv["type"] == "tank") {
+      tnode.cat_restrictiontype = HierarchyNode::HNT_TANK;
+    } else {
+      dprintf("Unknown restriction type in hierarchy node: %s\n", chunk->kv["type"].c_str());
+      CHECK(0);
+    }
+    chunk->consume("type");
+  }
+  if(tnode.cat_restrictiontype == -1) {
+    tnode.cat_restrictiontype = mountpoint->cat_restrictiontype;
+  }
+  
+  tnode.spawncash = parseWithDefault(chunk, "spawncash", Money(0));
+  
+  CHECK(mountpoint->cat_restrictiontype == -1 || tnode.cat_restrictiontype == mountpoint->cat_restrictiontype);
+  mountpoint->branches.push_back(tnode);
 }
 
 void parseLauncher(kvData *chunk) {

@@ -74,7 +74,6 @@ public:
 
 class Shop {
 private:
-  mutable HierarchyNode dynamic_equip;
   bool miniature;
 
   ShopLayout slay;

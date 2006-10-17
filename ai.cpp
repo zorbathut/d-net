@@ -299,7 +299,7 @@ void appendPurchases(deque<Controller> *dest, const vector<Controller> &src, int
   dest->insert(dest->end(), reversed.begin(), reversed.end());
 }
 
-void Ai::updateShop(const Player *player) {
+void Ai::updateShop(const Player *player, const HierarchyNode &hierarchy) {
   updateKeys(CORE);
   
   zeroNextKeys();
@@ -309,11 +309,10 @@ void Ai::updateShop(const Player *player) {
     return;
   }
   CHECK(!shopdone);
-  const HierarchyNode &rt = itemDbRoot();
   vector<pair<Money, vector<Controller> > > weps;
   vector<pair<pair<Money, const IDBUpgrade *>, vector<Controller> > > upgs;
   vector<Controller> done;
-  doMegaEnum(rt, &weps, &upgs, &done, player);
+  doMegaEnum(hierarchy, &weps, &upgs, &done, player);
   dprintf("%d weps, %d upgs, %d donesize\n", weps.size(), upgs.size(), done.size());
   CHECK(weps.size());
   CHECK(done.size());
@@ -362,7 +361,7 @@ void Ai::updateShop(const Player *player) {
   }
   swap(shopQueue, realShopQueue);
   shopdone = true;
-  updateShop(player);
+  updateShop(player, hierarchy);
   dprintf("shop prepared");
 }
 

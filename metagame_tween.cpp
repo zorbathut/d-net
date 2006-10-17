@@ -1268,13 +1268,27 @@ PersistentData::PersistentData(int playercount, int in_roundsbetweenshop) {
   }
 }
 
-HierarchyNode PersistentData::generateShopHierarchy() const {
-  HierarchyNode rv = itemDbRoot();
-  for(int i = 0; i < rv.branches.size(); i++) {
-    if(rv.branches[i].type == HierarchyNode::HNT_CATEGORY && rv.branches[i].cat_restrictiontype == HierarchyNode::HNT_BOMBARDMENT && playerdata.size() <= 2) {
-      rv.branches.erase(rv.branches.begin() + i);
+DEFINE_bool(cullShopTree, true, "Cull items which the players wouldn't want or realistically can't yet buy");
+
+void recursiveCullShopHierarchy(HierarchyNode &node, int playercount, Money startingCash) {
+  for(int i = 0; i < node.branches.size(); i++) {
+    if(!FLAGS_cullShopTree)
+      continue;
+    if(node.branches[i].type == HierarchyNode::HNT_CATEGORY && node.branches[i].cat_restrictiontype == HierarchyNode::HNT_BOMBARDMENT && playercount <= 2) {
+      node.branches.erase(node.branches.begin() + i);
       i--;
+    } else if(node.branches[i].spawncash > startingCash) {
+      node.branches.erase(node.branches.begin() + i);
+      i--;
+    } else {
+      recursiveCullShopHierarchy(node.branches[i], playercount, startingCash);
     }
   }
+}
+
+HierarchyNode PersistentData::generateShopHierarchy() const {
+  HierarchyNode rv = itemDbRoot();
+  recursiveCullShopHierarchy(rv, playerdata.size(), newPlayerStartingCash);
+  rv.checkConsistency();
   return rv;
 }

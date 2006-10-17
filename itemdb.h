@@ -383,6 +383,7 @@ public:
   const IDBWeapon *equipweapon;
   
   int cat_restrictiontype;
+  Money spawncash;
   
   void checkConsistency() const;
   
