@@ -450,6 +450,9 @@ template<> string parseWithDefault_processing<string>(const string &val, string 
 template<> Color parseWithDefault_processing<Color>(const string &val, Color def) {
   return colorFromString(val);
 }
+template<> Money parseWithDefault_processing<Money>(const string &val, Money def) {
+  return moneyFromString(val);
+}
   
 template<typename T> T parseWithDefault(kvData *chunk, const string &label, T def) {
   if(!chunk->kv.count(label))
@@ -613,10 +616,6 @@ void parseWarhead(kvData *chunk) {
   
   memset(titem->impactdamage, 0, sizeof(titem->impactdamage));
   memset(titem->radiusdamage, 0, sizeof(titem->radiusdamage));
-  titem->radiusfalloff = -1;
-  
-  if(chunk->kv.count("impactdamage"))
-    parseDamagecode(chunk->consume("impactdamage"), titem->impactdamage);
   
   // these must either neither exist, or both exist
   CHECK(chunk->kv.count("radiusfalloff") == chunk->kv.count("radiusdamage"));
@@ -625,22 +624,21 @@ void parseWarhead(kvData *chunk) {
   // if wallremovalchance exists, wallremovalradius must too
   CHECK(chunk->kv.count("wallremovalchance") <= chunk->kv.count("wallremovalradius"));
   
-  titem->radiuscolor_bright = Color(1.0, 0.8, 0.2);
-  titem->radiuscolor_dim = Color(1.0, 0.2, 0.0);
-  if(chunk->kv.count("radiusdamage")) {
+  // if radiuscolor_bright exists, radiusfalloff must too
+  CHECK(chunk->kv.count("radiuscolor_bright") <= chunk->kv.count("radiusfalloff"));
+  
+  titem->radiuscolor_bright = parseWithDefault(chunk, "radiuscolor_bright", Color(1.0, 0.8, 0.2));
+  titem->radiuscolor_dim = parseWithDefault(chunk, "radiuscolor_dim", Color(1.0, 0.2, 0.0));
+  
+  if(chunk->kv.count("impactdamage"))
+    parseDamagecode(chunk->consume("impactdamage"), titem->impactdamage);
+  if(chunk->kv.count("radiusdamage"))
     parseDamagecode(chunk->consume("radiusdamage"), titem->radiusdamage);
-    titem->radiusfalloff = atof(chunk->consume("radiusfalloff").c_str());
-    if(chunk->kv.count("radiuscolor_bright")) {
-      titem->radiuscolor_bright = colorFromString(chunk->consume("radiuscolor_bright"));
-      titem->radiuscolor_dim = colorFromString(chunk->consume("radiuscolor_dim"));
-    } // no, you can't just overload one, dammit
-  }
+  
+  titem->radiusfalloff = parseWithDefault(chunk, "radiusfalloff", -1.0);
   
   titem->wallremovalradius = parseWithDefault(chunk, "wallremovalradius", 0.0);
-  if(titem->wallremovalradius != 0)
-    titem->wallremovalchance = parseWithDefault(chunk, "wallremovalchance", 1.0);
-  else
-    titem->wallremovalchance = 0;
+  titem->wallremovalchance = parseWithDefault(chunk, "wallremovalchance", 1.0);
 }
 
 void parseGlory(kvData *chunk) {
@@ -781,11 +779,7 @@ void parseTank(kvData *chunk) {
   }
   
   titem->base_cost = moneyFromString(chunk->consume("cost"));
-  if(chunk->kv.count("upgrade_base")) {
-    titem->upgrade_base = moneyFromString(chunk->consume("upgrade_base"));
-  } else {
-    titem->upgrade_base = titem->base_cost;
-  }
+  titem->upgrade_base = parseWithDefault(chunk, "upgrade_base", titem->base_cost);
   
   if(chunk->kv.count("default") && atoi(chunk->consume("default").c_str())) {
     CHECK(!deftank);
