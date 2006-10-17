@@ -601,6 +601,7 @@ void PersistentData::renderSlot(int slotid) const {
     for(int i = 0; i < factions.size(); i++) {
       if(!factions[i].taken && isInside(factions[i].compass_location, pms[slt.pid].compasspos)) {
         CHECK(!factdone);
+        factdone = true;
         {
           GfxWindow gfxw(Float4(0, 0, div_x, 0.5), 1.0);
           setZoomCenter(0, 0, 1.0);
@@ -614,6 +615,19 @@ void PersistentData::renderSlot(int slotid) const {
           drawParagraphedText(*factions[i].faction->text, 0.04, contract(getZoom(), 0.02));
         }
       }
+    }
+    
+    if(!factdone) {
+      setColor(C::inactive_text);
+      GfxWindow gfxw(Float4(div_x, 0, getAspect(), 1.0), 1.0);
+      setZoomVertical(0, 0, 1);
+      vector<string> steer;
+      steer.push_back("Move the cursor over a");
+      steer.push_back("faction icon for information");
+      steer.push_back("");
+      steer.push_back("Press a button to");
+      steer.push_back("choose that faction");
+      drawJustifiedMultiText(steer, 0.04, getZoom().midpoint(), TEXT_CENTER, TEXT_CENTER);
     }
     
   } else if(slt.type == Slot::SHOP) {
