@@ -7,11 +7,8 @@ text {
 
 adjustment {
   name=adjustment.lucifer.high
-  damage_kinetic=30
-  damage_energy=30
-  damage_explosive=30
-  damage_trap=30
-  damage_exotic=30
+  
+  damage_all=30
   
   tank_armor=-20
 }
@@ -89,20 +86,7 @@ text {
 adjustment {
   name=adjustment.aquear.high
   
-  damage_kinetic=5
-  damage_energy=5
-  damage_explosive=5
-  damage_trap=5
-  damage_exotic=5
-  discount_weapon=5
-  discount_training=5
-  discount_upgrade=5
-  discount_tank=5
-  recycle_bonus=5
-  tank_firerate=5
-  tank_speed=5
-  tank_turn=5
-  tank_armor=5
+  all=5
 }
 
 faction { # increased everything 

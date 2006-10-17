@@ -4,6 +4,7 @@
   - Add random faction
   - Faction bonuses/penalties in demo screens
 - Fix lots of redundant code in itemdb.cpp
+- Replace sizeof with ARRAYSIZE
 - Gradual shop spawning
   - Remove bombardment from 2 player, make it cheaper for 3 and 4
 - Pull glory explody into its own deploy?
@@ -52,3 +53,8 @@
   - dnd compression
 
 http://www.itchstudios.com/psg/ - Dafred's artist
+
+---
+Abilities
+
+Every faction is made up of up to 5 modifiers, and we just store those. Reasonable? Absolutely!

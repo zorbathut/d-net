@@ -777,13 +777,32 @@ void parseAdjustment(kvData *chunk) {
   CHECK(adjustmentclasses.count(name) == 0);
   IDBAdjustment *titem = &adjustmentclasses[name];
   
-  CHECK(sizeof(adjust_text) / sizeof(*adjust_text) == IDBAdjustment::LAST);
-  CHECK(sizeof(adjust_human) / sizeof(*adjust_human) == IDBAdjustment::LAST);
-  CHECK(sizeof(adjust_unit) / sizeof(*adjust_unit) == IDBAdjustment::LAST);
+  CHECK(ARRAY_SIZE(adjust_text) == IDBAdjustment::COMBO_LAST);
+  CHECK(ARRAY_SIZE(adjust_human) == IDBAdjustment::COMBO_LAST);
+  CHECK(ARRAY_SIZE(adjust_unit) == IDBAdjustment::LAST);
   
   for(int i = 0; i < IDBAdjustment::LAST; i++)
     if(chunk->kv.count(adjust_text[i]))
       titem->adjusts[i] = atoi(chunk->consume(adjust_text[i]).c_str());
+  
+  for(int i = IDBAdjustment::LAST; i < IDBAdjustment::COMBO_LAST; i++) {
+    if(chunk->kv.count(adjust_text[i])) {
+      int value = atoi(chunk->consume(adjust_text[i]).c_str());
+      if(i == IDBAdjustment::DAMAGE_ALL) {
+        for(int j = 0; j < IDBAdjustment::DAMAGE_LAST; j++) {
+          CHECK(titem->adjusts[j] == 0);
+          titem->adjusts[j] = value;
+        }
+      } else if(i == IDBAdjustment::ALL) {
+        for(int j = 0; j < IDBAdjustment::LAST; j++) {
+          CHECK(titem->adjusts[j] == 0);
+          titem->adjusts[j] = value;
+        }
+      } else {
+        CHECK(0);
+      }
+    }
+  }
 }
 
 void parseFaction(kvData *chunk) {
