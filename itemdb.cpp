@@ -447,16 +447,21 @@ template<typename T> T parseWithDefault_processing(const string &val, T def) {
 template<> string parseWithDefault_processing<string>(const string &val, string def) {
   return val;
 }
+template<> Color parseWithDefault_processing<Color>(const string &val, Color def) {
+  return colorFromString(val);
+}
   
 template<typename T> T parseWithDefault(kvData *chunk, const string &label, T def) {
   if(!chunk->kv.count(label))
     return def;
-  string val = chunk->consume(label);
-  return parseWithDefault_processing(val, def);
+  return parseWithDefault_processing(chunk->consume(label), def);
 }
 
 string parseWithDefault(kvData *chunk, const string &label, const char *def) {
   return parseWithDefault(chunk, label, string(def));
+}
+float parseWithDefault(kvData *chunk, const string &label, double def) {
+  return parseWithDefault(chunk, label, float(def));
 }
 
 void parseLauncher(kvData *chunk) {
@@ -491,13 +496,8 @@ void parseLauncher(kvData *chunk) {
 void parseStats(kvData *chunk) {
   IDBStats *titem = prepareName(chunk, &statsclasses, "stats");
     
-  titem->dps_efficiency = 1.0;
-  if(chunk->kv.count("dps_efficiency"))
-    titem->dps_efficiency = atof(chunk->consume("dps_efficiency").c_str());
-  
-  titem->cps_efficiency = 1.0;
-  if(chunk->kv.count("cps_efficiency"))
-    titem->cps_efficiency = atof(chunk->consume("cps_efficiency").c_str());
+  titem->dps_efficiency = parseWithDefault(chunk, "dps_efficiency", 1.0);
+  titem->cps_efficiency = parseWithDefault(chunk, "cps_efficiency", 1.0);
 }
 
 void parseWeapon(kvData *chunk) {
@@ -561,37 +561,28 @@ void parseUpgrade(kvData *chunk) {
 
 void parseProjectile(kvData *chunk) {
   IDBProjectile *titem = prepareName(chunk, &projclasses, "projectile");
-
-  titem->motion = PM_NORMAL;
-  titem->thickness_visual = 0.3;
   
-  if(chunk->kv.count("thickness_visual")) {
-    titem->thickness_visual = atof(chunk->consume("thickness_visual").c_str());
+  titem->thickness_visual = parseWithDefault(chunk, "thickness_visual", 0.3);
+  
+  string motion = parseWithDefault(chunk, "motion", "normal");
+  if(motion == "normal") {
+    titem->motion = PM_NORMAL;
+  } else if(motion == "missile") {
+    titem->motion = PM_MISSILE;
+  } else if(motion == "airbrake") {
+    titem->motion = PM_AIRBRAKE;
+  } else if(motion == "mine") {
+    titem->motion = PM_MINE;
+    titem->radius_physical = atof(chunk->consume("radius_physical").c_str());
+    titem->halflife = atof(chunk->consume("halflife").c_str());
+  } else if(motion == "instant") {
+    titem->motion = PM_INSTANT;
+  } else {
+    dprintf("Unknown projectile motion: %s\n", motion.c_str());
+    CHECK(0);
   }
   
-  if(chunk->kv.count("motion")) {
-    string motion = chunk->consume("motion");
-    if(motion == "normal") {
-      titem->motion = PM_NORMAL;
-    } else if(motion == "missile") {
-      titem->motion = PM_MISSILE;
-    } else if(motion == "airbrake") {
-      titem->motion = PM_AIRBRAKE;
-    } else if(motion == "mine") {
-      titem->motion = PM_MINE;
-      titem->radius_physical = atof(chunk->consume("radius_physical").c_str());
-      titem->halflife = atof(chunk->consume("halflife").c_str());
-    } else if(motion == "instant") {
-      titem->motion = PM_INSTANT;
-    } else {
-      dprintf("Unknown projectile motion: %s\n", motion.c_str());
-      CHECK(0);
-    }
-  }
-  
-  titem->color = C::gray(1.0);
-  if(titem->motion != PM_INSTANT)
-    titem->color = colorFromString(chunk->consume("color"));
+  titem->color = parseWithDefault(chunk, "color", C::gray(1.0));
   
   titem->velocity = 0;
   if(titem->motion != PM_MINE && titem->motion != PM_INSTANT)
@@ -603,16 +594,11 @@ void parseProjectile(kvData *chunk) {
 void parseDeploy(kvData *chunk) {
   IDBDeploy *titem = prepareName(chunk, &deployclasses, "deploy");
   
-  titem->anglestddev = 0;
-  
-  string type = "forward";
-  if(chunk->kv.count("type"))
-    type = chunk->consume("type");
+  string type = parseWithDefault(chunk, "type", "forward");
   
   if(type == "forward") {
     titem->type = DT_FORWARD;
-    if(chunk->kv.count("anglestddev"))
-      titem->anglestddev = atof(chunk->consume("anglestddev").c_str());
+    titem->anglestddev = parseWithDefault(chunk, "anglestddev", 0.0);
   } else if(type == "centroid") {
     titem->type = DT_CENTROID;
   } else if(type == "minepath") {
@@ -628,13 +614,16 @@ void parseWarhead(kvData *chunk) {
   memset(titem->impactdamage, 0, sizeof(titem->impactdamage));
   memset(titem->radiusdamage, 0, sizeof(titem->radiusdamage));
   titem->radiusfalloff = -1;
-  titem->wallremovalradius = 0;
-  titem->wallremovalchance = 1;
   
   if(chunk->kv.count("impactdamage"))
     parseDamagecode(chunk->consume("impactdamage"), titem->impactdamage);
   
+  // these must either neither exist, or both exist
   CHECK(chunk->kv.count("radiusfalloff") == chunk->kv.count("radiusdamage"));
+  CHECK(chunk->kv.count("radiuscolor_bright") == chunk->kv.count("radiuscolor_dim"));
+  
+  // if wallremovalchance exists, wallremovalradius must too
+  CHECK(chunk->kv.count("wallremovalchance") <= chunk->kv.count("wallremovalradius"));
   
   titem->radiuscolor_bright = Color(1.0, 0.8, 0.2);
   titem->radiuscolor_dim = Color(1.0, 0.2, 0.0);
@@ -647,11 +636,11 @@ void parseWarhead(kvData *chunk) {
     } // no, you can't just overload one, dammit
   }
   
-  if(chunk->kv.count("wallremovalradius"))
-    titem->wallremovalradius = atof(chunk->consume("wallremovalradius").c_str());
-  
-  if(chunk->kv.count("wallremovalchance"))
-    titem->wallremovalchance = atof(chunk->consume("wallremovalchance").c_str());
+  titem->wallremovalradius = parseWithDefault(chunk, "wallremovalradius", 0.0);
+  if(titem->wallremovalradius != 0)
+    titem->wallremovalchance = parseWithDefault(chunk, "wallremovalchance", 1.0);
+  else
+    titem->wallremovalchance = 0;
 }
 
 void parseGlory(kvData *chunk) {
