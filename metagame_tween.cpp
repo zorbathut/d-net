@@ -551,6 +551,28 @@ bool PersistentData::tickSlot(int slotid, const vector<Controller> &keys) {
   return false;
 }
 
+class AdjustSorter {
+public:
+  int parity(const string &ite) {
+    if(ite[0] == '+')
+      return 1;
+    if(ite[0] == '-')
+      return -1;
+    if(ite == "~=")
+      return 0;
+    CHECK(0);
+  }
+  bool operator()(const pair<string, vector<string> > &lhs, const pair<string, vector<string> > &rhs) {
+    int lp = parity(lhs.first);
+    int rp = parity(rhs.first);
+    if(lp != rp)
+      return lp > rp;
+    if(lhs.first.size() != rhs.first.size())
+      return lhs.first.size() * lp > rhs.first.size() * rp;
+    return lhs < rhs;
+  }
+};
+
 void PersistentData::renderSlot(int slotid) const {
   CHECK(slotid >= 0 && slotid < 4);
   const Slot &slt = slot[slotid];
@@ -637,10 +659,13 @@ void PersistentData::renderSlot(int slotid) const {
         setZoomVertical(0, 0, 1.5 * lines_needed + 0.5);
         float horzavail = getZoom().y_span() - 1.0;
         const IDBAdjustment *idba = factions[fid].faction->adjustment[3];
-        float cpos = 0.5;
+        
+        vector<pair<string, vector<string> > > adjusttext;
+        int total_lines = 0;
         for(int i = 0; i < ARRAY_SIZE(idba->adjustlist); i++) {
           if(idba->adjustlist[i].first == -1)
             break;
+          
           vector<string> tlins;
           string modifiertext = adjust_modifiertext(idba->adjustlist[i].first, idba->adjustlist[i].second);
           if(getTextWidth(StringPrintf("%s  %s", adjust_human[idba->adjustlist[i].first], modifiertext.c_str()), 1.0) > horzavail) {
@@ -650,23 +675,30 @@ void PersistentData::renderSlot(int slotid) const {
           }
           for(int j = 1; j < tlins.size(); j++)
             tlins[j] = "  " + tlins[j];
-          tlins[tlins.size() - 1] += StringPrintf("   %d", idba->adjustlist[i].second);
+          total_lines += tlins.size();
           
+          adjusttext.push_back(make_pair(modifiertext, tlins));
+        }
+        
+        sort(adjusttext.begin(), adjusttext.end(), AdjustSorter());
+        
+        float cpos = 0.5 + (lines_needed - total_lines) * 1.5 / 2;
+        for(int i = 0; i < adjusttext.size(); i++) {
           setColor(C::inactive_text);
-          for(int j = 0; j < tlins.size(); j++) {
-            drawText(tlins[j], 1, Float2(0.5, cpos));
+          for(int j = 0; j < adjusttext[i].second.size(); j++) {
+            drawText(adjusttext[i].second[j], 1, Float2(0.5, cpos));
             cpos += 1.5;
           }
           
-          if(modifiertext[0] == '+')
+          if(adjusttext[i].first[0] == '+')
             setColor(Color(0.1, 1.0, 0.1));
-          else if(modifiertext[0] == '-')
+          else if(adjusttext[i].first[0] == '-')
             setColor(Color(1.0, 0.1, 0.1));
-          else if(modifiertext == "~=")
+          else if(adjusttext[i].first == "~=")
             ;
           else
             CHECK(0);
-          drawJustifiedText(modifiertext, 1, Float2(getZoom().ex - 0.5, cpos - 1.5), TEXT_MAX, TEXT_MIN);
+          drawJustifiedText(adjusttext[i].first, 1, Float2(getZoom().ex - 0.5, cpos - 1.5), TEXT_MAX, TEXT_MIN);
         }
       }
     }
