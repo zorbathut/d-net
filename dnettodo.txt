@@ -1,7 +1,7 @@
 ---- Major work path
 - Faction info screen on startup
-  - Add abilities
   - Add icon fading
+  - Add abilities
   - Add random faction
   - Faction bonuses/penalties in demo screens
 - Fix lots of redundant code in itemdb.cpp

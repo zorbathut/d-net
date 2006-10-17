@@ -597,27 +597,7 @@ void PersistentData::renderSlot(int slotid) const {
       drawLine(pms[slt.pid].compasspos.x + comouter, pms[slt.pid].compasspos.y, pms[slt.pid].compasspos.x + cominner, pms[slt.pid].compasspos.y, comthick);
     }
     
-    bool factdone = false;
-    for(int i = 0; i < factions.size(); i++) {
-      if(!factions[i].taken && isInside(factions[i].compass_location, pms[slt.pid].compasspos)) {
-        CHECK(!factdone);
-        factdone = true;
-        {
-          GfxWindow gfxw(Float4(0, 0, div_x, 0.5), 1.0);
-          setZoomCenter(0, 0, 1.0);
-          setColor(factions[i].faction->color);
-          drawDvec2(factions[i].faction->icon, boxAround(Float2(0, 0), 1), 50, 0.02);
-        }
-        if(factions[i].faction->text) {
-          setColor(C::inactive_text);
-          GfxWindow gfxw(Float4(div_x, 0, getAspect(), 1.0), 1.0);
-          setZoomVertical(0, 0, 1);
-          drawParagraphedText(*factions[i].faction->text, 0.04, contract(getZoom(), 0.02));
-        }
-      }
-    }
-    
-    if(!factdone) {
+    if(pms[slt.pid].current_faction_over == -1) {
       setColor(C::inactive_text);
       GfxWindow gfxw(Float4(div_x, 0, getAspect(), 1.0), 1.0);
       setZoomVertical(0, 0, 1);
@@ -628,6 +608,20 @@ void PersistentData::renderSlot(int slotid) const {
       steer.push_back("Press a button to");
       steer.push_back("choose that faction");
       drawJustifiedMultiText(steer, 0.04, getZoom().midpoint(), TEXT_CENTER, TEXT_CENTER);
+    } else {
+      const int fid = pms[slt.pid].current_faction_over;
+      {
+        GfxWindow gfxw(Float4(0, 0, div_x, 0.5), 1.0);
+        setZoomCenter(0, 0, 1.0);
+        setColor(factions[fid].faction->color);
+        drawDvec2(factions[fid].faction->icon, boxAround(Float2(0, 0), 1), 50, 0.02);
+      }
+      if(factions[fid].faction->text) {
+        setColor(C::inactive_text);
+        GfxWindow gfxw(Float4(div_x, 0, getAspect(), 1.0), 1.0);
+        setZoomVertical(0, 0, 1);
+        drawParagraphedText(*factions[fid].faction->text, 0.04, contract(getZoom(), 0.02));
+      }
     }
     
   } else if(slt.type == Slot::SHOP) {

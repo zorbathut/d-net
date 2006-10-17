@@ -79,6 +79,12 @@ const float RenderInfo::units = textline_size * textline_count + textline_count 
 const float RenderInfo::linethick = 0.003;
 
 PlayerMenuState::PlayerMenuState() {
+  faction = NULL;
+  compasspos = Float2(0, 0);
+  
+  current_faction_over = -1;
+  current_faction_over_duration = 0;
+
   settingmode = SETTING_BUTTONS;
   choicemode = CHOICE_FIRSTPASS;
   
@@ -94,9 +100,6 @@ PlayerMenuState::PlayerMenuState() {
   buttons.resize(BUTTON_LAST, -1);
   axes.resize(2, -1);
   axes_invert.resize(axes.size(), false);
-  
-  faction = NULL;
-  compasspos = Float2(0, 0);
 }
 
 PlayerMenuState::~PlayerMenuState() { }
@@ -699,6 +702,13 @@ bool runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
           factions[targetInside].taken = true;
         }
       }
+    }
+    
+    if(pms->current_faction_over == targetInside) {
+      pms->current_faction_over_duration++;
+    } else {
+      pms->current_faction_over = targetInside;
+      pms->current_faction_over_duration = 0;
     }
   } else {
     StackString sstr("proc");

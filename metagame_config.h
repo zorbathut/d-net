@@ -68,6 +68,8 @@ struct PlayerMenuState {
 public:
   Float2 compasspos;
   FactionState *faction;
+  int current_faction_over;
+  int current_faction_over_duration;
 
   int settingmode;
   int choicemode;
