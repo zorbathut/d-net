@@ -73,7 +73,7 @@ warhead {
 
 glory {
   name=ROOT.Glory Devices.Shaped Charges
-  cost=2000
+  cost=4000
   
   deploy=deploy.glory
   projectile=projectile.glory.shaped

@@ -98,6 +98,8 @@ private:
 
   // Helper functions
   void drawMultibar(const vector<float> &sizes, const Float4 &dimensions) const;
+  
+  HierarchyNode generateShopHierarchy() const;
 };
 
 #endif

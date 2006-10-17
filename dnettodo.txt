@@ -1,7 +1,6 @@
 ---- Major work path
 - Gradual shop spawning
-  - Remove bombardment from 2 player, make it cheaper for 3 and 4
-- Pull glory explody into its own deploy?
+- Pull glory explody into its own deploy
 - Next-gen weapons
 - Training
 - Implants
@@ -11,9 +10,12 @@
 - Make small text thicker
 
 ---- Things that take thought and musing
+- FloatRange
+  - This just takes some work - do this once I'm dealing with a lot of ranges again
 - Cached shop demo stats
   - This is problematic because of all the various adjustments that can be on weapons
-- FloatRange
+- Make bombardment cheaper for 3 and 4 players
+  - This is tough because of weird situations involving people buying/selling equipment before everyone's joined, after people leave, etc
 - GameAccessors class
 - Tweekvalues?
 - Normalize controller to circle?

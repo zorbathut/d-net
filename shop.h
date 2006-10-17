@@ -106,7 +106,7 @@ public:
   void ai(Ai *ai, const Player *player) const;
   void renderToScreen(const Player *player) const;
 
-  void init(bool miniature);
+  void init(bool miniature, const HierarchyNode &hnode);
 
   Shop();
 

@@ -535,7 +535,7 @@ void Shop::renderToScreen(const Player *player) const {
 // Not a valid state
 Shop::Shop() { }
 
-void Shop::init(bool in_miniature) {
+void Shop::init(bool in_miniature, const HierarchyNode &hnode) {
   curloc.clear();
   lastloc.clear();
   
@@ -546,5 +546,5 @@ void Shop::init(bool in_miniature) {
   miniature = in_miniature;
   slay = ShopLayout(miniature);
   
-  hierarchroot = itemDbRoot();
+  hierarchroot = hnode;
 }

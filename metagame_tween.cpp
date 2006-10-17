@@ -243,10 +243,10 @@ bool PersistentData::tick(const vector< Controller > &keys) {
           slot[empty].type = Slot::CHOOSE;
         } else if(sps_queue[0].second == TTL_FULLSHOP) {
           slot[empty].type = Slot::SHOP;
-          slot[empty].shop.init(false);
+          slot[empty].shop.init(false, generateShopHierarchy());
         } else if(sps_queue[0].second == TTL_QUICKSHOP) {
           slot[empty].type = Slot::SHOP;
-          slot[empty].shop.init(true);
+          slot[empty].shop.init(true, generateShopHierarchy());
         } else if(sps_queue[0].second == TTL_SETTINGS) {
           slot[empty].type = Slot::SETTINGS;
         } else {
@@ -1266,4 +1266,15 @@ PersistentData::PersistentData(int playercount, int in_roundsbetweenshop) {
     playerdata.push_back(Player(pms[cdbc].faction->faction, 0));
     cdbc++;
   }
+}
+
+HierarchyNode PersistentData::generateShopHierarchy() const {
+  HierarchyNode rv = itemDbRoot();
+  for(int i = 0; i < rv.branches.size(); i++) {
+    if(rv.branches[i].type == HierarchyNode::HNT_CATEGORY && rv.branches[i].cat_restrictiontype == HierarchyNode::HNT_BOMBARDMENT && playerdata.size() <= 2) {
+      rv.branches.erase(rv.branches.begin() + i);
+      i--;
+    }
+  }
+  return rv;
 }
