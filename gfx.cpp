@@ -744,10 +744,15 @@ void drawFormattedText(const string &txt, float scale, Float4 bounds) {
   drawJustifiedMultiText(lines, scale, Float2(bounds.sx, bounds.sy), TEXT_MIN, TEXT_MIN);
 }
 
-void drawParagraphedText(const string &txt, float scale, Float4 bounds) {
-  const vector<string> lines = formatText(txt, scale, bounds.x_span(), "  ");
-  drawJustifiedMultiText(lines, scale, Float2(bounds.sx, bounds.sy), TEXT_MIN, TEXT_MIN);
+void drawParagraphedText(const string &txt, float scale, pair<float, float> x_bounds, float y) {
+  drawJustifiedParagraphedText(txt, scale, x_bounds, y, TEXT_MIN);
 }
+
+void drawJustifiedParagraphedText(const string &txt, float scale, pair<float, float> x_bounds, float y, int just) {
+  const vector<string> lines = formatText(txt, scale, x_bounds.second - x_bounds.first, "  ");
+  drawJustifiedMultiText(lines, scale, Float2(x_bounds.first, y), TEXT_MIN, just);
+}
+
 
 /*************
  * Vector path operations

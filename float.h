@@ -113,6 +113,10 @@ public:
     return Float2(ex, ey);
   }
   
+  pair<float, float> xs() const {
+    return make_pair(sx, ex);
+  }
+  
   float x_span() const {
     return ex - sx;
   }

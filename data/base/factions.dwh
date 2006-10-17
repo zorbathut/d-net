@@ -102,7 +102,7 @@ faction { # increased everything
 
 text {
   name=text.faction.hermes
-  data=The Academy of Hermes claims to be a research facility run by the actual Greek god. As unlikely as this sounds, their engines and drivetrains are literally second to none, breaking technology records regularly.
+  data=The Academy of Hermes claims to be a research facility run by the actual Greek god. While many are skeptical of their claimed divinity, their engines and drivetrains are unarguably second to none, breaking technology records regularly.
   data=Hermes tanks are unbelievably quick, but the cutting-edge technology involved increases tank cost considerably. Hermes technology does not require any other compromises.
 }
 

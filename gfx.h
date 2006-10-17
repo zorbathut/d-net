@@ -100,7 +100,8 @@ void drawJustifiedText(const string &txt, float scale, Float2 pos, int xps, int 
 void drawJustifiedMultiText(const vector<string> &txt, float letterscale, Float2 pos, int xps, int yps);
 
 void drawFormattedText(const string &txt, float scale, Float4 bounds);
-void drawParagraphedText(const string &txt, float scale, Float4 bounds);
+void drawParagraphedText(const string &txt, float scale, pair<float, float> x_bounds, float y);
+void drawJustifiedParagraphedText(const string &txt, float scale, pair<float, float> x_bounds, float y, int yps);
 
 // VectorPath objects have their own local coordinate system - this scales it by whatever, then translates its origin to the new origin.
 // It is not necessarily an upper-left corner origin (it's more likely to be center, but that's not guaranteed either)

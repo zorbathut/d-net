@@ -587,6 +587,8 @@ void PersistentData::renderSlot(int slotid) const {
     CHECK(slt.pid >= 0 && slt.pid < pms.size());
     setZoomVertical(0, 0, 1);
     
+    const bool ignore_modifiers = true;
+    
     const float div_x = 0.6;
     
     setColor(C::active_text);
@@ -597,7 +599,7 @@ void PersistentData::renderSlot(int slotid) const {
     const int fid_duration = pms[slt.pid].current_faction_over_duration;
     float compass_opacity;
     {
-      if(fid == -1) {
+      if(fid == -1 || ignore_modifiers) {
         compass_opacity = 1.0;
       } else if(fid_duration < FPS * 3) {
         compass_opacity = 1.0;
@@ -642,7 +644,12 @@ void PersistentData::renderSlot(int slotid) const {
       drawJustifiedMultiText(steer, 0.04, getZoom().midpoint(), TEXT_CENTER, TEXT_CENTER);
     } else {
       {
-        GfxWindow gfxw(Float4(0, 0.5, div_x, 1.0), logo_opacity);
+        smart_ptr<GfxWindow> gfxw;
+        if(ignore_modifiers) {
+          gfxw.reset(new GfxWindow(Float4(0, 0, div_x, 0.5), 1.0));
+        } else {
+          gfxw.reset(new GfxWindow(Float4(0, 0.5, div_x, 1.0), logo_opacity));
+        }
         setZoomCenter(0, 0, 1.0);
         setColor(factions[fid].faction->color);
         drawDvec2(factions[fid].faction->icon, contract(getZoom(), 0.1), 50, 0.02);
@@ -651,9 +658,15 @@ void PersistentData::renderSlot(int slotid) const {
         setColor(C::inactive_text);
         GfxWindow gfxw(Float4(div_x, 0, getAspect(), 1.0), 1.0);
         setZoomVertical(0, 0, 1);
-        drawParagraphedText(*factions[fid].faction->text, 0.04, contract(getZoom(), 0.02));
+        if(ignore_modifiers) {
+          vector<string> tok = tokenize(*factions[fid].faction->text, "\n");
+          CHECK(tok.size() == 2);
+          drawJustifiedParagraphedText(tok[0], 0.04, contract(getZoom(), 0.02).xs(), getZoom().midpoint().y, TEXT_CENTER);
+        } else {
+          drawJustifiedParagraphedText(*factions[fid].faction->text, 0.04, contract(getZoom(), 0.02).xs(), getZoom().midpoint().y, TEXT_CENTER);
+        }
       }
-      {
+      if(!ignore_modifiers) {
         GfxWindow gfxw(Float4(0, 0, div_x, 0.5), 1.0);
         int lines_needed = 9;
         setZoomVertical(0, 0, 1.5 * lines_needed + 0.5);

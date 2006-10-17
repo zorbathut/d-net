@@ -59,6 +59,8 @@ bool Metagame::runTick(const vector<Controller> &keys) {
       // Their job is done. Accumulated profit will vanish along with them.
       // Thanks, players.
       // Thlayers.
+      
+      // TODO: pay some attention to our result
     }
   } else if(mode == MGM_TWEEN) {
     if(persistent.tick(keys)) {

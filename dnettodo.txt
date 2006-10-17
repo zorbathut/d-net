@@ -1,8 +1,6 @@
 ---- Major work path
 - Faction info screen on startup
-  - Add abilities
   - Add random faction
-  - Faction bonuses/penalties in demo screens
 - Fix lots of redundant code in itemdb.cpp
 - Replace sizeof with ARRAYSIZE
 - Gradual shop spawning
@@ -12,12 +10,14 @@
 - Training
 - Implants
 - Activate factions
+  - Faction bonuses/penalties in demo screens
 - Many many more weapons
 - Make small text thicker
 
 ---- Things that take thought and musing
 - Cached shop demo stats
   - This is problematic because of all the various adjustments that can be on weapons
+- FloatRange
 - GameAccessors class
 - Tweekvalues?
 - Normalize controller to circle?
