@@ -386,11 +386,22 @@ void parseHierarchy(kvData *chunk) {
   mountpoint->branches.push_back(tnode);
 }
 
-void parseLauncher(kvData *chunk) {
+template<typename T> T *prepareName(kvData *chunk, map<string, T> *classes, const string &prefix = "", string *namestorage = NULL) {
   string name = chunk->consume("name");
-  CHECK(prefixed(name, "launcher"));
-  CHECK(launcherclasses.count(name) == 0);
-  IDBLauncher *titem = &launcherclasses[name];
+  if(namestorage)
+    *namestorage = name;
+  if(prefix.size())
+    CHECK(prefixed(name, prefix));
+  CHECK(classes->count(name) == 0);
+  return &(*classes)[name];
+}
+
+template<typename T> T *prepareName(kvData *chunk, map<string, T> *classes, string *namestorage) {
+  return prepareName(chunk, classes, "", namestorage);
+}
+
+void parseLauncher(kvData *chunk) {
+  IDBLauncher *titem = prepareName(chunk, &launcherclasses, "launcher");
   
   string projclass = chunk->consume("projectile");
   CHECK(projclasses.count(projclass));
@@ -438,10 +449,7 @@ void parseLauncher(kvData *chunk) {
 }
 
 void parseStats(kvData *chunk) {
-  string name = chunk->consume("name");
-  CHECK(prefixed(name, "stats"));
-  CHECK(statsclasses.count(name) == 0);
-  IDBStats *titem = &statsclasses[name];
+  IDBStats *titem = prepareName(chunk, &statsclasses, "stats");
     
   titem->dps_efficiency = 1.0;
   if(chunk->kv.count("dps_efficiency"))
@@ -453,9 +461,8 @@ void parseStats(kvData *chunk) {
 }
 
 void parseWeapon(kvData *chunk) {
-  string name = chunk->consume("name");
-  CHECK(weaponclasses.count(name) == 0);
-  IDBWeapon *titem = &weaponclasses[name];
+  string name;
+  IDBWeapon *titem = prepareName(chunk, &weaponclasses, &name);
   
   const string informal_name = tokenize(name, ".").back();
   
@@ -491,9 +498,8 @@ void parseWeapon(kvData *chunk) {
 }
 
 void parseUpgrade(kvData *chunk) {
-  string name = chunk->consume("name");
-  CHECK(upgradeclasses.count(name) == 0);
-  IDBUpgrade *titem = &upgradeclasses[name];
+  string name;
+  IDBUpgrade *titem = prepareName(chunk, &upgradeclasses, &name);
   
   HierarchyNode *mountpoint = findNamedNode(name, 1);
   HierarchyNode tnode;
@@ -523,10 +529,7 @@ void parseUpgrade(kvData *chunk) {
 }
 
 void parseProjectile(kvData *chunk) {
-  string name = chunk->consume("name");
-  CHECK(prefixed(name, "projectile"));
-  CHECK(projclasses.count(name) == 0);
-  IDBProjectile *titem = &projclasses[name];
+  IDBProjectile *titem = prepareName(chunk, &projclasses, "projectile");
 
   titem->motion = PM_NORMAL;
   titem->thickness_visual = 0.3;
@@ -569,10 +572,7 @@ void parseProjectile(kvData *chunk) {
 }
 
 void parseDeploy(kvData *chunk) {
-  string name = chunk->consume("name");
-  CHECK(prefixed(name, "deploy"));
-  CHECK(deployclasses.count(name) == 0);
-  IDBDeploy *titem = &deployclasses[name];
+  IDBDeploy *titem = prepareName(chunk, &deployclasses, "deploy");
   
   titem->anglestddev = 0;
   
@@ -594,10 +594,7 @@ void parseDeploy(kvData *chunk) {
 }
 
 void parseWarhead(kvData *chunk) {
-  string name = chunk->consume("name");
-  CHECK(prefixed(name, "warhead"));
-  CHECK(warheadclasses.count(name) == 0);
-  IDBWarhead *titem = &warheadclasses[name];
+  IDBWarhead *titem = prepareName(chunk, &warheadclasses, "warhead");
   
   memset(titem->impactdamage, 0, sizeof(titem->impactdamage));
   memset(titem->radiusdamage, 0, sizeof(titem->radiusdamage));
@@ -629,9 +626,8 @@ void parseWarhead(kvData *chunk) {
 }
 
 void parseGlory(kvData *chunk) {
-  string name = chunk->consume("name");
-  CHECK(gloryclasses.count(name) == 0);
-  IDBGlory *titem = &gloryclasses[name];
+  string name;
+  IDBGlory *titem = prepareName(chunk, &gloryclasses, &name);
   
   HierarchyNode *mountpoint = findNamedNode(name, 1);
   HierarchyNode tnode;
@@ -681,10 +677,9 @@ void parseGlory(kvData *chunk) {
 }
 
 void parseBombardment(kvData *chunk) {
-  string name = chunk->consume("name");
-  CHECK(bombardmentclasses.count(name) == 0);
-  IDBBombardment *titem = &bombardmentclasses[name];
-  
+  string name;
+  IDBBombardment *titem = prepareName(chunk, &bombardmentclasses, &name);
+
   HierarchyNode *mountpoint = findNamedNode(name, 1);
   HierarchyNode tnode;
   tnode.name = tokenize(name, ".").back();
@@ -723,9 +718,8 @@ void parseBombardment(kvData *chunk) {
 }
 
 void parseTank(kvData *chunk) {
-  string name = chunk->consume("name");
-  CHECK(tankclasses.count(name) == 0);
-  IDBTank *titem = &tankclasses[name];
+  string name;
+  IDBTank *titem = prepareName(chunk, &tankclasses, &name);
   
   HierarchyNode *mountpoint = findNamedNode(name, 1);
   HierarchyNode tnode;
@@ -813,9 +807,7 @@ void parseTank(kvData *chunk) {
 }
 
 void parseAdjustment(kvData *chunk) {
-  string name = chunk->consume("name");
-  CHECK(adjustmentclasses.count(name) == 0);
-  IDBAdjustment *titem = &adjustmentclasses[name];
+  IDBAdjustment *titem = prepareName(chunk, &adjustmentclasses, "adjustment");
   
   CHECK(ARRAY_SIZE(adjust_text) == IDBAdjustment::COMBO_LAST);
   CHECK(ARRAY_SIZE(adjust_human) == IDBAdjustment::COMBO_LAST);
@@ -896,7 +888,6 @@ void parseFaction(kvData *chunk) {
 
 void parseEquip(kvData *chunk) {
   string name = chunk->consume("name");
-  CHECK(bombardmentclasses.count(name) == 0);
   
   HierarchyNode *mountpoint = findNamedNode(name, 1);
   HierarchyNode tnode;
@@ -910,10 +901,8 @@ void parseEquip(kvData *chunk) {
 }
 
 void parseText(kvData *chunk) {
-  string name = chunk->consume("name");
-  CHECK(text.count(name) == 0);
-  CHECK(strncmp(name.c_str(), "text.", 5) == 0);
-  text[name] = chunk->consume("data");
+  string *titem = prepareName(chunk, &text, "text");
+  *titem = chunk->consume("data");
   // yay
 }
 
