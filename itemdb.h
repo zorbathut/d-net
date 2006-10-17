@@ -45,7 +45,7 @@ public:
   Dvec2 icon;
   Color color;
   string name;
-  IDBAdjustment *adjustment[4];
+  const IDBAdjustment *adjustment[4];
 
   vector<string> name_lines;
 
@@ -115,7 +115,7 @@ public:
   string name;
 
   float firerate;
-  IDBLauncher *launcher;
+  const IDBLauncher *launcher;
 
   Money base_cost;
   int quantity;
@@ -141,7 +141,7 @@ public:
 
 struct IDBUpgrade {
 public:
-  IDBAdjustment *adjustment;
+  const IDBAdjustment *adjustment;
 
   int costmult;
 

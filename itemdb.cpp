@@ -400,28 +400,25 @@ template<typename T> T *prepareName(kvData *chunk, map<string, T> *classes, stri
   return prepareName(chunk, classes, "", namestorage);
 }
 
+template<typename T> const T *parseSubclass(string name, const map<string, T> &classes) {
+  CHECK(classes.count(name));
+  return &classes.find(name)->second;
+}
+
+template<typename T> const T *parseOptionalSubclass(kvData *chunk, string label, const map<string, T> &classes) {
+  if(!chunk->kv.count(label))
+    return NULL;
+  return parseSubclass(chunk->consume(label), classes);
+}
+
 void parseLauncher(kvData *chunk) {
   IDBLauncher *titem = prepareName(chunk, &launcherclasses, "launcher");
   
-  string projclass = chunk->consume("projectile");
-  CHECK(projclasses.count(projclass));
-  titem->projectile = &projclasses[projclass];
+  titem->projectile = parseSubclass(chunk->consume("projectile"), projclasses);
+  titem->deploy = parseSubclass(chunk->consume("deploy"), deployclasses);
+  titem->stats = parseSubclass(chunk->consume("stats"), statsclasses);
 
-  string deployclass = chunk->consume("deploy");
-  CHECK(deployclasses.count(deployclass));
-  titem->deploy = &deployclasses[deployclass];
-  
-  string statsclass = chunk->consume("stats");
-  CHECK(statsclasses.count(statsclass));
-  titem->stats = &statsclasses[statsclass];
-
-  if(chunk->kv.count("text")) {
-    string textid = chunk->consume("text");
-    CHECK(text.count(textid));
-    titem->text = &text[textid];
-  } else {
-    titem->text = NULL;
-  }
+  titem->text = parseOptionalSubclass(chunk, "text", text);
   
   string demotype = "firingrange";
   if(chunk->kv.count("demo"))
@@ -492,9 +489,7 @@ void parseWeapon(kvData *chunk) {
   titem->name = informal_name;
   titem->firerate = atof(chunk->consume("firerate").c_str());
   
-  string launcherclass = chunk->consume("launcher");
-  CHECK(launcherclasses.count(launcherclass));
-  titem->launcher = &launcherclasses[launcherclass];
+  titem->launcher = parseSubclass(chunk->consume("launcher"), launcherclasses);
 }
 
 void parseUpgrade(kvData *chunk) {
@@ -515,17 +510,10 @@ void parseUpgrade(kvData *chunk) {
   mountpoint->branches.push_back(tnode);
   
   titem->costmult = atoi(chunk->consume("costmult").c_str());
-  string adjustment = chunk->consume("adjustment");
-  CHECK(adjustmentclasses.count(adjustment));
-  titem->adjustment = &adjustmentclasses[adjustment];
   
-  if(chunk->kv.count("text")) {
-    string textid = chunk->consume("text");
-    CHECK(text.count(textid));
-    titem->text = &text[textid];
-  } else {
-    titem->text = NULL;
-  }
+  titem->adjustment = parseSubclass(chunk->consume("adjustment"), adjustmentclasses);
+  
+  titem->text = parseOptionalSubclass(chunk, "text", text);
 }
 
 void parseProjectile(kvData *chunk) {
@@ -566,9 +554,7 @@ void parseProjectile(kvData *chunk) {
   if(titem->motion != PM_MINE && titem->motion != PM_INSTANT)
     titem->velocity = atof(chunk->consume("velocity").c_str()) / FPS;
   
-  string warheadclass = chunk->consume("warhead");
-  CHECK(warheadclasses.count(warheadclass));
-  titem->warhead = &warheadclasses[warheadclass];
+  titem->warhead = parseSubclass(chunk->consume("warhead"), warheadclasses);
 }
 
 void parseDeploy(kvData *chunk) {
@@ -644,17 +630,9 @@ void parseGlory(kvData *chunk) {
   
   titem->base_cost = moneyFromString(chunk->consume("cost"));
   
-  string projclass = chunk->consume("projectile");
-  CHECK(projclasses.count(projclass));
-  titem->projectile = &projclasses[projclass];
-
-  string deployclass = chunk->consume("deploy");
-  CHECK(deployclasses.count(deployclass));
-  titem->deploy = &deployclasses[deployclass];
-  
-  string coreclass = chunk->consume("core");
-  CHECK(warheadclasses.count(coreclass));
-  titem->core = &warheadclasses[coreclass];
+  titem->projectile = parseSubclass(chunk->consume("projectile"), projclasses);
+  titem->deploy = parseSubclass(chunk->consume("deploy"), deployclasses);
+  titem->core = parseSubclass(chunk->consume("core"), warheadclasses);
 
   titem->minsplits = atoi(chunk->consume("minsplits").c_str());
   titem->maxsplits = atoi(chunk->consume("maxsplits").c_str());
@@ -664,16 +642,10 @@ void parseGlory(kvData *chunk) {
   
   if(chunk->kv.count("default") && atoi(chunk->consume("default").c_str())) {
     CHECK(!defglory);
-    defglory = &gloryclasses[name];
+    defglory = titem;
   }
   
-  if(chunk->kv.count("text")) {
-    string textid = chunk->consume("text");
-    CHECK(text.count(textid));
-    titem->text = &text[textid];
-  } else {
-    titem->text = NULL;
-  }
+  titem->text = parseOptionalSubclass(chunk, "text", text);
 }
 
 void parseBombardment(kvData *chunk) {
@@ -693,28 +665,19 @@ void parseBombardment(kvData *chunk) {
   tnode.bombardment = &bombardmentclasses[name];
   mountpoint->branches.push_back(tnode);
 
-  string warheadclass = chunk->consume("warhead");
-  CHECK(warheadclasses.count(warheadclass));
+  titem->warhead = parseSubclass(chunk->consume("warhead"), warheadclasses);
   
   titem->base_cost = moneyFromString(chunk->consume("cost"));
-  
-  titem->warhead = &warheadclasses[warheadclass];
 
   titem->lockdelay = atof(chunk->consume("lockdelay").c_str());
   titem->unlockdelay = atof(chunk->consume("unlockdelay").c_str());
 
   if(chunk->kv.count("default") && atoi(chunk->consume("default").c_str())) {
     CHECK(!defbombardment);
-    defbombardment = &bombardmentclasses[name];
+    defbombardment = titem;
   }
   
-  if(chunk->kv.count("text")) {
-    string textid = chunk->consume("text");
-    CHECK(text.count(textid));
-    titem->text = &text[textid];
-  } else {
-    titem->text = NULL;
-  }
+  titem->text = parseOptionalSubclass(chunk, "text", text);
 }
 
 void parseTank(kvData *chunk) {
@@ -794,16 +757,10 @@ void parseTank(kvData *chunk) {
   
   if(chunk->kv.count("default") && atoi(chunk->consume("default").c_str())) {
     CHECK(!deftank);
-    deftank = &tankclasses[name];
+    deftank = titem;
   }
   
-  if(chunk->kv.count("text")) {
-    string textid = chunk->consume("text");
-    CHECK(text.count(textid));
-    titem->text = &text[textid];
-  } else {
-    titem->text = NULL;
-  }
+  titem->text = parseOptionalSubclass(chunk, "text", text);
 }
 
 void parseAdjustment(kvData *chunk) {
@@ -869,19 +826,12 @@ void parseFaction(kvData *chunk) {
     }
   }
   
-  string adjustment = chunk->consume("adjustment") +  ".high";
-  CHECK(adjustmentclasses.count(adjustment));
+  adjustmentclasses["null"]; // this is a hideous hack just FYI
   for(int i = 0; i < 3; i++)
-    fact.adjustment[i] = &adjustmentclasses["null"]; // wheeeeeeeee
-  fact.adjustment[3] = &adjustmentclasses[adjustment];
+    fact.adjustment[i] = parseSubclass("null", adjustmentclasses); // wheeeeeeeee
+  fact.adjustment[3] = parseSubclass(chunk->consume("adjustment") +  ".high", adjustmentclasses);
   
-  if(chunk->kv.count("text")) {
-    string textid = chunk->consume("text");
-    CHECK(text.count(textid));
-    fact.text = &text[textid];
-  } else {
-    fact.text = NULL;
-  }
+  fact.text = parseOptionalSubclass(chunk, "text", text);
   
   factions.push_back(fact);
 }
