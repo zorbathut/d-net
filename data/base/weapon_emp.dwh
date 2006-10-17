@@ -1,4 +1,9 @@
 
+hierarchy {
+  name=ROOT.Weapons.EMP
+  pack=100
+}
+
 text {
   name=text.weapon.emp
   data=A focused burst of electromagnetic energy damages tank armor and electronics at close range. These purchases include a limited-use compensation and shielding package designed to protect a tank from its own weapon.

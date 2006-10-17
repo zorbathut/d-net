@@ -1,4 +1,9 @@
 
+hierarchy {
+  name=ROOT.Weapons.Mine
+  pack=100
+}
+
 text {
   name=text.weapon.mine
   data=This simple piece of equipment drops high explosive land mines with touch sensors. Land mines are hard to detect and will only be visible when near a tank. Basic land mines are also equipped with friend-or-foe sensors to avoid friendly fire.

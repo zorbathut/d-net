@@ -1,4 +1,9 @@
 
+hierarchy {
+  name=ROOT.Weapons.Autocannon
+  pack=100
+}
+
 text {
   name=text.weapon.autocannon
   data=Standard 44mm armor-piercing kinetic delivery systems. These weapons are rather inaccurate and not terribly fast-firing, but pack incredible power at short range.

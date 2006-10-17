@@ -1,4 +1,9 @@
 
+hierarchy {
+  name=ROOT.Weapons.Laser
+  pack=100
+}
+
 text {
   name=text.weapon.laser
   data="Laser" is a misnomer. This family of weapons is a projected plasma containment system. Extremely accurate and fast-firing, the containment field disperses rapidly on impact, leading to unfortunately low damage.

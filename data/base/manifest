@@ -6,7 +6,6 @@ common.dwh
 hierarchy.dwh
 
 # Weaponry
-weapon.dwh
 weapon_autocannon.dwh
 weapon_laser.dwh
 weapon_missile.dwh
