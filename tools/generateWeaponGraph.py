@@ -17,7 +17,7 @@ for line in open("tools/weapondump.dat"):
     print "ERROR"
     fail
   plot(key, value, label = name)
-legend()
+legend(loc='lower right')
 loglog()
 xlabel('CPS')
 ylabel('DPS')

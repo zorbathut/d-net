@@ -1,0 +1,95 @@
+
+hierarchy {
+  name=ROOT.Weapons.AP Autocannon
+  pack=100
+}
+
+text {
+  name=text.weapon.apautocannon
+  data=Heavy armor-piercing rounds have been added to the standard autocannon. The new alloys increase cost enormously, but also increase penetration.
+}
+
+warhead {
+  name=warhead.apautocannon
+  impactdamage=4.5 kinetic
+  wallremovalradius=0.5
+  wallremovalchance=0.05
+}
+
+projectile {
+  name=projectile.apautocannon
+  motion=normal
+  velocity=160
+  thickness_visual=0.8  # 2x
+  color=1.0, 0.9, 0.6
+  warhead=warhead.apautocannon
+}
+
+stats {
+  name=stats.apautocannon
+}
+
+launcher {
+  name=launcher.apautocannon
+  
+  deploy=deploy.autocannon
+  projectile=projectile.apautocannon
+  
+  stats=stats.apautocannon
+  
+  text=text.weapon.apautocannon
+}
+
+weapon {
+  name=ROOT.Weapons.AP Autocannon.AP Autocannon I
+  
+  cost=2000
+  firerate=3
+  
+  launcher=launcher.apautocannon
+}
+
+weapon {
+  name=ROOT.Weapons.AP Autocannon.AP Autocannon II
+  
+  cost=3000
+  firerate=3.8
+  
+  launcher=launcher.apautocannon
+}
+
+weapon {
+  name=ROOT.Weapons.AP Autocannon.AP Autocannon III
+  
+  cost=4500
+  firerate=5
+  
+  launcher=launcher.apautocannon
+}
+
+weapon {
+  name=ROOT.Weapons.AP Autocannon.AP Autocannon IV
+  
+  cost=7000
+  firerate=6.5
+  
+  launcher=launcher.apautocannon
+}
+
+weapon {
+  name=ROOT.Weapons.AP Autocannon.AP Autocannon V
+  
+  cost=12000
+  firerate=8.5
+  
+  launcher=launcher.apautocannon
+}
+
+weapon {
+  name=ROOT.Weapons.AP Autocannon.AP Autocannon VI
+  
+  cost=18000
+  firerate=11
+  
+  launcher=launcher.apautocannon
+}
