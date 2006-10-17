@@ -1,6 +1,5 @@
 ---- Major work path
 - Faction info screen on startup
-  - Add icon fading
   - Add abilities
   - Add random faction
   - Faction bonuses/penalties in demo screens

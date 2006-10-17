@@ -671,6 +671,9 @@ bool runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
       Float2 dir = deadzone(keys.menu, DEADZONE_CENTER, 0.2) * 0.02;
       dir.y *= -1;
       pms->compasspos += dir;
+      
+      if(len(keys.menu) > 0.5)
+        pms->current_faction_over_duration = 0;
     }
     {
       Float4 bbx = startFBoundBox();

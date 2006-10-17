@@ -571,8 +571,24 @@ void PersistentData::renderSlot(int slotid) const {
     drawLine(0.05, 0.5, div_x, 0.5, 0.003);
     drawLine(div_x, 0.05, div_x, 0.95, 0.003);
     
+    const int fid = pms[slt.pid].current_faction_over;
+    const int fid_duration = pms[slt.pid].current_faction_over_duration;
+    float compass_opacity;
     {
-      GfxWindow gfxw(Float4(0, 0.5, div_x, 1), 1.0);
+      if(fid == -1) {
+        compass_opacity = 1.0;
+      } else if(fid_duration < FPS * 3) {
+        compass_opacity = 1.0;
+      } else if(fid_duration < FPS * 5) {
+        compass_opacity = float(FPS * 2 - (fid_duration - FPS * 3)) / (FPS * 2);
+      } else {
+        compass_opacity = 0.0;
+      }
+    }
+    float logo_opacity = 1.0 - compass_opacity;
+    
+    {
+      GfxWindow gfxw(Float4(0, 0.5, div_x, 1), compass_opacity);
       setZoomCenter(0, 0, 1.0);
       for(int i = 0; i < factions.size(); i++) {
         if(!factions[i].taken) {
@@ -581,13 +597,7 @@ void PersistentData::renderSlot(int slotid) const {
         }
       }
       setColor(1.0, 1.0, 1.0);
-      /*
-      {
-        vector<string> txt;
-        txt.push_back("Choose");
-        txt.push_back("your faction");
-        drawJustifiedMultiText(txt, 0.08, Float2(0, 0), TEXT_CENTER, TEXT_CENTER);
-      }*/
+
       const float comouter = 0.1;
       const float cominner = 0.03;
       const float comthick = 0.01;
@@ -597,7 +607,7 @@ void PersistentData::renderSlot(int slotid) const {
       drawLine(pms[slt.pid].compasspos.x + comouter, pms[slt.pid].compasspos.y, pms[slt.pid].compasspos.x + cominner, pms[slt.pid].compasspos.y, comthick);
     }
     
-    if(pms[slt.pid].current_faction_over == -1) {
+    if(fid == -1) {
       setColor(C::inactive_text);
       GfxWindow gfxw(Float4(div_x, 0, getAspect(), 1.0), 1.0);
       setZoomVertical(0, 0, 1);
@@ -609,12 +619,11 @@ void PersistentData::renderSlot(int slotid) const {
       steer.push_back("choose that faction");
       drawJustifiedMultiText(steer, 0.04, getZoom().midpoint(), TEXT_CENTER, TEXT_CENTER);
     } else {
-      const int fid = pms[slt.pid].current_faction_over;
       {
-        GfxWindow gfxw(Float4(0, 0, div_x, 0.5), 1.0);
+        GfxWindow gfxw(Float4(0, 0.5, div_x, 1.0), logo_opacity);
         setZoomCenter(0, 0, 1.0);
         setColor(factions[fid].faction->color);
-        drawDvec2(factions[fid].faction->icon, boxAround(Float2(0, 0), 1), 50, 0.02);
+        drawDvec2(factions[fid].faction->icon, contract(getZoom(), 0.1), 50, 0.02);
       }
       if(factions[fid].faction->text) {
         setColor(C::inactive_text);
