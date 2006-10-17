@@ -97,9 +97,9 @@ void ShopLayout::updateExpandy(int depth, bool this_branches) {
     int_expandy[i] = approach(int_expandy[i], nexpandy[i], framechange);
 }
 
-const HierarchyNode &Shop::normalize(const HierarchyNode &item, const Player *player) const {
+void Shop::renormalize(HierarchyNode &item, const Player *player) {
   if(item.type == HierarchyNode::HNT_EQUIP) {
-    dynamic_equip = item;
+    item.branches.clear();
     vector<const IDBWeapon *> weaps = player->getAvailableWeapons();
     for(int i = 0; i < weaps.size(); i++) {
       HierarchyNode hod;
@@ -110,12 +110,13 @@ const HierarchyNode &Shop::normalize(const HierarchyNode &item, const Player *pl
       hod.name = weaps[i]->name;
       hod.pack = 1;
       hod.equipweapon = weaps[i];
-      dynamic_equip.branches.push_back(hod);
+      item.branches.push_back(hod);
     }
-    dynamic_equip.checkConsistency();
-    return dynamic_equip;
+    item.checkConsistency();
   }
-  return item;
+  
+  for(int i = 0; i < item.branches.size(); i++)
+    renormalize(item.branches[i], player);
 }
 
 const HierarchyNode &Shop::getStepNode(int step, const Player *player) const {
@@ -125,7 +126,7 @@ const HierarchyNode &Shop::getStepNode(int step, const Player *player) const {
   } else {
     const HierarchyNode &nd = getStepNode(step - 1, player);
     CHECK(curloc[step - 1] >= 0 && curloc[step - 1] < nd.branches.size());
-    return normalize(nd.branches[curloc[step - 1]], player);
+    return nd.branches[curloc[step - 1]];
   }
 }
 
@@ -155,7 +156,7 @@ void Shop::renderNode(const HierarchyNode &node, int depth, const Player *player
   }
   
   if(depth < curloc.size())
-    renderNode(normalize(node.branches[curloc[depth]], player), depth + 1, player);
+    renderNode(node.branches[curloc[depth]], depth + 1, player);
   
   if(node.type == HierarchyNode::HNT_EQUIP) {
     float maxdown = -1000;
@@ -481,6 +482,8 @@ bool Shop::runTick(const Keystates &keys, Player *player) {
   
   if(curloc == lastloc && hasInfo(getCurNode(player).type))
     cshopinf.runTick();
+  
+  renormalize(hierarchroot, player);
   
   return false;
 }

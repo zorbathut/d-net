@@ -89,7 +89,7 @@ private:
 
   ShopInfo cshopinf;
 
-  const HierarchyNode &normalize(const HierarchyNode &item, const Player *player) const;
+  void renormalize(HierarchyNode &item, const Player *player);
   
   const HierarchyNode &getStepNode(int step, const Player *player) const;
 
