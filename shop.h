@@ -85,6 +85,8 @@ private:
   bool selling;
   bool disabled;  // when we switch, we wait for them to let go of the button
 
+  HierarchyNode hierarchroot;
+
   ShopInfo cshopinf;
 
   const HierarchyNode &normalize(const HierarchyNode &item, const Player *player) const;

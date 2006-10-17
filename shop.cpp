@@ -121,7 +121,7 @@ const HierarchyNode &Shop::normalize(const HierarchyNode &item, const Player *pl
 const HierarchyNode &Shop::getStepNode(int step, const Player *player) const {
   CHECK(step >= 0 && step <= curloc.size());
   if(step == 0) {
-    return itemDbRoot();
+    return hierarchroot;
   } else {
     const HierarchyNode &nd = getStepNode(step - 1, player);
     CHECK(curloc[step - 1] >= 0 && curloc[step - 1] < nd.branches.size());
@@ -492,7 +492,7 @@ void Shop::ai(Ai *ais, const Player *player) const {
 
 
 void Shop::doTableRender(const Player *player) const {
-  renderNode(itemDbRoot(), 0, player);
+  renderNode(hierarchroot, 0, player);
 };
 
 void Shop::renderToScreen(const Player *player) const {
@@ -542,4 +542,6 @@ void Shop::init(bool in_miniature) {
   
   miniature = in_miniature;
   slay = ShopLayout(miniature);
+  
+  hierarchroot = itemDbRoot();
 }

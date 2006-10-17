@@ -1,5 +1,4 @@
 ---- Major work path
-- Fix lots of redundant code in itemdb.cpp
 - Gradual shop spawning
   - Remove bombardment from 2 player, make it cheaper for 3 and 4
 - Pull glory explody into its own deploy?
