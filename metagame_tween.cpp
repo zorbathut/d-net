@@ -1305,6 +1305,20 @@ void recursiveCullShopHierarchy(HierarchyNode &node, int playercount, Money star
       i--;
     } else {
       recursiveCullShopHierarchy(node.branches[i], playercount, startingCash);
+      
+      // If we have tanks, bombardment, or glory devices, and there's only one item left, it's the default item.
+      if(node.branches[i].type == HierarchyNode::HNT_CATEGORY && (node.branches[i].cat_restrictiontype == HierarchyNode::HNT_BOMBARDMENT || node.branches[i].cat_restrictiontype == HierarchyNode::HNT_GLORY || node.branches[i].cat_restrictiontype == HierarchyNode::HNT_TANK)) {
+        CHECK(node.branches[i].branches.size() > 0);
+        if(node.branches[i].branches.size() == 1) {
+          node.branches.erase(node.branches.begin() + i);
+          i--;
+        }
+      } else if(node.branches[i].type == HierarchyNode::HNT_CATEGORY && node.branches[i].cat_restrictiontype == HierarchyNode::HNT_UPGRADE) {
+        if(node.branches[i].branches.size() == 0) {
+          node.branches.erase(node.branches.begin() + i);
+          i--;
+        }
+      }
     }
   }
 }
