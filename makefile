@@ -21,6 +21,9 @@ basicrun: d-net.exe
 	d-net.exe --nofullscreen --writeTarget=
 
 run: d-net.exe
+	d-net.exe --nofullscreen --debugitems --startingCash=100000 --debugControllers=2 --factionMode=0 --nullControllers=11 --writeTarget= --auto_newgame --nocullShopTree
+
+three: d-net.exe
 	d-net.exe --nofullscreen --debugitems --startingCash=100000 --debugControllers=3 --factionMode=0 --nullControllers=11 --writeTarget= --auto_newgame --nocullShopTree
 
 ai: d-net.exe

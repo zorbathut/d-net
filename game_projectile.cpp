@@ -115,7 +115,7 @@ Coord2 Projectile::movement() const {
   } else if(projtype.motion() == PM_MISSILE) {
     return missile_accel() + missile_backdrop() + missile_sidedrop();
   } else if(projtype.motion() == PM_AIRBRAKE) {
-    return Coord2(makeAngle(d) * airbrake_velocity);
+    return Coord2(makeAngle(d) * airbrake_velocity / FPS);
   } else if(projtype.motion() == PM_MINE) {
     return Coord2(0, 0);
   } else {
@@ -129,7 +129,7 @@ Coord2 Projectile::nexttail() const {
   } else if(projtype.motion() == PM_MISSILE) {
     return Coord2(makeAngle(d) * -projtype.length());
   } else if(projtype.motion() == PM_AIRBRAKE) {
-    return Coord2(makeAngle(d) * -(airbrake_velocity + 2));
+    return Coord2(makeAngle(d) * -(airbrake_velocity / FPS + 2));
   } else if(projtype.motion() == PM_MINE) {
     return Coord2(0, 0);
   } else {
