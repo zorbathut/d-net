@@ -13,6 +13,7 @@
   - This just takes some work - do this once I'm dealing with a lot of ranges again
 - Cached shop demo stats
   - This is problematic because of all the various adjustments that can be on weapons
+    - Record warhead impacts, replay?
 - Make bombardment cheaper for 3 and 4 players
   - This is tough because of weird situations involving people buying/selling equipment before everyone's joined, after people leave, etc
 - GameAccessors class

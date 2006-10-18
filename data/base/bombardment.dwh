@@ -26,7 +26,7 @@ bombardment {
 
 text {
   name=text.bombardment.bomb
-  data=Improved warheads for the stock bomb launching system, these do significantly more damage in a larger blast radius. Be feared even after death.
+  data=Improved warheads for the stock bomb launching system, these do significantly more damage in a larger blast radius. Also included are upgraded locking and reloading equipment. Be feared even after death.
 }
 
 warhead {
@@ -38,12 +38,12 @@ warhead {
 
 bombardment {
   name=ROOT.Bombardment.Bomb
-  cost=1500
+  cost=2500
   
   warhead=warhead.bombardment.bomb
   
-  lockdelay=2
-  unlockdelay=1
+  lockdelay=1.5
+  unlockdelay=0.5
   
   text=text.bombardment.bomb
 }
