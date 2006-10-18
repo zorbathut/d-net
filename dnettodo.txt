@@ -1,4 +1,6 @@
 ---- Major work path
+- Glory devices are broken (I think it's a problem with AIRBRAKE)
+- Hiding bombardment and glory categories
 - Pull glory explody into its own deploy
 - Next-gen weapons
 - Training

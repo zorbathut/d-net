@@ -1201,7 +1201,7 @@ PersistentData::PersistentData(int playercount, int in_roundsbetweenshop) {
   
   shopcycles = 0;
   
-  CHECK(FLAGS_debugControllers >= 0 && FLAGS_debugControllers <= 2);
+  CHECK(FLAGS_debugControllers >= 0 && FLAGS_debugControllers <= 3);
   CHECK(factions.size() >= FLAGS_debugControllers);
   
   CHECK(ARRAY_SIZE(slot) == 4);
@@ -1262,6 +1262,29 @@ PersistentData::PersistentData(int playercount, int in_roundsbetweenshop) {
     pms[cdbc].axes_invert[1] = false;
     pms[cdbc].setting_axistype = KSAX_ABSOLUTE;
     pms[cdbc].setting_old_axistype = KSAX_ABSOLUTE;
+    playerid[cdbc] = playerdata.size();
+    playerdata.push_back(Player(pms[cdbc].faction->faction, 0));
+    cdbc++;
+  }
+  if(FLAGS_debugControllers >= 3) {
+    CHECK(pms.size() >= 3);
+    pms[cdbc].faction = &factions[3];
+    factions[3].taken = true;
+    pms[cdbc].settingmode = SETTING_READY;
+    pms[cdbc].choicemode = CHOICE_IDLE;
+    pms[cdbc].buttons[BUTTON_FIRE1] = 4;
+    pms[cdbc].buttons[BUTTON_FIRE2] = 5;
+    pms[cdbc].buttons[BUTTON_SWITCH1] = 6;
+    pms[cdbc].buttons[BUTTON_SWITCH2] = 7;
+    pms[cdbc].buttons[BUTTON_ACCEPT] = 2;
+    pms[cdbc].buttons[BUTTON_CANCEL] = 1;
+    CHECK(pms[cdbc].buttons.size() == 6);
+    pms[cdbc].axes[0] = 1;
+    pms[cdbc].axes[1] = 2;
+    pms[cdbc].axes_invert[0] = false;
+    pms[cdbc].axes_invert[1] = false;
+    pms[cdbc].setting_axistype = KSAX_TANK;
+    pms[cdbc].setting_old_axistype = KSAX_TANK;
     playerid[cdbc] = playerdata.size();
     playerdata.push_back(Player(pms[cdbc].faction->faction, 0));
     cdbc++;
