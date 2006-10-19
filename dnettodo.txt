@@ -1,4 +1,5 @@
 ---- Major work path
+- Privatize tank
 - Pull glory explody into its own deploy
 - Next-gen weapons
 - Training
@@ -54,6 +55,4 @@
 http://www.itchstudios.com/psg/ - Dafred's artist
 
 ---
-Abilities
-
-Every faction is made up of up to 5 modifiers, and we just store those. Reasonable? Absolutely!
+Deploy/launch

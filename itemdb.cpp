@@ -476,7 +476,7 @@ void parseLauncher(kvData *chunk) {
   
   titem->projectile = parseSubclass(chunk->consume("projectile"), projclasses);
   titem->deploy = parseSubclass(chunk->consume("deploy"), deployclasses);
-  titem->stats = parseSubclass(chunk->consume("stats"), statsclasses);
+  titem->stats = parseOptionalSubclass(chunk, "stats", statsclasses);
 
   titem->text = parseOptionalSubclass(chunk, "text", text);
   
@@ -540,6 +540,7 @@ void parseWeapon(kvData *chunk) {
   titem->firerate = atof(chunk->consume("firerate").c_str());
   
   titem->launcher = parseSubclass(chunk->consume("launcher"), launcherclasses);
+  CHECK(titem->launcher->stats);
 }
 
 void parseUpgrade(kvData *chunk) {
@@ -666,7 +667,7 @@ void parseGlory(kvData *chunk) {
   
   titem->projectile = parseSubclass(chunk->consume("projectile"), projclasses);
   titem->deploy = parseSubclass(chunk->consume("deploy"), deployclasses);
-  titem->core = parseSubclass(chunk->consume("core"), warheadclasses);
+  titem->launcher = parseSubclass(chunk->consume("launcher"), launcherclasses);
 
   titem->minsplits = atoi(chunk->consume("minsplits").c_str());
   titem->maxsplits = atoi(chunk->consume("maxsplits").c_str());

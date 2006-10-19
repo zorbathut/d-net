@@ -125,12 +125,12 @@ int IDBGloryAdjust::maxsplitsize() const { return idb->maxsplitsize; };
 
 int IDBGloryAdjust::shotspersplit() const { return idb->shotspersplit; };
 IDBProjectileAdjust IDBGloryAdjust::projectile() const { return IDBProjectileAdjust(idb->projectile, adjust); };
-IDBWarheadAdjust IDBGloryAdjust::core() const { return IDBWarheadAdjust(idb->core, adjust); };
+IDBLauncherAdjust IDBGloryAdjust::launcher() const { return IDBLauncherAdjust(idb->launcher, adjust); };
 
 Money IDBGloryAdjust::cost() const { return idb->base_cost; };
 Money IDBGloryAdjust::sellcost() const { return cost() * adjust.recyclevalue(); };
 
-float IDBGloryAdjust::stats_averageDamage() const { return (minsplits() + maxsplits()) / 2.0 * shotspersplit() * projectile().stats_damagePerShot() + core().stats_damagePerShot(); }
+float IDBGloryAdjust::stats_averageDamage() const { return (minsplits() + maxsplits()) / 2.0 * shotspersplit() * projectile().stats_damagePerShot() + launcher().stats_damagePerShot(); }
 
 IDBGloryAdjust::IDBGloryAdjust(const IDBGlory *in_idb, const IDBAdjustment &in_adjust) { idb = in_idb; adjust = in_adjust; };
 

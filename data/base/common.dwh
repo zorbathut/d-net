@@ -12,3 +12,7 @@ deploy {
   name=deploy.minepath
   type=minepath
 }
+
+stats {
+  name=stats.null
+}

@@ -29,6 +29,25 @@ public:
   GameImpactContext(vector<Tank> *players, vector<smart_ptr<GfxEffects> > *effects, Gamemap *gamemap);
 };
 
+class LauncherLocation {
+  const Tank *tank_int; // if null, not tank
+  
+  Coord2 loc_int;
+  float d_int;
+public:
+  
+  bool isTank() const;
+
+  const Tank &tank() const;
+
+  Coord2 loc() const;
+  float d() const;
+
+  LauncherLocation(const Tank *tank);
+};
+
+class ProjectilePack;
+void launchProjectile(const IDBLauncherAdjust &launcher, const LauncherLocation &location, ProjectilePack *projpack, int owner, const GameImpactContext &gic);
 void detonateWarhead(const IDBWarheadAdjust &warhead, Coord2 pos, Tank *impact, Tank *owner, const GameImpactContext &gic, float damagecredit, bool killcredit);
 
 #endif

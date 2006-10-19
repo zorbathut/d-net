@@ -52,7 +52,8 @@ public:
   const string *text;
 };
 
-enum { DT_FORWARD, DT_CENTROID, DT_MINEPATH, DT_LAST };
+// Normal specifies "Forward" for tanks, or "Centroid" on cases where there is no tank
+enum { DT_NORMAL, DT_FORWARD, DT_CENTROID, DT_MINEPATH, DT_LAST };
 
 struct IDBDeploy {
 public:
@@ -74,7 +75,7 @@ public:
   float wallremovalchance;
 };
 
-enum {PM_NORMAL, PM_MISSILE, PM_AIRBRAKE, PM_MINE, PM_INSTANT, PM_LAST};
+enum { PM_NORMAL, PM_MISSILE, PM_AIRBRAKE, PM_MINE, PM_INSTANT, PM_LAST };
 
 struct IDBProjectile {
 public:
@@ -131,7 +132,7 @@ public:
 
   const IDBDeploy *deploy;
   const IDBProjectile *projectile;
-  const IDBWarhead *core;
+  const IDBLauncher *launcher;
 
   int shotspersplit;
 
@@ -289,7 +290,7 @@ public:
 
   int shotspersplit() const;
   IDBProjectileAdjust projectile() const;
-  IDBWarheadAdjust core() const;
+  IDBLauncherAdjust launcher() const;
   
   Money cost() const;
   Money sellcost() const;

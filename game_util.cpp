@@ -29,6 +29,29 @@ vector<pair<float, Tank *> > GameImpactContext::getAdjacency(const Coord2 &cente
   return rv;
 }
 
+bool LauncherLocation::isTank() const {
+  return tank_int;
+}
+
+const Tank &LauncherLocation::tank() const {
+  CHECK(tank_int);
+  return *tank_int;
+}
+
+Coord2 LauncherLocation::loc() const {
+  CHECK(!tank_int);
+  return loc_int;
+}
+float LauncherLocation::d() const {
+  CHECK(!tank_int);
+  return d_int;
+}
+
+LauncherLocation::LauncherLocation(const Tank *tank) {
+  CHECK(tank);
+  tank_int = tank;
+}
+
 void dealDamage(float dmg, Tank *target, Tank *owner, float damagecredit, bool killcredit) {
   if(target->team == owner->team)
     return; // friendly fire exception
@@ -61,6 +84,47 @@ void detonateWarhead(const IDBWarheadAdjust &warhead, Coord2 pos, Tank *impact, 
 
 };
 
+void launchProjectile(const IDBLauncherAdjust &launcher, const LauncherLocation &location, ProjectilePack *projpack, int owner, const GameImpactContext &gic) {
+  Coord2 startpos;
+  float startdir;
+  
+  int type = launcher.deploy().type();
+  if(type == DT_NORMAL) {
+    if(location.isTank())
+      type = DT_FORWARD;
+    else
+      type = DT_CENTROID;
+  }
+  
+  if(type == DT_FORWARD) {
+    CHECK(location.isTank());
+    startpos = location.tank().getFiringPoint();
+    startdir = location.tank().d + launcher.deploy().anglestddev() * gaussian();
+  } else if(type == DT_CENTROID) {
+    if(location.isTank()) {
+      startpos = location.tank().pos;
+      startdir = location.tank().d;
+    } else {
+      startpos = location.loc();
+      startdir = location.d();
+    }
+  } else if(type == DT_MINEPATH) {
+    CHECK(location.isTank());
+    startpos = location.tank().getMinePoint();
+    startdir = location.tank().d;
+  } else {
+    CHECK(0);
+  }
+
+  {
+    Projectile proj(startpos, startdir, launcher.projectile(), owner);
+    if(launcher.projectile().motion() == PM_INSTANT) {
+      proj.impact(startpos, NULL, gic);
+    } else {
+      projpack->add(proj);
+    }
+  }
+}
 Team::Team() {
   weapons_enabled = true;
   color = Color(0, 0, 0);

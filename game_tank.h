@@ -40,6 +40,8 @@ public:
   void addKill();
   
   void addAccumulatedScores(Player *player);
+  
+  LauncherLocation launchData() const;
 
   Tank();
 

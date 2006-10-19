@@ -328,29 +328,7 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
           // Blam!
           IDBWeaponAdjust weapon = players[i]->getWeapon(curfire);
           
-          Coord2 startpos;
-          float startdir;
-          if(weapon.launcher().deploy().type() == DT_FORWARD) {
-            startpos = tanks[i].getFiringPoint();
-            startdir = tanks[i].d;
-          } else if(weapon.launcher().deploy().type() == DT_CENTROID) {
-            startpos = tanks[i].pos;
-            startdir = tanks[i].d;
-          } else if(weapon.launcher().deploy().type() == DT_MINEPATH) {
-            startpos = tanks[i].getMinePoint();
-            startdir = tanks[i].d;
-          } else {
-            CHECK(0);
-          }
-          
-          {
-            Projectile proj(startpos, startdir + weapon.launcher().deploy().anglestddev() * gaussian(), weapon.launcher().projectile(), i);
-            if(weapon.launcher().projectile().motion() == PM_INSTANT) {
-              proj.impact(startpos, NULL, gic);
-            } else {
-              projectiles[i].add(proj);
-            }
-          }
+          launchProjectile(weapon.launcher(), tanks[i].launchData(), &projectiles[i], i, gic);
           
           tanks[i].weaponCooldown = weapon.framesForCooldown();
           // hack here to detect weapon out-of-ammo
