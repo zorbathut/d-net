@@ -1,5 +1,5 @@
 ---- Major work path
-- Pull glory explody into its own deploy
+- Airbrake should impact at the end of its lifetime
 - Next-gen weapons
 - Training
 - Implants

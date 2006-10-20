@@ -21,6 +21,14 @@ projectile {
 
 deploy {
   name=deploy.glory.basic.core
+  type=explode
+  
+  exp_minsplits=2
+  exp_maxsplits=4
+  exp_minsplitsize=1
+  exp_maxsplitsize=5
+  
+  exp_shotspersplit=4
   
   anglestddev=0.1
   
@@ -50,13 +58,6 @@ glory {
   core=deploy.glory.basic.core
   blast=deploy.glory.basic.blast
   
-  minsplits=2
-  maxsplits=4
-  minsplitsize=1
-  maxsplitsize=5
-  
-  shotspersplit=4
-  
   text=text.glory.basic
 }
 
@@ -76,6 +77,14 @@ projectile {
 
 deploy {
   name=deploy.glory.shaped.core
+  type=explode
+  
+  exp_minsplits=3
+  exp_maxsplits=5
+  exp_minsplitsize=1
+  exp_maxsplitsize=5
+  
+  exp_shotspersplit=8
   
   anglestddev=0.1
   
@@ -103,13 +112,6 @@ glory {
   
   core=deploy.glory.shaped.core
   blast=deploy.glory.shaped.blast
-  
-  minsplits=3
-  maxsplits=5
-  minsplitsize=1
-  maxsplitsize=5
-  
-  shotspersplit=8
   
   text=text.glory.shaped
 }

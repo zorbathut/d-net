@@ -11,6 +11,14 @@ using namespace std;
  
 int IDBDeployAdjust::type() const { return idb->type; };
 
+int IDBDeployAdjust::exp_minsplits() const { return idb->exp_minsplits; };
+int IDBDeployAdjust::exp_maxsplits() const { return idb->exp_maxsplits; };
+
+int IDBDeployAdjust::exp_minsplitsize() const { return idb->exp_minsplitsize; };
+int IDBDeployAdjust::exp_maxsplitsize() const { return idb->exp_maxsplitsize; };
+
+int IDBDeployAdjust::exp_shotspersplit() const { return idb->exp_shotspersplit; };
+
 float IDBDeployAdjust::anglestddev() const { return idb->anglestddev; };
 
 vector<IDBDeployAdjust> IDBDeployAdjust::chain_deploy() const {
@@ -33,6 +41,15 @@ vector<IDBWarheadAdjust> IDBDeployAdjust::chain_warhead() const {
 }
 
 float IDBDeployAdjust::stats_damagePerShot() const {
+  float mult;
+  if(idb->type == DT_NORMAL || idb->type == DT_FORWARD || idb->type == DT_CENTROID || idb->type == DT_MINEPATH) {
+    mult = 1.0;
+  } else if(idb->type == DT_EXPLODE) {
+    mult = (exp_minsplits() + exp_maxsplits()) / 2.0 * exp_shotspersplit();
+  } else {
+    CHECK(0);
+  }
+
   float val = 0;
   
   vector<IDBDeployAdjust> idbda = chain_deploy();
@@ -47,7 +64,7 @@ float IDBDeployAdjust::stats_damagePerShot() const {
   for(int i = 0; i < idbwa.size(); i++)
     val += idbwa[i].stats_damagePerShot();
   
-  return val;
+  return val * mult;
 }
 
 IDBDeployAdjust::IDBDeployAdjust(const IDBDeploy *in_idb, const IDBAdjustment &in_adjust) { idb = in_idb; adjust = in_adjust; };
@@ -162,20 +179,15 @@ IDBWeaponAdjust::IDBWeaponAdjust(const IDBWeapon *in_idb, const IDBAdjustment &i
  * IDBGloryAdjust
  */
 
-int IDBGloryAdjust::minsplits() const { return idb->minsplits; };
-int IDBGloryAdjust::maxsplits() const { return idb->maxsplits; };
-
-int IDBGloryAdjust::minsplitsize() const { return idb->minsplitsize; };
-int IDBGloryAdjust::maxsplitsize() const { return idb->maxsplitsize; };
-
-int IDBGloryAdjust::shotspersplit() const { return idb->shotspersplit; };
 IDBDeployAdjust IDBGloryAdjust::blast() const { return IDBDeployAdjust(idb->blast, adjust); };
 IDBDeployAdjust IDBGloryAdjust::core() const { return IDBDeployAdjust(idb->core, adjust); };
 
 Money IDBGloryAdjust::cost() const { return idb->base_cost; };
 Money IDBGloryAdjust::sellcost() const { return cost() * adjust.recyclevalue(); };
 
-float IDBGloryAdjust::stats_averageDamage() const { return (minsplits() + maxsplits()) / 2.0 * shotspersplit() * core().stats_damagePerShot() + blast().stats_damagePerShot(); }
+float IDBGloryAdjust::stats_averageDamage() const {
+  return core().stats_damagePerShot() + blast().stats_damagePerShot();
+}
 
 IDBGloryAdjust::IDBGloryAdjust(const IDBGlory *in_idb, const IDBAdjustment &in_adjust) { idb = in_idb; adjust = in_adjust; };
 

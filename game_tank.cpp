@@ -296,6 +296,7 @@ bool Tank::takeDamage(float damage) {
 };
 
 void Tank::genEffects(const GameImpactContext &gic, ProjectilePack *projectiles, const Player *player, int id) {
+  StackString sst("genEffects");
   CHECK(gic.players[id] == this);
   
   if(spawnShards) {
@@ -309,22 +310,8 @@ void Tank::genEffects(const GameImpactContext &gic, ProjectilePack *projectiles,
     const IDBGloryAdjust &glory = player->getGlory();
     
     vector<float> ang;
-    {
-      int ct = int(frand() * (glory.maxsplits() - glory.minsplits() + 1)) + glory.minsplits();
-      CHECK(ct <= glory.maxsplits() && ct >= glory.minsplits());
-      for(int i = 0; i < ct; i++)
-        ang.push_back(frand() * (glory.maxsplitsize() - glory.minsplitsize()) + glory.minsplitsize());
-      for(int i = 1; i < ang.size(); i++)
-        ang[i] += ang[i - 1];
-      float angtot = ang.back();
-      float shift = frand() * PI * 2;
-      for(int i = 0; i < ang.size(); i++) {
-        ang[i] *= PI * 2 / angtot;
-        ang[i] += shift;
-        //dprintf("%f\n", ang[i]);
-      }
-      //dprintf("---");
-    }
+    deployProjectile(glory.core(), launchData(), projectiles, id, gic, &ang);
+    CHECK(ang.size() >= 2);
     
     vector<vector<Coord2> > chunks;
     for(int i = 0; i < ang.size(); i++) {
@@ -371,10 +358,6 @@ void Tank::genEffects(const GameImpactContext &gic, ProjectilePack *projectiles,
       float path_ang_vel = gaussian() / 20;
       gic.effects->push_back(GfxPath(vf2, (centr + subcentroid).toFloat(), path_pos_vel * 60, -path_pos_vel * 60, 0, path_ang_vel * 60, -path_ang_vel * 60, 0.5, player->getFaction()->color));
     }
-    
-    for(int i = 0; i < ang.size(); i++)
-      for(int j = 0; j < glory.shotspersplit(); j++)
-        deployProjectile(glory.core(), DeployLocation(centr, ang[i] + gaussian_scaled(2) / 8), projectiles, id, gic);
     
     deployProjectile(glory.blast(), launchData(), projectiles, id, gic);
     

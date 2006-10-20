@@ -48,7 +48,7 @@ public:
 };
 
 class ProjectilePack;
-void deployProjectile(const IDBDeployAdjust &deploy, const DeployLocation &location, ProjectilePack *projpack, int owner, const GameImpactContext &gic);
+void deployProjectile(const IDBDeployAdjust &deploy, const DeployLocation &location, ProjectilePack *projpack, int owner, const GameImpactContext &gic, vector<float> *ang = NULL);
 void detonateWarhead(const IDBWarheadAdjust &warhead, Coord2 pos, Tank *impact, Tank *owner, const GameImpactContext &gic, float damagecredit, bool killcredit);
 
 #endif

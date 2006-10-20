@@ -83,13 +83,20 @@ public:
 };
 
 // Normal specifies "Forward" for tanks, or "Centroid" on cases where there is no tank
-enum { DT_NORMAL, DT_FORWARD, DT_CENTROID, DT_MINEPATH, DT_LAST };
+enum { DT_NORMAL, DT_FORWARD, DT_CENTROID, DT_MINEPATH, DT_EXPLODE, DT_LAST };
 
 struct IDBDeploy {
 public:
   int type;
 
   float anglestddev;
+
+  int exp_minsplits;
+  int exp_maxsplits;
+  int exp_minsplitsize;
+  int exp_maxsplitsize;
+
+  int exp_shotspersplit;
 
   vector<const IDBDeploy *> chain_deploy;
   vector<const IDBProjectile *> chain_projectile;
@@ -128,15 +135,8 @@ public:
 
 struct IDBGlory {
 public:
-  int minsplits;
-  int maxsplits;
-  int minsplitsize;
-  int maxsplitsize;
-
   const IDBDeploy *blast;
   const IDBDeploy *core;
-
-  int shotspersplit;
 
   Money base_cost;
 
@@ -238,6 +238,14 @@ struct IDBDeployAdjust {
 public:
   int type() const;
 
+  int exp_minsplits() const;
+  int exp_maxsplits() const;
+
+  int exp_minsplitsize() const;
+  int exp_maxsplitsize() const;
+
+  int exp_shotspersplit() const;
+
   float anglestddev() const;
   
   vector<IDBDeployAdjust> chain_deploy() const;
@@ -287,14 +295,6 @@ struct IDBGloryAdjust {
   IDBAdjustment adjust;
 
 public:
-  int minsplits() const;
-  int maxsplits() const;
-
-  int minsplitsize() const;
-  int maxsplitsize() const;
-
-  int shotspersplit() const;
-
   IDBDeployAdjust blast() const;
   IDBDeployAdjust core() const;
   

@@ -640,6 +640,13 @@ void parseDeploy(kvData *chunk) {
     titem->type = DT_CENTROID;
   } else if(type == "minepath") {
     titem->type = DT_MINEPATH;
+  } else if(type == "explode") {
+    titem->type = DT_EXPLODE;
+    titem->exp_minsplits = atoi(chunk->consume("exp_minsplits").c_str());
+    titem->exp_maxsplits = atoi(chunk->consume("exp_maxsplits").c_str());
+    titem->exp_minsplitsize = atoi(chunk->consume("exp_minsplitsize").c_str());
+    titem->exp_maxsplitsize = atoi(chunk->consume("exp_maxsplitsize").c_str());
+    titem->exp_shotspersplit = atoi(chunk->consume("exp_shotspersplit").c_str());
   } else {
     CHECK(0);
   }
@@ -649,6 +656,8 @@ void parseDeploy(kvData *chunk) {
   titem->chain_deploy = parseSubclassSet(chunk, "deploy", deployclasses);
   titem->chain_projectile = parseSubclassSet(chunk, "projectile", projectileclasses);
   titem->chain_warhead = parseSubclassSet(chunk, "warhead", warheadclasses);
+  for(int i = 0; i < titem->chain_deploy.size(); i++)
+    CHECK(titem->chain_deploy[i] != titem);
   
   CHECK(titem->chain_deploy.size() || titem->chain_projectile.size() || titem->chain_warhead.size());
 }
@@ -691,12 +700,6 @@ void parseGlory(kvData *chunk) {
   
   titem->blast = parseSubclass(chunk->consume("blast"), deployclasses);
   titem->core = parseSubclass(chunk->consume("core"), deployclasses);
-
-  titem->minsplits = atoi(chunk->consume("minsplits").c_str());
-  titem->maxsplits = atoi(chunk->consume("maxsplits").c_str());
-  titem->minsplitsize = atoi(chunk->consume("minsplitsize").c_str());
-  titem->maxsplitsize = atoi(chunk->consume("maxsplitsize").c_str());
-  titem->shotspersplit = atoi(chunk->consume("shotspersplit").c_str());
   
   if(chunk->kv.count("default") && atoi(chunk->consume("default").c_str())) {
     CHECK(!defglory);
