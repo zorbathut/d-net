@@ -28,6 +28,13 @@ projectile {
   warhead=warhead.apautocannon
 }
 
+deploy {
+  name=deploy.apautocannon
+  type=forward
+  anglestddev=0.03
+  projectile=projectile.apautocannon
+}
+
 stats {
   name=stats.apautocannon
   
@@ -37,8 +44,7 @@ stats {
 launcher {
   name=launcher.apautocannon
   
-  deploy=deploy.autocannon
-  projectile=projectile.apautocannon
+  deploy=deploy.apautocannon
   
   stats=stats.apautocannon
   

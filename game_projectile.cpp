@@ -96,7 +96,9 @@ void Projectile::impact(Coord2 pos, Tank *target, const GameImpactContext &gic) 
   if(!live)
     return;
   
-  detonateWarhead(projtype.warhead(), pos, target, gic.players[owner], gic, 1.0, true);
+  vector<IDBWarheadAdjust> idw = projtype.chain_warhead();
+  for(int i = 0; i < idw.size(); i++)
+    detonateWarhead(idw[i], pos, target, gic.players[owner], gic, 1.0, true);
 
   live = false;
 };
@@ -184,7 +186,6 @@ Projectile::Projectile(const Coord2 &in_pos, float in_d, const IDBProjectileAdju
     airbrake_velocity = (gaussian_scaled(2) / 4 + 1) * projtype.velocity();
   } else if(projtype.motion() == PM_MINE) {
     mine_facing = frand() * 2 * PI;
-  } else if(projtype.motion() == PM_INSTANT) {
   } else {
     CHECK(0);
   }

@@ -52,16 +52,6 @@ public:
   const string *text;
 };
 
-// Normal specifies "Forward" for tanks, or "Centroid" on cases where there is no tank
-enum { DT_NORMAL, DT_FORWARD, DT_CENTROID, DT_MINEPATH, DT_LAST };
-
-struct IDBDeploy {
-public:
-  int type;
-
-  float anglestddev;
-};
-
 struct IDBWarhead {
 public:
   float impactdamage[IDBAdjustment::DAMAGE_LAST];
@@ -75,7 +65,7 @@ public:
   float wallremovalchance;
 };
 
-enum { PM_NORMAL, PM_MISSILE, PM_AIRBRAKE, PM_MINE, PM_INSTANT, PM_LAST };
+enum { PM_NORMAL, PM_MISSILE, PM_AIRBRAKE, PM_MINE, PM_LAST };
 
 struct IDBProjectile {
 public:
@@ -89,7 +79,21 @@ public:
 
   float halflife;
 
-  const IDBWarhead *warhead;
+  vector<const IDBWarhead *> chain_warhead;
+};
+
+// Normal specifies "Forward" for tanks, or "Centroid" on cases where there is no tank
+enum { DT_NORMAL, DT_FORWARD, DT_CENTROID, DT_MINEPATH, DT_LAST };
+
+struct IDBDeploy {
+public:
+  int type;
+
+  float anglestddev;
+
+  vector<const IDBDeploy *> chain_deploy;
+  vector<const IDBProjectile *> chain_projectile;
+  vector<const IDBWarhead *> chain_warhead;
 };
 
 struct IDBStats {
@@ -102,7 +106,6 @@ enum { WDM_FIRINGRANGE, WDM_MINES, WDM_LAST };
 enum { WFRD_NORMAL, WFRD_MELEE };
 struct IDBLauncher {
   const IDBDeploy *deploy;
-  const IDBProjectile *projectile;
 
   int demomode;
   int firingrange_distance;
@@ -130,9 +133,8 @@ public:
   int minsplitsize;
   int maxsplitsize;
 
-  const IDBDeploy *deploy;
-  const IDBProjectile *projectile;
-  const IDBLauncher *launcher;
+  const IDBDeploy *blast;
+  const IDBDeploy *core;
 
   int shotspersplit;
 
@@ -185,20 +187,6 @@ public:
  * Adjusted data items
  */
 
-struct IDBDeployAdjust {
-  const IDBDeploy *idb;
-  IDBAdjustment adjust;
-  
-public:
-  int type() const;
-
-  float anglestddev() const;
-  
-  float stats_damagePerShotMultiplier() const;
-
-  IDBDeployAdjust(const IDBDeploy *in_idb, const IDBAdjustment &in_adjust);
-};
-
 struct IDBWarheadAdjust {
   const IDBWarhead *idb;
   IDBAdjustment adjust;
@@ -231,7 +219,7 @@ public:
   float length() const;
   float radius_physical() const;
 
-  IDBWarheadAdjust warhead() const;
+  vector<IDBWarheadAdjust> chain_warhead() const;
 
   Color color() const;
   float thickness_visual() const;
@@ -243,13 +231,30 @@ public:
   IDBProjectileAdjust(const IDBProjectile *in_idb, const IDBAdjustment &in_adjust);
 };
 
+struct IDBDeployAdjust {
+  const IDBDeploy *idb;
+  IDBAdjustment adjust;
+  
+public:
+  int type() const;
+
+  float anglestddev() const;
+  
+  vector<IDBDeployAdjust> chain_deploy() const;
+  vector<IDBProjectileAdjust> chain_projectile() const;
+  vector<IDBWarheadAdjust> chain_warhead() const;
+
+  float stats_damagePerShot() const;
+
+  IDBDeployAdjust(const IDBDeploy *in_idb, const IDBAdjustment &in_adjust);
+};
+
 struct IDBLauncherAdjust {
   const IDBLauncher *idb;
   IDBAdjustment adjust;
 
 public:
   IDBDeployAdjust deploy() const;
-  IDBProjectileAdjust projectile() const;
   
   float stats_damagePerShot() const;
 
@@ -289,8 +294,9 @@ public:
   int maxsplitsize() const;
 
   int shotspersplit() const;
-  IDBProjectileAdjust projectile() const;
-  IDBLauncherAdjust launcher() const;
+
+  IDBDeployAdjust blast() const;
+  IDBDeployAdjust core() const;
   
   Money cost() const;
   Money sellcost() const;

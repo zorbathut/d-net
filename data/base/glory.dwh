@@ -1,11 +1,6 @@
 
-deploy {
-  name=deploy.glory
-  anglestddev=0.1
-}
-
 warhead {
-  name=warhead.glory.projectile
+  name=warhead.glory.core
   impactdamage=0.75 explosive
   wallremovalradius=1
 }
@@ -16,32 +11,35 @@ text {
 }
 
 projectile {
-  name=projectile.glory.basic
+  name=projectile.glory.basic.core
   thickness_visual=0.6
   velocity=40
   color=1.0, 0.8, 0.3
   motion=airbrake
-  warhead=warhead.glory.projectile
+  warhead=warhead.glory.core
+}
+
+deploy {
+  name=deploy.glory.basic.core
+  
+  anglestddev=0.1
+  
+  projectile=projectile.glory.basic.core
 }
 
 warhead {
-  name=warhead.glory.basic.core
+  name=warhead.glory.basic.blast
   radiusdamage=4.0 explosive
   radiusfalloff=6
   wallremovalradius=2
 }
 
-projectile {
-  name=projectile.glory.basic.core
-  motion=instant
-  warhead=warhead.glory.basic.core
-}
-
-launcher {
-  name=launcher.glory.basic.core
+deploy {
+  name=deploy.glory.basic.blast
   
-  deploy=deploy.centroid
-  projectile=projectile.glory.basic.core
+  type=centroid
+  
+  warhead=warhead.glory.basic.blast
 }
 
 glory {
@@ -49,9 +47,8 @@ glory {
   cost=0
   default=1
   
-  deploy=deploy.glory
-  projectile=projectile.glory.basic
-  launcher=launcher.glory.basic.core
+  core=deploy.glory.basic.core
+  blast=deploy.glory.basic.blast
   
   minsplits=2
   maxsplits=4
@@ -69,41 +66,43 @@ text {
 }
 
 projectile {
-  name=projectile.glory.shaped
+  name=projectile.glory.shaped.core
   thickness_visual=0.6
   velocity=80
   color=1.0, 0.8, 0.3
   motion=airbrake
-  warhead=warhead.glory.projectile
+  warhead=warhead.glory.core
+}
+
+deploy {
+  name=deploy.glory.shaped.core
+  
+  anglestddev=0.1
+  
+  projectile=projectile.glory.shaped.core
 }
 
 warhead {
-  name=warhead.glory.shaped.core
+  name=warhead.glory.shaped.blast
   radiusdamage=8.0 explosive
   radiusfalloff=12
   wallremovalradius=8
 }
 
-projectile {
-  name=projectile.glory.shaped.core
-  motion=instant
-  warhead=warhead.glory.shaped.core
-}
-
-launcher {
-  name=launcher.glory.shaped.core
+deploy {
+  name=deploy.glory.shaped.blast
   
-  deploy=deploy.centroid
-  projectile=projectile.glory.shaped.core
+  type=centroid
+  
+  warhead=warhead.glory.shaped.blast
 }
 
 glory {
   name=ROOT.Glory Devices.Shaped Charges
   cost=4000
   
-  deploy=deploy.glory
-  projectile=projectile.glory.shaped
-  launcher=launcher.glory.shaped.core
+  core=deploy.glory.shaped.core
+  blast=deploy.glory.shaped.blast
   
   minsplits=3
   maxsplits=5

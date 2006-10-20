@@ -17,9 +17,9 @@ warhead {
   radiuscolor_dim=018
 }
 
-projectile {
-  name=projectile.emp
-  motion=instant
+deploy {
+  name=deploy.emp
+  type=centroid
   warhead=warhead.emp
 }
 
@@ -32,8 +32,7 @@ stats {
 launcher {
   name=launcher.emp
   
-  deploy=deploy.centroid
-  projectile=projectile.emp
+  deploy=deploy.emp
 
   demo=firingrange
   firingrange_distance=melee

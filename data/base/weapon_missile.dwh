@@ -9,12 +9,6 @@ text {
   data=Explosives in a can. The missile is one of the most powerful low-tech systems developed and extremely popular for wholescale demolition. The rocket engine takes several seconds to reach full speed, making this weapon difficult to aim with.
 }
 
-deploy {
-  name=deploy.missile
-  type=forward
-  anglestddev=0.002
-}
-
 warhead {
   name=warhead.missile
   impactdamage=0.5 explosive
@@ -31,6 +25,13 @@ projectile {
   warhead=warhead.missile
 }
 
+deploy {
+  name=deploy.missile
+  type=forward
+  anglestddev=0.002
+  projectile=projectile.missile
+}
+
 stats {
   name=stats.missile
   
@@ -41,7 +42,6 @@ launcher {
   name=launcher.missile
   
   deploy=deploy.missile
-  projectile=projectile.missile
   
   stats=stats.missile
   

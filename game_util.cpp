@@ -29,27 +29,33 @@ vector<pair<float, Tank *> > GameImpactContext::getAdjacency(const Coord2 &cente
   return rv;
 }
 
-bool LauncherLocation::isTank() const {
+bool DeployLocation::isTank() const {
   return tank_int;
 }
 
-const Tank &LauncherLocation::tank() const {
+const Tank &DeployLocation::tank() const {
   CHECK(tank_int);
   return *tank_int;
 }
 
-Coord2 LauncherLocation::loc() const {
+Coord2 DeployLocation::pos() const {
   CHECK(!tank_int);
-  return loc_int;
+  return pos_int;
 }
-float LauncherLocation::d() const {
+float DeployLocation::d() const {
   CHECK(!tank_int);
   return d_int;
 }
 
-LauncherLocation::LauncherLocation(const Tank *tank) {
+DeployLocation::DeployLocation(const Tank *tank) {
   CHECK(tank);
   tank_int = tank;
+}
+
+DeployLocation::DeployLocation(Coord2 pos, float d) {
+  tank_int = NULL;
+  pos_int = pos;
+  d_int = d;
 }
 
 void dealDamage(float dmg, Tank *target, Tank *owner, float damagecredit, bool killcredit) {
@@ -84,11 +90,11 @@ void detonateWarhead(const IDBWarheadAdjust &warhead, Coord2 pos, Tank *impact, 
 
 };
 
-void launchProjectile(const IDBLauncherAdjust &launcher, const LauncherLocation &location, ProjectilePack *projpack, int owner, const GameImpactContext &gic) {
+void deployProjectile(const IDBDeployAdjust &deploy, const DeployLocation &location, ProjectilePack *projpack, int owner, const GameImpactContext &gic) {
   Coord2 startpos;
   float startdir;
   
-  int type = launcher.deploy().type();
+  int type = deploy.type();
   if(type == DT_NORMAL) {
     if(location.isTank())
       type = DT_FORWARD;
@@ -99,13 +105,13 @@ void launchProjectile(const IDBLauncherAdjust &launcher, const LauncherLocation 
   if(type == DT_FORWARD) {
     CHECK(location.isTank());
     startpos = location.tank().getFiringPoint();
-    startdir = location.tank().d + launcher.deploy().anglestddev() * gaussian();
+    startdir = location.tank().d;
   } else if(type == DT_CENTROID) {
     if(location.isTank()) {
       startpos = location.tank().pos;
       startdir = location.tank().d;
     } else {
-      startpos = location.loc();
+      startpos = location.pos();
       startdir = location.d();
     }
   } else if(type == DT_MINEPATH) {
@@ -115,14 +121,25 @@ void launchProjectile(const IDBLauncherAdjust &launcher, const LauncherLocation 
   } else {
     CHECK(0);
   }
-
+  
+  startdir += deploy.anglestddev() * gaussian();
+  
   {
-    Projectile proj(startpos, startdir, launcher.projectile(), owner);
-    if(launcher.projectile().motion() == PM_INSTANT) {
-      proj.impact(startpos, NULL, gic);
-    } else {
-      projpack->add(proj);
-    }
+    vector<IDBDeployAdjust> idd = deploy.chain_deploy();
+    for(int i = 0; i < idd.size(); i++)
+      deployProjectile(idd[i], DeployLocation(startpos, startdir), projpack, owner, gic);
+  }
+  
+  {
+    vector<IDBProjectileAdjust> idp = deploy.chain_projectile();
+    for(int i = 0; i < idp.size(); i++)
+      projpack->add(Projectile(startpos, startdir, idp[i], owner));
+  }
+  
+  {
+    vector<IDBWarheadAdjust> idw = deploy.chain_warhead();
+    for(int i = 0; i < idw.size(); i++)
+      detonateWarhead(idw[i], startpos, NULL, gic.players[owner], gic, 1.0, true);
   }
 }
 Team::Team() {

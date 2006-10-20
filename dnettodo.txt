@@ -1,6 +1,4 @@
 ---- Major work path
-- Privatize tank
-- deploy->warhead(s)/projectile(s), projectile->warhead(s), warhead->deploy(s)/projectile(s), launcher remains the same (holds deploy, stats, demo info - rename launcher to stats, rename stats to ?)
 - Pull glory explody into its own deploy
 - Next-gen weapons
 - Training

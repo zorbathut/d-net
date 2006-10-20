@@ -54,7 +54,7 @@ public:
   void addAccumulatedScores(Player *player);
   
   // Introspection
-  LauncherLocation launchData() const;
+  DeployLocation launchData() const;
   Color getColor() const;
   
   float getHealth() const;

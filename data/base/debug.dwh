@@ -1,9 +1,4 @@
 
-deploy {
-  name=deploy.debug
-  debug=1
-}
-
 hierarchy {
   name=ROOT.Weapons.Debug
   pack=100000
@@ -18,19 +13,18 @@ projectile {
   debug=1
 }
 
-stats {
-  name=stats.debug
-  
+deploy {
+  name=deploy.tracer
+  projectile=projectile.tracer
   debug=1
 }
 
 launcher {
   name=launcher.tracer
   
-  projectile=projectile.tracer
-  deploy=deploy.debug
+  deploy=deploy.tracer
   
-  stats=stats.debug
+  stats=stats.null
   
   debug=1
 }
@@ -52,12 +46,6 @@ warhead {
   debug=1
 }
 
-warhead {
-  name=warhead.megashredder
-  wallremovalradius=50
-  debug=1
-}
-
 projectile {
   name=projectile.minishredder
   velocity=600
@@ -66,33 +54,18 @@ projectile {
   debug=1
 }
 
-
-projectile {
-  name=projectile.megashredder
-  velocity=600
-  color=1.0, 0.3, 0.3
-  warhead=warhead.megashredder
+deploy {
+  name=deploy.minishredder
+  projectile=projectile.minishredder
   debug=1
 }
 
 launcher {
   name=launcher.minishredder
   
-  projectile=projectile.minishredder
-  deploy=deploy.debug
+  deploy=deploy.minishredder
   
-  stats=stats.debug
-  
-  debug=1
-}
-
-launcher {
-  name=launcher.megashredder
-  
-  projectile=projectile.megashredder
-  deploy=deploy.debug
-  
-  stats=stats.debug
+  stats=stats.null
   
   debug=1
 }
@@ -107,6 +80,36 @@ weapon {
   debug=1
 }
 
+warhead {
+  name=warhead.megashredder
+  wallremovalradius=50
+  debug=1
+}
+
+projectile {
+  name=projectile.megashredder
+  velocity=600
+  color=1.0, 0.3, 0.3
+  warhead=warhead.megashredder
+  debug=1
+}
+
+deploy {
+  name=deploy.megashredder
+  projectile=projectile.megashredder
+  debug=1
+}
+
+launcher {
+  name=launcher.megashredder
+  
+  deploy=deploy.megashredder
+  
+  stats=stats.null
+  
+  debug=1
+}
+
 weapon {
   name=ROOT.Weapons.Debug.Megashredder
   cost=1
@@ -117,23 +120,37 @@ weapon {
   debug=1
 }
 
+warhead {
+  name=warhead.minesplatterer
+  radiusdamage=4.0 explosive
+  radiusfalloff=6
+  wallremovalradius=2
+}
+
 projectile {
   name=projectile.minesplatterer
   motion=mine
   radius_physical=1
   halflife=1000000
   color=1.0, 1.0, 1.0
-  warhead=warhead.mine1
+  warhead=warhead.minesplatterer
+  debug=1
+}
+
+deploy {
+  name=deploy.minesplatterer
+  
+  projectile=projectile.minesplatterer
+  
   debug=1
 }
 
 launcher {
   name=launcher.minesplatterer
   
-  projectile=projectile.minesplatterer
-  deploy=deploy.debug
+  deploy=deploy.minesplatterer
   
-  stats=stats.debug
+  stats=stats.null
   
   debug=1
 }

@@ -9,12 +9,6 @@ text {
   data="Laser" is a misnomer. This family of weapons is a projected plasma containment system. Extremely accurate and fast-firing, the containment field disperses rapidly on impact, leading to unfortunately low damage.
 }
 
-deploy {
-  name=deploy.laser
-  type=forward
-  anglestddev=0.008
-}
-
 warhead {
   name=warhead.laser
   impactdamage=0.4 energy
@@ -28,6 +22,13 @@ projectile {
   warhead=warhead.laser
 }
 
+deploy {
+  name=deploy.laser
+  type=forward
+  anglestddev=0.008
+  projectile=projectile.laser
+}
+
 stats {
   name=stats.laser
   
@@ -38,7 +39,6 @@ launcher {
   name=launcher.laser
   
   deploy=deploy.laser
-  projectile=projectile.laser
   
   stats=stats.laser
   

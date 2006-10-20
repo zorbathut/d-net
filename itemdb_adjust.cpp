@@ -13,7 +13,42 @@ int IDBDeployAdjust::type() const { return idb->type; };
 
 float IDBDeployAdjust::anglestddev() const { return idb->anglestddev; };
 
-float IDBDeployAdjust::stats_damagePerShotMultiplier() const { return 1; }; // IN ALL POSSIBLE CASES
+vector<IDBDeployAdjust> IDBDeployAdjust::chain_deploy() const {
+  vector<IDBDeployAdjust> rv;
+  for(int i = 0; i < idb->chain_deploy.size(); i++)
+    rv.push_back(IDBDeployAdjust(idb->chain_deploy[i], adjust));
+  return rv;
+}
+vector<IDBProjectileAdjust> IDBDeployAdjust::chain_projectile() const {
+  vector<IDBProjectileAdjust> rv;
+  for(int i = 0; i < idb->chain_projectile.size(); i++)
+    rv.push_back(IDBProjectileAdjust(idb->chain_projectile[i], adjust));
+  return rv;
+}
+vector<IDBWarheadAdjust> IDBDeployAdjust::chain_warhead() const {
+  vector<IDBWarheadAdjust> rv;
+  for(int i = 0; i < idb->chain_warhead.size(); i++)
+    rv.push_back(IDBWarheadAdjust(idb->chain_warhead[i], adjust));
+  return rv;
+}
+
+float IDBDeployAdjust::stats_damagePerShot() const {
+  float val = 0;
+  
+  vector<IDBDeployAdjust> idbda = chain_deploy();
+  for(int i = 0; i < idbda.size(); i++)
+    val += idbda[i].stats_damagePerShot();
+  
+  vector<IDBProjectileAdjust> idbpa = chain_projectile();
+  for(int i = 0; i < idbpa.size(); i++)
+    val += idbpa[i].stats_damagePerShot();
+  
+  vector<IDBWarheadAdjust> idbwa = chain_warhead();
+  for(int i = 0; i < idbwa.size(); i++)
+    val += idbwa[i].stats_damagePerShot();
+  
+  return val;
+}
 
 IDBDeployAdjust::IDBDeployAdjust(const IDBDeploy *in_idb, const IDBAdjustment &in_adjust) { idb = in_idb; adjust = in_adjust; };
 
@@ -51,14 +86,25 @@ float IDBProjectileAdjust::velocity() const { return idb->velocity; };
 float IDBProjectileAdjust::length() const { return idb->length; };
 float IDBProjectileAdjust::radius_physical() const { return idb->radius_physical; };
 
-IDBWarheadAdjust IDBProjectileAdjust::warhead() const { return IDBWarheadAdjust(idb->warhead, adjust); };
+vector<IDBWarheadAdjust> IDBProjectileAdjust::chain_warhead() const {
+  vector<IDBWarheadAdjust> rv;
+  for(int i = 0; i < idb->chain_warhead.size(); i++)
+    rv.push_back(IDBWarheadAdjust(idb->chain_warhead[i], adjust));
+  return rv;
+}
 
 Color IDBProjectileAdjust::color() const { return idb->color; };
 float IDBProjectileAdjust::thickness_visual() const { return idb->thickness_visual; };
 
 float IDBProjectileAdjust::halflife() const { return idb->halflife; };
 
-float IDBProjectileAdjust::stats_damagePerShot() const { return warhead().stats_damagePerShot(); };
+float IDBProjectileAdjust::stats_damagePerShot() const {
+  float val = 0;
+  vector<IDBWarheadAdjust> idbwa = chain_warhead();
+  for(int i = 0; i < idbwa.size(); i++)
+    val += idbwa[i].stats_damagePerShot();
+  return val;
+}
 
 IDBProjectileAdjust::IDBProjectileAdjust(const IDBProjectile *in_idb, const IDBAdjustment &in_adjust) { idb = in_idb; adjust = in_adjust; };
 
@@ -67,9 +113,8 @@ IDBProjectileAdjust::IDBProjectileAdjust(const IDBProjectile *in_idb, const IDBA
  */
 
 IDBDeployAdjust IDBLauncherAdjust::deploy() const { return IDBDeployAdjust(idb->deploy, adjust); };
-IDBProjectileAdjust IDBLauncherAdjust::projectile() const { return IDBProjectileAdjust(idb->projectile, adjust); };
 
-float IDBLauncherAdjust::stats_damagePerShot() const { return deploy().stats_damagePerShotMultiplier() * projectile().stats_damagePerShot(); }
+float IDBLauncherAdjust::stats_damagePerShot() const { return deploy().stats_damagePerShot(); };
 
 IDBLauncherAdjust::IDBLauncherAdjust(const IDBLauncher *in_idb, const IDBAdjustment &in_adjust) { idb = in_idb; adjust = in_adjust; };
 
@@ -124,13 +169,13 @@ int IDBGloryAdjust::minsplitsize() const { return idb->minsplitsize; };
 int IDBGloryAdjust::maxsplitsize() const { return idb->maxsplitsize; };
 
 int IDBGloryAdjust::shotspersplit() const { return idb->shotspersplit; };
-IDBProjectileAdjust IDBGloryAdjust::projectile() const { return IDBProjectileAdjust(idb->projectile, adjust); };
-IDBLauncherAdjust IDBGloryAdjust::launcher() const { return IDBLauncherAdjust(idb->launcher, adjust); };
+IDBDeployAdjust IDBGloryAdjust::blast() const { return IDBDeployAdjust(idb->blast, adjust); };
+IDBDeployAdjust IDBGloryAdjust::core() const { return IDBDeployAdjust(idb->core, adjust); };
 
 Money IDBGloryAdjust::cost() const { return idb->base_cost; };
 Money IDBGloryAdjust::sellcost() const { return cost() * adjust.recyclevalue(); };
 
-float IDBGloryAdjust::stats_averageDamage() const { return (minsplits() + maxsplits()) / 2.0 * shotspersplit() * projectile().stats_damagePerShot() + launcher().stats_damagePerShot(); }
+float IDBGloryAdjust::stats_averageDamage() const { return (minsplits() + maxsplits()) / 2.0 * shotspersplit() * core().stats_damagePerShot() + blast().stats_damagePerShot(); }
 
 IDBGloryAdjust::IDBGloryAdjust(const IDBGlory *in_idb, const IDBAdjustment &in_adjust) { idb = in_idb; adjust = in_adjust; };
 

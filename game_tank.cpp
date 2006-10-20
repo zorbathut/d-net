@@ -374,9 +374,9 @@ void Tank::genEffects(const GameImpactContext &gic, ProjectilePack *projectiles,
     
     for(int i = 0; i < ang.size(); i++)
       for(int j = 0; j < glory.shotspersplit(); j++)
-        projectiles->add(Projectile(centr, ang[i] + gaussian_scaled(2) / 8, glory.projectile(), id));
+        deployProjectile(glory.core(), DeployLocation(centr, ang[i] + gaussian_scaled(2) / 8), projectiles, id, gic);
     
-    launchProjectile(glory.launcher(), launchData(), projectiles, id, gic);
+    deployProjectile(glory.blast(), launchData(), projectiles, id, gic);
     
     spawnShards = false;
   }
@@ -416,8 +416,8 @@ void Tank::addAccumulatedScores(Player *player) {
   kills = 0;
 }
 
-LauncherLocation Tank::launchData() const {
-  return LauncherLocation(this);
+DeployLocation Tank::launchData() const {
+  return DeployLocation(this);
 }
 
 Color Tank::getColor() const {
@@ -477,7 +477,7 @@ void Tank::tryToFire(Button keys[SIMUL_WEAPONS], Player *player, ProjectilePack 
       // Blam!
       IDBWeaponAdjust weapon = player->getWeapon(curfire);
       
-      launchProjectile(weapon.launcher(), launchData(), projectiles, id, gic);
+      deployProjectile(weapon.launcher().deploy(), launchData(), projectiles, id, gic);
       
       weaponCooldown = weapon.framesForCooldown();
       // hack here to detect weapon out-of-ammo

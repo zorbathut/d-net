@@ -13,7 +13,7 @@ using namespace std;
 static HierarchyNode root;
 static map<string, IDBDeploy> deployclasses;
 static map<string, IDBWarhead> warheadclasses;
-static map<string, IDBProjectile> projclasses;
+static map<string, IDBProjectile> projectileclasses;
 static map<string, IDBStats> statsclasses;
 static map<string, IDBLauncher> launcherclasses;
 static map<string, IDBWeapon> weaponclasses;
@@ -344,6 +344,22 @@ template<typename T> const T *parseSubclass(const string &name, const map<string
   return &classes.find(name)->second;
 }
 
+template<typename T> vector<const T *> parseSubclassSet(kvData *chunk, const string &name, const map<string, T> &classes) {
+  if(!chunk->kv.count(name))
+    return vector<const T *>();
+  vector<const T *> types;
+  vector<string> items = tokenize(chunk->consume(name), "\n");
+  CHECK(items.size());
+  for(int i = 0; i < items.size(); i++) {
+    if(!classes.count(items[i])) {
+      dprintf("Can't find object %s\n", items[i].c_str());
+      CHECK(0);
+    }
+    types.push_back(&classes.find(items[i])->second);
+  }
+  return types;
+}
+
 template<typename T> const T *parseOptionalSubclass(kvData *chunk, const string &label, const map<string, T> &classes) {
   if(!chunk->kv.count(label))
     return NULL;
@@ -474,9 +490,8 @@ void parseHierarchy(kvData *chunk) {
 void parseLauncher(kvData *chunk) {
   IDBLauncher *titem = prepareName(chunk, &launcherclasses, "launcher");
   
-  titem->projectile = parseSubclass(chunk->consume("projectile"), projclasses);
   titem->deploy = parseSubclass(chunk->consume("deploy"), deployclasses);
-  titem->stats = parseOptionalSubclass(chunk, "stats", statsclasses);
+  titem->stats = parseSubclass(chunk->consume("stats"), statsclasses);
 
   titem->text = parseOptionalSubclass(chunk, "text", text);
   
@@ -571,7 +586,7 @@ void parseUpgrade(kvData *chunk) {
 }
 
 void parseProjectile(kvData *chunk) {
-  IDBProjectile *titem = prepareName(chunk, &projclasses, "projectile");
+  IDBProjectile *titem = prepareName(chunk, &projectileclasses, "projectile");
   
   titem->thickness_visual = parseWithDefault(chunk, "thickness_visual", 0.3);
   
@@ -586,8 +601,6 @@ void parseProjectile(kvData *chunk) {
     titem->motion = PM_MINE;
     titem->radius_physical = atof(chunk->consume("radius_physical").c_str());
     titem->halflife = atof(chunk->consume("halflife").c_str());
-  } else if(motion == "instant") {
-    titem->motion = PM_INSTANT;
   } else {
     dprintf("Unknown projectile motion: %s\n", motion.c_str());
     CHECK(0);
@@ -596,30 +609,33 @@ void parseProjectile(kvData *chunk) {
   titem->color = parseWithDefault(chunk, "color", C::gray(1.0));
   
   titem->velocity = 0;
-  if(titem->motion != PM_MINE && titem->motion != PM_INSTANT)
+  if(titem->motion != PM_MINE)
     titem->velocity = atof(chunk->consume("velocity").c_str());
   
   if(titem->motion == PM_NORMAL) {
     titem->length = parseWithDefault(chunk, "length", titem->velocity / 60);
   } else if(titem->motion == PM_MISSILE) {
     titem->length = parseWithDefault(chunk, "length", 2.0);
-  } else if(titem->motion == PM_AIRBRAKE || titem->motion == PM_INSTANT || titem->motion == PM_MINE) {
+  } else if(titem->motion == PM_AIRBRAKE || titem->motion == PM_MINE) {
     titem->length = 0;
   } else {
     CHECK(0);
   }
   
-  titem->warhead = parseSubclass(chunk->consume("warhead"), warheadclasses);
+  titem->chain_warhead = parseSubclassSet(chunk, "warhead", warheadclasses);
+  
+  CHECK(titem->chain_warhead.size());
 }
 
 void parseDeploy(kvData *chunk) {
   IDBDeploy *titem = prepareName(chunk, &deployclasses, "deploy");
   
-  string type = parseWithDefault(chunk, "type", "forward");
+  string type = parseWithDefault(chunk, "type", "normal");
   
-  if(type == "forward") {
+  if(type == "normal") {
+    titem->type = DT_NORMAL;
+  } else if(type == "forward") {
     titem->type = DT_FORWARD;
-    titem->anglestddev = parseWithDefault(chunk, "anglestddev", 0.0);
   } else if(type == "centroid") {
     titem->type = DT_CENTROID;
   } else if(type == "minepath") {
@@ -627,6 +643,14 @@ void parseDeploy(kvData *chunk) {
   } else {
     CHECK(0);
   }
+  
+  titem->anglestddev = parseWithDefault(chunk, "anglestddev", 0.0);
+  
+  titem->chain_deploy = parseSubclassSet(chunk, "deploy", deployclasses);
+  titem->chain_projectile = parseSubclassSet(chunk, "projectile", projectileclasses);
+  titem->chain_warhead = parseSubclassSet(chunk, "warhead", warheadclasses);
+  
+  CHECK(titem->chain_deploy.size() || titem->chain_projectile.size() || titem->chain_warhead.size());
 }
 
 void parseWarhead(kvData *chunk) {
@@ -665,9 +689,8 @@ void parseGlory(kvData *chunk) {
   
   titem->base_cost = moneyFromString(chunk->consume("cost"));
   
-  titem->projectile = parseSubclass(chunk->consume("projectile"), projclasses);
-  titem->deploy = parseSubclass(chunk->consume("deploy"), deployclasses);
-  titem->launcher = parseSubclass(chunk->consume("launcher"), launcherclasses);
+  titem->blast = parseSubclass(chunk->consume("blast"), deployclasses);
+  titem->core = parseSubclass(chunk->consume("core"), deployclasses);
 
   titem->minsplits = atoi(chunk->consume("minsplits").c_str());
   titem->maxsplits = atoi(chunk->consume("maxsplits").c_str());

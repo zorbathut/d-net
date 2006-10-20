@@ -3,16 +3,6 @@ warhead {
   name=warhead.null
 }
 
-deploy {
-  name=deploy.centroid
-  type=centroid
-}
-
-deploy {
-  name=deploy.minepath
-  type=minepath
-}
-
 stats {
   name=stats.null
 }

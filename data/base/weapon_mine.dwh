@@ -26,6 +26,12 @@ projectile {
   warhead=warhead.mine1
 }
 
+deploy {
+  name=deploy.mine1
+  type=minepath
+  projectile=projectile.mine1
+}
+
 stats {
   name=stats.mine
   
@@ -35,8 +41,7 @@ stats {
 launcher {
   name=launcher.mine1
   
-  deploy=deploy.minepath
-  projectile=projectile.mine1
+  deploy=deploy.mine1
   
   stats=stats.mine
   
@@ -69,11 +74,16 @@ projectile {
   warhead=warhead.mine2
 }
 
+deploy {
+  name=deploy.mine2
+  type=minepath
+  projectile=projectile.mine2
+}
+
 launcher {
   name=launcher.mine2
   
-  deploy=deploy.minepath
-  projectile=projectile.mine2
+  deploy=deploy.mine2
   
   stats=stats.mine
   
@@ -106,11 +116,16 @@ projectile {
   warhead=warhead.mine3
 }
 
+deploy {
+  name=deploy.mine3
+  type=minepath
+  projectile=projectile.mine3
+}
+
 launcher {
   name=launcher.mine3
   
-  deploy=deploy.minepath
-  projectile=projectile.mine3
+  deploy=deploy.mine3
   
   stats=stats.mine
   
