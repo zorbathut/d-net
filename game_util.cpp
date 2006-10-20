@@ -9,7 +9,7 @@ using namespace std;
 vector<pair<float, Tank *> > GameImpactContext::getAdjacency(const Coord2 &center) const {
   vector<pair<float, Tank *> > rv;
   for(int i = 0; i < players.size(); i++) {
-    if(players[i]->live) {
+    if(players[i]->isLive()) {
       vector<Coord2> tv = players[i]->getTankVertices(players[i]->pos, players[i]->d);
       if(inPath(center, tv)) {
         rv.push_back(make_pair(0, players[i]));

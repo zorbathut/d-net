@@ -14,7 +14,7 @@ void GameAiStandard::updateGameWork(const vector<Tank> &players, int me) {
     {
       vector<int> validtargets;
       for(int i = 0; i < players.size(); i++)
-        if(i != me && players[i].live)
+        if(i != me && players[i].isLive())
           validtargets.push_back(i);
       if(validtargets.size() == 0)
         validtargets.push_back(me);
@@ -75,7 +75,7 @@ void GameAiStandard::updateBombardmentWork(const vector<Tank> &players, Coord2 m
   Coord2 clopos(0, 0);
   Coord clodist = 1000000;
   for(int i = 0; i < players.size(); i++) {
-    if(players[i].live && len(players[i].pos - mypos) < clodist) {
+    if(players[i].isLive() && len(players[i].pos - mypos) < clodist) {
       clodist = len(players[i].pos - mypos);
       clopos = players[i].pos;
     }

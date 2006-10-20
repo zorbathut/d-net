@@ -33,6 +33,11 @@ public:
   // Modifiers
   bool takeDamage(float amount); // returns true on kill
   void genEffects(const GameImpactContext &gic, ProjectilePack *projectiles, const Player *player, int id);
+  void respawn(Coord2 pos, float facing, int team);
+  
+  // For demos and such
+  void megaboostHealth();
+  void setDead();
 
   // Statistics
   float getDPS() const;
@@ -50,7 +55,11 @@ public:
   // Introspection
   LauncherLocation launchData() const;
   Color getColor() const;
-  void respawn(Coord2 pos, float facing, int team);
+  
+  float getHealth() const;
+  bool isLive() const;
+  
+  // Publics >:(
   
   int team;
   
@@ -60,11 +69,6 @@ public:
   Coord2 pos;
   float d;
   pair<float, float> inertia;
-
-  bool spawnShards;
-  bool live;
-
-  float health;
   
   Keystates keys;
   
@@ -72,6 +76,10 @@ public:
   float weaponCooldownSubvals[SIMUL_WEAPONS];
 
 private:
+  float health;
+  bool spawnShards;
+  bool live;
+
   IDBTankAdjust tank;
   Color color;
 

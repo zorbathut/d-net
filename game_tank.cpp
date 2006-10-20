@@ -423,6 +423,14 @@ LauncherLocation Tank::launchData() const {
 Color Tank::getColor() const {
   return color;
 }
+
+float Tank::getHealth() const {
+  return health;
+}
+bool Tank::isLive() const {
+  return live;
+}
+
 void Tank::respawn(Coord2 in_pos, float in_d, int in_team) {
   IDBTankAdjust old_tank = tank;
   Color old_color = color;
@@ -431,6 +439,13 @@ void Tank::respawn(Coord2 in_pos, float in_d, int in_team) {
   pos = in_pos;
   d = in_d;
   team = in_team;
+}
+
+void Tank::megaboostHealth() {
+  health = 1000000000;
+}
+void Tank::setDead() {
+  live = false;
 }
 
 Tank::Tank() : tank(NULL, IDBAdjustment()) /* do not fucking use this */ {
