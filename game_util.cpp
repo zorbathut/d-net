@@ -83,9 +83,6 @@ void detonateWarhead(const IDBWarheadAdjust &warhead, Coord2 pos, Tank *impact, 
     }
   }
   
-  for(int i = 0; i < 6; i++)
-    gic.effects->push_back(GfxPoint(pos.toFloat(),  (makeAngle(frand() * 2 * PI) * 20) * (1.0 - frand() * frand()), 0.1, Color(1.0, 1.0, 1.0)));
-  
   if(warhead.radiusfalloff() > 0)
     gic.effects->push_back(GfxBlast(pos.toFloat(), warhead.radiusfalloff(), warhead.radiuscolor_bright(), warhead.radiuscolor_dim()));
   

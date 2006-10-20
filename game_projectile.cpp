@@ -99,6 +99,11 @@ void Projectile::impact(Coord2 pos, Tank *target, const GameImpactContext &gic) 
   vector<IDBWarheadAdjust> idw = projtype.chain_warhead();
   for(int i = 0; i < idw.size(); i++)
     detonateWarhead(idw[i], pos, target, gic.players[owner], gic, 1.0, true);
+  
+  // this is not ideal
+  if(projtype.motion() == PM_NORMAL)
+    for(int i = 0; i < 6; i++)
+      gic.effects->push_back(GfxPoint(pos.toFloat(),  (makeAngle(frand() * 2 * PI) * 20) * (1.0 - frand() * frand()), 0.1, Color(1.0, 1.0, 1.0)));
 
   live = false;
 };
