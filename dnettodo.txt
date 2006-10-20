@@ -1,7 +1,9 @@
 ---- Major work path
-- Separate glory demos by actual walls?
 - Add Effects module
-- Next-gen weapons
+- Second tier of weapons
+- Third tier of tanks
+- More bombardment
+- Make package
 - Training
 - Implants
 - Activate factions

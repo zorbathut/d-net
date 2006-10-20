@@ -50,7 +50,7 @@ public:
   void initStandard(vector<Player> *playerdata, const Level &level);
   void initChoice(vector<Player> *playerdata);
   void initTest(Player *playerdata, const Float4 &bounds);
-  void initDemo(vector<Player> *playerdata, float boxradi, const float *xps, const float *yps, const float *facing, const int *modes);
+  void initDemo(vector<Player> *playerdata, float boxradi, const float *xps, const float *yps, const float *facing, const int *modes, bool blockades = false);
   void initCenteredDemo(Player *playerdata, float zoom);
 
   bool runTick(const vector<Keystates> &keys, const vector<Player *> &players);

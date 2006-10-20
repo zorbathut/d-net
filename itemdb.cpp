@@ -709,6 +709,8 @@ void parseGlory(kvData *chunk) {
     defglory = titem;
   }
   
+  titem->demo_range = parseWithDefault(chunk, "demo_range", 100);
+  
   titem->text = parseOptionalSubclass(chunk, "text", text);
   
   {

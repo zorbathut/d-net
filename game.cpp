@@ -952,7 +952,7 @@ void Game::initTest(Player *in_playerdata, const Float4 &bounds) {
   clear = bounds;
 }
 
-void Game::initDemo(vector<Player> *in_playerdata, float boxradi, const float *xps, const float *yps, const float *facing, const int *modes) {
+void Game::initDemo(vector<Player> *in_playerdata, float boxradi, const float *xps, const float *yps, const float *facing, const int *modes, bool blockades) {
   gamemode = GMODE_DEMO;
   
   Level lev;
@@ -964,6 +964,17 @@ void Game::initDemo(vector<Player> *in_playerdata, float boxradi, const float *x
     path.push_back(Coord2(boxradi, boxradi));
     path.push_back(Coord2(boxradi, -boxradi));
     lev.paths.push_back(path);
+  }
+  
+  if(blockades) {
+    Coord inside = 1;
+    Coord outside = Coord(boxradi) - inside;
+    vector<Coord2> blockade;
+    blockade.push_back(Coord2(-inside, outside));
+    blockade.push_back(Coord2(-inside, -outside));
+    blockade.push_back(Coord2(inside, -outside));
+    blockade.push_back(Coord2(inside, outside));
+    lev.paths.push_back(blockade);
   }
   
   {

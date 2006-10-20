@@ -202,5 +202,7 @@ glory {
   blast=deploy.glory.plasma.blast
   blast=deploy.glory.plasma.bomb
   
+  demo_range=2x
+  
   text=text.glory.shaped
 }

@@ -229,8 +229,8 @@ const float bombardment_ypses[] = { -30, -30, -30, -30, 30, 30, 30, 30 };
 const int bombardment_mode[] = { DEMOPLAYER_DPC, DEMOPLAYER_BOMBSIGHT, DEMOPLAYER_DPC, DEMOPLAYER_BOMBSIGHT, DEMOPLAYER_DPC, DEMOPLAYER_BOMBSIGHT, DEMOPLAYER_DPC, DEMOPLAYER_BOMBSIGHT };
 const int bombardment_progression[] = { 6000, 0 };
 
-const float glory_xpses[] = { -50, -50, 50, 50, -50, -50, 50, 50 };
-const float glory_ypses[] = { -50, -50, -50, -50, 50, 50, 50, 50 };
+const float glory_xpses[] = { -0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5 };
+const float glory_ypses[] = { -0.5, -0.5, -0.5, -0.5, 0.5, 0.5, 0.5, 0.5 };
 const int glory_mode[] = { DEMOPLAYER_DPC, DEMOPLAYER_QUIET, DEMOPLAYER_DPC, DEMOPLAYER_QUIET, DEMOPLAYER_DPC, DEMOPLAYER_QUIET, DEMOPLAYER_DPC, DEMOPLAYER_QUIET };
 const int glory_progression[] = { 6000, 0 };
 
@@ -344,7 +344,16 @@ void ShopDemo::init(const IDBGlory *glory, const Player *player) {
   }
   respawn = false;
   
-  game.game.initDemo(&game.players, 100, glory_xpses, glory_ypses, NULL, glory_mode);
+  {
+    float xps[ARRAY_SIZE(glory_xpses)];
+    float yps[ARRAY_SIZE(glory_ypses)];
+    for(int i = 0; i < ARRAY_SIZE(xps); i++) {
+      xps[i] = glory->demo_range * glory_xpses[i];
+      yps[i] = glory->demo_range * glory_ypses[i];
+    }
+  
+    game.game.initDemo(&game.players, glory->demo_range, xps, yps, NULL, glory_mode, true);
+  }
   
   progression = glory_progression;
   

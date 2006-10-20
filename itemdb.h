@@ -138,6 +138,8 @@ public:
   vector<const IDBDeploy *> blast;
   const IDBDeploy *core;
 
+  float demo_range;
+
   Money base_cost;
 
   const string *text;
