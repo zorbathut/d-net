@@ -81,6 +81,9 @@ const Coord resolution = Coord(20);
 const Coord offset = Coord(1.23456f); // Nasty hack to largely eliminate many border cases
 
 void Gamemap::removeWalls(Coord2 center, float radius) {
+  if(!smashable)
+    return;
+  
   CHECK(nlinks.size() == 0);
   {
     Coord4 bounds = startCBoundBox();
@@ -218,7 +221,7 @@ void Gamemap::removeWalls(Coord2 center, float radius) {
 }
 
 Gamemap::Gamemap() { };
-Gamemap::Gamemap(const Level &lev) {
+Gamemap::Gamemap(const Level &lev, bool smashable) : smashable(smashable) {
   CHECK(lev.paths.size());
   
   Coord4 bounds = startCBoundBox();

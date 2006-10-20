@@ -811,7 +811,7 @@ Game::Game() : collider(0, 0) {
   gamemode = GMODE_LAST;
 }
 
-void Game::initCommon(const vector<Player*> &in_playerdata, const Level &lev) {
+void Game::initCommon(const vector<Player*> &in_playerdata, const Level &lev, bool smashable) {
   CHECK(gamemode >= 0 && gamemode < GMODE_LAST);
   
   tanks.clear();
@@ -824,7 +824,7 @@ void Game::initCommon(const vector<Player*> &in_playerdata, const Level &lev) {
   tanks.resize(in_playerdata.size());
   bombards.resize(in_playerdata.size());
   
-  gamemap = Gamemap(lev);
+  gamemap = Gamemap(lev, smashable);
   
   for(int i = 0; i < tanks.size(); i++) {
     CHECK(in_playerdata[i]);
@@ -875,7 +875,7 @@ void Game::initStandard(vector<Player> *in_playerdata, const Level &lev) {
   vector<Player*> playerdata;
   for(int i = 0; i < in_playerdata->size(); i++)
     playerdata.push_back(&(*in_playerdata)[i]);
-  initCommon(playerdata, lev);
+  initCommon(playerdata, lev, true);
   
   frameNmToStart = 180;
   freezeUntilStart = true;
@@ -893,7 +893,7 @@ void Game::initChoice(vector<Player> *in_playerdata) {
     playerdata.push_back(&(*in_playerdata)[i]);
   }
   
-  initCommon(playerdata, lev);
+  initCommon(playerdata, lev, true);
   
   teams.resize(5);
   for(int i = 0; i < tanks.size(); i++)
@@ -947,7 +947,7 @@ void Game::initTest(Player *in_playerdata, const Float4 &bounds) {
   
   vector<Player*> playerdata;
   playerdata.push_back(in_playerdata);
-  initCommon(playerdata, lev);
+  initCommon(playerdata, lev, false);
   
   clear = bounds;
 }
@@ -977,7 +977,7 @@ void Game::initDemo(vector<Player> *in_playerdata, float boxradi, const float *x
   for(int i = 0; i < in_playerdata->size(); i++)
     playerdata.push_back(&(*in_playerdata)[i]);
   
-  initCommon(playerdata, lev);
+  initCommon(playerdata, lev, false);
   
   for(int i = 0; i < tanks.size(); i++) {
     tanks[i].pos = Coord2(xps[i], yps[i]);
@@ -1023,7 +1023,7 @@ void Game::initCenteredDemo(Player *in_playerdata, float zoom) {
   
   vector<Player*> playerdata;
   playerdata.push_back(in_playerdata);
-  initCommon(playerdata, lev);
+  initCommon(playerdata, lev, false);
   
   collider = Collider(tanks.size(), Coord(1000));
 }

@@ -19,9 +19,11 @@ public:
   void removeWalls(Coord2 center, float radius);
   
   Gamemap();
-  Gamemap(const Level &level);
+  Gamemap(const Level &level, bool smashable);
 
 private:
+  bool smashable;
+
   int sx;
   int sy;
   int ex;

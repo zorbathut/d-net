@@ -1,7 +1,6 @@
 ---- Major work path
-- Sparks should be on a case-by-case basis
-- Turn off (or down?) wall destruction for some levels
 - Separate glory demos by actual walls?
+- Add Effects module
 - Next-gen weapons
 - Training
 - Implants
