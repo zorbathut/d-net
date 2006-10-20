@@ -62,7 +62,7 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
   if(frameNm < frameNmToStart && freezeUntilStart) {
     for(int i = 0; i < keys.size(); i++) {
       if(keys[i].accept.push || keys[i].fire[0].push)
-        gfxeffects.push_back(GfxPing(tanks[i].pos.toFloat(), zoom_size.y, zoom_size.y / 50, 0.5, tanks[i].color));
+        gfxeffects.push_back(GfxPing(tanks[i].pos.toFloat(), zoom_size.y, zoom_size.y / 50, 0.5, tanks[i].getColor()));
       keys[i].nullMove();
       for(int j = 0; j < SIMUL_WEAPONS; j++)
         keys[i].fire[j] = Button();
@@ -547,18 +547,18 @@ void Game::renderToScreen(const vector<const Player *> &players, GameMetacontext
       if(bombards[i].state == BombardmentState::BS_OFF) {
       } else if(bombards[i].state == BombardmentState::BS_SPAWNING) {
       } else if(bombards[i].state == BombardmentState::BS_ACTIVE) {
-        setColor(tanks[i].color * 0.8);
+        setColor(tanks[i].getColor() * 0.8);
         drawCirclePieces(bombards[i].pos, 0.3, 4);
         drawCrosses(bombards[i].pos, 4);
       } else if(bombards[i].state == BombardmentState::BS_FIRING) {
-        setColor(tanks[i].color * 0.5);
+        setColor(tanks[i].getColor() * 0.5);
         drawCirclePieces(bombards[i].pos, 0.3, 4);
         drawCrosses(bombards[i].pos, 4);
         setColor(Color(1.0, 1.0, 1.0));
         float ps = (float)bombards[i].timer / (players[i]->getBombardment((int)bombardment_tier).lockdelay() * FPS);
         drawCirclePieces(bombards[i].pos, 1 - ps, 4 * ps);
       } else if(bombards[i].state == BombardmentState::BS_COOLDOWN) {
-        setColor(tanks[i].color * 0.5);
+        setColor(tanks[i].getColor() * 0.5);
         drawCirclePieces(bombards[i].pos, 0.3, 4);
         drawCrosses(bombards[i].pos, 4);
         float ps = (float)bombards[i].timer / (players[i]->getBombardment((int)bombardment_tier).unlockdelay() * FPS);
@@ -817,13 +817,7 @@ void Game::kill(int id) {
 
 void Game::respawnPlayer(int id, Coord2 pos, float facing) {
   CHECK(gamemode == GMODE_DEMO);
-  IDBTankAdjust tank = tanks[id].tank;
-  Color color = tanks[id].color;
-  tanks[id] = Tank();
-  tanks[id].init(tank, color);
-  tanks[id].pos = pos;
-  tanks[id].d = facing;
-  tanks[id].team = id;
+  tanks[id].respawn(pos, facing, id);
   
   bombards[id].state = BombardmentState::BS_OFF;
   CHECK(tanks[id].live);

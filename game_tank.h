@@ -9,11 +9,15 @@ using namespace std;
 class Tank {
 public:
   
+  // Construction
   void init(IDBTankAdjust tank, Color color);
+  Tank();
   
+  // Standard behavior
   void tick(const Keystates &kst);
   void render(const vector<Team> &teams) const;
 
+  // Collision system
   void addCollision(Collider *collider, const Keystates &kst, int owner) const;
 
   vector<Coord4> getCurrentCollide() const;
@@ -26,9 +30,11 @@ public:
   pair<float, float> getNextInertia(const Keystates &keys) const;
   pair<Coord2, float> getNextPosition(const Keystates &keys) const;
 
+  // Modifiers
   bool takeDamage(float amount); // returns true on kill
   void genEffects(const GameImpactContext &gic, ProjectilePack *projectiles, const Player *player, int id);
 
+  // Statistics
   float getDPS() const;
   float getDPH() const;
   float getDPC(int cycles) const;
@@ -41,12 +47,10 @@ public:
   
   void addAccumulatedScores(Player *player);
   
+  // Introspection
   LauncherLocation launchData() const;
-
-  Tank();
-
-  IDBTankAdjust tank;
-  Color color;
+  Color getColor() const;
+  void respawn(Coord2 pos, float facing, int team);
   
   int team;
   
@@ -68,6 +72,9 @@ public:
   float weaponCooldownSubvals[SIMUL_WEAPONS];
 
 private:
+  IDBTankAdjust tank;
+  Color color;
+
   // this exists for the DPS calculations
   int framesSinceDamage;
   

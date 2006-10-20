@@ -420,6 +420,19 @@ LauncherLocation Tank::launchData() const {
   return LauncherLocation(this);
 }
 
+Color Tank::getColor() const {
+  return color;
+}
+void Tank::respawn(Coord2 in_pos, float in_d, int in_team) {
+  IDBTankAdjust old_tank = tank;
+  Color old_color = color;
+  *this = Tank();
+  init(old_tank, old_color);
+  pos = in_pos;
+  d = in_d;
+  team = in_team;
+}
+
 Tank::Tank() : tank(NULL, IDBAdjustment()) /* do not fucking use this */ {
   pos = Coord2(0, 0);
   d = 0;
