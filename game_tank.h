@@ -72,11 +72,11 @@ public:
   pair<float, float> inertia;
   
   Keystates keys;
-  
+
+private:
   int weaponCooldown;
   float weaponCooldownSubvals[SIMUL_WEAPONS];
 
-private:
   float health;
   bool spawnShards;
   bool live;

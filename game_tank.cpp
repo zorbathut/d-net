@@ -22,7 +22,6 @@ void Tank::init(IDBTankAdjust in_tank, Color in_color) {
 }
 
 void Tank::tick(const Keystates &kst) {
-  
   pair<Coord2, float> newpos = getNextPosition(kst);
   
   pos = newpos.first;
@@ -33,6 +32,7 @@ void Tank::tick(const Keystates &kst) {
   if(framesSinceDamage != -1)
     framesSinceDamage++;
   
+  weaponCooldown--;
 };
 
 void Tank::render(const vector<Team> &teams) const {

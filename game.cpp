@@ -311,7 +311,6 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
   }
 
   for(int i = 0; i < tanks.size(); i++) {
-    tanks[i].weaponCooldown--;
     tanks[i].genEffects(gic, &projectiles[i], players[i], i);
     if(tanks[i].isLive()) {
       int inzone = -1;
