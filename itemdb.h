@@ -135,7 +135,7 @@ public:
 
 struct IDBGlory {
 public:
-  const IDBDeploy *blast;
+  vector<const IDBDeploy *> blast;
   const IDBDeploy *core;
 
   Money base_cost;
@@ -295,7 +295,7 @@ struct IDBGloryAdjust {
   IDBAdjustment adjust;
 
 public:
-  IDBDeployAdjust blast() const;
+  vector<IDBDeployAdjust> blast() const;
   IDBDeployAdjust core() const;
   
   Money cost() const;

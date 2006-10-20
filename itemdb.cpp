@@ -331,7 +331,10 @@ template<typename T> T *prepareName(kvData *chunk, map<string, T> *classes, cons
     *namestorage = name;
   if(prefix.size())
     CHECK(prefixed(name, prefix));
-  CHECK(classes->count(name) == 0);
+  if(classes->count(name)) {
+    dprintf("Multiple definition of %s\n", name.c_str());
+    CHECK(0);
+  }
   return &(*classes)[name];
 }
 
@@ -698,7 +701,7 @@ void parseGlory(kvData *chunk) {
   
   titem->base_cost = moneyFromString(chunk->consume("cost"));
   
-  titem->blast = parseSubclass(chunk->consume("blast"), deployclasses);
+  titem->blast = parseSubclassSet(chunk, "blast", deployclasses);
   titem->core = parseSubclass(chunk->consume("core"), deployclasses);
   
   if(chunk->kv.count("default") && atoi(chunk->consume("default").c_str())) {

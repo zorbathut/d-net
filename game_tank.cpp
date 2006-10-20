@@ -359,7 +359,11 @@ void Tank::genEffects(const GameImpactContext &gic, ProjectilePack *projectiles,
       gic.effects->push_back(GfxPath(vf2, (centr + subcentroid).toFloat(), path_pos_vel * 60, -path_pos_vel * 60, 0, path_ang_vel * 60, -path_ang_vel * 60, 0.5, player->getFaction()->color));
     }
     
-    deployProjectile(glory.blast(), launchData(), projectiles, id, gic);
+    {
+      vector<IDBDeployAdjust> vd = glory.blast();
+      for(int i = 0; i < vd.size(); i++)
+        deployProjectile(vd[i], launchData(), projectiles, id, gic);
+    }
     
     spawnShards = false;
   }

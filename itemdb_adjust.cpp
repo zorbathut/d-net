@@ -179,14 +179,23 @@ IDBWeaponAdjust::IDBWeaponAdjust(const IDBWeapon *in_idb, const IDBAdjustment &i
  * IDBGloryAdjust
  */
 
-IDBDeployAdjust IDBGloryAdjust::blast() const { return IDBDeployAdjust(idb->blast, adjust); };
+vector<IDBDeployAdjust> IDBGloryAdjust::blast() const {
+  vector<IDBDeployAdjust> rv;
+  for(int i = 0; i < idb->blast.size(); i++)
+    rv.push_back(IDBDeployAdjust(idb->blast[i], adjust));
+  return rv;
+}
 IDBDeployAdjust IDBGloryAdjust::core() const { return IDBDeployAdjust(idb->core, adjust); };
 
 Money IDBGloryAdjust::cost() const { return idb->base_cost; };
 Money IDBGloryAdjust::sellcost() const { return cost() * adjust.recyclevalue(); };
 
 float IDBGloryAdjust::stats_averageDamage() const {
-  return core().stats_damagePerShot() + blast().stats_damagePerShot();
+  float v = core().stats_damagePerShot();
+  vector<IDBDeployAdjust> vd = blast();
+  for(int i = 0; i < vd.size(); i++)
+    v += vd[i].stats_damagePerShot();
+  return v;
 }
 
 IDBGloryAdjust::IDBGloryAdjust(const IDBGlory *in_idb, const IDBAdjustment &in_adjust) { idb = in_idb; adjust = in_adjust; };

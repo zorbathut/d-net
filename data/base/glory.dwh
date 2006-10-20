@@ -115,3 +115,92 @@ glory {
   
   text=text.glory.shaped
 }
+
+text {
+  name=text.glory.plasmacharge
+  data=Several carefully designed pressure chambers are added for this powerful, though unpredictable, weapon.
+}
+
+warhead {
+  name=warhead.glory.plasma.blast
+  impactdamage=5 energy
+  wallremovalradius=2
+}
+
+projectile {
+  name=projectile.glory.plasma.blast
+  thickness_visual=0.6
+  velocity=400
+  color=0.2, 0.6, 1.0
+  motion=airbrake
+  warhead=warhead.glory.plasma.blast
+}
+
+deploy {
+  name=deploy.glory.plasma.blast
+  type=explode
+  
+  exp_minsplits=3
+  exp_maxsplits=3
+  exp_minsplitsize=3
+  exp_maxsplitsize=5
+  
+  exp_shotspersplit=8
+  
+  anglestddev=0.04
+  
+  projectile=projectile.glory.plasma.blast
+}
+
+warhead {
+  name=warhead.glory.plasma.bomb
+  radiusdamage=20.0 exotic
+  radiusfalloff=14
+  wallremovalradius=4
+  radiuscolor_bright=88f
+  radiuscolor_dim=018
+}
+
+deploy {
+  name=deploy.glory.plasma.bomb
+  
+  type=centroid
+  
+  warhead=warhead.glory.plasma.bomb
+}
+
+projectile {
+  name=projectile.glory.plasma.core
+  thickness_visual=0.6
+  velocity=60
+  color=1.0, 0.8, 0.3
+  motion=airbrake
+  warhead=warhead.glory.core
+}
+
+deploy {
+  name=deploy.glory.plasma.core
+  type=explode
+  
+  exp_minsplits=3
+  exp_maxsplits=6
+  exp_minsplitsize=1
+  exp_maxsplitsize=5
+  
+  exp_shotspersplit=8
+  
+  anglestddev=0.1
+  
+  projectile=projectile.glory.plasma.core
+}
+
+glory {
+  name=ROOT.Glory Devices.Plasma Charge
+  cost=30000
+  
+  core=deploy.glory.plasma.core
+  blast=deploy.glory.plasma.blast
+  blast=deploy.glory.plasma.bomb
+  
+  text=text.glory.shaped
+}

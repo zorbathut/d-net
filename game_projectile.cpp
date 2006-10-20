@@ -30,7 +30,7 @@ void Projectile::tick(vector<smart_ptr<GfxEffects> > *gfxe) {
   } else if(projtype.motion() == PM_AIRBRAKE) {
     airbrake_velocity *= 0.95;
     if(airbrake_liveness() <= 0)
-      live = false;
+      detonating = true;
   } else if(projtype.motion() == PM_MINE) {
     if(frand() > pow(0.5f, 1 / (projtype.halflife() * FPS)))
       detonating = true;

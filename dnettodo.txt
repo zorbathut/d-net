@@ -1,5 +1,7 @@
 ---- Major work path
-- Airbrake should impact at the end of its lifetime
+- Sparks should be on a case-by-case basis
+- Turn off (or down?) wall destruction for some levels
+- Separate glory demos by actual walls?
 - Next-gen weapons
 - Training
 - Implants
