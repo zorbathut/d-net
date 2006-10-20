@@ -441,6 +441,61 @@ void Tank::respawn(Coord2 in_pos, float in_d, int in_team) {
   team = in_team;
 }
 
+void Tank::tryToFire(Button keys[SIMUL_WEAPONS], Player *player, ProjectilePack *projectiles, int id, const GameImpactContext &gic, vector<pair<string, float> > *status_text, float *firepowerSpent) {
+  if(weaponCooldown <= 0) {
+    StackString sst(StringPrintf("Firetesting"));
+    // The player can fire, so let's find out if he does
+    
+    // weaponCooldownSubvals is maintained in here.
+    // Every "fire" attempt, we find the weapon with the lowest subval. We subtract that from all active weapons (thereby making that value 0),
+    // then we add the seconds-until-next-shot to that one. Any non-active weapons are clamped to 0 on the theory that the player is hammering
+    // that button and really wants it to fire.
+    
+    float rlev = 1e20; // uh, no
+    int curfire = -1;
+    for(int j = 0; j < SIMUL_WEAPONS; j++) {
+      if(keys[j].down) {
+        if(rlev > weaponCooldownSubvals[j]) {
+          rlev = weaponCooldownSubvals[j];
+          curfire = j;
+        }
+      } else {
+        weaponCooldownSubvals[j] = 0;
+      }
+    }
+    CHECK(rlev >= 0);
+    
+    if(curfire != -1) {
+      // We're firing something!
+      
+      for(int j = 0; j < SIMUL_WEAPONS; j++) {
+        weaponCooldownSubvals[j] = max(weaponCooldownSubvals[j] - rlev, (float)0);
+      }
+      
+      weaponCooldownSubvals[curfire] = FPS / player->getWeapon(curfire).firerate();
+      
+      // Blam!
+      IDBWeaponAdjust weapon = player->getWeapon(curfire);
+      
+      launchProjectile(weapon.launcher(), launchData(), projectiles, id, gic);
+      
+      weaponCooldown = weapon.framesForCooldown();
+      // hack here to detect weapon out-of-ammo
+      string lastname = weapon.name();
+      *firepowerSpent += player->shotFired(curfire);
+      if(weapon.name() != lastname) {
+        status_text->push_back(make_pair(weapon.name(), 2));
+      }
+      
+      {
+        string slv = StringPrintf("%d", player->shotsLeft(curfire));
+        if(count(slv.begin(), slv.end(), '0') == slv.size() - 1)
+          status_text->push_back(make_pair(slv, 1));
+      }
+    }
+  }
+}
+
 void Tank::megaboostHealth() {
   health = 1000000000;
 }

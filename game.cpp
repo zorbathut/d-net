@@ -292,59 +292,11 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
         addTankStatusText(i, players[i]->getWeapon(j).name(), 1);
       }
     }
-    if(tanks[i].isLive()) {
-      if(tanks[i].weaponCooldown <= 0 && teams[tanks[i].team].weapons_enabled && frameNm >= frameNmToStart && frameNmToStart != -1) {
-        StackString sst(StringPrintf("Firetesting"));
-        // The player can fire, so let's find out if he does
-        
-        // weaponCooldownSubvals is maintained in here.
-        // Every "fire" attempt, we find the weapon with the lowest subval. We subtract that from all active weapons (thereby making that value 0),
-        // then we add the seconds-until-next-shot to that one. Any non-active weapons are clamped to 0 on the theory that the player is hammering
-        // that button and really wants it to fire.
-        
-        float rlev = 1e20; // uh, no
-        int curfire = -1;
-        for(int j = 0; j < SIMUL_WEAPONS; j++) {
-          if(keys[i].fire[j].down) {
-            if(rlev > tanks[i].weaponCooldownSubvals[j]) {
-              rlev = tanks[i].weaponCooldownSubvals[j];
-              curfire = j;
-            }
-          } else {
-            tanks[i].weaponCooldownSubvals[j] = 0;
-          }
-        }
-        CHECK(rlev >= 0);
-        
-        if(curfire != -1) {
-          // We're firing something!
-          
-          for(int j = 0; j < SIMUL_WEAPONS; j++) {
-            tanks[i].weaponCooldownSubvals[j] = max(tanks[i].weaponCooldownSubvals[j] - rlev, (float)0);
-          }
-          
-          tanks[i].weaponCooldownSubvals[curfire] = FPS / players[i]->getWeapon(curfire).firerate();
-          
-          // Blam!
-          IDBWeaponAdjust weapon = players[i]->getWeapon(curfire);
-          
-          launchProjectile(weapon.launcher(), tanks[i].launchData(), &projectiles[i], i, gic);
-          
-          tanks[i].weaponCooldown = weapon.framesForCooldown();
-          // hack here to detect weapon out-of-ammo
-          string lastname = weapon.name();
-          firepowerSpent += players[i]->shotFired(curfire);
-          if(weapon.name() != lastname) {
-            addTankStatusText(i, weapon.name(), 2);
-          }
-          
-          {
-            string slv = StringPrintf("%d", players[i]->shotsLeft(curfire));
-            if(count(slv.begin(), slv.end(), '0') == slv.size() - 1)
-              addTankStatusText(i, slv, 1);
-          }
-        }
-      }
+    if(tanks[i].isLive() && teams[tanks[i].team].weapons_enabled && frameNm >= frameNmToStart && frameNmToStart != -1) {
+      vector<pair<string, float> > status;
+      tanks[i].tryToFire(keys[i].fire, players[i], &projectiles[i], i, gic, &status, &firepowerSpent);
+      for(int j = 0; j < status.size(); j++)
+        addTankStatusText(i, status[j].first, status[j].second);
     }
   }
 
