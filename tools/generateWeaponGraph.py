@@ -1,5 +1,7 @@
 from pylab import *
 import re
+colors = "bgrcmyk"
+pos = 0
 for line in open("tools/weapondump.dat"):
   splits = line.rsplit(",")
   name = splits[0]
@@ -16,7 +18,9 @@ for line in open("tools/weapondump.dat"):
   if(store != None):
     print "ERROR"
     fail
-  plot(key, value, label = name)
+  plot(key, value, colors[pos] + "-", label = name)
+  plot(key, value, colors[pos] + "o", label = "")
+  pos = (pos + 1) % len(colors)
 legend(loc='lower right')
 loglog()
 xlabel('CPS')

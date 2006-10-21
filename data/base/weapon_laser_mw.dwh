@@ -66,8 +66,8 @@ launcher {
 weapon {
   name=ROOT.Weapons.Megawatt Laser.MW Laser I
   
-  cost=1700
-  firerate=4.5
+  cost=1500
+  firerate=4.2
   
   launcher=launcher.mwlaser
 }
@@ -102,8 +102,8 @@ weapon {
 weapon {
   name=ROOT.Weapons.Megawatt Laser.MW Laser V
   
-  cost=7500
-  firerate=11.5
+  cost=8000
+  firerate=12
 
   launcher=launcher.mwlaser
 }
@@ -111,8 +111,8 @@ weapon {
 weapon {
   name=ROOT.Weapons.Megawatt Laser.MW Laser VI
   
-  cost=13000
-  firerate=14.5
+  cost=14000
+  firerate=16
 
   launcher=launcher.mwlaser
 }
