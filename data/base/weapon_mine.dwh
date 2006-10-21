@@ -1,7 +1,7 @@
 
 hierarchy {
   name=ROOT.Weapons.Mine
-  pack=100
+  pack=25
 }
 
 text {
@@ -52,7 +52,7 @@ launcher {
 weapon {
   name=ROOT.Weapons.Mine.Minelayer I
   
-  cost=200
+  cost=50
   firerate=2
 
   launcher=launcher.mine1
@@ -94,7 +94,7 @@ launcher {
 weapon {
   name=ROOT.Weapons.Mine.Minelayer II
   
-  cost=600
+  cost=150
   firerate=2.5
   
   launcher=launcher.mine2
@@ -136,9 +136,93 @@ launcher {
 weapon {
   name=ROOT.Weapons.Mine.Minelayer III
   
-  cost=3000
+  cost=875
   firerate=3
 
   launcher=launcher.mine3
+}
+
+warhead {
+  name=warhead.mine4
+  radiusdamage=22.0 explosive
+  radiusfalloff=9
+  wallremovalradius=4
+}
+
+projectile {
+  name=projectile.mine4
+  motion=mine
+  radius_physical=1.6
+  halflife=12
+  color=1.0, 1.0, 1.0
+  warhead=warhead.mine4
+}
+
+deploy {
+  name=deploy.mine4
+  type=minepath
+  projectile=projectile.mine4
+}
+
+launcher {
+  name=launcher.mine4
+  
+  deploy=deploy.mine4
+  
+  stats=stats.mine
+  
+  demo=mines
+  text=text.weapon.mine
+}
+
+weapon {
+  name=ROOT.Weapons.Mine.Minelayer IV
+  
+  cost=4500
+  firerate=3
+
+  launcher=launcher.mine4
+}
+
+warhead {
+  name=warhead.mine5
+  radiusdamage=36.0 explosive
+  radiusfalloff=10
+  wallremovalradius=4
+}
+
+projectile {
+  name=projectile.mine5
+  motion=mine
+  radius_physical=1.8
+  halflife=12
+  color=1.0, 1.0, 1.0
+  warhead=warhead.mine5
+}
+
+deploy {
+  name=deploy.mine5
+  type=minepath
+  projectile=projectile.mine5
+}
+
+launcher {
+  name=launcher.mine5
+  
+  deploy=deploy.mine5
+  
+  stats=stats.mine
+  
+  demo=mines
+  text=text.weapon.mine
+}
+
+weapon {
+  name=ROOT.Weapons.Mine.Minelayer V
+  
+  cost=15000
+  firerate=3
+
+  launcher=launcher.mine5
 }
 
