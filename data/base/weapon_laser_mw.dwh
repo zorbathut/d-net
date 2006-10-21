@@ -10,15 +10,45 @@ text {
 }
 
 effects {
-  name=effects.mwlaser
+  name=effects.mwlaser1
 
-  quantity=12
+  quantity=4
   
-  inertia=0
-  spread=50
+  inertia=0.1
+  spread=30
   
   slowdown=0.3
-  lifetime=0.4
+  lifetime=0.2
+  
+  radius=0.4
+  color=0.6, 0.9, 1.0
+}
+
+effects {
+  name=effects.mwlaser2
+
+  quantity=4
+  
+  inertia=-0.1
+  spread=30
+  
+  slowdown=0.3
+  lifetime=0.2
+  
+  radius=0.4
+  color=0.6, 0.9, 1.0
+}
+
+effects {
+  name=effects.mwlaser3
+
+  quantity=4
+  
+  inertia=0
+  spread=3
+  
+  slowdown=0.5
+  lifetime=1
   
   radius=0.4
   color=0.6, 0.9, 1.0
@@ -27,7 +57,10 @@ effects {
 warhead {
   name=warhead.mwlaser
   impactdamage=1.5 energy
-  effects_impact=effects.mwlaser
+  
+  effects_impact=effects.mwlaser1
+  effects_impact=effects.mwlaser2
+  effects_impact=effects.mwlaser3
 }
 
 projectile {

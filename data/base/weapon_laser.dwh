@@ -10,24 +10,56 @@ text {
 }
 
 effects {
-  name=effects.laser
+  name=effects.laser1
 
-  quantity=8
+  quantity=4
   
-  inertia=0
-  spread=50
+  inertia=0.1
+  spread=20
   
   slowdown=0.3
-  lifetime=0.4
+  lifetime=0.15
   
-  radius=0.3
+  radius=0.4
+  color=0.6, 0.9, 1.0
+}
+
+effects {
+  name=effects.laser2
+
+  quantity=4
+  
+  inertia=-0.1
+  spread=20
+  
+  slowdown=0.3
+  lifetime=0.15
+  
+  radius=0.4
+  color=0.6, 0.9, 1.0
+}
+
+effects {
+  name=effects.laser3
+
+  quantity=2
+  
+  inertia=0
+  spread=3
+  
+  slowdown=0.5
+  lifetime=0.6
+  
+  radius=0.4
   color=0.6, 0.9, 1.0
 }
 
 warhead {
   name=warhead.laser
   impactdamage=0.4 energy
-  effects_impact=effects.laser
+  effects_impact=effects.laser1
+  effects_impact=effects.laser2
+  effects_impact=effects.laser3
 }
 
 projectile {

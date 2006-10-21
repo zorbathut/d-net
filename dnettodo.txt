@@ -1,6 +1,5 @@
 ---- Major work path
 - Make package anywhere from here and on
-- Improved laser effects
 - Remove exponential text
 - Improve mine demo
 - Move labels in EMP demo
