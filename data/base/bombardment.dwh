@@ -6,8 +6,8 @@ text {
 
 warhead {
   name=warhead.bombardment.minibomb
-  radiusdamage=0.3 explosive
-  radiusfalloff=3
+  radiusdamage=0.5 explosive
+  radiusfalloff=4
   wallremovalradius=0.5
 }
 
@@ -31,7 +31,7 @@ text {
 
 warhead {
   name=warhead.bombardment.bomb
-  radiusdamage=2 explosive
+  radiusdamage=3 explosive
   radiusfalloff=8
   wallremovalradius=2
 }
@@ -42,8 +42,72 @@ bombardment {
   
   warhead=warhead.bombardment.bomb
   
-  lockdelay=1.5
-  unlockdelay=0.5
+  lockdelay=1.8
+  unlockdelay=0.8
   
   text=text.bombardment.bomb
+}
+
+text {
+  name=text.bombardment.megabomb
+  data=Further improved, this bomb is significantly larger and heavier than less powerful weaponry, and requires major modifications to the launching system. Its destructive force can be a major factor on the battlefield.
+}
+
+warhead {
+  name=warhead.bombardment.megabomb
+  radiusdamage=10 explosive
+  radiusfalloff=10
+  wallremovalradius=4
+}
+
+bombardment {
+  name=ROOT.Bombardment.Megabomb
+  cost=14000
+  
+  warhead=warhead.bombardment.megabomb
+  
+  lockdelay=1.6
+  unlockdelay=0.6
+  
+  text=text.bombardment.megabomb
+}
+
+text {
+  name=text.bombardment.railgun
+  data=A magnetic launching system fires aluminum alloy projectiles from space. Despite the reduced damage and almost total lack of blast radius, this weapon is popular due to its rapid surface impact. Recharging the launch capacitors takes significant time.
+}
+
+effects {
+  name=effects.railgun
+
+  quantity=16
+  
+  inertia=0
+  spread=30
+  
+  slowdown=0.3
+  lifetime=1.0
+  
+  radius=0.8
+  color=1.0, 0.9, 0.6
+}
+
+warhead {
+  name=warhead.bombardment.railgun
+  radiusdamage=1 kinetic
+  radiusfalloff=1
+  
+  effects_impact=effects.railgun
+}
+
+bombardment {
+  name=ROOT.Bombardment.Railgun
+  cost=6000
+  
+  warhead=warhead.bombardment.railgun
+  
+  lockdelay=0.5
+  unlockdelay=1.5
+  
+  text=text.bombardment.railgun
 }

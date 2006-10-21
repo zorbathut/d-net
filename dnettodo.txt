@@ -1,5 +1,4 @@
 ---- Major work path
-- More bombardment
 - Make package anywhere from here and on
 - Sparker effects
 - Improved laser effects
