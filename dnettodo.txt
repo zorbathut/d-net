@@ -1,8 +1,9 @@
 ---- Major work path
-- Second tier of weapons
-- Third tier of tanks
 - More bombardment
 - Make package anywhere from here and on
+- Sparker effects
+- Improved laser effects
+- Remove exponential text
 - Improve mine demo
 - Move labels in EMP demo
 - Tank-specific upgrades

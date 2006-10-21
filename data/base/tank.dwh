@@ -188,3 +188,112 @@ tank {
   
   text=text.tank.roxo
 }
+
+warhead {
+  name=warhead.sparker3
+  impactdamage=1.0 kinetic
+  impactdamage=1.0 energy
+  impactdamage=1.0 explosive
+}
+
+projectile {
+  name=projectile.sparker3
+  velocity=200
+  color=1.0, 1.0, 1.0
+  warhead=warhead.sparker3
+}
+
+deploy {
+  name=deploy.sparker3
+  
+  anglestddev=0.018
+  
+  projectile=projectile.sparker3
+}
+
+launcher {
+  name=launcher.sparker3
+  
+  deploy=deploy.sparker3
+  
+  stats=stats.null
+  
+  text=text.weapon.sparker
+}
+
+weapon {
+  name=Sparker III
+  firerate=8
+  
+  launcher=launcher.sparker3
+}
+
+tank {
+  name=ROOT.Tanks.CARAT II
+
+  health=175
+  handling=2.5
+  engine=32
+  
+  mass=35
+  
+  weapon=Sparker III
+  
+  cost=500000
+  
+  vertices=6.5 0 firepoint
+  vertices=-1 -2.25 rear_begin
+  vertices=0.4 -0.5
+  vertices=0.4 0.5
+  vertices=-1 2.25 rear_end
+  
+  text=text.tank.carat
+}
+
+tank {
+  name=ROOT.Tanks.PIRE II
+
+  health=210
+  handling=2.1
+  engine=25
+  
+  mass=60
+  
+  weapon=Sparker III
+  
+  cost=500000
+  
+  vertices=6.5 0 firepoint
+  vertices=5.5 -0.8
+  vertices=2 -2.3
+  vertices=0 -2.5 rear_begin
+  vertices=0 2.5 rear_end
+  vertices=2 2.3
+  vertices=5.5 0.8
+  
+  text=text.tank.pire
+}
+
+tank {
+  name=ROOT.Tanks.ROXO II
+
+  health=240
+  handling=1.85
+  engine=19
+  
+  mass=110
+  
+  weapon=Sparker III
+  
+  cost=500000
+  
+  vertices=6.6 0.5
+  vertices=6.8 0 firepoint
+  vertices=6.6 -0.5
+  vertices=4 -2.3
+  vertices=0 -2.8 rear_begin
+  vertices=0 2.8 rear_end
+  vertices=4 2.3
+  
+  text=text.tank.roxo
+}
