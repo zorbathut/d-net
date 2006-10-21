@@ -1,5 +1,4 @@
 ---- Major work path
-- Make sure EMP efficiency makes sense
 - Make cash-over-time not drop
 - Second tier of weapons
 - Third tier of tanks

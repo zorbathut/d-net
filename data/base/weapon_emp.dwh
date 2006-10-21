@@ -26,7 +26,7 @@ deploy {
 stats {
   name=stats.emp
   
-  cps_efficiency=3.0
+  dps_efficiency=0.6
 }
 
 launcher {
