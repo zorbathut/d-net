@@ -66,6 +66,7 @@ public:
   Color color;
 };
 
+class IDBDeploy; // yay circles
 struct IDBWarhead {
 public:
   float impactdamage[IDBAdjustment::DAMAGE_LAST];
@@ -77,6 +78,8 @@ public:
 
   float wallremovalradius;
   float wallremovalchance;
+
+  vector<const IDBDeploy *> deploy;
 
   vector<const IDBEffects *> effects_impact;
 };
@@ -93,6 +96,7 @@ public:
   Color color;
   float thickness_visual;
 
+  float airbrake_life;
   float halflife;
 
   vector<const IDBWarhead *> chain_warhead;
@@ -205,6 +209,7 @@ public:
  * Adjusted data items
  */
 
+class IDBDeployAdjust;
 struct IDBWarheadAdjust {
   const IDBWarhead *idb;
   IDBAdjustment adjust;
@@ -222,6 +227,7 @@ public:
   float wallremovalradius() const;
   float wallremovalchance() const;
 
+  vector<IDBDeployAdjust> deploy() const;
   const vector<const IDBEffects *> &effects_impact() const;
   
   float stats_damagePerShot() const;
@@ -245,6 +251,8 @@ public:
   float thickness_visual() const;
 
   float halflife() const;
+
+  float airbrake_life() const;
   
   float stats_damagePerShot() const;
 

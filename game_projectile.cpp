@@ -10,6 +10,7 @@ using namespace std;
 void Projectile::tick(vector<smart_ptr<GfxEffects> > *gfxe) {
   CHECK(live);
   CHECK(age != -1);
+  distance += len(movement()).toFloat();
   pos += movement();
   lasttail = nexttail();
   age++;
@@ -78,7 +79,7 @@ void Projectile::addCollision(Collider *collider, int id) const {
   CHECK(live);
   if(projtype.motion() == PM_MINE) {
   } else {
-    collider->addToken(CollideId(CGR_PROJECTILE, owner, id), Coord4(pos, pos + lasttail), Coord4(movement(), movement() + nexttail()));
+    collider->addToken(CollideId(CGR_PROJECTILE, owner, id), Coord4(pos, pos + lasttail), Coord4(movement(), movement() + nexttail() - lasttail));
   }
 }
 
@@ -92,13 +93,14 @@ Coord2 Projectile::warheadposition() const {
   return pos;
 }
 
-void Projectile::detonate(Coord2 pos, Tank *target, const GameImpactContext &gic, bool impacted) {
+void Projectile::detonate(Coord2 pos, Tank *target, const GamePlayerContext &gpc, bool impacted) {
+  CHECK(gpc.owner == owner);
   if(!live)
     return;
   
   vector<IDBWarheadAdjust> idw = projtype.chain_warhead();
   for(int i = 0; i < idw.size(); i++)
-    detonateWarhead(idw[i], pos, movement() * FPS, target, gic.players[owner], gic, 1.0, true, impacted);
+    detonateWarhead(idw[i], pos, movement() * FPS, target, gpc, 1.0, true, impacted);
 
   live = false;
 };
@@ -126,12 +128,13 @@ Coord2 Projectile::movement() const {
 }
 
 Coord2 Projectile::nexttail() const {
+  float maxlen = max(0., distance - 0.1);
   if(projtype.motion() == PM_NORMAL) {
-    return Coord2(makeAngle(d) * -projtype.length());
+    return Coord2(makeAngle(d) * -min(projtype.length(), maxlen));
   } else if(projtype.motion() == PM_MISSILE) {
-    return Coord2(makeAngle(d) * -projtype.length());
+    return Coord2(makeAngle(d) * -min(projtype.length(), maxlen));
   } else if(projtype.motion() == PM_AIRBRAKE) {
-    return Coord2(makeAngle(d) * -(airbrake_velocity / FPS + 2));
+    return Coord2(makeAngle(d) * -min(airbrake_velocity / FPS + 2, maxlen));
   } else if(projtype.motion() == PM_MINE) {
     return Coord2(0, 0);
   } else {
@@ -150,7 +153,7 @@ Coord2 Projectile::missile_sidedrop() const {
 }
 
 float Projectile::airbrake_liveness() const {
-  return 1.0 - (age / float(FPS));
+  return 1.0 - (age / float(FPS) / projtype.airbrake_life());
 }
 
 vector<Coord2> Projectile::mine_polys() const {
@@ -178,6 +181,7 @@ Projectile::Projectile(const Coord2 &in_pos, float in_d, const IDBProjectileAdju
   live = true;
   detonating = false;
   lasttail = Coord2(0, 0);
+  distance = 0;
   
   if(projtype.motion() == PM_NORMAL) {
   } else if(projtype.motion() == PM_MISSILE) {
@@ -218,15 +222,15 @@ void ProjectilePack::updateCollisions(Collider *collider, int owner) {
   }
 }
 
-void ProjectilePack::tick(vector<smart_ptr<GfxEffects> > *gfxe, Collider *collide, const GameImpactContext &gic) {
+void ProjectilePack::tick(vector<smart_ptr<GfxEffects> > *gfxe, Collider *collide, int id, const GameImpactContext &gic) {
   for(map<int, Projectile>::iterator itr = projectiles.begin(); itr != projectiles.end(); ) {
     // the logic here is kind of grim, sorry about this
     if(itr->second.isLive() && itr->second.isDetonating())
-      itr->second.detonate(itr->second.warheadposition(), NULL, gic, false);
+      itr->second.detonate(itr->second.warheadposition(), NULL, GamePlayerContext(id, this, gic), false);
     if(itr->second.isLive()) {
       itr->second.tick(gfxe);
       if(itr->second.isLive() && itr->second.isDetonating())
-        itr->second.detonate(itr->second.warheadposition(), NULL, gic, false);
+        itr->second.detonate(itr->second.warheadposition(), NULL, GamePlayerContext(id, this, gic), false);
       if(itr->second.isLive()) {
         ++itr;
         continue;

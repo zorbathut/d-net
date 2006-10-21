@@ -92,7 +92,21 @@ Color IDBWarheadAdjust::radiuscolor_dim() const { return idb->radiuscolor_dim; }
 
 const vector<const IDBEffects *> &IDBWarheadAdjust::effects_impact() const { return idb->effects_impact; };
 
-float IDBWarheadAdjust::stats_damagePerShot() const { return impactdamage() + radiusdamage(); };
+vector<IDBDeployAdjust> IDBWarheadAdjust::deploy() const {
+  vector<IDBDeployAdjust> rv;
+  for(int i = 0; i < idb->deploy.size(); i++)
+    rv.push_back(IDBDeployAdjust(idb->deploy[i], adjust));
+  return rv;
+}
+
+float IDBWarheadAdjust::stats_damagePerShot() const {
+  float count = impactdamage() + radiusdamage();
+  vector<IDBDeployAdjust> dp = deploy();
+  for(int i = 0; i < dp.size(); i++) {
+    count += dp[i].stats_damagePerShot();
+  }
+  return count;
+};
 
 IDBWarheadAdjust::IDBWarheadAdjust(const IDBWarhead *in_idb, const IDBAdjustment &in_adjust) { idb = in_idb; adjust = in_adjust; };
 
@@ -116,6 +130,7 @@ Color IDBProjectileAdjust::color() const { return idb->color; };
 float IDBProjectileAdjust::thickness_visual() const { return idb->thickness_visual; };
 
 float IDBProjectileAdjust::halflife() const { return idb->halflife; };
+float IDBProjectileAdjust::airbrake_life() const { return idb->airbrake_life; }
 
 float IDBProjectileAdjust::stats_damagePerShot() const {
   float val = 0;

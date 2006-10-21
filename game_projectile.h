@@ -20,7 +20,7 @@ public:
 
   Coord2 warheadposition() const;
 
-  void detonate(Coord2 pos, Tank *target, const GameImpactContext &gic, bool impacted);
+  void detonate(Coord2 pos, Tank *target, const GamePlayerContext &gpc, bool impacted);
 
   bool isLive() const;
   bool isDetonating() const;
@@ -61,6 +61,8 @@ private:
   
   bool live;
   bool detonating;
+  
+  float distance;
 };
 
 class ProjectilePack {
@@ -70,7 +72,7 @@ public:
   void add(const Projectile &proj);
 
   void updateCollisions(Collider *collider, int owner);
-  void tick(vector<smart_ptr<GfxEffects> > *gfxe, Collider *collider, const GameImpactContext &gic);
+  void tick(vector<smart_ptr<GfxEffects> > *gfxe, Collider *collider, int id, const GameImpactContext &gic);
   void render(const vector<Coord2> &tankpos) const;
 
 private:

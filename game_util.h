@@ -29,6 +29,19 @@ public:
   GameImpactContext(vector<Tank> *players, vector<smart_ptr<GfxEffects> > *effects, Gamemap *gamemap);
 };
 
+class ProjectilePack;
+class GamePlayerContext {
+public:
+  int owner;
+  ProjectilePack *projpack;
+
+  const GameImpactContext *gic;
+
+  Tank *owner_tank() const;
+
+  GamePlayerContext(int owner, ProjectilePack *projpack, const GameImpactContext &gic);
+};
+
 class DeployLocation {
   const Tank *tank_int; // if null, not tank
   
@@ -48,7 +61,7 @@ public:
 };
 
 class ProjectilePack;
-void deployProjectile(const IDBDeployAdjust &deploy, const DeployLocation &location, ProjectilePack *projpack, int owner, const GameImpactContext &gic, vector<float> *ang = NULL);
-void detonateWarhead(const IDBWarheadAdjust &warhead, Coord2 pos, Coord2 vel, Tank *impact, Tank *owner, const GameImpactContext &gic, float damagecredit, bool killcredit, bool impacted);
+void deployProjectile(const IDBDeployAdjust &deploy, const DeployLocation &location, const GamePlayerContext &gpc, vector<float> *ang = NULL);
+void detonateWarhead(const IDBWarheadAdjust &warhead, Coord2 pos, Coord2 vel, Tank *impact, const GamePlayerContext &gpc, float damagecredit, bool killcredit, bool impacted);
 
 #endif

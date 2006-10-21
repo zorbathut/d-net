@@ -1,0 +1,140 @@
+
+hierarchy {
+  name=ROOT.Weapons.HE Missile
+  pack=100
+}
+
+text {
+  name=text.weapon.hemissile
+  data=Improved technology leads to bigger explosions. The missile payload has been boosted with high-energy explosives and the necessary equipment to keep them stable in the ammo bay. Of course, with improved technology comes higher costs.
+}
+
+warhead {
+  name=warhead.hemissile.secondary
+  impactdamage=0.3 explosive
+  wallremovalradius=1
+  wallremovalchance=0.2
+}
+
+projectile {
+  name=projectile.hemissile.secondary
+  thickness_visual=0.6
+  velocity=40
+  color=1.0, 0.8, 0.3
+  motion=airbrake
+  airbrake_life=0.5
+  warhead=warhead.hemissile.secondary
+}
+
+deploy {
+  name=deploy.hemissile.secondary
+  type=explode
+  
+  exp_minsplits=2
+  exp_maxsplits=4
+  exp_minsplitsize=1
+  exp_maxsplitsize=5
+  
+  exp_shotspersplit=4
+  
+  anglestddev=0.1
+  
+  projectile=projectile.hemissile.secondary
+}
+
+warhead {
+  name=warhead.hemissile
+  impactdamage=2.0 explosive
+  radiusdamage=3.0 explosive
+  radiusfalloff=6
+  wallremovalradius=2
+  
+  deploy=deploy.hemissile.secondary
+}
+
+projectile {
+  name=projectile.hemissile
+  velocity=180
+  color=0.9, 0.95, 1.0
+  motion=missile
+  thickness_visual=2x
+  length=1.5x
+  warhead=warhead.hemissile
+}
+
+deploy {
+  name=deploy.hemissile
+  type=forward
+  anglestddev=0.004
+  projectile=projectile.hemissile
+}
+
+stats {
+  name=stats.hemissile
+  
+  dps_efficiency=0.65
+}
+
+launcher {
+  name=launcher.hemissile
+  
+  deploy=deploy.hemissile
+  
+  stats=stats.hemissile
+  
+  text=text.weapon.hemissile
+}
+
+weapon {
+  name=ROOT.Weapons.HE Missile.HE Missile I
+  
+  cost=2300
+  firerate=2.2
+  
+  launcher=launcher.hemissile
+}
+
+weapon {
+  name=ROOT.Weapons.HE Missile.HE Missile II
+  
+  cost=4400
+  firerate=3
+  
+  launcher=launcher.hemissile
+}
+
+weapon {
+  name=ROOT.Weapons.HE Missile.HE Missile III
+  
+  cost=6800
+  firerate=4
+  
+  launcher=launcher.hemissile
+}
+
+weapon {
+  name=ROOT.Weapons.HE Missile.HE Missile IV
+  
+  cost=10500
+  firerate=5.5
+  
+  launcher=launcher.hemissile
+}
+
+weapon {
+  name=ROOT.Weapons.HE Missile.HE Missile V
+  
+  cost=18000
+  firerate=7
+  
+  launcher=launcher.hemissile
+}
+
+weapon {
+  name=ROOT.Weapons.HE Missile.HE Missile VI
+  
+  cost=26000
+  firerate=9
+  
+  launcher=launcher.hemissile
+}

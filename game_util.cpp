@@ -70,36 +70,40 @@ void dealDamage(float dmg, Tank *target, Tank *owner, float damagecredit, bool k
   owner->addDamage(dmg * damagecredit);
 };
 
-void detonateWarhead(const IDBWarheadAdjust &warhead, Coord2 pos, Coord2 vel, Tank *impact, Tank *owner, const GameImpactContext &gic, float damagecredit, bool killcredit, bool impacted) {
+void detonateWarhead(const IDBWarheadAdjust &warhead, Coord2 pos, Coord2 vel, Tank *impact, const GamePlayerContext &gpc, float damagecredit, bool killcredit, bool impacted) {
   
   if(impact)
-    dealDamage(warhead.impactdamage(), impact, owner, damagecredit, killcredit);
+    dealDamage(warhead.impactdamage(), impact, gpc.owner_tank(), damagecredit, killcredit);
   
   if(warhead.radiusfalloff() >= 0) {
-    vector<pair<float, Tank *> > adjacency = gic.getAdjacency(pos);
+    vector<pair<float, Tank *> > adjacency = gpc.gic->getAdjacency(pos);
     for(int i = 0; i < adjacency.size(); i++) {
       if(adjacency[i].first < warhead.radiusfalloff())
-        dealDamage(warhead.radiusdamage() / warhead.radiusfalloff() * (warhead.radiusfalloff() - adjacency[i].first), adjacency[i].second, owner, damagecredit, killcredit);
+        dealDamage(warhead.radiusdamage() / warhead.radiusfalloff() * (warhead.radiusfalloff() - adjacency[i].first), adjacency[i].second, gpc.owner_tank(), damagecredit, killcredit);
     }
   }
   
   if(warhead.radiusfalloff() > 0)
-    gic.effects->push_back(GfxBlast(pos.toFloat(), warhead.radiusfalloff(), warhead.radiuscolor_bright(), warhead.radiuscolor_dim()));
+    gpc.gic->effects->push_back(GfxBlast(pos.toFloat(), warhead.radiusfalloff(), warhead.radiuscolor_bright(), warhead.radiuscolor_dim()));
   
   if(warhead.wallremovalradius() > 0 && frand() < warhead.wallremovalchance())
-    gic.gamemap->removeWalls(pos, warhead.wallremovalradius());
+    gpc.gic->gamemap->removeWalls(pos, warhead.wallremovalradius());
   
   if(impacted) {
     for(int i = 0; i < warhead.effects_impact().size(); i++) {
       for(int j = 0; j < warhead.effects_impact()[i]->quantity; j++) {
-        gic.effects->push_back(GfxIdb(pos.toFloat(), vel.toFloat(), warhead.effects_impact()[i]));
+        gpc.gic->effects->push_back(GfxIdb(pos.toFloat(), vel.toFloat(), warhead.effects_impact()[i]));
       }
     }
   }
-
+  
+  vector<IDBDeployAdjust> dep = warhead.deploy();
+  for(int i = 0; i < dep.size(); i++)
+    deployProjectile(dep[i], DeployLocation(pos, getAngle(vel.toFloat())), gpc);
+  
 };
 
-void deployProjectile(const IDBDeployAdjust &deploy, const DeployLocation &location, ProjectilePack *projpack, int owner, const GameImpactContext &gic, vector<float> *tang) {
+void deployProjectile(const IDBDeployAdjust &deploy, const DeployLocation &location, const GamePlayerContext &gpc, vector<float> *tang) {
   
   int type = deploy.type();
   if(type == DT_NORMAL) {
@@ -156,21 +160,21 @@ void deployProjectile(const IDBDeployAdjust &deploy, const DeployLocation &locat
     vector<IDBDeployAdjust> idd = deploy.chain_deploy();
     for(int i = 0; i < idd.size(); i++)
       for(int j = 0; j < proji.size(); j++)
-        deployProjectile(idd[i], DeployLocation(proji[j].first, proji[j].second), projpack, owner, gic);
+        deployProjectile(idd[i], DeployLocation(proji[j].first, proji[j].second), gpc);
   }
   
   {
     vector<IDBProjectileAdjust> idp = deploy.chain_projectile();
     for(int i = 0; i < idp.size(); i++)
       for(int j = 0; j < proji.size(); j++)
-        projpack->add(Projectile(proji[j].first, proji[j].second, idp[i], owner));
+        gpc.projpack->add(Projectile(proji[j].first, proji[j].second, idp[i], gpc.owner));
   }
   
   {
     vector<IDBWarheadAdjust> idw = deploy.chain_warhead();
     for(int i = 0; i < idw.size(); i++)
       for(int j = 0; j < proji.size(); j++)
-        detonateWarhead(idw[i], proji[j].first, Coord2(0, 0), NULL, gic.players[owner], gic, 1.0, true, true);
+        detonateWarhead(idw[i], proji[j].first, Coord2(0, 0), NULL, gpc, 1.0, true, true);
   }
 }
 Team::Team() {
@@ -187,3 +191,9 @@ static vector<Tank*> ptrize(vector<Tank> *players) {
 }
 
 GameImpactContext::GameImpactContext(vector<Tank> *players, vector<smart_ptr<GfxEffects> > *effects, Gamemap *gamemap) : players(ptrize(players)), effects(effects), gamemap(gamemap) { };
+
+Tank *GamePlayerContext::owner_tank() const {
+  return gic->players[owner];
+}
+
+GamePlayerContext::GamePlayerContext(int owner, ProjectilePack *projpack, const GameImpactContext &gic) : owner(owner), projpack(projpack), gic(&gic) { };

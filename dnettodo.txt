@@ -2,7 +2,10 @@
 - Second tier of weapons
 - Third tier of tanks
 - More bombardment
+- Improve mine demo
+- Move labels in EMP demo
 - Make package
+- Get rid of IDs in projectile
 - Training
 - Implants
 - Activate factions

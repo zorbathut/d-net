@@ -616,6 +616,7 @@ void parseProjectile(kvData *chunk) {
     titem->motion = PM_MISSILE;
   } else if(motion == "airbrake") {
     titem->motion = PM_AIRBRAKE;
+    titem->airbrake_life = parseWithDefault(chunk, "airbrake_life", 1.0);
   } else if(motion == "mine") {
     titem->motion = PM_MINE;
     titem->radius_physical = atof(chunk->consume("radius_physical").c_str());
@@ -709,6 +710,8 @@ void parseWarhead(kvData *chunk) {
   
   titem->wallremovalradius = parseWithDefault(chunk, "wallremovalradius", 0.0);
   titem->wallremovalchance = parseWithDefault(chunk, "wallremovalchance", 1.0);
+  
+  titem->deploy = parseSubclassSet(chunk, "deploy", deployclasses);
   
   titem->effects_impact = parseSubclassSet(chunk, "effects_impact", effectsclasses);
 }
