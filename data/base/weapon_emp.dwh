@@ -74,6 +74,8 @@ weapon {
   
   cost=4000
   firerate=9.5
+  
+  spawncash=10000
 
   launcher=launcher.emp
 }
@@ -83,6 +85,8 @@ weapon {
   
   cost=11000
   firerate=18
+  
+  spawncash=10000
 
   launcher=launcher.emp
 }

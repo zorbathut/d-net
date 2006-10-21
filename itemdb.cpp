@@ -558,6 +558,7 @@ void parseWeapon(kvData *chunk) {
     tnode.cat_restrictiontype = HierarchyNode::HNT_WEAPON;
     CHECK(mountpoint->cat_restrictiontype == -1 || tnode.cat_restrictiontype == mountpoint->cat_restrictiontype);
     tnode.weapon = &weaponclasses[name];
+    tnode.spawncash = parseWithDefault(chunk, "spawncash", Money(0));
     mountpoint->branches.push_back(tnode);
     
     CHECK(mountpoint->pack >= 1);

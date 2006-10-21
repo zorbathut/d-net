@@ -2,6 +2,8 @@
 hierarchy {
   name=ROOT.Weapons.Megawatt Laser
   pack=100
+  
+  spawncash=10000
 }
 
 text {

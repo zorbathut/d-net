@@ -188,7 +188,11 @@ Transform2d t2d_rotate(float rads) {
 }
 
 string Money::textual() const {
-  return stringFromLongdouble(money);
+  if(money > 100000) {
+    return stringFromLongdouble(money / 1000) + "K";
+  } else {
+    return stringFromLongdouble(money);
+  }
 }
 
 float Money::toFloat() const {

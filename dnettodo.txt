@@ -1,9 +1,9 @@
 ---- Major work path
-- Make package anywhere from here and on
-- Remove exponential text
+- More work with rounding
 - Improve mine demo
 - Move labels in EMP demo
 - Tank-specific upgrades
+- Tank 
 - Okay make the damn package showoff
 - Reload on-the-fly
 - Get rid of IDs in projectile

@@ -180,6 +180,8 @@ weapon {
   
   cost=4500
   firerate=3
+  
+  spawncash=10000
 
   launcher=launcher.mine4
 }
@@ -222,6 +224,8 @@ weapon {
   
   cost=15000
   firerate=3
+  
+  spawncash=10000
 
   launcher=launcher.mine5
 }
