@@ -11,11 +11,27 @@ text {
   data=Heavy armor-piercing rounds have been added to the standard autocannon. The new alloys increase cost enormously, but also increase penetration.
 }
 
+effects {
+  name=effects.apautocannon
+
+  quantity=8
+  
+  inertia=0.5
+  spread=30
+  
+  slowdown=0.4
+  lifetime=0.3
+  
+  radius=0.5
+  color=1.0, 0.9, 0.6
+}
+
 warhead {
   name=warhead.apautocannon
   impactdamage=4 kinetic
   wallremovalradius=0.8
   wallremovalchance=0.20
+  effects_impact=effects.apautocannon
 }
 
 projectile {

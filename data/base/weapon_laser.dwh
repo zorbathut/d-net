@@ -9,9 +9,25 @@ text {
   data="Laser" is a misnomer. This family of weapons is a projected plasma containment system. Extremely accurate and fast-firing, the containment field disperses rapidly on impact, leading to unfortunately low damage.
 }
 
+effects {
+  name=effects.laser
+
+  quantity=8
+  
+  inertia=0
+  spread=50
+  
+  slowdown=0.3
+  lifetime=0.4
+  
+  radius=0.3
+  color=0.6, 0.9, 1.0
+}
+
 warhead {
   name=warhead.laser
   impactdamage=0.4 energy
+  effects_impact=effects.laser
 }
 
 projectile {

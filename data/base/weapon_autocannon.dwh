@@ -15,7 +15,7 @@ effects {
   quantity=8
   
   inertia=0.5
-  spread=50
+  spread=30
   
   slowdown=0.5
   lifetime=0.2
