@@ -1,5 +1,6 @@
 ---- Major work path
 - Make sure EMP efficiency makes sense
+- Make cash-over-time not drop
 - Second tier of weapons
 - Third tier of tanks
 - More bombardment
@@ -8,6 +9,7 @@
 - Move labels in EMP demo
 - Tank-specific upgrades
 - Okay make the damn package showoff
+- Reload on-the-fly
 - Get rid of IDs in projectile
 - Training
 - Implants

@@ -16,11 +16,11 @@ effects {
 
   quantity=8
   
-  inertia=0.5
-  spread=30
+  inertia=-0.4
+  spread=20
   
-  slowdown=0.4
-  lifetime=0.3
+  slowdown=0.3
+  lifetime=0.2
   
   radius=0.5
   color=1.0, 0.9, 0.6
