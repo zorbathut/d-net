@@ -1,10 +1,13 @@
 ---- Major work path
+- Make sure EMP efficiency makes sense
 - Second tier of weapons
 - Third tier of tanks
 - More bombardment
+- Make package anywhere from here and on
 - Improve mine demo
 - Move labels in EMP demo
-- Make package
+- Tank-specific upgrades
+- Okay make the damn package showoff
 - Get rid of IDs in projectile
 - Training
 - Implants
