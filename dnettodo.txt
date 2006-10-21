@@ -8,7 +8,12 @@
 - Activate factions
   - Faction bonuses/penalties in demo screens
 - Many many more weapons
-- Make small text thicker
+- Arcade mode
+- Alliance mode? Faction mode?
+- CTF
+- King of the Hill
+- Mutant
+- Onslaught
 
 ---- Things that take thought and musing
 - FloatRange
@@ -29,6 +34,7 @@
 - "Kill graph"
 
 ---- Maintenance, minor bugfix, braindead
+- Make small text thicker
 - Set your keys/buttons changing
 - AI shouldn't try to buy the items it already owns/smarter about shops
 - Buy menu flicker? Double-buffering?

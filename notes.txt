@@ -23,7 +23,7 @@ CARAT - fast
 PIRE - avg
 ROXO - heavy
 
-SEKA - added damage energy, trap, exotic, fast, not heavy - bonus speed upgrade
+SEKA - added damage energy, trap, exotic, fast, light - bonus speed upgrade
 MARI - bonus fire rate, slow, medium - bonus damage upgrades
 TUVU - added damage kinetic, explosive, added radius, medium, heavy - bonus hull upgrade
 

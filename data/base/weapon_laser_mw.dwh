@@ -1,0 +1,118 @@
+
+hierarchy {
+  name=ROOT.Weapons.Megawatt Laser
+  pack=100
+}
+
+text {
+  name=text.weapon.mwlaser
+  data=The megawatt laser series is an improved model of the basic laser. Heavy power couplings and a specialized water cooling system allow for more raw power output at a far higher price.
+}
+
+effects {
+  name=effects.mwlaser
+
+  quantity=12
+  
+  inertia=0
+  spread=50
+  
+  slowdown=0.3
+  lifetime=0.4
+  
+  radius=0.4
+  color=0.6, 0.9, 1.0
+}
+
+warhead {
+  name=warhead.mwlaser
+  impactdamage=1.5 energy
+  effects_impact=effects.mwlaser
+}
+
+projectile {
+  name=projectile.mwlaser
+  motion=normal
+  velocity=800
+  thickness_visual=1.5x
+  length=1.5x
+  color=0.6, 0.9, 1.0
+  warhead=warhead.mwlaser
+}
+
+deploy {
+  name=deploy.mwlaser
+  type=forward
+  anglestddev=0.006
+  projectile=projectile.mwlaser
+}
+
+stats {
+  name=stats.mwlaser
+  
+  dps_efficiency=2
+}
+
+launcher {
+  name=launcher.mwlaser
+  
+  deploy=deploy.mwlaser
+  
+  stats=stats.mwlaser
+  
+  text=text.weapon.mwlaser
+}
+
+weapon {
+  name=ROOT.Weapons.Megawatt Laser.MW Laser I
+  
+  cost=1700
+  firerate=4.5
+  
+  launcher=launcher.mwlaser
+}
+
+weapon {
+  name=ROOT.Weapons.Megawatt Laser.MW Laser II
+  
+  cost=2400
+  firerate=5.5
+  
+  launcher=launcher.mwlaser
+}
+
+weapon {
+  name=ROOT.Weapons.Megawatt Laser.MW Laser III
+  
+  cost=3500
+  firerate=7
+
+  launcher=launcher.mwlaser
+}
+
+weapon {
+  name=ROOT.Weapons.Megawatt Laser.MW Laser IV
+  
+  cost=5200
+  firerate=9
+
+  launcher=launcher.mwlaser
+}
+
+weapon {
+  name=ROOT.Weapons.Megawatt Laser.MW Laser V
+  
+  cost=7500
+  firerate=11.5
+
+  launcher=launcher.mwlaser
+}
+
+weapon {
+  name=ROOT.Weapons.Megawatt Laser.MW Laser VI
+  
+  cost=13000
+  firerate=14.5
+
+  launcher=launcher.mwlaser
+}
