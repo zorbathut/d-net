@@ -1,4 +1,49 @@
 
+effects {
+  name=effects.sparker1
+
+  quantity=4
+  
+  inertia=-0.1
+  spread=40
+  
+  slowdown=0.2
+  lifetime=0.3
+  
+  radius=0.3
+  color=1.0, 0.3, 0.3
+}
+
+effects {
+  name=effects.sparker2
+
+  quantity=4
+  
+  inertia=-0.1
+  spread=40
+  
+  slowdown=0.2
+  lifetime=0.3
+  
+  radius=0.3
+  color=0.3, 1.0, 0.3
+}
+
+effects {
+  name=effects.sparker3
+
+  quantity=4
+  
+  inertia=-0.1
+  spread=40
+  
+  slowdown=0.2
+  lifetime=0.3
+  
+  radius=0.5
+  color=0.3, 0.3, 1.0
+}
+
 text {
   name=text.weapon.sparker
   data=The most infamous of junkyard weapons, the Sparker is a cobbled together monstrosity from whatever parts can be found. It is not powerful, accurate, nor rapid, but can serve if no other weapons are available.
@@ -9,6 +54,10 @@ warhead {
   impactdamage=0.4 kinetic
   impactdamage=0.4 energy
   impactdamage=0.4 explosive
+  
+  effects_impact=effects.sparker1
+  effects_impact=effects.sparker2
+  effects_impact=effects.sparker3
 }
 
 projectile {
@@ -77,6 +126,10 @@ warhead {
   impactdamage=0.6 kinetic
   impactdamage=0.6 energy
   impactdamage=0.6 explosive
+  
+  effects_impact=effects.sparker1
+  effects_impact=effects.sparker2
+  effects_impact=effects.sparker3
 }
 
 projectile {
@@ -194,6 +247,10 @@ warhead {
   impactdamage=1.0 kinetic
   impactdamage=1.0 energy
   impactdamage=1.0 explosive
+  
+  effects_impact=effects.sparker1
+  effects_impact=effects.sparker2
+  effects_impact=effects.sparker3
 }
 
 projectile {
