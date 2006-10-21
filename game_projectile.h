@@ -20,7 +20,7 @@ public:
 
   Coord2 warheadposition() const;
 
-  void impact(Coord2 pos, Tank *target, const GameImpactContext &gic);
+  void detonate(Coord2 pos, Tank *target, const GameImpactContext &gic, bool impacted);
 
   bool isLive() const;
   bool isDetonating() const;

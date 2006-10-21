@@ -9,11 +9,28 @@ text {
   data=Standard 44mm armor-piercing kinetic delivery systems. These weapons are rather inaccurate and not terribly fast-firing, but pack incredible power at short range.
 }
 
+effects {
+  name=effects.autocannon
+
+  quantity=8
+  
+  inertia=0.5
+  spread=50
+  
+  slowdown=0.5
+  lifetime=0.2
+  
+  radius=0.3
+  color=1.0, 0.9, 0.6
+}
+
 warhead {
   name=warhead.autocannon
   impactdamage=1 kinetic
   wallremovalradius=0.5
   wallremovalchance=0.05
+  
+  effects_impact=effects.autocannon
 }
 
 projectile {

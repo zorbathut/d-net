@@ -43,4 +43,7 @@ smart_ptr<GfxEffects> GfxPath(vector<Float2> path, Float2 pos_start, Float2 pos_
 smart_ptr<GfxEffects> GfxPing(Float2 pos, float radius_d, float thickness_d, float life, Color color);
 smart_ptr<GfxEffects> GfxBlast(Float2 center, float radius, Color bright, Color dim);
 
+class IDBEffects;
+smart_ptr<GfxEffects> GfxIdb(Float2 center, Float2 velocity, const IDBEffects *effect);
+
 #endif

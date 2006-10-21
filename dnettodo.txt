@@ -57,4 +57,21 @@
 http://www.itchstudios.com/psg/ - Dafred's artist
 
 ---
-Deploy/launch
+Effects!
+
+So. Various effects:
+
+* Missiles don't have any.
+* Autocannons pick up inertia and have flak.
+* Lasers spread radially and stick around for a bit.
+
+So . . .
+
+* Inertia percentage
+* Added momentum
+* Slowdown per second
+* Seconds to fade completely
+* Radius
+* Color
+
+Anything else? Who the hell knows.

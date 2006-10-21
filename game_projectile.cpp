@@ -92,18 +92,13 @@ Coord2 Projectile::warheadposition() const {
   return pos;
 }
 
-void Projectile::impact(Coord2 pos, Tank *target, const GameImpactContext &gic) {
+void Projectile::detonate(Coord2 pos, Tank *target, const GameImpactContext &gic, bool impacted) {
   if(!live)
     return;
   
   vector<IDBWarheadAdjust> idw = projtype.chain_warhead();
   for(int i = 0; i < idw.size(); i++)
-    detonateWarhead(idw[i], pos, target, gic.players[owner], gic, 1.0, true);
-  
-  // this is not ideal
-  if(projtype.motion() == PM_NORMAL)
-    for(int i = 0; i < 6; i++)
-      gic.effects->push_back(GfxPoint(pos.toFloat(),  (makeAngle(frand() * 2 * PI) * 20) * (1.0 - frand() * frand()), 0.1, Color(1.0, 1.0, 1.0)));
+    detonateWarhead(idw[i], pos, movement() * FPS, target, gic.players[owner], gic, 1.0, true, impacted);
 
   live = false;
 };
@@ -227,11 +222,11 @@ void ProjectilePack::tick(vector<smart_ptr<GfxEffects> > *gfxe, Collider *collid
   for(map<int, Projectile>::iterator itr = projectiles.begin(); itr != projectiles.end(); ) {
     // the logic here is kind of grim, sorry about this
     if(itr->second.isLive() && itr->second.isDetonating())
-      itr->second.impact(itr->second.warheadposition(), NULL, gic);
+      itr->second.detonate(itr->second.warheadposition(), NULL, gic, false);
     if(itr->second.isLive()) {
       itr->second.tick(gfxe);
       if(itr->second.isLive() && itr->second.isDetonating())
-        itr->second.impact(itr->second.warheadposition(), NULL, gic);
+        itr->second.detonate(itr->second.warheadposition(), NULL, gic, false);
       if(itr->second.isLive()) {
         ++itr;
         continue;

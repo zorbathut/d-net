@@ -4,6 +4,7 @@
 #include "const.h"
 #include "gfx.h"
 #include "rng.h"
+#include "itemdb.h"
 
 using namespace std;
 
@@ -173,3 +174,25 @@ private:
   
 smart_ptr<GfxEffects> GfxBlast(Float2 center, float radius, Color bright, Color dim) {
   return smart_ptr<GfxEffects>(new GfxEffectsBlast(center, radius, bright, dim)); }
+
+class GfxEffectsIdb : public GfxEffects {
+public:
+    
+  virtual void render() const {
+    setBaseColor();
+    drawPoint(center + velocity * (pow(effect->slowdown, getAge()) / log(effect->slowdown) - 1 / log(effect->slowdown)), effect->radius);  // calculus FTW
+  }
+  
+  GfxEffectsIdb(Float2 center, Float2 in_velocity, const IDBEffects *effect) : GfxEffects(effect->lifetime, effect->color), center(center), effect(effect) {
+    velocity = in_velocity * effect->inertia + makeAngle(frand() * 2 * PI) * gaussian() * effect->spread;
+  };
+  
+private:
+  
+  Float2 center;
+  Float2 velocity;
+  const IDBEffects *effect;
+};
+  
+smart_ptr<GfxEffects> GfxIdb(Float2 center, Float2 velocity, const IDBEffects *effect) {
+  return smart_ptr<GfxEffects>(new GfxEffectsIdb(center, velocity, effect)); }

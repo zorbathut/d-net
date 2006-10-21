@@ -70,7 +70,7 @@ void dealDamage(float dmg, Tank *target, Tank *owner, float damagecredit, bool k
   owner->addDamage(dmg * damagecredit);
 };
 
-void detonateWarhead(const IDBWarheadAdjust &warhead, Coord2 pos, Tank *impact, Tank *owner, const GameImpactContext &gic, float damagecredit, bool killcredit) {
+void detonateWarhead(const IDBWarheadAdjust &warhead, Coord2 pos, Coord2 vel, Tank *impact, Tank *owner, const GameImpactContext &gic, float damagecredit, bool killcredit, bool impacted) {
   
   if(impact)
     dealDamage(warhead.impactdamage(), impact, owner, damagecredit, killcredit);
@@ -88,6 +88,14 @@ void detonateWarhead(const IDBWarheadAdjust &warhead, Coord2 pos, Tank *impact, 
   
   if(warhead.wallremovalradius() > 0 && frand() < warhead.wallremovalchance())
     gic.gamemap->removeWalls(pos, warhead.wallremovalradius());
+  
+  if(impacted) {
+    for(int i = 0; i < warhead.effects_impact().size(); i++) {
+      for(int j = 0; j < warhead.effects_impact()[i]->quantity; j++) {
+        gic.effects->push_back(GfxIdb(pos.toFloat(), vel.toFloat(), warhead.effects_impact()[i]));
+      }
+    }
+  }
 
 };
 
@@ -162,7 +170,7 @@ void deployProjectile(const IDBDeployAdjust &deploy, const DeployLocation &locat
     vector<IDBWarheadAdjust> idw = deploy.chain_warhead();
     for(int i = 0; i < idw.size(); i++)
       for(int j = 0; j < proji.size(); j++)
-        detonateWarhead(idw[i], proji[j].first, NULL, gic.players[owner], gic, 1.0, true);
+        detonateWarhead(idw[i], proji[j].first, Coord2(0, 0), NULL, gic.players[owner], gic, 1.0, true, true);
   }
 }
 Team::Team() {

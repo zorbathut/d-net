@@ -22,6 +22,7 @@ static map<string, IDBGlory> gloryclasses;
 static map<string, IDBBombardment> bombardmentclasses;
 static map<string, IDBTank> tankclasses;
 static map<string, IDBAdjustment> adjustmentclasses;
+static map<string, IDBEffects> effectsclasses;
 
 static vector<IDBFaction> factions;
 static map<string, string> text;
@@ -518,6 +519,21 @@ void parseLauncher(kvData *chunk) {
   }
 }
 
+void parseEffects(kvData *chunk) {
+  IDBEffects *titem = prepareName(chunk, &effectsclasses, "effects");
+  
+  titem->quantity = atoi(chunk->consume("quantity").c_str());
+  
+  titem->inertia = atof(chunk->consume("inertia").c_str());
+  titem->spread = atof(chunk->consume("spread").c_str());
+  
+  titem->slowdown = atof(chunk->consume("slowdown").c_str());
+  titem->lifetime = atof(chunk->consume("lifetime").c_str());
+  
+  titem->radius = atof(chunk->consume("radius").c_str());
+  titem->color = colorFromString(chunk->consume("color"));
+}
+
 void parseStats(kvData *chunk) {
   IDBStats *titem = prepareName(chunk, &statsclasses, "stats");
     
@@ -693,6 +709,8 @@ void parseWarhead(kvData *chunk) {
   
   titem->wallremovalradius = parseWithDefault(chunk, "wallremovalradius", 0.0);
   titem->wallremovalchance = parseWithDefault(chunk, "wallremovalchance", 1.0);
+  
+  titem->effects_impact = parseSubclassSet(chunk, "effects_impact", effectsclasses);
 }
 
 void parseGlory(kvData *chunk) {
@@ -981,6 +999,8 @@ void parseItemFile(const string &fname) {
       parseLauncher(&chunk);
     } else if(chunk.category == "stats") {
       parseStats(&chunk);
+    } else if(chunk.category == "effects") {
+      parseEffects(&chunk);
     } else {
       CHECK(0);
     }

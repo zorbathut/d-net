@@ -90,6 +90,8 @@ float IDBWarheadAdjust::wallremovalchance() const { return idb->wallremovalchanc
 Color IDBWarheadAdjust::radiuscolor_bright() const { return idb->radiuscolor_bright; };
 Color IDBWarheadAdjust::radiuscolor_dim() const { return idb->radiuscolor_dim; };
 
+const vector<const IDBEffects *> &IDBWarheadAdjust::effects_impact() const { return idb->effects_impact; };
+
 float IDBWarheadAdjust::stats_damagePerShot() const { return impactdamage() + radiusdamage(); };
 
 IDBWarheadAdjust::IDBWarheadAdjust(const IDBWarhead *in_idb, const IDBAdjustment &in_adjust) { idb = in_idb; adjust = in_adjust; };

@@ -52,6 +52,20 @@ public:
   const string *text;
 };
 
+struct IDBEffects {
+public:
+  int quantity;
+
+  float inertia;
+  float spread;
+
+  float slowdown;
+  float lifetime;
+
+  float radius;
+  Color color;
+};
+
 struct IDBWarhead {
 public:
   float impactdamage[IDBAdjustment::DAMAGE_LAST];
@@ -63,6 +77,8 @@ public:
 
   float wallremovalradius;
   float wallremovalchance;
+
+  vector<const IDBEffects *> effects_impact;
 };
 
 enum { PM_NORMAL, PM_MISSILE, PM_AIRBRAKE, PM_MINE, PM_LAST };
@@ -205,6 +221,8 @@ public:
   
   float wallremovalradius() const;
   float wallremovalchance() const;
+
+  const vector<const IDBEffects *> &effects_impact() const;
   
   float stats_damagePerShot() const;
 
