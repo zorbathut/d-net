@@ -1252,7 +1252,7 @@ PersistentData::PersistentData(int playercount, int in_roundsbetweenshop) {
     pms[cdbc].buttons[BUTTON_FIRE1] = 2;
     pms[cdbc].buttons[BUTTON_FIRE2] = 5;
     pms[cdbc].buttons[BUTTON_SWITCH1] = 1;
-    pms[cdbc].buttons[BUTTON_SWITCH2] = 5;
+    pms[cdbc].buttons[BUTTON_SWITCH2] = 4;
     pms[cdbc].buttons[BUTTON_ACCEPT] = 2;
     pms[cdbc].buttons[BUTTON_CANCEL] = 5;
     CHECK(pms[cdbc].buttons.size() == 6);
