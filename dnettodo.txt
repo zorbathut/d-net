@@ -1,12 +1,20 @@
 ---- Major work path
 - More work with rounding
-- Improve mine demo
-- Move labels in EMP demo
+  - Player stats in full integer notation, buy stats in flpt
+- Bombardment weapon-switch spam
+- Tank stats shouldn't include upgrades
+- Projectile destruction chances
+- Typo in missile description
+- Item spawning based on biggest player
+- Item despawning based on wimpiest player
+- Change keys while setting up keys for first time
+- "Enter sell mode" option in shop, with descriptive text
+- Second-level I tanks
 - Tank-specific upgrades
-- Tank 
-- Okay make the damn package showoff
 - Reload on-the-fly
 - Get rid of IDs in projectile
+- Improve mine demo
+- Move labels in EMP demo
 - Training
 - Implants
 - Activate factions
@@ -52,7 +60,7 @@
 - Add random faction
 - Stop reloading files in findLevels
 - Add tank sell depreciation
-- Special unique bonuses (turned the most, closest to death, most/least accurate, traveler, tunneler, deadeye, kamikaze)
+- Special unique bonuses (turned the most, closest to death, most/least accurate, traveler, tunneler, deadeye, kamikaze, suicidal, triggerhappy, gunshy, bomber)
 
 ---- Major but unimportant ATM
 - Sound, yo
