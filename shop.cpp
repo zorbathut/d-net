@@ -503,7 +503,22 @@ void Shop::renderToScreen(const Player *player) const {
   //clearFrame(player->getFaction()->color * 0.05 + Color(0.02, 0.02, 0.02));
   setColor(1.0, 1.0, 1.0);
   setZoom(Float4(0, 0, 133.333, 133.333 / getAspect()));
-  drawText(StringPrintf("Cash available %s", player->getCash().textual().c_str()), slay.fontsize(), Float2(80, 1));
+  {
+    long long cash = player->getCash().value();
+    string v;
+    if(cash == 0)
+      v = "0";
+    else {
+      while(cash) {
+        if(v.size() && v.size() % 4 == 3)
+          v += ',';
+        v += cash % 10 + '0';
+        cash /= 10;
+      }
+    }
+    reverse(v.begin(), v.end());
+    drawText(StringPrintf("Cash available: %s", v.c_str()), slay.fontsize(), Float2(80, 1));
+  }
   if(selling) {
     drawText("    Selling equipment", slay.fontsize(), Float2(1, 1));
   } else {

@@ -1,6 +1,4 @@
 ---- Major work path
-- More work with rounding
-  - Player stats in full integer notation, buy stats in flpt
 - Bombardment weapon-switch spam
 - Tank stats shouldn't include upgrades
 - Projectile destruction chances
