@@ -13,6 +13,7 @@
 - Tank-specific upgrades
 - Reload on-the-fly
 - Get rid of IDs in projectile
+- Remove global RNGs, synch up RNGs completely
 - Improve mine demo
 - Move labels in EMP demo
 - Training

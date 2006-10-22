@@ -25,7 +25,7 @@ void Weaponmanager::cycleWeapon(int id) {
   }
 }
 float Weaponmanager::shotFired(int id) {
-  float val = curweapons[id]->base_cost.toFloat() / curweapons[id]->quantity;
+  float val = (float)curweapons[id]->base_cost.value() / curweapons[id]->quantity;
   if(ammoCountSlot(id) != UNLIMITED_AMMO)
     removeAmmo(curweapons[id], 1);
   return val;
@@ -371,7 +371,7 @@ Money Player::getCash() const {
   return cash;
 }
 void Player::addCash(Money amount) {
-  CHECK(amount.toFloat() >= 0);
+  CHECK(amount >= Money(0));
   dprintf("Adding %s bucks!\n", amount.textual().c_str());
   cash += amount;
 }

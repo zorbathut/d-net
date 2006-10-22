@@ -320,7 +320,7 @@ void Ai::updateShop(const Player *player, const HierarchyNode &hierarchy) {
   sort(upgs.begin(), upgs.end());
   Money upgcash = player->getCash() / 2;
   Money weapcash = player->getCash();
-  while(upgcash.toFloat() > 0) {
+  while(upgcash > Money(0)) {
     for(int i = 0; i < upgs.size(); i++) {
       if(upgs[i].first.second && player->stateUpgrade(upgs[i].first.second) == ITEMSTATE_EQUIPPED) {
         upgs.erase(upgs.begin() + i);
@@ -338,13 +338,13 @@ void Ai::updateShop(const Player *player, const HierarchyNode &hierarchy) {
     appendPurchases(&shopQueue, upgs[dlim].second, 1);
     upgs.erase(upgs.begin() + dlim);
   }
-  if(weapcash.toFloat() > 0) {
+  if(weapcash > Money(0)) {
     int dlim = 0;
     while(dlim < weps.size() && weps[dlim].first <= weapcash)
       dlim++;
     dlim = int(dlim * rng.frand());
     int amount = 1;
-    if(weps[dlim].first.toFloat() > 0)
+    if(weps[dlim].first > Money(0))
       amount = min(weapcash / weps[dlim].first, 100);
     dprintf("Buying %d of stuff\n", amount);
     appendPurchases(&shopQueue, weps[dlim].second, amount);

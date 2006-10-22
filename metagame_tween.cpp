@@ -954,9 +954,9 @@ void PersistentData::divvyCash(float firepowerSpent) {
       chunkTotal++;
   }
   dprintf("%d, %f\n", shopcycles, firepowerSpent);
-  lrBaseCash = Money((75. / 1000 * FLAGS_startingCash) * powl(1.08, roundsbetweenshop * shopcycles) * playerdata.size() * roundsbetweenshop);
-  lrFirepower = Money(firepowerSpent * 0.8);
-  double total = (lrBaseCash + lrFirepower).toFloat();
+  lrBaseCash = Money((long long)((75. / 1000 * FLAGS_startingCash) * powl(1.08, roundsbetweenshop * shopcycles) * playerdata.size() * roundsbetweenshop));
+  lrFirepower = Money((long long)(firepowerSpent * 0.8));
+  double total = (lrBaseCash + lrFirepower).value();
   dprintf("Total cash is %f", total);
   
   if(total > 1e3000) {
@@ -983,7 +983,7 @@ void PersistentData::divvyCash(float firepowerSpent) {
   
   vector<Money> playercashresult(playerdata.size());
   for(int i = 0; i < playercash.size(); i++) {
-    playercashresult[i] = Money(playercash[i] * total);
+    playercashresult[i] = Money((long long)(playercash[i] * total));
   }
   // playercashresult now stores cashola for players
   

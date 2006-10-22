@@ -67,22 +67,16 @@ Transform2d t2d_rotate(float rads);
 class Money { // Like my hat?
 private:
 
-  long double money;
+  long long money;
 
 public:
   string textual() const;
 
-  float toFloat() const;
+  long long value() const;
 
   Money();
-  explicit Money(double in);
-  explicit Money(float in);
-  explicit Money(int in);
-
-  // These should not be used by anything outside util.cpp.
-  long double raw() const;
-  explicit Money(long double in);
-};  // It's made of money!
+  explicit Money(long long in);
+};
 
 Money operator+(const Money &lhs, const Money &rhs);
 Money operator-(const Money &lhs, const Money &rhs);
@@ -92,6 +86,7 @@ Money operator*(const Money &lhs, float rhs);
 int operator/(const Money &lhs, const Money &rhs);
 Money operator/(const Money &lhs, int rhs);
 Money operator/(const Money &lhs, float rhs);
+int operator%(const Money &lhs, int rhs);
 
 const Money &operator+=(Money &lhs, const Money &rhs);
 const Money &operator-=(Money &lhs, const Money &rhs);

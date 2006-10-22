@@ -195,33 +195,26 @@ string Money::textual() const {
   }
 }
 
-float Money::toFloat() const {
-  return money;
-}
-
 Money::Money() { };
-Money::Money(double in) { money = floor(in + 0.5); };
-Money::Money(float in) { money = floor(in + 0.5); };
-Money::Money(int in) { money = in; };
+Money::Money(long long in) { money = in; };
 
-long double Money::raw() const { return money; };
-Money::Money(long double in) { money = floor(in + 0.5); };
+long long Money::value() const { return money; };
 
 Money operator+(const Money &lhs, const Money &rhs) {
-  return Money(lhs.raw() + rhs.raw()); }
+  return Money(lhs.value() + rhs.value()); }
  Money operator-(const Money &lhs, const Money &rhs) {
-  return Money(lhs.raw() - rhs.raw()); }
+  return Money(lhs.value() - rhs.value()); }
 
 Money operator*(const Money &lhs, float rhs) {
-  return Money(lhs.raw() * rhs); }
+  return Money((long long)(lhs.value() * rhs)); }
 Money operator*(const Money &lhs, int rhs) {
-  return Money(lhs.raw() * rhs); }
+  return Money(lhs.value() * rhs); }
 int operator/(const Money &lhs, const Money &rhs) {
-  return int(min(lhs.raw() / rhs.raw(), 2000000000.L)); }
+  return int(min(lhs.value() / rhs.value(), 2000000000LL)); }
 Money operator/(const Money &lhs, int rhs) {
-  return Money(lhs.raw() / rhs); }
+  return Money(lhs.value() / rhs); }
 Money operator/(const Money &lhs, float rhs) {
-  return Money(lhs.raw() / rhs); }
+  return Money((long long)(lhs.value() / rhs)); }
 
 const Money &operator+=(Money &lhs, const Money &rhs) {
   lhs = lhs + rhs; return lhs; }
@@ -229,9 +222,9 @@ const Money &operator-=(Money &lhs, const Money &rhs) {
   lhs = lhs - rhs; return lhs; }
 
 bool operator==(const Money &lhs, const Money &rhs) {
-  return lhs.raw() == rhs.raw(); }
+  return lhs.value() == rhs.value(); }
 bool operator<(const Money &lhs, const Money &rhs) {
-  return lhs.raw() < rhs.raw(); }
+  return lhs.value() < rhs.value(); }
 bool operator<=(const Money &lhs, const Money &rhs) {
   return lhs < rhs || lhs == rhs; }
 bool operator>(const Money &lhs, const Money &rhs) {
