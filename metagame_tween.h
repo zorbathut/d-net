@@ -52,6 +52,7 @@ private:
   vector<bool> checked;
   
   Money newPlayerStartingCash;
+  Money highestPlayerCash;
   
   // Tween layout info
   struct Slot {

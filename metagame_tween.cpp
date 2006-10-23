@@ -725,12 +725,16 @@ void PersistentData::renderSlot(int slotid) const {
     setZoom(Float4(0, 0, 800, 600));
     setColor(1.0, 1.0, 1.0);
     
-    float cury = 40;
+    float cury = 20;
     
     setColor(C::inactive_text);
-    drawJustifiedText(StringPrintf("Base income: %s", lrBaseCash.textual().c_str()), 15, Float2(40 , cury), TEXT_MIN, TEXT_MIN);
-    drawJustifiedText(StringPrintf("Firepower bonus: %s", lrFirepower.textual().c_str()), 15, Float2(760, cury), TEXT_MAX, TEXT_MIN);
-    cury += 40;
+    drawJustifiedText(StringPrintf("Base income: %s", lrBaseCash.textual().c_str()), 10, Float2(40 , cury), TEXT_MIN, TEXT_MIN);
+    drawJustifiedText(StringPrintf("Highest player cash: %s", highestPlayerCash.textual().c_str()), 10, Float2(760, cury), TEXT_MAX, TEXT_MIN);
+    cury += 20;
+    
+    drawJustifiedText(StringPrintf("Firepower bonus: %s", lrFirepower.textual().c_str()), 10, Float2(40 , cury), TEXT_MIN, TEXT_MIN);
+    drawJustifiedText(StringPrintf("Starting cash: %s", newPlayerStartingCash.textual().c_str()), 10, Float2(760, cury), TEXT_MAX, TEXT_MIN);
+    cury += 20;
     
     setColor(C::inactive_text);
     drawText("Damage", 30, Float2(40, cury));
@@ -999,6 +1003,7 @@ void PersistentData::divvyCash(float firepowerSpent) {
   newPlayerStartingCash = playerdata[0].totalValue() + lrCash[0];
   for(int i = 0; i < playerdata.size(); i++) {
     newPlayerStartingCash = min(newPlayerStartingCash, playerdata[i].totalValue() + lrCash[i]);
+    highestPlayerCash = max(highestPlayerCash, playerdata[i].totalValue() + lrCash[i]);
     dprintf("Total value of %d: %s\n", i, (playerdata[i].totalValue()+ lrCash[i]).textual().c_str());
   }
   newPlayerStartingCash = max(newPlayerStartingCash, Money(FLAGS_startingCash));
@@ -1216,6 +1221,7 @@ PersistentData::PersistentData(int playercount, int in_roundsbetweenshop) {
   btt_frames_left = 0;
   
   newPlayerStartingCash = Money(FLAGS_startingCash);
+  highestPlayerCash = Money(FLAGS_startingCash);
   
   reset();
   
@@ -1293,18 +1299,18 @@ PersistentData::PersistentData(int playercount, int in_roundsbetweenshop) {
 
 DEFINE_bool(cullShopTree, true, "Cull items which the players wouldn't want or realistically can't yet buy");
 
-void recursiveCullShopHierarchy(HierarchyNode &node, int playercount, Money startingCash) {
+void recursiveCullShopHierarchy(HierarchyNode &node, int playercount, Money highestCash) {
   for(int i = 0; i < node.branches.size(); i++) {
     if(!FLAGS_cullShopTree)
       continue;
     if(node.branches[i].type == HierarchyNode::HNT_CATEGORY && node.branches[i].cat_restrictiontype == HierarchyNode::HNT_BOMBARDMENT && playercount <= 2) {
       node.branches.erase(node.branches.begin() + i);
       i--;
-    } else if(node.branches[i].spawncash > startingCash) {
+    } else if(node.branches[i].spawncash > highestCash) {
       node.branches.erase(node.branches.begin() + i);
       i--;
     } else {
-      recursiveCullShopHierarchy(node.branches[i], playercount, startingCash);
+      recursiveCullShopHierarchy(node.branches[i], playercount, highestCash);
       
       // If we have tanks, bombardment, or glory devices, and there's only one item left, it's the default item.
       if(node.branches[i].type == HierarchyNode::HNT_CATEGORY && (node.branches[i].cat_restrictiontype == HierarchyNode::HNT_BOMBARDMENT || node.branches[i].cat_restrictiontype == HierarchyNode::HNT_GLORY || node.branches[i].cat_restrictiontype == HierarchyNode::HNT_TANK)) {
@@ -1325,7 +1331,7 @@ void recursiveCullShopHierarchy(HierarchyNode &node, int playercount, Money star
 
 HierarchyNode PersistentData::generateShopHierarchy() const {
   HierarchyNode rv = itemDbRoot();
-  recursiveCullShopHierarchy(rv, playerdata.size(), newPlayerStartingCash);
+  recursiveCullShopHierarchy(rv, playerdata.size(), highestPlayerCash);
   rv.checkConsistency();
   return rv;
 }
