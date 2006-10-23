@@ -17,9 +17,12 @@ public:
   int timer;
   int state;
   
+  int framesSinceLastSwitch;
+  
   BombardmentState() {
     pos = Coord2(0, 0);
     timer = 0;
+    framesSinceLastSwitch = 0;
     state = BS_OFF;
   }
 };

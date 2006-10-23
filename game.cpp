@@ -235,6 +235,7 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
   
   for(int j = 0; j < bombards.size(); j++) {
     CHECK(bombards[j].state >= 0 && bombards[j].state < BombardmentState::BS_LAST);
+    bombards[j].framesSinceLastSwitch++;
     if(bombards[j].state == BombardmentState::BS_OFF) {
       if(!tanks[j].isLive()) {
         // if the player is dead and the bombard isn't initialized
@@ -285,13 +286,22 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
 
   for(int i = 0; i < tanks.size(); i++) {
     StackString sst(StringPrintf("Player weaponry %d", i));
+    
+    // Keep bombardment spamming from occuring
+    if(!tanks[i].isLive() && bombards[i].framesSinceLastSwitch < FPS)
+      continue;
+    
+    // Switch weapons
     for(int j = 0; j < SIMUL_WEAPONS; j++) {
       if(keys[i].change[j].push) {
         StackString sst(StringPrintf("Switching"));
         players[i]->cycleWeapon(j);
         addTankStatusText(i, players[i]->getWeapon(j).name(), 1);
+        bombards[i].framesSinceLastSwitch = 0;
       }
     }
+    
+    // Attempt to actually fire - deals with all weapons that the tank has equipped.
     if(tanks[i].isLive() && teams[tanks[i].team].weapons_enabled && frameNm >= frameNmToStart && frameNmToStart != -1) {
       vector<pair<string, float> > status;
       tanks[i].tryToFire(keys[i].fire, players[i], &projectiles[i], i, gic, &status, &firepowerSpent);
