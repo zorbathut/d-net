@@ -96,6 +96,8 @@ public:
   Color color;
   float thickness_visual;
 
+  float toughness;
+
   float airbrake_life;
   float halflife;
 
@@ -244,6 +246,7 @@ public:
   float velocity() const;
   float length() const;
   float radius_physical() const;
+  float toughness() const;
 
   vector<IDBWarheadAdjust> chain_warhead() const;
 

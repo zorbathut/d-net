@@ -118,6 +118,7 @@ int IDBProjectileAdjust::motion() const { return idb->motion; };
 float IDBProjectileAdjust::velocity() const { return idb->velocity; };
 float IDBProjectileAdjust::length() const { return idb->length; };
 float IDBProjectileAdjust::radius_physical() const { return idb->radius_physical; };
+float IDBProjectileAdjust::toughness() const { return idb->toughness; };
 
 vector<IDBWarheadAdjust> IDBProjectileAdjust::chain_warhead() const {
   vector<IDBWarheadAdjust> rv;

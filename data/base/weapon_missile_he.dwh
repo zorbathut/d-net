@@ -61,6 +61,7 @@ projectile {
   motion=missile
   thickness_visual=2x
   length=1.5x
+  toughness=2
   warhead=warhead.hemissile
 }
 

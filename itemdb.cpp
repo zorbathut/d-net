@@ -645,6 +645,8 @@ void parseProjectile(kvData *chunk) {
   
   titem->chain_warhead = parseSubclassSet(chunk, "warhead", warheadclasses);
   
+  titem->toughness = parseWithDefault(chunk, "toughness", 1.0);
+  
   CHECK(titem->chain_warhead.size());
 }
 

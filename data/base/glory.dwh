@@ -16,6 +16,7 @@ projectile {
   velocity=40
   color=1.0, 0.8, 0.3
   motion=airbrake
+  toughness=0.3
   warhead=warhead.glory.core
 }
 
@@ -72,6 +73,7 @@ projectile {
   velocity=80
   color=1.0, 0.8, 0.3
   motion=airbrake
+  toughness=0.3
   warhead=warhead.glory.core
 }
 
@@ -133,6 +135,7 @@ projectile {
   velocity=400
   color=0.2, 0.6, 1.0
   motion=airbrake
+  toughness=0.3
   warhead=warhead.glory.plasma.blast
 }
 
@@ -175,6 +178,7 @@ projectile {
   velocity=60
   color=1.0, 0.8, 0.3
   motion=airbrake
+  toughness=0.3
   warhead=warhead.glory.core
 }
 

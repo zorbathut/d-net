@@ -1,9 +1,9 @@
 ---- Major work path
-- Projectile destruction chances
+- Sparker II vanishes! Why does Sparker II vanish?
 - Item spawning based on biggest player
-- Item despawning based on wimpiest player
 - Change keys while setting up keys for first time
 - "Enter sell mode" option in shop, with descriptive text
+- Item despawning based on wimpiest player
 - Second-level I tanks
 - Tank-specific upgrades
 - Reload on-the-fly

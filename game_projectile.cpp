@@ -113,6 +113,14 @@ bool Projectile::isDetonating() const {
   return detonating;
 }
 
+bool Projectile::isConsumed() const {
+  return !isLive() || isDetonating();
+}
+
+float Projectile::toughness() const {
+  return projtype.toughness();
+}
+
 Coord2 Projectile::movement() const {
   if(projtype.motion() == PM_NORMAL) {
     return makeAngle(Coord(d)) * Coord(projtype.velocity() / FPS);

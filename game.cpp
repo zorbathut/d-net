@@ -196,6 +196,8 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
         CHECK(0);
       } else if(lhs.category == CGR_TANK && rhs.category == CGR_PROJECTILE) {
         // tank-projectile collision - kill projectile, do damage
+        if(projectiles[rhs.bucket].find(rhs.item).isConsumed())
+          continue;
         projectiles[rhs.bucket].find(rhs.item).detonate(collider.getCollision().pos, &tanks[lhs.bucket], GamePlayerContext(rhs.bucket, &projectiles[rhs.bucket], gic), true);
       } else if(lhs.category == CGR_TANK && rhs.category == CGR_WALL) {
         // tank-wall collision, should never happen
@@ -203,18 +205,30 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
       } else if(lhs.category == CGR_PROJECTILE && rhs.category == CGR_PROJECTILE) {
         // projectile-projectile collision - kill both projectiles
         // also do radius damage, and do it fairly dammit
+        if(projectiles[lhs.bucket].find(lhs.item).isConsumed() || projectiles[rhs.bucket].find(rhs.item).isConsumed())
+          continue;
+        
         bool lft = frand() < 0.5;
+        
+        if(projectiles[lhs.bucket].find(lhs.item).toughness() > projectiles[rhs.bucket].find(rhs.item).toughness())
+          swap(lhs, rhs);
+        
+        // LHS now has less toughness, so it's guaranteed to go boom
+        bool rhsdestroyed = frand() < (projectiles[lhs.bucket].find(lhs.item).toughness() / projectiles[rhs.bucket].find(rhs.item).toughness());
         
         if(lft)
           projectiles[lhs.bucket].find(lhs.item).detonate(collider.getCollision().pos, NULL, GamePlayerContext(lhs.bucket, &projectiles[lhs.bucket], gic), true);
         
-        projectiles[rhs.bucket].find(rhs.item).detonate(collider.getCollision().pos, NULL, GamePlayerContext(rhs.bucket, &projectiles[rhs.bucket], gic), true);
+        if(rhsdestroyed)
+          projectiles[rhs.bucket].find(rhs.item).detonate(collider.getCollision().pos, NULL, GamePlayerContext(rhs.bucket, &projectiles[rhs.bucket], gic), true);
         
         if(!lft)
           projectiles[lhs.bucket].find(lhs.item).detonate(collider.getCollision().pos, NULL, GamePlayerContext(lhs.bucket, &projectiles[lhs.bucket], gic), true);
         
       } else if(lhs.category == CGR_PROJECTILE && rhs.category == CGR_WALL) {
         // projectile-wall collision - kill projectile
+        if(projectiles[lhs.bucket].find(lhs.item).isConsumed())
+          continue;
         projectiles[lhs.bucket].find(lhs.item).detonate(collider.getCollision().pos, NULL, GamePlayerContext(lhs.bucket, &projectiles[lhs.bucket], gic), true);
       } else if(lhs.category == CGR_WALL && rhs.category == CGR_WALL) {
         // wall-wall collision, wtf?
