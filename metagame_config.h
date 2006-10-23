@@ -63,7 +63,7 @@ const char * const setting_names[] = { "Keys", "Mode", "Directions", "Test", "Do
 
 enum { CHOICE_FIRSTPASS, CHOICE_REAXIS, CHOICE_ACTIVE, CHOICE_IDLE };
 
-enum ReadMode { RM_IDLE, RM_CHOOSING, RM_SHUNTING };
+enum ReadMode { RM_IDLE, RM_CHOOSING, RM_NOTRIGGER };
 struct PlayerMenuState {
 public:
   Float2 compasspos;

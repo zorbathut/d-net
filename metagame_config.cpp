@@ -177,7 +177,7 @@ struct StandardButtonRenderData {
   const int *groups;
   
   int sel_button;
-  bool sel_button_reading;
+  ReadMode sel_button_reading;
   
   string prefix;
   vector<string> description;
@@ -213,26 +213,33 @@ bool changeButtons(vector<int> *buttons, vector<char> *inversions, const int *gr
 
 bool standardButtonTick(StandardButtonTickData *sbtd) {
   StackString sstr("standardButtonTick");
+  CHECK(sbtd);
   CHECK(sbtd->outkeys);
   CHECK(sbtd->outkeys->size());
   if(sbtd->outinvert)
     CHECK(sbtd->outkeys->size() == sbtd->outinvert->size());
   if(*sbtd->current_button == -1) {
-    if((*sbtd->outkeys)[0] == -1) {
-      *sbtd->current_mode = RM_SHUNTING;
-    } else {
+    if(sbtd->require_trigger) {
       *sbtd->current_mode = RM_IDLE;
+    } else {
+      *sbtd->current_mode = RM_NOTRIGGER;
     }
     *sbtd->current_button = 0;
   }
   CHECK(*sbtd->current_button >= 0 && *sbtd->current_button <= sbtd->outkeys->size());
-  if(*sbtd->current_mode != RM_IDLE) {
-    StackString sstr("rmidle");
+  
+  CHECK((*sbtd->current_mode == RM_NOTRIGGER) == !sbtd->require_trigger);
+  CHECK(sbtd->accept_button != -1 && sbtd->cancel_button != -1 || !sbtd->require_trigger);
+  
+  // First off, let's see if we do successfully change buttons.
+  if(*sbtd->current_mode == RM_NOTRIGGER || *sbtd->current_mode == RM_CHOOSING) {
     for(int i = 0; i < sbtd->triggers->size(); i++) { // For each input button . . .
       if(abs((*sbtd->triggers)[i]) > 0.9) { // If button was pushed . . .
+        int oldbutton = (*sbtd->outkeys)[*sbtd->current_button];
         if(changeButtons(sbtd->outkeys, sbtd->outinvert, sbtd->groups, *sbtd->current_button, i, (*sbtd->triggers)[i] < 0)) { // If button successfully changed . . .
-          if(*sbtd->current_mode == RM_SHUNTING) {
-            (*sbtd->current_button)++;
+          if(*sbtd->current_mode == RM_NOTRIGGER) {
+            if(oldbutton == -1)
+              (*sbtd->current_button)++;
           } else if(*sbtd->current_mode == RM_CHOOSING) {
             *sbtd->current_mode = RM_IDLE;
           } else {
@@ -242,47 +249,28 @@ bool standardButtonTick(StandardButtonTickData *sbtd) {
         }
       }
     }
-  } else {
-    StackString sstr("notidle");
+  }
+  
+  // Now let's see if we move.
+  if(*sbtd->current_mode == RM_NOTRIGGER || *sbtd->current_mode == RM_IDLE) {
     if(sbtd->keys.u.repeat)
       (*sbtd->current_button)--;
     if(sbtd->keys.d.repeat)
       (*sbtd->current_button)++;
     *sbtd->current_button = modurot(*sbtd->current_button, sbtd->outkeys->size() + 1);
     
-    if(*sbtd->current_button == sbtd->outkeys->size()) {    // If we're on "done" . . .
-      if(sbtd->keys.keys[sbtd->accept_button].push) {
+    // Here's where we potentially quit.
+    if(*sbtd->current_button == sbtd->outkeys->size() && sbtd->keys.keys[sbtd->accept_button].push || sbtd->cancel_button != -1 && sbtd->keys.keys[sbtd->cancel_button].push) { // if we're on done AND the accept button was pushed OR the cancel button exists AND the cancel button was pushed . . .
+      if(count(sbtd->outkeys->begin(), sbtd->outkeys->end(), -1) == 0) { // AND there are no unfinished keys . . .
         *sbtd->current_button = -1;
-        return true;
-      }
-    } else {   // If we're not on "done" . . .
-      if(sbtd->require_trigger) {
-        // We accept anything for this (besides cancel) because the user might not know what their accept button is at the moment
-        bool somethingpushed = false;
-        for(int i = 0; i < sbtd->keys.keys.size(); i++) {
-          if(i == sbtd->cancel_button)
-            continue;
-          if(sbtd->keys.keys[i].push)
-            somethingpushed = true;
-        }
-        if(somethingpushed) {
-          (*sbtd->current_mode) = RM_CHOOSING;
-        } else if(sbtd->keys.keys[sbtd->cancel_button].push) {
-          *sbtd->current_button = -1;
-          return true;
-        }
-      } else {
-        for(int i = 0; i < sbtd->triggers->size(); i++) {
-          if(abs((*sbtd->triggers)[i]) > 0.9) {
-            changeButtons(sbtd->outkeys, sbtd->outinvert, sbtd->groups, *sbtd->current_button, i, (*sbtd->triggers)[i] < 0);
-          }
-        }
+        return true;  // then we're done.
       }
     }
   }
   
-  if(*sbtd->current_button == sbtd->outkeys->size()) {
-    *sbtd->current_mode = RM_IDLE;
+  // Now let's see if we enter CHOOSING state. Only if we're not on DONE.
+  if(*sbtd->current_mode == RM_IDLE && *sbtd->current_button == sbtd->outkeys->size() && sbtd->keys.keys[sbtd->accept_button].push) {
+    (*sbtd->current_mode) = RM_CHOOSING;
   }
   
   return false;
@@ -335,7 +323,7 @@ void standardButtonRender(const StandardButtonRenderData &sbrd) {
         drawText((*sbrd.groupnames)[sbrd.groups[i]], sbrd.rin->textsize, Float2(groupnamexps, sbrd.rin->ystarts[cy++]));
       }
     }
-    if(sbrd.sel_button == i && !sbrd.sel_button_reading) {
+    if(sbrd.sel_button == i && sbrd.sel_button_reading != RM_CHOOSING) {
       setColor(C::active_text);
     } else {
       setColor(C::inactive_text);
@@ -345,7 +333,7 @@ void standardButtonRender(const StandardButtonRenderData &sbrd) {
     for(int j = 0; j < (*sbrd.names)[i].size(); j++)
       drawText((*sbrd.names)[i][j], sbrd.rin->textsize, Float2(xps, sbrd.rin->ystarts[cy++]));
     string btext;
-    if(sbrd.sel_button == i && sbrd.sel_button_reading) {
+    if(sbrd.sel_button == i && ((*sbrd.buttons)[i] == -1 || sbrd.sel_button_reading == RM_CHOOSING)) {
       btext = "?";
       setColor(C::active_text);
     } else if((*sbrd.buttons)[i] == -1) {
