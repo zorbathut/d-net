@@ -1,5 +1,4 @@
 ---- Major work path
-- Sparker II vanishes! Why does Sparker II vanish?
 - Item spawning based on biggest player
 - Change keys while setting up keys for first time
 - "Enter sell mode" option in shop, with descriptive text

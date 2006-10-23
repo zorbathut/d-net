@@ -130,6 +130,7 @@ void Weaponmanager::changeDefaultWeapon(const IDBWeapon *weapon) {
   }
   
   removeAmmo(defaultweapon, UNLIMITED_AMMO);
+  CHECK(!weapons.count(defaultweapon));
   CHECK(!weapons.count(weapon));
   weapons[weapon] = UNLIMITED_AMMO; // so we don't accidentally equip it somewhere
   
@@ -270,16 +271,15 @@ void Player::equipBombardment(const IDBBombardment *in_bombardment) {
   swap(*find(bombardment.begin(), bombardment.end(), in_bombardment), bombardment[0]);
 }
 void Player::equipTank(const IDBTank *in_tank) {
-  if(tank[0].tank != in_tank) {
-    int ps;
-    for(ps = 0; ps < tank.size(); ps++)
-      if(tank[ps].tank == in_tank)
-        break;
-    CHECK(ps < tank.size());
-    swap(tank[ps], tank[0]);
-    weapons.changeDefaultWeapon(in_tank->weapon);
-  }
-  reCalculate();  // it is possible we used to use the null tank
+  // we do *not* bother to check if we already have this tank equipped! If we did that, we might not recalculate or changeDefaultWeapon. Since we might not have any tank before equipping this one (i.e. the player had 0 tanks) we wouldn't equip the default weapon or recalculate properly. This would be bad.
+  int ps;
+  for(ps = 0; ps < tank.size(); ps++)
+    if(tank[ps].tank == in_tank)
+      break;
+  CHECK(ps < tank.size());
+  swap(tank[ps], tank[0]);
+  weapons.changeDefaultWeapon(in_tank->weapon);
+  reCalculate();
 }
 
 void Player::sellGlory(const IDBGlory *in_glory) {
