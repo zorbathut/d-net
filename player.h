@@ -37,7 +37,7 @@ public:
   const IDBWeapon *getWeaponSlot(int id) const;
   
   vector<const IDBWeapon *> getAvailableWeapons() const;
-  void setWeaponEquipBit(const IDBWeapon *weapon, int id, bool bit);
+  void setWeaponEquipBit(const IDBWeapon *weapon, int id, bool bit, bool force = false);  // If force is on, it will equip the default weapon if it has to.
   int getWeaponEquipBit(const IDBWeapon *weapon, int id) const;
 
   void changeDefaultWeapon(const IDBWeapon *weapon);

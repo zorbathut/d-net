@@ -56,7 +56,7 @@ void Weaponmanager::removeAmmo(const IDBWeapon *weap, int count) {
   if(weapons[weap] == count) {
     weapons.erase(weap);
     for(int i = 0; i < weaponops.size(); i++) {
-      setWeaponEquipBit(weap, i, false);
+      setWeaponEquipBit(weap, i, false, true);
       CHECK(curweapons[i] != weap);
     }
   } else {
@@ -84,7 +84,7 @@ vector<const IDBWeapon *> Weaponmanager::getAvailableWeapons() const {
       seet.insert(itr->first);
   return vector<const IDBWeapon *>(seet.begin(), seet.end());
 }
-void Weaponmanager::setWeaponEquipBit(const IDBWeapon *weapon, int id, bool bit) {
+void Weaponmanager::setWeaponEquipBit(const IDBWeapon *weapon, int id, bool bit, bool force) {
   if(count(weaponops[id].begin(), weaponops[id].end(), weapon) == bit)
     return;
   if(bit == true) {
@@ -99,9 +99,12 @@ void Weaponmanager::setWeaponEquipBit(const IDBWeapon *weapon, int id, bool bit)
     
     // If we're still removing the current weapon, we only have one weapon.
     if(curweapons[id] == weapon) {
-      // If that weapon is our default weapon, give up.
-      if(curweapons[id] == defaultweapon)
+      if(!force)  // Give up, if we're not forcing. If we are . . .
         return;
+      
+      // If that weapon is our default weapon, something horrible has occured.
+      if(curweapons[id] == defaultweapon)
+        CHECK(0);
       
       // Otherwise, add the default weapon and then cycle again.
       CHECK(weaponops[id].size() == 1);
