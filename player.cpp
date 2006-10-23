@@ -474,5 +474,4 @@ void Player::reCalculate() {
   if(tank.size())
     for(int i = 0; i < tank[0].upgrades.size(); i++)
       adjustment += *tank[0].upgrades[i]->adjustment;
-  adjustment.debugDump();
 }
