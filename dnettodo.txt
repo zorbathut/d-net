@@ -1,6 +1,5 @@
 ---- Major work path
 - Projectile destruction chances
-- Typo in missile description
 - Item spawning based on biggest player
 - Item despawning based on wimpiest player
 - Change keys while setting up keys for first time

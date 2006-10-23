@@ -6,7 +6,7 @@ hierarchy {
 
 text {
   name=text.weapon.missile
-  data=Explosives in a can. The missile is one of the most powerful low-tech systems developed and extremely popular for wholescale demolition. The rocket engine takes several seconds to reach full speed, making this weapon difficult to aim with.
+  data=Explosives in a can. The missile is one of the most powerful low-tech systems developed and extremely popular for wholesale demolition. The rocket engine takes several seconds to reach full speed, making this weapon difficult to aim with.
 }
 
 warhead {
