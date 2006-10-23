@@ -157,13 +157,23 @@ IDBUpgradeAdjust Player::adjustUpgradeForCurrentTank(const IDBUpgrade *in_upg) c
 IDBGloryAdjust Player::adjustGlory(const IDBGlory *in_upg) const { return IDBGloryAdjust(in_upg, adjustment); };
 IDBBombardmentAdjust Player::adjustBombardment(const IDBBombardment *in_upg, int bombard_level) const { return IDBBombardmentAdjust(in_upg, adjustment, bombard_level); };
 IDBWeaponAdjust Player::adjustWeapon(const IDBWeapon *in_upg) const { return IDBWeaponAdjust(in_upg, adjustment); };
-IDBTankAdjust Player::adjustTank(const IDBTank *in_upg) const { return IDBTankAdjust(in_upg, adjustment); };
+IDBTankAdjust Player::adjustTankWithInstanceUpgrades(const IDBTank *in_upg) const {
+  for(int i = 0; i < tank.size(); i++) {
+    if(tank[i].tank == in_upg) {
+      IDBAdjustment idba = adjustment_noupgrade;
+      for(int j = 0; j < tank[i].upgrades.size(); j++)
+        idba += *tank[i].upgrades[j]->adjustment;
+      return IDBTankAdjust(in_upg, idba);
+    }
+  }
+  return IDBTankAdjust(in_upg, adjustment_noupgrade);
+};
 
 bool Player::canBuyUpgrade(const IDBUpgrade *in_upg) const { return stateUpgrade(in_upg) == ITEMSTATE_UNOWNED && adjustUpgradeForCurrentTank(in_upg).cost() <= cash; }; 
 bool Player::canBuyGlory(const IDBGlory *in_glory) const { return stateGlory(in_glory) == ITEMSTATE_UNOWNED && adjustGlory(in_glory).cost() <= cash; };
 bool Player::canBuyBombardment(const IDBBombardment *in_bombardment) const { return stateBombardment(in_bombardment) == ITEMSTATE_UNOWNED && adjustBombardment(in_bombardment).cost() <= cash; };
 bool Player::canBuyWeapon(const IDBWeapon *in_weap) const { return adjustWeapon(in_weap).cost() <= cash && in_weap->base_cost > Money(0); }
-bool Player::canBuyTank(const IDBTank *in_tank) const { return stateTank(in_tank) == ITEMSTATE_UNOWNED && adjustTank(in_tank).cost() <= cash; };
+bool Player::canBuyTank(const IDBTank *in_tank) const { return stateTank(in_tank) == ITEMSTATE_UNOWNED && adjustTankWithInstanceUpgrades(in_tank).cost() <= cash; };
 
 bool Player::canSellGlory(const IDBGlory *in_glory) const { return hasGlory(in_glory) && in_glory != defaultGlory(); };
 bool Player::canSellBombardment(const IDBBombardment *in_bombardment) const { return hasBombardment(in_bombardment) && in_bombardment != defaultBombardment(); };
@@ -179,7 +189,7 @@ Money Player::sellTankValue(const IDBTank *in_tank) const {
   CHECK(ps < tank.size());
   
   Money acu = Money(0);
-  acu += adjustTank(in_tank).sellcost();
+  acu += adjustTankWithInstanceUpgrades(in_tank).sellcost();
   for(int i = 0; i < tank[ps].upgrades.size(); i++)
     acu += adjustUpgrade(tank[ps].upgrades[i], tank[ps].tank).sellcost();
   return acu;
@@ -213,9 +223,9 @@ void Player::buyWeapon(const IDBWeapon *in_weap) {
   cash -= adjustWeapon(in_weap).cost();
 }
 void Player::buyTank(const IDBTank *in_tank) {
-  CHECK(cash >= adjustTank(in_tank).cost());
+  CHECK(cash >= adjustTankWithInstanceUpgrades(in_tank).cost());
   CHECK(canBuyTank(in_tank));
-  cash -= adjustTank(in_tank).cost() ;
+  cash -= adjustTankWithInstanceUpgrades(in_tank).cost() ;
   tank.push_back(TankEquipment(in_tank));
   equipTank(in_tank);
 }
@@ -359,7 +369,7 @@ IDBGloryAdjust Player::getGlory() const {
 IDBBombardmentAdjust Player::getBombardment(int bombard_level) const {
   return adjustBombardment(bombardment[0], bombard_level); };
 IDBTankAdjust Player::getTank() const {
-  return adjustTank(tank[0].tank); };
+  return adjustTankWithInstanceUpgrades(tank[0].tank); };
 
 IDBWeaponAdjust Player::getWeapon(int id) const {
   return adjustWeapon(weapons.getWeaponSlot(id)); };
@@ -434,7 +444,7 @@ Money Player::totalValue() const {
     worth += adjustBombardment(bombardment[i]).cost();
   
   for(int i = 0; i < tank.size(); i++) {
-    worth += adjustTank(tank[i].tank).cost();
+    worth += adjustTankWithInstanceUpgrades(tank[i].tank).cost();
     
     for(int j = 0; j < tank[i].upgrades.size(); j++)
       worth += adjustUpgrade(tank[i].upgrades[j], tank[i].tank).cost();
@@ -456,6 +466,7 @@ Player::Player(const IDBFaction *fact, int in_factionmode) : weapons(defaultTank
   faction = fact;
   factionmode = in_factionmode;
   CHECK(factionmode >= 0 && factionmode < FACTIONMODE_LAST);
+  CHECK(factionmode == 0);
   cash = Money(FLAGS_startingCash);
   glory.push_back(defaultGlory());
   bombardment.push_back(defaultBombardment());
@@ -469,8 +480,8 @@ Player::Player(const IDBFaction *fact, int in_factionmode) : weapons(defaultTank
 
 void Player::reCalculate() {
   CHECK(faction);
-  //adjustment = *faction->adjustment[factionmode];
-  adjustment = *faction->adjustment[0]; // because factions aren't really useful yet
+  adjustment = *faction->adjustment[factionmode];
+  adjustment_noupgrade = *faction->adjustment[factionmode];
   if(tank.size())
     for(int i = 0; i < tank[0].upgrades.size(); i++)
       adjustment += *tank[0].upgrades[i]->adjustment;

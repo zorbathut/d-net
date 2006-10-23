@@ -62,7 +62,7 @@ public:
   IDBGloryAdjust adjustGlory(const IDBGlory *in_upg) const;
   IDBBombardmentAdjust adjustBombardment(const IDBBombardment *in_upg, int bombard_level = -1) const;
   IDBWeaponAdjust adjustWeapon(const IDBWeapon *in_upg) const;
-  IDBTankAdjust adjustTank(const IDBTank *in_upg) const;
+  IDBTankAdjust adjustTankWithInstanceUpgrades(const IDBTank *in_upg) const;
 
   bool canBuyUpgrade(const IDBUpgrade *in_upg) const;
   bool canBuyGlory(const IDBGlory *in_glory) const;
@@ -164,6 +164,7 @@ private:
   int factionmode;
 
   IDBAdjustment adjustment;
+  IDBAdjustment adjustment_noupgrade;
 
   Money cash;
 

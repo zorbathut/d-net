@@ -118,7 +118,7 @@ Money HierarchyNode::cost(const Player *player) const {
   } else if(type == HNT_BOMBARDMENT) {
     return player->adjustBombardment(bombardment).cost();
   } else if(type == HNT_TANK) {
-    return player->adjustTank(tank).cost();
+    return player->adjustTankWithInstanceUpgrades(tank).cost();
   } else {
     CHECK(0);
   }

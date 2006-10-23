@@ -1,6 +1,4 @@
 ---- Major work path
-- Bombardment weapon-switch spam
-- Tank stats shouldn't include upgrades
 - Projectile destruction chances
 - Typo in missile description
 - Item spawning based on biggest player

@@ -200,10 +200,10 @@ void ShopInfo::renderFrame(Float4 bounds, float fontsize, Float4 inset) const {
     }
   } else if(tank) {
     ShopKVPrinter kvp(bounds, fontsize, fontshift);
-    kvp.print("Max health", prettyFloatFormat(player->adjustTank(tank).maxHealth()) + " cme");
-    kvp.print("Turn speed", prettyFloatFormat(player->adjustTank(tank).turnSpeed()) + " rad/s");
-    kvp.print("Forward speed", prettyFloatFormat(player->adjustTank(tank).maxSpeed()) + " m/s");
-    kvp.print("Mass", prettyFloatFormat(player->adjustTank(tank).mass()) + " tons");
+    kvp.print("Max health", prettyFloatFormat(player->adjustTankWithInstanceUpgrades(tank).maxHealth()) + " cme");
+    kvp.print("Turn speed", prettyFloatFormat(player->adjustTankWithInstanceUpgrades(tank).turnSpeed()) + " rad/s");
+    kvp.print("Forward speed", prettyFloatFormat(player->adjustTankWithInstanceUpgrades(tank).maxSpeed()) + " m/s");
+    kvp.print("Mass", prettyFloatFormat(player->adjustTankWithInstanceUpgrades(tank).mass()) + " tons");
   } else {
     CHECK(0);
   }
