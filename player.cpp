@@ -10,6 +10,13 @@ using namespace std;
 DEFINE_int(startingCash, 1000, "Cash to start with");
 
 bool IDBWeaponNameSorter::operator()(const IDBWeapon *lhs, const IDBWeapon *rhs) const {
+  if(!lhs && !rhs)
+    return false;
+  if(!lhs)
+    return true;
+  if(!rhs)
+    return false;
+  CHECK(lhs && rhs);
   return lhs->name < rhs->name;
 }
   
@@ -73,7 +80,8 @@ const IDBWeapon *Weaponmanager::getWeaponSlot(int id) const {
 vector<const IDBWeapon *> Weaponmanager::getAvailableWeapons() const {
   set<const IDBWeapon *, IDBWeaponNameSorter> seet;
   for(map<const IDBWeapon *, int, IDBWeaponNameSorter>::const_iterator itr = weapons.begin(); itr != weapons.end(); itr++)
-    seet.insert(itr->first);
+    if(itr->first)
+      seet.insert(itr->first);
   return vector<const IDBWeapon *>(seet.begin(), seet.end());
 }
 void Weaponmanager::setWeaponEquipBit(const IDBWeapon *weapon, int id, bool bit) {
@@ -114,6 +122,7 @@ int Weaponmanager::getWeaponEquipBit(const IDBWeapon *weapon, int id) const {
 }
 
 void Weaponmanager::changeDefaultWeapon(const IDBWeapon *weapon) {
+  StackString sst("changeDefaultWeapon");
   if(weapon == defaultweapon)
     return; // just don't bother
   
@@ -130,8 +139,10 @@ void Weaponmanager::changeDefaultWeapon(const IDBWeapon *weapon) {
   }
   
   removeAmmo(defaultweapon, UNLIMITED_AMMO);
+  
   CHECK(!weapons.count(defaultweapon));
   CHECK(!weapons.count(weapon));
+  
   weapons[weapon] = UNLIMITED_AMMO; // so we don't accidentally equip it somewhere
   
   defaultweapon = weapon;
@@ -315,6 +326,7 @@ void Player::sellTank(const IDBTank *in_tank) {
   CHECK(ps < tank.size());
   cash += sellTankValue(in_tank);
   tank.erase(tank.begin() + ps);
+  weapons.changeDefaultWeapon(NULL);
   reCalculate(); // just in case we got rid of the last tank
 }
 
