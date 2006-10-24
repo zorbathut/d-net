@@ -5,6 +5,7 @@
 #include "gfx.h"
 #include "itemdb.h"
 #include "os.h"
+#include "httpd.h"
 
 #include <GL/glu.h>
 #include <SDL.h>
@@ -150,19 +151,19 @@ int main(int argc, char **argv) {
     if(generated)
       return 0;
   }
+  
+  initHttpd();
 
   initSystem();
   initGfx();
 
-  dprintf("Loop\n");
-
   MainLoop();
 
-  dprintf("Deinit\n");
-
   deinitSystem();
-
-  dprintf("Done\n");
+  
+  deinitHttpd();
+  
+  dprintf("Leaving main");
   
   return 0;
 }

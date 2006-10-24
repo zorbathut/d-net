@@ -1,7 +1,7 @@
 
-SOURCES = main core game timer debug gfx collide gamemap util rng args interface vecedit metagame itemdb parse dvec2 input level coord ai inputsnag os_win32 float cfcommon coord_boolean player itemdb_adjust metagame_config shop shop_demo shop_info game_ai game_effects color metagame_tween cfc game_tank game_util game_projectile
+SOURCES = main core game timer debug gfx collide gamemap util rng args interface vecedit metagame itemdb parse dvec2 input level coord ai inputsnag os_win32 float cfcommon coord_boolean player itemdb_adjust metagame_config shop shop_demo shop_info game_ai game_effects color metagame_tween cfc game_tank game_util game_projectile socket httpd
 CPPFLAGS = `sdl-config --cflags` -mno-cygwin -DVECTOR_PARANOIA -Wall -Wno-sign-compare -Wno-uninitialized -g -O2 #-pg # I would love to get rid of -Wno-uninitialized, but it makes the standard library spit out warnings! :(
-LINKFLAGS = `sdl-config --libs` -lglu32 -lopengl32 -lm -mno-cygwin -g -O2 #-pg
+LINKFLAGS = `sdl-config --libs` -lglu32 -lopengl32 -lm -lws2_32 -mno-cygwin -g -O2 #-pg
 
 CPP = g++
 
@@ -18,19 +18,19 @@ clean:
 	rm -rf *.o *.exe *.d *.S
 
 basicrun: d-net.exe
-	d-net.exe --nofullscreen --writeTarget=
+	d-net.exe --nofullscreen --writeTarget= --httpd_port=616
 
 run: d-net.exe
-	d-net.exe --nofullscreen --debugitems --startingCash=100000000 --debugControllers=2 --factionMode=0 --nullControllers=11 --writeTarget= --auto_newgame --nocullShopTree
+	d-net.exe --nofullscreen --debugitems --startingCash=100000000 --debugControllers=2 --factionMode=0 --nullControllers=11 --writeTarget= --auto_newgame --nocullShopTree --httpd_port=616
 
 three: d-net.exe
-	d-net.exe --nofullscreen --debugitems --startingCash=100000000 --debugControllers=3 --factionMode=0 --nullControllers=11 --writeTarget= --auto_newgame --nocullShopTree
+	d-net.exe --nofullscreen --debugitems --startingCash=100000000 --debugControllers=3 --factionMode=0 --nullControllers=11 --writeTarget= --auto_newgame --nocullShopTree --httpd_port=616
 
 ai: d-net.exe
-	d-net.exe --nofullscreen --aiCount=12 --fastForwardTo=100000000 --factionMode=0
+	d-net.exe --nofullscreen --aiCount=12 --fastForwardTo=100000000 --factionMode=0 --httpd_port=616
 
 ailoop: d-net.exe
-	while ./d-net.exe --nofullscreen --aiCount=12 --fastForwardTo=100000000 --terminateAfter=600 --startingCash=100000000 ; do echo Cycle. ; done
+	while ./d-net.exe --nofullscreen --aiCount=12 --fastForwardTo=100000000 --terminateAfter=600 --startingCash=100000000 --httpd_port=616 ; do echo Cycle. ; done
 
 vecedit: d-net.exe
 	d-net.exe --vecedit --nofullscreen
@@ -74,6 +74,7 @@ stats:
 	@echo UI: `cat interface.h interface.cpp metagame.h metagame.cpp metagame_config.cpp metagame_config.h shop.cpp shop.h shop_demo.cpp shop_demo.h shop_info.cpp shop_info.h game_ai.h game_ai.cpp metagame_tween.cpp metagame_tween.h | wc -l` loc
 	@echo Framework: `cat core.h core.cpp main.cpp input.h input.cpp inputsnag.h inputsnag.cpp os.h os_gen.cpp os_win32.cpp debug.h debug.cpp | wc -l` loc
 	@echo Util: `cat timer.h timer.cpp util.h util.cpp args.h args.cpp rng.h rng.cpp coord.h coord.cpp float.h float.cpp cfcommon.h cfcommon.cpp coord_boolean.cpp cfc.h cfc.cpp noncopyable.h | wc -l` loc
+  @echo Networking: `cat httpd.h httpd.cpp socket.h socket.cpp | wc -l` loc
 	@echo Vector system: `cat vecedit.h vecedit.cpp dvec2.h dvec2.cpp | wc -l` loc
 	@echo AI: `cat ai.h ai.cpp | wc -l` loc
 	@echo Total code: `cat *.h *.cpp makefile | wc -l` loc
