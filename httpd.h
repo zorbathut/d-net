@@ -18,6 +18,7 @@ public:
 };
 
 void initHttpd();
+void tickHttpd();
 void deinitHttpd();
 
 #endif

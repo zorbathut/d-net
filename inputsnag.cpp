@@ -5,6 +5,7 @@
 #include "args.h"
 #include "debug.h"
 #include "util.h"
+#include "smartptr.h"
 
 #include <SDL.h>
 

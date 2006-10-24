@@ -3,6 +3,7 @@
 
 #include "game_ai.h"
 #include "itemdb.h"
+#include "smartptr.h"
 
 using namespace std;
 

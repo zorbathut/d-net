@@ -13,6 +13,15 @@ class HTTPD {
   Listener listener;
   
 public:
+
+  void process() {
+    while(1) {
+      smart_ptr<Socket> ptr = listener.consumeNewConnection();
+      if(ptr.empty())
+        break;
+      dprintf("New connection");
+    }
+  }
   
   HTTPD(int port) : listener(port) { };
   ~HTTPD() { };
@@ -41,6 +50,12 @@ void initHttpd() {
     httpd = new HTTPD(FLAGS_httpd_port);
     httpdargs = new ArgsHTTPD;
   }
+}
+
+void tickHttpd() {
+  StackString sst("httpdtick");
+  if(httpd)
+    httpd->process();
 }
 
 void deinitHttpd() {

@@ -9,6 +9,7 @@
 #include "rng.h"
 #include "timer.h"
 #include "util.h"
+#include "httpd.h"
 
 #include <SDL.h>
 
@@ -58,6 +59,7 @@ void MainLoop() {
     
 	while(!quit) {
     StackString sst(StringPrintf("Frame %d loop", frameNumber));
+    tickHttpd();
     ffwd = (frameNumber < FLAGS_fastForwardTo);
     if(frameNumber == FLAGS_fastForwardTo)
       timer = Timer();    // so we don't end up sitting there for aeons waiting for another frame

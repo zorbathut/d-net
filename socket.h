@@ -3,15 +3,22 @@
 
 #include <string>
 
-#include "util.h"
 #include "noncopyable.h"
+#include "smartptr.h"
 
 class Socket : boost::noncopyable {
+private:
+  int sock;
+
+  string buffer;
 public:
   string receiveline();
   void send(const string &val);
 
   bool isDead() const;
+
+  Socket(int sock);
+  ~Socket();
 };
 
 class Listener : boost::noncopyable {

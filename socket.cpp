@@ -18,13 +18,21 @@ public:
   }
 } iws;  // this whole shebang doesn't exist in BSD
 
+Socket::Socket(int sock) : sock(sock) {
+    //CHECK(fcntl(sock, F_SETFL, O_NONBLOCK) == 0); // BSD
+  { int nonblocking = 0; CHECK(ioctlsocket(sock, FIONBIO, (unsigned long*) &nonblocking) == 0); } // Windows
+}
+Socket::~Socket() {
+  closesocket(sock);
+}
+
 Listener::Listener(int port) {
   CHECK(port >= 0 && port < 65536);
   
   CHECK((sock = socket(PF_INET, SOCK_STREAM, 0)) != -1);
 
   //CHECK(fcntl(sock, F_SETFL, O_NONBLOCK) == 0); // BSD
-  { int nonblocking = 0; CHECK(ioctlsocket(sock, FIONBIO, (unsigned long*) &nonblocking) == 0); } // Windows
+  { int nonblocking = 1; CHECK(ioctlsocket(sock, FIONBIO, (unsigned long*)&nonblocking) == 0); } // Windows
   
   {
     int yes = 1;
@@ -41,6 +49,24 @@ Listener::Listener(int port) {
   CHECK(bind(sock, (struct sockaddr *)&my_addr, sizeof(struct sockaddr)) == 0);
   
   listen(sock, 10);
+}
+
+smart_ptr<Socket> Listener::consumeNewConnection() {
+  struct sockaddr_in their_addr;
+  int sin_size = sizeof(their_addr);
+  
+  int new_fd;
+  new_fd = accept(sock, (struct sockaddr *)&their_addr, &sin_size);
+  
+  if(new_fd == -1) {
+    if(errno != WSAEWOULDBLOCK) { // EWOULDBLOCK for BSD
+      dprintf("errno is %d\n", errno);
+      CHECK(0);
+    }
+    return smart_ptr<Socket>();
+  }
+  
+  return smart_ptr<Socket>(new Socket(new_fd));
 }
 
 Listener::~Listener() {
