@@ -1,5 +1,4 @@
 ---- Major work path
-- Item despawning based on wimpiest player
 - Reload on-the-fly
 - Second-level I tanks
 - Tank-specific upgrades
@@ -20,6 +19,9 @@
 - Onslaught
 
 ---- Things that take thought and musing
+- Category descriptions somehow?
+- Item despawning based on wimpiest player
+  - How does selling work?
 - FloatRange
   - This just takes some work - do this once I'm dealing with a lot of ranges again
 - Cached shop demo stats
