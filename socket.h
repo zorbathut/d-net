@@ -13,7 +13,7 @@ private:
   string buffer;
 public:
   string receiveline();
-  void send(const string &val);
+  void sendline(const string &val);
 
   bool isDead() const;
 
