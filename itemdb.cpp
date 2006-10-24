@@ -153,6 +153,7 @@ void HierarchyNode::checkConsistency() const {
   
   // categories don't have a cost and aren't buyable
   if(type == HNT_CATEGORY) {
+    CHECK(!gottype);
     gottype = true;
     CHECK(displaymode != HNDM_COST);
     CHECK(!buyable);
@@ -160,6 +161,7 @@ void HierarchyNode::checkConsistency() const {
   
   // weapons all have costs and are buyable
   if(type == HNT_WEAPON) {
+    CHECK(!gottype);
     gottype = true;
     CHECK(displaymode == HNDM_COST);
     CHECK(buyable);
@@ -170,6 +172,7 @@ void HierarchyNode::checkConsistency() const {
   
   // upgrades all are unique and are buyable
   if(type == HNT_UPGRADE) {
+    CHECK(!gottype);
     gottype = true;
     CHECK(displaymode == HNDM_COSTUNIQUE);
     CHECK(buyable);
@@ -181,6 +184,7 @@ void HierarchyNode::checkConsistency() const {
   
   // glory devices all are unique and are buyable
   if(type == HNT_GLORY) {
+    CHECK(!gottype);
     gottype = true;
     CHECK(displaymode == HNDM_COSTUNIQUE);
     CHECK(pack == 1);
@@ -192,6 +196,7 @@ void HierarchyNode::checkConsistency() const {
   
   // bombardment devices all are unique and are buyable
   if(type == HNT_BOMBARDMENT) {
+    CHECK(!gottype);
     gottype = true;
     CHECK(displaymode == HNDM_COSTUNIQUE);
     CHECK(pack == 1);
@@ -203,6 +208,7 @@ void HierarchyNode::checkConsistency() const {
   
   // tanks all are unique and are buyable
   if(type == HNT_TANK) {
+    CHECK(!gottype);
     gottype = true;
     CHECK(displaymode == HNDM_COSTUNIQUE);
     CHECK(pack == 1);
@@ -214,14 +220,25 @@ void HierarchyNode::checkConsistency() const {
   
   // the equip item restricts on EQUIPWEAPON but is not buyable
   if(type == HNT_EQUIP) {
+    CHECK(!gottype);
     gottype = true;
     CHECK(displaymode == HNDM_BLANK);
     CHECK(!buyable);
     CHECK(cat_restrictiontype == HNT_EQUIPWEAPON);
   }
   
+    // the sell item restricts on NONE and is not buyable
+  if(type == HNT_SELL) {
+    CHECK(!gottype);
+    gottype = true;
+    CHECK(displaymode == HNDM_BLANK);
+    CHECK(!buyable);
+    CHECK(cat_restrictiontype == HNT_NONE);
+  }
+  
   // the equipweapon item must have a weapon and is "buyable"
   if(type == HNT_EQUIPWEAPON) {
+    CHECK(!gottype);
     gottype = true;
     CHECK(displaymode == HNDM_EQUIP);
     CHECK(buyable);
@@ -233,6 +250,7 @@ void HierarchyNode::checkConsistency() const {
   
   // the "done" token has no cost or other display but is "buyable"
   if(type == HNT_DONE) {
+    CHECK(!gottype);
     gottype = true;
     CHECK(displaymode == HNDM_BLANK);
     CHECK(buyable);
@@ -959,6 +977,20 @@ void parseEquip(kvData *chunk) {
   mountpoint->branches.push_back(tnode);
 }
 
+void parseSell(kvData *chunk) {
+  string name = chunk->consume("name");
+  
+  HierarchyNode *mountpoint = findNamedNode(name, 1);
+  HierarchyNode tnode;
+  tnode.name = tokenize(name, ".").back();
+  tnode.type = HierarchyNode::HNT_SELL;
+  tnode.displaymode = HierarchyNode::HNDM_BLANK;
+  tnode.cat_restrictiontype = HierarchyNode::HNT_NONE;
+  CHECK(mountpoint->cat_restrictiontype == -1 || tnode.cat_restrictiontype == mountpoint->cat_restrictiontype);
+  
+  mountpoint->branches.push_back(tnode);
+}
+
 void parseText(kvData *chunk) {
   string *titem = prepareName(chunk, &text, "text");
   *titem = chunk->consume("data");
@@ -999,6 +1031,8 @@ void parseItemFile(const string &fname) {
       parseFaction(&chunk);
     } else if(chunk.category == "equip") {
       parseEquip(&chunk);
+    } else if(chunk.category == "sell") {
+      parseSell(&chunk);
     } else if(chunk.category == "text") {
       parseText(&chunk);
     } else if(chunk.category == "launcher") {

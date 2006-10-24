@@ -254,6 +254,7 @@ void Shop::renderNode(const HierarchyNode &node, int depth, const Player *player
     }
     
     drawText(node.branches[itemid].name.c_str(), slay.fontsize(), slay.description(depth) + rendpos[j].second);
+    
     // Display ammo count
     {
       if(node.branches[itemid].type == HierarchyNode::HNT_WEAPON) {
@@ -395,6 +396,9 @@ bool Shop::runTick(const Keystates &keys, Player *player) {
         player->setWeaponEquipBit(getCurNode(player).equipweapon, i, !player->getWeaponEquipBit(getCurNode(player).equipweapon, i));
       }
     }
+  } else if(getCurNode(player).type == HierarchyNode::HNT_SELL) {
+    if(keys.accept.push)
+      selling = !selling;
   } else {
     
     Button buy;
@@ -544,6 +548,22 @@ void Shop::renderToScreen(const Player *player) const {
     if(hasInfo(getCurNode(player).type)) {
       cshopinf.renderFrame(slay.hud(), slay.fontsize(), slay.demo());
     }
+  }
+  
+  if(getCurNode(player).type == HierarchyNode::HNT_SELL) {
+    CHECK(curloc.size() == 1);
+    Float4 bds = slay.box(curloc.size());
+    bds.sy = slay.voffset();
+    bds.ey = getZoom().ey - slay.voffset();
+    bds = contract(bds, getTextBoxBorder(slay.fontsize()));
+    
+    string text = "Select this to enter Sell mode. Select this again to leave Sell mode. You may also toggle Sell mode by pressing your \"cancel\" button.";
+    float height = getFormattedTextHeight(text, slay.fontsize(), bds.x_span());
+    
+    setColor(C::inactive_text);
+    Float4 rebds(bds.sx, (bds.ey - bds.sy - height) / 2 + bds.sy, bds.ex, (bds.ey - bds.sy + height) / 2 + bds.sy);
+    drawTextBoxAround(rebds, slay.fontsize());
+    drawFormattedText(text, slay.fontsize(), rebds);
   }
 }
 

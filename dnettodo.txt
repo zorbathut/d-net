@@ -1,5 +1,4 @@
 ---- Major work path
-- "Enter sell mode" option in shop, with descriptive text
 - Item despawning based on wimpiest player
 - Reload on-the-fly
 - Second-level I tanks
