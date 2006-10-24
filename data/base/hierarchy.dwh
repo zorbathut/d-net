@@ -22,11 +22,3 @@ hierarchy {
   name=ROOT.Tanks
   type=tank
 }
-
-equip {
-  name=ROOT.Equip Weapons
-}
-
-sell {
-  name=ROOT.Sell Equipment
-}

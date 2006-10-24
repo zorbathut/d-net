@@ -963,34 +963,6 @@ void parseFaction(kvData *chunk) {
   factions.push_back(fact);
 }
 
-void parseEquip(kvData *chunk) {
-  string name = chunk->consume("name");
-  
-  HierarchyNode *mountpoint = findNamedNode(name, 1);
-  HierarchyNode tnode;
-  tnode.name = tokenize(name, ".").back();
-  tnode.type = HierarchyNode::HNT_EQUIP;
-  tnode.displaymode = HierarchyNode::HNDM_BLANK;
-  tnode.cat_restrictiontype = HierarchyNode::HNT_EQUIPWEAPON;
-  CHECK(mountpoint->cat_restrictiontype == -1 || tnode.cat_restrictiontype == mountpoint->cat_restrictiontype);
-  
-  mountpoint->branches.push_back(tnode);
-}
-
-void parseSell(kvData *chunk) {
-  string name = chunk->consume("name");
-  
-  HierarchyNode *mountpoint = findNamedNode(name, 1);
-  HierarchyNode tnode;
-  tnode.name = tokenize(name, ".").back();
-  tnode.type = HierarchyNode::HNT_SELL;
-  tnode.displaymode = HierarchyNode::HNDM_BLANK;
-  tnode.cat_restrictiontype = HierarchyNode::HNT_NONE;
-  CHECK(mountpoint->cat_restrictiontype == -1 || tnode.cat_restrictiontype == mountpoint->cat_restrictiontype);
-  
-  mountpoint->branches.push_back(tnode);
-}
-
 void parseText(kvData *chunk) {
   string *titem = prepareName(chunk, &text, "text");
   *titem = chunk->consume("data");
@@ -1029,10 +1001,6 @@ void parseItemFile(const string &fname) {
       parseAdjustment(&chunk);
     } else if(chunk.category == "faction") {
       parseFaction(&chunk);
-    } else if(chunk.category == "equip") {
-      parseEquip(&chunk);
-    } else if(chunk.category == "sell") {
-      parseSell(&chunk);
     } else if(chunk.category == "text") {
       parseText(&chunk);
     } else if(chunk.category == "launcher") {
@@ -1066,6 +1034,26 @@ void initItemdb() {
   while(getLineStripped(manifest, &line)) {
     dprintf("%s\n", line.c_str());
     parseItemFile(basepath + line);
+  }
+  
+  // add our hardcoded "sell" token
+  {
+    HierarchyNode tnode;
+    tnode.name = "Sell equipment";
+    tnode.type = HierarchyNode::HNT_SELL;
+    tnode.displaymode = HierarchyNode::HNDM_BLANK;
+    tnode.cat_restrictiontype = HierarchyNode::HNT_NONE;
+    root.branches.push_back(tnode);
+  }
+  
+  // add our hardcoded "equip" token
+  {
+    HierarchyNode tnode;
+    tnode.name = "Equip weapons";
+    tnode.type = HierarchyNode::HNT_EQUIP;
+    tnode.displaymode = HierarchyNode::HNDM_BLANK;
+    tnode.cat_restrictiontype = HierarchyNode::HNT_EQUIPWEAPON;
+    root.branches.push_back(tnode);
   }
   
   {
