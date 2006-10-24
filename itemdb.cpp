@@ -1098,6 +1098,15 @@ void generateFactionStats() {
   fclose(ofil);
 }
 
+void dumpText() {
+  FILE *ofil = fopen("tools/textdump.txt", "w");
+  CHECK(ofil);
+  for(map<string, string>::const_iterator itr = text.begin(); itr != text.end(); itr++) {
+    fprintf(ofil, "%s\n\n\n\n", itr->second.c_str());
+  }
+  fclose(ofil);
+}
+
 const HierarchyNode &itemDbRoot() {
   return root;
 }

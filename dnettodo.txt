@@ -1,9 +1,10 @@
 ---- Major work path
+- Spelling dump
 - "Enter sell mode" option in shop, with descriptive text
 - Item despawning based on wimpiest player
+- Reload on-the-fly
 - Second-level I tanks
 - Tank-specific upgrades
-- Reload on-the-fly
 - Get rid of IDs in projectile
 - Remove global RNGs, synch up RNGs completely
 - Improve mine demo

@@ -19,6 +19,7 @@ DEFINE_bool(help, false, "Get help");
 DEFINE_bool(generateCachedShops, false, "Do all the work necessary to cache shops");
 DEFINE_bool(generateWeaponStats, false, "Do all the work necessary to dump weapon info");
 DEFINE_bool(generateFactionStats, false, "Do all the work necessary to dump faction info");
+DEFINE_bool(dumpText, false, "Dump all \"text\" blocks");
 
 int GetVideoFlags(void) {
 
@@ -138,6 +139,11 @@ int main(int argc, char **argv) {
     
     if(FLAGS_generateFactionStats) {
       generateFactionStats();
+      generated = true;
+    }
+    
+    if(FLAGS_dumpText) {
+      dumpText();
       generated = true;
     }
     

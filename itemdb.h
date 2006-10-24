@@ -430,9 +430,11 @@ public:
 };
 
 void initItemdb();
+
 void generateCachedShops();
 void generateWeaponStats();
 void generateFactionStats();
+void dumpText();
 
 /*************
  * Accessors
