@@ -25,7 +25,7 @@ ROXO - heavy
 
 SEKA - added damage energy, trap, exotic, fast, light - bonus speed upgrade
 MARI - bonus fire rate, slow, medium - bonus damage upgrades
-TUVU - added damage kinetic, explosive, added radius, medium, heavy - bonus hull upgrade
+TUVU - added damage kinetic, explosive, added radius, medium, heavy
 
 GEPIN - reduced fire speed, reduced damage *, fast, heavy - bonus damage, firespeed upgrades
 BORA - medium, medium - bonus damage, firespeed, speed, hull upgrades

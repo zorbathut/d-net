@@ -1,4 +1,41 @@
 
+
+text {
+  name=text.tank.opecii
+  data=The most powerful tank twenty years ago, the Opec II is now utterly obsolete. Many are still used in combat, usually in rebuilt and reconditioned form.
+  data=Upgrade ASAP.
+}
+
+text {
+  name=text.tank.carat
+  data=The Carat series was designed for warriors who value speed above everything. Lightweight but sturdy, Carat tanks can outmaneuver anything in their class.
+}
+
+text {
+  name=text.tank.pire
+  data=Tired of having to choose between slow tanks and flimsy tanks, the Pire's designer set out to make a tank with no weak points and produced a solid contender on the field. Unfortunately but inevitably it also has no strong points.
+}
+
+text {
+  name=text.tank.roxo
+  data=Reinforced beyond previous records, the Roxo was, for a time, the world's heaviest tank. Soon surpassed by more advanced construction techniques, it is still unequaled among the lower-tech and cheaper tanks.
+}
+
+text {
+  name=text.tank.seka
+  data=Designed by Hermes scientists, the Seka tank is a speedy agile tank equipped with traps and long-range weaponry. It also features improved speed upgradability.
+}
+
+text {
+  name=text.tank.mari
+  data=Custom-built for Jason's Juggernauts, the Mari's advanced weaponry systems improve its fire rate substantially but decrease its speed significantly. Several aftermarket weapon boost kits exist for this tank.
+}
+
+text {
+  name=text.tank.tuvu
+  data=One of the only practical Amazon designs ever released, the Tuvu is a heavy and surprisingly fast tank equipped with improved projectile and explosive systems. It lacks the upgradability of other tanks in its class.
+}
+
 effects {
   name=effects.sparker1
 
@@ -92,12 +129,6 @@ weapon {
   launcher=launcher.sparker1
 }
 
-text {
-  name=text.tank.opecii
-  data=The most powerful tank twenty years ago, the Opec II is now utterly obsolete. Many are still used in combat, usually in rebuilt and reconditioned form.
-  data=Upgrade ASAP.
-}
-
 tank {
   name=ROOT.Tanks.OPEC II
 
@@ -162,11 +193,6 @@ weapon {
   launcher=launcher.sparker2
 }
 
-text {
-  name=text.tank.carat
-  data=The Carat series was designed for warriors who value speed above everything. Lightweight but sturdy, Carat tanks can outmaneuver anything in their class.
-}
-
 tank {
   name=ROOT.Tanks.CARAT I
 
@@ -186,11 +212,6 @@ tank {
   vertices=0 2.25 rear_end
   
   text=text.tank.carat
-}
-
-text {
-  name=text.tank.pire
-  data=Tired of having to choose between slow tanks and flimsy tanks, the Pire's designer set out to make a tank with no weak points and produced a solid contender on the field. Unfortunately but inevitably it also has no strong points.
 }
 
 tank {
@@ -213,11 +234,6 @@ tank {
   vertices=5.5 0.8
   
   text=text.tank.pire
-}
-
-text {
-  name=text.tank.roxo
-  data=Reinforced beyond previous records, the Roxo was, for a time, the world's heaviest tank. Soon surpassed by more advanced construction techniques, it is still unequaled among the lower-tech and cheaper tanks.
 }
 
 tank {
@@ -331,19 +347,12 @@ tank {
   text=text.tank.pire
 }
 
-adjustment {
-  name=adjustment.tank.roxo
-  #tank_firerate=100
-}
-
 tank {
   name=ROOT.Tanks.ROXO II
 
   health=240
   handling=1.85
   engine=19
-  
-  adjustment=adjustment.tank.roxo
   
   mass=110
   
@@ -360,4 +369,100 @@ tank {
   vertices=4 2.3
   
   text=text.tank.roxo
+}
+
+adjustment {
+  name=adjustment.tank.seka
+  damage_energy=20
+  damage_trap=20
+  damage_exotic=20
+}
+
+tank {
+  name=ROOT.Tanks.SEKA I
+
+  health=190
+  handling=2.6
+  engine=34
+  
+  mass=30
+  
+  adjustment=adjustment.tank.seka
+  
+  weapon=Sparker III
+  
+  cost=600000
+  
+  vertices=5 0.4
+  vertices=6.5 0 firepoint
+  vertices=5 -0.4
+  vertices=0 -2.3 rear_begin
+  vertices=0.5 0
+  vertices=0 2.3 rear_end
+  
+  text=text.tank.seka
+}
+
+adjustment {
+  name=adjustment.tank.mari
+  tank_firerate=20
+}
+
+tank {
+  name=ROOT.Tanks.MARI I
+
+  health=230
+  handling=1.9
+  engine=20
+  
+  mass=120
+  
+  adjustment=adjustment.tank.mari
+  
+  weapon=Sparker III
+  
+  cost=600000
+  
+  vertices=4.5 1.5
+  vertices=6.5 0.7
+  vertices=6.2 0 firepoint
+  vertices=6.5 -0.7
+  vertices=4.5 -1.5
+  vertices=0 -2.5 rear_begin
+  vertices=0 2.5 rear_end
+  
+  text=text.tank.mari
+}
+
+adjustment {
+  name=adjustment.tank.tuvu
+  damage_kinetic=20
+  damage_explosive=20
+  warhead_radius_falloff=20
+}
+
+tank {
+  name=ROOT.Tanks.TUVU I
+
+  health=260
+  handling=2.1
+  engine=25
+  
+  mass=75
+  
+  adjustment=adjustment.tank.tuvu
+  
+  weapon=Sparker III
+  
+  cost=600000
+  
+  vertices=4.5 2
+  vertices=7 0 firepoint
+  vertices=4.5 -2
+  vertices=0 -2.3 rear_begin
+  vertices=0.5 -1.5
+  vertices=0.5 1.5
+  vertices=0 2.3 rear_end
+  
+  text=text.tank.tuvu
 }
