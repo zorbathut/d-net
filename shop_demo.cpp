@@ -212,8 +212,8 @@ public:
 
 const float weapons_xpses_normal[] = { -80, -80, 0, 0, 80, 80 };
 const float weapons_ypses_normal[] = { 120, -120, 120, -40, 120, 40 };
-const float weapons_xpses_melee[] = { -20, -20, 0, 0, 20, 23 };
-const float weapons_ypses_melee[] = { 6, -7, 6, -3, 6, 4 };
+const float weapons_xpses_melee[] = { -20, -20, 0, 0, 20, 20 };
+const float weapons_ypses_melee[] = { 6, -7, 6, -3, 6, 6 };
 const float weapons_facing[] = { PI * 3 / 2, PI / 2, PI * 3 / 2, PI / 2, PI * 3 / 2, PI / 2 };
 const int weapons_mode[] = { DEMOPLAYER_QUIET, DEMOPLAYER_DPS, DEMOPLAYER_QUIET, DEMOPLAYER_DPS, DEMOPLAYER_QUIET, DEMOPLAYER_DPS };
 const int weapons_progression[] = { 600, 0 };
@@ -254,7 +254,31 @@ void ShopDemo::init(const IDBWeapon *weap, const Player *player) {
     if(weap->launcher->firingrange_distance == WFRD_NORMAL) {
       game.game.initDemo(&game.players, 160, weapons_xpses_normal, weapons_ypses_normal, weapons_facing, weapons_mode);
     } else if(weap->launcher->firingrange_distance == WFRD_MELEE) {
-      game.game.initDemo(&game.players, 40, weapons_xpses_melee, weapons_ypses_melee, weapons_facing, weapons_mode);
+      CHECK(ARRAY_SIZE(weapons_facing) == 6);
+      Tank tank;
+      tank.init(player->getTank(), Color(1, 1, 1));
+      Float2 basetest(weapons_xpses_melee[5], weapons_ypses_melee[5]);
+      float dist_min = 0.1;
+      float dist_max = 10;
+      while(dist_max - dist_min > 0.01) {
+        float dist_cen = (dist_min + dist_max) / 2;
+        Float2 pos = basetest + makeAngle(-PI / 4) * dist_cen;
+        if(getPathRelation(tank.getTankVertices(Coord2(weapons_xpses_melee[4], weapons_ypses_melee[4]), weapons_facing[4]), tank.getTankVertices(Coord2(pos), weapons_facing[5])) == PR_INTERSECT) {
+          dist_min = dist_cen;
+        } else {
+          dist_max = dist_cen;
+        }
+        dprintf("dist_cen is %f\n", dist_cen);
+      }
+      
+      float wxm[ARRAY_SIZE(weapons_xpses_melee)];
+      float wym[ARRAY_SIZE(weapons_xpses_melee)];
+      memcpy(wxm, weapons_xpses_melee, sizeof(wxm));
+      memcpy(wym, weapons_ypses_melee, sizeof(wym));
+      Float2 newpos = basetest + makeAngle(-PI / 4) * (dist_max + 0.1);
+      wxm[5] = newpos.x;
+      wym[5] = newpos.y;
+      game.game.initDemo(&game.players, 40, wxm, wym, weapons_facing, weapons_mode);
     } else {
       CHECK(0);
     }
