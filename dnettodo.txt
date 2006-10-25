@@ -1,5 +1,5 @@
 ---- Major work path
-- Make sure player axis choice still shunts through quickly
+- Exiting from axis choice hardcrashes
 - Get rid of player IDs in projectile
 - Remove global RNGs, synch up RNGs completely
 - Improve mine demo

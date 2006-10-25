@@ -220,7 +220,7 @@ bool standardButtonTick(StandardButtonTickData *sbtd) {
     CHECK(sbtd->outkeys->size() == sbtd->outinvert->size());
   if(*sbtd->current_button == -1) {
     if(sbtd->require_trigger) {
-      *sbtd->current_mode = RM_IDLE;
+      *sbtd->current_mode = RM_CHOOSING;
     } else {
       *sbtd->current_mode = RM_NOTRIGGER;
     }
@@ -231,15 +231,21 @@ bool standardButtonTick(StandardButtonTickData *sbtd) {
   CHECK((*sbtd->current_mode == RM_NOTRIGGER) == !sbtd->require_trigger);
   CHECK(sbtd->accept_button != -1 && sbtd->cancel_button != -1 || !sbtd->require_trigger);
   
+  bool nomove = false;
+  
   // First off, let's see if we do successfully change buttons.
   if(*sbtd->current_mode == RM_NOTRIGGER || *sbtd->current_mode == RM_CHOOSING) {
     for(int i = 0; i < sbtd->triggers->size(); i++) { // For each input button . . .
       if(abs((*sbtd->triggers)[i]) > 0.9) { // If button was pushed . . .
         int oldbutton = (*sbtd->outkeys)[*sbtd->current_button];
         if(changeButtons(sbtd->outkeys, sbtd->outinvert, sbtd->groups, *sbtd->current_button, i, (*sbtd->triggers)[i] < 0)) { // If button successfully changed . . .
-          if(*sbtd->current_mode == RM_NOTRIGGER) {
-            if(oldbutton == -1)
-              (*sbtd->current_button)++;
+          if(oldbutton == -1) {
+            (*sbtd->current_button)++;
+            if(*sbtd->current_button == sbtd->outkeys->size() && *sbtd->current_mode == RM_CHOOSING) {
+              *sbtd->current_mode = RM_IDLE;
+              nomove = true;
+            }
+          } else if(*sbtd->current_mode == RM_NOTRIGGER) {
           } else if(*sbtd->current_mode == RM_CHOOSING) {
             *sbtd->current_mode = RM_IDLE;
           } else {
@@ -252,7 +258,7 @@ bool standardButtonTick(StandardButtonTickData *sbtd) {
   }
   
   // Now let's see if we move.
-  if(*sbtd->current_mode == RM_NOTRIGGER || *sbtd->current_mode == RM_IDLE) {
+  if(!nomove && (*sbtd->current_mode == RM_NOTRIGGER || *sbtd->current_mode == RM_IDLE)) {
     if(sbtd->keys.u.repeat)
       (*sbtd->current_button)--;
     if(sbtd->keys.d.repeat)
