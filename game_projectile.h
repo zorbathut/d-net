@@ -14,9 +14,9 @@ public:
   void tick(vector<smart_ptr<GfxEffects> > *gfx);
   void render(const vector<Coord2> &tposes) const;
 
-  void firstCollide(Collider *collider, int id) const;
-  void addCollision(Collider *collider, int id) const;
-  void collideCleanup(Collider *collider, int id) const;
+  void firstCollide(Collider *collider, int owner, int id) const;
+  void addCollision(Collider *collider, int owner, int id) const;
+  void collideCleanup(Collider *collider, int owner, int id) const;
 
   Coord2 warheadposition() const;
 
@@ -61,7 +61,6 @@ private:
   int age;
   
   IDBProjectileAdjust projtype;
-  int owner;
   
   bool live;
   bool detonating;
@@ -76,7 +75,7 @@ public:
   void add(const Projectile &proj);
 
   void updateCollisions(Collider *collider, int owner);
-  void tick(vector<smart_ptr<GfxEffects> > *gfxe, Collider *collider, int id, const GameImpactContext &gic);
+  void tick(vector<smart_ptr<GfxEffects> > *gfxe, Collider *collider, int owner, const GameImpactContext &gic);
   void render(const vector<Coord2> &tankpos) const;
 
 private:

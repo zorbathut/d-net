@@ -66,7 +66,7 @@ void Projectile::render(const vector<Coord2> &tankposes) const {
   drawLine(Coord4(pos, pos + lasttail), projtype.thickness_visual());
 };
 
-void Projectile::firstCollide(Collider *collider, int id) const {
+void Projectile::firstCollide(Collider *collider, int owner, int id) const {
   if(projtype.motion() == PM_MINE) {
     vector<Coord2> ite = mine_polys();
     for(int i = 0; i < ite.size(); i++)
@@ -75,7 +75,7 @@ void Projectile::firstCollide(Collider *collider, int id) const {
   }
 }
 
-void Projectile::addCollision(Collider *collider, int id) const {
+void Projectile::addCollision(Collider *collider, int owner, int id) const {
   CHECK(live);
   if(projtype.motion() == PM_MINE) {
   } else {
@@ -83,7 +83,7 @@ void Projectile::addCollision(Collider *collider, int id) const {
   }
 }
 
-void Projectile::collideCleanup(Collider *collider, int id) const {
+void Projectile::collideCleanup(Collider *collider, int owner, int id) const {
   if(projtype.motion() == PM_MINE) {
     collider->dumpGroup(CollideId(CGR_STATPROJECTILE, owner, id));
   }
@@ -94,7 +94,6 @@ Coord2 Projectile::warheadposition() const {
 }
 
 void Projectile::detonate(Coord2 pos, Tank *target, const GamePlayerContext &gpc, bool impacted) {
-  CHECK(gpc.owner == owner);
   if(!live)
     return;
   
@@ -184,7 +183,6 @@ Projectile::Projectile() : projtype(NULL, IDBAdjustment()) {
 Projectile::Projectile(const Coord2 &in_pos, float in_d, const IDBProjectileAdjust &in_projtype, int in_owner) : projtype(in_projtype) {
   pos = in_pos;
   d = in_d;
-  owner = in_owner;
   age = 0;
   live = true;
   detonating = false;
@@ -222,23 +220,23 @@ void ProjectilePack::add(const Projectile &proj) {
 
 void ProjectilePack::updateCollisions(Collider *collider, int owner) {
   for(int i = 0; i < newitems.size(); i++)
-    projectiles[newitems[i]].firstCollide(collider, newitems[i]);
+    projectiles[newitems[i]].firstCollide(collider, owner, newitems[i]);
   newitems.clear();
   
   for(map<int, Projectile>::const_iterator itr = projectiles.begin(); itr != projectiles.end(); ++itr) {
-    itr->second.addCollision(collider, itr->first);
+    itr->second.addCollision(collider, owner, itr->first);
   }
 }
 
-void ProjectilePack::tick(vector<smart_ptr<GfxEffects> > *gfxe, Collider *collide, int id, const GameImpactContext &gic) {
+void ProjectilePack::tick(vector<smart_ptr<GfxEffects> > *gfxe, Collider *collide, int owner, const GameImpactContext &gic) {
   for(map<int, Projectile>::iterator itr = projectiles.begin(); itr != projectiles.end(); ) {
     // the logic here is kind of grim, sorry about this
     if(itr->second.isLive() && itr->second.isDetonating())
-      itr->second.detonate(itr->second.warheadposition(), NULL, GamePlayerContext(id, this, gic), false);
+      itr->second.detonate(itr->second.warheadposition(), NULL, GamePlayerContext(owner, this, gic), false);
     if(itr->second.isLive()) {
       itr->second.tick(gfxe);
       if(itr->second.isLive() && itr->second.isDetonating())
-        itr->second.detonate(itr->second.warheadposition(), NULL, GamePlayerContext(id, this, gic), false);
+        itr->second.detonate(itr->second.warheadposition(), NULL, GamePlayerContext(owner, this, gic), false);
       if(itr->second.isLive()) {
         ++itr;
         continue;
@@ -246,7 +244,7 @@ void ProjectilePack::tick(vector<smart_ptr<GfxEffects> > *gfxe, Collider *collid
     }
     
     CHECK(!itr->second.isLive());
-    itr->second.collideCleanup(collide, itr->first);
+    itr->second.collideCleanup(collide, owner, itr->first);
     aid.push_back(itr->first);
     map<int, Projectile>::iterator titr = itr;
     ++itr;
