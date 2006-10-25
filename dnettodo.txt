@@ -1,5 +1,4 @@
 ---- Major work path
-- Display tank adjustments
 - Tank-specific upgrades
 - EMP demo intersection with hefty tanks
 - Get rid of IDs in projectile
