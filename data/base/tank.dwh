@@ -140,6 +140,10 @@ tank {
   
   weapon=Sparker I
   
+  upgrades=Basic hull
+  upgrades=Basic engine
+  upgrades=Basic handling
+  
   cost=0
   upgrade_base=2000
   
@@ -204,6 +208,10 @@ tank {
   
   weapon=Sparker II
   
+  upgrades=Basic hull
+  upgrades=Basic engine
+  upgrades=Basic handling
+  
   cost=20000
   
   vertices=6.5 0 firepoint
@@ -224,6 +232,10 @@ tank {
   mass=60
   
   weapon=Sparker II
+  
+  upgrades=Basic hull
+  upgrades=Basic engine
+  upgrades=Basic handling
   
   cost=20000
   
@@ -246,6 +258,10 @@ tank {
   mass=100
   
   weapon=Sparker II
+  
+  upgrades=Basic hull
+  upgrades=Basic engine
+  upgrades=Basic handling
   
   cost=20000
   
@@ -312,6 +328,10 @@ tank {
   
   weapon=Sparker III
   
+  upgrades=Basic hull
+  upgrades=Basic engine
+  upgrades=Basic handling
+  
   cost=500000
   
   vertices=6.5 0 firepoint
@@ -333,6 +353,10 @@ tank {
   mass=60
   
   weapon=Sparker III
+  
+  upgrades=Basic hull
+  upgrades=Basic engine
+  upgrades=Basic handling
   
   cost=500000
   
@@ -357,6 +381,10 @@ tank {
   mass=110
   
   weapon=Sparker III
+  
+  upgrades=Basic hull
+  upgrades=Basic engine
+  upgrades=Basic handling
   
   cost=500000
   
@@ -391,6 +419,10 @@ tank {
   
   weapon=Sparker III
   
+  upgrades=Basic hull
+  upgrades=Basic engine
+  upgrades=Basic handling
+  
   cost=600000
   
   vertices=5 0.4
@@ -420,6 +452,10 @@ tank {
   adjustment=adjustment.tank.mari
   
   weapon=Sparker III
+  
+  upgrades=Basic hull
+  upgrades=Basic engine
+  upgrades=Basic handling
   
   cost=600000
   
@@ -453,6 +489,10 @@ tank {
   adjustment=adjustment.tank.tuvu
   
   weapon=Sparker III
+  
+  upgrades=Basic hull
+  upgrades=Basic engine
+  upgrades=Basic handling
   
   cost=600000
   

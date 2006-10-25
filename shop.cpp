@@ -115,8 +115,14 @@ void Shop::renormalize(HierarchyNode &item, const Player *player) {
     item.checkConsistency();
   }
   
-  for(int i = 0; i < item.branches.size(); i++)
-    renormalize(item.branches[i], player);
+  for(int i = 0; i < item.branches.size(); i++) {
+    if(item.branches[i].type == HierarchyNode::HNT_UPGRADE && !player->isUpgradeAvailable(item.branches[i].upgrade)) {
+      item.branches.erase(item.branches.begin() + i);
+      i--;
+    } else {
+      renormalize(item.branches[i], player);
+    }
+  }
 }
 
 const HierarchyNode &Shop::getStepNode(int step, const Player *player) const {
@@ -487,6 +493,7 @@ bool Shop::runTick(const Keystates &keys, Player *player) {
   if(curloc == lastloc && hasInfo(getCurNode(player).type))
     cshopinf.runTick();
   
+  hierarchroot = hierarchorig;
   renormalize(hierarchroot, player);
   
   return false;
@@ -581,5 +588,6 @@ void Shop::init(bool in_miniature, const HierarchyNode &hnode) {
   miniature = in_miniature;
   slay = ShopLayout(miniature);
   
-  hierarchroot = hnode;
+  hierarchorig = hnode;
+  hierarchroot = hierarchorig;
 }

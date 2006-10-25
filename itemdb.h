@@ -172,6 +172,7 @@ public:
   const IDBAdjustment *adjustment;
 
   int costmult;
+  string category;
 
   const string *text;
 };
@@ -196,6 +197,7 @@ public:
   float mass;
 
   const IDBAdjustment *adjustment;
+  vector<string> upgrades;
 
   const IDBWeapon *weapon;
 

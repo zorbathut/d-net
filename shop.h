@@ -85,6 +85,7 @@ private:
   bool disabled;  // when we switch, we wait for them to let go of the button
 
   HierarchyNode hierarchroot;
+  HierarchyNode hierarchorig;
 
   ShopInfo cshopinf;
 

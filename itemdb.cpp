@@ -608,6 +608,7 @@ void parseUpgrade(kvData *chunk, bool reload) {
   titem->costmult = atoi(chunk->consume("costmult").c_str());
   
   titem->adjustment = parseSubclass(chunk->consume("adjustment"), adjustmentclasses);
+  titem->category = chunk->consume("category");
   
   titem->text = parseOptionalSubclass(chunk, "text", text);
   
@@ -827,6 +828,7 @@ void parseTank(kvData *chunk, bool reload) {
   titem->mass = atof(chunk->consume("mass").c_str());
   
   titem->adjustment = parseOptionalSubclass(chunk, "adjustment", adjustmentclasses);
+  titem->upgrades = tokenize(chunk->consume("upgrades"), "\n");
   
   {
     vector<string> vtx = tokenize(chunk->consume("vertices"), "\n");

@@ -14,6 +14,8 @@ upgrade {
   costmult=1
   adjustment=adjustment.hull
   
+  category=Basic hull
+  
   text=text.tank.hull1
 }
 
@@ -26,6 +28,8 @@ upgrade {
   name=ROOT.Upgrades.Hull II
   costmult=3
   adjustment=adjustment.hull
+  
+  category=Basic hull
   
   text=text.tank.hull2
 }
@@ -45,6 +49,8 @@ upgrade {
   costmult=1
   adjustment=adjustment.engine
   
+  category=Basic engine
+  
   text=text.tank.engine1
 }
 
@@ -57,6 +63,8 @@ upgrade {
   name=ROOT.Upgrades.Engine II
   costmult=3
   adjustment=adjustment.engine
+  
+  category=Basic engine
   
   text=text.tank.engine2
 }
@@ -76,6 +84,8 @@ upgrade {
   costmult=1
   adjustment=adjustment.handling
   
+  category=Basic handling
+  
   text=text.tank.handling1
 }
 
@@ -88,6 +98,8 @@ upgrade {
   name=ROOT.Upgrades.Handling II
   costmult=3
   adjustment=adjustment.handling
+  
+  category=Basic handling
   
   text=text.tank.handling2
 }

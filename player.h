@@ -70,6 +70,8 @@ public:
   bool canBuyWeapon(const IDBWeapon *in_weap) const;
   bool canBuyTank(const IDBTank *in_tank) const;
 
+  bool isUpgradeAvailable(const IDBUpgrade *in_upg) const;
+
   bool canSellGlory(const IDBGlory *in_glory) const;
   bool canSellBombardment(const IDBBombardment *in_bombardment) const;
   bool canSellWeapon(const IDBWeapon *in_weap) const;
