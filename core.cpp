@@ -32,8 +32,6 @@ void MainLoop() {
 
   sfrand(time(NULL));
 
-  interfaceInit();
-
 	Timer timer;
 	Timer bencher;
 
@@ -54,9 +52,11 @@ void MainLoop() {
   int skipped = 0;
   
   frameNumber = 0;    // it's -1 before this point
+  
+  InterfaceMain interface;
 
   time_t starttime = time(NULL);
-    
+
 	while(!quit) {
     StackString sst(StringPrintf("Frame %d loop", frameNumber));
     tickHttpd();
@@ -89,7 +89,7 @@ void MainLoop() {
 		}
 		if(quit || FLAGS_terminateAfter != -1 && time(NULL) - starttime >= FLAGS_terminateAfter)
       break;
-    interfaceRunAi(controls_ai());  // has to be before controls
+    interface.ai(controls_ai());  // has to be before controls
 		controllers = controls_next();
 		CHECK(controllers.size() == origcontrollers.size());
 		for(int i = 0; i < controllers.size(); i++)
@@ -142,7 +142,7 @@ void MainLoop() {
     }
 		polling += bencher.ticksElapsed();
 		bencher = Timer();
-    if(interfaceRunTick(controllers))
+    if(interface.tick(controllers))
       quit = true;
 		ticking += bencher.ticksElapsed();
 		bencher = Timer();
@@ -153,7 +153,7 @@ void MainLoop() {
 		bencher = Timer();
 		if(!timer.skipFrame() && (!ffwd || frameNumber % 60 == 0) || !FLAGS_frameskip || frameNumber % (ffwd ? 60 : 6) == 0) {
 			initFrame();
-			interfaceRenderToScreen();
+			interface.render();
       if(!controls_users()) {
         setColor(1.0, 1.0, 1.0);
         setZoom(Float4(0, 0, 133.333, 100));

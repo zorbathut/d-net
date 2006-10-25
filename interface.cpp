@@ -18,22 +18,6 @@ DEFINE_bool(vecedit, false, "Vector editor (WARNING: nearly unusable)");
 DEFINE_int(rounds_per_shop, 6, "How many rounds between each buying-things opportunity");
 DEFINE_bool(auto_newgame, false, "Automatically enter New Game");
 
-class StdMenu {
-  
-  vector<pair<string, int> > items;
-  int cpos;
-  
-public:
-
-  void pushMenuItem(const string &name, int triggeraction);
-
-  int tick(const Keystates &keys);
-  void render() const;
-
-  StdMenu();
-
-};
-
 void StdMenu::pushMenuItem(const string &name, int triggeraction) {
   items.push_back(make_pair(name, triggeraction));
 }
@@ -66,33 +50,6 @@ StdMenu::StdMenu() {
   cpos = 0;
 }
 
-class InterfaceMain {
-  
-  enum { IFM_S_MAINMENU, IFM_S_PLAYING };
-  enum { IFM_M_NEWGAME, IFM_M_INPUTTEST, IFM_M_GRID, IFM_M_EXIT };
-  int interface_mode;
-  
-  bool grid;
-  bool inptest;
-  vector<Controller> inptest_controls;
-  
-  Metagame *game;
-  
-  StdMenu mainmenu;
-  
-  vector< Keystates > kst;
-  
-public:
-
-  bool tick(const vector< Controller > &control);
-  void ai(const vector<Ai *> &ais) const;
-  void render() const;
-
-  InterfaceMain();
-  ~InterfaceMain();
-
-};
-
 #define GETDIFFERENCE_DEBUG 0 // Code used for checking the validity of getDifference :)
 
 #if GETDIFFERENCE_DEBUG
@@ -100,7 +57,6 @@ public:
 #include "dvec2.h"
 #include "parse.h" // fix these
 #include <fstream>
-
 
 vector<string> parseHackyFile(string fname) {
   ifstream ifs(fname.c_str());
@@ -436,8 +392,7 @@ InterfaceMain::~InterfaceMain() {
   dprintf("Metagame deleted\n");
 }
 
-InterfaceMain ifm;
-
+/*
 void interfaceInit() {
   ifm = InterfaceMain();
 }
@@ -466,3 +421,4 @@ void interfaceRenderToScreen() {
     ifm.render();
   }
 }
+*/
