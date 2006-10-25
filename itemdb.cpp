@@ -580,7 +580,7 @@ void parseWeapon(kvData *chunk, bool reload) {
     tnode.pack = mountpoint->pack;
     tnode.cat_restrictiontype = HierarchyNode::HNT_WEAPON;
     CHECK(mountpoint->cat_restrictiontype == -1 || tnode.cat_restrictiontype == mountpoint->cat_restrictiontype);
-    tnode.weapon = &weaponclasses[name];
+    tnode.weapon = titem;
     tnode.spawncash = parseWithDefault(chunk, "spawncash", Money(0));
     mountpoint->branches.push_back(tnode);
     
@@ -602,13 +602,29 @@ void parseWeapon(kvData *chunk, bool reload) {
 }
 
 void parseUpgrade(kvData *chunk, bool reload) {
+  // This one turns out to be rather complicated.
   string name;
-  IDBUpgrade *titem = prepareName(chunk, &upgradeclasses, reload, &name);
+  string category;
+  IDBUpgrade *titem;
+  {
+    name = chunk->consume("name");
+    category = chunk->consume("category");
+    string locnam = name + "+" + category;
+    if(upgradeclasses.count(locnam)) {
+      if(!reload) {
+        dprintf("Multiple definition of %s\n", locnam.c_str());
+        CHECK(0);
+      } else {
+        upgradeclasses[locnam] = IDBUpgrade();
+      }
+    }
+    titem = &upgradeclasses[locnam];
+  }
   
-  titem->costmult = atoi(chunk->consume("costmult").c_str());
+  titem->costmult = atof(chunk->consume("costmult").c_str());
   
   titem->adjustment = parseSubclass(chunk->consume("adjustment"), adjustmentclasses);
-  titem->category = chunk->consume("category");
+  titem->category = category;
   
   titem->text = parseOptionalSubclass(chunk, "text", text);
   
@@ -623,8 +639,8 @@ void parseUpgrade(kvData *chunk, bool reload) {
     CHECK(mountpoint->pack == 1 || mountpoint->pack == -1);
     tnode.cat_restrictiontype = HierarchyNode::HNT_UPGRADE;
     CHECK(mountpoint->cat_restrictiontype == -1 || tnode.cat_restrictiontype == mountpoint->cat_restrictiontype);
-    tnode.upgrade = &upgradeclasses[name];
-    tnode.spawncash = Money(titem->costmult * 1100);  // heh.
+    tnode.upgrade = titem;
+    tnode.spawncash = Money((long long)(titem->costmult * 1100));  // heh.
     mountpoint->branches.push_back(tnode);
   }
 }
@@ -772,7 +788,7 @@ void parseGlory(kvData *chunk, bool reload) {
     tnode.cat_restrictiontype = HierarchyNode::HNT_GLORY;
     CHECK(mountpoint->cat_restrictiontype == -1 || tnode.cat_restrictiontype == mountpoint->cat_restrictiontype);
 
-    tnode.glory = &gloryclasses[name];
+    tnode.glory = titem;
     tnode.spawncash = titem->base_cost / 2;
     mountpoint->branches.push_back(tnode);
   }
@@ -808,7 +824,7 @@ void parseBombardment(kvData *chunk, bool reload) {
     CHECK(mountpoint->cat_restrictiontype == -1 || tnode.cat_restrictiontype == mountpoint->cat_restrictiontype);
     
     tnode.spawncash = titem->base_cost / 2;
-    tnode.bombardment = &bombardmentclasses[name];
+    tnode.bombardment = titem;
     mountpoint->branches.push_back(tnode);
   }
 }
@@ -894,7 +910,7 @@ void parseTank(kvData *chunk, bool reload) {
     CHECK(mountpoint->cat_restrictiontype == -1 || tnode.cat_restrictiontype == mountpoint->cat_restrictiontype);
     
     tnode.spawncash = titem->base_cost / 2;
-    tnode.tank = &tankclasses[name];
+    tnode.tank = titem;
     mountpoint->branches.push_back(tnode);
   }
 }

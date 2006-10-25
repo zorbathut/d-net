@@ -514,5 +514,5 @@ void Player::reCalculate() {
     if(tank[0].tank->adjustment)
       adjustment += *tank[0].tank->adjustment;
   }
-  adjustment.debugDump();
+  //adjustment.debugDump();
 }

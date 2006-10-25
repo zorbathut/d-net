@@ -171,7 +171,7 @@ struct IDBUpgrade {
 public:
   const IDBAdjustment *adjustment;
 
-  int costmult;
+  float costmult;
   string category;
 
   const string *text;

@@ -420,7 +420,7 @@ tank {
   weapon=Sparker III
   
   upgrades=Basic hull
-  upgrades=Basic engine
+  upgrades=Advanced engine
   upgrades=Basic handling
   
   cost=600000

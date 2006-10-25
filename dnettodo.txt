@@ -1,5 +1,6 @@
 ---- Major work path
-- Tank-specific upgrades
+- Add weapon upgrades
+- Upgrade info in shop screen
 - Modified sparkers
 - EMP demo intersection with hefty tanks
 - Get rid of IDs in projectile

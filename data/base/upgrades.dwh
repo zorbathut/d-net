@@ -1,12 +1,22 @@
 
-adjustment {
-  name=adjustment.hull
-  tank_armor=15
+text {
+  name=text.upgrade.hull1
+  data=Reinforced armor and improved alloys lead to a greater damage capacity without any bad side effects.
 }
 
 text {
-  name=text.tank.hull1
-  data=Reinforced armor and improved alloys lead to a greater damage capacity without any bad side effects.
+  name=text.upgrade.hull2
+  data=Active adaptive shielding on the hull absorbs an even greater percentage of incoming firepower . . . for a price.
+}
+
+text {
+  name=text.upgrade.hull3
+  data=Exotic alloys and point force projectors increase hull strength further.
+}
+
+adjustment {
+  name=adjustment.hull
+  tank_armor=15
 }
 
 upgrade {
@@ -16,12 +26,7 @@ upgrade {
   
   category=Basic hull
   
-  text=text.tank.hull1
-}
-
-text {
-  name=text.tank.hull2
-  data=Active adaptive shielding on the hull absorbs an even greater percentage of incoming firepower . . . for a price.
+  text=text.upgrade.hull1
 }
 
 upgrade {
@@ -31,17 +36,57 @@ upgrade {
   
   category=Basic hull
   
-  text=text.tank.hull2
+  text=text.upgrade.hull2
+}
+
+upgrade {
+  name=ROOT.Upgrades.Hull I
+  costmult=0.5
+  adjustment=adjustment.hull
+  
+  category=Advanced hull
+  
+  text=text.upgrade.hull3
+}
+
+upgrade {
+  name=ROOT.Upgrades.Hull II
+  costmult=1.5
+  adjustment=adjustment.hull
+  
+  category=Advanced hull
+  
+  text=text.upgrade.hull2
+}
+
+upgrade {
+  name=ROOT.Upgrades.Hull III
+  costmult=3
+  adjustment=adjustment.hull
+  
+  category=Advanced hull
+  
+  text=text.upgrade.hull3
+}
+
+text {
+  name=text.upgrade.engine1
+  data=Improved tuning, and a few aftermarket components, can make any engine perform a bit better.
+}
+
+text {
+  name=text.upgrade.engine2
+  data=For the true racer, much of the drivetrain can be replaced with higher-performance parts and an advanced transmission can be installed. All this, of course, has its cost.
+}
+
+text {
+  name=text.upgrade.engine3
+  data=A near-complete reactor rebuild can, in some cases, increase power output far beyond expected levels.
 }
 
 adjustment {
   name=adjustment.engine
   tank_speed=20
-}
-
-text {
-  name=text.tank.engine1
-  data=Improved tuning, and a few aftermarket components, can make any engine perform a bit better.
 }
 
 upgrade {
@@ -51,12 +96,7 @@ upgrade {
   
   category=Basic engine
   
-  text=text.tank.engine1
-}
-
-text {
-  name=text.tank.engine2
-  data=For the true racer, much of the drivetrain can be replaced with higher-performance parts and an advanced transmission can be installed. All this, of course, has its cost.
+  text=text.upgrade.engine1
 }
 
 upgrade {
@@ -66,17 +106,57 @@ upgrade {
   
   category=Basic engine
   
-  text=text.tank.engine2
+  text=text.upgrade.engine2
+}
+
+upgrade {
+  name=ROOT.Upgrades.Engine I
+  costmult=0.5
+  adjustment=adjustment.engine
+  
+  category=Advanced engine
+  
+  text=text.upgrade.engine1
+}
+
+upgrade {
+  name=ROOT.Upgrades.Engine II
+  costmult=1.5
+  adjustment=adjustment.engine
+  
+  category=Advanced engine
+  
+  text=text.upgrade.engine2
+}
+
+upgrade {
+  name=ROOT.Upgrades.Engine III
+  costmult=3
+  adjustment=adjustment.engine
+  
+  category=Advanced engine
+  
+  text=text.upgrade.engine3
+}
+
+text {
+  name=text.upgrade.handling1
+  data=Improved suspension and tread linkages lead to a significantly smaller turning radius.
+}
+
+text {
+  name=text.upgrade.handling2
+  data=Rebuilding the steering system and installing an improved differential allows sharp turns beyond original design limits.
+}
+
+text {
+  name=text.upgrade.handling3
+  data=Small focused graviton generators improve turning radius further by simply changing the direction of gravity. Not for the cheap.
 }
 
 adjustment {
   name=adjustment.handling
   tank_turn=20
-}
-
-text {
-  name=text.tank.handling1
-  data=Improved suspension and tread linkages lead to a significantly smaller turning radius.
 }
 
 upgrade {
@@ -86,12 +166,7 @@ upgrade {
   
   category=Basic handling
   
-  text=text.tank.handling1
-}
-
-text {
-  name=text.tank.handling2
-  data=Small focused graviton generators improve turning radius further by simply changing the direction of gravity. Not for the cheap.
+  text=text.upgrade.handling1
 }
 
 upgrade {
@@ -101,5 +176,35 @@ upgrade {
   
   category=Basic handling
   
-  text=text.tank.handling2
+  text=text.upgrade.handling2
+}
+
+upgrade {
+  name=ROOT.Upgrades.Handling I
+  costmult=0.5
+  adjustment=adjustment.handling
+  
+  category=Advanced handling
+  
+  text=text.upgrade.handling1
+}
+
+upgrade {
+  name=ROOT.Upgrades.Handling II
+  costmult=1.5
+  adjustment=adjustment.handling
+  
+  category=Advanced handling
+  
+  text=text.upgrade.handling2
+}
+
+upgrade {
+  name=ROOT.Upgrades.Handling III
+  costmult=3
+  adjustment=adjustment.handling
+  
+  category=Advanced handling
+  
+  text=text.upgrade.handling3
 }
