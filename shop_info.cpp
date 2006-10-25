@@ -195,7 +195,11 @@ void ShopInfo::renderFrame(Float4 bounds, float fontsize, Float4 inset) const {
     ShopKVPrinter kvp(bounds, fontsize, fontshift);
     for(int i = 0; i < IDBAdjustment::LAST; i++) {
       if(upgrade->adjustment->adjustmentfactor(i) != 1.0) {
-        kvp.print(adjust_human[i], StringPrintf("%s -> %s (%s%%)%s", getUpgradeBefore(i).c_str(), getUpgradeAfter(i).c_str(), prettyFloatFormat(upgrade->adjustment->adjustmentfactor(i) * 100 - 100).c_str(), adjust_unit[i]));
+        if(i >= 0 && i < IDBAdjustment::DAMAGE_LAST) {
+          kvp.print(adjust_human[i], StringPrintf("%s -> %s (%.0f%%)%s", getUpgradeBefore(i).c_str(), getUpgradeAfter(i).c_str(), upgrade->adjustment->adjustmentfactor(i) * 100 - 100, adjust_unit[i]));
+        } else {
+          kvp.print(adjust_human[i], StringPrintf("%s -> %s (%s%%)%s", getUpgradeBefore(i).c_str(), getUpgradeAfter(i).c_str(), prettyFloatFormat(upgrade->adjustment->adjustmentfactor(i) * 100 - 100).c_str(), adjust_unit[i]));
+        }
       }
     }
   } else if(tank) {
@@ -231,6 +235,8 @@ string ShopInfo::getUpgradeBefore(int cat) const {
   } else if(cat == IDBAdjustment::TANK_ARMOR) {
     Player tplayer = getUnupgradedPlayer();
     return prettyFloatFormat(tplayer.getTank().maxHealth());
+  } else if(cat < IDBAdjustment::DAMAGE_LAST) {
+    return StringPrintf("%.0f%%", player->getAdjust().adjustmentfactor(cat) * 100);
   } else {
     // fallback
     return prettyFloatFormat(player->getAdjust().adjustmentfactor(cat) * 100);
@@ -247,6 +253,8 @@ string ShopInfo::getUpgradeAfter(int cat) const {
   } else if(cat == IDBAdjustment::TANK_ARMOR) {
     Player tplayer = getUpgradedPlayer();
     return prettyFloatFormat(tplayer.getTank().maxHealth());
+  } else if(cat < IDBAdjustment::DAMAGE_LAST) {
+    return StringPrintf("%.0f%%", (player->getAdjust().adjustmentfactor(cat) + upgrade->adjustment->adjustmentfactor(cat)) * 100 - 100);
   } else {
     // fallback
     return prettyFloatFormat((player->getAdjust().adjustmentfactor(cat) + upgrade->adjustment->adjustmentfactor(cat)) * 100 - 100);
