@@ -1,5 +1,4 @@
 ---- Major work path
-- Modified sparkers
 - EMP demo intersection with hefty tanks
 - Get rid of IDs in projectile
 - Remove global RNGs, synch up RNGs completely

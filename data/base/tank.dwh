@@ -1,4 +1,8 @@
 
+text {
+  name=text.weapon.sparker
+  data=The most infamous of junkyard weapons, the Sparker is a cobbled together monstrosity from whatever parts can be found. It is not powerful, accurate, nor rapid, but can serve if no other weapons are available.
+}
 
 text {
   name=text.tank.opecii
@@ -19,6 +23,11 @@ text {
 text {
   name=text.tank.roxo
   data=Reinforced beyond previous records, the Roxo was, for a time, the world's heaviest tank. Soon surpassed by more advanced construction techniques, it is still unequaled among the lower-tech and cheaper tanks.
+}
+
+text {
+  name=text.weapon.sparker3
+  data=Named after the junkyard weapon, the "later models" of the Sparker are surprisingly useful and general weapons. They can be efficiently used in many situations and are not quite as hopeless as the Sparker I.
 }
 
 text {
@@ -79,11 +88,6 @@ effects {
   
   radius=0.5
   color=0.3, 0.3, 1.0
-}
-
-text {
-  name=text.weapon.sparker
-  data=The most infamous of junkyard weapons, the Sparker is a cobbled together monstrosity from whatever parts can be found. It is not powerful, accurate, nor rapid, but can serve if no other weapons are available.
 }
 
 warhead {
@@ -307,7 +311,7 @@ launcher {
   
   stats=stats.null
   
-  text=text.weapon.sparker
+  text=text.weapon.sparker3
 }
 
 weapon {
