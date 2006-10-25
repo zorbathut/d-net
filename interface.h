@@ -24,7 +24,7 @@ public:
 
 };
 
-class InterfaceMain {
+class InterfaceMain : boost::noncopyable {
   
   enum { IFM_S_MAINMENU, IFM_S_PLAYING };
   enum { IFM_M_NEWGAME, IFM_M_INPUTTEST, IFM_M_GRID, IFM_M_EXIT };
@@ -34,7 +34,7 @@ class InterfaceMain {
   bool inptest;
   vector<Controller> inptest_controls;
   
-  Metagame game;
+  Metagame *game;
   
   StdMenu mainmenu;
   
@@ -47,6 +47,8 @@ public:
   void render() const;
 
   InterfaceMain();
+  ~InterfaceMain();
+
 };
 
 #endif

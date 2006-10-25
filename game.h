@@ -4,6 +4,7 @@
 #include "collide.h"
 #include "game_projectile.h"
 #include "input.h"
+#include "noncopyable.h"
 
 using namespace std;
 
@@ -47,7 +48,7 @@ public:
   GameMetacontext(const vector<const IDBFaction *> &wins, int roundsPerShop);
 };
 
-class Game {
+class Game : boost::noncopyable{
 public:
   
   void initStandard(vector<Player> *playerdata, const Level &level);

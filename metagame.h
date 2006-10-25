@@ -7,7 +7,7 @@ using namespace std;
 
 class Ai;
 
-class Metagame {
+class Metagame : boost::noncopyable {
   
   enum { MGM_PLAYERCHOOSE, MGM_FACTIONTYPE, MGM_TWEEN, MGM_PLAY };
   int mode;
