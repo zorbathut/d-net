@@ -835,8 +835,9 @@ Game::Game() : collider(0, 0) {
   gamemode = GMODE_LAST;
 }
 
-void Game::initCommon(const vector<Player*> &in_playerdata, const Level &lev, bool smashable) {
+void Game::initCommon(const vector<Player*> &in_playerdata, const vector<Color> &in_colors, const Level &lev, bool smashable) {
   CHECK(gamemode >= 0 && gamemode < GMODE_LAST);
+  CHECK(in_playerdata.size() == in_colors.size());
   
   tanks.clear();
   bombards.clear();
@@ -852,7 +853,7 @@ void Game::initCommon(const vector<Player*> &in_playerdata, const Level &lev, bo
   
   for(int i = 0; i < tanks.size(); i++) {
     CHECK(in_playerdata[i]);
-    tanks[i].init(in_playerdata[i]->getTank(), in_playerdata[i]->getFaction()->color);
+    tanks[i].init(in_playerdata[i]->getTank(), in_colors[i]);
   }
   {
     // place tanks
@@ -893,13 +894,20 @@ void Game::initCommon(const vector<Player*> &in_playerdata, const Level &lev, bo
   demomode_hits = 0;
 }
 
+vector<Color> createBasicColors(const vector<Player*> &in_playerdata) {
+  vector<Color> rv;
+  for(int i = 0; i < in_playerdata.size(); i++)
+    rv.push_back(in_playerdata[i]->getFaction()->color);
+  return rv;
+}
+
 void Game::initStandard(vector<Player> *in_playerdata, const Level &lev) {
   gamemode = GMODE_STANDARD;
   
   vector<Player*> playerdata;
   for(int i = 0; i < in_playerdata->size(); i++)
     playerdata.push_back(&(*in_playerdata)[i]);
-  initCommon(playerdata, lev, true);
+  initCommon(playerdata, createBasicColors(playerdata), lev, true);
   
   frameNmToStart = 180;
   freezeUntilStart = true;
@@ -917,7 +925,7 @@ void Game::initChoice(vector<Player> *in_playerdata) {
     playerdata.push_back(&(*in_playerdata)[i]);
   }
   
-  initCommon(playerdata, lev, true);
+  initCommon(playerdata, createBasicColors(playerdata), lev, true);
   
   teams.resize(5);
   for(int i = 0; i < tanks.size(); i++)
@@ -971,7 +979,7 @@ void Game::initTest(Player *in_playerdata, const Float4 &bounds) {
   
   vector<Player*> playerdata;
   playerdata.push_back(in_playerdata);
-  initCommon(playerdata, lev, false);
+  initCommon(playerdata, createBasicColors(playerdata), lev, false);
   
   clear = bounds;
 }
@@ -1012,7 +1020,12 @@ void Game::initDemo(vector<Player> *in_playerdata, float boxradi, const float *x
   for(int i = 0; i < in_playerdata->size(); i++)
     playerdata.push_back(&(*in_playerdata)[i]);
   
-  initCommon(playerdata, lev, false);
+  vector<Color> colors;
+  CHECK(playerdata.size() <= factionList().size());
+  for(int i = 0; i < playerdata.size(); i++)
+    colors.push_back(factionList()[i].color);
+  
+  initCommon(playerdata, colors, lev, false);
   
   for(int i = 0; i < tanks.size(); i++) {
     tanks[i].pos = Coord2(xps[i], yps[i]);
@@ -1058,7 +1071,7 @@ void Game::initCenteredDemo(Player *in_playerdata, float zoom) {
   
   vector<Player*> playerdata;
   playerdata.push_back(in_playerdata);
-  initCommon(playerdata, lev, false);
+  initCommon(playerdata, createBasicColors(playerdata), lev, false);
   
   collider = Collider(tanks.size(), Coord(1000));
 }

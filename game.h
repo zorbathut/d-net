@@ -78,7 +78,7 @@ public:
 
 private:
   
-  void initCommon(const vector<Player*> &playerdata, const Level &level, bool smashable);
+  void initCommon(const vector<Player*> &playerdata, const vector<Color> &in_colors, const Level &level, bool smashable);
   
   void addTankStatusText(int tankid, const string &text, float duration);
 
