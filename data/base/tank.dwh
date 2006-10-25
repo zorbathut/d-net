@@ -304,7 +304,7 @@ weapon {
 tank {
   name=ROOT.Tanks.CARAT II
 
-  health=175
+  health=180
   handling=2.5
   engine=32
   
@@ -381,7 +381,7 @@ adjustment {
 tank {
   name=ROOT.Tanks.SEKA I
 
-  health=190
+  health=200
   handling=2.6
   engine=34
   
