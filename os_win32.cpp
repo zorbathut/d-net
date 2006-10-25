@@ -136,5 +136,6 @@ bool isUnoptimized() {
 #endif
 
 void seriouslyCrash() {
-  ExitProcess(1);
+  TerminateProcess(GetCurrentProcess(), 1);
+  exit(1);
 }
