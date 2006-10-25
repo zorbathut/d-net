@@ -1,6 +1,7 @@
 ---- Major work path
 - EMP demo intersection with hefty tanks
-- Get rid of IDs in projectile
+  - binsearch for closest intersection, plus 0.1 or so
+- Get rid of player IDs in projectile
 - Remove global RNGs, synch up RNGs completely
 - Improve mine demo
 - Move labels in EMP demo
