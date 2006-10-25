@@ -30,7 +30,7 @@ public:
   float toughness() const;
 
   Projectile();   // does not start in usable state
-  Projectile(const Coord2 &pos, float d, const IDBProjectileAdjust &projtype, int in_owner);
+  Projectile(const Coord2 &pos, float d, const IDBProjectileAdjust &projtype);
 
 private:
   

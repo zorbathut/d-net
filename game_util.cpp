@@ -167,7 +167,7 @@ void deployProjectile(const IDBDeployAdjust &deploy, const DeployLocation &locat
     vector<IDBProjectileAdjust> idp = deploy.chain_projectile();
     for(int i = 0; i < idp.size(); i++)
       for(int j = 0; j < proji.size(); j++)
-        gpc.projpack->add(Projectile(proji[j].first, proji[j].second, idp[i], gpc.owner));
+        gpc.projpack->add(Projectile(proji[j].first, proji[j].second, idp[i]));
   }
   
   {

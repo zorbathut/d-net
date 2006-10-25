@@ -180,7 +180,7 @@ Projectile::Projectile() : projtype(NULL, IDBAdjustment()) {
   live = false;
   age = -1;
 }
-Projectile::Projectile(const Coord2 &in_pos, float in_d, const IDBProjectileAdjust &in_projtype, int in_owner) : projtype(in_projtype) {
+Projectile::Projectile(const Coord2 &in_pos, float in_d, const IDBProjectileAdjust &in_projtype) : projtype(in_projtype) {
   pos = in_pos;
   d = in_d;
   age = 0;
