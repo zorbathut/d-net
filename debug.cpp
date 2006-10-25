@@ -53,7 +53,9 @@ void CrashHandler(const char *fname, int line) {
 };
 
 void crash() {
-  exit(1); 
+  dprintf("About to crash!\n");
+  seriouslyCrash();
+  dprintf("Crashed!\n");
 }
 
 int dprintf(const char *bort, ...) {

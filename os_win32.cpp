@@ -134,3 +134,7 @@ bool isUnoptimized() {
 }
 
 #endif
+
+void seriouslyCrash() {
+  ExitProcess(1);
+}

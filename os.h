@@ -13,4 +13,6 @@ void dumpStackTrace();
 
 bool isUnoptimized();
 
+void seriouslyCrash() __attribute__((__noreturn__)); // apparently this is needed. Why? Because SDL is stupid.
+
 #endif

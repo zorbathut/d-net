@@ -1,4 +1,5 @@
 ---- Major work path
+- AI broken
 - Exiting from axis choice hardcrashes
 - Get rid of player IDs in projectile
 - Remove global RNGs, synch up RNGs completely
