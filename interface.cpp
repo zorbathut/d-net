@@ -383,13 +383,6 @@ InterfaceMain::InterfaceMain() {
   mainmenu.pushMenuItem("Exit", IFM_M_EXIT);
   grid = false;
   inptest = false;
-  game = NULL;
-}
-
-InterfaceMain::~InterfaceMain() {
-  dprintf("Deleting metagame\n");
-  delete game;
-  dprintf("Metagame deleted\n");
 }
 
 /*

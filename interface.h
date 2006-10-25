@@ -34,7 +34,7 @@ class InterfaceMain {
   bool inptest;
   vector<Controller> inptest_controls;
   
-  Metagame *game;
+  Metagame game;
   
   StdMenu mainmenu;
   
@@ -47,8 +47,6 @@ public:
   void render() const;
 
   InterfaceMain();
-  ~InterfaceMain();
-
 };
 
 #endif
