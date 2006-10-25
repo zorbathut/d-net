@@ -1,5 +1,5 @@
 ---- Major work path
-- Add weapon upgrades
+- Weapon upgrade percentage with just %
 - Upgrade info in shop screen
 - Modified sparkers
 - EMP demo intersection with hefty tanks

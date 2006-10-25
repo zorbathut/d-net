@@ -208,3 +208,103 @@ upgrade {
   
   text=text.upgrade.handling3
 }
+
+text {
+  name=text.upgrade.kinetic
+  data=Better projectile machining and higher exit velocity combine to increase kinetic weapon damage significantly.
+}
+
+text {
+  name=text.upgrade.energy
+  data=An improved power core allows more raw energy to be delivered to weapon systems, translating directly into higher damage.
+}
+
+text {
+  name=text.upgrade.explosive
+  data=Better explosives make bigger explosions. Bigger explosions means more damage.
+}
+
+text {
+  name=text.upgrade.trap
+  data=Denser and heavier explosives, while unsuitable for airborne projectiles, work great in stationary traps.
+}
+
+text {
+  name=text.upgrade.exotic
+  data=While no single upgrade can improve the damage of all exotic weapons, a general upgrade package can be used to do a good job for most.
+}
+
+adjustment {
+  name=adjustment.kinetic
+  damage_kinetic=10
+}
+
+adjustment {
+  name=adjustment.energy
+  damage_energy=10
+}
+
+adjustment {
+  name=adjustment.explosive
+  damage_explosive=10
+}
+
+adjustment {
+  name=adjustment.trap
+  damage_trap=20
+}
+
+adjustment {
+  name=adjustment.exotic
+  damage_exotic=20
+}
+
+upgrade {
+  name=ROOT.Upgrades.Kinetic damage
+  costmult=2
+  adjustment=adjustment.kinetic
+  
+  category=Weapon damage
+  
+  text=text.upgrade.kinetic
+}
+
+upgrade {
+  name=ROOT.Upgrades.Energy damage
+  costmult=2
+  adjustment=adjustment.energy
+  
+  category=Weapon damage
+  
+  text=text.upgrade.energy
+}
+
+upgrade {
+  name=ROOT.Upgrades.Explosive damage
+  costmult=2
+  adjustment=adjustment.explosive
+  
+  category=Weapon damage
+  
+  text=text.upgrade.explosive
+}
+
+upgrade {
+  name=ROOT.Upgrades.Trap damage
+  costmult=2
+  adjustment=adjustment.trap
+  
+  category=Weapon damage
+  
+  text=text.upgrade.trap
+}
+
+upgrade {
+  name=ROOT.Upgrades.Exotic damage
+  costmult=2
+  adjustment=adjustment.exotic
+  
+  category=Weapon damage
+  
+  text=text.upgrade.exotic
+}

@@ -456,6 +456,7 @@ tank {
   upgrades=Basic hull
   upgrades=Basic engine
   upgrades=Basic handling
+  upgrades=Weapon damage
   
   cost=600000
   
