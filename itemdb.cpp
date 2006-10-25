@@ -826,6 +826,8 @@ void parseTank(kvData *chunk, bool reload) {
   titem->engine = atof(chunk->consume("engine").c_str());
   titem->mass = atof(chunk->consume("mass").c_str());
   
+  titem->adjustment = parseOptionalSubclass(chunk, "adjustment", adjustmentclasses);
+  
   {
     vector<string> vtx = tokenize(chunk->consume("vertices"), "\n");
     CHECK(vtx.size() >= 3); // triangle is the minimum, no linetanks please

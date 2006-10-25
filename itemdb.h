@@ -195,6 +195,8 @@ public:
   float engine;
   float mass;
 
+  const IDBAdjustment *adjustment;
+
   const IDBWeapon *weapon;
 
   vector<Coord2> vertices;

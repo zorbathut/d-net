@@ -1,6 +1,8 @@
 ---- Major work path
+- Demo tank color
 - Second-level I tanks
 - Tank-specific upgrades
+- EMP demo intersection with hefty tanks
 - Get rid of IDs in projectile
 - Remove global RNGs, synch up RNGs completely
 - Improve mine demo

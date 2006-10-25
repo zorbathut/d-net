@@ -164,7 +164,7 @@ private:
   int factionmode;
 
   IDBAdjustment adjustment;
-  IDBAdjustment adjustment_noupgrade;
+  IDBAdjustment adjustment_notank;
 
   Money cash;
 

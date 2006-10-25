@@ -240,12 +240,10 @@ void ShopDemo::init(const IDBWeapon *weap, const Player *player) {
   if(weap->launcher->demomode == WDM_FIRINGRANGE) {
     mode = DEMOMODE_FIRINGRANGE;
     game.players.clear();
-    game.players.resize(6);
+    game.players.resize(6, *player);
     CHECK(factionList().size() >= game.players.size());
-    for(int i = 0; i < game.players.size(); i++) {
-      game.players[i] = Player(&factionList()[i], 0); // TODO: make this be the right faction mode and stats
+    for(int i = 0; i < game.players.size(); i++)
       game.players[i].forceAcquireWeapon(weap, 1000000);
-    }
     
     ais.clear();
     for(int i = 0; i < 3; i++) {
@@ -265,12 +263,10 @@ void ShopDemo::init(const IDBWeapon *weap, const Player *player) {
   } else if(weap->launcher->demomode == WDM_MINES) {
     mode = DEMOMODE_MINE;
     game.players.clear();
-    game.players.resize(10);
+    game.players.resize(10, *player);
     CHECK(factionList().size() >= game.players.size());
-    for(int i = 0; i < game.players.size(); i++) {
-      game.players[i] = Player(&factionList()[i], 0); // TODO: make this be the right faction mode and stats
+    for(int i = 0; i < game.players.size(); i++)
       game.players[i].forceAcquireWeapon(weap, 1000000);
-    }
     
     ais.clear();  
     mine_miners.clear();
@@ -299,13 +295,10 @@ void ShopDemo::init(const IDBBombardment *bombard, const Player *player) {
   mode = DEMOMODE_BOMBARDMENT;
   
   game.players.clear();
-  game.players.resize(8);
+  game.players.resize(8, *player);
   CHECK(factionList().size() >= game.players.size());
-  for(int i = 0; i < game.players.size(); i++) {
-    game.players[i] = Player(&factionList()[i], 0); // TODO: make this be the right faction mode and the right faction data and the right tanks and upgrades and so forth
-    game.players[i].addCash(Money(1000000000));
+  for(int i = 0; i < game.players.size(); i++)
     game.players[i].forceAcquireBombardment(bombard);
-  }
   
   ais.clear();
   bombardment_scatterers.clear();
@@ -326,13 +319,10 @@ void ShopDemo::init(const IDBGlory *glory, const Player *player) {
   mode = DEMOMODE_GLORY;
   
   game.players.clear();
-  game.players.resize(8);
+  game.players.resize(8, *player);
   CHECK(factionList().size() >= game.players.size());
-  for(int i = 0; i < game.players.size(); i++) {
-    game.players[i] = Player(&factionList()[i], 0); // TODO: make this be the right faction mode and the right faction data and the right tanks and upgrades and so forth
-    game.players[i].addCash(Money(1000000000));
+  for(int i = 0; i < game.players.size(); i++)
     game.players[i].forceAcquireGlory(glory);
-  }
   
   ais.clear();
   glory_kamikazes.clear();

@@ -331,12 +331,19 @@ tank {
   text=text.tank.pire
 }
 
+adjustment {
+  name=adjustment.tank.roxo
+  #tank_firerate=100
+}
+
 tank {
   name=ROOT.Tanks.ROXO II
 
   health=240
   handling=1.85
   engine=19
+  
+  adjustment=adjustment.tank.roxo
   
   mass=110
   
