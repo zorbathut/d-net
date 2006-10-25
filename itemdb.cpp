@@ -4,6 +4,7 @@
 #include "args.h"
 #include "parse.h"
 #include "player.h"
+#include "httpd.h"
 
 #include <fstream>
 #include <numeric>
@@ -344,21 +345,25 @@ bool prefixed(const string &label, const string &prefix) {
   return true;
 }
 
-template<typename T> T *prepareName(kvData *chunk, map<string, T> *classes, const string &prefix = "", string *namestorage = NULL) {
+template<typename T> T *prepareName(kvData *chunk, map<string, T> *classes, bool reload, const string &prefix = "", string *namestorage = NULL) {
   string name = chunk->consume("name");
   if(namestorage)
     *namestorage = name;
   if(prefix.size())
     CHECK(prefixed(name, prefix));
   if(classes->count(name)) {
-    dprintf("Multiple definition of %s\n", name.c_str());
-    CHECK(0);
+    if(!reload) {
+      dprintf("Multiple definition of %s\n", name.c_str());
+      CHECK(0);
+    } else {
+      (*classes)[name] = T();
+    }
   }
   return &(*classes)[name];
 }
 
-template<typename T> T *prepareName(kvData *chunk, map<string, T> *classes, string *namestorage) {
-  return prepareName(chunk, classes, "", namestorage);
+template<typename T> T *prepareName(kvData *chunk, map<string, T> *classes, bool reload, string *namestorage) {
+  return prepareName(chunk, classes, reload, "", namestorage);
 }
 
 template<typename T> const T *parseSubclass(const string &name, const map<string, T> &classes) {
@@ -468,7 +473,7 @@ void parseDamagecode(const string &str, float *arr) {
   }
 }
 
-void parseHierarchy(kvData *chunk) {
+void parseHierarchy(kvData *chunk, bool reload) {
   HierarchyNode *mountpoint = findNamedNode(chunk->kv["name"], 1);
   HierarchyNode tnode;
   tnode.name = tokenize(chunk->consume("name"), ".").back();
@@ -509,8 +514,8 @@ void parseHierarchy(kvData *chunk) {
   mountpoint->branches.push_back(tnode);
 }
 
-void parseLauncher(kvData *chunk) {
-  IDBLauncher *titem = prepareName(chunk, &launcherclasses, "launcher");
+void parseLauncher(kvData *chunk, bool reload) {
+  IDBLauncher *titem = prepareName(chunk, &launcherclasses, reload, "launcher");
   
   titem->deploy = parseSubclass(chunk->consume("deploy"), deployclasses);
   titem->stats = parseSubclass(chunk->consume("stats"), statsclasses);
@@ -537,8 +542,8 @@ void parseLauncher(kvData *chunk) {
   }
 }
 
-void parseEffects(kvData *chunk) {
-  IDBEffects *titem = prepareName(chunk, &effectsclasses, "effects");
+void parseEffects(kvData *chunk, bool reload) {
+  IDBEffects *titem = prepareName(chunk, &effectsclasses, reload, "effects");
   
   titem->quantity = atoi(chunk->consume("quantity").c_str());
   
@@ -552,16 +557,16 @@ void parseEffects(kvData *chunk) {
   titem->color = colorFromString(chunk->consume("color"));
 }
 
-void parseStats(kvData *chunk) {
-  IDBStats *titem = prepareName(chunk, &statsclasses, "stats");
+void parseStats(kvData *chunk, bool reload) {
+  IDBStats *titem = prepareName(chunk, &statsclasses, reload, "stats");
     
   titem->dps_efficiency = parseWithDefault(chunk, "dps_efficiency", 1.0);
   titem->cps_efficiency = parseWithDefault(chunk, "cps_efficiency", 1.0);
 }
 
-void parseWeapon(kvData *chunk) {
+void parseWeapon(kvData *chunk, bool reload) {
   string name;
-  IDBWeapon *titem = prepareName(chunk, &weaponclasses, &name);
+  IDBWeapon *titem = prepareName(chunk, &weaponclasses, reload, &name);
   
   const string informal_name = tokenize(name, ".").back();
   
@@ -596,9 +601,9 @@ void parseWeapon(kvData *chunk) {
   CHECK(titem->launcher->stats);
 }
 
-void parseUpgrade(kvData *chunk) {
+void parseUpgrade(kvData *chunk, bool reload) {
   string name;
-  IDBUpgrade *titem = prepareName(chunk, &upgradeclasses, &name);
+  IDBUpgrade *titem = prepareName(chunk, &upgradeclasses, reload, &name);
   
   titem->costmult = atoi(chunk->consume("costmult").c_str());
   
@@ -623,8 +628,8 @@ void parseUpgrade(kvData *chunk) {
   }
 }
 
-void parseProjectile(kvData *chunk) {
-  IDBProjectile *titem = prepareName(chunk, &projectileclasses, "projectile");
+void parseProjectile(kvData *chunk, bool reload) {
+  IDBProjectile *titem = prepareName(chunk, &projectileclasses, reload, "projectile");
   
   titem->thickness_visual = parseWithDefault(chunk, "thickness_visual", 0.3);
   
@@ -668,8 +673,8 @@ void parseProjectile(kvData *chunk) {
   CHECK(titem->chain_warhead.size());
 }
 
-void parseDeploy(kvData *chunk) {
-  IDBDeploy *titem = prepareName(chunk, &deployclasses, "deploy");
+void parseDeploy(kvData *chunk, bool reload) {
+  IDBDeploy *titem = prepareName(chunk, &deployclasses, reload, "deploy");
   
   string type = parseWithDefault(chunk, "type", "normal");
   
@@ -703,8 +708,8 @@ void parseDeploy(kvData *chunk) {
   CHECK(titem->chain_deploy.size() || titem->chain_projectile.size() || titem->chain_warhead.size());
 }
 
-void parseWarhead(kvData *chunk) {
-  IDBWarhead *titem = prepareName(chunk, &warheadclasses, "warhead");
+void parseWarhead(kvData *chunk, bool reload) {
+  IDBWarhead *titem = prepareName(chunk, &warheadclasses, reload, "warhead");
   
   memset(titem->impactdamage, 0, sizeof(titem->impactdamage));
   memset(titem->radiusdamage, 0, sizeof(titem->radiusdamage));
@@ -737,9 +742,9 @@ void parseWarhead(kvData *chunk) {
   titem->effects_impact = parseSubclassSet(chunk, "effects_impact", effectsclasses);
 }
 
-void parseGlory(kvData *chunk) {
+void parseGlory(kvData *chunk, bool reload) {
   string name;
-  IDBGlory *titem = prepareName(chunk, &gloryclasses, &name);
+  IDBGlory *titem = prepareName(chunk, &gloryclasses, reload, &name);
   
   titem->base_cost = moneyFromString(chunk->consume("cost"));
   
@@ -772,9 +777,9 @@ void parseGlory(kvData *chunk) {
   }
 }
 
-void parseBombardment(kvData *chunk) {
+void parseBombardment(kvData *chunk, bool reload) {
   string name;
-  IDBBombardment *titem = prepareName(chunk, &bombardmentclasses, &name);
+  IDBBombardment *titem = prepareName(chunk, &bombardmentclasses, reload, &name);
   
   titem->warhead = parseSubclass(chunk->consume("warhead"), warheadclasses);
   
@@ -807,9 +812,9 @@ void parseBombardment(kvData *chunk) {
   }
 }
 
-void parseTank(kvData *chunk) {
+void parseTank(kvData *chunk, bool reload) {
   string name;
-  IDBTank *titem = prepareName(chunk, &tankclasses, &name);
+  IDBTank *titem = prepareName(chunk, &tankclasses, reload, &name);
   
   string weapon = chunk->consume("weapon");
   CHECK(weaponclasses.count(weapon));
@@ -890,8 +895,8 @@ void parseTank(kvData *chunk) {
   }
 }
 
-void parseAdjustment(kvData *chunk) {
-  IDBAdjustment *titem = prepareName(chunk, &adjustmentclasses, "adjustment");
+void parseAdjustment(kvData *chunk, bool reload) {
+  IDBAdjustment *titem = prepareName(chunk, &adjustmentclasses, reload, "adjustment");
   
   CHECK(ARRAY_SIZE(adjust_text) == IDBAdjustment::COMBO_LAST);
   CHECK(ARRAY_SIZE(adjust_human) == IDBAdjustment::COMBO_LAST);
@@ -930,7 +935,7 @@ void parseAdjustment(kvData *chunk) {
   }
 }
 
-void parseFaction(kvData *chunk) {
+void parseFaction(kvData *chunk, bool reload) {
   IDBFaction fact;
   
   fact.icon = loadDvec2("data/base/faction_icons/" + chunk->consume("file"));
@@ -963,13 +968,13 @@ void parseFaction(kvData *chunk) {
   factions.push_back(fact);
 }
 
-void parseText(kvData *chunk) {
-  string *titem = prepareName(chunk, &text, "text");
+void parseText(kvData *chunk, bool reload) {
+  string *titem = prepareName(chunk, &text, reload, "text");
   *titem = chunk->consume("data");
   // yay
 }
 
-void parseItemFile(const string &fname) {
+void parseItemFile(const string &fname, bool reload) {
   ifstream tfil(fname.c_str());
   CHECK(tfil);
   kvData chunk;
@@ -980,35 +985,35 @@ void parseItemFile(const string &fname) {
       continue;
     }
     if(chunk.category == "hierarchy") {
-      parseHierarchy(&chunk);
+      parseHierarchy(&chunk, reload);
     } else if(chunk.category == "weapon") {
-      parseWeapon(&chunk);
+      parseWeapon(&chunk, reload);
     } else if(chunk.category == "upgrade") {
-      parseUpgrade(&chunk);
+      parseUpgrade(&chunk, reload);
     } else if(chunk.category == "projectile") {
-      parseProjectile(&chunk);
+      parseProjectile(&chunk, reload);
     } else if(chunk.category == "deploy") {
-      parseDeploy(&chunk);
+      parseDeploy(&chunk, reload);
     } else if(chunk.category == "warhead") {
-      parseWarhead(&chunk);
+      parseWarhead(&chunk, reload);
     } else if(chunk.category == "glory") {
-      parseGlory(&chunk);
+      parseGlory(&chunk, reload);
     } else if(chunk.category == "bombardment") {
-      parseBombardment(&chunk);
+      parseBombardment(&chunk, reload);
     } else if(chunk.category == "tank") {
-      parseTank(&chunk);
+      parseTank(&chunk, reload);
     } else if(chunk.category == "adjustment") {
-      parseAdjustment(&chunk);
+      parseAdjustment(&chunk, reload);
     } else if(chunk.category == "faction") {
-      parseFaction(&chunk);
+      parseFaction(&chunk, reload);
     } else if(chunk.category == "text") {
-      parseText(&chunk);
+      parseText(&chunk, reload);
     } else if(chunk.category == "launcher") {
-      parseLauncher(&chunk);
+      parseLauncher(&chunk, reload);
     } else if(chunk.category == "stats") {
-      parseStats(&chunk);
+      parseStats(&chunk, reload);
     } else if(chunk.category == "effects") {
-      parseEffects(&chunk);
+      parseEffects(&chunk, reload);
     } else {
       CHECK(0);
     }
@@ -1020,7 +1025,7 @@ void parseItemFile(const string &fname) {
   }
 }
 
-void initItemdb() {
+void loadItemDb(bool reload) {
   {
     CHECK(root.name == "");
     root.name = "ROOT";
@@ -1033,7 +1038,7 @@ void initItemdb() {
   string line;
   while(getLineStripped(manifest, &line)) {
     dprintf("%s\n", line.c_str());
-    parseItemFile(basepath + line);
+    parseItemFile(basepath + line, reload);
   }
   
   // add our hardcoded "sell" token
@@ -1074,6 +1079,42 @@ void initItemdb() {
   root.checkConsistency();
   dprintf("Consistency check is awesome!\n");
 }
+
+void reloadItemdb() {
+  root = HierarchyNode();
+  
+  vector<IDBFaction *> idfa;
+  for(int i = 0; i < factions.size(); i++)
+    idfa.push_back(&factions[i]);
+  factions.clear();
+  
+  deftank = NULL;
+  defglory = NULL;
+  defbombardment = NULL;
+  
+  loadItemDb(true);
+  
+  CHECK(factions.size() == idfa.size());
+  for(int i = 0; i < factions.size(); i++)
+    CHECK(idfa[i] == &factions[i]);
+}
+
+void initItemdb() {
+  CHECK(root.name == "");
+  
+  loadItemDb(false);
+}
+
+class ReloadHTTPD : public HTTPDhook {
+public:
+
+  string reply(const map<string, string> &params) {
+    reloadItemdb();
+    return "done";
+  }
+
+  ReloadHTTPD() : HTTPDhook("reload") { };
+} reloadhttpd;
 
 void generateCachedShops() {
   FILE *ofil = fopen("data/shopcache.dwh", "w");

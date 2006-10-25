@@ -7,16 +7,19 @@
 #include "parse.h"
 #include "util.h"
 
-map<string, HTTPDhook *> hooks;
+map<string, HTTPDhook *> &getHooks() {
+  static map<string, HTTPDhook *> hooks;
+  return hooks;
+}
 
 HTTPDhook::HTTPDhook(const string &identifier) : identifier(identifier) {
-  CHECK(!hooks.count(identifier));
-  hooks[identifier] = this;
+  CHECK(!getHooks().count(identifier));
+  getHooks()[identifier] = this;
 };
 HTTPDhook::~HTTPDhook() {
-  CHECK(hooks.count(identifier));
-  CHECK(hooks[identifier] == this);
-  hooks.erase(identifier);
+  CHECK(getHooks().count(identifier));
+  CHECK(getHooks()[identifier] == this);
+  getHooks().erase(identifier);
 };
 
 class HTTPD {
@@ -45,7 +48,7 @@ public:
       CHECK(location[0] == '/');
       location.erase(location.begin());
       
-      if(!hooks.count(location)) {
+      if(!getHooks().count(location)) {
         ptr->sendline("HTTP/1.1 404 File Not Found");
         ptr->sendline("Content-type: text/html");
         ptr->sendline("");
@@ -55,7 +58,7 @@ public:
         ptr->sendline("Content-type: text/html");
         ptr->sendline("");
         ptr->sendline(StringPrintf("Listing for /%s:<p>", location.c_str()));
-        ptr->sendline(hooks[location]->reply(map<string, string>()));
+        ptr->sendline(getHooks()[location]->reply(map<string, string>()));
       }
     }
   }
@@ -74,36 +77,27 @@ public:
   }
 
   ArgsHTTPD() : HTTPDhook("args") { };
-};
-
-ArgsHTTPD *httpdargs = NULL;
+} argshttpd;
 
 class ParamsHTTPD : public HTTPDhook {
 public:
 
   string reply(const map<string, string> &params) {
     string rv;
-    for(map<string, HTTPDhook *>::const_iterator itr = hooks.begin(); itr != hooks.end(); itr++)
+    for(map<string, HTTPDhook *>::const_iterator itr = getHooks().begin(); itr != getHooks().end(); itr++)
       rv += StringPrintf("<a href=\"%s\">/%s</a><br>", itr->first.c_str(), itr->first.c_str());
     return rv;
   }
 
   ParamsHTTPD() : HTTPDhook("") { };
-};
-
-ParamsHTTPD *httpdparams = NULL;
+} paramshttpd;
 
 DEFINE_int(httpd_port, -1, "Port for HTTPD control interface (-1 to disable)");
 
 void initHttpd() {
   CHECK(!httpd);
-  CHECK(!httpdargs);
-  CHECK(!httpdparams);
-  if(FLAGS_httpd_port != -1) {
+  if(FLAGS_httpd_port != -1)
     httpd = new HTTPD(FLAGS_httpd_port);
-    httpdargs = new ArgsHTTPD;
-    httpdparams = new ParamsHTTPD;
-  }
 }
 
 void tickHttpd() {
@@ -113,10 +107,6 @@ void tickHttpd() {
 }
 
 void deinitHttpd() {
-  delete httpdparams;
-  delete httpdargs;
   delete httpd;
-  httpdparams = NULL;
-  httpdargs = NULL;
   httpd = NULL;
 }

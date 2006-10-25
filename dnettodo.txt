@@ -1,5 +1,4 @@
 ---- Major work path
-- Reload on-the-fly
 - Second-level I tanks
 - Tank-specific upgrades
 - Get rid of IDs in projectile
