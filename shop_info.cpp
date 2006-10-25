@@ -208,6 +208,8 @@ void ShopInfo::renderFrame(Float4 bounds, float fontsize, Float4 inset) const {
     kvp.print("Turn speed", prettyFloatFormat(player->adjustTankWithInstanceUpgrades(tank).turnSpeed()) + " rad/s");
     kvp.print("Forward speed", prettyFloatFormat(player->adjustTankWithInstanceUpgrades(tank).maxSpeed()) + " m/s");
     kvp.print("Mass", prettyFloatFormat(player->adjustTankWithInstanceUpgrades(tank).mass()) + " tons");
+    for(int i = 0; i < tank->upgrades.size(); i++)
+      kvp.print(tank->upgrades[i] + " upgrades", "");
     if(tank->adjustment) {
       for(int i = 0; i < IDBAdjustment::LAST; i++) {
         if(tank->adjustment->adjustmentfactor(i) != 1.0) {
