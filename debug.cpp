@@ -9,6 +9,7 @@
 using namespace std;
 
 int frameNumber = -1;
+void *stackStart;
 
 static vector<StackPrinter*> dbgstack;
 

@@ -160,7 +160,7 @@ struct StandardButtonTickData {
   int accept_button;
   int cancel_button;
   
-  const int *groups;
+  vector<int> groups;
   
   Controller keys;
   const vector<float> *triggers;
@@ -171,10 +171,10 @@ struct StandardButtonRenderData {
   
   const vector<int> *buttons;
   const vector<char> *inverts;
-  
   const vector<vector<string> > *names;
+  
   const vector<string> *groupnames;
-  const int *groups;
+  vector<int> groups;
   
   int sel_button;
   ReadMode sel_button_reading;
@@ -183,7 +183,7 @@ struct StandardButtonRenderData {
   vector<string> description;
 };
 
-bool changeButtons(vector<int> *buttons, vector<char> *inversions, const int *groups, int choice, int button, bool inverted) {
+bool changeButtons(vector<int> *buttons, vector<char> *inversions, const vector<int> &groups, int choice, int button, bool inverted) {
   // Step 1: If this button has been chosen somewhere else, and we're not choosing this button for the first time, swap 'em (TODO: go back?)
   for(int j = 0; j < buttons->size(); j++) {
     if(groups[j] != groups[choice])
@@ -234,7 +234,7 @@ bool standardButtonTick(StandardButtonTickData *sbtd) {
   bool nomove = false;
   
   // First off, let's see if we do successfully change buttons.
-  if(*sbtd->current_mode == RM_NOTRIGGER || *sbtd->current_mode == RM_CHOOSING) {
+  if((*sbtd->current_mode == RM_NOTRIGGER || *sbtd->current_mode == RM_CHOOSING) && *sbtd->current_button < sbtd->outkeys->size()) {
     for(int i = 0; i < sbtd->triggers->size(); i++) { // For each input button . . .
       if(abs((*sbtd->triggers)[i]) > 0.9) { // If button was pushed . . .
         int oldbutton = (*sbtd->outkeys)[*sbtd->current_button];
@@ -294,19 +294,27 @@ void standardButtonRender(const StandardButtonRenderData &sbrd) {
   CHECK(sbrd.rin);
   CHECK(sbrd.buttons);
   CHECK(sbrd.names);
-  CHECK(sbrd.groups);
+  CHECK(sbrd.groupnames);
+  CHECK(sbrd.buttons->size() == sbrd.names->size());
+  CHECK(sbrd.buttons->size() == sbrd.groups.size());
+  CHECK(!sbrd.inverts || sbrd.buttons->size() == sbrd.inverts->size());
+  
   int linesneeded = 2;
   for(int i = 0; i < sbrd.names->size(); i++)
     linesneeded += (*sbrd.names)[i].size();
   
   {
-    set<int> grid(sbrd.groups, sbrd.groups + sbrd.buttons->size());
+    set<int> grid(sbrd.groups.begin(), sbrd.groups.end());
     assert(grid.size() > 0);
     linesneeded += grid.size() - 1;
     
-    vector<int> grod(sbrd.groups, sbrd.groups + sbrd.buttons->size());
+    vector<int> grod = sbrd.groups;
     grod.erase(unique(grod.begin(), grod.end()), grod.end());
     CHECK(grod.size() == grid.size());
+    
+    CHECK(grid.size() == sbrd.groupnames->size());
+    for(int i = 0; i < grid.size(); i++)
+      CHECK(grid.count(i));
     
     if(sbrd.groupnames)
       linesneeded += grid.size();
@@ -740,7 +748,7 @@ bool runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
       sbtd.require_trigger = false;
       sbtd.accept_button = pms->buttons[BUTTON_ACCEPT];
       sbtd.cancel_button = pms->buttons[BUTTON_CANCEL];
-      sbtd.groups = button_groups;
+      sbtd.groups = VECTORIZE(button_groups);
       sbtd.keys = keys;
       sbtd.triggers = &triggers;
       
@@ -816,7 +824,7 @@ bool runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
       sbtd.require_trigger = true;
       sbtd.accept_button = pms->buttons[BUTTON_ACCEPT];
       sbtd.cancel_button = pms->buttons[BUTTON_CANCEL];
-      sbtd.groups = axis_groups;
+      sbtd.groups = VECTORIZE(axis_groups);
       sbtd.keys = keys;
       sbtd.triggers = &triggers;
       
@@ -971,7 +979,7 @@ void runSettingRender(const PlayerMenuState &pms, const string &availdescr) {
     sbrd.inverts = NULL;
     sbrd.names = &names;
     sbrd.groupnames = &groups;
-    sbrd.groups = button_groups;
+    sbrd.groups = VECTORIZE(button_groups);
     sbrd.sel_button = pms.setting_button_current;
     sbrd.sel_button_reading = pms.setting_button_reading;
     sbrd.prefix = "Button #";
@@ -1080,7 +1088,7 @@ void runSettingRender(const PlayerMenuState &pms, const string &availdescr) {
     sbrd.inverts = &pms.axes_invert;
     sbrd.names = &ksax_axis_names[pms.setting_axistype];
     sbrd.groupnames = NULL;
-    sbrd.groups = axis_groups;
+    sbrd.groups = VECTORIZE(axis_groups);
     sbrd.sel_button = pms.setting_axis_current;
     sbrd.sel_button_reading = pms.setting_axis_reading;
     sbrd.prefix = "Axis #";

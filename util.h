@@ -2,6 +2,7 @@
 #define DNET_UTIL
 
 #include <string>
+#include <vector>
 
 using namespace std;
 
@@ -109,5 +110,7 @@ namespace detail {
   template <typename type, ::std::size_t size> char (&array_size_impl(type(&)[size]))[size];
 }
 #define ARRAY_SIZE(array) sizeof(::detail::array_size_impl(array))
+
+#define VECTORIZE(array) vector<int>((array), (array) + ARRAY_SIZE(array))
 
 #endif

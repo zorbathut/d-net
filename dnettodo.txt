@@ -1,5 +1,5 @@
 ---- Major work path
-- Exiting from axis choice hardcrashes
+- MAKE BOUNDSCHECK WORK AGAIN
 - Get rid of player IDs in projectile
 - Remove global RNGs, synch up RNGs completely
 - Improve mine demo

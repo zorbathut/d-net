@@ -34,6 +34,7 @@ void unregisterCrashFunction(void (*)());
 int dprintf(const char *bort, ...) __attribute__((format(printf,1,2)));
 
 extern int frameNumber;
+extern void *stackStart;
 
 void CrashHandler(const char *fname, int line);
 void PrintDebugStack();

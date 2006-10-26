@@ -108,8 +108,8 @@ void deinitSystem() {
 };
 
 int main(int argc, char **argv) {
-  
   StackString sst("Main");
+  stackStart = &sst;
 
   dprintf("Init\n");
   
