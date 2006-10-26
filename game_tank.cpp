@@ -295,9 +295,8 @@ bool Tank::takeDamage(float damage) {
   return false;
 };
 
-void Tank::genEffects(const GameImpactContext &gic, ProjectilePack *projectiles, const Player *player, int id) {
+void Tank::genEffects(const GameImpactContext &gic, ProjectilePack *projectiles, const Player *player) {
   StackString sst("genEffects");
-  CHECK(gic.players[id] == this);
   
   if(spawnShards) {
     vector<Coord2> tv = getTankVertices(pos, d);
@@ -310,7 +309,7 @@ void Tank::genEffects(const GameImpactContext &gic, ProjectilePack *projectiles,
     const IDBGloryAdjust &glory = player->getGlory();
     
     vector<float> ang;
-    deployProjectile(glory.core(), launchData(), GamePlayerContext(id, projectiles, gic), &ang);
+    deployProjectile(glory.core(), launchData(), GamePlayerContext(this, projectiles, gic), &ang);
     CHECK(ang.size() >= 2);
     
     vector<vector<Coord2> > chunks;
@@ -362,7 +361,7 @@ void Tank::genEffects(const GameImpactContext &gic, ProjectilePack *projectiles,
     {
       vector<IDBDeployAdjust> vd = glory.blast();
       for(int i = 0; i < vd.size(); i++)
-        deployProjectile(vd[i], launchData(), GamePlayerContext(id, projectiles, gic));
+        deployProjectile(vd[i], launchData(), GamePlayerContext(this, projectiles, gic));
     }
     
     spawnShards = false;
@@ -464,7 +463,7 @@ void Tank::tryToFire(Button keys[SIMUL_WEAPONS], Player *player, ProjectilePack 
       // Blam!
       IDBWeaponAdjust weapon = player->getWeapon(curfire);
       
-      deployProjectile(weapon.launcher().deploy(), launchData(), GamePlayerContext(id, projectiles, gic));
+      deployProjectile(weapon.launcher().deploy(), launchData(), GamePlayerContext(this, projectiles, gic));
       
       weaponCooldown = weapon.framesForCooldown();
       // hack here to detect weapon out-of-ammo

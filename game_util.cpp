@@ -73,13 +73,13 @@ void dealDamage(float dmg, Tank *target, Tank *owner, float damagecredit, bool k
 void detonateWarhead(const IDBWarheadAdjust &warhead, Coord2 pos, Coord2 vel, Tank *impact, const GamePlayerContext &gpc, float damagecredit, bool killcredit, bool impacted) {
   
   if(impact)
-    dealDamage(warhead.impactdamage(), impact, gpc.owner_tank(), damagecredit, killcredit);
+    dealDamage(warhead.impactdamage(), impact, gpc.owner, damagecredit, killcredit);
   
   if(warhead.radiusfalloff() >= 0) {
     vector<pair<float, Tank *> > adjacency = gpc.gic->getAdjacency(pos);
     for(int i = 0; i < adjacency.size(); i++) {
       if(adjacency[i].first < warhead.radiusfalloff())
-        dealDamage(warhead.radiusdamage() / warhead.radiusfalloff() * (warhead.radiusfalloff() - adjacency[i].first), adjacency[i].second, gpc.owner_tank(), damagecredit, killcredit);
+        dealDamage(warhead.radiusdamage() / warhead.radiusfalloff() * (warhead.radiusfalloff() - adjacency[i].first), adjacency[i].second, gpc.owner, damagecredit, killcredit);
     }
   }
   
@@ -192,8 +192,4 @@ static vector<Tank*> ptrize(vector<Tank> *players) {
 
 GameImpactContext::GameImpactContext(vector<Tank> *players, vector<smart_ptr<GfxEffects> > *effects, Gamemap *gamemap) : players(ptrize(players)), effects(effects), gamemap(gamemap) { };
 
-Tank *GamePlayerContext::owner_tank() const {
-  return gic->players[owner];
-}
-
-GamePlayerContext::GamePlayerContext(int owner, ProjectilePack *projpack, const GameImpactContext &gic) : owner(owner), projpack(projpack), gic(&gic) { };
+GamePlayerContext::GamePlayerContext(Tank *owner, ProjectilePack *projpack, const GameImpactContext &gic) : projpack(projpack), owner(owner), gic(&gic) { };

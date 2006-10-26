@@ -32,7 +32,7 @@ public:
 
   // Modifiers
   bool takeDamage(float amount); // returns true on kill
-  void genEffects(const GameImpactContext &gic, ProjectilePack *projectiles, const Player *player, int id);
+  void genEffects(const GameImpactContext &gic, ProjectilePack *projectiles, const Player *player);
   void respawn(Coord2 pos, float facing, int team);
   void tryToFire(Button keys[SIMUL_WEAPONS], Player *player, ProjectilePack *projectiles, int id, const GameImpactContext &gic, vector<pair<string, float> > *status_text, float *firepowerSpent);
   

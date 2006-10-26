@@ -32,14 +32,12 @@ public:
 class ProjectilePack;
 class GamePlayerContext {
 public:
-  int owner;
   ProjectilePack *projpack;
+  Tank *owner;
 
   const GameImpactContext *gic;
 
-  Tank *owner_tank() const;
-
-  GamePlayerContext(int owner, ProjectilePack *projpack, const GameImpactContext &gic);
+  GamePlayerContext(Tank *owner, ProjectilePack *projpack, const GameImpactContext &gic);
 };
 
 class DeployLocation {

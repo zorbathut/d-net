@@ -232,11 +232,11 @@ void ProjectilePack::tick(vector<smart_ptr<GfxEffects> > *gfxe, Collider *collid
   for(map<int, Projectile>::iterator itr = projectiles.begin(); itr != projectiles.end(); ) {
     // the logic here is kind of grim, sorry about this
     if(itr->second.isLive() && itr->second.isDetonating())
-      itr->second.detonate(itr->second.warheadposition(), NULL, GamePlayerContext(owner, this, gic), false);
+      itr->second.detonate(itr->second.warheadposition(), NULL, GamePlayerContext(gic.players[owner], this, gic), false);
     if(itr->second.isLive()) {
       itr->second.tick(gfxe);
       if(itr->second.isLive() && itr->second.isDetonating())
-        itr->second.detonate(itr->second.warheadposition(), NULL, GamePlayerContext(owner, this, gic), false);
+        itr->second.detonate(itr->second.warheadposition(), NULL, GamePlayerContext(gic.players[owner], this, gic), false);
       if(itr->second.isLive()) {
         ++itr;
         continue;
