@@ -323,20 +323,25 @@ void InterfaceMain::render() const {
       const int textymax = int(crosshair / textsize);
       const int textxmax = 2;
       const float textxofs = crosshair / textxmax;
+      
+      const float boxthick = 0.5;
       for(int i = 0; i < inptest_controls.size(); i++) {
         const Controller &ct = inptest_controls[i];
         float x = (i % wid) * xsiz;
         float y = (i / wid) * ysiz + 300;
         Float4 chbox(x + bord, y + bord, x + bord + crosshair, y + bord + crosshair);
-        drawLine(Float4(chbox.sx, chbox.sy, chbox.sx + crosshair / 4, chbox.sy), 0.1);
-        drawLine(Float4(chbox.sx, chbox.sy, chbox.sx, chbox.sy + crosshair / 4), 0.1);
-        drawLine(Float4(chbox.sx, chbox.ey, chbox.sx + crosshair / 4, chbox.ey), 0.1);
-        drawLine(Float4(chbox.sx, chbox.ey, chbox.sx, chbox.ey - crosshair / 4), 0.1);
-        drawLine(Float4(chbox.ex, chbox.sy, chbox.ex - crosshair / 4, chbox.sy), 0.1);
-        drawLine(Float4(chbox.ex, chbox.sy, chbox.ex, chbox.sy + crosshair / 4), 0.1);
-        drawLine(Float4(chbox.ex, chbox.ey, chbox.ex - crosshair / 4, chbox.ey), 0.1);
-        drawLine(Float4(chbox.ex, chbox.ey, chbox.ex, chbox.ey - crosshair / 4), 0.1);
-        drawCrosshair(Float2(ct.menu.x * crosshairc + bord + crosshairc + x, -ct.menu.y * crosshairc + bord + crosshairc + y), crosshair / 4, 0.1);
+        setColor(C::box_border);
+        drawLine(Float4(chbox.sx, chbox.sy, chbox.sx + crosshair / 4, chbox.sy), boxthick);
+        drawLine(Float4(chbox.sx, chbox.sy, chbox.sx, chbox.sy + crosshair / 4), boxthick);
+        drawLine(Float4(chbox.sx, chbox.ey, chbox.sx + crosshair / 4, chbox.ey), boxthick);
+        drawLine(Float4(chbox.sx, chbox.ey, chbox.sx, chbox.ey - crosshair / 4), boxthick);
+        drawLine(Float4(chbox.ex, chbox.sy, chbox.ex - crosshair / 4, chbox.sy), boxthick);
+        drawLine(Float4(chbox.ex, chbox.sy, chbox.ex, chbox.sy + crosshair / 4), boxthick);
+        drawLine(Float4(chbox.ex, chbox.ey, chbox.ex - crosshair / 4, chbox.ey), boxthick);
+        drawLine(Float4(chbox.ex, chbox.ey, chbox.ex, chbox.ey - crosshair / 4), boxthick);
+        setColor(C::inactive_text);
+        drawCrosshair(Float2(ct.menu.x * crosshairc + bord + crosshairc + x, -ct.menu.y * crosshairc + bord + crosshairc + y), crosshair / 4, boxthick);
+        setColor(C::active_text);
         float textx = x + bord * 3 + crosshair;
         float texty = y + bord;
         int ctxt = 0;
