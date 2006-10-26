@@ -30,16 +30,17 @@ private:
 void registerCrashFunction(void (*)());
 void unregisterCrashFunction(void (*)());
  
+extern void *stackStart;
+
 // Almost everything after here is necessary for the vector header patch
 int dprintf(const char *bort, ...) __attribute__((format(printf,1,2)));
 
 extern int frameNumber;
-extern void *stackStart;
 
 void CrashHandler(const char *fname, int line);
 void PrintDebugStack();
 void crash() __attribute__((__noreturn__));
-#define CHECK(x) do { if(!(x)) { dprintf("Error at %d, %s:%d - %s\n", frameNumber, __FILE__, __LINE__, #x); PrintDebugStack(); CrashHandler(__FILE__, __LINE__); crash(); } } while(0)
+#define CHECK(x) do { if(!(x)) { dprintf("Error at %d, %s:%d - %s\n", frameNumber, __FILE__, __LINE__, #x); CrashHandler(__FILE__, __LINE__); PrintDebugStack(); crash(); } } while(0)
 // And here would be the end
 
 #define printf FAILURE

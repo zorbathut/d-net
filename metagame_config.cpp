@@ -294,7 +294,6 @@ void standardButtonRender(const StandardButtonRenderData &sbrd) {
   CHECK(sbrd.rin);
   CHECK(sbrd.buttons);
   CHECK(sbrd.names);
-  CHECK(sbrd.groupnames);
   CHECK(sbrd.buttons->size() == sbrd.names->size());
   CHECK(sbrd.buttons->size() == sbrd.groups.size());
   CHECK(!sbrd.inverts || sbrd.buttons->size() == sbrd.inverts->size());
@@ -312,7 +311,7 @@ void standardButtonRender(const StandardButtonRenderData &sbrd) {
     grod.erase(unique(grod.begin(), grod.end()), grod.end());
     CHECK(grod.size() == grid.size());
     
-    CHECK(grid.size() == sbrd.groupnames->size());
+    CHECK(!sbrd.groupnames || grid.size() == sbrd.groupnames->size());
     for(int i = 0; i < grid.size(); i++)
       CHECK(grid.count(i));
     

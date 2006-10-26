@@ -48,6 +48,27 @@ void unregisterCrashFunction(void (*fct)()) {
   crashfunc = NULL;
 }
 
+#ifdef VECTOR_PARANOIA
+class VectorParanoiaChecker {
+  static void throwshit() {
+    throw int();
+  }
+public:
+  VectorParanoiaChecker() {
+    vector<int> test(100);
+    registerCrashFunction(&throwshit);
+    try {
+      test[100];
+      unregisterCrashFunction(&throwshit);
+      dprintf("VECTOR PARANOIA FAILED");
+      CHECK(0);
+    } catch (int x) {
+      unregisterCrashFunction(&throwshit);
+    }
+  }
+} paranoia;
+#endif
+
 void CrashHandler(const char *fname, int line) {
   if(crashfunc)
     (*crashfunc)();
