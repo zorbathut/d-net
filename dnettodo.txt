@@ -1,5 +1,5 @@
 ---- Major work path
-- MAKE BOUNDSCHECK WORK AGAIN
+- Proper coloring for startup screen
 - Get rid of player IDs in projectile
 - Remove global RNGs, synch up RNGs completely
 - Improve mine demo

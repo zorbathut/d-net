@@ -275,7 +275,7 @@ bool standardButtonTick(StandardButtonTickData *sbtd) {
   }
   
   // Now let's see if we enter CHOOSING state. Only if we're not on DONE.
-  if(*sbtd->current_mode == RM_IDLE && *sbtd->current_button == sbtd->outkeys->size() && sbtd->keys.keys[sbtd->accept_button].push) {
+  if(*sbtd->current_mode == RM_IDLE && *sbtd->current_button != sbtd->outkeys->size() && sbtd->keys.keys[sbtd->accept_button].push) {
     (*sbtd->current_mode) = RM_CHOOSING;
   }
   
@@ -336,7 +336,7 @@ void standardButtonRender(const StandardButtonRenderData &sbrd) {
         drawText((*sbrd.groupnames)[sbrd.groups[i]], sbrd.rin->textsize, Float2(groupnamexps, sbrd.rin->ystarts[cy++]));
       }
     }
-    if(sbrd.sel_button == i && sbrd.sel_button_reading != RM_CHOOSING) {
+    if(sbrd.sel_button == i) {
       setColor(C::active_text);
     } else {
       setColor(C::inactive_text);
