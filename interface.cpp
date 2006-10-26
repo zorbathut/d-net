@@ -38,9 +38,9 @@ void StdMenu::render() const {
   setZoom(Float4(0, 0, 133.3333, 100));
   for(int i = 0; i < items.size(); i++) {
     if(i == cpos) {
-      setColor(1.0, 1.0, 1.0);
+      setColor(C::active_text);
     } else {
-      setColor(0.5, 0.5, 0.5);
+      setColor(C::inactive_text);
     }
     drawText(items[i].first.c_str(), 5, Float2(2, 2 + 6 * i));
   }
@@ -300,7 +300,7 @@ void InterfaceMain::render() const {
   
   if(interface_mode == IFM_S_MAINMENU) {
     mainmenu.render();
-    setColor(0.5, 0.5, 0.5);
+    setColor(C::inactive_text);
     drawText("Player one uses arrow keys and UIOJKL", 3, Float2(2, 30));
     drawText("Player two uses wasd and RTYFGH", 3, Float2(2, 34));
     drawText("Arrow keys to choose menu items, U to select", 3, Float2(2, 38));
@@ -379,7 +379,7 @@ InterfaceMain::InterfaceMain() {
   interface_mode = IFM_S_MAINMENU;
   mainmenu.pushMenuItem("New game", IFM_M_NEWGAME);
   mainmenu.pushMenuItem("Input test", IFM_M_INPUTTEST);
-  mainmenu.pushMenuItem("Grid toggle", IFM_M_GRID);
+  mainmenu.pushMenuItem("Grid toggle (useful for monitor sync)", IFM_M_GRID);
   mainmenu.pushMenuItem("Exit", IFM_M_EXIT);
   grid = false;
   inptest = false;
