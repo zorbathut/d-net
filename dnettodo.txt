@@ -1,11 +1,9 @@
 ---- Major work path
-- Get rid of player IDs in projectile
 - Remove global RNGs, synch up RNGs completely
 - Improve mine demo
 - Move labels in EMP demo
 - Start game at phase X
-- Training
-- Implants
+- Training/implants/wtf
 - Activate factions
   - Faction bonuses/penalties in demo screens
 - Many many more weapons
@@ -46,7 +44,6 @@
 - De-inline stuff in coord.h and float.h
 - Winner list better special effects
 - Winner list better "null" icon
-- Color for projectile impacts
 
 ---- Things that may or may not be needed
 - Add random faction
