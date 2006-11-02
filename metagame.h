@@ -26,9 +26,11 @@ class Metagame : boost::noncopyable {
   int gameround;
   int roundsBetweenShop;
 
+  Rng rng;
+
 public:
 
-  Metagame(int playercount, int roundsBetweenShop);
+  Metagame(int playercount, int roundsBetweenShop, RngSeed seed);
 
   void renderToScreen() const;
   void ai(const vector<Ai *> &ai) const;
@@ -38,8 +40,6 @@ private:
 
   void findLevels(int playercount);
 
-  void operator=(const Metagame &rhs);
-  Metagame(const Metagame &rhs);  // do not implement, fuckers
 };
 
 #endif

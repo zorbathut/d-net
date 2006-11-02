@@ -2,6 +2,7 @@
 #define DNET_GAMEMAP
 
 #include "level.h"
+#include "rng.h"
 
 using namespace std;
 
@@ -16,10 +17,10 @@ public:
   Coord4 getRenderBounds() const;
   Coord4 getCollisionBounds() const;
 
-  void removeWalls(Coord2 center, float radius);
+  void removeWalls(Coord2 center, float radius, Rng *rng);
   
   Gamemap();
-  Gamemap(const Level &level, bool smashable);
+  Gamemap(const vector<vector<Coord2> > &level, bool smashable);
 
 private:
   bool smashable;

@@ -5,6 +5,7 @@
 #include "game_projectile.h"
 #include "input.h"
 #include "noncopyable.h"
+#include "rng.h"
 
 using namespace std;
 
@@ -48,16 +49,16 @@ public:
   GameMetacontext(const vector<const IDBFaction *> &wins, int roundsPerShop);
 };
 
-class Game : boost::noncopyable{
+class Game : boost::noncopyable {
 public:
   
-  void initStandard(vector<Player> *playerdata, const Level &level);
-  void initChoice(vector<Player> *playerdata);
+  void initStandard(vector<Player> *playerdata, const Level &level, Rng *rng);
+  void initChoice(vector<Player> *playerdata, Rng *rng);
   void initTest(Player *playerdata, const Float4 &bounds);
   void initDemo(vector<Player> *playerdata, float boxradi, const float *xps, const float *yps, const float *facing, const int *modes, bool blockades = false);
   void initCenteredDemo(Player *playerdata, float zoom);
 
-  bool runTick(const vector<Keystates> &keys, const vector<Player *> &players);
+  bool runTick(const vector<Keystates> &keys, const vector<Player *> &players, Rng *rng);
   void ai(const vector<GameAi *> &ais) const;
   void renderToScreen(const vector<const Player *> &players, GameMetacontext gmc) const;
 
@@ -79,7 +80,8 @@ public:
 
 private:
   
-  void initCommon(const vector<Player*> &playerdata, const vector<Color> &in_colors, const Level &level, bool smashable);
+  void initCommon(const vector<Player*> &playerdata, const vector<Color> &in_colors, const vector<vector<Coord2> > &level, bool smashable);
+  void initRandomTankPlacement(const map<int, vector<pair<Coord2, float> > > &player_starts, Rng *rng);
   
   void addTankStatusText(int tankid, const string &text, float duration);
 
@@ -119,9 +121,6 @@ private:
   float bombardment_tier;
   float getBombardmentIncreasePerSec() const;
   float getTimeUntilBombardmentUpgrade() const;
-  
-  Game(const Game &rhs);      // do not implement
-  void operator=(const Game &rhs);
 
 };
 
@@ -130,7 +129,7 @@ public:
   vector<Player> players;
   Game game;
 
-  bool runTick(const vector<Keystates> &keys);
+  bool runTick(const vector<Keystates> &keys, Rng *rng);
   void renderToScreen() const;
 };
 

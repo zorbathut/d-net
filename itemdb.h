@@ -5,6 +5,7 @@
 #include "coord.h"
 #include "dvec2.h"
 #include "util.h"
+#include "rng.h"
 
 using namespace std;
 
@@ -313,7 +314,7 @@ public:
 
   IDBLauncherAdjust launcher() const;
 
-  int framesForCooldown() const;
+  int framesForCooldown(Rng *rng) const;
   float firerate() const;
   Money cost() const;
   Money sellcost(int shots) const;

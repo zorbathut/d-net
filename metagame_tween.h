@@ -3,6 +3,7 @@
 
 #include "metagame_config.h"
 #include "shop.h"
+#include "noncopyable.h"
 
 using namespace std;
 

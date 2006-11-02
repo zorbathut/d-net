@@ -42,7 +42,7 @@ class InterfaceMain : boost::noncopyable {
   
 public:
 
-  bool tick(const vector< Controller > &control);
+  bool tick(const vector< Controller > &control, RngSeed gameseed);
   void ai(const vector<Ai *> &ais) const;
   void render() const;
 

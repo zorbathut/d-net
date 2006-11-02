@@ -29,7 +29,7 @@ public:
   void updateConfig(const Config &conf);
   Float2 getControls() const;
 
-  GameAiAxisRotater(const Config &conf);
+  GameAiAxisRotater(const Config &conf, RngSeed seed);
   
 private:
   class Randomater {
@@ -39,7 +39,7 @@ private:
   public:
     bool smooth;
   
-    float next();
+    float next(Rng *rng);
     Randomater();
   };
   
@@ -47,6 +47,8 @@ private:
   vector<float> next;
   
   Config config;
+  
+  Rng rng;
 
   void updateGameWork(const vector<Tank> &players, int me);
   void updateBombardmentWork(const vector<Tank> &players, Coord2 mypos);
@@ -92,7 +94,7 @@ public:
   int setting_axistype_demo_aiframe;
   smart_ptr<GamePackage> setting_axistype_demo;
   smart_ptr<GameAiAxisRotater> setting_axistype_demo_ai;
-  void createNewAxistypeDemo();
+  void createNewAxistypeDemo(RngSeed seed);
 
   smart_ptr<GamePackage> test_game;
   

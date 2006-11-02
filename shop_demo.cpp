@@ -54,6 +54,8 @@ class GameAiScatterbombing : public GameAi {
   bool ready;
   bool bombing;
   
+  Rng rng;
+  
   void updateGameWork(const vector<Tank> &players, int me) {
     CHECK(0);
   }
@@ -89,7 +91,7 @@ public:
     bombing = true;
   }
   
-  GameAiScatterbombing(int in_targetid, float in_rad) { targetid = in_targetid; rad = in_rad; ready = false; bombing = true; }
+  GameAiScatterbombing(int in_targetid, float in_rad, RngSeed seed) : rng(seed) { targetid = in_targetid; rad = in_rad; ready = false; bombing = true; }
 };
 
 class GameAiKamikaze : public GameAi {
@@ -156,11 +158,14 @@ public:
 class GameAiMining : public GameAi {
   int direction;
   int frames_to_start;
+  
+  Rng rng;
+  
   void updateGameWork(const vector<Tank> &players, int me) {
     if(direction == 2) {
       direction = -((players[me].pos.x) / abs(players[me].pos.x)).toInt();
       CHECK(abs(direction) == 1);
-      frames_to_start = int(frand() * 30);
+      frames_to_start = int(rng.frand() * 30);
     }
     if(direction == 0)
       return;
@@ -179,17 +184,20 @@ class GameAiMining : public GameAi {
 public:
   bool running() const { return direction; };
   void start() { direction = 2; };
-  GameAiMining() { direction = 0; frames_to_start = 0; }
+  GameAiMining(RngSeed seed) : rng(seed) { direction = 0; frames_to_start = 0; }
 };
 
 class GameAiTraversing : public GameAi {
   Coord2 destination;
   bool active;
   bool starting;
+  
+  Rng rng;
+  
   void updateGameWork(const vector<Tank> &players, int me) {
     if(starting) {
       starting = false;
-      destination = Coord2(Coord(frand() * 80 - 40), abs(players[me].pos.y) / players[me].pos.y * -60);
+      destination = Coord2(Coord(rng.frand() * 80 - 40), abs(players[me].pos.y) / players[me].pos.y * -60);
       active = true;
     }
     if(len(players[me].pos - destination) < 1) {
@@ -207,7 +215,7 @@ class GameAiTraversing : public GameAi {
 public:
   bool running() const { return active; };
   void start() { starting = true; };
-  GameAiTraversing() { active = false; starting = false; }
+  GameAiTraversing(RngSeed seed) : rng(seed) { active = false; starting = false; }
 };
 
 const float weapons_xpses_normal[] = { -80, -80, 0, 0, 80, 80 };
@@ -295,12 +303,12 @@ void ShopDemo::init(const IDBWeapon *weap, const Player *player) {
     ais.clear();  
     mine_miners.clear();
     {
-      GameAiTraversing *gat = new GameAiTraversing();
+      GameAiTraversing *gat = new GameAiTraversing(unsync().generate_seed());
       ais.push_back(smart_ptr<GameAi>(gat));
       mine_traverser = gat;
     }
     for(int i = 1; i < game.players.size(); i++) {
-      GameAiMining *gam = new GameAiMining();
+      GameAiMining *gam = new GameAiMining(unsync().generate_seed());
       ais.push_back(smart_ptr<GameAi>(gam));
       mine_miners.push_back(gam);
     }
@@ -328,7 +336,7 @@ void ShopDemo::init(const IDBBombardment *bombard, const Player *player) {
   bombardment_scatterers.clear();
   for(int i = 0; i < 4; i++) {
     ais.push_back(smart_ptr<GameAi>(new GameAiNull));
-    GameAiScatterbombing *gas = new GameAiScatterbombing(i * 2, pow((float)2, (float)i + 1));
+    GameAiScatterbombing *gas = new GameAiScatterbombing(i * 2, pow((float)2, (float)i + 1), unsync().generate_seed());
     ais.push_back(smart_ptr<GameAi>(gas));
     bombardment_scatterers.push_back(gas);
   }
@@ -377,7 +385,7 @@ void ShopDemo::init(const IDBGlory *glory, const Player *player) {
 void ShopDemo::glory_respawnPlayers() {
   for(int i = 0; i < game.players.size(); i += 2) {
     Coord2 pos = game.game.queryPlayerLocation(i);
-    float facing = frand() * 2 * PI;
+    float facing = unsync().frand() * 2 * PI;
     Coord2 dir = makeAngle(Coord(facing));
     pos += dir * 40;
     game.game.respawnPlayer(i + 1, pos, facing + PI);
@@ -452,7 +460,7 @@ void ShopDemo::runTick() {
     vector<Keystates> kist;
     for(int i = 0; i < tai.size(); i++)
       kist.push_back(tai[i]->getNextKeys());
-    game.runTick(kist);
+    game.runTick(kist, &unsync());
   }
 };
 

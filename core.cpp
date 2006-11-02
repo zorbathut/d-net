@@ -30,16 +30,18 @@ long long rendering = 0;
 
 void MainLoop() {
 
-  sfrand(time(NULL));
-
 	Timer timer;
 	Timer bencher;
 
 	bool quit = false;
 
 	int frako = 0;
-
-  vector<Controller> controllers = controls_init();
+  
+  Rng rng(unsync().generate_seed());
+  pair<RngSeed, vector<Controller> > rc = controls_init(rng.generate_seed());
+  RngSeed game_seed = rc.first;
+  vector<Controller> controllers = rc.second;
+  
   vector<Controller> origcontrollers = controllers;
   
   dprintf("Final controllers:");
@@ -109,8 +111,7 @@ void MainLoop() {
         if(outfile) {
           int dat = 3;
           fwrite(&dat, 1, sizeof(dat), outfile);
-          dat = frandseed();
-          fwrite(&dat, 1, sizeof(dat), outfile);
+          fwrite(&game_seed, 1, sizeof(game_seed), outfile);  // this is kind of grim and nasty
           dat = controllers.size();
           fwrite(&dat, 1, sizeof(dat), outfile);
           for(int i = 0; i < controllers.size(); i++) {
@@ -142,7 +143,7 @@ void MainLoop() {
     }
 		polling += bencher.ticksElapsed();
 		bencher = Timer();
-    if(interface.tick(controllers))
+    if(interface.tick(controllers, game_seed))
       quit = true;
 		ticking += bencher.ticksElapsed();
 		bencher = Timer();

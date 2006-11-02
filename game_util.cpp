@@ -86,8 +86,8 @@ void detonateWarhead(const IDBWarheadAdjust &warhead, Coord2 pos, Coord2 vel, Ta
   if(warhead.radiusfalloff() > 0)
     gpc.gic->effects->push_back(GfxBlast(pos.toFloat(), warhead.radiusfalloff(), warhead.radiuscolor_bright(), warhead.radiuscolor_dim()));
   
-  if(warhead.wallremovalradius() > 0 && frand() < warhead.wallremovalchance())
-    gpc.gic->gamemap->removeWalls(pos, warhead.wallremovalradius());
+  if(warhead.wallremovalradius() > 0 && gpc.gic->rng->frand() < warhead.wallremovalchance())
+    gpc.gic->gamemap->removeWalls(pos, warhead.wallremovalradius(), gpc.gic->rng);
   
   if(impacted) {
     for(int i = 0; i < warhead.effects_impact().size(); i++) {
@@ -125,18 +125,18 @@ void deployProjectile(const IDBDeployAdjust &deploy, const DeployLocation &locat
   } else if(type == DT_MINEPATH) {
     CHECK(location.isTank());
     CHECK(!tang);
-    proji.push_back(make_pair(location.tank().getMinePoint(), location.tank().d));
+    proji.push_back(make_pair(location.tank().getMinePoint(gpc.gic->rng), location.tank().d));
   } else if(type == DT_EXPLODE) {
     vector<float> ang;
     {
-      int ct = int(frand() * (deploy.exp_maxsplits() - deploy.exp_minsplits() + 1)) + deploy.exp_minsplits();
+      int ct = int(gpc.gic->rng->frand() * (deploy.exp_maxsplits() - deploy.exp_minsplits() + 1)) + deploy.exp_minsplits();
       CHECK(ct <= deploy.exp_maxsplits() && ct >= deploy.exp_minsplits());
       for(int i = 0; i < ct; i++)
-        ang.push_back(frand() * (deploy.exp_maxsplitsize() - deploy.exp_minsplitsize()) + deploy.exp_minsplitsize());
+        ang.push_back(gpc.gic->rng->frand() * (deploy.exp_maxsplitsize() - deploy.exp_minsplitsize()) + deploy.exp_minsplitsize());
       for(int i = 1; i < ang.size(); i++)
         ang[i] += ang[i - 1];
       float angtot = ang.back();
-      float shift = frand() * PI * 2;
+      float shift = gpc.gic->rng->frand() * PI * 2;
       for(int i = 0; i < ang.size(); i++) {
         ang[i] *= PI * 2 / angtot;
         ang[i] += shift;
@@ -154,7 +154,7 @@ void deployProjectile(const IDBDeployAdjust &deploy, const DeployLocation &locat
   
   CHECK(proji.size());
   for(int i = 0; i < proji.size(); i++)
-    proji[i].second += deploy.anglestddev() * gaussian();
+    proji[i].second += deploy.anglestddev() * gpc.gic->rng->gaussian();
   
   {
     vector<IDBDeployAdjust> idd = deploy.chain_deploy();
@@ -167,7 +167,7 @@ void deployProjectile(const IDBDeployAdjust &deploy, const DeployLocation &locat
     vector<IDBProjectileAdjust> idp = deploy.chain_projectile();
     for(int i = 0; i < idp.size(); i++)
       for(int j = 0; j < proji.size(); j++)
-        gpc.projpack->add(Projectile(proji[j].first, proji[j].second, idp[i]));
+        gpc.projpack->add(Projectile(proji[j].first, proji[j].second, idp[i], gpc.gic->rng));
   }
   
   {
@@ -190,6 +190,6 @@ static vector<Tank*> ptrize(vector<Tank> *players) {
   return ptrs;
 }
 
-GameImpactContext::GameImpactContext(vector<Tank> *players, vector<smart_ptr<GfxEffects> > *effects, Gamemap *gamemap) : players(ptrize(players)), effects(effects), gamemap(gamemap) { };
+GameImpactContext::GameImpactContext(vector<Tank> *players, vector<smart_ptr<GfxEffects> > *effects, Gamemap *gamemap, Rng *rng) : players(ptrize(players)), effects(effects), gamemap(gamemap), rng(rng) { };
 
 GamePlayerContext::GamePlayerContext(Tank *owner, ProjectilePack *projpack, const GameImpactContext &gic) : projpack(projpack), owner(owner), gic(&gic) { };

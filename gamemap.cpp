@@ -80,7 +80,7 @@ Coord4 Gamemap::getCollisionBounds() const {
 const Coord resolution = Coord(20);
 const Coord offset = Coord(1.23456f); // Nasty hack to largely eliminate many border cases
 
-void Gamemap::removeWalls(Coord2 center, float radius) {
+void Gamemap::removeWalls(Coord2 center, float radius, Rng *rng) {
   if(!smashable)
     return;
   
@@ -166,11 +166,11 @@ void Gamemap::removeWalls(Coord2 center, float radius) {
   vector<Coord2> inters;
   {
     vector<float> rv;
-    int vct = int(frand() * 3) + 3;
-    float ofs = frand() * 2 * PI / vct;
+    int vct = int(rng->frand() * 3) + 3;
+    float ofs = rng->frand() * 2 * PI / vct;
     float maxofs = 2 * PI / vct / 2;
     for(int i = 0; i < vct; i++) {
-      rv.push_back(i * 2 * PI / vct + ofs + gaussian_scaled(2) * maxofs);
+      rv.push_back(i * 2 * PI / vct + ofs + rng->gaussian_scaled(2) * maxofs);
     }
     for(int i = 0; i < rv.size(); i++)
       inters.push_back(center + makeAngle(Coord(rv[i])) * Coord(radius));
@@ -179,7 +179,7 @@ void Gamemap::removeWalls(Coord2 center, float radius) {
   if(set<Coord2>(inters.begin(), inters.end()).size() != inters.size() || !inPath(center, inters)) {
     // We've gotten two duplicate points, start over from scratch!
     // Alternatively, the center isn't included in the explosion.
-    removeWalls(center, radius);
+    removeWalls(center, radius, rng);
     return;
   }
   
@@ -221,12 +221,12 @@ void Gamemap::removeWalls(Coord2 center, float radius) {
 }
 
 Gamemap::Gamemap() { };
-Gamemap::Gamemap(const Level &lev, bool smashable) : smashable(smashable) {
-  CHECK(lev.paths.size());
+Gamemap::Gamemap(const vector<vector<Coord2> > &lev, bool smashable) : smashable(smashable) {
+  CHECK(lev.size());
   
   Coord4 bounds = startCBoundBox();
-  for(int i = 0; i < lev.paths.size(); i++) {
-    addToBoundBox(&bounds, lev.paths[i]);
+  for(int i = 0; i < lev.size(); i++) {
+    addToBoundBox(&bounds, lev[i]);
   }
   CHECK(bounds.isNormalized());
   
@@ -248,8 +248,8 @@ Gamemap::Gamemap(const Level &lev, bool smashable) : smashable(smashable) {
       outerpath.push_back(Coord2(tile.sx, tile.ey));
       outerpath.push_back(Coord2(tile.ex, tile.ey));
       outerpath.push_back(Coord2(tile.ex, tile.sy));
-      for(int i = 0; i < lev.paths.size(); i++) {
-        vector<vector<Coord2> > resu = getDifference(lev.paths[i], outerpath);
+      for(int i = 0; i < lev.size(); i++) {
+        vector<vector<Coord2> > resu = getDifference(lev[i], outerpath);
         for(int j = 0; j < resu.size(); j++) {
           Coord4 bounds = startCBoundBox();
           addToBoundBox(&bounds, resu[j]);

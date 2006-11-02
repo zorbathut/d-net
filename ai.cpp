@@ -8,7 +8,7 @@
 using namespace std;
 
 void GameAiStandard::updateGameWork(const vector<Tank> &players, int me) {
-  if(rng.frand() < 0.01) {
+  if(rng->frand() < 0.01 || targetplayer == -1) {
     // find a tank, because approach and retreat both need one
     int targtank;
     {
@@ -18,10 +18,10 @@ void GameAiStandard::updateGameWork(const vector<Tank> &players, int me) {
           validtargets.push_back(i);
       if(validtargets.size() == 0)
         validtargets.push_back(me);
-      targtank = validtargets[int(validtargets.size() * rng.frand())];
+      targtank = validtargets[int(validtargets.size() * rng->frand())];
     }
     
-    float neai = rng.frand();
+    float neai = rng->frand();
     if(neai < 0.6) {
       gamemode = AGM_APPROACH;
       targetplayer = targtank;
@@ -30,8 +30,8 @@ void GameAiStandard::updateGameWork(const vector<Tank> &players, int me) {
       targetplayer = targtank;
     } else if(neai < 0.9) {
       gamemode = AGM_WANDER;
-      targetdir.x = rng.frand() - 0.5;
-      targetdir.y = rng.frand() - 0.5;
+      targetdir.x = rng->frand() - 0.5;
+      targetdir.y = rng->frand() - 0.5;
       targetdir = normalize(targetdir);
     } else {
       gamemode = AGM_BACKUP;
@@ -58,16 +58,16 @@ void GameAiStandard::updateGameWork(const vector<Tank> &players, int me) {
     nextKeys.udlrax = targetdir;
   } else if(gamemode == AGM_BACKUP) {
     Float2 nx(-makeAngle(players[me].d));
-    nx.x += (rng.frand() - 0.5) / 100;
-    nx.y += (rng.frand() - 0.5) / 100;
+    nx.x += (rng->frand() - 0.5) / 100;
+    nx.y += (rng->frand() - 0.5) / 100;
     nx = normalize(nx);
     nextKeys.udlrax = nx;
   }
   for(int i = 0; i < SIMUL_WEAPONS; i++) {
-    if(rng.frand() < 0.001)
+    if(rng->frand() < 0.001)
       firing[i] = !firing[i];
     nextKeys.fire[i].down = firing;
-    nextKeys.change[i].down = (rng.frand() < 0.001);  // weapon switch
+    nextKeys.change[i].down = (rng->frand() < 0.001);  // weapon switch
   }
 }
 
@@ -86,11 +86,12 @@ void GameAiStandard::updateBombardmentWork(const vector<Tank> &players, Coord2 m
   nextKeys.udlrax = dir.toFloat();
   nextKeys.udlrax.y *= -1;
   if(clodist < 10)
-    nextKeys.fire[0].down = (rng.frand() < 0.02);
+    nextKeys.fire[0].down = (rng->frand() < 0.02);
 }
 
-GameAiStandard::GameAiStandard() {
+GameAiStandard::GameAiStandard(Rng *rng) : rng(rng) {
   memset(firing, 0, sizeof(firing));
+  targetplayer = -1;
 }
 
 // these are not meant to be meaningful
@@ -199,14 +200,14 @@ void Ai::updateTween(bool live, bool pending, Float2 playerpos, bool shopped, Fl
     nextKeys.menu.x = -1.0;
     if(!live)
       shoptarget = 0;
-    else if(rng.rand() % 4 == 1)
+    else if(rng.frand() < 0.25)
       shoptarget = 1;
     else
       shoptarget = 2;
   }
   
   if(pending) {
-    nextKeys.keys[BUTTON_CANCEL].down = (rng.rand() % 100 == 0);
+    nextKeys.keys[BUTTON_CANCEL].down = (rng.frand() < 0.01);
     return;
   }
   
@@ -406,7 +407,7 @@ Controller Ai::getNextKeys() const {
   }
 }
 
-Ai::Ai() {
+Ai::Ai() : rng(unsync().generate_seed()), gai(&rng) {
   nextKeys.keys.resize(BUTTON_LAST);
   shopdone = false;
   source = UNKNOWN;

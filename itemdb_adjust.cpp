@@ -161,8 +161,8 @@ const string &IDBWeaponAdjust::name() const { return idb->name; };
 
 IDBLauncherAdjust IDBWeaponAdjust::launcher() const { return IDBLauncherAdjust(idb->launcher, adjust); };
 
-int framesForCooldownEngine(float frames_per_shot) {
-  return (int)floor(frames_per_shot) + (frand() < (frames_per_shot - floor(frames_per_shot)));
+int framesForCooldownEngine(float frames_per_shot, Rng *rng) {
+  return (int)floor(frames_per_shot) + (rng->frand() < (frames_per_shot - floor(frames_per_shot)));
 };
 
 struct FFCETester {
@@ -170,16 +170,17 @@ struct FFCETester {
     const float framn = 2;
     const float gole = framn * 1000;
     int tfram = 0;
+    Rng rng(unsync().generate_seed());
     for(int i = 0; i < 1000; i++)
-      tfram += framesForCooldownEngine(framn);
+      tfram += framesForCooldownEngine(framn, &rng);
     dprintf("tfram test: should be %dish, is %d\n", int(gole), tfram);
     
     CHECK(tfram > gole * .9 && tfram < gole * 1.1);
   }
 } test;
 
-int IDBWeaponAdjust::framesForCooldown() const { 
-  return framesForCooldownEngine(FPS / firerate());
+int IDBWeaponAdjust::framesForCooldown(Rng *rng) const { 
+  return framesForCooldownEngine(FPS / firerate(), rng);
 }
 float IDBWeaponAdjust::firerate() const {
   return idb->firerate * adjust.adjustmentfactor(IDBAdjustment::TANK_FIRERATE);

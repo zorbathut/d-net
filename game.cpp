@@ -45,13 +45,13 @@ void doInterp(float *curcenter, const float *nowcenter, float *curzoom, const fl
   }
 }
 
-bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &players) {
+bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &players, Rng *rng) {
   StackString sst("Frame runtick");
   
   CHECK(rkeys.size() == players.size());
   CHECK(players.size() == tanks.size());
 
-  GameImpactContext gic(&tanks, &gfxeffects, &gamemap);
+  GameImpactContext gic(&tanks, &gfxeffects, &gamemap, rng);
   
   if(!ffwd && FLAGS_verboseCollisions)
     dprintf("Ticking\n");
@@ -131,7 +131,7 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
           tanksleft.push_back(i);
       // TODO: turn this into random-shuffle using my deterministic seed
       while(tanksleft.size()) {
-        int pt = int(frand() * tanksleft.size());
+        int pt = int(rng->frand() * tanksleft.size());
         CHECK(pt >= 0 && pt < tanksleft.size());
         playerorder.push_back(tanksleft[pt]);
         tanksleft.erase(tanksleft.begin() + pt);
@@ -208,13 +208,13 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
         if(projectiles[lhs.bucket].find(lhs.item).isConsumed() || projectiles[rhs.bucket].find(rhs.item).isConsumed())
           continue;
         
-        bool lft = frand() < 0.5;
+        bool lft = rng->frand() < 0.5;
         
         if(projectiles[lhs.bucket].find(lhs.item).toughness() > projectiles[rhs.bucket].find(rhs.item).toughness())
           swap(lhs, rhs);
         
         // LHS now has less toughness, so it's guaranteed to go boom
-        bool rhsdestroyed = frand() < (projectiles[lhs.bucket].find(lhs.item).toughness() / projectiles[rhs.bucket].find(rhs.item).toughness());
+        bool rhsdestroyed = rng->frand() < (projectiles[lhs.bucket].find(lhs.item).toughness() / projectiles[rhs.bucket].find(rhs.item).toughness());
         
         if(lft)
           projectiles[lhs.bucket].find(lhs.item).detonate(collider.getCollision().pos, NULL, GamePlayerContext(&tanks[rhs.bucket], &projectiles[lhs.bucket], gic), true);
@@ -378,8 +378,8 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
     boomy.player = &boomyplay;
     boomyplay.glory = defaultGlory();
     float border = 40;
-    boomy.pos.x = Coord(frand()) * (gmbr.x_span() - border * 2) + gmbr.sx + border;
-    boomy.pos.y = Coord(frand()) * (gmbr.y_span() - border * 2) + gmbr.sy + border;
+    boomy.pos.x = Coord(rng->frand()) * (gmbr.x_span() - border * 2) + gmbr.sx + border;
+    boomy.pos.y = Coord(rng->frand()) * (gmbr.y_span() - border * 2) + gmbr.sy + border;
     boomy.d = 0;
     boomyplay.faction = &boomyfact;
     boomyfact.color = Color(1.0, 1.0, 1.0);
@@ -835,7 +835,7 @@ Game::Game() : collider(0, 0) {
   gamemode = GMODE_LAST;
 }
 
-void Game::initCommon(const vector<Player*> &in_playerdata, const vector<Color> &in_colors, const Level &lev, bool smashable) {
+void Game::initCommon(const vector<Player*> &in_playerdata, const vector<Color> &in_colors, const vector<vector<Coord2> > &lev, bool smashable) {
   CHECK(gamemode >= 0 && gamemode < GMODE_LAST);
   CHECK(in_playerdata.size() == in_colors.size());
   
@@ -854,18 +854,6 @@ void Game::initCommon(const vector<Player*> &in_playerdata, const vector<Color> 
   for(int i = 0; i < tanks.size(); i++) {
     CHECK(in_playerdata[i]);
     tanks[i].init(in_playerdata[i]->getTank(), in_colors[i]);
-  }
-  {
-    // place tanks
-    CHECK(lev.playerStarts.count(tanks.size()));
-    vector<pair<Coord2, float> > pstart = lev.playerStarts.find(tanks.size())->second;
-    for(int i = 0; i < tanks.size(); i++) {
-      int loc = int(frand() * pstart.size());
-      CHECK(loc >= 0 && loc < pstart.size());
-      tanks[i].pos = Coord2(pstart[loc].first);
-      tanks[i].d = pstart[loc].second;
-      pstart.erase(pstart.begin() + loc);
-    }
   }
 
   frameNm = 0;
@@ -894,6 +882,18 @@ void Game::initCommon(const vector<Player*> &in_playerdata, const vector<Color> 
   demomode_hits = 0;
 }
 
+void Game::initRandomTankPlacement(const map<int, vector<pair<Coord2, float> > > &player_starts, Rng *rng) {
+  CHECK(player_starts.count(tanks.size()));
+  vector<pair<Coord2, float> > pstart = player_starts.find(tanks.size())->second;
+  for(int i = 0; i < tanks.size(); i++) {
+    int loc = int(rng->frand() * pstart.size());
+    CHECK(loc >= 0 && loc < pstart.size());
+    tanks[i].pos = Coord2(pstart[loc].first);
+    tanks[i].d = pstart[loc].second;
+    pstart.erase(pstart.begin() + loc);
+  }
+}
+
 vector<Color> createBasicColors(const vector<Player*> &in_playerdata) {
   vector<Color> rv;
   for(int i = 0; i < in_playerdata.size(); i++)
@@ -901,19 +901,20 @@ vector<Color> createBasicColors(const vector<Player*> &in_playerdata) {
   return rv;
 }
 
-void Game::initStandard(vector<Player> *in_playerdata, const Level &lev) {
+void Game::initStandard(vector<Player> *in_playerdata, const Level &lev, Rng *rng) {
   gamemode = GMODE_STANDARD;
   
   vector<Player*> playerdata;
   for(int i = 0; i < in_playerdata->size(); i++)
     playerdata.push_back(&(*in_playerdata)[i]);
-  initCommon(playerdata, createBasicColors(playerdata), lev, true);
+  initCommon(playerdata, createBasicColors(playerdata), lev.paths, true);
+  initRandomTankPlacement(lev.playerStarts, rng);
   
   frameNmToStart = 180;
   freezeUntilStart = true;
 };
 
-void Game::initChoice(vector<Player> *in_playerdata) {
+void Game::initChoice(vector<Player> *in_playerdata, Rng *rng) {
   gamemode = GMODE_CHOICE;
   
   Level lev = loadLevel("data/levels_special/choice_4.dv2");
@@ -925,7 +926,8 @@ void Game::initChoice(vector<Player> *in_playerdata) {
     playerdata.push_back(&(*in_playerdata)[i]);
   }
   
-  initCommon(playerdata, createBasicColors(playerdata), lev, true);
+  initCommon(playerdata, createBasicColors(playerdata), lev.paths, true);
+  initRandomTankPlacement(lev.playerStarts, rng);
   
   teams.resize(5);
   for(int i = 0; i < tanks.size(); i++)
@@ -961,25 +963,22 @@ void Game::initChoice(vector<Player> *in_playerdata) {
 void Game::initTest(Player *in_playerdata, const Float4 &bounds) {
   gamemode = GMODE_TEST;
   
-  Level lev;
-  
+  vector<vector<Coord2> > level;
   {
     vector<Coord2> path;
     path.push_back(Coord2(bounds.sx, bounds.sy));
     path.push_back(Coord2(bounds.sx, bounds.ey));
     path.push_back(Coord2(bounds.ex, bounds.ey));
     path.push_back(Coord2(bounds.ex, bounds.sy));
-    lev.paths.push_back(path);
-  }
-  
-  {
-    lev.playersValid.insert(1);
-    lev.playerStarts[1].push_back(make_pair(bounds.midpoint(), PI / 2 * 3));
+    level.push_back(path);
   }
   
   vector<Player*> playerdata;
   playerdata.push_back(in_playerdata);
-  initCommon(playerdata, createBasicColors(playerdata), lev, false);
+  initCommon(playerdata, createBasicColors(playerdata), level, false);
+  CHECK(tanks.size() == 1);
+  tanks[0].pos = Coord2(bounds.midpoint());
+  tanks[0].d = PI / 2 * 3;
   
   clear = bounds;
 }
@@ -987,15 +986,14 @@ void Game::initTest(Player *in_playerdata, const Float4 &bounds) {
 void Game::initDemo(vector<Player> *in_playerdata, float boxradi, const float *xps, const float *yps, const float *facing, const int *modes, bool blockades) {
   gamemode = GMODE_DEMO;
   
-  Level lev;
-  
+  vector<vector<Coord2> > level;
   {
     vector<Coord2> path;
     path.push_back(Coord2(-boxradi, -boxradi));
     path.push_back(Coord2(-boxradi, boxradi));
     path.push_back(Coord2(boxradi, boxradi));
     path.push_back(Coord2(boxradi, -boxradi));
-    lev.paths.push_back(path);
+    level.push_back(path);
   }
   
   if(blockades) {
@@ -1006,14 +1004,7 @@ void Game::initDemo(vector<Player> *in_playerdata, float boxradi, const float *x
     blockade.push_back(Coord2(-inside, -outside));
     blockade.push_back(Coord2(inside, -outside));
     blockade.push_back(Coord2(inside, outside));
-    lev.paths.push_back(blockade);
-  }
-  
-  {
-    lev.playersValid.insert(in_playerdata->size());
-    for(int i = 0; i < in_playerdata->size(); i++)
-      lev.playerStarts[in_playerdata->size()].push_back(make_pair(Coord2(0, 0), PI / 2 * 3));
-    // these get pretty much ignored anyway
+    level.push_back(blockade);
   }
   
   vector<Player*> playerdata;
@@ -1025,7 +1016,7 @@ void Game::initDemo(vector<Player> *in_playerdata, float boxradi, const float *x
   for(int i = 0; i < playerdata.size(); i++)
     colors.push_back(factionList()[i].color);
   
-  initCommon(playerdata, colors, lev, false);
+  initCommon(playerdata, colors, level, false);
   
   for(int i = 0; i < tanks.size(); i++) {
     tanks[i].pos = Coord2(xps[i], yps[i]);
@@ -1051,7 +1042,7 @@ void Game::initCenteredDemo(Player *in_playerdata, float zoom) {
   
   centereddemo_zoom = zoom;
   
-  Level lev;  
+  vector<vector<Coord2> > level;
   {
     const float size = 1000;
     vector<Coord2> path;
@@ -1059,19 +1050,17 @@ void Game::initCenteredDemo(Player *in_playerdata, float zoom) {
     path.push_back(Coord2(-size, size));
     path.push_back(Coord2(size, size));
     path.push_back(Coord2(size, -size));
-    lev.paths.push_back(path);
+    level.push_back(path);
     
     clear = Float4(-size, -size, size, size);
   }
   
-  {
-    lev.playersValid.insert(1);
-    lev.playerStarts[1].push_back(make_pair(Coord2(0, 0), PI / 2 * 3));
-  }
-  
   vector<Player*> playerdata;
   playerdata.push_back(in_playerdata);
-  initCommon(playerdata, createBasicColors(playerdata), lev, false);
+  initCommon(playerdata, createBasicColors(playerdata), level, false);
+  CHECK(tanks.size() == 1);
+  tanks[0].pos = Coord2(0, 0);
+  tanks[0].d = PI / 2 * 3;
   
   collider = Collider(tanks.size(), Coord(1000));
 }
@@ -1086,11 +1075,11 @@ void Game::addTankStatusText(int tankid, const string &text, float duration) {
   gfxeffects.push_back(GfxText(pos + Float2(4, -4), Float2(0, -6), zoom_size.y / 80, text, duration, Color(1.0, 1.0, 1.0)));
 }
 
-bool GamePackage::runTick(const vector<Keystates> &keys) {
+bool GamePackage::runTick(const vector<Keystates> &keys, Rng *rng) {
   vector<Player*> ppt;
   for(int i = 0; i < players.size(); i++)
     ppt.push_back(&players[i]);
-  return game.runTick(keys, ppt);
+  return game.runTick(keys, ppt, rng);
 }
 
 void GamePackage::renderToScreen() const {

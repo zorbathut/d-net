@@ -7,7 +7,7 @@
 
 using namespace std;
 
-void Projectile::tick(vector<smart_ptr<GfxEffects> > *gfxe) {
+void Projectile::tick(vector<smart_ptr<GfxEffects> > *gfxe, Rng *rng) {
   CHECK(live);
   CHECK(age != -1);
   distance += len(movement()).toFloat();
@@ -20,11 +20,11 @@ void Projectile::tick(vector<smart_ptr<GfxEffects> > *gfxe) {
     if(age > FPS / 6)
       missile_sidedist /= 1.2;
     for(int i = 0; i < 2; i++) {
-      float dir = frand() * 2 * PI;
+      float dir = unsync().frand() * 2 * PI;
       Float2 pv = makeAngle(dir) / 3;
-      pv *= 1.0 - frand() * frand();
+      pv *= 1.0 - unsync().frand() * unsync().frand();
       pv += movement().toFloat();
-      pv += missile_accel().toFloat() * -3 * abs(gaussian());
+      pv += missile_accel().toFloat() * -3 * abs(unsync().gaussian());
       pv *= 60; // this is an actual 60, converting it from my previous movement-per-frame to movement-per-second
       gfxe->push_back(GfxPoint(pos.toFloat() + lasttail.toFloat() - movement().toFloat(), pv, 0.17, Color(1.0, 0.9, 0.6)));
     }
@@ -33,7 +33,7 @@ void Projectile::tick(vector<smart_ptr<GfxEffects> > *gfxe) {
     if(airbrake_liveness() <= 0)
       detonating = true;
   } else if(projtype.motion() == PM_MINE) {
-    if(frand() > pow(0.5f, 1 / (projtype.halflife() * FPS)))
+    if(rng->frand() > pow(0.5f, 1 / (projtype.halflife() * FPS)))
       detonating = true;
   } else {
     CHECK(0);
@@ -180,7 +180,7 @@ Projectile::Projectile() : projtype(NULL, IDBAdjustment()) {
   live = false;
   age = -1;
 }
-Projectile::Projectile(const Coord2 &in_pos, float in_d, const IDBProjectileAdjust &in_projtype) : projtype(in_projtype) {
+Projectile::Projectile(const Coord2 &in_pos, float in_d, const IDBProjectileAdjust &in_projtype, Rng *rng) : projtype(in_projtype) {
   pos = in_pos;
   d = in_d;
   age = 0;
@@ -191,11 +191,11 @@ Projectile::Projectile(const Coord2 &in_pos, float in_d, const IDBProjectileAdju
   
   if(projtype.motion() == PM_NORMAL) {
   } else if(projtype.motion() == PM_MISSILE) {
-    missile_sidedist = gaussian() * 0.25;
+    missile_sidedist = rng->gaussian() * 0.25;
   } else if(projtype.motion() == PM_AIRBRAKE) {
-    airbrake_velocity = (gaussian_scaled(2) / 4 + 1) * projtype.velocity();
+    airbrake_velocity = (rng->gaussian_scaled(2) / 4 + 1) * projtype.velocity();
   } else if(projtype.motion() == PM_MINE) {
-    mine_facing = frand() * 2 * PI;
+    mine_facing = rng->frand() * 2 * PI;
   } else {
     CHECK(0);
   }
@@ -234,7 +234,7 @@ void ProjectilePack::tick(vector<smart_ptr<GfxEffects> > *gfxe, Collider *collid
     if(itr->second.isLive() && itr->second.isDetonating())
       itr->second.detonate(itr->second.warheadposition(), NULL, GamePlayerContext(gic.players[owner], this, gic), false);
     if(itr->second.isLive()) {
-      itr->second.tick(gfxe);
+      itr->second.tick(gfxe, gic.rng);
       if(itr->second.isLive() && itr->second.isDetonating())
         itr->second.detonate(itr->second.warheadposition(), NULL, GamePlayerContext(gic.players[owner], this, gic), false);
       if(itr->second.isLive()) {

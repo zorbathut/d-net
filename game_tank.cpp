@@ -117,13 +117,13 @@ vector<Coord2> Tank::getTankVertices(Coord2 pos, float td) const {
 Coord2 Tank::getFiringPoint() const {
   return worldFromLocal(tank.firepoint());
 };
-Coord2 Tank::getMinePoint() const {
+Coord2 Tank::getMinePoint(Rng *rng) const {
   Coord tlen = 0;
   const vector<Coord2> &minepath = tank.minepath();
   for(int i = 0; i < minepath.size() - 1; i++)
     tlen += len(minepath[i] - minepath[i+1]);
   CHECK(tlen > 0);
-  tlen = Coord(frand() * tlen.toFloat());
+  tlen = Coord(rng->frand() * tlen.toFloat());
   for(int i = 0; i < minepath.size() - 1; i++) {
     if(tlen >= len(minepath[i] - minepath[i+1])) {
       tlen -= len(minepath[i] - minepath[i+1]);
@@ -354,7 +354,7 @@ void Tank::genEffects(const GameImpactContext &gic, ProjectilePack *projectiles,
         vf2.push_back((chunks[i][j] - subcentroid).toFloat());
       Coord2 vel = normalize(subcentroid) / 10 * tva / getArea(chunks[i]);
       Float2 path_pos_vel = vel.toFloat();
-      float path_ang_vel = gaussian() / 20;
+      float path_ang_vel = gic.rng->gaussian() / 20;
       gic.effects->push_back(GfxPath(vf2, (centr + subcentroid).toFloat(), path_pos_vel * 60, -path_pos_vel * 60, 0, path_ang_vel * 60, -path_ang_vel * 60, 0.5, player->getFaction()->color));
     }
     
@@ -465,7 +465,7 @@ void Tank::tryToFire(Button keys[SIMUL_WEAPONS], Player *player, ProjectilePack 
       
       deployProjectile(weapon.launcher().deploy(), launchData(), GamePlayerContext(this, projectiles, gic));
       
-      weaponCooldown = weapon.framesForCooldown();
+      weaponCooldown = weapon.framesForCooldown(gic.rng);
       // hack here to detect weapon out-of-ammo
       string lastname = weapon.name();
       *firepowerSpent += player->shotFired(curfire);

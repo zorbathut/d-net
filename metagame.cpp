@@ -26,7 +26,7 @@ bool Metagame::runTick(const vector<Controller> &keys) {
       findLevels(persistent.players().size());
 
       faction_mode_players = persistent.players();
-      game.initChoice(&faction_mode_players);
+      game.initChoice(&faction_mode_players, &rng);
     }
   } else if(mode == MGM_FACTIONTYPE) {
     StackString stp("Factiontype");
@@ -35,7 +35,7 @@ bool Metagame::runTick(const vector<Controller> &keys) {
       for(int i = 0; i < persistent.players().size(); i++)
         ppt.push_back(&persistent.players()[i]);
     }
-    if(FLAGS_factionMode != -1 || game.runTick(persistent.genKeystates(keys), ppt)) {
+    if(FLAGS_factionMode != -1 || game.runTick(persistent.genKeystates(keys), ppt, &rng)) {
       if(FLAGS_factionMode != -1)
         faction_mode = FLAGS_factionMode;
       else
@@ -49,7 +49,7 @@ bool Metagame::runTick(const vector<Controller> &keys) {
         for(int i = 0; i < teams.size(); i++)
           if(teams[i] == smalteam)
             smalteams.push_back(i);
-        faction_mode = smalteams[int(frand() * smalteams.size())];
+        faction_mode = smalteams[int(rng.frand() * smalteams.size())];
       }
       CHECK(faction_mode >= 0 && faction_mode < FACTION_LAST);
 
@@ -67,7 +67,7 @@ bool Metagame::runTick(const vector<Controller> &keys) {
       mode = MGM_PLAY;
 
       findLevels(persistent.players().size());  // player count may have changed. TODO: make this suck less
-      game.initStandard(&persistent.players(), levels[int(frand() * levels.size())]);
+      game.initStandard(&persistent.players(), levels[int(rng.frand() * levels.size())], &rng);
       if(win_history.size() != gameround)
         dprintf("%d, %d\n", win_history.size(), gameround);
       CHECK(win_history.size() == gameround);
@@ -79,7 +79,7 @@ bool Metagame::runTick(const vector<Controller> &keys) {
       for(int i = 0; i < persistent.players().size(); i++)
         ppt.push_back(&persistent.players()[i]);
     }
-    if(game.runTick(persistent.genKeystates(keys), ppt)) {
+    if(game.runTick(persistent.genKeystates(keys), ppt, &rng)) {
       if(game.winningTeam() == -1)
         win_history.push_back(NULL);
       else
@@ -92,7 +92,7 @@ bool Metagame::runTick(const vector<Controller> &keys) {
       } else {
         // store the firepower, restart the game, and add firepower to it (kind of kludgy)
         float firepower = game.firepowerSpent;
-        game.initStandard(&persistent.players(), levels[int(frand() * levels.size())]);
+        game.initStandard(&persistent.players(), levels[int(rng.frand() * levels.size())], &rng);
         game.firepowerSpent = firepower;
       }
     }
@@ -171,8 +171,8 @@ void Metagame::findLevels(int playercount) {
   }
 }
 
-Metagame::Metagame(int playercount, int in_roundsBetweenShop) :
-    persistent(playercount, in_roundsBetweenShop) {
+Metagame::Metagame(int playercount, int in_roundsBetweenShop, RngSeed seed) :
+    persistent(playercount, in_roundsBetweenShop), rng(seed) {
   
   if(FLAGS_factionMode != -1) {
     mode = MGM_TWEEN;

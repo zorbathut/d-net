@@ -219,7 +219,7 @@ void InterfaceMain::render() const {
 
 #else
 
-bool InterfaceMain::tick(const vector< Controller > &control) {
+bool InterfaceMain::tick(const vector< Controller > &control, RngSeed gameseed) {
   StackString stp("Interface ticking");
   
   inptest_controls = control;
@@ -253,7 +253,7 @@ bool InterfaceMain::tick(const vector< Controller > &control) {
     int mrv;
     mrv = mainmenu.tick(kst[controls_primary_id()]);
     if(mrv == IFM_M_NEWGAME || FLAGS_auto_newgame) {
-      game = new Metagame(control.size(), FLAGS_rounds_per_shop);
+      game = new Metagame(control.size(), FLAGS_rounds_per_shop, gameseed);
       interface_mode = IFM_S_PLAYING;
     } else if(mrv == IFM_M_EXIT) {
       return true;

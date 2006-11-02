@@ -2,6 +2,7 @@
 #define DNET_AI
 
 #include "game_ai.h"
+#include "rng.h"
 
 #include <deque>
 
@@ -23,15 +24,17 @@ private:
   Float2 targetdir;
   bool firing[SIMUL_WEAPONS];
   
+  Rng *rng;
+  
   virtual void updateGameWork(const vector<Tank> &players, int me);
   virtual void updateBombardmentWork(const vector<Tank> &players, Coord2 mypos);
 
 public:
 
-  GameAiStandard();
+  GameAiStandard(Rng *rng);
 };
 
-class Ai {
+class Ai : boost::noncopyable {
 private:
   deque<Controller> shopQueue;
   Controller nextKeys;

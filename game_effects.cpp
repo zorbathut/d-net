@@ -153,11 +153,11 @@ public:
       } else {
         setColor(dim * (1.0 - getAgeFactor()));
       }
-      const float ofs = unsync_frand() * 2 * PI / vertx;
+      const float ofs = unsync().frand() * 2 * PI / vertx;
       const float chaos = len(makeAngle(1 * PI * 2 / vertx) - makeAngle(0)) * desrad / 2;
       vector<Float2> pex;
       for(int j = 0; j < vertx; j++)
-        pex.push_back(center + makeAngle(j * PI * 2 / vertx + ofs) * desrad + Float2(unsync_symfrand(), unsync_symfrand()) * chaos);
+        pex.push_back(center + makeAngle(j * PI * 2 / vertx + ofs) * desrad + Float2(unsync().sym_frand(), unsync().sym_frand()) * chaos);
       drawLineLoop(pex, 0.3);
     }
   }
@@ -184,7 +184,7 @@ public:
   }
   
   GfxEffectsIdb(Float2 center, Float2 in_velocity, const IDBEffects *effect) : GfxEffects(effect->lifetime, effect->color), center(center), effect(effect) {
-    velocity = in_velocity * effect->inertia + makeAngle(frand() * 2 * PI) * gaussian() * effect->spread;
+    velocity = in_velocity * effect->inertia + makeAngle(unsync().frand() * 2 * PI) * unsync().gaussian() * effect->spread;
   };
   
 private:

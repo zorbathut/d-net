@@ -1,5 +1,6 @@
 ---- Major work path
-- Remove global RNGs, synch up RNGs completely
+- make unoptrun unoptai
+- Improve separation for glory device demo
 - Improve mine demo
 - Move labels in EMP demo
 - Start game at phase X
@@ -63,9 +64,8 @@
 http://www.itchstudios.com/psg/ - Dafred's artist
 
 ---
-Tank-specific upgrades.
+RNG stuff
 
-Upgrade groups? We can have upgrades belong to a single group, and tanks add a set of groups.
-hullupg_basic, hullupg_advanced, etc
+metagame should really own its RNG. So it should simply have a *copy* of an RNG passed in, for it to own. Should Game own its RNG also? I'm honestly not sure. There are advantages.
 
-Should these show up in the tank info view somehow? (yes)
+If this is true, it means that Game and such need to pass RNGs around everywhere. But that's not really too hard.

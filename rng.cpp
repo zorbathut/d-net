@@ -7,52 +7,20 @@
 
 using namespace std;
 
-static Rng unsyncrng(time(NULL));
-
-void Rng::sfrand(int in_seed) {
-  dprintf("Seeding random generator with %d\n", in_seed);
-  seed = in_seed;
-  sync = seed;
-  frand(); frand();
-  start = true;
-}
-
-int Rng::rand() {
-  sync = sync * 1103515245 + 12345;
-  return ((sync >>16) & 32767);
-}
-
 float Rng::frand() {
-  start = false;
-  return (float)rand() / 32768;
+  sync = sync * 1103515245 + 12345;
+  return (float)((sync >> 16) & 32767) / 32768;
 }
 
-int Rng::frandseed() {
-  CHECK(start);
-  return seed;
+// todo: something more cleverer
+float Rng::sym_frand() {
+  if(frand() < 0.5)
+    return frand();
+  else
+    return -frand();
 }
 
-Rng::Rng() {
-  sync = 1;
-  seed = 1;
-  start = false;
-  sfrand(unsyncrng.rand());
-}
-
-Rng::Rng(int in_seed) {
-  sync = 1;
-  seed = 1;
-  start = false;
-  sfrand(in_seed);
-}
-
-static Rng syncrng;
-
-void sfrand(int seed) { syncrng.sfrand(seed); };
-float frand() { return syncrng.frand(); };
-int frandseed() { return syncrng.frandseed(); };
-
-float gaussian() {
+float Rng::gaussian() {
   float x1, x2, w, y1;
   
   do {
@@ -67,7 +35,7 @@ float gaussian() {
   return y1;
 }
 
-float gaussian(float maxgauss) {
+float Rng::gaussian(float maxgauss) {
   while(1) {
     float gauss = gaussian();
     if(abs(gauss) <= maxgauss)
@@ -75,17 +43,19 @@ float gaussian(float maxgauss) {
   }
 }
 
-float gaussian_scaled(float maxgauss) {
+float Rng::gaussian_scaled(float maxgauss) {
   return gaussian(maxgauss) / maxgauss;
 }
 
-float unsync_frand() {
-  return unsyncrng.frand();
+RngSeed Rng::generate_seed() {
+  return RngSeed((int)(frand() * (1LL << 32)));
 }
 
-float unsync_symfrand() {
-  if(unsync_frand() < 0.5)
-    return unsync_frand();
-  else
-    return -unsync_frand();
+Rng::Rng(RngSeed in_seed) {
+  sync = in_seed.seed;
+  frand(); frand();
 }
+
+static Rng unsyncrng(RngSeed(time(NULL)));
+
+Rng &unsync() { return unsyncrng; }

@@ -104,7 +104,7 @@ PlayerMenuState::PlayerMenuState() {
 
 PlayerMenuState::~PlayerMenuState() { }
 
-void PlayerMenuState::createNewAxistypeDemo() {
+void PlayerMenuState::createNewAxistypeDemo(RngSeed seed) {
   setting_axistype_demo.reset();
   
   setting_axistype_demo.reset(new GamePackage);
@@ -121,7 +121,7 @@ void PlayerMenuState::createNewAxistypeDemo() {
   
   setting_axistype_demo->game.initCenteredDemo(&setting_axistype_demo->players[0], 50);
   
-  setting_axistype_demo_ai.reset(new GameAiAxisRotater(GameAiAxisRotater::steeringConfig(false, false)));
+  setting_axistype_demo_ai.reset(new GameAiAxisRotater(GameAiAxisRotater::steeringConfig(false, false), seed));
 }
 
 Keystates PlayerMenuState::genKeystate(const Controller &keys) const {
@@ -380,19 +380,19 @@ void standardButtonRender(const StandardButtonRenderData &sbrd) {
     drawJustifiedText(sbrd.description[i], sbrd.rin->textsize, Float2((sbrd.rin->xstart + sbrd.rin->xend) / 2, sbrd.rin->ystarts[sbrd.rin->ystarts.size() - sbrd.description.size() + i]), TEXT_CENTER, TEXT_MIN);
 }
 
-float GameAiAxisRotater::Randomater::next() {
+float GameAiAxisRotater::Randomater::next(Rng *rng) {
   if(frameNumber >= fnext) {
     if(smooth) {
-      current = frand() * 2 - 1;
+      current = rng->frand() * 2 - 1;
     } else {
       vector<float> opts;
       opts.push_back(1);
       opts.push_back(0);
       opts.push_back(-1);
       opts.erase(find(opts.begin(), opts.end(), current));
-      current = opts[int(frand() * opts.size())];
+      current = opts[int(rng->frand() * opts.size())];
     }
-    int shift = int(frand() * 120 + 120);
+    int shift = int(rng->frand() * 120 + 120);
     if(!smooth) {
       if(current == 0)
         shift /= 2;
@@ -413,13 +413,13 @@ void GameAiAxisRotater::updateGameWork(const vector<Tank> &players, int me) {
     CHECK(rands.size() == 2);
     for(int i = 0; i < 2; i++) {
       if(config.ax[i])
-        next[i] = approach(next[i], rands[i].next(), 0.05);
+        next[i] = approach(next[i], rands[i].next(&rng), 0.05);
       else
         next[i] = approach(next[i], 0, 0.05);
     }
   } else if(config.type == KSAX_ABSOLUTE) {
     CHECK(rands.size() == 1);
-    Float2 ps = makeAngle(rands[0].next() * PI);
+    Float2 ps = makeAngle(rands[0].next(&rng) * PI);
     next[0] = approach(next[0], ps.x, 0.05);
     next[1] = approach(next[1], ps.y, 0.05);
   } else if(config.type == KSAX_TANK) {
@@ -428,9 +428,9 @@ void GameAiAxisRotater::updateGameWork(const vector<Tank> &players, int me) {
       if(config.tax[i] == 0)
         next[i] = approach(next[i], 0, 0.05);
       else if(config.tax[i] < 0)
-        next[i] = approach(next[i], -rands[-config.tax[i] - 1].next(), 0.05);
+        next[i] = approach(next[i], -rands[-config.tax[i] - 1].next(&rng), 0.05);
       else
-        next[i] = approach(next[i], rands[config.tax[i] - 1].next(), 0.05);
+        next[i] = approach(next[i], rands[config.tax[i] - 1].next(&rng), 0.05);
     }
   } else {
     CHECK(0);
@@ -485,7 +485,7 @@ Float2 GameAiAxisRotater::getControls() const {
   return Float2(next[0], next[1]);
 }
 
-GameAiAxisRotater::GameAiAxisRotater(const GameAiAxisRotater::Config &conf) {
+GameAiAxisRotater::GameAiAxisRotater(const GameAiAxisRotater::Config &conf, RngSeed seed) : rng(seed) {
   next.resize(2, 0.);
   updateConfig(conf);
 }
@@ -777,7 +777,7 @@ bool runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
           pms->setting_axistype = pms->setting_axistype_curchoice / 2;
         } else {
           pms->setting_axistype_demo_cursegment = 0;
-          pms->createNewAxistypeDemo();
+          pms->createNewAxistypeDemo(unsync().generate_seed());
         }
       }
       
@@ -878,11 +878,11 @@ bool runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
       StackString sstr("runtest");
       if(pms->choicemode == CHOICE_IDLE) {
         vector<Keystates> kst(1);
-        CHECK(!pms->test_game->runTick(kst));
+        CHECK(!pms->test_game->runTick(kst, &unsync()));
       } else if(pms->choicemode == CHOICE_ACTIVE || pms->choicemode == CHOICE_FIRSTPASS || pms->choicemode == CHOICE_REAXIS) {
         vector<Keystates> kst;
         kst.push_back(pms->genKeystate(keys));
-        CHECK(!pms->test_game->runTick(kst));
+        CHECK(!pms->test_game->runTick(kst, &unsync()));
       } else {
         CHECK(0);
       }
@@ -934,7 +934,7 @@ bool runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
   
       {
         StackString sstr("game");
-        pms->setting_axistype_demo->runTick(kist);
+        pms->setting_axistype_demo->runTick(kist, &unsync());
       }
     }
   }

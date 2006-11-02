@@ -32,7 +32,8 @@ int playertwo[] = { SDLK_w, SDLK_s, SDLK_a, SDLK_d, SDLK_r, SDLK_t, SDLK_y, SDLK
 int *baseplayermap[2] = { playerone, playertwo };
 int baseplayersize[2] = { ARRAY_SIZE(playerone), ARRAY_SIZE(playertwo) };  
 
-vector<Controller> controls_init() {
+pair<RngSeed, vector<Controller> > controls_init(RngSeed default_seed) {
+  RngSeed rngs(default_seed);
   CHECK(sources.size() == 0);
   CHECK(FLAGS_readTarget == "" || FLAGS_aiCount == 0);
   if(FLAGS_readTarget != "") {
@@ -42,8 +43,7 @@ vector<Controller> controls_init() {
     int dat;
     fread(&dat, 1, sizeof(dat), infile);
     CHECK(dat == 3);
-    fread(&dat, 1, sizeof(dat), infile);
-    sfrand(dat);
+    fread(&rngs, 1, sizeof(rngs), infile);
     fread(&dat, 1, sizeof(dat), infile);
     dprintf("%d controllers\n", dat);
     now.resize(dat);
@@ -114,7 +114,7 @@ vector<Controller> controls_init() {
   CHECK(sources.size() != 0);
   CHECK(sources.size() == now.size());
   last = now;
-  return now;
+  return make_pair(rngs, now);
 }
 
 void controls_key(const SDL_KeyboardEvent *key) {

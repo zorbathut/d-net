@@ -2,7 +2,6 @@
 #define DNET_GAME_AI
 
 #include "input.h"
-#include "rng.h"
 #include "noncopyable.h"
 
 using namespace std;
@@ -10,7 +9,7 @@ using namespace std;
 class Tank;
 class Coord2;
 
-class GameAi : boost::noncopyable{
+class GameAi : boost::noncopyable {
 public:
   
   void updateGame(const vector<Tank> &players, int me);
@@ -24,7 +23,6 @@ public:
 protected:
 
   Keystates nextKeys;
-  Rng rng;
 
   void zeroNextKeys();
   void normalizeNext();

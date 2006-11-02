@@ -11,7 +11,7 @@ class Tank;
 class Projectile {
 public:
 
-  void tick(vector<smart_ptr<GfxEffects> > *gfx);
+  void tick(vector<smart_ptr<GfxEffects> > *gfx, Rng *rng);
   void render(const vector<Coord2> &tposes) const;
 
   void firstCollide(Collider *collider, int owner, int id) const;
@@ -30,7 +30,7 @@ public:
   float toughness() const;
 
   Projectile();   // does not start in usable state
-  Projectile(const Coord2 &pos, float d, const IDBProjectileAdjust &projtype);
+  Projectile(const Coord2 &pos, float d, const IDBProjectileAdjust &projtype, Rng *rng);
 
 private:
   
