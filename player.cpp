@@ -258,6 +258,8 @@ void Player::buyTank(const IDBTank *in_tank) {
 
 void Player::forceAcquireWeapon(const IDBWeapon *in_weap, int count) {
   weapons.addAmmo(in_weap, count);
+  weapons.setWeaponEquipBit(in_weap, 0, false, true);
+  weapons.setWeaponEquipBit(in_weap, 0, true, true);
   CHECK(weapons.getWeaponSlot(0) == in_weap);
 }
 void Player::forceAcquireUpgrade(const IDBUpgrade *in_upg) {
