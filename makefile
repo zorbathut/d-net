@@ -1,7 +1,7 @@
 
 SOURCES = main core game timer debug gfx collide gamemap util rng args interface vecedit metagame itemdb parse dvec2 input level coord ai inputsnag os_win32 float cfcommon coord_boolean player itemdb_adjust metagame_config shop shop_demo shop_info game_ai game_effects color metagame_tween cfc game_tank game_util game_projectile socket httpd
-CPPFLAGS = `sdl-config --cflags` -mno-cygwin -DVECTOR_PARANOIA -Wall -Wno-sign-compare -Wno-uninitialized -g -O2 #-pg # I would love to get rid of -Wno-uninitialized, but it makes the standard library spit out warnings! :(
-LINKFLAGS = `sdl-config --libs` -lglu32 -lopengl32 -lm -lws2_32 -mno-cygwin -g -O2 #-pg
+CPPFLAGS = `sdl-config --cflags` -mno-cygwin -DVECTOR_PARANOIA -Wall -Wno-sign-compare -Wno-uninitialized -g #-pg # I would love to get rid of -Wno-uninitialized, but it makes the standard library spit out warnings! :(
+LINKFLAGS = `sdl-config --libs` -lglu32 -lopengl32 -lm -lws2_32 -mno-cygwin -g #-pg
 
 CPP = g++
 
@@ -10,12 +10,18 @@ all: d-net.exe
 include $(SOURCES:=.d)
 
 d-net.exe: $(SOURCES:=.o) makefile
-	nice $(CPP) -o $@ $(SOURCES:=.o) $(LINKFLAGS) 
+	nice $(CPP) -o $@ $(SOURCES:=.o) $(LINKFLAGS)
+
+d-net-dbg.exe: $(SOURCES:=.do) makefile
+	nice $(CPP) -o $@ $(SOURCES:=.do) $(LINKFLAGS) 
 
 asm: $(SOURCES:=.S) makefile
 
 clean:
-	rm -rf *.o *.exe *.d *.S
+	rm -rf *.o *.do *.exe *.d *.S
+
+debugrun: d-net-dbg.exe
+	d-net-dbg.exe --nofullscreen --debugitems --startingCash=100000000 --debugControllers=2 --factionMode=0 --nullControllers=11 --writeTarget= --nocullShopTree --httpd_port=616
 
 basicrun: d-net.exe
 	d-net.exe --nofullscreen --writeTarget= --httpd_port=616
@@ -51,13 +57,16 @@ package: d-net.exe data/shopcache.dwh
 	rm -rf deploy
 
 %.o: %.cpp makefile
+	nice $(CPP) $(CPPFLAGS) -O2 -c -o $@ $<
+  
+%.do: %.cpp makefile
 	nice $(CPP) $(CPPFLAGS) -c -o $@ $<
 
 %.S: %.cpp makefile
 	nice $(CPP) $(CPPFLAGS) -c -g -Wa,-a,-ad $< > $@
 
 %.d: %.cpp makefile
-	nice bash -ec '$(CPP) $(CPPFLAGS) -MM $< | sed "s!$*.o!$*.o $@!g" > $@'
+	nice bash -ec '$(CPP) $(CPPFLAGS) -MM $< | sed "s!$*.o!$*.o $*.do $@!g" > $@'
 
 data/shopcache.dwh: d-net.exe
 	d-net.exe --generateCachedShops
