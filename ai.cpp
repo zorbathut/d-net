@@ -226,7 +226,8 @@ void Ai::updateTween(bool live, bool pending, Float2 playerpos, bool shopped, Fl
   
   if(len(playerpos - approach) < 3) {
     nextKeys.keys[BUTTON_ACCEPT].down = frameNumber % 2;
-    shoptarget = -1;
+    if(shoptarget == 0)
+      shoptarget = -1;
     return;
   }
   

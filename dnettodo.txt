@@ -5,6 +5,7 @@
 - Move labels in EMP demo
 - Start game at phase X
 - Training/implants/wtf
+- Next-gen vecedit?
 - Activate factions
   - Faction bonuses/penalties in demo screens
 - Many many more weapons
