@@ -1,5 +1,4 @@
 ---- Major work path
-- test consistency
 - Improve separation for glory device demo
 - Improve mine demo
 - Move labels in EMP demo
