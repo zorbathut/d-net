@@ -2,6 +2,7 @@
 SOURCES = main core game timer debug gfx collide gamemap util rng args interface vecedit metagame itemdb parse dvec2 input level coord ai inputsnag os_win32 float cfcommon coord_boolean player itemdb_adjust metagame_config shop shop_demo shop_info game_ai game_effects color metagame_tween cfc game_tank game_util game_projectile socket httpd
 CPPFLAGS = `sdl-config --cflags` -mno-cygwin -DVECTOR_PARANOIA -Wall -Wno-sign-compare -Wno-uninitialized -g #-pg # I would love to get rid of -Wno-uninitialized, but it makes the standard library spit out warnings! :(
 LINKFLAGS = `sdl-config --libs` -lglu32 -lopengl32 -lm -lws2_32 -mno-cygwin -g #-pg
+DATAFILES = $(shell find data | grep -v \.svn | grep -v shopcache.dwh)
 
 CPP = g++
 
@@ -9,10 +10,10 @@ all: d-net.exe
 
 include $(SOURCES:=.d)
 
-d-net.exe: $(SOURCES:=.o) makefile
+d-net.exe: $(SOURCES:=.o)
 	nice $(CPP) -o $@ $(SOURCES:=.o) $(LINKFLAGS)
 
-d-net-dbg.exe: $(SOURCES:=.do) makefile
+d-net-dbg.exe: $(SOURCES:=.do)
 	nice $(CPP) -o $@ $(SOURCES:=.do) $(LINKFLAGS) 
 
 asm: $(SOURCES:=.S) makefile
@@ -42,7 +43,7 @@ vecedit: d-net.exe
 	d-net.exe --vecedit --nofullscreen
     
 package: d-net.exe data/shopcache.dwh
-	rm \\\\192.168.100.2\\www-data\\d-net\\Dnet\ Latest\ Version.zip
+	rm \\\\192.168.100.4\\zorba\\www\\d-net\\Dnet\ Latest\ Version.zip
 	mkdir deploy
 	cp d-net.exe deploy
 	cp c:/cygwin/usr/local/bin/SDL.dll deploy
@@ -52,23 +53,23 @@ package: d-net.exe data/shopcache.dwh
 	rm -f deploy/data/coordfailure
 	cd deploy ; rm -rf `find | grep .svn`
 	strip deploy/d-net.exe
-	cd deploy ; zip -9 -r \\\\192.168.100.2\\www-data\\d-net\\Dnet\ Latest\ Version.zip *  # This is really too many backslashes.
-	cp \\\\192.168.100.2\\www-data\\d-net\\Dnet\ Latest\ Version.zip `date +\\\\\\\\192.168.100.2\\\\www-data\\\\d-net\\\\dnet%G%m%d%H%M%S.zip` # This is really too many backslashes.
+	cd deploy ; zip -9 -r \\\\192.168.100.4\\zorba\\www\\d-net\\Dnet\ Latest\ Version.zip *  # This is really too many backslashes.
+	cp \\\\192.168.100.4\\zorba\\www\\d-net\\Dnet\ Latest\ Version.zip `date +\\\\\\\\192.168.100.4\\\\zorba\\\\www\\\\d-net\\\\dnet%G%m%d%H%M%S.zip` # This is really too many backslashes.
 	rm -rf deploy
 
-%.o: %.cpp makefile
+%.o: %.cpp
 	nice $(CPP) $(CPPFLAGS) -O2 -c -o $@ $<
   
-%.do: %.cpp makefile
+%.do: %.cpp
 	nice $(CPP) $(CPPFLAGS) -c -o $@ $<
 
-%.S: %.cpp makefile
+%.S: %.cpp
 	nice $(CPP) $(CPPFLAGS) -c -g -Wa,-a,-ad $< > $@
 
-%.d: %.cpp makefile
+%.d: %.cpp
 	nice bash -ec '$(CPP) $(CPPFLAGS) -MM $< | sed "s!$*.o!$*.o $*.do $@!g" > $@'
 
-data/shopcache.dwh: d-net.exe
+data/shopcache.dwh: d-net.exe $(DATAFILES)
 	d-net.exe --generateCachedShops
 
 export: d-net.exe tools/generateWeaponGraph.py
