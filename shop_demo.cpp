@@ -260,7 +260,7 @@ void ShopDemo::init(const IDBWeapon *weap, const Player *player) {
     }
     
     if(weap->launcher->firingrange_distance == WFRD_NORMAL) {
-      game.game.initDemo(&game.players, 160, weapons_xpses_normal, weapons_ypses_normal, weapons_facing, weapons_mode);
+      game.game.initDemo(&game.players, 160, weapons_xpses_normal, weapons_ypses_normal, weapons_facing, weapons_mode, false, Float2(5, 5));
     } else if(weap->launcher->firingrange_distance == WFRD_MELEE) {
       CHECK(ARRAY_SIZE(weapons_facing) == 6);
       Tank tank;
@@ -286,7 +286,7 @@ void ShopDemo::init(const IDBWeapon *weap, const Player *player) {
       Float2 newpos = basetest + makeAngle(-PI / 4) * (dist_max + 0.1);
       wxm[5] = newpos.x;
       wym[5] = newpos.y;
-      game.game.initDemo(&game.players, 40, wxm, wym, weapons_facing, weapons_mode);
+      game.game.initDemo(&game.players, 40, wxm, wym, weapons_facing, weapons_mode, false, Float2(-10, 8)); // this is kind of painful
     } else {
       CHECK(0);
     }
@@ -313,7 +313,7 @@ void ShopDemo::init(const IDBWeapon *weap, const Player *player) {
       mine_miners.push_back(gam);
     }
     
-    game.game.initDemo(&game.players, 100, mines_xpses, mines_ypses, mines_facing, mines_mode);
+    game.game.initDemo(&game.players, 100, mines_xpses, mines_ypses, mines_facing, mines_mode, false, Float2(5, 5));
     mine_mined = false;
     
     progression = mines_progression;
@@ -341,7 +341,7 @@ void ShopDemo::init(const IDBBombardment *bombard, const Player *player) {
     bombardment_scatterers.push_back(gas);
   }
   
-  game.game.initDemo(&game.players, 50, bombardment_xpses, bombardment_ypses, NULL, bombardment_mode);
+  game.game.initDemo(&game.players, 50, bombardment_xpses, bombardment_ypses, NULL, bombardment_mode, false, Float2(5, 5));
   
   progression = bombardment_progression;
 };
@@ -374,7 +374,7 @@ void ShopDemo::init(const IDBGlory *glory, const Player *player) {
       yps[i] = glory->demo_range * glory_ypses[i];
     }
   
-    game.game.initDemo(&game.players, glory->demo_range, xps, yps, NULL, glory_mode, true);
+    game.game.initDemo(&game.players, glory->demo_range, xps, yps, NULL, glory_mode, true, Float2(5, 5));
   }
   
   progression = glory_progression;

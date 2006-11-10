@@ -55,7 +55,7 @@ public:
   void initStandard(vector<Player> *playerdata, const Level &level, Rng *rng);
   void initChoice(vector<Player> *playerdata, Rng *rng);
   void initTest(Player *playerdata, const Float4 &bounds);
-  void initDemo(vector<Player> *playerdata, float boxradi, const float *xps, const float *yps, const float *facing, const int *modes, bool blockades = false);
+  void initDemo(vector<Player> *playerdata, float boxradi, const float *xps, const float *yps, const float *facing, const int *modes, bool blockades, Float2 hudpos);
   void initCenteredDemo(Player *playerdata, float zoom);
 
   bool runTick(const vector<Keystates> &keys, const vector<Player *> &players, Rng *rng);
@@ -117,6 +117,7 @@ private:
   float centereddemo_zoom;
   
   int demomode_hits;
+  Float2 demo_hudpos;
   
   float bombardment_tier;
   float getBombardmentIncreasePerSec() const;

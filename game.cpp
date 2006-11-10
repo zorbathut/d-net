@@ -595,15 +595,15 @@ void Game::renderToScreen(const vector<const Player *> &players, GameMetacontext
       for(int i = 0; i < tanks.size(); i++) {
         if(demomode_playermodes[i] == DEMOPLAYER_DPS) {
           if(tanks[i].getDPS() > 0) {
-            drawJustifiedText(StringPrintf("%.2f DPS", tanks[i].getDPS()), demomode_boxradi / 15, tanks[i].pos.toFloat() - Float2(5, 5), TEXT_MAX, TEXT_MAX);
+            drawJustifiedText(StringPrintf("%.2f DPS", tanks[i].getDPS()), demomode_boxradi / 15, tanks[i].pos.toFloat() - demo_hudpos, TEXT_MAX, TEXT_MAX);
           }
         } else if(demomode_playermodes[i] == DEMOPLAYER_DPC) {
           if(demomode_hits) {
-            drawJustifiedText(StringPrintf("%.2f DPH", tanks[i].getDPC(demomode_hits)), demomode_boxradi / 15, tanks[i].pos.toFloat() - Float2(5, 5), TEXT_MAX, TEXT_MAX);
+            drawJustifiedText(StringPrintf("%.2f DPH", tanks[i].getDPC(demomode_hits)), demomode_boxradi / 15, tanks[i].pos.toFloat() - demo_hudpos, TEXT_MAX, TEXT_MAX);
           }
         } else if(demomode_playermodes[i] == DEMOPLAYER_DPH) {
           if(tanks[i].getDPH() > 0) {
-            drawJustifiedText(StringPrintf("%.2f DPH", tanks[i].getDPH()), demomode_boxradi / 15, tanks[i].pos.toFloat() - Float2(5, 5), TEXT_MAX, TEXT_MAX);
+            drawJustifiedText(StringPrintf("%.2f DPH", tanks[i].getDPH()), demomode_boxradi / 15, tanks[i].pos.toFloat() - demo_hudpos, TEXT_MAX, TEXT_MAX);
           }
         } else if(demomode_playermodes[i] == DEMOPLAYER_BOMBSIGHT) {
         } else if(demomode_playermodes[i] == DEMOPLAYER_QUIET) {
@@ -983,8 +983,9 @@ void Game::initTest(Player *in_playerdata, const Float4 &bounds) {
   clear = bounds;
 }
 
-void Game::initDemo(vector<Player> *in_playerdata, float boxradi, const float *xps, const float *yps, const float *facing, const int *modes, bool blockades) {
+void Game::initDemo(vector<Player> *in_playerdata, float boxradi, const float *xps, const float *yps, const float *facing, const int *modes, bool blockades, Float2 hudpos) {
   gamemode = GMODE_DEMO;
+  demo_hudpos = hudpos;
   
   vector<vector<Coord2> > level;
   {
