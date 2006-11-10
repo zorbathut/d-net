@@ -111,7 +111,7 @@ float IDBAdjustment::recyclevalue() const {
 
 Money HierarchyNode::cost(const Player *player) const {
   if(type == HNT_WEAPON) {
-    return player->adjustWeapon(weapon).cost();
+    return player->adjustWeapon(weapon).cost_pack();
   } else if(type == HNT_UPGRADE) {
     return player->adjustUpgradeForCurrentTank(upgrade).cost();
   } else if(type == HNT_GLORY) {
@@ -1152,7 +1152,7 @@ void generateWeaponStats() {
     IDBWeaponAdjust wa(&itr->second, adj);
     string name = wa.name();
     name = string(name.c_str(), (const char*)strrchr(name.c_str(), ' '));
-    if(wa.cost() > Money(0))
+    if(wa.cost_pack() > Money(0))
       goof[name].push_back(make_pair(wa.stats_damagePerSecond() * itr->second.launcher->stats->dps_efficiency, wa.stats_costPerSecond() * itr->second.launcher->stats->cps_efficiency));
   }
   

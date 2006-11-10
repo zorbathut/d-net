@@ -191,7 +191,7 @@ IDBTankAdjust Player::adjustTankWithInstanceUpgrades(const IDBTank *in_upg) cons
 bool Player::canBuyUpgrade(const IDBUpgrade *in_upg) const { return stateUpgrade(in_upg) == ITEMSTATE_UNOWNED && adjustUpgradeForCurrentTank(in_upg).cost() <= cash && isUpgradeAvailable(in_upg); }; 
 bool Player::canBuyGlory(const IDBGlory *in_glory) const { return stateGlory(in_glory) == ITEMSTATE_UNOWNED && adjustGlory(in_glory).cost() <= cash; };
 bool Player::canBuyBombardment(const IDBBombardment *in_bombardment) const { return stateBombardment(in_bombardment) == ITEMSTATE_UNOWNED && adjustBombardment(in_bombardment).cost() <= cash; };
-bool Player::canBuyWeapon(const IDBWeapon *in_weap) const { return adjustWeapon(in_weap).cost() <= cash && in_weap->base_cost > Money(0); }
+bool Player::canBuyWeapon(const IDBWeapon *in_weap) const { return adjustWeapon(in_weap).cost(1) <= cash && in_weap->base_cost > Money(0); }
 bool Player::canBuyTank(const IDBTank *in_tank) const { return stateTank(in_tank) == ITEMSTATE_UNOWNED && adjustTankWithInstanceUpgrades(in_tank).cost() <= cash; };
 
 bool Player::isUpgradeAvailable(const IDBUpgrade *in_upg) const {
@@ -245,8 +245,15 @@ void Player::buyBombardment(const IDBBombardment *in_bombardment) {
 }
 void Player::buyWeapon(const IDBWeapon *in_weap) {
   CHECK(canBuyWeapon(in_weap));
-  weapons.addAmmo(in_weap, in_weap->quantity);
-  cash -= adjustWeapon(in_weap).cost();
+  // hahahah awful
+  for(int i = in_weap->quantity; i > 0; --i) {
+    if(adjustWeapon(in_weap).cost(i) <= cash) {
+      weapons.addAmmo(in_weap, i);
+      cash -= adjustWeapon(in_weap).cost(i);
+      return;
+    }
+  }
+  CHECK(0);
 }
 void Player::buyTank(const IDBTank *in_tank) {
   CHECK(cash >= adjustTankWithInstanceUpgrades(in_tank).cost());
@@ -480,7 +487,7 @@ Money Player::totalValue() const {
   
   vector<const IDBWeapon *> weps = weapons.getAvailableWeapons();
   for(int i = 0; i < weps.size(); i++)
-    worth += adjustWeapon(weps[i]).cost() * weapons.ammoCount(weps[i]) / weps[i]->quantity;
+    worth += adjustWeapon(weps[i]).cost(weapons.ammoCount(weps[i]));
   
   return worth;
 }

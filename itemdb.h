@@ -316,7 +316,8 @@ public:
 
   int framesForCooldown(Rng *rng) const;
   float firerate() const;
-  Money cost() const;
+  Money cost(int shots) const;
+  Money cost_pack() const;
   Money sellcost(int shots) const;
 
   float stats_damagePerSecond() const;
