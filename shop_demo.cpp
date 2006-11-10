@@ -226,10 +226,10 @@ const float weapons_facing[] = { PI * 3 / 2, PI / 2, PI * 3 / 2, PI / 2, PI * 3 
 const int weapons_mode[] = { DEMOPLAYER_QUIET, DEMOPLAYER_DPS, DEMOPLAYER_QUIET, DEMOPLAYER_DPS, DEMOPLAYER_QUIET, DEMOPLAYER_DPS };
 const int weapons_progression[] = { 600, 0 };
 
-const float mines_xpses[] = { 0, -60, -60, -60, -60, -60, -60, -60, -60, -60 };
-const float mines_ypses[] = { -60, -40, -30, -20, -10, 0, 10, 20, 30, 40 };
-const float mines_facing[] = { PI / 2, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-const int mines_mode[] = { DEMOPLAYER_DPH, DEMOPLAYER_QUIET, DEMOPLAYER_QUIET, DEMOPLAYER_QUIET, DEMOPLAYER_QUIET, DEMOPLAYER_QUIET, DEMOPLAYER_QUIET, DEMOPLAYER_QUIET, DEMOPLAYER_QUIET, DEMOPLAYER_QUIET };
+const float mines_xpses[] = { 0, -60, -60, -60 };
+const float mines_ypses[] = { -60, -40, 0, 40 };
+const float mines_facing[] = { PI / 2, 0, 0, 0 };
+const int mines_mode[] = { DEMOPLAYER_DPH, DEMOPLAYER_QUIET, DEMOPLAYER_QUIET, DEMOPLAYER_QUIET };
 const int mines_progression[] = { 600, 0 };
 
 const float bombardment_xpses[] = { -30, -30, 30, 30, -30, -30, 30, 30 };
@@ -295,7 +295,7 @@ void ShopDemo::init(const IDBWeapon *weap, const Player *player) {
   } else if(weap->launcher->demomode == WDM_MINES) {
     mode = DEMOMODE_MINE;
     game.players.clear();
-    game.players.resize(10, *player);
+    game.players.resize(ARRAY_SIZE(mines_xpses), *player);
     CHECK(factionList().size() >= game.players.size());
     for(int i = 0; i < game.players.size(); i++)
       game.players[i].forceAcquireWeapon(weap, 1000000);

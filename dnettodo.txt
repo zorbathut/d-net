@@ -1,5 +1,4 @@
 ---- Major work path
-- Improve mine demo
 - Move labels in EMP demo
 - Start game at phase X
 - Training/implants/wtf
