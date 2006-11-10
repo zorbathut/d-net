@@ -1001,8 +1001,16 @@ void Game::initDemo(vector<Player> *in_playerdata, float boxradi, const float *x
     Coord outside = Coord(boxradi) - inside;
     vector<Coord2> blockade;
     blockade.push_back(Coord2(-inside, outside));
+    blockade.push_back(Coord2(-inside, inside));
+    blockade.push_back(Coord2(-outside, inside));
+    blockade.push_back(Coord2(-outside, -inside));
+    blockade.push_back(Coord2(-inside, -inside));
     blockade.push_back(Coord2(-inside, -outside));
     blockade.push_back(Coord2(inside, -outside));
+    blockade.push_back(Coord2(inside, -inside));
+    blockade.push_back(Coord2(outside, -inside));
+    blockade.push_back(Coord2(outside, inside));
+    blockade.push_back(Coord2(inside, inside));
     blockade.push_back(Coord2(inside, outside));
     level.push_back(blockade);
   }
