@@ -1,4 +1,5 @@
 ---- Major work path
+- Partial purchasing of weapons when low on cashola
 - Improve separation for glory device demo
 - Improve mine demo
 - Move labels in EMP demo
