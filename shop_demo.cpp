@@ -242,7 +242,7 @@ const float glory_ypses[] = { -0.5, -0.5, -0.5, -0.5, 0.5, 0.5, 0.5, 0.5 };
 const int glory_mode[] = { DEMOPLAYER_DPC, DEMOPLAYER_QUIET, DEMOPLAYER_DPC, DEMOPLAYER_QUIET, DEMOPLAYER_DPC, DEMOPLAYER_QUIET, DEMOPLAYER_DPC, DEMOPLAYER_QUIET };
 const int glory_progression[] = { 6000, 0 };
 
-void ShopDemo::init(const IDBWeapon *weap, const Player *player) {
+void ShopDemo::init(const IDBWeapon *weap, const Player *player, Recorder *recorder) {
   StackString sst("Initting demo weapon shop");
   
   if(weap->launcher->demomode == WDM_FIRINGRANGE) {
@@ -260,7 +260,7 @@ void ShopDemo::init(const IDBWeapon *weap, const Player *player) {
     }
     
     if(weap->launcher->firingrange_distance == WFRD_NORMAL) {
-      game.game.initDemo(&game.players, 160, weapons_xpses_normal, weapons_ypses_normal, weapons_facing, weapons_mode, false, Float2(5, 5));
+      game.game.initDemo(&game.players, 160, weapons_xpses_normal, weapons_ypses_normal, weapons_facing, weapons_mode, false, Float2(5, 5), recorder);
     } else if(weap->launcher->firingrange_distance == WFRD_MELEE) {
       CHECK(ARRAY_SIZE(weapons_facing) == 6);
       Tank tank;
@@ -286,7 +286,7 @@ void ShopDemo::init(const IDBWeapon *weap, const Player *player) {
       Float2 newpos = basetest + makeAngle(-PI / 4) * (dist_max + 0.1);
       wxm[5] = newpos.x;
       wym[5] = newpos.y;
-      game.game.initDemo(&game.players, 40, wxm, wym, weapons_facing, weapons_mode, false, Float2(-10, 8)); // this is kind of painful
+      game.game.initDemo(&game.players, 40, wxm, wym, weapons_facing, weapons_mode, false, Float2(-10, 8), recorder); // this is kind of painful
     } else {
       CHECK(0);
     }
@@ -313,7 +313,7 @@ void ShopDemo::init(const IDBWeapon *weap, const Player *player) {
       mine_miners.push_back(gam);
     }
     
-    game.game.initDemo(&game.players, 100, mines_xpses, mines_ypses, mines_facing, mines_mode, false, Float2(5, 5));
+    game.game.initDemo(&game.players, 100, mines_xpses, mines_ypses, mines_facing, mines_mode, false, Float2(5, 5), recorder);
     mine_mined = false;
     
     progression = mines_progression;
@@ -322,7 +322,7 @@ void ShopDemo::init(const IDBWeapon *weap, const Player *player) {
   }
 };
 
-void ShopDemo::init(const IDBBombardment *bombard, const Player *player) {
+void ShopDemo::init(const IDBBombardment *bombard, const Player *player, Recorder *recorder) {
   StackString sst("Initting demo bombardment shop");
   mode = DEMOMODE_BOMBARDMENT;
   
@@ -341,12 +341,12 @@ void ShopDemo::init(const IDBBombardment *bombard, const Player *player) {
     bombardment_scatterers.push_back(gas);
   }
   
-  game.game.initDemo(&game.players, 50, bombardment_xpses, bombardment_ypses, NULL, bombardment_mode, false, Float2(5, 5));
+  game.game.initDemo(&game.players, 50, bombardment_xpses, bombardment_ypses, NULL, bombardment_mode, false, Float2(5, 5), recorder);
   
   progression = bombardment_progression;
 };
 
-void ShopDemo::init(const IDBGlory *glory, const Player *player) {
+void ShopDemo::init(const IDBGlory *glory, const Player *player, Recorder *recorder) {
   StackString sst("Initting demo glory shop");
   mode = DEMOMODE_GLORY;
   
@@ -373,8 +373,10 @@ void ShopDemo::init(const IDBGlory *glory, const Player *player) {
       xps[i] = glory->demo_range * glory_xpses[i];
       yps[i] = glory->demo_range * glory_ypses[i];
     }
-  
-    game.game.initDemo(&game.players, glory->demo_range, xps, yps, NULL, glory_mode, true, Float2(5, 5));
+    
+    Player player;
+    
+    game.game.initDemo(&game.players, glory->demo_range, xps, yps, NULL, glory_mode, true, Float2(5, 5), recorder);
   }
   
   progression = glory_progression;
@@ -400,67 +402,71 @@ int mult(int frams, const int *progression) {
   return 1;
 }
 
-void ShopDemo::runTick() {
+void ShopDemo::runSingleTick() {
+  if(mode == DEMOMODE_FIRINGRANGE) {
+  } else if(mode == DEMOMODE_MINE) {
+    if(!mine_mined) {
+      if(!mine_traverser->running()) {
+        for(int i = 0; i < mine_miners.size(); i++)
+          mine_miners[i]->start();
+        mine_mined = true;
+      }
+    } else {
+      bool srun = false;
+      for(int i = 0; i < mine_miners.size(); i++)
+        if(mine_miners[i]->running())
+          srun = true;
+      if(!srun) {
+        mine_traverser->start();
+        mine_mined = false;
+      }
+    }
+  } else if(mode == DEMOMODE_BOMBARDMENT) {
+    bool notready = false;
+    for(int i = 0; i < bombardment_scatterers.size(); i++)
+      if(!bombardment_scatterers[i]->readytofire())
+        notready = true;
+    if(!notready) {
+      for(int i = 0; i < bombardment_scatterers.size(); i++)
+        bombardment_scatterers[i]->bombsaway();
+      game.game.addStatCycle();
+    }
+  } else if(mode == DEMOMODE_GLORY) {
+    if(respawn) {
+      glory_respawnPlayers();
+      respawn = false;
+    } else {
+      bool notready = false;
+      for(int i = 0; i < glory_kamikazes.size(); i++)
+        if(!glory_kamikazes[i]->readytoexplode())
+          notready = true;
+      if(!notready) {
+        for(int i = 0; i < glory_kamikazes.size(); i++) {
+          glory_kamikazes[i]->exploded();
+          game.game.kill(i * 2 + 1);
+        }
+        game.game.addStatCycle();
+        respawn = true;
+      }
+    }
+  } else {
+    CHECK(0);
+  }
+  
   vector<GameAi *> tai;
   for(int i = 0; i < ais.size(); i++)
     tai.push_back(ais[i].get());
+  game.game.ai(tai);
+  
+  vector<Keystates> kist;
+  for(int i = 0; i < tai.size(); i++)
+    kist.push_back(tai[i]->getNextKeys());
+  game.runTick(kist, &unsync());
+};
+
+void ShopDemo::runTick() {
   for(int i = 0; i < mult(game.game.frameCount(), progression); i++) {
-    
-    if(mode == DEMOMODE_FIRINGRANGE) {
-    } else if(mode == DEMOMODE_MINE) {
-      if(!mine_mined) {
-        if(!mine_traverser->running()) {
-          for(int i = 0; i < mine_miners.size(); i++)
-            mine_miners[i]->start();
-          mine_mined = true;
-        }
-      } else {
-        bool srun = false;
-        for(int i = 0; i < mine_miners.size(); i++)
-          if(mine_miners[i]->running())
-            srun = true;
-        if(!srun) {
-          mine_traverser->start();
-          mine_mined = false;
-        }
-      }
-    } else if(mode == DEMOMODE_BOMBARDMENT) {
-      bool notready = false;
-      for(int i = 0; i < bombardment_scatterers.size(); i++)
-        if(!bombardment_scatterers[i]->readytofire())
-          notready = true;
-      if(!notready) {
-        for(int i = 0; i < bombardment_scatterers.size(); i++)
-          bombardment_scatterers[i]->bombsaway();
-        game.game.addStatCycle();
-      }
-    } else if(mode == DEMOMODE_GLORY) {
-      if(respawn) {
-        glory_respawnPlayers();
-        respawn = false;
-      } else {
-        bool notready = false;
-        for(int i = 0; i < glory_kamikazes.size(); i++)
-          if(!glory_kamikazes[i]->readytoexplode())
-            notready = true;
-        if(!notready) {
-          for(int i = 0; i < glory_kamikazes.size(); i++) {
-            glory_kamikazes[i]->exploded();
-            game.game.kill(i * 2 + 1);
-          }
-          game.game.addStatCycle();
-          respawn = true;
-        }
-      }
-    } else {
-      CHECK(0);
-    }
-    
-    game.game.ai(tai);
-    vector<Keystates> kist;
-    for(int i = 0; i < tai.size(); i++)
-      kist.push_back(tai[i]->getNextKeys());
-    game.runTick(kist, &unsync());
+    runSingleTick();
   }
 };
 

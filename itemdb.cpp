@@ -1136,60 +1136,6 @@ public:
   ReloadHTTPD() : HTTPDhook("reload") { };
 } reloadhttpd;
 
-void generateCachedShops() {
-  FILE *ofil = fopen("data/shopcache.dwh", "w");
-  for(map<string, IDBWeapon>::const_iterator itr = weaponclasses.begin(); itr != weaponclasses.end(); itr++) {
-    dprintf("%s\n", itr->first.c_str());
-  }
-  fclose(ofil);
-}
-
-void generateWeaponStats() {
-  FILE *ofil = fopen("tools/weapondump.dat", "w");
-  IDBAdjustment adj;
-  map<string, vector<pair<float, float> > > goof;
-  for(map<string, IDBWeapon>::const_iterator itr = weaponclasses.begin(); itr != weaponclasses.end(); itr++) {
-    IDBWeaponAdjust wa(&itr->second, adj);
-    string name = wa.name();
-    name = string(name.c_str(), (const char*)strrchr(name.c_str(), ' '));
-    if(wa.cost_pack() > Money(0))
-      goof[name].push_back(make_pair(wa.stats_damagePerSecond() * itr->second.launcher->stats->dps_efficiency, wa.stats_costPerSecond() * itr->second.launcher->stats->cps_efficiency));
-  }
-  
-  for(map<string, vector<pair<float, float> > >::iterator itr = goof.begin(); itr != goof.end(); itr++) {
-    sort(itr->second.begin(), itr->second.end());
-    fprintf(ofil, "%s", itr->first.c_str());
-    for(int i = 0; i < itr->second.size(); i++)
-      fprintf(ofil, ",%f,%f", itr->second[i].first, itr->second[i].second);
-    fprintf(ofil, "\n");
-  }
-  fclose(ofil);
-}
-
-void generateFactionStats() {
-  FILE *ofil = fopen("tools/factiondump.dat", "w");
-  CHECK(ofil);
-  for(int j = 0; j < IDBAdjustment::LAST; j++)
-    fprintf(ofil, "\t%s", adjust_text[j]);
-  fprintf(ofil, "\n");
-  for(int i = 0; i < factions.size(); i++) {
-    fprintf(ofil, "%s", factions[i].name.c_str());
-    for(int j = 0; j < IDBAdjustment::LAST; j++)
-      fprintf(ofil, "\t%d", factions[i].adjustment[3]->adjusts[j]);
-    fprintf(ofil, "\n");
-  }
-  fclose(ofil);
-}
-
-void dumpText() {
-  FILE *ofil = fopen("tools/textdump.txt", "w");
-  CHECK(ofil);
-  for(map<string, string>::const_iterator itr = text.begin(); itr != text.end(); itr++) {
-    fprintf(ofil, "%s\n\n\n\n", itr->second.c_str());
-  }
-  fclose(ofil);
-}
-
 const HierarchyNode &itemDbRoot() {
   return root;
 }
@@ -1206,7 +1152,30 @@ const IDBBombardment *defaultBombardment() {
   CHECK(defbombardment);
   return defbombardment;
 }
+
+const map<string, IDBWeapon> &weaponList() {
+  return weaponclasses;
+}
 const vector<IDBFaction> &factionList() {
   return factions;
 }
+const map<string, string> &textList() {
+  return text;
+}
 
+// Let's have some complex caching
+map<const IDBWarhead *, string> warheadclasses_reverse;
+const string &nameFromWarhead(const IDBWarhead *idbw) {
+  if(warheadclasses.size() != warheadclasses_reverse.size()) {
+    warheadclasses_reverse.clear();
+    for(map<string, IDBWarhead>::const_iterator itr = warheadclasses.begin(); itr != warheadclasses.end(); itr++) {
+      CHECK(!warheadclasses_reverse.count(&itr->second));
+      warheadclasses_reverse[&itr->second] = itr->first;
+    }
+    CHECK(warheadclasses.size() == warheadclasses_reverse.size());
+  }
+  
+  CHECK(warheadclasses_reverse.count(idbw));
+  CHECK(&warheadclasses[warheadclasses_reverse[idbw]] == idbw);
+  return warheadclasses_reverse[idbw];
+}

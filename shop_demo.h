@@ -12,10 +12,11 @@ class GameAiTraversing;
 
 class ShopDemo {
 public:
-  void init(const IDBWeapon *weap, const Player *player);
-  void init(const IDBBombardment *weap, const Player *player);
-  void init(const IDBGlory *weap, const Player *player);
+  void init(const IDBWeapon *weap, const Player *player, Recorder *recorder);
+  void init(const IDBBombardment *weap, const Player *player, Recorder *recorder);
+  void init(const IDBGlory *weap, const Player *player, Recorder *recorder);
   
+  void runSingleTick();
   void runTick();
   void renderFrame() const;
 

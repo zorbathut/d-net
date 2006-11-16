@@ -55,7 +55,7 @@ public:
   void initStandard(vector<Player> *playerdata, const Level &level, Rng *rng);
   void initChoice(vector<Player> *playerdata, Rng *rng);
   void initTest(Player *playerdata, const Float4 &bounds);
-  void initDemo(vector<Player> *playerdata, float boxradi, const float *xps, const float *yps, const float *facing, const int *modes, bool blockades, Float2 hudpos);
+  void initDemo(vector<Player> *playerdata, float boxradi, const float *xps, const float *yps, const float *facing, const int *modes, bool blockades, Float2 hudpos, Recorder *recorder);
   void initCenteredDemo(Player *playerdata, float zoom);
 
   bool runTick(const vector<Keystates> &keys, const vector<Player *> &players, Rng *rng);
@@ -111,13 +111,14 @@ private:
   
   Float4 clear;
   
-  vector<int> demomode_playermodes;
-  float demomode_boxradi; // used for font sizes
-  
   float centereddemo_zoom;
+
+  vector<int> demo_playermodes;
+  float demo_boxradi; // used for font sizes
   
-  int demomode_hits;
+  int demo_hits;
   Float2 demo_hudpos;
+  Recorder *demo_recorder;
   
   float bombardment_tier;
   float getBombardmentIncreasePerSec() const;

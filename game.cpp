@@ -51,7 +51,7 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
   CHECK(rkeys.size() == players.size());
   CHECK(players.size() == tanks.size());
 
-  GameImpactContext gic(&tanks, &gfxeffects, &gamemap, rng);
+  GameImpactContext gic(&tanks, &gfxeffects, &gamemap, rng, demo_recorder);
   
   if(!ffwd && FLAGS_verboseCollisions)
     dprintf("Ticking\n");
@@ -593,20 +593,20 @@ void Game::renderToScreen(const vector<const Player *> &players, GameMetacontext
     if(gamemode == GMODE_DEMO) {
       setColor(1.0, 1.0, 1.0);
       for(int i = 0; i < tanks.size(); i++) {
-        if(demomode_playermodes[i] == DEMOPLAYER_DPS) {
+        if(demo_playermodes[i] == DEMOPLAYER_DPS) {
           if(tanks[i].getDPS() > 0) {
-            drawJustifiedText(StringPrintf("%.2f DPS", tanks[i].getDPS()), demomode_boxradi / 15, tanks[i].pos.toFloat() - demo_hudpos, TEXT_MAX, TEXT_MAX);
+            drawJustifiedText(StringPrintf("%.2f DPS", tanks[i].getDPS()), demo_boxradi / 15, tanks[i].pos.toFloat() - demo_hudpos, TEXT_MAX, TEXT_MAX);
           }
-        } else if(demomode_playermodes[i] == DEMOPLAYER_DPC) {
-          if(demomode_hits) {
-            drawJustifiedText(StringPrintf("%.2f DPH", tanks[i].getDPC(demomode_hits)), demomode_boxradi / 15, tanks[i].pos.toFloat() - demo_hudpos, TEXT_MAX, TEXT_MAX);
+        } else if(demo_playermodes[i] == DEMOPLAYER_DPC) {
+          if(demo_hits) {
+            drawJustifiedText(StringPrintf("%.2f DPH", tanks[i].getDPC(demo_hits)), demo_boxradi / 15, tanks[i].pos.toFloat() - demo_hudpos, TEXT_MAX, TEXT_MAX);
           }
-        } else if(demomode_playermodes[i] == DEMOPLAYER_DPH) {
+        } else if(demo_playermodes[i] == DEMOPLAYER_DPH) {
           if(tanks[i].getDPH() > 0) {
-            drawJustifiedText(StringPrintf("%.2f DPH", tanks[i].getDPH()), demomode_boxradi / 15, tanks[i].pos.toFloat() - demo_hudpos, TEXT_MAX, TEXT_MAX);
+            drawJustifiedText(StringPrintf("%.2f DPH", tanks[i].getDPH()), demo_boxradi / 15, tanks[i].pos.toFloat() - demo_hudpos, TEXT_MAX, TEXT_MAX);
           }
-        } else if(demomode_playermodes[i] == DEMOPLAYER_BOMBSIGHT) {
-        } else if(demomode_playermodes[i] == DEMOPLAYER_QUIET) {
+        } else if(demo_playermodes[i] == DEMOPLAYER_BOMBSIGHT) {
+        } else if(demo_playermodes[i] == DEMOPLAYER_QUIET) {
         } else {
           CHECK(0);
         }
@@ -800,20 +800,20 @@ void Game::respawnPlayer(int id, Coord2 pos, float facing) {
 
 void Game::addStatCycle() {
   bool addahit = false;
-  if(demomode_hits)
+  if(demo_hits)
     addahit = true;
   else
     for(int i = 0; i < tanks.size(); i++)
-      if(demomode_playermodes[i] == DEMOPLAYER_DPC && tanks[i].hasTakenDamage())
+      if(demo_playermodes[i] == DEMOPLAYER_DPC && tanks[i].hasTakenDamage())
         addahit = true;
   
   if(addahit) {
     for(int i = 0; i < tanks.size(); i++) {
-      if(demomode_playermodes[i] == DEMOPLAYER_DPC) {
+      if(demo_playermodes[i] == DEMOPLAYER_DPC) {
         tanks[i].addCycle();
       }
     }
-    demomode_hits++;
+    demo_hits++;
   }
 }
 
@@ -879,7 +879,8 @@ void Game::initCommon(const vector<Player*> &in_playerdata, const vector<Color> 
   frameNmToStart = -1000;
   freezeUntilStart = false;
   
-  demomode_hits = 0;
+  demo_hits = 0;
+  demo_recorder = NULL;
 }
 
 void Game::initRandomTankPlacement(const map<int, vector<pair<Coord2, float> > > &player_starts, Rng *rng) {
@@ -983,7 +984,7 @@ void Game::initTest(Player *in_playerdata, const Float4 &bounds) {
   clear = bounds;
 }
 
-void Game::initDemo(vector<Player> *in_playerdata, float boxradi, const float *xps, const float *yps, const float *facing, const int *modes, bool blockades, Float2 hudpos) {
+void Game::initDemo(vector<Player> *in_playerdata, float boxradi, const float *xps, const float *yps, const float *facing, const int *modes, bool blockades, Float2 hudpos, Recorder *recorder) {
   gamemode = GMODE_DEMO;
   demo_hudpos = hudpos;
   
@@ -1033,15 +1034,16 @@ void Game::initDemo(vector<Player> *in_playerdata, float boxradi, const float *x
       tanks[i].d = facing[i];
   }
   
-  demomode_playermodes.clear();
+  demo_playermodes.clear();
   for(int i = 0; i < tanks.size(); i++) {
     CHECK(modes[i] >= 0 && modes[i] < DEMOPLAYER_LAST);
-    demomode_playermodes.push_back(modes[i]);
+    demo_playermodes.push_back(modes[i]);
     if(modes[i] == DEMOPLAYER_BOMBSIGHT)
       tanks[i].setDead();
   }
   
-  demomode_boxradi = boxradi;
+  demo_boxradi = boxradi;
+  demo_recorder = recorder;
   
   clear = Float4(-boxradi, -boxradi, boxradi, boxradi);
 }

@@ -7,6 +7,8 @@
 #include "util.h"
 #include "rng.h"
 
+#include <map>
+
 using namespace std;
 
 class Player;
@@ -239,6 +241,8 @@ public:
   
   float stats_damagePerShot() const;
 
+  const IDBWarhead *base() const;
+
   IDBWarheadAdjust(const IDBWarhead *in_idb, const IDBAdjustment &in_adjust);
 };
 
@@ -437,11 +441,6 @@ public:
 
 void initItemdb();
 
-void generateCachedShops();
-void generateWeaponStats();
-void generateFactionStats();
-void dumpText();
-
 /*************
  * Accessors
  */
@@ -451,6 +450,11 @@ const HierarchyNode &itemDbRoot();
 const IDBTank *defaultTank();
 const IDBGlory *defaultGlory();
 const IDBBombardment *defaultBombardment();
+
+const map<string, IDBWeapon> &weaponList();
 const vector<IDBFaction> &factionList();
+const map<string, string> &textList();
+
+const string &nameFromWarhead(const IDBWarhead *idbw);
 
 #endif

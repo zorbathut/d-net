@@ -29,6 +29,17 @@ vector<pair<float, Tank *> > GameImpactContext::getAdjacency(const Coord2 &cente
   return rv;
 }
 
+void GameImpactContext::record(const IDBWarheadAdjust &warhead, Coord2 pos, const Tank *impact_tank) const {
+  if(recorder) {
+    if(!impact_tank) {
+      recorder->warhead(warhead, pos, -1);
+    } else {
+      CHECK(count(players.begin(), players.end(), impact_tank) == 1);
+      recorder->warhead(warhead, pos, find(players.begin(), players.end(), impact_tank) - players.begin());
+    }
+  }
+}
+
 bool DeployLocation::isTank() const {
   return tank_int;
 }
@@ -71,6 +82,8 @@ void dealDamage(float dmg, Tank *target, Tank *owner, float damagecredit, bool k
 };
 
 void detonateWarhead(const IDBWarheadAdjust &warhead, Coord2 pos, Coord2 vel, Tank *impact, const GamePlayerContext &gpc, float damagecredit, bool killcredit, bool impacted) {
+  
+  gpc.gic->record(warhead, pos, impact);
   
   if(impact)
     dealDamage(warhead.impactdamage(), impact, gpc.owner, damagecredit, killcredit);
@@ -190,6 +203,6 @@ static vector<Tank*> ptrize(vector<Tank> *players) {
   return ptrs;
 }
 
-GameImpactContext::GameImpactContext(vector<Tank> *players, vector<smart_ptr<GfxEffects> > *effects, Gamemap *gamemap, Rng *rng) : players(ptrize(players)), effects(effects), gamemap(gamemap), rng(rng) { };
+GameImpactContext::GameImpactContext(vector<Tank> *players, vector<smart_ptr<GfxEffects> > *effects, Gamemap *gamemap, Rng *rng, Recorder *recorder) : players(ptrize(players)), effects(effects), gamemap(gamemap), rng(rng), recorder(recorder) { };
 
 GamePlayerContext::GamePlayerContext(Tank *owner, ProjectilePack *projpack, const GameImpactContext &gic) : projpack(projpack), owner(owner), gic(&gic) { };

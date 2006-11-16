@@ -80,17 +80,17 @@ float IDBWarheadAdjust::accumulate(const float *damage) const {
   return acc;
 }
 
-float IDBWarheadAdjust::impactdamage() const { return accumulate(idb->impactdamage); };
+float IDBWarheadAdjust::impactdamage() const { return accumulate(idb->impactdamage); }
 
-float IDBWarheadAdjust::radiusdamage() const { return accumulate(idb->radiusdamage); };
-float IDBWarheadAdjust::radiusfalloff() const { return adjust.adjustmentfactor(IDBAdjustment::WARHEAD_RADIUS_FALLOFF) * idb->radiusfalloff; };
+float IDBWarheadAdjust::radiusdamage() const { return accumulate(idb->radiusdamage); }
+float IDBWarheadAdjust::radiusfalloff() const { return adjust.adjustmentfactor(IDBAdjustment::WARHEAD_RADIUS_FALLOFF) * idb->radiusfalloff; }
 
-float IDBWarheadAdjust::wallremovalradius() const { return adjust.adjustmentfactor(IDBAdjustment::WARHEAD_RADIUS_FALLOFF) * idb->wallremovalradius; };  // just 'cause :)
-float IDBWarheadAdjust::wallremovalchance() const { return idb->wallremovalchance; };
-Color IDBWarheadAdjust::radiuscolor_bright() const { return idb->radiuscolor_bright; };
-Color IDBWarheadAdjust::radiuscolor_dim() const { return idb->radiuscolor_dim; };
+float IDBWarheadAdjust::wallremovalradius() const { return adjust.adjustmentfactor(IDBAdjustment::WARHEAD_RADIUS_FALLOFF) * idb->wallremovalradius; }  // just 'cause :)
+float IDBWarheadAdjust::wallremovalchance() const { return idb->wallremovalchance; }
+Color IDBWarheadAdjust::radiuscolor_bright() const { return idb->radiuscolor_bright; }
+Color IDBWarheadAdjust::radiuscolor_dim() const { return idb->radiuscolor_dim; }
 
-const vector<const IDBEffects *> &IDBWarheadAdjust::effects_impact() const { return idb->effects_impact; };
+const vector<const IDBEffects *> &IDBWarheadAdjust::effects_impact() const { return idb->effects_impact; }
 
 vector<IDBDeployAdjust> IDBWarheadAdjust::deploy() const {
   vector<IDBDeployAdjust> rv;
@@ -106,9 +106,13 @@ float IDBWarheadAdjust::stats_damagePerShot() const {
     count += dp[i].stats_damagePerShot();
   }
   return count;
-};
+}
 
-IDBWarheadAdjust::IDBWarheadAdjust(const IDBWarhead *in_idb, const IDBAdjustment &in_adjust) { idb = in_idb; adjust = in_adjust; };
+const IDBWarhead *IDBWarheadAdjust::base() const {
+  return idb;
+}
+
+IDBWarheadAdjust::IDBWarheadAdjust(const IDBWarhead *in_idb, const IDBAdjustment &in_adjust) { idb = in_idb; adjust = in_adjust; }
 
 /*************
  * IDBProjectileAdjust

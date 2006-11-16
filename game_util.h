@@ -4,6 +4,7 @@
 #include "game_effects.h"
 #include "gamemap.h"
 #include "itemdb.h"
+#include "recorder.h"
 
 using namespace std;
 
@@ -25,9 +26,14 @@ public:
   Gamemap *gamemap;
   Rng *rng;
 
+  Recorder *recorder;
+
+  // This is kind of flawed because it actually does modify Recorder.
+  void record(const IDBWarheadAdjust &warhead, Coord2 pos, const Tank *impact_tank) const;
+
   vector<pair<float, Tank *> > getAdjacency(const Coord2 &pos) const;
 
-  GameImpactContext(vector<Tank> *players, vector<smart_ptr<GfxEffects> > *effects, Gamemap *gamemap, Rng *rng);
+  GameImpactContext(vector<Tank> *players, vector<smart_ptr<GfxEffects> > *effects, Gamemap *gamemap, Rng *rng, Recorder *recorder);
 };
 
 class ProjectilePack;

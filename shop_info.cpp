@@ -79,7 +79,7 @@ void ShopInfo::init(const IDBWeapon *in_weapon, const Player *in_player, bool in
   player = in_player;
   text = in_weapon->launcher->text;
   if(!miniature)
-    demo.init(weapon, player);
+    demo.init(weapon, player, NULL);
 }
 void ShopInfo::init(const IDBGlory *in_glory, const Player *in_player, bool in_miniature) {
   null();
@@ -88,7 +88,7 @@ void ShopInfo::init(const IDBGlory *in_glory, const Player *in_player, bool in_m
   player = in_player;
   text = in_glory->text;
   if(!miniature)
-    demo.init(glory, player);
+    demo.init(glory, player, NULL);
 }
 void ShopInfo::init(const IDBBombardment *in_bombardment, const Player *in_player, bool in_miniature) {
   null();
@@ -97,7 +97,7 @@ void ShopInfo::init(const IDBBombardment *in_bombardment, const Player *in_playe
   player = in_player;
   text = in_bombardment->text;
   if(!miniature)
-    demo.init(bombardment, player);
+    demo.init(bombardment, player, NULL);
 }
 void ShopInfo::init(const IDBUpgrade *in_upgrade, const Player *in_player, bool in_miniature) {
   null();

@@ -6,6 +6,7 @@
 #include "itemdb.h"
 #include "os.h"
 #include "httpd.h"
+#include "generators.h"
 
 #include <GL/glu.h>
 #include <SDL.h>
