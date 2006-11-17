@@ -20,6 +20,8 @@ public:
   void runTick();
   void renderFrame() const;
 
+  vector<float> getStats() const;
+
   ShopDemo();
   ~ShopDemo();
 

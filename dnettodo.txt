@@ -1,7 +1,8 @@
 ---- Major work path
 - Cached shop demo stats
-  - This is problematic because of all the various adjustments that can be on weapons
-    - Record warhead impacts, replay?
+  - Record warhead impacts, replay?
+  - Clamp "Target" tanks to be OPEC-II
+  - Remember to make the appropriate tank firerate adjustment
 - Figure out how I actually want new games to work
   - Start game at phase X
 - Training/implants/wtf

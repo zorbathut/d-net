@@ -478,5 +478,13 @@ void ShopDemo::renderFrame() const {
     drawJustifiedText(StringPrintf("Fastforward %dx", mult(game.game.frameCount(), progression)), 0.05, Float2(0, 1), TEXT_MIN, TEXT_MAX);
 };
 
+vector<float> ShopDemo::getStats() const {
+  vector<pair<Float2, pair<float, string> > > stats = game.game.getStats();
+  vector<float> rv;
+  for(int i = 0; i < stats.size(); i++)
+    rv.push_back(stats[i].second.first);
+  return rv;
+}
+
 ShopDemo::ShopDemo() { };
 ShopDemo::~ShopDemo() { };

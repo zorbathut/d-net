@@ -27,8 +27,27 @@ template<typename T> void generateShopCache(const string &itemname, const T &ite
     ShopDemo demo;
     demo.init(&item, &player, &recorder);
     
-    for(int i = 0; i < 600; i++)
-      demo.runSingleTick();
+    vector<float> oldstats = demo.getStats();
+    while(1) {
+      for(int i = 0; i < 600; i++)
+        demo.runSingleTick();
+      vector<float> newstats = demo.getStats();
+      CHECK(oldstats.size() == newstats.size());
+      bool end = true;
+      for(int i = 0; i < newstats.size(); i++) {
+        float ratdiff = oldstats[i] / newstats[i];
+        float absdiff = oldstats[i] - newstats[i];
+        if(ratdiff > 1)
+          ratdiff = 1 / ratdiff;
+        absdiff = abs(absdiff);
+        if(ratdiff < 0.99 && absdiff > 0.01)
+          end = false;
+      }
+      if(end)
+        break;
+      dprintf("continuing\n");
+      oldstats = newstats;
+    }
   }
   
   fprintf(ofil, "}\n\n");
