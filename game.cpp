@@ -597,25 +597,13 @@ void Game::renderToScreen(const vector<const Player *> &players, GameMetacontext
     
     // Here is the DPS numbers
     if(gamemode == GMODE_DEMO) {
+      vector<pair<Float2, pair<float, string> > > stats = getStats();
       setColor(1.0, 1.0, 1.0);
-      for(int i = 0; i < tanks.size(); i++) {
-        if(demo_playermodes[i] == DEMOPLAYER_DPS) {
-          if(tanks[i].getDPS() > 0) {
-            drawJustifiedText(StringPrintf("%.2f DPS", tanks[i].getDPS()), demo_boxradi / 15, tanks[i].pos.toFloat() - demo_hudpos, TEXT_MAX, TEXT_MAX);
-          }
-        } else if(demo_playermodes[i] == DEMOPLAYER_DPC) {
-          if(demo_hits) {
-            drawJustifiedText(StringPrintf("%.2f DPH", tanks[i].getDPC(demo_hits)), demo_boxradi / 15, tanks[i].pos.toFloat() - demo_hudpos, TEXT_MAX, TEXT_MAX);
-          }
-        } else if(demo_playermodes[i] == DEMOPLAYER_DPH) {
-          if(tanks[i].getDPH() > 0) {
-            drawJustifiedText(StringPrintf("%.2f DPH", tanks[i].getDPH()), demo_boxradi / 15, tanks[i].pos.toFloat() - demo_hudpos, TEXT_MAX, TEXT_MAX);
-          }
-        } else if(demo_playermodes[i] == DEMOPLAYER_BOMBSIGHT) {
-        } else if(demo_playermodes[i] == DEMOPLAYER_QUIET) {
-        } else {
-          CHECK(0);
-        }
+      for(int i = 0; i < stats.size(); i++) {
+        if(stats[i].second.first == -1)
+          continue;
+        
+        drawJustifiedText(StringPrintf("%.2f %s", stats[i].second.first, stats[i].second.second.c_str()), demo_boxradi / 15, stats[i].first, TEXT_MAX, TEXT_MAX);
       }
     }
   }
@@ -821,6 +809,39 @@ void Game::addStatCycle() {
     }
     demo_hits++;
   }
+}
+
+vector<pair<Float2, pair<float, string> > > Game::getStats() const {
+  CHECK(gamemode == GMODE_DEMO);
+  
+  vector<pair<Float2, pair<float, string> > > rv;
+  
+  for(int i = 0; i < tanks.size(); i++) {
+    if(demo_playermodes[i] == DEMOPLAYER_DPS) {
+      float v = tanks[i].getDPS();
+      if(v <= 0)
+        v = -1;
+      rv.push_back(make_pair(tanks[i].pos.toFloat() - demo_hudpos, make_pair(v, "DPS")));
+    } else if(demo_playermodes[i] == DEMOPLAYER_DPC) {
+      float v;
+      if(demo_hits == 0)
+        v = -1;
+      else
+        v = tanks[i].getDPC(demo_hits);
+      rv.push_back(make_pair(tanks[i].pos.toFloat() - demo_hudpos, make_pair(v, "DPH")));
+    } else if(demo_playermodes[i] == DEMOPLAYER_DPH) {
+      float v = tanks[i].getDPH();
+      if(v <= 0)
+        v = -1;
+      rv.push_back(make_pair(tanks[i].pos.toFloat() - demo_hudpos, make_pair(v, "DPH")));
+    } else if(demo_playermodes[i] == DEMOPLAYER_BOMBSIGHT) {
+    } else if(demo_playermodes[i] == DEMOPLAYER_QUIET) {
+    } else {
+      CHECK(0);
+    }
+  }
+  
+  return rv;
 }
 
 float Game::getBombardmentIncreasePerSec() const {

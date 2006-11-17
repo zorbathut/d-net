@@ -73,6 +73,7 @@ public:
   void respawnPlayer(int id, Coord2 pos, float facing);
 
   void addStatCycle();  // used for damage-per-cycle calculations
+  vector<pair<Float2, pair<float, string> > > getStats() const;
 
   float firepowerSpent;
 

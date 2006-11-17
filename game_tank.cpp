@@ -373,6 +373,8 @@ float Tank::getDPS() const {
 }
 
 float Tank::getDPH() const {
+  if(damageEvents == 0)
+    return -1;
   return damageTaken / damageEvents;
 }
 
