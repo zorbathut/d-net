@@ -13,6 +13,8 @@ void generateCachedShops() {
   for(map<string, IDBWeapon>::const_iterator itr = weaponList().begin(); itr != weaponList().end(); itr++) {
     dprintf("%s\n", itr->first.c_str());
     
+    fprintf(ofil, "shopcache {\n  weaponname=%s\n", itr->first.c_str());
+    
     IDBAdjustment adjustment_null;
     
     IDBFaction faction;
@@ -21,13 +23,17 @@ void generateCachedShops() {
     
     Player player(&faction, 0);
     
-    Recorder recorder;
+    {
+      Recorder recorder(ofil);
+      
+      ShopDemo demo;
+      demo.init(&itr->second, &player, &recorder);
+      
+      for(int i = 0; i < 600; i++)
+        demo.runSingleTick();
+    }
     
-    ShopDemo demo;
-    demo.init(&itr->second, &player, &recorder);
-    
-    for(int i = 0; i < 600; i++)
-      demo.runSingleTick();
+    fprintf(ofil, "}\n\n");
   }
   fclose(ofil);
 }
