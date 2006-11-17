@@ -1156,6 +1156,12 @@ const IDBBombardment *defaultBombardment() {
 const map<string, IDBWeapon> &weaponList() {
   return weaponclasses;
 }
+const map<string, IDBBombardment> &bombardmentList() {
+  return bombardmentclasses;
+}
+const map<string, IDBGlory> &gloryList() {
+  return gloryclasses;
+}
 const vector<IDBFaction> &factionList() {
   return factions;
 }

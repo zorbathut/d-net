@@ -8,32 +8,44 @@
 
 using namespace std;
 
+template<typename T> void generateShopCache(const string &itemname, const T &item, FILE *ofil) {
+  dprintf("%s\n", itemname.c_str());
+  
+  fprintf(ofil, "shopcache {\n  itemname=%s\n", itemname.c_str());
+  
+  IDBAdjustment adjustment_null;
+  
+  IDBFaction faction;
+  for(int i = 0; i < 4; i++)
+    faction.adjustment[i] = &adjustment_null;
+  
+  Player player(&faction, 0);
+  
+  {
+    Recorder recorder(ofil);
+    
+    ShopDemo demo;
+    demo.init(&item, &player, &recorder);
+    
+    for(int i = 0; i < 600; i++)
+      demo.runSingleTick();
+  }
+  
+  fprintf(ofil, "}\n\n");
+}
+
 void generateCachedShops() {
   FILE *ofil = fopen("data/shopcache.dwh", "w");
   for(map<string, IDBWeapon>::const_iterator itr = weaponList().begin(); itr != weaponList().end(); itr++) {
-    dprintf("%s\n", itr->first.c_str());
-    
-    fprintf(ofil, "shopcache {\n  weaponname=%s\n", itr->first.c_str());
-    
-    IDBAdjustment adjustment_null;
-    
-    IDBFaction faction;
-    for(int i = 0; i < 4; i++)
-      faction.adjustment[i] = &adjustment_null;
-    
-    Player player(&faction, 0);
-    
-    {
-      Recorder recorder(ofil);
-      
-      ShopDemo demo;
-      demo.init(&itr->second, &player, &recorder);
-      
-      for(int i = 0; i < 600; i++)
-        demo.runSingleTick();
-    }
-    
-    fprintf(ofil, "}\n\n");
+    generateShopCache(itr->first, itr->second, ofil);
+  }
+  
+  for(map<string, IDBBombardment>::const_iterator itr = bombardmentList().begin(); itr != bombardmentList().end(); itr++) {
+    generateShopCache(itr->first, itr->second, ofil);
+  }
+  
+  for(map<string, IDBGlory>::const_iterator itr = gloryList().begin(); itr != gloryList().end(); itr++) {
+    generateShopCache(itr->first, itr->second, ofil);
   }
   fclose(ofil);
 }

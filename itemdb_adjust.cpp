@@ -237,8 +237,8 @@ IDBUpgradeAdjust::IDBUpgradeAdjust(const IDBUpgrade *in_idb, const IDBTank *in_t
  * IDBBombardmentAdjust
  */
 
-float IDBBombardmentAdjust::lockdelay() const { return idb->lockdelay; };
-float IDBBombardmentAdjust::unlockdelay() const { return idb->unlockdelay; };
+float IDBBombardmentAdjust::lockdelay() const { return idb->lockdelay / adjust.adjustmentfactor(IDBAdjustment::TANK_FIRERATE); };
+float IDBBombardmentAdjust::unlockdelay() const { return idb->unlockdelay / adjust.adjustmentfactor(IDBAdjustment::TANK_FIRERATE); };
 
 IDBWarheadAdjust IDBBombardmentAdjust::warhead() const { CHECK(valid_level); return IDBWarheadAdjust(idb->warhead, adjust); };
 

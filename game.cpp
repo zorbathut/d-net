@@ -163,7 +163,13 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
       }
 
     }
-    
+  }
+  
+  if(demo_recorder) {
+    vector<pair<bool, pair<Coord2, float> > > livepos;
+    for(int i = 0; i < tanks.size(); i++)
+      livepos.push_back(make_pair(tanks[i].isLive(), make_pair(tanks[i].pos, tanks[i].d)));
+    demo_recorder->movement(livepos);
   }
   
   {

@@ -452,6 +452,8 @@ const IDBGlory *defaultGlory();
 const IDBBombardment *defaultBombardment();
 
 const map<string, IDBWeapon> &weaponList();
+const map<string, IDBBombardment> &bombardmentList();
+const map<string, IDBGlory> &gloryList();
 const vector<IDBFaction> &factionList();
 const map<string, string> &textList();
 

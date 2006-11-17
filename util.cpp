@@ -246,3 +246,14 @@ int modurot(int val, int mod) {
     val += abs(val) / mod * mod + mod;
   return val % mod;
 }
+
+string rawstrFromFloat(float x) {
+  // This is awful.
+  CHECK(sizeof(x) == 4);
+  CHECK(numeric_limits<float>::is_iec559);  // yayz
+  unsigned char *dat = reinterpret_cast<unsigned char*>(&x);
+  string beef;
+  for(int i = 0; i < 4; i++)
+    beef + StringPrintf("%02x", dat[i]);
+  return beef;
+}
