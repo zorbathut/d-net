@@ -1099,7 +1099,7 @@ void loadItemDb(bool reload) {
     root.branches.push_back(tnode);
   }
   
-  if(FLAGS_shopcache && !FLAGS_generateCachedShops) {
+  if(FLAGS_shopcache && FLAGS_generateCachedShops < 0) {
     ifstream shopcache("data/shopcache.dwh");
     if(shopcache) {
       dprintf("Loading shop cache");
