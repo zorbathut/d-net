@@ -11,7 +11,7 @@ using namespace std;
 template<typename T> void generateShopCache(const string &itemname, const T &item, FILE *ofil, float accuracy) {
   dprintf("%s\n", itemname.c_str());
   
-  fprintf(ofil, "shopcache {\n  itemname=%s\n", itemname.c_str());
+  fprintf(ofil, "shopcache {\n  name=%s\n", itemname.c_str());
   
   IDBAdjustment adjustment_null;
   

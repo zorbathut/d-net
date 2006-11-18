@@ -57,7 +57,7 @@ inline Coord coordExplicit(long long lhs) {
   coord.d = lhs;
   return coord;
 }
-Coord coordExplicit(const string &lhs);
+Coord coordFromRawstr(const string &lhs);
 
 inline Coord &operator+=(Coord &lhs, const Coord &rhs) {
   lhs.d += rhs.d;

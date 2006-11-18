@@ -999,6 +999,42 @@ void parseText(kvData *chunk, bool reload) {
 }
 
 void parseShopcache(kvData *chunk) {
+  IDBShopcache *titem = prepareName(chunk, &shopcaches, false);
+  
+  vector<string> tse = tokenize(chunk->consume("cmd"), "\n");
+  for(int i = 0; i < tse.size(); i++) {
+    IDBShopcache::Entry entry;
+    vector<string> tis = tokenize(tse[i], " ");
+    if(tis[0] == "position") {
+      if(tis.size() == 3) {
+        CHECK(tis[2] == "(dead)");
+        entry.type = IDBShopcache::Entry::POS;
+        entry.pos_tank = atoi(tis[1].c_str());
+        entry.pos_live = false;
+      } else if(tis.size() == 4) {
+        entry.type = IDBShopcache::Entry::POS;
+        entry.pos_tank = atoi(tis[1].c_str());
+        entry.pos_live = true;
+        entry.pos_pos = Coord2(coordFromRawstr(tis[2]), coordFromRawstr(tis[3]));
+      } else {
+        CHECK(0);
+      }
+    } else if(tis[0] == "warhead") {
+      entry.type = IDBShopcache::Entry::WARHEAD;
+      CHECK(warheadclasses.count(tis[1]));
+      entry.warhead_warhead = &warheadclasses[tis[1]];
+      entry.warhead_pos = Coord2(coordFromRawstr(tis[2]), coordFromRawstr(tis[3]));
+      if(tis[4] == "none") {
+        entry.warhead_impact = -1;
+      } else {
+        entry.warhead_impact = atoi(tis[4].c_str());
+      }
+    } else {
+      dprintf("%s\n", tis[0].c_str());
+      CHECK(0);
+    }
+    titem->entries.push_back(entry);
+  }
 }
 
 void parseItemFile(const string &fname, bool reload) {

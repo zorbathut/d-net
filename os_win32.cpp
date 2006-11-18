@@ -33,6 +33,16 @@ pair<int, int> getCurrentScreenSize() {
   return make_pair(GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN));
 }
 
+static string loc_exename;
+void set_exename(const string &str) {
+  loc_exename = str;
+}
+
+string exename() {
+  return loc_exename;
+}
+  
+
 #if defined(__GNUG__)
  
 const unsigned int kStackTraceMax = 20;
@@ -80,7 +90,7 @@ void dumpStackTrace() {
 
   vector<pair<string, string> > tokens;
   {
-    string line = "addr2line -f -e d-net.exe ";
+    string line = "addr2line -f -e " + exename() + " ";
     for(int i = 0; i < stack.size(); i++)
       line += StringPrintf("%p ", stack[i]);
     line += "> addr2linetmp.txt";

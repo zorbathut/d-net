@@ -111,6 +111,8 @@ void deinitSystem() {
 int main(int argc, char **argv) {
   StackString sst("Main");
   stackStart = &sst;
+  
+  set_exename(argv[0]);
 
   dprintf("Init\n");
   

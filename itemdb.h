@@ -213,6 +213,7 @@ struct IDBShopcache {
     int warhead_impact;
     
     int pos_tank;
+    bool pos_live;
     Coord2 pos_pos;
   };
   vector<Entry> entries;

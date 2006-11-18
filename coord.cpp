@@ -26,8 +26,11 @@ string Coord::rawstr() const {
   return StringPrintf("%08x%08x", (unsigned int)(d >> 32), (unsigned int)d);
 }
 
-Coord coordExplicit(const string &lhs) {
-  CHECK(lhs.size() == 16);
+Coord coordFromRawstr(const string &lhs) {
+  if(lhs.size() != 16) {
+    dprintf("%s\n", lhs.c_str());
+    CHECK(lhs.size() == 16);
+  }
   for(int i = 0; i < lhs.size(); i++)
     CHECK(isdigit(lhs[i]) || (lhs[i] >= 'a' && lhs[i] <= 'f'));
   long long dd = 0;
