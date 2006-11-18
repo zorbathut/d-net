@@ -45,12 +45,22 @@ ARGS_LinkageObject::ARGS_LinkageObject(const string &id, bool *writeto, bool def
   ld.bool_link = writeto;
   links[canonize(id)] = ld;
 }
+ARGS_LinkageObject::ARGS_LinkageObject(const string &id, float *writeto, float def, const string &descr) {
+  map< string, LinkageData > &links = getLinkageSingleton();
+  LinkageData ld;
+  ld.descr = descr;
+  ld.type = LinkageData::LINKAGE_FLOAT;
+  ld.float_def = def;
+  ld.float_link = writeto;
+  links[canonize(id)] = ld;
+}
 
 LinkageData::LinkageData() {
   type = -1;
   str_link = NULL;
   int_link = NULL;
   bool_link = NULL;
+  float_link = NULL;
 }
 
 map< string, string > getFlagDescriptions() {
@@ -70,6 +80,8 @@ void initFlags(int argc, char *argv[]) {
       *itr->second.int_link = itr->second.int_def;
     } else if(itr->second.type == LinkageData::LINKAGE_STRING) {
       *itr->second.str_link = itr->second.str_def;
+    } else if(itr->second.type == LinkageData::LINKAGE_FLOAT) {
+      *itr->second.float_link = itr->second.float_def;
     } else {
       CHECK(0);
     }
@@ -81,6 +93,8 @@ void initFlags(int argc, char *argv[]) {
       dprintf("Initted int %s to %d\n", itr->first.c_str(), *itr->second.int_link);
     } else if(itr->second.type == LinkageData::LINKAGE_STRING) {
       dprintf("Initted string %s to %s\n", itr->first.c_str(), itr->second.str_link->c_str());
+    } else if(itr->second.type == LinkageData::LINKAGE_FLOAT) {
+      dprintf("Initted float %s to %f\n", itr->first.c_str(), *itr->second.float_link);
     } else {
       CHECK(0);
     }
@@ -114,6 +128,7 @@ void initFlags(int argc, char *argv[]) {
     if(ld.type == LinkageData::LINKAGE_BOOL) {
       CHECK(!eq || string(eq) == "true" || string(eq) == "false");
       CHECK(!eq || !isBoolNo);
+      CHECK(ld.bool_link);
       if(isBoolNo || (eq && string(eq) == "false")) {
         *ld.bool_link = false;
       } else {
@@ -121,10 +136,16 @@ void initFlags(int argc, char *argv[]) {
       }
     } else if(ld.type == LinkageData::LINKAGE_STRING) {
       CHECK(!isBoolNo && eq);
+      CHECK(ld.str_link);
       *ld.str_link = eq;
     } else if(ld.type == LinkageData::LINKAGE_INT) {
       CHECK(!isBoolNo && eq);
+      CHECK(ld.int_link);
       *ld.int_link = atoi(eq);
+    } else if(ld.type == LinkageData::LINKAGE_FLOAT) {
+      CHECK(!isBoolNo && eq);
+      CHECK(ld.float_link);
+      *ld.float_link = atof(eq);
     } else {
       CHECK(0);
     }
@@ -136,6 +157,8 @@ void initFlags(int argc, char *argv[]) {
       dprintf("Set int %s to %d\n", itr->first.c_str(), *itr->second.int_link);
     } else if(itr->second.type == LinkageData::LINKAGE_STRING) {
       dprintf("Set string %s to %s\n", itr->first.c_str(), itr->second.str_link->c_str());
+    } else if(itr->second.type == LinkageData::LINKAGE_FLOAT) {
+      dprintf("Set float %s to %f\n", itr->first.c_str(), *itr->second.float_link);
     } else {
       CHECK(0);
     }

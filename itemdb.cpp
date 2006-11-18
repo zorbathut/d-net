@@ -32,7 +32,11 @@ static const IDBTank *deftank = NULL;
 static const IDBGlory *defglory = NULL;
 static const IDBBombardment *defbombardment = NULL;
 
+static map<string, IDBShopcache> shopcaches;
+
 DEFINE_bool(debugitems, false, "Enable debug items");
+DEFINE_bool(shopcache, true, "Enable shop demo cache");
+DECLARE_float(generateCachedShops);
 
 //const char * const adjust_text[] = { "damage_kinetic", "damage_energy", "damage_explosive", "damage_trap", "damage_exotic", "warhead_radius_falloff", "discount_weapon", "discount_training", "discount_upgrade", "discount_tank", "recycle_bonus", "tank_firerate", "tank_speed", "tank_turn", "tank_armor", "damage_all", "all" };
 
@@ -994,6 +998,9 @@ void parseText(kvData *chunk, bool reload) {
   // yay
 }
 
+void parseShopcache(kvData *chunk) {
+}
+
 void parseItemFile(const string &fname, bool reload) {
   ifstream tfil(fname.c_str());
   CHECK(tfil);
@@ -1092,6 +1099,25 @@ void loadItemDb(bool reload) {
     root.branches.push_back(tnode);
   }
   
+  if(FLAGS_shopcache && !FLAGS_generateCachedShops) {
+    ifstream shopcache("data/shopcache.dwh");
+    if(shopcache) {
+      dprintf("Loading shop cache");
+      kvData chunk;
+      while(getkvData(shopcache, &chunk)) {
+        CHECK(chunk.category == "shopcache");
+        parseShopcache(&chunk);
+        if(!chunk.isDone()) {
+          dprintf("Chunk still has unparsed data!\n");
+          dprintf("%s\n", chunk.debugOutput().c_str());
+          CHECK(0);
+        }
+      }
+    } else {
+      dprintf("No shop cache available, skipping");
+    }
+  }
+  
   dprintf("done loading, consistency check\n");
   CHECK(deftank);
   CHECK(defglory);
@@ -1111,6 +1137,8 @@ void reloadItemdb() {
   deftank = NULL;
   defglory = NULL;
   defbombardment = NULL;
+  
+  shopcaches.clear();
   
   loadItemDb(true);
   

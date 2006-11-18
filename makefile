@@ -21,23 +21,28 @@ asm: $(SOURCES:=.S) makefile
 clean:
 	rm -rf *.o *.do *.exe *.d *.S
 
+STDRUN = --nofullscreen --debugitems --startingCash=100000000 --debugControllers=2 --factionMode=0 --nullControllers=11 --writeTarget= --auto_newgame --nocullShopTree --httpd_port=616 --noshopcache
+
 debugrun: d-net-dbg.exe
-	d-net-dbg.exe --nofullscreen --debugitems --startingCash=100000000 --debugControllers=2 --factionMode=0 --nullControllers=11 --writeTarget= --nocullShopTree --httpd_port=616
+	d-net-dbg.exe $(STDRUN)
 
 basicrun: d-net.exe
 	d-net.exe --nofullscreen --writeTarget= --httpd_port=616
 
 run: d-net.exe
-	d-net.exe --nofullscreen --debugitems --startingCash=100000000 --debugControllers=2 --factionMode=0 --nullControllers=11 --writeTarget= --auto_newgame --nocullShopTree --httpd_port=616
+	d-net.exe $(STDRUN)
+
+cacherun: d-net.exe
+	d-net.exe $(STDRUN) --shopcache
 
 three: d-net.exe
-	d-net.exe --nofullscreen --debugitems --startingCash=100000000 --debugControllers=3 --factionMode=0 --nullControllers=11 --writeTarget= --auto_newgame --nocullShopTree --httpd_port=616
+	d-net.exe $(STDRUN) --debugControllers=3
 
 ai: d-net.exe
-	d-net.exe --nofullscreen --aiCount=12 --fastForwardTo=100000000 --factionMode=0 --httpd_port=616
+	d-net.exe --nofullscreen --aiCount=12 --fastForwardTo=100000000 --factionMode=0 --httpd_port=616 --noshopcache
 
 ailoop: d-net.exe
-	while ./d-net.exe --nofullscreen --aiCount=12 --fastForwardTo=100000000 --terminateAfter=600 --startingCash=100000000 --httpd_port=616 ; do echo Cycle. ; done
+	while ./d-net.exe --nofullscreen --aiCount=12 --fastForwardTo=100000000 --terminateAfter=600 --startingCash=100000000 --httpd_port=616 --noshopcache ; do echo Cycle. ; done
 
 vecedit: d-net.exe
 	d-net.exe --vecedit --nofullscreen
@@ -70,7 +75,7 @@ package: d-net.exe data/shopcache.dwh
 	nice bash -ec '$(CPP) $(CPPFLAGS) -MM $< | sed "s!$*.o!$*.o $*.do $@!g" > $@'
 
 data/shopcache.dwh: d-net.exe $(DATAFILES)
-	d-net.exe --generateCachedShops
+	d-net.exe --generateCachedShops=0.99
 
 export: d-net.exe tools/generateWeaponGraph.py
 	d-net.exe --generateWeaponStats

@@ -44,7 +44,6 @@ const IDBAdjustment &operator+=(IDBAdjustment &lhs, const IDBAdjustment &rhs);
 bool operator==(const IDBAdjustment &lhs, const IDBAdjustment &rhs);
 
 struct IDBFaction {
-public:
   Dvec2 icon;
   Color color;
   string name;
@@ -56,7 +55,6 @@ public:
 };
 
 struct IDBEffects {
-public:
   int quantity;
 
   float inertia;
@@ -71,7 +69,6 @@ public:
 
 class IDBDeploy; // yay circles
 struct IDBWarhead {
-public:
   float impactdamage[IDBAdjustment::DAMAGE_LAST];
 
   float radiusdamage[IDBAdjustment::DAMAGE_LAST];
@@ -90,7 +87,6 @@ public:
 enum { PM_NORMAL, PM_MISSILE, PM_AIRBRAKE, PM_MINE, PM_LAST };
 
 struct IDBProjectile {
-public:
   int motion;
   float velocity;
   float length;
@@ -111,7 +107,6 @@ public:
 enum { DT_NORMAL, DT_FORWARD, DT_CENTROID, DT_MINEPATH, DT_EXPLODE, DT_LAST };
 
 struct IDBDeploy {
-public:
   int type;
 
   float anglestddev;
@@ -129,7 +124,6 @@ public:
 };
 
 struct IDBStats {
-public:
   float dps_efficiency;
   float cps_efficiency;
 };
@@ -148,7 +142,6 @@ struct IDBLauncher {
 };
 
 struct IDBWeapon {
-public:
   string name;
 
   float firerate;
@@ -159,7 +152,6 @@ public:
 };
 
 struct IDBGlory {
-public:
   vector<const IDBDeploy *> blast;
   const IDBDeploy *core;
 
@@ -171,7 +163,6 @@ public:
 };
 
 struct IDBUpgrade {
-public:
   const IDBAdjustment *adjustment;
 
   float costmult;
@@ -181,7 +172,6 @@ public:
 };
 
 struct IDBBombardment {
-public:
   const IDBWarhead *warhead;
 
   float lockdelay;
@@ -193,7 +183,6 @@ public:
 };
 
 struct IDBTank {
-public:
   float health;
   float handling;
   float engine;
@@ -212,6 +201,21 @@ public:
   Money upgrade_base;
 
   const string *text;
+};
+
+struct IDBShopcache {
+  struct Entry {
+    enum { WARHEAD, POS, LAST };
+    int type;
+    
+    IDBWarhead *warhead_warhead;
+    Coord2 warhead_pos;
+    int warhead_impact;
+    
+    int pos_tank;
+    Coord2 pos_pos;
+  };
+  vector<Entry> entries;
 };
 
 /*************

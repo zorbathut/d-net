@@ -18,7 +18,7 @@ SDL_Surface * MainWindow = NULL;
 
 DEFINE_bool(fullscreen, true, "Fullscreen");
 DEFINE_bool(help, false, "Get help");
-DEFINE_bool(generateCachedShops, false, "Do all the work necessary to cache shops");
+DEFINE_float(generateCachedShops, -1, "Do all the work necessary to cache shops. Parameter is the accuracy");
 DEFINE_bool(generateWeaponStats, false, "Do all the work necessary to dump weapon info");
 DEFINE_bool(generateFactionStats, false, "Do all the work necessary to dump faction info");
 DEFINE_bool(dumpText, false, "Dump all \"text\" blocks");
@@ -128,8 +128,9 @@ int main(int argc, char **argv) {
   {
     bool generated = false;
     
-    if(FLAGS_generateCachedShops) {
-      generateCachedShops();
+    if(FLAGS_generateCachedShops != -1) {
+      CHECK(FLAGS_generateCachedShops > 0 && FLAGS_generateCachedShops < 1);
+      generateCachedShops(FLAGS_generateCachedShops);
       generated = true;
     }
     

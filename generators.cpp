@@ -8,7 +8,7 @@
 
 using namespace std;
 
-template<typename T> void generateShopCache(const string &itemname, const T &item, FILE *ofil) {
+template<typename T> void generateShopCache(const string &itemname, const T &item, FILE *ofil, float accuracy) {
   dprintf("%s\n", itemname.c_str());
   
   fprintf(ofil, "shopcache {\n  itemname=%s\n", itemname.c_str());
@@ -40,7 +40,7 @@ template<typename T> void generateShopCache(const string &itemname, const T &ite
         if(ratdiff > 1)
           ratdiff = 1 / ratdiff;
         absdiff = abs(absdiff);
-        if(ratdiff < 0.99 && absdiff > 0.01)
+        if(ratdiff < accuracy && absdiff > 0.01)
           end = false;
       }
       if(end)
@@ -53,18 +53,18 @@ template<typename T> void generateShopCache(const string &itemname, const T &ite
   fprintf(ofil, "}\n\n");
 }
 
-void generateCachedShops() {
+void generateCachedShops(float accuracy) {
   FILE *ofil = fopen("data/shopcache.dwh", "w");
   for(map<string, IDBWeapon>::const_iterator itr = weaponList().begin(); itr != weaponList().end(); itr++) {
-    generateShopCache(itr->first, itr->second, ofil);
+    generateShopCache(itr->first, itr->second, ofil, accuracy);
   }
   
   for(map<string, IDBBombardment>::const_iterator itr = bombardmentList().begin(); itr != bombardmentList().end(); itr++) {
-    generateShopCache(itr->first, itr->second, ofil);
+    generateShopCache(itr->first, itr->second, ofil, accuracy);
   }
   
   for(map<string, IDBGlory>::const_iterator itr = gloryList().begin(); itr != gloryList().end(); itr++) {
-    generateShopCache(itr->first, itr->second, ofil);
+    generateShopCache(itr->first, itr->second, ofil, accuracy);
   }
   fclose(ofil);
 }
