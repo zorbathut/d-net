@@ -320,6 +320,9 @@ void ShopDemo::init(const IDBWeapon *weap, const Player *player, Recorder *recor
   } else {
     CHECK(0);
   }
+  
+  if(hasShopcache(weap))
+    game.game.runShopcache(getShopcache(weap));
 };
 
 void ShopDemo::init(const IDBBombardment *bombard, const Player *player, Recorder *recorder) {
@@ -344,6 +347,9 @@ void ShopDemo::init(const IDBBombardment *bombard, const Player *player, Recorde
   game.game.initDemo(&game.players, 50, bombardment_xpses, bombardment_ypses, NULL, bombardment_mode, false, Float2(5, 5), recorder);
   
   progression = bombardment_progression;
+  
+  if(hasShopcache(bombard))
+    game.game.runShopcache(getShopcache(bombard));
 };
 
 void ShopDemo::init(const IDBGlory *glory, const Player *player, Recorder *recorder) {
@@ -382,6 +388,9 @@ void ShopDemo::init(const IDBGlory *glory, const Player *player, Recorder *recor
   progression = glory_progression;
   
   glory_respawnPlayers();
+  
+  if(hasShopcache(glory))
+    game.game.runShopcache(getShopcache(glory));
 };
 
 void ShopDemo::glory_respawnPlayers() {

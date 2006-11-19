@@ -9,15 +9,13 @@ using namespace std;
 
 class Recorder {
 public:
-  
-  void movement(const vector<pair<bool, pair<Coord2, float> > > &tankpos);
-  void warhead(const IDBWarheadAdjust &warhead, Coord2 pos, int tank_id);
+  void warhead(const IDBWarhead *warhead, int tank_id, vector<pair<float, int> > &adjacencies);
 
   Recorder(FILE *output);
+  ~Recorder();
 
 private:
-  string lastmovement;
-  string curposition;
+  map<string, int> lines;
 
   FILE *output;
 };

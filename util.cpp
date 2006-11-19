@@ -254,6 +254,7 @@ string rawstrFromFloat(float x) {
   unsigned char *dat = reinterpret_cast<unsigned char*>(&x);
   string beef;
   for(int i = 0; i < 4; i++)
-    beef + StringPrintf("%02x", dat[i]);
+    beef += StringPrintf("%02x", dat[i]);
+  CHECK(beef.size() == 8);
   return beef;
 }

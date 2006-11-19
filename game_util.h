@@ -34,6 +34,9 @@ public:
   vector<pair<float, Tank *> > getAdjacency(const Coord2 &pos) const;
 
   GameImpactContext(vector<Tank> *players, vector<smart_ptr<GfxEffects> > *effects, Gamemap *gamemap, Rng *rng, Recorder *recorder);
+
+private:
+  int findTankId(const Tank *tank) const;
 };
 
 class ProjectilePack;

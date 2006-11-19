@@ -31,13 +31,26 @@ vector<pair<float, Tank *> > GameImpactContext::getAdjacency(const Coord2 &cente
 
 void GameImpactContext::record(const IDBWarheadAdjust &warhead, Coord2 pos, const Tank *impact_tank) const {
   if(recorder) {
-    if(!impact_tank) {
-      recorder->warhead(warhead, pos, -1);
-    } else {
-      CHECK(count(players.begin(), players.end(), impact_tank) == 1);
-      recorder->warhead(warhead, pos, find(players.begin(), players.end(), impact_tank) - players.begin());
+    int target = -1;
+    if(impact_tank) {
+      target = findTankId(impact_tank);
     }
+    
+    vector<pair<float, Tank *> > dists = getAdjacency(pos);
+    vector<pair<float, int> > distadj;
+    for(int i = 0; i < dists.size(); i++)
+      if(dists[i].first <= warhead.base()->radiusfalloff * WARHEAD_RADIUS_MAXMULT)
+        distadj.push_back(make_pair(dists[i].first, findTankId(dists[i].second)));
+    sort(distadj.begin(), distadj.end());
+    
+    if(target != -1 || distadj.size())
+      recorder->warhead(warhead.base(), target, distadj);
   }
+}
+
+int GameImpactContext::findTankId(const Tank *tank) const {
+  CHECK(count(players.begin(), players.end(), tank) == 1);
+  return find(players.begin(), players.end(), tank) - players.begin();
 }
 
 bool DeployLocation::isTank() const {

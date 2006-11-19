@@ -74,6 +74,8 @@ public:
 
   void addStatCycle();  // used for damage-per-cycle calculations
   vector<pair<Float2, pair<float, string> > > getStats() const;
+  
+  void runShopcache(const IDBShopcache &cache);
 
   float firepowerSpent;
 

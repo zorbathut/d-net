@@ -17,6 +17,8 @@ class Player;
  * Basic data items
  */
 
+#define WARHEAD_RADIUS_MAXMULT 2
+
 const char * const adjust_text[] = { "damage_kinetic", "damage_energy", "damage_explosive", "damage_trap", "damage_exotic", "warhead_radius_falloff", "discount_weapon", "discount_training", "discount_upgrade", "discount_tank", "recycle_bonus", "tank_firerate", "tank_speed", "tank_turn", "tank_armor", "damage_all", "all" };
 const char * const adjust_human[] = {"Kinetic damage", "Energy damage", "Explosive damage", "Trap damage", "Exotic damage", "Blast radius", "Weapon discount", "Training discount", "Upgrade discount", "Tank discount", "Recycle bonus", "Tank firerate", "Tank speed", "Tank turning", "Tank armor", "All damage", "All" };
 const char * const adjust_unit[] = {" KPE", " KJE", " TOTE", " FSE", " flux", " m", "", "", "", "", "", "", " m/s", " rad/s", " CME"};
@@ -205,17 +207,11 @@ struct IDBTank {
 
 struct IDBShopcache {
   struct Entry {
-    enum { WARHEAD, POS, LAST };
-    int type;
-    
-    IDBWarhead *warhead_warhead;
-    Coord2 warhead_pos;
-    int warhead_impact;
-    
-    int pos_tank;
-    bool pos_live;
-    Coord2 pos_pos;
+    IDBWarhead *warhead;
+    int impact;
+    vector<pair<float, int> > distances;
   };
+  
   vector<Entry> entries;
 };
 
@@ -462,6 +458,17 @@ const map<string, IDBGlory> &gloryList();
 const vector<IDBFaction> &factionList();
 const map<string, string> &textList();
 
-const string &nameFromWarhead(const IDBWarhead *idbw);
+bool hasShopcache(const IDBWeapon *weap);
+bool hasShopcache(const IDBBombardment *bombard);
+bool hasShopcache(const IDBGlory *glory);
+
+const IDBShopcache &getShopcache(const IDBWeapon *weap);
+const IDBShopcache &getShopcache(const IDBBombardment *bombard);
+const IDBShopcache &getShopcache(const IDBGlory *glory);
+
+const string &nameFromIDB(const IDBWeapon *idbw);
+const string &nameFromIDB(const IDBWarhead *idbw);
+const string &nameFromIDB(const IDBBombardment *bombard);
+const string &nameFromIDB(const IDBGlory *glory);
 
 #endif

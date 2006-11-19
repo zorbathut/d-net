@@ -3,7 +3,7 @@
   - Record warhead impacts, replay?
   - Clamp "Target" tanks to be OPEC-II
   - Remember to make the appropriate tank firerate adjustment when replaying
-  - Order doesn't matter. Radius doesn't matter if it's far outside the tank's location (note: clamp this). tank position technically doesn't matter, we can include radius info in the warhead? Is this efficient? I honestly don't know. If we do that, though, we don't need warhead position either.
+  - Order doesn't matter. Radius doesn't matter if it's far outside the tank's location (note: clamp this). tank position technically doesn't matter, we can include radius info in the warhead? Is this efficient? I honestly don't know. If we do that, though, we don't need warhead position either. This sounds, mostly, good - warhead name, impacter, distance/range pairs if the warhead has radius
 - Figure out how I actually want new games to work
   - Start game at phase X
 - Training/implants/wtf

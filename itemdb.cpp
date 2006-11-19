@@ -999,6 +999,7 @@ void parseText(kvData *chunk, bool reload) {
 }
 
 void parseShopcache(kvData *chunk) {
+  /*
   IDBShopcache *titem = prepareName(chunk, &shopcaches, false);
   
   vector<string> tse = tokenize(chunk->consume("cmd"), "\n");
@@ -1035,6 +1036,7 @@ void parseShopcache(kvData *chunk) {
     }
     titem->entries.push_back(entry);
   }
+  */
 }
 
 void parseItemFile(const string &fname, bool reload) {
@@ -1233,19 +1235,61 @@ const map<string, string> &textList() {
   return text;
 }
 
-// Let's have some complex caching
-map<const IDBWarhead *, string> warheadclasses_reverse;
-const string &nameFromWarhead(const IDBWarhead *idbw) {
-  if(warheadclasses.size() != warheadclasses_reverse.size()) {
-    warheadclasses_reverse.clear();
-    for(map<string, IDBWarhead>::const_iterator itr = warheadclasses.begin(); itr != warheadclasses.end(); itr++) {
-      CHECK(!warheadclasses_reverse.count(&itr->second));
-      warheadclasses_reverse[&itr->second] = itr->first;
+bool hasShopcache(const IDBWeapon *weap) {
+  return shopcaches.count(nameFromIDB(weap));
+}
+bool hasShopcache(const IDBBombardment *bombard) {
+  return shopcaches.count(nameFromIDB(bombard));
+}
+bool hasShopcache(const IDBGlory *glory) {
+  return shopcaches.count(nameFromIDB(glory));
+}
+
+const IDBShopcache &getShopcache(const IDBWeapon *weap) {
+  CHECK(hasShopcache(weap));
+  return shopcaches[nameFromIDB(weap)];
+}
+const IDBShopcache &getShopcache(const IDBBombardment *bombard) {
+  CHECK(hasShopcache(bombard));
+  return shopcaches[nameFromIDB(bombard)];
+}
+const IDBShopcache &getShopcache(const IDBGlory *glory) {
+  CHECK(hasShopcache(glory));
+  return shopcaches[nameFromIDB(glory)];
+}
+
+template<typename T> const string &nameFromIDBImp(const T *idbw, const map<string, T> &forward, map<const T*, string> *backward) {
+  if(forward.size() != backward->size()) {
+    backward->clear();
+    for(typename map<string, T>::const_iterator itr = forward.begin(); itr != forward.end(); itr++) {
+      CHECK(!backward->count(&itr->second));
+      (*backward)[&itr->second] = itr->first;
     }
-    CHECK(warheadclasses.size() == warheadclasses_reverse.size());
+    CHECK(forward.size() == backward->size());
   }
   
-  CHECK(warheadclasses_reverse.count(idbw));
-  CHECK(&warheadclasses[warheadclasses_reverse[idbw]] == idbw);
-  return warheadclasses_reverse[idbw];
+  CHECK(backward->count(idbw));
+  CHECK(forward.count((*backward)[idbw]));
+  CHECK(&forward.find((*backward)[idbw])->second == idbw);
+  return (*backward)[idbw];
+}
+
+static map<const IDBWeapon *, string> weaponclasses_reverse;
+const string &nameFromIDB(const IDBWeapon *idbw) {
+  return nameFromIDBImp(idbw, weaponclasses, &weaponclasses_reverse);
+}
+
+static map<const IDBWarhead *, string> warheadclasses_reverse;
+const string &nameFromIDB(const IDBWarhead *idbw) {
+  return nameFromIDBImp(idbw, warheadclasses, &warheadclasses_reverse);
+}
+
+static map<const IDBGlory *, string> gloryclasses_reverse;
+const string &nameFromIDB(const IDBGlory *idbw) {
+  return nameFromIDBImp(idbw, gloryclasses, &gloryclasses_reverse);
+}
+
+static map<const IDBBombardment *, string> bombardmentclasses_reverse;
+const string &nameFromIDB(const IDBBombardment *idbw) {
+  return nameFromIDBImp(idbw, bombardmentclasses, &bombardmentclasses_reverse);
 }
