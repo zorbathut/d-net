@@ -207,6 +207,7 @@ struct IDBTank {
 
 struct IDBShopcache {
   struct Entry {
+    int count;
     IDBWarhead *warhead;
     int impact;
     vector<pair<float, int> > distances;

@@ -114,5 +114,6 @@ namespace detail {
 #define VECTORIZE(array) vector<int>((array), (array) + ARRAY_SIZE(array))
 
 string rawstrFromFloat(float x);
+float floatFromString(const string &x);
 
 #endif

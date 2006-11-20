@@ -258,3 +258,20 @@ string rawstrFromFloat(float x) {
   CHECK(beef.size() == 8);
   return beef;
 }
+
+float floatFromString(const string &x) {
+  // This is also awful.
+  CHECK(sizeof(float) == 4);
+  CHECK(numeric_limits<float>::is_iec559); // wootz
+  CHECK(x.size() == 8);
+  float rv;
+  unsigned char *dat = reinterpret_cast<unsigned char*>(&rv);
+  for(int i = 0; i < 4; i++) {
+    int v;
+    CHECK(sscanf(x.c_str() + i * 2, "%2x", &v));
+    CHECK(v >= 0 && v < 256);
+    dat[i] = v;
+  }
+  CHECK(rawstrFromFloat(rv) == x);
+  return rv;
+}
