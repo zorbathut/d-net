@@ -29,17 +29,17 @@ vector<pair<float, Tank *> > GameImpactContext::getAdjacency(const Coord2 &cente
   return rv;
 }
 
-void GameImpactContext::record(const IDBWarheadAdjust &warhead, Coord2 pos, const Tank *impact_tank) const {
+void GameImpactContext::record(const IDBWarheadAdjust &warhead, Coord2 pos, const Tank *impact_tank, const Tank *owner_tank) const {
   if(recorder) {
     int target = -1;
-    if(impact_tank) {
+    if(impact_tank && impact_tank->team != owner_tank->team) {
       target = findTankId(impact_tank);
     }
     
     vector<pair<float, Tank *> > dists = getAdjacency(pos);
     vector<pair<float, int> > distadj;
     for(int i = 0; i < dists.size(); i++)
-      if(dists[i].first <= warhead.base()->radiusfalloff * WARHEAD_RADIUS_MAXMULT)
+      if(dists[i].first <= warhead.base()->radiusfalloff * WARHEAD_RADIUS_MAXMULT && dists[i].second->team != owner_tank->team)
         distadj.push_back(make_pair(dists[i].first, findTankId(dists[i].second)));
     sort(distadj.begin(), distadj.end());
     
@@ -96,8 +96,9 @@ void dealDamage(float dmg, Tank *target, Tank *owner, float damagecredit, bool k
 
 void detonateWarhead(const IDBWarheadAdjust &warhead, Coord2 pos, Coord2 vel, Tank *impact, const GamePlayerContext &gpc, float damagecredit, bool killcredit, bool impacted) {
   
-  gpc.gic->record(warhead, pos, impact);
+  gpc.gic->record(warhead, pos, impact, gpc.owner);
   
+  // this stuff is kind of copied into detonateWarheadDamageOnly
   if(impact)
     dealDamage(warhead.impactdamage(), impact, gpc.owner, damagecredit, killcredit);
   
@@ -127,7 +128,16 @@ void detonateWarhead(const IDBWarheadAdjust &warhead, Coord2 pos, Coord2 vel, Ta
   for(int i = 0; i < dep.size(); i++)
     deployProjectile(dep[i], DeployLocation(pos, getAngle(vel.toFloat())), gpc);
   
-};
+}
+
+void detonateWarheadDamageOnly(const IDBWarheadAdjust &warhead, Tank *impact, const vector<pair<float, Tank*> > &radius) {
+  if(impact)
+    impact->takeDamage(warhead.impactdamage());
+  
+  for(int i = 0; i < radius.size(); i++)
+    if(radius[i].first < warhead.radiusfalloff())
+      radius[i].second->takeDamage(warhead.radiusdamage() / warhead.radiusfalloff() * (warhead.radiusfalloff() - radius[i].first));
+}
 
 void deployProjectile(const IDBDeployAdjust &deploy, const DeployLocation &location, const GamePlayerContext &gpc, vector<float> *tang) {
   
@@ -207,13 +217,6 @@ Team::Team() {
   weapons_enabled = true;
   color = Color(0, 0, 0);
   swap_colors = false;
-}
-
-static vector<Tank*> ptrize(vector<Tank> *players) {
-  vector<Tank*> ptrs;
-  for(int i = 0; i < players->size(); i++)
-    ptrs.push_back(&(*players)[i]);
-  return ptrs;
 }
 
 GameImpactContext::GameImpactContext(vector<Tank> *players, vector<smart_ptr<GfxEffects> > *effects, Gamemap *gamemap, Rng *rng, Recorder *recorder) : players(ptrize(players)), effects(effects), gamemap(gamemap), rng(rng), recorder(recorder) { };

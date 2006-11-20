@@ -104,6 +104,8 @@ bool operator==(const IDBAdjustment &lhs, const IDBAdjustment &rhs) {
 
 float IDBAdjustment::adjustmentfactor(int type) const {
   CHECK(type >= 0 && type < LAST);
+  if(type == WARHEAD_RADIUS_FALLOFF)
+    CHECK(adjusts[type] + 100 <= WARHEAD_RADIUS_MAXMULT * 100);
   return (float)(adjusts[type] + 100) / 100;
 }
 

@@ -837,8 +837,22 @@ vector<pair<Float2, pair<float, string> > > Game::getStats() const {
   return rv;
 }
 
-void Game::runShopcache(const IDBShopcache &cache) {
+void Game::runShopcache(const IDBShopcache &cache, const vector<const Player *> &players) {
   for(int i = 0; i < cache.entries.size(); i++) {
+    const IDBShopcache::Entry ent = cache.entries[i];
+    
+    IDBWarheadAdjust adj(ent.warhead, players[0]->getAdjust());
+    
+    Tank *impact_tank = NULL;
+    if(ent.impact != -1)
+      impact_tank = &tanks[ent.impact];
+    
+    vector<pair<float, Tank*> > radius;
+    for(int i = 0; i < ent.distances.size(); i++)
+      radius.push_back(make_pair(ent.distances[i].first, &tanks[ent.distances[i].second]));
+    
+    for(int i = 0; i < ent.count; i++)
+      detonateWarheadDamageOnly(adj, impact_tank, radius);
   }
 }
 
@@ -1065,6 +1079,8 @@ void Game::initDemo(vector<Player> *in_playerdata, float boxradi, const float *x
     demo_playermodes.push_back(modes[i]);
     if(modes[i] == DEMOPLAYER_BOMBSIGHT)
       tanks[i].setDead();
+    else
+      tanks[i].megaboostHealth();
   }
   
   demo_boxradi = boxradi;
@@ -1112,17 +1128,15 @@ void Game::addTankStatusText(int tankid, const string &text, float duration) {
 }
 
 bool GamePackage::runTick(const vector<Keystates> &keys, Rng *rng) {
-  vector<Player*> ppt;
-  for(int i = 0; i < players.size(); i++)
-    ppt.push_back(&players[i]);
-  return game.runTick(keys, ppt, rng);
+  return game.runTick(keys, ptrize(&players), rng);
 }
 
 void GamePackage::renderToScreen() const {
-  vector<const Player*> ppt;
-  for(int i = 0; i < players.size(); i++)
-    ppt.push_back(&players[i]);
-  game.renderToScreen(ppt, GameMetacontext());
+  game.renderToScreen(ptrize(players), GameMetacontext());
+}
+
+void GamePackage::runShopcache(const IDBShopcache &cache) {
+  game.runShopcache(cache, ptrize(players));
 }
 
 const vector<const IDBFaction *> &GameMetacontext::getWins() const {

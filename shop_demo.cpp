@@ -322,7 +322,7 @@ void ShopDemo::init(const IDBWeapon *weap, const Player *player, Recorder *recor
   }
   
   if(hasShopcache(weap))
-    game.game.runShopcache(getShopcache(weap));
+    game.runShopcache(getShopcache(weap));
 };
 
 void ShopDemo::init(const IDBBombardment *bombard, const Player *player, Recorder *recorder) {
@@ -349,7 +349,7 @@ void ShopDemo::init(const IDBBombardment *bombard, const Player *player, Recorde
   progression = bombardment_progression;
   
   if(hasShopcache(bombard))
-    game.game.runShopcache(getShopcache(bombard));
+    game.runShopcache(getShopcache(bombard));
 };
 
 void ShopDemo::init(const IDBGlory *glory, const Player *player, Recorder *recorder) {
@@ -390,7 +390,7 @@ void ShopDemo::init(const IDBGlory *glory, const Player *player, Recorder *recor
   glory_respawnPlayers();
   
   if(hasShopcache(glory))
-    game.game.runShopcache(getShopcache(glory));
+    game.runShopcache(getShopcache(glory));
 };
 
 void ShopDemo::glory_respawnPlayers() {

@@ -116,4 +116,18 @@ namespace detail {
 string rawstrFromFloat(float x);
 float floatFromString(const string &x);
 
+template <typename T> vector<T*> ptrize(vector<T> *vt) {
+  vector<T*> rv;
+  for(int i = 0; i < vt->size(); i++)
+    rv.push_back(&(*vt)[i]);
+  return rv;
+}
+
+template <typename T> vector<const T*> ptrize(const vector<T> &vt) {
+  vector<const T*> rv;
+  for(int i = 0; i < vt.size(); i++)
+    rv.push_back(&vt[i]);
+  return rv;
+}
+
 #endif

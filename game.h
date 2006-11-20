@@ -75,7 +75,7 @@ public:
   void addStatCycle();  // used for damage-per-cycle calculations
   vector<pair<Float2, pair<float, string> > > getStats() const;
   
-  void runShopcache(const IDBShopcache &cache);
+  void runShopcache(const IDBShopcache &cache, const vector<const Player *> &players);
 
   float firepowerSpent;
 
@@ -136,6 +136,8 @@ public:
 
   bool runTick(const vector<Keystates> &keys, Rng *rng);
   void renderToScreen() const;
+
+  void runShopcache(const IDBShopcache &sc);
 };
 
 #endif
