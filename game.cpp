@@ -787,7 +787,7 @@ void Game::respawnPlayer(int id, Coord2 pos, float facing) {
 
 void Game::addStatCycle() {
   bool addahit = false;
-  if(demo_hits)
+  if(demo_cycles)
     addahit = true;
   else
     for(int i = 0; i < tanks.size(); i++)
@@ -800,7 +800,7 @@ void Game::addStatCycle() {
         tanks[i].addCycle();
       }
     }
-    demo_hits++;
+    demo_cycles++;
   }
 }
 
@@ -817,10 +817,10 @@ vector<pair<Float2, pair<float, string> > > Game::getStats() const {
       rv.push_back(make_pair(tanks[i].pos.toFloat() - demo_hudpos, make_pair(v, "DPS")));
     } else if(demo_playermodes[i] == DEMOPLAYER_DPC) {
       float v;
-      if(demo_hits == 0)
+      if(demo_cycles == 0)
         v = -1;
       else
-        v = tanks[i].getDPC(demo_hits);
+        v = tanks[i].getDPC(demo_cycles);
       rv.push_back(make_pair(tanks[i].pos.toFloat() - demo_hudpos, make_pair(v, "DPH")));
     } else if(demo_playermodes[i] == DEMOPLAYER_DPH) {
       float v = tanks[i].getDPH();
@@ -835,6 +835,14 @@ vector<pair<Float2, pair<float, string> > > Game::getStats() const {
   }
   
   return rv;
+}
+
+void Game::dumpMetastats(Recorder *recorder) const {
+  vector<pair<int, int> > stats;
+  for(int i = 0; i < tanks.size(); i++)
+    stats.push_back(tanks[i].dumpMetastats());
+  
+  recorder->metastats(demo_cycles, stats);
 }
 
 void Game::runShopcache(const IDBShopcache &cache, const vector<const Player *> &players) {
@@ -854,6 +862,9 @@ void Game::runShopcache(const IDBShopcache &cache, const vector<const Player *> 
     for(int i = 0; i < ent.count; i++)
       detonateWarheadDamageOnly(adj, impact_tank, radius);
   }
+  
+  for(int i = 0; i < tanks.size(); i++)
+    tanks[i].addCycle();
 }
 
 float Game::getBombardmentIncreasePerSec() const {
@@ -918,7 +929,7 @@ void Game::initCommon(const vector<Player*> &in_playerdata, const vector<Color> 
   frameNmToStart = -1000;
   freezeUntilStart = false;
   
-  demo_hits = 0;
+  demo_cycles = 0;
   demo_recorder = NULL;
 }
 

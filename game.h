@@ -74,6 +74,7 @@ public:
 
   void addStatCycle();  // used for damage-per-cycle calculations
   vector<pair<Float2, pair<float, string> > > getStats() const;
+  void dumpMetastats(Recorder *recorder) const;
   
   void runShopcache(const IDBShopcache &cache, const vector<const Player *> &players);
 
@@ -119,7 +120,7 @@ private:
   vector<int> demo_playermodes;
   float demo_boxradi; // used for font sizes
   
-  int demo_hits;
+  int demo_cycles;
   Float2 demo_hudpos;
   Recorder *demo_recorder;
   

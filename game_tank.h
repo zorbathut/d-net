@@ -44,6 +44,7 @@ public:
   float getDPS() const;
   float getDPH() const;
   float getDPC(int cycles) const;
+  pair<int, int> dumpMetastats() const;
   
   bool hasTakenDamage() const;
   void addCycle();
@@ -86,6 +87,7 @@ private:
 
   // this exists for the DPS calculations
   int framesSinceDamage;
+  int prerollFrames;
   
   // this exists for the DPC calculations
   float damageTakenPreviousHits;

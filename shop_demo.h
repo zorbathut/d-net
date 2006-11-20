@@ -22,6 +22,8 @@ public:
 
   vector<float> getStats() const;
 
+  void dumpMetastats(Recorder *recorder) const;
+
   ShopDemo();
   ~ShopDemo();
 

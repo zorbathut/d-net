@@ -10,6 +10,7 @@ using namespace std;
 class Recorder {
 public:
   void warhead(const IDBWarhead *warhead, int tank_id, vector<pair<float, int> > &adjacencies);
+  void metastats(int cycles, const vector<pair<int, int> > &pertank);
 
   Recorder(FILE *output);
   ~Recorder();

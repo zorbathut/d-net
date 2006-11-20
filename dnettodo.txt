@@ -63,8 +63,13 @@
 http://www.itchstudios.com/psg/ - Dafred's artist
 
 ---
-RNG stuff
+DPS stat stuff
 
-metagame should really own its RNG. So it should simply have a *copy* of an RNG passed in, for it to own. Should Game own its RNG also? I'm honestly not sure. There are advantages.
+Three types:
 
-If this is true, it means that Game and such need to pass RNGs around everywhere. But that's not really too hard.
+cycles=blah
+tankstats=tankid frames hits
+
+DPS - must store number of frames, per-tank
+DPC - must store number of cycles (global)
+DPH - must store number of hits, per-tank

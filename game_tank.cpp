@@ -13,6 +13,7 @@ void Tank::init(IDBTankAdjust in_tank, Color in_color) {
   color = in_color;
   health = in_tank.maxHealth();
   framesSinceDamage = -1;
+  prerollFrames = 0;
   damageTakenPreviousHits = 0;
   damageEvents = 0;
   damageTaken = 0;
@@ -369,7 +370,7 @@ void Tank::genEffects(const GameImpactContext &gic, ProjectilePack *projectiles,
 }
 
 float Tank::getDPS() const {
-  return damageTaken / framesSinceDamage * FPS;
+  return damageTaken / (framesSinceDamage + prerollFrames) * FPS;
 }
 
 float Tank::getDPH() const {
@@ -380,6 +381,11 @@ float Tank::getDPH() const {
 
 float Tank::getDPC(int cycles) const {
   return damageTakenPreviousHits / cycles;
+}
+
+pair<int, int> Tank::dumpMetastats() const {
+  CHECK(prerollFrames == 0);
+  return make_pair(framesSinceDamage, damageEvents);
 }
 
 bool Tank::hasTakenDamage() const {

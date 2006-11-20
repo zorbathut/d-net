@@ -495,5 +495,9 @@ vector<float> ShopDemo::getStats() const {
   return rv;
 }
 
+void ShopDemo::dumpMetastats(Recorder *recorder) const {
+  game.game.dumpMetastats(recorder);
+}
+
 ShopDemo::ShopDemo() { };
 ShopDemo::~ShopDemo() { };

@@ -20,9 +20,15 @@ void Recorder::warhead(const IDBWarhead *warhead, int tank_id, vector<pair<float
   lines[line]++;
 }
 
-Recorder::Recorder(FILE *output) : output(output) { };
+void Recorder::metastats(int cycles, const vector<pair<int, int> > &pertank) {
+  fprintf(output, "  cycles=%d\n", cycles);
+  for(int i = 0; i < pertank.size(); i++)
+    fprintf(output, "  tankstats=%d %d %d\n", i, pertank[i].first, pertank[i].second);
+}
+
+Recorder::Recorder(FILE *output) : output(output) { }
 Recorder::~Recorder() {
   for(map<string, int>::const_iterator itr = lines.begin(); itr != lines.end(); itr++) {
     fprintf(output, "  x=%d %s\n", itr->second, itr->first.c_str());
   }
-};
+}

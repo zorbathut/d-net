@@ -43,8 +43,10 @@ template<typename T> void generateShopCache(const string &itemname, const T &ite
         if(ratdiff < accuracy && absdiff > 0.01)
           end = false;
       }
-      if(end)
+      if(end) {
+        demo.dumpMetastats(&recorder);
         break;
+      }
       dprintf("continuing\n");
       oldstats = newstats;
     }
