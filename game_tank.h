@@ -45,6 +45,7 @@ public:
   float getDPH() const;
   float getDPC(int cycles) const;
   pair<int, int> dumpMetastats() const;
+  void insertMetastats(pair<int, int> mst);
   
   bool hasTakenDamage() const;
   void addCycle();

@@ -846,6 +846,9 @@ void Game::dumpMetastats(Recorder *recorder) const {
 }
 
 void Game::runShopcache(const IDBShopcache &cache, const vector<const Player *> &players) {
+  CHECK(gamemode == GMODE_DEMO);
+  CHECK(tanks.size() == cache.tank_specific.size());
+  
   for(int i = 0; i < cache.entries.size(); i++) {
     const IDBShopcache::Entry ent = cache.entries[i];
     
@@ -863,8 +866,13 @@ void Game::runShopcache(const IDBShopcache &cache, const vector<const Player *> 
       detonateWarheadDamageOnly(adj, impact_tank, radius);
   }
   
+  demo_cycles = cache.cycles;
   for(int i = 0; i < tanks.size(); i++)
-    tanks[i].addCycle();
+    tanks[i].insertMetastats(cache.tank_specific[i]);
+  
+  for(int i = 0; i < tanks.size(); i++)
+    if(demo_playermodes[i] == DEMOPLAYER_DPC)
+      tanks[i].addCycle();
 }
 
 float Game::getBombardmentIncreasePerSec() const {

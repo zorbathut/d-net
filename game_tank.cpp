@@ -388,6 +388,12 @@ pair<int, int> Tank::dumpMetastats() const {
   return make_pair(framesSinceDamage, damageEvents);
 }
 
+void Tank::insertMetastats(pair<int, int> mst) {
+  CHECK(prerollFrames == 0);
+  prerollFrames = mst.first;
+  damageEvents = mst.second;
+}
+
 bool Tank::hasTakenDamage() const {
   return damageTaken != 0;
 }

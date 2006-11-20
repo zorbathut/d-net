@@ -1021,6 +1021,16 @@ void parseShopcache(kvData *chunk) {
     }
     titem->entries.push_back(entry);
   }
+  
+  titem->cycles = atoi(chunk->consume("cycles").c_str());
+  
+  vector<string> tspec = tokenize(chunk->consume("tankstats"), "\n");
+  for(int i = 0; i < tspec.size(); i++) {
+    vector<int> ti = sti(tokenize(tspec[i], " "));
+    CHECK(ti.size() == 3);
+    CHECK(ti[0] == i);
+    titem->tank_specific.push_back(make_pair(ti[1], ti[2]));
+  }
 }
 
 void parseItemFile(const string &fname, bool reload) {

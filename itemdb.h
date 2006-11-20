@@ -214,6 +214,9 @@ struct IDBShopcache {
   };
   
   vector<Entry> entries;
+  
+  int cycles;
+  vector<pair<int, int> > tank_specific;
 };
 
 /*************
