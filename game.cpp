@@ -867,8 +867,11 @@ void Game::runShopcache(const IDBShopcache &cache, const vector<const Player *> 
   }
   
   demo_cycles = cache.cycles;
-  for(int i = 0; i < tanks.size(); i++)
-    tanks[i].insertMetastats(cache.tank_specific[i]);
+  for(int i = 0; i < tanks.size(); i++) {
+    pair<int, int> cts = cache.tank_specific[i];  // speed up if TANK_FIRERATE is higher
+    cts.first = (int)(cts.first / players[0]->getAdjust().adjustmentfactor(IDBAdjustment::TANK_FIRERATE));
+    tanks[i].insertMetastats(cts);
+  }
   
   for(int i = 0; i < tanks.size(); i++)
     if(demo_playermodes[i] == DEMOPLAYER_DPC)

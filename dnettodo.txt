@@ -1,7 +1,6 @@
 ---- Major work path
 - Cached shop demo stats
   - Clamp "Target" tanks to be OPEC-II
-  - Remember to make the appropriate tank firerate adjustment when replaying
   - Full second within 1%, not this current checkpoint system
 - Figure out how I actually want new games to work
   - Start game at phase X
