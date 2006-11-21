@@ -32,6 +32,7 @@ private:
   GamePackage game;
   vector<smart_ptr<GameAi> > ais;
 
+  bool prerolled;
   const int *progression;
 
   int mode;

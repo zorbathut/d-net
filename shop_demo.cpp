@@ -321,8 +321,12 @@ void ShopDemo::init(const IDBWeapon *weap, const Player *player, Recorder *recor
     CHECK(0);
   }
   
-  if(hasShopcache(weap))
+  if(hasShopcache(weap)) {
+    prerolled = true;
     game.runShopcache(getShopcache(weap));
+  } else {
+    prerolled = false;
+  }
 };
 
 void ShopDemo::init(const IDBBombardment *bombard, const Player *player, Recorder *recorder) {
@@ -348,8 +352,12 @@ void ShopDemo::init(const IDBBombardment *bombard, const Player *player, Recorde
   
   progression = bombardment_progression;
   
-  if(hasShopcache(bombard))
+  if(hasShopcache(bombard)) {
+    prerolled = true;
     game.runShopcache(getShopcache(bombard));
+  } else {
+    prerolled = false;
+  }
 };
 
 void ShopDemo::init(const IDBGlory *glory, const Player *player, Recorder *recorder) {
@@ -389,8 +397,12 @@ void ShopDemo::init(const IDBGlory *glory, const Player *player, Recorder *recor
   
   glory_respawnPlayers();
   
-  if(hasShopcache(glory))
+  if(hasShopcache(glory)) {
+    prerolled = true;
     game.runShopcache(getShopcache(glory));
+  } else {
+    prerolled = false;
+  }
 };
 
 void ShopDemo::glory_respawnPlayers() {
@@ -474,7 +486,10 @@ void ShopDemo::runSingleTick() {
 };
 
 void ShopDemo::runTick() {
-  for(int i = 0; i < mult(game.game.frameCount(), progression); i++) {
+  int timing = mult(game.game.frameCount(), progression);
+  if(prerolled)
+    timing = 1;
+  for(int i = 0; i < timing; i++) {
     runSingleTick();
   }
 };
@@ -483,7 +498,7 @@ void ShopDemo::renderFrame() const {
   game.renderToScreen();
   setZoom(Float4(0, 0, 1, 1));
   setColor(1, 1, 1);
-  if(mult(game.game.frameCount(), progression) != 1)
+  if(mult(game.game.frameCount(), progression) != 1 && !prerolled)
     drawJustifiedText(StringPrintf("Fastforward %dx", mult(game.game.frameCount(), progression)), 0.05, Float2(0, 1), TEXT_MIN, TEXT_MAX);
 };
 

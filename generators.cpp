@@ -6,6 +6,8 @@
 #include "player.h"
 #include "shop_demo.h"
 
+#include <deque>
+
 using namespace std;
 
 template<typename T> void generateShopCache(const string &itemname, const T &item, FILE *ofil, float accuracy) {
@@ -27,28 +29,35 @@ template<typename T> void generateShopCache(const string &itemname, const T &ite
     ShopDemo demo;
     demo.init(&item, &player, &recorder);
     
-    vector<float> oldstats = demo.getStats();
+    vector<deque<float> > oldstats(demo.getStats().size());
+    int ticks = 0;
     while(1) {
-      for(int i = 0; i < 600; i++)
-        demo.runSingleTick();
-      vector<float> newstats = demo.getStats();
-      CHECK(oldstats.size() == newstats.size());
-      bool end = true;
-      for(int i = 0; i < newstats.size(); i++) {
-        float ratdiff = oldstats[i] / newstats[i];
-        float absdiff = oldstats[i] - newstats[i];
-        if(ratdiff > 1)
-          ratdiff = 1 / ratdiff;
-        absdiff = abs(absdiff);
-        if(ratdiff < accuracy && absdiff > 0.01)
-          end = false;
+      ticks++;
+      demo.runSingleTick();
+      {
+        vector<float> nst = demo.getStats();
+        for(int i = 0; i < nst.size(); i++)
+          oldstats[i].push_back(nst[i]);
       }
-      if(end) {
-        demo.dumpMetastats(&recorder);
-        break;
+      if(ticks >= 600) {
+        bool end = true;
+        for(int i = 0; i < oldstats.size(); i++) {
+          float high = *max_element(oldstats[i].begin(), oldstats[i].end());
+          float low = *min_element(oldstats[i].begin(), oldstats[i].end());
+          float ratdiff = low / high;
+          float absdiff = high - low;
+          if(ratdiff < accuracy && absdiff > 0.01)
+            end = false;
+        }
+        if(end) {
+          demo.dumpMetastats(&recorder);
+          dprintf("Done at %d ticks\n", ticks);
+          break;
+        } else {
+          for(int i = 0; i < oldstats.size(); i++)
+            oldstats[i].erase(oldstats[i].begin());
+        }
       }
-      dprintf("continuing\n");
-      oldstats = newstats;
     }
   }
   

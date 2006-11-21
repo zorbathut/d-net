@@ -390,7 +390,9 @@ int Tank::dumpDamageframes() const {
 
 void Tank::insertDamageframes(int dfr) {
   CHECK(prerollFrames == 0);
+  CHECK(framesSinceDamage == 0 || framesSinceDamage == -1);
   prerollFrames = dfr;
+  framesSinceDamage = -1;
 }
 
 bool Tank::hasTakenDamage() const {
