@@ -401,6 +401,8 @@ public:
   Money cost() const;
   Money sellcost() const;
 
+  const IDBTank *base() const;
+
   IDBTankAdjust(const IDBTank *in_idb, const IDBAdjustment &in_adjust);
 };
 bool operator==(const IDBTankAdjust &lhs, const IDBTankAdjust &rhs);  // This could exist for others as well, it just doesn't yet.

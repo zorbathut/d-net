@@ -845,7 +845,7 @@ void Game::dumpMetastats(Recorder *recorder) const {
   recorder->metastats(demo_cycles, stats);
 }
 
-void Game::runShopcache(const IDBShopcache &cache, const vector<const Player *> &players) {
+void Game::runShopcache(const IDBShopcache &cache, const vector<const Player *> &players, const Player *adjuster) {
   CHECK(gamemode == GMODE_DEMO);
   CHECK(tanks.size() == cache.tank_specific.size());
   
@@ -864,6 +864,14 @@ void Game::runShopcache(const IDBShopcache &cache, const vector<const Player *> 
     
     for(int i = 0; i < ent.count; i++)
       detonateWarheadDamageOnly(adj, impact_tank, radius);
+  }
+  
+  {
+    // Test to make sure we have the right tank!
+    // We assume "adjuster" is the one with the right stats. Just as a double-check, we want to make sure there are no other players who have a different non-default tank.
+    for(int i = 0; i < players.size(); i++)
+      if(players[i]->getTank().base() != defaultTank() && players[i]->getTank().base() != adjuster->getTank().base())
+        CHECK(0);
   }
   
   demo_cycles = cache.cycles;
@@ -1154,8 +1162,8 @@ void GamePackage::renderToScreen() const {
   game.renderToScreen(ptrize(players), GameMetacontext());
 }
 
-void GamePackage::runShopcache(const IDBShopcache &cache) {
-  game.runShopcache(cache, ptrize(players));
+void GamePackage::runShopcache(const IDBShopcache &cache, int adjuster) {
+  game.runShopcache(cache, ptrize(players), &players[adjuster]);
 }
 
 const vector<const IDBFaction *> &GameMetacontext::getWins() const {

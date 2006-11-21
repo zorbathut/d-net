@@ -76,7 +76,7 @@ public:
   vector<pair<Float2, pair<float, string> > > getStats() const;
   void dumpMetastats(Recorder *recorder) const;
   
-  void runShopcache(const IDBShopcache &cache, const vector<const Player *> &players);
+  void runShopcache(const IDBShopcache &cache, const vector<const Player *> &players, const Player *adjuster);
 
   float firepowerSpent;
 
@@ -138,7 +138,7 @@ public:
   bool runTick(const vector<Keystates> &keys, Rng *rng);
   void renderToScreen() const;
 
-  void runShopcache(const IDBShopcache &sc);
+  void runShopcache(const IDBShopcache &sc, int adjuster);
 };
 
 #endif

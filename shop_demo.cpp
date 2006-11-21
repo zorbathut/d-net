@@ -245,6 +245,8 @@ const int glory_progression[] = { 6000, 0 };
 void ShopDemo::init(const IDBWeapon *weap, const Player *player, Recorder *recorder) {
   StackString sst("Initting demo weapon shop");
   
+  int primary = -1;
+  
   if(weap->launcher->demomode == WDM_FIRINGRANGE) {
     mode = DEMOMODE_FIRINGRANGE;
     game.players.clear();
@@ -256,6 +258,8 @@ void ShopDemo::init(const IDBWeapon *weap, const Player *player, Recorder *recor
     ais.clear();
     for(int i = 0; i < 3; i++) {
       ais.push_back(smart_ptr<GameAi>(new GameAiFiring));
+      
+      game.players[i * 2 + 1].forceAcquireTank(defaultTank());
       ais.push_back(smart_ptr<GameAi>(new GameAiNull));
     }
     
@@ -292,6 +296,7 @@ void ShopDemo::init(const IDBWeapon *weap, const Player *player, Recorder *recor
     }
     
     progression = weapons_progression;
+    primary = 0;
   } else if(weap->launcher->demomode == WDM_MINES) {
     mode = DEMOMODE_MINE;
     game.players.clear();
@@ -306,6 +311,7 @@ void ShopDemo::init(const IDBWeapon *weap, const Player *player, Recorder *recor
       GameAiTraversing *gat = new GameAiTraversing(unsync().generate_seed());
       ais.push_back(smart_ptr<GameAi>(gat));
       mine_traverser = gat;
+      game.players[0].forceAcquireTank(defaultTank());
     }
     for(int i = 1; i < game.players.size(); i++) {
       GameAiMining *gam = new GameAiMining(unsync().generate_seed());
@@ -317,13 +323,15 @@ void ShopDemo::init(const IDBWeapon *weap, const Player *player, Recorder *recor
     mine_mined = false;
     
     progression = mines_progression;
+    primary = 1;
   } else {
     CHECK(0);
   }
   
+  CHECK(primary != -1);
   if(hasShopcache(weap)) {
     prerolled = true;
-    game.runShopcache(getShopcache(weap));
+    game.runShopcache(getShopcache(weap), primary);
   } else {
     prerolled = false;
   }
@@ -342,7 +350,9 @@ void ShopDemo::init(const IDBBombardment *bombard, const Player *player, Recorde
   ais.clear();
   bombardment_scatterers.clear();
   for(int i = 0; i < 4; i++) {
+    game.players[i * 2].forceAcquireTank(defaultTank());
     ais.push_back(smart_ptr<GameAi>(new GameAiNull));
+    
     GameAiScatterbombing *gas = new GameAiScatterbombing(i * 2, pow((float)2, (float)i + 1), unsync().generate_seed());
     ais.push_back(smart_ptr<GameAi>(gas));
     bombardment_scatterers.push_back(gas);
@@ -354,7 +364,7 @@ void ShopDemo::init(const IDBBombardment *bombard, const Player *player, Recorde
   
   if(hasShopcache(bombard)) {
     prerolled = true;
-    game.runShopcache(getShopcache(bombard));
+    game.runShopcache(getShopcache(bombard), 1);
   } else {
     prerolled = false;
   }
@@ -373,7 +383,9 @@ void ShopDemo::init(const IDBGlory *glory, const Player *player, Recorder *recor
   ais.clear();
   glory_kamikazes.clear();
   for(int i = 0; i < 4; i++) {
+    game.players[i * 2].forceAcquireTank(defaultTank());
     ais.push_back(smart_ptr<GameAi>(new GameAiNull));
+    
     GameAiKamikaze *gas = new GameAiKamikaze(i * 2, i ? i * 5 + 5 : 0);
     ais.push_back(smart_ptr<GameAi>(gas));
     glory_kamikazes.push_back(gas);
@@ -399,7 +411,7 @@ void ShopDemo::init(const IDBGlory *glory, const Player *player, Recorder *recor
   
   if(hasShopcache(glory)) {
     prerolled = true;
-    game.runShopcache(getShopcache(glory));
+    game.runShopcache(getShopcache(glory), 1);
   } else {
     prerolled = false;
   }

@@ -1,7 +1,4 @@
 ---- Major work path
-- Cached shop demo stats
-  - Clamp "Target" tanks to be OPEC-II
-  - Full second within 1%, not this current checkpoint system
 - Figure out how I actually want new games to work
   - Start game at phase X
 - Training/implants/wtf

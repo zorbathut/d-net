@@ -275,6 +275,8 @@ const vector<Coord2> &IDBTankAdjust::vertices() const { return idb->vertices; };
 Coord2 IDBTankAdjust::firepoint() const { return idb->firepoint; };
 const vector<Coord2> &IDBTankAdjust::minepath() const { return idb->minepath; };
 
+const IDBTank *IDBTankAdjust::base() const { return idb; };
+
 IDBTankAdjust::IDBTankAdjust(const IDBTank *in_idb, const IDBAdjustment &in_adjust) { idb = in_idb; adjust = in_adjust; };
 
 bool operator==(const IDBTankAdjust &lhs, const IDBTankAdjust &rhs) {
