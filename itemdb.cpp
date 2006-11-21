@@ -1027,9 +1027,9 @@ void parseShopcache(kvData *chunk) {
   vector<string> tspec = tokenize(chunk->consume("tankstats"), "\n");
   for(int i = 0; i < tspec.size(); i++) {
     vector<int> ti = sti(tokenize(tspec[i], " "));
-    CHECK(ti.size() == 3);
+    CHECK(ti.size() == 2);
     CHECK(ti[0] == i);
-    titem->tank_specific.push_back(make_pair(ti[1], ti[2]));
+    titem->tank_specific.push_back(ti[1]);
   }
 }
 

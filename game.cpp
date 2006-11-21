@@ -838,9 +838,9 @@ vector<pair<Float2, pair<float, string> > > Game::getStats() const {
 }
 
 void Game::dumpMetastats(Recorder *recorder) const {
-  vector<pair<int, int> > stats;
+  vector<int> stats;
   for(int i = 0; i < tanks.size(); i++)
-    stats.push_back(tanks[i].dumpMetastats());
+    stats.push_back(tanks[i].dumpDamageframes());
   
   recorder->metastats(demo_cycles, stats);
 }
@@ -867,11 +867,8 @@ void Game::runShopcache(const IDBShopcache &cache, const vector<const Player *> 
   }
   
   demo_cycles = cache.cycles;
-  for(int i = 0; i < tanks.size(); i++) {
-    pair<int, int> cts = cache.tank_specific[i];  // speed up if TANK_FIRERATE is higher
-    cts.first = (int)(cts.first / players[0]->getAdjust().adjustmentfactor(IDBAdjustment::TANK_FIRERATE));
-    tanks[i].insertMetastats(cts);
-  }
+  for(int i = 0; i < tanks.size(); i++) // speed up/slow down based on TANK_FIRERATE
+    tanks[i].insertDamageframes((int)(cache.tank_specific[i] / players[0]->getAdjust().adjustmentfactor(IDBAdjustment::TANK_FIRERATE)));
   
   for(int i = 0; i < tanks.size(); i++)
     if(demo_playermodes[i] == DEMOPLAYER_DPC)

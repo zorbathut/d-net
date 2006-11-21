@@ -383,15 +383,14 @@ float Tank::getDPC(int cycles) const {
   return damageTakenPreviousHits / cycles;
 }
 
-pair<int, int> Tank::dumpMetastats() const {
+int Tank::dumpDamageframes() const {
   CHECK(prerollFrames == 0);
-  return make_pair(framesSinceDamage, damageEvents);
+  return framesSinceDamage;
 }
 
-void Tank::insertMetastats(pair<int, int> mst) {
+void Tank::insertDamageframes(int dfr) {
   CHECK(prerollFrames == 0);
-  prerollFrames = mst.first;
-  damageEvents = mst.second;
+  prerollFrames = dfr;
 }
 
 bool Tank::hasTakenDamage() const {

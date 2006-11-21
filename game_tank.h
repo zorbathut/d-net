@@ -44,8 +44,8 @@ public:
   float getDPS() const;
   float getDPH() const;
   float getDPC(int cycles) const;
-  pair<int, int> dumpMetastats() const;
-  void insertMetastats(pair<int, int> mst);
+  int dumpDamageframes() const;
+  void insertDamageframes(int dfr);
   
   bool hasTakenDamage() const;
   void addCycle();
