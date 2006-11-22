@@ -8,14 +8,32 @@ using namespace std;
 
 class Ai;
 
+class StdMenuItem {
+public:
+  static StdMenuItem makeStandardMenu(const string &text, int trigger);
+
+  int tick(const Keystates &keys);
+  float render(float y) const;
+
+private:
+  enum { TYPE_TRIGGER, TYPE_LAST };
+  
+  int type;
+  string name;
+
+  int trigger;
+
+  StdMenuItem();
+};
+
 class StdMenu {
   
-  vector<pair<string, int> > items;
+  vector<StdMenuItem> items;
   int cpos;
   
 public:
 
-  void pushMenuItem(const string &name, int triggeraction);
+  void pushMenuItem(const StdMenuItem &site);
 
   int tick(const Keystates &keys);
   void render() const;
@@ -38,7 +56,7 @@ class InterfaceMain : boost::noncopyable {
   
   StdMenu mainmenu;
   
-  vector< Keystates > kst;
+  vector<Keystates> kst;
   
 public:
 

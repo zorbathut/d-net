@@ -18,31 +18,62 @@ DEFINE_bool(vecedit, false, "Vector editor (WARNING: nearly unusable)");
 DEFINE_int(rounds_per_shop, 6, "How many rounds between each buying-things opportunity");
 DEFINE_bool(auto_newgame, false, "Automatically enter New Game");
 
-void StdMenu::pushMenuItem(const string &name, int triggeraction) {
-  items.push_back(make_pair(name, triggeraction));
+StdMenuItem StdMenuItem::makeStandardMenu(const string &text, int trigger) {
+  StdMenuItem stim;
+  stim.type = TYPE_TRIGGER;
+  stim.name = text;
+  stim.trigger = trigger;
+  return stim;
+}
+
+int StdMenuItem::tick(const Keystates &keys) {
+  if(type == TYPE_TRIGGER) {
+    if(keys.accept.down)
+      return trigger;
+  } else {
+    CHECK(0);
+  }
+  return -1; 
+}
+
+float StdMenuItem::render(float y) const {
+  if(type == TYPE_TRIGGER) {
+    drawText(name.c_str(), 5, Float2(2, y));
+    return 6;
+  } else {
+    CHECK(0);
+  }
+  CHECK(0);
+}
+
+StdMenuItem::StdMenuItem() { }
+
+void StdMenu::pushMenuItem(const StdMenuItem &site) {
+  items.push_back(site);
 }
 
 int StdMenu::tick(const Keystates &keys) {
-  if(keys.accept.down)
-    return items[cpos].second;
   if(keys.u.repeat)
     cpos--;
   if(keys.d.repeat)
     cpos++;
   cpos += items.size();
   cpos %= items.size();
-  return -1;
+  
+  return items[cpos].tick(keys);
 }
 
 void StdMenu::render() const {
   setZoom(Float4(0, 0, 133.3333, 100));
+  
+  float y = 2;
   for(int i = 0; i < items.size(); i++) {
     if(i == cpos) {
       setColor(C::active_text);
     } else {
       setColor(C::inactive_text);
     }
-    drawText(items[i].first.c_str(), 5, Float2(2, 2 + 6 * i));
+    y += items[i].render(y);
   }
 }
 
@@ -382,10 +413,10 @@ void InterfaceMain::render() const {
 
 InterfaceMain::InterfaceMain() {
   interface_mode = IFM_S_MAINMENU;
-  mainmenu.pushMenuItem("New game", IFM_M_NEWGAME);
-  mainmenu.pushMenuItem("Input test", IFM_M_INPUTTEST);
-  mainmenu.pushMenuItem("Grid toggle (useful for monitor sync)", IFM_M_GRID);
-  mainmenu.pushMenuItem("Exit", IFM_M_EXIT);
+  mainmenu.pushMenuItem(StdMenuItem::makeStandardMenu("New game", IFM_M_NEWGAME));
+  mainmenu.pushMenuItem(StdMenuItem::makeStandardMenu("Input test", IFM_M_INPUTTEST));
+  mainmenu.pushMenuItem(StdMenuItem::makeStandardMenu("Grid toggle (useful for monitor sync)", IFM_M_GRID));
+  mainmenu.pushMenuItem(StdMenuItem::makeStandardMenu("Exit", IFM_M_EXIT));
   grid = false;
   inptest = false;
   game = NULL;
@@ -397,33 +428,3 @@ InterfaceMain::~InterfaceMain() {
   dprintf("Metagame deleted\n");
 }
 
-/*
-void interfaceInit() {
-  ifm = InterfaceMain();
-}
-
-bool interfaceRunTick(const vector< Controller > &control) {
-  if(FLAGS_vecedit) {
-    return vecEditTick(control[controls_primary_id()]);
-  } else {
-    return ifm.tick(control);
-  }
-}
-
-void interfaceRunAi(const vector<Ai *> &ais) {
-  if(FLAGS_vecedit) {
-    for(int i = 0; i < ais.size(); i++)
-      CHECK(!ais[i]);
-  } else {
-    return ifm.ai(ais);
-  }
-}
-  
-void interfaceRenderToScreen() {
-  if(FLAGS_vecedit) {
-    vecEditRender();
-  } else {
-    ifm.render();
-  }
-}
-*/

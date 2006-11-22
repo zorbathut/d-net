@@ -42,6 +42,7 @@
 - Winner list better "null" icon
 
 ---- Things that may or may not be needed
+- Multithread cache generation
 - Add random faction
 - Stop reloading files in findLevels
 - Add tank sell depreciation
@@ -59,13 +60,24 @@
 http://www.itchstudios.com/psg/ - Dafred's artist
 
 ---
-DPS stat stuff
+New game stuff
 
-Three types:
+Junkyard 1000
+Civilian 30000?
+Professional 900000?
+Military 2.7m
+Exotic 81m
+Experimental 2.4b
+Ultimate 73b
 
-cycles=blah
-tankstats=tankid frames hits
+Start game at point:
+End game at point:
+Approximate rounds to play:
 
-DPS - must store number of frames, per-tank
-DPC - must store number of cycles (global)
-DPH - must store number of hits, per-tank
+How to calculate stuff? I'm not sure. log vs log, divide by rounds, exp or something?
+
+lessee
+
+exp((log(30000) - log(1000)) / rounds) = multiple
+
+Where should this be? I think Interface, so I can start Metagame with these parameters. I guess I'll move the whole faction thing into that as well, I really don't think the battles work (as neat as the idea is.)
