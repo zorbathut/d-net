@@ -281,11 +281,9 @@ bool InterfaceMain::tick(const vector< Controller > &control, RngSeed gameseed) 
   }
 
   if(interface_mode == STATE_MAINMENU) {
-    int mrv;
-    mrv = mainmenu.tick(kst[controls_primary_id()]);
+    int mrv = mainmenu.tick(kst[controls_primary_id()]);
     if(mrv == MAIN_NEWGAME || FLAGS_auto_newgame) {
-      game = new Metagame(control.size(), FLAGS_rounds_per_shop, gameseed);
-      interface_mode = STATE_PLAYING;
+      interface_mode = STATE_CONFIGURE;
     } else if(mrv == MAIN_EXIT) {
       return true;
     } else if(mrv == MAIN_INPUTTEST) {
@@ -295,10 +293,15 @@ bool InterfaceMain::tick(const vector< Controller > &control, RngSeed gameseed) 
     } else {
       CHECK(mrv == -1);
     }
-  } else if(interface_mode == STATE_PLAYING) {
-    if(game->runTick(control)) {
-      interface_mode = STATE_MAINMENU;
+  } else if(interface_mode == STATE_CONFIGURE) {
+    int mrv = configmenu.tick(kst[controls_primary_id()]);
+    if(mrv == 1) {
+      game = new Metagame(control.size(), FLAGS_rounds_per_shop, gameseed);
+      interface_mode = STATE_PLAYING;
     }
+  } else if(interface_mode == STATE_PLAYING) {
+    if(game->runTick(control))
+      interface_mode = STATE_MAINMENU;
   } else {
     CHECK(0);
   }
@@ -403,6 +406,8 @@ void InterfaceMain::render() const {
       setColor(Color(1.0, 0.3, 0.3));
       drawText("Optimizations disabled!", 6, Float2(1, 1));
     }
+  } else if(interface_mode == STATE_CONFIGURE) {
+    configmenu.render();
   } else if(interface_mode == STATE_PLAYING) {
     game->renderToScreen();
   } else {
@@ -417,6 +422,11 @@ InterfaceMain::InterfaceMain() {
   mainmenu.pushMenuItem(StdMenuItem::makeStandardMenu("Input test", MAIN_INPUTTEST));
   mainmenu.pushMenuItem(StdMenuItem::makeStandardMenu("Grid toggle (useful for monitor sync)", MAIN_GRID));
   mainmenu.pushMenuItem(StdMenuItem::makeStandardMenu("Exit", MAIN_EXIT));
+  
+  configmenu.pushMenuItem(StdMenuItem::makeStandardMenu("Starting point", 1));
+  configmenu.pushMenuItem(StdMenuItem::makeStandardMenu("Ending point", 1));
+  configmenu.pushMenuItem(StdMenuItem::makeStandardMenu("Estimated game length", 1));
+  configmenu.pushMenuItem(StdMenuItem::makeStandardMenu("Begin", 1));
   grid = false;
   inptest = false;
   game = NULL;

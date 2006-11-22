@@ -44,7 +44,7 @@ public:
 
 class InterfaceMain : boost::noncopyable {
   
-  enum { STATE_MAINMENU, STATE_PLAYING };
+  enum { STATE_MAINMENU, STATE_CONFIGURE, STATE_PLAYING };
   enum { MAIN_NEWGAME, MAIN_INPUTTEST, MAIN_GRID, MAIN_EXIT };
   int interface_mode;
   
@@ -55,6 +55,11 @@ class InterfaceMain : boost::noncopyable {
   Metagame *game;
   
   StdMenu mainmenu;
+  StdMenu configmenu;
+  
+  float start;
+  float end;
+  float expamount;
   
   vector<Keystates> kst;
   
