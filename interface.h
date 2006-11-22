@@ -44,8 +44,8 @@ public:
 
 class InterfaceMain : boost::noncopyable {
   
-  enum { IFM_S_MAINMENU, IFM_S_PLAYING };
-  enum { IFM_M_NEWGAME, IFM_M_INPUTTEST, IFM_M_GRID, IFM_M_EXIT };
+  enum { STATE_MAINMENU, STATE_PLAYING };
+  enum { MAIN_NEWGAME, MAIN_INPUTTEST, MAIN_GRID, MAIN_EXIT };
   int interface_mode;
   
   bool grid;

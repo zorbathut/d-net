@@ -280,24 +280,24 @@ bool InterfaceMain::tick(const vector< Controller > &control, RngSeed gameseed) 
     }
   }
 
-  if(interface_mode == IFM_S_MAINMENU) {
+  if(interface_mode == STATE_MAINMENU) {
     int mrv;
     mrv = mainmenu.tick(kst[controls_primary_id()]);
-    if(mrv == IFM_M_NEWGAME || FLAGS_auto_newgame) {
+    if(mrv == MAIN_NEWGAME || FLAGS_auto_newgame) {
       game = new Metagame(control.size(), FLAGS_rounds_per_shop, gameseed);
-      interface_mode = IFM_S_PLAYING;
-    } else if(mrv == IFM_M_EXIT) {
+      interface_mode = STATE_PLAYING;
+    } else if(mrv == MAIN_EXIT) {
       return true;
-    } else if(mrv == IFM_M_INPUTTEST) {
+    } else if(mrv == MAIN_INPUTTEST) {
       inptest = !inptest;
-    } else if(mrv == IFM_M_GRID) {
+    } else if(mrv == MAIN_GRID) {
       grid = !grid;
     } else {
       CHECK(mrv == -1);
     }
-  } else if(interface_mode == IFM_S_PLAYING) {
+  } else if(interface_mode == STATE_PLAYING) {
     if(game->runTick(control)) {
-      interface_mode = IFM_S_MAINMENU;
+      interface_mode = STATE_MAINMENU;
     }
   } else {
     CHECK(0);
@@ -309,11 +309,11 @@ bool InterfaceMain::tick(const vector< Controller > &control, RngSeed gameseed) 
 
 void InterfaceMain::ai(const vector<Ai *> &ai) const {
   StackString stp("Interface AI");
-  if(interface_mode == IFM_S_MAINMENU) {
+  if(interface_mode == STATE_MAINMENU) {
     for(int i = 0; i < ai.size(); i++)
       if(ai[i])
         ai[i]->updatePregame();
-  } else if(interface_mode == IFM_S_PLAYING) {
+  } else if(interface_mode == STATE_PLAYING) {
     game->ai(ai);
   }
 }
@@ -329,7 +329,7 @@ void InterfaceMain::render() const {
     drawJustifiedText("A Lion", 30, Float2(0, 0), TEXT_CENTER, TEXT_CENTER);
   }
   
-  if(interface_mode == IFM_S_MAINMENU) {
+  if(interface_mode == STATE_MAINMENU) {
     mainmenu.render();
     setColor(C::inactive_text);
     drawText("Player one uses arrow keys and UIOJKL", 3, Float2(2, 30));
@@ -403,7 +403,7 @@ void InterfaceMain::render() const {
       setColor(Color(1.0, 0.3, 0.3));
       drawText("Optimizations disabled!", 6, Float2(1, 1));
     }
-  } else if(interface_mode == IFM_S_PLAYING) {
+  } else if(interface_mode == STATE_PLAYING) {
     game->renderToScreen();
   } else {
     CHECK(0);
@@ -412,11 +412,11 @@ void InterfaceMain::render() const {
 #endif
 
 InterfaceMain::InterfaceMain() {
-  interface_mode = IFM_S_MAINMENU;
-  mainmenu.pushMenuItem(StdMenuItem::makeStandardMenu("New game", IFM_M_NEWGAME));
-  mainmenu.pushMenuItem(StdMenuItem::makeStandardMenu("Input test", IFM_M_INPUTTEST));
-  mainmenu.pushMenuItem(StdMenuItem::makeStandardMenu("Grid toggle (useful for monitor sync)", IFM_M_GRID));
-  mainmenu.pushMenuItem(StdMenuItem::makeStandardMenu("Exit", IFM_M_EXIT));
+  interface_mode = STATE_MAINMENU;
+  mainmenu.pushMenuItem(StdMenuItem::makeStandardMenu("New game", MAIN_NEWGAME));
+  mainmenu.pushMenuItem(StdMenuItem::makeStandardMenu("Input test", MAIN_INPUTTEST));
+  mainmenu.pushMenuItem(StdMenuItem::makeStandardMenu("Grid toggle (useful for monitor sync)", MAIN_GRID));
+  mainmenu.pushMenuItem(StdMenuItem::makeStandardMenu("Exit", MAIN_EXIT));
   grid = false;
   inptest = false;
   game = NULL;
