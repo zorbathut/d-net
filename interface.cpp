@@ -38,7 +38,7 @@ int StdMenuItem::tick(const Keystates &keys) {
 
 float StdMenuItem::render(float y) const {
   if(type == TYPE_TRIGGER) {
-    drawText(name.c_str(), 5, Float2(2, y));
+    drawText(name.c_str(), 4, Float2(2, y));
     return 6;
   } else {
     CHECK(0);
