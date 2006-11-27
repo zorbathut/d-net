@@ -247,10 +247,16 @@ int modurot(int val, int mod) {
   return val % mod;
 }
 
+void checkEndian() {
+  float j = 12;
+  CHECK(reinterpret_cast<unsigned char*>(&j)[3] == 65);
+}
+
 string rawstrFromFloat(float x) {
   // This is awful.
   CHECK(sizeof(x) == 4);
   CHECK(numeric_limits<float>::is_iec559);  // yayz
+  checkEndian();
   unsigned char *dat = reinterpret_cast<unsigned char*>(&x);
   string beef;
   for(int i = 0; i < 4; i++)
@@ -263,6 +269,7 @@ float floatFromString(const string &x) {
   // This is also awful.
   CHECK(sizeof(float) == 4);
   CHECK(numeric_limits<float>::is_iec559); // wootz
+  checkEndian();
   CHECK(x.size() == 8);
   float rv;
   unsigned char *dat = reinterpret_cast<unsigned char*>(&rv);

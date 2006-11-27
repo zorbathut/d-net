@@ -1,5 +1,4 @@
 ---- Major work path
-- Check byte order on float conversion
 - OSX/otherOS conversions
 - Figure out how I actually want new games to work
   - Start game at phase X
