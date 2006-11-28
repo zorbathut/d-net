@@ -171,7 +171,7 @@ void Metagame::findLevels(int playercount) {
   }
 }
 
-Metagame::Metagame(int playercount, int in_roundsBetweenShop, RngSeed seed) :
+Metagame::Metagame(int playercount, Money startingcash, float multiple, int in_roundsBetweenShop, RngSeed seed) :
     persistent(playercount, in_roundsBetweenShop), rng(seed) {
   
   if(FLAGS_factionMode != -1) {

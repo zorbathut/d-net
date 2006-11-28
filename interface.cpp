@@ -379,7 +379,7 @@ bool InterfaceMain::tick(const vector< Controller > &control, RngSeed gameseed) 
       }
     }
     if(mrv == 1) {
-      game = new Metagame(control.size(), FLAGS_rounds_per_shop, gameseed);
+      game = new Metagame(control.size(), Money((long long)(1000 * pow(30, start))), exp(moneyexp), FLAGS_rounds_per_shop, gameseed);
       interface_mode = STATE_PLAYING;
     }
   } else if(interface_mode == STATE_PLAYING) {
@@ -510,11 +510,11 @@ InterfaceMain::InterfaceMain() {
   
   start = 0;
   end = names.size() - 1;
-  exp = 0.1133;
+  moneyexp = 0.1133;
   
   configmenu.pushMenuItem(StdMenuItem::makeScale("Game start", names, &start));
   configmenu.pushMenuItem(StdMenuItem::makeScale("Game end", names, &end));
-  configmenu.pushMenuItem(StdMenuItem::makeRounds("Estimated rounds", &start, &end, &exp));
+  configmenu.pushMenuItem(StdMenuItem::makeRounds("Estimated rounds", &start, &end, &moneyexp));
   configmenu.pushMenuItem(StdMenuItem::makeStandardMenu("Begin", 1));
   
   grid = false;

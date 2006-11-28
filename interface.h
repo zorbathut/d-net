@@ -70,7 +70,7 @@ class InterfaceMain : boost::noncopyable {
   
   float start;
   float end;
-  float exp;
+  float moneyexp;
   
   vector<Keystates> kst;
   
