@@ -11,17 +11,21 @@ class Ai;
 class StdMenuItem {
 public:
   static StdMenuItem makeStandardMenu(const string &text, int trigger);
+  static StdMenuItem makeScale(const string &text, const vector<string> &labels, float *position);
 
   int tick(const Keystates &keys);
   float render(float y) const;
 
 private:
-  enum { TYPE_TRIGGER, TYPE_LAST };
+  enum { TYPE_TRIGGER, TYPE_SCALE, TYPE_LAST };
   
   int type;
   string name;
 
   int trigger;
+  
+  vector<string> scale_labels;
+  float *scale_position;
 
   StdMenuItem();
 };

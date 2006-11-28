@@ -1,8 +1,8 @@
 ---- Major work path
-- OSX/otherOS conversions
 - Figure out how I actually want new games to work
   - Start game at phase X
 - Sound
+- OSX/otherOS conversions
 - Training/implants/wtf
 - Next-gen vecedit?
 - Activate factions
