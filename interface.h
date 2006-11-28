@@ -12,12 +12,13 @@ class StdMenuItem {
 public:
   static StdMenuItem makeStandardMenu(const string &text, int trigger);
   static StdMenuItem makeScale(const string &text, const vector<string> &labels, float *position);
+  static StdMenuItem makeRounds(const string &text, float *start, float *end, float *exp);
 
   int tick(const Keystates &keys);
   float render(float y) const;
 
 private:
-  enum { TYPE_TRIGGER, TYPE_SCALE, TYPE_LAST };
+  enum { TYPE_TRIGGER, TYPE_SCALE, TYPE_ROUNDS, TYPE_LAST };
   
   int type;
   string name;
@@ -26,6 +27,10 @@ private:
   
   vector<string> scale_labels;
   float *scale_position;
+  
+  float *rounds_start;
+  float *rounds_end;
+  float *rounds_exp;
 
   StdMenuItem();
 };
@@ -65,7 +70,7 @@ class InterfaceMain : boost::noncopyable {
   
   float start;
   float end;
-  float expamount;
+  float exp;
   
   vector<Keystates> kst;
   

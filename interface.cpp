@@ -37,6 +37,16 @@ StdMenuItem StdMenuItem::makeScale(const string &text, const vector<string> &lab
   return stim;
 }
 
+StdMenuItem StdMenuItem::makeRounds(const string &text, float *start, float *end, float *exp) {
+  StdMenuItem stim;
+  stim.type = TYPE_ROUNDS;
+  stim.name = text;
+  stim.rounds_start = start;
+  stim.rounds_end = end;
+  stim.rounds_exp = exp;
+  return stim;
+}
+
 int StdMenuItem::tick(const Keystates &keys) {
   if(type == TYPE_TRIGGER) {
     if(keys.accept.push)
@@ -46,6 +56,12 @@ int StdMenuItem::tick(const Keystates &keys) {
       *scale_position -= 0.05;
     if(keys.r.down)
       *scale_position += 0.05;
+  } else if(type == TYPE_ROUNDS) {
+    if(keys.l.down)
+      *rounds_exp *= 1.01;
+    if(keys.r.down)
+      *rounds_exp /= 1.01;
+    *rounds_exp = clamp(*rounds_exp, 0.001, 2);
   } else {
     CHECK(0);
   }
@@ -86,6 +102,12 @@ float StdMenuItem::render(float y) const {
       path.push_back(Float2(*scale_position - height / 16, height / 4));
       drawLineLoop(path, height / 20);
     }
+    return 6;
+  } else if(type == TYPE_ROUNDS) {
+    drawText(name.c_str(), 4, Float2(2, y));
+    int rounds = int(ceil((*rounds_end - *rounds_start) * log(30) / *rounds_exp / 6)) * 6;
+    float percentage = (exp(*rounds_exp) - 1) * 100;
+    drawText(StringPrintf("%d (+%.2f%% cash/round)", rounds, percentage), 4, Float2(60, y));
     return 6;
   } else {
     CHECK(0);
@@ -488,10 +510,11 @@ InterfaceMain::InterfaceMain() {
   
   start = 0;
   end = names.size() - 1;
+  exp = 0.1133;
   
   configmenu.pushMenuItem(StdMenuItem::makeScale("Game start", names, &start));
   configmenu.pushMenuItem(StdMenuItem::makeScale("Game end", names, &end));
-  configmenu.pushMenuItem(StdMenuItem::makeStandardMenu("Estimated game length", 1));
+  configmenu.pushMenuItem(StdMenuItem::makeRounds("Estimated rounds", &start, &end, &exp));
   configmenu.pushMenuItem(StdMenuItem::makeStandardMenu("Begin", 1));
   
   grid = false;
