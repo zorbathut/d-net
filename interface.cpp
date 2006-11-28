@@ -39,9 +39,13 @@ StdMenuItem StdMenuItem::makeScale(const string &text, const vector<string> &lab
 
 int StdMenuItem::tick(const Keystates &keys) {
   if(type == TYPE_TRIGGER) {
-    if(keys.accept.down)
+    if(keys.accept.push)
       return trigger;
   } else if(type == TYPE_SCALE) {
+    if(keys.l.down)
+      *scale_position -= 0.05;
+    if(keys.r.down)
+      *scale_position += 0.05;
   } else {
     CHECK(0);
   }
@@ -54,18 +58,34 @@ float StdMenuItem::render(float y) const {
     return 6;
   } else if(type == TYPE_SCALE) {
     drawText(name.c_str(), 4, Float2(2, y));
+    
     float xstart = 40;
-    //drawRect(Float4(xstart, y, getZoom().ex - 4, y + 4), 0.01);
-    GfxWindow gfxw(Float4(xstart, y, getZoom().ex - 4, y + 4), 1.0);
+    Float4 boundy = Float4(xstart, y, getZoom().ex - 4, y + 4);
+    GfxWindow gfxw(boundy, 1.0);
+    
     setZoomAround(Float4(*scale_position - 2, 0, *scale_position + 2, 0));
     
     float height = getZoom().y_span();
     
-    setColor(C::active_text);
-    for(int i = 0; i < scale_labels.size(); i++)
+    for(int i = 0; i < scale_labels.size(); i++) {
+      setColor(C::active_text);
       drawJustifiedText(scale_labels[i], height / 2 * 0.9, Float2(i, 0), TEXT_CENTER, TEXT_MAX);
+      setColor(C::inactive_text);
+      drawLine(Float4(i, height / 2 - height / 6, i, height / 6), height / 20);
+    }
+
     setColor(C::inactive_text);
     drawLine(Float4(0, height / 4, scale_labels.size() - 1, height / 4), height / 20);
+    
+    setColor(C::active_text);
+    {
+      vector<Float2> path;
+      path.push_back(Float2(*scale_position, height / 8));
+      path.push_back(Float2(*scale_position + height / 16, height / 4));
+      path.push_back(Float2(*scale_position, height / 2 - height / 8));
+      path.push_back(Float2(*scale_position - height / 16, height / 4));
+      drawLineLoop(path, height / 20);
+    }
     return 6;
   } else {
     CHECK(0);
@@ -84,8 +104,7 @@ int StdMenu::tick(const Keystates &keys) {
     cpos--;
   if(keys.d.repeat)
     cpos++;
-  cpos += items.size();
-  cpos %= items.size();
+  cpos = modurot(cpos, items.size());
   
   return items[cpos].tick(keys);
 }
@@ -102,6 +121,10 @@ void StdMenu::render() const {
     }
     y += items[i].render(y);
   }
+}
+
+int StdMenu::currentItem() const {
+  return cpos;
 }
 
 StdMenu::StdMenu() {
@@ -322,6 +345,17 @@ bool InterfaceMain::tick(const vector< Controller > &control, RngSeed gameseed) 
     }
   } else if(interface_mode == STATE_CONFIGURE) {
     int mrv = configmenu.tick(kst[controls_primary_id()]);
+    start = clamp(start, 0, 6);
+    end = clamp(end, 0, 6);
+    if(start > end) {
+      if(configmenu.currentItem() == 0) {
+        start = end;
+      } else if(configmenu.currentItem() == 1) {
+        end = start;
+      } else {
+        CHECK(0); // what
+      }
+    }
     if(mrv == 1) {
       game = new Metagame(control.size(), FLAGS_rounds_per_shop, gameseed);
       interface_mode = STATE_PLAYING;

@@ -42,6 +42,8 @@ public:
   int tick(const Keystates &keys);
   void render() const;
 
+  int currentItem() const;
+
   StdMenu();
 
 };
