@@ -12,6 +12,8 @@
 #include "player.h"
 #include "vecedit.h"
 
+#include <boost/assign.hpp>
+
 using namespace std;
 
 DEFINE_bool(vecedit, false, "Vector editor (WARNING: nearly unusable)");
@@ -26,10 +28,20 @@ StdMenuItem StdMenuItem::makeStandardMenu(const string &text, int trigger) {
   return stim;
 }
 
+StdMenuItem StdMenuItem::makeScale(const string &text, const vector<string> &labels, float *position) {
+  StdMenuItem stim;
+  stim.type = TYPE_SCALE;
+  stim.name = text;
+  stim.scale_labels = labels;
+  stim.scale_position = position;
+  return stim;
+}
+
 int StdMenuItem::tick(const Keystates &keys) {
   if(type == TYPE_TRIGGER) {
     if(keys.accept.down)
       return trigger;
+  } else if(type == TYPE_SCALE) {
   } else {
     CHECK(0);
   }
@@ -39,6 +51,21 @@ int StdMenuItem::tick(const Keystates &keys) {
 float StdMenuItem::render(float y) const {
   if(type == TYPE_TRIGGER) {
     drawText(name.c_str(), 4, Float2(2, y));
+    return 6;
+  } else if(type == TYPE_SCALE) {
+    drawText(name.c_str(), 4, Float2(2, y));
+    float xstart = 40;
+    //drawRect(Float4(xstart, y, getZoom().ex - 4, y + 4), 0.01);
+    GfxWindow gfxw(Float4(xstart, y, getZoom().ex - 4, y + 4), 1.0);
+    setZoomAround(Float4(*scale_position - 2, 0, *scale_position + 2, 0));
+    
+    float height = getZoom().y_span();
+    
+    setColor(C::active_text);
+    for(int i = 0; i < scale_labels.size(); i++)
+      drawJustifiedText(scale_labels[i], height / 2 * 0.9, Float2(i, 0), TEXT_CENTER, TEXT_MAX);
+    setColor(C::inactive_text);
+    drawLine(Float4(0, height / 4, scale_labels.size() - 1, height / 4), height / 20);
     return 6;
   } else {
     CHECK(0);
@@ -423,10 +450,16 @@ InterfaceMain::InterfaceMain() {
   mainmenu.pushMenuItem(StdMenuItem::makeStandardMenu("Grid toggle (useful for monitor sync)", MAIN_GRID));
   mainmenu.pushMenuItem(StdMenuItem::makeStandardMenu("Exit", MAIN_EXIT));
   
-  configmenu.pushMenuItem(StdMenuItem::makeStandardMenu("Starting point", 1));
-  configmenu.pushMenuItem(StdMenuItem::makeStandardMenu("Ending point", 1));
+  vector<string> names = boost::assign::list_of("Junkyard")("Civilian")("Professional")("Military")("Exotic")("Experimental")("Ultimate");
+  
+  start = 0;
+  end = names.size() - 1;
+  
+  configmenu.pushMenuItem(StdMenuItem::makeScale("Game start", names, &start));
+  configmenu.pushMenuItem(StdMenuItem::makeScale("Game end", names, &end));
   configmenu.pushMenuItem(StdMenuItem::makeStandardMenu("Estimated game length", 1));
   configmenu.pushMenuItem(StdMenuItem::makeStandardMenu("Begin", 1));
+  
   grid = false;
   inptest = false;
   game = NULL;

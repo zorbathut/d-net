@@ -4,7 +4,7 @@
 #include <map>
 #include <string>
 
-#include "boost/noncopyable.hpp"
+#include <boost/noncopyable.hpp>
 
 using namespace std;
 

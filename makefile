@@ -1,7 +1,7 @@
 
 SOURCES = main core game timer debug gfx collide gamemap util rng args interface vecedit metagame itemdb parse dvec2 input level coord ai inputsnag os_win32 float cfcommon coord_boolean player itemdb_adjust metagame_config shop shop_demo shop_info game_ai game_effects color metagame_tween cfc game_tank game_util game_projectile socket httpd recorder generators
-CPPFLAGS = `sdl-config --cflags` -mno-cygwin -DVECTOR_PARANOIA -Wall -Wno-sign-compare -Wno-uninitialized -g #-pg # I would love to get rid of -Wno-uninitialized, but it makes the standard library spit out warnings! :(
-LINKFLAGS = `sdl-config --libs` -lglu32 -lopengl32 -lm -lws2_32 -mno-cygwin -g #-pg
+CPPFLAGS = `sdl-config --cflags` -DVECTOR_PARANOIA -I/usr/include/boost-1_33_1 -Wall -Wno-sign-compare -Wno-uninitialized -g #-pg # I would love to get rid of -Wno-uninitialized, but it makes the standard library spit out warnings! :(
+LINKFLAGS = `sdl-config --libs` -lglu32 -lopengl32 -lm -lws2_32 -g #-pg
 DATAFILES = $(shell find data | grep -v \.svn | grep -v shopcache.dwh)
 
 CPP = g++

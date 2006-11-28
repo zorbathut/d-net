@@ -4,8 +4,9 @@
 #include "collide.h"
 #include "game_projectile.h"
 #include "input.h"
-#include "boost/noncopyable.hpp"
 #include "rng.h"
+
+#include <boost/noncopyable.hpp>
 
 using namespace std;
 

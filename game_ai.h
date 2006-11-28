@@ -2,7 +2,8 @@
 #define DNET_GAME_AI
 
 #include "input.h"
-#include "boost/noncopyable.hpp"
+
+#include <boost/noncopyable.hpp>
 
 using namespace std;
 

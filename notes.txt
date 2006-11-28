@@ -49,7 +49,7 @@ GBH II                                                      ------
 KXD A                                                       ------
 KXD B                                                                -----
 KXD O                                                                        -----
-                Junkyard | Civilian | Professi | Military | Exotic | Ultra | Crazy
+                Junkyard | Civilian | Professi | Military | Exotic | Experimental | Ultimate (OGRE only)
 
 KINETIC
 Autocannon      -------------
