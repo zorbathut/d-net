@@ -3,7 +3,7 @@
 
 #include <string>
 
-#include "noncopyable.h"
+#include "boost/noncopyable.hpp"
 #include "smartptr.h"
 
 class Socket : boost::noncopyable {

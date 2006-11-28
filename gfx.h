@@ -4,7 +4,7 @@
 #include "cfc.h"
 #include "color.h"
 #include "dvec2.h"
-#include "noncopyable.h"
+#include "boost/noncopyable.hpp"
 
 using namespace std;
 

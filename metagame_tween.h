@@ -3,7 +3,7 @@
 
 #include "metagame_config.h"
 #include "shop.h"
-#include "noncopyable.h"
+#include "boost/noncopyable.hpp"
 
 using namespace std;
 
