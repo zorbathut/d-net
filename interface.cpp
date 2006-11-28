@@ -513,7 +513,7 @@ InterfaceMain::InterfaceMain() {
   moneyexp = 0.1133;
   
   configmenu.pushMenuItem(StdMenuItem::makeScale("Game start", names, &start));
-  configmenu.pushMenuItem(StdMenuItem::makeScale("Game end", names, &end));
+  //configmenu.pushMenuItem(StdMenuItem::makeScale("Game end", names, &end));
   configmenu.pushMenuItem(StdMenuItem::makeRounds("Estimated rounds", &start, &end, &moneyexp));
   configmenu.pushMenuItem(StdMenuItem::makeStandardMenu("Begin", 1));
   

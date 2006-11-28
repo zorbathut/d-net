@@ -109,7 +109,7 @@ void PlayerMenuState::createNewAxistypeDemo(RngSeed seed) {
   
   setting_axistype_demo.reset(new GamePackage);
   
-  setting_axistype_demo->players.push_back(Player(faction->faction, 0));
+  setting_axistype_demo->players.push_back(Player(faction->faction, 0, Money(0)));
   
   const RenderInfo rin;
   
@@ -860,7 +860,7 @@ bool runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
       
       pms->test_game.reset(new GamePackage);
       
-      pms->test_game->players.push_back(Player(pms->faction->faction, 0));
+      pms->test_game->players.push_back(Player(pms->faction->faction, 0, Money(0)));
       
       const RenderInfo rin;
       

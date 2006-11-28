@@ -125,7 +125,6 @@ public:
   
   Money getCash() const;
   void addCash(Money amount); // this is really designed *solely* for the income phase
-  void setCash(Money amount); // And this is really designed *solely* for joining a game in progres
 
   void accumulateStats(int kills, float damage);
   void addWin();
@@ -149,7 +148,7 @@ public:
   Money totalValue() const; // Update this when more stuff is added to the player
 
   Player();
-  Player(const IDBFaction *fact, int factionmode);
+  Player(const IDBFaction *fact, int factionmode, Money cash);
 
 private:
   

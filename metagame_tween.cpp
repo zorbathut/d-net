@@ -21,8 +21,6 @@ const float ticker_text_size = 2;
 const float ticker_queue_border = 1;
 const float ticker_waiting_border = 1;
 
-DECLARE_int(startingCash);  // defaults to 1000 atm
-
 bool PersistentData::isPlayerChoose() const {
   return mode == TM_PLAYERCHOOSE;
 }
@@ -476,8 +474,7 @@ bool PersistentData::tickSlot(int slotid, const vector<Controller> &keys) {
 
     if(pms[slt.pid].faction) {
       playerid[slt.pid] = playerdata.size();
-      playerdata.push_back(Player(pms[slt.pid].faction->faction, 0)); // TODO: Make factions matter again
-      playerdata.back().setCash(newPlayerStartingCash);
+      playerdata.push_back(Player(pms[slt.pid].faction->faction, 0, newPlayerStartingCash)); // TODO: Make factions matter again
       slot[slotid].type = Slot::SETTINGS;
     }
   } else if(slt.type == Slot::RESULTS) {
@@ -957,8 +954,9 @@ void PersistentData::divvyCash(float firepowerSpent) {
     if(totals[i] > 1e-6)
       chunkTotal++;
   }
-  dprintf("%d, %f\n", shopcycles, firepowerSpent);
-  lrBaseCash = Money((long long)((75. / 1000 * FLAGS_startingCash) * powl(1.08, roundsbetweenshop * shopcycles) * playerdata.size() * roundsbetweenshop));
+  
+  // We give the users a good chunk of money at the beginning to get started, but then we tone it down a bit per round so they don't get an immediate 6x increase. (or whateverx increase.) In a lot of ways, "starting cash" is a crummy number - it should be "starting cash per round", with starting cash calculated from that. But it's easier to understand this way.
+  lrBaseCash = Money((long long)((75. / 1000 * baseStartingCash.value()) * powl(multiplePerRound, roundsbetweenshop * shopcycles) * playerdata.size() * roundsbetweenshop));
   lrFirepower = Money((long long)(firepowerSpent * 0.8));
   double total = (lrBaseCash + lrFirepower).value();
   dprintf("Total cash is %f", total);
@@ -1006,7 +1004,7 @@ void PersistentData::divvyCash(float firepowerSpent) {
     highestPlayerCash = max(highestPlayerCash, playerdata[i].totalValue() + lrCash[i]);
     dprintf("Total value of %d: %s\n", i, (playerdata[i].totalValue()+ lrCash[i]).textual().c_str());
   }
-  newPlayerStartingCash = max(newPlayerStartingCash, Money(FLAGS_startingCash));
+  newPlayerStartingCash = max(newPlayerStartingCash, baseStartingCash);
 }
 
 void PersistentData::startAtNormalShop() {
@@ -1146,7 +1144,7 @@ pair<Float4, vector<Float2> > getFactionCenters(int fcount) {
 
 DEFINE_int(debugControllers, 0, "Number of controllers to set to debug defaults");
 
-PersistentData::PersistentData(int playercount, int in_roundsbetweenshop) {
+PersistentData::PersistentData(int playercount, Money startingcash, float multiple, int in_roundsbetweenshop) {
   roundsbetweenshop = in_roundsbetweenshop;
   
   pms.clear();
@@ -1220,8 +1218,11 @@ PersistentData::PersistentData(int playercount, int in_roundsbetweenshop) {
   btt_notify = NULL;
   btt_frames_left = 0;
   
-  newPlayerStartingCash = Money(FLAGS_startingCash);
-  highestPlayerCash = Money(FLAGS_startingCash);
+  baseStartingCash = startingcash;
+  multiplePerRound = multiple;
+  
+  newPlayerStartingCash = baseStartingCash;
+  highestPlayerCash = baseStartingCash;
   
   reset();
   
@@ -1246,7 +1247,7 @@ PersistentData::PersistentData(int playercount, int in_roundsbetweenshop) {
     pms[cdbc].setting_axistype = KSAX_STEERING;
     pms[cdbc].setting_old_axistype = KSAX_STEERING;
     playerid[cdbc] = playerdata.size();
-    playerdata.push_back(Player(pms[cdbc].faction->faction, 0));
+    playerdata.push_back(Player(pms[cdbc].faction->faction, 0, newPlayerStartingCash));
     cdbc++;
   }
   if(FLAGS_debugControllers >= 2) {
@@ -1269,7 +1270,7 @@ PersistentData::PersistentData(int playercount, int in_roundsbetweenshop) {
     pms[cdbc].setting_axistype = KSAX_ABSOLUTE;
     pms[cdbc].setting_old_axistype = KSAX_ABSOLUTE;
     playerid[cdbc] = playerdata.size();
-    playerdata.push_back(Player(pms[cdbc].faction->faction, 0));
+    playerdata.push_back(Player(pms[cdbc].faction->faction, 0, newPlayerStartingCash));
     cdbc++;
   }
   if(FLAGS_debugControllers >= 3) {
@@ -1292,7 +1293,7 @@ PersistentData::PersistentData(int playercount, int in_roundsbetweenshop) {
     pms[cdbc].setting_axistype = KSAX_TANK;
     pms[cdbc].setting_old_axistype = KSAX_TANK;
     playerid[cdbc] = playerdata.size();
-    playerdata.push_back(Player(pms[cdbc].faction->faction, 0));
+    playerdata.push_back(Player(pms[cdbc].faction->faction, 0, newPlayerStartingCash));
     cdbc++;
   }
 }

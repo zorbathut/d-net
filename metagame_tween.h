@@ -31,7 +31,7 @@ public:
   void startAtNormalShop();
 
   // Constructor
-  PersistentData(int playercount, int roundsbetweenshop);
+  PersistentData(int playercount, Money startingcash, float multiple, int roundsbetweenshop);
 
 private:
   // Persistent state
@@ -52,6 +52,9 @@ private:
   Money lrBaseCash;
   Money lrFirepower;
   vector<bool> checked;
+  
+  Money baseStartingCash;
+  float multiplePerRound;
   
   Money newPlayerStartingCash;
   Money highestPlayerCash;

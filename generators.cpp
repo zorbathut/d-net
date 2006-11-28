@@ -21,7 +21,7 @@ template<typename T> void generateShopCache(const string &itemname, const T &ite
   for(int i = 0; i < 4; i++)
     faction.adjustment[i] = &adjustment_null;
   
-  Player player(&faction, 0);
+  Player player(&faction, 0, Money(0));
   
   {
     Recorder recorder(ofil);

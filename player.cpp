@@ -7,8 +7,6 @@
 
 using namespace std;
 
-DEFINE_int(startingCash, 1000, "Cash to start with");
-
 bool IDBWeaponNameSorter::operator()(const IDBWeapon *lhs, const IDBWeapon *rhs) const {
   if(!lhs && !rhs)
     return false;
@@ -422,10 +420,6 @@ void Player::addCash(Money amount) {
   dprintf("Adding %s bucks!\n", amount.textual().c_str());
   cash += amount;
 }
-void Player::setCash(Money amount) {
-  CHECK(cash == Money(FLAGS_startingCash)); // owned
-  cash = amount;
-}
 
 void Player::accumulateStats(int in_kills, float damage) { damageDone += damage; kills += in_kills; }
 void Player::addWin() { wins++; }
@@ -499,12 +493,12 @@ Player::Player() : weapons(NULL) { // this kind of works with the weapon manager
   faction = NULL;
 }
 
-Player::Player(const IDBFaction *fact, int in_factionmode) : weapons(defaultTank()->weapon) {
+Player::Player(const IDBFaction *fact, int in_factionmode, Money money) : weapons(defaultTank()->weapon) {
   faction = fact;
   factionmode = in_factionmode;
   CHECK(factionmode >= 0 && factionmode < FACTIONMODE_LAST);
   CHECK(factionmode == 0);
-  cash = Money(FLAGS_startingCash);
+  cash = money;
   glory.push_back(defaultGlory());
   bombardment.push_back(defaultBombardment());
   tank.push_back(defaultTank());
