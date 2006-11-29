@@ -60,24 +60,8 @@
 http://www.itchstudios.com/psg/ - Dafred's artist
 
 ---
-New game stuff
+Sounditude
 
-Junkyard 1000
-Civilian 30000?
-Professional 900000?
-Military 2.7m
-Exotic 81m
-Experimental 2.4b
-Ultimate 73b
-
-Start game at point:
-End game at point:
-Approximate rounds to play:
-
-How to calculate stuff? I'm not sure. log vs log, divide by rounds, exp or something?
-
-lessee
-
-exp((log(30000) - log(1000)) / rounds) = multiple
-
-Where should this be? I think Interface, so I can start Metagame with these parameters. I guess I'll move the whole faction thing into that as well, I really don't think the battles work (as neat as the idea is.)
+Take a "queueSound" with Sound, volume, fade.
+Sound gets loaded, much like dvec2.
+Then there's IDBSoundPack items. This sounds good.
