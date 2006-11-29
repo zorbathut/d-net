@@ -379,7 +379,7 @@ bool InterfaceMain::tick(const vector< Controller > &control, RngSeed gameseed) 
         CHECK(0); // what
       }
     }
-    if(mrv == 1) {
+    if(mrv == 1 || FLAGS_auto_newgame) {
       game = new Metagame(control.size(), Money((long long)(1000 * pow(30, start))), exp(moneyexp), FLAGS_rounds_per_shop, gameseed);
       interface_mode = STATE_PLAYING;
     }
