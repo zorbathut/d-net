@@ -19,6 +19,7 @@ using namespace std;
 DEFINE_bool(vecedit, false, "Vector editor (WARNING: nearly unusable)");
 DEFINE_int(rounds_per_shop, 6, "How many rounds between each buying-things opportunity");
 DEFINE_bool(auto_newgame, false, "Automatically enter New Game");
+DEFINE_int(startingCash, -1, "Starting cash override");
 
 StdMenuItem StdMenuItem::makeStandardMenu(const string &text, int trigger) {
   StdMenuItem stim;
@@ -508,7 +509,10 @@ InterfaceMain::InterfaceMain() {
   
   vector<string> names = boost::assign::list_of("Junkyard")("Civilian")("Professional")("Military")("Exotic")("Experimental")("Ultimate");
   
-  start = 0;
+  if(FLAGS_startingCash == -1)
+    start = 0;
+  else
+    start = log(FLAGS_startingCash / 1000) / log(30);
   end = names.size() - 1;
   moneyexp = 0.1133;
   
