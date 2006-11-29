@@ -39,8 +39,6 @@ void sound_callback(void *userdata, Uint8 *stream, int len) {
 }
 
 void initAudio() {
-  CHECK(SDL_AudioInit("dsound") == 0);
-  
   SDL_AudioSpec spec;
   spec.freq = 44100;
   spec.format = AUDIO_S16LSB;
@@ -61,7 +59,6 @@ void initAudio() {
 
 void deinitAudio() {
   SDL_CloseAudio();
-  SDL_AudioQuit();
 }
 
 void queueSound(const Sound &sound, float volume) {
