@@ -1,6 +1,9 @@
 ---- Major work path
 - Sound
   - confirm -> accept
+  - Need sound for game start sliders
+  - Need sound for various options in Tween
+  - flac/ogg
 - OSX/otherOS conversions
 - Training/implants/wtf
 - Next-gen vecedit?

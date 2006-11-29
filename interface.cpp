@@ -52,7 +52,7 @@ StdMenuItem StdMenuItem::makeRounds(const string &text, float *start, float *end
 int StdMenuItem::tick(const Keystates &keys) {
   if(type == TYPE_TRIGGER) {
     if(keys.accept.push) {
-      queueSound(S::confirm, 1.0);
+      queueSound(S::accept, 1.0);
       return trigger;
     }
   } else if(type == TYPE_SCALE) {

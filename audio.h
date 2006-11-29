@@ -32,7 +32,7 @@ Sound loadSound(const string &filename);
 
 namespace S {
   extern Sound cancel;
-  extern Sound confirm;
+  extern Sound accept;
   extern Sound error;
   extern Sound select;
 };

@@ -52,7 +52,7 @@ void initAudio() {
   SDL_PauseAudio(0);
   
   S::cancel = loadSound("data/sound/cancel");
-  S::confirm = loadSound("data/sound/confirm");
+  S::accept = loadSound("data/sound/accept");
   S::error = loadSound("data/sound/error");
   S::select = loadSound("data/sound/select");
 }
@@ -97,6 +97,6 @@ Sound loadSound(const string &name) {
 }
 
 Sound S::cancel;
-Sound S::confirm;
+Sound S::accept;
 Sound S::error;
 Sound S::select;
