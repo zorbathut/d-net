@@ -22,7 +22,6 @@ Sint16 mixsample(int channel) {
 } // whee megaslow
 
 void sound_callback(void *userdata, Uint8 *stream, int len) {
-  dprintf("callback, %f of a second\n", (float)len / 44100 / 4);
   Sint16 *rstream = reinterpret_cast<Sint16 *>(stream);
   CHECK(len % 4 == 0);
   len /= 4;
@@ -40,14 +39,18 @@ void sound_callback(void *userdata, Uint8 *stream, int len) {
 }
 
 void initAudio() {
+  CHECK(SDL_AudioInit("dsound") == 0);
+  
   SDL_AudioSpec spec;
   spec.freq = 44100;
   spec.format = AUDIO_S16LSB;
   spec.channels = 2;
-  spec.samples = 512;
+  spec.samples = 2048;
   spec.callback = sound_callback;
   spec.userdata = NULL;
+  
   CHECK(SDL_OpenAudio(&spec, NULL) == 0);
+  
   SDL_PauseAudio(0);
   
   S::cancel = loadSound("data/sound/cancel");
@@ -58,6 +61,7 @@ void initAudio() {
 
 void deinitAudio() {
   SDL_CloseAudio();
+  SDL_AudioQuit();
 }
 
 void queueSound(const Sound &sound, float volume) {
