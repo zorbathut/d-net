@@ -1,5 +1,6 @@
 ---- Major work path
 - Sound
+  - confirm -> accept
 - OSX/otherOS conversions
 - Training/implants/wtf
 - Next-gen vecedit?

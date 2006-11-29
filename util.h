@@ -130,4 +130,13 @@ template <typename T> vector<const T*> ptrize(const vector<T> &vt) {
   return rv;
 }
 
+template<typename T, typename U> T clamp(T x, U min, U max) {
+  CHECK(min <= max);
+  if(x < min)
+    return min;
+  if(x > max)
+    return max;
+  return x;
+}
+
 #endif

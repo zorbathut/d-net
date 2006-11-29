@@ -22,9 +22,9 @@ public:
 void initAudio();
 void deinitAudio();
 
-Sound loadSound(const string &filename);
-
 void queueSound(const Sound &sound, float volume);
+
+Sound loadSound(const string &filename);
 
 /*************
  * Global sounds

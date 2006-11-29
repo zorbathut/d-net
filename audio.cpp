@@ -5,12 +5,38 @@
 
 #include <SDL.h>
 
+class SoundState {
+public:
+  const Sound *sound;
+  float volume;
+  int sample;
+};
+
+vector<SoundState> sstv;
+
+Sint16 mixsample(int channel) {
+  int mix = 0;
+  for(int i = 0; i < sstv.size(); i++)
+    mix += (int)(sstv[i].sound->data[channel][sstv[i].sample] * sstv[i].volume);
+  return clamp(mix, -32767, 32767);
+} // whee megaslow
+
 void sound_callback(void *userdata, Uint8 *stream, int len) {
+  dprintf("callback, %f of a second\n", (float)len / 44100 / 4);
   Sint16 *rstream = reinterpret_cast<Sint16 *>(stream);
-  len /= 2;
-  for(int i = 0; i < len; i++)
-    rstream[i] = 0;
-    
+  CHECK(len % 4 == 0);
+  len /= 4;
+  for(int i = 0; i < len; i++) {
+    *rstream++ = mixsample(0);
+    *rstream++ = mixsample(1);
+    for(int i = 0; i < sstv.size(); i++) {
+      sstv[i].sample++;
+      if(sstv[i].sample == sstv[i].sound->data[0].size()) {
+        sstv.erase(sstv.begin() + i);
+        i--;
+      }
+    } // god this is inefficient
+  }
 }
 
 void initAudio() {
@@ -18,7 +44,7 @@ void initAudio() {
   spec.freq = 44100;
   spec.format = AUDIO_S16LSB;
   spec.channels = 2;
-  spec.samples = 2048;
+  spec.samples = 512;
   spec.callback = sound_callback;
   spec.userdata = NULL;
   CHECK(SDL_OpenAudio(&spec, NULL) == 0);
@@ -32,6 +58,16 @@ void initAudio() {
 
 void deinitAudio() {
   SDL_CloseAudio();
+}
+
+void queueSound(const Sound &sound, float volume) {
+  SoundState stt;
+  stt.sound = &sound;
+  stt.volume = volume;
+  stt.sample = 0;
+  SDL_LockAudio();
+  sstv.push_back(stt);
+  SDL_UnlockAudio();
 }
 
 Sound loadSound(const string &name) {

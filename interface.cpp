@@ -11,6 +11,7 @@
 #include "os.h"
 #include "player.h"
 #include "vecedit.h"
+#include "audio.h"
 
 #include <boost/assign.hpp>
 
@@ -50,8 +51,10 @@ StdMenuItem StdMenuItem::makeRounds(const string &text, float *start, float *end
 
 int StdMenuItem::tick(const Keystates &keys) {
   if(type == TYPE_TRIGGER) {
-    if(keys.accept.push)
+    if(keys.accept.push) {
+      queueSound(S::confirm, 1.0);
       return trigger;
+    }
   } else if(type == TYPE_SCALE) {
     if(keys.l.down)
       *scale_position -= 0.05;
@@ -123,10 +126,14 @@ void StdMenu::pushMenuItem(const StdMenuItem &site) {
 }
 
 int StdMenu::tick(const Keystates &keys) {
-  if(keys.u.repeat)
+  if(keys.u.repeat) {
     cpos--;
-  if(keys.d.repeat)
+    queueSound(S::select, 1.0);
+  }
+  if(keys.d.repeat) {
     cpos++;
+    queueSound(S::select, 1.0);
+  }
   cpos = modurot(cpos, items.size());
   
   return items[cpos].tick(keys);
