@@ -1,5 +1,5 @@
 
-SOURCES = main core game timer debug gfx collide gamemap util rng args interface vecedit metagame itemdb parse dvec2 input level coord ai inputsnag os_win32 float cfcommon coord_boolean player itemdb_adjust metagame_config shop shop_demo shop_info game_ai game_effects color metagame_tween cfc game_tank game_util game_projectile socket httpd recorder generators
+SOURCES = main core game timer debug gfx collide gamemap util rng args interface vecedit metagame itemdb parse dvec2 input level coord ai inputsnag os_win32 float cfcommon coord_boolean player itemdb_adjust metagame_config shop shop_demo shop_info game_ai game_effects color metagame_tween cfc game_tank game_util game_projectile socket httpd recorder generators audio
 CPPFLAGS = `sdl-config --cflags` -DVECTOR_PARANOIA -I/usr/include/boost-1_33_1 -Wall -Wno-sign-compare -Wno-uninitialized -g #-pg # I would love to get rid of -Wno-uninitialized, but it makes the standard library spit out warnings! :(
 LINKFLAGS = `sdl-config --libs` -lglu32 -lopengl32 -lm -lws2_32 -g #-pg
 DATAFILES = $(shell find data | grep -v \.svn | grep -v shopcache.dwh)
@@ -82,7 +82,8 @@ export: d-net.exe tools/generateWeaponGraph.py
 	/cygdrive/c/Python25/python.exe tools/generateWeaponGraph.py # this is not ideal
 
 stats:
-	@echo Graphics: `cat gfx.h gfx.cpp game_effects.h game_effects.cpp color.h color.cpp| wc -l` loc
+	@echo Graphics: `cat gfx.h gfx.cpp game_effects.h game_effects.cpp color.h color.cpp | wc -l` loc
+  @echo Sound: `cat audio.h audio.cpp | wc -l` loc
 	@echo Collisions: `cat collide.h collide.cpp | wc -l` loc
 	@echo Game mechanics: `cat game.h game.cpp gamemap.h gamemap.cpp level.cpp level.h player.cpp player.h game_tank.cpp game_tank.h game_util.cpp game_util.h game_projectile.h game_projectile.cpp | wc -l` loc
 	@echo Item hierarchy: `cat itemdb.h itemdb.cpp parse.h parse.cpp itemdb_adjust.cpp | wc -l` loc

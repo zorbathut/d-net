@@ -7,6 +7,7 @@
 #include "os.h"
 #include "httpd.h"
 #include "generators.h"
+#include "audio.h"
 
 #include <GL/glu.h>
 #include <SDL.h>
@@ -94,7 +95,7 @@ void GetStartingResolution() {
 
 void initSystem() {
 
-  CHECK(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE | SDL_INIT_TIMER | SDL_INIT_JOYSTICK) >= 0);
+  CHECK(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_NOPARACHUTE | SDL_INIT_TIMER | SDL_INIT_JOYSTICK) >= 0);
 
   SetupOgl();
   GetStartingResolution();
@@ -159,6 +160,7 @@ int main(int argc, char **argv) {
 
   initSystem();
   initGfx();
+  initAudio();
 
   MainLoop();
 
