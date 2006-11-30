@@ -4,6 +4,7 @@
 #include "ai.h"
 #include "gfx.h"
 #include "player.h"
+#include "audio.h"
 
 using namespace std;
 
@@ -366,14 +367,22 @@ bool Shop::hasInfo(int type) const {
 }
 
 bool Shop::runTick(const Keystates &keys, Player *player) {
-  if(keys.l.repeat && curloc.size() > 1)
+  if(keys.l.repeat && curloc.size() > 1) {
+    queueSound(S::select, 1.0);
     curloc.pop_back();
-  if(keys.r.repeat && getCurNode(player).branches.size() != 0)
+  }
+  if(keys.r.repeat && getCurNode(player).branches.size() != 0) {
+    queueSound(S::select, 1.0);
     curloc.push_back(0);
-  if(keys.u.repeat)
+  }
+  if(keys.u.repeat) {
+    queueSound(S::select, 1.0);
     curloc.back()--;
-  if(keys.d.repeat)
+  }
+  if(keys.d.repeat) {
+    queueSound(S::select, 1.0);
     curloc.back()++;
+  }
   curloc.back() += getCategoryNode(player).branches.size();
   curloc.back() %= getCategoryNode(player).branches.size();
   
@@ -399,12 +408,15 @@ bool Shop::runTick(const Keystates &keys, Player *player) {
     
     for(int i = 0; i < SIMUL_WEAPONS; i++) {
       if(keys.fire[i].push) {
+        queueSound(S::choose, 1.0);
         player->setWeaponEquipBit(getCurNode(player).equipweapon, i, !player->getWeaponEquipBit(getCurNode(player).equipweapon, i));
       }
     }
   } else if(getCurNode(player).type == HierarchyNode::HNT_SELL) {
-    if(keys.accept.push)
+    if(keys.accept.push) {
+      queueSound(S::choose, 1.0);
       selling = !selling;
+    }
   } else {
     
     Button buy;
@@ -435,56 +447,104 @@ bool Shop::runTick(const Keystates &keys, Player *player) {
     }
     
     if(buy.repeat) {
+      bool ret = false;
+      const Sound *sound = NULL;
+      
       if(!selling) {
         if(getCurNode(player).buyable) {
           // Player is trying to buy something!
           
           if(getCurNode(player).type == HierarchyNode::HNT_DONE) {
-            if(player->canContinue())
-              return true;
+            if(player->canContinue()) {
+              ret = true;
+              sound = S::accept;
+            } else {
+              sound = S::error;
+            }
           } else if(getCurNode(player).type == HierarchyNode::HNT_UPGRADE) {
-            if(player->stateUpgrade(getCurNode(player).upgrade) != ITEMSTATE_UNOWNED)
-              ;
-              //player->equipUpgrade(getCurNode(player).upgrade);
-            else if(player->canBuyUpgrade(getCurNode(player).upgrade))
+            if(player->stateUpgrade(getCurNode(player).upgrade) != ITEMSTATE_UNOWNED) {
+              sound = S::error;
+            } else if(player->canBuyUpgrade(getCurNode(player).upgrade))  {
               player->buyUpgrade(getCurNode(player).upgrade);
+              sound = S::choose;
+            } else {
+              sound = S::error;
+            }
           } else if(getCurNode(player).type == HierarchyNode::HNT_WEAPON) {
-            if(player->canBuyWeapon(getCurNode(player).weapon))
+            if(player->canBuyWeapon(getCurNode(player).weapon)) {
               player->buyWeapon(getCurNode(player).weapon);
+              sound = S::choose;
+            } else {
+              sound = S::error;
+            }
           } else if(getCurNode(player).type == HierarchyNode::HNT_GLORY) {
-            if(player->stateGlory(getCurNode(player).glory) != ITEMSTATE_UNOWNED)
+            if(player->stateGlory(getCurNode(player).glory) != ITEMSTATE_UNOWNED) {
               player->equipGlory(getCurNode(player).glory);
-            else if(player->canBuyGlory(getCurNode(player).glory))
+              sound = S::choose;
+            } else if(player->canBuyGlory(getCurNode(player).glory)) {
               player->buyGlory(getCurNode(player).glory);
+              sound = S::choose;
+            } else {
+              sound = S::error;
+            }
           } else if(getCurNode(player).type == HierarchyNode::HNT_BOMBARDMENT) {
-            if(player->stateBombardment(getCurNode(player).bombardment) != ITEMSTATE_UNOWNED)
+            if(player->stateBombardment(getCurNode(player).bombardment) != ITEMSTATE_UNOWNED) {
               player->equipBombardment(getCurNode(player).bombardment);
-            else if(player->canBuyBombardment(getCurNode(player).bombardment))
+              sound = S::choose;
+            } else if(player->canBuyBombardment(getCurNode(player).bombardment)) {
               player->buyBombardment(getCurNode(player).bombardment);
+              sound = S::choose;
+            } else {
+              sound = S::error;
+            }
           } else if(getCurNode(player).type == HierarchyNode::HNT_TANK) {
-            if(player->stateTank(getCurNode(player).tank) != ITEMSTATE_UNOWNED)
+            if(player->stateTank(getCurNode(player).tank) != ITEMSTATE_UNOWNED) {
               player->equipTank(getCurNode(player).tank);
-            else if(player->canBuyTank(getCurNode(player).tank))
+              sound = S::choose;
+            } else if(player->canBuyTank(getCurNode(player).tank)) {
               player->buyTank(getCurNode(player).tank);
+              sound = S::choose;
+            } else {
+              sound = S::error;
+            }
           } else {
             CHECK(0);
           }
   
+        } else {
+          sound = S::null;
         }
       } else {
         if(getCurNode(player).type == HierarchyNode::HNT_DONE) {
-          if(player->canContinue())
-            return true;
+          if(player->canContinue()) {
+            ret = true;
+            sound = S::accept;
+          } else {
+            sound = S::error;
+          }
         } else if(getCurNode(player).type == HierarchyNode::HNT_WEAPON && player->canSellWeapon(getCurNode(player).weapon)) {
           player->sellWeapon(getCurNode(player).weapon);
+          sound = S::choose;
         } else if(getCurNode(player).type == HierarchyNode::HNT_GLORY && player->canSellGlory(getCurNode(player).glory)) {
           player->sellGlory(getCurNode(player).glory);
+          sound = S::choose;
         } else if(getCurNode(player).type == HierarchyNode::HNT_BOMBARDMENT && player->canSellBombardment(getCurNode(player).bombardment)) {
           player->sellBombardment(getCurNode(player).bombardment);
+          sound = S::choose;
         } else if(getCurNode(player).type == HierarchyNode::HNT_TANK && player->canSellTank(getCurNode(player).tank)) {
           player->sellTank(getCurNode(player).tank);
+          sound = S::choose;
+        } else if(!getCurNode(player).buyable) {
+          sound = S::null;
+        } else {
+          sound = S::error;
         }
       }
+      
+      CHECK(sound);
+      queueSound(sound, 1.0);
+      if(ret)
+        return true;
     }
   }
   

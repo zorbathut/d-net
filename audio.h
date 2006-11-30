@@ -22,7 +22,7 @@ public:
 void initAudio();
 void deinitAudio();
 
-void queueSound(const Sound &sound, float volume);
+void queueSound(const Sound *sound, float volume);
 
 Sound loadSound(const string &filename);
 
@@ -31,16 +31,15 @@ Sound loadSound(const string &filename);
  */
 
 namespace S {
-  extern Sound accept;  // major choices (finish menus)
-  extern Sound choose;  // minor choices (keys, buying items)
+  extern const Sound *const accept;  // major choices (finish menus)
+  extern const Sound *const choose;  // minor choices (keys, buying items)
   
-  extern Sound select;  // menu choices
-  extern Sound cursorover;  // anything really passive
+  extern const Sound *const select;  // menu choices
+  extern const Sound *const cursorover;  // anything really passive
   
-  extern Sound error; // errors (dur)
+  extern const Sound *const error; // errors (dur)
   
-  // not really used for anything yet
-  extern Sound cancel;
+  extern const Sound *const null; // the null sound
 };
 
 #endif

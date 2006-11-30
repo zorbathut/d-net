@@ -5,6 +5,8 @@
   - accept.wav seems to start too late
   - Need sound for various options in Tween
   - flac/ogg
+- Buy a new tank, go to equip, crash
+- Round up currencies to at least $1
 - OSX/otherOS conversions
 - Training/implants/wtf
 - Next-gen vecedit?

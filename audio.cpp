@@ -38,6 +38,20 @@ void sound_callback(void *userdata, Uint8 *stream, int len) {
   }
 }
 
+static Sound choose_local;
+static Sound accept_local;
+static Sound select_local;
+static Sound cursorover_local;
+static Sound error_local;
+static Sound null_local;
+
+const Sound *const S::choose = &choose_local;
+const Sound *const S::accept = &accept_local;
+const Sound *const S::select = &select_local;
+const Sound *const S::cursorover = &cursorover_local;
+const Sound *const S::error = &error_local;
+const Sound *const S::null = &null_local;
+
 void initAudio() {
   SDL_AudioSpec spec;
   spec.freq = 44100;
@@ -51,24 +65,28 @@ void initAudio() {
   
   SDL_PauseAudio(0);
   
-  S::accept = loadSound("data/sound/accept");
-  S::choose = loadSound("data/sound/choose");
+  accept_local = loadSound("data/sound/accept");
+  choose_local = loadSound("data/sound/choose");
   
-  S::select = loadSound("data/sound/select");
-  S::select = loadSound("data/sound/cursorover");
+  select_local = loadSound("data/sound/select");
+  cursorover_local = loadSound("data/sound/cursorover");
   
-  S::error = loadSound("data/sound/error");
+  error_local = loadSound("data/sound/error");
   
-  S::cancel = loadSound("data/sound/cancel");
+  null_local.data[0].resize(1);
+  null_local.data[1].resize(1);
 }
 
 void deinitAudio() {
   SDL_CloseAudio();
 }
 
-void queueSound(const Sound &sound, float volume) {
+void queueSound(const Sound *sound, float volume) {
+  CHECK(sound);
+  CHECK(sound->data[0].size());
+  CHECK(sound->data[1].size());
   SoundState stt;
-  stt.sound = &sound;
+  stt.sound = sound;
   stt.volume = volume;
   stt.sample = 0;
   SDL_LockAudio();
@@ -100,10 +118,3 @@ Sound loadSound(const string &name) {
 
   return sound;
 }
-
-Sound S::choose;
-Sound S::accept;
-Sound S::select;
-Sound S::cursorover;
-Sound S::error;
-Sound S::cancel;
