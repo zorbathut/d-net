@@ -2,6 +2,7 @@
 #include "metagame_tween.h"
 
 #include "ai.h"
+#include "audio.h"
 #include "args.h"
 #include "debug.h"
 #include "game_tank.h"
@@ -105,9 +106,24 @@ bool PersistentData::tick(const vector< Controller > &keys) {
       // Subsecond: Move the cursor.
       if(sps_playermode[player] == SPS_CHOOSING) {
         Float2 dz = deadzone(keys[player].menu, DEADZONE_CENTER, 0.2) / 2;
+        
+        bool wasin = false;
+        for(int j = 0; j < ranges.size(); j++)
+          if(sps_playerpos[player].x == clamp(sps_playerpos[player].x, ranges[j].second.first, ranges[j].second.second))
+            wasin = true;
+        
         sps_playerpos[player].x += dz.x;
         sps_playerpos[player].y -= dz.y;
         sps_playerpos[player] = clamp(sps_playerpos[player], Float4(0, 90, 133.333, 100));
+        
+        if(!wasin) {
+          bool isin = false;
+          for(int j = 0; j < ranges.size(); j++)
+            if(sps_playerpos[player].x == clamp(sps_playerpos[player].x, ranges[j].second.first, ranges[j].second.second))
+              isin = true;
+          if(isin)
+            queueSound(S::cursorover, 1.0);
+        }
       }
       
       // Subthird: Do various things depending on the player's current mode
@@ -127,18 +143,22 @@ bool PersistentData::tick(const vector< Controller > &keys) {
               if(pms[player].faction) {
                 if(ranges[j].first == TTL_DONE) {
                   if(!sps_shopped[player] && mode == TM_SHOP) {
+                    queueSound(S::error, 1.0);
                     btt_notify = pms[player].faction->faction;
                     btt_frames_left = 180;
                   } else {
+                    queueSound(S::choose, 1.0);
                     sps_playermode[player] = SPS_DONE;
                   }
                 } else if(ranges[j].first == TTL_JOIN) {
                 } else {
+                  queueSound(S::choose, 1.0);
                   sps_playermode[player] = SPS_PENDING;
                   sps_queue.push_back(make_pair(player, ranges[j].first));
                 }
               } else {
                 if(ranges[j].first == TTL_LEAVEJOIN || ranges[j].first == TTL_JOIN) {
+                  queueSound(S::choose, 1.0);
                   sps_playermode[player] = SPS_PENDING;
                   sps_queue.push_back(make_pair(player, ranges[j].first));
                 }
@@ -169,6 +189,8 @@ bool PersistentData::tick(const vector< Controller > &keys) {
             }
           }
           CHECK(found);
+          
+          queueSound(S::choose, 1.0);
         }
       } else if(sps_playermode[player] == SPS_ACTIVE) {
         // Iterate over items, see if this player is finished
@@ -184,8 +206,10 @@ bool PersistentData::tick(const vector< Controller > &keys) {
       } else if(sps_playermode[player] == SPS_DONE) {
         // Let the player cancel
         CHECK(pms[player].faction);
-        if(pms[player].genKeystate(keys[player]).cancel.push)
+        if(pms[player].genKeystate(keys[player]).cancel.push) {
+          queueSound(S::choose, 1.0);
           sps_playermode[player] = SPS_CHOOSING;
+        }
       } else {
         dprintf("Player %d is %d\n", player, sps_playermode[player]);
         CHECK(0);
