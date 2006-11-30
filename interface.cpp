@@ -407,8 +407,14 @@ void InterfaceMain::ai(const vector<Ai *> &ai) const {
     for(int i = 0; i < ai.size(); i++)
       if(ai[i])
         ai[i]->updatePregame();
+  } else if(interface_mode == STATE_CONFIGURE) {
+    for(int i = 0; i < ai.size(); i++)
+      if(ai[i])
+        ai[i]->updateSetup(configmenu.currentItem());
   } else if(interface_mode == STATE_PLAYING) {
     game->ai(ai);
+  } else {
+    CHECK(0);
   }
 }
 

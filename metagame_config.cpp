@@ -224,7 +224,11 @@ bool standardButtonTick(StandardButtonTickData *sbtd) {
     CHECK(sbtd->outkeys->size() == sbtd->outinvert->size());
   if(*sbtd->current_button == -1) {
     if(sbtd->require_trigger) {
-      *sbtd->current_mode = RM_IDLE;
+      if((*sbtd->outkeys)[0] == -1) {
+        *sbtd->current_mode = RM_CHOOSING;
+      } else {
+        *sbtd->current_mode = RM_IDLE;
+      }
     } else {
       *sbtd->current_mode = RM_NOTRIGGER;
     }

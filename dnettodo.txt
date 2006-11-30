@@ -4,7 +4,6 @@
   - Need choose.wav and cursorover.wav
   - accept.wav seems to start too late
   - flac/ogg
-- Fix AI (again)
 - OSX/otherOS conversions
 - Training/implants/wtf
 - Next-gen vecedit?

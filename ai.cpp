@@ -135,6 +135,17 @@ void Ai::updatePregame() {
   nextKeys.keys[0].down = true;
 }
 
+void Ai::updateSetup(int pos) {
+  updateKeys(CORE);
+  
+  zeroNextKeys();
+  if(pos != 2)
+    nextKeys.menu = Float2(0, 1);
+  
+  if(pos == 2 && frameNumber % 2)
+    nextKeys.keys[0].down = true;
+}
+
 void Ai::updateCharacterChoice(const vector<FactionState> &factions, const PlayerMenuState &player, int you) {
   updateKeys(CORE);
   
@@ -175,12 +186,14 @@ void Ai::updateCharacterChoice(const vector<FactionState> &factions, const Playe
       }
     }
   } else if(player.settingmode == SETTING_AXISCHOOSE) {
-    if(player.setting_axis_current == 0)
-      nextKeys.menu.x = 1.0;
-    if(player.setting_axis_current == 1)
-      nextKeys.menu.y = 1.0;
-    if(player.setting_axis_current == 2)
-      nextKeys.keys[BUTTON_ACCEPT].down = true;
+    if(frameNumber % 2) {
+      if(player.setting_axis_current == 0)
+        nextKeys.menu.x = 1.0;
+      if(player.setting_axis_current == 1)
+        nextKeys.menu.y = 1.0;
+      if(player.setting_axis_current == 2)
+        nextKeys.keys[BUTTON_ACCEPT].down = true;
+    }
   } else if(player.settingmode == SETTING_TEST) {
     nextKeys.keys[BUTTON_CANCEL].down = true;
   } else if(player.settingmode == SETTING_READY) {
