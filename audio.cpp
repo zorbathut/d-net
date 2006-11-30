@@ -57,7 +57,7 @@ void initAudio() {
   spec.freq = 44100;
   spec.format = AUDIO_S16LSB;
   spec.channels = 2;
-  spec.samples = 2048;
+  spec.samples = 1024;
   spec.callback = sound_callback;
   spec.userdata = NULL;
   

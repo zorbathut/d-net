@@ -189,7 +189,7 @@ int IDBWeaponAdjust::framesForCooldown(Rng *rng) const {
 float IDBWeaponAdjust::firerate() const {
   return idb->firerate * adjust.adjustmentfactor(IDBAdjustment::TANK_FIRERATE);
 }
-Money IDBWeaponAdjust::cost(int amount) const { return cost_pack() * amount / idb->quantity; };
+Money IDBWeaponAdjust::cost(int amount) const { return (cost_pack() * amount + Money(idb->quantity - 1)) / idb->quantity; };
 Money IDBWeaponAdjust::cost_pack() const { return idb->base_cost / adjust.adjustmentfactor(IDBAdjustment::DISCOUNT_WEAPON); };
 Money IDBWeaponAdjust::sellcost(int amount) const { return cost_pack() * adjust.recyclevalue() * amount / idb->quantity; };
 
