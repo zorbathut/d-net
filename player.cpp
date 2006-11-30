@@ -139,7 +139,7 @@ void Weaponmanager::changeDefaultWeapon(const IDBWeapon *weapon) {
     CHECK(getWeaponEquipBit(defaultweapon, i) == WEB_UNEQUIPPED);
   }
   
-  removeAmmo(defaultweapon, UNLIMITED_AMMO);
+  weapons.erase(defaultweapon);
   
   CHECK(!weapons.count(defaultweapon));
   CHECK(!weapons.count(weapon));
