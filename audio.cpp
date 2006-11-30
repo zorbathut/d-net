@@ -51,10 +51,15 @@ void initAudio() {
   
   SDL_PauseAudio(0);
   
-  S::cancel = loadSound("data/sound/cancel");
   S::accept = loadSound("data/sound/accept");
-  S::error = loadSound("data/sound/error");
+  S::choose = loadSound("data/sound/choose");
+  
   S::select = loadSound("data/sound/select");
+  S::select = loadSound("data/sound/cursorover");
+  
+  S::error = loadSound("data/sound/error");
+  
+  S::cancel = loadSound("data/sound/cancel");
 }
 
 void deinitAudio() {
@@ -96,7 +101,9 @@ Sound loadSound(const string &name) {
   return sound;
 }
 
-Sound S::cancel;
+Sound S::choose;
 Sound S::accept;
-Sound S::error;
 Sound S::select;
+Sound S::cursorover;
+Sound S::error;
+Sound S::cancel;

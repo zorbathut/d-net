@@ -1,7 +1,8 @@
 ---- Major work path
 - Sound
-  - confirm -> accept
   - Need sound for game start sliders
+  - Need choose.wav and cursorover.wav
+  - accept.wav seems to start too late
   - Need sound for various options in Tween
   - flac/ogg
 - OSX/otherOS conversions

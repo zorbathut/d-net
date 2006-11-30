@@ -31,10 +31,16 @@ Sound loadSound(const string &filename);
  */
 
 namespace S {
+  extern Sound accept;  // major choices (finish menus)
+  extern Sound choose;  // minor choices (keys, buying items)
+  
+  extern Sound select;  // menu choices
+  extern Sound cursorover;  // anything really passive
+  
+  extern Sound error; // errors (dur)
+  
+  // not really used for anything yet
   extern Sound cancel;
-  extern Sound accept;
-  extern Sound error;
-  extern Sound select;
 };
 
 #endif
