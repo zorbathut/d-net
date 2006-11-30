@@ -510,8 +510,10 @@ bool PersistentData::tickSlot(int slotid, const vector<Controller> &keys) {
     StackString stp("Results");
     for(int i = 0; i < ki.size(); i++) {
       CHECK(SIMUL_WEAPONS == 2);
-      if(ki[i].accept.push || ki[i].fire[0].push || ki[i].fire[1].push)
+      if(ki[i].accept.push || ki[i].fire[0].push || ki[i].fire[1].push && !checked[i]) {
         checked[i] = true;
+        queueSound(S::choose, 1.0);
+      }
     }
     if(count(checked.begin(), checked.end(), false) == 0) {
       for(int i = 0; i < playerdata.size(); i++)
@@ -538,16 +540,21 @@ bool PersistentData::tickSlot(int slotid, const vector<Controller> &keys) {
     
     CHECK(slt.pid >= 0 && slt.pid < pms.size());
     CHECK(keys.size() == 1);
-    if(thesekeys.u.repeat)
+    if(thesekeys.u.repeat) {
+      queueSound(S::select, 1.0);
       sps_quitconfirm[slt.pid]--;
-    if(thesekeys.d.repeat)
+    }
+    if(thesekeys.d.repeat) {
+      queueSound(S::select, 1.0);
       sps_quitconfirm[slt.pid]++;
+    }
     
-    sps_quitconfirm[slt.pid] += 5;
-    sps_quitconfirm[slt.pid] %= 5;
+    sps_quitconfirm[slt.pid] = modurot(sps_quitconfirm[slt.pid], 5);
     
-    if(thesekeys.cancel.push)
+    if(thesekeys.cancel.push) {
+      queueSound(S::choose, 1.0);
       return true;
+    }
     
     if(thesekeys.accept.push) {
       if(sps_quitconfirm[slt.pid] == 3) {
@@ -563,6 +570,9 @@ bool PersistentData::tickSlot(int slotid, const vector<Controller> &keys) {
           if(playerid[i] > spid)
             playerid[i]--;
         dprintf("DESTROY %d\n", playerdata.size());
+        queueSound(S::accept, 1.0);
+      } else {
+        queueSound(S::choose, 1.0);
       }
       return true;
     }

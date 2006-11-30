@@ -5,7 +5,6 @@
   - accept.wav seems to start too late
   - Need sound for various options in Tween
   - flac/ogg
-- Round up currencies to at least $1
 - Fix AI (again)
 - OSX/otherOS conversions
 - Training/implants/wtf
