@@ -224,7 +224,7 @@ bool standardButtonTick(StandardButtonTickData *sbtd) {
     CHECK(sbtd->outkeys->size() == sbtd->outinvert->size());
   if(*sbtd->current_button == -1) {
     if(sbtd->require_trigger) {
-      *sbtd->current_mode = RM_CHOOSING;
+      *sbtd->current_mode = RM_IDLE;
     } else {
       *sbtd->current_mode = RM_NOTRIGGER;
     }
@@ -277,7 +277,7 @@ bool standardButtonTick(StandardButtonTickData *sbtd) {
     *sbtd->current_button = modurot(*sbtd->current_button, sbtd->outkeys->size() + 1);
     
     // Here's where we potentially quit.
-    if(*sbtd->current_button == sbtd->outkeys->size() && sbtd->keys.keys[sbtd->accept_button].push || sbtd->cancel_button != -1 && sbtd->keys.keys[sbtd->cancel_button].push) { // if we're on done AND the accept button was pushed OR the cancel button exists AND the cancel button was pushed . . .
+    if(*sbtd->current_button == sbtd->outkeys->size() && sbtd->keys.keys[sbtd->accept_button].push /*|| sbtd->cancel_button != -1 && sbtd->keys.keys[sbtd->cancel_button].push*/) { // if we're on done AND the accept button was pushed OR the cancel button exists AND the cancel button was pushed . . .
       if(count(sbtd->outkeys->begin(), sbtd->outkeys->end(), -1) == 0) { // AND there are no unfinished keys . . .
         *sbtd->current_button = -1;
         queueSound(S::accept, 1.0);
@@ -753,6 +753,7 @@ bool runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
         return true;
       }
       if(keys.keys[pms->buttons[BUTTON_ACCEPT]].push) {
+        dprintf("pushactive\n");
         queueSound(S::choose, 1.0);
         pms->choicemode = CHOICE_ACTIVE;
       }
