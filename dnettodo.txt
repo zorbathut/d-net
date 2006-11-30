@@ -4,7 +4,6 @@
   - Need choose.wav and cursorover.wav
   - accept.wav seems to start too late
   - flac/ogg
-- Buzz error when setting axes
 - Selecting "directions" causes it to change the first item
 - Pressing cancel in "keys" causes it to both change the cancel key *and* abort
 - Fix AI (again)

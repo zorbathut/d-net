@@ -165,6 +165,7 @@ struct StandardButtonTickData {
   
   Controller keys;
   const vector<float> *triggers;
+  const vector<float> *oldtriggers;
 };
 
 struct StandardButtonRenderData {
@@ -217,6 +218,8 @@ bool standardButtonTick(StandardButtonTickData *sbtd) {
   CHECK(sbtd);
   CHECK(sbtd->outkeys);
   CHECK(sbtd->outkeys->size());
+  CHECK(sbtd->triggers);
+  CHECK(!sbtd->oldtriggers || sbtd->oldtriggers->size() == sbtd->triggers->size());
   if(sbtd->outinvert)
     CHECK(sbtd->outkeys->size() == sbtd->outinvert->size());
   if(*sbtd->current_button == -1) {
@@ -237,7 +240,7 @@ bool standardButtonTick(StandardButtonTickData *sbtd) {
   // First off, let's see if we do successfully change buttons.
   if((*sbtd->current_mode == RM_NOTRIGGER || *sbtd->current_mode == RM_CHOOSING) && *sbtd->current_button < sbtd->outkeys->size()) {
     for(int i = 0; i < sbtd->triggers->size(); i++) { // For each input button . . .
-      if(abs((*sbtd->triggers)[i]) > 0.9) { // If button was pushed . . .
+      if(abs((*sbtd->triggers)[i]) > 0.9 && (!sbtd->oldtriggers || abs((*sbtd->oldtriggers)[i]) <= 0.9)) { // If button was pushed . . .
         int oldbutton = (*sbtd->outkeys)[*sbtd->current_button];
         if(changeButtons(sbtd->outkeys, sbtd->outinvert, sbtd->groups, *sbtd->current_button, i, (*sbtd->triggers)[i] < 0)) { // If button successfully changed . . .
           queueSound(S::choose, 1.0);
@@ -761,7 +764,8 @@ bool runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
       vector<int> groups(BUTTON_LAST);
       groups[BUTTON_ACCEPT] = 1;
       groups[BUTTON_CANCEL] = 1;
-      StandardButtonTickData sbtd;      
+      
+      StandardButtonTickData sbtd;
       sbtd.outkeys = &pms->buttons;
       sbtd.outinvert = NULL;
       sbtd.current_button = &pms->setting_button_current;
@@ -772,6 +776,7 @@ bool runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
       sbtd.groups = VECTORIZE(button_groups);
       sbtd.keys = keys;
       sbtd.triggers = &triggers;
+      sbtd.oldtriggers = NULL;
       
       if(standardButtonTick(&sbtd)) {
         if(pms->choicemode == CHOICE_ACTIVE) {
@@ -843,9 +848,6 @@ bool runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
       
     } else if(pms->settingmode == SETTING_AXISCHOOSE) {
       StackString sstr("SAX");
-      vector<float> triggers;
-      for(int i = 0; i < keys.axes.size(); i++)
-        triggers.push_back(keys.axes[i]);
       
       StandardButtonTickData sbtd;      
       sbtd.outkeys = &pms->axes;
@@ -857,7 +859,8 @@ bool runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
       sbtd.cancel_button = pms->buttons[BUTTON_CANCEL];
       sbtd.groups = VECTORIZE(axis_groups);
       sbtd.keys = keys;
-      sbtd.triggers = &triggers;
+      sbtd.triggers = &keys.axes;
+      sbtd.oldtriggers = &keys.lastaxes;
       
       if(standardButtonTick(&sbtd)) {
         if(pms->choicemode == CHOICE_ACTIVE) {

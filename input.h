@@ -35,6 +35,7 @@ public:
   Button l;
   Button r;
   vector<float> axes;
+  vector<float> lastaxes;
   vector<Button> keys;
 
   void newState(const Controller &nst);

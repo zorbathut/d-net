@@ -42,6 +42,7 @@ void Button::newState(bool pushed) {
 
 void Controller::newState(const Controller &nst) {
   menu = nst.menu;
+  lastaxes = axes;
   axes = nst.axes;
   u.newState(nst.u);
   d.newState(nst.d);
