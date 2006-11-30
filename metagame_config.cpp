@@ -287,6 +287,7 @@ bool standardButtonTick(StandardButtonTickData *sbtd) {
   
   // Now let's see if we enter CHOOSING state. Only if we're not on DONE.
   if(*sbtd->current_mode == RM_IDLE && *sbtd->current_button != sbtd->outkeys->size() && sbtd->keys.keys[sbtd->accept_button].push) {
+    queueSound(S::accept, 1.0);
     (*sbtd->current_mode) = RM_CHOOSING;
   }
   
