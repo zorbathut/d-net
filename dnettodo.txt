@@ -3,8 +3,6 @@
   - Need sound for game start sliders
   - Need choose.wav and cursorover.wav
   - accept.wav seems to start too late
-- Convert to ogg on build
-- Render tween HUD after items, so clears don't fuck things up
 - Progress indicator for cache weapon build
 - OSX/otherOS conversions
 - Background grid?

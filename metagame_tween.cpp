@@ -311,6 +311,84 @@ void PersistentData::render() const {
   smart_ptr<GfxWindow> gfxwpos;
   
   if(slot[0].type != Slot::RESULTS) {
+    setZoom(Float4(0, 0, 133.333, 100));
+    gfxwpos.reset(new GfxWindow(Float4(0, 0, 133.333, divider_ypos), 1.0));
+    setZoom(Float4(0, 0, getAspect(), 1.0));
+    
+    vector<string> text;
+    if(shopcycles == 0) {
+      text.push_back("Choose \"join game\" to add more players.");
+      text.push_back("At least two players are needed.");
+      text.push_back("");
+      text.push_back("");
+      text.push_back("Left keyboard player uses WASD for movement");
+      text.push_back("and RTYFGHVBN as buttons.");
+      text.push_back("");
+      text.push_back("Right keyboard player uses arrow keys for movement");
+      text.push_back("and 7890UIOPJKL;M,./ as buttons.");
+      text.push_back("");
+      text.push_back("");
+    }
+    
+    text.push_back("Choose \"Settings\" to modify your controller settings.");
+    text.push_back("");
+    text.push_back("");
+    
+    if(mode == TM_SHOP) {
+      text.push_back("\"Quick shop\" lets four people buy things at once.");
+      text.push_back("\"Full shop\" gives weapon and upgrade demonstrations.");
+      text.push_back("");
+      text.push_back("");
+    }
+    
+    text.push_back("Choose \"done\" when ready to play.");
+    
+    setColor(C::inactive_text * 0.5);
+    drawJustifiedMultiText(text, 0.03, getZoom().midpoint(), TEXT_CENTER, TEXT_CENTER);
+  }
+  
+  setZoom(Float4(0, 0, getAspect(), 1.0));
+  
+  if(slot_count == 1) {
+    renderSlot(0);
+  } else if(slot_count == 4) {
+    {
+      GfxWindow gfxw2(Float4(0, 0, getAspect() / 2, 0.5), 1.0);
+      renderSlot(0);
+    }
+    {
+      GfxWindow gfxw2(Float4(getAspect() / 2, 0, getAspect(), 0.5), 1.0);
+      renderSlot(1);
+    }
+    {
+      GfxWindow gfxw2(Float4(0, 0.5, getAspect() / 2, 1), 1.0);
+      renderSlot(2);
+    }
+    {
+      GfxWindow gfxw2(Float4(getAspect() / 2, 0.5, getAspect(), 1), 1.0);
+      renderSlot(3);
+    }
+    
+    setColor(C::inactive_text);
+    
+    if(slot[0].type != Slot::EMPTY || slot[1].type != Slot::EMPTY)
+      drawLine(Float4(getAspect() / 2, 0, getAspect() / 2, 0.5), 0.001);
+    
+    if(slot[2].type != Slot::EMPTY || slot[3].type != Slot::EMPTY)
+      drawLine(Float4(getAspect() / 2, 0.5, getAspect() / 2, 1), 0.001);
+    
+    if(slot[0].type != Slot::EMPTY || slot[2].type != Slot::EMPTY)
+      drawLine(Float4(0, 0.5, getAspect() / 2, 0.5), 0.001);
+    
+    if(slot[1].type != Slot::EMPTY || slot[3].type != Slot::EMPTY)
+      drawLine(Float4(getAspect() / 2, 0.5, getAspect(), 0.5), 0.001);
+  } else {
+    CHECK(0);
+  }
+  
+  gfxwpos.reset();
+  
+  if(slot[0].type != Slot::RESULTS) {
     // Draw our framework
     setZoom(Float4(0, 0, 133.333, 100));
     setColor(C::active_text);
@@ -387,80 +465,6 @@ void PersistentData::render() const {
           drawDvec2(pms[i].faction->faction->icon, Float4(0, 0, ticker_text_size, ticker_text_size) + sps_playerpos[i] + Float2(ticker_text_size, ticker_text_size) / 10, 10, 0.001);
       }
     }
-    
-    gfxwpos.reset(new GfxWindow(Float4(0, 0, 133.333, divider_ypos), 1.0));
-    
-    setZoom(Float4(0, 0, getAspect(), 1.0));
-  }
-  
-  {
-    vector<string> text;
-    if(shopcycles == 0) {
-      text.push_back("Choose \"join game\" to add more players.");
-      text.push_back("At least two players are needed.");
-      text.push_back("");
-      text.push_back("");
-      text.push_back("Left keyboard player uses WASD for movement");
-      text.push_back("and RTYFGHVBN as buttons.");
-      text.push_back("");
-      text.push_back("Right keyboard player uses arrow keys for movement");
-      text.push_back("and 7890UIOPJKL;M,./ as buttons.");
-      text.push_back("");
-      text.push_back("");
-    }
-    
-    text.push_back("Choose \"Settings\" to modify your controller settings.");
-    text.push_back("");
-    text.push_back("");
-    
-    if(mode == TM_SHOP) {
-      text.push_back("\"Quick shop\" lets four people buy things at once.");
-      text.push_back("\"Full shop\" gives weapon and upgrade demonstrations.");
-      text.push_back("");
-      text.push_back("");
-    }
-    
-    text.push_back("Choose \"done\" when ready to play.");
-    
-    setColor(C::inactive_text * 0.5);
-    drawJustifiedMultiText(text, 0.03, getZoom().midpoint(), TEXT_CENTER, TEXT_CENTER);
-  }
-  
-  if(slot_count == 1) {
-    renderSlot(0);
-  } else if(slot_count == 4) {
-    {
-      GfxWindow gfxw2(Float4(0, 0, getAspect() / 2, 0.5), 1.0);
-      renderSlot(0);
-    }
-    {
-      GfxWindow gfxw2(Float4(getAspect() / 2, 0, getAspect(), 0.5), 1.0);
-      renderSlot(1);
-    }
-    {
-      GfxWindow gfxw2(Float4(0, 0.5, getAspect() / 2, 1), 1.0);
-      renderSlot(2);
-    }
-    {
-      GfxWindow gfxw2(Float4(getAspect() / 2, 0.5, getAspect(), 1), 1.0);
-      renderSlot(3);
-    }
-    
-    setColor(C::inactive_text);
-    
-    if(slot[0].type != Slot::EMPTY || slot[1].type != Slot::EMPTY)
-      drawLine(Float4(getAspect() / 2, 0, getAspect() / 2, 0.5), 0.001);
-    
-    if(slot[2].type != Slot::EMPTY || slot[3].type != Slot::EMPTY)
-      drawLine(Float4(getAspect() / 2, 0.5, getAspect() / 2, 1), 0.001);
-    
-    if(slot[0].type != Slot::EMPTY || slot[2].type != Slot::EMPTY)
-      drawLine(Float4(0, 0.5, getAspect() / 2, 0.5), 0.001);
-    
-    if(slot[1].type != Slot::EMPTY || slot[3].type != Slot::EMPTY)
-      drawLine(Float4(getAspect() / 2, 0.5, getAspect(), 0.5), 0.001);
-  } else {
-    CHECK(0);
   }
 }
 
