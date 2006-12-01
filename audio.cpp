@@ -4,6 +4,7 @@
 #include "util.h"
 
 #include <SDL.h>
+#include <vorbis/vorbisfile.h>
 
 class SoundState {
 public:
@@ -94,31 +95,42 @@ void queueSound(const Sound *sound, float volume) {
   SDL_UnlockAudio();
 }
 
-// having trouble getting ogg working >:(
-/*
 Sound loadSoundOgg(const string &name) {
-  dprintf("Now attempting file\n");
   FILE *file = fopen((name + ".ogg").c_str(), "rb");
   CHECK(file);
   
-  dprintf("ov_open\n");
   OggVorbis_File ov;
-  dprintf("ov_open2\n");
   CHECK(!ov_open(file, &ov, NULL, 0));
   
-  dprintf("ov_info\n");
   vorbis_info *inf = ov_info(&ov, -1);
   CHECK(inf);
   CHECK(inf->channels == 2);
   CHECK(inf->rate == 44100);
-  
-  dprintf("ov_clear\n");
-  CHECK(!ov_clear(&ov));
-  
+
   Sound foo;
+
+  while(1) {
+    char buf[4096];
+    int bitstream;
+    int rv = ov_read(&ov, buf, sizeof(buf), 0, 2, 1, &bitstream);
+    CHECK(bitstream == 0);
+    CHECK(rv >= 0);
+    CHECK(rv <= sizeof(buf));
+    CHECK(rv % 4 == 0);
+    if(rv == 0)
+      break;
+    short *pt = reinterpret_cast<short*>(buf);
+    rv /= 4;
+    for(int i = 0; i < rv; i++) {
+      foo.data[0].push_back(*pt++);
+      foo.data[1].push_back(*pt++);
+    }
+  }
+  
+  CHECK(!ov_clear(&ov));
+
   return foo;
 }
-*/
 
 Sound loadSound(const string &name) {
   CHECK(sizeof(short) == 2 && CHAR_BIT == 8);
@@ -129,8 +141,7 @@ Sound loadSound(const string &name) {
   Uint8 *data;
   Uint32 len;
   if(!SDL_LoadWAV((name + ".wav").c_str(), &aspec, &data, &len)) {
-    CHECK(0);
-    //return loadSoundOgg(name);
+    return loadSoundOgg(name);
   }
   
   CHECK(aspec.freq == 44100);
