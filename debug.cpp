@@ -4,6 +4,8 @@
 #include "os.h"
 
 #include <stdarg.h>
+#include <assert.h>
+
 #include <vector>
 
 using namespace std;
