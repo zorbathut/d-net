@@ -23,20 +23,23 @@ clean:
 
 STDRUN = --nofullscreen --debugitems --startingCash=100000000 --debugControllers=2 --factionMode=0 --nullControllers=11 --writeTarget= --auto_newgame --nocullShopTree --httpd_port=616 --noshopcache
 
-debugrun: d-net-dbg.exe
-	d-net-dbg.exe $(STDRUN)
-
-basicrun: d-net.exe
-	d-net.exe --nofullscreen --writeTarget= --httpd_port=616
-
 run: d-net.exe
 	d-net.exe $(STDRUN)
+  
+basicrun: d-net.exe
+	d-net.exe --nofullscreen --writeTarget= --httpd_port=616
 
 cacherun: d-net.exe
 	d-net.exe $(STDRUN) --shopcache
 
-three: d-net.exe
+threerun: d-net.exe
 	d-net.exe $(STDRUN) --debugControllers=3
+  
+debugrun: d-net-dbg.exe
+	d-net-dbg.exe $(STDRUN)
+
+debugbasicrun: d-net-dbg.exe
+	d-net-dbg.exe --nofullscreen --writeTarget= --httpd_port=616
 
 ai: d-net.exe
 	d-net.exe --nofullscreen --aiCount=12 --fastForwardTo=100000000 --factionMode=0 --httpd_port=616 --noshopcache

@@ -281,7 +281,7 @@ bool standardButtonTick(StandardButtonTickData *sbtd) {
     *sbtd->current_button = modurot(*sbtd->current_button, sbtd->outkeys->size() + 1);
     
     // Here's where we potentially quit.
-    if(*sbtd->current_button == sbtd->outkeys->size() && sbtd->keys.keys[sbtd->accept_button].push /*|| sbtd->cancel_button != -1 && sbtd->keys.keys[sbtd->cancel_button].push*/) { // if we're on done AND the accept button was pushed OR the cancel button exists AND the cancel button was pushed . . .
+    if(*sbtd->current_button == sbtd->outkeys->size() && sbtd->accept_button != -1 && sbtd->keys.keys[sbtd->accept_button].push /*|| sbtd->cancel_button != -1 && sbtd->keys.keys[sbtd->cancel_button].push*/) { // if we're on done AND the accept button exists AND the accept button was pushed OR the cancel button exists AND the cancel button was pushed . . .
       if(count(sbtd->outkeys->begin(), sbtd->outkeys->end(), -1) == 0) { // AND there are no unfinished keys . . .
         *sbtd->current_button = -1;
         queueSound(S::accept, 1.0);
