@@ -60,8 +60,10 @@ package: d-net.exe data/shopcache.dwh
 	mkdir deploy/dumps
 	cp dumps/readme.txt deploy/dumps
 	rm -f deploy/data/coordfailure
-	cd deploy ; rm -rf `find | grep .svn`
-	strip deploy/d-net.exe
+	cd deploy ; rm -rf `find | grep \.svn`
+	strip -s deploy/*.exe deploy/*.dll
+	cd deploy ; find | grep \.wav | xargs oggenc -q 6
+	cd deploy ; rm -rf `find | grep \.wav`
 	cd deploy ; zip -9 -r \\\\192.168.100.4\\zorba\\www\\d-net\\Dnet\ Latest\ Version.zip *  # This is really too many backslashes.
 	cp \\\\192.168.100.4\\zorba\\www\\d-net\\Dnet\ Latest\ Version.zip `date +\\\\\\\\192.168.100.4\\\\zorba\\\\www\\\\d-net\\\\dnet%G%m%d%H%M%S.zip` # This is really too many backslashes.
 	rm -rf deploy
