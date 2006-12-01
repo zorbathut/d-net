@@ -65,16 +65,26 @@ template<typename T> void generateShopCache(const string &itemname, const T &ite
 }
 
 void generateCachedShops(float accuracy) {
+  
+  const int gencount = weaponList().size() + bombardmentList().size() + gloryList().size();
+  int gendone = 0;
+  
   FILE *ofil = fopen("data/shopcache.dwh", "w");
   for(map<string, IDBWeapon>::const_iterator itr = weaponList().begin(); itr != weaponList().end(); itr++) {
+    dprintf("%d/%d (%.0f%%)\n", gendone, gencount, (float)gendone / gencount * 100);
+    gendone++;
     generateShopCache(itr->first, itr->second, ofil, accuracy);
   }
   
   for(map<string, IDBBombardment>::const_iterator itr = bombardmentList().begin(); itr != bombardmentList().end(); itr++) {
+    dprintf("%d/%d (%.0f%%)\n", gendone, gencount, (float)gendone / gencount * 100);
+    gendone++;
     generateShopCache(itr->first, itr->second, ofil, accuracy);
   }
   
   for(map<string, IDBGlory>::const_iterator itr = gloryList().begin(); itr != gloryList().end(); itr++) {
+    dprintf("%d/%d (%.0f%%)\n", gendone, gencount, (float)gendone / gencount * 100);
+    gendone++;
     generateShopCache(itr->first, itr->second, ofil, accuracy);
   }
   fclose(ofil);

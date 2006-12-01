@@ -3,7 +3,6 @@
   - Need sound for game start sliders
   - Need choose.wav and cursorover.wav
   - accept.wav seems to start too late
-- Progress indicator for cache weapon build
 - OSX/otherOS conversions
 - Background grid?
 - Training/implants/wtf
