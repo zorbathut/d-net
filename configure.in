@@ -1,3 +1,27 @@
 AC_INIT(main.cpp)
+
+AC_CONFIG_AUX_DIR([build-aux])
+
 AC_PROG_CXX
+AC_LANG_CPLUSPLUS
+
+AC_CHECK_PROG(SDL, sdl-config, sdl-config)
+if test "x$SDL" == "x" ; then
+    AC_MSG_ERROR([D-Net requires SDL.])
+fi
+
+CPPFLAGS="$CPPFLAGS `sdl-config --cflags`"
+LDFLAGS="$CPPFLAGS `sdl-config --libs`"
+
+AC_CANONICAL_TARGET
+case "${target_os}" in
+  cygwin)
+    AC_MSG_NOTICE([adding extended boost directory for cygwin])
+    CPPFLAGS="$CPPFLAGS -I/usr/include/boost-1_33_1"
+    ;;
+  *)
+    ;;
+esac
+
+AC_CHECK_HEADER([boost/noncopyable.hpp],,AC_MSG_ERROR([D-Net requires Boost.]))
 AC_OUTPUT(Makefile)
