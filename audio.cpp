@@ -94,6 +94,32 @@ void queueSound(const Sound *sound, float volume) {
   SDL_UnlockAudio();
 }
 
+// having trouble getting ogg working >:(
+/*
+Sound loadSoundOgg(const string &name) {
+  dprintf("Now attempting file\n");
+  FILE *file = fopen((name + ".ogg").c_str(), "rb");
+  CHECK(file);
+  
+  dprintf("ov_open\n");
+  OggVorbis_File ov;
+  dprintf("ov_open2\n");
+  CHECK(!ov_open(file, &ov, NULL, 0));
+  
+  dprintf("ov_info\n");
+  vorbis_info *inf = ov_info(&ov, -1);
+  CHECK(inf);
+  CHECK(inf->channels == 2);
+  CHECK(inf->rate == 44100);
+  
+  dprintf("ov_clear\n");
+  CHECK(!ov_clear(&ov));
+  
+  Sound foo;
+  return foo;
+}
+*/
+
 Sound loadSound(const string &name) {
   CHECK(sizeof(short) == 2 && CHAR_BIT == 8);
   
@@ -102,7 +128,10 @@ Sound loadSound(const string &name) {
   SDL_AudioSpec aspec;
   Uint8 *data;
   Uint32 len;
-  CHECK(SDL_LoadWAV((name + ".wav").c_str(), &aspec, &data, &len));
+  if(!SDL_LoadWAV((name + ".wav").c_str(), &aspec, &data, &len)) {
+    CHECK(0);
+    //return loadSoundOgg(name);
+  }
   
   CHECK(aspec.freq == 44100);
   CHECK(aspec.format == AUDIO_S16LSB);

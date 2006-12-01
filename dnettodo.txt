@@ -5,6 +5,7 @@
   - accept.wav seems to start too late
   - flac/ogg
 - OSX/otherOS conversions
+- Background grid?
 - Training/implants/wtf
 - Next-gen vecedit?
 - Activate factions
