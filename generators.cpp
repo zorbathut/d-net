@@ -39,7 +39,7 @@ template<typename T> void generateShopCache(const string &itemname, const T &ite
         for(int i = 0; i < nst.size(); i++)
           oldstats[i].push_back(nst[i]);
       }
-      if(ticks >= 600) {
+      if(ticks >= 1200) {
         bool end = true;
         for(int i = 0; i < oldstats.size(); i++) {
           float high = *max_element(oldstats[i].begin(), oldstats[i].end());

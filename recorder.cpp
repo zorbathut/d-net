@@ -28,6 +28,7 @@ void Recorder::metastats(int cycles, const vector<int> &damageframes) {
 
 Recorder::Recorder(FILE *output) : output(output) { }
 Recorder::~Recorder() {
+  CHECK(lines.size());
   for(map<string, int>::const_iterator itr = lines.begin(); itr != lines.end(); itr++) {
     fprintf(output, "  x=%d %s\n", itr->second, itr->first.c_str());
   }

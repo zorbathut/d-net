@@ -51,7 +51,7 @@ vecedit: d-net.exe
 	d-net.exe --vecedit --nofullscreen
     
 package: d-net.exe data/shopcache.dwh
-	rm \\\\192.168.100.4\\zorba\\www\\d-net\\Dnet\ Latest\ Version.zip
+	rm \\\\192.168.100.4\\zorba\\www\\d-net\\Dnet\ Latest\ Version.zip || true
 	mkdir deploy
 	cp d-net.exe deploy
 	cp c:/cygwin/usr/local/bin/SDL.dll deploy
