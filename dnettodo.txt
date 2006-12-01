@@ -4,6 +4,7 @@
   - Need choose.wav and cursorover.wav
   - accept.wav seems to start too late
   - flac/ogg
+- Progress indicator for cache weapon build
 - OSX/otherOS conversions
 - Background grid?
 - Training/implants/wtf
