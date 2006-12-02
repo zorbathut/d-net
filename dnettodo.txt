@@ -3,7 +3,6 @@
   - Need sound for game start sliders
   - Need choose.wav and cursorover.wav
   - accept.wav seems to start too late
-- OSX/otherOS conversions
 - Background grid?
 - Training/implants/wtf
 - Next-gen vecedit?
