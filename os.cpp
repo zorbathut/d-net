@@ -12,6 +12,27 @@
 
 using namespace std;
 
+// Cross-platform
+static string loc_exename;
+void set_exename(const string &str) {
+  loc_exename = str;
+}
+
+// if Windows
+pair<int, int> getCurrentScreenSize() {
+  return make_pair(GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN));
+}
+
+void outputDebugString(const string &str) {
+  OutputDebugString(str.c_str());
+}
+
+void seriouslyCrash() {
+  TerminateProcess(GetCurrentProcess(), 1);
+  exit(1);
+}
+
+// if Cygwin or other Linux
 typedef void (*sighandler_t)(int);
 
 class SignalHandler {
@@ -25,23 +46,11 @@ public:
   }
 } sighandler;
 
-void outputDebugString(const string &str) {
-  OutputDebugString(str.c_str());
-}
-
-pair<int, int> getCurrentScreenSize() {
-  return make_pair(GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN));
-}
-
-static string loc_exename;
-void set_exename(const string &str) {
-  loc_exename = str;
-}
-
 string exename() {
   return loc_exename;
 }
-  
+
+// if GCC
 
 #if defined(__GNUG__)
  
@@ -143,9 +152,14 @@ bool isUnoptimized() {
   return !testInlined();
 }
 
-#endif
+#else
 
-void seriouslyCrash() {
-  TerminateProcess(GetCurrentProcess(), 1);
-  exit(1);
+void dumpStackTrace() {
+  dprintf("No stack trace available\n");
 }
+
+bool isUnoptimized() {
+  return false;
+}
+
+#endif
