@@ -116,7 +116,13 @@ Listener::Listener(int port) {
 
 smart_ptr<Socket> Listener::consumeNewConnection() {
   struct sockaddr_in their_addr;
-  socklen_t sin_size = sizeof(their_addr);
+  #ifdef NO_WINDOWS
+    socklen_t sin_size;
+  #else
+    int sin_size;
+  #endif
+
+  sin_size = sizeof(their_addr);
   
   int new_fd;
   new_fd = accept(sock, (struct sockaddr *)&their_addr, &sin_size);
