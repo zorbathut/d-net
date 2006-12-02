@@ -89,16 +89,12 @@ void SetupOgl() {
 
 }
 
-void GetStartingResolution() {
-  setDefaultResolution(getCurrentScreenSize().first, getCurrentScreenSize().second, FLAGS_fullscreen);
-}
-
 void initSystem() {
 
   CHECK(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_NOPARACHUTE | SDL_INIT_TIMER | SDL_INIT_JOYSTICK) >= 0);
 
   SetupOgl();
-  GetStartingResolution();
+  setDefaultResolution(FLAGS_fullscreen);
   while(!MakeWindow("Devastation Net", getResolutionX(), getResolutionY()))
     resDown();
 };

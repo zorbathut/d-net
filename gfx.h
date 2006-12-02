@@ -13,7 +13,7 @@ using namespace std;
  * Setup and statistics
  */
 
-void setDefaultResolution(int cur_width, int cur_height, bool fullscreen);
+void setDefaultResolution(bool fullscreen);
 int getResolutionX();
 int getResolutionY();
 void resDown();

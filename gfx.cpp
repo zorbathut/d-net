@@ -90,10 +90,12 @@ public:
 };
 static vector<GfxWindowState> windows;
 
-void setDefaultResolution(int width, int height, bool fullscreen) {
-  dprintf("Current detected resolution: %d/%d\n", width, height);
+void setDefaultResolution(bool fullscreen) {
+  const SDL_VideoInfo *vinf = SDL_GetVideoInfo();
+  
+  dprintf("Current detected resolution: %d/%d\n", vinf->current_w, vinf->current_h);
   if(FLAGS_resolution_x == -1) {
-    FLAGS_resolution_x = width;
+    FLAGS_resolution_x = vinf->current_w;
     if(!fullscreen)
       resDown();
   }

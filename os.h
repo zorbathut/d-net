@@ -5,9 +5,6 @@
 
 using namespace std;
 
-// Video stuff
-pair<int, int> getCurrentScreenSize();
-
 // Debug stuff
 void outputDebugString(const string &str);
 
