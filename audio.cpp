@@ -1,6 +1,7 @@
 
 #include "audio.h"
 #include "cfcommon.h"
+#include "debug.h"
 #include "util.h"
 
 #include <SDL.h>

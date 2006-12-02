@@ -8,7 +8,6 @@
 #include <vector>
 #include <signal.h>
 #include <unistd.h>
-#include <windows.h>
 
 using namespace std;
 
@@ -18,7 +17,10 @@ void set_exename(const string &str) {
   loc_exename = str;
 }
 
-// if Windows
+#ifndef NO_WINDOWS
+
+#include <windows.h>
+
 void outputDebugString(const string &str) {
   OutputDebugString(str.c_str());
 }
@@ -27,6 +29,20 @@ void seriouslyCrash() {
   TerminateProcess(GetCurrentProcess(), 1);
   exit(1);
 }
+
+#else
+
+#undef printf
+void outputDebugString(const string &str) {
+  printf("%s\n", str.c_str());
+}
+#define printf FAILURE
+
+void seriouslyCrash() {
+  exit(1);
+}
+
+#endif
 
 // if Cygwin or other Linux
 typedef void (*sighandler_t)(int);

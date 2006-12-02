@@ -323,7 +323,7 @@ void standardButtonRender(const StandardButtonRenderData &sbrd) {
   
   {
     set<int> grid(sbrd.groups.begin(), sbrd.groups.end());
-    assert(grid.size() > 0);
+    CHECK(grid.size() > 0);
     linesneeded += grid.size() - 1;
     
     vector<int> grod = sbrd.groups;

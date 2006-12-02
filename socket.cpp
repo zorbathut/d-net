@@ -3,27 +3,37 @@
 
 #include "debug.h"
 
-#include <winsock.h>
+#ifdef NO_WINDOWS
+  #include <sys/socket.h>
+  #include <netinet/in.h>
+  #include <arpa/inet.h>
+  #include <unistd.h>
+  #include <fcntl.h>
 
-class InitWinsock {
-public:
-  InitWinsock() {
-    dprintf("Starting winsock");
-    WSADATA wsaData;
-    CHECK(WSAStartup(MAKEWORD(1, 1), &wsaData) == 0);
-  }
-  ~InitWinsock() {
-    dprintf("Closing winsock");
-    WSACleanup();
-  }
-} iws;  // this whole shebang doesn't exist in BSD
+  void closesocket(int socket) { close(socket); }
+#else
+  #include <winsock.h>
+
+  class InitWinsock {
+  public:
+    InitWinsock() {
+      dprintf("Starting winsock");
+      WSADATA wsaData;
+      CHECK(WSAStartup(MAKEWORD(1, 1), &wsaData) == 0);
+    }
+    ~InitWinsock() {
+      dprintf("Closing winsock");
+      WSACleanup();
+    }
+  } iws;  // this whole shebang doesn't exist in BSD
+#endif
 
 string Socket::receiveline() {
   char data[1024];
   int recvamount;
   
   // read as much as we can
-  while(recvamount = recv(sock, data, sizeof(data), 0)) {
+  while((recvamount = recv(sock, data, sizeof(data), 0))) {
     if(recvamount == -1)
       break;
     CHECK(recvamount >= 0);
@@ -66,8 +76,11 @@ void Socket::sendline(const string &str) {
 }
     
 Socket::Socket(int sock) : sock(sock) {
-    //CHECK(fcntl(sock, F_SETFL, O_NONBLOCK) == 0); // BSD
-  { int nonblocking = 1; CHECK(ioctlsocket(sock, FIONBIO, (unsigned long*) &nonblocking) == 0); } // Windows
+  #ifdef NO_WINDOWS
+    CHECK(fcntl(sock, F_SETFL, O_NONBLOCK) == 0); // BSD
+  #else
+    { int nonblocking = 1; CHECK(ioctlsocket(sock, FIONBIO, (unsigned long*) &nonblocking) == 0); } // Windows
+  #endif
 }
 Socket::~Socket() {
   closesocket(sock);
@@ -78,8 +91,11 @@ Listener::Listener(int port) {
   
   CHECK((sock = socket(PF_INET, SOCK_STREAM, 0)) != -1);
 
-  //CHECK(fcntl(sock, F_SETFL, O_NONBLOCK) == 0); // BSD
-  { int nonblocking = 1; CHECK(ioctlsocket(sock, FIONBIO, (unsigned long*)&nonblocking) == 0); } // Windows
+  #ifdef NO_WINDOWS
+    CHECK(fcntl(sock, F_SETFL, O_NONBLOCK) == 0); // BSD
+  #else
+    { int nonblocking = 1; CHECK(ioctlsocket(sock, FIONBIO, (unsigned long*) &nonblocking) == 0); } // Windows
+  #endif
   
   {
     int yes = 1;
@@ -94,13 +110,13 @@ Listener::Listener(int port) {
   memset(&(my_addr.sin_zero), '\0', 8); // zero the rest of the struct
   
   CHECK(bind(sock, (struct sockaddr *)&my_addr, sizeof(struct sockaddr)) == 0);
-  
+ 
   listen(sock, 10);
 }
 
 smart_ptr<Socket> Listener::consumeNewConnection() {
   struct sockaddr_in their_addr;
-  int sin_size = sizeof(their_addr);
+  socklen_t sin_size = sizeof(their_addr);
   
   int new_fd;
   new_fd = accept(sock, (struct sockaddr *)&their_addr, &sin_size);
@@ -115,39 +131,3 @@ smart_ptr<Socket> Listener::consumeNewConnection() {
 Listener::~Listener() {
   closesocket(sock);  // close in BSD
 }
-
-/*
-    if (listen(sockfd, BACKLOG) == -1) {
-        perror("listen");
-        exit(1);
-    }
-
-    sa.sa_handler = sigchld_handler; // reap all dead processes
-    sigemptyset(&sa.sa_mask);
-    sa.sa_flags = SA_RESTART;
-    if (sigaction(SIGCHLD, &sa, NULL) == -1) {
-        perror("sigaction");
-        exit(1);
-    }
-
-    while(1) {  // main accept() loop
-        sin_size = sizeof(struct sockaddr_in);
-        if ((new_fd = accept(sockfd, (struct sockaddr *)&their_addr,
-                                                       &sin_size)) == -1) {
-            perror("accept");
-            continue;
-        }
-        printf("server: got connection from %s\n",
-                                           inet_ntoa(their_addr.sin_addr));
-        if (!fork()) { // this is the child process
-            close(sockfd); // child doesn't need the listener
-            if (send(new_fd, "Hello, world!\n", 14, 0) == -1)
-                perror("send");
-            close(new_fd);
-            exit(0);
-        }
-        close(new_fd);  // parent doesn't need this
-    }
-
-    return 0;
-*/
