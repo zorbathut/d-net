@@ -29,6 +29,7 @@ case "${target_os}" in
     LDFLAGS="$LDFLAGS -lopengl32"
     ;;
   *)
+    CPPFLAGS="$CPP_FLAGS -DNO_WINDOWS"
     ;;
 esac
 
