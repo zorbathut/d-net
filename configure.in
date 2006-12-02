@@ -16,7 +16,7 @@ case "${target_os}" in
   cygwin)
     AC_MSG_NOTICE([adding extended boost and ogg directories for cygwin])
     # SDL fucks things up, but we need -mno-cygwin for other tests
-    CPPFLAGS="$CPPFLAGS -I/usr/include/boost-1_33_1 -I/usr/ogg/include -mno-cygwin"
+    CPPFLAGS="$CPPFLAGS -I/usr/include/boost-1_33_1 -I/usr/ogg/include -mno-cygwin -DVECTOR_PARANOIA"
     LDFLAGS="$LDFLAGS -L/usr/ogg/lib -mno-cygwin"
     AC_CHECK_HEADER([windows.h],,AC_MSG_ERROR([Can't find windows.h]))
     

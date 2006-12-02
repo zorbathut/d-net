@@ -18,12 +18,21 @@ string StringPrintf(const char *bort, ...) {
   va_list args;
 
   int done = 0;
+  bool noresize = false;
   do {
-    if(done)
+    if(done && !noresize)
       buf.resize(buf.size() * 2);
     va_start(args, bort);
     done = vsnprintf(&(buf[0]), buf.size() - 1,  bort, args);
-    CHECK(done < (int)buf.size());
+    if(done >= (int)buf.size()) {
+      CHECK(noresize == false);
+      CHECK(buf[buf.size() - 2] == 0);
+      buf.resize(done + 2);
+      done = -1;
+      noresize = true;
+    } else {
+      CHECK(done < (int)buf.size());
+    }
     va_end(args);
   } while(done == buf.size() - 1 || done == -1);
 

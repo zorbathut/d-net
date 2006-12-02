@@ -87,14 +87,24 @@ int dprintf(const char *bort, ...) {
   // this is duplicated code with StringPrintf - I should figure out a way of combining these
   static vector< char > buf(2);
   va_list args;
+  buf[buf.size() - 1] = 1;
 
   int done = 0;
+  bool noresize = false;
   do {
-    if(done)
+    if(done && !noresize)
       buf.resize(buf.size() * 2);
     va_start(args, bort);
     done = vsnprintf(&(buf[0]), buf.size() - 1,  bort, args);
-    assert(done < (int)buf.size());
+    if(done >= (int)buf.size()) {
+      assert(noresize == false);
+      assert(buf[buf.size() - 2] == 0);
+      buf.resize(done + 2);
+      done = -1;
+      noresize = true;
+    } else {
+      assert(done < (int)buf.size());
+    }
     va_end(args);
   } while(done == buf.size() - 1 || done == -1);
 
