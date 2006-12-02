@@ -30,6 +30,8 @@ case "${target_os}" in
     ;;
   *)
     CPPFLAGS="$CPP_FLAGS -DNO_WINDOWS"
+    AC_CHECK_LIB([GL], [glBegin],,AC_MSG_ERROR([opengl is needed]))
+    LDFLAGS="$LDFLAGS -lGL"
     ;;
 esac
 
