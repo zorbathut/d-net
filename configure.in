@@ -22,6 +22,10 @@ case "${target_os}" in
     # Horrible hack here - we can't search for a function in ws2_32 because their name mangling is different. So instead we just make sure the library exists. Not ideal.
     AC_CHECK_LIB([ws2_32], [main],,AC_MSG_ERROR([winsock is needed under cygwin]))
     LDFLAGS="$LDFLAGS -lws2_32"
+    
+    # Same deal here too
+    AC_CHECK_LIB([opengl32], [main],,AC_MSG_ERROR([opengl is needed]))
+    LDFLAGS="$LDFLAGS -lopengl32"
     ;;
   *)
     ;;
@@ -37,8 +41,6 @@ AC_CHECK_LIB([ogg], [ogg_stream_init],,AC_MSG_ERROR([libogg is needed]))
 AC_CHECK_LIB([vorbis], [vorbis_info_init],,AC_MSG_ERROR([libvorbis is needed]))
 AC_CHECK_LIB([vorbisfile], [ov_open],,AC_MSG_ERROR([libvorbisfile is needed]))
 LDFLAGS="$LDFLAGS -lvorbisfile -lvorbis -logg"
-
-# check opengl
 
 CPPFLAGS="$CPPFLAGS `sdl-config --cflags`"
 LDFLAGS="$LDFLAGS `sdl-config --libs`"
