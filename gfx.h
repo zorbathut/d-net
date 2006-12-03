@@ -51,6 +51,12 @@ public:
   ~GfxStenciled();
 };
 
+class GfxInvertingStencil : boost::noncopyable {
+public:
+  GfxInvertingStencil();
+  ~GfxInvertingStencil();
+};
+
 /*************
  * Primitives
  */
@@ -68,7 +74,7 @@ void drawPoint(const Float2 &pos, float weight);
 
 void drawSolid(const Float4 &box);  // Background color only, and intentionally so
 void drawSolidLoop(const vector<Float2> &verts); // Must be convex
-void invertStencilLoop(const vector<Float2> &verts);
+void invertStencilLoop(const vector<Coord2> &verts);
 
 /*************
  * Composites

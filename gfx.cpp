@@ -316,7 +316,7 @@ void initFrame() {
 void clearFrame(const Color &color) {
   finishLineCluster();
   glClearColor(color.r, color.g, color.b, 0.0f);
-  glClearStencil(1);
+  glClearStencil(0);
   glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
   CHECK(glGetError() == GL_NO_ERROR);
   clearcolor = color;
@@ -395,6 +395,35 @@ GfxStenciled::~GfxStenciled() {
   glDisable(GL_STENCIL_TEST);
   CHECK(glGetError() == GL_NO_ERROR);
   stenciled = false;
+}
+
+bool inverting = false;
+GfxInvertingStencil::GfxInvertingStencil() {
+  CHECK(!inverting);
+  
+  finishLineCluster();
+  CHECK(glGetError() == GL_NO_ERROR);
+
+  glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+  glEnable(GL_STENCIL_TEST);
+  glStencilMask(1);
+  glStencilFunc(GL_ALWAYS, 0, 0);
+  glStencilOp(GL_INVERT, GL_INVERT, GL_INVERT);
+  CHECK(glGetError() == GL_NO_ERROR);
+  
+  inverting = true;
+}
+
+GfxInvertingStencil::~GfxInvertingStencil() {
+  CHECK(inverting);
+  CHECK(curWeight == -1.f);
+  
+  glDisable(GL_STENCIL_TEST);
+  glStencilMask(0);
+  glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+  CHECK(glGetError() == GL_NO_ERROR);
+
+  inverting = false;
 }
 
 /*************
@@ -532,23 +561,13 @@ void drawSolidLoop(const vector<Float2> &verts) {
   setColor(curcolor);
 }
 
-void invertStencilLoop(const vector<Float2> &verts) {
-  finishLineCluster();
-  CHECK(glGetError() == GL_NO_ERROR);
-  glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
-  glEnable(GL_STENCIL_TEST);
-  CHECK(glGetError() == GL_NO_ERROR);
-  glStencilMask(1);
-  CHECK(glGetError() == GL_NO_ERROR);
-  glStencilFunc(GL_ALWAYS, 0, 0);
-  CHECK(glGetError() == GL_NO_ERROR);
-  glStencilOp(GL_INVERT, GL_INVERT, GL_INVERT);
-  CHECK(glGetError() == GL_NO_ERROR);
-  drawSolidLoopWorker(verts);
-  glDisable(GL_STENCIL_TEST);
-  glStencilMask(0);
-  glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
-  CHECK(glGetError() == GL_NO_ERROR);
+void invertStencilLoop(const vector<Coord2> &verts) {
+  CHECK(inverting);
+  
+  glBegin(GL_TRIANGLE_FAN);
+  for(int i = 0; i < verts.size(); i++)
+    localVertex2f(verts[i].x.toFloat(), verts[i].y.toFloat());
+  glEnd();
 }
 
 void drawPoint(const Float2 &pos, float weight) {

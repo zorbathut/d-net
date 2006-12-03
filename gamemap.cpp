@@ -22,12 +22,8 @@ void Gamemap::render() const {
     if(isAvailable(paths[i].state))
       continue;
     
-    if(frameNumber % 2 || 1) {
-      for(int j = 0; j < paths[i].renderpath.size(); j++)
-        drawLinePath(paths[i].renderpath[j], 0.5);
-    } else {
-      drawLineLoop(paths[i].collisionpath, 0.5);
-    }
+    for(int j = 0; j < paths[i].renderpath.size(); j++)
+      drawLinePath(paths[i].renderpath[j], 0.5);
     /*
     if(FLAGS_debugGraphics) {
       for(int j = 0; j < paths[i].second.size(); j++) {
@@ -46,6 +42,56 @@ void Gamemap::render() const {
       }
     }
     */
+  }
+  
+  {
+    GfxInvertingStencil gfxis;
+    for(int i = 0; i < paths.size(); i++) {
+      invertStencilLoop(paths[i].collisionpath);
+    }
+    
+    // Four giant rectangles. Two vertical that include corners, two horizontal that don't.
+    {
+      vector<Coord2> left;
+      left.push_back(Coord2(getCollisionBounds().sx * 2, getCollisionBounds().sy * 2)); // far top-left
+      left.push_back(Coord2(getCollisionBounds().sx, getCollisionBounds().sy * 2)); // near top-left
+      left.push_back(Coord2(getCollisionBounds().sx, getCollisionBounds().ey * 2)); // near bottom-left
+      left.push_back(Coord2(getCollisionBounds().sx * 2, getCollisionBounds().ey * 2)); // far bottom-left
+      invertStencilLoop(left);
+    }
+    
+    {
+      vector<Coord2> right;
+      right.push_back(Coord2(getCollisionBounds().ex * 2, getCollisionBounds().sy * 2)); // far top-right
+      right.push_back(Coord2(getCollisionBounds().ex, getCollisionBounds().sy * 2)); // near top-right
+      right.push_back(Coord2(getCollisionBounds().ex, getCollisionBounds().ey * 2)); // near bottom-right
+      right.push_back(Coord2(getCollisionBounds().ex * 2, getCollisionBounds().ey * 2)); // far bottom-right
+      invertStencilLoop(right);
+    }
+    
+    {
+      vector<Coord2> top;
+      top.push_back(Coord2(getCollisionBounds().sx, getCollisionBounds().sy * 2)); // far top-left
+      top.push_back(Coord2(getCollisionBounds().sx, getCollisionBounds().sy)); // near top-left
+      top.push_back(Coord2(getCollisionBounds().ex, getCollisionBounds().sy)); // near top-right
+      top.push_back(Coord2(getCollisionBounds().ex, getCollisionBounds().sy * 2)); // far top-left
+      invertStencilLoop(top);
+    }
+    
+    {
+      vector<Coord2> bottom;
+      bottom.push_back(Coord2(getCollisionBounds().sx, getCollisionBounds().ey * 2)); // far bottom-left
+      bottom.push_back(Coord2(getCollisionBounds().sx, getCollisionBounds().ey)); // near bottom-left
+      bottom.push_back(Coord2(getCollisionBounds().ex, getCollisionBounds().ey)); // near bottom-right
+      bottom.push_back(Coord2(getCollisionBounds().ex, getCollisionBounds().ey * 2)); // far bottom-left
+      invertStencilLoop(bottom);
+    }
+  }
+  
+  {
+    GfxStenciled gfxs;
+    setColor(Color(0.3, 0.3, 0.3));
+    drawGrid(10.0, 0.1);
   }
 }
 

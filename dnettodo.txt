@@ -1,5 +1,4 @@
 ---- Major work path
-- Background grid?
 - Training/implants/wtf
 - Make upgrades hide old versions
 - Sound
