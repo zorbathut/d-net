@@ -420,7 +420,7 @@ void InterfaceMain::ai(const vector<Ai *> &ai) const {
 
 extern int lastFailedFrame;
 
-void InterfaceMain::render() const {
+void InterfaceMain::render() const {  
   StackString stp("Interface rendering");
   
   if(lastFailedFrame + 600 > frameNumber) {

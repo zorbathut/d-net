@@ -289,6 +289,11 @@ static bool frame_running = false;
 void initFrame() {
   CHECK(!frame_running);
   CHECK(curWeight == -1.f);
+  {
+    int v = 0;
+    glGetIntegerv(GL_STENCIL_BITS, &v);
+    CHECK(v >= 1);
+  }
   glEnable(GL_POINT_SMOOTH);
   glEnable(GL_LINE_SMOOTH);
   glEnable(GL_SCISSOR_TEST);
@@ -299,9 +304,11 @@ void initFrame() {
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE);
   //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  glStencilMask(1);
   clearFrame(Color(0.05, 0.05, 0.05));
   CHECK(glGetError() == GL_NO_ERROR);
   frame_running = true;
+  glStencilMask(0);
   
   registerCrashFunction(deinitFrame);
 }
@@ -309,7 +316,9 @@ void initFrame() {
 void clearFrame(const Color &color) {
   finishLineCluster();
   glClearColor(color.r, color.g, color.b, 0.0f);
-  glClear(GL_COLOR_BUFFER_BIT);
+  glClearStencil(1);
+  glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+  CHECK(glGetError() == GL_NO_ERROR);
   clearcolor = color;
 }
 
@@ -365,6 +374,27 @@ void GfxWindowState::setScissor() const { // yes, the Y's are correct - the scre
   int ex = int(ceil(getResolutionY() * newbounds.ex));
   int ey = int(ceil(getResolutionY() * newbounds.ey));
   glScissor(sx, getResolutionY() - ey, ex - sx, ey - sy);
+}
+
+bool stenciled = false;
+GfxStenciled::GfxStenciled() {
+  CHECK(!stenciled);
+  finishLineCluster();
+  CHECK(glGetError() == GL_NO_ERROR);
+  glEnable(GL_STENCIL_TEST);
+  glStencilFunc(GL_EQUAL, 1, 1);
+  glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+  CHECK(glGetError() == GL_NO_ERROR);
+  stenciled = true;
+}
+
+GfxStenciled::~GfxStenciled() {
+  CHECK(stenciled);
+  finishLineCluster();
+  CHECK(glGetError() == GL_NO_ERROR);
+  glDisable(GL_STENCIL_TEST);
+  CHECK(glGetError() == GL_NO_ERROR);
+  stenciled = false;
 }
 
 /*************
@@ -481,6 +511,13 @@ void drawSolid(const Float4 &box) {
   drawSolidLoop(*bochs);
 }
 
+void drawSolidLoopWorker(const vector<Float2> &verts) {
+  glBegin(GL_TRIANGLE_FAN);
+  for(int i = 0; i < verts.size(); i++)
+    localVertex2f(verts[i].x, verts[i].y);
+  glEnd();
+}
+
 void drawSolidLoop(const vector<Float2> &verts) {
   for(int i = 0; i < verts.size(); i++)
     CHECK(inPath((verts[i] + verts[(i + 1) % verts.size()] + verts[(i + 2) % verts.size()]) / 3, verts));
@@ -489,13 +526,29 @@ void drawSolidLoop(const vector<Float2> &verts) {
   CHECK(glGetError() == GL_NO_ERROR);
   glColor3f(clearcolor.r, clearcolor.g, clearcolor.b);
   glBlendFunc(GL_ONE, GL_ZERO);
-  glBegin(GL_TRIANGLE_FAN);
-  for(int i = 0; i < verts.size(); i++)
-    localVertex2f(verts[i].x, verts[i].y);
-  glEnd();
+  drawSolidLoopWorker(verts);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE);
   CHECK(glGetError() == GL_NO_ERROR);
   setColor(curcolor);
+}
+
+void invertStencilLoop(const vector<Float2> &verts) {
+  finishLineCluster();
+  CHECK(glGetError() == GL_NO_ERROR);
+  glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+  glEnable(GL_STENCIL_TEST);
+  CHECK(glGetError() == GL_NO_ERROR);
+  glStencilMask(1);
+  CHECK(glGetError() == GL_NO_ERROR);
+  glStencilFunc(GL_ALWAYS, 0, 0);
+  CHECK(glGetError() == GL_NO_ERROR);
+  glStencilOp(GL_INVERT, GL_INVERT, GL_INVERT);
+  CHECK(glGetError() == GL_NO_ERROR);
+  drawSolidLoopWorker(verts);
+  glDisable(GL_STENCIL_TEST);
+  glStencilMask(0);
+  glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+  CHECK(glGetError() == GL_NO_ERROR);
 }
 
 void drawPoint(const Float2 &pos, float weight) {

@@ -81,7 +81,7 @@ void SetupOgl() {
   CHECK(SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 5) == 0);
   CHECK(SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 5) == 0);
   CHECK(SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, SCREEN_DEPTH) == 0);     // size of depth buffer
-  CHECK(SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 0) == 0);      // we aren't going to use the stencil buffer
+  CHECK(SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 1) == 0);      // now we do use the stencil buffer
   CHECK(SDL_GL_SetAttribute(SDL_GL_ACCUM_RED_SIZE, 0) == 0);    // this and the next three lines set the bits allocated per pixel -
   CHECK(SDL_GL_SetAttribute(SDL_GL_ACCUM_GREEN_SIZE, 0) == 0);    // - for the accumulation buffer to 0
   CHECK(SDL_GL_SetAttribute(SDL_GL_ACCUM_BLUE_SIZE, 0) == 0);
@@ -97,6 +97,19 @@ void initSystem() {
   setDefaultResolution(FLAGS_fullscreen);
   while(!MakeWindow("Devastation Net", getResolutionX(), getResolutionY()))
     resDown();
+  
+  {
+    dprintf("GL version: %s\n", glGetString(GL_VERSION));
+  
+    dprintf("Renderer: %s\n", glGetString(GL_RENDERER));
+    dprintf("Vendor: %s\n", glGetString(GL_VENDOR));
+    
+    int v;
+    glGetIntegerv(GL_DEPTH_BITS, &v);
+    dprintf("Depth bits: %d\n", v);
+    glGetIntegerv(GL_STENCIL_BITS, &v);
+    dprintf("Stencil bits: %d\n", v);
+  }
 };
 
 void deinitSystem() {

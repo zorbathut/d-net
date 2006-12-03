@@ -1,10 +1,12 @@
 ---- Major work path
+- Background grid?
+- Training/implants/wtf
+- Make upgrades hide old versions
 - Sound
   - Need sound for game start sliders
   - Need choose.wav and cursorover.wav
   - accept.wav seems to start too late
-- Background grid?
-- Training/implants/wtf
+  - Eventually get things like weaponry sounds in
 - Next-gen vecedit?
 - Activate factions
   - Faction bonuses/penalties in demo screens
@@ -68,3 +70,16 @@ Sounditude
 Take a "queueSound" with Sound, volume, fade.
 Sound gets loaded, much like dvec2.
 Then there's IDBSoundPack items. This sounds good.
+
+
+--- Grid
+Stencil buffer. Render all polygons on top of it. Use that to stencil the lines. Oughta work fine.
+
+
+
+--- Implants/training
+Training seems dumb now. So do licenses - heavy tanks are enough of a discontinuity. So, implants:
+
+* Extra slots cost exponentially increasing amounts of money (max out at, say, four or five?)
+* One implant per type, upgrading it costs increasing amounts of money
+How should the interface function? Staggered, "equip" and "upgrade"
