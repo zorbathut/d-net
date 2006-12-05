@@ -634,6 +634,40 @@ void parseUpgrade(kvData *chunk, bool reload) {
   
   titem->text = parseOptionalSubclass(chunk, "text", text);
   
+  titem->has_postreq = false;
+  
+  {
+    string lastname = tokenize(name, " ").back();
+    CHECK(lastname.size()); // if this is wrong something horrible has occured
+    
+    bool roman = true;
+    for(int i = 0; i < lastname.size(); i++)
+      if(lastname[i] != 'I' && lastname[i] != 'V' && lastname[i] != 'X')  // I figure nobody will get past X without tripping the checks earlier
+        roman = false;
+      
+    if(!roman) {
+      titem->prereq = NULL;
+    } else {
+      // roman numerals are hard :(
+      CHECK(count(lastname.begin(), lastname.end(), 'I') == lastname.size());
+      
+      if(lastname.size() > 1) {
+        string tempname = name;
+        CHECK(tempname[tempname.size() - 1] == 'I');
+        tempname.erase(tempname.end() - 1); // chop the last I off
+        string locnam = tempname + "+" + category;
+        dprintf("%s\n", locnam.c_str());
+        CHECK(upgradeclasses.count(locnam));
+        CHECK(!upgradeclasses[locnam].has_postreq);
+        titem->prereq = &upgradeclasses[locnam];
+        upgradeclasses[locnam].has_postreq = true;
+      } else {
+        titem->prereq = NULL;
+      }
+    }
+  }
+      
+  
   {
     HierarchyNode *mountpoint = findNamedNode(name, 1);
     HierarchyNode tnode;

@@ -169,6 +169,9 @@ struct IDBUpgrade {
 
   float costmult;
   string category;
+  
+  const IDBUpgrade *prereq;
+  bool has_postreq;
 
   const string *text;
 };

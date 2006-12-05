@@ -1,6 +1,9 @@
 ---- Major work path
-- Training/implants/wtf
 - Make upgrades hide old versions
+  - Rename "upgrades" to "tank upgrades"
+  - Add prereqs
+  - Handle prereqs
+- Training/implants/wtf
 - Sound
   - Need sound for game start sliders
   - Need choose.wav and cursorover.wav
