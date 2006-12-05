@@ -1,5 +1,4 @@
 ---- Major work path
-- Rename "upgrades" to "tank upgrades"
 - Training/implants/wtf
 - Sound
   - Need sound for game start sliders

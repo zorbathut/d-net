@@ -20,7 +20,7 @@ adjustment {
 }
 
 upgrade {
-  name=ROOT.Upgrades.Hull I
+  name=ROOT.Tank Upgrades.Hull I
   costmult=1
   adjustment=adjustment.hull
   
@@ -30,7 +30,7 @@ upgrade {
 }
 
 upgrade {
-  name=ROOT.Upgrades.Hull II
+  name=ROOT.Tank Upgrades.Hull II
   costmult=3
   adjustment=adjustment.hull
   
@@ -40,7 +40,7 @@ upgrade {
 }
 
 upgrade {
-  name=ROOT.Upgrades.Hull I
+  name=ROOT.Tank Upgrades.Hull I
   costmult=0.5
   adjustment=adjustment.hull
   
@@ -50,7 +50,7 @@ upgrade {
 }
 
 upgrade {
-  name=ROOT.Upgrades.Hull II
+  name=ROOT.Tank Upgrades.Hull II
   costmult=1.5
   adjustment=adjustment.hull
   
@@ -60,7 +60,7 @@ upgrade {
 }
 
 upgrade {
-  name=ROOT.Upgrades.Hull III
+  name=ROOT.Tank Upgrades.Hull III
   costmult=3
   adjustment=adjustment.hull
   
@@ -90,7 +90,7 @@ adjustment {
 }
 
 upgrade {
-  name=ROOT.Upgrades.Engine I
+  name=ROOT.Tank Upgrades.Engine I
   costmult=1
   adjustment=adjustment.engine
   
@@ -100,7 +100,7 @@ upgrade {
 }
 
 upgrade {
-  name=ROOT.Upgrades.Engine II
+  name=ROOT.Tank Upgrades.Engine II
   costmult=3
   adjustment=adjustment.engine
   
@@ -110,7 +110,7 @@ upgrade {
 }
 
 upgrade {
-  name=ROOT.Upgrades.Engine I
+  name=ROOT.Tank Upgrades.Engine I
   costmult=0.5
   adjustment=adjustment.engine
   
@@ -120,7 +120,7 @@ upgrade {
 }
 
 upgrade {
-  name=ROOT.Upgrades.Engine II
+  name=ROOT.Tank Upgrades.Engine II
   costmult=1.5
   adjustment=adjustment.engine
   
@@ -130,7 +130,7 @@ upgrade {
 }
 
 upgrade {
-  name=ROOT.Upgrades.Engine III
+  name=ROOT.Tank Upgrades.Engine III
   costmult=3
   adjustment=adjustment.engine
   
@@ -160,7 +160,7 @@ adjustment {
 }
 
 upgrade {
-  name=ROOT.Upgrades.Handling I
+  name=ROOT.Tank Upgrades.Handling I
   costmult=1
   adjustment=adjustment.handling
   
@@ -170,7 +170,7 @@ upgrade {
 }
 
 upgrade {
-  name=ROOT.Upgrades.Handling II
+  name=ROOT.Tank Upgrades.Handling II
   costmult=3
   adjustment=adjustment.handling
   
@@ -180,7 +180,7 @@ upgrade {
 }
 
 upgrade {
-  name=ROOT.Upgrades.Handling I
+  name=ROOT.Tank Upgrades.Handling I
   costmult=0.5
   adjustment=adjustment.handling
   
@@ -190,7 +190,7 @@ upgrade {
 }
 
 upgrade {
-  name=ROOT.Upgrades.Handling II
+  name=ROOT.Tank Upgrades.Handling II
   costmult=1.5
   adjustment=adjustment.handling
   
@@ -200,7 +200,7 @@ upgrade {
 }
 
 upgrade {
-  name=ROOT.Upgrades.Handling III
+  name=ROOT.Tank Upgrades.Handling III
   costmult=3
   adjustment=adjustment.handling
   
@@ -260,7 +260,7 @@ adjustment {
 }
 
 upgrade {
-  name=ROOT.Upgrades.Kinetic damage
+  name=ROOT.Tank Upgrades.Kinetic damage
   costmult=2
   adjustment=adjustment.kinetic
   
@@ -270,7 +270,7 @@ upgrade {
 }
 
 upgrade {
-  name=ROOT.Upgrades.Energy damage
+  name=ROOT.Tank Upgrades.Energy damage
   costmult=2
   adjustment=adjustment.energy
   
@@ -280,7 +280,7 @@ upgrade {
 }
 
 upgrade {
-  name=ROOT.Upgrades.Explosive damage
+  name=ROOT.Tank Upgrades.Explosive damage
   costmult=2
   adjustment=adjustment.explosive
   
@@ -290,7 +290,7 @@ upgrade {
 }
 
 upgrade {
-  name=ROOT.Upgrades.Trap damage
+  name=ROOT.Tank Upgrades.Trap damage
   costmult=2
   adjustment=adjustment.trap
   
@@ -300,7 +300,7 @@ upgrade {
 }
 
 upgrade {
-  name=ROOT.Upgrades.Exotic damage
+  name=ROOT.Tank Upgrades.Exotic damage
   costmult=2
   adjustment=adjustment.exotic
   

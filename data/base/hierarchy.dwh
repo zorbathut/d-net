@@ -4,11 +4,6 @@ hierarchy {
 }
 
 hierarchy {
-  name=ROOT.Upgrades
-  type=upgrade
-}
-
-hierarchy {
   name=ROOT.Glory Devices
   type=glory
 }
@@ -16,6 +11,11 @@ hierarchy {
 hierarchy {
   name=ROOT.Bombardment
   type=bombardment
+}
+
+hierarchy {
+  name=ROOT.Tank Upgrades
+  type=upgrade
 }
 
 hierarchy {
