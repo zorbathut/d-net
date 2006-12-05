@@ -117,7 +117,22 @@ void Shop::renormalize(HierarchyNode &item, const Player *player) {
   }
   
   for(int i = 0; i < item.branches.size(); i++) {
-    if(item.branches[i].type == HierarchyNode::HNT_UPGRADE && !player->isUpgradeAvailable(item.branches[i].upgrade)) {
+    bool keep = true;
+    
+    if(item.branches[i].type == HierarchyNode::HNT_UPGRADE) {
+      if(keep && !player->isUpgradeAvailable(item.branches[i].upgrade))   // if the upgrade isn't available, we don't include it
+        keep = false;
+      
+      if(keep && item.branches[i].upgrade->prereq && !player->hasUpgrade(item.branches[i].upgrade->prereq)) { // if there's a prereq and the player doesn't own it, we don't include it
+        CHECK(player->isUpgradeAvailable(item.branches[i].upgrade->prereq)); // we do make sure the player *could* own it, just for safety's sake
+        keep = false;
+      }
+      
+      if(keep && item.branches[i].upgrade->has_postreq && player->hasUpgrade(item.branches[i].upgrade)) // if there's a postreq and the player already has this one, we don't include it
+        keep = false;
+    }
+    
+    if(!keep) {
       item.branches.erase(item.branches.begin() + i);
       i--;
     } else {
@@ -386,21 +401,20 @@ bool Shop::runTick(const Keystates &keys, Player *player) {
   curloc.back() += getCategoryNode(player).branches.size();
   curloc.back() %= getCategoryNode(player).branches.size();
   
-  if(curloc != lastloc) {
-    lastloc = curloc;
-    if(getCurNode(player).type == HierarchyNode::HNT_WEAPON)
-      cshopinf.init(getCurNode(player).weapon, player, miniature);
-    else if(getCurNode(player).type == HierarchyNode::HNT_EQUIPWEAPON)
-      cshopinf.init(getCurNode(player).equipweapon, player, miniature);
-    else if(getCurNode(player).type == HierarchyNode::HNT_GLORY)
-      cshopinf.init(getCurNode(player).glory, player, miniature);
-    else if(getCurNode(player).type == HierarchyNode::HNT_BOMBARDMENT)
-      cshopinf.init(getCurNode(player).bombardment, player, miniature);
-    else if(getCurNode(player).type == HierarchyNode::HNT_UPGRADE)
-      cshopinf.init(getCurNode(player).upgrade, player, miniature);
-    else if(getCurNode(player).type == HierarchyNode::HNT_TANK)
-      cshopinf.init(getCurNode(player).tank, player, miniature);
-  }
+  if(getCurNode(player).type == HierarchyNode::HNT_WEAPON)
+    cshopinf.initIfNeeded(getCurNode(player).weapon, player, miniature);
+  else if(getCurNode(player).type == HierarchyNode::HNT_EQUIPWEAPON)
+    cshopinf.initIfNeeded(getCurNode(player).equipweapon, player, miniature);
+  else if(getCurNode(player).type == HierarchyNode::HNT_GLORY)
+    cshopinf.initIfNeeded(getCurNode(player).glory, player, miniature);
+  else if(getCurNode(player).type == HierarchyNode::HNT_BOMBARDMENT)
+    cshopinf.initIfNeeded(getCurNode(player).bombardment, player, miniature);
+  else if(getCurNode(player).type == HierarchyNode::HNT_UPGRADE)
+    cshopinf.initIfNeeded(getCurNode(player).upgrade, player, miniature);
+  else if(getCurNode(player).type == HierarchyNode::HNT_TANK)
+    cshopinf.initIfNeeded(getCurNode(player).tank, player, miniature);
+  else
+    cshopinf.clear();
   
   if(getCurNode(player).type == HierarchyNode::HNT_EQUIPWEAPON) {
     // EquipWeapon works differently
@@ -550,7 +564,7 @@ bool Shop::runTick(const Keystates &keys, Player *player) {
   
   slay.updateExpandy(curloc.size(), getCurNode(player).branches.size());
   
-  if(curloc == lastloc && hasInfo(getCurNode(player).type))
+  if(hasInfo(getCurNode(player).type))
     cshopinf.runTick();
   
   hierarchroot = hierarchorig;
@@ -608,13 +622,8 @@ void Shop::renderToScreen(const Player *player) const {
   }
   doTableRender(player);
 
-  if(curloc != lastloc) {
-    dprintf("Curloc isn't lastloc!");
-  } else {
-    CHECK(curloc == lastloc);
-    if(hasInfo(getCurNode(player).type)) {
-      cshopinf.renderFrame(slay.hud(), slay.fontsize(), slay.demo());
-    }
+  if(hasInfo(getCurNode(player).type)) {
+    cshopinf.renderFrame(slay.hud(), slay.fontsize(), slay.demo());
   }
   
   if(getCurNode(player).type == HierarchyNode::HNT_SELL) {
@@ -639,7 +648,6 @@ Shop::Shop() { }
 
 void Shop::init(bool in_miniature, const HierarchyNode &hnode) {
   curloc.clear();
-  lastloc.clear();
   
   curloc.push_back(0);
   selling = false;

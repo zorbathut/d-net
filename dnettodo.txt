@@ -1,8 +1,5 @@
 ---- Major work path
-- Make upgrades hide old versions
-  - Rename "upgrades" to "tank upgrades"
-  - Add prereqs
-  - Handle prereqs
+- Rename "upgrades" to "tank upgrades"
 - Training/implants/wtf
 - Sound
   - Need sound for game start sliders

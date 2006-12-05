@@ -115,7 +115,32 @@ void ShopInfo::init(const IDBTank *in_tank, const Player *in_player, bool in_min
   text = in_tank->text;
   // no working demo atm
 }
-  
+
+void ShopInfo::initIfNeeded(const IDBWeapon *in_weapon, const Player *in_player, bool in_miniature) {
+  if(weapon != in_weapon || player != in_player || miniature != in_miniature)
+    init(in_weapon, in_player, in_miniature);
+}
+void ShopInfo::initIfNeeded(const IDBGlory *in_glory, const Player *in_player, bool in_miniature) {
+  if(glory != in_glory || player != in_player || miniature != in_miniature)
+    init(in_glory, in_player, in_miniature);
+}
+void ShopInfo::initIfNeeded(const IDBBombardment *in_bombardment, const Player *in_player, bool in_miniature) {
+  if(bombardment != in_bombardment || player != in_player || miniature != in_miniature)
+    init(in_bombardment, in_player, in_miniature);
+}
+void ShopInfo::initIfNeeded(const IDBUpgrade *in_upgrade, const Player *in_player, bool in_miniature) {
+  if(upgrade != in_upgrade || player != in_player || miniature != in_miniature)
+    init(in_upgrade, in_player, in_miniature);
+}
+void ShopInfo::initIfNeeded(const IDBTank *in_tank, const Player *in_player, bool in_miniature) {
+  if(tank != in_tank || player != in_player || miniature != in_miniature)
+    init(in_tank, in_player, in_miniature);
+}
+
+void ShopInfo::clear() {
+  null();
+}
+
 void ShopInfo::runTick() {
   if(hasDemo())
     demo.runTick();
