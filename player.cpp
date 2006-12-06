@@ -192,6 +192,7 @@ bool Player::canBuyGlory(const IDBGlory *in_glory) const { return stateGlory(in_
 bool Player::canBuyBombardment(const IDBBombardment *in_bombardment) const { return stateBombardment(in_bombardment) == ITEMSTATE_UNOWNED && adjustBombardment(in_bombardment).cost() <= cash; };
 bool Player::canBuyWeapon(const IDBWeapon *in_weap) const { return adjustWeapon(in_weap).cost(1) <= cash && in_weap->base_cost > Money(0); }
 bool Player::canBuyTank(const IDBTank *in_tank) const { return stateTank(in_tank) == ITEMSTATE_UNOWNED && adjustTankWithInstanceUpgrades(in_tank).cost() <= cash; };
+bool Player::canBuyImplantSlot(const IDBImplantSlot *in_impslot) const { return stateImplantSlot(in_impslot) == ITEMSTATE_UNOWNED && adjustImplantSlot(in_impslot).cost() <= cash; };
 
 bool Player::isUpgradeAvailable(const IDBUpgrade *in_upg) const {
   if(!tank.size())
@@ -257,10 +258,16 @@ void Player::buyWeapon(const IDBWeapon *in_weap) {
 void Player::buyTank(const IDBTank *in_tank) {
   CHECK(cash >= adjustTankWithInstanceUpgrades(in_tank).cost());
   CHECK(canBuyTank(in_tank));
-  cash -= adjustTankWithInstanceUpgrades(in_tank).cost() ;
+  cash -= adjustTankWithInstanceUpgrades(in_tank).cost();
   tank.push_back(TankEquipment(in_tank));
   equipTank(in_tank);
 }
+void Player::buyImplantSlot(const IDBImplantSlot *in_impslot) {
+  CHECK(cash >= adjustImplantSlot(in_impslot).cost());
+  CHECK(canBuyImplantSlot(in_impslot));
+  cash -= adjustImplantSlot(in_impslot).cost();
+  implantslots.push_back(in_impslot);
+};
 
 void Player::forceAcquireWeapon(const IDBWeapon *in_weap, int count) {
   weapons.addAmmo(in_weap, count);

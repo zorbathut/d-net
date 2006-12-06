@@ -86,6 +86,7 @@ public:
   void buyBombardment(const IDBBombardment *in_bombardment);
   void buyWeapon(const IDBWeapon *in_weap);
   void buyTank(const IDBTank *in_tank);
+  void buyImplantSlot(const IDBImplantSlot *in_impslot);
 
   // Allows you to acquire things. Does not do sanity checks. Should not be used for anything involving meaningful game logic!
   void forceAcquireWeapon(const IDBWeapon *in_weap, int count);

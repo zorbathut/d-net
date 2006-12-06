@@ -523,6 +523,15 @@ bool Shop::runTick(const Keystates &keys, Player *player) {
             } else {
               sound = S::error;
             }
+          } else if(getCurNode(player).type == HierarchyNode::HNT_IMPLANT && getCurNode(player).implant_slot) {
+            if(player->stateImplantSlot(getCurNode(player).implant_slot) != ITEMSTATE_UNOWNED) {
+              sound = S::error;
+            } else if(player->canBuyImplantSlot(getCurNode(player).implant_slot))  {
+              player->buyImplantSlot(getCurNode(player).implant_slot);
+              sound = S::choose;
+            } else {
+              sound = S::error;
+            }
           } else {
             CHECK(0);
           }
