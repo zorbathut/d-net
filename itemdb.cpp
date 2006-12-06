@@ -8,6 +8,7 @@
 
 #include <fstream>
 #include <numeric>
+#include <boost/assign.hpp>
 
 using namespace std;
 
@@ -495,6 +496,47 @@ void parseDamagecode(const string &str, float *arr) {
   }
 }
 
+static const vector<string> roman_values = boost::assign::list_of("I")("II")("III")("IV")("V")("VI")("VII")("VIII");
+
+template<typename T> void doStandardPrereq(T *titem, const string &name, map<string, T> *classes) {
+  
+  titem->has_postreq = false;
+  
+  {
+    string lastname = tokenize(name, " ").back();
+    CHECK(lastname.size()); // if this is wrong something horrible has occured
+    
+    bool roman = true;
+    for(int i = 0; i < lastname.size(); i++)
+      if(lastname[i] != 'I' && lastname[i] != 'V' && lastname[i] != 'X')  // I figure nobody will get past X without tripping the checks earlier
+        roman = false;
+    
+    if(lastname.size() == 0)
+      roman = false;
+    
+    if(!roman) {
+      titem->prereq = NULL;
+    } else {
+      // roman numerals are hard :(
+      
+      int rv = find(roman_values.begin(), roman_values.end(), lastname) - roman_values.begin();
+      CHECK(rv < roman_values.size());
+      
+      if(rv == 0) {
+        titem->prereq = NULL;
+        return;
+      }
+      
+      string locnam = string(name.c_str(), (const char*)strrchr(name.c_str(), ' ')) + " " + roman_values[rv - 1];
+      
+      CHECK(classes->count(locnam));
+      CHECK(!(*classes)[locnam].has_postreq);
+      titem->prereq = &(*classes)[locnam];
+      (*classes)[locnam].has_postreq = true;
+    }
+  }
+}
+
 void parseHierarchy(kvData *chunk, bool reload) {
   HierarchyNode *mountpoint = findNamedNode(chunk->kv["name"], 1);
   HierarchyNode tnode;
@@ -633,7 +675,7 @@ void parseUpgrade(kvData *chunk, bool reload) {
   {
     name = chunk->consume("name");
     category = chunk->consume("category");
-    string locnam = name + "+" + category;
+    string locnam = category + "+" + name;
     if(upgradeclasses.count(locnam)) {
       if(!reload) {
         dprintf("Multiple definition of %s\n", locnam.c_str());
@@ -652,39 +694,7 @@ void parseUpgrade(kvData *chunk, bool reload) {
   
   titem->text = parseOptionalSubclass(chunk, "text", text);
   
-  titem->has_postreq = false;
-  
-  {
-    string lastname = tokenize(name, " ").back();
-    CHECK(lastname.size()); // if this is wrong something horrible has occured
-    
-    bool roman = true;
-    for(int i = 0; i < lastname.size(); i++)
-      if(lastname[i] != 'I' && lastname[i] != 'V' && lastname[i] != 'X')  // I figure nobody will get past X without tripping the checks earlier
-        roman = false;
-      
-    if(!roman) {
-      titem->prereq = NULL;
-    } else {
-      // roman numerals are hard :(
-      CHECK(count(lastname.begin(), lastname.end(), 'I') == lastname.size());
-      
-      if(lastname.size() > 1) {
-        string tempname = name;
-        CHECK(tempname[tempname.size() - 1] == 'I');
-        tempname.erase(tempname.end() - 1); // chop the last I off
-        string locnam = tempname + "+" + category;
-        dprintf("%s\n", locnam.c_str());
-        CHECK(upgradeclasses.count(locnam));
-        CHECK(!upgradeclasses[locnam].has_postreq);
-        titem->prereq = &upgradeclasses[locnam];
-        upgradeclasses[locnam].has_postreq = true;
-      } else {
-        titem->prereq = NULL;
-      }
-    }
-  }
-      
+  doStandardPrereq(titem, category + "+" + name, &upgradeclasses);
   
   {
     HierarchyNode *mountpoint = findNamedNode(name, 1);

@@ -1,7 +1,7 @@
 ---- Major work path
-- Search for \t
 - Implants
   - Get implant slots working
+    - Get implant slot dependencies working
   - Get implant upgrades working
   - Get implant equipping working
   - Projectile reflecto

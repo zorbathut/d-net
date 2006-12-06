@@ -225,6 +225,9 @@ struct IDBShopcache {
 
 struct IDBImplantSlot {
   Money cost;
+  
+  const IDBImplantSlot *prereq;
+  bool has_postreq;
 };
 
 /*************
