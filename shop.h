@@ -109,7 +109,7 @@ public:
   void ai(Ai *ai, const Player *player) const;
   void renderToScreen(const Player *player) const;
 
-  void init(bool miniature, int players, Money highestPlayerCount);
+  void init(bool miniature, const Player *player, int players, Money highestPlayerCount);
 
   Shop();
 

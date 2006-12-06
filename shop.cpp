@@ -122,49 +122,53 @@ void Shop::renormalize(HierarchyNode &item, const Player *player, int playercoun
   for(int i = 0; i < item.branches.size(); i++) {
     bool keep = true;
     
-    if(item.branches[i].type == HierarchyNode::HNT_UPGRADE) {
-      if(keep && !player->isUpgradeAvailable(item.branches[i].upgrade))   // if the upgrade isn't available, we don't include it
+    // Various upgrade-related stuff
+    if(keep && item.branches[i].type == HierarchyNode::HNT_UPGRADE) {
+      
+      // If the upgrade isn't available, we don't include it
+      if(keep && !player->isUpgradeAvailable(item.branches[i].upgrade))
         keep = false;
       
-      if(keep && item.branches[i].upgrade->prereq && !player->hasUpgrade(item.branches[i].upgrade->prereq)) { // if there's a prereq and the player doesn't own it, we don't include it
+      // If there's a prereq and the player doesn't own it, we don't include it
+      if(keep && item.branches[i].upgrade->prereq && !player->hasUpgrade(item.branches[i].upgrade->prereq)) {
         CHECK(player->isUpgradeAvailable(item.branches[i].upgrade->prereq)); // we do make sure the player *could* own it, just for safety's sake
         keep = false;
       }
       
-      if(keep && item.branches[i].upgrade->has_postreq && player->hasUpgrade(item.branches[i].upgrade)) // if there's a postreq and the player already has this one, we don't include it
+      // If there's a postreq and the player already has this one, we don't include it
+      if(keep && item.branches[i].upgrade->has_postreq && player->hasUpgrade(item.branches[i].upgrade))
         keep = false;
+    }
+    
+    // If this is the Bombardment category, and there's only 2 players, we get rid of it entirely (TODO: how do you sell bombardment if you're stuck with 2 players?)
+    if(keep && item.branches[i].type == HierarchyNode::HNT_CATEGORY && item.branches[i].cat_restrictiontype == HierarchyNode::HNT_BOMBARDMENT && playercount <= 2)
+      keep = false;
+    
+    // If the item isn't supposed to spawn yet, we get rid of it.
+    if(keep && item.branches[i].spawncash > highestCash)
+      keep = false;
+    
+    if(keep) {
+      renormalize(item.branches[i], player, playercount, highestcash);
+      
+      // Now that the subitem is normalized, we see if we need to eliminate it anyway. This only applies to categories.
+      if(item.branches[i].type == HierarchyNode::HNT_CATEGORY) {
+        
+        // If we have tanks, bombardment, or glory devices, and there's only one item left, it's the default item.
+        if(item.branches[i].cat_restrictiontype == HierarchyNode::HNT_BOMBARDMENT || item.branches[i].cat_restrictiontype == HierarchyNode::HNT_GLORY || item.branches[i].cat_restrictiontype == HierarchyNode::HNT_TANK) {
+          CHECK(item.branches[i].branches.size() > 0);
+          if(item.branches[i].branches.size() == 1)
+            keep = false;
+        } else if(item.branches[i].cat_restrictiontype == HierarchyNode::HNT_UPGRADE || item.branches[i].cat_restrictiontype == HierarchyNode::HNT_IMPLANT) {
+          if(item.branches[i].branches.size() == 0)
+            keep = false;
+        }
+      }
     }
     
     if(!keep) {
       item.branches.erase(item.branches.begin() + i);
       i--;
-      continue;
-    } else {
-      renormalize(item.branches[i], player, playercount, highestcash);
-    }
-    
-    if(item.branches[i].type == HierarchyNode::HNT_CATEGORY && item.branches[i].cat_restrictiontype == HierarchyNode::HNT_BOMBARDMENT && playercount <= 2) {
-      item.branches.erase(item.branches.begin() + i);
-      i--;
-    } else if(item.branches[i].spawncash > highestCash) {
-      item.branches.erase(item.branches.begin() + i);
-      i--;
-    } else {
-      renormalize(item.branches[i], player, playercount, highestCash);
-      
-      // If we have tanks, bombardment, or glory devices, and there's only one item left, it's the default item.
-      if(item.branches[i].type == HierarchyNode::HNT_CATEGORY && (item.branches[i].cat_restrictiontype == HierarchyNode::HNT_BOMBARDMENT || item.branches[i].cat_restrictiontype == HierarchyNode::HNT_GLORY || item.branches[i].cat_restrictiontype == HierarchyNode::HNT_TANK)) {
-        CHECK(item.branches[i].branches.size() > 0);
-        if(item.branches[i].branches.size() == 1) {
-          item.branches.erase(item.branches.begin() + i);
-          i--;
-        }
-      } else if(item.branches[i].type == HierarchyNode::HNT_CATEGORY && item.branches[i].cat_restrictiontype == HierarchyNode::HNT_UPGRADE) {
-        if(item.branches[i].branches.size() == 0) {
-          item.branches.erase(item.branches.begin() + i);
-          i--;
-        }
-      }
     }
   }
 }
@@ -684,7 +688,7 @@ void Shop::renderToScreen(const Player *player) const {
 // Not a valid state
 Shop::Shop() { }
 
-void Shop::init(bool in_miniature, int in_playercount, Money in_highestCash) {
+void Shop::init(bool in_miniature, const Player *player, int in_playercount, Money in_highestCash) {
   curloc.clear();
   
   curloc.push_back(0);
@@ -697,4 +701,6 @@ void Shop::init(bool in_miniature, int in_playercount, Money in_highestCash) {
   hierarchroot = itemDbRoot();
   playercount = in_playercount;
   highestcash = in_highestCash;
+  
+  renormalize(hierarchroot, player, playercount, highestcash);
 }

@@ -5,11 +5,7 @@
   - Get implant slots working
   - Get implant upgrades working
   - Get implant equipping working
-- Sound
-  - Need sound for game start sliders
-  - Need choose.wav and cursorover.wav
-  - accept.wav seems to start too late
-  - Eventually get things like weaponry sounds in
+  - Projectile reflecto
 - Next-gen vecedit?
 - Activate factions
   - Faction bonuses/penalties in demo screens
@@ -20,6 +16,12 @@
 - King of the Hill
 - Mutant
 - Onslaught
+
+---- Sound-related stuff
+- Need sound for game start sliders
+- Need choose.wav and cursorover.wav
+- accept.wav seems to start too late
+- Eventually get things like weaponry sounds in
 
 ---- Things that take thought and musing
 - Category descriptions somehow?
