@@ -1,5 +1,4 @@
 ---- Major work path
-- Search for \r
 - Search for \t
 - Implants
   - Get implant slots working
