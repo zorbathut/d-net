@@ -222,6 +222,10 @@ struct IDBShopcache {
   vector<int> tank_specific;
 };
 
+struct IDBImplantSlot {
+  Money cost;
+};
+
 /*************
  * Adjusted data items
  */
@@ -420,7 +424,7 @@ public:
 
   string name;
 
-  enum Type {HNT_CATEGORY, HNT_WEAPON, HNT_UPGRADE, HNT_GLORY, HNT_BOMBARDMENT, HNT_TANK, HNT_EQUIP, HNT_EQUIPWEAPON, HNT_SELL, HNT_NONE, HNT_DONE, HNT_LAST};
+  enum Type {HNT_CATEGORY, HNT_WEAPON, HNT_UPGRADE, HNT_GLORY, HNT_BOMBARDMENT, HNT_TANK, HNT_IMPLANT, HNT_EQUIP, HNT_EQUIPWEAPON, HNT_SELL, HNT_NONE, HNT_DONE, HNT_LAST};
   Type type;
 
   enum Displaymode {HNDM_BLANK, HNDM_COST, HNDM_PACK, HNDM_COSTUNIQUE, HNDM_EQUIP, HNDM_LAST};
@@ -437,6 +441,8 @@ public:
   const IDBGlory *glory;
   const IDBBombardment *bombardment;
   const IDBTank *tank;
+  
+  const IDBImplantSlot *implant_slot;
   
   const IDBWeapon *equipweapon;
   

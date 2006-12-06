@@ -242,8 +242,13 @@ bool operator>=(const Money &lhs, const Money &rhs) {
   return rhs <= lhs; }
 
 Money moneyFromString(const string &rhs) {
-  CHECK(rhs.size() < 10);
-  return Money(atoi(rhs.c_str()));
+  Money accum = Money(0);
+  for(int i = 0; i < rhs.size(); i++) {
+    CHECK(isdigit(rhs[i]));
+    accum = accum * 10;
+    accum = accum + Money(rhs[i] - '0');
+  }
+  return accum;
 }
 
 /*************

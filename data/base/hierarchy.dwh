@@ -22,3 +22,8 @@ hierarchy {
   name=ROOT.Tanks
   type=tank
 }
+
+hierarchy {
+  name=ROOT.Implants
+  type=implant
+}

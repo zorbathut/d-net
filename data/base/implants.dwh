@@ -1,0 +1,20 @@
+
+implant_slot {
+  name=ROOT.Implants.Slot I
+  cost=100000
+}
+
+implant_slot {
+  name=ROOT.Implants.Slot II
+  cost=4000000
+}
+
+implant_slot {
+  name=ROOT.Implants.Slot III
+  cost=150000000
+}
+
+implant_slot {
+  name=ROOT.Implants.Slot IV
+  cost=6000000000
+}
