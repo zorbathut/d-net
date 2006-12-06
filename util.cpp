@@ -197,11 +197,38 @@ Transform2d t2d_rotate(float rads) {
 }
 
 string Money::textual() const {
-  if(money > 100000) {
-    return stringFromLongdouble(money / 1000) + "K";
-  } else {
-    return stringFromLongdouble(money);
+  string text;
+  long long moneytmp = money;
+  CHECK(moneytmp >= 0);
+  while(moneytmp) {
+    text.push_back(moneytmp % 10 + '0');
+    moneytmp /= 10;
   }
+  if(!text.size())
+    text = "0";
+  
+  int ks = 0;
+  while(text.size() >= 6 && count(text.begin(), text.begin() + 3, '0') == 3) {
+    text.erase(text.begin(), text.begin() + 3);
+    ks++;
+  }
+  
+  reverse(text.begin(), text.end());
+  
+  if(ks == 0)
+    ;
+  else if(ks == 1)
+    text += " K";
+  else if(ks == 2)
+    text += " M";
+  else if(ks == 3)
+    text += " G";
+  else if(ks == 4)
+    text += " T";
+  else
+    CHECK(0);
+  
+  return text;
 }
 
 Money::Money() { };
