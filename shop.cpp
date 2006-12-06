@@ -2,6 +2,7 @@
 #include "shop.h"
 
 #include "ai.h"
+#include "args.h"
 #include "gfx.h"
 #include "player.h"
 #include "audio.h"
@@ -98,7 +99,9 @@ void ShopLayout::updateExpandy(int depth, bool this_branches) {
     int_expandy[i] = approach(int_expandy[i], nexpandy[i], framechange);
 }
 
-void Shop::renormalize(HierarchyNode &item, const Player *player) {
+DEFINE_bool(cullShopTree, true, "Cull items which the players wouldn't want or realistically can't yet buy");
+
+void Shop::renormalize(HierarchyNode &item, const Player *player, int playercount, Money highestCash) {
   if(item.type == HierarchyNode::HNT_EQUIP) {
     item.branches.clear();
     vector<const IDBWeapon *> weaps = player->getAvailableWeapons();
@@ -115,7 +118,7 @@ void Shop::renormalize(HierarchyNode &item, const Player *player) {
     }
     item.checkConsistency();
   }
-  
+
   for(int i = 0; i < item.branches.size(); i++) {
     bool keep = true;
     
@@ -135,8 +138,33 @@ void Shop::renormalize(HierarchyNode &item, const Player *player) {
     if(!keep) {
       item.branches.erase(item.branches.begin() + i);
       i--;
+      continue;
     } else {
-      renormalize(item.branches[i], player);
+      renormalize(item.branches[i], player, playercount, highestcash);
+    }
+    
+    if(item.branches[i].type == HierarchyNode::HNT_CATEGORY && item.branches[i].cat_restrictiontype == HierarchyNode::HNT_BOMBARDMENT && playercount <= 2) {
+      item.branches.erase(item.branches.begin() + i);
+      i--;
+    } else if(item.branches[i].spawncash > highestCash) {
+      item.branches.erase(item.branches.begin() + i);
+      i--;
+    } else {
+      renormalize(item.branches[i], player, playercount, highestCash);
+      
+      // If we have tanks, bombardment, or glory devices, and there's only one item left, it's the default item.
+      if(item.branches[i].type == HierarchyNode::HNT_CATEGORY && (item.branches[i].cat_restrictiontype == HierarchyNode::HNT_BOMBARDMENT || item.branches[i].cat_restrictiontype == HierarchyNode::HNT_GLORY || item.branches[i].cat_restrictiontype == HierarchyNode::HNT_TANK)) {
+        CHECK(item.branches[i].branches.size() > 0);
+        if(item.branches[i].branches.size() == 1) {
+          item.branches.erase(item.branches.begin() + i);
+          i--;
+        }
+      } else if(item.branches[i].type == HierarchyNode::HNT_CATEGORY && item.branches[i].cat_restrictiontype == HierarchyNode::HNT_UPGRADE) {
+        if(item.branches[i].branches.size() == 0) {
+          item.branches.erase(item.branches.begin() + i);
+          i--;
+        }
+      }
     }
   }
 }
@@ -578,8 +606,7 @@ bool Shop::runTick(const Keystates &keys, Player *player) {
   if(hasInfo(getCurNode(player).type))
     cshopinf.runTick();
   
-  hierarchroot = hierarchorig;
-  renormalize(hierarchroot, player);
+  renormalize(hierarchroot, player, playercount, highestcash);
   
   return false;
 }
@@ -657,7 +684,7 @@ void Shop::renderToScreen(const Player *player) const {
 // Not a valid state
 Shop::Shop() { }
 
-void Shop::init(bool in_miniature, const HierarchyNode &hnode) {
+void Shop::init(bool in_miniature, int in_playercount, Money in_highestCash) {
   curloc.clear();
   
   curloc.push_back(0);
@@ -667,6 +694,7 @@ void Shop::init(bool in_miniature, const HierarchyNode &hnode) {
   miniature = in_miniature;
   slay = ShopLayout(miniature);
   
-  hierarchorig = hnode;
-  hierarchroot = hierarchorig;
+  hierarchroot = itemDbRoot();
+  playercount = in_playercount;
+  highestcash = in_highestCash;
 }

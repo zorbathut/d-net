@@ -85,11 +85,14 @@ private:
   bool disabled;  // when we switch, we wait for them to let go of the button
 
   HierarchyNode hierarchroot;
-  HierarchyNode hierarchorig;
+
+  // these two are just for generating the shop
+  int playercount;
+  Money highestcash;
 
   ShopInfo cshopinf;
 
-  void renormalize(HierarchyNode &item, const Player *player);
+  void renormalize(HierarchyNode &item, const Player *player, int playercount, Money highestcash);
   
   const HierarchyNode &getStepNode(int step, const Player *player) const;
 
@@ -106,7 +109,7 @@ public:
   void ai(Ai *ai, const Player *player) const;
   void renderToScreen(const Player *player) const;
 
-  void init(bool miniature, const HierarchyNode &hnode);
+  void init(bool miniature, int players, Money highestPlayerCount);
 
   Shop();
 

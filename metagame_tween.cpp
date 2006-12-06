@@ -265,10 +265,10 @@ bool PersistentData::tick(const vector< Controller > &keys) {
           slot[empty].type = Slot::CHOOSE;
         } else if(sps_queue[0].second == TTL_FULLSHOP) {
           slot[empty].type = Slot::SHOP;
-          slot[empty].shop.init(false, generateShopHierarchy());
+          slot[empty].shop.init(false, playerdata.size(), highestPlayerCash);
         } else if(sps_queue[0].second == TTL_QUICKSHOP) {
           slot[empty].type = Slot::SHOP;
-          slot[empty].shop.init(true, generateShopHierarchy());
+          slot[empty].shop.init(true, playerdata.size(), highestPlayerCash);
         } else if(sps_queue[0].second == TTL_SETTINGS) {
           slot[empty].type = Slot::SETTINGS;
         } else {
@@ -1334,43 +1334,4 @@ PersistentData::PersistentData(int playercount, Money startingcash, float multip
     playerdata.push_back(Player(pms[cdbc].faction->faction, 0, newPlayerStartingCash));
     cdbc++;
   }
-}
-
-DEFINE_bool(cullShopTree, true, "Cull items which the players wouldn't want or realistically can't yet buy");
-
-void recursiveCullShopHierarchy(HierarchyNode &node, int playercount, Money highestCash) {
-  for(int i = 0; i < node.branches.size(); i++) {
-    if(!FLAGS_cullShopTree)
-      continue;
-    if(node.branches[i].type == HierarchyNode::HNT_CATEGORY && node.branches[i].cat_restrictiontype == HierarchyNode::HNT_BOMBARDMENT && playercount <= 2) {
-      node.branches.erase(node.branches.begin() + i);
-      i--;
-    } else if(node.branches[i].spawncash > highestCash) {
-      node.branches.erase(node.branches.begin() + i);
-      i--;
-    } else {
-      recursiveCullShopHierarchy(node.branches[i], playercount, highestCash);
-      
-      // If we have tanks, bombardment, or glory devices, and there's only one item left, it's the default item.
-      if(node.branches[i].type == HierarchyNode::HNT_CATEGORY && (node.branches[i].cat_restrictiontype == HierarchyNode::HNT_BOMBARDMENT || node.branches[i].cat_restrictiontype == HierarchyNode::HNT_GLORY || node.branches[i].cat_restrictiontype == HierarchyNode::HNT_TANK)) {
-        CHECK(node.branches[i].branches.size() > 0);
-        if(node.branches[i].branches.size() == 1) {
-          node.branches.erase(node.branches.begin() + i);
-          i--;
-        }
-      } else if(node.branches[i].type == HierarchyNode::HNT_CATEGORY && node.branches[i].cat_restrictiontype == HierarchyNode::HNT_UPGRADE) {
-        if(node.branches[i].branches.size() == 0) {
-          node.branches.erase(node.branches.begin() + i);
-          i--;
-        }
-      }
-    }
-  }
-}
-
-HierarchyNode PersistentData::generateShopHierarchy() const {
-  HierarchyNode rv = itemDbRoot();
-  recursiveCullShopHierarchy(rv, playerdata.size(), highestPlayerCash);
-  rv.checkConsistency();
-  return rv;
 }
