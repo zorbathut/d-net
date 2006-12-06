@@ -365,6 +365,7 @@ bool Player::hasUpgrade(const IDBUpgrade *in_upg) const { return stateUpgrade(in
 bool Player::hasGlory(const IDBGlory *in_glory) const { return stateGlory(in_glory) != ITEMSTATE_UNOWNED; }
 bool Player::hasBombardment(const IDBBombardment *in_bombardment) const { return stateBombardment(in_bombardment) != ITEMSTATE_UNOWNED; }
 bool Player::hasTank(const IDBTank *in_tank) const { return stateTank(in_tank) != ITEMSTATE_UNOWNED; }
+bool Player::hasImplantSlot(const IDBImplantSlot *in_impslot) const { return stateImplantSlot(in_impslot) != ITEMSTATE_UNOWNED; }
 
 int Player::stateUpgrade(const IDBUpgrade *in_upg) const {
   if(tank.size() == 0)

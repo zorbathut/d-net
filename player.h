@@ -112,6 +112,7 @@ public:
   bool hasGlory(const IDBGlory *in_glory) const;
   bool hasBombardment(const IDBBombardment *in_bombardment) const;
   bool hasTank(const IDBTank *in_tank) const;
+  bool hasImplantSlot(const IDBImplantSlot *in_impslot) const;
   
   int stateUpgrade(const IDBUpgrade *in_upg) const; // ATM this will only return UNOWNED or EQUIPPED
   int stateImplantSlot(const IDBImplantSlot *in_impslot) const; // Same

@@ -1101,6 +1101,8 @@ void parseImplantSlot(kvData *chunk, bool reload) {
   
   titem->cost = moneyFromString(chunk->consume("cost"));
   
+  doStandardPrereq(titem, name, &implantslotclasses);
+  
   {
     HierarchyNode *mountpoint = findNamedNode(name, 1);
     HierarchyNode tnode;
@@ -1112,7 +1114,6 @@ void parseImplantSlot(kvData *chunk, bool reload) {
     tnode.cat_restrictiontype = HierarchyNode::HNT_IMPLANT;
     CHECK(mountpoint->cat_restrictiontype == -1 || tnode.cat_restrictiontype == mountpoint->cat_restrictiontype);
     
-    tnode.spawncash = titem->cost / 2;
     tnode.implant_slot = titem;
     mountpoint->branches.push_back(tnode);
   }

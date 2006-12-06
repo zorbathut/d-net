@@ -140,6 +140,17 @@ void Shop::renormalize(HierarchyNode &item, const Player *player, int playercoun
         keep = false;
     }
     
+    // More prereqs with the implant slot
+    if(keep && item.branches[i].type == HierarchyNode::HNT_IMPLANT && item.branches[i].implant_slot) {
+      // If there's a prereq and the player doesn't own it, we don't include it
+      if(keep && item.branches[i].implant_slot->prereq && !player->hasImplantSlot(item.branches[i].implant_slot->prereq))
+        keep = false;
+      
+      // If there's a postreq and the player already has this one, we don't include it
+      if(keep && item.branches[i].implant_slot->has_postreq && player->hasImplantSlot(item.branches[i].implant_slot))
+        keep = false;
+    }
+    
     // If this is the Bombardment category, and there's only 2 players, we get rid of it entirely (TODO: how do you sell bombardment if you're stuck with 2 players?)
     if(keep && item.branches[i].type == HierarchyNode::HNT_CATEGORY && item.branches[i].cat_restrictiontype == HierarchyNode::HNT_BOMBARDMENT && playercount <= 2)
       keep = false;
@@ -610,6 +621,7 @@ bool Shop::runTick(const Keystates &keys, Player *player) {
   if(hasInfo(getCurNode(player).type))
     cshopinf.runTick();
   
+  hierarchroot = itemDbRoot();
   renormalize(hierarchroot, player, playercount, highestcash);
   
   return false;

@@ -26,4 +26,5 @@ hierarchy {
 hierarchy {
   name=ROOT.Implants
   type=implant
+  spawncash=20000
 }
