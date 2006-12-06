@@ -1,5 +1,10 @@
 ---- Major work path
-- Training/implants/wtf
+- Search for \r
+- Search for \t
+- Implants
+  - Get implant slots working
+  - Get implant upgrades working
+  - Get implant equipping working
 - Sound
   - Need sound for game start sliders
   - Need choose.wav and cursorover.wav

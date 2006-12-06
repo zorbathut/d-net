@@ -304,6 +304,8 @@ void Shop::renderNode(const HierarchyNode &node, int depth, const Player *player
           state = player->stateBombardment(node.branches[itemid].bombardment);
         else if(node.branches[itemid].type == HierarchyNode::HNT_TANK)
           state = player->stateTank(node.branches[itemid].tank);
+        else if(node.branches[itemid].type == HierarchyNode::HNT_IMPLANT && node.branches[itemid].implant_slot)
+          state = player->stateImplantSlot(node.branches[itemid].implant_slot);
         else
           CHECK(0);
         if(state == ITEMSTATE_UNOWNED) {

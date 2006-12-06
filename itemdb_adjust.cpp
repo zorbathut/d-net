@@ -282,3 +282,11 @@ IDBTankAdjust::IDBTankAdjust(const IDBTank *in_idb, const IDBAdjustment &in_adju
 bool operator==(const IDBTankAdjust &lhs, const IDBTankAdjust &rhs) {
   return lhs.idb == rhs.idb && lhs.adjust == rhs.adjust;
 }
+
+/*************
+ * IDBImplantSlotAdjust
+ */
+
+Money IDBImplantSlotAdjust::cost() const { return idb->cost / adjust.adjustmentfactor(IDBAdjustment::DISCOUNT_IMPLANT); };
+
+IDBImplantSlotAdjust::IDBImplantSlotAdjust(const IDBImplantSlot *in_idb, const IDBAdjustment &in_adjust) { idb = in_idb; adjust = in_adjust; };

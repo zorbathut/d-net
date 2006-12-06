@@ -89,7 +89,7 @@ export: d-net.exe tools/generateWeaponGraph.py
 
 stats:
 	@echo Graphics: `cat gfx.h gfx.cpp game_effects.h game_effects.cpp color.h color.cpp | wc -l` loc
-  @echo Sound: `cat audio.h audio.cpp | wc -l` loc
+	@echo Sound: `cat audio.h audio.cpp | wc -l` loc
 	@echo Collisions: `cat collide.h collide.cpp | wc -l` loc
 	@echo Game mechanics: `cat game.h game.cpp gamemap.h gamemap.cpp level.cpp level.h player.cpp player.h game_tank.cpp game_tank.h game_util.cpp game_util.h game_projectile.h game_projectile.cpp | wc -l` loc
 	@echo Item hierarchy: `cat itemdb.h itemdb.cpp parse.h parse.cpp itemdb_adjust.cpp | wc -l` loc

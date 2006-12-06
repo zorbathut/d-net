@@ -35,7 +35,7 @@ adjustment {
   
   discount_weapon=20
   
-  discount_training=-20
+  discount_implant=-20
 }
 
 faction { # cheaper weapons
@@ -128,13 +128,13 @@ faction { # much faster movement
 text {
   name=text.faction.rational
   data=The Rational Warriors are a mercenary training group who believe in introspection and logic in battle. They pride themselves on their intelligence and ability to predict the tide of combat.
-  data=Not surprisingly, Rational Warriors find training and upgrades far cheaper than other factions. However, they avoid the unpredictable nature of explosives and exotic weapons.
+  data=Not surprisingly, Rational Warriors find implants and upgrades far cheaper than other factions. However, they avoid the unpredictable nature of explosives and exotic weapons.
 }
 
 adjustment {
   name=adjustment.rational.high
   
-  discount_training=50
+  discount_implant=50
   discount_upgrade=25
   
   damage_explosive=-20
@@ -339,14 +339,14 @@ faction { # Heavy armor
 text {
   name=text.faction.sons
   data=The Sons of Earth formed soon after the Greenpeace seal fiasco. They work hard at the environmentalist agenda and use D-Net as an advertising platform.
-  data=Their technology is focused towards reuse and recycling, resulting in incredible sell value for used items. While they avoid explosives and traps due to their uncontrolled nature, they continue to research "cleaner" weapons, leading to a significant advantage in exotic weaponry and training techniques.
+  data=Their technology is focused towards reuse and recycling, resulting in incredible sell value for used items. While they avoid explosives and traps due to their uncontrolled nature, they continue to research "cleaner" weapons, leading to a significant advantage in exotic weaponry and cybernetics.
 }
 
 adjustment {
   name=adjustment.sons.high
   
   recycle_bonus=400
-  discount_training=25
+  discount_implant=25
   damage_exotic=20
   
   damage_trap=-20
@@ -402,7 +402,7 @@ adjustment {
   damage_trap=50
   damage_exotic=50
   
-  discount_training=-20
+  discount_implant=-20
   tank_firerate=-10
 }
 

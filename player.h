@@ -63,12 +63,14 @@ public:
   IDBBombardmentAdjust adjustBombardment(const IDBBombardment *in_upg, int bombard_level = -1) const;
   IDBWeaponAdjust adjustWeapon(const IDBWeapon *in_upg) const;
   IDBTankAdjust adjustTankWithInstanceUpgrades(const IDBTank *in_upg) const;
+  IDBImplantSlotAdjust adjustImplantSlot(const IDBImplantSlot *in_impslot) const;
 
   bool canBuyUpgrade(const IDBUpgrade *in_upg) const;
   bool canBuyGlory(const IDBGlory *in_glory) const;
   bool canBuyBombardment(const IDBBombardment *in_bombardment) const;
   bool canBuyWeapon(const IDBWeapon *in_weap) const;
   bool canBuyTank(const IDBTank *in_tank) const;
+  bool canBuyImplantSlot(const IDBImplantSlot *in_impslot) const;
 
   bool isUpgradeAvailable(const IDBUpgrade *in_upg) const;
 
@@ -105,12 +107,13 @@ public:
   void sellWeapon(const IDBWeapon *in_weap);
   void sellTank(const IDBTank *in_tank);
   
-  bool hasUpgrade(const IDBUpgrade *in_upg) const; // ATM this will only return UNOWNED or EQUIPPED
+  bool hasUpgrade(const IDBUpgrade *in_upg) const;
   bool hasGlory(const IDBGlory *in_glory) const;
   bool hasBombardment(const IDBBombardment *in_bombardment) const;
   bool hasTank(const IDBTank *in_tank) const;
   
   int stateUpgrade(const IDBUpgrade *in_upg) const; // ATM this will only return UNOWNED or EQUIPPED
+  int stateImplantSlot(const IDBImplantSlot *in_impslot) const; // Same
   int stateGlory(const IDBGlory *in_glory) const;
   int stateBombardment(const IDBBombardment *in_bombardment) const;
   int stateTank(const IDBTank *in_tank) const;
@@ -160,6 +163,8 @@ private:
   vector<const IDBGlory *> glory;
   vector<const IDBBombardment *> bombardment;
   vector<TankEquipment> tank;
+
+  vector<const IDBImplantSlot *> implantslots;
 
   const IDBFaction *faction;
   int factionmode;

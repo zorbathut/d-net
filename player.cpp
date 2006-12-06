@@ -185,6 +185,7 @@ IDBTankAdjust Player::adjustTankWithInstanceUpgrades(const IDBTank *in_upg) cons
   
   return IDBTankAdjust(in_upg, idba);
 };
+IDBImplantSlotAdjust Player::adjustImplantSlot(const IDBImplantSlot *in_upg) const { return IDBImplantSlotAdjust(in_upg, adjustment); };
 
 bool Player::canBuyUpgrade(const IDBUpgrade *in_upg) const { return stateUpgrade(in_upg) == ITEMSTATE_UNOWNED && adjustUpgradeForCurrentTank(in_upg).cost() <= cash && isUpgradeAvailable(in_upg); }; 
 bool Player::canBuyGlory(const IDBGlory *in_glory) const { return stateGlory(in_glory) == ITEMSTATE_UNOWNED && adjustGlory(in_glory).cost() <= cash; };
@@ -390,6 +391,11 @@ int Player::stateTank(const IDBTank *in_tank) const {
       if(tank[i].tank == in_tank)
         return ITEMSTATE_BOUGHT;
   }
+  return ITEMSTATE_UNOWNED;
+}
+int Player::stateImplantSlot(const IDBImplantSlot *in_impslot) const {
+  if(count(implantslots.begin(), implantslots.end(), in_impslot))
+    return ITEMSTATE_EQUIPPED; // can't be bought without being equipped, heh
   return ITEMSTATE_UNOWNED;
 }
 
