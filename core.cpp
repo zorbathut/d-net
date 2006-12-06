@@ -65,37 +65,37 @@ void MainLoop() {
     ffwd = (frameNumber < FLAGS_fastForwardTo);
     if(frameNumber == FLAGS_fastForwardTo)
       timer = Timer();    // so we don't end up sitting there for aeons waiting for another frame
-		bencher = Timer();
-		SDL_Event event;
-		while(SDL_PollEvent(&event)) {
-			switch(event.type) {
+    bencher = Timer();
+    SDL_Event event;
+    while(SDL_PollEvent(&event)) {
+      switch(event.type) {
         case SDL_QUIT:
-					quit = true;
+          quit = true;
           break;
 
-				case SDL_KEYDOWN:
-				case SDL_KEYUP:
+        case SDL_KEYDOWN:
+        case SDL_KEYUP:
           if(event.key.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE)
             quit = true;
-					controls_key(&event.key);
-					break;
+          controls_key(&event.key);
+          break;
 
-				case SDL_VIDEORESIZE:
-					CHECK(0);
-					//CreateWindow("Destruction Net", event.resize.w, event.resize.h);
-					break;
+        case SDL_VIDEORESIZE:
+          CHECK(0);
+          //CreateWindow("Destruction Net", event.resize.w, event.resize.h);
+          break;
 
-				default:
-					break;
-			}
-		}
-		if(quit || FLAGS_terminateAfter != -1 && time(NULL) - starttime >= FLAGS_terminateAfter)
+        default:
+          break;
+      }
+    }
+    if(quit || FLAGS_terminateAfter != -1 && time(NULL) - starttime >= FLAGS_terminateAfter)
       break;
     interface.ai(controls_ai());  // has to be before controls
-		controllers = controls_next();
-		CHECK(controllers.size() == origcontrollers.size());
-		for(int i = 0; i < controllers.size(); i++)
-			CHECK(controllers[i].keys.size() == origcontrollers[i].keys.size());
+    controllers = controls_next();
+    CHECK(controllers.size() == origcontrollers.size());
+    for(int i = 0; i < controllers.size(); i++)
+      CHECK(controllers[i].keys.size() == origcontrollers[i].keys.size());
     if(FLAGS_writeTarget != "" && controls_recordable()) {
       if(frameNumber == 0) {
         if(outfile)
@@ -141,31 +141,31 @@ void MainLoop() {
         fflush(outfile);
       }
     }
-		polling += bencher.ticksElapsed();
-		bencher = Timer();
+    polling += bencher.ticksElapsed();
+    bencher = Timer();
     if(interface.tick(controllers, game_seed))
       quit = true;
-		ticking += bencher.ticksElapsed();
-		bencher = Timer();
+    ticking += bencher.ticksElapsed();
+    bencher = Timer();
     if(frameNumber >= FLAGS_fastForwardTo) {
       timer.waitForNextFrame();
     }
-		waiting += bencher.ticksElapsed();
-		bencher = Timer();
-		if(!timer.skipFrame() && (!ffwd || frameNumber % 60 == 0) || !FLAGS_frameskip || frameNumber % (ffwd ? 60 : 6) == 0) {
-			initFrame();
-			interface.render();
+    waiting += bencher.ticksElapsed();
+    bencher = Timer();
+    if(!timer.skipFrame() && (!ffwd || frameNumber % 60 == 0) || !FLAGS_frameskip || frameNumber % (ffwd ? 60 : 6) == 0) {
+      initFrame();
+      interface.render();
       if(!controls_users()) {
         setColor(1.0, 1.0, 1.0);
         setZoom(Float4(0, 0, 133.333, 100));
         drawText(StringPrintf("%d", frameNumber), 10, Float2(5, 85));
       }
-			deinitFrame();
-		} else {
+      deinitFrame();
+    } else {
       skipped++;
-		}
-		rendering += bencher.ticksElapsed();
-		timer.frameDone();
+    }
+    rendering += bencher.ticksElapsed();
+    timer.frameDone();
     {
       int frameSplit;
       if(ffwd)
@@ -191,7 +191,7 @@ void MainLoop() {
     }
     frameNumber++;
     frako++;
-	}
+  }
   dprintf("Control shutdown\n");
   controls_shutdown();
   dprintf("Exiting core\n");

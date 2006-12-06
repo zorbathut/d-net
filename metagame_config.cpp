@@ -16,7 +16,7 @@ public:
   static const float textline_size;  // How many times larger a line of text is than its divider
   static const float border_size;
   static const float top_border_extra_size;
-  static const float divider_size;	// Division between tabs and content
+  static const float divider_size;  // Division between tabs and content
   static const float units;
 
   static const int textline_count = 16; // How many lines we're going to have
@@ -75,7 +75,7 @@ public:
 const float RenderInfo::textline_size = 3;  // How many times larger a line of text is than its divider
 const float RenderInfo::border_size = 1.5;
 const float RenderInfo::top_border_extra_size = 1.5;
-const float RenderInfo::divider_size = 5;	// Division between tabs and content in dividers
+const float RenderInfo::divider_size = 5;  // Division between tabs and content in dividers
 const float RenderInfo::units = textline_size * textline_count + textline_count - 1 + border_size + top_border_extra_size + divider_size; // X lines, plus dividers (textline_count-1), plus the top and bottom borders, plus the increased divider from categories to data
 const float RenderInfo::linethick = 0.003;
 
