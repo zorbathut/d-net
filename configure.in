@@ -28,6 +28,17 @@ case "${target_os}" in
     AC_CHECK_LIB([opengl32], [main],,AC_MSG_ERROR([opengl is needed]))
     LDFLAGS="$LDFLAGS -lopengl32"
     ;;
+
+  darwin*)
+    AC_MSG_NOTICE([adding needed flags for darwin])
+
+    # I'm not sure where I should be looking for boost. This might not be it. And the -I might be wrong too.
+    CPPFLAGS="$CPPFLAGS -I/System/Library/Frameworks/OpenGL.framework/Headers -I/sw/include/boost-1_33_1 -I/sw/include -DNO_GL_PREFIX -DNO_WINDOWS"
+    LDFLAGS="$LDFLAGS -L/System/Library/Frameworks/OpenGL.framework/Libraries -L/sw/lib"
+    AC_CHECK_LIB([GL], [glBegin],,AC_MSG_ERROR([opengl is needed]))
+    LDFLAGS="$LDFLAGS -lGL"
+    ;;
+
   *)
     CPPFLAGS="$CPP_FLAGS -DNO_WINDOWS"
     AC_CHECK_LIB([GL], [glBegin],,AC_MSG_ERROR([opengl is needed]))

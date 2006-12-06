@@ -8,8 +8,13 @@
 #include "debug.h"
 
 #include <fstream>
-#include <GL/gl.h>
 #include <SDL.h>
+
+#ifdef NO_GL_PREFIX
+  #include <gl.h>
+#else
+  #include <GL/gl.h>
+#endif
 
 using namespace std;
 
@@ -290,7 +295,7 @@ void initFrame() {
   CHECK(!frame_running);
   CHECK(curWeight == -1.f);
   {
-    int v = 0;
+    GLint v = 0;
     glGetIntegerv(GL_STENCIL_BITS, &v);
     CHECK(v >= 1);
   }

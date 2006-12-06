@@ -9,8 +9,13 @@
 #include "generators.h"
 #include "audio.h"
 
-#include <GL/glu.h>
 #include <SDL.h>
+
+#ifdef NO_GL_PREFIX
+  #include <gl.h>
+#else
+  #include <GL/gl.h>
+#endif
 
 using namespace std;
 
@@ -100,15 +105,15 @@ void initSystem() {
   
   {
     dprintf("GL version: %s\n", glGetString(GL_VERSION));
-  
+ 
     dprintf("Renderer: %s\n", glGetString(GL_RENDERER));
     dprintf("Vendor: %s\n", glGetString(GL_VENDOR));
     
-    int v;
+    GLint v;
     glGetIntegerv(GL_DEPTH_BITS, &v);
-    dprintf("Depth bits: %d\n", v);
+    dprintf("Depth bits: %d\n", (int)v);
     glGetIntegerv(GL_STENCIL_BITS, &v);
-    dprintf("Stencil bits: %d\n", v);
+    dprintf("Stencil bits: %d\n", (int)v);
   }
 };
 

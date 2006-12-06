@@ -30,12 +30,12 @@ long long rendering = 0;
 
 void MainLoop() {
 
-	Timer timer;
-	Timer bencher;
+  Timer timer;
+  Timer bencher;
 
-	bool quit = false;
+  bool quit = false;
 
-	int frako = 0;
+  int frako = 0;
   
   Rng rng(unsync().generate_seed());
   pair<RngSeed, vector<Controller> > rc = controls_init(rng.generate_seed());
@@ -46,7 +46,7 @@ void MainLoop() {
   
   dprintf("Final controllers:");
   for(int i = 0; i < controllers.size(); i++) {
-      dprintf("%d: %d buttons, %d axes", i, controllers[i].keys.size(), controllers[i].axes.size());
+    dprintf("%d: %d buttons, %d axes", i, controllers[i].keys.size(), controllers[i].axes.size());
   }
   
   FILE *outfile = NULL;
@@ -59,7 +59,7 @@ void MainLoop() {
 
   time_t starttime = time(NULL);
 
-	while(!quit) {
+  while(!quit) {
     StackString sst(StringPrintf("Frame %d loop", frameNumber));
     tickHttpd();
     ffwd = (frameNumber < FLAGS_fastForwardTo);
