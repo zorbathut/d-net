@@ -2,7 +2,8 @@
 - Implants
   - More implants
   - Get actual data adjustments working
-  - Get shop display working
+  - Scrolling
+  - Get shop info display up
 - Override sell instead of changing it
 - addr2line -i
 - Render all tanks out
