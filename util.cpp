@@ -323,3 +323,37 @@ float floatFromString(const string &x) {
   CHECK(rawstrFromFloat(rv) == x);
   return rv;
 }
+
+string roman_number(int rid) {
+  CHECK(rid >= 0);
+  rid++; // okay this is kind of grim
+  CHECK(rid < 40); // lazy
+  string rv;
+  while(rid >= 10) {
+    rid -= 10;
+    rv += "X";
+  }
+  
+  if(rid == 9) {
+    rid -= 9;
+    rv += "IX";
+  }
+  
+  if(rid >= 5) {
+    rid -= 5;
+    rv += "V";
+  }
+  
+  if(rid == 4) {
+    rid -= 4;
+    rv += "IV";
+  }
+  
+  rv += string(rid, 'I');
+  
+  return rv;
+}
+
+int roman_max() {
+  return 38;
+}

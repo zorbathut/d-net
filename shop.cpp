@@ -326,8 +326,8 @@ void Shop::renderNode(const HierarchyNode &node, int depth, const Player *player
       }
       continue;
     } else if(node.branches[itemid].displaymode == HierarchyNode::HNDM_IMPLANT_UPGRADE) {
-      drawText("Level II upgrade", slay.fontsize(), slay.description(depth) + rendpos[j].second + Float2(slay.implantUpgradeDiff(), 0));
-      drawJustifiedText("1000 K", slay.fontsize(), slay.price(depth) + rendpos[j].second, TEXT_MAX, TEXT_MIN);
+      drawText("Level " + roman_number(player->implantLevel(node.branches[itemid].implant_item)) + " upgrade", slay.fontsize(), slay.description(depth) + rendpos[j].second + Float2(slay.implantUpgradeDiff(), 0));
+      drawJustifiedText(node.branches[itemid].cost(player).textual().c_str(), slay.fontsize(), slay.price(depth) + rendpos[j].second, TEXT_MAX, TEXT_MIN);
       continue;
     }
     
@@ -390,7 +390,8 @@ void Shop::renderNode(const HierarchyNode &node, int depth, const Player *player
       }
       
       if(dispmode == HierarchyNode::HNDM_IMPLANT_EQUIP) {
-        display = "Installed";
+        if(player->hasImplant(node.branches[itemid].implant_item))
+          display = "Installed";
         setColor(C::active_text);
         displayset = true;
       }
@@ -590,6 +591,20 @@ bool Shop::runTick(const Keystates &keys, Player *player) {
               sound = S::error;
             } else if(player->canBuyImplantSlot(getCurNode(player).implant_slot))  {
               player->buyImplantSlot(getCurNode(player).implant_slot);
+              sound = S::choose;
+            } else {
+              sound = S::error;
+            }
+          } else if(getCurNode(player).type == HierarchyNode::HNT_IMPLANT && getCurNode(player).implant_item && getCurNode(player).displaymode == HierarchyNode::HNDM_IMPLANT_EQUIP) {
+            if(player->canToggleImplant(getCurNode(player).implant_item)) {
+              player->toggleImplant(getCurNode(player).implant_item);
+              sound = S::choose;
+            } else {
+              sound = S::error;
+            }
+          } else if(getCurNode(player).type == HierarchyNode::HNT_IMPLANT && getCurNode(player).implant_item && getCurNode(player).displaymode == HierarchyNode::HNDM_IMPLANT_UPGRADE) {
+            if(player->canLevelImplant(getCurNode(player).implant_item)) {
+              player->levelImplant(getCurNode(player).implant_item);
               sound = S::choose;
             } else {
               sound = S::error;

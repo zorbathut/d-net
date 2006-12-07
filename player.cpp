@@ -186,6 +186,7 @@ IDBTankAdjust Player::adjustTankWithInstanceUpgrades(const IDBTank *in_upg) cons
   return IDBTankAdjust(in_upg, idba);
 };
 IDBImplantSlotAdjust Player::adjustImplantSlot(const IDBImplantSlot *in_upg) const { return IDBImplantSlotAdjust(in_upg, adjustment); };
+IDBImplantAdjust Player::adjustImplant(const IDBImplant *in_upg) const { return IDBImplantAdjust(in_upg, adjustment); };
 
 bool Player::canBuyUpgrade(const IDBUpgrade *in_upg) const { return stateUpgrade(in_upg) == ITEMSTATE_UNOWNED && adjustUpgradeForCurrentTank(in_upg).cost() <= cash && isUpgradeAvailable(in_upg); }; 
 bool Player::canBuyGlory(const IDBGlory *in_glory) const { return stateGlory(in_glory) == ITEMSTATE_UNOWNED && adjustGlory(in_glory).cost() <= cash; };
@@ -268,6 +269,41 @@ void Player::buyImplantSlot(const IDBImplantSlot *in_impslot) {
   cash -= adjustImplantSlot(in_impslot).cost();
   implantslots.push_back(in_impslot);
 };
+
+bool Player::canToggleImplant(const IDBImplant *implant) const {
+  return implantequipped.count(implant) || implantequipped.size() < implantslots.size();
+}
+void Player::toggleImplant(const IDBImplant *implant) {
+  CHECK(canToggleImplant(implant));
+  if(implantequipped.count(implant)) {
+    implantequipped.erase(implant);
+  } else {
+    implantequipped.insert(implant);
+  }
+  
+  reCalculate();
+}
+bool Player::hasImplant(const IDBImplant *implant) const {
+  return implantequipped.count(implant);
+}
+
+int Player::implantLevel(const IDBImplant *implant) const {
+  if(implantlevels.count(implant))
+    return implantlevels.find(implant)->second;
+  else
+    return 1;
+}
+bool Player::canLevelImplant(const IDBImplant *implant) const {
+  return cash >= adjustImplant(implant).costToLevel(implantLevel(implant));
+}
+void Player::levelImplant(const IDBImplant *implant) {
+  CHECK(canLevelImplant(implant));
+  cash -= adjustImplant(implant).costToLevel(implantLevel(implant));
+  int newlevel = implantLevel(implant) + 1;
+  implantlevels[implant] = newlevel;
+  
+  reCalculate();
+}
 
 void Player::forceAcquireWeapon(const IDBWeapon *in_weap, int count) {
   weapons.addAmmo(in_weap, count);

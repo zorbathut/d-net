@@ -432,6 +432,16 @@ public:
   IDBImplantSlotAdjust(const IDBImplantSlot *in_idb, const IDBAdjustment &in_adjust);
 };
 
+struct IDBImplantAdjust {
+  const IDBImplant *idb;
+  IDBAdjustment adjust;
+  
+public:
+  Money costToLevel(int curlevel) const;
+
+  IDBImplantAdjust(const IDBImplant *in_idb, const IDBAdjustment &in_adjust);
+};
+
 /*************
  * Hierarchy items
  */

@@ -290,3 +290,17 @@ bool operator==(const IDBTankAdjust &lhs, const IDBTankAdjust &rhs) {
 Money IDBImplantSlotAdjust::cost() const { return idb->cost / adjust.adjustmentfactor(IDBAdjustment::DISCOUNT_IMPLANT); };
 
 IDBImplantSlotAdjust::IDBImplantSlotAdjust(const IDBImplantSlot *in_idb, const IDBAdjustment &in_adjust) { idb = in_idb; adjust = in_adjust; };
+
+/*************
+ * IDBImplantAdjust
+ */
+
+Money IDBImplantAdjust::costToLevel(int curlevel) const {
+  // I'm not quite sure what to do here
+  Money flev = Money(5000);
+  for(int i = 0; i < curlevel; i++)
+    flev = flev * 30;
+  return flev;
+}
+
+IDBImplantAdjust::IDBImplantAdjust(const IDBImplant *in_idb, const IDBAdjustment &in_adjust) { idb = in_idb; adjust = in_adjust; }

@@ -8,7 +8,6 @@
 
 #include <fstream>
 #include <numeric>
-#include <boost/assign.hpp>
 
 using namespace std;
 
@@ -131,6 +130,8 @@ Money HierarchyNode::cost(const Player *player) const {
     return player->adjustTankWithInstanceUpgrades(tank).cost();
   } else if(type == HNT_IMPLANT && implant_slot) {
     return player->adjustImplantSlot(implant_slot).cost();
+  } else if(type == HNT_IMPLANT && implant_item && displaymode == HNDM_IMPLANT_UPGRADE) {
+    return player->adjustImplant(implant_item).costToLevel(player->implantLevel(implant_item));
   } else {
     CHECK(0);
   }
@@ -510,8 +511,6 @@ void parseDamagecode(const string &str, float *arr) {
   }
 }
 
-static const vector<string> roman_values = boost::assign::list_of("I")("II")("III")("IV")("V")("VI")("VII")("VIII");
-
 template<typename T> void doStandardPrereq(T *titem, const string &name, map<string, T> *classes) {
   
   titem->has_postreq = false;
@@ -531,17 +530,20 @@ template<typename T> void doStandardPrereq(T *titem, const string &name, map<str
     if(!roman) {
       titem->prereq = NULL;
     } else {
-      // roman numerals are hard :(
       
-      int rv = find(roman_values.begin(), roman_values.end(), lastname) - roman_values.begin();
-      CHECK(rv < roman_values.size());
+      int rv;
+      for(rv = 0; rv < roman_max(); rv++)
+        if(lastname == roman_number(rv))
+          break;
+      
+      CHECK(rv < roman_max());
       
       if(rv == 0) {
         titem->prereq = NULL;
         return;
       }
       
-      string locnam = string(name.c_str(), (const char*)strrchr(name.c_str(), ' ')) + " " + roman_values[rv - 1];
+      string locnam = string(name.c_str(), (const char*)strrchr(name.c_str(), ' ')) + " " + roman_number(rv - 1);
       
       CHECK(classes->count(locnam));
       CHECK(!(*classes)[locnam].has_postreq);

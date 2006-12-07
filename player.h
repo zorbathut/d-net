@@ -4,6 +4,7 @@
 #include "itemdb.h"
 
 #include <map>
+#include <set>
 
 using namespace std;
 
@@ -64,6 +65,7 @@ public:
   IDBWeaponAdjust adjustWeapon(const IDBWeapon *in_upg) const;
   IDBTankAdjust adjustTankWithInstanceUpgrades(const IDBTank *in_upg) const;
   IDBImplantSlotAdjust adjustImplantSlot(const IDBImplantSlot *in_impslot) const;
+  IDBImplantAdjust adjustImplant(const IDBImplant *in_imp) const;
 
   bool canBuyUpgrade(const IDBUpgrade *in_upg) const;
   bool canBuyGlory(const IDBGlory *in_glory) const;
@@ -87,6 +89,15 @@ public:
   void buyWeapon(const IDBWeapon *in_weap);
   void buyTank(const IDBTank *in_tank);
   void buyImplantSlot(const IDBImplantSlot *in_impslot);
+  
+  // Implant stuff, which is pretty fundamentally different
+  bool canToggleImplant(const IDBImplant *implant) const;
+  void toggleImplant(const IDBImplant *implant);
+  bool hasImplant(const IDBImplant *implant) const;
+  
+  int implantLevel(const IDBImplant *implant) const;
+  bool canLevelImplant(const IDBImplant *implant) const;
+  void levelImplant(const IDBImplant *implant);
 
   // Allows you to acquire things. Does not do sanity checks. Should not be used for anything involving meaningful game logic!
   void forceAcquireWeapon(const IDBWeapon *in_weap, int count);
@@ -167,6 +178,9 @@ private:
   vector<TankEquipment> tank;
 
   vector<const IDBImplantSlot *> implantslots;
+
+  map<const IDBImplant *, int> implantlevels;
+  set<const IDBImplant *> implantequipped;
 
   const IDBFaction *faction;
   int factionmode;
