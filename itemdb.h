@@ -230,6 +230,10 @@ struct IDBImplantSlot {
   bool has_postreq;
 };
 
+struct IDBImplant {
+  const IDBAdjustment *adjustment;
+};
+
 /*************
  * Adjusted data items
  */
@@ -441,7 +445,7 @@ public:
   enum Type {HNT_CATEGORY, HNT_WEAPON, HNT_UPGRADE, HNT_GLORY, HNT_BOMBARDMENT, HNT_TANK, HNT_IMPLANT, HNT_EQUIP, HNT_EQUIPWEAPON, HNT_SELL, HNT_NONE, HNT_DONE, HNT_LAST};
   Type type;
 
-  enum Displaymode {HNDM_BLANK, HNDM_COST, HNDM_PACK, HNDM_COSTUNIQUE, HNDM_EQUIP, HNDM_LAST};
+  enum Displaymode {HNDM_BLANK, HNDM_COST, HNDM_PACK, HNDM_COSTUNIQUE, HNDM_EQUIP, HNDM_IMPLANT_EQUIP, HNDM_IMPLANT_UPGRADE, HNDM_LAST};
   Displaymode displaymode;
 
   bool buyable;
@@ -457,6 +461,7 @@ public:
   const IDBTank *tank;
   
   const IDBImplantSlot *implant_slot;
+  const IDBImplant *implant_item;
   
   const IDBWeapon *equipweapon;
   

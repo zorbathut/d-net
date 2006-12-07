@@ -1,10 +1,9 @@
 ---- Major work path
 - Implants
-  - Get implant slots working
-    - Get implant slot dependencies working
-  - Get implant upgrades working
+  - Get basic implants working
   - Get implant equipping working
-  - Projectile reflecto
+  - Get implant upgrades working
+- Projectile reflecto
 - Next-gen vecedit?
 - Activate factions
   - Faction bonuses/penalties in demo screens

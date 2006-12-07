@@ -23,3 +23,15 @@ implant_slot {
   name=ROOT.Implants.Slot V
   cost=100000000000
 }
+
+adjustment {
+  name=adjustment.implant.armor
+  
+  tank_armor=5
+}
+
+implant {
+  name=ROOT.Implants.Armor
+  
+  adjustment=adjustment.implant.armor
+}

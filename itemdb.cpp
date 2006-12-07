@@ -26,6 +26,7 @@ static map<string, IDBTank> tankclasses;
 static map<string, IDBAdjustment> adjustmentclasses;
 static map<string, IDBEffects> effectsclasses;
 static map<string, IDBImplantSlot> implantslotclasses;
+static map<string, IDBImplant> implantclasses;
 
 static vector<IDBFaction> factions;
 static map<string, string> text;
@@ -271,6 +272,18 @@ void HierarchyNode::checkConsistency() const {
     CHECK(!implant_slot);
   }
   
+  // If it's of implant_item type, it also must be buyable and have a slot of 1. But its rendering is different.
+  if(type == HNT_IMPLANT && implant_item) {  
+    CHECK(!gottype);
+    gottype = true;
+    CHECK(displaymode == HNDM_IMPLANT_EQUIP);
+    CHECK(buyable);
+    CHECK(pack == 1);
+    CHECK(implant_item);
+  } else {
+    CHECK(!implant_item);
+  }
+  
   // the "done" token has no cost or other display but is "buyable"
   if(type == HNT_DONE) {
     CHECK(!gottype);
@@ -320,6 +333,7 @@ HierarchyNode::HierarchyNode() {
   bombardment = NULL;
   tank = NULL;
   implant_slot = NULL;
+  implant_item = NULL;
   equipweapon = NULL;
   spawncash = Money(0);
 }
@@ -1119,6 +1133,28 @@ void parseImplantSlot(kvData *chunk, bool reload) {
   }
 }
 
+void parseImplant(kvData *chunk, bool reload) {
+  string name;
+  IDBImplant *titem = prepareName(chunk, &implantclasses, reload, &name);
+  
+  titem->adjustment = parseSubclass(chunk->consume("adjustment"), adjustmentclasses);
+  
+  {
+    HierarchyNode *mountpoint = findNamedNode(name, 1);
+    HierarchyNode tnode;
+    tnode.name = tokenize(name, ".").back();
+    tnode.type = HierarchyNode::HNT_IMPLANT;
+    tnode.displaymode = HierarchyNode::HNDM_IMPLANT_EQUIP;
+    tnode.buyable = true;
+    tnode.pack = 1;
+    tnode.cat_restrictiontype = HierarchyNode::HNT_IMPLANT;
+    CHECK(mountpoint->cat_restrictiontype == -1 || tnode.cat_restrictiontype == mountpoint->cat_restrictiontype);
+    
+    tnode.implant_item = titem;
+    mountpoint->branches.push_back(tnode);
+  }
+}
+
 void parseItemFile(const string &fname, bool reload) {
   ifstream tfil(fname.c_str());
   CHECK(tfil);
@@ -1161,6 +1197,8 @@ void parseItemFile(const string &fname, bool reload) {
       parseEffects(&chunk, reload);
     } else if(chunk.category == "implant_slot") {
       parseImplantSlot(&chunk, reload);
+    } else if(chunk.category == "implant") {
+      parseImplant(&chunk, reload);
     } else {
       CHECK(0);
     }

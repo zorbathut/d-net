@@ -376,6 +376,11 @@ void Shop::renderNode(const HierarchyNode &node, int depth, const Player *player
         displayset = true;
       }
       
+      if(dispmode == HierarchyNode::HNDM_IMPLANT_EQUIP) {
+        display = "Installed";
+        displayset = true;
+      }
+      
       // If it's an Equip, something has gone bizarrely wrong.
       if(dispmode == HierarchyNode::HNDM_EQUIP) {
         CHECK(0);
