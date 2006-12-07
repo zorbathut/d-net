@@ -68,6 +68,8 @@ public:
   Float2 equip1(int depth) const;
   Float2 equip2(int depth) const;
   
+  float implantUpgradeDiff() const;
+  
   ShopLayout();
   ShopLayout(bool miniature);
 };

@@ -276,7 +276,7 @@ void HierarchyNode::checkConsistency() const {
   if(type == HNT_IMPLANT && implant_item) {  
     CHECK(!gottype);
     gottype = true;
-    CHECK(displaymode == HNDM_IMPLANT_EQUIP);
+    CHECK(displaymode == HNDM_IMPLANT_EQUIP || displaymode == HNDM_IMPLANT_UPGRADE);
     CHECK(buyable);
     CHECK(pack == 1);
     CHECK(implant_item);
@@ -1139,12 +1139,28 @@ void parseImplant(kvData *chunk, bool reload) {
   
   titem->adjustment = parseSubclass(chunk->consume("adjustment"), adjustmentclasses);
   
+  // this is kind of grim - we push two nodes in. This could happen at shop manipulation time also, I suppose.
   {
     HierarchyNode *mountpoint = findNamedNode(name, 1);
     HierarchyNode tnode;
     tnode.name = tokenize(name, ".").back();
     tnode.type = HierarchyNode::HNT_IMPLANT;
     tnode.displaymode = HierarchyNode::HNDM_IMPLANT_EQUIP;
+    tnode.buyable = true;
+    tnode.pack = 1;
+    tnode.cat_restrictiontype = HierarchyNode::HNT_IMPLANT;
+    CHECK(mountpoint->cat_restrictiontype == -1 || tnode.cat_restrictiontype == mountpoint->cat_restrictiontype);
+    
+    tnode.implant_item = titem;
+    mountpoint->branches.push_back(tnode);
+  }
+  
+  {
+    HierarchyNode *mountpoint = findNamedNode(name, 1);
+    HierarchyNode tnode;
+    tnode.name = tokenize(name, ".").back();
+    tnode.type = HierarchyNode::HNT_IMPLANT;
+    tnode.displaymode = HierarchyNode::HNDM_IMPLANT_UPGRADE;
     tnode.buyable = true;
     tnode.pack = 1;
     tnode.cat_restrictiontype = HierarchyNode::HNT_IMPLANT;

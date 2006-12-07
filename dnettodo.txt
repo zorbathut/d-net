@@ -3,6 +3,7 @@
   - Get basic implants working
   - Get implant equipping working
   - Get implant upgrades working
+- addr2line -i
 - Projectile reflecto
 - Next-gen vecedit?
 - Activate factions

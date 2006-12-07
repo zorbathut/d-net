@@ -44,6 +44,10 @@ Float2 ShopLayout::equip2(int depth) const {
   return Float2(hoffbase(depth) + int_boxwidth - int_boxborder, int_boxborder);
 }
 
+float ShopLayout::implantUpgradeDiff() const {
+  return int_boxwidth / 8;
+}
+
 ShopLayout::ShopLayout() {
   // not valid
 }
@@ -285,6 +289,11 @@ void Shop::renderNode(const HierarchyNode &node, int depth, const Player *player
       
       drawSolid(box + rendpos[j].second);
       drawRect(box + rendpos[j].second, slay.boxthick());
+    } else if(node.branches[itemid].displaymode == HierarchyNode::HNDM_IMPLANT_UPGRADE) {
+      Float4 box = slay.box(depth);
+      box.sx += slay.implantUpgradeDiff();
+      drawSolid(box + rendpos[j].second);
+      drawRect(box + rendpos[j].second, slay.boxthick());
     } else {
       drawSolid(slay.box(depth) + rendpos[j].second);
       drawRect(slay.box(depth) + rendpos[j].second, slay.boxthick());
@@ -315,6 +324,10 @@ void Shop::renderNode(const HierarchyNode &node, int depth, const Player *player
         else
           drawJustifiedText(text, slay.fontsize(), slay.equip2(depth) + rendpos[j].second, TEXT_MAX, TEXT_MIN);
       }
+      continue;
+    } else if(node.branches[itemid].displaymode == HierarchyNode::HNDM_IMPLANT_UPGRADE) {
+      drawText("Level II upgrade", slay.fontsize(), slay.description(depth) + rendpos[j].second + Float2(slay.implantUpgradeDiff(), 0));
+      drawJustifiedText("1000 K", slay.fontsize(), slay.price(depth) + rendpos[j].second, TEXT_MAX, TEXT_MIN);
       continue;
     }
     
@@ -378,6 +391,7 @@ void Shop::renderNode(const HierarchyNode &node, int depth, const Player *player
       
       if(dispmode == HierarchyNode::HNDM_IMPLANT_EQUIP) {
         display = "Installed";
+        setColor(C::active_text);
         displayset = true;
       }
       
