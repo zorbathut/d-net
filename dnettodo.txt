@@ -1,8 +1,9 @@
 ---- Major work path
 - Implants
-  - Get sell-mode selections working
+  - More implants
   - Get actual data adjustments working
   - Get shop display working
+- Override sell instead of changing it
 - addr2line -i
 - Render all tanks out
 - Projectile reflecto

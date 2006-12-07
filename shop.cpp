@@ -327,7 +327,8 @@ void Shop::renderNode(const HierarchyNode &node, int depth, const Player *player
       continue;
     } else if(node.branches[itemid].displaymode == HierarchyNode::HNDM_IMPLANT_UPGRADE) {
       drawText("Level " + roman_number(player->implantLevel(node.branches[itemid].implant_item)) + " upgrade", slay.fontsize(), slay.description(depth) + rendpos[j].second + Float2(slay.implantUpgradeDiff(), 0));
-      drawJustifiedText(node.branches[itemid].cost(player).textual().c_str(), slay.fontsize(), slay.price(depth) + rendpos[j].second, TEXT_MAX, TEXT_MIN);
+      if(!selling)
+        drawJustifiedText(node.branches[itemid].cost(player).textual().c_str(), slay.fontsize(), slay.price(depth) + rendpos[j].second, TEXT_MAX, TEXT_MIN);
       continue;
     }
     
@@ -435,6 +436,8 @@ void Shop::renderNode(const HierarchyNode &node, int depth, const Player *player
         drawJustifiedText(StringPrintf("%dpk", node.branches[itemid].pack), slay.fontsize(), slay.price(depth) + rendpos[j].second, TEXT_MAX, TEXT_MIN);
       } else if(dispmode == HierarchyNode::HNDM_COSTUNIQUE) {
       } else if(dispmode == HierarchyNode::HNDM_EQUIP) {
+      } else if(dispmode == HierarchyNode::HNDM_IMPLANT_EQUIP) {
+      } else if(dispmode == HierarchyNode::HNDM_IMPLANT_UPGRADE) {
       } else {
         CHECK(0);
       }
@@ -481,9 +484,11 @@ bool Shop::runTick(const Keystates &keys, Player *player) {
   else
     cshopinf.clear();
   
+  if(getCurNode(player).type == HierarchyNode::HNT_IMPLANT || getCurNode(player).type == HierarchyNode::HNT_EQUIPWEAPON)
+      selling = false;
+  
   if(getCurNode(player).type == HierarchyNode::HNT_EQUIPWEAPON) {
     // EquipWeapon works differently
-    selling = false;
     
     for(int i = 0; i < SIMUL_WEAPONS; i++) {
       if(keys.fire[i].push) {
@@ -519,6 +524,7 @@ bool Shop::runTick(const Keystates &keys, Player *player) {
     }
     
     if(change.push) {
+      queueSound(S::choose, 1.0);
       selling = !selling;
       disabled = true;
       buy = Button();
