@@ -1,7 +1,5 @@
 ---- Major work path
 - Implants
-  - More implants
-  - Get actual data adjustments working
   - Scrolling
   - Get shop info display up
 - Override sell instead of changing it

@@ -561,8 +561,12 @@ Player::Player(const IDBFaction *fact, int in_factionmode, Money money) : weapon
 
 void Player::reCalculate() {
   CHECK(faction);
+  
   adjustment = *faction->adjustment[factionmode];
-  adjustment_notank = *faction->adjustment[factionmode];
+  for(set<const IDBImplant *>::const_iterator itr = implantequipped.begin(); itr != implantequipped.end(); itr++)
+    adjustment += *(*itr)->adjustment * implantLevel(*itr);
+  
+  adjustment_notank = adjustment;
   if(tank.size()) {
     for(int i = 0; i < tank[0].upgrades.size(); i++)
       adjustment += *tank[0].upgrades[i]->adjustment;

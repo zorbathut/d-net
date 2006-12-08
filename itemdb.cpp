@@ -91,6 +91,13 @@ IDBAdjustment::IDBAdjustment() {
   memset(adjustlist, -1, sizeof(adjustlist));
 }
 
+IDBAdjustment operator*(const IDBAdjustment &lhs, int mult) {
+  IDBAdjustment rv = lhs;
+  for(int i = 0; i < IDBAdjustment::LAST; i++)
+    rv.adjusts[i] *= mult;
+  return rv;
+}
+
 const IDBAdjustment &operator+=(IDBAdjustment &lhs, const IDBAdjustment &rhs) {
   for(int i = 0; i < IDBAdjustment::LAST; i++)
     lhs.adjusts[i] += rhs.adjusts[i];

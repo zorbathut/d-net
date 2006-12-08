@@ -43,6 +43,7 @@ public:
   IDBAdjustment();
 };
 
+IDBAdjustment operator*(const IDBAdjustment &lhs, int mult);
 const IDBAdjustment &operator+=(IDBAdjustment &lhs, const IDBAdjustment &rhs);
 bool operator==(const IDBAdjustment &lhs, const IDBAdjustment &rhs);
 
