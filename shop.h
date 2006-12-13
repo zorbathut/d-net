@@ -65,7 +65,7 @@ public:
   float scrollpos(int depth) const;
   
   void updateExpandy(int depth, bool this_branches);
-  void updateScroll(const vector<int> &depth);
+  void updateScroll(const vector<int> &depth, const vector<int> &items, float height);
   
   float equipDiff() const { return int_equipDiff; };
   Float2 equip1(int depth) const;
@@ -99,10 +99,10 @@ private:
 
   void renormalize(HierarchyNode &item, const Player *player, int playercount, Money highestcash);
   
-  const HierarchyNode &getStepNode(int step, const Player *player) const;
+  const HierarchyNode &getStepNode(int step) const;
 
-  const HierarchyNode &getCategoryNode(const Player *player) const;
-  const HierarchyNode &getCurNode(const Player *player) const;
+  const HierarchyNode &getCategoryNode() const;
+  const HierarchyNode &getCurNode() const;
 
   void doTableRender(const Player *player) const;
   void renderNode(const HierarchyNode &node, int depth, const Player *player) const;

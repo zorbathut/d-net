@@ -3,6 +3,7 @@
   - Scrolling
   - Get shop info display up
 - Override sell instead of changing it
+- Enough digits for cash on-hand
 - addr2line -i
 - Render all tanks out
 - Projectile reflecto
@@ -55,7 +56,6 @@
 - Multithread cache generation
 - Add random faction
 - Stop reloading files in findLevels
-- Add tank sell depreciation
 - Special unique bonuses (turned the most, closest to death, most/least accurate, traveler, tunneler, deadeye, kamikaze, suicidal, triggerhappy, gunshy, bomber)
 
 ---- Major but unimportant ATM
