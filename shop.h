@@ -36,6 +36,7 @@ private:
   
   float int_xofs;
   vector<float> int_expandy;
+  vector<float> int_scroll;
   
 public:
   
@@ -60,9 +61,11 @@ public:
     
   float boxthick() const { return int_boxthick; };
   
-  float expandy(int tier) const { return int_expandy[tier]; };
+  float expandy(int tier) const;
+  float scrollpos(int depth) const;
   
   void updateExpandy(int depth, bool this_branches);
+  void updateScroll(const vector<int> &depth);
   
   float equipDiff() const { return int_equipDiff; };
   Float2 equip1(int depth) const;

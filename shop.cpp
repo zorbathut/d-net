@@ -37,6 +37,20 @@ float ShopLayout::hoffbase(int depth) const {
   return int_hoffset + (int_boxwidth + int_hoffset) * (depth - int_xofs);
 }
 
+float ShopLayout::expandy(int tier) const {
+  CHECK(tier >= 0);
+  if(tier < int_expandy.size())
+    return int_expandy[tier];
+  return 1.0;
+}
+
+float ShopLayout::scrollpos(int tier) const {
+  CHECK(tier >= 0);
+  if(tier < int_scroll.size())
+    return int_scroll[tier];
+  return 0.0;
+}
+
 Float2 ShopLayout::equip1(int depth) const {
   return Float2(hoffbase(depth) + int_boxborder, int_boxborder);
 }
@@ -101,6 +115,21 @@ void ShopLayout::updateExpandy(int depth, bool this_branches) {
     nexpandy[depth - 2] = 0.0;
   for(int i = 0; i < int_expandy.size(); i++)
     int_expandy[i] = approach(int_expandy[i], nexpandy[i], framechange);
+}
+
+void ShopLayout::updateScroll(const vector<int> &curpos) {
+  if(int_scroll.size() < curpos.size()) {
+    int_scroll.resize(curpos.size(), 0);
+  }
+  
+  vector<int> vcurpos = curpos;
+  if(vcurpos.size() < int_scroll.size())
+    vcurpos.resize(int_scroll.size(), 0);
+  
+  CHECK(vcurpos.size() == int_scroll.size());
+  
+  for(int i = 0; i < curpos.size(); i++)
+    int_scroll[i] = approach(int_scroll[i], vcurpos[i], 0.05);
 }
 
 DEFINE_bool(cullShopTree, true, "Cull items which the players wouldn't want or realistically can't yet buy");
@@ -218,10 +247,10 @@ void Shop::renderNode(const HierarchyNode &node, int depth, const Player *player
     else
       desiredfront = curloc[depth];
     for(int i = 0; i < desiredfront; i++)
-      rendpos.push_back(make_pair(i, Float2(0, slay.voffset() + (i * slay.itemheight()) * slay.expandy(depth))));
+      rendpos.push_back(make_pair(i, Float2(0, slay.voffset() + ((i - slay.scrollpos(depth)) * slay.itemheight()) * slay.expandy(depth))));
     for(int i = node.branches.size() - 1; i > desiredfront; i--)
-      rendpos.push_back(make_pair(i, Float2(0, slay.voffset() + (i * slay.itemheight()) * slay.expandy(depth))));
-    rendpos.push_back(make_pair(desiredfront, Float2(0, slay.voffset() + (desiredfront * slay.itemheight()) * slay.expandy(depth))));
+      rendpos.push_back(make_pair(i, Float2(0, slay.voffset() + ((i - slay.scrollpos(depth)) * slay.itemheight()) * slay.expandy(depth))));
+    rendpos.push_back(make_pair(desiredfront, Float2(0, slay.voffset() + ((desiredfront - slay.scrollpos(depth)) * slay.itemheight()) * slay.expandy(depth))));
   }
   
   if(depth < curloc.size())
@@ -657,6 +686,7 @@ bool Shop::runTick(const Keystates &keys, Player *player) {
   }
   
   slay.updateExpandy(curloc.size(), getCurNode(player).branches.size());
+  slay.updateScroll(curloc);
   
   if(hasInfo(getCurNode(player).type))
     cshopinf.runTick();

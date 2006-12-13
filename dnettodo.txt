@@ -76,15 +76,11 @@ Take a "queueSound" with Sound, volume, fade.
 Sound gets loaded, much like dvec2.
 Then there's IDBSoundPack items. This sounds good.
 
+---
+Scrolling
 
---- Grid
-Stencil buffer. Render all polygons on top of it. Use that to stencil the lines. Oughta work fine.
+Vertical location stored along with expandability
+Set up a window around the draw zone - if there's "up", reserve room for text. Same with "down".
 
+Scrolling happens when the cursor is high is low (whatever that means)
 
-
---- Implants/training
-Training seems dumb now. So do licenses - heavy tanks are enough of a discontinuity. So, implants:
-
-* Extra slots cost exponentially increasing amounts of money (max out at, say, four or five?)
-* One implant per type, upgrading it costs increasing amounts of money
-How should the interface function? Staggered, "equip" and "upgrade"
