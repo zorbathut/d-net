@@ -1,6 +1,7 @@
 ---- Major work path
 - Implants
   - Scrolling
+    - Scroll pointers
   - Get shop info display up
 - Scroll properly for equip
 - Override sell instead of changing it

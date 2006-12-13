@@ -129,8 +129,13 @@ void ShopLayout::updateScroll(const vector<int> &curpos, const vector<int> &opti
   
   CHECK(vcurpos.size() == int_scroll.size());
   
-  for(int i = 0; i < curpos.size(); i++)
-    int_scroll[i] = clamp(approach(int_scroll[i], vcurpos[i] - max_rows / 2, 0.05), 0, max(0, options[i] - max_rows));
+  for(int i = 0; i < curpos.size(); i++) {
+    float diff = abs(int_scroll[i] - (vcurpos[i] - max_rows / 2));
+    diff = diff / 30;
+    if(diff < 0.05)
+      diff = 0;
+    int_scroll[i] = clamp(approach(int_scroll[i], vcurpos[i] - max_rows / 2, diff), 0, max(0, options[i] - max_rows));
+  }
 }
 
 DEFINE_bool(cullShopTree, true, "Cull items which the players wouldn't want or realistically can't yet buy");
