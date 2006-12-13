@@ -118,7 +118,7 @@ void ShopLayout::updateExpandy(int depth, bool this_branches) {
 }
 
 void ShopLayout::updateScroll(const vector<int> &curpos, const vector<int> &options, float height) {
-  int max_rows = (int)floor((height - int_voffset) / int_itemheight) - 1;
+  int max_rows = (int)floor((height - int_voffset) / int_itemheight) - 2;
   if(int_scroll.size() < curpos.size()) {
     int_scroll.resize(curpos.size(), 0);
   }
@@ -256,6 +256,8 @@ void Shop::renderNode(const HierarchyNode &node, int depth, const Player *player
   
   if(depth < curloc.size())
     renderNode(node.branches[curloc[depth]], depth + 1, player);
+  
+  GfxWindow gfxw(Float4(slay.box(depth).sx - slay.fontsize() / 2, slay.voffset(), slay.box(depth).ex + slay.fontsize() / 2, getZoom().ey - slay.itemheight() + slay.fontsize() / 2), 1.0);
   
   if(node.type == HierarchyNode::HNT_EQUIP) {
     float maxdown = -1000;

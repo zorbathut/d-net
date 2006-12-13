@@ -2,6 +2,7 @@
 - Implants
   - Scrolling
   - Get shop info display up
+- Scroll properly for equip
 - Override sell instead of changing it
 - Enough digits for cash on-hand
 - addr2line -i

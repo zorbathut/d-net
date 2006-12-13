@@ -343,7 +343,16 @@ void deinitFrame() {
   frame_running = false;
 }
 
-GfxWindow::GfxWindow(const Float4 &bounds, float fade) {
+GfxWindow::GfxWindow(const Float4 &obounds, float fade) {
+  finishLineCluster();
+  
+  Float4 bounds = obounds;
+  bounds.sx = max(bounds.sx, map_bounds.sx);
+  bounds.sy = max(bounds.sy, map_bounds.sy);
+  bounds.ex = min(bounds.ex, map_bounds.ex);
+  bounds.ey = min(bounds.ey, map_bounds.ey);
+  CHECK(bounds.isNormalized());
+  
   GfxWindowState gfws;
   gfws.saved_sx = map_saved_sx;
   gfws.saved_sy = map_saved_sy;
@@ -355,9 +364,9 @@ GfxWindow::GfxWindow(const Float4 &bounds, float fade) {
   
   gfws.gfxw = this;
   
-  windows.push_back(gfws);
+  map_bounds = bounds;
   
-  finishLineCluster();
+  windows.push_back(gfws);
   
   windows.back().setScissor();
 }
