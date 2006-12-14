@@ -53,8 +53,9 @@ float ShopLayout::scrollpos(int tier) const {
 
 pair<bool, bool> ShopLayout::scrollmarkers(int tier) const {
   CHECK(tier >= 0);
-  CHECK(tier < int_scroll.size());
-  return int_scroll[tier].second;
+  if(tier < int_scroll.size())
+    return int_scroll[tier].second;
+  return make_pair(false, false);
 }
 
 Float2 ShopLayout::equip1(int depth) const {
@@ -146,8 +147,8 @@ void ShopLayout::updateScroll(const vector<int> &curpos, const vector<int> &opti
     if(diff < 0.05)
       diff = 0;
     int_scroll[i].first = clamp(approach(int_scroll[i].first, vcurpos[i] - max_rows / 2, diff), 0, max(0, voptions[i] - max_rows));
-    int_scroll[i].second.first = (int_scroll[i].first == 0);
-    int_scroll[i].second.second = (int_scroll[i].first == max(0, voptions[i] - max_rows));
+    int_scroll[i].second.first = (int_scroll[i].first != 0);
+    int_scroll[i].second.second = (int_scroll[i].first != max(0, voptions[i] - max_rows));
   }
 }
 
@@ -275,7 +276,13 @@ void Shop::renderNode(const HierarchyNode &node, int depth, const Player *player
   if(depth < curloc.size())
     renderNode(node.branches[curloc[depth]], depth + 1, player);
   
-  GfxWindow gfxw(Float4(slay.box(depth).sx - slay.fontsize() / 2, slay.voffset(), slay.box(depth).ex + slay.fontsize() / 2, getZoom().ey - slay.itemheight() + slay.fontsize() / 2), 1.0);
+  Float4 boundbox = Float4(slay.box(depth).sx - slay.fontsize() / 2, slay.voffset(), slay.box(depth).ex + slay.fontsize() / 2, getZoom().ey - slay.itemheight() + slay.fontsize() / 2);
+  if(slay.scrollmarkers(depth).first)
+    boundbox.sy += slay.itemheight();
+  if(slay.scrollmarkers(depth).second)
+    boundbox.ey -= slay.itemheight();
+  
+  GfxWindow gfxw(boundbox, 1.0);
   
   if(node.type == HierarchyNode::HNT_EQUIP) {
     float maxdown = -1000;
