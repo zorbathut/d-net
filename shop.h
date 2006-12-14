@@ -36,7 +36,7 @@ private:
   
   float int_xofs;
   vector<float> int_expandy;
-  vector<float> int_scroll;
+  vector<pair<float, pair<bool, bool> > > int_scroll;
   
 public:
   
@@ -63,6 +63,7 @@ public:
   
   float expandy(int tier) const;
   float scrollpos(int depth) const;
+  pair<bool, bool> scrollmarkers(int depth) const;
   
   void updateExpandy(int depth, bool this_branches);
   void updateScroll(const vector<int> &depth, const vector<int> &items, float height);

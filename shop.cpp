@@ -47,8 +47,14 @@ float ShopLayout::expandy(int tier) const {
 float ShopLayout::scrollpos(int tier) const {
   CHECK(tier >= 0);
   if(tier < int_scroll.size())
-    return int_scroll[tier];
+    return int_scroll[tier].first;
   return 0.0;
+}
+
+pair<bool, bool> ShopLayout::scrollmarkers(int tier) const {
+  CHECK(tier >= 0);
+  CHECK(tier < int_scroll.size());
+  return int_scroll[tier].second;
 }
 
 Float2 ShopLayout::equip1(int depth) const {
@@ -119,22 +125,29 @@ void ShopLayout::updateExpandy(int depth, bool this_branches) {
 
 void ShopLayout::updateScroll(const vector<int> &curpos, const vector<int> &options, float height) {
   int max_rows = (int)floor((height - int_voffset) / int_itemheight) - 2;
-  if(int_scroll.size() < curpos.size()) {
-    int_scroll.resize(curpos.size(), 0);
+  if(int_scroll.size() < options.size()) {
+    int_scroll.resize(options.size(), make_pair(0, make_pair(false, false)));
   }
   
   vector<int> vcurpos = curpos;
   if(vcurpos.size() < int_scroll.size())
     vcurpos.resize(int_scroll.size(), 0);
   
-  CHECK(vcurpos.size() == int_scroll.size());
+  vector<int> voptions = options;
+  if(voptions.size() < int_scroll.size())
+    voptions.resize(int_scroll.size(), 0);
   
-  for(int i = 0; i < curpos.size(); i++) {
-    float diff = abs(int_scroll[i] - (vcurpos[i] - max_rows / 2));
+  CHECK(vcurpos.size() == int_scroll.size());
+  CHECK(vcurpos.size() == voptions.size());
+  
+  for(int i = 0; i < vcurpos.size(); i++) {
+    float diff = abs(int_scroll[i].first - (vcurpos[i] - max_rows / 2));
     diff = diff / 30;
     if(diff < 0.05)
       diff = 0;
-    int_scroll[i] = clamp(approach(int_scroll[i], vcurpos[i] - max_rows / 2, diff), 0, max(0, options[i] - max_rows));
+    int_scroll[i].first = clamp(approach(int_scroll[i].first, vcurpos[i] - max_rows / 2, diff), 0, max(0, voptions[i] - max_rows));
+    int_scroll[i].second.first = (int_scroll[i].first == 0);
+    int_scroll[i].second.second = (int_scroll[i].first == max(0, voptions[i] - max_rows));
   }
 }
 
@@ -695,7 +708,7 @@ bool Shop::runTick(const Keystates &keys, Player *player) {
   slay.updateExpandy(curloc.size(), getCurNode().branches.size());
   {
     vector<int> options;
-    for(int i = 0; i < curloc.size(); i++)
+    for(int i = 0; i <= curloc.size(); i++)
       options.push_back(getStepNode(i).branches.size());
     slay.updateScroll(curloc, options, getZoom().y_span());
   }

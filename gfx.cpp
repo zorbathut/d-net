@@ -351,6 +351,10 @@ GfxWindow::GfxWindow(const Float4 &obounds, float fade) {
   bounds.sy = max(bounds.sy, map_bounds.sy);
   bounds.ex = min(bounds.ex, map_bounds.ex);
   bounds.ey = min(bounds.ey, map_bounds.ey);
+  if(!bounds.isNormalized()) {
+    dprintf("WARNING: Null gfxwindow!\n");
+    bounds = Float4(map_bounds.sx, map_bounds.sy, map_bounds.sx, map_bounds.sy);
+  }
   CHECK(bounds.isNormalized());
   
   GfxWindowState gfws;
