@@ -256,6 +256,51 @@ const HierarchyNode &Shop::getCategoryNode() const {
   return getStepNode(curloc.size() - 1);
 }
 
+void drawScrollBar(const ShopLayout &slay, int depth, bool bottom) {
+  Float4 zone = slay.box(depth);
+  float ofs = 0;
+  string text;
+  if(!bottom) {
+    ofs = slay.voffset();
+    text = "Up";
+  } else {
+    ofs = getZoom().ey - slay.itemheight() * 2 + slay.fontsize() / 2 + slay.itemheight() - zone.y_span();
+    text = "Down";
+  }
+  zone.sy += ofs;
+  zone.ey += ofs;
+  
+  // Center
+  {
+    Float4 czone = zone;
+    czone.sx = (zone.sx * 2 + zone.ex) / 3;
+    czone.ex = (zone.sx + zone.ex * 2) / 3;
+    drawSolid(czone);
+    setColor(C::box_border);
+    drawRect(czone, slay.boxthick());
+    setColor(C::active_text);
+    drawJustifiedText(text, slay.fontsize(), czone.midpoint(), TEXT_CENTER, TEXT_CENTER);
+  }
+  
+  vector<float> beef;
+  beef.push_back((zone.sx * 5 + zone.ex) / 6);
+  beef.push_back((zone.sx + zone.ex * 5) / 6);
+  for(int i = 0; i  < beef.size(); i++) {
+    vector<Float2> tri;
+    if(bottom) {
+      tri.push_back(Float2(beef[i], zone.ey));
+      tri.push_back(Float2(beef[i] + zone.y_span(), zone.sy));
+      tri.push_back(Float2(beef[i] - zone.y_span(), zone.sy));
+    } else {
+      tri.push_back(Float2(beef[i], zone.sy));
+      tri.push_back(Float2(beef[i] + zone.y_span(), zone.ey));
+      tri.push_back(Float2(beef[i] - zone.y_span(), zone.ey));
+    }
+    drawSolidLoop(tri);
+    drawLineLoop(tri, slay.boxthick());
+  }
+}
+
 void Shop::renderNode(const HierarchyNode &node, int depth, const Player *player) const {
   float hoffbase = slay.hoffbase(depth);
   
@@ -277,10 +322,14 @@ void Shop::renderNode(const HierarchyNode &node, int depth, const Player *player
     renderNode(node.branches[curloc[depth]], depth + 1, player);
   
   Float4 boundbox = Float4(slay.box(depth).sx - slay.fontsize() / 2, slay.voffset(), slay.box(depth).ex + slay.fontsize() / 2, getZoom().ey - slay.itemheight() + slay.fontsize() / 2);
-  if(slay.scrollmarkers(depth).first)
+  if(slay.scrollmarkers(depth).first) {
+    drawScrollBar(slay, depth, false);
     boundbox.sy += slay.itemheight();
-  if(slay.scrollmarkers(depth).second)
+  }
+  if(slay.scrollmarkers(depth).second) {
+    drawScrollBar(slay, depth, true);
     boundbox.ey -= slay.itemheight();
+  }
   
   GfxWindow gfxw(boundbox, 1.0);
   
@@ -324,7 +373,7 @@ void Shop::renderNode(const HierarchyNode &node, int depth, const Player *player
     if(selling) {
       setColor(Color(0.8, 0, 0));
     } else {
-      setColor(C::gray(0.5));
+      setColor(C::box_border);
     }
     {
       float xstart = hoffbase;
