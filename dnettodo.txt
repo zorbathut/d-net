@@ -1,6 +1,9 @@
 ---- Major work path
 - Implants
   - Get shop info display up
+    - Implant mods display better (i.e. before/after)
+    - Implants display based on level
+    - Implants display upgrade on buying implant, and upgrade on upgrading implant
   - Implant text
 - Scroll properly for equip (i.e. don't run past the bottom labels)
 - Override sell instead of changing it
