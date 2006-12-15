@@ -68,6 +68,7 @@ void ShopInfo::null() {
   bombardment = NULL;
   upgrade = NULL;
   tank = NULL;
+  implant = NULL;
 }
 
 void ShopInfo::init(const IDBWeapon *in_weapon, const Player *in_player, bool in_miniature) {
@@ -108,6 +109,14 @@ void ShopInfo::init(const IDBTank *in_tank, const Player *in_player, bool in_min
   text = in_tank->text;
   // no working demo atm
 }
+void ShopInfo::init(const IDBImplant *in_implant, bool upgrade, const Player *in_player, bool in_miniature) {
+  null();
+  miniature = in_miniature;
+  implant = in_implant;
+  implant_upgrade = upgrade;
+  text = in_implant->text;
+  // no working demo atm
+}
 
 void ShopInfo::initIfNeeded(const IDBWeapon *in_weapon, const Player *in_player, bool in_miniature) {
   if(weapon != in_weapon || miniature != in_miniature)
@@ -128,6 +137,10 @@ void ShopInfo::initIfNeeded(const IDBUpgrade *in_upgrade, const Player *in_playe
 void ShopInfo::initIfNeeded(const IDBTank *in_tank, const Player *in_player, bool in_miniature) {
   if(tank != in_tank || miniature != in_miniature)
     init(in_tank, in_player, in_miniature);
+}
+void ShopInfo::initIfNeeded(const IDBImplant *in_implant, bool upgrade, const Player *in_player, bool in_miniature) {
+  if(implant != in_implant || implant_upgrade != upgrade || miniature != in_miniature)
+    init(in_implant, upgrade, in_player, in_miniature);
 }
 
 void ShopInfo::clear() {
@@ -188,7 +201,7 @@ void drawShadedFormattedText(Float4 bounds, float fontsize, const string &text) 
 }
 
 void ShopInfo::renderFrame(Float4 bounds, float fontsize, Float4 inset, const Player *player) const {
-  CHECK(bool(weapon) + bool(glory) + bool(bombardment) + bool(upgrade) + bool(tank) == 1);
+  CHECK(bool(weapon) + bool(glory) + bool(bombardment) + bool(upgrade) + bool(tank) + bool(implant) == 1);
   
   if(text && !miniature)
     drawShadedFormattedText(bounds, fontsize, *text);
@@ -233,6 +246,14 @@ void ShopInfo::renderFrame(Float4 bounds, float fontsize, Float4 inset, const Pl
         if(tank->adjustment->adjustmentfactor(i) != 1.0) {
           kvp.print(adjust_human[i], StringPrintf("%.0f%%", tank->adjustment->adjustmentfactor(i) * 100));
         }
+      }
+    }
+  } else if(implant) {
+    ShopKVPrinter kvp(bounds, fontsize, fontshift);
+    CHECK(implant->adjustment);
+    for(int i = 0; i < IDBAdjustment::LAST; i++) {
+      if(implant->adjustment->adjustmentfactor(i) != 1.0) {
+        kvp.print(adjust_human[i], StringPrintf("%.0f%%", implant->adjustment->adjustmentfactor(i) * 100));
       }
     }
   } else {

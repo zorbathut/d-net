@@ -14,14 +14,14 @@ public:
   void init(const IDBBombardment *in_bombardment, const Player *player, bool miniature);
   void init(const IDBUpgrade *in_upgrade, const Player *player, bool miniature);
   void init(const IDBTank *in_tank, const Player *player, bool miniature);
-  void init(const IDBImplant *in_tank, bool upgrade, const Player *player, bool miniature);
+  void init(const IDBImplant *in_implant, bool upgrade, const Player *player, bool miniature);
 
   void initIfNeeded(const IDBWeapon *in_weapon, const Player *player, bool miniature);
   void initIfNeeded(const IDBGlory *in_glory, const Player *player, bool miniature);
   void initIfNeeded(const IDBBombardment *in_bombardment, const Player *player, bool miniature);
   void initIfNeeded(const IDBUpgrade *in_upgrade, const Player *player, bool miniature);
   void initIfNeeded(const IDBTank *in_tank, const Player *player, bool miniature);
-  void initIfNeeded(const IDBImplant *in_tank, bool upgrade, const Player *player, bool miniature);
+  void initIfNeeded(const IDBImplant *in_implant, bool upgrade, const Player *player, bool miniature);
 
   void clear();
   

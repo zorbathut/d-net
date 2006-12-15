@@ -1,7 +1,7 @@
 ---- Major work path
-- Check makefile
 - Implants
   - Get shop info display up
+  - Implant text
 - Scroll properly for equip (i.e. don't run past the bottom labels)
 - Override sell instead of changing it
 - Enough digits for cash on-hand

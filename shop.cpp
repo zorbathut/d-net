@@ -194,13 +194,13 @@ void Shop::renormalize(HierarchyNode &item, const Player *player, int playercoun
     }
     
     // More prereqs with the implant slot
-    if(keep && item.branches[i].type == HierarchyNode::HNT_IMPLANT && item.branches[i].implant_slot) {
+    if(keep && item.branches[i].type == HierarchyNode::HNT_IMPLANTSLOT) {
       // If there's a prereq and the player doesn't own it, we don't include it
-      if(keep && item.branches[i].implant_slot->prereq && !player->hasImplantSlot(item.branches[i].implant_slot->prereq))
+      if(keep && item.branches[i].implantslot->prereq && !player->hasImplantSlot(item.branches[i].implantslot->prereq))
         keep = false;
       
       // If there's a postreq and the player already has this one, we don't include it
-      if(keep && item.branches[i].implant_slot->has_postreq && player->hasImplantSlot(item.branches[i].implant_slot))
+      if(keep && item.branches[i].implantslot->has_postreq && player->hasImplantSlot(item.branches[i].implantslot))
         keep = false;
     }
     
@@ -217,13 +217,12 @@ void Shop::renormalize(HierarchyNode &item, const Player *player, int playercoun
       
       // Now that the subitem is normalized, we see if we need to eliminate it anyway. This only applies to categories.
       if(item.branches[i].type == HierarchyNode::HNT_CATEGORY) {
-        
         // If we have tanks, bombardment, or glory devices, and there's only one item left, it's the default item.
         if(item.branches[i].cat_restrictiontype == HierarchyNode::HNT_BOMBARDMENT || item.branches[i].cat_restrictiontype == HierarchyNode::HNT_GLORY || item.branches[i].cat_restrictiontype == HierarchyNode::HNT_TANK) {
           CHECK(item.branches[i].branches.size() > 0);
           if(item.branches[i].branches.size() == 1)
             keep = false;
-        } else if(item.branches[i].cat_restrictiontype == HierarchyNode::HNT_UPGRADE || item.branches[i].cat_restrictiontype == HierarchyNode::HNT_IMPLANT) {
+        } else if(item.branches[i].cat_restrictiontype == HierarchyNode::HNT_UPGRADE || item.branches[i].cat_restrictiontype == HierarchyNode::HNT_IMPLANT_CAT) {
           if(item.branches[i].branches.size() == 0)
             keep = false;
         }
@@ -432,7 +431,7 @@ void Shop::renderNode(const HierarchyNode &node, int depth, const Player *player
       }
       continue;
     } else if(node.branches[itemid].displaymode == HierarchyNode::HNDM_IMPLANT_UPGRADE) {
-      drawText("Level " + roman_number(player->implantLevel(node.branches[itemid].implant_item)) + " upgrade", slay.fontsize(), slay.description(depth) + rendpos[j].second + Float2(slay.implantUpgradeDiff(), 0));
+      drawText("Level " + roman_number(player->implantLevel(node.branches[itemid].implantitem)) + " upgrade", slay.fontsize(), slay.description(depth) + rendpos[j].second + Float2(slay.implantUpgradeDiff(), 0));
       if(!selling)
         drawJustifiedText(node.branches[itemid].cost(player).textual().c_str(), slay.fontsize(), slay.price(depth) + rendpos[j].second, TEXT_MAX, TEXT_MIN);
       continue;
@@ -467,8 +466,8 @@ void Shop::renderNode(const HierarchyNode &node, int depth, const Player *player
           state = player->stateBombardment(node.branches[itemid].bombardment);
         else if(node.branches[itemid].type == HierarchyNode::HNT_TANK)
           state = player->stateTank(node.branches[itemid].tank);
-        else if(node.branches[itemid].type == HierarchyNode::HNT_IMPLANT && node.branches[itemid].implant_slot)
-          state = player->stateImplantSlot(node.branches[itemid].implant_slot);
+        else if(node.branches[itemid].type == HierarchyNode::HNT_IMPLANTSLOT)
+          state = player->stateImplantSlot(node.branches[itemid].implantslot);
         else
           CHECK(0);
         if(state == ITEMSTATE_UNOWNED) {
@@ -497,7 +496,7 @@ void Shop::renderNode(const HierarchyNode &node, int depth, const Player *player
       }
       
       if(dispmode == HierarchyNode::HNDM_IMPLANT_EQUIP) {
-        if(player->hasImplant(node.branches[itemid].implant_item))
+        if(player->hasImplant(node.branches[itemid].implantitem))
           display = "Installed";
         setColor(C::active_text);
         displayset = true;
@@ -552,7 +551,7 @@ void Shop::renderNode(const HierarchyNode &node, int depth, const Player *player
 }
 
 bool Shop::hasInfo(int type) const {
-  return type == HierarchyNode::HNT_WEAPON || type == HierarchyNode::HNT_EQUIPWEAPON || type == HierarchyNode::HNT_GLORY || type == HierarchyNode::HNT_BOMBARDMENT || type == HierarchyNode::HNT_UPGRADE || type == HierarchyNode::HNT_TANK;
+  return type == HierarchyNode::HNT_WEAPON || type == HierarchyNode::HNT_EQUIPWEAPON || type == HierarchyNode::HNT_GLORY || type == HierarchyNode::HNT_BOMBARDMENT || type == HierarchyNode::HNT_UPGRADE || type == HierarchyNode::HNT_TANK || type == HierarchyNode::HNT_IMPLANTITEM || type == HierarchyNode::HNT_IMPLANTITEM_UPG;
 }
 
 bool Shop::runTick(const Keystates &keys, Player *player) {
@@ -573,23 +572,33 @@ bool Shop::runTick(const Keystates &keys, Player *player) {
     curloc.back()++;
   }
   curloc.back() = modurot(curloc.back(), getCategoryNode().branches.size());
+
+  {
+    bool hasinfo = true;
+    if(getCurNode().type == HierarchyNode::HNT_WEAPON)
+      cshopinf.initIfNeeded(getCurNode().weapon, player, miniature);
+    else if(getCurNode().type == HierarchyNode::HNT_EQUIPWEAPON)
+      cshopinf.initIfNeeded(getCurNode().equipweapon, player, miniature);
+    else if(getCurNode().type == HierarchyNode::HNT_GLORY)
+      cshopinf.initIfNeeded(getCurNode().glory, player, miniature);
+    else if(getCurNode().type == HierarchyNode::HNT_BOMBARDMENT)
+      cshopinf.initIfNeeded(getCurNode().bombardment, player, miniature);
+    else if(getCurNode().type == HierarchyNode::HNT_UPGRADE)
+      cshopinf.initIfNeeded(getCurNode().upgrade, player, miniature);
+    else if(getCurNode().type == HierarchyNode::HNT_TANK)
+      cshopinf.initIfNeeded(getCurNode().tank, player, miniature);
+    else if(getCurNode().type == HierarchyNode::HNT_IMPLANTITEM)
+      cshopinf.initIfNeeded(getCurNode().implantitem, false, player, miniature);
+    else if(getCurNode().type == HierarchyNode::HNT_IMPLANTITEM_UPG)
+      cshopinf.initIfNeeded(getCurNode().implantitem, true, player, miniature);
+    else {
+      hasinfo = false;
+      cshopinf.clear();
+    }
+    CHECK(hasinfo == hasInfo(getCurNode().type)); // doublecheck
+  }
   
-  if(getCurNode().type == HierarchyNode::HNT_WEAPON)
-    cshopinf.initIfNeeded(getCurNode().weapon, player, miniature);
-  else if(getCurNode().type == HierarchyNode::HNT_EQUIPWEAPON)
-    cshopinf.initIfNeeded(getCurNode().equipweapon, player, miniature);
-  else if(getCurNode().type == HierarchyNode::HNT_GLORY)
-    cshopinf.initIfNeeded(getCurNode().glory, player, miniature);
-  else if(getCurNode().type == HierarchyNode::HNT_BOMBARDMENT)
-    cshopinf.initIfNeeded(getCurNode().bombardment, player, miniature);
-  else if(getCurNode().type == HierarchyNode::HNT_UPGRADE)
-    cshopinf.initIfNeeded(getCurNode().upgrade, player, miniature);
-  else if(getCurNode().type == HierarchyNode::HNT_TANK)
-    cshopinf.initIfNeeded(getCurNode().tank, player, miniature);
-  else
-    cshopinf.clear();
-  
-  if(getCurNode().type == HierarchyNode::HNT_IMPLANT || getCurNode().type == HierarchyNode::HNT_EQUIPWEAPON)
+  if(getCurNode().type == HierarchyNode::HNT_IMPLANTSLOT || getCurNode().type == HierarchyNode::HNT_IMPLANTITEM || getCurNode().type == HierarchyNode::HNT_IMPLANTITEM_UPG || getCurNode().type == HierarchyNode::HNT_EQUIPWEAPON)
       selling = false;
   
   if(getCurNode().type == HierarchyNode::HNT_EQUIPWEAPON) {
@@ -697,25 +706,25 @@ bool Shop::runTick(const Keystates &keys, Player *player) {
             } else {
               sound = S::error;
             }
-          } else if(getCurNode().type == HierarchyNode::HNT_IMPLANT && getCurNode().implant_slot) {
-            if(player->stateImplantSlot(getCurNode().implant_slot) != ITEMSTATE_UNOWNED) {
+          } else if(getCurNode().type == HierarchyNode::HNT_IMPLANTSLOT) {
+            if(player->stateImplantSlot(getCurNode().implantslot) != ITEMSTATE_UNOWNED) {
               sound = S::error;
-            } else if(player->canBuyImplantSlot(getCurNode().implant_slot))  {
-              player->buyImplantSlot(getCurNode().implant_slot);
+            } else if(player->canBuyImplantSlot(getCurNode().implantslot))  {
+              player->buyImplantSlot(getCurNode().implantslot);
               sound = S::choose;
             } else {
               sound = S::error;
             }
-          } else if(getCurNode().type == HierarchyNode::HNT_IMPLANT && getCurNode().implant_item && getCurNode().displaymode == HierarchyNode::HNDM_IMPLANT_EQUIP) {
-            if(player->canToggleImplant(getCurNode().implant_item)) {
-              player->toggleImplant(getCurNode().implant_item);
+          } else if(getCurNode().type == HierarchyNode::HNT_IMPLANTITEM) {
+            if(player->canToggleImplant(getCurNode().implantitem)) {
+              player->toggleImplant(getCurNode().implantitem);
               sound = S::choose;
             } else {
               sound = S::error;
             }
-          } else if(getCurNode().type == HierarchyNode::HNT_IMPLANT && getCurNode().implant_item && getCurNode().displaymode == HierarchyNode::HNDM_IMPLANT_UPGRADE) {
-            if(player->canLevelImplant(getCurNode().implant_item)) {
-              player->levelImplant(getCurNode().implant_item);
+          } else if(getCurNode().type == HierarchyNode::HNT_IMPLANTITEM_UPG) {
+            if(player->canLevelImplant(getCurNode().implantitem)) {
+              player->levelImplant(getCurNode().implantitem);
               sound = S::choose;
             } else {
               sound = S::error;

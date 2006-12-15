@@ -1,25 +1,25 @@
 
-implant_slot {
+implantslot {
   name=ROOT.Implants.Slot I
   cost=40000
 }
 
-implant_slot {
+implantslot {
   name=ROOT.Implants.Slot II
   cost=1500000
 }
 
-implant_slot {
+implantslot {
   name=ROOT.Implants.Slot III
   cost=65000000
 }
 
-implant_slot {
+implantslot {
   name=ROOT.Implants.Slot IV
   cost=2500000000
 }
 
-implant_slot {
+implantslot {
   name=ROOT.Implants.Slot V
   cost=100000000000
 }

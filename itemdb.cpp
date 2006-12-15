@@ -135,10 +135,10 @@ Money HierarchyNode::cost(const Player *player) const {
     return player->adjustBombardment(bombardment).cost();
   } else if(type == HNT_TANK) {
     return player->adjustTankWithInstanceUpgrades(tank).cost();
-  } else if(type == HNT_IMPLANT && implant_slot) {
-    return player->adjustImplantSlot(implant_slot).cost();
-  } else if(type == HNT_IMPLANT && implant_item && displaymode == HNDM_IMPLANT_UPGRADE) {
-    return player->adjustImplant(implant_item).costToLevel(player->implantLevel(implant_item));
+  } else if(type == HNT_IMPLANTSLOT) {
+    return player->adjustImplantSlot(implantslot).cost();
+  } else if(type == HNT_IMPLANTITEM_UPG) {
+    return player->adjustImplant(implantitem).costToLevel(player->implantLevel(implantitem));
   } else {
     CHECK(0);
   }
@@ -268,28 +268,34 @@ void HierarchyNode::checkConsistency() const {
     CHECK(!equipweapon);
   }
   
-  // HNT_IMPLANT has two types. If it's of implant_slot type, it must be buyable and have a slot of 1
-  if(type == HNT_IMPLANT && implant_slot) {  
+  // implantslot must be buyable and have a slot of 1
+  if(type == HNT_IMPLANTSLOT) {  
     CHECK(!gottype);
     gottype = true;
     CHECK(displaymode == HNDM_COSTUNIQUE);
     CHECK(buyable);
     CHECK(pack == 1);
-    CHECK(implant_slot);
+    CHECK(implantslot);
   } else {
-    CHECK(!implant_slot);
+    CHECK(!implantslot);
   }
   
-  // If it's of implant_item type, it also must be buyable and have a slot of 1. But its rendering is different.
-  if(type == HNT_IMPLANT && implant_item) {  
+  // implantitem must be buyable and have a slot of 1, but the rendering varies
+  if(type == HNT_IMPLANTITEM || type == HNT_IMPLANTITEM_UPG) {  
     CHECK(!gottype);
     gottype = true;
-    CHECK(displaymode == HNDM_IMPLANT_EQUIP || displaymode == HNDM_IMPLANT_UPGRADE);
+    if(type == HNT_IMPLANTITEM) {
+      CHECK(displaymode == HNDM_IMPLANT_EQUIP);
+    } else if(type == HNT_IMPLANTITEM_UPG) {
+      CHECK(displaymode == HNDM_IMPLANT_UPGRADE);
+    } else {
+      CHECK(0);
+    }
     CHECK(buyable);
     CHECK(pack == 1);
-    CHECK(implant_item);
+    CHECK(implantitem);
   } else {
-    CHECK(!implant_item);
+    CHECK(!implantitem);
   }
   
   // the "done" token has no cost or other display but is "buyable"
@@ -320,7 +326,10 @@ void HierarchyNode::checkConsistency() const {
   
   // last, check the consistency of everything recursively
   for(int i = 0; i < branches.size(); i++) {
-    if(cat_restrictiontype != -1) {
+    if(cat_restrictiontype == HNT_IMPLANT_CAT) {
+      CHECK(branches[i].type == HNT_IMPLANTSLOT || branches[i].type == HNT_IMPLANTITEM || branches[i].type == HNT_IMPLANTITEM_UPG);
+      CHECK(branches[i].cat_restrictiontype == cat_restrictiontype);
+    } else if(cat_restrictiontype != -1) {
       CHECK(branches[i].type == cat_restrictiontype || branches[i].type == HNT_CATEGORY);
       CHECK(branches[i].cat_restrictiontype == cat_restrictiontype);
     }
@@ -340,8 +349,8 @@ HierarchyNode::HierarchyNode() {
   glory = NULL;
   bombardment = NULL;
   tank = NULL;
-  implant_slot = NULL;
-  implant_item = NULL;
+  implantslot = NULL;
+  implantitem = NULL;
   equipweapon = NULL;
   spawncash = Money(0);
 }
@@ -586,7 +595,7 @@ void parseHierarchy(kvData *chunk, bool reload) {
     } else if(chunk->kv["type"] == "tank") {
       tnode.cat_restrictiontype = HierarchyNode::HNT_TANK;
     } else if(chunk->kv["type"] == "implant") {
-      tnode.cat_restrictiontype = HierarchyNode::HNT_IMPLANT;
+      tnode.cat_restrictiontype = HierarchyNode::HNT_IMPLANT_CAT;
     } else {
       dprintf("Unknown restriction type in hierarchy node: %s\n", chunk->kv["type"].c_str());
       CHECK(0);
@@ -1124,20 +1133,22 @@ void parseImplantSlot(kvData *chunk, bool reload) {
   
   titem->cost = moneyFromString(chunk->consume("cost"));
   
+  titem->text = parseOptionalSubclass(chunk, "text", text);
+  
   doStandardPrereq(titem, name, &implantslotclasses);
   
   {
     HierarchyNode *mountpoint = findNamedNode(name, 1);
     HierarchyNode tnode;
     tnode.name = tokenize(name, ".").back();
-    tnode.type = HierarchyNode::HNT_IMPLANT;
+    tnode.type = HierarchyNode::HNT_IMPLANTSLOT;
     tnode.displaymode = HierarchyNode::HNDM_COSTUNIQUE;
     tnode.buyable = true;
     tnode.pack = 1;
-    tnode.cat_restrictiontype = HierarchyNode::HNT_IMPLANT;
+    tnode.cat_restrictiontype = HierarchyNode::HNT_IMPLANT_CAT;
     CHECK(mountpoint->cat_restrictiontype == -1 || tnode.cat_restrictiontype == mountpoint->cat_restrictiontype);
     
-    tnode.implant_slot = titem;
+    tnode.implantslot = titem;
     mountpoint->branches.push_back(tnode);
   }
 }
@@ -1148,19 +1159,21 @@ void parseImplant(kvData *chunk, bool reload) {
   
   titem->adjustment = parseSubclass(chunk->consume("adjustment"), adjustmentclasses);
   
+  titem->text = parseOptionalSubclass(chunk, "text", text);
+  
   // this is kind of grim - we push two nodes in. This could happen at shop manipulation time also, I suppose.
   {
     HierarchyNode *mountpoint = findNamedNode(name, 1);
     HierarchyNode tnode;
     tnode.name = tokenize(name, ".").back();
-    tnode.type = HierarchyNode::HNT_IMPLANT;
+    tnode.type = HierarchyNode::HNT_IMPLANTITEM;
     tnode.displaymode = HierarchyNode::HNDM_IMPLANT_EQUIP;
     tnode.buyable = true;
     tnode.pack = 1;
-    tnode.cat_restrictiontype = HierarchyNode::HNT_IMPLANT;
+    tnode.cat_restrictiontype = HierarchyNode::HNT_IMPLANT_CAT;
     CHECK(mountpoint->cat_restrictiontype == -1 || tnode.cat_restrictiontype == mountpoint->cat_restrictiontype);
     
-    tnode.implant_item = titem;
+    tnode.implantitem = titem;
     mountpoint->branches.push_back(tnode);
   }
   
@@ -1168,14 +1181,14 @@ void parseImplant(kvData *chunk, bool reload) {
     HierarchyNode *mountpoint = findNamedNode(name, 1);
     HierarchyNode tnode;
     tnode.name = tokenize(name, ".").back();
-    tnode.type = HierarchyNode::HNT_IMPLANT;
+    tnode.type = HierarchyNode::HNT_IMPLANTITEM_UPG;
     tnode.displaymode = HierarchyNode::HNDM_IMPLANT_UPGRADE;
     tnode.buyable = true;
     tnode.pack = 1;
-    tnode.cat_restrictiontype = HierarchyNode::HNT_IMPLANT;
+    tnode.cat_restrictiontype = HierarchyNode::HNT_IMPLANT_CAT;
     CHECK(mountpoint->cat_restrictiontype == -1 || tnode.cat_restrictiontype == mountpoint->cat_restrictiontype);
     
-    tnode.implant_item = titem;
+    tnode.implantitem = titem;
     mountpoint->branches.push_back(tnode);
   }
 }
@@ -1220,7 +1233,7 @@ void parseItemFile(const string &fname, bool reload) {
       parseStats(&chunk, reload);
     } else if(chunk.category == "effects") {
       parseEffects(&chunk, reload);
-    } else if(chunk.category == "implant_slot") {
+    } else if(chunk.category == "implantslot") {
       parseImplantSlot(&chunk, reload);
     } else if(chunk.category == "implant") {
       parseImplant(&chunk, reload);

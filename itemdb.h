@@ -229,10 +229,14 @@ struct IDBImplantSlot {
   
   const IDBImplantSlot *prereq;
   bool has_postreq;
+  
+  const string *text;
 };
 
 struct IDBImplant {
   const IDBAdjustment *adjustment;
+  
+  const string *text;
 };
 
 /*************
@@ -453,7 +457,7 @@ public:
 
   string name;
 
-  enum Type {HNT_CATEGORY, HNT_WEAPON, HNT_UPGRADE, HNT_GLORY, HNT_BOMBARDMENT, HNT_TANK, HNT_IMPLANT, HNT_EQUIP, HNT_EQUIPWEAPON, HNT_SELL, HNT_NONE, HNT_DONE, HNT_LAST};
+  enum Type {HNT_CATEGORY, HNT_WEAPON, HNT_UPGRADE, HNT_GLORY, HNT_BOMBARDMENT, HNT_TANK, HNT_IMPLANTSLOT, HNT_IMPLANTITEM, HNT_IMPLANTITEM_UPG, HNT_EQUIP, HNT_EQUIPWEAPON, HNT_SELL, HNT_DONE, HNT_NONE /* for restrictions */, HNT_IMPLANT_CAT /* for restrictions */, HNT_LAST};
   Type type;
 
   enum Displaymode {HNDM_BLANK, HNDM_COST, HNDM_PACK, HNDM_COSTUNIQUE, HNDM_EQUIP, HNDM_IMPLANT_EQUIP, HNDM_IMPLANT_UPGRADE, HNDM_LAST};
@@ -471,8 +475,8 @@ public:
   const IDBBombardment *bombardment;
   const IDBTank *tank;
   
-  const IDBImplantSlot *implant_slot;
-  const IDBImplant *implant_item;
+  const IDBImplant *implantitem;
+  const IDBImplantSlot *implantslot;
   
   const IDBWeapon *equipweapon;
   
