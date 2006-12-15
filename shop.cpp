@@ -828,7 +828,7 @@ void Shop::renderToScreen(const Player *player) const {
   doTableRender(player);
 
   if(hasInfo(getCurNode().type)) {
-    cshopinf.renderFrame(slay.hud(), slay.fontsize(), slay.demo());
+    cshopinf.renderFrame(slay.hud(), slay.fontsize(), slay.demo(), player);
   }
   
   if(getCurNode().type == HierarchyNode::HNT_SELL) {
@@ -853,6 +853,7 @@ Shop::Shop() { }
 
 void Shop::init(bool in_miniature, const Player *player, int in_playercount, Money in_highestCash) {
   curloc.clear();
+  cshopinf.clear();
   
   curloc.push_back(0);
   selling = false;

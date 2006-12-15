@@ -60,7 +60,6 @@ Float4 ShopKVPrinter::activebounds() const {
   
 ShopInfo::ShopInfo() {
   weapon = NULL;
-  player = NULL;
 }
 
 void ShopInfo::null() {
@@ -69,41 +68,36 @@ void ShopInfo::null() {
   bombardment = NULL;
   upgrade = NULL;
   tank = NULL;
-  player = NULL;
 }
 
 void ShopInfo::init(const IDBWeapon *in_weapon, const Player *in_player, bool in_miniature) {
   null();
   miniature = in_miniature;
   weapon = in_weapon;
-  player = in_player;
   text = in_weapon->launcher->text;
   if(!miniature)
-    demo.init(weapon, player, NULL);
+    demo.init(weapon, in_player, NULL);
 }
 void ShopInfo::init(const IDBGlory *in_glory, const Player *in_player, bool in_miniature) {
   null();
   miniature = in_miniature;
   glory = in_glory;
-  player = in_player;
   text = in_glory->text;
   if(!miniature)
-    demo.init(glory, player, NULL);
+    demo.init(glory, in_player, NULL);
 }
 void ShopInfo::init(const IDBBombardment *in_bombardment, const Player *in_player, bool in_miniature) {
   null();
   miniature = in_miniature;
   bombardment = in_bombardment;
-  player = in_player;
   text = in_bombardment->text;
   if(!miniature)
-    demo.init(bombardment, player, NULL);
+    demo.init(bombardment, in_player, NULL);
 }
 void ShopInfo::init(const IDBUpgrade *in_upgrade, const Player *in_player, bool in_miniature) {
   null();
   miniature = in_miniature;
   upgrade = in_upgrade;
-  player = in_player; 
   text = in_upgrade->text;
   // no working demo atm
 }
@@ -111,29 +105,28 @@ void ShopInfo::init(const IDBTank *in_tank, const Player *in_player, bool in_min
   null();
   miniature = in_miniature;
   tank = in_tank;
-  player = in_player;
   text = in_tank->text;
   // no working demo atm
 }
 
 void ShopInfo::initIfNeeded(const IDBWeapon *in_weapon, const Player *in_player, bool in_miniature) {
-  if(weapon != in_weapon || player != in_player || miniature != in_miniature)
+  if(weapon != in_weapon || miniature != in_miniature)
     init(in_weapon, in_player, in_miniature);
 }
 void ShopInfo::initIfNeeded(const IDBGlory *in_glory, const Player *in_player, bool in_miniature) {
-  if(glory != in_glory || player != in_player || miniature != in_miniature)
+  if(glory != in_glory || miniature != in_miniature)
     init(in_glory, in_player, in_miniature);
 }
 void ShopInfo::initIfNeeded(const IDBBombardment *in_bombardment, const Player *in_player, bool in_miniature) {
-  if(bombardment != in_bombardment || player != in_player || miniature != in_miniature)
+  if(bombardment != in_bombardment || miniature != in_miniature)
     init(in_bombardment, in_player, in_miniature);
 }
 void ShopInfo::initIfNeeded(const IDBUpgrade *in_upgrade, const Player *in_player, bool in_miniature) {
-  if(upgrade != in_upgrade || player != in_player || miniature != in_miniature)
+  if(upgrade != in_upgrade || miniature != in_miniature)
     init(in_upgrade, in_player, in_miniature);
 }
 void ShopInfo::initIfNeeded(const IDBTank *in_tank, const Player *in_player, bool in_miniature) {
-  if(tank != in_tank || player != in_player || miniature != in_miniature)
+  if(tank != in_tank || miniature != in_miniature)
     init(in_tank, in_player, in_miniature);
 }
 
@@ -194,7 +187,7 @@ void drawShadedFormattedText(Float4 bounds, float fontsize, const string &text) 
     drawText(vlines[i], fontsize, Float2(rkt.sx, rkt.sy + linesize * i));
 }
 
-void ShopInfo::renderFrame(Float4 bounds, float fontsize, Float4 inset) const {
+void ShopInfo::renderFrame(Float4 bounds, float fontsize, Float4 inset, const Player *player) const {
   CHECK(bool(weapon) + bool(glory) + bool(bombardment) + bool(upgrade) + bool(tank) == 1);
   
   if(text && !miniature)
@@ -221,9 +214,9 @@ void ShopInfo::renderFrame(Float4 bounds, float fontsize, Float4 inset) const {
     for(int i = 0; i < IDBAdjustment::LAST; i++) {
       if(upgrade->adjustment->adjustmentfactor(i) != 1.0) {
         if(i >= 0 && i < IDBAdjustment::DAMAGE_LAST) {
-          kvp.print(adjust_human[i], StringPrintf("%s -> %s (%.0f%%)%s", getUpgradeBefore(i).c_str(), getUpgradeAfter(i).c_str(), upgrade->adjustment->adjustmentfactor(i) * 100 - 100, adjust_unit[i]));
+          kvp.print(adjust_human[i], StringPrintf("%s -> %s (%.0f%%)%s", getUpgradeBefore(i, player).c_str(), getUpgradeAfter(i, player).c_str(), upgrade->adjustment->adjustmentfactor(i) * 100 - 100, adjust_unit[i]));
         } else {
-          kvp.print(adjust_human[i], StringPrintf("%s -> %s (%s%%)%s", getUpgradeBefore(i).c_str(), getUpgradeAfter(i).c_str(), prettyFloatFormat(upgrade->adjustment->adjustmentfactor(i) * 100 - 100).c_str(), adjust_unit[i]));
+          kvp.print(adjust_human[i], StringPrintf("%s -> %s (%s%%)%s", getUpgradeBefore(i, player).c_str(), getUpgradeAfter(i, player).c_str(), prettyFloatFormat(upgrade->adjustment->adjustmentfactor(i) * 100 - 100).c_str(), adjust_unit[i]));
         }
       }
     }
@@ -252,15 +245,15 @@ void ShopInfo::renderFrame(Float4 bounds, float fontsize, Float4 inset) const {
   }
 }
 
-string ShopInfo::getUpgradeBefore(int cat) const {
+string ShopInfo::getUpgradeBefore(int cat, const Player *player) const {
   if(cat == IDBAdjustment::TANK_SPEED) {
-    Player tplayer = getUnupgradedPlayer();
+    Player tplayer = getUnupgradedPlayer(player);
     return prettyFloatFormat(tplayer.getTank().maxSpeed());
   } else if(cat == IDBAdjustment::TANK_TURN) {
-    Player tplayer = getUnupgradedPlayer();
+    Player tplayer = getUnupgradedPlayer(player);
     return prettyFloatFormat(tplayer.getTank().turnSpeed());
   } else if(cat == IDBAdjustment::TANK_ARMOR) {
-    Player tplayer = getUnupgradedPlayer();
+    Player tplayer = getUnupgradedPlayer(player);
     return prettyFloatFormat(tplayer.getTank().maxHealth());
   } else if(cat < IDBAdjustment::DAMAGE_LAST) {
     return StringPrintf("%.0f%%", player->getAdjust().adjustmentfactor(cat) * 100);
@@ -270,15 +263,15 @@ string ShopInfo::getUpgradeBefore(int cat) const {
   }
 }
 
-string ShopInfo::getUpgradeAfter(int cat) const {
+string ShopInfo::getUpgradeAfter(int cat, const Player *player) const {
   if(cat == IDBAdjustment::TANK_SPEED) {
-    Player tplayer = getUpgradedPlayer();
+    Player tplayer = getUpgradedPlayer(player);
     return prettyFloatFormat(tplayer.getTank().maxSpeed());
   } else if(cat == IDBAdjustment::TANK_TURN) {
-    Player tplayer = getUpgradedPlayer();
+    Player tplayer = getUpgradedPlayer(player);
     return prettyFloatFormat(tplayer.getTank().turnSpeed());
   } else if(cat == IDBAdjustment::TANK_ARMOR) {
-    Player tplayer = getUpgradedPlayer();
+    Player tplayer = getUpgradedPlayer(player);
     return prettyFloatFormat(tplayer.getTank().maxHealth());
   } else if(cat < IDBAdjustment::DAMAGE_LAST) {
     return StringPrintf("%.0f%%", (player->getAdjust().adjustmentfactor(cat) + upgrade->adjustment->adjustmentfactor(cat)) * 100 - 100);
@@ -288,14 +281,14 @@ string ShopInfo::getUpgradeAfter(int cat) const {
   }
 }
 
-Player ShopInfo::getUnupgradedPlayer() const {
+Player ShopInfo::getUnupgradedPlayer(const Player *player) const {
   Player ploy = *player;
   if(ploy.hasUpgrade(upgrade))
     ploy.forceRemoveUpgrade(upgrade);
   return ploy;
 }
 
-Player ShopInfo::getUpgradedPlayer() const {
+Player ShopInfo::getUpgradedPlayer(const Player *player) const {
   Player ploy = *player;
   if(!ploy.hasUpgrade(upgrade))
     ploy.forceAcquireUpgrade(upgrade);
