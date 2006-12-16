@@ -67,7 +67,7 @@ implant {
 adjustment {
   name=adjustment.implant.weaponry
   
-  damage_all=2
+  damage_all=3
 }
 
 implant {

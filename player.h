@@ -103,8 +103,9 @@ public:
   void forceAcquireWeapon(const IDBWeapon *in_weap, int count);
   void forceAcquireUpgrade(const IDBUpgrade *in_upg);
   void forceAcquireBombardment(const IDBBombardment *in_bombard);
-  void forceAcquireGlory(const IDBGlory *in_bombard);
-  void forceAcquireTank(const IDBTank *in_bombard);
+  void forceAcquireGlory(const IDBGlory *in_glory);
+  void forceAcquireTank(const IDBTank *in_tank);
+  void forceAcquireImplant(const IDBImplant *in_implant);
   
   // Allows you to remove things, even things which are not meant to be removed
   void forceRemoveUpgrade(const IDBUpgrade *in_upg);

@@ -237,6 +237,8 @@ struct IDBImplant {
   const IDBAdjustment *adjustment;
   
   const string *text;
+  
+  IDBAdjustment makeAdjustment(int level) const;
 };
 
 /*************

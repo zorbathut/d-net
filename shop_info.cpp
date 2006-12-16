@@ -253,7 +253,11 @@ void ShopInfo::renderFrame(Float4 bounds, float fontsize, Float4 inset, const Pl
     CHECK(implant->adjustment);
     for(int i = 0; i < IDBAdjustment::LAST; i++) {
       if(implant->adjustment->adjustmentfactor(i) != 1.0) {
-        kvp.print(adjust_human[i], StringPrintf("%.0f%%", implant->adjustment->adjustmentfactor(i) * 100));
+        if(i >= 0 && i < IDBAdjustment::DAMAGE_LAST) {
+          kvp.print(adjust_human[i], StringPrintf("%s -> %s (%.0f%%)%s", getImplantBefore(i, player).c_str(), getImplantAfter(i, player).c_str(), implant->makeAdjustment(player->implantLevel(implant)).adjustmentfactor(i) * 100 - 100, adjust_unit[i]));
+        } else {
+          kvp.print(adjust_human[i], StringPrintf("%s -> %s (%s%%)%s", getImplantBefore(i, player).c_str(), getImplantAfter(i, player).c_str(), prettyFloatFormat(implant->makeAdjustment(player->implantLevel(implant)).adjustmentfactor(i) * 100 - 100).c_str(), adjust_unit[i]));
+        }
       }
     }
   } else {
@@ -266,55 +270,111 @@ void ShopInfo::renderFrame(Float4 bounds, float fontsize, Float4 inset, const Pl
   }
 }
 
-string ShopInfo::getUpgradeBefore(int cat, const Player *player) const {
-  if(cat == IDBAdjustment::TANK_SPEED) {
+// If I have to do these again, or have to change these, I need to make this entire second less redundant.
+  string ShopInfo::getUpgradeBefore(int cat, const Player *player) const {
+    CHECK(upgrade);
     Player tplayer = getUnupgradedPlayer(player);
-    return prettyFloatFormat(tplayer.getTank().maxSpeed());
-  } else if(cat == IDBAdjustment::TANK_TURN) {
-    Player tplayer = getUnupgradedPlayer(player);
-    return prettyFloatFormat(tplayer.getTank().turnSpeed());
-  } else if(cat == IDBAdjustment::TANK_ARMOR) {
-    Player tplayer = getUnupgradedPlayer(player);
-    return prettyFloatFormat(tplayer.getTank().maxHealth());
-  } else if(cat < IDBAdjustment::DAMAGE_LAST) {
-    return StringPrintf("%.0f%%", player->getAdjust().adjustmentfactor(cat) * 100);
-  } else {
-    // fallback
-    return prettyFloatFormat(player->getAdjust().adjustmentfactor(cat) * 100);
+    if(cat == IDBAdjustment::TANK_SPEED) {
+      return prettyFloatFormat(tplayer.getTank().maxSpeed());
+    } else if(cat == IDBAdjustment::TANK_TURN) {
+      return prettyFloatFormat(tplayer.getTank().turnSpeed());
+    } else if(cat == IDBAdjustment::TANK_ARMOR) {
+      return prettyFloatFormat(tplayer.getTank().maxHealth());
+    } else if(cat < IDBAdjustment::DAMAGE_LAST) {
+      return StringPrintf("%.0f%%", tplayer.getAdjust().adjustmentfactor(cat) * 100);
+    } else {
+      // fallback
+      return prettyFloatFormat(tplayer.getAdjust().adjustmentfactor(cat) * 100);
+    }
   }
-}
-
-string ShopInfo::getUpgradeAfter(int cat, const Player *player) const {
-  if(cat == IDBAdjustment::TANK_SPEED) {
+  
+  string ShopInfo::getUpgradeAfter(int cat, const Player *player) const {
+    CHECK(upgrade);
     Player tplayer = getUpgradedPlayer(player);
-    return prettyFloatFormat(tplayer.getTank().maxSpeed());
-  } else if(cat == IDBAdjustment::TANK_TURN) {
-    Player tplayer = getUpgradedPlayer(player);
-    return prettyFloatFormat(tplayer.getTank().turnSpeed());
-  } else if(cat == IDBAdjustment::TANK_ARMOR) {
-    Player tplayer = getUpgradedPlayer(player);
-    return prettyFloatFormat(tplayer.getTank().maxHealth());
-  } else if(cat < IDBAdjustment::DAMAGE_LAST) {
-    return StringPrintf("%.0f%%", (player->getAdjust().adjustmentfactor(cat) + upgrade->adjustment->adjustmentfactor(cat)) * 100 - 100);
-  } else {
-    // fallback
-    return prettyFloatFormat((player->getAdjust().adjustmentfactor(cat) + upgrade->adjustment->adjustmentfactor(cat)) * 100 - 100);
+    if(cat == IDBAdjustment::TANK_SPEED) {
+      return prettyFloatFormat(tplayer.getTank().maxSpeed());
+    } else if(cat == IDBAdjustment::TANK_TURN) {
+      Player tplayer = getUpgradedPlayer(player);
+      return prettyFloatFormat(tplayer.getTank().turnSpeed());
+    } else if(cat == IDBAdjustment::TANK_ARMOR) {
+      Player tplayer = getUpgradedPlayer(player);
+      return prettyFloatFormat(tplayer.getTank().maxHealth());
+    } else if(cat < IDBAdjustment::DAMAGE_LAST) {
+      return StringPrintf("%.0f%%", tplayer.getAdjust().adjustmentfactor(cat) * 100);
+    } else {
+      // fallback
+      return prettyFloatFormat(tplayer.getAdjust().adjustmentfactor(cat) * 100);
+    }
   }
-}
-
-Player ShopInfo::getUnupgradedPlayer(const Player *player) const {
-  Player ploy = *player;
-  if(ploy.hasUpgrade(upgrade))
-    ploy.forceRemoveUpgrade(upgrade);
-  return ploy;
-}
-
-Player ShopInfo::getUpgradedPlayer(const Player *player) const {
-  Player ploy = *player;
-  if(!ploy.hasUpgrade(upgrade))
-    ploy.forceAcquireUpgrade(upgrade);
-  return ploy;
-}
+  
+  Player ShopInfo::getUnupgradedPlayer(const Player *player) const {
+    CHECK(upgrade);
+    Player ploy = *player;
+    if(ploy.hasUpgrade(upgrade))
+      ploy.forceRemoveUpgrade(upgrade);
+    return ploy;
+  }
+  
+  Player ShopInfo::getUpgradedPlayer(const Player *player) const {
+    CHECK(upgrade);
+    Player ploy = *player;
+    if(!ploy.hasUpgrade(upgrade))
+      ploy.forceAcquireUpgrade(upgrade);
+    return ploy;
+  }
+  
+  string ShopInfo::getImplantBefore(int cat, const Player *player) const {
+    CHECK(implant);
+    Player tplayer = getUnimplantedPlayer(player);
+    if(cat == IDBAdjustment::TANK_SPEED) {
+      return prettyFloatFormat(tplayer.getTank().maxSpeed());
+    } else if(cat == IDBAdjustment::TANK_TURN) {
+      Player tplayer = getUnimplantedPlayer(player);
+      return prettyFloatFormat(tplayer.getTank().turnSpeed());
+    } else if(cat == IDBAdjustment::TANK_ARMOR) {
+      Player tplayer = getUnimplantedPlayer(player);
+      return prettyFloatFormat(tplayer.getTank().maxHealth());
+    } else if(cat < IDBAdjustment::DAMAGE_LAST) {
+      return StringPrintf("%.0f%%", tplayer.getAdjust().adjustmentfactor(cat) * 100);
+    } else {
+      // fallback
+      return prettyFloatFormat(tplayer.getAdjust().adjustmentfactor(cat) * 100);
+    }
+  }
+  
+  string ShopInfo::getImplantAfter(int cat, const Player *player) const {
+    CHECK(implant);
+    Player tplayer = getImplantedPlayer(player);
+    if(cat == IDBAdjustment::TANK_SPEED) {
+      return prettyFloatFormat(tplayer.getTank().maxSpeed());
+    } else if(cat == IDBAdjustment::TANK_TURN) {
+      return prettyFloatFormat(tplayer.getTank().turnSpeed());
+    } else if(cat == IDBAdjustment::TANK_ARMOR) {
+      return prettyFloatFormat(tplayer.getTank().maxHealth());
+    } else if(cat < IDBAdjustment::DAMAGE_LAST) {
+      return StringPrintf("%.0f%%", tplayer.getAdjust().adjustmentfactor(cat) * 100);
+    } else {
+      // fallback
+      return prettyFloatFormat(tplayer.getAdjust().adjustmentfactor(cat) * 100);
+    }
+  }
+  
+  Player ShopInfo::getUnimplantedPlayer(const Player *player) const {
+    CHECK(implant);
+    Player ploy = *player;
+    if(ploy.hasImplant(implant))
+      ploy.toggleImplant(implant);
+    return ploy;
+  }
+  
+  Player ShopInfo::getImplantedPlayer(const Player *player) const {
+    CHECK(implant);
+    Player ploy = *player;
+    if(!ploy.hasImplant(implant))
+      ploy.forceAcquireImplant(implant);
+    return ploy;
+  }
+// End redundancy.
 
 bool ShopInfo::hasDemo() const {
   return (weapon || glory || bombardment) && !miniature;

@@ -1360,6 +1360,11 @@ public:
   ReloadHTTPD() : HTTPDhook("reload") { };
 } reloadhttpd;
 
+IDBAdjustment IDBImplant::makeAdjustment(int level) const {
+  CHECK(level > 0);
+  return *adjustment * level;
+}
+
 const HierarchyNode &itemDbRoot() {
   return root;
 }

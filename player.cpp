@@ -331,6 +331,10 @@ void Player::forceAcquireTank(const IDBTank *in_tank) {
   tank.push_back(TankEquipment(in_tank));
   equipTank(in_tank);
 }
+void Player::forceAcquireImplant(const IDBImplant *in_implant) {
+  implantequipped.insert(in_implant);
+  reCalculate();
+}
 
 // Allows you to remove things, even things which are not meant to be removed
 void Player::forceRemoveUpgrade(const IDBUpgrade *in_upg) {
@@ -564,7 +568,7 @@ void Player::reCalculate() {
   
   adjustment = *faction->adjustment[factionmode];
   for(set<const IDBImplant *>::const_iterator itr = implantequipped.begin(); itr != implantequipped.end(); itr++)
-    adjustment += *(*itr)->adjustment * implantLevel(*itr);
+    adjustment += (*itr)->makeAdjustment(implantLevel(*itr));
   
   adjustment_notank = adjustment;
   if(tank.size()) {

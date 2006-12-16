@@ -38,6 +38,12 @@ private:
   Player getUnupgradedPlayer(const Player *player) const;
   Player getUpgradedPlayer(const Player *player) const;
 
+  string getImplantBefore(int cat, const Player *player) const;
+  string getImplantAfter(int cat, const Player *player) const;
+
+  Player getUnimplantedPlayer(const Player *player) const;
+  Player getImplantedPlayer(const Player *player) const;
+
   bool hasDemo() const;
 
   ShopDemo demo;
