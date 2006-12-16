@@ -106,6 +106,7 @@ public:
   void forceAcquireGlory(const IDBGlory *in_glory);
   void forceAcquireTank(const IDBTank *in_tank);
   void forceAcquireImplant(const IDBImplant *in_implant);
+  void forceLevelImplant(const IDBImplant *in_implant);
   
   // Allows you to remove things, even things which are not meant to be removed
   void forceRemoveUpgrade(const IDBUpgrade *in_upg);

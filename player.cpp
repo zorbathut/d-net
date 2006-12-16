@@ -335,6 +335,11 @@ void Player::forceAcquireImplant(const IDBImplant *in_implant) {
   implantequipped.insert(in_implant);
   reCalculate();
 }
+void Player::forceLevelImplant(const IDBImplant *in_implant) {
+  int newlevel = implantLevel(in_implant) + 1;
+  implantlevels[in_implant] = newlevel;
+  reCalculate();
+}
 
 // Allows you to remove things, even things which are not meant to be removed
 void Player::forceRemoveUpgrade(const IDBUpgrade *in_upg) {

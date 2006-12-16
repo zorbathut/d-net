@@ -32,17 +32,15 @@ private:
   
   void null();
 
-  string getUpgradeBefore(int cat, const Player *player) const;
-  string getUpgradeAfter(int cat, const Player *player) const;
+  static string formatChange(int cat, const Player &before, const Player &after, const IDBAdjustment &adjust);
+  static string formatSlot(int cat, const Player &player);
 
   Player getUnupgradedPlayer(const Player *player) const;
   Player getUpgradedPlayer(const Player *player) const;
 
-  string getImplantBefore(int cat, const Player *player) const;
-  string getImplantAfter(int cat, const Player *player) const;
-
   Player getUnimplantedPlayer(const Player *player) const;
   Player getImplantedPlayer(const Player *player) const;
+  Player getImplantedLeveledPlayer(const Player *player) const;
 
   bool hasDemo() const;
 
