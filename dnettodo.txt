@@ -1,11 +1,9 @@
 ---- Major work path
-- Increase "money"
-- Implants
-  - Implant text
+- Shop implant count
 - "Corrupted" bit for player, set on "force"?
 - Scroll properly for equip (i.e. don't run past the bottom labels)
 - Override sell instead of changing it
-- Enough digits for cash on-hand
+- Enough digits in the shop for cash on-hand
 - addr2line -i
 - Render all tanks out
 - Projectile reflecto
@@ -27,6 +25,7 @@
 - Eventually get things like weaponry sounds in
 
 ---- Things that take thought and musing
+- Roll speed and handling together? Otherwise, come up with a description for the implant
 - Category descriptions somehow?
 - Item despawning based on wimpiest player
   - How does selling work?

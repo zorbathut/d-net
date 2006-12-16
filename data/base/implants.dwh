@@ -60,6 +60,11 @@ implantslot {
 }
 
 
+text {
+  name=text.implant.armor
+  data=Includes techniques for reinforcing armor as well as how to take impacts on your tank hull with minimal damage. These skills can significantly increase the overall firepower your tank can absorb before exploding.
+}
+
 adjustment {
   name=adjustment.implant.armor
   
@@ -70,8 +75,15 @@ implant {
   name=ROOT.Implants.Armor
   
   adjustment=adjustment.implant.armor
+  
+  text=text.implant.armor
 }
 
+
+text {
+  name=text.implant.speed
+  data=This chip increases your effective maximum speed through driving techniques and engine tuning. High-level chips include techniques for modifying suspension and handling.
+}
 
 adjustment {
   name=adjustment.implant.speed
@@ -83,8 +95,15 @@ implant {
   name=ROOT.Implants.Speed
   
   adjustment=adjustment.implant.speed
+  
+  text=text.implant.speed
 }
 
+
+text {
+  name=text.implant.handling
+  data=I'm not going to bother writing this because I think I might end up deleting it. TODO: write this
+}
 
 adjustment {
   name=adjustment.implant.handling
@@ -96,8 +115,15 @@ implant {
   name=ROOT.Implants.Handling
   
   adjustment=adjustment.implant.handling
+  
+  text=text.implant.handling
 }
 
+
+text {
+  name=text.implant.weaponry
+  data=Includes techniques for targeting tank weak points, slightly increasing the damage of all weapons.
+}
 
 adjustment {
   name=adjustment.implant.weaponry
@@ -109,8 +135,15 @@ implant {
   name=ROOT.Implants.Weapon damage
   
   adjustment=adjustment.implant.weaponry
+  
+  text=text.implant.weaponry
 }
 
+
+text {
+  name=text.implant.kinetic
+  data=Kinetic weaponry must be aimed carefully to deliver the most kinetic energy into a single spot. This chip includes information which can be used to reduce the frequency of glancing shots and other problems, increasing weapon power slightly.
+}
 
 adjustment {
   name=adjustment.implant.kinetic
@@ -122,8 +155,15 @@ implant {
   name=ROOT.Implants.Kinetic power
   
   adjustment=adjustment.implant.kinetic
+  
+  text=text.implant.kinetic
 }
 
+
+text {
+  name=text.implant.energy
+  data=Information on tuning reactors and power feeds to deliver more energy as quickly as possible. These techniques increase penetration of energy weapon shots, adding to damage.
+}
 
 adjustment {
   name=adjustment.implant.energy
@@ -135,8 +175,15 @@ implant {
   name=ROOT.Implants.Energy penetration
   
   adjustment=adjustment.implant.energy
+  
+  text=text.implant.energy
 }
 
+
+text {
+  name=text.implant.explosive
+  data=Increasing combat explosive yield can be more of an art than a science. This chip includes techniques to focus blast power, doing maximum damage to the target.
+}
 
 adjustment {
   name=adjustment.implant.explosive
@@ -149,30 +196,46 @@ implant {
   name=ROOT.Implants.Explosive yield
   
   adjustment=adjustment.implant.explosive
+  
+  text=text.implant.explosive
 }
 
+
+text {
+  name=text.implant.trap
+  data=Trap design and placement is a complex subject. Trap power can be increased through many methods, but all of them require predicting what your opponent will do. This implant contains complex prediction algorithms to focus the blast on the most useful area.
+}
 
 adjustment {
   name=adjustment.implant.trap
   
-  damage_trap=5
+  damage_trap=10
 }
 
 implant {
   name=ROOT.Implants.Trap placement
   
   adjustment=adjustment.implant.trap
+  
+  text=text.implant.trap
 }
 
+
+text {
+  name=text.implant.exotic
+  data=Exotic weaponry can be bizarre and difficult to use, though powerful to master. Some of them most common exotic weaponry techniques have been compiled and added to this implant, increasing exotic efficiency by a large margin.
+}
 
 adjustment {
   name=adjustment.implant.exotic
   
-  damage_exotic=5
+  damage_exotic=10
 }
 
 implant {
   name=ROOT.Implants.Exotic usage
   
   adjustment=adjustment.implant.exotic
+  
+  text=text.implant.exotic
 }

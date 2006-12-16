@@ -1188,6 +1188,7 @@ void parseImplant(kvData *chunk, bool reload) {
     tnode.cat_restrictiontype = HierarchyNode::HNT_IMPLANT_CAT;
     CHECK(mountpoint->cat_restrictiontype == -1 || tnode.cat_restrictiontype == mountpoint->cat_restrictiontype);
     
+    tnode.spawncash = Money(75000);
     tnode.implantitem = titem;
     mountpoint->branches.push_back(tnode);
   }
