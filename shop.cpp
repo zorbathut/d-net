@@ -91,7 +91,7 @@ ShopLayout::ShopLayout(bool miniature) {
     
   int_boxwidth = (int_totalwidth - int_hoffset * 3) / 2;
   
-  int_pricehpos = int_boxwidth / 8 * 7;
+  int_pricehpos = int_boxwidth - int_boxborder;
   int_quanthpos = int_boxwidth / 5 * 3;
   
   int_demowidth = int_boxwidth * 3 / 5;
