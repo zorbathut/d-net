@@ -15,6 +15,7 @@ public:
   void init(const IDBUpgrade *in_upgrade, const Player *player, bool miniature);
   void init(const IDBTank *in_tank, const Player *player, bool miniature);
   void init(const IDBImplant *in_implant, bool upgrade, const Player *player, bool miniature);
+  void init(const IDBImplantSlot *in_implant, const Player *player, bool miniature);
 
   void initIfNeeded(const IDBWeapon *in_weapon, const Player *player, bool miniature);
   void initIfNeeded(const IDBGlory *in_glory, const Player *player, bool miniature);
@@ -22,6 +23,7 @@ public:
   void initIfNeeded(const IDBUpgrade *in_upgrade, const Player *player, bool miniature);
   void initIfNeeded(const IDBTank *in_tank, const Player *player, bool miniature);
   void initIfNeeded(const IDBImplant *in_implant, bool upgrade, const Player *player, bool miniature);
+  void initIfNeeded(const IDBImplantSlot *in_implant, const Player *player, bool miniature);
 
   void clear();
   
@@ -54,6 +56,7 @@ private:
   const IDBTank *tank;
   const IDBImplant *implant;
   bool implant_upgrade;
+  const IDBImplantSlot *implantslot;
 
   const string *text;
 

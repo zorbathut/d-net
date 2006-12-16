@@ -1,4 +1,5 @@
 ---- Major work path
+- Increase "money"
 - Implants
   - Implant text
 - "Corrupted" bit for player, set on "force"?

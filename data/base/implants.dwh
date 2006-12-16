@@ -1,27 +1,62 @@
 
+text {
+  name=text.implant.slot1
+  data=A standard universal cyberlink implant can be easily and relatively cheaply retrofitted to take skill chips.
+}
+
+text {
+  name=text.implant.slot2
+  data=Once the cyberlink retrofit has been completed, a second channel can be added for a second skill chip. This requires extensive work to increase the implant's bandwidth.
+}
+
+text {
+  name=text.implant.slot3
+  data=A third skill chip can be added with extreme difficulty, as the cyberlink's bandwidth at this point exceeds that of the standard brain interface point. A far more comprehensive neural interface layer must be added.
+}
+
+text {
+  name=text.implant.slot4
+  data=Recent research has yielded the technology to build a fourth skill chip interface into the spinal cord. It is still experimental and far from mass production.
+}
+
+text {
+  name=text.implant.slot5
+  data=Once all major nerve clusters have been used, increasing bandwidth further requires near-complete control over brain signals. A force network can be implanted around the skull, providing the infrastructure for a fifth and final skill chip to be utilized.
+}
+
 implantslot {
   name=ROOT.Implants.Slot I
   cost=40000
+  
+  text=text.implant.slot1
 }
 
 implantslot {
   name=ROOT.Implants.Slot II
   cost=1500000
+  
+  text=text.implant.slot2
 }
 
 implantslot {
   name=ROOT.Implants.Slot III
   cost=65000000
+  
+  text=text.implant.slot3
 }
 
 implantslot {
   name=ROOT.Implants.Slot IV
   cost=2500000000
+  
+  text=text.implant.slot4
 }
 
 implantslot {
   name=ROOT.Implants.Slot V
   cost=100000000000
+  
+  text=text.implant.slot5
 }
 
 

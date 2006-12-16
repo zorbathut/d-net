@@ -69,6 +69,7 @@ void ShopInfo::null() {
   upgrade = NULL;
   tank = NULL;
   implant = NULL;
+  implantslot = NULL;
 }
 
 void ShopInfo::init(const IDBWeapon *in_weapon, const Player *in_player, bool in_miniature) {
@@ -117,6 +118,13 @@ void ShopInfo::init(const IDBImplant *in_implant, bool upgrade, const Player *in
   text = in_implant->text;
   // no working demo atm
 }
+void ShopInfo::init(const IDBImplantSlot *in_implantslot, const Player *in_player, bool in_miniature) {
+  null();
+  miniature = in_miniature;
+  implantslot = in_implantslot;
+  text = in_implantslot->text;
+  // no working demo atm
+}
 
 void ShopInfo::initIfNeeded(const IDBWeapon *in_weapon, const Player *in_player, bool in_miniature) {
   if(weapon != in_weapon || miniature != in_miniature)
@@ -141,6 +149,10 @@ void ShopInfo::initIfNeeded(const IDBTank *in_tank, const Player *in_player, boo
 void ShopInfo::initIfNeeded(const IDBImplant *in_implant, bool upgrade, const Player *in_player, bool in_miniature) {
   if(implant != in_implant || implant_upgrade != upgrade || miniature != in_miniature)
     init(in_implant, upgrade, in_player, in_miniature);
+}
+void ShopInfo::initIfNeeded(const IDBImplantSlot *in_implantslot, const Player *in_player, bool in_miniature) {
+  if(implantslot != in_implantslot || miniature != in_miniature)
+    init(in_implantslot, in_player, in_miniature);
 }
 
 void ShopInfo::clear() {
@@ -201,7 +213,7 @@ void drawShadedFormattedText(Float4 bounds, float fontsize, const string &text) 
 }
 
 void ShopInfo::renderFrame(Float4 bounds, float fontsize, Float4 inset, const Player *player) const {
-  CHECK(bool(weapon) + bool(glory) + bool(bombardment) + bool(upgrade) + bool(tank) + bool(implant) == 1);
+  CHECK(bool(weapon) + bool(glory) + bool(bombardment) + bool(upgrade) + bool(tank) + bool(implant) + bool(implantslot)== 1);
   
   if(text && !miniature)
     drawShadedFormattedText(bounds, fontsize, *text);
@@ -266,6 +278,7 @@ void ShopInfo::renderFrame(Float4 bounds, float fontsize, Float4 inset, const Pl
         kvp.print(adjust_human[i], formatChange(i, imp, implev, *implant->adjustment));
       }
     }
+  } else if(implantslot) {
   } else {
     CHECK(0);
   }

@@ -551,7 +551,7 @@ void Shop::renderNode(const HierarchyNode &node, int depth, const Player *player
 }
 
 bool Shop::hasInfo(int type) const {
-  return type == HierarchyNode::HNT_WEAPON || type == HierarchyNode::HNT_EQUIPWEAPON || type == HierarchyNode::HNT_GLORY || type == HierarchyNode::HNT_BOMBARDMENT || type == HierarchyNode::HNT_UPGRADE || type == HierarchyNode::HNT_TANK || type == HierarchyNode::HNT_IMPLANTITEM || type == HierarchyNode::HNT_IMPLANTITEM_UPG;
+  return type == HierarchyNode::HNT_WEAPON || type == HierarchyNode::HNT_EQUIPWEAPON || type == HierarchyNode::HNT_GLORY || type == HierarchyNode::HNT_BOMBARDMENT || type == HierarchyNode::HNT_UPGRADE || type == HierarchyNode::HNT_TANK || type == HierarchyNode::HNT_IMPLANTITEM || type == HierarchyNode::HNT_IMPLANTITEM_UPG || type == HierarchyNode::HNT_IMPLANTSLOT;
 }
 
 bool Shop::runTick(const Keystates &keys, Player *player) {
@@ -591,6 +591,8 @@ bool Shop::runTick(const Keystates &keys, Player *player) {
       cshopinf.initIfNeeded(getCurNode().implantitem, false, player, miniature);
     else if(getCurNode().type == HierarchyNode::HNT_IMPLANTITEM_UPG)
       cshopinf.initIfNeeded(getCurNode().implantitem, true, player, miniature);
+    else if(getCurNode().type == HierarchyNode::HNT_IMPLANTSLOT)
+      cshopinf.initIfNeeded(getCurNode().implantslot, player, miniature);
     else {
       hasinfo = false;
       cshopinf.clear();
