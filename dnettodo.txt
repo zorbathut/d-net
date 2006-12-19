@@ -1,6 +1,5 @@
 ---- Major work path
 - addr2line -i
-- Buy better tank, sell old tank, default weapon goes away
 - Fix annoying sound with leaving and rejoining
 - Shop implant count
 - Show starting cash

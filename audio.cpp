@@ -91,7 +91,7 @@ void queueSound(const Sound *sound, float volume) {
   CHECK(sound);
   CHECK(sound->data[0].size());
   CHECK(sound->data[1].size());
-  if(FLAGS_disableAudio || FLAGS_fastForwardTo != -1)
+  if(FLAGS_disableAudio || FLAGS_fastForwardTo)
     return;
   SoundState stt;
   stt.sound = sound;
