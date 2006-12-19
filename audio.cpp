@@ -11,16 +11,17 @@
 class SoundState {
 public:
   const Sound *sound;
-  float volume;
-  int sample;
+  float shiftl, shiftr;
+  float tone;
+  float sample;
 };
 
 vector<SoundState> sstv;
 
-Sint16 mixsample(int channel) {
+template<float (SoundState::*pt)> Sint16 mixsample(int channel) {
   int mix = 0;
   for(int i = 0; i < sstv.size(); i++)
-    mix += (int)(sstv[i].sound->data[channel][sstv[i].sample] * sstv[i].volume);
+    mix += (int)(sstv[i].sound->data[channel][(int)sstv[i].sample] * sstv[i].*pt);
   return clamp(mix, -32767, 32767);
 } // whee megaslow
 
@@ -29,11 +30,11 @@ void sound_callback(void *userdata, Uint8 *stream, int len) {
   CHECK(len % 4 == 0);
   len /= 4;
   for(int i = 0; i < len; i++) {
-    *rstream++ = mixsample(0);
-    *rstream++ = mixsample(1);
+    *rstream++ = mixsample<&SoundState::shiftl>(0);
+    *rstream++ = mixsample<&SoundState::shiftr>(1);
     for(int i = 0; i < sstv.size(); i++) {
-      sstv[i].sample++;
-      if(sstv[i].sample == sstv[i].sound->data[0].size()) {
+      sstv[i].sample = sstv[i].sample + 1;
+      if(sstv[i].sample >= sstv[i].sound->data[0].size()) {
         sstv.erase(sstv.begin() + i);
         i--;
       }
@@ -84,6 +85,29 @@ void deinitAudio() {
   SDL_CloseAudio();
 }
 
+static vector<pair<float, float> > shiftvols;
+static float shiftl = 1.0;
+static float shiftr = 1.0;
+
+void reCalcShift() {
+  shiftl = 1.0;
+  shiftr = 1.0;
+  for(int i = 0; i < shiftvols.size(); i++) {
+    shiftl *= shiftvols[i].first;
+    shiftr *= shiftvols[i].second;
+  }
+}
+
+AudioShifter::AudioShifter(float l, float r) {
+  shiftvols.push_back(make_pair(l, r));
+  reCalcShift();
+}
+
+AudioShifter::~AudioShifter() {
+  shiftvols.pop_back();
+  reCalcShift();
+}
+
 DEFINE_bool(disableAudio, false, "Turn off sound entirely");
 DECLARE_int(fastForwardTo);
 
@@ -95,7 +119,9 @@ void queueSound(const Sound *sound) {
     return;
   SoundState stt;
   stt.sound = sound;
-  stt.volume = 1.0;
+  stt.shiftl = shiftl;
+  stt.shiftr = shiftr;
+  stt.tone = 1.0;
   stt.sample = 0;
   SDL_LockAudio();
   sstv.push_back(stt);

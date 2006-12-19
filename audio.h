@@ -27,6 +27,22 @@ void queueSound(const Sound *sound);
 Sound loadSound(const string &filename);
 
 /*************
+ * Modifiers
+ */
+
+class AudioToner {
+public:
+  AudioToner(float shift);
+  ~AudioToner();
+};
+
+class AudioShifter {
+public:
+  AudioShifter(float l, float r);
+  ~AudioShifter();
+};
+
+/*************
  * Global sounds
  */
 
