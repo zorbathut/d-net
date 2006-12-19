@@ -11,9 +11,9 @@ bool IDBWeaponNameSorter::operator()(const IDBWeapon *lhs, const IDBWeapon *rhs)
   if(!lhs && !rhs)
     return false;
   if(!lhs)
-    return true;
-  if(!rhs)
     return false;
+  if(!rhs)
+    return true;
   CHECK(lhs && rhs);
   return lhs->name < rhs->name;
 }
@@ -30,16 +30,16 @@ void Weaponmanager::cycleWeapon(int id) {
   }
 }
 float Weaponmanager::shotFired(int id) {
-  float val = (float)curweapons[id]->base_cost.value() / curweapons[id]->quantity;
+  float val = (float)getWeaponSlot(id)->base_cost.value() / getWeaponSlot(id)->quantity;
   if(ammoCountSlot(id) != UNLIMITED_AMMO)
-    removeAmmo(curweapons[id], 1);
+    removeAmmo(getWeaponSlot(id), 1);
   return val;
 }
 
 void Weaponmanager::addAmmo(const IDBWeapon *weap, int count) {
-  CHECK(count > 0 || count == UNLIMITED_AMMO);
+  CHECK(weap);
+  CHECK(count > 0);
   if(weapons.count(weap)) {
-    CHECK(count != UNLIMITED_AMMO);
     weapons[weap] += count;
   } else {
     weapons[weap] = count;
@@ -48,9 +48,10 @@ void Weaponmanager::addAmmo(const IDBWeapon *weap, int count) {
   }
 }
 void Weaponmanager::removeAmmo(const IDBWeapon *weap, int count) {
-  CHECK(count > 0 || count == UNLIMITED_AMMO);
+  CHECK(weap);
+  CHECK(count > 0);
   CHECK(weapons.count(weap));
-  CHECK((weapons[weap] > 0 && weapons[weap] >= count) || (weapons[weap] == UNLIMITED_AMMO && count == UNLIMITED_AMMO));
+  CHECK(weapons[weap] > 0 && weapons[weap] >= count);
   if(weapons[weap] == count) {
     weapons.erase(weap);
     for(int i = 0; i < weaponops.size(); i++) {
@@ -63,27 +64,40 @@ void Weaponmanager::removeAmmo(const IDBWeapon *weap, int count) {
 }
 
 int Weaponmanager::ammoCount(const IDBWeapon *weap) const {
+  CHECK(weap);
+  if(weap == defaultweapon)
+    weap = NULL;
   if(weapons.count(weap))
     return weapons.find(weap)->second;
   return 0;
 }
 
 int Weaponmanager::ammoCountSlot(int id) const {
-  return ammoCount(curweapons[id]);
+  return ammoCount(getWeaponSlot(id));
 }
 const IDBWeapon *Weaponmanager::getWeaponSlot(int id) const {
-  CHECK(curweapons[id]);
-  return curweapons[id];
+  if(!curweapons[id]) {
+    CHECK(defaultweapon);
+    return defaultweapon;
+  } else {
+    return curweapons[id];
+  }
 }
 
 vector<const IDBWeapon *> Weaponmanager::getAvailableWeapons() const {
   set<const IDBWeapon *, IDBWeaponNameSorter> seet;
-  for(map<const IDBWeapon *, int, IDBWeaponNameSorter>::const_iterator itr = weapons.begin(); itr != weapons.end(); itr++)
+  for(map<const IDBWeapon *, int, IDBWeaponNameSorter>::const_iterator itr = weapons.begin(); itr != weapons.end(); itr++) {
     if(itr->first)
       seet.insert(itr->first);
+    else if(defaultweapon)
+      seet.insert(defaultweapon);
+  }
   return vector<const IDBWeapon *>(seet.begin(), seet.end());
 }
 void Weaponmanager::setWeaponEquipBit(const IDBWeapon *weapon, int id, bool bit, bool force) {
+  CHECK(weapon);
+  if(weapon == defaultweapon)
+    weapon = NULL;
   if(count(weaponops[id].begin(), weaponops[id].end(), weapon) == bit)
     return;
   if(bit == true) {
@@ -102,59 +116,40 @@ void Weaponmanager::setWeaponEquipBit(const IDBWeapon *weapon, int id, bool bit,
         return;
       
       // If that weapon is our default weapon, something horrible has occured.
-      if(curweapons[id] == defaultweapon)
+      if(curweapons[id] == NULL)
         CHECK(0);
       
       // Otherwise, add the default weapon and then cycle again.
       CHECK(weaponops[id].size() == 1);
-      weaponops[id].push_back(defaultweapon);
+      weaponops[id].push_back(NULL);
+      sort(weaponops[id].begin(), weaponops[id].end(), IDBWeaponNameSorter());  // this is technically unnecessary
       cycleWeapon(id);
+      CHECK(curweapons[id] == NULL);
     }
 
     // At this point, we must not be removing the current weapon.
     CHECK(curweapons[id] != weapon);
     
     // We're simply removing, so no need to sort.
-    // If we added a default weapon, it's now the only item in here, so, again, no need to sort.
     weaponops[id].erase(find(weaponops[id].begin(), weaponops[id].end(), weapon));
   }
 }
 int Weaponmanager::getWeaponEquipBit(const IDBWeapon *weapon, int id) const {
+  CHECK(weapon);
+  if(weapon == defaultweapon)
+    weapon = NULL;
   return count(weaponops[id].begin(), weaponops[id].end(), weapon) + (curweapons[id] == weapon);
 }
 
 void Weaponmanager::changeDefaultWeapon(const IDBWeapon *weapon) {
-  StackString sst("changeDefaultWeapon");
-  if(weapon == defaultweapon)
-    return; // just don't bother
-  
-  // If the old default weapon is equipped somewhere, switch it with the new default weapon.
-  // If the old default weapon is active somewhere, switch it with the new default weapon.
-  for(int i = 0; i < curweapons.size(); i++) {
-    if(count(weaponops[i].begin(), weaponops[i].end(), defaultweapon)) {
-      *find(weaponops[i].begin(), weaponops[i].end(), defaultweapon) = weapon;
-      sort(weaponops[i].begin(), weaponops[i].end(), IDBWeaponNameSorter());
-      if(curweapons[i] == defaultweapon)
-        curweapons[i] = weapon;
-    }
-    CHECK(getWeaponEquipBit(defaultweapon, i) == WEB_UNEQUIPPED);
-  }
-  
-  weapons.erase(defaultweapon);
-  
-  CHECK(!weapons.count(defaultweapon));
-  CHECK(!weapons.count(weapon));
-  
-  weapons[weapon] = UNLIMITED_AMMO; // so we don't accidentally equip it somewhere
-  
-  defaultweapon = weapon;
+  defaultweapon = weapon; // YES. IT'S EASY NOW.
 }
 
 Weaponmanager::Weaponmanager(const IDBWeapon *weapon) {
   defaultweapon = weapon;
-  weaponops.resize(SIMUL_WEAPONS, vector<const IDBWeapon*>(1, defaultweapon));
-  addAmmo(defaultweapon, UNLIMITED_AMMO);
-  curweapons.resize(SIMUL_WEAPONS, defaultweapon);
+  weapons[NULL] = UNLIMITED_AMMO;
+  weaponops.resize(SIMUL_WEAPONS, vector<const IDBWeapon*>(1, (IDBWeapon*)NULL));
+  curweapons.resize(SIMUL_WEAPONS, NULL);
 }
 
 TankEquipment::TankEquipment() { tank = NULL; }
@@ -403,8 +398,12 @@ void Player::sellTank(const IDBTank *in_tank) {
   CHECK(ps < tank.size());
   cash += sellTankValue(in_tank);
   tank.erase(tank.begin() + ps);
-  weapons.changeDefaultWeapon(NULL);
-  reCalculate(); // just in case we got rid of the last tank
+  
+  // just in case we got rid of the last tank
+  if(!tank.size()) {
+    weapons.changeDefaultWeapon(NULL);
+    reCalculate();
+  }
 }
 
 bool Player::hasUpgrade(const IDBUpgrade *in_upg) const { return stateUpgrade(in_upg) != ITEMSTATE_UNOWNED; }

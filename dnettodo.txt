@@ -1,7 +1,7 @@
 ---- Major work path
-- Fix annoying sound with leaving and rejoining
-- Fix crash bug!
+- addr2line -i
 - Buy better tank, sell old tank, default weapon goes away
+- Fix annoying sound with leaving and rejoining
 - Shop implant count
 - Show starting cash
 - Different shop balances/tones
@@ -9,7 +9,6 @@
 - Scroll properly for equip (i.e. don't run past the bottom labels)
 - Override sell instead of changing it
 - Enough digits in the shop for cash on-hand
-- addr2line -i
 - Render all tanks out
 - Projectile reflecto
 - Next-gen vecedit?
