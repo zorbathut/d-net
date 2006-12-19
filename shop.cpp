@@ -825,6 +825,12 @@ void Shop::renderToScreen(const Player *player) const {
   } else {
     drawText("    Buying equipment", slay.fontsize(), Float2(1, 1));
   }
+  
+  if(player->freeImplantSlots()) {
+    setColor(C::red);
+    drawText(StringPrintf("%d unused implant slot%s", player->freeImplantSlots(), player->freeImplantSlots() >= 2 ? "s" : ""), slay.fontsize(), Float2(1, getZoom().ey - 1 - slay.fontsize()));
+  }
+  
   {
     setColor(player->getFaction()->color * 0.5);
     const float ofs = 0.08;

@@ -282,6 +282,10 @@ void Player::toggleImplant(const IDBImplant *implant) {
 bool Player::hasImplant(const IDBImplant *implant) const {
   return implantequipped.count(implant);
 }
+int Player::freeImplantSlots() const {
+  CHECK(implantequipped.size() <= implantslots.size());
+  return implantslots.size() - implantequipped.size();
+}
 
 int Player::implantLevel(const IDBImplant *implant) const {
   if(implantlevels.count(implant))

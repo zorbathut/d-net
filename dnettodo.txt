@@ -1,12 +1,12 @@
 ---- Major work path
 - addr2line -i
-- Shop implant count
 - Show starting cash
 - Different shop balances/tones
 - "Corrupted" bit for player, set on "force"?
 - Scroll properly for equip (i.e. don't run past the bottom labels)
 - Override sell instead of changing it
 - Enough digits in the shop for cash on-hand
+- AI should buy/sell/play with everything
 - Render all tanks out
 - Projectile reflecto
 - Next-gen vecedit?

@@ -94,6 +94,7 @@ public:
   bool canToggleImplant(const IDBImplant *implant) const;
   void toggleImplant(const IDBImplant *implant);
   bool hasImplant(const IDBImplant *implant) const;
+  int freeImplantSlots() const;
   
   int implantLevel(const IDBImplant *implant) const;
   bool canLevelImplant(const IDBImplant *implant) const;

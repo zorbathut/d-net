@@ -31,6 +31,8 @@ namespace C {
   const Color active_text = Color(0.7, 1.0, 0.6);
   const Color inactive_text = Color(0.7, 0.7, 0.4);
   const Color box_border = Color(0.4, 0.4, 0.4);
+  
+  const Color red = Color(1.0, 0.0, 0.0);
 }
 
 #endif
