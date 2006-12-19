@@ -1000,7 +1000,7 @@ void PersistentData::divvyCash(float firepowerSpent) {
   }
   
   // We give the users a good chunk of money at the beginning to get started, but then we tone it down a bit per round so they don't get an immediate 6x increase. (or whateverx increase.) In a lot of ways, "starting cash" is a crummy number - it should be "starting cash per round", with starting cash calculated from that. But it's easier to understand this way.
-  lrBaseCash = Money((long long)((75. / 1000 * baseStartingCash.value()) * powl(multiplePerRound, roundsbetweenshop * shopcycles) * playerdata.size() * roundsbetweenshop));
+  lrBaseCash = Money((long long)((100. / 1000 * baseStartingCash.value()) * powl(multiplePerRound, roundsbetweenshop * shopcycles) * playerdata.size() * roundsbetweenshop));
   lrFirepower = Money((long long)(firepowerSpent * 0.8));
   double total = (lrBaseCash + lrFirepower).value();
   dprintf("Total cash is %f", total);
