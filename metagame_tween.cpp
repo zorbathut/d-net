@@ -71,6 +71,30 @@ bool PersistentData::tick(const vector< Controller > &keys) {
   for(int i = 0; i < slot_count; i++) {
     if(slot[i].type == Slot::EMPTY)
       continue;
+    
+    smart_ptr<AudioToner> at;
+    smart_ptr<AudioShifter> as;
+    if(slot_count == 1) {
+    } else if(slot_count == 4) {
+      if(i == 0) {
+        at.reset(new AudioToner(1.3));
+        as.reset(new AudioShifter(1.0, 0));
+      } else if(i == 1) {
+        at.reset(new AudioToner(1.1));
+        as.reset(new AudioShifter(0, 1.0));
+      } else if(i == 2) {
+        at.reset(new AudioToner(0.9));
+        as.reset(new AudioShifter(1.0, 0));
+      } else if(i == 3) {
+        at.reset(new AudioToner(0.7));
+        as.reset(new AudioShifter(0, 1.0));
+      } else {
+        CHECK(0);
+      }
+    } else {
+      CHECK(0);
+    }
+    
     bool clear;
     if(slot[i].pid == -1) {
       clear = tickSlot(i, keys);
