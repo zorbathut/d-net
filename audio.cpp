@@ -33,7 +33,7 @@ void sound_callback(void *userdata, Uint8 *stream, int len) {
     *rstream++ = mixsample<&SoundState::shiftl>(0);
     *rstream++ = mixsample<&SoundState::shiftr>(1);
     for(int i = 0; i < sstv.size(); i++) {
-      sstv[i].sample = sstv[i].sample + 1;
+      sstv[i].sample += sstv[i].tone;
       if(sstv[i].sample >= sstv[i].sound->data[0].size()) {
         sstv.erase(sstv.begin() + i);
         i--;
@@ -85,6 +85,25 @@ void deinitAudio() {
   SDL_CloseAudio();
 }
 
+static vector<float> tonemults;
+static float tone = 1.0;
+
+void reCalcTone() {
+  tone = 1.0;
+  for(int i = 0; i < tonemults.size(); i++)
+    tone *= tonemults[i];
+}
+
+AudioToner::AudioToner(float t) {
+  tonemults.push_back(t);
+  reCalcTone();
+}
+
+AudioToner::~AudioToner() {
+  tonemults.pop_back();
+  reCalcTone();
+}
+
 static vector<pair<float, float> > shiftvols;
 static float shiftl = 1.0;
 static float shiftr = 1.0;
@@ -121,7 +140,7 @@ void queueSound(const Sound *sound) {
   stt.sound = sound;
   stt.shiftl = shiftl;
   stt.shiftr = shiftr;
-  stt.tone = 1.0;
+  stt.tone = tone;
   stt.sample = 0;
   SDL_LockAudio();
   sstv.push_back(stt);

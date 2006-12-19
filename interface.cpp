@@ -391,7 +391,6 @@ bool InterfaceMain::tick(const vector< Controller > &control, RngSeed gameseed) 
       interface_mode = STATE_PLAYING;
     }
   } else if(interface_mode == STATE_PLAYING) {
-    AudioShifter asf(1.0, 1.0);
     if(game->runTick(control))
       interface_mode = STATE_MAINMENU;
   } else {
