@@ -63,6 +63,10 @@ bool PersistentData::tick(const vector< Controller > &keys) {
   StackString sps("Persistentdata tick");
   CHECK(keys.size() == pms.size());
   
+  // Update our sound info
+  for(int i = 0; i < sps_soundtimeout.size(); i++)
+    sps_soundtimeout[i]--;
+  
   // First: traverse and empty.
   for(int i = 0; i < slot_count; i++) {
     if(slot[i].type == Slot::EMPTY)
@@ -122,7 +126,7 @@ bool PersistentData::tick(const vector< Controller > &keys) {
             if(sps_playerpos[player].x == clamp(sps_playerpos[player].x, ranges[j].second.first, ranges[j].second.second))
               isin = true;
           if(isin)
-            queueSound(S::cursorover, 1.0);
+            queueSound(S::cursorover);
         }
       }
       
@@ -143,26 +147,28 @@ bool PersistentData::tick(const vector< Controller > &keys) {
               if(pms[player].faction) {
                 if(ranges[j].first == TTL_DONE) {
                   if(!sps_shopped[player] && mode == TM_SHOP) {
-                    queueSound(S::error, 1.0);
+                    attemptQueueSound(player, S::error);
                     btt_notify = pms[player].faction->faction;
                     btt_frames_left = 180;
                   } else {
-                    queueSound(S::choose, 1.0);
+                    attemptQueueSound(player, S::choose);
                     sps_playermode[player] = SPS_DONE;
                   }
                 } else if(ranges[j].first == TTL_JOIN) {
+                  attemptQueueSound(player, S::error);
                 } else {
-                  queueSound(S::choose, 1.0);
+                  queueSound(S::choose);
                   sps_playermode[player] = SPS_PENDING;
                   sps_queue.push_back(make_pair(player, ranges[j].first));
                 }
               } else {
                 if(ranges[j].first == TTL_LEAVEJOIN || ranges[j].first == TTL_JOIN) {
-                  queueSound(S::choose, 1.0);
+                  queueSound(S::choose);
                   sps_playermode[player] = SPS_PENDING;
                   sps_queue.push_back(make_pair(player, ranges[j].first));
+                } else {
+                  attemptQueueSound(player, S::error);
                 }
-                // otherwise we just ignore it
               }
             }
           }
@@ -190,7 +196,7 @@ bool PersistentData::tick(const vector< Controller > &keys) {
           }
           CHECK(found);
           
-          queueSound(S::choose, 1.0);
+          queueSound(S::choose);
         }
       } else if(sps_playermode[player] == SPS_ACTIVE) {
         // Iterate over items, see if this player is finished
@@ -207,7 +213,7 @@ bool PersistentData::tick(const vector< Controller > &keys) {
         // Let the player cancel
         CHECK(pms[player].faction);
         if(pms[player].genKeystate(keys[player]).cancel.push) {
-          queueSound(S::choose, 1.0);
+          attemptQueueSound(player, S::choose);
           sps_playermode[player] = SPS_CHOOSING;
         }
       } else {
@@ -516,7 +522,7 @@ bool PersistentData::tickSlot(int slotid, const vector<Controller> &keys) {
       CHECK(SIMUL_WEAPONS == 2);
       if(ki[i].accept.push || ki[i].fire[0].push || ki[i].fire[1].push && !checked[i]) {
         checked[i] = true;
-        queueSound(S::choose, 1.0);
+        queueSound(S::choose);
       }
     }
     if(count(checked.begin(), checked.end(), false) == 0) {
@@ -545,18 +551,18 @@ bool PersistentData::tickSlot(int slotid, const vector<Controller> &keys) {
     CHECK(slt.pid >= 0 && slt.pid < pms.size());
     CHECK(keys.size() == 1);
     if(thesekeys.u.repeat) {
-      queueSound(S::select, 1.0);
+      queueSound(S::select);
       sps_quitconfirm[slt.pid]--;
     }
     if(thesekeys.d.repeat) {
-      queueSound(S::select, 1.0);
+      queueSound(S::select);
       sps_quitconfirm[slt.pid]++;
     }
     
     sps_quitconfirm[slt.pid] = modurot(sps_quitconfirm[slt.pid], 5);
     
     if(thesekeys.cancel.push) {
-      queueSound(S::choose, 1.0);
+      queueSound(S::choose);
       return true;
     }
     
@@ -574,9 +580,9 @@ bool PersistentData::tickSlot(int slotid, const vector<Controller> &keys) {
           if(playerid[i] > spid)
             playerid[i]--;
         dprintf("DESTROY %d\n", playerdata.size());
-        queueSound(S::accept, 1.0);
+        queueSound(S::accept);
       } else {
-        queueSound(S::choose, 1.0);
+        queueSound(S::choose);
       }
       return true;
     }
@@ -1180,6 +1186,13 @@ pair<Float4, vector<Float2> > getFactionCenters(int fcount) {
   }
 }
 
+void PersistentData::attemptQueueSound(int player, const Sound *sound) {
+  if(sps_soundtimeout[player] <= 0) {
+    queueSound(sound);
+    sps_soundtimeout[player] = FPS;
+  }
+}
+
 DEFINE_int(debugControllers, 0, "Number of controllers to set to debug defaults");
 
 PersistentData::PersistentData(int playercount, Money startingcash, float multiple, int in_roundsbetweenshop) {
@@ -1189,6 +1202,7 @@ PersistentData::PersistentData(int playercount, Money startingcash, float multip
   pms.resize(playercount);
   playerid.resize(playercount, -1);
   sps_quitconfirm.resize(playercount, 0);
+  sps_soundtimeout.resize(playercount, 0);
   
   {
     const vector<IDBFaction> &facts = factionList();

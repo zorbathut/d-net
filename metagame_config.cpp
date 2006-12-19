@@ -247,7 +247,7 @@ bool standardButtonTick(StandardButtonTickData *sbtd) {
       if(abs((*sbtd->triggers)[i]) > 0.9 && (!sbtd->oldtriggers || abs((*sbtd->oldtriggers)[i]) <= 0.9)) { // If button was pushed . . .
         int oldbutton = (*sbtd->outkeys)[*sbtd->current_button];
         if(changeButtons(sbtd->outkeys, sbtd->outinvert, sbtd->groups, *sbtd->current_button, i, (*sbtd->triggers)[i] < 0)) { // If button successfully changed . . .
-          queueSound(S::choose, 1.0);
+          queueSound(S::choose);
           if(oldbutton == -1) {
             (*sbtd->current_button)++;
             if(*sbtd->current_button == sbtd->outkeys->size() && *sbtd->current_mode == RM_CHOOSING) {
@@ -262,7 +262,7 @@ bool standardButtonTick(StandardButtonTickData *sbtd) {
           }
           break;
         } else {
-          queueSound(S::error, 1.0);
+          queueSound(S::error);
         }
       }
     }
@@ -271,11 +271,11 @@ bool standardButtonTick(StandardButtonTickData *sbtd) {
   // Now let's see if we move.
   if(!nomove && (*sbtd->current_mode == RM_NOTRIGGER || *sbtd->current_mode == RM_IDLE)) {
     if(sbtd->keys.u.repeat) {
-      queueSound(S::select, 1.0);
+      queueSound(S::select);
       (*sbtd->current_button)--;
     }
     if(sbtd->keys.d.repeat) {
-      queueSound(S::select, 1.0);
+      queueSound(S::select);
       (*sbtd->current_button)++;
     }
     *sbtd->current_button = modurot(*sbtd->current_button, sbtd->outkeys->size() + 1);
@@ -284,17 +284,17 @@ bool standardButtonTick(StandardButtonTickData *sbtd) {
     if(*sbtd->current_button == sbtd->outkeys->size() && sbtd->accept_button != -1 && sbtd->keys.keys[sbtd->accept_button].push /*|| sbtd->cancel_button != -1 && sbtd->keys.keys[sbtd->cancel_button].push*/) { // if we're on done AND the accept button exists AND the accept button was pushed OR the cancel button exists AND the cancel button was pushed . . .
       if(count(sbtd->outkeys->begin(), sbtd->outkeys->end(), -1) == 0) { // AND there are no unfinished keys . . .
         *sbtd->current_button = -1;
-        queueSound(S::accept, 1.0);
+        queueSound(S::accept);
         return true;  // then we're done.
       } else {
-        queueSound(S::error, 1.0);
+        queueSound(S::error);
       }
     }
   }
   
   // Now let's see if we enter CHOOSING state. Only if we're not on DONE.
   if(*sbtd->current_mode == RM_IDLE && *sbtd->current_button != sbtd->outkeys->size() && sbtd->keys.keys[sbtd->accept_button].push) {
-    queueSound(S::accept, 1.0);
+    queueSound(S::accept);
     (*sbtd->current_mode) = RM_CHOOSING;
   }
   
@@ -723,7 +723,7 @@ bool runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
           pms->settingmode = SETTING_BUTTONS;
           pms->choicemode = CHOICE_FIRSTPASS; // Because it is.
           factions[targetInside].taken = true;
-          queueSound(S::accept, 1.0);
+          queueSound(S::accept);
         }
       }
     }
@@ -733,7 +733,7 @@ bool runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
     } else {
       pms->current_faction_over = targetInside;
       pms->current_faction_over_duration = 0;
-      queueSound(S::cursorover, 1.0);
+      queueSound(S::cursorover);
     }
   } else {
     StackString sstr("proc");
@@ -741,24 +741,24 @@ bool runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
     if(pms->choicemode == CHOICE_IDLE) {
       CHECK(pms->faction);
       if(keys.l.push) {
-        queueSound(S::select, 1.0);
+        queueSound(S::select);
         pms->settingmode--;
       }
       if(keys.r.push) {
         pms->settingmode++;
-        queueSound(S::select, 1.0);
+        queueSound(S::select);
       }
       if(pms->settingmode < 0)
         pms->settingmode = 0;
       if(pms->settingmode >= SETTING_LAST)
         pms->settingmode = SETTING_LAST - 1;
       if(keys.keys[pms->buttons[BUTTON_ACCEPT]].push && pms->settingmode == SETTING_READY) {
-        queueSound(S::accept, 1.0);
+        queueSound(S::accept);
         return true;
       }
       if(keys.keys[pms->buttons[BUTTON_ACCEPT]].push) {
         dprintf("pushactive\n");
-        queueSound(S::choose, 1.0);
+        queueSound(S::choose);
         pms->choicemode = CHOICE_ACTIVE;
       }
     } else if(pms->settingmode == SETTING_BUTTONS) {
@@ -796,11 +796,11 @@ bool runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
       bool closing = false;
       
       if(keys.u.push) {
-        queueSound(S::select, 1.0);
+        queueSound(S::select);
         pms->setting_axistype_curchoice--;
       }
       if(keys.d.push) {
-        queueSound(S::select, 1.0);
+        queueSound(S::select);
         pms->setting_axistype_curchoice++;
       }
       
@@ -808,13 +808,13 @@ bool runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
       
       if(keys.keys[pms->buttons[BUTTON_ACCEPT]].push) {
         if(pms->setting_axistype_curchoice == KSAX_END * 2) {
-          queueSound(S::accept, 1.0);
+          queueSound(S::accept);
           closing = true;
         } else if(pms->setting_axistype_curchoice % 2 == 0) {
-          queueSound(S::choose, 1.0);
+          queueSound(S::choose);
           pms->setting_axistype = pms->setting_axistype_curchoice / 2;
         } else {
-          queueSound(S::choose, 1.0);
+          queueSound(S::choose);
           pms->setting_axistype_demo_cursegment = 0;
           pms->createNewAxistypeDemo(unsync().generate_seed());
         }
@@ -842,12 +842,12 @@ bool runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
     } else if(pms->settingmode == SETTING_AXISTYPE && pms->setting_axistype_demo_cursegment != -1) {
       
       if(keys.keys[pms->buttons[BUTTON_ACCEPT]].push) {
-        queueSound(S::choose, 1.0);
+        queueSound(S::choose);
         pms->setting_axistype_demo_cursegment++;
       }
       
       if(keys.keys[pms->buttons[BUTTON_CANCEL]].push) {
-        queueSound(S::choose, 1.0);
+        queueSound(S::choose);
         pms->setting_axistype_demo_cursegment = -1;
       }
       
@@ -878,7 +878,7 @@ bool runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
       }
     } else if(pms->settingmode == SETTING_TEST) {
       if(keys.keys[pms->buttons[BUTTON_CANCEL]].push) {
-        queueSound(S::accept, 1.0);
+        queueSound(S::accept);
         if(pms->choicemode == CHOICE_FIRSTPASS) {
           pms->settingmode++;
         } else {

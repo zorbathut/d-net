@@ -3,6 +3,7 @@
 
 #include "metagame_config.h"
 #include "shop.h"
+#include "audio.h"
 
 #include <boost/noncopyable.hpp>
 
@@ -88,6 +89,9 @@ private:
     // Choosing only
     vector<Float2> sps_playerpos;
     
+    // Sound timeout
+    vector<int> sps_soundtimeout;
+    
     // Pending only
     vector<pair<int, int> > sps_queue;
     
@@ -106,6 +110,7 @@ private:
   void drawMultibar(const vector<float> &sizes, const Float4 &dimensions) const;
   
   HierarchyNode generateShopHierarchy() const;
+  void attemptQueueSound(int player, const Sound *sound);
 };
 
 #endif

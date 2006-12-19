@@ -52,7 +52,7 @@ StdMenuItem StdMenuItem::makeRounds(const string &text, float *start, float *end
 int StdMenuItem::tick(const Keystates &keys) {
   if(type == TYPE_TRIGGER) {
     if(keys.accept.push) {
-      queueSound(S::accept, 1.0);
+      queueSound(S::accept);
       return trigger;
     }
   } else if(type == TYPE_SCALE) {
@@ -128,11 +128,11 @@ void StdMenu::pushMenuItem(const StdMenuItem &site) {
 int StdMenu::tick(const Keystates &keys) {
   if(keys.u.repeat) {
     cpos--;
-    queueSound(S::select, 1.0);
+    queueSound(S::select);
   }
   if(keys.d.repeat) {
     cpos++;
-    queueSound(S::select, 1.0);
+    queueSound(S::select);
   }
   cpos = modurot(cpos, items.size());
   

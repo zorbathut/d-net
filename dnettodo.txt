@@ -1,6 +1,5 @@
 ---- Major work path
 - addr2line -i
-- Fix annoying sound with leaving and rejoining
 - Shop implant count
 - Show starting cash
 - Different shop balances/tones

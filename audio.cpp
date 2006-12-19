@@ -87,7 +87,7 @@ void deinitAudio() {
 DEFINE_bool(disableAudio, false, "Turn off sound entirely");
 DECLARE_int(fastForwardTo);
 
-void queueSound(const Sound *sound, float volume) {
+void queueSound(const Sound *sound) {
   CHECK(sound);
   CHECK(sound->data[0].size());
   CHECK(sound->data[1].size());
@@ -95,7 +95,7 @@ void queueSound(const Sound *sound, float volume) {
     return;
   SoundState stt;
   stt.sound = sound;
-  stt.volume = volume;
+  stt.volume = 1.0;
   stt.sample = 0;
   SDL_LockAudio();
   sstv.push_back(stt);

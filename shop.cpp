@@ -556,19 +556,19 @@ bool Shop::hasInfo(int type) const {
 
 bool Shop::runTick(const Keystates &keys, Player *player) {
   if(keys.l.repeat && curloc.size() > 1) {
-    queueSound(S::select, 1.0);
+    queueSound(S::select);
     curloc.pop_back();
   }
   if(keys.r.repeat && getCurNode().branches.size() != 0) {
-    queueSound(S::select, 1.0);
+    queueSound(S::select);
     curloc.push_back(0);
   }
   if(keys.u.repeat) {
-    queueSound(S::select, 1.0);
+    queueSound(S::select);
     curloc.back()--;
   }
   if(keys.d.repeat) {
-    queueSound(S::select, 1.0);
+    queueSound(S::select);
     curloc.back()++;
   }
   curloc.back() = modurot(curloc.back(), getCategoryNode().branches.size());
@@ -608,13 +608,13 @@ bool Shop::runTick(const Keystates &keys, Player *player) {
     
     for(int i = 0; i < SIMUL_WEAPONS; i++) {
       if(keys.fire[i].push) {
-        queueSound(S::choose, 1.0);
+        queueSound(S::choose);
         player->setWeaponEquipBit(getCurNode().equipweapon, i, !player->getWeaponEquipBit(getCurNode().equipweapon, i));
       }
     }
   } else if(getCurNode().type == HierarchyNode::HNT_SELL) {
     if(keys.accept.push) {
-      queueSound(S::choose, 1.0);
+      queueSound(S::choose);
       selling = !selling;
     }
   } else {
@@ -640,7 +640,7 @@ bool Shop::runTick(const Keystates &keys, Player *player) {
     }
     
     if(change.push) {
-      queueSound(S::choose, 1.0);
+      queueSound(S::choose);
       selling = !selling;
       disabled = true;
       buy = Button();
@@ -766,7 +766,7 @@ bool Shop::runTick(const Keystates &keys, Player *player) {
       }
       
       CHECK(sound);
-      queueSound(sound, 1.0);
+      queueSound(sound);
       if(ret)
         return true;
     }

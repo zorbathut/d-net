@@ -22,7 +22,7 @@ public:
 void initAudio();
 void deinitAudio();
 
-void queueSound(const Sound *sound, float volume);
+void queueSound(const Sound *sound);
 
 Sound loadSound(const string &filename);
 
