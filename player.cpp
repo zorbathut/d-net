@@ -312,33 +312,40 @@ void Player::forceAcquireWeapon(const IDBWeapon *in_weap, int count) {
     weapons.setWeaponEquipBit(in_weap, 0, true, true);
   }
   CHECK(weapons.getWeaponSlot(0) == in_weap);
+  corrupted = true;
 }
 void Player::forceAcquireUpgrade(const IDBUpgrade *in_upg) {
   CHECK(!hasUpgrade(in_upg));
   CHECK(tank.size() >= 1);
   tank[0].upgrades.push_back(in_upg);
   reCalculate();
+  corrupted = true;
 }
 void Player::forceAcquireBombardment(const IDBBombardment *in_bombard) {
   bombardment.push_back(in_bombard);
   equipBombardment(in_bombard);
+  corrupted = true;
 }
 void Player::forceAcquireGlory(const IDBGlory *in_glory) {
   glory.push_back(in_glory);
   equipGlory(in_glory);
+  corrupted = true;
 }
 void Player::forceAcquireTank(const IDBTank *in_tank) {
   tank.push_back(TankEquipment(in_tank));
   equipTank(in_tank);
+  corrupted = true;
 }
 void Player::forceAcquireImplant(const IDBImplant *in_implant) {
   implantequipped.insert(in_implant);
   reCalculate();
+  corrupted = true;
 }
 void Player::forceLevelImplant(const IDBImplant *in_implant) {
   int newlevel = implantLevel(in_implant) + 1;
   implantlevels[in_implant] = newlevel;
   reCalculate();
+  corrupted = true;
 }
 
 // Allows you to remove things, even things which are not meant to be removed
@@ -347,6 +354,7 @@ void Player::forceRemoveUpgrade(const IDBUpgrade *in_upg) {
   CHECK(tank.size() >= 1);
   tank[0].upgrades.erase(find(tank[0].upgrades.begin(), tank[0].upgrades.end(), in_upg));
   reCalculate();
+  corrupted = true;
 }
 
 void Player::equipGlory(const IDBGlory *in_glory) {
@@ -548,12 +556,24 @@ Money Player::totalValue() const {
   for(int i = 0; i < weps.size(); i++)
     worth += adjustWeapon(weps[i]).cost(weapons.ammoCount(weps[i]));
   
+  for(int i = 0; i < implantslots.size(); i++)
+    worth += adjustImplantSlot(implantslots[i]).cost();
+  
+  for(map<const IDBImplant *, int>::const_iterator itr = implantlevels.begin(); itr != implantlevels.end(); itr++)
+    for(int i = 1; i < itr->second; i++)
+      worth += adjustImplant(itr->first).costToLevel(i);
+  
   return worth;
+}
+
+bool Player::isCorrupted() const {
+  return corrupted;
 }
 
 Player::Player() : weapons(NULL) { // this kind of works with the weapon manager
   cash = Money(-1);
   faction = NULL;
+  corrupted = false;
 }
 
 Player::Player(const IDBFaction *fact, int in_factionmode, Money money) : weapons(defaultTank()->weapon) {
@@ -570,6 +590,7 @@ Player::Player(const IDBFaction *fact, int in_factionmode, Money money) : weapon
   kills = 0;
   wins = 0;
   damageDone = 0;
+  corrupted = false;
 }
 
 void Player::reCalculate() {

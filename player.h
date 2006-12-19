@@ -165,11 +165,15 @@ public:
   IDBAdjustment getAdjust() const;
   
   Money totalValue() const; // Update this when more stuff is added to the player
+  
+  bool isCorrupted() const;
 
   Player();
   Player(const IDBFaction *fact, int factionmode, Money cash);
 
 private:
+  
+  bool corrupted; // set on any of the "force" functions
   
   void reCalculate();
 

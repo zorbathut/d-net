@@ -972,8 +972,10 @@ void Game::initStandard(vector<Player> *in_playerdata, const Level &lev, Rng *rn
   gamemode = GMODE_STANDARD;
   
   vector<Player*> playerdata;
-  for(int i = 0; i < in_playerdata->size(); i++)
+  for(int i = 0; i < in_playerdata->size(); i++) {
+    CHECK(!(*in_playerdata)[i].isCorrupted());
     playerdata.push_back(&(*in_playerdata)[i]);
+  }
   initCommon(playerdata, createBasicColors(playerdata), lev.paths, true);
   initRandomTankPlacement(lev.playerStarts, rng);
   
