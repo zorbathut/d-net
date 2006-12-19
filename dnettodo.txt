@@ -1,6 +1,10 @@
 ---- Major work path
+- Fix annoying sound with leaving and rejoining
+- Fix crash bug!
+- Buy better tank, sell old tank, default weapon goes away
 - Shop implant count
 - Show starting cash
+- Different shop balances/tones
 - "Corrupted" bit for player, set on "force"?
 - Scroll properly for equip (i.e. don't run past the bottom labels)
 - Override sell instead of changing it

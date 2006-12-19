@@ -72,6 +72,7 @@ int Weaponmanager::ammoCountSlot(int id) const {
   return ammoCount(curweapons[id]);
 }
 const IDBWeapon *Weaponmanager::getWeaponSlot(int id) const {
+  CHECK(curweapons[id]);
   return curweapons[id];
 }
 

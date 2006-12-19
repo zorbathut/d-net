@@ -3,6 +3,7 @@
 #include "cfcommon.h"
 #include "debug.h"
 #include "util.h"
+#include "args.h"
 
 #include <SDL.h>
 #include <vorbis/vorbisfile.h>
@@ -83,10 +84,15 @@ void deinitAudio() {
   SDL_CloseAudio();
 }
 
+DEFINE_bool(disableAudio, false, "Turn off sound entirely");
+DECLARE_int(fastForwardTo);
+
 void queueSound(const Sound *sound, float volume) {
   CHECK(sound);
   CHECK(sound->data[0].size());
   CHECK(sound->data[1].size());
+  if(FLAGS_disableAudio || FLAGS_fastForwardTo != -1)
+    return;
   SoundState stt;
   stt.sound = sound;
   stt.volume = volume;
