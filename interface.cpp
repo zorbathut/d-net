@@ -505,6 +505,8 @@ void InterfaceMain::render() const {
     }
   } else if(interface_mode == STATE_CONFIGURE) {
     configmenu.render();
+    setColor(C::inactive_text);
+    drawText(StringPrintf("%s starting cash", Money((long long)(1000 * pow(30, start))).textual().c_str()), 2, Float2(1, 97));
   } else if(interface_mode == STATE_PLAYING) {
     game->renderToScreen();
   } else {

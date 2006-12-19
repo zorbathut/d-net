@@ -1,6 +1,5 @@
 ---- Major work path
 - addr2line -i
-- Show starting cash
 - Different shop balances/tones
 - "Corrupted" bit for player, set on "force"?
 - Scroll properly for equip (i.e. don't run past the bottom labels)
@@ -59,7 +58,7 @@
 - Multithread cache generation
 - Add random faction
 - Stop reloading files in findLevels
-- Special unique bonuses (turned the most, closest to death, most/least accurate, traveler, tunneler, deadeye, kamikaze, suicidal, triggerhappy, gunshy, bomber)
+- Special unique bonuses (turned the most, closest to death, most/least accurate, traveler, tunneler, deadeye, kamikaze, suicidal, triggerhappy, gunshy, bomber, perfect round, shutout, perfect shutout)
 
 ---- Major but unimportant ATM
 - Sound, yo
