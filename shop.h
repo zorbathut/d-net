@@ -66,7 +66,7 @@ public:
   pair<bool, bool> scrollmarkers(int depth) const;
   
   void updateExpandy(int depth, bool this_branches);
-  void updateScroll(const vector<int> &depth, const vector<int> &items, float height);
+  void updateScroll(const vector<int> &depth, const vector<int> &items, const vector<float> &height);
   
   float equipDiff() const { return int_equipDiff; };
   Float2 equip1(int depth) const;

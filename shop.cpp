@@ -124,8 +124,7 @@ void ShopLayout::updateExpandy(int depth, bool this_branches) {
     int_expandy[i] = approach(int_expandy[i], nexpandy[i], framechange);
 }
 
-void ShopLayout::updateScroll(const vector<int> &curpos, const vector<int> &options, float height) {
-  int max_rows = (int)floor((height - int_voffset) / int_itemheight) - 2;
+void ShopLayout::updateScroll(const vector<int> &curpos, const vector<int> &options, const vector<float> &height) {
   if(int_scroll.size() < options.size()) {
     int_scroll.resize(options.size(), make_pair(0, make_pair(false, false)));
   }
@@ -138,10 +137,16 @@ void ShopLayout::updateScroll(const vector<int> &curpos, const vector<int> &opti
   if(voptions.size() < int_scroll.size())
     voptions.resize(int_scroll.size(), 0);
   
+  vector<float> vheight = height;
+  if(vheight.size() < int_scroll.size())
+    vheight.resize(int_scroll.size(), 1);
+  
   CHECK(vcurpos.size() == int_scroll.size());
   CHECK(vcurpos.size() == voptions.size());
   
   for(int i = 0; i < vcurpos.size(); i++) {
+    int max_rows = (int)floor(vheight[i] / int_itemheight) - 2;
+    
     float diff = abs(int_scroll[i].first - (vcurpos[i] - max_rows / 2));
     diff = diff / 30;
     if(diff < 0.05)
@@ -775,9 +780,12 @@ bool Shop::runTick(const Keystates &keys, Player *player) {
   slay.updateExpandy(curloc.size(), getCurNode().branches.size());
   {
     vector<int> options;
-    for(int i = 0; i <= curloc.size(); i++)
+    vector<float> height;
+    for(int i = 0; i <= curloc.size(); i++) {
       options.push_back(getStepNode(i).branches.size());
-    slay.updateScroll(curloc, options, getZoom().y_span());
+      height.push_back(getZoom().y_span() - slay.voffset());
+    }
+    slay.updateScroll(curloc, options, height);
   }
   
   if(hasInfo(getCurNode().type))
