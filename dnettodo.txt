@@ -1,6 +1,5 @@
 ---- Major work path
 - addr2line -i
-- Override sell instead of changing it
 - Enough digits in the shop for cash on-hand
 - AI should buy/sell/play with everything
 - Render all tanks out

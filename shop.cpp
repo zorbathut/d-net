@@ -311,6 +311,13 @@ void drawScrollBar(const ShopLayout &slay, int depth, float ofs, bool bottom) {
   }
 }
 
+bool normalizeSelling(bool selling, HierarchyNode::Type type) {
+  if(type == HierarchyNode::HNT_IMPLANTSLOT || type == HierarchyNode::HNT_IMPLANTITEM || type == HierarchyNode::HNT_IMPLANTITEM_UPG || type == HierarchyNode::HNT_EQUIPWEAPON)
+    return false;
+  else
+    return selling;
+}
+
 void Shop::renderNode(const HierarchyNode &node, int depth, const Player *player) const {
   float hoffbase = slay.hoffbase(depth);
   
@@ -393,11 +400,14 @@ void Shop::renderNode(const HierarchyNode &node, int depth, const Player *player
   
   for(int j = 0; j < rendpos.size(); j++) {
     const int itemid = rendpos[j].first;
-    if(selling) {
+    const bool effectiveselling = normalizeSelling(selling, node.branches[itemid].type);
+    
+    if(effectiveselling) {
       setColor(Color(0.8, 0, 0));
     } else {
       setColor(C::box_border);
     }
+    
     {
       float xstart = hoffbase;
       float xend = hoffbase + slay.boxwidth();
@@ -456,7 +466,7 @@ void Shop::renderNode(const HierarchyNode &node, int depth, const Player *player
       continue;
     } else if(node.branches[itemid].displaymode == HierarchyNode::HNDM_IMPLANT_UPGRADE) {
       drawText("Level " + roman_number(player->implantLevel(node.branches[itemid].implantitem)) + " upgrade", slay.fontsize(), slay.description(depth) + rendpos[j].second + Float2(slay.implantUpgradeDiff(), 0));
-      if(!selling)
+      if(!effectiveselling)
         drawJustifiedText(node.branches[itemid].cost(player).textual().c_str(), slay.fontsize(), slay.price(depth) + rendpos[j].second, TEXT_MAX, TEXT_MIN);
       continue;
     }
@@ -474,7 +484,7 @@ void Shop::renderNode(const HierarchyNode &node, int depth, const Player *player
       }
     }
     // Figure out how we want to display the "cost" text
-    if(!selling) {
+    if(!effectiveselling) {
       string display = "";
       bool displayset = false;
       const int dispmode = node.branches[itemid].displaymode;
@@ -624,8 +634,7 @@ bool Shop::runTick(const Keystates &keys, Player *player) {
     CHECK(hasinfo == hasInfo(getCurNode().type)); // doublecheck
   }
   
-  if(getCurNode().type == HierarchyNode::HNT_IMPLANTSLOT || getCurNode().type == HierarchyNode::HNT_IMPLANTITEM || getCurNode().type == HierarchyNode::HNT_IMPLANTITEM_UPG || getCurNode().type == HierarchyNode::HNT_EQUIPWEAPON)
-      selling = false;
+  const bool effectiveselling = normalizeSelling(selling, getCurNode().type);
   
   if(getCurNode().type == HierarchyNode::HNT_EQUIPWEAPON) {
     // EquipWeapon works differently
@@ -675,7 +684,7 @@ bool Shop::runTick(const Keystates &keys, Player *player) {
       bool ret = false;
       const Sound *sound = NULL;
       
-      if(!selling) {
+      if(!effectiveselling) {
         if(getCurNode().buyable) {
           // Player is trying to buy something!
           
