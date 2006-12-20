@@ -244,7 +244,7 @@ void Shop::renormalize(HierarchyNode &item, const Player *player, int playercoun
           CHECK(item.branches[i].branches.size() > 0);
           if(item.branches[i].branches.size() == 1)
             keep = false;
-        } else if(item.branches[i].cat_restrictiontype == HierarchyNode::HNT_UPGRADE || item.branches[i].cat_restrictiontype == HierarchyNode::HNT_IMPLANT_CAT) {
+        } else if(item.branches[i].cat_restrictiontype == HierarchyNode::HNT_IMPLANT_CAT) {
           if(item.branches[i].branches.size() == 0)
             keep = false;
         }

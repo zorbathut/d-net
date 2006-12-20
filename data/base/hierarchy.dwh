@@ -16,6 +16,7 @@ hierarchy {
 hierarchy {
   name=ROOT.Tank Upgrades
   type=upgrade
+  spawncash=1100 # heh.
 }
 
 hierarchy {

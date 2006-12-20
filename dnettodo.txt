@@ -1,8 +1,6 @@
 ---- Major work path
-- addr2line -i
 - AI should buy/sell/play with everything
   - including equipping
-- "Tank upgrades" shouldn't vanish when the player has no tank, or appear when the player has a tank
 - Render all tanks out
 - Projectile reflecto
 - Next-gen vecedit?

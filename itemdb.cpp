@@ -740,7 +740,6 @@ void parseUpgrade(kvData *chunk, bool reload) {
     tnode.cat_restrictiontype = HierarchyNode::HNT_UPGRADE;
     CHECK(mountpoint->cat_restrictiontype == -1 || tnode.cat_restrictiontype == mountpoint->cat_restrictiontype);
     tnode.upgrade = titem;
-    tnode.spawncash = Money((long long)(titem->costmult * 1100));  // heh.
     mountpoint->branches.push_back(tnode);
   }
 }
