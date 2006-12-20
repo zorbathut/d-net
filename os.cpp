@@ -115,7 +115,6 @@ void dumpStackTrace() {
     for(int i = 0; i < stack.size(); i++)
       line += StringPrintf("%p ", stack[i]);
     line += "> addr2linetmp.txt";
-    dprintf("%s\n", line.c_str());
     int rv = system(line.c_str());
     if(!rv) {
       {

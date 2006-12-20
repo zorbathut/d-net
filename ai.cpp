@@ -251,7 +251,7 @@ void Ai::updateTween(bool live, bool pending, Float2 playerpos, bool shopped, Fl
   // we just sort of ignore the y
 }
 
-Controller makeController(float x, float y, bool key) {
+Controller makeController(float x, float y, bool key, bool toggle) {
   Controller rv;
   rv.keys.resize(BUTTON_LAST);
   rv.menu = Float2(x, y);
@@ -259,28 +259,36 @@ Controller makeController(float x, float y, bool key) {
     rv.keys[i].down = 0;
   rv.keys[BUTTON_FIRE1].down = key;
   rv.keys[BUTTON_ACCEPT].down = key;  // it is truly best not to ask
+  rv.keys[BUTTON_CANCEL].down = toggle;
   return rv;
 }
 
-void doMegaEnumWorker(const HierarchyNode &rt, vector<pair<Money, vector<Controller> > > *weps, vector<pair<pair<Money, const IDBUpgrade*>, vector<Controller> > > *upgs, vector<Controller> *done, vector<Controller> path, const Player *player) {
+void doMegaEnumWorker(const HierarchyNode &rt, vector<pair<Money, vector<Controller> > > *weps, vector<pair<Money, vector<Controller> > > *upgs, vector<vector<Controller> > *equips, vector<Controller> *done, vector<Controller> path, const Player *player) {
   if(rt.type == HierarchyNode::HNT_CATEGORY) {
-    path.push_back(makeController(1, 0, 0));
+    path.push_back(makeController(1, 0, false, false));
     for(int i = 0; i < rt.branches.size(); i++) {
       if(i)
-        path.push_back(makeController(0, -1, 0));
-      doMegaEnumWorker(rt.branches[i], weps, upgs, done, path, player);
+        path.push_back(makeController(0, -1, false, false));
+      doMegaEnumWorker(rt.branches[i], weps, upgs, equips, done, path, player);
     }
   } else if(rt.type == HierarchyNode::HNT_WEAPON) {
     weps->push_back(make_pair(player->adjustWeapon(rt.weapon).cost(rt.weapon->quantity), path));
   } else if(rt.type == HierarchyNode::HNT_UPGRADE) {  // TODO: don't buy stuff if you already have it :)
-    upgs->push_back(make_pair(make_pair(player->adjustUpgradeForCurrentTank(rt.upgrade).cost(), rt.upgrade), path));
+    upgs->push_back(make_pair(player->adjustUpgradeForCurrentTank(rt.upgrade).cost(), path));
   } else if(rt.type == HierarchyNode::HNT_GLORY) {
-    upgs->push_back(make_pair(make_pair(player->adjustGlory(rt.glory).cost(), (IDBUpgrade*)NULL), path));
+    upgs->push_back(make_pair(player->adjustGlory(rt.glory).cost(), path));
   } else if(rt.type == HierarchyNode::HNT_BOMBARDMENT) {
-    upgs->push_back(make_pair(make_pair(player->adjustBombardment(rt.bombardment, 0).cost(), (IDBUpgrade*)NULL), path));
+    upgs->push_back(make_pair(player->adjustBombardment(rt.bombardment, 0).cost(), path));
   } else if(rt.type == HierarchyNode::HNT_TANK) {
-    upgs->push_back(make_pair(make_pair(player->adjustTankWithInstanceUpgrades(rt.tank).cost(), (IDBUpgrade*)NULL), path));
+    upgs->push_back(make_pair(player->adjustTankWithInstanceUpgrades(rt.tank).cost(), path));
   } else if(rt.type == HierarchyNode::HNT_EQUIP) {
+    equips->push_back(path);  // this is kind of glitchy since it won't adjust after the player buys weapons, but whatever
+  } else if(rt.type == HierarchyNode::HNT_IMPLANTSLOT) {
+    upgs->push_back(make_pair(player->adjustImplantSlot(rt.implantslot).cost(), path));
+  } else if(rt.type == HierarchyNode::HNT_IMPLANTITEM) {
+    upgs->push_back(make_pair(Money(0), path));
+  } else if(rt.type == HierarchyNode::HNT_IMPLANTITEM_UPG) {
+    upgs->push_back(make_pair(player->adjustImplant(rt.implantitem).costToLevel(player->implantLevel(rt.implantitem)), path));
   } else if(rt.type == HierarchyNode::HNT_SELL) {
   } else if(rt.type == HierarchyNode::HNT_DONE) {
     CHECK(done->size() == 0);
@@ -290,29 +298,35 @@ void doMegaEnumWorker(const HierarchyNode &rt, vector<pair<Money, vector<Control
   }
 }
 
-void doMegaEnum(const HierarchyNode &rt, vector<pair<Money, vector<Controller> > > *weps, vector<pair<pair<Money, const IDBUpgrade*>, vector<Controller> > > *upgs, vector<Controller> *done, const Player *player) {
+void doMegaEnum(const HierarchyNode &rt, vector<pair<Money, vector<Controller> > > *weps, vector<pair<Money, vector<Controller> > > *upgs, vector<vector<Controller> > *equips, vector<Controller> *done, const Player *player) {
   for(int i = 0; i < rt.branches.size(); i++) {
     vector<Controller> tvd;
     for(int j = 0; j < i; j++)
-      tvd.push_back(makeController(0, -1, 0));
-    doMegaEnumWorker(rt.branches[i], weps, upgs, done, tvd, player);
+      tvd.push_back(makeController(0, -1, false, false));
+    doMegaEnumWorker(rt.branches[i], weps, upgs, equips, done, tvd, player);
   }
 }
 
 vector<Controller> reversecontroller(const vector<Controller> &in) {
   vector<Controller> rv;
   for(int i = 0; i < in.size(); i++)
-    rv.push_back(makeController(-in[i].menu.x, -in[i].menu.y, in[i].keys[0].down));
+    rv.push_back(makeController(-in[i].menu.x, -in[i].menu.y, false, false));
   reverse(rv.begin(), rv.end());
   return rv;
 }
 
-void appendPurchases(deque<Controller> *dest, const vector<Controller> &src, int count) {
-  dest->insert(dest->end(), src.begin(), src.end());
+vector<Controller> makeComboAppend(const vector<Controller> &src, int count, bool sell) {
+  vector<Controller> oot;
+  if(sell)
+    oot.push_back(makeController(0, 0, false, true));
+  oot.insert(oot.end(), src.begin(), src.end());
   for(int i = 0; i < count; i++)
-    dest->push_back(makeController(0, 0, 1));
-  vector<Controller> reversed = reversecontroller(src);
-  dest->insert(dest->end(), reversed.begin(), reversed.end());
+    oot.push_back(makeController(0, 0, true, false));
+  vector<Controller> rev = reversecontroller(src);
+  oot.insert(oot.end(), rev.begin(), rev.end());
+  if(sell)
+    oot.push_back(makeController(0, 0, false, true));
+  return oot;
 }
 
 void Ai::updateShop(const Player *player, const HierarchyNode &hierarchy) {
@@ -326,9 +340,10 @@ void Ai::updateShop(const Player *player, const HierarchyNode &hierarchy) {
   }
   CHECK(!shopdone);
   vector<pair<Money, vector<Controller> > > weps;
-  vector<pair<pair<Money, const IDBUpgrade *>, vector<Controller> > > upgs;
+  vector<pair<Money, vector<Controller> > > upgs;
+  vector<vector<Controller> > equips;
   vector<Controller> done;
-  doMegaEnum(hierarchy, &weps, &upgs, &done, player);
+  doMegaEnum(hierarchy, &weps, &upgs, &equips, &done, player);
   dprintf("%d weps, %d upgs, %d donesize\n", weps.size(), upgs.size(), done.size());
   CHECK(weps.size());
   CHECK(done.size());
@@ -336,24 +351,25 @@ void Ai::updateShop(const Player *player, const HierarchyNode &hierarchy) {
   sort(upgs.begin(), upgs.end());
   Money upgcash = player->getCash() / 2;
   Money weapcash = player->getCash();
-  while(upgcash > Money(0)) {
-    for(int i = 0; i < upgs.size(); i++) {
-      if(upgs[i].first.second && player->stateUpgrade(upgs[i].first.second) == ITEMSTATE_EQUIPPED) {
-        upgs.erase(upgs.begin() + i);
-        i--;
-      }
+  vector<vector<Controller> > commands;
+  
+  float cullperc = rng.frand();
+  float singleperc = rng.frand() + 0.1;
+  float sellperc = rng.frand();
+  
+  while(upgcash > Money(0) && upgs.size()) {
+    int dlim = int(upgs.size() * rng.frand());
+    if(rng.frand() < cullperc) {
+      upgs.erase(upgs.begin() + dlim);
+      continue;
     }
-    int dlim = 0;
-    while(dlim < upgs.size() && upgs[dlim].first.first <= upgcash)
-      dlim++;
-    if(dlim == 0)
-      break;
-    dlim = int(dlim * rng.frand());
-    upgcash -= upgs[dlim].first.first;
-    weapcash -= upgs[dlim].first.first;
-    appendPurchases(&shopQueue, upgs[dlim].second, 1);
-    upgs.erase(upgs.begin() + dlim);
+    upgcash -= upgs[dlim].first;
+    weapcash -= upgs[dlim].first;
+    commands.push_back(makeComboAppend(upgs[dlim].second, 1, rng.frand() < sellperc));
+    if(rng.frand() < singleperc)
+      upgs.erase(upgs.begin() + dlim);
   }
+  
   if(weapcash > Money(0)) {
     int dlim = 0;
     while(dlim < weps.size() && weps[dlim].first <= weapcash)
@@ -363,16 +379,21 @@ void Ai::updateShop(const Player *player, const HierarchyNode &hierarchy) {
     if(weps[dlim].first > Money(0))
       amount = min(weapcash / weps[dlim].first, 100);
     dprintf("Buying %d of stuff\n", amount);
-    appendPurchases(&shopQueue, weps[dlim].second, amount);
+    commands.push_back(makeComboAppend(weps[dlim].second, amount, false));
   }
+  
+  random_shuffle(commands.begin(), commands.end());
+  for(int i = 0; i < commands.size(); i++)
+    shopQueue.insert(shopQueue.end(), commands[i].begin(), commands[i].end());
+  
   shopQueue.insert(shopQueue.end(), done.begin(), done.end());
-  shopQueue.push_back(makeController(0, 0, 1));
+  shopQueue.push_back(makeController(0, 0, true, false));
   //for(int i = 0; i < shopQueue.size(); i++)
     //dprintf("%f %f %d\n", shopQueue[i].x, shopQueue[i].y, shopQueue[i].keys[0].down);
   deque<Controller> realShopQueue;
   for(int i = 0; i < shopQueue.size(); i++) {
     for(int k = 0; k < 1; k++)
-      realShopQueue.push_back(makeController(0, 0, 0));
+      realShopQueue.push_back(makeController(0, 0, false, false));
     realShopQueue.push_back(shopQueue[i]);
   }
   swap(shopQueue, realShopQueue);
