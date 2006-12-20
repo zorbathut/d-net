@@ -41,6 +41,8 @@ private:
 public:
   
   float voffset() const { return int_voffset; };
+  float options_vspan() const;
+  float options_equip_vspan() const;
   
   Float4 box(int depth) const;
   

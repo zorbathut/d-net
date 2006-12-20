@@ -9,6 +9,10 @@
 
 using namespace std;
 
+float ShopLayout::options_vspan() const {
+  return getZoom().ey - itemheight() + fontsize() / 2 - voffset();
+}
+
 Float4 ShopLayout::box(int depth) const {
   return Float4(hoffbase(depth), 0, hoffbase(depth) + int_boxwidth, int_fontsize + int_boxborder * 2);
 }
@@ -260,19 +264,17 @@ const HierarchyNode &Shop::getCategoryNode() const {
   return getStepNode(curloc.size() - 1);
 }
 
-void drawScrollBar(const ShopLayout &slay, int depth, bool bottom) {
+void drawScrollBar(const ShopLayout &slay, int depth, float ofs, bool bottom) {
   Float4 zone = slay.box(depth);
-  float ofs = 0;
-  string text;
-  if(!bottom) {
-    ofs = slay.voffset();
-    text = "Up";
-  } else {
-    ofs = getZoom().ey - slay.itemheight() * 2 + slay.fontsize() / 2 + slay.itemheight() - zone.y_span();
-    text = "Down";
-  }
   zone.sy += ofs;
   zone.ey += ofs;
+  
+  string text;
+  if(!bottom) {
+    text = "Up";
+  } else {
+    text = "Down";
+  }
   
   // Center
   {
@@ -327,11 +329,11 @@ void Shop::renderNode(const HierarchyNode &node, int depth, const Player *player
   
   Float4 boundbox = Float4(slay.box(depth).sx - slay.fontsize() / 2, slay.voffset(), slay.box(depth).ex + slay.fontsize() / 2, getZoom().ey - slay.itemheight() + slay.fontsize() / 2);
   if(slay.scrollmarkers(depth).first) {
-    drawScrollBar(slay, depth, false);
+    drawScrollBar(slay, depth, slay.voffset(), false);
     boundbox.sy += slay.itemheight();
   }
   if(slay.scrollmarkers(depth).second) {
-    drawScrollBar(slay, depth, true);
+    drawScrollBar(slay, depth, slay.voffset() + slay.options_vspan() - slay.box(depth).y_span(), true);
     boundbox.ey -= slay.itemheight();
   }
   
@@ -341,6 +343,7 @@ void Shop::renderNode(const HierarchyNode &node, int depth, const Player *player
     float maxdown = -1000;
     for(int i = 0; i < rendpos.size(); i++)
       maxdown = max(maxdown, rendpos[i].second.y);
+    maxdown = min(maxdown, boundbox.ex);
     
     for(int i = 0; i < 2; i++) {
       Float4 box = slay.box(depth);
@@ -783,7 +786,7 @@ bool Shop::runTick(const Keystates &keys, Player *player) {
     vector<float> height;
     for(int i = 0; i <= curloc.size(); i++) {
       options.push_back(getStepNode(i).branches.size());
-      height.push_back(getZoom().y_span() - slay.voffset());
+      height.push_back(slay.options_vspan());
     }
     slay.updateScroll(curloc, options, height);
   }
