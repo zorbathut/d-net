@@ -338,6 +338,12 @@ void Ai::updateShop(const Player *player, const HierarchyNode &hierarchy) {
     shopQueue.pop_front();
     return;
   }
+  if(shopdone) {
+    CHECK(!player->hasValidTank());
+    shopdone = false;
+    nextKeys = makeController(0, -1, false, false);
+    return;
+  }
   CHECK(!shopdone);
   vector<pair<Money, vector<Controller> > > weps;
   vector<pair<Money, vector<Controller> > > upgs;
