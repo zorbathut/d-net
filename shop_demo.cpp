@@ -252,8 +252,11 @@ void ShopDemo::init(const IDBWeapon *weap, const Player *player, Recorder *recor
     game.players.clear();
     game.players.resize(6, *player);
     CHECK(factionList().size() >= game.players.size());
-    for(int i = 0; i < game.players.size(); i++)
+    for(int i = 0; i < game.players.size(); i++) {
       game.players[i].forceAcquireWeapon(weap, 1000000);
+      if(!game.players[i].hasValidTank())
+        game.players[i].forceAcquireTank(defaultTank());
+    }
     
     ais.clear();
     for(int i = 0; i < 3; i++) {
@@ -268,7 +271,7 @@ void ShopDemo::init(const IDBWeapon *weap, const Player *player, Recorder *recor
     } else if(weap->launcher->firingrange_distance == WFRD_MELEE) {
       CHECK(ARRAY_SIZE(weapons_facing) == 6);
       Tank tank;
-      tank.init(player->getTank(), Color(1, 1, 1));
+      tank.init(game.players[0].getTank(), Color(1, 1, 1));
       Float2 basetest(weapons_xpses_melee[5], weapons_ypses_melee[5]);
       float dist_min = 0.1;
       float dist_max = 10;
@@ -302,8 +305,11 @@ void ShopDemo::init(const IDBWeapon *weap, const Player *player, Recorder *recor
     game.players.clear();
     game.players.resize(ARRAY_SIZE(mines_xpses), *player);
     CHECK(factionList().size() >= game.players.size());
-    for(int i = 0; i < game.players.size(); i++)
+    for(int i = 0; i < game.players.size(); i++) {
       game.players[i].forceAcquireWeapon(weap, 1000000);
+      if(!game.players[i].hasValidTank())
+        game.players[i].forceAcquireTank(defaultTank());
+    }
     
     ais.clear();  
     mine_miners.clear();
@@ -344,8 +350,11 @@ void ShopDemo::init(const IDBBombardment *bombard, const Player *player, Recorde
   game.players.clear();
   game.players.resize(8, *player);
   CHECK(factionList().size() >= game.players.size());
-  for(int i = 0; i < game.players.size(); i++)
+  for(int i = 0; i < game.players.size(); i++) {
     game.players[i].forceAcquireBombardment(bombard);
+    if(!game.players[i].hasValidTank())
+      game.players[i].forceAcquireTank(defaultTank());
+  }
   
   ais.clear();
   bombardment_scatterers.clear();
@@ -377,8 +386,11 @@ void ShopDemo::init(const IDBGlory *glory, const Player *player, Recorder *recor
   game.players.clear();
   game.players.resize(8, *player);
   CHECK(factionList().size() >= game.players.size());
-  for(int i = 0; i < game.players.size(); i++)
+  for(int i = 0; i < game.players.size(); i++) {
     game.players[i].forceAcquireGlory(glory);
+    if(!game.players[i].hasValidTank())
+      game.players[i].forceAcquireTank(defaultTank());
+  }
   
   ais.clear();
   glory_kamikazes.clear();
