@@ -13,6 +13,10 @@ float ShopLayout::options_vspan() const {
   return getZoom().ey - itemheight() + fontsize() / 2 - voffset();
 }
 
+float ShopLayout::options_equip_vspan() const {
+  return options_vspan() - itemheight() * 3;
+}
+
 Float4 ShopLayout::box(int depth) const {
   return Float4(hoffbase(depth), 0, hoffbase(depth) + int_boxwidth, int_fontsize + int_boxborder * 2);
 }
@@ -327,23 +331,33 @@ void Shop::renderNode(const HierarchyNode &node, int depth, const Player *player
   if(depth < curloc.size())
     renderNode(node.branches[curloc[depth]], depth + 1, player);
   
-  Float4 boundbox = Float4(slay.box(depth).sx - slay.fontsize() / 2, slay.voffset(), slay.box(depth).ex + slay.fontsize() / 2, getZoom().ey - slay.itemheight() + slay.fontsize() / 2);
+  Float4 boundbox = Float4(slay.box(depth).sx - slay.fontsize() / 2, slay.voffset(), slay.box(depth).ex + slay.fontsize() / 2, slay.voffset());
   if(slay.scrollmarkers(depth).first) {
     drawScrollBar(slay, depth, slay.voffset(), false);
     boundbox.sy += slay.itemheight();
   }
+  
+  if(node.type == HierarchyNode::HNT_EQUIP) {
+    boundbox.ey = boundbox.ey + slay.options_equip_vspan();
+  } else {
+    boundbox.ey = boundbox.ey + slay.options_vspan();
+  }
+  
+  float bbxey = boundbox.ey;
+  
   if(slay.scrollmarkers(depth).second) {
-    drawScrollBar(slay, depth, slay.voffset() + slay.options_vspan() - slay.box(depth).y_span(), true);
+    drawScrollBar(slay, depth, boundbox.ey - slay.box(depth).y_span(), true);
     boundbox.ey -= slay.itemheight();
   }
   
-  GfxWindow gfxw(boundbox, 1.0);
-  
+  // this must happen before the gfxwindow
   if(node.type == HierarchyNode::HNT_EQUIP) {
     float maxdown = -1000;
     for(int i = 0; i < rendpos.size(); i++)
-      maxdown = max(maxdown, rendpos[i].second.y);
-    maxdown = min(maxdown, boundbox.ex);
+      maxdown = max(maxdown, rendpos[i].second.y + slay.itemheight());
+    maxdown = min(maxdown, bbxey);
+    
+    maxdown -= slay.itemheight();
     
     for(int i = 0; i < 2; i++) {
       Float4 box = slay.box(depth);
@@ -374,6 +388,8 @@ void Shop::renderNode(const HierarchyNode &node, int depth, const Player *player
       drawJustifiedMultiText(str, slay.fontsize(), box.midpoint(), TEXT_CENTER, TEXT_CENTER);
     }
   }
+  
+  GfxWindow gfxw(boundbox, 1.0);
   
   for(int j = 0; j < rendpos.size(); j++) {
     const int itemid = rendpos[j].first;
@@ -786,7 +802,11 @@ bool Shop::runTick(const Keystates &keys, Player *player) {
     vector<float> height;
     for(int i = 0; i <= curloc.size(); i++) {
       options.push_back(getStepNode(i).branches.size());
-      height.push_back(slay.options_vspan());
+      if(getStepNode(i).type == HierarchyNode::HNT_EQUIP) {
+        height.push_back(slay.options_equip_vspan());
+      } else {
+        height.push_back(slay.options_vspan());
+      }
     }
     slay.updateScroll(curloc, options, height);
   }

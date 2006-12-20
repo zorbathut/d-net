@@ -1,6 +1,5 @@
 ---- Major work path
 - addr2line -i
-- Scroll properly for equip (i.e. don't run past the bottom labels)
 - Override sell instead of changing it
 - Enough digits in the shop for cash on-hand
 - AI should buy/sell/play with everything
