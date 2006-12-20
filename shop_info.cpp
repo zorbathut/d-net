@@ -294,17 +294,15 @@ string ShopInfo::formatChange(int cat, const Player &before, const Player &after
 }
 
 string ShopInfo::formatSlot(int cat, const Player &player) {
-  if(cat == IDBAdjustment::TANK_SPEED) {
+  if(cat == IDBAdjustment::TANK_SPEED && player.hasValidTank()) {
     return prettyFloatFormat(player.getTank().maxSpeed());
-  } else if(cat == IDBAdjustment::TANK_TURN) {
+  } else if(cat == IDBAdjustment::TANK_TURN && player.hasValidTank()) {
     return prettyFloatFormat(player.getTank().turnSpeed());
-  } else if(cat == IDBAdjustment::TANK_ARMOR) {
+  } else if(cat == IDBAdjustment::TANK_ARMOR && player.hasValidTank()) {
     return prettyFloatFormat(player.getTank().maxHealth());
-  } else if(cat < IDBAdjustment::DAMAGE_LAST) {
-    return StringPrintf("%.0f%%", player.getAdjust().adjustmentfactor(cat) * 100);
   } else {
     // fallback
-    return prettyFloatFormat(player.getAdjust().adjustmentfactor(cat) * 100);
+    return StringPrintf("%.0f%%", player.getAdjust().adjustmentfactor(cat) * 100);
   }
 }  
 Player ShopInfo::getUnupgradedPlayer(const Player *player) const {

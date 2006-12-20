@@ -135,6 +135,7 @@ public:
   int stateTank(const IDBTank *in_tank) const;
   
   bool canContinue() const;
+  bool hasValidTank() const;
 
   const IDBFaction *getFaction() const;
   

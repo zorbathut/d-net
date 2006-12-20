@@ -465,6 +465,8 @@ int Player::stateImplantSlot(const IDBImplantSlot *in_impslot) const {
 }
 
 bool Player::canContinue() const {
+  return hasValidTank(); }
+bool Player::hasValidTank() const {
   return tank.size(); }
 
 const IDBFaction *Player::getFaction() const {
