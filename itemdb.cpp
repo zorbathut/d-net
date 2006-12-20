@@ -89,6 +89,7 @@ void IDBAdjustment::debugDump() {
 IDBAdjustment::IDBAdjustment() {
   memset(adjusts, 0, sizeof(adjusts));
   memset(adjustlist, -1, sizeof(adjustlist));
+  ignore_excessive_radius = false;
 }
 
 IDBAdjustment operator*(const IDBAdjustment &lhs, int mult) {
@@ -113,8 +114,12 @@ bool operator==(const IDBAdjustment &lhs, const IDBAdjustment &rhs) {
 
 float IDBAdjustment::adjustmentfactor(int type) const {
   CHECK(type >= 0 && type < LAST);
-  if(type == WARHEAD_RADIUS_FALLOFF)
-    CHECK(adjusts[type] + 100 <= WARHEAD_RADIUS_MAXMULT * 100);
+  if(type == WARHEAD_RADIUS_FALLOFF) {
+    if(!ignore_excessive_radius && adjusts[type] + 100 > WARHEAD_RADIUS_MAXMULT * 100) {
+      dprintf("Adjust is %d vs %d\n", adjusts[type] + 100, WARHEAD_RADIUS_MAXMULT * 100);
+      CHECK(adjusts[type] + 100 <= WARHEAD_RADIUS_MAXMULT * 100);
+    }
+  }
   return (float)(adjusts[type] + 100) / 100;
 }
 

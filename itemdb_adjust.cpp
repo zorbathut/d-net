@@ -253,6 +253,8 @@ IDBBombardmentAdjust::IDBBombardmentAdjust(const IDBBombardment *in_idb, const I
     for(int i = 0; i < IDBAdjustment::DAMAGE_LAST; i++)
       adjust.adjusts[i] += 25 * in_bombardlevel;
     adjust.adjusts[IDBAdjustment::WARHEAD_RADIUS_FALLOFF] += 20 * in_bombardlevel;
+    if(in_bombardlevel > 0)
+      adjust.ignore_excessive_radius = true;
   } else {
     valid_level = false;
   }
