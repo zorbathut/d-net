@@ -38,7 +38,11 @@ private:
   vector<float> int_expandy;
   vector<pair<float, pair<bool, bool> > > int_scroll;
   
+  bool miniature;
+  
 public:
+  
+  Float2 cashpos() const;
   
   float voffset() const { return int_voffset; };
   float options_vspan() const;

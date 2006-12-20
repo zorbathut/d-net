@@ -9,6 +9,13 @@
 
 using namespace std;
 
+Float2 ShopLayout::cashpos() const {
+  if(!miniature)
+    return Float2(80, 1);
+  else
+    return Float2(60, 1);
+}
+
 float ShopLayout::options_vspan() const {
   return getZoom().ey - itemheight() + fontsize() / 2 - voffset();
 }
@@ -81,7 +88,9 @@ ShopLayout::ShopLayout() {
   // not valid
 }
 
-ShopLayout::ShopLayout(bool miniature) {
+ShopLayout::ShopLayout(bool in_miniature) {
+  miniature = in_miniature;
+  
   if(!miniature) {
     int_fontsize = 2;
     int_boxborder = 0.5;
@@ -858,7 +867,7 @@ void Shop::renderToScreen(const Player *player) const {
       }
     }
     reverse(v.begin(), v.end());
-    drawText(StringPrintf("Cash available: %s", v.c_str()), slay.fontsize(), Float2(80, 1));
+    drawText(StringPrintf("Cash available: %s", v.c_str()), slay.fontsize(), slay.cashpos());
   }
   if(selling) {
     drawText("    Selling equipment", slay.fontsize(), Float2(1, 1));

@@ -1,6 +1,5 @@
 ---- Major work path
 - addr2line -i
-- Enough digits in the shop for cash on-hand
 - AI should buy/sell/play with everything
 - Render all tanks out
 - Projectile reflecto
