@@ -315,6 +315,26 @@ vector<Controller> reversecontroller(const vector<Controller> &in) {
   return rv;
 }
 
+vector<Controller> makeComboToggle(const vector<Controller> &src, Rng *rng) {
+  vector<Controller> oot = src;
+  
+  for(int i = 0; i < rng->frand() * 100; i++) {  // yes, the rng frand gets called each time
+    Controller rv;
+    rv.keys.resize(BUTTON_LAST);
+    rv.menu = Float2(0, 0);
+    for(int i = 0; i < BUTTON_LAST; i++)
+      rv.keys[i].down = 0;
+    rv.keys[BUTTON_FIRE1].down = rng->frand() < 0.5;
+    rv.keys[BUTTON_FIRE2].down = rng->frand() < 0.5;
+    oot.push_back(rv);
+  }
+  
+  vector<Controller> rev = reversecontroller(src);
+  oot.insert(oot.end(), rev.begin(), rev.end());
+  return oot;
+}
+
+
 vector<Controller> makeComboAppend(const vector<Controller> &src, int count, bool sell) {
   vector<Controller> oot;
   if(sell)
@@ -359,21 +379,37 @@ void Ai::updateShop(const Player *player, const HierarchyNode &hierarchy) {
   Money weapcash = player->getCash();
   vector<vector<Controller> > commands;
   
-  float cullperc = rng.frand();
-  float singleperc = rng.frand() + 0.1;
-  float sellperc = rng.frand();
-  
-  while(upgcash > Money(0) && upgs.size()) {
-    int dlim = int(upgs.size() * rng.frand());
-    if(rng.frand() < cullperc) {
-      upgs.erase(upgs.begin() + dlim);
-      continue;
+  {
+    float cullperc = rng.frand();
+    float singleperc = rng.frand() + 0.1;
+    while(equips.size()) {
+      int dite = int(equips.size() * rng.frand());
+      if(rng.frand() < cullperc) {
+        equips.erase(equips.begin() + dite);
+        continue;
+      }
+      commands.push_back(makeComboToggle(equips[dite], &rng));
+      if(rng.frand() < singleperc)
+        equips.erase(equips.begin() + dite);
     }
-    upgcash -= upgs[dlim].first;
-    weapcash -= upgs[dlim].first;
-    commands.push_back(makeComboAppend(upgs[dlim].second, 1, rng.frand() < sellperc));
-    if(rng.frand() < singleperc)
-      upgs.erase(upgs.begin() + dlim);
+  }
+  
+  {
+    float cullperc = rng.frand();
+    float singleperc = rng.frand() + 0.1;
+    float sellperc = rng.frand();
+    while(upgcash > Money(0) && upgs.size()) {
+      int dlim = int(upgs.size() * rng.frand());
+      if(rng.frand() < cullperc) {
+        upgs.erase(upgs.begin() + dlim);
+        continue;
+      }
+      upgcash -= upgs[dlim].first;
+      weapcash -= upgs[dlim].first;
+      commands.push_back(makeComboAppend(upgs[dlim].second, 1, rng.frand() < sellperc));
+      if(rng.frand() < singleperc)
+        upgs.erase(upgs.begin() + dlim);
+    }
   }
   
   if(weapcash > Money(0)) {

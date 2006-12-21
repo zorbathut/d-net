@@ -1,6 +1,4 @@
 ---- Major work path
-- AI should buy/sell/play with everything
-  - including equipping
 - Render all tanks out
 - Projectile reflecto
 - Next-gen vecedit?
