@@ -70,7 +70,9 @@ public:
 
 class ProjectilePack;
 void deployProjectile(const IDBDeployAdjust &deploy, const DeployLocation &location, const GamePlayerContext &gpc, vector<float> *ang = NULL);
-void detonateWarhead(const IDBWarheadAdjust &warhead, Coord2 pos, Coord2 vel, Tank *impact, const GamePlayerContext &gpc, float damagecredit, bool killcredit, bool impacted);
+
+const float NO_NORMAL = -1e100;
+void detonateWarhead(const IDBWarheadAdjust &warhead, Coord2 pos, float normal, Coord2 vel, Tank *impact, const GamePlayerContext &gpc, float damagecredit, bool killcredit, bool impacted);
 void detonateWarheadDamageOnly(const IDBWarheadAdjust &warhead, Tank *impact, const vector<pair<float, Tank*> > &radius);
 
 #endif

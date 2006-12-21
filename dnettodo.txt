@@ -1,6 +1,4 @@
 ---- Major work path
-- Render all tanks out
-- Projectile reflecto
 - Next-gen vecedit?
 - Activate factions
   - Faction bonuses/penalties in demo screens

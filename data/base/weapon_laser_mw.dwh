@@ -46,7 +46,6 @@ effects {
 
   quantity=4
   
-  inertia=0
   spread=3
   
   slowdown=0.5

@@ -313,7 +313,7 @@ void CollideZone::processMotion(vector<pair<Coord, CollideData> > *clds, const c
               if(tcol.first == NOCOLLIDE)
                 continue;
               CHECK(tcol.first >= 0 && tcol.first <= 1);
-              clds->push_back(make_pair(tcol.first, CollideData(CollideId(reverseCategoryFromCC(catrefs.size(), items[x].first), xitr->first), CollideId(reverseCategoryFromCC(catrefs.size(), items[y].first), yitr->first), tcol.second)));
+              clds->push_back(make_pair(tcol.first, CollideData(CollideId(reverseCategoryFromCC(catrefs.size(), items[x].first), xitr->first), CollideId(reverseCategoryFromCC(catrefs.size(), items[y].first), yitr->first), tcol.second, make_pair(getAngle(lerp(tx[xa].first, tx[xa].first + tx[xa].second, tcol.first).vector()).toFloat() + PI / 2, getAngle(lerp(ty[ya].first, ty[ya].first + ty[ya].second, tcol.first).vector()).toFloat() + PI / 2))));
             }
           }
         }

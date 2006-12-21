@@ -45,6 +45,6 @@ smart_ptr<GfxEffects> GfxPing(Float2 pos, float radius_d, float thickness_d, flo
 smart_ptr<GfxEffects> GfxBlast(Float2 center, float radius, Color bright, Color dim);
 
 class IDBEffects;
-smart_ptr<GfxEffects> GfxIdb(Float2 center, Float2 velocity, const IDBEffects *effect);
+smart_ptr<GfxEffects> GfxIdb(Float2 center, float normal, Float2 velocity, const IDBEffects *effect);
 
 #endif

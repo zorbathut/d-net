@@ -164,3 +164,85 @@ weapon {
   
   debug=1
 }
+
+effects {
+  name=effects.efftester1
+  
+  quantity=4
+  
+  inertia=1
+  spread=10
+  
+  slowdown=0.5
+  lifetime=1.3
+  
+  radius=0.4
+  color=1.0, 0.0, 0.0
+  
+  debug=1
+}
+
+effects {
+  name=effects.efftester2
+  
+  quantity=4
+  
+  reflect=1
+  spread=10
+  
+  slowdown=0.5
+  lifetime=1.3
+  
+  radius=0.4
+  color=0.0, 1.0, 0.0
+  
+  debug=1
+}
+
+warhead {
+  name=warhead.efftester
+  
+  effects_impact=effects.efftester1
+  effects_impact=effects.efftester2
+  
+  debug=1
+}
+
+projectile {
+  name=projectile.efftester
+  motion=normal
+  velocity=200
+  color=1.0, 1.0, 1.0
+  warhead=warhead.efftester
+  
+  debug=1
+}
+
+deploy {
+  name=deploy.efftester
+  
+  projectile=projectile.efftester
+  anglestddev=0.03
+  
+  debug=1
+}
+
+launcher {
+  name=launcher.efftester
+  
+  deploy=deploy.efftester
+  
+  stats=stats.null
+  
+  debug=1
+}
+
+weapon {
+  name=ROOT.Weapons.Debug.Effects tester
+  cost=1
+  firerate=60
+  
+  launcher=launcher.efftester
+  
+  debug=1
+}

@@ -62,7 +62,11 @@ struct IDBFaction {
 struct IDBEffects {
   int quantity;
 
+  // percentage
   float inertia;
+  float reflect;
+  
+  // m/s (times gaussian)
   float spread;
 
   float slowdown;

@@ -14,7 +14,7 @@ effects {
 
   quantity=8
   
-  inertia=-0.3
+  reflect=0.3
   spread=20
   
   slowdown=0.2

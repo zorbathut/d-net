@@ -463,7 +463,8 @@ template<> int parseSingleItem<int>(const string &val) {
 template<> float parseSingleItem<float>(const string &val) {
   bool foundperiod = false;
   for(int i = 0; i < val.size(); i++) {
-    if(val[i] == '.') {
+    if(val[i] == '-' && i == 0) {
+    } else if(val[i] == '.') {
       CHECK(!foundperiod);
       foundperiod = true;
     } else {
@@ -650,7 +651,9 @@ void parseEffects(kvData *chunk, bool reload) {
   
   titem->quantity = atoi(chunk->consume("quantity").c_str());
   
-  titem->inertia = atof(chunk->consume("inertia").c_str());
+  titem->inertia = parseWithDefault(chunk, "inertia", 0.f);
+  titem->reflect = parseWithDefault(chunk, "reflect", 0.f);
+  
   titem->spread = atof(chunk->consume("spread").c_str());
   
   titem->slowdown = atof(chunk->consume("slowdown").c_str());

@@ -287,6 +287,10 @@ public:
     return (s() + e()) / 2;
   }
   
+  Coord2 vector() const {
+    return e() - s();
+  }
+  
   Float4 toFloat() const;
 
   Coord4() { };
@@ -406,6 +410,7 @@ inline bool boxBoxIntersect(const Coord4 &lhs, const Coord4 &rhs) {
 }
 
 Coord2 lerp(const Coord2 &lhs, const Coord2 &rhs, Coord dist);
+Coord4 lerp(const Coord4 &lhs, const Coord4 &rhs, Coord dist);
 
 #endif
 

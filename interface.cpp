@@ -436,7 +436,7 @@ void InterfaceMain::render() const {
       for(int i = 0; i < itr->second.vertices.size(); i++)
         vertices.push_back(Float2(itr->second.vertices[i].y.toFloat(), -itr->second.vertices[i].x.toFloat()) + Float2(xsize, ysize) / 2 + Float2(x, y));
       drawLineLoop(vertices, 0.5);
-      drawJustifiedText(strrchr(itr->first.c_str(), '.') + 1, 2, Float2(xsize / 2, ysize - 1) + Float2(x, y), TEXT_CENTER, TEXT_MAX);
+      drawJustifiedText(strrchr(itr->first.c_str(), '.') + 1, 3, Float2(xsize / 2, ysize - 1) + Float2(x, y), TEXT_CENTER, TEXT_MAX);
       x += xsize;
       if(x + xsize > getZoom().ex) {
         y += ysize;

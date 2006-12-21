@@ -182,3 +182,7 @@ Coord linelineintersectpos(const Coord4 &lhs, const Coord4 &rhs) { return imp_li
 Coord2 lerp(const Coord2 &lhs, const Coord2 &rhs, Coord dist) {
   return lhs + (rhs - lhs) * dist;
 }
+
+Coord4 lerp(const Coord4 &lhs, const Coord4 &rhs, Coord dist) {
+  return lhs + (rhs - lhs) * dist;
+}

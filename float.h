@@ -202,6 +202,8 @@ float getArea(const vector<Float2> &are);
 
 bool pathReversed(const vector<Float2> &path);
 
+Float2 reflect(const Float2 &incoming, float normal);
+
 /*************
  * Bounding box
  */

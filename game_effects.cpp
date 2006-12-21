@@ -183,8 +183,8 @@ public:
     drawPoint(center + velocity * (pow(effect->slowdown, getAge()) / log(effect->slowdown) - 1 / log(effect->slowdown)), effect->radius);  // calculus FTW
   }
   
-  GfxEffectsIdb(Float2 center, Float2 in_velocity, const IDBEffects *effect) : GfxEffects(effect->lifetime, effect->color), center(center), effect(effect) {
-    velocity = in_velocity * effect->inertia + makeAngle(unsync().frand() * 2 * PI) * unsync().gaussian() * effect->spread;
+  GfxEffectsIdb(Float2 center, float normal, Float2 in_velocity, const IDBEffects *effect) : GfxEffects(effect->lifetime, effect->color), center(center), effect(effect) {
+    velocity = in_velocity * effect->inertia + reflect(in_velocity, normal) * effect->reflect + makeAngle(unsync().frand() * 2 * PI) * unsync().gaussian() * effect->spread;
   };
   
 private:
@@ -194,5 +194,5 @@ private:
   const IDBEffects *effect;
 };
   
-smart_ptr<GfxEffects> GfxIdb(Float2 center, Float2 velocity, const IDBEffects *effect) {
-  return smart_ptr<GfxEffects>(new GfxEffectsIdb(center, velocity, effect)); }
+smart_ptr<GfxEffects> GfxIdb(Float2 center, float normal, Float2 velocity, const IDBEffects *effect) {
+  return smart_ptr<GfxEffects>(new GfxEffectsIdb(center, normal, velocity, effect)); }

@@ -47,6 +47,14 @@ bool pathReversed(const vector<Float2> &path) {
 float getArea(const vector<Float2> &are) {
   return imp_getArea<Floats>(are);
 }
+/*
+Float2 reflect(const Float2 &incoming, float normal) {
+  return makeAngle(normal) * len(incoming);
+}*/
+
+Float2 reflect(const Float2 &incoming, float normal) {
+  return makeAngle(-(getAngle(-incoming) - normal) + normal) * len(incoming);
+}
 
 /*************
  * Bounding box

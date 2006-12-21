@@ -94,7 +94,7 @@ void dealDamage(float dmg, Tank *target, Tank *owner, float damagecredit, bool k
   owner->addDamage(dmg * damagecredit);
 };
 
-void detonateWarhead(const IDBWarheadAdjust &warhead, Coord2 pos, Coord2 vel, Tank *impact, const GamePlayerContext &gpc, float damagecredit, bool killcredit, bool impacted) {
+void detonateWarhead(const IDBWarheadAdjust &warhead, Coord2 pos, float normal, Coord2 vel, Tank *impact, const GamePlayerContext &gpc, float damagecredit, bool killcredit, bool impacted) {
   
   gpc.gic->record(warhead, pos, impact, gpc.owner);
   
@@ -119,7 +119,7 @@ void detonateWarhead(const IDBWarheadAdjust &warhead, Coord2 pos, Coord2 vel, Ta
   if(impacted) {
     for(int i = 0; i < warhead.effects_impact().size(); i++) {
       for(int j = 0; j < warhead.effects_impact()[i]->quantity; j++) {
-        gpc.gic->effects->push_back(GfxIdb(pos.toFloat(), vel.toFloat(), warhead.effects_impact()[i]));
+        gpc.gic->effects->push_back(GfxIdb(pos.toFloat(), normal, vel.toFloat(), warhead.effects_impact()[i]));
       }
     }
   }
@@ -210,7 +210,7 @@ void deployProjectile(const IDBDeployAdjust &deploy, const DeployLocation &locat
     vector<IDBWarheadAdjust> idw = deploy.chain_warhead();
     for(int i = 0; i < idw.size(); i++)
       for(int j = 0; j < proji.size(); j++)
-        detonateWarhead(idw[i], proji[j].first, Coord2(0, 0), NULL, gpc, 1.0, true, true);
+        detonateWarhead(idw[i], proji[j].first, NO_NORMAL, Coord2(0, 0), NULL, gpc, 1.0, true, true);
   }
 }
 Team::Team() {

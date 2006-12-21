@@ -81,8 +81,7 @@ effects {
   name=effects.railgun
 
   quantity=16
-  
-  inertia=0
+   
   spread=30
   
   slowdown=0.3

@@ -34,9 +34,10 @@ public:
   CollideId lhs;
   CollideId rhs;
   Coord2 pos;
+  pair<float, float> normals;
 
   CollideData() { };
-  CollideData(const CollideId &lhs, const CollideId &rhs, const Coord2 &pos) : lhs(lhs), rhs(rhs), pos(pos) { };
+  CollideData(const CollideId &lhs, const CollideId &rhs, const Coord2 &pos, pair<float, float> normals) : lhs(lhs), rhs(rhs), pos(pos), normals(normals) { };
 };
 
 class CollideZone {
