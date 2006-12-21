@@ -338,7 +338,7 @@ tank {
   
   cost=500000
   
-  vertices=6.5 0 firepoint
+  vertices=6.0 0 firepoint
   vertices=-1 -2.25 rear_begin
   vertices=0.4 -0.5
   vertices=0.4 0.5
@@ -365,12 +365,11 @@ tank {
   cost=500000
   
   vertices=6.5 0 firepoint
-  vertices=5.5 -0.8
-  vertices=2 -2.3
+  vertices=5.8 -1
   vertices=0 -2.5 rear_begin
   vertices=0 2.5 rear_end
-  vertices=2 2.3
-  vertices=5.5 0.8
+  vertices=5.8 1
+  
   
   text=text.tank.pire
 }
@@ -395,10 +394,10 @@ tank {
   vertices=6.6 0.5
   vertices=6.8 0 firepoint
   vertices=6.6 -0.5
-  vertices=4 -2.3
+  vertices=4.5 -2.3
   vertices=0 -2.8 rear_begin
   vertices=0 2.8 rear_end
-  vertices=4 2.3
+  vertices=4.5 2.3
   
   text=text.tank.roxo
 }
@@ -429,9 +428,9 @@ tank {
   
   cost=600000
   
-  vertices=5 0.4
+  vertices=4 0.6
   vertices=6.5 0 firepoint
-  vertices=5 -0.4
+  vertices=4 -0.6
   vertices=0 -2.3 rear_begin
   vertices=0.5 0
   vertices=0 2.3 rear_end
