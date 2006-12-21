@@ -1396,6 +1396,9 @@ const map<string, IDBBombardment> &bombardmentList() {
 const map<string, IDBGlory> &gloryList() {
   return gloryclasses;
 }
+const map<string, IDBTank> &tankList() {
+  return tankclasses;
+}
 const vector<IDBFaction> &factionList() {
   return factions;
 }

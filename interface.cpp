@@ -21,6 +21,7 @@ DEFINE_bool(vecedit, false, "Vector editor (WARNING: nearly unusable)");
 DEFINE_int(rounds_per_shop, 6, "How many rounds between each buying-things opportunity");
 DEFINE_bool(auto_newgame, false, "Automatically enter New Game");
 DEFINE_float(startingPhase, -1, "Starting phase override");
+DEFINE_bool(showtanks, false, "Show-tank mode");
 
 StdMenuItem StdMenuItem::makeStandardMenu(const string &text, int trigger) {
   StdMenuItem stim;
@@ -331,6 +332,9 @@ void InterfaceMain::render() const {
 #else
 
 bool InterfaceMain::tick(const vector< Controller > &control, RngSeed gameseed) {
+  if(FLAGS_showtanks)
+    return false;
+  
   StackString stp("Interface ticking");
   
   inptest_controls = control;
@@ -398,7 +402,6 @@ bool InterfaceMain::tick(const vector< Controller > &control, RngSeed gameseed) 
   }
   
   return false;
-  
 }
 
 void InterfaceMain::ai(const vector<Ai *> &ai) const {
@@ -421,6 +424,28 @@ void InterfaceMain::ai(const vector<Ai *> &ai) const {
 extern int lastFailedFrame;
 
 void InterfaceMain::render() const {  
+  if(FLAGS_showtanks) {
+    setZoomVertical(0, 0, 200);
+    setColor(1.0, 1.0, 1.0);
+    float x = 0;
+    float y = 0;
+    const float xsize = 30;
+    const float ysize = 30;
+    for(map<string, IDBTank>::const_iterator itr = tankList().begin(); itr != tankList().end(); itr++) {
+      vector<Float2> vertices;
+      for(int i = 0; i < itr->second.vertices.size(); i++)
+        vertices.push_back(Float2(itr->second.vertices[i].y.toFloat(), -itr->second.vertices[i].x.toFloat()) + Float2(xsize, ysize) / 2 + Float2(x, y));
+      drawLineLoop(vertices, 0.5);
+      drawJustifiedText(strrchr(itr->first.c_str(), '.') + 1, 2, Float2(xsize / 2, ysize - 1) + Float2(x, y), TEXT_CENTER, TEXT_MAX);
+      x += xsize;
+      if(x + xsize > getZoom().ex) {
+        y += ysize;
+        x = 0;
+      }
+    }
+    return;
+  }
+  
   StackString stp("Interface rendering");
   
   if(lastFailedFrame + 600 > frameNumber) {
