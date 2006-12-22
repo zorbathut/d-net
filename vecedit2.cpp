@@ -1,27 +1,24 @@
 
 #include "wx/wx.h"
 
-class MyApp: public wxApp
-{
-virtual bool OnInit();
+class MyApp: public wxApp {
+  virtual bool OnInit();
 };
 
-class MyFrame: public wxFrame
-{
+class MyFrame : public wxFrame {
 public:
-
-MyFrame(const wxString& title, const wxPoint& pos, const wxSize& size);
-
-void OnQuit(wxCommandEvent& event);
-void OnAbout(wxCommandEvent& event);
-
-DECLARE_EVENT_TABLE()
+  
+  MyFrame(const wxString& title);
+  
+  void OnQuit(wxCommandEvent& event);
+  void OnAbout(wxCommandEvent& event);
+  
+  DECLARE_EVENT_TABLE()
 };
 
-enum
-{
-ID_Quit = 1,
-ID_About,
+enum {
+  ID_Quit = 1,
+  ID_About,
 };
 
 BEGIN_EVENT_TABLE(MyFrame, wxFrame)
@@ -31,38 +28,44 @@ END_EVENT_TABLE()
 
 IMPLEMENT_APP(MyApp)
 
-bool MyApp::OnInit()
-{
-MyFrame *frame = new MyFrame( "Hello World", wxPoint(50,50), wxSize(450,340) );
-frame->Show(TRUE);
-SetTopWindow(frame);
-return TRUE;
+bool MyApp::OnInit() {
+  MyFrame *frame = new MyFrame("D-Net Vecedit2");
+  frame->Show(TRUE);
+  SetTopWindow(frame);
+  return TRUE;
 }
 
-MyFrame::MyFrame(const wxString& title, const wxPoint& pos, const wxSize& size)
-: wxFrame((wxFrame *)NULL, -1, title, pos, size)
-{
-wxMenu *menuFile = new wxMenu;
-
-menuFile->Append( ID_About, "&About..." );
-menuFile->AppendSeparator();
-menuFile->Append( ID_Quit, "E&xit" );
-
-wxMenuBar *menuBar = new wxMenuBar;
-menuBar->Append( menuFile, "&File" );
-
-SetMenuBar( menuBar );
-
-CreateStatusBar();
-SetStatusText( "Welcome to wxWidgets!" );
+MyFrame::MyFrame(const wxString& title) : wxFrame((wxFrame *)NULL, -1, title) {
+  wxMenuBar *menuBar = new wxMenuBar;
+  
+  {
+    wxMenu *menuFile = new wxMenu;
+    
+    menuFile->Append( ID_Quit, "E&xit" );    
+    
+    menuBar->Append( menuFile, "&File" );
+  }
+  
+  {
+    wxMenu *menuFile = new wxMenu;
+    
+    menuFile->Append( ID_About, "&About..." );
+    
+    menuBar->Append( menuFile, "&Help" );
+  }
+  
+  SetMenuBar( menuBar );
+  
+  wxPanel *panel = new wxPanel(this);
+  
+  CreateStatusBar();
+  SetStatusText( "Welcome to wxWidgets!" );
 }
 
-void MyFrame::OnQuit(wxCommandEvent& WXUNUSED(event))
-{
-Close(TRUE);
+void MyFrame::OnQuit(wxCommandEvent& WXUNUSED(event)) {
+  Close(TRUE);
 }
 
-void MyFrame::OnAbout(wxCommandEvent& WXUNUSED(event))
-{
-wxMessageBox("This is a wxWidgets Hello world sample", "About Hello World", wxOK | wxICON_INFORMATION, this);
+void MyFrame::OnAbout(wxCommandEvent& WXUNUSED(event)) {
+  wxMessageBox("This is a wxWidgets Hello world sample", "About Hello World", wxOK | wxICON_INFORMATION, this);
 }
