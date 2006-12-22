@@ -1,25 +1,35 @@
 
-SOURCES = main core game timer debug gfx collide gamemap util rng args interface vecedit metagame itemdb parse dvec2 input level coord ai inputsnag os float cfcommon coord_boolean player itemdb_adjust metagame_config shop shop_demo shop_info game_ai game_effects color metagame_tween cfc game_tank game_util game_projectile socket httpd recorder generators audio
-CPPFLAGS = @CPPFLAGS@ -Wall -Wno-sign-compare -Wno-uninitialized -g
-LDFLAGS = @LDFLAGS@ -g
+GAMESOURCES = main core game timer debug gfx collide gamemap util rng args interface vecedit metagame itemdb parse dvec2 input level coord ai inputsnag os float cfcommon coord_boolean player itemdb_adjust metagame_config shop shop_demo shop_info game_ai game_effects color metagame_tween cfc game_tank game_util game_projectile socket httpd recorder generators audio
+EDITORSOURCES = vecedit2
+
+GAMECPPFLAGS = @CPPFLAGS@ -Wall -Wno-sign-compare -Wno-uninitialized -g
+GAMELDFLAGS = @LDFLAGS@ -g
+
+EDITORCPPFLAGS = `wx-config --cxxflags`
+EDITORLDFLAGS = `wx-config --libs`
+
 DATAFILES = $(shell find data | grep -v \.svn | grep -v shopcache.dwh)
 
 CPP = g++
 
 all: d-net.exe
 
-include $(SOURCES:=.d)
+include $(GAMESOURCES:=.g.d)
+include $(EDITORSOURCES:=.e.d)
 
-d-net.exe: $(SOURCES:=.o)
-	nice $(CPP) -o $@ $(SOURCES:=.o) $(LDFLAGS)
+d-net.exe: $(GAMESOURCES:=.g.o)
+	nice $(CPP) -o $@ $(GAMESOURCES:=.g.o) $(GAMELDFLAGS)
 
-d-net-dbg.exe: $(SOURCES:=.do)
-	nice $(CPP) -o $@ $(SOURCES:=.do) $(LDFLAGS) 
+d-net-dbg.exe: $(GAMESOURCES:=.g.d.o)
+	nice $(CPP) -o $@ $(GAMESOURCES:=.g.d.o) $(GAMELDFLAGS)
 
-asm: $(SOURCES:=.S) makefile
+vecedit2.exe: $(EDITORSOURCES:=.e.o)
+	nice $(CPP) -o $@ $(EDITORSOURCES:=.e.o) $(EDITORLDFLAGS)
+
+asm: $(GAMESOURCES:=.S) makefile
 
 clean:
-	rm -rf *.o *.do *.exe *.d *.S
+	rm -rf *.o *.exe *.d *.S
 
 STDRUN = --nofullscreen --debugitems --startingPhase=8 --debugControllers=2 --factionMode=0 --nullControllers=11 --writeTarget= --auto_newgame --nocullShopTree --httpd_port=616 --noshopcache
 
@@ -47,9 +57,9 @@ ai: d-net.exe
 ailoop: d-net.exe
 	while ./d-net.exe --nofullscreen --aiCount=12 --fastForwardTo=100000000 --terminateAfter=600 --startingPhase=8 --httpd_port=616 --noshopcache ; do echo Cycle. ; done
 
-vecedit: d-net.exe
-	d-net.exe --vecedit --nofullscreen
-    
+vecedit: vecedit2.exe
+	vecedit2.exe
+
 package: d-net.exe data/shopcache.dwh
 	rm \\\\192.168.100.4\\zorba\\www\\d-net\\Dnet\ Latest\ Version.zip || true
 	mkdir deploy
@@ -68,17 +78,29 @@ package: d-net.exe data/shopcache.dwh
 	cp \\\\192.168.100.4\\zorba\\www\\d-net\\Dnet\ Latest\ Version.zip `date +\\\\\\\\192.168.100.4\\\\zorba\\\\www\\\\d-net\\\\dnet%G%m%d%H%M%S.zip` # This is really too many backslashes.
 	rm -rf deploy
 
-%.o: %.cpp
-	nice $(CPP) $(CPPFLAGS) -O2 -c -o $@ $<
+%.g.o: %.cpp
+	nice $(CPP) $(GAMECPPFLAGS) -O2 -c -o $@ $<
   
-%.do: %.cpp
-	nice $(CPP) $(CPPFLAGS) -c -o $@ $<
+%.g.d.o: %.cpp
+	nice $(CPP) $(GAMECPPFLAGS) -c -o $@ $<
 
-%.S: %.cpp
-	nice $(CPP) $(CPPFLAGS) -c -g -Wa,-a,-ad $< > $@
+%.g.S: %.cpp
+	nice $(CPP) $(GAMECPPFLAGS) -c -g -Wa,-a,-ad $< > $@
 
-%.d: %.cpp
-	nice bash -ec '$(CPP) $(CPPFLAGS) -MM $< | sed "s!$*.o!$*.o $*.do $@!g" > $@'
+%.g.d: %.cpp
+	nice bash -ec '$(CPP) $(GAMECPPFLAGS) -MM $< | sed "s!$*.o!$*.g.o $*.g.d.o $@!g" > $@'
+
+%.e.o: %.cpp
+	nice $(CPP) $(EDITORCPPFLAGS) -O2 -c -o $@ $<
+  
+%.e.d.o: %.cpp
+	nice $(CPP) $(EDITORCPPFLAGS) -c -o $@ $<
+
+%.e.S: %.cpp
+	nice $(CPP) $(EDITORCPPFLAGS) -c -g -Wa,-a,-ad $< > $@
+
+%.e.d: %.cpp
+	nice bash -ec '$(CPP) $(EDITORCPPFLAGS) -MM $< | sed "s!$*.o!$*.e.o $*.e.d.o $@!g" > $@'
 
 data/shopcache.dwh: d-net.exe $(DATAFILES)
 	d-net.exe --generateCachedShops=0.99
