@@ -38,6 +38,7 @@ public:
   MyGLC(wxWindow *wind);
   
   void OnPaint(wxPaintEvent& event);
+  void OnSize(wxSizeEvent& event);
   void OnEraseBackground(wxEraseEvent& event);
 
   DECLARE_EVENT_TABLE()
@@ -45,11 +46,12 @@ public:
 
 BEGIN_EVENT_TABLE(MyGLC, wxGLCanvas)
   EVT_PAINT(MyGLC::OnPaint)
+  EVT_SIZE(MyGLC::OnSize)
   EVT_ERASE_BACKGROUND(MyGLC::OnEraseBackground) 
 END_EVENT_TABLE()
 
 bool MyApp::OnInit() {
-  initGfx();
+  //initGfx();
   
   MyFrame *frame = new MyFrame("D-Net Vecedit2");
   frame->Show(TRUE);
@@ -94,7 +96,13 @@ void MyFrame::OnAbout(wxCommandEvent& WXUNUSED(event)) {
   wxMessageBox("This is a level editor.", "About D-Net Vecedit2", wxOK | wxICON_INFORMATION, this);
 }
 
-MyGLC::MyGLC(wxWindow *wind) : wxGLCanvas(wind, -1, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER) { };
+int gl_attribList[] = {
+  WX_GL_RGBA,
+  WX_GL_STENCIL_SIZE, 1,
+  WX_GL_DOUBLEBUFFER,
+  0
+};
+MyGLC::MyGLC(wxWindow *wind) : wxGLCanvas(wind, -1, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER, "GLCanvas", gl_attribList) { };
 
 void MyGLC::OnPaint(wxPaintEvent& event) {
   wxPaintDC dc(this);
@@ -117,15 +125,25 @@ void MyGLC::OnPaint(wxPaintEvent& event) {
     updateResolution((float)w / h);
   }
   
+  wxYield();
   initFrame();
 
   clearFrame(Color(0, 0, 0));
   setZoomCenter(0, 0, 1);
-  drawJustifiedText("THIS IS A TEST", 0.01, Float2(0, 0), TEXT_CENTER, TEXT_CENTER);
+  setColor(Color(1.0, 1.0, 1.0));
+  drawJustifiedText("THIS IS A TEST", 0.1, Float2(0, 0), TEXT_CENTER, TEXT_CENTER);
   
   deinitFrame();
   
+  dprintf("Deinit\n");
+  
   SwapBuffers();
+  
+  dprintf("Swapped\n");
+}
+
+void MyGLC::OnSize(wxSizeEvent& event) {
+  Refresh();
 }
 
 void MyGLC::OnEraseBackground(wxEraseEvent& event) {

@@ -195,8 +195,10 @@ void initGfx() {
 }
 
 void updateResolution(float aspect) {
+  dprintf("ures %f\n", aspect);
   // Set up our OpenGL translation so we have the right image size
   {
+    glLoadIdentity();
     GLfloat flipy[16]= { (5.0/4.0) / aspect, 0, 0, 0,   0, -1, 0, 0,   0, 0, 1, 0,  0, 0, 0, 1 };
     glMultMatrixf(flipy);
     glTranslatef(0, -1, 0);
@@ -218,6 +220,7 @@ void updateResolution(float aspect) {
     gfws.gfxw = NULL;
     
     windows.push_back(gfws);
+    windows.back().setScissor();
   }
 }
 
