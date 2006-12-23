@@ -1,11 +1,12 @@
 
 GAMESOURCES = main core game timer debug gfx collide gamemap util rng args interface vecedit metagame itemdb parse dvec2 input level coord ai inputsnag os float cfcommon coord_boolean player itemdb_adjust metagame_config shop shop_demo shop_info game_ai game_effects color metagame_tween cfc game_tank game_util game_projectile socket httpd recorder generators audio
-EDITORSOURCES = vecedit2 debug os util
+EDITORSOURCES = vecedit2 debug os util gfx float coord parse color dvec2 cfcommon
 
 GAMECPPFLAGS = @CPPFLAGS@ -Wall -Wno-sign-compare -Wno-uninitialized -g
 GAMELDFLAGS = @LDFLAGS@ -g
 
-EDITORCPPFLAGS = `wx-config --cxxflags`
+# there are obviously portability issues here
+EDITORCPPFLAGS = -I/usr/include/boost-1_33_1 `wx-config --cxxflags`
 EDITORLDFLAGS = `wx-config --libs --gl-libs` -lopengl32
 
 DATAFILES = $(shell find data | grep -v \.svn | grep -v shopcache.dwh)

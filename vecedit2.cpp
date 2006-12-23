@@ -3,6 +3,7 @@
 #include <wx/glcanvas.h>
 
 #include "debug.h"
+#include "gfx.h"
 
 class MyApp: public wxApp {
   virtual bool OnInit();
@@ -48,6 +49,8 @@ BEGIN_EVENT_TABLE(MyGLC, wxGLCanvas)
 END_EVENT_TABLE()
 
 bool MyApp::OnInit() {
+  initGfx();
+  
   MyFrame *frame = new MyFrame("D-Net Vecedit2");
   frame->Show(TRUE);
   SetTopWindow(frame);
@@ -110,25 +113,17 @@ void MyGLC::OnPaint(wxPaintEvent& event) {
     int w, h;
     GetClientSize(&w, &h);
     glViewport(0, 0, (GLint) w, (GLint) h); 
+    
+    updateResolution((float)w / h);
   }
+  
+  initFrame();
 
-  //wxSafeYield();
-  glClearColor(0.0, 0.0, 0.0, 0.0);
-  glClearStencil(0);
-  glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-  CHECK(glGetError() == GL_NO_ERROR);
+  clearFrame(Color(0, 0, 0));
+  setZoomCenter(0, 0, 1);
+  drawJustifiedText("THIS IS A TEST", 0.01, Float2(0, 0), TEXT_CENTER, TEXT_CENTER);
   
-  glColor3f(1.0, 1.0, 1.0);
-  
-  glBegin(GL_POLYGON);
-    glVertex2f(-foo, -foo);
-    glVertex2f(-foo, foo);
-    glVertex2f(foo, foo);
-    glVertex2f(foo, -foo);
-  glEnd();
-  glFlush();
-  
-  CHECK(glGetError() == GL_NO_ERROR);
+  deinitFrame();
   
   SwapBuffers();
 }
