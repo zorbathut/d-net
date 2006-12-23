@@ -27,8 +27,8 @@ enum {
 };
 
 BEGIN_EVENT_TABLE(MyFrame, wxFrame)
-EVT_MENU(ID_Quit, MyFrame::OnQuit)
-EVT_MENU(ID_About, MyFrame::OnAbout)
+  EVT_MENU(ID_Quit, MyFrame::OnQuit)
+  EVT_MENU(ID_About, MyFrame::OnAbout)
 END_EVENT_TABLE()
 
 class MyGLC : public wxGLCanvas {
@@ -37,12 +37,14 @@ public:
   MyGLC(wxWindow *wind);
   
   void OnPaint(wxPaintEvent& event);
+  void OnEraseBackground(wxEraseEvent& event);
 
   DECLARE_EVENT_TABLE()
 };
 
 BEGIN_EVENT_TABLE(MyGLC, wxGLCanvas)
-EVT_PAINT(MyGLC::OnPaint)
+  EVT_PAINT(MyGLC::OnPaint)
+  EVT_ERASE_BACKGROUND(MyGLC::OnEraseBackground) 
 END_EVENT_TABLE()
 
 bool MyApp::OnInit() {
@@ -73,10 +75,12 @@ MyFrame::MyFrame(const wxString& title) : wxFrame((wxFrame *)NULL, -1, title) {
   
   SetMenuBar( menuBar );
 
-  new MyGLC(this);
-  
+  // We make this first so it gets redrawn first, which reduces flicker a bit
   CreateStatusBar();
   SetStatusText("borf borf borf");
+  
+  new MyGLC(this);
+
 }
 
 void MyFrame::OnQuit(wxCommandEvent& WXUNUSED(event)) {
@@ -127,4 +131,7 @@ void MyGLC::OnPaint(wxPaintEvent& event) {
   CHECK(glGetError() == GL_NO_ERROR);
   
   SwapBuffers();
+}
+
+void MyGLC::OnEraseBackground(wxEraseEvent& event) {
 }
