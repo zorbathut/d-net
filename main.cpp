@@ -82,9 +82,9 @@ bool MakeWindow(const char * strWindowName, int width, int height) {
 void SetupOgl() {
 
   CHECK(SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1) == 0);     // tell SDL that the GL drawing is going to be double buffered
-  CHECK(SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 5) == 0);
-  CHECK(SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 5) == 0);
-  CHECK(SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 5) == 0);
+  CHECK(SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8) == 0);
+  CHECK(SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8) == 0);
+  CHECK(SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8) == 0);
   CHECK(SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, SCREEN_DEPTH) == 0);     // size of depth buffer
   CHECK(SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 1) == 0);      // now we do use the stencil buffer
   CHECK(SDL_GL_SetAttribute(SDL_GL_ACCUM_RED_SIZE, 0) == 0);    // this and the next three lines set the bits allocated per pixel -
