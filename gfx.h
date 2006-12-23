@@ -13,11 +13,6 @@ using namespace std;
  * Setup and statistics
  */
 
-void setDefaultResolution(bool fullscreen);
-int getResolutionX();
-int getResolutionY();
-void resDown();
-
 void initGfx();
 void updateResolution(float aspect); // picks up viewport data from OpenGL
 

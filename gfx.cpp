@@ -8,7 +8,6 @@
 #include "debug.h"
 
 #include <fstream>
-#include <SDL.h>
 
 #ifdef NO_GL_PREFIX
   #include <gl.h>
@@ -17,8 +16,6 @@
 #endif
 
 using namespace std;
-
-DEFINE_int(resolution_x, -1, "X resolution (Y is X/4*3), -1 for autodetect");
 
 /*************
  * Expensive object pool
@@ -79,6 +76,19 @@ template<typename T> Pool<T> PoolObj<T>::pool;
 /*************
  * Infrastructure
  */
+
+vector<int> getView() {
+  vector<int> rv(4);
+  glGetIntegerv(GL_VIEWPORT, &rv[0]);
+  return rv;
+}
+
+int getResolutionX() {
+  return getView()[2];
+}
+int getResolutionY() {
+  return getView()[3];
+}
  
 class GfxWindowState {
 public:
@@ -94,40 +104,6 @@ public:
   void setScissor() const;
 };
 static vector<GfxWindowState> windows;
-
-void setDefaultResolution(bool fullscreen) {
-  const SDL_VideoInfo *vinf = SDL_GetVideoInfo();
-  
-  dprintf("Current detected resolution: %d/%d\n", vinf->current_w, vinf->current_h);
-  if(FLAGS_resolution_x == -1) {
-    FLAGS_resolution_x = vinf->current_w;
-    if(!fullscreen)
-      resDown();
-  }
-}
-  
-int getResolutionX() {
-  CHECK(FLAGS_resolution_x > 0);
-  CHECK(FLAGS_resolution_x % 4 == 0);
-  return FLAGS_resolution_x;
-}
-int getResolutionY() {
-  CHECK(FLAGS_resolution_x > 0);
-  CHECK(FLAGS_resolution_x % 4 == 0);
-  return FLAGS_resolution_x / 4 * 3;
-}
-
-void resDown() {
-  const int reses[] = { 1600, 1400, 1280, 1152, 1024, 800, 640, -1 };
-  CHECK(FLAGS_resolution_x > 0);
-  for(int i = 0; i < ARRAY_SIZE(reses); i++) {
-    if(FLAGS_resolution_x > reses[i]) {
-      FLAGS_resolution_x = reses[i];
-      break;
-    }
-  }
-  CHECK(FLAGS_resolution_x > 0);
-}
 
 static float map_sx;
 static float map_sy;
@@ -340,7 +316,6 @@ void deinitFrame() {
   CHECK(frame_running);
   finishLineCluster();
   glFlush();
-  SDL_GL_SwapBuffers(); 
   CHECK(glGetError() == GL_NO_ERROR);
   renderedFrameId++;
   frame_running = false;

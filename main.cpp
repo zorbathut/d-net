@@ -94,13 +94,49 @@ void SetupOgl() {
 
 }
 
+DEFINE_int(resolution_x, -1, "X resolution (Y is X/4*3), -1 for autodetect");
+
+void resDown() {
+  const int reses[] = { 1600, 1400, 1280, 1152, 1024, 800, 640, -1 };
+  CHECK(FLAGS_resolution_x > 0);
+  for(int i = 0; i < ARRAY_SIZE(reses); i++) {
+    if(FLAGS_resolution_x > reses[i]) {
+      FLAGS_resolution_x = reses[i];
+      break;
+    }
+  }
+  CHECK(FLAGS_resolution_x > 0);
+}
+
+void setDefaultResolution(bool fullscreen) {
+  const SDL_VideoInfo *vinf = SDL_GetVideoInfo();
+  
+  dprintf("Current detected resolution: %d/%d\n", vinf->current_w, vinf->current_h);
+  if(FLAGS_resolution_x == -1) {
+    FLAGS_resolution_x = vinf->current_w;
+    if(!fullscreen)
+      resDown();
+  }
+}
+  
+int getFlagResX() {
+  CHECK(FLAGS_resolution_x > 0);
+  CHECK(FLAGS_resolution_x % 4 == 0);
+  return FLAGS_resolution_x;
+}
+int getFlagResY() {
+  CHECK(FLAGS_resolution_x > 0);
+  CHECK(FLAGS_resolution_x % 4 == 0);
+  return FLAGS_resolution_x / 4 * 3;
+}
+
 void initSystem() {
 
   CHECK(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_NOPARACHUTE | SDL_INIT_TIMER | SDL_INIT_JOYSTICK) >= 0);
 
   SetupOgl();
   setDefaultResolution(FLAGS_fullscreen);
-  while(!MakeWindow("Devastation Net", getResolutionX(), getResolutionY()))
+  while(!MakeWindow("Devastation Net", getFlagResX(), getFlagResY()))
     resDown();
   
   {

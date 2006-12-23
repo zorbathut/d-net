@@ -161,6 +161,7 @@ void MainLoop() {
         drawText(StringPrintf("%d", frameNumber), 10, Float2(5, 85));
       }
       deinitFrame();
+      SDL_GL_SwapBuffers();
     } else {
       skipped++;
     }
