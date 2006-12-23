@@ -109,6 +109,7 @@ void MyGLC::OnPaint(wxPaintEvent& event) {
   
   SetCurrent();
   
+  /*
   static float foo = 0.3;
   foo += 0.1;
   if(foo > 0.9)
@@ -134,7 +135,7 @@ void MyGLC::OnPaint(wxPaintEvent& event) {
   drawJustifiedText("THIS IS A TEST", 0.1, Float2(0, 0), TEXT_CENTER, TEXT_CENTER);
   
   deinitFrame();
-  
+  */
   dprintf("Deinit\n");
   
   SwapBuffers();
