@@ -87,7 +87,7 @@ void MyFrame::OnAbout(wxCommandEvent& WXUNUSED(event)) {
   wxMessageBox("This is a level editor.", "About D-Net Vecedit2", wxOK | wxICON_INFORMATION, this);
 }
 
-MyGLC::MyGLC(wxWindow *wind) : wxGLCanvas(wind, -1, wxDefaultPosition, wxDefaultSize) { };
+MyGLC::MyGLC(wxWindow *wind) : wxGLCanvas(wind, -1, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER) { };
 
 void MyGLC::OnPaint(wxPaintEvent& event) {
   wxPaintDC dc(this);
@@ -96,12 +96,18 @@ void MyGLC::OnPaint(wxPaintEvent& event) {
   
   static float foo = 0.3;
   foo += 0.1;
-  if(foo > 3.0)
+  if(foo > 0.9)
     foo = 0.1;
 
   dprintf("render, %f\n", foo);
   dprintf("size is %d,%d\n", GetSize().x, GetSize().y);
   
+  {
+    int w, h;
+    GetClientSize(&w, &h);
+    glViewport(0, 0, (GLint) w, (GLint) h); 
+  }
+
   //wxSafeYield();
   glClearColor(0.0, 0.0, 0.0, 0.0);
   glClearStencil(0);
@@ -117,6 +123,8 @@ void MyGLC::OnPaint(wxPaintEvent& event) {
     glVertex2f(foo, -foo);
   glEnd();
   glFlush();
+  
+  CHECK(glGetError() == GL_NO_ERROR);
   
   SwapBuffers();
 }
