@@ -6,7 +6,7 @@ GAMECPPFLAGS = @CPPFLAGS@ -Wall -Wno-sign-compare -Wno-uninitialized -g
 GAMELDFLAGS = @LDFLAGS@ -g
 
 EDITORCPPFLAGS = `wx-config --cxxflags`
-EDITORLDFLAGS = `wx-config --libs`
+EDITORLDFLAGS = `wx-config --libs --gl-libs` -lopengl32
 
 DATAFILES = $(shell find data | grep -v \.svn | grep -v shopcache.dwh)
 
