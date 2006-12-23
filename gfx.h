@@ -19,6 +19,8 @@ int getResolutionY();
 void resDown();
 
 void initGfx();
+void updateResolution(float aspect); // picks up viewport data from OpenGL
+
 string printGraphicsStats();
 
 void clearFrame(const Color &color);

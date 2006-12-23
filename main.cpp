@@ -174,6 +174,7 @@ int main(int argc, char **argv) {
 
   initSystem();
   initGfx();
+  updateResolution(4.0 / 3.0);
   initAudio();
 
   MainLoop();

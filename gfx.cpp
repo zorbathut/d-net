@@ -177,56 +177,59 @@ public:
 static map<char, FontCharacter> fontdata;
 
 void initGfx() {
-  // Load fonts
-  {
-    CHECK(fontdata.size() == 0);
-    ifstream font("data/font.dwh");
-    CHECK(font);
-    kvData kvd;
-    while(getkvData(font, &kvd)) {
-      CHECK(kvd.category == "character");
-      CHECK(kvd.kv.count("id"));
-      string id = kvd.consume("id");
-      if(id == "hash")
-        id = "#";
-      if(id == "space")
-        id = " ";
-      CHECK(id.size() == 1);
-      vector<string> paths = tokenize(kvd.consume("path"), "\n");
-      
-      CHECK(!fontdata.count(id[0]));
-      fontdata[id[0]]; // creates it for "space", which will have no paths
-      for(int i = 0; i < paths.size(); i++) {
-        vector<string> order = tokenize(paths[i], " ");
-        CHECK(order.size() >= 2);
-        vector<pair<int, int> > tpath;
-        for(int j = 0; j < order.size(); j++) {
-          vector<int> out = sti(tokenize(order[j], ","));
-          CHECK(out.size() == 2);
-          tpath.push_back(make_pair(out[0], out[1]));
-        }
-        CHECK(tpath.size() >= 2);
-        fontdata[id[0]].art.push_back(tpath);
+  // Load fonts. This used to include more code.
+  CHECK(fontdata.size() == 0);
+  ifstream font("data/font.dwh");
+  CHECK(font);
+  kvData kvd;
+  while(getkvData(font, &kvd)) {
+    CHECK(kvd.category == "character");
+    CHECK(kvd.kv.count("id"));
+    string id = kvd.consume("id");
+    if(id == "hash")
+      id = "#";
+    if(id == "space")
+      id = " ";
+    CHECK(id.size() == 1);
+    vector<string> paths = tokenize(kvd.consume("path"), "\n");
+    
+    CHECK(!fontdata.count(id[0]));
+    fontdata[id[0]]; // creates it for "space", which will have no paths
+    for(int i = 0; i < paths.size(); i++) {
+      vector<string> order = tokenize(paths[i], " ");
+      CHECK(order.size() >= 2);
+      vector<pair<int, int> > tpath;
+      for(int j = 0; j < order.size(); j++) {
+        vector<int> out = sti(tokenize(order[j], ","));
+        CHECK(out.size() == 2);
+        tpath.push_back(make_pair(out[0], out[1]));
       }
-      
-      if(kvd.kv.count("width")) {
-        fontdata[id[0]].width = atoi(kvd.consume("width").c_str());
-      } else {
-        fontdata[id[0]].normalize();
-      }
-      
-      kvd.shouldBeDone();
+      CHECK(tpath.size() >= 2);
+      fontdata[id[0]].art.push_back(tpath);
     }
+    
+    if(kvd.kv.count("width")) {
+      fontdata[id[0]].width = atoi(kvd.consume("width").c_str());
+    } else {
+      fontdata[id[0]].normalize();
+    }
+    
+    kvd.shouldBeDone();
   }
-  
+}
+
+void updateResolution(float aspect) {
   // Set up our OpenGL translation so we have the right image size
   {
-    GLfloat flipy[16]= { (5.0/4.0) / (4.0/3.0), 0, 0, 0,   0, -1, 0, 0,   0, 0, 1, 0,  0, 0, 0, 1 };
+    GLfloat flipy[16]= { (5.0/4.0) / aspect, 0, 0, 0,   0, -1, 0, 0,   0, 0, 1, 0,  0, 0, 0, 1 };
     glMultMatrixf(flipy);
     glTranslatef(0, -1, 0);
   }
   
   // Set up our windowing system
+  if(windows.size() == 1)
+    windows.clear();
+  
   {
     CHECK(windows.size() == 0);
     GfxWindowState gfws;
@@ -235,7 +238,7 @@ void initGfx() {
     gfws.saved_ey = 1;
     gfws.fade = 1;
 
-    gfws.newbounds = Float4(0, 0, 4.0/3.0, 1);
+    gfws.newbounds = Float4(0, 0, aspect, 1);
     gfws.gfxw = NULL;
     
     windows.push_back(gfws);
@@ -386,7 +389,7 @@ GfxWindow::~GfxWindow() {
   windows.back().setScissor();
 }
 
-void GfxWindowState::setScissor() const { // yes, the Y's are correct - the screen coordinates are (0,0)-(1,1.3333).
+void GfxWindowState::setScissor() const { // yes, the Y's are correct - the screen coordinates are (0,0)-(1,aspect).
   int sx = int(getResolutionY() * newbounds.sx);
   int sy = int(getResolutionY() * newbounds.sy);
   int ex = int(ceil(getResolutionY() * newbounds.ex));
