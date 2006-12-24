@@ -127,11 +127,8 @@ void MyGLC::OnPaint(wxPaintEvent& event) {
   
   deinitFrame();
   
-  dprintf("Deinit\n");
-  
   SwapBuffers();
-  
-  dprintf("Swapped\n");
+
 }
 
 void MyGLC::OnSize(wxSizeEvent& event) {
