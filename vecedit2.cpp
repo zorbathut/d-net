@@ -16,6 +16,11 @@ public:
   
   MyFrame(const wxString& title);
   
+  void OnNew(wxCommandEvent& event);
+  void OnOpen(wxCommandEvent& event);
+  void OnSave(wxCommandEvent& event);
+  void OnSaveas(wxCommandEvent& event);
+
   void OnQuit(wxCommandEvent& event);
   void OnAbout(wxCommandEvent& event);
   
@@ -23,11 +28,19 @@ public:
 };
 
 enum {
-  ID_Quit = 1,
+  ID_New = 1,
+  ID_Open,
+  ID_Save,
+  ID_Saveas,
+  ID_Quit,
   ID_About,
 };
 
 BEGIN_EVENT_TABLE(MyFrame, wxFrame)
+  EVT_MENU(ID_New, MyFrame::OnNew)
+  EVT_MENU(ID_Open, MyFrame::OnOpen)
+  EVT_MENU(ID_Save, MyFrame::OnSave)
+  EVT_MENU(ID_Saveas, MyFrame::OnSaveas)
   EVT_MENU(ID_Quit, MyFrame::OnQuit)
   EVT_MENU(ID_About, MyFrame::OnAbout)
 END_EVENT_TABLE()
@@ -65,7 +78,14 @@ MyFrame::MyFrame(const wxString& title) : wxFrame((wxFrame *)NULL, -1, title) {
   {
     wxMenu *menuFile = new wxMenu;
     
-    menuFile->Append( ID_Quit, "E&xit" );    
+    menuFile->Append( ID_New, "&New" );
+    menuFile->Append( ID_Open, "&Open..." );
+    menuFile->Append( ID_Save, "&Save" );
+    menuFile->Append( ID_Saveas, "Save &as..." );
+    
+    menuFile->AppendSeparator();
+    
+    menuFile->Append( ID_Quit, "E&xit" );
     
     menuBar->Append( menuFile, "&File" );
   }
@@ -86,6 +106,29 @@ MyFrame::MyFrame(const wxString& title) : wxFrame((wxFrame *)NULL, -1, title) {
   
   new MyGLC(this);
 
+}
+
+void MyFrame::OnNew(wxCommandEvent& event) {
+  dprintf("New");
+}
+void MyFrame::OnOpen(wxCommandEvent& event) {
+  wxFileDialog wxfd(this, "Open File", "", "", "DVec2 Files (*.dv2)|*.dv2|All Files (*.*)|*.*", wxFD_OPEN);
+  if(wxfd.ShowModal() == wxID_OK) {
+    dprintf("Open %s", wxfd.GetFilename().c_str());
+  } else {
+    dprintf("Open cancel");
+  }
+}
+void MyFrame::OnSave(wxCommandEvent& event) {
+  OnSaveas();
+}
+void MyFrame::OnSaveas(wxCommandEvent& event) {
+  wxFileDialog wxfd(this, "Save File", "", "", "DVec2 Files (*.dv2)|*.dv2|All Files (*.*)|*.*", wxFD_SAVE);
+  if(wxfd.ShowModal() == wxID_OK) {
+    dprintf("Saveas %s", wxfd.GetFilename().c_str());
+  } else {
+    dprintf("Saveas cancel");
+  }
 }
 
 void MyFrame::OnQuit(wxCommandEvent& WXUNUSED(event)) {

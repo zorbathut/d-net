@@ -41,6 +41,8 @@ template<typename T> void generateShopCache(const string &itemname, const T &ite
       }
       if(ticks >= 1200) {
         bool end = true;
+        if(ticks % 36000 == 0)
+          dprintf("Tick %d\n", ticks);
         for(int i = 0; i < oldstats.size(); i++) {
           float high = *max_element(oldstats[i].begin(), oldstats[i].end());
           float low = *min_element(oldstats[i].begin(), oldstats[i].end());
@@ -48,6 +50,8 @@ template<typename T> void generateShopCache(const string &itemname, const T &ite
           float absdiff = high - low;
           if(ratdiff < accuracy && absdiff > 0.01)
             end = false;
+          if(ticks % 36000 == 0)
+            dprintf("%f (%f) and %f (%f)", ratdiff, accuracy, absdiff, 0.01);
         }
         if(end) {
           demo.dumpMetastats(&recorder);
