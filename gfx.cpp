@@ -21,6 +21,7 @@ using namespace std;
  * Expensive object pool
  */
 
+#include <windows.h>
 template<typename T> class Pool : boost::noncopyable {
 public:
   T *acquire() {
@@ -38,13 +39,8 @@ public:
   
   Pool() { }
   ~Pool() {
-    dprintf("Cleaning pool\n");
-    dprintf("cp %d\n", poolitems.size());
-    for(int i = 0; i < poolitems.size(); i++) {
-      dprintf("%p\n", poolitems[i]);
+    for(int i = 0; i < poolitems.size(); i++)
       delete poolitems[i];
-    }
-    dprintf("Pool cleaned\n");
   }
   
 private:
