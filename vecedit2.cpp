@@ -51,7 +51,7 @@ BEGIN_EVENT_TABLE(MyGLC, wxGLCanvas)
 END_EVENT_TABLE()
 
 bool MyApp::OnInit() {
-  //initGfx();
+  initGfx();
   
   MyFrame *frame = new MyFrame("D-Net Vecedit2");
   frame->Show(TRUE);
@@ -109,15 +109,6 @@ void MyGLC::OnPaint(wxPaintEvent& event) {
   
   SetCurrent();
   
-  /*
-  static float foo = 0.3;
-  foo += 0.1;
-  if(foo > 0.9)
-    foo = 0.1;
-
-  dprintf("render, %f\n", foo);
-  dprintf("size is %d,%d\n", GetSize().x, GetSize().y);
-  
   {
     int w, h;
     GetClientSize(&w, &h);
@@ -135,7 +126,7 @@ void MyGLC::OnPaint(wxPaintEvent& event) {
   drawJustifiedText("THIS IS A TEST", 0.1, Float2(0, 0), TEXT_CENTER, TEXT_CENTER);
   
   deinitFrame();
-  */
+  
   dprintf("Deinit\n");
   
   SwapBuffers();

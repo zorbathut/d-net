@@ -82,7 +82,11 @@ void crash() {
   dprintf("Crashed!\n");
 }
 
+static bool inthread = false;
+
 int dprintf(const char *bort, ...) {
+  CHECK(!inthread);
+  inthread = true;
 
   // this is duplicated code with StringPrintf - I should figure out a way of combining these
   static vector< char > buf(2);
@@ -112,6 +116,8 @@ int dprintf(const char *bort, ...) {
 
   outputDebugString(&(buf[0]));
 
+  CHECK(inthread);
+  inthread = false;
+  
   return 0;
-
 };

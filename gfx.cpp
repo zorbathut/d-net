@@ -39,8 +39,11 @@ public:
   Pool() { }
   ~Pool() {
     dprintf("Cleaning pool\n");
-    for(int i = 0; i < poolitems.size(); i++)
+    dprintf("cp %d\n", poolitems.size());
+    for(int i = 0; i < poolitems.size(); i++) {
+      dprintf("%p\n", poolitems[i]);
       delete poolitems[i];
+    }
     dprintf("Pool cleaned\n");
   }
   

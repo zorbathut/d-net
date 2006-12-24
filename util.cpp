@@ -12,8 +12,12 @@ using namespace std;
 
 bool ffwd = false;
 
-string StringPrintf(const char *bort, ...) {
+static bool inthread = false;
 
+string StringPrintf(const char *bort, ...) {
+  CHECK(!inthread);
+  inthread = true;
+  
   static vector< char > buf(2);
   va_list args;
 
@@ -38,8 +42,12 @@ string StringPrintf(const char *bort, ...) {
 
   CHECK(done < (int)buf.size());
 
-  return string(buf.begin(), buf.begin() + done);
-
+  string rv = string(buf.begin(), buf.begin() + done);
+  
+  CHECK(inthread);
+  inthread = false;
+  
+  return rv;
 };
 
 string stringFromLongdouble(long double x) {

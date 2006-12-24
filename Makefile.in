@@ -26,6 +26,9 @@ d-net-dbg.exe: $(GAMESOURCES:=.g.d.o)
 
 vecedit2.exe: $(EDITORSOURCES:=.e.o)
 	nice $(CPP) -o $@ $(EDITORSOURCES:=.e.o) $(EDITORLDFLAGS)
+  
+vecedit2-dbg.exe: $(EDITORSOURCES:=.e.d.o)
+	nice $(CPP) -o $@ $(EDITORSOURCES:=.e.d.o) $(EDITORLDFLAGS)
 
 asm: $(GAMESOURCES:=.S) makefile
 
