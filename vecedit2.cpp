@@ -120,10 +120,10 @@ void MyFrame::OnOpen(wxCommandEvent& event) {
   }
 }
 void MyFrame::OnSave(wxCommandEvent& event) {
-  OnSaveas();
+  OnSaveas(event);
 }
 void MyFrame::OnSaveas(wxCommandEvent& event) {
-  wxFileDialog wxfd(this, "Save File", "", "", "DVec2 Files (*.dv2)|*.dv2|All Files (*.*)|*.*", wxFD_SAVE);
+  wxFileDialog wxfd(this, "Save File", "", "", "DVec2 Files (*.dv2)|*.dv2|All Files (*.*)|*.*", wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
   if(wxfd.ShowModal() == wxID_OK) {
     dprintf("Saveas %s", wxfd.GetFilename().c_str());
   } else {
