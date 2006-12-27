@@ -8,13 +8,13 @@ bool Vecedit::changed() const {
 
 void Vecedit::render() const {
   setZoomCenter(xc, yc, zpp * getResolutionY() / 2);
-  setColor(Color(1.0, 1.0, 1.0));
+  setColor(Color(0.7, 1.0, 0.7));
 
   for(int i = 0; i < dv2.paths.size(); i++)
-    drawVectorPath(dv2.paths[i], make_pair(Float2(0, 0), 0), 100, zpp * 2);
+    drawVectorPath(dv2.paths[i], make_pair(Float2(0, 0), 1), 100, zpp * 2);
   
-  setColor(0.5, 0.5, 0.5);
-  drawGrid(32, zpp * 2);
+  setColor(0.2, 0.2, 0.5);
+  drawGrid(32, zpp);
 }
 
 void Vecedit::clear() {
