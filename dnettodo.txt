@@ -1,6 +1,28 @@
 ---- Major work path
 - Railgun currently crashes everything
 - Next-gen vecedit?
+  - Toolbar working
+  - Ability to save
+  - Mouse input
+  - Scrolling, zooming
+  - Ability to select things
+  - Controls onscreen
+  - Moving existing controls
+  - Grid lock
+  - Grid change
+  - Undo
+  - Toggling curve
+  - Adding points
+  - Deleting points
+  - Deleting entire curve
+  - Adding new curve
+  - Curve properties (flip, spin, etc)
+  - Entity select
+  - Entity properties
+  - Entity move
+  - Entity delete
+  - Entity add
+  - Save
 - Activate factions
   - Faction bonuses/penalties in demo screens
 - Many many more weapons

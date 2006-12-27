@@ -4,9 +4,7 @@
 #include "functor.h"
 #include "dvec2.h"
 
-#include <boost/noncopyable.hpp>
-
-class Vecedit : private boost::noncopyable {
+class Vecedit {
   smart_ptr<Closure0> resync_gui_callback;
   
   // x center, y center, zoom per pixel
