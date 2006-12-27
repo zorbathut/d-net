@@ -11,9 +11,12 @@
  */
  
 class VeceditGLC : public wxGLCanvas {
+private:
+  smart_ptr<Closure0> render_callback;
+
 public:
   
-  explicit VeceditGLC(wxWindow *wind);
+  VeceditGLC(wxWindow *wind, const smart_ptr<Closure0> &render_callback);
   
   void OnPaint(wxPaintEvent& event);
   void OnSize(wxSizeEvent& event);
@@ -34,7 +37,7 @@ int gl_attribList[] = {
   WX_GL_DOUBLEBUFFER,
   0
 };
-VeceditGLC::VeceditGLC(wxWindow *wind) : wxGLCanvas(wind, -1, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER, "GLCanvas", gl_attribList) { };
+VeceditGLC::VeceditGLC(wxWindow *wind, const smart_ptr<Closure0> &render_callback) : wxGLCanvas(wind, -1, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER, "GLCanvas", gl_attribList), render_callback(render_callback) { };
 
 void VeceditGLC::OnPaint(wxPaintEvent& event) {
   wxPaintDC dc(this);
@@ -50,17 +53,14 @@ void VeceditGLC::OnPaint(wxPaintEvent& event) {
   }
   
   wxYield();
+  
   initFrame();
-
   clearFrame(Color(0, 0, 0));
-  setZoomCenter(0, 0, 1);
-  setColor(Color(1.0, 1.0, 1.0));
-  drawJustifiedText("THIS IS A TEST", 0.1, Float2(0, 0), TEXT_CENTER, TEXT_CENTER);
+  
+  render_callback->Run();
   
   deinitFrame();
-  
   SwapBuffers();
-
 }
 
 void VeceditGLC::OnSize(wxSizeEvent& event) {
@@ -157,7 +157,7 @@ VeceditWindow::VeceditWindow() : wxFrame((wxFrame *)NULL, -1, veceditname), core
   CreateStatusBar();
   SetStatusText("borf borf borf");
   
-  glc = new VeceditGLC(this);
+  glc = new VeceditGLC(this, NewFunctor(&core, &Vecedit::render));
 
 }
 
