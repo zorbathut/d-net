@@ -14,6 +14,7 @@ public:
 
   void render() const;
 
+  void clear();
   void load(const string &filename);
   void save(const string &filename);
   

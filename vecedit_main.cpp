@@ -79,20 +79,26 @@ private:
   Vecedit core;
 
   VeceditGLC *glc;
+  string filename;
 
 public:
   
   VeceditWindow();
   
-  void OnNew(wxCommandEvent& event);
-  void OnOpen(wxCommandEvent& event);
-  void OnSave(wxCommandEvent& event);
-  void OnSaveas(wxCommandEvent& event);
+  void OnNew(wxCommandEvent &event);
+  void OnOpen(wxCommandEvent &event);
+  bool OnSave();
+  bool OnSaveas();
 
-  void OnQuit(wxCommandEvent& event);
-  void OnAbout(wxCommandEvent& event);
+  void OnQuit(wxCommandEvent &event);
+  void OnAbout(wxCommandEvent &event);
+  void OnClose(wxCloseEvent &event);
+
+  void OnSave_dispatch(wxCommandEvent &event);
+  void OnSaveas_dispatch(wxCommandEvent &event);
 
   void redraw();
+  bool maybeSaveChanges();
   
   DECLARE_EVENT_TABLE()
 };
@@ -109,10 +115,12 @@ enum {
 BEGIN_EVENT_TABLE(VeceditWindow, wxFrame)
   EVT_MENU(ID_New, VeceditWindow::OnNew)
   EVT_MENU(ID_Open, VeceditWindow::OnOpen)
-  EVT_MENU(ID_Save, VeceditWindow::OnSave)
-  EVT_MENU(ID_Saveas, VeceditWindow::OnSaveas)
+  EVT_MENU(ID_Save, VeceditWindow::OnSave_dispatch)
+  EVT_MENU(ID_Saveas, VeceditWindow::OnSaveas_dispatch)
+
   EVT_MENU(ID_Quit, VeceditWindow::OnQuit)
   EVT_MENU(ID_About, VeceditWindow::OnAbout)
+  EVT_CLOSE(VeceditWindow::OnClose)
 END_EVENT_TABLE()
 
 const string veceditname =  "D-Net Vecedit2";
@@ -154,48 +162,83 @@ VeceditWindow::VeceditWindow() : wxFrame((wxFrame *)NULL, -1, veceditname), core
 }
 
 void VeceditWindow::OnNew(wxCommandEvent& event) {
-  dprintf("New");
+  if(!maybeSaveChanges())
+    return;
+  core.clear();
+  filename = "";
 }
 void VeceditWindow::OnOpen(wxCommandEvent& event) {
-  if(core.changed()) {
-    int saveit = wxMessageBox("The text in the unknown file has changed.\n\nDo you want to save the changes?", veceditname, wxYES_NO | wxCANCEL | wxICON_EXCLAMATION);
-    if(saveit == wxCANCEL)
-      return;
-    if(saveit == wxYES)
-      OnSave(event);
-  }
-  
+  if(!maybeSaveChanges())
+    return;
   wxFileDialog wxfd(this, "Open File", veceditname, "", "DVec2 Files (*.dv2)|*.dv2|All Files (*.*)|*.*", wxFD_OPEN);
   if(wxfd.ShowModal() == wxID_OK) {
-    dprintf("Open %s", wxfd.GetPath().c_str());
-  } else {
-    dprintf("Open cancel");
+    filename = wxfd.GetPath();
+    core.load(filename);
   }
 }
-void VeceditWindow::OnSave(wxCommandEvent& event) {
-  OnSaveas(event);
+bool VeceditWindow::OnSave() {
+  if(filename.empty()) {
+    return OnSaveas();
+  } else {
+    core.save(filename);
+    return true;
+  }
 }
-void VeceditWindow::OnSaveas(wxCommandEvent& event) {
+bool VeceditWindow::OnSaveas() {
   wxFileDialog wxfd(this, "Save File", veceditname, "", "DVec2 Files (*.dv2)|*.dv2|All Files (*.*)|*.*", wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
   if(wxfd.ShowModal() == wxID_OK) {
-    dprintf("Saveas %s", wxfd.GetPath().c_str());
+    filename = wxfd.GetPath();
+    core.save(filename);
+    return true;
   } else {
-    dprintf("Saveas cancel");
+    return false;
   }
 }
 
 void VeceditWindow::OnQuit(wxCommandEvent& WXUNUSED(event)) {
+  if(!maybeSaveChanges())
+    return;
   Close(TRUE);
 }
-
 void VeceditWindow::OnAbout(wxCommandEvent& WXUNUSED(event)) {
   wxMessageBox("What is D-Net Vecedit2? We just don't know.", "About D-Net Vecedit2", wxOK | wxICON_INFORMATION, this);
+}
+void VeceditWindow::OnClose(wxCloseEvent &event) {
+  if(!maybeSaveChanges()) {
+    if(!event.CanVeto()) {
+      wxMessageBox("Cannot cancel closing, saving to c:\\backup.dv2", "ba-weep-gra-na-weep-ninny-bong", wxOK);
+      core.save("c:\\backup.dv2");
+      this->Destroy();
+    } else {
+      event.Veto();
+    }
+  } else {
+    this->Destroy();
+  }
+}
+
+void VeceditWindow::OnSave_dispatch(wxCommandEvent& event) {
+  OnSave();
+}
+void VeceditWindow::OnSaveas_dispatch(wxCommandEvent& event) {
+  OnSaveas();
 }
 
 void VeceditWindow::redraw() {
   dprintf("Redraw\n");
   
   glc->Refresh();
+}
+
+bool VeceditWindow::maybeSaveChanges() {
+  if(core.changed()) {
+    int saveit = wxMessageBox("The text in the unknown file has changed.\n\nDo you want to save the changes?", veceditname, wxYES_NO | wxCANCEL | wxICON_EXCLAMATION);
+    if(saveit == wxCANCEL)
+      return false;
+    if(saveit == wxYES)
+      return OnSave();
+  }
+  return true;
 }
 
 /*************
