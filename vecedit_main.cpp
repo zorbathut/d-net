@@ -158,7 +158,13 @@ VeceditWindow::VeceditWindow() : wxFrame((wxFrame *)NULL, -1, veceditname), core
   SetStatusText("borf borf borf");
   
   glc = new VeceditGLC(this, NewFunctor(&core, &Vecedit::render));
+  wxPanel *pan = new wxPanel(this);
 
+  wxBoxSizer *sizer = new wxBoxSizer(wxHORIZONTAL);
+  sizer->Add(glc, 1, wxEXPAND);
+  sizer->Add(pan, 0, wxEXPAND);
+  SetSizer(sizer);
+  
 }
 
 void VeceditWindow::OnNew(wxCommandEvent& event) {
