@@ -16,6 +16,9 @@ using namespace std;
 void initGfx();
 void updateResolution(float aspect); // picks up viewport data from OpenGL
 
+int getResolutionX();
+int getResolutionY();
+
 string printGraphicsStats();
 
 void clearFrame(const Color &color);

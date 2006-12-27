@@ -8,6 +8,11 @@
 class Vecedit : private boost::noncopyable {
   smart_ptr<Closure0> resync_gui_callback;
   
+  // x center, y center, zoom per pixel
+  float xc;
+  float yc;
+  float zpp;
+  
 public:
 
   bool changed() const;

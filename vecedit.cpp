@@ -7,9 +7,9 @@ bool Vecedit::changed() const {
 }
 
 void Vecedit::render() const {
-  setZoomCenter(0, 0, 1);
+  setZoomCenter(xc, yc, zpp * getResolutionY() / 2);
   setColor(Color(1.0, 1.0, 1.0));
-  drawJustifiedText("THIS IS A TEST", 0.1, Float2(0, 0), TEXT_CENTER, TEXT_CENTER);
+  drawJustifiedText("THIS IS A TEST", 10, Float2(0, 0), TEXT_CENTER, TEXT_CENTER);
 }
 
 void Vecedit::clear() {
@@ -24,4 +24,8 @@ void Vecedit::save(const string &filename) {
   dprintf("Saving %s\n", filename.c_str());
 }
 
-Vecedit::Vecedit(const smart_ptr<Closure0> &resync_gui_callback) : resync_gui_callback(resync_gui_callback) { };
+Vecedit::Vecedit(const smart_ptr<Closure0> &resync_gui_callback) : resync_gui_callback(resync_gui_callback) {
+  xc = 0;
+  yc = 0;
+  zpp = 0.25;
+};
