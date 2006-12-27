@@ -472,7 +472,7 @@ void setZoomVertical(float in_sx, float in_sy, float in_ey) {
   map_sy = real_sy;
   map_zoom = real_ey - real_sy;
   map_ey = map_sy + map_zoom;
-  map_ex = map_sx + map_zoom * 4 / 3;
+  map_ex = map_sx + map_zoom * windows.back().newbounds.x_span() / windows.back().newbounds.y_span();
 }
 
 Float4 getZoom() { return map_bounds; };

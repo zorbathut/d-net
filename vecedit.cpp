@@ -9,15 +9,20 @@ bool Vecedit::changed() const {
 void Vecedit::render() const {
   setZoomCenter(xc, yc, zpp * getResolutionY() / 2);
   setColor(Color(1.0, 1.0, 1.0));
-  drawJustifiedText("THIS IS A TEST", 10, Float2(0, 0), TEXT_CENTER, TEXT_CENTER);
+
+  for(int i = 0; i < dv2.paths.size(); i++)
+    drawVectorPath(dv2.paths[i], make_pair(Float2(0, 0), 0), 100, zpp * 2);
+  
+  setColor(0.5, 0.5, 0.5);
+  drawGrid(32, zpp * 2);
 }
 
 void Vecedit::clear() {
-  dprintf("Clearing\n");
+  dv2 = Dvec2();
   resync_gui_callback->Run();
 }
 void Vecedit::load(const string &filename) {
-  dprintf("Loading %s\n", filename.c_str());
+  dv2 = loadDvec2(filename);
   resync_gui_callback->Run();
 }
 void Vecedit::save(const string &filename) {

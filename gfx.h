@@ -119,7 +119,7 @@ void drawJustifiedParagraphedText(const string &txt, float scale, pair<float, fl
 
 // VectorPath objects have their own local coordinate system - this scales it by whatever, then translates its origin to the new origin.
 // It is not necessarily an upper-left corner origin (it's more likely to be center, but that's not guaranteed either)
-void drawVectorPath(const VectorPath &vecob, const pair<pair<float, float>, float> &coord, int midpoints, float weight);
+void drawVectorPath(const VectorPath &vecob, const pair<Float2, float> &coord, int midpoints, float weight);
 void drawVectorPath(const VectorPath &vecob, const Float4 &bounds, int midpoints, float weight);
 
 void drawDvec2(const Dvec2 &vecob, const Float4 &bounds, int midpoints, float weight);

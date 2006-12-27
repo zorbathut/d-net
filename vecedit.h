@@ -2,6 +2,7 @@
 #define DNET_VECEDIT
 
 #include "functor.h"
+#include "dvec2.h"
 
 #include <boost/noncopyable.hpp>
 
@@ -12,6 +13,8 @@ class Vecedit : private boost::noncopyable {
   float xc;
   float yc;
   float zpp;
+  
+  Dvec2 dv2;
   
 public:
 
