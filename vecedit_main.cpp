@@ -4,6 +4,7 @@
 
 #include "debug.h"
 #include "gfx.h"
+#include "vecedit.h"
 
 class MyApp: public wxApp {
   virtual bool OnInit();
@@ -12,6 +13,9 @@ class MyApp: public wxApp {
 IMPLEMENT_APP(MyApp)
 
 class MyFrame : public wxFrame {
+private:
+  Vecedit core;
+
 public:
   
   MyFrame(const wxString& title);
@@ -23,6 +27,8 @@ public:
 
   void OnQuit(wxCommandEvent& event);
   void OnAbout(wxCommandEvent& event);
+
+  void redraw();
   
   DECLARE_EVENT_TABLE()
 };
@@ -72,7 +78,7 @@ bool MyApp::OnInit() {
   return TRUE;
 }
 
-MyFrame::MyFrame(const wxString& title) : wxFrame((wxFrame *)NULL, -1, title) {
+MyFrame::MyFrame(const wxString& title) : wxFrame((wxFrame *)NULL, -1, title), core(NewFunctor(this, &MyFrame::redraw)) {
   wxMenuBar *menuBar = new wxMenuBar;
   
   {
@@ -136,7 +142,11 @@ void MyFrame::OnQuit(wxCommandEvent& WXUNUSED(event)) {
 }
 
 void MyFrame::OnAbout(wxCommandEvent& WXUNUSED(event)) {
-  wxMessageBox("This is a level editor.", "About D-Net Vecedit2", wxOK | wxICON_INFORMATION, this);
+  wxMessageBox("What is D-Net Vecedit2? We just don't know.", "About D-Net Vecedit2", wxOK | wxICON_INFORMATION, this);
+}
+
+void MyFrame::redraw() {
+  dprintf("Redraw\n");
 }
 
 int gl_attribList[] = {

@@ -1,5 +1,5 @@
-#ifndef DNET_VECEDIT
-#define DNET_VECEDIT
+#ifndef DNET_VECEDIT_OLD
+#define DNET_VECEDIT_OLD
 
 #include "input.h"
 
