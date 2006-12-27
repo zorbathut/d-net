@@ -1,5 +1,5 @@
 
-#include "vecedit.h"
+#include "vecedit_old.h"
 
 #include "game_tank.h"
 #include "gfx.h"
