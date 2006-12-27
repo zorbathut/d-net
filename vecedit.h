@@ -11,6 +11,9 @@ class Vecedit : private boost::noncopyable {
 public:
   
   void render() const;
+
+  void load(const string &filename);
+  void save(const string &filename) const;
   
   explicit Vecedit(const smart_ptr<Closure0> &resync_gui_callback);
 };
