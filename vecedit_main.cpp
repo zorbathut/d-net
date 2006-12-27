@@ -1,6 +1,7 @@
 
 #include <wx/wx.h>
 #include <wx/glcanvas.h>
+#include <wx/notebook.h>
 
 #include "debug.h"
 #include "gfx.h"
@@ -125,7 +126,7 @@ END_EVENT_TABLE()
 
 const string veceditname =  "D-Net Vecedit2";
 
-VeceditWindow::VeceditWindow() : wxFrame((wxFrame *)NULL, -1, veceditname), core(NewFunctor(this, &VeceditWindow::redraw)) {
+VeceditWindow::VeceditWindow() : wxFrame((wxFrame *)NULL, -1, veceditname, wxDefaultPosition, wxSize(800, 600)), core(NewFunctor(this, &VeceditWindow::redraw)) {
   wxMenuBar *menuBar = new wxMenuBar;
   
   {
@@ -158,11 +159,14 @@ VeceditWindow::VeceditWindow() : wxFrame((wxFrame *)NULL, -1, veceditname), core
   SetStatusText("borf borf borf");
   
   glc = new VeceditGLC(this, NewFunctor(&core, &Vecedit::render));
-  wxPanel *pan = new wxPanel(this);
+  wxNotebook *note = new wxNotebook(this, wxID_ANY);
+  note->SetMinSize(wxSize(150, 0));
+  note->AddPage(new wxNotebookPage(this, wxID_ANY), "Props");
+  note->AddPage(new wxNotebookPage(this, wxID_ANY), "Globals");
 
   wxBoxSizer *sizer = new wxBoxSizer(wxHORIZONTAL);
   sizer->Add(glc, 1, wxEXPAND);
-  sizer->Add(pan, 0, wxEXPAND);
+  sizer->Add(note, 0, wxEXPAND);
   SetSizer(sizer);
   
 }
