@@ -22,7 +22,7 @@ inline float fsin(float in) {
   if(in < 0 || in >= PI * 5 / 2) {
     in = fmod(in, PI * 2);
     if(in < 0)
-      in = in + PI * 2;
+      in = -in + PI;
     return fsin(in);
   }
   
@@ -36,8 +36,11 @@ inline float fsin(float in) {
     return -dsin(PI * 2 - in);
   } else if(in < PI * 5 / 2) {
     return dsin(in - PI * 2);
+  } else if(isnan(in)) {
+    return in;
   } else {
-    return fsin(in - PI * 2);   // this should never happen, but I'm keeping CHECK out of this file for compiler reasons
+    *(int*)0 = 0;   // this should never happen, but I'm keeping CHECK out of this file for compiler reasons
+    return 0;
   }
 }
 inline float fcos(float in) {

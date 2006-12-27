@@ -53,6 +53,8 @@ Float2 reflect(const Float2 &incoming, float normal) {
 }*/
 
 Float2 reflect(const Float2 &incoming, float normal) {
+  if(len(incoming) == 0)
+    return Float2(0, 0);
   return makeAngle(-(getAngle(-incoming) - normal) + normal) * len(incoming);
 }
 

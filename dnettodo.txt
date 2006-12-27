@@ -1,5 +1,4 @@
 ---- Major work path
-- Railgun currently crashes everything
 - Next-gen vecedit?
   - Toolbar working
   - Ability to save
