@@ -13,7 +13,7 @@
 class VeceditGLC : public wxGLCanvas {
 public:
   
-  VeceditGLC(wxWindow *wind);
+  explicit VeceditGLC(wxWindow *wind);
   
   void OnPaint(wxPaintEvent& event);
   void OnSize(wxSizeEvent& event);
@@ -82,7 +82,7 @@ private:
 
 public:
   
-  VeceditWindow(const wxString& title);
+  VeceditWindow();
   
   void OnNew(wxCommandEvent& event);
   void OnOpen(wxCommandEvent& event);
@@ -115,7 +115,9 @@ BEGIN_EVENT_TABLE(VeceditWindow, wxFrame)
   EVT_MENU(ID_About, VeceditWindow::OnAbout)
 END_EVENT_TABLE()
 
-VeceditWindow::VeceditWindow(const wxString& title) : wxFrame((wxFrame *)NULL, -1, title), core(NewFunctor(this, &VeceditWindow::redraw)) {
+const string veceditname =  "D-Net Vecedit2";
+
+VeceditWindow::VeceditWindow() : wxFrame((wxFrame *)NULL, -1, veceditname), core(NewFunctor(this, &VeceditWindow::redraw)) {
   wxMenuBar *menuBar = new wxMenuBar;
   
   {
@@ -155,7 +157,15 @@ void VeceditWindow::OnNew(wxCommandEvent& event) {
   dprintf("New");
 }
 void VeceditWindow::OnOpen(wxCommandEvent& event) {
-  wxFileDialog wxfd(this, "Open File", "", "", "DVec2 Files (*.dv2)|*.dv2|All Files (*.*)|*.*", wxFD_OPEN);
+  if(core.changed()) {
+    int saveit = wxMessageBox("The text in the unknown file has changed.\n\nDo you want to save the changes?", veceditname, wxYES_NO | wxCANCEL | wxICON_EXCLAMATION);
+    if(saveit == wxCANCEL)
+      return;
+    if(saveit == wxYES)
+      OnSave(event);
+  }
+  
+  wxFileDialog wxfd(this, "Open File", veceditname, "", "DVec2 Files (*.dv2)|*.dv2|All Files (*.*)|*.*", wxFD_OPEN);
   if(wxfd.ShowModal() == wxID_OK) {
     dprintf("Open %s", wxfd.GetPath().c_str());
   } else {
@@ -166,7 +176,7 @@ void VeceditWindow::OnSave(wxCommandEvent& event) {
   OnSaveas(event);
 }
 void VeceditWindow::OnSaveas(wxCommandEvent& event) {
-  wxFileDialog wxfd(this, "Save File", "", "", "DVec2 Files (*.dv2)|*.dv2|All Files (*.*)|*.*", wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
+  wxFileDialog wxfd(this, "Save File", veceditname, "", "DVec2 Files (*.dv2)|*.dv2|All Files (*.*)|*.*", wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
   if(wxfd.ShowModal() == wxID_OK) {
     dprintf("Saveas %s", wxfd.GetPath().c_str());
   } else {
@@ -201,7 +211,7 @@ IMPLEMENT_APP(VeceditMain)
 bool VeceditMain::OnInit() {
   initGfx();
   
-  VeceditWindow *frame = new VeceditWindow("D-Net Vecedit2");
+  VeceditWindow *frame = new VeceditWindow();
   frame->Show(TRUE);
   SetTopWindow(frame);
   return TRUE;
