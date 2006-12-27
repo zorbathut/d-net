@@ -7,13 +7,13 @@
 #include "vecedit.h"
 
 /*************
- * MyGLC
+ * VeceditGLC
  */
  
-class MyGLC : public wxGLCanvas {
+class VeceditGLC : public wxGLCanvas {
 public:
   
-  MyGLC(wxWindow *wind);
+  VeceditGLC(wxWindow *wind);
   
   void OnPaint(wxPaintEvent& event);
   void OnSize(wxSizeEvent& event);
@@ -22,10 +22,10 @@ public:
   DECLARE_EVENT_TABLE()
 };
 
-BEGIN_EVENT_TABLE(MyGLC, wxGLCanvas)
-  EVT_PAINT(MyGLC::OnPaint)
-  EVT_SIZE(MyGLC::OnSize)
-  EVT_ERASE_BACKGROUND(MyGLC::OnEraseBackground) 
+BEGIN_EVENT_TABLE(VeceditGLC, wxGLCanvas)
+  EVT_PAINT(VeceditGLC::OnPaint)
+  EVT_SIZE(VeceditGLC::OnSize)
+  EVT_ERASE_BACKGROUND(VeceditGLC::OnEraseBackground) 
 END_EVENT_TABLE()
 
 int gl_attribList[] = {
@@ -34,9 +34,9 @@ int gl_attribList[] = {
   WX_GL_DOUBLEBUFFER,
   0
 };
-MyGLC::MyGLC(wxWindow *wind) : wxGLCanvas(wind, -1, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER, "GLCanvas", gl_attribList) { };
+VeceditGLC::VeceditGLC(wxWindow *wind) : wxGLCanvas(wind, -1, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER, "GLCanvas", gl_attribList) { };
 
-void MyGLC::OnPaint(wxPaintEvent& event) {
+void VeceditGLC::OnPaint(wxPaintEvent& event) {
   wxPaintDC dc(this);
   
   SetCurrent();
@@ -63,26 +63,26 @@ void MyGLC::OnPaint(wxPaintEvent& event) {
 
 }
 
-void MyGLC::OnSize(wxSizeEvent& event) {
+void VeceditGLC::OnSize(wxSizeEvent& event) {
   Refresh();
 }
 
-void MyGLC::OnEraseBackground(wxEraseEvent& event) {
+void VeceditGLC::OnEraseBackground(wxEraseEvent& event) {
 }
 
 /*************
- * MyFrame
+ * VeceditWindow
  */
 
-class MyFrame : public wxFrame {
+class VeceditWindow : public wxFrame {
 private:
   Vecedit core;
 
-  MyGLC *glc;
+  VeceditGLC *glc;
 
 public:
   
-  MyFrame(const wxString& title);
+  VeceditWindow(const wxString& title);
   
   void OnNew(wxCommandEvent& event);
   void OnOpen(wxCommandEvent& event);
@@ -106,16 +106,16 @@ enum {
   ID_About,
 };
 
-BEGIN_EVENT_TABLE(MyFrame, wxFrame)
-  EVT_MENU(ID_New, MyFrame::OnNew)
-  EVT_MENU(ID_Open, MyFrame::OnOpen)
-  EVT_MENU(ID_Save, MyFrame::OnSave)
-  EVT_MENU(ID_Saveas, MyFrame::OnSaveas)
-  EVT_MENU(ID_Quit, MyFrame::OnQuit)
-  EVT_MENU(ID_About, MyFrame::OnAbout)
+BEGIN_EVENT_TABLE(VeceditWindow, wxFrame)
+  EVT_MENU(ID_New, VeceditWindow::OnNew)
+  EVT_MENU(ID_Open, VeceditWindow::OnOpen)
+  EVT_MENU(ID_Save, VeceditWindow::OnSave)
+  EVT_MENU(ID_Saveas, VeceditWindow::OnSaveas)
+  EVT_MENU(ID_Quit, VeceditWindow::OnQuit)
+  EVT_MENU(ID_About, VeceditWindow::OnAbout)
 END_EVENT_TABLE()
 
-MyFrame::MyFrame(const wxString& title) : wxFrame((wxFrame *)NULL, -1, title), core(NewFunctor(this, &MyFrame::redraw)) {
+VeceditWindow::VeceditWindow(const wxString& title) : wxFrame((wxFrame *)NULL, -1, title), core(NewFunctor(this, &VeceditWindow::redraw)) {
   wxMenuBar *menuBar = new wxMenuBar;
   
   {
@@ -147,14 +147,14 @@ MyFrame::MyFrame(const wxString& title) : wxFrame((wxFrame *)NULL, -1, title), c
   CreateStatusBar();
   SetStatusText("borf borf borf");
   
-  glc = new MyGLC(this);
+  glc = new VeceditGLC(this);
 
 }
 
-void MyFrame::OnNew(wxCommandEvent& event) {
+void VeceditWindow::OnNew(wxCommandEvent& event) {
   dprintf("New");
 }
-void MyFrame::OnOpen(wxCommandEvent& event) {
+void VeceditWindow::OnOpen(wxCommandEvent& event) {
   wxFileDialog wxfd(this, "Open File", "", "", "DVec2 Files (*.dv2)|*.dv2|All Files (*.*)|*.*", wxFD_OPEN);
   if(wxfd.ShowModal() == wxID_OK) {
     dprintf("Open %s", wxfd.GetPath().c_str());
@@ -162,10 +162,10 @@ void MyFrame::OnOpen(wxCommandEvent& event) {
     dprintf("Open cancel");
   }
 }
-void MyFrame::OnSave(wxCommandEvent& event) {
+void VeceditWindow::OnSave(wxCommandEvent& event) {
   OnSaveas(event);
 }
-void MyFrame::OnSaveas(wxCommandEvent& event) {
+void VeceditWindow::OnSaveas(wxCommandEvent& event) {
   wxFileDialog wxfd(this, "Save File", "", "", "DVec2 Files (*.dv2)|*.dv2|All Files (*.*)|*.*", wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
   if(wxfd.ShowModal() == wxID_OK) {
     dprintf("Saveas %s", wxfd.GetPath().c_str());
@@ -174,34 +174,34 @@ void MyFrame::OnSaveas(wxCommandEvent& event) {
   }
 }
 
-void MyFrame::OnQuit(wxCommandEvent& WXUNUSED(event)) {
+void VeceditWindow::OnQuit(wxCommandEvent& WXUNUSED(event)) {
   Close(TRUE);
 }
 
-void MyFrame::OnAbout(wxCommandEvent& WXUNUSED(event)) {
+void VeceditWindow::OnAbout(wxCommandEvent& WXUNUSED(event)) {
   wxMessageBox("What is D-Net Vecedit2? We just don't know.", "About D-Net Vecedit2", wxOK | wxICON_INFORMATION, this);
 }
 
-void MyFrame::redraw() {
+void VeceditWindow::redraw() {
   dprintf("Redraw\n");
   
   glc->Refresh();
 }
 
 /*************
- * MyApp
+ * VeceditMain
  */
 
-class MyApp: public wxApp {
+class VeceditMain: public wxApp {
   virtual bool OnInit();
 };
 
-IMPLEMENT_APP(MyApp)
+IMPLEMENT_APP(VeceditMain)
 
-bool MyApp::OnInit() {
+bool VeceditMain::OnInit() {
   initGfx();
   
-  MyFrame *frame = new MyFrame("D-Net Vecedit2");
+  VeceditWindow *frame = new VeceditWindow("D-Net Vecedit2");
   frame->Show(TRUE);
   SetTopWindow(frame);
   return TRUE;
