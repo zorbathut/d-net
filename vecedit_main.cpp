@@ -2,6 +2,8 @@
 #include <wx/wx.h>
 #include <wx/glcanvas.h>
 #include <wx/notebook.h>
+#include <wx/toolbar.h>
+#include <wx/tbarbase.h>
 
 #include "debug.h"
 #include "gfx.h"
@@ -163,11 +165,18 @@ VeceditWindow::VeceditWindow() : wxFrame((wxFrame *)NULL, -1, veceditname, wxDef
   note->SetMinSize(wxSize(150, 0));
   note->AddPage(new wxNotebookPage(this, wxID_ANY), "Props");
   note->AddPage(new wxNotebookPage(this, wxID_ANY), "Globals");
-
+  
+  wxToolBar *tool = new wxToolBar(this, wxID_ANY);
+  
   wxBoxSizer *sizer = new wxBoxSizer(wxHORIZONTAL);
   sizer->Add(glc, 1, wxEXPAND);
   sizer->Add(note, 0, wxEXPAND);
-  SetSizer(sizer);
+  
+  wxBoxSizer *vertsizer = new wxBoxSizer(wxVERTICAL);
+  vertsizer->Add(tool, 0, wxEXPAND);
+  vertsizer->Add(sizer, 1, wxEXPAND);
+  
+  SetSizer(vertsizer);
   
 }
 
