@@ -202,15 +202,19 @@ bool VeceditWindow::OnSave() {
   if(filename.empty()) {
     return OnSaveas();
   } else {
-    core.save(filename);
+    if(!core.save(filename))
+      wxMessageBox("Error saving! File is not saved!", "ba-weep-gra-na-weep-ninny-bong", wxOK | wxICON_INFORMATION, this);
     return true;
   }
 }
 bool VeceditWindow::OnSaveas() {
   wxFileDialog wxfd(this, "Save File", veceditname, "", "DVec2 Files (*.dv2)|*.dv2|All Files (*.*)|*.*", wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
   if(wxfd.ShowModal() == wxID_OK) {
-    filename = wxfd.GetPath();
-    core.save(filename);
+    if(core.save((string)wxfd.GetPath())) {
+      filename = wxfd.GetPath();
+    } else {
+      wxMessageBox("Error saving! File is not saved!", "ba-weep-gra-na-weep-ninny-bong", wxOK | wxICON_INFORMATION, this);
+    }
     return true;
   } else {
     return false;

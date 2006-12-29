@@ -22,7 +22,7 @@ public:
 
   void clear();
   void load(const string &filename);
-  void save(const string &filename);
+  bool save(const string &filename);
   
   explicit Vecedit(const smart_ptr<Closure0> &resync_gui_callback);
 };

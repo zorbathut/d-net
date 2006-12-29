@@ -29,61 +29,6 @@ float cursor_y = 0;
 float mouse_xoverflow = 0;
 float mouse_yoverflow = 0;
 
-void savePath(int i, FILE *outfile) {
-  CHECK(i >= 0 && i < paths.size());
-  fprintf(outfile, "path {\n");
-  fprintf(outfile, "  center=%f,%f\n", paths[i].centerx, paths[i].centery);
-  fprintf(outfile, "  reflect=%s\n", rf_names[paths[i].reflect]);
-  fprintf(outfile, "  dupes=%d\n", paths[i].dupes);
-  fprintf(outfile, "  angle=%d/%d\n", paths[i].ang_numer, paths[i].ang_denom);
-  for(int j = 0; j < paths[i].path.size(); j++) {
-    string lhs;
-    string rhs;
-    if(paths[i].path[j].curvl)
-      lhs = StringPrintf("%f,%f", paths[i].path[j].curvlx, paths[i].path[j].curvly);
-    else
-      lhs = "---";
-    if(paths[i].path[j].curvr)
-      rhs = StringPrintf("%f,%f", paths[i].path[j].curvrx, paths[i].path[j].curvry);
-    else
-      rhs = "---";
-    fprintf(outfile, "  node= %s | %f,%f | %s\n", lhs.c_str(), paths[i].path[j].x, paths[i].path[j].y, rhs.c_str());
-  }
-  fprintf(outfile, "}\n");
-  fprintf(outfile, "\n");
-};
-
-void saveEntity(int i, FILE *outfile) {
-  CHECK(i >= 0 && i < entities.size());
-  fprintf(outfile, "entity {\n");
-  fprintf(outfile, "  type=%s\n", ent_names[entities[i].type]);
-  fprintf(outfile, "  coord=%f,%f\n", entities[i].x, entities[i].y);
-  for(int j = 0; j < entities[i].params.size(); j++)
-    fprintf(outfile, "%s", entities[i].params[j].dumpTextRep().c_str());
-  fprintf(outfile, "}\n");
-  fprintf(outfile, "\n");
-}
-
-void saveDv2() {
-  FILE *outfile;
-  {
-    char timestampbuf[128];
-    time_t ctmt = time(NULL);
-    strftime(timestampbuf, sizeof(timestampbuf), "%Y%m%d-%H%M%S.dv2", gmtime(&ctmt));
-    dprintf("%s\n", timestampbuf);
-    outfile = fopen(timestampbuf, "wb");
-    if(!outfile) {
-      dprintf("Outfile %s couldn't be opened! Didn't save!", timestampbuf);
-      return;
-    }
-  }  
-  for(int i = 0; i < paths.size(); i++)
-    savePath(i, outfile);
-  for(int i = 0; i < entities.size(); i++)
-    saveEntity(i, outfile);
-  fclose(outfile);
-}
-
 void loadDv2() {
   saveDv2();
   Dvec2 temp = loadDvec2("load.dv2");

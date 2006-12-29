@@ -1,6 +1,8 @@
 
 #include "vecedit.h"
+
 #include "gfx.h"
+#include "util.h"
 
 bool Vecedit::changed() const {
   return false;
@@ -25,8 +27,46 @@ void Vecedit::load(const string &filename) {
   dv2 = loadDvec2(filename);
   resync_gui_callback->Run();
 }
-void Vecedit::save(const string &filename) {
-  dprintf("Saving %s\n", filename.c_str());
+bool Vecedit::save(const string &filename) {
+  FILE *outfile;
+  outfile = fopen(filename.c_str(), "wb");
+  if(!outfile)
+    return false;
+      
+  for(int i = 0; i < dv2.paths.size(); i++) {
+    fprintf(outfile, "path {\n");
+    fprintf(outfile, "  center=%f,%f\n", dv2.paths[i].centerx, dv2.paths[i].centery);
+    fprintf(outfile, "  reflect=%s\n", rf_names[dv2.paths[i].reflect]);
+    fprintf(outfile, "  dupes=%d\n", dv2.paths[i].dupes);
+    fprintf(outfile, "  angle=%d/%d\n", dv2.paths[i].ang_numer, dv2.paths[i].ang_denom);
+    for(int j = 0; j < dv2.paths[i].path.size(); j++) {
+      string lhs;
+      string rhs;
+      if(dv2.paths[i].path[j].curvl)
+        lhs = StringPrintf("%f,%f", dv2.paths[i].path[j].curvlx, dv2.paths[i].path[j].curvly);
+      else
+        lhs = "---";
+      if(dv2.paths[i].path[j].curvr)
+        rhs = StringPrintf("%f,%f", dv2.paths[i].path[j].curvrx, dv2.paths[i].path[j].curvry);
+      else
+        rhs = "---";
+      fprintf(outfile, "  node= %s | %f,%f | %s\n", lhs.c_str(), dv2.paths[i].path[j].x, dv2.paths[i].path[j].y, rhs.c_str());
+    }
+    fprintf(outfile, "}\n");
+    fprintf(outfile, "\n");
+  }
+  for(int i = 0; i < dv2.entities.size(); i++) {
+    fprintf(outfile, "entity {\n");
+    fprintf(outfile, "  type=%s\n", ent_names[dv2.entities[i].type]);
+    fprintf(outfile, "  coord=%f,%f\n", dv2.entities[i].x, dv2.entities[i].y);
+    for(int j = 0; j < dv2.entities[i].params.size(); j++)
+      fprintf(outfile, "%s", dv2.entities[i].params[j].dumpTextRep().c_str());
+    fprintf(outfile, "}\n");
+    fprintf(outfile, "\n");
+  }
+  fclose(outfile);
+  
+  return true;
 }
 
 Vecedit::Vecedit(const smart_ptr<Closure0> &resync_gui_callback) : resync_gui_callback(resync_gui_callback) {
