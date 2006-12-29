@@ -10,14 +10,12 @@
 #include "metagame.h"
 #include "os.h"
 #include "player.h"
-#include "vecedit.h"
 #include "audio.h"
 
 #include <boost/assign.hpp>
 
 using namespace std;
 
-DEFINE_bool(vecedit, false, "Vector editor (WARNING: nearly unusable)");
 DEFINE_int(rounds_per_shop, 6, "How many rounds between each buying-things opportunity");
 DEFINE_bool(auto_newgame, false, "Automatically enter New Game");
 DEFINE_float(startingPhase, -1, "Starting phase override");

@@ -8,6 +8,8 @@
 class Closure0 : private boost::noncopyable {
 public:
   virtual void Run() const = 0;
+
+  virtual ~Closure0() { };
 };
 
 template<typename Owner> class Closure0_Member_NC : public Closure0 {

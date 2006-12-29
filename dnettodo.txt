@@ -1,6 +1,5 @@
 ---- Major work path
 - Next-gen vecedit?
-  - Toolbar working
   - Ability to save
   - Mouse input
   - Scrolling, zooming
