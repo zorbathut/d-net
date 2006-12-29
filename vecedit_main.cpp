@@ -169,6 +169,7 @@ VeceditWindow::VeceditWindow() : wxFrame((wxFrame *)NULL, -1, veceditname, wxDef
   wxToolBar *tool = new wxToolBar(this, wxID_ANY);
   tool->AddTool(wxID_ANY, "add shit", wxBitmap("vecedit/plus.png", wxBITMAP_TYPE_PNG));
   tool->Realize();
+  tool->SetMinSize(wxSize(0, 25));
   
   wxBoxSizer *sizer = new wxBoxSizer(wxHORIZONTAL);
   sizer->Add(glc, 1, wxEXPAND);
