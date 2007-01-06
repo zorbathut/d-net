@@ -6,8 +6,7 @@
 #include "input.h"
 
 struct MouseInput {
-  int x;
-  int y;
+  Float2 pos;
   
   int dw;
   
@@ -17,9 +16,8 @@ struct MouseInput {
 class Vecedit {
   smart_ptr<Closure0> resync_gui_callback;
   
-  // x center, y center, zoom per pixel
-  float xc;
-  float yc;
+  // center, zoom per pixel
+  Float2 center;
   float zpp;
   
   Dvec2 dv2;

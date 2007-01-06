@@ -9,7 +9,7 @@ bool Vecedit::changed() const {
 }
 
 void Vecedit::render() const {
-  setZoomCenter(xc, yc, zpp * getResolutionY() / 2);
+  setZoomCenter(center.x, center.y, zpp * getResolutionY() / 2);
   setColor(Color(0.7, 1.0, 0.7));
 
   for(int i = 0; i < dv2.paths.size(); i++)
@@ -19,7 +19,11 @@ void Vecedit::render() const {
   drawGrid(32, zpp);
 }
 void Vecedit::mouse(const MouseInput &mouse) {
-  dprintf("Mouse movement! Now at %d,%d, wheel %d, buttons %s %s %s\n", mouse.x, mouse.y, mouse.dw, mouse.b[0].stringize().c_str(), mouse.b[1].stringize().c_str(), mouse.b[2].stringize().c_str());
+  if(mouse.b[0].push) {
+    Float2 world = (mouse.pos - Float2(getResolutionX() / 2, getResolutionY() / 2)) * zpp - Float2(center);
+    dprintf("Worldpos is %f,%f\n", world.x, world.y);
+  }
+  //dprintf("Mouse movement! Now at %d,%d, wheel %d, buttons %s %s %s\n", mouse.x, mouse.y, mouse.dw, mouse.b[0].stringize().c_str(), mouse.b[1].stringize().c_str(), mouse.b[2].stringize().c_str());
   
 }
 
@@ -74,7 +78,6 @@ bool Vecedit::save(const string &filename) {
 }
 
 Vecedit::Vecedit(const smart_ptr<Closure0> &resync_gui_callback) : resync_gui_callback(resync_gui_callback) {
-  xc = 0;
-  yc = 0;
+  center = Float2(0, 0);
   zpp = 0.25;
 };

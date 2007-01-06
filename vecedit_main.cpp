@@ -81,8 +81,7 @@ void VeceditGLC::OnEraseBackground(wxEraseEvent& event) {
 void VeceditGLC::OnMouse(wxMouseEvent &event) {
   event.Skip();
   
-  mstate.x = event.GetX();
-  mstate.y = event.GetY();
+  mstate.pos = Float2(event.GetX(), event.GetY());
   
   mstate.dw = event.GetWheelRotation();
   
