@@ -3,6 +3,16 @@
 
 #include "functor.h"
 #include "dvec2.h"
+#include "input.h"
+
+struct MouseInput {
+  int x;
+  int y;
+  
+  int dw;
+  
+  Button b[3];
+};
 
 class Vecedit {
   smart_ptr<Closure0> resync_gui_callback;
@@ -19,6 +29,8 @@ public:
   bool changed() const;
 
   void render() const;
+
+  void mouse(const MouseInput &mouse);
 
   void clear();
   void load(const string &filename);

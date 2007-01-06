@@ -40,6 +40,26 @@ void Button::newState(bool pushed) {
   }
 }
 
+string Button::stringize() const {
+  string rv;
+  if(down) {
+    rv = "D";
+  } else {
+    rv = "U";
+  }
+  
+  if(push)
+    rv += "P";
+  
+  if(release)
+    rv += "R";
+  
+  if(repeat)
+    rv += "E";
+  
+  return rv;
+};
+
 void Controller::newState(const Controller &nst) {
   menu = nst.menu;
   lastaxes = axes;

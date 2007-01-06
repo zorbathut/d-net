@@ -1,6 +1,6 @@
 ---- Major work path
+- Conditionals to makefiles so that the dependencies are only included if they're needed
 - Next-gen vecedit?
-  - Ability to save
   - Mouse input
   - Scrolling, zooming
   - Ability to select things

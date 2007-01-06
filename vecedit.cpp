@@ -18,6 +18,10 @@ void Vecedit::render() const {
   setColor(0.2, 0.2, 0.5);
   drawGrid(32, zpp);
 }
+void Vecedit::mouse(const MouseInput &mouse) {
+  dprintf("Mouse movement! Now at %d,%d, wheel %d, buttons %s %s %s\n", mouse.x, mouse.y, mouse.dw, mouse.b[0].stringize().c_str(), mouse.b[1].stringize().c_str(), mouse.b[2].stringize().c_str());
+  
+}
 
 void Vecedit::clear() {
   dv2 = Dvec2();

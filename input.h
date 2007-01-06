@@ -24,6 +24,8 @@ public:
   void newState(bool pushed);
   void newState(const Button &other);
 
+  string stringize() const;
+
   Button();
 };
 

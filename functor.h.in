@@ -1,0 +1,36 @@
+%%TEMPLATE_TOKEN%%class Closure%%DEPTH%% : private boost::noncopyable {
+public:
+  virtual void Run(%%PARAMS%%) const = 0;
+
+  virtual ~Closure%%DEPTH%%() { };
+};
+
+template<typename Owner%%TEMPLATE_TYPES%%> class Closure%%DEPTH%%_Member_NC : public Closure%%DEPTH%%%%USE_TEMPLATE_TYPES%% {
+private:
+  Owner *owner;
+  void (Owner::*function)(%%PARAMS_NOIDENT%%);
+
+public:
+  virtual void Run(%%PARAMS%%) const { (owner->*function)(%%PARAMS_NOTYPE%%); };
+  
+  Closure%%DEPTH%%_Member_NC(Owner *owner, void (Owner::*function)(%%PARAMS_NOIDENT%%)) : owner(owner), function(function) { };
+};
+
+template<typename Owner%%TEMPLATE_TYPES%%> class Closure%%DEPTH%%_Member_C : public Closure%%DEPTH%%%%USE_TEMPLATE_TYPES%% {
+private:
+  const Owner *owner;
+  void (Owner::*function)(%%PARAMS_NOIDENT%%) const;
+
+public:
+  virtual void Run(%%PARAMS%%) const { (owner->*function)(%%PARAMS_NOTYPE%%); };
+  
+  Closure%%DEPTH%%_Member_C(const Owner *owner, void (Owner::*function)(%%PARAMS_NOIDENT%%) const) : owner(owner), function(function) { };
+};
+
+template<typename Owner%%TEMPLATE_TYPES%%> smart_ptr<Closure%%DEPTH%%%%USE_TEMPLATE_TYPES%%> NewFunctor(Owner *owner, void (Owner::*function)(%%PARAMS_NOIDENT%%)) {
+  return smart_ptr<Closure%%DEPTH%%%%USE_TEMPLATE_TYPES%%>(new Closure%%DEPTH%%_Member_NC<Owner%%TEMPLATE_TYPES_NOTYPENAME%%>(owner, function));
+};
+
+template<typename Owner%%TEMPLATE_TYPES%%> smart_ptr<Closure%%DEPTH%%%%USE_TEMPLATE_TYPES%%> NewFunctor(const Owner *owner, void (Owner::*function)(%%PARAMS_NOIDENT%%) const ) {
+  return smart_ptr<Closure%%DEPTH%%%%USE_TEMPLATE_TYPES%%>(new Closure%%DEPTH%%_Member_C<Owner%%TEMPLATE_TYPES_NOTYPENAME%%>(owner, function));
+};

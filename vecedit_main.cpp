@@ -16,14 +16,18 @@
 class VeceditGLC : public wxGLCanvas {
 private:
   smart_ptr<Closure0> render_callback;
+  smart_ptr<Closure1<const MouseInput &> > mouse_callback;
+  MouseInput mstate;
 
 public:
   
-  VeceditGLC(wxWindow *wind, const smart_ptr<Closure0> &render_callback);
+  VeceditGLC(wxWindow *wind, const smart_ptr<Closure0> &render_callback, const smart_ptr<Closure1<const MouseInput &> > &mouse_callback);
   
-  void OnPaint(wxPaintEvent& event);
-  void OnSize(wxSizeEvent& event);
-  void OnEraseBackground(wxEraseEvent& event);
+  void OnPaint(wxPaintEvent &event);
+  void OnSize(wxSizeEvent &event);
+  void OnEraseBackground(wxEraseEvent &event);
+
+  void OnMouse(wxMouseEvent &event);
 
   DECLARE_EVENT_TABLE()
 };
@@ -32,6 +36,7 @@ BEGIN_EVENT_TABLE(VeceditGLC, wxGLCanvas)
   EVT_PAINT(VeceditGLC::OnPaint)
   EVT_SIZE(VeceditGLC::OnSize)
   EVT_ERASE_BACKGROUND(VeceditGLC::OnEraseBackground) 
+  EVT_MOUSE_EVENTS(VeceditGLC::OnMouse)
 END_EVENT_TABLE()
 
 int gl_attribList[] = {
@@ -40,7 +45,7 @@ int gl_attribList[] = {
   WX_GL_DOUBLEBUFFER,
   0
 };
-VeceditGLC::VeceditGLC(wxWindow *wind, const smart_ptr<Closure0> &render_callback) : wxGLCanvas(wind, -1, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER, "GLCanvas", gl_attribList), render_callback(render_callback) { };
+VeceditGLC::VeceditGLC(wxWindow *wind, const smart_ptr<Closure0> &render_callback, const smart_ptr<Closure1<const MouseInput &> > &mouse_callback) : wxGLCanvas(wind, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER, "GLCanvas", gl_attribList), render_callback(render_callback), mouse_callback(mouse_callback) { };
 
 void VeceditGLC::OnPaint(wxPaintEvent& event) {
   wxPaintDC dc(this);
@@ -71,6 +76,21 @@ void VeceditGLC::OnSize(wxSizeEvent& event) {
 }
 
 void VeceditGLC::OnEraseBackground(wxEraseEvent& event) {
+}
+
+void VeceditGLC::OnMouse(wxMouseEvent &event) {
+  event.Skip();
+  
+  mstate.x = event.GetX();
+  mstate.y = event.GetY();
+  
+  mstate.dw = event.GetWheelRotation();
+  
+  mstate.b[0].newState(event.LeftIsDown());
+  mstate.b[1].newState(event.RightIsDown());
+  mstate.b[2].newState(event.MiddleIsDown());
+  
+  mouse_callback->Run(mstate);
 }
 
 /*************
@@ -160,7 +180,7 @@ VeceditWindow::VeceditWindow() : wxFrame((wxFrame *)NULL, -1, veceditname, wxDef
   CreateStatusBar();
   SetStatusText("borf borf borf");
   
-  glc = new VeceditGLC(this, NewFunctor(&core, &Vecedit::render));
+  glc = new VeceditGLC(this, NewFunctor(&core, &Vecedit::render), NewFunctor(&core, &Vecedit::mouse));
   wxNotebook *note = new wxNotebook(this, wxID_ANY);
   note->SetMinSize(wxSize(150, 0));
   note->AddPage(new wxNotebookPage(this, wxID_ANY), "Props");
