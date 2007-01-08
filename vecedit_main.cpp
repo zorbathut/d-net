@@ -15,14 +15,14 @@
  
 class VeceditGLC : public wxGLCanvas {
 private:
-  smart_ptr<Closure0> render_callback;
-  smart_ptr<Closure1<const MouseInput &> > mouse_callback;
+  smart_ptr<Closure<> > render_callback;
+  smart_ptr<Closure<const MouseInput &> > mouse_callback;
   //smart_ptr<Callback0<
   MouseInput mstate;
 
 public:
   
-  VeceditGLC(wxWindow *wind, const smart_ptr<Closure0> &render_callback, const smart_ptr<Closure1<const MouseInput &> > &mouse_callback);
+  VeceditGLC(wxWindow *wind, const smart_ptr<Closure<> > &render_callback, const smart_ptr<Closure<const MouseInput &> > &mouse_callback);
   
   void OnPaint(wxPaintEvent &event);
   void OnSize(wxSizeEvent &event);
@@ -48,7 +48,7 @@ int gl_attribList[] = {
   WX_GL_DOUBLEBUFFER,
   0
 };
-VeceditGLC::VeceditGLC(wxWindow *wind, const smart_ptr<Closure0> &render_callback, const smart_ptr<Closure1<const MouseInput &> > &mouse_callback) : wxGLCanvas(wind, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER, "GLCanvas", gl_attribList), render_callback(render_callback), mouse_callback(mouse_callback) {
+VeceditGLC::VeceditGLC(wxWindow *wind, const smart_ptr<Closure<> > &render_callback, const smart_ptr<Closure<const MouseInput &> > &mouse_callback) : wxGLCanvas(wind, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER, "GLCanvas", gl_attribList), render_callback(render_callback), mouse_callback(mouse_callback) {
   SetScrollbar(wxVERTICAL, 0, 16, 50);
   SetScrollbar(wxHORIZONTAL, 0, 16, 50);
 };

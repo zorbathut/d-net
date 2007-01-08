@@ -30,6 +30,8 @@ private:
 void registerCrashFunction(void (*)());
 void unregisterCrashFunction(void (*)());
  
+void disableStackTrace();
+
 extern void *stackStart;
 
 // Almost everything after here is necessary for the vector header patch

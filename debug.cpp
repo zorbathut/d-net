@@ -30,13 +30,19 @@ StackString::StackString(const string &str) : str_(str) {
   //dprintf("%s\n", str.c_str());
 };
 
+static bool do_stacktrace = true;
+void disableStackTrace() {
+  do_stacktrace = false;
+}
+
 void PrintDebugStack() {
   for(int i = (int)dbgstack.size() - 1; i >= 0; i--) {
     dprintf("Stack entry:\n");
     dbgstack[i]->Print();
   }
   dprintf("End of stack\n");
-  dumpStackTrace();
+  if(do_stacktrace)
+    dumpStackTrace();
 }
 
 void (*crashfunc)() = NULL;

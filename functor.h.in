@@ -1,36 +1,40 @@
-%%TEMPLATE_TOKEN%%class Closure%%DEPTH%% : private boost::noncopyable {
-public:
-  virtual void Run(%%PARAMS%%) const = 0;
+// Start of copied block
 
-  virtual ~Closure%%DEPTH%%() { };
+%%TEMPLATE(prefixtemplate, hastypename, hastype, hasdefaults)%%class %%CALLBACK_OR_CLOSURE%%%%TEMPLATE(blankonfirst, prefixbracket, hastype, trailingvoids)%% : private boost::noncopyable {
+public:
+  virtual %%RETURNVALUE%% Run(%%TEMPLATE(hastype, hasparam)%%) const = 0;
+
+  virtual ~%%CALLBACK_OR_CLOSURE%%() { };
 };
 
-template<typename Owner%%TEMPLATE_TYPES%%> class Closure%%DEPTH%%_Member_NC : public Closure%%DEPTH%%%%USE_TEMPLATE_TYPES%% {
+%%TEMPLATE(prefixtemplate, hasowner, hastypename, hastype, hasdefaults)%%class %%CALLBACK_OR_CLOSURE%%_Member_NC%%TEMPLATE(blankonfirst, prefixbracket, hasowner, hastype, trailingvoids)%% : public %%CALLBACK_OR_CLOSURE%%%%TEMPLATE(prefixbracket, hastype)%% {
 private:
   Owner *owner;
-  void (Owner::*function)(%%PARAMS_NOIDENT%%);
+  %%RETURNVALUE%% (Owner::*function)(%%TEMPLATE(hastype)%%);
 
 public:
-  virtual void Run(%%PARAMS%%) const { (owner->*function)(%%PARAMS_NOTYPE%%); };
+  virtual %%RETURNVALUE%% Run(%%TEMPLATE(hastype, hasparam)%%) const { return (owner->*function)(%%TEMPLATE(hasparam)%%); };
   
-  Closure%%DEPTH%%_Member_NC(Owner *owner, void (Owner::*function)(%%PARAMS_NOIDENT%%)) : owner(owner), function(function) { };
+  %%CALLBACK_OR_CLOSURE%%_Member_NC(Owner *owner, %%RETURNVALUE%% (Owner::*function)(%%TEMPLATE(hastype)%%)) : owner(owner), function(function) { };
 };
 
-template<typename Owner%%TEMPLATE_TYPES%%> class Closure%%DEPTH%%_Member_C : public Closure%%DEPTH%%%%USE_TEMPLATE_TYPES%% {
+%%TEMPLATE(prefixtemplate, hasowner, hastypename, hastype, hasdefaults)%%class %%CALLBACK_OR_CLOSURE%%_Member_C%%TEMPLATE(blankonfirst, prefixbracket, hasowner, hastype, trailingvoids)%% : public %%CALLBACK_OR_CLOSURE%%%%TEMPLATE(prefixbracket, hastype)%% {
 private:
   const Owner *owner;
-  void (Owner::*function)(%%PARAMS_NOIDENT%%) const;
+  %%RETURNVALUE%% (Owner::*function)(%%TEMPLATE(hastype)%%) const;
 
 public:
-  virtual void Run(%%PARAMS%%) const { (owner->*function)(%%PARAMS_NOTYPE%%); };
+  virtual %%RETURNVALUE%% Run(%%TEMPLATE(hastype, hasparam)%%) const { return (owner->*function)(%%TEMPLATE(hasparam)%%); };
   
-  Closure%%DEPTH%%_Member_C(const Owner *owner, void (Owner::*function)(%%PARAMS_NOIDENT%%) const) : owner(owner), function(function) { };
+  %%CALLBACK_OR_CLOSURE%%_Member_C(const Owner *owner, %%RETURNVALUE%% (Owner::*function)(%%TEMPLATE(hastype)%%) const) : owner(owner), function(function) { };
 };
 
-template<typename Owner%%TEMPLATE_TYPES%%> smart_ptr<Closure%%DEPTH%%%%USE_TEMPLATE_TYPES%%> NewFunctor(Owner *owner, void (Owner::*function)(%%PARAMS_NOIDENT%%)) {
-  return smart_ptr<Closure%%DEPTH%%%%USE_TEMPLATE_TYPES%%>(new Closure%%DEPTH%%_Member_NC<Owner%%TEMPLATE_TYPES_NOTYPENAME%%>(owner, function));
+%%TEMPLATE(nullstatic, prefixtemplate, hasowner, hastypename, hastype)%% smart_ptr<%%CALLBACK_OR_CLOSURE%%%%TEMPLATE(prefixbracket, hastype)%%> NewFunctor(Owner *owner, %%RETURNVALUE%% (Owner::*function)(%%TEMPLATE(hastype)%%)) {
+  return smart_ptr<%%CALLBACK_OR_CLOSURE%%%%TEMPLATE(prefixbracket, hastype)%%>(new %%CALLBACK_OR_CLOSURE%%_Member_NC%%TEMPLATE(prefixbracket, hasowner, hastype)%%(owner, function));
 };
 
-template<typename Owner%%TEMPLATE_TYPES%%> smart_ptr<Closure%%DEPTH%%%%USE_TEMPLATE_TYPES%%> NewFunctor(const Owner *owner, void (Owner::*function)(%%PARAMS_NOIDENT%%) const ) {
-  return smart_ptr<Closure%%DEPTH%%%%USE_TEMPLATE_TYPES%%>(new Closure%%DEPTH%%_Member_C<Owner%%TEMPLATE_TYPES_NOTYPENAME%%>(owner, function));
+%%TEMPLATE(nullstatic, prefixtemplate, hasowner, hastypename, hastype)%% smart_ptr<%%CALLBACK_OR_CLOSURE%%%%TEMPLATE(prefixbracket, hastype)%%> NewFunctor(const Owner *owner, %%RETURNVALUE%% (Owner::*function)(%%TEMPLATE(hastype)%%) const) {
+  return smart_ptr<%%CALLBACK_OR_CLOSURE%%%%TEMPLATE(prefixbracket, hastype)%%>(new %%CALLBACK_OR_CLOSURE%%_Member_C%%TEMPLATE(prefixbracket, hasowner, hastype)%%(owner, function));
 };
+
+// End of copied block

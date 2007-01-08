@@ -26,8 +26,10 @@ void outputDebugString(const string &str) {
 }
 
 void seriouslyCrash() {
-  TerminateProcess(GetCurrentProcess(), 1);
-  exit(1);
+  #ifdef NOEXIT
+    TerminateProcess(GetCurrentProcess(), 1); // sigh
+  #endif
+  exit(-1);
 }
 
 #else
@@ -39,7 +41,7 @@ void outputDebugString(const string &str) {
 #define printf FAILURE
 
 void seriouslyCrash() {
-  exit(1);
+  exit(-1);
 }
 
 #endif
@@ -50,6 +52,7 @@ typedef void (*sighandler_t)(int);
 class SignalHandler {
 public:
   static void signal_h(int signum) {
+    disableStackTrace(); // we won't get anything anyway
     CHECK(0);
   }
   
@@ -108,7 +111,7 @@ void dumpStackTrace() {
     dprintf("Stacktracing\n");
     StackTracer<2>::printStack(&stack);
   }
-
+  
   vector<pair<string, string> > tokens;
   {
     string line = "addr2line -f -e " + exename() + " ";

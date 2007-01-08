@@ -14,7 +14,7 @@ struct MouseInput {
 };
 
 class Vecedit {
-  smart_ptr<Closure0> resync_gui_callback;
+  smart_ptr<Closure<> > resync_gui_callback;
   
   // center, zoom per pixel
   Float2 center;
@@ -34,7 +34,7 @@ public:
   void load(const string &filename);
   bool save(const string &filename);
   
-  explicit Vecedit(const smart_ptr<Closure0> &resync_gui_callback);
+  explicit Vecedit(const smart_ptr<Closure<> > &resync_gui_callback);
 };
 
 #endif

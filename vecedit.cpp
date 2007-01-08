@@ -77,7 +77,7 @@ bool Vecedit::save(const string &filename) {
   return true;
 }
 
-Vecedit::Vecedit(const smart_ptr<Closure0> &resync_gui_callback) : resync_gui_callback(resync_gui_callback) {
+Vecedit::Vecedit(const smart_ptr<Closure<> > &resync_gui_callback) : resync_gui_callback(resync_gui_callback) {
   center = Float2(0, 0);
   zpp = 0.25;
 };

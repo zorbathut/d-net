@@ -3,33 +3,62 @@
 #include <fstream>
 #include <vector>
 #include <iterator>
+#include <set>
 
 #include "debug.h"
+#include "parse.h"
+#include "util.h"
 
 using namespace std;
 
-void printTemplateTypes(FILE *funcfile, int count, bool typename_token, bool notfirst) {
-  for(int j = 0; j < count; j++) {
-    if(j || notfirst)
-      fprintf(funcfile, ", ");
-    if(typename_token)
-      fprintf(funcfile, "typename ");
-    fprintf(funcfile, "T%d", j);
-  }
+class Params {
+  set<string> flags;
+  set<string> unusedflags;
+  
+public:
+  void init(const vector<string> &items);
+
+  bool check(const string &str);
+  void override();
+
+  string stringize() const;
+
+  ~Params();
+};
+
+void Params::init(const vector<string> &items) {
+  flags = set<string>(items.begin(), items.end());
+  CHECK(flags.size() == items.size());
+  unusedflags = flags;
 }
 
-void printParams(FILE *funcfile, int count, bool type, bool name) {
-  CHECK(type || name);
-  for(int j = 0; j < count; j++) {
-    if(j)
-      fprintf(funcfile, ", ");
-    if(type)
-      fprintf(funcfile, "T%d", j);
-    if(type && name)
-      fprintf(funcfile, " ", j);
-    if(name)
-      fprintf(funcfile, "param%d", j);
+bool Params::check(const string &str) {
+  unusedflags.erase(str);
+  return flags.count(str);
+}
+void Params::override() {
+  unusedflags.clear();
+}
+
+string Params::stringize() const {
+  string out;
+  if(flags.size()) {
+    for(set<string>::const_iterator itr = flags.begin(); itr != flags.end(); itr++) {
+      if(itr != flags.begin())
+        out += ", ";
+      out += *itr;
+    }
+  } else {
+    out += "(none)";
   }
+  return out;
+}
+
+Params::~Params() {
+  if(unusedflags.size())
+    for(set<string>::const_iterator itr = unusedflags.begin(); itr != unusedflags.end(); itr++)
+      dprintf("Unused flag: %s\n", itr->c_str());
+  CHECK(unusedflags.size() == 0);
 }
 
 int main() {
@@ -43,7 +72,7 @@ int main() {
     copy(istream_iterator<char>(sourcefile), istream_iterator<char>(), back_inserter(source));
   }
   
-  FILE *funcfile = fopen("functor.h", "w");
+  FILE *funcfile = fopen("functor.h.tmp", "w");
   
   fprintf(funcfile,
     "#ifndef DNET_FUNCTOR\n"
@@ -57,7 +86,10 @@ int main() {
     "\n"
   );
   
-  for(int i = 0; i <= 1; i++) {
+  const int maxparams = 2;
+  
+  bool first = true;
+  for(int i = maxparams; i >= 0; i--) {
     int curofs = 0;
     while(curofs != source.size()) {
       if(source[curofs] == '%') {
@@ -67,32 +99,87 @@ int main() {
         CHECK(source[endtoken] == '%' && source[endtoken + 1] == '%');
         string inttoken = string(source.begin() + curofs, source.begin() + endtoken);
         
-        if(inttoken == "DEPTH") {
-          fprintf(funcfile, "%d", i);
-        } else if(inttoken == "TEMPLATE_TOKEN") {
-          if(i) {
-            fprintf(funcfile, "template <");
-            printTemplateTypes(funcfile, i, true, false);
-            fprintf(funcfile, "> ");
+        Params params;
+        if(count(inttoken.begin(), inttoken.end(), '(')) {
+          CHECK(count(inttoken.begin(), inttoken.end(), '(') == 1);
+          CHECK(count(inttoken.begin(), inttoken.end(), ')') == 1);
+          CHECK(inttoken[inttoken.size() - 1] == ')');
+          string paramlist = string(find(inttoken.begin(), inttoken.end(), '(') + 1, inttoken.end() - 1); // at worst this is "nothing"
+          inttoken = string(inttoken.begin(), find(inttoken.begin(), inttoken.end(), '('));
+          params.init(tokenize(paramlist, ", "));
+        }
+        
+        {
+          string dbgout = inttoken;
+          dbgout += ", params ";
+          dbgout += params.stringize();
+          dprintf("%s\n", dbgout.c_str());
+        }
+        
+        if(inttoken == "CALLBACK_OR_CLOSURE") {
+          fprintf(funcfile, "Closure");
+        } else if(inttoken == "RETURNVALUE") {
+          fprintf(funcfile, "void");
+        } else if(inttoken == "TEMPLATE") {
+          // Flags: blankonfirst, prefixtemplate, prefixbracket, hasowner, hastypename, hastype, hasparam, hasdefaults, trailingvoids, nullstatic, nullnothing
+          bool null = !i && !params.check("hasowner");
+          
+          if(params.check("blankonfirst") && first) {
+            params.override();
+          } else if(params.check("nullstatic") && null) {   // params check must be first so it touches the token and we know it's not being ignored
+            fprintf(funcfile, "static");
+            params.override();
+          } else if(params.check("nullnothing") && null) {
+            params.override();
+          } else {
+            if(params.check("prefixtemplate"))
+              fprintf(funcfile, "template");
+            if(params.check("prefixtemplate") || params.check("prefixbracket"))
+              fprintf(funcfile, "<");
+            
+            vector<string> items;
+            if(params.check("hasowner"))
+              items.push_back("Owner");
+            for(int j = 0; j < i; j++)
+              items.push_back(StringPrintf("T%d", j));
+            
+            if(!items.size()) { // touch stuff that would otherwise go untouched
+              params.check("hastypename");
+              params.check("hastype");
+              params.check("hasparam");
+              params.check("hasdefaults");
+            }
+            
+            for(int j = 0; j < items.size(); j++) {
+              if(j)
+                fprintf(funcfile, ", ");
+              if(params.check("hastypename"))
+                fprintf(funcfile, "typename ");
+              if(params.check("hastype"))
+                fprintf(funcfile, "%s ", items[j].c_str());
+              if(params.check("hasparam")) {
+                CHECK(items[j][0] == 'T');
+                fprintf(funcfile, "param%s ", items[j].c_str() + 1);
+              }
+              if(params.check("hasdefaults") && first)  // hasdefaults only on first
+                if(items[j][0] == 'T')
+                  fprintf(funcfile, "= void");
+            }
+            
+            if(params.check("trailingvoids")) {
+              for(int j = i; j < maxparams; j++) {
+                if(j || items.size())
+                  fprintf(funcfile, ", ");
+                fprintf(funcfile, "void");
+              }
+            }
+            
+            if(params.check("prefixtemplate") || params.check("prefixbracket"))
+              fprintf(funcfile, "> ");
           }
-        } else if(inttoken == "TEMPLATE_TYPES") {
-          printTemplateTypes(funcfile, i, true, true);
-        } else if(inttoken == "TEMPLATE_TYPES_NOTYPENAME") {
-          printTemplateTypes(funcfile, i, false, true);
-        } else if(inttoken == "USE_TEMPLATE_TYPES") {
-          if(i) {
-            fprintf(funcfile, "<");
-            printTemplateTypes(funcfile, i, false, false);
-            fprintf(funcfile, "> ");
-          }
-        } else if(inttoken == "PARAMS") {
-          printParams(funcfile, i, true, true);
-        } else if(inttoken == "PARAMS_NOIDENT") {
-          printParams(funcfile, i, true, false);
-        } else if(inttoken == "PARAMS_NOTYPE") {
-          printParams(funcfile, i, false, true);
         } else {
           dprintf("Intercepted token is %s\n", inttoken.c_str());
+          CHECK(0);
         }
         
         curofs = endtoken + 2;
@@ -102,10 +189,14 @@ int main() {
         curofs = npos;
       }
     }
+    first = false;
   }
   
   fprintf(funcfile, "\n");
   fprintf(funcfile, "#endif\n");
   
   fclose(funcfile);
+  
+  // this is pretty much awful
+  system("mv functor.h.tmp functor.h");
 }
