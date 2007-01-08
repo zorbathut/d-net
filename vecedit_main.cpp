@@ -66,7 +66,7 @@ void VeceditGLC::OnPaint(wxPaintEvent& event) {
     updateResolution((float)w / h);
   }
   
-  wxYield();
+  //wxYield();
   
   initFrame();
   clearFrame(Color(0, 0, 0));
@@ -258,6 +258,7 @@ void VeceditWindow::OnAbout(wxCommandEvent& WXUNUSED(event)) {
   wxMessageBox("What is D-Net Vecedit2? We just don't know.", "About D-Net Vecedit2", wxOK | wxICON_INFORMATION, this);
 }
 void VeceditWindow::OnClose(wxCloseEvent &event) {
+  dprintf("enclose\n");
   if(!maybeSaveChanges()) {
     if(!event.CanVeto()) {
       wxMessageBox("Cannot cancel closing, saving to c:\\backup.dv2", "ba-weep-gra-na-weep-ninny-bong", wxOK);
@@ -267,7 +268,9 @@ void VeceditWindow::OnClose(wxCloseEvent &event) {
       event.Veto();
     }
   } else {
-    this->Destroy();
+    dprintf("destroy!\n");
+    bool rv = this->Destroy();
+    dprintf("crush! %d\n", rv);
   }
 }
 
