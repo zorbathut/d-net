@@ -1,5 +1,9 @@
 ---- Major work path
 - Conditionals to makefiles so that the dependencies are only included if they're needed
+- Swap x_span to span_x
+- Squareroot values of movement
+- Less incentive to camp?
+- Stronger bombardment in general
 - Next-gen vecedit?
   - Scrolling, zooming
   - Ability to select things

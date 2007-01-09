@@ -13,6 +13,11 @@ struct MouseInput {
   Button b[3];
 };
 
+struct ScrollBounds {
+  Float4 objbounds;
+  Float4 currentwindow;
+};
+
 class Vecedit {
   smart_ptr<Closure<> > resync_gui_callback;
   
@@ -25,6 +30,7 @@ class Vecedit {
 public:
 
   bool changed() const;
+  ScrollBounds getScrollBounds(Float2 screenres) const;
 
   void render() const;
 

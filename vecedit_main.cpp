@@ -17,12 +17,12 @@ class VeceditGLC : public wxGLCanvas {
 private:
   smart_ptr<Closure<> > render_callback;
   smart_ptr<Closure<const MouseInput &> > mouse_callback;
-  //smart_ptr<Callback0<
+  smart_ptr<Callback<ScrollBounds, Float2> > scroll_callback;
   MouseInput mstate;
 
 public:
   
-  VeceditGLC(wxWindow *wind, const smart_ptr<Closure<> > &render_callback, const smart_ptr<Closure<const MouseInput &> > &mouse_callback);
+  VeceditGLC(wxWindow *wind, const smart_ptr<Closure<> > &render_callback, const smart_ptr<Closure<const MouseInput &> > &mouse_callback, const smart_ptr<Callback<ScrollBounds, Float2> > &scroll_callback);
   
   void OnPaint(wxPaintEvent &event);
   void OnSize(wxSizeEvent &event);
@@ -48,9 +48,9 @@ int gl_attribList[] = {
   WX_GL_DOUBLEBUFFER,
   0
 };
-VeceditGLC::VeceditGLC(wxWindow *wind, const smart_ptr<Closure<> > &render_callback, const smart_ptr<Closure<const MouseInput &> > &mouse_callback) : wxGLCanvas(wind, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER, "GLCanvas", gl_attribList), render_callback(render_callback), mouse_callback(mouse_callback) {
-  SetScrollbar(wxVERTICAL, 0, 16, 50);
-  SetScrollbar(wxHORIZONTAL, 0, 16, 50);
+VeceditGLC::VeceditGLC(wxWindow *wind, const smart_ptr<Closure<> > &render_callback, const smart_ptr<Closure<const MouseInput &> > &mouse_callback,  const smart_ptr<Callback<ScrollBounds, Float2> > &scroll_callback) : wxGLCanvas(wind, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER | wxVSCROLL | wxHSCROLL | wxALWAYS_SHOW_SB, "GLCanvas", gl_attribList), render_callback(render_callback), mouse_callback(mouse_callback), scroll_callback(scroll_callback) {
+  SetScrollbar(wxVERTICAL, 0, 50, 50);
+  SetScrollbar(wxHORIZONTAL, 0, 50, 50);
 };
 
 void VeceditGLC::OnPaint(wxPaintEvent& event) {
@@ -188,7 +188,7 @@ VeceditWindow::VeceditWindow() : wxFrame((wxFrame *)NULL, -1, veceditname, wxDef
   CreateStatusBar();
   SetStatusText("borf borf borf");
   
-  glc = new VeceditGLC(this, NewFunctor(&core, &Vecedit::render), NewFunctor(&core, &Vecedit::mouse));
+  glc = new VeceditGLC(this, NewFunctor(&core, &Vecedit::render), NewFunctor(&core, &Vecedit::mouse), NewFunctor(&core, &Vecedit::getScrollBounds));
   wxNotebook *note = new wxNotebook(this, wxID_ANY);
   note->SetMinSize(wxSize(150, 0));
   note->AddPage(new wxNotebookPage(this, wxID_ANY), "Props");

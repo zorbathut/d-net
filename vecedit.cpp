@@ -7,6 +7,23 @@
 bool Vecedit::changed() const {
   return false;
 }
+ScrollBounds Vecedit::getScrollBounds(Float2 screenres) const {
+  ScrollBounds rv;
+  
+  // First, find the object bounds.
+  rv.objbounds = dv2.boundingBox();
+  
+  // Second, find the screen bounds.
+  rv.currentwindow = Float4(center.x - zpp * screenres.x / 2, center.y - zpp * screenres.y / 2, center.x + zpp * screenres.x / 2, center.y + zpp * screenres.y / 2);
+  
+  // Third, add some slack to the object bounds.
+  rv.objbounds.sx -= rv.currentwindow.x_span();
+  rv.objbounds.sy -= rv.currentwindow.y_span();
+  rv.objbounds.ex += rv.currentwindow.x_span();
+  rv.objbounds.ey += rv.currentwindow.y_span();
+  
+  return rv;
+};
 
 void Vecedit::render() const {
   setZoomCenter(center.x, center.y, zpp * getResolutionY() / 2);
