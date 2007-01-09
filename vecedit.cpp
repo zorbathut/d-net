@@ -25,7 +25,11 @@ ScrollBounds Vecedit::getScrollBounds(Float2 screenres) const {
   addToBoundBox(&rv.objbounds, rv.currentwindow);
   
   return rv;
-};
+}
+void Vecedit::setScrollPos(Float2 scrollpos) {
+  center = scrollpos;
+  resync_gui_callback->Run();
+}
 
 void Vecedit::render() const {
   setZoomCenter(center.x, center.y, zpp * getResolutionY() / 2);
@@ -39,8 +43,8 @@ void Vecedit::render() const {
 }
 void Vecedit::mouse(const MouseInput &mouse) {
   if(mouse.b[0].push) {
-    Float2 world = (mouse.pos - Float2(getResolutionX() / 2, getResolutionY() / 2)) * zpp - Float2(center);
-    dprintf("Worldpos is %f,%f\n", world.x, world.y);
+    Float2 world = (mouse.pos - Float2(getResolutionX() / 2, getResolutionY() / 2)) * zpp + Float2(center);
+    dprintf("Worldpos is %f,%f from %f,%f\n", world.x, world.y, mouse.pos.x, mouse.pos.y);
   }
   //dprintf("Mouse movement! Now at %d,%d, wheel %d, buttons %s %s %s\n", mouse.x, mouse.y, mouse.dw, mouse.b[0].stringize().c_str(), mouse.b[1].stringize().c_str(), mouse.b[2].stringize().c_str());
   

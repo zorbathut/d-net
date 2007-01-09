@@ -31,6 +31,7 @@ public:
 
   bool changed() const;
   ScrollBounds getScrollBounds(Float2 screenres) const;
+  void setScrollPos(Float2 scrollpos);
 
   void render() const;
 
