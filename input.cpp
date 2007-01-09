@@ -163,5 +163,5 @@ float prepower(float x) {
   if(x < 0)
     return -prepower(abs(x));
   CHECK(x >= 0);
-  return pow(x, 2.0f);
+  return pow(x, 3.0f);
 }
