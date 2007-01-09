@@ -227,7 +227,7 @@ void Shop::renormalize(HierarchyNode &item, const Player *player, int playercoun
     }
     
     // If this is the Bombardment category, and there's only 2 players, we get rid of it entirely (TODO: how do you sell bombardment if you're stuck with 2 players?)
-    if(keep && item.branches[i].type == HierarchyNode::HNT_CATEGORY && item.branches[i].cat_restrictiontype == HierarchyNode::HNT_BOMBARDMENT && playercount <= 2)
+    if(keep && FLAGS_cullShopTree && item.branches[i].type == HierarchyNode::HNT_CATEGORY && item.branches[i].cat_restrictiontype == HierarchyNode::HNT_BOMBARDMENT && playercount <= 2)
       keep = false;
     
     // If the item isn't supposed to spawn yet, we get rid of it.

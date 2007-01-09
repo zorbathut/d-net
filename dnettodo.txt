@@ -1,7 +1,6 @@
 ---- Major work path
 - Less incentive to camp?
 - Add bombardment charts
-- Disable bombardment cull on the rest of cull
 - No-fast-forward
 - Next-gen vecedit?
   - Scrolling, zooming
