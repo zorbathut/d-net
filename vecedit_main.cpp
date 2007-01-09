@@ -126,6 +126,9 @@ void VeceditGLC::OnScroll(wxScrollWinEvent &event) {
   if(cpos + thumbsize > GetScrollRange(dir))
     cpos = GetScrollRange(dir) - thumbsize;
   
+  if(cpos == GetScrollPos(dir))
+    return;
+  
   SetScrollbar(dir, cpos, thumbsize, GetScrollRange(dir));
   
   if(dir == wxVERTICAL) {

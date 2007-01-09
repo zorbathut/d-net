@@ -42,12 +42,19 @@ void Vecedit::render() const {
   drawGrid(32, zpp);
 }
 void Vecedit::mouse(const MouseInput &mouse) {
-  if(mouse.b[0].push) {
-    Float2 world = (mouse.pos - Float2(getResolutionX() / 2, getResolutionY() / 2)) * zpp + Float2(center);
-    dprintf("Worldpos is %f,%f from %f,%f\n", world.x, world.y, mouse.pos.x, mouse.pos.y);
-  }
-  //dprintf("Mouse movement! Now at %d,%d, wheel %d, buttons %s %s %s\n", mouse.x, mouse.y, mouse.dw, mouse.b[0].stringize().c_str(), mouse.b[1].stringize().c_str(), mouse.b[2].stringize().c_str());
+  Float2 world = (mouse.pos - Float2(getResolutionX() / 2, getResolutionY() / 2)) * zpp + Float2(center);
   
+  if(mouse.b[0].push)
+    dprintf("Worldpos is %f,%f from %f,%f\n", world.x, world.y, mouse.pos.x, mouse.pos.y);
+  
+  const float mult = pow(1.2, mouse.dw / 120.0);
+  
+  zpp /= mult;
+  
+  if(mult > 1.0)
+    center = world - (world - center) / mult;
+  
+  resync_gui_callback->Run();
 }
 
 void Vecedit::clear() {
