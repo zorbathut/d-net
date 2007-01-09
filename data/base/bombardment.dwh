@@ -140,9 +140,24 @@ text {
   data=Tougher alloys, a larger projectile, and a higher-powered launcher results in massively more damage to ground targets. Launch speed is increased slightly, resulting in a plasma shockwave traveling along with the projectile.
 }
 
+effects {
+  name=effects.aprailgun
+
+  quantity=20
+   
+  spread=40
+  
+  slowdown=0.3
+  lifetime=1.0
+  
+  radius=1.0
+  color=1.0, 0.9, 0.6
+}
+
 warhead {
   name=warhead.bombardment.aprailgun
-  radiusdamage=8 kinetic 4 energy
+  radiusdamage=8 kinetic
+  radiusdamage=4 energy
   radiusfalloff=1
   
   effects_impact=effects.aprailgun
@@ -165,6 +180,20 @@ text {
   data=Firing projectiles originally designed for naval bombardment, this weapon delivers an incredible amount of kinetic energy. Unfortunately, the equipment needed to accelerate such large masses to many times the speed of sound is extremely bulky and expensive.
 }
 
+effects {
+  name=effects.heavyrailgun
+
+  quantity=24
+   
+  spread=50
+  
+  slowdown=0.3
+  lifetime=1.0
+  
+  radius=1.2
+  color=1.0, 0.9, 0.6
+}
+
 warhead {
   name=warhead.bombardment.heavyrailgun
   radiusdamage=48 kinetic
@@ -174,7 +203,7 @@ warhead {
 }
 
 bombardment {
-  name=ROOT.Bombardment.AP Railgun
+  name=ROOT.Bombardment.Heavy Railgun
   cost=180000
   
   warhead=warhead.bombardment.heavyrailgun
