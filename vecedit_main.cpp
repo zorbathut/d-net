@@ -49,8 +49,8 @@ int gl_attribList[] = {
   0
 };
 VeceditGLC::VeceditGLC(wxWindow *wind, const smart_ptr<Closure<> > &render_callback, const smart_ptr<Closure<const MouseInput &> > &mouse_callback,  const smart_ptr<Callback<ScrollBounds, Float2> > &scroll_callback) : wxGLCanvas(wind, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER | wxVSCROLL | wxHSCROLL | wxALWAYS_SHOW_SB, "GLCanvas", gl_attribList), render_callback(render_callback), mouse_callback(mouse_callback), scroll_callback(scroll_callback) {
-  SetScrollbar(wxVERTICAL, 0, 50, 50);
-  SetScrollbar(wxHORIZONTAL, 0, 50, 50);
+  SetScrollbar(wxVERTICAL, 0, 40, 50);
+  SetScrollbar(wxHORIZONTAL, 0, 40, 50);
 };
 
 void VeceditGLC::OnPaint(wxPaintEvent& event) {
@@ -75,13 +75,11 @@ void VeceditGLC::OnPaint(wxPaintEvent& event) {
   
   deinitFrame();
   SwapBuffers();
-  
-  
-  //SetScrollbarInfo(wxVERTICAL, 
 }
 
 void VeceditGLC::OnSize(wxSizeEvent& event) {
   Refresh();
+  SetScrollBars();
 }
 
 void VeceditGLC::OnEraseBackground(wxEraseEvent& event) {
@@ -99,6 +97,23 @@ void VeceditGLC::OnMouse(wxMouseEvent &event) {
   mstate.b[2].newState(event.MiddleIsDown());
   
   mouse_callback->Run(mstate);
+}
+
+void VeceditGLC::SetScrollBars() {
+  ScrollBounds sb;
+  {
+    int w, h;
+    GetClientSize(&w, &h);
+    sb = scroll_callback->Run(Float2(w, h));
+  }
+  
+  const int maxv = 10000;
+  
+  const float xscale = maxv / sb.objbounds.span_x();
+  const float yscale = maxv / sb.objbounds.span_y();
+  
+  SetScrollbar(wxHORIZONTAL, (int)((sb.currentwindow.sx - sb.objbounds.sx) * xscale), (int)(sb.currentwindow.span_x() * xscale), maxv);
+  SetScrollbar(wxVERTICAL, (int)((sb.currentwindow.sy - sb.objbounds.sy) * yscale), (int)(sb.currentwindow.span_y() * yscale), maxv);
 }
 
 /*************
@@ -209,6 +224,7 @@ VeceditWindow::VeceditWindow() : wxFrame((wxFrame *)NULL, -1, veceditname, wxDef
   
   SetSizer(vertsizer);
   
+  redraw();
 }
 
 void VeceditWindow::OnNew(wxCommandEvent& event) {
@@ -282,9 +298,8 @@ void VeceditWindow::OnSaveas_dispatch(wxCommandEvent& event) {
 }
 
 void VeceditWindow::redraw() {
-  dprintf("Redraw\n");
-  
   glc->Refresh();
+  glc->SetScrollBars();
 }
 
 bool VeceditWindow::maybeSaveChanges() {

@@ -17,10 +17,12 @@ ScrollBounds Vecedit::getScrollBounds(Float2 screenres) const {
   rv.currentwindow = Float4(center.x - zpp * screenres.x / 2, center.y - zpp * screenres.y / 2, center.x + zpp * screenres.x / 2, center.y + zpp * screenres.y / 2);
   
   // Third, add some slack to the object bounds.
-  rv.objbounds.sx -= rv.currentwindow.span_x();
-  rv.objbounds.sy -= rv.currentwindow.span_y();
-  rv.objbounds.ex += rv.currentwindow.span_x();
-  rv.objbounds.ey += rv.currentwindow.span_y();
+  rv.objbounds.sx -= rv.currentwindow.span_x() * 3 / 5;
+  rv.objbounds.sy -= rv.currentwindow.span_y() * 3 / 5;
+  rv.objbounds.ex += rv.currentwindow.span_x() * 3 / 5;
+  rv.objbounds.ey += rv.currentwindow.span_y() * 3 / 5;
+  
+  addToBoundBox(&rv.objbounds, rv.currentwindow);
   
   return rv;
 };
