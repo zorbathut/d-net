@@ -1,8 +1,6 @@
 ---- Major work path
-- Conditionals to makefiles so that the dependencies are only included if they're needed
-- Squareroot values of movement
 - Less incentive to camp?
-- Stronger bombardment in general
+- Add bombardment charts
 - Next-gen vecedit?
   - Scrolling, zooming
   - Ability to select things
@@ -69,6 +67,7 @@
 - Winner list better "null" icon
 
 ---- Things that may or may not be needed
+- Conditionals to makefiles so that the dependencies are only included if they're needed
 - Multithread cache generation
 - Add random faction
 - Stop reloading files in findLevels

@@ -6,7 +6,7 @@ text {
 
 warhead {
   name=warhead.bombardment.minibomb
-  radiusdamage=0.5 explosive
+  radiusdamage=1 explosive
   radiusfalloff=4
   wallremovalradius=0.5
 }
@@ -18,7 +18,7 @@ bombardment {
   
   warhead=warhead.bombardment.minibomb
   
-  lockdelay=2
+  lockdelay=1.6
   unlockdelay=1
   
   text=text.bombardment.minibomb
@@ -31,7 +31,7 @@ text {
 
 warhead {
   name=warhead.bombardment.bomb
-  radiusdamage=3 explosive
+  radiusdamage=4 explosive
   radiusfalloff=8
   wallremovalradius=2
 }
@@ -42,7 +42,7 @@ bombardment {
   
   warhead=warhead.bombardment.bomb
   
-  lockdelay=1.8
+  lockdelay=1.4
   unlockdelay=0.8
   
   text=text.bombardment.bomb
@@ -55,7 +55,7 @@ text {
 
 warhead {
   name=warhead.bombardment.megabomb
-  radiusdamage=10 explosive
+  radiusdamage=14 explosive
   radiusfalloff=10
   wallremovalradius=4
 }
@@ -66,10 +66,34 @@ bombardment {
   
   warhead=warhead.bombardment.megabomb
   
-  lockdelay=1.6
+  lockdelay=1.2
   unlockdelay=0.6
   
   text=text.bombardment.megabomb
+}
+
+text {
+  name=text.bombardment.ultrabomb
+  data=One of the largest conventional explosives ever produced, this huge warhead does devastating damage to anything near the impact zone. Handle with extreme care.
+}
+
+warhead {
+  name=warhead.bombardment.ultrabomb
+  radiusdamage=45 explosive
+  radiusfalloff=12
+  wallremovalradius=6
+}
+
+bombardment {
+  name=ROOT.Bombardment.Ultrabomb
+  cost=90000
+  
+  warhead=warhead.bombardment.ultrabomb
+  
+  lockdelay=1.2
+  unlockdelay=0.8
+  
+  text=text.bombardment.ultrabomb
 }
 
 text {
@@ -93,7 +117,7 @@ effects {
 
 warhead {
   name=warhead.bombardment.railgun
-  radiusdamage=1 kinetic
+  radiusdamage=3 kinetic
   radiusfalloff=1
   
   effects_impact=effects.railgun
@@ -109,4 +133,54 @@ bombardment {
   unlockdelay=1.5
   
   text=text.bombardment.railgun
+}
+
+text {
+  name=text.bombardment.aprailgun
+  data=Tougher alloys, a larger projectile, and a higher-powered launcher results in massively more damage to ground targets. Launch speed is increased slightly, resulting in a plasma shockwave traveling along with the projectile.
+}
+
+warhead {
+  name=warhead.bombardment.aprailgun
+  radiusdamage=8 kinetic 4 energy
+  radiusfalloff=1
+  
+  effects_impact=effects.aprailgun
+}
+
+bombardment {
+  name=ROOT.Bombardment.AP Railgun
+  cost=35000
+  
+  warhead=warhead.bombardment.aprailgun
+  
+  lockdelay=0.5
+  unlockdelay=1.5
+  
+  text=text.bombardment.aprailgun
+}
+
+text {
+  name=text.bombardment.heavyrailgun
+  data=Firing projectiles originally designed for naval bombardment, this weapon delivers an incredible amount of kinetic energy. Unfortunately, the equipment needed to accelerate such large masses to many times the speed of sound is extremely bulky and expensive.
+}
+
+warhead {
+  name=warhead.bombardment.heavyrailgun
+  radiusdamage=48 kinetic
+  radiusfalloff=1
+  
+  effects_impact=effects.heavyrailgun
+}
+
+bombardment {
+  name=ROOT.Bombardment.AP Railgun
+  cost=180000
+  
+  warhead=warhead.bombardment.heavyrailgun
+  
+  lockdelay=0.5
+  unlockdelay=1.5
+  
+  text=text.bombardment.heavyrailgun
 }
