@@ -117,10 +117,10 @@ public:
     return make_pair(sx, ex);
   }
   
-  float x_span() const {
+  float span_x() const {
     return ex - sx;
   }
-  float y_span() const {
+  float span_y() const {
     return ey - sy;
   }
   

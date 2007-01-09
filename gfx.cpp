@@ -428,7 +428,7 @@ GfxInvertingStencil::~GfxInvertingStencil() {
  */
 
 void setZoom(const Float4 &fl4) {
-  float rat = fl4.x_span() / fl4.y_span() / getAspect();
+  float rat = fl4.span_x() / fl4.span_y() / getAspect();
   if(rat < 0.999 || rat > 1.001) {
     dprintf("rat is %f\n", rat);
     CHECK(0);
@@ -438,8 +438,8 @@ void setZoom(const Float4 &fl4) {
 
 void setZoomAround(const CFC4 &bbox) {
   Float2 center = bbox->midpoint();
-  float zoomtop = bbox->y_span() / 2;
-  float zoomside = bbox->x_span() / 2;
+  float zoomtop = bbox->span_y() / 2;
+  float zoomside = bbox->span_x() / 2;
   float zoomtopfinal = max(zoomtop, zoomside / getAspect());
   setZoomVertical(center.x - zoomtopfinal * getAspect(), center.y - zoomtopfinal, center.y + zoomtopfinal);
 }
@@ -457,14 +457,14 @@ void setZoomVertical(float in_sx, float in_sy, float in_ey) {
   
   map_bounds = Float4(in_sx, in_sy, in_sx + (in_ey - in_sy) * getAspect(), in_ey);
   
-  float real_sy = in_sy - ((in_ey - in_sy) / windows.back().newbounds.y_span() * windows.back().newbounds.sy);
-  float real_sx = in_sx - ((in_ey - in_sy) / windows.back().newbounds.y_span() * windows.back().newbounds.sx);
-  float real_ey = real_sy + (in_ey - in_sy) / windows.back().newbounds.y_span();
+  float real_sy = in_sy - ((in_ey - in_sy) / windows.back().newbounds.span_y() * windows.back().newbounds.sy);
+  float real_sx = in_sx - ((in_ey - in_sy) / windows.back().newbounds.span_y() * windows.back().newbounds.sx);
+  float real_ey = real_sy + (in_ey - in_sy) / windows.back().newbounds.span_y();
   
   /*
   dprintf("Zoom - input was %f,%f,%f, converted to %f,%f,%f\n", in_sx, in_sy, in_ey, real_sx, real_sy, real_ey);
   dprintf("aspect is %f\n", getAspect());
-  dprintf("%f, %f\n", windows.back().newbounds.x_span(), windows.back().newbounds.y_span());
+  dprintf("%f, %f\n", windows.back().newbounds.span_x(), windows.back().newbounds.span_y());
   dprintf("%f, %f, %f, %f\n", windows.back().newbounds.sx, windows.back().newbounds.sy, windows.back().newbounds.ex, windows.back().newbounds.ey);
   dprintf("%d\n", windows.size());*/
   
@@ -472,11 +472,11 @@ void setZoomVertical(float in_sx, float in_sy, float in_ey) {
   map_sy = real_sy;
   map_zoom = real_ey - real_sy;
   map_ey = map_sy + map_zoom;
-  map_ex = map_sx + map_zoom * windows.back().newbounds.x_span() / windows.back().newbounds.y_span();
+  map_ex = map_sx + map_zoom * windows.back().newbounds.span_x() / windows.back().newbounds.span_y();
 }
 
 Float4 getZoom() { return map_bounds; };
-float getAspect() { return windows.back().newbounds.x_span() / windows.back().newbounds.y_span(); };
+float getAspect() { return windows.back().newbounds.span_x() / windows.back().newbounds.span_y(); };
 
 void setColor(float r, float g, float b) {
   r *= windows.back().fade;
@@ -813,7 +813,7 @@ void drawJustifiedMultiText(const vector<string> &txt, float letterscale, Float2
 
 void drawFormattedText(const string &txt, float scale, Float4 bounds) {
   CHECK(!count(txt.begin(), txt.end(), '\n'));
-  const vector<string> lines = formatText(txt, scale, bounds.x_span(), "");
+  const vector<string> lines = formatText(txt, scale, bounds.span_x(), "");
   drawJustifiedMultiText(lines, scale, Float2(bounds.sx, bounds.sy), TEXT_MIN, TEXT_MIN);
 }
 

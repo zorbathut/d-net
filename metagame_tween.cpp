@@ -675,7 +675,7 @@ void PersistentData::renderSlot(int slotid) const {
       for(int i = 0; i < factions.size(); i++) {
         if(!factions[i].taken) {
           setColor(factions[i].faction->color);
-          drawDvec2(factions[i].faction->icon, boxAround(factions[i].compass_location.midpoint(), factions[i].compass_location.y_span() / 2 * 0.9), 50, 0.01);
+          drawDvec2(factions[i].faction->icon, boxAround(factions[i].compass_location.midpoint(), factions[i].compass_location.span_y() / 2 * 0.9), 50, 0.01);
         }
       }
       setColor(1.0, 1.0, 1.0);
@@ -728,7 +728,7 @@ void PersistentData::renderSlot(int slotid) const {
         GfxWindow gfxw(Float4(0, 0, div_x, 0.5), 1.0);
         int lines_needed = 9;
         setZoomVertical(0, 0, 1.5 * lines_needed + 0.5);
-        float horzavail = getZoom().y_span() - 1.0;
+        float horzavail = getZoom().span_y() - 1.0;
         const IDBAdjustment *idba = factions[fid].faction->adjustment[3];
         
         vector<pair<string, vector<string> > > adjusttext;
@@ -834,7 +834,7 @@ void PersistentData::renderSlot(int slotid) const {
   } else if(slt.type == Slot::SETTINGS) {
     CHECK(slt.pid >= 0 && slt.pid < pms.size());
     const FactionState &tfs = *pms[slt.pid].faction;
-    Float2 sizes(tfs.compass_location.x_span(), tfs.compass_location.y_span());
+    Float2 sizes(tfs.compass_location.span_x(), tfs.compass_location.span_y());
     Float2 mp = tfs.compass_location.midpoint();
     setZoomAround(Float4(mp.x - sizes.x, mp.y - sizes.y, mp.x + sizes.x, mp.y + sizes.y));
     runSettingRender(pms[slt.pid], controls_availdescr(slt.pid));
@@ -844,7 +844,7 @@ void PersistentData::renderSlot(int slotid) const {
       setColor(pms[slt.pid].faction->faction->color * 0.5);
       const float ofs = 0.08;
       Float4 pos = getZoom();
-      const float diff = pos.y_span() * ofs;
+      const float diff = pos.span_y() * ofs;
       pos.sx += diff;
       pos.sy += diff;
       pos.ex -= diff;
@@ -855,7 +855,7 @@ void PersistentData::renderSlot(int slotid) const {
     {
       string areyousuretext = "Are you sure you want to destroy your tank and possessions and quit the game?";
       Float4 zone = Float4(-12, -7, 12, 7);
-      float height = getFormattedTextHeight(areyousuretext, 1, zone.x_span());
+      float height = getFormattedTextHeight(areyousuretext, 1, zone.span_x());
       
       Float4 box = extend(Float4(zone.sx, zone.sy, zone.ex, zone.sy + height), 0.4);
       drawSolid(box);

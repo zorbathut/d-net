@@ -84,7 +84,7 @@ float StdMenuItem::render(float y) const {
     
     setZoomAround(Float4(*scale_position - 2, 0, *scale_position + 2, 0));
     
-    float height = getZoom().y_span();
+    float height = getZoom().span_y();
     
     for(int i = 0; i < scale_labels.size(); i++) {
       setColor(C::active_text);
@@ -271,7 +271,7 @@ void InterfaceMain::render() const {
   
   if(res.size()) {
     Coord4 bbox = getBoundBox(diff[1]);
-    static pair<Coord2, Coord> zoom = make_pair(bbox.midpoint(), bbox.y_span() / 2 * Coord(1.1));
+    static pair<Coord2, Coord> zoom = make_pair(bbox.midpoint(), bbox.span_y() / 2 * Coord(1.1));
     
     if(ct.l.down)
       zoom.first.x -= zoom.second / 50;

@@ -381,8 +381,8 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
     boomy.player = &boomyplay;
     boomyplay.glory = defaultGlory();
     float border = 40;
-    boomy.pos.x = Coord(rng->frand()) * (gmbr.x_span() - border * 2) + gmbr.sx + border;
-    boomy.pos.y = Coord(rng->frand()) * (gmbr.y_span() - border * 2) + gmbr.sy + border;
+    boomy.pos.x = Coord(rng->frand()) * (gmbr.span_x() - border * 2) + gmbr.sx + border;
+    boomy.pos.y = Coord(rng->frand()) * (gmbr.span_y() - border * 2) + gmbr.sy + border;
     boomy.d = 0;
     boomyplay.faction = &boomyfact;
     boomyfact.color = Color(1.0, 1.0, 1.0);

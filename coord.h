@@ -276,10 +276,10 @@ public:
     return Coord2(ex, ey);
   }
   
-  Coord x_span() const {
+  Coord span_x() const {
     return ex - sx;
   }
-  Coord y_span() const {
+  Coord span_y() const {
     return ey - sy;
   }
   

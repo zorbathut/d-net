@@ -308,12 +308,12 @@ void drawScrollBar(const ShopLayout &slay, int depth, float ofs, bool bottom) {
     vector<Float2> tri;
     if(bottom) {
       tri.push_back(Float2(beef[i], zone.ey));
-      tri.push_back(Float2(beef[i] + zone.y_span(), zone.sy));
-      tri.push_back(Float2(beef[i] - zone.y_span(), zone.sy));
+      tri.push_back(Float2(beef[i] + zone.span_y(), zone.sy));
+      tri.push_back(Float2(beef[i] - zone.span_y(), zone.sy));
     } else {
       tri.push_back(Float2(beef[i], zone.sy));
-      tri.push_back(Float2(beef[i] + zone.y_span(), zone.ey));
-      tri.push_back(Float2(beef[i] - zone.y_span(), zone.ey));
+      tri.push_back(Float2(beef[i] + zone.span_y(), zone.ey));
+      tri.push_back(Float2(beef[i] - zone.span_y(), zone.ey));
     }
     drawSolidLoop(tri);
     drawLineLoop(tri, slay.boxthick());
@@ -362,7 +362,7 @@ void Shop::renderNode(const HierarchyNode &node, int depth, const Player *player
   float bbxey = boundbox.ey;
   
   if(slay.scrollmarkers(depth).second) {
-    drawScrollBar(slay, depth, boundbox.ey - slay.box(depth).y_span(), true);
+    drawScrollBar(slay, depth, boundbox.ey - slay.box(depth).span_y(), true);
     boundbox.ey -= slay.itemheight();
   }
   
@@ -377,12 +377,12 @@ void Shop::renderNode(const HierarchyNode &node, int depth, const Player *player
     
     for(int i = 0; i < 2; i++) {
       Float4 box = slay.box(depth);
-      box = box + Float2(0, maxdown + box.y_span() * 3);
+      box = box + Float2(0, maxdown + box.span_y() * 3);
       box.ex = box.sx + slay.equipDiff();
-      box.ey = box.sy + box.y_span() * 2;
+      box.ey = box.sy + box.span_y() * 2;
       
       if(i)
-        box = box + Float2(slay.box(depth).x_span() - slay.equipDiff(), 0);
+        box = box + Float2(slay.box(depth).span_x() - slay.equipDiff(), 0);
       
       setColor(C::box_border);
       drawSolid(box);
@@ -884,7 +884,7 @@ void Shop::renderToScreen(const Player *player) const {
     setColor(player->getFaction()->color * 0.5);
     const float ofs = 0.08;
     Float4 pos = getZoom();
-    const float diff = pos.y_span() * ofs;
+    const float diff = pos.span_y() * ofs;
     pos.sx += diff;
     pos.sy += diff;
     pos.ex -= diff;
@@ -905,7 +905,7 @@ void Shop::renderToScreen(const Player *player) const {
     bds = contract(bds, getTextBoxBorder(slay.fontsize()));
     
     string text = "Select this to enter Sell mode. Select this again to leave Sell mode. You may also toggle Sell mode by pressing your \"cancel\" button.";
-    float height = getFormattedTextHeight(text, slay.fontsize(), bds.x_span());
+    float height = getFormattedTextHeight(text, slay.fontsize(), bds.span_x());
     
     setColor(C::inactive_text);
     Float4 rebds(bds.sx, (bds.ey - bds.sy - height) / 2 + bds.sy, bds.ex, (bds.ey - bds.sy + height) / 2 + bds.sy);

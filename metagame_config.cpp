@@ -51,7 +51,7 @@ public:
     drawzone = Float4(roundaborder, roundaborder, aspect - roundaborder, 1.0 - roundaborder);     // maaaagic
 
     // runtime constants
-    unitsize = drawzone.y_span() / units;
+    unitsize = drawzone.span_y() / units;
     border = unitsize * border_size;
     external_xstart = drawzone.sx + border;
     external_xend = drawzone.ex - border;
@@ -117,7 +117,7 @@ void PlayerMenuState::createNewAxistypeDemo(RngSeed seed) {
   Float4 boundy = Float4(rin.xstart, rin.ystarts[1], rin.xend, rin.ystarts[7]);
   boundy -= boundy.midpoint();
   
-  float mn = min(boundy.x_span(), boundy.y_span());
+  float mn = min(boundy.span_x(), boundy.span_y());
   boundy *= (100 / mn);
   
   setting_axistype_demo->game.initCenteredDemo(&setting_axistype_demo->players[0], 50);
@@ -908,7 +908,7 @@ bool runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
       Float4 boundy = Float4(rin.xstart, rin.ystarts[2], rin.xend, rin.ystarts[rin.textline_count - 4]);
       boundy -= boundy.midpoint();
       
-      float mn = min(boundy.x_span(), boundy.y_span());
+      float mn = min(boundy.span_x(), boundy.span_y());
       boundy *= (100 / mn);
       
       pms->test_game->game.initTest(&pms->test_game->players[0], boundy);

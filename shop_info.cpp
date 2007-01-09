@@ -47,7 +47,7 @@ void ShopKVPrinter::print(const string &key, const string &value) {
 };
 
 bool ShopKVPrinter::twolinemode() const {
-  float wid = activebounds().x_span();
+  float wid = activebounds().span_x();
   for(int i = 0; i < pairz.size(); i++)
     if(getTextWidth(pairz[i].first, fontsize) + getTextWidth(pairz[i].second, fontsize) + getTextWidth("  ", fontsize) > wid)
       return true;
@@ -188,7 +188,7 @@ void drawShadedFormattedText(Float4 bounds, float fontsize, const string &text) 
     vector<string> left = tokenize(lines[i], " ");
     bool first = true;
     while(left.size()) {
-      int wordsa = wordsallowed(left, fontsize, rkt.x_span(), first ? "   " : "");
+      int wordsa = wordsallowed(left, fontsize, rkt.span_x(), first ? "   " : "");
       CHECK(wordsa > 0 && wordsa <= left.size());
       string v = first ? "   " : "";
       for(int k = 0; k < wordsa; k++) {
@@ -196,7 +196,7 @@ void drawShadedFormattedText(Float4 bounds, float fontsize, const string &text) 
           v += " ";
         v += left[k];
       }
-      CHECK(getTextWidth(v, fontsize) <= rkt.x_span());
+      CHECK(getTextWidth(v, fontsize) <= rkt.span_x());
       vlines.push_back(v);
       first = false;
       left.erase(left.begin(), left.begin() + wordsa);
