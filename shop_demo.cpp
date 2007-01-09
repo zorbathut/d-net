@@ -367,7 +367,7 @@ void ShopDemo::init(const IDBBombardment *bombard, const Player *player, Recorde
     bombardment_scatterers.push_back(gas);
   }
   
-  game.game.initDemo(&game.players, 50, bombardment_xpses, bombardment_ypses, NULL, bombardment_mode, false, Float2(5, 5), recorder);
+  game.game.initDemo(&game.players, 50, bombardment_xpses, bombardment_ypses, NULL, bombardment_mode, false, Float2(-10, 8), recorder);
   
   progression = bombardment_progression;
   
