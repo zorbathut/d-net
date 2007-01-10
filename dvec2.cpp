@@ -88,20 +88,20 @@ const Parameter *Entity::getParameter(const string &name) const {
 
 
 void VectorPoint::mirror() {
-  swap(curvlx, curvrx);
-  swap(curvly, curvry);
+  swap(curvlp, curvrp);
   swap(curvl, curvr);
 }
 
 void VectorPoint::transform(const Transform2d &ctd) {
-  ctd.transform(&x, &y);
-  ctd.transform(&curvlx, &curvly);
-  ctd.transform(&curvrx, &curvry);
+  ctd.transform(&pos);
+  ctd.transform(&curvlp);
+  ctd.transform(&curvrp);
 }
 
 VectorPoint::VectorPoint() {
-  x = y = 0;
-  curvlx = curvly = curvrx = curvry = 16;
+  pos = Float2(0, 0);
+  curvlp = Float2(0, 0);
+  curvrp = Float2(0, 0);
   curvl = curvr = false;
 }
 
@@ -149,7 +149,7 @@ Transform2d rfg_behavior(int type, int segment, int dupe, int numer, int denom) 
 Float4 VectorPath::boundingBox() const {
   Float4 bbox = startFBoundBox();
   for(int i = 0; i < vpath.size(); i++)
-    addToBoundBox(&bbox, centerx + vpath[i].x, centery + vpath[i].y);
+    addToBoundBox(&bbox, center + vpath[i].pos);
   return bbox;
 }
 
@@ -163,8 +163,7 @@ int VectorPath::vpathCreate(int node) {
   //dprintf("phase is %d\n", phase);
   // we're inserting a node to be the new can.first at dupe 0, but then we have to figure out what it ended up being at dupe #phase
   VectorPoint tv;
-  tv.x = 0;
-  tv.y = 0;   // this will look bad, and should be changed by the caller ASAP
+  tv.pos = Float2(0, 0);
   path.insert(path.begin() + can.first, tv);
   fixCurve();
   rebuildVpath();
@@ -311,7 +310,7 @@ void VectorPath::rebuildVpath() {
 }
 
 VectorPath::VectorPath() {
-  centerx = centery = 0;
+  center = Float2(0, 0);
   reflect = VECRF_SPIN;
   dupes = 1;
   ang_numer = 0;
@@ -323,7 +322,7 @@ Float4 Dvec2::boundingBox() const {
   for(int i = 0; i < paths.size(); i++)
     addToBoundBox(&bb, paths[i].boundingBox());
   for(int i = 0; i < entities.size(); i++)
-    addToBoundBox(&bb, entities[i].x, entities[i].y);
+    addToBoundBox(&bb, entities[i].pos);
   return bb;
 }
 
@@ -341,7 +340,7 @@ Dvec2 loadDvec2(const string &fname) {
   while(getkvData(fil, &dat)) {
     if(dat.category == "path") {
       VectorPath nvp;
-      sscanf(dat.consume("center").c_str(), "%f,%f", &nvp.centerx, &nvp.centery);
+      sscanf(dat.consume("center").c_str(), "%f,%f", &nvp.center.x, &nvp.center.y);
       
       nvp.reflect = find(rf_names, rf_names + VECRF_END, dat.consume("reflect")) - rf_names;
       CHECK(nvp.reflect >= 0 && nvp.reflect < VECRF_END);
@@ -354,18 +353,18 @@ Dvec2 loadDvec2(const string &fname) {
         vector<string> tnode = tokenize(nodes[i], " |");
         CHECK(tnode.size() == 3);
         VectorPoint vpt;
-        sscanf(tnode[1].c_str(), "%f,%f", &vpt.x, &vpt.y);
+        sscanf(tnode[1].c_str(), "%f,%f", &vpt.pos.x, &vpt.pos.y);
         if(tnode[0] == "---") {
           vpt.curvl = false;
         } else {
           vpt.curvl = true;
-          sscanf(tnode[0].c_str(), "%f,%f", &vpt.curvlx, &vpt.curvly);
+          sscanf(tnode[0].c_str(), "%f,%f", &vpt.curvlp.x, &vpt.curvlp.y);
         }
         if(tnode[2] == "---") {
           vpt.curvr = false;
         } else {
           vpt.curvr = true;
-          sscanf(tnode[2].c_str(), "%f,%f", &vpt.curvrx, &vpt.curvry);
+          sscanf(tnode[2].c_str(), "%f,%f", &vpt.curvrp.x, &vpt.curvrp.y);
         }
         nvp.path.push_back(vpt);
       }
@@ -374,7 +373,7 @@ Dvec2 loadDvec2(const string &fname) {
       rv.paths.push_back(nvp);
     } else if(dat.category == "entity") {
       Entity ne;
-      sscanf(dat.consume("coord").c_str(), "%f,%f", &ne.x, &ne.y);
+      sscanf(dat.consume("coord").c_str(), "%f,%f", &ne.pos.x, &ne.pos.y);
       string typ = dat.consume("type");
       ne.type = -1;
       for(int i = 0; i < ENTITY_END; i++)

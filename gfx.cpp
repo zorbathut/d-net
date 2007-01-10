@@ -615,8 +615,8 @@ void drawRect(const Float4 &rect, float weight) {
   drawLineLoop(*verts, weight);
 }
 
-void drawRectAround(float x, float y, float rad, float weight) {
-  drawRect(Float4(x - rad, y - rad, x + rad, y + rad), weight);
+void drawRectAround(const Float2 &pos, float rad, float weight) {
+  drawRect(Float4(pos.x - rad, pos.y - rad, pos.x + rad, pos.y + rad), weight);
 }
 
 void drawShadedRect(const Float4 &locs, float weight, float shadedens) {
@@ -652,15 +652,6 @@ void drawCurve(const Float4 &ptah, const Float4 &ptbh, int midpoints, float weig
   for(int i = 0; i <= midpoints; i++)
     verts->push_back(Float2(bezinterp(ptah.sx, ptah.ex, ptbh.sx, ptbh.ex, i / (float)midpoints), bezinterp(ptah.sy, ptah.ey, ptbh.sy, ptbh.ey, i / (float)midpoints)));
   drawLinePath(*verts, weight);
-}
-
-void drawCurveControls(const Float4 &ptah, const Float4 &ptbh, float spacing, float weight) {
-  drawRectAround(ptah.sx, ptah.sy, spacing, weight);
-  drawRectAround(ptah.ex, ptah.ey, spacing, weight);
-  drawRectAround(ptbh.sx, ptbh.sy, spacing, weight);
-  drawRectAround(ptbh.ex, ptbh.ey, spacing, weight);
-  drawLine(ptah, weight);
-  drawLine(ptbh, weight);
 }
 
 void drawCircle(const Float2 &center, float radius, float weight) {
@@ -834,40 +825,23 @@ void drawVectorPath(const VectorPath &vecob, const pair<Float2, float> &coord, i
   for(int i = 0; i < vecob.vpath.size(); i++) {
     int j = (i + 1) % vecob.vpath.size();
     CHECK(vecob.vpath[i].curvr == vecob.vpath[j].curvl);
-    float lx = vecob.centerx + vecob.vpath[i].x;
-    float ly = vecob.centery + vecob.vpath[i].y;
-    float rx = vecob.centerx + vecob.vpath[j].x;
-    float ry = vecob.centery + vecob.vpath[j].y;
+    Float2 l = vecob.center + vecob.vpath[i].pos;
+    Float2 r = vecob.center + vecob.vpath[j].pos;
     
     // these are invalid and meaningless if it's not a curve, but hey!
-    float lcx = lx + vecob.vpath[i].curvrx;
-    float lcy = ly + vecob.vpath[i].curvry;
-    float rcx = rx + vecob.vpath[j].curvlx;
-    float rcy = ry + vecob.vpath[j].curvly;
+    Float2 lc = l + vecob.vpath[i].curvrp;
+    Float2 rc = r + vecob.vpath[i].curvlp;
     
-    lx *= coord.second;
-    ly *= coord.second;
-    rx *= coord.second;
-    ry *= coord.second;
+    l = l * coord.second + coord.first;
+    r = r * coord.second + coord.first;
     
-    lcx *= coord.second;
-    lcy *= coord.second;
-    rcx *= coord.second;
-    rcy *= coord.second;
+    lc = lc * coord.second + coord.first;
+    rc = rc * coord.second + coord.first;
     
-    lx += coord.first.x;
-    ly += coord.first.y;
-    rx += coord.first.x;
-    ry += coord.first.y;
-    
-    lcx += coord.first.x;
-    lcy += coord.first.y;
-    rcx += coord.first.x;
-    rcy += coord.first.y;
     if(vecob.vpath[i].curvr) {
-      drawCurve(Float4(lx, ly, lcx, lcy), Float4(rcx, rcy, rx, ry), midpoints, weight);
+      drawCurve(Float4(l, lc), Float4(rc, r), midpoints, weight);
     } else {
-      drawLine(Float4(lx, ly, rx, ry), weight);
+      drawLine(Float4(l, r), weight);
     }
   }
 }

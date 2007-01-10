@@ -89,12 +89,11 @@ void drawLineLoop(const vector<Coord2> &verts, float weight);
 void drawTransformedLinePath(const vector<Float2> &verts, float angle, Float2 translate, float weight);
 
 void drawRect(const Float4 &rect, float weight);
-void drawRectAround(float x, float y, float rad, float weight);
+void drawRectAround(const Float2 &pos, float rad, float weight);
 
 void drawShadedRect(const Float4 &locs, float weight, float shadedens);
 
 void drawCurve(const Float4 &ptah, const Float4 &ptbh, int midpoints, float weight);
-void drawCurveControls(const Float4 &ptah, const Float4 &ptbh, float spacing, float weight);
 
 void drawCircle(const Float2 &center, float radius, float weight);
 

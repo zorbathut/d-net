@@ -27,6 +27,8 @@ class Vecedit {
   
   Dvec2 dv2;
   
+  int selected_path;
+  
 public:
 
   bool changed() const;

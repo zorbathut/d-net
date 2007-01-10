@@ -44,8 +44,7 @@ public:
   
   int type;
 
-  float x;
-  float y;
+  Float2 pos;
 
   vector<Parameter> params;
 
@@ -57,13 +56,10 @@ public:
 };
 
 struct VectorPoint {
-  float x;
-  float y;
+  Float2 pos;
 
-  float curvlx;
-  float curvly;
-  float curvrx;
-  float curvry;
+  Float2 curvlp;
+  Float2 curvrp;
 
   bool curvl;
   bool curvr;
@@ -84,8 +80,7 @@ public:
     * Stuff you should pay attention to no matter what you're doing
     */
 
-  float centerx;
-  float centery;
+  Float2 center;
 
   vector<VectorPoint> vpath;
 

@@ -2,9 +2,8 @@
 - Less incentive to camp?
 - Add bombardment charts
 - Next-gen vecedit?
-  - Scrolling, zooming
-  - Ability to select things
   - Controls onscreen
+  - Ability to select things
   - Moving existing controls
   - Grid lock
   - Grid change
