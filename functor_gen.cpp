@@ -8,6 +8,7 @@
 #include "debug.h"
 #include "parse.h"
 #include "util.h"
+#include "os.h"
 
 using namespace std;
 
@@ -62,6 +63,8 @@ Params::~Params() {
 }
 
 int main() {
+  set_exename("functor_gen.exe");
+  
   dprintf("Generating functor.h");
   
   vector<char> source;

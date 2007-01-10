@@ -8,6 +8,7 @@
 #include "debug.h"
 #include "gfx.h"
 #include "vecedit.h"
+#include "os.h"
 
 /*************
  * VeceditGLC
@@ -364,6 +365,8 @@ class VeceditMain: public wxApp {
 IMPLEMENT_APP(VeceditMain)
 
 bool VeceditMain::OnInit() {
+  set_exename("vecedit.exe");
+  
   wxImage::AddHandler(new wxPNGHandler);
   
   initGfx();
