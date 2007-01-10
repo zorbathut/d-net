@@ -21,7 +21,6 @@ using namespace std;
  * Expensive object pool
  */
 
-#include <windows.h>
 template<typename T> class Pool : boost::noncopyable {
 public:
   T *acquire() {
