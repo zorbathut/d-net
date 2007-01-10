@@ -44,7 +44,7 @@ asm: $(GAMESOURCES:=.S) makefile
 clean:
 	rm -rf *.o *.exe *.d *.S data/shopcache.dwh
 
-STDRUN = --nofullscreen --debugitems --startingPhase=8 --debugControllers=2 --factionMode=0 --nullControllers=11 --writeTarget= --auto_newgame --nocullShopTree --httpd_port=616 --noshopcache
+STDRUN = --nofullscreen --debugitems --startingPhase=8 --debugControllers=2 --factionMode=0 --nullControllers=11 --writeTarget= --auto_newgame --nocullShopTree --httpd_port=616 --noshopcache --nofastForwardOnNoCache
 
 run: d-net.exe
 	d-net.exe $(STDRUN)

@@ -6,6 +6,7 @@
 #include "game_tank.h"
 #include "gfx.h"
 #include "player.h"
+#include "args.h"
 
 using namespace std;
 
@@ -509,9 +510,11 @@ void ShopDemo::runSingleTick() {
   game.runTick(kist, &unsync());
 };
 
+DEFINE_bool(fastForwardOnNoCache, true, "Enables fastforwarding when there's no shopcache file to fall back on");
+
 void ShopDemo::runTick() {
   int timing = mult(game.game.frameCount(), progression);
-  if(prerolled)
+  if(prerolled || !FLAGS_fastForwardOnNoCache)
     timing = 1;
   for(int i = 0; i < timing; i++) {
     runSingleTick();

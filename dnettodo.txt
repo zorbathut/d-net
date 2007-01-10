@@ -1,7 +1,6 @@
 ---- Major work path
 - Less incentive to camp?
 - Add bombardment charts
-- No-fast-forward
 - Next-gen vecedit?
   - Scrolling, zooming
   - Ability to select things
