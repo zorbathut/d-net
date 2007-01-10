@@ -44,6 +44,7 @@ void Vecedit::render() const {
   setZoomCenter(center.x, center.y, zpp * getResolutionY() / 2);
 
   for(int i = 0; i < dv2.paths.size(); i++) {
+    dprintf("dvp%d\n", i);
     if(selected_path != i) {
       setColor(Color(0.7, 1.0, 0.7));
       drawVectorPath(dv2.paths[i], make_pair(Float2(0, 0), 1), 100, zpp * 2);
@@ -53,6 +54,7 @@ void Vecedit::render() const {
       for(int j = 0; j < dv2.paths[j].vpath.size(); j++)
         drawRectAround(dv2.paths[i].center + dv2.paths[i].vpath[j].pos, zpp * 10, zpp);
     }
+    dprintf("dve%d\n", i);
   }
   
   setColor(0.2, 0.2, 0.5);
