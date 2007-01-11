@@ -2,7 +2,6 @@
 - Less incentive to camp?
 - Add bombardment charts
 - Next-gen vecedit?
-  - Zoom out on startup
   - Controls onscreen
   - Ability to select things
   - Moving existing controls

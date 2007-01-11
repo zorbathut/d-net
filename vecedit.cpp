@@ -50,8 +50,17 @@ void Vecedit::render() const {
     } else {
       setColor(Color(1.0, 0.7, 0.7));
       drawVectorPath(dv2.paths[i], make_pair(Float2(0, 0), 1), 100, zpp * 2);
-      for(int j = 0; j < dv2.paths[i].vpath.size(); j++)
+      for(int j = 0; j < dv2.paths[i].vpath.size(); j++) {
         drawRectAround(dv2.paths[i].center + dv2.paths[i].vpath[j].pos, zpp * 10, zpp);
+        if(dv2.paths[i].vpath[j].curvl) {
+          drawLine(dv2.paths[i].center + dv2.paths[i].vpath[j].pos, dv2.paths[i].center + dv2.paths[i].vpath[j].pos + dv2.paths[i].vpath[j].curvlp, zpp);
+          drawRectAround(dv2.paths[i].center + dv2.paths[i].vpath[j].pos + dv2.paths[i].vpath[j].curvlp, zpp * 5, zpp);
+        }
+        if(dv2.paths[i].vpath[j].curvr) {
+          drawLine(dv2.paths[i].center + dv2.paths[i].vpath[j].pos, dv2.paths[i].center + dv2.paths[i].vpath[j].pos + dv2.paths[i].vpath[j].curvrp, zpp);
+          drawRectAround(dv2.paths[i].center + dv2.paths[i].vpath[j].pos + dv2.paths[i].vpath[j].curvrp, zpp * 5, zpp);
+        }
+      }
     }
   }
   
@@ -87,10 +96,6 @@ void Vecedit::clear() {
 void Vecedit::load(const string &filename) {
   dv2 = loadDvec2(filename);
   selected_path = -1;
-  
-  center = Float2(0, 0);
-  zpp = 1;
-  
   resync_gui_callback->Run();
 }
 bool Vecedit::save(const string &filename) {
@@ -137,6 +142,6 @@ bool Vecedit::save(const string &filename) {
 
 Vecedit::Vecedit(const smart_ptr<Closure<> > &resync_gui_callback) : resync_gui_callback(resync_gui_callback) {
   center = Float2(0, 0);
-  zpp = 1;
+  zpp = 0.25;
   selected_path = -1;
 };

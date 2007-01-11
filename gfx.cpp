@@ -830,7 +830,7 @@ void drawVectorPath(const VectorPath &vecob, const pair<Float2, float> &coord, i
     
     // these are invalid and meaningless if it's not a curve, but hey!
     Float2 lc = l + vecob.vpath[i].curvrp;
-    Float2 rc = r + vecob.vpath[i].curvlp;
+    Float2 rc = r + vecob.vpath[j].curvlp;
     
     l = l * coord.second + coord.first;
     r = r * coord.second + coord.first;
