@@ -87,6 +87,10 @@ void Vecedit::clear() {
 void Vecedit::load(const string &filename) {
   dv2 = loadDvec2(filename);
   selected_path = -1;
+  
+  center = Float2(0, 0);
+  zpp = 1;
+  
   resync_gui_callback->Run();
 }
 bool Vecedit::save(const string &filename) {
@@ -133,6 +137,6 @@ bool Vecedit::save(const string &filename) {
 
 Vecedit::Vecedit(const smart_ptr<Closure<> > &resync_gui_callback) : resync_gui_callback(resync_gui_callback) {
   center = Float2(0, 0);
-  zpp = 0.25;
+  zpp = 1;
   selected_path = -1;
 };
