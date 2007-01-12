@@ -4,17 +4,8 @@
 #include "gfx.h"
 #include "util.h"
 
-const float primenode = 7;
-const float secondnode = 3;
-
-void drawCurveControls(const Float4 &ptah, const Float4 &ptbh, float spacing, float weight) {
-  drawRectAround(ptah.s(), spacing, weight);
-  drawRectAround(ptah.e(), spacing, weight);
-  drawRectAround(ptbh.s(), spacing, weight);
-  drawRectAround(ptbh.e(), spacing, weight);
-  drawLine(ptah, weight);
-  drawLine(ptbh, weight);
-}
+const float primenode = 8;
+const float secondnode = 5;
 
 Selectitem::Selectitem() {
   type = NONE;
@@ -90,12 +81,24 @@ void Vecedit::render() const {
   for(int i = 0; i < dv2.paths.size(); i++) {
     if(select.path != i) {
       setColor(Color(0.7, 1.0, 0.7));
-      drawVectorPath(dv2.paths[i], make_pair(Float2(0, 0), 1), 100, zpp * 2);
     } else {
       setColor(Color(1.0, 0.7, 0.7));
-      drawVectorPath(dv2.paths[i], make_pair(Float2(0, 0), 1), 100, zpp * 2);
-      for(int j = 0; j < dv2.paths[i].vpath.size(); j++) {
-        drawRectAround(dv2.paths[i].center + dv2.paths[i].vpath[j].pos, zpp * primenode, zpp);
+    }
+    
+    drawVectorPath(dv2.paths[i], make_pair(Float2(0, 0), 1), 100, zpp * 2);
+  
+    for(int j = 0; j < dv2.paths[i].vpath.size(); j++) {
+      {
+        int width;
+        if(select.path == i) {
+          width = primenode;
+        } else {
+          width = secondnode;
+        }
+        drawRectAround(dv2.paths[i].center + dv2.paths[i].vpath[j].pos, zpp * width, zpp);
+      }
+      
+      if(select.path == i) {
         if(dv2.paths[i].vpath[j].curvl) {
           drawLine(dv2.paths[i].center + dv2.paths[i].vpath[j].pos, dv2.paths[i].center + dv2.paths[i].vpath[j].pos + dv2.paths[i].vpath[j].curvlp, zpp);
           drawRectAround(dv2.paths[i].center + dv2.paths[i].vpath[j].pos + dv2.paths[i].vpath[j].curvlp, zpp * secondnode, zpp);
