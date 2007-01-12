@@ -2,7 +2,6 @@
 - Less incentive to camp?
 - Add bombardment charts
 - Next-gen vecedit?
-  - Controls onscreen
   - Ability to select things
   - Moving existing controls
   - Grid lock
@@ -91,10 +90,11 @@ Sound gets loaded, much like dvec2.
 Then there's IDBSoundPack items. This sounds good.
 
 ---
-Scrolling
+Selecting
 
-Vertical location stored along with expandability
-Set up a window around the draw zone - if there's "up", reserve room for text. Same with "down".
+Okay. Things that need to be selected:
 
-Scrolling happens when the cursor is high is low (whatever that means)
+* Line segments
+* Points
 
+Points are easy. Line segments, less so. But they still must be done. Sigh.

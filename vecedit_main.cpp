@@ -36,6 +36,7 @@ public:
   void OnScroll(wxScrollWinEvent &event);
 
   void SetScrollBars();
+  void SetGLCCursor(Cursor curse);
 
   ScrollBounds getSB() const;
 
@@ -150,6 +151,20 @@ void VeceditGLC::SetScrollBars() {
   SetScrollbar(wxHORIZONTAL, (int)((sb.currentwindow.sx - sb.objbounds.sx) * xscale), (int)(sb.currentwindow.span_x() * xscale), maxv);
   SetScrollbar(wxVERTICAL, (int)((sb.currentwindow.sy - sb.objbounds.sy) * yscale), (int)(sb.currentwindow.span_y() * yscale), maxv);
 }
+void VeceditGLC::SetGLCCursor(Cursor curse) {
+  int cid;
+  if(curse == CURSOR_NORMAL) {
+    cid = wxCURSOR_ARROW;
+  } else if(curse == CURSOR_CROSS) {
+    cid = wxCURSOR_CROSS;
+  } else if(curse == CURSOR_HAND) {
+    cid = wxCURSOR_HAND;
+  } else {
+    CHECK(0);
+  }
+  
+  SetCursor(wxCursor(cid));
+}
 
 ScrollBounds VeceditGLC::getSB() const {
   int w, h;
@@ -186,6 +201,8 @@ public:
 
   void redraw();
   bool maybeSaveChanges();
+
+  void SetGLCCursor(Cursor cursor);
   
   DECLARE_EVENT_TABLE()
 };
@@ -212,7 +229,7 @@ END_EVENT_TABLE()
 
 const string veceditname =  "D-Net Vecedit2";
 
-VeceditWindow::VeceditWindow() : wxFrame((wxFrame *)NULL, -1, veceditname, wxDefaultPosition, wxSize(800, 600)), core(NewFunctor(this, &VeceditWindow::redraw)) {
+VeceditWindow::VeceditWindow() : wxFrame((wxFrame *)NULL, -1, veceditname, wxDefaultPosition, wxSize(800, 600)), core(NewFunctor(this, &VeceditWindow::redraw), NewFunctor(this, &VeceditWindow::SetGLCCursor)) {
   wxMenuBar *menuBar = new wxMenuBar;
   
   {
@@ -352,6 +369,10 @@ bool VeceditWindow::maybeSaveChanges() {
       return OnSave();
   }
   return true;
+}
+
+void VeceditWindow::SetGLCCursor(Cursor cursor) {
+  glc->SetGLCCursor(cursor);
 }
 
 /*************

@@ -70,6 +70,12 @@ void Vecedit::render() const {
 void Vecedit::mouse(const MouseInput &mouse) {
   Float2 world = (mouse.pos - Float2(getResolutionX() / 2, getResolutionY() / 2)) * zpp + Float2(center);
   
+  if(world.x > world.y) {
+    cursor_change_callback->Run(CURSOR_CROSS);
+  } else {
+    cursor_change_callback->Run(CURSOR_HAND);
+  }
+  
   if(mouse.b[0].push) {
     dprintf("Worldpos is %f,%f from %f,%f\n", world.x, world.y, mouse.pos.x, mouse.pos.y);
     selected_path = 0;
@@ -90,7 +96,7 @@ void Vecedit::mouse(const MouseInput &mouse) {
 }
 
 void Vecedit::clear() {
-  *this = Vecedit(resync_gui_callback);
+  *this = Vecedit(resync_gui_callback, cursor_change_callback);
   resync_gui_callback->Run();
 }
 void Vecedit::load(const string &filename) {
@@ -140,7 +146,7 @@ bool Vecedit::save(const string &filename) {
   return true;
 }
 
-Vecedit::Vecedit(const smart_ptr<Closure<> > &resync_gui_callback) : resync_gui_callback(resync_gui_callback) {
+Vecedit::Vecedit(const smart_ptr<Closure<> > &resync_gui_callback, const smart_ptr<Closure<Cursor> > &cursor_change_callback) : resync_gui_callback(resync_gui_callback), cursor_change_callback(cursor_change_callback) {
   center = Float2(0, 0);
   zpp = 0.25;
   selected_path = -1;

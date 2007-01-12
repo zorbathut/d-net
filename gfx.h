@@ -93,6 +93,7 @@ void drawRectAround(const Float2 &pos, float rad, float weight);
 
 void drawShadedRect(const Float4 &locs, float weight, float shadedens);
 
+vector<Float2> generateCurve(const Float4 &ptah, const Float4 &ptbh, int midpoints);
 void drawCurve(const Float4 &ptah, const Float4 &ptbh, int midpoints, float weight);
 
 void drawCircle(const Float2 &center, float radius, float weight);

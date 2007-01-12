@@ -402,9 +402,6 @@ inline Coord4 snapToEnclosingGrid(Coord4 orig, Coord grid) {
   return orig;
 }
 
-bool linelineintersect(const Coord4 &lhs, const Coord4 &rhs);
-Coord linelineintersectpos(const Coord4 &lhs, const Coord4 &rhs);
-
 inline bool boxBoxIntersect(const Coord4 &lhs, const Coord4 &rhs) {
   return !(lhs.sx > rhs.ex || lhs.ex < rhs.sx || lhs.sy > rhs.ey || lhs.ey < rhs.sy);
 }

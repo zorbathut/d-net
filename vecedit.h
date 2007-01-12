@@ -18,8 +18,11 @@ struct ScrollBounds {
   Float4 currentwindow;
 };
 
+enum Cursor { CURSOR_NORMAL, CURSOR_CROSS, CURSOR_HAND };
+
 class Vecedit {
   smart_ptr<Closure<> > resync_gui_callback;
+  smart_ptr<Closure<Cursor> > cursor_change_callback;
   
   // center, zoom per pixel
   Float2 center;
@@ -43,7 +46,7 @@ public:
   void load(const string &filename);
   bool save(const string &filename);
   
-  explicit Vecedit(const smart_ptr<Closure<> > &resync_gui_callback);
+  explicit Vecedit(const smart_ptr<Closure<> > &resync_gui_callback, const smart_ptr<Closure<Cursor> > &cursor_change_callback);
 };
 
 #endif

@@ -230,9 +230,6 @@ inline Float4 boxAround(const Float2 &lhs, float radius) {
   return Float4(lhs.x - radius, lhs.y - radius, lhs.x + radius, lhs.y + radius);
 }
 
-bool linelineintersect(const Float4 &lhs, const Float4 &rhs);
-float linelineintersectpos(const Float4 &lhs, const Float4 &rhs);
-
 Float2 rotate(const Float2 &in, float ang);
 
 // square inscribed in the rect

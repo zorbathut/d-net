@@ -647,6 +647,13 @@ float bezinterp(float x0, float x1, float x2, float x3, float t) {
   return ax * t * t * t + bx * t * t + cx * t + x0;
 }
 
+vector<Float2> generateCurve(const Float4 &ptah, const Float4 &ptbh, int midpoints) {
+  PoolObj<vector<Float2> > verts;
+  for(int i = 0; i <= midpoints; i++)
+    verts->push_back(Float2(bezinterp(ptah.sx, ptah.ex, ptbh.sx, ptbh.ex, i / (float)midpoints), bezinterp(ptah.sy, ptah.ey, ptbh.sy, ptbh.ey, i / (float)midpoints)));
+  return *verts;
+}
+
 void drawCurve(const Float4 &ptah, const Float4 &ptbh, int midpoints, float weight) {
   PoolObj<vector<Float2> > verts;
   for(int i = 0; i <= midpoints; i++)
