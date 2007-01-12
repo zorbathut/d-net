@@ -89,7 +89,7 @@ void Vecedit::render() const {
   
     for(int j = 0; j < dv2.paths[i].vpath.size(); j++) {
       {
-        int width;
+        double width;
         if(select.path == i) {
           width = primenode;
         } else {
@@ -143,6 +143,10 @@ void Vecedit::mouse(const MouseInput &mouse) {
       cursor_change_callback->Run(CURSOR_NORMAL);
     } else if(ss[0].type == Selectitem::NODE) {
       cursor_change_callback->Run(CURSOR_HAND);
+      if(mouse.b[0].down) {
+        select = ss[0];
+        resync_gui_callback->Run();
+      }
     } else if(ss[0].type == Selectitem::LINK) {
       cursor_change_callback->Run(CURSOR_CROSS);
     } else {
@@ -153,13 +157,7 @@ void Vecedit::mouse(const MouseInput &mouse) {
   if(state == IDLE) {
     
   }
-    
-  if(world.x > world.y) {
-    cursor_change_callback->Run(CURSOR_CROSS);
-  } else {
-    cursor_change_callback->Run(CURSOR_HAND);
-  }
-  
+
   if(mouse.dw == 0)
     return;
   
