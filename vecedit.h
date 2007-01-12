@@ -18,6 +18,16 @@ struct ScrollBounds {
   Float4 currentwindow;
 };
 
+struct Selectitem {
+  enum { NODE, LINK, NONE };
+  int type;
+  int path;
+  int item;
+  
+  Selectitem();
+  Selectitem(int type, int path, int item);
+};
+
 enum Cursor { CURSOR_NORMAL, CURSOR_CROSS, CURSOR_HAND };
 
 class Vecedit {
@@ -30,7 +40,11 @@ class Vecedit {
   
   Dvec2 dv2;
   
-  int selected_path;
+  enum { IDLE, SELECTED, DRAGGING };
+  int state;
+  Selectitem select;
+  
+  vector<Selectitem> getSelectionStack(Float2 pos) const;
   
 public:
 

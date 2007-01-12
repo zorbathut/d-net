@@ -4,6 +4,9 @@
 #include "gfx.h"
 #include "util.h"
 
+const float primenode = 7;
+const float secondnode = 3;
+
 void drawCurveControls(const Float4 &ptah, const Float4 &ptbh, float spacing, float weight) {
   drawRectAround(ptah.s(), spacing, weight);
   drawRectAround(ptah.e(), spacing, weight);
@@ -11,6 +14,47 @@ void drawCurveControls(const Float4 &ptah, const Float4 &ptbh, float spacing, fl
   drawRectAround(ptbh.e(), spacing, weight);
   drawLine(ptah, weight);
   drawLine(ptbh, weight);
+}
+
+Selectitem::Selectitem() {
+  type = NONE;
+  path = -1;
+  item = -1;
+}
+Selectitem::Selectitem(int type, int path, int item) : type(type), path(path), item(item) {
+};
+
+bool operator<(const Selectitem &lhs, const Selectitem &rhs) {
+  if(lhs.type != rhs.type) return lhs.type < rhs.type;
+  if(lhs.path != rhs.path) return lhs.path < rhs.path;
+  if(lhs.item != rhs.item) return lhs.item < rhs.item;
+  return false;
+}
+
+void maybeAdd(vector<Selectitem> *ite, Selectitem tite, Float2 pos, Float2 loc, float dist) {
+  if(max(abs(pos.x - loc.x), abs(pos.y - loc.y)) < dist)
+    ite->push_back(tite);
+}
+
+vector<Selectitem> Vecedit::getSelectionStack(Float2 pos) const {
+  vector<Selectitem> ites;
+  
+  for(int i = 0; i < dv2.paths.size(); i++) {
+    const VectorPath &vp = dv2.paths[i];
+    const bool thisselect = (i == select.path);
+    for(int j = 0; j < vp.vpath.size(); j++) {
+      Selectitem site(Selectitem::NODE, i, j);
+      if(thisselect) {
+        maybeAdd(&ites, site, pos, vp.center + vp.vpath[j].pos, primenode * zpp);
+      } else {
+        maybeAdd(&ites, site, pos, vp.center + vp.vpath[j].pos, secondnode * zpp);
+      }
+    }
+  }
+  
+  sort(ites.begin(), ites.end());
+  
+  return ites;
 }
 
 bool Vecedit::changed() const {
@@ -44,21 +88,21 @@ void Vecedit::render() const {
   setZoomCenter(center.x, center.y, zpp * getResolutionY() / 2);
 
   for(int i = 0; i < dv2.paths.size(); i++) {
-    if(selected_path != i) {
+    if(select.path != i) {
       setColor(Color(0.7, 1.0, 0.7));
       drawVectorPath(dv2.paths[i], make_pair(Float2(0, 0), 1), 100, zpp * 2);
     } else {
       setColor(Color(1.0, 0.7, 0.7));
       drawVectorPath(dv2.paths[i], make_pair(Float2(0, 0), 1), 100, zpp * 2);
       for(int j = 0; j < dv2.paths[i].vpath.size(); j++) {
-        drawRectAround(dv2.paths[i].center + dv2.paths[i].vpath[j].pos, zpp * 10, zpp);
+        drawRectAround(dv2.paths[i].center + dv2.paths[i].vpath[j].pos, zpp * primenode, zpp);
         if(dv2.paths[i].vpath[j].curvl) {
           drawLine(dv2.paths[i].center + dv2.paths[i].vpath[j].pos, dv2.paths[i].center + dv2.paths[i].vpath[j].pos + dv2.paths[i].vpath[j].curvlp, zpp);
-          drawRectAround(dv2.paths[i].center + dv2.paths[i].vpath[j].pos + dv2.paths[i].vpath[j].curvlp, zpp * 5, zpp);
+          drawRectAround(dv2.paths[i].center + dv2.paths[i].vpath[j].pos + dv2.paths[i].vpath[j].curvlp, zpp * secondnode, zpp);
         }
         if(dv2.paths[i].vpath[j].curvr) {
           drawLine(dv2.paths[i].center + dv2.paths[i].vpath[j].pos, dv2.paths[i].center + dv2.paths[i].vpath[j].pos + dv2.paths[i].vpath[j].curvrp, zpp);
-          drawRectAround(dv2.paths[i].center + dv2.paths[i].vpath[j].pos + dv2.paths[i].vpath[j].curvrp, zpp * 5, zpp);
+          drawRectAround(dv2.paths[i].center + dv2.paths[i].vpath[j].pos + dv2.paths[i].vpath[j].curvrp, zpp * secondnode, zpp);
         }
       }
     }
@@ -67,19 +111,50 @@ void Vecedit::render() const {
   setColor(0.2, 0.2, 0.5);
   drawGrid(32, zpp);
 }
+
+// Okay let's have some logic!
+// Possible states: 
+// * Not selected
+// * Selected
+// * Dragging
+
+// * This stack isn't selected + mousedown + something selectable -> selected
+// * Selected + mouseup + something selectable -> rotate through selectable things
+// * Selected + mousecurrentlydown + selected draggable + movement -> dragging
+// * Dragging + mouseup -> back to selected
+// Note that dragging + mouseup != rotate
+
+// * Not selected + rightmousedown + something selectable -> select it, toggle
+// * Selected + rightmousedown -> toggle
+
+// For selecting things: order in the following direction!
+// * Points that are close enough, sorted by path, then by point
+// * Lines that are close enough
+
 void Vecedit::mouse(const MouseInput &mouse) {
   Float2 world = (mouse.pos - Float2(getResolutionX() / 2, getResolutionY() / 2)) * zpp + Float2(center);
   
+  {
+    vector<Selectitem> ss = getSelectionStack(world);
+    if(!ss.size()) {
+      cursor_change_callback->Run(CURSOR_NORMAL);
+    } else if(ss[0].type == Selectitem::NODE) {
+      cursor_change_callback->Run(CURSOR_HAND);
+    } else if(ss[0].type == Selectitem::LINK) {
+      cursor_change_callback->Run(CURSOR_CROSS);
+    } else {
+      CHECK(0); // well fuck
+    }
+  }
+  
+  if(state == IDLE) {
+    
+  }
+    
   if(world.x > world.y) {
     cursor_change_callback->Run(CURSOR_CROSS);
   } else {
     cursor_change_callback->Run(CURSOR_HAND);
-  }
-  
-  if(mouse.b[0].push) {
-    dprintf("Worldpos is %f,%f from %f,%f\n", world.x, world.y, mouse.pos.x, mouse.pos.y);
-    selected_path = 0;
-    resync_gui_callback->Run();
   }
   
   if(mouse.dw == 0)
@@ -100,8 +175,8 @@ void Vecedit::clear() {
   resync_gui_callback->Run();
 }
 void Vecedit::load(const string &filename) {
+  clear();
   dv2 = loadDvec2(filename);
-  selected_path = -1;
   resync_gui_callback->Run();
 }
 bool Vecedit::save(const string &filename) {
@@ -149,5 +224,6 @@ bool Vecedit::save(const string &filename) {
 Vecedit::Vecedit(const smart_ptr<Closure<> > &resync_gui_callback, const smart_ptr<Closure<Cursor> > &cursor_change_callback) : resync_gui_callback(resync_gui_callback), cursor_change_callback(cursor_change_callback) {
   center = Float2(0, 0);
   zpp = 0.25;
-  selected_path = -1;
+  
+  state = IDLE;
 };
