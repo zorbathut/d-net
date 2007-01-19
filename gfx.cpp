@@ -76,8 +76,9 @@ template<typename T> Pool<T> PoolObj<T>::pool;
  */
 
 vector<int> getView() {
-  vector<int> rv(4);
-  glGetIntegerv(GL_VIEWPORT, &rv[0]);
+  GLint gli[4];
+  glGetIntegerv(GL_VIEWPORT, gli);
+  vector<int> rv(gli, gli + 4);
   return rv;
 }
 
