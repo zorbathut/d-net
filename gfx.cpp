@@ -9,8 +9,8 @@
 
 #include <fstream>
 
-#ifdef NO_GL_PREFIX
-  #include <gl.h>
+#ifdef OSX_GL_PREFIX
+  #include <OpenGL/gl.h>
 #else
   #include <GL/gl.h>
 #endif

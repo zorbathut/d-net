@@ -16,9 +16,13 @@ case "${target_os}" in
   cygwin)
     AC_MSG_NOTICE([adding extended boost and ogg directories for cygwin])
     # SDL fucks things up, but we need -mno-cygwin for other tests
-    CPPFLAGS="$CPPFLAGS -I/usr/include/boost-1_33_1 -I/usr/ogg/include -mno-cygwin"
+    CPPFLAGS="$CPPFLAGS -I/usr/ogg/include -mno-cygwin"
     LDFLAGS="$LDFLAGS -L/usr/ogg/lib -mno-cygwin"
-    VECTOR_PARANOIA="-DVECTOR_PARANOIA"  # This should really only exist on Zorba's personal hacked headers
+    
+    STDCPPFLAGS="$STDCPPFLAGS -DVECTOR_PARANOIA" # This should really only exist on Zorba's personal hacked headers
+    
+    STDCPPFLAGS="$STDCPPFLAGS -I/usr/include/boost-1_33_1"
+    
     AC_CHECK_HEADER([windows.h],,AC_MSG_ERROR([Can't find windows.h]))
     
     # Horrible hack here - we can't search for a function in ws2_32 because their name mangling is different from what configure uses. So instead we just make sure the library exists. Not ideal.
@@ -34,10 +38,13 @@ case "${target_os}" in
     AC_MSG_NOTICE([adding needed flags for darwin])
 
     # I'm not sure where I should be looking for boost. This might not be it. And the -I might be wrong too.
-    CPPFLAGS="$CPPFLAGS -I/System/Library/Frameworks/OpenGL.framework/Headers -I/sw/include/boost-1_33_1 -I/sw/include -DNO_GL_PREFIX -DNO_WINDOWS"
-    LDFLAGS="$LDFLAGS -L/System/Library/Frameworks/OpenGL.framework/Libraries -L/sw/lib"
-    AC_CHECK_LIB([GL], [glBegin],,AC_MSG_ERROR([opengl is needed]))
-    LDFLAGS="$LDFLAGS -lGL"
+    CPPFLAGS="$CPPFLAGS -I/sw/include"
+    LDFLAGS="$LDFLAGS -framework OpenGL -L/sw/lib"
+    
+    STDCPPFLAGS="$STDCPPFLAGS -DOSX_GL_PREFIX -DNO_WINDOWS -I/sw/include/boost-1_33_1 "
+    
+    #AC_CHECK_LIB([GL], [glBegin],,AC_MSG_ERROR([opengl is needed]))
+    #LDFLAGS="$LDFLAGS -lGL"
     ;;
 
   *)
@@ -67,6 +74,6 @@ GAMELDFLAGS="$LDFLAGS"
 
 AC_SUBST(GAMECPPFLAGS)
 AC_SUBST(GAMELDFLAGS)
-AC_SUBST(VECTOR_PARANOIA)
+AC_SUBST(STDCPPFLAGS)
 
 AC_OUTPUT(Makefile)
