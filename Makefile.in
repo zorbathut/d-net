@@ -47,31 +47,31 @@ clean:
 STDRUN = --nofullscreen --debugitems --startingPhase=8 --debugControllers=2 --factionMode=0 --nullControllers=11 --writeTarget= --auto_newgame --nocullShopTree --httpd_port=616 --noshopcache --nofastForwardOnNoCache
 
 run: d-net.exe
-	d-net.exe $(STDRUN)
+	./d-net.exe $(STDRUN)
   
 basicrun: d-net.exe
-	d-net.exe --nofullscreen --writeTarget= --httpd_port=616
+	./d-net.exe --nofullscreen --writeTarget= --httpd_port=616
 
 cacherun: d-net.exe
-	d-net.exe $(STDRUN) --shopcache
+	./d-net.exe $(STDRUN) --shopcache
 
 threerun: d-net.exe
-	d-net.exe $(STDRUN) --debugControllers=3
+	./d-net.exe $(STDRUN) --debugControllers=3
   
 debugrun: d-net-dbg.exe
-	d-net-dbg.exe $(STDRUN)
+	./d-net-dbg.exe $(STDRUN)
 
 debugbasicrun: d-net-dbg.exe
-	d-net-dbg.exe --nofullscreen --writeTarget= --httpd_port=616
+	./d-net-dbg.exe --nofullscreen --writeTarget= --httpd_port=616
 
 ai: d-net.exe
-	d-net.exe --nofullscreen --aiCount=12 --fastForwardTo=100000000 --factionMode=0 --httpd_port=616 --noshopcache
+	./d-net.exe --nofullscreen --aiCount=12 --fastForwardTo=100000000 --factionMode=0 --httpd_port=616 --noshopcache
 
 ailoop: d-net.exe
 	while ./d-net.exe --nofullscreen --aiCount=12 --fastForwardTo=100000000 --terminateAfter=600 --startingPhase=8 --httpd_port=616 --noshopcache ; do echo Cycle. ; done
 
 veced: vecedit.exe
-	vecedit.exe
+	./vecedit.exe
 
 package: d-net.exe data/shopcache.dwh
 	rm \\\\192.168.100.4\\zorba\\www\\d-net\\Dnet\ Latest\ Version.zip || true
@@ -138,7 +138,7 @@ functor_gen.exe: $(FUNCTORSOURCES:=.c.o)
 	nice $(CPP) -o $@ $(FUNCTORSOURCES:=.c.o) $(CONSOLELDFLAGS)
 
 functor.h: functor_gen.exe functor.h.in
-	functor_gen.exe
+	./functor_gen.exe
 
 stats:
 	@echo Graphics: `cat gfx.h gfx.cpp game_effects.h game_effects.cpp color.h color.cpp | wc -l` loc
