@@ -36,9 +36,9 @@ vector<Selectitem> Vecedit::getSelectionStack(Float2 pos) const {
     for(int j = 0; j < vp.vpath.size(); j++) {
       Selectitem site(Selectitem::NODE, i, j);
       if(thisselect) {
-        maybeAdd(&ites, site, pos, vp.center + vp.vpath[j].pos, primenode * zpp);
+        maybeAdd(&ites, site, pos, vp.center + vp.vpath[j].pos, primenode * zpp * 1.5);
       } else {
-        maybeAdd(&ites, site, pos, vp.center + vp.vpath[j].pos, secondnode * zpp);
+        maybeAdd(&ites, site, pos, vp.center + vp.vpath[j].pos, secondnode * zpp * 1.5);
       }
     }
   }
