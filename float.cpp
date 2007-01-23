@@ -26,6 +26,7 @@ const float Floats::tPI = PI;
 
 float len(const Float2 &in) { return imp_len<Floats>(in); }
 Float2 normalize(const Float2 &in) { return imp_normalize<Floats>(in); }
+float dot(const Float2 &lhs, const Float2 &rhs) { return lhs.x * rhs.x + lhs.y * rhs.y; }
 
 float getAngle(const Float2 &in) { return imp_getAngle<Floats>(in); };
 Float2 makeAngle(const float &in) { return imp_makeAngle<Floats>(in); };
@@ -72,6 +73,19 @@ void expandBoundBox(Float4 *bbox, float factor) { return imp_expandBoundBox<Floa
 
 bool linelineintersect(const Float4 &lhs, const Float4 &rhs) { return imp_linelineintersect<Floats>(lhs, rhs); };
 float linelineintersectpos(const Float4 &lhs, const Float4 &rhs) { return imp_linelineintersectpos<Floats>(lhs, rhs); };
+
+float linepointdistance(const Float4 &lhs, const Float2 &rhs) {
+  Float2 v = lhs.e() - lhs.s();
+  Float2 w = rhs - lhs.s();
+  float c1, c2;
+  if((c1 = dot(w, v)) <= 0)
+    return len(rhs - lhs.s());
+  if((c2 = dot(v, v)) <= c1)
+    return len(rhs - lhs.e());
+  float b = c1 / c2;
+  Float2 Pb = lhs.s() + v * b;
+  return len(rhs - Pb);
+}
 
 Float2 rotate(const Float2 &in, float ang) {
   return makeAngle(getAngle(in) + ang) * len(in);

@@ -183,12 +183,15 @@ inline Float2 clamp(const Float2 &val, const Float4 &bounds) {
 
 float len(const Float2 &in);
 Float2 normalize(const Float2 &in);
+float dot(const Float2 &lhs, const Float2 &rhs);
 
 float getAngle(const Float2 &in);
 Float2 makeAngle(const float &in);
 
 bool linelineintersect(const Float4 &lhs, const Float4 &rhs);
 float linelineintersectpos(const Float4 &lhs, const Float4 &rhs);
+
+float linepointdistance(const Float4 &lhs, const Float2 &rhs);
 
 int whichSide(const Float4 &f4, const Float2 &pta);
 

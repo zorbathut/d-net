@@ -156,7 +156,7 @@ void VeceditGLC::SetGLCCursor(Cursor curse) {
   if(curse == CURSOR_NORMAL) {
     cid = wxCURSOR_ARROW;
   } else if(curse == CURSOR_CROSS) {
-    cid = wxCURSOR_CROSS;
+    cid = wxCURSOR_HAND;  // grr
   } else if(curse == CURSOR_HAND) {
     cid = wxCURSOR_HAND;
   } else {

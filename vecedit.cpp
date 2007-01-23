@@ -22,9 +22,24 @@ bool operator<(const Selectitem &lhs, const Selectitem &rhs) {
   return false;
 }
 
-void maybeAdd(vector<Selectitem> *ite, Selectitem tite, Float2 pos, Float2 loc, float dist) {
-  if(max(abs(pos.x - loc.x), abs(pos.y - loc.y)) < dist)
+void maybeAddPoint(vector<Selectitem> *ite, Selectitem tite, Float2 pos, Float2 loc, float dist) {
+  if(max(abs(pos.x - loc.x), abs(pos.y - loc.y)) <= dist)
     ite->push_back(tite);
+}
+
+void maybeAddLine(vector<Selectitem> *ite, Selectitem tite, Float2 pos, Float4 loc, float dist) {
+  if(linepointdistance(loc, pos) <= dist)
+    ite->push_back(tite);
+}
+
+void maybeAddCurve(vector<Selectitem> *ite, Selectitem tite, Float2 pos, Float4 ptah, Float4 ptbh, float dist) {
+  vector<Float2> curv = generateCurve(ptah, ptbh, 20);
+  for(int i = 0; i < curv.size() - 1; i++) {
+    if(linepointdistance(Float4(curv[i], curv[i + 1]), pos) <= dist) {
+      ite->push_back(tite);
+      break;
+    }
+  }
 }
 
 vector<Selectitem> Vecedit::getSelectionStack(Float2 pos) const {
@@ -34,11 +49,21 @@ vector<Selectitem> Vecedit::getSelectionStack(Float2 pos) const {
     const VectorPath &vp = dv2.paths[i];
     const bool thisselect = (i == select.path);
     for(int j = 0; j < vp.vpath.size(); j++) {
-      Selectitem site(Selectitem::NODE, i, j);
+            float selsize;
       if(thisselect) {
-        maybeAdd(&ites, site, pos, vp.center + vp.vpath[j].pos, primenode * zpp * 1.5);
+        selsize = primenode * zpp;
       } else {
-        maybeAdd(&ites, site, pos, vp.center + vp.vpath[j].pos, secondnode * zpp * 1.5);
+        selsize = secondnode * zpp;
+      }
+      
+      maybeAddPoint(&ites, Selectitem(Selectitem::NODE, i, j), pos, vp.center + vp.vpath[j].pos, selsize * 1.5);
+      
+      int k = (j + 1) % vp.vpath.size();
+      if(vp.vpath[j].curvr) {
+        CHECK(vp.vpath[k].curvl);
+        maybeAddCurve(&ites, Selectitem(Selectitem::LINK, i, j), pos, Float4(vp.center + vp.vpath[j].pos, vp.center + vp.vpath[j].pos + vp.vpath[j].curvrp), Float4(vp.center + vp.vpath[k].pos + vp.vpath[k].curvlp, vp.center + vp.vpath[k].pos), selsize);
+      } else {
+        maybeAddLine(&ites, Selectitem(Selectitem::LINK, i, j), pos, Float4(vp.center + vp.vpath[j].pos, vp.center + vp.vpath[k].pos), selsize);
       }
     }
   }
