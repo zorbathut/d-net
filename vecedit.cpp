@@ -22,6 +22,13 @@ bool operator<(const Selectitem &lhs, const Selectitem &rhs) {
   return false;
 }
 
+bool operator==(const Selectitem &lhs, const Selectitem &rhs) {
+  if(lhs.type != rhs.type) return false;
+  if(lhs.path != rhs.path) return false;
+  if(lhs.item != rhs.item) return false;
+  return true;
+}
+
 void maybeAddPoint(vector<Selectitem> *ite, Selectitem tite, Float2 pos, Float2 loc, float dist) {
   if(max(abs(pos.x - loc.x), abs(pos.y - loc.y)) <= dist)
     ite->push_back(tite);
@@ -156,6 +163,15 @@ void Vecedit::render() const {
   drawGrid(32, zpp);
 }
 
+void selectThings(Selectitem *select, const vector<Selectitem> &ss) {
+  CHECK(ss.size());
+  if(count(ss.begin(), ss.end(), *select)) {
+    *select = ss[(find(ss.begin(), ss.end(), *select) - ss.begin() + 1) % ss.size()];
+  } else {
+    *select = ss[0];
+  }
+}
+
 // Okay let's have some logic!
 // Possible states: 
 // * Not selected
@@ -185,13 +201,13 @@ void Vecedit::mouse(const MouseInput &mouse) {
     } else if(ss[0].type == Selectitem::NODE) {
       cursor_change_callback->Run(CURSOR_HAND);
       if(mouse.b[0].down) {
-        select = ss[0];
+        selectThings(&select, ss);
         resync_gui_callback->Run();
       }
     } else if(ss[0].type == Selectitem::LINK) {
       cursor_change_callback->Run(CURSOR_CROSS);
       if(mouse.b[0].down) {
-        select = ss[0];
+        selectThings(&select, ss);
         resync_gui_callback->Run();
       }
     } else {
