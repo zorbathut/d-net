@@ -176,11 +176,12 @@ void selectThings(Selectitem *select, const vector<Selectitem> &ss) {
 // Possible states: 
 // * Not selected
 // * Selected
+// * SELECTEDNEW
 // * Dragging
 
-// * This stack isn't selected + mousedown + something selectable -> selected
-// * Selected + mouseup + something selectable -> rotate through selectable things
-// * Selected + mousecurrentlydown + selected draggable + movement -> dragging
+// * This stack isn't selected + mousedown + something selectable -> Selectednew
+// * Previouslyselected + mouseup + something selectable -> rotate through selectable things
+// * Selectednew | Selected + mousecurrentlydown + selected draggable + movement -> dragging
 // * Dragging + mouseup -> back to selected
 // Note that dragging + mouseup != rotate
 
@@ -196,40 +197,46 @@ void Vecedit::mouse(const MouseInput &mouse) {
   
   {
     vector<Selectitem> ss = getSelectionStack(world);
+    
     if(!ss.size()) {
       cursor_change_callback->Run(CURSOR_NORMAL);
-    } else if(ss[0].type == Selectitem::NODE) {
-      cursor_change_callback->Run(CURSOR_HAND);
-      if(mouse.b[0].down) {
-        selectThings(&select, ss);
-        resync_gui_callback->Run();
-      }
-    } else if(ss[0].type == Selectitem::LINK) {
-      cursor_change_callback->Run(CURSOR_CROSS);
-      if(mouse.b[0].down) {
-        selectThings(&select, ss);
-        resync_gui_callback->Run();
-      }
     } else {
-      CHECK(0); // well fuck
+      cursor_change_callback->Run(CURSOR_HAND);
+      
+      if(mouse.b[0].push) {
+        if(state == IDLE) {
+          if(count(ss.begin(), ss.end(), select)) {
+            state = SELECTED;
+          } else {
+            selectThings(&select, ss);
+            state = SELECTEDNEW;
+            resync_gui_callback->Run();
+          }
+        }
+      }
+      
+      if(mouse.b[0].release) {
+        if(state == SELECTED) {
+          selectThings(&select, ss);
+          state = IDLE;
+          resync_gui_callback->Run();
+        } else if(state == SELECTEDNEW || state == DRAGGING) {
+          state = IDLE;
+        }
+      }
     }
   }
-  
-  if(state == IDLE) {
-    
-  }
 
-  if(mouse.dw == 0)
-    return;
-  
-  const float mult = pow(1.2, mouse.dw / 120.0);
-  
-  zpp /= mult;
-  
-  if(mult > 1.0)
-    center = world - (world - center) / mult;
-  
-  resync_gui_callback->Run();
+  if(mouse.dw != 0) {
+    const float mult = pow(1.2, mouse.dw / 120.0);
+    
+    zpp /= mult;
+    
+    if(mult > 1.0)
+      center = world - (world - center) / mult;
+    
+    resync_gui_callback->Run();
+  }
 }
 
 void Vecedit::clear() {

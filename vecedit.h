@@ -40,7 +40,7 @@ class Vecedit {
   
   Dvec2 dv2;
   
-  enum { IDLE, SELECTED, DRAGGING };
+  enum { IDLE, SELECTED, SELECTEDNEW, DRAGGING };
   int state;
   Selectitem select;
   
