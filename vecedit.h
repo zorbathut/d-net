@@ -19,13 +19,16 @@ struct ScrollBounds {
 };
 
 struct Selectitem {
-  enum { NODE, LINK, NONE };
+  enum { NODE, LINK, CURVECONTROL, PATHCENTER, NONE };
   int type;
   int path;
   int item;
+  bool curveside;
   
   Selectitem();
+  Selectitem(int type, int path);
   Selectitem(int type, int path, int item);
+  Selectitem(int type, int path, int item, bool curveside);
 };
 
 enum Cursor { CURSOR_NORMAL, CURSOR_CROSS, CURSOR_HAND };
