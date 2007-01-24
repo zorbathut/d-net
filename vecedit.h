@@ -42,6 +42,7 @@ class Vecedit {
   
   enum { IDLE, SELECTED, SELECTEDNEW, DRAGGING };
   int state;
+  Float2 startpos;
   Selectitem select;
   
   vector<Selectitem> getSelectionStack(Float2 pos) const;

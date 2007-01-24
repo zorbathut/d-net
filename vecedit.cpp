@@ -212,6 +212,7 @@ void Vecedit::mouse(const MouseInput &mouse) {
             state = SELECTEDNEW;
             resync_gui_callback->Run();
           }
+          startpos = world;
         }
       }
       
@@ -224,6 +225,12 @@ void Vecedit::mouse(const MouseInput &mouse) {
           state = IDLE;
         }
       }
+    }
+    
+    if((state == SELECTED || state == SELECTEDNEW) && select.type == Selectitem::NODE && len(startpos - world) > zpp * 3) {
+      dv2.paths[select.path].vpath[select.item].pos = world - dv2.paths[select.path].center;
+      dv2.paths[select.path].vpathModify(select.item);
+      resync_gui_callback->Run();
     }
   }
 
