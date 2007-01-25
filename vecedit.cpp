@@ -348,6 +348,28 @@ bool Vecedit::save(const string &filename) {
   return true;
 }
 
+static Vecedit *emerg_save = NULL;
+
+void doEmergSave() {
+  CHECK(emerg_save);
+  Vecedit *es = emerg_save;
+  emerg_save = NULL;
+  es->save("crash.dv2");
+}
+
+void Vecedit::registerEmergencySave() {
+  CHECK(!emerg_save);
+  dprintf("dvrcf\n");
+  emerg_save = this;
+  registerCrashFunction(&doEmergSave);
+}
+
+void Vecedit::unregisterEmergencySave() {
+  CHECK(emerg_save);
+  emerg_save = NULL;
+  unregisterCrashFunction(&doEmergSave);
+}
+
 Vecedit::Vecedit(const smart_ptr<Closure<> > &resync_gui_callback, const smart_ptr<Closure<Cursor> > &cursor_change_callback) : resync_gui_callback(resync_gui_callback), cursor_change_callback(cursor_change_callback) {
   center = Float2(0, 0);
   zpp = 0.25;

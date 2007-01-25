@@ -45,15 +45,15 @@ void PrintDebugStack() {
     dumpStackTrace();
 }
 
-void (*crashfunc)() = NULL;
+vector<void (*)()> cfc;
 
 void registerCrashFunction(void (*fct)()) {
-  CHECK(!crashfunc);
-  crashfunc = fct;
+  cfc.push_back(fct);
 }
 void unregisterCrashFunction(void (*fct)()) {
-  CHECK(crashfunc == fct);
-  crashfunc = NULL;
+  CHECK(cfc.size());
+  CHECK(cfc.back() == fct);
+  cfc.pop_back();
 }
 
 #ifdef VECTOR_PARANOIA
@@ -78,8 +78,8 @@ public:
 #endif
 
 void CrashHandler(const char *fname, int line) {
-  if(crashfunc)
-    (*crashfunc)();
+  for(int i = cfc.size() - 1; i >= 0; i--)
+    (*cfc[i])();
 };
 
 void crash() {

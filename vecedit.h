@@ -63,7 +63,10 @@ public:
   void clear();
   void load(const string &filename);
   bool save(const string &filename);
-  
+
+  void registerEmergencySave();
+  void unregisterEmergencySave();
+
   explicit Vecedit(const smart_ptr<Closure<> > &resync_gui_callback, const smart_ptr<Closure<Cursor> > &cursor_change_callback);
 };
 

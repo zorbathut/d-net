@@ -186,7 +186,8 @@ private:
 public:
   
   VeceditWindow();
-  
+  ~VeceditWindow();
+
   void OnNew(wxCommandEvent &event);
   void OnOpen(wxCommandEvent &event);
   bool OnSave();
@@ -283,6 +284,12 @@ VeceditWindow::VeceditWindow() : wxFrame((wxFrame *)NULL, -1, veceditname, wxDef
   SetSizer(vertsizer);
   
   redraw();
+  
+  core.registerEmergencySave();
+}
+
+VeceditWindow::~VeceditWindow() {
+  core.unregisterEmergencySave();
 }
 
 void VeceditWindow::OnNew(wxCommandEvent& event) {
