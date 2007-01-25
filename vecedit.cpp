@@ -84,6 +84,10 @@ vector<Selectitem> Vecedit::getSelectionStack(Float2 pos) const {
         maybeAddPoint(&ites, Selectitem(Selectitem::CURVECONTROL, i, j, true), pos, vp.center + vp.vpath[j].pos + vp.vpath[j].curvrp, secondnode * zpp * 1.5);
       }
       
+      if(thisselect) {
+        maybeAddPoint(&ites, Selectitem(Selectitem::PATHCENTER, i), pos, vp.center, primenode * zpp * 1.5);
+      }
+      
       int k = (j + 1) % vp.vpath.size();
       if(vp.vpath[j].curvr) {
         CHECK(vp.vpath[k].curvl);
@@ -186,6 +190,9 @@ void Vecedit::render() const {
           setAppropriateColor(Selectitem(Selectitem::CURVECONTROL, i, j, true), select);
           drawRectAround(dv2.paths[i].center + dv2.paths[i].vpath[j].pos + dv2.paths[i].vpath[j].curvrp, zpp * secondnode, zpp);
         }
+        
+        setAppropriateColor(Selectitem(Selectitem::PATHCENTER, i), select);
+        drawRectAround(dv2.paths[i].center, zpp * primenode, zpp);
       }
       
       setAppropriateColor(Selectitem(Selectitem::LINK, i, j), select);
@@ -266,10 +273,11 @@ void Vecedit::mouse(const MouseInput &mouse) {
       }
     }
     
-    if((state == SELECTED || state == SELECTEDNEW) && len(startpos - world) > zpp * 3) {
+    if((state == SELECTED || state == SELECTEDNEW) && len(startpos - world) > zpp * 3 || state == DRAGGING) {
       if(select.type == Selectitem::NODE) {
         dv2.paths[select.path].vpath[select.item].pos = world - dv2.paths[select.path].center;
         dv2.paths[select.path].vpathModify(select.item);
+        state = DRAGGING;
         resync_gui_callback->Run();
       } else if(select.type == Selectitem::CURVECONTROL) {
         Float2 destpt = world - dv2.paths[select.path].center - dv2.paths[select.path].vpath[select.item].pos;
@@ -280,6 +288,12 @@ void Vecedit::mouse(const MouseInput &mouse) {
           vp.curvrp = destpt;
         }
         dv2.paths[select.path].vpathModify(select.item);
+        state = DRAGGING;
+        resync_gui_callback->Run();
+      } else if(select.type == Selectitem::PATHCENTER) {
+        dv2.paths[select.path].center = world;
+        dv2.paths[select.path].moveCenterOrReflect();
+        state = DRAGGING;
         resync_gui_callback->Run();
       }
     }

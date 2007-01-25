@@ -2,7 +2,6 @@
 - Less incentive to camp?
 - Add bombardment charts
 - Next-gen vecedit?
-  - Moving path centers
   - Grid lock
   - Grid change
   - Undo
