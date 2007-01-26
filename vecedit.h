@@ -37,6 +37,8 @@ class Vecedit {
   smart_ptr<Closure<> > resync_gui_callback;
   smart_ptr<Closure<Cursor> > cursor_change_callback;
   
+  bool modified;
+  
   // center, zoom per pixel
   Float2 center;
   float zpp;

@@ -369,7 +369,7 @@ void VeceditWindow::redraw() {
 
 bool VeceditWindow::maybeSaveChanges() {
   if(core.changed()) {
-    int saveit = wxMessageBox("The text in the unknown file has changed.\n\nDo you want to save the changes?", veceditname, wxYES_NO | wxCANCEL | wxICON_EXCLAMATION);
+    int saveit = wxMessageBox(StringPrintf("The text in %s has changed.\n\nDo you want to save the changes?", filename.c_str()), veceditname, wxYES_NO | wxCANCEL | wxICON_EXCLAMATION);
     if(saveit == wxCANCEL)
       return false;
     if(saveit == wxYES)

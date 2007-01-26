@@ -104,7 +104,7 @@ vector<Selectitem> Vecedit::getSelectionStack(Float2 pos) const {
 }
 
 bool Vecedit::changed() const {
-  return false;
+  return modified;
 }
 ScrollBounds Vecedit::getScrollBounds(Float2 screenres) const {
   ScrollBounds rv;
@@ -213,6 +213,16 @@ void selectThings(Selectitem *select, const vector<Selectitem> &ss) {
   }
 }
 
+float toGrid(float x, float grid) {
+  return floor(x / grid + 0.5) * grid;
+}
+
+Float2 toGrid(Float2 in, float grid) {
+  in.x = toGrid(in.x, grid);
+  in.y = toGrid(in.y, grid);
+  return in;
+}
+
 // Okay let's have some logic!
 // Possible states: 
 // * Not selected
@@ -235,6 +245,8 @@ void selectThings(Selectitem *select, const vector<Selectitem> &ss) {
 
 void Vecedit::mouse(const MouseInput &mouse) {
   Float2 world = (mouse.pos - Float2(getResolutionX() / 2, getResolutionY() / 2)) * zpp + Float2(center);
+  Float2 worldlock = world;
+  worldlock = toGrid(worldlock, 8.f);
   
   {
     vector<Selectitem> ss = getSelectionStack(world);
@@ -275,12 +287,13 @@ void Vecedit::mouse(const MouseInput &mouse) {
     
     if((state == SELECTED || state == SELECTEDNEW) && len(startpos - world) > zpp * 3 || state == DRAGGING) {
       if(select.type == Selectitem::NODE) {
-        dv2.paths[select.path].vpath[select.item].pos = world - dv2.paths[select.path].center;
+        dv2.paths[select.path].vpath[select.item].pos = worldlock - dv2.paths[select.path].center;
         dv2.paths[select.path].vpathModify(select.item);
         state = DRAGGING;
+        modified = true;
         resync_gui_callback->Run();
       } else if(select.type == Selectitem::CURVECONTROL) {
-        Float2 destpt = world - dv2.paths[select.path].center - dv2.paths[select.path].vpath[select.item].pos;
+        Float2 destpt = worldlock - dv2.paths[select.path].center - dv2.paths[select.path].vpath[select.item].pos;
         VectorPoint &vp = dv2.paths[select.path].vpath[select.item];
         if(!select.curveside) {
           vp.curvlp = destpt;
@@ -289,11 +302,13 @@ void Vecedit::mouse(const MouseInput &mouse) {
         }
         dv2.paths[select.path].vpathModify(select.item);
         state = DRAGGING;
+        modified = true;
         resync_gui_callback->Run();
       } else if(select.type == Selectitem::PATHCENTER) {
-        dv2.paths[select.path].center = world;
+        dv2.paths[select.path].center = worldlock;
         dv2.paths[select.path].moveCenterOrReflect();
         state = DRAGGING;
+        modified = true;
         resync_gui_callback->Run();
       }
     }
@@ -313,11 +328,13 @@ void Vecedit::mouse(const MouseInput &mouse) {
 
 void Vecedit::clear() {
   *this = Vecedit(resync_gui_callback, cursor_change_callback);
+  modified = false;
   resync_gui_callback->Run();
 }
 void Vecedit::load(const string &filename) {
   clear();
   dv2 = loadDvec2(filename);
+  modified = false;
   resync_gui_callback->Run();
 }
 bool Vecedit::save(const string &filename) {
@@ -359,6 +376,7 @@ bool Vecedit::save(const string &filename) {
   }
   fclose(outfile);
   
+  modified = false;
   return true;
 }
 
@@ -388,5 +406,6 @@ Vecedit::Vecedit(const smart_ptr<Closure<> > &resync_gui_callback, const smart_p
   center = Float2(0, 0);
   zpp = 0.25;
   
+  modified = false;
   state = IDLE;
 };
