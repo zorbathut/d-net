@@ -24,6 +24,17 @@ Selectitem::Selectitem(int type, int path, int item, bool curveside) : type(type
   CHECK(type == CURVECONTROL);
 };
 
+OtherInput::OtherInput() {
+  addnode = false;
+  gridup = false;
+  griddown = false;
+  gridpos = -1;
+}
+OtherState::OtherState() {
+  cursor = CURSOR_UNCHANGED;
+  redraw = false;
+  gridpos = -1;
+}
 
 bool operator<(const Selectitem &lhs, const Selectitem &rhs) {
   if(lhs.type != rhs.type) return lhs.type < rhs.type;
@@ -127,7 +138,6 @@ ScrollBounds Vecedit::getScrollBounds(Float2 screenres) const {
 }
 void Vecedit::setScrollPos(Float2 scrollpos) {
   center = scrollpos;
-  resync_gui_callback->Run();
 }
 
 void drawLink(Float2 center, const vector<VectorPoint> &vpt, int j, float weight) {
@@ -243,7 +253,11 @@ Float2 toGrid(Float2 in, float grid) {
 // * Points that are close enough, sorted by path, then by point
 // * Lines that are close enough
 
-void Vecedit::mouse(const MouseInput &mouse) {
+OtherState Vecedit::input(const MouseInput &mouse, const OtherInput &other) {
+  CHECK(other.gridpos != -1);
+  ostate.gridpos = other.gridpos;
+  
+  ostate.redraw = false;
   Float2 world = (mouse.pos - Float2(getResolutionX() / 2, getResolutionY() / 2)) * zpp + Float2(center);
   Float2 worldlock = world;
   worldlock = toGrid(worldlock, 8.f);
@@ -252,14 +266,18 @@ void Vecedit::mouse(const MouseInput &mouse) {
     vector<Selectitem> ss = getSelectionStack(world);
     
     if(!ss.size()) {
-      cursor_change_callback->Run(CURSOR_NORMAL);
+      ostate.cursor = CURSOR_NORMAL;
       
       if(mouse.b[0].push) {
         select = Selectitem();
-        resync_gui_callback->Run();
+        ostate.redraw = true;
       }
+      
+      if(mouse.b[0].release) {
+        state = IDLE;
+      } // whatever we were doing, we're not doing it now
     } else {
-      cursor_change_callback->Run(CURSOR_HAND);
+      ostate.cursor = CURSOR_HAND;
       
       if(mouse.b[0].push) {
         if(state == IDLE) {
@@ -268,7 +286,7 @@ void Vecedit::mouse(const MouseInput &mouse) {
           } else {
             selectThings(&select, ss);
             state = SELECTEDNEW;
-            resync_gui_callback->Run();
+            ostate.redraw = true;
           }
           startpos = world;
         }
@@ -278,7 +296,7 @@ void Vecedit::mouse(const MouseInput &mouse) {
         if(state == SELECTED) {
           selectThings(&select, ss);
           state = IDLE;
-          resync_gui_callback->Run();
+          ostate.redraw = true;
         } else if(state == SELECTEDNEW || state == DRAGGING) {
           state = IDLE;
         }
@@ -291,7 +309,7 @@ void Vecedit::mouse(const MouseInput &mouse) {
         dv2.paths[select.path].vpathModify(select.item);
         state = DRAGGING;
         modified = true;
-        resync_gui_callback->Run();
+        ostate.redraw = true;
       } else if(select.type == Selectitem::CURVECONTROL) {
         Float2 destpt = worldlock - dv2.paths[select.path].center - dv2.paths[select.path].vpath[select.item].pos;
         VectorPoint &vp = dv2.paths[select.path].vpath[select.item];
@@ -303,13 +321,13 @@ void Vecedit::mouse(const MouseInput &mouse) {
         dv2.paths[select.path].vpathModify(select.item);
         state = DRAGGING;
         modified = true;
-        resync_gui_callback->Run();
+        ostate.redraw = true;
       } else if(select.type == Selectitem::PATHCENTER) {
         dv2.paths[select.path].center = worldlock;
         dv2.paths[select.path].moveCenterOrReflect();
         state = DRAGGING;
         modified = true;
-        resync_gui_callback->Run();
+        ostate.redraw = true;
       }
     }
   }
@@ -322,20 +340,20 @@ void Vecedit::mouse(const MouseInput &mouse) {
     if(mult > 1.0)
       center = world - (world - center) / mult;
     
-    resync_gui_callback->Run();
+    ostate.redraw = true;
   }
+  
+  return ostate;
 }
 
 void Vecedit::clear() {
-  *this = Vecedit(resync_gui_callback, cursor_change_callback);
-  modified = false;
-  resync_gui_callback->Run();
+  *this = Vecedit();
+  modified = false; 
 }
 void Vecedit::load(const string &filename) {
   clear();
   dv2 = loadDvec2(filename);
   modified = false;
-  resync_gui_callback->Run();
 }
 bool Vecedit::save(const string &filename) {
   FILE *outfile;
@@ -402,7 +420,7 @@ void Vecedit::unregisterEmergencySave() {
   unregisterCrashFunction(&doEmergSave);
 }
 
-Vecedit::Vecedit(const smart_ptr<Closure<> > &resync_gui_callback, const smart_ptr<Closure<Cursor> > &cursor_change_callback) : resync_gui_callback(resync_gui_callback), cursor_change_callback(cursor_change_callback) {
+Vecedit::Vecedit() {
   center = Float2(0, 0);
   zpp = 0.25;
   

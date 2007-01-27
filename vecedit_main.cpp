@@ -9,6 +9,7 @@
 #include "gfx.h"
 #include "vecedit.h"
 #include "os.h"
+#include "util.h"
 
 /*************
  * VeceditGLC
@@ -138,6 +139,8 @@ void VeceditGLC::OnScroll(wxScrollWinEvent &event) {
   } else {
     set_scroll_callback->Run(Float2((GetScrollPos(wxHORIZONTAL) + GetScrollThumb(wxHORIZONTAL) / 2.0) / GetScrollRange(wxHORIZONTAL) * bounds.objbounds.span_x() + bounds.objbounds.sx, bounds.currentwindow.midpoint().y));
   }
+  
+  Refresh();
 }
 
 void VeceditGLC::SetScrollBars() {
@@ -201,9 +204,8 @@ public:
   void OnSaveas_dispatch(wxCommandEvent &event);
 
   void redraw();
+  void mouse(const MouseInput &minp);
   bool maybeSaveChanges();
-
-  void SetGLCCursor(Cursor cursor);
   
   DECLARE_EVENT_TABLE()
 };
@@ -230,7 +232,7 @@ END_EVENT_TABLE()
 
 const string veceditname =  "D-Net Vecedit2";
 
-VeceditWindow::VeceditWindow() : wxFrame((wxFrame *)NULL, -1, veceditname, wxDefaultPosition, wxSize(800, 600)), core(NewFunctor(this, &VeceditWindow::redraw), NewFunctor(this, &VeceditWindow::SetGLCCursor)) {
+VeceditWindow::VeceditWindow() : wxFrame((wxFrame *)NULL, -1, veceditname, wxDefaultPosition, wxSize(800, 600)) {
   wxMenuBar *menuBar = new wxMenuBar;
   
   {
@@ -262,7 +264,7 @@ VeceditWindow::VeceditWindow() : wxFrame((wxFrame *)NULL, -1, veceditname, wxDef
   CreateStatusBar();
   SetStatusText("borf borf borf");
   
-  glc = new VeceditGLC(this, NewFunctor(&core, &Vecedit::render), NewFunctor(&core, &Vecedit::mouse), NewFunctor(&core, &Vecedit::getScrollBounds), NewFunctor(&core, &Vecedit::setScrollPos));
+  glc = new VeceditGLC(this, NewFunctor(&core, &Vecedit::render), NewFunctor(this, &VeceditWindow::mouse), NewFunctor(&core, &Vecedit::getScrollBounds), NewFunctor(&core, &Vecedit::setScrollPos));
   wxNotebook *note = new wxNotebook(this, wxID_ANY);
   note->SetMinSize(wxSize(150, 0));
   note->AddPage(new wxNotebookPage(this, wxID_ANY), "Props");
@@ -297,6 +299,8 @@ void VeceditWindow::OnNew(wxCommandEvent& event) {
     return;
   core.clear();
   filename = "";
+  
+  redraw();
 }
 void VeceditWindow::OnOpen(wxCommandEvent& event) {
   if(!maybeSaveChanges())
@@ -306,6 +310,8 @@ void VeceditWindow::OnOpen(wxCommandEvent& event) {
     filename = wxfd.GetPath();
     core.load(filename);
   }
+  
+  redraw();
 }
 bool VeceditWindow::OnSave() {
   if(filename.empty()) {
@@ -367,6 +373,20 @@ void VeceditWindow::redraw() {
   glc->SetScrollBars();
 }
 
+void VeceditWindow::mouse(const MouseInput &minp) {
+  OtherInput oinp;
+  oinp.gridpos = 8;
+  
+  OtherState ost = core.input(minp, oinp);
+  
+  if(ost.cursor != CURSOR_UNCHANGED)
+    glc->SetGLCCursor(ost.cursor);
+  if(ost.redraw)
+    glc->Refresh();
+  
+  CHECK(ost.gridpos == oinp.gridpos);
+}
+
 bool VeceditWindow::maybeSaveChanges() {
   if(core.changed()) {
     int saveit = wxMessageBox(StringPrintf("The text in %s has changed.\n\nDo you want to save the changes?", filename.c_str()), veceditname, wxYES_NO | wxCANCEL | wxICON_EXCLAMATION);
@@ -376,10 +396,6 @@ bool VeceditWindow::maybeSaveChanges() {
       return OnSave();
   }
   return true;
-}
-
-void VeceditWindow::SetGLCCursor(Cursor cursor) {
-  glc->SetGLCCursor(cursor);
 }
 
 /*************

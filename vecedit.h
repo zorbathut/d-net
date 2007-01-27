@@ -31,12 +31,29 @@ struct Selectitem {
   Selectitem(int type, int path, int item, bool curveside);
 };
 
-enum Cursor { CURSOR_NORMAL, CURSOR_CROSS, CURSOR_HAND };
+enum Cursor { CURSOR_NORMAL, CURSOR_CROSS, CURSOR_HAND, CURSOR_UNCHANGED = -1 };
+
+struct OtherInput {
+  bool addnode;
+  
+  bool gridup;
+  bool griddown;
+  
+  int gridpos;
+  
+  OtherInput();
+};
+
+struct OtherState {
+  Cursor cursor;
+  bool redraw;
+  
+  int gridpos;
+  
+  OtherState();
+};
 
 class Vecedit {
-  smart_ptr<Closure<> > resync_gui_callback;
-  smart_ptr<Closure<Cursor> > cursor_change_callback;
-  
   bool modified;
   
   // center, zoom per pixel
@@ -50,6 +67,8 @@ class Vecedit {
   Float2 startpos;
   Selectitem select;
   
+  OtherState ostate;
+  
   vector<Selectitem> getSelectionStack(Float2 pos) const;
   
 public:
@@ -58,9 +77,8 @@ public:
   ScrollBounds getScrollBounds(Float2 screenres) const;
   void setScrollPos(Float2 scrollpos);
 
+  OtherState input(const MouseInput &mouse, const OtherInput &other);
   void render() const;
-
-  void mouse(const MouseInput &mouse);
 
   void clear();
   void load(const string &filename);
@@ -69,7 +87,7 @@ public:
   void registerEmergencySave();
   void unregisterEmergencySave();
 
-  explicit Vecedit(const smart_ptr<Closure<> > &resync_gui_callback, const smart_ptr<Closure<Cursor> > &cursor_change_callback);
+  explicit Vecedit();
 };
 
 #endif
