@@ -4,6 +4,7 @@
 #include <wx/notebook.h>
 #include <wx/toolbar.h>
 #include <wx/tbarbase.h>
+#include <wx/spinctrl.h>
 
 #include "debug.h"
 #include "gfx.h"
@@ -200,11 +201,16 @@ public:
   void OnAbout(wxCommandEvent &event);
   void OnClose(wxCloseEvent &event);
 
+  void OnNewPath(wxCommandEvent &event);
+  void OnGridUp(wxCommandEvent &event);
+  void OnGridDown(wxCommandEvent &event);
+
   void OnSave_dispatch(wxCommandEvent &event);
   void OnSaveas_dispatch(wxCommandEvent &event);
 
   void redraw();
   void mouse(const MouseInput &minp);
+  void process(const OtherState &inp);
   bool maybeSaveChanges();
   
   DECLARE_EVENT_TABLE()
@@ -217,6 +223,10 @@ enum {
   ID_Saveas,
   ID_Quit,
   ID_About,
+  
+  ID_NewPath,
+  ID_GridUp,
+  ID_GridDown
 };
 
 BEGIN_EVENT_TABLE(VeceditWindow, wxFrame)
@@ -227,6 +237,11 @@ BEGIN_EVENT_TABLE(VeceditWindow, wxFrame)
 
   EVT_MENU(ID_Quit, VeceditWindow::OnQuit)
   EVT_MENU(ID_About, VeceditWindow::OnAbout)
+
+  EVT_MENU(ID_NewPath, VeceditWindow::OnNewPath)
+  EVT_MENU(ID_GridUp, VeceditWindow::OnGridUp)
+  EVT_MENU(ID_GridDown, VeceditWindow::OnGridDown)
+
   EVT_CLOSE(VeceditWindow::OnClose)
 END_EVENT_TABLE()
 
@@ -271,7 +286,11 @@ VeceditWindow::VeceditWindow() : wxFrame((wxFrame *)NULL, -1, veceditname, wxDef
   note->AddPage(new wxNotebookPage(this, wxID_ANY), "Globals");
   
   wxToolBar *tool = new wxToolBar(this, wxID_ANY);
-  tool->AddTool(wxID_ANY, "add shit", wxBitmap("vecedit/plus.png", wxBITMAP_TYPE_PNG));
+  tool->AddTool(ID_NewPath, "add shit", wxBitmap("vecedit/plus.png", wxBITMAP_TYPE_PNG));
+  tool->AddSeparator();
+  tool->AddTool(ID_GridUp, "grid up", wxBitmap("vecedit/plus.png", wxBITMAP_TYPE_PNG));
+  tool->AddControl(new wxSpinCtrl(tool, wxID_ANY, "8"));
+  tool->AddTool(ID_GridDown, "grid down", wxBitmap("vecedit/plus.png", wxBITMAP_TYPE_PNG));
   tool->Realize();
   tool->SetMinSize(wxSize(0, 25));  // this shouldn't be needed >:(
   
@@ -361,6 +380,16 @@ void VeceditWindow::OnClose(wxCloseEvent &event) {
   }
 }
 
+void VeceditWindow::OnNewPath(wxCommandEvent &event) {
+  dprintf("new path\n");
+}
+void VeceditWindow::OnGridUp(wxCommandEvent &event) {
+  process(core.gridup());
+}
+void VeceditWindow::OnGridDown(wxCommandEvent &event) {
+  process(core.griddown());
+}
+
 void VeceditWindow::OnSave_dispatch(wxCommandEvent& event) {
   OnSave();
 }
@@ -374,17 +403,14 @@ void VeceditWindow::redraw() {
 }
 
 void VeceditWindow::mouse(const MouseInput &minp) {
-  OtherInput oinp;
-  oinp.gridpos = 8;
-  
-  OtherState ost = core.input(minp, oinp);
-  
+  process(core.mouse(minp));
+}
+
+void VeceditWindow::process(const OtherState &ost) {
   if(ost.cursor != CURSOR_UNCHANGED)
     glc->SetGLCCursor(ost.cursor);
   if(ost.redraw)
     glc->Refresh();
-  
-  CHECK(ost.gridpos == oinp.gridpos);
 }
 
 bool VeceditWindow::maybeSaveChanges() {

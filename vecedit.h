@@ -77,7 +77,10 @@ public:
   ScrollBounds getScrollBounds(Float2 screenres) const;
   void setScrollPos(Float2 scrollpos);
 
-  OtherState input(const MouseInput &mouse, const OtherInput &other);
+  OtherState mouse(const MouseInput &mouse);
+  OtherState gridup();
+  OtherState griddown();
+
   void render() const;
 
   void clear();

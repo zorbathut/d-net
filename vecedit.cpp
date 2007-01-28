@@ -253,11 +253,9 @@ Float2 toGrid(Float2 in, float grid) {
 // * Points that are close enough, sorted by path, then by point
 // * Lines that are close enough
 
-OtherState Vecedit::input(const MouseInput &mouse, const OtherInput &other) {
-  CHECK(other.gridpos != -1);
-  ostate.gridpos = other.gridpos;
-  
+OtherState Vecedit::mouse(const MouseInput &mouse) {
   ostate.redraw = false;
+  
   Float2 world = (mouse.pos - Float2(getResolutionX() / 2, getResolutionY() / 2)) * zpp + Float2(center);
   Float2 worldlock = world;
   worldlock = toGrid(worldlock, 8.f);
@@ -343,6 +341,14 @@ OtherState Vecedit::input(const MouseInput &mouse, const OtherInput &other) {
     ostate.redraw = true;
   }
   
+  return ostate;
+}
+OtherState Vecedit::gridup() {
+  ostate.redraw = true;
+  return ostate;
+}
+OtherState Vecedit::griddown() {
+  ostate.redraw = true;
   return ostate;
 }
 
