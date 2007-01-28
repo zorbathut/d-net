@@ -343,7 +343,9 @@ OtherState Vecedit::gridupd(int in_grid) {
 }
 
 void Vecedit::clear() {
+  int tgrid = grid;
   *this = Vecedit();
+  grid = tgrid;
   modified = false; 
 }
 void Vecedit::load(const string &filename) {

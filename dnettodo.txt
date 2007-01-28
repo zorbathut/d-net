@@ -3,7 +3,6 @@
 - Add bombardment charts
 - Next-gen vecedit?
   - Grid lock
-  - Grid change
   - Undo
   - Toggling curve
   - Adding points
