@@ -19,7 +19,7 @@ struct ScrollBounds {
 };
 
 struct Selectitem {
-  enum { NODE, LINK, CURVECONTROL, PATHCENTER, NONE };
+  enum { PATHCENTER, NODE, CURVECONTROL, LINK, NONE };
   int type;
   int path;
   int item;

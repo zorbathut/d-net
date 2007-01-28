@@ -15,6 +15,7 @@
   - Entity move
   - Entity delete
   - Entity add
+  - Copy/paste
   - Save
 - Activate factions
   - Faction bonuses/penalties in demo screens
