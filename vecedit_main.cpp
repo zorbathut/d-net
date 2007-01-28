@@ -187,6 +187,8 @@ private:
   VeceditGLC *glc;
   string filename;
 
+  wxSpinCtrl *grid;
+
 public:
   
   VeceditWindow();
@@ -202,8 +204,10 @@ public:
   void OnClose(wxCloseEvent &event);
 
   void OnNewPath(wxCommandEvent &event);
-  void OnGridUp(wxCommandEvent &event);
-  void OnGridDown(wxCommandEvent &event);
+
+  void OnGridUpdate(wxSpinEvent &event);
+  void OnGridUp(wxSpinEvent &event);
+  void OnGridDown(wxSpinEvent &event);
 
   void OnSave_dispatch(wxCommandEvent &event);
   void OnSaveas_dispatch(wxCommandEvent &event);
@@ -225,8 +229,8 @@ enum {
   ID_About,
   
   ID_NewPath,
-  ID_GridUp,
-  ID_GridDown
+  
+  ID_GridSpinner
 };
 
 BEGIN_EVENT_TABLE(VeceditWindow, wxFrame)
@@ -239,8 +243,10 @@ BEGIN_EVENT_TABLE(VeceditWindow, wxFrame)
   EVT_MENU(ID_About, VeceditWindow::OnAbout)
 
   EVT_MENU(ID_NewPath, VeceditWindow::OnNewPath)
-  EVT_MENU(ID_GridUp, VeceditWindow::OnGridUp)
-  EVT_MENU(ID_GridDown, VeceditWindow::OnGridDown)
+
+  EVT_SPINCTRL(ID_GridSpinner, VeceditWindow::OnGridUpdate)
+  EVT_SPIN_UP(ID_GridSpinner, VeceditWindow::OnGridUp)
+  EVT_SPIN_DOWN(ID_GridSpinner, VeceditWindow::OnGridDown)
 
   EVT_CLOSE(VeceditWindow::OnClose)
 END_EVENT_TABLE()
@@ -288,9 +294,7 @@ VeceditWindow::VeceditWindow() : wxFrame((wxFrame *)NULL, -1, veceditname, wxDef
   wxToolBar *tool = new wxToolBar(this, wxID_ANY);
   tool->AddTool(ID_NewPath, "add shit", wxBitmap("vecedit/plus.png", wxBITMAP_TYPE_PNG));
   tool->AddSeparator();
-  tool->AddTool(ID_GridUp, "grid up", wxBitmap("vecedit/plus.png", wxBITMAP_TYPE_PNG));
-  tool->AddControl(new wxSpinCtrl(tool, wxID_ANY, "8"));
-  tool->AddTool(ID_GridDown, "grid down", wxBitmap("vecedit/plus.png", wxBITMAP_TYPE_PNG));
+  tool->AddControl(grid = new wxSpinCtrl(tool, ID_GridSpinner, "16"));
   tool->Realize();
   tool->SetMinSize(wxSize(0, 25));  // this shouldn't be needed >:(
   
@@ -304,6 +308,7 @@ VeceditWindow::VeceditWindow() : wxFrame((wxFrame *)NULL, -1, veceditname, wxDef
   
   SetSizer(vertsizer);
   
+  core.gridupd(grid->GetValue());
   redraw();
   
   core.registerEmergencySave();
@@ -383,11 +388,19 @@ void VeceditWindow::OnClose(wxCloseEvent &event) {
 void VeceditWindow::OnNewPath(wxCommandEvent &event) {
   dprintf("new path\n");
 }
-void VeceditWindow::OnGridUp(wxCommandEvent &event) {
-  process(core.gridup());
+void VeceditWindow::OnGridUpdate(wxSpinEvent &event) {
+  process(core.gridupd(event.GetPosition()));
 }
-void VeceditWindow::OnGridDown(wxCommandEvent &event) {
-  process(core.griddown());
+
+// The +'s and -'s are kind of dumb and shouldn't exist. Nevertheless, they do.
+void VeceditWindow::OnGridUp(wxSpinEvent &event) {
+  grid->SetValue(grid->GetValue() * 2 - 1);
+}
+void VeceditWindow::OnGridDown(wxSpinEvent &event) {
+  if(grid->GetValue() <= 1)
+    grid->SetValue(1 + 1);
+  else
+    grid->SetValue(grid->GetValue() / 2 + 1);
 }
 
 void VeceditWindow::OnSave_dispatch(wxCommandEvent& event) {

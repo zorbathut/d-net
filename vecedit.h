@@ -33,22 +33,9 @@ struct Selectitem {
 
 enum Cursor { CURSOR_NORMAL, CURSOR_CROSS, CURSOR_HAND, CURSOR_UNCHANGED = -1 };
 
-struct OtherInput {
-  bool addnode;
-  
-  bool gridup;
-  bool griddown;
-  
-  int gridpos;
-  
-  OtherInput();
-};
-
 struct OtherState {
   Cursor cursor;
   bool redraw;
-  
-  int gridpos;
   
   OtherState();
 };
@@ -68,6 +55,7 @@ class Vecedit {
   Selectitem select;
   
   OtherState ostate;
+  int grid;
   
   vector<Selectitem> getSelectionStack(Float2 pos) const;
   
@@ -78,8 +66,7 @@ public:
   void setScrollPos(Float2 scrollpos);
 
   OtherState mouse(const MouseInput &mouse);
-  OtherState gridup();
-  OtherState griddown();
+  OtherState gridupd(int gridsize);
 
   void render() const;
 

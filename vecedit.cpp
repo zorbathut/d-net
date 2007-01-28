@@ -24,16 +24,9 @@ Selectitem::Selectitem(int type, int path, int item, bool curveside) : type(type
   CHECK(type == CURVECONTROL);
 };
 
-OtherInput::OtherInput() {
-  addnode = false;
-  gridup = false;
-  griddown = false;
-  gridpos = -1;
-}
 OtherState::OtherState() {
   cursor = CURSOR_UNCHANGED;
   redraw = false;
-  gridpos = -1;
 }
 
 bool operator<(const Selectitem &lhs, const Selectitem &rhs) {
@@ -211,7 +204,7 @@ void Vecedit::render() const {
   }
   
   setColor(0.2, 0.2, 0.5);
-  drawGrid(32, zpp);
+  drawGrid(grid, zpp);
 }
 
 void selectThings(Selectitem *select, const vector<Selectitem> &ss) {
@@ -258,7 +251,7 @@ OtherState Vecedit::mouse(const MouseInput &mouse) {
   
   Float2 world = (mouse.pos - Float2(getResolutionX() / 2, getResolutionY() / 2)) * zpp + Float2(center);
   Float2 worldlock = world;
-  worldlock = toGrid(worldlock, 8.f);
+  worldlock = toGrid(worldlock, grid);
   
   {
     vector<Selectitem> ss = getSelectionStack(world);
@@ -343,11 +336,8 @@ OtherState Vecedit::mouse(const MouseInput &mouse) {
   
   return ostate;
 }
-OtherState Vecedit::gridup() {
-  ostate.redraw = true;
-  return ostate;
-}
-OtherState Vecedit::griddown() {
+OtherState Vecedit::gridupd(int in_grid) {
+  grid = in_grid;
   ostate.redraw = true;
   return ostate;
 }
