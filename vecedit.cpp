@@ -33,6 +33,7 @@ WrapperState::WrapperState() {
 OtherState::OtherState() {
   cursor = CURSOR_UNCHANGED;
   redraw = false;
+  snapshot = false;
 }
 
 bool operator<(const Selectitem &lhs, const Selectitem &rhs) {

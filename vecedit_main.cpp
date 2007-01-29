@@ -188,6 +188,7 @@ private:
   wxToolBar *toolbar;
   wxSpinCtrl *grid;
 
+  // while idle, the top item on undostack == core, since otherwise there's no way to intercept it *before* a change occurs
   vector<Vecedit> undostack;
   vector<Vecedit> redostack;
 
@@ -406,6 +407,9 @@ void VeceditWindow::OnNew(wxCommandEvent& event) {
   if(!maybeSaveChanges())
     return;
   core.clear();
+  undostack.clear();
+  redostack.clear();
+  undostack.push_back(core);
   filename = "";
   
   redraw();
@@ -417,6 +421,9 @@ void VeceditWindow::OnOpen(wxCommandEvent& event) {
   if(wxfd.ShowModal() == wxID_OK) {
     filename = wxfd.GetPath();
     core.load(filename);
+    undostack.clear();
+    redostack.clear();
+    undostack.push_back(core);
   }
   
   redraw();
@@ -451,10 +458,20 @@ void VeceditWindow::OnQuit(wxCommandEvent& WXUNUSED(event)) {
 }
 
 void VeceditWindow::OnUndo(wxCommandEvent &event) {
-  dprintf("Undo\n");
+  if(undostack.size() >= 2) {
+    undostack.pop_back();
+    redostack.push_back(core);
+    core = undostack.back();
+    glc->Refresh();
+  }
 }
 void VeceditWindow::OnRedo(wxCommandEvent &event) {
-  dprintf("Redo\n");
+  if(redostack.size()) {
+    core = redostack.back();
+    redostack.pop_back();
+    undostack.push_back(core);
+    glc->Refresh();
+  }
 }
 
 void VeceditWindow::OnAbout(wxCommandEvent& WXUNUSED(event)) {

@@ -2,7 +2,6 @@
 - Less incentive to camp?
 - Add bombardment charts
 - Next-gen vecedit?
-  - Undo
   - Toggling curve
   - Adding points
   - Deleting points
