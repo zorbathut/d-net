@@ -199,9 +199,13 @@ public:
   void OnOpen(wxCommandEvent &event);
   bool OnSave();
   bool OnSaveas();
-
   void OnQuit(wxCommandEvent &event);
+
+  void OnUndo(wxCommandEvent &event);
+  void OnRedo(wxCommandEvent &event);
+
   void OnAbout(wxCommandEvent &event);
+
   void OnClose(wxCloseEvent &event);
 
   void OnNewPath(wxCommandEvent &event);
@@ -228,6 +232,14 @@ enum {
   ID_Save,
   ID_Saveas,
   ID_Quit,
+  
+  ID_Undo,
+  ID_Redo,
+  ID_Cut,
+  ID_Copy,
+  ID_Paste,
+  ID_Delete,
+  
   ID_About,
   
   ID_NewPath,
@@ -243,6 +255,10 @@ BEGIN_EVENT_TABLE(VeceditWindow, wxFrame)
   EVT_MENU(ID_Saveas, VeceditWindow::OnSaveas_dispatch)
 
   EVT_MENU(ID_Quit, VeceditWindow::OnQuit)
+
+  EVT_MENU(ID_Undo, VeceditWindow::OnUndo)
+  EVT_MENU(ID_Redo, VeceditWindow::OnRedo)
+
   EVT_MENU(ID_About, VeceditWindow::OnAbout)
 
   EVT_TOOL(ID_NewPath, VeceditWindow::OnNewPath)
@@ -273,6 +289,22 @@ VeceditWindow::VeceditWindow() : wxFrame((wxFrame *)NULL, -1, veceditname, wxDef
     menuFile->Append( ID_Quit, "E&xit" );
     
     menuBar->Append( menuFile, "&File" );
+  }
+  
+  {
+    wxMenu *menuFile = new wxMenu;
+    
+    menuFile->Append( ID_Undo, "&Undo\tCtrl+Z" );
+    menuFile->Append( ID_Redo, "&Redo\tCtrl+Y" );
+    
+    menuFile->AppendSeparator();
+    
+    menuFile->Append( ID_Cut, "Cu&t\tCtrl+X" );
+    menuFile->Append( ID_Copy, "&Copy\tCtrl+C" );
+    menuFile->Append( ID_Paste, "&Paste\tCtrl+V" );
+    menuFile->Append( ID_Delete, "&Delete\tDel" );
+    
+    menuBar->Append( menuFile, "&Edit" );
   }
   
   {
@@ -369,6 +401,14 @@ void VeceditWindow::OnQuit(wxCommandEvent& WXUNUSED(event)) {
     return;
   Close(TRUE);
 }
+
+void VeceditWindow::OnUndo(wxCommandEvent &event) {
+  dprintf("Undo\n");
+}
+void VeceditWindow::OnRedo(wxCommandEvent &event) {
+  dprintf("Redo\n");
+}
+
 void VeceditWindow::OnAbout(wxCommandEvent& WXUNUSED(event)) {
   wxMessageBox("What is D-Net Vecedit2? We just don't know.", "About D-Net Vecedit2", wxOK | wxICON_INFORMATION, this);
 }

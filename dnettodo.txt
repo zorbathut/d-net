@@ -14,6 +14,8 @@
   - Entity move
   - Entity delete
   - Entity add
+  - Multiple entity select
+  - Select all
   - Copy/paste
   - Save
 - Activate factions
