@@ -8,9 +8,7 @@
 struct MouseInput {
   Float2 pos;
   
-  int dw;
-  
-  Button b[3];
+  Button b[2];
 };
 
 struct ScrollBounds {
@@ -33,19 +31,26 @@ struct Selectitem {
 
 enum Cursor { CURSOR_NORMAL, CURSOR_CROSS, CURSOR_HAND, CURSOR_UNCHANGED = -1 };
 
+struct WrapperState {
+  Float2 center;
+  float zpp;
+  
+  int grid;
+  
+  WrapperState();
+};
+
 struct OtherState {
   Cursor cursor;
   bool redraw;
+  
+  bool snapshot;
   
   OtherState();
 };
 
 class Vecedit {
   bool modified;
-  
-  // center, zoom per pixel
-  Float2 center;
-  float zpp;
   
   Dvec2 dv2;
   
@@ -54,21 +59,16 @@ class Vecedit {
   Float2 startpos;
   Selectitem select;
   
-  OtherState ostate;
-  int grid;
-  
-  vector<Selectitem> getSelectionStack(Float2 pos) const;
+  vector<Selectitem> getSelectionStack(Float2 pos, float zpp) const;
   
 public:
 
   bool changed() const;
-  ScrollBounds getScrollBounds(Float2 screenres) const;
-  void setScrollPos(Float2 scrollpos);
+  ScrollBounds getScrollBounds(Float2 screenres, const WrapperState &state) const;
 
-  OtherState mouse(const MouseInput &mouse);
-  OtherState gridupd(int gridsize);
+  OtherState mouse(const MouseInput &mouse, const WrapperState &state);
 
-  void render() const;
+  void render(const WrapperState &state) const;
 
   void clear();
   void load(const string &filename);

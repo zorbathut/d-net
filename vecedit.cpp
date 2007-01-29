@@ -24,6 +24,12 @@ Selectitem::Selectitem(int type, int path, int item, bool curveside) : type(type
   CHECK(type == CURVECONTROL);
 };
 
+WrapperState::WrapperState() {
+  center = Float2(0, 0);
+  zpp = 0.1;
+  grid = -1;
+}
+
 OtherState::OtherState() {
   cursor = CURSOR_UNCHANGED;
   redraw = false;
@@ -65,7 +71,7 @@ void maybeAddCurve(vector<Selectitem> *ite, Selectitem tite, Float2 pos, Float4 
   }
 }
 
-vector<Selectitem> Vecedit::getSelectionStack(Float2 pos) const {
+vector<Selectitem> Vecedit::getSelectionStack(Float2 pos, float zpp) const {
   vector<Selectitem> ites;
   
   for(int i = 0; i < dv2.paths.size(); i++) {
@@ -110,14 +116,14 @@ vector<Selectitem> Vecedit::getSelectionStack(Float2 pos) const {
 bool Vecedit::changed() const {
   return modified;
 }
-ScrollBounds Vecedit::getScrollBounds(Float2 screenres) const {
+ScrollBounds Vecedit::getScrollBounds(Float2 screenres, const WrapperState &state) const {
   ScrollBounds rv;
   
   // First, find the object bounds.
   rv.objbounds = dv2.boundingBox();
   
   // Second, find the screen bounds.
-  rv.currentwindow = Float4(center.x - zpp * screenres.x / 2, center.y - zpp * screenres.y / 2, center.x + zpp * screenres.x / 2, center.y + zpp * screenres.y / 2);
+  rv.currentwindow = Float4(state.center - screenres * state.zpp / 2, state.center + screenres * state.zpp / 2);
   
   // Third, add some slack to the object bounds.
   rv.objbounds.sx -= rv.currentwindow.span_x() * 3 / 5;
@@ -128,9 +134,6 @@ ScrollBounds Vecedit::getScrollBounds(Float2 screenres) const {
   addToBoundBox(&rv.objbounds, rv.currentwindow);
   
   return rv;
-}
-void Vecedit::setScrollPos(Float2 scrollpos) {
-  center = scrollpos;
 }
 
 void drawLink(Float2 center, const vector<VectorPoint> &vpt, int j, float weight) {
@@ -164,8 +167,8 @@ void setAppropriateLinkColor(const Selectitem &lhs, const Selectitem &rhs) {
   }
 }
   
-void Vecedit::render() const {
-  setZoomCenter(center.x, center.y, zpp * getResolutionY() / 2);
+void Vecedit::render(const WrapperState &state) const {
+  setZoomCenter(state.center.x, state.center.y, state.zpp * getResolutionY() / 2);
 
   for(int i = 0; i < dv2.paths.size(); i++) {
     for(int j = 0; j < dv2.paths[i].vpath.size(); j++) {
@@ -177,35 +180,35 @@ void Vecedit::render() const {
         } else {
           width = secondnode;
         }
-        drawRectAround(dv2.paths[i].center + dv2.paths[i].vpath[j].pos, zpp * width, zpp);
+        drawRectAround(dv2.paths[i].center + dv2.paths[i].vpath[j].pos, state.zpp * width, state.zpp);
       }
       
       if(select.path == i) {
         if(dv2.paths[i].vpath[j].curvl) {
           setAppropriateLinkColor(Selectitem(Selectitem::CURVECONTROL, i, j, false), select);
-          drawLine(dv2.paths[i].center + dv2.paths[i].vpath[j].pos, dv2.paths[i].center + dv2.paths[i].vpath[j].pos + dv2.paths[i].vpath[j].curvlp, zpp);
+          drawLine(dv2.paths[i].center + dv2.paths[i].vpath[j].pos, dv2.paths[i].center + dv2.paths[i].vpath[j].pos + dv2.paths[i].vpath[j].curvlp, state.zpp);
           setAppropriateColor(Selectitem(Selectitem::CURVECONTROL, i, j, false), select);
-          drawRectAround(dv2.paths[i].center + dv2.paths[i].vpath[j].pos + dv2.paths[i].vpath[j].curvlp, zpp * secondnode, zpp);
+          drawRectAround(dv2.paths[i].center + dv2.paths[i].vpath[j].pos + dv2.paths[i].vpath[j].curvlp, state.zpp * secondnode, state.zpp);
         }
         if(dv2.paths[i].vpath[j].curvr) {
           setAppropriateLinkColor(Selectitem(Selectitem::CURVECONTROL, i, j, true), select);
-          drawLine(dv2.paths[i].center + dv2.paths[i].vpath[j].pos, dv2.paths[i].center + dv2.paths[i].vpath[j].pos + dv2.paths[i].vpath[j].curvrp, zpp);
+          drawLine(dv2.paths[i].center + dv2.paths[i].vpath[j].pos, dv2.paths[i].center + dv2.paths[i].vpath[j].pos + dv2.paths[i].vpath[j].curvrp, state.zpp);
           setAppropriateColor(Selectitem(Selectitem::CURVECONTROL, i, j, true), select);
-          drawRectAround(dv2.paths[i].center + dv2.paths[i].vpath[j].pos + dv2.paths[i].vpath[j].curvrp, zpp * secondnode, zpp);
+          drawRectAround(dv2.paths[i].center + dv2.paths[i].vpath[j].pos + dv2.paths[i].vpath[j].curvrp, state.zpp * secondnode, state.zpp);
         }
         
         setAppropriateColor(Selectitem(Selectitem::PATHCENTER, i), select);
-        drawRectAround(dv2.paths[i].center, zpp * primenode, zpp);
+        drawRectAround(dv2.paths[i].center, state.zpp * primenode, state.zpp);
       }
       
       setAppropriateColor(Selectitem(Selectitem::LINK, i, j), select);
-      drawLink(dv2.paths[i].center, dv2.paths[i].vpath, j, zpp * 2);
+      drawLink(dv2.paths[i].center, dv2.paths[i].vpath, j, state.zpp * 2);
     }
   }
   
-  if(grid > 0) {
+  if(state.grid > 0) {
     setColor(0.2, 0.2, 0.5);
-    drawGrid(grid, zpp);
+    drawGrid(state.grid, state.zpp);
   }
 }
 
@@ -248,16 +251,15 @@ Float2 toGrid(Float2 in, float grid) {
 // * Points that are close enough, sorted by path, then by point
 // * Lines that are close enough
 
-OtherState Vecedit::mouse(const MouseInput &mouse) {
-  ostate.redraw = false;
-  
-  Float2 world = (mouse.pos - Float2(getResolutionX() / 2, getResolutionY() / 2)) * zpp + Float2(center);
-  Float2 worldlock = world;
-  if(grid > 0)
-    worldlock = toGrid(worldlock, grid);
+OtherState Vecedit::mouse(const MouseInput &mouse, const WrapperState &wrap) {
+  OtherState ostate;
+
+  Float2 worldlock = mouse.pos;
+  if(wrap.grid > 0)
+    worldlock = toGrid(worldlock, wrap.grid);
   
   {
-    vector<Selectitem> ss = getSelectionStack(world);
+    vector<Selectitem> ss = getSelectionStack(mouse.pos, wrap.zpp);
     
     if(!ss.size()) {
       ostate.cursor = CURSOR_NORMAL;
@@ -282,7 +284,7 @@ OtherState Vecedit::mouse(const MouseInput &mouse) {
             state = SELECTEDNEW;
             ostate.redraw = true;
           }
-          startpos = world;
+          startpos = mouse.pos;
         }
       }
       
@@ -291,13 +293,16 @@ OtherState Vecedit::mouse(const MouseInput &mouse) {
           selectThings(&select, ss);
           state = IDLE;
           ostate.redraw = true;
-        } else if(state == SELECTEDNEW || state == DRAGGING) {
+        } else if(state == SELECTEDNEW) {
           state = IDLE;
+        } else if(state == DRAGGING) {
+          state = IDLE;
+          ostate.snapshot = true;
         }
       }
     }
     
-    if((state == SELECTED || state == SELECTEDNEW) && len(startpos - world) > zpp * 3 || state == DRAGGING) {
+    if((state == SELECTED || state == SELECTEDNEW) && len(startpos - mouse.pos) > wrap.zpp * 3 || state == DRAGGING) {
       if(select.type == Selectitem::NODE) {
         dv2.paths[select.path].vpath[select.item].pos = worldlock - dv2.paths[select.path].center;
         dv2.paths[select.path].vpathModify(select.item);
@@ -325,30 +330,12 @@ OtherState Vecedit::mouse(const MouseInput &mouse) {
       }
     }
   }
-
-  if(mouse.dw != 0) {
-    const float mult = pow(1.2, mouse.dw / 120.0);
-    
-    zpp /= mult;
-    
-    if(mult > 1.0)
-      center = world - (world - center) / mult;
-    
-    ostate.redraw = true;
-  }
   
-  return ostate;
-}
-OtherState Vecedit::gridupd(int in_grid) {
-  grid = in_grid;
-  ostate.redraw = true;
   return ostate;
 }
 
 void Vecedit::clear() {
-  int tgrid = grid;
   *this = Vecedit();
-  grid = tgrid;
   modified = false; 
 }
 void Vecedit::load(const string &filename) {
@@ -422,10 +409,6 @@ void Vecedit::unregisterEmergencySave() {
 }
 
 Vecedit::Vecedit() {
-  center = Float2(0, 0);
-  zpp = 0.25;
-  
-  grid = -1;
   modified = false;
   state = IDLE;
 };

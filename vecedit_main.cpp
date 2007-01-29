@@ -19,16 +19,19 @@
 class VeceditGLC : public wxGLCanvas {
 private:
   smart_ptr<Closure<> > render_callback;
-  smart_ptr<Closure<const MouseInput &> > mouse_callback;
+  smart_ptr<Closure<const MouseInput &, int> > mouse_callback;
 
   smart_ptr<Callback<ScrollBounds, Float2> > scroll_callback;
   smart_ptr<Closure<Float2> > set_scroll_callback;
+
+  Float2 center;
+  float zpp;
 
   MouseInput mstate;
 
 public:
   
-  VeceditGLC(wxWindow *wind, const smart_ptr<Closure<> > &render_callback, const smart_ptr<Closure<const MouseInput &> > &mouse_callback, const smart_ptr<Callback<ScrollBounds, Float2> > &scroll_callback, const smart_ptr<Closure<Float2> > &set_scroll_callback);
+  VeceditGLC(wxWindow *wind, const smart_ptr<Closure<> > &render_callback, const smart_ptr<Closure<const MouseInput &, int> > &mouse_callback, const smart_ptr<Callback<ScrollBounds, Float2> > &scroll_callback, const smart_ptr<Closure<Float2> > &set_scroll_callback);
   
   void OnPaint(wxPaintEvent &event);
   void OnSize(wxSizeEvent &event);
@@ -59,9 +62,11 @@ int gl_attribList[] = {
   WX_GL_DOUBLEBUFFER,
   0
 };
-VeceditGLC::VeceditGLC(wxWindow *wind, const smart_ptr<Closure<> > &render_callback, const smart_ptr<Closure<const MouseInput &> > &mouse_callback,  const smart_ptr<Callback<ScrollBounds, Float2> > &scroll_callback, const smart_ptr<Closure<Float2> > &set_scroll_callback) : wxGLCanvas(wind, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER | wxVSCROLL | wxHSCROLL | wxALWAYS_SHOW_SB, "GLCanvas", gl_attribList), render_callback(render_callback), mouse_callback(mouse_callback), scroll_callback(scroll_callback), set_scroll_callback(set_scroll_callback) {
+VeceditGLC::VeceditGLC(wxWindow *wind, const smart_ptr<Closure<> > &render_callback, const smart_ptr<Closure<const MouseInput &, int> > &mouse_callback,  const smart_ptr<Callback<ScrollBounds, Float2> > &scroll_callback, const smart_ptr<Closure<Float2> > &set_scroll_callback) : wxGLCanvas(wind, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER | wxVSCROLL | wxHSCROLL | wxALWAYS_SHOW_SB, "GLCanvas", gl_attribList), render_callback(render_callback), mouse_callback(mouse_callback), scroll_callback(scroll_callback), set_scroll_callback(set_scroll_callback) {
   SetScrollbar(wxVERTICAL, 0, 40, 50);
   SetScrollbar(wxHORIZONTAL, 0, 40, 50);
+  center = Float2(0, 0);
+  zpp = 0.1;
 };
 
 void VeceditGLC::OnPaint(wxPaintEvent& event) {
@@ -77,14 +82,8 @@ void VeceditGLC::OnPaint(wxPaintEvent& event) {
     updateResolution((float)w / h);
   }
   
-  //wxYield();
-  
-  initFrame();
-  clearFrame(Color(0, 0, 0));
-  
   render_callback->Run();
   
-  deinitFrame();
   SwapBuffers();
 }
 
@@ -101,13 +100,12 @@ void VeceditGLC::OnMouse(wxMouseEvent &event) {
   
   mstate.pos = Float2(event.GetX(), event.GetY());
   
-  mstate.dw = event.GetWheelRotation();
-  
   mstate.b[0].newState(event.LeftIsDown());
   mstate.b[1].newState(event.RightIsDown());
-  mstate.b[2].newState(event.MiddleIsDown());
   
-  mouse_callback->Run(mstate);
+  mouse_callback->Run(mstate, event.GetWheelRotation());
+  
+  Refresh();
 }
 
 void VeceditGLC::OnScroll(wxScrollWinEvent &event) {
@@ -190,6 +188,20 @@ private:
   wxToolBar *toolbar;
   wxSpinCtrl *grid;
 
+  vector<Vecedit> undostack;
+  vector<Vecedit> redostack;
+
+  WrapperState wstate;
+
+  void redraw();
+  void renderCore() const;
+  void setScrollPos(Float2 nps);
+  ScrollBounds getScrollBounds(Float2 screenres) const;
+
+  void mouseCore(const MouseInput &mstate, int wheel);
+  void process(const OtherState &inp);
+  bool maybeSaveChanges();
+
 public:
   
   VeceditWindow();
@@ -217,11 +229,6 @@ public:
 
   void OnSave_dispatch(wxCommandEvent &event);
   void OnSaveas_dispatch(wxCommandEvent &event);
-
-  void redraw();
-  void mouse(const MouseInput &minp);
-  void process(const OtherState &inp);
-  bool maybeSaveChanges();
   
   DECLARE_EVENT_TABLE()
 };
@@ -273,6 +280,47 @@ END_EVENT_TABLE()
 
 const string veceditname =  "D-Net Vecedit2";
 
+void VeceditWindow::renderCore() const {
+  initFrame();
+  clearFrame(Color(0, 0, 0));
+  
+  core.render(wstate);
+  
+  deinitFrame();
+}
+
+void VeceditWindow::setScrollPos(Float2 nps) {
+  wstate.center = nps;
+}
+
+ScrollBounds VeceditWindow::getScrollBounds(Float2 screenres) const {
+  return core.getScrollBounds(screenres, wstate);
+}
+
+void VeceditWindow::mouseCore(const MouseInput &mstate, int wheel) {
+  MouseInput ms = mstate;
+  
+  ms.pos = (ms.pos - Float2(getResolutionX() / 2, getResolutionY() / 2)) * wstate.zpp + wstate.center;
+  
+  bool zoomed = false;
+  
+  if(wheel != 0) {
+    const float mult = pow(1.2, wheel / 120.0);
+    
+    wstate.zpp /= mult;
+    
+    if(mult > 1.0)
+      wstate.center = ms.pos - (ms.pos - wstate.center) / mult;
+    
+    zoomed = true;
+  }
+  
+  OtherState ost = core.mouse(ms, wstate);
+  if(zoomed)
+    ost.redraw = true;
+  process(ost);
+}
+
 VeceditWindow::VeceditWindow() : wxFrame((wxFrame *)NULL, -1, veceditname, wxDefaultPosition, wxSize(800, 600)) {
   wxMenuBar *menuBar = new wxMenuBar;
   
@@ -321,7 +369,7 @@ VeceditWindow::VeceditWindow() : wxFrame((wxFrame *)NULL, -1, veceditname, wxDef
   CreateStatusBar();
   SetStatusText("borf borf borf");
   
-  glc = new VeceditGLC(this, NewFunctor(&core, &Vecedit::render), NewFunctor(this, &VeceditWindow::mouse), NewFunctor(&core, &Vecedit::getScrollBounds), NewFunctor(&core, &Vecedit::setScrollPos));
+  glc = new VeceditGLC(this, NewFunctor(this, &VeceditWindow::renderCore), NewFunctor(this, &VeceditWindow::mouseCore), NewFunctor(this, &VeceditWindow::getScrollBounds), NewFunctor(this, &VeceditWindow::setScrollPos));
   wxNotebook *note = new wxNotebook(this, wxID_ANY);
   note->SetMinSize(wxSize(150, 0));
   note->AddPage(new wxNotebookPage(note, wxID_ANY), "Props");
@@ -435,14 +483,16 @@ void VeceditWindow::OnNewPath(wxCommandEvent &event) {
 
 void VeceditWindow::OnGridToggle(wxCommandEvent &event) {
   if(event.IsSelection()) {
-    process(core.gridupd(grid->GetValue()));
+    wstate.grid = grid->GetValue();
   } else {
-    process(core.gridupd(-1));
+    wstate.grid = -1;
   }
+  glc->Refresh();
 }
 void VeceditWindow::OnGridUpdate(wxSpinEvent &event) {
   if(toolbar->GetToolState(ID_GridToggle)) {
-    process(core.gridupd(event.GetPosition()));
+    wstate.grid = event.GetPosition();
+    glc->Refresh();
   }
 }
 // The +'s and -'s are kind of dumb and shouldn't exist. Nevertheless, they do.
@@ -468,15 +518,15 @@ void VeceditWindow::redraw() {
   glc->SetScrollBars();
 }
 
-void VeceditWindow::mouse(const MouseInput &minp) {
-  process(core.mouse(minp));
-}
-
 void VeceditWindow::process(const OtherState &ost) {
   if(ost.cursor != CURSOR_UNCHANGED)
     glc->SetGLCCursor(ost.cursor);
   if(ost.redraw)
     glc->Refresh();
+  if(ost.snapshot) {
+    redostack.clear();
+    undostack.push_back(core);
+  }
 }
 
 bool VeceditWindow::maybeSaveChanges() {

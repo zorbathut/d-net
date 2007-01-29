@@ -882,6 +882,7 @@ void drawSpokes(float x, float y, int dupes, int numer, int denom, float len, fl
 }
 
 static float roundUpGrid(float val, float spacing) {
+  CHECK(spacing > 0);
   return ceil(val / spacing) * spacing;
 };
 
