@@ -203,8 +203,10 @@ void Vecedit::render() const {
     }
   }
   
-  setColor(0.2, 0.2, 0.5);
-  drawGrid(grid, zpp);
+  if(grid > 0) {
+    setColor(0.2, 0.2, 0.5);
+    drawGrid(grid, zpp);
+  }
 }
 
 void selectThings(Selectitem *select, const vector<Selectitem> &ss) {
@@ -251,7 +253,8 @@ OtherState Vecedit::mouse(const MouseInput &mouse) {
   
   Float2 world = (mouse.pos - Float2(getResolutionX() / 2, getResolutionY() / 2)) * zpp + Float2(center);
   Float2 worldlock = world;
-  worldlock = toGrid(worldlock, grid);
+  if(grid > 0)
+    worldlock = toGrid(worldlock, grid);
   
   {
     vector<Selectitem> ss = getSelectionStack(world);
@@ -422,6 +425,7 @@ Vecedit::Vecedit() {
   center = Float2(0, 0);
   zpp = 0.25;
   
+  grid = -1;
   modified = false;
   state = IDLE;
 };

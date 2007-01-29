@@ -187,6 +187,7 @@ private:
   VeceditGLC *glc;
   string filename;
 
+  wxToolBar *toolbar;
   wxSpinCtrl *grid;
 
 public:
@@ -205,6 +206,7 @@ public:
 
   void OnNewPath(wxCommandEvent &event);
 
+  void OnGridToggle(wxCommandEvent &event);
   void OnGridUpdate(wxSpinEvent &event);
   void OnGridUp(wxSpinEvent &event);
   void OnGridDown(wxSpinEvent &event);
@@ -230,6 +232,7 @@ enum {
   
   ID_NewPath,
   
+  ID_GridToggle,
   ID_GridSpinner
 };
 
@@ -242,8 +245,9 @@ BEGIN_EVENT_TABLE(VeceditWindow, wxFrame)
   EVT_MENU(ID_Quit, VeceditWindow::OnQuit)
   EVT_MENU(ID_About, VeceditWindow::OnAbout)
 
-  EVT_MENU(ID_NewPath, VeceditWindow::OnNewPath)
+  EVT_TOOL(ID_NewPath, VeceditWindow::OnNewPath)
 
+  EVT_TOOL(ID_GridToggle, VeceditWindow::OnGridToggle)
   EVT_SPINCTRL(ID_GridSpinner, VeceditWindow::OnGridUpdate)
   EVT_SPIN_UP(ID_GridSpinner, VeceditWindow::OnGridUp)
   EVT_SPIN_DOWN(ID_GridSpinner, VeceditWindow::OnGridDown)
@@ -288,27 +292,27 @@ VeceditWindow::VeceditWindow() : wxFrame((wxFrame *)NULL, -1, veceditname, wxDef
   glc = new VeceditGLC(this, NewFunctor(&core, &Vecedit::render), NewFunctor(this, &VeceditWindow::mouse), NewFunctor(&core, &Vecedit::getScrollBounds), NewFunctor(&core, &Vecedit::setScrollPos));
   wxNotebook *note = new wxNotebook(this, wxID_ANY);
   note->SetMinSize(wxSize(150, 0));
-  note->AddPage(new wxNotebookPage(this, wxID_ANY), "Props");
-  note->AddPage(new wxNotebookPage(this, wxID_ANY), "Globals");
+  note->AddPage(new wxNotebookPage(note, wxID_ANY), "Props");
+  note->AddPage(new wxNotebookPage(note, wxID_ANY), "Globals");
   
-  wxToolBar *tool = new wxToolBar(this, wxID_ANY);
-  tool->AddTool(ID_NewPath, "add shit", wxBitmap("vecedit/plus.png", wxBITMAP_TYPE_PNG));
-  tool->AddSeparator();
-  tool->AddControl(grid = new wxSpinCtrl(tool, ID_GridSpinner, "16"));
-  tool->Realize();
-  tool->SetMinSize(wxSize(0, 25));  // this shouldn't be needed >:(
+  toolbar = new wxToolBar(this, wxID_ANY);
+  toolbar->AddTool(ID_NewPath, "add shit", wxBitmap("vecedit/plus.png", wxBITMAP_TYPE_PNG), "Add a new path");
+  toolbar->AddSeparator();
+  toolbar->AddTool(ID_GridToggle, "toggle grid", wxBitmap("vecedit/grid.png", wxBITMAP_TYPE_PNG), "Activate grid lock", wxITEM_CHECK);
+  toolbar->AddControl(grid = new wxSpinCtrl(toolbar, ID_GridSpinner, "16"));
+  toolbar->Realize();
+  toolbar->SetMinSize(wxSize(0, 25));  // this shouldn't be needed >:(
   
   wxBoxSizer *sizer = new wxBoxSizer(wxHORIZONTAL);
   sizer->Add(glc, 1, wxEXPAND);
   sizer->Add(note, 0, wxEXPAND);
   
   wxBoxSizer *vertsizer = new wxBoxSizer(wxVERTICAL);
-  vertsizer->Add(tool, 0, wxEXPAND);
+  vertsizer->Add(toolbar, 0, wxEXPAND);
   vertsizer->Add(sizer, 1, wxEXPAND);
   
   SetSizer(vertsizer);
   
-  core.gridupd(grid->GetValue());
   redraw();
   
   core.registerEmergencySave();
@@ -388,10 +392,19 @@ void VeceditWindow::OnClose(wxCloseEvent &event) {
 void VeceditWindow::OnNewPath(wxCommandEvent &event) {
   dprintf("new path\n");
 }
-void VeceditWindow::OnGridUpdate(wxSpinEvent &event) {
-  process(core.gridupd(event.GetPosition()));
-}
 
+void VeceditWindow::OnGridToggle(wxCommandEvent &event) {
+  if(event.IsSelection()) {
+    process(core.gridupd(grid->GetValue()));
+  } else {
+    process(core.gridupd(-1));
+  }
+}
+void VeceditWindow::OnGridUpdate(wxSpinEvent &event) {
+  if(toolbar->GetToolState(ID_GridToggle)) {
+    process(core.gridupd(event.GetPosition()));
+  }
+}
 // The +'s and -'s are kind of dumb and shouldn't exist. Nevertheless, they do.
 void VeceditWindow::OnGridUp(wxSpinEvent &event) {
   grid->SetValue(grid->GetValue() * 2 - 1);

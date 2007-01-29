@@ -2,7 +2,6 @@
 - Less incentive to camp?
 - Add bombardment charts
 - Next-gen vecedit?
-  - Grid lock
   - Undo
   - Toggling curve
   - Adding points
