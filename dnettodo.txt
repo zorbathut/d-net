@@ -2,7 +2,6 @@
 - Less incentive to camp?
 - Add bombardment charts
 - Next-gen vecedit?
-  - Toggling curve
   - Adding points
   - Deleting points
   - Deleting entire curve
@@ -17,6 +16,7 @@
   - Select all
   - Copy/paste
   - Save
+  - Straighten curve through point
 - Activate factions
   - Faction bonuses/penalties in demo screens
 - Many many more weapons

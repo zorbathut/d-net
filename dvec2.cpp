@@ -175,13 +175,35 @@ int VectorPath::vpathCreate(int node) {
   CHECK(0);
 }
 
+void setDefaultCurvs(VectorPoint *vpl, VectorPoint *vpr) {
+  if(vpl->curvrp == Float2(0, 0)) {
+    dprintf("curvr\n");
+    vpl->curvrp = (vpr->pos - vpl->pos) / 3;
+  }
+  if(vpr->curvlp == Float2(0, 0)) {
+    dprintf("curvl\n");
+    vpr->curvlp = (vpl->pos - vpr->pos) / 3;
+  }
+}
+
 void VectorPath::vpathModify(int node) {
   CHECK(node >= 0 && node < vpath.size());
   VectorPoint orig = genNode(node);
-  if(orig.curvl != vpath[node].curvl)
+  pair<int, int> defcurv = make_pair(-1, -1);
+  if(orig.curvl != vpath[node].curvl) {
+    if(vpath[node].curvl) {
+      CHECK(defcurv.first == -1);
+      defcurv = make_pair((node + vpath.size() - 1) % vpath.size(), node);
+    }
     setVRCurviness((node + vpath.size() - 1) % vpath.size(), vpath[node].curvl);
-  if(orig.curvr != vpath[node].curvr)
+  }
+  if(orig.curvr != vpath[node].curvr) {
+    if(vpath[node].curvr) {
+      CHECK(defcurv.first == -1);
+      defcurv = make_pair(node, (node + 1) % vpath.size());
+    }
     setVRCurviness(node, vpath[node].curvr);
+  }
   if(node >= path.size()) {
     pair<int, bool> canon = getCanonicalNode(node);
     VectorPoint tnode = vpath[node];
@@ -195,6 +217,14 @@ void VectorPath::vpathModify(int node) {
     path[node] = vpath[node];
   }
   rebuildVpath();
+  
+  if(defcurv.first != -1) {
+    // let's do some rather icky curve modification stuff
+    setDefaultCurvs(&vpath[defcurv.first], &vpath[defcurv.second]);
+    vpathModify(defcurv.first);
+    setDefaultCurvs(&vpath[defcurv.first], &vpath[defcurv.second]);
+    vpathModify(defcurv.second);
+  }
 }
 
 void VectorPath::setVRCurviness(int node, bool curv) {

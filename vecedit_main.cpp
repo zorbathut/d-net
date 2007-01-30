@@ -563,6 +563,7 @@ bool VeceditWindow::maybeSaveChanges() {
 
 class VeceditMain: public wxApp {
   virtual bool OnInit();
+  virtual int OnExit();
 };
 
 IMPLEMENT_APP(VeceditMain)
@@ -575,7 +576,12 @@ bool VeceditMain::OnInit() {
   initGfx();
   
   VeceditWindow *frame = new VeceditWindow();
-  frame->Show(TRUE);
+  frame->Show(true);
   SetTopWindow(frame);
-  return TRUE;
+  return true;
 }
+
+int VeceditMain::OnExit() {
+  return wxApp::OnExit();
+}
+

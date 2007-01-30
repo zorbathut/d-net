@@ -258,6 +258,8 @@ OtherState Vecedit::mouse(const MouseInput &mouse, const WrapperState &wrap) {
   Float2 worldlock = mouse.pos;
   if(wrap.grid > 0)
     worldlock = toGrid(worldlock, wrap.grid);
+  bool compospush = mouse.b[0].push || mouse.b[1].push;
+  bool composrelease = mouse.b[0].release || mouse.b[1].release;
   
   {
     vector<Selectitem> ss = getSelectionStack(mouse.pos, wrap.zpp);
@@ -265,18 +267,18 @@ OtherState Vecedit::mouse(const MouseInput &mouse, const WrapperState &wrap) {
     if(!ss.size()) {
       ostate.cursor = CURSOR_NORMAL;
       
-      if(mouse.b[0].push) {
+      if(compospush) {
         select = Selectitem();
         ostate.redraw = true;
       }
       
-      if(mouse.b[0].release) {
+      if(composrelease) {
         state = IDLE;
       } // whatever we were doing, we're not doing it now
     } else {
       ostate.cursor = CURSOR_HAND;
       
-      if(mouse.b[0].push) {
+      if(compospush) {
         if(state == IDLE) {
           if(count(ss.begin(), ss.end(), select)) {
             state = SELECTED;
@@ -289,7 +291,20 @@ OtherState Vecedit::mouse(const MouseInput &mouse, const WrapperState &wrap) {
         }
       }
       
-      if(mouse.b[0].release) {
+      if(mouse.b[1].push) {
+        // here we toggle things
+        if(state == SELECTEDNEW)
+          state = SELECTED;
+        if(select.type == Selectitem::LINK) {
+          dprintf("CURVINESS setting %d,%d to %d\n", select.path, select.item, !dv2.paths[select.path].vpath[select.item].curvr);
+          dv2.paths[select.path].vpath[select.item].curvr = !dv2.paths[select.path].vpath[select.item].curvr;
+          dv2.paths[select.path].vpathModify(select.item);
+          ostate.redraw = true;
+          ostate.snapshot = true;
+        }
+      }
+      
+      if(composrelease) {
         if(state == SELECTED) {
           selectThings(&select, ss);
           state = IDLE;
@@ -303,7 +318,7 @@ OtherState Vecedit::mouse(const MouseInput &mouse, const WrapperState &wrap) {
       }
     }
     
-    if((state == SELECTED || state == SELECTEDNEW) && len(startpos - mouse.pos) > wrap.zpp * 3 || state == DRAGGING) {
+    if(mouse.b[0].down && ((state == SELECTED || state == SELECTEDNEW) && len(startpos - mouse.pos) > wrap.zpp * 3 || state == DRAGGING)) {
       if(select.type == Selectitem::NODE) {
         dv2.paths[select.path].vpath[select.item].pos = worldlock - dv2.paths[select.path].center;
         dv2.paths[select.path].vpathModify(select.item);
