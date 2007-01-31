@@ -222,6 +222,7 @@ public:
   void OnClose(wxCloseEvent &event);
 
   void OnNewPath(wxCommandEvent &event);
+  void OnNewNode(wxCommandEvent &event);
 
   void OnGridToggle(wxCommandEvent &event);
   void OnGridUpdate(wxSpinEvent &event);
@@ -251,6 +252,7 @@ enum {
   ID_About,
   
   ID_NewPath,
+  ID_NewNode,
   
   ID_GridToggle,
   ID_GridSpinner
@@ -269,7 +271,8 @@ BEGIN_EVENT_TABLE(VeceditWindow, wxFrame)
 
   EVT_MENU(ID_About, VeceditWindow::OnAbout)
 
-  EVT_TOOL(ID_NewPath, VeceditWindow::OnNewPath)
+  EVT_MENU(ID_NewPath, VeceditWindow::OnNewPath)
+  EVT_MENU(ID_NewNode, VeceditWindow::OnNewNode)
 
   EVT_TOOL(ID_GridToggle, VeceditWindow::OnGridToggle)
   EVT_SPINCTRL(ID_GridSpinner, VeceditWindow::OnGridUpdate)
@@ -353,6 +356,11 @@ VeceditWindow::VeceditWindow() : wxFrame((wxFrame *)NULL, -1, veceditname, wxDef
     menuFile->Append( ID_Paste, "&Paste\tCtrl+V" );
     menuFile->Append( ID_Delete, "&Delete\tDel" );
     
+    menuFile->AppendSeparator();
+    
+    menuFile->Append( ID_NewPath, "Add path\tP" );
+    menuFile->Append( ID_NewNode, "Add node\tA" );
+    
     menuBar->Append( menuFile, "&Edit" );
   }
   
@@ -377,7 +385,8 @@ VeceditWindow::VeceditWindow() : wxFrame((wxFrame *)NULL, -1, veceditname, wxDef
   note->AddPage(new wxNotebookPage(note, wxID_ANY), "Globals");
   
   toolbar = new wxToolBar(this, wxID_ANY);
-  toolbar->AddTool(ID_NewPath, "add shit", wxBitmap("vecedit/plus.png", wxBITMAP_TYPE_PNG), "Add a new path");
+  toolbar->AddTool(ID_NewPath, "add path", wxBitmap("vecedit/addpath.png", wxBITMAP_TYPE_PNG), "Add a new path");
+  toolbar->AddTool(ID_NewNode, "add node", wxBitmap("vecedit/addnode.png", wxBITMAP_TYPE_PNG), "Add a new node");
   toolbar->AddSeparator();
   toolbar->AddTool(ID_GridToggle, "toggle grid", wxBitmap("vecedit/grid.png", wxBITMAP_TYPE_PNG), "Activate grid lock", wxITEM_CHECK);
   toolbar->AddControl(grid = new wxSpinCtrl(toolbar, ID_GridSpinner, "16"));
@@ -496,6 +505,10 @@ void VeceditWindow::OnClose(wxCloseEvent &event) {
 
 void VeceditWindow::OnNewPath(wxCommandEvent &event) {
   dprintf("new path\n");
+}
+
+void VeceditWindow::OnNewNode(wxCommandEvent &event) {
+  dprintf("new node\n");
 }
 
 void VeceditWindow::OnGridToggle(wxCommandEvent &event) {
