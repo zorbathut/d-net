@@ -297,6 +297,17 @@ OtherState Vecedit::mouse(const MouseInput &mouse, const WrapperState &wrap) {
         }
       }
       
+      dprintf("%d %d %d\n", compospush, select.type == Selectitem::LINK, ostate.ui.newNode);
+      if(compospush && select.type == Selectitem::LINK && ostate.ui.newNode) {
+        int newnode = dv2.paths[select.path].vpathCreate((select.item + 1) % dv2.paths[select.path].vpath.size());
+        select.item = newnode;
+        select.type = Selectitem::NODE;
+        dv2.paths[select.path].vpath[select.item].pos = worldlock - dv2.paths[select.path].center;
+        dv2.paths[select.path].vpathModify(select.item);
+        ostate.ui.newNode = false;
+        state = SELECTEDNEW;
+      }
+      
       if(mouse.b[1].push) {
         // here we toggle things
         if(state == SELECTEDNEW)
