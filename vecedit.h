@@ -77,6 +77,7 @@ public:
   ScrollBounds getScrollBounds(Float2 screenres, const WrapperState &state) const;
 
   OtherState mouse(const MouseInput &mouse, const WrapperState &state);
+  OtherState del(const WrapperState &wrap);
 
   void render(const WrapperState &state) const;
 

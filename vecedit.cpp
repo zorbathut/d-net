@@ -337,7 +337,6 @@ OtherState Vecedit::mouse(const MouseInput &mouse, const WrapperState &wrap) {
         if(state == SELECTEDNEW)
           state = SELECTED;
         if(select.type == Selectitem::LINK) {
-          dprintf("CURVINESS setting %d,%d to %d\n", select.path, select.item, !dv2.paths[select.path].vpath[select.item].curvr);
           dv2.paths[select.path].vpath[select.item].curvr = !dv2.paths[select.path].vpath[select.item].curvr;
           dv2.paths[select.path].vpathModify(select.item);
           ostate.redraw = true;
@@ -386,6 +385,34 @@ OtherState Vecedit::mouse(const MouseInput &mouse, const WrapperState &wrap) {
         ostate.redraw = true;
       }
     }
+  }
+  
+  return ostate;
+}
+OtherState Vecedit::del(const WrapperState &wrap) {
+  OtherState ostate;
+  ostate.ui = wrap.ui;
+
+  if(select.type == Selectitem::NODE) {
+    dv2.paths[select.path].vpathRemove(select.item);
+    state = IDLE;
+    select = Selectitem();
+    ostate.redraw = true;
+    ostate.snapshot = true;
+  } else if(select.type == Selectitem::PATHCENTER) {
+    dv2.paths.erase(dv2.paths.begin() + select.path);
+    state = IDLE;
+    select = Selectitem();
+    ostate.redraw = true;
+    ostate.snapshot = true;
+  } else if(select.type == Selectitem::CURVECONTROL) {
+    if(select.curveside == false)
+      select.item = modurot(select.item - 1, dv2.paths[select.path].vpath.size()); // we can change this because we'll be clearing it soon anyway
+    dv2.paths[select.path].vpath[select.item].curvr = !dv2.paths[select.path].vpath[select.item].curvr;
+    dv2.paths[select.path].vpathModify(select.item);
+    ostate.redraw = true;
+    ostate.snapshot = true;
+    select = Selectitem();
   }
   
   return ostate;

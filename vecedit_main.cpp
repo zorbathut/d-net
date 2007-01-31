@@ -200,6 +200,8 @@ private:
   ScrollBounds getScrollBounds(Float2 screenres) const;
 
   void mouseCore(const MouseInput &mstate, int wheel);
+
+  WrapperState &genwrap();
   void process(const OtherState &inp);
   bool maybeSaveChanges();
 
@@ -216,6 +218,7 @@ public:
 
   void OnUndo(wxCommandEvent &event);
   void OnRedo(wxCommandEvent &event);
+  void OnDelete(wxCommandEvent &event);
 
   void OnAbout(wxCommandEvent &event);
 
@@ -273,6 +276,7 @@ BEGIN_EVENT_TABLE(VeceditWindow, wxFrame)
 
   EVT_MENU(ID_Undo, VeceditWindow::OnUndo)
   EVT_MENU(ID_Redo, VeceditWindow::OnRedo)
+  EVT_MENU(ID_Delete, VeceditWindow::OnDelete)
 
   EVT_MENU(ID_About, VeceditWindow::OnAbout)
 
@@ -330,10 +334,7 @@ void VeceditWindow::mouseCore(const MouseInput &mstate, int wheel) {
     zoomed = true;
   }
   
-  wstate.ui.newPath = toolbar->GetToolState(ID_NewPath);
-  wstate.ui.newNode = toolbar->GetToolState(ID_NewNode);
-  
-  OtherState ost = core.mouse(ms, wstate);
+  OtherState ost = core.mouse(ms, genwrap());
   if(zoomed)
     ost.redraw = true;
   process(ost);
@@ -497,6 +498,10 @@ void VeceditWindow::OnRedo(wxCommandEvent &event) {
   }
 }
 
+void VeceditWindow::OnDelete(wxCommandEvent &event) {
+  process(core.del(genwrap()));
+}
+
 void VeceditWindow::OnAbout(wxCommandEvent& WXUNUSED(event)) {
   wxMessageBox("What is D-Net Vecedit2? We just don't know.", "About D-Net Vecedit2", wxOK | wxICON_INFORMATION, this);
 }
@@ -578,6 +583,11 @@ void VeceditWindow::redraw() {
   glc->SetScrollBars();
 }
 
+WrapperState &VeceditWindow::genwrap() {
+  wstate.ui.newPath = toolbar->GetToolState(ID_NewPath);
+  wstate.ui.newNode = toolbar->GetToolState(ID_NewNode);
+  return wstate;
+}
 void VeceditWindow::process(const OtherState &ost) {
   if(ost.cursor != CURSOR_UNCHANGED)
     glc->SetGLCCursor(ost.cursor);
