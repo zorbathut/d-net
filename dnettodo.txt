@@ -2,7 +2,6 @@
 - Less incentive to camp?
 - Add bombardment charts
 - Next-gen vecedit?
-  - Deal with curve controls properly when adding nodes (both transitively, and with pointing handles in the right directions)
   - Deleting points
   - Deleting entire curve
   - Adding new curve

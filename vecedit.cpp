@@ -299,10 +299,15 @@ OtherState Vecedit::mouse(const MouseInput &mouse, const WrapperState &wrap) {
       
       dprintf("%d %d %d\n", compospush, select.type == Selectitem::LINK, ostate.ui.newNode);
       if(compospush && select.type == Selectitem::LINK && ostate.ui.newNode) {
-        int newnode = dv2.paths[select.path].vpathCreate((select.item + 1) % dv2.paths[select.path].vpath.size());
+        VectorPath &path = dv2.paths[select.path];
+        int newnode = path.vpathCreate((select.item + 1) % path.vpath.size());
         select.item = newnode;
         select.type = Selectitem::NODE;
-        dv2.paths[select.path].vpath[select.item].pos = worldlock - dv2.paths[select.path].center;
+        path.vpath[select.item].pos = worldlock - path.center;
+        if(path.vpath[select.item].curvl)
+          path.vpath[select.item].curvlp = (path.vpath[modurot(select.item - 1, path.vpath.size())].pos - path.vpath[select.item].pos) / 3;
+        if(path.vpath[select.item].curvr)
+          path.vpath[select.item].curvrp = (path.vpath[modurot(select.item + 1, path.vpath.size())].pos - path.vpath[select.item].pos) / 3;
         dv2.paths[select.path].vpathModify(select.item);
         ostate.ui.newNode = false;
         state = SELECTEDNEW;

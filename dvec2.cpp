@@ -164,6 +164,7 @@ int VectorPath::vpathCreate(int node) {
   // we're inserting a node to be the new can.first at dupe 0, but then we have to figure out what it ended up being at dupe #phase
   VectorPoint tv;
   tv.pos = Float2(0, 0);
+  tv.curvl = tv.curvr = vpath[node].curvl;
   path.insert(path.begin() + can.first, tv);
   fixCurve();
   rebuildVpath();
