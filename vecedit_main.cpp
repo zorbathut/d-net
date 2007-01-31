@@ -223,6 +223,9 @@ public:
 
   void OnNewPath(wxCommandEvent &event);
   void OnNewNode(wxCommandEvent &event);
+  
+  void OnNewPathMenu(wxCommandEvent &event);
+  void OnNewNodeMenu(wxCommandEvent &event);
 
   void OnGridToggle(wxCommandEvent &event);
   void OnGridUpdate(wxSpinEvent &event);
@@ -252,7 +255,9 @@ enum {
   ID_About,
   
   ID_NewPath,
+  ID_NewPathMenu,
   ID_NewNode,
+  ID_NewNodeMenu,
   
   ID_GridToggle,
   ID_GridSpinner
@@ -271,8 +276,11 @@ BEGIN_EVENT_TABLE(VeceditWindow, wxFrame)
 
   EVT_MENU(ID_About, VeceditWindow::OnAbout)
 
-  EVT_MENU(ID_NewPath, VeceditWindow::OnNewPath)
-  EVT_MENU(ID_NewNode, VeceditWindow::OnNewNode)
+  EVT_TOOL(ID_NewPath, VeceditWindow::OnNewPath)
+  EVT_TOOL(ID_NewNode, VeceditWindow::OnNewNode)
+
+  EVT_MENU(ID_NewPathMenu, VeceditWindow::OnNewPathMenu)
+  EVT_MENU(ID_NewNodeMenu, VeceditWindow::OnNewNodeMenu)
 
   EVT_TOOL(ID_GridToggle, VeceditWindow::OnGridToggle)
   EVT_SPINCTRL(ID_GridSpinner, VeceditWindow::OnGridUpdate)
@@ -331,49 +339,49 @@ VeceditWindow::VeceditWindow() : wxFrame((wxFrame *)NULL, -1, veceditname, wxDef
   {
     wxMenu *menuFile = new wxMenu;
     
-    menuFile->Append( ID_New, "&New" );
-    menuFile->Append( ID_Open, "&Open..." );
-    menuFile->Append( ID_Save, "&Save" );
-    menuFile->Append( ID_Saveas, "Save &as..." );
+    menuFile->Append(ID_New, "&New");
+    menuFile->Append(ID_Open, "&Open...");
+    menuFile->Append(ID_Save, "&Save");
+    menuFile->Append(ID_Saveas, "Save &as...");
     
     menuFile->AppendSeparator();
     
-    menuFile->Append( ID_Quit, "E&xit" );
+    menuFile->Append(ID_Quit, "E&xit");
     
-    menuBar->Append( menuFile, "&File" );
+    menuBar->Append(menuFile, "&File");
   }
   
   {
     wxMenu *menuFile = new wxMenu;
     
-    menuFile->Append( ID_Undo, "&Undo\tCtrl+Z" );
-    menuFile->Append( ID_Redo, "&Redo\tCtrl+Y" );
+    menuFile->Append(ID_Undo, "&Undo\tCtrl+Z");
+    menuFile->Append(ID_Redo, "&Redo\tCtrl+Y");
     
     menuFile->AppendSeparator();
     
-    menuFile->Append( ID_Cut, "Cu&t\tCtrl+X" );
-    menuFile->Append( ID_Copy, "&Copy\tCtrl+C" );
-    menuFile->Append( ID_Paste, "&Paste\tCtrl+V" );
-    menuFile->Append( ID_Delete, "&Delete\tDel" );
+    menuFile->Append(ID_Cut, "Cu&t\tCtrl+X");
+    menuFile->Append(ID_Copy, "&Copy\tCtrl+C");
+    menuFile->Append(ID_Paste, "&Paste\tCtrl+V");
+    menuFile->Append(ID_Delete, "&Delete\tDel");
     
     menuFile->AppendSeparator();
     
-    menuFile->Append( ID_NewPath, "Add path\tP" );
-    menuFile->Append( ID_NewNode, "Add node\tA" );
+    menuFile->Append(ID_NewPathMenu, "Add path\tP");
+    menuFile->Append(ID_NewNodeMenu, "Add node\tA");
     
-    menuBar->Append( menuFile, "&Edit" );
+    menuBar->Append(menuFile, "&Edit");
   }
   
   {
     wxMenu *menuFile = new wxMenu;
     
-    menuFile->Append( ID_About, "&About..." );
+    menuFile->Append(ID_About, "&About...");
     
-    menuBar->Append( menuFile, "&Help" );
+    menuBar->Append(menuFile, "&Help");
   }
   
-  SetMenuBar( menuBar );
-
+  SetMenuBar(menuBar);
+  
   // We make this first so it gets redrawn first, which reduces flicker a bit
   CreateStatusBar();
   SetStatusText("borf borf borf");
@@ -385,8 +393,8 @@ VeceditWindow::VeceditWindow() : wxFrame((wxFrame *)NULL, -1, veceditname, wxDef
   note->AddPage(new wxNotebookPage(note, wxID_ANY), "Globals");
   
   toolbar = new wxToolBar(this, wxID_ANY);
-  toolbar->AddTool(ID_NewPath, "add path", wxBitmap("vecedit/addpath.png", wxBITMAP_TYPE_PNG), "Add a new path");
-  toolbar->AddTool(ID_NewNode, "add node", wxBitmap("vecedit/addnode.png", wxBITMAP_TYPE_PNG), "Add a new node");
+  toolbar->AddTool(ID_NewPath, "add path", wxBitmap("vecedit/addpath.png", wxBITMAP_TYPE_PNG), "Add a new path", wxITEM_CHECK);
+  toolbar->AddTool(ID_NewNode, "add node", wxBitmap("vecedit/addnode.png", wxBITMAP_TYPE_PNG), "Add a new node", wxITEM_CHECK);
   toolbar->AddSeparator();
   toolbar->AddTool(ID_GridToggle, "toggle grid", wxBitmap("vecedit/grid.png", wxBITMAP_TYPE_PNG), "Activate grid lock", wxITEM_CHECK);
   toolbar->AddControl(grid = new wxSpinCtrl(toolbar, ID_GridSpinner, "16"));
@@ -504,11 +512,27 @@ void VeceditWindow::OnClose(wxCloseEvent &event) {
 }
 
 void VeceditWindow::OnNewPath(wxCommandEvent &event) {
-  dprintf("new path\n");
+  if(event.IsSelection()) {
+    toolbar->ToggleTool(ID_NewNode, 0);
+  }
 }
 
 void VeceditWindow::OnNewNode(wxCommandEvent &event) {
-  dprintf("new node\n");
+  if(event.IsSelection()) {
+    toolbar->ToggleTool(ID_NewPath, 0);
+  }
+}
+
+void VeceditWindow::OnNewPathMenu(wxCommandEvent &event) {
+  dprintf("togl pathmenu %d\n", !toolbar->GetToolState(ID_NewPath));
+  toolbar->ToggleTool(ID_NewPath, !toolbar->GetToolState(ID_NewPath));
+  dprintf("now %d\n", toolbar->GetToolState(ID_NewPath));
+  toolbar->ToggleTool(ID_NewNode, 0);
+}
+
+void VeceditWindow::OnNewNodeMenu(wxCommandEvent &event) {
+  toolbar->ToggleTool(ID_NewNode, !toolbar->GetToolState(ID_NewNode));
+  toolbar->ToggleTool(ID_NewPath, 0);
 }
 
 void VeceditWindow::OnGridToggle(wxCommandEvent &event) {
