@@ -4,7 +4,6 @@
 - Next-gen vecedit?
   - Deleting points
   - Deleting entire curve
-  - Adding new curve
   - Curve properties (flip, spin, etc)
   - Entity select
   - Entity properties

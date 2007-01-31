@@ -267,7 +267,21 @@ OtherState Vecedit::mouse(const MouseInput &mouse, const WrapperState &wrap) {
   bool compospush = mouse.b[0].push || mouse.b[1].push;
   bool composrelease = mouse.b[0].release || mouse.b[1].release;
   
-  {
+  if(compospush && ostate.ui.newPath) {
+    // this is kind of special
+    
+    VectorPath nvp;
+    nvp.center = worldlock;
+    
+    nvp.path.push_back(VectorPoint());
+    nvp.rebuildVpath();
+    
+    dv2.paths.push_back(nvp);
+    select = Selectitem(Selectitem::NODE, dv2.paths.size() - 1, 0);
+    state = SELECTEDNEW;
+    ostate.ui.newPath = false;
+    // we do NOT snapshot here because we'll snapshot once the player lets go of the button
+  } else {
     vector<Selectitem> ss = getSelectionStack(mouse.pos, wrap.zpp);
     
     if(!ss.size()) {
@@ -297,8 +311,12 @@ OtherState Vecedit::mouse(const MouseInput &mouse, const WrapperState &wrap) {
         }
       }
       
-      dprintf("%d %d %d\n", compospush, select.type == Selectitem::LINK, ostate.ui.newNode);
-      if(compospush && select.type == Selectitem::LINK && ostate.ui.newNode) {
+      // let's see if we can find a link
+      if(compospush && ostate.ui.newNode && select.type != Selectitem::LINK)
+        for(int i = 0; i < ss.size() && select.type != Selectitem::LINK; i++)
+          selectThings(&select, ss);
+      
+      if(compospush && ostate.ui.newNode && select.type == Selectitem::LINK) {
         VectorPath &path = dv2.paths[select.path];
         int newnode = path.vpathCreate((select.item + 1) % path.vpath.size());
         select.item = newnode;
@@ -311,6 +329,7 @@ OtherState Vecedit::mouse(const MouseInput &mouse, const WrapperState &wrap) {
         dv2.paths[select.path].vpathModify(select.item);
         ostate.ui.newNode = false;
         state = SELECTEDNEW;
+        // we do NOT snapshot here because we'll snapshot once the player lets go of the button
       }
       
       if(mouse.b[1].push) {
