@@ -24,6 +24,11 @@ Selectitem::Selectitem(int type, int path, int item, bool curveside) : type(type
   CHECK(type == CURVECONTROL);
 };
 
+UIState::UIState() {
+  newPath = false;
+  newNode = false;
+}
+
 WrapperState::WrapperState() {
   center = Float2(0, 0);
   zpp = 0.1;
@@ -254,6 +259,7 @@ Float2 toGrid(Float2 in, float grid) {
 
 OtherState Vecedit::mouse(const MouseInput &mouse, const WrapperState &wrap) {
   OtherState ostate;
+  ostate.ui = wrap.ui;
 
   Float2 worldlock = mouse.pos;
   if(wrap.grid > 0)

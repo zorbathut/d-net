@@ -295,8 +295,11 @@ const string veceditname =  "D-Net Vecedit2";
 void VeceditWindow::renderCore() const {
   initFrame();
   clearFrame(Color(0, 0, 0));
-  
-  core.render(wstate);
+
+  WrapperState ws = wstate;
+  ws.ui.newPath = toolbar->GetToolState(ID_NewPath);
+  ws.ui.newNode = toolbar->GetToolState(ID_NewNode);
+  core.render(ws);
   
   deinitFrame();
 }
@@ -326,6 +329,9 @@ void VeceditWindow::mouseCore(const MouseInput &mstate, int wheel) {
     
     zoomed = true;
   }
+  
+  wstate.ui.newPath = toolbar->GetToolState(ID_NewPath);
+  wstate.ui.newNode = toolbar->GetToolState(ID_NewNode);
   
   OtherState ost = core.mouse(ms, wstate);
   if(zoomed)
@@ -581,6 +587,9 @@ void VeceditWindow::process(const OtherState &ost) {
     redostack.clear();
     undostack.push_back(core);
   }
+  
+  toolbar->ToggleTool(ID_NewPath, ost.ui.newPath);
+  toolbar->ToggleTool(ID_NewNode, ost.ui.newNode);
 }
 
 bool VeceditWindow::maybeSaveChanges() {

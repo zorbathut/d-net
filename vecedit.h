@@ -31,19 +31,29 @@ struct Selectitem {
 
 enum Cursor { CURSOR_NORMAL, CURSOR_CROSS, CURSOR_HAND, CURSOR_UNCHANGED = -1 };
 
+struct UIState {
+  bool newPath;
+  bool newNode;
+  
+  UIState();
+};
+
 struct WrapperState {
   Float2 center;
   float zpp;
   
   int grid;
   
+  UIState ui;
+  
   WrapperState();
 };
 
 struct OtherState {
+  UIState ui;
   Cursor cursor;
+
   bool redraw;
-  
   bool snapshot;
   
   OtherState();
