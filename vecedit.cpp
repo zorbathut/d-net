@@ -4,25 +4,45 @@
 #include "gfx.h"
 #include "util.h"
 
+#include <set>
+
+using namespace std;
+
 const float primenode = 8;
 const float secondnode = 5;
 
-Selectitem::Selectitem() {
+SelectItem::SelectItem() {
   type = NONE;
   path = -1;
   item = -1;
   curveside = false;
 }
 
-Selectitem::Selectitem(int type, int path) : type(type), path(path), item(0), curveside(false) {
+SelectItem::SelectItem(int type, int path) : type(type), path(path), item(0), curveside(false) {
   CHECK(type == PATHCENTER);
 };
-Selectitem::Selectitem(int type, int path, int item) : type(type), path(path), item(item), curveside(false) {
+SelectItem::SelectItem(int type, int path, int item) : type(type), path(path), item(item), curveside(false) {
   CHECK(type == NODE || type == LINK);
 };
-Selectitem::Selectitem(int type, int path, int item, bool curveside) : type(type), path(path), item(item), curveside(curveside) {
+SelectItem::SelectItem(int type, int path, int item, bool curveside) : type(type), path(path), item(item), curveside(curveside) {
   CHECK(type == CURVECONTROL);
 };
+
+bool operator<(const SelectItem &lhs, const SelectItem &rhs) {
+  if(lhs.type != rhs.type) return lhs.type < rhs.type;
+  if(lhs.path != rhs.path) return lhs.path < rhs.path;
+  if(lhs.item != rhs.item) return lhs.item < rhs.item;
+  if(lhs.curveside != rhs.curveside) return lhs.curveside < rhs.curveside;
+  return false;
+}
+
+bool operator==(const SelectItem &lhs, const SelectItem &rhs) {
+  if(lhs.type != rhs.type) return false;
+  if(lhs.path != rhs.path) return false;
+  if(lhs.item != rhs.item) return false;
+  if(lhs.curveside != rhs.curveside) return false;
+  return true;
+}
 
 UIState::UIState() {
   newPath = false;
@@ -41,33 +61,34 @@ OtherState::OtherState() {
   snapshot = false;
 }
 
-bool operator<(const Selectitem &lhs, const Selectitem &rhs) {
-  if(lhs.type != rhs.type) return lhs.type < rhs.type;
-  if(lhs.path != rhs.path) return lhs.path < rhs.path;
-  if(lhs.item != rhs.item) return lhs.item < rhs.item;
-  if(lhs.curveside != rhs.curveside) return lhs.curveside < rhs.curveside;
-  return false;
+bool SelectStack::hasItems() const {
+  return next.type != SelectItem::NONE;
 }
 
-bool operator==(const Selectitem &lhs, const Selectitem &rhs) {
-  if(lhs.type != rhs.type) return false;
-  if(lhs.path != rhs.path) return false;
-  if(lhs.item != rhs.item) return false;
-  if(lhs.curveside != rhs.curveside) return false;
-  return true;
+SelectItem SelectStack::nextItem() const {
+  return next;
 }
 
-void maybeAddPoint(vector<Selectitem> *ite, Selectitem tite, Float2 pos, Float2 loc, float dist) {
+SelectStack::SelectStack(const vector<SelectItem> &items, const SelectItem &current) {
+  CHECK(set<SelectItem>(items.begin(), items.end()).size() == items.size());
+  if(count(items.begin(), items.end(), current)) {
+    next = items[modurot(find(items.begin(), items.end(), current) - items.begin() + 1, items.size())];
+  } else if(items.size()) {
+    next = items[0];
+  }
+};
+
+void maybeAddPoint(vector<SelectItem> *ite, SelectItem tite, Float2 pos, Float2 loc, float dist) {
   if(max(abs(pos.x - loc.x), abs(pos.y - loc.y)) <= dist)
     ite->push_back(tite);
 }
 
-void maybeAddLine(vector<Selectitem> *ite, Selectitem tite, Float2 pos, Float4 loc, float dist) {
+void maybeAddLine(vector<SelectItem> *ite, SelectItem tite, Float2 pos, Float4 loc, float dist) {
   if(linepointdistance(loc, pos) <= dist)
     ite->push_back(tite);
 }
 
-void maybeAddCurve(vector<Selectitem> *ite, Selectitem tite, Float2 pos, Float4 ptah, Float4 ptbh, float dist) {
+void maybeAddCurve(vector<SelectItem> *ite, SelectItem tite, Float2 pos, Float4 ptah, Float4 ptbh, float dist) {
   vector<Float2> curv = generateCurve(ptah, ptbh, 20);
   for(int i = 0; i < curv.size() - 1; i++) {
     if(linepointdistance(Float4(curv[i], curv[i + 1]), pos) <= dist) {
@@ -77,8 +98,8 @@ void maybeAddCurve(vector<Selectitem> *ite, Selectitem tite, Float2 pos, Float4 
   }
 }
 
-vector<Selectitem> Vecedit::getSelectionStack(Float2 pos, float zpp) const {
-  vector<Selectitem> ites;
+SelectStack Vecedit::getSelectionStack(Float2 pos, float zpp) const {
+  vector<SelectItem> ites;
   
   for(int i = 0; i < dv2.paths.size(); i++) {
     const VectorPath &vp = dv2.paths[i];
@@ -91,32 +112,32 @@ vector<Selectitem> Vecedit::getSelectionStack(Float2 pos, float zpp) const {
         selsize = secondnode * zpp;
       }
       
-      maybeAddPoint(&ites, Selectitem(Selectitem::NODE, i, j), pos, vp.center + vp.vpath[j].pos, selsize * 1.5);
+      maybeAddPoint(&ites, SelectItem(SelectItem::NODE, i, j), pos, vp.center + vp.vpath[j].pos, selsize * 1.5);
       
       if(thisselect && vp.vpath[j].curvl) {
-        maybeAddPoint(&ites, Selectitem(Selectitem::CURVECONTROL, i, j, false), pos, vp.center + vp.vpath[j].pos + vp.vpath[j].curvlp, secondnode * zpp * 1.5);
+        maybeAddPoint(&ites, SelectItem(SelectItem::CURVECONTROL, i, j, false), pos, vp.center + vp.vpath[j].pos + vp.vpath[j].curvlp, secondnode * zpp * 1.5);
       }
       if(thisselect && vp.vpath[j].curvr) {
-        maybeAddPoint(&ites, Selectitem(Selectitem::CURVECONTROL, i, j, true), pos, vp.center + vp.vpath[j].pos + vp.vpath[j].curvrp, secondnode * zpp * 1.5);
+        maybeAddPoint(&ites, SelectItem(SelectItem::CURVECONTROL, i, j, true), pos, vp.center + vp.vpath[j].pos + vp.vpath[j].curvrp, secondnode * zpp * 1.5);
       }
       
       if(thisselect) {
-        maybeAddPoint(&ites, Selectitem(Selectitem::PATHCENTER, i), pos, vp.center, primenode * zpp * 1.5);
+        maybeAddPoint(&ites, SelectItem(SelectItem::PATHCENTER, i), pos, vp.center, primenode * zpp * 1.5);
       }
       
       int k = (j + 1) % vp.vpath.size();
       if(vp.vpath[j].curvr) {
         CHECK(vp.vpath[k].curvl);
-        maybeAddCurve(&ites, Selectitem(Selectitem::LINK, i, j), pos, Float4(vp.center + vp.vpath[j].pos, vp.center + vp.vpath[j].pos + vp.vpath[j].curvrp), Float4(vp.center + vp.vpath[k].pos + vp.vpath[k].curvlp, vp.center + vp.vpath[k].pos), selsize);
+        maybeAddCurve(&ites, SelectItem(SelectItem::LINK, i, j), pos, Float4(vp.center + vp.vpath[j].pos, vp.center + vp.vpath[j].pos + vp.vpath[j].curvrp), Float4(vp.center + vp.vpath[k].pos + vp.vpath[k].curvlp, vp.center + vp.vpath[k].pos), selsize);
       } else {
-        maybeAddLine(&ites, Selectitem(Selectitem::LINK, i, j), pos, Float4(vp.center + vp.vpath[j].pos, vp.center + vp.vpath[k].pos), selsize);
+        maybeAddLine(&ites, SelectItem(SelectItem::LINK, i, j), pos, Float4(vp.center + vp.vpath[j].pos, vp.center + vp.vpath[k].pos), selsize);
       }
     }
   }
   
   sort(ites.begin(), ites.end());
   
-  return ites;
+  return SelectStack(ites, select);
 }
 
 bool Vecedit::changed() const {
@@ -152,7 +173,7 @@ void drawLink(Float2 center, const vector<VectorPoint> &vpt, int j, float weight
   }
 }
 
-void setAppropriateColor(const Selectitem &lhs, const Selectitem &rhs) {
+void setAppropriateColor(const SelectItem &lhs, const SelectItem &rhs) {
   if(lhs.path != rhs.path) {
     setColor(Color(0.7, 0.7, 1.0));
   } else if(lhs.type != rhs.type || lhs.item != rhs.item) {
@@ -162,11 +183,11 @@ void setAppropriateColor(const Selectitem &lhs, const Selectitem &rhs) {
   }
 }
 
-void setAppropriateLinkColor(const Selectitem &lhs, const Selectitem &rhs) {
-  CHECK(lhs.type == Selectitem::CURVECONTROL);
+void setAppropriateLinkColor(const SelectItem &lhs, const SelectItem &rhs) {
+  CHECK(lhs.type == SelectItem::CURVECONTROL);
   if(lhs.path != rhs.path) {
     CHECK(0); // this shouldn't even happen
-  } else if(lhs.item != rhs.item || rhs.type == Selectitem::LINK || (rhs.type == Selectitem::CURVECONTROL && lhs.curveside != rhs.curveside)) {
+  } else if(lhs.item != rhs.item || rhs.type == SelectItem::LINK || (rhs.type == SelectItem::CURVECONTROL && lhs.curveside != rhs.curveside)) {
     setColor(Color(0.5, 0.5, 0.5));
   } else {
     setColor(Color(1.0, 0.7, 0.7));
@@ -178,7 +199,7 @@ void Vecedit::render(const WrapperState &state) const {
 
   for(int i = 0; i < dv2.paths.size(); i++) {
     for(int j = 0; j < dv2.paths[i].vpath.size(); j++) {
-      setAppropriateColor(Selectitem(Selectitem::NODE, i, j), select);
+      setAppropriateColor(SelectItem(SelectItem::NODE, i, j), select);
       {
         double width;
         if(select.path == i) {
@@ -191,23 +212,23 @@ void Vecedit::render(const WrapperState &state) const {
       
       if(select.path == i) {
         if(dv2.paths[i].vpath[j].curvl) {
-          setAppropriateLinkColor(Selectitem(Selectitem::CURVECONTROL, i, j, false), select);
+          setAppropriateLinkColor(SelectItem(SelectItem::CURVECONTROL, i, j, false), select);
           drawLine(dv2.paths[i].center + dv2.paths[i].vpath[j].pos, dv2.paths[i].center + dv2.paths[i].vpath[j].pos + dv2.paths[i].vpath[j].curvlp, state.zpp);
-          setAppropriateColor(Selectitem(Selectitem::CURVECONTROL, i, j, false), select);
+          setAppropriateColor(SelectItem(SelectItem::CURVECONTROL, i, j, false), select);
           drawRectAround(dv2.paths[i].center + dv2.paths[i].vpath[j].pos + dv2.paths[i].vpath[j].curvlp, state.zpp * secondnode, state.zpp);
         }
         if(dv2.paths[i].vpath[j].curvr) {
-          setAppropriateLinkColor(Selectitem(Selectitem::CURVECONTROL, i, j, true), select);
+          setAppropriateLinkColor(SelectItem(SelectItem::CURVECONTROL, i, j, true), select);
           drawLine(dv2.paths[i].center + dv2.paths[i].vpath[j].pos, dv2.paths[i].center + dv2.paths[i].vpath[j].pos + dv2.paths[i].vpath[j].curvrp, state.zpp);
-          setAppropriateColor(Selectitem(Selectitem::CURVECONTROL, i, j, true), select);
+          setAppropriateColor(SelectItem(SelectItem::CURVECONTROL, i, j, true), select);
           drawRectAround(dv2.paths[i].center + dv2.paths[i].vpath[j].pos + dv2.paths[i].vpath[j].curvrp, state.zpp * secondnode, state.zpp);
         }
         
-        setAppropriateColor(Selectitem(Selectitem::PATHCENTER, i), select);
+        setAppropriateColor(SelectItem(SelectItem::PATHCENTER, i), select);
         drawRectAround(dv2.paths[i].center, state.zpp * primenode, state.zpp);
       }
       
-      setAppropriateColor(Selectitem(Selectitem::LINK, i, j), select);
+      setAppropriateColor(SelectItem(SelectItem::LINK, i, j), select);
       drawLink(dv2.paths[i].center, dv2.paths[i].vpath, j, state.zpp * 2);
     }
   }
@@ -215,15 +236,6 @@ void Vecedit::render(const WrapperState &state) const {
   if(state.grid > 0) {
     setColor(0.2, 0.2, 0.5);
     drawGrid(state.grid, state.zpp);
-  }
-}
-
-void selectThings(Selectitem *select, const vector<Selectitem> &ss) {
-  CHECK(ss.size());
-  if(count(ss.begin(), ss.end(), *select)) {
-    *select = ss[(find(ss.begin(), ss.end(), *select) - ss.begin() + 1) % ss.size()];
-  } else {
-    *select = ss[0];
   }
 }
 
@@ -241,7 +253,7 @@ Float2 toGrid(Float2 in, float grid) {
 // Possible states: 
 // * Not selected
 // * Selected
-// * Selectednew
+// * Selectednochange
 // * Dragging
 
 // Selection stack: Contains one item of each type at most, along with a "next item" to be used if the user ends up switching to the next item in the stack.
@@ -262,6 +274,41 @@ OtherState Vecedit::mouse(const MouseInput &mouse, const WrapperState &wrap) {
   bool compospush = mouse.b[0].push || mouse.b[1].push;
   bool composrelease = mouse.b[0].release || mouse.b[1].release;
   
+  SelectStack ss = getSelectionStack(mouse.pos, wrap.zpp);
+  
+  if(ss.hasItems()) {
+    ostate.cursor = CURSOR_HAND;
+  } else {
+    ostate.cursor = CURSOR_NORMAL;
+  }
+
+  if(compospush) {  // If the user has pushed a button . . .
+    if(select.type == -1) { // and nothing is selected . . .
+      select = ss.nextItem(); // select something . . .
+      if(select.type != -1) { // and, if we actually got something . . 
+        state = SELECTEDNOCHANGE; // select it, but don't allow it to be changed after buttonup.
+        ostate.redraw = true;
+      }
+    } else {  // If something is selected already, just change to SELECTED mode.
+      state = SELECTED;
+    }
+  }
+    
+  
+  if(composrelease) { // If the user has released a button . . .
+    if(state == SELECTED) {  // and something was selected . . .
+      select = ss.nextItem(); // select the next thing and redraw.
+      state = IDLE;
+      ostate.redraw = true;
+    } else if(state == SELECTEDNOCHANGE) {  // and something was selected and we weren't supposed to change . . .
+      state = IDLE; // don't.
+    } else if(state == DRAGGING) {  // and we were dragging something . . .
+      state = IDLE; // take a snapshot for undo.
+      ostate.snapshot = true;
+    }
+  }
+  
+  /*
   if(compospush && ostate.ui.newPath) {
     // this is kind of special
     
@@ -272,18 +319,18 @@ OtherState Vecedit::mouse(const MouseInput &mouse, const WrapperState &wrap) {
     nvp.rebuildVpath();
     
     dv2.paths.push_back(nvp);
-    select = Selectitem(Selectitem::NODE, dv2.paths.size() - 1, 0);
+    select = SelectItem(SelectItem::NODE, dv2.paths.size() - 1, 0);
     state = SELECTEDNEW;
     ostate.ui.newPath = false;
     // we do NOT snapshot here because we'll snapshot once the player lets go of the button
   } else {
-    vector<Selectitem> ss = getSelectionStack(mouse.pos, wrap.zpp);
+    
     
     if(!ss.size()) {
       ostate.cursor = CURSOR_NORMAL;
       
       if(compospush) {
-        select = Selectitem();
+        select = SelectItem();
         ostate.redraw = true;
       }
       
@@ -307,15 +354,15 @@ OtherState Vecedit::mouse(const MouseInput &mouse, const WrapperState &wrap) {
       }
       
       // let's see if we can find a link
-      if(compospush && ostate.ui.newNode && select.type != Selectitem::LINK)
-        for(int i = 0; i < ss.size() && select.type != Selectitem::LINK; i++)
+      if(compospush && ostate.ui.newNode && select.type != SelectItem::LINK)
+        for(int i = 0; i < ss.size() && select.type != SelectItem::LINK; i++)
           selectThings(&select, ss);
       
-      if(compospush && ostate.ui.newNode && select.type == Selectitem::LINK) {
+      if(compospush && ostate.ui.newNode && select.type == SelectItem::LINK) {
         VectorPath &path = dv2.paths[select.path];
         int newnode = path.vpathCreate((select.item + 1) % path.vpath.size());
         select.item = newnode;
-        select.type = Selectitem::NODE;
+        select.type = SelectItem::NODE;
         path.vpath[select.item].pos = worldlock - path.center;
         if(path.vpath[select.item].curvl)
           path.vpath[select.item].curvlp = (path.vpath[modurot(select.item - 1, path.vpath.size())].pos - path.vpath[select.item].pos) / 3;
@@ -331,7 +378,7 @@ OtherState Vecedit::mouse(const MouseInput &mouse, const WrapperState &wrap) {
         // here we toggle things
         if(state == SELECTEDNEW)
           state = SELECTED;
-        if(select.type == Selectitem::LINK) {
+        if(select.type == SelectItem::LINK) {
           dv2.paths[select.path].vpath[select.item].curvr = !dv2.paths[select.path].vpath[select.item].curvr;
           dv2.paths[select.path].vpathModify(select.item);
           ostate.redraw = true;
@@ -354,13 +401,13 @@ OtherState Vecedit::mouse(const MouseInput &mouse, const WrapperState &wrap) {
     }
     
     if(mouse.b[0].down && ((state == SELECTED || state == SELECTEDNEW) && len(startpos - mouse.pos) > wrap.zpp * 3 || state == DRAGGING)) {
-      if(select.type == Selectitem::NODE) {
+      if(select.type == SelectItem::NODE) {
         dv2.paths[select.path].vpath[select.item].pos = worldlock - dv2.paths[select.path].center;
         dv2.paths[select.path].vpathModify(select.item);
         state = DRAGGING;
         modified = true;
         ostate.redraw = true;
-      } else if(select.type == Selectitem::CURVECONTROL) {
+      } else if(select.type == SelectItem::CURVECONTROL) {
         Float2 destpt = worldlock - dv2.paths[select.path].center - dv2.paths[select.path].vpath[select.item].pos;
         VectorPoint &vp = dv2.paths[select.path].vpath[select.item];
         if(!select.curveside) {
@@ -372,7 +419,7 @@ OtherState Vecedit::mouse(const MouseInput &mouse, const WrapperState &wrap) {
         state = DRAGGING;
         modified = true;
         ostate.redraw = true;
-      } else if(select.type == Selectitem::PATHCENTER) {
+      } else if(select.type == SelectItem::PATHCENTER) {
         dv2.paths[select.path].center = worldlock;
         dv2.paths[select.path].moveCenterOrReflect();
         state = DRAGGING;
@@ -380,7 +427,7 @@ OtherState Vecedit::mouse(const MouseInput &mouse, const WrapperState &wrap) {
         ostate.redraw = true;
       }
     }
-  }
+  }*/
   
   return ostate;
 }
@@ -388,26 +435,26 @@ OtherState Vecedit::del(const WrapperState &wrap) {
   OtherState ostate;
   ostate.ui = wrap.ui;
 
-  if(select.type == Selectitem::NODE) {
+  if(select.type == SelectItem::NODE) {
     dv2.paths[select.path].vpathRemove(select.item);
     state = IDLE;
-    select = Selectitem();
+    select = SelectItem();
     ostate.redraw = true;
     ostate.snapshot = true;
-  } else if(select.type == Selectitem::PATHCENTER) {
+  } else if(select.type == SelectItem::PATHCENTER) {
     dv2.paths.erase(dv2.paths.begin() + select.path);
     state = IDLE;
-    select = Selectitem();
+    select = SelectItem();
     ostate.redraw = true;
     ostate.snapshot = true;
-  } else if(select.type == Selectitem::CURVECONTROL) {
+  } else if(select.type == SelectItem::CURVECONTROL) {
     if(select.curveside == false)
       select.item = modurot(select.item - 1, dv2.paths[select.path].vpath.size()); // we can change this because we'll be clearing it soon anyway
     dv2.paths[select.path].vpath[select.item].curvr = !dv2.paths[select.path].vpath[select.item].curvr;
     dv2.paths[select.path].vpathModify(select.item);
     ostate.redraw = true;
     ostate.snapshot = true;
-    select = Selectitem();
+    select = SelectItem();
   }
   
   return ostate;

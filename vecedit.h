@@ -16,17 +16,17 @@ struct ScrollBounds {
   Float4 currentwindow;
 };
 
-struct Selectitem {
-  enum { PATHCENTER, NODE, CURVECONTROL, LINK, NONE };
+struct SelectItem {
+  enum { PATHCENTER, NODE, CURVECONTROL, LINK, END, NONE = -1};
   int type;
   int path;
   int item;
   bool curveside;
   
-  Selectitem();
-  Selectitem(int type, int path);
-  Selectitem(int type, int path, int item);
-  Selectitem(int type, int path, int item, bool curveside);
+  SelectItem();
+  SelectItem(int type, int path);
+  SelectItem(int type, int path, int item);
+  SelectItem(int type, int path, int item, bool curveside);
 };
 
 enum Cursor { CURSOR_NORMAL, CURSOR_CROSS, CURSOR_HAND, CURSOR_UNCHANGED = -1 };
@@ -59,17 +59,28 @@ struct OtherState {
   OtherState();
 };
 
+class SelectStack {
+  SelectItem next;
+  
+public:
+  bool hasItems() const;
+
+  SelectItem nextItem() const;
+
+  SelectStack(const vector<SelectItem> &items, const SelectItem &current);
+};
+
 class Vecedit {
   bool modified;
   
   Dvec2 dv2;
   
-  enum { IDLE, SELECTED, SELECTEDNEW, DRAGGING };
+  enum { IDLE, SELECTED, SELECTEDNOCHANGE, DRAGGING };
   int state;
   Float2 startpos;
-  Selectitem select;
+  SelectItem select;
   
-  vector<Selectitem> getSelectionStack(Float2 pos, float zpp) const;
+  SelectStack getSelectionStack(Float2 pos, float zpp) const;
   
 public:
 
