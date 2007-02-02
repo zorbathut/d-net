@@ -2,8 +2,7 @@
 - Less incentive to camp?
 - Add bombardment charts
 - Next-gen vecedit?
-  - Deleting points
-  - Deleting entire curve
+  - "Selection type stack" to make selecting the right thing easier
   - Curve properties (flip, spin, etc)
   - Entity select
   - Entity properties

@@ -241,21 +241,16 @@ Float2 toGrid(Float2 in, float grid) {
 // Possible states: 
 // * Not selected
 // * Selected
-// * SELECTEDNEW
+// * Selectednew
 // * Dragging
 
-// * This stack isn't selected + mousedown + something selectable -> Selectednew
-// * Previouslyselected + mouseup + something selectable -> rotate through selectable things
-// * Selectednew | Selected + mousecurrentlydown + selected draggable + movement -> dragging
-// * Dragging + mouseup -> back to selected
-// Note that dragging + mouseup != rotate
+// Selection stack: Contains one item of each type at most, along with a "next item" to be used if the user ends up switching to the next item in the stack.
 
-// * Not selected + rightmousedown + something selectable -> select it, toggle
-// * Selected + rightmousedown -> toggle
-
-// For selecting things: order in the following direction!
-// * Points that are close enough, sorted by path, then by point
-// * Lines that are close enough
+// Algorithm:
+// * If the user has clicked, or released, generate a selection stack of things that they might be referring to. If they haven't, the selection stack contains solely the currently selected node. Select something if nothing is selected and switch to SELECTEDNEW mode. Otherwise, switch to SELECTED mode (which is pretty much mouse-down mode actually.)
+// * If the user has clicked, handle the click in some way. Usually this only applies to right-clicks or when another tool is in use. Sometimes this will have to look through the selection stack to find something to apply it to, in which case we also change selection and change to SELECTEDNEW mode.
+// * If the user has LMB down and has dragged, handle it if appropriate, possibly changing state to DRAGGING.
+// * If the user has released, and we're in SELECTED mode, change to the next selection item as usual.
 
 OtherState Vecedit::mouse(const MouseInput &mouse, const WrapperState &wrap) {
   OtherState ostate;
