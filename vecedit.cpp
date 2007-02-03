@@ -370,6 +370,22 @@ OtherState Vecedit::mouse(const MouseInput &mouse, const WrapperState &wrap) {
     // we do NOT snapshot here because we'll snapshot once the player lets go of the button
   }
   
+  // RMB
+  if(mouse.b[1].push) {
+    for(int i = 0; i < startposstack.itemOrder().size(); i++) {
+      if(startposstack.itemOrder()[i].type == SelectItem::LINK) {
+        select = startposstack.itemOrder()[i];
+        state = SELECTED;
+        dv2.paths[select.path].vpath[select.item].curvr = !dv2.paths[select.path].vpath[select.item].curvr;
+        dv2.paths[select.path].vpathModify(select.item);
+        modified = true;
+        ostate.redraw = true;
+        ostate.snapshot = true;
+        break;
+      }
+    }
+  }
+  
   // Dragging
   if(mouse.b[0].down && ((state == SELECTED || state == SELECTEDNOCHANGE) && len(startpos - mouse.pos) > wrap.zpp * 3 || state == DRAGGING)) {
     // We want to grab something draggable if possible. However, if we've had our item overriden to one that didn't exist beforehand, we want to preserve that.
@@ -426,85 +442,6 @@ OtherState Vecedit::mouse(const MouseInput &mouse, const WrapperState &wrap) {
       CHECK(0);
     }
   }
-  
-  /*
-    
-      
-      // let's see if we can find a link
-      if(compospush && ostate.ui.newNode && select.type != SelectItem::LINK)
-        for(int i = 0; i < ss.size() && select.type != SelectItem::LINK; i++)
-          selectThings(&select, ss);
-      
-      if(compospush && ostate.ui.newNode && select.type == SelectItem::LINK) {
-        VectorPath &path = dv2.paths[select.path];
-        int newnode = path.vpathCreate((select.item + 1) % path.vpath.size());
-        select.item = newnode;
-        select.type = SelectItem::NODE;
-        path.vpath[select.item].pos = worldlock - path.center;
-        if(path.vpath[select.item].curvl)
-          path.vpath[select.item].curvlp = (path.vpath[modurot(select.item - 1, path.vpath.size())].pos - path.vpath[select.item].pos) / 3;
-        if(path.vpath[select.item].curvr)
-          path.vpath[select.item].curvrp = (path.vpath[modurot(select.item + 1, path.vpath.size())].pos - path.vpath[select.item].pos) / 3;
-        dv2.paths[select.path].vpathModify(select.item);
-        ostate.ui.newNode = false;
-        state = SELECTEDNEW;
-        // we do NOT snapshot here because we'll snapshot once the player lets go of the button
-      }
-      
-      if(mouse.b[1].push) {
-        // here we toggle things
-        if(state == SELECTEDNEW)
-          state = SELECTED;
-        if(select.type == SelectItem::LINK) {
-          dv2.paths[select.path].vpath[select.item].curvr = !dv2.paths[select.path].vpath[select.item].curvr;
-          dv2.paths[select.path].vpathModify(select.item);
-          ostate.redraw = true;
-          ostate.snapshot = true;
-        }
-      }
-      
-      if(composrelease) {
-        if(state == SELECTED) {
-          selectThings(&select, ss);
-          state = IDLE;
-          ostate.redraw = true;
-        } else if(state == SELECTEDNEW) {
-          state = IDLE;
-        } else if(state == DRAGGING) {
-          state = IDLE;
-          ostate.snapshot = true;
-        }
-      }
-    }
-    
-    if(mouse.b[0].down && ((state == SELECTED || state == SELECTEDNEW) && len(startpos - mouse.pos) > wrap.zpp * 3 || state == DRAGGING)) {
-      if(select.type == SelectItem::NODE) {
-        dv2.paths[select.path].vpath[select.item].pos = worldlock - dv2.paths[select.path].center;
-        dv2.paths[select.path].vpathModify(select.item);
-        state = DRAGGING;
-        modified = true;
-        ostate.redraw = true;
-      } else if(select.type == SelectItem::CURVECONTROL) {
-        Float2 destpt = worldlock - dv2.paths[select.path].center - dv2.paths[select.path].vpath[select.item].pos;
-        VectorPoint &vp = dv2.paths[select.path].vpath[select.item];
-        if(!select.curveside) {
-          vp.curvlp = destpt;
-        } else {
-          vp.curvrp = destpt;
-        }
-        dv2.paths[select.path].vpathModify(select.item);
-        state = DRAGGING;
-        modified = true;
-        ostate.redraw = true;
-      } else if(select.type == SelectItem::PATHCENTER) {
-        dv2.paths[select.path].center = worldlock;
-        dv2.paths[select.path].moveCenterOrReflect();
-        state = DRAGGING;
-        modified = true;
-        ostate.redraw = true;
-      }
-    }
-  }*/
   
   return ostate;
 }
