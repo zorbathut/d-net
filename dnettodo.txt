@@ -2,7 +2,6 @@
 - Less incentive to camp?
 - Add bombardment charts
 - Next-gen vecedit?
-  - yeah I actually do need to store a position-selection-stack :/
   - Curve properties (flip, spin, etc)
   - Entity select
   - Entity properties

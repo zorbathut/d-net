@@ -83,6 +83,7 @@ public:
 
   const vector<SelectItem> &itemOrder() const;
 
+  SelectStack();
   SelectStack(const vector<SelectItem> &items, const SelectItem &current);
 };
 
@@ -93,8 +94,10 @@ class Vecedit {
   
   enum { IDLE, SELECTED, SELECTEDNOCHANGE, DRAGGING };
   int state;
-  Float2 startpos;
   SelectItem select;
+  
+  Float2 startpos;
+  SelectStack startposstack;
   
   SelectStack getSelectionStack(Float2 pos, float zpp) const;
   
