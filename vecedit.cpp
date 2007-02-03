@@ -18,13 +18,13 @@ SelectItem::SelectItem() {
   curveside = false;
 }
 
-SelectItem::SelectItem(int type, int path) : type(type), path(path), item(0), curveside(false) {
+SelectItem::SelectItem(Type type, int path) : type(type), path(path), item(0), curveside(false) {
   CHECK(type == PATHCENTER);
 };
-SelectItem::SelectItem(int type, int path, int item) : type(type), path(path), item(item), curveside(false) {
+SelectItem::SelectItem(Type type, int path, int item) : type(type), path(path), item(item), curveside(false) {
   CHECK(type == NODE || type == LINK);
 };
-SelectItem::SelectItem(int type, int path, int item, bool curveside) : type(type), path(path), item(item), curveside(curveside) {
+SelectItem::SelectItem(Type type, int path, int item, bool curveside) : type(type), path(path), item(item), curveside(curveside) {
   CHECK(type == CURVECONTROL);
 };
 
@@ -61,6 +61,9 @@ OtherState::OtherState() {
   snapshot = false;
 }
 
+bool SelectStack::hasItem(const SelectItem &si) const {
+  return possible_items.count(si);
+}
 bool SelectStack::hasItems() const {
   return next.type != SelectItem::NONE;
 }
@@ -69,13 +72,42 @@ SelectItem SelectStack::nextItem() const {
   return next;
 }
 
-SelectStack::SelectStack(const vector<SelectItem> &items, const SelectItem &current) {
-  CHECK(set<SelectItem>(items.begin(), items.end()).size() == items.size());
-  if(count(items.begin(), items.end(), current)) {
-    next = items[modurot(find(items.begin(), items.end(), current) - items.begin() + 1, items.size())];
-  } else if(items.size()) {
-    next = items[0];
+bool SelectStack::hasItemType(SelectItem::Type type) const {
+  return items[type].type != SelectItem::NONE;
+}
+SelectItem SelectStack::getItemType(SelectItem::Type type) const {
+  return items[type];
+}
+const vector<SelectItem> &SelectStack::itemOrder() const {
+  return iteorder;
+}
+
+SelectStack::SelectStack(const vector<SelectItem> &in_items, const SelectItem &current) {
+  possible_items = set<SelectItem>(in_items.begin(), in_items.end());
+  CHECK(possible_items.size() == in_items.size());
+  
+  items.resize(SelectItem::END);
+  
+  int spt;
+  if(count(in_items.begin(), in_items.end(), current)) {
+    spt = find(in_items.begin(), in_items.end(), current) - in_items.begin();
+    next = in_items[modurot(spt + 1, in_items.size())];
+  } else if(in_items.size()) {
+    spt = 0;
+    next = in_items[spt];
   }
+  
+  for(int i = 0; i < in_items.size(); i++) {
+    if(items[in_items[modurot(spt + i, in_items.size())].type].type == SelectItem::NONE) {
+      items[in_items[modurot(spt + i, in_items.size())].type] = in_items[modurot(spt + i, in_items.size())];
+      iteorder.push_back(in_items[modurot(spt + i, in_items.size())]);
+    }
+  }
+  
+  for(int i = 0; i < items.size(); i++)
+    CHECK(items[i].type == SelectItem::NONE || items[i].type == i);
+  
+  
 };
 
 void maybeAddPoint(vector<SelectItem> *ite, SelectItem tite, Float2 pos, Float2 loc, float dist) {
@@ -104,6 +136,10 @@ SelectStack Vecedit::getSelectionStack(Float2 pos, float zpp) const {
   for(int i = 0; i < dv2.paths.size(); i++) {
     const VectorPath &vp = dv2.paths[i];
     const bool thisselect = (i == select.path);
+    if(thisselect) {
+      maybeAddPoint(&ites, SelectItem(SelectItem::PATHCENTER, i), pos, vp.center, primenode * zpp * 1.5);
+    }
+    
     for(int j = 0; j < vp.vpath.size(); j++) {
       float selsize;
       if(thisselect) {
@@ -121,10 +157,6 @@ SelectStack Vecedit::getSelectionStack(Float2 pos, float zpp) const {
         maybeAddPoint(&ites, SelectItem(SelectItem::CURVECONTROL, i, j, true), pos, vp.center + vp.vpath[j].pos + vp.vpath[j].curvrp, secondnode * zpp * 1.5);
       }
       
-      if(thisselect) {
-        maybeAddPoint(&ites, SelectItem(SelectItem::PATHCENTER, i), pos, vp.center, primenode * zpp * 1.5);
-      }
-      
       int k = (j + 1) % vp.vpath.size();
       if(vp.vpath[j].curvr) {
         CHECK(vp.vpath[k].curvl);
@@ -134,6 +166,8 @@ SelectStack Vecedit::getSelectionStack(Float2 pos, float zpp) const {
       }
     }
   }
+  
+  CHECK(set<SelectItem>(ites.begin(), ites.end()).size() == ites.size());
   
   sort(ites.begin(), ites.end());
   
@@ -282,8 +316,9 @@ OtherState Vecedit::mouse(const MouseInput &mouse, const WrapperState &wrap) {
     ostate.cursor = CURSOR_NORMAL;
   }
 
+  // Push and initial selection
   if(compospush) {  // If the user has pushed a button . . .
-    if(select.type == -1) { // and nothing is selected . . .
+    if(!ss.hasItem(select)) { // and nothing in this stack is selected . . .
       select = ss.nextItem(); // select something . . .
       if(select.type != -1) { // and, if we actually got something . . 
         state = SELECTEDNOCHANGE; // select it, but don't allow it to be changed after buttonup.
@@ -292,9 +327,84 @@ OtherState Vecedit::mouse(const MouseInput &mouse, const WrapperState &wrap) {
     } else {  // If something is selected already, just change to SELECTED mode.
       state = SELECTED;
     }
+    startpos = mouse.pos;
   }
-    
   
+  // Tool commands
+  if(compospush && ostate.ui.newPath) { // Build a new path at this location
+    VectorPath nvp;
+    nvp.center = worldlock;
+    
+    nvp.path.push_back(VectorPoint());
+    nvp.rebuildVpath();
+    
+    dv2.paths.push_back(nvp);
+    select = SelectItem(SelectItem::NODE, dv2.paths.size() - 1, 0);
+    state = SELECTEDNOCHANGE;
+    modified = true;
+    ostate.ui.newPath = false;
+    ostate.redraw = true;
+    // we do NOT snapshot here because we'll snapshot once the player lets go of the button
+  }
+  
+  if(compospush && ostate.ui.newNode && ss.hasItemType(SelectItem::LINK)) {
+    select = ss.getItemType(SelectItem::LINK); // we'll change this again ASAP anyway
+    
+    VectorPath &path = dv2.paths[select.path];
+    int newnode = path.vpathCreate((select.item + 1) % path.vpath.size());
+    select.item = newnode;
+    select.type = SelectItem::NODE;
+    path.vpath[select.item].pos = worldlock - path.center;
+    if(path.vpath[select.item].curvl)
+      path.vpath[select.item].curvlp = (path.vpath[modurot(select.item - 1, path.vpath.size())].pos - path.vpath[select.item].pos) / 3;
+    if(path.vpath[select.item].curvr)
+      path.vpath[select.item].curvrp = (path.vpath[modurot(select.item + 1, path.vpath.size())].pos - path.vpath[select.item].pos) / 3;
+    dv2.paths[select.path].vpathModify(select.item);
+    modified = true;
+    ostate.ui.newNode = false;
+    ostate.redraw = true;
+    state = SELECTEDNOCHANGE;
+    // we do NOT snapshot here because we'll snapshot once the player lets go of the button
+  }
+  
+  // Dragging
+  if(mouse.b[0].down && ((state == SELECTED || state == SELECTEDNOCHANGE) && len(startpos - mouse.pos) > wrap.zpp * 3 || state == DRAGGING)) {
+    // We want to grab something draggable if possible. However, if we've had our item overriden to one that didn't exist beforehand, we want to preserve that.
+    if(select.type != SelectItem::NODE && select.type != SelectItem::CURVECONTROL && select.type != SelectItem::PATHCENTER) {
+      for(int i = 0; i < ss.itemOrder().size(); i++) {
+        if(ss.itemOrder()[i].type == SelectItem::NODE || ss.itemOrder()[i].type == SelectItem::CURVECONTROL || ss.itemOrder()[i].type == SelectItem::PATHCENTER) {
+          select = ss.itemOrder()[i];
+          state = DRAGGING;
+        }
+      }
+    }
+    
+    // Actually move things
+    if(select.type == SelectItem::NODE) {
+      dv2.paths[select.path].vpath[select.item].pos = worldlock - dv2.paths[select.path].center;
+      dv2.paths[select.path].vpathModify(select.item);
+      modified = true;
+      ostate.redraw = true;
+    } else if(select.type == SelectItem::CURVECONTROL) {
+      Float2 destpt = worldlock - dv2.paths[select.path].center - dv2.paths[select.path].vpath[select.item].pos;
+      VectorPoint &vp = dv2.paths[select.path].vpath[select.item];
+      if(!select.curveside) {
+        vp.curvlp = destpt;
+      } else {
+        vp.curvrp = destpt;
+      }
+      dv2.paths[select.path].vpathModify(select.item);
+      modified = true;
+      ostate.redraw = true;
+    } else if(select.type == SelectItem::PATHCENTER) {
+      dv2.paths[select.path].center = worldlock;
+      dv2.paths[select.path].moveCenterOrReflect();
+      modified = true;
+      ostate.redraw = true;
+    }
+  }
+  
+  // Release
   if(composrelease) { // If the user has released a button . . .
     if(state == SELECTED) {  // and something was selected . . .
       select = ss.nextItem(); // select the next thing and redraw.
@@ -305,53 +415,15 @@ OtherState Vecedit::mouse(const MouseInput &mouse, const WrapperState &wrap) {
     } else if(state == DRAGGING) {  // and we were dragging something . . .
       state = IDLE; // take a snapshot for undo.
       ostate.snapshot = true;
+    } else if(state == IDLE) {
+      dprintf("We were already idle, I'm kind of confused\n");
+    } else {
+      CHECK(0);
     }
   }
   
   /*
-  if(compospush && ostate.ui.newPath) {
-    // this is kind of special
     
-    VectorPath nvp;
-    nvp.center = worldlock;
-    
-    nvp.path.push_back(VectorPoint());
-    nvp.rebuildVpath();
-    
-    dv2.paths.push_back(nvp);
-    select = SelectItem(SelectItem::NODE, dv2.paths.size() - 1, 0);
-    state = SELECTEDNEW;
-    ostate.ui.newPath = false;
-    // we do NOT snapshot here because we'll snapshot once the player lets go of the button
-  } else {
-    
-    
-    if(!ss.size()) {
-      ostate.cursor = CURSOR_NORMAL;
-      
-      if(compospush) {
-        select = SelectItem();
-        ostate.redraw = true;
-      }
-      
-      if(composrelease) {
-        state = IDLE;
-      } // whatever we were doing, we're not doing it now
-    } else {
-      ostate.cursor = CURSOR_HAND;
-      
-      if(compospush) {
-        if(state == IDLE) {
-          if(count(ss.begin(), ss.end(), select)) {
-            state = SELECTED;
-          } else {
-            selectThings(&select, ss);
-            state = SELECTEDNEW;
-            ostate.redraw = true;
-          }
-          startpos = mouse.pos;
-        }
-      }
       
       // let's see if we can find a link
       if(compospush && ostate.ui.newNode && select.type != SelectItem::LINK)
@@ -439,12 +511,14 @@ OtherState Vecedit::del(const WrapperState &wrap) {
     dv2.paths[select.path].vpathRemove(select.item);
     state = IDLE;
     select = SelectItem();
+    modified = true;
     ostate.redraw = true;
     ostate.snapshot = true;
   } else if(select.type == SelectItem::PATHCENTER) {
     dv2.paths.erase(dv2.paths.begin() + select.path);
     state = IDLE;
     select = SelectItem();
+    modified = true;
     ostate.redraw = true;
     ostate.snapshot = true;
   } else if(select.type == SelectItem::CURVECONTROL) {
@@ -452,6 +526,7 @@ OtherState Vecedit::del(const WrapperState &wrap) {
       select.item = modurot(select.item - 1, dv2.paths[select.path].vpath.size()); // we can change this because we'll be clearing it soon anyway
     dv2.paths[select.path].vpath[select.item].curvr = !dv2.paths[select.path].vpath[select.item].curvr;
     dv2.paths[select.path].vpathModify(select.item);
+    modified = true;
     ostate.redraw = true;
     ostate.snapshot = true;
     select = SelectItem();

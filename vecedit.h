@@ -5,6 +5,10 @@
 #include "dvec2.h"
 #include "input.h"
 
+#include <set>
+
+using namespace std;
+
 struct MouseInput {
   Float2 pos;
   
@@ -17,16 +21,16 @@ struct ScrollBounds {
 };
 
 struct SelectItem {
-  enum { PATHCENTER, NODE, CURVECONTROL, LINK, END, NONE = -1};
-  int type;
+  enum Type { PATHCENTER, NODE, CURVECONTROL, LINK, END, NONE = -1};
+  Type type;
   int path;
   int item;
   bool curveside;
   
   SelectItem();
-  SelectItem(int type, int path);
-  SelectItem(int type, int path, int item);
-  SelectItem(int type, int path, int item, bool curveside);
+  SelectItem(Type type, int path);
+  SelectItem(Type type, int path, int item);
+  SelectItem(Type type, int path, int item, bool curveside);
 };
 
 enum Cursor { CURSOR_NORMAL, CURSOR_CROSS, CURSOR_HAND, CURSOR_UNCHANGED = -1 };
@@ -62,10 +66,22 @@ struct OtherState {
 class SelectStack {
   SelectItem next;
   
+  vector<SelectItem> items;
+  
+  vector<SelectItem> iteorder;
+  
+  set<SelectItem> possible_items;
+  
 public:
+  bool hasItem(const SelectItem &si) const;
   bool hasItems() const;
 
   SelectItem nextItem() const;
+
+  bool hasItemType(SelectItem::Type type) const;
+  SelectItem getItemType(SelectItem::Type type) const;
+
+  const vector<SelectItem> &itemOrder() const;
 
   SelectStack(const vector<SelectItem> &items, const SelectItem &current);
 };
