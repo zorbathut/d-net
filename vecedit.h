@@ -60,6 +60,9 @@ struct OtherState {
   bool redraw;
   bool snapshot;
   
+  bool hasPathProperties;
+  int divisions;
+  
   OtherState();
 };
 

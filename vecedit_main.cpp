@@ -242,28 +242,36 @@ public:
 };
 
 enum {
-  ID_New = 1,
-  ID_Open,
-  ID_Save,
-  ID_Saveas,
-  ID_Quit,
+  // Menu items
+    // Main menu
+      ID_New = 1,
+      ID_Open,
+      ID_Save,
+      ID_Saveas,
+      ID_Quit,
+
+    // Edit menu
+      ID_Undo,
+      ID_Redo,
+      ID_Cut,
+      ID_Copy,
+      ID_Paste,
+      ID_Delete,
+
+    // Help menu
+      ID_About,
   
-  ID_Undo,
-  ID_Redo,
-  ID_Cut,
-  ID_Copy,
-  ID_Paste,
-  ID_Delete,
-  
-  ID_About,
-  
-  ID_NewPath,
-  ID_NewPathMenu,
-  ID_NewNode,
-  ID_NewNodeMenu,
-  
-  ID_GridToggle,
-  ID_GridSpinner
+  // Toolbar items
+    ID_NewPath,
+    ID_NewPathMenu,
+    ID_NewNode,
+    ID_NewNodeMenu,
+    
+    ID_GridToggle,
+    ID_GridSpinner,
+
+  // Property pane items
+    ID_PathReflects
 };
 
 BEGIN_EVENT_TABLE(VeceditWindow, wxFrame)
@@ -395,8 +403,32 @@ VeceditWindow::VeceditWindow() : wxFrame((wxFrame *)NULL, -1, veceditname, wxDef
   
   glc = new VeceditGLC(this, NewFunctor(this, &VeceditWindow::renderCore), NewFunctor(this, &VeceditWindow::mouseCore), NewFunctor(this, &VeceditWindow::getScrollBounds), NewFunctor(this, &VeceditWindow::setScrollPos));
   wxNotebook *note = new wxNotebook(this, wxID_ANY);
-  note->SetMinSize(wxSize(150, 0));
-  note->AddPage(new wxNotebookPage(note, wxID_ANY), "Props");
+  note->SetMinSize(wxSize(150, 150));
+  
+  {
+    wxNotebookPage *pathprops = new wxPanel(note, wxID_ANY);
+    
+    wxBoxSizer *sizer = new wxBoxSizer(wxVERTICAL);
+    
+    sizer->Add(new wxStaticText(pathprops, wxID_ANY, "Path reflections"));
+    sizer->Add(new wxSpinCtrl(pathprops, ID_PathReflects, "1"));
+    
+    sizer->Add(0, 20);
+    
+    {
+      wxString options[] = { "Buzzsaw", "Snowflake" };
+      
+      sizer->Add(new wxRadioBox(pathprops, wxID_ANY, "Rotation mode", wxDefaultPosition, wxDefaultSize, ARRAY_SIZE(options), options, 1));
+    }
+    
+    wxBoxSizer *internal = new wxBoxSizer(wxVERTICAL);
+    internal->Add(sizer, wxSizerFlags().Border());
+    
+    pathprops->SetSizer(internal);
+    
+    note->AddPage(pathprops, "Props");
+  }
+
   note->AddPage(new wxNotebookPage(note, wxID_ANY), "Globals");
   
   toolbar = new wxToolBar(this, wxID_ANY);
@@ -631,7 +663,7 @@ bool VeceditMain::OnInit() {
   
   initGfx();
   
-  VeceditWindow *frame = new VeceditWindow();
+  wxFrame *frame = new VeceditWindow();
   frame->Show(true);
   SetTopWindow(frame);
   return true;
