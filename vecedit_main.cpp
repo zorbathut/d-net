@@ -232,8 +232,13 @@ public:
 
   void OnGridToggle(wxCommandEvent &event);
   void OnGridUpdate(wxSpinEvent &event);
+  void OnGridUpdateDirect(wxCommandEvent &event);
   void OnGridUp(wxSpinEvent &event);
   void OnGridDown(wxSpinEvent &event);
+  
+  void OnPathReflects(wxSpinEvent &event);
+  void OnPathReflectsDirect(wxCommandEvent &event);
+  void OnPathRotation(wxCommandEvent &event);
 
   void OnSave_dispatch(wxCommandEvent &event);
   void OnSaveas_dispatch(wxCommandEvent &event);
@@ -271,7 +276,8 @@ enum {
     ID_GridSpinner,
 
   // Property pane items
-    ID_PathReflects
+    ID_PathReflects,
+    ID_PathRotation
 };
 
 BEGIN_EVENT_TABLE(VeceditWindow, wxFrame)
@@ -296,8 +302,13 @@ BEGIN_EVENT_TABLE(VeceditWindow, wxFrame)
 
   EVT_TOOL(ID_GridToggle, VeceditWindow::OnGridToggle)
   EVT_SPINCTRL(ID_GridSpinner, VeceditWindow::OnGridUpdate)
+  EVT_TEXT(ID_GridSpinner, VeceditWindow::OnGridUpdateDirect)
   EVT_SPIN_UP(ID_GridSpinner, VeceditWindow::OnGridUp)
   EVT_SPIN_DOWN(ID_GridSpinner, VeceditWindow::OnGridDown)
+
+  EVT_SPINCTRL(ID_PathReflects, VeceditWindow::OnPathReflects)
+  EVT_TEXT(ID_PathReflects, VeceditWindow::OnPathReflectsDirect)
+  EVT_RADIOBOX(ID_PathRotation, VeceditWindow::OnPathRotation)
 
   EVT_CLOSE(VeceditWindow::OnClose)
 END_EVENT_TABLE()
@@ -418,7 +429,7 @@ VeceditWindow::VeceditWindow() : wxFrame((wxFrame *)NULL, -1, veceditname, wxDef
     {
       wxString options[] = { "Buzzsaw", "Snowflake" };
       
-      sizer->Add(new wxRadioBox(pathprops, wxID_ANY, "Rotation mode", wxDefaultPosition, wxDefaultSize, ARRAY_SIZE(options), options, 1));
+      sizer->Add(new wxRadioBox(pathprops, ID_PathRotation, "Rotation mode", wxDefaultPosition, wxDefaultSize, ARRAY_SIZE(options), options, 1));
     }
     
     wxBoxSizer *internal = new wxBoxSizer(wxVERTICAL);
@@ -592,6 +603,9 @@ void VeceditWindow::OnGridUpdate(wxSpinEvent &event) {
     glc->Refresh();
   }
 }
+void VeceditWindow::OnGridUpdateDirect(wxCommandEvent &event) {
+  dprintf("gridupdatedirect %d", event.GetInt());
+}
 // The +'s and -'s are kind of dumb and shouldn't exist. Nevertheless, they do.
 void VeceditWindow::OnGridUp(wxSpinEvent &event) {
   grid->SetValue(grid->GetValue() * 2 - 1);
@@ -601,6 +615,16 @@ void VeceditWindow::OnGridDown(wxSpinEvent &event) {
     grid->SetValue(1 + 1);
   else
     grid->SetValue(grid->GetValue() / 2 + 1);
+}
+
+void VeceditWindow::OnPathReflects(wxSpinEvent &event) {
+  dprintf("Spinevent %d", event.GetPosition());
+}
+void VeceditWindow::OnPathReflectsDirect(wxCommandEvent &event) {
+  dprintf("Spineventdirect %d", event.GetInt());
+}
+void VeceditWindow::OnPathRotation(wxCommandEvent &event) {
+  dprintf("Pathrotate %d", event.GetInt());
 }
 
 void VeceditWindow::OnSave_dispatch(wxCommandEvent& event) {
