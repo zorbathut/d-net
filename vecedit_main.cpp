@@ -185,8 +185,13 @@ private:
   VeceditGLC *glc;
   string filename;
 
+  // toolbar
   wxToolBar *toolbar;
   wxSpinCtrl *grid;
+
+  // properties panel
+  wxSpinCtrl *reflects;
+  wxRadioBox *snowflake;
 
   // while idle, the top item on undostack == core, since otherwise there's no way to intercept it *before* a change occurs
   vector<Vecedit> undostack;
@@ -231,13 +236,11 @@ public:
   void OnNewNodeMenu(wxCommandEvent &event);
 
   void OnGridToggle(wxCommandEvent &event);
-  void OnGridUpdate(wxSpinEvent &event);
-  void OnGridUpdateDirect(wxCommandEvent &event);
+  void OnGridUpdate(wxCommandEvent &event);
   void OnGridUp(wxSpinEvent &event);
   void OnGridDown(wxSpinEvent &event);
   
-  void OnPathReflects(wxSpinEvent &event);
-  void OnPathReflectsDirect(wxCommandEvent &event);
+  void OnPathReflects(wxCommandEvent &event);
   void OnPathRotation(wxCommandEvent &event);
 
   void OnSave_dispatch(wxCommandEvent &event);
@@ -301,13 +304,11 @@ BEGIN_EVENT_TABLE(VeceditWindow, wxFrame)
   EVT_MENU(ID_NewNodeMenu, VeceditWindow::OnNewNodeMenu)
 
   EVT_TOOL(ID_GridToggle, VeceditWindow::OnGridToggle)
-  EVT_SPINCTRL(ID_GridSpinner, VeceditWindow::OnGridUpdate)
-  EVT_TEXT(ID_GridSpinner, VeceditWindow::OnGridUpdateDirect)
+  EVT_TEXT(ID_GridSpinner, VeceditWindow::OnGridUpdate)
   EVT_SPIN_UP(ID_GridSpinner, VeceditWindow::OnGridUp)
   EVT_SPIN_DOWN(ID_GridSpinner, VeceditWindow::OnGridDown)
 
-  EVT_SPINCTRL(ID_PathReflects, VeceditWindow::OnPathReflects)
-  EVT_TEXT(ID_PathReflects, VeceditWindow::OnPathReflectsDirect)
+  EVT_TEXT(ID_PathReflects, VeceditWindow::OnPathReflects)
   EVT_RADIOBOX(ID_PathRotation, VeceditWindow::OnPathRotation)
 
   EVT_CLOSE(VeceditWindow::OnClose)
@@ -422,14 +423,14 @@ VeceditWindow::VeceditWindow() : wxFrame((wxFrame *)NULL, -1, veceditname, wxDef
     wxBoxSizer *sizer = new wxBoxSizer(wxVERTICAL);
     
     sizer->Add(new wxStaticText(pathprops, wxID_ANY, "Path reflections"));
-    sizer->Add(new wxSpinCtrl(pathprops, ID_PathReflects, "1"));
+    sizer->Add(reflects = new wxSpinCtrl(pathprops, ID_PathReflects, "1", wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 1, 16384));
     
     sizer->Add(0, 20);
     
     {
       wxString options[] = { "Buzzsaw", "Snowflake" };
       
-      sizer->Add(new wxRadioBox(pathprops, ID_PathRotation, "Rotation mode", wxDefaultPosition, wxDefaultSize, ARRAY_SIZE(options), options, 1));
+      sizer->Add(snowflake = new wxRadioBox(pathprops, ID_PathRotation, "Rotation mode", wxDefaultPosition, wxDefaultSize, ARRAY_SIZE(options), options, 1));
     }
     
     wxBoxSizer *internal = new wxBoxSizer(wxVERTICAL);
@@ -447,7 +448,7 @@ VeceditWindow::VeceditWindow() : wxFrame((wxFrame *)NULL, -1, veceditname, wxDef
   toolbar->AddTool(ID_NewNode, "add node", wxBitmap("vecedit/addnode.png", wxBITMAP_TYPE_PNG), "Add a new node", wxITEM_CHECK);
   toolbar->AddSeparator();
   toolbar->AddTool(ID_GridToggle, "toggle grid", wxBitmap("vecedit/grid.png", wxBITMAP_TYPE_PNG), "Activate grid lock", wxITEM_CHECK);
-  toolbar->AddControl(grid = new wxSpinCtrl(toolbar, ID_GridSpinner, "16"));
+  toolbar->AddControl(grid = new wxSpinCtrl(toolbar, ID_GridSpinner, "16", wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 1, 16384));
   toolbar->Realize();
   toolbar->SetMinSize(wxSize(0, 25));  // this shouldn't be needed >:(
   
@@ -597,14 +598,11 @@ void VeceditWindow::OnGridToggle(wxCommandEvent &event) {
   }
   glc->Refresh();
 }
-void VeceditWindow::OnGridUpdate(wxSpinEvent &event) {
+void VeceditWindow::OnGridUpdate(wxCommandEvent &event) {
   if(toolbar->GetToolState(ID_GridToggle)) {
-    wstate.grid = event.GetPosition();
+    wstate.grid = event.GetInt();
     glc->Refresh();
   }
-}
-void VeceditWindow::OnGridUpdateDirect(wxCommandEvent &event) {
-  dprintf("gridupdatedirect %d", event.GetInt());
 }
 // The +'s and -'s are kind of dumb and shouldn't exist. Nevertheless, they do.
 void VeceditWindow::OnGridUp(wxSpinEvent &event) {
@@ -617,14 +615,11 @@ void VeceditWindow::OnGridDown(wxSpinEvent &event) {
     grid->SetValue(grid->GetValue() / 2 + 1);
 }
 
-void VeceditWindow::OnPathReflects(wxSpinEvent &event) {
-  dprintf("Spinevent %d", event.GetPosition());
-}
-void VeceditWindow::OnPathReflectsDirect(wxCommandEvent &event) {
-  dprintf("Spineventdirect %d", event.GetInt());
+void VeceditWindow::OnPathReflects(wxCommandEvent &event) {
+  process(core.rotate(event.GetInt(), genwrap()));
 }
 void VeceditWindow::OnPathRotation(wxCommandEvent &event) {
-  dprintf("Pathrotate %d", event.GetInt());
+  process(core.snowflake(event.GetInt(), genwrap()));
 }
 
 void VeceditWindow::OnSave_dispatch(wxCommandEvent& event) {
@@ -656,6 +651,16 @@ void VeceditWindow::process(const OtherState &ost) {
   
   toolbar->ToggleTool(ID_NewPath, ost.ui.newPath);
   toolbar->ToggleTool(ID_NewNode, ost.ui.newNode);
+  
+  if(!ost.hasPathProperties) {
+    reflects->Disable();
+    snowflake->Disable();
+  } else {
+    reflects->Enable();
+    snowflake->Enable();
+    reflects->SetValue(ost.divisions);
+    snowflake->SetSelection(ost.snowflakey);
+  }
 }
 
 bool VeceditWindow::maybeSaveChanges() {

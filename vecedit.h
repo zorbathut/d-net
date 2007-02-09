@@ -62,6 +62,7 @@ struct OtherState {
   
   bool hasPathProperties;
   int divisions;
+  bool snowflakey;
   
   OtherState();
 };
@@ -104,6 +105,8 @@ class Vecedit {
   
   SelectStack getSelectionStack(Float2 pos, float zpp) const;
   
+  void pathprops(OtherState *ost) const;
+  
 public:
 
   bool changed() const;
@@ -111,6 +114,8 @@ public:
 
   OtherState mouse(const MouseInput &mouse, const WrapperState &state);
   OtherState del(const WrapperState &wrap);
+  OtherState rotate(int reflects, const WrapperState &wrap);
+  OtherState snowflake(bool newstate, const WrapperState &wrap);
 
   void render(const WrapperState &state) const;
 

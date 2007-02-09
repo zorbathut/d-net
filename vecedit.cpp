@@ -174,6 +174,15 @@ SelectStack Vecedit::getSelectionStack(Float2 pos, float zpp) const {
   
   return SelectStack(ites, select);
 }
+void Vecedit::pathprops(OtherState *ost) const {
+  if(select.path == -1) {
+    ost->hasPathProperties = false;
+  } else {
+    ost->hasPathProperties = true;
+    ost->divisions = dv2.paths[select.path].dupes;
+    ost->snowflakey = dv2.paths[select.path].reflect;
+  }
+}
 
 bool Vecedit::changed() const {
   return modified;
@@ -443,6 +452,7 @@ OtherState Vecedit::mouse(const MouseInput &mouse, const WrapperState &wrap) {
     }
   }
   
+  pathprops(&ostate);
   return ostate;
 }
 OtherState Vecedit::del(const WrapperState &wrap) {
@@ -474,6 +484,33 @@ OtherState Vecedit::del(const WrapperState &wrap) {
     select = SelectItem();
   }
   
+  pathprops(&ostate);
+  return ostate;
+}
+OtherState Vecedit::rotate(int reflects, const WrapperState &wrap) {
+  OtherState ostate;
+  ostate.ui = wrap.ui;
+  ostate.redraw = true;
+  ostate.snapshot = true;
+  
+  CHECK(select.path != -1);
+  dv2.paths[select.path].dupes = reflects;
+  dv2.paths[select.path].moveCenterOrReflect();
+  
+  pathprops(&ostate);
+  return ostate;
+}
+OtherState Vecedit::snowflake(bool newstate, const WrapperState &wrap) {
+  OtherState ostate;
+  ostate.ui = wrap.ui;
+  ostate.redraw = true;
+  ostate.snapshot = true;
+  
+  CHECK(select.path != -1);
+  dv2.paths[select.path].reflect = newstate;
+  dv2.paths[select.path].moveCenterOrReflect();
+  
+  pathprops(&ostate);
   return ostate;
 }
 
