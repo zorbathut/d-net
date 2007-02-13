@@ -70,6 +70,11 @@ if test "x$SDL" == "x" ; then
   AC_MSG_ERROR([D-Net requires SDL.])
 fi
 
+AC_PATH_PROG([WX], [wx-config], [], [/usr/local/bin:/usr/bin])
+if test "x$WX" == "x" ; then
+  AC_MSG_ERROR([D-Net requires WX, kind of.])
+fi
+
 GAMECPPFLAGS="$GAMECPPFLAGS `$SDL --cflags`"
 GAMELDFLAGS="$GAMELDFLAGS `$SDL --libs`"
 
