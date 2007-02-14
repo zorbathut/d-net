@@ -47,6 +47,7 @@ struct WrapperState {
   float zpp;
   
   int grid;
+  int rotgrid;
   
   UIState ui;
   

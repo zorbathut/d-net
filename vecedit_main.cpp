@@ -188,6 +188,7 @@ private:
   // toolbar
   wxToolBar *toolbar;
   wxSpinCtrl *grid;
+  wxSpinCtrl *rotgrid;
 
   // properties panel
   wxSpinCtrl *reflects;
@@ -240,6 +241,9 @@ public:
   void OnGridUp(wxSpinEvent &event);
   void OnGridDown(wxSpinEvent &event);
   
+  void OnRotGridToggle(wxCommandEvent &event);
+  void OnRotGridUpdate(wxCommandEvent &event);
+  
   void OnPathReflects(wxCommandEvent &event);
   void OnPathRotation(wxCommandEvent &event);
 
@@ -277,6 +281,9 @@ enum {
     
     ID_GridToggle,
     ID_GridSpinner,
+    
+    ID_RotGridToggle,
+    ID_RotGridSpinner,
 
   // Property pane items
     ID_PathReflects,
@@ -307,6 +314,9 @@ BEGIN_EVENT_TABLE(VeceditWindow, wxFrame)
   EVT_TEXT(ID_GridSpinner, VeceditWindow::OnGridUpdate)
   EVT_SPIN_UP(ID_GridSpinner, VeceditWindow::OnGridUp)
   EVT_SPIN_DOWN(ID_GridSpinner, VeceditWindow::OnGridDown)
+  
+  EVT_TOOL(ID_RotGridToggle, VeceditWindow::OnRotGridToggle)
+  EVT_TEXT(ID_RotGridSpinner, VeceditWindow::OnRotGridUpdate)
 
   EVT_TEXT(ID_PathReflects, VeceditWindow::OnPathReflects)
   EVT_RADIOBOX(ID_PathRotation, VeceditWindow::OnPathRotation)
@@ -446,9 +456,16 @@ VeceditWindow::VeceditWindow() : wxFrame((wxFrame *)NULL, -1, veceditname, wxDef
   toolbar = new wxToolBar(this, wxID_ANY);
   toolbar->AddTool(ID_NewPath, "add path", wxBitmap("vecedit/addpath.png", wxBITMAP_TYPE_PNG), "Add a new path", wxITEM_CHECK);
   toolbar->AddTool(ID_NewNode, "add node", wxBitmap("vecedit/addnode.png", wxBITMAP_TYPE_PNG), "Add a new node", wxITEM_CHECK);
+  
   toolbar->AddSeparator();
   toolbar->AddTool(ID_GridToggle, "toggle grid", wxBitmap("vecedit/grid.png", wxBITMAP_TYPE_PNG), "Activate grid lock", wxITEM_CHECK);
   toolbar->AddControl(grid = new wxSpinCtrl(toolbar, ID_GridSpinner, "16", wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 1, 16384));
+  
+  toolbar->AddSeparator();
+  toolbar->AddTool(ID_RotGridToggle, "toggle rotation grid", wxBitmap("vecedit/rotgrid.png", wxBITMAP_TYPE_PNG), "Activate rotation grid lock", wxITEM_CHECK);
+  toolbar->ToggleTool(ID_RotGridToggle, 1);
+  toolbar->AddControl(rotgrid = new wxSpinCtrl(toolbar, ID_RotGridSpinner, "8", wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 1, 16384));
+  
   toolbar->Realize();
   toolbar->SetMinSize(wxSize(0, 25));  // this shouldn't be needed >:(
   
@@ -614,6 +631,22 @@ void VeceditWindow::OnGridDown(wxSpinEvent &event) {
   else
     grid->SetValue(grid->GetValue() / 2 + 1);
 }
+
+void VeceditWindow::OnRotGridToggle(wxCommandEvent &event) {
+  if(event.IsSelection()) {
+    wstate.rotgrid = rotgrid->GetValue();
+  } else {
+    wstate.rotgrid = -1;
+  }
+  glc->Refresh();
+}
+void VeceditWindow::OnRotGridUpdate(wxCommandEvent &event) {
+  if(toolbar->GetToolState(ID_RotGridToggle)) {
+    wstate.rotgrid = event.GetInt();
+    glc->Refresh();
+  }
+}
+
 
 void VeceditWindow::OnPathReflects(wxCommandEvent &event) {
   process(core.rotate(event.GetInt(), genwrap()));
