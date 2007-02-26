@@ -19,7 +19,7 @@ SelectItem::SelectItem() {
 }
 
 SelectItem::SelectItem(Type type, int path) : type(type), path(path), item(0), curveside(false) {
-  CHECK(type == PATHCENTER);
+  CHECK(type == PATHCENTER || type == PATHROTATE);
 };
 SelectItem::SelectItem(Type type, int path, int item) : type(type), path(path), item(item), curveside(false) {
   CHECK(type == NODE || type == LINK);
@@ -139,6 +139,7 @@ SelectStack Vecedit::getSelectionStack(Float2 pos, float zpp) const {
     const bool thisselect = (i == select.path);
     if(thisselect) {
       maybeAddPoint(&ites, SelectItem(SelectItem::PATHCENTER, i), pos, vp.center, primenode * zpp * 1.5);
+      maybeAddPoint(&ites, SelectItem(SelectItem::PATHROTATE, i), pos, vp.center + makeAngle(2 * PI * vp.ang_numer / vp.ang_denom) * zpp * 40, primenode * zpp * 1.5);
     }
     
     for(int j = 0; j < vp.vpath.size(); j++) {
@@ -242,7 +243,8 @@ void Vecedit::render(const WrapperState &state) const {
   setZoomCenter(state.center.x, state.center.y, state.zpp * getResolutionY() / 2);
 
   for(int i = 0; i < dv2.paths.size(); i++) {
-    for(int j = 0; j < dv2.paths[i].vpath.size(); j++) {
+    const VectorPath &vp = dv2.paths[i];
+    for(int j = 0; j < vp.vpath.size(); j++) {
       setAppropriateColor(SelectItem(SelectItem::NODE, i, j), select);
       {
         double width;
@@ -251,29 +253,35 @@ void Vecedit::render(const WrapperState &state) const {
         } else {
           width = secondnode;
         }
-        drawRectAround(dv2.paths[i].center + dv2.paths[i].vpath[j].pos, state.zpp * width, state.zpp);
+        drawRectAround(vp.center + vp.vpath[j].pos, state.zpp * width, state.zpp);
       }
       
       if(select.path == i) {
-        if(dv2.paths[i].vpath[j].curvl) {
+        if(vp.vpath[j].curvl) {
           setAppropriateLinkColor(SelectItem(SelectItem::CURVECONTROL, i, j, false), select);
-          drawLine(dv2.paths[i].center + dv2.paths[i].vpath[j].pos, dv2.paths[i].center + dv2.paths[i].vpath[j].pos + dv2.paths[i].vpath[j].curvlp, state.zpp);
+          drawLine(vp.center + vp.vpath[j].pos, vp.center + vp.vpath[j].pos + vp.vpath[j].curvlp, state.zpp);
           setAppropriateColor(SelectItem(SelectItem::CURVECONTROL, i, j, false), select);
-          drawRectAround(dv2.paths[i].center + dv2.paths[i].vpath[j].pos + dv2.paths[i].vpath[j].curvlp, state.zpp * secondnode, state.zpp);
+          drawRectAround(vp.center + vp.vpath[j].pos + vp.vpath[j].curvlp, state.zpp * secondnode, state.zpp);
         }
-        if(dv2.paths[i].vpath[j].curvr) {
+        if(vp.vpath[j].curvr) {
           setAppropriateLinkColor(SelectItem(SelectItem::CURVECONTROL, i, j, true), select);
-          drawLine(dv2.paths[i].center + dv2.paths[i].vpath[j].pos, dv2.paths[i].center + dv2.paths[i].vpath[j].pos + dv2.paths[i].vpath[j].curvrp, state.zpp);
+          drawLine(vp.center + vp.vpath[j].pos, vp.center + vp.vpath[j].pos + vp.vpath[j].curvrp, state.zpp);
           setAppropriateColor(SelectItem(SelectItem::CURVECONTROL, i, j, true), select);
-          drawRectAround(dv2.paths[i].center + dv2.paths[i].vpath[j].pos + dv2.paths[i].vpath[j].curvrp, state.zpp * secondnode, state.zpp);
+          drawRectAround(vp.center + vp.vpath[j].pos + vp.vpath[j].curvrp, state.zpp * secondnode, state.zpp);
         }
-        
-        setAppropriateColor(SelectItem(SelectItem::PATHCENTER, i), select);
-        drawRectAround(dv2.paths[i].center, state.zpp * primenode, state.zpp);
       }
       
       setAppropriateColor(SelectItem(SelectItem::LINK, i, j), select);
-      drawLink(dv2.paths[i].center, dv2.paths[i].vpath, j, state.zpp * 2);
+      drawLink(vp.center, vp.vpath, j, state.zpp * 2);
+    }
+    
+    if(select.path == i) {
+      setAppropriateColor(SelectItem(SelectItem::PATHCENTER, i), select);
+      drawRectAround(vp.center, state.zpp * primenode, state.zpp);
+      
+      setAppropriateColor(SelectItem(SelectItem::PATHROTATE, i), select);
+      drawRectAround(vp.center + makeAngle(2 * PI * vp.ang_numer / vp.ang_denom) * state.zpp * 40, state.zpp * secondnode, state.zpp);
+      drawLine(vp.center, vp.center + makeAngle(2 * PI * vp.ang_numer / vp.ang_denom) * state.zpp * 40, state.zpp);
     }
   }
   

@@ -21,7 +21,7 @@ struct ScrollBounds {
 };
 
 struct SelectItem {
-  enum Type { PATHCENTER, NODE, CURVECONTROL, LINK, END, NONE = -1};
+  enum Type { PATHCENTER, PATHROTATE, NODE, CURVECONTROL, LINK, END, NONE = -1};
   Type type;
   int path;
   int item;
