@@ -143,7 +143,8 @@ SelectStack Vecedit::getSelectionStack(Float2 pos, float zpp) const {
     const bool thisselect = (i == select.path);
     if(thisselect) {
       maybeAddPoint(&ites, SelectItem(SelectItem::PATHCENTER, i), pos, vp.center, primenode * zpp * 1.5);
-      maybeAddPoint(&ites, SelectItem(SelectItem::PATHROTATE, i), pos, vp.center + makeAngle(2 * PI * vp.ang_numer / vp.ang_denom) * zpp * 40, primenode * zpp * 1.5);
+      if(vp.reflect)
+        maybeAddPoint(&ites, SelectItem(SelectItem::PATHROTATE, i), pos, vp.center + makeAngle(2 * PI * vp.ang_numer / vp.ang_denom) * zpp * 40, primenode * zpp * 1.5);
     }
     
     for(int j = 0; j < vp.vpath.size(); j++) {
@@ -283,9 +284,11 @@ void Vecedit::render(const WrapperState &state) const {
       setAppropriateColor(SelectItem(SelectItem::PATHCENTER, i), select);
       drawRectAround(vp.center, state.zpp * primenode, state.zpp);
       
-      setAppropriateColor(SelectItem(SelectItem::PATHROTATE, i), select);
-      drawRectAround(vp.center + makeAngle(2 * PI * vp.ang_numer / vp.ang_denom) * state.zpp * 40, state.zpp * secondnode, state.zpp);
-      drawLine(vp.center, vp.center + makeAngle(2 * PI * vp.ang_numer / vp.ang_denom) * state.zpp * 40, state.zpp);
+      if(vp.reflect) {
+        setAppropriateColor(SelectItem(SelectItem::PATHROTATE, i), select);
+        drawRectAround(vp.center + makeAngle(2 * PI * vp.ang_numer / vp.ang_denom) * state.zpp * 40, state.zpp * secondnode, state.zpp);
+        drawLine(vp.center, vp.center + makeAngle(2 * PI * vp.ang_numer / vp.ang_denom) * state.zpp * 40, state.zpp);
+      }
     }
   }
   

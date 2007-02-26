@@ -2,7 +2,6 @@
 - Less incentive to camp?
 - Add bombardment charts
 - Next-gen vecedit?
-  - Curve properties (spin)
   - Entity select
   - Entity properties
   - Entity move
@@ -12,8 +11,8 @@
   - Select all
   - Move
   - Copy/paste
-  - Save
   - Straighten curve through point
+  - Show level/icon, clean
 - Activate factions
   - Faction bonuses/penalties in demo screens
 - Many many more weapons
