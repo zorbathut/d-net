@@ -460,11 +460,13 @@ VeceditWindow::VeceditWindow() : wxFrame((wxFrame *)NULL, -1, veceditname, wxDef
   toolbar->AddSeparator();
   toolbar->AddTool(ID_GridToggle, "toggle grid", wxBitmap("vecedit/grid.png", wxBITMAP_TYPE_PNG), "Activate grid lock", wxITEM_CHECK);
   toolbar->AddControl(grid = new wxSpinCtrl(toolbar, ID_GridSpinner, "16", wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 1, 16384));
+  wstate.grid = -1;
   
   toolbar->AddSeparator();
   toolbar->AddTool(ID_RotGridToggle, "toggle rotation grid", wxBitmap("vecedit/rotgrid.png", wxBITMAP_TYPE_PNG), "Activate rotation grid lock", wxITEM_CHECK);
   toolbar->ToggleTool(ID_RotGridToggle, 1);
   toolbar->AddControl(rotgrid = new wxSpinCtrl(toolbar, ID_RotGridSpinner, "8", wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 1, 16384));
+  wstate.rotgrid = 8;
   
   toolbar->Realize();
   toolbar->SetMinSize(wxSize(0, 25));  // this shouldn't be needed >:(

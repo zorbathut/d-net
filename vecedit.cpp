@@ -44,6 +44,10 @@ bool operator==(const SelectItem &lhs, const SelectItem &rhs) {
   return true;
 }
 
+bool isDraggable(int type) {
+  return type == SelectItem::PATHCENTER || type == SelectItem::PATHROTATE || type == SelectItem::NODE || type == SelectItem::CURVECONTROL;
+}
+
 UIState::UIState() {
   newPath = false;
   newNode = false;
@@ -406,9 +410,9 @@ OtherState Vecedit::mouse(const MouseInput &mouse, const WrapperState &wrap) {
   // Dragging
   if(mouse.b[0].down && ((state == SELECTED || state == SELECTEDNOCHANGE) && len(startpos - mouse.pos) > wrap.zpp * 3 || state == DRAGGING)) {
     // We want to grab something draggable if possible. However, if we've had our item overriden to one that didn't exist beforehand, we want to preserve that.
-    if(select.type != SelectItem::NODE && select.type != SelectItem::CURVECONTROL && select.type != SelectItem::PATHCENTER) {
+    if(!isDraggable(select.type)) {
       for(int i = 0; i < startposstack.itemOrder().size(); i++) {
-        if(startposstack.itemOrder()[i].type == SelectItem::NODE || startposstack.itemOrder()[i].type == SelectItem::CURVECONTROL || startposstack.itemOrder()[i].type == SelectItem::PATHCENTER) {
+        if(isDraggable(startposstack.itemOrder()[i].type)) {
           select = startposstack.itemOrder()[i];
         }
       }
@@ -439,6 +443,27 @@ OtherState Vecedit::mouse(const MouseInput &mouse, const WrapperState &wrap) {
       modified = true;
       ostate.redraw = true;
       state = DRAGGING;
+    } else if(select.type == SelectItem::PATHROTATE) {
+      // This is a bit complicated.
+      Float2 vector = mouse.pos - dv2.paths[select.path].center;
+      if(len(vector) != 0) {
+        float ang = getAngle(vector) / 2 / PI;
+        int numer;
+        int denom;
+        if(wrap.rotgrid == -1) {
+          numer = round(ang * 3600);
+          denom = 3600;
+        } else {
+          numer = modurot(round(ang * wrap.rotgrid), wrap.rotgrid);
+          denom = wrap.rotgrid;
+        }
+        dv2.paths[select.path].ang_numer = numer;
+        dv2.paths[select.path].ang_denom = denom;
+        dv2.paths[select.path].moveCenterOrReflect();
+        modified = true;
+        ostate.redraw = true;
+        state = DRAGGING;
+      }
     }
   }
   
