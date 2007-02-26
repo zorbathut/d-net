@@ -3,7 +3,6 @@
 - Add bombardment charts
 - Next-gen vecedit?
   - Curve properties (spin)
-  - what's up with the scroll bar size
   - Entity select
   - Entity properties
   - Entity move

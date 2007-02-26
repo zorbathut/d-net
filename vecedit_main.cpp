@@ -676,7 +676,7 @@ void VeceditWindow::process(const OtherState &ost) {
   if(ost.cursor != CURSOR_UNCHANGED)
     glc->SetGLCCursor(ost.cursor);
   if(ost.redraw)
-    glc->Refresh();
+    redraw();
   if(ost.snapshot) {
     redostack.clear();
     undostack.push_back(core);
