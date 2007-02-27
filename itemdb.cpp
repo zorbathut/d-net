@@ -3,7 +3,6 @@
 
 #include "args.h"
 #include "parse.h"
-#include "player.h"
 #include "httpd.h"
 
 #include <fstream>
@@ -126,40 +125,6 @@ float IDBAdjustment::recyclevalue() const {
   float shares = 1 * adjustmentfactor(IDBAdjustment::RECYCLE_BONUS);
   float ratio = shares / (shares + 1.0);
   return ratio;
-}
-
-Money HierarchyNode::cost(const Player *player) const {
-  if(type == HNT_WEAPON) {
-    return player->adjustWeapon(weapon).cost_pack();
-  } else if(type == HNT_UPGRADE) {
-    return player->adjustUpgradeForCurrentTank(upgrade).cost();
-  } else if(type == HNT_GLORY) {
-    return player->adjustGlory(glory).cost();
-  } else if(type == HNT_BOMBARDMENT) {
-    return player->adjustBombardment(bombardment).cost();
-  } else if(type == HNT_TANK) {
-    return player->adjustTankWithInstanceUpgrades(tank).cost();
-  } else if(type == HNT_IMPLANTSLOT) {
-    return player->adjustImplantSlot(implantslot).cost();
-  } else if(type == HNT_IMPLANTITEM_UPG) {
-    return player->adjustImplant(implantitem).costToLevel(player->implantLevel(implantitem));
-  } else {
-    CHECK(0);
-  }
-}
-
-Money HierarchyNode::sellvalue(const Player *player) const {
-  if(type == HNT_WEAPON) {
-    return player->adjustWeapon(weapon).sellcost(min(pack, player->ammoCount(weapon)));
-  } else if(type == HNT_GLORY) {
-    return player->adjustGlory(glory).sellcost();
-  } else if(type == HNT_BOMBARDMENT) {
-    return player->adjustBombardment(bombardment).sellcost();
-  } else if(type == HNT_TANK) {
-    return player->sellTankValue(tank);
-  } else {
-    CHECK(0);
-  }
 }
 
 void HierarchyNode::checkConsistency() const {

@@ -3,6 +3,7 @@
 
 #include "game_projectile.h"
 #include "input.h"
+#include "player.h"
 
 using namespace std;
 

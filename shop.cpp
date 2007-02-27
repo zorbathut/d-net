@@ -327,6 +327,40 @@ bool normalizeSelling(bool selling, HierarchyNode::Type type) {
     return selling;
 }
 
+Money cost(const HierarchyNode &node, const Player *player) {
+  if(node.type == HierarchyNode::HNT_WEAPON) {
+    return player->costWeapon(node.weapon);
+  } else if(node.type == HierarchyNode::HNT_UPGRADE) {
+    return player->costUpgrade(node.upgrade);
+  } else if(node.type == HierarchyNode::HNT_GLORY) {
+    return player->costGlory(node.glory);
+  } else if(node.type == HierarchyNode::HNT_BOMBARDMENT) {
+    return player->costBombardment(node.bombardment);
+  } else if(node.type == HierarchyNode::HNT_TANK) {
+    return player->costTank(node.tank);
+  } else if(node.type == HierarchyNode::HNT_IMPLANTSLOT) {
+    return player->costImplantSlot(node.implantslot);
+  } else if(node.type == HierarchyNode::HNT_IMPLANTITEM_UPG) {
+    return player->costImplantUpg(node.implantitem);
+  } else {
+    CHECK(0);
+  }
+}
+
+Money sellvalue(const HierarchyNode &node, const Player *player) {
+  if(node.type == HierarchyNode::HNT_WEAPON) {
+    return player->sellvalueWeapon(node.weapon);
+  } else if(node.type == HierarchyNode::HNT_GLORY) {
+    return player->sellvalueGlory(node.glory);
+  } else if(node.type == HierarchyNode::HNT_BOMBARDMENT) {
+    return player->sellvalueBombardment(node.bombardment);
+  } else if(node.type == HierarchyNode::HNT_TANK) {
+    return player->sellvalueTank(node.tank);
+  } else {
+    CHECK(0);
+  }
+}
+
 void Shop::renderNode(const HierarchyNode &node, int depth, const Player *player) const {
   float hoffbase = slay.hoffbase(depth);
   
@@ -476,7 +510,7 @@ void Shop::renderNode(const HierarchyNode &node, int depth, const Player *player
     } else if(node.branches[itemid].displaymode == HierarchyNode::HNDM_IMPLANT_UPGRADE) {
       drawText("Level " + roman_number(player->implantLevel(node.branches[itemid].implantitem)) + " upgrade", slay.fontsize(), slay.description(depth) + rendpos[j].second + Float2(slay.implantUpgradeDiff(), 0));
       if(!effectiveselling)
-        drawJustifiedText(node.branches[itemid].cost(player).textual().c_str(), slay.fontsize(), slay.price(depth) + rendpos[j].second, TEXT_MAX, TEXT_MIN);
+        drawJustifiedText(cost(node.branches[itemid], player).textual().c_str(), slay.fontsize(), slay.price(depth) + rendpos[j].second, TEXT_MAX, TEXT_MIN);
       continue;
     }
     
@@ -528,7 +562,7 @@ void Shop::renderNode(const HierarchyNode &node, int depth, const Player *player
       
       // If it's not unique, or it is and it just hasn't been bought, we show the cost.
       if(!displayset && (dispmode == HierarchyNode::HNDM_COST || dispmode == HierarchyNode::HNDM_COSTUNIQUE)) {
-        display = StringPrintf("%s", node.branches[itemid].cost(player).textual().c_str());
+        display = StringPrintf("%s", cost(node.branches[itemid], player).textual().c_str());
         displayset = true;
       }
       
@@ -579,7 +613,7 @@ void Shop::renderNode(const HierarchyNode &node, int depth, const Player *player
       if(dispmode == HierarchyNode::HNDM_BLANK) {
       } else if(dispmode == HierarchyNode::HNDM_COST) {
         setColor(1.0, 0.3, 0.3);
-        drawJustifiedText(StringPrintf("%s", node.branches[itemid].sellvalue(player).textual().c_str()), slay.fontsize(), slay.price(depth) + rendpos[j].second, TEXT_MAX, TEXT_MIN);
+        drawJustifiedText(StringPrintf("%s", sellvalue(node.branches[itemid], player).textual().c_str()), slay.fontsize(), slay.price(depth) + rendpos[j].second, TEXT_MAX, TEXT_MIN);
       } else if(dispmode == HierarchyNode::HNDM_PACK) {
         drawJustifiedText(StringPrintf("%dpk", node.branches[itemid].pack), slay.fontsize(), slay.price(depth) + rendpos[j].second, TEXT_MAX, TEXT_MIN);
       } else if(dispmode == HierarchyNode::HNDM_COSTUNIQUE) {

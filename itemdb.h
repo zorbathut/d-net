@@ -11,8 +11,6 @@
 
 using namespace std;
 
-class Player;
-
 /*************
  * Basic data items
  */
@@ -475,8 +473,6 @@ public:
 
   bool buyable;
   
-  Money cost(const Player *player) const;
-  Money sellvalue(const Player *player) const;
   int pack;
   
   const IDBWeapon *weapon;

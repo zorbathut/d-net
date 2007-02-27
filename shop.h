@@ -2,6 +2,7 @@
 #define DNET_SHOP
 
 #include "shop_info.h"
+#include "player.h"
 
 using namespace std;
 

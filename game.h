@@ -5,6 +5,7 @@
 #include "game_projectile.h"
 #include "input.h"
 #include "rng.h"
+#include "player.h"
 
 #include <boost/noncopyable.hpp>
 

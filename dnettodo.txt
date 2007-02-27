@@ -15,6 +15,7 @@
   - Copy/paste
   - Straighten curve through point
   - Show level/icon, clean
+- Pop up "sell obsolete item" on buying bombardment/glory/new tank
 - Activate factions
   - Faction bonuses/penalties in demo screens
 - Many many more weapons

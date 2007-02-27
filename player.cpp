@@ -203,7 +203,48 @@ bool Player::canSellBombardment(const IDBBombardment *in_bombardment) const { re
 bool Player::canSellWeapon(const IDBWeapon *in_weap) const { return ammoCount(in_weap) > 0; }
 bool Player::canSellTank(const IDBTank *in_tank) const { return hasTank(in_tank); }  // yes, you can sell all your tanks!
 
-Money Player::sellTankValue(const IDBTank *in_tank) const {
+
+Money Player::costWeapon(const IDBWeapon *in_weap) const {
+  return adjustWeapon(in_weap).cost_pack();
+}
+
+Money Player::costUpgrade(const IDBUpgrade *in_upg) const {
+  return adjustUpgradeForCurrentTank(in_upg).cost();
+}
+
+Money Player::costGlory(const IDBGlory *in_glory) const {
+  return adjustGlory(in_glory).cost();
+}
+
+Money Player::costBombardment(const IDBBombardment *in_bombard) const {
+  return adjustBombardment(in_bombard).cost();
+}
+
+Money Player::costTank(const IDBTank *in_tank) const {
+  return adjustTankWithInstanceUpgrades(in_tank).cost();
+}
+
+Money Player::costImplantSlot(const IDBImplantSlot *in_slot) const {
+  return adjustImplantSlot(in_slot).cost();
+}
+
+Money Player::costImplantUpg(const IDBImplant *in_implant) const {
+  return adjustImplant(in_implant).costToLevel(implantLevel(in_implant));
+}
+  
+Money Player::sellvalueWeapon(const IDBWeapon *in_weap) const {
+  return adjustWeapon(in_weap).sellcost(min(in_weap->quantity, ammoCount(in_weap)));
+}
+
+Money Player::sellvalueGlory(const IDBGlory *in_glory) const {
+  return adjustGlory(in_glory).sellcost();
+}
+
+Money Player::sellvalueBombardment(const IDBBombardment *in_bombard) const {
+  return adjustBombardment(in_bombard).sellcost();
+}
+
+Money Player::sellvalueTank(const IDBTank *in_tank) const {
   CHECK(hasTank(in_tank));
   int ps;
   for(ps = 0; ps < tank.size(); ps++)
@@ -408,7 +449,7 @@ void Player::sellTank(const IDBTank *in_tank) {
     if(tank[ps].tank == in_tank)
       break;
   CHECK(ps < tank.size());
-  cash += sellTankValue(in_tank);
+  cash += sellvalueTank(in_tank);
   tank.erase(tank.begin() + ps);
   
   // just in case we got rid of the last tank

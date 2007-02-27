@@ -81,7 +81,18 @@ public:
   bool canSellWeapon(const IDBWeapon *in_weap) const;
   bool canSellTank(const IDBTank *in_tank) const;
   
-  Money sellTankValue(const IDBTank *in_tank) const;
+  Money costWeapon(const IDBWeapon *in_weap) const;
+  Money costUpgrade(const IDBUpgrade *in_upg) const;
+  Money costGlory(const IDBGlory *in_glory) const;
+  Money costBombardment(const IDBBombardment *in_bombard) const;
+  Money costTank(const IDBTank *in_tank) const;
+  Money costImplantSlot(const IDBImplantSlot *in_slot) const;
+  Money costImplantUpg(const IDBImplant *in_implant) const;
+  
+  Money sellvalueWeapon(const IDBWeapon *in_weap) const;
+  Money sellvalueGlory(const IDBGlory *in_glory) const;
+  Money sellvalueBombardment(const IDBBombardment *in_bombard) const;
+  Money sellvalueTank(const IDBTank *in_tank) const;
 
   void buyUpgrade(const IDBUpgrade *in_upg);
   void buyGlory(const IDBGlory *in_glory);
