@@ -4,6 +4,8 @@
 #include "gfx.h"
 #include "util.h"
 
+#include "itemdb.h"
+
 #include <set>
 
 using namespace std;
@@ -290,6 +292,13 @@ void Vecedit::render(const WrapperState &state) const {
         drawLine(vp.center, vp.center + makeAngle(2 * PI * vp.ang_numer / vp.ang_denom) * state.zpp * 40, state.zpp);
       }
     }
+  }
+  
+  for(int i = 0; i < dv2.entities.size(); i++) {
+    const Entity &ent = dv2.entities[i];
+    
+    setAppropriateColor(SelectItem(SelectItem::ENTITY, i), select);
+    drawLineLoop(defaultTank()->getTankVertices(Coord2(Coord(ent.pos.x), Coord(ent.pos.y)), (float)ent.params[0].bi_val / ent.params[1].bi_val * 2 * PI), 0.2);
   }
   
   if(state.grid > 0) {

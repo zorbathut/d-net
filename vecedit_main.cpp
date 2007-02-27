@@ -11,6 +11,7 @@
 #include "vecedit.h"
 #include "os.h"
 #include "util.h"
+#include "itemdb.h"
 
 /*************
  * VeceditGLC
@@ -723,9 +724,10 @@ IMPLEMENT_APP(VeceditMain)
 bool VeceditMain::OnInit() {
   set_exename("vecedit.exe");
   
-  wxImage::AddHandler(new wxPNGHandler);
-  
+  initItemdb();
   initGfx();
+  
+  wxImage::AddHandler(new wxPNGHandler);
   
   wxFrame *frame = new VeceditWindow();
   frame->Show(true);

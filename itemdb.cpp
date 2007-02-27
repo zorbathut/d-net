@@ -38,7 +38,6 @@ static map<string, IDBShopcache> shopcaches;
 
 DEFINE_bool(debugitems, false, "Enable debug items");
 DEFINE_bool(shopcache, true, "Enable shop demo cache");
-DECLARE_float(generateCachedShops);
 
 //const char * const adjust_text[] = { "damage_kinetic", "damage_energy", "damage_explosive", "damage_trap", "damage_exotic", "warhead_radius_falloff", "discount_weapon", "discount_training", "discount_upgrade", "discount_tank", "recycle_bonus", "tank_firerate", "tank_speed", "tank_turn", "tank_armor", "damage_all", "all" };
 
@@ -1303,7 +1302,7 @@ void loadItemDb(bool reload) {
     root.branches.push_back(tnode);
   }
   
-  if(FLAGS_shopcache && FLAGS_generateCachedShops < 0) {
+  if(FLAGS_shopcache) {
     ifstream shopcache("data/shopcache.dwh");
     if(shopcache) {
       dprintf("Loading shop cache");
@@ -1357,20 +1356,18 @@ void initItemdb() {
   loadItemDb(false);
 }
 
-class ReloadHTTPD : public HTTPDhook {
-public:
-
-  string reply(const map<string, string> &params) {
-    reloadItemdb();
-    return "done";
-  }
-
-  ReloadHTTPD() : HTTPDhook("reload") { };
-} reloadhttpd;
-
 IDBAdjustment IDBImplant::makeAdjustment(int level) const {
   CHECK(level > 0);
   return *adjustment * level;
+}
+
+vector<Coord2> IDBTank::getTankVertices(Coord2 pos, float td) const {
+  Coord2 xt = makeAngle(Coord(td));
+  Coord2 yt = makeAngle(Coord(td) - COORDPI / 2);
+  vector<Coord2> rv;
+  for(int i = 0; i < vertices.size(); i++)
+    rv.push_back(Coord2(pos.x + vertices[i].x * xt.x + vertices[i].y * xt.y, pos.y + vertices[i].y * yt.y + vertices[i].x * yt.x));
+  return rv;
 }
 
 const HierarchyNode &itemDbRoot() {

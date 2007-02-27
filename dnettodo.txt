@@ -1,6 +1,8 @@
 ---- Major work path
 - Less incentive to camp?
 - Add bombardment charts
+- Clean up that awful parameter system
+- Untangle things so that itemdb doesn't depend on player?
 - Next-gen vecedit?
   - Entity select
   - Entity properties

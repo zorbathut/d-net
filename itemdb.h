@@ -213,6 +213,8 @@ struct IDBTank {
   Money upgrade_base;
 
   const string *text;
+  
+  vector<Coord2> getTankVertices(Coord2 pos, float td) const;
 };
 
 struct IDBShopcache {
@@ -424,6 +426,7 @@ public:
   const vector<Coord2> &vertices() const;
   Coord2 firepoint() const;
   const vector<Coord2> &minepath() const;
+  vector<Coord2> getTankVertices(Coord2 pos, float td) const;
 
   Money cost() const;
   Money sellcost() const;
@@ -497,6 +500,7 @@ public:
 };
 
 void initItemdb();
+void reloadItemdb();
 
 /*************
  * Accessors

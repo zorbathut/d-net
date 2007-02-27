@@ -29,6 +29,8 @@ DEFINE_bool(generateWeaponStats, false, "Do all the work necessary to dump weapo
 DEFINE_bool(generateFactionStats, false, "Do all the work necessary to dump faction info");
 DEFINE_bool(dumpText, false, "Dump all \"text\" blocks");
 
+DECLARE_bool(shopcache);
+
 int GetVideoFlags(void) {
 
   int videoflags = 0;
@@ -174,6 +176,10 @@ int main(int argc, char **argv) {
     for(map<string, string>::iterator itr = flags.begin(); itr != flags.end(); itr++)
       printf("%s: %s\n", itr->first.c_str(), itr->second.c_str());
     return 0;
+  }
+  
+  if(FLAGS_generateCachedShops != -1) {
+    FLAGS_shopcache = false;
   }
   
   initItemdb();

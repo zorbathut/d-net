@@ -107,12 +107,7 @@ void Tank::addCollision(Collider *collider, const Keystates &keys, int owner) co
 };
 
 vector<Coord2> Tank::getTankVertices(Coord2 pos, float td) const {
-  Coord2 xt = makeAngle(Coord(td));
-  Coord2 yt = makeAngle(Coord(td) - COORDPI / 2);
-  vector<Coord2> rv;
-  for(int i = 0; i < tank.vertices().size(); i++)
-    rv.push_back(Coord2(pos.x + tank.vertices()[i].x * xt.x + tank.vertices()[i].y * xt.y, pos.y + tank.vertices()[i].y * yt.y + tank.vertices()[i].x * yt.x));
-  return rv;
+  return tank.getTankVertices(pos, td);
 };
 
 Coord2 Tank::getFiringPoint() const {
