@@ -34,7 +34,7 @@ SelectItem::SelectItem(Type in_type, int in_x) {
   if(in_type == PATHCENTER || in_type == PATHROTATE) {
     type = in_type;
     path = in_x;
-  } else if(in_type == ENTITY) {
+  } else if(in_type == ENTITY || in_type == ENTITYROTATE) {
     type = in_type;
     entity = in_x;
   } else {
@@ -74,7 +74,7 @@ bool operator==(const SelectItem &lhs, const SelectItem &rhs) {
 }
 
 bool isDraggable(int type) {
-  return type == SelectItem::PATHCENTER || type == SelectItem::PATHROTATE || type == SelectItem::NODE || type == SelectItem::CURVECONTROL || type == SelectItem::ENTITY;
+  return type == SelectItem::PATHCENTER || type == SelectItem::PATHROTATE || type == SelectItem::NODE || type == SelectItem::CURVECONTROL || type == SelectItem::ENTITY || type == SelectItem::ENTITYROTATE;
 }
 
 UIState::UIState() {
@@ -332,7 +332,7 @@ void Vecedit::render(const WrapperState &state) const {
     if(select.path == i) {
       setAppropriateColor(SelectItem(SelectItem::PATHCENTER, i), select);
       drawRectAround(vp.center, state.zpp * primenode, state.zpp);
-      
+     
       if(vp.reflect) {
         setAppropriateColor(SelectItem(SelectItem::PATHROTATE, i), select);
         drawRectAround(vp.center + makeAngle(2 * PI * vp.ang_numer / vp.ang_denom) * state.zpp * rotatehandle, state.zpp * secondnode, state.zpp);
@@ -370,6 +370,22 @@ Float2 toGrid(Float2 in, float grid) {
   in.x = toGrid(in.x, grid);
   in.y = toGrid(in.y, grid);
   return in;
+}
+
+bool rotateHelper(Float2 relative, int grid, int *numer, int *denom) {
+  if(len(relative) != 0) {
+    float ang = getAngle(relative) / 2 / PI;
+    if(grid == -1) {
+      *numer = round(ang * 3600);
+      *denom = 3600;
+    } else {
+      *numer = modurot(round(ang * grid), grid);
+      *denom = grid;
+    }
+    return true;
+  } else {
+    return false;
+  }
 }
 
 // Okay let's have some logic!
@@ -512,21 +528,7 @@ OtherState Vecedit::mouse(const MouseInput &mouse, const WrapperState &wrap) {
       state = DRAGGING;
     } else if(select.type == SelectItem::PATHROTATE) {
       // This is a bit complicated.
-      Float2 vector = mouse.pos - dv2.paths[select.path].center;
-      if(len(vector) != 0) {
-        float ang = getAngle(vector) / 2 / PI;
-        int numer;
-        int denom;
-        if(wrap.rotgrid == -1) {
-          numer = round(ang * 3600);
-          denom = 3600;
-        } else {
-          numer = modurot(round(ang * wrap.rotgrid), wrap.rotgrid);
-          denom = wrap.rotgrid;
-        }
-        dv2.paths[select.path].ang_numer = numer;
-        dv2.paths[select.path].ang_denom = denom;
-        dv2.paths[select.path].moveCenterOrReflect();
+      if(rotateHelper(mouse.pos - dv2.paths[select.path].center, wrap.rotgrid, &dv2.paths[select.path].ang_numer, &dv2.paths[select.path].ang_denom)) {
         modified = true;
         ostate.redraw = true;
         state = DRAGGING;
@@ -536,6 +538,14 @@ OtherState Vecedit::mouse(const MouseInput &mouse, const WrapperState &wrap) {
       modified = true;
       ostate.redraw = true;
       state = DRAGGING;
+    } else if(select.type == SelectItem::ENTITYROTATE) {
+      if(rotateHelper(mouse.pos - dv2.entities[select.entity].pos, wrap.rotgrid, &dv2.entities[select.entity].tank_ang_numer, &dv2.entities[select.entity].tank_ang_denom)) {
+        modified = true;
+        ostate.redraw = true;
+        state = DRAGGING;
+      }
+    } else if(isDraggable(select.type)) {
+      CHECK(0); // *someone* forgot to implement some code >:(
     }
   }
   

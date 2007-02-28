@@ -25,7 +25,7 @@ private:
   void flatten();
 
 public:
-  enum Type { ENTITY, PATHCENTER, PATHROTATE, NODE, CURVECONTROL, LINK, END, NONE = -1};
+  enum Type { ENTITY, ENTITYROTATE, PATHCENTER, PATHROTATE, NODE, CURVECONTROL, LINK, END, NONE = -1};
   Type type;
   
   int path;
