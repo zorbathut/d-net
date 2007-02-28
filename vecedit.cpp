@@ -72,7 +72,7 @@ bool operator==(const SelectItem &lhs, const SelectItem &rhs) {
 }
 
 bool isDraggable(int type) {
-  return type == SelectItem::PATHCENTER || type == SelectItem::PATHROTATE || type == SelectItem::NODE || type == SelectItem::CURVECONTROL;
+  return type == SelectItem::PATHCENTER || type == SelectItem::PATHROTATE || type == SelectItem::NODE || type == SelectItem::CURVECONTROL || type == SelectItem::ENTITY;
 }
 
 UIState::UIState() {
@@ -525,6 +525,11 @@ OtherState Vecedit::mouse(const MouseInput &mouse, const WrapperState &wrap) {
         ostate.redraw = true;
         state = DRAGGING;
       }
+    } else if(select.type == SelectItem::ENTITY) {
+      dv2.entities[select.entity].pos = worldlock;
+      modified = true;
+      ostate.redraw = true;
+      state = DRAGGING;
     }
   }
   
