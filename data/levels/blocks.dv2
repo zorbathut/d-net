@@ -44,49 +44,42 @@ path {
 entity {
   type=tank start location
   coord=-120.000000,28.000000
-  numerator=0
-  denominator=1
+  angle=0/1
 }
 
 entity {
   type=tank start location
   coord=-88.000000,-88.000000
-  numerator=3
-  denominator=8
+  angle=3/8
 }
 
 entity {
   type=tank start location
   coord=-16.000000,-56.000000
-  numerator=3
-  denominator=4
+  angle=3/4
 }
 
 entity {
   type=tank start location
   coord=104.000000,-80.000000
-  numerator=3
-  denominator=5
+  angle=3/5
 }
 
 entity {
   type=tank start location
   coord=68.000000,-40.000000
-  numerator=1
-  denominator=5
+  angle=1/5
 }
 
 entity {
   type=tank start location
   coord=40.000000,28.000000
-  numerator=4
-  denominator=7
+  angle=4/7
 }
 
 entity {
   type=tank start location
   coord=84.000000,88.000000
-  numerator=1
-  denominator=2
+  angle=1/2
 }
 

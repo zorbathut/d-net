@@ -9,84 +9,6 @@
 
 using namespace std;
 
-string Parameter::dumpTextRep() const {
-  if(type == BOOLEAN) {
-    if(hide_def && bool_val == bool_def)
-      return "";
-    return "  " + name + "=" + (bool_val ? "true" : "false") + "\n";
-  } else if(type == BOUNDED_INTEGER) {
-    if(hide_def && bi_val == bi_def)
-      return "";
-    return StringPrintf("  %s=%d\n", name.c_str(), bi_val);
-  } else {
-    CHECK(0);
-  }
-}
-
-void Parameter::parseTextRep(const string &in) {
-  if(type == BOOLEAN) {
-    if(in == "false") {
-      bool_val = false;
-    } else if(in == "true") {
-      bool_val = true;
-    } else {
-      CHECK(0);
-    }
-  } else if(type == BOUNDED_INTEGER) {
-    bi_val = atoi(in.c_str());
-  } else {
-    CHECK(0);
-  }
-}
-
-Parameter paramBool(const string &name, bool begin, bool hideDefault) {
-  Parameter param;
-  param.name = name;
-  param.type = Parameter::BOOLEAN;
-  param.hide_def = hideDefault;
-  param.bool_val = begin;
-  param.bool_def = begin;
-  return param;
-};
-
-Parameter paramBoundint(const string &name, int begin, int low, int high, bool hideDefault) {
-  Parameter param;
-  param.name = name;
-  param.type = Parameter::BOUNDED_INTEGER;
-  param.hide_def = hideDefault;
-  param.bi_val = begin;
-  param.bi_def = begin;
-  param.bi_low = low;
-  param.bi_high = high;
-  return param;
-};
-
-void Entity::initParams() {
-  params.clear();
-  if(type == ENTITY_TANKSTART) {
-    params.push_back(paramBoundint("numerator", 0, 0, 100000, false));
-    params.push_back(paramBoundint("denominator", 1, 1, 100000, false));
-    for(int i = 2; i <= 36; i++)
-      params.push_back(paramBool(StringPrintf("exist%03d", i), true, true));
-  } else {
-    CHECK(0);
-  }
-}
-
-Parameter *Entity::getParameter(const string &name) {
-  for(int i = 0; i < params.size(); i++)
-    if(params[i].name == name)
-      return &params[i];
-  return NULL;
-}
-const Parameter *Entity::getParameter(const string &name) const {
-  for(int i = 0; i < params.size(); i++)
-    if(params[i].name == name)
-      return &params[i];
-  return NULL;
-}
-
-
 void VectorPoint::mirror() {
   swap(curvlp, curvrp);
   swap(curvl, curvr);
@@ -407,14 +329,26 @@ Dvec2 loadDvec2(const string &fname) {
       sscanf(dat.consume("coord").c_str(), "%f,%f", &ne.pos.x, &ne.pos.y);
       string typ = dat.consume("type");
       ne.type = -1;
-      for(int i = 0; i < ENTITY_END; i++)
-        if(typ == ent_names[i])
+      for(int i = 0; i < ENTITY_END; i++) {
+        if(typ == ent_names[i]) {
+          CHECK(ne.type == -1);
           ne.type = i;
+        }
+      }
       CHECK(ne.type != -1);
-      ne.initParams();
-      for(int i = 0; i < ne.params.size(); i++)
-        if(dat.kv.count(ne.params[i].name))
-          ne.params[i].parseTextRep(dat.consume(ne.params[i].name));
+      
+      if(ne.type == ENTITY_TANKSTART) {
+        string ang = dat.consume("angle");
+        vector<int> toki = sti(tokenize(ang, "/"));
+        CHECK(toki.size() == 2);
+        ne.tank_ang_numer = toki[0];
+        ne.tank_ang_denom = toki[1];
+        CHECK(ne.tank_ang_numer >= 0);
+        CHECK(ne.tank_ang_denom > 0);
+      } else {
+        CHECK(0);
+      }
+      
       rv.entities.push_back(ne);
     } else if(dat.category == "params") {
       CHECK(!got_params);

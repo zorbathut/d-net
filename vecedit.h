@@ -21,14 +21,21 @@ struct ScrollBounds {
 };
 
 struct SelectItem {
+private:
+  void flatten();
+
+public:
   enum Type { ENTITY, PATHCENTER, PATHROTATE, NODE, CURVECONTROL, LINK, END, NONE = -1};
   Type type;
+  
   int path;
   int item;
   bool curveside;
   
+  int entity;
+  
   SelectItem();
-  SelectItem(Type type, int path);
+  SelectItem(Type type, int x);
   SelectItem(Type type, int path, int item);
   SelectItem(Type type, int path, int item, bool curveside);
 };

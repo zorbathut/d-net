@@ -168,126 +168,108 @@ path {
 entity {
   type=tank start location
   coord=-100.000000,-48.000000
-  numerator=0
-  denominator=1
+  angle=0/1
 }
 
 entity {
   type=tank start location
   coord=-100.000000,48.000000
-  numerator=0
-  denominator=1
+  angle=0/1
 }
 
 entity {
   type=tank start location
   coord=-60.000000,-76.000000
-  numerator=0
-  denominator=1
+  angle=0/1
 }
 
 entity {
   type=tank start location
   coord=-60.000000,76.000000
-  numerator=0
-  denominator=1
+  angle=0/1
 }
 
 entity {
   type=tank start location
   coord=-136.000000,-88.000000
-  numerator=0
-  denominator=1
+  angle=0/1
 }
 
 entity {
   type=tank start location
   coord=-136.000000,88.000000
-  numerator=0
-  denominator=1
+  angle=0/1
 }
 
 entity {
   type=tank start location
   coord=-36.000000,0.000000
-  numerator=0
-  denominator=1
+  angle=0/1
 }
 
 entity {
   type=tank start location
   coord=-36.000000,-68.000000
-  numerator=0
-  denominator=1
+  angle=0/1
 }
 
 entity {
   type=tank start location
   coord=-36.000000,68.000000
-  numerator=0
-  denominator=1
+  angle=0/1
 }
 
 entity {
   type=tank start location
   coord=52.000000,-68.000000
-  numerator=1
-  denominator=2
+  angle=1/2
 }
 
 entity {
   type=tank start location
   coord=52.000000,0.000000
-  numerator=1
-  denominator=2
+  angle=1/2
 }
 
 entity {
   type=tank start location
   coord=52.000000,68.000000
-  numerator=1
-  denominator=2
+  angle=1/2
 }
 
 entity {
   type=tank start location
   coord=76.000000,-76.000000
-  numerator=1
-  denominator=2
+  angle=1/2
 }
 
 entity {
   type=tank start location
   coord=76.000000,76.000000
-  numerator=1
-  denominator=2
+  angle=1/2
 }
 
 entity {
   type=tank start location
   coord=116.000000,-48.000000
-  numerator=1
-  denominator=2
+  angle=1/2
 }
 
 entity {
   type=tank start location
   coord=116.000000,48.000000
-  numerator=1
-  denominator=2
+  angle=1/2
 }
 
 entity {
   type=tank start location
   coord=152.000000,-88.000000
-  numerator=1
-  denominator=2
+  angle=1/2
 }
 
 entity {
   type=tank start location
   coord=152.000000,88.000000
-  numerator=1
-  denominator=2
+  angle=1/2
 }
 

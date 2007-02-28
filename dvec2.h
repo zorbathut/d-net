@@ -9,32 +9,6 @@ using namespace std;
 
 // these are only needed if you're planning to edit the dvec2
 class Transform2d;
-  
-class Parameter {
-public:
-  
-  string name;
-  
-  enum { BOOLEAN, BOUNDED_INTEGER };
-  int type;
-  
-  bool hide_def;
-  
-  bool bool_val;
-  bool bool_def;
-  
-  int bi_val;
-  int bi_def;
-  int bi_low;
-  int bi_high;
-  
-  string dumpTextRep() const;
-  void parseTextRep(const string &in);
-  
-};
-
-Parameter paramBool(const string &name, bool begin, bool hideDefault);
-Parameter paramBoundint(const string &name, int begin, int low, int high, bool hideDefault);
 
 enum { ENTITY_TANKSTART, ENTITY_END };
 static const char *const ent_names[] = {"tank start location"};
@@ -46,13 +20,8 @@ public:
 
   Float2 pos;
 
-  vector<Parameter> params;
-
-  void initParams();  // inits params to the default for that type
-
-  Parameter *getParameter(const string &name);
-  const Parameter *getParameter(const string &name) const;
-
+  int tank_ang_numer;
+  int tank_ang_denom;
 };
 
 struct VectorPoint {

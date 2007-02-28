@@ -38,9 +38,7 @@ Level loadLevel(const string &str) {
     for(int i = 0; i < dv.entities.size(); i++) {
       CHECK(dv.entities[i].type == ENTITY_TANKSTART);
       for(int j = 2; j <= dv.entities.size(); j++) {
-        string estr = StringPrintf("exist%03d", j);
-        CHECK(dv.entities[i].getParameter(estr) && dv.entities[i].getParameter(estr)->bool_val == true);
-        // yeah, so these don't work yet, it'll be fixed eventually
+        // eventually we could have things set up to only allow certain numbers of players on certain maps
         entallow[j]++;
       }
     }
@@ -49,8 +47,8 @@ Level loadLevel(const string &str) {
         //dprintf("Entities valid for %d players, got %d starts", itr->first, itr->second);
         rv.playersValid.insert(itr->first);
         for(int i = 0; i < dv.entities.size(); i++) {
-          CHECK(dv.entities[i].getParameter("numerator") && dv.entities[i].getParameter("denominator"));
-          rv.playerStarts[itr->first].push_back(make_pair(dv.entities[i].pos, PI * 2 * dv.entities[i].getParameter("numerator")->bi_val / dv.entities[i].getParameter("denominator")->bi_val));
+          CHECK(dv.entities[i].type == ENTITY_TANKSTART);
+          rv.playerStarts[itr->first].push_back(make_pair(dv.entities[i].pos, PI * 2 * dv.entities[i].tank_ang_numer / dv.entities[i].tank_ang_denom));
         }
         
       }

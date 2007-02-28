@@ -377,10 +377,10 @@ VeceditWindow::VeceditWindow() : wxFrame((wxFrame *)NULL, -1, veceditname, wxDef
   {
     wxMenu *menuFile = new wxMenu;
     
-    menuFile->Append(ID_New, "&New");
-    menuFile->Append(ID_Open, "&Open...");
-    menuFile->Append(ID_Save, "&Save");
-    menuFile->Append(ID_Saveas, "Save &as...");
+    menuFile->Append(ID_New, "&New\tCtrl-N");
+    menuFile->Append(ID_Open, "&Open...\tCtrl-O");
+    menuFile->Append(ID_Save, "&Save\tCtrl+S");
+    menuFile->Append(ID_Saveas, "Save &as...\tCtrl+Shift+S");
     
     menuFile->AppendSeparator();
     

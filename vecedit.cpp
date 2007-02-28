@@ -13,21 +13,46 @@ using namespace std;
 const float primenode = 8;
 const float secondnode = 5;
 
-SelectItem::SelectItem() {
+void SelectItem::flatten() {
   type = NONE;
+  
   path = -1;
   item = -1;
   curveside = false;
+  
+  entity = -1;
 }
 
-SelectItem::SelectItem(Type type, int path) : type(type), path(path), item(0), curveside(false) {
-  CHECK(type == PATHCENTER || type == PATHROTATE);
+SelectItem::SelectItem() {
+  flatten();
 };
-SelectItem::SelectItem(Type type, int path, int item) : type(type), path(path), item(item), curveside(false) {
-  CHECK(type == NODE || type == LINK);
+SelectItem::SelectItem(Type in_type, int in_x) {
+  flatten();
+  
+  if(in_type == PATHCENTER || in_type == PATHROTATE) {
+    type = in_type;
+    path = in_x;
+  } else if(in_type == ENTITY) {
+    type = in_type;
+    entity = in_x;
+  } else {
+    CHECK(0);
+  }
 };
-SelectItem::SelectItem(Type type, int path, int item, bool curveside) : type(type), path(path), item(item), curveside(curveside) {
-  CHECK(type == CURVECONTROL);
+SelectItem::SelectItem(Type in_type, int in_path, int in_item) {
+  CHECK(in_type == NODE || in_type == LINK);
+  flatten();
+  type = in_type;
+  path = in_path;
+  item = in_item;
+};
+SelectItem::SelectItem(Type in_type, int in_path, int in_item, bool in_curveside) {
+  CHECK(in_type == CURVECONTROL);
+  flatten();
+  type = in_type;
+  path = in_path;
+  item = in_item;
+  curveside = in_curveside;
 };
 
 bool operator<(const SelectItem &lhs, const SelectItem &rhs) {
@@ -297,8 +322,12 @@ void Vecedit::render(const WrapperState &state) const {
   for(int i = 0; i < dv2.entities.size(); i++) {
     const Entity &ent = dv2.entities[i];
     
-    setAppropriateColor(SelectItem(SelectItem::ENTITY, i), select);
-    drawLineLoop(defaultTank()->getTankVertices(Coord2(Coord(ent.pos.x), Coord(ent.pos.y)), (float)ent.params[0].bi_val / ent.params[1].bi_val * 2 * PI), 0.2);
+    if(ent.type == ENTITY_TANKSTART) {
+      setAppropriateColor(SelectItem(SelectItem::ENTITY, i), select);
+      drawLineLoop(defaultTank()->getTankVertices(Coord2(Coord(ent.pos.x), Coord(ent.pos.y)), (float)ent.tank_ang_numer / ent.tank_ang_denom * 2 * PI), state.zpp);
+    } else {
+      CHECK(0);
+    }
   }
   
   if(state.grid > 0) {
@@ -600,8 +629,11 @@ bool Vecedit::save(const string &filename) {
     fprintf(outfile, "entity {\n");
     fprintf(outfile, "  type=%s\n", ent_names[dv2.entities[i].type]);
     fprintf(outfile, "  coord=%f,%f\n", dv2.entities[i].pos.x, dv2.entities[i].pos.y);
-    for(int j = 0; j < dv2.entities[i].params.size(); j++)
-      fprintf(outfile, "%s", dv2.entities[i].params[j].dumpTextRep().c_str());
+    if(dv2.entities[i].type == ENTITY_TANKSTART) {
+      fprintf(outfile, "  angle=%d/%d\n", dv2.entities[i].tank_ang_numer, dv2.entities[i].tank_ang_denom);
+    } else {
+      CHECK(0);
+    }
     fprintf(outfile, "}\n");
     fprintf(outfile, "\n");
   }
