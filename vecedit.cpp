@@ -13,6 +13,8 @@ using namespace std;
 const float primenode = 8;
 const float secondnode = 5;
 
+const float rotatehandle = 40;
+
 void SelectItem::flatten() {
   type = NONE;
   
@@ -138,8 +140,6 @@ SelectStack::SelectStack(const vector<SelectItem> &in_items, const SelectItem &c
   
   for(int i = 0; i < items.size(); i++)
     CHECK(items[i].type == SelectItem::NONE || items[i].type == i);
-  
-  
 };
 
 void maybeAddPoint(vector<SelectItem> *ite, SelectItem tite, Float2 pos, Float2 loc, float dist) {
@@ -171,7 +171,7 @@ SelectStack Vecedit::getSelectionStack(Float2 pos, float zpp) const {
     if(thisselect) {
       maybeAddPoint(&ites, SelectItem(SelectItem::PATHCENTER, i), pos, vp.center, primenode * zpp * 1.5);
       if(vp.reflect)
-        maybeAddPoint(&ites, SelectItem(SelectItem::PATHROTATE, i), pos, vp.center + makeAngle(2 * PI * vp.ang_numer / vp.ang_denom) * zpp * 40, primenode * zpp * 1.5);
+        maybeAddPoint(&ites, SelectItem(SelectItem::PATHROTATE, i), pos, vp.center + makeAngle(2 * PI * vp.ang_numer / vp.ang_denom) * zpp * rotatehandle, secondnode * zpp * 1.5);
     }
     
     for(int j = 0; j < vp.vpath.size(); j++) {
@@ -206,6 +206,8 @@ SelectStack Vecedit::getSelectionStack(Float2 pos, float zpp) const {
     
     if(ent.type == ENTITY_TANKSTART) {
       maybeAddPoint(&ites, SelectItem(SelectItem::ENTITY, i), pos, ent.pos, primenode * zpp);
+      if(select.entity == i)
+        maybeAddPoint(&ites, SelectItem(SelectItem::ENTITYROTATE, i), pos, ent.pos + makeAngle(2 * PI * ent.tank_ang_numer / ent.tank_ang_denom) * zpp * rotatehandle, secondnode * zpp * 1.5);
     } else {
       CHECK(0);
     }
@@ -333,8 +335,8 @@ void Vecedit::render(const WrapperState &state) const {
       
       if(vp.reflect) {
         setAppropriateColor(SelectItem(SelectItem::PATHROTATE, i), select);
-        drawRectAround(vp.center + makeAngle(2 * PI * vp.ang_numer / vp.ang_denom) * state.zpp * 40, state.zpp * secondnode, state.zpp);
-        drawLine(vp.center, vp.center + makeAngle(2 * PI * vp.ang_numer / vp.ang_denom) * state.zpp * 40, state.zpp);
+        drawRectAround(vp.center + makeAngle(2 * PI * vp.ang_numer / vp.ang_denom) * state.zpp * rotatehandle, state.zpp * secondnode, state.zpp);
+        drawLine(vp.center, vp.center + makeAngle(2 * PI * vp.ang_numer / vp.ang_denom) * state.zpp * rotatehandle, state.zpp);
       }
     }
   }
@@ -345,6 +347,10 @@ void Vecedit::render(const WrapperState &state) const {
     if(ent.type == ENTITY_TANKSTART) {
       setAppropriateColor(SelectItem(SelectItem::ENTITY, i), select);
       drawLineLoop(defaultTank()->getTankVertices(Coord2(Coord(ent.pos.x), Coord(ent.pos.y)), (float)ent.tank_ang_numer / ent.tank_ang_denom * 2 * PI), state.zpp);
+      if(select.entity == i) {
+        drawRectAround(ent.pos + makeAngle(2 * PI * ent.tank_ang_numer / ent.tank_ang_denom) * state.zpp * rotatehandle, state.zpp * secondnode, state.zpp);
+        drawLine(ent.pos, ent.pos + makeAngle(2 * PI * ent.tank_ang_numer / ent.tank_ang_denom) * state.zpp * rotatehandle, state.zpp);
+      }
     } else {
       CHECK(0);
     }
