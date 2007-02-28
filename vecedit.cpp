@@ -201,6 +201,16 @@ SelectStack Vecedit::getSelectionStack(Float2 pos, float zpp) const {
     }
   }
   
+  for(int i = 0; i < dv2.entities.size(); i++) {
+    const Entity &ent = dv2.entities[i];
+    
+    if(ent.type == ENTITY_TANKSTART) {
+      maybeAddPoint(&ites, SelectItem(SelectItem::ENTITY, i), pos, ent.pos, primenode * zpp);
+    } else {
+      CHECK(0);
+    }
+  }
+  
   CHECK(set<SelectItem>(ites.begin(), ites.end()).size() == ites.size());
   
   sort(ites.begin(), ites.end());
@@ -250,13 +260,23 @@ void drawLink(Float2 center, const vector<VectorPoint> &vpt, int j, float weight
   }
 }
 
+static const Color selected = Color(1.0, 0.7, 0.7);
+static const Color samepath = Color(0.7, 1.0, 0.7);
+static const Color unselected_path = Color(0.7, 0.7, 1.0);
+static const Color unselected_entity = Color(0.7, 1.0, 1.0);
+
 void setAppropriateColor(const SelectItem &lhs, const SelectItem &rhs) {
-  if(lhs.path != rhs.path) {
-    setColor(Color(0.7, 0.7, 1.0));
+  // this is complicated :(
+  if(lhs.type == SelectItem::ENTITY && lhs.entity == rhs.entity) {
+    setColor(selected);
+  } else if(lhs.type == SelectItem::ENTITY) {
+    setColor(unselected_entity);
+  } else if(lhs.path != rhs.path) {
+    setColor(unselected_path);
   } else if(lhs.type != rhs.type || lhs.item != rhs.item) {
-    setColor(Color(0.7, 1.0, 0.7));
+    setColor(samepath);
   } else {
-    setColor(Color(1.0, 0.7, 0.7));
+    setColor(selected);
   }
 }
 

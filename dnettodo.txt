@@ -1,7 +1,6 @@
 ---- Major work path
 - Less incentive to camp?
 - Add bombardment charts
-- Clean up that awful parameter system
 - Next-gen vecedit?
   - Entity select
   - Entity properties
