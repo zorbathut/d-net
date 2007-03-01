@@ -233,9 +233,11 @@ public:
 
   void OnNewPath(wxCommandEvent &event);
   void OnNewNode(wxCommandEvent &event);
+  void OnNewTank(wxCommandEvent &event);
   
   void OnNewPathMenu(wxCommandEvent &event);
   void OnNewNodeMenu(wxCommandEvent &event);
+  void OnNewTankMenu(wxCommandEvent &event);
 
   void OnGridToggle(wxCommandEvent &event);
   void OnGridUpdate(wxCommandEvent &event);
@@ -279,6 +281,8 @@ enum {
     ID_NewPathMenu,
     ID_NewNode,
     ID_NewNodeMenu,
+    ID_NewTank,
+    ID_NewTankMenu,
     
     ID_GridToggle,
     ID_GridSpinner,
@@ -307,9 +311,11 @@ BEGIN_EVENT_TABLE(VeceditWindow, wxFrame)
 
   EVT_TOOL(ID_NewPath, VeceditWindow::OnNewPath)
   EVT_TOOL(ID_NewNode, VeceditWindow::OnNewNode)
+  EVT_TOOL(ID_NewTank, VeceditWindow::OnNewTank)
 
   EVT_MENU(ID_NewPathMenu, VeceditWindow::OnNewPathMenu)
   EVT_MENU(ID_NewNodeMenu, VeceditWindow::OnNewNodeMenu)
+  EVT_MENU(ID_NewTankMenu, VeceditWindow::OnNewTankMenu)
 
   EVT_TOOL(ID_GridToggle, VeceditWindow::OnGridToggle)
   EVT_TEXT(ID_GridSpinner, VeceditWindow::OnGridUpdate)
@@ -331,9 +337,10 @@ void VeceditWindow::renderCore() const {
   initFrame();
   clearFrame(Color(0, 0, 0));
 
-  WrapperState ws = wstate;
+  WrapperState ws = wstate; // stupid const >:( TODO: suck less
   ws.ui.newPath = toolbar->GetToolState(ID_NewPath);
   ws.ui.newNode = toolbar->GetToolState(ID_NewNode);
+  ws.ui.newTank = toolbar->GetToolState(ID_NewTank);
   core.render(ws);
   
   deinitFrame();
@@ -406,6 +413,7 @@ VeceditWindow::VeceditWindow() : wxFrame((wxFrame *)NULL, -1, veceditname, wxDef
     
     menuFile->Append(ID_NewPathMenu, "Add path\tP");
     menuFile->Append(ID_NewNodeMenu, "Add node\tA");
+    menuFile->Append(ID_NewTankMenu, "Add tank\tT");
     
     menuBar->Append(menuFile, "&Edit");
   }
@@ -457,6 +465,7 @@ VeceditWindow::VeceditWindow() : wxFrame((wxFrame *)NULL, -1, veceditname, wxDef
   toolbar = new wxToolBar(this, wxID_ANY);
   toolbar->AddTool(ID_NewPath, "add path", wxBitmap("vecedit/addpath.png", wxBITMAP_TYPE_PNG), "Add a new path", wxITEM_CHECK);
   toolbar->AddTool(ID_NewNode, "add node", wxBitmap("vecedit/addnode.png", wxBITMAP_TYPE_PNG), "Add a new node", wxITEM_CHECK);
+  toolbar->AddTool(ID_NewTank, "add tank", wxBitmap("vecedit/addtank.png", wxBITMAP_TYPE_PNG), "Add a new tank", wxITEM_CHECK);
   
   toolbar->AddSeparator();
   toolbar->AddTool(ID_GridToggle, "toggle grid", wxBitmap("vecedit/grid.png", wxBITMAP_TYPE_PNG), "Activate grid lock", wxITEM_CHECK);
@@ -598,15 +607,27 @@ void VeceditWindow::OnNewNode(wxCommandEvent &event) {
   }
 }
 
+void VeceditWindow::OnNewTank(wxCommandEvent &event) {
+  if(event.IsSelection()) {
+    toolbar->ToggleTool(ID_NewTank, 0);
+  }
+}
+
 void VeceditWindow::OnNewPathMenu(wxCommandEvent &event) {
-  dprintf("togl pathmenu %d\n", !toolbar->GetToolState(ID_NewPath));
   toolbar->ToggleTool(ID_NewPath, !toolbar->GetToolState(ID_NewPath));
-  dprintf("now %d\n", toolbar->GetToolState(ID_NewPath));
   toolbar->ToggleTool(ID_NewNode, 0);
+  toolbar->ToggleTool(ID_NewTank, 0);
 }
 
 void VeceditWindow::OnNewNodeMenu(wxCommandEvent &event) {
   toolbar->ToggleTool(ID_NewNode, !toolbar->GetToolState(ID_NewNode));
+  toolbar->ToggleTool(ID_NewPath, 0);
+  toolbar->ToggleTool(ID_NewTank, 0);
+}
+
+void VeceditWindow::OnNewTankMenu(wxCommandEvent &event) {
+  toolbar->ToggleTool(ID_NewTank, !toolbar->GetToolState(ID_NewTank));
+  toolbar->ToggleTool(ID_NewNode, 0);
   toolbar->ToggleTool(ID_NewPath, 0);
 }
 
@@ -673,6 +694,7 @@ void VeceditWindow::redraw() {
 WrapperState &VeceditWindow::genwrap() {
   wstate.ui.newPath = toolbar->GetToolState(ID_NewPath);
   wstate.ui.newNode = toolbar->GetToolState(ID_NewNode);
+  wstate.ui.newTank = toolbar->GetToolState(ID_NewTank);
   return wstate;
 }
 void VeceditWindow::process(const OtherState &ost) {
@@ -687,6 +709,7 @@ void VeceditWindow::process(const OtherState &ost) {
   
   toolbar->ToggleTool(ID_NewPath, ost.ui.newPath);
   toolbar->ToggleTool(ID_NewNode, ost.ui.newNode);
+  toolbar->ToggleTool(ID_NewTank, ost.ui.newTank);
   
   if(!ost.hasPathProperties) {
     reflects->Disable();

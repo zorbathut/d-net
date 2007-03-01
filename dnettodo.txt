@@ -2,7 +2,6 @@
 - Less incentive to camp?
 - Add bombardment charts
 - Next-gen vecedit?
-  - Entity delete
   - Entity add
   - Multiple thing select
   - Select all
