@@ -70,6 +70,7 @@ bool operator==(const SelectItem &lhs, const SelectItem &rhs) {
   if(lhs.path != rhs.path) return false;
   if(lhs.item != rhs.item) return false;
   if(lhs.curveside != rhs.curveside) return false;
+  if(lhs.entity != rhs.entity) return false;
   return true;
 }
 
@@ -510,6 +511,24 @@ OtherState Vecedit::mouse(const MouseInput &mouse, const WrapperState &wrap) {
     dv2.paths[select.path].vpathModify(select.item);
     modified = true;
     ostate.ui.newNode = false;
+    ostate.redraw = true;
+    state = DRAGGING;
+    // we do NOT snapshot here because we'll snapshot once the player lets go of the button
+  }
+  
+  if(compospush && ostate.ui.newTank) { // New tank creation
+    Entity ne;
+    ne.type = ENTITY_TANKSTART;
+    
+    ne.pos = worldlock;
+    ne.tank_ang_numer = 0;
+    ne.tank_ang_denom = 1;
+    
+    dv2.entities.push_back(ne);
+    
+    select = SelectItem(SelectItem::ENTITYROTATE, dv2.entities.size() - 1);
+    modified = true;
+    ostate.ui.newTank = false;
     ostate.redraw = true;
     state = DRAGGING;
     // we do NOT snapshot here because we'll snapshot once the player lets go of the button
