@@ -267,18 +267,58 @@ static const Color samepath = Color(0.7, 1.0, 0.7);
 static const Color unselected_path = Color(0.7, 0.7, 1.0);
 static const Color unselected_entity = Color(0.7, 1.0, 1.0);
 
-void setAppropriateColor(const SelectItem &lhs, const SelectItem &rhs) {
-  // this is complicated :(
-  if(lhs.type == SelectItem::ENTITY && lhs.entity == rhs.entity) {
-    setColor(selected);
-  } else if(lhs.type == SelectItem::ENTITY) {
-    setColor(unselected_entity);
-  } else if(lhs.path != rhs.path) {
-    setColor(unselected_path);
-  } else if(lhs.type != rhs.type || lhs.item != rhs.item) {
-    setColor(samepath);
+int itemzone(const SelectItem &lhs) {
+  if(lhs.type == SelectItem::PATHCENTER || lhs.type == SelectItem::PATHROTATE || lhs.type == SelectItem::NODE || lhs.type == SelectItem::CURVECONTROL || lhs.type == SelectItem::LINK) {
+    return SelectItem::PATHCENTER;
+  } else if(lhs.type == SelectItem::ENTITY || lhs.type == SelectItem::ENTITYROTATE) {
+    return SelectItem::ENTITY;
   } else {
-    setColor(selected);
+    CHECK(0);
+  }
+}
+
+Color getUnselectedColor(const SelectItem &lhs) {
+  if(itemzone(lhs) == SelectItem::PATHCENTER) {
+    return unselected_path;
+  } else if(itemzone(lhs) == SelectItem::ENTITY) {
+    return unselected_entity;
+  } else {
+    CHECK(0);
+  }
+}
+
+Color getAppropriateColor(const SelectItem &lhs, const SelectItem &rhs) {
+  // this is complicated :(
+  // If they are in different zones, it's unselected.
+  // If they are the same zone, but different items, it's unselected.
+  // If they are in the same zone, but the same item, but different actual selections, it's samepath.
+  // If they are the same zone, same item, and same selections, it's selected.
+  
+  if(rhs.type == SelectItem::NONE)
+    return getUnselectedColor(lhs);
+  
+  if(itemzone(lhs) != itemzone(rhs)) {
+    return getUnselectedColor(lhs);
+  }
+  
+  if(itemzone(lhs) == SelectItem::PATHCENTER) {
+    if(lhs.path != rhs.path) {
+      return getUnselectedColor(lhs);
+    } else if(lhs.type != rhs.type || lhs.item != rhs.item) {
+      return samepath;
+    } else {
+      return selected;
+    }
+  } else if(itemzone(lhs) == SelectItem::ENTITY) {
+    if(lhs.entity == rhs.entity && lhs.type == rhs.type) {
+      return selected;
+    } else if(lhs.entity == rhs.entity) {
+      return samepath;
+    } else {
+      return getUnselectedColor(lhs);
+    }
+  } else {
+    CHECK(0);
   }
 }
 
@@ -299,7 +339,7 @@ void Vecedit::render(const WrapperState &state) const {
   for(int i = 0; i < dv2.paths.size(); i++) {
     const VectorPath &vp = dv2.paths[i];
     for(int j = 0; j < vp.vpath.size(); j++) {
-      setAppropriateColor(SelectItem(SelectItem::NODE, i, j), select);
+      setColor(getAppropriateColor(SelectItem(SelectItem::NODE, i, j), select));
       {
         double width;
         if(select.path == i) {
@@ -314,27 +354,27 @@ void Vecedit::render(const WrapperState &state) const {
         if(vp.vpath[j].curvl) {
           setAppropriateLinkColor(SelectItem(SelectItem::CURVECONTROL, i, j, false), select);
           drawLine(vp.center + vp.vpath[j].pos, vp.center + vp.vpath[j].pos + vp.vpath[j].curvlp, state.zpp);
-          setAppropriateColor(SelectItem(SelectItem::CURVECONTROL, i, j, false), select);
+          setColor(getAppropriateColor(SelectItem(SelectItem::CURVECONTROL, i, j, false), select));
           drawRectAround(vp.center + vp.vpath[j].pos + vp.vpath[j].curvlp, state.zpp * secondnode, state.zpp);
         }
         if(vp.vpath[j].curvr) {
           setAppropriateLinkColor(SelectItem(SelectItem::CURVECONTROL, i, j, true), select);
           drawLine(vp.center + vp.vpath[j].pos, vp.center + vp.vpath[j].pos + vp.vpath[j].curvrp, state.zpp);
-          setAppropriateColor(SelectItem(SelectItem::CURVECONTROL, i, j, true), select);
+          setColor(getAppropriateColor(SelectItem(SelectItem::CURVECONTROL, i, j, true), select));
           drawRectAround(vp.center + vp.vpath[j].pos + vp.vpath[j].curvrp, state.zpp * secondnode, state.zpp);
         }
       }
       
-      setAppropriateColor(SelectItem(SelectItem::LINK, i, j), select);
+      setColor(getAppropriateColor(SelectItem(SelectItem::LINK, i, j), select));
       drawLink(vp.center, vp.vpath, j, state.zpp * 2);
     }
     
     if(select.path == i) {
-      setAppropriateColor(SelectItem(SelectItem::PATHCENTER, i), select);
+      setColor(getAppropriateColor(SelectItem(SelectItem::PATHCENTER, i), select));
       drawRectAround(vp.center, state.zpp * primenode, state.zpp);
      
       if(vp.reflect) {
-        setAppropriateColor(SelectItem(SelectItem::PATHROTATE, i), select);
+        setColor(getAppropriateColor(SelectItem(SelectItem::PATHROTATE, i), select));
         drawRectAround(vp.center + makeAngle(2 * PI * vp.ang_numer / vp.ang_denom) * state.zpp * rotatehandle, state.zpp * secondnode, state.zpp);
         drawLine(vp.center, vp.center + makeAngle(2 * PI * vp.ang_numer / vp.ang_denom) * state.zpp * rotatehandle, state.zpp);
       }
@@ -345,9 +385,10 @@ void Vecedit::render(const WrapperState &state) const {
     const Entity &ent = dv2.entities[i];
     
     if(ent.type == ENTITY_TANKSTART) {
-      setAppropriateColor(SelectItem(SelectItem::ENTITY, i), select);
+      setColor(getAppropriateColor(SelectItem(SelectItem::ENTITY, i), select));
       drawLineLoop(defaultTank()->getTankVertices(Coord2(Coord(ent.pos.x), Coord(ent.pos.y)), (float)ent.tank_ang_numer / ent.tank_ang_denom * 2 * PI), state.zpp);
       if(select.entity == i) {
+        setColor(getAppropriateColor(SelectItem(SelectItem::ENTITYROTATE, i), select));
         drawRectAround(ent.pos + makeAngle(2 * PI * ent.tank_ang_numer / ent.tank_ang_denom) * state.zpp * rotatehandle, state.zpp * secondnode, state.zpp);
         drawLine(ent.pos, ent.pos + makeAngle(2 * PI * ent.tank_ang_numer / ent.tank_ang_denom) * state.zpp * rotatehandle, state.zpp);
       }
@@ -593,6 +634,12 @@ OtherState Vecedit::del(const WrapperState &wrap) {
       select.item = modurot(select.item - 1, dv2.paths[select.path].vpath.size()); // we can change this because we'll be clearing it soon anyway
     dv2.paths[select.path].vpath[select.item].curvr = !dv2.paths[select.path].vpath[select.item].curvr;
     dv2.paths[select.path].vpathModify(select.item);
+    modified = true;
+    ostate.redraw = true;
+    ostate.snapshot = true;
+    select = SelectItem();
+  } else if(select.type == SelectItem::ENTITY || select.type == SelectItem::ENTITYROTATE) {
+    dv2.entities.erase(dv2.entities.begin() + select.entity);
     modified = true;
     ostate.redraw = true;
     ostate.snapshot = true;

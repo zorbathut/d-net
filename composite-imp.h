@@ -64,6 +64,8 @@ template <typename T> void imp_addToBoundBox(Type4 *bbox, const Type2 &point) {
   imp_addToBoundBox<T>(bbox, point.x, point.y);
 };
 template <typename T> void imp_addToBoundBox(Type4 *bbox, const Type4 &rect) {
+  if(rect == imp_startBoundBox<T>())
+    return;
   CHECK(rect.isNormalized());
   imp_addToBoundBox<T>(bbox, rect.sx, rect.sy);
   imp_addToBoundBox<T>(bbox, rect.ex, rect.ey);
