@@ -62,6 +62,7 @@ bool operator<(const SelectItem &lhs, const SelectItem &rhs) {
   if(lhs.path != rhs.path) return lhs.path < rhs.path;
   if(lhs.item != rhs.item) return lhs.item < rhs.item;
   if(lhs.curveside != rhs.curveside) return lhs.curveside < rhs.curveside;
+  if(lhs.entity != rhs.entity) return lhs.entity < rhs.entity;
   return false;
 }
 

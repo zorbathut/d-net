@@ -2,13 +2,12 @@
 - Less incentive to camp?
 - Add bombardment charts
 - Next-gen vecedit?
-  - Entity add
   - Multiple thing select
   - Select all
   - Move
   - Copy/paste
   - Straighten curve through point
-  - Show level/icon, clean
+  - Show level/icon, clean with no controls or whatever
 - Pop up "sell obsolete item" on buying bombardment/glory/new tank
 - Test all tanks in all levels, make sure they don't collide with walls in start
 - Activate factions
