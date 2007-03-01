@@ -598,18 +598,21 @@ void VeceditWindow::OnClose(wxCloseEvent &event) {
 void VeceditWindow::OnNewPath(wxCommandEvent &event) {
   if(event.IsSelection()) {
     toolbar->ToggleTool(ID_NewNode, 0);
+    toolbar->ToggleTool(ID_NewTank, 0);
   }
 }
 
 void VeceditWindow::OnNewNode(wxCommandEvent &event) {
   if(event.IsSelection()) {
     toolbar->ToggleTool(ID_NewPath, 0);
+    toolbar->ToggleTool(ID_NewTank, 0);
   }
 }
 
 void VeceditWindow::OnNewTank(wxCommandEvent &event) {
   if(event.IsSelection()) {
-    toolbar->ToggleTool(ID_NewTank, 0);
+    toolbar->ToggleTool(ID_NewPath, 0);
+    toolbar->ToggleTool(ID_NewNode, 0);
   }
 }
 
@@ -627,8 +630,8 @@ void VeceditWindow::OnNewNodeMenu(wxCommandEvent &event) {
 
 void VeceditWindow::OnNewTankMenu(wxCommandEvent &event) {
   toolbar->ToggleTool(ID_NewTank, !toolbar->GetToolState(ID_NewTank));
-  toolbar->ToggleTool(ID_NewNode, 0);
   toolbar->ToggleTool(ID_NewPath, 0);
+  toolbar->ToggleTool(ID_NewNode, 0);
 }
 
 void VeceditWindow::OnGridToggle(wxCommandEvent &event) {
