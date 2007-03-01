@@ -73,23 +73,48 @@ ailoop: d-net.exe
 veced: vecedit.exe
 	./vecedit.exe
 
+define prepackage
+rm \\\\192.168.100.4\\zorba\\www\\d-net\\Dnet\ Latest\ Windows.zip || true
+mkdir deploy
+cp d-net.exe deploy
+cp c:/cygwin/usr/local/bin/SDL.dll deploy
+cp /usr/ogg/bin/* deploy
+cp -r data deploy
+mkdir deploy/dumps
+cp dumps/readme.txt deploy/dumps
+rm -f deploy/data/coordfailure
+endef
+
+define strip
+strip -s deploy/*.exe deploy/*.dll
+endef
+
+define postpackage
+cd deploy ; rm -rf `find | grep \.svn`
+cd deploy ; find | grep \.wav | xargs oggenc -q 6
+cd deploy ; rm -rf `find | grep \.wav`
+cd deploy ; zip -9 -r \\\\192.168.100.4\\zorba\\www\\d-net\\Dnet\ Latest\ Windows.zip *  # This is really too many backslashes.
+cp \\\\192.168.100.4\\zorba\\www\\d-net\\Dnet\ Latest\ Windows.zip `date +\\\\\\\\192.168.100.4\\\\zorba\\\\www\\\\d-net\\\\dnet%G%m%d%H%M%S.zip` # This is really too many backslashes.
+rm -rf deploy
+endef
+
 package: d-net.exe data/shopcache.dwh
-	rm \\\\192.168.100.4\\zorba\\www\\d-net\\Dnet\ Latest\ Version.zip || true
-	mkdir deploy
-	cp d-net.exe deploy
-	cp c:/cygwin/usr/local/bin/SDL.dll deploy
-	cp /usr/ogg/bin/* deploy
-	cp -r data deploy
-	mkdir deploy/dumps
-	cp dumps/readme.txt deploy/dumps
-	rm -f deploy/data/coordfailure
-	cd deploy ; rm -rf `find | grep \.svn`
-	strip -s deploy/*.exe deploy/*.dll
-	cd deploy ; find | grep \.wav | xargs oggenc -q 6
-	cd deploy ; rm -rf `find | grep \.wav`
-	cd deploy ; zip -9 -r \\\\192.168.100.4\\zorba\\www\\d-net\\Dnet\ Latest\ Version.zip *  # This is really too many backslashes.
-	cp \\\\192.168.100.4\\zorba\\www\\d-net\\Dnet\ Latest\ Version.zip `date +\\\\\\\\192.168.100.4\\\\zorba\\\\www\\\\d-net\\\\dnet%G%m%d%H%M%S.zip` # This is really too many backslashes.
-	rm -rf deploy
+	$(prepackage)
+	$(strip)
+	$(postpackage)
+
+packageed: d-net.exe vecedit.exe data/shopcache.dwh
+	$(prepackage)
+	cp vecedit.exe deploy
+	cp c:/cygwin/bin/cygz.dll deploy
+	cp c:/cygwin/usr/local/lib/cygwxbase28_gcc_custom-0.dll deploy
+	cp c:/cygwin/usr/local/lib/cygwxmsw28_core_gcc_custom-0.dll deploy
+	cp c:/cygwin/usr/local/lib/cygwxmsw28_gl_gcc_custom-0.dll deploy
+	cp -r vecedit deploy
+	$(strip)
+	cp c:/cygwin/bin/cygwin1.dll deploy # for some reason stripping this makes things break badly
+	$(postpackage)
+	cp \\\\192.168.100.4\\zorba\\www\\d-net\\Dnet\ Latest\ Windows.zip \\\\192.168.100.4\\zorba\\www\\d-net\\Dnet\ Latest\ Editor.zip
 
 %.g.o: %.cpp
 	nice $(CPP) $(GAMECPPFLAGS) -O2 -c -o $@ $<

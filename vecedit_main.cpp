@@ -25,9 +25,6 @@ private:
   smart_ptr<Callback<ScrollBounds, Float2> > scroll_callback;
   smart_ptr<Closure<Float2> > set_scroll_callback;
 
-  Float2 center;
-  float zpp;
-
   MouseInput mstate;
 
 public:
@@ -66,8 +63,6 @@ int gl_attribList[] = {
 VeceditGLC::VeceditGLC(wxWindow *wind, const smart_ptr<Closure<> > &render_callback, const smart_ptr<Closure<const MouseInput &, int> > &mouse_callback,  const smart_ptr<Callback<ScrollBounds, Float2> > &scroll_callback, const smart_ptr<Closure<Float2> > &set_scroll_callback) : wxGLCanvas(wind, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER | wxVSCROLL | wxHSCROLL | wxALWAYS_SHOW_SB, "GLCanvas", gl_attribList), render_callback(render_callback), mouse_callback(mouse_callback), scroll_callback(scroll_callback), set_scroll_callback(set_scroll_callback) {
   SetScrollbar(wxVERTICAL, 0, 40, 50);
   SetScrollbar(wxHORIZONTAL, 0, 40, 50);
-  center = Float2(0, 0);
-  zpp = 0.1;
 };
 
 void VeceditGLC::OnPaint(wxPaintEvent& event) {

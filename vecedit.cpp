@@ -86,7 +86,7 @@ UIState::UIState() {
 
 WrapperState::WrapperState() {
   center = Float2(0, 0);
-  zpp = 0.1;
+  zpp = 1;
   grid = -1;
 }
 
