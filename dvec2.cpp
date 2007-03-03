@@ -25,6 +25,7 @@ VectorPoint::VectorPoint() {
   curvlp = Float2(0, 0);
   curvrp = Float2(0, 0);
   curvl = curvr = false;
+  flat = false;
 }
 
 int rfg_repeats(int type, int dupe) {
@@ -136,6 +137,7 @@ void VectorPath::vpathModify(int node) {
     trans.invert();
     tnode.transform(trans);
     path[canon.first] = tnode;
+    path[canon.first].flat = tnode.flat;
   } else {
     path[node] = vpath[node];
   }
@@ -318,6 +320,13 @@ Dvec2 loadDvec2(const string &fname) {
         } else {
           vpt.curvr = true;
           sscanf(tnode[2].c_str(), "%f,%f", &vpt.curvrp.x, &vpt.curvrp.y);
+        }
+        if(vpt.curvl && vpt.curvr) {
+          if(abs(abs(getAngle(vpt.curvlp) - getAngle(vpt.curvrp)) - PI) < 0.002) {
+            vpt.flat = true;
+          } else {
+            dprintf("%f\n", abs(abs(getAngle(vpt.curvlp) - getAngle(vpt.curvrp)) - PI));
+          }
         }
         nvp.path.push_back(vpt);
       }

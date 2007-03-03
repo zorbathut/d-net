@@ -353,17 +353,30 @@ void Vecedit::render(const WrapperState &state) const {
       }
       
       if(select.path == i) {
+        Float2 center = vp.center + vp.vpath[j].pos;
         if(vp.vpath[j].curvl) {
+          Float2 fringe = vp.center + vp.vpath[j].pos + vp.vpath[j].curvlp;
           setAppropriateLinkColor(SelectItem(SelectItem::CURVECONTROL, i, j, false), select);
-          drawLine(vp.center + vp.vpath[j].pos, vp.center + vp.vpath[j].pos + vp.vpath[j].curvlp, state.zpp);
+          drawLine(center, fringe, state.zpp);
+          if(vp.vpath[j].flat) {
+            Float2 shift = makeAngle(getAngle(fringe - center) + PI / 2) * state.zpp * 2;
+            drawLine(center + shift, (center + fringe) / 2 + shift, state.zpp);
+            drawLine(center - shift, (center + fringe) / 2 - shift, state.zpp);
+          }
           setColor(getAppropriateColor(SelectItem(SelectItem::CURVECONTROL, i, j, false), select));
-          drawRectAround(vp.center + vp.vpath[j].pos + vp.vpath[j].curvlp, state.zpp * secondnode, state.zpp);
+          drawRectAround(fringe, state.zpp * secondnode, state.zpp);
         }
         if(vp.vpath[j].curvr) {
+          Float2 fringe = vp.center + vp.vpath[j].pos + vp.vpath[j].curvrp;
           setAppropriateLinkColor(SelectItem(SelectItem::CURVECONTROL, i, j, true), select);
-          drawLine(vp.center + vp.vpath[j].pos, vp.center + vp.vpath[j].pos + vp.vpath[j].curvrp, state.zpp);
+          drawLine(center, fringe, state.zpp);
+          if(vp.vpath[j].flat) {
+            Float2 shift = makeAngle(getAngle(fringe - center) + PI / 2) * state.zpp * 2;
+            drawLine(center + shift, (center + fringe) / 2 + shift, state.zpp);
+            drawLine(center - shift, (center + fringe) / 2 - shift, state.zpp);
+          }
           setColor(getAppropriateColor(SelectItem(SelectItem::CURVECONTROL, i, j, true), select));
-          drawRectAround(vp.center + vp.vpath[j].pos + vp.vpath[j].curvrp, state.zpp * secondnode, state.zpp);
+          drawRectAround(fringe, state.zpp * secondnode, state.zpp);
         }
       }
       
@@ -547,6 +560,21 @@ OtherState Vecedit::mouse(const MouseInput &mouse, const WrapperState &wrap) {
         ostate.redraw = true;
         ostate.snapshot = true;
         break;
+      } else if(startposstack.itemOrder()[i].type == SelectItem::NODE) {
+        select = startposstack.itemOrder()[i];
+        state = SELECTED;
+        VectorPoint &vp = dv2.paths[select.path].vpath[select.item];
+        vp.flat = !vp.flat;
+        if(vp.flat) {
+          float desang = (getAngle(vp.curvlp) + getAngle(vp.curvrp)) / 2;
+          vp.curvlp = makeAngle(desang + PI * ((getAngle(vp.curvlp) > desang) * 2 - 1) / 2) * len(vp.curvlp);
+          vp.curvrp = makeAngle(desang + PI * ((getAngle(vp.curvrp) >= desang) * 2 - 1) / 2) * len(vp.curvrp);
+          dv2.paths[select.path].vpathModify(select.item);
+          modified = true;
+        }
+        ostate.redraw = true;
+        ostate.snapshot = true;
+        break;
       }
     }
   }
@@ -574,8 +602,14 @@ OtherState Vecedit::mouse(const MouseInput &mouse, const WrapperState &wrap) {
       VectorPoint &vp = dv2.paths[select.path].vpath[select.item];
       if(!select.curveside) {
         vp.curvlp = destpt;
+        if(vp.flat) {
+          vp.curvrp = makeAngle(getAngle(vp.curvlp) + PI) * len(vp.curvrp);
+        }
       } else {
         vp.curvrp = destpt;
+        if(vp.flat) {
+          vp.curvlp = makeAngle(getAngle(vp.curvrp) + PI) * len(vp.curvlp);
+        }
       }
       dv2.paths[select.path].vpathModify(select.item);
       modified = true;

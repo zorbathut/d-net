@@ -32,6 +32,8 @@ struct VectorPoint {
 
   bool curvl;
   bool curvr;
+  
+  bool flat;
 
   void mirror();
   void transform(const Transform2d &ctd);
