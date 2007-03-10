@@ -55,6 +55,20 @@ Float2 reflect(const Float2 &incoming, float normal) {
   return makeAngle(-(getAngle(-incoming) - normal) + normal) * len(incoming);
 }
 
+vector<Float2> generateCurve(const Float4 &ptah, const Float4 &ptbh, int midpoints) {
+  vector<Float2> verts;
+  for(int i = 0; i <= midpoints; i++)
+    verts.push_back(Float2(bezinterp(ptah.sx, ptah.ex, ptbh.sx, ptbh.ex, i / (float)midpoints), bezinterp(ptah.sy, ptah.ey, ptbh.sy, ptbh.ey, i / (float)midpoints)));
+  return verts;
+}
+
+float bezinterp(float x0, float x1, float x2, float x3, float t) {
+  float cx = 3 * (x1 - x0);
+  float bx = 3 * (x2 - x1) - cx;
+  float ax = x3 - x0 - cx - bx;
+  return ax * t * t * t + bx * t * t + cx * t + x0;
+}
+
 /*************
  * Bounding box
  */

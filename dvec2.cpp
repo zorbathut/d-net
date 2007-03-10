@@ -71,8 +71,16 @@ Transform2d rfg_behavior(int type, int segment, int dupe, int numer, int denom) 
 
 Float4 VectorPath::boundingBox() const {
   Float4 bbox = startFBoundBox();
-  for(int i = 0; i < vpath.size(); i++)
-    addToBoundBox(&bbox, center + vpath[i].pos);
+  for(int i = 0; i < vpath.size(); i++) {
+    if(vpath[i].curvr) {
+      int j = modurot(i + 1, vpath.size());
+      vector<Float2> pts = generateCurve(Float4(vpath[i].pos, vpath[i].pos + vpath[i].curvrp) + center, Float4(vpath[j].pos + vpath[j].curvlp, vpath[j].pos) + center, 10);
+      for(int j = 0; j < pts.size(); j++)
+        addToBoundBox(&bbox, pts[j]);
+    } else {
+      addToBoundBox(&bbox, center + vpath[i].pos);
+    }
+  }
   return bbox;
 }
 

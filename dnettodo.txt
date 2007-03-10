@@ -2,6 +2,7 @@
 - Less incentive to camp?
 - Add bombardment charts
 - Next-gen vecedit?
+  - Store straight nodes :(
   - Multiple thing select
   - Select all
   - Move
