@@ -314,7 +314,7 @@ Dvec2 loadDvec2(const string &fname) {
       vector<string> nodes = tokenize(dat.consume("node"), "\n");
       for(int i = 0; i < nodes.size(); i++) {
         vector<string> tnode = tokenize(nodes[i], " |");
-        CHECK(tnode.size() == 3);
+        CHECK(tnode.size() == 3 || tnode.size() == 4);
         VectorPoint vpt;
         sscanf(tnode[1].c_str(), "%f,%f", &vpt.pos.x, &vpt.pos.y);
         if(tnode[0] == "---") {
@@ -330,11 +330,12 @@ Dvec2 loadDvec2(const string &fname) {
           sscanf(tnode[2].c_str(), "%f,%f", &vpt.curvrp.x, &vpt.curvrp.y);
         }
         if(vpt.curvl && vpt.curvr) {
-          if(abs(abs(getAngle(vpt.curvlp) - getAngle(vpt.curvrp)) - PI) < 0.002) {
+          if(tnode.size() == 4) {
+            CHECK(tnode[3] == "(straight)");
             vpt.flat = true;
-          } else {
-            dprintf("%f\n", abs(abs(getAngle(vpt.curvlp) - getAngle(vpt.curvrp)) - PI));
           }
+        } else {
+          CHECK(tnode.size() == 3);
         }
         nvp.path.push_back(vpt);
       }

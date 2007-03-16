@@ -754,6 +754,7 @@ bool Vecedit::save(const string &filename) {
     for(int j = 0; j < dv2.paths[i].path.size(); j++) {
       string lhs;
       string rhs;
+      string straight;
       if(dv2.paths[i].path[j].curvl)
         lhs = StringPrintf("%f,%f", dv2.paths[i].path[j].curvlp.x, dv2.paths[i].path[j].curvlp.y);
       else
@@ -762,7 +763,9 @@ bool Vecedit::save(const string &filename) {
         rhs = StringPrintf("%f,%f", dv2.paths[i].path[j].curvrp.x, dv2.paths[i].path[j].curvrp.y);
       else
         rhs = "---";
-      fprintf(outfile, "  node= %s | %f,%f | %s\n", lhs.c_str(), dv2.paths[i].path[j].pos.x, dv2.paths[i].path[j].pos.y, rhs.c_str());
+      if(dv2.paths[i].path[j].curvl && dv2.paths[i].path[j].curvr && dv2.paths[i].path[j].flat)
+        straight = " (straight)";
+      fprintf(outfile, "  node= %s | %f,%f | %s%s\n", lhs.c_str(), dv2.paths[i].path[j].pos.x, dv2.paths[i].path[j].pos.y, rhs.c_str(), straight.c_str());
     }
     fprintf(outfile, "}\n");
     fprintf(outfile, "\n");
