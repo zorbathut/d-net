@@ -17,7 +17,7 @@ static long long cpf() {
 
 void Timer::waitForNextFrame() {
   while(cpc() < frameNum * ticksPerFrame + ticksOffset)
-    ;
+    SDL_Delay(1);
 };
 
 bool Timer::skipFrame() {

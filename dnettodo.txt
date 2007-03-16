@@ -1,13 +1,15 @@
 ---- Major work path
+- Need to sit down and rewrite the shop interface again.
+  - Restricted speed/turn for the better tanks
+  - Ability to assign to *four* weapons (how the fuck will this work)
+  - Sell option with new tanks
 - Less incentive to camp?
 - Add bombardment charts
 - Next-gen vecedit?
-  - Store straight nodes :(
   - Multiple thing select
   - Select all
   - Move
   - Copy/paste
-  - Straighten curve through point
   - Show level/icon, clean with no controls or whatever
 - Pop up "sell obsolete item" on buying bombardment/glory/new tank
 - Test all tanks in all levels, make sure they don't collide with walls in start

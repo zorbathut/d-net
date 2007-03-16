@@ -134,7 +134,17 @@ int getFlagResY() {
 
 void initSystem() {
 
-  CHECK(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_NOPARACHUTE | SDL_INIT_TIMER | SDL_INIT_JOYSTICK) >= 0);
+  dprintf("inp\n");
+  CHECK(SDL_Init(SDL_INIT_NOPARACHUTE) >= 0);
+  dprintf("iv\n");
+  CHECK(SDL_InitSubSystem(SDL_INIT_VIDEO) >= 0);
+  dprintf("ia ia cthulhu fhtagn\n");
+  CHECK(SDL_InitSubSystem(SDL_INIT_AUDIO) >= 0);
+  dprintf("it\n");
+  CHECK(SDL_InitSubSystem(SDL_INIT_TIMER) >= 0);
+  dprintf("ij\n");
+  CHECK(SDL_InitSubSystem(SDL_INIT_JOYSTICK) >= 0);
+  dprintf("ogl\n");
 
   SetupOgl();
   setDefaultResolution(FLAGS_fullscreen);
