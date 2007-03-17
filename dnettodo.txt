@@ -1,27 +1,25 @@
 ---- Major work path
-- Need to sit down and rewrite the shop interface again.
-  - Restricted speed/turn for the better tanks
-  - Ability to assign to *four* weapons (how the fuck will this work)
-  - Sell option with new tanks
-- Less incentive to camp?
-- Add bombardment charts
-- Next-gen vecedit?
-  - Multiple thing select
-  - Select all
-  - Move
-  - Copy/paste
-  - Show level/icon, clean with no controls or whatever
-- Pop up "sell obsolete item" on buying bombardment/glory/new tank
+- Make bombardment increase faster
+- Add better bombardment ticker
 - Test all tanks in all levels, make sure they don't collide with walls in start
 - Activate factions
   - Faction bonuses/penalties in demo screens
 - Many many more weapons
-- Arcade mode
-- Alliance mode? Faction mode?
-- CTF
-- King of the Hill
-- Mutant
-- Onslaught
+- Less incentive to camp?
+  - Reduce win/kill bonus as game goes on
+- New game modes
+  - Arcade mode
+  - Alliance mode? Faction mode?
+  - CTF
+  - King of the Hill
+  - Mutant
+  - Onslaught
+
+---- After I figure out where it's going
+- Need to sit down and rewrite the shop interface again.
+  - Restricted speed/turn for the better tanks
+  - Ability to assign to *four* weapons (how the fuck will this work)
+  - Pop up "sell obsolete item" on buying bombardment/glory/new tank
 
 ---- Sound-related stuff
 - Need sound for game start sliders
@@ -59,6 +57,12 @@
 - Winner list better "null" icon
 
 ---- Things that may or may not be needed
+Next-gen vecedit?
+  - Multiple thing select
+  - Select all
+  - Move
+  - Copy/paste
+  - Show level/icon, clean with no controls or whatever
 - Conditionals to makefiles so that the dependencies are only included if they're needed
 - Multithread cache generation
 - Add random faction

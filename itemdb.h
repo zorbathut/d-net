@@ -17,9 +17,9 @@ using namespace std;
 
 #define WARHEAD_RADIUS_MAXMULT 2
 
-const char * const adjust_text[] = { "damage_kinetic", "damage_energy", "damage_explosive", "damage_trap", "damage_exotic", "warhead_radius_falloff", "discount_weapon", "discount_implant", "discount_upgrade", "discount_tank", "recycle_bonus", "tank_firerate", "tank_speed", "tank_turn", "tank_armor", "damage_all", "all" };
-const char * const adjust_human[] = {"Kinetic damage", "Energy damage", "Explosive damage", "Trap damage", "Exotic damage", "Blast radius", "Weapon discount", "Implant discount", "Upgrade discount", "Tank discount", "Recycle bonus", "Tank firerate", "Tank speed", "Tank turning", "Tank armor", "All damage", "All" };
-const char * const adjust_unit[] = {" KPE", " KJE", " TOTE", " FSE", " flux", " m", "", "", "", "", "", "", " m/s", " rad/s", " CME"};
+const char * const adjust_text[] = { "damage_kinetic", "damage_energy", "damage_explosive", "damage_trap", "damage_exotic", "warhead_radius_falloff", "discount_weapon", "discount_implant", "discount_upgrade", "discount_tank", "recycle_bonus", "tank_firerate", "tank_speed", "tank_turn", "tank_armor", "bombardment_speed", "damage_all", "all" };
+const char * const adjust_human[] = {"Kinetic damage", "Energy damage", "Explosive damage", "Trap damage", "Exotic damage", "Blast radius", "Weapon discount", "Implant discount", "Upgrade discount", "Tank discount", "Recycle bonus", "Tank firerate", "Tank speed", "Tank turning", "Tank armor", "Bombardment speed", "All damage", "All" };
+const char * const adjust_unit[] = {" KPE", " KJE", " TOTE", " FSE", " flux", " m", "", "", "", "", "", "", " m/s", " rad/s", " CME", ""};
 
 string adjust_modifiertext(int id, int amount);
 
@@ -27,7 +27,7 @@ struct IDBAdjustment {
 public:
   // NOTE: there is currently an implicit assumption that the "damage" stats are first. Don't violate this. Look for DAMAGE_* for the places where it matters.
   // Also, these are obviously correlated with the string arrays above.
-  enum { DAMAGE_KINETIC, DAMAGE_ENERGY, DAMAGE_EXPLOSIVE, DAMAGE_TRAP, DAMAGE_EXOTIC, WARHEAD_RADIUS_FALLOFF, DISCOUNT_WEAPON, DISCOUNT_IMPLANT, DISCOUNT_UPGRADE, DISCOUNT_TANK, RECYCLE_BONUS, TANK_FIRERATE, TANK_SPEED, TANK_TURN, TANK_ARMOR, LAST, DAMAGE_ALL = LAST, ALL, COMBO_LAST, DAMAGE_LAST = DAMAGE_EXOTIC + 1, DISCOUNT_BEGIN = DISCOUNT_WEAPON, DISCOUNT_END = DISCOUNT_TANK + 1, TANK_BEGIN = TANK_FIRERATE, TANK_END = TANK_ARMOR + 1 };
+  enum { DAMAGE_KINETIC, DAMAGE_ENERGY, DAMAGE_EXPLOSIVE, DAMAGE_TRAP, DAMAGE_EXOTIC, WARHEAD_RADIUS_FALLOFF, DISCOUNT_WEAPON, DISCOUNT_IMPLANT, DISCOUNT_UPGRADE, DISCOUNT_TANK, RECYCLE_BONUS, TANK_FIRERATE, TANK_SPEED, TANK_TURN, TANK_ARMOR, BOMBARDMENT_SPEED, LAST, DAMAGE_ALL = LAST, ALL, COMBO_LAST, DAMAGE_LAST = DAMAGE_EXOTIC + 1, DISCOUNT_BEGIN = DISCOUNT_WEAPON, DISCOUNT_END = DISCOUNT_TANK + 1, TANK_BEGIN = TANK_FIRERATE, TANK_END = TANK_ARMOR + 1 };
   
   bool ignore_excessive_radius;
   int adjusts[LAST];  // These are in percentage points away from 100. Yes, this is kind of weird.

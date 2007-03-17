@@ -237,8 +237,8 @@ IDBUpgradeAdjust::IDBUpgradeAdjust(const IDBUpgrade *in_idb, const IDBTank *in_t
  * IDBBombardmentAdjust
  */
 
-float IDBBombardmentAdjust::lockdelay() const { return idb->lockdelay / adjust.adjustmentfactor(IDBAdjustment::TANK_FIRERATE); };
-float IDBBombardmentAdjust::unlockdelay() const { return idb->unlockdelay / adjust.adjustmentfactor(IDBAdjustment::TANK_FIRERATE); };
+float IDBBombardmentAdjust::lockdelay() const { return idb->lockdelay / adjust.adjustmentfactor(IDBAdjustment::BOMBARDMENT_SPEED); };
+float IDBBombardmentAdjust::unlockdelay() const { return idb->unlockdelay / adjust.adjustmentfactor(IDBAdjustment::BOMBARDMENT_SPEED); };
 
 IDBWarheadAdjust IDBBombardmentAdjust::warhead() const { CHECK(valid_level); return IDBWarheadAdjust(idb->warhead, adjust); };
 
@@ -248,11 +248,13 @@ Money IDBBombardmentAdjust::sellcost() const { return cost() * adjust.recycleval
 IDBBombardmentAdjust::IDBBombardmentAdjust(const IDBBombardment *in_idb, const IDBAdjustment &in_adjust, int in_bombardlevel) {
   idb = in_idb; adjust = in_adjust;
   if(in_bombardlevel != -1) {
+    in_bombardlevel = 10;
     CHECK(in_bombardlevel >= 0);
     valid_level = true;
     for(int i = 0; i < IDBAdjustment::DAMAGE_LAST; i++)
       adjust.adjusts[i] += 25 * in_bombardlevel;
     adjust.adjusts[IDBAdjustment::WARHEAD_RADIUS_FALLOFF] += 20 * in_bombardlevel;
+    adjust.adjusts[IDBAdjustment::BOMBARDMENT_SPEED] += 25 * in_bombardlevel;
     if(in_bombardlevel > 0)
       adjust.ignore_excessive_radius = true;
   } else {

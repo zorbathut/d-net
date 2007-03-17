@@ -894,7 +894,7 @@ float Game::getBombardmentIncreasePerSec() const {
       bombardy++;
   if(!bombardy)
     return 0;
-  return 1 / (15 / ((float)bombardy / tanks.size()));
+  return 1 / (10 / ((float)bombardy / tanks.size()));
 }
   
 float Game::getTimeUntilBombardmentUpgrade() const {
