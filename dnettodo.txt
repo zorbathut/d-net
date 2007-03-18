@@ -1,5 +1,4 @@
 ---- Major work path
-- Make bombardment increase faster
 - Add better bombardment ticker
 - Test all tanks in all levels, make sure they don't collide with walls in start
 - Activate factions

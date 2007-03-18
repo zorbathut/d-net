@@ -669,7 +669,7 @@ void Game::renderToScreen(const vector<const Player *> &players, GameMetacontext
     // Bombardment level text
     if(bombardment_tier != 0) {
       setColor(C::gray(1.0));
-      drawText(StringPrintf("Bombardment level %d, %.0fs until next level", (int)floor(bombardment_tier) + 1, getTimeUntilBombardmentUpgrade()), 2, Float2(2, 96));
+      drawText(StringPrintf("Bombardment level %d, %.0fs until next level", (int)floor(bombardment_tier) + 1, ceil(getTimeUntilBombardmentUpgrade())), 2, Float2(2, 96));
     }
     
     setZoom(Float4(0, 0, 1.33333, 1));
@@ -678,7 +678,7 @@ void Game::renderToScreen(const vector<const Player *> &players, GameMetacontext
     if(gmc.hasMetacontext()) {
       const float iconwidth = 0.02;
       const float iconborder = 0.001;
-      const float comboborder=0.0015;
+      const float comboborder = 0.0015;
       const float lineborder = iconborder * 2;
       const float lineextra = 0.005;
       
