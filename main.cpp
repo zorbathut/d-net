@@ -8,6 +8,7 @@
 #include "httpd.h"
 #include "generators.h"
 #include "audio.h"
+#include "test.h"
 
 #include <SDL.h>
 
@@ -28,6 +29,9 @@ DEFINE_float(generateCachedShops, -1, "Do all the work necessary to cache shops.
 DEFINE_bool(generateWeaponStats, false, "Do all the work necessary to dump weapon info");
 DEFINE_bool(generateFactionStats, false, "Do all the work necessary to dump faction info");
 DEFINE_bool(dumpText, false, "Dump all \"text\" blocks");
+
+DEFINE_bool(runTests, false, "Run all tests");
+DEFINE_bool(runGame, true, "Run the actual game");
 
 DECLARE_bool(shopcache);
 
@@ -228,8 +232,12 @@ int main(int argc, char **argv) {
   initGfx();
   updateResolution(4.0 / 3.0);
   initAudio();
+  
+  if(FLAGS_runTests)
+    runTests();
 
-  MainLoop();
+  if(FLAGS_runGame)
+    MainLoop();
 
   deinitSystem();
   

@@ -56,7 +56,6 @@ Level loadLevel(const string &str) {
   }
   rv.makeProperSolids();
   
-  Gamemap gmp(rv.paths, true);
   return rv;
 }
 

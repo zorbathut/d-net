@@ -1,5 +1,4 @@
 ---- Major work path
-- Add better bombardment ticker
 - Test all tanks in all levels, make sure they don't collide with walls in start
 - Activate factions
   - Faction bonuses/penalties in demo screens
@@ -17,9 +16,10 @@
 ---- After I figure out where it's going
 - Need to sit down and rewrite the shop interface again.
   - Restricted speed/turn for the better tanks
+    - Roll speed and handling together? Otherwise, come up with a description for the implant
   - Ability to assign to *four* weapons (how the fuck will this work)
   - Pop up "sell obsolete item" on buying bombardment/glory/new tank
-
+  - Category descriptions somehow?
 ---- Sound-related stuff
 - Need sound for game start sliders
 - Need choose.wav and cursorover.wav
@@ -27,8 +27,7 @@
 - Eventually get things like weaponry sounds in
 
 ---- Things that take thought and musing
-- Roll speed and handling together? Otherwise, come up with a description for the implant
-- Category descriptions somehow?
+- Add better bombardment ticker
 - Item despawning based on wimpiest player
   - How does selling work?
 - FloatRange
@@ -47,6 +46,7 @@
 
 ---- Maintenance, minor bugfix, braindead
 - Make small text thicker
+- Set your keys/buttons changing
 - Set your keys/buttons changing
 - AI shouldn't try to buy the items it already owns/smarter about shops
 - Buy menu flicker? Double-buffering?
