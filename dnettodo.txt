@@ -1,8 +1,8 @@
 ---- Major work path
-- Test all tanks in all levels, make sure they don't collide with walls in start
 - Activate factions
   - Faction bonuses/penalties in demo screens
 - Many many more weapons
+- Netplay
 - Less incentive to camp?
   - Reduce win/kill bonus as game goes on
 - New game modes

@@ -160,6 +160,7 @@ void Metagame::findLevels(int playercount) {
   levels.clear();
   if(!levels.size()) {
     ifstream ifs("data/levels/levellist.txt");
+    CHECK(ifs);
     string line;
     while(getLineStripped(ifs, &line)) {
       Level lev = loadLevel("data/levels/" + line);
