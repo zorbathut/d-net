@@ -55,14 +55,12 @@ path {
 entity {
   type=tank start location
   coord=0.000000,0.000000
-  numerator=0
-  denominator=1
+  angle=0/1
 }
 
 entity {
   type=tank start location
   coord=1.000000,0.000000
-  numerator=0
-  denominator=1
+  angle=0/1
 }
 
