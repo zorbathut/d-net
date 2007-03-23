@@ -13,6 +13,7 @@ public:
   static StdMenuItem makeStandardMenu(const string &text, int trigger);
   static StdMenuItem makeScale(const string &text, const vector<string> &labels, float *position);
   static StdMenuItem makeRounds(const string &text, float *start, float *end, float *exp);
+  static StdMenuItem makeOptions(const string &text, const vector<string> &labels, int *position);
 
   int tick(const Keystates &keys);
   float render(float y) const;
@@ -26,7 +27,9 @@ private:
   int trigger;
   
   vector<string> scale_labels;
-  float *scale_position;
+  float *scale_posfloat;
+  float scale_posint_approx;
+  int *scale_posint;
   
   float *rounds_start;
   float *rounds_end;
@@ -71,6 +74,9 @@ class InterfaceMain : boost::noncopyable {
   float start;
   float end;
   float moneyexp;
+  
+  // 0 represents "battle choice", 1-4 are the valid normal options
+  int faction;
   
   vector<Keystates> kst;
   

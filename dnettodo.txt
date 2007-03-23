@@ -87,11 +87,8 @@ Sound gets loaded, much like dvec2.
 Then there's IDBSoundPack items. This sounds good.
 
 ---
-Selecting
+String table stuff
 
-Okay. Things that need to be selected:
+Strtab("Hello")
 
-* Line segments
-* Points
-
-Points are easy. Line segments, less so. But they still must be done. Sigh.
+Should somehow init a *global* parameter, and load things at the beginning of the program. Given a global init somehow I can do this.

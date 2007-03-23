@@ -34,7 +34,8 @@ StdMenuItem StdMenuItem::makeScale(const string &text, const vector<string> &lab
   stim.type = TYPE_SCALE;
   stim.name = text;
   stim.scale_labels = labels;
-  stim.scale_position = position;
+  stim.scale_posfloat = position;
+  stim.scale_posint = NULL;
   return stim;
 }
 
@@ -48,6 +49,17 @@ StdMenuItem StdMenuItem::makeRounds(const string &text, float *start, float *end
   return stim;
 }
 
+StdMenuItem StdMenuItem::makeOptions(const string &text, const vector<string> &labels, int *position) {
+  StdMenuItem stim;
+  stim.type = TYPE_SCALE;
+  stim.name = text;
+  stim.scale_labels = labels;
+  stim.scale_posfloat = NULL;
+  stim.scale_posint = position;
+  stim.scale_posint_approx = *position;
+  return stim;
+}
+
 int StdMenuItem::tick(const Keystates &keys) {
   if(type == TYPE_TRIGGER) {
     if(keys.accept.push) {
@@ -55,10 +67,23 @@ int StdMenuItem::tick(const Keystates &keys) {
       return trigger;
     }
   } else if(type == TYPE_SCALE) {
-    if(keys.l.down)
-      *scale_position -= 0.05;
-    if(keys.r.down)
-      *scale_position += 0.05;
+    if(scale_posfloat) {
+      if(keys.l.down)
+        *scale_posfloat -= 0.05;
+      if(keys.r.down)
+        *scale_posfloat += 0.05;
+      *scale_posfloat = clamp(*scale_posfloat, 0, scale_labels.size());
+    } else {
+      CHECK(scale_posint);
+      if(keys.l.down)
+        scale_posint_approx -= 0.03;
+      if(keys.r.down)
+        scale_posint_approx += 0.03;
+      if(!keys.l.down && !keys.r.down)
+        scale_posint_approx = approach(scale_posint_approx, round(scale_posint_approx), 0.01);
+      scale_posint_approx = clamp(scale_posint_approx, 0, scale_labels.size());
+      *scale_posint = round(scale_posint_approx);
+    }
   } else if(type == TYPE_ROUNDS) {
     if(keys.l.down)
       *rounds_exp *= 1.01;
@@ -78,11 +103,18 @@ float StdMenuItem::render(float y) const {
   } else if(type == TYPE_SCALE) {
     drawText(name.c_str(), 4, Float2(2, y));
     
+    CHECK(!scale_posfloat + !scale_posint == 1);
+    float pos;
+    if(scale_posfloat)
+      pos = *scale_posfloat;
+    else
+      pos = scale_posint_approx;
+    
     float xstart = 40;
     Float4 boundy = Float4(xstart, y, getZoom().ex - 4, y + 4);
     GfxWindow gfxw(boundy, 1.0);
     
-    setZoomAround(Float4(*scale_position - 2, 0, *scale_position + 2, 0));
+    setZoomAround(Float4(pos - 2, 0, pos + 2, 0));
     
     float height = getZoom().span_y();
     
@@ -99,10 +131,10 @@ float StdMenuItem::render(float y) const {
     setColor(C::active_text);
     {
       vector<Float2> path;
-      path.push_back(Float2(*scale_position, height / 8));
-      path.push_back(Float2(*scale_position + height / 16, height / 4));
-      path.push_back(Float2(*scale_position, height / 2 - height / 8));
-      path.push_back(Float2(*scale_position - height / 16, height / 4));
+      path.push_back(Float2(pos, height / 8));
+      path.push_back(Float2(pos + height / 16, height / 4));
+      path.push_back(Float2(pos, height / 2 - height / 8));
+      path.push_back(Float2(pos - height / 16, height / 4));
       drawLineLoop(path, height / 20);
     }
     return 6;
@@ -135,6 +167,9 @@ int StdMenu::tick(const Keystates &keys) {
   }
   cpos = modurot(cpos, items.size());
   
+  for(int i = 0; i < items.size(); i++)
+    if(i != cpos)
+      items[i].tick(Keystates());
   return items[cpos].tick(keys);
 }
 
@@ -377,8 +412,6 @@ bool InterfaceMain::tick(const vector< Controller > &control, RngSeed gameseed) 
     }
   } else if(interface_mode == STATE_CONFIGURE) {
     int mrv = configmenu.tick(kst[controls_primary_id()]);
-    start = clamp(start, 0, 6);
-    end = clamp(end, 0, 6);
     if(start > end) {
       if(configmenu.currentItem() == 0) {
         start = end;
@@ -538,6 +571,8 @@ void InterfaceMain::render() const {
 };
 #endif
 
+DEFINE_int(factionMode, 0, "Faction mode to skip faction choice battle");
+
 InterfaceMain::InterfaceMain() {
   interface_mode = STATE_MAINMENU;
   mainmenu.pushMenuItem(StdMenuItem::makeStandardMenu("New game", MAIN_NEWGAME));
@@ -554,9 +589,13 @@ InterfaceMain::InterfaceMain() {
   end = names.size() - 1;
   moneyexp = 0.1133;
   
+  faction = FLAGS_factionMode + 1;
+  CHECK(faction >= 0 && faction < 5);
+  
   configmenu.pushMenuItem(StdMenuItem::makeScale("Game start", names, &start));
   //configmenu.pushMenuItem(StdMenuItem::makeScale("Game end", names, &end));
   configmenu.pushMenuItem(StdMenuItem::makeRounds("Estimated rounds", &start, &end, &moneyexp));
+  configmenu.pushMenuItem(StdMenuItem::makeOptions("Faction mode", boost::assign::list_of("Battle")("No factions")("Minor factions")("Normal factions")("Major factions"), &faction));
   configmenu.pushMenuItem(StdMenuItem::makeStandardMenu("Begin", 1));
   
   grid = false;
