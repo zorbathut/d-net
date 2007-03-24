@@ -29,6 +29,8 @@ public:
 
 private:
 
+  int getMultiplier() const;
+  
   GamePackage game;
   vector<smart_ptr<GameAi> > ais;
 

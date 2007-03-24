@@ -440,10 +440,15 @@ void ShopDemo::glory_respawnPlayers() {
   }
 };
 
-int mult(int frams, const int *progression) {
-  if(frams < progression[0])
+DEFINE_bool(fastForwardOnNoCache, true, "Enables fastforwarding when there's no shopcache file to fall back on");
+
+int ShopDemo::getMultiplier() const {
+  if(!FLAGS_fastForwardOnNoCache || prerolled)
+    return 1;
+  
+  if(game.game.frameCount() < progression[0])
     return 10;
-  if(frams < progression[1])
+  if(game.game.frameCount() < progression[1])
     return 4;
   return 1;
 }
@@ -510,12 +515,8 @@ void ShopDemo::runSingleTick() {
   game.runTick(kist, &unsync());
 };
 
-DEFINE_bool(fastForwardOnNoCache, true, "Enables fastforwarding when there's no shopcache file to fall back on");
-
 void ShopDemo::runTick() {
-  int timing = mult(game.game.frameCount(), progression);
-  if(prerolled || !FLAGS_fastForwardOnNoCache)
-    timing = 1;
+  int timing = getMultiplier();
   for(int i = 0; i < timing; i++) {
     runSingleTick();
   }
@@ -525,8 +526,8 @@ void ShopDemo::renderFrame() const {
   game.renderToScreen();
   setZoom(Float4(0, 0, 1, 1));
   setColor(1, 1, 1);
-  if(mult(game.game.frameCount(), progression) != 1 && !prerolled)
-    drawJustifiedText(StringPrintf("Fastforward %dx", mult(game.game.frameCount(), progression)), 0.05, Float2(0, 1), TEXT_MIN, TEXT_MAX);
+  if(getMultiplier() != 1)
+    drawJustifiedText(StringPrintf("Fastforward %dx", getMultiplier()), 0.05, Float2(0, 1), TEXT_MIN, TEXT_MAX);
 };
 
 vector<float> ShopDemo::getStats() const {
