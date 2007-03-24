@@ -1298,7 +1298,7 @@ PersistentData::PersistentData(int playercount, Money startingcash, float multip
   int cdbc = controls_primary_id();
   if(FLAGS_debugControllers >= 1) {
     CHECK(pms.size() >= 1); // better be
-    pms[cdbc].faction = &factions[13];
+    pms[cdbc].faction = &factions[5];
     factions[13].taken = true;
     pms[cdbc].settingmode = SETTING_READY;
     pms[cdbc].choicemode = CHOICE_IDLE;
@@ -1321,7 +1321,7 @@ PersistentData::PersistentData(int playercount, Money startingcash, float multip
   }
   if(FLAGS_debugControllers >= 2) {
     CHECK(pms.size() >= 2); // better be
-    pms[cdbc].faction = &factions[8];
+    pms[cdbc].faction = &factions[6];
     factions[8].taken = true;
     pms[cdbc].settingmode = SETTING_READY;
     pms[cdbc].choicemode = CHOICE_IDLE;
