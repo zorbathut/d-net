@@ -21,6 +21,8 @@ DEFINE_bool(auto_newgame, false, "Automatically enter New Game");
 DEFINE_float(startingPhase, -1, "Starting phase override");
 DEFINE_bool(showtanks, false, "Show-tank mode");
 
+DEFINE_int(factionMode, 0, "Faction mode to skip faction choice battle, -1 for normal faction mode");
+
 StdMenuItem StdMenuItem::makeStandardMenu(const string &text, int trigger) {
   StdMenuItem stim;
   stim.type = TYPE_TRIGGER;
@@ -422,7 +424,7 @@ bool InterfaceMain::tick(const vector< Controller > &control, RngSeed gameseed) 
       }
     }
     if(mrv == 1 || FLAGS_auto_newgame) {
-      game = new Metagame(control.size(), Money((long long)(1000 * pow(30, start))), exp(moneyexp), FLAGS_rounds_per_shop, gameseed);
+      game = new Metagame(control.size(), Money((long long)(1000 * pow(30, start))), exp(moneyexp), faction - 1, FLAGS_rounds_per_shop, gameseed);
       interface_mode = STATE_PLAYING;
     }
   } else if(interface_mode == STATE_PLAYING) {
@@ -570,8 +572,6 @@ void InterfaceMain::render() const {
   }
 };
 #endif
-
-DEFINE_int(factionMode, 0, "Faction mode to skip faction choice battle");
 
 InterfaceMain::InterfaceMain() {
   interface_mode = STATE_MAINMENU;

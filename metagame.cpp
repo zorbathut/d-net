@@ -14,9 +14,6 @@
 
 using namespace std;
 
-DECLARE_int(factionMode);
-// Change to -1 to enable faction mode battle
-
 bool Metagame::runTick(const vector<Controller> &keys) {
   if(mode == MGM_PLAYERCHOOSE) {
     CHECK(persistent.isPlayerChoose());
@@ -35,12 +32,13 @@ bool Metagame::runTick(const vector<Controller> &keys) {
       for(int i = 0; i < persistent.players().size(); i++)
         ppt.push_back(&persistent.players()[i]);
     }
-    if(FLAGS_factionMode != -1 || game.runTick(persistent.genKeystates(keys), ppt, &rng)) {
-      if(FLAGS_factionMode != -1)
-        faction_mode = FLAGS_factionMode;
-      else
+    
+    // This is the "do init faction-related stuff" routine. If the faction_mode isn't -1 then we go straight into intting. Otherwise, we run the Faction Game, and only init once it's done.
+    if(faction_mode != -1 || game.runTick(persistent.genKeystates(keys), ppt, &rng)) {
+      if(faction_mode == -1)  // We must have been doing the faction game, so pull the winning team from that.
         faction_mode = game.winningTeam();
-      if(faction_mode == -1) {
+      
+      if(faction_mode == -1) {  // Not only were we doing the faction game, but there *was no winner*. Penalize people for sucking >:(
         vector<int> teams = game.teamBreakdown();
         CHECK(teams.size() == 5);
         teams.erase(teams.begin() + 4);
@@ -172,17 +170,17 @@ void Metagame::findLevels(int playercount) {
   }
 }
 
-Metagame::Metagame(int playercount, Money startingcash, float multiple, int in_roundsBetweenShop, RngSeed seed) :
+Metagame::Metagame(int playercount, Money startingcash, float multiple, int faction, int in_roundsBetweenShop, RngSeed seed) :
     persistent(playercount, startingcash, multiple, in_roundsBetweenShop), rng(seed) {
   
-  if(FLAGS_factionMode != -1) {
+  faction_mode = faction;
+  if(faction_mode != -1) {
     mode = MGM_TWEEN;
     persistent.startAtNormalShop();
   } else {
     mode = MGM_PLAYERCHOOSE;
   }
   
-  faction_mode = FLAGS_factionMode;
   roundsBetweenShop = in_roundsBetweenShop;
   gameround = 0;
   CHECK(roundsBetweenShop >= 1);
