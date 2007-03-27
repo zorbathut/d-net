@@ -19,6 +19,8 @@ public:
 
   vector<Ai *> distillAi(const vector<Ai *> &ais) const;
 
+  void setFactionMode(int faction_mode);
+
   // State accessors
   bool isPlayerChoose() const;
 
@@ -45,6 +47,7 @@ private:
   vector<int> playerid; // from pms to playerdata ID
   
   vector<FactionState> factions;
+  int faction_mode;
   
   // Temporaries for scoring
   vector<vector<float> > lrCategory;

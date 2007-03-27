@@ -149,6 +149,7 @@ public:
   bool hasValidTank() const;
 
   const IDBFaction *getFaction() const;
+  void setFactionMode(int faction_mode);
   
   IDBGloryAdjust getGlory() const;
   IDBBombardmentAdjust getBombardment(int bombard_level) const;

@@ -513,6 +513,11 @@ bool Player::hasValidTank() const {
 const IDBFaction *Player::getFaction() const {
   return faction; };
 
+void Player::setFactionMode(int faction_mode) {
+  factionmode = faction_mode;
+  reCalculate();
+}
+
 IDBGloryAdjust Player::getGlory() const {
   return adjustGlory(glory[0]); };
 IDBBombardmentAdjust Player::getBombardment(int bombard_level) const {
@@ -623,7 +628,6 @@ Player::Player(const IDBFaction *fact, int in_factionmode, Money money) : weapon
   faction = fact;
   factionmode = in_factionmode;
   CHECK(factionmode >= 0 && factionmode < FACTIONMODE_LAST);
-  CHECK(factionmode == 0);
   cash = money;
   glory.push_back(defaultGlory());
   bombardment.push_back(defaultBombardment());

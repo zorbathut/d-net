@@ -926,6 +926,13 @@ vector<Ai *> PersistentData::distillAi(const vector<Ai *> &ai) const {
   return rv;
 }
 
+void PersistentData::setFactionMode(int in_faction_mode) {
+  CHECK(in_faction_mode >= 0 && in_faction_mode < 4);
+  faction_mode = in_faction_mode;
+  for(int i = 0; i < playerdata.size(); i++)
+    playerdata[i].setFactionMode(faction_mode);
+}
+
 void PersistentData::ai(const vector<Ai *> &ais) const {
   StackString sst("persistent AI");
   if(mode == TM_RESULTS) {
@@ -1214,6 +1221,7 @@ DEFINE_int(debugControllers, 0, "Number of controllers to set to debug defaults"
 
 PersistentData::PersistentData(int playercount, Money startingcash, float multiple, int in_roundsbetweenshop) {
   roundsbetweenshop = in_roundsbetweenshop;
+  faction_mode = 0;
   
   pms.clear();
   pms.resize(playercount);
@@ -1316,7 +1324,7 @@ PersistentData::PersistentData(int playercount, Money startingcash, float multip
     pms[cdbc].setting_axistype = KSAX_STEERING;
     pms[cdbc].setting_old_axistype = KSAX_STEERING;
     playerid[cdbc] = playerdata.size();
-    playerdata.push_back(Player(pms[cdbc].faction->faction, 0, newPlayerStartingCash));
+    playerdata.push_back(Player(pms[cdbc].faction->faction, faction_mode, newPlayerStartingCash));
     cdbc++;
   }
   if(FLAGS_debugControllers >= 2) {
@@ -1339,7 +1347,7 @@ PersistentData::PersistentData(int playercount, Money startingcash, float multip
     pms[cdbc].setting_axistype = KSAX_ABSOLUTE;
     pms[cdbc].setting_old_axistype = KSAX_ABSOLUTE;
     playerid[cdbc] = playerdata.size();
-    playerdata.push_back(Player(pms[cdbc].faction->faction, 0, newPlayerStartingCash));
+    playerdata.push_back(Player(pms[cdbc].faction->faction, faction_mode, newPlayerStartingCash));
     cdbc++;
   }
   if(FLAGS_debugControllers >= 3) {
@@ -1362,7 +1370,7 @@ PersistentData::PersistentData(int playercount, Money startingcash, float multip
     pms[cdbc].setting_axistype = KSAX_TANK;
     pms[cdbc].setting_old_axistype = KSAX_TANK;
     playerid[cdbc] = playerdata.size();
-    playerdata.push_back(Player(pms[cdbc].faction->faction, 0, newPlayerStartingCash));
+    playerdata.push_back(Player(pms[cdbc].faction->faction, faction_mode, newPlayerStartingCash));
     cdbc++;
   }
 }

@@ -58,7 +58,7 @@ bool Metagame::runTick(const vector<Controller> &keys) {
       // Thanks, players.
       // Thlayers.
       
-      // TODO: pay some attention to our result
+      persistent.setFactionMode(faction_mode);
     }
   } else if(mode == MGM_TWEEN) {
     if(persistent.tick(keys)) {
@@ -176,6 +176,7 @@ Metagame::Metagame(int playercount, Money startingcash, float multiple, int fact
   faction_mode = faction;
   if(faction_mode != -1) {
     mode = MGM_TWEEN;
+    persistent.setFactionMode(faction_mode);
     persistent.startAtNormalShop();
   } else {
     mode = MGM_PLAYERCHOOSE;
