@@ -305,7 +305,7 @@ Money IDBImplantAdjust::costToLevel(int curlevel) const {
   Money flev = Money(5000);
   for(int i = 0; i < curlevel; i++)
     flev = flev * 30;
-  return flev;
+  return flev / adjust.adjustmentfactor(IDBAdjustment::DISCOUNT_IMPLANT);
 }
 
 IDBImplantAdjust::IDBImplantAdjust(const IDBImplant *in_idb, const IDBAdjustment &in_adjust) { idb = in_idb; adjust = in_adjust; }

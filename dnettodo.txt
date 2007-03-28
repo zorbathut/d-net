@@ -1,6 +1,4 @@
 ---- Major work path
-- Activate factions
-  - Faction bonuses/penalties in demo screens
 - Many many more weapons
 - Netplay
 - Less incentive to camp?
