@@ -1,49 +1,22 @@
 
+################################################################
+#
+#     Sparkers
+
+#### Text
+
 text {
   name=text.weapon.sparker
   data=The most infamous of junkyard weapons, the Sparker is a cobbled together monstrosity from whatever parts can be found. It is not powerful, accurate, nor rapid, but can serve if no other weapons are available.
 }
 
 text {
-  name=text.tank.otekii
-  data=The most powerful tank twenty years ago, the Otek II is now utterly obsolete. Many are still used in combat, usually in rebuilt and reconditioned form.
-  data=Upgrade ASAP.
-}
-
-text {
-  name=text.tank.cara
-  data=The Cara series was designed for warriors who value speed above everything. Lightweight but sturdy, Cara tanks can outmaneuver anything in their class.
-}
-
-text {
-  name=text.tank.pire
-  data=Tired of having to choose between slow tanks and flimsy tanks, the Pire's designer set out to make a tank with no weak points and produced a solid contender on the field. Unfortunately but inevitably it also has no strong points.
-}
-
-text {
-  name=text.tank.roxo
-  data=Reinforced beyond previous records, the Roxo was, for a time, the world's heaviest tank. Soon surpassed by more advanced construction techniques, it is still unequaled among the lower-tech and cheaper tanks.
-}
-
-text {
-  name=text.weapon.sparker3
+  name=text.weapon.sparker4
   data=Named after the junkyard weapon, the "later models" of the Sparker are surprisingly useful and general weapons. They can be efficiently used in many situations and are not quite as hopeless as the Sparker I.
 }
 
-text {
-  name=text.tank.seka
-  data=Designed by Hermes scientists, the Seka tank is a speedy agile tank equipped with traps and long-range weaponry. It also features improved speed upgradability.
-}
 
-text {
-  name=text.tank.mari
-  data=Custom-built for Jason's Juggernauts, the Mari's advanced weaponry systems improve its fire rate substantially but decrease its speed significantly. Several aftermarket weapon boost kits exist for this tank.
-}
-
-text {
-  name=text.tank.tuvu
-  data=One of the only practical Amazon designs ever released, the Tuvu is a heavy and surprisingly fast tank equipped with improved projectile and explosive systems. It lacks the upgradability of other tanks in its class.
-}
+#### Effects
 
 effects {
   name=effects.sparker1
@@ -90,6 +63,9 @@ effects {
   color=0.3, 0.3, 1.0
 }
 
+
+#### Sparker I
+
 warhead {
   name=warhead.sparker1
   impactdamage=0.4 kinetic
@@ -133,32 +109,8 @@ weapon {
   launcher=launcher.sparker1
 }
 
-tank {
-  name=ROOT.Tanks.OTEK II
 
-  health=20
-  handling=2
-  engine=24
-  
-  mass=50
-  
-  weapon=Sparker I
-  
-  upgrades=Basic hull
-  upgrades=Basic engine
-  upgrades=Basic handling
-  
-  cost=0
-  upgrade_base=2000
-  
-  default=1
-  
-  vertices=6.5 0 firepoint
-  vertices=0 -2.5 rear_begin
-  vertices=0 2.5 rear_end
-  
-  text=text.tank.otekii
-}
+#### Sparker II
 
 warhead {
   name=warhead.sparker2
@@ -200,6 +152,199 @@ weapon {
   
   launcher=launcher.sparker2
 }
+
+
+#### Sparker III
+
+warhead {
+  name=warhead.sparker3
+  impactdamage=1.0 kinetic
+  impactdamage=1.0 energy
+  impactdamage=1.0 explosive
+  
+  effects_impact=effects.sparker1
+  effects_impact=effects.sparker2
+  effects_impact=effects.sparker3
+}
+
+projectile {
+  name=projectile.sparker3
+  velocity=200
+  color=1.0, 1.0, 1.0
+  warhead=warhead.sparker3
+}
+
+deploy {
+  name=deploy.sparker3
+  
+  anglestddev=0.018
+  
+  projectile=projectile.sparker3
+}
+
+launcher {
+  name=launcher.sparker3
+  
+  deploy=deploy.sparker3
+  
+  stats=stats.null
+  
+  text=text.weapon.sparker
+}
+
+weapon {
+  name=Sparker III
+  firerate=8
+  
+  launcher=launcher.sparker3
+}
+
+
+#### Sparker IV
+
+warhead {
+  name=warhead.sparker4
+  impactdamage=4.0 kinetic
+  impactdamage=4.0 energy
+  impactdamage=4.0 explosive
+  
+  effects_impact=effects.sparker1
+  effects_impact=effects.sparker2
+  effects_impact=effects.sparker3
+}
+
+projectile {
+  name=projectile.sparker4
+  velocity=210
+  color=1.0, 1.0, 1.0
+  thickness_visual=1.5x
+  length=1.5x
+  warhead=warhead.sparker4
+}
+
+deploy {
+  name=deploy.sparker4
+  
+  anglestddev=0.025
+  
+  projectile=projectile.sparker4
+}
+
+launcher {
+  name=launcher.sparker4
+  
+  deploy=deploy.sparker4
+  
+  stats=stats.null
+  
+  text=text.weapon.sparker4
+}
+
+weapon {
+  name=Sparker IV
+  firerate=4
+  
+  launcher=launcher.sparker4
+}
+
+
+
+################################################################
+#
+#     Tank-related stuff
+
+#### Text
+
+text {
+  name=text.tank.otekii
+  data=The most powerful tank twenty years ago, the Otek II is now utterly obsolete. Many are still used in combat, usually in rebuilt and reconditioned form.
+  data=Upgrade ASAP.
+}
+
+text {
+  name=text.tank.cara
+  data=The Cara series was designed for warriors who value speed above everything. Lightweight but sturdy, Cara tanks can outmaneuver anything in their class.
+}
+
+text {
+  name=text.tank.pire
+  data=Tired of having to choose between slow tanks and flimsy tanks, the Pire's designer set out to make a tank with no weak points and produced a solid contender on the field. Unfortunately but inevitably it also has no strong points.
+}
+
+text {
+  name=text.tank.roxo
+  data=Reinforced beyond previous records, the Roxo was, for a time, the world's heaviest tank. Soon surpassed by more advanced construction techniques, it is still unequaled among the lower-tech and cheaper tanks.
+}
+
+text {
+  name=text.tank.seka
+  data=Designed by Hermes scientists, the Seka tank is a speedy agile tank equipped with traps and long-range weaponry. It also features improved speed upgradability.
+}
+
+text {
+  name=text.tank.mari
+  data=Custom-built for Jason's Juggernauts, the Mari's advanced weaponry systems improve its fire rate substantially but decrease its speed significantly. Several aftermarket weapon boost kits exist for this tank.
+}
+
+text {
+  name=text.tank.tuvu
+  data=One of the only practical Amazon designs ever released, the Tuvu is a heavy and surprisingly fast tank equipped with improved projectile and explosive systems. It lacks the upgradability of other tanks in its class.
+}
+
+
+#### Adjustments
+
+adjustment {
+  name=adjustment.tank.seka
+  damage_energy=20
+  damage_trap=20
+  damage_exotic=20
+}
+
+adjustment {
+  name=adjustment.tank.tuvu
+  damage_kinetic=20
+  damage_explosive=20
+  warhead_radius_falloff=20
+}
+
+
+
+################################################################
+#
+#     Actual tanks
+
+#### Junkyard
+
+tank {
+  name=ROOT.Tanks.OTEK II
+
+  health=20
+  handling=2
+  engine=24
+  
+  mass=50
+  
+  weapon=Sparker I
+  
+  upgrades=Basic hull
+  upgrades=Basic engine
+  upgrades=Basic handling
+  
+  cost=0
+  upgrade_base=2000
+  
+  default=1
+  
+  vertices=6.5 0 firepoint
+  vertices=0 -2.5 rear_begin
+  vertices=0 2.5 rear_end
+  
+  text=text.tank.otekii
+}
+
+
+#### Civilian
 
 tank {
   name=ROOT.Tanks.CARA I
@@ -278,48 +423,8 @@ tank {
   text=text.tank.roxo
 }
 
-warhead {
-  name=warhead.sparker3
-  impactdamage=1.0 kinetic
-  impactdamage=1.0 energy
-  impactdamage=1.0 explosive
-  
-  effects_impact=effects.sparker1
-  effects_impact=effects.sparker2
-  effects_impact=effects.sparker3
-}
 
-projectile {
-  name=projectile.sparker3
-  velocity=200
-  color=1.0, 1.0, 1.0
-  warhead=warhead.sparker3
-}
-
-deploy {
-  name=deploy.sparker3
-  
-  anglestddev=0.018
-  
-  projectile=projectile.sparker3
-}
-
-launcher {
-  name=launcher.sparker3
-  
-  deploy=deploy.sparker3
-  
-  stats=stats.null
-  
-  text=text.weapon.sparker3
-}
-
-weapon {
-  name=Sparker III
-  firerate=8
-  
-  launcher=launcher.sparker3
-}
+#### Advanced civilian
 
 tank {
   name=ROOT.Tanks.CARA II
@@ -402,12 +507,8 @@ tank {
   text=text.tank.roxo
 }
 
-adjustment {
-  name=adjustment.tank.seka
-  damage_energy=20
-  damage_trap=20
-  damage_exotic=20
-}
+
+#### Professional
 
 tank {
   name=ROOT.Tanks.SEKA I
@@ -474,13 +575,6 @@ tank {
   text=text.tank.mari
 }
 
-adjustment {
-  name=adjustment.tank.tuvu
-  damage_kinetic=20
-  damage_explosive=20
-  warhead_radius_falloff=20
-}
-
 tank {
   name=ROOT.Tanks.TUVU I
 
@@ -511,48 +605,8 @@ tank {
   text=text.tank.tuvu
 }
 
-warhead {
-  name=warhead.sparker4
-  impactdamage=1.0 kinetic
-  impactdamage=1.0 energy
-  impactdamage=1.0 explosive
-  
-  effects_impact=effects.sparker1
-  effects_impact=effects.sparker2
-  effects_impact=effects.sparker3
-}
 
-projectile {
-  name=projectile.sparker4
-  velocity=200
-  color=1.0, 1.0, 1.0
-  warhead=warhead.sparker4
-}
-
-deploy {
-  name=deploy.sparker4
-  
-  anglestddev=0.018
-  
-  projectile=projectile.sparker4
-}
-
-launcher {
-  name=launcher.sparker4
-  
-  deploy=deploy.sparker4
-  
-  stats=stats.null
-  
-  text=text.weapon.sparker3
-}
-
-weapon {
-  name=Sparker IV
-  firerate=8
-  
-  launcher=launcher.sparker4
-}
+#### Advanced professional
 
 tank {
   name=ROOT.Tanks.SEKA II
@@ -624,8 +678,8 @@ tank {
   name=ROOT.Tanks.TUVU II
 
   health=860
-  handling=2.1
-  engine=25
+  handling=2.2
+  engine=26
   
   mass=75
   

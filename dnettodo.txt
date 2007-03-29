@@ -33,6 +33,7 @@
 - Eventually get things like weaponry sounds in
 
 ---- Things that take thought and musing
+- Tank treads :D
 - Add better bombardment ticker
 - Item despawning based on wimpiest player
   - How does selling work?
