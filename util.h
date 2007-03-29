@@ -59,6 +59,7 @@ const Money &operator+=(Money &lhs, const Money &rhs);
 const Money &operator-=(Money &lhs, const Money &rhs);
 
 bool operator==(const Money &lhs, const Money &rhs);
+bool operator!=(const Money &lhs, const Money &rhs);
 bool operator<(const Money &lhs, const Money &rhs);
 bool operator<=(const Money &lhs, const Money &rhs);
 bool operator>(const Money &lhs, const Money &rhs);

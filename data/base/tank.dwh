@@ -5,14 +5,14 @@ text {
 }
 
 text {
-  name=text.tank.opecii
-  data=The most powerful tank twenty years ago, the Opec II is now utterly obsolete. Many are still used in combat, usually in rebuilt and reconditioned form.
+  name=text.tank.otekii
+  data=The most powerful tank twenty years ago, the Otek II is now utterly obsolete. Many are still used in combat, usually in rebuilt and reconditioned form.
   data=Upgrade ASAP.
 }
 
 text {
-  name=text.tank.carat
-  data=The Carat series was designed for warriors who value speed above everything. Lightweight but sturdy, Carat tanks can outmaneuver anything in their class.
+  name=text.tank.cara
+  data=The Cara series was designed for warriors who value speed above everything. Lightweight but sturdy, Cara tanks can outmaneuver anything in their class.
 }
 
 text {
@@ -134,7 +134,7 @@ weapon {
 }
 
 tank {
-  name=ROOT.Tanks.OPEC II
+  name=ROOT.Tanks.OTEK II
 
   health=20
   handling=2
@@ -157,7 +157,7 @@ tank {
   vertices=0 -2.5 rear_begin
   vertices=0 2.5 rear_end
   
-  text=text.tank.opecii
+  text=text.tank.otekii
 }
 
 warhead {
@@ -202,7 +202,7 @@ weapon {
 }
 
 tank {
-  name=ROOT.Tanks.CARAT I
+  name=ROOT.Tanks.CARA I
 
   health=55
   handling=2.4
@@ -223,7 +223,7 @@ tank {
   vertices=0.5 0
   vertices=0 2.25 rear_end
   
-  text=text.tank.carat
+  text=text.tank.cara
 }
 
 tank {
@@ -322,7 +322,7 @@ weapon {
 }
 
 tank {
-  name=ROOT.Tanks.CARAT II
+  name=ROOT.Tanks.CARA II
 
   health=180
   handling=2.5
@@ -344,7 +344,7 @@ tank {
   vertices=0.4 0.5
   vertices=-1 2.25 rear_end
   
-  text=text.tank.carat
+  text=text.tank.cara
 }
 
 tank {
@@ -413,8 +413,8 @@ tank {
   name=ROOT.Tanks.SEKA I
 
   health=200
-  handling=2.6
-  engine=34
+  handling=2.4
+  engine=31
   
   mass=30
   
@@ -507,6 +507,147 @@ tank {
   vertices=0.5 -1.5
   vertices=0.5 1.5
   vertices=0 2.3 rear_end
+  
+  text=text.tank.tuvu
+}
+
+warhead {
+  name=warhead.sparker4
+  impactdamage=1.0 kinetic
+  impactdamage=1.0 energy
+  impactdamage=1.0 explosive
+  
+  effects_impact=effects.sparker1
+  effects_impact=effects.sparker2
+  effects_impact=effects.sparker3
+}
+
+projectile {
+  name=projectile.sparker4
+  velocity=200
+  color=1.0, 1.0, 1.0
+  warhead=warhead.sparker4
+}
+
+deploy {
+  name=deploy.sparker4
+  
+  anglestddev=0.018
+  
+  projectile=projectile.sparker4
+}
+
+launcher {
+  name=launcher.sparker4
+  
+  deploy=deploy.sparker4
+  
+  stats=stats.null
+  
+  text=text.weapon.sparker3
+}
+
+weapon {
+  name=Sparker IV
+  firerate=8
+  
+  launcher=launcher.sparker4
+}
+
+tank {
+  name=ROOT.Tanks.SEKA II
+
+  health=650
+  handling=2.5
+  engine=32
+  
+  mass=30
+  
+  adjustment=adjustment.tank.seka
+  
+  weapon=Sparker IV
+  
+  upgrades=Basic hull
+  upgrades=Advanced engine
+  upgrades=Basic handling
+  
+  cost=15000000
+  
+  vertices=2.1 1.2
+  vertices=4 0.6
+  vertices=7 0 firepoint
+  vertices=4 -0.6
+  vertices=2.1 -1.2
+  vertices=0 -2.3 rear_begin
+  vertices=0.6 -0.8
+  vertices=0.6 0.8
+  vertices=0 2.3 rear_end
+  
+  text=text.tank.seka
+}
+
+tank {
+  name=ROOT.Tanks.MARI II
+
+  health=780
+  handling=2.0
+  engine=22
+  
+  mass=120
+  
+  adjustment=adjustment.tank.mari
+  
+  weapon=Sparker IV
+  
+  upgrades=Basic hull
+  upgrades=Basic engine
+  upgrades=Basic handling
+  upgrades=Weapon damage
+  
+  cost=15000000
+  
+  vertices=4.7 1.7
+  vertices=6.3 0.9
+  vertices=5.8 -0.5
+  vertices=5.8 0 firepoint
+  vertices=5.8 0.5
+  vertices=6.3 -0.9
+  vertices=4.7 -1.7
+  vertices=0 -2.7 rear_begin
+  vertices=0 2.7 rear_end
+  
+  text=text.tank.mari
+}
+
+
+tank {
+  name=ROOT.Tanks.TUVU II
+
+  health=860
+  handling=2.1
+  engine=25
+  
+  mass=75
+  
+  adjustment=adjustment.tank.tuvu
+  
+  weapon=Sparker IV
+  
+  upgrades=Basic hull
+  upgrades=Basic engine
+  upgrades=Basic handling
+  
+  cost=15000000
+  
+  vertices=4.4 2.2
+  vertices=5.4 1.8
+  vertices=6.8 0 firepoint
+  vertices=5.4 -1.8
+  vertices=4.4 -2.2
+  vertices=0 -2.6 rear_begin
+  vertices=0.6 -1.8
+  vertices=0.6 1.8
+  vertices=0 2.6 rear_end
   
   text=text.tank.tuvu
 }

@@ -17,21 +17,21 @@ Research Facility - ultra-high-end optimize 10%
 
 ADEFIJKLNQUVWXYZ
 
-OPEC - base
+OTEK - base
 
-CARAT - fast
+CARA - fast
 PIRE - avg
 ROXO - heavy
 
 SEKA - added damage energy, trap, exotic, fast, light - bonus speed upgrade
-MARI - bonus fire rate, slow, medium - bonus damage upgrades
 TUVU - added damage kinetic, explosive, added radius, medium, heavy
+MARI - bonus fire rate, slow, medium - bonus damage upgrades
 
-GEPIN - reduced fire speed, reduced damage *, fast, heavy - bonus damage, firespeed upgrades
+GUPE - reduced fire speed, reduced damage *, fast, heavy - bonus damage, firespeed upgrades
 BORA - medium, medium - bonus damage, firespeed, speed, hull upgrades
 HIMO - increased fire speed, increased damage *, slow, light - bonus speed, hull upgrades
 
-KERAMI - increased damage energy, trap, fast, light - all bonus upgrades
+KEROMI - increased damage energy, trap, fast, light - all bonus upgrades
 XATIPE - increased damage kinetic, medium, medium - all bonus upgrades
 DUMARO - increased damage explosive, exotic, slow, heavy - all bonus upgrades
 

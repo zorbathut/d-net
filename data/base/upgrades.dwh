@@ -231,7 +231,7 @@ text {
 
 text {
   name=text.upgrade.exotic
-  data=While no single upgrade can improve the damage of all exotic weapons, a general upgrade package can be used to do a good job for most.
+  data=While no single upgrade can improve the damage of all possible exotic weapons, a general upgrade package can be used to do a good job for most.
 }
 
 adjustment {

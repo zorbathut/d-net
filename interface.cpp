@@ -20,6 +20,7 @@ DEFINE_int(rounds_per_shop, 6, "How many rounds between each buying-things oppor
 DEFINE_bool(auto_newgame, false, "Automatically enter New Game");
 DEFINE_float(startingPhase, -1, "Starting phase override");
 DEFINE_bool(showtanks, false, "Show-tank mode");
+DEFINE_bool(makeTankDump, false, "Dump-tank mode");
 
 DEFINE_int(factionMode, 0, "Faction mode to skip faction choice battle, -1 for normal faction mode");
 
@@ -456,7 +457,36 @@ void InterfaceMain::ai(const vector<Ai *> &ai) const {
 
 extern int lastFailedFrame;
 
-void InterfaceMain::render() const {  
+bool tankCostSorter(const pair<string, IDBTank> &lhs, const pair<string, IDBTank> &rhs) {
+  return lhs.first < rhs.first;
+  if(lhs.second.base_cost != rhs.second.base_cost)
+    return lhs.second.base_cost < rhs.second.base_cost;
+  return lhs.second.engine > rhs.second.engine;
+}
+
+void InterfaceMain::render() const {
+  if(FLAGS_makeTankDump) {  // this should probably be in main.cpp really
+    static bool dumpedtanks = false;
+    
+    if(!dumpedtanks) {
+      vector<pair<string, IDBTank> > ttk;
+      for(map<string, IDBTank>::const_iterator itr = tankList().begin(); itr != tankList().end(); itr++)
+        ttk.push_back(make_pair(itr->first, itr->second));
+      sort(ttk.begin(), ttk.end(), tankCostSorter);
+      
+      dumpedtanks = true;
+      
+      FILE *of = fopen("tanks.dv2", "w");
+      for(int i = 0; i < ttk.size(); i++) {
+        fprintf(of, "path {\n  center=%d,0\n  reflect=spin\n  dupes=1\n  angle=0/1\n", i * 1000);
+        for(int j = 0; j < ttk[i].second.vertices.size(); j++)
+          fprintf(of, "  node= --- | %f,%f | ---\n", (ttk[i].second.vertices[j].y + ttk[i].second.centering_adjustment.y).toFloat() * 100, -(ttk[i].second.vertices[j].x + ttk[i].second.centering_adjustment.x).toFloat() * 100);
+        fprintf(of, "}\n\n");
+      }
+      fclose(of);
+    }
+  }
+  
   if(FLAGS_showtanks) {
     setZoomVertical(0, 0, 200);
     setColor(1.0, 1.0, 1.0);
@@ -464,12 +494,16 @@ void InterfaceMain::render() const {
     float y = 0;
     const float xsize = 30;
     const float ysize = 30;
-    for(map<string, IDBTank>::const_iterator itr = tankList().begin(); itr != tankList().end(); itr++) {
+    vector<pair<string, IDBTank> > ttk;
+    for(map<string, IDBTank>::const_iterator itr = tankList().begin(); itr != tankList().end(); itr++)
+      ttk.push_back(make_pair(itr->first, itr->second));
+    sort(ttk.begin(), ttk.end(), tankCostSorter);
+    for(int i = 0; i < ttk.size(); i++) {
       vector<Float2> vertices;
-      for(int i = 0; i < itr->second.vertices.size(); i++)
-        vertices.push_back(Float2(itr->second.vertices[i].y.toFloat(), -itr->second.vertices[i].x.toFloat()) + Float2(xsize, ysize) / 2 + Float2(x, y));
+      for(int j = 0; j < ttk[i].second.vertices.size(); j++)
+        vertices.push_back(Float2(ttk[i].second.vertices[j].y.toFloat(), -ttk[i].second.vertices[j].x.toFloat()) + Float2(xsize, ysize) / 2 + Float2(x, y));
       drawLineLoop(vertices, 0.5);
-      drawJustifiedText(strrchr(itr->first.c_str(), '.') + 1, 3, Float2(xsize / 2, ysize - 1) + Float2(x, y), TEXT_CENTER, TEXT_MAX);
+      drawJustifiedText(strrchr(ttk[i].first.c_str(), '.') + 1, 3, Float2(xsize / 2, ysize - 1) + Float2(x, y), TEXT_CENTER, TEXT_MAX);
       x += xsize;
       if(x + xsize > getZoom().ex) {
         y += ysize;

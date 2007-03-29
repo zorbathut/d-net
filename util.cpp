@@ -138,6 +138,8 @@ const Money &operator-=(Money &lhs, const Money &rhs) {
 
 bool operator==(const Money &lhs, const Money &rhs) {
   return lhs.value() == rhs.value(); }
+bool operator!=(const Money &lhs, const Money &rhs) {
+  return lhs.value() != rhs.value(); }
 bool operator<(const Money &lhs, const Money &rhs) {
   return lhs.value() < rhs.value(); }
 bool operator<=(const Money &lhs, const Money &rhs) {
@@ -156,6 +158,8 @@ Money moneyFromString(const string &rhs) {
   }
   return accum;
 }
+
+// It's made of money!
 
 /*************
  * Misc

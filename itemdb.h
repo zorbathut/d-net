@@ -213,6 +213,8 @@ struct IDBTank {
   const string *text;
   
   vector<Coord2> getTankVertices(Coord2 pos, float td) const;
+  
+  Coord2 centering_adjustment;
 };
 
 struct IDBShopcache {

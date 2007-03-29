@@ -1,4 +1,11 @@
 ---- Major work path
+- Sparker IV
+- Many many more tanks
+  - GBH I
+  - GBH II
+  - KXD A
+  - KXD B
+  - KXD O
 - Many many more weapons
 - Netplay
 - Less incentive to camp?
@@ -18,6 +25,7 @@
   - Ability to assign to *four* weapons (how the fuck will this work)
   - Pop up "sell obsolete item" on buying bombardment/glory/new tank
   - Category descriptions somehow?
+
 ---- Sound-related stuff
 - Need sound for game start sliders
 - Need choose.wav and cursorover.wav

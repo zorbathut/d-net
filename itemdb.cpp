@@ -390,7 +390,10 @@ template<typename T> T *prepareName(kvData *chunk, map<string, T> *classes, bool
 }
 
 template<typename T> const T *parseSubclass(const string &name, const map<string, T> &classes) {
-  CHECK(classes.count(name));
+  if(!classes.count(name)) {
+    dprintf("Can't find token %s\n", name.c_str());
+    CHECK(0);
+  }
   return &classes.find(name)->second;
 }
 
@@ -905,6 +908,8 @@ void parseTank(kvData *chunk, bool reload) {
   IDBTank *titem = prepareName(chunk, &tankclasses, reload, &name);
   
   string weapon = chunk->consume("weapon");
+  if(!weaponclasses.count(weapon))
+    dprintf("Can't find weapon %s", weapon.c_str());
   CHECK(weaponclasses.count(weapon));
   
   titem->weapon = &weaponclasses[weapon];
@@ -950,12 +955,12 @@ void parseTank(kvData *chunk, bool reload) {
     }
     CHECK(titem->minepath.size() >= 2);
     
-    Coord2 centr = getCentroid(titem->vertices);
+    titem->centering_adjustment = getCentroid(titem->vertices);
     for(int i = 0; i < titem->vertices.size(); i++)
-      titem->vertices[i] -= centr;
-    titem->firepoint -= centr;
+      titem->vertices[i] -= titem->centering_adjustment;
+    titem->firepoint -= titem->centering_adjustment;
     for(int i = 0; i < titem->minepath.size(); i++)
-      titem->minepath[i] -= centr;
+      titem->minepath[i] -= titem->centering_adjustment;
   }
   
   titem->base_cost = moneyFromString(chunk->consume("cost"));
