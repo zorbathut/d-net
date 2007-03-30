@@ -444,7 +444,7 @@ weapon {
 #### Text
 
 text {
-  name=text.tank.otekii
+  name=text.tank.otek
   data=The most powerful tank twenty years ago, the Otek II is now utterly obsolete. Many are still used in combat, usually in rebuilt and reconditioned form.
   data=Upgrade ASAP.
 }
@@ -490,6 +490,11 @@ adjustment {
 }
 
 adjustment {
+  name=adjustment.tank.mari
+  tank_firerate=20
+}
+
+adjustment {
   name=adjustment.tank.tuvu
   damage_kinetic=20
   damage_explosive=20
@@ -528,7 +533,7 @@ tank {
   vertices=0 -2.5 rear_begin
   vertices=0 2.5 rear_end
   
-  text=text.tank.otekii
+  text=text.tank.otek
 }
 
 
@@ -727,11 +732,6 @@ tank {
   text=text.tank.seka
 }
 
-adjustment {
-  name=adjustment.tank.mari
-  tank_firerate=20
-}
-
 tank {
   name=ROOT.Tanks.MARI I
 
@@ -892,4 +892,193 @@ tank {
   vertices=0 2.6 rear_end
   
   text=text.tank.tuvu
+}
+
+
+
+#### Military
+
+tank {
+  name=ROOT.Tanks.GUPE I
+
+  health=1
+  handling=1
+  engine=3
+  
+  mass=1
+  
+  weapon=Sparker IV
+  
+  upgrades=Basic hull
+  upgrades=Basic engine
+  upgrades=Basic handling
+  
+  cost=18000000
+  
+  vertices=6.25 1.25
+  vertices=7.0 0 firepoint
+  vertices=6.25 -1.25
+  vertices=0 -2.5 rear_begin
+  vertices=-0.5 0
+  vertices=0 2.5 rear_end
+  
+  text=text.tank.otek
+}
+
+tank {
+  name=ROOT.Tanks.BORA I
+
+  health=1
+  handling=1
+  engine=2
+  
+  mass=1
+  
+  weapon=Sparker IV
+  
+  upgrades=Basic hull
+  upgrades=Basic engine
+  upgrades=Basic handling
+  
+  cost=18000000
+  
+  vertices=4.7 1.0
+  vertices=5.6 1.1
+  vertices=7.0 0 firepoint
+  vertices=5.6 -1.1
+  vertices=4.7 -1.0
+  vertices=0 -2 rear_begin
+  vertices=0 2 rear_end
+  
+  text=text.tank.otek
+}
+
+tank {
+  name=ROOT.Tanks.HIMO I
+
+  health=1
+  handling=1
+  engine=1
+  
+  mass=1
+  
+  weapon=Sparker IV
+  
+  upgrades=Basic hull
+  upgrades=Basic engine
+  upgrades=Basic handling
+  
+  cost=18000000
+  
+  vertices=4.5 1.5
+  vertices=6 0.75
+  vertices=5 0.25
+  vertices=6.75 0 firepoint
+  vertices=5 -0.25
+  vertices=6 -0.75
+  vertices=4.5 -1.5
+  vertices=0 -2.5 rear_begin
+  vertices=0 2.5 rear_end
+  
+  text=text.tank.otek
+}
+
+
+
+#### Advanced military
+
+tank {
+  name=ROOT.Tanks.GUPE II
+
+  health=1
+  handling=1
+  engine=3
+  
+  mass=1
+  
+  weapon=Sparker V
+  
+  upgrades=Basic hull
+  upgrades=Basic engine
+  upgrades=Basic handling
+  
+  cost=450000000
+  
+  vertices=4.25 2.25
+  vertices=6.5 1.25
+  vertices=7.25 0 firepoint
+  vertices=6.5 -1.25
+  vertices=4.25 -2.25
+  vertices=0.5 -2.5 rear_begin
+  vertices=-0.5 -0.75
+  vertices=-0.5 0.75
+  vertices=0.5 2.5 rear_end
+  
+  text=text.tank.otek
+}
+
+tank {
+  name=ROOT.Tanks.BORA II
+
+  health=1
+  handling=1
+  engine=2
+  
+  mass=1
+  
+  weapon=Sparker V
+  
+  upgrades=Basic hull
+  upgrades=Basic engine
+  upgrades=Basic handling
+  
+  cost=450000000
+  
+  vertices=2.7 1.4
+  vertices=3.5 1.5
+  vertices=4.7 1.0
+  vertices=5.6 1.1
+  vertices=7.0 0 firepoint
+  vertices=5.6 -1.1
+  vertices=4.7 -1.0
+  vertices=3.5 -1.5
+  vertices=2.7 -1.4
+  vertices=0 -2 rear_begin
+  vertices=0 2 rear_end
+  
+  text=text.tank.otek
+}
+
+tank {
+  name=ROOT.Tanks.HIMO II
+
+  health=1
+  handling=1
+  engine=1
+  
+  mass=1
+  
+  weapon=Sparker V
+  
+  upgrades=Basic hull
+  upgrades=Basic engine
+  upgrades=Basic handling
+  
+  cost=450000000
+  
+  vertices=4.5 1.5
+  vertices=4.5 0.9
+  vertices=5.5 1.0
+  vertices=6 0.75
+  vertices=5 0.25
+  vertices=6.75 0 firepoint
+  vertices=5 -0.25
+  vertices=6 -0.75
+  vertices=5.5 -1.0
+  vertices=4.5 -0.9
+  vertices=4.5 -1.5
+  vertices=0 -2.5 rear_begin
+  vertices=0 2.5 rear_end
+  
+  text=text.tank.otek
 }

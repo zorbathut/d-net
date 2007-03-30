@@ -52,8 +52,8 @@ KXD O                                                                        ---
                 Junkyard | Civilian | Professi | Military | Exotic | Experimental | Ultimate (OGRE only)
 
 KINETIC
-Autocannon      -------------
-AP Autocannon             ------------
+XAutocannon      -------------
+XAP Autocannon             ------------
 Hvy Autocannon                   -----------
 Sabot Shotgun                             -----------
 Blade Launcher                                    -----------
@@ -68,8 +68,8 @@ Metal Storm                                      --------------------------
 
 
 ENERGY
-Laser           -------------
-Megawatt Laser            ----------
+XLaser           -------------
+XMegawatt Laser            ----------
 Gigawatt Laser                   -------------
 Plasma Cannon                             ------------
 Gamma Beam                                       ------------
@@ -82,8 +82,8 @@ Reflector Beam
 Lightning Gun                           ---------------------------
 
 EXPLOSIVE
-Missile
-HE Missile
+XMissile
+XHE Missile
 Cluster Missile
 Proximity Rocket
 Adaptive Shaped Rocket
@@ -96,7 +96,7 @@ Homing Cluster
 Megacluster Bomb
 
 TRAP
-Mine
+XMine
 Tripwire
 Ion Beam
 Spider Mine
@@ -104,7 +104,7 @@ Proximity Mine
 Proximity Cluster Bomb
 
 EXOTIC
-EMP
+XEMP
 Angel Cannon
 Chaos Bomb
 Flash Gun
@@ -113,22 +113,23 @@ Reflection Bomb
 Omni-Graviton Refraction Emitter (OGRE)
 
 BOMBARDMENT
-Minibomb
-Bomb
-Megabomb
+XMinibomb
+XBomb
+XMegabomb
 Cluster Bomb
 Orbital Nuke
 Antimatter Drop
 
-Railgun
-Airstrike
+XRailgun
+XHeavy Railgun
 Laser Satellite
+Airstrike
 EMP Cluster
 
 GLORY
-?
-Shaped Charges
-Plasma Charge
+XBasic
+XShaped Charges
+XPlasma Charge
 Core Explosive
 Overload Chip
 Kamikaze Warhead

@@ -1,11 +1,10 @@
 ---- Major work path
 - Figure out why Sparker Omega shots are going through the walls. Tick before collision?
-- Many many more tanks
-  - GBH I
-  - GBH II
+- Many many more tank models
   - KXD A
   - KXD B
   - KXD O
+- Tank numbers and balance
 - Many many more weapons
 - Netplay
 - Less incentive to camp?
