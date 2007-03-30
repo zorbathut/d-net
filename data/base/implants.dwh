@@ -88,7 +88,7 @@ text {
 adjustment {
   name=adjustment.implant.speed
   
-  tank_speed=10
+  tank_speed=5
 }
 
 implant {
@@ -108,7 +108,7 @@ text {
 adjustment {
   name=adjustment.implant.handling
   
-  tank_turn=10
+  tank_turn=5
 }
 
 implant {
