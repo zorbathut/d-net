@@ -71,7 +71,6 @@ void Projectile::firstCollide(Collider *collider, int owner, int id) const {
     vector<Coord2> ite = mine_polys();
     for(int i = 0; i < ite.size(); i++)
       collider->addToken(CollideId(CGR_STATPROJECTILE, owner, id), Coord4(ite[i], ite[(i + 1) % ite.size()]), Coord4(0, 0, 0, 0));
-    //collider->markPersistent(CollideId(CGR_STATPROJECTILE, owner, id));
   }
 }
 
@@ -234,7 +233,8 @@ void ProjectilePack::tick(vector<smart_ptr<GfxEffects> > *gfxe, Collider *collid
     if(itr->second.isLive() && itr->second.isDetonating())
       itr->second.detonate(itr->second.warheadposition(), NO_NORMAL, NULL, GamePlayerContext(gic.players[owner], this, gic), false);
     if(itr->second.isLive()) {
-      itr->second.tick(gfxe, gic.rng);
+      if(!count(newitems.begin(), newitems.end(), itr->first))  // we make sure we do collisions before ticks
+        itr->second.tick(gfxe, gic.rng);
       if(itr->second.isLive() && itr->second.isDetonating())
         itr->second.detonate(itr->second.warheadposition(), NO_NORMAL, NULL, GamePlayerContext(gic.players[owner], this, gic), false);
       if(itr->second.isLive()) {

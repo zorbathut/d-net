@@ -12,7 +12,12 @@ text {
 
 text {
   name=text.weapon.sparker4
-  data=Named after the junkyard weapon, the "later models" of the Sparker are surprisingly useful and general weapons. They can be efficiently used in many situations and are not quite as hopeless as the Sparker I.
+  data=Named after the original junkyard weapon, the "later models" of the Sparker are surprisingly useful and general weapons. They can be efficiently used in many situations and are not quite as hopeless as the Sparker I.
+}
+
+text {
+  name=text.weapon.sparker7
+  data=Although it bears almost no resemblance to the original Sparker, this weapon bears the namesake of the original Devastation Net staple. It fires a high-speed entangled-chaos package, bombarding the impact area with energetic nanoparticles.
 }
 
 
@@ -247,6 +252,189 @@ weapon {
   launcher=launcher.sparker4
 }
 
+
+#### Sparker V
+
+warhead {
+  name=warhead.sparker5
+  impactdamage=6.0 kinetic
+  impactdamage=6.0 energy
+  impactdamage=6.0 explosive
+  
+  effects_impact=effects.sparker1
+  effects_impact=effects.sparker2
+  effects_impact=effects.sparker3
+}
+
+projectile {
+  name=projectile.sparker5
+  velocity=225
+  color=1.0, 1.0, 1.0
+  thickness_visual=1.5x
+  length=1.5x
+  warhead=warhead.sparker5
+}
+
+deploy {
+  name=deploy.sparker5
+  
+  anglestddev=0.022
+  
+  projectile=projectile.sparker5
+}
+
+launcher {
+  name=launcher.sparker5
+  
+  deploy=deploy.sparker5
+  
+  stats=stats.null
+  
+  text=text.weapon.sparker4
+}
+
+weapon {
+  name=Sparker V
+  firerate=6.5
+  
+  launcher=launcher.sparker5
+}
+
+
+#### Sparker VI
+
+warhead {
+  name=warhead.sparker6
+  impactdamage=9.0 kinetic
+  impactdamage=9.0 energy
+  impactdamage=9.0 explosive
+  
+  effects_impact=effects.sparker1
+  effects_impact=effects.sparker2
+  effects_impact=effects.sparker3
+}
+
+projectile {
+  name=projectile.sparker6
+  velocity=240
+  color=1.0, 1.0, 1.0
+  thickness_visual=1.5x
+  length=1.5x
+  warhead=warhead.sparker6
+}
+
+deploy {
+  name=deploy.sparker6
+  
+  anglestddev=0.020
+  
+  projectile=projectile.sparker6
+}
+
+launcher {
+  name=launcher.sparker6
+  
+  deploy=deploy.sparker6
+  
+  stats=stats.null
+  
+  text=text.weapon.sparker4
+}
+
+weapon {
+  name=Sparker VI
+  firerate=10
+  
+  launcher=launcher.sparker6
+}
+
+
+#### Sparker Omega
+
+warhead {
+  name=warhead.sparker7.secondary
+  impactdamage=3.0 kinetic
+  impactdamage=3.0 energy
+  impactdamage=3.0 explosive
+  
+  effects_impact=effects.sparker1
+  effects_impact=effects.sparker2
+  effects_impact=effects.sparker3
+}
+
+projectile {
+  name=projectile.sparker7.secondary
+  motion=airbrake
+  airbrake_life=0.2
+  velocity=120
+  color=1.0, 1.0, 1.0
+  thickness_visual=1.5x
+  warhead=warhead.sparker7.secondary
+}
+
+deploy {
+  name=deploy.sparker7.secondary
+  type=explode
+  
+  exp_minsplits=12
+  exp_maxsplits=18
+  exp_minsplitsize=1
+  exp_maxsplitsize=5
+  
+  exp_shotspersplit=1
+  
+  projectile=projectile.sparker7.secondary
+}
+
+warhead {
+  name=warhead.sparker7
+  impactdamage=20.0 kinetic
+  impactdamage=20.0 energy
+  impactdamage=20.0 explosive
+  
+  effects_impact=effects.sparker1
+  effects_impact=effects.sparker2
+  effects_impact=effects.sparker3
+  effects_impact=effects.sparker1
+  effects_impact=effects.sparker2
+  effects_impact=effects.sparker3 # yeah this is cheap
+  
+  deploy=deploy.sparker7.secondary
+}
+
+projectile {
+  name=projectile.sparker7
+  velocity=280
+  color=1.0, 1.0, 1.0
+  thickness_visual=1.5x
+  length=1.5x
+  warhead=warhead.sparker7
+}
+
+deploy {
+  name=deploy.sparker7
+  
+  anglestddev=0.03
+  
+  projectile=projectile.sparker7
+}
+
+launcher {
+  name=launcher.sparker7
+  
+  deploy=deploy.sparker7
+  
+  stats=stats.null
+  
+  text=text.weapon.sparker7
+}
+
+weapon {
+  name=Sparker Omega
+  firerate=4
+  
+  launcher=launcher.sparker7
+}
 
 
 ################################################################
@@ -662,9 +850,9 @@ tank {
   
   vertices=4.7 1.7
   vertices=6.3 0.9
-  vertices=5.8 -0.5
-  vertices=5.8 0 firepoint
   vertices=5.8 0.5
+  vertices=5.8 0 firepoint
+  vertices=5.8 -0.5
   vertices=6.3 -0.9
   vertices=4.7 -1.7
   vertices=0 -2.7 rear_begin

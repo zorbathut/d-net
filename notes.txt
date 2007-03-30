@@ -17,23 +17,23 @@ Research Facility - ultra-high-end optimize 10%
 
 ADEFIJKLNQUVWXYZ
 
-OTEK - base
+OTEK - base (triangle)
 
-CARA - fast
-PIRE - avg
-ROXO - heavy
+CARA - fast (arrow)
+PIRE - avg (blunt)
+ROXO - heavy (wide)
 
-SEKA - added damage energy, trap, exotic, fast, light - bonus speed upgrade
-TUVU - added damage kinetic, explosive, added radius, medium, heavy
-MARI - bonus fire rate, slow, medium - bonus damage upgrades
+SEKA - added damage energy, trap, exotic, fast, light - bonus speed upgrade (concave arrow)
+TUVU - added damage kinetic, explosive, added radius, medium, heavy (box)
+MARI - bonus fire rate, slow, medium - bonus damage upgrades (depression)
 
-GUPE - reduced fire speed, reduced damage *, fast, heavy - bonus damage, firespeed upgrades
-BORA - medium, medium - bonus damage, firespeed, speed, hull upgrades
-HIMO - increased fire speed, increased damage *, slow, light - bonus speed, hull upgrades
+GUPE - reduced fire speed, reduced damage *, fast, heavy - bonus damage, firespeed upgrades (convex bottom, blunt, aerodynamic)
+BORA - medium, medium - bonus damage, firespeed, speed, hull upgrades (?)
+HIMO - increased fire speed, increased damage *, slow, light - bonus speed, hull upgrades (tri-point)
 
-KEROMI - increased damage energy, trap, fast, light - all bonus upgrades
-XATIPE - increased damage kinetic, medium, medium - all bonus upgrades
-DUMARO - increased damage explosive, exotic, slow, heavy - all bonus upgrades
+KEROMI - increased damage energy, trap, fast, light - all bonus upgrades (thin, teeth)
+XATIPE - increased damage kinetic, medium, medium - all bonus upgrades (normal, teeth)
+DUMARO - increased damage explosive, exotic, slow, heavy - all bonus upgrades (heavy, teeth)
 
 OPEC            --------
 

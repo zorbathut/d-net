@@ -1,5 +1,5 @@
 ---- Major work path
-- Sparker IV
+- Figure out why Sparker Omega shots are going through the walls. Tick before collision?
 - Many many more tanks
   - GBH I
   - GBH II

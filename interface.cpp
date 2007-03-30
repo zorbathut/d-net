@@ -20,7 +20,7 @@ DEFINE_int(rounds_per_shop, 6, "How many rounds between each buying-things oppor
 DEFINE_bool(auto_newgame, false, "Automatically enter New Game");
 DEFINE_float(startingPhase, -1, "Starting phase override");
 DEFINE_bool(showtanks, false, "Show-tank mode");
-DEFINE_bool(makeTankDump, false, "Dump-tank mode");
+DEFINE_bool(dumpTanks, false, "Dump-tank mode");
 
 DEFINE_int(factionMode, 0, "Faction mode to skip faction choice battle, -1 for normal faction mode");
 
@@ -458,14 +458,14 @@ void InterfaceMain::ai(const vector<Ai *> &ai) const {
 extern int lastFailedFrame;
 
 bool tankCostSorter(const pair<string, IDBTank> &lhs, const pair<string, IDBTank> &rhs) {
-  return lhs.first < rhs.first;
+  //return lhs.first < rhs.first;
   if(lhs.second.base_cost != rhs.second.base_cost)
     return lhs.second.base_cost < rhs.second.base_cost;
   return lhs.second.engine > rhs.second.engine;
 }
 
 void InterfaceMain::render() const {
-  if(FLAGS_makeTankDump) {  // this should probably be in main.cpp really
+  if(FLAGS_dumpTanks) {  // this should probably be in main.cpp really
     static bool dumpedtanks = false;
     
     if(!dumpedtanks) {
@@ -476,12 +476,28 @@ void InterfaceMain::render() const {
       
       dumpedtanks = true;
       
+      int x = 0;
+      int y = 0;
+      
+      bool addedfinal = false;
       FILE *of = fopen("tanks.dv2", "w");
       for(int i = 0; i < ttk.size(); i++) {
-        fprintf(of, "path {\n  center=%d,0\n  reflect=spin\n  dupes=1\n  angle=0/1\n", i * 1000);
+        fprintf(of, "path {\n  center=%d,%d\n  reflect=spin\n  dupes=1\n  angle=0/1\n", x, y);
+        if(i % 3 == 0) {
+          x = -1000;
+          y += 1000;
+          if(i % 6 == 0)
+            y += 1000;
+        } else {
+          x += 1000;
+        }
         for(int j = 0; j < ttk[i].second.vertices.size(); j++)
           fprintf(of, "  node= --- | %f,%f | ---\n", (ttk[i].second.vertices[j].y + ttk[i].second.centering_adjustment.y).toFloat() * 100, -(ttk[i].second.vertices[j].x + ttk[i].second.centering_adjustment.x).toFloat() * 100);
         fprintf(of, "}\n\n");
+        if(i + 1 == ttk.size() && !addedfinal) {
+          i -= 6; // hee hee
+          addedfinal = true;
+        }
       }
       fclose(of);
     }
