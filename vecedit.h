@@ -57,6 +57,8 @@ struct WrapperState {
   int grid;
   int rotgrid;
   
+  bool showControls;
+  
   UIState ui;
   
   WrapperState();

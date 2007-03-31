@@ -242,6 +242,8 @@ public:
   void OnRotGridToggle(wxCommandEvent &event);
   void OnRotGridUpdate(wxCommandEvent &event);
   
+  //void OnShowControlsToggle(wxCommandEvent &event);
+  
   void OnPathReflects(wxCommandEvent &event);
   void OnPathRotation(wxCommandEvent &event);
 
@@ -284,6 +286,8 @@ enum {
     
     ID_RotGridToggle,
     ID_RotGridSpinner,
+    
+    ID_ShowControlsToggle,
 
   // Property pane items
     ID_PathReflects,
@@ -319,6 +323,8 @@ BEGIN_EVENT_TABLE(VeceditWindow, wxFrame)
   
   EVT_TOOL(ID_RotGridToggle, VeceditWindow::OnRotGridToggle)
   EVT_TEXT(ID_RotGridSpinner, VeceditWindow::OnRotGridUpdate)
+  
+  //EVT_TOOL(ID_ShowControlsToggle, VeceditWindow::OnShowControlsToggle)
 
   EVT_TEXT(ID_PathReflects, VeceditWindow::OnPathReflects)
   EVT_RADIOBOX(ID_PathRotation, VeceditWindow::OnPathRotation)
@@ -472,6 +478,10 @@ VeceditWindow::VeceditWindow() : wxFrame((wxFrame *)NULL, -1, veceditname, wxDef
   toolbar->ToggleTool(ID_RotGridToggle, 1);
   toolbar->AddControl(rotgrid = new wxSpinCtrl(toolbar, ID_RotGridSpinner, "8", wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 1, 16384));
   wstate.rotgrid = 8;
+  
+  toolbar->AddSeparator();
+  toolbar->AddTool(ID_ShowControlsToggle, "toggle controls", wxBitmap("vecedit/showcontrols.png", wxBITMAP_TYPE_PNG), "Toggle control visibility", wxITEM_CHECK);
+  toolbar->ToggleTool(ID_ShowControlsToggle, 1);
   
   toolbar->Realize();
   toolbar->SetMinSize(wxSize(0, 25));  // this shouldn't be needed >:(
@@ -693,6 +703,8 @@ WrapperState &VeceditWindow::genwrap() {
   wstate.ui.newPath = toolbar->GetToolState(ID_NewPath);
   wstate.ui.newNode = toolbar->GetToolState(ID_NewNode);
   wstate.ui.newTank = toolbar->GetToolState(ID_NewTank);
+  
+  wstate.showControls = toolbar->GetToolState(ID_ShowControlsToggle);
   return wstate;
 }
 void VeceditWindow::process(const OtherState &ost) {

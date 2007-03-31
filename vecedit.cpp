@@ -342,7 +342,7 @@ void Vecedit::render(const WrapperState &state) const {
     const VectorPath &vp = dv2.paths[i];
     for(int j = 0; j < vp.vpath.size(); j++) {
       setColor(getAppropriateColor(SelectItem(SelectItem::NODE, i, j), select));
-      {
+      if(state.showControls) {
         double width;
         if(select.path == i) {
           width = primenode;
@@ -353,30 +353,32 @@ void Vecedit::render(const WrapperState &state) const {
       }
       
       if(select.path == i) {
-        Float2 center = vp.center + vp.vpath[j].pos;
-        if(vp.vpath[j].curvl) {
-          Float2 fringe = vp.center + vp.vpath[j].pos + vp.vpath[j].curvlp;
-          setAppropriateLinkColor(SelectItem(SelectItem::CURVECONTROL, i, j, false), select);
-          drawLine(center, fringe, state.zpp);
-          if(vp.vpath[j].flat) {
-            Float2 shift = makeAngle(getAngle(fringe - center) + PI / 2) * state.zpp * 2;
-            drawLine(center + shift, (center + fringe) / 2 + shift, state.zpp);
-            drawLine(center - shift, (center + fringe) / 2 - shift, state.zpp);
+        if(state.showControls) {
+          Float2 center = vp.center + vp.vpath[j].pos;
+          if(vp.vpath[j].curvl) {
+            Float2 fringe = vp.center + vp.vpath[j].pos + vp.vpath[j].curvlp;
+            setAppropriateLinkColor(SelectItem(SelectItem::CURVECONTROL, i, j, false), select);
+            drawLine(center, fringe, state.zpp);
+            if(vp.vpath[j].flat) {
+              Float2 shift = makeAngle(getAngle(fringe - center) + PI / 2) * state.zpp * 2;
+              drawLine(center + shift, (center + fringe) / 2 + shift, state.zpp);
+              drawLine(center - shift, (center + fringe) / 2 - shift, state.zpp);
+            }
+            setColor(getAppropriateColor(SelectItem(SelectItem::CURVECONTROL, i, j, false), select));
+            drawRectAround(fringe, state.zpp * secondnode, state.zpp);
           }
-          setColor(getAppropriateColor(SelectItem(SelectItem::CURVECONTROL, i, j, false), select));
-          drawRectAround(fringe, state.zpp * secondnode, state.zpp);
-        }
-        if(vp.vpath[j].curvr) {
-          Float2 fringe = vp.center + vp.vpath[j].pos + vp.vpath[j].curvrp;
-          setAppropriateLinkColor(SelectItem(SelectItem::CURVECONTROL, i, j, true), select);
-          drawLine(center, fringe, state.zpp);
-          if(vp.vpath[j].flat) {
-            Float2 shift = makeAngle(getAngle(fringe - center) + PI / 2) * state.zpp * 2;
-            drawLine(center + shift, (center + fringe) / 2 + shift, state.zpp);
-            drawLine(center - shift, (center + fringe) / 2 - shift, state.zpp);
+          if(vp.vpath[j].curvr) {
+            Float2 fringe = vp.center + vp.vpath[j].pos + vp.vpath[j].curvrp;
+            setAppropriateLinkColor(SelectItem(SelectItem::CURVECONTROL, i, j, true), select);
+            drawLine(center, fringe, state.zpp);
+            if(vp.vpath[j].flat) {
+              Float2 shift = makeAngle(getAngle(fringe - center) + PI / 2) * state.zpp * 2;
+              drawLine(center + shift, (center + fringe) / 2 + shift, state.zpp);
+              drawLine(center - shift, (center + fringe) / 2 - shift, state.zpp);
+            }
+            setColor(getAppropriateColor(SelectItem(SelectItem::CURVECONTROL, i, j, true), select));
+            drawRectAround(fringe, state.zpp * secondnode, state.zpp);
           }
-          setColor(getAppropriateColor(SelectItem(SelectItem::CURVECONTROL, i, j, true), select));
-          drawRectAround(fringe, state.zpp * secondnode, state.zpp);
         }
       }
       
@@ -384,7 +386,7 @@ void Vecedit::render(const WrapperState &state) const {
       drawLink(vp.center, vp.vpath, j, state.zpp * 2);
     }
     
-    if(select.path == i) {
+    if(state.showControls && select.path == i) {
       setColor(getAppropriateColor(SelectItem(SelectItem::PATHCENTER, i), select));
       drawRectAround(vp.center, state.zpp * primenode, state.zpp);
      
@@ -624,6 +626,7 @@ OtherState Vecedit::mouse(const MouseInput &mouse, const WrapperState &wrap) {
     } else if(select.type == SelectItem::PATHROTATE) {
       // This is a bit complicated.
       if(rotateHelper(mouse.pos - dv2.paths[select.path].center, wrap.rotgrid, &dv2.paths[select.path].ang_numer, &dv2.paths[select.path].ang_denom)) {
+        dv2.paths[select.path].moveCenterOrReflect();
         modified = true;
         ostate.redraw = true;
         state = DRAGGING;
