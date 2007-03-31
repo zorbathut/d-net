@@ -418,6 +418,42 @@ void Vecedit::render(const WrapperState &state) const {
     setColor(0.2, 0.2, 0.5);
     drawGrid(state.grid, state.zpp);
   }
+  
+  // temporary hack for tank displays
+  /*{
+    const float fontsize = 180;
+    setColor(Color(1.0, 0.7, 0.7));
+    drawJustifiedText("OTEK II", fontsize, Float2(-500 - fontsize / 2, -300), TEXT_MAX, TEXT_CENTER);
+    
+    drawJustifiedText("CARA", fontsize, Float2(-1000, 1000 - fontsize / 2), TEXT_CENTER, TEXT_MIN);
+    drawJustifiedText("PIRE", fontsize, Float2(0, 1000 - fontsize / 2), TEXT_CENTER, TEXT_MIN);
+    drawJustifiedText("ROXO", fontsize, Float2(1000, 1000 - fontsize / 2), TEXT_CENTER, TEXT_MIN);
+    
+    drawJustifiedText("SEKA", fontsize, Float2(-1000, 4000 - fontsize / 2), TEXT_CENTER, TEXT_MIN);
+    drawJustifiedText("TUVU", fontsize, Float2(0, 4000 - fontsize / 2), TEXT_CENTER, TEXT_MIN);
+    drawJustifiedText("MARI", fontsize, Float2(1000, 4000 - fontsize / 2), TEXT_CENTER, TEXT_MIN);
+    
+    drawJustifiedText("GUPE", fontsize, Float2(-1000, 7000 - fontsize / 2), TEXT_CENTER, TEXT_MIN);
+    drawJustifiedText("BORA", fontsize, Float2(0, 7000 - fontsize / 2), TEXT_CENTER, TEXT_MIN);
+    drawJustifiedText("HIMO", fontsize, Float2(1000, 7000 - fontsize / 2), TEXT_CENTER, TEXT_MIN);
+    
+    drawJustifiedText("KEROMI", fontsize, Float2(-1000, 10000 - fontsize / 2), TEXT_CENTER, TEXT_MIN);
+    drawJustifiedText("XATIPE", fontsize, Float2(0, 10000 - fontsize / 2), TEXT_CENTER, TEXT_MIN);
+    drawJustifiedText("DUMARO", fontsize, Float2(1000, 10000 - fontsize / 2), TEXT_CENTER, TEXT_MIN);
+    
+    drawJustifiedText("I", fontsize, Float2(-1500 - fontsize, 1700), TEXT_MIN, TEXT_CENTER);
+    drawJustifiedText("II", fontsize, Float2(-1500 - fontsize, 2700), TEXT_MIN, TEXT_CENTER);
+    
+    drawJustifiedText("I", fontsize, Float2(-1500 - fontsize, 4700), TEXT_MIN, TEXT_CENTER);
+    drawJustifiedText("II", fontsize, Float2(-1500 - fontsize, 5700), TEXT_MIN, TEXT_CENTER);
+    
+    drawJustifiedText("I", fontsize, Float2(-1500 - fontsize, 7700), TEXT_MIN, TEXT_CENTER);
+    drawJustifiedText("II", fontsize, Float2(-1500 - fontsize, 8700), TEXT_MIN, TEXT_CENTER);
+    
+    drawJustifiedText("Alpha", fontsize, Float2(-1500 - fontsize * 3, 10700), TEXT_MIN, TEXT_CENTER);
+    drawJustifiedText("Beta", fontsize, Float2(-1500 - fontsize * 3, 11700), TEXT_MIN, TEXT_CENTER);
+    drawJustifiedText("Omega", fontsize, Float2(-1500 - fontsize * 3, 12700), TEXT_MIN, TEXT_CENTER);
+  }*/
 }
 
 float toGrid(float x, float grid) {
