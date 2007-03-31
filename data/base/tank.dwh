@@ -1066,19 +1066,380 @@ tank {
   
   cost=450000000
   
-  vertices=4.5 1.5
-  vertices=4.5 0.9
-  vertices=5.5 1.0
-  vertices=6 0.75
-  vertices=5 0.25
-  vertices=6.75 0 firepoint
-  vertices=5 -0.25
-  vertices=6 -0.75
-  vertices=5.5 -1.0
-  vertices=4.5 -0.9
-  vertices=4.5 -1.5
+  vertices=2.75 2.0
+  vertices=4.25 1.0
+  vertices=5.75 1.0
+  vertices=6.25 0.75
+  vertices=5.25 0.25
+  vertices=7.00 0 firepoint
+  vertices=5.25 -0.25
+  vertices=6.25 -0.75
+  vertices=5.75 -1.0
+  vertices=4.25 -1.0
+  vertices=2.75 -2.0
   vertices=0 -2.5 rear_begin
   vertices=0 2.5 rear_end
+  
+  text=text.tank.otek
+}
+
+
+
+#### Exotic
+
+tank {
+  name=ROOT.Tanks.KEROMI Alpha
+
+  health=1
+  handling=1
+  engine=3
+  
+  mass=1
+  
+  weapon=Sparker V
+  
+  upgrades=Basic hull
+  upgrades=Basic engine
+  upgrades=Basic handling
+  
+  cost=550000000
+  
+  vertices=5 0.75
+  vertices=3.75 1.5
+  vertices=8 0 firepoint
+  vertices=3.75 -1.5
+  vertices=5 -0.75
+  vertices=0 -2 rear_begin
+  vertices=0.5 -1.25
+  vertices=0.75 0
+  vertices=0.5 1.25
+  vertices=0 2 rear_end
+  
+  text=text.tank.otek
+}
+
+tank {
+  name=ROOT.Tanks.XATIPE Alpha
+
+  health=1
+  handling=1
+  engine=2
+  
+  mass=1
+  
+  weapon=Sparker V
+  
+  upgrades=Basic hull
+  upgrades=Basic engine
+  upgrades=Basic handling
+  
+  cost=550000000
+  
+  vertices=4.5 1.0
+  vertices=3.25 1.75
+  vertices=6.5 1.0
+  vertices=7.25 0 firepoint
+  vertices=6.5 -1.0
+  vertices=3.25 -1.75
+  vertices=4.5 -1.0
+  vertices=0 -2.5 rear_begin
+  vertices=0 2.5 rear_end
+  
+  text=text.tank.otek
+}
+
+tank {
+  name=ROOT.Tanks.DUMARO Alpha
+
+  health=1
+  handling=1
+  engine=1
+  
+  mass=1
+  
+  weapon=Sparker V
+  
+  upgrades=Basic hull
+  upgrades=Basic engine
+  upgrades=Basic handling
+  
+  cost=550000000
+  
+  vertices=4 1.5
+  vertices=2.75 2.25
+  vertices=5.75 1.25
+  vertices=6.0 0.75
+  vertices=6.0 1.5
+  vertices=6.25 1.25
+  vertices=6.5 0 firepoint
+  vertices=6.25 -1.25
+  vertices=6.0 -1.5
+  vertices=6.0 -0.75
+  vertices=5.75 -1.25
+  vertices=2.75 -2.25
+  vertices=4 -1.5
+  vertices=0.5 -2.75
+  vertices=0 -2.5 rear_begin
+  vertices=0 2.5 rear_end
+  vertices=0.5 2.75
+  
+  text=text.tank.otek
+}
+
+
+
+#### Experimental
+
+tank {
+  name=ROOT.Tanks.KEROMI Beta
+
+  health=1
+  handling=1
+  engine=3
+  
+  mass=1
+  
+  weapon=Sparker VI
+  
+  upgrades=Basic hull
+  upgrades=Basic engine
+  upgrades=Basic handling
+  
+  cost=14000000000
+  
+  vertices=3.75 1.00
+  vertices=2.50 1.75
+  vertices=5.25 0.75
+  vertices=4.00 1.50
+  vertices=8 0 firepoint
+  vertices=4.00 -1.5
+  vertices=5.25 -0.75
+  vertices=2.50 -1.75
+  vertices=3.75 -1.00
+  vertices=0 -2 rear_begin
+  vertices=0.25 -1.25
+  vertices=1.00 -0.75
+  vertices=0.50 0
+  vertices=1.00 0.75
+  vertices=0.25 1.25
+  vertices=0 2 rear_end
+  
+  text=text.tank.otek
+}
+
+tank {
+  name=ROOT.Tanks.XATIPE Beta
+
+  health=1
+  handling=1
+  engine=2
+  
+  mass=1
+  
+  weapon=Sparker VI
+  
+  upgrades=Basic hull
+  upgrades=Basic engine
+  upgrades=Basic handling
+  
+  cost=14000000000
+  
+  vertices=4.25 1.0
+  vertices=3.00 1.75
+  vertices=5.00 1.0
+  vertices=3.75 1.75
+  vertices=6.75 1.25
+  vertices=7.25 0 firepoint
+  vertices=6.75 -1.25
+  vertices=3.75 -1.75
+  vertices=5.00 -1.0
+  vertices=3.00 -1.75
+  vertices=4.25 -1.0
+  vertices=0 -2.5 rear_begin
+  vertices=0 2.5 rear_end
+  
+  text=text.tank.otek
+}
+
+tank {
+  name=ROOT.Tanks.DUMARO Beta
+
+  health=1
+  handling=1
+  engine=1
+  
+  mass=1
+  
+  weapon=Sparker VI
+  
+  upgrades=Basic hull
+  upgrades=Basic engine
+  upgrades=Basic handling
+  
+  cost=14000000000
+  
+  vertices=3.5 1.5
+  vertices=2.25 2.25
+  vertices=4.75 1.25
+  vertices=3.5 2.00
+  vertices=5.75 1.25
+  vertices=6.00 0.75
+  vertices=6.00 1.75
+  vertices=6.25 1.50
+  vertices=6.5 0 firepoint
+  vertices=6.25 -1.50
+  vertices=6.00 -1.75
+  vertices=6.00 -0.75
+  vertices=5.75 -1.25
+  vertices=3.50 -2.00
+  vertices=4.75 -1.25
+  vertices=2.25 -2.25
+  vertices=3.50 -1.5
+  vertices=0.50 -2.75
+  vertices=0 -2.25 rear_begin
+  vertices=0 2.25 rear_end
+  vertices=0.50 2.75
+  
+  text=text.tank.otek
+}
+
+
+
+#### Ultimate
+
+tank {
+  name=ROOT.Tanks.KEROMI Omega
+
+  health=1
+  handling=1
+  engine=3
+  
+  mass=1
+  
+  weapon=Sparker Omega
+  
+  upgrades=Basic hull
+  upgrades=Basic engine
+  upgrades=Basic handling
+  
+  cost=350000000000
+  
+  vertices=3.00 1.25
+  vertices=1.75 2.00
+  vertices=4.75 0.75
+  vertices=3.50 1.50
+  vertices=6.00 0.50
+  vertices=4.75 1.25
+  vertices=8 0 firepoint
+  vertices=4.75 -1.25
+  vertices=6.00 -0.50
+  vertices=3.50 -1.5
+  vertices=4.75 -0.75
+  vertices=1.75 -2.00
+  vertices=3.00 -1.25
+  vertices=0 -2 rear_begin
+  vertices=0.30 -1.10
+  vertices=1.25 -1.00
+  vertices=0.50 -0.60
+  vertices=0.70 -0.10
+  vertices=1.50 0
+  vertices=0.70 0.10
+  vertices=0.50 0.60
+  vertices=1.25 1.00
+  vertices=0.30 1.10
+  vertices=0 2 rear_end
+  
+  text=text.tank.otek
+}
+
+tank {
+  name=ROOT.Tanks.XATIPE Omega
+
+  health=1
+  handling=1
+  engine=2
+  
+  mass=1
+  
+  weapon=Sparker Omega
+  
+  upgrades=Basic hull
+  upgrades=Basic engine
+  upgrades=Basic handling
+  
+  cost=350000000000
+  
+  vertices=4.00 1.25
+  vertices=2.75 2.00
+  vertices=4.75 1.25
+  vertices=3.50 2.00
+  vertices=5.50 1.25
+  vertices=4.25 2.00
+  vertices=6.60 1.40
+  vertices=7.10 0.70
+  vertices=7.25 0 firepoint
+  vertices=7.10 -0.70
+  vertices=6.60 -1.40
+  vertices=4.25 -2.00
+  vertices=5.50 -1.25
+  vertices=3.50 -2.00
+  vertices=4.75 -1.25
+  vertices=2.75 -2.00
+  vertices=4.00 -1.25
+  vertices=0 -2.5 rear_begin
+  vertices=0 2.5 rear_end
+  
+  text=text.tank.otek
+}
+
+tank {
+  name=ROOT.Tanks.DUMARO Omega
+
+  health=1
+  handling=1
+  engine=1
+  
+  mass=1
+  
+  weapon=Sparker Omega
+  
+  upgrades=Basic hull
+  upgrades=Basic engine
+  upgrades=Basic handling
+  
+  cost=350000000000
+  
+  vertices=3.25 1.5
+  vertices=2.00 2.25
+  vertices=4.25 1.25
+  vertices=3.00 2.00
+  vertices=5.50 1.00
+  vertices=4.25 1.75
+  vertices=5.75 1.25
+  vertices=6.00 0.75
+  vertices=6.00 2.25
+  vertices=6.25 2.00
+  vertices=6.50 1.50
+  vertices=6.75 0.50
+  vertices=6.75 0 firepoint
+  vertices=6.75 -0.50
+  vertices=6.50 -1.50
+  vertices=6.25 -2.00
+  vertices=6.00 -2.25
+  vertices=6.00 -0.75
+  vertices=5.75 -1.25
+  vertices=4.25 -1.75
+  vertices=5.50 -1.00
+  vertices=3.00 -2.00
+  vertices=4.25 -1.25
+  vertices=2.00 -2.25
+  vertices=3.25 -1.5
+  vertices=0.50 -2.50
+  vertices=0.25 -2.25 rear_begin
+  vertices=0 -1.75 
+  vertices=0 1.75 
+  vertices=0.25 2.25 rear_end
+  vertices=0.50 2.50
   
   text=text.tank.otek
 }
