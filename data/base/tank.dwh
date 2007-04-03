@@ -513,8 +513,8 @@ tank {
   name=ROOT.Tanks.OTEK II
 
   health=20
-  handling=2
   engine=24
+  handling=2
   
   mass=50
   
@@ -543,8 +543,8 @@ tank {
   name=ROOT.Tanks.CARA I
 
   health=55
-  handling=2.4
   engine=30
+  handling=2.4
   
   mass=40
   
@@ -568,8 +568,8 @@ tank {
   name=ROOT.Tanks.PIRE I
 
   health=65
-  handling=2
   engine=24
+  handling=2
   
   mass=60
   
@@ -594,8 +594,8 @@ tank {
   name=ROOT.Tanks.ROXO I
 
   health=75
-  handling=1.6
   engine=18
+  handling=1.6
   
   mass=100
   
@@ -623,8 +623,8 @@ tank {
   name=ROOT.Tanks.CARA II
 
   health=180
-  handling=2.5
   engine=31
+  handling=2.5
   
   mass=35
   
@@ -649,8 +649,8 @@ tank {
   name=ROOT.Tanks.PIRE II
 
   health=210
-  handling=2.1
   engine=25
+  handling=2.1
   
   mass=60
   
@@ -676,8 +676,8 @@ tank {
   name=ROOT.Tanks.ROXO II
 
   health=240
-  handling=1.7
   engine=19
+  handling=1.7
   
   mass=110
   
@@ -707,9 +707,9 @@ tank {
   name=ROOT.Tanks.SEKA I
 
   health=190
-  handling=2.4
   engine=31
-  
+  handling=2.4
+
   mass=40
   
   adjustment=adjustment.tank.seka
@@ -736,8 +736,8 @@ tank {
   name=ROOT.Tanks.TUVU I
 
   health=260
-  handling=2.1
   engine=25
+  handling=2.1
   
   mass=90
   
@@ -766,8 +766,8 @@ tank {
   name=ROOT.Tanks.MARI I
 
   health=230
-  handling=1.9
   engine=20
+  handling=1.9
   
   mass=75
   
@@ -800,8 +800,8 @@ tank {
   name=ROOT.Tanks.SEKA II
 
   health=620
-  handling=2.5
   engine=32
+  handling=2.5
   
   mass=35
   
@@ -832,8 +832,8 @@ tank {
   name=ROOT.Tanks.TUVU II
 
   health=860
-  handling=2.2
   engine=26
+  handling=2.2
   
   mass=95
   
@@ -864,8 +864,8 @@ tank {
   name=ROOT.Tanks.MARI II
 
   health=740
-  handling=2.0
   engine=22
+  handling=2.0
   
   mass=80
   
@@ -902,8 +902,8 @@ tank {
   name=ROOT.Tanks.GUPE I
 
   health=920
-  handling=2.6
   engine=30
+  handling=2.6
   
   mass=50
   
@@ -928,11 +928,11 @@ tank {
 tank {
   name=ROOT.Tanks.BORA I
 
-  health=1
-  handling=1
-  engine=2
+  health=800
+  engine=26
+  handling=2.2
   
-  mass=1
+  mass=60
   
   weapon=Sparker IV
   
@@ -956,11 +956,11 @@ tank {
 tank {
   name=ROOT.Tanks.HIMO I
 
-  health=1
-  handling=1
-  engine=1
+  health=680
+  engine=22
+  handling=1.8
   
-  mass=1
+  mass=60
   
   weapon=Sparker IV
   
@@ -990,11 +990,11 @@ tank {
 tank {
   name=ROOT.Tanks.GUPE II
 
-  health=1
-  handling=1
-  engine=3
+  health=3000
+  engine=32
+  handling=2.7
   
-  mass=1
+  mass=45
   
   weapon=Sparker V
   
@@ -1021,11 +1021,11 @@ tank {
 tank {
   name=ROOT.Tanks.BORA II
 
-  health=1
-  handling=1
-  engine=2
+  health=2600
+  engine=27
+  handling=2.3
   
-  mass=1
+  mass=55
   
   weapon=Sparker V
   
@@ -1053,11 +1053,11 @@ tank {
 tank {
   name=ROOT.Tanks.HIMO II
 
-  health=1
-  handling=1
-  engine=1
+  health=2200
+  engine=22
+  handling=1.9
   
-  mass=1
+  mass=65
   
   weapon=Sparker V
   
@@ -1091,11 +1091,11 @@ tank {
 tank {
   name=ROOT.Tanks.KEROMI Alpha
 
-  health=1
-  handling=1
-  engine=3
+  health=2400
+  engine=32
+  handling=2.6
   
-  mass=1
+  mass=45
   
   weapon=Sparker V
   
@@ -1122,11 +1122,11 @@ tank {
 tank {
   name=ROOT.Tanks.XATIPE Alpha
 
-  health=1
-  handling=1
-  engine=2
+  health=2800
+  engine=26
+  handling=2.2
   
-  mass=1
+  mass=70
   
   weapon=Sparker V
   
@@ -1152,11 +1152,11 @@ tank {
 tank {
   name=ROOT.Tanks.DUMARO Alpha
 
-  health=1
-  handling=1
-  engine=1
+  health=3200
+  engine=20
+  handling=1.8
   
-  mass=1
+  mass=110
   
   weapon=Sparker V
   
@@ -1194,11 +1194,11 @@ tank {
 tank {
   name=ROOT.Tanks.KEROMI Beta
 
-  health=1
-  handling=1
-  engine=3
+  health=7600
+  engine=33
+  handling=2.7
   
-  mass=1
+  mass=40
   
   weapon=Sparker VI
   
@@ -1231,11 +1231,11 @@ tank {
 tank {
   name=ROOT.Tanks.XATIPE Beta
 
-  health=1
-  handling=1
-  engine=2
+  health=9000
+  engine=27
+  handling=2.3
   
-  mass=1
+  mass=70
   
   weapon=Sparker VI
   
@@ -1265,11 +1265,11 @@ tank {
 tank {
   name=ROOT.Tanks.DUMARO Beta
 
-  health=1
-  handling=1
-  engine=1
+  health=10400
+  engine=21
+  handling=1.9
   
-  mass=1
+  mass=120
   
   weapon=Sparker VI
   
@@ -1311,11 +1311,11 @@ tank {
 tank {
   name=ROOT.Tanks.KEROMI Omega
 
-  health=1
-  handling=1
-  engine=3
+  health=25000
+  engine=34
+  handling=2.8
   
-  mass=1
+  mass=35
   
   weapon=Sparker Omega
   
@@ -1356,11 +1356,11 @@ tank {
 tank {
   name=ROOT.Tanks.XATIPE Omega
 
-  health=1
-  handling=1
-  engine=2
+  health=29500
+  engine=28
+  handling=2.4
   
-  mass=1
+  mass=70
   
   weapon=Sparker Omega
   
@@ -1396,11 +1396,11 @@ tank {
 tank {
   name=ROOT.Tanks.DUMARO Omega
 
-  health=1
-  handling=1
-  engine=1
+  health=34000
+  engine=22
+  handling=2.0
   
-  mass=1
+  mass=130
   
   weapon=Sparker Omega
   

@@ -1,6 +1,7 @@
 ---- Major work path
-- Tank numbers and balance
-  - I'm going to need a spreadsheet here :(
+- Doesn't show final tank
+- Doesn't show tank durability properly
+- Sparker balance
 - Many many more weapons
 - Netplay
 - Less incentive to camp?
