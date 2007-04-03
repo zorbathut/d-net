@@ -121,7 +121,7 @@ weapon {
   
   cost=1
   
-  debug=1
+  debug=true
 }
 
 
@@ -176,7 +176,7 @@ weapon {
   
   cost=1
   
-  debug=1
+  debug=true
 }
 
 #### Sparker III
@@ -232,7 +232,7 @@ weapon {
   
   cost=1
   
-  debug=1
+  debug=true
 }
 
 #### Sparker IV
@@ -290,7 +290,7 @@ weapon {
   
   cost=1
   
-  debug=1
+  debug=true
 }
 
 #### Sparker V
@@ -348,7 +348,7 @@ weapon {
   
   cost=1
   
-  debug=1
+  debug=true
 }
 
 #### Sparker VI
@@ -406,7 +406,7 @@ weapon {
   
   cost=1
   
-  debug=1
+  debug=true
 }
 
 
@@ -505,7 +505,7 @@ weapon {
   
   cost=1
   
-  debug=1
+  debug=true
 }
 
 

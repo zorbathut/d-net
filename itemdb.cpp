@@ -441,9 +441,9 @@ template<> bool parseSingleItem<bool>(const string &val) {
   string lowered;
   for(int i = 0; i < val.size(); i++)
     lowered += val[i];
-  if(lowered == "t" || lowered == "true" || lowered == "1")
+  if(lowered == "t" || lowered == "true")
     return true;
-  if(lowered == "f" || lowered == "false" || lowered == "0")
+  if(lowered == "f" || lowered == "false")
     return false;
   CHECK(0);
 }
@@ -1240,7 +1240,7 @@ void parseItemFile(const string &fname, bool reload, vector<string> *errors) {
   kvData chunk;
   while(getkvData(tfil, &chunk, &line, &nextline)) {
     //dprintf("%s\n", chunk.debugOutput().c_str());
-    if(chunk.kv.count("debug") && atoi(chunk.consume("debug").c_str()) && !FLAGS_debugitems) {
+    if(parseWithDefault(&chunk, "debug", false) && !FLAGS_debugitems) {
       dprintf("Debug only, skipping\n");
       continue;
     }

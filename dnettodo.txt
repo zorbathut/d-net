@@ -1,5 +1,4 @@
 ---- Major work path
-- Remove option for 1 and 0 in parse bool
 - Doesn't show final tank (fullscreen only!)
 - Sparker balance
 - Many many more weapons

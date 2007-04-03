@@ -2,7 +2,7 @@
 hierarchy {
   name=ROOT.Weapons.Debug
   pack=100000
-  debug=1
+  debug=true
 }
 
 projectile {
@@ -10,13 +10,13 @@ projectile {
   velocity=600
   color=1.0, 0.3, 0.3
   warhead=warhead.null
-  debug=1
+  debug=true
 }
 
 deploy {
   name=deploy.tracer
   projectile=projectile.tracer
-  debug=1
+  debug=true
 }
 
 launcher {
@@ -26,7 +26,7 @@ launcher {
   
   stats=stats.null
   
-  debug=1
+  debug=true
 }
 
 weapon {
@@ -37,15 +37,15 @@ weapon {
   
   launcher=launcher.tracer
   
-  nocache=1
+  nocache=true
   
-  debug=1
+  debug=true
 }
 
 warhead {
   name=warhead.minishredder
   wallremovalradius=2
-  debug=1
+  debug=true
 }
 
 projectile {
@@ -53,13 +53,13 @@ projectile {
   velocity=600
   color=1.0, 0.3, 0.3
   warhead=warhead.minishredder
-  debug=1
+  debug=true
 }
 
 deploy {
   name=deploy.minishredder
   projectile=projectile.minishredder
-  debug=1
+  debug=true
 }
 
 launcher {
@@ -69,7 +69,7 @@ launcher {
   
   stats=stats.null
   
-  debug=1
+  debug=true
 }
 
 weapon {
@@ -79,15 +79,15 @@ weapon {
   
   launcher=launcher.minishredder
   
-  nocache=1
+  nocache=true
   
-  debug=1
+  debug=true
 }
 
 warhead {
   name=warhead.megashredder
   wallremovalradius=50
-  debug=1
+  debug=true
 }
 
 projectile {
@@ -95,13 +95,13 @@ projectile {
   velocity=600
   color=1.0, 0.3, 0.3
   warhead=warhead.megashredder
-  debug=1
+  debug=true
 }
 
 deploy {
   name=deploy.megashredder
   projectile=projectile.megashredder
-  debug=1
+  debug=true
 }
 
 launcher {
@@ -111,7 +111,7 @@ launcher {
   
   stats=stats.null
   
-  debug=1
+  debug=true
 }
 
 weapon {
@@ -121,9 +121,9 @@ weapon {
   
   launcher=launcher.megashredder
   
-  nocache=1
+  nocache=true
   
-  debug=1
+  debug=true
 }
 
 warhead {
@@ -140,7 +140,7 @@ projectile {
   halflife=1000000
   color=1.0, 1.0, 1.0
   warhead=warhead.minesplatterer
-  debug=1
+  debug=true
 }
 
 deploy {
@@ -148,7 +148,7 @@ deploy {
   
   projectile=projectile.minesplatterer
   
-  debug=1
+  debug=true
 }
 
 launcher {
@@ -158,7 +158,7 @@ launcher {
   
   stats=stats.null
   
-  debug=1
+  debug=true
 }
 
 weapon {
@@ -168,9 +168,9 @@ weapon {
   
   launcher=launcher.minesplatterer
   
-  nocache=1
+  nocache=true
   
-  debug=1
+  debug=true
 }
 
 effects {
@@ -187,7 +187,7 @@ effects {
   radius=0.4
   color=1.0, 0.0, 0.0
   
-  debug=1
+  debug=true
 }
 
 effects {
@@ -204,7 +204,7 @@ effects {
   radius=0.4
   color=0.0, 1.0, 0.0
   
-  debug=1
+  debug=true
 }
 
 warhead {
@@ -213,7 +213,7 @@ warhead {
   effects_impact=effects.efftester1
   effects_impact=effects.efftester2
   
-  debug=1
+  debug=true
 }
 
 projectile {
@@ -223,7 +223,7 @@ projectile {
   color=1.0, 1.0, 1.0
   warhead=warhead.efftester
   
-  debug=1
+  debug=true
 }
 
 deploy {
@@ -232,7 +232,7 @@ deploy {
   projectile=projectile.efftester
   anglestddev=0.03
   
-  debug=1
+  debug=true
 }
 
 launcher {
@@ -242,7 +242,7 @@ launcher {
   
   stats=stats.null
   
-  debug=1
+  debug=true
 }
 
 weapon {
@@ -252,7 +252,7 @@ weapon {
   
   launcher=launcher.efftester
   
-  nocache=1
+  nocache=true
   
-  debug=1
+  debug=true
 }
