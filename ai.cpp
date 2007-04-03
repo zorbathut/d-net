@@ -139,10 +139,10 @@ void Ai::updateSetup(int pos) {
   updateKeys(CORE);
   
   zeroNextKeys();
-  if(pos != 2)
+  if(pos != 3)
     nextKeys.menu = Float2(0, 1);
   
-  if(pos == 2 && frameNumber % 2)
+  if(pos == 3 && frameNumber % 2)
     nextKeys.keys[0].down = true;
 }
 
@@ -358,10 +358,14 @@ void Ai::updateShop(const Player *player, const HierarchyNode &hierarchy) {
     shopQueue.pop_front();
     return;
   }
-  if(shopdone) {
-    CHECK(!player->hasValidTank());
+  if(shopdone) {  // If our shop is done, something weird has happened.
+    CHECK(!player->hasValidTank()); // It's possible the player has sold their last tank.
+    CHECK(shopQueue.size() == 0);
     shopdone = false;
-    nextKeys = makeController(0, -1, false, false);
+    // Next steps: wait to avoid repeat glitches, move down, wait again.
+    nextKeys = makeController(0, 0, false, false);
+    shopQueue.push_back(makeController(0, -1, false, false));
+    shopQueue.push_back(makeController(0, 0, false, false));
     return;
   }
   CHECK(!shopdone);

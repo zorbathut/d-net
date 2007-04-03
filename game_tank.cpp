@@ -339,8 +339,10 @@ void Tank::genEffects(const GameImpactContext &gic, ProjectilePack *projectiles,
           }
         }
       }
-      CHECK(thischunk.size() == 1);
-      chunks.push_back(thischunk[0]);
+      if(thischunk.size() != 1)
+        dprintf("Multiple chunks: %d\n", thischunk.size());
+      for(int i = 0; i < thischunk.size(); i++)
+        chunks.push_back(thischunk[i]);
     }
     
     for(int i = 0; i < chunks.size(); i++) {
