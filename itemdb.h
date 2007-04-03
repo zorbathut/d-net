@@ -156,6 +156,8 @@ struct IDBWeapon {
 
   Money base_cost;
   int quantity;
+  
+  bool nocache;
 };
 
 struct IDBGlory {

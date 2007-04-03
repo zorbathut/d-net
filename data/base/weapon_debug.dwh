@@ -37,6 +37,8 @@ weapon {
   
   launcher=launcher.tracer
   
+  nocache=1
+  
   debug=1
 }
 
@@ -77,6 +79,8 @@ weapon {
   
   launcher=launcher.minishredder
   
+  nocache=1
+  
   debug=1
 }
 
@@ -116,6 +120,8 @@ weapon {
   firerate=60
   
   launcher=launcher.megashredder
+  
+  nocache=1
   
   debug=1
 }
@@ -161,6 +167,8 @@ weapon {
   firerate=60
   
   launcher=launcher.minesplatterer
+  
+  nocache=1
   
   debug=1
 }
@@ -243,6 +251,8 @@ weapon {
   firerate=60
   
   launcher=launcher.efftester
+  
+  nocache=1
   
   debug=1
 }

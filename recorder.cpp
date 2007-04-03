@@ -4,6 +4,16 @@
 void Recorder::warhead(const IDBWarhead *warhead, int tank_id, vector<pair<float, int> > &adjacencies) {
   CHECK(tank_id != -1 || adjacencies.size());
   
+  {
+    bool doesdamage = false;
+    for(int i = 0; i < IDBAdjustment::DAMAGE_LAST; i++)
+      if(warhead->impactdamage[i] != 0 || warhead->radiusdamage[i] != 0)
+        doesdamage = true;
+      
+    if(!doesdamage)
+      return;
+  }
+  
   string tank;
   if(tank_id == -1)
     tank = "none";
@@ -24,6 +34,10 @@ void Recorder::metastats(int cycles, const vector<int> &damageframes) {
   fprintf(output, "  cycles=%d\n", cycles);
   for(int i = 0; i < damageframes.size(); i++)
     fprintf(output, "  tankstats=%d %d\n", i, damageframes[i]);
+}
+
+bool Recorder::hasItems() const {
+  return lines.size();
 }
 
 Recorder::Recorder(FILE *output) : output(output) { }

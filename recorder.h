@@ -12,6 +12,8 @@ public:
   void warhead(const IDBWarhead *warhead, int tank_id, vector<pair<float, int> > &adjacencies);
   void metastats(int cycles, const vector<int> &damageframes);
 
+  bool hasItems() const;
+
   Recorder(FILE *output);
   ~Recorder();
 

@@ -53,6 +53,10 @@ template<typename T> void generateShopCache(const string &itemname, const T &ite
           if(ticks % 36000 == 0)
             dprintf("%f (%f) and %f (%f)", ratdiff, accuracy, absdiff, 0.01);
         }
+        if(end && !recorder.hasItems()) {
+          CHECK(ticks < 36000);
+          end = false;
+        }
         if(end) {
           demo.dumpMetastats(&recorder);
           dprintf("Done at %d ticks\n", ticks);
@@ -76,6 +80,8 @@ void generateCachedShops(float accuracy) {
   FILE *ofil = fopen("data/shopcache.dwh", "w");
   for(map<string, IDBWeapon>::const_iterator itr = weaponList().begin(); itr != weaponList().end(); itr++) {
     dprintf("%d/%d (%.0f%%)\n", gendone, gencount, (float)gendone / gencount * 100);
+    if(itr->second.nocache)
+      continue;
     gendone++;
     generateShopCache(itr->first, itr->second, ofil, accuracy);
   }

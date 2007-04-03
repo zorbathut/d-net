@@ -1056,7 +1056,7 @@ void Game::initTest(Player *in_playerdata, const Float4 &bounds) {
   clear = bounds;
 }
 
-void Game::initDemo(vector<Player> *in_playerdata, float boxradi, const float *xps, const float *yps, const float *facing, const int *modes, bool blockades, Float2 hudpos, Recorder *recorder) {
+void Game::initDemo(vector<Player> *in_playerdata, float boxradi, const float *xps, const float *yps, const float *facing, const int *in_teams, const int *modes, bool blockades, Float2 hudpos, Recorder *recorder) {
   gamemode = GMODE_DEMO;
   demo_hudpos = hudpos;
   
@@ -1115,6 +1115,10 @@ void Game::initDemo(vector<Player> *in_playerdata, float boxradi, const float *x
     else
       tanks[i].megaboostHealth();
   }
+  
+  teams.resize(*max_element(in_teams, in_teams + tanks.size()) + 1);
+  for(int i = 0; i < tanks.size(); i++)
+    tanks[i].team = in_teams[i];
   
   demo_boxradi = boxradi;
   demo_recorder = recorder;

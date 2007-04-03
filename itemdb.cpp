@@ -437,6 +437,17 @@ template<typename T> const T *parseOptionalSubclass(kvData *chunk, const string 
 
 template<typename T> T parseSingleItem(const string &val);
 
+template<> bool parseSingleItem<bool>(const string &val) {
+  string lowered;
+  for(int i = 0; i < val.size(); i++)
+    lowered += val[i];
+  if(lowered == "t" || lowered == "true" || lowered == "1")
+    return true;
+  if(lowered == "f" || lowered == "false" || lowered == "0")
+    return false;
+  CHECK(0);
+}
+
 template<> int parseSingleItem<int>(const string &val) {
   for(int i = 0; i < val.size(); i++)
     CHECK(isdigit(val[i]));
@@ -688,6 +699,8 @@ void parseWeapon(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   
   titem->launcher = parseSubclass(chunk->consume("launcher"), launcherclasses);
   CHECK(titem->launcher->stats);
+  
+  titem->nocache = parseWithDefault(chunk, "nocache", false);
 }
 
 void parseUpgrade(kvData *chunk, bool reload, ErrorAccumulator &accum) {

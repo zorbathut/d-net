@@ -1,8 +1,10 @@
 ---- Major work path
+- Remove option for 1 and 0 in parse bool
 - Doesn't show final tank (fullscreen only!)
 - Sparker balance
 - Many many more weapons
 - Netplay
+- Add accuracy implant/upgrade?
 - Less incentive to camp?
   - Reduce win/kill bonus as game goes on
 - New game modes
@@ -17,6 +19,7 @@
 - Need to sit down and rewrite the shop interface again.
   - Restricted speed/turn for the better tanks
     - Roll speed and handling together? Otherwise, come up with a description for the implant
+    - "fast turn" "slow turn" modifier buttons?
   - Ability to assign to *four* weapons (how the fuck will this work)
   - Pop up "sell obsolete item" on buying bombardment/glory/new tank
   - Category descriptions somehow?

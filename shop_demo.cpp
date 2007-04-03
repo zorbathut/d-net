@@ -224,22 +224,26 @@ const float weapons_ypses_normal[] = { 120, -120, 120, -40, 120, 40 };
 const float weapons_xpses_melee[] = { -20, -20, 0, 0, 20, 20 };
 const float weapons_ypses_melee[] = { 6, -7, 6, -3, 6, 6 };
 const float weapons_facing[] = { PI * 3 / 2, PI / 2, PI * 3 / 2, PI / 2, PI * 3 / 2, PI / 2 };
+const int weapons_teams[] = { 0, 1, 0, 1, 0, 1 };
 const int weapons_mode[] = { DEMOPLAYER_QUIET, DEMOPLAYER_DPS, DEMOPLAYER_QUIET, DEMOPLAYER_DPS, DEMOPLAYER_QUIET, DEMOPLAYER_DPS };
 const int weapons_progression[] = { 600, 0 };
 
 const float mines_xpses[] = { 0, -60, -60, -60 };
 const float mines_ypses[] = { -60, -40, 0, 40 };
 const float mines_facing[] = { PI / 2, 0, 0, 0 };
+const int mines_teams[] = { 0, 1, 1, 1 };
 const int mines_mode[] = { DEMOPLAYER_DPH, DEMOPLAYER_QUIET, DEMOPLAYER_QUIET, DEMOPLAYER_QUIET };
 const int mines_progression[] = { 600, 0 };
 
 const float bombardment_xpses[] = { -30, -30, 30, 30, -30, -30, 30, 30 };
 const float bombardment_ypses[] = { -30, -30, -30, -30, 30, 30, 30, 30 };
+const int bombardment_teams[] = { 0, 1, 0, 1, 0, 1, 0, 1 };
 const int bombardment_mode[] = { DEMOPLAYER_DPC, DEMOPLAYER_BOMBSIGHT, DEMOPLAYER_DPC, DEMOPLAYER_BOMBSIGHT, DEMOPLAYER_DPC, DEMOPLAYER_BOMBSIGHT, DEMOPLAYER_DPC, DEMOPLAYER_BOMBSIGHT };
 const int bombardment_progression[] = { 6000, 0 };
 
 const float glory_xpses[] = { -0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5 };
 const float glory_ypses[] = { -0.5, -0.5, -0.5, -0.5, 0.5, 0.5, 0.5, 0.5 };
+const int glory_teams[] = { 0, 1, 0, 1, 0, 1, 0, 1 };
 const int glory_mode[] = { DEMOPLAYER_DPC, DEMOPLAYER_QUIET, DEMOPLAYER_DPC, DEMOPLAYER_QUIET, DEMOPLAYER_DPC, DEMOPLAYER_QUIET, DEMOPLAYER_DPC, DEMOPLAYER_QUIET };
 const int glory_progression[] = { 6000, 0 };
 
@@ -268,7 +272,7 @@ void ShopDemo::init(const IDBWeapon *weap, const Player *player, Recorder *recor
     }
     
     if(weap->launcher->firingrange_distance == WFRD_NORMAL) {
-      game.game.initDemo(&game.players, 160, weapons_xpses_normal, weapons_ypses_normal, weapons_facing, weapons_mode, false, Float2(5, 5), recorder);
+      game.game.initDemo(&game.players, 160, weapons_xpses_normal, weapons_ypses_normal, weapons_facing, weapons_teams, weapons_mode, false, Float2(5, 5), recorder);
     } else if(weap->launcher->firingrange_distance == WFRD_MELEE) {
       CHECK(ARRAY_SIZE(weapons_facing) == 6);
       Tank tank;
@@ -294,7 +298,7 @@ void ShopDemo::init(const IDBWeapon *weap, const Player *player, Recorder *recor
       Float2 newpos = basetest + makeAngle(-PI / 4) * (dist_max + 0.1);
       wxm[5] = newpos.x;
       wym[5] = newpos.y;
-      game.game.initDemo(&game.players, 40, wxm, wym, weapons_facing, weapons_mode, false, Float2(-10, 8), recorder); // this is kind of painful
+      game.game.initDemo(&game.players, 40, wxm, wym, weapons_facing, weapons_teams, weapons_mode, false, Float2(-10, 8), recorder); // this is kind of painful
     } else {
       CHECK(0);
     }
@@ -326,7 +330,7 @@ void ShopDemo::init(const IDBWeapon *weap, const Player *player, Recorder *recor
       mine_miners.push_back(gam);
     }
     
-    game.game.initDemo(&game.players, 100, mines_xpses, mines_ypses, mines_facing, mines_mode, false, Float2(5, 5), recorder);
+    game.game.initDemo(&game.players, 100, mines_xpses, mines_ypses, mines_facing, mines_teams, mines_mode, false, Float2(5, 5), recorder);
     mine_mined = false;
     
     progression = mines_progression;
@@ -368,7 +372,7 @@ void ShopDemo::init(const IDBBombardment *bombard, const Player *player, Recorde
     bombardment_scatterers.push_back(gas);
   }
   
-  game.game.initDemo(&game.players, 50, bombardment_xpses, bombardment_ypses, NULL, bombardment_mode, false, Float2(-10, 8), recorder);
+  game.game.initDemo(&game.players, 50, bombardment_xpses, bombardment_ypses, NULL, bombardment_teams, bombardment_mode, false, Float2(-10, 8), recorder);
   
   progression = bombardment_progression;
   
@@ -415,7 +419,7 @@ void ShopDemo::init(const IDBGlory *glory, const Player *player, Recorder *recor
     
     Player player;
     
-    game.game.initDemo(&game.players, glory->demo_range, xps, yps, NULL, glory_mode, true, Float2(5, 5), recorder);
+    game.game.initDemo(&game.players, glory->demo_range, xps, yps, NULL, glory_teams, glory_mode, true, Float2(5, 5), recorder);
   }
   
   progression = glory_progression;
