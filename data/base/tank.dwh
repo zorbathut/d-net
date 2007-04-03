@@ -710,7 +710,7 @@ tank {
   handling=2.4
   engine=31
   
-  mass=30
+  mass=40
   
   adjustment=adjustment.tank.seka
   
@@ -730,6 +730,36 @@ tank {
   vertices=0 2.3 rear_end
   
   text=text.tank.seka
+}
+
+tank {
+  name=ROOT.Tanks.TUVU I
+
+  health=260
+  handling=2.1
+  engine=25
+  
+  mass=75
+  
+  adjustment=adjustment.tank.tuvu
+  
+  weapon=Sparker III
+  
+  upgrades=Basic hull
+  upgrades=Basic engine
+  upgrades=Basic handling
+  
+  cost=600000
+  
+  vertices=4.5 2
+  vertices=7 0 firepoint
+  vertices=4.5 -2
+  vertices=0 -2.3 rear_begin
+  vertices=0.5 -1.5
+  vertices=0.5 1.5
+  vertices=0 2.3 rear_end
+  
+  text=text.tank.tuvu
 }
 
 tank {
@@ -763,43 +793,13 @@ tank {
   text=text.tank.mari
 }
 
-tank {
-  name=ROOT.Tanks.TUVU I
-
-  health=260
-  handling=2.1
-  engine=25
-  
-  mass=75
-  
-  adjustment=adjustment.tank.tuvu
-  
-  weapon=Sparker III
-  
-  upgrades=Basic hull
-  upgrades=Basic engine
-  upgrades=Basic handling
-  
-  cost=600000
-  
-  vertices=4.5 2
-  vertices=7 0 firepoint
-  vertices=4.5 -2
-  vertices=0 -2.3 rear_begin
-  vertices=0.5 -1.5
-  vertices=0.5 1.5
-  vertices=0 2.3 rear_end
-  
-  text=text.tank.tuvu
-}
-
 
 #### Advanced professional
 
 tank {
   name=ROOT.Tanks.SEKA II
 
-  health=650
+  health=620
   handling=2.5
   engine=32
   
@@ -827,40 +827,6 @@ tank {
   
   text=text.tank.seka
 }
-
-tank {
-  name=ROOT.Tanks.MARI II
-
-  health=780
-  handling=2.0
-  engine=22
-  
-  mass=120
-  
-  adjustment=adjustment.tank.mari
-  
-  weapon=Sparker IV
-  
-  upgrades=Basic hull
-  upgrades=Basic engine
-  upgrades=Basic handling
-  upgrades=Weapon damage
-  
-  cost=15000000
-  
-  vertices=4.7 1.7
-  vertices=6.3 0.9
-  vertices=5.8 0.5
-  vertices=5.8 0 firepoint
-  vertices=5.8 -0.5
-  vertices=6.3 -0.9
-  vertices=4.7 -1.7
-  vertices=0 -2.7 rear_begin
-  vertices=0 2.7 rear_end
-  
-  text=text.tank.mari
-}
-
 
 tank {
   name=ROOT.Tanks.TUVU II
@@ -893,6 +859,40 @@ tank {
   
   text=text.tank.tuvu
 }
+
+tank {
+  name=ROOT.Tanks.MARI II
+
+  health=740
+  handling=2.0
+  engine=22
+  
+  mass=120
+  
+  adjustment=adjustment.tank.mari
+  
+  weapon=Sparker IV
+  
+  upgrades=Basic hull
+  upgrades=Basic engine
+  upgrades=Basic handling
+  upgrades=Weapon damage
+  
+  cost=15000000
+  
+  vertices=4.7 1.7
+  vertices=6.3 0.9
+  vertices=5.8 0.5
+  vertices=5.8 0 firepoint
+  vertices=5.8 -0.5
+  vertices=6.3 -0.9
+  vertices=4.7 -1.7
+  vertices=0 -2.7 rear_begin
+  vertices=0 2.7 rear_end
+  
+  text=text.tank.mari
+}
+
 
 
 
