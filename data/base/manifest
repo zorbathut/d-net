@@ -14,6 +14,7 @@ weapon_missile.dwh
 weapon_missile_he.dwh
 weapon_mine.dwh
 weapon_emp.dwh
+weapon_debug.dwh  # Debug only
 
 # Miscellaneous
 upgrades.dwh
@@ -24,6 +25,3 @@ implants.dwh
 
 # Non-buy-mode "items"
 factions.dwh
-
-# Debug stuff
-debug.dwh

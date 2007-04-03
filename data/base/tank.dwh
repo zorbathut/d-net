@@ -68,7 +68,6 @@ effects {
   color=0.3, 0.3, 1.0
 }
 
-
 #### Sparker I
 
 warhead {
@@ -112,6 +111,17 @@ weapon {
   firerate=3
   
   launcher=launcher.sparker1
+}
+
+weapon {
+  name=ROOT.Weapons.Debug.Sparker I
+  firerate=3
+  
+  launcher=launcher.sparker1
+  
+  cost=1
+  
+  debug=1
 }
 
 
@@ -158,6 +168,16 @@ weapon {
   launcher=launcher.sparker2
 }
 
+weapon {
+  name=ROOT.Weapons.Debug.Sparker II
+  firerate=5
+  
+  launcher=launcher.sparker2
+  
+  cost=1
+  
+  debug=1
+}
 
 #### Sparker III
 
@@ -204,6 +224,16 @@ weapon {
   launcher=launcher.sparker3
 }
 
+weapon {
+  name=ROOT.Weapons.Debug.Sparker III
+  firerate=8
+  
+  launcher=launcher.sparker3
+  
+  cost=1
+  
+  debug=1
+}
 
 #### Sparker IV
 
@@ -252,6 +282,16 @@ weapon {
   launcher=launcher.sparker4
 }
 
+weapon {
+  name=ROOT.Weapons.Debug.Sparker IV
+  firerate=4
+  
+  launcher=launcher.sparker4
+  
+  cost=1
+  
+  debug=1
+}
 
 #### Sparker V
 
@@ -300,6 +340,16 @@ weapon {
   launcher=launcher.sparker5
 }
 
+weapon {
+  name=ROOT.Weapons.Debug.Sparker V
+  firerate=6.5
+  
+  launcher=launcher.sparker5
+  
+  cost=1
+  
+  debug=1
+}
 
 #### Sparker VI
 
@@ -346,6 +396,17 @@ weapon {
   firerate=10
   
   launcher=launcher.sparker6
+}
+
+weapon {
+  name=ROOT.Weapons.Debug.Sparker VI
+  firerate=10
+  
+  launcher=launcher.sparker6
+  
+  cost=1
+  
+  debug=1
 }
 
 
@@ -434,6 +495,17 @@ weapon {
   firerate=4
   
   launcher=launcher.sparker7
+}
+
+weapon {
+  name=ROOT.Weapons.Debug.Sparker Omega
+  firerate=4
+  
+  launcher=launcher.sparker7
+  
+  cost=1
+  
+  debug=1
 }
 
 

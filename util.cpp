@@ -57,6 +57,10 @@ string stringFromLongdouble(long double x) {
 }
 
 string prettyFloatFormat(float v) {
+  if(v >= 10000 && v < 100000) {
+    string borf = StringPrintf("%f", v);
+    return string(borf.begin(), borf.begin() + 5);
+  }
   if(!(0.01 <= v && v < 10000) && v != 0.0) {
     dprintf("err: %f\n", v);
   }
