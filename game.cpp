@@ -50,6 +50,9 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
   
   CHECK(rkeys.size() == players.size());
   CHECK(players.size() == tanks.size());
+  
+  for(int i = 0; i < tanks.size(); i++)
+    CHECK(tanks[i].team >= 0 && tanks[i].team < teams.size());
 
   GameImpactContext gic(&tanks, &gfxeffects, &gamemap, rng, demo_recorder);
   
@@ -411,7 +414,7 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
   
   if(gamemode == GMODE_STANDARD)
     bombardment_tier += getBombardmentIncreasePerSec() / FPS;
-
+  
   if(framesSinceOneLeft / FPS >= 3 && gamemode != GMODE_TEST && gamemode != GMODE_DEMO && gamemode != GMODE_CENTERED_DEMO) {
     if(zones.size() == 0) {
       int winplayer = -1;
@@ -783,7 +786,7 @@ void Game::kill(int id) {
 
 void Game::respawnPlayer(int id, Coord2 pos, float facing) {
   CHECK(gamemode == GMODE_DEMO);
-  tanks[id].respawn(pos, facing, id);
+  tanks[id].respawn(pos, facing);
   
   bombards[id].state = BombardmentState::BS_OFF;
   CHECK(tanks[id].isLive());
@@ -1124,6 +1127,9 @@ void Game::initDemo(vector<Player> *in_playerdata, float boxradi, const float *x
   demo_recorder = recorder;
   
   clear = Float4(-boxradi, -boxradi, boxradi, boxradi);
+  
+  for(int i = 0; i < tanks.size(); i++)
+    CHECK(tanks[i].team >= 0 && tanks[i].team < teams.size());
 }
 
 void Game::initCenteredDemo(Player *in_playerdata, float zoom) {

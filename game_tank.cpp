@@ -429,14 +429,15 @@ bool Tank::isLive() const {
   return live;
 }
 
-void Tank::respawn(Coord2 in_pos, float in_d, int in_team) {
+void Tank::respawn(Coord2 in_pos, float in_d) {
   IDBTankAdjust old_tank = tank;
   Color old_color = color;
+  int old_team = team;
   *this = Tank();
   init(old_tank, old_color);
   pos = in_pos;
   d = in_d;
-  team = in_team;
+  team = old_team;
 }
 
 void Tank::tryToFire(Button keys[SIMUL_WEAPONS], Player *player, ProjectilePack *projectiles, int id, const GameImpactContext &gic, vector<pair<string, float> > *status_text, float *firepowerSpent) {
@@ -512,6 +513,7 @@ Tank::Tank() : tank(NULL, IDBAdjustment()) /* do not fucking use this */ {
   memset(weaponCooldownSubvals, 0, sizeof(weaponCooldownSubvals)); // if you're not using IEEE floats, get a new computer.
   zone_current = -1;
   zone_frames = 0;
+  team = -12345;
 }
 
 Coord2 Tank::worldFromLocal(const Coord2 &coord) const {

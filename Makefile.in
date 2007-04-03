@@ -1,5 +1,5 @@
 
-STDCPPFLAGS = @STDCPPFLAGS@ -Wall -Wno-sign-compare -Wno-uninitialized -g
+STDCPPFLAGS = @STDCPPFLAGS@ -Wall -Wno-sign-compare -Wno-uninitialized -g -O2
 STDLDFLAGS = -g
 
 GAMESOURCES = main core game timer debug gfx collide gamemap util rng args interface metagame itemdb parse dvec2 input level coord ai inputsnag os float cfcommon coord_boolean player itemdb_adjust metagame_config shop shop_demo shop_info game_ai game_effects color metagame_tween cfc game_tank game_util game_projectile socket httpd recorder generators audio itemdb_httpd test
@@ -120,7 +120,7 @@ packageed: d-net.exe vecedit.exe data/shopcache.dwh
 	cp \\\\192.168.100.4\\zorba\\www\\d-net\\Dnet\ Latest\ Windows.zip \\\\192.168.100.4\\zorba\\www\\d-net\\Dnet\ Latest\ Editor.zip
 
 %.g.o: %.cpp
-	nice $(CPP) $(GAMECPPFLAGS) -O2 -c -o $@ $<
+	nice $(CPP) $(GAMECPPFLAGS) -c -o $@ $<
   
 %.g.d.o: %.cpp
 	nice $(CPP) $(GAMECPPFLAGS) -c -o $@ $<
@@ -132,7 +132,7 @@ packageed: d-net.exe vecedit.exe data/shopcache.dwh
 	nice bash -ec '$(CPP) $(GAMECPPFLAGS) -MM $< | sed "s!$*.o!$*.g.o $*.g.d.o $@!g" > $@'
 
 %.e.o: %.cpp
-	nice $(CPP) $(EDITORCPPFLAGS) -O2 -c -o $@ $<
+	nice $(CPP) $(EDITORCPPFLAGS) -c -o $@ $<
   
 %.e.d.o: %.cpp
 	nice $(CPP) $(EDITORCPPFLAGS) -c -o $@ $<
@@ -144,7 +144,7 @@ packageed: d-net.exe vecedit.exe data/shopcache.dwh
 	nice bash -ec '$(CPP) $(EDITORCPPFLAGS) -MM $< | sed "s!$*.o!$*.e.o $*.e.d.o $@!g" > $@'
 
 %.c.o: %.cpp
-	nice $(CPP) $(CONSOLECPPFLAGS) -O2 -c -o $@ $<
+	nice $(CPP) $(CONSOLECPPFLAGS) -c -o $@ $<
   
 %.c.d.o: %.cpp
 	nice $(CPP) $(CONSOLECPPFLAGS) -c -o $@ $<
