@@ -491,7 +491,7 @@ public:
   int cat_restrictiontype;
   Money spawncash;
   
-  void checkConsistency() const;
+  void checkConsistency(vector<string> *errors) const;
   
   HierarchyNode();
   

@@ -58,8 +58,10 @@ void kvData::shouldBeDone() const {
   CHECK(isDone());
 }
 
-istream &getLineStripped(istream &ifs, string *out) {
+istream &getLineStripped(istream &ifs, string *out, int *line) {
   while(getline(ifs, *out)) {
+    if(line)
+      (*line)++;
     *out = string(out->begin(), find(out->begin(), out->end(), '#'));
     while(out->size() && isspace(*out->begin()))
       out->erase(out->begin());
@@ -71,12 +73,17 @@ istream &getLineStripped(istream &ifs, string *out) {
   return ifs;
 }
 
-istream &getkvData(istream &ifs, kvData *out) {
+istream &getkvData(istream &ifs, kvData *out, int *linenum, int *endline) {
+  CHECK(!linenum == !endline);
+  if(linenum && endline)
+    *linenum = *endline;
   out->kv.clear();
   out->category.clear();
   {
     string line;
-    getLineStripped(ifs, &line);
+    getLineStripped(ifs, &line, linenum);
+    if(linenum && endline)
+      *endline = *linenum;
     if(!ifs)
       return ifs; // only way to return failure without an assert
     vector<string> tok = tokenize(line, " ");
@@ -86,7 +93,7 @@ istream &getkvData(istream &ifs, kvData *out) {
   }
   {
     string line;
-    while(getLineStripped(ifs, &line)) {
+    while(getLineStripped(ifs, &line, endline)) {
       if(line == "}")
         return ifs;
       vector<string> tok = tokenize(line, "=");

@@ -24,8 +24,8 @@ public:
 
 };
 
-istream &getLineStripped(istream &ifs, string *out);
-istream &getkvData(istream &ifs, kvData *out);
+istream &getLineStripped(istream &ifs, string *out, int *line = NULL);
+istream &getkvData(istream &ifs, kvData *out, int *line = NULL, int *endline = NULL);
 
 string stringFromKvData(const kvData &kvd);
 

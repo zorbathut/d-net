@@ -191,7 +191,14 @@ void Shop::renormalize(HierarchyNode &item, const Player *player, int playercoun
       hod.equipweapon = weaps[i];
       item.branches.push_back(hod);
     }
-    item.checkConsistency();
+    vector<string> errors;
+    item.checkConsistency(&errors);
+    if(errors.size()) {
+      dprintf("oh god renormalized hierarchy broke how can this be\n");
+      for(int i = 0; i < errors.size(); i++)
+        dprintf("    %s\n", errors[i].c_str());
+      CHECK(0);
+    }
   }
 
   for(int i = 0; i < item.branches.size(); i++) {

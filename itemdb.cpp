@@ -127,7 +127,23 @@ float IDBAdjustment::recyclevalue() const {
   return ratio;
 }
 
-void HierarchyNode::checkConsistency() const {
+class ErrorAccumulator {
+public:
+  void addError(const string &text) {
+    string tt = StringPrintf("%s:%d - %s", fname.c_str(), line, text.c_str());
+    dprintf("%s\n", tt.c_str());
+    errors->push_back(tt);
+  }
+
+  ErrorAccumulator(vector<string> *errors, const string &fname, int line) : errors(errors), fname(fname), line(line) { };
+  
+private:
+  vector<string> *errors;
+  string fname;
+  int line;
+};
+
+void HierarchyNode::checkConsistency(vector<string> *errors) const {
   //dprintf("Consistency scan entering %s\n", name.c_str());
   // all nodes need a name
   CHECK(name.size());
@@ -302,7 +318,7 @@ void HierarchyNode::checkConsistency() const {
       CHECK(branches[i].type == cat_restrictiontype || branches[i].type == HNT_CATEGORY);
       CHECK(branches[i].cat_restrictiontype == cat_restrictiontype);
     }
-    branches[i].checkConsistency();
+    branches[i].checkConsistency(errors);
   }
   //dprintf("Consistency scan leaving %s\n", name.c_str());
 }
@@ -542,7 +558,7 @@ template<typename T> void doStandardPrereq(T *titem, const string &name, map<str
   }
 }
 
-void parseHierarchy(kvData *chunk, bool reload) {
+void parseHierarchy(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   HierarchyNode *mountpoint = findNamedNode(chunk->kv["name"], 1);
   HierarchyNode tnode;
   tnode.name = tokenize(chunk->consume("name"), ".").back();
@@ -585,7 +601,7 @@ void parseHierarchy(kvData *chunk, bool reload) {
   mountpoint->branches.push_back(tnode);
 }
 
-void parseLauncher(kvData *chunk, bool reload) {
+void parseLauncher(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   IDBLauncher *titem = prepareName(chunk, &launcherclasses, reload, "launcher");
   
   titem->deploy = parseSubclass(chunk->consume("deploy"), deployclasses);
@@ -613,7 +629,7 @@ void parseLauncher(kvData *chunk, bool reload) {
   }
 }
 
-void parseEffects(kvData *chunk, bool reload) {
+void parseEffects(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   IDBEffects *titem = prepareName(chunk, &effectsclasses, reload, "effects");
   
   titem->quantity = atoi(chunk->consume("quantity").c_str());
@@ -630,14 +646,14 @@ void parseEffects(kvData *chunk, bool reload) {
   titem->color = colorFromString(chunk->consume("color"));
 }
 
-void parseStats(kvData *chunk, bool reload) {
+void parseStats(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   IDBStats *titem = prepareName(chunk, &statsclasses, reload, "stats");
     
   titem->dps_efficiency = parseWithDefault(chunk, "dps_efficiency", 1.0);
   titem->cps_efficiency = parseWithDefault(chunk, "cps_efficiency", 1.0);
 }
 
-void parseWeapon(kvData *chunk, bool reload) {
+void parseWeapon(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   string name;
   IDBWeapon *titem = prepareName(chunk, &weaponclasses, reload, &name);
   
@@ -674,7 +690,7 @@ void parseWeapon(kvData *chunk, bool reload) {
   CHECK(titem->launcher->stats);
 }
 
-void parseUpgrade(kvData *chunk, bool reload) {
+void parseUpgrade(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   // This one turns out to be rather complicated.
   string name;
   string category;
@@ -719,7 +735,7 @@ void parseUpgrade(kvData *chunk, bool reload) {
   }
 }
 
-void parseProjectile(kvData *chunk, bool reload) {
+void parseProjectile(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   IDBProjectile *titem = prepareName(chunk, &projectileclasses, reload, "projectile");
   
   titem->thickness_visual = parseWithDefault(chunk, "thickness_visual", 0.3);
@@ -764,7 +780,7 @@ void parseProjectile(kvData *chunk, bool reload) {
   CHECK(titem->chain_warhead.size());
 }
 
-void parseDeploy(kvData *chunk, bool reload) {
+void parseDeploy(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   IDBDeploy *titem = prepareName(chunk, &deployclasses, reload, "deploy");
   
   string type = parseWithDefault(chunk, "type", "normal");
@@ -799,7 +815,7 @@ void parseDeploy(kvData *chunk, bool reload) {
   CHECK(titem->chain_deploy.size() || titem->chain_projectile.size() || titem->chain_warhead.size());
 }
 
-void parseWarhead(kvData *chunk, bool reload) {
+void parseWarhead(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   IDBWarhead *titem = prepareName(chunk, &warheadclasses, reload, "warhead");
   
   memset(titem->impactdamage, 0, sizeof(titem->impactdamage));
@@ -833,7 +849,7 @@ void parseWarhead(kvData *chunk, bool reload) {
   titem->effects_impact = parseSubclassSet(chunk, "effects_impact", effectsclasses);
 }
 
-void parseGlory(kvData *chunk, bool reload) {
+void parseGlory(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   string name;
   IDBGlory *titem = prepareName(chunk, &gloryclasses, reload, &name);
   
@@ -868,7 +884,7 @@ void parseGlory(kvData *chunk, bool reload) {
   }
 }
 
-void parseBombardment(kvData *chunk, bool reload) {
+void parseBombardment(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   string name;
   IDBBombardment *titem = prepareName(chunk, &bombardmentclasses, reload, &name);
   
@@ -903,7 +919,7 @@ void parseBombardment(kvData *chunk, bool reload) {
   }
 }
 
-void parseTank(kvData *chunk, bool reload) {
+void parseTank(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   string name;
   IDBTank *titem = prepareName(chunk, &tankclasses, reload, &name);
   
@@ -991,7 +1007,7 @@ void parseTank(kvData *chunk, bool reload) {
   }
 }
 
-void parseAdjustment(kvData *chunk, bool reload) {
+void parseAdjustment(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   IDBAdjustment *titem = prepareName(chunk, &adjustmentclasses, reload, "adjustment");
   
   CHECK(ARRAY_SIZE(adjust_text) == IDBAdjustment::COMBO_LAST);
@@ -1031,7 +1047,7 @@ void parseAdjustment(kvData *chunk, bool reload) {
   }
 }
 
-void parseFaction(kvData *chunk, bool reload) {
+void parseFaction(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   IDBFaction fact;
   
   fact.icon = loadDvec2("data/base/faction_icons/" + chunk->consume("file"));
@@ -1064,13 +1080,13 @@ void parseFaction(kvData *chunk, bool reload) {
   factions.push_back(fact);
 }
 
-void parseText(kvData *chunk, bool reload) {
+void parseText(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   string *titem = prepareName(chunk, &text, reload, "text");
   *titem = chunk->consume("data");
   // yay
 }
 
-void parseShopcache(kvData *chunk) {
+void parseShopcache(kvData *chunk, vector<string> *errors) {
   IDBShopcache *titem = prepareName(chunk, &shopcaches, false);
   
   vector<string> tse = tokenize(chunk->consume("x"), "\n");
@@ -1103,7 +1119,7 @@ void parseShopcache(kvData *chunk) {
   }
 }
 
-void parseImplantSlot(kvData *chunk, bool reload) {
+void parseImplantSlot(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   string name;
   IDBImplantSlot *titem = prepareName(chunk, &implantslotclasses, reload, &name);
   
@@ -1129,7 +1145,7 @@ void parseImplantSlot(kvData *chunk, bool reload) {
   }
 }
 
-void parseImplant(kvData *chunk, bool reload) {
+void parseImplant(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   string name;
   IDBImplant *titem = prepareName(chunk, &implantclasses, reload, &name);
   
@@ -1170,58 +1186,60 @@ void parseImplant(kvData *chunk, bool reload) {
   }
 }
 
-void parseItemFile(const string &fname, bool reload) {
+void parseItemFile(const string &fname, bool reload, vector<string> *errors) {
   ifstream tfil(fname.c_str());
   CHECK(tfil);
+  
+  int line = 0;
+  int nextline = 0;
+  
   kvData chunk;
-  while(getkvData(tfil, &chunk)) {
-    dprintf("%s\n", chunk.debugOutput().c_str());
+  while(getkvData(tfil, &chunk, &line, &nextline)) {
+    //dprintf("%s\n", chunk.debugOutput().c_str());
     if(chunk.kv.count("debug") && atoi(chunk.consume("debug").c_str()) && !FLAGS_debugitems) {
       dprintf("Debug only, skipping\n");
       continue;
     }
+    ErrorAccumulator erac(errors, fname, line);
     if(chunk.category == "hierarchy") {
-      parseHierarchy(&chunk, reload);
+      parseHierarchy(&chunk, reload, erac);
     } else if(chunk.category == "weapon") {
-      parseWeapon(&chunk, reload);
+      parseWeapon(&chunk, reload, erac);
     } else if(chunk.category == "upgrade") {
-      parseUpgrade(&chunk, reload);
+      parseUpgrade(&chunk, reload, erac);
     } else if(chunk.category == "projectile") {
-      parseProjectile(&chunk, reload);
+      parseProjectile(&chunk, reload, erac);
     } else if(chunk.category == "deploy") {
-      parseDeploy(&chunk, reload);
+      parseDeploy(&chunk, reload, erac);
     } else if(chunk.category == "warhead") {
-      parseWarhead(&chunk, reload);
+      parseWarhead(&chunk, reload, erac);
     } else if(chunk.category == "glory") {
-      parseGlory(&chunk, reload);
+      parseGlory(&chunk, reload, erac);
     } else if(chunk.category == "bombardment") {
-      parseBombardment(&chunk, reload);
+      parseBombardment(&chunk, reload, erac);
     } else if(chunk.category == "tank") {
-      parseTank(&chunk, reload);
+      parseTank(&chunk, reload, erac);
     } else if(chunk.category == "adjustment") {
-      parseAdjustment(&chunk, reload);
+      parseAdjustment(&chunk, reload, erac);
     } else if(chunk.category == "faction") {
-      parseFaction(&chunk, reload);
+      parseFaction(&chunk, reload, erac);
     } else if(chunk.category == "text") {
-      parseText(&chunk, reload);
+      parseText(&chunk, reload, erac);
     } else if(chunk.category == "launcher") {
-      parseLauncher(&chunk, reload);
+      parseLauncher(&chunk, reload, erac);
     } else if(chunk.category == "stats") {
-      parseStats(&chunk, reload);
+      parseStats(&chunk, reload, erac);
     } else if(chunk.category == "effects") {
-      parseEffects(&chunk, reload);
+      parseEffects(&chunk, reload, erac);
     } else if(chunk.category == "implantslot") {
-      parseImplantSlot(&chunk, reload);
+      parseImplantSlot(&chunk, reload, erac);
     } else if(chunk.category == "implant") {
-      parseImplant(&chunk, reload);
+      parseImplant(&chunk, reload, erac);
     } else {
       CHECK(0);
     }
-    if(!chunk.isDone()) {
-      dprintf("Chunk still has unparsed data!\n");
-      dprintf("%s\n", chunk.debugOutput().c_str());
-      CHECK(0);
-    }
+    if(!chunk.isDone())
+      erac.addError(StringPrintf("Chunk still has unparsed data! %s", chunk.debugOutput().c_str()));
   }
 }
 
@@ -1233,12 +1251,14 @@ void loadItemDb(bool reload) {
     root.displaymode = HierarchyNode::HNDM_BLANK;
   }
   
+  vector<string> errors;
+  
   string basepath = "data/base/";
   ifstream manifest((basepath + "manifest").c_str());
   string line;
   while(getLineStripped(manifest, &line)) {
     dprintf("%s\n", line.c_str());
-    parseItemFile(basepath + line, reload);
+    parseItemFile(basepath + line, reload, &errors);
   }
   
   // add our hardcoded "sell" token
@@ -1279,7 +1299,7 @@ void loadItemDb(bool reload) {
       kvData chunk;
       while(getkvData(shopcache, &chunk)) {
         CHECK(chunk.category == "shopcache");
-        parseShopcache(&chunk);
+        parseShopcache(&chunk, &errors);
         if(!chunk.isDone()) {
           dprintf("Chunk still has unparsed data!\n");
           dprintf("%s\n", chunk.debugOutput().c_str());
@@ -1295,8 +1315,16 @@ void loadItemDb(bool reload) {
   CHECK(deftank);
   CHECK(defglory);
   CHECK(defbombardment);
-  root.checkConsistency();
-  dprintf("Consistency check is awesome!\n");
+  root.checkConsistency(&errors);
+  
+  if(errors.size() == 0) {
+    dprintf("EVERYTHING IS AWESOME! HELLS FUCKING YES\n");
+  } else {
+    dprintf("%d errors\n", errors.size());
+    for(int i = 0; i < errors.size(); i++)
+      dprintf("    %s\n", errors[i].c_str());
+    CHECK(0);
+  }
 }
 
 void reloadItemdb() {
