@@ -594,7 +594,7 @@ tank {
   name=ROOT.Tanks.ROXO I
 
   health=75
-  handling=1.8
+  handling=1.6
   engine=18
   
   mass=100
@@ -624,7 +624,7 @@ tank {
 
   health=180
   handling=2.5
-  engine=32
+  engine=31
   
   mass=35
   
@@ -676,7 +676,7 @@ tank {
   name=ROOT.Tanks.ROXO II
 
   health=240
-  handling=1.85
+  handling=1.7
   engine=19
   
   mass=110
@@ -706,7 +706,7 @@ tank {
 tank {
   name=ROOT.Tanks.SEKA I
 
-  health=200
+  health=190
   handling=2.4
   engine=31
   
@@ -739,7 +739,7 @@ tank {
   handling=2.1
   engine=25
   
-  mass=75
+  mass=90
   
   adjustment=adjustment.tank.tuvu
   
@@ -769,7 +769,7 @@ tank {
   handling=1.9
   engine=20
   
-  mass=120
+  mass=75
   
   adjustment=adjustment.tank.mari
   
@@ -803,7 +803,7 @@ tank {
   handling=2.5
   engine=32
   
-  mass=30
+  mass=35
   
   adjustment=adjustment.tank.seka
   
@@ -835,7 +835,7 @@ tank {
   handling=2.2
   engine=26
   
-  mass=75
+  mass=95
   
   adjustment=adjustment.tank.tuvu
   
@@ -867,7 +867,7 @@ tank {
   handling=2.0
   engine=22
   
-  mass=120
+  mass=80
   
   adjustment=adjustment.tank.mari
   
@@ -901,11 +901,11 @@ tank {
 tank {
   name=ROOT.Tanks.GUPE I
 
-  health=1
-  handling=1
-  engine=3
+  health=920
+  handling=2.6
+  engine=30
   
-  mass=1
+  mass=50
   
   weapon=Sparker IV
   
