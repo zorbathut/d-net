@@ -21,12 +21,17 @@ vector< string > tokenize(const string &in, const string &kar) {
   return oot;
 };
 
-vector< int > sti(const vector< string > &foo) {
-  int i;
-  vector< int > bar;
-  for(i = 0; i < foo.size(); i++) {
+vector<int> sti(const vector<string> &foo) {
+  vector<int> bar;
+  for(int i = 0; i < foo.size(); i++)
     bar.push_back(atoi(foo[i].c_str()));
-  }
+  return bar;
+};
+
+vector<float> stf(const vector<string> &foo) {
+  vector<float> bar;
+  for(int i = 0; i < foo.size(); i++)
+    bar.push_back(atof(foo[i].c_str()));
   return bar;
 };
 

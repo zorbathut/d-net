@@ -991,6 +991,37 @@ void parseTank(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   titem->text = parseOptionalSubclass(chunk, "text", text);
   
   {
+    // Test to see if it matches the .csv
+    ifstream ntcsv("notes_tanks.csv");
+    if(ntcsv) {
+      CHECK(count(name.begin(), name.end(), '.'));
+      string tnam = string((const char *)strrchr(name.c_str(), '.') + 1, name.c_str() + name.size());
+      
+      string lin;
+      bool found = false;
+      while(getline(ntcsv, lin)) {
+        vector<string> tok = tokenize(lin, "\",");
+        vector<float> tf = stf(tok);
+        if(tok.size() && tnam == tok[0]) {
+          CHECK(tf.size() >= 6);
+          CHECK(!found);
+          found = true;
+          if(titem->health != tf[2])
+            accum.addError(StringPrintf("Tank %s health is %f, should be %f", tnam.c_str(), titem->health, tf[2]));
+          if(titem->engine != tf[3])
+            accum.addError(StringPrintf("Tank %s engine is %f, should be %f", tnam.c_str(), titem->engine, tf[3]));
+          if(titem->handling != tf[4])
+            accum.addError(StringPrintf("Tank %s handling is %f, should be %f", tnam.c_str(), titem->handling, tf[4]));
+          if(titem->mass != tf[5])
+            accum.addError(StringPrintf("Tank %s mass is %f, should be %f", tnam.c_str(), titem->mass, tf[5]));
+        }
+      }
+      if(!found)
+        accum.addError(StringPrintf("Couldn't find tank %s", tnam.c_str()));
+    }
+  }
+  
+  {
     HierarchyNode *mountpoint = findNamedNode(name, 1);
     HierarchyNode tnode;
     tnode.name = tokenize(name, ".").back();
