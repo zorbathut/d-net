@@ -75,11 +75,17 @@ if test "x$WX" == "x" ; then
   AC_MSG_ERROR([D-Net requires WX, kind of.])
 fi
 
+AC_PATH_PROG([OO], [soffice.exe], [], ["/cygdrive/c/Program Files (x86)/OpenOffice.org 2.0/program"])
+if test "x$OO" == "x" ; then
+  AC_MSG_ERROR([D-Net requires OpenOffice, kind of.])
+fi
+
 GAMECPPFLAGS="$GAMECPPFLAGS `$SDL --cflags`"
 GAMELDFLAGS="$GAMELDFLAGS `$SDL --libs`"
 
 AC_SUBST(GAMECPPFLAGS)
 AC_SUBST(GAMELDFLAGS)
 AC_SUBST(STDCPPFLAGS)
+AC_SUBST(OO)
 
 AC_OUTPUT(Makefile)

@@ -15,6 +15,8 @@ FUNCTORSOURCES = functor_gen debug os util parse
 BUILDCPPFLAGS = $(STDCPPFLAGS)
 BUILDLDFLAGS = $(STDLDFLAGS)
 
+OO = "@OO@"
+
 DATAFILES = $(shell find data | grep -v \.svn | grep -v shopcache.dwh)
 
 CPP = g++
@@ -157,6 +159,9 @@ packageed: d-net.exe vecedit.exe data/shopcache.dwh
 
 data/shopcache.dwh: d-net.exe $(DATAFILES)
 	d-net.exe --generateCachedShops=0.99
+
+notes_%.csv: notes.ods
+	$(OO) -invisible "notes.ods" "macro://notes/Standard.Convert.Convert"
 
 export: d-net.exe tools/generateWeaponGraph.py
 	d-net.exe --generateWeaponStats

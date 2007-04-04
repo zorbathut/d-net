@@ -134,3 +134,13 @@ Core Explosive
 Overload Chip
 Kamikaze Warhead
 Immolation Device
+
+// A lot of this shit is moving into notes_weapons.whatever and so here's some commentary about that
+
+Every weapon type has a basic projectile type as well as a firerate. The projectile type is constant for all variants of the weapon, the only thing that changes is firerate.
+
+Not all projectile types are created equal, so I'll have to take that into account.
+
+So: each weapon needs to copy the DPS from the previous generation and multiply by the generation multiplier. The tanks use 3.5, so we'll use 3.25 or 3.00 to make it harder to kill tanks as time goes on. (Sparker uses 2.75.) From there you have to multiply by the adjustment factor. This gives a "desired theoretical DPS" for each type of weapon. From there I can tweak the weapons as needed. Obviously if a weapon chain ends up too powerful or too weak that's a sign I need to tweak the adjustment factor.
+
+Weapons should overlap a bit, so I'll need to figure out numbers for that. I think I want V and VI to overlap with I and II, but I'll have to fiddle with things to make it an actual tradeoff. Also, projectile durability numbers will take some fiddling.
