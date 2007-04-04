@@ -1,5 +1,16 @@
 ---- Major work path
 - Many many more weapons
+  - Base autocannon weaponry
+  - Base laser weaponry
+  - Base missile weaponry
+  - Special autocannon
+  - Special laser
+  - Special missile
+  - Trap
+  - Exotic
+  - Bombardment
+  - Glory
+  - OGRE
 - Netplay
 - Add accuracy implant/upgrade?
 - Less incentive to camp?
