@@ -162,15 +162,15 @@ void ShopLayout::updateScroll(const vector<int> &curpos, const vector<int> &opti
   CHECK(vcurpos.size() == voptions.size());
   
   for(int i = 0; i < vcurpos.size(); i++) {
-    int max_rows = (int)floor(vheight[i] / int_itemheight) - 2;
+    int max_rows = (int)floor(vheight[i] / int_itemheight) - 3;
     
     float diff = abs(int_scroll[i].first - (vcurpos[i] - max_rows / 2));
     diff = diff / 30;
     if(diff < 0.05)
       diff = 0;
     int_scroll[i].first = clamp(approach(int_scroll[i].first, vcurpos[i] - max_rows / 2, diff), 0, max(0, voptions[i] - max_rows));
-    int_scroll[i].second.first = (int_scroll[i].first != 0);
-    int_scroll[i].second.second = (int_scroll[i].first != max(0, voptions[i] - max_rows));
+    int_scroll[i].second.first = (abs(int_scroll[i].first) > 0.01);
+    int_scroll[i].second.second = (abs(int_scroll[i].first - max(0, voptions[i] - max_rows)) > 0.01);
   }
 }
 
