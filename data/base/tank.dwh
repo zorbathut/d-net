@@ -562,18 +562,43 @@ adjustment {
 }
 
 adjustment {
-  name=adjustment.tank.mari
-  tank_firerate=20
-}
-
-adjustment {
   name=adjustment.tank.tuvu
   damage_kinetic=20
   damage_explosive=20
   warhead_radius_falloff=20
 }
 
+adjustment {
+  name=adjustment.tank.mari
+  tank_firerate=20
+}
 
+adjustment {
+  name=adjustment.tank.gupe
+  damage_all=-10
+  tank_firerate=-20
+}
+
+adjustment {
+  name=adjustment.tank.himo
+  damage_all=10
+  tank_firerate=20
+}
+
+adjustment {
+  name=adjustment.tank.keromi
+  damage_energy=20
+}
+
+adjustment {
+  name=adjustment.tank.xatipe
+  damage_kinetic=20
+}
+
+adjustment {
+  name=adjustment.tank.dumaro
+  damage_explosive=20
+}
 
 ################################################################
 #
@@ -979,11 +1004,15 @@ tank {
   
   mass=50
   
+  adjustment=adjustment.tank.gupe
+  
   weapon=Sparker IV
   
   upgrades=Basic hull
   upgrades=Basic engine
   upgrades=Basic handling
+  upgrades=Weapon damage
+  upgrades=Firerate
   
   cost=18000000
   
@@ -1008,9 +1037,11 @@ tank {
   
   weapon=Sparker IV
   
-  upgrades=Basic hull
-  upgrades=Basic engine
-  upgrades=Basic handling
+  upgrades=Advanced hull
+  upgrades=Advanced engine
+  upgrades=Advanced handling
+  upgrades=Weapon damage
+  upgrades=Firerate
   
   cost=18000000
   
@@ -1034,11 +1065,13 @@ tank {
   
   mass=60
   
+  adjustment=adjustment.tank.himo
+  
   weapon=Sparker IV
   
-  upgrades=Basic hull
-  upgrades=Basic engine
-  upgrades=Basic handling
+  upgrades=Advanced hull
+  upgrades=Advanced engine
+  upgrades=Advanced handling
   
   cost=18000000
   
@@ -1068,11 +1101,15 @@ tank {
   
   mass=45
   
+  adjustment=adjustment.tank.gupe
+  
   weapon=Sparker V
   
   upgrades=Basic hull
   upgrades=Basic engine
   upgrades=Basic handling
+  upgrades=Weapon damage
+  upgrades=Firerate
   
   cost=450000000
   
@@ -1101,9 +1138,11 @@ tank {
   
   weapon=Sparker V
   
-  upgrades=Basic hull
-  upgrades=Basic engine
-  upgrades=Basic handling
+  upgrades=Advanced hull
+  upgrades=Advanced engine
+  upgrades=Advanced handling
+  upgrades=Weapon damage
+  upgrades=Firerate
   
   cost=450000000
   
@@ -1131,11 +1170,13 @@ tank {
   
   mass=65
   
+  adjustment=adjustment.tank.himo
+  
   weapon=Sparker V
   
-  upgrades=Basic hull
-  upgrades=Basic engine
-  upgrades=Basic handling
+  upgrades=Advanced hull
+  upgrades=Advanced engine
+  upgrades=Advanced handling
   
   cost=450000000
   
@@ -1169,11 +1210,15 @@ tank {
   
   mass=45
   
+  adjustment=adjustment.tank.keromi
+  
   weapon=Sparker V
   
-  upgrades=Basic hull
-  upgrades=Basic engine
-  upgrades=Basic handling
+  upgrades=Advanced hull
+  upgrades=Advanced engine
+  upgrades=Advanced handling
+  upgrades=Weapon damage
+  upgrades=Firerate
   
   cost=550000000
   
@@ -1200,11 +1245,15 @@ tank {
   
   mass=70
   
+  adjustment=adjustment.tank.xatipe
+  
   weapon=Sparker V
   
-  upgrades=Basic hull
-  upgrades=Basic engine
-  upgrades=Basic handling
+  upgrades=Advanced hull
+  upgrades=Advanced engine
+  upgrades=Advanced handling
+  upgrades=Weapon damage
+  upgrades=Firerate
   
   cost=550000000
   
@@ -1230,11 +1279,15 @@ tank {
   
   mass=110
   
+  adjustment=adjustment.tank.dumaro
+  
   weapon=Sparker V
   
-  upgrades=Basic hull
-  upgrades=Basic engine
-  upgrades=Basic handling
+  upgrades=Advanced hull
+  upgrades=Advanced engine
+  upgrades=Advanced handling
+  upgrades=Weapon damage
+  upgrades=Firerate
   
   cost=550000000
   
@@ -1272,11 +1325,15 @@ tank {
   
   mass=40
   
+  adjustment=adjustment.tank.keromi
+  
   weapon=Sparker VI
   
-  upgrades=Basic hull
-  upgrades=Basic engine
-  upgrades=Basic handling
+  upgrades=Advanced hull
+  upgrades=Advanced engine
+  upgrades=Advanced handling
+  upgrades=Weapon damage
+  upgrades=Firerate
   
   cost=14000000000
   
@@ -1309,11 +1366,15 @@ tank {
   
   mass=70
   
+  adjustment=adjustment.tank.xatipe
+  
   weapon=Sparker VI
   
-  upgrades=Basic hull
-  upgrades=Basic engine
-  upgrades=Basic handling
+  upgrades=Advanced hull
+  upgrades=Advanced engine
+  upgrades=Advanced handling
+  upgrades=Weapon damage
+  upgrades=Firerate
   
   cost=14000000000
   
@@ -1343,11 +1404,15 @@ tank {
   
   mass=120
   
+  adjustment=adjustment.tank.dumaro
+  
   weapon=Sparker VI
   
-  upgrades=Basic hull
-  upgrades=Basic engine
-  upgrades=Basic handling
+  upgrades=Advanced hull
+  upgrades=Advanced engine
+  upgrades=Advanced handling
+  upgrades=Weapon damage
+  upgrades=Firerate
   
   cost=14000000000
   
@@ -1389,11 +1454,15 @@ tank {
   
   mass=35
   
+  adjustment=adjustment.tank.keromi
+  
   weapon=Sparker Omega
   
-  upgrades=Basic hull
-  upgrades=Basic engine
-  upgrades=Basic handling
+  upgrades=Advanced hull
+  upgrades=Advanced engine
+  upgrades=Advanced handling
+  upgrades=Weapon damage
+  upgrades=Firerate
   
   cost=350000000000
   
@@ -1434,11 +1503,15 @@ tank {
   
   mass=70
   
+  adjustment=adjustment.tank.xatipe
+  
   weapon=Sparker Omega
   
-  upgrades=Basic hull
-  upgrades=Basic engine
-  upgrades=Basic handling
+  upgrades=Advanced hull
+  upgrades=Advanced engine
+  upgrades=Advanced handling
+  upgrades=Weapon damage
+  upgrades=Firerate
   
   cost=350000000000
   
@@ -1474,11 +1547,15 @@ tank {
   
   mass=130
   
+  adjustment=adjustment.tank.dumaro
+  
   weapon=Sparker Omega
   
-  upgrades=Basic hull
-  upgrades=Basic engine
-  upgrades=Basic handling
+  upgrades=Advanced hull
+  upgrades=Advanced engine
+  upgrades=Advanced handling
+  upgrades=Weapon damage
+  upgrades=Firerate
   
   cost=350000000000
   

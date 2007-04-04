@@ -1,6 +1,5 @@
 ---- Major work path
 - Doesn't show final tank (fullscreen only!)
-- Sparker balance
 - Many many more weapons
 - Netplay
 - Add accuracy implant/upgrade?

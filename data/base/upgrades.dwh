@@ -308,3 +308,38 @@ upgrade {
   
   text=text.upgrade.exotic
 }
+
+text {
+  name=text.upgrade.firerate1
+  data=TODO: write something here
+}
+
+text {
+  name=text.upgrade.firerate2
+  data=TODO: write something here
+}
+
+adjustment {
+  name=adjustment.firerate
+  tank_firerate=10
+}
+
+upgrade {
+  name=ROOT.Tank Upgrades.Firerate I
+  costmult=1
+  adjustment=adjustment.firerate
+  
+  category=Firerate
+  
+  text=text.upgrade.firerate1
+}
+
+upgrade {
+  name=ROOT.Tank Upgrades.Firerate II
+  costmult=3
+  adjustment=adjustment.firerate
+  
+  category=Firerate
+  
+  text=text.upgrade.firerate2
+}
