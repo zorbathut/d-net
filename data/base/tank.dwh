@@ -129,9 +129,9 @@ weapon {
 
 warhead {
   name=warhead.sparker2
-  impactdamage=0.6 kinetic
-  impactdamage=0.6 energy
-  impactdamage=0.6 explosive
+  impactdamage=0.5 kinetic
+  impactdamage=0.5 energy
+  impactdamage=0.5 explosive
   
   effects_impact=effects.sparker1
   effects_impact=effects.sparker2
@@ -183,9 +183,9 @@ weapon {
 
 warhead {
   name=warhead.sparker3
-  impactdamage=1.0 kinetic
-  impactdamage=1.0 energy
-  impactdamage=1.0 explosive
+  impactdamage=0.8 kinetic
+  impactdamage=0.8 energy
+  impactdamage=0.8 explosive
   
   effects_impact=effects.sparker1
   effects_impact=effects.sparker2
@@ -239,9 +239,9 @@ weapon {
 
 warhead {
   name=warhead.sparker4
-  impactdamage=4.0 kinetic
-  impactdamage=4.0 energy
-  impactdamage=4.0 explosive
+  impactdamage=5.3 kinetic
+  impactdamage=5.3 energy
+  impactdamage=5.3 explosive
   
   effects_impact=effects.sparker1
   effects_impact=effects.sparker2
@@ -297,9 +297,9 @@ weapon {
 
 warhead {
   name=warhead.sparker5
-  impactdamage=6.0 kinetic
-  impactdamage=6.0 energy
-  impactdamage=6.0 explosive
+  impactdamage=8.0 kinetic
+  impactdamage=8.0 energy
+  impactdamage=8.0 explosive
   
   effects_impact=effects.sparker1
   effects_impact=effects.sparker2
@@ -355,9 +355,9 @@ weapon {
 
 warhead {
   name=warhead.sparker6
-  impactdamage=9.0 kinetic
-  impactdamage=9.0 energy
-  impactdamage=9.0 explosive
+  impactdamage=13.5 kinetic
+  impactdamage=13.5 energy
+  impactdamage=13.5 explosive
   
   effects_impact=effects.sparker1
   effects_impact=effects.sparker2
@@ -414,9 +414,9 @@ weapon {
 
 warhead {
   name=warhead.sparker7.secondary
-  impactdamage=3.0 kinetic
-  impactdamage=3.0 energy
-  impactdamage=3.0 explosive
+  impactdamage=11.0 kinetic
+  impactdamage=11.0 energy
+  impactdamage=11.0 explosive
   
   effects_impact=effects.sparker1
   effects_impact=effects.sparker2
@@ -449,9 +449,9 @@ deploy {
 
 warhead {
   name=warhead.sparker7
-  impactdamage=20.0 kinetic
-  impactdamage=20.0 energy
-  impactdamage=20.0 explosive
+  impactdamage=35.0 kinetic
+  impactdamage=35.0 energy
+  impactdamage=35.0 explosive
   
   effects_impact=effects.sparker1
   effects_impact=effects.sparker2

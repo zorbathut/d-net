@@ -80,9 +80,9 @@ void generateCachedShops(float accuracy) {
   FILE *ofil = fopen("data/shopcache.dwh", "w");
   for(map<string, IDBWeapon>::const_iterator itr = weaponList().begin(); itr != weaponList().end(); itr++) {
     dprintf("%d/%d (%.0f%%)\n", gendone, gencount, (float)gendone / gencount * 100);
+    gendone++;
     if(itr->second.nocache)
       continue;
-    gendone++;
     generateShopCache(itr->first, itr->second, ofil, accuracy);
   }
   
