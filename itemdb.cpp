@@ -1005,7 +1005,7 @@ void parseTank(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   
   {
     // Test to see if it matches the .csv
-    ifstream ntcsv("notes_Tanks.csv");
+    ifstream ntcsv("notes_tanks.csv");
     if(ntcsv) {
       CHECK(count(name.begin(), name.end(), '.'));
       string tnam = string((const char *)strrchr(name.c_str(), '.') + 1, name.c_str() + name.size());
