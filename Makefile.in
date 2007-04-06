@@ -12,12 +12,15 @@ EDITORCPPFLAGS = `wx-config --cxxflags` $(STDCPPFLAGS)
 EDITORLDFLAGS = `wx-config --libs --gl-libs` -lopengl32 $(STDLDFLAGS)
 
 FUNCTORSOURCES = functor_gen debug os util parse
-BUILDCPPFLAGS = $(STDCPPFLAGS)
-BUILDLDFLAGS = $(STDLDFLAGS)
+MERGERSOURCES = merger debug os util parse
+CONSOLECPPFLAGS = $(STDCPPFLAGS)
+CONSOLELDFLAGS = $(STDLDFLAGS)
 
 OO = "@OO@"
 
 DATAFILES = $(shell find data | grep -v \.svn | grep -v shopcache.dwh)
+PROTOWEAPONTYPES = $(ls data/base/weapon*.dwh.proto | sed 's/\(.*\).dwh.proto/\1/')
+PROTOWEAPONCSVS = $(ls data/base/weapon*.dwh.proto | sed 's/\(.*\).dwh.proto/notes_\1.csv/')
 
 CPP = g++
 
@@ -26,6 +29,7 @@ all: d-net.exe
 include $(GAMESOURCES:=.g.d)
 include $(EDITORSOURCES:=.e.d)
 include $(FUNCTORSOURCES:=.c.d)
+include $(MERGERSOURCES:=.c.d)
 
 all: d-net.exe vecedit.exe
 
@@ -160,9 +164,6 @@ packageed: d-net.exe vecedit.exe data/shopcache.dwh
 data/shopcache.dwh: d-net.exe $(DATAFILES)
 	d-net.exe --generateCachedShops=0.99
 
-notes_%.csv: notes.ods
-	$(OO) -invisible "notes.ods" "macro://notes/Standard.Convert.Convert"
-
 export: d-net.exe tools/generateWeaponGraph.py
 	d-net.exe --generateWeaponStats
 	/cygdrive/c/Python25/python.exe tools/generateWeaponGraph.py # this is not ideal
@@ -172,6 +173,15 @@ functor_gen.exe: $(FUNCTORSOURCES:=.c.o)
 
 functor.h: functor_gen.exe functor.h.in
 	./functor_gen.exe
+  
+merger.exe: $(MERGERSOURCES:=.c.o)
+	nice $(CPP) -o $@ $(MERGERSOURCES:=.c.o) $(CONSOLELDFLAGS)
+
+notes_tanks.csv $(PROTOWEAPONCSVS): notes.ods
+	$(OO) -invisible "notes.ods" "macro://notes/Standard.Convert.Convert"
+
+data/base/%.dwh: data/base/%.dwh.proto notes_%.csv
+	echo test
 
 stats:
 	@echo Graphics: `cat gfx.h gfx.cpp game_effects.h game_effects.cpp color.h color.cpp | wc -l` loc
