@@ -1,5 +1,6 @@
 ---- Major work path
 - Make the csv replacement work
+  - Fix make package
   - Many many more weapons
     - Base autocannon weaponry
     - Base laser weaponry

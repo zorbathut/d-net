@@ -18,9 +18,10 @@ CONSOLELDFLAGS = $(STDLDFLAGS)
 
 OO = "@OO@"
 
-DATAFILES = $(shell find data | grep -v \.svn | grep -v shopcache.dwh)
-PROTOWEAPONTYPES = $(ls data/base/weapon*.dwh.proto | sed 's/\(.*\).dwh.proto/\1/')
-PROTOWEAPONCSVS = $(ls data/base/weapon*.dwh.proto | sed 's/\(.*\).dwh.proto/notes_\1.csv/')
+WEAPONTYPES = $(shell ls data/base/weapon*.dwh.proto | sed 's/data\/base\/\(.*\).dwh.proto/\1/')
+WEAPONDATA = $(patsubst %,data/base/%.dwh,$(WEAPONTYPES))
+
+DATAFILES = $(shell find data | grep -v \.svn | grep -v shopcache.dwh | grep -v .proto) $(WEAPONDATA)
 
 CPP = g++
 
@@ -33,22 +34,22 @@ include $(MERGERSOURCES:=.c.d)
 
 all: d-net.exe vecedit.exe
 
-d-net.exe: $(GAMESOURCES:=.g.o)
+d-net.exe: $(GAMESOURCES:=.g.o) $(WEAPONDATA)
 	nice $(CPP) -o $@ $(GAMESOURCES:=.g.o) $(GAMELDFLAGS)
 
-d-net-dbg.exe: $(GAMESOURCES:=.g.d.o)
+d-net-dbg.exe: $(GAMESOURCES:=.g.d.o) $(WEAPONDATA)
 	nice $(CPP) -o $@ $(GAMESOURCES:=.g.d.o) $(GAMELDFLAGS)
 
-vecedit.exe: $(EDITORSOURCES:=.e.o)
+vecedit.exe: $(EDITORSOURCES:=.e.o) $(WEAPONDATA)
 	nice $(CPP) -o $@ $(EDITORSOURCES:=.e.o) $(EDITORLDFLAGS)
   
-vecedit-dbg.exe: $(EDITORSOURCES:=.e.d.o)
+vecedit-dbg.exe: $(EDITORSOURCES:=.e.d.o) $(WEAPONDATA)
 	nice $(CPP) -o $@ $(EDITORSOURCES:=.e.d.o) $(EDITORLDFLAGS)
 
 asm: $(GAMESOURCES:=.S) makefile
 
 clean:
-	rm -rf *.o *.exe *.d *.S data/shopcache.dwh
+	rm -rf *.o *.exe *.d *.S data/shopcache.dwh $(patsubst %,data/base/%.dwh,$(WEAPONTYPES)) *.csv
 
 STDRUN = --nofullscreen --debugitems --startingPhase=8 --debugControllers=2 --factionMode=3 --nullControllers=11 --writeTarget= --auto_newgame --nocullShopTree --httpd_port=616 --noshopcache --runTests
 
@@ -177,11 +178,11 @@ functor.h: functor_gen.exe functor.h.in
 merger.exe: $(MERGERSOURCES:=.c.o)
 	nice $(CPP) -o $@ $(MERGERSOURCES:=.c.o) $(CONSOLELDFLAGS)
 
-notes_tanks.csv $(PROTOWEAPONCSVS): notes.ods
+notes_tanks.csv $(patsubst %,notes_%.csv,$(WEAPONTYPES)): notes.ods
 	$(OO) -invisible "notes.ods" "macro://notes/Standard.Convert.Convert"
 
-data/base/%.dwh: data/base/%.dwh.proto notes_%.csv
-	echo test
+data/base/%.dwh: data/base/%.dwh.proto notes_%.csv merger.exe
+	./merger.exe data/base/$*.dwh.proto notes_$*.csv > data/base/$*.dwh
 
 stats:
 	@echo Graphics: `cat gfx.h gfx.cpp game_effects.h game_effects.cpp color.h color.cpp | wc -l` loc
