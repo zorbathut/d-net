@@ -65,26 +65,26 @@ launcher {
 weapon {
   name=ROOT.Weapons.Autocannon.Autocannon I
   
-  cost=60
-  firerate=5
+  cost=MERGE
+  firerate=MERGE
   
   launcher=launcher.autocannon
 }
 
 weapon {
   name=ROOT.Weapons.Autocannon.Autocannon II
-  
-  cost=100
-  firerate=6
-  
+
+  cost=MERGE
+  firerate=MERGE
+
   launcher=launcher.autocannon
 }
 
 weapon {
   name=ROOT.Weapons.Autocannon.Autocannon III
   
-  cost=180
-  firerate=8
+  cost=MERGE
+  firerate=MERGE
   
   launcher=launcher.autocannon
 }
@@ -92,8 +92,8 @@ weapon {
 weapon {
   name=ROOT.Weapons.Autocannon.Autocannon IV
   
-  cost=300
-  firerate=10
+  cost=MERGE
+  firerate=MERGE
   
   launcher=launcher.autocannon
 }
@@ -101,8 +101,8 @@ weapon {
 weapon {
   name=ROOT.Weapons.Autocannon.Autocannon V
   
-  cost=450
-  firerate=12
+  cost=MERGE
+  firerate=MERGE
   
   launcher=launcher.autocannon
 }
@@ -110,8 +110,8 @@ weapon {
 weapon {
   name=ROOT.Weapons.Autocannon.Autocannon VI
   
-  cost=650
-  firerate=14
+  cost=MERGE
+  firerate=MERGE
   
   launcher=launcher.autocannon
 }

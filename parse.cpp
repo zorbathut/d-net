@@ -63,7 +63,7 @@ void kvData::shouldBeDone() const {
   CHECK(isDone());
 }
 
-string kvData::read(string key) const {
+const string &kvData::read(string key) const {
   CHECK(kv.count(key));
   return kv.find(key)->second;
 }

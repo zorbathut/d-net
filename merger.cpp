@@ -8,6 +8,7 @@
 #include <string>
 #include <fstream>
 #include <map>
+#include <set>
 #include <iostream>
 
 using namespace std;
@@ -102,13 +103,36 @@ int main(int argc, char *argv[]) {
   dprintf("Got %d weapondats\n", weapondats.size());
   
   {
+    set<string> doneweps;
+    
     ifstream ifs(argv[1]);
     kvData kvd;
     while(getkvData(ifs, &kvd)) {
       if(kvd.category == "weapon") {
         dprintf("Weapon %s found\n", kvd.read("name").c_str());
+        
+        CHECK(count(kvd.read("name").begin(), kvd.read("name").end(), '.'));
+        string basicname = strrchr(kvd.read("name").c_str(), '.') + 1;
+        
+        CHECK(weapondats.count(basicname));
+        CHECK(!doneweps.count(basicname));
+        
+        CHECK(kvd.read("cost") == "MERGE");
+        CHECK(kvd.read("firerate") == "MERGE");
+        
+        doneweps.insert(basicname);
+        kvd.kv["cost"] = weapondats[basicname].cost;
+        kvd.kv["firerate"] = weapondats[basicname].firerate;
       }
+      
       cout << stringFromKvData(kvd) << endl;
+    }
+    
+    if(doneweps.size() != weapondats.size()) {
+      dprintf("Weapons incomplete!\n");
+      for(map<string, Weapondat>::const_iterator itr = weapondats.begin(); itr != weapondats.end(); itr++)
+        if(!doneweps.count(itr->first))
+          dprintf("Didn't complete %s\n", itr->first.c_str());
     }
   }
 }
