@@ -147,7 +147,7 @@ packageed: d-net.exe vecedit.exe data/shopcache.dwh
 %.e.S: %.cpp
 	nice $(CPP) $(EDITORCPPFLAGS) -c -g -Wa,-a,-ad $< > $@
 
-%.e.d: %.cpp
+%.e.d: %.cpp functor.h  # some of these files use functor, so we make sure functor.h is built first
 	nice bash -ec '$(CPP) $(EDITORCPPFLAGS) -MM $< | sed "s!$*.o!$*.e.o $*.e.d.o $@!g" > $@'
 
 %.c.o: %.cpp

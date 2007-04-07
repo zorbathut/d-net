@@ -106,6 +106,7 @@ template<typename T, typename U> T clamp(T x, U min, U max) {
   return x;
 }
 
+// roman_number returns the roman equivalent of rid+1. This is retarded. If you're having trouble with that, for the love of god please fix it.
 string roman_number(int rid);
 int roman_max();
 

@@ -108,6 +108,8 @@ Strtab("Hello")
 
 Should somehow init a *global* parameter, and load things at the beginning of the program. Given a global init somehow I can do this.
 
+This is not going to happen. We can, however, parse the source with an external program, then assemble that into a string-table file which is built into the program. It's a bit hacky but it will work.
+
 ---
 I need to load weapon data from the csv file directly somehow. I'm not sure what the best approach for this is. Ideally I want to modify my existing .dwh files. Maybe a utility that reads in a .dwh file, replaces anything in it that needs replacing from the .csv file, and dumps the .dwh file again? This could work.
 
