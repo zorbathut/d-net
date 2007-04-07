@@ -63,6 +63,11 @@ void kvData::shouldBeDone() const {
   CHECK(isDone());
 }
 
+string kvData::read(string key) const {
+  CHECK(kv.count(key));
+  return kv.find(key)->second;
+}
+
 istream &getLineStripped(istream &ifs, string *out, int *line) {
   while(getline(ifs, *out)) {
     if(line)

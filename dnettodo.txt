@@ -71,7 +71,8 @@
 - Winner list better "null" icon
 
 ---- Things that may or may not be needed
-Next-gen vecedit?
+- Someday I should implement protocol buffers
+- Next-gen vecedit?
   - Multiple thing select
   - Select all
   - Move

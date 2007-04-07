@@ -20,6 +20,7 @@ public:
   string debugOutput() const;
 
   string consume(string key);
+  string read(string key) const;  // guarantees that it exists otherwise kablooey
   bool isDone() const;
   void shouldBeDone() const;
 

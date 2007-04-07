@@ -8,6 +8,7 @@
 #include <string>
 #include <fstream>
 #include <map>
+#include <iostream>
 
 using namespace std;
 
@@ -66,7 +67,6 @@ int main(int argc, char *argv[]) {
       
       if(dt[0] == "") {
         CHECK(prefix.size() || lastid == -1);
-        dprintf("%s\n", dt[1].c_str());
         if(prefix.size() && dt[1] != "" && dt[1] != "Params") {
           CHECK(dt[1] == roman_number(lastid));
           lastid++;
@@ -101,4 +101,14 @@ int main(int argc, char *argv[]) {
   
   dprintf("Got %d weapondats\n", weapondats.size());
   
+  {
+    ifstream ifs(argv[1]);
+    kvData kvd;
+    while(getkvData(ifs, &kvd)) {
+      if(kvd.category == "weapon") {
+        dprintf("Weapon %s found\n", kvd.read("name").c_str());
+      }
+      cout << stringFromKvData(kvd) << endl;
+    }
+  }
 }

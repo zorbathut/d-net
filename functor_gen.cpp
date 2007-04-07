@@ -117,7 +117,7 @@ int main() {
             string dbgout = inttoken;
             dbgout += ", params ";
             dbgout += params.stringize();
-            dprintf("%s\n", dbgout.c_str());
+            //dprintf("%s\n", dbgout.c_str());
           }
           
           if(inttoken == "CALLBACK_OR_CLOSURE") {
