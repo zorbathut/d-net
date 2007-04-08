@@ -105,9 +105,8 @@ int main(int argc, char *argv[]) {
   
   dprintf("Got %d weapondats\n", weapondats.size());
   
+  set<string> doneweps;
   {
-    set<string> doneweps;
-    
     ifstream ifs(argv[1]);
     ofstream ofs(argv[3]);
     kvData kvd;
@@ -144,5 +143,11 @@ int main(int argc, char *argv[]) {
   addItemFile("data/base/hierarchy.dwh");
   addItemFile(argv[3]);
   
-  
+  for(map<string, IDBWeapon>::const_iterator itr = weaponList().begin(); itr != weaponList().end(); itr++) {
+    CHECK(count(itr->first.begin(), itr->first.end(), '.'));
+    string wname = strrchr(itr->first.c_str(), '.') + 1;
+    CHECK(doneweps.count(wname)); // what
+    doneweps.erase(wname);
+    CHECK(IDBWeaponAdjust(&itr->second, IDBAdjustment()).launcher().stats_damagePerShot() == atof(weapondats[wname].dpp.c_str()));
+  }
 }
