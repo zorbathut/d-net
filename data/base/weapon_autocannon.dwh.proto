@@ -1,3 +1,6 @@
+###########################
+#
+#   Autocannon base stats
 
 hierarchy {
   name=ROOT.Weapons.Autocannon
@@ -62,6 +65,83 @@ launcher {
   text=text.weapon.autocannon
 }
 
+###########################
+#
+#   AP Autocannon base stats
+
+hierarchy {
+  name=ROOT.Weapons.AP Autocannon
+  pack=100
+  
+  spawncash=10000
+}
+
+text {
+  name=text.weapon.apautocannon
+  data=Heavy armor-piercing rounds have been added to the standard autocannon. The new alloys increase cost enormously, but also increase penetration.
+}
+
+effects {
+  name=effects.apautocannon
+
+  quantity=8
+  
+  reflect=0.4
+  spread=20
+  
+  slowdown=0.3
+  lifetime=0.2
+  
+  radius=0.5
+  color=1.0, 0.9, 0.6
+}
+
+warhead {
+  name=warhead.apautocannon
+  impactdamage=4.5 kinetic
+  wallremovalradius=0.8
+  wallremovalchance=0.20
+  effects_impact=effects.apautocannon
+}
+
+projectile {
+  name=projectile.apautocannon
+  motion=normal
+  velocity=130
+  thickness_visual=2x
+  length=2x
+  toughness=2
+  color=1.0, 0.9, 0.6
+  warhead=warhead.apautocannon
+}
+
+deploy {
+  name=deploy.apautocannon
+  type=forward
+  anglestddev=0.03
+  projectile=projectile.apautocannon
+}
+
+stats {
+  name=stats.apautocannon
+  
+  dps_efficiency=1.05  # wild guess
+}
+
+launcher {
+  name=launcher.apautocannon
+  
+  deploy=deploy.apautocannon
+  
+  stats=stats.apautocannon
+  
+  text=text.weapon.apautocannon
+}
+
+###########################
+#
+#   The actual weaponry
+
 weapon {
   name=ROOT.Weapons.Autocannon.Autocannon I
   
@@ -114,4 +194,59 @@ weapon {
   firerate=MERGE
   
   launcher=launcher.autocannon
+}
+
+
+weapon {
+  name=ROOT.Weapons.AP Autocannon.AP AC I
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.apautocannon
+}
+
+weapon {
+  name=ROOT.Weapons.AP Autocannon.AP AC II
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.apautocannon
+}
+
+weapon {
+  name=ROOT.Weapons.AP Autocannon.AP AC III
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.apautocannon
+}
+
+weapon {
+  name=ROOT.Weapons.AP Autocannon.AP AC IV
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.apautocannon
+}
+
+weapon {
+  name=ROOT.Weapons.AP Autocannon.AP AC V
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.apautocannon
+}
+
+weapon {
+  name=ROOT.Weapons.AP Autocannon.AP AC VI
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.apautocannon
 }

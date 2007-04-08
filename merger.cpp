@@ -143,11 +143,19 @@ int main(int argc, char *argv[]) {
   addItemFile("data/base/hierarchy.dwh");
   addItemFile(argv[3]);
   
+  bool shitisbroke = false;
+  
   for(map<string, IDBWeapon>::const_iterator itr = weaponList().begin(); itr != weaponList().end(); itr++) {
     CHECK(count(itr->first.begin(), itr->first.end(), '.'));
     string wname = strrchr(itr->first.c_str(), '.') + 1;
     CHECK(doneweps.count(wname)); // what
     doneweps.erase(wname);
-    CHECK(IDBWeaponAdjust(&itr->second, IDBAdjustment()).launcher().stats_damagePerShot() == atof(weapondats[wname].dpp.c_str()));
+    float dps = IDBWeaponAdjust(&itr->second, IDBAdjustment()).launcher().stats_damagePerShot();
+    float ddps = atof(weapondats[wname].dpp.c_str());
+    if(dps != ddps) {
+      dprintf("Weapon %s doesn't do the right damage per shot (is %f, should be %f)\n", wname.c_str(), dps, ddps);
+      shitisbroke = true;
+    }
   }
+  CHECK(!shitisbroke);
 }
