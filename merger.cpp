@@ -3,6 +3,8 @@
 #include "parse.h"
 #include "util.h"
 #include "os.h"
+#include "itemdb.h"
+#include "args.h"
 
 #include <vector>
 #include <string>
@@ -44,8 +46,9 @@ struct Weapondat {
 
 int main(int argc, char *argv[]) {
   set_exename("merger.exe");
+  initFlags(argc, argv, 3);
   
-  CHECK(argc == 3);
+  CHECK(argc == 4);
   
   map<string, Weapondat> weapondats;
   {
@@ -106,6 +109,7 @@ int main(int argc, char *argv[]) {
     set<string> doneweps;
     
     ifstream ifs(argv[1]);
+    ofstream ofs(argv[3]);
     kvData kvd;
     while(getkvData(ifs, &kvd)) {
       if(kvd.category == "weapon") {
@@ -125,7 +129,7 @@ int main(int argc, char *argv[]) {
         kvd.kv["firerate"] = weapondats[basicname].firerate;
       }
       
-      cout << stringFromKvData(kvd) << endl;
+      ofs << stringFromKvData(kvd) << endl;
     }
     
     if(doneweps.size() != weapondats.size()) {
@@ -135,4 +139,10 @@ int main(int argc, char *argv[]) {
           dprintf("Didn't complete %s\n", itr->first.c_str());
     }
   }
+  
+  addItemFile("data/base/common.dwh");
+  addItemFile("data/base/hierarchy.dwh");
+  addItemFile(argv[3]);
+  
+  
 }

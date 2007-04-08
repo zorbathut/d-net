@@ -6,13 +6,14 @@ GAMESOURCES = main core game timer debug gfx collide gamemap util rng args inter
 GAMECPPFLAGS = @GAMECPPFLAGS@ $(STDCPPFLAGS) -DNOEXIT
 GAMELDFLAGS = @GAMELDFLAGS@ -g $(STDLDFLAGS)
 
-EDITORSOURCES = vecedit vecedit_main debug os util gfx float coord parse color dvec2 cfcommon input itemdb itemdb_adjust args rng  # rng is not really needed since it won't be linked in at all, but it's easier to just include it
+EDITORSOURCES = vecedit vecedit_main debug os util gfx float coord parse color dvec2 cfcommon input itemdb itemdb_adjust args rng # rng is not really needed since it won't be linked in at all, but it's easier to just include it
 # there are obviously portability issues here
 EDITORCPPFLAGS = `wx-config --cxxflags` $(STDCPPFLAGS)
 EDITORLDFLAGS = `wx-config --libs --gl-libs` -lopengl32 $(STDLDFLAGS)
 
 FUNCTORSOURCES = functor_gen debug os util parse
-MERGERSOURCES = merger debug os util parse
+MERGERSOURCES = merger debug os util parse itemdb itemdb_adjust args color dvec2 float coord cfcommon rng # rng is not really needed since it won't be linked in at all, but it's easier to just include it
+# there are obviously portability issues here
 CONSOLECPPFLAGS = $(STDCPPFLAGS)
 CONSOLELDFLAGS = $(STDLDFLAGS)
 
@@ -160,7 +161,7 @@ packageed: d-net.exe vecedit.exe data/shopcache.dwh
 	nice $(CPP) $(CONSOLECPPFLAGS) -c -g -Wa,-a,-ad $< > $@
 
 %.c.d: %.cpp
-	nice bash -ec '$(CPP) $(CONSOLECPPFLAGS) -MM $< | sed "s!$*.o!$*.e.o $*.e.d.o $@!g" > $@'
+	nice bash -ec '$(CPP) $(CONSOLECPPFLAGS) -MM $< | sed "s!$*.o!$*.c.o $*.c.d.o $@!g" > $@'
 
 data/shopcache.dwh: d-net.exe $(DATAFILES)
 	d-net.exe --generateCachedShops=0.99
@@ -182,7 +183,7 @@ notes_tanks.csv $(patsubst %,notes_%.csv,$(WEAPONTYPES)): notes.ods
 	$(OO) -invisible "notes.ods" "macro://notes/Standard.Convert.Convert"
 
 data/base/%.dwh: data/base/%.dwh.proto notes_%.csv merger.exe
-	./merger.exe data/base/$*.dwh.proto notes_$*.csv > data/base/$*.dwh
+	./merger.exe data/base/$*.dwh.proto notes_$*.csv data/base/$*.dwh
 
 stats:
 	@echo Graphics: `cat gfx.h gfx.cpp game_effects.h game_effects.cpp color.h color.cpp | wc -l` loc

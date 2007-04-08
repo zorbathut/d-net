@@ -500,6 +500,7 @@ public:
 };
 
 void initItemdb();
+void addItemFile(const string &file);
 void reloadItemdb();
 
 /*************

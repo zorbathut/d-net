@@ -64,6 +64,6 @@ public:
 
 map< string, string > getFlagDescriptions();
 
-void initFlags(int argc, char *argv[]);
+void initFlags(int argc, char *argv[], int ignoreargs);
 
 #endif

@@ -1287,13 +1287,16 @@ void parseItemFile(const string &fname, bool reload, vector<string> *errors) {
   }
 }
 
+void idb_coreinit() {
+  CHECK(root.name == "");
+  root.name = "ROOT";
+  root.type = HierarchyNode::HNT_CATEGORY;
+  root.displaymode = HierarchyNode::HNDM_BLANK;
+}
+
 void loadItemDb(bool reload) {
-  {
-    CHECK(root.name == "");
-    root.name = "ROOT";
-    root.type = HierarchyNode::HNT_CATEGORY;
-    root.displaymode = HierarchyNode::HNDM_BLANK;
-  }
+  
+  idb_coreinit();
   
   vector<string> errors;
   
@@ -1364,6 +1367,22 @@ void loadItemDb(bool reload) {
   if(errors.size() == 0) {
     dprintf("EVERYTHING IS AWESOME! HELLS FUCKING YES\n");
   } else {
+    dprintf("%d errors\n", errors.size());
+    for(int i = 0; i < errors.size(); i++)
+      dprintf("    %s\n", errors[i].c_str());
+    CHECK(0);
+  }
+}
+
+void addItemFile(const string &file) {
+  if(root.name == "")
+    idb_coreinit();
+  
+  vector<string> errors;
+  
+  parseItemFile(file, false, &errors);
+  
+  if(errors.size() != 0) {
     dprintf("%d errors\n", errors.size());
     for(int i = 0; i < errors.size(); i++)
       dprintf("    %s\n", errors[i].c_str());

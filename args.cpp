@@ -71,8 +71,8 @@ map< string, string > getFlagDescriptions() {
   return rv;
 }
 
-void initFlags(int argc, char *argv[]) {
-  map< string, LinkageData > &links = getLinkageSingleton();
+void initFlags(int argc, char *argv[], int ignoreargs) {
+  map<string, LinkageData> &links = getLinkageSingleton();
   for(map<string, LinkageData>::iterator itr = links.begin(); itr != links.end(); itr++) {
     if(itr->second.type == LinkageData::LINKAGE_BOOL) {
       *itr->second.bool_link = itr->second.bool_def;
@@ -99,7 +99,7 @@ void initFlags(int argc, char *argv[]) {
       CHECK(0);
     }
   }
-  for(int i = 1; i < argc; i++) {
+  for(int i = ignoreargs + 1; i < argc; i++) {
     CHECK(argv[i][0] == '-' && argv[i][1] == '-');
     char *arg = argv[i] + 2;
     bool isBoolNo = false;
