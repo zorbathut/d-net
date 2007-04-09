@@ -10,8 +10,8 @@ text {
 }
 
 warhead {
-  name=warhead.mine1
-  radiusdamage=4.0 explosive
+  name=warhead.Minelayer I
+  radiusdamage=MERGE explosive
   radiusfalloff=6
   wallremovalradius=2
 }
@@ -22,7 +22,7 @@ projectile {
   radius_physical=1
   halflife=6
   color=1.0, 1.0, 1.0
-  warhead=warhead.mine1
+  warhead=warhead.Minelayer I
 }
 
 deploy {
@@ -51,15 +51,15 @@ launcher {
 weapon {
   name=ROOT.Weapons.Mine.Minelayer I
   
-  cost=50
-  firerate=2
+  cost=MERGE
+  firerate=MERGE
 
   launcher=launcher.mine1
 }
 
 warhead {
-  name=warhead.mine2
-  radiusdamage=6.0 explosive
+  name=warhead.Minelayer II
+  radiusdamage=MERGE explosive
   radiusfalloff=7
   wallremovalradius=3
 }
@@ -70,7 +70,7 @@ projectile {
   radius_physical=1.2
   halflife=8
   color=1.0, 1.0, 1.0
-  warhead=warhead.mine2
+  warhead=warhead.Minelayer II
 }
 
 deploy {
@@ -93,15 +93,15 @@ launcher {
 weapon {
   name=ROOT.Weapons.Mine.Minelayer II
   
-  cost=150
-  firerate=2.5
+  cost=MERGE
+  firerate=MERGE
   
   launcher=launcher.mine2
 }
 
 warhead {
-  name=warhead.mine3
-  radiusdamage=12.0 explosive
+  name=warhead.Minelayer III
+  radiusdamage=MERGE explosive
   radiusfalloff=8
   wallremovalradius=4
 }
@@ -112,7 +112,7 @@ projectile {
   radius_physical=1.4
   halflife=10
   color=1.0, 1.0, 1.0
-  warhead=warhead.mine3
+  warhead=warhead.Minelayer III
 }
 
 deploy {
@@ -135,15 +135,15 @@ launcher {
 weapon {
   name=ROOT.Weapons.Mine.Minelayer III
   
-  cost=875
-  firerate=3
+  cost=MERGE
+  firerate=MERGE
 
   launcher=launcher.mine3
 }
 
 warhead {
-  name=warhead.mine4
-  radiusdamage=22.0 explosive
+  name=warhead.Minelayer IV
+  radiusdamage=MERGE explosive
   radiusfalloff=9
   wallremovalradius=4
 }
@@ -154,7 +154,7 @@ projectile {
   radius_physical=1.6
   halflife=12
   color=1.0, 1.0, 1.0
-  warhead=warhead.mine4
+  warhead=warhead.Minelayer IV
 }
 
 deploy {
@@ -177,8 +177,8 @@ launcher {
 weapon {
   name=ROOT.Weapons.Mine.Minelayer IV
   
-  cost=4500
-  firerate=3
+  cost=MERGE
+  firerate=MERGE
   
   spawncash=10000
 
@@ -186,8 +186,8 @@ weapon {
 }
 
 warhead {
-  name=warhead.mine5
-  radiusdamage=36.0 explosive
+  name=warhead.Minelayer V
+  radiusdamage=MERGE explosive
   radiusfalloff=10
   wallremovalradius=4
 }
@@ -198,7 +198,7 @@ projectile {
   radius_physical=1.8
   halflife=12
   color=1.0, 1.0, 1.0
-  warhead=warhead.mine5
+  warhead=warhead.Minelayer V
 }
 
 deploy {
@@ -221,11 +221,55 @@ launcher {
 weapon {
   name=ROOT.Weapons.Mine.Minelayer V
   
-  cost=15000
-  firerate=3
+  cost=MERGE
+  firerate=MERGE
   
   spawncash=10000
 
   launcher=launcher.mine5
+}
+
+warhead {
+  name=warhead.Minelayer VI
+  radiusdamage=MERGE explosive
+  radiusfalloff=12
+  wallremovalradius=5
+}
+
+projectile {
+  name=projectile.mine6
+  motion=mine
+  radius_physical=2.0
+  halflife=15
+  color=1.0, 1.0, 1.0
+  warhead=warhead.Minelayer VI
+}
+
+deploy {
+  name=deploy.mine6
+  type=minepath
+  projectile=projectile.mine6
+}
+
+launcher {
+  name=launcher.mine6
+  
+  deploy=deploy.mine6
+  
+  stats=stats.mine
+  
+  demo=mines
+  text=text.weapon.mine
+}
+
+weapon {
+  name=ROOT.Weapons.Mine.Minelayer VI
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  spawncash=10000
+
+  launcher=launcher.mine6
 }
 

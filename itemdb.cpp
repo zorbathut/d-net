@@ -523,7 +523,7 @@ void parseDamagecode(const string &str, float *arr) {
     else
       CHECK(0);
     CHECK(arr[bucket] == 0);
-    arr[bucket] = atof(qoki[0].c_str());
+    arr[bucket] = parseSingleItem<float>(qoki[0]);
   }
 }
 

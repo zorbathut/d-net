@@ -58,7 +58,7 @@ int main(int argc, char *argv[]) {
     string prefix;
     int lastid = -1;
     
-    bool gaci = false;
+    bool gaci = true;
     
     while(getline(ifs, lin)) {
       CHECK(prefix.size() || lastid == -1);
@@ -80,6 +80,9 @@ int main(int argc, char *argv[]) {
         CHECK(lastid == -1 || lastid == 6);
         prefix = dt[0];
         lastid = 0;
+        
+        if(prefix == "Autocannon")
+          gaci = false;
       }
       
       if(pline) {
@@ -126,6 +129,19 @@ int main(int argc, char *argv[]) {
         doneweps.insert(basicname);
         kvd.kv["cost"] = weapondats[basicname].cost;
         kvd.kv["firerate"] = weapondats[basicname].firerate;
+      } else if(kvd.category == "warhead") {
+        dprintf("Warhead %s found\n", kvd.read("name").c_str());
+        
+        CHECK(count(kvd.read("name").begin(), kvd.read("name").end(), '.'));
+        string basicname = strrchr(kvd.read("name").c_str(), '.') + 1;
+        
+        if(weapondats.count(basicname)) {
+          CHECK(!doneweps.count(basicname));
+          vector<string> radidam = tokenize(kvd.read("radiusdamage"), "\n ");
+          CHECK(radidam.size() == 2);
+          CHECK(radidam[0] == "MERGE");
+          kvd.kv["radiusdamage"] = StringPrintf("%s %s", weapondats[basicname].dpp.c_str(), radidam[1].c_str());
+        }
       }
       
       ofs << stringFromKvData(kvd) << endl;
