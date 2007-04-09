@@ -52,7 +52,7 @@ vecedit-dbg.exe: $(EDITORSOURCES:=.e.d.o) $(WEAPONDATA)
 asm: $(GAMESOURCES:=.S) makefile
 
 clean:
-	rm -rf *.o *.exe *.d *.S data/shopcache.dwh $(patsubst %,data/base/%.dwh,$(WEAPONTYPES)) *.csv
+	rm -rf *.o *.exe *.d *.S data/shopcache.dwh $(patsubst %,data/base/%.dwh,$(WEAPONTYPES)) *.csv notes.token
 
 STDRUN = --nofullscreen --debugitems --startingPhase=8 --debugControllers=2 --factionMode=3 --nullControllers=11 --writeTarget= --auto_newgame --nocullShopTree --httpd_port=616 --noshopcache --runTests
 
@@ -182,8 +182,12 @@ functor.h: functor_gen.exe functor.h.in
 merger.exe: $(MERGERSOURCES:=.c.o)
 	nice $(CPP) -o $@ $(MERGERSOURCES:=.c.o) $(CONSOLELDFLAGS)
 
-notes_tanks.csv $(patsubst %,notes_%.csv,$(WEAPONTYPES)): notes.ods
-	$(OO) -invisible "notes.ods" "macro://notes/Standard.Convert.Convert" || ( rm -f $@ && false )
+notes_tanks.csv $(patsubst %,notes_%.csv,$(WEAPONTYPES)): notes.token
+	@true
+
+notes.token: notes.ods
+	touch notes.token
+	$(OO) -invisible "notes.ods" "macro://notes/Standard.Convert.Convert" || ( rm -f notes_tanks.csv $(patsubst %,notes_%.csv,$(WEAPONTYPES)) notes.token && false )
 
 data/base/%.dwh: data/base/%.dwh.proto notes_%.csv merger.exe
 	./merger.exe data/base/$*.dwh.proto notes_$*.csv data/base/$*.dwh || ( rm -f $@ && false )

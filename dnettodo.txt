@@ -1,7 +1,6 @@
 ---- Major work path
 - Fix make package
 - Convert to merge
-  - Exotic
   - Laser
   - Missile
 - Many many more weapons
