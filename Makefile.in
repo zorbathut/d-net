@@ -208,4 +208,4 @@ stats:
 	@echo AI: `cat ai.h ai.cpp | wc -l` loc
 	@echo Infrastructure: `cat Makefile.in configure.in | wc -l` loc
 	@echo Total code: `cat *.h *.cpp Makefile.in configure.in | wc -l` loc
-	@echo Datafiles: `cd data; cat \`find -type f | grep -v .svn\` | wc -l` lines
+	@echo Datafiles: `cd data; cat \`find -type f | grep -v .svn | grep -v weapon.*.dwh$ | grep -v shopcache.dwh\` | wc -l` lines

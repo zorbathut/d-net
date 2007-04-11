@@ -140,6 +140,341 @@ launcher {
 
 ###########################
 #
+#   Heavy Autocannon base stats (TODO: desuck)
+
+hierarchy {
+  name=ROOT.Weapons.Heavy Autocannon
+  pack=100
+}
+
+text {
+  name=text.weapon.heavyautocannon
+  data=Blah blah hamster blah yacht blah blah blah monocle polish
+}
+
+effects {
+  name=effects.heavyautocannon
+
+  quantity=8
+  
+  reflect=0.3
+  spread=20
+  
+  slowdown=0.2
+  lifetime=0.15
+  
+  radius=0.3
+  color=1.0, 0.9, 0.6
+}
+
+warhead {
+  name=warhead.heavyautocannon
+  impactdamage=20 kinetic
+  wallremovalradius=0.5
+  wallremovalchance=0.05
+  
+  effects_impact=effects.heavyautocannon
+}
+
+projectile {
+  name=projectile.heavyautocannon
+  motion=normal
+  velocity=120
+  color=1.0, 0.9, 0.6
+  warhead=warhead.heavyautocannon
+}
+
+deploy {
+  name=deploy.heavyautocannon
+  type=forward
+  anglestddev=0.025
+  projectile=projectile.heavyautocannon
+}
+
+stats {
+  name=stats.heavyautocannon
+}
+
+launcher {
+  name=launcher.heavyautocannon
+  
+  deploy=deploy.heavyautocannon
+  
+  stats=stats.heavyautocannon
+  
+  text=text.weapon.heavyautocannon
+}
+
+###########################
+#
+#   Sabot Shotgun base stats (TODO: desuck)
+
+hierarchy {
+  name=ROOT.Weapons.Sabot Shotgun
+  pack=100
+}
+
+text {
+  name=text.weapon.sabotshotgun
+  data=Blah blah hamster blah yacht blah blah blah monocle polish
+}
+
+effects {
+  name=effects.sabotshotgun
+
+  quantity=8
+  
+  reflect=0.3
+  spread=20
+  
+  slowdown=0.2
+  lifetime=0.15
+  
+  radius=0.3
+  color=1.0, 0.9, 0.6
+}
+
+warhead {
+  name=warhead.sabotshotgun
+  impactdamage=40 kinetic
+  wallremovalradius=0.5
+  wallremovalchance=0.05
+  
+  effects_impact=effects.sabotshotgun
+}
+
+projectile {
+  name=projectile.sabotshotgun
+  motion=normal
+  velocity=120
+  color=1.0, 0.9, 0.6
+  warhead=warhead.sabotshotgun
+}
+
+deploy {
+  name=deploy.sabotshotgun
+  type=forward
+  anglestddev=0.025
+  projectile=projectile.sabotshotgun
+}
+
+stats {
+  name=stats.sabotshotgun
+}
+
+launcher {
+  name=launcher.sabotshotgun
+  
+  deploy=deploy.sabotshotgun
+  
+  stats=stats.sabotshotgun
+  
+  text=text.weapon.sabotshotgun
+}
+
+###########################
+#
+#   Blade Launcher base stats (TODO: desuck)
+
+hierarchy {
+  name=ROOT.Weapons.Blade Launcher
+  pack=100
+}
+
+text {
+  name=text.weapon.bladelauncher
+  data=Blah blah hamster blah yacht blah blah blah monocle polish
+}
+
+effects {
+  name=effects.bladelauncher
+
+  quantity=8
+  
+  reflect=0.3
+  spread=20
+  
+  slowdown=0.2
+  lifetime=0.15
+  
+  radius=0.3
+  color=1.0, 0.9, 0.6
+}
+
+warhead {
+  name=warhead.bladelauncher
+  impactdamage=75 kinetic
+  wallremovalradius=0.5
+  wallremovalchance=0.05
+  
+  effects_impact=effects.bladelauncher
+}
+
+projectile {
+  name=projectile.bladelauncher
+  motion=normal
+  velocity=120
+  color=1.0, 0.9, 0.6
+  warhead=warhead.bladelauncher
+}
+
+deploy {
+  name=deploy.bladelauncher
+  type=forward
+  anglestddev=0.025
+  projectile=projectile.bladelauncher
+}
+
+stats {
+  name=stats.bladelauncher
+}
+
+launcher {
+  name=launcher.bladelauncher
+  
+  deploy=deploy.bladelauncher
+  
+  stats=stats.bladelauncher
+  
+  text=text.weapon.bladelauncher
+}
+
+###########################
+#
+#   C Cannon base stats (TODO: desuck)
+
+hierarchy {
+  name=ROOT.Weapons.C Cannon
+  pack=100
+}
+
+text {
+  name=text.weapon.ccannon
+  data=Blah blah hamster blah yacht blah blah blah monocle polish
+}
+
+effects {
+  name=effects.ccannon
+
+  quantity=8
+  
+  reflect=0.3
+  spread=20
+  
+  slowdown=0.2
+  lifetime=0.15
+  
+  radius=0.3
+  color=1.0, 0.9, 0.6
+}
+
+warhead {
+  name=warhead.ccannon
+  impactdamage=350 kinetic
+  wallremovalradius=0.5
+  wallremovalchance=0.05
+  
+  effects_impact=effects.ccannon
+}
+
+projectile {
+  name=projectile.ccannon
+  motion=normal
+  velocity=120
+  color=1.0, 0.9, 0.6
+  warhead=warhead.ccannon
+}
+
+deploy {
+  name=deploy.ccannon
+  type=forward
+  anglestddev=0.025
+  projectile=projectile.ccannon
+}
+
+stats {
+  name=stats.ccannon
+}
+
+launcher {
+  name=launcher.ccannon
+  
+  deploy=deploy.ccannon
+  
+  stats=stats.ccannon
+  
+  text=text.weapon.ccannon
+}
+
+###########################
+#
+#   Conversion Cannon base stats (TODO: desuck)
+
+hierarchy {
+  name=ROOT.Weapons.Conversion Cannon
+  pack=100
+}
+
+text {
+  name=text.weapon.conversioncannon
+  data=Blah blah hamster blah yacht blah blah blah monocle polish
+}
+
+effects {
+  name=effects.conversioncannon
+
+  quantity=8
+  
+  reflect=0.3
+  spread=20
+  
+  slowdown=0.2
+  lifetime=0.15
+  
+  radius=0.3
+  color=1.0, 0.9, 0.6
+}
+
+warhead {
+  name=warhead.conversioncannon
+  impactdamage=1200 kinetic
+  wallremovalradius=0.5
+  wallremovalchance=0.05
+  
+  effects_impact=effects.conversioncannon
+}
+
+projectile {
+  name=projectile.conversioncannon
+  motion=normal
+  velocity=120
+  color=1.0, 0.9, 0.6
+  warhead=warhead.conversioncannon
+}
+
+deploy {
+  name=deploy.conversioncannon
+  type=forward
+  anglestddev=0.025
+  projectile=projectile.conversioncannon
+}
+
+stats {
+  name=stats.conversioncannon
+}
+
+launcher {
+  name=launcher.conversioncannon
+  
+  deploy=deploy.conversioncannon
+  
+  stats=stats.conversioncannon
+  
+  text=text.weapon.conversioncannon
+}
+
+###########################
+#
 #   The actual weaponry
 
 weapon {
@@ -206,6 +541,7 @@ weapon {
   launcher=launcher.apautocannon
 }
 
+
 weapon {
   name=ROOT.Weapons.AP Autocannon.AP AC II
   
@@ -249,4 +585,279 @@ weapon {
   firerate=MERGE
   
   launcher=launcher.apautocannon
+}
+
+
+weapon {
+  name=ROOT.Weapons.Heavy Autocannon.Heavy AC I
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.heavyautocannon
+}
+
+weapon {
+  name=ROOT.Weapons.Heavy Autocannon.Heavy AC II
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.heavyautocannon
+}
+
+weapon {
+  name=ROOT.Weapons.Heavy Autocannon.Heavy AC III
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.heavyautocannon
+}
+
+weapon {
+  name=ROOT.Weapons.Heavy Autocannon.Heavy AC IV
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.heavyautocannon
+}
+
+weapon {
+  name=ROOT.Weapons.Heavy Autocannon.Heavy AC V
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.heavyautocannon
+}
+
+weapon {
+  name=ROOT.Weapons.Heavy Autocannon.Heavy AC VI
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.heavyautocannon
+}
+
+
+weapon {
+  name=ROOT.Weapons.Sabot Shotgun.Sabot Shotgun I
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.sabotshotgun
+}
+
+weapon {
+  name=ROOT.Weapons.Sabot Shotgun.Sabot Shotgun II
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.sabotshotgun
+}
+
+weapon {
+  name=ROOT.Weapons.Sabot Shotgun.Sabot Shotgun III
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.sabotshotgun
+}
+
+weapon {
+  name=ROOT.Weapons.Sabot Shotgun.Sabot Shotgun IV
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.sabotshotgun
+}
+
+weapon {
+  name=ROOT.Weapons.Sabot Shotgun.Sabot Shotgun V
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.sabotshotgun
+}
+
+weapon {
+  name=ROOT.Weapons.Sabot Shotgun.Sabot Shotgun VI
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.sabotshotgun
+}
+
+
+weapon {
+  name=ROOT.Weapons.Blade Launcher.Blade Launcher I
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.bladelauncher
+}
+
+weapon {
+  name=ROOT.Weapons.Blade Launcher.Blade Launcher II
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.bladelauncher
+}
+
+weapon {
+  name=ROOT.Weapons.Blade Launcher.Blade Launcher III
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.bladelauncher
+}
+
+weapon {
+  name=ROOT.Weapons.Blade Launcher.Blade Launcher IV
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.bladelauncher
+}
+
+weapon {
+  name=ROOT.Weapons.Blade Launcher.Blade Launcher V
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.bladelauncher
+}
+
+weapon {
+  name=ROOT.Weapons.Blade Launcher.Blade Launcher VI
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.bladelauncher
+}
+
+
+weapon {
+  name=ROOT.Weapons.C Cannon.C Cannon I
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.ccannon
+}
+
+weapon {
+  name=ROOT.Weapons.C Cannon.C Cannon II
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.ccannon
+}
+
+weapon {
+  name=ROOT.Weapons.C Cannon.C Cannon III
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.ccannon
+}
+
+weapon {
+  name=ROOT.Weapons.C Cannon.C Cannon IV
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.ccannon
+}
+
+weapon {
+  name=ROOT.Weapons.C Cannon.C Cannon V
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.ccannon
+}
+
+weapon {
+  name=ROOT.Weapons.C Cannon.C Cannon VI
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.ccannon
+}
+
+
+weapon {
+  name=ROOT.Weapons.Conversion Cannon.Conversion Cannon I
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.conversioncannon
+}
+
+weapon {
+  name=ROOT.Weapons.Conversion Cannon.Conversion Cannon II
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.conversioncannon
+}
+
+weapon {
+  name=ROOT.Weapons.Conversion Cannon.Conversion Cannon III
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.conversioncannon
+}
+
+weapon {
+  name=ROOT.Weapons.Conversion Cannon.Conversion Cannon IV
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.conversioncannon
+}
+
+weapon {
+  name=ROOT.Weapons.Conversion Cannon.Conversion Cannon V
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.conversioncannon
+}
+
+weapon {
+  name=ROOT.Weapons.Conversion Cannon.Conversion Cannon VI
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.conversioncannon
 }
