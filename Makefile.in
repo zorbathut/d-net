@@ -19,10 +19,10 @@ CONSOLELDFLAGS = $(STDLDFLAGS)
 
 OO = "@OO@"
 
-WEAPONTYPES = $(shell ls data/base/weapon*.dwh.proto | sed 's/data\/base\/\(.*\).dwh.proto/\1/')
+WEAPONTYPES = $(shell ls data/base/weapon*.dwh.unmerged | sed 's/data\/base\/\(.*\).dwh.unmerged/\1/')
 WEAPONDATA = $(patsubst %,data/base/%.dwh,$(WEAPONTYPES))
 
-DATAFILES = $(shell find data | grep -v \.svn | grep -v shopcache.dwh | grep -v .proto) $(WEAPONDATA)
+DATAFILES = $(shell find data | grep -v \.svn | grep -v shopcache.dwh | grep -v .unmerged) $(WEAPONDATA)
 
 PACKAGESUBDIR = sekret
 
@@ -97,7 +97,7 @@ cp -r data deploy
 mkdir deploy/dumps
 cp dumps/readme.txt deploy/dumps
 rm -f deploy/data/coordfailure
-rm -rf deploy/data/base/*.proto
+rm -rf deploy/data/base/*.unmerged
 endef
 
 define strip
@@ -190,8 +190,8 @@ notes_tanks.csv $(patsubst %,notes_%.csv,$(WEAPONTYPES)): .notes_flag
 	$(OO) -invisible "notes.ods" "macro://notes/Standard.Convert.Convert" || ( rm -f notes_tanks.csv $(patsubst %,notes_%.csv,$(WEAPONTYPES)) && false )
 	@touch .notes_flag
 
-data/base/%.dwh: data/base/%.dwh.proto notes_%.csv merger.exe
-	./merger.exe data/base/$*.dwh.proto notes_$*.csv data/base/$*.dwh || ( rm -f $@ && false )
+data/base/%.dwh: data/base/%.dwh.unmerged notes_%.csv merger.exe
+	./merger.exe data/base/$*.dwh.unmerged notes_$*.csv data/base/$*.dwh || ( rm -f $@ && false )
 
 stats:
 	@echo Graphics: `cat gfx.h gfx.cpp game_effects.h game_effects.cpp color.h color.cpp | wc -l` loc
