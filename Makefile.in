@@ -87,6 +87,7 @@ veced: vecedit.exe
 	./vecedit.exe
 
 define prepackage
+rm -rf deploy
 rm -f \\\\192.168.100.4\\zorba\\www\\d-net\\$(PACKAGESUBDIR)\\Dnet\ Latest\ Windows.zip
 mkdir deploy
 cp d-net.exe deploy
@@ -96,7 +97,7 @@ cp -r data deploy
 mkdir deploy/dumps
 cp dumps/readme.txt deploy/dumps
 rm -f deploy/data/coordfailure
-rm -rf deploy/data/*.proto
+rm -rf deploy/data/base/*.proto
 endef
 
 define strip
@@ -167,10 +168,10 @@ packageed: d-net.exe $(WEAPONDATA) vecedit.exe data/shopcache.dwh
 	nice bash -ec '$(CPP) $(CONSOLECPPFLAGS) -MM $< | sed "s!$*.o!$*.c.o $*.c.d.o $@!g" > $@'
 
 data/shopcache.dwh: d-net.exe $(DATAFILES)
-	d-net.exe --generateCachedShops=0.99 || ( rm -f $@ && false )
+	./d-net.exe --generateCachedShops=0.99 || ( rm -f $@ && false )
 
 export: d-net.exe tools/generateWeaponGraph.py
-	d-net.exe --generateWeaponStats || ( rm -f $@ && false )
+	./d-net.exe --generateWeaponStats || ( rm -f $@ && false )
 	/cygdrive/c/Python25/python.exe tools/generateWeaponGraph.py # this is not ideal
 
 functor_gen.exe: $(FUNCTORSOURCES:=.c.o)
