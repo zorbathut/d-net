@@ -146,6 +146,271 @@ launcher {
 
 ###########################
 #
+#   Cluster Missile base stats
+
+hierarchy {
+  name=ROOT.Weapons.Cluster Missile
+  pack=100
+}
+
+text {
+  name=text.weapon.clustermissile
+  data=Blah blah hamster blah yacht blah blah blah monocle polish
+}
+
+warhead {
+  name=warhead.clustermissile
+  impactdamage=0 explosive
+  radiusdamage=20.0 explosive
+  radiusfalloff=4
+  wallremovalradius=1
+}
+
+projectile {
+  name=projectile.clustermissile
+  velocity=180
+  color=0.9, 0.95, 1.0
+  motion=missile
+  warhead=warhead.clustermissile
+}
+
+deploy {
+  name=deploy.clustermissile
+  type=forward
+  anglestddev=0.002
+  projectile=projectile.clustermissile
+}
+
+stats {
+  name=stats.clustermissile
+  
+  dps_efficiency=0.8
+}
+
+launcher {
+  name=launcher.clustermissile
+  
+  deploy=deploy.clustermissile
+  
+  stats=stats.clustermissile
+  
+  text=text.weapon.clustermissile
+}
+
+###########################
+#
+#   Proximity Rocket base stats
+
+hierarchy {
+  name=ROOT.Weapons.Proximity Rocket
+  pack=100
+}
+
+text {
+  name=text.weapon.proximityrocket
+  data=Blah blah hamster blah yacht blah blah blah monocle polish
+}
+
+warhead {
+  name=warhead.proximityrocket
+  impactdamage=0 explosive
+  radiusdamage=40 explosive
+  radiusfalloff=4
+  wallremovalradius=1
+}
+
+projectile {
+  name=projectile.proximityrocket
+  velocity=180
+  color=0.9, 0.95, 1.0
+  motion=missile
+  warhead=warhead.proximityrocket
+}
+
+deploy {
+  name=deploy.proximityrocket
+  type=forward
+  anglestddev=0.002
+  projectile=projectile.proximityrocket
+}
+
+stats {
+  name=stats.proximityrocket
+  
+  dps_efficiency=0.8
+}
+
+launcher {
+  name=launcher.proximityrocket
+  
+  deploy=deploy.proximityrocket
+  
+  stats=stats.proximityrocket
+  
+  text=text.weapon.proximityrocket
+}
+
+###########################
+#
+#   Adaptive Rocket base stats
+
+hierarchy {
+  name=ROOT.Weapons.Adaptive Rocket
+  pack=100
+}
+
+text {
+  name=text.weapon.adaptiverocket
+  data=Blah blah hamster blah yacht blah blah blah monocle polish
+}
+
+warhead {
+  name=warhead.adaptiverocket
+  impactdamage=0 explosive
+  radiusdamage=75 explosive
+  radiusfalloff=4
+  wallremovalradius=1
+}
+
+projectile {
+  name=projectile.adaptiverocket
+  velocity=180
+  color=0.9, 0.95, 1.0
+  motion=missile
+  warhead=warhead.adaptiverocket
+}
+
+deploy {
+  name=deploy.adaptiverocket
+  type=forward
+  anglestddev=0.002
+  projectile=projectile.adaptiverocket
+}
+
+stats {
+  name=stats.adaptiverocket
+  
+  dps_efficiency=0.8
+}
+
+launcher {
+  name=launcher.adaptiverocket
+  
+  deploy=deploy.adaptiverocket
+  
+  stats=stats.adaptiverocket
+  
+  text=text.weapon.adaptiverocket
+}
+
+###########################
+#
+#   Mini-Nuke base stats
+
+hierarchy {
+  name=ROOT.Weapons.Mini-Nuke
+  pack=100
+}
+
+text {
+  name=text.weapon.mininuke
+  data=Blah blah hamster blah yacht blah blah blah monocle polish
+}
+
+warhead {
+  name=warhead.mininuke
+  impactdamage=0 explosive
+  radiusdamage=350 explosive
+  radiusfalloff=4
+  wallremovalradius=1
+}
+
+projectile {
+  name=projectile.mininuke
+  velocity=180
+  color=0.9, 0.95, 1.0
+  motion=missile
+  warhead=warhead.mininuke
+}
+
+deploy {
+  name=deploy.mininuke
+  type=forward
+  anglestddev=0.002
+  projectile=projectile.mininuke
+}
+
+stats {
+  name=stats.mininuke
+  
+  dps_efficiency=0.8
+}
+
+launcher {
+  name=launcher.mininuke
+  
+  deploy=deploy.mininuke
+  
+  stats=stats.mininuke
+  
+  text=text.weapon.mininuke
+}
+
+###########################
+#
+#   Conversion Nuke base stats
+
+hierarchy {
+  name=ROOT.Weapons.Conversion Nuke
+  pack=100
+}
+
+text {
+  name=text.weapon.conversionnuke
+  data=Blah blah hamster blah yacht blah blah blah monocle polish
+}
+
+warhead {
+  name=warhead.conversionnuke
+  impactdamage=0 explosive
+  radiusdamage=1200 explosive
+  radiusfalloff=4
+  wallremovalradius=1
+}
+
+projectile {
+  name=projectile.conversionnuke
+  velocity=180
+  color=0.9, 0.95, 1.0
+  motion=missile
+  warhead=warhead.conversionnuke
+}
+
+deploy {
+  name=deploy.conversionnuke
+  type=forward
+  anglestddev=0.002
+  projectile=projectile.conversionnuke
+}
+
+stats {
+  name=stats.conversionnuke
+  
+  dps_efficiency=0.8
+}
+
+launcher {
+  name=launcher.conversionnuke
+  
+  deploy=deploy.conversionnuke
+  
+  stats=stats.conversionnuke
+  
+  text=text.weapon.conversionnuke
+}
+
+###########################
+#
 #   The actual weaponry
 
 weapon {
@@ -254,4 +519,279 @@ weapon {
   firerate=MERGE
   
   launcher=launcher.hemissile
+}
+
+
+weapon {
+  name=ROOT.Weapons.Cluster Missile.Cluster Missile I
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.clustermissile
+}
+
+weapon {
+  name=ROOT.Weapons.Cluster Missile.Cluster Missile II
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.clustermissile
+}
+
+weapon {
+  name=ROOT.Weapons.Cluster Missile.Cluster Missile III
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.clustermissile
+}
+
+weapon {
+  name=ROOT.Weapons.Cluster Missile.Cluster Missile IV
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.clustermissile
+}
+
+weapon {
+  name=ROOT.Weapons.Cluster Missile.Cluster Missile V
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.clustermissile
+}
+
+weapon {
+  name=ROOT.Weapons.Cluster Missile.Cluster Missile VI
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.clustermissile
+}
+
+
+weapon {
+  name=ROOT.Weapons.Proximity Rocket.Proximity Rocket I
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.proximityrocket
+}
+
+weapon {
+  name=ROOT.Weapons.Proximity Rocket.Proximity Rocket II
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.proximityrocket
+}
+
+weapon {
+  name=ROOT.Weapons.Proximity Rocket.Proximity Rocket III
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.proximityrocket
+}
+
+weapon {
+  name=ROOT.Weapons.Proximity Rocket.Proximity Rocket IV
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.proximityrocket
+}
+
+weapon {
+  name=ROOT.Weapons.Proximity Rocket.Proximity Rocket V
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.proximityrocket
+}
+
+weapon {
+  name=ROOT.Weapons.Proximity Rocket.Proximity Rocket VI
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.proximityrocket
+}
+
+
+weapon {
+  name=ROOT.Weapons.Adaptive Rocket.Adaptive Rocket I
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.adaptiverocket
+}
+
+weapon {
+  name=ROOT.Weapons.Adaptive Rocket.Adaptive Rocket II
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.adaptiverocket
+}
+
+weapon {
+  name=ROOT.Weapons.Adaptive Rocket.Adaptive Rocket III
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.adaptiverocket
+}
+
+weapon {
+  name=ROOT.Weapons.Adaptive Rocket.Adaptive Rocket IV
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.adaptiverocket
+}
+
+weapon {
+  name=ROOT.Weapons.Adaptive Rocket.Adaptive Rocket V
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.adaptiverocket
+}
+
+weapon {
+  name=ROOT.Weapons.Adaptive Rocket.Adaptive Rocket VI
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.adaptiverocket
+}
+
+
+weapon {
+  name=ROOT.Weapons.Mini-Nuke.Mini-Nuke I
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.mininuke
+}
+
+weapon {
+  name=ROOT.Weapons.Mini-Nuke.Mini-Nuke II
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.mininuke
+}
+
+weapon {
+  name=ROOT.Weapons.Mini-Nuke.Mini-Nuke III
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.mininuke
+}
+
+weapon {
+  name=ROOT.Weapons.Mini-Nuke.Mini-Nuke IV
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.mininuke
+}
+
+weapon {
+  name=ROOT.Weapons.Mini-Nuke.Mini-Nuke V
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.mininuke
+}
+
+weapon {
+  name=ROOT.Weapons.Mini-Nuke.Mini-Nuke VI
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.mininuke
+}
+
+
+weapon {
+  name=ROOT.Weapons.Conversion Nuke.Conversion Nuke I
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.conversionnuke
+}
+
+weapon {
+  name=ROOT.Weapons.Conversion Nuke.Conversion Nuke II
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.conversionnuke
+}
+
+weapon {
+  name=ROOT.Weapons.Conversion Nuke.Conversion Nuke III
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.conversionnuke
+}
+
+weapon {
+  name=ROOT.Weapons.Conversion Nuke.Conversion Nuke IV
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.conversionnuke
+}
+
+weapon {
+  name=ROOT.Weapons.Conversion Nuke.Conversion Nuke V
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.conversionnuke
+}
+
+weapon {
+  name=ROOT.Weapons.Conversion Nuke.Conversion Nuke VI
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.conversionnuke
 }

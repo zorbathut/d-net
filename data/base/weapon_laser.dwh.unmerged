@@ -97,7 +97,7 @@ launcher {
 
 ###########################
 #
-#   MW Laser base stats
+#   Megawatt Laser base stats
 
 
 hierarchy {
@@ -201,6 +201,491 @@ launcher {
 
 ###########################
 #
+#   Gigawatt Laser base stats
+
+hierarchy {
+  name=ROOT.Weapons.Gigawatt Laser
+  pack=100
+}
+
+text {
+  name=text.weapon.gwlaser
+  data=Blah blah hamster blah yacht blah blah blah monocle polish
+}
+
+effects {
+  name=effects.gwlaser1
+
+  quantity=4
+  
+  inertia=0.1
+  spread=20
+  
+  slowdown=0.3
+  lifetime=0.15
+  
+  radius=0.4
+  color=0.6, 0.9, 1.0
+}
+
+effects {
+  name=effects.gwlaser2
+
+  quantity=4
+  
+  inertia=-0.1
+  spread=20
+  
+  slowdown=0.3
+  lifetime=0.15
+  
+  radius=0.4
+  color=0.6, 0.9, 1.0
+}
+
+effects {
+  name=effects.gwlaser3
+
+  quantity=2
+  
+  spread=3
+  
+  slowdown=0.5
+  lifetime=0.6
+  
+  radius=0.4
+  color=0.6, 0.9, 1.0
+}
+
+warhead {
+  name=warhead.gwlaser
+  impactdamage=5 energy
+  effects_impact=effects.gwlaser1
+  effects_impact=effects.gwlaser2
+  effects_impact=effects.gwlaser3
+}
+
+projectile {
+  name=projectile.gwlaser
+  motion=normal
+  velocity=600
+  color=0.6, 0.9, 1.0
+  warhead=warhead.gwlaser
+}
+
+deploy {
+  name=deploy.gwlaser
+  type=forward
+  anglestddev=0.008
+  projectile=projectile.gwlaser
+}
+
+stats {
+  name=stats.gwlaser
+  
+  dps_efficiency=2
+}
+
+launcher {
+  name=launcher.gwlaser
+  
+  deploy=deploy.gwlaser
+  
+  stats=stats.gwlaser
+  
+  text=text.weapon.gwlaser
+}
+
+###########################
+#
+#   Plasma Cannon base stats
+
+hierarchy {
+  name=ROOT.Weapons.Plasma Cannon
+  pack=100
+}
+
+text {
+  name=text.weapon.plasmacannon
+  data=Blah blah hamster blah yacht blah blah blah monocle polish
+}
+
+effects {
+  name=effects.plasmacannon1
+
+  quantity=4
+  
+  inertia=0.1
+  spread=20
+  
+  slowdown=0.3
+  lifetime=0.15
+  
+  radius=0.4
+  color=0.6, 0.9, 1.0
+}
+
+effects {
+  name=effects.plasmacannon2
+
+  quantity=4
+  
+  inertia=-0.1
+  spread=20
+  
+  slowdown=0.3
+  lifetime=0.15
+  
+  radius=0.4
+  color=0.6, 0.9, 1.0
+}
+
+effects {
+  name=effects.plasmacannon3
+
+  quantity=2
+  
+  spread=3
+  
+  slowdown=0.5
+  lifetime=0.6
+  
+  radius=0.4
+  color=0.6, 0.9, 1.0
+}
+
+warhead {
+  name=warhead.plasmacannon
+  impactdamage=30 energy
+  effects_impact=effects.plasmacannon1
+  effects_impact=effects.plasmacannon2
+  effects_impact=effects.plasmacannon3
+}
+
+projectile {
+  name=projectile.plasmacannon
+  motion=normal
+  velocity=600
+  color=0.6, 0.9, 1.0
+  warhead=warhead.plasmacannon
+}
+
+deploy {
+  name=deploy.plasmacannon
+  type=forward
+  anglestddev=0.008
+  projectile=projectile.plasmacannon
+}
+
+stats {
+  name=stats.plasmacannon
+  
+  dps_efficiency=2
+}
+
+launcher {
+  name=launcher.plasmacannon
+  
+  deploy=deploy.plasmacannon
+  
+  stats=stats.plasmacannon
+  
+  text=text.weapon.plasmacannon
+}
+
+###########################
+#
+#   Gamma Beam base stats
+
+hierarchy {
+  name=ROOT.Weapons.Gamma Beam
+  pack=100
+}
+
+text {
+  name=text.weapon.gammabeam
+  data=Blah blah hamster blah yacht blah blah blah monocle polish
+}
+
+effects {
+  name=effects.gammabeam1
+
+  quantity=4
+  
+  inertia=0.1
+  spread=20
+  
+  slowdown=0.3
+  lifetime=0.15
+  
+  radius=0.4
+  color=0.6, 0.9, 1.0
+}
+
+effects {
+  name=effects.gammabeam2
+
+  quantity=4
+  
+  inertia=-0.1
+  spread=20
+  
+  slowdown=0.3
+  lifetime=0.15
+  
+  radius=0.4
+  color=0.6, 0.9, 1.0
+}
+
+effects {
+  name=effects.gammabeam3
+
+  quantity=2
+  
+  spread=3
+  
+  slowdown=0.5
+  lifetime=0.6
+  
+  radius=0.4
+  color=0.6, 0.9, 1.0
+}
+
+warhead {
+  name=warhead.gammabeam
+  impactdamage=90 energy
+  effects_impact=effects.gammabeam1
+  effects_impact=effects.gammabeam2
+  effects_impact=effects.gammabeam3
+}
+
+projectile {
+  name=projectile.gammabeam
+  motion=normal
+  velocity=600
+  color=0.6, 0.9, 1.0
+  warhead=warhead.gammabeam
+}
+
+deploy {
+  name=deploy.gammabeam
+  type=forward
+  anglestddev=0.008
+  projectile=projectile.gammabeam
+}
+
+stats {
+  name=stats.gammabeam
+  
+  dps_efficiency=2
+}
+
+launcher {
+  name=launcher.gammabeam
+  
+  deploy=deploy.gammabeam
+  
+  stats=stats.gammabeam
+  
+  text=text.weapon.gammabeam
+}
+
+###########################
+#
+#   Fission Laser base stats
+
+hierarchy {
+  name=ROOT.Weapons.Fission Laser
+  pack=100
+}
+
+text {
+  name=text.weapon.fissionlaser
+  data=Blah blah hamster blah yacht blah blah blah monocle polish
+}
+
+effects {
+  name=effects.fissionlaser1
+
+  quantity=4
+  
+  inertia=0.1
+  spread=20
+  
+  slowdown=0.3
+  lifetime=0.15
+  
+  radius=0.4
+  color=0.6, 0.9, 1.0
+}
+
+effects {
+  name=effects.fissionlaser2
+
+  quantity=4
+  
+  inertia=-0.1
+  spread=20
+  
+  slowdown=0.3
+  lifetime=0.15
+  
+  radius=0.4
+  color=0.6, 0.9, 1.0
+}
+
+effects {
+  name=effects.fissionlaser3
+
+  quantity=2
+  
+  spread=3
+  
+  slowdown=0.5
+  lifetime=0.6
+  
+  radius=0.4
+  color=0.6, 0.9, 1.0
+}
+
+warhead {
+  name=warhead.fissionlaser
+  impactdamage=170 energy
+  effects_impact=effects.fissionlaser1
+  effects_impact=effects.fissionlaser2
+  effects_impact=effects.fissionlaser3
+}
+
+projectile {
+  name=projectile.fissionlaser
+  motion=normal
+  velocity=600
+  color=0.6, 0.9, 1.0
+  warhead=warhead.fissionlaser
+}
+
+deploy {
+  name=deploy.fissionlaser
+  type=forward
+  anglestddev=0.008
+  projectile=projectile.fissionlaser
+}
+
+stats {
+  name=stats.fissionlaser
+  
+  dps_efficiency=2
+}
+
+launcher {
+  name=launcher.fissionlaser
+  
+  deploy=deploy.fissionlaser
+  
+  stats=stats.fissionlaser
+  
+  text=text.weapon.fissionlaser
+}
+
+###########################
+#
+#   Conversion Beam base stats
+
+hierarchy {
+  name=ROOT.Weapons.Conversion Beam
+  pack=100
+}
+
+text {
+  name=text.weapon.conversionbeam
+  data=Blah blah hamster blah yacht blah blah blah monocle polish
+}
+
+effects {
+  name=effects.conversionbeam1
+
+  quantity=4
+  
+  inertia=0.1
+  spread=20
+  
+  slowdown=0.3
+  lifetime=0.15
+  
+  radius=0.4
+  color=0.6, 0.9, 1.0
+}
+
+effects {
+  name=effects.conversionbeam2
+
+  quantity=4
+  
+  inertia=-0.1
+  spread=20
+  
+  slowdown=0.3
+  lifetime=0.15
+  
+  radius=0.4
+  color=0.6, 0.9, 1.0
+}
+
+effects {
+  name=effects.conversionbeam3
+
+  quantity=2
+  
+  spread=3
+  
+  slowdown=0.5
+  lifetime=0.6
+  
+  radius=0.4
+  color=0.6, 0.9, 1.0
+}
+
+warhead {
+  name=warhead.conversionbeam
+  impactdamage=350 energy
+  effects_impact=effects.conversionbeam1
+  effects_impact=effects.conversionbeam2
+  effects_impact=effects.conversionbeam3
+}
+
+projectile {
+  name=projectile.conversionbeam
+  motion=normal
+  velocity=600
+  color=0.6, 0.9, 1.0
+  warhead=warhead.conversionbeam
+}
+
+deploy {
+  name=deploy.conversionbeam
+  type=forward
+  anglestddev=0.008
+  projectile=projectile.conversionbeam
+}
+
+stats {
+  name=stats.conversionbeam
+  
+  dps_efficiency=2
+}
+
+launcher {
+  name=launcher.conversionbeam
+  
+  deploy=deploy.conversionbeam
+  
+  stats=stats.conversionbeam
+  
+  text=text.weapon.conversionbeam
+}
+
+###########################
+#
 #   The actual weaponry
 
 weapon {
@@ -257,6 +742,7 @@ weapon {
   launcher=launcher.laser
 }
 
+
 weapon {
   name=ROOT.Weapons.Megawatt Laser.MW Laser I
   
@@ -309,4 +795,279 @@ weapon {
   firerate=MERGE
 
   launcher=launcher.mwlaser
+}
+
+
+weapon {
+  name=ROOT.Weapons.Gigawatt Laser.GW Laser I
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.gwlaser
+}
+
+weapon {
+  name=ROOT.Weapons.Gigawatt Laser.GW Laser II
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.gwlaser
+}
+
+weapon {
+  name=ROOT.Weapons.Gigawatt Laser.GW Laser III
+  
+  cost=MERGE
+  firerate=MERGE
+
+  launcher=launcher.gwlaser
+}
+
+weapon {
+  name=ROOT.Weapons.Gigawatt Laser.GW Laser IV
+  
+  cost=MERGE
+  firerate=MERGE
+
+  launcher=launcher.gwlaser
+}
+
+weapon {
+  name=ROOT.Weapons.Gigawatt Laser.GW Laser V
+  
+  cost=MERGE
+  firerate=MERGE
+
+  launcher=launcher.gwlaser
+}
+
+weapon {
+  name=ROOT.Weapons.Gigawatt Laser.GW Laser VI
+  
+  cost=MERGE
+  firerate=MERGE
+
+  launcher=launcher.gwlaser
+}
+
+
+weapon {
+  name=ROOT.Weapons.Plasma Cannon.Plasma Cannon I
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.plasmacannon
+}
+
+weapon {
+  name=ROOT.Weapons.Plasma Cannon.Plasma Cannon II
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.plasmacannon
+}
+
+weapon {
+  name=ROOT.Weapons.Plasma Cannon.Plasma Cannon III
+  
+  cost=MERGE
+  firerate=MERGE
+
+  launcher=launcher.plasmacannon
+}
+
+weapon {
+  name=ROOT.Weapons.Plasma Cannon.Plasma Cannon IV
+  
+  cost=MERGE
+  firerate=MERGE
+
+  launcher=launcher.plasmacannon
+}
+
+weapon {
+  name=ROOT.Weapons.Plasma Cannon.Plasma Cannon V
+  
+  cost=MERGE
+  firerate=MERGE
+
+  launcher=launcher.plasmacannon
+}
+
+weapon {
+  name=ROOT.Weapons.Plasma Cannon.Plasma Cannon VI
+  
+  cost=MERGE
+  firerate=MERGE
+
+  launcher=launcher.plasmacannon
+}
+
+
+weapon {
+  name=ROOT.Weapons.Gamma Beam.Gamma Beam I
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.gammabeam
+}
+
+weapon {
+  name=ROOT.Weapons.Gamma Beam.Gamma Beam II
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.gammabeam
+}
+
+weapon {
+  name=ROOT.Weapons.Gamma Beam.Gamma Beam III
+  
+  cost=MERGE
+  firerate=MERGE
+
+  launcher=launcher.gammabeam
+}
+
+weapon {
+  name=ROOT.Weapons.Gamma Beam.Gamma Beam IV
+  
+  cost=MERGE
+  firerate=MERGE
+
+  launcher=launcher.gammabeam
+}
+
+weapon {
+  name=ROOT.Weapons.Gamma Beam.Gamma Beam V
+  
+  cost=MERGE
+  firerate=MERGE
+
+  launcher=launcher.gammabeam
+}
+
+weapon {
+  name=ROOT.Weapons.Gamma Beam.Gamma Beam VI
+  
+  cost=MERGE
+  firerate=MERGE
+
+  launcher=launcher.gammabeam
+}
+
+
+weapon {
+  name=ROOT.Weapons.Fission Laser.Fission Laser I
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.fissionlaser
+}
+
+weapon {
+  name=ROOT.Weapons.Fission Laser.Fission Laser II
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.fissionlaser
+}
+
+weapon {
+  name=ROOT.Weapons.Fission Laser.Fission Laser III
+  
+  cost=MERGE
+  firerate=MERGE
+
+  launcher=launcher.fissionlaser
+}
+
+weapon {
+  name=ROOT.Weapons.Fission Laser.Fission Laser IV
+  
+  cost=MERGE
+  firerate=MERGE
+
+  launcher=launcher.fissionlaser
+}
+
+weapon {
+  name=ROOT.Weapons.Fission Laser.Fission Laser V
+  
+  cost=MERGE
+  firerate=MERGE
+
+  launcher=launcher.fissionlaser
+}
+
+weapon {
+  name=ROOT.Weapons.Fission Laser.Fission Laser VI
+  
+  cost=MERGE
+  firerate=MERGE
+
+  launcher=launcher.fissionlaser
+}
+
+
+weapon {
+  name=ROOT.Weapons.Conversion Beam.Conversion Beam I
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.conversionbeam
+}
+
+weapon {
+  name=ROOT.Weapons.Conversion Beam.Conversion Beam II
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.conversionbeam
+}
+
+weapon {
+  name=ROOT.Weapons.Conversion Beam.Conversion Beam III
+  
+  cost=MERGE
+  firerate=MERGE
+
+  launcher=launcher.conversionbeam
+}
+
+weapon {
+  name=ROOT.Weapons.Conversion Beam.Conversion Beam IV
+  
+  cost=MERGE
+  firerate=MERGE
+
+  launcher=launcher.conversionbeam
+}
+
+weapon {
+  name=ROOT.Weapons.Conversion Beam.Conversion Beam V
+  
+  cost=MERGE
+  firerate=MERGE
+
+  launcher=launcher.conversionbeam
+}
+
+weapon {
+  name=ROOT.Weapons.Conversion Beam.Conversion Beam VI
+  
+  cost=MERGE
+  firerate=MERGE
+
+  launcher=launcher.conversionbeam
 }
