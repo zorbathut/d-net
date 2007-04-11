@@ -1,0 +1,115 @@
+path {
+  center=0.000000,0.000000
+  reflect=spin
+  dupes=20
+  angle=0/1
+  node= --- | 128.000000,-128.000000 | ---
+}
+
+path {
+  center=-16.000000,-16.000000
+  reflect=spin
+  dupes=1
+  angle=0/1
+  node= --- | 0.000000,-112.000000 | ---
+  node= --- | 0.000000,-64.000000 | ---
+  node= --- | -64.000000,0.000000 | ---
+  node= --- | -112.000000,0.000000 | ---
+  node= --- | -80.000000,-80.000000 | ---
+}
+
+path {
+  center=16.000000,-16.000000
+  reflect=spin
+  dupes=1
+  angle=0/1
+  node= --- | 0.000000,-64.000000 | ---
+  node= --- | 64.000000,0.000000 | ---
+  node= --- | 112.000000,0.000000 | ---
+  node= --- | 80.000000,-80.000000 | ---
+  node= --- | 0.000000,-112.000000 | ---
+}
+
+path {
+  center=-16.000000,16.000000
+  reflect=spin
+  dupes=1
+  angle=0/1
+  node= --- | -64.000000,0.000000 | ---
+  node= --- | 0.000000,64.000000 | ---
+  node= --- | 0.000000,112.000000 | ---
+  node= --- | -80.000000,80.000000 | ---
+  node= --- | -112.000000,0.000000 | ---
+}
+
+path {
+  center=16.000000,16.000000
+  reflect=spin
+  dupes=1
+  angle=0/1
+  node= --- | 64.000000,0.000000 | ---
+  node= --- | 0.000000,64.000000 | ---
+  node= --- | 0.000000,112.000000 | ---
+  node= --- | 80.000000,80.000000 | ---
+  node= --- | 112.000000,0.000000 | ---
+}
+
+path {
+  center=0.000000,0.000000
+  reflect=spin
+  dupes=1
+  angle=0/1
+  node= --- | 40.000000,0.000000 | ---
+  node= --- | 0.000000,40.000000 | ---
+  node= --- | -40.000000,0.000000 | ---
+  node= --- | 0.000000,-40.000000 | ---
+}
+
+entity {
+  type=tank start location
+  coord=0.000000,-160.000000
+  angle=2/8
+}
+
+entity {
+  type=tank start location
+  coord=160.000000,0.000000
+  angle=4/8
+}
+
+entity {
+  type=tank start location
+  coord=120.000000,-120.000000
+  angle=3/8
+}
+
+entity {
+  type=tank start location
+  coord=-120.000000,-120.000000
+  angle=1/8
+}
+
+entity {
+  type=tank start location
+  coord=-160.000000,0.000000
+  angle=0/8
+}
+
+entity {
+  type=tank start location
+  coord=-120.000000,120.000000
+  angle=7/8
+}
+
+entity {
+  type=tank start location
+  coord=0.000000,160.000000
+  angle=6/8
+}
+
+entity {
+  type=tank start location
+  coord=120.000000,120.000000
+  angle=5/8
+}
+

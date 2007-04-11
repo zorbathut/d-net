@@ -1,6 +1,5 @@
 ---- Major work path
 - Many many more weapons
-  - Add all prototypes based on Tier 1
   - Bombardment
   - Glory
   - Spruce up base autocannon weaponry
