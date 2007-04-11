@@ -135,6 +135,16 @@ int main(int argc, char *argv[]) {
         CHECK(count(kvd.read("name").begin(), kvd.read("name").end(), '.'));
         string basicname = strrchr(kvd.read("name").c_str(), '.') + 1;
         
+        dprintf("%s\n", basicname.c_str());
+        CHECK(basicname.size());
+        basicname += ' ';
+        for(int i = basicname.size() - 2; i >= 0; i--)
+          if(basicname[i] == 'I' || basicname[i] == 'V')
+            swap(basicname[i], basicname[i + 1]);
+          else
+            break;
+        dprintf("%s\n", basicname.c_str());
+        
         if(weapondats.count(basicname)) {
           CHECK(!doneweps.count(basicname));
           vector<string> radidam = tokenize(kvd.read("radiusdamage"), "\n ");

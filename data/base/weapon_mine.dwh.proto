@@ -10,7 +10,7 @@ text {
 }
 
 warhead {
-  name=warhead.Minelayer I
+  name=warhead.MinelayerI
   radiusdamage=MERGE explosive
   radiusfalloff=6
   wallremovalradius=2
@@ -22,7 +22,7 @@ projectile {
   radius_physical=1
   halflife=6
   color=1.0, 1.0, 1.0
-  warhead=warhead.Minelayer I
+  warhead=warhead.MinelayerI
 }
 
 deploy {
@@ -58,7 +58,7 @@ weapon {
 }
 
 warhead {
-  name=warhead.Minelayer II
+  name=warhead.MinelayerII
   radiusdamage=MERGE explosive
   radiusfalloff=7
   wallremovalradius=3
@@ -70,7 +70,7 @@ projectile {
   radius_physical=1.2
   halflife=8
   color=1.0, 1.0, 1.0
-  warhead=warhead.Minelayer II
+  warhead=warhead.MinelayerII
 }
 
 deploy {
@@ -100,7 +100,7 @@ weapon {
 }
 
 warhead {
-  name=warhead.Minelayer III
+  name=warhead.MinelayerIII
   radiusdamage=MERGE explosive
   radiusfalloff=8
   wallremovalradius=4
@@ -112,7 +112,7 @@ projectile {
   radius_physical=1.4
   halflife=10
   color=1.0, 1.0, 1.0
-  warhead=warhead.Minelayer III
+  warhead=warhead.MinelayerIII
 }
 
 deploy {
@@ -142,7 +142,7 @@ weapon {
 }
 
 warhead {
-  name=warhead.Minelayer IV
+  name=warhead.MinelayerIV
   radiusdamage=MERGE explosive
   radiusfalloff=9
   wallremovalradius=4
@@ -154,7 +154,7 @@ projectile {
   radius_physical=1.6
   halflife=12
   color=1.0, 1.0, 1.0
-  warhead=warhead.Minelayer IV
+  warhead=warhead.MinelayerIV
 }
 
 deploy {
@@ -186,7 +186,7 @@ weapon {
 }
 
 warhead {
-  name=warhead.Minelayer V
+  name=warhead.MinelayerV
   radiusdamage=MERGE explosive
   radiusfalloff=10
   wallremovalradius=4
@@ -198,7 +198,7 @@ projectile {
   radius_physical=1.8
   halflife=12
   color=1.0, 1.0, 1.0
-  warhead=warhead.Minelayer V
+  warhead=warhead.MinelayerV
 }
 
 deploy {
@@ -230,7 +230,7 @@ weapon {
 }
 
 warhead {
-  name=warhead.Minelayer VI
+  name=warhead.MinelayerVI
   radiusdamage=MERGE explosive
   radiusfalloff=12
   wallremovalradius=5
@@ -242,7 +242,7 @@ projectile {
   radius_physical=2.0
   halflife=15
   color=1.0, 1.0, 1.0
-  warhead=warhead.Minelayer VI
+  warhead=warhead.MinelayerVI
 }
 
 deploy {
