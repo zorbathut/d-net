@@ -1,3 +1,59 @@
+###########################
+#
+#   Missile base stats
+
+hierarchy {
+  name=ROOT.Weapons.Missile
+  pack=100
+}
+
+text {
+  name=text.weapon.missile
+  data=Explosives in a can. The missile is one of the most powerful low-tech systems developed and extremely popular for wholesale demolition. The rocket engine takes several seconds to reach full speed, making this weapon difficult to aim with.
+}
+
+warhead {
+  name=warhead.missile
+  impactdamage=0.5 explosive
+  radiusdamage=1.2 explosive
+  radiusfalloff=4
+  wallremovalradius=1
+}
+
+projectile {
+  name=projectile.missile
+  velocity=180
+  color=0.9, 0.95, 1.0
+  motion=missile
+  warhead=warhead.missile
+}
+
+deploy {
+  name=deploy.missile
+  type=forward
+  anglestddev=0.002
+  projectile=projectile.missile
+}
+
+stats {
+  name=stats.missile
+  
+  dps_efficiency=0.8
+}
+
+launcher {
+  name=launcher.missile
+  
+  deploy=deploy.missile
+  
+  stats=stats.missile
+  
+  text=text.weapon.missile
+}
+
+###########################
+#
+#   HE Missile base stats
 
 hierarchy {
   name=ROOT.Weapons.HE Missile
@@ -88,11 +144,69 @@ launcher {
   text=text.weapon.hemissile
 }
 
+###########################
+#
+#   The actual weaponry
+
+weapon {
+  name=ROOT.Weapons.Missile.Missile I
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.missile
+}
+
+weapon {
+  name=ROOT.Weapons.Missile.Missile II
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.missile
+}
+
+weapon {
+  name=ROOT.Weapons.Missile.Missile III
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.missile
+}
+
+weapon {
+  name=ROOT.Weapons.Missile.Missile IV
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.missile
+}
+
+weapon {
+  name=ROOT.Weapons.Missile.Missile V
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.missile
+}
+
+weapon {
+  name=ROOT.Weapons.Missile.Missile VI
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.missile
+}
+
 weapon {
   name=ROOT.Weapons.HE Missile.HE Missile I
   
-  cost=2300
-  firerate=2.2
+  cost=MERGE
+  firerate=MERGE
   
   launcher=launcher.hemissile
 }
@@ -100,8 +214,8 @@ weapon {
 weapon {
   name=ROOT.Weapons.HE Missile.HE Missile II
   
-  cost=4400
-  firerate=3
+  cost=MERGE
+  firerate=MERGE
   
   launcher=launcher.hemissile
 }
@@ -109,8 +223,8 @@ weapon {
 weapon {
   name=ROOT.Weapons.HE Missile.HE Missile III
   
-  cost=6800
-  firerate=4
+  cost=MERGE
+  firerate=MERGE
   
   launcher=launcher.hemissile
 }
@@ -118,8 +232,8 @@ weapon {
 weapon {
   name=ROOT.Weapons.HE Missile.HE Missile IV
   
-  cost=10500
-  firerate=5.5
+  cost=MERGE
+  firerate=MERGE
   
   launcher=launcher.hemissile
 }
@@ -127,8 +241,8 @@ weapon {
 weapon {
   name=ROOT.Weapons.HE Missile.HE Missile V
   
-  cost=18000
-  firerate=7
+  cost=MERGE
+  firerate=MERGE
   
   launcher=launcher.hemissile
 }
@@ -136,8 +250,8 @@ weapon {
 weapon {
   name=ROOT.Weapons.HE Missile.HE Missile VI
   
-  cost=26000
-  firerate=9
+  cost=MERGE
+  firerate=MERGE
   
   launcher=launcher.hemissile
 }
