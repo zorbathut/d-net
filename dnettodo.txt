@@ -1,8 +1,7 @@
 ---- Major work path
-- Fix make package
 - Convert to merge
-  - Laser
   - Missile
+- Change things to "buy per 10sec" essentially?
 - Many many more weapons
   - Base autocannon weaponry
   - Base laser weaponry

@@ -1,0 +1,312 @@
+###########################
+#
+#   Laser base stats
+
+hierarchy {
+  name=ROOT.Weapons.Laser
+  pack=100
+}
+
+text {
+  name=text.weapon.laser
+  data="Laser" is a misnomer. This family of weapons is a projected plasma containment system. Extremely accurate and fast-firing, the containment field disperses rapidly on impact, leading to unfortunately low damage.
+}
+
+effects {
+  name=effects.laser1
+
+  quantity=4
+  
+  inertia=0.1
+  spread=20
+  
+  slowdown=0.3
+  lifetime=0.15
+  
+  radius=0.4
+  color=0.6, 0.9, 1.0
+}
+
+effects {
+  name=effects.laser2
+
+  quantity=4
+  
+  inertia=-0.1
+  spread=20
+  
+  slowdown=0.3
+  lifetime=0.15
+  
+  radius=0.4
+  color=0.6, 0.9, 1.0
+}
+
+effects {
+  name=effects.laser3
+
+  quantity=2
+  
+  spread=3
+  
+  slowdown=0.5
+  lifetime=0.6
+  
+  radius=0.4
+  color=0.6, 0.9, 1.0
+}
+
+warhead {
+  name=warhead.laser
+  impactdamage=0.4 energy
+  effects_impact=effects.laser1
+  effects_impact=effects.laser2
+  effects_impact=effects.laser3
+}
+
+projectile {
+  name=projectile.laser
+  motion=normal
+  velocity=600
+  color=0.6, 0.9, 1.0
+  warhead=warhead.laser
+}
+
+deploy {
+  name=deploy.laser
+  type=forward
+  anglestddev=0.008
+  projectile=projectile.laser
+}
+
+stats {
+  name=stats.laser
+  
+  dps_efficiency=2
+}
+
+launcher {
+  name=launcher.laser
+  
+  deploy=deploy.laser
+  
+  stats=stats.laser
+  
+  text=text.weapon.laser
+}
+
+###########################
+#
+#   MW Laser base stats
+
+
+hierarchy {
+  name=ROOT.Weapons.Megawatt Laser
+  pack=100
+  
+  spawncash=10000
+}
+
+text {
+  name=text.weapon.mwlaser
+  data=The megawatt laser series is an improved model of the basic laser. Heavy power couplings and a specialized water cooling system allow for more raw power output at a far higher price.
+}
+
+effects {
+  name=effects.mwlaser1
+
+  quantity=4
+  
+  inertia=0.1
+  spread=30
+  
+  slowdown=0.3
+  lifetime=0.2
+  
+  radius=0.4
+  color=0.6, 0.9, 1.0
+}
+
+effects {
+  name=effects.mwlaser2
+
+  quantity=4
+  
+  inertia=-0.1
+  spread=30
+  
+  slowdown=0.3
+  lifetime=0.2
+  
+  radius=0.4
+  color=0.6, 0.9, 1.0
+}
+
+effects {
+  name=effects.mwlaser3
+
+  quantity=4
+  
+  spread=3
+  
+  slowdown=0.5
+  lifetime=1
+  
+  radius=0.4
+  color=0.6, 0.9, 1.0
+}
+
+warhead {
+  name=warhead.mwlaser
+  impactdamage=1.5 energy
+  
+  effects_impact=effects.mwlaser1
+  effects_impact=effects.mwlaser2
+  effects_impact=effects.mwlaser3
+}
+
+projectile {
+  name=projectile.mwlaser
+  motion=normal
+  velocity=800
+  thickness_visual=1.5x
+  length=1.5x
+  toughness=2
+  color=0.6, 0.9, 1.0
+  warhead=warhead.mwlaser
+}
+
+deploy {
+  name=deploy.mwlaser
+  type=forward
+  anglestddev=0.006
+  projectile=projectile.mwlaser
+}
+
+stats {
+  name=stats.mwlaser
+  
+  dps_efficiency=2
+}
+
+launcher {
+  name=launcher.mwlaser
+  
+  deploy=deploy.mwlaser
+  
+  stats=stats.mwlaser
+  
+  text=text.weapon.mwlaser
+}
+
+###########################
+#
+#   The actual weaponry
+
+weapon {
+  name=ROOT.Weapons.Laser.Laser I
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.laser
+}
+
+weapon {
+  name=ROOT.Weapons.Laser.Laser II
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.laser
+}
+
+weapon {
+  name=ROOT.Weapons.Laser.Laser III
+  
+  cost=MERGE
+  firerate=MERGE
+
+  launcher=launcher.laser
+}
+
+weapon {
+  name=ROOT.Weapons.Laser.Laser IV
+  
+  cost=MERGE
+  firerate=MERGE
+
+  launcher=launcher.laser
+}
+
+weapon {
+  name=ROOT.Weapons.Laser.Laser V
+  
+  cost=MERGE
+  firerate=MERGE
+
+  launcher=launcher.laser
+}
+
+weapon {
+  name=ROOT.Weapons.Laser.Laser VI
+  
+  cost=MERGE
+  firerate=MERGE
+
+  launcher=launcher.laser
+}
+
+weapon {
+  name=ROOT.Weapons.Megawatt Laser.MW Laser I
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.mwlaser
+}
+
+weapon {
+  name=ROOT.Weapons.Megawatt Laser.MW Laser II
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.mwlaser
+}
+
+weapon {
+  name=ROOT.Weapons.Megawatt Laser.MW Laser III
+  
+  cost=MERGE
+  firerate=MERGE
+
+  launcher=launcher.mwlaser
+}
+
+weapon {
+  name=ROOT.Weapons.Megawatt Laser.MW Laser IV
+  
+  cost=MERGE
+  firerate=MERGE
+
+  launcher=launcher.mwlaser
+}
+
+weapon {
+  name=ROOT.Weapons.Megawatt Laser.MW Laser V
+  
+  cost=MERGE
+  firerate=MERGE
+
+  launcher=launcher.mwlaser
+}
+
+weapon {
+  name=ROOT.Weapons.Megawatt Laser.MW Laser VI
+  
+  cost=MERGE
+  firerate=MERGE
+
+  launcher=launcher.mwlaser
+}
