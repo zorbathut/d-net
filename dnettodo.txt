@@ -1,5 +1,4 @@
 ---- Major work path
-- What's going on with bombardment? It seems to be hilariously large, even at level 5 or so.
 - Many many more weapons
   - Add prototype weapon creation thresholds, since otherwise it'll just suck
   - Bombardment

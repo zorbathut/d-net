@@ -154,12 +154,28 @@ bool operator>=(const Money &lhs, const Money &rhs) {
   return rhs <= lhs; }
 
 Money moneyFromString(const string &rhs) {
-  Money accum = Money(0);
-  for(int i = 0; i < rhs.size(); i++) {
+  CHECK(rhs.size());
+  for(int i = 0; i < rhs.size() - 1; i++)
     CHECK(isdigit(rhs[i]));
-    accum = accum * 10;
-    accum = accum + Money(rhs[i] - '0');
+  CHECK(isdigit(rhs[rhs.size() - 1]) || tolower(rhs[rhs.size() - 1]) == 'k' || tolower(rhs[rhs.size() - 1]) == 'm' || tolower(rhs[rhs.size() - 1]) == 'g');
+  
+  Money accum = Money(0);
+  
+  for(int i = 0; i < rhs.size(); i++) {
+    if(isdigit(rhs[i])) {
+      accum = accum * 10;
+      accum = accum + Money(rhs[i] - '0');
+    }
   }
+  
+  if(tolower(rhs[rhs.size() - 1]) == 'k') {
+    accum = accum * 1000;
+  } else if(tolower(rhs[rhs.size() - 1]) == 'm') {
+    accum = accum * 1000000;
+  } else if(tolower(rhs[rhs.size() - 1]) == 'g') {
+    accum = accum * 1000000000;
+  }
+  
   return accum;
 }
 

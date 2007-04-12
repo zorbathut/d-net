@@ -151,6 +151,8 @@ launcher {
 hierarchy {
   name=ROOT.Weapons.Cluster Missile
   pack=100
+  
+  spawncash=300k
 }
 
 text {
@@ -204,6 +206,8 @@ launcher {
 hierarchy {
   name=ROOT.Weapons.Proximity Rocket
   pack=100
+  
+  spawncash=9m
 }
 
 text {
@@ -257,6 +261,8 @@ launcher {
 hierarchy {
   name=ROOT.Weapons.Adaptive Rocket
   pack=100
+  
+  spawncash=270m
 }
 
 text {
@@ -310,6 +316,8 @@ launcher {
 hierarchy {
   name=ROOT.Weapons.Mini-Nuke
   pack=100
+  
+  spawncash=8100m
 }
 
 text {
@@ -363,6 +371,8 @@ launcher {
 hierarchy {
   name=ROOT.Weapons.Conversion Nuke
   pack=100
+  
+  spawncash=243g
 }
 
 text {

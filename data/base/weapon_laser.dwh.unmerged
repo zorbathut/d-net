@@ -206,6 +206,8 @@ launcher {
 hierarchy {
   name=ROOT.Weapons.Gigawatt Laser
   pack=100
+  
+  spawncash=300k
 }
 
 text {
@@ -303,6 +305,8 @@ launcher {
 hierarchy {
   name=ROOT.Weapons.Plasma Cannon
   pack=100
+  
+  spawncash=9m
 }
 
 text {
@@ -400,6 +404,8 @@ launcher {
 hierarchy {
   name=ROOT.Weapons.Gamma Beam
   pack=100
+  
+  spawncash=270m
 }
 
 text {
@@ -497,6 +503,8 @@ launcher {
 hierarchy {
   name=ROOT.Weapons.Fission Laser
   pack=100
+  
+  spawncash=8100m
 }
 
 text {
@@ -594,6 +602,8 @@ launcher {
 hierarchy {
   name=ROOT.Weapons.Conversion Beam
   pack=100
+  
+  spawncash=243g
 }
 
 text {

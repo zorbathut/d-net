@@ -7,13 +7,11 @@ GAMECPPFLAGS = @GAMECPPFLAGS@ $(STDCPPFLAGS) -DNOEXIT
 GAMELDFLAGS = @GAMELDFLAGS@ -g $(STDLDFLAGS)
 
 EDITORSOURCES = vecedit vecedit_main debug os util gfx float coord parse color dvec2 cfcommon input itemdb itemdb_adjust args rng # rng is not really needed since it won't be linked in at all, but it's easier to just include it
-# there are obviously portability issues here
 EDITORCPPFLAGS = `wx-config --cxxflags` $(STDCPPFLAGS)
 EDITORLDFLAGS = `wx-config --libs --gl-libs` -lopengl32 $(STDLDFLAGS)
 
 FUNCTORSOURCES = functor_gen debug os util parse
 MERGERSOURCES = merger debug os util parse itemdb itemdb_adjust args color dvec2 float coord cfcommon rng # rng is not really needed since it won't be linked in at all, but it's easier to just include it
-# there are obviously portability issues here
 CONSOLECPPFLAGS = $(STDCPPFLAGS)
 CONSOLELDFLAGS = $(STDLDFLAGS)
 
@@ -75,7 +73,7 @@ debugbasicrun: d-net-dbg.exe
 	./d-net-dbg.exe --nofullscreen --writeTarget= --httpd_port=616
 
 ai: d-net.exe
-	./d-net.exe --nofullscreen --aiCount=16 --fastForwardTo=100000000 --factionMode=0 --noshopcache
+	./d-net.exe --nofullscreen --aiCount=16 --fastForwardTo=100000000 --factionMode=3 --noshopcache
 
 aisc: d-net.exe data/shopcache.dwh
 	./d-net.exe --nofullscreen --aiCount=16 --fastForwardTo=100000000 --factionMode=3

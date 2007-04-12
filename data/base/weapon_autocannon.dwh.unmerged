@@ -140,11 +140,13 @@ launcher {
 
 ###########################
 #
-#   Heavy Autocannon base stats (TODO: desuck)
+#   Heavy Autocannon base stats
 
 hierarchy {
   name=ROOT.Weapons.Heavy Autocannon
   pack=100
+  
+  spawncash=300k
 }
 
 text {
@@ -207,11 +209,13 @@ launcher {
 
 ###########################
 #
-#   Sabot Shotgun base stats (TODO: desuck)
+#   Sabot Shotgun base stats
 
 hierarchy {
   name=ROOT.Weapons.Sabot Shotgun
   pack=100
+  
+  spawncash=9m
 }
 
 text {
@@ -274,11 +278,13 @@ launcher {
 
 ###########################
 #
-#   Blade Launcher base stats (TODO: desuck)
+#   Blade Launcher base stats
 
 hierarchy {
   name=ROOT.Weapons.Blade Launcher
   pack=100
+  
+  spawncash=270m
 }
 
 text {
@@ -341,11 +347,13 @@ launcher {
 
 ###########################
 #
-#   C Cannon base stats (TODO: desuck)
+#   C Cannon base stats
 
 hierarchy {
   name=ROOT.Weapons.C Cannon
   pack=100
+  
+  spawncash=8100m
 }
 
 text {
@@ -408,11 +416,13 @@ launcher {
 
 ###########################
 #
-#   Conversion Cannon base stats (TODO: desuck)
+#   Conversion Cannon base stats
 
 hierarchy {
   name=ROOT.Weapons.Conversion Cannon
   pack=100
+  
+  spawncash=243g
 }
 
 text {
