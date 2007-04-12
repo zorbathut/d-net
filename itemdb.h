@@ -37,7 +37,7 @@ public:
   float adjustmentfactor(int type) const;
   float recyclevalue() const; // this is annoyingly different
 
-  void debugDump();
+  void debugDump() const;
 
   IDBAdjustment();
 };

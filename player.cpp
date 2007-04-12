@@ -634,6 +634,10 @@ Player::Player(const IDBFaction *fact, int in_factionmode, Money money) : weapon
   tank.push_back(defaultTank());
   reCalculate();
   
+  dprintf("----- ADJUSTMENT DATA\n");
+  adjustment.debugDump();
+  dprintf("----- END ADJUSTMENT DATA\n");
+  
   kills = 0;
   wins = 0;
   damageDone = 0;

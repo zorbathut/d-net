@@ -248,7 +248,6 @@ Money IDBBombardmentAdjust::sellcost() const { return cost() * adjust.recycleval
 IDBBombardmentAdjust::IDBBombardmentAdjust(const IDBBombardment *in_idb, const IDBAdjustment &in_adjust, int in_bombardlevel) {
   idb = in_idb; adjust = in_adjust;
   if(in_bombardlevel != -1) {
-    in_bombardlevel = 10;
     CHECK(in_bombardlevel >= 0);
     valid_level = true;
     for(int i = 0; i < IDBAdjustment::DAMAGE_LAST; i++)

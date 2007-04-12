@@ -77,7 +77,7 @@ string adjust_modifiertext(int id, int amount) {
   }
 }
 
-void IDBAdjustment::debugDump() {
+void IDBAdjustment::debugDump() const {
   dprintf("IDBAdjustment debug dump");
   for(int i = 0; i < LAST; i++)
     if(adjusts[i])
