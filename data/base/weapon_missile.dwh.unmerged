@@ -163,7 +163,7 @@ text {
 warhead {
   name=warhead.clustermissile
   impactdamage=0 explosive
-  radiusdamage=20.0 explosive
+  radiusdamage=25.0 explosive
   radiusfalloff=4
   wallremovalradius=1
 }
@@ -218,7 +218,7 @@ text {
 warhead {
   name=warhead.proximityrocket
   impactdamage=0 explosive
-  radiusdamage=40 explosive
+  radiusdamage=45 explosive
   radiusfalloff=4
   wallremovalradius=1
 }
@@ -273,7 +273,7 @@ text {
 warhead {
   name=warhead.adaptiverocket
   impactdamage=0 explosive
-  radiusdamage=75 explosive
+  radiusdamage=180 explosive
   radiusfalloff=4
   wallremovalradius=1
 }
@@ -328,7 +328,7 @@ text {
 warhead {
   name=warhead.mininuke
   impactdamage=0 explosive
-  radiusdamage=350 explosive
+  radiusdamage=650 explosive
   radiusfalloff=4
   wallremovalradius=1
 }
@@ -383,7 +383,7 @@ text {
 warhead {
   name=warhead.conversionnuke
   impactdamage=0 explosive
-  radiusdamage=1200 explosive
+  radiusdamage=2400 explosive
   radiusfalloff=4
   wallremovalradius=1
 }
