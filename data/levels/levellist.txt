@@ -7,3 +7,4 @@ maze.dv2
 bunkers.dv2
 pacman.dv2
 core.dv2
+spiney.dv2

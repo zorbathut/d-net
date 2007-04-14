@@ -1,6 +1,6 @@
 ---- Major work path
+- fix core.dv2
 - Many many more weapons
-  - Add prototype weapon creation thresholds, since otherwise it'll just suck
   - Bombardment
   - Glory
   - Spruce up base autocannon weaponry

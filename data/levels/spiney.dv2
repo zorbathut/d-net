@@ -1,0 +1,174 @@
+path {
+  center=16.000000,16.000000
+  reflect=snowflake
+  dupes=6
+  angle=0/1
+  node= --- | -228.133286,-20.861538 | ---
+  node= --- | -214.276871,-12.861540 | ---
+}
+
+path {
+  center=16.000000,16.000000
+  reflect=snowflake
+  dupes=6
+  angle=0/1
+  node= --- | -15.856407,-4.535897 | ---
+  node= --- | -38.641018,-13.071793 | ---
+  node= --- | -51.569221,-6.679487 | ---
+  node= --- | -52.497425,-21.071791 | ---
+  node= --- | -63.425629,-18.143587 | ---
+  node= --- | -70.497421,-10.105124 | ---
+  node= --- | -102.746132,-9.961535 | ---
+  node= --- | -111.282028,-32.746143 | ---
+  node= --- | -128.210236,-46.066654 | ---
+  node= --- | -114.746132,-30.746145 | ---
+  node= --- | -109.674339,-5.961535 | ---
+  node= --- | -156.000000,-4.000000 | ---
+  node= --- | -176.000000,-40.000000 | ---
+  node= --- | -164.000000,-8.000000 | ---
+}
+
+entity {
+  type=tank start location
+  coord=16.000000,-32.000000
+  angle=6/8
+}
+
+entity {
+  type=tank start location
+  coord=56.000000,-8.000000
+  angle=11/12
+}
+
+entity {
+  type=tank start location
+  coord=56.000000,40.000000
+  angle=1/12
+}
+
+entity {
+  type=tank start location
+  coord=16.000000,64.000000
+  angle=3/12
+}
+
+entity {
+  type=tank start location
+  coord=-24.000000,40.000000
+  angle=5/12
+}
+
+entity {
+  type=tank start location
+  coord=-24.000000,-8.000000
+  angle=7/12
+}
+
+entity {
+  type=tank start location
+  coord=-160.000000,16.000000
+  angle=6/12
+}
+
+entity {
+  type=tank start location
+  coord=-72.000000,-136.000000
+  angle=8/12
+}
+
+entity {
+  type=tank start location
+  coord=104.000000,-136.000000
+  angle=10/12
+}
+
+entity {
+  type=tank start location
+  coord=192.000000,16.000000
+  angle=0/12
+}
+
+entity {
+  type=tank start location
+  coord=104.000000,168.000000
+  angle=2/12
+}
+
+entity {
+  type=tank start location
+  coord=-72.000000,168.000000
+  angle=4/12
+}
+
+entity {
+  type=tank start location
+  coord=-56.000000,-80.000000
+  angle=6/12
+}
+
+entity {
+  type=tank start location
+  coord=-32.000000,-96.000000
+  angle=9/12
+}
+
+entity {
+  type=tank start location
+  coord=64.000000,-96.000000
+  angle=9/12
+}
+
+entity {
+  type=tank start location
+  coord=88.000000,-80.000000
+  angle=0/12
+}
+
+entity {
+  type=tank start location
+  coord=140.000000,0.000000
+  angle=10/12
+}
+
+entity {
+  type=tank start location
+  coord=140.000000,32.000000
+  angle=2/12
+}
+
+entity {
+  type=tank start location
+  coord=88.000000,112.000000
+  angle=0/12
+}
+
+entity {
+  type=tank start location
+  coord=64.000000,128.000000
+  angle=3/12
+}
+
+entity {
+  type=tank start location
+  coord=-32.000000,128.000000
+  angle=3/12
+}
+
+entity {
+  type=tank start location
+  coord=-60.000000,112.000000
+  angle=6/12
+}
+
+entity {
+  type=tank start location
+  coord=-108.000000,32.000000
+  angle=4/12
+}
+
+entity {
+  type=tank start location
+  coord=-108.000000,0.000000
+  angle=8/12
+}
+
