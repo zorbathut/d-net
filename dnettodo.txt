@@ -1,6 +1,5 @@
 ---- Major work path
 - Remove tank testing, make tanks merged
-- Spruce up bombardment looks
 - Many many more weapons
   - Bombardment
   - Glory
