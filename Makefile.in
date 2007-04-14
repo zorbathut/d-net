@@ -17,10 +17,10 @@ CONSOLELDFLAGS = $(STDLDFLAGS)
 
 OO = "@OO@"
 
-WEAPONTYPES = $(shell ls data/base/weapon*.dwh.unmerged | sed 's/data\/base\/\(.*\).dwh.unmerged/\1/')
-WEAPONDATA = $(patsubst %,data/base/%.dwh,$(WEAPONTYPES))
+MERGETYPES = $(shell ls data/base/*.dwh.unmerged | sed 's/data\/base\/\(.*\).dwh.unmerged/\1/')
+MERGEDATA = $(patsubst %,data/base/%.dwh,$(MERGETYPES))
 
-DATAFILES = $(shell find data | grep -v \.svn | grep -v shopcache.dwh | grep -v .unmerged) $(WEAPONDATA)
+DATAFILES = $(shell find data | grep -v \.svn | grep -v shopcache.dwh | grep -v .unmerged) $(MERGEDATA)
 
 PACKAGESUBDIR = sekret
 
@@ -33,16 +33,16 @@ include $(EDITORSOURCES:=.e.d)
 include $(FUNCTORSOURCES:=.c.d)
 include $(MERGERSOURCES:=.c.d)
 
-d-net.exe: $(GAMESOURCES:=.g.o) $(WEAPONDATA)
+d-net.exe: $(GAMESOURCES:=.g.o) $(MERGEDATA)
 	nice $(CPP) -o $@ $(GAMESOURCES:=.g.o) $(GAMELDFLAGS)
 
-d-net-dbg.exe: $(GAMESOURCES:=.g.d.o) $(WEAPONDATA)
+d-net-dbg.exe: $(GAMESOURCES:=.g.d.o) $(MERGEDATA)
 	nice $(CPP) -o $@ $(GAMESOURCES:=.g.d.o) $(GAMELDFLAGS)
 
-vecedit.exe: $(EDITORSOURCES:=.e.o) $(WEAPONDATA)
+vecedit.exe: $(EDITORSOURCES:=.e.o) $(MERGEDATA)
 	nice $(CPP) -o $@ $(EDITORSOURCES:=.e.o) $(EDITORLDFLAGS)
   
-vecedit-dbg.exe: $(EDITORSOURCES:=.e.d.o) $(WEAPONDATA)
+vecedit-dbg.exe: $(EDITORSOURCES:=.e.d.o) $(MERGEDATA)
 	nice $(CPP) -o $@ $(EDITORSOURCES:=.e.d.o) $(EDITORLDFLAGS)
 
 all: d-net.exe vecedit.exe
@@ -50,7 +50,7 @@ all: d-net.exe vecedit.exe
 asm: $(GAMESOURCES:=.S) makefile
 
 clean:
-	rm -rf *.o *.exe *.d *.S data/shopcache.dwh $(patsubst %,data/base/%.dwh,$(WEAPONTYPES)) *.csv .*_flag
+	rm -rf *.o *.exe *.d *.S data/shopcache.dwh $(patsubst %,data/base/%.dwh,$(MERGETYPES)) *.csv .*_flag
 
 STDRUN = --nofullscreen --debugitems --startingPhase=8 --debugControllers=2 --factionMode=3 --nullControllers=11 --writeTarget= --auto_newgame --nocullShopTree --httpd_port=616 --noshopcache --runTests
 
@@ -111,12 +111,12 @@ cp \\\\192.168.100.4\\zorba\\www\\d-net\\$(PACKAGESUBDIR)\\Dnet\ Latest\ Windows
 rm -rf deploy
 endef
 
-package: d-net.exe $(WEAPONDATA) data/shopcache.dwh
+package: d-net.exe $(MERGEDATA) data/shopcache.dwh
 	$(prepackage)
 	$(strip)
 	$(postpackage)
 
-packageed: d-net.exe $(WEAPONDATA) vecedit.exe data/shopcache.dwh
+packageed: d-net.exe $(MERGEDATA) vecedit.exe data/shopcache.dwh
 	$(prepackage)
 	cp vecedit.exe deploy
 	cp c:/cygwin/bin/cygz.dll deploy
@@ -181,11 +181,11 @@ functor.h: functor_gen.exe functor.h.in
 merger.exe: $(MERGERSOURCES:=.c.o)
 	nice $(CPP) -o $@ $(MERGERSOURCES:=.c.o) $(CONSOLELDFLAGS)
 
-notes_tanks.csv $(patsubst %,notes_%.csv,$(WEAPONTYPES)): .notes_flag
+$(patsubst %,notes_%.csv,$(MERGETYPES) tanks): .notes_flag
 	@:
 
 .notes_flag: notes.ods
-	$(OO) -invisible "notes.ods" "macro://notes/Standard.Convert.Convert" || ( rm -f notes_tanks.csv $(patsubst %,notes_%.csv,$(WEAPONTYPES)) && false )
+	$(OO) -invisible "notes.ods" "macro://notes/Standard.Convert.Convert" || ( rm -f notes_tanks.csv $(patsubst %,notes_%.csv,$(MERGETYPES)) && false )
 	@touch .notes_flag
 
 data/base/%.dwh: data/base/%.dwh.unmerged notes_%.csv merger.exe
