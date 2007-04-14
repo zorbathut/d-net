@@ -306,12 +306,12 @@ bombardment {
 }
 
 text {
-  name=text.bombardment.durailgun
+  name=text.bombardment.supersonicrailgun
   data=Blah blah hamster blah yacht blah blah blah monocle polish
 }
 
 effects {
-  name=effects.durailgun
+  name=effects.supersonicrailgun
 
   quantity=24
    
@@ -325,32 +325,32 @@ effects {
 }
 
 warhead {
-  name=warhead.bombardment.DURailgun
+  name=warhead.bombardment.SupersonicRailgun
   radiusdamage=MERGE kinetic
   radiusfalloff=1
   
-  effects_impact=effects.durailgun
+  effects_impact=effects.supersonicrailgun
 }
 
 bombardment {
-  name=ROOT.Bombardment.DU Railgun
+  name=ROOT.Bombardment.Supersonic Railgun
   cost=MERGE
   
-  warhead=warhead.bombardment.DURailgun
+  warhead=warhead.bombardment.SupersonicRailgun
   
   lockdelay=MERGE
   unlockdelay=MERGE
   
-  text=text.bombardment.durailgun
+  text=text.bombardment.supersonicrailgun
 }
 
 text {
-  name=text.bombardment.crailgun
+  name=text.bombardment.shockwaverailgun
   data=Blah blah hamster blah yacht blah blah blah monocle polish
 }
 
 effects {
-  name=effects.crailgun
+  name=effects.shockwaverailgun
 
   quantity=24
    
@@ -364,21 +364,21 @@ effects {
 }
 
 warhead {
-  name=warhead.bombardment.CRailgun
+  name=warhead.bombardment.ShockwaveRailgun
   radiusdamage=MERGE kinetic
   radiusfalloff=1
   
-  effects_impact=effects.crailgun
+  effects_impact=effects.shockwaverailgun
 }
 
 bombardment {
-  name=ROOT.Bombardment.C Railgun
+  name=ROOT.Bombardment.Shockwave Railgun
   cost=MERGE
   
-  warhead=warhead.bombardment.CRailgun
+  warhead=warhead.bombardment.ShockwaveRailgun
   
   lockdelay=MERGE
   unlockdelay=MERGE
   
-  text=text.bombardment.crailgun
+  text=text.bombardment.shockwaverailgun
 }
