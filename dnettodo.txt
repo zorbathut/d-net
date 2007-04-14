@@ -1,5 +1,4 @@
 ---- Major work path
-- fix core.dv2
 - Many many more weapons
   - Bombardment
   - Glory

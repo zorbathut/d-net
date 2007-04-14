@@ -124,7 +124,7 @@ Coord4 Gamemap::getCollisionBounds() const {
 }
 
 const Coord resolution = Coord(20);
-const Coord offset = Coord(1.23456f); // Nasty hack to largely eliminate many border cases
+const Coord2 offset = Coord2(1.23456f, 0.12345f); // Nasty hack to largely eliminate many border cases
 
 void Gamemap::removeWalls(Coord2 center, float radius, Rng *rng) {
   if(!smashable)
@@ -135,7 +135,7 @@ void Gamemap::removeWalls(Coord2 center, float radius, Rng *rng) {
     Coord4 bounds = startCBoundBox();
     Coord4 ib = getInternalBounds();
     addToBoundBox(&bounds, ib);
-    bounds = bounds + Coord4(-offset, -offset, -offset, -offset);
+    bounds = bounds + Coord4(-offset, -offset);
     bounds = snapToEnclosingGrid(bounds, resolution);
     int nsx = (bounds.sx / resolution).toInt();
     int nsy = (bounds.sy / resolution).toInt();
@@ -156,7 +156,7 @@ void Gamemap::removeWalls(Coord2 center, float radius, Rng *rng) {
       dprintf("%f, %f, %f, %f\n", bounds.sx.toFloat(), bounds.sy.toFloat(), bounds.ex.toFloat(), bounds.ey.toFloat());
       dprintf("%f, %f, %f, %f\n", ib.sx.toFloat(), ib.sy.toFloat(), ib.ex.toFloat(), ib.ey.toFloat());
     
-      bounds = bounds + Coord4(-offset, -offset, -offset, -offset);
+      bounds = bounds + Coord4(-offset, -offset);
       bounds = snapToEnclosingGrid(bounds, resolution);
       
       int nsx = (bounds.sx / resolution).toInt();
@@ -234,7 +234,7 @@ void Gamemap::removeWalls(Coord2 center, float radius, Rng *rng) {
   {
     Coord4 bounds = startCBoundBox();
     addToBoundBox(&bounds, inters);
-    bounds = bounds + Coord4(-offset, -offset, -offset, -offset);
+    bounds = bounds + Coord4(-offset, -offset);
     bounds = snapToEnclosingGrid(bounds, resolution);
     int nsx = (bounds.sx / resolution).toInt();
     int nsy = (bounds.sy / resolution).toInt();
@@ -278,7 +278,7 @@ Gamemap::Gamemap(const vector<vector<Coord2> > &lev, bool smashable) : smashable
   
   render_bounds = bounds;
   
-  bounds = bounds + Coord4(-offset, -offset, -offset, -offset);
+  bounds = bounds + Coord4(-offset, -offset);
   bounds = snapToEnclosingGrid(bounds, resolution);
   sx = (bounds.sx / resolution).toInt() - 1;
   sy = (bounds.sy / resolution).toInt() - 1;
@@ -315,10 +315,10 @@ Gamemap::Gamemap(const vector<vector<Coord2> > &lev, bool smashable) : smashable
 }
 
 Coord4 Gamemap::getInternalBounds() const {
-  return Coord4(sx * resolution + offset, sy * resolution + offset, ex * resolution + offset, ey * resolution + offset);
+  return Coord4(sx * resolution, sy * resolution, ex * resolution, ey * resolution) + Coord4(offset, offset);
 }
 Coord4 Gamemap::getTileBounds(int x, int y) const {
-  return Coord4(x * resolution + offset, y * resolution + offset, (x + 1) * resolution + offset, (y + 1) * resolution + offset);
+  return Coord4(x * resolution, y * resolution, (x + 1) * resolution, (y + 1) * resolution) + Coord4(offset, offset);
 }
 
 int Gamemap::linkid(int x, int y) const {
@@ -359,14 +359,14 @@ void Gamemap::flushAdds() {
 }
 
 Coord diffFromBase(const Coord &x) {
-  Coord d = (x - offset) / resolution;
+  Coord d = x / resolution;
   return abs(d - floor(d + Coord(0.5)));
 }
 
 bool onboundary(const Coord2 &x, const Coord2 &y) {
-  if(abs(x.x - y.x) < Coord(0.0001) && diffFromBase(x.x) < Coord(0.0001) && abs(x.y - y.y) > abs(x.x - y.x) * 10)
+  if(abs(x.x - y.x) < Coord(0.0001) && diffFromBase(x.x - offset.x) < Coord(0.0001) && abs(x.y - y.y) > abs(x.x - y.x) * 10)
     return true;
-  if(abs(x.y - y.y) < Coord(0.0001) && diffFromBase(x.y) < Coord(0.0001) && abs(x.x - y.x) > abs(x.y - y.y) * 10)
+  if(abs(x.y - y.y) < Coord(0.0001) && diffFromBase(x.y - offset.y) < Coord(0.0001) && abs(x.x - y.x) > abs(x.y - y.y) * 10)
     return true;
   return false;
 }
