@@ -1,3 +1,6 @@
+###########################
+#
+#   Bombs
 
 text {
   name=text.bombardment.minibomb
@@ -5,21 +8,21 @@ text {
 }
 
 warhead {
-  name=warhead.bombardment.minibomb
-  radiusdamage=1 explosive
+  name=warhead.bombardment.Minibomb
+  radiusdamage=MERGE explosive
   radiusfalloff=4
   wallremovalradius=0.5
 }
 
 bombardment {
   name=ROOT.Bombardment.Minibomb
-  cost=0
+  cost=MERGE
   default=1
   
-  warhead=warhead.bombardment.minibomb
+  warhead=warhead.bombardment.Minibomb
   
-  lockdelay=1.6
-  unlockdelay=1
+  lockdelay=MERGE
+  unlockdelay=MERGE
   
   text=text.bombardment.minibomb
 }
@@ -30,71 +33,122 @@ text {
 }
 
 warhead {
-  name=warhead.bombardment.bomb
-  radiusdamage=4 explosive
+  name=warhead.bombardment.Bomb
+  radiusdamage=MERGE explosive
   radiusfalloff=8
   wallremovalradius=2
 }
 
 bombardment {
   name=ROOT.Bombardment.Bomb
-  cost=2500
+  cost=MERGE
   
-  warhead=warhead.bombardment.bomb
+  warhead=warhead.bombardment.Bomb
   
-  lockdelay=1.4
-  unlockdelay=0.8
+  lockdelay=MERGE
+  unlockdelay=MERGE
   
   text=text.bombardment.bomb
 }
 
 text {
-  name=text.bombardment.megabomb
+  name=text.bombardment.hebomb
   data=Further improved, this bomb is significantly larger and heavier than less powerful weaponry, and requires major modifications to the launching system. Its destructive force can be a major factor on the battlefield.
 }
 
 warhead {
-  name=warhead.bombardment.megabomb
-  radiusdamage=14 explosive
+  name=warhead.bombardment.HEBomb
+  radiusdamage=MERGE explosive
   radiusfalloff=10
   wallremovalradius=4
 }
 
 bombardment {
-  name=ROOT.Bombardment.Megabomb
-  cost=14000
+  name=ROOT.Bombardment.HE Bomb
+  cost=MERGE
   
-  warhead=warhead.bombardment.megabomb
+  warhead=warhead.bombardment.HEBomb
   
-  lockdelay=1.2
-  unlockdelay=0.6
+  lockdelay=MERGE
+  unlockdelay=MERGE
   
-  text=text.bombardment.megabomb
+  text=text.bombardment.hebomb
 }
 
 text {
-  name=text.bombardment.ultrabomb
+  name=text.bombardment.heavybomb
   data=One of the largest conventional explosives ever produced, this huge warhead does devastating damage to anything near the impact zone. Handle with extreme care.
 }
 
 warhead {
-  name=warhead.bombardment.ultrabomb
-  radiusdamage=45 explosive
+  name=warhead.bombardment.HeavyBomb
+  radiusdamage=MERGE explosive
   radiusfalloff=12
   wallremovalradius=6
 }
 
 bombardment {
+  name=ROOT.Bombardment.Heavy Bomb
+  cost=MERGE
+  
+  warhead=warhead.bombardment.HeavyBomb
+  
+  lockdelay=MERGE
+  unlockdelay=MERGE
+  
+  text=text.bombardment.heavybomb
+}
+
+text {
+  name=text.bombardment.superbomb
+  data=Blah blah hamster blah yacht blah blah blah monocle polish
+}
+
+warhead {
+  name=warhead.bombardment.Superbomb
+  radiusdamage=MERGE explosive
+  radiusfalloff=13
+  wallremovalradius=6.5
+}
+
+bombardment {
+  name=ROOT.Bombardment.Superbomb
+  cost=MERGE
+  
+  warhead=warhead.bombardment.Superbomb
+  
+  lockdelay=MERGE
+  unlockdelay=MERGE
+  
+  text=text.bombardment.superbomb
+}
+
+text {
+  name=text.bombardment.ultrabomb
+  data=Blah blah hamster blah yacht blah blah blah monocle polish
+}
+
+warhead {
+  name=warhead.bombardment.Ultrabomb
+  radiusdamage=MERGE explosive
+  radiusfalloff=14
+  wallremovalradius=7
+}
+
+bombardment {
   name=ROOT.Bombardment.Ultrabomb
-  cost=90000
+  cost=MERGE
   
-  warhead=warhead.bombardment.ultrabomb
+  warhead=warhead.bombardment.Ultrabomb
   
-  lockdelay=1.2
-  unlockdelay=0.8
+  lockdelay=MERGE
+  unlockdelay=MERGE
   
   text=text.bombardment.ultrabomb
 }
+###########################
+#
+#   Railguns
 
 text {
   name=text.bombardment.railgun
@@ -116,8 +170,8 @@ effects {
 }
 
 warhead {
-  name=warhead.bombardment.railgun
-  radiusdamage=3 kinetic
+  name=warhead.bombardment.Railgun
+  radiusdamage=MERGE kinetic
   radiusfalloff=1
   
   effects_impact=effects.railgun
@@ -125,12 +179,12 @@ warhead {
 
 bombardment {
   name=ROOT.Bombardment.Railgun
-  cost=6000
+  cost=MERGE
   
-  warhead=warhead.bombardment.railgun
+  warhead=warhead.bombardment.Railgun
   
-  lockdelay=0.5
-  unlockdelay=1.5
+  lockdelay=MERGE
+  unlockdelay=MERGE
   
   text=text.bombardment.railgun
 }
@@ -155,9 +209,8 @@ effects {
 }
 
 warhead {
-  name=warhead.bombardment.aprailgun
-  radiusdamage=8 kinetic
-  radiusdamage=4 energy
+  name=warhead.bombardment.APRailgun
+  radiusdamage=MERGE kinetic
   radiusfalloff=1
   
   effects_impact=effects.aprailgun
@@ -165,12 +218,12 @@ warhead {
 
 bombardment {
   name=ROOT.Bombardment.AP Railgun
-  cost=35000
+  cost=MERGE
   
-  warhead=warhead.bombardment.aprailgun
+  warhead=warhead.bombardment.APRailgun
   
-  lockdelay=0.5
-  unlockdelay=1.5
+  lockdelay=MERGE
+  unlockdelay=MERGE
   
   text=text.bombardment.aprailgun
 }
@@ -179,7 +232,6 @@ text {
   name=text.bombardment.heavyrailgun
   data=Firing projectiles originally designed for naval bombardment, this weapon delivers an incredible amount of kinetic energy. Unfortunately, the equipment needed to accelerate such large masses to many times the speed of sound is extremely bulky and expensive.
 }
-
 effects {
   name=effects.heavyrailgun
 
@@ -195,8 +247,8 @@ effects {
 }
 
 warhead {
-  name=warhead.bombardment.heavyrailgun
-  radiusdamage=48 kinetic
+  name=warhead.bombardment.HeavyRailgun
+  radiusdamage=MERGE kinetic
   radiusfalloff=1
   
   effects_impact=effects.heavyrailgun
@@ -204,12 +256,129 @@ warhead {
 
 bombardment {
   name=ROOT.Bombardment.Heavy Railgun
-  cost=180000
+  cost=MERGE
   
-  warhead=warhead.bombardment.heavyrailgun
+  warhead=warhead.bombardment.HeavyRailgun
   
-  lockdelay=0.5
-  unlockdelay=1.5
+  lockdelay=MERGE
+  unlockdelay=MERGE
   
   text=text.bombardment.heavyrailgun
+}
+
+text {
+  name=text.bombardment.sabotrailgun
+  data=Blah blah hamster blah yacht blah blah blah monocle polish
+}
+
+effects {
+  name=effects.sabotrailgun
+
+  quantity=24
+   
+  spread=50
+  
+  slowdown=0.3
+  lifetime=1.0
+  
+  radius=1.2
+  color=1.0, 0.9, 0.6
+}
+
+warhead {
+  name=warhead.bombardment.SabotRailgun
+  radiusdamage=MERGE kinetic
+  radiusfalloff=1
+  
+  effects_impact=effects.sabotrailgun
+}
+
+bombardment {
+  name=ROOT.Bombardment.Sabot Railgun
+  cost=MERGE
+  
+  warhead=warhead.bombardment.SabotRailgun
+  
+  lockdelay=MERGE
+  unlockdelay=MERGE
+  
+  text=text.bombardment.sabotrailgun
+}
+
+text {
+  name=text.bombardment.durailgun
+  data=Blah blah hamster blah yacht blah blah blah monocle polish
+}
+
+effects {
+  name=effects.durailgun
+
+  quantity=24
+   
+  spread=50
+  
+  slowdown=0.3
+  lifetime=1.0
+  
+  radius=1.2
+  color=1.0, 0.9, 0.6
+}
+
+warhead {
+  name=warhead.bombardment.DURailgun
+  radiusdamage=MERGE kinetic
+  radiusfalloff=1
+  
+  effects_impact=effects.durailgun
+}
+
+bombardment {
+  name=ROOT.Bombardment.DU Railgun
+  cost=MERGE
+  
+  warhead=warhead.bombardment.DURailgun
+  
+  lockdelay=MERGE
+  unlockdelay=MERGE
+  
+  text=text.bombardment.durailgun
+}
+
+text {
+  name=text.bombardment.crailgun
+  data=Blah blah hamster blah yacht blah blah blah monocle polish
+}
+
+effects {
+  name=effects.crailgun
+
+  quantity=24
+   
+  spread=50
+  
+  slowdown=0.3
+  lifetime=1.0
+  
+  radius=1.2
+  color=1.0, 0.9, 0.6
+}
+
+warhead {
+  name=warhead.bombardment.CRailgun
+  radiusdamage=MERGE kinetic
+  radiusfalloff=1
+  
+  effects_impact=effects.crailgun
+}
+
+bombardment {
+  name=ROOT.Bombardment.C Railgun
+  cost=MERGE
+  
+  warhead=warhead.bombardment.CRailgun
+  
+  lockdelay=MERGE
+  unlockdelay=MERGE
+  
+  text=text.bombardment.crailgun
 }

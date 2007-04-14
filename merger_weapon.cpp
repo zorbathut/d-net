@@ -85,8 +85,7 @@ void mergeWeapon(const string &csv, const string &unmerged, const string &merged
       if(kvd.category == "weapon") {
         dprintf("Weapon %s found\n", kvd.read("name").c_str());
         
-        CHECK(count(kvd.read("name").begin(), kvd.read("name").end(), '.'));
-        string basicname = strrchr(kvd.read("name").c_str(), '.') + 1;
+        string basicname = suffix(kvd.read("name").c_str());;
         
         CHECK(weapondats.count(basicname));
         CHECK(!doneweps.count(basicname));
@@ -100,30 +99,14 @@ void mergeWeapon(const string &csv, const string &unmerged, const string &merged
       } else if(kvd.category == "warhead") {
         dprintf("Warhead %s found\n", kvd.read("name").c_str());
         
-        CHECK(count(kvd.read("name").begin(), kvd.read("name").end(), '.'));
-        string basicname = strrchr(kvd.read("name").c_str(), '.') + 1;
+        string matchname = findName(suffix(kvd.read("name")), weapondats);
         
-        dprintf("%s\n", basicname.c_str());
-        CHECK(basicname.size());
-        basicname += ' ';
-        for(int i = basicname.size() - 2; i >= 0; i--)
-          if(basicname[i] == 'I' || basicname[i] == 'V')
-            swap(basicname[i], basicname[i + 1]);
-          else
-            break;
-        dprintf("%s\n", basicname.c_str());
-        
-        if(weapondats.count(basicname)) {
-          CHECK(!doneweps.count(basicname));
-          vector<string> radidam = tokenize(kvd.read("radiusdamage"), "\n ");
-          CHECK(radidam.size() == 2);
-          CHECK(radidam[0] == "MERGE");
-          kvd.kv["radiusdamage"] = StringPrintf("%s %s", weapondats[basicname].dpp.c_str(), radidam[1].c_str());
-        }
+        if(matchname.size())
+          kvd.kv["radiusdamage"] = splice(kvd.read("radiusdamage"), weapondats[matchname].dpp);
       }
       
       for(map<string, string>::const_iterator itr = kvd.kv.begin(); itr != kvd.kv.end(); itr++)
-        CHECK(itr->second != "MERGE");
+        CHECK(itr->second.find("MERGE") == string::npos);
       
       ofs << stringFromKvData(kvd) << endl;
     }
@@ -133,6 +116,7 @@ void mergeWeapon(const string &csv, const string &unmerged, const string &merged
       for(map<string, Weapondat>::const_iterator itr = weapondats.begin(); itr != weapondats.end(); itr++)
         if(!doneweps.count(itr->first))
           dprintf("Didn't complete %s\n", itr->first.c_str());
+      CHECK(0);
     }
   }
   

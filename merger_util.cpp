@@ -1,5 +1,6 @@
 
 #include "merger_util.h"
+#include "parse.h"
 
 vector<string> parseCsv(const string &in) {
   dprintf("%s\n", in.c_str());
@@ -21,4 +22,28 @@ vector<string> parseCsv(const string &in) {
     }
   }
   return tok;
+}
+
+string splice(const string &source, const string &splicetext) {
+  int replacements = 0;
+  vector<string> radidam = tokenize(source, " ");
+  for(int i = 0; i < radidam.size(); i++) {
+    if(radidam[i] == "MERGE") {
+      radidam[i] = splicetext;
+      replacements++;
+    }
+  }
+  CHECK(replacements == 1);
+  string out;
+  for(int i = 0; i < radidam.size(); i++) {
+    if(i)
+      out += " ";
+    out += radidam[i];
+  }
+  return out;
+}
+
+string suffix(const string &name) {
+  CHECK(count(name.begin(), name.end(), '.'));
+  return strrchr(name.c_str(), '.') + 1;
 }
