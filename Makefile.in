@@ -181,11 +181,11 @@ functor.h: functor_gen.exe functor.h.in
 merger.exe: $(MERGERSOURCES:=.c.o)
 	nice $(CPP) -o $@ $(MERGERSOURCES:=.c.o) $(CONSOLELDFLAGS)
 
-$(patsubst %,notes_%.csv,$(MERGETYPES) tanks): .notes_flag
+$(patsubst %,notes_%.csv,$(MERGETYPES)): .notes_flag
 	@:
 
 .notes_flag: notes.ods
-	$(OO) -invisible "notes.ods" "macro://notes/Standard.Convert.Convert" || ( rm -f notes_tanks.csv $(patsubst %,notes_%.csv,$(MERGETYPES)) && false )
+	$(OO) -invisible "notes.ods" "macro://notes/Standard.Convert.Convert" || ( rm -f $(patsubst %,notes_%.csv,$(MERGETYPES)) && false )
 	@touch .notes_flag
 
 data/base/%.dwh: data/base/%.dwh.unmerged notes_%.csv merger.exe

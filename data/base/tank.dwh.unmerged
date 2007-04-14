@@ -609,11 +609,10 @@ adjustment {
 tank {
   name=ROOT.Tanks.OTEK II
 
-  health=20
-  engine=24
-  handling=2
-  
-  mass=50
+  health=MERGE
+  engine=MERGE
+  handling=MERGE
+  mass=MERGE
   
   weapon=Sparker I
   
@@ -639,11 +638,10 @@ tank {
 tank {
   name=ROOT.Tanks.CARA I
 
-  health=55
-  engine=30
-  handling=2.4
-  
-  mass=40
+  health=MERGE
+  engine=MERGE
+  handling=MERGE
+  mass=MERGE
   
   weapon=Sparker II
   
@@ -664,11 +662,10 @@ tank {
 tank {
   name=ROOT.Tanks.PIRE I
 
-  health=65
-  engine=24
-  handling=2
-  
-  mass=60
+  health=MERGE
+  engine=MERGE
+  handling=MERGE
+  mass=MERGE
   
   weapon=Sparker II
   
@@ -690,11 +687,10 @@ tank {
 tank {
   name=ROOT.Tanks.ROXO I
 
-  health=75
-  engine=18
-  handling=1.6
-  
-  mass=100
+  health=MERGE
+  engine=MERGE
+  handling=MERGE
+  mass=MERGE
   
   weapon=Sparker II
   
@@ -719,11 +715,10 @@ tank {
 tank {
   name=ROOT.Tanks.CARA II
 
-  health=180
-  engine=31
-  handling=2.5
-  
-  mass=35
+  health=MERGE
+  engine=MERGE
+  handling=MERGE
+  mass=MERGE
   
   weapon=Sparker III
   
@@ -745,11 +740,10 @@ tank {
 tank {
   name=ROOT.Tanks.PIRE II
 
-  health=210
-  engine=25
-  handling=2.1
-  
-  mass=60
+  health=MERGE
+  engine=MERGE
+  handling=MERGE
+  mass=MERGE
   
   weapon=Sparker III
   
@@ -772,11 +766,10 @@ tank {
 tank {
   name=ROOT.Tanks.ROXO II
 
-  health=240
-  engine=19
-  handling=1.7
-  
-  mass=110
+  health=MERGE
+  engine=MERGE
+  handling=MERGE
+  mass=MERGE
   
   weapon=Sparker III
   
@@ -803,11 +796,10 @@ tank {
 tank {
   name=ROOT.Tanks.SEKA I
 
-  health=190
-  engine=31
-  handling=2.4
-
-  mass=40
+  health=MERGE
+  engine=MERGE
+  handling=MERGE
+  mass=MERGE
   
   adjustment=adjustment.tank.seka
   
@@ -832,11 +824,10 @@ tank {
 tank {
   name=ROOT.Tanks.TUVU I
 
-  health=260
-  engine=25
-  handling=2.1
-  
-  mass=90
+  health=MERGE
+  engine=MERGE
+  handling=MERGE
+  mass=MERGE
   
   adjustment=adjustment.tank.tuvu
   
@@ -862,11 +853,10 @@ tank {
 tank {
   name=ROOT.Tanks.MARI I
 
-  health=230
-  engine=20
-  handling=1.9
-  
-  mass=75
+  health=MERGE
+  engine=MERGE
+  handling=MERGE
+  mass=MERGE
   
   adjustment=adjustment.tank.mari
   
@@ -896,11 +886,10 @@ tank {
 tank {
   name=ROOT.Tanks.SEKA II
 
-  health=620
-  engine=32
-  handling=2.5
-  
-  mass=35
+  health=MERGE
+  engine=MERGE
+  handling=MERGE
+  mass=MERGE
   
   adjustment=adjustment.tank.seka
   
@@ -928,11 +917,10 @@ tank {
 tank {
   name=ROOT.Tanks.TUVU II
 
-  health=860
-  engine=26
-  handling=2.2
-  
-  mass=95
+  health=MERGE
+  engine=MERGE
+  handling=MERGE
+  mass=MERGE
   
   adjustment=adjustment.tank.tuvu
   
@@ -960,11 +948,10 @@ tank {
 tank {
   name=ROOT.Tanks.MARI II
 
-  health=740
-  engine=22
-  handling=2.0
-  
-  mass=80
+  health=MERGE
+  engine=MERGE
+  handling=MERGE
+  mass=MERGE
   
   adjustment=adjustment.tank.mari
   
@@ -998,11 +985,10 @@ tank {
 tank {
   name=ROOT.Tanks.GUPE I
 
-  health=920
-  engine=30
-  handling=2.6
-  
-  mass=50
+  health=MERGE
+  engine=MERGE
+  handling=MERGE
+  mass=MERGE
   
   adjustment=adjustment.tank.gupe
   
@@ -1029,11 +1015,10 @@ tank {
 tank {
   name=ROOT.Tanks.BORA I
 
-  health=800
-  engine=26
-  handling=2.2
-  
-  mass=60
+  health=MERGE
+  engine=MERGE
+  handling=MERGE
+  mass=MERGE
   
   weapon=Sparker IV
   
@@ -1059,11 +1044,10 @@ tank {
 tank {
   name=ROOT.Tanks.HIMO I
 
-  health=680
-  engine=22
-  handling=1.8
-  
-  mass=60
+  health=MERGE
+  engine=MERGE
+  handling=MERGE
+  mass=MERGE
   
   adjustment=adjustment.tank.himo
   
@@ -1095,11 +1079,10 @@ tank {
 tank {
   name=ROOT.Tanks.GUPE II
 
-  health=3000
-  engine=32
-  handling=2.7
-  
-  mass=45
+  health=MERGE
+  engine=MERGE
+  handling=MERGE
+  mass=MERGE
   
   adjustment=adjustment.tank.gupe
   
@@ -1130,11 +1113,10 @@ tank {
 tank {
   name=ROOT.Tanks.BORA II
 
-  health=2600
-  engine=27
-  handling=2.3
-  
-  mass=55
+  health=MERGE
+  engine=MERGE
+  handling=MERGE
+  mass=MERGE
   
   weapon=Sparker V
   
@@ -1164,11 +1146,10 @@ tank {
 tank {
   name=ROOT.Tanks.HIMO II
 
-  health=2200
-  engine=22
-  handling=1.9
-  
-  mass=65
+  health=MERGE
+  engine=MERGE
+  handling=MERGE
+  mass=MERGE
   
   adjustment=adjustment.tank.himo
   
@@ -1204,11 +1185,10 @@ tank {
 tank {
   name=ROOT.Tanks.KEROMI Alpha
 
-  health=2400
-  engine=32
-  handling=2.6
-  
-  mass=45
+  health=MERGE
+  engine=MERGE
+  handling=MERGE
+  mass=MERGE
   
   adjustment=adjustment.tank.keromi
   
@@ -1239,11 +1219,10 @@ tank {
 tank {
   name=ROOT.Tanks.XATIPE Alpha
 
-  health=2800
-  engine=26
-  handling=2.2
-  
-  mass=70
+  health=MERGE
+  engine=MERGE
+  handling=MERGE
+  mass=MERGE
   
   adjustment=adjustment.tank.xatipe
   
@@ -1273,11 +1252,10 @@ tank {
 tank {
   name=ROOT.Tanks.DUMARO Alpha
 
-  health=3200
-  engine=20
-  handling=1.8
-  
-  mass=110
+  health=MERGE
+  engine=MERGE
+  handling=MERGE
+  mass=MERGE
   
   adjustment=adjustment.tank.dumaro
   
@@ -1319,11 +1297,10 @@ tank {
 tank {
   name=ROOT.Tanks.KEROMI Beta
 
-  health=7600
-  engine=33
-  handling=2.7
-  
-  mass=40
+  health=MERGE
+  engine=MERGE
+  handling=MERGE
+  mass=MERGE
   
   adjustment=adjustment.tank.keromi
   
@@ -1360,11 +1337,10 @@ tank {
 tank {
   name=ROOT.Tanks.XATIPE Beta
 
-  health=9000
-  engine=27
-  handling=2.3
-  
-  mass=70
+  health=MERGE
+  engine=MERGE
+  handling=MERGE
+  mass=MERGE
   
   adjustment=adjustment.tank.xatipe
   
@@ -1398,11 +1374,10 @@ tank {
 tank {
   name=ROOT.Tanks.DUMARO Beta
 
-  health=10400
-  engine=21
-  handling=1.9
-  
-  mass=120
+  health=MERGE
+  engine=MERGE
+  handling=MERGE
+  mass=MERGE
   
   adjustment=adjustment.tank.dumaro
   
@@ -1448,11 +1423,10 @@ tank {
 tank {
   name=ROOT.Tanks.KEROMI Omega
 
-  health=25000
-  engine=34
-  handling=2.8
-  
-  mass=35
+  health=MERGE
+  engine=MERGE
+  handling=MERGE
+  mass=MERGE
   
   adjustment=adjustment.tank.keromi
   
@@ -1497,11 +1471,10 @@ tank {
 tank {
   name=ROOT.Tanks.XATIPE Omega
 
-  health=29500
-  engine=28
-  handling=2.4
-  
-  mass=70
+  health=MERGE
+  engine=MERGE
+  handling=MERGE
+  mass=MERGE
   
   adjustment=adjustment.tank.xatipe
   
@@ -1541,11 +1514,10 @@ tank {
 tank {
   name=ROOT.Tanks.DUMARO Omega
 
-  health=34000
-  engine=22
-  handling=2.0
-  
-  mass=130
+  health=MERGE
+  engine=MERGE
+  handling=MERGE
+  mass=MERGE
   
   adjustment=adjustment.tank.dumaro
   

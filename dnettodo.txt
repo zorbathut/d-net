@@ -1,5 +1,7 @@
 ---- Major work path
-- Remove tank testing, make tanks merged
+- Reprocess tank names, check for biases, uniqueize second letter?
+- Colorcode weapons?
+- Add glory to balance system
 - Many many more weapons
   - Bombardment
   - Glory
