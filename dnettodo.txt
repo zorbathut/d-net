@@ -1,6 +1,7 @@
 ---- Major work path
 - Missile spread increase without slamming tanks on the side somehow?
 - EMP should have its start position increased since you use *very* little of it during the game, also change to packs of 25
+- Rename "weapons" to "ammo"
 - Reprocess tank names, check for biases, uniqueize second letter?
 - Colorcode weapons?
 - Add glory to balance system
@@ -16,6 +17,7 @@
   - Special laser
   - Special missile
   - OGRE
+- Four-weapon system
 - Netplay
 - Add accuracy implant/upgrade?
 - Less incentive to camp?
@@ -33,7 +35,6 @@
   - Restricted speed/turn for the better tanks
     - Roll speed and handling together? Otherwise, come up with a description for the implant
     - "fast turn" "slow turn" modifier buttons?
-  - Ability to assign to *four* weapons (how the fuck will this work)
   - Pop up "sell obsolete item" on buying bombardment/glory/new tank
   - Category descriptions somehow?
 
