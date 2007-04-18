@@ -1,4 +1,6 @@
 ---- Major work path
+- Missile spread increase without slamming tanks on the side somehow?
+- EMP should have its start position increased since you use *very* little of it during the game, also change to packs of 25
 - Reprocess tank names, check for biases, uniqueize second letter?
 - Colorcode weapons?
 - Add glory to balance system

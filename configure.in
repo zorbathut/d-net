@@ -75,7 +75,7 @@ if test "x$WX" == "x" ; then
   AC_MSG_ERROR([D-Net requires WX, kind of.])
 fi
 
-AC_PATH_PROG([OO], [soffice.exe], [], ["/cygdrive/c/Program Files (x86)/OpenOffice.org 2.2/program"])
+AC_PATH_PROG([OO], [soffice.exe], [], [/cygdrive/c/Program Files (x86)/OpenOffice.org 2.2/program:/cygdrive/c/Program Files/OpenOffice.org 2.2/program])
 if test "x$OO" == "x" ; then
   AC_MSG_ERROR([D-Net requires OpenOffice, kind of.])
 fi
