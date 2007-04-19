@@ -645,7 +645,7 @@ void PersistentData::renderSlot(int slotid) const {
     CHECK(slt.pid >= 0 && slt.pid < pms.size());
     setZoomVertical(0, 0, 1);
     
-    const bool ignore_modifiers = true;
+    const bool ignore_modifiers = (faction_mode == 0);
     
     const float div_x = 0.6;
     

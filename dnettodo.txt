@@ -1,5 +1,5 @@
 ---- Major work path
-- Make faction adjustment options, you know, show up somehow
+- Faction type slider goes too far
 - Colorcode weapons?
   - Add a "base color" option
   - Figure out some way to brighten this color sanely
