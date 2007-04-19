@@ -104,8 +104,14 @@ struct IDBProjectile {
 
   float toughness;
 
-  float airbrake_life;
   float halflife;
+  
+  float missile_sidelaunch;
+  float missile_backlaunch;
+  float missile_stabstart;
+  float missile_stabilization;
+  
+  float airbrake_life;
 
   vector<const IDBWarhead *> chain_warhead;
 };
@@ -301,6 +307,11 @@ public:
   float halflife() const;
 
   float airbrake_life() const;
+
+  float missile_stabstart() const;
+  float missile_stabilization() const;
+  float missile_sidelaunch() const;
+  float missile_backlaunch() const;
   
   float stats_damagePerShot() const;
 

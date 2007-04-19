@@ -22,9 +22,16 @@ warhead {
 
 projectile {
   name=projectile.missile
-  velocity=180
   color=0.9, 0.95, 1.0
+  
   motion=missile
+  
+  velocity=180
+  missile_stabstart=0.0
+  missile_stabilization=6
+  missile_sidelaunch=15
+  missile_backlaunch=0.5
+  
   warhead=warhead.missile
 }
 
@@ -112,9 +119,15 @@ warhead {
 
 projectile {
   name=projectile.hemissile
-  velocity=180
   color=0.9, 0.95, 1.0
   motion=missile
+  
+  velocity=180
+  missile_stabstart=0.0
+  missile_stabilization=6
+  missile_sidelaunch=15
+  missile_backlaunch=0.5
+  
   thickness_visual=2x
   length=1.5x
   toughness=2
@@ -170,9 +183,16 @@ warhead {
 
 projectile {
   name=projectile.clustermissile
-  velocity=180
   color=0.9, 0.95, 1.0
+  
   motion=missile
+  
+  velocity=180
+  missile_stabstart=0.0
+  missile_stabilization=6
+  missile_sidelaunch=15
+  missile_backlaunch=0.5
+  
   warhead=warhead.clustermissile
 }
 
@@ -225,9 +245,16 @@ warhead {
 
 projectile {
   name=projectile.proximityrocket
-  velocity=180
   color=0.9, 0.95, 1.0
+  
   motion=missile
+  
+  velocity=180
+  missile_stabstart=0.0
+  missile_stabilization=6
+  missile_sidelaunch=15
+  missile_backlaunch=0.5
+  
   warhead=warhead.proximityrocket
 }
 
@@ -280,9 +307,16 @@ warhead {
 
 projectile {
   name=projectile.adaptiverocket
-  velocity=180
   color=0.9, 0.95, 1.0
+  
   motion=missile
+  
+  velocity=180
+  missile_stabstart=0.0
+  missile_stabilization=6
+  missile_sidelaunch=15
+  missile_backlaunch=0.5
+  
   warhead=warhead.adaptiverocket
 }
 
@@ -335,9 +369,16 @@ warhead {
 
 projectile {
   name=projectile.mininuke
-  velocity=180
   color=0.9, 0.95, 1.0
+  
   motion=missile
+  
+  velocity=180
+  missile_stabstart=0.0
+  missile_stabilization=6
+  missile_sidelaunch=15
+  missile_backlaunch=0.5
+  
   warhead=warhead.mininuke
 }
 
@@ -390,9 +431,16 @@ warhead {
 
 projectile {
   name=projectile.conversionnuke
-  velocity=180
   color=0.9, 0.95, 1.0
+  
   motion=missile
+  
+  velocity=180
+  missile_stabstart=0.0
+  missile_stabilization=6
+  missile_sidelaunch=15
+  missile_backlaunch=0.5
+  
   warhead=warhead.conversionnuke
 }
 

@@ -1,9 +1,12 @@
 ---- Major work path
-- Missile spread increase without slamming tanks on the side somehow?
+- Make faction adjustment options, you know, show up somehow
 - Colorcode weapons?
+  - Add a "base color" option
+  - Figure out some way to brighten this color sanely
+  - Base it on damage type, and then it can even be automatic
+  - Add another series for tanks, based on relative tank level
 - Add glory to balance system
 - EMP glory resistance
-- Tone bombardment down a little
 - Many many more weapons
   - Bombardment
   - Glory

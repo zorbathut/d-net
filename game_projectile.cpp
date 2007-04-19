@@ -17,9 +17,9 @@ void Projectile::tick(vector<smart_ptr<GfxEffects> > *gfxe, Rng *rng) {
   
   if(projtype.motion() == PM_NORMAL) {
   } else if(projtype.motion() == PM_MISSILE) {
-    if(age > FPS / 6)
-      missile_sidedist /= 1.2;
-    for(int i = 0; i < 2; i++) {
+    if(age > projtype.missile_stabstart() * FPS)
+      missile_sidedist /= pow(projtype.missile_stabilization(), 1.f / FPS);
+    for(int i = 0; i < 2; i++) { // generate particle effects
       float dir = unsync().frand() * 2 * PI;
       Float2 pv = makeAngle(dir) / 3;
       pv *= 1.0 - unsync().frand() * unsync().frand();
@@ -152,7 +152,7 @@ Coord2 Projectile::missile_accel() const {
   return makeAngle(Coord(d)) * Coord(projtype.velocity() / FPS) * age / FPS;
 }
 Coord2 Projectile::missile_backdrop() const {
-  return makeAngle(Coord(d)) / 120;
+  return makeAngle(Coord(d)) * Coord(projtype.missile_backlaunch()) / FPS;
 }
 Coord2 Projectile::missile_sidedrop() const {
   return makeAngle(Coord(d) - COORDPI / 2) * Coord(missile_sidedist);
@@ -190,7 +190,7 @@ Projectile::Projectile(const Coord2 &in_pos, float in_d, const IDBProjectileAdju
   
   if(projtype.motion() == PM_NORMAL) {
   } else if(projtype.motion() == PM_MISSILE) {
-    missile_sidedist = rng->gaussian() * 0.25;
+    missile_sidedist = rng->gaussian() * projtype.missile_sidelaunch() / FPS;
   } else if(projtype.motion() == PM_AIRBRAKE) {
     airbrake_velocity = (rng->gaussian_scaled(2) / 4 + 1) * projtype.velocity();
   } else if(projtype.motion() == PM_MINE) {

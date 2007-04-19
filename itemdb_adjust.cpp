@@ -135,7 +135,12 @@ Color IDBProjectileAdjust::color() const { return idb->color; };
 float IDBProjectileAdjust::thickness_visual() const { return idb->thickness_visual; };
 
 float IDBProjectileAdjust::halflife() const { return idb->halflife; };
-float IDBProjectileAdjust::airbrake_life() const { return idb->airbrake_life; }
+float IDBProjectileAdjust::airbrake_life() const { CHECK(idb->motion == PM_AIRBRAKE); return idb->airbrake_life; }
+
+float IDBProjectileAdjust::missile_stabstart() const { CHECK(idb->motion == PM_MISSILE); return idb->missile_stabstart; }
+float IDBProjectileAdjust::missile_stabilization() const { CHECK(idb->motion == PM_MISSILE); return idb->missile_stabilization; }
+float IDBProjectileAdjust::missile_sidelaunch() const { CHECK(idb->motion == PM_MISSILE); return idb->missile_sidelaunch; }
+float IDBProjectileAdjust::missile_backlaunch() const { CHECK(idb->motion == PM_MISSILE); return idb->missile_backlaunch; }
 
 float IDBProjectileAdjust::stats_damagePerShot() const {
   float val = 0;

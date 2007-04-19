@@ -758,6 +758,10 @@ void parseProjectile(kvData *chunk, bool reload, ErrorAccumulator &accum) {
     titem->motion = PM_NORMAL;
   } else if(motion == "missile") {
     titem->motion = PM_MISSILE;
+    titem->missile_stabstart = parseSingleItem<float>(chunk->consume("missile_stabstart"));
+    titem->missile_stabilization = parseSingleItem<float>(chunk->consume("missile_stabilization"));
+    titem->missile_sidelaunch = parseSingleItem<float>(chunk->consume("missile_sidelaunch"));
+    titem->missile_backlaunch = parseSingleItem<float>(chunk->consume("missile_backlaunch"));
   } else if(motion == "airbrake") {
     titem->motion = PM_AIRBRAKE;
     titem->airbrake_life = parseWithDefault(chunk, "airbrake_life", 1.0);
