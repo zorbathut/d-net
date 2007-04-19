@@ -114,7 +114,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Debug.Sparker I
+  name=ROOT.Ammo.Debug.Sparker I
   firerate=3
   
   launcher=launcher.sparker1
@@ -169,7 +169,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Debug.Sparker II
+  name=ROOT.Ammo.Debug.Sparker II
   firerate=5
   
   launcher=launcher.sparker2
@@ -225,7 +225,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Debug.Sparker III
+  name=ROOT.Ammo.Debug.Sparker III
   firerate=8
   
   launcher=launcher.sparker3
@@ -283,7 +283,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Debug.Sparker IV
+  name=ROOT.Ammo.Debug.Sparker IV
   firerate=4
   
   launcher=launcher.sparker4
@@ -341,7 +341,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Debug.Sparker V
+  name=ROOT.Ammo.Debug.Sparker V
   firerate=6.5
   
   launcher=launcher.sparker5
@@ -399,7 +399,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Debug.Sparker VI
+  name=ROOT.Ammo.Debug.Sparker VI
   firerate=10
   
   launcher=launcher.sparker6
@@ -498,7 +498,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Debug.Sparker Omega
+  name=ROOT.Ammo.Debug.Sparker Omega
   firerate=4
   
   launcher=launcher.sparker7

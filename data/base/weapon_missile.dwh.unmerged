@@ -3,7 +3,7 @@
 #   Missile base stats
 
 hierarchy {
-  name=ROOT.Weapons.Missile
+  name=ROOT.Ammo.Missile
   pack=100
 }
 
@@ -56,7 +56,7 @@ launcher {
 #   HE Missile base stats
 
 hierarchy {
-  name=ROOT.Weapons.HE Missile
+  name=ROOT.Ammo.HE Missile
   pack=100
   
   spawncash=10000
@@ -149,7 +149,7 @@ launcher {
 #   Cluster Missile base stats
 
 hierarchy {
-  name=ROOT.Weapons.Cluster Missile
+  name=ROOT.Ammo.Cluster Missile
   pack=100
   
   spawncash=300k
@@ -204,7 +204,7 @@ launcher {
 #   Proximity Rocket base stats
 
 hierarchy {
-  name=ROOT.Weapons.Proximity Rocket
+  name=ROOT.Ammo.Proximity Rocket
   pack=100
   
   spawncash=9m
@@ -259,7 +259,7 @@ launcher {
 #   Adaptive Rocket base stats
 
 hierarchy {
-  name=ROOT.Weapons.Adaptive Rocket
+  name=ROOT.Ammo.Adaptive Rocket
   pack=100
   
   spawncash=270m
@@ -314,7 +314,7 @@ launcher {
 #   Mini-Nuke base stats
 
 hierarchy {
-  name=ROOT.Weapons.Mini-Nuke
+  name=ROOT.Ammo.Mini-Nuke
   pack=100
   
   spawncash=8100m
@@ -369,7 +369,7 @@ launcher {
 #   Conversion Nuke base stats
 
 hierarchy {
-  name=ROOT.Weapons.Conversion Nuke
+  name=ROOT.Ammo.Conversion Nuke
   pack=100
   
   spawncash=243g
@@ -424,7 +424,7 @@ launcher {
 #   The actual weaponry
 
 weapon {
-  name=ROOT.Weapons.Missile.Missile I
+  name=ROOT.Ammo.Missile.Missile I
   
   cost=MERGE
   firerate=MERGE
@@ -433,7 +433,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Missile.Missile II
+  name=ROOT.Ammo.Missile.Missile II
   
   cost=MERGE
   firerate=MERGE
@@ -442,7 +442,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Missile.Missile III
+  name=ROOT.Ammo.Missile.Missile III
   
   cost=MERGE
   firerate=MERGE
@@ -451,7 +451,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Missile.Missile IV
+  name=ROOT.Ammo.Missile.Missile IV
   
   cost=MERGE
   firerate=MERGE
@@ -460,7 +460,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Missile.Missile V
+  name=ROOT.Ammo.Missile.Missile V
   
   cost=MERGE
   firerate=MERGE
@@ -469,7 +469,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Missile.Missile VI
+  name=ROOT.Ammo.Missile.Missile VI
   
   cost=MERGE
   firerate=MERGE
@@ -478,7 +478,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.HE Missile.HE Missile I
+  name=ROOT.Ammo.HE Missile.HE Missile I
   
   cost=MERGE
   firerate=MERGE
@@ -487,7 +487,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.HE Missile.HE Missile II
+  name=ROOT.Ammo.HE Missile.HE Missile II
   
   cost=MERGE
   firerate=MERGE
@@ -496,7 +496,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.HE Missile.HE Missile III
+  name=ROOT.Ammo.HE Missile.HE Missile III
   
   cost=MERGE
   firerate=MERGE
@@ -505,7 +505,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.HE Missile.HE Missile IV
+  name=ROOT.Ammo.HE Missile.HE Missile IV
   
   cost=MERGE
   firerate=MERGE
@@ -514,7 +514,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.HE Missile.HE Missile V
+  name=ROOT.Ammo.HE Missile.HE Missile V
   
   cost=MERGE
   firerate=MERGE
@@ -523,7 +523,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.HE Missile.HE Missile VI
+  name=ROOT.Ammo.HE Missile.HE Missile VI
   
   cost=MERGE
   firerate=MERGE
@@ -533,7 +533,7 @@ weapon {
 
 
 weapon {
-  name=ROOT.Weapons.Cluster Missile.Cluster Missile I
+  name=ROOT.Ammo.Cluster Missile.Cluster Missile I
   
   cost=MERGE
   firerate=MERGE
@@ -542,7 +542,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Cluster Missile.Cluster Missile II
+  name=ROOT.Ammo.Cluster Missile.Cluster Missile II
   
   cost=MERGE
   firerate=MERGE
@@ -551,7 +551,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Cluster Missile.Cluster Missile III
+  name=ROOT.Ammo.Cluster Missile.Cluster Missile III
   
   cost=MERGE
   firerate=MERGE
@@ -560,7 +560,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Cluster Missile.Cluster Missile IV
+  name=ROOT.Ammo.Cluster Missile.Cluster Missile IV
   
   cost=MERGE
   firerate=MERGE
@@ -569,7 +569,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Cluster Missile.Cluster Missile V
+  name=ROOT.Ammo.Cluster Missile.Cluster Missile V
   
   cost=MERGE
   firerate=MERGE
@@ -578,7 +578,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Cluster Missile.Cluster Missile VI
+  name=ROOT.Ammo.Cluster Missile.Cluster Missile VI
   
   cost=MERGE
   firerate=MERGE
@@ -588,7 +588,7 @@ weapon {
 
 
 weapon {
-  name=ROOT.Weapons.Proximity Rocket.Proximity Rocket I
+  name=ROOT.Ammo.Proximity Rocket.Proximity Rocket I
   
   cost=MERGE
   firerate=MERGE
@@ -597,7 +597,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Proximity Rocket.Proximity Rocket II
+  name=ROOT.Ammo.Proximity Rocket.Proximity Rocket II
   
   cost=MERGE
   firerate=MERGE
@@ -606,7 +606,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Proximity Rocket.Proximity Rocket III
+  name=ROOT.Ammo.Proximity Rocket.Proximity Rocket III
   
   cost=MERGE
   firerate=MERGE
@@ -615,7 +615,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Proximity Rocket.Proximity Rocket IV
+  name=ROOT.Ammo.Proximity Rocket.Proximity Rocket IV
   
   cost=MERGE
   firerate=MERGE
@@ -624,7 +624,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Proximity Rocket.Proximity Rocket V
+  name=ROOT.Ammo.Proximity Rocket.Proximity Rocket V
   
   cost=MERGE
   firerate=MERGE
@@ -633,7 +633,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Proximity Rocket.Proximity Rocket VI
+  name=ROOT.Ammo.Proximity Rocket.Proximity Rocket VI
   
   cost=MERGE
   firerate=MERGE
@@ -643,7 +643,7 @@ weapon {
 
 
 weapon {
-  name=ROOT.Weapons.Adaptive Rocket.Adaptive Rocket I
+  name=ROOT.Ammo.Adaptive Rocket.Adaptive Rocket I
   
   cost=MERGE
   firerate=MERGE
@@ -652,7 +652,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Adaptive Rocket.Adaptive Rocket II
+  name=ROOT.Ammo.Adaptive Rocket.Adaptive Rocket II
   
   cost=MERGE
   firerate=MERGE
@@ -661,7 +661,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Adaptive Rocket.Adaptive Rocket III
+  name=ROOT.Ammo.Adaptive Rocket.Adaptive Rocket III
   
   cost=MERGE
   firerate=MERGE
@@ -670,7 +670,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Adaptive Rocket.Adaptive Rocket IV
+  name=ROOT.Ammo.Adaptive Rocket.Adaptive Rocket IV
   
   cost=MERGE
   firerate=MERGE
@@ -679,7 +679,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Adaptive Rocket.Adaptive Rocket V
+  name=ROOT.Ammo.Adaptive Rocket.Adaptive Rocket V
   
   cost=MERGE
   firerate=MERGE
@@ -688,7 +688,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Adaptive Rocket.Adaptive Rocket VI
+  name=ROOT.Ammo.Adaptive Rocket.Adaptive Rocket VI
   
   cost=MERGE
   firerate=MERGE
@@ -698,7 +698,7 @@ weapon {
 
 
 weapon {
-  name=ROOT.Weapons.Mini-Nuke.Mini-Nuke I
+  name=ROOT.Ammo.Mini-Nuke.Mini-Nuke I
   
   cost=MERGE
   firerate=MERGE
@@ -707,7 +707,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Mini-Nuke.Mini-Nuke II
+  name=ROOT.Ammo.Mini-Nuke.Mini-Nuke II
   
   cost=MERGE
   firerate=MERGE
@@ -716,7 +716,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Mini-Nuke.Mini-Nuke III
+  name=ROOT.Ammo.Mini-Nuke.Mini-Nuke III
   
   cost=MERGE
   firerate=MERGE
@@ -725,7 +725,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Mini-Nuke.Mini-Nuke IV
+  name=ROOT.Ammo.Mini-Nuke.Mini-Nuke IV
   
   cost=MERGE
   firerate=MERGE
@@ -734,7 +734,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Mini-Nuke.Mini-Nuke V
+  name=ROOT.Ammo.Mini-Nuke.Mini-Nuke V
   
   cost=MERGE
   firerate=MERGE
@@ -743,7 +743,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Mini-Nuke.Mini-Nuke VI
+  name=ROOT.Ammo.Mini-Nuke.Mini-Nuke VI
   
   cost=MERGE
   firerate=MERGE
@@ -753,7 +753,7 @@ weapon {
 
 
 weapon {
-  name=ROOT.Weapons.Conversion Nuke.Conversion Nuke I
+  name=ROOT.Ammo.Conversion Nuke.Conversion Nuke I
   
   cost=MERGE
   firerate=MERGE
@@ -762,7 +762,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Conversion Nuke.Conversion Nuke II
+  name=ROOT.Ammo.Conversion Nuke.Conversion Nuke II
   
   cost=MERGE
   firerate=MERGE
@@ -771,7 +771,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Conversion Nuke.Conversion Nuke III
+  name=ROOT.Ammo.Conversion Nuke.Conversion Nuke III
   
   cost=MERGE
   firerate=MERGE
@@ -780,7 +780,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Conversion Nuke.Conversion Nuke IV
+  name=ROOT.Ammo.Conversion Nuke.Conversion Nuke IV
   
   cost=MERGE
   firerate=MERGE
@@ -789,7 +789,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Conversion Nuke.Conversion Nuke V
+  name=ROOT.Ammo.Conversion Nuke.Conversion Nuke V
   
   cost=MERGE
   firerate=MERGE
@@ -798,7 +798,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Conversion Nuke.Conversion Nuke VI
+  name=ROOT.Ammo.Conversion Nuke.Conversion Nuke VI
   
   cost=MERGE
   firerate=MERGE

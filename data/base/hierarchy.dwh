@@ -1,5 +1,5 @@
 hierarchy {
-  name=ROOT.Weapons
+  name=ROOT.Ammo
   type=weapon
 }
 

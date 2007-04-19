@@ -1,6 +1,6 @@
 
 hierarchy {
-  name=ROOT.Weapons.Mine
+  name=ROOT.Ammo.Mine
   pack=25
 }
 
@@ -49,7 +49,7 @@ launcher {
 }
 
 weapon {
-  name=ROOT.Weapons.Mine.Minelayer I
+  name=ROOT.Ammo.Mine.Minelayer I
   
   cost=MERGE
   firerate=MERGE
@@ -91,7 +91,7 @@ launcher {
 }
 
 weapon {
-  name=ROOT.Weapons.Mine.Minelayer II
+  name=ROOT.Ammo.Mine.Minelayer II
   
   cost=MERGE
   firerate=MERGE
@@ -133,7 +133,7 @@ launcher {
 }
 
 weapon {
-  name=ROOT.Weapons.Mine.Minelayer III
+  name=ROOT.Ammo.Mine.Minelayer III
   
   cost=MERGE
   firerate=MERGE
@@ -175,7 +175,7 @@ launcher {
 }
 
 weapon {
-  name=ROOT.Weapons.Mine.Minelayer IV
+  name=ROOT.Ammo.Mine.Minelayer IV
   
   cost=MERGE
   firerate=MERGE
@@ -219,7 +219,7 @@ launcher {
 }
 
 weapon {
-  name=ROOT.Weapons.Mine.Minelayer V
+  name=ROOT.Ammo.Mine.Minelayer V
   
   cost=MERGE
   firerate=MERGE
@@ -263,7 +263,7 @@ launcher {
 }
 
 weapon {
-  name=ROOT.Weapons.Mine.Minelayer VI
+  name=ROOT.Ammo.Mine.Minelayer VI
   
   cost=MERGE
   firerate=MERGE

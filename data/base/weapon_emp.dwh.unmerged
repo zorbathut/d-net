@@ -1,7 +1,7 @@
 
 hierarchy {
-  name=ROOT.Weapons.EMP
-  pack=100
+  name=ROOT.Ammo.EMP
+  pack=25
 }
 
 text {
@@ -43,7 +43,7 @@ launcher {
 }
 
 weapon {
-  name=ROOT.Weapons.EMP.EMP I
+  name=ROOT.Ammo.EMP.EMP I
   
   cost=MERGE
   firerate=MERGE
@@ -52,7 +52,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.EMP.EMP II
+  name=ROOT.Ammo.EMP.EMP II
   
   cost=MERGE
   firerate=MERGE
@@ -61,7 +61,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.EMP.EMP III
+  name=ROOT.Ammo.EMP.EMP III
   
   cost=MERGE
   firerate=MERGE
@@ -70,7 +70,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.EMP.EMP IV
+  name=ROOT.Ammo.EMP.EMP IV
   
   cost=MERGE
   firerate=MERGE
@@ -79,7 +79,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.EMP.EMP V
+  name=ROOT.Ammo.EMP.EMP V
   
   cost=MERGE
   firerate=MERGE
@@ -88,7 +88,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.EMP.EMP VI
+  name=ROOT.Ammo.EMP.EMP VI
   
   cost=MERGE
   firerate=MERGE

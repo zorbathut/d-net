@@ -3,7 +3,7 @@
 #   Autocannon base stats
 
 hierarchy {
-  name=ROOT.Weapons.Autocannon
+  name=ROOT.Ammo.Autocannon
   pack=100
 }
 
@@ -70,7 +70,7 @@ launcher {
 #   AP Autocannon base stats
 
 hierarchy {
-  name=ROOT.Weapons.AP Autocannon
+  name=ROOT.Ammo.AP Autocannon
   pack=100
   
   spawncash=10000
@@ -143,7 +143,7 @@ launcher {
 #   Heavy Autocannon base stats
 
 hierarchy {
-  name=ROOT.Weapons.Heavy Autocannon
+  name=ROOT.Ammo.Heavy Autocannon
   pack=100
   
   spawncash=300k
@@ -212,7 +212,7 @@ launcher {
 #   Sabot Shotgun base stats
 
 hierarchy {
-  name=ROOT.Weapons.Sabot Shotgun
+  name=ROOT.Ammo.Sabot Shotgun
   pack=100
   
   spawncash=9m
@@ -281,7 +281,7 @@ launcher {
 #   Blade Launcher base stats
 
 hierarchy {
-  name=ROOT.Weapons.Blade Launcher
+  name=ROOT.Ammo.Blade Launcher
   pack=100
   
   spawncash=270m
@@ -350,7 +350,7 @@ launcher {
 #   C Cannon base stats
 
 hierarchy {
-  name=ROOT.Weapons.C Cannon
+  name=ROOT.Ammo.C Cannon
   pack=100
   
   spawncash=8100m
@@ -419,7 +419,7 @@ launcher {
 #   Conversion Cannon base stats
 
 hierarchy {
-  name=ROOT.Weapons.Conversion Cannon
+  name=ROOT.Ammo.Conversion Cannon
   pack=100
   
   spawncash=243g
@@ -488,7 +488,7 @@ launcher {
 #   The actual weaponry
 
 weapon {
-  name=ROOT.Weapons.Autocannon.Autocannon I
+  name=ROOT.Ammo.Autocannon.Autocannon I
   
   cost=MERGE
   firerate=MERGE
@@ -497,7 +497,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Autocannon.Autocannon II
+  name=ROOT.Ammo.Autocannon.Autocannon II
 
   cost=MERGE
   firerate=MERGE
@@ -506,7 +506,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Autocannon.Autocannon III
+  name=ROOT.Ammo.Autocannon.Autocannon III
   
   cost=MERGE
   firerate=MERGE
@@ -515,7 +515,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Autocannon.Autocannon IV
+  name=ROOT.Ammo.Autocannon.Autocannon IV
   
   cost=MERGE
   firerate=MERGE
@@ -524,7 +524,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Autocannon.Autocannon V
+  name=ROOT.Ammo.Autocannon.Autocannon V
   
   cost=MERGE
   firerate=MERGE
@@ -533,7 +533,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Autocannon.Autocannon VI
+  name=ROOT.Ammo.Autocannon.Autocannon VI
   
   cost=MERGE
   firerate=MERGE
@@ -543,7 +543,7 @@ weapon {
 
 
 weapon {
-  name=ROOT.Weapons.AP Autocannon.AP AC I
+  name=ROOT.Ammo.AP Autocannon.AP AC I
   
   cost=MERGE
   firerate=MERGE
@@ -553,7 +553,7 @@ weapon {
 
 
 weapon {
-  name=ROOT.Weapons.AP Autocannon.AP AC II
+  name=ROOT.Ammo.AP Autocannon.AP AC II
   
   cost=MERGE
   firerate=MERGE
@@ -562,7 +562,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.AP Autocannon.AP AC III
+  name=ROOT.Ammo.AP Autocannon.AP AC III
   
   cost=MERGE
   firerate=MERGE
@@ -571,7 +571,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.AP Autocannon.AP AC IV
+  name=ROOT.Ammo.AP Autocannon.AP AC IV
   
   cost=MERGE
   firerate=MERGE
@@ -580,7 +580,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.AP Autocannon.AP AC V
+  name=ROOT.Ammo.AP Autocannon.AP AC V
   
   cost=MERGE
   firerate=MERGE
@@ -589,7 +589,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.AP Autocannon.AP AC VI
+  name=ROOT.Ammo.AP Autocannon.AP AC VI
   
   cost=MERGE
   firerate=MERGE
@@ -599,7 +599,7 @@ weapon {
 
 
 weapon {
-  name=ROOT.Weapons.Heavy Autocannon.Heavy AC I
+  name=ROOT.Ammo.Heavy Autocannon.Heavy AC I
   
   cost=MERGE
   firerate=MERGE
@@ -608,7 +608,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Heavy Autocannon.Heavy AC II
+  name=ROOT.Ammo.Heavy Autocannon.Heavy AC II
   
   cost=MERGE
   firerate=MERGE
@@ -617,7 +617,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Heavy Autocannon.Heavy AC III
+  name=ROOT.Ammo.Heavy Autocannon.Heavy AC III
   
   cost=MERGE
   firerate=MERGE
@@ -626,7 +626,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Heavy Autocannon.Heavy AC IV
+  name=ROOT.Ammo.Heavy Autocannon.Heavy AC IV
   
   cost=MERGE
   firerate=MERGE
@@ -635,7 +635,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Heavy Autocannon.Heavy AC V
+  name=ROOT.Ammo.Heavy Autocannon.Heavy AC V
   
   cost=MERGE
   firerate=MERGE
@@ -644,7 +644,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Heavy Autocannon.Heavy AC VI
+  name=ROOT.Ammo.Heavy Autocannon.Heavy AC VI
   
   cost=MERGE
   firerate=MERGE
@@ -654,7 +654,7 @@ weapon {
 
 
 weapon {
-  name=ROOT.Weapons.Sabot Shotgun.Sabot Shotgun I
+  name=ROOT.Ammo.Sabot Shotgun.Sabot Shotgun I
   
   cost=MERGE
   firerate=MERGE
@@ -663,7 +663,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Sabot Shotgun.Sabot Shotgun II
+  name=ROOT.Ammo.Sabot Shotgun.Sabot Shotgun II
   
   cost=MERGE
   firerate=MERGE
@@ -672,7 +672,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Sabot Shotgun.Sabot Shotgun III
+  name=ROOT.Ammo.Sabot Shotgun.Sabot Shotgun III
   
   cost=MERGE
   firerate=MERGE
@@ -681,7 +681,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Sabot Shotgun.Sabot Shotgun IV
+  name=ROOT.Ammo.Sabot Shotgun.Sabot Shotgun IV
   
   cost=MERGE
   firerate=MERGE
@@ -690,7 +690,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Sabot Shotgun.Sabot Shotgun V
+  name=ROOT.Ammo.Sabot Shotgun.Sabot Shotgun V
   
   cost=MERGE
   firerate=MERGE
@@ -699,7 +699,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Sabot Shotgun.Sabot Shotgun VI
+  name=ROOT.Ammo.Sabot Shotgun.Sabot Shotgun VI
   
   cost=MERGE
   firerate=MERGE
@@ -709,7 +709,7 @@ weapon {
 
 
 weapon {
-  name=ROOT.Weapons.Blade Launcher.Blade Launcher I
+  name=ROOT.Ammo.Blade Launcher.Blade Launcher I
   
   cost=MERGE
   firerate=MERGE
@@ -718,7 +718,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Blade Launcher.Blade Launcher II
+  name=ROOT.Ammo.Blade Launcher.Blade Launcher II
   
   cost=MERGE
   firerate=MERGE
@@ -727,7 +727,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Blade Launcher.Blade Launcher III
+  name=ROOT.Ammo.Blade Launcher.Blade Launcher III
   
   cost=MERGE
   firerate=MERGE
@@ -736,7 +736,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Blade Launcher.Blade Launcher IV
+  name=ROOT.Ammo.Blade Launcher.Blade Launcher IV
   
   cost=MERGE
   firerate=MERGE
@@ -745,7 +745,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Blade Launcher.Blade Launcher V
+  name=ROOT.Ammo.Blade Launcher.Blade Launcher V
   
   cost=MERGE
   firerate=MERGE
@@ -754,7 +754,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Blade Launcher.Blade Launcher VI
+  name=ROOT.Ammo.Blade Launcher.Blade Launcher VI
   
   cost=MERGE
   firerate=MERGE
@@ -764,7 +764,7 @@ weapon {
 
 
 weapon {
-  name=ROOT.Weapons.C Cannon.C Cannon I
+  name=ROOT.Ammo.C Cannon.C Cannon I
   
   cost=MERGE
   firerate=MERGE
@@ -773,7 +773,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.C Cannon.C Cannon II
+  name=ROOT.Ammo.C Cannon.C Cannon II
   
   cost=MERGE
   firerate=MERGE
@@ -782,7 +782,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.C Cannon.C Cannon III
+  name=ROOT.Ammo.C Cannon.C Cannon III
   
   cost=MERGE
   firerate=MERGE
@@ -791,7 +791,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.C Cannon.C Cannon IV
+  name=ROOT.Ammo.C Cannon.C Cannon IV
   
   cost=MERGE
   firerate=MERGE
@@ -800,7 +800,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.C Cannon.C Cannon V
+  name=ROOT.Ammo.C Cannon.C Cannon V
   
   cost=MERGE
   firerate=MERGE
@@ -809,7 +809,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.C Cannon.C Cannon VI
+  name=ROOT.Ammo.C Cannon.C Cannon VI
   
   cost=MERGE
   firerate=MERGE
@@ -819,7 +819,7 @@ weapon {
 
 
 weapon {
-  name=ROOT.Weapons.Conversion Cannon.Conversion Cannon I
+  name=ROOT.Ammo.Conversion Cannon.Conversion Cannon I
   
   cost=MERGE
   firerate=MERGE
@@ -828,7 +828,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Conversion Cannon.Conversion Cannon II
+  name=ROOT.Ammo.Conversion Cannon.Conversion Cannon II
   
   cost=MERGE
   firerate=MERGE
@@ -837,7 +837,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Conversion Cannon.Conversion Cannon III
+  name=ROOT.Ammo.Conversion Cannon.Conversion Cannon III
   
   cost=MERGE
   firerate=MERGE
@@ -846,7 +846,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Conversion Cannon.Conversion Cannon IV
+  name=ROOT.Ammo.Conversion Cannon.Conversion Cannon IV
   
   cost=MERGE
   firerate=MERGE
@@ -855,7 +855,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Conversion Cannon.Conversion Cannon V
+  name=ROOT.Ammo.Conversion Cannon.Conversion Cannon V
   
   cost=MERGE
   firerate=MERGE
@@ -864,7 +864,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Conversion Cannon.Conversion Cannon VI
+  name=ROOT.Ammo.Conversion Cannon.Conversion Cannon VI
   
   cost=MERGE
   firerate=MERGE

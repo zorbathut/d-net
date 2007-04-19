@@ -3,7 +3,7 @@
 #   Laser base stats
 
 hierarchy {
-  name=ROOT.Weapons.Laser
+  name=ROOT.Ammo.Laser
   pack=100
 }
 
@@ -101,7 +101,7 @@ launcher {
 
 
 hierarchy {
-  name=ROOT.Weapons.Megawatt Laser
+  name=ROOT.Ammo.Megawatt Laser
   pack=100
   
   spawncash=10000
@@ -204,7 +204,7 @@ launcher {
 #   Gigawatt Laser base stats
 
 hierarchy {
-  name=ROOT.Weapons.Gigawatt Laser
+  name=ROOT.Ammo.Gigawatt Laser
   pack=100
   
   spawncash=300k
@@ -303,7 +303,7 @@ launcher {
 #   Plasma Cannon base stats
 
 hierarchy {
-  name=ROOT.Weapons.Plasma Cannon
+  name=ROOT.Ammo.Plasma Cannon
   pack=100
   
   spawncash=9m
@@ -402,7 +402,7 @@ launcher {
 #   Gamma Beam base stats
 
 hierarchy {
-  name=ROOT.Weapons.Gamma Beam
+  name=ROOT.Ammo.Gamma Beam
   pack=100
   
   spawncash=270m
@@ -501,7 +501,7 @@ launcher {
 #   Fission Laser base stats
 
 hierarchy {
-  name=ROOT.Weapons.Fission Laser
+  name=ROOT.Ammo.Fission Laser
   pack=100
   
   spawncash=8100m
@@ -600,7 +600,7 @@ launcher {
 #   Conversion Beam base stats
 
 hierarchy {
-  name=ROOT.Weapons.Conversion Beam
+  name=ROOT.Ammo.Conversion Beam
   pack=100
   
   spawncash=243g
@@ -699,7 +699,7 @@ launcher {
 #   The actual weaponry
 
 weapon {
-  name=ROOT.Weapons.Laser.Laser I
+  name=ROOT.Ammo.Laser.Laser I
   
   cost=MERGE
   firerate=MERGE
@@ -708,7 +708,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Laser.Laser II
+  name=ROOT.Ammo.Laser.Laser II
   
   cost=MERGE
   firerate=MERGE
@@ -717,7 +717,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Laser.Laser III
+  name=ROOT.Ammo.Laser.Laser III
   
   cost=MERGE
   firerate=MERGE
@@ -726,7 +726,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Laser.Laser IV
+  name=ROOT.Ammo.Laser.Laser IV
   
   cost=MERGE
   firerate=MERGE
@@ -735,7 +735,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Laser.Laser V
+  name=ROOT.Ammo.Laser.Laser V
   
   cost=MERGE
   firerate=MERGE
@@ -744,7 +744,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Laser.Laser VI
+  name=ROOT.Ammo.Laser.Laser VI
   
   cost=MERGE
   firerate=MERGE
@@ -754,7 +754,7 @@ weapon {
 
 
 weapon {
-  name=ROOT.Weapons.Megawatt Laser.MW Laser I
+  name=ROOT.Ammo.Megawatt Laser.MW Laser I
   
   cost=MERGE
   firerate=MERGE
@@ -763,7 +763,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Megawatt Laser.MW Laser II
+  name=ROOT.Ammo.Megawatt Laser.MW Laser II
   
   cost=MERGE
   firerate=MERGE
@@ -772,7 +772,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Megawatt Laser.MW Laser III
+  name=ROOT.Ammo.Megawatt Laser.MW Laser III
   
   cost=MERGE
   firerate=MERGE
@@ -781,7 +781,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Megawatt Laser.MW Laser IV
+  name=ROOT.Ammo.Megawatt Laser.MW Laser IV
   
   cost=MERGE
   firerate=MERGE
@@ -790,7 +790,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Megawatt Laser.MW Laser V
+  name=ROOT.Ammo.Megawatt Laser.MW Laser V
   
   cost=MERGE
   firerate=MERGE
@@ -799,7 +799,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Megawatt Laser.MW Laser VI
+  name=ROOT.Ammo.Megawatt Laser.MW Laser VI
   
   cost=MERGE
   firerate=MERGE
@@ -809,7 +809,7 @@ weapon {
 
 
 weapon {
-  name=ROOT.Weapons.Gigawatt Laser.GW Laser I
+  name=ROOT.Ammo.Gigawatt Laser.GW Laser I
   
   cost=MERGE
   firerate=MERGE
@@ -818,7 +818,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Gigawatt Laser.GW Laser II
+  name=ROOT.Ammo.Gigawatt Laser.GW Laser II
   
   cost=MERGE
   firerate=MERGE
@@ -827,7 +827,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Gigawatt Laser.GW Laser III
+  name=ROOT.Ammo.Gigawatt Laser.GW Laser III
   
   cost=MERGE
   firerate=MERGE
@@ -836,7 +836,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Gigawatt Laser.GW Laser IV
+  name=ROOT.Ammo.Gigawatt Laser.GW Laser IV
   
   cost=MERGE
   firerate=MERGE
@@ -845,7 +845,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Gigawatt Laser.GW Laser V
+  name=ROOT.Ammo.Gigawatt Laser.GW Laser V
   
   cost=MERGE
   firerate=MERGE
@@ -854,7 +854,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Gigawatt Laser.GW Laser VI
+  name=ROOT.Ammo.Gigawatt Laser.GW Laser VI
   
   cost=MERGE
   firerate=MERGE
@@ -864,7 +864,7 @@ weapon {
 
 
 weapon {
-  name=ROOT.Weapons.Plasma Cannon.Plasma Cannon I
+  name=ROOT.Ammo.Plasma Cannon.Plasma Cannon I
   
   cost=MERGE
   firerate=MERGE
@@ -873,7 +873,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Plasma Cannon.Plasma Cannon II
+  name=ROOT.Ammo.Plasma Cannon.Plasma Cannon II
   
   cost=MERGE
   firerate=MERGE
@@ -882,7 +882,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Plasma Cannon.Plasma Cannon III
+  name=ROOT.Ammo.Plasma Cannon.Plasma Cannon III
   
   cost=MERGE
   firerate=MERGE
@@ -891,7 +891,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Plasma Cannon.Plasma Cannon IV
+  name=ROOT.Ammo.Plasma Cannon.Plasma Cannon IV
   
   cost=MERGE
   firerate=MERGE
@@ -900,7 +900,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Plasma Cannon.Plasma Cannon V
+  name=ROOT.Ammo.Plasma Cannon.Plasma Cannon V
   
   cost=MERGE
   firerate=MERGE
@@ -909,7 +909,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Plasma Cannon.Plasma Cannon VI
+  name=ROOT.Ammo.Plasma Cannon.Plasma Cannon VI
   
   cost=MERGE
   firerate=MERGE
@@ -919,7 +919,7 @@ weapon {
 
 
 weapon {
-  name=ROOT.Weapons.Gamma Beam.Gamma Beam I
+  name=ROOT.Ammo.Gamma Beam.Gamma Beam I
   
   cost=MERGE
   firerate=MERGE
@@ -928,7 +928,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Gamma Beam.Gamma Beam II
+  name=ROOT.Ammo.Gamma Beam.Gamma Beam II
   
   cost=MERGE
   firerate=MERGE
@@ -937,7 +937,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Gamma Beam.Gamma Beam III
+  name=ROOT.Ammo.Gamma Beam.Gamma Beam III
   
   cost=MERGE
   firerate=MERGE
@@ -946,7 +946,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Gamma Beam.Gamma Beam IV
+  name=ROOT.Ammo.Gamma Beam.Gamma Beam IV
   
   cost=MERGE
   firerate=MERGE
@@ -955,7 +955,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Gamma Beam.Gamma Beam V
+  name=ROOT.Ammo.Gamma Beam.Gamma Beam V
   
   cost=MERGE
   firerate=MERGE
@@ -964,7 +964,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Gamma Beam.Gamma Beam VI
+  name=ROOT.Ammo.Gamma Beam.Gamma Beam VI
   
   cost=MERGE
   firerate=MERGE
@@ -974,7 +974,7 @@ weapon {
 
 
 weapon {
-  name=ROOT.Weapons.Fission Laser.Fission Laser I
+  name=ROOT.Ammo.Fission Laser.Fission Laser I
   
   cost=MERGE
   firerate=MERGE
@@ -983,7 +983,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Fission Laser.Fission Laser II
+  name=ROOT.Ammo.Fission Laser.Fission Laser II
   
   cost=MERGE
   firerate=MERGE
@@ -992,7 +992,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Fission Laser.Fission Laser III
+  name=ROOT.Ammo.Fission Laser.Fission Laser III
   
   cost=MERGE
   firerate=MERGE
@@ -1001,7 +1001,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Fission Laser.Fission Laser IV
+  name=ROOT.Ammo.Fission Laser.Fission Laser IV
   
   cost=MERGE
   firerate=MERGE
@@ -1010,7 +1010,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Fission Laser.Fission Laser V
+  name=ROOT.Ammo.Fission Laser.Fission Laser V
   
   cost=MERGE
   firerate=MERGE
@@ -1019,7 +1019,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Fission Laser.Fission Laser VI
+  name=ROOT.Ammo.Fission Laser.Fission Laser VI
   
   cost=MERGE
   firerate=MERGE
@@ -1029,7 +1029,7 @@ weapon {
 
 
 weapon {
-  name=ROOT.Weapons.Conversion Beam.Conversion Beam I
+  name=ROOT.Ammo.Conversion Beam.Conversion Beam I
   
   cost=MERGE
   firerate=MERGE
@@ -1038,7 +1038,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Conversion Beam.Conversion Beam II
+  name=ROOT.Ammo.Conversion Beam.Conversion Beam II
   
   cost=MERGE
   firerate=MERGE
@@ -1047,7 +1047,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Conversion Beam.Conversion Beam III
+  name=ROOT.Ammo.Conversion Beam.Conversion Beam III
   
   cost=MERGE
   firerate=MERGE
@@ -1056,7 +1056,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Conversion Beam.Conversion Beam IV
+  name=ROOT.Ammo.Conversion Beam.Conversion Beam IV
   
   cost=MERGE
   firerate=MERGE
@@ -1065,7 +1065,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Conversion Beam.Conversion Beam V
+  name=ROOT.Ammo.Conversion Beam.Conversion Beam V
   
   cost=MERGE
   firerate=MERGE
@@ -1074,7 +1074,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Weapons.Conversion Beam.Conversion Beam VI
+  name=ROOT.Ammo.Conversion Beam.Conversion Beam VI
   
   cost=MERGE
   firerate=MERGE

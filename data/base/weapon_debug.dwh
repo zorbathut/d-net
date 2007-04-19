@@ -1,6 +1,6 @@
 
 hierarchy {
-  name=ROOT.Weapons.Debug
+  name=ROOT.Ammo.Debug
   pack=100000
   debug=true
 }
@@ -30,7 +30,7 @@ launcher {
 }
 
 weapon {
-  name=ROOT.Weapons.Debug.Tracer
+  name=ROOT.Ammo.Debug.Tracer
   
   cost=1
   firerate=60
@@ -73,7 +73,7 @@ launcher {
 }
 
 weapon {
-  name=ROOT.Weapons.Debug.Minishredder
+  name=ROOT.Ammo.Debug.Minishredder
   cost=1
   firerate=60
   
@@ -115,7 +115,7 @@ launcher {
 }
 
 weapon {
-  name=ROOT.Weapons.Debug.Megashredder
+  name=ROOT.Ammo.Debug.Megashredder
   cost=1
   firerate=60
   
@@ -162,7 +162,7 @@ launcher {
 }
 
 weapon {
-  name=ROOT.Weapons.Debug.Minesplatterer
+  name=ROOT.Ammo.Debug.Minesplatterer
   cost=1
   firerate=60
   
@@ -246,7 +246,7 @@ launcher {
 }
 
 weapon {
-  name=ROOT.Weapons.Debug.Effects tester
+  name=ROOT.Ammo.Debug.Effects tester
   cost=1
   firerate=60
   
