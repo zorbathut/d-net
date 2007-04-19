@@ -1,8 +1,9 @@
 ---- Major work path
 - Missile spread increase without slamming tanks on the side somehow?
-- Reprocess tank names, check for biases, uniqueize second letter?
 - Colorcode weapons?
 - Add glory to balance system
+- EMP glory resistance
+- Tone bombardment down a little
 - Many many more weapons
   - Bombardment
   - Glory

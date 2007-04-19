@@ -528,7 +528,7 @@ text {
 
 text {
   name=text.tank.pire
-  data=Tired of having to choose between slow tanks and flimsy tanks, the Pire's designer set out to make a tank with no weak points and produced a solid contender on the field. Unfortunately but inevitably it also has no strong points.
+  data=Tired of having to choose between slow tanks and flimsy tanks, the Pite's designer set out to make a tank with no weak points and produced a solid contender on the field. Unfortunately but inevitably it also has no strong points.
 }
 
 text {
@@ -543,7 +543,7 @@ text {
 
 text {
   name=text.tank.mari
-  data=Custom-built for Jason's Juggernauts, the Mari's advanced weaponry systems improve its fire rate substantially but decrease its speed significantly. Several aftermarket weapon boost kits exist for this tank.
+  data=Custom-built for Jason's Juggernauts, the Madi's advanced weaponry systems improve its fire rate substantially but decrease its speed significantly. Several aftermarket weapon boost kits exist for this tank.
 }
 
 text {
@@ -660,7 +660,7 @@ tank {
 }
 
 tank {
-  name=ROOT.Tanks.PIRE I
+  name=ROOT.Tanks.PITE I
 
   health=MERGE
   engine=MERGE
@@ -738,7 +738,7 @@ tank {
 }
 
 tank {
-  name=ROOT.Tanks.PIRE II
+  name=ROOT.Tanks.PITE II
 
   health=MERGE
   engine=MERGE
@@ -851,7 +851,7 @@ tank {
 }
 
 tank {
-  name=ROOT.Tanks.MARI I
+  name=ROOT.Tanks.MADI I
 
   health=MERGE
   engine=MERGE
@@ -946,7 +946,7 @@ tank {
 }
 
 tank {
-  name=ROOT.Tanks.MARI II
+  name=ROOT.Tanks.MADI II
 
   health=MERGE
   engine=MERGE
@@ -1013,7 +1013,7 @@ tank {
 }
 
 tank {
-  name=ROOT.Tanks.BORA I
+  name=ROOT.Tanks.BOJA I
 
   health=MERGE
   engine=MERGE
@@ -1111,7 +1111,7 @@ tank {
 }
 
 tank {
-  name=ROOT.Tanks.BORA II
+  name=ROOT.Tanks.BOJA II
 
   health=MERGE
   engine=MERGE
@@ -1183,7 +1183,7 @@ tank {
 #### Exotic
 
 tank {
-  name=ROOT.Tanks.KEROMI Alpha
+  name=ROOT.Tanks.KESOMI Alpha
 
   health=MERGE
   engine=MERGE
@@ -1217,7 +1217,7 @@ tank {
 }
 
 tank {
-  name=ROOT.Tanks.XATIPE Alpha
+  name=ROOT.Tanks.XAQIPE Alpha
 
   health=MERGE
   engine=MERGE
@@ -1250,7 +1250,7 @@ tank {
 }
 
 tank {
-  name=ROOT.Tanks.DUMARO Alpha
+  name=ROOT.Tanks.DOBARU Alpha
 
   health=MERGE
   engine=MERGE
@@ -1295,7 +1295,7 @@ tank {
 #### Experimental
 
 tank {
-  name=ROOT.Tanks.KEROMI Beta
+  name=ROOT.Tanks.KESOMI Beta
 
   health=MERGE
   engine=MERGE
@@ -1335,7 +1335,7 @@ tank {
 }
 
 tank {
-  name=ROOT.Tanks.XATIPE Beta
+  name=ROOT.Tanks.XAQIPE Beta
 
   health=MERGE
   engine=MERGE
@@ -1372,7 +1372,7 @@ tank {
 }
 
 tank {
-  name=ROOT.Tanks.DUMARO Beta
+  name=ROOT.Tanks.DOBARU Beta
 
   health=MERGE
   engine=MERGE
@@ -1421,7 +1421,7 @@ tank {
 #### Ultimate
 
 tank {
-  name=ROOT.Tanks.KEROMI Omega
+  name=ROOT.Tanks.KESOMI Omega
 
   health=MERGE
   engine=MERGE
@@ -1469,7 +1469,7 @@ tank {
 }
 
 tank {
-  name=ROOT.Tanks.XATIPE Omega
+  name=ROOT.Tanks.XAQIPE Omega
 
   health=MERGE
   engine=MERGE
@@ -1512,7 +1512,7 @@ tank {
 }
 
 tank {
-  name=ROOT.Tanks.DUMARO Omega
+  name=ROOT.Tanks.DOBARU Omega
 
   health=MERGE
   engine=MERGE
