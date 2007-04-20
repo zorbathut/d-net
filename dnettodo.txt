@@ -1,5 +1,4 @@
 ---- Major work path
-- Faction type slider goes too far
 - Colorcode weapons?
   - Add a "base color" option
   - Figure out some way to brighten this color sanely

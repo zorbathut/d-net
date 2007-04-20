@@ -84,7 +84,7 @@ int StdMenuItem::tick(const Keystates &keys) {
         scale_posint_approx += 0.03;
       if(!keys.l.down && !keys.r.down)
         scale_posint_approx = approach(scale_posint_approx, round(scale_posint_approx), 0.01);
-      scale_posint_approx = clamp(scale_posint_approx, 0, scale_labels.size());
+      scale_posint_approx = clamp(scale_posint_approx, 0, scale_labels.size() - 1);
       *scale_posint = round(scale_posint_approx);
     }
   } else if(type == TYPE_ROUNDS) {
