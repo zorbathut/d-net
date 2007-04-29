@@ -11,6 +11,7 @@
 #include "test.h"
 
 #include <SDL.h>
+#include <boost/assign.hpp>
 
 #ifdef OSX_GL_PREFIX
   #include <OpenGL/gl.h>

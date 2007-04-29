@@ -12,8 +12,6 @@
 #include "player.h"
 #include "audio.h"
 
-#include <boost/assign.hpp>
-
 using namespace std;
 
 DEFINE_int(rounds_per_shop, 6, "How many rounds between each buying-things opportunity");

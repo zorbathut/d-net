@@ -7,6 +7,7 @@
 #include "itemdb.h"
 
 #include <set>
+#include <boost/assign.hpp>
 
 using namespace std;
 
@@ -388,7 +389,10 @@ void Vecedit::render(const WrapperState &state) const {
     
     if(state.showControls && select.path == i) {
       setColor(getAppropriateColor(SelectItem(SelectItem::PATHCENTER, i), select));
-      drawRectAround(vp.center, state.zpp * primenode, state.zpp);
+      {
+        const vector<Float2> foo = boost::assign::list_of(vp.center + Float2(primenode, 0))(vp.center + Float2(0, primenode))(vp.center + Float2(-primenode, 0))(vp.center + Float2(0, -primenode));
+        drawLineLoop(foo, state.zpp);
+      }
      
       if(vp.reflect) {
         setColor(getAppropriateColor(SelectItem(SelectItem::PATHROTATE, i), select));
