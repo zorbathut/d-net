@@ -5,6 +5,8 @@
 #include <string>
 #include <map>
 
+#include "debug.h"
+
 using namespace std;
 
 vector<string> parseCsv(const string &in);
