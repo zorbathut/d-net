@@ -1,5 +1,8 @@
 ---- Major work path
 - Make the GetToolState stuff not duplicated
+- vecedit should drag around with the right mouse button or whatever
+- center should look totally different in some crazy way
+- add commandline option to run with level
 - Colorcode weapons?
   - Add a "base color" option
   - Figure out some way to brighten this color sanely
@@ -31,6 +34,7 @@
   - King of the Hill
   - Mutant
   - Onslaught
+  - Bombing Run
 
 ---- After I figure out where it's going
 - Need to sit down and rewrite the shop interface again.

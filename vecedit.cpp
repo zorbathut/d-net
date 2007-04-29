@@ -710,6 +710,10 @@ OtherState Vecedit::del(const WrapperState &wrap) {
 
   if(select.type == SelectItem::NODE) {
     dv2.paths[select.path].vpathRemove(select.item);
+    if(!dv2.paths[select.path].vpath.size()) {
+      dprintf("Deleting entire path\n");
+      dv2.paths.erase(dv2.paths.begin() + select.path);
+    }
     state = IDLE;
     select = SelectItem();
     modified = true;
