@@ -1,6 +1,12 @@
 ---- Major work path
 - vecedit should drag around with the right mouse button or whatever
 - support for really thin walls
+- More permissive levels, more powerful editor catchall
+  - Figure out how and when I can do genus-n levels, and allow that in one way or another (possibly chopping holey things in half?)
+  - Allow subtractives
+  - Try rebuilding the intersection system again? :/
+  - Allow rings of some kind?
+- Add warning for single-node paths
 - Colorcode weapons?
   - Add a "base color" option
   - Figure out some way to brighten this color sanely
