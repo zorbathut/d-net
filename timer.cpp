@@ -3,7 +3,11 @@
 
 #include "const.h"
 
-#include <SDL.h>
+#ifdef OSX_FRAMEWORK_PREFIXES
+  #include <SDL/SDL.h>
+#else
+  #include <SDL.h>
+#endif
 
 using namespace std;
 

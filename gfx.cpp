@@ -9,7 +9,7 @@
 
 #include <fstream>
 
-#ifdef OSX_GL_PREFIX
+#ifdef OSX_FRAMEWORK_PREFIXES
   #include <OpenGL/gl.h>
 #else
   #include <GL/gl.h>

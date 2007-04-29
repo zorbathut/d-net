@@ -6,12 +6,14 @@ GAMESOURCES := main core game timer debug gfx collide gamemap util rng args inte
 GAMECPPFLAGS := @GAMECPPFLAGS@ $(STDCPPFLAGS) -DNOEXIT
 GAMELDFLAGS := @GAMELDFLAGS@ -g $(STDLDFLAGS)
 
-EDITORSOURCES := vecedit vecedit_main debug os util gfx float coord parse color dvec2 cfcommon input itemdb itemdb_adjust args rng # rng is not really needed since it won't be linked in at all, but it's easier to just include it
+EDITORSOURCES := vecedit vecedit_main debug os util gfx float coord parse color dvec2 cfcommon input itemdb itemdb_adjust args rng
+# rng is not really needed since it won't be linked in at all, but it's easier to just include it
 EDITORCPPFLAGS := `wx-config --cxxflags` $(STDCPPFLAGS)
 EDITORLDFLAGS := `wx-config --libs --gl-libs` -lopengl32 $(STDLDFLAGS)
 
 FUNCTORSOURCES := functor_gen debug os util parse
-MERGERSOURCES := merger debug os util parse itemdb itemdb_adjust args color dvec2 float coord cfcommon merger_weapon merger_bombardment merger_tanks merger_util rng # rng is not really needed since it won't be linked in at all, but it's easier to just include it
+MERGERSOURCES := merger debug os util parse itemdb itemdb_adjust args color dvec2 float coord cfcommon merger_weapon merger_bombardment merger_tanks merger_util rng
+# rng is not really needed since it won't be linked in at all, but it's easier to just include it
 CONSOLECPPFLAGS := $(STDCPPFLAGS)
 CONSOLELDFLAGS := $(STDLDFLAGS)
 

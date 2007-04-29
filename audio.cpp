@@ -5,7 +5,12 @@
 #include "util.h"
 #include "args.h"
 
-#include <SDL.h>
+#ifdef OSX_FRAMEWORK_PREFIXES
+  #include <SDL/SDL.h>
+#else
+  #include <SDL.h>
+#endif
+
 #include <vorbis/vorbisfile.h>
 
 class SoundState {

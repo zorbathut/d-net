@@ -25,19 +25,29 @@ case "${target_os}" in
     # Same deal here too
     AC_CHECK_LIB([opengl32], [main],,AC_MSG_ERROR([opengl is needed]))
     GAMELDFLAGS="$GAMELDFLAGS -lopengl32"
+
+    AC_PATH_PROG([SDL], [sdl-config], [], [/usr/local/bin:/usr/bin])
+    if test "x$SDL" == "x" ; then
+      AC_MSG_ERROR([D-Net requires SDL.])
+    fi
+
+    GAMECPPFLAGS="$GAMECPPFLAGS `$SDL --cflags`"
+    GAMELDFLAGS="$GAMELDFLAGS `$SDL --libs`"
+
     ;;
 
   darwin*)
     AC_MSG_NOTICE([adding needed flags for darwin])
 
     # I'm not sure where I should be looking for boost. This might not be it. And the -I might be wrong too.
-    GAMECPPFLAGS="$GAMECPPFLAGS -I/sw/include"
-    GAMELDFLAGS="$GAMELDFLAGS -framework OpenGL -L/sw/lib"
+    GAMECPPFLAGS="$GAMECPPFLAGS "
+    GAMELDFLAGS="$GAMELDFLAGS -framework OpenGL -framework SDL"
     
-    STDCPPFLAGS="$STDCPPFLAGS -DOSX_GL_PREFIX -DNO_WINDOWS -I/sw/include/boost-1_33_1 "
+    STDCPPFLAGS="$STDCPPFLAGS -DOSX_FRAMEWORK_PREFIXES -DNO_WINDOWS -I/usr/local/include/boost-1_34 "
     
     #AC_CHECK_LIB([GL], [glBegin],,AC_MSG_ERROR([opengl is needed]))
     #LDFLAGS="$GAMELDFLAGS -lGL"
+
     ;;
 
   *)
@@ -65,23 +75,15 @@ LDFLAGS=""
 GAMECPPFLAGS="$GAMECPPFLAGS $OGGINCLUDE"
 GAMELDFLAGS="$GAMELDFLAGS $OGGLIB -lvorbisfile -lvorbis -logg"
 
-AC_PATH_PROG([SDL], [sdl-config], [], [/usr/local/bin:/usr/bin])
-if test "x$SDL" == "x" ; then
-  AC_MSG_ERROR([D-Net requires SDL.])
-fi
-
 AC_PATH_PROG([WX], [wx-config], [], [/usr/local/bin:/usr/bin])
 if test "x$WX" == "x" ; then
   AC_MSG_ERROR([D-Net requires WX, kind of.])
 fi
 
-AC_PATH_PROG([OO], [soffice.exe], [], [/cygdrive/c/Program Files (x86)/OpenOffice.org 2.2/program:/cygdrive/c/Program Files/OpenOffice.org 2.2/program])
+AC_PATH_PROGS([OO], [soffice.exe soffice], [], [/cygdrive/c/Program Files (x86)/OpenOffice.org 2.2/program:/cygdrive/c/Program Files/OpenOffice.org 2.2/program:/Applications/OpenOffice.org 2.2.app/Contents/MacOS/program])
 if test "x$OO" == "x" ; then
   AC_MSG_ERROR([D-Net requires OpenOffice, kind of.])
 fi
-
-GAMECPPFLAGS="$GAMECPPFLAGS `$SDL --cflags`"
-GAMELDFLAGS="$GAMELDFLAGS `$SDL --libs`"
 
 AC_SUBST(GAMECPPFLAGS)
 AC_SUBST(GAMELDFLAGS)
