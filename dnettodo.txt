@@ -1,15 +1,15 @@
 ---- Major work path
-- Make the GetToolState stuff not duplicated
 - vecedit should drag around with the right mouse button or whatever
 - center should look totally different in some crazy way
 - add commandline option to run with level
+- support for really thin walls
 - Colorcode weapons?
   - Add a "base color" option
   - Figure out some way to brighten this color sanely
   - Base it on damage type, and then it can even be automatic
   - Add another series for tanks, based on relative tank level
-- Add glory to balance system
 - EMP glory resistance
+- Add glory to balance system
 - Many many more weapons
   - Bombardment
   - Glory

@@ -203,7 +203,7 @@ private:
 
   void mouseCore(const MouseInput &mstate, int wheel);
 
-  WrapperState &genwrap();
+  WrapperState genwrap() const;
   void process(const OtherState &inp);
   bool maybeSaveChanges();
 
@@ -338,13 +338,7 @@ void VeceditWindow::renderCore() const {
   initFrame();
   clearFrame(Color(0, 0, 0));
 
-  WrapperState ws = wstate; // stupid const >:( TODO: suck less
-  ws.ui.newPath = toolbar->GetToolState(ID_NewPath);
-  ws.ui.newNode = toolbar->GetToolState(ID_NewNode);
-  ws.ui.newTank = toolbar->GetToolState(ID_NewTank);
-  
-  ws.showControls = toolbar->GetToolState(ID_ShowControlsToggle);
-  core.render(ws);
+  core.render(genwrap());
   
   deinitFrame();
 }
@@ -705,13 +699,14 @@ void VeceditWindow::redraw() {
   glc->SetScrollBars();
 }
 
-WrapperState &VeceditWindow::genwrap() {
-  wstate.ui.newPath = toolbar->GetToolState(ID_NewPath);
-  wstate.ui.newNode = toolbar->GetToolState(ID_NewNode);
-  wstate.ui.newTank = toolbar->GetToolState(ID_NewTank);
+WrapperState VeceditWindow::genwrap() const {
+  WrapperState ws = wstate;
+  ws.ui.newPath = toolbar->GetToolState(ID_NewPath);
+  ws.ui.newNode = toolbar->GetToolState(ID_NewNode);
+  ws.ui.newTank = toolbar->GetToolState(ID_NewTank);
   
-  wstate.showControls = toolbar->GetToolState(ID_ShowControlsToggle);
-  return wstate;
+  ws.showControls = toolbar->GetToolState(ID_ShowControlsToggle);
+  return ws;
 }
 void VeceditWindow::process(const OtherState &ost) {
   if(ost.cursor != CURSOR_UNCHANGED)

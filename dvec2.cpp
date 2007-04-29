@@ -301,7 +301,6 @@ Dvec2 loadDvec2(const string &fname) {
   CHECK(fil);
   bool got_params = false;
   while(getkvData(fil, &dat)) {
-    dprintf("%s\n", dat.category.c_str());
     if(dat.category == "path") {
       VectorPath nvp;
       sscanf(dat.consume("center").c_str(), "%f,%f", &nvp.center.x, &nvp.center.y);
@@ -362,7 +361,6 @@ Dvec2 loadDvec2(const string &fname) {
         CHECK(toki.size() == 2);
         ne.tank_ang_numer = toki[0];
         ne.tank_ang_denom = toki[1];
-        CHECK(ne.tank_ang_numer >= 0);
         CHECK(ne.tank_ang_denom > 0);
       } else {
         CHECK(0);
