@@ -1,4 +1,5 @@
 ---- Major work path
+- Make the GetToolState stuff not duplicated
 - Colorcode weapons?
   - Add a "base color" option
   - Figure out some way to brighten this color sanely

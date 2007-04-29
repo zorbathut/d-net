@@ -242,7 +242,7 @@ public:
   void OnRotGridToggle(wxCommandEvent &event);
   void OnRotGridUpdate(wxCommandEvent &event);
   
-  //void OnShowControlsToggle(wxCommandEvent &event);
+  void OnShowControlsToggle(wxCommandEvent &event);
   
   void OnPathReflects(wxCommandEvent &event);
   void OnPathRotation(wxCommandEvent &event);
@@ -324,7 +324,7 @@ BEGIN_EVENT_TABLE(VeceditWindow, wxFrame)
   EVT_TOOL(ID_RotGridToggle, VeceditWindow::OnRotGridToggle)
   EVT_TEXT(ID_RotGridSpinner, VeceditWindow::OnRotGridUpdate)
   
-  //EVT_TOOL(ID_ShowControlsToggle, VeceditWindow::OnShowControlsToggle)
+  EVT_TOOL(ID_ShowControlsToggle, VeceditWindow::OnShowControlsToggle)
 
   EVT_TEXT(ID_PathReflects, VeceditWindow::OnPathReflects)
   EVT_RADIOBOX(ID_PathRotation, VeceditWindow::OnPathRotation)
@@ -342,6 +342,8 @@ void VeceditWindow::renderCore() const {
   ws.ui.newPath = toolbar->GetToolState(ID_NewPath);
   ws.ui.newNode = toolbar->GetToolState(ID_NewNode);
   ws.ui.newTank = toolbar->GetToolState(ID_NewTank);
+  
+  ws.showControls = toolbar->GetToolState(ID_ShowControlsToggle);
   core.render(ws);
   
   deinitFrame();
@@ -679,6 +681,10 @@ void VeceditWindow::OnRotGridUpdate(wxCommandEvent &event) {
   }
 }
 
+void VeceditWindow::OnShowControlsToggle(wxCommandEvent &event) {
+  dprintf("sct\n");
+  redraw();
+}
 
 void VeceditWindow::OnPathReflects(wxCommandEvent &event) {
   process(core.rotate(event.GetInt(), genwrap()));
