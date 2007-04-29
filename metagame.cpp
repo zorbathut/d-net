@@ -12,6 +12,8 @@
 
 #include <fstream>
 
+DEFINE_string(singlelevel, "", "The name of a level to load and use exclusively");
+
 using namespace std;
 
 bool Metagame::runTick(const vector<Controller> &keys) {
@@ -156,7 +158,12 @@ void Metagame::renderToScreen() const {
 
 void Metagame::findLevels(int playercount) {
   levels.clear();
-  if(!levels.size()) {
+  if(FLAGS_singlelevel.size()) {
+    Level lev = loadLevel(FLAGS_singlelevel);
+    CHECK(lev.playersValid.count(playercount));
+    levels.push_back(lev);
+    dprintf("Used single level %s\n", FLAGS_singlelevel.c_str());
+  } else {
     ifstream ifs("data/levels/levellist.txt");
     CHECK(ifs);
     string line;

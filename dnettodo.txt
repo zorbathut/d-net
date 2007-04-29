@@ -1,7 +1,5 @@
 ---- Major work path
 - vecedit should drag around with the right mouse button or whatever
-- center should look totally different in some crazy way
-- add commandline option to run with level
 - support for really thin walls
 - Colorcode weapons?
   - Add a "base color" option
