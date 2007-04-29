@@ -30,7 +30,7 @@ DEFINE_bool(generateWeaponStats, false, "Do all the work necessary to dump weapo
 DEFINE_bool(generateFactionStats, false, "Do all the work necessary to dump faction info");
 DEFINE_bool(dumpText, false, "Dump all \"text\" blocks");
 
-DEFINE_bool(runTests, false, "Run all tests");
+DEFINE_bool(runTests, true, "Run all tests");
 DEFINE_bool(runGame, true, "Run the actual game");
 
 DECLARE_bool(shopcache);
