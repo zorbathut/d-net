@@ -84,7 +84,7 @@ void CrashHandler(const char *fname, int line) {
     (*cfc[i])();
 };
 
-void crash() {
+void crash_now() {
   dprintf("About to crash!\n");
   seriouslyCrash();
   dprintf("Crashed!\n");

@@ -41,7 +41,7 @@ case "${target_os}" in
 
     # I'm not sure where I should be looking for boost. This might not be it. And the -I might be wrong too.
     GAMECPPFLAGS="$GAMECPPFLAGS "
-    GAMELDFLAGS="$GAMELDFLAGS -framework OpenGL -framework SDL"
+    GAMELDFLAGS="$GAMELDFLAGS -framework OpenGL -framework SDL -lSDLmain -framework Cocoa"
     
     STDCPPFLAGS="$STDCPPFLAGS -DOSX_FRAMEWORK_PREFIXES -DNO_WINDOWS -I/usr/local/include/boost-1_34 "
     
