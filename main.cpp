@@ -10,7 +10,6 @@
 #include "audio.h"
 #include "test.h"
 
-
 #ifdef OSX_FRAMEWORK_PREFIXES
   #include <OpenGL/gl.h>
   #include <SDL/SDL.h>

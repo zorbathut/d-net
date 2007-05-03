@@ -21,6 +21,16 @@ Level loadLevel(const string &str) {
     CHECK(tp.size());
     if(tp.back() == tp[0])
       tp.pop_back();
+    if(!tp.size()) {
+      dprintf("WARNING WARNING WARNING");
+      dprintf("File %s contains single-node paths and is being loaded as a level! Cats and dogs sleeping together! Fish raining from the sky!", str.c_str());
+      dprintf("WARNING WARNING WARNING");
+      
+      // We do this cleanup so that the CHECK later on can trigger properly
+      dv.paths.erase(dv.paths.begin() + i);
+      --i;
+      continue;
+    }
     CHECK(tp.size());
     {
       set<Float2> flup(tp.begin(), tp.end());
