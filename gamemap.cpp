@@ -50,40 +50,42 @@ void Gamemap::render() const {
       invertStencilLoop(paths[i].collisionpath);
     }
     
+    const Coord boundenex = max(getCollisionBounds().span_x(), getCollisionBounds().span_y());
+  
     // Four giant rectangles. Two vertical that include corners, two horizontal that don't.
     {
       vector<Coord2> left;
-      left.push_back(Coord2(getCollisionBounds().sx * 2, getCollisionBounds().sy * 2)); // far top-left
-      left.push_back(Coord2(getCollisionBounds().sx, getCollisionBounds().sy * 2)); // near top-left
-      left.push_back(Coord2(getCollisionBounds().sx, getCollisionBounds().ey * 2)); // near bottom-left
-      left.push_back(Coord2(getCollisionBounds().sx * 2, getCollisionBounds().ey * 2)); // far bottom-left
+      left.push_back(Coord2(getCollisionBounds().sx - boundenex, getCollisionBounds().sy - boundenex)); // far top-left
+      left.push_back(Coord2(getCollisionBounds().sx, getCollisionBounds().sy - boundenex)); // near top-left
+      left.push_back(Coord2(getCollisionBounds().sx, getCollisionBounds().ey + boundenex)); // near bottom-left
+      left.push_back(Coord2(getCollisionBounds().sx - boundenex, getCollisionBounds().ey + boundenex)); // far bottom-left
       invertStencilLoop(left);
     }
     
     {
       vector<Coord2> right;
-      right.push_back(Coord2(getCollisionBounds().ex * 2, getCollisionBounds().sy * 2)); // far top-right
-      right.push_back(Coord2(getCollisionBounds().ex, getCollisionBounds().sy * 2)); // near top-right
-      right.push_back(Coord2(getCollisionBounds().ex, getCollisionBounds().ey * 2)); // near bottom-right
-      right.push_back(Coord2(getCollisionBounds().ex * 2, getCollisionBounds().ey * 2)); // far bottom-right
+      right.push_back(Coord2(getCollisionBounds().ex + boundenex, getCollisionBounds().sy - boundenex)); // far top-right
+      right.push_back(Coord2(getCollisionBounds().ex, getCollisionBounds().sy - boundenex)); // near top-right
+      right.push_back(Coord2(getCollisionBounds().ex, getCollisionBounds().ey + boundenex)); // near bottom-right
+      right.push_back(Coord2(getCollisionBounds().ex + boundenex, getCollisionBounds().ey + boundenex)); // far bottom-right
       invertStencilLoop(right);
     }
     
     {
       vector<Coord2> top;
-      top.push_back(Coord2(getCollisionBounds().sx, getCollisionBounds().sy * 2)); // far top-left
+      top.push_back(Coord2(getCollisionBounds().sx, getCollisionBounds().sy - boundenex)); // far top-left
       top.push_back(Coord2(getCollisionBounds().sx, getCollisionBounds().sy)); // near top-left
       top.push_back(Coord2(getCollisionBounds().ex, getCollisionBounds().sy)); // near top-right
-      top.push_back(Coord2(getCollisionBounds().ex, getCollisionBounds().sy * 2)); // far top-left
+      top.push_back(Coord2(getCollisionBounds().ex, getCollisionBounds().sy - boundenex)); // far top-left
       invertStencilLoop(top);
     }
     
     {
       vector<Coord2> bottom;
-      bottom.push_back(Coord2(getCollisionBounds().sx, getCollisionBounds().ey * 2)); // far bottom-left
+      bottom.push_back(Coord2(getCollisionBounds().sx, getCollisionBounds().ey + boundenex)); // far bottom-left
       bottom.push_back(Coord2(getCollisionBounds().sx, getCollisionBounds().ey)); // near bottom-left
       bottom.push_back(Coord2(getCollisionBounds().ex, getCollisionBounds().ey)); // near bottom-right
-      bottom.push_back(Coord2(getCollisionBounds().ex, getCollisionBounds().ey * 2)); // far bottom-left
+      bottom.push_back(Coord2(getCollisionBounds().ex, getCollisionBounds().ey + boundenex)); // far bottom-left
       invertStencilLoop(bottom);
     }
   }

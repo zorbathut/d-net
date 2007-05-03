@@ -390,7 +390,7 @@ void Vecedit::render(const WrapperState &state) const {
     if(state.showControls && select.path == i) {
       setColor(getAppropriateColor(SelectItem(SelectItem::PATHCENTER, i), select));
       {
-        const vector<Float2> foo = boost::assign::list_of(vp.center + Float2(primenode, 0))(vp.center + Float2(0, primenode))(vp.center + Float2(-primenode, 0))(vp.center + Float2(0, -primenode));
+        const vector<Float2> foo = boost::assign::list_of(vp.center + Float2(primenode, 0) * state.zpp)(vp.center + Float2(0, primenode) * state.zpp)(vp.center + Float2(-primenode, 0) * state.zpp)(vp.center + Float2(0, -primenode) * state.zpp);
         drawLineLoop(foo, state.zpp);
       }
      
