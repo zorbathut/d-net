@@ -11,7 +11,7 @@ text {
 
 warhead {
   name=warhead.MinelayerI
-  radiusdamage=MERGE explosive
+  radiusdamage=MERGE trap
   radiusfalloff=6
   wallremovalradius=2
 }
@@ -59,7 +59,7 @@ weapon {
 
 warhead {
   name=warhead.MinelayerII
-  radiusdamage=MERGE explosive
+  radiusdamage=MERGE trap
   radiusfalloff=7
   wallremovalradius=3
 }
@@ -101,7 +101,7 @@ weapon {
 
 warhead {
   name=warhead.MinelayerIII
-  radiusdamage=MERGE explosive
+  radiusdamage=MERGE trap
   radiusfalloff=8
   wallremovalradius=4
 }
@@ -143,7 +143,7 @@ weapon {
 
 warhead {
   name=warhead.MinelayerIV
-  radiusdamage=MERGE explosive
+  radiusdamage=MERGE trap
   radiusfalloff=9
   wallremovalradius=4
 }
@@ -187,7 +187,7 @@ weapon {
 
 warhead {
   name=warhead.MinelayerV
-  radiusdamage=MERGE explosive
+  radiusdamage=MERGE trap
   radiusfalloff=10
   wallremovalradius=4
 }
@@ -231,7 +231,7 @@ weapon {
 
 warhead {
   name=warhead.MinelayerVI
-  radiusdamage=MERGE explosive
+  radiusdamage=MERGE trap
   radiusfalloff=12
   wallremovalradius=5
 }

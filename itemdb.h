@@ -372,6 +372,8 @@ public:
   Money sellcost(int shots) const;
 
   float stats_damagePerSecond() const;
+  float stats_damagePerSecondType(int type) const;
+
   float stats_costPerDamage() const;
   float stats_costPerSecond() const;
 
@@ -505,6 +507,9 @@ public:
   Money spawncash;
   
   void checkConsistency(vector<string> *errors) const;
+  
+  Color getColor() const;
+  Color getHighlightColor() const;
   
   HierarchyNode();
   

@@ -323,6 +323,35 @@ void HierarchyNode::checkConsistency(vector<string> *errors) const {
   //dprintf("Consistency scan leaving %s\n", name.c_str());
 }
 
+// Kin, ene, exp, trap, exot
+// white blue orange cyan green
+
+const Color nhcolor[] = { Color(0.7, 0.7, 0.8), Color(0.5, 0.5, 1.0), Color(0.9, 0.5, 0.2), Color(0.2, 0.7, 0.7), Color(0.5, 0.9, 0.2) };
+
+Color HierarchyNode::getColor() const {
+  if(type == HNT_WEAPON) {
+    int dmg = -1;
+    for(int i = 0; i < IDBAdjustment::DAMAGE_LAST; i++) {
+      if(IDBWeaponAdjust(weapon, IDBAdjustment()).stats_damagePerSecondType(i) != 0) {
+        if(dmg == -1) {
+          dmg = i;
+        } else {
+          dmg = -2;
+        }
+      }
+    }
+    if(dmg < 0)
+      return C::inactive_text;
+    return nhcolor[dmg];
+  } else {
+    return C::inactive_text;
+  }
+  CHECK(0);
+}
+Color HierarchyNode::getHighlightColor() const {
+  return C::active_text;
+}
+
 HierarchyNode::HierarchyNode() {
   type = HNT_LAST;
   displaymode = HNDM_LAST;

@@ -490,9 +490,9 @@ void Shop::renderNode(const HierarchyNode &node, int depth, const Player *player
     
     // highlight if this one is in our "active path"
     if(depth < curloc.size() && curloc[depth] == itemid) {
-      setColor(C::active_text);
+      setColor(node.branches[itemid].getHighlightColor());
     } else {
-      setColor(C::inactive_text);
+      setColor(node.branches[itemid].getColor());
     }
     
     if(node.branches[itemid].displaymode == HierarchyNode::HNDM_EQUIP) {

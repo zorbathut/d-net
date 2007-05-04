@@ -199,6 +199,15 @@ Money IDBWeaponAdjust::cost_pack() const { return idb->base_cost / adjust.adjust
 Money IDBWeaponAdjust::sellcost(int amount) const { return cost_pack() * adjust.recyclevalue() * amount / idb->quantity; };
 
 float IDBWeaponAdjust::stats_damagePerSecond() const { return launcher().stats_damagePerShot() * firerate(); }
+float IDBWeaponAdjust::stats_damagePerSecondType(int type) const {
+  // Sometimes I'm clever.
+  IDBAdjustment adj = adjust;
+  for(int i = 0; i < IDBAdjustment::DAMAGE_LAST; i++)
+    if(i != type)
+      adj.adjusts[i] = -100;
+  return IDBWeaponAdjust(idb, adj).stats_damagePerSecond();
+}
+
 float IDBWeaponAdjust::stats_costPerDamage() const { return (float)cost_pack().value() / idb->quantity / launcher().stats_damagePerShot(); }
 float IDBWeaponAdjust::stats_costPerSecond() const { return (float)cost_pack().value() / idb->quantity * firerate(); }
 

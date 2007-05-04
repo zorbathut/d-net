@@ -1,4 +1,7 @@
 ---- Major work path
+- Colorcode weapons?
+  - Add another series for tanks, based on relative tank level
+- reverse tank order
 - vecedit should drag around with the right mouse button or whatever
 - walls that are more easily destroyed
 - autocannons cause more wall damage
@@ -9,11 +12,6 @@
   - Try rebuilding the intersection system again? :/
   - Allow rings of some kind?
 - Add warning for single-node paths
-- Colorcode weapons?
-  - Add a "base color" option
-  - Figure out some way to brighten this color sanely
-  - Base it on damage type, and then it can even be automatic
-  - Add another series for tanks, based on relative tank level
 - EMP glory resistance
 - Add glory to balance system
 - Many many more weapons

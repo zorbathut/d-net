@@ -60,7 +60,7 @@ void runTests() {
     CHECK(ifs);
     string line;
     while(getLineStripped(ifs, &line)) {
-      testLevel(line);
+      testLevel("data/levels/" + line);
     }
   } else {
     testLevel(FLAGS_singlelevel);
