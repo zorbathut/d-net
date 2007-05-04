@@ -326,7 +326,7 @@ void HierarchyNode::checkConsistency(vector<string> *errors) const {
 // Kin, ene, exp, trap, exot
 // white blue orange cyan green
 
-const Color nhcolor[] = { Color(0.7, 0.7, 0.8), Color(0.5, 0.5, 1.0), Color(0.9, 0.5, 0.2), Color(0.2, 0.7, 0.7), Color(0.5, 0.9, 0.2) };
+const Color nhcolor[] = { Color(0.7, 0.7, 0.8), Color(0.5, 0.5, 1.0), Color(0.9, 0.5, 0.2), Color(0.2, 0.7, 0.7), Color(0.4, 0.7, 0.2) };
 
 Color HierarchyNode::getColor() const {
   if(type == HNT_WEAPON) {
