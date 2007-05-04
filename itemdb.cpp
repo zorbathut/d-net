@@ -343,6 +343,12 @@ Color HierarchyNode::getColor() const {
     if(dmg < 0)
       return C::inactive_text;
     return nhcolor[dmg];
+  } else if(type == HNT_CATEGORY && branches.size()) {
+    Color col = branches[0].getColor();
+    for(int i = 1; i < branches.size(); i++)
+      if(branches[i].getColor() != col)
+        return C::inactive_text;
+    return col;
   } else {
     return C::inactive_text;
   }
