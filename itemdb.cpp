@@ -1302,6 +1302,8 @@ void parseItemFile(const string &fname, bool reload, vector<string> *errors) {
     } else if(chunk.category == "implant") {
       parseImplant(&chunk, reload, erac);
     } else {
+      dprintf("Confusing category. Are you insane?\n");
+      dprintf("%s\n", stringFromKvData(chunk).c_str());
       CHECK(0);
     }
     if(!chunk.isDone())

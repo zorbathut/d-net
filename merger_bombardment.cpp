@@ -77,7 +77,8 @@ void mergeBombardment(const string &csv, const string &unmerged, const string &m
       }
       
       for(map<string, string>::const_iterator itr = kvd.kv.begin(); itr != kvd.kv.end(); itr++)
-        CHECK(itr->second.find("MERGE") == string::npos);
+        if(itr->second.find("MERGE") != string::npos)
+          dprintf("%s\n", stringFromKvData(kvd).c_str());
       
       ofs << stringFromKvData(kvd) << endl;
     }
@@ -87,7 +88,7 @@ void mergeBombardment(const string &csv, const string &unmerged, const string &m
       for(map<string, Bombarddat>::const_iterator itr = bdd.begin(); itr != bdd.end(); itr++)
         if(!donebdd.count(itr->first))
           dprintf("Didn't complete %s\n", itr->first.c_str());
-      CHECK(0);
+      //CHECK(0);
     }
   }
   

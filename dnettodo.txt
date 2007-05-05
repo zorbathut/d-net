@@ -1,6 +1,8 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - EMP glory resistance
+  - Add colors to bombardment
+  - Reverse bombardment order
   - Many many more weapons
     - Bombardment
     - Trap
