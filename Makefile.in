@@ -15,7 +15,7 @@ FUNCTORSOURCES := functor_gen debug os util parse
 MERGERSOURCES := merger debug os util parse itemdb itemdb_adjust args color dvec2 float coord cfcommon merger_weapon merger_bombardment merger_tanks merger_glory merger_util rng
 # rng is not really needed since it won't be linked in at all, but it's easier to just include it
 CONSOLECPPFLAGS := $(STDCPPFLAGS)
-CONSOLELDFLAGS := $(STDLDFLAGS)
+CONSOLELDFLAGS := $(STDLDFLAGS) -lboost_regex-gcc-mt
 
 OO := "@OO@"
 

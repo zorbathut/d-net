@@ -6,7 +6,7 @@ text {
 
 warhead {
   name=warhead.glory.none.core
-  impactdamage=0.75 explosive
+  impactdamage=MERGE(1) explosive
   wallremovalradius=1
 }
 
@@ -38,7 +38,7 @@ deploy {
 
 warhead {
   name=warhead.glory.none.blast
-  radiusdamage=4.0 explosive
+  radiusdamage=MERGE(5) explosive
   radiusfalloff=6
   wallremovalradius=2
 }
@@ -64,28 +64,28 @@ glory {
 
 
 text {
-  name=text.glory.shaped
+  name=text.glory.shapedcharges
   data=Explosives added around the reactor core can turn an anemic reactor breach into a reasonably-sized bomb explosion, capable of killing only moderately damaged tanks.
 }
 
 warhead {
-  name=warhead.glory.shaped.core
-  impactdamage=0.75 explosive
+  name=warhead.glory.shapedcharges.core
+  impactdamage=MERGE(1) explosive
   wallremovalradius=1
 }
 
 projectile {
-  name=projectile.glory.shaped.core
+  name=projectile.glory.shapedcharges.core
   thickness_visual=0.6
   velocity=80
   color=1.0, 0.8, 0.3
   motion=airbrake
   toughness=0.3
-  warhead=warhead.glory.shaped.core
+  warhead=warhead.glory.shapedcharges.core
 }
 
 deploy {
-  name=deploy.glory.shaped.core
+  name=deploy.glory.shapedcharges.core
   type=explode
   
   exp_minsplits=3
@@ -97,32 +97,32 @@ deploy {
   
   anglestddev=0.1
   
-  projectile=projectile.glory.shaped.core
+  projectile=projectile.glory.shapedcharges.core
 }
 
 warhead {
-  name=warhead.glory.shaped.blast
-  radiusdamage=8.0 explosive
+  name=warhead.glory.shapedcharges.blast
+  radiusdamage=MERGE(10) explosive
   radiusfalloff=12
   wallremovalradius=8
 }
 
 deploy {
-  name=deploy.glory.shaped.blast
+  name=deploy.glory.shapedcharges.blast
   
   type=centroid
   
-  warhead=warhead.glory.shaped.blast
+  warhead=warhead.glory.shapedcharges.blast
 }
 
 glory {
   name=ROOT.Glory Devices.Shaped Charges
   cost=MERGE
   
-  core=deploy.glory.shaped.core
-  blast=deploy.glory.shaped.blast
+  core=deploy.glory.shapedcharges.core
+  blast=deploy.glory.shapedcharges.blast
   
-  text=text.glory.shaped
+  text=text.glory.shapedcharges
 }
 
 
@@ -133,7 +133,7 @@ text {
 
 warhead {
   name=warhead.glory.plasmacharge.blast
-  impactdamage=5 energy
+  impactdamage=MERGE(4) energy
   wallremovalradius=2
 }
 
@@ -165,7 +165,7 @@ deploy {
 
 warhead {
   name=warhead.glory.plasmacharge.bomb
-  radiusdamage=20.0 exotic
+  radiusdamage=MERGE(15) exotic
   radiusfalloff=14
   wallremovalradius=4
   radiuscolor_bright=88f
@@ -182,7 +182,7 @@ deploy {
 
 warhead {
   name=warhead.glory.plasmacharge.core
-  impactdamage=0.75 explosive
+  impactdamage=MERGE(1) explosive
   wallremovalradius=1
 }
 
@@ -222,7 +222,7 @@ glory {
   
   demo_range=2x
   
-  text=text.glory.shaped
+  text=text.glory.plasmacharge
 }
 
 
@@ -233,7 +233,7 @@ text {
 
 warhead {
   name=warhead.glory.vengeancepulse.core
-  impactdamage=0.75 explosive
+  impactdamage=MERGE(1) explosive
   wallremovalradius=1
 }
 
@@ -265,7 +265,7 @@ deploy {
 
 warhead {
   name=warhead.glory.vengeancepulse.blast
-  radiusdamage=4.0 explosive
+  radiusdamage=MERGE(5) explosive
   radiusfalloff=6
   wallremovalradius=2
 }
@@ -296,7 +296,7 @@ text {
 
 warhead {
   name=warhead.glory.coreexplosive.core
-  impactdamage=0.75 explosive
+  impactdamage=MERGE(1) explosive
   wallremovalradius=1
 }
 
@@ -328,7 +328,7 @@ deploy {
 
 warhead {
   name=warhead.glory.coreexplosive.blast
-  radiusdamage=4.0 explosive
+  radiusdamage=MERGE(5) explosive
   radiusfalloff=6
   wallremovalradius=2
 }
@@ -359,7 +359,7 @@ text {
 
 warhead {
   name=warhead.glory.stasischamber.core
-  impactdamage=0.75 explosive
+  impactdamage=MERGE(1) explosive
   wallremovalradius=1
 }
 
@@ -391,7 +391,7 @@ deploy {
 
 warhead {
   name=warhead.glory.stasischamber.blast
-  radiusdamage=4.0 explosive
+  radiusdamage=MERGE(5) explosive
   radiusfalloff=6
   wallremovalradius=2
 }
@@ -422,7 +422,7 @@ text {
 
 warhead {
   name=warhead.glory.overloadchip.core
-  impactdamage=0.75 explosive
+  impactdamage=MERGE(1) explosive
   wallremovalradius=1
 }
 
@@ -454,7 +454,7 @@ deploy {
 
 warhead {
   name=warhead.glory.overloadchip.blast
-  radiusdamage=4.0 explosive
+  radiusdamage=MERGE(5) explosive
   radiusfalloff=6
   wallremovalradius=2
 }
@@ -485,7 +485,7 @@ text {
 
 warhead {
   name=warhead.glory.kamikazewarhead.core
-  impactdamage=0.75 explosive
+  impactdamage=MERGE(1) explosive
   wallremovalradius=1
 }
 
@@ -517,7 +517,7 @@ deploy {
 
 warhead {
   name=warhead.glory.kamikazewarhead.blast
-  radiusdamage=4.0 explosive
+  radiusdamage=MERGE(5) explosive
   radiusfalloff=6
   wallremovalradius=2
 }
@@ -548,7 +548,7 @@ text {
 
 warhead {
   name=warhead.glory.thedevice.core
-  impactdamage=0.75 explosive
+  impactdamage=MERGE(1) explosive
   wallremovalradius=1
 }
 
@@ -580,7 +580,7 @@ deploy {
 
 warhead {
   name=warhead.glory.thedevice.blast
-  radiusdamage=4.0 explosive
+  radiusdamage=MERGE(5) explosive
   radiusfalloff=6
   wallremovalradius=2
 }
@@ -611,7 +611,7 @@ text {
 
 warhead {
   name=warhead.glory.deadmansnuke.core
-  impactdamage=0.75 explosive
+  impactdamage=MERGE(1) explosive
   wallremovalradius=1
 }
 
@@ -643,7 +643,7 @@ deploy {
 
 warhead {
   name=warhead.glory.deadmansnuke.blast
-  radiusdamage=4.0 explosive
+  radiusdamage=MERGE(5) explosive
   radiusfalloff=6
   wallremovalradius=2
 }
@@ -674,7 +674,7 @@ text {
 
 warhead {
   name=warhead.glory.immolationdevice.core
-  impactdamage=0.75 explosive
+  impactdamage=MERGE(1) explosive
   wallremovalradius=1
 }
 
@@ -706,7 +706,7 @@ deploy {
 
 warhead {
   name=warhead.glory.immolationdevice.blast
-  radiusdamage=4.0 explosive
+  radiusdamage=MERGE(5) explosive
   radiusfalloff=6
   wallremovalradius=2
 }
@@ -737,7 +737,7 @@ text {
 
 warhead {
   name=warhead.glory.coreconversion.core
-  impactdamage=0.75 explosive
+  impactdamage=MERGE(1) explosive
   wallremovalradius=1
 }
 
@@ -769,7 +769,7 @@ deploy {
 
 warhead {
   name=warhead.glory.coreconversion.blast
-  radiusdamage=4.0 explosive
+  radiusdamage=MERGE(5) explosive
   radiusfalloff=6
   wallremovalradius=2
 }

@@ -516,8 +516,11 @@ public:
   
 };
 
-void initItemdb();
+void clearItemdb();
+
+void loadItemdb();
 void addItemFile(const string &file);
+
 void reloadItemdb();
 
 /*************

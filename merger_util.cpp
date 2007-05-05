@@ -1,6 +1,9 @@
 
 #include "merger_util.h"
 #include "parse.h"
+#include "util.h"
+
+#include <boost/regex.hpp>
 
 vector<string> parseCsv(const string &in) {
   dprintf("%s\n", in.c_str());
@@ -43,7 +46,45 @@ string splice(const string &source, const string &splicetext) {
   return out;
 }
 
-string suffix(const string &name) {
-  CHECK(count(name.begin(), name.end(), '.'));
-  return strrchr(name.c_str(), '.') + 1;
+string splice(const string &source, float value) {
+  int replacements = 0;
+  vector<string> radidam = tokenize(source, " ");
+  for(int i = 0; i < radidam.size(); i++) {
+    static const boost::regex expression("MERGE\\(([0-9]*)\\)");
+    boost::smatch match;
+    if(boost::regex_match(radidam[i], match, expression)) {
+      if(match[1].matched) {
+        radidam[i] = StringPrintf("%f", atof(match[1].str().c_str()) * value);
+      } else {
+        radidam[i] = StringPrintf("%f", value);
+      }
+      replacements++;
+    }
+  }
+  CHECK(replacements == 1);
+  string out;
+  for(int i = 0; i < radidam.size(); i++) {
+    if(i)
+      out += " ";
+    out += radidam[i];
+  }
+  return out;
+}
+
+string suffix(const string &name, int position) {
+  CHECK(position >= 1);
+  CHECK(name.size() >= 1);
+  CHECK(count(name.begin(), name.end(), '.') >= position);
+  int sps = -1;
+  for(int i = name.size() - 1; i >= 0; --i) {
+    if(name[i] == '.')
+      position--;
+    if(!position) {
+      sps = i;
+      break;
+    }
+  }
+  CHECK(sps != -1);
+  sps++;
+  return string(name.begin() + sps, find(name.begin() + sps, name.end(), '.'));
 }

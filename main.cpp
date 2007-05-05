@@ -198,7 +198,7 @@ int main(int argc, char **argv) {
     FLAGS_shopcache = false;
   }
   
-  initItemdb();
+  loadItemdb();
   
   {
     bool generated = false;

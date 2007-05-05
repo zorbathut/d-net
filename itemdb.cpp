@@ -1309,6 +1309,32 @@ void parseItemFile(const string &fname, bool reload, vector<string> *errors) {
   }
 }
 
+void clearItemdb() {
+  root = HierarchyNode();
+  
+  deployclasses.clear();
+  warheadclasses.clear();
+  projectileclasses.clear();
+  statsclasses.clear();
+  launcherclasses.clear();
+  weaponclasses.clear();
+  upgradeclasses.clear();
+  gloryclasses.clear();
+  bombardmentclasses.clear();
+  tankclasses.clear();
+  adjustmentclasses.clear();
+  effectsclasses.clear();
+  implantslotclasses.clear();
+  implantclasses.clear();
+  factions.clear();
+  text.clear();
+  shopcaches.clear();
+
+  deftank = NULL;
+  defglory = NULL;
+  defbombardment = NULL;
+}
+
 void idb_coreinit() {
   CHECK(root.name == "");
   root.name = "ROOT";
@@ -1433,7 +1459,7 @@ void reloadItemdb() {
     CHECK(idfa[i] == &factions[i]);
 }
 
-void initItemdb() {
+void loadItemdb() {
   CHECK(root.name == "");
   
   loadItemDb(false);

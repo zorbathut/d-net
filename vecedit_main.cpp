@@ -758,7 +758,7 @@ IMPLEMENT_APP(VeceditMain)
 bool VeceditMain::OnInit() {
   set_exename("vecedit.exe");
   
-  initItemdb();
+  loadItemdb();
   initGfx();
   
   wxImage::AddHandler(new wxPNGHandler);

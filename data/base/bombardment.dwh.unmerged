@@ -8,7 +8,7 @@ text {
 }
 
 warhead {
-  name=warhead.bombardment.Ultrabomb
+  name=warhead.bombardment.ultrabomb
   radiusdamage=MERGE explosive
   radiusfalloff=14
   wallremovalradius=7
@@ -18,7 +18,7 @@ bombardment {
   name=ROOT.Bombardment.Ultrabomb
   cost=MERGE
   
-  warhead=warhead.bombardment.Ultrabomb
+  warhead=warhead.bombardment.ultrabomb
   
   lockdelay=MERGE
   unlockdelay=MERGE
@@ -32,7 +32,7 @@ text {
 }
 
 warhead {
-  name=warhead.bombardment.Superbomb
+  name=warhead.bombardment.superbomb
   radiusdamage=MERGE explosive
   radiusfalloff=13
   wallremovalradius=6.5
@@ -42,7 +42,7 @@ bombardment {
   name=ROOT.Bombardment.Superbomb
   cost=MERGE
   
-  warhead=warhead.bombardment.Superbomb
+  warhead=warhead.bombardment.superbomb
   
   lockdelay=MERGE
   unlockdelay=MERGE
@@ -56,7 +56,7 @@ text {
 }
 
 warhead {
-  name=warhead.bombardment.HeavyBomb
+  name=warhead.bombardment.heavybomb
   radiusdamage=MERGE explosive
   radiusfalloff=12
   wallremovalradius=6
@@ -66,7 +66,7 @@ bombardment {
   name=ROOT.Bombardment.Heavy Bomb
   cost=MERGE
   
-  warhead=warhead.bombardment.HeavyBomb
+  warhead=warhead.bombardment.heavybomb
   
   lockdelay=MERGE
   unlockdelay=MERGE
@@ -80,7 +80,7 @@ text {
 }
 
 warhead {
-  name=warhead.bombardment.HEBomb
+  name=warhead.bombardment.hebomb
   radiusdamage=MERGE explosive
   radiusfalloff=10
   wallremovalradius=4
@@ -90,7 +90,7 @@ bombardment {
   name=ROOT.Bombardment.HE Bomb
   cost=MERGE
   
-  warhead=warhead.bombardment.HEBomb
+  warhead=warhead.bombardment.hebomb
   
   lockdelay=MERGE
   unlockdelay=MERGE
@@ -104,7 +104,7 @@ text {
 }
 
 warhead {
-  name=warhead.bombardment.Bomb
+  name=warhead.bombardment.bomb
   radiusdamage=MERGE explosive
   radiusfalloff=8
   wallremovalradius=2
@@ -114,7 +114,7 @@ bombardment {
   name=ROOT.Bombardment.Bomb
   cost=MERGE
   
-  warhead=warhead.bombardment.Bomb
+  warhead=warhead.bombardment.bomb
   
   lockdelay=MERGE
   unlockdelay=MERGE
@@ -128,7 +128,7 @@ text {
 }
 
 warhead {
-  name=warhead.bombardment.Minibomb
+  name=warhead.bombardment.minibomb
   radiusdamage=MERGE explosive
   radiusfalloff=4
   wallremovalradius=0.5
@@ -139,7 +139,7 @@ bombardment {
   cost=MERGE
   default=1
   
-  warhead=warhead.bombardment.Minibomb
+  warhead=warhead.bombardment.minibomb
   
   lockdelay=MERGE
   unlockdelay=MERGE
@@ -171,7 +171,7 @@ effects {
 }
 
 warhead {
-  name=warhead.bombardment.ShockwaveRailgun
+  name=warhead.bombardment.shockwaverailgun
   radiusdamage=MERGE kinetic
   radiusfalloff=1
   
@@ -182,7 +182,7 @@ bombardment {
   name=ROOT.Bombardment.Shockwave Railgun
   cost=MERGE
   
-  warhead=warhead.bombardment.ShockwaveRailgun
+  warhead=warhead.bombardment.shockwaverailgun
   
   lockdelay=MERGE
   unlockdelay=MERGE
@@ -210,7 +210,7 @@ effects {
 }
 
 warhead {
-  name=warhead.bombardment.SupersonicRailgun
+  name=warhead.bombardment.supersonicrailgun
   radiusdamage=MERGE kinetic
   radiusfalloff=1
   
@@ -221,7 +221,7 @@ bombardment {
   name=ROOT.Bombardment.Supersonic Railgun
   cost=MERGE
   
-  warhead=warhead.bombardment.SupersonicRailgun
+  warhead=warhead.bombardment.supersonicrailgun
   
   lockdelay=MERGE
   unlockdelay=MERGE
@@ -249,7 +249,7 @@ effects {
 }
 
 warhead {
-  name=warhead.bombardment.SabotRailgun
+  name=warhead.bombardment.sabotrailgun
   radiusdamage=MERGE kinetic
   radiusfalloff=1
   
@@ -260,7 +260,7 @@ bombardment {
   name=ROOT.Bombardment.Sabot Railgun
   cost=MERGE
   
-  warhead=warhead.bombardment.SabotRailgun
+  warhead=warhead.bombardment.sabotrailgun
   
   lockdelay=MERGE
   unlockdelay=MERGE
@@ -288,7 +288,7 @@ effects {
 }
 
 warhead {
-  name=warhead.bombardment.HeavyRailgun
+  name=warhead.bombardment.heavyrailgun
   radiusdamage=MERGE kinetic
   radiusfalloff=1
   
@@ -299,7 +299,7 @@ bombardment {
   name=ROOT.Bombardment.Heavy Railgun
   cost=MERGE
   
-  warhead=warhead.bombardment.HeavyRailgun
+  warhead=warhead.bombardment.heavyrailgun
   
   lockdelay=MERGE
   unlockdelay=MERGE
@@ -327,7 +327,7 @@ effects {
 }
 
 warhead {
-  name=warhead.bombardment.APRailgun
+  name=warhead.bombardment.aprailgun
   radiusdamage=MERGE kinetic
   radiusfalloff=1
   
@@ -338,7 +338,7 @@ bombardment {
   name=ROOT.Bombardment.AP Railgun
   cost=MERGE
   
-  warhead=warhead.bombardment.APRailgun
+  warhead=warhead.bombardment.aprailgun
   
   lockdelay=MERGE
   unlockdelay=MERGE
@@ -366,7 +366,7 @@ effects {
 }
 
 warhead {
-  name=warhead.bombardment.Railgun
+  name=warhead.bombardment.railgun
   radiusdamage=MERGE kinetic
   radiusfalloff=1
   
@@ -377,7 +377,7 @@ bombardment {
   name=ROOT.Bombardment.Railgun
   cost=MERGE
   
-  warhead=warhead.bombardment.Railgun
+  warhead=warhead.bombardment.railgun
   
   lockdelay=MERGE
   unlockdelay=MERGE
