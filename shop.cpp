@@ -176,6 +176,12 @@ void ShopLayout::updateScroll(const vector<int> &curpos, const vector<int> &opti
 
 DEFINE_bool(cullShopTree, true, "Cull items which the players wouldn't want or realistically can't yet buy");
 
+bool sortByTankCost(const HierarchyNode &lhs, const HierarchyNode &rhs) {
+  CHECK(lhs.type == HierarchyNode::HNT_TANK);
+  CHECK(rhs.type == HierarchyNode::HNT_TANK);
+  return lhs.tank->base_cost > rhs.tank->base_cost;
+}
+
 void Shop::renormalize(HierarchyNode &item, const Player *player, int playercount, Money highestCash) {
   if(item.type == HierarchyNode::HNT_EQUIP) {
     item.branches.clear();
@@ -263,6 +269,9 @@ void Shop::renormalize(HierarchyNode &item, const Player *player, int playercoun
       i--;
     }
   }
+  
+  if(item.type == HierarchyNode::HNT_CATEGORY && item.cat_restrictiontype == HierarchyNode::HNT_TANK)
+    stable_sort(item.branches.begin(), item.branches.end(), sortByTankCost);
 }
 
 const HierarchyNode &Shop::getStepNode(int step) const {

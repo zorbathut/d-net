@@ -282,6 +282,7 @@ public:
   const vector<const IDBEffects *> &effects_impact() const;
   
   float stats_damagePerShot() const;
+  float stats_damagePerShotType(int type) const;
 
   const IDBWarhead *base() const;
 

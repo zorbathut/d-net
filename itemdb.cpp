@@ -343,6 +343,20 @@ Color HierarchyNode::getColor() const {
     if(dmg < 0)
       return C::inactive_text;
     return nhcolor[dmg];
+  } else if(type == HNT_BOMBARDMENT) {
+    int dmg = -1;
+    for(int i = 0; i < IDBAdjustment::DAMAGE_LAST; i++) {
+      if(IDBBombardmentAdjust(bombardment, IDBAdjustment(), 0).warhead().stats_damagePerShotType(i) != 0) {
+        if(dmg == -1) {
+          dmg = i;
+        } else {
+          dmg = -2;
+        }
+      }
+    }
+    if(dmg < 0)
+      return C::inactive_text;
+    return nhcolor[dmg];
   } else if(type == HNT_CATEGORY && branches.size()) {
     Color col = branches[0].getColor();
     for(int i = 1; i < branches.size(); i++)

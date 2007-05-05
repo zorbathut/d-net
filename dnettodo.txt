@@ -1,6 +1,5 @@
 ---- Major work path
-- Colorcode weapons?
-  - Add another series for tanks, based on relative tank level
+- Colorcode tanks, based on relative tank level
 - reverse tank order
 - vecedit should drag around with the right mouse button or whatever
 - walls that are more easily destroyed

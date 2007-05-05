@@ -108,6 +108,15 @@ float IDBWarheadAdjust::stats_damagePerShot() const {
   return count;
 }
 
+float IDBWarheadAdjust::stats_damagePerShotType(int type) const {
+    // Sometimes I'm clever.
+  IDBAdjustment adj = adjust;
+  for(int i = 0; i < IDBAdjustment::DAMAGE_LAST; i++)
+    if(i != type)
+      adj.adjusts[i] = -100;
+  return IDBWarheadAdjust(idb, adj).stats_damagePerShot();
+}
+
 const IDBWarhead *IDBWarheadAdjust::base() const {
   return idb;
 }
