@@ -411,7 +411,6 @@ projectile {
 
 deploy {
   name=deploy.bombardment.orbitalmines.deployer
-  type=centroid
   projectile=projectile.bombardment.orbitalmines
 }
 

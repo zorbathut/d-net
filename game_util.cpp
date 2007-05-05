@@ -124,9 +124,15 @@ void detonateWarhead(const IDBWarheadAdjust &warhead, Coord2 pos, float normal, 
     }
   }
   
-  vector<IDBDeployAdjust> dep = warhead.deploy();
-  for(int i = 0; i < dep.size(); i++)
-    deployProjectile(dep[i], DeployLocation(pos - normalize(vel) / 10, getAngle(vel.toFloat())), gpc);
+  {
+    Coord2 shifted_pos = pos;
+    if(len(vel) > Coord(0))
+      shifted_pos -= normalize(vel) / 10;
+    
+    vector<IDBDeployAdjust> dep = warhead.deploy();
+    for(int i = 0; i < dep.size(); i++)
+      deployProjectile(dep[i], DeployLocation(shifted_pos, getAngle(vel.toFloat())), gpc);
+  }
   
 }
 

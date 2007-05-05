@@ -402,9 +402,8 @@ void Collider::addToken(const CollideId &cid, const Coord4 &line, const Coord4 &
   int tsy = max((area.sy / resolution).toInt(), sy);
   int tex = min((area.ex / resolution).toInt(), ex);
   int tey = min((area.ey / resolution).toInt(), ey);
-  CHECK(tsx < ex && tsy < ey && tex >= sx && tey >= sy);
-  /*
-  if(!(tsx < sx && tsy < sy && tex > ex && tey > ey)) {
+  
+  if(!(tsx < ex && tsy < ey && tex >= sx && tey >= sy)) {
     dprintf("%d, %d, %d, %d\n", tsx, tsy, tex, tey);
     dprintf("%d, %d, %d, %d\n", sx, sy, ex, ey);
     dprintf("%f, %f, %f, %f\n", area.sx.toFloat(), area.sy.toFloat(), area.ex.toFloat(), area.ey.toFloat());
@@ -418,7 +417,8 @@ void Collider::addToken(const CollideId &cid, const Coord4 &line, const Coord4 &
     dprintf("Area bounds: %f,%f %f,%f\n", (sx * resolution).toFloat(), (sy * resolution).toFloat(), (ex * resolution).toFloat(), (ey * resolution).toFloat());
     CHECK(0);
   }
-  */
+  CHECK(tsx < ex && tsy < ey && tex >= sx && tey >= sy);
+  
   int categ = getCategoryFromPlayers(players, cid.category, cid.bucket);
   for(int x = tsx; x < tex; x++)
     for(int y = tsy; y < tey; y++)
