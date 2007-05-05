@@ -12,7 +12,7 @@ EDITORCPPFLAGS := `@WX@ --cxxflags` $(STDCPPFLAGS)
 EDITORLDFLAGS := `@WX@ --libs --gl-libs` -lopengl32 $(STDLDFLAGS)
 
 FUNCTORSOURCES := functor_gen debug os util parse
-MERGERSOURCES := merger debug os util parse itemdb itemdb_adjust args color dvec2 float coord cfcommon merger_weapon merger_bombardment merger_tanks merger_util rng
+MERGERSOURCES := merger debug os util parse itemdb itemdb_adjust args color dvec2 float coord cfcommon merger_weapon merger_bombardment merger_tanks merger_glory merger_util rng
 # rng is not really needed since it won't be linked in at all, but it's easier to just include it
 CONSOLECPPFLAGS := $(STDCPPFLAGS)
 CONSOLELDFLAGS := $(STDLDFLAGS)
@@ -54,7 +54,7 @@ asm: $(GAMESOURCES:=.S) makefile
 clean:
 	rm -rf *.o *.exe *.d *.S data/shopcache.dwh $(patsubst %,data/base/%.dwh,$(MERGETYPES)) *.csv .*_flag
 
-STDRUN = --nofullscreen --debugitems --startingPhase=8 --debugControllers=2 --factionMode=3 --nullControllers=11 --writeTarget= --auto_newgame --nocullShopTree --httpd_port=616 --noshopcache --runTests
+STDRUN = --nofullscreen --debugitems --startingPhase=8 --debugControllers=2 --factionMode=0 --nullControllers=11 --writeTarget= --auto_newgame --nocullShopTree --httpd_port=616 --noshopcache --runTests
 
 run: d-net.exe
 	./d-net.exe $(STDRUN)

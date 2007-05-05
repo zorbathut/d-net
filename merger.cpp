@@ -5,6 +5,7 @@
 #include "merger_weapon.h"
 #include "merger_bombardment.h"
 #include "merger_tanks.h"
+#include "merger_glory.h"
 #include "merger_util.h"
 
 #include <fstream>
@@ -33,6 +34,8 @@ int main(int argc, char *argv[]) {
     mergeBombardment(argv[1], argv[2], argv[3]);
   } else if(type == "TANKS") {
     mergeTanks(argv[1], argv[2], argv[3]);
+  } else if(type == "GLORY") {
+    mergeGlory(argv[1], argv[2], argv[3]);
   } else {
     CHECK(0);
   }

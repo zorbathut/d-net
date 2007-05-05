@@ -2,6 +2,7 @@
 - "Finish the Damn Game" Initiative
   - EMP glory resistance
   - Add glory to balance system
+    - Check to make sure it does right damage per shot
   - Many many more weapons
     - Bombardment
     - Glory
