@@ -164,7 +164,7 @@ float Projectile::airbrake_liveness() const {
 
 vector<Coord2> Projectile::mine_polys() const {
   vector<Coord2> rv;
-  const int rad = 12;
+  const int rad = projtype.mine_spikes() * 2;
   for(int i = 0; i < rad; i++) {
     float expfact = (i % 2);
     expfact *= 3;

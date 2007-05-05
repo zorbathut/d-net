@@ -404,6 +404,7 @@ projectile {
   name=projectile.bombardment.orbitalmines
   motion=mine
   radius_physical=1
+  mine_spikes=4
   halflife=12
   color=0.8, 1.0, 0.9
   warhead=warhead.bombardment.orbitalmines
@@ -429,4 +430,229 @@ bombardment {
   unlockdelay=MERGE
   
   text=text.bombardment.orbitalmines
+}
+
+
+text {
+  name=text.bombardment.minelauncher
+  data=Blah blah hamster blah yacht blah blah blah monocle polish
+}
+
+warhead {
+  name=warhead.bombardment.minelauncher
+  radiusdamage=MERGE trap
+  radiusfalloff=8
+  wallremovalradius=4
+}
+
+projectile {
+  name=projectile.bombardment.minelauncher
+  motion=mine
+  radius_physical=1.1
+  mine_spikes=4
+  halflife=13
+  color=0.8, 1.0, 0.9
+  warhead=warhead.bombardment.minelauncher
+}
+
+deploy {
+  name=deploy.bombardment.minelauncher.deployer
+  projectile=projectile.bombardment.minelauncher
+}
+
+warhead {
+  name=warhead.bombardment.minelauncher.deployer
+  deploy=deploy.bombardment.minelauncher.deployer
+}
+
+bombardment {
+  name=ROOT.Bombardment.Mine Launcher
+  cost=MERGE
+  
+  warhead=warhead.bombardment.minelauncher.deployer
+  
+  lockdelay=MERGE
+  unlockdelay=MERGE
+  
+  text=text.bombardment.minelauncher
+}
+
+
+text {
+  name=text.bombardment.minebooster
+  data=Blah blah hamster blah yacht blah blah blah monocle polish
+}
+
+warhead {
+  name=warhead.bombardment.minebooster
+  radiusdamage=MERGE trap
+  radiusfalloff=8
+  wallremovalradius=4
+}
+
+projectile {
+  name=projectile.bombardment.minebooster
+  motion=mine
+  radius_physical=1.2
+  mine_spikes=4
+  halflife=14
+  color=0.8, 1.0, 0.9
+  warhead=warhead.bombardment.minebooster
+}
+
+deploy {
+  name=deploy.bombardment.minebooster.deployer
+  projectile=projectile.bombardment.minebooster
+}
+
+warhead {
+  name=warhead.bombardment.minebooster.deployer
+  deploy=deploy.bombardment.minebooster.deployer
+}
+
+bombardment {
+  name=ROOT.Bombardment.Mine Booster
+  cost=MERGE
+  
+  warhead=warhead.bombardment.minebooster.deployer
+  
+  lockdelay=MERGE
+  unlockdelay=MERGE
+  
+  text=text.bombardment.minebooster
+}
+
+
+text {
+  name=text.bombardment.blastmines
+  data=Blah blah hamster blah yacht blah blah blah monocle polish
+}
+
+warhead {
+  name=warhead.bombardment.blastmines
+  radiusdamage=MERGE trap
+  radiusfalloff=8
+  wallremovalradius=4
+}
+
+projectile {
+  name=projectile.bombardment.blastmines
+  motion=mine
+  radius_physical=1.3
+  mine_spikes=4
+  halflife=15
+  color=0.8, 1.0, 0.9
+  warhead=warhead.bombardment.blastmines
+}
+
+deploy {
+  name=deploy.bombardment.blastmines.deployer
+  projectile=projectile.bombardment.blastmines
+}
+
+warhead {
+  name=warhead.bombardment.blastmines.deployer
+  deploy=deploy.bombardment.blastmines.deployer
+}
+
+bombardment {
+  name=ROOT.Bombardment.Blast Mines
+  cost=MERGE
+  
+  warhead=warhead.bombardment.blastmines.deployer
+  
+  lockdelay=MERGE
+  unlockdelay=MERGE
+  
+  text=text.bombardment.blastmines
+}
+
+
+text {
+  name=text.bombardment.shockmines
+  data=Blah blah hamster blah yacht blah blah blah monocle polish
+}
+
+warhead {
+  name=warhead.bombardment.shockmines
+  radiusdamage=MERGE trap
+  radiusfalloff=8
+  wallremovalradius=4
+}
+
+projectile {
+  name=projectile.bombardment.shockmines
+  motion=mine
+  radius_physical=1.4
+  mine_spikes=4
+  halflife=16
+  color=0.8, 1.0, 0.9
+  warhead=warhead.bombardment.shockmines
+}
+
+deploy {
+  name=deploy.bombardment.shockmines.deployer
+  projectile=projectile.bombardment.shockmines
+}
+
+warhead {
+  name=warhead.bombardment.shockmines.deployer
+  deploy=deploy.bombardment.shockmines.deployer
+}
+
+bombardment {
+  name=ROOT.Bombardment.Shock Mines
+  cost=MERGE
+  
+  warhead=warhead.bombardment.shockmines.deployer
+  
+  lockdelay=MERGE
+  unlockdelay=MERGE
+  
+  text=text.bombardment.shockmines
+}
+
+
+text {
+  name=text.bombardment.mineporter
+  data=Blah blah hamster blah yacht blah blah blah monocle polish
+}
+
+warhead {
+  name=warhead.bombardment.mineporter
+  radiusdamage=MERGE trap
+  radiusfalloff=8
+  wallremovalradius=4
+}
+
+projectile {
+  name=projectile.bombardment.mineporter
+  motion=mine
+  radius_physical=1.5
+  mine_spikes=4
+  halflife=17
+  color=0.8, 1.0, 0.9
+  warhead=warhead.bombardment.mineporter
+}
+
+deploy {
+  name=deploy.bombardment.mineporter.deployer
+  projectile=projectile.bombardment.mineporter
+}
+
+warhead {
+  name=warhead.bombardment.mineporter.deployer
+  deploy=deploy.bombardment.mineporter.deployer
+}
+
+bombardment {
+  name=ROOT.Bombardment.Mine 'Porter
+  cost=MERGE
+  
+  warhead=warhead.bombardment.mineporter.deployer
+  
+  lockdelay=MERGE
+  unlockdelay=MERGE
+  
+  text=text.bombardment.mineporter
 }

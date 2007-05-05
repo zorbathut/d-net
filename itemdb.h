@@ -101,6 +101,7 @@ struct IDBProjectile {
 
   Color color;
   float thickness_visual;
+  int mine_spikes;
 
   float toughness;
 
@@ -304,6 +305,7 @@ public:
 
   Color color() const;
   float thickness_visual() const;
+  int mine_spikes() const;
 
   float halflife() const;
 

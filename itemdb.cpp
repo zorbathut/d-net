@@ -817,6 +817,7 @@ void parseProjectile(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   } else if(motion == "mine") {
     titem->motion = PM_MINE;
     titem->radius_physical = atof(chunk->consume("radius_physical").c_str());
+    titem->mine_spikes = parseWithDefault(chunk, "mine_spikes", 6);
     titem->halflife = atof(chunk->consume("halflife").c_str());
   } else {
     dprintf("Unknown projectile motion: %s\n", motion.c_str());
