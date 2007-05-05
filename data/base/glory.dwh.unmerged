@@ -1,27 +1,27 @@
 
+text {
+  name=text.glory.none
+  data=When destroyed, a tank's reactor core tends to detonate with impressive fireworks. Compared to tank armor, however, this explosion is not very impressive.
+}
+
 warhead {
-  name=warhead.glory.core
+  name=warhead.glory.none.core
   impactdamage=0.75 explosive
   wallremovalradius=1
 }
 
-text {
-  name=text.glory.basic
-  data=When destroyed, a tank's reactor core tends to detonate with impressive fireworks. Compared to tank armor, however, this explosion is not very impressive.
-}
-
 projectile {
-  name=projectile.glory.basic.core
+  name=projectile.glory.none.core
   thickness_visual=0.6
   velocity=40
   color=1.0, 0.8, 0.3
   motion=airbrake
   toughness=0.3
-  warhead=warhead.glory.core
+  warhead=warhead.glory.none.core
 }
 
 deploy {
-  name=deploy.glory.basic.core
+  name=deploy.glory.none.core
   type=explode
   
   exp_minsplits=2
@@ -33,38 +33,45 @@ deploy {
   
   anglestddev=0.1
   
-  projectile=projectile.glory.basic.core
+  projectile=projectile.glory.none.core
 }
 
 warhead {
-  name=warhead.glory.basic.blast
+  name=warhead.glory.none.blast
   radiusdamage=4.0 explosive
   radiusfalloff=6
   wallremovalradius=2
 }
 
 deploy {
-  name=deploy.glory.basic.blast
+  name=deploy.glory.none.blast
   
   type=centroid
   
-  warhead=warhead.glory.basic.blast
+  warhead=warhead.glory.none.blast
 }
 
 glory {
   name=ROOT.Glory Devices.None
-  cost=0
+  cost=MERGE
   default=1
   
-  core=deploy.glory.basic.core
-  blast=deploy.glory.basic.blast
+  core=deploy.glory.none.core
+  blast=deploy.glory.none.blast
   
-  text=text.glory.basic
+  text=text.glory.none
 }
+
 
 text {
   name=text.glory.shaped
   data=Explosives added around the reactor core can turn an anemic reactor breach into a reasonably-sized bomb explosion, capable of killing only moderately damaged tanks.
+}
+
+warhead {
+  name=warhead.glory.shaped.core
+  impactdamage=0.75 explosive
+  wallremovalradius=1
 }
 
 projectile {
@@ -74,7 +81,7 @@ projectile {
   color=1.0, 0.8, 0.3
   motion=airbrake
   toughness=0.3
-  warhead=warhead.glory.core
+  warhead=warhead.glory.shaped.core
 }
 
 deploy {
@@ -110,7 +117,7 @@ deploy {
 
 glory {
   name=ROOT.Glory Devices.Shaped Charges
-  cost=4000
+  cost=MERGE
   
   core=deploy.glory.shaped.core
   blast=deploy.glory.shaped.blast
@@ -118,29 +125,30 @@ glory {
   text=text.glory.shaped
 }
 
+
 text {
   name=text.glory.plasmacharge
   data=Several carefully designed pressure chambers are added for this powerful, though unpredictable, weapon.
 }
 
 warhead {
-  name=warhead.glory.plasma.blast
+  name=warhead.glory.plasmacharge.blast
   impactdamage=5 energy
   wallremovalradius=2
 }
 
 projectile {
-  name=projectile.glory.plasma.blast
+  name=projectile.glory.plasmacharge.blast
   thickness_visual=0.6
   velocity=400
   color=0.2, 0.6, 1.0
   motion=airbrake
   toughness=0.3
-  warhead=warhead.glory.plasma.blast
+  warhead=warhead.glory.plasmacharge.blast
 }
 
 deploy {
-  name=deploy.glory.plasma.blast
+  name=deploy.glory.plasmacharge.blast
   type=explode
   
   exp_minsplits=3
@@ -152,11 +160,11 @@ deploy {
   
   anglestddev=0.04
   
-  projectile=projectile.glory.plasma.blast
+  projectile=projectile.glory.plasmacharge.blast
 }
 
 warhead {
-  name=warhead.glory.plasma.bomb
+  name=warhead.glory.plasmacharge.bomb
   radiusdamage=20.0 exotic
   radiusfalloff=14
   wallremovalradius=4
@@ -165,25 +173,31 @@ warhead {
 }
 
 deploy {
-  name=deploy.glory.plasma.bomb
+  name=deploy.glory.plasmacharge.bomb
   
   type=centroid
   
-  warhead=warhead.glory.plasma.bomb
+  warhead=warhead.glory.plasmacharge.bomb
+}
+
+warhead {
+  name=warhead.glory.plasmacharge.core
+  impactdamage=0.75 explosive
+  wallremovalradius=1
 }
 
 projectile {
-  name=projectile.glory.plasma.core
+  name=projectile.glory.plasmacharge.core
   thickness_visual=0.6
   velocity=60
   color=1.0, 0.8, 0.3
   motion=airbrake
   toughness=0.3
-  warhead=warhead.glory.core
+  warhead=warhead.glory.plasmacharge.core
 }
 
 deploy {
-  name=deploy.glory.plasma.core
+  name=deploy.glory.plasmacharge.core
   type=explode
   
   exp_minsplits=3
@@ -195,18 +209,585 @@ deploy {
   
   anglestddev=0.1
   
-  projectile=projectile.glory.plasma.core
+  projectile=projectile.glory.plasmacharge.core
 }
 
 glory {
   name=ROOT.Glory Devices.Plasma Charge
-  cost=30000
+  cost=MERGE
   
-  core=deploy.glory.plasma.core
-  blast=deploy.glory.plasma.blast
-  blast=deploy.glory.plasma.bomb
+  core=deploy.glory.plasmacharge.core
+  blast=deploy.glory.plasmacharge.blast
+  blast=deploy.glory.plasmacharge.bomb
   
   demo_range=2x
   
   text=text.glory.shaped
+}
+
+
+text {
+  name=text.glory.vengeancepulse
+  data=Blah blah hamster blah yacht blah blah blah monocle polish
+}
+
+warhead {
+  name=warhead.glory.vengeancepulse.core
+  impactdamage=0.75 explosive
+  wallremovalradius=1
+}
+
+projectile {
+  name=projectile.glory.vengeancepulse.core
+  thickness_visual=0.6
+  velocity=40
+  color=1.0, 0.8, 0.3
+  motion=airbrake
+  toughness=0.3
+  warhead=warhead.glory.vengeancepulse.core
+}
+
+deploy {
+  name=deploy.glory.vengeancepulse.core
+  type=explode
+  
+  exp_minsplits=2
+  exp_maxsplits=4
+  exp_minsplitsize=1
+  exp_maxsplitsize=5
+  
+  exp_shotspersplit=4
+  
+  anglestddev=0.1
+  
+  projectile=projectile.glory.vengeancepulse.core
+}
+
+warhead {
+  name=warhead.glory.vengeancepulse.blast
+  radiusdamage=4.0 explosive
+  radiusfalloff=6
+  wallremovalradius=2
+}
+
+deploy {
+  name=deploy.glory.vengeancepulse.blast
+  
+  type=centroid
+  
+  warhead=warhead.glory.vengeancepulse.blast
+}
+
+glory {
+  name=ROOT.Glory Devices.Vengeance Pulse
+  cost=MERGE
+  
+  core=deploy.glory.vengeancepulse.core
+  blast=deploy.glory.vengeancepulse.blast
+  
+  text=text.glory.vengeancepulse
+}
+
+
+text {
+  name=text.glory.coreexplosive
+  data=Blah blah hamster blah yacht blah blah blah monocle polish
+}
+
+warhead {
+  name=warhead.glory.coreexplosive.core
+  impactdamage=0.75 explosive
+  wallremovalradius=1
+}
+
+projectile {
+  name=projectile.glory.coreexplosive.core
+  thickness_visual=0.6
+  velocity=40
+  color=1.0, 0.8, 0.3
+  motion=airbrake
+  toughness=0.3
+  warhead=warhead.glory.coreexplosive.core
+}
+
+deploy {
+  name=deploy.glory.coreexplosive.core
+  type=explode
+  
+  exp_minsplits=2
+  exp_maxsplits=4
+  exp_minsplitsize=1
+  exp_maxsplitsize=5
+  
+  exp_shotspersplit=4
+  
+  anglestddev=0.1
+  
+  projectile=projectile.glory.coreexplosive.core
+}
+
+warhead {
+  name=warhead.glory.coreexplosive.blast
+  radiusdamage=4.0 explosive
+  radiusfalloff=6
+  wallremovalradius=2
+}
+
+deploy {
+  name=deploy.glory.coreexplosive.blast
+  
+  type=centroid
+  
+  warhead=warhead.glory.coreexplosive.blast
+}
+
+glory {
+  name=ROOT.Glory Devices.Core Explosive
+  cost=MERGE
+  
+  core=deploy.glory.coreexplosive.core
+  blast=deploy.glory.coreexplosive.blast
+  
+  text=text.glory.coreexplosive
+}
+
+
+text {
+  name=text.glory.stasischamber
+  data=Blah blah hamster blah yacht blah blah blah monocle polish
+}
+
+warhead {
+  name=warhead.glory.stasischamber.core
+  impactdamage=0.75 explosive
+  wallremovalradius=1
+}
+
+projectile {
+  name=projectile.glory.stasischamber.core
+  thickness_visual=0.6
+  velocity=40
+  color=1.0, 0.8, 0.3
+  motion=airbrake
+  toughness=0.3
+  warhead=warhead.glory.stasischamber.core
+}
+
+deploy {
+  name=deploy.glory.stasischamber.core
+  type=explode
+  
+  exp_minsplits=2
+  exp_maxsplits=4
+  exp_minsplitsize=1
+  exp_maxsplitsize=5
+  
+  exp_shotspersplit=4
+  
+  anglestddev=0.1
+  
+  projectile=projectile.glory.stasischamber.core
+}
+
+warhead {
+  name=warhead.glory.stasischamber.blast
+  radiusdamage=4.0 explosive
+  radiusfalloff=6
+  wallremovalradius=2
+}
+
+deploy {
+  name=deploy.glory.stasischamber.blast
+  
+  type=centroid
+  
+  warhead=warhead.glory.stasischamber.blast
+}
+
+glory {
+  name=ROOT.Glory Devices.Stasis Chamber
+  cost=MERGE
+  
+  core=deploy.glory.stasischamber.core
+  blast=deploy.glory.stasischamber.blast
+  
+  text=text.glory.stasischamber
+}
+
+
+text {
+  name=text.glory.overloadchip
+  data=Blah blah hamster blah yacht blah blah blah monocle polish
+}
+
+warhead {
+  name=warhead.glory.overloadchip.core
+  impactdamage=0.75 explosive
+  wallremovalradius=1
+}
+
+projectile {
+  name=projectile.glory.overloadchip.core
+  thickness_visual=0.6
+  velocity=40
+  color=1.0, 0.8, 0.3
+  motion=airbrake
+  toughness=0.3
+  warhead=warhead.glory.overloadchip.core
+}
+
+deploy {
+  name=deploy.glory.overloadchip.core
+  type=explode
+  
+  exp_minsplits=2
+  exp_maxsplits=4
+  exp_minsplitsize=1
+  exp_maxsplitsize=5
+  
+  exp_shotspersplit=4
+  
+  anglestddev=0.1
+  
+  projectile=projectile.glory.overloadchip.core
+}
+
+warhead {
+  name=warhead.glory.overloadchip.blast
+  radiusdamage=4.0 explosive
+  radiusfalloff=6
+  wallremovalradius=2
+}
+
+deploy {
+  name=deploy.glory.overloadchip.blast
+  
+  type=centroid
+  
+  warhead=warhead.glory.overloadchip.blast
+}
+
+glory {
+  name=ROOT.Glory Devices.Overload Chip
+  cost=MERGE
+  
+  core=deploy.glory.overloadchip.core
+  blast=deploy.glory.overloadchip.blast
+  
+  text=text.glory.overloadchip
+}
+
+
+text {
+  name=text.glory.kamikazewarhead
+  data=Blah blah hamster blah yacht blah blah blah monocle polish
+}
+
+warhead {
+  name=warhead.glory.kamikazewarhead.core
+  impactdamage=0.75 explosive
+  wallremovalradius=1
+}
+
+projectile {
+  name=projectile.glory.kamikazewarhead.core
+  thickness_visual=0.6
+  velocity=40
+  color=1.0, 0.8, 0.3
+  motion=airbrake
+  toughness=0.3
+  warhead=warhead.glory.kamikazewarhead.core
+}
+
+deploy {
+  name=deploy.glory.kamikazewarhead.core
+  type=explode
+  
+  exp_minsplits=2
+  exp_maxsplits=4
+  exp_minsplitsize=1
+  exp_maxsplitsize=5
+  
+  exp_shotspersplit=4
+  
+  anglestddev=0.1
+  
+  projectile=projectile.glory.kamikazewarhead.core
+}
+
+warhead {
+  name=warhead.glory.kamikazewarhead.blast
+  radiusdamage=4.0 explosive
+  radiusfalloff=6
+  wallremovalradius=2
+}
+
+deploy {
+  name=deploy.glory.kamikazewarhead.blast
+  
+  type=centroid
+  
+  warhead=warhead.glory.kamikazewarhead.blast
+}
+
+glory {
+  name=ROOT.Glory Devices.Kamikaze Warhead
+  cost=MERGE
+  
+  core=deploy.glory.kamikazewarhead.core
+  blast=deploy.glory.kamikazewarhead.blast
+  
+  text=text.glory.kamikazewarhead
+}
+
+
+text {
+  name=text.glory.thedevice
+  data=Blah blah hamster blah yacht blah blah blah monocle polish
+}
+
+warhead {
+  name=warhead.glory.thedevice.core
+  impactdamage=0.75 explosive
+  wallremovalradius=1
+}
+
+projectile {
+  name=projectile.glory.thedevice.core
+  thickness_visual=0.6
+  velocity=40
+  color=1.0, 0.8, 0.3
+  motion=airbrake
+  toughness=0.3
+  warhead=warhead.glory.thedevice.core
+}
+
+deploy {
+  name=deploy.glory.thedevice.core
+  type=explode
+  
+  exp_minsplits=2
+  exp_maxsplits=4
+  exp_minsplitsize=1
+  exp_maxsplitsize=5
+  
+  exp_shotspersplit=4
+  
+  anglestddev=0.1
+  
+  projectile=projectile.glory.thedevice.core
+}
+
+warhead {
+  name=warhead.glory.thedevice.blast
+  radiusdamage=4.0 explosive
+  radiusfalloff=6
+  wallremovalradius=2
+}
+
+deploy {
+  name=deploy.glory.thedevice.blast
+  
+  type=centroid
+  
+  warhead=warhead.glory.thedevice.blast
+}
+
+glory {
+  name=ROOT.Glory Devices.The Device
+  cost=MERGE
+  
+  core=deploy.glory.thedevice.core
+  blast=deploy.glory.thedevice.blast
+  
+  text=text.glory.thedevice
+}
+
+
+text {
+  name=text.glory.deadmansnuke
+  data=Blah blah hamster blah yacht blah blah blah monocle polish
+}
+
+warhead {
+  name=warhead.glory.deadmansnuke.core
+  impactdamage=0.75 explosive
+  wallremovalradius=1
+}
+
+projectile {
+  name=projectile.glory.deadmansnuke.core
+  thickness_visual=0.6
+  velocity=40
+  color=1.0, 0.8, 0.3
+  motion=airbrake
+  toughness=0.3
+  warhead=warhead.glory.deadmansnuke.core
+}
+
+deploy {
+  name=deploy.glory.deadmansnuke.core
+  type=explode
+  
+  exp_minsplits=2
+  exp_maxsplits=4
+  exp_minsplitsize=1
+  exp_maxsplitsize=5
+  
+  exp_shotspersplit=4
+  
+  anglestddev=0.1
+  
+  projectile=projectile.glory.deadmansnuke.core
+}
+
+warhead {
+  name=warhead.glory.deadmansnuke.blast
+  radiusdamage=4.0 explosive
+  radiusfalloff=6
+  wallremovalradius=2
+}
+
+deploy {
+  name=deploy.glory.deadmansnuke.blast
+  
+  type=centroid
+  
+  warhead=warhead.glory.deadmansnuke.blast
+}
+
+glory {
+  name=ROOT.Glory Devices.Deadman's Nuke
+  cost=MERGE
+  
+  core=deploy.glory.deadmansnuke.core
+  blast=deploy.glory.deadmansnuke.blast
+  
+  text=text.glory.deadmansnuke
+}
+
+
+text {
+  name=text.glory.immolationdevice
+  data=Blah blah hamster blah yacht blah blah blah monocle polish
+}
+
+warhead {
+  name=warhead.glory.immolationdevice.core
+  impactdamage=0.75 explosive
+  wallremovalradius=1
+}
+
+projectile {
+  name=projectile.glory.immolationdevice.core
+  thickness_visual=0.6
+  velocity=40
+  color=1.0, 0.8, 0.3
+  motion=airbrake
+  toughness=0.3
+  warhead=warhead.glory.immolationdevice.core
+}
+
+deploy {
+  name=deploy.glory.immolationdevice.core
+  type=explode
+  
+  exp_minsplits=2
+  exp_maxsplits=4
+  exp_minsplitsize=1
+  exp_maxsplitsize=5
+  
+  exp_shotspersplit=4
+  
+  anglestddev=0.1
+  
+  projectile=projectile.glory.immolationdevice.core
+}
+
+warhead {
+  name=warhead.glory.immolationdevice.blast
+  radiusdamage=4.0 explosive
+  radiusfalloff=6
+  wallremovalradius=2
+}
+
+deploy {
+  name=deploy.glory.immolationdevice.blast
+  
+  type=centroid
+  
+  warhead=warhead.glory.immolationdevice.blast
+}
+
+glory {
+  name=ROOT.Glory Devices.Immolation Device
+  cost=MERGE
+  
+  core=deploy.glory.immolationdevice.core
+  blast=deploy.glory.immolationdevice.blast
+  
+  text=text.glory.immolationdevice
+}
+
+
+text {
+  name=text.glory.coreconversion
+  data=Blah blah hamster blah yacht blah blah blah monocle polish
+}
+
+warhead {
+  name=warhead.glory.coreconversion.core
+  impactdamage=0.75 explosive
+  wallremovalradius=1
+}
+
+projectile {
+  name=projectile.glory.coreconversion.core
+  thickness_visual=0.6
+  velocity=40
+  color=1.0, 0.8, 0.3
+  motion=airbrake
+  toughness=0.3
+  warhead=warhead.glory.coreconversion.core
+}
+
+deploy {
+  name=deploy.glory.coreconversion.core
+  type=explode
+  
+  exp_minsplits=2
+  exp_maxsplits=4
+  exp_minsplitsize=1
+  exp_maxsplitsize=5
+  
+  exp_shotspersplit=4
+  
+  anglestddev=0.1
+  
+  projectile=projectile.glory.coreconversion.core
+}
+
+warhead {
+  name=warhead.glory.coreconversion.blast
+  radiusdamage=4.0 explosive
+  radiusfalloff=6
+  wallremovalradius=2
+}
+
+deploy {
+  name=deploy.glory.coreconversion.blast
+  
+  type=centroid
+  
+  warhead=warhead.glory.coreconversion.blast
+}
+
+glory {
+  name=ROOT.Glory Devices.Core Conversion
+  cost=MERGE
+  
+  core=deploy.glory.coreconversion.core
+  blast=deploy.glory.coreconversion.blast
+  
+  text=text.glory.coreconversion
 }

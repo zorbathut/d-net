@@ -28,8 +28,8 @@ void mergeGlory(const string &csv, const string &unmerged, const string &merged)
       CHECK(!tdd.count(dt[0]));
       
       Glorydat bd;
-      bd.cost = dt[2];
-      bd.damage= atof(dt[3].c_str());
+      bd.cost = dt[1];
+      bd.damage= atof(dt[2].c_str());
     
       tdd[dt[0]] = bd;
     }
@@ -43,25 +43,19 @@ void mergeGlory(const string &csv, const string &unmerged, const string &merged)
     ofstream ofs(merged.c_str());
     kvData kvd;
     while(getkvData(ifs, &kvd)) {
-      /*if(kvd.category == "tank") {
-        dprintf("Tank %s found\n", kvd.read("name").c_str());
+      if(kvd.category == "glory") {
+        dprintf("Glory %s found\n", kvd.read("name").c_str());
         
         string basicname = suffix(kvd.read("name").c_str());
         
         CHECK(tdd.count(basicname));
         CHECK(!donetdd.count(basicname));
         
-        CHECK(kvd.read("health") == "MERGE");
-        CHECK(kvd.read("engine") == "MERGE");
-        CHECK(kvd.read("handling") == "MERGE");
-        CHECK(kvd.read("mass") == "MERGE");
+        CHECK(kvd.read("cost") == "MERGE");
         
         donetdd.insert(basicname);
-        kvd.kv["health"] = tdd[basicname].health;
-        kvd.kv["engine"] = tdd[basicname].engine;
-        kvd.kv["handling"] = tdd[basicname].handling;
-        kvd.kv["mass"] = tdd[basicname].mass;
-      }*/
+        kvd.kv["cost"] = tdd[basicname].cost;
+      }
       
       for(map<string, string>::const_iterator itr = kvd.kv.begin(); itr != kvd.kv.end(); itr++)
         CHECK(itr->second.find("MERGE") == string::npos);
@@ -74,7 +68,7 @@ void mergeGlory(const string &csv, const string &unmerged, const string &merged)
       for(map<string, Glorydat>::const_iterator itr = tdd.begin(); itr != tdd.end(); itr++)
         if(!donetdd.count(itr->first))
           dprintf("Didn't complete %s\n", itr->first.c_str());
-      //CHECK(0);
+      CHECK(0);
     }
   }
   

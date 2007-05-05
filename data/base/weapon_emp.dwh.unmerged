@@ -6,7 +6,7 @@ hierarchy {
 
 text {
   name=text.weapon.emp
-  data=A focused burst of electromagnetic energy damages tank armor and electronics at close range. These purchases include a limited-use compensation and shielding package designed to protect a tank from its own weapon.
+  data=A focused burst of electromagnetic energy damages tank armor and electronics at close range. These purchases include a limited-use compensation and shielding package designed to protect a tank from its own weapon, as well as from nearby glory devices.
 }
 
 warhead {
