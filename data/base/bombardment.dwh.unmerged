@@ -644,3 +644,228 @@ bombardment {
   
   text=text.bombardment.explorerrocket
 }
+
+
+text {
+  name=text.bombardment.hunterrocket
+  data=Blah blah hamster blah yacht blah blah blah monocle polish
+}
+
+warhead {
+  name=warhead.bombardment.hunterrocket
+  radiusdamage=MERGE exotic
+  radiusfalloff=4.5
+  wallremovalradius=2.25
+}
+
+projectile {
+  name=projectile.bombardment.hunterrocket
+  motion=missile
+  
+  velocity=180
+  missile_stabstart=0.0
+  missile_stabilization=4
+  missile_sidelaunch=2
+  missile_backlaunch=0
+  
+  thickness_visual=3x
+  length=2x
+  toughness=2
+  
+  color=0.9,0.8,0.5
+  
+  warhead=warhead.bombardment.hunterrocket
+}
+
+bombardment {
+  name=ROOT.Bombardment.Hunter Rocket
+  cost=MERGE
+  
+  projectile=projectile.bombardment.hunterrocket
+  showdirection=true
+  
+  lockdelay=MERGE
+  unlockdelay=MERGE
+  
+  text=text.bombardment.hunterrocket
+}
+
+
+text {
+  name=text.bombardment.slayerrocket
+  data=Blah blah hamster blah yacht blah blah blah monocle polish
+}
+
+warhead {
+  name=warhead.bombardment.slayerrocket
+  radiusdamage=MERGE exotic
+  radiusfalloff=5
+  wallremovalradius=2.5
+}
+
+projectile {
+  name=projectile.bombardment.slayerrocket
+  motion=missile
+  
+  velocity=180
+  missile_stabstart=0.0
+  missile_stabilization=4
+  missile_sidelaunch=2
+  missile_backlaunch=0
+  
+  thickness_visual=3x
+  length=2x
+  toughness=2
+  
+  color=0.9,0.8,0.5
+  
+  warhead=warhead.bombardment.slayerrocket
+}
+
+bombardment {
+  name=ROOT.Bombardment.Slayer Rocket
+  cost=MERGE
+  
+  projectile=projectile.bombardment.slayerrocket
+  showdirection=true
+  
+  lockdelay=MERGE
+  unlockdelay=MERGE
+  
+  text=text.bombardment.slayerrocket
+}
+
+
+text {
+  name=text.bombardment.butcherrocket
+  data=Blah blah hamster blah yacht blah blah blah monocle polish
+}
+
+warhead {
+  name=warhead.bombardment.butcherrocket
+  radiusdamage=MERGE exotic
+  radiusfalloff=5.5
+  wallremovalradius=2.75
+}
+
+projectile {
+  name=projectile.bombardment.butcherrocket
+  motion=missile
+  
+  velocity=180
+  missile_stabstart=0.0
+  missile_stabilization=4
+  missile_sidelaunch=2
+  missile_backlaunch=0
+  
+  thickness_visual=3x
+  length=2x
+  toughness=2
+  
+  color=0.9,0.8,0.5
+  
+  warhead=warhead.bombardment.butcherrocket
+}
+
+bombardment {
+  name=ROOT.Bombardment.Butcher Rocket
+  cost=MERGE
+  
+  projectile=projectile.bombardment.butcherrocket
+  showdirection=true
+  
+  lockdelay=MERGE
+  unlockdelay=MERGE
+  
+  text=text.bombardment.butcherrocket
+}
+
+
+text {
+  name=text.bombardment.eliminatorrocket
+  data=Blah blah hamster blah yacht blah blah blah monocle polish
+}
+
+warhead {
+  name=warhead.bombardment.eliminatorrocket
+  radiusdamage=MERGE exotic
+  radiusfalloff=6
+  wallremovalradius=3
+}
+
+projectile {
+  name=projectile.bombardment.eliminatorrocket
+  motion=missile
+  
+  velocity=180
+  missile_stabstart=0.0
+  missile_stabilization=4
+  missile_sidelaunch=2
+  missile_backlaunch=0
+  
+  thickness_visual=3x
+  length=2x
+  toughness=2
+  
+  color=0.9,0.8,0.5
+  
+  warhead=warhead.bombardment.eliminatorrocket
+}
+
+bombardment {
+  name=ROOT.Bombardment.Eliminator Rocket
+  cost=MERGE
+  
+  projectile=projectile.bombardment.eliminatorrocket
+  showdirection=true
+  
+  lockdelay=MERGE
+  unlockdelay=MERGE
+  
+  text=text.bombardment.eliminatorrocket
+}
+
+
+text {
+  name=text.bombardment.liquidatorrocket
+  data=Blah blah hamster blah yacht blah blah blah monocle polish
+}
+
+warhead {
+  name=warhead.bombardment.liquidatorrocket
+  radiusdamage=MERGE exotic
+  radiusfalloff=6.5
+  wallremovalradius=3.25
+}
+
+projectile {
+  name=projectile.bombardment.liquidatorrocket
+  motion=missile
+  
+  velocity=180
+  missile_stabstart=0.0
+  missile_stabilization=4
+  missile_sidelaunch=2
+  missile_backlaunch=0
+  
+  thickness_visual=3x
+  length=2x
+  toughness=2
+  
+  color=0.9,0.8,0.5
+  
+  warhead=warhead.bombardment.liquidatorrocket
+}
+
+bombardment {
+  name=ROOT.Bombardment.Liquidator Rocket
+  cost=MERGE
+  
+  projectile=projectile.bombardment.liquidatorrocket
+  showdirection=true
+  
+  lockdelay=MERGE
+  unlockdelay=MERGE
+  
+  text=text.bombardment.liquidatorrocket
+}
