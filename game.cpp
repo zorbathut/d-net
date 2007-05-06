@@ -276,6 +276,8 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
         deaded /= len(deaded);
       deaded.y *= -1;
       bombards[j].pos += Coord2(deaded);
+      if(len(keys[j].udlrax) > 0.2)
+        bombards[j].d = -getAngle(keys[j].udlrax);
       bombards[j].pos.x = max(bombards[j].pos.x, gmbr.sx);
       bombards[j].pos.y = max(bombards[j].pos.y, gmbr.sy);
       bombards[j].pos.x = min(bombards[j].pos.x, gmbr.ex);
@@ -286,9 +288,11 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
         bombards[j].timer = round(players[j]->getBombardment((int)bombardment_tier).lockdelay() * FPS);
       }
     } else if(bombards[j].state == BombardmentState::BS_FIRING) {
+      if(len(keys[j].udlrax) > 0.2)
+        bombards[j].d = -getAngle(keys[j].udlrax);
       bombards[j].timer--;
       if(bombards[j].timer <= 0) {
-        detonateBombardment(players[j]->getBombardment((int)bombardment_tier), bombards[j].pos, 0, GamePlayerContext(&tanks[j], &projectiles[j], gic));
+        detonateBombardment(players[j]->getBombardment((int)bombardment_tier), bombards[j].pos, bombards[j].d, GamePlayerContext(&tanks[j], &projectiles[j], gic));
         bombards[j].state = BombardmentState::BS_COOLDOWN;
         bombards[j].timer = round(players[j]->getBombardment((int)bombardment_tier).unlockdelay() * FPS);
       }
@@ -538,6 +542,13 @@ void Game::renderToScreen(const vector<const Player *> &players, GameMetacontext
         setColor(Color(1.0, 1.0, 1.0));
         float ps = (float)bombards[i].timer / (players[i]->getBombardment((int)bombardment_tier).lockdelay() * FPS);
         drawCirclePieces(bombards[i].pos, 1 - ps, 4 * ps);
+        if(players[i]->getBombardment((int)bombardment_tier).showdirection()) {
+          vector<Float2> arrow;
+          arrow.push_back(makeAngle(bombards[i].d - 0.2) * 4 + bombards[i].pos.toFloat());
+          arrow.push_back(makeAngle(bombards[i].d) * 6 + bombards[i].pos.toFloat());
+          arrow.push_back(makeAngle(bombards[i].d + 0.2) * 4 + bombards[i].pos.toFloat());
+          drawLinePath(arrow, 0.5);
+        }
       } else if(bombards[i].state == BombardmentState::BS_COOLDOWN) {
         setColor(tanks[i].getColor() * 0.5);
         drawCirclePieces(bombards[i].pos, 0.3, 4);

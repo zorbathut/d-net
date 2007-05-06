@@ -427,6 +427,8 @@ public:
   float lockdelay() const;
   float unlockdelay() const;
 
+  bool showdirection() const;
+
   vector<IDBWarheadAdjust> warheads() const;
   vector<IDBProjectileAdjust> projectiles() const;
   

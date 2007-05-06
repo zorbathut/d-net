@@ -264,6 +264,10 @@ IDBUpgradeAdjust::IDBUpgradeAdjust(const IDBUpgrade *in_idb, const IDBTank *in_t
 float IDBBombardmentAdjust::lockdelay() const { return idb->lockdelay / adjust.adjustmentfactor(IDBAdjustment::BOMBARDMENT_SPEED); };
 float IDBBombardmentAdjust::unlockdelay() const { return idb->unlockdelay / adjust.adjustmentfactor(IDBAdjustment::BOMBARDMENT_SPEED); };
 
+bool IDBBombardmentAdjust::showdirection() const {
+  return idb->showdirection;
+}
+
 vector<IDBWarheadAdjust> IDBBombardmentAdjust::warheads() const {
   CHECK(valid_level);
   vector<IDBWarheadAdjust> rv;

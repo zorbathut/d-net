@@ -18,6 +18,7 @@ class BombardmentState {
 public:
   enum { BS_OFF, BS_SPAWNING, BS_ACTIVE, BS_FIRING, BS_COOLDOWN, BS_LAST };
   Coord2 pos;
+  float d;
   int timer;
   int state;
   
