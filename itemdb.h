@@ -191,7 +191,10 @@ struct IDBUpgrade {
 };
 
 struct IDBBombardment {
-  const IDBWarhead *warhead;
+  vector<const IDBWarhead *> warheads;
+  vector<const IDBProjectile *> projectiles;
+  
+  bool showdirection;
 
   float lockdelay;
   float unlockdelay;
@@ -421,10 +424,14 @@ public:
   float lockdelay() const;
   float unlockdelay() const;
 
-  IDBWarheadAdjust warhead() const;
+  vector<IDBWarheadAdjust> warheads() const;
+  vector<IDBProjectileAdjust> projectiles() const;
   
   Money cost() const;
   Money sellcost() const;
+
+  float stats_damagePerShot() const;
+  float stats_damagePerShotType(int type) const;
 
   IDBBombardmentAdjust(const IDBBombardment *in_idb, const IDBAdjustment &in_adjust, int blevel);
 };

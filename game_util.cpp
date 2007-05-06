@@ -145,6 +145,14 @@ void detonateWarheadDamageOnly(const IDBWarheadAdjust &warhead, Tank *impact, co
       radius[i].second->takeDamage(warhead.radiusdamage() / warhead.radiusfalloff() * (warhead.radiusfalloff() - radius[i].first));
 }
 
+void detonateBombardment(const IDBBombardmentAdjust &bombard, Coord2 pos, float direction, const GamePlayerContext &gpc) {
+  for(int i = 0; i < bombard.warheads().size(); i++)
+    detonateWarhead(bombard.warheads()[i], pos, direction, Coord2(0, 0), NULL, gpc, 1.0, false, true);
+  
+  for(int i = 0; i < bombard.projectiles().size(); i++)
+    gpc.projpack->add(Projectile(pos, direction, bombard.projectiles()[i], gpc.gic->rng));
+}
+
 void deployProjectile(const IDBDeployAdjust &deploy, const DeployLocation &location, const GamePlayerContext &gpc, vector<float> *tang) {
   
   int type = deploy.type();

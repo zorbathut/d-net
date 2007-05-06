@@ -231,7 +231,7 @@ void ShopInfo::renderFrame(Float4 bounds, float fontsize, Float4 inset, const Pl
     kvp.print("Total average damage", prettyFloatFormat(player->adjustGlory(glory).stats_averageDamage()));
   } else if(bombardment) {
     ShopKVPrinter kvp(bounds, fontsize, fontshift);
-    kvp.print("Damage per hit", prettyFloatFormat(player->adjustBombardment(bombardment, 0).warhead().stats_damagePerShot()));
+    kvp.print("Damage per hit", prettyFloatFormat(player->adjustBombardment(bombardment, 0).stats_damagePerShot()));
     kvp.print("Firing delay", prettyFloatFormat(player->adjustBombardment(bombardment, 0).lockdelay()) + " seconds");
     kvp.print("Cooldown", prettyFloatFormat(player->adjustBombardment(bombardment, 0).unlockdelay()) + " second");
   } else if(upgrade) {

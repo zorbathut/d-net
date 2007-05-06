@@ -346,7 +346,7 @@ Color HierarchyNode::getColor() const {
   } else if(type == HNT_BOMBARDMENT) {
     int dmg = -1;
     for(int i = 0; i < IDBAdjustment::DAMAGE_LAST; i++) {
-      if(IDBBombardmentAdjust(bombardment, IDBAdjustment(), 0).warhead().stats_damagePerShotType(i) != 0) {
+      if(IDBBombardmentAdjust(bombardment, IDBAdjustment(), 0).stats_damagePerShotType(i) != 0) {
         if(dmg == -1) {
           dmg = i;
         } else {
@@ -955,7 +955,10 @@ void parseBombardment(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   string name;
   IDBBombardment *titem = prepareName(chunk, &bombardmentclasses, reload, &name);
   
-  titem->warhead = parseSubclass(chunk->consume("warhead"), warheadclasses);
+  titem->warheads = parseSubclassSet(chunk, "warhead", warheadclasses);
+  titem->projectiles = parseSubclassSet(chunk, "projectile", projectileclasses);
+  
+  titem->showdirection = parseWithDefault(chunk, "showdirection", false);
   
   titem->base_cost = moneyFromString(chunk->consume("cost"));
 

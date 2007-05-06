@@ -264,10 +264,40 @@ IDBUpgradeAdjust::IDBUpgradeAdjust(const IDBUpgrade *in_idb, const IDBTank *in_t
 float IDBBombardmentAdjust::lockdelay() const { return idb->lockdelay / adjust.adjustmentfactor(IDBAdjustment::BOMBARDMENT_SPEED); };
 float IDBBombardmentAdjust::unlockdelay() const { return idb->unlockdelay / adjust.adjustmentfactor(IDBAdjustment::BOMBARDMENT_SPEED); };
 
-IDBWarheadAdjust IDBBombardmentAdjust::warhead() const { CHECK(valid_level); return IDBWarheadAdjust(idb->warhead, adjust); };
+vector<IDBWarheadAdjust> IDBBombardmentAdjust::warheads() const {
+  CHECK(valid_level);
+  vector<IDBWarheadAdjust> rv;
+  for(int i = 0; i < idb->warheads.size(); i++)
+    rv.push_back(IDBWarheadAdjust(idb->warheads[i], adjust));
+  return rv;
+}
+vector<IDBProjectileAdjust> IDBBombardmentAdjust::projectiles() const {
+  CHECK(valid_level);
+  vector<IDBProjectileAdjust> rv;
+  for(int i = 0; i < idb->projectiles.size(); i++)
+    rv.push_back(IDBProjectileAdjust(idb->projectiles[i], adjust));
+  return rv;
+}
 
 Money IDBBombardmentAdjust::cost() const { return idb->base_cost; };
 Money IDBBombardmentAdjust::sellcost() const { return cost() * adjust.recyclevalue(); };
+
+float IDBBombardmentAdjust::stats_damagePerShot() const {
+  float accum = 0;
+  for(int i = 0; i < warheads().size(); i++)
+    accum += warheads()[i].stats_damagePerShot();
+  for(int i = 0; i < projectiles().size(); i++)
+    accum += projectiles()[i].stats_damagePerShot();
+  return accum;
+}
+float IDBBombardmentAdjust::stats_damagePerShotType(int type) const {
+  // Sometimes I'm clever.
+  IDBAdjustment adj = adjust;
+  for(int i = 0; i < IDBAdjustment::DAMAGE_LAST; i++)
+    if(i != type)
+      adj.adjusts[i] = -100;
+  return IDBBombardmentAdjust(idb, adj, 0).stats_damagePerShot();
+}
 
 IDBBombardmentAdjust::IDBBombardmentAdjust(const IDBBombardment *in_idb, const IDBAdjustment &in_adjust, int in_bombardlevel) {
   idb = in_idb; adjust = in_adjust;

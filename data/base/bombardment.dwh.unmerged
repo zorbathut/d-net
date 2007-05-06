@@ -410,21 +410,11 @@ projectile {
   warhead=warhead.bombardment.orbitalmines
 }
 
-deploy {
-  name=deploy.bombardment.orbitalmines.deployer
-  projectile=projectile.bombardment.orbitalmines
-}
-
-warhead {
-  name=warhead.bombardment.orbitalmines.deployer
-  deploy=deploy.bombardment.orbitalmines.deployer
-}
-
 bombardment {
   name=ROOT.Bombardment.Orbital Mines
   cost=MERGE
   
-  warhead=warhead.bombardment.orbitalmines.deployer
+  projectile=projectile.bombardment.orbitalmines
   
   lockdelay=MERGE
   unlockdelay=MERGE
@@ -455,21 +445,11 @@ projectile {
   warhead=warhead.bombardment.minelauncher
 }
 
-deploy {
-  name=deploy.bombardment.minelauncher.deployer
-  projectile=projectile.bombardment.minelauncher
-}
-
-warhead {
-  name=warhead.bombardment.minelauncher.deployer
-  deploy=deploy.bombardment.minelauncher.deployer
-}
-
 bombardment {
   name=ROOT.Bombardment.Mine Launcher
   cost=MERGE
   
-  warhead=warhead.bombardment.minelauncher.deployer
+  projectile=projectile.bombardment.minelauncher
   
   lockdelay=MERGE
   unlockdelay=MERGE
@@ -500,21 +480,11 @@ projectile {
   warhead=warhead.bombardment.minebooster
 }
 
-deploy {
-  name=deploy.bombardment.minebooster.deployer
-  projectile=projectile.bombardment.minebooster
-}
-
-warhead {
-  name=warhead.bombardment.minebooster.deployer
-  deploy=deploy.bombardment.minebooster.deployer
-}
-
 bombardment {
   name=ROOT.Bombardment.Mine Booster
   cost=MERGE
   
-  warhead=warhead.bombardment.minebooster.deployer
+  projectile=projectile.bombardment.minebooster
   
   lockdelay=MERGE
   unlockdelay=MERGE
@@ -545,21 +515,11 @@ projectile {
   warhead=warhead.bombardment.blastmines
 }
 
-deploy {
-  name=deploy.bombardment.blastmines.deployer
-  projectile=projectile.bombardment.blastmines
-}
-
-warhead {
-  name=warhead.bombardment.blastmines.deployer
-  deploy=deploy.bombardment.blastmines.deployer
-}
-
 bombardment {
   name=ROOT.Bombardment.Blast Mines
   cost=MERGE
   
-  warhead=warhead.bombardment.blastmines.deployer
+  projectile=projectile.bombardment.blastmines
   
   lockdelay=MERGE
   unlockdelay=MERGE
@@ -590,21 +550,11 @@ projectile {
   warhead=warhead.bombardment.shockmines
 }
 
-deploy {
-  name=deploy.bombardment.shockmines.deployer
-  projectile=projectile.bombardment.shockmines
-}
-
-warhead {
-  name=warhead.bombardment.shockmines.deployer
-  deploy=deploy.bombardment.shockmines.deployer
-}
-
 bombardment {
   name=ROOT.Bombardment.Shock Mines
   cost=MERGE
   
-  warhead=warhead.bombardment.shockmines.deployer
+  projectile=projectile.bombardment.shockmines
   
   lockdelay=MERGE
   unlockdelay=MERGE
@@ -635,24 +585,62 @@ projectile {
   warhead=warhead.bombardment.mineporter
 }
 
-deploy {
-  name=deploy.bombardment.mineporter.deployer
-  projectile=projectile.bombardment.mineporter
-}
-
-warhead {
-  name=warhead.bombardment.mineporter.deployer
-  deploy=deploy.bombardment.mineporter.deployer
-}
-
 bombardment {
   name=ROOT.Bombardment.Mine 'Porter
   cost=MERGE
   
-  warhead=warhead.bombardment.mineporter.deployer
+  projectile=projectile.bombardment.mineporter
   
   lockdelay=MERGE
   unlockdelay=MERGE
   
   text=text.bombardment.mineporter
+}
+
+###########################
+#
+#   Rockets
+
+text {
+  name=text.bombardment.explorerrocket
+  data=Blah blah hamster blah yacht blah blah blah monocle polish
+}
+
+warhead {
+  name=warhead.bombardment.explorerrocket
+  radiusdamage=MERGE exotic
+  radiusfalloff=4
+  wallremovalradius=2
+}
+
+projectile {
+  name=projectile.bombardment.explorerrocket
+  motion=missile
+  
+  velocity=180
+  missile_stabstart=0.0
+  missile_stabilization=4
+  missile_sidelaunch=2
+  missile_backlaunch=0
+  
+  thickness_visual=3x
+  length=2x
+  toughness=2
+  
+  color=0.9,0.8,0.5
+  
+  warhead=warhead.bombardment.explorerrocket
+}
+
+bombardment {
+  name=ROOT.Bombardment.Explorer Rocket
+  cost=MERGE
+  
+  projectile=projectile.bombardment.explorerrocket
+  showdirection=true
+  
+  lockdelay=MERGE
+  unlockdelay=MERGE
+  
+  text=text.bombardment.explorerrocket
 }

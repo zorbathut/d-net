@@ -1,8 +1,9 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - EMP glory resistance
-  - Add colors to bombardment
   - Reverse bombardment order
+  - Fix it so that projectiles launched by bombardments don't get kill credits
+  - Fix it so you can't launch projectiles inside walls
   - Many many more weapons
     - Bombardment
     - Trap
