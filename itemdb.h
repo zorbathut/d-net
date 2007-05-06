@@ -58,20 +58,23 @@ struct IDBFaction {
 };
 
 struct IDBEffects {
+  enum IDBEType { EFT_PARTICLE };
+  
+  IDBEType type;
   int quantity;
 
   // percentage
-  float inertia;
-  float reflect;
+  float particle_inertia;
+  float particle_reflect;
   
   // m/s (times gaussian)
-  float spread;
+  float particle_spread;
 
-  float slowdown;
-  float lifetime;
+  float particle_slowdown;
+  float particle_lifetime;
 
-  float radius;
-  Color color;
+  float particle_radius;
+  Color particle_color;
 };
 
 class IDBDeploy; // yay circles

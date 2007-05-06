@@ -692,18 +692,27 @@ void parseLauncher(kvData *chunk, bool reload, ErrorAccumulator &accum) {
 void parseEffects(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   IDBEffects *titem = prepareName(chunk, &effectsclasses, reload, "effects");
   
+  string effecttype = chunk->consume("type");
+  
+  if(effecttype == "particle") {
+    titem->type = IDBEffects::EFT_PARTICLE;
+    
+    titem->particle_inertia = parseWithDefault(chunk, "inertia", 0.f);
+    titem->particle_reflect = parseWithDefault(chunk, "reflect", 0.f);
+    
+    titem->particle_spread = atof(chunk->consume("spread").c_str());
+    
+    titem->particle_slowdown = atof(chunk->consume("slowdown").c_str());
+    titem->particle_lifetime = atof(chunk->consume("lifetime").c_str());
+    
+    titem->particle_radius = atof(chunk->consume("radius").c_str());
+    titem->particle_color = colorFromString(chunk->consume("color"));
+  } else {
+    CHECK(0);
+  }
+  
   titem->quantity = atoi(chunk->consume("quantity").c_str());
   
-  titem->inertia = parseWithDefault(chunk, "inertia", 0.f);
-  titem->reflect = parseWithDefault(chunk, "reflect", 0.f);
-  
-  titem->spread = atof(chunk->consume("spread").c_str());
-  
-  titem->slowdown = atof(chunk->consume("slowdown").c_str());
-  titem->lifetime = atof(chunk->consume("lifetime").c_str());
-  
-  titem->radius = atof(chunk->consume("radius").c_str());
-  titem->color = colorFromString(chunk->consume("color"));
 }
 
 void parseStats(kvData *chunk, bool reload, ErrorAccumulator &accum) {

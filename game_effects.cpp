@@ -175,16 +175,16 @@ private:
 smart_ptr<GfxEffects> GfxBlast(Float2 center, float radius, Color bright, Color dim) {
   return smart_ptr<GfxEffects>(new GfxEffectsBlast(center, radius, bright, dim)); }
 
-class GfxEffectsIdb : public GfxEffects {
+class GfxEffectsIdbParticle : public GfxEffects {
 public:
     
   virtual void render() const {
     setBaseColor();
-    drawPoint(center + velocity * (pow(effect->slowdown, getAge()) / log(effect->slowdown) - 1 / log(effect->slowdown)), effect->radius);  // calculus FTW
+    drawPoint(center + velocity * (pow(effect->particle_slowdown, getAge()) / log(effect->particle_slowdown) - 1 / log(effect->particle_slowdown)), effect->particle_radius);  // calculus FTW
   }
   
-  GfxEffectsIdb(Float2 center, float normal, Float2 in_velocity, const IDBEffects *effect) : GfxEffects(effect->lifetime, effect->color), center(center), effect(effect) {
-    velocity = in_velocity * effect->inertia + reflect(in_velocity, normal) * effect->reflect + makeAngle(unsync().frand() * 2 * PI) * unsync().gaussian() * effect->spread;
+  GfxEffectsIdbParticle(Float2 center, float normal, Float2 in_velocity, const IDBEffects *effect) : GfxEffects(effect->particle_lifetime, effect->particle_color), center(center), effect(effect) {
+    velocity = in_velocity * effect->particle_inertia + reflect(in_velocity, normal) * effect->particle_reflect + makeAngle(unsync().frand() * 2 * PI) * unsync().gaussian() * effect->particle_spread;
   };
   
 private:
@@ -195,4 +195,9 @@ private:
 };
   
 smart_ptr<GfxEffects> GfxIdb(Float2 center, float normal, Float2 velocity, const IDBEffects *effect) {
-  return smart_ptr<GfxEffects>(new GfxEffectsIdb(center, normal, velocity, effect)); }
+  if(effect->type == IDBEffects::EFT_PARTICLE) {
+    return smart_ptr<GfxEffects>(new GfxEffectsIdbParticle(center, normal, velocity, effect));
+  } else {
+    CHECK(0);
+  }
+}

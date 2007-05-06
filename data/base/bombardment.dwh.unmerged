@@ -158,6 +158,7 @@ text {
 
 effects {
   name=effects.railgun
+  type=particle
 
   quantity=16
    
@@ -197,6 +198,7 @@ text {
 
 effects {
   name=effects.aprailgun
+  type=particle
 
   quantity=18
    
@@ -235,6 +237,7 @@ text {
 }
 effects {
   name=effects.heavyrailgun
+  type=particle
 
   quantity=20
    
@@ -274,6 +277,7 @@ text {
 
 effects {
   name=effects.sabotrailgun
+  type=particle
 
   quantity=22
    
@@ -313,6 +317,7 @@ text {
 
 effects {
   name=effects.supersonicrailgun
+  type=particle
 
   quantity=24
    
@@ -352,6 +357,7 @@ text {
 
 effects {
   name=effects.shockwaverailgun
+  type=particle
 
   quantity=26
    

@@ -175,6 +175,7 @@ weapon {
 
 effects {
   name=effects.efftester1
+  type=particle
   
   quantity=4
   
@@ -192,6 +193,7 @@ effects {
 
 effects {
   name=effects.efftester2
+  type=particle
   
   quantity=4
   

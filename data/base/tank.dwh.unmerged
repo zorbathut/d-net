@@ -25,6 +25,7 @@ text {
 
 effects {
   name=effects.sparker1
+  type=particle
 
   quantity=4
   
@@ -40,6 +41,7 @@ effects {
 
 effects {
   name=effects.sparker2
+  type=particle
 
   quantity=4
   
@@ -55,6 +57,7 @@ effects {
 
 effects {
   name=effects.sparker3
+  type=particle
 
   quantity=4
   
