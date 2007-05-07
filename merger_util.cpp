@@ -50,7 +50,7 @@ string splice(const string &source, float value) {
   int replacements = 0;
   vector<string> radidam = tokenize(source, " ");
   for(int i = 0; i < radidam.size(); i++) {
-    static const boost::regex expression("MERGE\\(([0-9]*)\\)");
+    static const boost::regex expression("MERGE(?:\\(([0-9]*)\\))?");
     boost::smatch match;
     if(boost::regex_match(radidam[i], match, expression)) {
       if(match[1].matched) {

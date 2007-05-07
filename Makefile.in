@@ -2,17 +2,17 @@
 STDCPPFLAGS := @STDCPPFLAGS@ -Wall -Wno-sign-compare -Wno-uninitialized -g -O2
 STDLDFLAGS := -g
 
-GAMESOURCES := main core game timer debug gfx collide gamemap util rng args interface metagame itemdb parse dvec2 input level coord ai inputsnag os float cfcommon coord_boolean player itemdb_adjust metagame_config shop shop_demo shop_info game_ai game_effects color metagame_tween cfc game_tank game_util game_projectile socket httpd recorder generators audio itemdb_httpd test
+GAMESOURCES := main core game timer debug gfx collide gamemap util rng args interface metagame itemdb parse dvec2 input level coord ai inputsnag os float cfcommon coord_boolean player itemdb_adjust metagame_config shop shop_demo shop_info game_ai game_effects color metagame_tween cfc game_tank game_util game_projectile socket httpd recorder generators audio itemdb_httpd test regex
 GAMECPPFLAGS := @GAMECPPFLAGS@ $(STDCPPFLAGS) -DNOEXIT
-GAMELDFLAGS := @GAMELDFLAGS@ -g $(STDLDFLAGS)
+GAMELDFLAGS := @GAMELDFLAGS@ -g $(STDLDFLAGS) -lboost_regex-mgw-mt
 
-EDITORSOURCES := vecedit vecedit_main debug os util gfx float coord parse color dvec2 cfcommon input itemdb itemdb_adjust args rng
+EDITORSOURCES := vecedit vecedit_main debug os util gfx float coord parse color dvec2 cfcommon input itemdb itemdb_adjust args regex rng
 # rng is not really needed since it won't be linked in at all, but it's easier to just include it
 EDITORCPPFLAGS := `@WX@ --cxxflags` $(STDCPPFLAGS)
-EDITORLDFLAGS := `@WX@ --libs --gl-libs` -lopengl32 $(STDLDFLAGS)
+EDITORLDFLAGS := `@WX@ --libs --gl-libs` -lopengl32 $(STDLDFLAGS) -lboost_regex-gcc-mt
 
 FUNCTORSOURCES := functor_gen debug os util parse
-MERGERSOURCES := merger debug os util parse itemdb itemdb_adjust args color dvec2 float coord cfcommon merger_weapon merger_bombardment merger_tanks merger_glory merger_util rng
+MERGERSOURCES := merger debug os util parse itemdb itemdb_adjust args color dvec2 float coord cfcommon merger_weapon merger_bombardment merger_tanks merger_glory merger_util regex rng
 # rng is not really needed since it won't be linked in at all, but it's easier to just include it
 CONSOLECPPFLAGS := $(STDCPPFLAGS)
 CONSOLELDFLAGS := $(STDLDFLAGS) -lboost_regex-gcc-mt
@@ -92,7 +92,7 @@ rm -f \\\\192.168.100.4\\zorba\\www\\d-net\\$(PACKAGESUBDIR)\\Dnet\ Latest\ Wind
 mkdir deploy
 cp d-net.exe deploy
 cp c:/cygwin/usr/local/bin/SDL.dll deploy
-cp /usr/ogg/bin/* deploy
+cp /usr/ogg/bin/*.dll deploy
 cp -r data deploy
 mkdir deploy/dumps
 cp dumps/readme.txt deploy/dumps

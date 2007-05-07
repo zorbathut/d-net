@@ -6,6 +6,7 @@
 #include "parse.h"
 #include "util.h"
 #include "debug.h"
+#include "rng.h"
 
 #include <fstream>
 
@@ -882,6 +883,14 @@ void drawGrid(float spacing, float size) {
 void drawCrosshair(const CFC2 &pos, float rad, float weight) {
   drawLine(pos->x - rad, pos->y, pos->x + rad, pos->y, weight);
   drawLine(pos->x, pos->y - rad, pos->x, pos->y + rad, weight);
+}
+
+void drawBlast(const Float2 &center, float rad, float chaos, int vertices) {
+  const float ofs = unsync().frand() * 2 * PI / vertices;
+  vector<Float2> pex;
+  for(int j = 0; j < vertices; j++)
+    pex.push_back(center + makeAngle(j * PI * 2 / vertices + ofs) * rad + Float2(unsync().gaussian(), unsync().gaussian()) * chaos);
+  drawLineLoop(pex, 0.3);
 }
 
 vector<Color> cstack;

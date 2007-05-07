@@ -58,7 +58,7 @@ struct IDBFaction {
 };
 
 struct IDBEffects {
-  enum IDBEType { EFT_PARTICLE };
+  enum IDBEType { EFT_PARTICLE, EFT_IONBLAST };
   
   IDBEType type;
   int quantity;
@@ -75,6 +75,11 @@ struct IDBEffects {
 
   float particle_radius;
   Color particle_color;
+  
+  float ionblast_radius;
+  float ionblast_duration;
+  
+  vector<pair<int, Color> > ionblast_visuals;
 };
 
 class IDBDeploy; // yay circles

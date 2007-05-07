@@ -127,6 +127,7 @@ void drawSpokes(float x, float y, int dupes, int numer, int denom, float len, fl
 void drawGrid(float spacing, float width);
 
 void drawCrosshair(const CFC2 &pos, float rad, float weight);
+void drawBlast(const Float2 &center, float rad, float chaos, int vertices);
 
 /*************
  * Color stack

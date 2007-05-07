@@ -153,12 +153,8 @@ public:
       } else {
         setColor(dim * (1.0 - getAgeFactor()));
       }
-      const float ofs = unsync().frand() * 2 * PI / vertx;
       const float chaos = len(makeAngle(1 * PI * 2 / vertx) - makeAngle(0)) * desrad / 2;
-      vector<Float2> pex;
-      for(int j = 0; j < vertx; j++)
-        pex.push_back(center + makeAngle(j * PI * 2 / vertx + ofs) * desrad + Float2(unsync().sym_frand(), unsync().sym_frand()) * chaos);
-      drawLineLoop(pex, 0.3);
+      drawBlast(center, desrad, chaos, vertx);
     }
   }
 
@@ -184,6 +180,7 @@ public:
   }
   
   GfxEffectsIdbParticle(Float2 center, float normal, Float2 in_velocity, const IDBEffects *effect) : GfxEffects(effect->particle_lifetime, effect->particle_color), center(center), effect(effect) {
+    CHECK(effect->type == IDBEffects::EFT_PARTICLE);
     velocity = in_velocity * effect->particle_inertia + reflect(in_velocity, normal) * effect->particle_reflect + makeAngle(unsync().frand() * 2 * PI) * unsync().gaussian() * effect->particle_spread;
   };
   
@@ -193,10 +190,34 @@ private:
   Float2 velocity;
   const IDBEffects *effect;
 };
+
+class GfxEffectsIdbIonBlast : public GfxEffects {
+public:
+    
+  virtual void render() const {
+    for(int i = 0; i < effect->ionblast_visuals.size(); i++) {
+      setColor(effect->ionblast_visuals[i].second * getAgeFactor());
+      for(int j = 0; j < effect->ionblast_visuals[i].first; j++) {
+        
+      }
+    }
+  }
   
+  GfxEffectsIdbIonBlast(Float2 center, const IDBEffects *effect) : GfxEffects(effect->particle_lifetime, Color(0, 0, 0)), center(center), effect(effect) {
+    CHECK(effect->type == IDBEffects::EFT_PARTICLE);
+  };
+  
+private:
+  
+  Float2 center;
+  const IDBEffects *effect;
+};
+
 smart_ptr<GfxEffects> GfxIdb(Float2 center, float normal, Float2 velocity, const IDBEffects *effect) {
   if(effect->type == IDBEffects::EFT_PARTICLE) {
     return smart_ptr<GfxEffects>(new GfxEffectsIdbParticle(center, normal, velocity, effect));
+  } else if(effect->type == IDBEffects::EFT_IONBLAST) {
+    return smart_ptr<GfxEffects>(new GfxEffectsIdbIonBlast(center, effect));
   } else {
     CHECK(0);
   }

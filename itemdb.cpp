@@ -4,6 +4,7 @@
 #include "args.h"
 #include "parse.h"
 #include "httpd.h"
+#include "regex.h"
 
 #include <fstream>
 #include <numeric>
@@ -517,6 +518,14 @@ template<> float parseSingleItem<float>(const string &val) {
   return atof(val.c_str());
 }
 
+template<> Color parseSingleItem<Color>(const string &val) {
+  return colorFromString(val);
+}
+
+template<> Money parseSingleItem<Money>(const string &val) {
+  return moneyFromString(val);
+}
+
 template<typename T> T parseWithDefault_processing(const string &val, T def) {
   CHECK(val.size());
   if(tolower(val[val.size() - 1]) == 'x') {
@@ -700,18 +709,33 @@ void parseEffects(kvData *chunk, bool reload, ErrorAccumulator &accum) {
     titem->particle_inertia = parseWithDefault(chunk, "inertia", 0.f);
     titem->particle_reflect = parseWithDefault(chunk, "reflect", 0.f);
     
-    titem->particle_spread = atof(chunk->consume("spread").c_str());
+    titem->particle_spread = parseSingleItem<float>(chunk->consume("spread"));
     
-    titem->particle_slowdown = atof(chunk->consume("slowdown").c_str());
-    titem->particle_lifetime = atof(chunk->consume("lifetime").c_str());
+    titem->particle_slowdown = parseSingleItem<float>(chunk->consume("slowdown"));
+    titem->particle_lifetime = parseSingleItem<float>(chunk->consume("lifetime"));
     
-    titem->particle_radius = atof(chunk->consume("radius").c_str());
-    titem->particle_color = colorFromString(chunk->consume("color"));
+    titem->particle_radius = parseSingleItem<float>(chunk->consume("radius"));
+    titem->particle_color = parseSingleItem<Color>(chunk->consume("color"));
+  } else if(effecttype == "ionblast") {
+    titem->type = IDBEffects::EFT_IONBLAST;
+    
+    titem->ionblast_radius = parseSingleItem<float>(chunk->consume("radius"));
+    titem->ionblast_duration = parseSingleItem<float>(chunk->consume("duration"));
+    
+    vector<string> vislist = tokenize(chunk->consume("visuals"), "\n");
+    for(int i = 0; i < vislist.size(); i++) {
+      dprintf("entering match\n");
+      //boost::smatch mch = match(vislist[i], "([0-9]+) (.*)");
+      dprintf("leaving match\n");
+      //titem->ionblast_visuals.push_back(make_pair(parseSingleItem<int>(mch[1]), parseSingleItem<Color>(mch[2])));
+      dprintf("destroying match\n");
+    }
+    dprintf("done\n");
   } else {
     CHECK(0);
   }
   
-  titem->quantity = atoi(chunk->consume("quantity").c_str());
+  titem->quantity = parseWithDefault(chunk, "quantity", 1);
   
 }
 

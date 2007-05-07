@@ -11,8 +11,8 @@ case "${target_os}" in
   cygwin)
     AC_MSG_NOTICE([adding extended boost and ogg directories for cygwin])
 
-    OGGINCLUDE="-I/usr/ogg/include -mno-cygwin" # I'm not sure why my ogg requires this
-    OGGLIB="-L/usr/ogg/lib"
+    OGGINCLUDE="-I/usr/ogg/include -I/usr/mingw/local/include -mno-cygwin" # I'm not sure why my ogg requires this
+    OGGLIB="-L/usr/ogg/lib -I/usr/mingw/local/lib"
     
     STDCPPFLAGS="$STDCPPFLAGS -I/usr/include/boost-1_33_1 -DVECTOR_PARANOIA" # This should really only exist on Zorba's personal hacked headers
     

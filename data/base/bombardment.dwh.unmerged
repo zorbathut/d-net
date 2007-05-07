@@ -875,3 +875,48 @@ bombardment {
   
   text=text.bombardment.liquidatorrocket
 }
+
+###########################
+#
+#   Beams
+
+text {
+  name=text.bombardment.ionbeam
+  data=Blah blah hamster blah yacht blah blah blah monocle polish
+}
+
+effects {
+  name=effects.bombardment.ionbeam
+  type=ionblast
+  
+  radius=4
+  
+  visuals=20 018
+  visuals=5 88f
+  
+  duration=2
+}
+
+warhead {
+  name=warhead.bombardment.ionbeam
+  radiusdamage=MERGE energy
+  radiusfalloff=4
+  wallremovalradius=2
+  
+  radiuscolor_dim=018
+  radiuscolor_bright=88f
+  
+  effects_impact=effects.bombardment.ionbeam
+}
+
+bombardment {
+  name=ROOT.Bombardment.Ion Beam
+  cost=MERGE
+  
+  warhead=warhead.bombardment.ionbeam
+  
+  lockdelay=MERGE
+  unlockdelay=MERGE
+  
+  text=text.bombardment.ionbeam
+}
