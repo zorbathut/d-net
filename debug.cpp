@@ -109,18 +109,18 @@ int dprintf(const char *bort, ...) {
     va_start(args, bort);
     done = vsnprintf(&(buf[0]), buf.size() - 1,  bort, args);
     if(done >= (int)buf.size()) {
-      assert(noresize == false);
-      assert(buf[buf.size() - 2] == 0);
+      //assert(noresize == false);
+      //assert(buf[buf.size() - 2] == 0);
       buf.resize(done + 2);
       done = -1;
       noresize = true;
     } else {
-      assert(done < (int)buf.size());
+      //assert(done < (int)buf.size());
     }
     va_end(args);
   } while(done == buf.size() - 1 || done == -1);
 
-  assert(done < (int)buf.size());
+  //assert(done < (int)buf.size());
 
   outputDebugString(&(buf[0]));
 

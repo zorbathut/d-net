@@ -10,11 +10,11 @@ AC_CANONICAL_TARGET
 case "${target_os}" in
   cygwin)
     AC_MSG_NOTICE([adding extended boost and ogg directories for cygwin])
-
-    OGGINCLUDE="-I/usr/ogg/include -I/usr/mingw/local/include -mno-cygwin" # I'm not sure why my ogg requires this
-    OGGLIB="-L/usr/ogg/lib -I/usr/mingw/local/lib"
     
-    STDCPPFLAGS="$STDCPPFLAGS -I/usr/include/boost-1_33_1 -DVECTOR_PARANOIA" # This should really only exist on Zorba's personal hacked headers
+    CPPFLAGS="-I/usr/mingw/local/include -I/usr/mingw/local/include/boost-1_33_1 -mno-cygwin"
+    LDFLAGS="-L/usr/mingw/local/lib -mno-cygwin"
+    
+    STDCPPFLAGS="$STDCPPFLAGS -DVECTOR_PARANOIA" # This should really only exist on Zorba's personal hacked headers
     
     AC_CHECK_HEADER([windows.h],,AC_MSG_ERROR([Can't find windows.h]))
     
@@ -26,13 +26,17 @@ case "${target_os}" in
     AC_CHECK_LIB([opengl32], [main],,AC_MSG_ERROR([opengl is needed]))
     GAMELDFLAGS="$GAMELDFLAGS -lopengl32"
 
-    AC_PATH_PROG([SDL], [sdl-config], [], [/usr/local/bin:/usr/bin])
+    AC_PATH_PROG([SDL], [sdl-config], [], [/usr/mingw/local/bin:/usr/local/bin:/usr/bin])
     if test "x$SDL" == "x" ; then
       AC_MSG_ERROR([D-Net requires SDL.])
     fi
 
     GAMECPPFLAGS="$GAMECPPFLAGS `$SDL --cflags`"
     GAMELDFLAGS="$GAMELDFLAGS `$SDL --libs`"
+    
+    LDFLAGS="$LDFLAGS"
+    
+    MING="-lmingw32"
 
     ;;
 
@@ -57,25 +61,19 @@ case "${target_os}" in
     ;;
 esac
 
-CPPFLAGS="$STDCPPFLAGS"
 AC_CHECK_HEADER([boost/noncopyable.hpp],,AC_MSG_ERROR([D-Net requires Boost.]))
-CPPFLAGS=""
 
 AC_CHECK_LIB([m], [sin],,AC_MSG_ERROR([libm is needed]))
 GAMELDFLAGS="$GAMELDFLAGS -lm"
 
-CPPFLAGS="$OGGINCLUDE"
-LDFLAGS="$OGGLIB"
 AC_CHECK_HEADER([vorbis/vorbisfile.h],,AC_MSG_ERROR([Can't find a working vorbisfile include anywhere]))
 AC_CHECK_LIB([ogg], [ogg_stream_init],,AC_MSG_ERROR([libogg is needed]))
 AC_CHECK_LIB([vorbis], [vorbis_info_init],,AC_MSG_ERROR([libvorbis is needed]))
 AC_CHECK_LIB([vorbisfile], [ov_open],,AC_MSG_ERROR([libvorbisfile is needed]))
-CPPFLAGS=""
-LDFLAGS=""
 GAMECPPFLAGS="$GAMECPPFLAGS $OGGINCLUDE"
 GAMELDFLAGS="$GAMELDFLAGS $OGGLIB -lvorbisfile -lvorbis -logg"
 
-AC_PATH_PROG([WX], [wx-config], [], [/usr/local/bin:/usr/bin])
+AC_PATH_PROG([WX], [wx-config], [], [/usr/mingw/local/bin:/usr/local/bin:/usr/bin])
 if test "x$WX" == "x" ; then
   AC_MSG_ERROR([D-Net requires WX, kind of.])
 fi
@@ -85,9 +83,13 @@ if test "x$OO" == "x" ; then
   AC_MSG_ERROR([D-Net requires OpenOffice, kind of.])
 fi
 
+STDCPPFLAGS="$STDCPPFLAGS $CPPFLAGS"
+STDLDFLAGS="$LDFLAGS $MING"
+
 AC_SUBST(GAMECPPFLAGS)
 AC_SUBST(GAMELDFLAGS)
 AC_SUBST(STDCPPFLAGS)
+AC_SUBST(STDLDFLAGS)
 AC_SUBST(OO)
 AC_SUBST(WX)
 

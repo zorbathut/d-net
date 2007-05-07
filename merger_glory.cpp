@@ -48,6 +48,8 @@ void mergeGlory(const string &csv, const string &unmerged, const string &merged)
     }
   }
   
+  dprintf("stuph\n");
+  
   set<string> donetdd;
   {
     ofstream ofs(merged.c_str());
@@ -89,6 +91,8 @@ void mergeGlory(const string &csv, const string &unmerged, const string &merged)
       CHECK(0);
     }
   }
+  
+  dprintf("bahm\n");
   
   // Now we load the files in and see how much data our weapons are actually doing.
   addItemFile("data/base/common.dwh");
