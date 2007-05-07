@@ -75,7 +75,7 @@ int main() {
     copy(istream_iterator<char>(sourcefile), istream_iterator<char>(), back_inserter(source));
   }
   
-  FILE *funcfile = fopen("functor.h.tmp", "w");
+  FILE *funcfile = fopen("functor.h.tmp", "wb");
   
   fprintf(funcfile,
     "#ifndef DNET_FUNCTOR\n"
