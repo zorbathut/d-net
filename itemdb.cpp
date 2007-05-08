@@ -359,6 +359,8 @@ Color HierarchyNode::getColor() const {
       return C::inactive_text;
     return nhcolor[dmg];
   } else if(type == HNT_CATEGORY && branches.size()) {
+    if(name == "Bombardment")
+      return C::inactive_text; // hackety hack hack
     Color col = branches[0].getColor();
     for(int i = 1; i < branches.size(); i++)
       if(branches[i].getColor() != col)
@@ -415,7 +417,7 @@ HierarchyNode *findNamedNode(const string &in, int postcut) {
       }
     }
     if(fc == 0) {
-      dprintf("Parent node not found for item hierarchy!\n");
+      dprintf("Parent node %s not found for item hierarchy!\n", in.c_str());
     }
     CHECK(fc == 1);
     CHECK(fi != -1);

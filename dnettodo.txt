@@ -2,7 +2,6 @@
 - "Finish the Damn Game" Initiative
   - Run header culler again :D
   - EMP glory resistance
-  - Reverse bombardment order
   - Fix it so you can't launch projectiles inside walls
   - Add DPS projectile
   - Many many more weapons

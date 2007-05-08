@@ -210,55 +210,69 @@ void Shop::renormalize(HierarchyNode &item, const Player *player, int playercoun
   for(int i = 0; i < item.branches.size(); i++) {
     bool keep = true;
     
+    HierarchyNode &titem = item.branches[i];
+    
     // Various upgrade-related stuff
-    if(keep && item.branches[i].type == HierarchyNode::HNT_UPGRADE) {
+    if(keep && titem.type == HierarchyNode::HNT_UPGRADE) {
       
       // If the upgrade isn't available, we don't include it
-      if(keep && !player->isUpgradeAvailable(item.branches[i].upgrade))
+      if(keep && !player->isUpgradeAvailable(titem.upgrade))
         keep = false;
       
       // If there's a prereq and the player doesn't own it, we don't include it
-      if(keep && item.branches[i].upgrade->prereq && !player->hasUpgrade(item.branches[i].upgrade->prereq)) {
-        CHECK(player->isUpgradeAvailable(item.branches[i].upgrade->prereq)); // we do make sure the player *could* own it, just for safety's sake
+      if(keep && titem.upgrade->prereq && !player->hasUpgrade(titem.upgrade->prereq)) {
+        CHECK(player->isUpgradeAvailable(titem.upgrade->prereq)); // we do make sure the player *could* own it, just for safety's sake
         keep = false;
       }
       
       // If there's a postreq and the player already has this one, we don't include it
-      if(keep && item.branches[i].upgrade->has_postreq && player->hasUpgrade(item.branches[i].upgrade))
+      if(keep && titem.upgrade->has_postreq && player->hasUpgrade(titem.upgrade))
         keep = false;
     }
     
     // More prereqs with the implant slot
-    if(keep && item.branches[i].type == HierarchyNode::HNT_IMPLANTSLOT) {
+    if(keep && titem.type == HierarchyNode::HNT_IMPLANTSLOT) {
       // If there's a prereq and the player doesn't own it, we don't include it
-      if(keep && item.branches[i].implantslot->prereq && !player->hasImplantSlot(item.branches[i].implantslot->prereq))
+      if(keep && titem.implantslot->prereq && !player->hasImplantSlot(titem.implantslot->prereq))
         keep = false;
       
       // If there's a postreq and the player already has this one, we don't include it
-      if(keep && item.branches[i].implantslot->has_postreq && player->hasImplantSlot(item.branches[i].implantslot))
+      if(keep && titem.implantslot->has_postreq && player->hasImplantSlot(titem.implantslot))
         keep = false;
     }
     
     // If this is the Bombardment category, and there's only 2 players, we get rid of it entirely (TODO: how do you sell bombardment if you're stuck with 2 players?)
-    if(keep && FLAGS_cullShopTree && item.branches[i].type == HierarchyNode::HNT_CATEGORY && item.branches[i].cat_restrictiontype == HierarchyNode::HNT_BOMBARDMENT && playercount <= 2)
+    if(keep && FLAGS_cullShopTree && titem.type == HierarchyNode::HNT_CATEGORY && titem.cat_restrictiontype == HierarchyNode::HNT_BOMBARDMENT && playercount <= 2)
       keep = false;
     
     // If the item isn't supposed to spawn yet, we get rid of it.
-    if(keep && item.branches[i].spawncash > highestCash)
+    if(keep && titem.spawncash > highestCash)
       keep = false;
     
     if(keep) {
-      renormalize(item.branches[i], player, playercount, highestcash);
+      renormalize(titem, player, playercount, highestcash);
       
       // Now that the subitem is normalized, we see if we need to eliminate it anyway. This only applies to categories.
-      if(item.branches[i].type == HierarchyNode::HNT_CATEGORY) {
-        // If we have tanks, bombardment, or glory devices, and there's only one item left, it's the default item.
-        if(item.branches[i].cat_restrictiontype == HierarchyNode::HNT_BOMBARDMENT || item.branches[i].cat_restrictiontype == HierarchyNode::HNT_GLORY || item.branches[i].cat_restrictiontype == HierarchyNode::HNT_TANK) {
-          CHECK(item.branches[i].branches.size() > 0);
-          if(item.branches[i].branches.size() == 1)
+      if(titem.type == HierarchyNode::HNT_CATEGORY) {
+
+        if(titem.cat_restrictiontype == HierarchyNode::HNT_GLORY || titem.cat_restrictiontype == HierarchyNode::HNT_TANK) {
+          // If we have tanks or glory devices, and there's only one item left, it's the default item.
+          CHECK(titem.branches.size() > 0);
+          if(titem.branches.size() == 1)
             keep = false;
-        } else if(item.branches[i].cat_restrictiontype == HierarchyNode::HNT_IMPLANT_CAT) {
-          if(item.branches[i].branches.size() == 0)
+        } else if(titem.cat_restrictiontype == HierarchyNode::HNT_BOMBARDMENT) {
+          // If it's bombardment, life is more complicated. 
+          if(titem.branches.size() == 0)
+            keep = false;
+          if(titem.branches.size() == 1 && titem.branches[0].type == HierarchyNode::HNT_BOMBARDMENT && titem.branches[0].bombardment == defaultBombardment())
+            keep = false;
+          if(titem.branches.size() == 1 && titem.branches[0].type == HierarchyNode::HNT_CATEGORY) {
+            CHECK(keep);
+            vector<HierarchyNode> nod = titem.branches[0].branches;
+            titem.branches = nod;  // augh
+          }
+        } else if(titem.cat_restrictiontype == HierarchyNode::HNT_IMPLANT_CAT) {
+          if(titem.branches.size() == 0)
             keep = false;
         }
       }

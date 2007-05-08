@@ -28,7 +28,7 @@ template<typename T> string findName(const string &thistoken, const map<string, 
     for(int i = 0; i < itr->first.size(); i++)
       if(isalpha(itr->first[i]) || thistoken[i] == '.')
         tx += tolower(itr->first[i]);
-    dprintf("Comparing %s and %s\n", tx.c_str(), tts.c_str());
+    //dprintf("Comparing %s and %s\n", tx.c_str(), tts.c_str());
     if(tx == tts) {
       CHECK(!ct.size());
       ct = itr->first;

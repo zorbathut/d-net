@@ -2,46 +2,26 @@
 #
 #   Bombs
 
+hierarchy {
+  name=ROOT.Bombardment.Bombs
+}
+
 text {
-  name=text.bombardment.minibomb
-  data=To combat audience boredom, the Destruction Zone staff provides a small arsenal of minibombs to drop on the arena from orbit. Both impact time and reload time are extremely high, and the bombs themselves do little damage.
+  name=text.bombardment.bomb
+  data=To combat audience boredom, the Destruction Zone staff provides a small arsenal of bombs to drop on the arena from orbit. Both impact time and reload time are extremely high, and the bombs themselves do little damage.
 }
 
 warhead {
-  name=warhead.bombardment.minibomb
+  name=warhead.bombardment.bomb
   radiusdamage=MERGE explosive
   radiusfalloff=4
   wallremovalradius=0.5
 }
 
 bombardment {
-  name=ROOT.Bombardment.Minibomb
+  name=ROOT.Bombardment.Bombs.Bomb
   cost=MERGE
   default=1
-  
-  warhead=warhead.bombardment.minibomb
-  
-  lockdelay=MERGE
-  unlockdelay=MERGE
-  
-  text=text.bombardment.minibomb
-}
-
-text {
-  name=text.bombardment.bomb
-  data=Improved warheads for the stock bomb launching system, these do significantly more damage in a larger blast radius. Also included are upgraded locking and reloading equipment. Be feared even after death.
-}
-
-warhead {
-  name=warhead.bombardment.bomb
-  radiusdamage=MERGE explosive
-  radiusfalloff=8
-  wallremovalradius=2
-}
-
-bombardment {
-  name=ROOT.Bombardment.Bomb
-  cost=MERGE
   
   warhead=warhead.bombardment.bomb
   
@@ -52,43 +32,19 @@ bombardment {
 }
 
 text {
-  name=text.bombardment.hebomb
-  data=Further improved, this bomb is significantly larger and heavier than less powerful weaponry, and requires major modifications to the launching system. Its destructive force can be a major factor on the battlefield.
-}
-
-warhead {
-  name=warhead.bombardment.hebomb
-  radiusdamage=MERGE explosive
-  radiusfalloff=10
-  wallremovalradius=4
-}
-
-bombardment {
-  name=ROOT.Bombardment.HE Bomb
-  cost=MERGE
-  
-  warhead=warhead.bombardment.hebomb
-  
-  lockdelay=MERGE
-  unlockdelay=MERGE
-  
-  text=text.bombardment.hebomb
-}
-
-text {
   name=text.bombardment.heavybomb
-  data=One of the largest conventional explosives ever produced, this huge warhead does devastating damage to anything near the impact zone. Handle with extreme care.
+  data=Improved warheads for the stock bomb launching system, these do significantly more damage in a larger blast radius. Also included are upgraded locking and reloading equipment. Be feared even after death.
 }
 
 warhead {
   name=warhead.bombardment.heavybomb
   radiusdamage=MERGE explosive
-  radiusfalloff=12
-  wallremovalradius=6
+  radiusfalloff=8
+  wallremovalradius=2
 }
 
 bombardment {
-  name=ROOT.Bombardment.Heavy Bomb
+  name=ROOT.Bombardment.Bombs.Heavy Bomb
   cost=MERGE
   
   warhead=warhead.bombardment.heavybomb
@@ -100,56 +56,108 @@ bombardment {
 }
 
 text {
-  name=text.bombardment.superbomb
+  name=text.bombardment.hebomb
+  data=Further improved, this bomb is significantly larger and heavier than previous types, and requires major modifications to the launching system. Its destructive force can be a major factor on the battlefield.
+}
+
+warhead {
+  name=warhead.bombardment.hebomb
+  radiusdamage=MERGE explosive
+  radiusfalloff=10
+  wallremovalradius=4
+}
+
+bombardment {
+  name=ROOT.Bombardment.Bombs.HE Bomb
+  cost=MERGE
+  
+  warhead=warhead.bombardment.hebomb
+  
+  lockdelay=MERGE
+  unlockdelay=MERGE
+  
+  text=text.bombardment.hebomb
+}
+
+text {
+  name=text.bombardment.nitrobomb
+  data=One of the largest conventional explosives ever produced, this huge warhead does devastating damage to anything near the impact zone. Handle with extreme care.
+}
+
+warhead {
+  name=warhead.bombardment.nitrobomb
+  radiusdamage=MERGE explosive
+  radiusfalloff=12
+  wallremovalradius=6
+}
+
+bombardment {
+  name=ROOT.Bombardment.Bombs.Nitro Bomb
+  cost=MERGE
+  
+  warhead=warhead.bombardment.nitrobomb
+  
+  lockdelay=MERGE
+  unlockdelay=MERGE
+  
+  text=text.bombardment.nitrobomb
+}
+
+text {
+  name=text.bombardment.fissionbomb
   data=Blah blah hamster blah yacht blah blah blah monocle polish
 }
 
 warhead {
-  name=warhead.bombardment.superbomb
+  name=warhead.bombardment.fissionbomb
   radiusdamage=MERGE explosive
   radiusfalloff=13
   wallremovalradius=6.5
 }
 
 bombardment {
-  name=ROOT.Bombardment.Superbomb
+  name=ROOT.Bombardment.Bombs.Fission Bomb
   cost=MERGE
   
-  warhead=warhead.bombardment.superbomb
+  warhead=warhead.bombardment.fissionbomb
   
   lockdelay=MERGE
   unlockdelay=MERGE
   
-  text=text.bombardment.superbomb
+  text=text.bombardment.fissionbomb
 }
 
 text {
-  name=text.bombardment.ultrabomb
+  name=text.bombardment.fusionbomb
   data=Blah blah hamster blah yacht blah blah blah monocle polish
 }
 
 warhead {
-  name=warhead.bombardment.ultrabomb
+  name=warhead.bombardment.fusionbomb
   radiusdamage=MERGE explosive
   radiusfalloff=14
   wallremovalradius=7
 }
 
 bombardment {
-  name=ROOT.Bombardment.Ultrabomb
+  name=ROOT.Bombardment.Bombs.Fusion Bomb
   cost=MERGE
   
-  warhead=warhead.bombardment.ultrabomb
+  warhead=warhead.bombardment.fusionbomb
   
   lockdelay=MERGE
   unlockdelay=MERGE
   
-  text=text.bombardment.ultrabomb
+  text=text.bombardment.fusionbomb
 }
 
 ###########################
 #
 #   Railguns
+
+hierarchy {
+  name=ROOT.Bombardment.Railguns
+}
 
 text {
   name=text.bombardment.railgun
@@ -180,7 +188,7 @@ warhead {
 }
 
 bombardment {
-  name=ROOT.Bombardment.Railgun
+  name=ROOT.Bombardment.Railguns.Railgun
   cost=MERGE
   
   warhead=warhead.bombardment.railgun
@@ -220,7 +228,7 @@ warhead {
 }
 
 bombardment {
-  name=ROOT.Bombardment.AP Railgun
+  name=ROOT.Bombardment.Railguns.AP Railgun
   cost=MERGE
   
   warhead=warhead.bombardment.aprailgun
@@ -259,7 +267,7 @@ warhead {
 }
 
 bombardment {
-  name=ROOT.Bombardment.Heavy Railgun
+  name=ROOT.Bombardment.Railguns.Heavy Railgun
   cost=MERGE
   
   warhead=warhead.bombardment.heavyrailgun
@@ -299,7 +307,7 @@ warhead {
 }
 
 bombardment {
-  name=ROOT.Bombardment.Sabot Railgun
+  name=ROOT.Bombardment.Railguns.Sabot Railgun
   cost=MERGE
   
   warhead=warhead.bombardment.sabotrailgun
@@ -339,7 +347,7 @@ warhead {
 }
 
 bombardment {
-  name=ROOT.Bombardment.Supersonic Railgun
+  name=ROOT.Bombardment.Railguns.Supersonic Railgun
   cost=MERGE
   
   warhead=warhead.bombardment.supersonicrailgun
@@ -379,7 +387,7 @@ warhead {
 }
 
 bombardment {
-  name=ROOT.Bombardment.Shockwave Railgun
+  name=ROOT.Bombardment.Railguns.Shockwave Railgun
   cost=MERGE
   
   warhead=warhead.bombardment.shockwaverailgun
@@ -393,6 +401,10 @@ bombardment {
 ###########################
 #
 #   Mines
+
+hierarchy {
+  name=ROOT.Bombardment.Mines
+}
 
 text {
   name=text.bombardment.orbitalmines
@@ -417,7 +429,7 @@ projectile {
 }
 
 bombardment {
-  name=ROOT.Bombardment.Orbital Mines
+  name=ROOT.Bombardment.Mines.Orbital Mines
   cost=MERGE
   
   projectile=projectile.bombardment.orbitalmines
@@ -452,7 +464,7 @@ projectile {
 }
 
 bombardment {
-  name=ROOT.Bombardment.Mine Launcher
+  name=ROOT.Bombardment.Mines.Mine Launcher
   cost=MERGE
   
   projectile=projectile.bombardment.minelauncher
@@ -487,7 +499,7 @@ projectile {
 }
 
 bombardment {
-  name=ROOT.Bombardment.Mine Booster
+  name=ROOT.Bombardment.Mines.Mine Booster
   cost=MERGE
   
   projectile=projectile.bombardment.minebooster
@@ -522,7 +534,7 @@ projectile {
 }
 
 bombardment {
-  name=ROOT.Bombardment.Blast Mines
+  name=ROOT.Bombardment.Mines.Blast Mines
   cost=MERGE
   
   projectile=projectile.bombardment.blastmines
@@ -557,7 +569,7 @@ projectile {
 }
 
 bombardment {
-  name=ROOT.Bombardment.Shock Mines
+  name=ROOT.Bombardment.Mines.Shock Mines
   cost=MERGE
   
   projectile=projectile.bombardment.shockmines
@@ -592,7 +604,7 @@ projectile {
 }
 
 bombardment {
-  name=ROOT.Bombardment.Mine 'Porter
+  name=ROOT.Bombardment.Mines.Mine 'Porter
   cost=MERGE
   
   projectile=projectile.bombardment.mineporter
@@ -606,6 +618,10 @@ bombardment {
 ###########################
 #
 #   Rockets
+
+hierarchy {
+  name=ROOT.Bombardment.Rockets
+}
 
 text {
   name=text.bombardment.explorerrocket
@@ -639,7 +655,7 @@ projectile {
 }
 
 bombardment {
-  name=ROOT.Bombardment.Explorer Rocket
+  name=ROOT.Bombardment.Rockets.Explorer Rocket
   cost=MERGE
   
   projectile=projectile.bombardment.explorerrocket
@@ -684,7 +700,7 @@ projectile {
 }
 
 bombardment {
-  name=ROOT.Bombardment.Hunter Rocket
+  name=ROOT.Bombardment.Rockets.Hunter Rocket
   cost=MERGE
   
   projectile=projectile.bombardment.hunterrocket
@@ -729,7 +745,7 @@ projectile {
 }
 
 bombardment {
-  name=ROOT.Bombardment.Slayer Rocket
+  name=ROOT.Bombardment.Rockets.Slayer Rocket
   cost=MERGE
   
   projectile=projectile.bombardment.slayerrocket
@@ -774,7 +790,7 @@ projectile {
 }
 
 bombardment {
-  name=ROOT.Bombardment.Butcher Rocket
+  name=ROOT.Bombardment.Rockets.Butcher Rocket
   cost=MERGE
   
   projectile=projectile.bombardment.butcherrocket
@@ -819,7 +835,7 @@ projectile {
 }
 
 bombardment {
-  name=ROOT.Bombardment.Eliminator Rocket
+  name=ROOT.Bombardment.Rockets.Eliminator Rocket
   cost=MERGE
   
   projectile=projectile.bombardment.eliminatorrocket
@@ -864,7 +880,7 @@ projectile {
 }
 
 bombardment {
-  name=ROOT.Bombardment.Liquidator Rocket
+  name=ROOT.Bombardment.Rockets.Liquidator Rocket
   cost=MERGE
   
   projectile=projectile.bombardment.liquidatorrocket
@@ -879,6 +895,10 @@ bombardment {
 ###########################
 #
 #   Beams
+
+hierarchy {
+  name=ROOT.Bombardment.Beams
+}
 
 text {
   name=text.bombardment.ionbeam
@@ -910,7 +930,7 @@ warhead {
 }
 
 bombardment {
-  name=ROOT.Bombardment.Ion Beam
+  name=ROOT.Bombardment.Beams.Ion Beam
   cost=MERGE
   
   warhead=warhead.bombardment.ionbeam
@@ -952,7 +972,7 @@ warhead {
 }
 
 bombardment {
-  name=ROOT.Bombardment.Terawatt Beam
+  name=ROOT.Bombardment.Beams.Terawatt Beam
   cost=MERGE
   
   warhead=warhead.bombardment.terawattbeam
@@ -994,7 +1014,7 @@ warhead {
 }
 
 bombardment {
-  name=ROOT.Bombardment.Plasma Beam
+  name=ROOT.Bombardment.Beams.Plasma Beam
   cost=MERGE
   
   warhead=warhead.bombardment.plasmabeam
@@ -1036,7 +1056,7 @@ warhead {
 }
 
 bombardment {
-  name=ROOT.Bombardment.Gamma Beam
+  name=ROOT.Bombardment.Beams.Gamma Beam
   cost=MERGE
   
   warhead=warhead.bombardment.gammabeam
@@ -1078,7 +1098,7 @@ warhead {
 }
 
 bombardment {
-  name=ROOT.Bombardment.Photon Beam
+  name=ROOT.Bombardment.Beams.Photon Beam
   cost=MERGE
   
   warhead=warhead.bombardment.photonbeam
@@ -1121,7 +1141,7 @@ warhead {
 }
 
 bombardment {
-  name=ROOT.Bombardment.Conversion Beam
+  name=ROOT.Bombardment.Beams.Conversion Beam
   cost=MERGE
   
   warhead=warhead.bombardment.conversionbeam
