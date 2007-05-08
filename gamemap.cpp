@@ -268,6 +268,20 @@ void Gamemap::removeWalls(Coord2 center, float radius, Rng *rng) {
   }
 }
 
+bool Gamemap::isInsideWall(Coord2 point) const {
+  Coord2 npoint = point - offset;
+  int tx = floor(npoint.x / resolution).toInt();
+  int ty = floor(npoint.y / resolution).toInt();
+  int linid = linkid(tx, ty);
+  for(int i = 0; i < links[linid].size(); i++) {
+    CHECK(!isAvailable(paths[links[linid][i]].state));
+    
+    if(inPath(point, paths[links[linid][i]].collisionpath))
+      return true;
+  }
+  return false;
+}
+
 Gamemap::Gamemap() { };
 Gamemap::Gamemap(const vector<vector<Coord2> > &lev, bool smashable) : smashable(smashable) {
   CHECK(lev.size());

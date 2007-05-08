@@ -18,6 +18,8 @@ public:
   Coord4 getCollisionBounds() const;
 
   void removeWalls(Coord2 center, float radius, Rng *rng);
+
+  bool isInsideWall(Coord2 point) const;
   
   Gamemap();
   Gamemap(const vector<vector<Coord2> > &level, bool smashable);

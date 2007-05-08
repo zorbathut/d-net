@@ -283,7 +283,7 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
       bombards[j].pos.x = min(bombards[j].pos.x, gmbr.ex);
       bombards[j].pos.y = min(bombards[j].pos.y, gmbr.ey);
       CHECK(SIMUL_WEAPONS == 2);
-      if(keys[j].fire[0].down || keys[j].fire[1].down) {
+      if((keys[j].fire[0].down || keys[j].fire[1].down) && !gamemap.isInsideWall(bombards[j].pos)) {
         bombards[j].state = BombardmentState::BS_FIRING;
         bombards[j].timer = round(players[j]->getBombardment((int)bombardment_tier).lockdelay() * FPS);
       }
@@ -292,6 +292,7 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
         bombards[j].d = -getAngle(keys[j].udlrax);
       bombards[j].timer--;
       if(bombards[j].timer <= 0) {
+        CHECK(!gamemap.isInsideWall(bombards[j].pos));
         detonateBombardment(players[j]->getBombardment((int)bombardment_tier), bombards[j].pos, bombards[j].d, GamePlayerContext(&tanks[j], &projectiles[j], gic));
         bombards[j].state = BombardmentState::BS_COOLDOWN;
         bombards[j].timer = round(players[j]->getBombardment((int)bombardment_tier).unlockdelay() * FPS);
