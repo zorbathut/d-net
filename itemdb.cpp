@@ -851,6 +851,9 @@ void parseProjectile(kvData *chunk, bool reload, ErrorAccumulator &accum) {
     titem->radius_physical = atof(chunk->consume("radius_physical").c_str());
     titem->mine_spikes = parseWithDefault(chunk, "mine_spikes", 6);
     titem->halflife = atof(chunk->consume("halflife").c_str());
+  } else if(motion == "dps") {
+    titem->motion = PM_DPS;
+    titem->dps_duration = parseSingleItem<float>(chunk->consume("duration"));
   } else {
     dprintf("Unknown projectile motion: %s\n", motion.c_str());
     CHECK(0);
@@ -859,14 +862,14 @@ void parseProjectile(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   titem->color = parseWithDefault(chunk, "color", C::gray(1.0));
   
   titem->velocity = 0;
-  if(titem->motion != PM_MINE)
+  if(titem->motion != PM_MINE && titem->motion != PM_DPS)
     titem->velocity = atof(chunk->consume("velocity").c_str());
   
   if(titem->motion == PM_NORMAL) {
     titem->length = parseWithDefault(chunk, "length", titem->velocity / 60);
   } else if(titem->motion == PM_MISSILE) {
     titem->length = parseWithDefault(chunk, "length", 2.0);
-  } else if(titem->motion == PM_AIRBRAKE || titem->motion == PM_MINE) {
+  } else if(titem->motion == PM_AIRBRAKE || titem->motion == PM_MINE || titem->motion == PM_DPS) {
     titem->length = 0;
   } else {
     CHECK(0);
@@ -989,6 +992,7 @@ void parseBombardment(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   
   titem->warheads = parseSubclassSet(chunk, "warhead", warheadclasses);
   titem->projectiles = parseSubclassSet(chunk, "projectile", projectileclasses);
+  titem->effects = parseSubclassSet(chunk, "effects", effectsclasses);
   
   titem->showdirection = parseWithDefault(chunk, "showdirection", false);
   
@@ -1199,12 +1203,13 @@ void parseShopcache(kvData *chunk, vector<string> *errors) {
     CHECK(tis.size() % 2 == 1);
     entry.count = atoi(tis[0].c_str());
     entry.warhead = &warheadclasses[tis[1]];
-    if(tis[2] == "none") {
+    entry.mult = atof(tis[2].c_str());
+    if(tis[3] == "none") {
       entry.impact = -1;
     } else {
-      entry.impact = atoi(tis[2].c_str());
+      entry.impact = atoi(tis[3].c_str());
     }
-    for(int i = 3; i < tis.size(); i += 2) {
+    for(int i = 4; i < tis.size(); i += 2) {
       entry.distances.push_back(make_pair(floatFromString(tis[i]), atoi(tis[i + 1].c_str())));
     }
     titem->entries.push_back(entry);

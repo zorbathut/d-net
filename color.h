@@ -34,6 +34,7 @@ namespace C {
   const Color box_border = Color(0.4, 0.4, 0.4);
   
   const Color red = Color(1.0, 0.0, 0.0);
+  const Color black = Color(0.0, 0.0, 0.0);
 }
 
 #endif

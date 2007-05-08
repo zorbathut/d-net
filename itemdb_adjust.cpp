@@ -80,15 +80,15 @@ float IDBWarheadAdjust::accumulate(const float *damage) const {
   return acc;
 }
 
-float IDBWarheadAdjust::impactdamage() const { return accumulate(idb->impactdamage); }
+float IDBWarheadAdjust::impactdamage() const { return accumulate(idb->impactdamage) * mf; }
 
-float IDBWarheadAdjust::radiusdamage() const { return accumulate(idb->radiusdamage); }
+float IDBWarheadAdjust::radiusdamage() const { return accumulate(idb->radiusdamage) * mf; }
 float IDBWarheadAdjust::radiusfalloff() const { return adjust.adjustmentfactor(IDBAdjustment::WARHEAD_RADIUS_FALLOFF) * idb->radiusfalloff; }
 
 float IDBWarheadAdjust::wallremovalradius() const { return adjust.adjustmentfactor(IDBAdjustment::WARHEAD_RADIUS_FALLOFF) * idb->wallremovalradius; }  // just 'cause :)
 float IDBWarheadAdjust::wallremovalchance() const { return idb->wallremovalchance; }
-Color IDBWarheadAdjust::radiuscolor_bright() const { return idb->radiuscolor_bright; }
-Color IDBWarheadAdjust::radiuscolor_dim() const { return idb->radiuscolor_dim; }
+Color IDBWarheadAdjust::radiuscolor_bright() const { return idb->radiuscolor_bright * mf; }
+Color IDBWarheadAdjust::radiuscolor_dim() const { return idb->radiuscolor_dim * mf; }
 
 const vector<const IDBEffects *> &IDBWarheadAdjust::effects_impact() const { return idb->effects_impact; }
 
@@ -120,8 +120,14 @@ float IDBWarheadAdjust::stats_damagePerShotType(int type) const {
 const IDBWarhead *IDBWarheadAdjust::base() const {
   return idb;
 }
+float IDBWarheadAdjust::multfactor() const {
+  return mf;
+}
+IDBWarheadAdjust IDBWarheadAdjust::multiply(float mult) const {
+  return IDBWarheadAdjust(idb, adjust, mf * mult);
+}
 
-IDBWarheadAdjust::IDBWarheadAdjust(const IDBWarhead *in_idb, const IDBAdjustment &in_adjust) { idb = in_idb; adjust = in_adjust; }
+IDBWarheadAdjust::IDBWarheadAdjust(const IDBWarhead *in_idb, const IDBAdjustment &in_adjust, float in_multfactor) { idb = in_idb; adjust = in_adjust; mf = in_multfactor; }
 
 /*************
  * IDBProjectileAdjust
@@ -133,10 +139,10 @@ float IDBProjectileAdjust::length() const { return idb->length; };
 float IDBProjectileAdjust::radius_physical() const { return idb->radius_physical; };
 float IDBProjectileAdjust::toughness() const { return idb->toughness; };
 
-vector<IDBWarheadAdjust> IDBProjectileAdjust::chain_warhead() const {
+vector<IDBWarheadAdjust> IDBProjectileAdjust::chain_warhead(float multfactor) const {
   vector<IDBWarheadAdjust> rv;
   for(int i = 0; i < idb->chain_warhead.size(); i++)
-    rv.push_back(IDBWarheadAdjust(idb->chain_warhead[i], adjust));
+    rv.push_back(IDBWarheadAdjust(idb->chain_warhead[i], adjust, multfactor));
   return rv;
 }
 
@@ -151,6 +157,8 @@ float IDBProjectileAdjust::missile_stabstart() const { CHECK(idb->motion == PM_M
 float IDBProjectileAdjust::missile_stabilization() const { CHECK(idb->motion == PM_MISSILE); return idb->missile_stabilization; }
 float IDBProjectileAdjust::missile_sidelaunch() const { CHECK(idb->motion == PM_MISSILE); return idb->missile_sidelaunch; }
 float IDBProjectileAdjust::missile_backlaunch() const { CHECK(idb->motion == PM_MISSILE); return idb->missile_backlaunch; }
+
+float IDBProjectileAdjust::dps_duration() const { CHECK(idb->motion == PM_DPS); return idb->dps_duration; }
 
 float IDBProjectileAdjust::stats_damagePerShot() const {
   float val = 0;
@@ -281,6 +289,9 @@ vector<IDBProjectileAdjust> IDBBombardmentAdjust::projectiles() const {
   for(int i = 0; i < idb->projectiles.size(); i++)
     rv.push_back(IDBProjectileAdjust(idb->projectiles[i], adjust));
   return rv;
+}
+const vector<const IDBEffects *> &IDBBombardmentAdjust::effects() const {
+  return idb->effects;
 }
 
 Money IDBBombardmentAdjust::cost() const { return idb->base_cost; };

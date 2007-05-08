@@ -923,17 +923,24 @@ warhead {
   radiusfalloff=8
   wallremovalradius=2
   
-  radiuscolor_dim=018
-  radiuscolor_bright=88f
+  radiuscolor_dim=000
+  radiuscolor_bright=000
+}
+
+projectile {
+  name=projectile.bombardment.ionbeam
+  motion=dps
+  duration=0.5
   
-  effects_impact=effects.bombardment.ionbeam
+  warhead=warhead.bombardment.ionbeam
 }
 
 bombardment {
   name=ROOT.Bombardment.Beams.Ion Beam
   cost=MERGE
   
-  warhead=warhead.bombardment.ionbeam
+  projectile=projectile.bombardment.ionbeam
+  effects=effects.bombardment.ionbeam
   
   lockdelay=MERGE
   unlockdelay=MERGE
@@ -962,20 +969,27 @@ effects {
 warhead {
   name=warhead.bombardment.terawattbeam
   radiusdamage=MERGE energy
-  radiusfalloff=8
+  radiusfalloff=8.5
   wallremovalradius=2
   
-  radiuscolor_dim=018
-  radiuscolor_bright=88f
+  radiuscolor_dim=000
+  radiuscolor_bright=000
+}
+
+projectile {
+  name=projectile.bombardment.terawattbeam
+  motion=dps
+  duration=0.5
   
-  effects_impact=effects.bombardment.terawattbeam
+  warhead=warhead.bombardment.terawattbeam
 }
 
 bombardment {
   name=ROOT.Bombardment.Beams.Terawatt Beam
   cost=MERGE
   
-  warhead=warhead.bombardment.terawattbeam
+  projectile=projectile.bombardment.terawattbeam
+  effects=effects.bombardment.terawattbeam
   
   lockdelay=MERGE
   unlockdelay=MERGE
@@ -1004,20 +1018,27 @@ effects {
 warhead {
   name=warhead.bombardment.plasmabeam
   radiusdamage=MERGE energy
-  radiusfalloff=8
+  radiusfalloff=9
   wallremovalradius=2
   
-  radiuscolor_dim=018
-  radiuscolor_bright=88f
+  radiuscolor_dim=000
+  radiuscolor_bright=000
+}
+
+projectile {
+  name=projectile.bombardment.plasmabeam
+  motion=dps
+  duration=0.5
   
-  effects_impact=effects.bombardment.plasmabeam
+  warhead=warhead.bombardment.plasmabeam
 }
 
 bombardment {
   name=ROOT.Bombardment.Beams.Plasma Beam
   cost=MERGE
   
-  warhead=warhead.bombardment.plasmabeam
+  projectile=projectile.bombardment.plasmabeam
+  effects=effects.bombardment.plasmabeam
   
   lockdelay=MERGE
   unlockdelay=MERGE
@@ -1046,20 +1067,27 @@ effects {
 warhead {
   name=warhead.bombardment.gammabeam
   radiusdamage=MERGE energy
-  radiusfalloff=8
+  radiusfalloff=9.5
   wallremovalradius=2
   
-  radiuscolor_dim=018
-  radiuscolor_bright=88f
+  radiuscolor_dim=000
+  radiuscolor_bright=000
+}
+
+projectile {
+  name=projectile.bombardment.gammabeam
+  motion=dps
+  duration=0.5
   
-  effects_impact=effects.bombardment.gammabeam
+  warhead=warhead.bombardment.gammabeam
 }
 
 bombardment {
   name=ROOT.Bombardment.Beams.Gamma Beam
   cost=MERGE
   
-  warhead=warhead.bombardment.gammabeam
+  projectile=projectile.bombardment.gammabeam
+  effects=effects.bombardment.gammabeam
   
   lockdelay=MERGE
   unlockdelay=MERGE
@@ -1088,20 +1116,27 @@ effects {
 warhead {
   name=warhead.bombardment.photonbeam
   radiusdamage=MERGE energy
-  radiusfalloff=8
+  radiusfalloff=10
   wallremovalradius=2
   
-  radiuscolor_dim=018
-  radiuscolor_bright=88f
+  radiuscolor_dim=000
+  radiuscolor_bright=000
+}
+
+projectile {
+  name=projectile.bombardment.photonbeam
+  motion=dps
+  duration=0.5
   
-  effects_impact=effects.bombardment.photonbeam
+  warhead=warhead.bombardment.photonbeam
 }
 
 bombardment {
   name=ROOT.Bombardment.Beams.Photon Beam
   cost=MERGE
   
-  warhead=warhead.bombardment.photonbeam
+  projectile=projectile.bombardment.photonbeam
+  effects=effects.bombardment.photonbeam
   
   lockdelay=MERGE
   unlockdelay=MERGE
@@ -1131,20 +1166,27 @@ effects {
 warhead {
   name=warhead.bombardment.conversionbeam
   radiusdamage=MERGE energy
-  radiusfalloff=8
+  radiusfalloff=10.5
   wallremovalradius=2
   
-  radiuscolor_dim=018
-  radiuscolor_bright=88f
+  radiuscolor_dim=000
+  radiuscolor_bright=000
+}
+
+projectile {
+  name=projectile.bombardment.conversionbeam
+  motion=dps
+  duration=0.5
   
-  effects_impact=effects.bombardment.conversionbeam
+  warhead=warhead.bombardment.conversionbeam
 }
 
 bombardment {
   name=ROOT.Bombardment.Beams.Conversion Beam
   cost=MERGE
   
-  warhead=warhead.bombardment.conversionbeam
+  projectile=projectile.bombardment.conversionbeam
+  effects=effects.bombardment.conversionbeam
   
   lockdelay=MERGE
   unlockdelay=MERGE

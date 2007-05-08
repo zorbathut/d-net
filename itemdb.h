@@ -99,7 +99,7 @@ struct IDBWarhead {
   vector<const IDBEffects *> effects_impact;
 };
 
-enum { PM_NORMAL, PM_MISSILE, PM_AIRBRAKE, PM_MINE, PM_LAST };
+enum { PM_NORMAL, PM_MISSILE, PM_AIRBRAKE, PM_MINE, PM_DPS, PM_LAST };
 
 struct IDBProjectile {
   int motion;
@@ -121,6 +121,8 @@ struct IDBProjectile {
   float missile_stabilization;
   
   float airbrake_life;
+  
+  float dps_duration;
 
   vector<const IDBWarhead *> chain_warhead;
 };
@@ -201,6 +203,7 @@ struct IDBUpgrade {
 struct IDBBombardment {
   vector<const IDBWarhead *> warheads;
   vector<const IDBProjectile *> projectiles;
+  vector<const IDBEffects *> effects;
   
   bool showdirection;
 
@@ -241,6 +244,7 @@ struct IDBShopcache {
   struct Entry {
     int count;
     IDBWarhead *warhead;
+    float mult;
     int impact;
     vector<pair<float, int> > distances;
   };
@@ -276,6 +280,7 @@ class IDBDeployAdjust;
 struct IDBWarheadAdjust {
   const IDBWarhead *idb;
   IDBAdjustment adjust;
+  float mf;
   
   float accumulate(const float *damage) const;
   
@@ -297,8 +302,10 @@ public:
   float stats_damagePerShotType(int type) const;
 
   const IDBWarhead *base() const;
+  float multfactor() const;
+  IDBWarheadAdjust multiply(float mult) const;
 
-  IDBWarheadAdjust(const IDBWarhead *in_idb, const IDBAdjustment &in_adjust);
+  IDBWarheadAdjust(const IDBWarhead *in_idb, const IDBAdjustment &in_adjust, float in_multfactor = 1.0f);
 };
 
 struct IDBProjectileAdjust {
@@ -312,7 +319,7 @@ public:
   float radius_physical() const;
   float toughness() const;
 
-  vector<IDBWarheadAdjust> chain_warhead() const;
+  vector<IDBWarheadAdjust> chain_warhead(float multfactor = 1.0f) const;
 
   Color color() const;
   float thickness_visual() const;
@@ -326,6 +333,8 @@ public:
   float missile_stabilization() const;
   float missile_sidelaunch() const;
   float missile_backlaunch() const;
+
+  float dps_duration() const;
   
   float stats_damagePerShot() const;
 
@@ -436,6 +445,7 @@ public:
 
   vector<IDBWarheadAdjust> warheads() const;
   vector<IDBProjectileAdjust> projectiles() const;
+  const vector<const IDBEffects *> &effects() const;
   
   Money cost() const;
   Money sellcost() const;

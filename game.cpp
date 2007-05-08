@@ -871,7 +871,7 @@ void Game::runShopcache(const IDBShopcache &cache, const vector<const Player *> 
   for(int i = 0; i < cache.entries.size(); i++) {
     const IDBShopcache::Entry ent = cache.entries[i];
     
-    IDBWarheadAdjust adj(ent.warhead, players[0]->getAdjust());
+    IDBWarheadAdjust adj(ent.warhead, players[0]->getAdjust(), ent.mult);
     
     Tank *impact_tank = NULL;
     if(ent.impact != -1)

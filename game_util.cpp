@@ -44,7 +44,7 @@ void GameImpactContext::record(const IDBWarheadAdjust &warhead, Coord2 pos, cons
     sort(distadj.begin(), distadj.end());
     
     if(target != -1 || distadj.size())
-      recorder->warhead(warhead.base(), target, distadj);
+      recorder->warhead(warhead.base(), warhead.multfactor(), target, distadj);
   }
 }
 
@@ -89,6 +89,7 @@ DeployLocation::DeployLocation(Coord2 pos, float d) {
 void dealDamage(float dmg, Tank *target, Tank *owner, float damagecredit, bool killcredit) {
   if(target->team == owner->team)
     return; // friendly fire exception
+  //dprintf("Dealing %f damage\n", dmg);
   if(target->takeDamage(dmg) && killcredit)
     owner->addKill();
   owner->addDamage(dmg * damagecredit);
@@ -110,7 +111,7 @@ void detonateWarhead(const IDBWarheadAdjust &warhead, Coord2 pos, float normal, 
     }
   }
   
-  if(warhead.radiusfalloff() > 0)
+  if(warhead.radiusfalloff() > 0 && (warhead.radiuscolor_bright() != C::black || warhead.radiuscolor_dim() != C::black))
     gpc.gic->effects->push_back(GfxBlast(pos.toFloat(), warhead.radiusfalloff(), warhead.radiuscolor_bright(), warhead.radiuscolor_dim()));
   
   if(warhead.wallremovalradius() > 0 && gpc.gic->rng->frand() < warhead.wallremovalchance())
@@ -151,6 +152,12 @@ void detonateBombardment(const IDBBombardmentAdjust &bombard, Coord2 pos, float 
   
   for(int i = 0; i < bombard.projectiles().size(); i++)
     gpc.projpack->add(Projectile(pos, direction, bombard.projectiles()[i], gpc.gic->rng, false));
+  
+  for(int i = 0; i < bombard.effects().size(); i++) {
+    for(int j = 0; j < bombard.effects()[i]->quantity; j++) {
+      gpc.gic->effects->push_back(GfxIdb(pos.toFloat(), 0, makeAngle(direction), bombard.effects()[i]));
+    }
+  }
 }
 
 void deployProjectile(const IDBDeployAdjust &deploy, const DeployLocation &location, const GamePlayerContext &gpc, bool killcredit, vector<float> *tang) {

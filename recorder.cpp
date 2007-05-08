@@ -1,7 +1,7 @@
 
 #include "recorder.h"
 
-void Recorder::warhead(const IDBWarhead *warhead, int tank_id, vector<pair<float, int> > &adjacencies) {
+void Recorder::warhead(const IDBWarhead *warhead, float factor, int tank_id, vector<pair<float, int> > &adjacencies) {
   CHECK(tank_id != -1 || adjacencies.size());
   
   {
@@ -22,7 +22,7 @@ void Recorder::warhead(const IDBWarhead *warhead, int tank_id, vector<pair<float
   
   string line;
   
-  line = StringPrintf("%s %s", nameFromIDB(warhead).c_str(), tank.c_str());
+  line = StringPrintf("%s %f %s", nameFromIDB(warhead).c_str(), factor, tank.c_str());
   
   for(int i = 0; i < adjacencies.size(); i++)
     line += StringPrintf(" %s %d", rawstrFromFloat(adjacencies[i].first).c_str(), adjacencies[i].second);

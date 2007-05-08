@@ -35,6 +35,8 @@ void Projectile::tick(vector<smart_ptr<GfxEffects> > *gfxe, Rng *rng) {
   } else if(projtype.motion() == PM_MINE) {
     if(rng->frand() > pow(0.5f, 1 / (projtype.halflife() * FPS)))
       detonating = true;
+  } else if(projtype.motion() == PM_DPS) {
+    detonating = true;
   } else {
     CHECK(0);
   }
@@ -60,6 +62,7 @@ void Projectile::render(const vector<Coord2> &tankposes) const {
       drawLineLoop(mine_polys(), 0.1);
     }
     return;
+  } else if(projtype.motion() == PM_DPS) {
   } else {
     CHECK(0);
   }
@@ -76,7 +79,7 @@ void Projectile::firstCollide(Collider *collider, int owner, int id) const {
 
 void Projectile::addCollision(Collider *collider, int owner, int id) const {
   CHECK(live);
-  if(projtype.motion() == PM_MINE) {
+  if(projtype.motion() == PM_MINE || projtype.motion() == PM_DPS) {
   } else {
     collider->addToken(CollideId(CGR_PROJECTILE, owner, id), Coord4(pos, pos + lasttail), Coord4(movement(), movement() + nexttail() - lasttail));
   }
@@ -96,11 +99,27 @@ void Projectile::detonate(Coord2 pos, float normal, Tank *target, const GamePlay
   if(!live)
     return;
   
-  vector<IDBWarheadAdjust> idw = projtype.chain_warhead();
-  for(int i = 0; i < idw.size(); i++)
-    detonateWarhead(idw[i], pos, normal, movement() * FPS, target, gpc, 1.0, killcredit, impacted);
-
-  live = false;
+  if(projtype.motion() != PM_DPS) {
+    vector<IDBWarheadAdjust> idw = projtype.chain_warhead();
+    for(int i = 0; i < idw.size(); i++)
+      detonateWarhead(idw[i], pos, normal, movement() * FPS, target, gpc, 1.0, killcredit, impacted);
+  
+    live = false;
+  } else if(projtype.motion() == PM_DPS) {
+    int alen = int(projtype.dps_duration() * FPS);
+    if(age > alen) {
+      live = false;
+    } else {
+      int shares = alen * (alen + 1) / 2;
+      int tshares = alen - age + 1;
+      vector<IDBWarheadAdjust> idw = projtype.chain_warhead();
+      for(int i = 0; i < idw.size(); i++)
+        detonateWarhead(idw[i].multiply((float)tshares / shares), pos, 0, Coord2(0, 0), NULL, gpc, 1.0, killcredit, false);
+      detonating = false;
+    }
+  } else {
+    CHECK(0);
+  }
 };
 
 bool Projectile::isLive() const {
@@ -126,7 +145,7 @@ Coord2 Projectile::movement() const {
     return missile_accel() + missile_backdrop() + missile_sidedrop();
   } else if(projtype.motion() == PM_AIRBRAKE) {
     return Coord2(makeAngle(d) * airbrake_velocity / FPS);
-  } else if(projtype.motion() == PM_MINE) {
+  } else if(projtype.motion() == PM_MINE || projtype.motion() == PM_DPS) {
     return Coord2(0, 0);
   } else {
     CHECK(0);
@@ -141,7 +160,7 @@ Coord2 Projectile::nexttail() const {
     return Coord2(makeAngle(d) * -min(projtype.length(), maxlen));
   } else if(projtype.motion() == PM_AIRBRAKE) {
     return Coord2(makeAngle(d) * -min(airbrake_velocity / FPS + 2, maxlen));
-  } else if(projtype.motion() == PM_MINE) {
+  } else if(projtype.motion() == PM_MINE || projtype.motion() == PM_DPS) {
     return Coord2(0, 0);
   } else {
     CHECK(0);
@@ -195,6 +214,7 @@ Projectile::Projectile(const Coord2 &in_pos, float in_d, const IDBProjectileAdju
     airbrake_velocity = (rng->gaussian_scaled(2) / 4 + 1) * projtype.velocity();
   } else if(projtype.motion() == PM_MINE) {
     mine_facing = rng->frand() * 2 * PI;
+  } else if(projtype.motion() == PM_DPS) {
   } else {
     CHECK(0);
   }
