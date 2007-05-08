@@ -123,6 +123,7 @@ packageed: d-net.exe $(MERGEDATA) vecedit.exe data/shopcache.dwh
 	cp /usr/mingw/local/lib/wxbase28_gcc_custom.dll deploy
 	cp /usr/mingw/local/lib/wxmsw28_core_gcc_custom.dll deploy
 	cp /usr/mingw/local/lib/wxmsw28_gl_gcc_custom.dll deploy
+	cp /usr/bin/mingwm10.dll deploy
 	cp -r vecedit deploy
 	$(strip)
 	$(postpackage)
