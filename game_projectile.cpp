@@ -98,7 +98,7 @@ void Projectile::detonate(Coord2 pos, float normal, Tank *target, const GamePlay
   
   vector<IDBWarheadAdjust> idw = projtype.chain_warhead();
   for(int i = 0; i < idw.size(); i++)
-    detonateWarhead(idw[i], pos, normal, movement() * FPS, target, gpc, 1.0, true, impacted);
+    detonateWarhead(idw[i], pos, normal, movement() * FPS, target, gpc, 1.0, killcredit, impacted);
 
   live = false;
 };
@@ -179,7 +179,7 @@ Projectile::Projectile() : projtype(NULL, IDBAdjustment()) {
   live = false;
   age = -1;
 }
-Projectile::Projectile(const Coord2 &in_pos, float in_d, const IDBProjectileAdjust &in_projtype, Rng *rng) : projtype(in_projtype) {
+Projectile::Projectile(const Coord2 &in_pos, float in_d, const IDBProjectileAdjust &projtype, Rng *rng, bool killcredit) : projtype(projtype), killcredit(killcredit) {
   pos = in_pos;
   d = in_d;
   age = 0;

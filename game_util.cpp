@@ -131,7 +131,7 @@ void detonateWarhead(const IDBWarheadAdjust &warhead, Coord2 pos, float normal, 
     
     vector<IDBDeployAdjust> dep = warhead.deploy();
     for(int i = 0; i < dep.size(); i++)
-      deployProjectile(dep[i], DeployLocation(shifted_pos, getAngle(vel.toFloat())), gpc);
+      deployProjectile(dep[i], DeployLocation(shifted_pos, getAngle(vel.toFloat())), gpc, killcredit);
   }
   
 }
@@ -150,10 +150,10 @@ void detonateBombardment(const IDBBombardmentAdjust &bombard, Coord2 pos, float 
     detonateWarhead(bombard.warheads()[i], pos, direction, Coord2(0, 0), NULL, gpc, 1.0, false, true);
   
   for(int i = 0; i < bombard.projectiles().size(); i++)
-    gpc.projpack->add(Projectile(pos, direction, bombard.projectiles()[i], gpc.gic->rng));
+    gpc.projpack->add(Projectile(pos, direction, bombard.projectiles()[i], gpc.gic->rng, false));
 }
 
-void deployProjectile(const IDBDeployAdjust &deploy, const DeployLocation &location, const GamePlayerContext &gpc, vector<float> *tang) {
+void deployProjectile(const IDBDeployAdjust &deploy, const DeployLocation &location, const GamePlayerContext &gpc, bool killcredit, vector<float> *tang) {
   
   int type = deploy.type();
   if(type == DT_NORMAL) {
@@ -210,23 +210,24 @@ void deployProjectile(const IDBDeployAdjust &deploy, const DeployLocation &locat
     vector<IDBDeployAdjust> idd = deploy.chain_deploy();
     for(int i = 0; i < idd.size(); i++)
       for(int j = 0; j < proji.size(); j++)
-        deployProjectile(idd[i], DeployLocation(proji[j].first, proji[j].second), gpc);
+        deployProjectile(idd[i], DeployLocation(proji[j].first, proji[j].second), gpc, killcredit);
   }
   
   {
     vector<IDBProjectileAdjust> idp = deploy.chain_projectile();
     for(int i = 0; i < idp.size(); i++)
       for(int j = 0; j < proji.size(); j++)
-        gpc.projpack->add(Projectile(proji[j].first, proji[j].second, idp[i], gpc.gic->rng));
+        gpc.projpack->add(Projectile(proji[j].first, proji[j].second, idp[i], gpc.gic->rng, killcredit));
   }
   
   {
     vector<IDBWarheadAdjust> idw = deploy.chain_warhead();
     for(int i = 0; i < idw.size(); i++)
       for(int j = 0; j < proji.size(); j++)
-        detonateWarhead(idw[i], proji[j].first, NO_NORMAL, Coord2(0, 0), NULL, gpc, 1.0, true, true);
+        detonateWarhead(idw[i], proji[j].first, NO_NORMAL, Coord2(0, 0), NULL, gpc, 1.0, killcredit, true);
   }
 }
+
 Team::Team() {
   weapons_enabled = true;
   color = Color(0, 0, 0);
