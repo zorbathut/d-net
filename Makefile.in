@@ -91,8 +91,7 @@ rm -rf deploy
 rm -f \\\\192.168.100.4\\zorba\\www\\d-net\\$(PACKAGESUBDIR)\\Dnet\ Latest\ Windows.zip
 mkdir deploy
 cp d-net.exe deploy
-cp c:/cygwin/usr/local/bin/SDL.dll deploy
-cp /usr/ogg/bin/*.dll deploy
+cp /usr/mingw/local/bin/SDL.dll /usr/mingw/local/bin/cygogg-0.dll /usr/mingw/local/bin/libvorbis-0.dll /usr/mingw/local/bin/libvorbisfile-3.dll deploy
 cp -r data deploy
 mkdir deploy/dumps
 cp dumps/readme.txt deploy/dumps
@@ -121,13 +120,11 @@ package: d-net.exe $(MERGEDATA) data/shopcache.dwh
 packageed: d-net.exe $(MERGEDATA) vecedit.exe data/shopcache.dwh
 	$(prepackage)
 	cp vecedit.exe deploy
-	cp c:/cygwin/bin/cygz.dll deploy
-	cp c:/cygwin/usr/local/lib/cygwxbase28_gcc_custom-0.dll deploy
-	cp c:/cygwin/usr/local/lib/cygwxmsw28_core_gcc_custom-0.dll deploy
-	cp c:/cygwin/usr/local/lib/cygwxmsw28_gl_gcc_custom-0.dll deploy
+	cp /usr/mingw/local/lib/wxbase28_gcc_custom.dll deploy
+	cp /usr/mingw/local/lib/wxmsw28_core_gcc_custom.dll deploy
+	cp /usr/mingw/local/lib/wxmsw28_gl_gcc_custom.dll deploy
 	cp -r vecedit deploy
 	$(strip)
-	cp c:/cygwin/bin/cygwin1.dll deploy # for some reason stripping this makes things break badly
 	$(postpackage)
 	cp \\\\192.168.100.4\\zorba\\www\\d-net\\$(PACKAGESUBDIR)\\Dnet\ Latest\ Windows.zip \\\\192.168.100.4\\zorba\\www\\d-net\\$(PACKAGESUBDIR)\\Dnet\ Latest\ Editor.zip
 
