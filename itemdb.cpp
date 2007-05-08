@@ -724,11 +724,8 @@ void parseEffects(kvData *chunk, bool reload, ErrorAccumulator &accum) {
     
     vector<string> vislist = tokenize(chunk->consume("visuals"), "\n");
     for(int i = 0; i < vislist.size(); i++) {
-      dprintf("entering match\n");
-      //boost::smatch mch = match(vislist[i], "([0-9]+) (.*)");
-      dprintf("leaving match\n");
-      //titem->ionblast_visuals.push_back(make_pair(parseSingleItem<int>(mch[1]), parseSingleItem<Color>(mch[2])));
-      dprintf("destroying match\n");
+      boost::smatch mch = match(vislist[i], "([0-9]+) (.*)");
+      titem->ionblast_visuals.push_back(make_pair(parseSingleItem<int>(mch[1]), parseSingleItem<Color>(mch[2])));
     }
     dprintf("done\n");
   } else {

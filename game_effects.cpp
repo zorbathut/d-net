@@ -196,15 +196,16 @@ public:
     
   virtual void render() const {
     for(int i = 0; i < effect->ionblast_visuals.size(); i++) {
-      setColor(effect->ionblast_visuals[i].second * getAgeFactor());
+      setColor(effect->ionblast_visuals[i].second * pow(1.0 - getAgeFactor(), 1.0));
       for(int j = 0; j < effect->ionblast_visuals[i].first; j++) {
-        
+        float rad = unsync().frand() * effect->ionblast_radius;
+        drawBlast(center, rad, rad * 0.1, 16);
       }
     }
   }
   
-  GfxEffectsIdbIonBlast(Float2 center, const IDBEffects *effect) : GfxEffects(effect->particle_lifetime, Color(0, 0, 0)), center(center), effect(effect) {
-    CHECK(effect->type == IDBEffects::EFT_PARTICLE);
+  GfxEffectsIdbIonBlast(Float2 center, const IDBEffects *effect) : GfxEffects(effect->ionblast_duration, Color(0, 0, 0)), center(center), effect(effect) {
+    CHECK(effect->type == IDBEffects::EFT_IONBLAST);
   };
   
 private:
