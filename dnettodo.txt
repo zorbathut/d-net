@@ -3,7 +3,6 @@
   - Run header culler again :D
   - EMP glory resistance
   - Reverse bombardment order
-  - Reenable bombardment coverage check
   - Fix it so that projectiles launched by bombardments don't get kill credits
   - Fix it so you can't launch projectiles inside walls
   - Many many more weapons

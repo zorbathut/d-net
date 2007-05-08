@@ -88,7 +88,7 @@ void mergeBombardment(const string &csv, const string &unmerged, const string &m
       for(map<string, Bombarddat>::const_iterator itr = bdd.begin(); itr != bdd.end(); itr++)
         if(!donebdd.count(itr->first))
           dprintf("Didn't complete %s\n", itr->first.c_str());
-      //CHECK(0);
+      CHECK(0);
     }
   }
   

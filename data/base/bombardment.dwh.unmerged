@@ -920,3 +920,214 @@ bombardment {
   
   text=text.bombardment.ionbeam
 }
+
+
+text {
+  name=text.bombardment.terawattbeam
+  data=Blah blah hamster blah yacht blah blah blah monocle polish
+}
+
+effects {
+  name=effects.bombardment.terawattbeam
+  type=ionblast
+  
+  radius=8.5
+  
+  visuals=20 029
+  visuals=5 99f
+  
+  duration=0.5
+}
+
+warhead {
+  name=warhead.bombardment.terawattbeam
+  radiusdamage=MERGE energy
+  radiusfalloff=8
+  wallremovalradius=2
+  
+  radiuscolor_dim=018
+  radiuscolor_bright=88f
+  
+  effects_impact=effects.bombardment.terawattbeam
+}
+
+bombardment {
+  name=ROOT.Bombardment.Terawatt Beam
+  cost=MERGE
+  
+  warhead=warhead.bombardment.terawattbeam
+  
+  lockdelay=MERGE
+  unlockdelay=MERGE
+  
+  text=text.bombardment.terawattbeam
+}
+
+
+text {
+  name=text.bombardment.plasmabeam
+  data=Blah blah hamster blah yacht blah blah blah monocle polish
+}
+
+effects {
+  name=effects.bombardment.plasmabeam
+  type=ionblast
+  
+  radius=9
+  
+  visuals=20 881
+  visuals=5 ff8
+  
+  duration=0.5
+}
+
+warhead {
+  name=warhead.bombardment.plasmabeam
+  radiusdamage=MERGE energy
+  radiusfalloff=8
+  wallremovalradius=2
+  
+  radiuscolor_dim=018
+  radiuscolor_bright=88f
+  
+  effects_impact=effects.bombardment.plasmabeam
+}
+
+bombardment {
+  name=ROOT.Bombardment.Plasma Beam
+  cost=MERGE
+  
+  warhead=warhead.bombardment.plasmabeam
+  
+  lockdelay=MERGE
+  unlockdelay=MERGE
+  
+  text=text.bombardment.plasmabeam
+}
+
+
+text {
+  name=text.bombardment.gammabeam
+  data=Blah blah hamster blah yacht blah blah blah monocle polish
+}
+
+effects {
+  name=effects.bombardment.gammabeam
+  type=ionblast
+  
+  radius=9.5
+  
+  visuals=20 081
+  visuals=5 8f8
+  
+  duration=0.5
+}
+
+warhead {
+  name=warhead.bombardment.gammabeam
+  radiusdamage=MERGE energy
+  radiusfalloff=8
+  wallremovalradius=2
+  
+  radiuscolor_dim=018
+  radiuscolor_bright=88f
+  
+  effects_impact=effects.bombardment.gammabeam
+}
+
+bombardment {
+  name=ROOT.Bombardment.Gamma Beam
+  cost=MERGE
+  
+  warhead=warhead.bombardment.gammabeam
+  
+  lockdelay=MERGE
+  unlockdelay=MERGE
+  
+  text=text.bombardment.gammabeam
+}
+
+
+text {
+  name=text.bombardment.photonbeam
+  data=Blah blah hamster blah yacht blah blah blah monocle polish
+}
+
+effects {
+  name=effects.bombardment.photonbeam
+  type=ionblast
+  
+  radius=10
+  
+  visuals=20 555
+  visuals=5 fff
+  
+  duration=0.5
+}
+
+warhead {
+  name=warhead.bombardment.photonbeam
+  radiusdamage=MERGE energy
+  radiusfalloff=8
+  wallremovalradius=2
+  
+  radiuscolor_dim=018
+  radiuscolor_bright=88f
+  
+  effects_impact=effects.bombardment.photonbeam
+}
+
+bombardment {
+  name=ROOT.Bombardment.Photon Beam
+  cost=MERGE
+  
+  warhead=warhead.bombardment.photonbeam
+  
+  lockdelay=MERGE
+  unlockdelay=MERGE
+  
+  text=text.bombardment.photonbeam
+}
+
+
+text {
+  name=text.bombardment.conversionbeam
+  data=Blah blah hamster blah yacht blah blah blah monocle polish
+}
+
+effects {
+  name=effects.bombardment.conversionbeam
+  type=ionblast
+  
+  radius=10.5
+  
+  visuals=20 00f
+  visuals=20 0f0
+  visuals=20 f00
+  
+  duration=0.5
+}
+
+warhead {
+  name=warhead.bombardment.conversionbeam
+  radiusdamage=MERGE energy
+  radiusfalloff=8
+  wallremovalradius=2
+  
+  radiuscolor_dim=018
+  radiuscolor_bright=88f
+  
+  effects_impact=effects.bombardment.conversionbeam
+}
+
+bombardment {
+  name=ROOT.Bombardment.Conversion Beam
+  cost=MERGE
+  
+  warhead=warhead.bombardment.conversionbeam
+  
+  lockdelay=MERGE
+  unlockdelay=MERGE
+  
+  text=text.bombardment.conversionbeam
+}
