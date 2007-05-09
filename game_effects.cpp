@@ -176,48 +176,48 @@ public:
     
   virtual void render() const {
     setBaseColor();
-    drawPoint(center + velocity * (pow(effect->particle_slowdown, getAge()) / log(effect->particle_slowdown) - 1 / log(effect->particle_slowdown)), effect->particle_radius);  // calculus FTW
+    drawPoint(center + velocity * (pow(effect.particle_slowdown(), getAge()) / log(effect.particle_slowdown()) - 1 / log(effect.particle_slowdown())), effect.particle_radius());  // calculus FTW
   }
   
-  GfxEffectsIdbParticle(Float2 center, float normal, Float2 in_velocity, const IDBEffects *effect) : GfxEffects(effect->particle_lifetime, effect->particle_color), center(center), effect(effect) {
-    CHECK(effect->type == IDBEffects::EFT_PARTICLE);
-    velocity = in_velocity * effect->particle_inertia + reflect(in_velocity, normal) * effect->particle_reflect + makeAngle(unsync().frand() * 2 * PI) * unsync().gaussian() * effect->particle_spread;
+  GfxEffectsIdbParticle(Float2 center, float normal, Float2 in_velocity, const IDBEffectsAdjust &effect) : GfxEffects(effect.particle_lifetime(), effect.particle_color()), center(center), effect(effect) {
+    CHECK(effect.type() == IDBEffects::EFT_PARTICLE);
+    velocity = in_velocity * effect.particle_inertia() + reflect(in_velocity, normal) * effect.particle_reflect() + makeAngle(unsync().frand() * 2 * PI) * unsync().gaussian() * effect.particle_spread();
   };
   
 private:
   
   Float2 center;
   Float2 velocity;
-  const IDBEffects *effect;
+  IDBEffectsAdjust effect;
 };
 
 class GfxEffectsIdbIonBlast : public GfxEffects {
 public:
     
   virtual void render() const {
-    for(int i = 0; i < effect->ionblast_visuals.size(); i++) {
-      setColor(effect->ionblast_visuals[i].second * pow(1.0 - getAgeFactor(), 1.0));
-      for(int j = 0; j < effect->ionblast_visuals[i].first; j++) {
-        float rad = unsync().frand() * effect->ionblast_radius;
+    for(int i = 0; i < effect.ionblast_visuals().size(); i++) {
+      setColor(effect.ionblast_visuals()[i].second * pow(1.0 - getAgeFactor(), 1.0));
+      for(int j = 0; j < effect.ionblast_visuals()[i].first; j++) {
+        float rad = unsync().frand() * effect.ionblast_radius();
         drawBlast(center, rad, rad * 0.1, 16);
       }
     }
   }
   
-  GfxEffectsIdbIonBlast(Float2 center, const IDBEffects *effect) : GfxEffects(effect->ionblast_duration, Color(0, 0, 0)), center(center), effect(effect) {
-    CHECK(effect->type == IDBEffects::EFT_IONBLAST);
+  GfxEffectsIdbIonBlast(Float2 center, const IDBEffectsAdjust &effect) : GfxEffects(effect.ionblast_duration(), Color(0, 0, 0)), center(center), effect(effect) {
+    CHECK(effect.type() == IDBEffects::EFT_IONBLAST);
   };
   
 private:
   
   Float2 center;
-  const IDBEffects *effect;
+  IDBEffectsAdjust effect;
 };
 
-smart_ptr<GfxEffects> GfxIdb(Float2 center, float normal, Float2 velocity, const IDBEffects *effect) {
-  if(effect->type == IDBEffects::EFT_PARTICLE) {
+smart_ptr<GfxEffects> GfxIdb(Float2 center, float normal, Float2 velocity, const IDBEffectsAdjust &effect) {
+  if(effect.type() == IDBEffects::EFT_PARTICLE) {
     return smart_ptr<GfxEffects>(new GfxEffectsIdbParticle(center, normal, velocity, effect));
-  } else if(effect->type == IDBEffects::EFT_IONBLAST) {
+  } else if(effect.type() == IDBEffects::EFT_IONBLAST) {
     return smart_ptr<GfxEffects>(new GfxEffectsIdbIonBlast(center, effect));
   } else {
     CHECK(0);

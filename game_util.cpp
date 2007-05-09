@@ -119,7 +119,7 @@ void detonateWarhead(const IDBWarheadAdjust &warhead, Coord2 pos, float normal, 
   
   if(impacted) {
     for(int i = 0; i < warhead.effects_impact().size(); i++) {
-      for(int j = 0; j < warhead.effects_impact()[i]->quantity; j++) {
+      for(int j = 0; j < warhead.effects_impact()[i].quantity(); j++) {
         gpc.gic->effects->push_back(GfxIdb(pos.toFloat(), normal, vel.toFloat(), warhead.effects_impact()[i]));
       }
     }
@@ -154,7 +154,7 @@ void detonateBombardment(const IDBBombardmentAdjust &bombard, Coord2 pos, float 
     gpc.projpack->add(Projectile(pos, direction, bombard.projectiles()[i], gpc.gic->rng, false));
   
   for(int i = 0; i < bombard.effects().size(); i++) {
-    for(int j = 0; j < bombard.effects()[i]->quantity; j++) {
+    for(int j = 0; j < bombard.effects()[i].quantity(); j++) {
       gpc.gic->effects->push_back(GfxIdb(pos.toFloat(), 0, makeAngle(direction), bombard.effects()[i]));
     }
   }

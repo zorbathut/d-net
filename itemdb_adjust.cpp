@@ -5,6 +5,13 @@
 
 using namespace std;
 
+template<typename T> vector<typename IDBItemProperties<T>::adjusted> adjust_vector(const vector<const T *> &orig, const IDBAdjustment &adjust) {
+  vector<typename IDBItemProperties<T>::adjusted> rv;
+  for(int i = 0; i < orig.size(); i++)
+    rv.push_back(typename IDBItemProperties<T>::adjusted(orig[i], adjust));
+  return rv;
+}
+
 /*************
  * IDBDeployAdjust
  */
@@ -21,24 +28,9 @@ int IDBDeployAdjust::exp_shotspersplit() const { return idb->exp_shotspersplit; 
 
 float IDBDeployAdjust::anglestddev() const { return idb->anglestddev; };
 
-vector<IDBDeployAdjust> IDBDeployAdjust::chain_deploy() const {
-  vector<IDBDeployAdjust> rv;
-  for(int i = 0; i < idb->chain_deploy.size(); i++)
-    rv.push_back(IDBDeployAdjust(idb->chain_deploy[i], adjust));
-  return rv;
-}
-vector<IDBProjectileAdjust> IDBDeployAdjust::chain_projectile() const {
-  vector<IDBProjectileAdjust> rv;
-  for(int i = 0; i < idb->chain_projectile.size(); i++)
-    rv.push_back(IDBProjectileAdjust(idb->chain_projectile[i], adjust));
-  return rv;
-}
-vector<IDBWarheadAdjust> IDBDeployAdjust::chain_warhead() const {
-  vector<IDBWarheadAdjust> rv;
-  for(int i = 0; i < idb->chain_warhead.size(); i++)
-    rv.push_back(IDBWarheadAdjust(idb->chain_warhead[i], adjust));
-  return rv;
-}
+vector<IDBDeployAdjust> IDBDeployAdjust::chain_deploy() const { return adjust_vector(idb->chain_deploy, adjust); }
+vector<IDBProjectileAdjust> IDBDeployAdjust::chain_projectile() const { return adjust_vector(idb->chain_projectile, adjust); }
+vector<IDBWarheadAdjust> IDBDeployAdjust::chain_warhead() const { return adjust_vector(idb->chain_warhead, adjust); }
 
 float IDBDeployAdjust::stats_damagePerShot() const {
   float mult;
@@ -90,7 +82,12 @@ float IDBWarheadAdjust::wallremovalchance() const { return idb->wallremovalchanc
 Color IDBWarheadAdjust::radiuscolor_bright() const { return idb->radiuscolor_bright * mf; }
 Color IDBWarheadAdjust::radiuscolor_dim() const { return idb->radiuscolor_dim * mf; }
 
-const vector<const IDBEffects *> &IDBWarheadAdjust::effects_impact() const { return idb->effects_impact; }
+vector<IDBEffectsAdjust> IDBWarheadAdjust::effects_impact() const {
+  vector<IDBEffectsAdjust> rv;
+  for(int i = 0; i < idb->effects_impact.size(); i++)
+    rv.push_back(IDBEffectsAdjust(idb->effects_impact[i], adjust));
+  return rv;
+}
 
 vector<IDBDeployAdjust> IDBWarheadAdjust::deploy() const {
   vector<IDBDeployAdjust> rv;
@@ -290,9 +287,7 @@ vector<IDBProjectileAdjust> IDBBombardmentAdjust::projectiles() const {
     rv.push_back(IDBProjectileAdjust(idb->projectiles[i], adjust));
   return rv;
 }
-const vector<const IDBEffects *> &IDBBombardmentAdjust::effects() const {
-  return idb->effects;
-}
+vector<IDBEffectsAdjust> IDBBombardmentAdjust::effects() const { return adjust_vector(idb->effects, adjust); }
 
 Money IDBBombardmentAdjust::cost() const { return idb->base_cost; };
 Money IDBBombardmentAdjust::sellcost() const { return cost() * adjust.recyclevalue(); };
@@ -377,3 +372,28 @@ Money IDBImplantAdjust::costToLevel(int curlevel) const {
 }
 
 IDBImplantAdjust::IDBImplantAdjust(const IDBImplant *in_idb, const IDBAdjustment &in_adjust) { idb = in_idb; adjust = in_adjust; }
+
+/*************
+ * IDBEffectsAdjust
+ */
+
+IDBEffects::IDBEType IDBEffectsAdjust::type() const { return idb->type; }
+int IDBEffectsAdjust::quantity() const { return idb->quantity; }
+
+float IDBEffectsAdjust::particle_inertia() const { CHECK(type() == IDBEffects::EFT_PARTICLE); return idb->particle_inertia; }
+float IDBEffectsAdjust::particle_reflect() const { CHECK(type() == IDBEffects::EFT_PARTICLE); return idb->particle_reflect; }
+
+float IDBEffectsAdjust::particle_spread() const { CHECK(type() == IDBEffects::EFT_PARTICLE); return idb->particle_spread; }
+
+float IDBEffectsAdjust::particle_slowdown() const { CHECK(type() == IDBEffects::EFT_PARTICLE); return idb->particle_slowdown; }
+float IDBEffectsAdjust::particle_lifetime() const { CHECK(type() == IDBEffects::EFT_PARTICLE); return idb->particle_lifetime; }
+
+float IDBEffectsAdjust::particle_radius() const { CHECK(type() == IDBEffects::EFT_PARTICLE); return idb->particle_radius; }
+Color IDBEffectsAdjust::particle_color() const { CHECK(type() == IDBEffects::EFT_PARTICLE); return idb->particle_color; }
+
+float IDBEffectsAdjust::ionblast_radius() const { CHECK(type() == IDBEffects::EFT_IONBLAST); return idb->ionblast_radius * adjust.adjustmentfactor(IDBAdjustment::WARHEAD_RADIUS_FALLOFF); }
+float IDBEffectsAdjust::ionblast_duration() const { CHECK(type() == IDBEffects::EFT_IONBLAST); return idb->ionblast_duration; }
+
+const vector<pair<int, Color> > &IDBEffectsAdjust::ionblast_visuals() const { CHECK(type() == IDBEffects::EFT_IONBLAST); return idb->ionblast_visuals; }
+
+IDBEffectsAdjust::IDBEffectsAdjust(const base_type *in_idb, const IDBAdjustment &in_adjust) { idb = in_idb; adjust = in_adjust; }

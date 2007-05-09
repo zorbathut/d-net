@@ -276,7 +276,10 @@ struct IDBImplant {
  * Adjusted data items
  */
 
+template<typename T> class IDBItemProperties;
+
 class IDBDeployAdjust;
+class IDBEffectsAdjust;
 struct IDBWarheadAdjust {
   const IDBWarhead *idb;
   IDBAdjustment adjust;
@@ -285,6 +288,8 @@ struct IDBWarheadAdjust {
   float accumulate(const float *damage) const;
   
 public:
+  typedef IDBWarhead base_type;
+
   float impactdamage() const;
 
   float radiusdamage() const;
@@ -296,7 +301,7 @@ public:
   float wallremovalchance() const;
 
   vector<IDBDeployAdjust> deploy() const;
-  const vector<const IDBEffects *> &effects_impact() const;
+  vector<IDBEffectsAdjust> effects_impact() const;
   
   float stats_damagePerShot() const;
   float stats_damagePerShotType(int type) const;
@@ -305,7 +310,10 @@ public:
   float multfactor() const;
   IDBWarheadAdjust multiply(float mult) const;
 
-  IDBWarheadAdjust(const IDBWarhead *in_idb, const IDBAdjustment &in_adjust, float in_multfactor = 1.0f);
+  IDBWarheadAdjust(const base_type *in_idb, const IDBAdjustment &in_adjust, float in_multfactor = 1.0f);
+};
+template<> struct IDBItemProperties<IDBWarheadAdjust::base_type> {
+  typedef IDBWarheadAdjust adjusted;
 };
 
 struct IDBProjectileAdjust {
@@ -313,6 +321,8 @@ struct IDBProjectileAdjust {
   IDBAdjustment adjust;
   
 public:
+  typedef IDBProjectile base_type;
+
   int motion() const;
   float velocity() const;
   float length() const;
@@ -338,7 +348,10 @@ public:
   
   float stats_damagePerShot() const;
 
-  IDBProjectileAdjust(const IDBProjectile *in_idb, const IDBAdjustment &in_adjust);
+  IDBProjectileAdjust(const base_type *in_idb, const IDBAdjustment &in_adjust);
+};
+template<> struct IDBItemProperties<IDBProjectileAdjust::base_type> {
+  typedef IDBProjectileAdjust adjusted;
 };
 
 struct IDBDeployAdjust {
@@ -346,6 +359,8 @@ struct IDBDeployAdjust {
   IDBAdjustment adjust;
   
 public:
+  typedef IDBDeploy base_type;
+
   int type() const;
 
   int exp_minsplits() const;
@@ -364,7 +379,10 @@ public:
 
   float stats_damagePerShot() const;
 
-  IDBDeployAdjust(const IDBDeploy *in_idb, const IDBAdjustment &in_adjust);
+  IDBDeployAdjust(const base_type *in_idb, const IDBAdjustment &in_adjust);
+};
+template<> struct IDBItemProperties<IDBDeployAdjust::base_type> {
+  typedef IDBDeployAdjust adjusted;
 };
 
 struct IDBLauncherAdjust {
@@ -372,11 +390,16 @@ struct IDBLauncherAdjust {
   IDBAdjustment adjust;
 
 public:
+  typedef IDBLauncher base_type;
+
   IDBDeployAdjust deploy() const;
   
   float stats_damagePerShot() const;
 
-  IDBLauncherAdjust(const IDBLauncher *in_idb, const IDBAdjustment &in_adjust);
+  IDBLauncherAdjust(const base_type *in_idb, const IDBAdjustment &in_adjust);
+};
+template<> struct IDBItemProperties<IDBLauncherAdjust::base_type> {
+  typedef IDBLauncherAdjust adjusted;
 };
 
 struct IDBWeaponAdjust {
@@ -384,6 +407,8 @@ struct IDBWeaponAdjust {
   IDBAdjustment adjust;
 
 public:
+  typedef IDBWeapon base_type;
+
   const string &name() const;
 
   IDBLauncherAdjust launcher() const;
@@ -400,7 +425,10 @@ public:
   float stats_costPerDamage() const;
   float stats_costPerSecond() const;
 
-  IDBWeaponAdjust(const IDBWeapon *in_idb, const IDBAdjustment &in_adjust);
+  IDBWeaponAdjust(const base_type *in_idb, const IDBAdjustment &in_adjust);
+};
+template<> struct IDBItemProperties<IDBWeaponAdjust::base_type> {
+  typedef IDBWeaponAdjust adjusted;
 };
 
 struct IDBGloryAdjust {
@@ -408,6 +436,8 @@ struct IDBGloryAdjust {
   IDBAdjustment adjust;
 
 public:
+  typedef IDBGlory base_type;
+
   vector<IDBDeployAdjust> blast() const;
   IDBDeployAdjust core() const;
   
@@ -416,7 +446,10 @@ public:
 
   float stats_averageDamage() const;
   
-  IDBGloryAdjust(const IDBGlory *in_idb, const IDBAdjustment &in_adjust);
+  IDBGloryAdjust(const base_type *in_idb, const IDBAdjustment &in_adjust);
+};
+template<> struct IDBItemProperties<IDBGloryAdjust::base_type> {
+  typedef IDBGloryAdjust adjusted;
 };
 
 struct IDBUpgradeAdjust {
@@ -425,11 +458,15 @@ struct IDBUpgradeAdjust {
   const IDBTank *tank;
 
 public:
+  typedef IDBUpgrade base_type;
 
   Money cost() const;
   Money sellcost() const;
 
-  IDBUpgradeAdjust(const IDBUpgrade *in_idb, const IDBTank *in_tank, const IDBAdjustment &in_adjust);
+  IDBUpgradeAdjust(const base_type *in_idb, const IDBTank *in_tank, const IDBAdjustment &in_adjust);
+};
+template<> struct IDBItemProperties<IDBUpgradeAdjust::base_type> {
+  typedef IDBUpgradeAdjust adjusted;
 };
 
 struct IDBBombardmentAdjust {
@@ -438,6 +475,8 @@ struct IDBBombardmentAdjust {
   bool valid_level;
 
 public:
+  typedef IDBBombardment base_type;
+
   float lockdelay() const;
   float unlockdelay() const;
 
@@ -445,7 +484,7 @@ public:
 
   vector<IDBWarheadAdjust> warheads() const;
   vector<IDBProjectileAdjust> projectiles() const;
-  const vector<const IDBEffects *> &effects() const;
+  vector<IDBEffectsAdjust> effects() const;
   
   Money cost() const;
   Money sellcost() const;
@@ -453,7 +492,10 @@ public:
   float stats_damagePerShot() const;
   float stats_damagePerShotType(int type) const;
 
-  IDBBombardmentAdjust(const IDBBombardment *in_idb, const IDBAdjustment &in_adjust, int blevel);
+  IDBBombardmentAdjust(const base_type *in_idb, const IDBAdjustment &in_adjust, int blevel);
+};
+template<> struct IDBItemProperties<IDBBombardmentAdjust::base_type> {
+  typedef IDBBombardmentAdjust adjusted;
 };
 
 struct IDBTankAdjust {
@@ -462,6 +504,8 @@ struct IDBTankAdjust {
 
   friend bool operator==(const IDBTankAdjust &, const IDBTankAdjust &);
 public:
+  typedef IDBTank base_type;
+
   float maxHealth() const;
   float turnSpeed() const;
   float maxSpeed() const;
@@ -478,7 +522,10 @@ public:
 
   const IDBTank *base() const;
 
-  IDBTankAdjust(const IDBTank *in_idb, const IDBAdjustment &in_adjust);
+  IDBTankAdjust(const base_type *in_idb, const IDBAdjustment &in_adjust);
+};
+template<> struct IDBItemProperties<IDBTankAdjust::base_type> {
+  typedef IDBTankAdjust adjusted;
 };
 bool operator==(const IDBTankAdjust &lhs, const IDBTankAdjust &rhs);  // This could exist for others as well, it just doesn't yet.
 
@@ -487,9 +534,14 @@ struct IDBImplantSlotAdjust {
   IDBAdjustment adjust;
   
 public:
+  typedef IDBImplantSlot base_type;
+
   Money cost() const;
 
-  IDBImplantSlotAdjust(const IDBImplantSlot *in_idb, const IDBAdjustment &in_adjust);
+  IDBImplantSlotAdjust(const base_type *in_idb, const IDBAdjustment &in_adjust);
+};
+template<> struct IDBItemProperties<IDBImplantSlotAdjust::base_type> {
+  typedef IDBImplantSlotAdjust adjusted;
 };
 
 struct IDBImplantAdjust {
@@ -497,9 +549,46 @@ struct IDBImplantAdjust {
   IDBAdjustment adjust;
   
 public:
+  typedef IDBImplant base_type;
+
   Money costToLevel(int curlevel) const;
 
-  IDBImplantAdjust(const IDBImplant *in_idb, const IDBAdjustment &in_adjust);
+  IDBImplantAdjust(const base_type *in_idb, const IDBAdjustment &in_adjust);
+};
+template<> struct IDBItemProperties<IDBImplantAdjust::base_type> {
+  typedef IDBImplantAdjust adjusted;
+};
+
+struct IDBEffectsAdjust {
+  const IDBEffects *idb;
+  IDBAdjustment adjust;
+
+public:
+  typedef IDBEffects base_type;
+
+  IDBEffects::IDBEType type() const;
+  int quantity() const;
+
+  float particle_inertia() const;
+  float particle_reflect() const;
+  
+  float particle_spread() const;
+
+  float particle_slowdown() const;
+  float particle_lifetime() const;
+
+  float particle_radius() const;
+  Color particle_color() const;
+  
+  float ionblast_radius() const;
+  float ionblast_duration() const;
+  
+  const vector<pair<int, Color> > &ionblast_visuals() const;
+
+  IDBEffectsAdjust(const base_type *in_idb, const IDBAdjustment &in_adjust);
+};
+template<> struct IDBItemProperties<IDBEffectsAdjust::base_type> {
+  typedef IDBEffectsAdjust adjusted;
 };
 
 /*************
