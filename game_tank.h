@@ -51,6 +51,8 @@ public:
   bool hasTakenDamage() const;
   void addCycle();
   
+  // Damage and kill-related
+  float getBombardmentMultiplier() const;
   void addDamage(float amount);
   void addKill();
   
@@ -103,6 +105,9 @@ private:
   float damageDealt;
   int kills;
 
+  float glory_resist_multiplier;
+  int glory_resist_boost_frames;
+  
   Coord2 worldFromLocal(const Coord2 &loc) const;
 
 };

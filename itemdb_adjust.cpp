@@ -213,6 +213,8 @@ Money IDBWeaponAdjust::cost(int amount) const { return (cost_pack() * amount + M
 Money IDBWeaponAdjust::cost_pack() const { return idb->base_cost / adjust.adjustmentfactor(IDBAdjustment::DISCOUNT_WEAPON); };
 Money IDBWeaponAdjust::sellcost(int amount) const { return cost_pack() * adjust.recyclevalue() * amount / idb->quantity; };
 
+bool IDBWeaponAdjust::glory_resistance() const { return idb->glory_resistance; };
+
 float IDBWeaponAdjust::stats_damagePerSecond() const { return launcher().stats_damagePerShot() * firerate(); }
 float IDBWeaponAdjust::stats_damagePerSecondType(int type) const {
   // Sometimes I'm clever.

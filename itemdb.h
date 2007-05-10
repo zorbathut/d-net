@@ -174,6 +174,7 @@ struct IDBWeapon {
   Money base_cost;
   int quantity;
   
+  bool glory_resistance;
   bool nocache;
 };
 
@@ -418,6 +419,8 @@ public:
   Money cost(int shots) const;
   Money cost_pack() const;
   Money sellcost(int shots) const;
+
+  bool glory_resistance() const;
 
   float stats_damagePerSecond() const;
   float stats_damagePerSecondType(int type) const;

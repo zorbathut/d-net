@@ -20,6 +20,9 @@ void Tank::init(IDBTankAdjust in_tank, Color in_color) {
   
   damageDealt = 0;
   kills = 0;
+  
+  glory_resist_multiplier = 0;
+  glory_resist_boost_frames = 0;
 }
 
 void Tank::tick(const Keystates &kst) {
@@ -34,6 +37,20 @@ void Tank::tick(const Keystates &kst) {
     framesSinceDamage++;
   
   weaponCooldown--;
+  
+  {
+    static const float resistance_approach = 0.75;
+    static const float resistance_approach_per_sec = 0.75; // this is a fraction of how close it gets to the theoretical max
+    static const float resistance_dapproach_per_sec = 0.75;
+    static const float resistance_approach_per_frame = 1.0 - pow(1.0 - resistance_approach_per_sec, 1. / FPS);
+    static const float resistance_dapproach_per_frame = 1.0 - pow(1.0 - resistance_dapproach_per_sec, 1. / FPS);
+    if(glory_resist_boost_frames) {
+      glory_resist_boost_frames--;
+      glory_resist_multiplier = glory_resist_multiplier * (1.0 - resistance_approach_per_frame) + resistance_approach * resistance_approach_per_frame;
+    } else {
+      glory_resist_multiplier = glory_resist_multiplier * (1.0 - resistance_dapproach_per_frame);
+    }
+  }
 };
 
 void Tank::render(const vector<Team> &teams) const {
@@ -479,6 +496,9 @@ void Tank::tryToFire(Button keys[SIMUL_WEAPONS], Player *player, ProjectilePack 
       deployProjectile(weapon.launcher().deploy(), launchData(), GamePlayerContext(this, projectiles, gic), true);
       
       weaponCooldown = weapon.framesForCooldown(gic.rng);
+      if(weapon.glory_resistance())
+        glory_resist_boost_frames = weaponCooldown;
+        
       // hack here to detect weapon out-of-ammo
       string lastname = weapon.name();
       *firepowerSpent += player->shotFired(curfire);

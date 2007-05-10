@@ -2,7 +2,6 @@
 - "Finish the Damn Game" Initiative
   - Run header culler again :D
   - EMP glory resistance
-  - IDBEffects blast radius increase with bombardment
   - Many many more weapons
     - Trap
     - Exotic
