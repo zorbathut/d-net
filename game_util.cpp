@@ -86,28 +86,30 @@ DeployLocation::DeployLocation(Coord2 pos, float d) {
   d_int = d;
 }
 
-void dealDamage(float dmg, Tank *target, Tank *owner, float damagecredit, bool killcredit) {
+void dealDamage(float dmg, Tank *target, Tank *owner, const DamageFlags &flags) {
   if(target->team == owner->team)
     return; // friendly fire exception
   //dprintf("Dealing %f damage\n", dmg);
-  if(target->takeDamage(dmg) && killcredit)
+  if(flags.glory)
+    dmg *= 1.0 - target->getGloryResistance();
+  if(target->takeDamage(dmg) && flags.killcredit)
     owner->addKill();
-  owner->addDamage(dmg * damagecredit);
+  owner->addDamage(dmg * flags.damagecredit);
 };
 
-void detonateWarhead(const IDBWarheadAdjust &warhead, Coord2 pos, float normal, Coord2 vel, Tank *impact, const GamePlayerContext &gpc, float damagecredit, bool killcredit, bool impacted) {
+void detonateWarhead(const IDBWarheadAdjust &warhead, Coord2 pos, float normal, Coord2 vel, Tank *impact, const GamePlayerContext &gpc, const DamageFlags &flags, bool impacted) {
   
   gpc.gic->record(warhead, pos, impact, gpc.owner);
   
   // this stuff is kind of copied into detonateWarheadDamageOnly
   if(impact)
-    dealDamage(warhead.impactdamage(), impact, gpc.owner, damagecredit, killcredit);
+    dealDamage(warhead.impactdamage(), impact, gpc.owner, flags);
   
   if(warhead.radiusfalloff() >= 0) {
     vector<pair<float, Tank *> > adjacency = gpc.gic->getAdjacency(pos);
     for(int i = 0; i < adjacency.size(); i++) {
       if(adjacency[i].first < warhead.radiusfalloff())
-        dealDamage(warhead.radiusdamage() / warhead.radiusfalloff() * (warhead.radiusfalloff() - adjacency[i].first), adjacency[i].second, gpc.owner, damagecredit, killcredit);
+        dealDamage(warhead.radiusdamage() / warhead.radiusfalloff() * (warhead.radiusfalloff() - adjacency[i].first), adjacency[i].second, gpc.owner, flags);
     }
   }
   
@@ -132,7 +134,7 @@ void detonateWarhead(const IDBWarheadAdjust &warhead, Coord2 pos, float normal, 
     
     vector<IDBDeployAdjust> dep = warhead.deploy();
     for(int i = 0; i < dep.size(); i++)
-      deployProjectile(dep[i], DeployLocation(shifted_pos, getAngle(vel.toFloat())), gpc, killcredit);
+      deployProjectile(dep[i], DeployLocation(shifted_pos, getAngle(vel.toFloat())), gpc, flags.killcredit);
   }
   
 }
@@ -148,7 +150,7 @@ void detonateWarheadDamageOnly(const IDBWarheadAdjust &warhead, Tank *impact, co
 
 void detonateBombardment(const IDBBombardmentAdjust &bombard, Coord2 pos, float direction, const GamePlayerContext &gpc) {
   for(int i = 0; i < bombard.warheads().size(); i++)
-    detonateWarhead(bombard.warheads()[i], pos, direction, Coord2(0, 0), NULL, gpc, 1.0, false, true);
+    detonateWarhead(bombard.warheads()[i], pos, direction, Coord2(0, 0), NULL, gpc, DamageFlags(1.0, false, false), true);
   
   for(int i = 0; i < bombard.projectiles().size(); i++)
     gpc.projpack->add(Projectile(pos, direction, bombard.projectiles()[i], gpc.gic->rng, false));
@@ -231,7 +233,7 @@ void deployProjectile(const IDBDeployAdjust &deploy, const DeployLocation &locat
     vector<IDBWarheadAdjust> idw = deploy.chain_warhead();
     for(int i = 0; i < idw.size(); i++)
       for(int j = 0; j < proji.size(); j++)
-        detonateWarhead(idw[i], proji[j].first, NO_NORMAL, Coord2(0, 0), NULL, gpc, 1.0, killcredit, true);
+        detonateWarhead(idw[i], proji[j].first, NO_NORMAL, Coord2(0, 0), NULL, gpc, DamageFlags(1.0, killcredit, false), true);
   }
 }
 

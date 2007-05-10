@@ -21,7 +21,7 @@ void Tank::init(IDBTankAdjust in_tank, Color in_color) {
   damageDealt = 0;
   kills = 0;
   
-  glory_resist_multiplier = 0;
+  glory_resistance = 0;
   glory_resist_boost_frames = 0;
 }
 
@@ -46,9 +46,9 @@ void Tank::tick(const Keystates &kst) {
     static const float resistance_dapproach_per_frame = 1.0 - pow(1.0 - resistance_dapproach_per_sec, 1. / FPS);
     if(glory_resist_boost_frames) {
       glory_resist_boost_frames--;
-      glory_resist_multiplier = glory_resist_multiplier * (1.0 - resistance_approach_per_frame) + resistance_approach * resistance_approach_per_frame;
+      glory_resistance = glory_resistance * (1.0 - resistance_approach_per_frame) + resistance_approach * resistance_approach_per_frame;
     } else {
-      glory_resist_multiplier = glory_resist_multiplier * (1.0 - resistance_dapproach_per_frame);
+      glory_resistance = glory_resistance * (1.0 - resistance_dapproach_per_frame);
     }
   }
 };
@@ -418,6 +418,9 @@ void Tank::addCycle() {
   damageTaken = 0;
 }
 
+float Tank::getGloryResistance() const {
+  return glory_resistance;
+}
 void Tank::addDamage(float amount) {
   damageDealt += amount;
 }

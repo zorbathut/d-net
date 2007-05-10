@@ -102,7 +102,7 @@ void Projectile::detonate(Coord2 pos, float normal, Tank *target, const GamePlay
   if(projtype.motion() != PM_DPS) {
     vector<IDBWarheadAdjust> idw = projtype.chain_warhead();
     for(int i = 0; i < idw.size(); i++)
-      detonateWarhead(idw[i], pos, normal, movement() * FPS, target, gpc, 1.0, killcredit, impacted);
+      detonateWarhead(idw[i], pos, normal, movement() * FPS, target, gpc, DamageFlags(1.0, killcredit, false), impacted);
   
     live = false;
   } else if(projtype.motion() == PM_DPS) {
@@ -114,7 +114,7 @@ void Projectile::detonate(Coord2 pos, float normal, Tank *target, const GamePlay
       int tshares = alen - age + 1;
       vector<IDBWarheadAdjust> idw = projtype.chain_warhead();
       for(int i = 0; i < idw.size(); i++)
-        detonateWarhead(idw[i].multiply((float)tshares / shares), pos, 0, Coord2(0, 0), NULL, gpc, 1.0, killcredit, false);
+        detonateWarhead(idw[i].multiply((float)tshares / shares), pos, 0, Coord2(0, 0), NULL, gpc, DamageFlags(1.0, killcredit, false), false);
       detonating = false;
     }
   } else {
