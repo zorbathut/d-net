@@ -30,7 +30,7 @@ public:
   float toughness() const;
 
   Projectile();   // does not start in usable state
-  Projectile(const Coord2 &pos, float d, const IDBProjectileAdjust &projtype, Rng *rng, bool killcredit);
+  Projectile(const Coord2 &pos, float d, const IDBProjectileAdjust &projtype, Rng *rng, const DamageFlags &damageflags);
 
 private:
   
@@ -67,7 +67,7 @@ private:
   
   float distance;
   
-  bool killcredit;
+  DamageFlags damageflags;
 };
 
 class ProjectilePack {

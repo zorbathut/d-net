@@ -134,7 +134,7 @@ void detonateWarhead(const IDBWarheadAdjust &warhead, Coord2 pos, float normal, 
     
     vector<IDBDeployAdjust> dep = warhead.deploy();
     for(int i = 0; i < dep.size(); i++)
-      deployProjectile(dep[i], DeployLocation(shifted_pos, getAngle(vel.toFloat())), gpc, flags.killcredit);
+      deployProjectile(dep[i], DeployLocation(shifted_pos, getAngle(vel.toFloat())), gpc, flags);
   }
   
 }
@@ -150,10 +150,10 @@ void detonateWarheadDamageOnly(const IDBWarheadAdjust &warhead, Tank *impact, co
 
 void detonateBombardment(const IDBBombardmentAdjust &bombard, Coord2 pos, float direction, const GamePlayerContext &gpc) {
   for(int i = 0; i < bombard.warheads().size(); i++)
-    detonateWarhead(bombard.warheads()[i], pos, direction, Coord2(0, 0), NULL, gpc, DamageFlags(1.0, false, false), true);
+    detonateWarhead(bombard.warheads()[i], pos, direction, Coord2(0, 0), NULL, gpc, DamageFlags(1.0, false, true), true);
   
   for(int i = 0; i < bombard.projectiles().size(); i++)
-    gpc.projpack->add(Projectile(pos, direction, bombard.projectiles()[i], gpc.gic->rng, false));
+    gpc.projpack->add(Projectile(pos, direction, bombard.projectiles()[i], gpc.gic->rng, DamageFlags(1.0, false, true)));
   
   for(int i = 0; i < bombard.effects().size(); i++) {
     for(int j = 0; j < bombard.effects()[i].quantity(); j++) {
@@ -162,7 +162,7 @@ void detonateBombardment(const IDBBombardmentAdjust &bombard, Coord2 pos, float 
   }
 }
 
-void deployProjectile(const IDBDeployAdjust &deploy, const DeployLocation &location, const GamePlayerContext &gpc, bool killcredit, vector<float> *tang) {
+void deployProjectile(const IDBDeployAdjust &deploy, const DeployLocation &location, const GamePlayerContext &gpc, const DamageFlags &flags, vector<float> *tang) {
   
   int type = deploy.type();
   if(type == DT_NORMAL) {
@@ -219,21 +219,21 @@ void deployProjectile(const IDBDeployAdjust &deploy, const DeployLocation &locat
     vector<IDBDeployAdjust> idd = deploy.chain_deploy();
     for(int i = 0; i < idd.size(); i++)
       for(int j = 0; j < proji.size(); j++)
-        deployProjectile(idd[i], DeployLocation(proji[j].first, proji[j].second), gpc, killcredit);
+        deployProjectile(idd[i], DeployLocation(proji[j].first, proji[j].second), gpc, flags);
   }
   
   {
     vector<IDBProjectileAdjust> idp = deploy.chain_projectile();
     for(int i = 0; i < idp.size(); i++)
       for(int j = 0; j < proji.size(); j++)
-        gpc.projpack->add(Projectile(proji[j].first, proji[j].second, idp[i], gpc.gic->rng, killcredit));
+        gpc.projpack->add(Projectile(proji[j].first, proji[j].second, idp[i], gpc.gic->rng, flags));
   }
   
   {
     vector<IDBWarheadAdjust> idw = deploy.chain_warhead();
     for(int i = 0; i < idw.size(); i++)
       for(int j = 0; j < proji.size(); j++)
-        detonateWarhead(idw[i], proji[j].first, NO_NORMAL, Coord2(0, 0), NULL, gpc, DamageFlags(1.0, killcredit, false), true);
+        detonateWarhead(idw[i], proji[j].first, NO_NORMAL, Coord2(0, 0), NULL, gpc, flags, true);
   }
 }
 

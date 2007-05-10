@@ -102,7 +102,7 @@ void Projectile::detonate(Coord2 pos, float normal, Tank *target, const GamePlay
   if(projtype.motion() != PM_DPS) {
     vector<IDBWarheadAdjust> idw = projtype.chain_warhead();
     for(int i = 0; i < idw.size(); i++)
-      detonateWarhead(idw[i], pos, normal, movement() * FPS, target, gpc, DamageFlags(1.0, killcredit, false), impacted);
+      detonateWarhead(idw[i], pos, normal, movement() * FPS, target, gpc, damageflags, impacted);
   
     live = false;
   } else if(projtype.motion() == PM_DPS) {
@@ -114,7 +114,7 @@ void Projectile::detonate(Coord2 pos, float normal, Tank *target, const GamePlay
       int tshares = alen - age + 1;
       vector<IDBWarheadAdjust> idw = projtype.chain_warhead();
       for(int i = 0; i < idw.size(); i++)
-        detonateWarhead(idw[i].multiply((float)tshares / shares), pos, 0, Coord2(0, 0), NULL, gpc, DamageFlags(1.0, killcredit, false), false);
+        detonateWarhead(idw[i].multiply((float)tshares / shares), pos, 0, Coord2(0, 0), NULL, gpc, damageflags, false);
       detonating = false;
     }
   } else {
@@ -194,11 +194,11 @@ vector<Coord2> Projectile::mine_polys() const {
   return rv;
 }
 
-Projectile::Projectile() : projtype(NULL, IDBAdjustment()) {
+Projectile::Projectile() : projtype(NULL, IDBAdjustment()), damageflags(0.0, false, false) {
   live = false;
   age = -1;
 }
-Projectile::Projectile(const Coord2 &in_pos, float in_d, const IDBProjectileAdjust &projtype, Rng *rng, bool killcredit) : projtype(projtype), killcredit(killcredit) {
+Projectile::Projectile(const Coord2 &in_pos, float in_d, const IDBProjectileAdjust &projtype, Rng *rng, const DamageFlags &damageflags) : projtype(projtype), damageflags(damageflags) {
   pos = in_pos;
   d = in_d;
   age = 0;
