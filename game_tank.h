@@ -26,6 +26,7 @@ public:
 
   vector<Coord2> getTankVertices(Coord2 pos, float td) const;
   Coord2 getFiringPoint() const;
+  Coord2 getRearFiringPoint() const;
   Coord2 getMinePoint(Rng *rng) const;
 
   pair<float, float> getNextInertia(const Keystates &keys) const;

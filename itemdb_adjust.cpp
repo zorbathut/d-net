@@ -342,6 +342,7 @@ float IDBTankAdjust::mass() const { return idb->mass; };    // BAM
 
 const vector<Coord2> &IDBTankAdjust::vertices() const { return idb->vertices; };
 Coord2 IDBTankAdjust::firepoint() const { return idb->firepoint; };
+Coord2 IDBTankAdjust::rearfirepoint() const { return idb->rearfirepoint; };
 const vector<Coord2> &IDBTankAdjust::minepath() const { return idb->minepath; };
 vector<Coord2> IDBTankAdjust::getTankVertices(Coord2 pos, float td) const { return idb->getTankVertices(pos, td); };
 

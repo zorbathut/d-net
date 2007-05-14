@@ -130,6 +130,9 @@ vector<Coord2> Tank::getTankVertices(Coord2 pos, float td) const {
 Coord2 Tank::getFiringPoint() const {
   return worldFromLocal(tank.firepoint());
 };
+Coord2 Tank::getRearFiringPoint() const {
+  return worldFromLocal(tank.rearfirepoint());
+};
 Coord2 Tank::getMinePoint(Rng *rng) const {
   Coord tlen = 0;
   const vector<Coord2> &minepath = tank.minepath();

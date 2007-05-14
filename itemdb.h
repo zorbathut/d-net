@@ -128,7 +128,7 @@ struct IDBProjectile {
 };
 
 // Normal specifies "Forward" for tanks, or "Centroid" on cases where there is no tank
-enum { DT_NORMAL, DT_FORWARD, DT_CENTROID, DT_MINEPATH, DT_EXPLODE, DT_LAST };
+enum { DT_NORMAL, DT_FORWARD, DT_REAR, DT_CENTROID, DT_MINEPATH, DT_EXPLODE, DT_LAST };
 
 struct IDBDeploy {
   int type;
@@ -229,6 +229,7 @@ struct IDBTank {
 
   vector<Coord2> vertices;
   Coord2 firepoint;
+  Coord2 rearfirepoint;
   vector<Coord2> minepath;
 
   Money base_cost;
@@ -517,6 +518,7 @@ public:
 
   const vector<Coord2> &vertices() const;
   Coord2 firepoint() const;
+  Coord2 rearfirepoint() const;
   const vector<Coord2> &minepath() const;
   vector<Coord2> getTankVertices(Coord2 pos, float td) const;
 

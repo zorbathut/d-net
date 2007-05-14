@@ -178,6 +178,10 @@ void deployProjectile(const IDBDeployAdjust &deploy, const DeployLocation &locat
     CHECK(location.isTank());
     CHECK(!tang);
     proji.push_back(make_pair(location.tank().getFiringPoint(), location.tank().d));
+  } else if(type == DT_REAR) {
+    CHECK(location.isTank());
+    CHECK(!tang);
+    proji.push_back(make_pair(location.tank().getRearFiringPoint(), location.tank().d + PI));
   } else if(type == DT_CENTROID) {
     CHECK(!tang);
     proji.push_back(make_pair(location.pos(), location.d()));

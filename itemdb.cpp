@@ -892,6 +892,8 @@ void parseDeploy(kvData *chunk, bool reload, ErrorAccumulator &accum) {
     titem->type = DT_NORMAL;
   } else if(type == "forward") {
     titem->type = DT_FORWARD;
+  } else if(type == "rear") {
+    titem->type = DT_REAR;
   } else if(type == "centroid") {
     titem->type = DT_CENTROID;
   } else if(type == "minepath") {
@@ -1049,6 +1051,7 @@ void parseTank(kvData *chunk, bool reload, ErrorAccumulator &accum) {
     vector<string> vtx = tokenize(chunk->consume("vertices"), "\n");
     CHECK(vtx.size() >= 3); // triangle is the minimum, no linetanks please
     bool got_firepoint = false;
+    bool got_rearfirepoint = false;
     bool in_mine_path = false;
     for(int i = 0; i < vtx.size(); i++) {
       vector<string> vti = tokenize(vtx[i], " ");
@@ -1062,6 +1065,11 @@ void parseTank(kvData *chunk, bool reload, ErrorAccumulator &accum) {
           CHECK(!got_firepoint);
           titem->firepoint = this_vertex;
           got_firepoint = true;
+        } else if(vti[2] == "rear_firepoint") {
+          CHECK(!got_rearfirepoint);
+          CHECK(in_mine_path);
+          titem->rearfirepoint = this_vertex;
+          got_rearfirepoint = true;
         } else if(vti[2] == "rear_begin") {
           CHECK(!in_mine_path);
           CHECK(!titem->minepath.size());
@@ -1077,6 +1085,9 @@ void parseTank(kvData *chunk, bool reload, ErrorAccumulator &accum) {
       }
     }
     CHECK(titem->minepath.size() >= 2);
+    
+    CHECK(got_firepoint);
+    CHECK(got_rearfirepoint);
     
     titem->centering_adjustment = getCentroid(titem->vertices);
     for(int i = 0; i < titem->vertices.size(); i++)
