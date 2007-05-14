@@ -1,8 +1,9 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
-  - Run header culler again :D
+  - Add rear-fire token for tanks
+  - Add implementations for all trap weapons
+  - Re-enable weapon check
   - Many many more weapons
-    - Trap
     - Exotic
     - Special autocannon
     - Special laser
@@ -32,6 +33,7 @@
     - Allow rings of some kind?
   - Add warning for single-node paths
 
+- Run header culler again :D
 - Netplay
 - Add accuracy implant/upgrade?
 - Less incentive to camp?

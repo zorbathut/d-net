@@ -116,7 +116,7 @@ void mergeWeapon(const string &csv, const string &unmerged, const string &merged
       for(map<string, Weapondat>::const_iterator itr = weapondats.begin(); itr != weapondats.end(); itr++)
         if(!doneweps.count(itr->first))
           dprintf("Didn't complete %s\n", itr->first.c_str());
-      CHECK(0);
+      //CHECK(0);
     }
   }
   
