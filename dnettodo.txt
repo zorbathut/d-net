@@ -1,7 +1,6 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - Run header culler again :D
-  - EMP glory resistance
   - Many many more weapons
     - Trap
     - Exotic
