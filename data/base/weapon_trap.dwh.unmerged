@@ -1,3 +1,6 @@
+###########################
+#
+#   Mines
 
 hierarchy {
   name=ROOT.Ammo.Mine
@@ -273,3 +276,102 @@ weapon {
   launcher=launcher.mine6
 }
 
+###########################
+#
+#   Rear Cannon
+
+hierarchy {
+  name=ROOT.Ammo.Rear Cannon
+  pack=100
+}
+
+text {
+  name=text.weapon.rearcannon
+  data=Blah blah hamster blah yacht blah blah blah monocle polish
+}
+
+warhead {
+  name=warhead.rearcannon
+  impactdamage=MERGE trap
+  wallremovalradius=0.5
+  wallremovalchance=0.05
+  
+  effects_impact=effects.rearcannon
+}
+
+projectile {
+  name=projectile.rearcannon
+  motion=normal
+  velocity=180
+  color=1.0, 0.9, 0.6
+  warhead=warhead.rearcannon
+}
+
+deploy {
+  name=deploy.rearcannon
+  type=rear
+  anglestddev=0.03
+  projectile=projectile.rearcannon
+}
+
+launcher {
+  name=launcher.rearcannon
+  
+  deploy=deploy.rearcannon
+  
+  text=text.weapon.rearcannon
+}
+
+weapon {
+  name=ROOT.Ammo.Rear Cannon.Rear Cannon I
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.rearcannon
+}
+
+weapon {
+  name=ROOT.Ammo.Rear Cannon.Rear Cannon II
+
+  cost=MERGE
+  firerate=MERGE
+
+  launcher=launcher.rearcannon
+}
+
+weapon {
+  name=ROOT.Ammo.Rear Cannon.Rear Cannon III
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.rearcannon
+}
+
+weapon {
+  name=ROOT.Ammo.Rear Cannon.Rear Cannon IV
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.rearcannon
+}
+
+weapon {
+  name=ROOT.Ammo.Rear Cannon.Rear Cannon V
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.rearcannon
+}
+
+weapon {
+  name=ROOT.Ammo.Rear Cannon.Rear Cannon VI
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.rearcannon
+}

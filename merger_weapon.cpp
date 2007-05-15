@@ -100,13 +100,18 @@ void mergeWeapon(const string &csv, const string &unmerged, const string &merged
         dprintf("Warhead %s found\n", kvd.read("name").c_str());
         
         string matchname = findName(suffix(kvd.read("name")), weapondats);
+        if(!matchname.size())
+          matchname = findName(suffix(kvd.read("name")) + "i", weapondats); // try again
         
-        if(matchname.size())
-          kvd.kv["radiusdamage"] = splice(kvd.read("radiusdamage"), weapondats[matchname].dpp);
+        if(matchname.size()) {
+          if(kvd.kv.count("radiusdamage"))
+            kvd.kv["radiusdamage"] = splice(kvd.read("radiusdamage"), weapondats[matchname].dpp);
+          if(kvd.kv.count("impactdamage"))
+            kvd.kv["impactdamage"] = splice(kvd.read("impactdamage"), weapondats[matchname].dpp);
+        }
       }
       
-      for(map<string, string>::const_iterator itr = kvd.kv.begin(); itr != kvd.kv.end(); itr++)
-        CHECK(itr->second.find("MERGE") == string::npos);
+      checkForExtraMerges(kvd);
       
       ofs << stringFromKvData(kvd) << endl;
     }

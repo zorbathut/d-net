@@ -34,6 +34,9 @@ string splice(const string &source, const string &splicetext) {
     if(radidam[i] == "MERGE") {
       radidam[i] = splicetext;
       replacements++;
+    } else {
+      static const boost::regex expression(".*MERGE.*");
+      CHECK(!boost::regex_match(radidam[i], expression));
     }
   }
   CHECK(replacements == 1);
@@ -87,4 +90,14 @@ string suffix(const string &name, int position) {
   CHECK(sps != -1);
   sps++;
   return string(name.begin() + sps, find(name.begin() + sps, name.end(), '.'));
+}
+
+void checkForExtraMerges(const kvData &kvd) {
+  for(map<string, string>::const_iterator itr = kvd.kv.begin(); itr != kvd.kv.end(); itr++) {
+    if(itr->second.find("MERGE") != string::npos) {
+      dprintf("Unexpected MERGE\n");
+      dprintf("%s\n", stringFromKvData(kvd).c_str());
+      CHECK(0);
+    }
+  }
 }

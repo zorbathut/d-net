@@ -61,7 +61,7 @@ effects {
 
 warhead {
   name=warhead.laser
-  impactdamage=0.4 energy
+  impactdamage=MERGE energy
   effects_impact=effects.laser1
   effects_impact=effects.laser2
   effects_impact=effects.laser3
@@ -164,7 +164,7 @@ effects {
 
 warhead {
   name=warhead.mwlaser
-  impactdamage=1.5 energy
+  impactdamage=MERGE energy
   
   effects_impact=effects.mwlaser1
   effects_impact=effects.mwlaser2
@@ -270,7 +270,7 @@ effects {
 
 warhead {
   name=warhead.gwlaser
-  impactdamage=5 energy
+  impactdamage=MERGE energy
   effects_impact=effects.gwlaser1
   effects_impact=effects.gwlaser2
   effects_impact=effects.gwlaser3
@@ -372,7 +372,7 @@ effects {
 
 warhead {
   name=warhead.plasmacannon
-  impactdamage=30 energy
+  impactdamage=MERGE energy
   effects_impact=effects.plasmacannon1
   effects_impact=effects.plasmacannon2
   effects_impact=effects.plasmacannon3
@@ -474,7 +474,7 @@ effects {
 
 warhead {
   name=warhead.gammabeam
-  impactdamage=90 energy
+  impactdamage=MERGE energy
   effects_impact=effects.gammabeam1
   effects_impact=effects.gammabeam2
   effects_impact=effects.gammabeam3
@@ -576,7 +576,7 @@ effects {
 
 warhead {
   name=warhead.fissionlaser
-  impactdamage=170 energy
+  impactdamage=MERGE energy
   effects_impact=effects.fissionlaser1
   effects_impact=effects.fissionlaser2
   effects_impact=effects.fissionlaser3
@@ -678,7 +678,7 @@ effects {
 
 warhead {
   name=warhead.conversionbeam
-  impactdamage=350 energy
+  impactdamage=MERGE energy
   effects_impact=effects.conversionbeam1
   effects_impact=effects.conversionbeam2
   effects_impact=effects.conversionbeam3

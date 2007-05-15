@@ -6,6 +6,7 @@
 #include <map>
 
 #include "debug.h"
+#include "parse.h"
 
 using namespace std;
 
@@ -13,6 +14,8 @@ vector<string> parseCsv(const string &in);
 string splice(const string &source, const string &splicetext);
 string splice(const string &source, float splicevalue);
 string suffix(const string &name, int position = 1);
+
+void checkForExtraMerges(const kvData &kvd);
 
 template<typename T> string findName(const string &thistoken, const map<string, T> &table) {
   string tts;

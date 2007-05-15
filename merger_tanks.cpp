@@ -68,8 +68,7 @@ void mergeTanks(const string &csv, const string &unmerged, const string &merged)
         kvd.kv["mass"] = tdd[basicname].mass;
       }
       
-      for(map<string, string>::const_iterator itr = kvd.kv.begin(); itr != kvd.kv.end(); itr++)
-        CHECK(itr->second.find("MERGE") == string::npos);
+      checkForExtraMerges(kvd);
       
       ofs << stringFromKvData(kvd) << endl;
     }

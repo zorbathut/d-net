@@ -11,7 +11,7 @@ text {
 
 warhead {
   name=warhead.emp
-  radiusdamage=4.5 exotic
+  radiusdamage=MERGE exotic
   radiusfalloff=10
   radiuscolor_bright=88f
   radiuscolor_dim=018

@@ -76,9 +76,7 @@ void mergeBombardment(const string &csv, const string &unmerged, const string &m
           kvd.kv["radiusdamage"] = splice(kvd.read("radiusdamage"), bdd[matchname].dpp);
       }
       
-      for(map<string, string>::const_iterator itr = kvd.kv.begin(); itr != kvd.kv.end(); itr++)
-        if(itr->second.find("MERGE") != string::npos)
-          dprintf("%s\n", stringFromKvData(kvd).c_str());
+      checkForExtraMerges(kvd);
       
       ofs << stringFromKvData(kvd) << endl;
     }

@@ -48,8 +48,6 @@ void mergeGlory(const string &csv, const string &unmerged, const string &merged)
     }
   }
   
-  dprintf("stuph\n");
-  
   set<string> donetdd;
   {
     ofstream ofs(merged.c_str());
@@ -77,8 +75,7 @@ void mergeGlory(const string &csv, const string &unmerged, const string &merged)
           kvd.kv["impactdamage"] = splice(kvd.read("impactdamage"), 1);
       }
       
-      for(map<string, string>::const_iterator itr = kvd.kv.begin(); itr != kvd.kv.end(); itr++)
-        CHECK(itr->second.find("MERGE") == string::npos);
+      checkForExtraMerges(kvd);
       
       ofs << stringFromKvData(kvd) << endl;
     }
@@ -123,8 +120,7 @@ void mergeGlory(const string &csv, const string &unmerged, const string &merged)
           kvd.kv["impactdamage"] = splice(kvd.read("impactdamage"), tdd[tokname].damage_unit);
       }
       
-      for(map<string, string>::const_iterator itr = kvd.kv.begin(); itr != kvd.kv.end(); itr++)
-        CHECK(itr->second.find("MERGE") == string::npos);
+      checkForExtraMerges(kvd);
       
       ofs << stringFromKvData(kvd) << endl;
     }

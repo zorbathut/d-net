@@ -30,7 +30,7 @@ effects {
 
 warhead {
   name=warhead.autocannon
-  impactdamage=1 kinetic
+  impactdamage=MERGE kinetic
   wallremovalradius=0.5
   wallremovalchance=0.05
   
@@ -100,7 +100,7 @@ effects {
 
 warhead {
   name=warhead.apautocannon
-  impactdamage=4.5 kinetic
+  impactdamage=MERGE kinetic
   wallremovalradius=0.8
   wallremovalchance=0.20
   effects_impact=effects.apautocannon
@@ -174,7 +174,7 @@ effects {
 
 warhead {
   name=warhead.heavyautocannon
-  impactdamage=20 kinetic
+  impactdamage=MERGE kinetic
   wallremovalradius=0.5
   wallremovalchance=0.05
   
@@ -244,7 +244,7 @@ effects {
 
 warhead {
   name=warhead.sabotshotgun
-  impactdamage=40 kinetic
+  impactdamage=MERGE kinetic
   wallremovalradius=0.5
   wallremovalchance=0.05
   
@@ -314,7 +314,7 @@ effects {
 
 warhead {
   name=warhead.bladelauncher
-  impactdamage=75 kinetic
+  impactdamage=MERGE kinetic
   wallremovalradius=0.5
   wallremovalchance=0.05
   
@@ -384,7 +384,7 @@ effects {
 
 warhead {
   name=warhead.ccannon
-  impactdamage=350 kinetic
+  impactdamage=MERGE kinetic
   wallremovalradius=0.5
   wallremovalchance=0.05
   
@@ -454,7 +454,7 @@ effects {
 
 warhead {
   name=warhead.conversioncannon
-  impactdamage=1200 kinetic
+  impactdamage=MERGE kinetic
   wallremovalradius=0.5
   wallremovalchance=0.05
   
@@ -550,7 +550,7 @@ weapon {
 
 
 weapon {
-  name=ROOT.Ammo.AP Autocannon.AP AC I
+  name=ROOT.Ammo.AP Autocannon.AP Autocannon I
   
   cost=MERGE
   firerate=MERGE
@@ -560,7 +560,7 @@ weapon {
 
 
 weapon {
-  name=ROOT.Ammo.AP Autocannon.AP AC II
+  name=ROOT.Ammo.AP Autocannon.AP Autocannon II
   
   cost=MERGE
   firerate=MERGE
@@ -569,7 +569,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Ammo.AP Autocannon.AP AC III
+  name=ROOT.Ammo.AP Autocannon.AP Autocannon III
   
   cost=MERGE
   firerate=MERGE
@@ -578,7 +578,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Ammo.AP Autocannon.AP AC IV
+  name=ROOT.Ammo.AP Autocannon.AP Autocannon IV
   
   cost=MERGE
   firerate=MERGE
@@ -587,7 +587,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Ammo.AP Autocannon.AP AC V
+  name=ROOT.Ammo.AP Autocannon.AP Autocannon V
   
   cost=MERGE
   firerate=MERGE
@@ -596,7 +596,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Ammo.AP Autocannon.AP AC VI
+  name=ROOT.Ammo.AP Autocannon.AP Autocannon VI
   
   cost=MERGE
   firerate=MERGE
@@ -606,7 +606,7 @@ weapon {
 
 
 weapon {
-  name=ROOT.Ammo.Heavy Autocannon.Heavy AC I
+  name=ROOT.Ammo.Heavy Autocannon.Heavy Autocannon I
   
   cost=MERGE
   firerate=MERGE
@@ -615,7 +615,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Ammo.Heavy Autocannon.Heavy AC II
+  name=ROOT.Ammo.Heavy Autocannon.Heavy Autocannon II
   
   cost=MERGE
   firerate=MERGE
@@ -624,7 +624,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Ammo.Heavy Autocannon.Heavy AC III
+  name=ROOT.Ammo.Heavy Autocannon.Heavy Autocannon III
   
   cost=MERGE
   firerate=MERGE
@@ -633,7 +633,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Ammo.Heavy Autocannon.Heavy AC IV
+  name=ROOT.Ammo.Heavy Autocannon.Heavy Autocannon IV
   
   cost=MERGE
   firerate=MERGE
@@ -642,7 +642,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Ammo.Heavy Autocannon.Heavy AC V
+  name=ROOT.Ammo.Heavy Autocannon.Heavy Autocannon V
   
   cost=MERGE
   firerate=MERGE
@@ -651,7 +651,7 @@ weapon {
 }
 
 weapon {
-  name=ROOT.Ammo.Heavy Autocannon.Heavy AC VI
+  name=ROOT.Ammo.Heavy Autocannon.Heavy Autocannon VI
   
   cost=MERGE
   firerate=MERGE
