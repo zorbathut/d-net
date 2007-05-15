@@ -19,8 +19,10 @@ template<typename Model, bool twopass> struct PAW;
 template<typename Model> struct PAW<Model, false> {
   static void f(const map<string, typename Model::Data> &tdd, const vector<kvData> &preproc, const string &merged) {
     ofstream ofs(merged.c_str());
-    for(int i = 0; i < preproc.size(); i++)
+    for(int i = 0; i < preproc.size(); i++) {
+      checkForExtraMerges(preproc[i]);
       ofs << stringFromKvData(preproc[i]);
+    }
   }
 };
 
@@ -105,8 +107,8 @@ int main(int argc, char *argv[]) {
   
   if(type == "WEAPON") {
     mergeWeapon(argv[1], argv[2], argv[3]);
-  } else if(type == "BOMBARDMENT") {
-    mergeBombardment(argv[1], argv[2], argv[3]);
+  } else if(type == BombardParams::token()) {
+    doMerge<BombardParams>(argv[1], argv[2], argv[3]);
   } else if(type == TankParams::token()) {
     doMerge<TankParams>(argv[1], argv[2], argv[3]);
   } else if(type == "GLORY") {

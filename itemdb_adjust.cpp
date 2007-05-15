@@ -291,7 +291,7 @@ vector<IDBProjectileAdjust> IDBBombardmentAdjust::projectiles() const {
 }
 vector<IDBEffectsAdjust> IDBBombardmentAdjust::effects() const { return adjust_vector(idb->effects, adjust); }
 
-Money IDBBombardmentAdjust::cost() const { return idb->base_cost; };
+Money IDBBombardmentAdjust::cost() const { return idb->cost; };
 Money IDBBombardmentAdjust::sellcost() const { return cost() * adjust.recyclevalue(); };
 
 float IDBBombardmentAdjust::stats_damagePerShot() const {

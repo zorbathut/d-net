@@ -999,7 +999,7 @@ void parseBombardment(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   
   titem->showdirection = parseWithDefault(chunk, "showdirection", false);
   
-  titem->base_cost = moneyFromString(chunk->consume("cost"));
+  titem->cost = moneyFromString(chunk->consume("cost"));
 
   titem->lockdelay = atof(chunk->consume("lockdelay").c_str());
   titem->unlockdelay = atof(chunk->consume("unlockdelay").c_str());
@@ -1022,7 +1022,7 @@ void parseBombardment(kvData *chunk, bool reload, ErrorAccumulator &accum) {
     tnode.cat_restrictiontype = HierarchyNode::HNT_BOMBARDMENT;
     CHECK(mountpoint->cat_restrictiontype == -1 || tnode.cat_restrictiontype == mountpoint->cat_restrictiontype);
     
-    tnode.spawncash = titem->base_cost / 2;
+    tnode.spawncash = titem->cost / 2;
     tnode.bombardment = titem;
     mountpoint->branches.push_back(tnode);
   }

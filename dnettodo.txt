@@ -18,6 +18,7 @@
     - Spruce up trap weaponry
     - Spruce up exotic weaponry
     - OGRE
+  - Remove the ability to sell?
 
 - "Polish the Damn Interface" Initiative
   - Four-weapon system

@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include <map>
+#include <set>
 
 #include "debug.h"
 #include "parse.h"
@@ -17,27 +18,13 @@ string suffix(const string &name, int position = 1);
 
 void checkForExtraMerges(const kvData &kvd);
 
+string findName(const string &thistoken, const set<string> &table);
+
 template<typename T> string findName(const string &thistoken, const map<string, T> &table) {
-  string tts;
-  for(int i = 0; i < thistoken.size(); i++)
-    if(isalpha(thistoken[i]) || thistoken[i] == '.')
-      tts += tolower(thistoken[i]);
-  CHECK(tts.size());
-  
-  string ct;
-  for(typename map<string, T>::const_iterator itr = table.begin(); itr != table.end(); itr++) {
-    CHECK(itr->first.size());
-    string tx;
-    for(int i = 0; i < itr->first.size(); i++)
-      if(isalpha(itr->first[i]) || thistoken[i] == '.')
-        tx += tolower(itr->first[i]);
-    //dprintf("Comparing %s and %s\n", tx.c_str(), tts.c_str());
-    if(tx == tts) {
-      CHECK(!ct.size());
-      ct = itr->first;
-    }
-  }
-  return ct;
+  set<string> temp;
+  for(typename map<string, T>::const_iterator itr = table.begin(); itr != table.end(); itr++)
+    temp.insert(itr->first);
+  return findName(thistoken, temp);
 }
 
 #endif

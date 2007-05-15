@@ -103,3 +103,26 @@ void checkForExtraMerges(const kvData &kvd) {
     }
   }
 }
+
+string findName(const string &thistoken, const set<string> &table) {
+  string tts;
+  for(int i = 0; i < thistoken.size(); i++)
+    if(isalpha(thistoken[i]) || thistoken[i] == '.')
+      tts += tolower(thistoken[i]);
+  CHECK(tts.size());
+  
+  string ct;
+  for(set<string>::const_iterator itr = table.begin(); itr != table.end(); itr++) {
+    CHECK(itr->size());
+    string tx;
+    for(int i = 0; i < itr->size(); i++)
+      if(isalpha((*itr)[i]) || thistoken[i] == '.')
+        tx += tolower((*itr)[i]);
+    //dprintf("Comparing %s and %s\n", tx.c_str(), tts.c_str());
+    if(tx == tts) {
+      CHECK(!ct.size());
+      ct = *itr;
+    }
+  }
+  return ct;
+}

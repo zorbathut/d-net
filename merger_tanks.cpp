@@ -8,7 +8,6 @@
 #include <fstream>
 #include <set>
 
-
 string TankParams::token() {
   return "TANKS";
 }

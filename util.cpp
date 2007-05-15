@@ -118,6 +118,7 @@ Money::Money() { };
 Money::Money(long long in) { money = in; };
 
 long long Money::value() const { return money; };
+float Money::toFloat() const { return (float)money; };
 
 Money operator+(const Money &lhs, const Money &rhs) {
   return Money(lhs.value() + rhs.value()); }
@@ -262,6 +263,9 @@ int roman_max() {
 }
 
 bool withinEpsilon(float a, float b, float e) {
+  CHECK(e >= 0);
+  if(a == b)
+    return true; // I mean even if they're both 0
   float diff = a / b;
   if(diff < 0)
     return false; // it's not even the same *sign*

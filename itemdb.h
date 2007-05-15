@@ -211,7 +211,7 @@ struct IDBBombardment {
   float lockdelay;
   float unlockdelay;
 
-  Money base_cost;
+  Money cost;
 
   const string *text;
 };

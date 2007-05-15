@@ -40,6 +40,7 @@ public:
   string textual() const;
 
   long long value() const;
+  float toFloat() const;
 
   Money();
   explicit Money(long long in);
