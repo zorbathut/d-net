@@ -1,5 +1,5 @@
 
-STDCPPFLAGS := @STDCPPFLAGS@ -Wall -Wno-sign-compare -Wno-uninitialized -g -O2
+STDCPPFLAGS := @STDCPPFLAGS@ -Wall -Wno-sign-compare -Wno-uninitialized -g #-O2
 STDLDFLAGS := @STDLDFLAGS@ -g
 
 GAMESOURCES := main core game timer debug gfx collide gamemap util rng args interface metagame itemdb parse dvec2 input level coord ai inputsnag os float cfcommon coord_boolean player itemdb_adjust metagame_config shop shop_demo shop_info game_ai game_effects color metagame_tween cfc game_tank game_util game_projectile socket httpd recorder generators audio itemdb_httpd test regex

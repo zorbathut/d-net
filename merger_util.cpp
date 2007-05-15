@@ -75,6 +75,8 @@ string splice(const string &source, float value) {
 }
 
 string suffix(const string &name, int position) {
+  if(count(name.begin(), name.end(), '.') == 0 && position == 1)
+    return name;
   CHECK(position >= 1);
   CHECK(name.size() >= 1);
   CHECK(count(name.begin(), name.end(), '.') >= position);

@@ -295,8 +295,6 @@ warhead {
   impactdamage=MERGE trap
   wallremovalradius=0.5
   wallremovalchance=0.05
-  
-  effects_impact=effects.rearcannon
 }
 
 projectile {
@@ -318,6 +316,8 @@ launcher {
   name=launcher.rearcannon
   
   deploy=deploy.rearcannon
+  
+  stats=stats.null
   
   text=text.weapon.rearcannon
 }

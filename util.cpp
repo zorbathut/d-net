@@ -260,3 +260,12 @@ string roman_number(int rid) {
 int roman_max() {
   return 38;
 }
+
+bool withinEpsilon(float a, float b, float e) {
+  float diff = a / b;
+  if(diff < 0)
+    return false; // it's not even the same *sign*
+  if(abs(diff) < 1.0)
+    diff = 1 / diff;
+  return 1 - diff <= e;
+}

@@ -110,4 +110,6 @@ template<typename T, typename U> T clamp(T x, U min, U max) {
 string roman_number(int rid);
 int roman_max();
 
+bool withinEpsilon(float a, float b, float e);
+
 #endif
