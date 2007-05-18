@@ -1,6 +1,7 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
-  - Add rear-fire token for tanks
+  - Merge glory
+  - Merge weapons
   - Add implementations for all trap weapons
   - Re-enable weapon check
   - Many many more weapons

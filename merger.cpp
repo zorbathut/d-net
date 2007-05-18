@@ -26,6 +26,59 @@ template<typename Model> struct PAW<Model, false> {
   }
 };
 
+template<typename Model> struct PAW<Model, true> {
+  static void f(const map<string, typename Model::Data> &tdd, const vector<kvData> &preproc, const string &merged) {
+    set<string> names;
+    for(typename map<string, typename Model::Data>::const_iterator itr = tdd.begin(); itr != tdd.end(); itr++)
+      names.insert(itr->first);
+    
+    {
+      ofstream ofs(merged.c_str());
+      for(int i = 0; i < preproc.size(); i++) {
+        string name = Model::getWantedName(preproc[i].read("name"), names);
+        kvData kvd = preproc[i];
+        if(name.size()) {
+          CHECK(tdd.count(name));
+          Model::testprocess(&kvd, tdd.find(name)->second);
+        }
+        checkForExtraMerges(kvd);
+        ofs << stringFromKvData(kvd);
+      }
+    }
+    
+    addItemFile("data/base/common.dwh");
+    addItemFile("data/base/hierarchy.dwh");
+    addItemFile(merged);
+    
+    map<string, float> multipliers;
+    for(typename map<string, typename Model::FinalType>::const_iterator itr = Model::finalTypeList().begin(); itr != Model::finalTypeList().end(); itr++) {
+      string name = Model::getWantedName(itr->first, names);
+      if(!name.size())
+          continue;
+      CHECK(tdd.count(name));
+      CHECK(!multipliers.count(name));
+      multipliers[suffix(itr->first)] = Model::getMultiple(itr->second, tdd.find(name)->second);
+    }
+    
+    clearItemdb();
+    
+    {
+      ofstream ofs(merged.c_str());
+      for(int i = 0; i < preproc.size(); i++) {
+        string name = Model::getWantedName(preproc[i].read("name"), names);
+        kvData kvd = preproc[i];
+        if(name.size()) {
+          CHECK(tdd.count(name));
+          CHECK(multipliers.count(name));
+          Model::reprocess(&kvd, tdd.find(name)->second, multipliers[name]);
+        }
+        checkForExtraMerges(kvd);
+        ofs << stringFromKvData(kvd);
+      }
+    }
+  }
+};
+
 template<typename Model> void processAndWrite(const map<string, typename Model::Data> &tdd, const vector<kvData> &preproc, const string &merged) {
   PAW<Model, Model::twopass>::f(tdd, preproc, merged);
 }
@@ -111,8 +164,8 @@ int main(int argc, char *argv[]) {
     doMerge<BombardParams>(argv[1], argv[2], argv[3]);
   } else if(type == TankParams::token()) {
     doMerge<TankParams>(argv[1], argv[2], argv[3]);
-  } else if(type == "GLORY") {
-    mergeGlory(argv[1], argv[2], argv[3]);
+  } else if(type == GloryParams::token()) {
+    doMerge<GloryParams>(argv[1], argv[2], argv[3]);
   } else {
     CHECK(0);
   }
