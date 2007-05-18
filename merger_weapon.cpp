@@ -10,6 +10,67 @@
 
 using namespace std;
 
+string WeaponParams::token() {
+  return "GLORY";
+}
+
+bool WeaponParams::parseLine(const vector<string> &line, Data *data) {
+  data->cost = line[1];
+  data->intended_damage = atof(line[2].c_str());
+  return true;
+}
+
+string WeaponParams::getWantedName(const string &name, const set<string> &possiblenames) {
+  string rv;
+  rv = suffix(name);
+  if(possiblenames.count(rv))
+    return rv;
+  rv = findName(suffix(name, 2), possiblenames);
+  if(possiblenames.count(rv))
+    return rv;
+  return "";
+}
+
+void WeaponParams::preprocess(kvData *kvd, const Data &data) {
+  if(kvd->category == "weapon") {
+    CHECK(kvd->read("cost") == "MERGE");
+    CHECK(kvd->read("firerate") == "MERGE");
+    
+    kvd->kv["cost"] = data.cost;
+    kvd->kv["firerate"] = data.firerate;
+  }
+}
+
+void WeaponParams::testprocess(kvData *kvd, const Data &data) {
+  if(kvd->category == "warhead") {
+    if(kvd->kv.count("radiusdamage"))
+      kvd->kv["radiusdamage"] = splice(kvd->read("radiusdamage"), 1);
+    if(kvd->kv.count("impactdamage"))
+      kvd->kv["impactdamage"] = splice(kvd->read("impactdamage"), 1);
+  }
+}
+
+float WeaponParams::getMultiple(const IDBWeapon &item, const Data &data) {
+  return data.intended_damage / IDBWeaponAdjust(&item, IDBAdjustment()).launcher().stats_damagePerShot();
+}
+
+void WeaponParams::reprocess(kvData *kvd, const Data &data, float multiple) {
+  if(kvd->category == "warhead") {
+    if(kvd->kv.count("radiusdamage"))
+      kvd->kv["radiusdamage"] = splice(kvd->read("radiusdamage"), multiple);
+    if(kvd->kv.count("impactdamage"))
+      kvd->kv["impactdamage"] = splice(kvd->read("impactdamage"), multiple);
+  }
+}
+
+bool WeaponParams::verify(const IDBWeapon &item, const Data &data) {
+  CHECK(withinEpsilon(IDBWeaponAdjust(&item, IDBAdjustment()).launcher().stats_damagePerShot(), data.intended_damage, 0.0001));
+  return true;
+}
+
+const map<string, GloryParams::FinalType> &GloryParams::finalTypeList() { return gloryList(); }
+
+/*
 struct Weapondat {
   string cost;
   string firerate;
@@ -145,3 +206,4 @@ void mergeWeapon(const string &csv, const string &unmerged, const string &merged
   }
   CHECK(!shitisbroke);
 }
+*/

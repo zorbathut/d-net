@@ -1,6 +1,5 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
-  - Merge glory
   - Merge weapons
   - Add implementations for all trap weapons
   - Re-enable weapon check

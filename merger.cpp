@@ -158,8 +158,8 @@ int main(int argc, char *argv[]) {
   }
   dprintf("Got type %s\n", type.c_str());
   
-  if(type == "WEAPON") {
-    mergeWeapon(argv[1], argv[2], argv[3]);
+  if(type == WeaponParams::token()) {
+    doMerger<WeaponParams>(argv[1], argv[2], argv[3]);
   } else if(type == BombardParams::token()) {
     doMerge<BombardParams>(argv[1], argv[2], argv[3]);
   } else if(type == TankParams::token()) {
