@@ -1,7 +1,4 @@
 
-# Base stuff that's commonly used
-common.dwh
-
 # Basic framework for our buy categories
 hierarchy.dwh
 

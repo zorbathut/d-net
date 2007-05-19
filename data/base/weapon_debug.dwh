@@ -5,11 +5,15 @@ hierarchy {
   debug=true
 }
 
+warhead {
+  name=warhead.tracer
+}
+
 projectile {
   name=projectile.tracer
   velocity=600
   color=1.0, 0.3, 0.3
-  warhead=warhead.null
+  warhead=warhead.tracer
   debug=true
 }
 
