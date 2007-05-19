@@ -2,7 +2,7 @@
 #define DNET_GENERATORS
 
 void generateCachedShops(float accuracy);
-void generateWeaponStats();
+//void generateWeaponStats();
 void generateFactionStats();
 void dumpText();
 

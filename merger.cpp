@@ -35,12 +35,8 @@ template<typename Model> struct PAW<Model, true> {
     {
       ofstream ofs(merged.c_str());
       for(int i = 0; i < preproc.size(); i++) {
-        string name = Model::getWantedName(preproc[i].read("name"), names);
         kvData kvd = preproc[i];
-        if(name.size()) {
-          CHECK(tdd.count(name));
-          Model::testprocess(&kvd, tdd.find(name)->second);
-        }
+        Model::testprocess(&kvd);
         checkForExtraMerges(kvd);
         ofs << stringFromKvData(kvd);
       }
@@ -57,7 +53,16 @@ template<typename Model> struct PAW<Model, true> {
           continue;
       CHECK(tdd.count(name));
       CHECK(!multipliers.count(name));
-      multipliers[suffix(itr->first)] = Model::getMultiple(itr->second, tdd.find(name)->second);
+      multipliers[name] = Model::getMultiple(itr->second, tdd.find(name)->second);
+      string mn = Model::getMultipleAltName(itr->first);
+      if(mn.size()) {
+        if(multipliers.count(mn))
+          CHECK(withinEpsilon(multipliers[mn], Model::getMultiple(itr->second, tdd.find(name)->second), 0.00001));
+        else {
+          multipliers[mn] = Model::getMultiple(itr->second, tdd.find(name)->second);
+          names.insert(mn);
+        }
+      }
     }
     
     clearItemdb();
@@ -66,11 +71,11 @@ template<typename Model> struct PAW<Model, true> {
       ofstream ofs(merged.c_str());
       for(int i = 0; i < preproc.size(); i++) {
         string name = Model::getWantedName(preproc[i].read("name"), names);
+        dprintf("Name is %s from %s\n", name.c_str(), preproc[i].read("name").c_str());
         kvData kvd = preproc[i];
-        if(name.size()) {
-          CHECK(tdd.count(name));
+        if(multipliers.count(name)) {
           CHECK(multipliers.count(name));
-          Model::reprocess(&kvd, tdd.find(name)->second, multipliers[name]);
+          Model::reprocess(&kvd, multipliers[name]);
         }
         checkForExtraMerges(kvd);
         ofs << stringFromKvData(kvd);
@@ -89,21 +94,27 @@ template<typename Model> void doMerge(const string &csv, const string &unmerged,
   {
     ifstream ifs(csv.c_str());
     
+    typename Model::Namer namer;
+    
     string lin;
     while(getline(ifs, lin)) {
       vector<string> dt = parseCsv(lin);
       
-      if(dt[0] == Model::token() || dt[0] == "")
+      if(dt[0] == Model::token())
         continue;
       
-      CHECK(!tdd.count(dt[0]));
+      string name = namer.getName(dt);
+      if(!name.size())
+        continue;
+      
+      CHECK(!tdd.count(name));
       
       typename Model::Data dat;
       if(!Model::parseLine(dt, &dat))
         continue;
       
-      tdd[dt[0]] = dat;
-      names.insert(dt[0]);
+      tdd[name] = dat;
+      names.insert(name);
     }
   }
   
@@ -117,6 +128,7 @@ template<typename Model> void doMerge(const string &csv, const string &unmerged,
     while(getkvData(ifs, &kvd)) {
       string name = Model::getWantedName(kvd.read("name"), names);
       if(name.size()) {
+        dprintf("calling pp\n");
         CHECK(tdd.count(name));
         done.insert(name);
         Model::preprocess(&kvd, tdd[name]);
@@ -124,9 +136,10 @@ template<typename Model> void doMerge(const string &csv, const string &unmerged,
       preproc.push_back(kvd);
     }
     
+    /*
     CHECK(done.size() == tdd.size());
     for(typename map<string, typename Model::Data>::const_iterator itr = tdd.begin(); itr != tdd.end(); itr++)
-      CHECK(done.count(itr->first));
+      CHECK(done.count(itr->first));*/
   }
   
   processAndWrite<Model>(tdd, preproc, merged);
@@ -140,7 +153,10 @@ template<typename Model> void doMerge(const string &csv, const string &unmerged,
     Model::verify(itr->second, tdd[suffix(itr->first)]);
     tdd.erase(suffix(itr->first));
   }
-  CHECK(!tdd.size());
+  
+  for(typename map<string, typename Model::Data>::const_iterator itr = tdd.begin(); itr != tdd.end(); itr++)
+    dprintf("Didn't manage to process %s\n", itr->first.c_str());
+  //CHECK(tdd.empty());
 }  
 
 int main(int argc, char *argv[]) {
@@ -159,7 +175,7 @@ int main(int argc, char *argv[]) {
   dprintf("Got type %s\n", type.c_str());
   
   if(type == WeaponParams::token()) {
-    doMerger<WeaponParams>(argv[1], argv[2], argv[3]);
+    doMerge<WeaponParams>(argv[1], argv[2], argv[3]);
   } else if(type == BombardParams::token()) {
     doMerge<BombardParams>(argv[1], argv[2], argv[3]);
   } else if(type == TankParams::token()) {

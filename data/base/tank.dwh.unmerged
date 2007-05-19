@@ -104,8 +104,6 @@ launcher {
   
   deploy=deploy.sparker1
   
-  stats=stats.null
-  
   text=text.weapon.sparker
 }
 
@@ -158,8 +156,6 @@ launcher {
   name=launcher.sparker2
   
   deploy=deploy.sparker2
-  
-  stats=stats.null
   
   text=text.weapon.sparker
 }
@@ -214,8 +210,6 @@ launcher {
   name=launcher.sparker3
   
   deploy=deploy.sparker3
-  
-  stats=stats.null
   
   text=text.weapon.sparker
 }
@@ -273,8 +267,6 @@ launcher {
   
   deploy=deploy.sparker4
   
-  stats=stats.null
-  
   text=text.weapon.sparker4
 }
 
@@ -331,8 +323,6 @@ launcher {
   
   deploy=deploy.sparker5
   
-  stats=stats.null
-  
   text=text.weapon.sparker4
 }
 
@@ -388,8 +378,6 @@ launcher {
   name=launcher.sparker6
   
   deploy=deploy.sparker6
-  
-  stats=stats.null
   
   text=text.weapon.sparker4
 }
@@ -487,8 +475,6 @@ launcher {
   name=launcher.sparker7
   
   deploy=deploy.sparker7
-  
-  stats=stats.null
   
   text=text.weapon.sparker7
 }

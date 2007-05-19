@@ -27,4 +27,11 @@ template<typename T> string findName(const string &thistoken, const map<string, 
   return findName(thistoken, temp);
 }
 
+class BaseNamer {
+public:
+  string getName(const vector<string> &line) {
+    return line[0];
+  }
+};
+
 #endif

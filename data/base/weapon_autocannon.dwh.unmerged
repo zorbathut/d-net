@@ -13,7 +13,7 @@ text {
 }
 
 effects {
-  name=effects.autocannon
+  name=effects.weapon.autocannon
   type=particle
 
   quantity=8
@@ -29,39 +29,33 @@ effects {
 }
 
 warhead {
-  name=warhead.autocannon
+  name=warhead.weapon.autocannon
   impactdamage=MERGE kinetic
   wallremovalradius=0.5
   wallremovalchance=0.05
   
-  effects_impact=effects.autocannon
+  effects_impact=effects.weapon.autocannon
 }
 
 projectile {
-  name=projectile.autocannon
+  name=projectile.weapon.autocannon
   motion=normal
   velocity=120
   color=1.0, 0.9, 0.6
-  warhead=warhead.autocannon
+  warhead=warhead.weapon.autocannon
 }
 
 deploy {
-  name=deploy.autocannon
+  name=deploy.weapon.autocannon
   type=forward
   anglestddev=0.025
-  projectile=projectile.autocannon
-}
-
-stats {
-  name=stats.autocannon
+  projectile=projectile.weapon.autocannon
 }
 
 launcher {
-  name=launcher.autocannon
+  name=launcher.weapon.autocannon
   
-  deploy=deploy.autocannon
-  
-  stats=stats.autocannon
+  deploy=deploy.weapon.autocannon
   
   text=text.weapon.autocannon
 }
@@ -83,7 +77,7 @@ text {
 }
 
 effects {
-  name=effects.apautocannon
+  name=effects.weapon.apautocannon
   type=particle
 
   quantity=8
@@ -99,43 +93,35 @@ effects {
 }
 
 warhead {
-  name=warhead.apautocannon
+  name=warhead.weapon.apautocannon
   impactdamage=MERGE kinetic
   wallremovalradius=0.8
   wallremovalchance=0.20
-  effects_impact=effects.apautocannon
+  effects_impact=effects.weapon.apautocannon
 }
 
 projectile {
-  name=projectile.apautocannon
+  name=projectile.weapon.apautocannon
   motion=normal
   velocity=130
   thickness_visual=2x
   length=2x
   toughness=2
   color=1.0, 0.9, 0.6
-  warhead=warhead.apautocannon
+  warhead=warhead.weapon.apautocannon
 }
 
 deploy {
-  name=deploy.apautocannon
+  name=deploy.weapon.apautocannon
   type=forward
   anglestddev=0.03
-  projectile=projectile.apautocannon
-}
-
-stats {
-  name=stats.apautocannon
-  
-  dps_efficiency=1.05  # wild guess
+  projectile=projectile.weapon.apautocannon
 }
 
 launcher {
-  name=launcher.apautocannon
+  name=launcher.weapon.apautocannon
   
-  deploy=deploy.apautocannon
-  
-  stats=stats.apautocannon
+  deploy=deploy.weapon.apautocannon
   
   text=text.weapon.apautocannon
 }
@@ -157,7 +143,7 @@ text {
 }
 
 effects {
-  name=effects.heavyautocannon
+  name=effects.weapon.heavyautocannon
   type=particle
 
   quantity=8
@@ -173,39 +159,33 @@ effects {
 }
 
 warhead {
-  name=warhead.heavyautocannon
+  name=warhead.weapon.heavyautocannon
   impactdamage=MERGE kinetic
   wallremovalradius=0.5
   wallremovalchance=0.05
   
-  effects_impact=effects.heavyautocannon
+  effects_impact=effects.weapon.heavyautocannon
 }
 
 projectile {
-  name=projectile.heavyautocannon
+  name=projectile.weapon.heavyautocannon
   motion=normal
   velocity=120
   color=1.0, 0.9, 0.6
-  warhead=warhead.heavyautocannon
+  warhead=warhead.weapon.heavyautocannon
 }
 
 deploy {
-  name=deploy.heavyautocannon
+  name=deploy.weapon.heavyautocannon
   type=forward
   anglestddev=0.025
-  projectile=projectile.heavyautocannon
-}
-
-stats {
-  name=stats.heavyautocannon
+  projectile=projectile.weapon.heavyautocannon
 }
 
 launcher {
-  name=launcher.heavyautocannon
+  name=launcher.weapon.heavyautocannon
   
-  deploy=deploy.heavyautocannon
-  
-  stats=stats.heavyautocannon
+  deploy=deploy.weapon.heavyautocannon
   
   text=text.weapon.heavyautocannon
 }
@@ -227,7 +207,7 @@ text {
 }
 
 effects {
-  name=effects.sabotshotgun
+  name=effects.weapon.sabotshotgun
   type=particle
 
   quantity=8
@@ -243,39 +223,33 @@ effects {
 }
 
 warhead {
-  name=warhead.sabotshotgun
+  name=warhead.weapon.sabotshotgun
   impactdamage=MERGE kinetic
   wallremovalradius=0.5
   wallremovalchance=0.05
   
-  effects_impact=effects.sabotshotgun
+  effects_impact=effects.weapon.sabotshotgun
 }
 
 projectile {
-  name=projectile.sabotshotgun
+  name=projectile.weapon.sabotshotgun
   motion=normal
   velocity=120
   color=1.0, 0.9, 0.6
-  warhead=warhead.sabotshotgun
+  warhead=warhead.weapon.sabotshotgun
 }
 
 deploy {
-  name=deploy.sabotshotgun
+  name=deploy.weapon.sabotshotgun
   type=forward
   anglestddev=0.025
-  projectile=projectile.sabotshotgun
-}
-
-stats {
-  name=stats.sabotshotgun
+  projectile=projectile.weapon.sabotshotgun
 }
 
 launcher {
-  name=launcher.sabotshotgun
+  name=launcher.weapon.sabotshotgun
   
-  deploy=deploy.sabotshotgun
-  
-  stats=stats.sabotshotgun
+  deploy=deploy.weapon.sabotshotgun
   
   text=text.weapon.sabotshotgun
 }
@@ -297,7 +271,7 @@ text {
 }
 
 effects {
-  name=effects.bladelauncher
+  name=effects.weapon.bladelauncher
   type=particle
 
   quantity=8
@@ -313,39 +287,33 @@ effects {
 }
 
 warhead {
-  name=warhead.bladelauncher
+  name=warhead.weapon.bladelauncher
   impactdamage=MERGE kinetic
   wallremovalradius=0.5
   wallremovalchance=0.05
   
-  effects_impact=effects.bladelauncher
+  effects_impact=effects.weapon.bladelauncher
 }
 
 projectile {
-  name=projectile.bladelauncher
+  name=projectile.weapon.bladelauncher
   motion=normal
   velocity=120
   color=1.0, 0.9, 0.6
-  warhead=warhead.bladelauncher
+  warhead=warhead.weapon.bladelauncher
 }
 
 deploy {
-  name=deploy.bladelauncher
+  name=deploy.weapon.bladelauncher
   type=forward
   anglestddev=0.025
-  projectile=projectile.bladelauncher
-}
-
-stats {
-  name=stats.bladelauncher
+  projectile=projectile.weapon.bladelauncher
 }
 
 launcher {
-  name=launcher.bladelauncher
+  name=launcher.weapon.bladelauncher
   
-  deploy=deploy.bladelauncher
-  
-  stats=stats.bladelauncher
+  deploy=deploy.weapon.bladelauncher
   
   text=text.weapon.bladelauncher
 }
@@ -367,7 +335,7 @@ text {
 }
 
 effects {
-  name=effects.ccannon
+  name=effects.weapon.ccannon
   type=particle
 
   quantity=8
@@ -383,39 +351,33 @@ effects {
 }
 
 warhead {
-  name=warhead.ccannon
+  name=warhead.weapon.ccannon
   impactdamage=MERGE kinetic
   wallremovalradius=0.5
   wallremovalchance=0.05
   
-  effects_impact=effects.ccannon
+  effects_impact=effects.weapon.ccannon
 }
 
 projectile {
-  name=projectile.ccannon
+  name=projectile.weapon.ccannon
   motion=normal
   velocity=120
   color=1.0, 0.9, 0.6
-  warhead=warhead.ccannon
+  warhead=warhead.weapon.ccannon
 }
 
 deploy {
-  name=deploy.ccannon
+  name=deploy.weapon.ccannon
   type=forward
   anglestddev=0.025
-  projectile=projectile.ccannon
-}
-
-stats {
-  name=stats.ccannon
+  projectile=projectile.weapon.ccannon
 }
 
 launcher {
-  name=launcher.ccannon
+  name=launcher.weapon.ccannon
   
-  deploy=deploy.ccannon
-  
-  stats=stats.ccannon
+  deploy=deploy.weapon.ccannon
   
   text=text.weapon.ccannon
 }
@@ -437,7 +399,7 @@ text {
 }
 
 effects {
-  name=effects.conversioncannon
+  name=effects.weapon.conversioncannon
   type=particle
 
   quantity=8
@@ -453,39 +415,33 @@ effects {
 }
 
 warhead {
-  name=warhead.conversioncannon
+  name=warhead.weapon.conversioncannon
   impactdamage=MERGE kinetic
   wallremovalradius=0.5
   wallremovalchance=0.05
   
-  effects_impact=effects.conversioncannon
+  effects_impact=effects.weapon.conversioncannon
 }
 
 projectile {
-  name=projectile.conversioncannon
+  name=projectile.weapon.conversioncannon
   motion=normal
   velocity=120
   color=1.0, 0.9, 0.6
-  warhead=warhead.conversioncannon
+  warhead=warhead.weapon.conversioncannon
 }
 
 deploy {
-  name=deploy.conversioncannon
+  name=deploy.weapon.conversioncannon
   type=forward
   anglestddev=0.025
-  projectile=projectile.conversioncannon
-}
-
-stats {
-  name=stats.conversioncannon
+  projectile=projectile.weapon.conversioncannon
 }
 
 launcher {
-  name=launcher.conversioncannon
+  name=launcher.weapon.conversioncannon
   
-  deploy=deploy.conversioncannon
-  
-  stats=stats.conversioncannon
+  deploy=deploy.weapon.conversioncannon
   
   text=text.weapon.conversioncannon
 }
@@ -500,7 +456,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.autocannon
+  launcher=launcher.weapon.autocannon
 }
 
 weapon {
@@ -509,7 +465,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
 
-  launcher=launcher.autocannon
+  launcher=launcher.weapon.autocannon
 }
 
 weapon {
@@ -518,7 +474,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.autocannon
+  launcher=launcher.weapon.autocannon
 }
 
 weapon {
@@ -527,7 +483,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.autocannon
+  launcher=launcher.weapon.autocannon
 }
 
 weapon {
@@ -536,7 +492,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.autocannon
+  launcher=launcher.weapon.autocannon
 }
 
 weapon {
@@ -545,7 +501,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.autocannon
+  launcher=launcher.weapon.autocannon
 }
 
 
@@ -555,7 +511,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.apautocannon
+  launcher=launcher.weapon.apautocannon
 }
 
 
@@ -565,7 +521,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.apautocannon
+  launcher=launcher.weapon.apautocannon
 }
 
 weapon {
@@ -574,7 +530,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.apautocannon
+  launcher=launcher.weapon.apautocannon
 }
 
 weapon {
@@ -583,7 +539,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.apautocannon
+  launcher=launcher.weapon.apautocannon
 }
 
 weapon {
@@ -592,7 +548,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.apautocannon
+  launcher=launcher.weapon.apautocannon
 }
 
 weapon {
@@ -601,7 +557,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.apautocannon
+  launcher=launcher.weapon.apautocannon
 }
 
 
@@ -611,7 +567,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.heavyautocannon
+  launcher=launcher.weapon.heavyautocannon
 }
 
 weapon {
@@ -620,7 +576,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.heavyautocannon
+  launcher=launcher.weapon.heavyautocannon
 }
 
 weapon {
@@ -629,7 +585,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.heavyautocannon
+  launcher=launcher.weapon.heavyautocannon
 }
 
 weapon {
@@ -638,7 +594,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.heavyautocannon
+  launcher=launcher.weapon.heavyautocannon
 }
 
 weapon {
@@ -647,7 +603,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.heavyautocannon
+  launcher=launcher.weapon.heavyautocannon
 }
 
 weapon {
@@ -656,7 +612,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.heavyautocannon
+  launcher=launcher.weapon.heavyautocannon
 }
 
 
@@ -666,7 +622,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.sabotshotgun
+  launcher=launcher.weapon.sabotshotgun
 }
 
 weapon {
@@ -675,7 +631,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.sabotshotgun
+  launcher=launcher.weapon.sabotshotgun
 }
 
 weapon {
@@ -684,7 +640,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.sabotshotgun
+  launcher=launcher.weapon.sabotshotgun
 }
 
 weapon {
@@ -693,7 +649,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.sabotshotgun
+  launcher=launcher.weapon.sabotshotgun
 }
 
 weapon {
@@ -702,7 +658,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.sabotshotgun
+  launcher=launcher.weapon.sabotshotgun
 }
 
 weapon {
@@ -711,7 +667,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.sabotshotgun
+  launcher=launcher.weapon.sabotshotgun
 }
 
 
@@ -721,7 +677,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.bladelauncher
+  launcher=launcher.weapon.bladelauncher
 }
 
 weapon {
@@ -730,7 +686,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.bladelauncher
+  launcher=launcher.weapon.bladelauncher
 }
 
 weapon {
@@ -739,7 +695,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.bladelauncher
+  launcher=launcher.weapon.bladelauncher
 }
 
 weapon {
@@ -748,7 +704,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.bladelauncher
+  launcher=launcher.weapon.bladelauncher
 }
 
 weapon {
@@ -757,7 +713,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.bladelauncher
+  launcher=launcher.weapon.bladelauncher
 }
 
 weapon {
@@ -766,7 +722,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.bladelauncher
+  launcher=launcher.weapon.bladelauncher
 }
 
 
@@ -776,7 +732,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.ccannon
+  launcher=launcher.weapon.ccannon
 }
 
 weapon {
@@ -785,7 +741,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.ccannon
+  launcher=launcher.weapon.ccannon
 }
 
 weapon {
@@ -794,7 +750,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.ccannon
+  launcher=launcher.weapon.ccannon
 }
 
 weapon {
@@ -803,7 +759,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.ccannon
+  launcher=launcher.weapon.ccannon
 }
 
 weapon {
@@ -812,7 +768,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.ccannon
+  launcher=launcher.weapon.ccannon
 }
 
 weapon {
@@ -821,7 +777,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.ccannon
+  launcher=launcher.weapon.ccannon
 }
 
 
@@ -831,7 +787,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.conversioncannon
+  launcher=launcher.weapon.conversioncannon
 }
 
 weapon {
@@ -840,7 +796,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.conversioncannon
+  launcher=launcher.weapon.conversioncannon
 }
 
 weapon {
@@ -849,7 +805,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.conversioncannon
+  launcher=launcher.weapon.conversioncannon
 }
 
 weapon {
@@ -858,7 +814,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.conversioncannon
+  launcher=launcher.weapon.conversioncannon
 }
 
 weapon {
@@ -867,7 +823,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.conversioncannon
+  launcher=launcher.weapon.conversioncannon
 }
 
 weapon {
@@ -876,5 +832,5 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.conversioncannon
+  launcher=launcher.weapon.conversioncannon
 }

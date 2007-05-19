@@ -7,6 +7,7 @@
 
 #include "itemdb.h"
 #include "parse.h"
+#include "merger_util.h"
 
 using namespace std;
 
@@ -22,6 +23,8 @@ struct TankParams {
   typedef IDBTank FinalType;
   
   static const bool twopass = false;
+  
+  typedef BaseNamer Namer;
   
   static string token();
   

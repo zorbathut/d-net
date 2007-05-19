@@ -13,7 +13,7 @@ text {
 }
 
 warhead {
-  name=warhead.missile
+  name=warhead.weapon.missile
   impactdamage=MERGE(1) explosive
   radiusdamage=MERGE(3) explosive
   radiusfalloff=4
@@ -21,7 +21,7 @@ warhead {
 }
 
 projectile {
-  name=projectile.missile
+  name=projectile.weapon.missile
   color=0.9, 0.95, 1.0
   
   motion=missile
@@ -32,28 +32,20 @@ projectile {
   missile_sidelaunch=15
   missile_backlaunch=0.5
   
-  warhead=warhead.missile
+  warhead=warhead.weapon.missile
 }
 
 deploy {
-  name=deploy.missile
+  name=deploy.weapon.missile
   type=forward
   anglestddev=0.002
-  projectile=projectile.missile
-}
-
-stats {
-  name=stats.missile
-  
-  dps_efficiency=0.8
+  projectile=projectile.weapon.missile
 }
 
 launcher {
-  name=launcher.missile
+  name=launcher.weapon.missile
   
-  deploy=deploy.missile
-  
-  stats=stats.missile
+  deploy=deploy.weapon.missile
   
   text=text.weapon.missile
 }
@@ -75,24 +67,24 @@ text {
 }
 
 warhead {
-  name=warhead.hemissile.secondary
+  name=warhead.weapon.hemissile.secondary
   impactdamage=MERGE(1) explosive
   wallremovalradius=1
   wallremovalchance=0.2
 }
 
 projectile {
-  name=projectile.hemissile.secondary
+  name=projectile.weapon.hemissile.secondary
   thickness_visual=0.6
   velocity=40
   color=1.0, 0.8, 0.3
   motion=airbrake
   airbrake_life=0.5
-  warhead=warhead.hemissile.secondary
+  warhead=warhead.weapon.hemissile.secondary
 }
 
 deploy {
-  name=deploy.hemissile.secondary
+  name=deploy.weapon.hemissile.secondary
   type=explode
   
   exp_minsplits=2
@@ -104,21 +96,21 @@ deploy {
   
   anglestddev=0.1
   
-  projectile=projectile.hemissile.secondary
+  projectile=projectile.weapon.hemissile.secondary
 }
 
 warhead {
-  name=warhead.hemissile
+  name=warhead.weapon.hemissile
   impactdamage=MERGE(6) explosive
   radiusdamage=MERGE(10) explosive
   radiusfalloff=6
   wallremovalradius=2
   
-  deploy=deploy.hemissile.secondary
+  deploy=deploy.weapon.hemissile.secondary
 }
 
 projectile {
-  name=projectile.hemissile
+  name=projectile.weapon.hemissile
   color=0.9, 0.95, 1.0
   motion=missile
   
@@ -131,28 +123,20 @@ projectile {
   thickness_visual=2x
   length=1.5x
   toughness=2
-  warhead=warhead.hemissile
+  warhead=warhead.weapon.hemissile
 }
 
 deploy {
-  name=deploy.hemissile
+  name=deploy.weapon.hemissile
   type=forward
   anglestddev=0.004
-  projectile=projectile.hemissile
-}
-
-stats {
-  name=stats.hemissile
-  
-  dps_efficiency=0.65
+  projectile=projectile.weapon.hemissile
 }
 
 launcher {
-  name=launcher.hemissile
+  name=launcher.weapon.hemissile
   
-  deploy=deploy.hemissile
-  
-  stats=stats.hemissile
+  deploy=deploy.weapon.hemissile
   
   text=text.weapon.hemissile
 }
@@ -174,7 +158,7 @@ text {
 }
 
 warhead {
-  name=warhead.clustermissile
+  name=warhead.weapon.clustermissile
   impactdamage=MERGE(1) explosive
   radiusdamage=MERGE(3) explosive
   radiusfalloff=4
@@ -182,7 +166,7 @@ warhead {
 }
 
 projectile {
-  name=projectile.clustermissile
+  name=projectile.weapon.clustermissile
   color=0.9, 0.95, 1.0
   
   motion=missile
@@ -193,28 +177,20 @@ projectile {
   missile_sidelaunch=15
   missile_backlaunch=0.5
   
-  warhead=warhead.clustermissile
+  warhead=warhead.weapon.clustermissile
 }
 
 deploy {
-  name=deploy.clustermissile
+  name=deploy.weapon.clustermissile
   type=forward
   anglestddev=0.002
-  projectile=projectile.clustermissile
-}
-
-stats {
-  name=stats.clustermissile
-  
-  dps_efficiency=0.8
+  projectile=projectile.weapon.clustermissile
 }
 
 launcher {
-  name=launcher.clustermissile
+  name=launcher.weapon.clustermissile
   
-  deploy=deploy.clustermissile
-  
-  stats=stats.clustermissile
+  deploy=deploy.weapon.clustermissile
   
   text=text.weapon.clustermissile
 }
@@ -236,7 +212,7 @@ text {
 }
 
 warhead {
-  name=warhead.proximityrocket
+  name=warhead.weapon.proximityrocket
   impactdamage=MERGE(1) explosive
   radiusdamage=MERGE(3) explosive
   radiusfalloff=4
@@ -244,7 +220,7 @@ warhead {
 }
 
 projectile {
-  name=projectile.proximityrocket
+  name=projectile.weapon.proximityrocket
   color=0.9, 0.95, 1.0
   
   motion=missile
@@ -255,28 +231,20 @@ projectile {
   missile_sidelaunch=15
   missile_backlaunch=0.5
   
-  warhead=warhead.proximityrocket
+  warhead=warhead.weapon.proximityrocket
 }
 
 deploy {
-  name=deploy.proximityrocket
+  name=deploy.weapon.proximityrocket
   type=forward
   anglestddev=0.002
-  projectile=projectile.proximityrocket
-}
-
-stats {
-  name=stats.proximityrocket
-  
-  dps_efficiency=0.8
+  projectile=projectile.weapon.proximityrocket
 }
 
 launcher {
-  name=launcher.proximityrocket
+  name=launcher.weapon.proximityrocket
   
-  deploy=deploy.proximityrocket
-  
-  stats=stats.proximityrocket
+  deploy=deploy.weapon.proximityrocket
   
   text=text.weapon.proximityrocket
 }
@@ -298,7 +266,7 @@ text {
 }
 
 warhead {
-  name=warhead.adaptiverocket
+  name=warhead.weapon.adaptiverocket
   impactdamage=MERGE(1) explosive
   radiusdamage=MERGE(3) explosive
   radiusfalloff=4
@@ -306,7 +274,7 @@ warhead {
 }
 
 projectile {
-  name=projectile.adaptiverocket
+  name=projectile.weapon.adaptiverocket
   color=0.9, 0.95, 1.0
   
   motion=missile
@@ -317,28 +285,20 @@ projectile {
   missile_sidelaunch=15
   missile_backlaunch=0.5
   
-  warhead=warhead.adaptiverocket
+  warhead=warhead.weapon.adaptiverocket
 }
 
 deploy {
-  name=deploy.adaptiverocket
+  name=deploy.weapon.adaptiverocket
   type=forward
   anglestddev=0.002
-  projectile=projectile.adaptiverocket
-}
-
-stats {
-  name=stats.adaptiverocket
-  
-  dps_efficiency=0.8
+  projectile=projectile.weapon.adaptiverocket
 }
 
 launcher {
-  name=launcher.adaptiverocket
+  name=launcher.weapon.adaptiverocket
   
-  deploy=deploy.adaptiverocket
-  
-  stats=stats.adaptiverocket
+  deploy=deploy.weapon.adaptiverocket
   
   text=text.weapon.adaptiverocket
 }
@@ -360,7 +320,7 @@ text {
 }
 
 warhead {
-  name=warhead.mininuke
+  name=warhead.weapon.mininuke
   impactdamage=MERGE(1) explosive
   radiusdamage=MERGE(3) explosive
   radiusfalloff=4
@@ -368,7 +328,7 @@ warhead {
 }
 
 projectile {
-  name=projectile.mininuke
+  name=projectile.weapon.mininuke
   color=0.9, 0.95, 1.0
   
   motion=missile
@@ -379,28 +339,20 @@ projectile {
   missile_sidelaunch=15
   missile_backlaunch=0.5
   
-  warhead=warhead.mininuke
+  warhead=warhead.weapon.mininuke
 }
 
 deploy {
-  name=deploy.mininuke
+  name=deploy.weapon.mininuke
   type=forward
   anglestddev=0.002
-  projectile=projectile.mininuke
-}
-
-stats {
-  name=stats.mininuke
-  
-  dps_efficiency=0.8
+  projectile=projectile.weapon.mininuke
 }
 
 launcher {
-  name=launcher.mininuke
+  name=launcher.weapon.mininuke
   
-  deploy=deploy.mininuke
-  
-  stats=stats.mininuke
+  deploy=deploy.weapon.mininuke
   
   text=text.weapon.mininuke
 }
@@ -422,7 +374,7 @@ text {
 }
 
 warhead {
-  name=warhead.conversionnuke
+  name=warhead.weapon.conversionnuke
   impactdamage=MERGE(1) explosive
   radiusdamage=MERGE(3) explosive
   radiusfalloff=4
@@ -430,7 +382,7 @@ warhead {
 }
 
 projectile {
-  name=projectile.conversionnuke
+  name=projectile.weapon.conversionnuke
   color=0.9, 0.95, 1.0
   
   motion=missile
@@ -441,28 +393,20 @@ projectile {
   missile_sidelaunch=15
   missile_backlaunch=0.5
   
-  warhead=warhead.conversionnuke
+  warhead=warhead.weapon.conversionnuke
 }
 
 deploy {
-  name=deploy.conversionnuke
+  name=deploy.weapon.conversionnuke
   type=forward
   anglestddev=0.002
-  projectile=projectile.conversionnuke
-}
-
-stats {
-  name=stats.conversionnuke
-  
-  dps_efficiency=0.8
+  projectile=projectile.weapon.conversionnuke
 }
 
 launcher {
-  name=launcher.conversionnuke
+  name=launcher.weapon.conversionnuke
   
-  deploy=deploy.conversionnuke
-  
-  stats=stats.conversionnuke
+  deploy=deploy.weapon.conversionnuke
   
   text=text.weapon.conversionnuke
 }
@@ -477,7 +421,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.missile
+  launcher=launcher.weapon.missile
 }
 
 weapon {
@@ -486,7 +430,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.missile
+  launcher=launcher.weapon.missile
 }
 
 weapon {
@@ -495,7 +439,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.missile
+  launcher=launcher.weapon.missile
 }
 
 weapon {
@@ -504,7 +448,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.missile
+  launcher=launcher.weapon.missile
 }
 
 weapon {
@@ -513,7 +457,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.missile
+  launcher=launcher.weapon.missile
 }
 
 weapon {
@@ -522,7 +466,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.missile
+  launcher=launcher.weapon.missile
 }
 
 weapon {
@@ -531,7 +475,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.hemissile
+  launcher=launcher.weapon.hemissile
 }
 
 weapon {
@@ -540,7 +484,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.hemissile
+  launcher=launcher.weapon.hemissile
 }
 
 weapon {
@@ -549,7 +493,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.hemissile
+  launcher=launcher.weapon.hemissile
 }
 
 weapon {
@@ -558,7 +502,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.hemissile
+  launcher=launcher.weapon.hemissile
 }
 
 weapon {
@@ -567,7 +511,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.hemissile
+  launcher=launcher.weapon.hemissile
 }
 
 weapon {
@@ -576,7 +520,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.hemissile
+  launcher=launcher.weapon.hemissile
 }
 
 
@@ -586,7 +530,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.clustermissile
+  launcher=launcher.weapon.clustermissile
 }
 
 weapon {
@@ -595,7 +539,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.clustermissile
+  launcher=launcher.weapon.clustermissile
 }
 
 weapon {
@@ -604,7 +548,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.clustermissile
+  launcher=launcher.weapon.clustermissile
 }
 
 weapon {
@@ -613,7 +557,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.clustermissile
+  launcher=launcher.weapon.clustermissile
 }
 
 weapon {
@@ -622,7 +566,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.clustermissile
+  launcher=launcher.weapon.clustermissile
 }
 
 weapon {
@@ -631,7 +575,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.clustermissile
+  launcher=launcher.weapon.clustermissile
 }
 
 
@@ -641,7 +585,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.proximityrocket
+  launcher=launcher.weapon.proximityrocket
 }
 
 weapon {
@@ -650,7 +594,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.proximityrocket
+  launcher=launcher.weapon.proximityrocket
 }
 
 weapon {
@@ -659,7 +603,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.proximityrocket
+  launcher=launcher.weapon.proximityrocket
 }
 
 weapon {
@@ -668,7 +612,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.proximityrocket
+  launcher=launcher.weapon.proximityrocket
 }
 
 weapon {
@@ -677,7 +621,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.proximityrocket
+  launcher=launcher.weapon.proximityrocket
 }
 
 weapon {
@@ -686,7 +630,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.proximityrocket
+  launcher=launcher.weapon.proximityrocket
 }
 
 
@@ -696,7 +640,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.adaptiverocket
+  launcher=launcher.weapon.adaptiverocket
 }
 
 weapon {
@@ -705,7 +649,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.adaptiverocket
+  launcher=launcher.weapon.adaptiverocket
 }
 
 weapon {
@@ -714,7 +658,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.adaptiverocket
+  launcher=launcher.weapon.adaptiverocket
 }
 
 weapon {
@@ -723,7 +667,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.adaptiverocket
+  launcher=launcher.weapon.adaptiverocket
 }
 
 weapon {
@@ -732,7 +676,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.adaptiverocket
+  launcher=launcher.weapon.adaptiverocket
 }
 
 weapon {
@@ -741,7 +685,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.adaptiverocket
+  launcher=launcher.weapon.adaptiverocket
 }
 
 
@@ -751,7 +695,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.mininuke
+  launcher=launcher.weapon.mininuke
 }
 
 weapon {
@@ -760,7 +704,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.mininuke
+  launcher=launcher.weapon.mininuke
 }
 
 weapon {
@@ -769,7 +713,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.mininuke
+  launcher=launcher.weapon.mininuke
 }
 
 weapon {
@@ -778,7 +722,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.mininuke
+  launcher=launcher.weapon.mininuke
 }
 
 weapon {
@@ -787,7 +731,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.mininuke
+  launcher=launcher.weapon.mininuke
 }
 
 weapon {
@@ -796,7 +740,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.mininuke
+  launcher=launcher.weapon.mininuke
 }
 
 
@@ -806,7 +750,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.conversionnuke
+  launcher=launcher.weapon.conversionnuke
 }
 
 weapon {
@@ -815,7 +759,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.conversionnuke
+  launcher=launcher.weapon.conversionnuke
 }
 
 weapon {
@@ -824,7 +768,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.conversionnuke
+  launcher=launcher.weapon.conversionnuke
 }
 
 weapon {
@@ -833,7 +777,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.conversionnuke
+  launcher=launcher.weapon.conversionnuke
 }
 
 weapon {
@@ -842,7 +786,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.conversionnuke
+  launcher=launcher.weapon.conversionnuke
 }
 
 weapon {
@@ -851,5 +795,5 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.conversionnuke
+  launcher=launcher.weapon.conversionnuke
 }

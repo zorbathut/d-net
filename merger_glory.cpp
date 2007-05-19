@@ -37,7 +37,7 @@ void GloryParams::preprocess(kvData *kvd, const Data &data) {
   }
 }
 
-void GloryParams::testprocess(kvData *kvd, const Data &data) {
+void GloryParams::testprocess(kvData *kvd) {
   if(kvd->category == "warhead") {
     if(kvd->kv.count("radiusdamage"))
       kvd->kv["radiusdamage"] = splice(kvd->read("radiusdamage"), 1);
@@ -50,7 +50,11 @@ float GloryParams::getMultiple(const IDBGlory &item, const Data &data) {
   return data.intended_damage / IDBGloryAdjust(&item, IDBAdjustment()).stats_averageDamage();
 }
 
-void GloryParams::reprocess(kvData *kvd, const Data &data, float multiple) {
+string GloryParams::getMultipleAltName(const string &name) {
+  return "";
+}
+
+void GloryParams::reprocess(kvData *kvd, float multiple) {
   if(kvd->category == "warhead") {
     if(kvd->kv.count("radiusdamage"))
       kvd->kv["radiusdamage"] = splice(kvd->read("radiusdamage"), multiple);

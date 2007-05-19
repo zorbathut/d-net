@@ -10,7 +10,7 @@ text {
 }
 
 warhead {
-  name=warhead.emp
+  name=warhead.weapon.emp
   radiusdamage=MERGE exotic
   radiusfalloff=10
   radiuscolor_bright=88f
@@ -18,26 +18,18 @@ warhead {
 }
 
 deploy {
-  name=deploy.emp
+  name=deploy.weapon.emp
   type=centroid
-  warhead=warhead.emp
-}
-
-stats {
-  name=stats.emp
-  
-  dps_efficiency=0.6
+  warhead=warhead.weapon.emp
 }
 
 launcher {
-  name=launcher.emp
+  name=launcher.weapon.emp
   
-  deploy=deploy.emp
+  deploy=deploy.weapon.emp
 
   demo=firingrange
   firingrange_distance=melee
-  
-  stats=stats.emp
   
   text=text.weapon.emp
 }
@@ -50,7 +42,7 @@ weapon {
   
   glory_resistance=true
   
-  launcher=launcher.emp
+  launcher=launcher.weapon.emp
 }
 
 weapon {
@@ -61,7 +53,7 @@ weapon {
   
   glory_resistance=true
 
-  launcher=launcher.emp
+  launcher=launcher.weapon.emp
 }
 
 weapon {
@@ -72,7 +64,7 @@ weapon {
   
   glory_resistance=true
 
-  launcher=launcher.emp
+  launcher=launcher.weapon.emp
 }
 
 weapon {
@@ -83,7 +75,7 @@ weapon {
   
   glory_resistance=true
 
-  launcher=launcher.emp
+  launcher=launcher.weapon.emp
 }
 
 weapon {
@@ -94,7 +86,7 @@ weapon {
   
   glory_resistance=true
   
-  launcher=launcher.emp
+  launcher=launcher.weapon.emp
 }
 
 weapon {
@@ -105,5 +97,5 @@ weapon {
   
   glory_resistance=true
   
-  launcher=launcher.emp
+  launcher=launcher.weapon.emp
 }

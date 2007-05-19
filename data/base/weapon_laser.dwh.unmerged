@@ -13,7 +13,7 @@ text {
 }
 
 effects {
-  name=effects.laser1
+  name=effects.weapon.laser1
   type=particle
 
   quantity=4
@@ -29,7 +29,7 @@ effects {
 }
 
 effects {
-  name=effects.laser2
+  name=effects.weapon.laser2
   type=particle
 
   quantity=4
@@ -45,7 +45,7 @@ effects {
 }
 
 effects {
-  name=effects.laser3
+  name=effects.weapon.laser3
   type=particle
 
   quantity=2
@@ -60,40 +60,32 @@ effects {
 }
 
 warhead {
-  name=warhead.laser
+  name=warhead.weapon.laser
   impactdamage=MERGE energy
-  effects_impact=effects.laser1
-  effects_impact=effects.laser2
-  effects_impact=effects.laser3
+  effects_impact=effects.weapon.laser1
+  effects_impact=effects.weapon.laser2
+  effects_impact=effects.weapon.laser3
 }
 
 projectile {
-  name=projectile.laser
+  name=projectile.weapon.laser
   motion=normal
   velocity=600
   color=0.6, 0.9, 1.0
-  warhead=warhead.laser
+  warhead=warhead.weapon.laser
 }
 
 deploy {
-  name=deploy.laser
+  name=deploy.weapon.laser
   type=forward
   anglestddev=0.008
-  projectile=projectile.laser
-}
-
-stats {
-  name=stats.laser
-  
-  dps_efficiency=2
+  projectile=projectile.weapon.laser
 }
 
 launcher {
-  name=launcher.laser
+  name=launcher.weapon.laser
   
-  deploy=deploy.laser
-  
-  stats=stats.laser
+  deploy=deploy.weapon.laser
   
   text=text.weapon.laser
 }
@@ -116,7 +108,7 @@ text {
 }
 
 effects {
-  name=effects.mwlaser1
+  name=effects.weapon.mwlaser1
   type=particle
 
   quantity=4
@@ -132,7 +124,7 @@ effects {
 }
 
 effects {
-  name=effects.mwlaser2
+  name=effects.weapon.mwlaser2
   type=particle
 
   quantity=4
@@ -148,7 +140,7 @@ effects {
 }
 
 effects {
-  name=effects.mwlaser3
+  name=effects.weapon.mwlaser3
   type=particle
 
   quantity=4
@@ -163,44 +155,36 @@ effects {
 }
 
 warhead {
-  name=warhead.mwlaser
+  name=warhead.weapon.mwlaser
   impactdamage=MERGE energy
   
-  effects_impact=effects.mwlaser1
-  effects_impact=effects.mwlaser2
-  effects_impact=effects.mwlaser3
+  effects_impact=effects.weapon.mwlaser1
+  effects_impact=effects.weapon.mwlaser2
+  effects_impact=effects.weapon.mwlaser3
 }
 
 projectile {
-  name=projectile.mwlaser
+  name=projectile.weapon.mwlaser
   motion=normal
   velocity=800
   thickness_visual=1.5x
   length=1.5x
   toughness=2
   color=0.6, 0.9, 1.0
-  warhead=warhead.mwlaser
+  warhead=warhead.weapon.mwlaser
 }
 
 deploy {
-  name=deploy.mwlaser
+  name=deploy.weapon.mwlaser
   type=forward
   anglestddev=0.006
-  projectile=projectile.mwlaser
-}
-
-stats {
-  name=stats.mwlaser
-  
-  dps_efficiency=2
+  projectile=projectile.weapon.mwlaser
 }
 
 launcher {
-  name=launcher.mwlaser
+  name=launcher.weapon.mwlaser
   
-  deploy=deploy.mwlaser
-  
-  stats=stats.mwlaser
+  deploy=deploy.weapon.mwlaser
   
   text=text.weapon.mwlaser
 }
@@ -222,7 +206,7 @@ text {
 }
 
 effects {
-  name=effects.gwlaser1
+  name=effects.weapon.gwlaser1
   type=particle
 
   quantity=4
@@ -238,7 +222,7 @@ effects {
 }
 
 effects {
-  name=effects.gwlaser2
+  name=effects.weapon.gwlaser2
   type=particle
 
   quantity=4
@@ -254,7 +238,7 @@ effects {
 }
 
 effects {
-  name=effects.gwlaser3
+  name=effects.weapon.gwlaser3
   type=particle
 
   quantity=2
@@ -269,40 +253,32 @@ effects {
 }
 
 warhead {
-  name=warhead.gwlaser
+  name=warhead.weapon.gwlaser
   impactdamage=MERGE energy
-  effects_impact=effects.gwlaser1
-  effects_impact=effects.gwlaser2
-  effects_impact=effects.gwlaser3
+  effects_impact=effects.weapon.gwlaser1
+  effects_impact=effects.weapon.gwlaser2
+  effects_impact=effects.weapon.gwlaser3
 }
 
 projectile {
-  name=projectile.gwlaser
+  name=projectile.weapon.gwlaser
   motion=normal
   velocity=600
   color=0.6, 0.9, 1.0
-  warhead=warhead.gwlaser
+  warhead=warhead.weapon.gwlaser
 }
 
 deploy {
-  name=deploy.gwlaser
+  name=deploy.weapon.gwlaser
   type=forward
   anglestddev=0.008
-  projectile=projectile.gwlaser
-}
-
-stats {
-  name=stats.gwlaser
-  
-  dps_efficiency=2
+  projectile=projectile.weapon.gwlaser
 }
 
 launcher {
-  name=launcher.gwlaser
+  name=launcher.weapon.gwlaser
   
-  deploy=deploy.gwlaser
-  
-  stats=stats.gwlaser
+  deploy=deploy.weapon.gwlaser
   
   text=text.weapon.gwlaser
 }
@@ -324,7 +300,7 @@ text {
 }
 
 effects {
-  name=effects.plasmacannon1
+  name=effects.weapon.plasmacannon1
   type=particle
 
   quantity=4
@@ -340,7 +316,7 @@ effects {
 }
 
 effects {
-  name=effects.plasmacannon2
+  name=effects.weapon.plasmacannon2
   type=particle
 
   quantity=4
@@ -356,7 +332,7 @@ effects {
 }
 
 effects {
-  name=effects.plasmacannon3
+  name=effects.weapon.plasmacannon3
   type=particle
 
   quantity=2
@@ -371,40 +347,32 @@ effects {
 }
 
 warhead {
-  name=warhead.plasmacannon
+  name=warhead.weapon.plasmacannon
   impactdamage=MERGE energy
-  effects_impact=effects.plasmacannon1
-  effects_impact=effects.plasmacannon2
-  effects_impact=effects.plasmacannon3
+  effects_impact=effects.weapon.plasmacannon1
+  effects_impact=effects.weapon.plasmacannon2
+  effects_impact=effects.weapon.plasmacannon3
 }
 
 projectile {
-  name=projectile.plasmacannon
+  name=projectile.weapon.plasmacannon
   motion=normal
   velocity=600
   color=0.6, 0.9, 1.0
-  warhead=warhead.plasmacannon
+  warhead=warhead.weapon.plasmacannon
 }
 
 deploy {
-  name=deploy.plasmacannon
+  name=deploy.weapon.plasmacannon
   type=forward
   anglestddev=0.008
-  projectile=projectile.plasmacannon
-}
-
-stats {
-  name=stats.plasmacannon
-  
-  dps_efficiency=2
+  projectile=projectile.weapon.plasmacannon
 }
 
 launcher {
-  name=launcher.plasmacannon
+  name=launcher.weapon.plasmacannon
   
-  deploy=deploy.plasmacannon
-  
-  stats=stats.plasmacannon
+  deploy=deploy.weapon.plasmacannon
   
   text=text.weapon.plasmacannon
 }
@@ -426,7 +394,7 @@ text {
 }
 
 effects {
-  name=effects.gammabeam1
+  name=effects.weapon.gammabeam1
   type=particle
 
   quantity=4
@@ -442,7 +410,7 @@ effects {
 }
 
 effects {
-  name=effects.gammabeam2
+  name=effects.weapon.gammabeam2
   type=particle
 
   quantity=4
@@ -458,7 +426,7 @@ effects {
 }
 
 effects {
-  name=effects.gammabeam3
+  name=effects.weapon.gammabeam3
   type=particle
 
   quantity=2
@@ -473,40 +441,32 @@ effects {
 }
 
 warhead {
-  name=warhead.gammabeam
+  name=warhead.weapon.gammabeam
   impactdamage=MERGE energy
-  effects_impact=effects.gammabeam1
-  effects_impact=effects.gammabeam2
-  effects_impact=effects.gammabeam3
+  effects_impact=effects.weapon.gammabeam1
+  effects_impact=effects.weapon.gammabeam2
+  effects_impact=effects.weapon.gammabeam3
 }
 
 projectile {
-  name=projectile.gammabeam
+  name=projectile.weapon.gammabeam
   motion=normal
   velocity=600
   color=0.6, 0.9, 1.0
-  warhead=warhead.gammabeam
+  warhead=warhead.weapon.gammabeam
 }
 
 deploy {
-  name=deploy.gammabeam
+  name=deploy.weapon.gammabeam
   type=forward
   anglestddev=0.008
-  projectile=projectile.gammabeam
-}
-
-stats {
-  name=stats.gammabeam
-  
-  dps_efficiency=2
+  projectile=projectile.weapon.gammabeam
 }
 
 launcher {
-  name=launcher.gammabeam
+  name=launcher.weapon.gammabeam
   
-  deploy=deploy.gammabeam
-  
-  stats=stats.gammabeam
+  deploy=deploy.weapon.gammabeam
   
   text=text.weapon.gammabeam
 }
@@ -528,7 +488,7 @@ text {
 }
 
 effects {
-  name=effects.fissionlaser1
+  name=effects.weapon.fissionlaser1
   type=particle
 
   quantity=4
@@ -544,7 +504,7 @@ effects {
 }
 
 effects {
-  name=effects.fissionlaser2
+  name=effects.weapon.fissionlaser2
   type=particle
 
   quantity=4
@@ -560,7 +520,7 @@ effects {
 }
 
 effects {
-  name=effects.fissionlaser3
+  name=effects.weapon.fissionlaser3
   type=particle
 
   quantity=2
@@ -575,40 +535,32 @@ effects {
 }
 
 warhead {
-  name=warhead.fissionlaser
+  name=warhead.weapon.fissionlaser
   impactdamage=MERGE energy
-  effects_impact=effects.fissionlaser1
-  effects_impact=effects.fissionlaser2
-  effects_impact=effects.fissionlaser3
+  effects_impact=effects.weapon.fissionlaser1
+  effects_impact=effects.weapon.fissionlaser2
+  effects_impact=effects.weapon.fissionlaser3
 }
 
 projectile {
-  name=projectile.fissionlaser
+  name=projectile.weapon.fissionlaser
   motion=normal
   velocity=600
   color=0.6, 0.9, 1.0
-  warhead=warhead.fissionlaser
+  warhead=warhead.weapon.fissionlaser
 }
 
 deploy {
-  name=deploy.fissionlaser
+  name=deploy.weapon.fissionlaser
   type=forward
   anglestddev=0.008
-  projectile=projectile.fissionlaser
-}
-
-stats {
-  name=stats.fissionlaser
-  
-  dps_efficiency=2
+  projectile=projectile.weapon.fissionlaser
 }
 
 launcher {
-  name=launcher.fissionlaser
+  name=launcher.weapon.fissionlaser
   
-  deploy=deploy.fissionlaser
-  
-  stats=stats.fissionlaser
+  deploy=deploy.weapon.fissionlaser
   
   text=text.weapon.fissionlaser
 }
@@ -630,7 +582,7 @@ text {
 }
 
 effects {
-  name=effects.conversionbeam1
+  name=effects.weapon.conversionbeam1
   type=particle
 
   quantity=4
@@ -646,7 +598,7 @@ effects {
 }
 
 effects {
-  name=effects.conversionbeam2
+  name=effects.weapon.conversionbeam2
   type=particle
 
   quantity=4
@@ -662,7 +614,7 @@ effects {
 }
 
 effects {
-  name=effects.conversionbeam3
+  name=effects.weapon.conversionbeam3
   type=particle
 
   quantity=2
@@ -677,40 +629,32 @@ effects {
 }
 
 warhead {
-  name=warhead.conversionbeam
+  name=warhead.weapon.conversionbeam
   impactdamage=MERGE energy
-  effects_impact=effects.conversionbeam1
-  effects_impact=effects.conversionbeam2
-  effects_impact=effects.conversionbeam3
+  effects_impact=effects.weapon.conversionbeam1
+  effects_impact=effects.weapon.conversionbeam2
+  effects_impact=effects.weapon.conversionbeam3
 }
 
 projectile {
-  name=projectile.conversionbeam
+  name=projectile.weapon.conversionbeam
   motion=normal
   velocity=600
   color=0.6, 0.9, 1.0
-  warhead=warhead.conversionbeam
+  warhead=warhead.weapon.conversionbeam
 }
 
 deploy {
-  name=deploy.conversionbeam
+  name=deploy.weapon.conversionbeam
   type=forward
   anglestddev=0.008
-  projectile=projectile.conversionbeam
-}
-
-stats {
-  name=stats.conversionbeam
-  
-  dps_efficiency=2
+  projectile=projectile.weapon.conversionbeam
 }
 
 launcher {
-  name=launcher.conversionbeam
+  name=launcher.weapon.conversionbeam
   
-  deploy=deploy.conversionbeam
-  
-  stats=stats.conversionbeam
+  deploy=deploy.weapon.conversionbeam
   
   text=text.weapon.conversionbeam
 }
@@ -725,7 +669,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.laser
+  launcher=launcher.weapon.laser
 }
 
 weapon {
@@ -734,7 +678,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.laser
+  launcher=launcher.weapon.laser
 }
 
 weapon {
@@ -743,7 +687,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
 
-  launcher=launcher.laser
+  launcher=launcher.weapon.laser
 }
 
 weapon {
@@ -752,7 +696,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
 
-  launcher=launcher.laser
+  launcher=launcher.weapon.laser
 }
 
 weapon {
@@ -761,7 +705,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
 
-  launcher=launcher.laser
+  launcher=launcher.weapon.laser
 }
 
 weapon {
@@ -770,7 +714,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
 
-  launcher=launcher.laser
+  launcher=launcher.weapon.laser
 }
 
 
@@ -780,7 +724,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.mwlaser
+  launcher=launcher.weapon.mwlaser
 }
 
 weapon {
@@ -789,7 +733,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.mwlaser
+  launcher=launcher.weapon.mwlaser
 }
 
 weapon {
@@ -798,7 +742,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
 
-  launcher=launcher.mwlaser
+  launcher=launcher.weapon.mwlaser
 }
 
 weapon {
@@ -807,7 +751,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
 
-  launcher=launcher.mwlaser
+  launcher=launcher.weapon.mwlaser
 }
 
 weapon {
@@ -816,7 +760,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
 
-  launcher=launcher.mwlaser
+  launcher=launcher.weapon.mwlaser
 }
 
 weapon {
@@ -825,7 +769,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
 
-  launcher=launcher.mwlaser
+  launcher=launcher.weapon.mwlaser
 }
 
 
@@ -835,7 +779,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.gwlaser
+  launcher=launcher.weapon.gwlaser
 }
 
 weapon {
@@ -844,7 +788,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.gwlaser
+  launcher=launcher.weapon.gwlaser
 }
 
 weapon {
@@ -853,7 +797,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
 
-  launcher=launcher.gwlaser
+  launcher=launcher.weapon.gwlaser
 }
 
 weapon {
@@ -862,7 +806,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
 
-  launcher=launcher.gwlaser
+  launcher=launcher.weapon.gwlaser
 }
 
 weapon {
@@ -871,7 +815,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
 
-  launcher=launcher.gwlaser
+  launcher=launcher.weapon.gwlaser
 }
 
 weapon {
@@ -880,7 +824,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
 
-  launcher=launcher.gwlaser
+  launcher=launcher.weapon.gwlaser
 }
 
 
@@ -890,7 +834,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.plasmacannon
+  launcher=launcher.weapon.plasmacannon
 }
 
 weapon {
@@ -899,7 +843,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.plasmacannon
+  launcher=launcher.weapon.plasmacannon
 }
 
 weapon {
@@ -908,7 +852,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
 
-  launcher=launcher.plasmacannon
+  launcher=launcher.weapon.plasmacannon
 }
 
 weapon {
@@ -917,7 +861,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
 
-  launcher=launcher.plasmacannon
+  launcher=launcher.weapon.plasmacannon
 }
 
 weapon {
@@ -926,7 +870,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
 
-  launcher=launcher.plasmacannon
+  launcher=launcher.weapon.plasmacannon
 }
 
 weapon {
@@ -935,7 +879,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
 
-  launcher=launcher.plasmacannon
+  launcher=launcher.weapon.plasmacannon
 }
 
 
@@ -945,7 +889,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.gammabeam
+  launcher=launcher.weapon.gammabeam
 }
 
 weapon {
@@ -954,7 +898,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.gammabeam
+  launcher=launcher.weapon.gammabeam
 }
 
 weapon {
@@ -963,7 +907,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
 
-  launcher=launcher.gammabeam
+  launcher=launcher.weapon.gammabeam
 }
 
 weapon {
@@ -972,7 +916,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
 
-  launcher=launcher.gammabeam
+  launcher=launcher.weapon.gammabeam
 }
 
 weapon {
@@ -981,7 +925,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
 
-  launcher=launcher.gammabeam
+  launcher=launcher.weapon.gammabeam
 }
 
 weapon {
@@ -990,7 +934,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
 
-  launcher=launcher.gammabeam
+  launcher=launcher.weapon.gammabeam
 }
 
 
@@ -1000,7 +944,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.fissionlaser
+  launcher=launcher.weapon.fissionlaser
 }
 
 weapon {
@@ -1009,7 +953,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.fissionlaser
+  launcher=launcher.weapon.fissionlaser
 }
 
 weapon {
@@ -1018,7 +962,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
 
-  launcher=launcher.fissionlaser
+  launcher=launcher.weapon.fissionlaser
 }
 
 weapon {
@@ -1027,7 +971,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
 
-  launcher=launcher.fissionlaser
+  launcher=launcher.weapon.fissionlaser
 }
 
 weapon {
@@ -1036,7 +980,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
 
-  launcher=launcher.fissionlaser
+  launcher=launcher.weapon.fissionlaser
 }
 
 weapon {
@@ -1045,7 +989,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
 
-  launcher=launcher.fissionlaser
+  launcher=launcher.weapon.fissionlaser
 }
 
 
@@ -1055,7 +999,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.conversionbeam
+  launcher=launcher.weapon.conversionbeam
 }
 
 weapon {
@@ -1064,7 +1008,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.conversionbeam
+  launcher=launcher.weapon.conversionbeam
 }
 
 weapon {
@@ -1073,7 +1017,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
 
-  launcher=launcher.conversionbeam
+  launcher=launcher.weapon.conversionbeam
 }
 
 weapon {
@@ -1082,7 +1026,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
 
-  launcher=launcher.conversionbeam
+  launcher=launcher.weapon.conversionbeam
 }
 
 weapon {
@@ -1091,7 +1035,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
 
-  launcher=launcher.conversionbeam
+  launcher=launcher.weapon.conversionbeam
 }
 
 weapon {
@@ -1100,5 +1044,5 @@ weapon {
   cost=MERGE
   firerate=MERGE
 
-  launcher=launcher.conversionbeam
+  launcher=launcher.weapon.conversionbeam
 }

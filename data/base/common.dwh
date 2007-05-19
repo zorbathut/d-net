@@ -2,7 +2,3 @@
 warhead {
   name=warhead.null
 }
-
-stats {
-  name=stats.null
-}

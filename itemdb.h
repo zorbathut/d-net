@@ -147,11 +147,6 @@ struct IDBDeploy {
   vector<const IDBWarhead *> chain_warhead;
 };
 
-struct IDBStats {
-  float dps_efficiency;
-  float cps_efficiency;
-};
-
 enum { WDM_FIRINGRANGE, WDM_MINES, WDM_LAST };
 enum { WFRD_NORMAL, WFRD_MELEE };
 struct IDBLauncher {
@@ -159,8 +154,6 @@ struct IDBLauncher {
 
   int demomode;
   int firingrange_distance;
-  
-  const IDBStats *stats;
   
   const string *text;
 };

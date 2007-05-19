@@ -15,7 +15,6 @@ static HierarchyNode root;
 static map<string, IDBDeploy> deployclasses;
 static map<string, IDBWarhead> warheadclasses;
 static map<string, IDBProjectile> projectileclasses;
-static map<string, IDBStats> statsclasses;
 static map<string, IDBLauncher> launcherclasses;
 static map<string, IDBWeapon> weaponclasses;
 static map<string, IDBUpgrade> upgradeclasses;
@@ -676,7 +675,6 @@ void parseLauncher(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   IDBLauncher *titem = prepareName(chunk, &launcherclasses, reload, "launcher");
   
   titem->deploy = parseSubclass(chunk->consume("deploy"), deployclasses);
-  titem->stats = parseSubclass(chunk->consume("stats"), statsclasses);
 
   titem->text = parseOptionalSubclass(chunk, "text", text);
   
@@ -738,13 +736,6 @@ void parseEffects(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   
 }
 
-void parseStats(kvData *chunk, bool reload, ErrorAccumulator &accum) {
-  IDBStats *titem = prepareName(chunk, &statsclasses, reload, "stats");
-    
-  titem->dps_efficiency = parseWithDefault(chunk, "dps_efficiency", 1.0);
-  titem->cps_efficiency = parseWithDefault(chunk, "cps_efficiency", 1.0);
-}
-
 void parseWeapon(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   string name;
   IDBWeapon *titem = prepareName(chunk, &weaponclasses, reload, &name);
@@ -779,7 +770,6 @@ void parseWeapon(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   titem->firerate = atof(chunk->consume("firerate").c_str());
   
   titem->launcher = parseSubclass(chunk->consume("launcher"), launcherclasses);
-  CHECK(titem->launcher->stats);
   
   titem->glory_resistance = parseWithDefault(chunk, "glory_resistance", false);
   titem->nocache = parseWithDefault(chunk, "nocache", false);
@@ -1346,8 +1336,6 @@ void parseItemFile(const string &fname, bool reload, vector<string> *errors) {
       parseText(&chunk, reload, erac);
     } else if(chunk.category == "launcher") {
       parseLauncher(&chunk, reload, erac);
-    } else if(chunk.category == "stats") {
-      parseStats(&chunk, reload, erac);
     } else if(chunk.category == "effects") {
       parseEffects(&chunk, reload, erac);
     } else if(chunk.category == "implantslot") {
@@ -1370,7 +1358,6 @@ void clearItemdb() {
   deployclasses.clear();
   warheadclasses.clear();
   projectileclasses.clear();
-  statsclasses.clear();
   launcherclasses.clear();
   weaponclasses.clear();
   upgradeclasses.clear();

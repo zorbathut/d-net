@@ -34,7 +34,7 @@ vector<IDBWarheadAdjust> IDBDeployAdjust::chain_warhead() const { return adjust_
 
 float IDBDeployAdjust::stats_damagePerShot() const {
   float mult;
-  if(idb->type == DT_NORMAL || idb->type == DT_FORWARD || idb->type == DT_CENTROID || idb->type == DT_MINEPATH) {
+  if(idb->type == DT_NORMAL || idb->type == DT_FORWARD || idb->type == DT_CENTROID || idb->type == DT_MINEPATH || idb->type == DT_REAR) {
     mult = 1.0;
   } else if(idb->type == DT_EXPLODE) {
     mult = (exp_minsplits() + exp_maxsplits()) / 2.0 * exp_shotspersplit();

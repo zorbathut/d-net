@@ -100,7 +100,7 @@ void generateCachedShops(float accuracy) {
   fclose(ofil);
 }
 
-void generateWeaponStats() {
+/*void generateWeaponStats() {
   FILE *ofil = fopen("tools/weapondump.dat", "w");
   IDBAdjustment adj;
   map<string, vector<pair<float, float> > > goof;
@@ -120,7 +120,7 @@ void generateWeaponStats() {
     fprintf(ofil, "\n");
   }
   fclose(ofil);
-}
+}*/
 
 void generateFactionStats() {
   FILE *ofil = fopen("tools/factiondump.dat", "w");

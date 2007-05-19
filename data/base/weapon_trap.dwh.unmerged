@@ -13,39 +13,31 @@ text {
 }
 
 warhead {
-  name=warhead.MinelayerI
+  name=warhead.weapon.MinelayerI
   radiusdamage=MERGE trap
   radiusfalloff=6
   wallremovalradius=2
 }
 
 projectile {
-  name=projectile.mine1
+  name=projectile.weapon.mine1
   motion=mine
   radius_physical=1
   halflife=6
   color=1.0, 1.0, 1.0
-  warhead=warhead.MinelayerI
+  warhead=warhead.weapon.MinelayerI
 }
 
 deploy {
-  name=deploy.mine1
+  name=deploy.weapon.mine1
   type=minepath
-  projectile=projectile.mine1
-}
-
-stats {
-  name=stats.mine
-  
-  dps_efficiency=0.5
+  projectile=projectile.weapon.mine1
 }
 
 launcher {
-  name=launcher.mine1
+  name=launcher.weapon.mine1
   
-  deploy=deploy.mine1
-  
-  stats=stats.mine
+  deploy=deploy.weapon.mine1
   
   demo=mines
   text=text.weapon.mine
@@ -57,37 +49,35 @@ weapon {
   cost=MERGE
   firerate=MERGE
 
-  launcher=launcher.mine1
+  launcher=launcher.weapon.mine1
 }
 
 warhead {
-  name=warhead.MinelayerII
+  name=warhead.weapon.MinelayerII
   radiusdamage=MERGE trap
   radiusfalloff=7
   wallremovalradius=3
 }
 
 projectile {
-  name=projectile.mine2
+  name=projectile.weapon.mine2
   motion=mine
   radius_physical=1.2
   halflife=8
   color=1.0, 1.0, 1.0
-  warhead=warhead.MinelayerII
+  warhead=warhead.weapon.MinelayerII
 }
 
 deploy {
-  name=deploy.mine2
+  name=deploy.weapon.mine2
   type=minepath
-  projectile=projectile.mine2
+  projectile=projectile.weapon.mine2
 }
 
 launcher {
-  name=launcher.mine2
+  name=launcher.weapon.mine2
   
-  deploy=deploy.mine2
-  
-  stats=stats.mine
+  deploy=deploy.weapon.mine2
   
   demo=mines
   text=text.weapon.mine
@@ -99,37 +89,35 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.mine2
+  launcher=launcher.weapon.mine2
 }
 
 warhead {
-  name=warhead.MinelayerIII
+  name=warhead.weapon.MinelayerIII
   radiusdamage=MERGE trap
   radiusfalloff=8
   wallremovalradius=4
 }
 
 projectile {
-  name=projectile.mine3
+  name=projectile.weapon.mine3
   motion=mine
   radius_physical=1.4
   halflife=10
   color=1.0, 1.0, 1.0
-  warhead=warhead.MinelayerIII
+  warhead=warhead.weapon.MinelayerIII
 }
 
 deploy {
-  name=deploy.mine3
+  name=deploy.weapon.mine3
   type=minepath
-  projectile=projectile.mine3
+  projectile=projectile.weapon.mine3
 }
 
 launcher {
-  name=launcher.mine3
+  name=launcher.weapon.mine3
   
-  deploy=deploy.mine3
-  
-  stats=stats.mine
+  deploy=deploy.weapon.mine3
   
   demo=mines
   text=text.weapon.mine
@@ -141,37 +129,35 @@ weapon {
   cost=MERGE
   firerate=MERGE
 
-  launcher=launcher.mine3
+  launcher=launcher.weapon.mine3
 }
 
 warhead {
-  name=warhead.MinelayerIV
+  name=warhead.weapon.MinelayerIV
   radiusdamage=MERGE trap
   radiusfalloff=9
   wallremovalradius=4
 }
 
 projectile {
-  name=projectile.mine4
+  name=projectile.weapon.mine4
   motion=mine
   radius_physical=1.6
   halflife=12
   color=1.0, 1.0, 1.0
-  warhead=warhead.MinelayerIV
+  warhead=warhead.weapon.MinelayerIV
 }
 
 deploy {
-  name=deploy.mine4
+  name=deploy.weapon.mine4
   type=minepath
-  projectile=projectile.mine4
+  projectile=projectile.weapon.mine4
 }
 
 launcher {
-  name=launcher.mine4
+  name=launcher.weapon.mine4
   
-  deploy=deploy.mine4
-  
-  stats=stats.mine
+  deploy=deploy.weapon.mine4
   
   demo=mines
   text=text.weapon.mine
@@ -185,37 +171,35 @@ weapon {
   
   spawncash=10000
 
-  launcher=launcher.mine4
+  launcher=launcher.weapon.mine4
 }
 
 warhead {
-  name=warhead.MinelayerV
+  name=warhead.weapon.MinelayerV
   radiusdamage=MERGE trap
   radiusfalloff=10
   wallremovalradius=4
 }
 
 projectile {
-  name=projectile.mine5
+  name=projectile.weapon.mine5
   motion=mine
   radius_physical=1.8
   halflife=12
   color=1.0, 1.0, 1.0
-  warhead=warhead.MinelayerV
+  warhead=warhead.weapon.MinelayerV
 }
 
 deploy {
-  name=deploy.mine5
+  name=deploy.weapon.mine5
   type=minepath
-  projectile=projectile.mine5
+  projectile=projectile.weapon.mine5
 }
 
 launcher {
-  name=launcher.mine5
+  name=launcher.weapon.mine5
   
-  deploy=deploy.mine5
-  
-  stats=stats.mine
+  deploy=deploy.weapon.mine5
   
   demo=mines
   text=text.weapon.mine
@@ -229,37 +213,35 @@ weapon {
   
   spawncash=10000
 
-  launcher=launcher.mine5
+  launcher=launcher.weapon.mine5
 }
 
 warhead {
-  name=warhead.MinelayerVI
+  name=warhead.weapon.MinelayerVI
   radiusdamage=MERGE trap
   radiusfalloff=12
   wallremovalradius=5
 }
 
 projectile {
-  name=projectile.mine6
+  name=projectile.weapon.mine6
   motion=mine
   radius_physical=2.0
   halflife=15
   color=1.0, 1.0, 1.0
-  warhead=warhead.MinelayerVI
+  warhead=warhead.weapon.MinelayerVI
 }
 
 deploy {
-  name=deploy.mine6
+  name=deploy.weapon.mine6
   type=minepath
-  projectile=projectile.mine6
+  projectile=projectile.weapon.mine6
 }
 
 launcher {
-  name=launcher.mine6
+  name=launcher.weapon.mine6
   
-  deploy=deploy.mine6
-  
-  stats=stats.mine
+  deploy=deploy.weapon.mine6
   
   demo=mines
   text=text.weapon.mine
@@ -273,7 +255,7 @@ weapon {
   
   spawncash=10000
 
-  launcher=launcher.mine6
+  launcher=launcher.weapon.mine6
 }
 
 ###########################
@@ -291,33 +273,31 @@ text {
 }
 
 warhead {
-  name=warhead.rearcannon
+  name=warhead.weapon.rearcannon
   impactdamage=MERGE trap
   wallremovalradius=0.5
   wallremovalchance=0.05
 }
 
 projectile {
-  name=projectile.rearcannon
+  name=projectile.weapon.rearcannon
   motion=normal
   velocity=180
   color=1.0, 0.9, 0.6
-  warhead=warhead.rearcannon
+  warhead=warhead.weapon.rearcannon
 }
 
 deploy {
-  name=deploy.rearcannon
+  name=deploy.weapon.rearcannon
   type=rear
   anglestddev=0.03
-  projectile=projectile.rearcannon
+  projectile=projectile.weapon.rearcannon
 }
 
 launcher {
-  name=launcher.rearcannon
+  name=launcher.weapon.rearcannon
   
-  deploy=deploy.rearcannon
-  
-  stats=stats.null
+  deploy=deploy.weapon.rearcannon
   
   text=text.weapon.rearcannon
 }
@@ -328,7 +308,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.rearcannon
+  launcher=launcher.weapon.rearcannon
 }
 
 weapon {
@@ -337,7 +317,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
 
-  launcher=launcher.rearcannon
+  launcher=launcher.weapon.rearcannon
 }
 
 weapon {
@@ -346,7 +326,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.rearcannon
+  launcher=launcher.weapon.rearcannon
 }
 
 weapon {
@@ -355,7 +335,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.rearcannon
+  launcher=launcher.weapon.rearcannon
 }
 
 weapon {
@@ -364,7 +344,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.rearcannon
+  launcher=launcher.weapon.rearcannon
 }
 
 weapon {
@@ -373,5 +353,5 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.rearcannon
+  launcher=launcher.weapon.rearcannon
 }

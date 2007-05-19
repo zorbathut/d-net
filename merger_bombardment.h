@@ -7,6 +7,7 @@
 
 #include "itemdb.h"
 #include "parse.h"
+#include "merger_util.h"
 
 using namespace std;
 
@@ -23,6 +24,8 @@ struct BombardParams {
   typedef IDBBombardment FinalType;
   
   static const bool twopass = false;
+  
+  typedef BaseNamer Namer;
   
   static string token();
   
