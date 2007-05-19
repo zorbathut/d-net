@@ -42,7 +42,6 @@ template<typename Model> struct PAW<Model, true> {
       }
     }
     
-    addItemFile("data/base/common.dwh");
     addItemFile("data/base/hierarchy.dwh");
     addItemFile(merged);
     
@@ -128,7 +127,6 @@ template<typename Model> void doMerge(const string &csv, const string &unmerged,
     while(getkvData(ifs, &kvd)) {
       string name = Model::getWantedName(kvd.read("name"), names);
       if(name.size()) {
-        dprintf("calling pp\n");
         CHECK(tdd.count(name));
         done.insert(name);
         Model::preprocess(&kvd, tdd[name]);
@@ -144,7 +142,6 @@ template<typename Model> void doMerge(const string &csv, const string &unmerged,
   
   processAndWrite<Model>(tdd, preproc, merged);
   
-  addItemFile("data/base/common.dwh");
   addItemFile("data/base/hierarchy.dwh");
   addItemFile(merged);
   

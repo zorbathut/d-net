@@ -1,8 +1,8 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
-  - Merge weapons
   - Add implementations for all trap weapons
   - Re-enable weapon check
+  - Add spider, sniper, satellite behavior
   - Many many more weapons
     - Exotic
     - Special autocannon

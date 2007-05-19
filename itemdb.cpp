@@ -1083,6 +1083,7 @@ void parseTank(kvData *chunk, bool reload, ErrorAccumulator &accum) {
     for(int i = 0; i < titem->vertices.size(); i++)
       titem->vertices[i] -= titem->centering_adjustment;
     titem->firepoint -= titem->centering_adjustment;
+    titem->rearfirepoint -= titem->centering_adjustment;
     for(int i = 0; i < titem->minepath.size(); i++)
       titem->minepath[i] -= titem->centering_adjustment;
   }
