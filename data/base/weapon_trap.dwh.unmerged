@@ -299,6 +299,8 @@ launcher {
   
   deploy=deploy.weapon.rearcannon
   
+  demo=back
+  
   text=text.weapon.rearcannon
 }
 

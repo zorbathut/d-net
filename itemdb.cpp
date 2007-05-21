@@ -691,6 +691,8 @@ void parseLauncher(kvData *chunk, bool reload, ErrorAccumulator &accum) {
     } else {
       CHECK(0);
     }
+  } else if(demotype == "back") {
+    titem->demomode = WDM_BACKRANGE;
   } else if(demotype == "mines") {
     titem->demomode = WDM_MINES;
   } else {
@@ -1203,7 +1205,7 @@ void parseShopcache(kvData *chunk, vector<string> *errors) {
     IDBShopcache::Entry entry;
     vector<string> tis = tokenize(tse[i], " ");
     CHECK(tis.size() >= 3);
-    CHECK(tis.size() % 2 == 1);
+    CHECK(tis.size() % 2 == 0);
     entry.count = atoi(tis[0].c_str());
     entry.warhead = &warheadclasses[tis[1]];
     entry.mult = atof(tis[2].c_str());

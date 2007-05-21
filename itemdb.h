@@ -147,7 +147,7 @@ struct IDBDeploy {
   vector<const IDBWarhead *> chain_warhead;
 };
 
-enum { WDM_FIRINGRANGE, WDM_MINES, WDM_LAST };
+enum { WDM_FIRINGRANGE, WDM_BACKRANGE, WDM_MINES, WDM_LAST };
 enum { WFRD_NORMAL, WFRD_MELEE };
 struct IDBLauncher {
   const IDBDeploy *deploy;

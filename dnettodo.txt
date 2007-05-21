@@ -1,5 +1,25 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
+  - Bugfixes from games
+    - Fix faction tank-cheapness, other faction discounts
+    - Check over faction bonuses in general
+    - Tanks near the end really travel way too fast
+    - Boost EMP damage a bit
+    - Firerate is really important, modify factions to take this into account
+    - Show faction percentages
+    - Fix missiles doing self-damage
+    - Railgun faster, more power
+    - Disable star level
+    - Add level editor options for subtraction, fix star level and re-add
+    - Pacman scale up 20% or so
+    - Add projectile durability to balancing sheet 
+    - Make upgrades a bit cheaper, maybe
+    - Increase base cash, decrease wins
+    - 80% starting cash for new players, to discourage quitting and restarting
+    - Add explosive radius in tank weapon upgrade
+    - Make explosive radius bonus not apply to certain weapons
+    - Change rockets to guided blasts or something to emphasize exotic
+      - Boost blast radius on rockets  
   - Add implementations for all trap weapons
   - Re-enable weapon check
   - Add spider, sniper, satellite behavior
@@ -11,6 +31,7 @@
     - Spruce up base autocannon weaponry
     - Spruce up special autocannon weaponry
     - Spruce up base laser weaponry
+      - lasers spawn sparklies
     - Spruce up special laser weaponry
     - Spruce up base missile weaponry
     - Spruce up special missile weaponry

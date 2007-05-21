@@ -224,6 +224,7 @@ const float weapons_ypses_normal[] = { 120, -120, 120, -40, 120, 40 };
 const float weapons_xpses_melee[] = { -20, -20, 0, 0, 20, 20 };
 const float weapons_ypses_melee[] = { 6, -7, 6, -3, 6, 6 };
 const float weapons_facing[] = { PI * 3 / 2, PI / 2, PI * 3 / 2, PI / 2, PI * 3 / 2, PI / 2 };
+const float weapons_facing_back[] = { PI / 2, PI / 2, PI / 2, PI / 2, PI / 2, PI / 2 };
 const int weapons_teams[] = { 0, 1, 0, 1, 0, 1 };
 const int weapons_mode[] = { DEMOPLAYER_QUIET, DEMOPLAYER_DPS, DEMOPLAYER_QUIET, DEMOPLAYER_DPS, DEMOPLAYER_QUIET, DEMOPLAYER_DPS };
 const int weapons_progression[] = { 600, 0 };
@@ -252,7 +253,7 @@ void ShopDemo::init(const IDBWeapon *weap, const Player *player, Recorder *recor
   
   int primary = -1;
   
-  if(weap->launcher->demomode == WDM_FIRINGRANGE) {
+  if(weap->launcher->demomode == WDM_FIRINGRANGE || weap->launcher->demomode == WDM_BACKRANGE) {
     mode = DEMOMODE_FIRINGRANGE;
     game.players.clear();
     game.players.resize(6, *player);
@@ -271,8 +272,16 @@ void ShopDemo::init(const IDBWeapon *weap, const Player *player, Recorder *recor
       ais.push_back(smart_ptr<GameAi>(new GameAiNull));
     }
     
+    const float *facing;
+    if(weap->launcher->demomode == WDM_FIRINGRANGE)
+      facing = weapons_facing;
+    else if(weap->launcher->demomode == WDM_BACKRANGE)
+      facing = weapons_facing_back;
+    else
+      CHECK(0);
+    
     if(weap->launcher->firingrange_distance == WFRD_NORMAL) {
-      game.game.initDemo(&game.players, 160, weapons_xpses_normal, weapons_ypses_normal, weapons_facing, weapons_teams, weapons_mode, false, Float2(5, 5), recorder);
+      game.game.initDemo(&game.players, 160, weapons_xpses_normal, weapons_ypses_normal, facing, weapons_teams, weapons_mode, false, Float2(5, 5), recorder);
     } else if(weap->launcher->firingrange_distance == WFRD_MELEE) {
       CHECK(ARRAY_SIZE(weapons_facing) == 6);
       Tank tank;
@@ -283,7 +292,7 @@ void ShopDemo::init(const IDBWeapon *weap, const Player *player, Recorder *recor
       while(dist_max - dist_min > 0.01) {
         float dist_cen = (dist_min + dist_max) / 2;
         Float2 pos = basetest + makeAngle(-PI / 4) * dist_cen;
-        if(getPathRelation(tank.getTankVertices(Coord2(weapons_xpses_melee[4], weapons_ypses_melee[4]), weapons_facing[4]), tank.getTankVertices(Coord2(pos), weapons_facing[5])) == PR_INTERSECT) {
+        if(getPathRelation(tank.getTankVertices(Coord2(weapons_xpses_melee[4], weapons_ypses_melee[4]), facing[4]), tank.getTankVertices(Coord2(pos), weapons_facing[5])) == PR_INTERSECT) {
           dist_min = dist_cen;
         } else {
           dist_max = dist_cen;
@@ -298,7 +307,7 @@ void ShopDemo::init(const IDBWeapon *weap, const Player *player, Recorder *recor
       Float2 newpos = basetest + makeAngle(-PI / 4) * (dist_max + 0.1);
       wxm[5] = newpos.x;
       wym[5] = newpos.y;
-      game.game.initDemo(&game.players, 40, wxm, wym, weapons_facing, weapons_teams, weapons_mode, false, Float2(-10, 8), recorder); // this is kind of painful
+      game.game.initDemo(&game.players, 40, wxm, wym, facing, weapons_teams, weapons_mode, false, Float2(-10, 8), recorder); // this is kind of painful
     } else {
       CHECK(0);
     }
