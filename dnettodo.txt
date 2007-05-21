@@ -1,7 +1,6 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - Bugfixes from games
-    - Tanks near the end really travel way too fast
     - Boost EMP damage a bit
     - Firerate is really important, modify factions to take this into account
     - Show faction percentages
