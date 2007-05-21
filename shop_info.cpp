@@ -252,10 +252,12 @@ void ShopInfo::renderFrame(Float4 bounds, float fontsize, Float4 inset, const Pl
     for(int i = 0; i < tank->upgrades.size(); i++)
       kvp.print(tank->upgrades[i] + " upgrades", "");
     if(tank->adjustment) {
-      for(int i = 0; i < IDBAdjustment::LAST; i++) {
-        if(tank->adjustment->adjustmentfactor(i) != 1.0) {
-          kvp.print(adjust_human[i], StringPrintf("%.0f%%", tank->adjustment->adjustmentfactor(i) * 100));
-        }
+      const IDBAdjustment *idba = tank->adjustment;
+      for(int i = 0; i < ARRAY_SIZE(idba->adjustlist); i++) {
+        if(idba->adjustlist[i].first == -1)
+          break;
+        
+        kvp.print(adjust_human[idba->adjustlist[i].first], StringPrintf("%.0d%%", idba->adjustlist[i].second + 100));
       }
     }
   } else if(implant && !implant_upgrade) {

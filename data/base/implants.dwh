@@ -189,7 +189,7 @@ adjustment {
   name=adjustment.implant.explosive
   
   damage_explosive=5
-  warhead_radius_falloff=5
+  warhead_radius_falloff=3
 }
 
 implant {

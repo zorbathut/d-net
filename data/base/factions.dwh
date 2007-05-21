@@ -190,8 +190,8 @@ adjustment {
   name=adjustment.juggernauts.high
   
   tank_firerate=20
-  tank_speed=-5
-  tank_turn=-5
+  tank_speed=-10
+  tank_turn=-10
   tank_armor=-5
 }
 

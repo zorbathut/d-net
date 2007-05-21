@@ -1,9 +1,8 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - Bugfixes from games
-    - Boost EMP damage a bit
-    - Firerate is really important, modify factions to take this into account
     - Show faction percentages
+    - Check to see if the upgradable tanks can just overpower the non-upgradable ones
     - Fix missiles doing self-damage
     - Railgun faster, more power
     - Disable star level

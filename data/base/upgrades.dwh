@@ -247,6 +247,7 @@ adjustment {
 adjustment {
   name=adjustment.explosive
   damage_explosive=10
+  warhead_radius_falloff=5
 }
 
 adjustment {
