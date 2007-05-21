@@ -525,7 +525,7 @@ bool PersistentData::tickSlot(int slotid, const vector<Controller> &keys) {
 
     if(pms[slt.pid].faction) {
       playerid[slt.pid] = playerdata.size();
-      playerdata.push_back(Player(pms[slt.pid].faction->faction, 0, newPlayerStartingCash)); // TODO: Make factions matter again
+      playerdata.push_back(Player(pms[slt.pid].faction->faction, faction_mode, newPlayerStartingCash)); // TODO: Make factions matter again
       slot[slotid].type = Slot::SETTINGS;
     }
   } else if(slt.type == Slot::RESULTS) {
