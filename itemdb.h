@@ -18,10 +18,10 @@ using namespace std;
 #define WARHEAD_RADIUS_MAXMULT 2
 
 const char * const adjust_text[] = { "damage_kinetic", "damage_energy", "damage_explosive", "damage_trap", "damage_exotic", "warhead_radius_falloff", "discount_weapon", "discount_implant", "discount_upgrade", "discount_tank", "recycle_bonus", "tank_firerate", "tank_speed", "tank_turn", "tank_armor", "bombardment_speed", "damage_all", "all" };
-const char * const adjust_human[] = {"Kinetic damage", "Energy damage", "Explosive damage", "Trap damage", "Exotic damage", "Blast radius", "Weapon discount", "Implant discount", "Upgrade discount", "Tank discount", "Recycle bonus", "Tank firerate", "Tank speed", "Tank turning", "Tank armor", "Bombardment speed", "All damage", "All" };
+const char * const adjust_human[] = {"Kinetic damage", "Energy damage", "Explosive damage", "Trap damage", "Exotic damage", "Blast radius", "Weapon discount", "Implant discount", "Upgrade discount", "Tank discount", "Sell efficiency", "Tank firerate", "Tank speed", "Tank turning", "Tank armor", "Bombardment speed", "All damage", "All" };
 const char * const adjust_unit[] = {" KPE", " KJE", " TOTE", " FSE", " flux", " m", "", "", "", "", "", "", " m/s", " rad/s", " CME", ""};
 
-string adjust_modifiertext(int id, int amount);
+pair<string, bool> adjust_modifiertext(int id, int amount);
 
 struct IDBAdjustment {
 public:

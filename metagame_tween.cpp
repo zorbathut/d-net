@@ -611,18 +611,11 @@ bool PersistentData::tickSlot(int slotid, const vector<Controller> &keys) {
 
 class AdjustSorter {
 public:
-  int parity(const string &ite) {
-    if(ite[0] == '+')
-      return 1;
-    if(ite[0] == '-')
-      return -1;
-    if(ite == "~=")
-      return 0;
-    CHECK(0);
-  }
-  bool operator()(const pair<string, vector<string> > &lhs, const pair<string, vector<string> > &rhs) {
-    if(atoi(lhs.first.c_str()) != atoi(rhs.first.c_str()))
-      return atoi(lhs.first.c_str()) > atoi(rhs.first.c_str());
+  bool operator()(const pair<pair<string, bool>, vector<string> > &lhs, const pair<pair<string, bool>, vector<string> > &rhs) {
+    if(lhs.first.second != rhs.first.second)
+      return lhs.first.second > rhs.first.second;
+    if(atoi(lhs.first.first.c_str()) != atoi(rhs.first.first.c_str()))
+      return atoi(lhs.first.first.c_str()) > atoi(rhs.first.first.c_str());
     return lhs.second < rhs.second;
   }
 };
@@ -727,16 +720,15 @@ void PersistentData::renderSlot(int slotid) const {
         float horzavail = getZoom().span_y() - 1.0;
         const IDBAdjustment *idba = factions[fid].faction->adjustment[3];
         
-        vector<pair<string, vector<string> > > adjusttext;
+        vector<pair<pair<string, bool>, vector<string> > > adjusttext;
         int total_lines = 0;
         for(int i = 0; i < ARRAY_SIZE(idba->adjustlist); i++) {
           if(idba->adjustlist[i].first == -1)
             break;
           
           vector<string> tlins;
-          //string modifiertext = adjust_modifiertext(idba->adjustlist[i].first, idba->adjustlist[i].second);
-          string modifiertext = StringPrintf("%+d%%", idba->adjustlist[i].second);
-          if(getTextWidth(StringPrintf("%s  %s", adjust_human[idba->adjustlist[i].first], modifiertext.c_str()), 1.0) > horzavail) {
+          pair<string, bool> modifiertext = adjust_modifiertext(idba->adjustlist[i].first, idba->adjustlist[i].second);
+          if(getTextWidth(StringPrintf("%s  %s", adjust_human[idba->adjustlist[i].first], modifiertext.first.c_str()), 1.0) > horzavail) {
             tlins = tokenize(adjust_human[idba->adjustlist[i].first], " ");
           } else {
             tlins.push_back(adjust_human[idba->adjustlist[i].first]);
@@ -758,15 +750,11 @@ void PersistentData::renderSlot(int slotid) const {
             cpos += 1.5;
           }
           
-          if(adjusttext[i].first[0] == '+')
+          if(adjusttext[i].first.second)
             setColor(Color(0.1, 1.0, 0.1));
-          else if(adjusttext[i].first[0] == '-')
-            setColor(Color(1.0, 0.1, 0.1));
-          else if(adjusttext[i].first == "~=")
-            ;
           else
-            CHECK(0);
-          drawJustifiedText(adjusttext[i].first, 1, Float2(getZoom().ex - 0.5, cpos - 1.5), TEXT_MAX, TEXT_MIN);
+            setColor(Color(1.0, 0.1, 0.1));
+          drawJustifiedText(adjusttext[i].first.first, 1, Float2(getZoom().ex - 0.5, cpos - 1.5), TEXT_MAX, TEXT_MIN);
         }
       }
     }

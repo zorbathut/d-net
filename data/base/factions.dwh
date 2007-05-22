@@ -345,7 +345,7 @@ text {
 adjustment {
   name=adjustment.sons.high
   
-  recycle_bonus=400
+  recycle_bonus=900
   discount_implant=25
   damage_exotic=20
   
