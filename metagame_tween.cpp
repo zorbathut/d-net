@@ -621,13 +621,9 @@ public:
     CHECK(0);
   }
   bool operator()(const pair<string, vector<string> > &lhs, const pair<string, vector<string> > &rhs) {
-    int lp = parity(lhs.first);
-    int rp = parity(rhs.first);
-    if(lp != rp)
-      return lp > rp;
-    if(lhs.first.size() != rhs.first.size())
-      return lhs.first.size() * lp > rhs.first.size() * rp;
-    return lhs < rhs;
+    if(atoi(lhs.first.c_str()) != atoi(rhs.first.c_str()))
+      return atoi(lhs.first.c_str()) > atoi(rhs.first.c_str());
+    return lhs.second < rhs.second;
   }
 };
 
@@ -738,7 +734,8 @@ void PersistentData::renderSlot(int slotid) const {
             break;
           
           vector<string> tlins;
-          string modifiertext = adjust_modifiertext(idba->adjustlist[i].first, idba->adjustlist[i].second);
+          //string modifiertext = adjust_modifiertext(idba->adjustlist[i].first, idba->adjustlist[i].second);
+          string modifiertext = StringPrintf("%+d%%", idba->adjustlist[i].second);
           if(getTextWidth(StringPrintf("%s  %s", adjust_human[idba->adjustlist[i].first], modifiertext.c_str()), 1.0) > horzavail) {
             tlins = tokenize(adjust_human[idba->adjustlist[i].first], " ");
           } else {

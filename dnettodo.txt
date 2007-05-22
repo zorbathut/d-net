@@ -4,6 +4,7 @@
     - Show faction percentages
     - Check to see if the upgradable tanks can just overpower the non-upgradable ones
     - Fix missiles doing self-damage
+    - Missiles inject damage directly into things in the front?
     - Railgun faster, more power
     - Disable star level
     - Add level editor options for subtraction, fix star level and re-add
@@ -14,8 +15,14 @@
     - 80% starting cash for new players, to discourage quitting and restarting
     - Add explosive radius in tank weapon upgrade
     - Make explosive radius bonus not apply to certain weapons
-    - Change rockets to guided blasts or something to emphasize exotic
-      - Boost blast radius on rockets  
+    - Change rockets to drones or something to emphasize exotic
+      - Boost blast radius on drones
+    - Base bombardment radius up a bit, late bombardment radius down a bit
+    - Slow high-end tanks down a bit
+    - Rework how inertia works
+    - Add tank slide code w.r.t inertia
+    - Speed up bombardment reticle speed
+    - Link handling to engine a little
   - Add implementations for all trap weapons
   - Re-enable weapon check
   - Add spider, sniper, satellite behavior
