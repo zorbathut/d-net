@@ -156,8 +156,12 @@ bool operator>=(const Money &lhs, const Money &rhs) {
 
 Money moneyFromString(const string &rhs) {
   CHECK(rhs.size());
-  for(int i = 0; i < rhs.size() - 1; i++)
-    CHECK(isdigit(rhs[i]));
+  for(int i = 0; i < rhs.size() - 1; i++) {
+    if(!isdigit(rhs[i])) {
+      dprintf("%s isn't money!\n", rhs.c_str());
+      CHECK(0);
+    }
+  }
   CHECK(isdigit(rhs[rhs.size() - 1]) || tolower(rhs[rhs.size() - 1]) == 'k' || tolower(rhs[rhs.size() - 1]) == 'm' || tolower(rhs[rhs.size() - 1]) == 'g');
   
   Money accum = Money(0);

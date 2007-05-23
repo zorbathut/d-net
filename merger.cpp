@@ -70,7 +70,6 @@ template<typename Model> struct PAW<Model, true> {
       ofstream ofs(merged.c_str());
       for(int i = 0; i < preproc.size(); i++) {
         string name = Model::getWantedName(preproc[i].read("name"), names);
-        dprintf("Name is %s from %s\n", name.c_str(), preproc[i].read("name").c_str());
         kvData kvd = preproc[i];
         if(multipliers.count(name)) {
           CHECK(multipliers.count(name));
@@ -126,6 +125,7 @@ template<typename Model> void doMerge(const string &csv, const string &unmerged,
     kvData kvd;
     while(getkvData(ifs, &kvd)) {
       string name = Model::getWantedName(kvd.read("name"), names);
+      dprintf("Name is %s, checking %s\n", kvd.read("name").c_str(), name.c_str());
       if(name.size()) {
         CHECK(tdd.count(name));
         done.insert(name);

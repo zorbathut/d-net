@@ -68,7 +68,7 @@ hierarchy {
   name=ROOT.Ammo.AP Autocannon
   pack=100
   
-  spawncash=10000
+  spawncash=MERGE
 }
 
 text {
@@ -134,7 +134,7 @@ hierarchy {
   name=ROOT.Ammo.Heavy Autocannon
   pack=100
   
-  spawncash=300k
+  spawncash=MERGE
 }
 
 text {
@@ -198,7 +198,7 @@ hierarchy {
   name=ROOT.Ammo.Sabot Shotgun
   pack=100
   
-  spawncash=9m
+  spawncash=MERGE
 }
 
 text {
@@ -262,7 +262,7 @@ hierarchy {
   name=ROOT.Ammo.Blade Launcher
   pack=100
   
-  spawncash=270m
+  spawncash=MERGE
 }
 
 text {
@@ -326,7 +326,7 @@ hierarchy {
   name=ROOT.Ammo.C Cannon
   pack=100
   
-  spawncash=8100m
+  spawncash=MERGE
 }
 
 text {
@@ -390,7 +390,7 @@ hierarchy {
   name=ROOT.Ammo.Conversion Cannon
   pack=100
   
-  spawncash=243g
+  spawncash=MERGE
 }
 
 text {

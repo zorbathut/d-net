@@ -1,8 +1,12 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - Bugfixes from games
-    - Show faction percentages
-    - Rear cannon should not be showing up this early
+    - Add hierarchy merges
+      - Rear cannon should not be showing up this early
+    - Do things show up simultaneously, or do discounted players get them earlier?
+    - Add "recommend shots for a level", if I'm having trouble with it I can't imagine other people will do it well
+    - Deal with weapon names being too long
+    - Add tank upgrade multipliers to the balance sheet
     - Check to see if the upgradable tanks can just overpower the non-upgradable ones
     - Fix missiles doing self-damage
     - Missiles inject damage directly into things in the front?
@@ -24,6 +28,7 @@
     - Add tank slide code w.r.t inertia
     - Speed up bombardment reticle speed
     - Link handling to engine a little
+    - Four-weapon system
   - Add implementations for all trap weapons
   - Re-enable weapon check
   - Add spider, sniper, satellite behavior
@@ -46,7 +51,6 @@
   - Remove the ability to sell?
 
 - "Polish the Damn Interface" Initiative
-  - Four-weapon system
   - Colorcode tanks, based on relative tank level
   - vecedit should drag around with the right mouse button or whatever
   - walls that are more easily destroyed

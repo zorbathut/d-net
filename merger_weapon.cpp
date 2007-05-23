@@ -17,6 +17,9 @@ string WeaponParams::Namer::getName(const vector<string> &line) {
       CHECK(line[1] == roman_number(lastid));
       lastid++;
       return prefix + " " + line[1];
+    } else if(line[1] == "Params") {
+      CHECK(prefix.size());
+      return prefix;
     } else {
       return "";
     }
@@ -42,6 +45,8 @@ bool WeaponParams::parseLine(const vector<string> &line, Data *data) {
       return false;
     data->params = true;
     data->dpp = atof(line[5].c_str());
+    data->params_threshold = string(line[2].begin(), find(line[2].begin(), line[2].end(), '.'));
+    CHECK(data->params_threshold.size());
     return true;
   } else {
     data->params = false;
@@ -53,15 +58,18 @@ bool WeaponParams::parseLine(const vector<string> &line, Data *data) {
 }
 
 string WeaponParams::getWantedName(const string &name, const set<string> &possiblenames) {
-  dprintf("%s\n", name.c_str());
+  dprintf("--- START %s\n", name.c_str());
   string rv;
   rv = suffix(name);
+  dprintf("%s\n", rv.c_str());
   if(possiblenames.count(rv))
     return rv;
   rv = findName(suffix(name, 1), possiblenames);
+  dprintf("%s\n", rv.c_str());
   if(possiblenames.count(rv))
     return rv;
   rv = findName(suffix(name, 2), possiblenames);
+  dprintf("%s\n", rv.c_str());
   if(possiblenames.count(rv))
     return rv;
   dprintf("returning NOTHING\n");
@@ -77,6 +85,13 @@ void WeaponParams::preprocess(kvData *kvd, const Data &data) {
     
     kvd->kv["cost"] = data.item_cost;
     kvd->kv["firerate"] = data.item_firerate;
+  } else if(kvd->category == "hierarchy") {
+    CHECK(data.params);
+    
+    CHECK(atof(data.params_threshold.c_str()) < 1000 || kvd->read("spawncash") == "MERGE");
+    
+    if(kvd->kv.count("spawncash"))
+      kvd->kv["spawncash"] = data.params_threshold;
   }
 }
 

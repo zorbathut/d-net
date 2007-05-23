@@ -18,6 +18,8 @@ struct WeaponParams {
     string item_cost;
     string item_firerate;
     
+    string params_threshold;
+    
     float dpp;
   };
   

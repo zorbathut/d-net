@@ -265,6 +265,8 @@ weapon {
 hierarchy {
   name=ROOT.Ammo.Rear Cannon
   pack=100
+
+  spawncash=MERGE
 }
 
 text {

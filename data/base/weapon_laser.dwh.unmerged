@@ -99,16 +99,16 @@ hierarchy {
   name=ROOT.Ammo.Megawatt Laser
   pack=100
   
-  spawncash=10000
+  spawncash=MERGE
 }
 
 text {
-  name=text.weapon.mwlaser
+  name=text.weapon.megawattlaser
   data=The megawatt laser series is an improved model of the basic laser. Heavy power couplings and a specialized water cooling system allow for more raw power output at a far higher price.
 }
 
 effects {
-  name=effects.weapon.mwlaser1
+  name=effects.weapon.megawattlaser1
   type=particle
 
   quantity=4
@@ -124,7 +124,7 @@ effects {
 }
 
 effects {
-  name=effects.weapon.mwlaser2
+  name=effects.weapon.megawattlaser2
   type=particle
 
   quantity=4
@@ -140,7 +140,7 @@ effects {
 }
 
 effects {
-  name=effects.weapon.mwlaser3
+  name=effects.weapon.megawattlaser3
   type=particle
 
   quantity=4
@@ -155,38 +155,38 @@ effects {
 }
 
 warhead {
-  name=warhead.weapon.mwlaser
+  name=warhead.weapon.megawattlaser
   impactdamage=MERGE energy
   
-  effects_impact=effects.weapon.mwlaser1
-  effects_impact=effects.weapon.mwlaser2
-  effects_impact=effects.weapon.mwlaser3
+  effects_impact=effects.weapon.megawattlaser1
+  effects_impact=effects.weapon.megawattlaser2
+  effects_impact=effects.weapon.megawattlaser3
 }
 
 projectile {
-  name=projectile.weapon.mwlaser
+  name=projectile.weapon.megawattlaser
   motion=normal
   velocity=800
   thickness_visual=1.5x
   length=1.5x
   toughness=2
   color=0.6, 0.9, 1.0
-  warhead=warhead.weapon.mwlaser
+  warhead=warhead.weapon.megawattlaser
 }
 
 deploy {
-  name=deploy.weapon.mwlaser
+  name=deploy.weapon.megawattlaser
   type=forward
   anglestddev=0.006
-  projectile=projectile.weapon.mwlaser
+  projectile=projectile.weapon.megawattlaser
 }
 
 launcher {
-  name=launcher.weapon.mwlaser
+  name=launcher.weapon.megawattlaser
   
-  deploy=deploy.weapon.mwlaser
+  deploy=deploy.weapon.megawattlaser
   
-  text=text.weapon.mwlaser
+  text=text.weapon.megawattlaser
 }
 
 ###########################
@@ -197,16 +197,16 @@ hierarchy {
   name=ROOT.Ammo.Gigawatt Laser
   pack=100
   
-  spawncash=300k
+  spawncash=MERGE
 }
 
 text {
-  name=text.weapon.gwlaser
+  name=text.weapon.gigawattlaser
   data=Blah blah hamster blah yacht blah blah blah monocle polish
 }
 
 effects {
-  name=effects.weapon.gwlaser1
+  name=effects.weapon.gigawattlaser1
   type=particle
 
   quantity=4
@@ -222,7 +222,7 @@ effects {
 }
 
 effects {
-  name=effects.weapon.gwlaser2
+  name=effects.weapon.gigawattlaser2
   type=particle
 
   quantity=4
@@ -238,7 +238,7 @@ effects {
 }
 
 effects {
-  name=effects.weapon.gwlaser3
+  name=effects.weapon.gigawattlaser3
   type=particle
 
   quantity=2
@@ -253,34 +253,34 @@ effects {
 }
 
 warhead {
-  name=warhead.weapon.gwlaser
+  name=warhead.weapon.gigawattlaser
   impactdamage=MERGE energy
-  effects_impact=effects.weapon.gwlaser1
-  effects_impact=effects.weapon.gwlaser2
-  effects_impact=effects.weapon.gwlaser3
+  effects_impact=effects.weapon.gigawattlaser1
+  effects_impact=effects.weapon.gigawattlaser2
+  effects_impact=effects.weapon.gigawattlaser3
 }
 
 projectile {
-  name=projectile.weapon.gwlaser
+  name=projectile.weapon.gigawattlaser
   motion=normal
   velocity=600
   color=0.6, 0.9, 1.0
-  warhead=warhead.weapon.gwlaser
+  warhead=warhead.weapon.gigawattlaser
 }
 
 deploy {
-  name=deploy.weapon.gwlaser
+  name=deploy.weapon.gigawattlaser
   type=forward
   anglestddev=0.008
-  projectile=projectile.weapon.gwlaser
+  projectile=projectile.weapon.gigawattlaser
 }
 
 launcher {
-  name=launcher.weapon.gwlaser
+  name=launcher.weapon.gigawattlaser
   
-  deploy=deploy.weapon.gwlaser
+  deploy=deploy.weapon.gigawattlaser
   
-  text=text.weapon.gwlaser
+  text=text.weapon.gigawattlaser
 }
 
 ###########################
@@ -291,7 +291,7 @@ hierarchy {
   name=ROOT.Ammo.Plasma Cannon
   pack=100
   
-  spawncash=9m
+  spawncash=MERGE
 }
 
 text {
@@ -385,7 +385,7 @@ hierarchy {
   name=ROOT.Ammo.Gamma Beam
   pack=100
   
-  spawncash=270m
+  spawncash=MERGE
 }
 
 text {
@@ -479,7 +479,7 @@ hierarchy {
   name=ROOT.Ammo.Fission Laser
   pack=100
   
-  spawncash=8100m
+  spawncash=MERGE
 }
 
 text {
@@ -573,7 +573,7 @@ hierarchy {
   name=ROOT.Ammo.Conversion Beam
   pack=100
   
-  spawncash=243g
+  spawncash=MERGE
 }
 
 text {
@@ -719,112 +719,112 @@ weapon {
 
 
 weapon {
-  name=ROOT.Ammo.Megawatt Laser.MW Laser I
+  name=ROOT.Ammo.Megawatt Laser.Megawatt Laser I
   
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.weapon.mwlaser
+  launcher=launcher.weapon.megawattlaser
 }
 
 weapon {
-  name=ROOT.Ammo.Megawatt Laser.MW Laser II
+  name=ROOT.Ammo.Megawatt Laser.Megawatt Laser II
   
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.weapon.mwlaser
+  launcher=launcher.weapon.megawattlaser
 }
 
 weapon {
-  name=ROOT.Ammo.Megawatt Laser.MW Laser III
+  name=ROOT.Ammo.Megawatt Laser.Megawatt Laser III
   
   cost=MERGE
   firerate=MERGE
 
-  launcher=launcher.weapon.mwlaser
+  launcher=launcher.weapon.megawattlaser
 }
 
 weapon {
-  name=ROOT.Ammo.Megawatt Laser.MW Laser IV
+  name=ROOT.Ammo.Megawatt Laser.Megawatt Laser IV
   
   cost=MERGE
   firerate=MERGE
 
-  launcher=launcher.weapon.mwlaser
+  launcher=launcher.weapon.megawattlaser
 }
 
 weapon {
-  name=ROOT.Ammo.Megawatt Laser.MW Laser V
+  name=ROOT.Ammo.Megawatt Laser.Megawatt Laser V
   
   cost=MERGE
   firerate=MERGE
 
-  launcher=launcher.weapon.mwlaser
+  launcher=launcher.weapon.megawattlaser
 }
 
 weapon {
-  name=ROOT.Ammo.Megawatt Laser.MW Laser VI
+  name=ROOT.Ammo.Megawatt Laser.Megawatt Laser VI
   
   cost=MERGE
   firerate=MERGE
 
-  launcher=launcher.weapon.mwlaser
+  launcher=launcher.weapon.megawattlaser
 }
 
 
 weapon {
-  name=ROOT.Ammo.Gigawatt Laser.GW Laser I
+  name=ROOT.Ammo.Gigawatt Laser.Gigawatt Laser I
   
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.weapon.gwlaser
+  launcher=launcher.weapon.gigawattlaser
 }
 
 weapon {
-  name=ROOT.Ammo.Gigawatt Laser.GW Laser II
+  name=ROOT.Ammo.Gigawatt Laser.Gigawatt Laser II
   
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.weapon.gwlaser
+  launcher=launcher.weapon.gigawattlaser
 }
 
 weapon {
-  name=ROOT.Ammo.Gigawatt Laser.GW Laser III
+  name=ROOT.Ammo.Gigawatt Laser.Gigawatt Laser III
   
   cost=MERGE
   firerate=MERGE
 
-  launcher=launcher.weapon.gwlaser
+  launcher=launcher.weapon.gigawattlaser
 }
 
 weapon {
-  name=ROOT.Ammo.Gigawatt Laser.GW Laser IV
+  name=ROOT.Ammo.Gigawatt Laser.Gigawatt Laser IV
   
   cost=MERGE
   firerate=MERGE
 
-  launcher=launcher.weapon.gwlaser
+  launcher=launcher.weapon.gigawattlaser
 }
 
 weapon {
-  name=ROOT.Ammo.Gigawatt Laser.GW Laser V
+  name=ROOT.Ammo.Gigawatt Laser.Gigawatt Laser V
   
   cost=MERGE
   firerate=MERGE
 
-  launcher=launcher.weapon.gwlaser
+  launcher=launcher.weapon.gigawattlaser
 }
 
 weapon {
-  name=ROOT.Ammo.Gigawatt Laser.GW Laser VI
+  name=ROOT.Ammo.Gigawatt Laser.Gigawatt Laser VI
   
   cost=MERGE
   firerate=MERGE
 
-  launcher=launcher.weapon.gwlaser
+  launcher=launcher.weapon.gigawattlaser
 }
 
 

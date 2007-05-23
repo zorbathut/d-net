@@ -64,6 +64,8 @@ void kvData::shouldBeDone() const {
 }
 
 const string &kvData::read(string key) const {
+  if(!kv.count(key))
+    dprintf("Couldn't find key %s in kvdata %s\n", key.c_str(), stringFromKvData(*this).c_str());
   CHECK(kv.count(key));
   return kv.find(key)->second;
 }
