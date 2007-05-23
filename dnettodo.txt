@@ -1,9 +1,6 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - Bugfixes from games
-    - Add hierarchy merges
-      - Rear cannon should not be showing up this early
-    - Do things show up simultaneously, or do discounted players get them earlier?
     - Add "recommend shots for a level", if I'm having trouble with it I can't imagine other people will do it well
     - Deal with weapon names being too long
     - Add tank upgrade multipliers to the balance sheet
