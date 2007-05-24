@@ -760,6 +760,7 @@ void parseWeapon(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   
   titem->launcher = parseSubclass(chunk->consume("launcher"), launcherclasses);
   
+  titem->recommended = parseWithDefault(chunk, "recommended", -1);
   titem->glory_resistance = parseWithDefault(chunk, "glory_resistance", false);
   titem->nocache = parseWithDefault(chunk, "nocache", false);
 }

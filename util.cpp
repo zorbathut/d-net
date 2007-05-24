@@ -57,22 +57,12 @@ string stringFromLongdouble(long double x) {
 }
 
 string prettyFloatFormat(float v) {
-  if(v >= 10000 && v < 100000) {
-    string borf = StringPrintf("%f", v);
-    return string(borf.begin(), borf.begin() + 5);
-  }
-  if(!(0.01 <= v && v < 10000) && v != 0.0) {
-    dprintf("err: %f\n", v);
-  }
-  string borf = StringPrintf("%.4f", v);
-  int digic = 0;
-  int cps = 0;
-  while(digic != 4 && cps < borf.size()) {
-    if(isdigit(borf[cps]))
-      digic++;
-    cps++;
-  }
-  return string(borf.begin(), borf.begin() + cps);
+  string borf = StringPrintf("%.2f", v);
+  while(borf.size() > 4 && borf[borf.size() - 1] != '.')
+    borf.erase(borf.end() - 1);
+  if(borf[borf.size() - 1] == '.')
+    borf.erase(borf.end() - 1);
+  return borf;
 }
 
 /*************

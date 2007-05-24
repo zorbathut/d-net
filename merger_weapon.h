@@ -17,6 +17,7 @@ struct WeaponParams {
     
     string item_cost;
     string item_firerate;
+    string item_recommended;
     
     string params_threshold;
     

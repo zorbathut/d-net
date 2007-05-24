@@ -14,6 +14,8 @@ public:
   
   void print(const string &key, const string &value);
 
+  void discontinuity();
+
 private:
   bool twolinemode() const;
   Float4 activebounds() const;
@@ -32,19 +34,26 @@ ShopKVPrinter::ShopKVPrinter(Float4 in_bounds, float in_fontsize, float in_lines
 };
 
 ShopKVPrinter::~ShopKVPrinter() {
-  Float4 activerkt = activebounds();
-  int step = twolinemode() + 1;
-  setColor(C::inactive_text);
-  drawTextBoxAround(Float4(activerkt.sx, activerkt.sy, activerkt.ex, activerkt.sy + (pairz.size() * step - 1) * linesize + fontsize), fontsize);
-  for(int i = 0; i < pairz.size(); i++) {
-    drawText(pairz[i].first, fontsize, Float2(activerkt.sx, activerkt.sy + linesize * i * step));
-    drawJustifiedText(pairz[i].second, fontsize, Float2(activerkt.ex, activerkt.sy + linesize * (i * step + twolinemode())), TEXT_MAX, TEXT_MIN);
-  }
+  discontinuity();
 };
 
 void ShopKVPrinter::print(const string &key, const string &value) {
   pairz.push_back(make_pair(key, value));
 };
+
+void ShopKVPrinter::discontinuity() {
+  Float4 activerkt = activebounds();
+  int step = twolinemode() + 1;
+  setColor(C::inactive_text);
+  Float4 tbx = Float4(activerkt.sx, activerkt.sy, activerkt.ex, activerkt.sy + (pairz.size() * step - 1) * linesize + fontsize);
+  drawTextBoxAround(tbx, fontsize);
+  for(int i = 0; i < pairz.size(); i++) {
+    drawText(pairz[i].first, fontsize, Float2(activerkt.sx, activerkt.sy + linesize * i * step));
+    drawJustifiedText(pairz[i].second, fontsize, Float2(activerkt.ex, activerkt.sy + linesize * (i * step + twolinemode())), TEXT_MAX, TEXT_MIN);
+  }
+  pairz.clear();
+  bounds.sy = tbx.ey + fontsize * 1.5;
+}
 
 bool ShopKVPrinter::twolinemode() const {
   float wid = activebounds().span_x();
@@ -226,6 +235,8 @@ void ShopInfo::renderFrame(Float4 bounds, float fontsize, Float4 inset, const Pl
     kvp.print("Theoretical DPS", prettyFloatFormat(player->adjustWeapon(weapon).stats_damagePerSecond()));
     kvp.print("Cost per damage", prettyFloatFormat(player->adjustWeapon(weapon).stats_costPerDamage()));
     kvp.print("Cost per second", prettyFloatFormat(player->adjustWeapon(weapon).stats_costPerSecond()));
+    kvp.discontinuity();
+    kvp.print("Recommend loadout", StringPrintf("%d", weapon->recommended));
   } else if(glory) {
     ShopKVPrinter kvp(bounds, fontsize, fontshift);
     kvp.print("Total average damage", prettyFloatFormat(player->adjustGlory(glory).stats_averageDamage()));

@@ -1,7 +1,7 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - Bugfixes from games
-    - Add "recommend shots for a level", if I'm having trouble with it I can't imagine other people will do it well
+    - Make rear-fire weapons trappier
     - Deal with weapon names being too long
     - Add tank upgrade multipliers to the balance sheet
     - Check to see if the upgradable tanks can just overpower the non-upgradable ones
@@ -25,7 +25,8 @@
     - Add tank slide code w.r.t inertia
     - Speed up bombardment reticle speed
     - Link handling to engine a little
-    - Four-weapon system
+    - Better implant interface
+    - Firing HE Missile everywhere leads to slowdowns :(
   - Add implementations for all trap weapons
   - Re-enable weapon check
   - Add spider, sniper, satellite behavior
@@ -34,6 +35,8 @@
     - Special autocannon
     - Special laser
     - Special missile
+    - OGRE
+    - Four-weapon system
     - Spruce up base autocannon weaponry
     - Spruce up special autocannon weaponry
     - Spruce up base laser weaponry
@@ -44,7 +47,7 @@
     - Spruce up glory devices
     - Spruce up trap weaponry
     - Spruce up exotic weaponry
-    - OGRE
+    - Spruce up OGRE
   - Remove the ability to sell?
 
 - "Polish the Damn Interface" Initiative

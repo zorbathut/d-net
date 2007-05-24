@@ -166,6 +166,7 @@ struct IDBWeapon {
 
   Money base_cost;
   int quantity;
+  int recommended;
   
   bool glory_resistance;
   bool nocache;

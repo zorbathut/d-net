@@ -41,10 +41,10 @@ string WeaponParams::token() {
 
 bool WeaponParams::parseLine(const vector<string> &line, Data *data) {
   if(line[1] == "Params") {
-    if(!line[5].size())
+    if(!line[6].size())
       return false;
     data->params = true;
-    data->dpp = atof(line[5].c_str());
+    data->dpp = atof(line[6].c_str());
     data->params_threshold = string(line[2].begin(), find(line[2].begin(), line[2].end(), '.'));
     CHECK(data->params_threshold.size());
     return true;
@@ -52,7 +52,9 @@ bool WeaponParams::parseLine(const vector<string> &line, Data *data) {
     data->params = false;
     data->item_cost = line[2];
     data->item_firerate = line[3];
-    data->dpp = atof(line[5].c_str());
+    CHECK(line[4].size());
+    data->item_recommended = StringPrintf("%d", atoi(line[4].c_str()));
+    data->dpp = atof(line[6].c_str());
     return true;
   }
 }
@@ -82,9 +84,11 @@ void WeaponParams::preprocess(kvData *kvd, const Data &data) {
     
     CHECK(kvd->read("cost") == "MERGE");
     CHECK(kvd->read("firerate") == "MERGE");
+    CHECK(!kvd->kv.count("recommended") || kvd->read("recommended") == "MERGE");
     
     kvd->kv["cost"] = data.item_cost;
     kvd->kv["firerate"] = data.item_firerate;
+    kvd->kv["recommended"] = data.item_recommended;
   } else if(kvd->category == "hierarchy") {
     CHECK(data.params);
     
