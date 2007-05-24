@@ -62,12 +62,14 @@ float ShopLayout::expandy(int tier) const {
 float ShopLayout::scrollpos(int tier) const {
   CHECK(tier >= 0);
   if(tier < int_scroll.size())
-    return int_scroll[tier].first;
+    return int_scroll[tier].first * expandy(tier);
   return 0.0;
 }
 
 pair<bool, bool> ShopLayout::scrollmarkers(int tier) const {
   CHECK(tier >= 0);
+  if(expandy(tier) != 1.0)
+    return make_pair(false, false);
   if(tier < int_scroll.size())
     return int_scroll[tier].second;
   return make_pair(false, false);
