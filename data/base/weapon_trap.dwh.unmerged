@@ -260,102 +260,102 @@ weapon {
 
 ###########################
 #
-#   Rear Cannon
+#   Boomerang Gun
 
 hierarchy {
-  name=ROOT.Ammo.Rear Cannon
+  name=ROOT.Ammo.Boomerang Gun
   pack=100
 
   spawncash=MERGE
 }
 
 text {
-  name=text.weapon.rearcannon
+  name=text.weapon.boomeranggun
   data=Blah blah hamster blah yacht blah blah blah monocle polish
 }
 
 warhead {
-  name=warhead.weapon.rearcannon
+  name=warhead.weapon.boomeranggun
   impactdamage=MERGE trap
   wallremovalradius=0.5
   wallremovalchance=0.05
 }
 
 projectile {
-  name=projectile.weapon.rearcannon
+  name=projectile.weapon.boomeranggun
   motion=normal
   velocity=180
   color=1.0, 0.9, 0.6
-  warhead=warhead.weapon.rearcannon
+  warhead=warhead.weapon.boomeranggun
 }
 
 deploy {
-  name=deploy.weapon.rearcannon
+  name=deploy.weapon.boomeranggun
   type=rear
   anglestddev=0.03
-  projectile=projectile.weapon.rearcannon
+  projectile=projectile.weapon.boomeranggun
 }
 
 launcher {
-  name=launcher.weapon.rearcannon
+  name=launcher.weapon.boomeranggun
   
-  deploy=deploy.weapon.rearcannon
+  deploy=deploy.weapon.boomeranggun
   
   demo=back
   
-  text=text.weapon.rearcannon
+  text=text.weapon.boomeranggun
 }
 
 weapon {
-  name=ROOT.Ammo.Rear Cannon.Rear Cannon I
+  name=ROOT.Ammo.Boomerang Gun.Boomerang Gun I
   
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.weapon.rearcannon
+  launcher=launcher.weapon.boomeranggun
 }
 
 weapon {
-  name=ROOT.Ammo.Rear Cannon.Rear Cannon II
+  name=ROOT.Ammo.Boomerang Gun.Boomerang Gun II
 
   cost=MERGE
   firerate=MERGE
 
-  launcher=launcher.weapon.rearcannon
+  launcher=launcher.weapon.boomeranggun
 }
 
 weapon {
-  name=ROOT.Ammo.Rear Cannon.Rear Cannon III
+  name=ROOT.Ammo.Boomerang Gun.Boomerang Gun III
   
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.weapon.rearcannon
+  launcher=launcher.weapon.boomeranggun
 }
 
 weapon {
-  name=ROOT.Ammo.Rear Cannon.Rear Cannon IV
+  name=ROOT.Ammo.Boomerang Gun.Boomerang Gun IV
   
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.weapon.rearcannon
+  launcher=launcher.weapon.boomeranggun
 }
 
 weapon {
-  name=ROOT.Ammo.Rear Cannon.Rear Cannon V
+  name=ROOT.Ammo.Boomerang Gun.Boomerang Gun V
   
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.weapon.rearcannon
+  launcher=launcher.weapon.boomeranggun
 }
 
 weapon {
-  name=ROOT.Ammo.Rear Cannon.Rear Cannon VI
+  name=ROOT.Ammo.Boomerang Gun.Boomerang Gun VI
   
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.weapon.rearcannon
+  launcher=launcher.weapon.boomeranggun
 }

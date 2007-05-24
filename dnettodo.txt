@@ -1,7 +1,6 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - Bugfixes from games
-    - Make rear-fire weapons trappier
     - Deal with weapon names being too long
     - Add tank upgrade multipliers to the balance sheet
     - Check to see if the upgradable tanks can just overpower the non-upgradable ones
