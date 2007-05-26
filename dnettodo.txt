@@ -1,8 +1,6 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - Bugfixes from games
-    - What I'm doing right now
-      - Run AI
     - Critical or simple fixes
       - Disable star level
       - Add support for a M-width space, set up cash textualization to use it
