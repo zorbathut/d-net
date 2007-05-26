@@ -247,7 +247,10 @@ string printGraphicsStats() {
   return gstat;
 }
 
+static bool frame_running = false;
+
 void beginLineCluster(float weight) {
+  CHECK(frame_running);
   CHECK(glGetError() == GL_NO_ERROR);
   CHECK(curWeight == -1.f);
   CHECK(weight != -1.f);
@@ -261,6 +264,7 @@ void beginLineCluster(float weight) {
 }
 
 void finishLineCluster() {
+  CHECK(frame_running);
   if(curWeight != -1.f) {
     curWeight = -1.f;
     glEnd();
@@ -270,10 +274,9 @@ void finishLineCluster() {
   glLineWidth(1);
 }
 
-static bool frame_running = false;
-
 void initFrame() {
   CHECK(!frame_running);
+  frame_running = true;
   CHECK(curWeight == -1.f);
   {
     GLint v = 0;
@@ -293,7 +296,6 @@ void initFrame() {
   glStencilMask(1);
   clearFrame(Color(0.05, 0.05, 0.05));
   CHECK(glGetError() == GL_NO_ERROR);
-  frame_running = true;
   glStencilMask(0);
   
   registerCrashFunction(deinitFrame);
@@ -324,6 +326,7 @@ void deinitFrame() {
 }
 
 GfxWindow::GfxWindow(const Float4 &obounds, float fade) {
+  CHECK(frame_running);
   finishLineCluster();
   
   Float4 bounds = obounds;
@@ -355,6 +358,7 @@ GfxWindow::GfxWindow(const Float4 &obounds, float fade) {
   windows.back().setScissor();
 }
 GfxWindow::~GfxWindow() {
+  CHECK(frame_running);
   CHECK(windows.size() > 1);
   CHECK(windows.back().gfxw == this);
   float tmap_sx = windows.back().saved_sx;
@@ -376,6 +380,7 @@ void GfxWindowState::setScissor() const { // yes, the Y's are correct - the scre
 
 bool stenciled = false;
 GfxStenciled::GfxStenciled() {
+  CHECK(frame_running);
   CHECK(!stenciled);
   finishLineCluster();
   CHECK(glGetError() == GL_NO_ERROR);
@@ -387,6 +392,7 @@ GfxStenciled::GfxStenciled() {
 }
 
 GfxStenciled::~GfxStenciled() {
+  CHECK(frame_running);
   CHECK(stenciled);
   finishLineCluster();
   CHECK(glGetError() == GL_NO_ERROR);
@@ -397,6 +403,7 @@ GfxStenciled::~GfxStenciled() {
 
 bool inverting = false;
 GfxInvertingStencil::GfxInvertingStencil() {
+  CHECK(frame_running);
   CHECK(!inverting);
   
   finishLineCluster();
@@ -413,6 +420,7 @@ GfxInvertingStencil::GfxInvertingStencil() {
 }
 
 GfxInvertingStencil::~GfxInvertingStencil() {
+  CHECK(frame_running);
   CHECK(inverting);
   CHECK(curWeight == -1.f);
   
@@ -429,6 +437,7 @@ GfxInvertingStencil::~GfxInvertingStencil() {
  */
 
 void setZoom(const Float4 &fl4) {
+  CHECK(frame_running);
   float rat = fl4.span_x() / fl4.span_y() / getAspect();
   if(rat < 0.999 || rat > 1.001) {
     dprintf("rat is %f\n", rat);
@@ -450,6 +459,7 @@ void setZoomCenter(float cx, float cy, float radius_y) {
 }
 
 void setZoomVertical(float in_sx, float in_sy, float in_ey) {
+  CHECK(frame_running);
   finishLineCluster();
   
   map_saved_sx = in_sx;
@@ -476,10 +486,12 @@ void setZoomVertical(float in_sx, float in_sy, float in_ey) {
   map_ex = map_sx + map_zoom * windows.back().newbounds.span_x() / windows.back().newbounds.span_y();
 }
 
-Float4 getZoom() { return map_bounds; };
-float getAspect() { return windows.back().newbounds.span_x() / windows.back().newbounds.span_y(); };
+Float4 getZoom() { CHECK(frame_running); return map_bounds; };
+float getAspect() { CHECK(frame_running); return windows.back().newbounds.span_x() / windows.back().newbounds.span_y(); };
+float getScreenAspect() { return windows[0].newbounds.span_x() / windows[0].newbounds.span_y(); };
 
 void setColor(float r, float g, float b) {
+  CHECK(frame_running);
   r *= windows.back().fade;
   g *= windows.back().fade;
   b *= windows.back().fade;

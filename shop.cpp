@@ -9,49 +9,6 @@
 
 using namespace std;
 
-Float2 ShopLayout::cashpos() const {
-  if(!miniature)
-    return Float2(80, 1);
-  else
-    return Float2(60, 1);
-}
-
-float ShopLayout::options_vspan() const {
-  return getZoom().ey - itemheight() + fontsize() / 2 - voffset();
-}
-
-float ShopLayout::options_equip_vspan() const {
-  return options_vspan() - itemheight() * 3;
-}
-
-Float4 ShopLayout::box(int depth) const {
-  return Float4(hoffbase(depth), 0, hoffbase(depth) + int_boxwidth, int_fontsize + int_boxborder * 2);
-}
-
-Float2 ShopLayout::description(int depth) const {
-  return Float2(hoffbase(depth) + int_boxborder, int_boxborder);
-}
-Float2 ShopLayout::quantity(int depth) const {
-  return Float2(hoffbase(depth) + int_quanthpos, int_boxborder);
-}
-Float2 ShopLayout::price(int depth) const {
-  return Float2(hoffbase(depth) + int_pricehpos, int_boxborder);
-}
-Float2 ShopLayout::equipbit(int depth, int id) const {
-  return Float2(hoffbase(depth) + int_pricehpos - int_fontsize + int_fontsize * id * 2, int_boxborder);
-}
-
-Float4 ShopLayout::hud() const {
-  return Float4(int_hoffset, int_hudstart, int_hoffset + int_boxwidth, int_hudend);
-}
-Float4 ShopLayout::demo() const {
-  return Float4(int_demoxstart, int_demoystart, int_demoxstart + int_demowidth, int_demoystart + int_demowidth);
-}
-
-float ShopLayout::hoffbase(int depth) const {
-  return int_hoffset + (int_boxwidth + int_hoffset) * (depth - int_xofs);
-}
-
 float ShopLayout::expandy(int tier) const {
   CHECK(tier >= 0);
   if(tier < int_expandy.size())
@@ -75,75 +32,221 @@ pair<bool, bool> ShopLayout::scrollmarkers(int tier) const {
   return make_pair(false, false);
 }
 
-Float2 ShopLayout::equip1(int depth) const {
-  return Float2(hoffbase(depth) + int_boxborder, int_boxborder);
-}
-Float2 ShopLayout::equip2(int depth) const {
-  return Float2(hoffbase(depth) + int_boxwidth - int_boxborder, int_boxborder);
-}
-
-float ShopLayout::implantUpgradeDiff() const {
-  return int_boxwidth / 8;
+float ShopLayout::framestart(int depth) const {
+  if(depth == 0)
+    return 0;
+  return frameend(depth - 1);
 }
 
-ShopLayout::ShopLayout() {
-  // not valid
+float ShopLayout::frameend(int depth) const {
+  if(depth == 0)
+    return framewidth(depth);
+  return frameend(depth - 1) + framewidth(depth);
 }
 
-ShopLayout::ShopLayout(bool in_miniature) {
-  miniature = in_miniature;
+const float leftside = 45;
+const float rightside = 100 - leftside;
+
+// this is probably O(n^2) or something
+float ShopLayout::framewidth(int depth) const {
+  float start = 0;
+  if(depth > 0)
+    start = frameend(depth - 1);
+  if(int_xofs >= start)
+    return leftside;
+  if(int_xofs < start - leftside)
+    return rightside;
+  return lerp(leftside, rightside, (start - int_xofs) / leftside);
+}
+
+float ShopLayout::xmargin() const {
+  return cint_itemheight / 2;
+}
+
+float ShopLayout::boxstart(int depth) const {
+  return framestart(depth) + xmargin() / 2;
+}
+float ShopLayout::boxend(int depth) const {
+  return frameend(depth) - xmargin() / 2;
+}
+float ShopLayout::boxwidth(int depth) const {
+  return boxend(depth) - boxstart(depth);
+}
+
+float ShopLayout::quantx(int depth) const {
+  return lerp(boxstart(depth) + border(), boxend(depth) - border(), 0.7);
+}
+float ShopLayout::pricex(int depth) const {
+  return boxend(depth) - border();
+}
+
+float ShopLayout::ystart() const {
+  return cint_fontsize * 2;
+}
+float ShopLayout::yend() const {
+  return cint_height - cint_fontsize;
+}
+
+const float marginproportion = 0.25;
+float ShopLayout::ymargin() const {
+  return (cint_itemheight - cint_fontsize) / 2 * marginproportion;
+}
+
+Float4 ShopLayout::zone(int depth) const {
+  return Float4(framestart(depth), ystart(), frameend(depth), yend());
+}
+float ShopLayout::border() const {
+  return (cint_itemheight - cint_fontsize) / 2 * (1.0 - marginproportion);
+}
+
+float ShopLayout::itemypos(const ShopPlacement &place) const {
+  return ystart() + (place.current - scrollpos(place.depth)) * cint_itemheight * expandy(place.depth);
+}
+
+vector<pair<int, float> > ShopLayout::getPriorityAndPlacement(const ShopPlacement &place) const {
+  vector<pair<int, float> > rendpos;
+  if(place.siblings) {
+    int desiredfront = place.active;
+    for(int i = 0; i < desiredfront; i++)
+      rendpos.push_back(make_pair(i, itemypos(ShopPlacement(place.depth, i, place.siblings, place.current))));
+    for(int i = place.siblings - 1; i > desiredfront; i--)
+      rendpos.push_back(make_pair(i, itemypos(ShopPlacement(place.depth, i, place.siblings, place.current))));
+    rendpos.push_back(make_pair(desiredfront, itemypos(ShopPlacement(place.depth, desiredfront, place.siblings, place.current))));
+  }
+  return rendpos;
+}
+
+void ShopLayout::drawMarkerSet(int depth, bool down) const {
+  Float4 zon = zone(depth);
   
-  if(!miniature) {
-    int_fontsize = 2;
-    int_boxborder = 0.5;
-    int_itemheight = 4;
+  string text;
+  if(!down) {
+    text = "Up";
+    zon.ey = zon.sy + (cint_itemheight - ymargin() * 2);
   } else {
-    int_fontsize = 3;
-    int_boxborder = 0.75;
-    int_itemheight = 6;
+    text = "Down";
+    zon.sy = zon.ey - (cint_itemheight - ymargin() * 2);
   }
   
-  int_totalwidth = 133.334;
+  // Center
+  {
+    Float4 czon = zon;
+    czon.sx = (zon.sx * 2 + zon.ex) / 3;
+    czon.ex = (zon.sx + zon.ex * 2) / 3;
+    drawSolid(czon);
+    setColor(C::box_border);
+    drawRect(czon, boxthick());
+    setColor(C::active_text);
+    drawJustifiedText(text, cint_fontsize, czon.midpoint(), TEXT_CENTER, TEXT_CENTER);
+  }
   
-  int_hoffset = 1.5;
-  int_voffset = 5;
-    
-  int_boxwidth = (int_totalwidth - int_hoffset * 3) / 2;
-  
-  int_pricehpos = int_boxwidth - int_boxborder;
-  int_quanthpos = int_boxwidth / 5 * 3;
-  
-  int_demowidth = int_boxwidth * 3 / 5;
-  int_demoxstart = int_hoffset + int_boxwidth * 1 / 5;
-  int_demoystart = 45;
-  
-  int_boxthick = 0.1;
-  
-  int_hudstart = 10;
-  int_hudend = 95;
-  
-  int_xofs = 0;
-  int_expandy.resize(2, 1.0); // not really ideal but hey
-  
-  int_equipDiff = int_boxwidth / 4;
+  vector<float> beef;
+  beef.push_back((zon.sx * 5 + zon.ex) / 6);
+  beef.push_back((zon.sx + zon.ex * 5) / 6);
+  for(int i = 0; i  < beef.size(); i++) {
+    vector<Float2> tri;
+    if(!down) {
+      tri.push_back(Float2(beef[i], zon.sy));
+      tri.push_back(Float2(beef[i] + zon.span_y(), zon.ey));
+      tri.push_back(Float2(beef[i] - zon.span_y(), zon.ey));
+    } else {
+      tri.push_back(Float2(beef[i], zon.ey));
+      tri.push_back(Float2(beef[i] + zon.span_y(), zon.sy));
+      tri.push_back(Float2(beef[i] - zon.span_y(), zon.sy));
+    }
+    drawSolidLoop(tri);
+    drawLineLoop(tri, boxthick());
+  }
 }
 
-const float framechange = 0.2;
+Float2 ShopLayout::cashpos() const {
+  if(miniature)
+    return Float2(50, 1);
+  else
+    return Float2(60, 1);
+}
+
+Float4 ShopLayout::hud() const {
+  return Float4(xmargin() + cint_fontsize / 2, ystart() + cint_fontsize * 3, leftside - (xmargin() + cint_fontsize / 2), demo().sy);
+}
+Float4 ShopLayout::demo() const {
+  const float xpadding = cint_fontsize * 4;
+  Float4 dempos;
+  dempos.sx = xmargin() + xpadding;
+  dempos.ex = leftside - (xmargin() + xpadding);
+  dempos.ey = yend();
+  dempos.sy = dempos.ey - dempos.span_x();
+  return dempos;
+}
+
+Float4 ShopLayout::box(const ShopPlacement &place) const {
+  float iyp = itemypos(place);
+  return Float4(boxstart(place.depth), iyp + ymargin(), boxend(place.depth), iyp + cint_itemheight - ymargin());
+}
+Float4 ShopLayout::boximplantupgrade(const ShopPlacement &place) const {
+  float iyp = itemypos(place);
+  return Float4(boxstart(place.depth) + boxwidth(place.depth) / 5, iyp + ymargin(), boxend(place.depth), iyp + cint_itemheight - ymargin());
+}
+
+Float2 ShopLayout::description(const ShopPlacement &place) const {
+  return box(place).s() + Float2(border(), border());
+}
+Float2 ShopLayout::descriptionimplantupgrade(const ShopPlacement &place) const {
+  return boximplantupgrade(place).s() + Float2(border(), border());
+}
+Float2 ShopLayout::quantity(const ShopPlacement &place) const {
+  return Float2(quantx(place.depth), box(place).sy + border());
+}
+Float2 ShopLayout::price(const ShopPlacement &place) const {
+  return Float2(pricex(place.depth), box(place).sy + border());
+}
+
+float ShopLayout::boxthick() const {
+  return cint_fontsize / 10;
+}
+vector<int> ShopLayout::renderOrder(const ShopPlacement &place) const {
+  vector<pair<int, float> > ifp = getPriorityAndPlacement(place);
+  vector<int> rv;
+  for(int i = 0; i < ifp.size(); i++)
+    rv.push_back(ifp[i].first);
+  return rv;
+}
+
+void ShopLayout::drawScrollMarkers(int depth) const {
+  if(scrollmarkers(depth).first) {
+    drawMarkerSet(depth, false);
+  }
+  if(scrollmarkers(depth).second) {
+    drawMarkerSet(depth, true);
+  }
+}
+
+Float4 ShopLayout::getScrollBBox(int depth) const {
+  Float4 zon = zone(depth);
+  if(scrollmarkers(depth).first)
+    zon.sy += cint_itemheight;
+  if(scrollmarkers(depth).second)
+    zon.ey -= cint_itemheight;
+  return zon;
+}
 
 void ShopLayout::updateExpandy(int depth, bool this_branches) {
-  float nxofs = max(depth - 1 - !this_branches, 0);
-  int_xofs = approach(int_xofs, nxofs, framechange);
+  int_xofs = approach(int_xofs, framestart(max(depth - 2 + this_branches, 0)), 10);  // this moves the screen left and right
   
-  int sz = max((int)int_expandy.size(), depth + 1);
-  int_expandy.resize(sz, 1.0);
-  vector<float> nexpandy(sz, 1.0);
-  if(!this_branches && depth >= 2)
-    nexpandy[depth - 2] = 0.0;
-  for(int i = 0; i < int_expandy.size(); i++)
-    int_expandy[i] = approach(int_expandy[i], nexpandy[i], framechange);
+  { // this controlls expansion of categories
+    int sz = max((int)int_expandy.size(), depth + 1);
+    int_expandy.resize(sz, 1.0);
+    vector<float> nexpandy(sz, 1.0);
+    if(!this_branches && depth >= 2)
+      nexpandy[depth - 2] = 0.0;
+    for(int i = 0; i < int_expandy.size(); i++)
+      int_expandy[i] = approach(int_expandy[i], nexpandy[i], 0.2);
+  }
 }
 
-void ShopLayout::updateScroll(const vector<int> &curpos, const vector<int> &options, const vector<float> &height) {
+void ShopLayout::updateScroll(const vector<int> &curpos, const vector<int> &options) {
+  const float max_rows = (yend() - ystart()) / cint_itemheight;
+  
   if(int_scroll.size() < options.size()) {
     int_scroll.resize(options.size(), make_pair(0, make_pair(false, false)));
   }
@@ -156,24 +259,44 @@ void ShopLayout::updateScroll(const vector<int> &curpos, const vector<int> &opti
   if(voptions.size() < int_scroll.size())
     voptions.resize(int_scroll.size(), 0);
   
-  vector<float> vheight = height;
-  if(vheight.size() < int_scroll.size())
-    vheight.resize(int_scroll.size(), 1);
-  
   CHECK(vcurpos.size() == int_scroll.size());
   CHECK(vcurpos.size() == voptions.size());
-  
+ 
   for(int i = 0; i < vcurpos.size(); i++) {
-    int max_rows = (int)floor(vheight[i] / int_itemheight) - 3;
-    
     float diff = abs(int_scroll[i].first - (vcurpos[i] - max_rows / 2));
     diff = diff / 30;
     if(diff < 0.05)
       diff = 0;
-    int_scroll[i].first = clamp(approach(int_scroll[i].first, vcurpos[i] - max_rows / 2, diff), 0, max(0, voptions[i] - max_rows));
+    int_scroll[i].first = clamp(approach(int_scroll[i].first, vcurpos[i] - max_rows / 2, diff), 0, max(0.f, voptions[i] - max_rows));
     int_scroll[i].second.first = (abs(int_scroll[i].first) > 0.01);
-    int_scroll[i].second.second = (abs(int_scroll[i].first - max(0, voptions[i] - max_rows)) > 0.01);
+    int_scroll[i].second.second = (abs(int_scroll[i].first - max(0.f, voptions[i] - max_rows)) > 0.01);
   }
+}
+
+void ShopLayout::staticZoom() const {
+  setZoomAround(Float4(0, 0, 100, 100 / getAspect()));
+}
+void ShopLayout::dynamicZoom() const {
+  setZoomAround(Float4(int_xofs, 0, int_xofs + 100, 100 / getAspect()));
+}
+
+ShopLayout::ShopLayout() {
+  // not valid
+}
+
+ShopLayout::ShopLayout(bool miniature, float aspect) {
+  if(miniature) {
+    cint_fontsize = 2;
+    cint_itemheight = 4;
+  } else {
+    cint_fontsize = 1.5;
+    cint_itemheight = 3;
+  }
+  
+  cint_height = 100 / aspect;
+  
+  int_xofs = 0;
+  int_expandy.resize(2, 1.0); // not really ideal but hey
 }
 
 DEFINE_bool(cullShopTree, true, "Cull items which the players wouldn't want or realistically can't yet buy");
@@ -309,49 +432,6 @@ const HierarchyNode &Shop::getCategoryNode() const {
   return getStepNode(curloc.size() - 1);
 }
 
-void drawScrollBar(const ShopLayout &slay, int depth, float ofs, bool bottom) {
-  Float4 zone = slay.box(depth);
-  zone.sy += ofs;
-  zone.ey += ofs;
-  
-  string text;
-  if(!bottom) {
-    text = "Up";
-  } else {
-    text = "Down";
-  }
-  
-  // Center
-  {
-    Float4 czone = zone;
-    czone.sx = (zone.sx * 2 + zone.ex) / 3;
-    czone.ex = (zone.sx + zone.ex * 2) / 3;
-    drawSolid(czone);
-    setColor(C::box_border);
-    drawRect(czone, slay.boxthick());
-    setColor(C::active_text);
-    drawJustifiedText(text, slay.fontsize(), czone.midpoint(), TEXT_CENTER, TEXT_CENTER);
-  }
-  
-  vector<float> beef;
-  beef.push_back((zone.sx * 5 + zone.ex) / 6);
-  beef.push_back((zone.sx + zone.ex * 5) / 6);
-  for(int i = 0; i  < beef.size(); i++) {
-    vector<Float2> tri;
-    if(bottom) {
-      tri.push_back(Float2(beef[i], zone.ey));
-      tri.push_back(Float2(beef[i] + zone.span_y(), zone.sy));
-      tri.push_back(Float2(beef[i] - zone.span_y(), zone.sy));
-    } else {
-      tri.push_back(Float2(beef[i], zone.sy));
-      tri.push_back(Float2(beef[i] + zone.span_y(), zone.ey));
-      tri.push_back(Float2(beef[i] - zone.span_y(), zone.ey));
-    }
-    drawSolidLoop(tri);
-    drawLineLoop(tri, slay.boxthick());
-  }
-}
-
 bool normalizeSelling(bool selling, HierarchyNode::Type type) {
   if(type == HierarchyNode::HNT_IMPLANTSLOT || type == HierarchyNode::HNT_IMPLANTITEM || type == HierarchyNode::HNT_IMPLANTITEM_UPG || type == HierarchyNode::HNT_EQUIPWEAPON)
     return false;
@@ -394,123 +474,55 @@ Money sellvalue(const HierarchyNode &node, const Player *player) {
 }
 
 void Shop::renderNode(const HierarchyNode &node, int depth, const Player *player) const {
-  float hoffbase = slay.hoffbase(depth);
-  
-  vector<pair<int, Float2> > rendpos;
-  if(node.branches.size()) {
-    int desiredfront;
-    if(curloc.size() <= depth)
-      desiredfront = 0;
-    else
-      desiredfront = curloc[depth];
-    for(int i = 0; i < desiredfront; i++)
-      rendpos.push_back(make_pair(i, Float2(0, slay.voffset() + ((i - slay.scrollpos(depth)) * slay.itemheight()) * slay.expandy(depth))));
-    for(int i = node.branches.size() - 1; i > desiredfront; i--)
-      rendpos.push_back(make_pair(i, Float2(0, slay.voffset() + ((i - slay.scrollpos(depth)) * slay.itemheight()) * slay.expandy(depth))));
-    rendpos.push_back(make_pair(desiredfront, Float2(0, slay.voffset() + ((desiredfront - slay.scrollpos(depth)) * slay.itemheight()) * slay.expandy(depth))));
-  }
-  
   if(depth < curloc.size())
     renderNode(node.branches[curloc[depth]], depth + 1, player);
   
-  Float4 boundbox = Float4(slay.box(depth).sx - slay.fontsize() / 2, slay.voffset(), slay.box(depth).ex + slay.fontsize() / 2, slay.voffset());
-  if(slay.scrollmarkers(depth).first) {
-    drawScrollBar(slay, depth, slay.voffset(), false);
-    boundbox.sy += slay.itemheight();
-  }
+  slay.dynamicZoom();
   
-  if(node.type == HierarchyNode::HNT_EQUIP) {
-    boundbox.ey = boundbox.ey + slay.options_equip_vspan();
-  } else {
-    boundbox.ey = boundbox.ey + slay.options_vspan();
-  }
+  slay.drawScrollMarkers(depth);
+  GfxWindow gfxw(slay.getScrollBBox(depth), 1.0);
   
-  float bbxey = boundbox.ey;
+  ShopPlacement tsp;
+  if(curloc.size() > depth)
+    tsp = ShopPlacement(depth, -1, node.branches.size(), curloc[depth]);
+  else
+    tsp = ShopPlacement(depth, -1, node.branches.size(), 0);
   
-  if(slay.scrollmarkers(depth).second) {
-    drawScrollBar(slay, depth, boundbox.ey - slay.box(depth).span_y(), true);
-    boundbox.ey -= slay.itemheight();
-  }
+  vector<int> renderorder = slay.renderOrder(tsp);
   
-  // this must happen before the gfxwindow
-  if(node.type == HierarchyNode::HNT_EQUIP) {
-    float maxdown = -1000;
-    for(int i = 0; i < rendpos.size(); i++)
-      maxdown = max(maxdown, rendpos[i].second.y + slay.itemheight());
-    maxdown = min(maxdown, bbxey);
-    
-    maxdown -= slay.itemheight();
-    
-    for(int i = 0; i < 2; i++) {
-      Float4 box = slay.box(depth);
-      box = box + Float2(0, maxdown + box.span_y() * 3);
-      box.ex = box.sx + slay.equipDiff();
-      box.ey = box.sy + box.span_y() * 2;
-      
-      if(i)
-        box = box + Float2(slay.box(depth).span_x() - slay.equipDiff(), 0);
-      
-      setColor(C::box_border);
-      drawSolid(box);
-      drawRect(box, slay.boxthick());
-      
-      setColor(C::inactive_text);
-      
-      vector<string> str;
-      str.push_back("?");
-      str.push_back("Weapon");
-      if(i == 0) {
-        str[0] = "Left";
-      } else if(i == 1) {
-        str[0] = "Right";
-      } else {
-        CHECK(0);
-      }
-      
-      drawJustifiedMultiText(str, slay.fontsize(), box.midpoint(), TEXT_CENTER, TEXT_CENTER);
-    }
-  }
-  
-  GfxWindow gfxw(boundbox, 1.0);
-  
-  for(int j = 0; j < rendpos.size(); j++) {
-    const int itemid = rendpos[j].first;
+  for(int j = 0; j < renderorder.size(); j++) {
+    const int itemid = renderorder[j];
+    const ShopPlacement splace = ShopPlacement(tsp.depth, itemid, tsp.siblings, tsp.active);
     const bool effectiveselling = normalizeSelling(selling, node.branches[itemid].type);
     
     if(effectiveselling) {
       setColor(Color(0.8, 0, 0));
     } else {
-      setColor(C::box_border);
+      setColor(C::box_border*0.5);
     }
     
-    {
-      float xstart = hoffbase;
-      float xend = hoffbase + slay.boxwidth();
-      xend = min(xend, 133.334f);
-      xstart = max(xstart, 0.f);
-      if(xend - xstart < slay.boxwidth() * 0.01)
-        continue;   // if we can only see 1% of this box, just don't show any of it - gets rid of some ugly rendering edge cases
-    }
+    if(min(slay.box(splace).ex, getZoom().ex) - max(slay.box(splace).sx, getZoom().sx) < slay.box(splace).span_x() * 0.01)
+      continue;   // if we can only see 1% of this box, just don't show any of it - gets rid of some ugly rendering edge cases
     
     if(node.branches[itemid].displaymode == HierarchyNode::HNDM_EQUIP) {
       // Equip rendering works dramatically different from others
-      Float4 box = slay.box(depth);
+      /*Float4 box = slay.box(splace);
       CHECK(SIMUL_WEAPONS == 2);
       if(player->getWeaponEquipBit(node.branches[itemid].equipweapon, 0) == WEB_UNEQUIPPED)
-        box.sx += slay.equipDiff();
+        box.sx += slay.equipsize(depth);
       if(player->getWeaponEquipBit(node.branches[itemid].equipweapon, 1) == WEB_UNEQUIPPED)
-        box.ex -= slay.equipDiff();
+        box.ex -= slay.equipsize(depth);
       
       drawSolid(box + rendpos[j].second);
-      drawRect(box + rendpos[j].second, slay.boxthick());
+      drawRect(box + rendpos[j].second, slay.boxthick());*/
+      drawSolid(slay.boximplantupgrade(splace));
+      drawRect(slay.boximplantupgrade(splace), slay.boxthick());
     } else if(node.branches[itemid].displaymode == HierarchyNode::HNDM_IMPLANT_UPGRADE) {
-      Float4 box = slay.box(depth);
-      box.sx += slay.implantUpgradeDiff();
-      drawSolid(box + rendpos[j].second);
-      drawRect(box + rendpos[j].second, slay.boxthick());
+      drawSolid(slay.boximplantupgrade(splace));
+      drawRect(slay.boximplantupgrade(splace), slay.boxthick());
     } else {
-      drawSolid(slay.box(depth) + rendpos[j].second);
-      drawRect(slay.box(depth) + rendpos[j].second, slay.boxthick());
+      drawSolid(slay.box(splace));
+      drawRect(slay.box(splace), slay.boxthick());
     }
     
     // highlight if this one is in our "active path"
@@ -521,40 +533,24 @@ void Shop::renderNode(const HierarchyNode &node, int depth, const Player *player
     }
     
     if(node.branches[itemid].displaymode == HierarchyNode::HNDM_EQUIP) {
-      drawText(node.branches[itemid].name.c_str(), slay.fontsize(), slay.description(depth) + rendpos[j].second + Float2(slay.equipDiff(), 0));
-      
-      for(int i = 0; i < SIMUL_WEAPONS; i++) {
-        string text;
-        if(player->getWeaponEquipBit(node.branches[itemid].equipweapon, i) == WEB_EQUIPPED) {
-          setColor(C::inactive_text);
-          text = "Equip";
-        } else if(player->getWeaponEquipBit(node.branches[itemid].equipweapon, i) == WEB_ACTIVE) {
-          setColor(C::active_text);
-          text = "Active";
-        }
-        
-        if(i == 0)
-          drawJustifiedText(text, slay.fontsize(), slay.equip1(depth) + rendpos[j].second, TEXT_MIN, TEXT_MIN);
-        else
-          drawJustifiedText(text, slay.fontsize(), slay.equip2(depth) + rendpos[j].second, TEXT_MAX, TEXT_MIN);
-      }
+      drawText(node.branches[itemid].name.c_str(), slay.fontsize(), slay.descriptionimplantupgrade(splace));
       continue;
     } else if(node.branches[itemid].displaymode == HierarchyNode::HNDM_IMPLANT_UPGRADE) {
-      drawText("Level " + roman_number(player->implantLevel(node.branches[itemid].implantitem)) + " upgrade", slay.fontsize(), slay.description(depth) + rendpos[j].second + Float2(slay.implantUpgradeDiff(), 0));
+      drawText("Level " + roman_number(player->implantLevel(node.branches[itemid].implantitem)) + " upgrade", slay.fontsize(), slay.descriptionimplantupgrade(splace));
       if(!effectiveselling)
-        drawJustifiedText(cost(node.branches[itemid], player).textual().c_str(), slay.fontsize(), slay.price(depth) + rendpos[j].second, TEXT_MAX, TEXT_MIN);
+        drawJustifiedText(cost(node.branches[itemid], player).textual().c_str(), slay.fontsize(), slay.price(splace), TEXT_MAX, TEXT_MIN);
       continue;
     }
     
-    drawText(node.branches[itemid].name.c_str(), slay.fontsize(), slay.description(depth) + rendpos[j].second);
+    drawText(node.branches[itemid].name.c_str(), slay.fontsize(), slay.description(splace));
     
     // Display ammo count
     {
       if(node.branches[itemid].type == HierarchyNode::HNT_WEAPON) {
         if(player->ammoCount(node.branches[itemid].weapon) == -1) {
-          drawJustifiedText(StringPrintf("%s", "UNL"), slay.fontsize(), slay.quantity(depth) + rendpos[j].second, TEXT_MAX, TEXT_MIN);
+          drawJustifiedText(StringPrintf("%s", "UNL"), slay.fontsize(), slay.quantity(splace), TEXT_MAX, TEXT_MIN);
         } else if(player->ammoCount(node.branches[itemid].weapon) > 0) {
-          drawJustifiedText(StringPrintf("%d", player->ammoCount(node.branches[itemid].weapon)), slay.fontsize(), slay.quantity(depth) + rendpos[j].second, TEXT_MAX, TEXT_MIN);
+          drawJustifiedText(StringPrintf("%d", player->ammoCount(node.branches[itemid].weapon)), slay.fontsize(), slay.quantity(splace), TEXT_MAX, TEXT_MIN);
         }
       }
     }
@@ -624,7 +620,7 @@ void Shop::renderNode(const HierarchyNode &node, int depth, const Player *player
       CHECK(displayset);
       
       // Draw what we've got.
-      drawJustifiedText(display, slay.fontsize(), slay.price(depth) + rendpos[j].second, TEXT_MAX, TEXT_MIN);
+      drawJustifiedText(display, slay.fontsize(), slay.price(splace), TEXT_MAX, TEXT_MIN);
     } else {
       int dispmode = node.branches[itemid].displaymode;
       if(dispmode == HierarchyNode::HNDM_COSTUNIQUE) {
@@ -645,9 +641,9 @@ void Shop::renderNode(const HierarchyNode &node, int depth, const Player *player
       if(dispmode == HierarchyNode::HNDM_BLANK) {
       } else if(dispmode == HierarchyNode::HNDM_COST) {
         setColor(1.0, 0.3, 0.3);
-        drawJustifiedText(StringPrintf("%s", sellvalue(node.branches[itemid], player).textual().c_str()), slay.fontsize(), slay.price(depth) + rendpos[j].second, TEXT_MAX, TEXT_MIN);
+        drawJustifiedText(StringPrintf("%s", sellvalue(node.branches[itemid], player).textual().c_str()), slay.fontsize(), slay.price(splace), TEXT_MAX, TEXT_MIN);
       } else if(dispmode == HierarchyNode::HNDM_PACK) {
-        drawJustifiedText(StringPrintf("%dpk", node.branches[itemid].pack), slay.fontsize(), slay.price(depth) + rendpos[j].second, TEXT_MAX, TEXT_MIN);
+        drawJustifiedText(StringPrintf("%dpk", node.branches[itemid].pack), slay.fontsize(), slay.price(splace), TEXT_MAX, TEXT_MIN);
       } else if(dispmode == HierarchyNode::HNDM_COSTUNIQUE) {
       } else if(dispmode == HierarchyNode::HNDM_EQUIP) {
       } else if(dispmode == HierarchyNode::HNDM_IMPLANT_EQUIP) {
@@ -883,16 +879,9 @@ bool Shop::runTick(const Keystates &keys, Player *player) {
   slay.updateExpandy(curloc.size(), getCurNode().branches.size());
   {
     vector<int> options;
-    vector<float> height;
-    for(int i = 0; i <= curloc.size(); i++) {
+    for(int i = 0; i <= curloc.size(); i++)
       options.push_back(getStepNode(i).branches.size());
-      if(getStepNode(i).type == HierarchyNode::HNT_EQUIP) {
-        height.push_back(slay.options_equip_vspan());
-      } else {
-        height.push_back(slay.options_vspan());
-      }
-    }
-    slay.updateScroll(curloc, options, height);
+    slay.updateScroll(curloc, options);
   }
   
   if(hasInfo(getCurNode().type))
@@ -916,9 +905,10 @@ void Shop::doTableRender(const Player *player) const {
 
 void Shop::renderToScreen(const Player *player) const {
   CHECK(player);
-  //clearFrame(player->getFaction()->color * 0.05 + Color(0.02, 0.02, 0.02));
+  
+  slay.staticZoom();
+  
   setColor(1.0, 1.0, 1.0);
-  setZoom(Float4(0, 0, 133.333, 133.333 / getAspect()));
   {
     long long cash = player->getCash().value();
     string v;
@@ -957,14 +947,17 @@ void Shop::renderToScreen(const Player *player) const {
     pos.ey -= diff;
     drawDvec2(player->getFaction()->icon, pos, 50, 0.5);
   }
+  
   doTableRender(player);
 
+  slay.staticZoom();
+  
   if(hasInfo(getCurNode().type)) {
     cshopinf.renderFrame(slay.hud(), slay.fontsize(), slay.demo(), player);
   }
   
   if(getCurNode().type == HierarchyNode::HNT_SELL) {
-    CHECK(curloc.size() == 1);
+    /*CHECK(curloc.size() == 1);
     Float4 bds = slay.box(curloc.size());
     bds.sy = slay.voffset();
     bds.ey = getZoom().ey - slay.voffset();
@@ -976,14 +969,14 @@ void Shop::renderToScreen(const Player *player) const {
     setColor(C::inactive_text);
     Float4 rebds(bds.sx, (bds.ey - bds.sy - height) / 2 + bds.sy, bds.ex, (bds.ey - bds.sy + height) / 2 + bds.sy);
     drawTextBoxAround(rebds, slay.fontsize());
-    drawFormattedText(text, slay.fontsize(), rebds);
+    drawFormattedText(text, slay.fontsize(), rebds);*/
   }
 }
 
 // Not a valid state
 Shop::Shop() { }
 
-void Shop::init(bool in_miniature, const Player *player, int in_playercount, Money in_highestCash) {
+void Shop::init(bool in_miniature, const Player *player, int in_playercount, Money in_highestCash, float aspectRatio) {
   curloc.clear();
   cshopinf.clear();
   
@@ -992,7 +985,7 @@ void Shop::init(bool in_miniature, const Player *player, int in_playercount, Mon
   disabled = false;
   
   miniature = in_miniature;
-  slay = ShopLayout(miniature);
+  slay = ShopLayout(miniature, aspectRatio);
   
   hierarchroot = itemDbRoot();
   playercount = in_playercount;

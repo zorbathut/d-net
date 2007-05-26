@@ -288,10 +288,10 @@ bool PersistentData::tick(const vector< Controller > &keys) {
           slot[empty].type = Slot::CHOOSE;
         } else if(sps_queue[0].second == TTL_FULLSHOP) {
           slot[empty].type = Slot::SHOP;
-          slot[empty].shop.init(false, &playerdata[playerid[slot[empty].pid]], playerdata.size(), highestPlayerCash);
+          slot[empty].shop.init(false, &playerdata[playerid[slot[empty].pid]], playerdata.size(), highestPlayerCash, getScreenAspect() * 100 / divider_ypos);
         } else if(sps_queue[0].second == TTL_QUICKSHOP) {
           slot[empty].type = Slot::SHOP;
-          slot[empty].shop.init(true, &playerdata[playerid[slot[empty].pid]], playerdata.size(), highestPlayerCash);
+          slot[empty].shop.init(true, &playerdata[playerid[slot[empty].pid]], playerdata.size(), highestPlayerCash, getScreenAspect() * 100 / divider_ypos);
         } else if(sps_queue[0].second == TTL_SETTINGS) {
           slot[empty].type = Slot::SETTINGS;
         } else {

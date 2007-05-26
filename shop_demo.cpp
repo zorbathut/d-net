@@ -537,10 +537,11 @@ void ShopDemo::runTick() {
 
 void ShopDemo::renderFrame() const {
   game.renderToScreen();
-  setZoom(Float4(0, 0, 1, 1));
-  setColor(1, 1, 1);
-  if(getMultiplier() != 1)
+  if(getMultiplier() != 1) {
+    setZoom(Float4(0, 0, 1, 1));
+    setColor(1, 1, 1);
     drawJustifiedText(StringPrintf("Fastforward %dx", getMultiplier()), 0.05, Float2(0, 1), TEXT_MIN, TEXT_MAX);
+  }
 };
 
 vector<float> ShopDemo::getStats() const {

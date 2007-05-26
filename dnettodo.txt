@@ -1,28 +1,39 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - Bugfixes from games
-    - Deal with weapon names being too long
+    - What I'm doing right now
+      - Run AI
+    - Critical or simple fixes
+      - Disable star level
+      - Add support for a M-width space, set up cash textualization to use it
+      - Move shoplayout into shop_layout.h
+      - Speed up bombardment reticle speed
+      - Change rockets to drones or something to emphasize exotic
+      - Four-weapon system
+      - Railgun faster, more power
+      - Main menu crosshair speedup
+      - Fix missiles doing self-damage
+      - Missiles inject damage directly into things in the front?
+    - Display current mods
+    - Use "sell" to sell old weapons that no longer exist in the shop
+    - Get rid of old weapons as they become obsolete
+    - Can you accidentally buy an upgrade or tank or etc despite being in sell mode?
     - Add tank upgrade multipliers to the balance sheet
     - Check to see if the upgradable tanks can just overpower the non-upgradable ones
-    - Fix missiles doing self-damage
-    - Missiles inject damage directly into things in the front?
-    - Railgun faster, more power
-    - Disable star level
     - Add level editor options for subtraction, fix star level and re-add
     - Pacman scale up 20% or so
     - Add projectile durability to balancing sheet 
+    - Add upgrades to the balance sheet
     - Make upgrades a bit cheaper, maybe
     - Increase base cash, decrease wins
     - 80% starting cash for new players, to discourage quitting and restarting
     - Add explosive radius in tank weapon upgrade
     - Make explosive radius bonus not apply to certain weapons
-    - Change rockets to drones or something to emphasize exotic
-      - Boost blast radius on drones
+    - Boost blast radius on drones
     - Base bombardment radius up a bit, late bombardment radius down a bit
     - Slow high-end tanks down a bit
     - Rework how inertia works
     - Add tank slide code w.r.t inertia
-    - Speed up bombardment reticle speed
     - Link handling to engine a little
     - Better implant interface
     - Firing HE Missile everywhere leads to slowdowns :(
@@ -35,7 +46,6 @@
     - Special laser
     - Special missile
     - OGRE
-    - Four-weapon system
     - Spruce up base autocannon weaponry
     - Spruce up special autocannon weaponry
     - Spruce up base laser weaponry
@@ -163,12 +173,8 @@ Should somehow init a *global* parameter, and load things at the beginning of th
 This is not going to happen. We can, however, parse the source with an external program, then assemble that into a string-table file which is built into the program. It's a bit hacky but it will work.
 
 ---
-Process:
+xofs is the current window x offset.
 
-* Read in itemdats. For the name, this is either done with prefix/suffix, or just alone. The rest has to be parsed specially.
-* Read in kvds. Do the premerge step for everything besides warhead. Make sure to check for completeness, extra merges, etc.
-* Do the warheads, write out file.
-* Read in everything.
-* Traverse over "everything" and see if the "value" needs to be multiplied in some way. If so, save the multiplier.
-* Re-traverse and do warheads again, with multiplier. Write out file again.
-* Read in everything, test values.
+We read in the current depth and branchines. From this we can calculate the intended depth of the left side. From this, we can calculate what the x offset of that left side *should* be. We approach this. As we approach this, the position of the x left side approaches whatever it should be, and other things approach as necessary.
+
+So, if we assume left is 40% and right is 60%, that means if intended-left-side is 2, left-side will be 0.8 units. If we're at 0.7 units, depth 0 and 1 will be 0.4, depth 2 will be 0.45, and depth 3 will be 0.6.

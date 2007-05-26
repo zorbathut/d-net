@@ -32,6 +32,7 @@ void setZoomVertical(float sx, float sy, float ey);
 Float4 getZoom();
 
 float getAspect();
+float getScreenAspect();
 
 void deinitFrame();
 

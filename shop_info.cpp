@@ -225,9 +225,9 @@ void ShopInfo::renderFrame(Float4 bounds, float fontsize, Float4 inset, const Pl
   CHECK(bool(weapon) + bool(glory) + bool(bombardment) + bool(upgrade) + bool(tank) + bool(implant) + bool(implantslot)== 1);
   
   if(text && !miniature)
-    drawShadedFormattedText(bounds, fontsize, *text);
+    drawShadedFormattedText(bounds, fontsize * 0.75, *text);
   
-  bounds.sy += 25;
+  bounds.sy += fontsize * 8;
   
   const float fontshift = fontsize * 1.5;
   if(weapon) {
@@ -235,8 +235,10 @@ void ShopInfo::renderFrame(Float4 bounds, float fontsize, Float4 inset, const Pl
     kvp.print("Theoretical DPS", prettyFloatFormat(player->adjustWeapon(weapon).stats_damagePerSecond()));
     kvp.print("Cost per damage", prettyFloatFormat(player->adjustWeapon(weapon).stats_costPerDamage()));
     kvp.print("Cost per second", prettyFloatFormat(player->adjustWeapon(weapon).stats_costPerSecond()));
-    kvp.discontinuity();
-    kvp.print("Recommend loadout", StringPrintf("%d", weapon->recommended));
+    if(weapon->recommended != -1) {
+      kvp.discontinuity();
+      kvp.print("Recommend loadout", StringPrintf("%d", weapon->recommended));
+    }
   } else if(glory) {
     ShopKVPrinter kvp(bounds, fontsize, fontshift);
     kvp.print("Total average damage", prettyFloatFormat(player->adjustGlory(glory).stats_averageDamage()));

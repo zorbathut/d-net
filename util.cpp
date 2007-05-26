@@ -89,13 +89,13 @@ string Money::textual() const {
   reverse(text.begin(), text.end());
   
   if(ks == 0)
-    ;
+    text += "  ";
   else if(ks == 1)
     text += " K";
   else if(ks == 2)
     text += " M";
   else if(ks == 3)
-    text += " G";
+    text += " B";
   else if(ks == 4)
     text += " T";
   else
@@ -266,4 +266,8 @@ bool withinEpsilon(float a, float b, float e) {
   if(abs(diff) < 1.0)
     diff = 1 / diff;
   return 1 - diff <= e;
+}
+
+float lerp(float lhs, float rhs, float dist) {
+  return lhs * (1.0 - dist) + rhs * dist;
 }

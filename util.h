@@ -113,4 +113,6 @@ int roman_max();
 
 bool withinEpsilon(float a, float b, float e);
 
+float lerp(float lhs, float rhs, float dist);
+
 #endif
