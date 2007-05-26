@@ -89,7 +89,7 @@ string Money::textual() const {
   reverse(text.begin(), text.end());
   
   if(ks == 0)
-    text += "  ";
+    text += " _";
   else if(ks == 1)
     text += " K";
   else if(ks == 2)

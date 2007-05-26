@@ -463,3 +463,9 @@ character {
   path=3,0 3,6
   path=3,7 3,9
 }
+
+character {
+  id=_
+  path=
+  width=6
+}

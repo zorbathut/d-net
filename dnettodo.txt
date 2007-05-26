@@ -2,7 +2,6 @@
 - "Finish the Damn Game" Initiative
   - Bugfixes from games
     - Critical or simple fixes
-      - Add support for a M-width space, set up cash textualization to use it
       - Speed up bombardment reticle speed
       - Change rockets to drones or something to emphasize exotic
       - Four-weapon system
