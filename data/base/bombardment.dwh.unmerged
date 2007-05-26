@@ -617,26 +617,26 @@ bombardment {
 
 ###########################
 #
-#   Rockets
+#   Drones
 
 hierarchy {
-  name=ROOT.Bombardment.Rockets
+  name=ROOT.Bombardment.Drones
 }
 
 text {
-  name=text.bombardment.explorerrocket
+  name=text.bombardment.explorerdrone
   data=Blah blah hamster blah yacht blah blah blah monocle polish
 }
 
 warhead {
-  name=warhead.bombardment.explorerrocket
+  name=warhead.bombardment.explorerdrone
   radiusdamage=MERGE exotic
   radiusfalloff=4
   wallremovalradius=2
 }
 
 projectile {
-  name=projectile.bombardment.explorerrocket
+  name=projectile.bombardment.explorerdrone
   motion=missile
   
   velocity=180
@@ -651,37 +651,37 @@ projectile {
   
   color=0.9,0.8,0.5
   
-  warhead=warhead.bombardment.explorerrocket
+  warhead=warhead.bombardment.explorerdrone
 }
 
 bombardment {
-  name=ROOT.Bombardment.Rockets.Explorer Rocket
+  name=ROOT.Bombardment.Drones.Explorer Drone
   cost=MERGE
   
-  projectile=projectile.bombardment.explorerrocket
+  projectile=projectile.bombardment.explorerdrone
   showdirection=true
   
   lockdelay=MERGE
   unlockdelay=MERGE
   
-  text=text.bombardment.explorerrocket
+  text=text.bombardment.explorerdrone
 }
 
 
 text {
-  name=text.bombardment.hunterrocket
+  name=text.bombardment.hunterdrone
   data=Blah blah hamster blah yacht blah blah blah monocle polish
 }
 
 warhead {
-  name=warhead.bombardment.hunterrocket
+  name=warhead.bombardment.hunterdrone
   radiusdamage=MERGE exotic
   radiusfalloff=4.5
   wallremovalradius=2.25
 }
 
 projectile {
-  name=projectile.bombardment.hunterrocket
+  name=projectile.bombardment.hunterdrone
   motion=missile
   
   velocity=180
@@ -696,37 +696,37 @@ projectile {
   
   color=0.9,0.8,0.5
   
-  warhead=warhead.bombardment.hunterrocket
+  warhead=warhead.bombardment.hunterdrone
 }
 
 bombardment {
-  name=ROOT.Bombardment.Rockets.Hunter Rocket
+  name=ROOT.Bombardment.Drones.Hunter Drone
   cost=MERGE
   
-  projectile=projectile.bombardment.hunterrocket
+  projectile=projectile.bombardment.hunterdrone
   showdirection=true
   
   lockdelay=MERGE
   unlockdelay=MERGE
   
-  text=text.bombardment.hunterrocket
+  text=text.bombardment.hunterdrone
 }
 
 
 text {
-  name=text.bombardment.slayerrocket
+  name=text.bombardment.slayerdrone
   data=Blah blah hamster blah yacht blah blah blah monocle polish
 }
 
 warhead {
-  name=warhead.bombardment.slayerrocket
+  name=warhead.bombardment.slayerdrone
   radiusdamage=MERGE exotic
   radiusfalloff=5
   wallremovalradius=2.5
 }
 
 projectile {
-  name=projectile.bombardment.slayerrocket
+  name=projectile.bombardment.slayerdrone
   motion=missile
   
   velocity=180
@@ -741,37 +741,37 @@ projectile {
   
   color=0.9,0.8,0.5
   
-  warhead=warhead.bombardment.slayerrocket
+  warhead=warhead.bombardment.slayerdrone
 }
 
 bombardment {
-  name=ROOT.Bombardment.Rockets.Slayer Rocket
+  name=ROOT.Bombardment.Drones.Slayer Drone
   cost=MERGE
   
-  projectile=projectile.bombardment.slayerrocket
+  projectile=projectile.bombardment.slayerdrone
   showdirection=true
   
   lockdelay=MERGE
   unlockdelay=MERGE
   
-  text=text.bombardment.slayerrocket
+  text=text.bombardment.slayerdrone
 }
 
 
 text {
-  name=text.bombardment.butcherrocket
+  name=text.bombardment.butcherdrone
   data=Blah blah hamster blah yacht blah blah blah monocle polish
 }
 
 warhead {
-  name=warhead.bombardment.butcherrocket
+  name=warhead.bombardment.butcherdrone
   radiusdamage=MERGE exotic
   radiusfalloff=5.5
   wallremovalradius=2.75
 }
 
 projectile {
-  name=projectile.bombardment.butcherrocket
+  name=projectile.bombardment.butcherdrone
   motion=missile
   
   velocity=180
@@ -786,37 +786,37 @@ projectile {
   
   color=0.9,0.8,0.5
   
-  warhead=warhead.bombardment.butcherrocket
+  warhead=warhead.bombardment.butcherdrone
 }
 
 bombardment {
-  name=ROOT.Bombardment.Rockets.Butcher Rocket
+  name=ROOT.Bombardment.Drones.Butcher Drone
   cost=MERGE
   
-  projectile=projectile.bombardment.butcherrocket
+  projectile=projectile.bombardment.butcherdrone
   showdirection=true
   
   lockdelay=MERGE
   unlockdelay=MERGE
   
-  text=text.bombardment.butcherrocket
+  text=text.bombardment.butcherdrone
 }
 
 
 text {
-  name=text.bombardment.eliminatorrocket
+  name=text.bombardment.eliminatordrone
   data=Blah blah hamster blah yacht blah blah blah monocle polish
 }
 
 warhead {
-  name=warhead.bombardment.eliminatorrocket
+  name=warhead.bombardment.eliminatordrone
   radiusdamage=MERGE exotic
   radiusfalloff=6
   wallremovalradius=3
 }
 
 projectile {
-  name=projectile.bombardment.eliminatorrocket
+  name=projectile.bombardment.eliminatordrone
   motion=missile
   
   velocity=180
@@ -831,37 +831,37 @@ projectile {
   
   color=0.9,0.8,0.5
   
-  warhead=warhead.bombardment.eliminatorrocket
+  warhead=warhead.bombardment.eliminatordrone
 }
 
 bombardment {
-  name=ROOT.Bombardment.Rockets.Eliminator Rocket
+  name=ROOT.Bombardment.Drones.Eliminator Drone
   cost=MERGE
   
-  projectile=projectile.bombardment.eliminatorrocket
+  projectile=projectile.bombardment.eliminatordrone
   showdirection=true
   
   lockdelay=MERGE
   unlockdelay=MERGE
   
-  text=text.bombardment.eliminatorrocket
+  text=text.bombardment.eliminatordrone
 }
 
 
 text {
-  name=text.bombardment.liquidatorrocket
+  name=text.bombardment.liquidatordrone
   data=Blah blah hamster blah yacht blah blah blah monocle polish
 }
 
 warhead {
-  name=warhead.bombardment.liquidatorrocket
+  name=warhead.bombardment.liquidatordrone
   radiusdamage=MERGE exotic
   radiusfalloff=6.5
   wallremovalradius=3.25
 }
 
 projectile {
-  name=projectile.bombardment.liquidatorrocket
+  name=projectile.bombardment.liquidatordrone
   motion=missile
   
   velocity=180
@@ -876,20 +876,20 @@ projectile {
   
   color=0.9,0.8,0.5
   
-  warhead=warhead.bombardment.liquidatorrocket
+  warhead=warhead.bombardment.liquidatordrone
 }
 
 bombardment {
-  name=ROOT.Bombardment.Rockets.Liquidator Rocket
+  name=ROOT.Bombardment.Drones.Liquidator Drone
   cost=MERGE
   
-  projectile=projectile.bombardment.liquidatorrocket
+  projectile=projectile.bombardment.liquidatordrone
   showdirection=true
   
   lockdelay=MERGE
   unlockdelay=MERGE
   
-  text=text.bombardment.liquidatorrocket
+  text=text.bombardment.liquidatordrone
 }
 
 ###########################

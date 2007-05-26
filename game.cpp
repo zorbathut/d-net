@@ -275,7 +275,7 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
       if(len(deaded) > 1)
         deaded /= len(deaded);
       deaded.y *= -1;
-      bombards[j].pos += Coord2(deaded) * 1.5;
+      bombards[j].pos += Coord2(deaded) * 3 / 2;
       if(len(keys[j].udlrax) > 0.2)
         bombards[j].d = -getAngle(keys[j].udlrax);
       bombards[j].pos.x = max(bombards[j].pos.x, gmbr.sx);
