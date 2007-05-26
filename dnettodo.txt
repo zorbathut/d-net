@@ -2,9 +2,7 @@
 - "Finish the Damn Game" Initiative
   - Bugfixes from games
     - Critical or simple fixes
-      - Disable star level
       - Add support for a M-width space, set up cash textualization to use it
-      - Move shoplayout into shop_layout.h
       - Speed up bombardment reticle speed
       - Change rockets to drones or something to emphasize exotic
       - Four-weapon system
@@ -18,7 +16,7 @@
     - Can you accidentally buy an upgrade or tank or etc despite being in sell mode?
     - Add tank upgrade multipliers to the balance sheet
     - Check to see if the upgradable tanks can just overpower the non-upgradable ones
-    - Add level editor options for subtraction, fix star level and re-add
+    - Add level editor options for subtraction, fix spiney and re-add
     - Pacman scale up 20% or so
     - Add projectile durability to balancing sheet 
     - Add upgrades to the balance sheet
