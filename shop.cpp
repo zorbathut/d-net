@@ -453,12 +453,12 @@ bool Shop::runTick(const Keystates &keys, Player *player) {
   if(getCurNode().type == HierarchyNode::HNT_EQUIPWEAPON) {
     // EquipWeapon works differently
     
-    /*for(int i = 0; i < SIMUL_WEAPONS; i++) {
+    for(int i = 0; i < SIMUL_WEAPONS; i++) {
       if(keys.fire[i].push) {
         queueSound(S::choose);
-        player->setWeaponEquipBit(getCurNode().equipweapon, i, !player->getWeaponEquipBit(getCurNode().equipweapon, i));
+        player->promoteWeapon(getCurNode().equipweapon, i);
       }
-    }*/
+    }
   } else if(getCurNode().type == HierarchyNode::HNT_SELL) {
     if(keys.accept.push) {
       queueSound(S::choose);
