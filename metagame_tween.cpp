@@ -536,8 +536,11 @@ bool PersistentData::tickSlot(int slotid, const vector<Controller> &keys) {
     CHECK(slt.type == Slot::RESULTS);
     StackString stp("Results");
     for(int i = 0; i < ki.size(); i++) {
-      CHECK(SIMUL_WEAPONS == 2);
-      if(ki[i].accept.push || ki[i].fire[0].push || ki[i].fire[1].push && !checked[i]) {
+      bool pushed = false;
+      for(int j = 0; j < SIMUL_WEAPONS; j++)
+        if(ki[i].fire[j].push)
+          pushed = true;
+      if((ki[i].accept.push || pushed) && !checked[i]) {
         checked[i] = true;
         queueSound(S::choose);
       }
@@ -1297,8 +1300,8 @@ PersistentData::PersistentData(int playercount, Money startingcash, float multip
     pms[cdbc].choicemode = CHOICE_IDLE;
     pms[cdbc].buttons[BUTTON_FIRE1] = 4;
     pms[cdbc].buttons[BUTTON_FIRE2] = 8;
-    pms[cdbc].buttons[BUTTON_SWITCH1] = 5;
-    pms[cdbc].buttons[BUTTON_SWITCH2] = 9;
+    pms[cdbc].buttons[BUTTON_FIRE3] = 5;
+    pms[cdbc].buttons[BUTTON_FIRE4] = 9;
     pms[cdbc].buttons[BUTTON_ACCEPT] = 4;
     pms[cdbc].buttons[BUTTON_CANCEL] = 8;
     CHECK(pms[cdbc].buttons.size() == 6);
@@ -1320,8 +1323,8 @@ PersistentData::PersistentData(int playercount, Money startingcash, float multip
     pms[cdbc].choicemode = CHOICE_IDLE;
     pms[cdbc].buttons[BUTTON_FIRE1] = 2;
     pms[cdbc].buttons[BUTTON_FIRE2] = 5;
-    pms[cdbc].buttons[BUTTON_SWITCH1] = 1;
-    pms[cdbc].buttons[BUTTON_SWITCH2] = 4;
+    pms[cdbc].buttons[BUTTON_FIRE3] = 1;
+    pms[cdbc].buttons[BUTTON_FIRE4] = 4;
     pms[cdbc].buttons[BUTTON_ACCEPT] = 2;
     pms[cdbc].buttons[BUTTON_CANCEL] = 5;
     CHECK(pms[cdbc].buttons.size() == 6);
@@ -1343,8 +1346,8 @@ PersistentData::PersistentData(int playercount, Money startingcash, float multip
     pms[cdbc].choicemode = CHOICE_IDLE;
     pms[cdbc].buttons[BUTTON_FIRE1] = 4;
     pms[cdbc].buttons[BUTTON_FIRE2] = 5;
-    pms[cdbc].buttons[BUTTON_SWITCH1] = 6;
-    pms[cdbc].buttons[BUTTON_SWITCH2] = 7;
+    pms[cdbc].buttons[BUTTON_FIRE3] = 6;
+    pms[cdbc].buttons[BUTTON_FIRE4] = 7;
     pms[cdbc].buttons[BUTTON_ACCEPT] = 2;
     pms[cdbc].buttons[BUTTON_CANCEL] = 1;
     CHECK(pms[cdbc].buttons.size() == 6);

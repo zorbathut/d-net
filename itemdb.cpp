@@ -216,7 +216,7 @@ void HierarchyNode::checkConsistency(vector<string> *errors) const {
     gottype = true;
     CHECK(displaymode == HNDM_BLANK);
     CHECK(!buyable);
-    CHECK(cat_restrictiontype == HNT_EQUIPWEAPON);
+    CHECK(cat_restrictiontype == HNT_EQUIP_CAT);
   }
   
   // the sell item restricts on NONE and is not buyable
@@ -234,10 +234,19 @@ void HierarchyNode::checkConsistency(vector<string> *errors) const {
     gottype = true;
     CHECK(displaymode == HNDM_EQUIP);
     CHECK(buyable);
-    CHECK(pack == 1);
+    CHECK(cat_restrictiontype == HNT_EQUIP_CAT);
     CHECK(equipweapon);
   } else {
     CHECK(!equipweapon);
+  }
+  
+  // the equipcategory item must have a category and isn't buyable
+  if(type == HNT_EQUIPCATEGORY) {
+    CHECK(!gottype);
+    gottype = true;
+    CHECK(displaymode == HNDM_BLANK);
+    CHECK(!buyable);
+    CHECK(cat_restrictiontype == HNT_EQUIP_CAT);
   }
   
   // implantslot must be buyable and have a slot of 1
@@ -300,6 +309,9 @@ void HierarchyNode::checkConsistency(vector<string> *errors) const {
   for(int i = 0; i < branches.size(); i++) {
     if(cat_restrictiontype == HNT_IMPLANT_CAT) {
       CHECK(branches[i].type == HNT_IMPLANTSLOT || branches[i].type == HNT_IMPLANTITEM || branches[i].type == HNT_IMPLANTITEM_UPG);
+      CHECK(branches[i].cat_restrictiontype == cat_restrictiontype);
+    } else if(cat_restrictiontype == HNT_EQUIP_CAT) {
+      CHECK(branches[i].type == HNT_EQUIPWEAPON || branches[i].type == HNT_EQUIPCATEGORY);
       CHECK(branches[i].cat_restrictiontype == cat_restrictiontype);
     } else if(cat_restrictiontype != -1) {
       CHECK(branches[i].type == cat_restrictiontype || branches[i].type == HNT_CATEGORY);
@@ -1405,7 +1417,7 @@ void loadItemDb(bool reload) {
     tnode.name = "Equip weapons";
     tnode.type = HierarchyNode::HNT_EQUIP;
     tnode.displaymode = HierarchyNode::HNDM_BLANK;
-    tnode.cat_restrictiontype = HierarchyNode::HNT_EQUIPWEAPON;
+    tnode.cat_restrictiontype = HierarchyNode::HNT_EQUIP_CAT;
     root.branches.push_back(tnode);
   }
   

@@ -66,8 +66,7 @@ void GameAiStandard::updateGameWork(const vector<Tank> &players, int me) {
   for(int i = 0; i < SIMUL_WEAPONS; i++) {
     if(rng->frand() < 0.001)
       firing[i] = !firing[i];
-    nextKeys.fire[i].down = firing;
-    nextKeys.change[i].down = (rng->frand() < 0.001);  // weapon switch
+    nextKeys.fire[i].down = firing[i];
   }
 }
 
@@ -478,10 +477,8 @@ Controller Ai::getNextKeys() const {
     kont.menu = kst.udlrax;
     kont.keys[BUTTON_ACCEPT] = kst.accept;
     kont.keys[BUTTON_CANCEL] = kst.cancel;
-    for(int i = 0; i < SIMUL_WEAPONS; i++) {
+    for(int i = 0; i < SIMUL_WEAPONS; i++)
       kont.keys[BUTTON_FIRE1 + i] = kst.fire[i];
-      kont.keys[BUTTON_SWITCH1 + i] = kst.change[i];
-    }
     return kont;
   } else {
     CHECK(0);

@@ -3,6 +3,7 @@
   - Bugfixes from games
     - Critical or simple fixes
       - Four-weapon system
+        - Full rewrite of weaponmanager
       - Railgun faster, more power
       - Main menu crosshair speedup
       - Fix missiles doing self-damage

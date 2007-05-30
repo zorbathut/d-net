@@ -255,7 +255,6 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
   
   for(int j = 0; j < bombards.size(); j++) {
     CHECK(bombards[j].state >= 0 && bombards[j].state < BombardmentState::BS_LAST);
-    bombards[j].framesSinceLastSwitch++;
     if(bombards[j].state == BombardmentState::BS_OFF) {
       if(!tanks[j].isLive()) {
         // if the player is dead and the bombard isn't initialized
@@ -282,10 +281,15 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
       bombards[j].pos.y = max(bombards[j].pos.y, gmbr.sy);
       bombards[j].pos.x = min(bombards[j].pos.x, gmbr.ex);
       bombards[j].pos.y = min(bombards[j].pos.y, gmbr.ey);
-      CHECK(SIMUL_WEAPONS == 2);
-      if((keys[j].fire[0].down || keys[j].fire[1].down) && !gamemap.isInsideWall(bombards[j].pos)) {
-        bombards[j].state = BombardmentState::BS_FIRING;
-        bombards[j].timer = round(players[j]->getBombardment((int)bombardment_tier).lockdelay() * FPS);
+      {
+        bool firing = false;
+        for(int i = 0; i < SIMUL_WEAPONS; i++)
+          if(keys[j].fire[i].down)
+            firing = true;
+        if(firing && !gamemap.isInsideWall(bombards[j].pos)) {
+          bombards[j].state = BombardmentState::BS_FIRING;
+          bombards[j].timer = round(players[j]->getBombardment((int)bombardment_tier).lockdelay() * FPS);
+        }
       }
     } else if(bombards[j].state == BombardmentState::BS_FIRING) {
       if(len(keys[j].udlrax) > 0.2)
@@ -312,22 +316,12 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
   for(int i = 0; i < tanks.size(); i++) {
     StackString sst(StringPrintf("Player weaponry %d", i));
     
-    // Keep bombardment spamming from occuring
-    if(!tanks[i].isLive() && bombards[i].framesSinceLastSwitch < FPS)
+    // Dur.
+    if(!tanks[i].isLive())
       continue;
     
-    // Switch weapons
-    for(int j = 0; j < SIMUL_WEAPONS; j++) {
-      if(keys[i].change[j].push) {
-        StackString sst(StringPrintf("Switching"));
-        players[i]->cycleWeapon(j);
-        addTankStatusText(i, players[i]->getWeapon(j).name(), 1);
-        bombards[i].framesSinceLastSwitch = 0;
-      }
-    }
-    
     // Attempt to actually fire - deals with all weapons that the tank has equipped.
-    if(tanks[i].isLive() && teams[tanks[i].team].weapons_enabled && frameNm >= frameNmToStart && frameNmToStart != -1) {
+    if(teams[tanks[i].team].weapons_enabled && frameNm >= frameNmToStart && frameNmToStart != -1) {
       vector<pair<string, float> > status;
       tanks[i].tryToFire(keys[i].fire, players[i], &projectiles[i], i, gic, &status, &firepowerSpent);
       for(int j = 0; j < status.size(); j++)
@@ -654,9 +648,11 @@ void Game::renderToScreen(const vector<const Player *> &players, GameMetacontext
           }
         }
         
-        CHECK(SIMUL_WEAPONS == 2);
-        drawJustifiedText(ammotext[0], 1.5, Float2(loffset + 1, 7.75), TEXT_MIN, TEXT_MIN);
-        drawJustifiedText(ammotext[1], 1.5, Float2(roffset - 1, 7.75), TEXT_MAX, TEXT_MIN);
+        CHECK(SIMUL_WEAPONS == 4);
+        drawJustifiedText(ammotext[0], 1, Float2(loffset + 1, 9.25), TEXT_MIN, TEXT_MAX);
+        drawJustifiedText(ammotext[1], 1, Float2(roffset - 1, 9.25), TEXT_MAX, TEXT_MAX);
+        drawJustifiedText(ammotext[2], 1, Float2(loffset + 1, 0.75), TEXT_MIN, TEXT_MIN);
+        drawJustifiedText(ammotext[3], 1, Float2(roffset - 1, 0.75), TEXT_MAX, TEXT_MIN);
       }
     }
     

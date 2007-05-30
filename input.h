@@ -53,8 +53,8 @@ const vector<vector<vector<string> > > ksax_axis_names = ksax_axis_names_gen(); 
 const char *const ksax_descriptions[KSAX_END][2] = { {"Turn axis and", "movement axis"}, {"Tank goes in", "stick direction"}, {"Independent", "tread control"} };
 const int axis_groups[] = { 0, 0 };
 
-enum { BUTTON_FIRE1, BUTTON_FIRE2, BUTTON_SWITCH1, BUTTON_SWITCH2, BUTTON_ACCEPT, BUTTON_CANCEL, BUTTON_LAST };
-const char * const button_names[] = { "Fire left weapon", "Fire right weapon", "Switch left weapon", "Switch right weapon", "Accept menu item key", "Change/abort menu key" };
+enum { BUTTON_FIRE1, BUTTON_FIRE2, BUTTON_FIRE3, BUTTON_FIRE4, BUTTON_ACCEPT, BUTTON_CANCEL, BUTTON_LAST };
+const char * const button_names[] = { "Fire weapon 1", "Fire weapon 2", "Fire weapon 3", "Fire weapon 4", "Accept menu item key", "Change/abort menu key" };
 const int button_groups[] = { 0, 0, 0, 0, 1, 1 };
 
 class Keystates {
@@ -62,7 +62,6 @@ public:
   float ax[2];
   int axmode;
   Button fire[SIMUL_WEAPONS];
-  Button change[SIMUL_WEAPONS];
   
   Float2 udlrax;
   Button u,d,l,r;

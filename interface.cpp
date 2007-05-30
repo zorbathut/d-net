@@ -394,10 +394,8 @@ bool InterfaceMain::tick(const vector< Controller > &control, RngSeed gameseed) 
         aButtonPushed = true;
     kst[i].accept.newState(aButtonPushed);
     kst[i].cancel.newState(false);
-    for(int j = 0; j < SIMUL_WEAPONS; j++) {
+    for(int j = 0; j < SIMUL_WEAPONS; j++)
       kst[i].fire[j].newState(false);
-      kst[i].change[j].newState(false);
-    }
   }
 
   if(interface_mode == STATE_MAINMENU) {

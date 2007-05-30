@@ -20,18 +20,31 @@ bool sortByTankCost(const HierarchyNode &lhs, const HierarchyNode &rhs) {
 void Shop::renormalize(HierarchyNode &item, const Player *player, int playercount, Money highestCash) {
   if(item.type == HierarchyNode::HNT_EQUIP) {
     item.branches.clear();
-    vector<const IDBWeapon *> weaps = player->getAvailableWeapons();
+    
+    vector<vector<const IDBWeapon *> > weaps = player->getWeaponList();
     for(int i = 0; i < weaps.size(); i++) {
-      HierarchyNode hod;
-      hod.type = HierarchyNode::HNT_EQUIPWEAPON;
-      hod.cat_restrictiontype = HierarchyNode::HNT_EQUIPWEAPON;
-      hod.displaymode = HierarchyNode::HNDM_EQUIP;
-      hod.buyable = true;
-      hod.name = weaps[i]->name;
-      hod.pack = 1;
-      hod.equipweapon = weaps[i];
-      item.branches.push_back(hod);
+      {
+        HierarchyNode hod;
+        hod.type = HierarchyNode::HNT_EQUIPCATEGORY;
+        hod.cat_restrictiontype = HierarchyNode::HNT_EQUIP_CAT;
+        hod.displaymode = HierarchyNode::HNDM_BLANK;
+        hod.buyable = false;
+        hod.name = StringPrintf("category %d", i);
+        item.branches.push_back(hod);
+      }
+      for(int j = 0; j < weaps[i].size(); j++) {
+        HierarchyNode hod;
+        hod.type = HierarchyNode::HNT_EQUIPWEAPON;
+        hod.cat_restrictiontype = HierarchyNode::HNT_EQUIP_CAT;
+        hod.displaymode = HierarchyNode::HNDM_EQUIP;
+        hod.buyable = true;
+        hod.name = weaps[i][j]->name;
+        hod.pack = 1;
+        hod.equipweapon = weaps[i][j];
+        item.branches.push_back(hod);
+      }
     }
+
     vector<string> errors;
     item.checkConsistency(&errors);
     if(errors.size()) {
@@ -215,16 +228,6 @@ void Shop::renderNode(const HierarchyNode &node, int depth, const Player *player
       continue;   // if we can only see 1% of this box, just don't show any of it - gets rid of some ugly rendering edge cases
     
     if(node.branches[itemid].displaymode == HierarchyNode::HNDM_EQUIP) {
-      // Equip rendering works dramatically different from others
-      /*Float4 box = slay.box(splace);
-      CHECK(SIMUL_WEAPONS == 2);
-      if(player->getWeaponEquipBit(node.branches[itemid].equipweapon, 0) == WEB_UNEQUIPPED)
-        box.sx += slay.equipsize(depth);
-      if(player->getWeaponEquipBit(node.branches[itemid].equipweapon, 1) == WEB_UNEQUIPPED)
-        box.ex -= slay.equipsize(depth);
-      
-      drawSolid(box + rendpos[j].second);
-      drawRect(box + rendpos[j].second, slay.boxthick());*/
       drawSolid(slay.boximplantupgrade(splace));
       drawRect(slay.boximplantupgrade(splace), slay.boxthick());
     } else if(node.branches[itemid].displaymode == HierarchyNode::HNDM_IMPLANT_UPGRADE) {
@@ -420,12 +423,12 @@ bool Shop::runTick(const Keystates &keys, Player *player) {
   if(getCurNode().type == HierarchyNode::HNT_EQUIPWEAPON) {
     // EquipWeapon works differently
     
-    for(int i = 0; i < SIMUL_WEAPONS; i++) {
+    /*for(int i = 0; i < SIMUL_WEAPONS; i++) {
       if(keys.fire[i].push) {
         queueSound(S::choose);
         player->setWeaponEquipBit(getCurNode().equipweapon, i, !player->getWeaponEquipBit(getCurNode().equipweapon, i));
       }
-    }
+    }*/
   } else if(getCurNode().type == HierarchyNode::HNT_SELL) {
     if(keys.accept.push) {
       queueSound(S::choose);

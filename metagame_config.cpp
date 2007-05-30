@@ -131,13 +131,13 @@ Keystates PlayerMenuState::genKeystate(const Controller &keys) const {
   kst.d = keys.d;
   kst.l = keys.l;
   kst.r = keys.r;
-  CHECK(SIMUL_WEAPONS == 2);
+  CHECK(SIMUL_WEAPONS == 4);
   kst.accept = keys.keys[buttons[BUTTON_ACCEPT]];
   kst.cancel = keys.keys[buttons[BUTTON_CANCEL]];
   kst.fire[0] = keys.keys[buttons[BUTTON_FIRE1]];
   kst.fire[1] = keys.keys[buttons[BUTTON_FIRE2]];
-  kst.change[0] = keys.keys[buttons[BUTTON_SWITCH1]];
-  kst.change[1] = keys.keys[buttons[BUTTON_SWITCH2]];
+  kst.fire[2] = keys.keys[buttons[BUTTON_FIRE3]];
+  kst.fire[3] = keys.keys[buttons[BUTTON_FIRE4]];
   kst.axmode = setting_axistype;
   for(int j = 0; j < 2; j++) {
     kst.ax[j] = keys.axes[axes[j]];

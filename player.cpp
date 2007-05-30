@@ -7,28 +7,25 @@
 
 using namespace std;
 
-bool IDBWeaponNameSorter::operator()(const IDBWeapon *lhs, const IDBWeapon *rhs) const {
-  if(!lhs && !rhs)
-    return false;
-  if(!lhs)
-    return false;
-  if(!rhs)
-    return true;
-  CHECK(lhs && rhs);
-  return lhs->name < rhs->name;
-}
-  
-void Weaponmanager::cycleWeapon(int id) {
-  CHECK(weaponops[id].size());
-  vector<const IDBWeapon *>::iterator itr = find(weaponops[id].begin(), weaponops[id].end(), curweapons[id]);
-  CHECK(itr != weaponops[id].end());
-  itr++;
-  if(itr == weaponops[id].end()) {
-    curweapons[id] = weaponops[id][0];
-  } else {
-    curweapons[id] = *itr;
+pair<int, int> Weaponmanager::findWeapon(const IDBWeapon *weap) const {
+  pair<int, int> rv = make_pair(-1, -1);
+  for(int i = 0; i < weaponops.size(); i++) {
+    for(int j = 0; j < weaponops[i].size(); j++) {
+      if(weaponops[i][j] == weap) {
+        CHECK(rv.first == -1);
+        rv.first = i;
+        rv.second = j;
+      }
+    }
   }
+  CHECK(rv.first != -1);
+  return rv;
 }
+void Weaponmanager::eraseWeapon(const IDBWeapon *weap) {
+  pair<int, int> pos = findWeapon(weap);
+  weaponops[pos.first].erase(weaponops[pos.first].begin() + pos.second);
+}
+
 float Weaponmanager::shotFired(int id) {
   float val = (float)getWeaponSlot(id)->base_cost.value() / getWeaponSlot(id)->quantity;
   if(ammoCountSlot(id) != UNLIMITED_AMMO)
@@ -43,23 +40,22 @@ void Weaponmanager::addAmmo(const IDBWeapon *weap, int count) {
     weapons[weap] += count;
   } else {
     weapons[weap] = count;
-    for(int i = 0; i < SIMUL_WEAPONS; i++)
-      setWeaponEquipBit(weap, i, true);
+    weaponops[WMSPC_NEW].push_back(weap);
   }
 }
-void Weaponmanager::removeAmmo(const IDBWeapon *weap, int count) {
+
+void Weaponmanager::removeAmmo(const IDBWeapon *weap, int amount) {
   CHECK(weap);
-  CHECK(count > 0);
+  CHECK(amount > 0);
   CHECK(weapons.count(weap));
-  CHECK(weapons[weap] > 0 && weapons[weap] >= count);
-  if(weapons[weap] == count) {
+  CHECK(weapons[weap] > 0 && weapons[weap] >= amount);
+  if(weapons[weap] == amount) {
     weapons.erase(weap);
-    for(int i = 0; i < weaponops.size(); i++) {
-      setWeaponEquipBit(weap, i, false, true);
-      CHECK(curweapons[i] != weap);
-    }
+    for(int i = 0; i < weaponops.size(); i++)
+      if(count(weaponops[i].begin(), weaponops[i].end(), weap))
+        weaponops[i].erase(find(weaponops[i].begin(), weaponops[i].end(), weap));
   } else {
-    weapons[weap] -= count;
+    weapons[weap] -= amount;
   }
 }
 
@@ -76,71 +72,45 @@ int Weaponmanager::ammoCountSlot(int id) const {
   return ammoCount(getWeaponSlot(id));
 }
 const IDBWeapon *Weaponmanager::getWeaponSlot(int id) const {
-  if(!curweapons[id]) {
-    CHECK(defaultweapon);
-    return defaultweapon;
+  if(weaponops[id].size())
+    return weaponops[id][0];
+  CHECK(defaultweapon);
+  return defaultweapon;
+}
+
+const vector<vector<const IDBWeapon *> > &Weaponmanager::getWeaponList() const {
+  return weaponops;
+}
+
+void Weaponmanager::moveWeaponUp(const IDBWeapon *a) {
+  pair<int, int> weppos = findWeapon(a);
+  eraseWeapon(a);
+  if(weppos.second == 0) {
+    weppos.first = modurot(weppos.first - 1, WMSPC_READY_LAST);
+    weppos.second = weaponops[weppos.first].size();
   } else {
-    return curweapons[id];
+    weppos.second--;
   }
+  weaponops[weppos.first].insert(weaponops[weppos.first].begin() + weppos.second, a);
 }
-
-vector<const IDBWeapon *> Weaponmanager::getAvailableWeapons() const {
-  set<const IDBWeapon *, IDBWeaponNameSorter> seet;
-  for(map<const IDBWeapon *, int, IDBWeaponNameSorter>::const_iterator itr = weapons.begin(); itr != weapons.end(); itr++) {
-    if(itr->first)
-      seet.insert(itr->first);
-    else if(defaultweapon)
-      seet.insert(defaultweapon);
-  }
-  return vector<const IDBWeapon *>(seet.begin(), seet.end());
-}
-void Weaponmanager::setWeaponEquipBit(const IDBWeapon *weapon, int id, bool bit, bool force) {
-  CHECK(weapon);
-  if(weapon == defaultweapon)
-    weapon = NULL;
-  if(count(weaponops[id].begin(), weaponops[id].end(), weapon) == bit)
-    return;
-  if(bit == true) {
-    CHECK(weapons.count(weapon));
-    weaponops[id].push_back(weapon);
-    sort(weaponops[id].begin(), weaponops[id].end(), IDBWeaponNameSorter());
-    curweapons[id] = weapon; // equip it
+void Weaponmanager::moveWeaponDown(const IDBWeapon *a) {
+  pair<int, int> weppos = findWeapon(a);
+  eraseWeapon(a);
+  if(weppos.second == weaponops[weppos.first].size()) {
+    weppos.first = modurot(weppos.first + 1, WMSPC_READY_LAST);
+    weppos.second = 0;
   } else {
-    // If we're removing the current weapon, switch to the next weapon first.
-    if(curweapons[id] == weapon)
-      cycleWeapon(id);
-    
-    // If we're still removing the current weapon, we only have one weapon.
-    if(curweapons[id] == weapon) {
-      if(!force)  // Give up, if we're not forcing. If we are . . .
-        return;
-      
-      // If that weapon is our default weapon, something horrible has occured.
-      if(curweapons[id] == NULL)
-        CHECK(0);
-      
-      // Otherwise, add the default weapon and then cycle again.
-      CHECK(weaponops[id].size() == 1);
-      weaponops[id].push_back(NULL);
-      sort(weaponops[id].begin(), weaponops[id].end(), IDBWeaponNameSorter());  // this is technically unnecessary
-      cycleWeapon(id);
-      CHECK(curweapons[id] == NULL);
-    }
-
-    // At this point, we must not be removing the current weapon.
-    CHECK(curweapons[id] != weapon);
-    
-    // We're simply removing, so no need to sort.
-    weaponops[id].erase(find(weaponops[id].begin(), weaponops[id].end(), weapon));
+    weppos.second++;
   }
+  weaponops[weppos.first].insert(weaponops[weppos.first].begin() + weppos.second, a);
 }
-int Weaponmanager::getWeaponEquipBit(const IDBWeapon *weapon, int id) const {
-  CHECK(weapon);
-  if(weapon == defaultweapon)
-    weapon = NULL;
-  return count(weaponops[id].begin(), weaponops[id].end(), weapon) + (curweapons[id] == weapon);
+void Weaponmanager::promoteWeapon(const IDBWeapon *a, int slot) {
+  CHECK(a);
+  CHECK(weapons.count(a));
+  CHECK(slot >= 0 && slot < SIMUL_WEAPONS);
+  eraseWeapon(a);
+  weaponops[slot].insert(weaponops[slot].begin(), a);
 }
-
 void Weaponmanager::changeDefaultWeapon(const IDBWeapon *weapon) {
   defaultweapon = weapon; // YES. IT'S EASY NOW.
 }
@@ -148,8 +118,7 @@ void Weaponmanager::changeDefaultWeapon(const IDBWeapon *weapon) {
 Weaponmanager::Weaponmanager(const IDBWeapon *weapon) {
   defaultweapon = weapon;
   weapons[NULL] = UNLIMITED_AMMO;
-  weaponops.resize(SIMUL_WEAPONS, vector<const IDBWeapon*>(1, (IDBWeapon*)NULL));
-  curweapons.resize(SIMUL_WEAPONS, NULL);
+  weaponops.resize(WMSPC_LAST);
 }
 
 TankEquipment::TankEquipment() { tank = NULL; }
@@ -348,10 +317,7 @@ void Player::levelImplant(const IDBImplant *implant) {
 
 void Player::forceAcquireWeapon(const IDBWeapon *in_weap, int count) {
   weapons.addAmmo(in_weap, count);
-  if(weapons.getWeaponSlot(0) != in_weap) {
-    weapons.setWeaponEquipBit(in_weap, 0, false, true);
-    weapons.setWeaponEquipBit(in_weap, 0, true, true);
-  }
+  weapons.promoteWeapon(in_weap, 0);
   CHECK(weapons.getWeaponSlot(0) == in_weap);
   corrupted = true;
 }
@@ -527,9 +493,6 @@ IDBTankAdjust Player::getTank() const {
 
 IDBWeaponAdjust Player::getWeapon(int id) const {
   return adjustWeapon(weapons.getWeaponSlot(id)); };
-void Player::cycleWeapon(int id) {
-  weapons.cycleWeapon(id);
-}
 
 Money Player::getCash() const {
   return cash;
@@ -568,15 +531,18 @@ int Player::shotsLeft(int id) const {
 int Player::ammoCount(const IDBWeapon *in_weapon) const {
   return weapons.ammoCount(in_weapon);
 }
-
-vector<const IDBWeapon *> Player::getAvailableWeapons() const {
-  return weapons.getAvailableWeapons();
+  
+const vector<vector<const IDBWeapon *> > &Player::getWeaponList() const {
+  return weapons.getWeaponList();
 }
-void Player::setWeaponEquipBit(const IDBWeapon *weapon, int id, bool bit) {
-  return weapons.setWeaponEquipBit(weapon, id, bit);
+void Player::moveWeaponUp(const IDBWeapon *a) {
+  weapons.moveWeaponUp(a);
 }
-int Player::getWeaponEquipBit(const IDBWeapon *weapon, int id) const {
-  return weapons.getWeaponEquipBit(weapon, id);
+void Player::moveWeaponDown(const IDBWeapon *a) {
+  weapons.moveWeaponDown(a);
+}
+void Player::promoteWeapon(const IDBWeapon *a, int slot) {
+  weapons.promoteWeapon(a, slot);
 }
 
 IDBAdjustment Player::getAdjust() const {
@@ -600,9 +566,10 @@ Money Player::totalValue() const {
       worth += adjustUpgrade(tank[i].upgrades[j], tank[i].tank).cost();
   }
   
-  vector<const IDBWeapon *> weps = weapons.getAvailableWeapons();
+  vector<vector<const IDBWeapon *> > weps = weapons.getWeaponList();
   for(int i = 0; i < weps.size(); i++)
-    worth += adjustWeapon(weps[i]).cost(weapons.ammoCount(weps[i]));
+    for(int j = 0; j < weps[i].size(); j++)
+      worth += adjustWeapon(weps[i][j]).cost(weapons.ammoCount(weps[i][j]));
   
   for(int i = 0; i < implantslots.size(); i++)
     worth += adjustImplantSlot(implantslots[i]).cost();

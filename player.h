@@ -17,16 +17,21 @@ public:
   bool operator()(const IDBWeapon *lhs, const IDBWeapon *rhs) const;
 };
 
+enum { WMSPC_UNEQUIPPED = SIMUL_WEAPONS, WMSPC_NEW, WMSPC_LAST, WMSPC_READY_LAST = WMSPC_UNEQUIPPED + 1 };
+
+const int UNLIMITED_AMMO = -1938;
+
 class Weaponmanager {
 private:
-  map<const IDBWeapon *, int, IDBWeaponNameSorter> weapons;
+  map<const IDBWeapon *, int> weapons;
   vector<vector<const IDBWeapon *> > weaponops;
-  vector<const IDBWeapon *> curweapons;
 
   const IDBWeapon *defaultweapon;
+
+  pair<int, int> findWeapon(const IDBWeapon *weap) const;
+  void eraseWeapon(const IDBWeapon *weap);
   
 public:
-  void cycleWeapon(int id);
   float shotFired(int id);  // Fire a single shot. Returns the cost of that shot. This could likely be done better.
 
   void addAmmo(const IDBWeapon *weap, int count);
@@ -37,10 +42,11 @@ public:
   int ammoCountSlot(int id) const;  
   const IDBWeapon *getWeaponSlot(int id) const;
   
-  vector<const IDBWeapon *> getAvailableWeapons() const;
-  void setWeaponEquipBit(const IDBWeapon *weapon, int id, bool bit, bool force = false);  // If force is on, it will equip the default weapon if it has to.
-  int getWeaponEquipBit(const IDBWeapon *weapon, int id) const;
+  const vector<vector<const IDBWeapon *> > &getWeaponList() const;
 
+  void moveWeaponUp(const IDBWeapon *a);
+  void moveWeaponDown(const IDBWeapon *a);
+  void promoteWeapon(const IDBWeapon *a, int slot);
   void changeDefaultWeapon(const IDBWeapon *weapon);
 
   Weaponmanager(const IDBWeapon *weapon);
@@ -166,14 +172,14 @@ public:
   float consumeDamage();
 
   IDBWeaponAdjust getWeapon(int id) const;
-  void cycleWeapon(int id);
   float shotFired(int id);  // Fire a single shot. Returns the cost of that shot. This could likely be done better.
   int shotsLeft(int id) const;
   int ammoCount(const IDBWeapon *in_weapon) const;
   
-  vector<const IDBWeapon *> getAvailableWeapons() const;
-  void setWeaponEquipBit(const IDBWeapon *weapon, int id, bool bit);
-  int getWeaponEquipBit(const IDBWeapon *weapon, int id) const;
+  const vector<vector<const IDBWeapon *> > &getWeaponList() const;
+  void moveWeaponUp(const IDBWeapon *a);
+  void moveWeaponDown(const IDBWeapon *a);
+  void promoteWeapon(const IDBWeapon *a, int slot);
   
   IDBAdjustment getAdjust() const;
   

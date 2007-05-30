@@ -409,5 +409,6 @@ inline bool boxBoxIntersect(const Coord4 &lhs, const Coord4 &rhs) {
 Coord2 lerp(const Coord2 &lhs, const Coord2 &rhs, Coord dist);
 Coord4 lerp(const Coord4 &lhs, const Coord4 &rhs, Coord dist);
 
-#endif
+const Coord COORDPI = Coord(PI);
 
+#endif
