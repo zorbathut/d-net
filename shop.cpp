@@ -29,7 +29,15 @@ void Shop::renormalize(HierarchyNode &item, const Player *player, int playercoun
         hod.cat_restrictiontype = HierarchyNode::HNT_EQUIP_CAT;
         hod.displaymode = HierarchyNode::HNDM_BLANK;
         hod.buyable = false;
-        hod.name = StringPrintf("category %d", i);
+        if(i < SIMUL_WEAPONS) {
+          hod.name = StringPrintf("Weapon system %d", i);
+        } else if(i == WMSPC_UNEQUIPPED) {
+          hod.name = "Offline weapons";
+        } else if(i == WMSPC_NEW) {
+          hod.name = "New weapons";
+        } else {
+          CHECK(0);
+        }
         item.branches.push_back(hod);
       }
       for(int j = 0; j < weaps[i].size(); j++) {
@@ -247,26 +255,48 @@ void Shop::renderNode(const HierarchyNode &node, int depth, const Player *player
     
     if(node.branches[itemid].displaymode == HierarchyNode::HNDM_EQUIP) {
       drawText(node.branches[itemid].name.c_str(), slay.fontsize(), slay.descriptionimplantupgrade(splace));
-      continue;
     } else if(node.branches[itemid].displaymode == HierarchyNode::HNDM_IMPLANT_UPGRADE) {
       drawText("Level " + roman_number(player->implantLevel(node.branches[itemid].implantitem)) + " upgrade", slay.fontsize(), slay.descriptionimplantupgrade(splace));
-      if(!effectiveselling)
-        drawJustifiedText(cost(node.branches[itemid], player).textual().c_str(), slay.fontsize(), slay.price(splace), TEXT_MAX, TEXT_MIN);
-      continue;
+    } else {
+      drawText(node.branches[itemid].name.c_str(), slay.fontsize(), slay.description(splace));
     }
-    
-    drawText(node.branches[itemid].name.c_str(), slay.fontsize(), slay.description(splace));
     
     // Display ammo count
     {
-      if(node.branches[itemid].type == HierarchyNode::HNT_WEAPON) {
-        if(player->ammoCount(node.branches[itemid].weapon) == -1) {
-          drawJustifiedText(StringPrintf("%s", "UNL"), slay.fontsize(), slay.quantity(splace), TEXT_MAX, TEXT_MIN);
-        } else if(player->ammoCount(node.branches[itemid].weapon) > 0) {
-          drawJustifiedText(StringPrintf("%d", player->ammoCount(node.branches[itemid].weapon)), slay.fontsize(), slay.quantity(splace), TEXT_MAX, TEXT_MIN);
+      if(node.branches[itemid].type == HierarchyNode::HNT_WEAPON || node.branches[itemid].type == HierarchyNode::HNT_EQUIPWEAPON) {
+        const IDBWeapon *weap;
+        if(node.branches[itemid].type == HierarchyNode::HNT_WEAPON) {
+          weap = node.branches[itemid].weapon;
+        } else if(node.branches[itemid].type == HierarchyNode::HNT_EQUIPWEAPON) {
+          weap = node.branches[itemid].equipweapon;
+        } else {
+          CHECK(0);
         }
+        
+        string text;
+        {
+          int pac = player->ammoCount(weap);
+          if(pac == UNLIMITED_AMMO) {
+            text = "UNL";
+          } else if(pac == 0) {
+            text = "";
+          } else if(pac > 0) {
+            text = StringPrintf("%d", player->ammoCount(weap));
+          } else {
+            CHECK(0);
+          }
+        }
+        
+        if(node.branches[itemid].type == HierarchyNode::HNT_WEAPON) {
+          drawJustifiedText(text, slay.fontsize(), slay.quantity(splace), TEXT_MAX, TEXT_MIN);
+        } else if(node.branches[itemid].type == HierarchyNode::HNT_EQUIPWEAPON) {
+          drawJustifiedText(text, slay.fontsize(), slay.price(splace), TEXT_MAX, TEXT_MIN);
+        } else {
+          CHECK(0);
+        }        
       }
     }
+    
     // Figure out how we want to display the "cost" text
     if(!effectiveselling) {
       string display = "";
@@ -320,13 +350,13 @@ void Shop::renderNode(const HierarchyNode &node, int depth, const Player *player
         displayset = true;
       }
       
-      // If it's an Equip, something has gone bizarrely wrong.
-      if(dispmode == HierarchyNode::HNDM_EQUIP) {
-        CHECK(0);
+      if(dispmode == HierarchyNode::HNDM_IMPLANT_UPGRADE) {
+        display = cost(node.branches[itemid], player).textual();
+        displayset = true;
       }
       
-      // If it's blank we do fucking nothing
-      if(dispmode == HierarchyNode::HNDM_BLANK) {
+      // If it's blank or equip we do fucking nothing
+      if(dispmode == HierarchyNode::HNDM_BLANK || dispmode == HierarchyNode::HNDM_EQUIP) {
         displayset = true;
       }
       
