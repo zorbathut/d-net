@@ -327,35 +327,45 @@ void HierarchyNode::checkConsistency(vector<string> *errors) const {
 
 const Color nhcolor[] = { Color(0.7, 0.7, 0.8), Color(0.5, 0.5, 1.0), Color(0.9, 0.5, 0.2), Color(0.2, 0.7, 0.7), Color(0.4, 0.7, 0.2) };
 
+template<typename T> class getDamageType;
+
+template<> class getDamageType<IDBWeapon> {
+public:
+  float operator()(const IDBWeapon *item, int type) {
+    return IDBWeaponAdjust(item, IDBAdjustment()).stats_damagePerSecondType(type);
+  }
+};
+
+template<> class getDamageType<IDBBombardment> {
+public:
+  float operator()(const IDBBombardment *item, int type) {
+    return IDBBombardmentAdjust(item, IDBAdjustment(), 0).stats_damagePerShotType(type);
+  }
+};
+  
+template<typename T> Color gcolor(const T *item) {
+  int dmg = -1;
+  for(int i = 0; i < IDBAdjustment::DAMAGE_LAST; i++) {
+    if(getDamageType<T>()(item, i) != 0) {
+      if(dmg == -1) {
+        dmg = i;
+      } else {
+        dmg = -2;
+      }
+    }
+  }
+  if(dmg < 0)
+    return C::inactive_text;
+  return nhcolor[dmg];
+}
+
 Color HierarchyNode::getColor() const {
   if(type == HNT_WEAPON) {
-    int dmg = -1;
-    for(int i = 0; i < IDBAdjustment::DAMAGE_LAST; i++) {
-      if(IDBWeaponAdjust(weapon, IDBAdjustment()).stats_damagePerSecondType(i) != 0) {
-        if(dmg == -1) {
-          dmg = i;
-        } else {
-          dmg = -2;
-        }
-      }
-    }
-    if(dmg < 0)
-      return C::inactive_text;
-    return nhcolor[dmg];
+    return gcolor(weapon);
   } else if(type == HNT_BOMBARDMENT) {
-    int dmg = -1;
-    for(int i = 0; i < IDBAdjustment::DAMAGE_LAST; i++) {
-      if(IDBBombardmentAdjust(bombardment, IDBAdjustment(), 0).stats_damagePerShotType(i) != 0) {
-        if(dmg == -1) {
-          dmg = i;
-        } else {
-          dmg = -2;
-        }
-      }
-    }
-    if(dmg < 0)
-      return C::inactive_text;
-    return nhcolor[dmg];
+    return gcolor(bombardment);
+  } else if(type == HNT_EQUIPWEAPON) {
+    return gcolor(equipweapon);
   } else if(type == HNT_CATEGORY && branches.size()) {
     if(name == "Bombardment")
       return C::inactive_text; // hackety hack hack
