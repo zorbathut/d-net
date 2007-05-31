@@ -97,7 +97,10 @@ void Weaponmanager::moveWeaponDown(const IDBWeapon *a) {
   pair<int, int> weppos = findWeapon(a);
   eraseWeapon(a);
   if(weppos.second == weaponops[weppos.first].size()) {
-    weppos.first = modurot(weppos.first + 1, WMSPC_READY_LAST);
+    if(weppos.first == WMSPC_NEW)
+      weppos.first = 0;
+    else
+      weppos.first = modurot(weppos.first + 1, WMSPC_READY_LAST);
     weppos.second = 0;
   } else {
     weppos.second++;

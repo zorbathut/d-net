@@ -21,6 +21,8 @@ private:
   bool selling;
   bool disabled;  // when we switch, we wait for them to let go of the button
 
+  const IDBWeapon *equipselected;
+
   HierarchyNode hierarchroot;
 
   // these two are just for generating the shop

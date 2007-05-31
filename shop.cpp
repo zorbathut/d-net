@@ -402,6 +402,20 @@ bool Shop::hasInfo(int type) const {
   return type == HierarchyNode::HNT_WEAPON || type == HierarchyNode::HNT_EQUIPWEAPON || type == HierarchyNode::HNT_GLORY || type == HierarchyNode::HNT_BOMBARDMENT || type == HierarchyNode::HNT_UPGRADE || type == HierarchyNode::HNT_TANK || type == HierarchyNode::HNT_IMPLANTITEM || type == HierarchyNode::HNT_IMPLANTITEM_UPG || type == HierarchyNode::HNT_IMPLANTSLOT;
 }
 
+bool findEquipItem(const HierarchyNode &hrt, const IDBWeapon *weap, vector<int> *path) {
+  if(hrt.type == HierarchyNode::HNT_EQUIPWEAPON && hrt.equipweapon == weap)
+    return true;
+  
+  for(int i = 0; i < hrt.branches.size(); i++) {
+    path->push_back(i);
+    if(findEquipItem(hrt.branches[i], weap, path))
+      return true;
+    path->pop_back();
+  }
+  
+  return false;
+}
+
 bool Shop::runTick(const Keystates &keys, Player *player) {
   if(keys.l.repeat && curloc.size() > 1) {
     queueSound(S::select);
@@ -420,43 +434,43 @@ bool Shop::runTick(const Keystates &keys, Player *player) {
     curloc.back()++;
   }
   curloc.back() = modurot(curloc.back(), getCategoryNode().branches.size());
-
-  {
-    bool hasinfo = true;
-    if(getCurNode().type == HierarchyNode::HNT_WEAPON)
-      cshopinf.initIfNeeded(getCurNode().weapon, player, miniature);
-    else if(getCurNode().type == HierarchyNode::HNT_EQUIPWEAPON)
-      cshopinf.initIfNeeded(getCurNode().equipweapon, player, miniature);
-    else if(getCurNode().type == HierarchyNode::HNT_GLORY)
-      cshopinf.initIfNeeded(getCurNode().glory, player, miniature);
-    else if(getCurNode().type == HierarchyNode::HNT_BOMBARDMENT)
-      cshopinf.initIfNeeded(getCurNode().bombardment, player, miniature);
-    else if(getCurNode().type == HierarchyNode::HNT_UPGRADE)
-      cshopinf.initIfNeeded(getCurNode().upgrade, player, miniature);
-    else if(getCurNode().type == HierarchyNode::HNT_TANK)
-      cshopinf.initIfNeeded(getCurNode().tank, player, miniature);
-    else if(getCurNode().type == HierarchyNode::HNT_IMPLANTITEM)
-      cshopinf.initIfNeeded(getCurNode().implantitem, false, player, miniature);
-    else if(getCurNode().type == HierarchyNode::HNT_IMPLANTITEM_UPG)
-      cshopinf.initIfNeeded(getCurNode().implantitem, true, player, miniature);
-    else if(getCurNode().type == HierarchyNode::HNT_IMPLANTSLOT)
-      cshopinf.initIfNeeded(getCurNode().implantslot, player, miniature);
-    else {
-      hasinfo = false;
-      cshopinf.clear();
-    }
-    CHECK(hasinfo == hasInfo(getCurNode().type)); // doublecheck
-  }
   
   const bool effectiveselling = normalizeSelling(selling, getCurNode().type);
   
-  if(getCurNode().type == HierarchyNode::HNT_EQUIPWEAPON) {
+  if(getCurNode().type != HierarchyNode::HNT_EQUIPWEAPON && getCurNode().type != HierarchyNode::HNT_EQUIPCATEGORY)
+    equipselected = NULL;
+  
+  if(getCurNode().type == HierarchyNode::HNT_EQUIPWEAPON || getCurNode().type == HierarchyNode::HNT_EQUIPCATEGORY) {
     // EquipWeapon works differently
     
-    for(int i = 0; i < SIMUL_WEAPONS; i++) {
-      if(keys.fire[i].push) {
-        queueSound(S::choose);
-        player->promoteWeapon(getCurNode().equipweapon, i);
+    if(equipselected) {
+      if(keys.u.repeat) {
+        player->moveWeaponUp(equipselected);
+      }
+      if(keys.d.repeat) {
+        player->moveWeaponDown(equipselected);
+      }
+    }
+    
+    if(getCurNode().type == HierarchyNode::HNT_EQUIPWEAPON) {
+      if(keys.accept.push) {
+        if(equipselected)
+          equipselected = NULL;
+        else
+          equipselected = getCurNode().equipweapon;
+      } else if(keys.cancel.push) {
+        equipselected = NULL; // wheeee
+      } else {
+        for(int i = 0; i < SIMUL_WEAPONS; i++) {
+          if(keys.fire[i].push) {
+            queueSound(S::choose);
+            if(equipselected)
+              player->promoteWeapon(equipselected, i);
+            else
+              player->promoteWeapon(getCurNode().equipweapon, i);
+            equipselected = NULL;
+          }
+        }
       }
     }
   } else if(getCurNode().type == HierarchyNode::HNT_SELL) {
@@ -633,6 +647,38 @@ bool Shop::runTick(const Keystates &keys, Player *player) {
   hierarchroot = itemDbRoot();
   renormalize(hierarchroot, player, playercount, highestcash);
   
+  if(equipselected) {
+    curloc.clear();
+    CHECK(findEquipItem(hierarchroot, equipselected, &curloc));
+  }
+  
+  {
+    bool hasinfo = true;
+    if(getCurNode().type == HierarchyNode::HNT_WEAPON)
+      cshopinf.initIfNeeded(getCurNode().weapon, player, miniature);
+    else if(getCurNode().type == HierarchyNode::HNT_EQUIPWEAPON)
+      cshopinf.initIfNeeded(getCurNode().equipweapon, player, miniature);
+    else if(getCurNode().type == HierarchyNode::HNT_GLORY)
+      cshopinf.initIfNeeded(getCurNode().glory, player, miniature);
+    else if(getCurNode().type == HierarchyNode::HNT_BOMBARDMENT)
+      cshopinf.initIfNeeded(getCurNode().bombardment, player, miniature);
+    else if(getCurNode().type == HierarchyNode::HNT_UPGRADE)
+      cshopinf.initIfNeeded(getCurNode().upgrade, player, miniature);
+    else if(getCurNode().type == HierarchyNode::HNT_TANK)
+      cshopinf.initIfNeeded(getCurNode().tank, player, miniature);
+    else if(getCurNode().type == HierarchyNode::HNT_IMPLANTITEM)
+      cshopinf.initIfNeeded(getCurNode().implantitem, false, player, miniature);
+    else if(getCurNode().type == HierarchyNode::HNT_IMPLANTITEM_UPG)
+      cshopinf.initIfNeeded(getCurNode().implantitem, true, player, miniature);
+    else if(getCurNode().type == HierarchyNode::HNT_IMPLANTSLOT)
+      cshopinf.initIfNeeded(getCurNode().implantslot, player, miniature);
+    else {
+      hasinfo = false;
+      cshopinf.clear();
+    }
+    CHECK(hasinfo == hasInfo(getCurNode().type)); // doublecheck
+  }
+  
   return false;
 }
 
@@ -726,6 +772,8 @@ void Shop::init(bool in_miniature, const Player *player, int in_playercount, Mon
   curloc.push_back(0);
   selling = false;
   disabled = false;
+  
+  equipselected = NULL;
   
   miniature = in_miniature;
   slay = ShopLayout(miniature, aspectRatio);

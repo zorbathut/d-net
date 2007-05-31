@@ -5,7 +5,10 @@
       - Four-weapon system
         - Make sure stuff works in sell mode
         - Highlight first weapon
-        - Make drag work
+        - Colorcode weapons
+        - Improve game GUI to show weapon ammo
+        - Don't let the user out of the shop until shit is equipped
+        - Figure out how to equip stuff well?
       - Railgun faster, more power
       - Main menu crosshair speedup
       - Fix missiles doing self-damage
@@ -34,6 +37,7 @@
     - Link handling to engine a little
     - Better implant interface
     - Firing HE Missile everywhere leads to slowdowns :(
+    - Increase autocannon eating through walls
   - Add implementations for all trap weapons
   - Re-enable weapon check
   - Add spider, sniper, satellite behavior
