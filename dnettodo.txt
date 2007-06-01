@@ -2,7 +2,6 @@
 - "Finish the Damn Game" Initiative
   - Bugfixes from games
     - Critical or simple fixes
-      - Fix missiles doing self-damage
       - Missiles inject damage directly into things in the front?
     - Fix up AI with new equip system
     - Remove the ability to sell

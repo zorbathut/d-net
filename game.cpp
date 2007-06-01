@@ -61,7 +61,7 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
   
   frameNm++;
   
-  vector< Keystates > keys = rkeys;
+  vector<Keystates> keys = rkeys;
   if(frameNm < frameNmToStart && freezeUntilStart) {
     for(int i = 0; i < keys.size(); i++) {
       if(keys[i].accept.push || keys[i].fire[0].push)
@@ -223,19 +223,19 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
         bool rhsdestroyed = rng->frand() < (projectiles[lhs.bucket].find(lhs.item).toughness() / projectiles[rhs.bucket].find(rhs.item).toughness());
         
         if(lft)
-          projectiles[lhs.bucket].find(lhs.item).detonate(collider.getCollision().pos, normals.second, NULL, GamePlayerContext(&tanks[rhs.bucket], &projectiles[lhs.bucket], gic), true);
+          projectiles[lhs.bucket].find(lhs.item).detonate(collider.getCollision().pos, normals.second, NULL, GamePlayerContext(&tanks[lhs.bucket], &projectiles[lhs.bucket], gic), true);
         
         if(rhsdestroyed)
           projectiles[rhs.bucket].find(rhs.item).detonate(collider.getCollision().pos, normals.first, NULL, GamePlayerContext(&tanks[rhs.bucket], &projectiles[rhs.bucket], gic), true);
         
         if(!lft)
-          projectiles[lhs.bucket].find(lhs.item).detonate(collider.getCollision().pos, normals.second, NULL, GamePlayerContext(&tanks[rhs.bucket], &projectiles[lhs.bucket], gic), true);
+          projectiles[lhs.bucket].find(lhs.item).detonate(collider.getCollision().pos, normals.second, NULL, GamePlayerContext(&tanks[lhs.bucket], &projectiles[lhs.bucket], gic), true);
         
       } else if(lhs.category == CGR_PROJECTILE && rhs.category == CGR_WALL) {
         // projectile-wall collision - kill projectile
         if(projectiles[lhs.bucket].find(lhs.item).isConsumed())
           continue;
-        projectiles[lhs.bucket].find(lhs.item).detonate(collider.getCollision().pos, normals.second, NULL, GamePlayerContext(&tanks[rhs.bucket], &projectiles[lhs.bucket], gic), true);
+        projectiles[lhs.bucket].find(lhs.item).detonate(collider.getCollision().pos, normals.second, NULL, GamePlayerContext(&tanks[lhs.bucket], &projectiles[lhs.bucket], gic), true);
       } else if(lhs.category == CGR_WALL && rhs.category == CGR_WALL) {
         // wall-wall collision, wtf?
         CHECK(0);

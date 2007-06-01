@@ -87,8 +87,11 @@ DeployLocation::DeployLocation(Coord2 pos, float d) {
 }
 
 void dealDamage(float dmg, Tank *target, Tank *owner, const DamageFlags &flags) {
+  CHECK(target);
+  CHECK(owner);
   if(target->team == owner->team)
     return; // friendly fire exception
+  CHECK(target != owner); // something has gone horribly wrong if this is the case
   //dprintf("Dealing %f damage\n", dmg);
   if(flags.glory)
     dmg *= 1.0 - target->getGloryResistance();
