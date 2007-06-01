@@ -213,6 +213,19 @@ void Shop::renderNode(const HierarchyNode &node, int depth, const Player *player
   slay.drawScrollMarkers(depth);
   GfxWindow gfxw(slay.getScrollBBox(depth), 1.0);
   
+  if(node.type == HierarchyNode::HNT_DONE) {
+    vector<string> msg = player->blockedReasons();
+    if(!msg.empty()) {
+      Float4 otbox = slay.textbox(depth);
+      Float4 tbox;
+      tbox.sx = lerp(otbox.sx, otbox.ex, 0.05);
+      tbox.ex = lerp(otbox.sx, otbox.ex, 1 - 0.05);
+      tbox.sy = lerp(otbox.sy, otbox.ey, 0.4);
+      tbox.ey = otbox.ey;
+      drawFormattedTextBox(msg, slay.fontsize(), tbox, C::active_text, C::box_border);
+    }
+  }
+  
   ShopPlacement tsp;
   if(curloc.size() > depth)
     tsp = ShopPlacement(depth, -1, node.branches.size(), curloc[depth]);

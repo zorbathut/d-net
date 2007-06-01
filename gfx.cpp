@@ -823,6 +823,30 @@ void drawJustifiedParagraphedText(const string &txt, float scale, pair<float, fl
   drawJustifiedMultiText(lines, scale, Float2(x_bounds.first, y), TEXT_MIN, just);
 }
 
+void drawFormattedTextBox(const vector<string> &txt, float scale, Float4 bounds, Color text, Color box) {
+  CHECK(txt.size());
+  const float border = scale / 2;
+  vector<string> lines;
+  for(int i = 0; i < txt.size(); i++) {
+    vector<string> tlin = formatText(txt[i], scale, bounds.span_x() - border * 2, "");
+    if(lines.size())
+      lines.push_back("");
+    lines.insert(lines.end(), tlin.begin(), tlin.end());
+  }
+  float newey = bounds.sy + border * 2 + lines.size() * scale * 1.5 - scale * 0.5;
+  CHECK(newey <= bounds.ey);
+  bounds.ey = newey;
+  drawSolid(bounds);
+  {
+    ColorStack csc(box);
+    drawRect(bounds, scale * 0.1);
+  }
+  {
+    ColorStack csc(text);
+    drawJustifiedMultiText(lines, scale, bounds.s() + Float2(border, border), TEXT_MIN, TEXT_MIN);
+  }
+}
+
 
 /*************
  * Vector path operations

@@ -87,6 +87,8 @@ public:
   Float2 quantity(const ShopPlacement &place) const;
   Float2 price(const ShopPlacement &place) const;
 
+  Float4 textbox(int depth) const;
+
   // Scalars, flags
   float fontsize() const { return cint_fontsize; };
   float boxthick() const;

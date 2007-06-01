@@ -195,6 +195,10 @@ Float2 ShopLayout::price(const ShopPlacement &place) const {
   return Float2(pricex(place.depth), box(place).sy + border());
 }
 
+Float4 ShopLayout::textbox(int depth) const {
+  return Float4(boxstart(depth), ystart(), boxend(depth), yend());
+}
+
 float ShopLayout::boxthick() const {
   return cint_fontsize / 10;
 }
