@@ -310,6 +310,15 @@ void Shop::renderNode(const HierarchyNode &node, int depth, const Player *player
       }
     }
     
+    if(node.branches[itemid].type == HierarchyNode::HNT_EQUIPWEAPON && node.branches[itemid].equipweapon == equipselected) {
+      vector<Float2> pt;
+      pt.push_back(Float2(lerp(slay.box(splace).sx, slay.boximplantupgrade(splace).sx, 0.5), slay.box(splace).sy));
+      pt.push_back(Float2(lerp(slay.box(splace).sx, slay.boximplantupgrade(splace).sx, 0.5), slay.box(splace).ey));
+      pt.push_back(Float2(pt[0].x + (pt[1].y - pt[0].y) / 2, lerp(slay.box(splace).sy, slay.box(splace).ey, 0.5)));
+      drawSolidLoop(pt);
+      drawLineLoop(pt, slay.boxthick());
+    }
+    
     // Figure out how we want to display the "cost" text
     if(!effectiveselling) {
       string display = "";
