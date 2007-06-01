@@ -3,11 +3,9 @@
   - Bugfixes from games
     - Critical or simple fixes
       - Four-weapon system
+        - Display why you're not letting the user out of the shop
         - Make sure stuff works in sell mode
         - Highlight first weapon
-        - Colorcode weapons
-        - Improve game GUI to show weapon ammo
-        - Don't let the user out of the shop until shit is equipped
         - Figure out how to equip stuff well?
       - Railgun faster, more power
       - Main menu crosshair speedup

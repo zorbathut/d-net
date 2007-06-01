@@ -48,6 +48,7 @@ public:
   void moveWeaponDown(const IDBWeapon *a);
   void promoteWeapon(const IDBWeapon *a, int slot);
   void changeDefaultWeapon(const IDBWeapon *weapon);
+  bool weaponsReady() const;
 
   Weaponmanager(const IDBWeapon *weapon);
 };

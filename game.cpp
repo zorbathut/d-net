@@ -636,7 +636,7 @@ void Game::renderToScreen(const vector<const Player *> &players, GameMetacontext
           float bare = (roffset - 1) - (loffset + 1);
           bare /= players[i]->getTank().maxHealth();
           bare *= tanks[i].getHealth();
-          drawShadedRect(Float4(barl, 2, barl + bare, 7), 0.1, 2);
+          drawShadedRect(Float4(barl, 3, barl + bare, 7), 0.1, 2);
         }
           
         string ammotext[SIMUL_WEAPONS];

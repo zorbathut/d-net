@@ -117,6 +117,9 @@ void Weaponmanager::promoteWeapon(const IDBWeapon *a, int slot) {
 void Weaponmanager::changeDefaultWeapon(const IDBWeapon *weapon) {
   defaultweapon = weapon; // YES. IT'S EASY NOW.
 }
+bool Weaponmanager::weaponsReady() const {
+  return weaponops[WMSPC_NEW].empty();
+}
 
 Weaponmanager::Weaponmanager(const IDBWeapon *weapon) {
   defaultweapon = weapon;
@@ -475,7 +478,7 @@ int Player::stateImplantSlot(const IDBImplantSlot *in_impslot) const {
 }
 
 bool Player::canContinue() const {
-  return hasValidTank(); }
+  return hasValidTank() && weapons.weaponsReady(); }
 bool Player::hasValidTank() const {
   return tank.size(); }
 
