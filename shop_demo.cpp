@@ -297,7 +297,7 @@ void ShopDemo::init(const IDBWeapon *weap, const Player *player, Recorder *recor
         } else {
           dist_max = dist_cen;
         }
-        dprintf("dist_cen is %f\n", dist_cen);
+        //dprintf("dist_cen is %f\n", dist_cen);
       }
       
       float wxm[ARRAY_SIZE(weapons_xpses_melee)];

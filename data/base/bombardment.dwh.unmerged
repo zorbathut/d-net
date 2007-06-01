@@ -14,7 +14,7 @@ text {
 warhead {
   name=warhead.bombardment.bomb
   radiusdamage=MERGE explosive
-  radiusfalloff=4
+  radiusfalloff=6
   wallremovalradius=0.5
 }
 
@@ -39,7 +39,7 @@ text {
 warhead {
   name=warhead.bombardment.heavybomb
   radiusdamage=MERGE explosive
-  radiusfalloff=8
+  radiusfalloff=7
   wallremovalradius=2
 }
 
@@ -63,7 +63,7 @@ text {
 warhead {
   name=warhead.bombardment.hebomb
   radiusdamage=MERGE explosive
-  radiusfalloff=10
+  radiusfalloff=8
   wallremovalradius=4
 }
 
@@ -87,7 +87,7 @@ text {
 warhead {
   name=warhead.bombardment.nitrobomb
   radiusdamage=MERGE explosive
-  radiusfalloff=12
+  radiusfalloff=9
   wallremovalradius=6
 }
 
@@ -111,7 +111,7 @@ text {
 warhead {
   name=warhead.bombardment.fissionbomb
   radiusdamage=MERGE explosive
-  radiusfalloff=13
+  radiusfalloff=10
   wallremovalradius=6.5
 }
 
@@ -135,7 +135,7 @@ text {
 warhead {
   name=warhead.bombardment.fusionbomb
   radiusdamage=MERGE explosive
-  radiusfalloff=14
+  radiusfalloff=11
   wallremovalradius=7
 }
 

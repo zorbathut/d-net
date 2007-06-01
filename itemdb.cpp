@@ -105,7 +105,11 @@ float IDBAdjustment::adjustmentfactor(int type) const {
       CHECK(adjusts[type] + 100 <= WARHEAD_RADIUS_MAXMULT * 100);
     }
   }
-  return (float)(adjusts[type] + 100) / 100;
+  if(adjust_negative[type]) {
+    return 100. / (100. - adjusts[type]);
+  } else {
+    return (adjusts[type] + 100.) / 100.;
+  }
 }
 
 float IDBAdjustment::recyclevalue() const {

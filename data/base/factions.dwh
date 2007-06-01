@@ -215,8 +215,8 @@ text {
 adjustment {
   name=adjustment.dynasty.high
   
-  discount_tank=40
-  discount_upgrade=20
+  discount_tank=30
+  discount_upgrade=15
   
   recycle_bonus=-100
 }

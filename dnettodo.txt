@@ -27,6 +27,7 @@
     - Firing HE Missile everywhere leads to slowdowns :(
     - Increase autocannon eating through walls
     - Add wander-around-randomly-and-do-shit to the AI
+    - Remove bombardment level visualization, and de-integer it
   - Add implementations for all trap weapons
   - Re-enable weapon check
   - Add spider, sniper, satellite behavior
