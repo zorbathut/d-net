@@ -463,6 +463,12 @@ bool tankCostSorter(const pair<string, IDBTank> &lhs, const pair<string, IDBTank
 }
 
 void InterfaceMain::render() const {
+  if(isUnoptimized()) {
+    setZoom(Float4(0, 0, 133.3333, 100));
+    setColor(Color(1.0, 0.3, 0.3));
+    drawText("Optimizations disabled!", 6, Float2(1, 1));
+  }
+  
   if(FLAGS_dumpTanks) {  // this should probably be in main.cpp really
     static bool dumpedtanks = false;
     
@@ -603,11 +609,6 @@ void InterfaceMain::render() const {
           }
         }
       }
-    }
-    if(isUnoptimized()) {
-      setZoom(Float4(0, 0, 133.3333, 100));
-      setColor(Color(1.0, 0.3, 0.3));
-      drawText("Optimizations disabled!", 6, Float2(1, 1));
     }
   } else if(interface_mode == STATE_CONFIGURE) {
     configmenu.render();
