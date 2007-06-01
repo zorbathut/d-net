@@ -126,7 +126,7 @@ bool PersistentData::tick(const vector< Controller > &keys) {
       
       // Subsecond: Move the cursor.
       if(sps_playermode[player] == SPS_CHOOSING) {
-        Float2 dz = deadzone(keys[player].menu, DEADZONE_CENTER, 0.2) / 2;
+        Float2 dz = deadzone(keys[player].menu, DEADZONE_CENTER, 0.2) / 1.5;
         
         bool wasin = false;
         for(int j = 0; j < ranges.size(); j++)
