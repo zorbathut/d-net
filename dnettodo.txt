@@ -2,14 +2,11 @@
 - "Finish the Damn Game" Initiative
   - Bugfixes from games
     - Critical or simple fixes
-      - Four-weapon system
-        - Make sure stuff works in sell mode
-        - Highlight first weapon
-        - Figure out how to equip stuff well?
       - Railgun faster, more power
       - Main menu crosshair speedup
       - Fix missiles doing self-damage
       - Missiles inject damage directly into things in the front?
+    - Fix up AI with new equip system
     - Remove the ability to sell
     - Display current mods
     - Use "sell" to sell old weapons that no longer exist in the shop
@@ -57,6 +54,10 @@
     - Spruce up OGRE
 
 - "Polish the Damn Interface" Initiative
+  - Four-weapon system
+    - Make sure stuff works in sell mode
+    - Highlight first weapon
+    - Figure out how to equip stuff well?
   - Colorcode tanks, based on relative tank level
   - vecedit should drag around with the right mouse button or whatever
   - walls that are more easily destroyed
