@@ -28,9 +28,9 @@ projectile {
   
   velocity=180
   missile_stabstart=0.0
-  missile_stabilization=6
-  missile_sidelaunch=15
-  missile_backlaunch=0.5
+  missile_stabilization=30
+  missile_sidelaunch=30
+  missile_backlaunch=15
   
   warhead=warhead.weapon.missile
 }
@@ -116,9 +116,9 @@ projectile {
   
   velocity=180
   missile_stabstart=0.0
-  missile_stabilization=6
-  missile_sidelaunch=15
-  missile_backlaunch=0.5
+  missile_stabilization=30
+  missile_sidelaunch=30
+  missile_backlaunch=15
   
   thickness_visual=2x
   length=1.5x
@@ -173,9 +173,9 @@ projectile {
   
   velocity=180
   missile_stabstart=0.0
-  missile_stabilization=6
-  missile_sidelaunch=15
-  missile_backlaunch=0.5
+  missile_stabilization=30
+  missile_sidelaunch=30
+  missile_backlaunch=15
   
   warhead=warhead.weapon.clustermissile
 }
@@ -227,9 +227,9 @@ projectile {
   
   velocity=180
   missile_stabstart=0.0
-  missile_stabilization=6
-  missile_sidelaunch=15
-  missile_backlaunch=0.5
+  missile_stabilization=30
+  missile_sidelaunch=30
+  missile_backlaunch=15
   
   warhead=warhead.weapon.proximityrocket
 }
@@ -281,9 +281,9 @@ projectile {
   
   velocity=180
   missile_stabstart=0.0
-  missile_stabilization=6
-  missile_sidelaunch=15
-  missile_backlaunch=0.5
+  missile_stabilization=30
+  missile_sidelaunch=30
+  missile_backlaunch=15
   
   warhead=warhead.weapon.adaptiverocket
 }
@@ -335,9 +335,9 @@ projectile {
   
   velocity=180
   missile_stabstart=0.0
-  missile_stabilization=6
-  missile_sidelaunch=15
-  missile_backlaunch=0.5
+  missile_stabilization=30
+  missile_sidelaunch=30
+  missile_backlaunch=15
   
   warhead=warhead.weapon.mininuke
 }
@@ -389,9 +389,9 @@ projectile {
   
   velocity=180
   missile_stabstart=0.0
-  missile_stabilization=6
-  missile_sidelaunch=15
-  missile_backlaunch=0.5
+  missile_stabilization=30
+  missile_sidelaunch=30
+  missile_backlaunch=15
   
   warhead=warhead.weapon.conversionnuke
 }

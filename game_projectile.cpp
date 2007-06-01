@@ -171,7 +171,7 @@ Coord2 Projectile::missile_accel() const {
   return makeAngle(Coord(d)) * Coord(projtype.velocity() / FPS) * age / FPS;
 }
 Coord2 Projectile::missile_backdrop() const {
-  return makeAngle(Coord(d)) * Coord(projtype.missile_backlaunch()) / FPS;
+  return -makeAngle(Coord(d)) * Coord(projtype.missile_backlaunch()) / FPS;
 }
 Coord2 Projectile::missile_sidedrop() const {
   return makeAngle(Coord(d) - COORDPI / 2) * Coord(missile_sidedist);

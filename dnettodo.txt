@@ -1,8 +1,6 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - Bugfixes from games
-    - Critical or simple fixes
-      - Missiles inject damage directly into things in the front?
     - Fix up AI with new equip system
     - Remove the ability to sell
     - Display current mods

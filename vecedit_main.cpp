@@ -460,23 +460,23 @@ VeceditWindow::VeceditWindow() : wxFrame((wxFrame *)NULL, -1, veceditname, wxDef
   note->AddPage(new wxNotebookPage(note, wxID_ANY), "Globals");
   
   toolbar = new wxToolBar(this, wxID_ANY);
-  toolbar->AddTool(ID_NewPath, "add path", wxBitmap("vecedit/addpath.png", wxBITMAP_TYPE_PNG), "Add a new path", wxITEM_CHECK);
-  toolbar->AddTool(ID_NewNode, "add node", wxBitmap("vecedit/addnode.png", wxBITMAP_TYPE_PNG), "Add a new node", wxITEM_CHECK);
-  toolbar->AddTool(ID_NewTank, "add tank", wxBitmap("vecedit/addtank.png", wxBITMAP_TYPE_PNG), "Add a new tank", wxITEM_CHECK);
+  toolbar->AddTool(ID_NewPath, "add path", wxBitmap("data/vecedit/addpath.png", wxBITMAP_TYPE_PNG), "Add a new path", wxITEM_CHECK);
+  toolbar->AddTool(ID_NewNode, "add node", wxBitmap("data/vecedit/addnode.png", wxBITMAP_TYPE_PNG), "Add a new node", wxITEM_CHECK);
+  toolbar->AddTool(ID_NewTank, "add tank", wxBitmap("data/vecedit/addtank.png", wxBITMAP_TYPE_PNG), "Add a new tank", wxITEM_CHECK);
   
   toolbar->AddSeparator();
-  toolbar->AddTool(ID_GridToggle, "toggle grid", wxBitmap("vecedit/grid.png", wxBITMAP_TYPE_PNG), "Activate grid lock", wxITEM_CHECK);
+  toolbar->AddTool(ID_GridToggle, "toggle grid", wxBitmap("data/vecedit/grid.png", wxBITMAP_TYPE_PNG), "Activate grid lock", wxITEM_CHECK);
   toolbar->AddControl(grid = new wxSpinCtrl(toolbar, ID_GridSpinner, "16", wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 1, 16384));
   wstate.grid = -1;
   
   toolbar->AddSeparator();
-  toolbar->AddTool(ID_RotGridToggle, "toggle rotation grid", wxBitmap("vecedit/rotgrid.png", wxBITMAP_TYPE_PNG), "Activate rotation grid lock", wxITEM_CHECK);
+  toolbar->AddTool(ID_RotGridToggle, "toggle rotation grid", wxBitmap("data/vecedit/rotgrid.png", wxBITMAP_TYPE_PNG), "Activate rotation grid lock", wxITEM_CHECK);
   toolbar->ToggleTool(ID_RotGridToggle, 1);
   toolbar->AddControl(rotgrid = new wxSpinCtrl(toolbar, ID_RotGridSpinner, "8", wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 1, 16384));
   wstate.rotgrid = 8;
   
   toolbar->AddSeparator();
-  toolbar->AddTool(ID_ShowControlsToggle, "toggle controls", wxBitmap("vecedit/showcontrols.png", wxBITMAP_TYPE_PNG), "Toggle control visibility", wxITEM_CHECK);
+  toolbar->AddTool(ID_ShowControlsToggle, "toggle controls", wxBitmap("data/vecedit/showcontrols.png", wxBITMAP_TYPE_PNG), "Toggle control visibility", wxITEM_CHECK);
   toolbar->ToggleTool(ID_ShowControlsToggle, 1);
   
   toolbar->Realize();

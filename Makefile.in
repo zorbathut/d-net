@@ -28,26 +28,31 @@ PACKAGESUBDIR := sekret
 
 CPP := g++
 
-justdnet: d-net.exe
+justdnet: d-net
 
 include $(GAMESOURCES:=.g.d)
 include $(EDITORSOURCES:=.e.d)
 include $(FUNCTORSOURCES:=.c.d)
 include $(MERGERSOURCES:=.c.d)
 
-d-net.exe: $(GAMESOURCES:=.g.o) $(MERGEDATA)
+d-net: d-net.exe $(MERGEDATA)
+d-net-dbg: d-net-dbg.exe $(MERGEDATA)
+vecedit: vecedit.exe $(MERGEDATA)
+vecedit-dbg: vecedit-dbg.exe $(MERGEDATA)
+
+d-net.exe: $(GAMESOURCES:=.g.o)
 	nice $(CPP) -o $@ $(GAMESOURCES:=.g.o) $(GAMELDFLAGS)
 
-d-net-dbg.exe: $(GAMESOURCES:=.g.d.o) $(MERGEDATA)
+d-net-dbg.exe: $(GAMESOURCES:=.g.d.o)
 	nice $(CPP) -o $@ $(GAMESOURCES:=.g.d.o) $(GAMELDFLAGS)
 
-vecedit.exe: $(EDITORSOURCES:=.e.o) $(MERGEDATA)
+vecedit.exe: $(EDITORSOURCES:=.e.o)
 	nice $(CPP) -o $@ $(EDITORSOURCES:=.e.o) $(EDITORLDFLAGS)
   
-vecedit-dbg.exe: $(EDITORSOURCES:=.e.d.o) $(MERGEDATA)
+vecedit-dbg.exe: $(EDITORSOURCES:=.e.d.o)
 	nice $(CPP) -o $@ $(EDITORSOURCES:=.e.d.o) $(EDITORLDFLAGS)
 
-all: d-net.exe vecedit.exe
+all: d-net vecedit
 
 asm: $(GAMESOURCES:=.S) makefile
 
@@ -56,34 +61,34 @@ clean:
 
 STDRUN = --nofullscreen --debugitems --startingPhase=8 --debugControllers=2 --factionMode=0 --nullControllers=11 --writeTarget= --auto_newgame --nocullShopTree --httpd_port=616 --noshopcache --runTests --disableaudio
 
-run: d-net.exe
+run: d-net
 	./d-net.exe $(STDRUN)
   
-basicrun: d-net.exe
+basicrun: d-net
 	./d-net.exe --nofullscreen --writeTarget= --httpd_port=616
 
-cacherun: d-net.exe
+cacherun: d-net
 	./d-net.exe $(STDRUN) --shopcache
 
-threerun: d-net.exe
+threerun: d-net
 	./d-net.exe $(STDRUN) --debugControllers=3
   
-debugrun: d-net-dbg.exe
+debugrun: d-net-dbg
 	./d-net-dbg.exe $(STDRUN)
 
-debugbasicrun: d-net-dbg.exe
+debugbasicrun: d-net-dbg
 	./d-net-dbg.exe --nofullscreen --writeTarget= --httpd_port=616
 
-ai: d-net.exe
+ai: d-net
 	./d-net.exe --nofullscreen --aiCount=16 --fastForwardTo=100000000 --factionMode=3 --noshopcache
 
-aisc: d-net.exe data/shopcache.dwh
+aisc: d-net data/shopcache.dwh
 	./d-net.exe --nofullscreen --aiCount=16 --fastForwardTo=100000000 --factionMode=3
 
-ailoop: d-net.exe
+ailoop: d-net
 	while ./d-net.exe --nofullscreen --aiCount=12 --fastForwardTo=100000000 --terminateAfter=600 --startingPhase=8 --httpd_port=616 --noshopcache ; do echo Cycle. ; done
 
-veced: vecedit.exe
+veced: vecedit
 	./vecedit.exe
 
 define prepackage
@@ -112,12 +117,12 @@ cp \\\\192.168.100.4\\zorba\\www\\d-net\\$(PACKAGESUBDIR)\\Dnet\ Latest\ Windows
 rm -rf deploy
 endef
 
-package: d-net.exe $(MERGEDATA) data/shopcache.dwh
+package: d-net data/shopcache.dwh
 	$(prepackage)
 	$(strip)
 	$(postpackage)
 
-packageed: d-net.exe $(MERGEDATA) vecedit.exe data/shopcache.dwh
+packageed: d-net vecedit data/shopcache.dwh
 	$(prepackage)
 	cp vecedit.exe deploy
 	cp /usr/mingw/local/lib/wxbase28_gcc_custom.dll deploy
@@ -165,10 +170,10 @@ packageed: d-net.exe $(MERGEDATA) vecedit.exe data/shopcache.dwh
 %.c.d: %.cpp
 	nice bash -ec '$(CPP) $(CONSOLECPPFLAGS) -MM $< | sed "s!$*.o!$*.c.o $*.c.d.o $@!g" > $@'
 
-data/shopcache.dwh: d-net.exe $(DATAFILES)
+data/shopcache.dwh: d-net $(DATAFILES)
 	./d-net.exe --generateCachedShops=0.99 || ( rm -f $@ && false )
 
-export: d-net.exe tools/generateWeaponGraph.py
+export: d-net tools/generateWeaponGraph.py
 	./d-net.exe --generateWeaponStats || ( rm -f $@ && false )
 	/cygdrive/c/Python25/python.exe tools/generateWeaponGraph.py # this is not ideal
 
