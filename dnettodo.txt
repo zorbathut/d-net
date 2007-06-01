@@ -3,6 +3,7 @@
   - Bugfixes from games
     - Critical or simple fixes
       - Four-weapon system
+        - Display pointer for selected items
         - Display why you're not letting the user out of the shop
         - Make sure stuff works in sell mode
         - Highlight first weapon

@@ -477,8 +477,14 @@ int Player::stateImplantSlot(const IDBImplantSlot *in_impslot) const {
   return ITEMSTATE_UNOWNED;
 }
 
-bool Player::canContinue() const {
-  return hasValidTank() && weapons.weaponsReady(); }
+vector<string> Player::blockedReasons() const {
+  vector<string> rv;
+  if(!tank.size())
+    rv.push_back("You don't have a tank. You need to buy one before you can enter combat again.");
+  if(!weapons.weaponsReady())
+    rv.push_back("Not all of your new weapons are equipped. Go equip them first.");
+  return rv;
+}
 bool Player::hasValidTank() const {
   return tank.size(); }
 

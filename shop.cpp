@@ -454,6 +454,7 @@ bool Shop::runTick(const Keystates &keys, Player *player) {
     
     if(getCurNode().type == HierarchyNode::HNT_EQUIPWEAPON) {
       if(keys.accept.push) {
+        queueSound(S::choose);
         if(equipselected)
           equipselected = NULL;
         else
@@ -517,7 +518,7 @@ bool Shop::runTick(const Keystates &keys, Player *player) {
           // Player is trying to buy something!
           
           if(getCurNode().type == HierarchyNode::HNT_DONE) {
-            if(player->canContinue()) {
+            if(player->blockedReasons().empty()) {
               ret = true;
               sound = S::accept;
             } else {
@@ -601,7 +602,7 @@ bool Shop::runTick(const Keystates &keys, Player *player) {
         }
       } else {
         if(getCurNode().type == HierarchyNode::HNT_DONE) {
-          if(player->canContinue()) {
+          if(player->blockedReasons().empty()) {
             ret = true;
             sound = S::accept;
           } else {

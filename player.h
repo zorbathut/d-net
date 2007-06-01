@@ -152,7 +152,7 @@ public:
   int stateBombardment(const IDBBombardment *in_bombardment) const;
   int stateTank(const IDBTank *in_tank) const;
   
-  bool canContinue() const;
+  vector<string> blockedReasons() const;
   bool hasValidTank() const;
 
   const IDBFaction *getFaction() const;

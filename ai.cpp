@@ -358,7 +358,7 @@ void Ai::updateShop(const Player *player, const HierarchyNode &hierarchy) {
     return;
   }
   if(shopdone) {  // If our shop is done, something weird has happened.
-    CHECK(!player->hasValidTank()); // It's possible the player has sold their last tank.
+    CHECK(player->blockedReasons().size()); // It's possible the player isn't allowed to continue for some reason.
     CHECK(shopQueue.size() == 0);
     shopdone = false;
     // Next steps: wait to avoid repeat glitches, move down, wait again.
