@@ -2,6 +2,7 @@
 - "Finish the Damn Game" Initiative
   - Bugfixes from games
     - Fix up AI with new equip system
+    - Add wander-around-randomly-and-do-shit to the AI
     - Remove the ability to sell
     - Display current mods
     - Use "sell" to sell old weapons that no longer exist in the shop

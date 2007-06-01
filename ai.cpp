@@ -208,6 +208,9 @@ void Ai::updateTween(bool live, bool pending, Float2 playerpos, bool shopped, Fl
   
   zeroNextKeys();
   
+  if(live && shoptarget == 0)
+    shoptarget = -1;
+  
   if(shoptarget == -1) {
     nextKeys.menu.x = -1.0;
     if(!live)
@@ -217,11 +220,11 @@ void Ai::updateTween(bool live, bool pending, Float2 playerpos, bool shopped, Fl
     else
       shoptarget = 2;
   }
-  
+  /*
   if(pending) {
     nextKeys.keys[BUTTON_CANCEL].down = (rng.frand() < 0.01);
     return;
-  }
+  }*/
   
   Float2 approach;
   if(shopped) {
@@ -236,7 +239,7 @@ void Ai::updateTween(bool live, bool pending, Float2 playerpos, bool shopped, Fl
     CHECK(0);
   }
   
-  if(len(playerpos - approach) < 3) {
+  if(len(playerpos - approach) < 2) {
     nextKeys.keys[BUTTON_ACCEPT].down = frameNumber % 2;
     if(shoptarget == 0)
       shoptarget = -1;
@@ -263,7 +266,7 @@ Controller makeController(float x, float y, bool key, bool toggle) {
 }
 
 void doMegaEnumWorker(const HierarchyNode &rt, vector<pair<Money, vector<Controller> > > *weps, vector<pair<Money, vector<Controller> > > *upgs, vector<vector<Controller> > *equips, vector<Controller> *done, vector<Controller> path, const Player *player) {
-  if(rt.type == HierarchyNode::HNT_CATEGORY) {
+  if(rt.type == HierarchyNode::HNT_CATEGORY || rt.type == HierarchyNode::HNT_EQUIP) {
     path.push_back(makeController(1, 0, false, false));
     for(int i = 0; i < rt.branches.size(); i++) {
       if(i)
@@ -280,7 +283,7 @@ void doMegaEnumWorker(const HierarchyNode &rt, vector<pair<Money, vector<Control
     upgs->push_back(make_pair(player->adjustBombardment(rt.bombardment, 0).cost(), path));
   } else if(rt.type == HierarchyNode::HNT_TANK) {
     upgs->push_back(make_pair(player->adjustTankWithInstanceUpgrades(rt.tank).cost(), path));
-  } else if(rt.type == HierarchyNode::HNT_EQUIP) {
+  } else if(rt.type == HierarchyNode::HNT_EQUIPWEAPON) {
     equips->push_back(path);  // this is kind of glitchy since it won't adjust after the player buys weapons, but whatever
   } else if(rt.type == HierarchyNode::HNT_IMPLANTSLOT) {
     upgs->push_back(make_pair(player->adjustImplantSlot(rt.implantslot).cost(), path));
@@ -289,6 +292,7 @@ void doMegaEnumWorker(const HierarchyNode &rt, vector<pair<Money, vector<Control
   } else if(rt.type == HierarchyNode::HNT_IMPLANTITEM_UPG) {
     upgs->push_back(make_pair(player->adjustImplant(rt.implantitem).costToLevel(player->implantLevel(rt.implantitem)), path));
   } else if(rt.type == HierarchyNode::HNT_SELL) {
+  } else if(rt.type == HierarchyNode::HNT_EQUIPCATEGORY) {
   } else if(rt.type == HierarchyNode::HNT_DONE) {
     CHECK(done->size() == 0);
     *done = path;
@@ -317,19 +321,50 @@ vector<Controller> reversecontroller(const vector<Controller> &in) {
 vector<Controller> makeComboToggle(const vector<Controller> &src, Rng *rng) {
   vector<Controller> oot = src;
   
-  for(int i = 0; i < rng->frand() * 100; i++) {  // yes, the rng frand gets called each time
+  for(int i = 0; i < rng->frand() * 10; i++) {  // yes, the rng frand gets called each time
     Controller rv;
     rv.keys.resize(BUTTON_LAST);
     rv.menu = Float2(0, 0);
     for(int i = 0; i < BUTTON_LAST; i++)
       rv.keys[i].down = 0;
-    rv.keys[BUTTON_FIRE1].down = rng->frand() < 0.5;
-    rv.keys[BUTTON_FIRE2].down = rng->frand() < 0.5;
-    oot.push_back(rv);
+    if(rng->frand() < 0.1) {
+      vector<Controller> path;
+      
+      rv.keys[BUTTON_ACCEPT].down = true;
+      rv.menu.y = rng->frand() * 2 - 1;
+      path.push_back(rv);
+      rv.keys[BUTTON_ACCEPT].down = false;
+      
+      float bias = rng->frand();
+      for(int i = 0; i < rng->frand() * 100; i++) {
+        if(rng->frand() < bias) {
+          rv.menu.y = 1;
+        } else {
+          rv.menu.y = -1;
+        }
+        path.push_back(rv);
+      }
+      rv.menu.y = rng->frand() * 2 - 1;
+      rv.keys[BUTTON_ACCEPT].down = true;
+      path.push_back(rv);
+      
+      oot.insert(oot.end(), path.begin(), path.end());
+      vector<Controller> rev = reversecontroller(path);
+      for(int i = 0; i < rev.size(); i++)
+        rev[i].keys[BUTTON_ACCEPT].down = false;
+      oot.insert(oot.end(), rev.begin(), rev.end());
+    } else {
+      rv.keys[BUTTON_FIRE1].down = rng->frand() < 0.5;
+      rv.keys[BUTTON_FIRE2].down = rng->frand() < 0.5;
+      rv.keys[BUTTON_FIRE3].down = rng->frand() < 0.5;
+      rv.keys[BUTTON_FIRE4].down = rng->frand() < 0.5;
+      oot.push_back(rv);
+    }
   }
-  
+
   vector<Controller> rev = reversecontroller(src);
   oot.insert(oot.end(), rev.begin(), rev.end());
+
   return oot;
 }
 
@@ -348,7 +383,7 @@ vector<Controller> makeComboAppend(const vector<Controller> &src, int count, boo
   return oot;
 }
 
-void Ai::updateShop(const Player *player, const HierarchyNode &hierarchy) {
+void Ai::updateShop(const Player *player, const HierarchyNode &hierarchy, bool athead) {
   updateKeys(CORE);
   
   zeroNextKeys();
@@ -368,12 +403,13 @@ void Ai::updateShop(const Player *player, const HierarchyNode &hierarchy) {
     return;
   }
   CHECK(!shopdone);
+  CHECK(athead);
   vector<pair<Money, vector<Controller> > > weps;
   vector<pair<Money, vector<Controller> > > upgs;
   vector<vector<Controller> > equips;
   vector<Controller> done;
   doMegaEnum(hierarchy, &weps, &upgs, &equips, &done, player);
-  dprintf("%d weps, %d upgs, %d donesize\n", weps.size(), upgs.size(), done.size());
+  dprintf("%d weps, %d upgs, %d equips, %d donesize\n", weps.size(), upgs.size(), equips.size(), done.size());
   CHECK(weps.size());
   CHECK(done.size());
   sort(weps.begin(), weps.end());
@@ -423,7 +459,6 @@ void Ai::updateShop(const Player *player, const HierarchyNode &hierarchy) {
     int amount = 1;
     if(weps[dlim].first > Money(0))
       amount = min(weapcash / weps[dlim].first, 100);
-    dprintf("Buying %d of stuff\n", amount);
     commands.push_back(makeComboAppend(weps[dlim].second, amount, false));
   }
   
@@ -443,8 +478,8 @@ void Ai::updateShop(const Player *player, const HierarchyNode &hierarchy) {
   }
   swap(shopQueue, realShopQueue);
   shopdone = true;
-  updateShop(player, hierarchy);
-  dprintf("shop prepared");
+  updateShop(player, hierarchy, false);
+  dprintf("shop prepared, %d moves\n", shopQueue.size());
 }
 
 GameAi *Ai::getGameAi() {

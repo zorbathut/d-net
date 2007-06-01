@@ -707,7 +707,7 @@ bool Shop::runTick(const Keystates &keys, Player *player) {
 
 void Shop::ai(Ai *ais, const Player *player) const {
   if(ais)
-    ais->updateShop(player, hierarchroot);
+    ais->updateShop(player, hierarchroot, (curloc.size() == 1 && curloc[0] == 0));
 }
 
 
