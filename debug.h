@@ -35,7 +35,12 @@ void disableStackTrace();
 extern void *stackStart;
 
 // Almost everything after here is necessary for the vector header patch
+#ifdef DPRINTF_MARKUP
+int rdprintf(const char *bort, ...) __attribute__((format(printf,1,2)));
+#define dprintf(format, args...) rdprintf("%10.10s:%4d: " format, __FILE__, __LINE__, ##args)
+#else
 int dprintf(const char *bort, ...) __attribute__((format(printf,1,2)));
+#endif
 
 extern int frameNumber;
 

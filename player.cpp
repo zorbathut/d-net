@@ -637,7 +637,5 @@ void Player::reCalculate() {
     if(tank[0].tank->adjustment)
       adjustment += *tank[0].tank->adjustment;
   }
-  
-  dprintf("%f", adjustment.adjustmentfactor(IDBAdjustment::WARHEAD_RADIUS_FALLOFF));
   //adjustment.debugDump();
 }

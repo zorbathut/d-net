@@ -340,7 +340,7 @@ void Collider::cleanup(int mode, const Coord4 &bounds, const vector<int> &teams)
   int nex = (zbounds.ex / resolution).toInt();
   int ney = (zbounds.ey / resolution).toInt();
   if(nsx != sx || nsy != sy || nex != ex || ney != ey) {
-    dprintf("Rescaling!\n");
+    //dprintf("Rescaling!\n");
     {
       vector<CollideZone> ncz((nex - nsx) * (ney - nsy));
       for(int nx = nsx; nx < nex; nx++) {
