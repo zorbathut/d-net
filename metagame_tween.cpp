@@ -1005,10 +1005,12 @@ void PersistentData::divvyCash(float firepowerSpent) {
   for(int j = 0; j < totals.size(); j++) {
     totals[j] = accumulate(values[j].begin(), values[j].end(), 0.0);
   }
-  int chunkTotal = 0;
+  const float ratios[4] = { 1.0, 1.0, 0.6, 3.0 };
+  //const float ratios[4] = { 1.0, 1.0, 1.0, 1.0 };
+  float chunkTotal = 0;
   for(int i = 0; i < totals.size(); i++) {
     if(totals[i] > 1e-6)
-      chunkTotal++;
+      chunkTotal += ratios[i];
   }
   
   // We give the users a good chunk of money at the beginning to get started, but then we tone it down a bit per round so they don't get an immediate 6x increase. (or whateverx increase.) In a lot of ways, "starting cash" is a crummy number - it should be "starting cash per round", with starting cash calculated from that. But it's easier to understand this way.
@@ -1033,7 +1035,7 @@ void PersistentData::divvyCash(float firepowerSpent) {
   vector<float> playercash(playerdata.size());
   for(int i = 0; i < playercash.size(); i++) {
     for(int j = 0; j < totals.size(); j++) {
-      playercash[i] += values[j][i];
+      playercash[i] += values[j][i] * ratios[j];
     }
     playercash[i] /= chunkTotal;
   }
