@@ -164,6 +164,8 @@ const HierarchyNode &Shop::getCategoryNode() const {
 }
 
 bool normalizeSelling(bool selling, HierarchyNode::Type type) {
+  if(type != HierarchyNode::HNT_WEAPON) // this is pretty crummy, but it's a temporary hack
+    return false;
   if(type == HierarchyNode::HNT_IMPLANTSLOT || type == HierarchyNode::HNT_IMPLANTITEM || type == HierarchyNode::HNT_IMPLANTITEM_UPG || type == HierarchyNode::HNT_EQUIPWEAPON || type == HierarchyNode::HNT_EQUIPCATEGORY)
     return false;
   else
