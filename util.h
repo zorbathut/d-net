@@ -50,10 +50,10 @@ Money operator+(const Money &lhs, const Money &rhs);
 Money operator-(const Money &lhs, const Money &rhs);
 
 Money operator*(const Money &lhs, int rhs);
-Money operator*(const Money &lhs, float rhs);
+Money operator*(const Money &lhs, double rhs);
 int operator/(const Money &lhs, const Money &rhs);
 Money operator/(const Money &lhs, int rhs);
-Money operator/(const Money &lhs, float rhs);
+Money operator/(const Money &lhs, double rhs);
 int operator%(const Money &lhs, int rhs);
 
 const Money &operator+=(Money &lhs, const Money &rhs);

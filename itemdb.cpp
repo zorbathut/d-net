@@ -97,7 +97,7 @@ bool operator==(const IDBAdjustment &lhs, const IDBAdjustment &rhs) {
   return true;
 }
 
-float IDBAdjustment::adjustmentfactor(int type) const {
+double IDBAdjustment::adjustmentfactor(int type) const {
   CHECK(type >= 0 && type < LAST);
   if(type == WARHEAD_RADIUS_FALLOFF) {
     if(!ignore_excessive_radius && adjusts[type] + 100 > WARHEAD_RADIUS_MAXMULT * 100) {
@@ -112,7 +112,7 @@ float IDBAdjustment::adjustmentfactor(int type) const {
   }
 }
 
-float IDBAdjustment::recyclevalue() const {
+double IDBAdjustment::recyclevalue() const {
   float shares = 1 * adjustmentfactor(IDBAdjustment::RECYCLE_BONUS);
   float ratio = shares / (shares + 1.0);
   return ratio;

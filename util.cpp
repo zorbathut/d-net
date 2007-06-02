@@ -115,7 +115,7 @@ Money operator+(const Money &lhs, const Money &rhs) {
  Money operator-(const Money &lhs, const Money &rhs) {
   return Money(lhs.value() - rhs.value()); }
 
-Money operator*(const Money &lhs, float rhs) {
+Money operator*(const Money &lhs, double rhs) {
   return Money((long long)(lhs.value() * rhs)); }
 Money operator*(const Money &lhs, int rhs) {
   return Money(lhs.value() * rhs); }
@@ -123,7 +123,7 @@ int operator/(const Money &lhs, const Money &rhs) {
   return int(min(lhs.value() / rhs.value(), 2000000000LL)); }
 Money operator/(const Money &lhs, int rhs) {
   return Money(lhs.value() / rhs); }
-Money operator/(const Money &lhs, float rhs) {
+Money operator/(const Money &lhs, double rhs) {
   return Money((long long)(lhs.value() / rhs)); }
 
 const Money &operator+=(Money &lhs, const Money &rhs) {

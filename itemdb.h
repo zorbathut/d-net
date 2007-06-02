@@ -36,8 +36,8 @@ public:
   
   pair<int, int> adjustlist[5];
   
-  float adjustmentfactor(int type) const;
-  float recyclevalue() const; // this is annoyingly different
+  double adjustmentfactor(int type) const;
+  double recyclevalue() const; // this is annoyingly different
 
   void debugDump() const;
 
