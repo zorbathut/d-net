@@ -7,8 +7,6 @@
     - Make things round less stupidly
     - Can you accidentally buy an upgrade or tank or etc despite being in sell mode?
     - Add tank upgrade multipliers to the balance sheet
-    - Check to see if the upgradable tanks can just overpower the non-upgradable ones
-      - HIMO kind of sucks
     - Add level editor options for subtraction, fix spiney and re-add
     - Pacman scale up 20% or so
     - Add projectile durability to balancing sheet 
