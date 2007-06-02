@@ -521,12 +521,14 @@ template<> bool parseSingleItem<bool>(const string &val) {
 }
 
 template<> int parseSingleItem<int>(const string &val) {
+  CHECK(val.size());
   for(int i = 0; i < val.size(); i++)
     CHECK(isdigit(val[i]));
   return atoi(val.c_str());
 }
 
 template<> float parseSingleItem<float>(const string &val) {
+  CHECK(val.size());
   bool foundperiod = false;
   for(int i = 0; i < val.size(); i++) {
     if(val[i] == '-' && i == 0) {
@@ -892,7 +894,11 @@ void parseProjectile(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   
   titem->chain_warhead = parseSubclassSet(chunk, "warhead", warheadclasses);
   
-  titem->toughness = parseWithDefault(chunk, "toughness", 1.0);
+  if(titem->motion != PM_MINE && titem->motion != PM_DPS) {
+    titem->durability = parseSingleItem<float>(chunk->consume("durability"));
+  } else {
+    titem->durability = -1;
+  }
   
   CHECK(titem->chain_warhead.size());
 }

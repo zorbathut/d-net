@@ -4,7 +4,6 @@
     - Use "sell" to sell old weapons that no longer exist in the shop
       - Clean up the old sell code
       - Get rid of old weapons as they become obsolete
-    - Add projectile durability to balancing sheet
     - Make things round less stupidly
     - Can you accidentally buy an upgrade or tank or etc despite being in sell mode?
     - Add tank upgrade multipliers to the balance sheet
@@ -24,11 +23,16 @@
     - Increase autocannon eating through walls
     - Add wander-around-randomly-and-do-shit to the AI
     - Remove bombardment level visualization, and de-integer it
-  - Add implementations for all trap weapons
-  - Re-enable weapon check
-  - Add spider, sniper, satellite behavior
+    - Add calculation for missile explosion durability
+    - Glory durability?
+    - Add sparker to balance sheet >:(
+    - Add tank cost to balance sheet
   - Many many more weapons
-    - Exotic
+    - Add implementations for all trap weapons
+    - Add implementations for all exotic weapons
+    - Re-enable weapon checks
+    - Add trap behavior
+    - Add exotic behavior
     - Special autocannon
     - Special laser
     - Special missile
@@ -112,7 +116,6 @@
 
 ---- Maintenance, minor bugfix, braindead
 - Make small text thicker
-- Set your keys/buttons changing
 - Set your keys/buttons changing
 - AI shouldn't try to buy the items it already owns/smarter about shops
 - Buy menu flicker? Double-buffering?

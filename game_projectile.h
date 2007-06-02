@@ -27,7 +27,7 @@ public:
 
   bool isConsumed() const; // !isLive || isDetonating
 
-  float toughness() const;
+  float durability() const;
 
   Projectile();   // does not start in usable state
   Projectile(const Coord2 &pos, float d, const IDBProjectileAdjust &projtype, Rng *rng, const DamageFlags &damageflags);

@@ -134,8 +134,8 @@ bool Projectile::isConsumed() const {
   return !isLive() || isDetonating();
 }
 
-float Projectile::toughness() const {
-  return projtype.toughness();
+float Projectile::durability() const {
+  return projtype.durability();
 }
 
 Coord2 Projectile::movement() const {

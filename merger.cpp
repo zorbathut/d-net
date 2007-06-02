@@ -125,7 +125,7 @@ template<typename Model> void doMerge(const string &csv, const string &unmerged,
     kvData kvd;
     while(getkvData(ifs, &kvd)) {
       string name = Model::getWantedName(kvd.read("name"), names);
-      dprintf("Name is %s, checking %s\n", kvd.read("name").c_str(), name.c_str());
+      //dprintf("Name is %s, checking %s\n", kvd.read("name").c_str(), name.c_str());
       if(name.size()) {
         CHECK(tdd.count(name));
         done.insert(name);

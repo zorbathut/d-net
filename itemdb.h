@@ -113,7 +113,7 @@ struct IDBProjectile {
   float thickness_visual;
   int mine_spikes;
 
-  float toughness;
+  float durability;
 
   float halflife;
   
@@ -325,7 +325,7 @@ public:
   float velocity() const;
   float length() const;
   float radius_physical() const;
-  float toughness() const;
+  float durability() const;
 
   vector<IDBWarheadAdjust> chain_warhead(float multfactor = 1.0f) const;
 

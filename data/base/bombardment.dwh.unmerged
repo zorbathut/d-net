@@ -647,7 +647,7 @@ projectile {
   
   thickness_visual=3x
   length=2x
-  toughness=2
+  durability=MERGE
   
   color=0.9,0.8,0.5
   
@@ -692,7 +692,7 @@ projectile {
   
   thickness_visual=3x
   length=2x
-  toughness=2
+  durability=MERGE
   
   color=0.9,0.8,0.5
   
@@ -737,7 +737,7 @@ projectile {
   
   thickness_visual=3x
   length=2x
-  toughness=2
+  durability=MERGE
   
   color=0.9,0.8,0.5
   
@@ -782,7 +782,7 @@ projectile {
   
   thickness_visual=3x
   length=2x
-  toughness=2
+  durability=MERGE
   
   color=0.9,0.8,0.5
   
@@ -827,7 +827,7 @@ projectile {
   
   thickness_visual=3x
   length=2x
-  toughness=2
+  durability=MERGE
   
   color=0.9,0.8,0.5
   
@@ -872,7 +872,7 @@ projectile {
   
   thickness_visual=3x
   length=2x
-  toughness=2
+  durability=MERGE
   
   color=0.9,0.8,0.5
   

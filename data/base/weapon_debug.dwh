@@ -15,6 +15,7 @@ projectile {
   color=1.0, 0.3, 0.3
   warhead=warhead.tracer
   debug=true
+  durability=1
 }
 
 deploy {
@@ -56,6 +57,7 @@ projectile {
   color=1.0, 0.3, 0.3
   warhead=warhead.minishredder
   debug=true
+  durability=1
 }
 
 deploy {
@@ -96,6 +98,7 @@ projectile {
   color=1.0, 0.3, 0.3
   warhead=warhead.megashredder
   debug=true
+  durability=1
 }
 
 deploy {
@@ -222,6 +225,7 @@ projectile {
   warhead=warhead.efftester
   
   debug=true
+  durability=1
 }
 
 deploy {

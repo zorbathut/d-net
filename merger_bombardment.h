@@ -19,6 +19,8 @@ struct BombardParams {
     
     string lock;
     string unlock;
+    
+    string durability;
   };
   
   typedef IDBBombardment FinalType;

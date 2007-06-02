@@ -41,10 +41,13 @@ string WeaponParams::token() {
 
 bool WeaponParams::parseLine(const vector<string> &line, Data *data) {
   if(line[1] == "Params") {
-    if(!line[6].size())
+    CHECK(!line[6].size());
+    CHECK(line[8].size());
+    if(!line[7].size())
       return false;
     data->params = true;
-    data->dpp = atof(line[6].c_str());
+    data->dpp = atof(line[7].c_str());
+    data->durability = line[5];
     data->params_threshold = string(line[2].begin(), find(line[2].begin(), line[2].end(), '.'));
     CHECK(data->params_threshold.size());
     return true;
@@ -54,31 +57,33 @@ bool WeaponParams::parseLine(const vector<string> &line, Data *data) {
     data->item_firerate = line[3];
     CHECK(line[4].size());
     data->item_recommended = StringPrintf("%d", atoi(line[4].c_str()));
-    data->dpp = atof(line[6].c_str());
+    data->dpp = atof(line[7].c_str());
+    data->durability = line[5];
     return true;
   }
 }
 
 string WeaponParams::getWantedName(const string &name, const set<string> &possiblenames) {
-  dprintf("--- START %s\n", name.c_str());
+  //dprintf("--- START %s\n", name.c_str());
   string rv;
   rv = suffix(name);
-  dprintf("%s\n", rv.c_str());
+  //dprintf("%s\n", rv.c_str());
   if(possiblenames.count(rv))
     return rv;
   rv = findName(suffix(name, 1), possiblenames);
-  dprintf("%s\n", rv.c_str());
+  //dprintf("%s\n", rv.c_str());
   if(possiblenames.count(rv))
     return rv;
   rv = findName(suffix(name, 2), possiblenames);
-  dprintf("%s\n", rv.c_str());
+  //dprintf("%s\n", rv.c_str());
   if(possiblenames.count(rv))
     return rv;
-  dprintf("returning NOTHING\n");
+  //dprintf("returning NOTHING\n");
   return "";
 }
 
 void WeaponParams::preprocess(kvData *kvd, const Data &data) {
+  dprintf("%s %s\n", kvd->category.c_str(), kvd->read("name").c_str());
   if(kvd->category == "weapon") {
     CHECK(!data.params);
     
@@ -96,6 +101,11 @@ void WeaponParams::preprocess(kvData *kvd, const Data &data) {
     
     if(kvd->kv.count("spawncash"))
       kvd->kv["spawncash"] = data.params_threshold;
+  } else if(kvd->category == "projectile") {
+    if(kvd->read("durability") == "MERGE") {
+      dprintf("merging\n");
+      kvd->kv["durability"] = data.durability;
+    }
   }
 }
 
@@ -114,17 +124,18 @@ float WeaponParams::getMultiple(const IDBWeapon &item, const Data &data) {
 
 string WeaponParams::getMultipleAltName(const string &name) {
   string suff = suffix(name);
-  CHECK(count(suff.begin(), suff.end(), ' '));
+  if(!count(suff.begin(), suff.end(), ' '))
+    return "";
   {
     string pref = strrchr(suff.c_str(), ' ') + 1;
     bool found = false;
     for(int i = 0; i < 6; i++)
       if(pref == roman_number(i))
         found = true;
-    CHECK(found);
+    if(!found)
+      return "";
   }
   suff = string(suff.c_str(), (const char *)strrchr(suff.c_str(), ' '));
-  dprintf("%s\n", suff.c_str());
   return suff;
 }
 
@@ -139,6 +150,8 @@ void WeaponParams::reprocess(kvData *kvd, float multiple) {
 
 bool WeaponParams::verify(const IDBWeapon &item, const Data &data) {
   CHECK(withinEpsilon(IDBWeaponAdjust(&item, IDBAdjustment()).launcher().stats_damagePerShot(), data.dpp, 0.0001));
+  if(data.durability.size())
+    CHECK(withinEpsilon(IDBWeaponAdjust(&item, IDBAdjustment()).launcher().deploy().chain_projectile()[0].durability(), atof(data.durability.c_str()), 0.0001));
   return true;
 }
 

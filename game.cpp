@@ -216,11 +216,14 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
         
         bool lft = rng->frand() < 0.5;
         
-        if(projectiles[lhs.bucket].find(lhs.item).toughness() > projectiles[rhs.bucket].find(rhs.item).toughness())
+        CHECK(projectiles[lhs.bucket].find(lhs.item).durability() > 0);
+        CHECK(projectiles[rhs.bucket].find(rhs.item).durability() > 0);
+        
+        if(projectiles[lhs.bucket].find(lhs.item).durability() > projectiles[rhs.bucket].find(rhs.item).durability())
           swap(lhs, rhs);
         
         // LHS now has less toughness, so it's guaranteed to go boom
-        bool rhsdestroyed = rng->frand() < (projectiles[lhs.bucket].find(lhs.item).toughness() / projectiles[rhs.bucket].find(rhs.item).toughness());
+        bool rhsdestroyed = rng->frand() < (projectiles[lhs.bucket].find(lhs.item).durability() / projectiles[rhs.bucket].find(rhs.item).durability());
         
         if(lft)
           projectiles[lhs.bucket].find(lhs.item).detonate(collider.getCollision().pos, normals.second, NULL, GamePlayerContext(&tanks[lhs.bucket], &projectiles[lhs.bucket], gic), true);

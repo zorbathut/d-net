@@ -42,6 +42,7 @@ projectile {
   motion=normal
   velocity=120
   color=1.0, 0.9, 0.6
+  durability=MERGE
   warhead=warhead.weapon.autocannon
 }
 
@@ -106,7 +107,7 @@ projectile {
   velocity=130
   thickness_visual=2x
   length=2x
-  toughness=2
+  durability=MERGE
   color=1.0, 0.9, 0.6
   warhead=warhead.weapon.apautocannon
 }
@@ -172,6 +173,7 @@ projectile {
   motion=normal
   velocity=120
   color=1.0, 0.9, 0.6
+  durability=MERGE
   warhead=warhead.weapon.heavyautocannon
 }
 
@@ -236,6 +238,7 @@ projectile {
   motion=normal
   velocity=120
   color=1.0, 0.9, 0.6
+  durability=MERGE
   warhead=warhead.weapon.sabotshotgun
 }
 
@@ -300,6 +303,7 @@ projectile {
   motion=normal
   velocity=120
   color=1.0, 0.9, 0.6
+  durability=MERGE
   warhead=warhead.weapon.bladelauncher
 }
 
@@ -364,6 +368,7 @@ projectile {
   motion=normal
   velocity=120
   color=1.0, 0.9, 0.6
+  durability=MERGE
   warhead=warhead.weapon.ccannon
 }
 
@@ -428,6 +433,7 @@ projectile {
   motion=normal
   velocity=120
   color=1.0, 0.9, 0.6
+  durability=MERGE
   warhead=warhead.weapon.conversioncannon
 }
 

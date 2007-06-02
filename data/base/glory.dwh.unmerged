@@ -16,7 +16,7 @@ projectile {
   velocity=40
   color=1.0, 0.8, 0.3
   motion=airbrake
-  toughness=0.3
+  durability=0.3
   warhead=warhead.glory.none.core
 }
 
@@ -80,7 +80,7 @@ projectile {
   velocity=80
   color=1.0, 0.8, 0.3
   motion=airbrake
-  toughness=0.3
+  durability=0.5
   warhead=warhead.glory.shapedcharges.core
 }
 
@@ -143,7 +143,7 @@ projectile {
   velocity=400
   color=0.2, 0.6, 1.0
   motion=airbrake
-  toughness=0.3
+  durability=12
   warhead=warhead.glory.plasmacharge.blast
 }
 
@@ -192,7 +192,7 @@ projectile {
   velocity=60
   color=1.0, 0.8, 0.3
   motion=airbrake
-  toughness=0.3
+  durability=1
   warhead=warhead.glory.plasmacharge.core
 }
 
@@ -243,7 +243,7 @@ projectile {
   velocity=40
   color=1.0, 0.8, 0.3
   motion=airbrake
-  toughness=0.3
+  durability=0.3
   warhead=warhead.glory.vengeancepulse.core
 }
 
@@ -306,7 +306,7 @@ projectile {
   velocity=40
   color=1.0, 0.8, 0.3
   motion=airbrake
-  toughness=0.3
+  durability=0.3
   warhead=warhead.glory.coreexplosive.core
 }
 
@@ -369,7 +369,7 @@ projectile {
   velocity=40
   color=1.0, 0.8, 0.3
   motion=airbrake
-  toughness=0.3
+  durability=0.3
   warhead=warhead.glory.stasischamber.core
 }
 
@@ -432,7 +432,7 @@ projectile {
   velocity=40
   color=1.0, 0.8, 0.3
   motion=airbrake
-  toughness=0.3
+  durability=0.3
   warhead=warhead.glory.overloadchip.core
 }
 
@@ -495,7 +495,7 @@ projectile {
   velocity=40
   color=1.0, 0.8, 0.3
   motion=airbrake
-  toughness=0.3
+  durability=0.3
   warhead=warhead.glory.kamikazewarhead.core
 }
 
@@ -558,7 +558,7 @@ projectile {
   velocity=40
   color=1.0, 0.8, 0.3
   motion=airbrake
-  toughness=0.3
+  durability=0.3
   warhead=warhead.glory.thedevice.core
 }
 
@@ -621,7 +621,7 @@ projectile {
   velocity=40
   color=1.0, 0.8, 0.3
   motion=airbrake
-  toughness=0.3
+  durability=0.3
   warhead=warhead.glory.deadmansnuke.core
 }
 
@@ -684,7 +684,7 @@ projectile {
   velocity=40
   color=1.0, 0.8, 0.3
   motion=airbrake
-  toughness=0.3
+  durability=0.3
   warhead=warhead.glory.immolationdevice.core
 }
 
@@ -747,7 +747,7 @@ projectile {
   velocity=40
   color=1.0, 0.8, 0.3
   motion=airbrake
-  toughness=0.3
+  durability=0.3
   warhead=warhead.glory.coreconversion.core
 }
 

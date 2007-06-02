@@ -20,6 +20,7 @@ bool BombardParams::parseLine(const vector<string> &line, Data *data) {
   data->dpp = line[3];
   data->lock = line[4];
   data->unlock = line[5];
+  data->durability = line[6];
   return true;
 }
 
@@ -38,6 +39,9 @@ void BombardParams::preprocess(kvData *kvd, const Data &data) {
     kvd->kv["cost"] = data.cost;
     kvd->kv["lockdelay"] = data.lock;
     kvd->kv["unlockdelay"] = data.unlock;
+  } else if(kvd->category == "projectile") {
+    if(kvd->kv.count("durability") && kvd->kv["durability"] == "MERGE")
+      kvd->kv["durability"] = data.durability;
   } else if(kvd->category == "warhead") {
     CHECK(kvd->kv.count("radiusdamage"));
     kvd->kv["radiusdamage"] = splice(kvd->read("radiusdamage"), data.dpp);

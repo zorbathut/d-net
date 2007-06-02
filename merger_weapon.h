@@ -22,6 +22,7 @@ struct WeaponParams {
     string params_threshold;
     
     float dpp;
+    string durability;
   };
   
   typedef IDBWeapon FinalType;

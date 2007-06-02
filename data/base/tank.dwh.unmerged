@@ -88,6 +88,7 @@ projectile {
   name=projectile.sparker1
   velocity=150
   color=1.0, 1.0, 1.0
+  durability=1
   warhead=warhead.sparker1
 }
 
@@ -143,6 +144,7 @@ projectile {
   name=projectile.sparker2
   velocity=180
   color=1.0, 1.0, 1.0
+  durability=2
   warhead=warhead.sparker2
 }
 
@@ -195,6 +197,7 @@ projectile {
   name=projectile.sparker3
   velocity=200
   color=1.0, 1.0, 1.0
+  durability=4
   warhead=warhead.sparker3
 }
 
@@ -251,6 +254,7 @@ projectile {
   color=1.0, 1.0, 1.0
   thickness_visual=1.5x
   length=1.5x
+  durability=8
   warhead=warhead.sparker4
 }
 
@@ -307,6 +311,7 @@ projectile {
   color=1.0, 1.0, 1.0
   thickness_visual=1.5x
   length=1.5x
+  durability=16
   warhead=warhead.sparker5
 }
 
@@ -363,6 +368,7 @@ projectile {
   color=1.0, 1.0, 1.0
   thickness_visual=1.5x
   length=1.5x
+  durability=32
   warhead=warhead.sparker6
 }
 
@@ -421,6 +427,7 @@ projectile {
   velocity=120
   color=1.0, 1.0, 1.0
   thickness_visual=1.5x
+  durability=64
   warhead=warhead.sparker7.secondary
 }
 
@@ -460,6 +467,7 @@ projectile {
   color=1.0, 1.0, 1.0
   thickness_visual=1.5x
   length=1.5x
+  durability=128
   warhead=warhead.sparker7
 }
 
