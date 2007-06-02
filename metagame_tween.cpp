@@ -754,9 +754,9 @@ void PersistentData::renderSlot(int slotid) const {
           }
           
           if(adjusttext[i].first.second)
-            setColor(Color(0.1, 1.0, 0.1));
+            setColor(C::positive);
           else
-            setColor(Color(1.0, 0.1, 0.1));
+            setColor(C::negative);
           drawJustifiedText(adjusttext[i].first.first, 1, Float2(getZoom().ex - 0.5, cpos - 1.5), TEXT_MAX, TEXT_MIN);
         }
       }

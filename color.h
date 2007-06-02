@@ -35,6 +35,9 @@ namespace C {
   
   const Color red = Color(1.0, 0.0, 0.0);
   const Color black = Color(0.0, 0.0, 0.0);
+  
+  const Color positive = Color(0.1, 1.0, 0.1);
+  const Color negative = Color(1.0, 0.1, 0.1);
 }
 
 #endif

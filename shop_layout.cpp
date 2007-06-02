@@ -196,7 +196,7 @@ Float2 ShopLayout::price(const ShopPlacement &place) const {
 }
 
 Float4 ShopLayout::textbox(int depth) const {
-  return Float4(boxstart(depth), ystart(), boxend(depth), yend());
+  return Float4(lerp(boxstart(depth), boxend(depth), 0.05), ystart(), lerp(boxstart(depth), boxend(depth), 1.0 - 0.05), yend());
 }
 
 float ShopLayout::boxthick() const {

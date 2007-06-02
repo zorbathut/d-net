@@ -284,6 +284,14 @@ void HierarchyNode::checkConsistency(vector<string> *errors) const {
   }
   
   // the "done" token has no cost or other display but is "buyable"
+  if(type == HNT_BONUSES) {
+    CHECK(!gottype);
+    gottype = true;
+    CHECK(displaymode == HNDM_BLANK);
+    CHECK(!buyable);
+  }
+
+  // the "done" token has no cost or other display but is "buyable"
   if(type == HNT_DONE) {
     CHECK(!gottype);
     gottype = true;
@@ -1432,6 +1440,16 @@ void loadItemDb(bool reload) {
     tnode.type = HierarchyNode::HNT_EQUIP;
     tnode.displaymode = HierarchyNode::HNDM_BLANK;
     tnode.cat_restrictiontype = HierarchyNode::HNT_EQUIP_CAT;
+    root.branches.push_back(tnode);
+  }
+  
+    // bonuses bonuses bonuses! malkovich bonuses?
+  {
+    HierarchyNode tnode;
+    tnode.name = "Show bonuses";
+    tnode.type = HierarchyNode::HNT_BONUSES;
+    tnode.displaymode = HierarchyNode::HNDM_BLANK;
+    tnode.cat_restrictiontype = HierarchyNode::HNT_BONUSES;
     root.branches.push_back(tnode);
   }
   

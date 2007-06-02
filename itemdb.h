@@ -17,10 +17,11 @@ using namespace std;
 
 #define WARHEAD_RADIUS_MAXMULT 2
 
-const char * const adjust_text[] = { "damage_kinetic", "damage_energy", "damage_explosive", "damage_trap", "damage_exotic", "warhead_radius_falloff", "discount_weapon", "discount_implant", "discount_upgrade", "discount_tank", "recycle_bonus", "tank_firerate", "tank_speed", "tank_turn", "tank_armor", "bombardment_speed", "damage_all", "all" };
-const bool adjust_negative[] = { false, false, false, false, false, false, true, true, true, true, false, false, false, false, false, false };
-const char * const adjust_human[] = {"Kinetic damage", "Energy damage", "Explosive damage", "Trap damage", "Exotic damage", "Blast radius", "Weapon discount", "Implant discount", "Upgrade discount", "Tank discount", "Sell efficiency", "Tank firerate", "Tank speed", "Tank turning", "Tank armor", "Bombardment speed", "All damage", "All" };
-const char * const adjust_unit[] = {" KPE", " KJE", " TOTE", " FSE", " flux", " m", "", "", "", "", "", "", " m/s", " rad/s", " CME", ""};
+const char * const adjust_text[] = { "damage_kinetic", "damage_energy", "damage_explosive", "damage_trap", "damage_exotic", "warhead_radius_falloff", "tank_firerate", "tank_speed", "tank_turn", "tank_armor", "bombardment_speed", "discount_weapon", "discount_implant", "discount_upgrade", "discount_tank", "recycle_bonus", "damage_all", "all" };
+const bool adjust_negative[] = { false, false, false, false, false, false, false, false, false, false, false, true, true, true, true, false };
+const int adjust_category[] = { 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2 };
+const char * const adjust_human[] = {"Kinetic damage", "Energy damage", "Explosive damage", "Trap damage", "Exotic damage", "Blast radius", "Tank firerate", "Tank speed", "Tank turning", "Tank armor", "Bombardment speed", "Weapon discount", "Implant discount", "Upgrade discount", "Tank discount", "Sell efficiency", "All damage", "All" };
+const char * const adjust_unit[] = {" KPE", " KJE", " TOTE", " FSE", " flux", " m", "", " m/s", " rad/s", " CME", "", "", "", "", "", ""};
 
 pair<string, bool> adjust_modifiertext(int id, int amount);
 
@@ -28,7 +29,7 @@ struct IDBAdjustment {
 public:
   // NOTE: there is currently an implicit assumption that the "damage" stats are first. Don't violate this. Look for DAMAGE_* for the places where it matters.
   // Also, these are obviously correlated with the string arrays above.
-  enum { DAMAGE_KINETIC, DAMAGE_ENERGY, DAMAGE_EXPLOSIVE, DAMAGE_TRAP, DAMAGE_EXOTIC, WARHEAD_RADIUS_FALLOFF, DISCOUNT_WEAPON, DISCOUNT_IMPLANT, DISCOUNT_UPGRADE, DISCOUNT_TANK, RECYCLE_BONUS, TANK_FIRERATE, TANK_SPEED, TANK_TURN, TANK_ARMOR, BOMBARDMENT_SPEED, LAST, DAMAGE_ALL = LAST, ALL, COMBO_LAST, DAMAGE_LAST = DAMAGE_EXOTIC + 1, DISCOUNT_BEGIN = DISCOUNT_WEAPON, DISCOUNT_END = DISCOUNT_TANK + 1, TANK_BEGIN = TANK_FIRERATE, TANK_END = TANK_ARMOR + 1 };
+  enum { DAMAGE_KINETIC, DAMAGE_ENERGY, DAMAGE_EXPLOSIVE, DAMAGE_TRAP, DAMAGE_EXOTIC, WARHEAD_RADIUS_FALLOFF, TANK_FIRERATE, TANK_SPEED, TANK_TURN, TANK_ARMOR, BOMBARDMENT_SPEED, DISCOUNT_WEAPON, DISCOUNT_IMPLANT, DISCOUNT_UPGRADE, DISCOUNT_TANK, RECYCLE_BONUS, LAST, DAMAGE_ALL = LAST, ALL, COMBO_LAST, DAMAGE_LAST = DAMAGE_EXOTIC + 1, DISCOUNT_BEGIN = DISCOUNT_WEAPON, DISCOUNT_END = DISCOUNT_TANK + 1, TANK_BEGIN = TANK_FIRERATE, TANK_END = TANK_ARMOR + 1 };
   
   bool ignore_excessive_radius;
   int adjusts[LAST];  // These are in percentage points away from 100. Yes, this is kind of weird.
@@ -601,7 +602,7 @@ public:
 
   string name;
 
-  enum Type {HNT_CATEGORY, HNT_WEAPON, HNT_UPGRADE, HNT_GLORY, HNT_BOMBARDMENT, HNT_TANK, HNT_IMPLANTSLOT, HNT_IMPLANTITEM, HNT_IMPLANTITEM_UPG, HNT_EQUIP, HNT_EQUIPWEAPON, HNT_EQUIPCATEGORY, HNT_SELL, HNT_DONE, HNT_NONE /* for restrictions */, HNT_IMPLANT_CAT, HNT_EQUIP_CAT /* for restrictions */, HNT_LAST};
+  enum Type {HNT_CATEGORY, HNT_WEAPON, HNT_UPGRADE, HNT_GLORY, HNT_BOMBARDMENT, HNT_TANK, HNT_IMPLANTSLOT, HNT_IMPLANTITEM, HNT_IMPLANTITEM_UPG, HNT_EQUIP, HNT_EQUIPWEAPON, HNT_EQUIPCATEGORY, HNT_SELL, HNT_BONUSES, HNT_DONE, HNT_NONE /* for restrictions */, HNT_IMPLANT_CAT, HNT_EQUIP_CAT /* for restrictions */, HNT_LAST};
   Type type;
 
   enum Displaymode {HNDM_BLANK, HNDM_COST, HNDM_PACK, HNDM_COSTUNIQUE, HNDM_EQUIP, HNDM_IMPLANT_EQUIP, HNDM_IMPLANT_UPGRADE, HNDM_LAST};

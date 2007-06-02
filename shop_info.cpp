@@ -58,7 +58,7 @@ void ShopKVPrinter::discontinuity() {
 bool ShopKVPrinter::twolinemode() const {
   float wid = activebounds().span_x();
   for(int i = 0; i < pairz.size(); i++)
-    if(getTextWidth(pairz[i].first, fontsize) + getTextWidth(pairz[i].second, fontsize) + getTextWidth("  ", fontsize) > wid)
+    if(getTextWidth(pairz[i].first, fontsize) + getTextWidth(pairz[i].second, fontsize) + getTextWidth("  ", fontsize) * !pairz[i].second.empty() > wid)
       return true;
   return false;
 }

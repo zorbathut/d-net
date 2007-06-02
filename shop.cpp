@@ -218,13 +218,33 @@ void Shop::renderNode(const HierarchyNode &node, int depth, const Player *player
   if(node.type == HierarchyNode::HNT_DONE) {
     vector<string> msg = player->blockedReasons();
     if(!msg.empty()) {
-      Float4 otbox = slay.textbox(depth);
-      Float4 tbox;
-      tbox.sx = lerp(otbox.sx, otbox.ex, 0.05);
-      tbox.ex = lerp(otbox.sx, otbox.ex, 1 - 0.05);
-      tbox.sy = lerp(otbox.sy, otbox.ey, 0.4);
-      tbox.ey = otbox.ey;
+      Float4 tbox = slay.textbox(depth);
+      tbox.sy = lerp(tbox.sy, tbox.ey, 0.4);
       drawFormattedTextBox(msg, slay.fontsize(), tbox, C::active_text, C::box_border);
+    }
+  }
+  
+  if(node.type == HierarchyNode::HNT_BONUSES) {
+    Float4 tbox = slay.textbox(depth);
+    const int lines = IDBAdjustment::LAST + adjust_category[IDBAdjustment::LAST - 1];
+    float height = lines * slay.fontsize() * 1.5 - slay.fontsize() * 0.5 + slay.fontsize();
+    tbox.sy = tbox.midpoint().y - height / 2;
+    tbox.ey = tbox.sy + height;
+    drawSolid(tbox);
+    setColor(C::box_border);
+    drawRect(tbox, slay.fontsize() / 10);
+    for(int i = 0; i < IDBAdjustment::LAST; i++) {
+      pair<string, bool> mt = adjust_modifiertext(i, player->getAdjust().adjusts[i]);
+      if(!player->getAdjust().adjusts[i]) {
+        setColor(C::active_text);
+      } else if(mt.second) {
+        setColor(C::positive);
+      } else {
+        setColor(C::negative);
+      }
+      float y = tbox.sy + slay.fontsize() / 2 + (i + adjust_category[i]) * slay.fontsize() * 1.5;
+      drawText(adjust_human[i], slay.fontsize(), Float2(tbox.sx + slay.fontsize() / 2, y));
+      drawJustifiedText(mt.first, slay.fontsize(), Float2(tbox.ex - slay.fontsize() / 2, y), TEXT_MAX, TEXT_MIN);
     }
   }
   
