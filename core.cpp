@@ -23,6 +23,7 @@ DEFINE_string(writeTarget, "dumps/dump", "Prefix for file dump");
 //DEFINE_int(writeTargetCheckpoint, 2000000000, "Write target checkpoint frequency"); // currently disabled
 
 DEFINE_int(fastForwardTo, 0, "Fastforward rendering to this frame");
+DEFINE_int(terminateAfterFrame, -1, "Terminate execution after this many frames");
 DEFINE_int(terminateAfter, -1, "Terminate execution after this many seconds");
 
 DEFINE_bool(frameskip, true, "Enable or disable frameskipping");
@@ -94,6 +95,8 @@ void MainLoop() {
       }
     }
     if(quit || FLAGS_terminateAfter != -1 && time(NULL) - starttime >= FLAGS_terminateAfter)
+      break;
+    if(FLAGS_terminateAfterFrame != -1 && FLAGS_terminateAfterFrame <= frameNumber)
       break;
     interface.ai(controls_ai());  // has to be before controls
     controllers = controls_next();

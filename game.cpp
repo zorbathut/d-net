@@ -952,7 +952,7 @@ void Game::initCommon(const vector<Player*> &in_playerdata, const vector<Color> 
   
   zoom_speed = Float2(0, 0);
 
-  collider = Collider(tanks.size(), Coord(20));
+  collider = Collider(tanks.size(), Coord(15));
   
   teams.resize(tanks.size());
   for(int i = 0; i < tanks.size(); i++)

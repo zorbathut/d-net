@@ -18,22 +18,22 @@ using namespace std;
  * Angles
  */
  
-template <typename T> Type1 imp_len(const Type2 &in) {
+template <typename T> inline Type1 imp_len(const Type2 &in) {
   return sqrt(in.x * in.x + in.y * in.y);
 }
 
-template <typename T> Type2 imp_normalize(const Type2 &in) {
+template <typename T> inline Type2 imp_normalize(const Type2 &in) {
   return in / len(in);
 }
 
-template <typename T> Type1 imp_getAngle(const Type2 &in) {
+template <typename T> inline Type1 imp_getAngle(const Type2 &in) {
   return T::atan2(in.y, in.x);
 }
-template <typename T> Type2 imp_makeAngle(const Type1 &in) {
+template <typename T> inline Type2 imp_makeAngle(const Type1 &in) {
   return Type2(T::cos(in), T::sin(in));
 }
 
-template <typename T> int imp_whichSide(const Type4 &f4, const Type2 &pta) {
+template <typename T> inline int imp_whichSide(const Type4 &f4, const Type2 &pta) {
   Type1 ax = f4.ex - f4.sx;
   Type1 ay = f4.ey - f4.sy;
   Type1 bx = pta.x - f4.sx;
@@ -50,32 +50,32 @@ template <typename T> int imp_whichSide(const Type4 &f4, const Type2 &pta) {
  * Bounding box
  */
 
-template <typename T> Type4 imp_startBoundBox() {
+template <typename T> inline Type4 imp_startBoundBox() {
   return Type4(1000000000, 1000000000, -1000000000, -1000000000);
 };
 
-template <typename T> void imp_addToBoundBox(Type4 *bbox, Type1 x, Type1 y) {
+template <typename T> inline void imp_addToBoundBox(Type4 *bbox, Type1 x, Type1 y) {
   bbox->sx = min(bbox->sx, x);
   bbox->sy = min(bbox->sy, y);
   bbox->ex = max(bbox->ex, x);
   bbox->ey = max(bbox->ey, y);
 };
-template <typename T> void imp_addToBoundBox(Type4 *bbox, const Type2 &point) {
+template <typename T> inline void imp_addToBoundBox(Type4 *bbox, const Type2 &point) {
   imp_addToBoundBox<T>(bbox, point.x, point.y);
 };
-template <typename T> void imp_addToBoundBox(Type4 *bbox, const Type4 &rect) {
+template <typename T> inline void imp_addToBoundBox(Type4 *bbox, const Type4 &rect) {
   if(rect == imp_startBoundBox<T>())
     return;
   CHECK(rect.isNormalized());
   imp_addToBoundBox<T>(bbox, rect.sx, rect.sy);
   imp_addToBoundBox<T>(bbox, rect.ex, rect.ey);
 };
-template <typename T> void imp_addToBoundBox(Type4 *bbox, const vector<Type2> &rect) {
+template <typename T> inline void imp_addToBoundBox(Type4 *bbox, const vector<Type2> &rect) {
   for(int i = 0; i < rect.size(); i++)
     imp_addToBoundBox<T>(bbox, rect[i]);
 };
 
-template <typename T> void imp_expandBoundBox(Type4 *bbox, Type1 factor) {
+template <typename T> inline void imp_expandBoundBox(Type4 *bbox, Type1 factor) {
   Type1 x = bbox->ex - bbox->sx;
   Type1 y = bbox->ey - bbox->sy;
   Type1 xc = (bbox->sx + bbox->ex) / 2;
@@ -94,7 +94,7 @@ template <typename T> void imp_expandBoundBox(Type4 *bbox, Type1 factor) {
  * Computational geometry
  */
 
-template <typename T> pair<Type2, float> imp_fitInside(const Type4 &objbounds, const Type4 &goalbounds) {
+template <typename T> inline pair<Type2, float> imp_fitInside(const Type4 &objbounds, const Type4 &goalbounds) {
   Type1 xscale = (goalbounds.ex - goalbounds.sx) / (objbounds.ex - objbounds.sx);
   Type1 yscale = (goalbounds.ey - goalbounds.sy) / (objbounds.ey - objbounds.sy);
   Type1 scale = min(xscale, yscale);
@@ -105,7 +105,7 @@ template <typename T> pair<Type2, float> imp_fitInside(const Type4 &objbounds, c
   return make_pair(Type2(goalx - objx * scale, goaly - objy * scale), scale);
 }
 
-template <typename T> bool imp_linelineintersect(Type1 x1, Type1 y1, Type1 x2, Type1 y2, Type1 x3, Type1 y3, Type1 x4, Type1 y4) {
+template <typename T> inline bool imp_linelineintersect(Type1 x1, Type1 y1, Type1 x2, Type1 y2, Type1 x3, Type1 y3, Type1 x4, Type1 y4) {
   Type1 denom = (y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1);
   if(denom == 0)
     return false;
@@ -113,10 +113,10 @@ template <typename T> bool imp_linelineintersect(Type1 x1, Type1 y1, Type1 x2, T
   Type1 ub = ((x2 - x1) * (y1 - y3) - (y2 - y1) * (x1 - x3)) / denom;
   return ua > 0 && ua < 1 && ub > 0 && ub < 1;
 }
-template <typename T> bool imp_linelineintersect(const Type4 &lhs, const Type4 &rhs) {
+template <typename T> inline bool imp_linelineintersect(const Type4 &lhs, const Type4 &rhs) {
   return imp_linelineintersect<T>(lhs.sx, lhs.sy, lhs.ex, lhs.ey, rhs.sx, rhs.sy, rhs.ex, rhs.ey);
 }
-template <typename T> Type1 imp_linelineintersectpos(Type1 x1, Type1 y1, Type1 x2, Type1 y2, Type1 x3, Type1 y3, Type1 x4, Type1 y4) {
+template <typename T> inline Type1 imp_linelineintersectpos(Type1 x1, Type1 y1, Type1 x2, Type1 y2, Type1 x3, Type1 y3, Type1 x4, Type1 y4) {
   Type1 denom = (y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1);
   Type1 ua = ((x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3)) / denom;
   Type1 ub = ((x2 - x1) * (y1 - y3) - (y2 - y1) * (x1 - x3)) / denom;
@@ -125,11 +125,11 @@ template <typename T> Type1 imp_linelineintersectpos(Type1 x1, Type1 y1, Type1 x
   else
     return 2;
 }
-template <typename T> Type1 imp_linelineintersectpos(const Type4 &lhs, const Type4 &rhs) {
+template <typename T> inline Type1 imp_linelineintersectpos(const Type4 &lhs, const Type4 &rhs) {
   return imp_linelineintersectpos<T>(lhs.sx, lhs.sy, lhs.ex, lhs.ey, rhs.sx, rhs.sy, rhs.ex, rhs.ey);
 }
 
-template <typename T> int imp_inPath(const Type2 &point, const vector<Type2> &path) {
+template <typename T> inline int imp_inPath(const Type2 &point, const vector<Type2> &path) {
   CHECK(path.size());
   Type1 accum = 0;
   Type1 cpt = imp_getAngle<T>(path.back() - point);
@@ -159,7 +159,7 @@ template <typename T> int imp_inPath(const Type2 &point, const vector<Type2> &pa
   }
 };
 
-template <typename T> Type1 imp_getArea(const vector<Type2> &are) {
+template <typename T> inline Type1 imp_getArea(const vector<Type2> &are) {
   Type1 totare = 0;
   for(int i = 0; i < are.size(); i++) {
     int j = (i + 1) % are.size();
@@ -169,7 +169,7 @@ template <typename T> Type1 imp_getArea(const vector<Type2> &are) {
   return totare;
 }
 
-template <typename T> Type2 imp_getCentroid(const vector<Type2> &are) {
+template <typename T> inline Type2 imp_getCentroid(const vector<Type2> &are) {
   Type2 centroid(0, 0);
   for(int i = 0; i < are.size(); i++) {
     int j = (i + 1) % are.size();
@@ -180,7 +180,7 @@ template <typename T> Type2 imp_getCentroid(const vector<Type2> &are) {
   return centroid;
 }
 
-template <typename T> bool imp_pathReversed(const vector<Type2> &path) {
+template <typename T> inline bool imp_pathReversed(const vector<Type2> &path) {
   return imp_getArea<T>(path) < 0;
 }
 
