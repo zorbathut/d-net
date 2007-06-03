@@ -47,6 +47,7 @@ pair<Coord, Coord> getLineCollision(const Coord4 &linepos, const Coord4 &linevel
     rv.second = (-b - sqrit) / a2;
   }
   {
+    /*
     if(rv.first != NOCOLLIDE) {
       if(!(abs(a * rv.first * rv.first + b * rv.first + c) < 1000000))
         dprintf("debugtest: %f resolves to %f (%f, %f, %f, %f)\n", rv.first.toFloat(), (a * rv.first * rv.first + b * rv.first + c).toFloat(), a.toFloat(), b.toFloat(), c.toFloat(), rv.first.toFloat());
@@ -57,6 +58,7 @@ pair<Coord, Coord> getLineCollision(const Coord4 &linepos, const Coord4 &linevel
         dprintf("debugtest: %f resolves to %f (%f, %f, %f, %f)\n", rv.second.toFloat(), (a * rv.second * rv.second + b * rv.second + c).toFloat(), a.toFloat(), b.toFloat(), c.toFloat(), rv.second.toFloat());
       CHECK(abs(a * rv.second * rv.second + b * rv.second + c) < 1000000);
     }
+    */
   }
   return rv;
 }

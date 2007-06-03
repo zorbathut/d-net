@@ -2,9 +2,10 @@
 - "Finish the Damn Game" Initiative
   - Bugfixes from games
     - Use "sell" to sell old weapons that no longer exist in the shop
+      - Yep, rip out everything. Wheee
       - Clean up the old sell code
       - Get rid of old weapons as they become obsolete
-    - Can you accidentally buy an upgrade or tank or etc despite being in sell mode?
+      - Can you accidentally buy an upgrade or tank or etc despite being in sell mode?
     - Add tank upgrade multipliers to the balance sheet
     - Add level editor options for subtraction, fix spiney and re-add
     - Pacman scale up 20% or so
