@@ -47,7 +47,7 @@ extern int frameNumber;
 void CrashHandler(const char *fname, int line);
 void PrintDebugStack();
 void crash_now() __attribute__((__noreturn__));
-#define CHECK(x) do { if(!(x)) { dprintf("Error at %d, %s:%d - %s\n", frameNumber, __FILE__, __LINE__, #x); CrashHandler(__FILE__, __LINE__); PrintDebugStack(); crash_now(); } } while(0)
+#define CHECK(x) do { if(__builtin_expect(!(x), 0)) { dprintf("Error at %d, %s:%d - %s\n", frameNumber, __FILE__, __LINE__, #x); CrashHandler(__FILE__, __LINE__); PrintDebugStack(); crash_now(); } } while(0)
 // And here would be the end
 
 #define printf FAILURE
