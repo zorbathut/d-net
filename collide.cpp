@@ -155,11 +155,11 @@ pair<Coord, Coord2> getCollision(const Coord4 &l1p, const Coord4 &l1v, const Coo
 }
 
 inline int getCategoryCount(int players) {
-  return players * 3 + 1;
+  return players * (CGR_LAST - 1) + 1;
 }
 inline int getPlayerCount(int index) {
-  CHECK(index % 3 == 1);
-  return index / 3;
+  CHECK(index % (CGR_LAST - 1) == 1);
+  return index / (CGR_LAST - 1);
 }
 int getCategoryFromPlayers(int players, int category, int bucket) {
   return players * category + bucket;
@@ -186,8 +186,10 @@ bool canCollidePlayer(int players, int indexa, int indexb, const vector<int> &te
   if(ar == br)
     return false;
   // Projectiles just don't collide
-  if(ar.first == CGR_PROJECTILE || br.first == CGR_PROJECTILE || ar.first == CGR_STATPROJECTILE || br.first == CGR_STATPROJECTILE)
+  if(ar.first == CGR_PROJECTILE || br.first == CGR_PROJECTILE || ar.first == CGR_STATPROJECTILE || br.first == CGR_STATPROJECTILE || ar.first == CGR_NOINTPROJECTILE || br.first == CGR_NOINTPROJECTILE)
     return false;
+  CHECK(ar.first == CGR_WALL || ar.first == CGR_TANK);
+  CHECK(br.first == CGR_WALL || br.first == CGR_TANK);
   return true;
 }
 bool canCollideProjectile(int players, int indexa, int indexb, const vector<int> &teams) {
@@ -208,11 +210,17 @@ bool canCollideProjectile(int players, int indexa, int indexb, const vector<int>
   // And with mines, as long as they're not on the same team.
   if(ar.first == CGR_TANK && br.first == CGR_STATPROJECTILE && teams[ar.second] != teams[br.second])
     return true;
+  // And with no-intersection projectiles, as long as they're not on the same team.
+  if(ar.first == CGR_TANK && br.first == CGR_NOINTPROJECTILE && teams[ar.second] != teams[br.second])
+    return true;
   // Projectiles can hit each other, as long as they're not on the same team.
   if(ar.first == CGR_PROJECTILE && br.first == CGR_PROJECTILE && teams[ar.second] != teams[br.second])
     return true;
   // Projectiles can hit walls.
   if(ar.first == CGR_PROJECTILE && br.first == CGR_WALL)
+    return true;
+  // Both kinds.
+  if(ar.first == CGR_NOINTPROJECTILE && br.first == CGR_WALL)
     return true;
   // That's it. Easy!
   return false;
@@ -283,13 +291,15 @@ void CollideZone::dumpGroup(int category, int group) {
     items[catrefs[category]].second.erase(group);
 }
 
-bool CollideZone::checkSimpleCollision(int groupid, const vector<Coord4> &line, const char *collidematrix) const {
+bool CollideZone::checkSimpleCollision(int groupid, const vector<Coord4> &line, const Coord4 &bbox, const char *collidematrix) const {
   for(int i = 0; i < items.size(); i++) {
     if(!collidematrix[groupid * catrefs.size() + items[i].first])
       continue;
     for(map<int, vector<pair<Coord4, Coord4> > >::const_iterator itr = items[i].second.begin(); itr != items[i].second.end(); ++itr) {
       const vector<pair<Coord4, Coord4> > &tx = itr->second;
       for(int xa = 0; xa < tx.size(); xa++) {
+        if(!boxLineIntersect(bbox, tx[xa].first))
+          continue;
         for(int ya = 0; ya < line.size(); ya++) {
           if(linelineintersect(tx[xa].first, line[ya]))
             return true;
@@ -474,7 +484,7 @@ bool Collider::checkSimpleCollision(int category, int gid, const vector<Coord4> 
   */
   for(int x = tsx; x < tex; x++)
     for(int y = tsy; y < tey; y++)
-      if(zones[cmap(x, y)].checkSimpleCollision(getCategoryFromPlayers(players, category, gid), line, &*collidematrix.begin()))
+      if(zones[cmap(x, y)].checkSimpleCollision(getCategoryFromPlayers(players, category, gid), line, pa, &*collidematrix.begin()))
         return true;
   return false;
 }
@@ -508,19 +518,6 @@ void Collider::processMotion() {
       collides.push_back(clds[i].second);
     }
   }
-}
-
-bool Collider::next() {
-  CHECK(state == CSTA_PROCESSED);
-  CHECK(curcollide == -1 || curcollide >= 0 && curcollide < collides.size());
-  curcollide++;
-  return curcollide < collides.size();
-}
-  
-const CollideData &Collider::getCollision() const {
-  CHECK(state == CSTA_PROCESSED);
-  CHECK(curcollide >= 0 && curcollide < collides.size());
-  return collides[curcollide];
 }
 
 void Collider::finishProcess() {

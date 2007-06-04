@@ -81,7 +81,10 @@ void Projectile::addCollision(Collider *collider, int owner, int id) const {
   CHECK(live);
   if(projtype.motion() == PM_MINE || projtype.motion() == PM_DPS) {
   } else {
-    collider->addToken(CollideId(CGR_PROJECTILE, owner, id), Coord4(pos, pos + lasttail), Coord4(movement(), movement() + nexttail() - lasttail));
+    int projgroup = CGR_PROJECTILE;
+    if(projtype.no_intersection())
+      projgroup = CGR_NOINTPROJECTILE;
+    collider->addToken(CollideId(projgroup, owner, id), Coord4(pos, pos + lasttail), Coord4(movement(), movement() + nexttail() - lasttail));
   }
 }
 

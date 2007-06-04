@@ -46,7 +46,7 @@ string kvData::debugOutput() const {
   return otp;
 }
 
-string kvData::consume(string key) {
+string kvData::consume(const string &key) {
   if(kv.count(key) != 1) {
     dprintf("Failed to read key \"%s\" in object \"%s\"\n", key.c_str(), category.c_str());
     CHECK(kv.count(key) == 1);
@@ -63,10 +63,15 @@ void kvData::shouldBeDone() const {
   CHECK(isDone());
 }
 
-const string &kvData::read(string key) const {
+const string &kvData::read(const string &key) const {
   if(!kv.count(key))
     dprintf("Couldn't find key %s in kvdata %s\n", key.c_str(), stringFromKvData(*this).c_str());
   CHECK(kv.count(key));
+  return kv.find(key)->second;
+}
+string kvData::saferead(const string &key) const {
+  if(!kv.count(key))
+    return StringPrintf("(missing key %s)", key.c_str());
   return kv.find(key)->second;
 }
 

@@ -165,8 +165,6 @@ bool colinear(const Coord4 &line, const Coord2 &pt) {
 
 Coord4 startCBoundBox() { return imp_startBoundBox<Coords>(); };
 
-void addToBoundBox(Coord4 *bbox, Coord x, Coord y) { return imp_addToBoundBox<Coords>(bbox, x, y); };
-void addToBoundBox(Coord4 *bbox, const Coord2 &point) { return imp_addToBoundBox<Coords>(bbox, point); };
 void addToBoundBox(Coord4 *bbox, const Coord4 &rect) { return imp_addToBoundBox<Coords>(bbox, rect); };
 void addToBoundBox(Coord4 *bbox, const vector<Coord2> &line) { return imp_addToBoundBox<Coords>(bbox, line); };
 

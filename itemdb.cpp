@@ -895,8 +895,13 @@ void parseProjectile(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   titem->chain_warhead = parseSubclassSet(chunk, "warhead", warheadclasses);
   
   if(titem->motion != PM_MINE && titem->motion != PM_DPS) {
-    titem->durability = parseSingleItem<float>(chunk->consume("durability"));
+    titem->no_intersection = parseWithDefault(chunk, "no_intersection", false);
+    if(!titem->no_intersection)
+      titem->durability = parseSingleItem<float>(chunk->consume("durability"));
+    else
+      titem->durability = -1;
   } else {
+    titem->no_intersection = true;
     titem->durability = -1;
   }
   

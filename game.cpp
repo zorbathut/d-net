@@ -188,9 +188,9 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
       //dprintf("%d,%d,%d vs %d,%d,%d\n", collider.getCollision().lhs.category, collider.getCollision().lhs.bucket, collider.getCollision().lhs.item, collider.getCollision().rhs.category, collider.getCollision().rhs.bucket, collider.getCollision().rhs.item);
       CollideId lhs = collider.getCollision().lhs;
       CollideId rhs = collider.getCollision().rhs;
-      if(lhs.category == CGR_STATPROJECTILE)
+      if(lhs.category == CGR_STATPROJECTILE || lhs.category == CGR_NOINTPROJECTILE)
         lhs.category = CGR_PROJECTILE;
-      if(rhs.category == CGR_STATPROJECTILE)
+      if(rhs.category == CGR_STATPROJECTILE || rhs.category == CGR_NOINTPROJECTILE)
         rhs.category = CGR_PROJECTILE;
       pair<float, float> normals = collider.getCollision().normals;
       if(rhs < lhs) {

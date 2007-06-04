@@ -83,7 +83,7 @@ string WeaponParams::getWantedName(const string &name, const set<string> &possib
 }
 
 void WeaponParams::preprocess(kvData *kvd, const Data &data) {
-  dprintf("%s %s\n", kvd->category.c_str(), kvd->read("name").c_str());
+  StackString prep(StringPrintf("Preprocessing %s", kvd->saferead("name").c_str()));
   if(kvd->category == "weapon") {
     CHECK(!data.params);
     
@@ -102,10 +102,8 @@ void WeaponParams::preprocess(kvData *kvd, const Data &data) {
     if(kvd->kv.count("spawncash"))
       kvd->kv["spawncash"] = data.params_threshold;
   } else if(kvd->category == "projectile") {
-    if(kvd->read("durability") == "MERGE") {
-      dprintf("merging\n");
+    if(kvd->kv.count("durability") && kvd->read("durability") == "MERGE")
       kvd->kv["durability"] = data.durability;
-    }
   }
 }
 

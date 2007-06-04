@@ -371,8 +371,15 @@ bool colinear(const Coord4 &line, const Coord2 &pt);
  
 Coord4 startCBoundBox();
 
-void addToBoundBox(Coord4 *bbox, Coord x, Coord y);
-void addToBoundBox(Coord4 *bbox, const Coord2 &point);
+inline void addToBoundBox(Coord4 *bbox, Coord x, Coord y) {
+  bbox->sx = min(bbox->sx, x);
+  bbox->sy = min(bbox->sy, y);
+  bbox->ex = max(bbox->ex, x);
+  bbox->ey = max(bbox->ey, y);
+}
+inline void addToBoundBox(Coord4 *bbox, const Coord2 &point) {
+  addToBoundBox(bbox, point.x, point.y);
+}
 void addToBoundBox(Coord4 *bbox, const Coord4 &rect);
 void addToBoundBox(Coord4 *bbox, const vector<Coord2> &line);
 
@@ -404,6 +411,15 @@ inline Coord4 snapToEnclosingGrid(Coord4 orig, Coord grid) {
 
 inline bool boxBoxIntersect(const Coord4 &lhs, const Coord4 &rhs) {
   return !(lhs.sx > rhs.ex || lhs.ex < rhs.sx || lhs.sy > rhs.ey || lhs.ey < rhs.sy);
+}
+
+inline bool boxLineIntersect(const Coord4 &box, const Coord4 &line) {
+  Coord4 lts = line;
+  if(lts.sx > lts.ex)
+    swap(lts.sx, lts.ex);
+  if(lts.sy > lts.ey)
+    swap(lts.sy, lts.ey);
+  return boxBoxIntersect(box, lts);
 }
 
 Coord2 lerp(const Coord2 &lhs, const Coord2 &rhs, Coord dist);

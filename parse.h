@@ -19,8 +19,9 @@ public:
 
   string debugOutput() const;
 
-  string consume(string key);
-  const string &read(string key) const;  // guarantees that it exists otherwise kablooey
+  string consume(const string &key);
+  const string &read(const string &key) const;  // guarantees that it exists otherwise kablooey
+  string saferead(const string &key) const;
   bool isDone() const;
   void shouldBeDone() const;
 

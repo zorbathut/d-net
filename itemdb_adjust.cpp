@@ -157,6 +157,10 @@ float IDBProjectileAdjust::missile_backlaunch() const { CHECK(idb->motion == PM_
 
 float IDBProjectileAdjust::dps_duration() const { CHECK(idb->motion == PM_DPS); return idb->dps_duration; }
 
+bool IDBProjectileAdjust::no_intersection() const {
+  return idb->no_intersection;
+}
+
 float IDBProjectileAdjust::stats_damagePerShot() const {
   float val = 0;
   vector<IDBWarheadAdjust> idbwa = chain_warhead();

@@ -57,7 +57,7 @@ public:
   void addToken(int category, int group, const Coord4 &line, const Coord4 &direction);
   void dumpGroup(int category, int group);
 
-  bool checkSimpleCollision(int groupid, const vector<Coord4> &line, const char *collidematrix) const;
+  bool checkSimpleCollision(int groupid, const vector<Coord4> &line, const Coord4 &bbox, const char *collidematrix) const;
 
   void processMotion(vector<pair<Coord, CollideData> > *clds, const char *collidematrix) const;
 
@@ -65,7 +65,7 @@ public:
 };
 
 enum {COM_PLAYER, COM_PROJECTILE};
-enum {CGR_TANK, CGR_PROJECTILE, CGR_STATPROJECTILE, CGR_WALL};
+enum {CGR_TANK, CGR_PROJECTILE, CGR_STATPROJECTILE, CGR_NOINTPROJECTILE, CGR_WALL, CGR_LAST};
 const int CGR_WALLOWNER = 0;
 
 class Collider {
@@ -82,9 +82,17 @@ public:
 
   void processMotion();
 
-  bool next();
-  const CollideData &getCollision() const;
-
+  bool next() {
+    CHECK(state == CSTA_PROCESSED);
+    //CHECK(curcollide == -1 || curcollide >= 0 && curcollide < collides.size());
+    curcollide++;
+    return curcollide < collides.size();
+  }
+  const CollideData &getCollision() const {
+    CHECK(state == CSTA_PROCESSED);
+    return collides[curcollide];
+  }
+  
   void finishProcess();
 
   Collider(int players, Coord resolution);

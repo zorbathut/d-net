@@ -125,6 +125,8 @@ struct IDBProjectile {
   float airbrake_life;
   
   float dps_duration;
+  
+  bool no_intersection;
 
   vector<const IDBWarhead *> chain_warhead;
 };
@@ -343,6 +345,8 @@ public:
   float missile_backlaunch() const;
 
   float dps_duration() const;
+  
+  bool no_intersection() const;
   
   float stats_damagePerShot() const;
 
