@@ -109,7 +109,7 @@ inline Coord ceil(const Coord &in) {
 
 // TODO: improve?
 inline Coord operator*(const Coord &lhs, const Coord &rhs) {
-  bool neg = false;
+  /*bool neg = false;
   long long ld = lhs.d;
   long long rd = rhs.d;
   if(ld < 0) { neg = !neg; ld = -ld; }
@@ -124,9 +124,9 @@ inline Coord operator*(const Coord &lhs, const Coord &rhs) {
   rv += ((unsigned long long)lh * (unsigned long long)rl);
   rv += ((unsigned long long)lh * (unsigned long long)rh) << 32;
   if(neg) rv = -rv;
-  return coordExplicit(rv);
+  return coordExplicit(rv);*/
+  return coordExplicit((long long)(((long double)lhs.d * (long double)rhs.d) / (1LL << 32)));
 }
-
 
 // TODO: improve?
 inline Coord operator/(const Coord &lhs, const Coord &rhs) {

@@ -12,7 +12,7 @@ DECLARE_bool(verboseCollisions);
 const Coord NOCOLLIDE = Coord(-1000000000);
 
 pair<Coord, Coord> getLineCollision(const Coord4 &linepos, const Coord4 &linevel, const Coord4 &ptposvel) {
-  Coord x1d = linepos.sx;
+  /*Coord x1d = linepos.sx;
   Coord y1d = linepos.sy;
   Coord x2d = linepos.ex;
   Coord y2d = linepos.ey;
@@ -26,7 +26,10 @@ pair<Coord, Coord> getLineCollision(const Coord4 &linepos, const Coord4 &linevel
   Coord y3v = ptposvel.ey;
   Coord a = -x3v*y1v-x1v*y2v+x3v*y2v+x2v*y1v+x1v*y3v-x2v*y3v;
   Coord b = x2v*y1d-x3v*y1d+x2d*y1v-x3d*y1v-x1v*y2d+x3v*y2d-x1d*y2v+x3d*y2v+x1v*y3d-x2v*y3d+x1d*y3v-x2d*y3v;
-  Coord c = x2d*y1d-x3d*y1d-x1d*y2d+x3d*y2d+x1d*y3d-x2d*y3d;
+  Coord c = x2d*y1d-x3d*y1d-x1d*y2d+x3d*y2d+x1d*y3d-x2d*y3d;*/
+  Coord a = -ptposvel.ex*linevel.sy-linevel.sx*linevel.ey+ptposvel.ex*linevel.ey+linevel.ex*linevel.sy+linevel.sx*ptposvel.ey-linevel.ex*ptposvel.ey;
+  Coord b = linevel.ex*linepos.sy-ptposvel.ex*linepos.sy+linepos.ex*linevel.sy-ptposvel.sx*linevel.sy-linevel.sx*linepos.ey+ptposvel.ex*linepos.ey-linepos.sx*linevel.ey+ptposvel.sx*linevel.ey+linevel.sx*ptposvel.sy-linevel.ex*ptposvel.sy+linepos.sx*ptposvel.ey-linepos.ex*ptposvel.ey;
+  Coord c = linepos.ex*linepos.sy-ptposvel.sx*linepos.sy-linepos.sx*linepos.ey+ptposvel.sx*linepos.ey+linepos.sx*ptposvel.sy-linepos.ex*ptposvel.sy;
   //dprintf("a is %f, b is %f, c is %f\n", a, b, c);
   Coord sqrii = b * b - 4 * a * c;
   //dprintf("sqrii is %f\n", sqrii);
@@ -34,7 +37,7 @@ pair<Coord, Coord> getLineCollision(const Coord4 &linepos, const Coord4 &linevel
   //dprintf("a2 is %f\n", a2);
   if(sqrii < 0)
     return make_pair(NOCOLLIDE, NOCOLLIDE);
-  pair< Coord, Coord > rv;
+  pair<Coord, Coord> rv;
   if(abs(a2) < Coord(0.00001f)) {
     if(b == 0) {
       return make_pair(NOCOLLIDE, NOCOLLIDE);
@@ -74,10 +77,10 @@ Coord getu(const Coord4 &linepos, const Coord4 &linevel, const Coord4 &ptposvel,
   Coord y2 = linepos.ey + linevel.ey * t;
   Coord x3 = ptposvel.sx + ptposvel.ex * t;
   Coord y3 = ptposvel.sy + ptposvel.ey * t;
-  return ((x3 - x1) * (x2 - x1) + (y3 - y1) * (y2 - y1)) / ( sqr( x2 - x1) + sqr( y2 - y1));
+  return ((x3 - x1) * (x2 - x1) + (y3 - y1) * (y2 - y1)) / (sqr(x2 - x1) + sqr(y2 - y1));
 }
 
-pair<Coord, Coord2> getCollision(const Coord4 &l1p, const Coord4 &l1v, const Coord4 &l2p, const Coord4 &l2v) {
+inline pair<Coord, Coord2> doCollision(const Coord4 &l1p, const Coord4 &l1v, const Coord4 &l2p, const Coord4 &l2v) {
   {
     Coord4 l1bb = startCBoundBox();
     addToBoundBox(&l1bb, l1p.sx, l1p.sy);
@@ -130,7 +133,7 @@ pair<Coord, Coord2> getCollision(const Coord4 &l1p, const Coord4 &l1v, const Coo
       default:
         CHECK(0);
     }
-    pair< Coord, Coord > tbv = getLineCollision(*linepos, *linevel, *ptposvel);
+    pair<Coord, Coord> tbv = getLineCollision(*linepos, *linevel, *ptposvel);
     Coord2 tpos;
     for(int j = 0; j < 2; j++) {
       Coord tt;
@@ -321,7 +324,7 @@ void CollideZone::processMotion(vector<pair<Coord, CollideData> > *clds, const c
           const vector<pair<Coord4, Coord4> > &ty = yitr->second;
           for(int xa = 0; xa < tx.size(); xa++) {
             for(int ya = 0; ya < ty.size(); ya++) {
-              pair<Coord, Coord2> tcol = getCollision(tx[xa].first, tx[xa].second, ty[ya].first, ty[ya].second);
+              pair<Coord, Coord2> tcol = doCollision(tx[xa].first, tx[xa].second, ty[ya].first, ty[ya].second);
               if(tcol.first == NOCOLLIDE)
                 continue;
               CHECK(tcol.first >= 0 && tcol.first <= 1);
