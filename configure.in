@@ -15,6 +15,7 @@ case "${target_os}" in
     LDFLAGS="-L/usr/mingw/local/lib -mno-cygwin"
     
     STDCPPFLAGS="$STDCPPFLAGS -DVECTOR_PARANOIA" # This should really only exist on Zorba's personal hacked headers
+    LDFLAGS="$LDFLAGS -lboost_regex-mgw-mt"
     
     AC_CHECK_HEADER([windows.h],,AC_MSG_ERROR([Can't find windows.h]))
     
@@ -26,16 +27,6 @@ case "${target_os}" in
     AC_CHECK_LIB([opengl32], [main],,AC_MSG_ERROR([opengl is needed]))
     GAMELDFLAGS="$GAMELDFLAGS -lopengl32"
 
-    AC_PATH_PROG([SDL], [sdl-config], [], [/usr/mingw/local/bin:/usr/local/bin:/usr/bin])
-    if test "x$SDL" == "x" ; then
-      AC_MSG_ERROR([D-Net requires SDL.])
-    fi
-
-    GAMECPPFLAGS="$GAMECPPFLAGS `$SDL --cflags`"
-    GAMELDFLAGS="$GAMELDFLAGS `$SDL --libs`"
-    
-    LDFLAGS="$LDFLAGS"
-    
     MING="-lmingw32"
 
     ;;
@@ -55,12 +46,22 @@ case "${target_os}" in
     ;;
 
   *)
-    GAMECPPFLAGS="$CPP_FLAGS -DNO_WINDOWS"
+    STDCPPFLAGS="$STDCPPFLAGS -DNO_WINDOWS -I/usr/local/include/boost-1_34"
+    CPPFLAGS="$CPPFLAGS -I/usr/local/include/boost-1_34"
+    LDFLAGS="$LDFLAGS -lboost_regex-gcc41-mt"
     AC_CHECK_LIB([GL], [glBegin],,AC_MSG_ERROR([opengl is needed]))
-    GAMELDFLAGS="GAMELDFLAGS -lGL"
+    GAMELDFLAGS="$GAMELDFLAGS -lGL"
     ;;
 esac
 
+AC_PATH_PROG([SDL], [sdl-config], [], [/usr/mingw/local/bin:/usr/local/bin:/usr/bin])
+if test "x$SDL" == "x" ; then
+  AC_MSG_ERROR([D-Net requires SDL.])
+fi
+
+GAMECPPFLAGS="$GAMECPPFLAGS `$SDL --cflags`"
+GAMELDFLAGS="$GAMELDFLAGS `$SDL --libs`"
+    
 AC_CHECK_HEADER([boost/noncopyable.hpp],,AC_MSG_ERROR([D-Net requires Boost.]))
 
 AC_CHECK_LIB([m], [sin],,AC_MSG_ERROR([libm is needed]))
@@ -78,7 +79,7 @@ if test "x$WX" == "x" ; then
   AC_MSG_ERROR([D-Net requires WX, kind of.])
 fi
 
-AC_PATH_PROGS([OO], [soffice.exe soffice], [], [/cygdrive/c/Program Files (x86)/OpenOffice.org 2.2/program:/cygdrive/c/Program Files/OpenOffice.org 2.2/program:/Applications/OpenOffice.org 2.2.app/Contents/MacOS/program])
+AC_PATH_PROGS([OO], [soffice.exe soffice], [], [/cygdrive/c/Program Files (x86)/OpenOffice.org 2.2/program:/cygdrive/c/Program Files/OpenOffice.org 2.2/program:/Applications/OpenOffice.org 2.2.app/Contents/MacOS/program:/usr/bin])
 if test "x$OO" == "x" ; then
   AC_MSG_ERROR([D-Net requires OpenOffice, kind of.])
 fi

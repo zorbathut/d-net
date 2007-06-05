@@ -1,6 +1,8 @@
 
 #include "regex.h"
 
+#include "debug.h"
+
 boost::smatch match(const string &in, const string &expression) {
   boost::regex exp("([0-9]+) (.*)");
   boost::smatch rv;
