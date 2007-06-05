@@ -81,59 +81,52 @@ Coord getu(const Coord4 &linepos, const Coord4 &linevel, const Coord4 &ptposvel,
 }
 
 inline pair<Coord, Coord2> doCollision(const Coord4 &l1p, const Coord4 &l1v, const Coord4 &l2p, const Coord4 &l2v) {
-  {
-    Coord4 l1bb = startCBoundBox();
-    addToBoundBox(&l1bb, l1p.sx, l1p.sy);
-    addToBoundBox(&l1bb, l1p.ex, l1p.ey);
-    addToBoundBox(&l1bb, l1p.sx + l1v.sx, l1p.sy + l1v.sy);
-    addToBoundBox(&l1bb, l1p.ex + l1v.ex, l1p.ey + l1v.ey);
-    
-    Coord4 l2bb = startCBoundBox();
-    addToBoundBox(&l2bb, l2p.sx, l2p.sy);
-    addToBoundBox(&l2bb, l2p.ex, l2p.ey);
-    addToBoundBox(&l2bb, l2p.sx + l2v.sx, l2p.sy + l2v.sy);
-    addToBoundBox(&l2bb, l2p.ex + l2v.ex, l2p.ey + l2v.ey);
-    
-    if(!boxBoxIntersect(l1bb, l2bb))
-      return make_pair(NOCOLLIDE, Coord2());
-  }
+  if(!boxBoxIntersect(
+      Coord4(
+        min(min(l1p.sx, l1p.sx + l1v.sx), min(l1p.ex, l1p.ex + l1v.ex)), 
+        min(min(l1p.sy, l1p.sy + l1v.sy), min(l1p.ey, l1p.ey + l1v.ey)), 
+        max(max(l1p.sx, l1p.sx + l1v.sx), max(l1p.ex, l1p.ex + l1v.ex)), 
+        max(max(l1p.sy, l1p.sy + l1v.sy), max(l1p.ey, l1p.ey + l1v.ey))
+      ), Coord4(
+        min(min(l2p.sx, l2p.sx + l2v.sx), min(l2p.ex, l2p.ex + l2v.ex)), 
+        min(min(l2p.sy, l2p.sy + l2v.sy), min(l2p.ey, l2p.ey + l2v.ey)), 
+        max(max(l2p.sx, l2p.sx + l2v.sx), max(l2p.ex, l2p.ex + l2v.ex)), 
+        max(max(l2p.sy, l2p.sy + l2v.sy), max(l2p.ey, l2p.ey + l2v.ey))
+      )
+    ))
+    return make_pair(NOCOLLIDE, Coord2());
   
   Coord cBc = NOCOLLIDE;
   Coord2 pos;
-  Coord4 temp;
   for(int i = 0; i < 4; i++) {
     const Coord4 *linepos;
     const Coord4 *linevel;
-    const Coord4 *ptposvel;
+    Coord4 ptposvel;
     switch(i) {
       case 0:
         linepos = &l1p;
         linevel = &l1v;
-        temp = Coord4(l2p.sx, l2p.sy, l2v.sx, l2v.sy);
-        ptposvel = &temp;
+        ptposvel = Coord4(l2p.sx, l2p.sy, l2v.sx, l2v.sy);
         break;
       case 1:
         linepos = &l1p;
         linevel = &l1v;
-        temp = Coord4(l2p.ex, l2p.ey, l2v.ex, l2v.ey);
-        ptposvel = &temp;
+        ptposvel = Coord4(l2p.ex, l2p.ey, l2v.ex, l2v.ey);
         break;
       case 2:
         linepos = &l2p;
         linevel = &l2v;
-        temp = Coord4(l1p.sx, l1p.sy, l1v.sx, l1v.sy);
-        ptposvel = &temp;
+        ptposvel = Coord4(l1p.sx, l1p.sy, l1v.sx, l1v.sy);
         break;
       case 3:
         linepos = &l2p;
         linevel = &l2v;
-        temp = Coord4(l1p.ex, l1p.ey, l1v.ex, l1v.ey);
-        ptposvel = &temp;
+        ptposvel = Coord4(l1p.ex, l1p.ey, l1v.ex, l1v.ey);
         break;
       default:
         CHECK(0);
     }
-    pair<Coord, Coord> tbv = getLineCollision(*linepos, *linevel, *ptposvel);
+    pair<Coord, Coord> tbv = getLineCollision(*linepos, *linevel, ptposvel);
     Coord2 tpos;
     for(int j = 0; j < 2; j++) {
       Coord tt;
@@ -144,10 +137,10 @@ inline pair<Coord, Coord2> doCollision(const Coord4 &l1p, const Coord4 &l1v, con
       }
       //if(verbosified && tt != NOCOLLIDE)
         //dprintf("%d, %d is %f\n", i, j, tt);
-      if(tt < 0 || tt > 1 || (cBc != NOCOLLIDE && tt > cBc))
+      if(likely(tt < 0 || tt > 1 || (cBc != NOCOLLIDE && tt > cBc)))
         continue;
-      Coord u = getu(*linepos, *linevel, *ptposvel, tt);
-      if(u < 0 || u > 1)
+      Coord u = getu(*linepos, *linevel, ptposvel, tt);
+      if(likely(u < 0 || u > 1))
         continue;
       cBc = tt;
       Coord4 cline = *linepos + *linevel * tt;
