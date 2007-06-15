@@ -108,15 +108,15 @@ float getTextBoxThickness(float scale);
 
 void drawTextBoxAround(const Float4 &bounds, float textscale);
 
-enum { TEXT_MIN, TEXT_CENTER, TEXT_MAX };
+enum Justification { TEXT_MIN, TEXT_CENTER, TEXT_MAX };
 
-void drawJustifiedText(const string &txt, float scale, Float2 pos, int xps, int yps);
-void drawJustifiedMultiText(const vector<string> &txt, float letterscale, Float2 pos, int xps, int yps);
+void drawJustifiedText(const string &txt, float scale, Float2 pos, Justification xjust, Justification yjust);
+void drawJustifiedMultiText(const vector<string> &txt, float letterscale, Float2 pos, Justification xjust, Justification yjust);
 
 void drawFormattedText(const string &txt, float scale, Float4 bounds);
 void drawFormattedText(const vector<string> &txt, float scale, Float4 bounds);
 void drawParagraphedText(const string &txt, float scale, pair<float, float> x_bounds, float y);
-void drawJustifiedParagraphedText(const string &txt, float scale, pair<float, float> x_bounds, float y, int yps);
+void drawJustifiedParagraphedText(const string &txt, float scale, pair<float, float> x_bounds, float y, Justification yjust);
 
 void drawFormattedTextBox(const vector<string> &txt, float scale, Float4 bounds, Color text, Color box);
 

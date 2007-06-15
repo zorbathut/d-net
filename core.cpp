@@ -27,6 +27,7 @@ DEFINE_int(terminateAfterFrame, -1, "Terminate execution after this many frames"
 DEFINE_int(terminateAfter, -1, "Terminate execution after this many seconds");
 
 DEFINE_bool(frameskip, true, "Enable or disable frameskipping");
+DEFINE_bool(render, true, "Render shit");
 
 long long polling = 0;
 long long waiting = 0;
@@ -159,7 +160,7 @@ void MainLoop() {
     }
     waiting += bencher.ticksElapsed();
     bencher = Timer();
-    if(!timer.skipFrame() && (!ffwd || frameNumber % 60 == 0) || !FLAGS_frameskip || frameNumber % (ffwd ? 60 : 6) == 0) {
+    if((!timer.skipFrame() && (!ffwd || frameNumber % 60 == 0) || !FLAGS_frameskip || frameNumber % (ffwd ? 60 : 6) == 0) && FLAGS_render) {
       initFrame();
       interface.render();
       if(!controls_users()) {

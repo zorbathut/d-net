@@ -769,7 +769,7 @@ void drawTextBoxAround(const Float4 &bounds, float textscale) {
   drawRect(Float4(bounds.sx - gtbb, bounds.sy - gtbb, bounds.ex + gtbb, bounds.ey + gtbb), getTextBoxThickness(textscale));
 }
 
-void drawJustifiedText(const string &txt, float scale, Float2 pos, int xps, int yps) {
+void drawJustifiedText(const string &txt, float scale, Float2 pos, Justification xps, Justification yps) {
   float wid = getTextWidth(txt, scale);
   if(xps == TEXT_MIN) {
   } else if(xps == TEXT_CENTER) {
@@ -792,7 +792,7 @@ void drawJustifiedText(const string &txt, float scale, Float2 pos, int xps, int 
   drawText(txt, scale, pos);
 }
 
-void drawJustifiedMultiText(const vector<string> &txt, float letterscale, Float2 pos, int xps, int yps) {
+void drawJustifiedMultiText(const vector<string> &txt, float letterscale, Float2 pos, Justification xps, Justification yps) {
   float gapscale = letterscale / 2;
   float hei = txt.size() * letterscale + (txt.size() - 1) * gapscale;
   if(yps == TEXT_MIN) {
@@ -818,7 +818,7 @@ void drawParagraphedText(const string &txt, float scale, pair<float, float> x_bo
   drawJustifiedParagraphedText(txt, scale, x_bounds, y, TEXT_MIN);
 }
 
-void drawJustifiedParagraphedText(const string &txt, float scale, pair<float, float> x_bounds, float y, int just) {
+void drawJustifiedParagraphedText(const string &txt, float scale, pair<float, float> x_bounds, float y, Justification just) {
   const vector<string> lines = formatText(txt, scale, x_bounds.second - x_bounds.first, "  ");
   drawJustifiedMultiText(lines, scale, Float2(x_bounds.first, y), TEXT_MIN, just);
 }

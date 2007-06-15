@@ -1,5 +1,6 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
+  - Write OO exporter
   - Bugfixes from games
     - Use "sell" to sell old weapons that no longer exist in the shop
       - Yep, rip out everything. Wheee
