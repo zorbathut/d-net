@@ -14,10 +14,10 @@ class Float4;
 // 64-bit int in 32:32 fixed-point format
 class Coord {
   friend inline Coord coordExplicit(long long lhs);
-  friend inline Coord &operator+=(Coord &lhs, const Coord &rhs);
-  friend inline Coord &operator-=(Coord &lhs, const Coord &rhs);
-  friend inline Coord &operator*=(Coord &lhs, const Coord &rhs);
-  friend inline Coord &operator/=(Coord &lhs, const Coord &rhs);
+  friend inline void operator+=(Coord &lhs, const Coord &rhs);
+  friend inline void operator-=(Coord &lhs, const Coord &rhs);
+  friend inline void operator*=(Coord &lhs, const Coord &rhs);
+  friend inline void operator/=(Coord &lhs, const Coord &rhs);
   friend inline Coord operator-(const Coord &lhs);
   friend inline Coord operator+(const Coord &lhs, const Coord &rhs);
   friend inline Coord operator-(const Coord &lhs, const Coord &rhs);
@@ -59,25 +59,10 @@ inline Coord coordExplicit(long long lhs) {
 }
 Coord coordFromRawstr(const string &lhs);
 
-inline Coord &operator+=(Coord &lhs, const Coord &rhs) {
-  lhs.d += rhs.d;
-  return lhs;
-}
-
-inline Coord &operator-=(Coord &lhs, const Coord &rhs) {
-  lhs.d -= rhs.d;
-  return lhs;
-}
-
-inline Coord &operator*=(Coord &lhs, const Coord &rhs) {
-  lhs = lhs * rhs;
-  return lhs;
-}
-
-inline Coord &operator/=(Coord &lhs, const Coord &rhs) {
-  lhs = lhs / rhs;
-  return lhs;
-}
+inline void operator+=(Coord &lhs, const Coord &rhs) { lhs.d += rhs.d; }
+inline void operator-=(Coord &lhs, const Coord &rhs) { lhs.d -= rhs.d; }
+inline void operator*=(Coord &lhs, const Coord &rhs) { lhs = lhs * rhs; }
+inline void operator/=(Coord &lhs, const Coord &rhs) { lhs = lhs / rhs; }
 
 inline Coord operator-(const Coord &lhs) {
   return coordExplicit(-lhs.d);
