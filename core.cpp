@@ -37,7 +37,6 @@ long long rendering = 0;
 void MainLoop() {
 
   Timer timer;
-  Timer bencher;
 
   bool quit = false;
 
@@ -66,12 +65,13 @@ void MainLoop() {
   time_t starttime = time(NULL);
 
   while(!quit) {
+    //Timer bencher;
     StackString sst(StringPrintf("Frame %d loop", frameNumber));
     tickHttpd();
     ffwd = (frameNumber < FLAGS_fastForwardTo);
     if(frameNumber == FLAGS_fastForwardTo)
       timer = Timer();    // so we don't end up sitting there for aeons waiting for another frame
-    bencher = Timer();
+    //bencher = Timer();
     SDL_Event event;
     while(SDL_PollEvent(&event)) {
       switch(event.type) {
@@ -101,6 +101,8 @@ void MainLoop() {
       break;
     interface.ai(controls_ai());  // has to be before controls
     controllers = controls_next();
+    if(!controllers.size())
+      break;
     CHECK(controllers.size() == origcontrollers.size());
     for(int i = 0; i < controllers.size(); i++)
       CHECK(controllers[i].keys.size() == origcontrollers[i].keys.size());
@@ -149,18 +151,18 @@ void MainLoop() {
         fflush(outfile);
       }
     }
-    polling += bencher.ticksElapsed();
-    bencher = Timer();
+    //polling += bencher.ticksElapsed();
+    //bencher = Timer();
     if(interface.tick(controllers, game_seed))
       quit = true;
-    ticking += bencher.ticksElapsed();
-    bencher = Timer();
+    //ticking += bencher.ticksElapsed();
+    //bencher = Timer();
     if(frameNumber >= FLAGS_fastForwardTo) {
       timer.waitForNextFrame();
     }
-    waiting += bencher.ticksElapsed();
-    bencher = Timer();
-    if((!timer.skipFrame() && (!ffwd || frameNumber % 60 == 0) || !FLAGS_frameskip || frameNumber % (ffwd ? 60 : 6) == 0) && FLAGS_render) {
+    //waiting += bencher.ticksElapsed();
+    //bencher = Timer();
+    if(FLAGS_render && (!FLAGS_frameskip || frameNumber % (ffwd ? 60 : 6) == 0 || (!ffwd || frameNumber % 60 == 0) && !timer.skipFrame())) {
       initFrame();
       interface.render();
       if(!controls_users()) {
@@ -173,7 +175,7 @@ void MainLoop() {
     } else {
       skipped++;
     }
-    rendering += bencher.ticksElapsed();
+    //rendering += bencher.ticksElapsed();
     timer.frameDone();
     {
       int frameSplit;
