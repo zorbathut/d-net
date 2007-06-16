@@ -118,6 +118,20 @@ double IDBAdjustment::recyclevalue() const {
   return ratio;
 }
 
+bool sortByTankCost(const HierarchyNode &lhs, const HierarchyNode &rhs) {
+  CHECK(lhs.type == HierarchyNode::HNT_TANK);
+  CHECK(rhs.type == HierarchyNode::HNT_TANK);
+  return lhs.tank->base_cost > rhs.tank->base_cost;
+}
+
+void HierarchyNode::finalSort() {
+  for(int i = 0; i < branches.size(); i++)
+    branches[i].finalSort();
+  
+  if(type == HierarchyNode::HNT_CATEGORY && cat_restrictiontype == HierarchyNode::HNT_TANK)
+    stable_sort(branches.begin(), branches.end(), sortByTankCost);
+}
+
 class ErrorAccumulator {
 public:
   void addError(const string &text) {
@@ -410,6 +424,20 @@ HierarchyNode::HierarchyNode() {
   implantitem = NULL;
   equipweapon = NULL;
   spawncash = Money(0);
+}
+
+void swap(HierarchyNode &lhs, HierarchyNode &rhs) {
+  if(&lhs == &rhs)
+    return;
+  vector<HierarchyNode> lb;
+  vector<HierarchyNode> rb;
+  lb.swap(lhs.branches);
+  rb.swap(rhs.branches);
+  HierarchyNode temp = lhs;
+  lhs = rhs;
+  rhs = temp;
+  lb.swap(rhs.branches);
+  rb.swap(lhs.branches);
 }
 
 bool isMountedNode(const string &in) {
@@ -1498,6 +1526,10 @@ void loadItemDb(bool reload) {
   CHECK(deftank);
   CHECK(defglory);
   CHECK(defbombardment);
+  root.checkConsistency(&errors);
+  
+  dprintf("sorting/processing\n");
+  root.finalSort();
   root.checkConsistency(&errors);
   
   if(errors.size() == 0) {

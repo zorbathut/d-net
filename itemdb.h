@@ -630,6 +630,7 @@ public:
   int cat_restrictiontype;
   Money spawncash;
   
+  void finalSort();
   void checkConsistency(vector<string> *errors) const;
   
   Color getColor() const;
@@ -638,6 +639,8 @@ public:
   HierarchyNode();
   
 };
+
+void swap(HierarchyNode &lhs, HierarchyNode &rhs);
 
 void clearItemdb();
 
