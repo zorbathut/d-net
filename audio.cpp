@@ -13,6 +13,8 @@
 
 #include <vorbis/vorbisfile.h>
 
+DEFINE_bool(audio, true, "Turn sound on or off entirely");
+
 class SoundState {
 public:
   const Sound *sound;
@@ -62,17 +64,19 @@ const Sound *const S::error = &error_local;
 const Sound *const S::null = &null_local;
 
 void initAudio() {
-  SDL_AudioSpec spec;
-  spec.freq = 44100;
-  spec.format = AUDIO_S16LSB;
-  spec.channels = 2;
-  spec.samples = 1024;
-  spec.callback = sound_callback;
-  spec.userdata = NULL;
-  
-  CHECK(SDL_OpenAudio(&spec, NULL) == 0);
-  
-  SDL_PauseAudio(0);
+  if(FLAGS_audio) {
+    SDL_AudioSpec spec;
+    spec.freq = 44100;
+    spec.format = AUDIO_S16LSB;
+    spec.channels = 2;
+    spec.samples = 1024;
+    spec.callback = sound_callback;
+    spec.userdata = NULL;
+    
+    CHECK(SDL_OpenAudio(&spec, NULL) == 0);
+    
+    SDL_PauseAudio(0);
+  }
   
   accept_local = loadSound("data/sound/accept");
   choose_local = loadSound("data/sound/choose");
@@ -87,7 +91,9 @@ void initAudio() {
 }
 
 void deinitAudio() {
-  SDL_CloseAudio();
+  if(FLAGS_audio) {
+    SDL_CloseAudio();
+  }
 }
 
 static vector<float> tonemults;
@@ -132,15 +138,14 @@ AudioShifter::~AudioShifter() {
   reCalcShift();
 }
 
-DEFINE_bool(disableAudio, false, "Turn off sound entirely");
 DECLARE_int(fastForwardTo);
 
 void queueSound(const Sound *sound) {
   CHECK(sound);
   CHECK(sound->data[0].size());
   CHECK(sound->data[1].size());
-  if(FLAGS_disableAudio || FLAGS_fastForwardTo)
-    return;
+  if(!FLAGS_audio || FLAGS_fastForwardTo)
+      return;
   SoundState stt;
   stt.sound = sound;
   stt.shiftl = shiftl;
