@@ -165,6 +165,8 @@ vector<Controller> controls_next() {
       for(int j = 0; j < now[i].axes.size(); j++)
         fread(&now[i].axes[j], 1, sizeof(now[i].axes[j]), infile);
     }
+    if(feof(infile))
+      return vector<Controller>();
     CHECK(!feof(infile));
     int cpos = ftell(infile);
     int x;
