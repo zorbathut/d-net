@@ -293,10 +293,12 @@ void doMegaEnumWorker(const HierarchyNode &rt, vector<pair<Money, vector<Control
     upgs->push_back(make_pair(player->adjustImplant(rt.implantitem).costToLevel(player->implantLevel(rt.implantitem)), path));
   } else if(rt.type == HierarchyNode::HNT_SELL) {
   } else if(rt.type == HierarchyNode::HNT_EQUIPCATEGORY) {
+  } else if(rt.type == HierarchyNode::HNT_BONUSES) {
   } else if(rt.type == HierarchyNode::HNT_DONE) {
     CHECK(done->size() == 0);
     *done = path;
   } else {
+    dprintf("what %d\n", rt.type);
     CHECK(0);
   }
 }
