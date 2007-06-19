@@ -11,6 +11,11 @@ DECLARE_bool(verboseCollisions);
 
 const Coord NOCOLLIDE = Coord(-1000000000);
 
+inline void norm(Coord *ref, const Coord &max) {
+  if(*ref < 0 || *ref > 1 || *ref > max)
+    *ref = NOCOLLIDE;
+}
+
 pair<Coord, Coord> getLineCollision(const Coord4 &linepos, const Coord4 &linevel, const Coord4 &ptposvel) {
   /*Coord x1d = linepos.sx;
   Coord y1d = linepos.sy;
@@ -121,7 +126,7 @@ inline pair<Coord, Coord2> doCollisionNN(const Coord4 &l1p, const Coord4 &l1v, c
     ))
     return make_pair(NOCOLLIDE, Coord2());
   
-  Coord cBc = NOCOLLIDE;
+  Coord cBc = 2;
   Coord2 pos;
   for(int i = 0; i < 4; i++) {
     const Coord4 *linepos;
@@ -152,26 +157,37 @@ inline pair<Coord, Coord2> doCollisionNN(const Coord4 &l1p, const Coord4 &l1v, c
         CHECK(0);
     }
     pair<Coord, Coord> tbv = getLineCollision(*linepos, *linevel, ptposvel);
-    Coord2 tpos;
-    for(int j = 0; j < 2; j++) {
-      Coord tt;
-      if(j) {
-        tt = tbv.second;
-      } else {
-        tt = tbv.first;
-      }
-      //if(verbosified && tt != NOCOLLIDE)
-        //dprintf("%d, %d is %f\n", i, j, tt);
-      if(likely(tt < 0 || tt > 1 || (cBc != NOCOLLIDE && tt > cBc)))
+    
+    norm(&tbv.first, cBc);
+    norm(&tbv.second, cBc);
+    if(likely(tbv.first == NOCOLLIDE)) {
+      if(likely(tbv.second == NOCOLLIDE)) {
         continue;
-      Coord u = getu(*linepos, *linevel, ptposvel, tt);
+      } else {
+        swap(tbv.first, tbv.second);
+      }
+    } else {
+      if(likely(tbv.second == NOCOLLIDE)) {
+      } else {
+        if(tbv.first > tbv.second)
+          swap(tbv.first, tbv.second);
+      }
+    }
+    
+    Coord u = getu(*linepos, *linevel, ptposvel, tbv.first);
+    if(likely(u < 0 || u > 1)) {
+      u = getu(*linepos, *linevel, ptposvel, tbv.second);
       if(likely(u < 0 || u > 1))
         continue;
-      cBc = tt;
-      Coord4 cline = *linepos + *linevel * tt;
-      pos = Coord2(cline.sx, cline.sy) + Coord2(cline.ex - cline.sx, cline.ey - cline.sy) * u;
+      cBc = tbv.second;
+    } else {
+      cBc = tbv.first;
     }
+    Coord4 cline = *linepos + *linevel * cBc;
+    pos = Coord2(cline.sx, cline.sy) + Coord2(cline.ex - cline.sx, cline.ey - cline.sy) * u;
   }
+  if(likely(cBc == 2))
+    cBc = NOCOLLIDE;
   return make_pair(cBc, pos);
 }
 
@@ -181,10 +197,35 @@ inline pair<Coord, Coord2> doCollisionNU(const Coord4 &l1p, const Coord4 &l1v, c
 
 inline pair<Coord, Coord2> doCollisionNP(const Coord4 &l1p, const Coord4 &l1v, const Coord4 &l2p, const Coord4 &l2v) {
   return doCollisionNN(l1p, l1v, l2p, l2v); // this can probably be optimized
+  //pair<Coord, Coord> tbv = getLineCollision(
 }
 
-inline pair<Coord, Coord2> doCollisionUP(const Coord4 &l1p, const Coord4 &l1v, const Coord4 &l2p, const Coord4 &l2v) {
+/*
+inline pair<Coord, Coord2> doCollisionNP(const Coord4 &l1p, const Coord4 &l1v, const Coord2 &l2p, const Coord2 &l2v) {
   return doCollisionNN(l1p, l1v, l2p, l2v); // this can probably be optimized
+  //pair<Coord, Coord> tbv = getLineCollision(
+}*/
+
+inline pair<Coord, Coord2> doCollisionUP(const Coord4 &l1, const Coord2 &l2p, const Coord2 &l2v) {
+  //return doCollisionNN(l1, Coord4(0, 0, 0, 0), Coord4(l2p, l2p), Coord4(l2v, l2v)); // this can probably be optimized
+  if(!boxBoxIntersect(
+      Coord4(
+        min(l1.sx, l1.ex),
+        min(l1.sy, l1.ey),
+        max(l1.sx, l1.ex),
+        max(l1.sy, l1.ey)
+      ), Coord4(
+        min(l2p.x, l2p.x + l2v.x),
+        min(l2p.y, l2p.y + l2v.y),
+        max(l2p.x, l2p.x + l2v.x),
+        max(l2p.y, l2p.y + l2v.y)
+      )
+    ))
+    return make_pair(NOCOLLIDE, Coord2());
+  Coord pos = linelineintersectpos(Coord4(l2p, l2p + l2v), l1);
+  if(pos == 2)
+    return make_pair(NOCOLLIDE, Coord2());
+  return make_pair(pos, l2p + l2v * pos);
 }
 
 inline int getCategoryCount(int players) {
@@ -383,7 +424,7 @@ void CollideZone::processMotion(vector<pair<Coord, CollideData> > *clds, const c
               pair<Coord, Coord2> tcol;
               if(tix->type == CollidePiece::UNMOVING && tiy->type == CollidePiece::POINT) {
                 cp_up++;
-                tcol = doCollisionUP(tix->pos, tix->vel, tiy->pos, tiy->vel);
+                tcol = doCollisionUP(tix->pos, tiy->pos.s(), tiy->vel.s());
               } else if(tix->type == CollidePiece::NORMAL && tiy->type == CollidePiece::UNMOVING) {
                 cp_nu++;
                 tcol = doCollisionNU(tix->pos, tix->vel, tiy->pos, tiy->vel);
@@ -392,6 +433,7 @@ void CollideZone::processMotion(vector<pair<Coord, CollideData> > *clds, const c
                 tcol = doCollisionNN(tix->pos, tix->vel, tiy->pos, tiy->vel);
               } else if(tix->type == CollidePiece::NORMAL && tiy->type == CollidePiece::POINT) {
                 cp_np++;
+                //tcol = doCollisionNP(tix->pos, tix->vel, tiy->pos.s(), tiy->vel.s());
                 tcol = doCollisionNP(tix->pos, tix->vel, tiy->pos, tiy->vel);
               } else if(tix->type == CollidePiece::POINT && tiy->type == CollidePiece::POINT) {
                 cp_pp++;
