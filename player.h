@@ -82,11 +82,6 @@ public:
   bool canBuyImplantSlot(const IDBImplantSlot *in_impslot) const;
 
   bool isUpgradeAvailable(const IDBUpgrade *in_upg) const;
-
-  bool canSellGlory(const IDBGlory *in_glory) const;
-  bool canSellBombardment(const IDBBombardment *in_bombardment) const;
-  bool canSellWeapon(const IDBWeapon *in_weap) const;
-  bool canSellTank(const IDBTank *in_tank) const;
   
   Money costWeapon(const IDBWeapon *in_weap) const;
   Money costUpgrade(const IDBUpgrade *in_upg) const;
@@ -97,9 +92,6 @@ public:
   Money costImplantUpg(const IDBImplant *in_implant) const;
   
   Money sellvalueWeapon(const IDBWeapon *in_weap) const;
-  Money sellvalueGlory(const IDBGlory *in_glory) const;
-  Money sellvalueBombardment(const IDBBombardment *in_bombard) const;
-  Money sellvalueTank(const IDBTank *in_tank) const;
 
   void buyUpgrade(const IDBUpgrade *in_upg);
   void buyGlory(const IDBGlory *in_glory);
@@ -135,10 +127,7 @@ public:
   void equipBombardment(const IDBBombardment *in_bombardment);
   void equipTank(const IDBTank *in_tank);
 
-  void sellGlory(const IDBGlory *in_glory);
-  void sellBombardment(const IDBBombardment *in_bombardment);
   void sellWeapon(const IDBWeapon *in_weap);
-  void sellTank(const IDBTank *in_tank);
   
   bool hasUpgrade(const IDBUpgrade *in_upg) const;
   bool hasGlory(const IDBGlory *in_glory) const;

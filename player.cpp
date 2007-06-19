@@ -173,12 +173,6 @@ bool Player::isUpgradeAvailable(const IDBUpgrade *in_upg) const {
   return count(tank[0].tank->upgrades.begin(), tank[0].tank->upgrades.end(), in_upg->category);
 }
 
-bool Player::canSellGlory(const IDBGlory *in_glory) const { return hasGlory(in_glory) && in_glory != defaultGlory(); };
-bool Player::canSellBombardment(const IDBBombardment *in_bombardment) const { return hasBombardment(in_bombardment) && in_bombardment != defaultBombardment(); };
-bool Player::canSellWeapon(const IDBWeapon *in_weap) const { return ammoCount(in_weap) > 0; }
-bool Player::canSellTank(const IDBTank *in_tank) const { return hasTank(in_tank); }  // yes, you can sell all your tanks!
-
-
 Money Player::costWeapon(const IDBWeapon *in_weap) const {
   return adjustWeapon(in_weap).cost_pack();
 }
@@ -209,29 +203,6 @@ Money Player::costImplantUpg(const IDBImplant *in_implant) const {
   
 Money Player::sellvalueWeapon(const IDBWeapon *in_weap) const {
   return adjustWeapon(in_weap).sellcost(min(in_weap->quantity, ammoCount(in_weap)));
-}
-
-Money Player::sellvalueGlory(const IDBGlory *in_glory) const {
-  return adjustGlory(in_glory).sellcost();
-}
-
-Money Player::sellvalueBombardment(const IDBBombardment *in_bombard) const {
-  return adjustBombardment(in_bombard).sellcost();
-}
-
-Money Player::sellvalueTank(const IDBTank *in_tank) const {
-  CHECK(hasTank(in_tank));
-  int ps;
-  for(ps = 0; ps < tank.size(); ps++)
-    if(tank[ps].tank == in_tank)
-      break;
-  CHECK(ps < tank.size());
-  
-  Money acu = Money(0);
-  acu += adjustTankWithInstanceUpgrades(in_tank).sellcost();
-  for(int i = 0; i < tank[ps].upgrades.size(); i++)
-    acu += adjustUpgrade(tank[ps].upgrades[i], tank[ps].tank).sellcost();
-  return acu;
 }
 
 void Player::buyUpgrade(const IDBUpgrade *in_upg) {
@@ -390,45 +361,12 @@ void Player::equipTank(const IDBTank *in_tank) {
   reCalculate();
 }
 
-void Player::sellGlory(const IDBGlory *in_glory) {
-  CHECK(canSellGlory(in_glory));
-  glory.erase(find(glory.begin(), glory.end(), in_glory));
-  cash += adjustGlory(in_glory).sellcost();
-  CHECK(glory.size() != 0);
-}
-void Player::sellBombardment(const IDBBombardment *in_bombardment) {
-  CHECK(canSellBombardment(in_bombardment));
-  bombardment.erase(find(bombardment.begin(), bombardment.end(), in_bombardment));
-  cash += adjustBombardment(in_bombardment).sellcost();
-  CHECK(bombardment.size() != 0);
-}
 void Player::sellWeapon(const IDBWeapon *in_weap) {
-  CHECK(canSellWeapon(in_weap));
   CHECK(weapons.ammoCount(in_weap) > 0);
 
   int sold = min(weapons.ammoCount(in_weap), in_weap->quantity);
   cash += adjustWeapon(in_weap).sellcost(sold);
   weapons.removeAmmo(in_weap, sold);
-}
-void Player::sellTank(const IDBTank *in_tank) {
-  CHECK(canSellTank(in_tank));
-  
-  if(tank[0].tank == in_tank && tank.size() >= 2)
-    equipTank(tank[1].tank);
-
-  int ps;
-  for(ps = 0; ps < tank.size(); ps++)
-    if(tank[ps].tank == in_tank)
-      break;
-  CHECK(ps < tank.size());
-  cash += sellvalueTank(in_tank);
-  tank.erase(tank.begin() + ps);
-  
-  // just in case we got rid of the last tank
-  if(!tank.size()) {
-    weapons.changeDefaultWeapon(NULL);
-    reCalculate();
-  }
 }
 
 bool Player::hasUpgrade(const IDBUpgrade *in_upg) const { return stateUpgrade(in_upg) != ITEMSTATE_UNOWNED; }

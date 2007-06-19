@@ -243,7 +243,19 @@ void HierarchyNode::checkConsistency(vector<string> *errors) const {
     gottype = true;
     CHECK(displaymode == HNDM_BLANK);
     CHECK(!buyable);
-    CHECK(cat_restrictiontype == HNT_NONE);
+    CHECK(cat_restrictiontype == HNT_SELLWEAPON);
+  }
+  
+  // the sellweapon item must have a weapon and is "buyable"
+  if(type == HNT_SELLWEAPON) {
+    CHECK(!gottype);
+    gottype = true;
+    CHECK(displaymode == HNDM_COST);
+    CHECK(buyable);
+    CHECK(cat_restrictiontype == HNT_SELLWEAPON);
+    CHECK(sellweapon);
+  } else {
+    CHECK(!sellweapon);
   }
   
   // the equipweapon item must have a weapon and is "buyable"
@@ -328,8 +340,8 @@ void HierarchyNode::checkConsistency(vector<string> *errors) const {
   // it may have no restriction or a valid restriction
   CHECK(cat_restrictiontype == -1 || cat_restrictiontype >= 0 && cat_restrictiontype < HNT_LAST);
   
-  // if it's not a category or an equip, it shouldn't have branches
-  CHECK(type == HNT_CATEGORY || type == HNT_EQUIP || branches.size() == 0);
+  // if it's not a category, an equip, or a sell, it shouldn't have branches
+  CHECK(type == HNT_CATEGORY || type == HNT_EQUIP || type == HNT_SELL || branches.size() == 0);
   
   // last, check the consistency of everything recursively
   for(int i = 0; i < branches.size(); i++) {
@@ -392,6 +404,8 @@ Color HierarchyNode::getColor() const {
     return gcolor(bombardment);
   } else if(type == HNT_EQUIPWEAPON) {
     return gcolor(equipweapon);
+  } else if(type == HNT_SELLWEAPON) {
+    return gcolor(sellweapon);
   } else if(type == HNT_CATEGORY && branches.size()) {
     if(name == "Bombardment")
       return C::inactive_text; // hackety hack hack
@@ -423,6 +437,7 @@ HierarchyNode::HierarchyNode() {
   implantslot = NULL;
   implantitem = NULL;
   equipweapon = NULL;
+  sellweapon = NULL;
   spawncash = Money(0);
 }
 
@@ -1468,7 +1483,7 @@ void loadItemDb(bool reload) {
     tnode.name = "Sell ammo";
     tnode.type = HierarchyNode::HNT_SELL;
     tnode.displaymode = HierarchyNode::HNDM_BLANK;
-    tnode.cat_restrictiontype = HierarchyNode::HNT_NONE;
+    tnode.cat_restrictiontype = HierarchyNode::HNT_SELLWEAPON;
     root.branches.push_back(tnode);
   }
   

@@ -13,6 +13,20 @@ using namespace std;
 
 DEFINE_bool(cullShopTree, true, "Cull items which the players wouldn't want or realistically can't yet buy");
 
+class WeaponNameSorter {
+public:
+  bool operator()(const IDBWeapon *lhs, const IDBWeapon *rhs) const {
+    if(!lhs && !rhs)
+      return false;
+    if(!lhs)
+      return false;
+    if(!rhs)
+      return true;
+    CHECK(lhs && rhs);
+    return lhs->name < rhs->name;
+  }
+};
+
 void Shop::renormalize(HierarchyNode &item, const Player *player, int playercount, Money highestCash) {
   if(item.type == HierarchyNode::HNT_EQUIP) {
     item.branches.clear();
@@ -47,6 +61,34 @@ void Shop::renormalize(HierarchyNode &item, const Player *player, int playercoun
         hod.equipweapon = weaps[i][j];
         item.branches.push_back(hod);
       }
+    }
+
+    vector<string> errors;
+    item.checkConsistency(&errors);
+    if(errors.size()) {
+      dprintf("oh god renormalized hierarchy broke how can this be\n");
+      for(int i = 0; i < errors.size(); i++)
+        dprintf("    %s\n", errors[i].c_str());
+      CHECK(0);
+    }
+  } else if(item.type == HierarchyNode::HNT_SELL) {
+    item.branches.clear();
+    
+    const vector<vector<const IDBWeapon *> > &weaps = player->getWeaponList();
+    set<const IDBWeapon *, WeaponNameSorter> st;
+    for(int i = 0; i < weaps.size(); i++)
+      st.insert(weaps[i].begin(), weaps[i].end());
+    
+    for(set<const IDBWeapon *, WeaponNameSorter>::const_iterator itr = st.begin(); itr != st.end(); itr++) {
+      HierarchyNode hod;
+      hod.type = HierarchyNode::HNT_SELLWEAPON;
+      hod.cat_restrictiontype = HierarchyNode::HNT_SELLWEAPON;
+      hod.displaymode = HierarchyNode::HNDM_COST;
+      hod.buyable = true;
+      hod.name = (*itr)->name;
+      hod.pack = 1;
+      hod.sellweapon = *itr;
+      item.branches.push_back(hod);
     }
 
     vector<string> errors;
@@ -185,6 +227,8 @@ Money cost(const HierarchyNode &node, const Player *player) {
     return player->costImplantSlot(node.implantslot);
   } else if(node.type == HierarchyNode::HNT_IMPLANTITEM_UPG) {
     return player->costImplantUpg(node.implantitem);
+  } else if(node.type == HierarchyNode::HNT_SELLWEAPON) {
+    return player->sellvalueWeapon(node.sellweapon);
   } else {
     CHECK(0);
   }
@@ -277,15 +321,18 @@ void Shop::renderNode(const HierarchyNode &node, int depth, const Player *player
     
     // Display ammo count
     {
-      if(node.branches[itemid].type == HierarchyNode::HNT_WEAPON || node.branches[itemid].type == HierarchyNode::HNT_EQUIPWEAPON) {
+      if(node.branches[itemid].type == HierarchyNode::HNT_WEAPON || node.branches[itemid].type == HierarchyNode::HNT_EQUIPWEAPON || node.branches[itemid].type == HierarchyNode::HNT_SELLWEAPON) {
         const IDBWeapon *weap;
         if(node.branches[itemid].type == HierarchyNode::HNT_WEAPON) {
           weap = node.branches[itemid].weapon;
         } else if(node.branches[itemid].type == HierarchyNode::HNT_EQUIPWEAPON) {
           weap = node.branches[itemid].equipweapon;
+        } else if(node.branches[itemid].type == HierarchyNode::HNT_SELLWEAPON) {
+          weap = node.branches[itemid].sellweapon;
         } else {
           CHECK(0);
         }
+        CHECK(weap);
         
         string text;
         {
@@ -301,7 +348,7 @@ void Shop::renderNode(const HierarchyNode &node, int depth, const Player *player
           }
         }
         
-        if(node.branches[itemid].type == HierarchyNode::HNT_WEAPON) {
+        if(node.branches[itemid].type == HierarchyNode::HNT_WEAPON || node.branches[itemid].type == HierarchyNode::HNT_SELLWEAPON) {
           drawJustifiedText(text, slay.fontsize(), slay.quantity(splace), TEXT_MAX, TEXT_MIN);
         } else if(node.branches[itemid].type == HierarchyNode::HNT_EQUIPWEAPON) {
           drawJustifiedText(text, slay.fontsize(), slay.price(splace), TEXT_MAX, TEXT_MIN);
@@ -390,7 +437,7 @@ void Shop::renderNode(const HierarchyNode &node, int depth, const Player *player
 }
 
 bool Shop::hasInfo(int type) const {
-  return type == HierarchyNode::HNT_WEAPON || type == HierarchyNode::HNT_EQUIPWEAPON || type == HierarchyNode::HNT_GLORY || type == HierarchyNode::HNT_BOMBARDMENT || type == HierarchyNode::HNT_UPGRADE || type == HierarchyNode::HNT_TANK || type == HierarchyNode::HNT_IMPLANTITEM || type == HierarchyNode::HNT_IMPLANTITEM_UPG || type == HierarchyNode::HNT_IMPLANTSLOT;
+  return type == HierarchyNode::HNT_WEAPON || type == HierarchyNode::HNT_EQUIPWEAPON || type == HierarchyNode::HNT_GLORY || type == HierarchyNode::HNT_BOMBARDMENT || type == HierarchyNode::HNT_UPGRADE || type == HierarchyNode::HNT_TANK || type == HierarchyNode::HNT_IMPLANTITEM || type == HierarchyNode::HNT_IMPLANTITEM_UPG || type == HierarchyNode::HNT_IMPLANTSLOT || type == HierarchyNode::HNT_SELLWEAPON;
 }
 
 bool findEquipItem(const HierarchyNode &hrt, const IDBWeapon *weap, vector<int> *path) {
@@ -552,6 +599,16 @@ bool Shop::runTick(const Keystates &keys, Player *player) {
           } else {
             sound = S::error;
           }
+        } else if(getCurNode().type == HierarchyNode::HNT_SELLWEAPON) {
+          player->sellWeapon(getCurNode().sellweapon);
+          sound = S::choose;
+          if(player->ammoCount(getCurNode().sellweapon) == 0) { // weapon going away, make sure things stay sane
+            if(getCategoryNode().branches.size() == 1) {
+              curloc.pop_back();
+            } else if(curloc[curloc.size() - 1] == getCategoryNode().branches.size() - 1) {
+              curloc[curloc.size() - 1]--;
+            }
+          }
         } else {
           CHECK(0);
         }
@@ -606,6 +663,8 @@ bool Shop::runTick(const Keystates &keys, Player *player) {
       cshopinf.initIfNeeded(getCurNode().implantitem, true, player, miniature);
     else if(getCurNode().type == HierarchyNode::HNT_IMPLANTSLOT)
       cshopinf.initIfNeeded(getCurNode().implantslot, player, miniature);
+    else if(getCurNode().type == HierarchyNode::HNT_SELLWEAPON)
+      cshopinf.initIfNeeded(getCurNode().sellweapon, player, miniature);
     else {
       hasinfo = false;
       cshopinf.clear();
