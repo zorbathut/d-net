@@ -40,9 +40,21 @@ public:
   CollideData(const CollideId &lhs, const CollideId &rhs, const Coord2 &pos, pair<float, float> normals) : lhs(lhs), rhs(rhs), pos(pos), normals(normals) { };
 };
 
+class CollidePiece {
+public:
+  enum { NORMAL, UNMOVING, POINT };
+  Coord4 pos;
+  Coord4 vel;
+  int type;
+  
+  CollidePiece() { };
+  CollidePiece(const Coord4 &pos, const Coord4 &vel, int type) : pos(pos), vel(vel), type(type) { };
+  CollidePiece(const CollidePiece &piece) : pos(piece.pos), vel(piece.vel), type(piece.type) { };
+};
+
 class CollideZone {
 private:
-  vector<pair<int, map<int, vector<pair<Coord4, Coord4> > > > > items;
+  vector<pair<int, map<int, vector<CollidePiece> > > > items;
   vector<int> catrefs;
 
   void makeSpaceFor(int id);
@@ -54,7 +66,7 @@ public:
 
   void clean(const char *persist);
 
-  void addToken(int category, int group, const Coord4 &line, const Coord4 &direction);
+  void addToken(int category, int group, const CollidePiece &piece);
   void dumpGroup(int category, int group);
 
   bool checkSimpleCollision(int groupid, const vector<Coord4> &line, const Coord4 &bbox, const char *collidematrix) const;
@@ -73,7 +85,10 @@ public:
 
   void cleanup(int mode, const Coord4 &bounds, const vector<int> &teams);
 
-  void addToken(const CollideId &cid, const Coord4 &line, const Coord4 &direction);
+  void addNormalToken(const CollideId &cid, const Coord4 &line, const Coord4 &direction);
+  void addUnmovingToken(const CollideId &cid, const Coord4 &line);
+  void addPointToken(const CollideId &cid, const Coord2 &pos, const Coord2 &vel);
+
   void dumpGroup(const CollideId &cid);
 
   int consumeAddedTokens() const;

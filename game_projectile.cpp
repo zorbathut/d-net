@@ -73,7 +73,7 @@ void Projectile::firstCollide(Collider *collider, int owner, int id) const {
   if(projtype.motion() == PM_MINE) {
     vector<Coord2> ite = mine_polys();
     for(int i = 0; i < ite.size(); i++)
-      collider->addToken(CollideId(CGR_STATPROJECTILE, owner, id), Coord4(ite[i], ite[(i + 1) % ite.size()]), Coord4(0, 0, 0, 0));
+      collider->addUnmovingToken(CollideId(CGR_STATPROJECTILE, owner, id), Coord4(ite[i], ite[(i + 1) % ite.size()]));
   }
 }
 
@@ -81,10 +81,11 @@ void Projectile::addCollision(Collider *collider, int owner, int id) const {
   CHECK(live);
   if(projtype.motion() == PM_MINE || projtype.motion() == PM_DPS) {
   } else {
-    int projgroup = CGR_PROJECTILE;
-    if(projtype.no_intersection())
-      projgroup = CGR_NOINTPROJECTILE;
-    collider->addToken(CollideId(projgroup, owner, id), Coord4(pos, pos + lasttail), Coord4(movement(), movement() + nexttail() - lasttail));
+    if(projtype.no_intersection()) {
+      collider->addPointToken(CollideId(CGR_NOINTPROJECTILE, owner, id), pos, movement());
+    } else {
+      collider->addNormalToken(CollideId(CGR_PROJECTILE, owner, id), Coord4(pos, pos + lasttail), Coord4(movement(), movement() + nexttail() - lasttail));
+    }
   }
 }
 

@@ -109,7 +109,7 @@ void Gamemap::updateCollide(Collider *collider) {
       collider->dumpGroup(CollideId(CGR_WALL, CGR_WALLOWNER, i));
       for(int j = 0; j < paths[i].collisionpath.size(); j++) {
         int k = (j + 1) % paths[i].collisionpath.size();
-        collider->addToken(CollideId(CGR_WALL, CGR_WALLOWNER, i), Coord4(paths[i].collisionpath[j], paths[i].collisionpath[k]), Coord4(0, 0, 0, 0));
+        collider->addUnmovingToken(CollideId(CGR_WALL, CGR_WALLOWNER, i), Coord4(paths[i].collisionpath[j], paths[i].collisionpath[k]));
       }
       // implicit in CGR_WALL now, but leaving this in just for the time being
       //collider->markPersistent(CollideId(CGR_WALL, CGR_WALLOWNER, i));

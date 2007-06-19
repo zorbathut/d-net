@@ -162,7 +162,7 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
         CHECK(isInside(gmbc, tanks[playerorder[i]].getNextPosition(keys[playerorder[i]]).first));
         collider.dumpGroup(CollideId(CGR_TANK, playerorder[i], 0));
         for(int j = 0; j < newpos.size(); j++)
-          collider.addToken(CollideId(CGR_TANK, playerorder[i], 0), newpos[j], Coord4(0, 0, 0, 0));
+          collider.addUnmovingToken(CollideId(CGR_TANK, playerorder[i], 0), newpos[j]);
       }
 
     }

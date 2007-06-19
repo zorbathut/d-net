@@ -34,6 +34,8 @@ long long waiting = 0;
 long long ticking = 0;
 long long rendering = 0;
 
+void displayCZInfo();
+
 void MainLoop() {
 
   Timer timer;
@@ -191,7 +193,8 @@ void MainLoop() {
         dprintf("%4d waiting", int(waiting * 1000 / tot));
         dprintf("%4d rendering", int(rendering * 1000 / tot));
         dprintf("%4d skipped", skipped);
-        dprintf("%s", printGraphicsStats().c_str());
+        dprintf("    %s", printGraphicsStats().c_str());
+        displayCZInfo();
         dprintf("%d frames in %ld seconds, %.2fx overall (%.2f hours gametime)", frameNumber, time(NULL) - starttime, (frameNumber / 60.) / (time(NULL) - starttime), frameNumber / 60. / 60 / 60);
         polling = 0;
         ticking = 0;

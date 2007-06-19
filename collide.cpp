@@ -105,7 +105,7 @@ Coord getu(const Coord4 &linepos, const Coord4 &linevel, const Coord4 &ptposvel,
   return ((x3 - x1) * (x2 - x1) + (y3 - y1) * (y2 - y1)) / (sqr(x2 - x1) + sqr(y2 - y1));
 }
 
-inline pair<Coord, Coord2> doCollision(const Coord4 &l1p, const Coord4 &l1v, const Coord4 &l2p, const Coord4 &l2v) {
+inline pair<Coord, Coord2> doCollisionNN(const Coord4 &l1p, const Coord4 &l1v, const Coord4 &l2p, const Coord4 &l2v) {
   if(!boxBoxIntersect(
       Coord4(
         min(min(l1p.sx, l1p.sx + l1v.sx), min(l1p.ex, l1p.ex + l1v.ex)), 
@@ -173,6 +173,18 @@ inline pair<Coord, Coord2> doCollision(const Coord4 &l1p, const Coord4 &l1v, con
     }
   }
   return make_pair(cBc, pos);
+}
+
+inline pair<Coord, Coord2> doCollisionNU(const Coord4 &l1p, const Coord4 &l1v, const Coord4 &l2p, const Coord4 &l2v) {
+  return doCollisionNN(l1p, l1v, l2p, l2v); // this can probably be optimized
+}
+
+inline pair<Coord, Coord2> doCollisionNP(const Coord4 &l1p, const Coord4 &l1v, const Coord4 &l2p, const Coord4 &l2v) {
+  return doCollisionNN(l1p, l1v, l2p, l2v); // this can probably be optimized
+}
+
+inline pair<Coord, Coord2> doCollisionUP(const Coord4 &l1p, const Coord4 &l1v, const Coord4 &l2p, const Coord4 &l2v) {
+  return doCollisionNN(l1p, l1v, l2p, l2v); // this can probably be optimized
 }
 
 inline int getCategoryCount(int players) {
@@ -303,9 +315,9 @@ void CollideZone::clean(const char *persist) {
   }
 }
 
-void CollideZone::addToken(int groupid, int token, const Coord4 &line, const Coord4 &direction) {
-  makeSpaceFor(groupid);
-  items[catrefs[groupid]].second[token].push_back(make_pair(line, direction));
+void CollideZone::addToken(int category, int group, const CollidePiece &piece) {
+  makeSpaceFor(category);
+  items[catrefs[category]].second[group].push_back(piece);
 }
 void CollideZone::dumpGroup(int category, int group) {
   if(catrefs[category] != -1)
@@ -316,13 +328,13 @@ bool CollideZone::checkSimpleCollision(int groupid, const vector<Coord4> &line, 
   for(int i = 0; i < items.size(); i++) {
     if(!collidematrix[groupid * catrefs.size() + items[i].first])
       continue;
-    for(map<int, vector<pair<Coord4, Coord4> > >::const_iterator itr = items[i].second.begin(); itr != items[i].second.end(); ++itr) {
-      const vector<pair<Coord4, Coord4> > &tx = itr->second;
+    for(map<int, vector<CollidePiece> >::const_iterator itr = items[i].second.begin(); itr != items[i].second.end(); ++itr) {
+      const vector<CollidePiece> &tx = itr->second;
       for(int xa = 0; xa < tx.size(); xa++) {
-        if(!boxLineIntersect(bbox, tx[xa].first))
+        if(!boxLineIntersect(bbox, tx[xa].pos))
           continue;
         for(int ya = 0; ya < line.size(); ya++) {
-          if(linelineintersect(tx[xa].first, line[ya]))
+          if(linelineintersect(tx[xa].pos, line[ya]))
             return true;
         }
       }
@@ -331,22 +343,69 @@ bool CollideZone::checkSimpleCollision(int groupid, const vector<Coord4> &line, 
   return false;
 }
 
+int cp_nn = 0;
+int cp_nu = 0;
+int cp_np = 0;
+int cp_uu = 0;
+int cp_up = 0;
+int cp_pp = 0;
+
+void displayCZInfo() {
+  dprintf("      NN: %d\n", cp_nn);
+  dprintf("      NU: %d\n", cp_nu);
+  dprintf("      NP: %d\n", cp_np);
+  dprintf("      UU: %d\n", cp_uu);
+  dprintf("      UP: %d\n", cp_up);
+  dprintf("      PP: %d\n", cp_pp);
+  cp_nn = 0;
+  cp_nu = 0;
+  cp_np = 0;
+  cp_uu = 0;
+  cp_up = 0;
+  cp_pp = 0;
+}
+
 void CollideZone::processMotion(vector<pair<Coord, CollideData> > *clds, const char *collidematrix) const {
   for(int x = 0; x < items.size(); x++) {
     for(int y = x + 1; y < items.size(); y++) {
       if(!collidematrix[items[x].first * catrefs.size() + items[y].first])
         continue;
-      for(map<int, vector<pair<Coord4, Coord4> > >::const_iterator xitr = items[x].second.begin(); xitr != items[x].second.end(); ++xitr) {
-        for(map<int, vector<pair<Coord4, Coord4> > >::const_iterator yitr = items[y].second.begin(); yitr != items[y].second.end(); ++yitr) {
-          const vector<pair<Coord4, Coord4> > &tx = xitr->second;
-          const vector<pair<Coord4, Coord4> > &ty = yitr->second;
+      for(map<int, vector<CollidePiece> >::const_iterator xitr = items[x].second.begin(); xitr != items[x].second.end(); ++xitr) {
+        const vector<CollidePiece> &tx = xitr->second;
+        for(map<int, vector<CollidePiece> >::const_iterator yitr = items[y].second.begin(); yitr != items[y].second.end(); ++yitr) {
+          const vector<CollidePiece> &ty = yitr->second;
           for(int xa = 0; xa < tx.size(); xa++) {
             for(int ya = 0; ya < ty.size(); ya++) {
-              pair<Coord, Coord2> tcol = doCollision(tx[xa].first, tx[xa].second, ty[ya].first, ty[ya].second);
+              const CollidePiece *tix = &tx[xa];
+              const CollidePiece *tiy = &ty[ya];
+              if(tix->type > tiy->type)
+                swap(tix, tiy);
+              pair<Coord, Coord2> tcol;
+              if(tix->type == CollidePiece::UNMOVING && tiy->type == CollidePiece::POINT) {
+                cp_up++;
+                tcol = doCollisionUP(tix->pos, tix->vel, tiy->pos, tiy->vel);
+              } else if(tix->type == CollidePiece::NORMAL && tiy->type == CollidePiece::UNMOVING) {
+                cp_nu++;
+                tcol = doCollisionNU(tix->pos, tix->vel, tiy->pos, tiy->vel);
+              } else if(tix->type == CollidePiece::NORMAL && tiy->type == CollidePiece::NORMAL) {
+                cp_nn++;
+                tcol = doCollisionNN(tix->pos, tix->vel, tiy->pos, tiy->vel);
+              } else if(tix->type == CollidePiece::NORMAL && tiy->type == CollidePiece::POINT) {
+                cp_np++;
+                tcol = doCollisionNP(tix->pos, tix->vel, tiy->pos, tiy->vel);
+              } else if(tix->type == CollidePiece::POINT && tiy->type == CollidePiece::POINT) {
+                cp_pp++;
+                continue; // no
+              } else if(tix->type == CollidePiece::UNMOVING && tiy->type == CollidePiece::UNMOVING) {
+                cp_uu++;
+                continue; // no
+              } else {
+                CHECK(0);
+              }
               if(tcol.first == NOCOLLIDE)
                 continue;
               CHECK(tcol.first >= 0 && tcol.first <= 1);
-              clds->push_back(make_pair(tcol.first, CollideData(CollideId(reverseCategoryFromCC(catrefs.size(), items[x].first), xitr->first), CollideId(reverseCategoryFromCC(catrefs.size(), items[y].first), yitr->first), tcol.second, make_pair(getAngle(lerp(tx[xa].first, tx[xa].first + tx[xa].second, tcol.first).vector()).toFloat() + PI / 2, getAngle(lerp(ty[ya].first, ty[ya].first + ty[ya].second, tcol.first).vector()).toFloat() + PI / 2))));
+              clds->push_back(make_pair(tcol.first, CollideData(CollideId(reverseCategoryFromCC(catrefs.size(), items[x].first), xitr->first), CollideId(reverseCategoryFromCC(catrefs.size(), items[y].first), yitr->first), tcol.second, make_pair(getAngle(lerp(tix->pos, tix->pos + tix->vel, tcol.first).vector()).toFloat() + PI / 2, getAngle(lerp(tiy->pos, tiy->pos + tiy->vel, tcol.first).vector()).toFloat() + PI / 2))));
             }
           }
         }
@@ -356,10 +415,11 @@ void CollideZone::processMotion(vector<pair<Coord, CollideData> > *clds, const c
 }
 
 void CollideZone::render() const {
+  /*
   for(int i = 0; i < items.size(); i++)
     for(map<int, vector<pair<Coord4, Coord4> > >::const_iterator itr = items[i].second.begin(); itr != items[i].second.end(); itr++)
       for(int j = 0; j < itr->second.size(); j++)
-        drawLine(itr->second[j].first, 1);
+        drawLine(itr->second[j].first, 1);*/
 }  
 
 void Collider::cleanup(int mode, const Coord4 &bounds, const vector<int> &teams) {
@@ -422,7 +482,7 @@ void Collider::cleanup(int mode, const Coord4 &bounds, const vector<int> &teams)
       CHECK(collidematrix[i * catcount + j] == collidematrix[j * catcount + i]);
 }
 
-void Collider::addToken(const CollideId &cid, const Coord4 &line, const Coord4 &direction) {
+void Collider::addNormalToken(const CollideId &cid, const Coord4 &line, const Coord4 &direction) {
   CHECK(state == CSTA_WAITING);
 
   Coord4 area = startCBoundBox();
@@ -436,7 +496,7 @@ void Collider::addToken(const CollideId &cid, const Coord4 &line, const Coord4 &
   int tex = min((area.ex / resolution).toInt(), ex);
   int tey = min((area.ey / resolution).toInt(), ey);
   
-  if(!(tsx < ex && tsy < ey && tex >= sx && tey >= sy)) {
+  /*if(!(tsx < ex && tsy < ey && tex >= sx && tey >= sy)) {
     dprintf("%d, %d, %d, %d\n", tsx, tsy, tex, tey);
     dprintf("%d, %d, %d, %d\n", sx, sy, ex, ey);
     dprintf("%f, %f, %f, %f\n", area.sx.toFloat(), area.sy.toFloat(), area.ex.toFloat(), area.ey.toFloat());
@@ -450,12 +510,52 @@ void Collider::addToken(const CollideId &cid, const Coord4 &line, const Coord4 &
     dprintf("Area bounds: %f,%f %f,%f\n", (sx * resolution).toFloat(), (sy * resolution).toFloat(), (ex * resolution).toFloat(), (ey * resolution).toFloat());
     CHECK(0);
   }
-  CHECK(tsx < ex && tsy < ey && tex >= sx && tey >= sy);
+  CHECK(tsx < ex && tsy < ey && tex >= sx && tey >= sy);*/
   
   int categ = getCategoryFromPlayers(players, cid.category, cid.bucket);
   for(int x = tsx; x < tex; x++)
     for(int y = tsy; y < tey; y++)
-      zones[cmap(x, y)].addToken(categ, cid.item, line, direction);
+      zones[cmap(x, y)].addToken(categ, cid.item, CollidePiece(line, direction, CollidePiece::NORMAL));
+    
+  addedTokens++;
+}
+
+void Collider::addUnmovingToken(const CollideId &cid, const Coord4 &line) {
+  CHECK(state == CSTA_WAITING);
+
+  Coord4 area = startCBoundBox();
+  addToBoundBox(&area, line.sx, line.sy);
+  addToBoundBox(&area, line.ex, line.ey);
+  area = snapToEnclosingGrid(area, resolution);
+  int tsx = max((area.sx / resolution).toInt(), sx);
+  int tsy = max((area.sy / resolution).toInt(), sy);
+  int tex = min((area.ex / resolution).toInt(), ex);
+  int tey = min((area.ey / resolution).toInt(), ey);
+  
+  int categ = getCategoryFromPlayers(players, cid.category, cid.bucket);
+  for(int x = tsx; x < tex; x++)
+    for(int y = tsy; y < tey; y++)
+      zones[cmap(x, y)].addToken(categ, cid.item, CollidePiece(line, Coord4(0, 0, 0, 0), CollidePiece::UNMOVING));
+    
+  addedTokens++;
+}
+
+void Collider::addPointToken(const CollideId &cid, const Coord2 &line, const Coord2 &direction) {
+  CHECK(state == CSTA_WAITING);
+
+  Coord4 area = startCBoundBox();
+  addToBoundBox(&area, line.x, line.y);
+  addToBoundBox(&area, line.x + direction.x, line.y + direction.y);
+  area = snapToEnclosingGrid(area, resolution);
+  int tsx = max((area.sx / resolution).toInt(), sx);
+  int tsy = max((area.sy / resolution).toInt(), sy);
+  int tex = min((area.ex / resolution).toInt(), ex);
+  int tey = min((area.ey / resolution).toInt(), ey);
+  
+  int categ = getCategoryFromPlayers(players, cid.category, cid.bucket);
+  for(int x = tsx; x < tex; x++)
+    for(int y = tsy; y < tey; y++)
+      zones[cmap(x, y)].addToken(categ, cid.item, CollidePiece(Coord4(line, Coord2(0, 0)), Coord4(direction, Coord2(0, 0)), CollidePiece::POINT));
     
   addedTokens++;
 }

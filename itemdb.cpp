@@ -1593,9 +1593,11 @@ IDBAdjustment IDBImplant::makeAdjustment(int level) const {
 vector<Coord2> IDBTank::getTankVertices(Coord2 pos, float td) const {
   Coord2 xt = makeAngle(Coord(td));
   Coord2 yt = makeAngle(Coord(td) - COORDPI / 2);
-  vector<Coord2> rv;
-  for(int i = 0; i < vertices.size(); i++)
-    rv.push_back(Coord2(pos.x + vertices[i].x * xt.x + vertices[i].y * xt.y, pos.y + vertices[i].y * yt.y + vertices[i].x * yt.x));
+  vector<Coord2> rv(vertices.size());
+  for(int i = 0; i < vertices.size(); i++) {  // this bit of weirdness brought to you by CPU efficiency, since this function is called surprisingly often
+    rv[i].x = pos.x + vertices[i].x * xt.x + vertices[i].y * xt.y;
+    rv[i].y = pos.y + vertices[i].y * yt.y + vertices[i].x * yt.x;
+  }
   return rv;
 }
 
