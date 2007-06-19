@@ -141,7 +141,7 @@ inline void proc2(Coord *cBc, Coord2 *pos, pair<Coord, Coord> *tbv, const Coord4
 }
 
 inline pair<Coord, Coord2> doCollisionNN(const Coord4 &l1p, const Coord4 &l1v, const Coord4 &l2p, const Coord4 &l2v) {
-  if(!boxBoxIntersect(
+  /*if(!boxBoxIntersect(
       Coord4(
         min(min(l1p.sx, l1p.sx + l1v.sx), min(l1p.ex, l1p.ex + l1v.ex)), 
         min(min(l1p.sy, l1p.sy + l1v.sy), min(l1p.ey, l1p.ey + l1v.ey)), 
@@ -154,7 +154,7 @@ inline pair<Coord, Coord2> doCollisionNN(const Coord4 &l1p, const Coord4 &l1v, c
         max(max(l2p.sy, l2p.sy + l2v.sy), max(l2p.ey, l2p.ey + l2v.ey))
       )
     ))
-    return make_pair(NOCOLLIDE, Coord2());
+    return make_pair(NOCOLLIDE, Coord2());*/
   
   Coord cBc = 2;
   Coord2 pos;
@@ -200,7 +200,7 @@ inline pair<Coord, Coord2> doCollisionNU(const Coord4 &l1p, const Coord4 &l1v, c
 }
 
 inline pair<Coord, Coord2> doCollisionNP(const Coord4 &l1p, const Coord4 &l1v, const Coord4 &ptpv) {
-  if(!boxBoxIntersect(
+  /*if(!boxBoxIntersect(
       Coord4(
         min(min(l1p.sx, l1p.sx + l1v.sx), min(l1p.ex, l1p.ex + l1v.ex)), 
         min(min(l1p.sy, l1p.sy + l1v.sy), min(l1p.ey, l1p.ey + l1v.ey)), 
@@ -213,7 +213,7 @@ inline pair<Coord, Coord2> doCollisionNP(const Coord4 &l1p, const Coord4 &l1v, c
         max(ptpv.sy, ptpv.sy + ptpv.ey)
       )
     ))
-    return make_pair(NOCOLLIDE, Coord2());
+    return make_pair(NOCOLLIDE, Coord2());*/
   pair<Coord, Coord> tbv = getLineCollision(l1p, l1v, ptpv);
   pair<Coord, Coord2> rv(2, Coord2());
   proc2(&rv.first, &rv.second, &tbv, l1p, l1v, ptpv);
@@ -224,7 +224,7 @@ inline pair<Coord, Coord2> doCollisionNP(const Coord4 &l1p, const Coord4 &l1v, c
 
 inline pair<Coord, Coord2> doCollisionUP(const Coord4 &l1, const Coord2 &l2p, const Coord2 &l2v) {
   //return doCollisionNN(l1, Coord4(0, 0, 0, 0), Coord4(l2p, l2p), Coord4(l2v, l2v)); // this can probably be optimized
-  if(!boxBoxIntersect(
+  /*if(!boxBoxIntersect(
       Coord4(
         min(l1.sx, l1.ex),
         min(l1.sy, l1.ey),
@@ -237,7 +237,7 @@ inline pair<Coord, Coord2> doCollisionUP(const Coord4 &l1, const Coord2 &l2p, co
         max(l2p.y, l2p.y + l2v.y)
       )
     ))
-    return make_pair(NOCOLLIDE, Coord2());
+    return make_pair(NOCOLLIDE, Coord2());*/
   Coord pos = linelineintersectpos(Coord4(l2p, l2p + l2v), l1);
   if(pos == 2)
     return make_pair(NOCOLLIDE, Coord2());
@@ -341,6 +341,36 @@ inline bool operator==(const CollideData &lhs, const CollideData &rhs) {
   return true;
 }
 
+CollidePiece::CollidePiece(const Coord4 &pos, const Coord4 &vel, int type) : pos(pos), vel(vel), type(type) {
+  if(type == NORMAL) {
+    bbx = Coord4(
+      min(min(pos.sx, pos.sx + vel.sx), min(pos.ex, pos.ex + vel.ex)), 
+      min(min(pos.sy, pos.sy + vel.sy), min(pos.ey, pos.ey + vel.ey)), 
+      max(max(pos.sx, pos.sx + vel.sx), max(pos.ex, pos.ex + vel.ex)), 
+      max(max(pos.sy, pos.sy + vel.sy), max(pos.ey, pos.ey + vel.ey))
+    );
+  } else if(type == UNMOVING) {
+    CHECK(vel == Coord4(0, 0, 0, 0));
+    bbx = Coord4(
+      min(pos.sx, pos.ex),
+      min(pos.sy, pos.ey),
+      max(pos.sx, pos.ex),
+      max(pos.sy, pos.ey)
+    );
+  } else if(type == POINT) {
+    CHECK(pos.s() == pos.e());
+    CHECK(vel.s() == vel.e());
+    bbx = Coord4(
+      min(pos.sx, pos.sx + vel.sx),
+      min(pos.sy, pos.sy + vel.sy),
+      max(pos.sx, pos.sx + vel.sx),
+      max(pos.sy, pos.sy + vel.sy)
+    );
+  } else {
+    CHECK(0);
+  }
+}
+
 void CollideZone::makeSpaceFor(int id) {
   if(catrefs[id] == -1) {
     catrefs[id] = items.size();
@@ -433,6 +463,8 @@ void CollideZone::processMotion(vector<pair<Coord, CollideData> > *clds, const c
           const vector<CollidePiece> &ty = yitr->second;
           for(int xa = 0; xa < tx.size(); xa++) {
             for(int ya = 0; ya < ty.size(); ya++) {
+              if(!boxBoxIntersect(tx[xa].bbx, ty[ya].bbx))
+                continue;
               const CollidePiece *tix = &tx[xa];
               const CollidePiece *tiy = &ty[ya];
               if(tix->type > tiy->type)
@@ -612,7 +644,7 @@ void Collider::addPointToken(const CollideId &cid, const Coord2 &line, const Coo
   int categ = getCategoryFromPlayers(players, cid.category, cid.bucket);
   for(int x = tsx; x < tex; x++)
     for(int y = tsy; y < tey; y++)
-      zones[cmap(x, y)].addToken(categ, cid.item, CollidePiece(Coord4(line, Coord2(0, 0)), Coord4(direction, Coord2(0, 0)), CollidePiece::POINT));
+      zones[cmap(x, y)].addToken(categ, cid.item, CollidePiece(Coord4(line, line), Coord4(direction, direction), CollidePiece::POINT));
     
   addedTokens++;
 }

@@ -47,9 +47,11 @@ public:
   Coord4 vel;
   int type;
   
+  Coord4 bbx;
+  
   CollidePiece() { };
-  CollidePiece(const Coord4 &pos, const Coord4 &vel, int type) : pos(pos), vel(vel), type(type) { };
-  CollidePiece(const CollidePiece &piece) : pos(piece.pos), vel(piece.vel), type(piece.type) { };
+  CollidePiece(const Coord4 &pos, const Coord4 &vel, int type);
+  CollidePiece(const CollidePiece &piece) : pos(piece.pos), vel(piece.vel), type(piece.type), bbx(piece.bbx) { };
 };
 
 class CollideZone {
