@@ -456,7 +456,7 @@ void Ai::updateShop(const Player *player, const HierarchyNode &hierarchy, bool a
     int amount = 1;
     if(weps[dlim].first > Money(0))
       amount = min(weapcash / weps[dlim].first, 100);
-    commands.push_back(makeComboAppend(weps[dlim].second, amount, false));
+    commands.push_back(makeComboAppend(weps[dlim].second, amount));
   }
   
   random_shuffle(commands.begin(), commands.end());
