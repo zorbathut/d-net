@@ -170,15 +170,6 @@ const HierarchyNode &Shop::getCategoryNode() const {
   return getStepNode(curloc.size() - 1);
 }
 
-bool normalizeSelling(bool selling, HierarchyNode::Type type) {
-  if(type != HierarchyNode::HNT_WEAPON) // this is pretty crummy, but it's a temporary hack
-    return false;
-  if(type == HierarchyNode::HNT_IMPLANTSLOT || type == HierarchyNode::HNT_IMPLANTITEM || type == HierarchyNode::HNT_IMPLANTITEM_UPG || type == HierarchyNode::HNT_EQUIPWEAPON || type == HierarchyNode::HNT_EQUIPCATEGORY)
-    return false;
-  else
-    return selling;
-}
-
 Money cost(const HierarchyNode &node, const Player *player) {
   if(node.type == HierarchyNode::HNT_WEAPON) {
     return player->costWeapon(node.weapon);
@@ -194,20 +185,6 @@ Money cost(const HierarchyNode &node, const Player *player) {
     return player->costImplantSlot(node.implantslot);
   } else if(node.type == HierarchyNode::HNT_IMPLANTITEM_UPG) {
     return player->costImplantUpg(node.implantitem);
-  } else {
-    CHECK(0);
-  }
-}
-
-Money sellvalue(const HierarchyNode &node, const Player *player) {
-  if(node.type == HierarchyNode::HNT_WEAPON) {
-    return player->sellvalueWeapon(node.weapon);
-  } else if(node.type == HierarchyNode::HNT_GLORY) {
-    return player->sellvalueGlory(node.glory);
-  } else if(node.type == HierarchyNode::HNT_BOMBARDMENT) {
-    return player->sellvalueBombardment(node.bombardment);
-  } else if(node.type == HierarchyNode::HNT_TANK) {
-    return player->sellvalueTank(node.tank);
   } else {
     CHECK(0);
   }
@@ -266,13 +243,8 @@ void Shop::renderNode(const HierarchyNode &node, int depth, const Player *player
   for(int j = 0; j < renderorder.size(); j++) {
     const int itemid = renderorder[j];
     const ShopPlacement splace = ShopPlacement(tsp.depth, itemid, tsp.siblings, tsp.active);
-    const bool effectiveselling = normalizeSelling(selling, node.branches[itemid].type);
     
-    if(effectiveselling) {
-      setColor(Color(0.8, 0, 0));
-    } else {
-      setColor(C::box_border*0.5);
-    }
+    setColor(C::box_border*0.5);
     
     if(min(slay.box(splace).ex, getZoom().ex) - max(slay.box(splace).sx, getZoom().sx) < slay.box(splace).span_x() * 0.01)
       continue;   // if we can only see 1% of this box, just don't show any of it - gets rid of some ugly rendering edge cases
@@ -349,103 +321,71 @@ void Shop::renderNode(const HierarchyNode &node, int depth, const Player *player
     }
     
     // Figure out how we want to display the "cost" text
-    if(!effectiveselling) {
-      string display = "";
-      bool displayset = false;
-      const int dispmode = node.branches[itemid].displaymode;
-      
-      // If it's "unique", we check to see if it's already been bought. If it has, we show what state it's in.
-      if(!display.size() && dispmode == HierarchyNode::HNDM_COSTUNIQUE) {
-        int state = 0;
-        if(node.branches[itemid].type == HierarchyNode::HNT_UPGRADE)
-          state = player->stateUpgrade(node.branches[itemid].upgrade);
-        else if(node.branches[itemid].type == HierarchyNode::HNT_GLORY)
-          state = player->stateGlory(node.branches[itemid].glory);
-        else if(node.branches[itemid].type == HierarchyNode::HNT_BOMBARDMENT)
-          state = player->stateBombardment(node.branches[itemid].bombardment);
-        else if(node.branches[itemid].type == HierarchyNode::HNT_TANK)
-          state = player->stateTank(node.branches[itemid].tank);
-        else if(node.branches[itemid].type == HierarchyNode::HNT_IMPLANTSLOT)
-          state = player->stateImplantSlot(node.branches[itemid].implantslot);
-        else
-          CHECK(0);
-        if(state == ITEMSTATE_UNOWNED) {
-        } else if(state == ITEMSTATE_BOUGHT) {
-          display = "Bought";
-          displayset = true;
-        } else if(state == ITEMSTATE_EQUIPPED) {
-          display = "Equipped";
-          displayset = true;
-        } else if(state == ITEMSTATE_UNAVAILABLE) {
-          display = "Unavailable";
-          displayset = true;
-        }
-      }
-      
-      // If it's not unique, or it is and it just hasn't been bought, we show the cost.
-      if(!displayset && (dispmode == HierarchyNode::HNDM_COST || dispmode == HierarchyNode::HNDM_COSTUNIQUE)) {
-        display = StringPrintf("%s", cost(node.branches[itemid], player).textual().c_str());
-        displayset = true;
-      }
-      
-      // If it's a pack, we show pack quantities.
-      if(!displayset && dispmode == HierarchyNode::HNDM_PACK) {
-        display = StringPrintf("%dpk", node.branches[itemid].pack);
-        displayset = true;
-      }
-      
-      if(dispmode == HierarchyNode::HNDM_IMPLANT_EQUIP) {
-        if(player->hasImplant(node.branches[itemid].implantitem))
-          display = "Installed";
-        setColor(C::active_text);
-        displayset = true;
-      }
-      
-      if(dispmode == HierarchyNode::HNDM_IMPLANT_UPGRADE) {
-        display = cost(node.branches[itemid], player).textual();
-        displayset = true;
-      }
-      
-      // If it's blank or equip we do fucking nothing
-      if(dispmode == HierarchyNode::HNDM_BLANK || dispmode == HierarchyNode::HNDM_EQUIP) {
-        displayset = true;
-      }
-      
-      CHECK(displayset);
-      
-      // Draw what we've got.
-      drawJustifiedText(display, slay.fontsize(), slay.price(splace), TEXT_MAX, TEXT_MIN);
-    } else {
-      int dispmode = node.branches[itemid].displaymode;
-      if(dispmode == HierarchyNode::HNDM_COSTUNIQUE) {
-        // Upgrades can't be sold
-        if(node.branches[itemid].type == HierarchyNode::HNT_GLORY && player->canSellGlory(node.branches[itemid].glory))
-          dispmode = HierarchyNode::HNDM_COST;
-        if(node.branches[itemid].type == HierarchyNode::HNT_BOMBARDMENT && player->canSellBombardment(node.branches[itemid].bombardment))
-          dispmode = HierarchyNode::HNDM_COST;
-        if(node.branches[itemid].type == HierarchyNode::HNT_TANK && player->canSellTank(node.branches[itemid].tank))
-          dispmode = HierarchyNode::HNDM_COST;
-      } else if(dispmode == HierarchyNode::HNDM_COST) {
-        CHECK(node.branches[itemid].type == HierarchyNode::HNT_WEAPON);
-        if(!player->canSellWeapon(node.branches[itemid].weapon)) {
-          dispmode = HierarchyNode::HNDM_COSTUNIQUE;
-        }
-      }
-      
-      if(dispmode == HierarchyNode::HNDM_BLANK) {
-      } else if(dispmode == HierarchyNode::HNDM_COST) {
-        setColor(1.0, 0.3, 0.3);
-        drawJustifiedText(StringPrintf("%s", sellvalue(node.branches[itemid], player).textual().c_str()), slay.fontsize(), slay.price(splace), TEXT_MAX, TEXT_MIN);
-      } else if(dispmode == HierarchyNode::HNDM_PACK) {
-        drawJustifiedText(StringPrintf("%dpk", node.branches[itemid].pack), slay.fontsize(), slay.price(splace), TEXT_MAX, TEXT_MIN);
-      } else if(dispmode == HierarchyNode::HNDM_COSTUNIQUE) {
-      } else if(dispmode == HierarchyNode::HNDM_EQUIP) {
-      } else if(dispmode == HierarchyNode::HNDM_IMPLANT_EQUIP) {
-      } else if(dispmode == HierarchyNode::HNDM_IMPLANT_UPGRADE) {
-      } else {
+    string display = "";
+    bool displayset = false;
+    const int dispmode = node.branches[itemid].displaymode;
+    
+    // If it's "unique", we check to see if it's already been bought. If it has, we show what state it's in.
+    if(!display.size() && dispmode == HierarchyNode::HNDM_COSTUNIQUE) {
+      int state = 0;
+      if(node.branches[itemid].type == HierarchyNode::HNT_UPGRADE)
+        state = player->stateUpgrade(node.branches[itemid].upgrade);
+      else if(node.branches[itemid].type == HierarchyNode::HNT_GLORY)
+        state = player->stateGlory(node.branches[itemid].glory);
+      else if(node.branches[itemid].type == HierarchyNode::HNT_BOMBARDMENT)
+        state = player->stateBombardment(node.branches[itemid].bombardment);
+      else if(node.branches[itemid].type == HierarchyNode::HNT_TANK)
+        state = player->stateTank(node.branches[itemid].tank);
+      else if(node.branches[itemid].type == HierarchyNode::HNT_IMPLANTSLOT)
+        state = player->stateImplantSlot(node.branches[itemid].implantslot);
+      else
         CHECK(0);
+      if(state == ITEMSTATE_UNOWNED) {
+      } else if(state == ITEMSTATE_BOUGHT) {
+        display = "Bought";
+        displayset = true;
+      } else if(state == ITEMSTATE_EQUIPPED) {
+        display = "Equipped";
+        displayset = true;
+      } else if(state == ITEMSTATE_UNAVAILABLE) {
+        display = "Unavailable";
+        displayset = true;
       }
     }
+    
+    // If it's not unique, or it is and it just hasn't been bought, we show the cost.
+    if(!displayset && (dispmode == HierarchyNode::HNDM_COST || dispmode == HierarchyNode::HNDM_COSTUNIQUE)) {
+      display = StringPrintf("%s", cost(node.branches[itemid], player).textual().c_str());
+      displayset = true;
+    }
+    
+    // If it's a pack, we show pack quantities.
+    if(!displayset && dispmode == HierarchyNode::HNDM_PACK) {
+      display = StringPrintf("%dpk", node.branches[itemid].pack);
+      displayset = true;
+    }
+    
+    if(dispmode == HierarchyNode::HNDM_IMPLANT_EQUIP) {
+      if(player->hasImplant(node.branches[itemid].implantitem))
+        display = "Installed";
+      setColor(C::active_text);
+      displayset = true;
+    }
+    
+    if(dispmode == HierarchyNode::HNDM_IMPLANT_UPGRADE) {
+      display = cost(node.branches[itemid], player).textual();
+      displayset = true;
+    }
+    
+    // If it's blank or equip we do fucking nothing
+    if(dispmode == HierarchyNode::HNDM_BLANK || dispmode == HierarchyNode::HNDM_EQUIP) {
+      displayset = true;
+    }
+    
+    CHECK(displayset);
+    
+    // Draw what we've got.
+    drawJustifiedText(display, slay.fontsize(), slay.price(splace), TEXT_MAX, TEXT_MIN);
   }
 }
 
@@ -485,8 +425,6 @@ bool Shop::runTick(const Keystates &keys, Player *player) {
     curloc.back()++;
   }
   curloc.back() = modurot(curloc.back(), getCategoryNode().branches.size());
-  
-  const bool effectiveselling = normalizeSelling(selling, getCurNode().type);
   
   if(getCurNode().type != HierarchyNode::HNT_EQUIPWEAPON && getCurNode().type != HierarchyNode::HNT_EQUIPCATEGORY)
     equipselected = NULL;
@@ -528,130 +466,16 @@ bool Shop::runTick(const Keystates &keys, Player *player) {
   } else if(getCurNode().type == HierarchyNode::HNT_SELL) {
     if(keys.accept.push) {
       queueSound(S::choose);
-      selling = !selling;
     }
   } else {
     
-    Button buy;
-    Button change;
-    
-    if(0) { // change this to if(selling) for "sell button" behavior
-      buy = keys.cancel;
-      change = keys.accept;
-    } else {
-      buy = keys.accept;
-      change = keys.cancel;
-    }
-    
-    if(disabled) {
-      if(!buy.down && !change.down) {
-        disabled = false;
-      } else {
-        buy = Button();
-        change = Button();
-      }
-    }
-    
-    if(change.push) {
-      queueSound(S::choose);
-      selling = !selling;
-      disabled = true;
-      buy = Button();
-      change = Button();
-    }
-    
-    if(buy.repeat) {
+    if(keys.accept.repeat) {
       bool ret = false;
       const Sound *sound = NULL;
       
-      if(!effectiveselling) {
-        if(getCurNode().buyable) {
-          // Player is trying to buy something!
-          
-          if(getCurNode().type == HierarchyNode::HNT_DONE) {
-            if(player->blockedReasons().empty()) {
-              ret = true;
-              sound = S::accept;
-            } else {
-              sound = S::error;
-            }
-          } else if(getCurNode().type == HierarchyNode::HNT_UPGRADE) {
-            if(player->stateUpgrade(getCurNode().upgrade) != ITEMSTATE_UNOWNED) {
-              sound = S::error;
-            } else if(player->canBuyUpgrade(getCurNode().upgrade))  {
-              player->buyUpgrade(getCurNode().upgrade);
-              sound = S::choose;
-            } else {
-              sound = S::error;
-            }
-          } else if(getCurNode().type == HierarchyNode::HNT_WEAPON) {
-            if(player->canBuyWeapon(getCurNode().weapon)) {
-              player->buyWeapon(getCurNode().weapon);
-              sound = S::choose;
-            } else {
-              sound = S::error;
-            }
-          } else if(getCurNode().type == HierarchyNode::HNT_GLORY) {
-            if(player->stateGlory(getCurNode().glory) != ITEMSTATE_UNOWNED) {
-              player->equipGlory(getCurNode().glory);
-              sound = S::choose;
-            } else if(player->canBuyGlory(getCurNode().glory)) {
-              player->buyGlory(getCurNode().glory);
-              sound = S::choose;
-            } else {
-              sound = S::error;
-            }
-          } else if(getCurNode().type == HierarchyNode::HNT_BOMBARDMENT) {
-            if(player->stateBombardment(getCurNode().bombardment) != ITEMSTATE_UNOWNED) {
-              player->equipBombardment(getCurNode().bombardment);
-              sound = S::choose;
-            } else if(player->canBuyBombardment(getCurNode().bombardment)) {
-              player->buyBombardment(getCurNode().bombardment);
-              sound = S::choose;
-            } else {
-              sound = S::error;
-            }
-          } else if(getCurNode().type == HierarchyNode::HNT_TANK) {
-            if(player->stateTank(getCurNode().tank) != ITEMSTATE_UNOWNED) {
-              player->equipTank(getCurNode().tank);
-              sound = S::choose;
-            } else if(player->canBuyTank(getCurNode().tank)) {
-              player->buyTank(getCurNode().tank);
-              sound = S::choose;
-            } else {
-              sound = S::error;
-            }
-          } else if(getCurNode().type == HierarchyNode::HNT_IMPLANTSLOT) {
-            if(player->stateImplantSlot(getCurNode().implantslot) != ITEMSTATE_UNOWNED) {
-              sound = S::error;
-            } else if(player->canBuyImplantSlot(getCurNode().implantslot))  {
-              player->buyImplantSlot(getCurNode().implantslot);
-              sound = S::choose;
-            } else {
-              sound = S::error;
-            }
-          } else if(getCurNode().type == HierarchyNode::HNT_IMPLANTITEM) {
-            if(player->canToggleImplant(getCurNode().implantitem)) {
-              player->toggleImplant(getCurNode().implantitem);
-              sound = S::choose;
-            } else {
-              sound = S::error;
-            }
-          } else if(getCurNode().type == HierarchyNode::HNT_IMPLANTITEM_UPG) {
-            if(player->canLevelImplant(getCurNode().implantitem)) {
-              player->levelImplant(getCurNode().implantitem);
-              sound = S::choose;
-            } else {
-              sound = S::error;
-            }
-          } else {
-            CHECK(0);
-          }
-  
-        } else {
-          sound = S::null;
-        }
-      } else {
+      if(getCurNode().buyable) {
+        // Player is trying to buy something!
+        
         if(getCurNode().type == HierarchyNode::HNT_DONE) {
           if(player->blockedReasons().empty()) {
             ret = true;
@@ -659,23 +483,81 @@ bool Shop::runTick(const Keystates &keys, Player *player) {
           } else {
             sound = S::error;
           }
-        } else if(getCurNode().type == HierarchyNode::HNT_WEAPON && player->canSellWeapon(getCurNode().weapon)) {
-          player->sellWeapon(getCurNode().weapon);
-          sound = S::choose;
-        } else if(getCurNode().type == HierarchyNode::HNT_GLORY && player->canSellGlory(getCurNode().glory)) {
-          player->sellGlory(getCurNode().glory);
-          sound = S::choose;
-        } else if(getCurNode().type == HierarchyNode::HNT_BOMBARDMENT && player->canSellBombardment(getCurNode().bombardment)) {
-          player->sellBombardment(getCurNode().bombardment);
-          sound = S::choose;
-        } else if(getCurNode().type == HierarchyNode::HNT_TANK && player->canSellTank(getCurNode().tank)) {
-          player->sellTank(getCurNode().tank);
-          sound = S::choose;
-        } else if(!getCurNode().buyable) {
-          sound = S::null;
+        } else if(getCurNode().type == HierarchyNode::HNT_UPGRADE) {
+          if(player->stateUpgrade(getCurNode().upgrade) != ITEMSTATE_UNOWNED) {
+            sound = S::error;
+          } else if(player->canBuyUpgrade(getCurNode().upgrade))  {
+            player->buyUpgrade(getCurNode().upgrade);
+            sound = S::choose;
+          } else {
+            sound = S::error;
+          }
+        } else if(getCurNode().type == HierarchyNode::HNT_WEAPON) {
+          if(player->canBuyWeapon(getCurNode().weapon)) {
+            player->buyWeapon(getCurNode().weapon);
+            sound = S::choose;
+          } else {
+            sound = S::error;
+          }
+        } else if(getCurNode().type == HierarchyNode::HNT_GLORY) {
+          if(player->stateGlory(getCurNode().glory) != ITEMSTATE_UNOWNED) {
+            player->equipGlory(getCurNode().glory);
+            sound = S::choose;
+          } else if(player->canBuyGlory(getCurNode().glory)) {
+            player->buyGlory(getCurNode().glory);
+            sound = S::choose;
+          } else {
+            sound = S::error;
+          }
+        } else if(getCurNode().type == HierarchyNode::HNT_BOMBARDMENT) {
+          if(player->stateBombardment(getCurNode().bombardment) != ITEMSTATE_UNOWNED) {
+            player->equipBombardment(getCurNode().bombardment);
+            sound = S::choose;
+          } else if(player->canBuyBombardment(getCurNode().bombardment)) {
+            player->buyBombardment(getCurNode().bombardment);
+            sound = S::choose;
+          } else {
+            sound = S::error;
+          }
+        } else if(getCurNode().type == HierarchyNode::HNT_TANK) {
+          if(player->stateTank(getCurNode().tank) != ITEMSTATE_UNOWNED) {
+            player->equipTank(getCurNode().tank);
+            sound = S::choose;
+          } else if(player->canBuyTank(getCurNode().tank)) {
+            player->buyTank(getCurNode().tank);
+            sound = S::choose;
+          } else {
+            sound = S::error;
+          }
+        } else if(getCurNode().type == HierarchyNode::HNT_IMPLANTSLOT) {
+          if(player->stateImplantSlot(getCurNode().implantslot) != ITEMSTATE_UNOWNED) {
+            sound = S::error;
+          } else if(player->canBuyImplantSlot(getCurNode().implantslot))  {
+            player->buyImplantSlot(getCurNode().implantslot);
+            sound = S::choose;
+          } else {
+            sound = S::error;
+          }
+        } else if(getCurNode().type == HierarchyNode::HNT_IMPLANTITEM) {
+          if(player->canToggleImplant(getCurNode().implantitem)) {
+            player->toggleImplant(getCurNode().implantitem);
+            sound = S::choose;
+          } else {
+            sound = S::error;
+          }
+        } else if(getCurNode().type == HierarchyNode::HNT_IMPLANTITEM_UPG) {
+          if(player->canLevelImplant(getCurNode().implantitem)) {
+            player->levelImplant(getCurNode().implantitem);
+            sound = S::choose;
+          } else {
+            sound = S::error;
+          }
         } else {
-          sound = S::error;
+          CHECK(0);
         }
+
+      } else {
+        sound = S::null;
       }
       
       CHECK(sound);
@@ -766,11 +648,6 @@ void Shop::renderToScreen(const Player *player) const {
     reverse(v.begin(), v.end());
     drawText(StringPrintf("Cash available: %s", v.c_str()), slay.fontsize(), slay.cashpos());
   }
-  if(selling) {
-    drawText("    Selling equipment", slay.fontsize(), Float2(1, 1));
-  } else {
-    drawText("    Buying equipment", slay.fontsize(), Float2(1, 1));
-  }
   
   if(player->freeImplantSlots()) {
     setColor(C::red);
@@ -796,22 +673,6 @@ void Shop::renderToScreen(const Player *player) const {
   if(hasInfo(getCurNode().type)) {
     cshopinf.renderFrame(slay.hud(), slay.fontsize(), slay.demo(), player);
   }
-  
-  if(getCurNode().type == HierarchyNode::HNT_SELL) {
-    /*CHECK(curloc.size() == 1);
-    Float4 bds = slay.box(curloc.size());
-    bds.sy = slay.voffset();
-    bds.ey = getZoom().ey - slay.voffset();
-    bds = contract(bds, getTextBoxBorder(slay.fontsize()));
-    
-    string text = "Select this to enter Sell mode. Select this again to leave Sell mode. You may also toggle Sell mode by pressing your \"cancel\" button.";
-    float height = getFormattedTextHeight(text, slay.fontsize(), bds.span_x());
-    
-    setColor(C::inactive_text);
-    Float4 rebds(bds.sx, (bds.ey - bds.sy - height) / 2 + bds.sy, bds.ex, (bds.ey - bds.sy + height) / 2 + bds.sy);
-    drawTextBoxAround(rebds, slay.fontsize());
-    drawFormattedText(text, slay.fontsize(), rebds);*/
-  }
 }
 
 // Not a valid state
@@ -822,8 +683,6 @@ void Shop::init(bool in_miniature, const Player *player, int in_playercount, Mon
   cshopinf.clear();
   
   curloc.push_back(0);
-  selling = false;
-  disabled = false;
   
   equipselected = NULL;
   

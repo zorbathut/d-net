@@ -371,17 +371,13 @@ vector<Controller> makeComboToggle(const vector<Controller> &src, Rng *rng) {
 }
 
 
-vector<Controller> makeComboAppend(const vector<Controller> &src, int count, bool sell) {
+vector<Controller> makeComboAppend(const vector<Controller> &src, int count) {
   vector<Controller> oot;
-  if(sell)
-    oot.push_back(makeController(0, 0, false, true));
   oot.insert(oot.end(), src.begin(), src.end());
   for(int i = 0; i < count; i++)
     oot.push_back(makeController(0, 0, true, false));
   vector<Controller> rev = reversecontroller(src);
   oot.insert(oot.end(), rev.begin(), rev.end());
-  if(sell)
-    oot.push_back(makeController(0, 0, false, true));
   return oot;
 }
 
@@ -438,7 +434,6 @@ void Ai::updateShop(const Player *player, const HierarchyNode &hierarchy, bool a
   {
     float cullperc = rng.frand();
     float singleperc = rng.frand() + 0.1;
-    float sellperc = rng.frand();
     while(upgcash > Money(0) && upgs.size()) {
       int dlim = int(upgs.size() * rng.frand());
       if(rng.frand() < cullperc) {
@@ -447,7 +442,7 @@ void Ai::updateShop(const Player *player, const HierarchyNode &hierarchy, bool a
       }
       upgcash -= upgs[dlim].first;
       weapcash -= upgs[dlim].first;
-      commands.push_back(makeComboAppend(upgs[dlim].second, 1, rng.frand() < sellperc));
+      commands.push_back(makeComboAppend(upgs[dlim].second, 1));
       if(rng.frand() < singleperc)
         upgs.erase(upgs.begin() + dlim);
     }

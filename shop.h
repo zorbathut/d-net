@@ -18,9 +18,6 @@ private:
   vector<int> curloc;
   vector<int> lastloc;
 
-  bool selling;
-  bool disabled;  // when we switch, we wait for them to let go of the button
-
   const IDBWeapon *equipselected;
 
   HierarchyNode hierarchroot;

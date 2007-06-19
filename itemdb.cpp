@@ -1465,7 +1465,7 @@ void loadItemDb(bool reload) {
   // add our hardcoded "sell" token
   {
     HierarchyNode tnode;
-    tnode.name = "Sell equipment";
+    tnode.name = "Sell ammo";
     tnode.type = HierarchyNode::HNT_SELL;
     tnode.displaymode = HierarchyNode::HNDM_BLANK;
     tnode.cat_restrictiontype = HierarchyNode::HNT_NONE;
