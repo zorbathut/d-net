@@ -110,6 +110,36 @@ Coord getu(const Coord4 &linepos, const Coord4 &linevel, const Coord4 &ptposvel,
   return ((x3 - x1) * (x2 - x1) + (y3 - y1) * (y2 - y1)) / (sqr(x2 - x1) + sqr(y2 - y1));
 }
 
+inline void proc2(Coord *cBc, Coord2 *pos, pair<Coord, Coord> *tbv, const Coord4 &linepos, const Coord4 &linevel, const Coord4 &ptposvel) {
+  norm(&tbv->first, *cBc);
+  norm(&tbv->second, *cBc);
+  if(likely(tbv->first == NOCOLLIDE)) {
+    if(likely(tbv->second == NOCOLLIDE)) {
+      return;
+    } else {
+      swap(tbv->first, tbv->second);
+    }
+  } else {
+    if(likely(tbv->second == NOCOLLIDE)) {
+    } else {
+      if(tbv->first > tbv->second)
+        swap(tbv->first, tbv->second);
+    }
+  }
+  
+  Coord u = getu(linepos, linevel, ptposvel, tbv->first);
+  if(likely(u < 0 || u > 1)) {
+    u = getu(linepos, linevel, ptposvel, tbv->second);
+    if(likely(u < 0 || u > 1))
+      return;
+    *cBc = tbv->second;
+  } else {
+    *cBc = tbv->first;
+  }
+  Coord4 cline = linepos + linevel * *cBc;
+  *pos = Coord2(cline.sx, cline.sy) + Coord2(cline.ex - cline.sx, cline.ey - cline.sy) * u;
+}
+
 inline pair<Coord, Coord2> doCollisionNN(const Coord4 &l1p, const Coord4 &l1v, const Coord4 &l2p, const Coord4 &l2v) {
   if(!boxBoxIntersect(
       Coord4(
@@ -158,33 +188,7 @@ inline pair<Coord, Coord2> doCollisionNN(const Coord4 &l1p, const Coord4 &l1v, c
     }
     pair<Coord, Coord> tbv = getLineCollision(*linepos, *linevel, ptposvel);
     
-    norm(&tbv.first, cBc);
-    norm(&tbv.second, cBc);
-    if(likely(tbv.first == NOCOLLIDE)) {
-      if(likely(tbv.second == NOCOLLIDE)) {
-        continue;
-      } else {
-        swap(tbv.first, tbv.second);
-      }
-    } else {
-      if(likely(tbv.second == NOCOLLIDE)) {
-      } else {
-        if(tbv.first > tbv.second)
-          swap(tbv.first, tbv.second);
-      }
-    }
-    
-    Coord u = getu(*linepos, *linevel, ptposvel, tbv.first);
-    if(likely(u < 0 || u > 1)) {
-      u = getu(*linepos, *linevel, ptposvel, tbv.second);
-      if(likely(u < 0 || u > 1))
-        continue;
-      cBc = tbv.second;
-    } else {
-      cBc = tbv.first;
-    }
-    Coord4 cline = *linepos + *linevel * cBc;
-    pos = Coord2(cline.sx, cline.sy) + Coord2(cline.ex - cline.sx, cline.ey - cline.sy) * u;
+    proc2(&cBc, &pos, &tbv, *linepos, *linevel, ptposvel);
   }
   if(likely(cBc == 2))
     cBc = NOCOLLIDE;
@@ -195,16 +199,28 @@ inline pair<Coord, Coord2> doCollisionNU(const Coord4 &l1p, const Coord4 &l1v, c
   return doCollisionNN(l1p, l1v, l2p, l2v); // this can probably be optimized
 }
 
-inline pair<Coord, Coord2> doCollisionNP(const Coord4 &l1p, const Coord4 &l1v, const Coord4 &l2p, const Coord4 &l2v) {
-  return doCollisionNN(l1p, l1v, l2p, l2v); // this can probably be optimized
-  //pair<Coord, Coord> tbv = getLineCollision(
+inline pair<Coord, Coord2> doCollisionNP(const Coord4 &l1p, const Coord4 &l1v, const Coord4 &ptpv) {
+  if(!boxBoxIntersect(
+      Coord4(
+        min(min(l1p.sx, l1p.sx + l1v.sx), min(l1p.ex, l1p.ex + l1v.ex)), 
+        min(min(l1p.sy, l1p.sy + l1v.sy), min(l1p.ey, l1p.ey + l1v.ey)), 
+        max(max(l1p.sx, l1p.sx + l1v.sx), max(l1p.ex, l1p.ex + l1v.ex)), 
+        max(max(l1p.sy, l1p.sy + l1v.sy), max(l1p.ey, l1p.ey + l1v.ey))
+      ), Coord4(
+        min(ptpv.sx, ptpv.sx + ptpv.ex),
+        min(ptpv.sy, ptpv.sy + ptpv.ey),
+        max(ptpv.sx, ptpv.sx + ptpv.ex),
+        max(ptpv.sy, ptpv.sy + ptpv.ey)
+      )
+    ))
+    return make_pair(NOCOLLIDE, Coord2());
+  pair<Coord, Coord> tbv = getLineCollision(l1p, l1v, ptpv);
+  pair<Coord, Coord2> rv(2, Coord2());
+  proc2(&rv.first, &rv.second, &tbv, l1p, l1v, ptpv);
+  if(rv.first == 2)
+    rv.first = NOCOLLIDE;
+  return rv;
 }
-
-/*
-inline pair<Coord, Coord2> doCollisionNP(const Coord4 &l1p, const Coord4 &l1v, const Coord2 &l2p, const Coord2 &l2v) {
-  return doCollisionNN(l1p, l1v, l2p, l2v); // this can probably be optimized
-  //pair<Coord, Coord> tbv = getLineCollision(
-}*/
 
 inline pair<Coord, Coord2> doCollisionUP(const Coord4 &l1, const Coord2 &l2p, const Coord2 &l2v) {
   //return doCollisionNN(l1, Coord4(0, 0, 0, 0), Coord4(l2p, l2p), Coord4(l2v, l2v)); // this can probably be optimized
@@ -433,8 +449,7 @@ void CollideZone::processMotion(vector<pair<Coord, CollideData> > *clds, const c
                 tcol = doCollisionNN(tix->pos, tix->vel, tiy->pos, tiy->vel);
               } else if(tix->type == CollidePiece::NORMAL && tiy->type == CollidePiece::POINT) {
                 cp_np++;
-                //tcol = doCollisionNP(tix->pos, tix->vel, tiy->pos.s(), tiy->vel.s());
-                tcol = doCollisionNP(tix->pos, tix->vel, tiy->pos, tiy->vel);
+                tcol = doCollisionNP(tix->pos, tix->vel, Coord4(tiy->pos.s(), tiy->vel.s()));
               } else if(tix->type == CollidePiece::POINT && tiy->type == CollidePiece::POINT) {
                 cp_pp++;
                 continue; // no
