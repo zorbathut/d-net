@@ -14,6 +14,7 @@ EDITORLDFLAGS := `@WX@ --libs --gl-libs` -lopengl32 $(STDLDFLAGS)
 FUNCTORSOURCES := functor_gen debug os util parse
 MERGERSOURCES := merger debug os util parse itemdb itemdb_adjust args color dvec2 float coord cfcommon merger_weapon merger_bombardment merger_tanks merger_glory merger_util regex rng
 # rng is not really needed since it won't be linked in at all, but it's easier to just include it
+ODS2CSVSOURCES := ods2csv debug os util parse
 CONSOLECPPFLAGS := $(STDCPPFLAGS)
 CONSOLELDFLAGS := $(STDLDFLAGS)
 
@@ -185,6 +186,9 @@ functor.h: functor_gen.exe functor.h.in
   
 merger.exe: $(MERGERSOURCES:=.c.o)
 	nice $(CPP) -o $@ $(MERGERSOURCES:=.c.o) $(CONSOLELDFLAGS)
+
+ods2csv.exe: $(ODS2CSVSOURCES:=.c.o)
+	nice $(CPP) -o $@ $(ODS2CSVSOURCES:=.c.o) $(CONSOLELDFLAGS) -lxerces-c -Xlinker --enable-auto-import
 
 $(patsubst %,notes_%.csv,$(MERGETYPES)): .notes_flag
 	@:
