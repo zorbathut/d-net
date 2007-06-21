@@ -6,8 +6,10 @@
 
 #include <xercesc/util/PlatformUtils.hpp>
 #include <xercesc/dom/DOMDocument.hpp>
+#include <xercesc/framework/MemBufInputSource.hpp>
 #include <xercesc/parsers/XercesDOMParser.hpp>
-#include <xercesc/framework/LocalFileFormatTarget.hpp>
+
+#include <vector>
 
 using namespace std;
 using namespace xercesc;
@@ -17,14 +19,40 @@ int main(int argc, char *argv[]) {
   
   CHECK(argc == 4);
   
-  unzFile unzf = unzOpen(argv[2]);
-  CHECK(unzf);
+  vector<unsigned char> file;
+  {
+    unzFile unzf = unzOpen(argv[2]);
+    CHECK(unzf);
+    
+    CHECK(unzLocateFile(unzf, "content.xml", 1) == UNZ_OK);
+    
+    unz_file_info inf;
+    CHECK(unzGetCurrentFileInfo(unzf, &inf, NULL, 0, NULL, 0, NULL, 0) == UNZ_OK);
+    CHECK(inf.uncompressed_size < (128 << 20)); // what
+    
+    CHECK(unzOpenCurrentFile(unzf) == UNZ_OK);
+    
+    file.resize(inf.uncompressed_size);
+    CHECK(unzReadCurrentFile(unzf, &file[0], file.size()) == file.size());
+    
+    CHECK(unzCloseCurrentFile(unzf) == UNZ_OK);
+    unzClose(unzf);
+    
+    dprintf("Content read, %d bytes\n", file.size());
+  }
   
   XMLPlatformUtils::Initialize();
   
-  XMLPlatformUtils::Terminate();
+  {
+    MemBufInputSource mbis(&file[0], file.size(), argv[2]);
+    XercesDOMParser parse;
+    parse.parse(mbis);
+    
+    dprintf("Content parsed\n");
+  }
   
-  unzClose(unzf);
+  XMLPlatformUtils::Terminate();
 
+  dprintf("ENDING YOU AND ALL YOU LOVE\n");
   CHECK(0);
 }
