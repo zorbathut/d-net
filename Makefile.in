@@ -14,7 +14,7 @@ EDITORLDFLAGS := `@WX@ --libs --gl-libs` -lopengl32 $(STDLDFLAGS)
 FUNCTORSOURCES := functor_gen debug os util parse
 MERGERSOURCES := merger debug os util parse itemdb itemdb_adjust args color dvec2 float coord cfcommon merger_weapon merger_bombardment merger_tanks merger_glory merger_util regex rng
 # rng is not really needed since it won't be linked in at all, but it's easier to just include it
-ODS2CSVSOURCES := ods2csv debug os util parse
+ODS2CSVSOURCES := ods2csv debug os util parse minizip/unzip minizip/ioapi
 CONSOLECPPFLAGS := $(STDCPPFLAGS)
 CONSOLELDFLAGS := $(STDLDFLAGS)
 
@@ -28,6 +28,7 @@ DATAFILES := $(shell find data | grep -v \.svn | grep -v shopcache.dwh | grep -v
 PACKAGESUBDIR := sekret
 
 CPP := g++
+CC := gcc
 
 justdnet: d-net
 
@@ -58,7 +59,7 @@ all: d-net vecedit
 asm: $(GAMESOURCES:=.S) makefile
 
 clean:
-	rm -rf *.o *.exe *.d *.S data/shopcache.dwh $(patsubst %,data/base/%.dwh,$(MERGETYPES)) *.csv .*_flag
+	rm -rf *.o *.exe *.d *.S data/shopcache.dwh $(patsubst %,data/base/%.dwh,$(MERGETYPES)) *.csv
 
 STDRUN = --nofullscreen --debugitems --startingPhase=8 --debugControllers=2 --factionMode=0 --nullControllers=11 --writeTarget= --auto_newgame --nocullShopTree --httpd_port=616 --noshopcache --runTests --noaudio
 
@@ -161,7 +162,11 @@ packageed: d-net vecedit data/shopcache.dwh
 
 %.c.o: %.cpp
 	nice $(CPP) $(CONSOLECPPFLAGS) -c -o $@ $<
-  
+
+# Any C files aren't ours, so we disable warnings
+%.c.o: %.c
+	nice $(CC) $(CONSOLECPPFLAGS) -w -c -o $@ $<
+
 %.c.d.o: %.cpp
 	nice $(CPP) $(CONSOLECPPFLAGS) -c -o $@ $<
 
@@ -188,14 +193,10 @@ merger.exe: $(MERGERSOURCES:=.c.o)
 	nice $(CPP) -o $@ $(MERGERSOURCES:=.c.o) $(CONSOLELDFLAGS)
 
 ods2csv.exe: $(ODS2CSVSOURCES:=.c.o)
-	nice $(CPP) -o $@ $(ODS2CSVSOURCES:=.c.o) $(CONSOLELDFLAGS) -lxerces-c -Xlinker --enable-auto-import
+	nice $(CPP) -o $@ $(ODS2CSVSOURCES:=.c.o) $(CONSOLELDFLAGS) -lxerces-c -lz
 
-$(patsubst %,notes_%.csv,$(MERGETYPES)): .notes_flag
-	@:
-
-.notes_flag: notes.ods
-	$(OO) -invisible "notes.ods" "macro://notes/Standard.Convert.Convert" || ( rm -f $(patsubst %,notes_%.csv,$(MERGETYPES)) && false )
-	@touch .notes_flag
+$(patsubst %,notes_%.csv,$(MERGETYPES)): notes.ods ods2csv.exe
+	./ods2csv.exe $@ notes.ods $(patsubst notes_%.csv,%,$@) || ( rm -f $@ && false )
 
 data/base/%.dwh: data/base/%.dwh.unmerged notes_%.csv merger.exe
 	./merger.exe notes_$*.csv data/base/$*.dwh.unmerged data/base/$*.dwh || ( rm -f $@ && false )
