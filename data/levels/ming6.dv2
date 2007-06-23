@@ -194,3 +194,39 @@ entity {
   angle=1180/3600
 }
 
+entity {
+  type=tank start location
+  coord=-112.000000,32.000000
+  angle=6/8
+}
+
+entity {
+  type=tank start location
+  coord=0.000000,-128.000000
+  angle=0/8
+}
+
+entity {
+  type=tank start location
+  coord=112.000000,-48.000000
+  angle=2/8
+}
+
+entity {
+  type=tank start location
+  coord=0.000000,128.000000
+  angle=4/8
+}
+
+entity {
+  type=tank start location
+  coord=-80.000000,-80.000000
+  angle=0/8
+}
+
+entity {
+  type=tank start location
+  coord=80.000000,80.000000
+  angle=4/8
+}
+
