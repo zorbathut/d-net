@@ -18,8 +18,6 @@ ODS2CSVSOURCES := ods2csv debug os util parse minizip/unzip minizip/ioapi
 CONSOLECXXFLAGS := $(STDCXXFLAGS)
 CONSOLELDFLAGS := $(STDLDFLAGS)
 
-OO := "@OO@"
-
 MERGETYPES := $(shell ls data/base/*.dwh.unmerged | sed 's/data\/base\/\(.*\).dwh.unmerged/\1/')
 MERGEDATA := $(patsubst %,data/base/%.dwh,$(MERGETYPES))
 
@@ -40,6 +38,7 @@ include $(MERGERSOURCES:=.c.d)
 d-net: d-net.exe $(MERGEDATA)
 d-net-dbg: d-net-dbg.exe $(MERGEDATA)
 vecedit: vecedit.exe $(MERGEDATA)
+	@
 vecedit-dbg: vecedit-dbg.exe $(MERGEDATA)
 
 d-net.exe: $(GAMESOURCES:=.g.o)

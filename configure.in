@@ -82,11 +82,6 @@ if test "x$WX" == "x" ; then
   AC_MSG_ERROR([D-Net requires WX, kind of.])
 fi
 
-AC_PATH_PROGS([OO], [soffice.exe soffice], [], [/cygdrive/c/Program Files (x86)/OpenOffice.org 2.2/program:/cygdrive/c/Program Files/OpenOffice.org 2.2/program:/Applications/OpenOffice.org 2.2.app/Contents/MacOS/program:/usr/bin])
-if test "x$OO" == "x" ; then
-  AC_MSG_ERROR([D-Net requires OpenOffice, kind of.])
-fi
-
 STDCPPFLAGS="$STDCPPFLAGS $CPPFLAGS"
 STDLDFLAGS="$LDFLAGS $MING"
 
@@ -97,7 +92,6 @@ AC_SUBST(GAMECXXFLAGS)
 AC_SUBST(GAMELDFLAGS)
 AC_SUBST(STDCXXFLAGS)
 AC_SUBST(STDLDFLAGS)
-AC_SUBST(OO)
 AC_SUBST(WX)
 
 AC_OUTPUT(Makefile)
