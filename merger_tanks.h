@@ -13,6 +13,8 @@ using namespace std;
 
 struct TankParams {
   struct Data {
+    string cost;
+    
     string health;
     string engine;
     string handling;

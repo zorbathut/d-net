@@ -121,23 +121,19 @@ template<typename Model> void doMerge(const string &csv, const string &unmerged,
   
   dprintf("Got %d items\n", tdd.size());
   
-  dprintf("gwn\n");
   vector<kvData> preproc;
   {
     set<string> done;
     ifstream ifs(unmerged.c_str());
     kvData kvd;
     while(getkvData(ifs, &kvd)) {
-      dprintf("gwna\n");
       string name = Model::getWantedName(kvd.read("name"), names);
-      dprintf("gwnb\n");
       //dprintf("Name is %s, checking %s\n", kvd.read("name").c_str(), name.c_str());
       if(name.size()) {
         CHECK(tdd.count(name));
         done.insert(name);
         Model::preprocess(&kvd, tdd[name]);
       }
-      dprintf("gwnc\n");
       preproc.push_back(kvd);
     }
     
@@ -146,14 +142,11 @@ template<typename Model> void doMerge(const string &csv, const string &unmerged,
     for(typename map<string, typename Model::Data>::const_iterator itr = tdd.begin(); itr != tdd.end(); itr++)
       CHECK(done.count(itr->first));*/
   }
-  dprintf("gwn2\n");
   
   processAndWrite<Model>(tdd, preproc, merged);
   
-  dprintf("AIF2 ");
   addItemFile("data/base/hierarchy.dwh");
   addItemFile(merged);
-  dprintf("AIFE2");
   
   for(typename map<string, typename Model::FinalType>::const_iterator itr = Model::finalTypeList().begin(); itr != Model::finalTypeList().end(); itr++) {
     CHECK(tdd.count(suffix(itr->first)));

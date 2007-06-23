@@ -617,7 +617,7 @@ tank {
   upgrades=Basic engine
   upgrades=Basic handling
   
-  cost=0
+  cost=MERGE
   upgrade_base=2000
   
   default=1
@@ -647,7 +647,7 @@ tank {
   upgrades=Basic engine
   upgrades=Basic handling
   
-  cost=20000
+  cost=MERGE
   
   vertices=6.5 0 firepoint
   vertices=0 -2.25 rear_begin
@@ -671,7 +671,7 @@ tank {
   upgrades=Basic engine
   upgrades=Basic handling
   
-  cost=20000
+  cost=MERGE
   
   vertices=6.5 0 firepoint
   vertices=5.5 -0.8
@@ -697,7 +697,7 @@ tank {
   upgrades=Basic engine
   upgrades=Basic handling
   
-  cost=20000
+  cost=MERGE
   
   vertices=6.8 0 firepoint
   vertices=4 -1.9
@@ -726,7 +726,7 @@ tank {
   upgrades=Basic engine
   upgrades=Basic handling
   
-  cost=500000
+  cost=MERGE
   
   vertices=6.0 0 firepoint
   vertices=-1 -2.25 rear_begin
@@ -752,7 +752,7 @@ tank {
   upgrades=Basic engine
   upgrades=Basic handling
   
-  cost=500000
+  cost=MERGE
   
   vertices=6.5 0 firepoint
   vertices=5.8 -1
@@ -779,7 +779,7 @@ tank {
   upgrades=Basic engine
   upgrades=Basic handling
   
-  cost=500000
+  cost=MERGE
   
   vertices=6.6 0.5
   vertices=6.8 0 firepoint
@@ -812,7 +812,7 @@ tank {
   upgrades=Advanced engine
   upgrades=Basic handling
   
-  cost=600000
+  cost=MERGE
   
   vertices=4 0.6
   vertices=6.5 0 firepoint
@@ -840,7 +840,7 @@ tank {
   upgrades=Basic engine
   upgrades=Basic handling
   
-  cost=600000
+  cost=MERGE
   
   vertices=4.5 2
   vertices=7 0 firepoint
@@ -871,7 +871,7 @@ tank {
   upgrades=Basic handling
   upgrades=Weapon damage
   
-  cost=600000
+  cost=MERGE
   
   vertices=4.5 1.5
   vertices=6.5 0.7
@@ -904,7 +904,7 @@ tank {
   upgrades=Advanced engine
   upgrades=Basic handling
   
-  cost=15000000
+  cost=MERGE
   
   vertices=2.1 1.2
   vertices=4 0.6
@@ -936,7 +936,7 @@ tank {
   upgrades=Basic engine
   upgrades=Basic handling
   
-  cost=15000000
+  cost=MERGE
   
   vertices=4.4 2.2
   vertices=5.4 1.8
@@ -969,7 +969,7 @@ tank {
   upgrades=Basic handling
   upgrades=Weapon damage
   
-  cost=15000000
+  cost=MERGE
   
   vertices=4.7 1.7
   vertices=6.3 0.9
@@ -1008,7 +1008,7 @@ tank {
   upgrades=Weapon damage
   upgrades=Firerate
   
-  cost=18000000
+  cost=MERGE
   
   vertices=6.25 1.25
   vertices=7.0 0 firepoint
@@ -1036,7 +1036,7 @@ tank {
   upgrades=Weapon damage
   upgrades=Firerate
   
-  cost=18000000
+  cost=MERGE
   
   vertices=4.7 1.0
   vertices=5.6 1.1
@@ -1066,7 +1066,7 @@ tank {
   upgrades=Advanced engine
   upgrades=Advanced handling
   
-  cost=18000000
+  cost=MERGE
   
   vertices=4.5 1.5
   vertices=6 0.75
@@ -1104,7 +1104,7 @@ tank {
   upgrades=Weapon damage
   upgrades=Firerate
   
-  cost=450000000
+  cost=MERGE
   
   vertices=4.00 2.25
   vertices=6.5 1.25
@@ -1136,7 +1136,7 @@ tank {
   upgrades=Weapon damage
   upgrades=Firerate
   
-  cost=450000000
+  cost=MERGE
   
   vertices=2.7 1.4
   vertices=3.5 1.5
@@ -1170,7 +1170,7 @@ tank {
   upgrades=Advanced engine
   upgrades=Advanced handling
   
-  cost=450000000
+  cost=MERGE
   
   vertices=2.75 2.0
   vertices=4.25 1.0
@@ -1212,7 +1212,7 @@ tank {
   upgrades=Weapon damage
   upgrades=Firerate
   
-  cost=550000000
+  cost=MERGE
   
   vertices=5 0.75
   vertices=3.75 1.5
@@ -1246,7 +1246,7 @@ tank {
   upgrades=Weapon damage
   upgrades=Firerate
   
-  cost=550000000
+  cost=MERGE
   
   vertices=4.5 1.0
   vertices=3.25 1.75
@@ -1280,7 +1280,7 @@ tank {
   upgrades=Weapon damage
   upgrades=Firerate
   
-  cost=550000000
+  cost=MERGE
   
   vertices=4 1.5
   vertices=2.75 2.25
@@ -1326,7 +1326,7 @@ tank {
   upgrades=Weapon damage
   upgrades=Firerate
   
-  cost=14000000000
+  cost=MERGE
   
   vertices=3.75 1.00
   vertices=2.50 1.75
@@ -1366,7 +1366,7 @@ tank {
   upgrades=Weapon damage
   upgrades=Firerate
   
-  cost=14000000000
+  cost=MERGE
   
   vertices=4.25 1.0
   vertices=3.00 1.75
@@ -1404,7 +1404,7 @@ tank {
   upgrades=Weapon damage
   upgrades=Firerate
   
-  cost=14000000000
+  cost=MERGE
   
   vertices=3.5 1.5
   vertices=2.25 2.25
@@ -1454,7 +1454,7 @@ tank {
   upgrades=Weapon damage
   upgrades=Firerate
   
-  cost=350000000000
+  cost=MERGE
   
   vertices=3.00 1.25
   vertices=1.75 2.00
@@ -1502,7 +1502,7 @@ tank {
   upgrades=Weapon damage
   upgrades=Firerate
   
-  cost=350000000000
+  cost=MERGE
   
   vertices=4.00 1.25
   vertices=2.75 2.00
@@ -1546,7 +1546,7 @@ tank {
   upgrades=Weapon damage
   upgrades=Firerate
   
-  cost=350000000000
+  cost=MERGE
   
   vertices=3.25 1.5
   vertices=2.00 2.25

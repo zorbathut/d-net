@@ -1,13 +1,9 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - Bugfixes from games
-    - Get rid of old weapons as they become obsolete
+    - Highlight first weapon in four-weapon interface
     - Slow-turn button
-    - Change "damage" to "weapon"
-    - Add commas to large numbers in shop info
     - Add tank upgrade multipliers to the balance sheet
-    - Add level editor options for subtraction, fix spiney and re-add
-    - Pacman scale up 20% or so
     - Add upgrades to the balance sheet
     - Make upgrades a bit cheaper, maybe
     - 80% starting cash for new players, to discourage quitting and restarting
@@ -17,15 +13,8 @@
     - Rework how inertia works
     - Add tank slide code w.r.t inertia
     - Link handling to engine a little
-    - Better implant interface
     - Firing HE Missile everywhere leads to slowdowns :(
     - Increase autocannon eating through walls
-    - Add wander-around-randomly-and-do-shit to the AI
-    - Remove bombardment level visualization, and de-integer it
-    - Add calculation for missile explosion durability
-    - Glory durability?
-    - Add sparker to balance sheet >:(
-    - Add tank cost to balance sheet
   - Many many more weapons
     - Add implementations for all trap weapons
     - Add implementations for all exotic weapons
@@ -36,6 +25,19 @@
     - Special laser
     - Special missile
     - OGRE
+  - Eventual bugfixes
+    - Remove bombardment level visualization, and de-integer it
+    - Get rid of old weapons as they become obsolete
+    - Add commas to large numbers in shop info
+    - Add level editor options for subtraction, fix spiney and re-add
+    - Pacman scale up 20% or so
+    - Better implant interface
+    - Add wander-around-randomly-and-do-shit to the AI
+    - Add calculation for missile explosion durability
+    - Glory durability?
+    - Add sparker to balance sheet >:(
+    - Set things up so that units don't change within groups
+  - Make It Pretty
     - Spruce up base autocannon weaponry
     - Spruce up special autocannon weaponry
     - Spruce up base laser weaponry
@@ -49,15 +51,14 @@
     - Spruce up OGRE
 
 - "Polish the Damn Interface" Initiative
+  - Fix config, again
+    - Remove tank, absolute
+    - Put in recommendations for split-axis
   - Four-weapon system
-    - Make sure stuff works in sell mode
-    - Highlight first weapon
     - Figure out how to equip stuff well?
-  - Figure out slowdowns
   - Colorcode tanks, based on relative tank level
   - vecedit should drag around with the right mouse button or whatever
   - walls that are more easily destroyed
-  - autocannons cause more wall damage
   - support for really thin walls
   - More permissive levels, more powerful editor catchall
     - Figure out how and when I can do genus-n levels, and allow that in one way or another (possibly chopping holey things in half?)
@@ -85,7 +86,6 @@
   - Restricted speed/turn for the better tanks
     - Roll speed and handling together? Otherwise, come up with a description for the implant
     - "fast turn" "slow turn" modifier buttons?
-  - Pop up "sell obsolete item" on buying bombardment/glory/new tank
   - Category descriptions somehow?
 
 ---- Sound-related stuff
@@ -95,11 +95,7 @@
 - Eventually get things like weaponry sounds in
 
 ---- Things that take thought and musing
-- Change things to "buy per 10sec" essentially?
 - Tank treads :D
-- Add better bombardment ticker
-- Item despawning based on wimpiest player
-  - How does selling work?
 - FloatRange
   - This just takes some work - do this once I'm dealing with a lot of ranges again
 - Make bombardment cheaper for 3 and 4 players
@@ -140,7 +136,6 @@
 
 ---- Major but unimportant ATM
 - Sound, yo
-- Absolute mode config
 - Holy crap! Self-intersecting! Cry!
 - Consistent-ize line width effects, colors, rendering in general
 - Snapshots - how should this work? I'm still not sure.

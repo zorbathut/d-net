@@ -81,7 +81,7 @@ string Money::textual() const {
     text = "0";
   
   int ks = 0;
-  while(text.size() >= 6 && count(text.begin(), text.begin() + 3, '0') == 3) {
+  while(text.size() >= 5 && count(text.begin(), text.begin() + 3, '0') == 3) {
     text.erase(text.begin(), text.begin() + 3);
     ks++;
   }
