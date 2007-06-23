@@ -67,6 +67,9 @@ AC_CHECK_HEADER([boost/noncopyable.hpp],,AC_MSG_ERROR([D-Net requires Boost.]))
 AC_CHECK_LIB([m], [sin],,AC_MSG_ERROR([libm is needed]))
 GAMELDFLAGS="$GAMELDFLAGS -lm"
 
+AC_CHECK_LIB([z], [compress],,AC_MSG_ERROR([zlib is needed]))
+AC_CHECK_LIB([xerces-c], [main],,AC_MSG_ERROR([xerces is needed]))
+
 AC_CHECK_HEADER([vorbis/vorbisfile.h],,AC_MSG_ERROR([Can't find a working vorbisfile include anywhere]))
 AC_CHECK_LIB([ogg], [ogg_stream_init],,AC_MSG_ERROR([libogg is needed]))
 AC_CHECK_LIB([vorbis], [vorbis_info_init],,AC_MSG_ERROR([libvorbis is needed]))
