@@ -19,7 +19,7 @@ public:
   static const float divider_size;  // Division between tabs and content
   static const float units;
 
-  static const int textline_count = 16; // How many lines we're going to have
+  static const int textline_count = 17; // How many lines we're going to have
   static const int demo_line_end = 6;
   static const float linethick;
 
@@ -44,7 +44,7 @@ public:
   float aspect;
   
   RenderInfo() {
-    aspect = 1.532563;
+    aspect = 1.532563;  // lolz
     
     const float roundaborder = 0.05;
     
@@ -134,6 +134,7 @@ Keystates PlayerMenuState::genKeystate(const Controller &keys) const {
   CHECK(SIMUL_WEAPONS == 4);
   kst.accept = keys.keys[buttons[BUTTON_ACCEPT]];
   kst.cancel = keys.keys[buttons[BUTTON_CANCEL]];
+  kst.precision = keys.keys[buttons[BUTTON_PRECISION]];
   kst.fire[0] = keys.keys[buttons[BUTTON_FIRE1]];
   kst.fire[1] = keys.keys[buttons[BUTTON_FIRE2]];
   kst.fire[2] = keys.keys[buttons[BUTTON_FIRE3]];

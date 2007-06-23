@@ -1302,17 +1302,19 @@ PersistentData::PersistentData(int playercount, Money startingcash, float multip
   int cdbc = controls_primary_id();
   if(FLAGS_debugControllers >= 1) {
     CHECK(pms.size() >= 1); // better be
-    pms[cdbc].faction = &factions[5];
-    factions[5].taken = true;
+    const int fact = 5;
+    pms[cdbc].faction = &factions[fact];
+    factions[fact].taken = true;
     pms[cdbc].settingmode = SETTING_READY;
     pms[cdbc].choicemode = CHOICE_IDLE;
     pms[cdbc].buttons[BUTTON_FIRE1] = 4;
     pms[cdbc].buttons[BUTTON_FIRE2] = 8;
     pms[cdbc].buttons[BUTTON_FIRE3] = 5;
     pms[cdbc].buttons[BUTTON_FIRE4] = 9;
+    pms[cdbc].buttons[BUTTON_PRECISION] = 12;
     pms[cdbc].buttons[BUTTON_ACCEPT] = 4;
     pms[cdbc].buttons[BUTTON_CANCEL] = 8;
-    CHECK(pms[cdbc].buttons.size() == 6);
+    CHECK(pms[cdbc].buttons.size() == 7);
     pms[cdbc].axes[0] = 0;
     pms[cdbc].axes[1] = 1;
     pms[cdbc].axes_invert[0] = false;
@@ -1325,17 +1327,19 @@ PersistentData::PersistentData(int playercount, Money startingcash, float multip
   }
   if(FLAGS_debugControllers >= 2) {
     CHECK(pms.size() >= 2); // better be
-    pms[cdbc].faction = &factions[6];
-    factions[6].taken = true;
+    const int fact = 6;
+    pms[cdbc].faction = &factions[fact];
+    factions[fact].taken = true;
     pms[cdbc].settingmode = SETTING_READY;
     pms[cdbc].choicemode = CHOICE_IDLE;
     pms[cdbc].buttons[BUTTON_FIRE1] = 2;
     pms[cdbc].buttons[BUTTON_FIRE2] = 5;
     pms[cdbc].buttons[BUTTON_FIRE3] = 1;
     pms[cdbc].buttons[BUTTON_FIRE4] = 4;
+    pms[cdbc].buttons[BUTTON_PRECISION] = 8;
     pms[cdbc].buttons[BUTTON_ACCEPT] = 2;
     pms[cdbc].buttons[BUTTON_CANCEL] = 5;
-    CHECK(pms[cdbc].buttons.size() == 6);
+    CHECK(pms[cdbc].buttons.size() == 7);
     pms[cdbc].axes[0] = 0;
     pms[cdbc].axes[1] = 1;
     pms[cdbc].axes_invert[0] = false;
@@ -1348,17 +1352,19 @@ PersistentData::PersistentData(int playercount, Money startingcash, float multip
   }
   if(FLAGS_debugControllers >= 3) {
     CHECK(pms.size() >= 3);
-    pms[cdbc].faction = &factions[3];
-    factions[3].taken = true;
+    const int fact = 3;
+    pms[cdbc].faction = &factions[fact];
+    factions[fact].taken = true;
     pms[cdbc].settingmode = SETTING_READY;
     pms[cdbc].choicemode = CHOICE_IDLE;
     pms[cdbc].buttons[BUTTON_FIRE1] = 4;
     pms[cdbc].buttons[BUTTON_FIRE2] = 5;
     pms[cdbc].buttons[BUTTON_FIRE3] = 6;
     pms[cdbc].buttons[BUTTON_FIRE4] = 7;
+    pms[cdbc].buttons[BUTTON_PRECISION] = 8;
     pms[cdbc].buttons[BUTTON_ACCEPT] = 2;
     pms[cdbc].buttons[BUTTON_CANCEL] = 1;
-    CHECK(pms[cdbc].buttons.size() == 6);
+    CHECK(pms[cdbc].buttons.size() == 7);
     pms[cdbc].axes[0] = 1;
     pms[cdbc].axes[1] = 2;
     pms[cdbc].axes_invert[0] = false;

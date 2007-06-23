@@ -2,7 +2,6 @@
 - "Finish the Damn Game" Initiative
   - Bugfixes from games
     - Highlight first weapon in four-weapon interface
-    - Slow-turn button
     - Add tank upgrade multipliers to the balance sheet
     - Add upgrades to the balance sheet
     - Make upgrades a bit cheaper, maybe

@@ -153,11 +153,15 @@ Coord2 Tank::getMinePoint(Rng *rng) const {
 
 pair<float, float> Tank::getNextInertia(const Keystates &keys) const {
   
+  float precisionmult = 1.0;
+  if(keys.precision.down)
+    precisionmult *= 0.2;
+  
   float dl;
   float dr;
   if(keys.axmode == KSAX_TANK) {
-    dl = prepower(deadzone(keys.ax[0], keys.ax[1], DEADZONE_CENTER, 0.2));
-    dr = prepower(deadzone(keys.ax[1], keys.ax[0], DEADZONE_CENTER, 0.2));
+    dl = prepower(deadzone(keys.ax[0], keys.ax[1], DEADZONE_CENTER, 0.2)) * precisionmult;
+    dr = prepower(deadzone(keys.ax[1], keys.ax[0], DEADZONE_CENTER, 0.2)) * precisionmult;
   } else if(keys.axmode == KSAX_ABSOLUTE || keys.axmode == KSAX_STEERING) {
     float dd;
     float dv;
@@ -183,20 +187,22 @@ pair<float, float> Tank::getNextInertia(const Keystates &keys) const {
         // 0 .. 0.333 - drive forwards
         // 0.333 .. 0.666 - do not drive
         // 0.666 .. 1.0 - drive backwards, don't turn
-        if(abs(desdir) < PI / 3)
+        if(abs(desdir) < PI / 3) {
           ;
-        else if(abs(desdir) < PI / 3 * 2)
+        } else if(abs(desdir) < PI / 3 * 2) {
           dv = 0; // if we're near right angles, stop
-        else if(abs(desdir) < PI / 10 * 9)
+        } else if(abs(desdir) < PI / 10 * 9) {
           dv = -dv;   // if we're merely backwards, go backwards
-        else {  // if we're straight backwards, don't turn
+        } else {  // if we're straight backwards, don't turn
           dv = -dv;
           dd = 0;
         }
+        dv *= precisionmult;
+        dd *= precisionmult;
       }
     } else {
-      dd = prepower(deadzone(keys.ax[0], keys.ax[1], DEADZONE_ABSOLUTE, 0.2));
-      dv = prepower(deadzone(keys.ax[1], keys.ax[0], DEADZONE_ABSOLUTE, 0.2));
+      dd = prepower(deadzone(keys.ax[0], keys.ax[1], DEADZONE_ABSOLUTE, 0.2)) * precisionmult;
+      dv = prepower(deadzone(keys.ax[1], keys.ax[0], DEADZONE_ABSOLUTE, 0.2)) * precisionmult;
     }
     
     // What aspects do we want here?
@@ -243,7 +249,7 @@ pair<float, float> Tank::getNextInertia(const Keystates &keys) const {
 
   dl = approach(inertia.first, dl, 300 / tank.mass() / FPS);  // 30 tons is 1/10 sec
   dr = approach(inertia.second, dr, 300/ tank.mass() / FPS);
-  
+ 
   return make_pair(dl, dr);
 }
 
