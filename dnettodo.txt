@@ -150,19 +150,3 @@ Sounditude
 Take a "queueSound" with Sound, volume, fade.
 Sound gets loaded, much like dvec2.
 Then there's IDBSoundPack items. This sounds good.
-
----
-String table stuff
-
-Strtab("Hello")
-
-Should somehow init a *global* parameter, and load things at the beginning of the program. Given a global init somehow I can do this.
-
-This is not going to happen. We can, however, parse the source with an external program, then assemble that into a string-table file which is built into the program. It's a bit hacky but it will work.
-
----
-xofs is the current window x offset.
-
-We read in the current depth and branchines. From this we can calculate the intended depth of the left side. From this, we can calculate what the x offset of that left side *should* be. We approach this. As we approach this, the position of the x left side approaches whatever it should be, and other things approach as necessary.
-
-So, if we assume left is 40% and right is 60%, that means if intended-left-side is 2, left-side will be 0.8 units. If we're at 0.7 units, depth 0 and 1 will be 0.4, depth 2 will be 0.45, and depth 3 will be 0.6.
