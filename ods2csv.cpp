@@ -33,10 +33,18 @@ private :
 #define X(str) XSargh(str).get()
 
 string FX(const XMLCh *d) {
+  CHECK(d);
 	char *dat = XMLString::transcode(d);
 	string out = dat;
 	XMLString::release(&dat);
 	return out;
+};
+
+bool hasattrib(DOMTreeWalker *walkr, const string &attr) {
+  DOMNamedNodeMap *mp = walkr->getCurrentNode()->getAttributes();
+  CHECK(mp);
+  DOMNode *n = mp->getNamedItem(X(attr));
+  return n;
 };
 
 string attrib(DOMTreeWalker *walkr, const string &attr) {
@@ -47,13 +55,69 @@ string attrib(DOMTreeWalker *walkr, const string &attr) {
   return FX(n->getNodeValue());
 };
 
+bool hastext(DOMTreeWalker *walkor, const string &tn) {
+  if(!walkor->firstChild())
+    return false;
+  CHECK(FX(walkor->getCurrentNode()->getNodeName()) == tn);
+  CHECK(!walkor->nextSibling());
+  CHECK(walkor->parentNode());
+  return true;
+};
+
+string text(DOMTreeWalker *walkor, const string &tn) {
+  CHECK(hastext(walkor, tn));
+  CHECK(walkor->firstChild());
+  string temp = FX(walkor->getCurrentNode()->getTextContent());
+  CHECK(walkor->parentNode());
+  return temp;
+};
+
 vector<vector<string> > extractDataFromTable(DOMTreeWalker *walkor) {
   CHECK(FX(walkor->getCurrentNode()->getNodeName()) == "table:table");
   CHECK(walkor->firstChild());
-  CHECK(walkor->parentNode());
   
+  int colcount = 0;
   vector<vector<string> > rv;
   
+  do {
+    if(FX(walkor->getCurrentNode()->getNodeName()) == "table:table-column") {
+      CHECK(rv.empty());
+      if(hasattrib(walkor, "table:number-columns-repeated"))
+        colcount += atoi(attrib(walkor, "table:number-columns-repeated").c_str());
+      else
+        colcount++;
+    } else if(FX(walkor->getCurrentNode()->getNodeName()) == "table:table-row") {
+      CHECK(colcount);
+      
+      int rowcount = 1;
+      if(hasattrib(walkor, "table:number-rows-repeated"))
+          rowcount = atoi(attrib(walkor, "table:number-rows-repeated").c_str());
+      
+      CHECK(walkor->firstChild());
+      vector<string> row;
+      row.reserve(colcount);
+      do {
+        CHECK(FX(walkor->getCurrentNode()->getNodeName()) == "table:table-cell" || FX(walkor->getCurrentNode()->getNodeName()) == "table:covered-table-cell");
+        int tcount = 1;
+        if(hasattrib(walkor, "table:number-columns-repeated"))
+          tcount = atoi(attrib(walkor, "table:number-columns-repeated").c_str());
+        string val = "";
+        if(hasattrib(walkor, "office:value"))
+          val = attrib(walkor, "office:value");
+        else if(hastext(walkor, "text:p"))
+          val = text(walkor, "text:p");
+        for(int i = 0; i < tcount; i++)
+          row.push_back(val);
+      } while(walkor->nextSibling());
+      CHECK(row.size() == colcount);
+      CHECK(walkor->parentNode());
+      
+      for(int i = 0; i < rowcount; i++)
+        rv.push_back(row);
+    }
+  } while(walkor->nextSibling());
+  
+  CHECK(walkor->parentNode());
   return rv;
 }
 
@@ -104,7 +168,7 @@ vector<vector<string> > extractData(const vector<unsigned char> &data, const str
   
   XMLPlatformUtils::Terminate();
   
-  CHECK(0);
+  return rv;
 }
 
 int main(int argc, char *argv[]) {
