@@ -20,7 +20,7 @@ using namespace std;
 const char * const adjust_text[] = { "damage_kinetic", "damage_energy", "damage_explosive", "damage_trap", "damage_exotic", "warhead_radius_falloff", "tank_firerate", "tank_speed", "tank_turn", "tank_armor", "bombardment_speed", "discount_weapon", "discount_implant", "discount_upgrade", "discount_tank", "recycle_bonus", "damage_all", "all" };
 const bool adjust_negative[] = { false, false, false, false, false, false, false, false, false, false, false, true, true, true, true, false };
 const int adjust_category[] = { 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2 };
-const char * const adjust_human[] = {"Kinetic damage", "Energy damage", "Explosive damage", "Trap damage", "Exotic damage", "Blast radius", "Tank firerate", "Tank speed", "Tank turning", "Tank armor", "Bombardment speed", "Weapon discount", "Implant discount", "Upgrade discount", "Tank discount", "Sell efficiency", "All damage", "All" };
+const char * const adjust_human[] = {"Kinetic weapons", "Energy weapons", "Explosive weapons", "Trap weapons", "Exotic weapons", "Blast radius", "Tank firerate", "Tank speed", "Tank turning", "Tank armor", "Bombardment speed", "Weapon discount", "Implant discount", "Upgrade discount", "Tank discount", "Sell efficiency", "All weapons", "Everything" };
 const char * const adjust_unit[] = {" KPE", " KJE", " TOTE", " FSE", " flux", " m", "", " m/s", " rad/s", " CME", "", "", "", "", "", ""};
 
 pair<string, bool> adjust_modifiertext(int id, int amount);

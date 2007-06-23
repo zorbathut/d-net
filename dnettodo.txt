@@ -3,7 +3,6 @@
   - Bugfixes from games
     - Get rid of old weapons as they become obsolete
     - Slow-turn button
-    - Add more spawns to ming levels
     - Change "damage" to "weapon"
     - Add commas to large numbers in shop info
     - Add tank upgrade multipliers to the balance sheet

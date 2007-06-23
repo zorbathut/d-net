@@ -592,15 +592,18 @@ bool PersistentData::tickSlot(int slotid, const vector<Controller> &keys) {
         dprintf("DESTROY %d\n", playerdata.size());
         int spid = playerid[slt.pid];
         pms[slt.pid].faction->taken = false;
+        // DESTROY
         playerid[slt.pid] = -1;
         sps_shopped[slt.pid] = false;
         pms[slt.pid] = PlayerMenuState();
         playerdata.erase(playerdata.begin() + spid);
+        // DESTROY
         for(int i = 0; i < playerid.size(); i++)
           if(playerid[i] > spid)
             playerid[i]--;
         dprintf("DESTROY %d\n", playerdata.size());
         queueSound(S::accept);
+        // DESTROY
       } else {
         queueSound(S::choose);
       }
@@ -611,6 +614,8 @@ bool PersistentData::tickSlot(int slotid, const vector<Controller> &keys) {
   }
   return false;
 }
+
+// DESTROY
 
 class AdjustSorter {
 public:
@@ -719,8 +724,9 @@ void PersistentData::renderSlot(int slotid) const {
       if(!ignore_modifiers) {
         GfxWindow gfxw(Float4(0, 0, div_x, 0.5), 1.0);
         int lines_needed = 9;
-        setZoomVertical(0, 0, 1.5 * lines_needed + 0.5);
-        float horzavail = getZoom().span_y() - 1.0;
+        const float tweensize = 0.6;
+        setZoomVertical(0, 0, (1 + tweensize) * lines_needed + tweensize);
+        float horzavail = getZoom().span_y() + 2;
         const IDBAdjustment *idba = factions[fid].faction->adjustment[3];
         
         vector<pair<pair<string, bool>, vector<string> > > adjusttext;
@@ -731,7 +737,8 @@ void PersistentData::renderSlot(int slotid) const {
           
           vector<string> tlins;
           pair<string, bool> modifiertext = adjust_modifiertext(idba->adjustlist[i].first, idba->adjustlist[i].second);
-          if(getTextWidth(StringPrintf("%s  %s", adjust_human[idba->adjustlist[i].first], modifiertext.first.c_str()), 1.0) > horzavail) {
+          //dprintf("%f %f, \"%s\"\n", horzavail, getTextWidth(StringPrintf("%s%s", adjust_human[idba->adjustlist[i].first], modifiertext.first.c_str()), 1.0), StringPrintf("%s  %s", adjust_human[idba->adjustlist[i].first], modifiertext.first.c_str()).c_str());
+          if(getTextWidth(StringPrintf("%s%s", adjust_human[idba->adjustlist[i].first], modifiertext.first.c_str()), 1.0) > horzavail) {
             tlins = tokenize(adjust_human[idba->adjustlist[i].first], " ");
           } else {
             tlins.push_back(adjust_human[idba->adjustlist[i].first]);
@@ -745,19 +752,19 @@ void PersistentData::renderSlot(int slotid) const {
         
         sort(adjusttext.begin(), adjusttext.end(), AdjustSorter());
         
-        float cpos = 0.5 + (lines_needed - total_lines) * 1.5 / 2;
+        float cpos = tweensize + (lines_needed - total_lines) * (1 + tweensize) / 2;
         for(int i = 0; i < adjusttext.size(); i++) {
           setColor(C::inactive_text);
           for(int j = 0; j < adjusttext[i].second.size(); j++) {
-            drawText(adjusttext[i].second[j], 1, Float2(0.5, cpos));
-            cpos += 1.5;
+            drawText(adjusttext[i].second[j], 1, Float2(tweensize, cpos));
+            cpos += 1 + tweensize;
           }
           
           if(adjusttext[i].first.second)
             setColor(C::positive);
           else
             setColor(C::negative);
-          drawJustifiedText(adjusttext[i].first.first, 1, Float2(getZoom().ex - 0.5, cpos - 1.5), TEXT_MAX, TEXT_MIN);
+          drawJustifiedText(adjusttext[i].first.first, 1, Float2(getZoom().ex - tweensize, cpos - 1 - tweensize), TEXT_MAX, TEXT_MIN);
         }
       }
     }
