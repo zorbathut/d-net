@@ -726,7 +726,7 @@ void PersistentData::renderSlot(int slotid) const {
         int lines_needed = 9;
         const float tweensize = 0.6;
         setZoomVertical(0, 0, (1 + tweensize) * lines_needed + tweensize);
-        float horzavail = getZoom().span_y() + 2;
+        float horzavail = getZoom().span_x();
         const IDBAdjustment *idba = factions[fid].faction->adjustment[3];
         
         vector<pair<pair<string, bool>, vector<string> > > adjusttext;
@@ -737,8 +737,7 @@ void PersistentData::renderSlot(int slotid) const {
           
           vector<string> tlins;
           pair<string, bool> modifiertext = adjust_modifiertext(idba->adjustlist[i].first, idba->adjustlist[i].second);
-          //dprintf("%f %f, \"%s\"\n", horzavail, getTextWidth(StringPrintf("%s%s", adjust_human[idba->adjustlist[i].first], modifiertext.first.c_str()), 1.0), StringPrintf("%s  %s", adjust_human[idba->adjustlist[i].first], modifiertext.first.c_str()).c_str());
-          if(getTextWidth(StringPrintf("%s%s", adjust_human[idba->adjustlist[i].first], modifiertext.first.c_str()), 1.0) > horzavail) {
+          if(getTextWidth(StringPrintf("%s  %s", adjust_human[idba->adjustlist[i].first], modifiertext.first.c_str()), 1.0) > horzavail) {
             tlins = tokenize(adjust_human[idba->adjustlist[i].first], " ");
           } else {
             tlins.push_back(adjust_human[idba->adjustlist[i].first]);
