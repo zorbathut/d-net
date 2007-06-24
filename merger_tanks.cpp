@@ -23,7 +23,7 @@ bool TankParams::parseLine(const vector<string> &line, Data *data) {
   return true;
 }
 
-string TankParams::getWantedName(const string &name, const set<string> &possiblenames) {
+string TankParams::nameFromKvname(const string &name, const set<string> &possiblenames) {
   if(possiblenames.count(suffix(name)))
     return suffix(name);
   return "";

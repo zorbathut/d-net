@@ -31,7 +31,8 @@ struct TankParams {
   static string token();
   
   static bool parseLine(const vector<string> &line, Data *data);
-  static string getWantedName(const string &name, const set<string> &possiblenames);
+  static const bool kvdirect = false;
+  static string nameFromKvname(const string &name, const set<string> &possiblenames);
   static void preprocess(kvData *kvd, const Data &data);
   static bool verify(const FinalType &item, const Data &data);
   

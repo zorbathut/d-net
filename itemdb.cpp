@@ -1633,24 +1633,13 @@ const IDBBombardment *defaultBombardment() {
   return defbombardment;
 }
 
-const map<string, IDBWeapon> &weaponList() {
-  return weaponclasses;
-}
-const map<string, IDBBombardment> &bombardmentList() {
-  return bombardmentclasses;
-}
-const map<string, IDBGlory> &gloryList() {
-  return gloryclasses;
-}
-const map<string, IDBTank> &tankList() {
-  return tankclasses;
-}
-const vector<IDBFaction> &factionList() {
-  return factions;
-}
-const map<string, string> &textList() {
-  return text;
-}
+const map<string, IDBWeapon> &weaponList() { return weaponclasses; }
+const map<string, IDBBombardment> &bombardmentList() { return bombardmentclasses; }
+const map<string, IDBGlory> &gloryList() { return gloryclasses; }
+const map<string, IDBTank> &tankList() { return tankclasses; }
+const map<string, IDBUpgrade> &upgradeList() { return upgradeclasses; }
+const vector<IDBFaction> &factionList() { return factions; }
+const map<string, string> &textList() { return text; }
 
 bool hasShopcache(const IDBWeapon *weap) {
   return shopcaches.count(nameFromIDB(weap));

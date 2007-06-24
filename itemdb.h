@@ -664,6 +664,7 @@ const map<string, IDBWeapon> &weaponList();
 const map<string, IDBBombardment> &bombardmentList();
 const map<string, IDBGlory> &gloryList();
 const map<string, IDBTank> &tankList();
+const map<string, IDBUpgrade> &upgradeList();
 const vector<IDBFaction> &factionList();
 const map<string, string> &textList();
 

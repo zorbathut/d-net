@@ -1,5 +1,5 @@
-#ifndef MERGER_BOMBARDMENT
-#define MERGER_BOMBARDMENT
+#ifndef MERGER_UPGRADES
+#define MERGER_UPGRADES
 
 #include <string>
 #include <vector>
@@ -11,29 +11,25 @@
 
 using namespace std;
 
-struct BombardParams {
+struct UpgradeParams {
   struct Data {
-    string cost;
-    
-    string dpp;
-    
-    string lock;
-    string unlock;
-    
-    string durability;
+    string costmult;
   };
   
-  typedef IDBBombardment FinalType;
+  typedef IDBUpgrade FinalType;
   
   static const bool twopass = false;
   
-  typedef BaseNamer Namer;
+  class Namer {
+  public:
+    string getName(const vector<string> &line);
+  };
   
   static string token();
   
   static bool parseLine(const vector<string> &line, Data *data);
-  static const bool kvdirect = false;
-  static string nameFromKvname(const string &name, const set<string> &possiblenames);
+  static const bool kvdirect = true;
+  static string nameFromKvd(const kvData &kvd, const set<string> &possiblenames);
   static void preprocess(kvData *kvd, const Data &data);
   static bool verify(const FinalType &item, const Data &data);
   

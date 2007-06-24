@@ -24,7 +24,7 @@ bool BombardParams::parseLine(const vector<string> &line, Data *data) {
   return true;
 }
 
-string BombardParams::getWantedName(const string &name, const set<string> &possiblenames) {
+string BombardParams::nameFromKvname(const string &name, const set<string> &possiblenames) {
   if(possiblenames.count(suffix(name)))
     return suffix(name);
   return findName(suffix(name), possiblenames);

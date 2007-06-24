@@ -18,7 +18,7 @@ bool GloryParams::parseLine(const vector<string> &line, Data *data) {
   return true;
 }
 
-string GloryParams::getWantedName(const string &name, const set<string> &possiblenames) {
+string GloryParams::nameFromKvname(const string &name, const set<string> &possiblenames) {
   string rv;
   rv = suffix(name);
   if(possiblenames.count(rv))

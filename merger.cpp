@@ -6,6 +6,7 @@
 #include "merger_bombardment.h"
 #include "merger_tanks.h"
 #include "merger_glory.h"
+#include "merger_upgrades.h"
 #include "merger_util.h"
 
 #include <fstream>
@@ -50,7 +51,7 @@ template<typename Model> struct PAW<Model, true> {
     
     map<string, float> multipliers;
     for(typename map<string, typename Model::FinalType>::const_iterator itr = Model::finalTypeList().begin(); itr != Model::finalTypeList().end(); itr++) {
-      string name = Model::getWantedName(itr->first, names);
+      string name = Model::nameFromKvname(itr->first, names);
       if(!name.size())
           continue;
       CHECK(tdd.count(name));
@@ -72,7 +73,7 @@ template<typename Model> struct PAW<Model, true> {
     {
       ofstream ofs(merged.c_str());
       for(int i = 0; i < preproc.size(); i++) {
-        string name = Model::getWantedName(preproc[i].read("name"), names);
+        string name = Model::nameFromKvname(preproc[i].read("name"), names);
         kvData kvd = preproc[i];
         if(multipliers.count(name)) {
           CHECK(multipliers.count(name));
@@ -87,6 +88,23 @@ template<typename Model> struct PAW<Model, true> {
 
 template<typename Model> void processAndWrite(const map<string, typename Model::Data> &tdd, const vector<kvData> &preproc, const string &merged) {
   PAW<Model, Model::twopass>::f(tdd, preproc, merged);
+}
+
+template<typename Model, bool direct> struct NFK;
+
+template<typename Model> struct NFK<Model, false> {
+  static string f(const kvData &kvd, const set<string> &possiblenames) {
+    return Model::nameFromKvname(kvd.read("name"), possiblenames);
+  }
+};
+template<typename Model> struct NFK<Model, true> {
+  static string f(const kvData &kvd, const set<string> &possiblenames) {
+    return Model::nameFromKvd(kvd, possiblenames);
+  }
+};
+
+template<typename Model> string nameFromKvd(const kvData &kvd, const set<string> &possiblenames) {
+  return NFK<Model, Model::kvdirect>::f(kvd, possiblenames);
 }
 
 template<typename Model> void doMerge(const string &csv, const string &unmerged, const string &merged) {
@@ -108,6 +126,8 @@ template<typename Model> void doMerge(const string &csv, const string &unmerged,
       if(!name.size())
         continue;
       
+      dprintf("got name %s\n", name.c_str());
+      
       CHECK(!tdd.count(name));
       
       typename Model::Data dat;
@@ -127,7 +147,8 @@ template<typename Model> void doMerge(const string &csv, const string &unmerged,
     ifstream ifs(unmerged.c_str());
     kvData kvd;
     while(getkvData(ifs, &kvd)) {
-      string name = Model::getWantedName(kvd.read("name"), names);
+      string name = nameFromKvd<Model>(kvd, names);
+      dprintf("got wanted name %s\n", name.c_str());
       //dprintf("Name is %s, checking %s\n", kvd.read("name").c_str(), name.c_str());
       if(name.size()) {
         CHECK(tdd.count(name));
@@ -149,9 +170,15 @@ template<typename Model> void doMerge(const string &csv, const string &unmerged,
   addItemFile(merged);
   
   for(typename map<string, typename Model::FinalType>::const_iterator itr = Model::finalTypeList().begin(); itr != Model::finalTypeList().end(); itr++) {
-    CHECK(tdd.count(suffix(itr->first)));
-    Model::verify(itr->second, tdd[suffix(itr->first)]);
-    tdd.erase(suffix(itr->first));
+    string tt;
+    if(tdd.count(suffix(itr->first))) {
+      tt = suffix(itr->first);
+    } else {
+      tt = itr->first;
+    }
+    CHECK(tdd.count(tt));
+    Model::verify(itr->second, tdd[tt]);
+    tdd.erase(tt);
   }
   
   for(typename map<string, typename Model::Data>::const_iterator itr = tdd.begin(); itr != tdd.end(); itr++)
@@ -182,6 +209,8 @@ int main(int argc, char *argv[]) {
     doMerge<TankParams>(argv[1], argv[2], argv[3]);
   } else if(type == GloryParams::token()) {
     doMerge<GloryParams>(argv[1], argv[2], argv[3]);
+  } else if(type == UpgradeParams::token()) {
+    doMerge<UpgradeParams>(argv[1], argv[2], argv[3]);
   } else {
     CHECK(0);
   }

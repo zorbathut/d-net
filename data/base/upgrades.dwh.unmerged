@@ -21,7 +21,7 @@ adjustment {
 
 upgrade {
   name=ROOT.Tank Upgrades.Hull I
-  costmult=1
+  costmult=MERGE
   adjustment=adjustment.hull
   
   category=Basic hull
@@ -31,7 +31,7 @@ upgrade {
 
 upgrade {
   name=ROOT.Tank Upgrades.Hull II
-  costmult=3
+  costmult=MERGE
   adjustment=adjustment.hull
   
   category=Basic hull
@@ -41,7 +41,7 @@ upgrade {
 
 upgrade {
   name=ROOT.Tank Upgrades.Hull I
-  costmult=0.5
+  costmult=MERGE
   adjustment=adjustment.hull
   
   category=Advanced hull
@@ -51,7 +51,7 @@ upgrade {
 
 upgrade {
   name=ROOT.Tank Upgrades.Hull II
-  costmult=1.5
+  costmult=MERGE
   adjustment=adjustment.hull
   
   category=Advanced hull
@@ -61,7 +61,7 @@ upgrade {
 
 upgrade {
   name=ROOT.Tank Upgrades.Hull III
-  costmult=3
+  costmult=MERGE
   adjustment=adjustment.hull
   
   category=Advanced hull
@@ -91,7 +91,7 @@ adjustment {
 
 upgrade {
   name=ROOT.Tank Upgrades.Engine I
-  costmult=1
+  costmult=MERGE
   adjustment=adjustment.engine
   
   category=Basic engine
@@ -101,7 +101,7 @@ upgrade {
 
 upgrade {
   name=ROOT.Tank Upgrades.Engine II
-  costmult=3
+  costmult=MERGE
   adjustment=adjustment.engine
   
   category=Basic engine
@@ -111,7 +111,7 @@ upgrade {
 
 upgrade {
   name=ROOT.Tank Upgrades.Engine I
-  costmult=0.5
+  costmult=MERGE
   adjustment=adjustment.engine
   
   category=Advanced engine
@@ -121,7 +121,7 @@ upgrade {
 
 upgrade {
   name=ROOT.Tank Upgrades.Engine II
-  costmult=1.5
+  costmult=MERGE
   adjustment=adjustment.engine
   
   category=Advanced engine
@@ -131,7 +131,7 @@ upgrade {
 
 upgrade {
   name=ROOT.Tank Upgrades.Engine III
-  costmult=3
+  costmult=MERGE
   adjustment=adjustment.engine
   
   category=Advanced engine
@@ -161,7 +161,7 @@ adjustment {
 
 upgrade {
   name=ROOT.Tank Upgrades.Handling I
-  costmult=1
+  costmult=MERGE
   adjustment=adjustment.handling
   
   category=Basic handling
@@ -171,7 +171,7 @@ upgrade {
 
 upgrade {
   name=ROOT.Tank Upgrades.Handling II
-  costmult=3
+  costmult=MERGE
   adjustment=adjustment.handling
   
   category=Basic handling
@@ -181,7 +181,7 @@ upgrade {
 
 upgrade {
   name=ROOT.Tank Upgrades.Handling I
-  costmult=0.5
+  costmult=MERGE
   adjustment=adjustment.handling
   
   category=Advanced handling
@@ -191,7 +191,7 @@ upgrade {
 
 upgrade {
   name=ROOT.Tank Upgrades.Handling II
-  costmult=1.5
+  costmult=MERGE
   adjustment=adjustment.handling
   
   category=Advanced handling
@@ -201,7 +201,7 @@ upgrade {
 
 upgrade {
   name=ROOT.Tank Upgrades.Handling III
-  costmult=3
+  costmult=MERGE
   adjustment=adjustment.handling
   
   category=Advanced handling
@@ -262,7 +262,7 @@ adjustment {
 
 upgrade {
   name=ROOT.Tank Upgrades.Kinetic damage
-  costmult=2
+  costmult=MERGE
   adjustment=adjustment.kinetic
   
   category=Weapon damage
@@ -272,7 +272,7 @@ upgrade {
 
 upgrade {
   name=ROOT.Tank Upgrades.Energy damage
-  costmult=2
+  costmult=MERGE
   adjustment=adjustment.energy
   
   category=Weapon damage
@@ -282,7 +282,7 @@ upgrade {
 
 upgrade {
   name=ROOT.Tank Upgrades.Explosive damage
-  costmult=2
+  costmult=MERGE
   adjustment=adjustment.explosive
   
   category=Weapon damage
@@ -292,7 +292,7 @@ upgrade {
 
 upgrade {
   name=ROOT.Tank Upgrades.Trap damage
-  costmult=2
+  costmult=MERGE
   adjustment=adjustment.trap
   
   category=Weapon damage
@@ -302,7 +302,7 @@ upgrade {
 
 upgrade {
   name=ROOT.Tank Upgrades.Exotic damage
-  costmult=2
+  costmult=MERGE
   adjustment=adjustment.exotic
   
   category=Weapon damage
@@ -327,7 +327,7 @@ adjustment {
 
 upgrade {
   name=ROOT.Tank Upgrades.Firerate I
-  costmult=1
+  costmult=MERGE
   adjustment=adjustment.firerate
   
   category=Firerate
@@ -337,7 +337,7 @@ upgrade {
 
 upgrade {
   name=ROOT.Tank Upgrades.Firerate II
-  costmult=3
+  costmult=MERGE
   adjustment=adjustment.firerate
   
   category=Firerate

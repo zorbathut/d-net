@@ -12,7 +12,7 @@ EDITORCXXFLAGS := `@WX@ --cxxflags` $(STDCXXFLAGS)
 EDITORLDFLAGS := `@WX@ --libs --gl-libs` -lopengl32 $(STDLDFLAGS)
 
 FUNCTORSOURCES := functor_gen debug os util parse
-MERGERSOURCES := merger debug os util parse itemdb itemdb_adjust args color dvec2 float coord cfcommon merger_weapon merger_bombardment merger_tanks merger_glory merger_util regex rng
+MERGERSOURCES := merger debug os util parse itemdb itemdb_adjust args color dvec2 float coord cfcommon merger_weapon merger_bombardment merger_tanks merger_glory merger_util merger_upgrades regex rng
 # rng is not really needed since it won't be linked in at all, but it's easier to just include it
 ODS2CSVSOURCES := ods2csv debug os util parse minizip/unzip minizip/ioapi
 CONSOLECXXFLAGS := $(STDCXXFLAGS)
@@ -109,10 +109,14 @@ define strip
 strip -s deploy/*.exe deploy/*.dll
 endef
 
-define postpackage
+define clean
 cd deploy ; rm -rf `find | grep \.svn`
 cd deploy ; find | grep \.wav | xargs oggenc -q 6
 cd deploy ; rm -rf `find | grep \.wav`
+endef
+
+define postpackage
+$(clean)
 cd deploy ; zip -9 -r \\\\192.168.100.4\\zorba\\www\\d-net\\$(PACKAGESUBDIR)\\Dnet\ Latest\ Windows.zip *  # This is really too many backslashes.
 cp \\\\192.168.100.4\\zorba\\www\\d-net\\$(PACKAGESUBDIR)\\Dnet\ Latest\ Windows.zip `date +\\\\\\\\192.168.100.4\\\\zorba\\\\www\\\\d-net\\\\$(PACKAGESUBDIR)\\\\dnet%G%m%d%H%M%S.zip` # This is really too many backslashes.
 rm -rf deploy
@@ -134,6 +138,11 @@ packageed: d-net vecedit data/shopcache.dwh
 	$(strip)
 	$(postpackage)
 	cp \\\\192.168.100.4\\zorba\\www\\d-net\\$(PACKAGESUBDIR)\\Dnet\ Latest\ Windows.zip \\\\192.168.100.4\\zorba\\www\\d-net\\$(PACKAGESUBDIR)\\Dnet\ Latest\ Editor.zip
+
+localpackage: d-net
+	$(prepackage)
+	$(strip)
+	$(clean)
 
 %.g.o: %.cpp
 	nice $(CXX) $(GAMECXXFLAGS) -c -o $@ $<

@@ -63,7 +63,7 @@ bool WeaponParams::parseLine(const vector<string> &line, Data *data) {
   }
 }
 
-string WeaponParams::getWantedName(const string &name, const set<string> &possiblenames) {
+string WeaponParams::nameFromKvname(const string &name, const set<string> &possiblenames) {
   //dprintf("--- START %s\n", name.c_str());
   string rv;
   rv = suffix(name);
