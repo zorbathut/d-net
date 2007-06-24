@@ -32,7 +32,7 @@ warhead {
   name=warhead.weapon.autocannon
   impactdamage=MERGE kinetic
   wallremovalradius=0.5
-  wallremovalchance=0.05
+  wallremovalchance=0.15
   
   effects_impact=effects.weapon.autocannon
 }
@@ -97,7 +97,7 @@ warhead {
   name=warhead.weapon.apautocannon
   impactdamage=MERGE kinetic
   wallremovalradius=0.8
-  wallremovalchance=0.20
+  wallremovalchance=0.30
   effects_impact=effects.weapon.apautocannon
 }
 
