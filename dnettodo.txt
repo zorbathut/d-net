@@ -2,7 +2,6 @@
 - "Finish the Damn Game" Initiative
   - Bugfixes from games
     - Highlight first weapon in four-weapon interface
-    - Make drones proximity
     - Rework how inertia works
     - Add tank slide code w.r.t inertia
     - Link handling to engine a little
