@@ -864,7 +864,7 @@ void parseUpgrade(kvData *chunk, bool reload, ErrorAccumulator &accum) {
     titem = &upgradeclasses[locnam];
   }
   
-  titem->costmult = atof(chunk->consume("costmult").c_str());
+  titem->costmult = strtod(chunk->consume("costmult").c_str(), NULL);
   
   titem->adjustment = parseSubclass(chunk->consume("adjustment"), adjustmentclasses);
   titem->category = category;

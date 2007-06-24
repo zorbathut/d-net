@@ -2,9 +2,7 @@
 - "Finish the Damn Game" Initiative
   - Bugfixes from games
     - Highlight first weapon in four-weapon interface
-    - Add tank upgrade multipliers to the balance sheet
     - Add upgrades to the balance sheet
-    - Make upgrades a bit cheaper, maybe
     - 80% starting cash for new players, to discourage quitting and restarting
     - Add explosive radius in tank weapon upgrade
     - Make explosive radius bonus not apply to certain weapons

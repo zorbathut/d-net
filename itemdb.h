@@ -190,7 +190,7 @@ struct IDBGlory {
 struct IDBUpgrade {
   const IDBAdjustment *adjustment;
 
-  float costmult;
+  double costmult;
   string category;
   
   const IDBUpgrade *prereq;
