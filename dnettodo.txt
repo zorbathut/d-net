@@ -4,7 +4,8 @@
     - Highlight first weapon in four-weapon interface
     - Rework how inertia works
     - Add tank slide code w.r.t inertia
-    - Link handling to engine a little
+    - Check if the new snipe code works
+      - Link handling to engine a little
   - Many many more weapons
     - Add implementations for all trap weapons
     - Add implementations for all exotic weapons

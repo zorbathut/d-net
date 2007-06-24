@@ -268,6 +268,7 @@ void HierarchyNode::checkConsistency(vector<string> *errors) const {
     CHECK(equipweapon);
   } else {
     CHECK(!equipweapon);
+    CHECK(!equipweaponfirst);
   }
   
   // the equipcategory item must have a category and isn't buyable
@@ -403,7 +404,10 @@ Color HierarchyNode::getColor() const {
   } else if(type == HNT_BOMBARDMENT) {
     return gcolor(bombardment);
   } else if(type == HNT_EQUIPWEAPON) {
-    return gcolor(equipweapon);
+    Color col = gcolor(equipweapon);
+    if(equipweaponfirst)
+      col += Color(0.2, 0.2, 0.2);
+    return col;
   } else if(type == HNT_SELLWEAPON) {
     return gcolor(sellweapon);
   } else if(type == HNT_CATEGORY && branches.size()) {
@@ -437,6 +441,7 @@ HierarchyNode::HierarchyNode() {
   implantslot = NULL;
   implantitem = NULL;
   equipweapon = NULL;
+  equipweaponfirst = false;
   sellweapon = NULL;
   spawncash = Money(0);
 }
@@ -925,6 +930,8 @@ void parseProjectile(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   if(titem->motion != PM_MINE && titem->motion != PM_DPS)
     titem->velocity = atof(chunk->consume("velocity").c_str());
   
+  titem->proximity = parseWithDefault(chunk, "proximity", false);
+  
   if(titem->motion == PM_NORMAL) {
     titem->length = parseWithDefault(chunk, "length", titem->velocity / 60);
   } else if(titem->motion == PM_MISSILE) {
@@ -936,14 +943,6 @@ void parseProjectile(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   }
   
   titem->chain_warhead = parseSubclassSet(chunk, "warhead", warheadclasses);
-  
-  titem->proximity = parseWithDefault(chunk, "proximity", false);
-  if(titem->proximity) {
-    CHECK(titem->chain_warhead.size());
-    CHECK(titem->chain_warhead[0]->radiusfalloff > 0);
-    for(int i = 0; i < titem->chain_warhead.size(); i++)
-      CHECK(titem->chain_warhead[i]->radiusfalloff <= titem->chain_warhead[0]->radiusfalloff);
-  }
   
   if(titem->motion != PM_MINE && titem->motion != PM_DPS) {
     titem->no_intersection = parseWithDefault(chunk, "no_intersection", false);

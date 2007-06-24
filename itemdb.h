@@ -630,6 +630,8 @@ public:
   const IDBImplantSlot *implantslot;
   
   const IDBWeapon *equipweapon;
+  bool equipweaponfirst;
+  
   const IDBWeapon *sellweapon;
   
   int cat_restrictiontype;
