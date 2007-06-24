@@ -17,6 +17,7 @@ warhead {
   impactdamage=MERGE(1) explosive
   radiusdamage=MERGE(3) explosive
   radiusfalloff=4
+  radiusexplosive=1
   wallremovalradius=1
 }
 
@@ -106,6 +107,7 @@ warhead {
   impactdamage=MERGE(6) explosive
   radiusdamage=MERGE(10) explosive
   radiusfalloff=6
+  radiusexplosive=1
   wallremovalradius=2
   
   deploy=deploy.weapon.hemissile.secondary
@@ -164,6 +166,7 @@ warhead {
   impactdamage=MERGE(1) explosive
   radiusdamage=MERGE(3) explosive
   radiusfalloff=4
+  radiusexplosive=1
   wallremovalradius=1
 }
 
@@ -219,6 +222,7 @@ warhead {
   impactdamage=MERGE(1) explosive
   radiusdamage=MERGE(3) explosive
   radiusfalloff=4
+  radiusexplosive=1
   wallremovalradius=1
 }
 
@@ -274,6 +278,7 @@ warhead {
   impactdamage=MERGE(1) explosive
   radiusdamage=MERGE(3) explosive
   radiusfalloff=4
+  radiusexplosive=1
   wallremovalradius=1
 }
 
@@ -329,6 +334,7 @@ warhead {
   impactdamage=MERGE(1) explosive
   radiusdamage=MERGE(3) explosive
   radiusfalloff=4
+  radiusexplosive=1
   wallremovalradius=1
 }
 
@@ -384,6 +390,7 @@ warhead {
   impactdamage=MERGE(1) explosive
   radiusdamage=MERGE(3) explosive
   radiusfalloff=4
+  radiusexplosive=1
   wallremovalradius=1
 }
 

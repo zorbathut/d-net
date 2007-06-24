@@ -40,6 +40,7 @@ warhead {
   name=warhead.glory.none.blast
   radiusdamage=MERGE(5) explosive
   radiusfalloff=6
+  radiusexplosive=1
   wallremovalradius=2
 }
 
@@ -104,6 +105,7 @@ warhead {
   name=warhead.glory.shapedcharges.blast
   radiusdamage=MERGE(10) explosive
   radiusfalloff=12
+  radiusexplosive=1
   wallremovalradius=8
 }
 
@@ -167,6 +169,7 @@ warhead {
   name=warhead.glory.plasmacharge.bomb
   radiusdamage=MERGE(15) exotic
   radiusfalloff=14
+  radiusexplosive=1
   wallremovalradius=4
   radiuscolor_bright=88f
   radiuscolor_dim=018
@@ -267,6 +270,7 @@ warhead {
   name=warhead.glory.vengeancepulse.blast
   radiusdamage=MERGE(5) explosive
   radiusfalloff=6
+  radiusexplosive=1
   wallremovalradius=2
 }
 
@@ -330,6 +334,7 @@ warhead {
   name=warhead.glory.coreexplosive.blast
   radiusdamage=MERGE(5) explosive
   radiusfalloff=6
+  radiusexplosive=1
   wallremovalradius=2
 }
 
@@ -393,6 +398,7 @@ warhead {
   name=warhead.glory.stasischamber.blast
   radiusdamage=MERGE(5) explosive
   radiusfalloff=6
+  radiusexplosive=1
   wallremovalradius=2
 }
 
@@ -456,6 +462,7 @@ warhead {
   name=warhead.glory.overloadchip.blast
   radiusdamage=MERGE(5) explosive
   radiusfalloff=6
+  radiusexplosive=1
   wallremovalradius=2
 }
 
@@ -519,6 +526,7 @@ warhead {
   name=warhead.glory.kamikazewarhead.blast
   radiusdamage=MERGE(5) explosive
   radiusfalloff=6
+  radiusexplosive=1
   wallremovalradius=2
 }
 
@@ -582,6 +590,7 @@ warhead {
   name=warhead.glory.thedevice.blast
   radiusdamage=MERGE(5) explosive
   radiusfalloff=6
+  radiusexplosive=1
   wallremovalradius=2
 }
 
@@ -645,6 +654,7 @@ warhead {
   name=warhead.glory.deadmansnuke.blast
   radiusdamage=MERGE(5) explosive
   radiusfalloff=6
+  radiusexplosive=1
   wallremovalradius=2
 }
 
@@ -708,6 +718,7 @@ warhead {
   name=warhead.glory.immolationdevice.blast
   radiusdamage=MERGE(5) explosive
   radiusfalloff=6
+  radiusexplosive=1
   wallremovalradius=2
 }
 
@@ -771,6 +782,7 @@ warhead {
   name=warhead.glory.coreconversion.blast
   radiusdamage=MERGE(5) explosive
   radiusfalloff=6
+  radiusexplosive=1
   wallremovalradius=2
 }
 

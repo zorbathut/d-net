@@ -996,6 +996,7 @@ void parseWarhead(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   
   // these must either neither exist, or both exist
   CHECK(chunk->kv.count("radiusfalloff") == chunk->kv.count("radiusdamage"));
+  CHECK(chunk->kv.count("radiusfalloff") == chunk->kv.count("radiusexplosive"));
   CHECK(chunk->kv.count("radiuscolor_bright") == chunk->kv.count("radiuscolor_dim"));
   
   // if wallremovalchance exists, wallremovalradius must too
@@ -1013,6 +1014,10 @@ void parseWarhead(kvData *chunk, bool reload, ErrorAccumulator &accum) {
     parseDamagecode(chunk->consume("radiusdamage"), titem->radiusdamage);
   
   titem->radiusfalloff = parseWithDefault(chunk, "radiusfalloff", -1.0);
+  titem->radiusexplosive = parseWithDefault(chunk, "radiusexplosive", -1.0);
+  if(titem->radiusfalloff != -1)
+    CHECK(titem->radiusexplosive >= 0 && titem->radiusexplosive <= 1);
+  
   
   titem->wallremovalradius = parseWithDefault(chunk, "wallremovalradius", 0.0);
   titem->wallremovalchance = parseWithDefault(chunk, "wallremovalchance", 1.0);
@@ -1374,6 +1379,11 @@ void parseImplant(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   }
 }
 
+kvData currentlyreading;
+void printCurread() {
+  dprintf("%s\n", stringFromKvData(currentlyreading).c_str());
+}
+
 void parseItemFile(const string &fname, bool reload, vector<string> *errors) {
   ifstream tfil(fname.c_str());
   CHECK(tfil);
@@ -1388,6 +1398,8 @@ void parseItemFile(const string &fname, bool reload, vector<string> *errors) {
       dprintf("Debug only, skipping\n");
       continue;
     }
+    currentlyreading = chunk;
+    registerCrashFunction(printCurread);
     ErrorAccumulator erac(errors, fname, line);
     if(chunk.category == "hierarchy") {
       parseHierarchy(&chunk, reload, erac);
@@ -1426,6 +1438,7 @@ void parseItemFile(const string &fname, bool reload, vector<string> *errors) {
       dprintf("%s\n", stringFromKvData(chunk).c_str());
       CHECK(0);
     }
+    unregisterCrashFunction(printCurread);
     if(!chunk.isDone())
       erac.addError(StringPrintf("Chunk still has unparsed data! %s", chunk.debugOutput().c_str()));
   }

@@ -131,6 +131,7 @@ warhead {
   name=warhead.minesplatterer
   radiusdamage=4.0 explosive
   radiusfalloff=6
+  radiusexplosive=0.5
   wallremovalradius=2
 }
 

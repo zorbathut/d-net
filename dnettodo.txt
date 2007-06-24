@@ -2,8 +2,7 @@
 - "Finish the Damn Game" Initiative
   - Bugfixes from games
     - Highlight first weapon in four-weapon interface
-    - Make explosive radius bonus not apply to certain weapons
-    - Boost blast radius on drones
+    - Make drones proximity
     - Rework how inertia works
     - Add tank slide code w.r.t inertia
     - Link handling to engine a little
@@ -33,6 +32,7 @@
     - Add sparker to balance sheet >:(
     - Set things up so that units don't change within groups
     - Add upgrades to the balance sheet
+    - Get better at returning "no I'm sorry I just can't understand the itemdb"
   - Make It Pretty
     - Spruce up base autocannon weaponry
     - Spruce up special autocannon weaponry

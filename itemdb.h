@@ -90,6 +90,7 @@ struct IDBWarhead {
 
   float radiusdamage[IDBAdjustment::DAMAGE_LAST];
   float radiusfalloff;
+  float radiusexplosive; // how much of the radius is affected by "explosive bonus"
   Color radiuscolor_bright;
   Color radiuscolor_dim;
 

@@ -15,7 +15,8 @@ warhead {
   name=warhead.bombardment.bomb
   radiusdamage=MERGE explosive
   radiusfalloff=6
-  wallremovalradius=0.5
+  radiusexplosive=1
+  wallremovalradius=2
 }
 
 bombardment {
@@ -40,7 +41,8 @@ warhead {
   name=warhead.bombardment.heavybomb
   radiusdamage=MERGE explosive
   radiusfalloff=7
-  wallremovalradius=2
+  radiusexplosive=1
+  wallremovalradius=2.5
 }
 
 bombardment {
@@ -64,7 +66,8 @@ warhead {
   name=warhead.bombardment.hebomb
   radiusdamage=MERGE explosive
   radiusfalloff=8
-  wallremovalradius=4
+  radiusexplosive=1
+  wallremovalradius=3
 }
 
 bombardment {
@@ -88,7 +91,8 @@ warhead {
   name=warhead.bombardment.nitrobomb
   radiusdamage=MERGE explosive
   radiusfalloff=9
-  wallremovalradius=6
+  radiusexplosive=1
+  wallremovalradius=3.5
 }
 
 bombardment {
@@ -112,7 +116,8 @@ warhead {
   name=warhead.bombardment.fissionbomb
   radiusdamage=MERGE explosive
   radiusfalloff=10
-  wallremovalradius=6.5
+  radiusexplosive=1
+  wallremovalradius=4
 }
 
 bombardment {
@@ -136,7 +141,8 @@ warhead {
   name=warhead.bombardment.fusionbomb
   radiusdamage=MERGE explosive
   radiusfalloff=11
-  wallremovalradius=7
+  radiusexplosive=1
+  wallremovalradius=4.5
 }
 
 bombardment {
@@ -183,6 +189,7 @@ warhead {
   name=warhead.bombardment.railgun
   radiusdamage=MERGE kinetic
   radiusfalloff=1
+  radiusexplosive=0
   
   effects_impact=effects.railgun
 }
@@ -223,6 +230,7 @@ warhead {
   name=warhead.bombardment.aprailgun
   radiusdamage=MERGE kinetic
   radiusfalloff=1
+  radiusexplosive=0
   
   effects_impact=effects.aprailgun
 }
@@ -262,6 +270,7 @@ warhead {
   name=warhead.bombardment.heavyrailgun
   radiusdamage=MERGE kinetic
   radiusfalloff=1
+  radiusexplosive=0
   
   effects_impact=effects.heavyrailgun
 }
@@ -302,6 +311,7 @@ warhead {
   name=warhead.bombardment.sabotrailgun
   radiusdamage=MERGE kinetic
   radiusfalloff=1
+  radiusexplosive=0
   
   effects_impact=effects.sabotrailgun
 }
@@ -342,6 +352,7 @@ warhead {
   name=warhead.bombardment.supersonicrailgun
   radiusdamage=MERGE kinetic
   radiusfalloff=1
+  radiusexplosive=0
   
   effects_impact=effects.supersonicrailgun
 }
@@ -382,6 +393,7 @@ warhead {
   name=warhead.bombardment.shockwaverailgun
   radiusdamage=MERGE kinetic
   radiusfalloff=1
+  radiusexplosive=0
   
   effects_impact=effects.shockwaverailgun
 }
@@ -415,6 +427,7 @@ warhead {
   name=warhead.bombardment.orbitalmines
   radiusdamage=MERGE trap
   radiusfalloff=8
+  radiusexplosive=0.5
   wallremovalradius=4
 }
 
@@ -450,6 +463,7 @@ warhead {
   name=warhead.bombardment.minelauncher
   radiusdamage=MERGE trap
   radiusfalloff=8
+  radiusexplosive=0.5
   wallremovalradius=4
 }
 
@@ -485,6 +499,7 @@ warhead {
   name=warhead.bombardment.minebooster
   radiusdamage=MERGE trap
   radiusfalloff=8
+  radiusexplosive=0.5
   wallremovalradius=4
 }
 
@@ -520,6 +535,7 @@ warhead {
   name=warhead.bombardment.blastmines
   radiusdamage=MERGE trap
   radiusfalloff=8
+  radiusexplosive=0.5
   wallremovalradius=4
 }
 
@@ -555,6 +571,7 @@ warhead {
   name=warhead.bombardment.shockmines
   radiusdamage=MERGE trap
   radiusfalloff=8
+  radiusexplosive=0.5
   wallremovalradius=4
 }
 
@@ -590,6 +607,7 @@ warhead {
   name=warhead.bombardment.mineporter
   radiusdamage=MERGE trap
   radiusfalloff=8
+  radiusexplosive=0.5
   wallremovalradius=4
 }
 
@@ -632,6 +650,7 @@ warhead {
   name=warhead.bombardment.explorerdrone
   radiusdamage=MERGE exotic
   radiusfalloff=4
+  radiusexplosive=0.5
   wallremovalradius=2
 }
 
@@ -677,6 +696,7 @@ warhead {
   name=warhead.bombardment.hunterdrone
   radiusdamage=MERGE exotic
   radiusfalloff=4.5
+  radiusexplosive=0.5
   wallremovalradius=2.25
 }
 
@@ -722,6 +742,7 @@ warhead {
   name=warhead.bombardment.slayerdrone
   radiusdamage=MERGE exotic
   radiusfalloff=5
+  radiusexplosive=0.5
   wallremovalradius=2.5
 }
 
@@ -767,6 +788,7 @@ warhead {
   name=warhead.bombardment.butcherdrone
   radiusdamage=MERGE exotic
   radiusfalloff=5.5
+  radiusexplosive=0.5
   wallremovalradius=2.75
 }
 
@@ -812,6 +834,7 @@ warhead {
   name=warhead.bombardment.eliminatordrone
   radiusdamage=MERGE exotic
   radiusfalloff=6
+  radiusexplosive=0.5
   wallremovalradius=3
 }
 
@@ -857,6 +880,7 @@ warhead {
   name=warhead.bombardment.liquidatordrone
   radiusdamage=MERGE exotic
   radiusfalloff=6.5
+  radiusexplosive=0.5
   wallremovalradius=3.25
 }
 
@@ -921,6 +945,7 @@ warhead {
   name=warhead.bombardment.ionbeam
   radiusdamage=MERGE energy
   radiusfalloff=8
+  radiusexplosive=0
   wallremovalradius=2
   
   radiuscolor_dim=000
@@ -970,6 +995,7 @@ warhead {
   name=warhead.bombardment.terawattbeam
   radiusdamage=MERGE energy
   radiusfalloff=8.5
+  radiusexplosive=0
   wallremovalradius=2
   
   radiuscolor_dim=000
@@ -1019,6 +1045,7 @@ warhead {
   name=warhead.bombardment.plasmabeam
   radiusdamage=MERGE energy
   radiusfalloff=9
+  radiusexplosive=0
   wallremovalradius=2
   
   radiuscolor_dim=000
@@ -1068,6 +1095,7 @@ warhead {
   name=warhead.bombardment.gammabeam
   radiusdamage=MERGE energy
   radiusfalloff=9.5
+  radiusexplosive=0
   wallremovalradius=2
   
   radiuscolor_dim=000
@@ -1117,6 +1145,7 @@ warhead {
   name=warhead.bombardment.photonbeam
   radiusdamage=MERGE energy
   radiusfalloff=10
+  radiusexplosive=0
   wallremovalradius=2
   
   radiuscolor_dim=000
@@ -1167,6 +1196,7 @@ warhead {
   name=warhead.bombardment.conversionbeam
   radiusdamage=MERGE energy
   radiusfalloff=10.5
+  radiusexplosive=0
   wallremovalradius=2
   
   radiuscolor_dim=000

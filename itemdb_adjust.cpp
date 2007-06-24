@@ -75,7 +75,7 @@ float IDBWarheadAdjust::accumulate(const float *damage) const {
 float IDBWarheadAdjust::impactdamage() const { return accumulate(idb->impactdamage) * mf; }
 
 float IDBWarheadAdjust::radiusdamage() const { return accumulate(idb->radiusdamage) * mf; }
-float IDBWarheadAdjust::radiusfalloff() const { return adjust.adjustmentfactor(IDBAdjustment::WARHEAD_RADIUS_FALLOFF) * idb->radiusfalloff; }
+float IDBWarheadAdjust::radiusfalloff() const { return (adjust.adjustmentfactor(IDBAdjustment::WARHEAD_RADIUS_FALLOFF) * idb->radiusfalloff * idb->radiusexplosive) + (idb->radiusfalloff * (1 - idb->radiusexplosive)); }
 
 float IDBWarheadAdjust::wallremovalradius() const { return adjust.adjustmentfactor(IDBAdjustment::WARHEAD_RADIUS_FALLOFF) * idb->wallremovalradius; }  // just 'cause :)
 float IDBWarheadAdjust::wallremovalchance() const { return idb->wallremovalchance; }
@@ -398,7 +398,7 @@ float IDBEffectsAdjust::particle_lifetime() const { CHECK(type() == IDBEffects::
 float IDBEffectsAdjust::particle_radius() const { CHECK(type() == IDBEffects::EFT_PARTICLE); return idb->particle_radius; }
 Color IDBEffectsAdjust::particle_color() const { CHECK(type() == IDBEffects::EFT_PARTICLE); return idb->particle_color; }
 
-float IDBEffectsAdjust::ionblast_radius() const { CHECK(type() == IDBEffects::EFT_IONBLAST); return idb->ionblast_radius * adjust.adjustmentfactor(IDBAdjustment::WARHEAD_RADIUS_FALLOFF); }
+float IDBEffectsAdjust::ionblast_radius() const { CHECK(type() == IDBEffects::EFT_IONBLAST); return idb->ionblast_radius; }
 float IDBEffectsAdjust::ionblast_duration() const { CHECK(type() == IDBEffects::EFT_IONBLAST); return idb->ionblast_duration; }
 
 const vector<pair<int, Color> > &IDBEffectsAdjust::ionblast_visuals() const { CHECK(type() == IDBEffects::EFT_IONBLAST); return idb->ionblast_visuals; }

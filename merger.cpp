@@ -29,11 +29,9 @@ template<typename Model> struct PAW<Model, false> {
 
 template<typename Model> struct PAW<Model, true> {
   static void f(const map<string, typename Model::Data> &tdd, const vector<kvData> &preproc, const string &merged) {
-    dprintf("ts");
     set<string> names;
     for(typename map<string, typename Model::Data>::const_iterator itr = tdd.begin(); itr != tdd.end(); itr++)
       names.insert(itr->first);
-    dprintf("ts2");
     {
       ofstream ofs(merged.c_str());
       for(int i = 0; i < preproc.size(); i++) {
@@ -44,10 +42,8 @@ template<typename Model> struct PAW<Model, true> {
       }
     }
     
-    dprintf("AIFS\n");
     addItemFile("data/base/hierarchy.dwh");
     addItemFile(merged);
-    dprintf("AIFE\n");
     
     map<string, float> multipliers;
     for(typename map<string, typename Model::FinalType>::const_iterator itr = Model::finalTypeList().begin(); itr != Model::finalTypeList().end(); itr++) {
@@ -126,7 +122,7 @@ template<typename Model> void doMerge(const string &csv, const string &unmerged,
       if(!name.size())
         continue;
       
-      dprintf("got name %s\n", name.c_str());
+      //dprintf("got name %s\n", name.c_str());
       
       CHECK(!tdd.count(name));
       
@@ -148,7 +144,7 @@ template<typename Model> void doMerge(const string &csv, const string &unmerged,
     kvData kvd;
     while(getkvData(ifs, &kvd)) {
       string name = nameFromKvd<Model>(kvd, names);
-      dprintf("got wanted name %s\n", name.c_str());
+      //dprintf("got wanted name %s\n", name.c_str());
       //dprintf("Name is %s, checking %s\n", kvd.read("name").c_str(), name.c_str());
       if(name.size()) {
         CHECK(tdd.count(name));
