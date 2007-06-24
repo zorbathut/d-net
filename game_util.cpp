@@ -29,6 +29,15 @@ vector<pair<float, Tank *> > GameImpactContext::getAdjacency(const Coord2 &cente
   return rv;
 }
 
+float GameImpactContext::getClosestFoe(const Coord2 &pos, int owner) const {
+  vector<pair<float, Tank *> > taj = getAdjacency(pos);
+  float closest = 1e20; // no
+  for(int i = 0; i < taj.size(); i++)
+    if(taj[i].first < closest && taj[i].second->team != players[owner]->team)
+      closest = taj[i].first;
+  return closest;
+}
+
 void GameImpactContext::record(const IDBWarheadAdjust &warhead, Coord2 pos, const Tank *impact_tank, const Tank *owner_tank) const {
   if(recorder) {
     int target = -1;

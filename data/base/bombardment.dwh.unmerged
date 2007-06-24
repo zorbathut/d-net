@@ -657,6 +657,7 @@ warhead {
 projectile {
   name=projectile.bombardment.explorerdrone
   motion=missile
+  proximity=true
   
   velocity=180
   missile_stabstart=0.0
@@ -703,6 +704,7 @@ warhead {
 projectile {
   name=projectile.bombardment.hunterdrone
   motion=missile
+  proximity=true
   
   velocity=180
   missile_stabstart=0.0
@@ -749,6 +751,7 @@ warhead {
 projectile {
   name=projectile.bombardment.slayerdrone
   motion=missile
+  proximity=true
   
   velocity=180
   missile_stabstart=0.0
@@ -795,6 +798,7 @@ warhead {
 projectile {
   name=projectile.bombardment.butcherdrone
   motion=missile
+  proximity=true
   
   velocity=180
   missile_stabstart=0.0
@@ -841,6 +845,7 @@ warhead {
 projectile {
   name=projectile.bombardment.eliminatordrone
   motion=missile
+  proximity=true
   
   velocity=180
   missile_stabstart=0.0
@@ -887,6 +892,7 @@ warhead {
 projectile {
   name=projectile.bombardment.liquidatordrone
   motion=missile
+  proximity=true
   
   velocity=180
   missile_stabstart=0.0

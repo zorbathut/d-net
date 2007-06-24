@@ -109,6 +109,8 @@ struct IDBProjectile {
   float velocity;
   float length;
   float radius_physical;
+  
+  bool proximity;
 
   Color color;
   float thickness_visual;
@@ -329,6 +331,7 @@ public:
   float length() const;
   float radius_physical() const;
   float durability() const;
+  bool proximity() const;
 
   vector<IDBWarheadAdjust> chain_warhead(float multfactor = 1.0f) const;
 

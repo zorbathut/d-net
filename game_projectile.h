@@ -11,7 +11,7 @@ class Tank;
 class Projectile {
 public:
 
-  void tick(vector<smart_ptr<GfxEffects> > *gfx, Rng *rng);
+  void tick(vector<smart_ptr<GfxEffects> > *gfx, const GameImpactContext &gic, int owner);
   void render(const vector<Coord2> &tposes) const;
 
   void firstCollide(Collider *collider, int owner, int id) const;
@@ -65,7 +65,9 @@ private:
   bool live;
   bool detonating;
   
-  float distance;
+  float distance_traveled;
+  
+  float closest_enemy_tank;
   
   DamageFlags damageflags;
 };

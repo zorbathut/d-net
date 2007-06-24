@@ -937,6 +937,14 @@ void parseProjectile(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   
   titem->chain_warhead = parseSubclassSet(chunk, "warhead", warheadclasses);
   
+  titem->proximity = parseWithDefault(chunk, "proximity", false);
+  if(titem->proximity) {
+    CHECK(titem->chain_warhead.size());
+    CHECK(titem->chain_warhead[0]->radiusfalloff > 0);
+    for(int i = 0; i < titem->chain_warhead.size(); i++)
+      CHECK(titem->chain_warhead[i]->radiusfalloff <= titem->chain_warhead[0]->radiusfalloff);
+  }
+  
   if(titem->motion != PM_MINE && titem->motion != PM_DPS) {
     titem->no_intersection = parseWithDefault(chunk, "no_intersection", false);
     if(!titem->no_intersection)

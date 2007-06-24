@@ -7,10 +7,10 @@
 
 using namespace std;
 
-void Projectile::tick(vector<smart_ptr<GfxEffects> > *gfxe, Rng *rng) {
+void Projectile::tick(vector<smart_ptr<GfxEffects> > *gfxe, const GameImpactContext &gic, int owner) {
   CHECK(live);
   CHECK(age != -1);
-  distance += len(movement()).toFloat();
+  distance_traveled += len(movement()).toFloat();
   pos += movement();
   lasttail = nexttail();
   age++;
@@ -33,12 +33,19 @@ void Projectile::tick(vector<smart_ptr<GfxEffects> > *gfxe, Rng *rng) {
     if(airbrake_liveness() <= 0)
       detonating = true;
   } else if(projtype.motion() == PM_MINE) {
-    if(rng->frand() > pow(0.5f, 1 / (projtype.halflife() * FPS)))
+    if(gic.rng->frand() > pow(0.5f, 1 / (projtype.halflife() * FPS)))
       detonating = true;
   } else if(projtype.motion() == PM_DPS) {
     detonating = true;
   } else {
     CHECK(0);
+  }
+  
+  if(projtype.proximity()) {
+    float newdist = gic.getClosestFoe(pos, owner);
+    if(newdist > closest_enemy_tank && newdist < projtype.chain_warhead()[0].radiusfalloff())
+      detonating = true; // BOOM
+    closest_enemy_tank = newdist;
   }
 }
 
@@ -157,7 +164,7 @@ Coord2 Projectile::movement() const {
 }
 
 Coord2 Projectile::nexttail() const {
-  float maxlen = max(0., distance - 0.1);
+  float maxlen = max(0., distance_traveled - 0.1);
   if(projtype.motion() == PM_NORMAL) {
     return Coord2(makeAngle(d) * -min(projtype.length(), maxlen));
   } else if(projtype.motion() == PM_MISSILE) {
@@ -209,7 +216,8 @@ Projectile::Projectile(const Coord2 &in_pos, float in_d, const IDBProjectileAdju
   live = true;
   detonating = false;
   lasttail = Coord2(0, 0);
-  distance = 0;
+  distance_traveled = 0;
+  closest_enemy_tank = 1e20; // no
   
   if(projtype.motion() == PM_NORMAL) {
   } else if(projtype.motion() == PM_MISSILE) {
@@ -258,7 +266,7 @@ void ProjectilePack::tick(vector<smart_ptr<GfxEffects> > *gfxe, Collider *collid
       itr->second.detonate(itr->second.warheadposition(), NO_NORMAL, NULL, GamePlayerContext(gic.players[owner], this, gic), false);
     if(itr->second.isLive()) {
       if(!count(newitems.begin(), newitems.end(), itr->first))  // we make sure we do collisions before ticks
-        itr->second.tick(gfxe, gic.rng);
+        itr->second.tick(gfxe, gic, owner);
       if(itr->second.isLive() && itr->second.isDetonating())
         itr->second.detonate(itr->second.warheadposition(), NO_NORMAL, NULL, GamePlayerContext(gic.players[owner], this, gic), false);
       if(itr->second.isLive()) {
