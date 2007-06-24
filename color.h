@@ -22,6 +22,7 @@ Color operator*(const Color &lhs, float rhs);
 Color operator/(const Color &lhs, float rhs);
 
 const Color &operator+=(Color &lhs, const Color &rhs);
+const Color &operator*=(Color &lhs, float rhs);
 
 bool operator==(const Color &lhs, const Color &rhs);
 bool operator!=(const Color &lhs, const Color &rhs);

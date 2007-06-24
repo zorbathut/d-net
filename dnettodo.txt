@@ -1,7 +1,6 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - Bugfixes from games
-    - Highlight first weapon in four-weapon interface
     - Rework how inertia works
     - Add tank slide code w.r.t inertia
     - Check if the new snipe code works

@@ -59,7 +59,7 @@ void Shop::renormalize(HierarchyNode &item, const Player *player, int playercoun
         hod.name = weaps[i][j]->name;
         hod.pack = 1;
         hod.equipweapon = weaps[i][j];
-        hod.equipweaponfirst = !j;
+        hod.equipweaponfirst = !j && i < SIMUL_WEAPONS;
         item.branches.push_back(hod);
       }
     }

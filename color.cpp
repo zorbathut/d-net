@@ -48,6 +48,10 @@ const Color &operator+=(Color &lhs, const Color &rhs) {
   lhs = lhs + rhs;
   return lhs;
 }
+const Color &operator*=(Color &lhs, float rhs) {
+  lhs = lhs * rhs;
+  return lhs;
+}
 
 bool operator==(const Color &lhs, const Color &rhs) {
   return lhs.r == rhs.r && lhs.g == rhs.g && lhs.b == rhs.b;

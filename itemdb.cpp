@@ -406,7 +406,7 @@ Color HierarchyNode::getColor() const {
   } else if(type == HNT_EQUIPWEAPON) {
     Color col = gcolor(equipweapon);
     if(equipweaponfirst)
-      col += Color(0.2, 0.2, 0.2);
+      col *= 1.5;
     return col;
   } else if(type == HNT_SELLWEAPON) {
     return gcolor(sellweapon);
