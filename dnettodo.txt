@@ -2,9 +2,6 @@
 - "Finish the Damn Game" Initiative
   - Bugfixes from games
     - Highlight first weapon in four-weapon interface
-    - Add upgrades to the balance sheet
-    - 80% starting cash for new players, to discourage quitting and restarting
-    - Add explosive radius in tank weapon upgrade
     - Make explosive radius bonus not apply to certain weapons
     - Boost blast radius on drones
     - Rework how inertia works
@@ -35,6 +32,7 @@
     - Glory durability?
     - Add sparker to balance sheet >:(
     - Set things up so that units don't change within groups
+    - Add upgrades to the balance sheet
   - Make It Pretty
     - Spruce up base autocannon weaponry
     - Spruce up special autocannon weaponry
