@@ -380,7 +380,8 @@ void CollideZone::makeSpaceFor(int id) {
 }
 void CollideZone::wipe(int id) {
   if(catrefs[id] != -1) {
-    swap(items[catrefs[id]], items[items.size() - 1]);
+    swap(items[catrefs[id]].first, items[items.size() - 1].first);
+    items[catrefs[id]].second.swap(items[items.size() - 1].second);
     catrefs[items[catrefs[id]].first] = catrefs[id];
     catrefs[id] = -1;
     items.pop_back();
