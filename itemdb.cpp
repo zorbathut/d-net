@@ -1625,9 +1625,9 @@ IDBAdjustment IDBImplant::makeAdjustment(int level) const {
   return *adjustment * level;
 }
 
-vector<Coord2> IDBTank::getTankVertices(Coord2 pos, float td) const {
-  Coord2 xt = makeAngle(Coord(td));
-  Coord2 yt = makeAngle(Coord(td) - COORDPI / 2);
+vector<Coord2> IDBTank::getTankVertices(Coord2 pos, Coord td) const {
+  Coord2 xt = makeAngle(td);
+  Coord2 yt = makeAngle(td - COORDPI / 2);
   vector<Coord2> rv(vertices.size());
   for(int i = 0; i < vertices.size(); i++) {  // this bit of weirdness brought to you by CPU efficiency, since this function is called surprisingly often
     rv[i].x = pos.x + vertices[i].x * xt.x + vertices[i].y * xt.y;

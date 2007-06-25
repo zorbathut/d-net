@@ -24,18 +24,17 @@ public:
   vector<Coord4> getCurrentCollide() const;
   vector<Coord4> getNextCollide(const Keystates &keys) const;
 
-  vector<Coord2> getTankVertices(Coord2 pos, float td) const;
+  vector<Coord2> getTankVertices(Coord2 pos, Coord td) const;
   Coord2 getFiringPoint() const;
   Coord2 getRearFiringPoint() const;
   Coord2 getMinePoint(Rng *rng) const;
 
-  pair<float, float> getNextInertia(const Keystates &keys) const;
-  pair<Coord2, float> getNextPosition(const Keystates &keys) const;
+  pair<Coord2, Coord> getNextPosition(const Keystates &keys) const;
 
   // Modifiers
   bool takeDamage(float amount); // returns true on kill
   void genEffects(const GameImpactContext &gic, ProjectilePack *projectiles, const Player *player);
-  void respawn(Coord2 pos, float facing);
+  void respawn(Coord2 pos, Coord facing);
   void tryToFire(Button keys[SIMUL_WEAPONS], Player *player, ProjectilePack *projectiles, int id, const GameImpactContext &gic, vector<pair<string, float> > *status_text, float *firepowerSpent);
   
   // For demos and such
@@ -74,12 +73,14 @@ public:
   int zone_frames;
 
   Coord2 pos;
-  float d;
-  pair<float, float> inertia;
+  Coord d;
+  pair<Coord2, Coord> inertia;
   
   Keystates keys;
 
 private:
+  pair<Coord2, Coord> getNextInertia(const Keystates &keys) const;
+
   int weaponCooldown;
   float weaponCooldownSubvals[SIMUL_WEAPONS];
 

@@ -70,7 +70,7 @@ public:
   // used for demos
   Coord2 queryPlayerLocation(int id) const;
   void kill(int id);
-  void respawnPlayer(int id, Coord2 pos, float facing);
+  void respawnPlayer(int id, Coord2 pos, Coord facing);
 
   void addStatCycle();  // used for damage-per-cycle calculations
   vector<pair<Float2, pair<float, string> > > getStats() const;
@@ -85,7 +85,7 @@ public:
 private:
   
   void initCommon(const vector<Player*> &playerdata, const vector<Color> &in_colors, const vector<vector<Coord2> > &level, bool smashable);
-  void initRandomTankPlacement(const map<int, vector<pair<Coord2, float> > > &player_starts, Rng *rng);
+  void initRandomTankPlacement(const map<int, vector<pair<Coord2, Coord> > > &player_starts, Rng *rng);
   
   void addTankStatusText(int tankid, const string &text, float duration);
 

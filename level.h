@@ -14,7 +14,7 @@ public:
 
   set<int> playersValid;
 
-  map<int, vector<pair<Coord2, float> > > playerStarts;
+  map<int, vector<pair<Coord2, Coord> > > playerStarts;
 
   void makeProperSolids();
 

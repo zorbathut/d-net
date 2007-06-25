@@ -33,6 +33,7 @@ class Coord {
   friend inline bool operator>=(const Coord &lhs, const Coord &rhs);
   friend inline Coord sqrt(const Coord &in);
   friend inline Coord floor(const Coord &in);
+  friend Coord mod(const Coord &a, const Coord &b);
   
 private:
   long long d;
@@ -382,6 +383,18 @@ inline Coord4 boxAround(const Coord2 &lhs, Coord radius) {
   return Coord4(lhs.x - radius, lhs.y - radius, lhs.x + radius, lhs.y + radius);
 }
 
+inline Coord approach(Coord start, Coord target, Coord delta) {
+  if(abs(start - target) <= delta)
+    return target;
+  else if(start < target)
+    return start + delta;
+  else if(start > target)
+    return start - delta;
+  else
+    CHECK(0);  // oh god bear is driving car how can this be
+}
+Coord2 approach(Coord2 start, Coord2 target, Coord delta);
+
 inline Coord4 snapToEnclosingGrid(Coord4 orig, Coord grid) {
   orig.sx = floor(orig.sx/grid) * grid;
   orig.sy = floor(orig.sy/grid) * grid;
@@ -406,6 +419,8 @@ inline bool boxLineIntersect(const Coord4 &box, const Coord4 &line) {
     swap(lts.sy, lts.ey);
   return boxBoxIntersect(box, lts);
 }
+
+Coord mod(const Coord &a, const Coord &b);
 
 Coord2 lerp(const Coord2 &lhs, const Coord2 &rhs, Coord dist);
 Coord4 lerp(const Coord4 &lhs, const Coord4 &rhs, Coord dist);

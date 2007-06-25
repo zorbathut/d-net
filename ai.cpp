@@ -57,7 +57,7 @@ void GameAiStandard::updateGameWork(const vector<Tank> &players, int me) {
   } else if(gamemode == AGM_WANDER) {
     nextKeys.udlrax = targetdir;
   } else if(gamemode == AGM_BACKUP) {
-    Float2 nx(-makeAngle(players[me].d));
+    Float2 nx(-makeAngle(players[me].d.toFloat()));
     nx.x += (rng->frand() - 0.5) / 100;
     nx.y += (rng->frand() - 0.5) / 100;
     nx = normalize(nx);

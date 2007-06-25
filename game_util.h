@@ -55,7 +55,7 @@ class DeployLocation {
   const Tank *tank_int; // if null, not tank
   
   Coord2 pos_int;
-  float d_int;
+  Coord d_int;
 public:
   
   bool isTank() const;
@@ -63,10 +63,10 @@ public:
   const Tank &tank() const;
 
   Coord2 pos() const;
-  float d() const;
+  Coord d() const;
 
   DeployLocation(const Tank *tank);
-  DeployLocation(Coord2 pos, float d);
+  DeployLocation(Coord2 pos, Coord d);
 };
 
 struct DamageFlags {
@@ -80,9 +80,9 @@ struct DamageFlags {
 class ProjectilePack;
 void deployProjectile(const IDBDeployAdjust &deploy, const DeployLocation &location, const GamePlayerContext &gpc, const DamageFlags &flags, vector<float> *ang = NULL);
 
-const float NO_NORMAL = -1e100;
-void detonateWarhead(const IDBWarheadAdjust &warhead, Coord2 pos, float normal, Coord2 vel, Tank *impact, const GamePlayerContext &gpc, const DamageFlags &flags, bool impacted);
+const Coord NO_NORMAL = Coord(-200000000);
+void detonateWarhead(const IDBWarheadAdjust &warhead, Coord2 pos, Coord normal, Coord2 vel, Tank *impact, const GamePlayerContext &gpc, const DamageFlags &flags, bool impacted);
 void detonateWarheadDamageOnly(const IDBWarheadAdjust &warhead, Tank *impact, const vector<pair<float, Tank*> > &radius);
-void detonateBombardment(const IDBBombardmentAdjust &bombard, Coord2 pos, float direction, const GamePlayerContext &gpc);
+void detonateBombardment(const IDBBombardmentAdjust &bombard, Coord2 pos, Coord direction, const GamePlayerContext &gpc);
 
 #endif

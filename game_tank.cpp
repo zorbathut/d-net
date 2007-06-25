@@ -26,7 +26,7 @@ void Tank::init(IDBTankAdjust in_tank, Color in_color) {
 }
 
 void Tank::tick(const Keystates &kst) {
-  pair<Coord2, float> newpos = getNextPosition(kst);
+  pair<Coord2, Coord> newpos = getNextPosition(kst);
   
   pos = newpos.first;
   d = newpos.second;
@@ -98,7 +98,7 @@ vector<Coord4> Tank::getNextCollide(const Keystates &keys) const {
   if(!live)
     return vector<Coord4>();
 
-  pair<Coord2, float> newpos = getNextPosition(keys);
+  pair<Coord2, Coord> newpos = getNextPosition(keys);
   vector<Coord2> tankpts = getTankVertices(newpos.first, newpos.second);
   vector<Coord4> rv;
   for(int i = 0; i < tankpts.size(); i++) {
@@ -114,7 +114,7 @@ void Tank::addCollision(Collider *collider, const Keystates &keys, int owner) co
     return;
 
   vector<Coord2> tankpts = getTankVertices(pos, d);
-  pair<Coord2, float> newpos = getNextPosition(keys);
+  pair<Coord2, Coord> newpos = getNextPosition(keys);
   vector<Coord2> newtankpts = getTankVertices(newpos.first, newpos.second);
   CHECK(tankpts.size() == newtankpts.size());
   for(int i = 0; i < newtankpts.size(); i++)
@@ -123,7 +123,7 @@ void Tank::addCollision(Collider *collider, const Keystates &keys, int owner) co
     collider->addNormalToken(CollideId(CGR_TANK, owner, 0), Coord4(tankpts[i], tankpts[(i + 1) % tankpts.size()]), Coord4(newtankpts[i], newtankpts[(i + 1) % tankpts.size()]));
 };
 
-vector<Coord2> Tank::getTankVertices(Coord2 pos, float td) const {
+vector<Coord2> Tank::getTankVertices(Coord2 pos, Coord td) const {
   return tank.getTankVertices(pos, td);
 };
 
@@ -151,7 +151,7 @@ Coord2 Tank::getMinePoint(Rng *rng) const {
   CHECK(0);
 }
 
-pair<float, float> Tank::getNextInertia(const Keystates &keys) const {
+pair<Coord2, Coord> Tank::getNextInertia(const Keystates &keys) const {
   
   float precisionmult = 1.0;
   if(keys.precision.down)
@@ -171,8 +171,8 @@ pair<float, float> Tank::getNextInertia(const Keystates &keys) const {
       if(xpd == 0 && ypd == 0) {
         dv = dd = 0;
       } else {
-        float desdir = atan2(-ypd, xpd);
-        desdir -= d;
+        float desdir = getAngle(Float2(-ypd, xpd));
+        desdir -= d.toFloat();
         desdir += 2 * PI;
         if(desdir > PI)
           desdir -= 2 * PI;
@@ -246,23 +246,7 @@ pair<float, float> Tank::getNextInertia(const Keystates &keys) const {
       dr = (d10 * intens + d11 * (1 - intens));
     }
   }
-
-  dl = approach(inertia.first, dl, 300 / tank.mass() / FPS);  // 30 tons is 1/10 sec
-  dr = approach(inertia.second, dr, 300/ tank.mass() / FPS);
  
-  return make_pair(dl, dr);
-}
-
-pair<Coord2, float> Tank::getNextPosition(const Keystates &keys) const {
-  
-  Coord2 npos = pos;
-  float nd = d;
-  
-  pair<float, float> inert = getNextInertia(keys);
-  
-  float dl = inert.first;
-  float dr = inert.second;
-
   float dv = (dr + dl) / 2;
   float dd = (dl - dr) / 2;
   
@@ -286,14 +270,18 @@ pair<Coord2, float> Tank::getNextPosition(const Keystates &keys) const {
   
   Coord cdv(dv);
 
-  npos += makeAngle(Coord(nd)) * Coord(tank.maxSpeed() / FPS) * cdv;
+  Coord turn = Coord(tank.turnSpeed()) * Coord(dd);
+  Coord2 speed = makeAngle(Coord(d) + turn / FPS) * Coord(tank.maxSpeed()) * cdv;
+  
+  speed = approach(inertia.first, speed, 300 / Coord(tank.mass()) / FPS * Coord(tank.maxSpeed()));
+  turn = approach(inertia.second, turn, 300 / Coord(tank.mass()) / FPS * Coord(tank.turnSpeed()));
+  
+  return make_pair(speed, turn);
+}
 
-  nd += tank.turnSpeed() / FPS * dd;
-  nd += 2*PI;
-  nd = fmod(nd, 2*(float)PI);
-  
-  return make_pair(npos, nd);
-  
+pair<Coord2, Coord> Tank::getNextPosition(const Keystates &keys) const {
+  pair<Coord2, Coord> inert = getNextInertia(keys);
+  return make_pair(pos + inert.first / FPS, mod(d + inert.second / FPS + COORDPI * 2, COORDPI * 2));
 }
 
 bool Tank::takeDamage(float damage) {
@@ -458,7 +446,7 @@ bool Tank::isLive() const {
   return live;
 }
 
-void Tank::respawn(Coord2 in_pos, float in_d) {
+void Tank::respawn(Coord2 in_pos, Coord in_d) {
   IDBTankAdjust old_tank = tank;
   Color old_color = color;
   int old_team = team;
@@ -540,7 +528,7 @@ Tank::Tank() : tank(NULL, IDBAdjustment()) /* do not fucking use this */ {
   live = true;
   spawnShards = false;
   health = -47283;
-  inertia = make_pair(0.f, 0.f);
+  inertia = make_pair(Coord2(0.f, 0.f), 0.f);
   weaponCooldown = 0;
   memset(weaponCooldownSubvals, 0, sizeof(weaponCooldownSubvals)); // if you're not using IEEE floats, get a new computer.
   zone_current = -1;

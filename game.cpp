@@ -154,7 +154,7 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
       }
       
       if(collider.checkSimpleCollision(CGR_TANK, playerorder[i], newpos)) {
-        tanks[playerorder[i]].inertia = make_pair(0.f, 0.f);  // wham!
+        tanks[playerorder[i]].inertia = make_pair(Coord2(0, 0), 0.f);  // wham!
         keys[playerorder[i]].nullMove();
       } else {
         StackString sst(StringPrintf("Moving player %d, status live %d", playerorder[i], tanks[playerorder[i]].isLive()));
@@ -204,7 +204,7 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
         // tank-projectile collision - kill projectile, do damage
         if(projectiles[rhs.bucket].find(rhs.item).isConsumed())
           continue;
-        projectiles[rhs.bucket].find(rhs.item).detonate(collider.getCollision().pos, normals.first, &tanks[lhs.bucket], GamePlayerContext(&tanks[rhs.bucket], &projectiles[rhs.bucket], gic), true);
+        projectiles[rhs.bucket].find(rhs.item).detonate(collider.getCollision().pos, Coord(normals.first), &tanks[lhs.bucket], GamePlayerContext(&tanks[rhs.bucket], &projectiles[rhs.bucket], gic), true);
       } else if(lhs.category == CGR_TANK && rhs.category == CGR_WALL) {
         // tank-wall collision, should never happen
         CHECK(0);
@@ -226,19 +226,19 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
         bool rhsdestroyed = rng->frand() < (projectiles[lhs.bucket].find(lhs.item).durability() / projectiles[rhs.bucket].find(rhs.item).durability());
         
         if(lft)
-          projectiles[lhs.bucket].find(lhs.item).detonate(collider.getCollision().pos, normals.second, NULL, GamePlayerContext(&tanks[lhs.bucket], &projectiles[lhs.bucket], gic), true);
+          projectiles[lhs.bucket].find(lhs.item).detonate(collider.getCollision().pos, Coord(normals.second), NULL, GamePlayerContext(&tanks[lhs.bucket], &projectiles[lhs.bucket], gic), true);
         
         if(rhsdestroyed)
-          projectiles[rhs.bucket].find(rhs.item).detonate(collider.getCollision().pos, normals.first, NULL, GamePlayerContext(&tanks[rhs.bucket], &projectiles[rhs.bucket], gic), true);
+          projectiles[rhs.bucket].find(rhs.item).detonate(collider.getCollision().pos, Coord(normals.first), NULL, GamePlayerContext(&tanks[rhs.bucket], &projectiles[rhs.bucket], gic), true);
         
         if(!lft)
-          projectiles[lhs.bucket].find(lhs.item).detonate(collider.getCollision().pos, normals.second, NULL, GamePlayerContext(&tanks[lhs.bucket], &projectiles[lhs.bucket], gic), true);
+          projectiles[lhs.bucket].find(lhs.item).detonate(collider.getCollision().pos, Coord(normals.second), NULL, GamePlayerContext(&tanks[lhs.bucket], &projectiles[lhs.bucket], gic), true);
         
       } else if(lhs.category == CGR_PROJECTILE && rhs.category == CGR_WALL) {
         // projectile-wall collision - kill projectile
         if(projectiles[lhs.bucket].find(lhs.item).isConsumed())
           continue;
-        projectiles[lhs.bucket].find(lhs.item).detonate(collider.getCollision().pos, normals.second, NULL, GamePlayerContext(&tanks[lhs.bucket], &projectiles[lhs.bucket], gic), true);
+        projectiles[lhs.bucket].find(lhs.item).detonate(collider.getCollision().pos, Coord(normals.second), NULL, GamePlayerContext(&tanks[lhs.bucket], &projectiles[lhs.bucket], gic), true);
       } else if(lhs.category == CGR_WALL && rhs.category == CGR_WALL) {
         // wall-wall collision, wtf?
         CHECK(0);
@@ -300,7 +300,7 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
       bombards[j].timer--;
       if(bombards[j].timer <= 0) {
         CHECK(!gamemap.isInsideWall(bombards[j].pos));
-        detonateBombardment(players[j]->getBombardment((int)bombardment_tier), bombards[j].pos, bombards[j].d, GamePlayerContext(&tanks[j], &projectiles[j], gic));
+        detonateBombardment(players[j]->getBombardment((int)bombardment_tier), bombards[j].pos, Coord(bombards[j].d), GamePlayerContext(&tanks[j], &projectiles[j], gic));
         bombards[j].state = BombardmentState::BS_COOLDOWN;
         bombards[j].timer = round(players[j]->getBombardment((int)bombardment_tier).unlockdelay() * FPS);
       }
@@ -795,7 +795,7 @@ void Game::kill(int id) {
   tanks[id].takeDamage(1000000000);
 }
 
-void Game::respawnPlayer(int id, Coord2 pos, float facing) {
+void Game::respawnPlayer(int id, Coord2 pos, Coord facing) {
   CHECK(gamemode == GMODE_DEMO);
   tanks[id].respawn(pos, facing);
   
@@ -967,9 +967,9 @@ void Game::initCommon(const vector<Player*> &in_playerdata, const vector<Color> 
   demo_recorder = NULL;
 }
 
-void Game::initRandomTankPlacement(const map<int, vector<pair<Coord2, float> > > &player_starts, Rng *rng) {
+void Game::initRandomTankPlacement(const map<int, vector<pair<Coord2, Coord> > > &player_starts, Rng *rng) {
   CHECK(player_starts.count(tanks.size()));
-  vector<pair<Coord2, float> > pstart = player_starts.find(tanks.size())->second;
+  vector<pair<Coord2, Coord> > pstart = player_starts.find(tanks.size())->second;
   for(int i = 0; i < tanks.size(); i++) {
     int loc = int(rng->frand() * pstart.size());
     CHECK(loc >= 0 && loc < pstart.size());
@@ -1065,7 +1065,7 @@ void Game::initTest(Player *in_playerdata, const Float4 &bounds) {
   initCommon(playerdata, createBasicColors(playerdata), level, false);
   CHECK(tanks.size() == 1);
   tanks[0].pos = Coord2(bounds.midpoint());
-  tanks[0].d = PI / 2 * 3;
+  tanks[0].d = COORDPI / 2 * 3;
   
   clear = bounds;
 }
@@ -1117,7 +1117,7 @@ void Game::initDemo(vector<Player> *in_playerdata, float boxradi, const float *x
   for(int i = 0; i < tanks.size(); i++) {
     tanks[i].pos = Coord2(xps[i], yps[i]);
     if(facing)
-      tanks[i].d = facing[i];
+      tanks[i].d = Coord(facing[i]);
   }
   
   demo_playermodes.clear();
@@ -1166,7 +1166,7 @@ void Game::initCenteredDemo(Player *in_playerdata, float zoom) {
   initCommon(playerdata, createBasicColors(playerdata), level, false);
   CHECK(tanks.size() == 1);
   tanks[0].pos = Coord2(0, 0);
-  tanks[0].d = PI / 2 * 3;
+  tanks[0].d = COORDPI / 2 * 3;
   
   collider = Collider(tanks.size(), Coord(1000));
 }

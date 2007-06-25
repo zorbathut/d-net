@@ -58,7 +58,7 @@ Level loadLevel(const string &str) {
         rv.playersValid.insert(itr->first);
         for(int i = 0; i < dv.entities.size(); i++) {
           CHECK(dv.entities[i].type == ENTITY_TANKSTART);
-          rv.playerStarts[itr->first].push_back(make_pair(dv.entities[i].pos, PI * 2 * dv.entities[i].tank_ang_numer / dv.entities[i].tank_ang_denom));
+          rv.playerStarts[itr->first].push_back(make_pair(dv.entities[i].pos, COORDPI * 2 * dv.entities[i].tank_ang_numer / dv.entities[i].tank_ang_denom));
         }
         
       }
@@ -71,7 +71,7 @@ Level loadLevel(const string &str) {
 
 void Level::makeProperSolids() {
   vector<Coord2> starts;
-  for(map<int, vector<pair<Coord2, float> > >::iterator itr = playerStarts.begin(); itr != playerStarts.end(); itr++) {
+  for(map<int, vector<pair<Coord2, Coord> > >::iterator itr = playerStarts.begin(); itr != playerStarts.end(); itr++) {
     for(int i = 0; i < itr->second.size(); i++) {
       starts.push_back(itr->second[i].first);
     }

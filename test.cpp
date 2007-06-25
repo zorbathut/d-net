@@ -28,14 +28,14 @@ void testLevel(const string &filename) {
   
   dprintf("Gamemap valid\n");
   
-  set<pair<Coord2, float> > stt;
-  for(map<int, vector<pair<Coord2, float> > >::const_iterator itr = lev.playerStarts.begin(); itr != lev.playerStarts.end(); itr++) {
+  set<pair<Coord2, Coord> > stt;
+  for(map<int, vector<pair<Coord2, Coord> > >::const_iterator itr = lev.playerStarts.begin(); itr != lev.playerStarts.end(); itr++) {
     for(int i = 0; i < itr->second.size(); i++) {
       stt.insert(itr->second[i]);
     }
   }
   
-  vector<pair<Coord2, float> > sttv(stt.begin(), stt.end());
+  vector<pair<Coord2, Coord> > sttv(stt.begin(), stt.end());
   
   dprintf("Found %d origins\n", stt.size());
   for(int i = 0; i < sttv.size(); i++) {

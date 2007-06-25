@@ -137,12 +137,12 @@ class GameAiCircling : public GameAi {
       nextKeys.udlrax.x += 0.5;
     if(len(players[me].pos).toFloat() < dist - 2)
       nextKeys.udlrax.x += -0.5;
-    float angdif = players[me].d - getAngle(players[me].pos).toFloat() - PI / 2;
-    while(angdif < PI) angdif += PI * 2;
-    while(angdif > PI) angdif -= PI * 2;
-    if(angdif < -0.1)
+    Coord angdif = players[me].d - getAngle(players[me].pos) - COORDPI / 2;
+    while(angdif < COORDPI) angdif += COORDPI * 2;
+    while(angdif > COORDPI) angdif -= COORDPI * 2;
+    if(angdif < Coord(-0.1))
       nextKeys.udlrax.x += 0.5;
-    if(angdif > 0.1)
+    if(angdif > Coord(0.1))
       nextKeys.udlrax.x -= 0.5;
     if(abs(nextKeys.udlrax.x) == 0.5)
       nextKeys.udlrax.x *= 1.5;
@@ -292,7 +292,7 @@ void ShopDemo::init(const IDBWeapon *weap, const Player *player, Recorder *recor
       while(dist_max - dist_min > 0.01) {
         float dist_cen = (dist_min + dist_max) / 2;
         Float2 pos = basetest + makeAngle(-PI / 4) * dist_cen;
-        if(getPathRelation(tank.getTankVertices(Coord2(weapons_xpses_melee[4], weapons_ypses_melee[4]), facing[4]), tank.getTankVertices(Coord2(pos), weapons_facing[5])) == PR_INTERSECT) {
+        if(getPathRelation(tank.getTankVertices(Coord2(weapons_xpses_melee[4], weapons_ypses_melee[4]), Coord(facing[4])), tank.getTankVertices(Coord2(pos), Coord(weapons_facing[5]))) == PR_INTERSECT) {
           dist_min = dist_cen;
         } else {
           dist_max = dist_cen;
@@ -449,7 +449,7 @@ void ShopDemo::glory_respawnPlayers() {
     float facing = unsync().frand() * 2 * PI;
     Coord2 dir = makeAngle(Coord(facing));
     pos += dir * 40;
-    game.game.respawnPlayer(i + 1, pos, facing + PI);
+    game.game.respawnPlayer(i + 1, pos, Coord(facing) + COORDPI);
   }
 };
 

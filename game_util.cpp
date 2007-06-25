@@ -77,7 +77,7 @@ Coord2 DeployLocation::pos() const {
   else
     return pos_int;
 }
-float DeployLocation::d() const {
+Coord DeployLocation::d() const {
   if(tank_int)
     return tank_int->d;
   else
@@ -89,7 +89,7 @@ DeployLocation::DeployLocation(const Tank *tank) {
   tank_int = tank;
 }
 
-DeployLocation::DeployLocation(Coord2 pos, float d) {
+DeployLocation::DeployLocation(Coord2 pos, Coord d) {
   tank_int = NULL;
   pos_int = pos;
   d_int = d;
@@ -109,7 +109,7 @@ void dealDamage(float dmg, Tank *target, Tank *owner, const DamageFlags &flags) 
   owner->addDamage(dmg * flags.damagecredit);
 };
 
-void detonateWarhead(const IDBWarheadAdjust &warhead, Coord2 pos, float normal, Coord2 vel, Tank *impact, const GamePlayerContext &gpc, const DamageFlags &flags, bool impacted) {
+void detonateWarhead(const IDBWarheadAdjust &warhead, Coord2 pos, Coord normal, Coord2 vel, Tank *impact, const GamePlayerContext &gpc, const DamageFlags &flags, bool impacted) {
   
   gpc.gic->record(warhead, pos, impact, gpc.owner);
   
@@ -134,7 +134,7 @@ void detonateWarhead(const IDBWarheadAdjust &warhead, Coord2 pos, float normal, 
   if(impacted) {
     for(int i = 0; i < warhead.effects_impact().size(); i++) {
       for(int j = 0; j < warhead.effects_impact()[i].quantity(); j++) {
-        gpc.gic->effects->push_back(GfxIdb(pos.toFloat(), normal, vel.toFloat(), warhead.effects_impact()[i]));
+        gpc.gic->effects->push_back(GfxIdb(pos.toFloat(), normal.toFloat(), vel.toFloat(), warhead.effects_impact()[i]));
       }
     }
   }
@@ -146,7 +146,7 @@ void detonateWarhead(const IDBWarheadAdjust &warhead, Coord2 pos, float normal, 
     
     vector<IDBDeployAdjust> dep = warhead.deploy();
     for(int i = 0; i < dep.size(); i++)
-      deployProjectile(dep[i], DeployLocation(shifted_pos, getAngle(vel.toFloat())), gpc, flags);
+      deployProjectile(dep[i], DeployLocation(shifted_pos, getAngle(vel)), gpc, flags);
   }
   
 }
@@ -160,7 +160,7 @@ void detonateWarheadDamageOnly(const IDBWarheadAdjust &warhead, Tank *impact, co
       radius[i].second->takeDamage(warhead.radiusdamage() / warhead.radiusfalloff() * (warhead.radiusfalloff() - radius[i].first));
 }
 
-void detonateBombardment(const IDBBombardmentAdjust &bombard, Coord2 pos, float direction, const GamePlayerContext &gpc) {
+void detonateBombardment(const IDBBombardmentAdjust &bombard, Coord2 pos, Coord direction, const GamePlayerContext &gpc) {
   for(int i = 0; i < bombard.warheads().size(); i++)
     detonateWarhead(bombard.warheads()[i], pos, direction, Coord2(0, 0), NULL, gpc, DamageFlags(1.0, false, true), true);
   
@@ -169,7 +169,7 @@ void detonateBombardment(const IDBBombardmentAdjust &bombard, Coord2 pos, float 
   
   for(int i = 0; i < bombard.effects().size(); i++) {
     for(int j = 0; j < bombard.effects()[i].quantity(); j++) {
-      gpc.gic->effects->push_back(GfxIdb(pos.toFloat(), 0, makeAngle(direction), bombard.effects()[i]));
+      gpc.gic->effects->push_back(GfxIdb(pos.toFloat(), 0, makeAngle(direction.toFloat()), bombard.effects()[i]));
     }
   }
 }
@@ -184,7 +184,7 @@ void deployProjectile(const IDBDeployAdjust &deploy, const DeployLocation &locat
       type = DT_CENTROID;
   }
   
-  vector<pair<Coord2, float> > proji;
+  vector<pair<Coord2, Coord> > proji;
   
   if(type == DT_FORWARD) {
     CHECK(location.isTank());
@@ -193,7 +193,7 @@ void deployProjectile(const IDBDeployAdjust &deploy, const DeployLocation &locat
   } else if(type == DT_REAR) {
     CHECK(location.isTank());
     CHECK(!tang);
-    proji.push_back(make_pair(location.tank().getRearFiringPoint(), location.tank().d + PI));
+    proji.push_back(make_pair(location.tank().getRearFiringPoint(), location.tank().d + COORDPI));
   } else if(type == DT_CENTROID) {
     CHECK(!tang);
     proji.push_back(make_pair(location.pos(), location.d()));
@@ -222,14 +222,14 @@ void deployProjectile(const IDBDeployAdjust &deploy, const DeployLocation &locat
     }
     for(int i = 0; i < ang.size(); i++)
       for(int j = 0; j < deploy.exp_shotspersplit(); j++)
-        proji.push_back(make_pair(location.pos(), ang[i]));
+        proji.push_back(make_pair(location.pos(), Coord(ang[i])));
   } else {
     CHECK(0);
   }
   
   CHECK(proji.size());
   for(int i = 0; i < proji.size(); i++)
-    proji[i].second += deploy.anglestddev() * gpc.gic->rng->gaussian();
+    proji[i].second += Coord(deploy.anglestddev() * gpc.gic->rng->gaussian());
   
   {
     vector<IDBDeployAdjust> idd = deploy.chain_deploy();

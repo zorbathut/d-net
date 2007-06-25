@@ -20,7 +20,7 @@ public:
 
   Coord2 warheadposition() const;
 
-  void detonate(Coord2 pos, float normal, Tank *target, const GamePlayerContext &gpc, bool impacted);
+  void detonate(Coord2 pos, Coord normal, Tank *target, const GamePlayerContext &gpc, bool impacted);
 
   bool isLive() const;
   bool isDetonating() const;
@@ -30,7 +30,7 @@ public:
   float durability() const;
 
   Projectile();   // does not start in usable state
-  Projectile(const Coord2 &pos, float d, const IDBProjectileAdjust &projtype, Rng *rng, const DamageFlags &damageflags);
+  Projectile(const Coord2 &pos, Coord d, const IDBProjectileAdjust &projtype, Rng *rng, const DamageFlags &damageflags);
 
 private:
   
@@ -54,7 +54,7 @@ private:
   float mine_facing;
 
   Coord2 pos;
-  float d;
+  Coord d;
 
   Coord2 lasttail;
 

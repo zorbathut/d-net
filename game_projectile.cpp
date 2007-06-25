@@ -106,7 +106,7 @@ Coord2 Projectile::warheadposition() const {
   return pos;
 }
 
-void Projectile::detonate(Coord2 pos, float normal, Tank *target, const GamePlayerContext &gpc, bool impacted) {
+void Projectile::detonate(Coord2 pos, Coord normal, Tank *target, const GamePlayerContext &gpc, bool impacted) {
   if(!live)
     return;
   
@@ -155,7 +155,7 @@ Coord2 Projectile::movement() const {
   } else if(projtype.motion() == PM_MISSILE) {
     return missile_accel() + missile_backdrop() + missile_sidedrop();
   } else if(projtype.motion() == PM_AIRBRAKE) {
-    return Coord2(makeAngle(d) * airbrake_velocity / FPS);
+    return makeAngle(d) * Coord(airbrake_velocity) / FPS;
   } else if(projtype.motion() == PM_MINE || projtype.motion() == PM_DPS) {
     return Coord2(0, 0);
   } else {
@@ -166,11 +166,11 @@ Coord2 Projectile::movement() const {
 Coord2 Projectile::nexttail() const {
   float maxlen = max(0., distance_traveled - 0.1);
   if(projtype.motion() == PM_NORMAL) {
-    return Coord2(makeAngle(d) * -min(projtype.length(), maxlen));
+    return makeAngle(d) * -Coord(min(projtype.length(), maxlen));
   } else if(projtype.motion() == PM_MISSILE) {
-    return Coord2(makeAngle(d) * -min(projtype.length(), maxlen));
+    return makeAngle(d) * -Coord(min(projtype.length(), maxlen));
   } else if(projtype.motion() == PM_AIRBRAKE) {
-    return Coord2(makeAngle(d) * -min(airbrake_velocity / FPS + 2, maxlen));
+    return makeAngle(d) * -Coord(min(airbrake_velocity / FPS + 2, maxlen));
   } else if(projtype.motion() == PM_MINE || projtype.motion() == PM_DPS) {
     return Coord2(0, 0);
   } else {
@@ -209,7 +209,7 @@ Projectile::Projectile() : projtype(NULL, IDBAdjustment()), damageflags(0.0, fal
   live = false;
   age = -1;
 }
-Projectile::Projectile(const Coord2 &in_pos, float in_d, const IDBProjectileAdjust &projtype, Rng *rng, const DamageFlags &damageflags) : projtype(projtype), damageflags(damageflags) {
+Projectile::Projectile(const Coord2 &in_pos, Coord in_d, const IDBProjectileAdjust &projtype, Rng *rng, const DamageFlags &damageflags) : projtype(projtype), damageflags(damageflags) {
   pos = in_pos;
   d = in_d;
   age = 0;
