@@ -171,7 +171,7 @@ pair<Coord2, Coord> Tank::getNextInertia(const Keystates &keys) const {
       if(xpd == 0 && ypd == 0) {
         dv = dd = 0;
       } else {
-        float desdir = getAngle(Float2(xpd, ypd));
+        float desdir = getAngle(Float2(xpd, -ypd));
         desdir -= d.toFloat();
         desdir += 2 * PI;
         if(desdir > PI)
