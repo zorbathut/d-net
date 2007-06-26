@@ -62,6 +62,7 @@ string Coord4::rawstr() const {
 
 Coord len(const Coord2 &in) { return Coord(len(in.toFloat())); };
 Coord2 normalize(const Coord2 &in) { return imp_normalize<Coords>(in); };
+Coord dot(const Coord2 &lhs, const Coord2 &rhs) { return lhs.x * rhs.x + lhs.y * rhs.y; };
 
 Coord getAngle(const Coord2 &in) { return imp_getAngle<Coords>(in); };
 Coord2 makeAngle(const Coord &in) { return imp_makeAngle<Coords>(in); };

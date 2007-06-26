@@ -347,6 +347,7 @@ inline bool operator==(const Coord4 &lhs, const Coord4 &rhs) {
 
 Coord len(const Coord2 &in);
 Coord2 normalize(const Coord2 &in);
+Coord dot(const Coord2 &lhs, const Coord2 &rhs);
 
 Coord getAngle(const Coord2 &in);
 Coord2 makeAngle(const Coord &in);

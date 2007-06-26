@@ -152,8 +152,11 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
       
       vector<Coord4> cpos = tt.getCurrentCollide();
       
+      bool doinshit = false;
+      
       // if the tank can turn without moving, we allow it to turn, otherwise we kill rotational inertia no matter what
       if(tt.inertia.second != 0) {
+        doinshit = true;
         Coord2 pinert = tt.inertia.first;
         tt.inertia.first = Coord2(0, 0);
         
@@ -168,22 +171,25 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
         tt.inertia.first = pinert;
       }
       
-      const int MAX_COLLIDE_TESTS = 1;
-      for(int j = 0; j < MAX_COLLIDE_TESTS; j++) {
-        vector<Coord4> newpos = tt.getNextCollide();
-        CHECK(cpos.size() == newpos.size());
-        for(int k = 0; k < newpos.size(); k++)
-          newpos[k] -= cpos[k];
-        
-        Coord ang;
-        if(!collider.checkSingleCollision(CGR_TANK, playerorder[i], cpos, newpos, &ang))
-          break;
-        
-        if(j == MAX_COLLIDE_TESTS - 1) {
-          tt.inertia.first = Coord2(0, 0);  // wham!
-          break;
-        } else {
-          CHECK(0);
+      if(tt.inertia.first != Coord2(0, 0)) {
+        doinshit = true;
+        const int MAX_COLLIDE_TESTS = 10;
+        for(int j = 0; j < MAX_COLLIDE_TESTS; j++) {
+          vector<Coord4> newpos = tt.getNextCollide();
+          CHECK(cpos.size() == newpos.size());
+          for(int k = 0; k < newpos.size(); k++)
+            newpos[k] -= cpos[k];
+          
+          Coord ang;
+          if(!collider.checkSingleCollision(CGR_TANK, playerorder[i], cpos, newpos, &ang))
+            break;
+          
+          if(j == MAX_COLLIDE_TESTS - 1) {
+            tt.inertia.first = Coord2(0, 0);  // wham!
+            break;
+          } else {
+            tt.inertia.first = makeAngle(ang + COORDPI / 2) * dot(tt.inertia.first, makeAngle(ang + COORDPI / 2));
+          }
         }
       }
       
@@ -192,7 +198,24 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
       CHECK(isInside(gmbc, tt.getNextPosition().first));
       collider.dumpGroup(CollideId(CGR_TANK, playerorder[i], 0));
       vector<Coord4> newpos = tt.getNextCollide();
-      CHECK(!collider.checkSimpleCollision(CGR_TANK, playerorder[i], newpos));
+      if(collider.checkSimpleCollision(CGR_TANK, playerorder[i], newpos)) {
+        dprintf("collisions are hard, let's go shopping\n");
+        tt.inertia = make_pair(Coord2(0, 0), Coord(0));
+        newpos = tt.getNextCollide();
+      }
+      if(doinshit && tt.inertia == make_pair(Coord2(0, 0), Coord(0))) {
+        // hmm
+        dprintf("we seem to be kind of stuck, let's jitter a little");
+        tt.inertia.first = makeAngle(Coord(rng->frand()) * COORDPI * 2) / 10;
+        vector<Coord4> tnpos = tt.getNextCollide();
+        if(collider.checkSimpleCollision(CGR_TANK, playerorder[i], tnpos)) {
+          dprintf("lol wut\n");
+          tt.inertia.first = Coord2(0, 0);
+        } else {
+          dprintf("kikass\n");
+          newpos = tnpos;
+        }
+      }
       for(int j = 0; j < newpos.size(); j++) {
         //collider.addNormalToken(CollideId(CGR_TANK, playerorder[i], 0), cpos[j], cpos[j] - newpos[j]);
         collider.addUnmovingToken(CollideId(CGR_TANK, playerorder[i], 0), newpos[j]);
