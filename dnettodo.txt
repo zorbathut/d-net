@@ -1,7 +1,6 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - Bugfixes from games
-    - Fix Coord for direction
     - Drone proximity doesn't work
     - Weapons should be 1-4, not 0-3
     - Equip categories shouldn't be selectable
@@ -10,8 +9,6 @@
     - Raise spread of autocannons a bit
     - Figure out a good meaning for the trees faction
     - Look over tank balance yet again for the first weird tanks
-    - Rework how inertia works
-    - Add tank slide code w.r.t inertia
     - Check if the new snipe code works
       - Link handling to engine a little
   - Many many more weapons
