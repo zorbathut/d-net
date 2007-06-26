@@ -1,7 +1,6 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - Bugfixes from games
-    - Performance bar
     - Drone proximity doesn't work
     - Weapons should be 1-4, not 0-3
     - Equip categories shouldn't be selectable

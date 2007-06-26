@@ -232,15 +232,24 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
     {
       PerfStack pst(PBC::gametickcollidersetup);
       
-      collider.cleanup(COM_PROJECTILE, gmbc, teamids);
+      {
+        PerfStack pst(PBC::gametickcollidersetupcleanup);
+        collider.cleanup(COM_PROJECTILE, gmbc, teamids);
+      }
       
-      gamemap.updateCollide(&collider);
+      {
+        PerfStack pst(PBC::gametickcollidersetupgamemap);
+        gamemap.updateCollide(&collider);
+      }
       
-      for(int j = 0; j < tanks.size(); j++)
-        tanks[j].addCollision(&collider, j);
-    
-      for(int j = 0; j < projectiles.size(); j++)
-        projectiles[j].updateCollisions(&collider, j);
+      {
+        PerfStack pst(PBC::gametickcollidersetupentities);
+        for(int j = 0; j < tanks.size(); j++)
+          tanks[j].addCollision(&collider, j);
+      
+        for(int j = 0; j < projectiles.size(); j++)
+          projectiles[j].updateCollisions(&collider, j);
+      }
     }
     
     {

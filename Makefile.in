@@ -81,10 +81,10 @@ debugbasicrun: d-net-dbg
 	./d-net-dbg.exe --nofullscreen --writeTarget= --httpd_port=616
 
 ai: d-net
-	./d-net.exe --nofullscreen --aiCount=16 --fastForwardTo=100000000 --factionMode=3 --noshopcache
+	./d-net.exe --nofullscreen --aiCount=16 --fastForwardTo=100000000 --factionMode=3 --noshopcache --perfbar
 
 aisc: d-net data/shopcache.dwh
-	./d-net.exe --nofullscreen --aiCount=16 --fastForwardTo=100000000 --factionMode=3
+	./d-net.exe --nofullscreen --aiCount=16 --fastForwardTo=100000000 --factionMode=3 --perfbar
 
 ailoop: d-net
 	while ./d-net.exe --nofullscreen --aiCount=12 --fastForwardTo=100000000 --terminateAfter=600 --startingPhase=8 --httpd_port=616 --noshopcache ; do echo Cycle. ; done
