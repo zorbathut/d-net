@@ -453,7 +453,61 @@ void displayCZInfo() {
   cp_pp = 0;
 }
 
+inline bool doCompare(const CollidePiece *tix, const CollidePiece *tiy, pair<Coord, Coord2> *rv) {
+  if(unlikely(boxBoxIntersect(tix->bbx, tiy->bbx))) {
+    if(tix->type > tiy->type)
+      swap(tix, tiy);
+    if(tix->type == CollidePiece::UNMOVING && tiy->type == CollidePiece::POINT) {
+      cp_up++;
+      *rv = doCollisionUP(tix->pos, tiy->pos.s(), tiy->vel.s());
+    } else if(tix->type == CollidePiece::NORMAL && tiy->type == CollidePiece::UNMOVING) {
+      cp_nu++;
+      *rv = doCollisionNU(tix->pos, tix->vel, tiy->pos, tiy->vel);
+    } else if(tix->type == CollidePiece::NORMAL && tiy->type == CollidePiece::NORMAL) {
+      cp_nn++;
+      *rv = doCollisionNN(tix->pos, tix->vel, tiy->pos, tiy->vel);
+    } else if(tix->type == CollidePiece::NORMAL && tiy->type == CollidePiece::POINT) {
+      cp_np++;
+      *rv = doCollisionNP(tix->pos, tix->vel, Coord4(tiy->pos.s(), tiy->vel.s()));
+    } else if(tix->type == CollidePiece::POINT && tiy->type == CollidePiece::POINT) {
+      cp_pp++;
+      CHECK(0); // no
+    } else if(tix->type == CollidePiece::UNMOVING && tiy->type == CollidePiece::UNMOVING) {
+      cp_uu++;
+      CHECK(0); // no
+    } else {
+      CHECK(0);
+    }
+    return true;
+  } else {
+    return false;
+  }
+}
+
+bool CollideZone::checkSingleCollision(int groupid, vector<pair<Coord, Coord> > *clds, const vector<CollidePiece> &cpiece, const char *collidematrix) const {
+  pair<Coord, Coord2> cd;
+  for(int i = 0; i < items.size(); i++) {
+    if(!collidematrix[groupid * catrefs.size() + items[i].first])
+      continue;
+    for(map<int, vector<CollidePiece> >::const_iterator itr = items[i].second.begin(); itr != items[i].second.end(); ++itr) {
+      const vector<CollidePiece> &tx = itr->second;
+      for(int xa = 0; xa < tx.size(); xa++) {
+        for(int ya = 0; ya < cpiece.size(); ya++) {
+          if(unlikely(doCompare(&tx[xa], &cpiece[ya], &cd))) {
+            if(unlikely(cd.first != NOCOLLIDE)) {
+              CHECK(cd.first >= 0 && cd.first <= 1);
+              clds->push_back(make_pair(cd.first, getAngle(lerp(tx[xa].pos, tx[xa].pos + tx[xa].vel, cd.first).vector()).toFloat() + PI / 2));
+            }
+          }
+        }
+      }
+    }
+  }
+  return false;
+}
+
 void CollideZone::processMotion(vector<pair<Coord, CollideData> > *clds, const char *collidematrix) const {
+  pair<Coord, Coord2> cd;
   for(int x = 0; x < items.size(); x++) {
     for(int y = x + 1; y < items.size(); y++) {
       if(!collidematrix[items[x].first * catrefs.size() + items[y].first])
@@ -464,38 +518,12 @@ void CollideZone::processMotion(vector<pair<Coord, CollideData> > *clds, const c
           const vector<CollidePiece> &ty = yitr->second;
           for(int xa = 0; xa < tx.size(); xa++) {
             for(int ya = 0; ya < ty.size(); ya++) {
-              if(!boxBoxIntersect(tx[xa].bbx, ty[ya].bbx))
-                continue;
-              const CollidePiece *tix = &tx[xa];
-              const CollidePiece *tiy = &ty[ya];
-              if(tix->type > tiy->type)
-                swap(tix, tiy);
-              pair<Coord, Coord2> tcol;
-              if(tix->type == CollidePiece::UNMOVING && tiy->type == CollidePiece::POINT) {
-                cp_up++;
-                tcol = doCollisionUP(tix->pos, tiy->pos.s(), tiy->vel.s());
-              } else if(tix->type == CollidePiece::NORMAL && tiy->type == CollidePiece::UNMOVING) {
-                cp_nu++;
-                tcol = doCollisionNU(tix->pos, tix->vel, tiy->pos, tiy->vel);
-              } else if(tix->type == CollidePiece::NORMAL && tiy->type == CollidePiece::NORMAL) {
-                cp_nn++;
-                tcol = doCollisionNN(tix->pos, tix->vel, tiy->pos, tiy->vel);
-              } else if(tix->type == CollidePiece::NORMAL && tiy->type == CollidePiece::POINT) {
-                cp_np++;
-                tcol = doCollisionNP(tix->pos, tix->vel, Coord4(tiy->pos.s(), tiy->vel.s()));
-              } else if(tix->type == CollidePiece::POINT && tiy->type == CollidePiece::POINT) {
-                cp_pp++;
-                continue; // no
-              } else if(tix->type == CollidePiece::UNMOVING && tiy->type == CollidePiece::UNMOVING) {
-                cp_uu++;
-                continue; // no
-              } else {
-                CHECK(0);
+              if(unlikely(doCompare(&tx[xa], &ty[ya], &cd))) {
+                if(unlikely(cd.first != NOCOLLIDE)) {
+                  CHECK(cd.first >= 0 && cd.first <= 1);
+                  clds->push_back(make_pair(cd.first, CollideData(CollideId(reverseCategoryFromCC(catrefs.size(), items[x].first), xitr->first), CollideId(reverseCategoryFromCC(catrefs.size(), items[y].first), yitr->first), cd.second, make_pair(getAngle(lerp(tx[xa].pos, tx[xa].pos + tx[xa].vel, cd.first).vector()).toFloat() + PI / 2, getAngle(lerp(ty[ya].pos, ty[ya].pos + ty[ya].vel, cd.first).vector()).toFloat() + PI / 2))));
+                }
               }
-              if(tcol.first == NOCOLLIDE)
-                continue;
-              CHECK(tcol.first >= 0 && tcol.first <= 1);
-              clds->push_back(make_pair(tcol.first, CollideData(CollideId(reverseCategoryFromCC(catrefs.size(), items[x].first), xitr->first), CollideId(reverseCategoryFromCC(catrefs.size(), items[y].first), yitr->first), tcol.second, make_pair(getAngle(lerp(tix->pos, tix->pos + tix->vel, tcol.first).vector()).toFloat() + PI / 2, getAngle(lerp(tiy->pos, tiy->pos + tiy->vel, tcol.first).vector()).toFloat() + PI / 2))));
             }
           }
         }
@@ -698,6 +726,54 @@ bool Collider::checkSimpleCollision(int category, int gid, const vector<Coord4> 
       if(zones[cmap(x, y)].checkSimpleCollision(getCategoryFromPlayers(players, category, gid), line, pa, &*collidematrix.begin()))
         return true;
   return false;
+}
+
+bool Collider::checkSingleCollision(int category, int gid, const vector<Coord4> &line, const vector<Coord4> &delta, Coord *ang) const {
+  CHECK(line.size() == delta.size());
+  if(line.size() == 0)
+    return false;
+  Coord4 area = startCBoundBox();
+  for(int i = 0; i < line.size(); i++) {
+    addToBoundBox(&area, line[i].sx, line[i].sy);
+    addToBoundBox(&area, line[i].ex, line[i].ey);
+    addToBoundBox(&area, line[i].sx + delta[i].sx, line[i].sy + delta[i].sy);
+    addToBoundBox(&area, line[i].ex + delta[i].ex, line[i].ey + delta[i].ey);
+  }
+  Coord4 pa = area;
+  area.sx -= resolution / 4;
+  area.sy -= resolution / 4;
+  area.ex += resolution / 4;
+  area.ey += resolution / 4;
+  area = snapToEnclosingGrid(area, resolution);
+  int tsx = max((area.sx / resolution).toInt(), sx);
+  int tsy = max((area.sy / resolution).toInt(), sy);
+  int tex = min((area.ex / resolution).toInt(), ex);
+  int tey = min((area.ey / resolution).toInt(), ey);
+  CHECK(tsx < ex && tsy < ey && tex >= sx && tey >= sy);
+  /*
+  if(!(txs < zxe && tys < zye && txe > zxs && tye > zys)) {
+    dprintf("%d, %d, %d, %d\n", txs, tys, txe, tye);
+    dprintf("%d, %d, %d, %d\n", zxs, zys, zxe, zye);
+    dprintf("%f, %f, %f, %f\n", area.sx.toFloat(), area.sy.toFloat(), area.ex.toFloat(), area.ey.toFloat());
+    dprintf("%f, %f, %f, %f\n", pa.sx.toFloat(), pa.sy.toFloat(), pa.ex.toFloat(), pa.ey.toFloat());
+    CHECK(0);
+  }
+  */
+  
+  vector<CollidePiece> cdat;
+  for(int i = 0; i < line.size(); i++)
+    cdat.push_back(CollidePiece(line[i], delta[i], CollidePiece::NORMAL));
+  
+  vector<pair<Coord, Coord> > clds;
+  
+  for(int x = tsx; x < tex; x++)
+    for(int y = tsy; y < tey; y++)
+      zones[cmap(x, y)].checkSingleCollision(getCategoryFromPlayers(players, category, gid), &clds, cdat, &*collidematrix.begin());
+  if(!clds.size())
+    return false;
+  
+  *ang = min_element(clds.begin(), clds.end())->second;
+  return true;
 }
 
 void Collider::processMotion() {

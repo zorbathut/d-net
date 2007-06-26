@@ -301,6 +301,35 @@ inline Coord4 operator/(const Coord4 &lhs, const Coord &rhs) {
   return Coord4(lhs.sx / rhs, lhs.sy / rhs, lhs.ex / rhs, lhs.ey / rhs);
 }
 
+inline Coord4 &operator+=(Coord4 &lhs, const Coord4 &rhs) {
+  lhs.sx += rhs.sx;
+  lhs.sy += rhs.sy;
+  lhs.ex += rhs.ex;
+  lhs.ey += rhs.ey;
+  return lhs;
+}
+inline Coord4 &operator-=(Coord4 &lhs, const Coord4 &rhs) {
+  lhs.sx -= rhs.sx;
+  lhs.sy -= rhs.sy;
+  lhs.ex -= rhs.ex;
+  lhs.ey -= rhs.ey;
+  return lhs;
+}
+inline Coord4 &operator*=(Coord4 &lhs, const Coord &rhs) {
+  lhs.sx *= rhs;
+  lhs.sy *= rhs;
+  lhs.ex *= rhs;
+  lhs.ey *= rhs;
+  return lhs;
+}
+inline Coord4 &operator/=(Coord4 &lhs, const Coord &rhs) {
+  lhs.sx /= rhs;
+  lhs.sy /= rhs;
+  lhs.ex /= rhs;
+  lhs.ey /= rhs;
+  return lhs;
+}
+
 inline Coord max(Coord lhs, int rhs) {
   return max(lhs, Coord(rhs));
 }

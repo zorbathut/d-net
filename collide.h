@@ -34,10 +34,10 @@ public:
   CollideId lhs;
   CollideId rhs;
   Coord2 pos;
-  pair<float, float> normals;
+  pair<Coord, Coord> normals;
 
   CollideData() { };
-  CollideData(const CollideId &lhs, const CollideId &rhs, const Coord2 &pos, pair<float, float> normals) : lhs(lhs), rhs(rhs), pos(pos), normals(normals) { };
+  CollideData(const CollideId &lhs, const CollideId &rhs, const Coord2 &pos, pair<Coord, Coord> normals) : lhs(lhs), rhs(rhs), pos(pos), normals(normals) { };
 };
 
 class CollidePiece {
@@ -72,6 +72,7 @@ public:
   void dumpGroup(int category, int group);
 
   bool checkSimpleCollision(int groupid, const vector<Coord4> &line, const Coord4 &bbox, const char *collidematrix) const;
+  bool checkSingleCollision(int groupid, vector<pair<Coord, Coord> > *clds, const vector<CollidePiece> &cpiece, const char *collidematrix) const;
 
   void processMotion(vector<pair<Coord, CollideData> > *clds, const char *collidematrix) const;
 
@@ -96,6 +97,7 @@ public:
   int consumeAddedTokens() const;
 
   bool checkSimpleCollision(int category, int gid, const vector<Coord4> &line) const;
+  bool checkSingleCollision(int category, int gid, const vector<Coord4> &lines, const vector<Coord4> &deltas, Coord *ang) const;
 
   void processMotion();
 
