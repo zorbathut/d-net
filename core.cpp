@@ -10,6 +10,7 @@
 #include "timer.h"
 #include "util.h"
 #include "httpd.h"
+#include "perfbar.h"
 
 #ifdef OSX_FRAMEWORK_PREFIXES
   #include <SDL/SDL.h>
@@ -70,6 +71,7 @@ void MainLoop() {
   Timer bencher;
   
   while(!quit) {
+    startPerformanceBar();
     if(FLAGS_timing)
       bencher = Timer();
     StackString sst(StringPrintf("Frame %d loop", frameNumber));
@@ -183,6 +185,7 @@ void MainLoop() {
         setZoom(Float4(0, 0, 133.333, 100));
         drawText(StringPrintf("%d", frameNumber), 10, Float2(5, 85));
       }
+      drawPerformanceBar();
       deinitFrame();
       SDL_GL_SwapBuffers();
     } else {

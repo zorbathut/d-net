@@ -7,6 +7,7 @@
 #include "game_tank.h"
 #include "gfx.h"
 #include "player.h"
+#include "perfbar.h"
 
 using namespace std;
 
@@ -47,6 +48,7 @@ void doInterp(float *curcenter, const float *nowcenter, float *curzoom, const fl
 
 bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &players, Rng *rng) {
   StackString sst("Frame runtick");
+  PerfStack pst(PBC::gametick);
   
   CHECK(rkeys.size() == players.size());
   CHECK(players.size() == tanks.size());
@@ -99,6 +101,7 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
   
   {
     StackString sst("Player movement collider");
+    PerfStack pst(PBC::gameticktankmovement);
     
     collider.cleanup(COM_PLAYER, gmbc, teamids);
     
@@ -224,190 +227,204 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
   
   {
     StackString sst("Main collider");
+    PerfStack pst(PBC::gametickcollider);
     
-    collider.cleanup(COM_PROJECTILE, gmbc, teamids);
+    {
+      PerfStack pst(PBC::gametickcollidersetup);
+      
+      collider.cleanup(COM_PROJECTILE, gmbc, teamids);
+      
+      gamemap.updateCollide(&collider);
+      
+      for(int j = 0; j < tanks.size(); j++)
+        tanks[j].addCollision(&collider, j);
     
-    gamemap.updateCollide(&collider);
+      for(int j = 0; j < projectiles.size(); j++)
+        projectiles[j].updateCollisions(&collider, j);
+    }
     
-    for(int j = 0; j < tanks.size(); j++)
-      tanks[j].addCollision(&collider, j);
-  
-    for(int j = 0; j < projectiles.size(); j++)
-      projectiles[j].updateCollisions(&collider, j);
+    {
+      PerfStack pst(PBC::gametickcolliderprocess);
+      collider.processMotion();
+    }
     
-    collider.processMotion();
-    
-    while(collider.next()) {
-      //dprintf("Collision!\n");
-      //dprintf("%d,%d,%d vs %d,%d,%d\n", collider.getCollision().lhs.category, collider.getCollision().lhs.bucket, collider.getCollision().lhs.item, collider.getCollision().rhs.category, collider.getCollision().rhs.bucket, collider.getCollision().rhs.item);
-      CollideId lhs = collider.getCollision().lhs;
-      CollideId rhs = collider.getCollision().rhs;
-      if(lhs.category == CGR_STATPROJECTILE || lhs.category == CGR_NOINTPROJECTILE)
-        lhs.category = CGR_PROJECTILE;
-      if(rhs.category == CGR_STATPROJECTILE || rhs.category == CGR_NOINTPROJECTILE)
-        rhs.category = CGR_PROJECTILE;
-      pair<Coord, Coord> normals = collider.getCollision().normals;
-      if(rhs < lhs) {
-        swap(lhs, rhs);
-        swap(normals.first, normals.second);
-      }
-      if(lhs.category == CGR_TANK && rhs.category == CGR_TANK) {
-        // tank-tank collision, should never happen
-        CHECK(0);
-      } else if(lhs.category == CGR_TANK && rhs.category == CGR_PROJECTILE) {
-        // tank-projectile collision - kill projectile, do damage
-        if(projectiles[rhs.bucket].find(rhs.item).isConsumed())
-          continue;
-        projectiles[rhs.bucket].find(rhs.item).detonate(collider.getCollision().pos, normals.first, &tanks[lhs.bucket], GamePlayerContext(&tanks[rhs.bucket], &projectiles[rhs.bucket], gic), true);
-      } else if(lhs.category == CGR_TANK && rhs.category == CGR_WALL) {
-        // tank-wall collision, should never happen
-        CHECK(0);
-      } else if(lhs.category == CGR_PROJECTILE && rhs.category == CGR_PROJECTILE) {
-        // projectile-projectile collision - kill both projectiles
-        // also do radius damage, and do it fairly dammit
-        if(projectiles[lhs.bucket].find(lhs.item).isConsumed() || projectiles[rhs.bucket].find(rhs.item).isConsumed())
-          continue;
-        
-        bool lft = rng->frand() < 0.5;
-        
-        CHECK(projectiles[lhs.bucket].find(lhs.item).durability() > 0);
-        CHECK(projectiles[rhs.bucket].find(rhs.item).durability() > 0);
-        
-        if(projectiles[lhs.bucket].find(lhs.item).durability() > projectiles[rhs.bucket].find(rhs.item).durability())
+    {
+      PerfStack pst(PBC::gametickcolliderresults);
+      while(collider.next()) {
+        //dprintf("Collision!\n");
+        //dprintf("%d,%d,%d vs %d,%d,%d\n", collider.getCollision().lhs.category, collider.getCollision().lhs.bucket, collider.getCollision().lhs.item, collider.getCollision().rhs.category, collider.getCollision().rhs.bucket, collider.getCollision().rhs.item);
+        CollideId lhs = collider.getCollision().lhs;
+        CollideId rhs = collider.getCollision().rhs;
+        if(lhs.category == CGR_STATPROJECTILE || lhs.category == CGR_NOINTPROJECTILE)
+          lhs.category = CGR_PROJECTILE;
+        if(rhs.category == CGR_STATPROJECTILE || rhs.category == CGR_NOINTPROJECTILE)
+          rhs.category = CGR_PROJECTILE;
+        pair<Coord, Coord> normals = collider.getCollision().normals;
+        if(rhs < lhs) {
           swap(lhs, rhs);
-        
-        // LHS now has less toughness, so it's guaranteed to go boom
-        bool rhsdestroyed = rng->frand() < (projectiles[lhs.bucket].find(lhs.item).durability() / projectiles[rhs.bucket].find(rhs.item).durability());
-        
-        if(lft)
+          swap(normals.first, normals.second);
+        }
+        if(lhs.category == CGR_TANK && rhs.category == CGR_TANK) {
+          // tank-tank collision, should never happen
+          CHECK(0);
+        } else if(lhs.category == CGR_TANK && rhs.category == CGR_PROJECTILE) {
+          // tank-projectile collision - kill projectile, do damage
+          if(projectiles[rhs.bucket].find(rhs.item).isConsumed())
+            continue;
+          projectiles[rhs.bucket].find(rhs.item).detonate(collider.getCollision().pos, normals.first, &tanks[lhs.bucket], GamePlayerContext(&tanks[rhs.bucket], &projectiles[rhs.bucket], gic), true);
+        } else if(lhs.category == CGR_TANK && rhs.category == CGR_WALL) {
+          // tank-wall collision, should never happen
+          CHECK(0);
+        } else if(lhs.category == CGR_PROJECTILE && rhs.category == CGR_PROJECTILE) {
+          // projectile-projectile collision - kill both projectiles
+          // also do radius damage, and do it fairly dammit
+          if(projectiles[lhs.bucket].find(lhs.item).isConsumed() || projectiles[rhs.bucket].find(rhs.item).isConsumed())
+            continue;
+          
+          bool lft = rng->frand() < 0.5;
+          
+          CHECK(projectiles[lhs.bucket].find(lhs.item).durability() > 0);
+          CHECK(projectiles[rhs.bucket].find(rhs.item).durability() > 0);
+          
+          if(projectiles[lhs.bucket].find(lhs.item).durability() > projectiles[rhs.bucket].find(rhs.item).durability())
+            swap(lhs, rhs);
+          
+          // LHS now has less toughness, so it's guaranteed to go boom
+          bool rhsdestroyed = rng->frand() < (projectiles[lhs.bucket].find(lhs.item).durability() / projectiles[rhs.bucket].find(rhs.item).durability());
+          
+          if(lft)
+            projectiles[lhs.bucket].find(lhs.item).detonate(collider.getCollision().pos, normals.second, NULL, GamePlayerContext(&tanks[lhs.bucket], &projectiles[lhs.bucket], gic), true);
+          
+          if(rhsdestroyed)
+            projectiles[rhs.bucket].find(rhs.item).detonate(collider.getCollision().pos, normals.first, NULL, GamePlayerContext(&tanks[rhs.bucket], &projectiles[rhs.bucket], gic), true);
+          
+          if(!lft)
+            projectiles[lhs.bucket].find(lhs.item).detonate(collider.getCollision().pos, normals.second, NULL, GamePlayerContext(&tanks[lhs.bucket], &projectiles[lhs.bucket], gic), true);
+          
+        } else if(lhs.category == CGR_PROJECTILE && rhs.category == CGR_WALL) {
+          // projectile-wall collision - kill projectile
+          if(projectiles[lhs.bucket].find(lhs.item).isConsumed())
+            continue;
           projectiles[lhs.bucket].find(lhs.item).detonate(collider.getCollision().pos, normals.second, NULL, GamePlayerContext(&tanks[lhs.bucket], &projectiles[lhs.bucket], gic), true);
-        
-        if(rhsdestroyed)
-          projectiles[rhs.bucket].find(rhs.item).detonate(collider.getCollision().pos, normals.first, NULL, GamePlayerContext(&tanks[rhs.bucket], &projectiles[rhs.bucket], gic), true);
-        
-        if(!lft)
-          projectiles[lhs.bucket].find(lhs.item).detonate(collider.getCollision().pos, normals.second, NULL, GamePlayerContext(&tanks[lhs.bucket], &projectiles[lhs.bucket], gic), true);
-        
-      } else if(lhs.category == CGR_PROJECTILE && rhs.category == CGR_WALL) {
-        // projectile-wall collision - kill projectile
-        if(projectiles[lhs.bucket].find(lhs.item).isConsumed())
-          continue;
-        projectiles[lhs.bucket].find(lhs.item).detonate(collider.getCollision().pos, normals.second, NULL, GamePlayerContext(&tanks[lhs.bucket], &projectiles[lhs.bucket], gic), true);
-      } else if(lhs.category == CGR_WALL && rhs.category == CGR_WALL) {
-        // wall-wall collision, wtf?
-        CHECK(0);
-      } else {
-        // nothing meaningful, should totally never happen, what the hell is going on here, who are you, and why are you in my apartment
-        dprintf("%d, %d\n", lhs.category, rhs.category);
-        CHECK(0);
+        } else if(lhs.category == CGR_WALL && rhs.category == CGR_WALL) {
+          // wall-wall collision, wtf?
+          CHECK(0);
+        } else {
+          // nothing meaningful, should totally never happen, what the hell is going on here, who are you, and why are you in my apartment
+          dprintf("%d, %d\n", lhs.category, rhs.category);
+          CHECK(0);
+        }
       }
     }
     
     collider.finishProcess();
   }
 
-  for(int j = 0; j < projectiles.size(); j++) {
-    projectiles[j].tick(&gfxeffects, &collider, j, gic);
-  }
-  
-  for(int j = 0; j < bombards.size(); j++) {
-    CHECK(bombards[j].state >= 0 && bombards[j].state < BombardmentState::BS_LAST);
-    if(bombards[j].state == BombardmentState::BS_OFF) {
-      if(!tanks[j].isLive()) {
-        // if the player is dead and the bombard isn't initialized
-        bombards[j].pos = tanks[j].pos;
-        bombards[j].state = BombardmentState::BS_SPAWNING;
-        if(gamemode == GMODE_DEMO)
-          bombards[j].timer = 0;
-        else
-          bombards[j].timer = 60 * 6;
-      }
-    } else if(bombards[j].state == BombardmentState::BS_SPAWNING) {
-      bombards[j].timer--;
-      if(bombards[j].timer <= 0)
-        bombards[j].state = BombardmentState::BS_ACTIVE;
-    } else if(bombards[j].state == BombardmentState::BS_ACTIVE) {
-      Float2 deaded = deadzone(keys[j].udlrax, DEADZONE_CENTER, 0.2);
-      if(len(deaded) > 1)
-        deaded /= len(deaded);
-      deaded.y *= -1;
-      bombards[j].pos += Coord2(deaded) * 3 / 2;
-      if(len(keys[j].udlrax) > 0.2)
-        bombards[j].d = -getAngle(keys[j].udlrax);
-      bombards[j].pos.x = max(bombards[j].pos.x, gmbr.sx);
-      bombards[j].pos.y = max(bombards[j].pos.y, gmbr.sy);
-      bombards[j].pos.x = min(bombards[j].pos.x, gmbr.ex);
-      bombards[j].pos.y = min(bombards[j].pos.y, gmbr.ey);
-      {
-        bool firing = false;
-        for(int i = 0; i < SIMUL_WEAPONS; i++)
-          if(keys[j].fire[i].down)
-            firing = true;
-        if(firing && !gamemap.isInsideWall(bombards[j].pos)) {
-          bombards[j].state = BombardmentState::BS_FIRING;
-          bombards[j].timer = round(players[j]->getBombardment((int)bombardment_tier).lockdelay() * FPS);
-        }
-      }
-    } else if(bombards[j].state == BombardmentState::BS_FIRING) {
-      if(len(keys[j].udlrax) > 0.2)
-        bombards[j].d = -getAngle(keys[j].udlrax);
-      bombards[j].timer--;
-      if(bombards[j].timer <= 0) {
-        CHECK(!gamemap.isInsideWall(bombards[j].pos));
-        detonateBombardment(players[j]->getBombardment((int)bombardment_tier), bombards[j].pos, Coord(bombards[j].d), GamePlayerContext(&tanks[j], &projectiles[j], gic));
-        bombards[j].state = BombardmentState::BS_COOLDOWN;
-        bombards[j].timer = round(players[j]->getBombardment((int)bombardment_tier).unlockdelay() * FPS);
-      }
-    } else if(bombards[j].state == BombardmentState::BS_COOLDOWN) {
-      bombards[j].timer--;
-      if(bombards[j].timer <= 0)
-        bombards[j].state = BombardmentState::BS_ACTIVE;
-    } else {
-      CHECK(0);
-    }
-  }  
-  
-  for(int i = 0; i < tanks.size(); i++)
-    tanks[i].tick();
-
-  for(int i = 0; i < tanks.size(); i++) {
-    StackString sst(StringPrintf("Player weaponry %d", i));
-    
-    // Dur.
-    if(!tanks[i].isLive())
-      continue;
-    
-    // Attempt to actually fire - deals with all weapons that the tank has equipped.
-    if(teams[tanks[i].team].weapons_enabled && frameNm >= frameNmToStart && frameNmToStart != -1) {
-      vector<pair<string, float> > status;
-      tanks[i].tryToFire(keys[i].fire, players[i], &projectiles[i], i, gic, &status, &firepowerSpent);
-      for(int j = 0; j < status.size(); j++)
-        addTankStatusText(i, status[j].first, status[j].second);
-    }
-  }
-
   {
-    vector<smart_ptr<GfxEffects> > neffects;
-    for(int i = 0; i < gfxeffects.size(); i++) {
-      gfxeffects[i]->tick();
-      if(!gfxeffects[i]->dead())
-        neffects.push_back(gfxeffects[i]);
+    PerfStack pst(PBC::gametickpbwe);
+    for(int j = 0; j < projectiles.size(); j++) {
+      projectiles[j].tick(&gfxeffects, &collider, j, gic);
     }
-    swap(neffects, gfxeffects);
-  }
-
-  for(int i = 0; i < tanks.size(); i++) {
-    tanks[i].genEffects(gic, &projectiles[i], players[i]);
-    if(tanks[i].isLive()) {
-      int inzone = -1;
-      for(int j = 0; j < zones.size(); j++)
-        if(inPath(tanks[i].pos, zones[j].first))
-          inzone = j;
-      if(tanks[i].zone_current != inzone) {
-        tanks[i].zone_current = inzone;
-        tanks[i].zone_frames = 0;
+  
+    for(int j = 0; j < bombards.size(); j++) {
+      CHECK(bombards[j].state >= 0 && bombards[j].state < BombardmentState::BS_LAST);
+      if(bombards[j].state == BombardmentState::BS_OFF) {
+        if(!tanks[j].isLive()) {
+          // if the player is dead and the bombard isn't initialized
+          bombards[j].pos = tanks[j].pos;
+          bombards[j].state = BombardmentState::BS_SPAWNING;
+          if(gamemode == GMODE_DEMO)
+            bombards[j].timer = 0;
+          else
+            bombards[j].timer = 60 * 6;
+        }
+      } else if(bombards[j].state == BombardmentState::BS_SPAWNING) {
+        bombards[j].timer--;
+        if(bombards[j].timer <= 0)
+          bombards[j].state = BombardmentState::BS_ACTIVE;
+      } else if(bombards[j].state == BombardmentState::BS_ACTIVE) {
+        Float2 deaded = deadzone(keys[j].udlrax, DEADZONE_CENTER, 0.2);
+        if(len(deaded) > 1)
+          deaded /= len(deaded);
+        deaded.y *= -1;
+        bombards[j].pos += Coord2(deaded) * 3 / 2;
+        if(len(keys[j].udlrax) > 0.2)
+          bombards[j].d = -getAngle(keys[j].udlrax);
+        bombards[j].pos.x = max(bombards[j].pos.x, gmbr.sx);
+        bombards[j].pos.y = max(bombards[j].pos.y, gmbr.sy);
+        bombards[j].pos.x = min(bombards[j].pos.x, gmbr.ex);
+        bombards[j].pos.y = min(bombards[j].pos.y, gmbr.ey);
+        {
+          bool firing = false;
+          for(int i = 0; i < SIMUL_WEAPONS; i++)
+            if(keys[j].fire[i].down)
+              firing = true;
+          if(firing && !gamemap.isInsideWall(bombards[j].pos)) {
+            bombards[j].state = BombardmentState::BS_FIRING;
+            bombards[j].timer = round(players[j]->getBombardment((int)bombardment_tier).lockdelay() * FPS);
+          }
+        }
+      } else if(bombards[j].state == BombardmentState::BS_FIRING) {
+        if(len(keys[j].udlrax) > 0.2)
+          bombards[j].d = -getAngle(keys[j].udlrax);
+        bombards[j].timer--;
+        if(bombards[j].timer <= 0) {
+          CHECK(!gamemap.isInsideWall(bombards[j].pos));
+          detonateBombardment(players[j]->getBombardment((int)bombardment_tier), bombards[j].pos, Coord(bombards[j].d), GamePlayerContext(&tanks[j], &projectiles[j], gic));
+          bombards[j].state = BombardmentState::BS_COOLDOWN;
+          bombards[j].timer = round(players[j]->getBombardment((int)bombardment_tier).unlockdelay() * FPS);
+        }
+      } else if(bombards[j].state == BombardmentState::BS_COOLDOWN) {
+        bombards[j].timer--;
+        if(bombards[j].timer <= 0)
+          bombards[j].state = BombardmentState::BS_ACTIVE;
+      } else {
+        CHECK(0);
       }
-      tanks[i].zone_frames++;
+    }  
+    
+    for(int i = 0; i < tanks.size(); i++)
+      tanks[i].tick();
+  
+    for(int i = 0; i < tanks.size(); i++) {
+      StackString sst(StringPrintf("Player weaponry %d", i));
+      
+      // Dur.
+      if(!tanks[i].isLive())
+        continue;
+      
+      // Attempt to actually fire - deals with all weapons that the tank has equipped.
+      if(teams[tanks[i].team].weapons_enabled && frameNm >= frameNmToStart && frameNmToStart != -1) {
+        vector<pair<string, float> > status;
+        tanks[i].tryToFire(keys[i].fire, players[i], &projectiles[i], i, gic, &status, &firepowerSpent);
+        for(int j = 0; j < status.size(); j++)
+          addTankStatusText(i, status[j].first, status[j].second);
+      }
+    }
+  
+    {
+      vector<smart_ptr<GfxEffects> > neffects;
+      for(int i = 0; i < gfxeffects.size(); i++) {
+        gfxeffects[i]->tick();
+        if(!gfxeffects[i]->dead())
+          neffects.push_back(gfxeffects[i]);
+      }
+      swap(neffects, gfxeffects);
+    }
+  
+    for(int i = 0; i < tanks.size(); i++) {
+      tanks[i].genEffects(gic, &projectiles[i], players[i]);
+      if(tanks[i].isLive()) {
+        int inzone = -1;
+        for(int j = 0; j < zones.size(); j++)
+          if(inPath(tanks[i].pos, zones[j].first))
+            inzone = j;
+        if(tanks[i].zone_current != inzone) {
+          tanks[i].zone_current = inzone;
+          tanks[i].zone_frames = 0;
+        }
+        tanks[i].zone_frames++;
+      }
     }
   }
   
@@ -430,24 +447,6 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
       }
     }
   }
-  
-  #if 0 // This hideous hack produces pretty yet deadly fireworks
-  {   
-    static Tank boomy;
-    static Player boomyplay;
-    static FactionState boomyfact;
-    boomy.spawnShards = true;
-    boomy.player = &boomyplay;
-    boomyplay.glory = defaultGlory();
-    float border = 40;
-    boomy.pos.x = Coord(rng->frand()) * (gmbr.span_x() - border * 2) + gmbr.sx + border;
-    boomy.pos.y = Coord(rng->frand()) * (gmbr.span_y() - border * 2) + gmbr.sy + border;
-    boomy.d = 0;
-    boomyplay.faction = &boomyfact;
-    boomyfact.color = Color(1.0, 1.0, 1.0);
-    boomy.genEffects(&gfxeffects, &projectiles[0]);
-  }
-  #endif
   
   {
     set<int> liveteams;
