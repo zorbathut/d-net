@@ -25,13 +25,13 @@ void Tank::init(IDBTankAdjust in_tank, Color in_color) {
   glory_resist_boost_frames = 0;
 }
 
-void Tank::tick(const Keystates &kst) {
-  pair<Coord2, Coord> newpos = getNextPosition(kst);
-  
-  pos = newpos.first;
-  d = newpos.second;
-  
+void Tank::updateInertia(const Keystates &kst) {
   inertia = getNextInertia(kst);
+}
+
+void Tank::tick() {
+  pos = getNextPosition().first;
+  d = getNextPosition().second;
   
   if(framesSinceDamage != -1)
     framesSinceDamage++;
@@ -94,11 +94,11 @@ vector<Coord4> Tank::getCurrentCollide() const {
   return rv;
 };
 
-vector<Coord4> Tank::getNextCollide(const Keystates &keys) const {
+vector<Coord4> Tank::getNextCollide() const {
   if(!live)
     return vector<Coord4>();
 
-  pair<Coord2, Coord> newpos = getNextPosition(keys);
+  pair<Coord2, Coord> newpos = getNextPosition();
   vector<Coord2> tankpts = getTankVertices(newpos.first, newpos.second);
   vector<Coord4> rv;
   for(int i = 0; i < tankpts.size(); i++) {
@@ -108,13 +108,13 @@ vector<Coord4> Tank::getNextCollide(const Keystates &keys) const {
   return rv;
 };
 
-void Tank::addCollision(Collider *collider, const Keystates &keys, int owner) const {
+void Tank::addCollision(Collider *collider, int owner) const {
   
   if(!live)
     return;
 
   vector<Coord2> tankpts = getTankVertices(pos, d);
-  pair<Coord2, Coord> newpos = getNextPosition(keys);
+  pair<Coord2, Coord> newpos = getNextPosition();
   vector<Coord2> newtankpts = getTankVertices(newpos.first, newpos.second);
   CHECK(tankpts.size() == newtankpts.size());
   for(int i = 0; i < newtankpts.size(); i++)
@@ -279,9 +279,8 @@ pair<Coord2, Coord> Tank::getNextInertia(const Keystates &keys) const {
   return make_pair(speed, turn);
 }
 
-pair<Coord2, Coord> Tank::getNextPosition(const Keystates &keys) const {
-  pair<Coord2, Coord> inert = getNextInertia(keys);
-  return make_pair(pos + inert.first / FPS, mod(d + inert.second / FPS + COORDPI * 2, COORDPI * 2));
+pair<Coord2, Coord> Tank::getNextPosition() const {
+  return make_pair(pos + inertia.first / FPS, mod(d + inertia.second / FPS + COORDPI * 2, COORDPI * 2));
 }
 
 bool Tank::takeDamage(float damage) {

@@ -118,7 +118,8 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
         dprintf("%s vs %s\n", tanks[j].pos.rawstr().c_str(), gmbc.rawstr().c_str());
         CHECK(0);
       }
-      tanks[j].addCollision(&collider, keys[j], j);
+      tanks[j].updateInertia(keys[j]);
+      tanks[j].addCollision(&collider, j);
     }
     
     /*    // CPU-intensive :(
@@ -146,20 +147,19 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
       CHECK(count(playerorder.begin(), playerorder.end(), playerorder[i]) == 1);
       CHECK(playerorder[i] >= 0 && playerorder[i] < tanks.size());
       
-      vector<Coord4> newpos = tanks[playerorder[i]].getNextCollide(keys[playerorder[i]]);
+      vector<Coord4> newpos = tanks[playerorder[i]].getNextCollide();
       {
         Tank test = tanks[playerorder[i]];
-        test.tick(keys[playerorder[i]]);
+        test.tick();
         CHECK(newpos == test.getCurrentCollide());
       }
-      
+      Coord ang;
       if(collider.checkSimpleCollision(CGR_TANK, playerorder[i], newpos)) {
         tanks[playerorder[i]].inertia = make_pair(Coord2(0, 0), 0.f);  // wham!
-        keys[playerorder[i]].nullMove();
       } else {
         StackString sst(StringPrintf("Moving player %d, status live %d", playerorder[i], tanks[playerorder[i]].isLive()));
         //CHECK(inPath(tanks[playerorder[i]].getNextPosition(keys[playerorder[i]], tanks[playerorder[i]].pos, tanks[playerorder[i]].d).first, gamemap.getCollide()[0]));
-        CHECK(isInside(gmbc, tanks[playerorder[i]].getNextPosition(keys[playerorder[i]]).first));
+        CHECK(isInside(gmbc, tanks[playerorder[i]].getNextPosition().first));
         collider.dumpGroup(CollideId(CGR_TANK, playerorder[i], 0));
         for(int j = 0; j < newpos.size(); j++)
           collider.addUnmovingToken(CollideId(CGR_TANK, playerorder[i], 0), newpos[j]);
@@ -176,7 +176,7 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
     gamemap.updateCollide(&collider);
     
     for(int j = 0; j < tanks.size(); j++)
-      tanks[j].addCollision(&collider, keys[j], j);
+      tanks[j].addCollision(&collider, j);
   
     for(int j = 0; j < projectiles.size(); j++)
       projectiles[j].updateCollisions(&collider, j);
@@ -314,7 +314,7 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
   }  
   
   for(int i = 0; i < tanks.size(); i++)
-    tanks[i].tick(keys[i]);
+    tanks[i].tick();
 
   for(int i = 0; i < tanks.size(); i++) {
     StackString sst(StringPrintf("Player weaponry %d", i));

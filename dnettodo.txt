@@ -152,3 +152,9 @@ Sounditude
 Take a "queueSound" with Sound, volume, fade.
 Sound gets loaded, much like dvec2.
 Then there's IDBSoundPack items. This sounds good.
+
+--- Tank movement
+* Update inertia given these keys
+* Where are you moving to?
+* Modify inertia directly (movement is now based 100% on inertia)
+* Move yourself, foo

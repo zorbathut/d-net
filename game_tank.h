@@ -15,21 +15,22 @@ public:
   Tank();
   
   // Standard behavior
-  void tick(const Keystates &kst);
+  void updateInertia(const Keystates &kst);
+  void tick();
   void render(const vector<Team> &teams) const;
 
   // Collision system
-  void addCollision(Collider *collider, const Keystates &kst, int owner) const;
+  void addCollision(Collider *collider, int owner) const;
 
   vector<Coord4> getCurrentCollide() const;
-  vector<Coord4> getNextCollide(const Keystates &keys) const;
+  vector<Coord4> getNextCollide() const;
 
   vector<Coord2> getTankVertices(Coord2 pos, Coord td) const;
   Coord2 getFiringPoint() const;
   Coord2 getRearFiringPoint() const;
   Coord2 getMinePoint(Rng *rng) const;
 
-  pair<Coord2, Coord> getNextPosition(const Keystates &keys) const;
+  pair<Coord2, Coord> getNextPosition() const;
 
   // Modifiers
   bool takeDamage(float amount); // returns true on kill
