@@ -6,6 +6,7 @@
 #include "gfx.h"
 #include "player.h"
 #include "audio.h"
+#include "perfbar.h"
 
 #include <boost/bind.hpp>
 
@@ -456,6 +457,8 @@ bool findEquipItem(const HierarchyNode &hrt, const IDBWeapon *weap, vector<int> 
 }
 
 bool Shop::runTick(const Keystates &keys, Player *player) {
+  PerfStack pst(PBC::shop);
+  
   if(keys.l.repeat && curloc.size() > 1) {
     queueSound(S::select);
     curloc.pop_back();
@@ -636,8 +639,11 @@ bool Shop::runTick(const Keystates &keys, Player *player) {
   if(hasInfo(getCurNode().type))
     cshopinf.runTick();
   
-  hierarchroot = itemDbRoot();
-  renormalize(hierarchroot, player, playercount, highestcash);
+  {
+    PerfStack pst(PBC::shopnormalize);
+    hierarchroot = itemDbRoot();
+    renormalize(hierarchroot, player, playercount, highestcash);
+  }
   
   if(equipselected) {
     curloc.clear();

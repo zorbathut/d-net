@@ -164,8 +164,11 @@ void MainLoop() {
       polling += bencher.ticksElapsed();
       bencher = Timer();
     }
-    if(interface.tick(controllers, game_seed))
-      quit = true;
+    {
+      PerfStack pst(PBC::tick);
+      if(interface.tick(controllers, game_seed))
+        quit = true;
+    }
     if(FLAGS_timing) {
       ticking += bencher.ticksElapsed();
       bencher = Timer();

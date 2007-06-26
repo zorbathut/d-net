@@ -10,6 +10,7 @@
 #include "inputsnag.h"
 #include "parse.h"
 #include "player.h"
+#include "perfbar.h"
 
 #include <numeric>
 
@@ -61,6 +62,8 @@ public:
 
 bool PersistentData::tick(const vector< Controller > &keys) {
   StackString sps("Persistentdata tick");
+  PerfStack pst(PBC::persistent);
+  
   CHECK(keys.size() == pms.size());
   
   // Update our sound info

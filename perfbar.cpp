@@ -10,7 +10,7 @@
 
 using namespace std;
 
-DEFINE_bool(perfbar, "Enable performance bar", false);
+DEFINE_bool(perfbar, false, "Enable performance bar");
 
 class PerfChunk {
 public:
