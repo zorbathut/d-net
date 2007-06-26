@@ -28,6 +28,7 @@ DEFINE_int(terminateAfter, -1, "Terminate execution after this many seconds");
 
 DEFINE_bool(frameskip, true, "Enable or disable frameskipping");
 DEFINE_bool(render, true, "Render shit");
+DEFINE_bool(timing, true, "Display timing information");
 
 long long polling = 0;
 long long waiting = 0;
@@ -66,14 +67,18 @@ void MainLoop() {
 
   time_t starttime = time(NULL);
 
+  Timer bencher;
+  
   while(!quit) {
-    //Timer bencher;
+    if(FLAGS_timing)
+      bencher = Timer();
     StackString sst(StringPrintf("Frame %d loop", frameNumber));
     tickHttpd();
     ffwd = (frameNumber < FLAGS_fastForwardTo);
     if(frameNumber == FLAGS_fastForwardTo)
       timer = Timer();    // so we don't end up sitting there for aeons waiting for another frame
-    //bencher = Timer();
+    if(FLAGS_timing)
+      bencher = Timer();
     SDL_Event event;
     while(SDL_PollEvent(&event)) {
       switch(event.type) {
@@ -153,17 +158,23 @@ void MainLoop() {
         fflush(outfile);
       }
     }
-    //polling += bencher.ticksElapsed();
-    //bencher = Timer();
+    if(FLAGS_timing) {
+      polling += bencher.ticksElapsed();
+      bencher = Timer();
+    }
     if(interface.tick(controllers, game_seed))
       quit = true;
-    //ticking += bencher.ticksElapsed();
-    //bencher = Timer();
+    if(FLAGS_timing) {
+      ticking += bencher.ticksElapsed();
+      bencher = Timer();
+    }
     if(frameNumber >= FLAGS_fastForwardTo) {
       timer.waitForNextFrame();
     }
-    //waiting += bencher.ticksElapsed();
-    //bencher = Timer();
+    if(FLAGS_timing) {
+      waiting += bencher.ticksElapsed();
+      bencher = Timer();
+    }
     if(FLAGS_render && (!FLAGS_frameskip || frameNumber % (ffwd ? 60 : 6) == 0 || (!ffwd || frameNumber % 60 == 0) && !timer.skipFrame())) {
       initFrame();
       interface.render();
@@ -177,7 +188,9 @@ void MainLoop() {
     } else {
       skipped++;
     }
-    //rendering += bencher.ticksElapsed();
+    if(FLAGS_timing) {
+      rendering += bencher.ticksElapsed();
+    }
     timer.frameDone();
     {
       int frameSplit;
