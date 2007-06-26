@@ -173,7 +173,7 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
       
       if(tt.inertia.first != Coord2(0, 0)) {
         doinshit = true;
-        const int MAX_COLLIDE_TESTS = 10;
+        const int MAX_COLLIDE_TESTS = 3;
         for(int j = 0; j < MAX_COLLIDE_TESTS; j++) {
           vector<Coord4> newpos = tt.getNextCollide();
           CHECK(cpos.size() == newpos.size());
@@ -196,29 +196,28 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
       StackString sst(StringPrintf("Moving player %d, status live %d", playerorder[i], tt.isLive()));
       //CHECK(inPath(tt.getNextPosition(keys[playerorder[i]], tt.pos, tt.d).first, gamemap.getCollide()[0]));
       CHECK(isInside(gmbc, tt.getNextPosition().first));
-      collider.dumpGroup(CollideId(CGR_TANK, playerorder[i], 0));
       vector<Coord4> newpos = tt.getNextCollide();
-      if(collider.checkSimpleCollision(CGR_TANK, playerorder[i], newpos)) {
-        dprintf("collisions are hard, let's go shopping\n");
+      if(doinshit && tt.inertia != make_pair(Coord2(0, 0), Coord(0)) && collider.checkSimpleCollision(CGR_TANK, playerorder[i], newpos)) {
+        //dprintf("collisions are hard, let's go shopping\n");
         tt.inertia = make_pair(Coord2(0, 0), Coord(0));
         newpos = tt.getNextCollide();
       }
-      if(doinshit && tt.inertia == make_pair(Coord2(0, 0), Coord(0))) {
+      if(doinshit && frameNumber % 4 == 0 && tt.inertia == make_pair(Coord2(0, 0), Coord(0))) {
         // hmm
-        dprintf("we seem to be kind of stuck, let's jitter a little");
         tt.inertia.first = makeAngle(Coord(rng->frand()) * COORDPI * 2) / 10;
         vector<Coord4> tnpos = tt.getNextCollide();
         if(collider.checkSimpleCollision(CGR_TANK, playerorder[i], tnpos)) {
-          dprintf("lol wut\n");
           tt.inertia.first = Coord2(0, 0);
         } else {
-          dprintf("kikass\n");
           newpos = tnpos;
         }
       }
-      for(int j = 0; j < newpos.size(); j++) {
-        //collider.addNormalToken(CollideId(CGR_TANK, playerorder[i], 0), cpos[j], cpos[j] - newpos[j]);
-        collider.addUnmovingToken(CollideId(CGR_TANK, playerorder[i], 0), newpos[j]);
+      if(tt.inertia != make_pair(Coord2(0, 0), Coord(0))) {
+        collider.dumpGroup(CollideId(CGR_TANK, playerorder[i], 0));
+        for(int j = 0; j < newpos.size(); j++) {
+          //collider.addNormalToken(CollideId(CGR_TANK, playerorder[i], 0), cpos[j], cpos[j] - newpos[j]);
+          collider.addUnmovingToken(CollideId(CGR_TANK, playerorder[i], 0), newpos[j]);
+        }
       }
     }
   }
