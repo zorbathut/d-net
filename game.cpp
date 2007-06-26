@@ -191,7 +191,8 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
             tt.inertia.first = Coord2(0, 0);  // wham!
             break;
           } else {
-            tt.inertia.first = makeAngle(ang + COORDPI / 2) * dot(tt.inertia.first, makeAngle(ang + COORDPI / 2));
+            Coord speed = dot(tt.inertia.first, makeAngle(ang + COORDPI / 2)) / Coord(players[playerorder[i]]->getTank().maxSpeed());
+            tt.inertia.first = makeAngle(ang + COORDPI / 2) * speed * Coord(players[playerorder[i]]->getTank().maxSpeed()) * Coord(0.8);
           }
         }
       }
