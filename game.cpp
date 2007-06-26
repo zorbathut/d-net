@@ -119,13 +119,15 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
         CHECK(0);
       }
       tanks[j].updateInertia(keys[j]);
-      tanks[j].addCollision(&collider, j);
+      
+      vector<Coord4> cpos = tanks[j].getCurrentCollide();
+      for(int k = 0; k < cpos.size(); k++)
+        collider.addUnmovingToken(CollideId(CGR_TANK, j, 0), cpos[k]);
     }
     
-    /*    // CPU-intensive :(
+    // CPU-intensive :(
     for(int j = 0; j < tanks.size(); j++)
       CHECK(!collider.checkSimpleCollision(CGR_TANK, j, tanks[j].getCurrentCollide()));
-    */
     
     vector<int> playerorder;
     {
@@ -143,33 +145,58 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
     }
     
     for(int i = 0; i < playerorder.size(); i++) {
-      
       CHECK(count(playerorder.begin(), playerorder.end(), playerorder[i]) == 1);
       CHECK(playerorder[i] >= 0 && playerorder[i] < tanks.size());
       
-      vector<Coord4> cpos = tanks[playerorder[i]].getCurrentCollide();
-      vector<Coord4> newpos = tanks[playerorder[i]].getNextCollide();
-      {
-        Tank test = tanks[playerorder[i]];
-        test.tick();
-        CHECK(newpos == test.getCurrentCollide());
-      }
-      CHECK(cpos.size() == newpos.size());
-      for(int j = 0; j < newpos.size(); j++)
-        newpos[j] -= cpos[j];
+      Tank &tt = tanks[playerorder[i]];
       
-      Coord ang;
-      if(collider.checkSingleCollision(CGR_TANK, playerorder[i], cpos, newpos, &ang)) {
-        tanks[playerorder[i]].inertia = make_pair(Coord2(0, 0), 0.f);  // wham!
-      } else {
-        StackString sst(StringPrintf("Moving player %d, status live %d", playerorder[i], tanks[playerorder[i]].isLive()));
-        //CHECK(inPath(tanks[playerorder[i]].getNextPosition(keys[playerorder[i]], tanks[playerorder[i]].pos, tanks[playerorder[i]].d).first, gamemap.getCollide()[0]));
-        CHECK(isInside(gmbc, tanks[playerorder[i]].getNextPosition().first));
-        collider.dumpGroup(CollideId(CGR_TANK, playerorder[i], 0));
-        for(int j = 0; j < newpos.size(); j++)
-          collider.addUnmovingToken(CollideId(CGR_TANK, playerorder[i], 0), newpos[j]);
+      vector<Coord4> cpos = tt.getCurrentCollide();
+      
+      // if the tank can turn without moving, we allow it to turn, otherwise we kill rotational inertia no matter what
+      if(tt.inertia.second != 0) {
+        Coord2 pinert = tt.inertia.first;
+        tt.inertia.first = Coord2(0, 0);
+        
+        vector<Coord4> newpos = tt.getNextCollide();
+        CHECK(cpos.size() == newpos.size());
+        for(int k = 0; k < newpos.size(); k++)
+          newpos[k] -= cpos[k];
+        
+        if(collider.checkSingleCollision(CGR_TANK, playerorder[i], cpos, newpos, NULL))
+          tt.inertia.second = 0;
+        
+        tt.inertia.first = pinert;
       }
-
+      
+      const int MAX_COLLIDE_TESTS = 1;
+      for(int j = 0; j < MAX_COLLIDE_TESTS; j++) {
+        vector<Coord4> newpos = tt.getNextCollide();
+        CHECK(cpos.size() == newpos.size());
+        for(int k = 0; k < newpos.size(); k++)
+          newpos[k] -= cpos[k];
+        
+        Coord ang;
+        if(!collider.checkSingleCollision(CGR_TANK, playerorder[i], cpos, newpos, &ang))
+          break;
+        
+        if(j == MAX_COLLIDE_TESTS - 1) {
+          tt.inertia.first = Coord2(0, 0);  // wham!
+          break;
+        } else {
+          CHECK(0);
+        }
+      }
+      
+      StackString sst(StringPrintf("Moving player %d, status live %d", playerorder[i], tt.isLive()));
+      //CHECK(inPath(tt.getNextPosition(keys[playerorder[i]], tt.pos, tt.d).first, gamemap.getCollide()[0]));
+      CHECK(isInside(gmbc, tt.getNextPosition().first));
+      collider.dumpGroup(CollideId(CGR_TANK, playerorder[i], 0));
+      vector<Coord4> newpos = tt.getNextCollide();
+      CHECK(!collider.checkSimpleCollision(CGR_TANK, playerorder[i], newpos));
+      for(int j = 0; j < newpos.size(); j++) {
+        //collider.addNormalToken(CollideId(CGR_TANK, playerorder[i], 0), cpos[j], cpos[j] - newpos[j]);
+        collider.addUnmovingToken(CollideId(CGR_TANK, playerorder[i], 0), newpos[j]);
+      }
     }
   }
   

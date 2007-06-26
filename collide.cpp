@@ -772,7 +772,8 @@ bool Collider::checkSingleCollision(int category, int gid, const vector<Coord4> 
   if(!clds.size())
     return false;
   
-  *ang = min_element(clds.begin(), clds.end())->second;
+  if(ang)
+    *ang = min_element(clds.begin(), clds.end())->second;
   return true;
 }
 
