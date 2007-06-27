@@ -3,7 +3,6 @@
   - Bugfixes from games
     - Bump things away from walls a bit to help with slide
     - Drone proximity doesn't work
-    - Weapons should be 1-4, not 0-3
     - Equip categories shouldn't be selectable
     - Put Sparker in the equip menu
     - Auto-equip the first weapon, auto-equip things into damage-type slots?
@@ -18,6 +17,8 @@
     - Re-enable weapon checks
     - Add trap behavior
     - Add exotic behavior
+    - Add glory behavior
+      - Make sure they don't spike CPU too badly
     - Special autocannon
     - Special laser
     - Special missile

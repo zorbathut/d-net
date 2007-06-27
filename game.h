@@ -86,6 +86,8 @@ private:
   
   void initCommon(const vector<Player*> &playerdata, const vector<Color> &in_colors, const vector<vector<Coord2> > &level, bool smashable);
   void initRandomTankPlacement(const map<int, vector<pair<Coord2, Coord> > > &player_starts, Rng *rng);
+
+  void checkLevelSanity() const;
   
   void addTankStatusText(int tankid, const string &text, float duration);
 

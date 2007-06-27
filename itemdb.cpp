@@ -839,7 +839,6 @@ void parseWeapon(kvData *chunk, bool reload, ErrorAccumulator &accum) {
     titem->base_cost = Money(0);
   }
   
-  titem->name = informal_name;
   titem->firerate = atof(chunk->consume("firerate").c_str());
   
   titem->launcher = parseSubclass(chunk->consume("launcher"), launcherclasses);
@@ -1718,4 +1717,16 @@ const string &nameFromIDB(const IDBGlory *idbw) {
 static map<const IDBBombardment *, string> bombardmentclasses_reverse;
 const string &nameFromIDB(const IDBBombardment *idbw) {
   return nameFromIDBImp(idbw, bombardmentclasses, &bombardmentclasses_reverse);
+}
+
+static map<const IDBTank *, string> tankclasses_reverse;
+const string &nameFromIDB(const IDBTank *idbw) {
+  return nameFromIDBImp(idbw, tankclasses, &tankclasses_reverse);
+}
+
+string informalNameFromIDB(const IDBWeapon *idbw) {
+  return tokenize(nameFromIDB(idbw), ".").back();
+}
+string informalNameFromIDB(const IDBWeaponAdjust &idbwa) {
+  return informalNameFromIDB(idbwa.base());
 }

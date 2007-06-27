@@ -24,7 +24,7 @@ public:
     if(!rhs)
       return true;
     CHECK(lhs && rhs);
-    return lhs->name < rhs->name;
+    return informalNameFromIDB(lhs) < informalNameFromIDB(rhs);
   }
 };
 
@@ -41,7 +41,7 @@ void Shop::renormalize(HierarchyNode &item, const Player *player, int playercoun
         hod.displaymode = HierarchyNode::HNDM_BLANK;
         hod.buyable = false;
         if(i < SIMUL_WEAPONS) {
-          hod.name = StringPrintf("Weapon system %d", i);
+          hod.name = StringPrintf("Weapon system %d", i + 1);
         } else if(i == WMSPC_UNEQUIPPED) {
           hod.name = "Offline weapons";
         } else if(i == WMSPC_NEW) {
@@ -57,7 +57,7 @@ void Shop::renormalize(HierarchyNode &item, const Player *player, int playercoun
         hod.cat_restrictiontype = HierarchyNode::HNT_EQUIP_CAT;
         hod.displaymode = HierarchyNode::HNDM_EQUIP;
         hod.buyable = true;
-        hod.name = weaps[i][j]->name;
+        hod.name = informalNameFromIDB(weaps[i][j]);
         hod.pack = 1;
         hod.equipweapon = weaps[i][j];
         hod.equipweaponfirst = !j && i < SIMUL_WEAPONS;
@@ -87,7 +87,7 @@ void Shop::renormalize(HierarchyNode &item, const Player *player, int playercoun
       hod.cat_restrictiontype = HierarchyNode::HNT_SELLWEAPON;
       hod.displaymode = HierarchyNode::HNDM_COST;
       hod.buyable = true;
-      hod.name = (*itr)->name;
+      hod.name = informalNameFromIDB(*itr);
       hod.pack = 1;
       hod.sellweapon = *itr;
       item.branches.push_back(hod);

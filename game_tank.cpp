@@ -499,10 +499,10 @@ void Tank::tryToFire(Button keys[SIMUL_WEAPONS], Player *player, ProjectilePack 
         glory_resist_boost_frames = weaponCooldown;
         
       // hack here to detect weapon out-of-ammo
-      string lastname = weapon.name();
+      string lastname = informalNameFromIDB(weapon);
       *firepowerSpent += player->shotFired(curfire);
-      if(weapon.name() != lastname) {
-        status_text->push_back(make_pair(weapon.name(), 2));
+      if(informalNameFromIDB(weapon) != lastname) {
+        status_text->push_back(make_pair(informalNameFromIDB(weapon), 2));
       }
       
       {

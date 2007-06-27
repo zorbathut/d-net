@@ -10,7 +10,7 @@ class GameAiKamikaze;
 class GameAiMining;
 class GameAiTraversing;
 
-class ShopDemo {
+class ShopDemo : boost::noncopyable{
 public:
   void init(const IDBWeapon *weap, const Player *player, Recorder *recorder);
   void init(const IDBBombardment *weap, const Player *player, Recorder *recorder);
@@ -49,9 +49,7 @@ private:
   vector<GameAiMining *> mine_miners;
   GameAiTraversing *mine_traverser;
 
-  // don't use
-  ShopDemo(const ShopDemo &rhs);
-  void operator=(const ShopDemo &rhs);
+  string identifier;
 };
 
 #endif

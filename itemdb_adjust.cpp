@@ -186,8 +186,6 @@ IDBLauncherAdjust::IDBLauncherAdjust(const IDBLauncher *in_idb, const IDBAdjustm
  * IDBWeaponAdjust
  */
 
-const string &IDBWeaponAdjust::name() const { return idb->name; };
-
 IDBLauncherAdjust IDBWeaponAdjust::launcher() const { return IDBLauncherAdjust(idb->launcher, adjust); };
 
 int framesForCooldownEngine(float frames_per_shot, Rng *rng) {
@@ -233,6 +231,7 @@ float IDBWeaponAdjust::stats_damagePerSecondType(int type) const {
 float IDBWeaponAdjust::stats_costPerDamage() const { return (float)cost_pack().value() / idb->quantity / launcher().stats_damagePerShot(); }
 float IDBWeaponAdjust::stats_costPerSecond() const { return (float)cost_pack().value() / idb->quantity * firerate(); }
 
+const IDBWeapon *IDBWeaponAdjust::base() const { return idb; }
 IDBWeaponAdjust::IDBWeaponAdjust(const IDBWeapon *in_idb, const IDBAdjustment &in_adjust) { idb = in_idb; adjust = in_adjust; };
 
 /*************

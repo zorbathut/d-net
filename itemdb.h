@@ -166,8 +166,6 @@ struct IDBLauncher {
 };
 
 struct IDBWeapon {
-  string name;
-
   float firerate;
   const IDBLauncher *launcher;
 
@@ -415,8 +413,6 @@ struct IDBWeaponAdjust {
 public:
   typedef IDBWeapon base_type;
 
-  const string &name() const;
-
   IDBLauncherAdjust launcher() const;
 
   int framesForCooldown(Rng *rng) const;
@@ -433,6 +429,7 @@ public:
   float stats_costPerDamage() const;
   float stats_costPerSecond() const;
 
+  const base_type *base() const;
   IDBWeaponAdjust(const base_type *in_idb, const IDBAdjustment &in_adjust);
 };
 template<> struct IDBItemProperties<IDBWeaponAdjust::base_type> {
@@ -530,7 +527,6 @@ public:
   Money sellcost() const;
 
   const IDBTank *base() const;
-
   IDBTankAdjust(const base_type *in_idb, const IDBAdjustment &in_adjust);
 };
 template<> struct IDBItemProperties<IDBTankAdjust::base_type> {
@@ -686,5 +682,9 @@ const string &nameFromIDB(const IDBWeapon *idbw);
 const string &nameFromIDB(const IDBWarhead *idbw);
 const string &nameFromIDB(const IDBBombardment *bombard);
 const string &nameFromIDB(const IDBGlory *glory);
+const string &nameFromIDB(const IDBTank *tank);
+
+string informalNameFromIDB(const IDBWeapon *idbw);
+string informalNameFromIDB(const IDBWeaponAdjust &idbwa);
 
 #endif

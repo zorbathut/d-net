@@ -250,6 +250,7 @@ const int glory_progression[] = { 6000, 0 };
 
 void ShopDemo::init(const IDBWeapon *weap, const Player *player, Recorder *recorder) {
   StackString sst("Initting demo weapon shop");
+  identifier = "weapon " + nameFromIDB(weap) + " with tank " + nameFromIDB(player->getTank().base());
   
   int primary = -1;
   
@@ -297,14 +298,18 @@ void ShopDemo::init(const IDBWeapon *weap, const Player *player, Recorder *recor
         } else {
           dist_max = dist_cen;
         }
-        //dprintf("dist_cen is %f\n", dist_cen);
       }
+      
+      dprintf("dist_max is %f\n", dist_max);
+      dist_max += 0.1;
+      
+      CHECK(getPathRelation(tank.getTankVertices(Coord2(weapons_xpses_melee[4], weapons_ypses_melee[4]), Coord(facing[4])), tank.getTankVertices(Coord2(basetest + makeAngle(-PI / 4) * dist_max), Coord(weapons_facing[5]))) != PR_INTERSECT);
       
       float wxm[ARRAY_SIZE(weapons_xpses_melee)];
       float wym[ARRAY_SIZE(weapons_xpses_melee)];
       memcpy(wxm, weapons_xpses_melee, sizeof(wxm));
       memcpy(wym, weapons_ypses_melee, sizeof(wym));
-      Float2 newpos = basetest + makeAngle(-PI / 4) * (dist_max + 0.1);
+      Float2 newpos = basetest + makeAngle(-PI / 4) * dist_max;
       wxm[5] = newpos.x;
       wym[5] = newpos.y;
       game.game.initDemo(&game.players, 40, wxm, wym, facing, weapons_teams, weapons_mode, false, Float2(-10, 8), recorder); // this is kind of painful
@@ -359,6 +364,7 @@ void ShopDemo::init(const IDBWeapon *weap, const Player *player, Recorder *recor
 
 void ShopDemo::init(const IDBBombardment *bombard, const Player *player, Recorder *recorder) {
   StackString sst("Initting demo bombardment shop");
+  identifier = "bombardment " + nameFromIDB(bombard);
   mode = DEMOMODE_BOMBARDMENT;
   
   game.players.clear();
@@ -395,6 +401,7 @@ void ShopDemo::init(const IDBBombardment *bombard, const Player *player, Recorde
 
 void ShopDemo::init(const IDBGlory *glory, const Player *player, Recorder *recorder) {
   StackString sst("Initting demo glory shop");
+  identifier = "glory " + nameFromIDB(glory);
   mode = DEMOMODE_GLORY;
   
   game.players.clear();
@@ -467,6 +474,7 @@ int ShopDemo::getMultiplier() const {
 }
 
 void ShopDemo::runSingleTick() {
+  StackString sst("Demo tick " + identifier);
   if(mode == DEMOMODE_FIRINGRANGE) {
   } else if(mode == DEMOMODE_MINE) {
     if(!mine_mined) {
@@ -556,5 +564,5 @@ void ShopDemo::dumpMetastats(Recorder *recorder) const {
   game.game.dumpMetastats(recorder);
 }
 
-ShopDemo::ShopDemo() { };
+ShopDemo::ShopDemo() { identifier = "uninitialized"; };
 ShopDemo::~ShopDemo() { };

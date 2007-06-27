@@ -1042,6 +1042,20 @@ void Game::initRandomTankPlacement(const map<int, vector<pair<Coord2, Coord> > >
   }
 }
 
+void Game::checkLevelSanity() const {
+  Collider ct = collider;
+  Gamemap gm = gamemap;
+  vector<int> teamids;
+  for(int i = 0; i < tanks.size(); i++)
+    teamids.push_back(tanks[i].team);
+  ct.cleanup(COM_PLAYER, gm.getCollisionBounds(), teamids);
+  gm.updateCollide(&ct);
+  for(int i = 0; i < tanks.size(); i++)
+    tanks[i].addCollision(&ct, i);
+  for(int i = 0; i < tanks.size(); i++)
+    CHECK(!ct.checkSimpleCollision(CGR_TANK, i, tanks[i].getCurrentCollide()));
+}
+
 vector<Color> createBasicColors(const vector<Player*> &in_playerdata) {
   vector<Color> rv;
   for(int i = 0; i < in_playerdata.size(); i++)
@@ -1062,6 +1076,8 @@ void Game::initStandard(vector<Player> *in_playerdata, const Level &lev, Rng *rn
   
   frameNmToStart = 180;
   freezeUntilStart = true;
+  
+  checkLevelSanity();
 };
 
 void Game::initChoice(vector<Player> *in_playerdata, Rng *rng) {
@@ -1108,6 +1124,8 @@ void Game::initChoice(vector<Player> *in_playerdata, Rng *rng) {
   
   frameNmToStart = -1;
   freezeUntilStart = false;
+  
+  checkLevelSanity();
 }
 
 void Game::initTest(Player *in_playerdata, const Float4 &bounds) {
@@ -1131,6 +1149,8 @@ void Game::initTest(Player *in_playerdata, const Float4 &bounds) {
   tanks[0].d = COORDPI / 2 * 3;
   
   clear = bounds;
+  
+  checkLevelSanity();
 }
 
 void Game::initDemo(vector<Player> *in_playerdata, float boxradi, const float *xps, const float *yps, const float *facing, const int *in_teams, const int *modes, bool blockades, Float2 hudpos, Recorder *recorder) {
@@ -1204,6 +1224,8 @@ void Game::initDemo(vector<Player> *in_playerdata, float boxradi, const float *x
   
   for(int i = 0; i < tanks.size(); i++)
     CHECK(tanks[i].team >= 0 && tanks[i].team < teams.size());
+  
+  checkLevelSanity();
 }
 
 void Game::initCenteredDemo(Player *in_playerdata, float zoom) {
@@ -1232,6 +1254,8 @@ void Game::initCenteredDemo(Player *in_playerdata, float zoom) {
   tanks[0].d = COORDPI / 2 * 3;
   
   collider = Collider(tanks.size(), Coord(1000));
+  
+  checkLevelSanity();
 }
 
 void Game::addTankStatusText(int tankid, const string &text, float duration) {
