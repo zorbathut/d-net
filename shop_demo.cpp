@@ -222,7 +222,7 @@ public:
 const float weapons_xpses_normal[] = { -80, -80, 0, 0, 80, 80 };
 const float weapons_ypses_normal[] = { 120, -120, 120, -40, 120, 40 };
 const float weapons_xpses_melee[] = { -20, -20, 0, 0, 20, 20 };
-const float weapons_ypses_melee[] = { 6, -7, 6, -3, 6, 6 };
+const float weapons_ypses_melee[] = { 6, -10, 6, -4, 6, 6 };
 const float weapons_facing[] = { PI * 3 / 2, PI / 2, PI * 3 / 2, PI / 2, PI * 3 / 2, PI / 2 };
 const float weapons_facing_back[] = { PI / 2, PI / 2, PI / 2, PI / 2, PI / 2, PI / 2 };
 const int weapons_teams[] = { 0, 1, 0, 1, 0, 1 };
