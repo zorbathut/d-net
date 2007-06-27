@@ -285,15 +285,17 @@ void ShopDemo::init(const IDBWeapon *weap, const Player *player, Recorder *recor
       game.game.initDemo(&game.players, 160, weapons_xpses_normal, weapons_ypses_normal, facing, weapons_teams, weapons_mode, false, Float2(5, 5), recorder);
     } else if(weap->launcher->firingrange_distance == WFRD_MELEE) {
       CHECK(ARRAY_SIZE(weapons_facing) == 6);
-      Tank tank;
-      tank.init(game.players[0].getTank(), Color(1, 1, 1));
+      Tank tankmajor;
+      Tank tankminor;
+      tankmajor.init(game.players[0].getTank(), Color(1, 1, 1));
+      tankminor.init(game.players[1].getTank(), Color(1, 1, 1));
       Float2 basetest(weapons_xpses_melee[5], weapons_ypses_melee[5]);
       float dist_min = 0.1;
       float dist_max = 10;
       while(dist_max - dist_min > 0.01) {
         float dist_cen = (dist_min + dist_max) / 2;
         Float2 pos = basetest + makeAngle(-PI / 4) * dist_cen;
-        if(getPathRelation(tank.getTankVertices(Coord2(weapons_xpses_melee[4], weapons_ypses_melee[4]), Coord(facing[4])), tank.getTankVertices(Coord2(pos), Coord(weapons_facing[5]))) == PR_INTERSECT) {
+        if(getPathRelation(tankmajor.getTankVertices(Coord2(weapons_xpses_melee[4], weapons_ypses_melee[4]), Coord(facing[4])), tankminor.getTankVertices(Coord2(pos), Coord(weapons_facing[5]))) == PR_INTERSECT) {
           dist_min = dist_cen;
         } else {
           dist_max = dist_cen;
@@ -303,7 +305,7 @@ void ShopDemo::init(const IDBWeapon *weap, const Player *player, Recorder *recor
       dprintf("dist_max is %f\n", dist_max);
       dist_max += 0.1;
       
-      CHECK(getPathRelation(tank.getTankVertices(Coord2(weapons_xpses_melee[4], weapons_ypses_melee[4]), Coord(facing[4])), tank.getTankVertices(Coord2(basetest + makeAngle(-PI / 4) * dist_max), Coord(weapons_facing[5]))) != PR_INTERSECT);
+      CHECK(getPathRelation(tankminor.getTankVertices(Coord2(weapons_xpses_melee[4], weapons_ypses_melee[4]), Coord(facing[4])), tankminor.getTankVertices(Coord2(basetest + makeAngle(-PI / 4) * dist_max), Coord(weapons_facing[5]))) != PR_INTERSECT);
       
       float wxm[ARRAY_SIZE(weapons_xpses_melee)];
       float wym[ARRAY_SIZE(weapons_xpses_melee)];
