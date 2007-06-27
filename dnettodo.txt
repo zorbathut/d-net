@@ -18,6 +18,7 @@
     - Add trap behavior
     - Add exotic behavior
     - Add glory behavior
+      - Buff up the first glory's blast radius a bit
       - Make sure they don't spike CPU too badly
     - Special autocannon
     - Special laser

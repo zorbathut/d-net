@@ -864,6 +864,8 @@ void Game::respawnPlayer(int id, Coord2 pos, Coord facing) {
   
   bombards[id].state = BombardmentState::BS_OFF;
   CHECK(tanks[id].isLive());
+  
+  checkLevelSanity();
 }
 
 void Game::addStatCycle() {

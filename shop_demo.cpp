@@ -104,7 +104,7 @@ class GameAiKamikaze : public GameAi {
   
   void updateGameWork(const vector<Tank> &players, int me) {
     float dist = len(players[targetid].pos - players[me].pos).toFloat();
-    if(dist <= rad || abs(dist - lastrad) < 0.0001) {
+    if(dist <= rad || rad > lastrad || abs(dist - lastrad) < 0.01) {
       ready = true;
     } else {
       nextKeys.udlrax.y = 1;
@@ -120,6 +120,7 @@ public:
     return ready;
   }
   void exploded() {
+    lastrad = 1e9;
     ready = false;
   }
   
@@ -243,7 +244,7 @@ const int bombardment_mode[] = { DEMOPLAYER_DPC, DEMOPLAYER_BOMBSIGHT, DEMOPLAYE
 const int bombardment_progression[] = { 6000, 0 };
 
 const float glory_xpses[] = { -0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5 };
-const float glory_ypses[] = { -0.5, -0.5, -0.5, -0.5, 0.5, 0.5, 0.5, 0.5 };
+const float glory_ypses[] = { -0.5, -0.25, -0.5, -0.25, 0.5, 0.25, 0.5, 0.25 };
 const int glory_teams[] = { 0, 1, 0, 1, 0, 1, 0, 1 };
 const int glory_mode[] = { DEMOPLAYER_DPC, DEMOPLAYER_QUIET, DEMOPLAYER_DPC, DEMOPLAYER_QUIET, DEMOPLAYER_DPC, DEMOPLAYER_QUIET, DEMOPLAYER_DPC, DEMOPLAYER_QUIET };
 const int glory_progression[] = { 6000, 0 };
@@ -455,10 +456,9 @@ void ShopDemo::init(const IDBGlory *glory, const Player *player, Recorder *recor
 void ShopDemo::glory_respawnPlayers() {
   for(int i = 0; i < game.players.size(); i += 2) {
     Coord2 pos = game.game.queryPlayerLocation(i);
-    float facing = unsync().frand() * 2 * PI;
-    Coord2 dir = makeAngle(Coord(facing));
-    pos += dir * 40;
-    game.game.respawnPlayer(i + 1, pos, Coord(facing) + COORDPI);
+    Coord facing = Coord(unsync().frand()) * 2 * COORDPI;
+    pos += makeAngle(facing) * 40;
+    game.game.respawnPlayer(i + 1, pos, facing + COORDPI);
   }
 };
 
