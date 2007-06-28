@@ -115,4 +115,7 @@ bool withinEpsilon(float a, float b, float e);
 
 float lerp(float lhs, float rhs, float dist);
 
+void addErrorMessage(const string &str);
+vector<string> returnErrorMessages();
+
 #endif

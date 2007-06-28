@@ -1,6 +1,8 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - Bugfixes from games
+    - Move cash off to the side
+    - Slowdown with lots of weapons?
     - Bump things away from walls a bit to help with slide
     - Drone proximity doesn't work
     - Equip categories shouldn't be selectable

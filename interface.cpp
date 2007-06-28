@@ -453,8 +453,6 @@ void InterfaceMain::ai(const vector<Ai *> &ai) const {
   }
 }
 
-extern int lastFailedFrame;
-
 bool tankCostSorter(const pair<string, IDBTank> &lhs, const pair<string, IDBTank> &rhs) {
   //return lhs.first < rhs.first;
   if(lhs.second.base_cost != rhs.second.base_cost)
@@ -535,10 +533,10 @@ void InterfaceMain::render() const {
   
   StackString stp("Interface rendering");
   
-  if(lastFailedFrame + 600 > frameNumber) {
+  for(int i = 0; i < returnErrorMessages().size(); i++) {
     setZoomCenter(0, 0, 100);
     setColor(1.0, 1.0, 1.0);
-    drawJustifiedText("A Lion", 30, Float2(0, 0), TEXT_CENTER, TEXT_CENTER);
+    drawJustifiedText(returnErrorMessages()[i], 30, Float2(0, 0), TEXT_CENTER, TEXT_CENTER);
   }
   
   if(interface_mode == STATE_MAINMENU) {
@@ -635,7 +633,7 @@ InterfaceMain::InterfaceMain() {
     start = 0;
   else
     start = FLAGS_startingPhase;
-  end = names.size() - 1;
+  end = names.size();
   moneyexp = 0.1133;
   
   faction = FLAGS_factionMode + 1;

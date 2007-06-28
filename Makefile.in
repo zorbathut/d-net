@@ -60,7 +60,7 @@ asm: $(GAMESOURCES:=.S) makefile
 clean:
 	rm -rf *.o *.exe *.d *.S data/shopcache.dwh $(patsubst %,data/base/%.dwh,$(MERGETYPES)) *.csv
 
-STDRUN = --nofullscreen --debugitems --startingPhase=8 --debugControllers=2 --factionMode=0 --nullControllers=11 --writeTarget= --auto_newgame --nocullShopTree --httpd_port=616 --noshopcache --runTests --noaudio --perfbar
+STDRUN = --nofullscreen --debugitems --startingPhase=7 --debugControllers=2 --factionMode=0 --nullControllers=11 --writeTarget= --auto_newgame --nocullShopTree --httpd_port=616 --noshopcache --runTests --noaudio --perfbar
 
 run: d-net
 	./d-net.exe $(STDRUN)
@@ -87,7 +87,7 @@ aisc: d-net data/shopcache.dwh
 	./d-net.exe --nofullscreen --aiCount=16 --fastForwardTo=100000000 --factionMode=3 --perfbar
 
 ailoop: d-net
-	while ./d-net.exe --nofullscreen --aiCount=12 --fastForwardTo=100000000 --terminateAfter=600 --startingPhase=8 --httpd_port=616 --noshopcache ; do echo Cycle. ; done
+	while ./d-net.exe --nofullscreen --aiCount=12 --fastForwardTo=100000000 --factionmode=3 --terminateAfter=600 --startingPhase=7 --noshopcache ; do echo Cycle. ; done
 
 veced: vecedit
 	./vecedit.exe

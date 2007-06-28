@@ -271,3 +271,17 @@ bool withinEpsilon(float a, float b, float e) {
 float lerp(float lhs, float rhs, float dist) {
   return lhs * (1.0 - dist) + rhs * dist;
 }
+
+static vector<pair<int, string> > errs;
+
+void addErrorMessage(const string &str) {
+  errs.push_back(make_pair(frameNumber, str));
+}
+vector<string> returnErrorMessages() {
+  while(errs.size() && errs[0].first < frameNumber + 600)
+    errs.erase(errs.begin());
+  vector<string> rv;
+  for(int i = 0; i < errs.size(); i++)
+    rv.push_back(errs[i].second);
+  return rv;
+}
