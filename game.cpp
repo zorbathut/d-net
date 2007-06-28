@@ -128,9 +128,31 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
         collider.addUnmovingToken(CollideId(CGR_TANK, j, 0), cpos[k]);
     }
     
-    // CPU-intensive :(
-    for(int j = 0; j < tanks.size(); j++)
-      CHECK(!collider.checkSimpleCollision(CGR_TANK, j, tanks[j].getCurrentCollide()));
+    for(int j = 0; j < tanks.size(); j++) {
+      if(collider.checkSimpleCollision(CGR_TANK, j, tanks[j].getCurrentCollide())) {
+        // FUCK
+        // ASS
+        dprintf("FUCK ASS");
+        addErrorMessage("A Zebra");
+        float delta = 0.1;
+        Coord2 ps = tanks[j].pos;
+        Coord d = tanks[j].d;
+        while(1) {
+          dprintf("Moving with delta %f\n", delta);
+          tanks[j].pos = ps + Coord2(makeAngle(rng->frand() * 2 * PI) * rng->gaussian() * delta);
+          tanks[j].d = d + Coord(rng->gaussian() * delta / 10);
+          if(!collider.checkSimpleCollision(CGR_TANK, j, tanks[j].getCurrentCollide())) {
+            collider.dumpGroup(CollideId(CGR_TANK, j, 0));
+            vector<Coord4> cpos = tanks[j].getCurrentCollide();
+            for(int k = 0; k < cpos.size(); k++)
+              collider.addUnmovingToken(CollideId(CGR_TANK, j, 0), cpos[k]);
+            dprintf("SUCCESS (kind of)");
+            break;
+          }
+        }
+      }
+    }
+    
     
     vector<int> playerorder;
     {
