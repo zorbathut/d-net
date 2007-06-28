@@ -134,7 +134,7 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
         // ASS
         dprintf("FUCK ASS");
         addErrorMessage("A Zebra");
-        float delta = 0.1;
+        float delta = 0.01;
         Coord2 ps = tanks[j].pos;
         Coord d = tanks[j].d;
         while(1) {
@@ -149,6 +149,7 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
             dprintf("SUCCESS (kind of)");
             break;
           }
+          delta *= 2;
         }
       }
     }
