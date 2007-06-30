@@ -214,8 +214,23 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
             tt.inertia.first = Coord2(0, 0);  // wham!
             break;
           } else {
-            Coord speed = dot(tt.inertia.first, makeAngle(ang + COORDPI / 2)) / Coord(players[playerorder[i]]->getTank().maxSpeed());
-            tt.inertia.first = makeAngle(ang + COORDPI / 2) * speed * Coord(players[playerorder[i]]->getTank().maxSpeed()) * Coord(0.8);
+            Coord2 mang = makeAngle(ang + COORDPI / 2);
+            Coord speed = dot(tt.inertia.first, mang) / Coord(players[playerorder[i]]->getTank().maxSpeed());
+            if(speed < 0) {
+              speed = -speed;
+              mang = -mang;
+            }
+            Coord2 dir = normalize(lerp(mang, Coord2(normalize(reflect(tt.inertia.first.toFloat(), ang.toFloat()))), Coord(0.1)));
+            /*
+            for(int k = 0; k < 10; k++)
+              gfxeffects.push_back(GfxPoint(tanks[playerorder[i]].pos.toFloat(), makeAngle(ang.toFloat()) * 100, 0.1, C::gray(1.0)));
+            for(int k = 0; k < 10; k++)
+              gfxeffects.push_back(GfxPoint(tanks[playerorder[i]].pos.toFloat(), tt.inertia.first.toFloat() * 100, 0.1, Color(1.0, 0, 0)));
+            for(int k = 0; k < 10; k++)
+              gfxeffects.push_back(GfxPoint(tanks[playerorder[i]].pos.toFloat(), normalize(reflect(tt.inertia.first.toFloat(), ang.toFloat())) * 100, 0.1, Color(0, 1.0, 0)));
+            for(int k = 0; k < 10; k++)
+              gfxeffects.push_back(GfxPoint(tanks[playerorder[i]].pos.toFloat(), dir.toFloat() * 100, 0.1, Color(0, 0, 1.0)));*/
+            tt.inertia.first = dir * speed * Coord(players[playerorder[i]]->getTank().maxSpeed()) * Coord(0.8);
           }
         }
       }
