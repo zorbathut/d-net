@@ -1,18 +1,17 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - Bugfixes from games
-    - Move cash off to the side
-    - Slowdown with lots of weapons?
-    - Bump things away from walls a bit to help with slide
     - Drone proximity doesn't work
-    - Equip categories shouldn't be selectable
-    - Put Sparker in the equip menu
-    - Auto-equip the first weapon, auto-equip things into damage-type slots?
+    - Move cash off to the side
+    - Bump things away from walls a bit to help with slide
     - Raise spread of autocannons a bit
-    - Figure out a good meaning for the trees faction
+    - Put Sparker in the equip menu
+    - Equip categories shouldn't be selectable
     - Look over tank balance yet again for the first weird tanks
-    - Check if the new snipe code works
-      - Link handling to engine a little
+    - Slowdown with lots of weapons?
+    - Auto-equip the first weapon, auto-equip things into damage-type slots?
+    - Figure out a good meaning for the trees faction
+    - Link handling to engine a little
   - Many many more weapons
     - Add implementations for all trap weapons
     - Add implementations for all exotic weapons
