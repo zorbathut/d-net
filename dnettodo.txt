@@ -1,7 +1,6 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - Bugfixes from games
-    - Bump things away from walls a bit to help with slide
     - Add perfbar to rendering
     - Put Sparker in the equip menu
     - Equip categories shouldn't be selectable

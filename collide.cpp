@@ -496,7 +496,12 @@ bool CollideZone::checkSingleCollision(int groupid, vector<pair<Coord, Coord> > 
           if(unlikely(doCompare(&tx[xa], &cpiece[ya], &cd))) {
             if(unlikely(cd.first != NOCOLLIDE)) {
               CHECK(cd.first >= 0 && cd.first <= 1);
-              clds->push_back(make_pair(cd.first, getAngle(lerp(tx[xa].pos, tx[xa].pos + tx[xa].vel, cd.first).vector()).toFloat() + PI / 2));
+              //dprintf("%f %f\n", len(cd.second - lerp(tx[xa].pos.s(), tx[xa].pos.s() + tx[xa].vel.s(), cd.first)), len(cd.second - lerp(tx[xa].pos.e(), tx[xa].pos.e() + tx[xa].vel.e(), cd.first)));
+              if(len(cd.second - lerp(tx[xa].pos.s(), tx[xa].pos.s() + tx[xa].vel.s(), cd.first)) < Coord(0.0001) || len(cd.second - lerp(tx[xa].pos.e(), tx[xa].pos.e() + tx[xa].vel.e(), cd.first)) < Coord(0.0001)) {
+                clds->push_back(make_pair(cd.first, getAngle(lerp(cpiece[ya].pos, cpiece[ya].pos + cpiece[ya].vel, cd.first).vector()).toFloat() + PI / 2));
+              } else {
+                clds->push_back(make_pair(cd.first, getAngle(lerp(tx[xa].pos, tx[xa].pos + tx[xa].vel, cd.first).vector()).toFloat() + PI / 2));
+              }
             }
           }
         }
