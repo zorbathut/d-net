@@ -1,7 +1,6 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - Bugfixes from games
-    - Drone proximity doesn't work
     - Move cash off to the side
     - Bump things away from walls a bit to help with slide
     - Put Sparker in the equip menu

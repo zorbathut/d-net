@@ -649,7 +649,7 @@ text {
 warhead {
   name=warhead.bombardment.explorerdrone
   radiusdamage=MERGE exotic
-  radiusfalloff=4
+  radiusfalloff=6
   radiusexplosive=0.5
   wallremovalradius=2
 }
@@ -696,7 +696,7 @@ text {
 warhead {
   name=warhead.bombardment.hunterdrone
   radiusdamage=MERGE exotic
-  radiusfalloff=4.5
+  radiusfalloff=6.25
   radiusexplosive=0.5
   wallremovalradius=2.25
 }
@@ -743,7 +743,7 @@ text {
 warhead {
   name=warhead.bombardment.slayerdrone
   radiusdamage=MERGE exotic
-  radiusfalloff=5
+  radiusfalloff=6.5
   radiusexplosive=0.5
   wallremovalradius=2.5
 }
@@ -790,7 +790,7 @@ text {
 warhead {
   name=warhead.bombardment.butcherdrone
   radiusdamage=MERGE exotic
-  radiusfalloff=5.5
+  radiusfalloff=6.75
   radiusexplosive=0.5
   wallremovalradius=2.75
 }
@@ -837,7 +837,7 @@ text {
 warhead {
   name=warhead.bombardment.eliminatordrone
   radiusdamage=MERGE exotic
-  radiusfalloff=6
+  radiusfalloff=7
   radiusexplosive=0.5
   wallremovalradius=3
 }
@@ -884,7 +884,7 @@ text {
 warhead {
   name=warhead.bombardment.liquidatordrone
   radiusdamage=MERGE exotic
-  radiusfalloff=6.5
+  radiusfalloff=7.25
   radiusexplosive=0.5
   wallremovalradius=3.25
 }
