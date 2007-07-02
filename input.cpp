@@ -60,6 +60,10 @@ string Button::stringize() const {
   return rv;
 };
 
+bool operator==(const Button &lhs, const Button &rhs) {
+  return lhs.down == rhs.down && lhs.push == rhs.push && lhs.release == rhs.release && lhs.repeat == rhs.repeat && lhs.dur == rhs.dur && lhs.sincerep == rhs.sincerep;
+}
+
 void Controller::newState(const Controller &nst) {
   menu = nst.menu;
   lastaxes = axes;
@@ -75,6 +79,10 @@ void Controller::newState(const Controller &nst) {
 
 Controller::Controller() {
   menu = Float2(0, 0);
+}
+
+bool operator==(const Controller &lhs, const Controller &rhs) {
+  return lhs.menu == rhs.menu && lhs.u == rhs.u && lhs.d == rhs.d && lhs.l == rhs.r && lhs.r == rhs.r && lhs.axes == rhs.axes && lhs.lastaxes == rhs.lastaxes && lhs.keys == rhs.keys;
 }
 
 void Keystates::nullMove() {

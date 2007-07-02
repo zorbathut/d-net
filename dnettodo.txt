@@ -25,6 +25,7 @@
     - OGRE
   - Eventual bugfixes
     - Write a better allocator
+    - Lever tanks off walls when they turn?
     - Remove bombardment level visualization, and de-integer it
     - Get rid of old weapons as they become obsolete
     - Add commas to large numbers in shop info

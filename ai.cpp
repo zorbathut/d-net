@@ -5,6 +5,8 @@
 #include "metagame_config.h"
 #include "player.h"
 
+#include <list>
+
 using namespace std;
 
 void GameAiStandard::updateGameWork(const vector<Tank> &players, int me) {
@@ -312,10 +314,17 @@ void doMegaEnum(const HierarchyNode &rt, vector<pair<Money, vector<Controller> >
   }
 }
 
-vector<Controller> reversecontroller(const vector<Controller> &in) {
+Controller reversecontroller(const Controller &in, bool restrictkeys = true) {
+  if(restrictkeys)
+    for(int i = 0; i < in.keys.size(); i++)
+      CHECK(!in.keys[i].down);
+  return makeController(-in.menu.x, -in.menu.y, false, false);
+}
+
+vector<Controller> reversecontroller(const vector<Controller> &in, bool restrictkeys = true) {
   vector<Controller> rv;
   for(int i = 0; i < in.size(); i++)
-    rv.push_back(makeController(-in[i].menu.x, -in[i].menu.y, false, false));
+    rv.push_back(reversecontroller(in[i], restrictkeys));
   reverse(rv.begin(), rv.end());
   return rv;
 }
@@ -323,7 +332,7 @@ vector<Controller> reversecontroller(const vector<Controller> &in) {
 vector<Controller> makeComboToggle(const vector<Controller> &src, Rng *rng) {
   vector<Controller> oot = src;
   
-  for(int i = 0; i < rng->frand() * 10; i++) {  // yes, the rng frand gets called each time
+  for(int i = 0; i < rng->frand() * 4; i++) {  // yes, the rng frand gets called each time
     Controller rv;
     rv.keys.resize(BUTTON_LAST);
     rv.menu = Float2(0, 0);
@@ -351,7 +360,7 @@ vector<Controller> makeComboToggle(const vector<Controller> &src, Rng *rng) {
       path.push_back(rv);
       
       oot.insert(oot.end(), path.begin(), path.end());
-      vector<Controller> rev = reversecontroller(path);
+      vector<Controller> rev = reversecontroller(path, false);
       for(int i = 0; i < rev.size(); i++)
         rev[i].keys[BUTTON_ACCEPT].down = false;
       oot.insert(oot.end(), rev.begin(), rev.end());
@@ -400,6 +409,7 @@ void Ai::updateShop(const Player *player, const HierarchyNode &hierarchy, bool a
     shopQueue.push_back(makeController(0, 0, false, false));
     return;
   }
+  StackString sst("Creating shop");
   CHECK(!shopdone);
   CHECK(athead);
   vector<pair<Money, vector<Controller> > > weps;
@@ -416,9 +426,43 @@ void Ai::updateShop(const Player *player, const HierarchyNode &hierarchy, bool a
   Money weapcash = player->getCash();
   vector<vector<Controller> > commands;
   
+  if(rng.frand() > (float)equips.size() / 10) {
+    dprintf("%d equips, buying more\n", equips.size());
+    {
+      float cullperc = 0.9 + rng.frand() * 0.1;
+      float singleperc = rng.frand() + 0.5;
+      while(upgcash > Money(0) && upgs.size()) {
+        int dlim = int(upgs.size() * rng.frand());
+        if(rng.frand() < cullperc) {
+          upgs.erase(upgs.begin() + dlim);
+          continue;
+        }
+        upgcash -= upgs[dlim].first;
+        weapcash -= upgs[dlim].first;
+        commands.push_back(makeComboAppend(upgs[dlim].second, 1));
+        if(rng.frand() < singleperc)
+          upgs.erase(upgs.begin() + dlim);
+      }
+    }
+    
+    for(int i = 0; i < 5; i++) {
+      if(weapcash > Money(0)) {
+        int dlim = 0;
+        while(dlim < weps.size() && weps[dlim].first <= weapcash)
+          dlim++;
+        dlim = int(dlim * rng.frand());
+        int amount = 1;
+        if(weps[dlim].first > Money(0))
+          amount = min(weapcash / weps[dlim].first, 100);
+        weapcash -= weps[dlim].first * amount;
+        commands.push_back(makeComboAppend(weps[dlim].second, amount));
+      }
+    }
+  }
+  
   {
     float cullperc = rng.frand();
-    float singleperc = rng.frand() + 0.1;
+    float singleperc = rng.frand() + 0.5;
     while(equips.size()) {
       int dite = int(equips.size() * rng.frand());
       if(rng.frand() < cullperc) {
@@ -431,52 +475,57 @@ void Ai::updateShop(const Player *player, const HierarchyNode &hierarchy, bool a
     }
   }
   
-  {
-    float cullperc = rng.frand();
-    float singleperc = rng.frand() + 0.1;
-    while(upgcash > Money(0) && upgs.size()) {
-      int dlim = int(upgs.size() * rng.frand());
-      if(rng.frand() < cullperc) {
-        upgs.erase(upgs.begin() + dlim);
-        continue;
-      }
-      upgcash -= upgs[dlim].first;
-      weapcash -= upgs[dlim].first;
-      commands.push_back(makeComboAppend(upgs[dlim].second, 1));
-      if(rng.frand() < singleperc)
-        upgs.erase(upgs.begin() + dlim);
-    }
-  }
-  
-  if(weapcash > Money(0)) {
-    int dlim = 0;
-    while(dlim < weps.size() && weps[dlim].first <= weapcash)
-      dlim++;
-    dlim = int(dlim * rng.frand());
-    int amount = 1;
-    if(weps[dlim].first > Money(0))
-      amount = min(weapcash / weps[dlim].first, 100);
-    commands.push_back(makeComboAppend(weps[dlim].second, amount));
-  }
-  
   random_shuffle(commands.begin(), commands.end());
-  for(int i = 0; i < commands.size(); i++)
-    shopQueue.insert(shopQueue.end(), commands[i].begin(), commands[i].end());
   
-  shopQueue.insert(shopQueue.end(), done.begin(), done.end());
-  shopQueue.push_back(makeController(0, 0, true, false));
-  //for(int i = 0; i < shopQueue.size(); i++)
-    //dprintf("%f %f %d\n", shopQueue[i].x, shopQueue[i].y, shopQueue[i].keys[0].down);
-  deque<Controller> realShopQueue;
-  for(int i = 0; i < shopQueue.size(); i++) {
-    for(int k = 0; k < 1; k++)
-      realShopQueue.push_back(makeController(0, 0, false, false));
-    realShopQueue.push_back(shopQueue[i]);
+  list<Controller> shoq;
+  for(int i = 0; i < commands.size(); i++)
+    shoq.insert(shoq.end(), commands[i].begin(), commands[i].end());
+  shoq.insert(shoq.end(), done.begin(), done.end());
+  shoq.push_back(makeController(0, 0, true, false));
+  
+  for(list<Controller>::iterator it = shoq.begin(); it != shoq.end(); ) {
+    
+    list<Controller>::iterator nit = it;
+    nit++;
+    if(nit == shoq.end())
+      break;
+    list<Controller>::iterator tit = nit;
+    tit++;
+    if(tit == shoq.end())
+      break;
+    
+    bool hasbuttons = false;
+    for(int i = 0; i < nit->keys.size(); i++)
+      if(nit->keys[i].down)
+        hasbuttons = true;
+    for(int i = 0; i < tit->keys.size(); i++)
+      if(tit->keys[i].down)
+        hasbuttons = true;
+    
+    if(hasbuttons) {
+      it++;
+      continue;
+    }
+    
+    if(reversecontroller(*nit) == *tit) {
+      shoq.erase(nit);
+      shoq.erase(tit);
+    } else {
+      it++;
+    }
+  };
+  
+  {
+    StackString sts("Final pass and padding");
+    for(list<Controller>::iterator it = shoq.begin(); it != shoq.end(); it++) {
+      for(int k = 0; k < 1; k++)
+        shopQueue.push_back(makeController(0, 0, false, false));
+      shopQueue.push_back(*it);
+    }
+    shopdone = true;
+    updateShop(player, hierarchy, false);
+    dprintf("shop prepared, %d moves\n", shopQueue.size());
   }
-  swap(shopQueue, realShopQueue);
-  shopdone = true;
-  updateShop(player, hierarchy, false);
-  dprintf("shop prepared, %d moves\n", shopQueue.size());
 }
 
 GameAi *Ai::getGameAi() {

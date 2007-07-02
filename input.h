@@ -29,6 +29,8 @@ public:
   Button();
 };
 
+bool operator==(const Button &lhs, const Button &rhs);
+
 class Controller {
 public:
   Float2 menu;
@@ -44,6 +46,8 @@ public:
 
   Controller();
 };
+
+bool operator==(const Controller &lhs, const Controller &rhs);
 
 enum { KSAX_STEERING, KSAX_ABSOLUTE, KSAX_TANK, KSAX_END };
 const char *const ksax_names[] = { "Steering (default)", "Absolute", "Tank (advanced)" };
