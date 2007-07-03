@@ -7,11 +7,24 @@
     - Put Sparker in the equip menu
     - Equip categories shouldn't be selectable
     - Make sure that bombardment does affect blast radiuses that aren't explosive
-    - Look over tank balance yet again for the first weird tanks
+    - Look over tank balance yet again for Seka/Tuvu/Madi, as nobody ever chooses Madi
+      - Calculate firespeed vs. damage value
+      - What kind of sheer DPS/DPS resistance can Gupe/Boja/Himo pour out in a fight?
+      - Add these bonuses to the balance sheet
+    - Check out damage/firespeed final numbers for Gupe/Boja/Himo
     - Slowdown with lots of weapons?
     - Auto-equip the first weapon, auto-equip things into damage-type slots?
     - Figure out a good meaning for the trees faction
     - Link handling to engine a little
+    - Hephaestus is too slow
+    - Lower damage upgrade cost
+  - I really hate naming things
+    - Mines are inconsistent
+    - C Cannon needs some fiddling :(
+    - "Lance" for "Beam" in lasers
+    - "Mini-Nuke" is inconsistent
+    - Mines should be pluralized
+    - Exotic: Brownian
   - Many many more weapons
     - Add implementations for all trap weapons
     - Add implementations for all exotic weapons
@@ -43,6 +56,8 @@
     - Add upgrades to the balance sheet
     - Get better at returning "no I'm sorry I just can't understand the itemdb"
   - Make It Pretty
+    - Add both "proportion" and "multiplier" merge options
+    - Add wall-destruction sizes to the balance sheet
     - Spruce up sparker weaponry
     - Spruce up base autocannon weaponry
     - Spruce up special autocannon weaponry
