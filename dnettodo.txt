@@ -1,6 +1,8 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - Bugfixes from games
+    - Raise Mines From Space size
+    - Increase mine visibility radius a little
     - Add perfbar to rendering
     - Put Sparker in the equip menu
     - Equip categories shouldn't be selectable
@@ -19,6 +21,7 @@
     - Add glory behavior
       - Buff up the first glory's blast radius a bit
       - Make sure they don't spike CPU too badly
+    - Add sparker behavior
     - Special autocannon
     - Special laser
     - Special missile
@@ -40,6 +43,7 @@
     - Add upgrades to the balance sheet
     - Get better at returning "no I'm sorry I just can't understand the itemdb"
   - Make It Pretty
+    - Spruce up sparker weaponry
     - Spruce up base autocannon weaponry
     - Spruce up special autocannon weaponry
     - Spruce up base laser weaponry
