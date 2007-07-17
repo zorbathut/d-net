@@ -9,6 +9,7 @@ increase and cost reduction
     - Add perfbar to rendering
     - Put Sparker in the equip menu
     - Equip categories shouldn't be selectable
+    - Fix drone durability
     - Make sure that bombardment does affect blast radiuses that aren't explosive
     - Look over tank balance yet again for Seka/Tuvu/Madi, as nobody ever chooses Madi
       - Calculate firespeed vs. damage value

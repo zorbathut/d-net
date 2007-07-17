@@ -1,12 +1,12 @@
 
 text {
-  name=text.faction.lucifer
+  name=text.faction.disciples
   data=The Disciples of Lucifer are a recent Satanist cult which believes pain and suffering are the path to redemption. They care deeply for their fellow humans and will do whatever it takes to save the souls of their brethren.
   data=This faction works hard to increase damage output for all weaponry. The increased warhead mass leaves less room for tank armor, which they gladly sacrifice in hopes that their own soul will be blessed.
 }
 
 adjustment {
-  name=adjustment.lucifer.high
+  name=adjustment.disciples.high
   
   damage_all=30
   
@@ -16,12 +16,12 @@ adjustment {
 faction { # extra damage on all weapons
   name=Disciples of Lucifer
   lines=1 2
-  text=text.faction.lucifer
+  text=text.faction.disciples
   
   file=pitchfork.dv2
   color=f00
   
-  adjustment=adjustment.lucifer
+  adjustment=adjustment.disciples
 }
 
 text {
@@ -101,7 +101,7 @@ faction { # increased everything
 }
 
 text {
-  name=text.faction.hermes
+  name=text.faction.academy
   data=The Academy of Hermes claims to be a research facility run by the actual Greek god. While many are skeptical of their claimed divinity, their engines and drivetrains are unarguably second to none, breaking technology records regularly.
   data=Hermes tanks are unbelievably quick, but the cutting-edge technology involved increases tank cost considerably. Hermes technology does not require any other compromises.
 }
@@ -117,7 +117,7 @@ adjustment {
 faction { # much faster movement
   name=Academy of Hermes
   lines=1 2
-  text=text.faction.hermes
+  text=text.faction.academy
   
   file=lightning.dv2
   color=ff0
@@ -181,13 +181,13 @@ faction { # Extra damage to trap weapons, speed/armor bonus
 }
 
 text {
-  name=text.faction.juggernauts
+  name=text.faction.jason
   data=Jason's Juggernauts are the world's most feared mercenary squadron. They believe all problems can be solved with sufficient firepower. If the problem isn't solved, you haven't used enough firepower.
   data=Their strength lies solely in warhead quantity, as their tanks are able to boost the fire rate of all weapons. Their battle-damaged tanks tend to be somewhat lacking in other abilities.
 }
 
 adjustment {
-  name=adjustment.juggernauts.high
+  name=adjustment.jason.high
   
   tank_firerate=20
   tank_speed=-10
@@ -198,22 +198,22 @@ adjustment {
 faction { # Increased firerate
   name=Jason's Juggernauts
   lines=1 1
-  text=text.faction.juggernauts
+  text=text.faction.jason
   
   file=buzzsaw.dv2
   color=88f
   
-  adjustment=adjustment.juggernauts
+  adjustment=adjustment.jason
 }
 
 text {
-  name=text.faction.dynasty
+  name=text.faction.korath
   data=The Korath Dynasty is the world's oldest family business. The company works as an assembly contractor for other businesses, and prides themselves on efficiency and quality.
   data=Korath Dynasty workers are skilled builders and integrators, resulting in lower prices for tanks and upgrades. Unfortunately, internal company politics makes it nearly impossible to resell unneeded components.
 }
 
 adjustment {
-  name=adjustment.dynasty.high
+  name=adjustment.korath.high
   
   discount_tank=30
   discount_upgrade=15
@@ -224,22 +224,22 @@ adjustment {
 faction { # Cheaper tanks
   name=Korath Dynasty
   lines=1 1
-  text=text.faction.dynasty
+  text=text.faction.korath
   
   file=zen.dv2
   color=f51
   
-  adjustment=adjustment.dynasty
+  adjustment=adjustment.korath
 }
 
 text {
-  name=text.faction.amazon
+  name=text.faction.tribes
   data=The Tribes of the Amazon are a set of naturalistic groups inhabiting South America. They believe in primitive tools and living off the land. While they are a formidable faction, it is unclear why they have joined D-Net.
   data=Amazonian tanks are built for extreme efficiency with simple projectile weapons. While the tanks themselves function surprisingly well, upgrading them is difficult at best.
 }
 
 adjustment {
-  name=adjustment.amazon.high
+  name=adjustment.tribes.high
   
   damage_kinetic=50
   
@@ -249,22 +249,22 @@ adjustment {
 faction { # Extra damage to projectile weapons
   name=Tribes of the Amazon
   lines=2 2
-  text=text.faction.amazon
+  text=text.faction.tribes
   
   file=pincer.dv2
   color=fb2
   
-  adjustment=adjustment.amazon
+  adjustment=adjustment.tribes
 }
 
 text {
-  name=text.faction.kindred
+  name=text.faction.alchemist
   data=Alchemist's Kindred is a research facility focusing on device re-use and upgrades. They are the world authority on aftermarket modifications.
   data=Naturally, this faction gets upgrades far more cheaply than other factions. They also make somewhat more money off selling items. The Alchemists are less interested in single-purpose kinetic and energy weapons and spend less time practicing with them.
 }
 
 adjustment {
-  name=adjustment.kindred.high
+  name=adjustment.alchemist.high
   
   discount_upgrade=40
   recycle_bonus=100
@@ -276,12 +276,12 @@ adjustment {
 faction { # Cheaper upgrades
   name=Alchemist's Kindred
   lines=1 1
-  text=text.faction.kindred
+  text=text.faction.alchemist
   
   file=poison.dv2
   color=63f
   
-  adjustment=adjustment.kindred
+  adjustment=adjustment.alchemist
 }
 
 text {
