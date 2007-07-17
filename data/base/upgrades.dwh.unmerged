@@ -16,7 +16,7 @@ text {
 
 adjustment {
   name=adjustment.hull
-  tank_armor=15
+  tank_armor=50
 }
 
 upgrade {
