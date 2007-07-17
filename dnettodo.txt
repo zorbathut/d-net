@@ -3,6 +3,7 @@
   - Bugfixes from games
     - balance factions better, figure out difference between damage
 increase and cost reduction
+    - Reduce weapon damage 10% or 20% with heavy factions
     - add implant equip
     - Raise Mines From Space size
     - Increase mine visibility radius a little
