@@ -12,11 +12,11 @@ EDITORCXXFLAGS := `@WX@ --cxxflags` $(STDCXXFLAGS)
 EDITORLDFLAGS := `@WX@ --libs --gl-libs` -lopengl32 $(STDLDFLAGS)
 
 FUNCTORSOURCES := functor_gen debug os util parse
-MERGERSOURCES := merger debug os util parse itemdb itemdb_adjust args color dvec2 float coord cfcommon merger_weapon merger_bombardment merger_tanks merger_glory merger_util merger_upgrades regex rng
+MERGERSOURCES := merger debug os util parse itemdb itemdb_adjust args color dvec2 float coord cfcommon merger_weapon merger_bombardment merger_tanks merger_glory merger_util merger_upgrades merger_factions regex rng
 # rng is not really needed since it won't be linked in at all, but it's easier to just include it
 ODS2CSVSOURCES := ods2csv debug os util parse minizip/unzip minizip/ioapi
-CONSOLECXXFLAGS := $(STDCXXFLAGS)
-CONSOLELDFLAGS := $(STDLDFLAGS)
+CONSOLECXXFLAGS := $(STDCXXFLAGS) -O0
+CONSOLELDFLAGS := $(STDLDFLAGS) -O0
 
 MERGETYPES := $(shell ls data/base/*.dwh.unmerged | sed 's/data\/base\/\(.*\).dwh.unmerged/\1/')
 MERGEDATA := $(patsubst %,data/base/%.dwh,$(MERGETYPES))

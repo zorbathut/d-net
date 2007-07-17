@@ -6,14 +6,10 @@ text {
 }
 
 adjustment {
-  name=adjustment.disciples.high
-  
-  damage_all=30
-  
-  tank_armor=-20
+  name=adjustment.disciples
 }
 
-faction { # extra damage on all weapons
+faction {
   name=Disciples of Lucifer
   lines=1 2
   text=text.faction.disciples
@@ -31,14 +27,10 @@ text {
 }
 
 adjustment {
-  name=adjustment.final.high
-  
-  discount_weapon=20
-  
-  discount_implant=-20
+  name=adjustment.final
 }
 
-faction { # cheaper weapons
+faction {
   name=Final Solutions Limited
   lines=1 1 1
   text=text.faction.final
@@ -56,17 +48,10 @@ text {
 }
 
 adjustment {
-  name=adjustment.serpent.high
-  
-  tank_speed=30
-  tank_turn=30
-  
-  tank_armor=-10
-  damage_trap=-20
-  damage_exotic=-20
+  name=adjustment.serpent
 }
 
-faction { # faster turn, faster movement
+faction {
   name=Serpent's Strike
   lines=1 1
   text=text.faction.serpent
@@ -84,9 +69,7 @@ text {
 }
 
 adjustment {
-  name=adjustment.aquear.high
-  
-  all=5
+  name=adjustment.aquear
 }
 
 faction { # increased everything 
@@ -107,11 +90,7 @@ text {
 }
 
 adjustment {
-  name=adjustment.academy.high
-  
-  tank_speed=50
-  
-  discount_tank=-30
+  name=adjustment.academy
 }
 
 faction { # much faster movement
@@ -132,13 +111,7 @@ text {
 }
 
 adjustment {
-  name=adjustment.rational.high
-  
-  discount_implant=50
-  discount_upgrade=25
-  
-  damage_explosive=-20
-  damage_exotic=-20
+  name=adjustment.rational
 }
 
 faction { # Cheaper training
@@ -159,14 +132,7 @@ text {
 }
 
 adjustment {
-  name=adjustment.security.high
-  
-  damage_trap=50
-  tank_speed=20
-  tank_armor=20
-  
-  damage_energy=-25
-  tank_turn=-10
+  name=adjustment.security
 }
 
 faction { # Extra damage to trap weapons, speed/armor bonus
@@ -187,12 +153,7 @@ text {
 }
 
 adjustment {
-  name=adjustment.jason.high
-  
-  tank_firerate=20
-  tank_speed=-10
-  tank_turn=-10
-  tank_armor=-5
+  name=adjustment.jason
 }
 
 faction { # Increased firerate
@@ -213,12 +174,7 @@ text {
 }
 
 adjustment {
-  name=adjustment.korath.high
-  
-  discount_tank=30
-  discount_upgrade=15
-  
-  recycle_bonus=-100
+  name=adjustment.korath
 }
 
 faction { # Cheaper tanks
@@ -239,11 +195,7 @@ text {
 }
 
 adjustment {
-  name=adjustment.tribes.high
-  
-  damage_kinetic=50
-  
-  discount_upgrade=-30
+  name=adjustment.tribes
 }
 
 faction { # Extra damage to projectile weapons
@@ -264,13 +216,7 @@ text {
 }
 
 adjustment {
-  name=adjustment.alchemist.high
-  
-  discount_upgrade=40
-  recycle_bonus=100
-  
-  damage_kinetic=-10
-  damage_energy=-10
+  name=adjustment.alchemist
 }
 
 faction { # Cheaper upgrades
@@ -291,12 +237,7 @@ text {
 }
 
 adjustment {
-  name=adjustment.catalysts.high
-  
-  damage_explosive=75
-  warhead_radius_falloff=50
-  
-  tank_firerate=-20
+  name=adjustment.catalysts
 }
 
 faction { # Extra damage to explosions
@@ -317,12 +258,7 @@ text {
 }
 
 adjustment {
-  name=adjustment.hephaestus.high
-  
-  tank_armor=50
-  
-  tank_speed=-30
-  tank_turn=-30
+  name=adjustment.hephaestus
 }
 
 faction { # Heavy armor
@@ -343,14 +279,7 @@ text {
 }
 
 adjustment {
-  name=adjustment.sons.high
-  
-  recycle_bonus=900
-  discount_implant=25
-  damage_exotic=20
-  
-  damage_trap=-20
-  damage_explosive=-20
+  name=adjustment.sons
 }
 
 faction { # Higher resell value
@@ -371,12 +300,7 @@ text {
 }
 
 adjustment {
-  name=adjustment.dust.high
-  
-  damage_energy=50
-  
-  warhead_radius_falloff=-25
-  tank_armor=-10
+  name=adjustment.dust
 }
 
 faction { # Extra damage to energy weapons
@@ -397,13 +321,7 @@ text {
 }
 
 adjustment {
-  name=adjustment.tricksters.high
-  
-  damage_trap=50
-  damage_exotic=50
-  
-  discount_implant=-20
-  tank_firerate=-10
+  name=adjustment.tricksters
 }
 
 faction { # Extra damage to trap/exotic weapons

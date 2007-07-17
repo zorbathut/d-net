@@ -8,6 +8,7 @@
 #include "merger_glory.h"
 #include "merger_upgrades.h"
 #include "merger_util.h"
+#include "merger_factions.h"
 
 #include <fstream>
 #include <string>
@@ -207,6 +208,8 @@ int main(int argc, char *argv[]) {
     doMerge<GloryParams>(argv[1], argv[2], argv[3]);
   } else if(type == UpgradeParams::token()) {
     doMerge<UpgradeParams>(argv[1], argv[2], argv[3]);
+  } else if(type == FactionParams::token()) {
+    doMerge<FactionParams>(argv[1], argv[2], argv[3]);
   } else {
     CHECK(0);
   }

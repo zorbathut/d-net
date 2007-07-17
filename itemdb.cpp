@@ -1271,7 +1271,7 @@ void parseFaction(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   adjustmentclasses["null"]; // this is a hideous hack just FYI
   for(int i = 0; i < 3; i++)
     fact.adjustment[i] = parseSubclass("null", adjustmentclasses); // wheeeeeeeee
-  fact.adjustment[3] = parseSubclass(chunk->consume("adjustment") +  ".high", adjustmentclasses);
+  fact.adjustment[3] = parseSubclass(chunk->consume("adjustment"), adjustmentclasses);
   
   fact.text = parseOptionalSubclass(chunk, "text", text);
   
