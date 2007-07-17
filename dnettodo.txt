@@ -1,6 +1,10 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - Bugfixes from games
+    - level 1 and 6 of weapons should be different
+    - balance factions better, figure out difference between damage
+increase and cost reduction
+    - add implant equip
     - Raise Mines From Space size
     - Increase mine visibility radius a little
     - Add perfbar to rendering

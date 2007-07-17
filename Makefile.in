@@ -87,7 +87,7 @@ aisc: d-net data/shopcache.dwh
 	./d-net.exe --nofullscreen --aiCount=16 --fastForwardTo=100000000 --factionMode=3 --perfbar
 
 ailoop: d-net
-	while ./d-net.exe --nofullscreen --aiCount=12 --fastForwardTo=100000000 --factionmode=3 --terminateAfter=600 --startingPhase=7 --noshopcache ; do echo Cycle. ; done
+	while nice ./d-net.exe --nofullscreen --aiCount=12 --fastForwardTo=100000000 --factionmode=3 --terminateAfter=3600 --startingPhase=0 --noshopcache ; do echo Cycle. ; done
 
 veced: vecedit
 	./vecedit.exe
