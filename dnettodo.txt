@@ -1,7 +1,7 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - Bugfixes from games
-    - Reduce weapon damage 10% or 20% with heavy factions
+    - Ultimate goes *too far*
     - add implant equip
     - Raise Mines From Space size
     - Increase mine visibility radius a little

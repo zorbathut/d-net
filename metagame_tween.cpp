@@ -730,7 +730,7 @@ void PersistentData::renderSlot(int slotid) const {
         const float tweensize = 0.6;
         setZoomVertical(0, 0, (1 + tweensize) * lines_needed + tweensize);
         float horzavail = getZoom().span_x();
-        const IDBAdjustment *idba = factions[fid].faction->adjustment[3];
+        const IDBAdjustment *idba = factions[fid].faction->adjustment[faction_mode];
         
         vector<pair<pair<string, bool>, vector<string> > > adjusttext;
         int total_lines = 0;

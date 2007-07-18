@@ -38,8 +38,6 @@ static map<string, IDBShopcache> shopcaches;
 DEFINE_bool(debugitems, false, "Enable debug items");
 DEFINE_bool(shopcache, true, "Enable shop demo cache");
 
-//const char * const adjust_text[] = { "damage_kinetic", "damage_energy", "damage_explosive", "damage_trap", "damage_exotic", "warhead_radius_falloff", "discount_weapon", "discount_training", "discount_upgrade", "discount_tank", "recycle_bonus", "tank_firerate", "tank_speed", "tank_turn", "tank_armor", "damage_all", "all" };
-
 string gendiffstring(int amount, const int (&arr)[11]) {
   for(int i = 0; i < ARRAY_SIZE(arr); i++) {
     if(amount <= arr[i]) {
@@ -74,6 +72,7 @@ void IDBAdjustment::debugDump() const {
 IDBAdjustment::IDBAdjustment() {
   memset(adjusts, 0, sizeof(adjusts));
   memset(adjustlist, -1, sizeof(adjustlist));
+  tankhpboost = 0;
   ignore_excessive_radius = false;
 }
 
@@ -81,12 +80,15 @@ IDBAdjustment operator*(const IDBAdjustment &lhs, int mult) {
   IDBAdjustment rv = lhs;
   for(int i = 0; i < IDBAdjustment::LAST; i++)
     rv.adjusts[i] *= mult;
+  CHECK(!lhs.tankhpboost);
   return rv;
 }
 
 const IDBAdjustment &operator+=(IDBAdjustment &lhs, const IDBAdjustment &rhs) {
   for(int i = 0; i < IDBAdjustment::LAST; i++)
     lhs.adjusts[i] += rhs.adjusts[i];
+  CHECK(!lhs.tankhpboost || !rhs.tankhpboost);
+  lhs.tankhpboost += rhs.tankhpboost;
   return lhs;
 }
 
@@ -94,6 +96,8 @@ bool operator==(const IDBAdjustment &lhs, const IDBAdjustment &rhs) {
   for(int i = 0; i < IDBAdjustment::LAST; i++)
     if(lhs.adjusts[i] != rhs.adjusts[i])
       return false;
+  if(lhs.tankhpboost != rhs.tankhpboost)
+    return false;
   return true;
 }
 
@@ -116,6 +120,10 @@ double IDBAdjustment::recyclevalue() const {
   float shares = 1 * adjustmentfactor(IDBAdjustment::RECYCLE_BONUS);
   float ratio = shares / (shares + 1.0);
   return ratio;
+}
+
+double IDBAdjustment::tankhp() const {
+  return (adjusts[TANK_ARMOR] + 100.) * (tankhpboost + 100.) / 10000.;
 }
 
 bool sortByTankCost(const HierarchyNode &lhs, const HierarchyNode &rhs) {

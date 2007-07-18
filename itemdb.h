@@ -34,10 +34,13 @@ public:
   bool ignore_excessive_radius;
   int adjusts[LAST];  // These are in percentage points away from 100. Yes, this is kind of weird.
   
+  int tankhpboost;
+  
   pair<int, int> adjustlist[5];
   
   double adjustmentfactor(int type) const;
   double recyclevalue() const; // this is annoyingly different
+  double tankhp() const; // this is also annoyingly different
 
   void debugDump() const;
 
