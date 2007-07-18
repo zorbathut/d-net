@@ -295,10 +295,7 @@ void Shop::renderNode(const HierarchyNode &node, int depth, const Player *player
     if(min(slay.box(splace).ex, getZoom().ex) - max(slay.box(splace).sx, getZoom().sx) < slay.box(splace).span_x() * 0.01)
       continue;   // if we can only see 1% of this box, just don't show any of it - gets rid of some ugly rendering edge cases
     
-    if(node.branches[itemid].displaymode == HierarchyNode::HNDM_EQUIP) {
-      drawSolid(slay.boximplantupgrade(splace));
-      drawRect(slay.boximplantupgrade(splace), slay.boxthick());
-    } else if(node.branches[itemid].displaymode == HierarchyNode::HNDM_IMPLANT_UPGRADE) {
+    if(node.branches[itemid].displaymode == HierarchyNode::HNDM_EQUIP || node.branches[itemid].displaymode == HierarchyNode::HNDM_IMPLANT_UPGRADE || node.branches[itemid].displaymode == HierarchyNode::HNDM_IMPLANT_EQUIP) {
       drawSolid(slay.boximplantupgrade(splace));
       drawRect(slay.boximplantupgrade(splace), slay.boxthick());
     } else {
@@ -317,6 +314,8 @@ void Shop::renderNode(const HierarchyNode &node, int depth, const Player *player
       drawText(node.branches[itemid].name.c_str(), slay.fontsize(), slay.descriptionimplantupgrade(splace));
     } else if(node.branches[itemid].displaymode == HierarchyNode::HNDM_IMPLANT_UPGRADE) {
       drawText("Level " + roman_number(player->implantLevel(node.branches[itemid].implantitem)) + " upgrade", slay.fontsize(), slay.descriptionimplantupgrade(splace));
+    } else if(node.branches[itemid].displaymode == HierarchyNode::HNDM_IMPLANT_EQUIP) {
+      drawText("Equip", slay.fontsize(), slay.descriptionimplantupgrade(splace));
     } else {
       drawText(node.branches[itemid].name.c_str(), slay.fontsize(), slay.description(splace));
     }
@@ -439,7 +438,7 @@ void Shop::renderNode(const HierarchyNode &node, int depth, const Player *player
 }
 
 bool Shop::hasInfo(int type) const {
-  return type == HierarchyNode::HNT_WEAPON || type == HierarchyNode::HNT_EQUIPWEAPON || type == HierarchyNode::HNT_GLORY || type == HierarchyNode::HNT_BOMBARDMENT || type == HierarchyNode::HNT_UPGRADE || type == HierarchyNode::HNT_TANK || type == HierarchyNode::HNT_IMPLANTITEM || type == HierarchyNode::HNT_IMPLANTITEM_UPG || type == HierarchyNode::HNT_IMPLANTSLOT || type == HierarchyNode::HNT_SELLWEAPON;
+  return type == HierarchyNode::HNT_WEAPON || type == HierarchyNode::HNT_EQUIPWEAPON || type == HierarchyNode::HNT_GLORY || type == HierarchyNode::HNT_BOMBARDMENT || type == HierarchyNode::HNT_UPGRADE || type == HierarchyNode::HNT_TANK || type == HierarchyNode::HNT_IMPLANTITEM || type == HierarchyNode::HNT_IMPLANTITEM_EQUIP || type == HierarchyNode::HNT_IMPLANTITEM_UPG || type == HierarchyNode::HNT_IMPLANTSLOT || type == HierarchyNode::HNT_SELLWEAPON;
 }
 
 bool findEquipItem(const HierarchyNode &hrt, const IDBWeapon *weap, vector<int> *path) {
@@ -589,7 +588,7 @@ bool Shop::runTick(const Keystates &keys, Player *player) {
           } else {
             sound = S::error;
           }
-        } else if(getCurNode().type == HierarchyNode::HNT_IMPLANTITEM) {
+        } else if(getCurNode().type == HierarchyNode::HNT_IMPLANTITEM_EQUIP) {
           if(player->canToggleImplant(getCurNode().implantitem)) {
             player->toggleImplant(getCurNode().implantitem);
             sound = S::choose;
@@ -664,7 +663,7 @@ bool Shop::runTick(const Keystates &keys, Player *player) {
       cshopinf.initIfNeeded(getCurNode().upgrade, player, miniature);
     else if(getCurNode().type == HierarchyNode::HNT_TANK)
       cshopinf.initIfNeeded(getCurNode().tank, player, miniature);
-    else if(getCurNode().type == HierarchyNode::HNT_IMPLANTITEM)
+    else if(getCurNode().type == HierarchyNode::HNT_IMPLANTITEM || getCurNode().type == HierarchyNode::HNT_IMPLANTITEM_EQUIP)
       cshopinf.initIfNeeded(getCurNode().implantitem, false, player, miniature);
     else if(getCurNode().type == HierarchyNode::HNT_IMPLANTITEM_UPG)
       cshopinf.initIfNeeded(getCurNode().implantitem, true, player, miniature);

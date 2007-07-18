@@ -293,18 +293,23 @@ void HierarchyNode::checkConsistency(vector<string> *errors) const {
   }
   
   // implantitem must be buyable and have a slot of 1, but the rendering varies
-  if(type == HNT_IMPLANTITEM || type == HNT_IMPLANTITEM_UPG) {  
+  if(type == HNT_IMPLANTITEM || type == HNT_IMPLANTITEM_EQUIP || type == HNT_IMPLANTITEM_UPG) {  
     CHECK(!gottype);
     gottype = true;
     if(type == HNT_IMPLANTITEM) {
+      CHECK(displaymode == HNDM_BLANK);
+      CHECK(!buyable);
+    } else if(type == HNT_IMPLANTITEM_EQUIP) {
       CHECK(displaymode == HNDM_IMPLANT_EQUIP);
+      CHECK(buyable);
+      CHECK(pack == 1);
     } else if(type == HNT_IMPLANTITEM_UPG) {
       CHECK(displaymode == HNDM_IMPLANT_UPGRADE);
+      CHECK(buyable);
+      CHECK(pack == 1);
     } else {
       CHECK(0);
     }
-    CHECK(buyable);
-    CHECK(pack == 1);
     CHECK(implantitem);
   } else {
     CHECK(!implantitem);
@@ -347,7 +352,7 @@ void HierarchyNode::checkConsistency(vector<string> *errors) const {
   // last, check the consistency of everything recursively
   for(int i = 0; i < branches.size(); i++) {
     if(cat_restrictiontype == HNT_IMPLANT_CAT) {
-      CHECK(branches[i].type == HNT_IMPLANTSLOT || branches[i].type == HNT_IMPLANTITEM || branches[i].type == HNT_IMPLANTITEM_UPG);
+      CHECK(branches[i].type == HNT_IMPLANTSLOT || branches[i].type == HNT_IMPLANTITEM || branches[i].type == HNT_IMPLANTITEM_UPG || branches[i].type == HNT_IMPLANTITEM_EQUIP);
       CHECK(branches[i].cat_restrictiontype == cat_restrictiontype);
     } else if(cat_restrictiontype == HNT_EQUIP_CAT) {
       CHECK(branches[i].type == HNT_EQUIPWEAPON || branches[i].type == HNT_EQUIPCATEGORY);
@@ -1352,12 +1357,26 @@ void parseImplant(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   
   titem->text = parseOptionalSubclass(chunk, "text", text);
   
-  // this is kind of grim - we push two nodes in. This could happen at shop manipulation time also, I suppose.
+  // this is kind of grim - we push three nodes in. This could happen at shop manipulation time also, I suppose.
   {
     HierarchyNode *mountpoint = findNamedNode(name, 1);
     HierarchyNode tnode;
     tnode.name = tokenize(name, ".").back();
     tnode.type = HierarchyNode::HNT_IMPLANTITEM;
+    tnode.displaymode = HierarchyNode::HNDM_BLANK;
+    tnode.buyable = false;
+    tnode.cat_restrictiontype = HierarchyNode::HNT_IMPLANT_CAT;
+    CHECK(mountpoint->cat_restrictiontype == -1 || tnode.cat_restrictiontype == mountpoint->cat_restrictiontype);
+    
+    tnode.implantitem = titem;
+    mountpoint->branches.push_back(tnode);
+  }
+  
+  {
+    HierarchyNode *mountpoint = findNamedNode(name, 1);
+    HierarchyNode tnode;
+    tnode.name = tokenize(name, ".").back();
+    tnode.type = HierarchyNode::HNT_IMPLANTITEM_EQUIP;
     tnode.displaymode = HierarchyNode::HNDM_IMPLANT_EQUIP;
     tnode.buyable = true;
     tnode.pack = 1;
