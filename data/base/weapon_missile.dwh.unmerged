@@ -307,20 +307,20 @@ launcher {
 
 ###########################
 #
-#   Mini-Nuke base stats
+#   Compact Nuke base stats
 
 hierarchy {
-  name=ROOT.Ammo.Mini-Nuke
+  name=ROOT.Ammo.Compact Nuke
   pack=100
 }
 
 text {
-  name=text.weapon.mininuke
+  name=text.weapon.compactnuke
   data=Blah blah hamster blah yacht blah blah blah monocle polish
 }
 
 warhead {
-  name=warhead.weapon.mininuke
+  name=warhead.weapon.compactnuke
   impactdamage=MERGE(1) explosive
   radiusdamage=MERGE(3) explosive
   radiusfalloff=4
@@ -329,7 +329,7 @@ warhead {
 }
 
 projectile {
-  name=projectile.weapon.mininuke
+  name=projectile.weapon.compactnuke
   color=0.9, 0.95, 1.0
   
   motion=missile
@@ -341,22 +341,22 @@ projectile {
   missile_backlaunch=15
   
   durability=MERGE
-  warhead=warhead.weapon.mininuke
+  warhead=warhead.weapon.compactnuke
 }
 
 deploy {
-  name=deploy.weapon.mininuke
+  name=deploy.weapon.compactnuke
   type=forward
   anglestddev=0.002
-  projectile=projectile.weapon.mininuke
+  projectile=projectile.weapon.compactnuke
 }
 
 launcher {
-  name=launcher.weapon.mininuke
+  name=launcher.weapon.compactnuke
   
-  deploy=deploy.weapon.mininuke
+  deploy=deploy.weapon.compactnuke
   
-  text=text.weapon.mininuke
+  text=text.weapon.compactnuke
 }
 
 ###########################
@@ -692,57 +692,57 @@ weapon {
 
 
 weapon {
-  name=ROOT.Ammo.Mini-Nuke.Mini-Nuke I
+  name=ROOT.Ammo.Compact Nuke.Compact Nuke I
   
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.weapon.mininuke
+  launcher=launcher.weapon.compactnuke
 }
 
 weapon {
-  name=ROOT.Ammo.Mini-Nuke.Mini-Nuke II
+  name=ROOT.Ammo.Compact Nuke.Compact Nuke II
   
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.weapon.mininuke
+  launcher=launcher.weapon.compactnuke
 }
 
 weapon {
-  name=ROOT.Ammo.Mini-Nuke.Mini-Nuke III
+  name=ROOT.Ammo.Compact Nuke.Compact Nuke III
   
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.weapon.mininuke
+  launcher=launcher.weapon.compactnuke
 }
 
 weapon {
-  name=ROOT.Ammo.Mini-Nuke.Mini-Nuke IV
+  name=ROOT.Ammo.Compact Nuke.Compact Nuke IV
   
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.weapon.mininuke
+  launcher=launcher.weapon.compactnuke
 }
 
 weapon {
-  name=ROOT.Ammo.Mini-Nuke.Mini-Nuke V
+  name=ROOT.Ammo.Compact Nuke.Compact Nuke V
   
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.weapon.mininuke
+  launcher=launcher.weapon.compactnuke
 }
 
 weapon {
-  name=ROOT.Ammo.Mini-Nuke.Mini-Nuke VI
+  name=ROOT.Ammo.Compact Nuke.Compact Nuke VI
   
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.weapon.mininuke
+  launcher=launcher.weapon.compactnuke
 }
 
 

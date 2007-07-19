@@ -8,8 +8,6 @@
     - Link handling to engine a little
   - I really hate naming things
     - Mines are inconsistent
-    - "Lance" for "Beam" in lasers
-    - "Mini-Nuke" is inconsistent
     - Mines should be pluralized
     - Exotic: Brownian
   - Many many more weapons
