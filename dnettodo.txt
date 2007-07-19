@@ -1,7 +1,6 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - Bugfixes from games
-    - Ultimate goes *too far*
     - Raise Mines From Space size
     - Increase mine visibility radius a little
     - Add perfbar to rendering
