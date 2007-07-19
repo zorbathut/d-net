@@ -162,6 +162,10 @@ void Shop::renormalize(HierarchyNode &item, const Player *player, int playercoun
       if(keep && titem.spawncash > highestCash)
         keep = false;
       
+      // If holy crap we should be past this, we get rid of it.
+      if(titem.spawncash > Money(0) && keep && titem.spawncash * 100000 < highestCash)
+        keep = false;
+      
       if(keep) {
         renormalize(titem, player, playercount, highestcash);
         

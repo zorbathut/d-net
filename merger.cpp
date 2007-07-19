@@ -123,14 +123,14 @@ template<typename Model> void doMerge(const string &csv, const string &unmerged,
       if(!name.size())
         continue;
       
-      //dprintf("got name %s\n", name.c_str());
-      
       CHECK(!tdd.count(name));
       
+      //dprintf("pl \"%s\"\n", name.c_str());
       typename Model::Data dat;
       if(!Model::parseLine(dt, &dat))
         continue;
       
+      //dprintf("got name \"%s\"\n", name.c_str());
       tdd[name] = dat;
       names.insert(name);
     }
@@ -145,8 +145,7 @@ template<typename Model> void doMerge(const string &csv, const string &unmerged,
     kvData kvd;
     while(getkvData(ifs, &kvd)) {
       string name = nameFromKvd<Model>(kvd, names);
-      //dprintf("got wanted name %s\n", name.c_str());
-      //dprintf("Name is %s, checking %s\n", kvd.read("name").c_str(), name.c_str());
+      //dprintf("Name is \"%s\", checking \"%s\"\n", kvd.read("name").c_str(), name.c_str());
       if(name.size()) {
         CHECK(tdd.count(name));
         done.insert(name);

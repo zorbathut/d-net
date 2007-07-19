@@ -43,20 +43,25 @@ bool WeaponParams::parseLine(const vector<string> &line, Data *data) {
   if(line[1] == "Params") {
     CHECK(!line[6].size());
     CHECK(line[8].size());
-    if(!line[7].size())
-      return false;
     data->params = true;
+    data->has_dpp = line[7].size();
     data->dpp = atof(line[7].c_str());
     data->durability = line[5];
     data->params_threshold = string(line[2].begin(), find(line[2].begin(), line[2].end(), '.'));
     CHECK(data->params_threshold.size());
     return true;
   } else {
+    CHECK(line[2].size());
+    CHECK(line[3].size());
+    CHECK(line[4].size());
+    CHECK(!line[6].size());
+    CHECK(line[7].size());
     data->params = false;
     data->item_cost = line[2];
     data->item_firerate = line[3];
     CHECK(line[4].size());
     data->item_recommended = StringPrintf("%d", atoi(line[4].c_str()));
+    data->has_dpp = true;
     data->dpp = atof(line[7].c_str());
     data->durability = line[5];
     return true;
@@ -117,6 +122,8 @@ void WeaponParams::testprocess(kvData *kvd) {
 }
 
 float WeaponParams::getMultiple(const IDBWeapon &item, const Data &data) {
+  if(!data.has_dpp)
+    return 1;
   return data.dpp / IDBWeaponAdjust(&item, IDBAdjustment()).launcher().stats_damagePerShot();
 }
 
@@ -147,6 +154,7 @@ void WeaponParams::reprocess(kvData *kvd, float multiple) {
 }
 
 bool WeaponParams::verify(const IDBWeapon &item, const Data &data) {
+  CHECK(data.has_dpp);
   CHECK(withinEpsilon(IDBWeaponAdjust(&item, IDBAdjustment()).launcher().stats_damagePerShot(), data.dpp, 0.0001));
   if(data.durability.size())
     CHECK(withinEpsilon(IDBWeaponAdjust(&item, IDBAdjustment()).launcher().deploy().chain_projectile()[0].durability(), atof(data.durability.c_str()), 0.0001));

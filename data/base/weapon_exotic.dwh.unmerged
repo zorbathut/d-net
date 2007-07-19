@@ -2,6 +2,8 @@
 hierarchy {
   name=ROOT.Ammo.EMP
   pack=25
+  
+  spawncash=MERGE
 }
 
 text {

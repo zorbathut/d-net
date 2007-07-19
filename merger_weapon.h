@@ -21,6 +21,7 @@ struct WeaponParams {
     
     string params_threshold;
     
+    bool has_dpp;
     float dpp;
     string durability;
   };

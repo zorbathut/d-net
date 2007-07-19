@@ -5,6 +5,8 @@
 hierarchy {
   name=ROOT.Ammo.Missile
   pack=100
+  
+  spawncash=MERGE
 }
 
 text {
