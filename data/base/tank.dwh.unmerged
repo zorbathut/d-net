@@ -566,8 +566,8 @@ adjustment {
 }
 
 adjustment {
-  name=adjustment.tank.mari
-  tank_firerate=20
+  name=adjustment.tank.madi
+  tank_firerate=30
 }
 
 adjustment {
@@ -862,7 +862,7 @@ tank {
   handling=MERGE
   mass=MERGE
   
-  adjustment=adjustment.tank.mari
+  adjustment=adjustment.tank.madi
   
   weapon=Sparker III
   
@@ -960,7 +960,7 @@ tank {
   handling=MERGE
   mass=MERGE
   
-  adjustment=adjustment.tank.mari
+  adjustment=adjustment.tank.madi
   
   weapon=Sparker IV
   

@@ -5,10 +5,6 @@
     - Remove old weapons
     - Make sure that bombardment does affect blast radiuses that aren't explosive
     - Balance sparker
-    - Look over tank balance yet again for Seka/Tuvu/Madi, as nobody ever chooses Madi
-      - Calculate firespeed vs. damage value
-      - What kind of sheer DPS/DPS resistance can Gupe/Boja/Himo pour out in a fight?
-      - Add these bonuses to the balance sheet
     - Check out damage/firespeed final numbers for Gupe/Boja/Himo
     - Slowdown with lots of weapons?
     - Auto-equip the first weapon, auto-equip things into damage-type slots?
@@ -38,6 +34,7 @@
     - Special missile
     - OGRE
   - Eventual bugfixes
+    - Add tank bonuses to the balance sheet
     - Rewrite faction flavor text if needed
     - Write a better allocator
     - Lever tanks off walls when they turn?

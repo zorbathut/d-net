@@ -236,28 +236,28 @@ text {
 
 adjustment {
   name=adjustment.kinetic
-  damage_kinetic=10
+  damage_kinetic=20
 }
 
 adjustment {
   name=adjustment.energy
-  damage_energy=10
+  damage_energy=20
 }
 
 adjustment {
   name=adjustment.explosive
-  damage_explosive=10
+  damage_explosive=20
   warhead_radius_falloff=5
 }
 
 adjustment {
   name=adjustment.trap
-  damage_trap=20
+  damage_trap=30
 }
 
 adjustment {
   name=adjustment.exotic
-  damage_exotic=20
+  damage_exotic=30
 }
 
 upgrade {
@@ -322,7 +322,7 @@ text {
 
 adjustment {
   name=adjustment.firerate
-  tank_firerate=10
+  tank_firerate=20
 }
 
 upgrade {
