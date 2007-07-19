@@ -40,6 +40,7 @@ void Shop::renormalize(HierarchyNode &item, const Player *player, int playercoun
         hod.cat_restrictiontype = HierarchyNode::HNT_EQUIP_CAT;
         hod.displaymode = HierarchyNode::HNDM_BLANK;
         hod.buyable = false;
+        hod.selectable = false;
         if(i < SIMUL_WEAPONS) {
           hod.name = StringPrintf("Weapon system %d", i + 1);
         } else if(i == WMSPC_UNEQUIPPED) {
@@ -476,20 +477,37 @@ bool Shop::runTick(const Keystates &keys, Player *player) {
   if(keys.l.repeat && curloc.size() > 1) {
     queueSound(S::select);
     curloc.pop_back();
+    CHECK(getCurNode().selectable);
   }
   if(keys.r.repeat && getCurNode().branches.size() != 0) {
-    queueSound(S::select);
-    curloc.push_back(0);
+    for(int i = 0; i < getCurNode().branches.size(); i++) {
+      if(getCurNode().branches[i].selectable) {
+        queueSound(S::select);
+        curloc.push_back(i);
+        break;
+      }
+    }
   }
   if(keys.u.repeat) {
+    CHECK(getCurNode().selectable);
     queueSound(S::select);
-    curloc.back()--;
+    while(true) {
+      curloc.back() = modurot(curloc.back() - 1, getCategoryNode().branches.size());
+      if(getCurNode().selectable)
+        break;
+    }
   }
   if(keys.d.repeat) {
+    CHECK(getCurNode().selectable);
     queueSound(S::select);
-    curloc.back()++;
+    while(true) {
+      curloc.back() = modurot(curloc.back() + 1, getCategoryNode().branches.size());
+      if(getCurNode().selectable)
+        break;
+    }
   }
-  curloc.back() = modurot(curloc.back(), getCategoryNode().branches.size());
+  
+  CHECK(getCurNode().selectable);
   
   if(getCurNode().type != HierarchyNode::HNT_EQUIPWEAPON && getCurNode().type != HierarchyNode::HNT_EQUIPCATEGORY)
     equipselected = NULL;

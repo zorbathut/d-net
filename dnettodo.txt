@@ -1,10 +1,10 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - Bugfixes from games
-    - Equip categories shouldn't be selectable
     - Fix drone durability
     - Remove old weapons
     - Make sure that bombardment does affect blast radiuses that aren't explosive
+    - Balance sparker
     - Look over tank balance yet again for Seka/Tuvu/Madi, as nobody ever chooses Madi
       - Calculate firespeed vs. damage value
       - What kind of sheer DPS/DPS resistance can Gupe/Boja/Himo pour out in a fight?

@@ -174,6 +174,7 @@ void HierarchyNode::checkConsistency(vector<string> *errors) const {
     CHECK(!gottype);
     gottype = true;
     CHECK(displaymode != HNDM_COST);
+    CHECK(selectable);
     CHECK(!buyable);
   }
   
@@ -182,6 +183,7 @@ void HierarchyNode::checkConsistency(vector<string> *errors) const {
     CHECK(!gottype);
     gottype = true;
     CHECK(displaymode == HNDM_COST);
+    CHECK(selectable);
     CHECK(buyable);
     CHECK(weapon);
   } else {
@@ -193,6 +195,7 @@ void HierarchyNode::checkConsistency(vector<string> *errors) const {
     CHECK(!gottype);
     gottype = true;
     CHECK(displaymode == HNDM_COSTUNIQUE);
+    CHECK(selectable);
     CHECK(buyable);
     CHECK(pack == 1);
     CHECK(upgrade);
@@ -205,6 +208,7 @@ void HierarchyNode::checkConsistency(vector<string> *errors) const {
     CHECK(!gottype);
     gottype = true;
     CHECK(displaymode == HNDM_COSTUNIQUE);
+    CHECK(selectable);
     CHECK(pack == 1);
     CHECK(buyable);
     CHECK(glory);
@@ -217,6 +221,7 @@ void HierarchyNode::checkConsistency(vector<string> *errors) const {
     CHECK(!gottype);
     gottype = true;
     CHECK(displaymode == HNDM_COSTUNIQUE);
+    CHECK(selectable);
     CHECK(pack == 1);
     CHECK(buyable);
     CHECK(bombardment);
@@ -229,6 +234,7 @@ void HierarchyNode::checkConsistency(vector<string> *errors) const {
     CHECK(!gottype);
     gottype = true;
     CHECK(displaymode == HNDM_COSTUNIQUE);
+    CHECK(selectable);
     CHECK(pack == 1);
     CHECK(buyable);
     CHECK(tank);
@@ -241,6 +247,7 @@ void HierarchyNode::checkConsistency(vector<string> *errors) const {
     CHECK(!gottype);
     gottype = true;
     CHECK(displaymode == HNDM_BLANK);
+    CHECK(selectable);
     CHECK(!buyable);
     CHECK(cat_restrictiontype == HNT_EQUIP_CAT);
   }
@@ -250,6 +257,7 @@ void HierarchyNode::checkConsistency(vector<string> *errors) const {
     CHECK(!gottype);
     gottype = true;
     CHECK(displaymode == HNDM_BLANK);
+    CHECK(selectable);
     CHECK(!buyable);
     CHECK(cat_restrictiontype == HNT_SELLWEAPON);
   }
@@ -259,6 +267,7 @@ void HierarchyNode::checkConsistency(vector<string> *errors) const {
     CHECK(!gottype);
     gottype = true;
     CHECK(displaymode == HNDM_COST);
+    CHECK(selectable);
     CHECK(buyable);
     CHECK(cat_restrictiontype == HNT_SELLWEAPON);
     CHECK(sellweapon);
@@ -271,6 +280,7 @@ void HierarchyNode::checkConsistency(vector<string> *errors) const {
     CHECK(!gottype);
     gottype = true;
     CHECK(displaymode == HNDM_EQUIP);
+    CHECK(selectable);
     CHECK(cat_restrictiontype == HNT_EQUIP_CAT);
     CHECK(equipweapon);
   } else {
@@ -283,6 +293,7 @@ void HierarchyNode::checkConsistency(vector<string> *errors) const {
     CHECK(!gottype);
     gottype = true;
     CHECK(displaymode == HNDM_BLANK);
+    CHECK(!selectable);
     CHECK(!buyable);
     CHECK(cat_restrictiontype == HNT_EQUIP_CAT);
   }
@@ -292,6 +303,7 @@ void HierarchyNode::checkConsistency(vector<string> *errors) const {
     CHECK(!gottype);
     gottype = true;
     CHECK(displaymode == HNDM_COSTUNIQUE);
+    CHECK(selectable);
     CHECK(buyable);
     CHECK(pack == 1);
     CHECK(implantslot);
@@ -305,13 +317,16 @@ void HierarchyNode::checkConsistency(vector<string> *errors) const {
     gottype = true;
     if(type == HNT_IMPLANTITEM) {
       CHECK(displaymode == HNDM_BLANK);
+      CHECK(!selectable);
       CHECK(!buyable);
     } else if(type == HNT_IMPLANTITEM_EQUIP) {
       CHECK(displaymode == HNDM_IMPLANT_EQUIP);
+      CHECK(selectable);
       CHECK(buyable);
       CHECK(pack == 1);
     } else if(type == HNT_IMPLANTITEM_UPG) {
       CHECK(displaymode == HNDM_IMPLANT_UPGRADE);
+      CHECK(selectable);
       CHECK(buyable);
       CHECK(pack == 1);
     } else {
@@ -322,11 +337,12 @@ void HierarchyNode::checkConsistency(vector<string> *errors) const {
     CHECK(!implantitem);
   }
   
-  // the "done" token has no cost or other display but is "buyable"
+  // the "bonuses" token has no cost or other display but is "buyable"
   if(type == HNT_BONUSES) {
     CHECK(!gottype);
     gottype = true;
     CHECK(displaymode == HNDM_BLANK);
+    CHECK(selectable);
     CHECK(!buyable);
   }
 
@@ -335,6 +351,7 @@ void HierarchyNode::checkConsistency(vector<string> *errors) const {
     CHECK(!gottype);
     gottype = true;
     CHECK(displaymode == HNDM_BLANK);
+    CHECK(selectable);
     CHECK(buyable);
     CHECK(pack == 1);
     CHECK(name == "Done");
@@ -443,6 +460,7 @@ HierarchyNode::HierarchyNode() {
   type = HNT_LAST;
   displaymode = HNDM_LAST;
   buyable = false;
+  selectable = true;
   pack = -1;
   cat_restrictiontype = -1;
   weapon = NULL;
@@ -1372,6 +1390,7 @@ void parseImplant(kvData *chunk, bool reload, ErrorAccumulator &accum) {
     tnode.type = HierarchyNode::HNT_IMPLANTITEM;
     tnode.displaymode = HierarchyNode::HNDM_BLANK;
     tnode.buyable = false;
+    tnode.selectable = false;
     tnode.cat_restrictiontype = HierarchyNode::HNT_IMPLANT_CAT;
     CHECK(mountpoint->cat_restrictiontype == -1 || tnode.cat_restrictiontype == mountpoint->cat_restrictiontype);
     

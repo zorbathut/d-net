@@ -616,6 +616,7 @@ public:
   Displaymode displaymode;
 
   bool buyable;
+  bool selectable;
   
   int pack;
   
