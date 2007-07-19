@@ -5,8 +5,6 @@
 hierarchy {
   name=ROOT.Ammo.Autocannon
   pack=100
-  
-  spawncash=MERGE
 }
 
 text {
@@ -70,8 +68,6 @@ launcher {
 hierarchy {
   name=ROOT.Ammo.AP Autocannon
   pack=100
-  
-  spawncash=MERGE
 }
 
 text {
@@ -136,8 +132,6 @@ launcher {
 hierarchy {
   name=ROOT.Ammo.Heavy Autocannon
   pack=100
-  
-  spawncash=MERGE
 }
 
 text {
@@ -201,8 +195,6 @@ launcher {
 hierarchy {
   name=ROOT.Ammo.Sabot Shotgun
   pack=100
-  
-  spawncash=MERGE
 }
 
 text {
@@ -266,8 +258,6 @@ launcher {
 hierarchy {
   name=ROOT.Ammo.Blade Launcher
   pack=100
-  
-  spawncash=MERGE
 }
 
 text {
@@ -331,8 +321,6 @@ launcher {
 hierarchy {
   name=ROOT.Ammo.C Cannon
   pack=100
-  
-  spawncash=MERGE
 }
 
 text {
@@ -396,8 +384,6 @@ launcher {
 hierarchy {
   name=ROOT.Ammo.Conversion Cannon
   pack=100
-  
-  spawncash=MERGE
 }
 
 text {

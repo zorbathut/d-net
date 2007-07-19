@@ -5,8 +5,6 @@
 hierarchy {
   name=ROOT.Ammo.Laser
   pack=100
-  
-  spawncash=MERGE
 }
 
 text {
@@ -101,8 +99,6 @@ launcher {
 hierarchy {
   name=ROOT.Ammo.Megawatt Laser
   pack=100
-  
-  spawncash=MERGE
 }
 
 text {
@@ -199,8 +195,6 @@ launcher {
 hierarchy {
   name=ROOT.Ammo.Gigawatt Laser
   pack=100
-  
-  spawncash=MERGE
 }
 
 text {
@@ -294,8 +288,6 @@ launcher {
 hierarchy {
   name=ROOT.Ammo.Plasma Cannon
   pack=100
-  
-  spawncash=MERGE
 }
 
 text {
@@ -389,8 +381,6 @@ launcher {
 hierarchy {
   name=ROOT.Ammo.Gamma Beam
   pack=100
-  
-  spawncash=MERGE
 }
 
 text {
@@ -484,8 +474,6 @@ launcher {
 hierarchy {
   name=ROOT.Ammo.Fission Laser
   pack=100
-  
-  spawncash=MERGE
 }
 
 text {
@@ -579,8 +567,6 @@ launcher {
 hierarchy {
   name=ROOT.Ammo.Conversion Beam
   pack=100
-  
-  spawncash=MERGE
 }
 
 text {

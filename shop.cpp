@@ -159,11 +159,11 @@ void Shop::renormalize(HierarchyNode &item, const Player *player, int playercoun
         keep = false;
       
       // If the item isn't supposed to spawn yet, we get rid of it.
-      if(keep && titem.spawncash > highestCash)
+      if(keep && FLAGS_cullShopTree && titem.spawncash > highestCash)
         keep = false;
       
       // If holy crap we should be past this, we get rid of it.
-      if(titem.spawncash > Money(0) && keep && titem.spawncash * 100000 < highestCash)
+      if(keep && titem.despawncash > Money(0) && FLAGS_cullShopTree && titem.despawncash < highestCash)
         keep = false;
       
       if(keep) {

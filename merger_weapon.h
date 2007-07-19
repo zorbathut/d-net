@@ -20,6 +20,7 @@ struct WeaponParams {
     string item_recommended;
     
     string params_threshold;
+    string params_dethreshold;
     
     bool has_dpp;
     float dpp;

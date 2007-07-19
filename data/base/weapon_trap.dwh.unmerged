@@ -5,8 +5,6 @@
 hierarchy {
   name=ROOT.Ammo.Minelayer
   pack=25
-  
-  spawncash=MERGE
 }
 
 text {
@@ -174,8 +172,6 @@ weapon {
   
   cost=MERGE
   firerate=MERGE
-  
-  spawncash=10000
 
   launcher=launcher.weapon.mine4
 }
@@ -217,8 +213,6 @@ weapon {
   
   cost=MERGE
   firerate=MERGE
-  
-  spawncash=10000
 
   launcher=launcher.weapon.mine5
 }
@@ -260,8 +254,6 @@ weapon {
   
   cost=MERGE
   firerate=MERGE
-  
-  spawncash=10000
 
   launcher=launcher.weapon.mine6
 }
@@ -273,8 +265,6 @@ weapon {
 hierarchy {
   name=ROOT.Ammo.Boomerang Gun
   pack=100
-
-  spawncash=MERGE
 }
 
 text {

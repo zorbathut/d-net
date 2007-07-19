@@ -474,6 +474,7 @@ HierarchyNode::HierarchyNode() {
   equipweaponfirst = false;
   sellweapon = NULL;
   spawncash = Money(0);
+  despawncash = Money(0);
 }
 
 void swap(HierarchyNode &lhs, HierarchyNode &rhs) {
@@ -767,6 +768,7 @@ void parseHierarchy(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   }
   
   tnode.spawncash = parseWithDefault(chunk, "spawncash", Money(0));
+  tnode.despawncash = parseWithDefault(chunk, "despawncash", Money(0));
   
   CHECK(mountpoint->cat_restrictiontype == -1 || tnode.cat_restrictiontype == mountpoint->cat_restrictiontype);
   mountpoint->branches.push_back(tnode);

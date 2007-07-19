@@ -5,8 +5,6 @@
 hierarchy {
   name=ROOT.Ammo.Missile
   pack=100
-  
-  spawncash=MERGE
 }
 
 text {
@@ -61,8 +59,6 @@ launcher {
 hierarchy {
   name=ROOT.Ammo.HE Missile
   pack=100
-  
-  spawncash=MERGE
 }
 
 text {
@@ -154,8 +150,6 @@ launcher {
 hierarchy {
   name=ROOT.Ammo.Cluster Missile
   pack=100
-  
-  spawncash=MERGE
 }
 
 text {
@@ -210,8 +204,6 @@ launcher {
 hierarchy {
   name=ROOT.Ammo.Proximity Rocket
   pack=100
-  
-  spawncash=MERGE
 }
 
 text {
@@ -266,8 +258,6 @@ launcher {
 hierarchy {
   name=ROOT.Ammo.Adaptive Rocket
   pack=100
-  
-  spawncash=MERGE
 }
 
 text {
@@ -322,8 +312,6 @@ launcher {
 hierarchy {
   name=ROOT.Ammo.Mini-Nuke
   pack=100
-  
-  spawncash=MERGE
 }
 
 text {
@@ -378,8 +366,6 @@ launcher {
 hierarchy {
   name=ROOT.Ammo.Conversion Nuke
   pack=100
-  
-  spawncash=MERGE
 }
 
 text {

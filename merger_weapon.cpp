@@ -41,6 +41,8 @@ string WeaponParams::token() {
 
 bool WeaponParams::parseLine(const vector<string> &line, Data *data) {
   if(line[1] == "Params") {
+    CHECK(line[2].size());
+    CHECK(line[3].size());
     CHECK(!line[6].size());
     CHECK(line[8].size());
     data->params = true;
@@ -48,6 +50,7 @@ bool WeaponParams::parseLine(const vector<string> &line, Data *data) {
     data->dpp = atof(line[7].c_str());
     data->durability = line[5];
     data->params_threshold = string(line[2].begin(), find(line[2].begin(), line[2].end(), '.'));
+    data->params_dethreshold = string(line[3].begin(), find(line[3].begin(), line[3].end(), '.'));
     CHECK(data->params_threshold.size());
     return true;
   } else {
@@ -102,13 +105,13 @@ void WeaponParams::preprocess(kvData *kvd, const Data &data) {
   } else if(kvd->category == "hierarchy") {
     CHECK(data.params);
     
-    CHECK(atof(data.params_threshold.c_str()) < 1000 || kvd->read("spawncash") == "MERGE");
-    
-    if(kvd->kv.count("spawncash"))
-      kvd->kv["spawncash"] = data.params_threshold;
+    kvd->kv["spawncash"] = data.params_threshold;
+    kvd->kv["despawncash"] = data.params_dethreshold;
   } else if(kvd->category == "projectile") {
-    if(kvd->kv.count("durability") && kvd->read("durability") == "MERGE")
+    if(kvd->kv.count("durability") && kvd->read("durability") == "MERGE") {
+      CHECK(data.durability.size());
       kvd->kv["durability"] = data.durability;
+    }
   }
 }
 

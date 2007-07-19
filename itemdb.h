@@ -636,6 +636,7 @@ public:
   
   int cat_restrictiontype;
   Money spawncash;
+  Money despawncash;
   
   void finalSort();
   void checkConsistency(vector<string> *errors) const;

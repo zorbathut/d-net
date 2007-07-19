@@ -1,16 +1,11 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - Bugfixes from games
-    - Remove old weapons
     - Make sure that bombardment does affect blast radiuses that aren't explosive
     - Balance sparker
-    - Check out damage/firespeed final numbers for Gupe/Boja/Himo
     - Slowdown with lots of weapons?
     - Auto-equip the first weapon, auto-equip things into damage-type slots?
-    - Figure out a good meaning for the trees faction
     - Link handling to engine a little
-    - Hephaestus is too slow
-    - Lower damage upgrade cost
   - I really hate naming things
     - Mines are inconsistent
     - C Cannon needs some fiddling :(
@@ -33,6 +28,8 @@
     - Special missile
     - OGRE
   - Eventual bugfixes
+    - Clean up implant interface a bit
+    - Add implant costs to the balance sheet
     - Add tank bonuses to the balance sheet
     - Rewrite faction flavor text if needed
     - Write a better allocator
