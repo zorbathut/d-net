@@ -316,20 +316,20 @@ launcher {
 
 ###########################
 #
-#   C Cannon base stats
+#   Relativistic Cannon base stats
 
 hierarchy {
-  name=ROOT.Ammo.C Cannon
+  name=ROOT.Ammo.Relativistic Cannon
   pack=100
 }
 
 text {
-  name=text.weapon.ccannon
+  name=text.weapon.relativisticcannon
   data=Blah blah hamster blah yacht blah blah blah monocle polish
 }
 
 effects {
-  name=effects.weapon.ccannon
+  name=effects.weapon.relativisticcannon
   type=particle
 
   quantity=8
@@ -345,36 +345,36 @@ effects {
 }
 
 warhead {
-  name=warhead.weapon.ccannon
+  name=warhead.weapon.relativisticcannon
   impactdamage=MERGE kinetic
   wallremovalradius=0.5
   wallremovalchance=0.05
   
-  effects_impact=effects.weapon.ccannon
+  effects_impact=effects.weapon.relativisticcannon
 }
 
 projectile {
-  name=projectile.weapon.ccannon
+  name=projectile.weapon.relativisticcannon
   motion=normal
   velocity=120
   color=1.0, 0.9, 0.6
   durability=MERGE
-  warhead=warhead.weapon.ccannon
+  warhead=warhead.weapon.relativisticcannon
 }
 
 deploy {
-  name=deploy.weapon.ccannon
+  name=deploy.weapon.relativisticcannon
   type=forward
   anglestddev=0.030
-  projectile=projectile.weapon.ccannon
+  projectile=projectile.weapon.relativisticcannon
 }
 
 launcher {
-  name=launcher.weapon.ccannon
+  name=launcher.weapon.relativisticcannon
   
-  deploy=deploy.weapon.ccannon
+  deploy=deploy.weapon.relativisticcannon
   
-  text=text.weapon.ccannon
+  text=text.weapon.relativisticcannon
 }
 
 ###########################
@@ -721,57 +721,57 @@ weapon {
 
 
 weapon {
-  name=ROOT.Ammo.C Cannon.C Cannon I
+  name=ROOT.Ammo.Relativistic Cannon.Relativistic Cannon I
   
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.weapon.ccannon
+  launcher=launcher.weapon.relativisticcannon
 }
 
 weapon {
-  name=ROOT.Ammo.C Cannon.C Cannon II
+  name=ROOT.Ammo.Relativistic Cannon.Relativistic Cannon II
   
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.weapon.ccannon
+  launcher=launcher.weapon.relativisticcannon
 }
 
 weapon {
-  name=ROOT.Ammo.C Cannon.C Cannon III
+  name=ROOT.Ammo.Relativistic Cannon.Relativistic Cannon III
   
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.weapon.ccannon
+  launcher=launcher.weapon.relativisticcannon
 }
 
 weapon {
-  name=ROOT.Ammo.C Cannon.C Cannon IV
+  name=ROOT.Ammo.Relativistic Cannon.Relativistic Cannon IV
   
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.weapon.ccannon
+  launcher=launcher.weapon.relativisticcannon
 }
 
 weapon {
-  name=ROOT.Ammo.C Cannon.C Cannon V
+  name=ROOT.Ammo.Relativistic Cannon.Relativistic Cannon V
   
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.weapon.ccannon
+  launcher=launcher.weapon.relativisticcannon
 }
 
 weapon {
-  name=ROOT.Ammo.C Cannon.C Cannon VI
+  name=ROOT.Ammo.Relativistic Cannon.Relativistic Cannon VI
   
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.weapon.ccannon
+  launcher=launcher.weapon.relativisticcannon
 }
 
 

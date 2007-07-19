@@ -376,20 +376,20 @@ launcher {
 
 ###########################
 #
-#   Gamma Beam base stats
+#   Gamma Lance base stats
 
 hierarchy {
-  name=ROOT.Ammo.Gamma Beam
+  name=ROOT.Ammo.Gamma Lance
   pack=100
 }
 
 text {
-  name=text.weapon.gammabeam
+  name=text.weapon.gammalance
   data=Blah blah hamster blah yacht blah blah blah monocle polish
 }
 
 effects {
-  name=effects.weapon.gammabeam1
+  name=effects.weapon.gammalance1
   type=particle
 
   quantity=4
@@ -405,7 +405,7 @@ effects {
 }
 
 effects {
-  name=effects.weapon.gammabeam2
+  name=effects.weapon.gammalance2
   type=particle
 
   quantity=4
@@ -421,7 +421,7 @@ effects {
 }
 
 effects {
-  name=effects.weapon.gammabeam3
+  name=effects.weapon.gammalance3
   type=particle
 
   quantity=2
@@ -436,35 +436,35 @@ effects {
 }
 
 warhead {
-  name=warhead.weapon.gammabeam
+  name=warhead.weapon.gammalance
   impactdamage=MERGE energy
-  effects_impact=effects.weapon.gammabeam1
-  effects_impact=effects.weapon.gammabeam2
-  effects_impact=effects.weapon.gammabeam3
+  effects_impact=effects.weapon.gammalance1
+  effects_impact=effects.weapon.gammalance2
+  effects_impact=effects.weapon.gammalance3
 }
 
 projectile {
-  name=projectile.weapon.gammabeam
+  name=projectile.weapon.gammalance
   motion=normal
   velocity=600
   color=0.6, 0.9, 1.0
   durability=MERGE
-  warhead=warhead.weapon.gammabeam
+  warhead=warhead.weapon.gammalance
 }
 
 deploy {
-  name=deploy.weapon.gammabeam
+  name=deploy.weapon.gammalance
   type=forward
   anglestddev=0.008
-  projectile=projectile.weapon.gammabeam
+  projectile=projectile.weapon.gammalance
 }
 
 launcher {
-  name=launcher.weapon.gammabeam
+  name=launcher.weapon.gammalance
   
-  deploy=deploy.weapon.gammabeam
+  deploy=deploy.weapon.gammalance
   
-  text=text.weapon.gammabeam
+  text=text.weapon.gammalance
 }
 
 ###########################
@@ -562,20 +562,20 @@ launcher {
 
 ###########################
 #
-#   Conversion Beam base stats
+#   Conversion Lance base stats
 
 hierarchy {
-  name=ROOT.Ammo.Conversion Beam
+  name=ROOT.Ammo.Conversion Lance
   pack=100
 }
 
 text {
-  name=text.weapon.conversionbeam
+  name=text.weapon.conversionlance
   data=Blah blah hamster blah yacht blah blah blah monocle polish
 }
 
 effects {
-  name=effects.weapon.conversionbeam1
+  name=effects.weapon.conversionlance1
   type=particle
 
   quantity=4
@@ -591,7 +591,7 @@ effects {
 }
 
 effects {
-  name=effects.weapon.conversionbeam2
+  name=effects.weapon.conversionlance2
   type=particle
 
   quantity=4
@@ -607,7 +607,7 @@ effects {
 }
 
 effects {
-  name=effects.weapon.conversionbeam3
+  name=effects.weapon.conversionlance3
   type=particle
 
   quantity=2
@@ -622,35 +622,35 @@ effects {
 }
 
 warhead {
-  name=warhead.weapon.conversionbeam
+  name=warhead.weapon.conversionlance
   impactdamage=MERGE energy
-  effects_impact=effects.weapon.conversionbeam1
-  effects_impact=effects.weapon.conversionbeam2
-  effects_impact=effects.weapon.conversionbeam3
+  effects_impact=effects.weapon.conversionlance1
+  effects_impact=effects.weapon.conversionlance2
+  effects_impact=effects.weapon.conversionlance3
 }
 
 projectile {
-  name=projectile.weapon.conversionbeam
+  name=projectile.weapon.conversionlance
   motion=normal
   velocity=600
   color=0.6, 0.9, 1.0
   durability=MERGE
-  warhead=warhead.weapon.conversionbeam
+  warhead=warhead.weapon.conversionlance
 }
 
 deploy {
-  name=deploy.weapon.conversionbeam
+  name=deploy.weapon.conversionlance
   type=forward
   anglestddev=0.008
-  projectile=projectile.weapon.conversionbeam
+  projectile=projectile.weapon.conversionlance
 }
 
 launcher {
-  name=launcher.weapon.conversionbeam
+  name=launcher.weapon.conversionlance
   
-  deploy=deploy.weapon.conversionbeam
+  deploy=deploy.weapon.conversionlance
   
-  text=text.weapon.conversionbeam
+  text=text.weapon.conversionlance
 }
 
 ###########################
@@ -878,57 +878,57 @@ weapon {
 
 
 weapon {
-  name=ROOT.Ammo.Gamma Beam.Gamma Beam I
+  name=ROOT.Ammo.Gamma Lance.Gamma Lance I
   
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.weapon.gammabeam
+  launcher=launcher.weapon.gammalance
 }
 
 weapon {
-  name=ROOT.Ammo.Gamma Beam.Gamma Beam II
+  name=ROOT.Ammo.Gamma Lance.Gamma Lance II
   
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.weapon.gammabeam
+  launcher=launcher.weapon.gammalance
 }
 
 weapon {
-  name=ROOT.Ammo.Gamma Beam.Gamma Beam III
+  name=ROOT.Ammo.Gamma Lance.Gamma Lance III
   
   cost=MERGE
   firerate=MERGE
 
-  launcher=launcher.weapon.gammabeam
+  launcher=launcher.weapon.gammalance
 }
 
 weapon {
-  name=ROOT.Ammo.Gamma Beam.Gamma Beam IV
+  name=ROOT.Ammo.Gamma Lance.Gamma Lance IV
   
   cost=MERGE
   firerate=MERGE
 
-  launcher=launcher.weapon.gammabeam
+  launcher=launcher.weapon.gammalance
 }
 
 weapon {
-  name=ROOT.Ammo.Gamma Beam.Gamma Beam V
+  name=ROOT.Ammo.Gamma Lance.Gamma Lance V
   
   cost=MERGE
   firerate=MERGE
 
-  launcher=launcher.weapon.gammabeam
+  launcher=launcher.weapon.gammalance
 }
 
 weapon {
-  name=ROOT.Ammo.Gamma Beam.Gamma Beam VI
+  name=ROOT.Ammo.Gamma Lance.Gamma Lance VI
   
   cost=MERGE
   firerate=MERGE
 
-  launcher=launcher.weapon.gammabeam
+  launcher=launcher.weapon.gammalance
 }
 
 
@@ -988,55 +988,55 @@ weapon {
 
 
 weapon {
-  name=ROOT.Ammo.Conversion Beam.Conversion Beam I
+  name=ROOT.Ammo.Conversion Lance.Conversion Lance I
   
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.weapon.conversionbeam
+  launcher=launcher.weapon.conversionlance
 }
 
 weapon {
-  name=ROOT.Ammo.Conversion Beam.Conversion Beam II
+  name=ROOT.Ammo.Conversion Lance.Conversion Lance II
   
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.weapon.conversionbeam
+  launcher=launcher.weapon.conversionlance
 }
 
 weapon {
-  name=ROOT.Ammo.Conversion Beam.Conversion Beam III
+  name=ROOT.Ammo.Conversion Lance.Conversion Lance III
   
   cost=MERGE
   firerate=MERGE
 
-  launcher=launcher.weapon.conversionbeam
+  launcher=launcher.weapon.conversionlance
 }
 
 weapon {
-  name=ROOT.Ammo.Conversion Beam.Conversion Beam IV
+  name=ROOT.Ammo.Conversion Lance.Conversion Lance IV
   
   cost=MERGE
   firerate=MERGE
 
-  launcher=launcher.weapon.conversionbeam
+  launcher=launcher.weapon.conversionlance
 }
 
 weapon {
-  name=ROOT.Ammo.Conversion Beam.Conversion Beam V
+  name=ROOT.Ammo.Conversion Lance.Conversion Lance V
   
   cost=MERGE
   firerate=MERGE
 
-  launcher=launcher.weapon.conversionbeam
+  launcher=launcher.weapon.conversionlance
 }
 
 weapon {
-  name=ROOT.Ammo.Conversion Beam.Conversion Beam VI
+  name=ROOT.Ammo.Conversion Lance.Conversion Lance VI
   
   cost=MERGE
   firerate=MERGE
 
-  launcher=launcher.weapon.conversionbeam
+  launcher=launcher.weapon.conversionlance
 }
