@@ -7,6 +7,7 @@
 #include "util.h"
 #include "debug.h"
 #include "rng.h"
+#include "perfbar.h"
 
 #include <fstream>
 
@@ -558,6 +559,7 @@ void drawSolidLoopWorker(const vector<Float2> &verts) {
 }
 
 void drawSolidLoop(const vector<Float2> &verts) {
+  PerfStack pst(PBC::gfxsolid);
   for(int i = 0; i < verts.size(); i++)
     CHECK(inPath((verts[i] + verts[(i + 1) % verts.size()] + verts[(i + 2) % verts.size()]) / 3, verts));
   
@@ -680,6 +682,7 @@ void drawText(const string &txt, float scale, float sx, float sy) {
 }
 
 void drawText(const string &txt, float scale, const Float2 &pos) {
+  PerfStack pst(PBC::gfxtext);
   float sx = pos.x;
   scale /= 9;
   for(int i = 0; i < txt.size(); i++) {

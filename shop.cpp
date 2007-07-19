@@ -237,6 +237,8 @@ Money cost(const HierarchyNode &node, const Player *player) {
 }
 
 void Shop::renderNode(const HierarchyNode &node, int depth, const Player *player) const {
+  PerfStack pst(PBC::rendershopnode);
+  
   if(depth < curloc.size())
     renderNode(node.branches[curloc[depth]], depth + 1, player);
   
@@ -692,6 +694,7 @@ void Shop::doTableRender(const Player *player) const {
 };
 
 void Shop::renderToScreen(const Player *player) const {
+  PerfStack pst(PBC::rendershop);
   CHECK(player);
   
   slay.staticZoom();

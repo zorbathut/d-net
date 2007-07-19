@@ -173,20 +173,19 @@ void MainLoop() {
       ticking += bencher.ticksElapsed();
       bencher = Timer();
     }
-    if(frameNumber >= FLAGS_fastForwardTo) {
-      timer.waitForNextFrame();
-    }
-    if(FLAGS_timing) {
-      waiting += bencher.ticksElapsed();
-      bencher = Timer();
-    }
     if(FLAGS_render && (!FLAGS_frameskip || frameNumber % (ffwd ? 60 : 6) == 0 || (!ffwd || frameNumber % 60 == 0) && !timer.skipFrame())) {
-      initFrame();
-      interface.render();
-      if(!controls_users()) {
-        setColor(1.0, 1.0, 1.0);
-        setZoom(Float4(0, 0, 133.333, 100));
-        drawText(StringPrintf("%d", frameNumber), 10, Float2(5, 85));
+      {
+        PerfStack pst(PBC::render);
+        {
+          PerfStack pst(PBC::renderinit);
+          initFrame();
+        }
+        interface.render();
+        if(!controls_users()) {
+          setColor(1.0, 1.0, 1.0);
+          setZoom(Float4(0, 0, 133.333, 100));
+          drawText(StringPrintf("%d", frameNumber), 10, Float2(5, 85));
+        }
       }
       drawPerformanceBar();
       deinitFrame();
@@ -196,6 +195,14 @@ void MainLoop() {
     }
     if(FLAGS_timing) {
       rendering += bencher.ticksElapsed();
+      bencher = Timer();
+    }
+    if(frameNumber >= FLAGS_fastForwardTo) {
+      timer.waitForNextFrame();
+    }
+    if(FLAGS_timing) {
+      waiting += bencher.ticksElapsed();
+      bencher = Timer();
     }
     timer.frameDone();
     {

@@ -9,6 +9,7 @@
 #include "inputsnag.h"
 #include "parse.h"
 #include "player.h"
+#include "perfbar.h"
 
 #include <fstream>
 
@@ -121,6 +122,8 @@ void Metagame::ai(const vector<Ai *> &ai) const {
 }
 
 void Metagame::renderToScreen() const {
+  PerfStack pst(PBC::rendermeta);
+  
   if(mode == MGM_PLAYERCHOOSE) {
     persistent.render();
   } else if(mode == MGM_FACTIONTYPE) {

@@ -22,6 +22,15 @@ namespace PBC {
   const Color persistent = Color(0.2, 0.5, 0.2);
   const Color shop = Color(1.0, 0.2, 0.2);
   const Color shopnormalize = Color(1.0, 1.0, 0.2);
+  
+  const Color render = Color(0.9, 0.9, 0.9);
+  const Color renderinit = Color(0.9, 0.2, 0.2);
+  const Color rendermeta = Color(0.2, 0.9, 0.2);
+  const Color rendershop = Color(0.9, 0.9, 0.2);
+  const Color rendershopnode = Color(0.6, 0.1, 0.1);
+  
+  const Color gfxtext = Color(0.1, 0.1, 0.4);
+  const Color gfxsolid = Color(0.1, 0.4, 0.1);
 };
 
 class PerfStack : boost::noncopyable {
