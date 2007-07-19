@@ -266,12 +266,11 @@ void HierarchyNode::checkConsistency(vector<string> *errors) const {
     CHECK(!sellweapon);
   }
   
-  // the equipweapon item must have a weapon and is "buyable"
+  // the equipweapon item must have a weapon and may or may not be buyable
   if(type == HNT_EQUIPWEAPON) {
     CHECK(!gottype);
     gottype = true;
     CHECK(displaymode == HNDM_EQUIP);
-    CHECK(buyable);
     CHECK(cat_restrictiontype == HNT_EQUIP_CAT);
     CHECK(equipweapon);
   } else {

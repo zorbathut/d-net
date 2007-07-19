@@ -1,8 +1,6 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - Bugfixes from games
-    - Add perfbar to rendering
-    - Put Sparker in the equip menu
     - Equip categories shouldn't be selectable
     - Fix drone durability
     - Remove old weapons

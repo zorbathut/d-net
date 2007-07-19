@@ -51,16 +51,29 @@ void Shop::renormalize(HierarchyNode &item, const Player *player, int playercoun
         }
         item.branches.push_back(hod);
       }
-      for(int j = 0; j < weaps[i].size(); j++) {
+      if(weaps[i].size()) {
+        for(int j = 0; j < weaps[i].size(); j++) {
+          HierarchyNode hod;
+          hod.type = HierarchyNode::HNT_EQUIPWEAPON;
+          hod.cat_restrictiontype = HierarchyNode::HNT_EQUIP_CAT;
+          hod.displaymode = HierarchyNode::HNDM_EQUIP;
+          hod.buyable = true;
+          hod.name = informalNameFromIDB(weaps[i][j]);
+          hod.pack = 1;
+          hod.equipweapon = weaps[i][j];
+          hod.equipweaponfirst = !j && i < SIMUL_WEAPONS;
+          item.branches.push_back(hod);
+        }
+      } else if(i < SIMUL_WEAPONS) {
+        const IDBWeapon *dw = player->getWeapon(i).base();
         HierarchyNode hod;
         hod.type = HierarchyNode::HNT_EQUIPWEAPON;
         hod.cat_restrictiontype = HierarchyNode::HNT_EQUIP_CAT;
         hod.displaymode = HierarchyNode::HNDM_EQUIP;
-        hod.buyable = true;
-        hod.name = informalNameFromIDB(weaps[i][j]);
-        hod.pack = 1;
-        hod.equipweapon = weaps[i][j];
-        hod.equipweaponfirst = !j && i < SIMUL_WEAPONS;
+        hod.buyable = false;
+        hod.name = informalNameFromIDB(dw);
+        hod.equipweapon = dw;
+        hod.equipweaponfirst = true;
         item.branches.push_back(hod);
       }
     }
@@ -341,7 +354,7 @@ void Shop::renderNode(const HierarchyNode &node, int depth, const Player *player
         {
           int pac = player->ammoCount(weap);
           if(pac == UNLIMITED_AMMO) {
-            text = "UNL";
+            text = "Unlimited";
           } else if(pac == 0) {
             text = "";
           } else if(pac > 0) {
@@ -495,22 +508,30 @@ bool Shop::runTick(const Keystates &keys, Player *player) {
     
     if(getCurNode().type == HierarchyNode::HNT_EQUIPWEAPON) {
       if(keys.accept.push) {
-        queueSound(S::choose);
-        if(equipselected)
-          equipselected = NULL;
-        else
-          equipselected = getCurNode().equipweapon;
+        if(getCurNode().buyable) {
+          queueSound(S::choose);
+          if(equipselected)
+            equipselected = NULL;
+          else
+            equipselected = getCurNode().equipweapon;
+        } else {
+          queueSound(S::error);
+        }
       } else if(keys.cancel.push) {
         equipselected = NULL; // wheeee
       } else {
         for(int i = 0; i < SIMUL_WEAPONS; i++) {
           if(keys.fire[i].push) {
-            queueSound(S::choose);
-            if(equipselected)
-              player->promoteWeapon(equipselected, i);
-            else
-              player->promoteWeapon(getCurNode().equipweapon, i);
-            equipselected = NULL;
+            if(getCurNode().buyable) {
+              queueSound(S::choose);
+              if(equipselected)
+                player->promoteWeapon(equipselected, i);
+              else
+                player->promoteWeapon(getCurNode().equipweapon, i);
+              equipselected = NULL;
+            } else {
+              queueSound(S::error);
+            }
           }
         }
       }
