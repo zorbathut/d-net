@@ -59,7 +59,7 @@ void Projectile::render(const vector<Coord2> &tankposes) const {
   } else if(projtype.motion() == PM_AIRBRAKE) {
     setColor(projtype.color() * airbrake_liveness());
   } else if(projtype.motion() == PM_MINE) {
-    const float radarrange = 30;
+    const float radarrange = 40;
     float closest = 1000;
     for(int i = 0; i < tankposes.size(); i++)
       if(len(tankposes[i] - pos).toFloat() < closest)
