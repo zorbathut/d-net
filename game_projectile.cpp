@@ -33,7 +33,7 @@ void Projectile::tick(vector<smart_ptr<GfxEffects> > *gfxe, const GameImpactCont
     if(airbrake_liveness() <= 0)
       detonating = true;
   } else if(projtype.motion() == PM_MINE) {
-    if(gic.rng->frand() > pow(0.5f, 1 / (projtype.halflife() * FPS)))
+    if(age >= projtype.halflife() * FPS / 2 && gic.rng->frand() > pow(0.5f, 1 / (projtype.halflife() * FPS)))
       detonating = true;
   } else if(projtype.motion() == PM_DPS) {
     detonating = true;

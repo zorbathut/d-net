@@ -1,11 +1,11 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - Bugfixes from games
-    - Increase mine halflife a bit
     - Add perfbar to rendering
     - Put Sparker in the equip menu
     - Equip categories shouldn't be selectable
     - Fix drone durability
+    - Remove old weapons
     - Make sure that bombardment does affect blast radiuses that aren't explosive
     - Look over tank balance yet again for Seka/Tuvu/Madi, as nobody ever chooses Madi
       - Calculate firespeed vs. damage value
