@@ -478,6 +478,7 @@ bool findEquipItem(const HierarchyNode &hrt, const IDBWeapon *weap, vector<int> 
 bool Shop::runTick(const Keystates &keys, Player *player) {
   PerfStack pst(PBC::shop);
   
+  CHECK(getCurNode().selectable);
   if(keys.l.repeat && curloc.size() > 1) {
     queueSound(S::select);
     curloc.pop_back();
@@ -510,7 +511,6 @@ bool Shop::runTick(const Keystates &keys, Player *player) {
         break;
     }
   }
-  
   CHECK(getCurNode().selectable);
   
   if(getCurNode().type != HierarchyNode::HNT_EQUIPWEAPON && getCurNode().type != HierarchyNode::HNT_EQUIPCATEGORY)

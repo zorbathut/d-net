@@ -1,6 +1,8 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - Bugfixes from games
+    - Buy weapon, move weapon to slot 3 via hotkey, crash
+    - Buy weapons, move shit around, ends up on an unselectable, crash
     - Make sure that bombardment does affect blast radiuses that aren't explosive
     - Balance sparker
     - Slowdown with lots of weapons?
@@ -25,6 +27,8 @@
     - Special missile
     - OGRE
   - Eventual bugfixes
+    - Start with level 3
+    - End with level 5
     - Clean up implant interface a bit
     - Add implant costs to the balance sheet
     - Add tank bonuses to the balance sheet
