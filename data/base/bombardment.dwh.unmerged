@@ -434,7 +434,7 @@ warhead {
 projectile {
   name=projectile.bombardment.orbitalmines
   motion=mine
-  radius_physical=1
+  radius_physical=1.4
   mine_spikes=4
   halflife=12
   color=0.8, 1.0, 0.9
@@ -470,7 +470,7 @@ warhead {
 projectile {
   name=projectile.bombardment.minelauncher
   motion=mine
-  radius_physical=1.1
+  radius_physical=1.5
   mine_spikes=4
   halflife=13
   color=0.8, 1.0, 0.9
@@ -506,7 +506,7 @@ warhead {
 projectile {
   name=projectile.bombardment.minebooster
   motion=mine
-  radius_physical=1.2
+  radius_physical=1.6
   mine_spikes=4
   halflife=14
   color=0.8, 1.0, 0.9
@@ -542,7 +542,7 @@ warhead {
 projectile {
   name=projectile.bombardment.blastmines
   motion=mine
-  radius_physical=1.3
+  radius_physical=1.7
   mine_spikes=4
   halflife=15
   color=0.8, 1.0, 0.9
@@ -578,7 +578,7 @@ warhead {
 projectile {
   name=projectile.bombardment.shockmines
   motion=mine
-  radius_physical=1.4
+  radius_physical=1.8
   mine_spikes=4
   halflife=16
   color=0.8, 1.0, 0.9
@@ -614,7 +614,7 @@ warhead {
 projectile {
   name=projectile.bombardment.mineporter
   motion=mine
-  radius_physical=1.5
+  radius_physical=1.9
   mine_spikes=4
   halflife=17
   color=0.8, 1.0, 0.9

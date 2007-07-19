@@ -3,6 +3,7 @@
   - Bugfixes from games
     - Raise Mines From Space size
     - Increase mine visibility radius a little
+    - Increase mine halflife a bit
     - Add perfbar to rendering
     - Put Sparker in the equip menu
     - Equip categories shouldn't be selectable
