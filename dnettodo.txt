@@ -1,7 +1,6 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - Bugfixes from games
-    - Fix drone durability
     - Remove old weapons
     - Make sure that bombardment does affect blast radiuses that aren't explosive
     - Balance sparker
