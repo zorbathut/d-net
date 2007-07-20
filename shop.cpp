@@ -687,6 +687,15 @@ bool Shop::runTick(const Keystates &keys, Player *player) {
     PerfStack pst(PBC::shopnormalize);
     hierarchroot = itemDbRoot();
     renormalize(hierarchroot, player, playercount, highestcash);
+    
+    if(getCategoryNode().branches.size() <= curloc.back())
+      curloc.back() = getCategoryNode().branches.size() - 1;  // grr
+    
+    while(!getCurNode().selectable && curloc.back() < getCategoryNode().branches.size() - 1)
+        curloc.back()++;
+    
+    while(!getCurNode().selectable && curloc.back() > 0)
+        curloc.back()--;
   }
   
   if(equipselected) {

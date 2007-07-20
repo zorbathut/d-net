@@ -1,8 +1,6 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - Bugfixes from games
-    - Buy weapon, move weapon to slot 3 via hotkey, crash
-    - Buy weapons, move shit around, ends up on an unselectable, crash
     - Make sure that bombardment does affect blast radiuses that aren't explosive
     - Balance sparker
     - Slowdown with lots of weapons?
@@ -63,6 +61,10 @@
     - Spruce up trap weaponry
     - Spruce up exotic weaponry
     - Spruce up OGRE
+  - Huge enormous things
+    - AI
+    - Network
+    - Singleplayer
 
 - "Polish the Damn Interface" Initiative
   - Fix config, again
