@@ -1,0 +1,503 @@
+
+#### Text
+
+text {
+  name=text.weapon.sparker
+  data=The most infamous of junkyard weapons, the Sparker is a cobbled together monstrosity from whatever parts can be found. It is not powerful, accurate, nor rapid, but can serve if no other weapons are available.
+}
+
+text {
+  name=text.weapon.sparker4
+  data=Named after the original junkyard weapon, the "later models" of the Sparker are surprisingly useful and general weapons. They can be efficiently used in many situations and are not quite as hopeless as the Sparker I.
+}
+
+text {
+  name=text.weapon.sparker7
+  data=Although it bears almost no resemblance to the original Sparker, this weapon bears the namesake of the original Devastation Net staple. It fires a high-speed entangled-chaos package, bombarding the impact area with energetic nanoparticles.
+}
+
+
+#### Effects
+
+effects {
+  name=effects.sparker1
+  type=particle
+
+  quantity=4
+  
+  inertia=-0.1
+  spread=40
+  
+  slowdown=0.2
+  lifetime=0.3
+  
+  radius=0.3
+  color=1.0, 0.3, 0.3
+}
+
+effects {
+  name=effects.sparker2
+  type=particle
+
+  quantity=4
+  
+  inertia=-0.1
+  spread=40
+  
+  slowdown=0.2
+  lifetime=0.3
+  
+  radius=0.3
+  color=0.3, 1.0, 0.3
+}
+
+effects {
+  name=effects.sparker3
+  type=particle
+
+  quantity=4
+  
+  inertia=-0.1
+  spread=40
+  
+  slowdown=0.2
+  lifetime=0.3
+  
+  radius=0.5
+  color=0.3, 0.3, 1.0
+}
+
+#### Sparker I
+
+warhead {
+  name=warhead.SparkerI
+  impactdamage=MERGE(1) kinetic
+  impactdamage=MERGE(1) energy
+  impactdamage=MERGE(1) explosive
+  
+  effects_impact=effects.sparker1
+  effects_impact=effects.sparker2
+  effects_impact=effects.sparker3
+}
+
+projectile {
+  name=projectile.SparkerI
+  velocity=150
+  color=1.0, 1.0, 1.0
+  durability=1
+  warhead=warhead.SparkerI
+}
+
+deploy {
+  name=deploy.SparkerI
+  
+  anglestddev=0.030
+  
+  projectile=projectile.SparkerI
+}
+
+launcher {
+  name=launcher.SparkerI
+  
+  deploy=deploy.SparkerI
+  
+  text=text.weapon.sparker
+}
+
+weapon {
+  name=Sparker I
+  firerate=MERGE
+  
+  launcher=launcher.SparkerI
+}
+
+weapon {
+  name=ROOT.Ammo.Debug.Sparker I
+  firerate=MERGE
+  
+  launcher=launcher.SparkerI
+  
+  cost=1
+  
+  debug=true
+}
+
+
+#### Sparker II
+
+warhead {
+  name=warhead.SparkerII
+  impactdamage=MERGE(1) kinetic
+  impactdamage=MERGE(1) energy
+  impactdamage=MERGE(1) explosive
+  
+  effects_impact=effects.sparker1
+  effects_impact=effects.sparker2
+  effects_impact=effects.sparker3
+}
+
+projectile {
+  name=projectile.SparkerII
+  velocity=180
+  color=1.0, 1.0, 1.0
+  durability=2
+  warhead=warhead.SparkerII
+}
+
+deploy {
+  name=deploy.SparkerII
+  anglestddev=0.020
+  projectile=projectile.SparkerII
+}
+
+launcher {
+  name=launcher.SparkerII
+  
+  deploy=deploy.SparkerII
+  
+  text=text.weapon.sparker
+}
+
+weapon {
+  name=Sparker II
+  firerate=MERGE
+  
+  launcher=launcher.SparkerII
+}
+
+weapon {
+  name=ROOT.Ammo.Debug.Sparker II
+  firerate=MERGE
+  
+  launcher=launcher.SparkerII
+  
+  cost=1
+  
+  debug=true
+}
+
+
+#### Sparker III
+
+warhead {
+  name=warhead.SparkerIII
+  impactdamage=MERGE(1) kinetic
+  impactdamage=MERGE(1) energy
+  impactdamage=MERGE(1) explosive
+  
+  effects_impact=effects.sparker1
+  effects_impact=effects.sparker2
+  effects_impact=effects.sparker3
+}
+
+projectile {
+  name=projectile.SparkerIII
+  velocity=200
+  color=1.0, 1.0, 1.0
+  durability=4
+  warhead=warhead.SparkerIII
+}
+
+deploy {
+  name=deploy.SparkerIII
+  
+  anglestddev=0.018
+  
+  projectile=projectile.SparkerIII
+}
+
+launcher {
+  name=launcher.SparkerIII
+  
+  deploy=deploy.SparkerIII
+  
+  text=text.weapon.sparker
+}
+
+weapon {
+  name=Sparker III
+  firerate=MERGE
+  
+  launcher=launcher.SparkerIII
+}
+
+weapon {
+  name=ROOT.Ammo.Debug.Sparker III
+  firerate=MERGE
+  
+  launcher=launcher.SparkerIII
+  
+  cost=1
+  
+  debug=true
+}
+
+#### Sparker IV
+
+warhead {
+  name=warhead.SparkerIV
+  impactdamage=MERGE(1) kinetic
+  impactdamage=MERGE(1) energy
+  impactdamage=MERGE(1) explosive
+  
+  effects_impact=effects.sparker1
+  effects_impact=effects.sparker2
+  effects_impact=effects.sparker3
+}
+
+projectile {
+  name=projectile.SparkerIV
+  velocity=210
+  color=1.0, 1.0, 1.0
+  thickness_visual=1.5x
+  length=1.5x
+  durability=8
+  warhead=warhead.SparkerIV
+}
+
+deploy {
+  name=deploy.SparkerIV
+  
+  anglestddev=0.025
+  
+  projectile=projectile.SparkerIV
+}
+
+launcher {
+  name=launcher.SparkerIV
+  
+  deploy=deploy.SparkerIV
+  
+  text=text.weapon.sparker4
+}
+
+weapon {
+  name=Sparker IV
+  firerate=MERGE
+  
+  launcher=launcher.SparkerIV
+}
+
+weapon {
+  name=ROOT.Ammo.Debug.Sparker IV
+  firerate=MERGE
+  
+  launcher=launcher.SparkerIV
+  
+  cost=1
+  
+  debug=true
+}
+
+#### Sparker V
+
+warhead {
+  name=warhead.SparkerV
+  impactdamage=MERGE(1) kinetic
+  impactdamage=MERGE(1) energy
+  impactdamage=MERGE(1) explosive
+  
+  effects_impact=effects.sparker1
+  effects_impact=effects.sparker2
+  effects_impact=effects.sparker3
+}
+
+projectile {
+  name=projectile.SparkerV
+  velocity=225
+  color=1.0, 1.0, 1.0
+  thickness_visual=1.5x
+  length=1.5x
+  durability=16
+  warhead=warhead.SparkerV
+}
+
+deploy {
+  name=deploy.SparkerV
+  
+  anglestddev=0.022
+  
+  projectile=projectile.SparkerV
+}
+
+launcher {
+  name=launcher.SparkerV
+  
+  deploy=deploy.SparkerV
+  
+  text=text.weapon.sparker4
+}
+
+weapon {
+  name=Sparker V
+  firerate=MERGE
+  
+  launcher=launcher.SparkerV
+}
+
+weapon {
+  name=ROOT.Ammo.Debug.Sparker V
+  firerate=MERGE
+  
+  launcher=launcher.SparkerV
+  
+  cost=1
+  
+  debug=true
+}
+
+#### Sparker VI
+
+warhead {
+  name=warhead.SparkerVI
+  impactdamage=MERGE(1) kinetic
+  impactdamage=MERGE(1) energy
+  impactdamage=MERGE(1) explosive
+  
+  effects_impact=effects.sparker1
+  effects_impact=effects.sparker2
+  effects_impact=effects.sparker3
+}
+
+projectile {
+  name=projectile.SparkerVI
+  velocity=240
+  color=1.0, 1.0, 1.0
+  thickness_visual=1.5x
+  length=1.5x
+  durability=32
+  warhead=warhead.SparkerVI
+}
+
+deploy {
+  name=deploy.SparkerVI
+  
+  anglestddev=0.020
+  
+  projectile=projectile.SparkerVI
+}
+
+launcher {
+  name=launcher.SparkerVI
+  
+  deploy=deploy.SparkerVI
+  
+  text=text.weapon.sparker4
+}
+
+weapon {
+  name=Sparker VI
+  firerate=MERGE
+  
+  launcher=launcher.SparkerVI
+}
+
+weapon {
+  name=ROOT.Ammo.Debug.Sparker VI
+  firerate=MERGE
+  
+  launcher=launcher.SparkerVI
+  
+  cost=1
+  
+  debug=true
+}
+
+
+#### Sparker Omega
+
+warhead {
+  name=warhead.SparkerOmega.secondary
+  impactdamage=MERGE(1) kinetic
+  impactdamage=MERGE(1) energy
+  impactdamage=MERGE(1) explosive
+  
+  effects_impact=effects.sparker1
+  effects_impact=effects.sparker2
+  effects_impact=effects.sparker3
+}
+
+projectile {
+  name=projectile.SparkerOmega.secondary
+  motion=airbrake
+  airbrake_life=0.2
+  velocity=120
+  color=1.0, 1.0, 1.0
+  thickness_visual=1.5x
+  durability=64
+  warhead=warhead.SparkerOmega.secondary
+}
+
+deploy {
+  name=deploy.SparkerOmega.secondary
+  type=explode
+  
+  exp_minsplits=12
+  exp_maxsplits=18
+  exp_minsplitsize=1
+  exp_maxsplitsize=5
+  
+  exp_shotspersplit=1
+  
+  projectile=projectile.SparkerOmega.secondary
+}
+
+warhead {
+  name=warhead.SparkerOmega
+  impactdamage=MERGE(3) kinetic
+  impactdamage=MERGE(3) energy
+  impactdamage=MERGE(3) explosive
+  
+  effects_impact=effects.sparker1
+  effects_impact=effects.sparker2
+  effects_impact=effects.sparker3
+  effects_impact=effects.sparker1
+  effects_impact=effects.sparker2
+  effects_impact=effects.sparker3 # yeah this is cheap
+  
+  deploy=deploy.SparkerOmega.secondary
+}
+
+projectile {
+  name=projectile.SparkerOmega
+  velocity=280
+  color=1.0, 1.0, 1.0
+  thickness_visual=1.5x
+  length=1.5x
+  durability=128
+  warhead=warhead.SparkerOmega
+}
+
+deploy {
+  name=deploy.SparkerOmega
+  
+  anglestddev=0.03
+  
+  projectile=projectile.SparkerOmega
+}
+
+launcher {
+  name=launcher.SparkerOmega
+  
+  deploy=deploy.SparkerOmega
+  
+  text=text.weapon.sparker7
+}
+
+weapon {
+  name=Sparker Omega
+  firerate=MERGE
+  
+  launcher=launcher.SparkerOmega
+}
+
+weapon {
+  name=ROOT.Ammo.Debug.Sparker Omega
+  firerate=MERGE
+  
+  launcher=launcher.SparkerOmega
+  
+  cost=1
+  
+  debug=true
+}

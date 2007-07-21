@@ -31,6 +31,8 @@ struct UpgradeParams {
   static const bool kvdirect = true;
   static string nameFromKvd(const kvData &kvd, const set<string> &possiblenames);
   static void preprocess(kvData *kvd, const Data &data);
+  
+  static vector<string> dependencies();
   static bool verify(const FinalType &item, const Data &data);
   
   static const map<string, FinalType> &finalTypeList();

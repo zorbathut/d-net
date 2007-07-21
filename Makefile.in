@@ -206,6 +206,8 @@ ods2csv.exe: $(ODS2CSVSOURCES:=.c.o)
 $(patsubst %,notes_%.csv,$(MERGETYPES)): notes.ods ods2csv.exe
 	./ods2csv.exe $@ notes.ods $(patsubst notes_%.csv,%,$@) || ( rm -f $@ && false )
 
+data/base/tank.dwh: data/base/weapon_sparker.dwh
+
 data/base/%.dwh: data/base/%.dwh.unmerged notes_%.csv merger.exe
 	./merger.exe notes_$*.csv data/base/$*.dwh.unmerged data/base/$*.dwh || ( rm -f $@ && false )
 

@@ -48,6 +48,10 @@ void BombardParams::preprocess(kvData *kvd, const Data &data) {
   }
 }
 
+vector<string> BombardParams::dependencies() {
+  return vector<string>();
+}
+
 bool BombardParams::verify(const IDBBombardment &item, const Data &data) {
   CHECK(withinEpsilon(item.cost.toFloat(), moneyFromString(data.cost).toFloat(), 0.0001));
   CHECK(withinEpsilon(item.lockdelay, atof(data.lock.c_str()), 0.0001));

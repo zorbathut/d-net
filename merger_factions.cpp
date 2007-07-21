@@ -48,6 +48,10 @@ void FactionParams::preprocess(kvData *kvd, const Data &data) {
   }
 }
 
+vector<string> FactionParams::dependencies() {
+  return vector<string>();
+}
+
 bool FactionParams::verify(const IDBFaction &item, const Data &data) {
   // this is hard so we're not bothering
   return true;

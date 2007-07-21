@@ -14,7 +14,7 @@ string WeaponParams::Namer::getName(const vector<string> &line) {
   if(line[0] == "") {
     CHECK(prefix.size() || lastid == -1);
     if(prefix.size() && line[1] != "" && line[1] != "Params") {
-      CHECK(line[1] == roman_number(lastid));
+      CHECK(line[1] == roman_number(lastid) || (line[1] == "Omega" && lastid == 6));
       lastid++;
       return prefix + " " + line[1];
     } else if(line[1] == "Params") {
@@ -66,6 +66,7 @@ bool WeaponParams::parseLine(const vector<string> &line, Data *data) {
     data->item_recommended = StringPrintf("%d", atoi(line[4].c_str()));
     data->has_dpp = true;
     data->dpp = atof(line[7].c_str());
+    dprintf("dpp %f\n", data->dpp);
     data->durability = line[5];
     return true;
   }
@@ -95,13 +96,16 @@ void WeaponParams::preprocess(kvData *kvd, const Data &data) {
   if(kvd->category == "weapon") {
     CHECK(!data.params);
     
-    CHECK(kvd->read("cost") == "MERGE");
+    CHECK((data.item_cost != "-1") == kvd->kv.count("cost") || kvd->read("debug") == "true" && kvd->read("cost") == "1");
+    CHECK(data.item_cost == "-1" || kvd->read("cost") == "MERGE");
     CHECK(kvd->read("firerate") == "MERGE");
     CHECK(!kvd->kv.count("recommended") || kvd->read("recommended") == "MERGE");
     
-    kvd->kv["cost"] = data.item_cost;
+    if(data.item_cost != "-1")
+      kvd->kv["cost"] = data.item_cost;
     kvd->kv["firerate"] = data.item_firerate;
-    kvd->kv["recommended"] = data.item_recommended;
+    if(data.item_recommended != "-1")
+      kvd->kv["recommended"] = data.item_recommended;
   } else if(kvd->category == "hierarchy") {
     CHECK(data.params);
     
@@ -125,6 +129,7 @@ void WeaponParams::testprocess(kvData *kvd) {
 }
 
 float WeaponParams::getMultiple(const IDBWeapon &item, const Data &data) {
+  dprintf("GM %d, %f\n", data.has_dpp, data.dpp);
   if(!data.has_dpp)
     return 1;
   return data.dpp / IDBWeaponAdjust(&item, IDBAdjustment()).launcher().stats_damagePerShot();
@@ -148,15 +153,25 @@ string WeaponParams::getMultipleAltName(const string &name) {
 }
 
 void WeaponParams::reprocess(kvData *kvd, float multiple) {
+  dprintf("reproc %s %f\n", kvd->read("name").c_str(), multiple);
   if(kvd->category == "warhead") {
-    if(kvd->kv.count("radiusdamage"))
+    if(kvd->kv.count("radiusdamage")) {
       kvd->kv["radiusdamage"] = splice(kvd->read("radiusdamage"), multiple);
-    if(kvd->kv.count("impactdamage"))
+      dprintf("%s\n", kvd->read("radiusdamage").c_str());
+    }
+    if(kvd->kv.count("impactdamage")) {
       kvd->kv["impactdamage"] = splice(kvd->read("impactdamage"), multiple);
+      dprintf("%s\n", kvd->read("impactdamage").c_str());
+    }
   }
 }
 
+vector<string> WeaponParams::dependencies() {
+  return vector<string>();
+}
+
 bool WeaponParams::verify(const IDBWeapon &item, const Data &data) {
+  dprintf("verify %s as %f\n", nameFromIDB(&item).c_str(), data.dpp);
   CHECK(data.has_dpp);
   CHECK(withinEpsilon(IDBWeaponAdjust(&item, IDBAdjustment()).launcher().stats_damagePerShot(), data.dpp, 0.0001));
   if(data.durability.size())

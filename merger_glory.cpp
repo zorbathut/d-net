@@ -63,6 +63,10 @@ void GloryParams::reprocess(kvData *kvd, float multiple) {
   }
 }
 
+vector<string> GloryParams::dependencies() {
+  return vector<string>();
+}
+
 bool GloryParams::verify(const IDBGlory &item, const Data &data) {
   CHECK(withinEpsilon(IDBGloryAdjust(&item, IDBAdjustment()).stats_averageDamage(), data.intended_damage, 0.0001));
   return true;

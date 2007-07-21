@@ -40,6 +40,10 @@ void UpgradeParams::preprocess(kvData *kvd, const Data &data) {
   }
 }
 
+vector<string> UpgradeParams::dependencies() {
+  return vector<string>();
+}
+
 bool UpgradeParams::verify(const IDBUpgrade &item, const Data &data) {
   CHECK(withinEpsilon(item.costmult, atof(data.costmult.c_str()), 0.0001));
   return true;

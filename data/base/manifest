@@ -9,6 +9,7 @@ weapon_missile.dwh
 weapon_trap.dwh
 weapon_exotic.dwh
 weapon_debug.dwh  # Debug only
+weapon_sparker.dwh
 
 # Miscellaneous
 upgrades.dwh

@@ -44,6 +44,9 @@ template<typename Model> struct PAW<Model, true> {
     }
     
     addItemFile("data/base/hierarchy.dwh");
+    vector<string> deps = Model::dependencies();
+    for(int i = 0; i < deps.size(); i++)
+      addItemFile(deps[i]);
     addItemFile(merged);
     
     map<string, float> multipliers;
@@ -163,6 +166,9 @@ template<typename Model> void doMerge(const string &csv, const string &unmerged,
   processAndWrite<Model>(tdd, preproc, merged);
   
   addItemFile("data/base/hierarchy.dwh");
+  vector<string> deps = Model::dependencies();
+    for(int i = 0; i < deps.size(); i++)
+      addItemFile(deps[i]);
   addItemFile(merged);
   
   for(typename map<string, typename Model::FinalType>::const_iterator itr = Model::finalTypeList().begin(); itr != Model::finalTypeList().end(); itr++) {

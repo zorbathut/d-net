@@ -51,6 +51,8 @@ struct WeaponParams {
   static float getMultiple(const FinalType &item, const Data &data);
   static string getMultipleAltName(const string &name);
   static void reprocess(kvData *kvd, float multiple);
+  
+  static vector<string> dependencies();
   static bool verify(const FinalType &item, const Data &data);
   
   static const map<string, FinalType> &finalTypeList();

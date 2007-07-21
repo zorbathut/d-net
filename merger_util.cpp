@@ -36,6 +36,8 @@ string splice(const string &source, const string &splicetext) {
       replacements++;
     } else {
       static const boost::regex expression(".*MERGE.*");
+      if(boost::regex_match(radidam[i], expression))
+        dprintf("%s\n", radidam[i].c_str());
       CHECK(!boost::regex_match(radidam[i], expression));
     }
   }
@@ -51,24 +53,40 @@ string splice(const string &source, const string &splicetext) {
 
 string splice(const string &source, float value) {
   int replacements = 0;
-  vector<string> radidam = tokenize(source, " ");
+  //dprintf("%s\n", source.c_str());
+  vector<string> radidam = tokenize(source, "\n");
   for(int i = 0; i < radidam.size(); i++) {
-    static const boost::regex expression("MERGE(?:\\(([0-9]*)\\))?");
-    boost::smatch match;
-    if(boost::regex_match(radidam[i], match, expression)) {
-      if(match[1].matched) {
-        radidam[i] = StringPrintf("%f", atof(match[1].str().c_str()) * value);
-      } else {
-        radidam[i] = StringPrintf("%f", value);
+    //dprintf("R %s\n", radidam[i].c_str());
+    vector<string> chunk = tokenize(radidam[i], " ");
+    int trepl = 0;
+    for(int j = 0; j < chunk.size(); j++) {
+      //dprintf("CC \"%s\"\n", chunk[j].c_str());
+      static const boost::regex expression("MERGE(?:\\(([0-9]*)\\))?");
+      boost::smatch match;
+      if(boost::regex_match(chunk[j], match, expression)) {
+        if(match[1].matched) {
+          chunk[j] = StringPrintf("%f", atof(match[1].str().c_str()) * value);
+        } else {
+          chunk[j] = StringPrintf("%f", value);
+        }
+        replacements++;
+        trepl++;
       }
-      replacements++;
+    }
+    dprintf("%d\n", trepl);
+    CHECK(trepl == 1);
+    radidam[i] = "";
+    for(int j = 0; j < chunk.size(); j++) {
+      if(j)
+        radidam[i] += " ";
+      radidam[i] += chunk[j];
     }
   }
-  CHECK(replacements == 1);
+  CHECK(replacements >= 1);
   string out;
   for(int i = 0; i < radidam.size(); i++) {
     if(i)
-      out += " ";
+      out += "\n";
     out += radidam[i];
   }
   return out;
