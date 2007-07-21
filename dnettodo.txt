@@ -1,9 +1,5 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
-  - I really hate naming things
-    - Mines are inconsistent
-    - Mines should be pluralized
-    - Exotic: Brownian
   - Many many more weapons
     - Add implementations for all trap weapons
     - Add implementations for all exotic weapons
@@ -78,6 +74,9 @@
     - Try rebuilding the intersection system again? :/
     - Allow rings of some kind?
   - Add warning for single-node paths
+
+- I really hate naming things
+  - Exotic: Brownian
 
 - Run header culler again :D
 - Netplay

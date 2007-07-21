@@ -455,12 +455,12 @@ bombardment {
 
 
 text {
-  name=text.bombardment.minelauncher
+  name=text.bombardment.augmentedmines
   data=Blah blah hamster blah yacht blah blah blah monocle polish
 }
 
 warhead {
-  name=warhead.bombardment.minelauncher
+  name=warhead.bombardment.augmentedmines
   radiusdamage=MERGE trap
   radiusfalloff=8
   radiusexplosive=0.5
@@ -468,35 +468,35 @@ warhead {
 }
 
 projectile {
-  name=projectile.bombardment.minelauncher
+  name=projectile.bombardment.augmentedmines
   motion=mine
   radius_physical=1.5
   mine_spikes=4
   halflife=13
   color=0.8, 1.0, 0.9
-  warhead=warhead.bombardment.minelauncher
+  warhead=warhead.bombardment.augmentedmines
 }
 
 bombardment {
-  name=ROOT.Bombardment.Mines.Mine Launcher
+  name=ROOT.Bombardment.Mines.Augmented Mines
   cost=MERGE
   
-  projectile=projectile.bombardment.minelauncher
+  projectile=projectile.bombardment.augmentedmines
   
   lockdelay=MERGE
   unlockdelay=MERGE
   
-  text=text.bombardment.minelauncher
+  text=text.bombardment.augmentedmines
 }
 
 
 text {
-  name=text.bombardment.minebooster
+  name=text.bombardment.boostedmines
   data=Blah blah hamster blah yacht blah blah blah monocle polish
 }
 
 warhead {
-  name=warhead.bombardment.minebooster
+  name=warhead.bombardment.boostedmines
   radiusdamage=MERGE trap
   radiusfalloff=8
   radiusexplosive=0.5
@@ -504,25 +504,25 @@ warhead {
 }
 
 projectile {
-  name=projectile.bombardment.minebooster
+  name=projectile.bombardment.boostedmines
   motion=mine
   radius_physical=1.6
   mine_spikes=4
   halflife=14
   color=0.8, 1.0, 0.9
-  warhead=warhead.bombardment.minebooster
+  warhead=warhead.bombardment.boostedmines
 }
 
 bombardment {
-  name=ROOT.Bombardment.Mines.Mine Booster
+  name=ROOT.Bombardment.Mines.Boosted Mines
   cost=MERGE
   
-  projectile=projectile.bombardment.minebooster
+  projectile=projectile.bombardment.boostedmines
   
   lockdelay=MERGE
   unlockdelay=MERGE
   
-  text=text.bombardment.minebooster
+  text=text.bombardment.boostedmines
 }
 
 
@@ -599,12 +599,12 @@ bombardment {
 
 
 text {
-  name=text.bombardment.mineporter
+  name=text.bombardment.annihilationmines
   data=Blah blah hamster blah yacht blah blah blah monocle polish
 }
 
 warhead {
-  name=warhead.bombardment.mineporter
+  name=warhead.bombardment.annihilationmines
   radiusdamage=MERGE trap
   radiusfalloff=8
   radiusexplosive=0.5
@@ -612,25 +612,25 @@ warhead {
 }
 
 projectile {
-  name=projectile.bombardment.mineporter
+  name=projectile.bombardment.annihilationmines
   motion=mine
   radius_physical=1.9
   mine_spikes=4
   halflife=17
   color=0.8, 1.0, 0.9
-  warhead=warhead.bombardment.mineporter
+  warhead=warhead.bombardment.annihilationmines
 }
 
 bombardment {
-  name=ROOT.Bombardment.Mines.Mine 'Porter
+  name=ROOT.Bombardment.Mines.Annihilation Mines
   cost=MERGE
   
-  projectile=projectile.bombardment.mineporter
+  projectile=projectile.bombardment.annihilationmines
   
   lockdelay=MERGE
   unlockdelay=MERGE
   
-  text=text.bombardment.mineporter
+  text=text.bombardment.annihilationmines
 }
 
 ###########################
