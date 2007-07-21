@@ -1,9 +1,5 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
-  - Bugfixes from games
-    - Slowdown with lots of weapons?
-    - Auto-equip the first weapon, auto-equip things into damage-type slots?
-    - Link handling to engine a little
   - I really hate naming things
     - Mines are inconsistent
     - Mines should be pluralized
@@ -25,11 +21,13 @@
   - Eventual bugfixes
     - Start with level 3
     - End with level 5
+    - Auto-equip the first weapon, auto-equip things into damage-type slots?
     - Clean up implant interface a bit
     - Add implant costs to the balance sheet
     - Add tank bonuses to the balance sheet
     - Rewrite faction flavor text if needed
     - Write a better allocator
+      - Slowdown with lots of weapons?
     - Lever tanks off walls when they turn?
     - Remove bombardment level visualization, and de-integer it
     - Get rid of old weapons as they become obsolete

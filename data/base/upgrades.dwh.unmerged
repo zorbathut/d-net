@@ -87,6 +87,7 @@ text {
 adjustment {
   name=adjustment.engine
   tank_speed=10
+  tank_turn=5
 }
 
 upgrade {
@@ -137,76 +138,6 @@ upgrade {
   category=Advanced engine
   
   text=text.upgrade.engine3
-}
-
-text {
-  name=text.upgrade.handling1
-  data=Improved suspension and tread linkages lead to a significantly smaller turning radius.
-}
-
-text {
-  name=text.upgrade.handling2
-  data=Rebuilding the steering system and installing an improved differential allows sharp turns beyond original design limits.
-}
-
-text {
-  name=text.upgrade.handling3
-  data=Small focused graviton generators improve turning radius further by simply changing the direction of gravity. Not for the cheap.
-}
-
-adjustment {
-  name=adjustment.handling
-  tank_turn=10
-}
-
-upgrade {
-  name=ROOT.Tank Upgrades.Handling I
-  costmult=MERGE
-  adjustment=adjustment.handling
-  
-  category=Basic handling
-  
-  text=text.upgrade.handling1
-}
-
-upgrade {
-  name=ROOT.Tank Upgrades.Handling II
-  costmult=MERGE
-  adjustment=adjustment.handling
-  
-  category=Basic handling
-  
-  text=text.upgrade.handling2
-}
-
-upgrade {
-  name=ROOT.Tank Upgrades.Handling I
-  costmult=MERGE
-  adjustment=adjustment.handling
-  
-  category=Advanced handling
-  
-  text=text.upgrade.handling1
-}
-
-upgrade {
-  name=ROOT.Tank Upgrades.Handling II
-  costmult=MERGE
-  adjustment=adjustment.handling
-  
-  category=Advanced handling
-  
-  text=text.upgrade.handling2
-}
-
-upgrade {
-  name=ROOT.Tank Upgrades.Handling III
-  costmult=MERGE
-  adjustment=adjustment.handling
-  
-  category=Advanced handling
-  
-  text=text.upgrade.handling3
 }
 
 text {
