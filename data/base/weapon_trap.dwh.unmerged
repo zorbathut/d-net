@@ -21,7 +21,7 @@ warhead {
 }
 
 projectile {
-  name=projectile.weapon.mine1
+  name=projectile.weapon.MinelayerI
   motion=mine
   radius_physical=1
   halflife=6
@@ -30,15 +30,15 @@ projectile {
 }
 
 deploy {
-  name=deploy.weapon.mine1
+  name=deploy.weapon.MinelayerI
   type=minepath
-  projectile=projectile.weapon.mine1
+  projectile=projectile.weapon.MinelayerI
 }
 
 launcher {
-  name=launcher.weapon.mine1
+  name=launcher.weapon.MinelayerI
   
-  deploy=deploy.weapon.mine1
+  deploy=deploy.weapon.MinelayerI
   
   demo=mines
   text=text.weapon.mine
@@ -50,7 +50,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
 
-  launcher=launcher.weapon.mine1
+  launcher=launcher.weapon.MinelayerI
 }
 
 warhead {
@@ -62,7 +62,7 @@ warhead {
 }
 
 projectile {
-  name=projectile.weapon.mine2
+  name=projectile.weapon.MinelayerII
   motion=mine
   radius_physical=1.2
   halflife=8
@@ -71,15 +71,15 @@ projectile {
 }
 
 deploy {
-  name=deploy.weapon.mine2
+  name=deploy.weapon.MinelayerII
   type=minepath
-  projectile=projectile.weapon.mine2
+  projectile=projectile.weapon.MinelayerII
 }
 
 launcher {
-  name=launcher.weapon.mine2
+  name=launcher.weapon.MinelayerII
   
-  deploy=deploy.weapon.mine2
+  deploy=deploy.weapon.MinelayerII
   
   demo=mines
   text=text.weapon.mine
@@ -91,7 +91,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.weapon.mine2
+  launcher=launcher.weapon.MinelayerII
 }
 
 warhead {
@@ -103,7 +103,7 @@ warhead {
 }
 
 projectile {
-  name=projectile.weapon.mine3
+  name=projectile.weapon.MinelayerIII
   motion=mine
   radius_physical=1.4
   halflife=10
@@ -112,15 +112,15 @@ projectile {
 }
 
 deploy {
-  name=deploy.weapon.mine3
+  name=deploy.weapon.MinelayerIII
   type=minepath
-  projectile=projectile.weapon.mine3
+  projectile=projectile.weapon.MinelayerIII
 }
 
 launcher {
-  name=launcher.weapon.mine3
+  name=launcher.weapon.MinelayerIII
   
-  deploy=deploy.weapon.mine3
+  deploy=deploy.weapon.MinelayerIII
   
   demo=mines
   text=text.weapon.mine
@@ -132,7 +132,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
 
-  launcher=launcher.weapon.mine3
+  launcher=launcher.weapon.MinelayerIII
 }
 
 warhead {
@@ -144,7 +144,7 @@ warhead {
 }
 
 projectile {
-  name=projectile.weapon.mine4
+  name=projectile.weapon.MinelayerIV
   motion=mine
   radius_physical=1.6
   halflife=12
@@ -153,15 +153,15 @@ projectile {
 }
 
 deploy {
-  name=deploy.weapon.mine4
+  name=deploy.weapon.MinelayerIV
   type=minepath
-  projectile=projectile.weapon.mine4
+  projectile=projectile.weapon.MinelayerIV
 }
 
 launcher {
-  name=launcher.weapon.mine4
+  name=launcher.weapon.MinelayerIV
   
-  deploy=deploy.weapon.mine4
+  deploy=deploy.weapon.MinelayerIV
   
   demo=mines
   text=text.weapon.mine
@@ -173,7 +173,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
 
-  launcher=launcher.weapon.mine4
+  launcher=launcher.weapon.MinelayerIV
 }
 
 warhead {
@@ -185,7 +185,7 @@ warhead {
 }
 
 projectile {
-  name=projectile.weapon.mine5
+  name=projectile.weapon.MinelayerV
   motion=mine
   radius_physical=1.8
   halflife=12
@@ -194,15 +194,15 @@ projectile {
 }
 
 deploy {
-  name=deploy.weapon.mine5
+  name=deploy.weapon.MinelayerV
   type=minepath
-  projectile=projectile.weapon.mine5
+  projectile=projectile.weapon.MinelayerV
 }
 
 launcher {
-  name=launcher.weapon.mine5
+  name=launcher.weapon.MinelayerV
   
-  deploy=deploy.weapon.mine5
+  deploy=deploy.weapon.MinelayerV
   
   demo=mines
   text=text.weapon.mine
@@ -214,7 +214,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
 
-  launcher=launcher.weapon.mine5
+  launcher=launcher.weapon.MinelayerV
 }
 
 warhead {
@@ -226,7 +226,7 @@ warhead {
 }
 
 projectile {
-  name=projectile.weapon.mine6
+  name=projectile.weapon.MinelayerVI
   motion=mine
   radius_physical=2.0
   halflife=15
@@ -235,15 +235,15 @@ projectile {
 }
 
 deploy {
-  name=deploy.weapon.mine6
+  name=deploy.weapon.MinelayerVI
   type=minepath
-  projectile=projectile.weapon.mine6
+  projectile=projectile.weapon.MinelayerVI
 }
 
 launcher {
-  name=launcher.weapon.mine6
+  name=launcher.weapon.MinelayerVI
   
-  deploy=deploy.weapon.mine6
+  deploy=deploy.weapon.MinelayerVI
   
   demo=mines
   text=text.weapon.mine
@@ -255,7 +255,7 @@ weapon {
   cost=MERGE
   firerate=MERGE
 
-  launcher=launcher.weapon.mine6
+  launcher=launcher.weapon.MinelayerVI
 }
 
 ###########################
