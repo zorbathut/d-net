@@ -53,6 +53,9 @@ private:
   vector<Coord2> mine_polys() const;
   float mine_facing;
 
+  Coord spider_vector;  // spider-vector, spider-vector, doin' things like a spectre. what's he like? no-one knows! he's got radioactive clothes! beware! here comes the spider vector
+  enum { SV_NONE = -1000 }; // this seems like a reasonable sentinel
+
   Coord2 pos;
   Coord d;
 

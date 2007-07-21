@@ -942,11 +942,18 @@ void parseProjectile(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   } else if(motion == "airbrake") {
     titem->motion = PM_AIRBRAKE;
     titem->airbrake_life = parseWithDefault(chunk, "airbrake_life", 1.0);
-  } else if(motion == "mine") {
-    titem->motion = PM_MINE;
+  } else if(motion == "mine" || motion == "spidermine") {
+    if(motion == "mine") {
+      titem->motion = PM_MINE;
+    } else if(motion == "spidermine") {
+      titem->motion = PM_SPIDERMINE;
+    } else {
+      CHECK(0);
+    }
     titem->radius_physical = atof(chunk->consume("radius_physical").c_str());
-    titem->mine_spikes = parseWithDefault(chunk, "mine_spikes", 6);
+    titem->mine_spikes = parseSingleItem<int>(chunk->consume("mine_spikes"));
     titem->halflife = atof(chunk->consume("halflife").c_str());
+    titem->mine_visibility = parseWithDefault(chunk, "mine_visibility", 40.f);
   } else if(motion == "dps") {
     titem->motion = PM_DPS;
     titem->dps_duration = parseSingleItem<float>(chunk->consume("duration"));
@@ -967,7 +974,7 @@ void parseProjectile(kvData *chunk, bool reload, ErrorAccumulator &accum) {
     titem->length = parseWithDefault(chunk, "length", titem->velocity / 60);
   } else if(titem->motion == PM_MISSILE) {
     titem->length = parseWithDefault(chunk, "length", 2.0);
-  } else if(titem->motion == PM_AIRBRAKE || titem->motion == PM_MINE || titem->motion == PM_DPS) {
+  } else if(titem->motion == PM_AIRBRAKE || titem->motion == PM_MINE || titem->motion == PM_DPS || titem->motion == PM_SPIDERMINE) {
     titem->length = 0;
   } else {
     CHECK(0);
@@ -975,7 +982,7 @@ void parseProjectile(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   
   titem->chain_warhead = parseSubclassSet(chunk, "warhead", warheadclasses);
   
-  if(titem->motion != PM_MINE && titem->motion != PM_DPS) {
+  if(titem->motion != PM_MINE && titem->motion != PM_DPS && titem->motion != PM_SPIDERMINE) {
     titem->no_intersection = parseWithDefault(chunk, "no_intersection", false);
     if(!titem->no_intersection)
       titem->durability = parseSingleItem<float>(chunk->consume("durability"));

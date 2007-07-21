@@ -105,7 +105,7 @@ struct IDBWarhead {
   vector<const IDBEffects *> effects_impact;
 };
 
-enum { PM_NORMAL, PM_MISSILE, PM_AIRBRAKE, PM_MINE, PM_DPS, PM_LAST };
+enum { PM_NORMAL, PM_MISSILE, PM_AIRBRAKE, PM_MINE, PM_SPIDERMINE, PM_DPS, PM_LAST };
 
 struct IDBProjectile {
   int motion;
@@ -118,6 +118,7 @@ struct IDBProjectile {
   Color color;
   float thickness_visual;
   int mine_spikes;
+  float mine_visibility;
 
   float durability;
 
@@ -339,6 +340,7 @@ public:
   Color color() const;
   float thickness_visual() const;
   int mine_spikes() const;
+  float mine_visibility() const;
 
   float halflife() const;
 

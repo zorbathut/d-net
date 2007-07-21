@@ -4,6 +4,7 @@
 #include "collide.h"
 #include "gfx.h"
 #include "rng.h"
+#include "game_tank.h"
 
 using namespace std;
 
@@ -32,9 +33,20 @@ void Projectile::tick(vector<smart_ptr<GfxEffects> > *gfxe, const GameImpactCont
     airbrake_velocity *= 0.95;
     if(airbrake_liveness() <= 0)
       detonating = true;
-  } else if(projtype.motion() == PM_MINE) {
+  } else if(projtype.motion() == PM_MINE || projtype.motion() == PM_SPIDERMINE) {
     if(age >= projtype.halflife() * FPS / 2 && gic.rng->frand() > pow(0.5f, 1 / (projtype.halflife() * FPS)))
       detonating = true;
+    if(projtype.motion() == PM_SPIDERMINE) {
+      spider_vector = Coord(SV_NONE);
+      int cid = gic.getClosestFoeId(pos, owner);
+      if(cid != -1) {
+        Coord2 dp = gic.players[cid]->pos;
+        dp -= pos;
+        if(len(dp) < Coord(projtype.mine_visibility()) && len(dp) > 0) {
+          spider_vector = getAngle(dp);
+        }
+      }
+    }
   } else if(projtype.motion() == PM_DPS) {
     detonating = true;
   } else {
@@ -42,7 +54,7 @@ void Projectile::tick(vector<smart_ptr<GfxEffects> > *gfxe, const GameImpactCont
   }
   
   if(projtype.proximity()) {
-    float newdist = gic.getClosestFoe(pos, owner);
+    float newdist = gic.getClosestFoeDistance(pos, owner);
     if(newdist > closest_enemy_tank && newdist < projtype.chain_warhead()[0].radiusfalloff())
       detonating = true; // BOOM
     closest_enemy_tank = newdist;
@@ -58,14 +70,18 @@ void Projectile::render(const vector<Coord2> &tankposes) const {
     setColor(projtype.color());
   } else if(projtype.motion() == PM_AIRBRAKE) {
     setColor(projtype.color() * airbrake_liveness());
-  } else if(projtype.motion() == PM_MINE) {
-    const float radarrange = 40;
+  } else if(projtype.motion() == PM_MINE || projtype.motion() == PM_SPIDERMINE) {
+    const float radarrange = projtype.mine_visibility();
     float closest = 1000;
     for(int i = 0; i < tankposes.size(); i++)
       if(len(tankposes[i] - pos).toFloat() < closest)
         closest = len(tankposes[i] - pos).toFloat();
     if(closest < radarrange) {
-      setColor(C::gray((radarrange - closest) / radarrange));
+      if(closest < radarrange / 2) {
+        setColor(C::gray(1.0));
+      } else {
+        setColor(C::gray((radarrange - closest) / radarrange * 2));
+      }
       drawLineLoop(mine_polys(), 0.1);
     }
     return;
@@ -158,6 +174,11 @@ Coord2 Projectile::movement() const {
     return makeAngle(d) * Coord(airbrake_velocity) / FPS;
   } else if(projtype.motion() == PM_MINE || projtype.motion() == PM_DPS) {
     return Coord2(0, 0);
+  } else if(projtype.motion() == PM_SPIDERMINE) {
+    if(spider_vector == Coord(SV_NONE))
+      return Coord2(0, 0);
+    else
+      return makeAngle(spider_vector) * Coord(projtype.velocity() / FPS);
   } else {
     CHECK(0);
   }
@@ -171,7 +192,7 @@ Coord2 Projectile::nexttail() const {
     return makeAngle(d) * -Coord(min(projtype.length(), maxlen));
   } else if(projtype.motion() == PM_AIRBRAKE) {
     return makeAngle(d) * -Coord(min(airbrake_velocity / FPS + 2, maxlen));
-  } else if(projtype.motion() == PM_MINE || projtype.motion() == PM_DPS) {
+  } else if(projtype.motion() == PM_MINE || projtype.motion() == PM_DPS || projtype.motion() == PM_SPIDERMINE) {
     return Coord2(0, 0);
   } else {
     CHECK(0);
@@ -224,7 +245,7 @@ Projectile::Projectile(const Coord2 &in_pos, Coord in_d, const IDBProjectileAdju
     missile_sidedist = rng->gaussian() * projtype.missile_sidelaunch() / FPS;
   } else if(projtype.motion() == PM_AIRBRAKE) {
     airbrake_velocity = (rng->gaussian_scaled(2) / 4 + 1) * projtype.velocity();
-  } else if(projtype.motion() == PM_MINE) {
+  } else if(projtype.motion() == PM_MINE || projtype.motion() == PM_SPIDERMINE) {
     mine_facing = rng->frand() * 2 * PI;
   } else if(projtype.motion() == PM_DPS) {
   } else {

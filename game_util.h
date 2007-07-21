@@ -32,7 +32,8 @@ public:
   void record(const IDBWarheadAdjust &warhead, Coord2 pos, const Tank *impact_tank, const Tank *owner_tank) const;
 
   vector<pair<float, Tank *> > getAdjacency(const Coord2 &pos) const;
-  float getClosestFoe(const Coord2 &pos, int owner) const;
+  int getClosestFoeId(const Coord2 &pos, int owner) const;
+  float getClosestFoeDistance(const Coord2 &pos, int owner) const;
 
   GameImpactContext(vector<Tank> *players, vector<smart_ptr<GfxEffects> > *effects, Gamemap *gamemap, Rng *rng, Recorder *recorder);
 

@@ -23,8 +23,9 @@ warhead {
 projectile {
   name=projectile.weapon.MinelayerI
   motion=mine
+  mine_spikes=7
   radius_physical=1
-  halflife=6
+  halflife=12
   color=1.0, 1.0, 1.0
   warhead=warhead.weapon.MinelayerI
 }
@@ -64,8 +65,9 @@ warhead {
 projectile {
   name=projectile.weapon.MinelayerII
   motion=mine
+  mine_spikes=7
   radius_physical=1.2
-  halflife=8
+  halflife=12
   color=1.0, 1.0, 1.0
   warhead=warhead.weapon.MinelayerII
 }
@@ -105,8 +107,9 @@ warhead {
 projectile {
   name=projectile.weapon.MinelayerIII
   motion=mine
+  mine_spikes=7
   radius_physical=1.4
-  halflife=10
+  halflife=12
   color=1.0, 1.0, 1.0
   warhead=warhead.weapon.MinelayerIII
 }
@@ -146,6 +149,7 @@ warhead {
 projectile {
   name=projectile.weapon.MinelayerIV
   motion=mine
+  mine_spikes=7
   radius_physical=1.6
   halflife=12
   color=1.0, 1.0, 1.0
@@ -187,6 +191,7 @@ warhead {
 projectile {
   name=projectile.weapon.MinelayerV
   motion=mine
+  mine_spikes=7
   radius_physical=1.8
   halflife=12
   color=1.0, 1.0, 1.0
@@ -228,8 +233,9 @@ warhead {
 projectile {
   name=projectile.weapon.MinelayerVI
   motion=mine
+  mine_spikes=7
   radius_physical=2.0
-  halflife=15
+  halflife=12
   color=1.0, 1.0, 1.0
   warhead=warhead.weapon.MinelayerVI
 }
@@ -357,4 +363,282 @@ weapon {
   firerate=MERGE
   
   launcher=launcher.weapon.boomeranggun
+}
+
+###########################
+#
+#   Mines
+
+hierarchy {
+  name=ROOT.Ammo.Spider Mine
+  pack=25
+}
+
+text {
+  name=text.weapon.spidermine
+  data=Blah blah hamster blah yacht blah blah blah monocle polish
+}
+
+warhead {
+  name=warhead.weapon.SpiderMineI
+  radiusdamage=MERGE trap
+  radiusfalloff=4
+  radiusexplosive=0.5
+  wallremovalradius=2
+}
+
+projectile {
+  name=projectile.weapon.SpiderMineI
+  motion=spidermine
+  mine_spikes=6
+  mine_visibility=1.5x
+  velocity=3
+  radius_physical=1
+  halflife=18
+  color=1.0, 1.0, 1.0
+  warhead=warhead.weapon.SpiderMineI
+}
+
+deploy {
+  name=deploy.weapon.SpiderMineI
+  type=minepath
+  projectile=projectile.weapon.SpiderMineI
+}
+
+launcher {
+  name=launcher.weapon.SpiderMineI
+  
+  deploy=deploy.weapon.SpiderMineI
+  
+  demo=mines
+  text=text.weapon.spidermine
+}
+
+weapon {
+  name=ROOT.Ammo.Spider Mine.Spider Mine I
+  
+  cost=MERGE
+  firerate=MERGE
+
+  launcher=launcher.weapon.SpiderMineI
+}
+
+warhead {
+  name=warhead.weapon.SpiderMineII
+  radiusdamage=MERGE trap
+  radiusfalloff=4.5
+  radiusexplosive=0.5
+  wallremovalradius=2.25
+}
+
+projectile {
+  name=projectile.weapon.SpiderMineII
+  motion=spidermine
+  mine_spikes=6
+  mine_visibility=1.5x
+  velocity=3
+  radius_physical=1.2
+  halflife=18
+  color=1.0, 1.0, 1.0
+  warhead=warhead.weapon.SpiderMineII
+}
+
+deploy {
+  name=deploy.weapon.SpiderMineII
+  type=minepath
+  projectile=projectile.weapon.SpiderMineII
+}
+
+launcher {
+  name=launcher.weapon.SpiderMineII
+  
+  deploy=deploy.weapon.SpiderMineII
+  
+  demo=mines
+  text=text.weapon.spidermine
+}
+
+weapon {
+  name=ROOT.Ammo.Spider Mine.Spider Mine II
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.weapon.SpiderMineII
+}
+
+warhead {
+  name=warhead.weapon.SpiderMineIII
+  radiusdamage=MERGE trap
+  radiusfalloff=5
+  radiusexplosive=0.5
+  wallremovalradius=2.5
+}
+
+projectile {
+  name=projectile.weapon.SpiderMineIII
+  motion=spidermine
+  mine_spikes=6
+  mine_visibility=1.5x
+  velocity=3
+  radius_physical=1.4
+  halflife=18
+  color=1.0, 1.0, 1.0
+  warhead=warhead.weapon.SpiderMineIII
+}
+
+deploy {
+  name=deploy.weapon.SpiderMineIII
+  type=minepath
+  projectile=projectile.weapon.SpiderMineIII
+}
+
+launcher {
+  name=launcher.weapon.SpiderMineIII
+  
+  deploy=deploy.weapon.SpiderMineIII
+  
+  demo=mines
+  text=text.weapon.spidermine
+}
+
+weapon {
+  name=ROOT.Ammo.Spider Mine.Spider Mine III
+  
+  cost=MERGE
+  firerate=MERGE
+
+  launcher=launcher.weapon.SpiderMineIII
+}
+
+warhead {
+  name=warhead.weapon.SpiderMineIV
+  radiusdamage=MERGE trap
+  radiusfalloff=5.5
+  radiusexplosive=0.5
+  wallremovalradius=2.75
+}
+
+projectile {
+  name=projectile.weapon.SpiderMineIV
+  motion=spidermine
+  mine_spikes=6
+  mine_visibility=1.5x
+  velocity=3
+  radius_physical=1.6
+  halflife=18
+  color=1.0, 1.0, 1.0
+  warhead=warhead.weapon.SpiderMineIV
+}
+
+deploy {
+  name=deploy.weapon.SpiderMineIV
+  type=minepath
+  projectile=projectile.weapon.SpiderMineIV
+}
+
+launcher {
+  name=launcher.weapon.SpiderMineIV
+  
+  deploy=deploy.weapon.SpiderMineIV
+  
+  demo=mines
+  text=text.weapon.spidermine
+}
+
+weapon {
+  name=ROOT.Ammo.Spider Mine.Spider Mine IV
+  
+  cost=MERGE
+  firerate=MERGE
+
+  launcher=launcher.weapon.SpiderMineIV
+}
+
+warhead {
+  name=warhead.weapon.SpiderMineV
+  radiusdamage=MERGE trap
+  radiusfalloff=6
+  radiusexplosive=0.5
+  wallremovalradius=3
+}
+
+projectile {
+  name=projectile.weapon.SpiderMineV
+  motion=spidermine
+  mine_spikes=6
+  mine_visibility=1.5x
+  velocity=3
+  radius_physical=1.8
+  halflife=18
+  color=1.0, 1.0, 1.0
+  warhead=warhead.weapon.SpiderMineV
+}
+
+deploy {
+  name=deploy.weapon.SpiderMineV
+  type=minepath
+  projectile=projectile.weapon.SpiderMineV
+}
+
+launcher {
+  name=launcher.weapon.SpiderMineV
+  
+  deploy=deploy.weapon.SpiderMineV
+  
+  demo=mines
+  text=text.weapon.spidermine
+}
+
+weapon {
+  name=ROOT.Ammo.Spider Mine.Spider Mine V
+  
+  cost=MERGE
+  firerate=MERGE
+
+  launcher=launcher.weapon.SpiderMineV
+}
+
+warhead {
+  name=warhead.weapon.SpiderMineVI
+  radiusdamage=MERGE trap
+  radiusfalloff=6.5
+  radiusexplosive=0.5
+  wallremovalradius=3.25
+}
+
+projectile {
+  name=projectile.weapon.SpiderMineVI
+  motion=spidermine
+  mine_spikes=6
+  mine_visibility=1.5x
+  velocity=3
+  radius_physical=2.0
+  halflife=18
+  color=1.0, 1.0, 1.0
+  warhead=warhead.weapon.SpiderMineVI
+}
+
+deploy {
+  name=deploy.weapon.SpiderMineVI
+  type=minepath
+  projectile=projectile.weapon.SpiderMineVI
+}
+
+launcher {
+  name=launcher.weapon.SpiderMineVI
+  
+  deploy=deploy.weapon.SpiderMineVI
+  
+  demo=mines
+  text=text.weapon.spidermine
+}
+
+weapon {
+  name=ROOT.Ammo.Spider Mine.Spider Mine VI
+  
+  cost=MERGE
+  firerate=MERGE
+
+  launcher=launcher.weapon.SpiderMineVI
 }

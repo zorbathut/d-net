@@ -138,6 +138,7 @@ warhead {
 projectile {
   name=projectile.minesplatterer
   motion=mine
+  mine_spikes=8
   radius_physical=1
   halflife=1000000
   color=1.0, 1.0, 1.0

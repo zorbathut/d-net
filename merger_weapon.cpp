@@ -66,7 +66,6 @@ bool WeaponParams::parseLine(const vector<string> &line, Data *data) {
     data->item_recommended = StringPrintf("%d", atoi(line[4].c_str()));
     data->has_dpp = true;
     data->dpp = atof(line[7].c_str());
-    dprintf("dpp %f\n", data->dpp);
     data->durability = line[5];
     return true;
   }

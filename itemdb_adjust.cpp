@@ -147,6 +147,7 @@ vector<IDBWarheadAdjust> IDBProjectileAdjust::chain_warhead(float multfactor) co
 Color IDBProjectileAdjust::color() const { return idb->color; };
 float IDBProjectileAdjust::thickness_visual() const { return idb->thickness_visual; };
 int IDBProjectileAdjust::mine_spikes() const { return idb->mine_spikes; };
+float IDBProjectileAdjust::mine_visibility() const { return idb->mine_visibility; };
 
 float IDBProjectileAdjust::halflife() const { return idb->halflife; };
 float IDBProjectileAdjust::airbrake_life() const { CHECK(idb->motion == PM_AIRBRAKE); return idb->airbrake_life; }
