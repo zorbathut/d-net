@@ -103,6 +103,10 @@ void Projectile::firstCollide(Collider *collider, int owner, int id) const {
 void Projectile::addCollision(Collider *collider, int owner, int id) const {
   CHECK(live);
   if(projtype.motion() == PM_MINE || projtype.motion() == PM_DPS) {
+  } else if(projtype.motion() == PM_SPIDERMINE) {
+    vector<Coord2> ite = mine_polys();
+    for(int i = 0; i < ite.size(); i++)
+      collider->addNormalToken(CollideId(CGR_NOINTPROJECTILE, owner, id), Coord4(ite[i], ite[(i + 1) % ite.size()]), Coord4(movement(), movement()));
   } else {
     if(projtype.no_intersection()) {
       collider->addPointToken(CollideId(CGR_NOINTPROJECTILE, owner, id), pos, movement());

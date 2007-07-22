@@ -1,7 +1,6 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - Many many more weapons
-    - Add implementations for all trap weapons
     - Add implementations for all exotic weapons
     - Re-enable weapon checks
     - Add trap behavior
