@@ -178,6 +178,9 @@ float IDBProjectileAdjust::stats_damagePerShot() const {
   vector<IDBWarheadAdjust> idbwa = chain_warhead();
   for(int i = 0; i < idbwa.size(); i++)
     val += idbwa[i].stats_damagePerShot();
+  vector<IDBDeployAdjust> idbde = chain_deploy();
+  for(int i = 0; i < idbde.size(); i++)
+    val += idbde[i].stats_damagePerShot();
   return val;
 }
 

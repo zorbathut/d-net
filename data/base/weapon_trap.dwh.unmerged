@@ -733,3 +733,389 @@ weapon {
 
   launcher=launcher.weapon.SniperMineI
 }
+
+warhead {
+  name=warhead.weapon.SniperMineII.snipe
+  impactdamage=MERGE(9) trap
+}
+
+projectile {
+  name=projectile.weapon.SniperMineII.snipe
+  motion=airbrake
+  
+  velocity=150
+  durability=MERGE
+  airbrake_life=0.5
+  airbrake_slowdown=0.98
+  
+  thickness_visual=2x
+  
+  color=0.2,1.0,1.0
+  
+  warhead=warhead.weapon.SniperMineII.snipe
+}
+
+deploy {
+  name=deploy.weapon.SniperMineII.snipe
+  type=directed
+  directed_range=20
+  anglestddev=0.01
+  projectile=projectile.weapon.SniperMineII.snipe
+}
+
+warhead {
+  name=warhead.weapon.SniperMineII
+  radiusdamage=MERGE(1) trap
+  radiusfalloff=3
+  radiusexplosive=0.5
+  wallremovalradius=2
+}
+
+projectile {
+  name=projectile.weapon.SniperMineII
+  
+  motion=mine
+  mine_spikes=3
+  mine_visibility=2x
+  radius_physical=1.6
+  halflife=18
+  
+  proximity=20
+  
+  color=1.0, 1.0, 1.0
+  warhead=warhead.weapon.SniperMineII
+  deploy=deploy.weapon.SniperMineII.snipe
+}
+
+deploy {
+  name=deploy.weapon.SniperMineII
+  type=minepath
+  projectile=projectile.weapon.SniperMineII
+}
+
+launcher {
+  name=launcher.weapon.SniperMineII
+  
+  deploy=deploy.weapon.SniperMineII
+  
+  demo=mines
+  text=text.weapon.snipermine
+}
+
+weapon {
+  name=ROOT.Ammo.Sniper Mine.Sniper Mine II
+  
+  cost=MERGE
+  firerate=MERGE
+
+  launcher=launcher.weapon.SniperMineII
+}
+
+warhead {
+  name=warhead.weapon.SniperMineIII.snipe
+  impactdamage=MERGE(9) trap
+}
+
+projectile {
+  name=projectile.weapon.SniperMineIII.snipe
+  motion=airbrake
+  
+  velocity=150
+  durability=MERGE
+  airbrake_life=0.5
+  airbrake_slowdown=0.98
+  
+  thickness_visual=2x
+  
+  color=0.2,1.0,1.0
+  
+  warhead=warhead.weapon.SniperMineIII.snipe
+}
+
+deploy {
+  name=deploy.weapon.SniperMineIII.snipe
+  type=directed
+  directed_range=20
+  anglestddev=0.01
+  projectile=projectile.weapon.SniperMineIII.snipe
+}
+
+warhead {
+  name=warhead.weapon.SniperMineIII
+  radiusdamage=MERGE(1) trap
+  radiusfalloff=3
+  radiusexplosive=0.5
+  wallremovalradius=2
+}
+
+projectile {
+  name=projectile.weapon.SniperMineIII
+  
+  motion=mine
+  mine_spikes=3
+  mine_visibility=2x
+  radius_physical=1.7
+  halflife=18
+  
+  proximity=20
+  
+  color=1.0, 1.0, 1.0
+  warhead=warhead.weapon.SniperMineIII
+  deploy=deploy.weapon.SniperMineIII.snipe
+}
+
+deploy {
+  name=deploy.weapon.SniperMineIII
+  type=minepath
+  projectile=projectile.weapon.SniperMineIII
+}
+
+launcher {
+  name=launcher.weapon.SniperMineIII
+  
+  deploy=deploy.weapon.SniperMineIII
+  
+  demo=mines
+  text=text.weapon.snipermine
+}
+
+weapon {
+  name=ROOT.Ammo.Sniper Mine.Sniper Mine III
+  
+  cost=MERGE
+  firerate=MERGE
+
+  launcher=launcher.weapon.SniperMineIII
+}
+
+warhead {
+  name=warhead.weapon.SniperMineIV.snipe
+  impactdamage=MERGE(9) trap
+}
+
+projectile {
+  name=projectile.weapon.SniperMineIV.snipe
+  motion=airbrake
+  
+  velocity=150
+  durability=MERGE
+  airbrake_life=0.5
+  airbrake_slowdown=0.98
+  
+  thickness_visual=2x
+  
+  color=0.2,1.0,1.0
+  
+  warhead=warhead.weapon.SniperMineIV.snipe
+}
+
+deploy {
+  name=deploy.weapon.SniperMineIV.snipe
+  type=directed
+  directed_range=20
+  anglestddev=0.01
+  projectile=projectile.weapon.SniperMineIV.snipe
+}
+
+warhead {
+  name=warhead.weapon.SniperMineIV
+  radiusdamage=MERGE(1) trap
+  radiusfalloff=3
+  radiusexplosive=0.5
+  wallremovalradius=2
+}
+
+projectile {
+  name=projectile.weapon.SniperMineIV
+  
+  motion=mine
+  mine_spikes=3
+  mine_visibility=2x
+  radius_physical=1.8
+  halflife=18
+  
+  proximity=20
+  
+  color=1.0, 1.0, 1.0
+  warhead=warhead.weapon.SniperMineIV
+  deploy=deploy.weapon.SniperMineIV.snipe
+}
+
+deploy {
+  name=deploy.weapon.SniperMineIV
+  type=minepath
+  projectile=projectile.weapon.SniperMineIV
+}
+
+launcher {
+  name=launcher.weapon.SniperMineIV
+  
+  deploy=deploy.weapon.SniperMineIV
+  
+  demo=mines
+  text=text.weapon.snipermine
+}
+
+weapon {
+  name=ROOT.Ammo.Sniper Mine.Sniper Mine IV
+  
+  cost=MERGE
+  firerate=MERGE
+
+  launcher=launcher.weapon.SniperMineIV
+}
+
+warhead {
+  name=warhead.weapon.SniperMineV.snipe
+  impactdamage=MERGE(9) trap
+}
+
+projectile {
+  name=projectile.weapon.SniperMineV.snipe
+  motion=airbrake
+  
+  velocity=150
+  durability=MERGE
+  airbrake_life=0.5
+  airbrake_slowdown=0.98
+  
+  thickness_visual=2x
+  
+  color=0.2,1.0,1.0
+  
+  warhead=warhead.weapon.SniperMineV.snipe
+}
+
+deploy {
+  name=deploy.weapon.SniperMineV.snipe
+  type=directed
+  directed_range=20
+  anglestddev=0.01
+  projectile=projectile.weapon.SniperMineV.snipe
+}
+
+warhead {
+  name=warhead.weapon.SniperMineV
+  radiusdamage=MERGE(1) trap
+  radiusfalloff=3
+  radiusexplosive=0.5
+  wallremovalradius=2
+}
+
+projectile {
+  name=projectile.weapon.SniperMineV
+  
+  motion=mine
+  mine_spikes=3
+  mine_visibility=2x
+  radius_physical=1.9
+  halflife=18
+  
+  proximity=20
+  
+  color=1.0, 1.0, 1.0
+  warhead=warhead.weapon.SniperMineV
+  deploy=deploy.weapon.SniperMineV.snipe
+}
+
+deploy {
+  name=deploy.weapon.SniperMineV
+  type=minepath
+  projectile=projectile.weapon.SniperMineV
+}
+
+launcher {
+  name=launcher.weapon.SniperMineV
+  
+  deploy=deploy.weapon.SniperMineV
+  
+  demo=mines
+  text=text.weapon.snipermine
+}
+
+weapon {
+  name=ROOT.Ammo.Sniper Mine.Sniper Mine V
+  
+  cost=MERGE
+  firerate=MERGE
+
+  launcher=launcher.weapon.SniperMineV
+}
+
+warhead {
+  name=warhead.weapon.SniperMineVI.snipe
+  impactdamage=MERGE(9) trap
+}
+
+projectile {
+  name=projectile.weapon.SniperMineVI.snipe
+  motion=airbrake
+  
+  velocity=150
+  durability=MERGE
+  airbrake_life=0.5
+  airbrake_slowdown=0.98
+  
+  thickness_visual=2x
+  
+  color=0.2,1.0,1.0
+  
+  warhead=warhead.weapon.SniperMineVI.snipe
+}
+
+deploy {
+  name=deploy.weapon.SniperMineVI.snipe
+  type=directed
+  directed_range=20
+  anglestddev=0.01
+  projectile=projectile.weapon.SniperMineVI.snipe
+}
+
+warhead {
+  name=warhead.weapon.SniperMineVI
+  radiusdamage=MERGE(1) trap
+  radiusfalloff=3
+  radiusexplosive=0.5
+  wallremovalradius=2
+}
+
+projectile {
+  name=projectile.weapon.SniperMineVI
+  
+  motion=mine
+  mine_spikes=3
+  mine_visibility=2x
+  radius_physical=2.0
+  halflife=18
+  
+  proximity=20
+  
+  color=1.0, 1.0, 1.0
+  warhead=warhead.weapon.SniperMineVI
+  deploy=deploy.weapon.SniperMineVI.snipe
+}
+
+deploy {
+  name=deploy.weapon.SniperMineVI
+  type=minepath
+  projectile=projectile.weapon.SniperMineVI
+}
+
+launcher {
+  name=launcher.weapon.SniperMineVI
+  
+  deploy=deploy.weapon.SniperMineVI
+  
+  demo=mines
+  text=text.weapon.snipermine
+}
+
+weapon {
+  name=ROOT.Ammo.Sniper Mine.Sniper Mine VI
+  
+  cost=MERGE
+  firerate=MERGE
+
+  launcher=launcher.weapon.SniperMineVI
+}
+
