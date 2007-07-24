@@ -981,6 +981,7 @@ void parseProjectile(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   
   titem->chain_warhead = parseSubclassSet(chunk, "warhead", warheadclasses);
   titem->chain_deploy = parseSubclassSet(chunk, "deploy", deployclasses);
+  titem->chain_effects = parseSubclassSet(chunk, "effects", effectsclasses);
   
   {
     string prox = parseWithDefault(chunk, "proximity", "off");
@@ -1008,7 +1009,7 @@ void parseProjectile(kvData *chunk, bool reload, ErrorAccumulator &accum) {
     titem->durability = -1;
   }
   
-  CHECK(titem->chain_warhead.size());
+  CHECK(titem->chain_warhead.size() || titem->chain_deploy.size());
 }
 
 void parseDeploy(kvData *chunk, bool reload, ErrorAccumulator &accum) {

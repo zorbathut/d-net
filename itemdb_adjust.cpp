@@ -146,12 +146,8 @@ vector<IDBWarheadAdjust> IDBProjectileAdjust::chain_warhead(float multfactor) co
   return rv;
 }
 
-vector<IDBDeployAdjust> IDBProjectileAdjust::chain_deploy() const {
-  vector<IDBDeployAdjust> rv;
-  for(int i = 0; i < idb->chain_deploy.size(); i++)
-    rv.push_back(IDBDeployAdjust(idb->chain_deploy[i], adjust));
-  return rv;
-}
+vector<IDBDeployAdjust> IDBProjectileAdjust::chain_deploy() const { return adjust_vector(idb->chain_deploy, adjust); }
+vector<IDBEffectsAdjust> IDBProjectileAdjust::chain_effects() const { return adjust_vector(idb->chain_effects, adjust); }
 
 Color IDBProjectileAdjust::color() const { return idb->color; };
 float IDBProjectileAdjust::thickness_visual() const { return idb->thickness_visual; };

@@ -138,6 +138,8 @@ struct IDBProjectile {
 
   vector<const IDBWarhead *> chain_warhead;
   vector<const IDBDeploy *> chain_deploy;
+  
+  vector<const IDBEffects *> chain_effects;
 };
 
 // Normal specifies "Forward" for tanks, or "Centroid" on cases where there is no tank
@@ -341,6 +343,8 @@ public:
 
   vector<IDBWarheadAdjust> chain_warhead(float multfactor = 1.0f) const;
   vector<IDBDeployAdjust> chain_deploy() const;
+
+  vector<IDBEffectsAdjust> chain_effects() const;
 
   Color color() const;
   float thickness_visual() const;

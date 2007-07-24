@@ -158,11 +158,8 @@ void detonateWarhead(const IDBWarheadAdjust &warhead, Coord2 pos, Coord normal, 
       shifted_pos -= normalize(vel) / 10;
     
     vector<IDBDeployAdjust> dep = warhead.deploy();
-    dprintf("depsize is %d\n", dep.size());
-    for(int i = 0; i < dep.size(); i++) {
-      dprintf("calling deproj in detonate\n");
+    for(int i = 0; i < dep.size(); i++)
       deployProjectile(dep[i], DeployLocation(shifted_pos, getAngle(vel)), gpc, flags);
-    }
   }
   
 }
@@ -191,8 +188,6 @@ void detonateBombardment(const IDBBombardmentAdjust &bombard, Coord2 pos, Coord 
 }
 
 void deployProjectile(const IDBDeployAdjust &deploy, const DeployLocation &location, const GamePlayerContext &gpc, const DamageFlags &flags, vector<float> *tang) {
-  
-  dprintf("deproj called\n");
   
   int type = deploy.type();
   if(type == DT_NORMAL) {

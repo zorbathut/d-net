@@ -143,7 +143,7 @@ warhead {
   radiusdamage=MERGE trap
   radiusfalloff=9
   radiusexplosive=0.5
-  wallremovalradius=4
+  wallremovalradius=4.5
 }
 
 projectile {
@@ -185,7 +185,7 @@ warhead {
   radiusdamage=MERGE trap
   radiusfalloff=10
   radiusexplosive=0.5
-  wallremovalradius=4
+  wallremovalradius=5
 }
 
 projectile {
@@ -225,9 +225,9 @@ weapon {
 warhead {
   name=warhead.weapon.MinelayerVI
   radiusdamage=MERGE trap
-  radiusfalloff=12
+  radiusfalloff=11
   radiusexplosive=0.5
-  wallremovalradius=5
+  wallremovalradius=5.5
 }
 
 projectile {
@@ -1117,5 +1117,451 @@ weapon {
   firerate=MERGE
 
   launcher=launcher.weapon.SniperMineVI
+}
+
+###########################
+#
+#   Satellite Mines
+
+hierarchy {
+  name=ROOT.Ammo.Satellite Mine
+  pack=25
+}
+
+text {
+  name=text.weapon.satellitemine
+  data=Blah blah hamster blah yacht blah blah blah monocle polish
+}
+
+effects {
+  name=effects.weapon.SatelliteMineI
+  type=ionblast
+  
+  radius=8
+  
+  visuals=6 484
+  visuals=2 8f8
+  
+  duration=0.5
+}
+
+warhead {
+  name=warhead.weapon.SatelliteMineI
+  radiusdamage=MERGE trap
+  radiusfalloff=8
+  radiusexplosive=0
+  wallremovalradius=2
+  
+  radiuscolor_dim=000
+  radiuscolor_bright=000
+}
+
+projectile {
+  name=projectile.weapon.SatelliteMineI.dps
+  motion=dps
+  duration=0.5
+  
+  warhead=warhead.weapon.SatelliteMineI
+}
+
+deploy {
+  name=deploy.weapon.SatelliteMineI.dps
+  projectile=projectile.weapon.SatelliteMineI.dps
+}
+
+projectile {
+  name=projectile.weapon.SatelliteMineI
+  motion=mine
+  mine_spikes=5
+  radius_physical=1.3
+  halflife=14
+  proximity=8
+  color=1.0, 1.0, 1.0
+  deploy=deploy.weapon.SatelliteMineI.dps
+  effects=effects.weapon.SatelliteMineI
+}
+
+deploy {
+  name=deploy.weapon.SatelliteMineI
+  type=minepath
+  projectile=projectile.weapon.SatelliteMineI
+}
+
+launcher {
+  name=launcher.weapon.SatelliteMineI
+  
+  deploy=deploy.weapon.SatelliteMineI
+  
+  demo=mines
+  text=text.weapon.satellitemine
+}
+
+weapon {
+  name=ROOT.Ammo.Satellite Mine.Satellite Mine I
+  
+  cost=MERGE
+  firerate=MERGE
+
+  launcher=launcher.weapon.SatelliteMineI
+}
+
+effects {
+  name=effects.weapon.SatelliteMineII
+  type=ionblast
+  
+  radius=9
+  
+  visuals=6 484
+  visuals=2 8f8
+  
+  duration=0.5
+}
+
+warhead {
+  name=warhead.weapon.SatelliteMineII
+  radiusdamage=MERGE trap
+  radiusfalloff=9
+  radiusexplosive=0
+  wallremovalradius=2
+  
+  radiuscolor_dim=000
+  radiuscolor_bright=000
+}
+
+projectile {
+  name=projectile.weapon.SatelliteMineII.dps
+  motion=dps
+  duration=0.5
+  
+  warhead=warhead.weapon.SatelliteMineII
+}
+
+deploy {
+  name=deploy.weapon.SatelliteMineII.dps
+  projectile=projectile.weapon.SatelliteMineII.dps
+}
+
+projectile {
+  name=projectile.weapon.SatelliteMineII
+  motion=mine
+  mine_spikes=5
+  radius_physical=1.4
+  halflife=14
+  proximity=9
+  color=1.0, 1.0, 1.0
+  deploy=deploy.weapon.SatelliteMineII.dps
+  effects=effects.weapon.SatelliteMineII
+}
+
+deploy {
+  name=deploy.weapon.SatelliteMineII
+  type=minepath
+  projectile=projectile.weapon.SatelliteMineII
+}
+
+launcher {
+  name=launcher.weapon.SatelliteMineII
+  
+  deploy=deploy.weapon.SatelliteMineII
+  
+  demo=mines
+  text=text.weapon.satellitemine
+}
+
+weapon {
+  name=ROOT.Ammo.Satellite Mine.Satellite Mine II
+  
+  cost=MERGE
+  firerate=MERGE
+
+  launcher=launcher.weapon.SatelliteMineII
+}
+
+effects {
+  name=effects.weapon.SatelliteMineIII
+  type=ionblast
+  
+  radius=10
+  
+  visuals=6 484
+  visuals=2 8f8
+  
+  duration=0.5
+}
+
+warhead {
+  name=warhead.weapon.SatelliteMineIII
+  radiusdamage=MERGE trap
+  radiusfalloff=10
+  radiusexplosive=0
+  wallremovalradius=2
+  
+  radiuscolor_dim=000
+  radiuscolor_bright=000
+}
+
+projectile {
+  name=projectile.weapon.SatelliteMineIII.dps
+  motion=dps
+  duration=0.5
+  
+  warhead=warhead.weapon.SatelliteMineIII
+}
+
+deploy {
+  name=deploy.weapon.SatelliteMineIII.dps
+  projectile=projectile.weapon.SatelliteMineIII.dps
+}
+
+projectile {
+  name=projectile.weapon.SatelliteMineIII
+  motion=mine
+  mine_spikes=5
+  radius_physical=1.5
+  halflife=14
+  proximity=10
+  color=1.0, 1.0, 1.0
+  deploy=deploy.weapon.SatelliteMineIII.dps
+  effects=effects.weapon.SatelliteMineIII
+}
+
+deploy {
+  name=deploy.weapon.SatelliteMineIII
+  type=minepath
+  projectile=projectile.weapon.SatelliteMineIII
+}
+
+launcher {
+  name=launcher.weapon.SatelliteMineIII
+  
+  deploy=deploy.weapon.SatelliteMineIII
+  
+  demo=mines
+  text=text.weapon.satellitemine
+}
+
+weapon {
+  name=ROOT.Ammo.Satellite Mine.Satellite Mine III
+  
+  cost=MERGE
+  firerate=MERGE
+
+  launcher=launcher.weapon.SatelliteMineIII
+}
+
+effects {
+  name=effects.weapon.SatelliteMineIV
+  type=ionblast
+  
+  radius=11
+  
+  visuals=6 484
+  visuals=2 8f8
+  
+  duration=0.5
+}
+
+warhead {
+  name=warhead.weapon.SatelliteMineIV
+  radiusdamage=MERGE trap
+  radiusfalloff=11
+  radiusexplosive=0
+  wallremovalradius=2
+  
+  radiuscolor_dim=000
+  radiuscolor_bright=000
+}
+
+projectile {
+  name=projectile.weapon.SatelliteMineIV.dps
+  motion=dps
+  duration=0.5
+  
+  warhead=warhead.weapon.SatelliteMineIV
+}
+
+deploy {
+  name=deploy.weapon.SatelliteMineIV.dps
+  projectile=projectile.weapon.SatelliteMineIV.dps
+}
+
+projectile {
+  name=projectile.weapon.SatelliteMineIV
+  motion=mine
+  mine_spikes=5
+  radius_physical=1.6
+  halflife=14
+  proximity=11
+  color=1.0, 1.0, 1.0
+  deploy=deploy.weapon.SatelliteMineIV.dps
+  effects=effects.weapon.SatelliteMineIV
+}
+
+deploy {
+  name=deploy.weapon.SatelliteMineIV
+  type=minepath
+  projectile=projectile.weapon.SatelliteMineIV
+}
+
+launcher {
+  name=launcher.weapon.SatelliteMineIV
+  
+  deploy=deploy.weapon.SatelliteMineIV
+  
+  demo=mines
+  text=text.weapon.satellitemine
+}
+
+weapon {
+  name=ROOT.Ammo.Satellite Mine.Satellite Mine IV
+  
+  cost=MERGE
+  firerate=MERGE
+
+  launcher=launcher.weapon.SatelliteMineIV
+}
+
+effects {
+  name=effects.weapon.SatelliteMineV
+  type=ionblast
+  
+  radius=12
+  
+  visuals=6 484
+  visuals=2 8f8
+  
+  duration=0.5
+}
+
+warhead {
+  name=warhead.weapon.SatelliteMineV
+  radiusdamage=MERGE trap
+  radiusfalloff=12
+  radiusexplosive=0
+  wallremovalradius=2
+  
+  radiuscolor_dim=000
+  radiuscolor_bright=000
+}
+
+projectile {
+  name=projectile.weapon.SatelliteMineV.dps
+  motion=dps
+  duration=0.5
+  
+  warhead=warhead.weapon.SatelliteMineV
+}
+
+deploy {
+  name=deploy.weapon.SatelliteMineV.dps
+  projectile=projectile.weapon.SatelliteMineV.dps
+}
+
+projectile {
+  name=projectile.weapon.SatelliteMineV
+  motion=mine
+  mine_spikes=5
+  radius_physical=1.7
+  halflife=14
+  proximity=12
+  color=1.0, 1.0, 1.0
+  deploy=deploy.weapon.SatelliteMineV.dps
+  effects=effects.weapon.SatelliteMineV
+}
+
+deploy {
+  name=deploy.weapon.SatelliteMineV
+  type=minepath
+  projectile=projectile.weapon.SatelliteMineV
+}
+
+launcher {
+  name=launcher.weapon.SatelliteMineV
+  
+  deploy=deploy.weapon.SatelliteMineV
+  
+  demo=mines
+  text=text.weapon.satellitemine
+}
+
+weapon {
+  name=ROOT.Ammo.Satellite Mine.Satellite Mine V
+  
+  cost=MERGE
+  firerate=MERGE
+
+  launcher=launcher.weapon.SatelliteMineV
+}
+
+effects {
+  name=effects.weapon.SatelliteMineVI
+  type=ionblast
+  
+  radius=13
+  
+  visuals=6 484
+  visuals=2 8f8
+  
+  duration=0.5
+}
+
+warhead {
+  name=warhead.weapon.SatelliteMineVI
+  radiusdamage=MERGE trap
+  radiusfalloff=13
+  radiusexplosive=0
+  wallremovalradius=2
+  
+  radiuscolor_dim=000
+  radiuscolor_bright=000
+}
+
+projectile {
+  name=projectile.weapon.SatelliteMineVI.dps
+  motion=dps
+  duration=0.5
+  
+  warhead=warhead.weapon.SatelliteMineVI
+}
+
+deploy {
+  name=deploy.weapon.SatelliteMineVI.dps
+  projectile=projectile.weapon.SatelliteMineVI.dps
+}
+
+projectile {
+  name=projectile.weapon.SatelliteMineVI
+  motion=mine
+  mine_spikes=5
+  radius_physical=1.8
+  halflife=14
+  proximity=13
+  color=1.0, 1.0, 1.0
+  deploy=deploy.weapon.SatelliteMineVI.dps
+  effects=effects.weapon.SatelliteMineVI
+}
+
+deploy {
+  name=deploy.weapon.SatelliteMineVI
+  type=minepath
+  projectile=projectile.weapon.SatelliteMineVI
+}
+
+launcher {
+  name=launcher.weapon.SatelliteMineVI
+  
+  deploy=deploy.weapon.SatelliteMineVI
+  
+  demo=mines
+  text=text.weapon.satellitemine
+}
+
+weapon {
+  name=ROOT.Ammo.Satellite Mine.Satellite Mine VI
+  
+  cost=MERGE
+  firerate=MERGE
+
+  launcher=launcher.weapon.SatelliteMineVI
 }
 

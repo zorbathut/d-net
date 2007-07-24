@@ -139,9 +139,14 @@ void Projectile::detonate(Coord2 pos, Coord normal, Tank *target, const GamePlay
     for(int i = 0; i < idd.size(); i++)
       deployProjectile(idd[i], DeployLocation(pos, getAngle(movement())), gpc, damageflags, NULL);
     
+    vector<IDBEffectsAdjust> ide = projtype.chain_effects();
+    for(int i = 0; i < idd.size(); i++)
+      gpc.gic->effects->push_back(GfxIdb(pos.toFloat(), normal.toFloat(), movement().toFloat(), ide[i]));
+    
     live = false;
   } else if(projtype.motion() == PM_DPS) {
     CHECK(!projtype.chain_deploy().size());
+    CHECK(!projtype.chain_effects().size());
     int alen = int(projtype.dps_duration() * FPS);
     if(age > alen) {
       live = false;
