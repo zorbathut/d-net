@@ -2,6 +2,10 @@
 - "Finish the Damn Game" Initiative
   - Many many more weapons
     - Add implementations for all trap weapons
+      - Boomerang Gun: This could be based on missle, perhaps with some extensions to missile behavior and with a angled spinning projectile instead of a standard one.
+      - Hunter/Killer: I need a new projectile for this.
+      - Tailwind Blast: Should spawn from centroid and sweep backwards, accelerating, with a triangle projectile.
+      - I think I need a way of determining projectile look. Maybe an optional set of enums for look? "Default", "Angled", with angled having width, height, and spin rate. Angled not allowed with mine projectiles or DPS projectiles, of course.
     - Add implementations for all exotic weapons
     - Re-enable weapon checks
     - Add trap behavior
