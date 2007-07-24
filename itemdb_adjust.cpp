@@ -28,13 +28,15 @@ int IDBDeployAdjust::exp_shotspersplit() const { return idb->exp_shotspersplit; 
 
 float IDBDeployAdjust::anglestddev() const { return idb->anglestddev; };
 
+float IDBDeployAdjust::directed_range() const { return idb->directed_range; };
+
 vector<IDBDeployAdjust> IDBDeployAdjust::chain_deploy() const { return adjust_vector(idb->chain_deploy, adjust); }
 vector<IDBProjectileAdjust> IDBDeployAdjust::chain_projectile() const { return adjust_vector(idb->chain_projectile, adjust); }
 vector<IDBWarheadAdjust> IDBDeployAdjust::chain_warhead() const { return adjust_vector(idb->chain_warhead, adjust); }
 
 float IDBDeployAdjust::stats_damagePerShot() const {
   float mult;
-  if(idb->type == DT_NORMAL || idb->type == DT_FORWARD || idb->type == DT_CENTROID || idb->type == DT_MINEPATH || idb->type == DT_REAR) {
+  if(idb->type == DT_NORMAL || idb->type == DT_FORWARD || idb->type == DT_CENTROID || idb->type == DT_MINEPATH || idb->type == DT_REAR || idb->type == DT_DIRECTED) {
     mult = 1.0;
   } else if(idb->type == DT_EXPLODE) {
     mult = (exp_minsplits() + exp_maxsplits()) / 2.0 * exp_shotspersplit();
@@ -135,12 +137,19 @@ float IDBProjectileAdjust::velocity() const { return idb->velocity; };
 float IDBProjectileAdjust::length() const { return idb->length; };
 float IDBProjectileAdjust::radius_physical() const { return idb->radius_physical; };
 float IDBProjectileAdjust::durability() const { return idb->durability; };
-bool IDBProjectileAdjust::proximity() const { return idb->proximity; };
+float IDBProjectileAdjust::proximity() const { return idb->proximity; };
 
 vector<IDBWarheadAdjust> IDBProjectileAdjust::chain_warhead(float multfactor) const {
   vector<IDBWarheadAdjust> rv;
   for(int i = 0; i < idb->chain_warhead.size(); i++)
     rv.push_back(IDBWarheadAdjust(idb->chain_warhead[i], adjust, multfactor));
+  return rv;
+}
+
+vector<IDBDeployAdjust> IDBProjectileAdjust::chain_deploy() const {
+  vector<IDBDeployAdjust> rv;
+  for(int i = 0; i < idb->chain_deploy.size(); i++)
+    rv.push_back(IDBDeployAdjust(idb->chain_deploy[i], adjust));
   return rv;
 }
 
@@ -151,6 +160,7 @@ float IDBProjectileAdjust::mine_visibility() const { return idb->mine_visibility
 
 float IDBProjectileAdjust::halflife() const { return idb->halflife; };
 float IDBProjectileAdjust::airbrake_life() const { CHECK(idb->motion == PM_AIRBRAKE); return idb->airbrake_life; }
+float IDBProjectileAdjust::airbrake_slowdown() const { CHECK(idb->motion == PM_AIRBRAKE); return idb->airbrake_slowdown; }
 
 float IDBProjectileAdjust::missile_stabstart() const { CHECK(idb->motion == PM_MISSILE); return idb->missile_stabstart; }
 float IDBProjectileAdjust::missile_stabilization() const { CHECK(idb->motion == PM_MISSILE); return idb->missile_stabilization; }

@@ -49,6 +49,8 @@ public:
 
   const GameImpactContext *gic;
 
+  int owner_id() const;
+
   GamePlayerContext(Tank *owner, ProjectilePack *projpack, const GameImpactContext &gic);
 };
 

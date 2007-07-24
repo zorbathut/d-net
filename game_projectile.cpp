@@ -30,7 +30,7 @@ void Projectile::tick(vector<smart_ptr<GfxEffects> > *gfxe, const GameImpactCont
       gfxe->push_back(GfxPoint(pos.toFloat() + lasttail.toFloat() - movement().toFloat(), pv, 0.17, Color(1.0, 0.9, 0.6)));
     }
   } else if(projtype.motion() == PM_AIRBRAKE) {
-    airbrake_velocity *= 0.95;
+    airbrake_velocity *= pow(1.0 - projtype.airbrake_slowdown(), 1/60.);
     if(airbrake_liveness() <= 0)
       detonating = true;
   } else if(projtype.motion() == PM_MINE || projtype.motion() == PM_SPIDERMINE) {
@@ -53,9 +53,9 @@ void Projectile::tick(vector<smart_ptr<GfxEffects> > *gfxe, const GameImpactCont
     CHECK(0);
   }
   
-  if(projtype.proximity()) {
+  if(projtype.proximity() != -1) {
     float newdist = gic.getClosestFoeDistance(pos, owner);
-    if(newdist > closest_enemy_tank && newdist < projtype.chain_warhead()[0].radiusfalloff())
+    if(newdist > closest_enemy_tank && newdist < projtype.proximity())
       detonating = true; // BOOM
     closest_enemy_tank = newdist;
   }
@@ -134,9 +134,14 @@ void Projectile::detonate(Coord2 pos, Coord normal, Tank *target, const GamePlay
     vector<IDBWarheadAdjust> idw = projtype.chain_warhead();
     for(int i = 0; i < idw.size(); i++)
       detonateWarhead(idw[i], pos, normal, movement() * FPS, target, gpc, damageflags, impacted);
-  
+    
+    vector<IDBDeployAdjust> idd = projtype.chain_deploy();
+    for(int i = 0; i < idd.size(); i++)
+      deployProjectile(idd[i], DeployLocation(pos, getAngle(movement())), gpc, damageflags, NULL);
+    
     live = false;
   } else if(projtype.motion() == PM_DPS) {
+    CHECK(!projtype.chain_deploy().size());
     int alen = int(projtype.dps_duration() * FPS);
     if(age > alen) {
       live = false;

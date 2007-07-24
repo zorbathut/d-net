@@ -14,6 +14,8 @@ class Rng {
 private:
   unsigned int sync;
 
+  Rng();
+
 public:
   float frand(); // [0,1)
   float sym_frand(); // (-1,1)

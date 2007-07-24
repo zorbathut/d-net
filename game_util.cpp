@@ -158,8 +158,11 @@ void detonateWarhead(const IDBWarheadAdjust &warhead, Coord2 pos, Coord normal, 
       shifted_pos -= normalize(vel) / 10;
     
     vector<IDBDeployAdjust> dep = warhead.deploy();
-    for(int i = 0; i < dep.size(); i++)
+    dprintf("depsize is %d\n", dep.size());
+    for(int i = 0; i < dep.size(); i++) {
+      dprintf("calling deproj in detonate\n");
       deployProjectile(dep[i], DeployLocation(shifted_pos, getAngle(vel)), gpc, flags);
+    }
   }
   
 }
@@ -189,6 +192,8 @@ void detonateBombardment(const IDBBombardmentAdjust &bombard, Coord2 pos, Coord 
 
 void deployProjectile(const IDBDeployAdjust &deploy, const DeployLocation &location, const GamePlayerContext &gpc, const DamageFlags &flags, vector<float> *tang) {
   
+  dprintf("deproj called\n");
+  
   int type = deploy.type();
   if(type == DT_NORMAL) {
     if(location.isTank())
@@ -214,6 +219,18 @@ void deployProjectile(const IDBDeployAdjust &deploy, const DeployLocation &locat
     CHECK(location.isTank());
     CHECK(!tang);
     proji.push_back(make_pair(location.tank().getMinePoint(gpc.gic->rng), location.tank().d));
+  } else if(type == DT_DIRECTED) {
+    dprintf("is directed\n");
+    CHECK(!proji.size());
+    int cid = gpc.gic->getClosestFoeId(location.pos(), gpc.owner_id());
+    if(cid != -1) {
+      Coord2 dp = gpc.gic->players[cid]->pos;
+      dp -= location.pos();
+      if(len(dp) <= Coord(deploy.directed_range()))
+        proji.push_back(make_pair(location.pos(), getAngle(dp)));
+    }
+    if(!proji.size())
+      proji.push_back(make_pair(location.pos(), gpc.gic->rng->frand() * PI * 2));
   } else if(type == DT_EXPLODE) {
     vector<float> ang;
     {
@@ -273,5 +290,11 @@ Team::Team() {
 }
 
 GameImpactContext::GameImpactContext(vector<Tank> *players, vector<smart_ptr<GfxEffects> > *effects, Gamemap *gamemap, Rng *rng, Recorder *recorder) : players(ptrize(players)), effects(effects), gamemap(gamemap), rng(rng), recorder(recorder) { };
+
+int GamePlayerContext::owner_id() const {
+  vector<Tank *>::const_iterator itr = find(gic->players.begin(), gic->players.end(), owner);
+  CHECK(itr != gic->players.end());
+  return itr - gic->players.begin();
+}
 
 GamePlayerContext::GamePlayerContext(Tank *owner, ProjectilePack *projpack, const GameImpactContext &gic) : projpack(projpack), owner(owner), gic(&gic) { };

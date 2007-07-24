@@ -80,6 +80,7 @@ projectile {
   color=1.0, 0.8, 0.3
   motion=airbrake
   airbrake_life=0.5
+  airbrake_slowdown=0.95
   no_intersection=true
   warhead=warhead.weapon.hemissile.secondary
 }

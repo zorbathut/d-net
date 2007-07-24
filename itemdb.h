@@ -113,7 +113,7 @@ struct IDBProjectile {
   float length;
   float radius_physical;
   
-  bool proximity;
+  float proximity;
 
   Color color;
   float thickness_visual;
@@ -130,16 +130,18 @@ struct IDBProjectile {
   float missile_stabilization;
   
   float airbrake_life;
+  float airbrake_slowdown;
   
   float dps_duration;
   
   bool no_intersection;
 
   vector<const IDBWarhead *> chain_warhead;
+  vector<const IDBDeploy *> chain_deploy;
 };
 
 // Normal specifies "Forward" for tanks, or "Centroid" on cases where there is no tank
-enum { DT_NORMAL, DT_FORWARD, DT_REAR, DT_CENTROID, DT_MINEPATH, DT_EXPLODE, DT_LAST };
+enum { DT_NORMAL, DT_FORWARD, DT_REAR, DT_CENTROID, DT_MINEPATH, DT_DIRECTED, DT_EXPLODE, DT_LAST };
 
 struct IDBDeploy {
   int type;
@@ -152,6 +154,8 @@ struct IDBDeploy {
   int exp_maxsplitsize;
 
   int exp_shotspersplit;
+  
+  float directed_range;
 
   vector<const IDBDeploy *> chain_deploy;
   vector<const IDBProjectile *> chain_projectile;
@@ -333,9 +337,10 @@ public:
   float length() const;
   float radius_physical() const;
   float durability() const;
-  bool proximity() const;
+  float proximity() const;
 
   vector<IDBWarheadAdjust> chain_warhead(float multfactor = 1.0f) const;
+  vector<IDBDeployAdjust> chain_deploy() const;
 
   Color color() const;
   float thickness_visual() const;
@@ -345,6 +350,7 @@ public:
   float halflife() const;
 
   float airbrake_life() const;
+  float airbrake_slowdown() const;
 
   float missile_stabstart() const;
   float missile_stabilization() const;
@@ -381,6 +387,8 @@ public:
   int exp_shotspersplit() const;
 
   float anglestddev() const;
+
+  float directed_range() const;
   
   vector<IDBDeployAdjust> chain_deploy() const;
   vector<IDBProjectileAdjust> chain_projectile() const;

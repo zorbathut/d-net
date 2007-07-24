@@ -367,7 +367,7 @@ weapon {
 
 ###########################
 #
-#   Mines
+#   Spider mines
 
 hierarchy {
   name=ROOT.Ammo.Spider Mine
@@ -641,4 +641,95 @@ weapon {
   firerate=MERGE
 
   launcher=launcher.weapon.SpiderMineVI
+}
+
+###########################
+#
+#   Sniper mines
+
+hierarchy {
+  name=ROOT.Ammo.Sniper Mine
+  pack=25
+}
+
+text {
+  name=text.weapon.snipermine
+  data=Blah blah hamster blah yacht blah blah blah monocle polish
+}
+
+warhead {
+  name=warhead.weapon.SniperMineI.snipe
+  impactdamage=MERGE(9) trap
+}
+
+projectile {
+  name=projectile.weapon.SniperMineI.snipe
+  motion=airbrake
+  
+  velocity=150
+  durability=MERGE
+  airbrake_life=0.5
+  airbrake_slowdown=0.98
+  
+  thickness_visual=2x
+  
+  color=0.2,1.0,1.0
+  
+  warhead=warhead.weapon.SniperMineI.snipe
+}
+
+deploy {
+  name=deploy.weapon.SniperMineI.snipe
+  type=directed
+  directed_range=20
+  anglestddev=0.01
+  projectile=projectile.weapon.SniperMineI.snipe
+}
+
+warhead {
+  name=warhead.weapon.SniperMineI
+  radiusdamage=MERGE(1) trap
+  radiusfalloff=3
+  radiusexplosive=0.5
+  wallremovalradius=2
+}
+
+projectile {
+  name=projectile.weapon.SniperMineI
+  
+  motion=mine
+  mine_spikes=3
+  mine_visibility=2x
+  radius_physical=1.5
+  halflife=18
+  
+  proximity=20
+  
+  color=1.0, 1.0, 1.0
+  warhead=warhead.weapon.SniperMineI
+  deploy=deploy.weapon.SniperMineI.snipe
+}
+
+deploy {
+  name=deploy.weapon.SniperMineI
+  type=minepath
+  projectile=projectile.weapon.SniperMineI
+}
+
+launcher {
+  name=launcher.weapon.SniperMineI
+  
+  deploy=deploy.weapon.SniperMineI
+  
+  demo=mines
+  text=text.weapon.snipermine
+}
+
+weapon {
+  name=ROOT.Ammo.Sniper Mine.Sniper Mine I
+  
+  cost=MERGE
+  firerate=MERGE
+
+  launcher=launcher.weapon.SniperMineI
 }

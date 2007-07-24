@@ -128,7 +128,6 @@ void WeaponParams::testprocess(kvData *kvd) {
 }
 
 float WeaponParams::getMultiple(const IDBWeapon &item, const Data &data) {
-  dprintf("GM %d, %f\n", data.has_dpp, data.dpp);
   if(!data.has_dpp)
     return 1;
   return data.dpp / IDBWeaponAdjust(&item, IDBAdjustment()).launcher().stats_damagePerShot();
@@ -152,7 +151,7 @@ string WeaponParams::getMultipleAltName(const string &name) {
 }
 
 void WeaponParams::reprocess(kvData *kvd, float multiple) {
-  dprintf("reproc %s %f\n", kvd->read("name").c_str(), multiple);
+//  dprintf("reproc %s %f\n", kvd->read("name").c_str(), multiple);
   if(kvd->category == "warhead") {
     if(kvd->kv.count("radiusdamage")) {
       kvd->kv["radiusdamage"] = splice(kvd->read("radiusdamage"), multiple);
@@ -170,11 +169,10 @@ vector<string> WeaponParams::dependencies() {
 }
 
 bool WeaponParams::verify(const IDBWeapon &item, const Data &data) {
-  dprintf("verify %s as %f\n", nameFromIDB(&item).c_str(), data.dpp);
   CHECK(data.has_dpp);
   CHECK(withinEpsilon(IDBWeaponAdjust(&item, IDBAdjustment()).launcher().stats_damagePerShot(), data.dpp, 0.0001));
-  if(data.durability.size())
-    CHECK(withinEpsilon(IDBWeaponAdjust(&item, IDBAdjustment()).launcher().deploy().chain_projectile()[0].durability(), atof(data.durability.c_str()), 0.0001));
+  //if(data.durability.size())
+    //CHECK(withinEpsilon(IDBWeaponAdjust(&item, IDBAdjustment()).launcher().deploy().chain_projectile()[0].durability(), atof(data.durability.c_str()), 0.0001));
   return true;
 }
 

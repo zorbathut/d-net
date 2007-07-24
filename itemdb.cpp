@@ -941,7 +941,8 @@ void parseProjectile(kvData *chunk, bool reload, ErrorAccumulator &accum) {
     titem->missile_backlaunch = parseSingleItem<float>(chunk->consume("missile_backlaunch"));
   } else if(motion == "airbrake") {
     titem->motion = PM_AIRBRAKE;
-    titem->airbrake_life = parseWithDefault(chunk, "airbrake_life", 1.0);
+    titem->airbrake_life = parseSingleItem<float>(chunk->consume("airbrake_life"));
+    titem->airbrake_slowdown = parseSingleItem<float>(chunk->consume("airbrake_slowdown"));
   } else if(motion == "mine" || motion == "spidermine") {
     if(motion == "mine") {
       titem->motion = PM_MINE;
@@ -968,8 +969,6 @@ void parseProjectile(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   if(titem->motion != PM_MINE && titem->motion != PM_DPS)
     titem->velocity = atof(chunk->consume("velocity").c_str());
   
-  titem->proximity = parseWithDefault(chunk, "proximity", false);
-  
   if(titem->motion == PM_NORMAL) {
     titem->length = parseWithDefault(chunk, "length", titem->velocity / 60);
   } else if(titem->motion == PM_MISSILE) {
@@ -981,6 +980,22 @@ void parseProjectile(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   }
   
   titem->chain_warhead = parseSubclassSet(chunk, "warhead", warheadclasses);
+  titem->chain_deploy = parseSubclassSet(chunk, "deploy", deployclasses);
+  
+  {
+    string prox = parseWithDefault(chunk, "proximity", "off");
+    if(prox == "off") {
+      titem->proximity = -1;
+    } else if(prox == "auto") {
+      float rad = -1;
+      for(int i = 0; i < titem->chain_warhead.size(); i++)
+        rad = max(rad, titem->chain_warhead[i]->radiusfalloff);
+      CHECK(rad > 0);
+      titem->proximity = rad;
+    } else {
+      titem->proximity = parseSingleItem<float>(prox);
+    }
+  }
   
   if(titem->motion != PM_MINE && titem->motion != PM_DPS && titem->motion != PM_SPIDERMINE) {
     titem->no_intersection = parseWithDefault(chunk, "no_intersection", false);
@@ -1011,13 +1026,16 @@ void parseDeploy(kvData *chunk, bool reload, ErrorAccumulator &accum) {
     titem->type = DT_CENTROID;
   } else if(type == "minepath") {
     titem->type = DT_MINEPATH;
+  } else if(type == "directed") {
+    titem->type = DT_DIRECTED;
+    titem->directed_range = parseSingleItem<float>(chunk->consume("directed_range"));
   } else if(type == "explode") {
     titem->type = DT_EXPLODE;
-    titem->exp_minsplits = atoi(chunk->consume("exp_minsplits").c_str());
-    titem->exp_maxsplits = atoi(chunk->consume("exp_maxsplits").c_str());
-    titem->exp_minsplitsize = atoi(chunk->consume("exp_minsplitsize").c_str());
-    titem->exp_maxsplitsize = atoi(chunk->consume("exp_maxsplitsize").c_str());
-    titem->exp_shotspersplit = atoi(chunk->consume("exp_shotspersplit").c_str());
+    titem->exp_minsplits = parseSingleItem<int>(chunk->consume("exp_minsplits"));
+    titem->exp_maxsplits = parseSingleItem<int>(chunk->consume("exp_maxsplits"));
+    titem->exp_minsplitsize = parseSingleItem<int>(chunk->consume("exp_minsplitsize"));
+    titem->exp_maxsplitsize = parseSingleItem<int>(chunk->consume("exp_maxsplitsize"));
+    titem->exp_shotspersplit = parseSingleItem<int>(chunk->consume("exp_shotspersplit"));
   } else {
     CHECK(0);
   }

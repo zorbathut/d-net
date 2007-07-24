@@ -421,6 +421,7 @@ projectile {
   name=projectile.SparkerOmega.secondary
   motion=airbrake
   airbrake_life=0.2
+  airbrake_slowdown=0.99
   velocity=120
   color=1.0, 1.0, 1.0
   thickness_visual=1.5x
