@@ -963,6 +963,18 @@ void parseProjectile(kvData *chunk, bool reload, ErrorAccumulator &accum) {
     CHECK(0);
   }
   
+  string shape = parseWithDefault(chunk, "shape", "default");
+  if(shape == "default") {
+    titem->shape = PS_DEFAULT;
+  } else if(shape == "arrow") {
+    titem->shape = PS_ARROW;
+    titem->arrow_height = parseSingleItem<float>(chunk->consume("arrow_height"));
+    titem->arrow_width = parseSingleItem<float>(chunk->consume("arrow_width"));
+    titem->arrow_rotate = parseWithDefault(chunk, "arrow_rotate", 0.0);
+  } else {
+    CHECK(0);
+  }
+  
   titem->color = parseWithDefault(chunk, "color", C::gray(1.0));
   
   titem->velocity = 0;

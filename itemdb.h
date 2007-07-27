@@ -106,6 +106,7 @@ struct IDBWarhead {
 };
 
 enum { PM_NORMAL, PM_MISSILE, PM_AIRBRAKE, PM_MINE, PM_SPIDERMINE, PM_DPS, PM_LAST };
+enum { PS_DEFAULT, PS_ARROW };
 
 struct IDBProjectile {
   int motion;
@@ -115,10 +116,15 @@ struct IDBProjectile {
   
   float proximity;
 
-  Color color;
-  float thickness_visual;
   int mine_spikes;
   float mine_visibility;
+  
+  int shape;
+  float arrow_width;
+  float arrow_height;
+  float arrow_rotate;
+  float thickness_visual;
+  Color color;
 
   float durability;
 
