@@ -288,15 +288,15 @@ warhead {
 projectile {
   name=projectile.weapon.boomeranggun
   motion=boomerang
-  velocity=30
-  boomerang_convergence=0.95
-  boomerang_intersection=40
-  boomerang_maxrotate=0.1
+  velocity=120
+  boomerang_convergence=24
+  boomerang_intersection=80
+  boomerang_maxrotate=20.0
   
   shape=arrow
   arrow_width=2
   arrow_height=0.75
-  arrow_rotate=6
+  arrow_rotate=4
   color=1.0, 0.9, 0.6
   
   durability=MERGE
@@ -305,7 +305,7 @@ projectile {
 
 deploy {
   name=deploy.weapon.boomeranggun
-  anglestddev=0
+  anglestddev=0.05
   projectile=projectile.weapon.boomeranggun
 }
 

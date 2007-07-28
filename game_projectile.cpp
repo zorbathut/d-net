@@ -32,12 +32,18 @@ void Projectile::tick(vector<smart_ptr<GfxEffects> > *gfxe, const GameImpactCont
       }
     }
   } else if(projtype.motion() == PM_AIRBRAKE) {
-    airbrake_velocity *= pow(1.0 - projtype.airbrake_slowdown(), 1/60.);
+    airbrake_velocity *= pow(1.0 - projtype.airbrake_slowdown(), 1. / FPS);
     if(airbrake_liveness() <= 0)
       detonating = true;
   } else if(projtype.motion() == PM_BOOMERANG) {
-    Coord desang = getAngle(boomerang_abspos - Coord2(0, projtype.boomerang_intersection()));
-    boomerang_angle += min(Coord(projtype.boomerang_maxrotate()), (desang - boomerang_angle) * Coord(pow(projtype.boomerang_convergence(), 1/60.f)));
+    Coord desang = getAngle(Coord2(-projtype.boomerang_intersection(), 0) - boomerang_abspos);
+    while(desang < 0)
+      desang += COORDPI * 2;
+    Coord bchange = min(clamp((desang - boomerang_angle) * Coord(projtype.boomerang_convergence()) / FPS, Coord(0), Coord(projtype.boomerang_maxrotate()) / FPS), boomerang_lastchange);
+    if(boomerang_angle > desang)
+      bchange = 0;
+    boomerang_lastchange = bchange;
+    boomerang_angle += bchange;
     boomerang_abspos += makeAngle(boomerang_angle) * Coord(projtype.velocity()) / FPS;
   } else if(projtype.motion() == PM_MINE || projtype.motion() == PM_SPIDERMINE) {
     if(age >= projtype.halflife() * FPS / 2 && gic.rng->frand() > pow(0.5f, 1 / (projtype.halflife() * FPS)))
@@ -221,7 +227,7 @@ Coord2 Projectile::movement() const {
     return makeAngle(d) * Coord(airbrake_velocity) / FPS;
   } else if(projtype.motion() == PM_BOOMERANG) {
     Coord2 mang = makeAngle(boomerang_angle) * Coord(projtype.velocity()) / FPS;
-    mang.x *= boomerang_xfactor;
+    mang.y *= boomerang_yfactor;
     return rotate(mang, d);
   } else if(projtype.motion() == PM_MINE || projtype.motion() == PM_DPS) {
     return Coord2(0, 0);
@@ -298,7 +304,7 @@ Projectile::Projectile(const Coord2 &in_pos, Coord in_d, const IDBProjectileAdju
     airbrake_velocity = (rng->gaussian_scaled(2) / 4 + 1) * projtype.velocity();
   } else if(projtype.motion() == PM_BOOMERANG) {
     boomerang_abspos = Coord2(0, 0);
-    boomerang_xfactor = cfcos(Coord(rng->frand()) * COORDPI);
+    boomerang_yfactor = cfcos(Coord(rng->frand()) * COORDPI);
     boomerang_angle = 0;
   } else if(projtype.motion() == PM_MINE || projtype.motion() == PM_SPIDERMINE) {
     mine_facing = rng->frand() * 2 * PI;
@@ -310,6 +316,8 @@ Projectile::Projectile(const Coord2 &in_pos, Coord in_d, const IDBProjectileAdju
   if(projtype.shape() == PS_DEFAULT) {
   } else if(projtype.shape() == PS_ARROW) {
     arrow_spin_parity = rng->frand() < 0.5;
+    arrow_spin = in_d.toFloat() + PI / 2;
+    arrow_spin_next = arrow_spin;
   } else {
     CHECK(0);
   }

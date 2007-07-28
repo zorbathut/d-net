@@ -1,6 +1,7 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - change "thickness" name
+  - make the number for boomerang_convergence mean more
   - extract "shape" from "motion" better
   - split itemdb_parse.cpp out
   - Many many more weapons

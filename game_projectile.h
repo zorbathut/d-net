@@ -51,8 +51,9 @@ private:
   float airbrake_velocity;
 
   Coord2 boomerang_abspos;
-  Coord boomerang_xfactor;
+  Coord boomerang_yfactor;
   Coord boomerang_angle;
+  Coord boomerang_lastchange;
 
   vector<Coord2> mine_polys() const;
   float mine_facing;

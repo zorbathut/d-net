@@ -2,20 +2,12 @@
 #define DNET_FLOAT
 
 #include "debug.h"
+#include "util.h"
 
 #include <cmath>
 #include <vector>
 
 using namespace std;
-
-inline float clamp(float x, float min, float max) {
-  CHECK(min <= max);
-  if(x < min)
-    return min;
-  if(x > max)
-    return max;
-  return x;
-}
 
 /*************
  * Float2/Float4 classes and operators
