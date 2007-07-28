@@ -50,6 +50,10 @@ private:
   float airbrake_liveness() const;
   float airbrake_velocity;
 
+  Coord2 boomerang_abspos;
+  Coord boomerang_xfactor;
+  Coord boomerang_angle;
+
   vector<Coord2> mine_polys() const;
   float mine_facing;
 
@@ -60,6 +64,9 @@ private:
   Coord d;
 
   Coord2 lasttail;
+  float arrow_spin;
+  float arrow_spin_next;
+  bool arrow_spin_parity;
 
   int age;
   

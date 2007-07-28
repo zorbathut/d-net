@@ -20,19 +20,25 @@ void Projectile::tick(vector<smart_ptr<GfxEffects> > *gfxe, const GameImpactCont
   } else if(projtype.motion() == PM_MISSILE) {
     if(age > projtype.missile_stabstart() * FPS)
       missile_sidedist /= pow(projtype.missile_stabilization(), 1.f / FPS);
-    for(int i = 0; i < 2; i++) { // generate particle effects
-      float dir = unsync().frand() * 2 * PI;
-      Float2 pv = makeAngle(dir) / 3;
-      pv *= 1.0 - unsync().frand() * unsync().frand();
-      pv += movement().toFloat();
-      pv += missile_accel().toFloat() * -3 * abs(unsync().gaussian());
-      pv *= 60; // this is an actual 60, converting it from my previous movement-per-frame to movement-per-second
-      gfxe->push_back(GfxPoint(pos.toFloat() + lasttail.toFloat() - movement().toFloat(), pv, 0.17, Color(1.0, 0.9, 0.6)));
+    if(projtype.shape() == PS_DEFAULT) {
+      for(int i = 0; i < 2; i++) { // generate particle effects
+        float dir = unsync().frand() * 2 * PI;
+        Float2 pv = makeAngle(dir) / 3;
+        pv *= 1.0 - unsync().frand() * unsync().frand();
+        pv += movement().toFloat();
+        pv += missile_accel().toFloat() * -3 * abs(unsync().gaussian());
+        pv *= 60; // this is an actual 60, converting it from my previous movement-per-frame to movement-per-second
+        gfxe->push_back(GfxPoint(pos.toFloat() + lasttail.toFloat() - movement().toFloat(), pv, 0.17, Color(1.0, 0.9, 0.6)));
+      }
     }
   } else if(projtype.motion() == PM_AIRBRAKE) {
     airbrake_velocity *= pow(1.0 - projtype.airbrake_slowdown(), 1/60.);
     if(airbrake_liveness() <= 0)
       detonating = true;
+  } else if(projtype.motion() == PM_BOOMERANG) {
+    Coord desang = getAngle(boomerang_abspos - Coord2(0, projtype.boomerang_intersection()));
+    boomerang_angle += min(Coord(projtype.boomerang_maxrotate()), (desang - boomerang_angle) * Coord(pow(projtype.boomerang_convergence(), 1/60.f)));
+    boomerang_abspos += makeAngle(boomerang_angle) * Coord(projtype.velocity()) / FPS;
   } else if(projtype.motion() == PM_MINE || projtype.motion() == PM_SPIDERMINE) {
     if(age >= projtype.halflife() * FPS / 2 && gic.rng->frand() > pow(0.5f, 1 / (projtype.halflife() * FPS)))
       detonating = true;
@@ -53,6 +59,11 @@ void Projectile::tick(vector<smart_ptr<GfxEffects> > *gfxe, const GameImpactCont
     CHECK(0);
   }
   
+  if(projtype.shape() == PS_ARROW) {
+    arrow_spin = arrow_spin_next;
+    arrow_spin_next += projtype.arrow_rotate() / FPS * (arrow_spin_parity * 2 - 1);
+  }
+  
   if(projtype.proximity() != -1) {
     float newdist = gic.getClosestFoeDistance(pos, owner);
     if(newdist > closest_enemy_tank && newdist < projtype.proximity())
@@ -70,6 +81,8 @@ void Projectile::render(const vector<Coord2> &tankposes) const {
     setColor(projtype.color());
   } else if(projtype.motion() == PM_AIRBRAKE) {
     setColor(projtype.color() * airbrake_liveness());
+  } else if(projtype.motion() == PM_BOOMERANG) {
+    setColor(projtype.color());
   } else if(projtype.motion() == PM_MINE || projtype.motion() == PM_SPIDERMINE) {
     const float radarrange = projtype.mine_visibility();
     float closest = 1000;
@@ -89,7 +102,18 @@ void Projectile::render(const vector<Coord2> &tankposes) const {
   } else {
     CHECK(0);
   }
-  drawLine(Coord4(pos, pos + lasttail), projtype.thickness_visual());
+  
+  if(projtype.shape() == PS_DEFAULT) {
+    drawLine(Coord4(pos, pos + lasttail), projtype.thickness_visual());
+  } else if(projtype.shape() == PS_ARROW) {
+    Coord2 l = pos + rotate(Coord2(projtype.arrow_width() / 2, projtype.arrow_height() / 2), Coord(arrow_spin));
+    Coord2 c = pos + rotate(Coord2(0, -projtype.arrow_height() / 2), Coord(arrow_spin));
+    Coord2 r = pos + rotate(Coord2(-projtype.arrow_width() / 2, projtype.arrow_height() / 2), Coord(arrow_spin));
+    drawLine(Coord4(l, c), projtype.thickness_visual());
+    drawLine(Coord4(c, r), projtype.thickness_visual());
+  } else {
+    CHECK(0);
+  }
 };
 
 void Projectile::firstCollide(Collider *collider, int owner, int id) const {
@@ -110,8 +134,17 @@ void Projectile::addCollision(Collider *collider, int owner, int id) const {
   } else {
     if(projtype.no_intersection()) {
       collider->addPointToken(CollideId(CGR_NOINTPROJECTILE, owner, id), pos, movement());
-    } else {
+    } else if(projtype.shape() == PS_DEFAULT) {
       collider->addNormalToken(CollideId(CGR_PROJECTILE, owner, id), Coord4(pos, pos + lasttail), Coord4(movement(), movement() + nexttail() - lasttail));
+    } else if(projtype.shape() == PS_ARROW) {
+      Coord2 l = pos + rotate(Coord2(projtype.arrow_width() / 2, projtype.arrow_height() / 2), Coord(arrow_spin));
+      Coord2 c = pos + rotate(Coord2(0, -projtype.arrow_height() / 2), Coord(arrow_spin));
+      Coord2 r = pos + rotate(Coord2(-projtype.arrow_width() / 2, projtype.arrow_height() / 2), Coord(arrow_spin));
+      Coord2 nl = pos + movement() + rotate(Coord2(projtype.arrow_width() / 2, projtype.arrow_height() / 2), Coord(arrow_spin_next));
+      Coord2 nc = pos + movement() + rotate(Coord2(0, -projtype.arrow_height() / 2), Coord(arrow_spin_next));
+      Coord2 nr = pos + movement() + rotate(Coord2(-projtype.arrow_width() / 2, projtype.arrow_height() / 2), Coord(arrow_spin_next));
+      collider->addNormalToken(CollideId(CGR_PROJECTILE, owner, id), Coord4(l, c), Coord4(nl - l, nc - c));
+      collider->addNormalToken(CollideId(CGR_PROJECTILE, owner, id), Coord4(c, r), Coord4(nc - c, nr - r));
     }
   }
 }
@@ -186,6 +219,10 @@ Coord2 Projectile::movement() const {
     return missile_accel() + missile_backdrop() + missile_sidedrop();
   } else if(projtype.motion() == PM_AIRBRAKE) {
     return makeAngle(d) * Coord(airbrake_velocity) / FPS;
+  } else if(projtype.motion() == PM_BOOMERANG) {
+    Coord2 mang = makeAngle(boomerang_angle) * Coord(projtype.velocity()) / FPS;
+    mang.x *= boomerang_xfactor;
+    return rotate(mang, d);
   } else if(projtype.motion() == PM_MINE || projtype.motion() == PM_DPS) {
     return Coord2(0, 0);
   } else if(projtype.motion() == PM_SPIDERMINE) {
@@ -201,12 +238,12 @@ Coord2 Projectile::movement() const {
 Coord2 Projectile::nexttail() const {
   float maxlen = max(0., distance_traveled - 0.1);
   if(projtype.motion() == PM_NORMAL) {
-    return makeAngle(d) * -Coord(min(projtype.length(), maxlen));
+    return makeAngle(d) * -Coord(min(projtype.defshape_length(), maxlen));
   } else if(projtype.motion() == PM_MISSILE) {
-    return makeAngle(d) * -Coord(min(projtype.length(), maxlen));
+    return makeAngle(d) * -Coord(min(projtype.defshape_length(), maxlen));
   } else if(projtype.motion() == PM_AIRBRAKE) {
     return makeAngle(d) * -Coord(min(airbrake_velocity / FPS + 2, maxlen));
-  } else if(projtype.motion() == PM_MINE || projtype.motion() == PM_DPS || projtype.motion() == PM_SPIDERMINE) {
+  } else if(projtype.motion() == PM_MINE || projtype.motion() == PM_DPS || projtype.motion() == PM_SPIDERMINE || projtype.motion() == PM_BOOMERANG) {
     return Coord2(0, 0);
   } else {
     CHECK(0);
@@ -259,9 +296,20 @@ Projectile::Projectile(const Coord2 &in_pos, Coord in_d, const IDBProjectileAdju
     missile_sidedist = rng->gaussian() * projtype.missile_sidelaunch() / FPS;
   } else if(projtype.motion() == PM_AIRBRAKE) {
     airbrake_velocity = (rng->gaussian_scaled(2) / 4 + 1) * projtype.velocity();
+  } else if(projtype.motion() == PM_BOOMERANG) {
+    boomerang_abspos = Coord2(0, 0);
+    boomerang_xfactor = cfcos(Coord(rng->frand()) * COORDPI);
+    boomerang_angle = 0;
   } else if(projtype.motion() == PM_MINE || projtype.motion() == PM_SPIDERMINE) {
     mine_facing = rng->frand() * 2 * PI;
   } else if(projtype.motion() == PM_DPS) {
+  } else {
+    CHECK(0);
+  }
+  
+  if(projtype.shape() == PS_DEFAULT) {
+  } else if(projtype.shape() == PS_ARROW) {
+    arrow_spin_parity = rng->frand() < 0.5;
   } else {
     CHECK(0);
   }

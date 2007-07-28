@@ -287,12 +287,15 @@ warhead {
 
 projectile {
   name=projectile.weapon.boomeranggun
-  motion=normal
-  velocity=180
+  motion=boomerang
+  velocity=30
+  boomerang_convergence=0.95
+  boomerang_intersection=40
+  boomerang_maxrotate=0.1
   
   shape=arrow
-  arrow_width=1.5
-  arrow_height=0.5
+  arrow_width=2
+  arrow_height=0.75
   arrow_rotate=6
   color=1.0, 0.9, 0.6
   
@@ -302,8 +305,7 @@ projectile {
 
 deploy {
   name=deploy.weapon.boomeranggun
-  type=rear
-  anglestddev=0.03
+  anglestddev=0
   projectile=projectile.weapon.boomeranggun
 }
 

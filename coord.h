@@ -413,6 +413,8 @@ inline Coord4 boxAround(const Coord2 &lhs, Coord radius) {
   return Coord4(lhs.x - radius, lhs.y - radius, lhs.x + radius, lhs.y + radius);
 }
 
+Coord2 rotate(const Coord2 &in, Coord ang);
+
 inline Coord approach(Coord start, Coord target, Coord delta) {
   if(abs(start - target) <= delta)
     return target;

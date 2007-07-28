@@ -46,6 +46,10 @@ template <typename T> inline int imp_whichSide(const Type4 &f4, const Type2 &pta
   else return 0;
 }
 
+template <typename T> inline Type2 imp_rotate(const Type2 &in, Type1 ang) {
+  return makeAngle(getAngle(in) + ang) * len(in);
+}
+
 /*************
  * Bounding box
  */

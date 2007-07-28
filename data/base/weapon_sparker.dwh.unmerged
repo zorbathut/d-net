@@ -250,7 +250,7 @@ projectile {
   velocity=210
   color=1.0, 1.0, 1.0
   thickness_visual=1.5x
-  length=1.5x
+  defshape_length=1.5x
   durability=8
   warhead=warhead.SparkerIV
 }
@@ -307,7 +307,7 @@ projectile {
   velocity=225
   color=1.0, 1.0, 1.0
   thickness_visual=1.5x
-  length=1.5x
+  defshape_length=1.5x
   durability=16
   warhead=warhead.SparkerV
 }
@@ -364,7 +364,7 @@ projectile {
   velocity=240
   color=1.0, 1.0, 1.0
   thickness_visual=1.5x
-  length=1.5x
+  defshape_length=1.5x
   durability=32
   warhead=warhead.SparkerVI
 }
@@ -464,7 +464,7 @@ projectile {
   velocity=280
   color=1.0, 1.0, 1.0
   thickness_visual=1.5x
-  length=1.5x
+  defshape_length=1.5x
   durability=128
   warhead=warhead.SparkerOmega
 }

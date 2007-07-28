@@ -134,7 +134,6 @@ IDBWarheadAdjust::IDBWarheadAdjust(const IDBWarhead *in_idb, const IDBAdjustment
 
 int IDBProjectileAdjust::motion() const { return idb->motion; };
 float IDBProjectileAdjust::velocity() const { return idb->velocity; };
-float IDBProjectileAdjust::length() const { return idb->length; };
 float IDBProjectileAdjust::radius_physical() const { return idb->radius_physical; };
 float IDBProjectileAdjust::durability() const { return idb->durability; };
 float IDBProjectileAdjust::proximity() const { return idb->proximity; };
@@ -149,8 +148,16 @@ vector<IDBWarheadAdjust> IDBProjectileAdjust::chain_warhead(float multfactor) co
 vector<IDBDeployAdjust> IDBProjectileAdjust::chain_deploy() const { return adjust_vector(idb->chain_deploy, adjust); }
 vector<IDBEffectsAdjust> IDBProjectileAdjust::chain_effects() const { return adjust_vector(idb->chain_effects, adjust); }
 
-Color IDBProjectileAdjust::color() const { return idb->color; };
+int IDBProjectileAdjust::shape() const { return idb->shape; }
+
+float IDBProjectileAdjust::defshape_length() const { return idb->defshape_length; };
+
+float IDBProjectileAdjust::arrow_width() const { CHECK(shape() == PS_ARROW); return idb->arrow_width; }
+float IDBProjectileAdjust::arrow_height() const { CHECK(shape() == PS_ARROW); return idb->arrow_height; }
+float IDBProjectileAdjust::arrow_rotate() const { CHECK(shape() == PS_ARROW); return idb->arrow_rotate; }
 float IDBProjectileAdjust::thickness_visual() const { return idb->thickness_visual; };
+Color IDBProjectileAdjust::color() const { return idb->color; };
+
 int IDBProjectileAdjust::mine_spikes() const { return idb->mine_spikes; };
 float IDBProjectileAdjust::mine_visibility() const { return idb->mine_visibility; };
 
@@ -162,6 +169,10 @@ float IDBProjectileAdjust::missile_stabstart() const { CHECK(idb->motion == PM_M
 float IDBProjectileAdjust::missile_stabilization() const { CHECK(idb->motion == PM_MISSILE); return idb->missile_stabilization; }
 float IDBProjectileAdjust::missile_sidelaunch() const { CHECK(idb->motion == PM_MISSILE); return idb->missile_sidelaunch; }
 float IDBProjectileAdjust::missile_backlaunch() const { CHECK(idb->motion == PM_MISSILE); return idb->missile_backlaunch; }
+
+float IDBProjectileAdjust::boomerang_convergence() const { CHECK(idb->motion == PM_BOOMERANG); return idb->boomerang_convergence; }
+float IDBProjectileAdjust::boomerang_intersection() const { CHECK(idb->motion == PM_BOOMERANG); return idb->boomerang_intersection; }
+float IDBProjectileAdjust::boomerang_maxrotate() const { CHECK(idb->motion == PM_BOOMERANG); return idb->boomerang_maxrotate; }
 
 float IDBProjectileAdjust::dps_duration() const { CHECK(idb->motion == PM_DPS); return idb->dps_duration; }
 

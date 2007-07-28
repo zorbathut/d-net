@@ -185,6 +185,10 @@ Coord2 approach(Coord2 start, Coord2 target, Coord delta) {
   return start + diff / len(diff) * delta;
 }
 
+Coord2 rotate(const Coord2 &in, Coord ang) {
+  return imp_rotate<Coords>(in, ang);
+}
+
 Coord mod(const Coord &a, const Coord &b) {
   if(a < Coord(0))
     return b - mod(-a, b);

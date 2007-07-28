@@ -102,7 +102,7 @@ float linepointdistance(const Float4 &lhs, const Float2 &rhs) {
 }
 
 Float2 rotate(const Float2 &in, float ang) {
-  return makeAngle(getAngle(in) + ang) * len(in);
+  return imp_rotate<Floats>(in, ang);
 }
 
 Float4 squareInside(const Float4 &in) {

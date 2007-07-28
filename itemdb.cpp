@@ -8,6 +8,7 @@
 
 #include <fstream>
 #include <numeric>
+#include <set>
 
 using namespace std;
 
@@ -930,19 +931,33 @@ void parseProjectile(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   
   titem->thickness_visual = parseWithDefault(chunk, "thickness_visual", 0.3);
   
+  set<string> allowed_shapes;
+  
   string motion = parseWithDefault(chunk, "motion", "normal");
   if(motion == "normal") {
     titem->motion = PM_NORMAL;
+    allowed_shapes.insert("default");
+    allowed_shapes.insert("arrow");
   } else if(motion == "missile") {
     titem->motion = PM_MISSILE;
     titem->missile_stabstart = parseSingleItem<float>(chunk->consume("missile_stabstart"));
     titem->missile_stabilization = parseSingleItem<float>(chunk->consume("missile_stabilization"));
     titem->missile_sidelaunch = parseSingleItem<float>(chunk->consume("missile_sidelaunch"));
     titem->missile_backlaunch = parseSingleItem<float>(chunk->consume("missile_backlaunch"));
+    allowed_shapes.insert("default");
+    allowed_shapes.insert("arrow");
   } else if(motion == "airbrake") {
     titem->motion = PM_AIRBRAKE;
     titem->airbrake_life = parseSingleItem<float>(chunk->consume("airbrake_life"));
     titem->airbrake_slowdown = parseSingleItem<float>(chunk->consume("airbrake_slowdown"));
+    allowed_shapes.insert("default");
+    allowed_shapes.insert("arrow");
+  } else if(motion == "boomerang") {
+    titem->motion = PM_BOOMERANG;
+    titem->boomerang_convergence = parseSingleItem<float>(chunk->consume("boomerang_convergence"));
+    titem->boomerang_intersection = parseSingleItem<float>(chunk->consume("boomerang_intersection"));
+    titem->boomerang_maxrotate = parseSingleItem<float>(chunk->consume("boomerang_maxrotate"));
+    allowed_shapes.insert("arrow");
   } else if(motion == "mine" || motion == "spidermine") {
     if(motion == "mine") {
       titem->motion = PM_MINE;
@@ -955,17 +970,31 @@ void parseProjectile(kvData *chunk, bool reload, ErrorAccumulator &accum) {
     titem->mine_spikes = parseSingleItem<int>(chunk->consume("mine_spikes"));
     titem->halflife = atof(chunk->consume("halflife").c_str());
     titem->mine_visibility = parseWithDefault(chunk, "mine_visibility", 40.f);
+    allowed_shapes.insert("default");
   } else if(motion == "dps") {
     titem->motion = PM_DPS;
     titem->dps_duration = parseSingleItem<float>(chunk->consume("duration"));
+    allowed_shapes.insert("default");
   } else {
     dprintf("Unknown projectile motion: %s\n", motion.c_str());
     CHECK(0);
   }
   
+  titem->velocity = 0;
+  if(titem->motion != PM_MINE && titem->motion != PM_DPS)
+    titem->velocity = atof(chunk->consume("velocity").c_str());
+  
   string shape = parseWithDefault(chunk, "shape", "default");
+  CHECK(allowed_shapes.count(shape));
   if(shape == "default") {
     titem->shape = PS_DEFAULT;
+    if(titem->motion == PM_NORMAL) {
+      titem->defshape_length = parseWithDefault(chunk, "defshape_length", titem->velocity / 60);
+    } else if(titem->motion == PM_MISSILE) {
+      titem->defshape_length = parseWithDefault(chunk, "defshape_length", 2.0);
+    } else {
+      titem->defshape_length = 0;
+    }
   } else if(shape == "arrow") {
     titem->shape = PS_ARROW;
     titem->arrow_height = parseSingleItem<float>(chunk->consume("arrow_height"));
@@ -976,20 +1005,6 @@ void parseProjectile(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   }
   
   titem->color = parseWithDefault(chunk, "color", C::gray(1.0));
-  
-  titem->velocity = 0;
-  if(titem->motion != PM_MINE && titem->motion != PM_DPS)
-    titem->velocity = atof(chunk->consume("velocity").c_str());
-  
-  if(titem->motion == PM_NORMAL) {
-    titem->length = parseWithDefault(chunk, "length", titem->velocity / 60);
-  } else if(titem->motion == PM_MISSILE) {
-    titem->length = parseWithDefault(chunk, "length", 2.0);
-  } else if(titem->motion == PM_AIRBRAKE || titem->motion == PM_MINE || titem->motion == PM_DPS || titem->motion == PM_SPIDERMINE) {
-    titem->length = 0;
-  } else {
-    CHECK(0);
-  }
   
   titem->chain_warhead = parseSubclassSet(chunk, "warhead", warheadclasses);
   titem->chain_deploy = parseSubclassSet(chunk, "deploy", deployclasses);

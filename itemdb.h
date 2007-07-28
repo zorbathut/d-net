@@ -105,13 +105,12 @@ struct IDBWarhead {
   vector<const IDBEffects *> effects_impact;
 };
 
-enum { PM_NORMAL, PM_MISSILE, PM_AIRBRAKE, PM_MINE, PM_SPIDERMINE, PM_DPS, PM_LAST };
+enum { PM_NORMAL, PM_MISSILE, PM_AIRBRAKE, PM_BOOMERANG, PM_MINE, PM_SPIDERMINE, PM_DPS, PM_LAST };
 enum { PS_DEFAULT, PS_ARROW };
 
 struct IDBProjectile {
   int motion;
   float velocity;
-  float length;
   float radius_physical;
   
   float proximity;
@@ -120,6 +119,9 @@ struct IDBProjectile {
   float mine_visibility;
   
   int shape;
+
+  float defshape_length;
+  
   float arrow_width;
   float arrow_height;
   float arrow_rotate;
@@ -134,6 +136,10 @@ struct IDBProjectile {
   float missile_backlaunch;
   float missile_stabstart;
   float missile_stabilization;
+  
+  float boomerang_convergence;
+  float boomerang_intersection;
+  float boomerang_maxrotate;
   
   float airbrake_life;
   float airbrake_slowdown;
@@ -342,7 +348,6 @@ public:
 
   int motion() const;
   float velocity() const;
-  float length() const;
   float radius_physical() const;
   float durability() const;
   float proximity() const;
@@ -352,8 +357,16 @@ public:
 
   vector<IDBEffectsAdjust> chain_effects() const;
 
-  Color color() const;
+  int shape() const;
+
+  float defshape_length() const;
+
+  float arrow_width() const;
+  float arrow_height() const;
+  float arrow_rotate() const;
   float thickness_visual() const;
+  Color color() const;
+
   int mine_spikes() const;
   float mine_visibility() const;
 
@@ -366,6 +379,10 @@ public:
   float missile_stabilization() const;
   float missile_sidelaunch() const;
   float missile_backlaunch() const;
+  
+  float boomerang_convergence() const;
+  float boomerang_intersection() const;
+  float boomerang_maxrotate() const;
 
   float dps_duration() const;
   

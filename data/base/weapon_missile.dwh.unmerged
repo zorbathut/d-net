@@ -124,7 +124,7 @@ projectile {
   missile_backlaunch=15
   
   thickness_visual=2x
-  length=1.5x
+  defshape_length=1.5x
   durability=MERGE
   warhead=warhead.weapon.hemissile
 }
