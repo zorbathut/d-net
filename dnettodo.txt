@@ -3,7 +3,6 @@
   - slow down faction tanks similarly to faction armor
   - don't choose same map twice
   - three tiers of weapons available at once
-  - firerate upgrade is perhaps a little too cheap (maybe)
   - change "thickness" name
   - split itemdb_parse.cpp out
   - boomerang gun impact effect
