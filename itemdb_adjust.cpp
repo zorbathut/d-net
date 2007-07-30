@@ -155,7 +155,7 @@ float IDBProjectileAdjust::defshape_length() const { return idb->defshape_length
 float IDBProjectileAdjust::arrow_width() const { CHECK(shape() == PS_ARROW); return idb->arrow_width; }
 float IDBProjectileAdjust::arrow_height() const { CHECK(shape() == PS_ARROW); return idb->arrow_height; }
 float IDBProjectileAdjust::arrow_rotate() const { CHECK(shape() == PS_ARROW); return idb->arrow_rotate; }
-float IDBProjectileAdjust::thickness_visual() const { return idb->thickness_visual; };
+float IDBProjectileAdjust::visual_thickness() const { return idb->visual_thickness; };
 Color IDBProjectileAdjust::color() const { return idb->color; };
 
 int IDBProjectileAdjust::mine_spikes() const { return idb->mine_spikes; };

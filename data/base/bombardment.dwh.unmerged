@@ -665,7 +665,7 @@ projectile {
   missile_sidelaunch=2
   missile_backlaunch=0
   
-  thickness_visual=3x
+  visual_thickness=3x
   defshape_length=2x
   durability=MERGE
   
@@ -712,7 +712,7 @@ projectile {
   missile_sidelaunch=2
   missile_backlaunch=0
   
-  thickness_visual=3x
+  visual_thickness=3x
   defshape_length=2x
   durability=MERGE
   
@@ -759,7 +759,7 @@ projectile {
   missile_sidelaunch=2
   missile_backlaunch=0
   
-  thickness_visual=3x
+  visual_thickness=3x
   defshape_length=2x
   durability=MERGE
   
@@ -806,7 +806,7 @@ projectile {
   missile_sidelaunch=2
   missile_backlaunch=0
   
-  thickness_visual=3x
+  visual_thickness=3x
   defshape_length=2x
   durability=MERGE
   
@@ -853,7 +853,7 @@ projectile {
   missile_sidelaunch=2
   missile_backlaunch=0
   
-  thickness_visual=3x
+  visual_thickness=3x
   defshape_length=2x
   durability=MERGE
   
@@ -900,7 +900,7 @@ projectile {
   missile_sidelaunch=2
   missile_backlaunch=0
   
-  thickness_visual=3x
+  visual_thickness=3x
   defshape_length=2x
   durability=MERGE
   

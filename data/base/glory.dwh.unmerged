@@ -12,7 +12,7 @@ warhead {
 
 projectile {
   name=projectile.glory.none.core
-  thickness_visual=0.6
+  visual_thickness=0.6
   velocity=40
   color=1.0, 0.8, 0.3
   motion=airbrake
@@ -81,7 +81,7 @@ warhead {
 
 projectile {
   name=projectile.glory.shapedcharges.core
-  thickness_visual=0.6
+  visual_thickness=0.6
   velocity=80
   color=1.0, 0.8, 0.3
   motion=airbrake
@@ -149,7 +149,7 @@ warhead {
 
 projectile {
   name=projectile.glory.plasmacharge.blast
-  thickness_visual=0.6
+  visual_thickness=0.6
   velocity=400
   color=0.2, 0.6, 1.0
   motion=airbrake
@@ -203,7 +203,7 @@ warhead {
 
 projectile {
   name=projectile.glory.plasmacharge.core
-  thickness_visual=0.6
+  visual_thickness=0.6
   velocity=60
   color=1.0, 0.8, 0.3
   motion=airbrake
@@ -258,7 +258,7 @@ warhead {
 
 projectile {
   name=projectile.glory.vengeancepulse.core
-  thickness_visual=0.6
+  visual_thickness=0.6
   velocity=40
   color=1.0, 0.8, 0.3
   motion=airbrake
@@ -326,7 +326,7 @@ warhead {
 
 projectile {
   name=projectile.glory.coreexplosive.core
-  thickness_visual=0.6
+  visual_thickness=0.6
   velocity=40
   color=1.0, 0.8, 0.3
   motion=airbrake
@@ -394,7 +394,7 @@ warhead {
 
 projectile {
   name=projectile.glory.stasischamber.core
-  thickness_visual=0.6
+  visual_thickness=0.6
   velocity=40
   color=1.0, 0.8, 0.3
   motion=airbrake
@@ -462,7 +462,7 @@ warhead {
 
 projectile {
   name=projectile.glory.overloadchip.core
-  thickness_visual=0.6
+  visual_thickness=0.6
   velocity=40
   color=1.0, 0.8, 0.3
   motion=airbrake
@@ -530,7 +530,7 @@ warhead {
 
 projectile {
   name=projectile.glory.kamikazewarhead.core
-  thickness_visual=0.6
+  visual_thickness=0.6
   velocity=40
   color=1.0, 0.8, 0.3
   motion=airbrake
@@ -598,7 +598,7 @@ warhead {
 
 projectile {
   name=projectile.glory.thedevice.core
-  thickness_visual=0.6
+  visual_thickness=0.6
   velocity=40
   color=1.0, 0.8, 0.3
   motion=airbrake
@@ -666,7 +666,7 @@ warhead {
 
 projectile {
   name=projectile.glory.deadmansnuke.core
-  thickness_visual=0.6
+  visual_thickness=0.6
   velocity=40
   color=1.0, 0.8, 0.3
   motion=airbrake
@@ -734,7 +734,7 @@ warhead {
 
 projectile {
   name=projectile.glory.immolationdevice.core
-  thickness_visual=0.6
+  visual_thickness=0.6
   velocity=40
   color=1.0, 0.8, 0.3
   motion=airbrake
@@ -802,7 +802,7 @@ warhead {
 
 projectile {
   name=projectile.glory.coreconversion.core
-  thickness_visual=0.6
+  visual_thickness=0.6
   velocity=40
   color=1.0, 0.8, 0.3
   motion=airbrake

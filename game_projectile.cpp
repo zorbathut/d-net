@@ -110,13 +110,13 @@ void Projectile::render(const vector<Coord2> &tankposes) const {
   }
   
   if(projtype.shape() == PS_DEFAULT) {
-    drawLine(Coord4(pos, pos + lasttail), projtype.thickness_visual());
+    drawLine(Coord4(pos, pos + lasttail), projtype.visual_thickness());
   } else if(projtype.shape() == PS_ARROW) {
     Coord2 l = pos + rotate(Coord2(projtype.arrow_width() / 2, projtype.arrow_height() / 2), Coord(arrow_spin));
     Coord2 c = pos + rotate(Coord2(0, -projtype.arrow_height() / 2), Coord(arrow_spin));
     Coord2 r = pos + rotate(Coord2(-projtype.arrow_width() / 2, projtype.arrow_height() / 2), Coord(arrow_spin));
-    drawLine(Coord4(l, c), projtype.thickness_visual());
-    drawLine(Coord4(c, r), projtype.thickness_visual());
+    drawLine(Coord4(l, c), projtype.visual_thickness());
+    drawLine(Coord4(c, r), projtype.visual_thickness());
   } else {
     CHECK(0);
   }

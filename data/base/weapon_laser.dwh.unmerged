@@ -166,7 +166,7 @@ projectile {
   name=projectile.weapon.megawattlaser
   motion=normal
   velocity=800
-  thickness_visual=1.5x
+  visual_thickness=1.5x
   defshape_length=1.5x
   durability=MERGE
   color=0.6, 0.9, 1.0

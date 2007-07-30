@@ -103,7 +103,7 @@ projectile {
   name=projectile.weapon.apautocannon
   motion=normal
   velocity=130
-  thickness_visual=2x
+  visual_thickness=2x
   defshape_length=2x
   durability=MERGE
   color=1.0, 0.9, 0.6

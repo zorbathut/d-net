@@ -127,7 +127,7 @@ struct IDBProjectile {
   float arrow_width;
   float arrow_height;
   float arrow_rotate;
-  float thickness_visual;
+  float visual_thickness;
   Color color;
 
   float durability;
@@ -366,7 +366,7 @@ public:
   float arrow_width() const;
   float arrow_height() const;
   float arrow_rotate() const;
-  float thickness_visual() const;
+  float visual_thickness() const;
   Color color() const;
 
   int mine_spikes() const;

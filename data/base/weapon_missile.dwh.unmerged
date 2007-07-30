@@ -75,7 +75,7 @@ warhead {
 
 projectile {
   name=projectile.weapon.hemissile.secondary
-  thickness_visual=0.6
+  visual_thickness=0.6
   velocity=40
   color=1.0, 0.8, 0.3
   motion=airbrake
@@ -123,7 +123,7 @@ projectile {
   missile_sidelaunch=30
   missile_backlaunch=15
   
-  thickness_visual=2x
+  visual_thickness=2x
   defshape_length=1.5x
   durability=MERGE
   warhead=warhead.weapon.hemissile

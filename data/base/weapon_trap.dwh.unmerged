@@ -679,7 +679,7 @@ projectile {
   airbrake_life=0.5
   airbrake_slowdown=0.98
   
-  thickness_visual=2x
+  visual_thickness=2x
   
   color=0.2,1.0,1.0
   
@@ -756,7 +756,7 @@ projectile {
   airbrake_life=0.5
   airbrake_slowdown=0.98
   
-  thickness_visual=2x
+  visual_thickness=2x
   
   color=0.2,1.0,1.0
   
@@ -833,7 +833,7 @@ projectile {
   airbrake_life=0.5
   airbrake_slowdown=0.98
   
-  thickness_visual=2x
+  visual_thickness=2x
   
   color=0.2,1.0,1.0
   
@@ -910,7 +910,7 @@ projectile {
   airbrake_life=0.5
   airbrake_slowdown=0.98
   
-  thickness_visual=2x
+  visual_thickness=2x
   
   color=0.2,1.0,1.0
   
@@ -987,7 +987,7 @@ projectile {
   airbrake_life=0.5
   airbrake_slowdown=0.98
   
-  thickness_visual=2x
+  visual_thickness=2x
   
   color=0.2,1.0,1.0
   
@@ -1064,7 +1064,7 @@ projectile {
   airbrake_life=0.5
   airbrake_slowdown=0.98
   
-  thickness_visual=2x
+  visual_thickness=2x
   
   color=0.2,1.0,1.0
   
