@@ -68,7 +68,7 @@ bool Metagame::runTick(const vector<Controller> &keys) {
       mode = MGM_PLAY;
 
       findLevels(persistent.players().size());  // player count may have changed. TODO: make this suck less
-      game.initStandard(&persistent.players(), levels[int(rng.frand() * levels.size())], &rng);
+      game.initStandard(&persistent.players(), chooseLevel(), &rng);
       if(win_history.size() != gameround)
         dprintf("%d, %d\n", win_history.size(), gameround);
       CHECK(win_history.size() == gameround);
@@ -93,7 +93,7 @@ bool Metagame::runTick(const vector<Controller> &keys) {
       } else {
         // store the firepower, restart the game, and add firepower to it (kind of kludgy)
         float firepower = game.firepowerSpent;
-        game.initStandard(&persistent.players(), levels[int(rng.frand() * levels.size())], &rng);
+        game.initStandard(&persistent.players(), chooseLevel(), &rng);
         game.firepowerSpent = firepower;
       }
     }
@@ -180,6 +180,16 @@ void Metagame::findLevels(int playercount) {
   }
 }
 
+Level Metagame::chooseLevel() {
+  while(1) {
+    int cs = int(rng.frand() * levels.size());
+    if(cs != last_level || levels.size() == 1) {
+      last_level = cs;
+      return levels[cs];
+    }
+  }
+}
+
 Metagame::Metagame(int playercount, Money startingcash, float multiple, int faction, int in_roundsBetweenShop, RngSeed seed) :
     persistent(playercount, startingcash, multiple, in_roundsBetweenShop), rng(seed) {
   
@@ -195,4 +205,6 @@ Metagame::Metagame(int playercount, Money startingcash, float multiple, int fact
   roundsBetweenShop = in_roundsBetweenShop;
   gameround = 0;
   CHECK(roundsBetweenShop >= 1);
+  
+  last_level = -1;
 }

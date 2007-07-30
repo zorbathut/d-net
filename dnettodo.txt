@@ -1,6 +1,5 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
-  - don't choose same map twice
   - change "thickness" name
   - split itemdb_parse.cpp out
   - boomerang gun impact effect

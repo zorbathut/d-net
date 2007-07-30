@@ -25,6 +25,8 @@ class Metagame : boost::noncopyable {
   
   int gameround;
   int roundsBetweenShop;
+  
+  int last_level;
 
   Rng rng;
 
@@ -39,6 +41,7 @@ public:
 private:
 
   void findLevels(int playercount);
+  Level chooseLevel();
 
 };
 
