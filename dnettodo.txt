@@ -2,7 +2,6 @@
 - "Finish the Damn Game" Initiative
   - slow down faction tanks similarly to faction armor
   - don't choose same map twice
-  - three tiers of weapons available at once
   - change "thickness" name
   - split itemdb_parse.cpp out
   - boomerang gun impact effect
@@ -61,7 +60,6 @@
     - Add wander-around-randomly-and-do-shit to the AI
     - Add calculation for missile explosion durability
     - Glory durability?
-    - Add sparker to balance sheet >:(
     - Set things up so that units don't change within groups
     - Add upgrades to the balance sheet
     - Get better at returning "no I'm sorry I just can't understand the itemdb"
