@@ -1,8 +1,6 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
-  - sniper mines crash, spider mines aim at wrong people (related?)
   - add flags to debug dump
-  - I have a huge replay bug somewhere :(
   - boomerang gun may be overpowered, reduce spread and/or increase emp area
   - slow down faction tanks similarly to faction armor
   - boost laser significantly

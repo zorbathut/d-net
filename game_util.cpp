@@ -34,19 +34,19 @@ int GameImpactContext::getClosestFoeId(const Coord2 &pos, int owner) const {
   float closest = 1e20; // no
   int id = -1; // denied
   for(int i = 0; i < taj.size(); i++) {
-    if(taj[i].second->isLive() && taj[i].first < closest && taj[i].second->team != players[owner]->team) {
+    if(taj[i].first < closest && taj[i].second->team != players[owner]->team) {
       closest = taj[i].first;
       id = i;
     }
   }
-  return id;
+  return findTankId(taj[id].second);
 }
 
 float GameImpactContext::getClosestFoeDistance(const Coord2 &pos, int owner) const {
   vector<pair<float, Tank *> > taj = getAdjacency(pos);
   float closest = 1e20; // no
   for(int i = 0; i < taj.size(); i++)
-    if(taj[i].second->isLive() && taj[i].first < closest && taj[i].second->team != players[owner]->team)
+    if(taj[i].first < closest && taj[i].second->team != players[owner]->team)
       closest = taj[i].first;
   return closest;
 }
