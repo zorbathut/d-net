@@ -1,6 +1,5 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
-  - split itemdb_parse.cpp out
   - boomerang gun impact effect
   - ultra-high-firerate weapons are going to kind of collapse
   - Many many more weapons
