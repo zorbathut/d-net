@@ -565,8 +565,10 @@ void Player::reCalculate() {
   CHECK(faction);
   
   adjustment = *faction->adjustment[factionmode];
-  if(factionmode == 3)
+  if(factionmode == 3) {
     adjustment.tankhpboost = 20;  // eww eww eww
+    adjustment.tankspeedreduction = 10;  // eww eww eww
+  }
   for(set<const IDBImplant *>::const_iterator itr = implantequipped.begin(); itr != implantequipped.end(); itr++)
     adjustment += (*itr)->makeAdjustment(implantLevel(*itr));
   

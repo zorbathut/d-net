@@ -361,7 +361,7 @@ Money IDBTankAdjust::sellcost() const { return cost() * adjust.recyclevalue(); }
 
 float IDBTankAdjust::maxHealth() const { return idb->health * adjust.tankhp(); };
 float IDBTankAdjust::turnSpeed() const { return idb->handling * adjust.adjustmentfactor(IDBAdjustment::TANK_TURN); };
-float IDBTankAdjust::maxSpeed() const { return idb->engine * adjust.adjustmentfactor(IDBAdjustment::TANK_SPEED); };
+float IDBTankAdjust::maxSpeed() const { return idb->engine * adjust.tankspeed(); };
 
 float IDBTankAdjust::mass() const { return idb->mass; };    // BAM
 

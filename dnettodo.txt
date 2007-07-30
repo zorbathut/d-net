@@ -1,6 +1,5 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
-  - slow down faction tanks similarly to faction armor
   - don't choose same map twice
   - change "thickness" name
   - split itemdb_parse.cpp out

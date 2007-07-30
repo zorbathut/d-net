@@ -35,12 +35,14 @@ public:
   int adjusts[LAST];  // These are in percentage points away from 100. Yes, this is kind of weird.
   
   int tankhpboost;
+  int tankspeedreduction;
   
   pair<int, int> adjustlist[5];
   
   double adjustmentfactor(int type) const;
   double recyclevalue() const; // this is annoyingly different
   double tankhp() const; // this is also annoyingly different
+  double tankspeed() const; // this is *also* annoyingly different. I should wrap these up into DisplayAdjustment and RealAdjustment
 
   void debugDump() const;
 

@@ -74,6 +74,7 @@ IDBAdjustment::IDBAdjustment() {
   memset(adjusts, 0, sizeof(adjusts));
   memset(adjustlist, -1, sizeof(adjustlist));
   tankhpboost = 0;
+  tankspeedreduction = 0;
   ignore_excessive_radius = false;
 }
 
@@ -82,6 +83,7 @@ IDBAdjustment operator*(const IDBAdjustment &lhs, int mult) {
   for(int i = 0; i < IDBAdjustment::LAST; i++)
     rv.adjusts[i] *= mult;
   CHECK(!lhs.tankhpboost);
+  CHECK(!lhs.tankspeedreduction);
   return rv;
 }
 
@@ -89,7 +91,9 @@ const IDBAdjustment &operator+=(IDBAdjustment &lhs, const IDBAdjustment &rhs) {
   for(int i = 0; i < IDBAdjustment::LAST; i++)
     lhs.adjusts[i] += rhs.adjusts[i];
   CHECK(!lhs.tankhpboost || !rhs.tankhpboost);
+  CHECK(!lhs.tankspeedreduction || !rhs.tankspeedreduction);
   lhs.tankhpboost += rhs.tankhpboost;
+  lhs.tankspeedreduction += rhs.tankspeedreduction;
   return lhs;
 }
 
@@ -98,6 +102,8 @@ bool operator==(const IDBAdjustment &lhs, const IDBAdjustment &rhs) {
     if(lhs.adjusts[i] != rhs.adjusts[i])
       return false;
   if(lhs.tankhpboost != rhs.tankhpboost)
+    return false;
+  if(lhs.tankspeedreduction != rhs.tankspeedreduction)
     return false;
   return true;
 }
@@ -125,6 +131,10 @@ double IDBAdjustment::recyclevalue() const {
 
 double IDBAdjustment::tankhp() const {
   return (adjusts[TANK_ARMOR] + 100.) * (tankhpboost + 100.) / 10000.;
+}
+
+double IDBAdjustment::tankspeed() const {
+  return (adjusts[TANK_SPEED] + 100.) * (100. - tankspeedreduction) / 10000.;
 }
 
 bool sortByTankCost(const HierarchyNode &lhs, const HierarchyNode &rhs) {
