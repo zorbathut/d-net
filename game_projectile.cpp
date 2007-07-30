@@ -179,7 +179,7 @@ void Projectile::detonate(Coord2 pos, Coord normal, Tank *target, const GamePlay
       deployProjectile(idd[i], DeployLocation(pos, getAngle(movement())), gpc, damageflags, NULL);
     
     vector<IDBEffectsAdjust> ide = projtype.chain_effects();
-    for(int i = 0; i < idd.size(); i++)
+    for(int i = 0; i < ide.size(); i++)
       gpc.gic->effects->push_back(GfxIdb(pos.toFloat(), normal.toFloat(), movement().toFloat(), ide[i]));
     
     live = false;

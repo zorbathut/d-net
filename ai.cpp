@@ -106,9 +106,6 @@ inline bool operator<(const Button &lhs, const Button &rhs) {
   return false;
 }
 
-inline bool operator==(const Button &lhs, const Button &rhs) {
-  return !(lhs < rhs) && !(rhs < lhs);
-}
 inline bool operator!=(const Button &lhs, const Button &rhs) {
   return !(lhs == rhs);
 }

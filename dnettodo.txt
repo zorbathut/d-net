@@ -1,8 +1,19 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
+  - sniper mines crash, spider mines aim at wrong people (related?)
+  - add flags to debug dump
+  - I have a huge replay bug somewhere :(
+  - boomerang gun may be overpowered, reduce spread and/or increase emp area
+  - slow down faction tanks similarly to faction armor
+  - boost laser significantly
+  - don't choose same map twice
+  - three tiers of weapons available at once
+  - spider mines are pretty hilarious, not always in the good way
+  - firerate upgrade is perhaps a little too cheap (maybe)
   - change "thickness" name
   - split itemdb_parse.cpp out
   - boomerang gun impact effect
+  - ultra-high-firerate weapons are going to kind of collapse
   - Many many more weapons
     - Add implementations for all trap weapons
       - Hunter/Killer: I need a new projectile for this.
@@ -20,6 +31,22 @@
     - Special laser
     - Special missile
     - OGRE
+  - Make It Pretty
+    - Add both "proportion" and "multiplier" merge options
+    - Add wall-destruction sizes to the balance sheet
+    - Spruce up sparker weaponry
+    - Spruce up base autocannon weaponry
+    - Spruce up special autocannon weaponry
+    - Spruce up base laser weaponry
+      - beam laser?
+      - lasers spawn sparklies
+    - Spruce up special laser weaponry
+    - Spruce up base missile weaponry
+    - Spruce up special missile weaponry
+    - Spruce up glory devices
+    - Spruce up trap weaponry
+    - Spruce up exotic weaponry
+    - Spruce up OGRE
   - Eventual bugfixes
     - Start with level 3
     - End with level 5
@@ -44,21 +71,6 @@
     - Set things up so that units don't change within groups
     - Add upgrades to the balance sheet
     - Get better at returning "no I'm sorry I just can't understand the itemdb"
-  - Make It Pretty
-    - Add both "proportion" and "multiplier" merge options
-    - Add wall-destruction sizes to the balance sheet
-    - Spruce up sparker weaponry
-    - Spruce up base autocannon weaponry
-    - Spruce up special autocannon weaponry
-    - Spruce up base laser weaponry
-      - lasers spawn sparklies
-    - Spruce up special laser weaponry
-    - Spruce up base missile weaponry
-    - Spruce up special missile weaponry
-    - Spruce up glory devices
-    - Spruce up trap weaponry
-    - Spruce up exotic weaponry
-    - Spruce up OGRE
   - Huge enormous things
     - AI
     - Network
