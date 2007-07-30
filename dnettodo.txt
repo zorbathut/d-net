@@ -1,12 +1,8 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
-  - add flags to debug dump
-  - boomerang gun may be overpowered, reduce spread and/or increase emp area
   - slow down faction tanks similarly to faction armor
-  - boost laser significantly
   - don't choose same map twice
   - three tiers of weapons available at once
-  - spider mines are pretty hilarious, not always in the good way
   - firerate upgrade is perhaps a little too cheap (maybe)
   - change "thickness" name
   - split itemdb_parse.cpp out
@@ -46,6 +42,7 @@
     - Spruce up exotic weaponry
     - Spruce up OGRE
   - Eventual bugfixes
+    - add flags to dump file
     - Start with level 3
     - End with level 5
     - Auto-equip the first weapon, auto-equip things into damage-type slots?

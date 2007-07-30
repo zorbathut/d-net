@@ -296,7 +296,7 @@ projectile {
   shape=arrow
   arrow_width=2
   arrow_height=0.75
-  arrow_rotate=4
+  arrow_rotate=6
   color=1.0, 0.9, 0.6
   
   durability=MERGE
