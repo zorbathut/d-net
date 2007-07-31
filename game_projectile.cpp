@@ -44,6 +44,7 @@ void Projectile::tick(vector<smart_ptr<GfxEffects> > *gfxe, const GameImpactCont
       bchange = 0;
     boomerang_lastchange = bchange;
     boomerang_angle += bchange;
+    //dprintf("%p: %f, %f\n", this, boomerang_angle.toFloat(), bchange.toFloat());
     boomerang_abspos += makeAngle(boomerang_angle) * Coord(projtype.velocity()) / FPS;
   } else if(projtype.motion() == PM_MINE || projtype.motion() == PM_SPIDERMINE) {
     if(age >= projtype.halflife() * FPS / 2 && gic.rng->frand() > pow(0.5f, 1 / (projtype.halflife() * FPS)))

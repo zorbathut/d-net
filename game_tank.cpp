@@ -492,24 +492,34 @@ void Tank::tryToFire(Button keys[SIMUL_WEAPONS], Player *player, ProjectilePack 
       // Blam!
       IDBWeaponAdjust weapon = player->getWeapon(curfire);
       
-      deployProjectile(weapon.launcher().deploy(), launchData(), GamePlayerContext(this, projectiles, gic), DamageFlags(1.0, true, false));
+      pair<int, int> wcd = weapon.simulateWeaponFiring(gic.rng);
+      weaponCooldown = wcd.second;
       
-      weaponCooldown = weapon.framesForCooldown(gic.rng);
+      string ammo_display;
+      
+      for(int i = 0; i < wcd.first; i++) {
+        deployProjectile(weapon.launcher().deploy(), launchData(), GamePlayerContext(this, projectiles, gic), DamageFlags(1.0, true, false));
+        
+        // hack here to detect weapon out-of-ammo
+        string lastname = informalNameFromIDB(weapon);
+        *firepowerSpent += player->shotFired(curfire);
+        if(informalNameFromIDB(weapon) != lastname) {
+          status_text->push_back(make_pair(informalNameFromIDB(weapon), 2));
+          break;
+        }
+        
+        {
+          string slv = StringPrintf("%d", player->shotsLeft(curfire));
+          if(count(slv.begin(), slv.end(), '0') == slv.size() - 1)
+            ammo_display = slv;
+        }
+      }
+      
       if(weapon.glory_resistance())
         glory_resist_boost_frames = weaponCooldown;
-        
-      // hack here to detect weapon out-of-ammo
-      string lastname = informalNameFromIDB(weapon);
-      *firepowerSpent += player->shotFired(curfire);
-      if(informalNameFromIDB(weapon) != lastname) {
-        status_text->push_back(make_pair(informalNameFromIDB(weapon), 2));
-      }
       
-      {
-        string slv = StringPrintf("%d", player->shotsLeft(curfire));
-        if(count(slv.begin(), slv.end(), '0') == slv.size() - 1)
-          status_text->push_back(make_pair(slv, 1));
-      }
+      if(ammo_display.size())
+        status_text->push_back(make_pair(ammo_display, 1));
     }
   }
 }

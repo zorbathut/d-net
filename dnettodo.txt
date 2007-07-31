@@ -1,7 +1,8 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
+  - args should be const :(
   - boomerang gun impact effect
-  - ultra-high-firerate weapons are going to kind of collapse
+  - change tank upgrade info screen to show + and - instead of just a percentage
   - Many many more weapons
     - Add implementations for all trap weapons
       - Hunter/Killer: I need a new projectile for this.

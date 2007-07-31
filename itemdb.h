@@ -456,8 +456,9 @@ public:
   typedef IDBWeapon base_type;
 
   IDBLauncherAdjust launcher() const;
+  
+  pair<int, int> simulateWeaponFiring(Rng *rng) const;
 
-  int framesForCooldown(Rng *rng) const;
   float firerate() const;
   Money cost(int shots) const;
   Money cost_pack() const;

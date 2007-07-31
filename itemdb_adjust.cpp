@@ -209,26 +209,35 @@ IDBLauncherAdjust::IDBLauncherAdjust(const IDBLauncher *in_idb, const IDBAdjustm
 
 IDBLauncherAdjust IDBWeaponAdjust::launcher() const { return IDBLauncherAdjust(idb->launcher, adjust); };
 
-int framesForCooldownEngine(float frames_per_shot, Rng *rng) {
-  return (int)floor(frames_per_shot) + (rng->frand() < (frames_per_shot - floor(frames_per_shot)));
+pair<int, int> simulateWeaponFiringEngine(float frames_per_shot, Rng *rng) {
+  if(frames_per_shot >= 1) {
+    return make_pair(1, (int)floor(frames_per_shot) + (rng->frand() < (frames_per_shot - floor(frames_per_shot))));
+  } else {
+    pair<int, int> swf = simulateWeaponFiringEngine(1 / frames_per_shot, rng);
+    return make_pair(swf.second, swf.first);
+  }
 };
 
 struct FFCETester {
   FFCETester() {
-    const float framn = 2;
-    const float gole = framn * 1000;
-    int tfram = 0;
-    Rng rng(unsync().generate_seed());
-    for(int i = 0; i < 1000; i++)
-      tfram += framesForCooldownEngine(framn, &rng);
-    dprintf("tfram test: should be %dish, is %d\n", int(gole), tfram);
-    
-    CHECK(tfram > gole * .9 && tfram < gole * 1.1);
+    for(float framn = 0.5; framn <= 1.5; framn += 0.2) {
+      const float gole = framn * 1000;
+      int tfram = 0;
+      Rng rng(unsync().generate_seed());
+      for(int i = 0; i < 1000; ) {
+        pair<int, int> tfr = simulateWeaponFiringEngine(framn, &rng);
+        i += tfr.first;
+        tfram += tfr.second;
+      }
+      dprintf("tfram test: should be %dish, is %d\n", int(gole), tfram);
+      
+      CHECK(tfram > gole * .95 && tfram < gole * 1.05);
+    }
   }
 } test;
 
-int IDBWeaponAdjust::framesForCooldown(Rng *rng) const { 
-  return framesForCooldownEngine(FPS / firerate(), rng);
+pair<int, int> IDBWeaponAdjust::simulateWeaponFiring(Rng *rng) const { 
+  return simulateWeaponFiringEngine(FPS / firerate(), rng);
 }
 float IDBWeaponAdjust::firerate() const {
   return idb->firerate * adjust.adjustmentfactor(IDBAdjustment::TANK_FIRERATE);
