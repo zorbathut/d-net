@@ -1,13 +1,19 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
-  - args should be const :(
+  - add checksums to dumps :(
+  - Lasers up a bit more, because they're weak at the beginning and passable at the end
+  - Missiles up a bit more too
+  - Boomerang durability higher
+  - Highlight selected box border
+  - De-highlight past box border
+  - Modify damagetype highlighting to make no-damage less similar to selected
+  - Boost normal mine damage a bit
   - boomerang gun impact effect
   - change tank upgrade info screen to show + and - instead of just a percentage
   - Many many more weapons
     - Add implementations for all trap weapons
       - Hunter/Killer: I need a new projectile for this.
       - Tailwind Blast: Should spawn from centroid and sweep backwards, accelerating, with a triangle projectile.
-      - I think I need a way of determining projectile look. Maybe an optional set of enums for look? "Default", "Angled", with angled having width, height, and spin rate. Angled not allowed with mine projectiles or DPS projectiles, of course.
     - Add implementations for all exotic weapons
     - Re-enable weapon checks
     - Add trap behavior

@@ -126,6 +126,12 @@ package: d-net data/shopcache.dwh
 	$(prepackage)
 	$(strip)
 	$(postpackage)
+  
+shortpackage: d-net
+	rm -f data/shopcache.dwh
+	$(prepackage)
+	$(strip)
+	$(postpackage)
 
 packageed: d-net vecedit data/shopcache.dwh
 	$(prepackage)
