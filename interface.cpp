@@ -32,7 +32,7 @@ StdMenuItem StdMenuItem::makeStandardMenu(const string &text, int trigger) {
   return stim;
 }
 
-StdMenuItem StdMenuItem::makeScale(const string &text, const vector<string> &labels, float *position) {
+StdMenuItem StdMenuItem::makeScale(const string &text, const vector<string> &labels, Coord *position) {
   StdMenuItem stim;
   stim.type = TYPE_SCALE;
   stim.name = text;
@@ -42,7 +42,7 @@ StdMenuItem StdMenuItem::makeScale(const string &text, const vector<string> &lab
   return stim;
 }
 
-StdMenuItem StdMenuItem::makeRounds(const string &text, float *start, float *end, float *exp) {
+StdMenuItem StdMenuItem::makeRounds(const string &text, Coord *start, Coord *end, Coord *exp) {
   StdMenuItem stim;
   stim.type = TYPE_ROUNDS;
   stim.name = text;
@@ -72,27 +72,27 @@ int StdMenuItem::tick(const Keystates &keys) {
   } else if(type == TYPE_SCALE) {
     if(scale_posfloat) {
       if(keys.l.down)
-        *scale_posfloat -= 0.05;
+        *scale_posfloat -= Coord(1) / 16;
       if(keys.r.down)
-        *scale_posfloat += 0.05;
+        *scale_posfloat += Coord(1) / 16;
       *scale_posfloat = clamp(*scale_posfloat, 0, scale_labels.size() - 1);
     } else {
       CHECK(scale_posint);
       if(keys.l.down)
-        scale_posint_approx -= 0.03;
+        scale_posint_approx -= Coord(1) / 32;
       if(keys.r.down)
-        scale_posint_approx += 0.03;
+        scale_posint_approx += Coord(1) / 32;
       if(!keys.l.down && !keys.r.down)
-        scale_posint_approx = approach(scale_posint_approx, round(scale_posint_approx), 0.01);
+        scale_posint_approx = approach(scale_posint_approx, round(scale_posint_approx), Coord(1) / 128);
       scale_posint_approx = clamp(scale_posint_approx, 0, scale_labels.size() - 1);
-      *scale_posint = round(scale_posint_approx);
+      *scale_posint = round(scale_posint_approx).toInt();
     }
   } else if(type == TYPE_ROUNDS) {
     if(keys.l.down)
-      *rounds_exp *= 1.01;
+      *rounds_exp *= Coord(101) / 100;
     if(keys.r.down)
-      *rounds_exp /= 1.01;
-    *rounds_exp = clamp(*rounds_exp, 0.001, 2);
+      *rounds_exp /= Coord(101) / 100;
+    *rounds_exp = clamp(*rounds_exp, Coord(0.001), 2);
   } else {
     CHECK(0);
   }
@@ -109,9 +109,9 @@ float StdMenuItem::render(float y) const {
     CHECK(!scale_posfloat + !scale_posint == 1);
     float pos;
     if(scale_posfloat)
-      pos = *scale_posfloat;
+      pos = scale_posfloat->toFloat();
     else
-      pos = scale_posint_approx;
+      pos = scale_posint_approx.toFloat();
     
     float xstart = 40;
     Float4 boundy = Float4(xstart, y, getZoom().ex - 4, y + 4);
@@ -143,8 +143,8 @@ float StdMenuItem::render(float y) const {
     return 6;
   } else if(type == TYPE_ROUNDS) {
     drawText(name.c_str(), 4, Float2(2, y));
-    int rounds = int(ceil((*rounds_end - *rounds_start) * log(30) / *rounds_exp / 6)) * 6;
-    float percentage = (exp(*rounds_exp) - 1) * 100;
+    int rounds = int(ceil((rounds_end->toFloat() - rounds_start->toFloat()) * log(30) / rounds_exp->toFloat() / 6)) * 6;
+    float percentage = (exp(rounds_exp->toFloat()) - 1) * 100;
     drawText(StringPrintf("%d (+%.2f%% cash/round)", rounds, percentage), 4, Float2(60, y));
     return 6;
   } else {
@@ -423,7 +423,7 @@ bool InterfaceMain::tick(const vector< Controller > &control, RngSeed gameseed) 
       }
     }
     if(mrv == 1 || FLAGS_auto_newgame) {
-      game = new Metagame(control.size(), Money((long long)(1000 * pow(30, start))), exp(moneyexp), faction - 1, FLAGS_rounds_per_shop, gameseed);
+      game = new Metagame(control.size(), Money((long long)(1000 * pow(30, start.toFloat()))), exp(moneyexp), faction - 1, FLAGS_rounds_per_shop, gameseed);
       interface_mode = STATE_PLAYING;
     }
   } else if(interface_mode == STATE_PLAYING) {
@@ -581,7 +581,7 @@ void InterfaceMain::render() const {
         drawLine(Float4(chbox.ex, chbox.ey, chbox.ex - crosshair / 4, chbox.ey), boxthick);
         drawLine(Float4(chbox.ex, chbox.ey, chbox.ex, chbox.ey - crosshair / 4), boxthick);
         setColor(C::inactive_text);
-        drawCrosshair(Float2(ct.menu.x * crosshairc + bord + crosshairc + x, -ct.menu.y * crosshairc + bord + crosshairc + y), crosshair / 4, boxthick);
+        drawCrosshair(Coord2(ct.menu.x * crosshairc + bord + crosshairc + x, -ct.menu.y * crosshairc + bord + crosshairc + y), crosshair / 4, boxthick);
         setColor(C::active_text);
         float textx = x + bord * 3 + crosshair;
         float texty = y + bord;
@@ -611,7 +611,7 @@ void InterfaceMain::render() const {
   } else if(interface_mode == STATE_CONFIGURE) {
     configmenu.render();
     setColor(C::inactive_text);
-    drawText(StringPrintf("%s starting cash", Money((long long)(1000 * pow(30, start))).textual().c_str()), 2, Float2(1, 97));
+    drawText(StringPrintf("%s starting cash", Money((long long)(1000 * pow(30, start.toFloat()))).textual().c_str()), 2, Float2(1, 97));
   } else if(interface_mode == STATE_PLAYING) {
     game->renderToScreen();
   } else {
@@ -619,6 +619,17 @@ void InterfaceMain::render() const {
   }
 };
 #endif
+
+void InterfaceMain::checksum(Adler32 *adl) const {
+  adler(adl, interface_mode);
+  adler(adl, start);
+  adler(adl, end);
+  adler(adl, moneyexp);
+  adler(adl, faction);
+  
+  if(game)
+    game->checksum(adl);
+}
 
 InterfaceMain::InterfaceMain() {
   interface_mode = STATE_MAINMENU;
@@ -632,9 +643,9 @@ InterfaceMain::InterfaceMain() {
   if(FLAGS_startingPhase == -1)
     start = 0;
   else
-    start = FLAGS_startingPhase;
+    start = Coord(FLAGS_startingPhase);
   end = names.size();
-  moneyexp = 0.1133;
+  moneyexp = Coord(0.1133);
   
   faction = FLAGS_factionMode + 1;
   CHECK(faction >= 0 && faction < 5);

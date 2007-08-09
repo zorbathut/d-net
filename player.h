@@ -32,7 +32,7 @@ private:
   void eraseWeapon(const IDBWeapon *weap);
   
 public:
-  float shotFired(int id);  // Fire a single shot. Returns the cost of that shot. This could likely be done better.
+  void shotFired(int id);  // Fire a single shot.
 
   void addAmmo(const IDBWeapon *weap, int count);
   void removeAmmo(const IDBWeapon *weap, int count);
@@ -162,7 +162,7 @@ public:
   float consumeDamage();
 
   IDBWeaponAdjust getWeapon(int id) const;
-  float shotFired(int id);  // Fire a single shot. Returns the cost of that shot. This could likely be done better.
+  void shotFired(int id);  // Fire a single shot.
   int shotsLeft(int id) const;
   int ammoCount(const IDBWeapon *in_weapon) const;
   

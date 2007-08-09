@@ -66,6 +66,7 @@ void setColor(float r, float g, float b);
 void setColor(const Color &color);
 
 void drawLine(float sx, float sy, float ex, float ey, float weight);
+void drawLine(const Coord &sx, const Coord &sy, const Coord &ex, const Coord &ey, float weight);
 void drawLine(const Float2 &s, const Float2 &e, float weight);
 void drawLine(const Coord2 &s, const Coord2 &e, float weight);
 void drawLine(const Float4 &loc, float weight);
@@ -89,8 +90,8 @@ void drawLineLoop(const vector<Coord2> &verts, float weight);
 
 void drawTransformedLinePath(const vector<Float2> &verts, float angle, Float2 translate, float weight);
 
-void drawRect(const Float4 &rect, float weight);
-void drawRectAround(const Float2 &pos, float rad, float weight);
+void drawRect(const CFC4 &rect, float weight);
+void drawRectAround(const CFC2 &pos, float rad, float weight);
 
 void drawShadedRect(const Float4 &locs, float weight, float shadedens);
 
@@ -110,8 +111,8 @@ void drawTextBoxAround(const Float4 &bounds, float textscale);
 
 enum Justification { TEXT_MIN, TEXT_CENTER, TEXT_MAX };
 
-void drawJustifiedText(const string &txt, float scale, Float2 pos, Justification xjust, Justification yjust);
-void drawJustifiedMultiText(const vector<string> &txt, float letterscale, Float2 pos, Justification xjust, Justification yjust);
+void drawJustifiedText(const string &txt, float scale, const CFC2 &pos, Justification xjust, Justification yjust);
+void drawJustifiedMultiText(const vector<string> &txt, float letterscale, const CFC2 &pos, Justification xjust, Justification yjust);
 
 void drawFormattedText(const string &txt, float scale, Float4 bounds);
 void drawFormattedText(const vector<string> &txt, float scale, Float4 bounds);
@@ -125,13 +126,13 @@ void drawFormattedTextBox(const vector<string> &txt, float scale, Float4 bounds,
 void drawVectorPath(const VectorPath &vecob, const pair<Float2, float> &coord, int midpoints, float weight);
 void drawVectorPath(const VectorPath &vecob, const Float4 &bounds, int midpoints, float weight);
 
-void drawDvec2(const Dvec2 &vecob, const Float4 &bounds, int midpoints, float weight);
+void drawDvec2(const Dvec2 &vecob, const CFC4 &bounds, int midpoints, float weight);
 
 void drawSpokes(float x, float y, int dupes, int numer, int denom, float len, float weight);
 void drawGrid(float spacing, float width);
 
 void drawCrosshair(const CFC2 &pos, float rad, float weight);
-void drawBlast(const Float2 &center, float rad, float chaos, int vertices);
+void drawBlast(const CFC2 &center, float rad, float chaos, int vertices);
 
 /*************
  * Color stack

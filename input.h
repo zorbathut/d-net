@@ -2,7 +2,7 @@
 #define DNET_INPUT
 
 #include "const.h"
-#include "float.h"
+#include "coord.h"
 
 #include <string>
 
@@ -33,13 +33,13 @@ bool operator==(const Button &lhs, const Button &rhs);
 
 class Controller {
 public:
-  Float2 menu;
+  Coord2 menu;
   Button u;
   Button d;
   Button l;
   Button r;
-  vector<float> axes;
-  vector<float> lastaxes;
+  vector<Coord> axes;
+  vector<Coord> lastaxes;
   vector<Button> keys;
 
   void newState(const Controller &nst);
@@ -63,11 +63,11 @@ const int button_groups[] = { 0, 0, 0, 0, 0, 1, 1 };
 
 class Keystates {
 public:
-  float ax[2];
+  Coord ax[2];
   int axmode;
   Button fire[SIMUL_WEAPONS];
   
-  Float2 udlrax;
+  Coord2 udlrax;
   Button u,d,l,r;
   Button precision;
   Button accept;
@@ -83,8 +83,8 @@ public:
  */
 
 enum { DEADZONE_ABSOLUTE, DEADZONE_CENTER };
-float deadzone(float t, float o, int dztype, float tdead);
-Float2 deadzone(const Float2 &mov, int dztype, float tdead);
-float prepower(float in);
+Coord deadzone(Coord t, Coord o, int dztype, Coord tdead);
+Coord2 deadzone(const Coord2 &mov, int dztype, Coord tdead);
+Coord prepower(Coord in);
 
 #endif

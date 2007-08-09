@@ -116,7 +116,7 @@ bool PersistentData::tick(const vector< Controller > &keys) {
     // Various complications and such!
     
     // First: calculate our ugly ranges for the text labels.
-    vector<pair<int, pair<float, float> > > ranges = getRanges();
+    vector<pair<int, pair<Coord, Coord> > > ranges = getRanges();
     
     // Second: Traverse all players and update them as necessary.
     for(int player = 0; player < sps_playermode.size(); player++) {
@@ -129,7 +129,7 @@ bool PersistentData::tick(const vector< Controller > &keys) {
       
       // Subsecond: Move the cursor.
       if(sps_playermode[player] == SPS_CHOOSING) {
-        Float2 dz = deadzone(keys[player].menu, DEADZONE_CENTER, 0.2) / 1.5;
+        Coord2 dz = deadzone(keys[player].menu, DEADZONE_CENTER, 0.2) / 1.5;
         
         bool wasin = false;
         for(int j = 0; j < ranges.size(); j++)
@@ -138,7 +138,7 @@ bool PersistentData::tick(const vector< Controller > &keys) {
         
         sps_playerpos[player].x += dz.x;
         sps_playerpos[player].y -= dz.y;
-        sps_playerpos[player] = clamp(sps_playerpos[player], Float4(0, 90, 133.333, 100));
+        sps_playerpos[player] = clamp(sps_playerpos[player], Coord4(0, 90, 133.333, 100));
         
         if(!wasin) {
           bool isin = false;
@@ -428,10 +428,10 @@ void PersistentData::render() const {
     
     // Draw our text labels
     {
-      vector<pair<int, pair<float, float> > > rng = getRanges();
+      vector<pair<int, pair<Coord, Coord> > > rng = getRanges();
       for(int i = 0; i < rng.size(); i++) {
         vector<string> lines = tokenize(tween_textlabels[rng[i].first], " ");
-        drawJustifiedMultiText(lines, ticker_text_size, Float2((rng[i].second.first + rng[i].second.second) / 2, (ticker_ypos + 100) / 2), TEXT_CENTER, TEXT_CENTER);
+        drawJustifiedMultiText(lines, ticker_text_size, Coord2((rng[i].second.first + rng[i].second.second) / 2, (ticker_ypos + 100) / 2), TEXT_CENTER, TEXT_CENTER);
       }
     }
     
@@ -486,9 +486,9 @@ void PersistentData::render() const {
           setColor(pms[i].faction->faction->color);
         else
           setColor(C::gray(0.8));
-        drawCrosshair(Float2(sps_playerpos[i].x, sps_playerpos[i].y), ticker_text_size, 0.1);
+        drawCrosshair(sps_playerpos[i], ticker_text_size, 0.1);
         if(pms[i].faction)
-          drawDvec2(pms[i].faction->faction->icon, Float4(0, 0, ticker_text_size, ticker_text_size) + sps_playerpos[i] + Float2(ticker_text_size, ticker_text_size) / 10, 10, 0.001);
+          drawDvec2(pms[i].faction->faction->icon, Coord4(0, 0, ticker_text_size, ticker_text_size) + sps_playerpos[i] + Coord2(ticker_text_size, ticker_text_size) / 10, 10, 0.001);
       }
     }
   }
@@ -787,7 +787,6 @@ void PersistentData::renderSlot(int slotid) const {
     drawJustifiedText(StringPrintf("Highest player cash: %s", highestPlayerCash.textual().c_str()), 10, Float2(760, cury), TEXT_MAX, TEXT_MIN);
     cury += 20;
     
-    drawJustifiedText(StringPrintf("Firepower bonus: %s", lrFirepower.textual().c_str()), 10, Float2(40 , cury), TEXT_MIN, TEXT_MIN);
     drawJustifiedText(StringPrintf("Starting cash: %s", newPlayerStartingCash.textual().c_str()), 10, Float2(760, cury), TEXT_MAX, TEXT_MIN);
     cury += 20;
     
@@ -831,9 +830,9 @@ void PersistentData::renderSlot(int slotid) const {
   } else if(slt.type == Slot::SETTINGS) {
     CHECK(slt.pid >= 0 && slt.pid < pms.size());
     const FactionState &tfs = *pms[slt.pid].faction;
-    Float2 sizes(tfs.compass_location.span_x(), tfs.compass_location.span_y());
-    Float2 mp = tfs.compass_location.midpoint();
-    setZoomAround(Float4(mp.x - sizes.x, mp.y - sizes.y, mp.x + sizes.x, mp.y + sizes.y));
+    Coord2 sizes(tfs.compass_location.span_x(), tfs.compass_location.span_y());
+    Coord2 mp = tfs.compass_location.midpoint();
+    setZoomAround(Coord4(mp.x - sizes.x, mp.y - sizes.y, mp.x + sizes.x, mp.y + sizes.y).toFloat());
     runSettingRender(pms[slt.pid], controls_availdescr(slt.pid));
   } else if(slt.type == Slot::QUITCONFIRM) {
     setZoomCenter(0, 0, 10);
@@ -957,9 +956,9 @@ void PersistentData::ai(const vector<Ai *> &ais) const {
     }
     for(int i = 0; i < dun.size(); i++) {
       if(!dun[i] && ais[i]) {
-        Float2 joincoords;
-        Float2 fullshopcoords;
-        Float2 quickshopcoords;
+        Coord2 joincoords;
+        Coord2 fullshopcoords;
+        Coord2 quickshopcoords;
         bool shopped;
         if(mode == TM_SHOP) {
           joincoords = targetCoords(TTL_LEAVEJOIN);
@@ -968,8 +967,8 @@ void PersistentData::ai(const vector<Ai *> &ais) const {
           shopped = sps_shopped[i];
         } else {
           joincoords = targetCoords(TTL_JOIN);
-          fullshopcoords = Float2(0, 0);
-          quickshopcoords = Float2(0, 0);
+          fullshopcoords = Coord2(0, 0);
+          quickshopcoords = Coord2(0, 0);
           shopped = true;
         }
         ais[i]->updateTween(!!pms[i].faction, sps_playermode[i] == SPS_PENDING, sps_playerpos[i], shopped, joincoords, fullshopcoords, quickshopcoords, targetCoords(TTL_DONE));
@@ -996,7 +995,7 @@ vector<Keystates> PersistentData::genKeystates(const vector<Controller> &keys) c
   return kst;
 }
 
-void PersistentData::divvyCash(float firepowerSpent) {
+void PersistentData::divvyCash() {
   shopcycles++;
   
   checked.clear();
@@ -1015,7 +1014,6 @@ void PersistentData::divvyCash(float firepowerSpent) {
     totals[j] = accumulate(values[j].begin(), values[j].end(), 0.0);
   }
   const float ratios[4] = { 1.0, 1.0, 0.6, 3.0 };
-  //const float ratios[4] = { 1.0, 1.0, 1.0, 1.0 };
   float chunkTotal = 0;
   for(int i = 0; i < totals.size(); i++) {
     if(totals[i] > 1e-6)
@@ -1023,9 +1021,8 @@ void PersistentData::divvyCash(float firepowerSpent) {
   }
   
   // We give the users a good chunk of money at the beginning to get started, but then we tone it down a bit per round so they don't get an immediate 6x increase. (or whateverx increase.) In a lot of ways, "starting cash" is a crummy number - it should be "starting cash per round", with starting cash calculated from that. But it's easier to understand this way.
-  lrBaseCash = Money((long long)((100. / 1000 * baseStartingCash.value()) * powl(multiplePerRound, roundsbetweenshop * shopcycles) * playerdata.size() * roundsbetweenshop));
-  lrFirepower = Money((long long)(firepowerSpent * 0.8));
-  double total = (lrBaseCash + lrFirepower).value();
+  lrBaseCash = Money((long long)((100. / 1000 * baseStartingCash.value()) * powl(multiplePerRound.toFloat(), roundsbetweenshop * shopcycles) * playerdata.size() * roundsbetweenshop));
+  double total = lrBaseCash.value();
   dprintf("Total cash is %f", total);
   
   if(total > 1e3000) {
@@ -1069,7 +1066,6 @@ void PersistentData::divvyCash(float firepowerSpent) {
   for(int i = 0; i < playerdata.size(); i++) {
     newPlayerStartingCash = min(newPlayerStartingCash, playerdata[i].totalValue() + lrCash[i]);
     highestPlayerCash = max(highestPlayerCash, playerdata[i].totalValue() + lrCash[i]);
-    dprintf("Total value of %d: %s\n", i, (playerdata[i].totalValue()+ lrCash[i]).textual().c_str());
   }
   newPlayerStartingCash = newPlayerStartingCash * 0.8;
   newPlayerStartingCash = max(newPlayerStartingCash, baseStartingCash);
@@ -1081,7 +1077,7 @@ void PersistentData::startAtNormalShop() {
   slot[0].type = Slot::EMPTY;
 }
 
-vector<pair<int, pair<float, float> > > PersistentData::getRanges() const {
+vector<pair<int, pair<Coord, Coord> > > PersistentData::getRanges() const {
   vector<int> avails;
   if(mode == TM_PLAYERCHOOSE) {
     avails.push_back(TTL_LEAVE);
@@ -1098,10 +1094,10 @@ vector<pair<int, pair<float, float> > > PersistentData::getRanges() const {
     CHECK(0);
   }
   
-  vector<pair<int, pair<float, float> > > ranges;
+  vector<pair<int, pair<Coord, Coord> > > ranges;
   for(int i = 0; i < avails.size(); i++) {
     vector<string> lines = tokenize(tween_textlabels[avails[i]], " ");
-    const float pivot = 133.333 / (avails.size() * 2) * (i * 2 + 1);
+    const Coord pivot = 133.333 / (avails.size() * 2) * (i * 2 + 1);
     
     float mwid = 0;
     for(int j = 0; j < lines.size(); j++)
@@ -1113,12 +1109,12 @@ vector<pair<int, pair<float, float> > > PersistentData::getRanges() const {
   return ranges;
 }
 
-Float2 PersistentData::targetCoords(int target) const {
-  vector<pair<int, pair<float, float> > > rang = getRanges();
+Coord2 PersistentData::targetCoords(int target) const {
+  vector<pair<int, pair<Coord, Coord> > > rang = getRanges();
   
   for(int i = 0; i < rang.size(); i++)
     if(rang[i].first == target)
-      return Float2((rang[i].second.first + rang[i].second.second) / 2, 95);
+      return Coord2((rang[i].second.first + rang[i].second.second) / 2, 95);
 
   CHECK(0);
 }
@@ -1219,7 +1215,7 @@ void PersistentData::attemptQueueSound(int player, const Sound *sound) {
 
 DEFINE_int(debugControllers, 0, "Number of controllers to set to debug defaults");
 
-PersistentData::PersistentData(int playercount, Money startingcash, float multiple, int in_roundsbetweenshop) {
+PersistentData::PersistentData(int playercount, Money startingcash, Coord multiple, int in_roundsbetweenshop) {
   roundsbetweenshop = in_roundsbetweenshop;
   faction_mode = 0;
   
@@ -1272,9 +1268,9 @@ PersistentData::PersistentData(int playercount, Money startingcash, float multip
     CHECK(centangs.size() == facthues.size());  // this is kind of flimsy
     
     for(int i = 0; i < facthues.size(); i++)
-      factions[facthues[i].second].compass_location = factcents.first + centangs[i].second;
+      factions[facthues[i].second].compass_location = Coord4(factcents.first + centangs[i].second);
     for(int i = 0; i < factgrays.size(); i++)
-      factions[factgrays[i]].compass_location = factcents.first + centgrays[i];
+      factions[factgrays[i]].compass_location = Coord4(factcents.first + centgrays[i]);
   }
   
   mode = TM_PLAYERCHOOSE;

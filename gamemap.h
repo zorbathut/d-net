@@ -14,6 +14,8 @@ public:
   void render() const;
   void updateCollide(Collider *collide);
 
+  void checksum(Adler32 *adl) const;
+
   Coord4 getRenderBounds() const;
   Coord4 getCollisionBounds() const;
 

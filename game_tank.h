@@ -19,6 +19,8 @@ public:
   void tick();
   void render(const vector<Team> &teams) const;
 
+  void checksum(Adler32 *adl) const;
+
   // Collision system
   void addCollision(Collider *collider, int owner) const;
 
@@ -36,7 +38,7 @@ public:
   bool takeDamage(float amount); // returns true on kill
   void genEffects(const GameImpactContext &gic, ProjectilePack *projectiles, const Player *player);
   void respawn(Coord2 pos, Coord facing);
-  void tryToFire(Button keys[SIMUL_WEAPONS], Player *player, ProjectilePack *projectiles, int id, const GameImpactContext &gic, vector<pair<string, float> > *status_text, float *firepowerSpent);
+  void tryToFire(Button keys[SIMUL_WEAPONS], Player *player, ProjectilePack *projectiles, int id, const GameImpactContext &gic, vector<pair<string, float> > *status_text);
   
   // For demos and such
   void megaboostHealth();

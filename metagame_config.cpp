@@ -81,7 +81,7 @@ const float RenderInfo::linethick = 0.003;
 
 PlayerMenuState::PlayerMenuState() {
   faction = NULL;
-  compasspos = Float2(0, 0);
+  compasspos = Coord2(0, 0);
   
   current_faction_over = -1;
   current_faction_over_duration = 0;
@@ -165,8 +165,8 @@ struct StandardButtonTickData {
   vector<int> groups;
   
   Controller keys;
-  const vector<float> *triggers;
-  const vector<float> *oldtriggers;
+  const vector<Coord> *triggers;
+  const vector<Coord> *oldtriggers;
 };
 
 struct StandardButtonRenderData {
@@ -501,8 +501,8 @@ GameAiAxisRotater::Config GameAiAxisRotater::tankConfig(int axlsrc, int axrsrc) 
   return conf;
 }
 
-Float2 GameAiAxisRotater::getControls() const {
-  return Float2(next[0], next[1]);
+Coord2 GameAiAxisRotater::getControls() const {
+  return Coord2(next[0], next[1]);
 }
 
 GameAiAxisRotater::GameAiAxisRotater(const GameAiAxisRotater::Config &conf, RngSeed seed) : rng(seed) {
@@ -689,7 +689,7 @@ bool runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
   if(!pms->faction) { // if player hasn't chosen faction yet
     StackString sstr("chfact");
     {
-      Float2 dir = deadzone(keys.menu, DEADZONE_CENTER, 0.2) * 0.02;
+      Coord2 dir = deadzone(keys.menu, DEADZONE_CENTER, 0.2) * 0.02;
       dir.y *= -1;
       pms->compasspos += dir;
       
@@ -697,7 +697,7 @@ bool runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
         pms->current_faction_over_duration = 0;
     }
     {
-      Float4 bbx = startFBoundBox();
+      Coord4 bbx = startCBoundBox();
       for(int j = 0; j < factions.size(); j++)
         addToBoundBox(&bbx, factions[j].compass_location);
       CHECK(bbx.isNormalized());
@@ -763,7 +763,7 @@ bool runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
         pms->choicemode = CHOICE_ACTIVE;
       }
     } else if(pms->settingmode == SETTING_BUTTONS) {
-      vector<float> triggers;
+      vector<Coord> triggers;
       for(int i = 0; i < keys.keys.size(); i++)
         triggers.push_back(keys.keys[i].push);
       
@@ -1093,7 +1093,7 @@ void runSettingRender(const PlayerMenuState &pms, const string &availdescr) {
     const float widgetthick = demowindowwidth / 100;
     const float boxthick = demowindowwidth / 150;
     const int sublines = 3;
-    Float2 cont = pms.setting_axistype_demo_ai->getControls();
+    Coord2 cont = pms.setting_axistype_demo_ai->getControls();
     cont.x += 1;
     cont.y += 1;
     cont /= 2;
@@ -1105,7 +1105,7 @@ void runSettingRender(const PlayerMenuState &pms, const string &availdescr) {
       const Float4 livecwind = Float4(controllerwindow.sx + widgetsize, controllerwindow.sy + widgetsize, controllerwindow.ex - widgetsize, controllerwindow.ey - widgetsize);
       setColor(C::active_text);
       for(int i = 1; i <= sublines; i++)
-        drawRect(boxAround(Float2((livecwind.ex - livecwind.sx) * cont.x + livecwind.sx, (livecwind.sy - livecwind.ey) * cont.y + livecwind.ey), widgetsize / sublines * i), widgetthick);
+        drawRect(boxAround(Coord2((livecwind.ex - livecwind.sx) * cont.x + livecwind.sx, (livecwind.sy - livecwind.ey) * cont.y + livecwind.ey), widgetsize / sublines * i), widgetthick);
     } else if(pms.setting_axistype_curchoice / 2 == KSAX_TANK) {
       const float xshift = widgetsize * 5;
       const float ys = controllerwindow.sy + widgetsize;
@@ -1115,9 +1115,9 @@ void runSettingRender(const PlayerMenuState &pms, const string &availdescr) {
       drawRect(Float4(controllerwindow.ex - widgetsize, controllerwindow.sy, controllerwindow.ex, controllerwindow.ey), boxthick);
       setColor(C::active_text);
       for(int i = 1; i <= sublines; i++)
-        drawRect(boxAround(Float2(controllerwindow.ex - xshift + widgetsize / 2, (ys - ye) * cont.x + ye), widgetsize / sublines * i), widgetthick);
+        drawRect(boxAround(Coord2(controllerwindow.ex - xshift + widgetsize / 2, (ys - ye) * cont.x + ye), widgetsize / sublines * i), widgetthick);
       for(int i = 1; i <= sublines; i++)
-        drawRect(boxAround(Float2(controllerwindow.ex - widgetsize / 2, (ys - ye) * cont.y + ye), widgetsize / sublines * i), widgetthick);
+        drawRect(boxAround(Coord2(controllerwindow.ex - widgetsize / 2, (ys - ye) * cont.y + ye), widgetsize / sublines * i), widgetthick);
     } else {
       CHECK(0);
     }

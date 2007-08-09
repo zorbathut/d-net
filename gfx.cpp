@@ -510,11 +510,11 @@ inline void localVertex2f(float x, float y) {
 
 void drawLine(float sx, float sy, float ex, float ey, float weight) {
   CHECK(weight > 0);
-  if(weight != curWeight || lineCount > 1000) {
+  if(unlikely(weight != curWeight || lineCount > 1000)) {
     finishLineCluster();
     beginLineCluster(weight);
   }
-  if(lastPoint != Float2(sx, sy)) {
+  if(likely(lastPoint != Float2(sx, sy))) {
     glColor3f(0, 0, 0);
     localVertex2f(lastPoint.x, lastPoint.y);
     localVertex2f(sx, sy);
@@ -528,6 +528,9 @@ void drawLine(float sx, float sy, float ex, float ey, float weight) {
   lastPoint = Float2(ex, ey);
   lineCount++;
   totalLineCount++;
+}
+void drawLine(const Coord &sx, const Coord &sy, const Coord &ex, const Coord &ey, float weight) {
+  drawLine(sx.toFloat(), sy.toFloat(), ex.toFloat(), ey.toFloat(), weight);
 }
 void drawLine(const Float2 &s, const Float2 &e, float weight) {
   drawLine(s.x, s.y, e.x, e.y, weight);
@@ -622,17 +625,17 @@ void drawTransformedLinePath(const vector<Float2> &verts, float angle, Float2 tr
   drawLineLoop(*transed, weight);
 };
 
-void drawRect(const Float4 &rect, float weight) {
+void drawRect(const CFC4 &rect, float weight) {
   PoolObj<vector<Float2> > verts;
-  verts->push_back(Float2(rect.sx, rect.sy));
-  verts->push_back(Float2(rect.sx, rect.ey));
-  verts->push_back(Float2(rect.ex, rect.ey));
-  verts->push_back(Float2(rect.ex, rect.sy));
+  verts->push_back(Float2(rect->sx, rect->sy));
+  verts->push_back(Float2(rect->sx, rect->ey));
+  verts->push_back(Float2(rect->ex, rect->ey));
+  verts->push_back(Float2(rect->ex, rect->sy));
   drawLineLoop(*verts, weight);
 }
 
-void drawRectAround(const Float2 &pos, float rad, float weight) {
-  drawRect(Float4(pos.x - rad, pos.y - rad, pos.x + rad, pos.y + rad), weight);
+void drawRectAround(const CFC2 &pos, float rad, float weight) {
+  drawRect(Float4(pos->x - rad, pos->y - rad, pos->x + rad, pos->y + rad), weight);
 }
 
 void drawShadedRect(const Float4 &locs, float weight, float shadedens) {
@@ -772,8 +775,10 @@ void drawTextBoxAround(const Float4 &bounds, float textscale) {
   drawRect(Float4(bounds.sx - gtbb, bounds.sy - gtbb, bounds.ex + gtbb, bounds.ey + gtbb), getTextBoxThickness(textscale));
 }
 
-void drawJustifiedText(const string &txt, float scale, Float2 pos, Justification xps, Justification yps) {
+void drawJustifiedText(const string &txt, float scale, const CFC2 &poss, Justification xps, Justification yps) {
   float wid = getTextWidth(txt, scale);
+  
+  Float2 pos = *poss;
   if(xps == TEXT_MIN) {
   } else if(xps == TEXT_CENTER) {
     pos.x -= wid / 2;
@@ -795,9 +800,11 @@ void drawJustifiedText(const string &txt, float scale, Float2 pos, Justification
   drawText(txt, scale, pos);
 }
 
-void drawJustifiedMultiText(const vector<string> &txt, float letterscale, Float2 pos, Justification xps, Justification yps) {
+void drawJustifiedMultiText(const vector<string> &txt, float letterscale, const CFC2 &poss, Justification xps, Justification yps) {
   float gapscale = letterscale / 2;
   float hei = txt.size() * letterscale + (txt.size() - 1) * gapscale;
+  
+  Float2 pos = *poss;
   if(yps == TEXT_MIN) {
   } else if(yps == TEXT_CENTER) {
     pos.y -= hei / 2;
@@ -885,9 +892,9 @@ void drawVectorPath(const VectorPath &vecob, const Float4 &bounds, int midpoints
   drawVectorPath(vecob, fitInside(bounds, vecob.boundingBox()), midpoints, weight);
 }
 
-void drawDvec2(const Dvec2 &vecob, const Float4 &bounds, int midpoints, float weight) {
+void drawDvec2(const Dvec2 &vecob, const CFC4 &bounds, int midpoints, float weight) {
   CHECK(vecob.entities.size() == 0);
-  pair<Float2, float> dimens = fitInside(vecob.boundingBox(), bounds);
+  pair<Float2, float> dimens = fitInside(vecob.boundingBox(), *bounds);
   dimens.second *= vecob.scale;
   //dprintf("fit %f,%f,%f,%f into %f,%f,%f,%f, got %f,%f, %f\n", vecob.boundingBox().sx, vecob.boundingBox().sy,
       //vecob.boundingBox().ex, vecob.boundingBox().ey, bounds.sx, bounds.sy, bounds.ex, bounds.ey,
@@ -924,11 +931,11 @@ void drawCrosshair(const CFC2 &pos, float rad, float weight) {
   drawLine(pos->x, pos->y - rad, pos->x, pos->y + rad, weight);
 }
 
-void drawBlast(const Float2 &center, float rad, float chaos, int vertices) {
+void drawBlast(const CFC2 &center, float rad, float chaos, int vertices) {
   const float ofs = unsync().frand() * 2 * PI / vertices;
   vector<Float2> pex;
   for(int j = 0; j < vertices; j++)
-    pex.push_back(center + makeAngle(j * PI * 2 / vertices + ofs) * rad + Float2(unsync().gaussian(), unsync().gaussian()) * chaos);
+    pex.push_back(*center + makeAngle(j * PI * 2 / vertices + ofs) * rad + Float2(unsync().gaussian(), unsync().gaussian()) * chaos);
   drawLineLoop(pex, 0.3);
 }
 

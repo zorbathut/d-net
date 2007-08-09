@@ -3,6 +3,8 @@
 
 #include "cfcommon.h"
 #include "debug.h"
+#include "adler32.h"
+#include "util.h"
 
 #include <vector>
 
@@ -34,6 +36,8 @@ class Coord {
   friend inline Coord sqrt(const Coord &in);
   friend inline Coord floor(const Coord &in);
   friend Coord mod(const Coord &a, const Coord &b);
+  friend inline Coord pow(const Coord &lhs, const Coord &rhs);
+  friend inline Coord exp(const Coord &lhs);
   
 private:
   long long d;
@@ -41,9 +45,11 @@ private:
 public:
   Coord() { };
   Coord(const Coord &rhs) : d(rhs.d) { };
-  Coord(int rhs) { d = (long long)rhs << 32; }
-  explicit Coord(float rhs) { d = (long long)(rhs * (1LL << 32)); }
-  explicit Coord(double rhs) { d = (long long)(rhs * (1LL << 32)); }
+  Coord(int rhs) { d = (long long)rhs * (1LL << 32); }
+  Coord(unsigned int rhs) { d = (long long)rhs * (1LL << 32); }
+  Coord(long long rhs) { CHECK(abs(rhs) < (1LL << 31)); d = rhs * (1LL << 32); }
+  Coord(float rhs) { d = (long long)(rhs * (1LL << 32)); }
+  Coord(double rhs) { d = (long long)(rhs * (1LL << 32)); }
   
   float toFloat() const { return (float)d / (1LL << 32); }
   int toInt() const { CHECK(Coord(int(d >> 32)).d == d); return d >> 32; }
@@ -95,7 +101,7 @@ inline Coord ceil(const Coord &in) {
 
 // TODO: improve?
 inline Coord operator*(const Coord &lhs, const Coord &rhs) {
-  /*bool neg = false;
+  bool neg = false;
   long long ld = lhs.d;
   long long rd = rhs.d;
   if(ld < 0) { neg = !neg; ld = -ld; }
@@ -110,8 +116,8 @@ inline Coord operator*(const Coord &lhs, const Coord &rhs) {
   rv += ((unsigned long long)lh * (unsigned long long)rl);
   rv += ((unsigned long long)lh * (unsigned long long)rh) << 32;
   if(neg) rv = -rv;
-  return coordExplicit(rv);*/
-  return coordExplicit((long long)(((long double)lhs.d * (long double)rhs.d) / (1LL << 32)));
+  return coordExplicit(rv);
+  //return coordExplicit((long long)(((long double)lhs.d * (long double)rhs.d) / (1LL << 32)));
 }
 
 // TODO: improve?
@@ -122,6 +128,14 @@ inline Coord operator/(const Coord &lhs, const Coord &rhs) {
   //dprintf("  %lld %lld %lld %d\n", lhs.d, rhs.d, rv.d, 1234);
   //dprintf("op/ out!\n");
   return rv;
+}
+
+inline Coord pow(const Coord &lhs, const Coord &rhs) {
+  return coordExplicit((long long)(pow((long double)lhs.d / (1LL << 32), (long double)rhs.d / (1LL << 32)) * (1LL << 32)));
+}
+
+inline Coord exp(const Coord &lhs) {
+  return coordExplicit((long long)exp((long double)lhs.d / (1LL << 32)) * (1LL << 32));
 }
 
 inline bool operator==(const Coord &lhs, const Coord &rhs) {
@@ -169,6 +183,10 @@ inline Coord abs(const Coord &in) {
   if(in < 0)
     return -in;
   return in;
+}
+
+inline Coord round(const Coord &in) {
+  return floor(in + Coord(1) / 2);
 }
 
 class Coord2 {
@@ -284,6 +302,7 @@ public:
   Coord4(const Coord2 &s, const Coord2 &e) : sx(s.x), sy(s.y), ex(e.x), ey(e.y) { };
   Coord4(const Coord4 &rhs) : sx(rhs.sx), sy(rhs.sy), ex(rhs.ex), ey(rhs.ey) { };
   Coord4(float isx, float isy, float iex, float iey) : sx(isx), sy(isy), ex(iex), ey(iey) { };
+  explicit Coord4(const Float4 &rhs);
   
   string rawstr() const;
 };
@@ -339,6 +358,18 @@ inline Coord max(int lhs, Coord rhs) {
 
 inline bool operator==(const Coord4 &lhs, const Coord4 &rhs) {
   return lhs.sx == rhs.sx && lhs.sy == rhs.sy && lhs.ex == rhs.ex && lhs.ey == rhs.ey;
+}
+
+inline Coord4 operator+(const Coord4 &lhs, const Coord2 &rhs) {
+  return Coord4(lhs.sx + rhs.x, lhs.sy + rhs.y, lhs.ex + rhs.x, lhs.ey + rhs.y);
+}
+
+inline Coord4 &operator-=(Coord4 &lhs, const Coord2 &rhs) {
+  lhs.sx -= rhs.x;
+  lhs.sy -= rhs.y;
+  lhs.ex -= rhs.x;
+  lhs.ey -= rhs.y;
+  return lhs;
 }
 
 /*************
@@ -400,6 +431,10 @@ void addToBoundBox(Coord4 *bbox, const Coord4 &rect);
 void addToBoundBox(Coord4 *bbox, const vector<Coord2> &line);
 
 void expandBoundBox(Coord4 *bbox, Coord factor);
+
+inline Coord2 clamp(const Coord2 &val, const Coord4 &bounds) {
+  return Coord2(clamp(val.x, bounds.sx, bounds.ex), clamp(val.y, bounds.sy, bounds.ey));
+}
 
 /*************
  * Math

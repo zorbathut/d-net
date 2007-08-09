@@ -3,6 +3,7 @@
 
 #include "game_ai.h"
 #include "rng.h"
+#include "float.h"
 
 #include <deque>
 
@@ -21,7 +22,7 @@ private:
   
   int gamemode;
   int targetplayer;
-  Float2 targetdir;
+  Coord2 targetdir;
   bool firing[SIMUL_WEAPONS];
   
   Rng *rng;
@@ -56,7 +57,7 @@ public:
   void updatePregame();
   void updateSetup(int pos);
   void updateCharacterChoice(const vector<FactionState> &factions, const PlayerMenuState &player, int me);
-  void updateTween(bool live, bool pending, Float2 playerpos, bool shopped, Float2 joinrange, Float2 fullshoprange, Float2 quickshoprange, Float2 donerange);
+  void updateTween(bool live, bool pending, Coord2 playerpos, bool shopped, Coord2 joinrange, Coord2 fullshoprange, Coord2 quickshoprange, Coord2 donerange);
   void updateShop(const Player *player, const HierarchyNode &hierarchy, bool athead);
   GameAi *getGameAi();
   void updateWaitingForReport();

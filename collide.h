@@ -119,6 +119,8 @@ public:
 
   void render() const;
   void renderAround(const Coord2 &kord) const;
+  
+  void checksum(Adler32 *adl) const;
 
 private:
   

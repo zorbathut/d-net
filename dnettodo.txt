@@ -1,6 +1,7 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - add checksums to dumps :(
+  - fix the RNG with MT or something similar
   - Lasers up a bit more, because they're weak at the beginning and passable at the end
   - Missiles up a bit more too
   - Boomerang durability higher

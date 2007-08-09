@@ -153,26 +153,26 @@ Coord2 Tank::getMinePoint(Rng *rng) const {
 
 pair<Coord2, Coord> Tank::getNextInertia(const Keystates &keys) const {
   
-  float precisionmult = 1.0;
+  Coord precisionmult = 1.0;
   if(keys.precision.down)
     precisionmult *= 0.2;
   
-  float dl;
-  float dr;
+  Coord dl;
+  Coord dr;
   if(keys.axmode == KSAX_TANK) {
     dl = prepower(deadzone(keys.ax[0], keys.ax[1], DEADZONE_CENTER, 0.2)) * precisionmult;
     dr = prepower(deadzone(keys.ax[1], keys.ax[0], DEADZONE_CENTER, 0.2)) * precisionmult;
   } else if(keys.axmode == KSAX_ABSOLUTE || keys.axmode == KSAX_STEERING) {
-    float dd;
-    float dv;
+    Coord dd;
+    Coord dv;
     if(keys.axmode == KSAX_ABSOLUTE) {
-      float xpd = deadzone(keys.ax[0], keys.ax[1], DEADZONE_CENTER, 0.2);
-      float ypd = deadzone(keys.ax[1], keys.ax[0], DEADZONE_CENTER, 0.2);
+      Coord xpd = deadzone(keys.ax[0], keys.ax[1], DEADZONE_CENTER, 0.2);
+      Coord ypd = deadzone(keys.ax[1], keys.ax[0], DEADZONE_CENTER, 0.2);
       if(xpd == 0 && ypd == 0) {
         dv = dd = 0;
       } else {
-        float desdir = getAngle(Float2(xpd, -ypd));
-        desdir -= d.toFloat();
+        Coord desdir = getAngle(Coord2(xpd, -ypd));
+        desdir -= d;
         desdir += 2 * PI;
         if(desdir > PI)
           desdir -= 2 * PI;
@@ -181,7 +181,7 @@ pair<Coord2, Coord> Tank::getNextInertia(const Keystates &keys) const {
           dd = -1;
         if(dd > 1)
           dd = 1;
-        dv = min(sqrt(xpd * xpd + ypd * ypd), 1.f);
+        dv = min(sqrt(xpd * xpd + ypd * ypd), Coord(1));
         // Various states (these numbers are wrong):
         // abs(desdir) / PI
         // 0 .. 0.333 - drive forwards
@@ -220,7 +220,7 @@ pair<Coord2, Coord> Tank::getNextInertia(const Keystates &keys) const {
     //  1  0
     //  1 -1
     //  0 -1
-    float d00, d01, d02, d10, d11, d12;
+    Coord d00, d01, d02, d10, d11, d12;
     if(dd <= 0) {
       d00 = 1 + dd;
       d10 = 1;
@@ -237,26 +237,26 @@ pair<Coord2, Coord> Tank::getNextInertia(const Keystates &keys) const {
       d12 = -1;
     }
     if(dv <= 0) {
-      float intens = abs(dv);
+      Coord intens = abs(dv);
       dl = (d02 * intens + d01 * (1 - intens));
       dr = (d12 * intens + d11 * (1 - intens));
     } else {
-      float intens = abs(dv);
+      Coord intens = abs(dv);
       dl = (d00 * intens + d01 * (1 - intens));
       dr = (d10 * intens + d11 * (1 - intens));
     }
   }
  
-  float dv = (dr + dl) / 2;
-  float dd = (dl - dr) / 2;
+  Coord dv = (dr + dl) / 2;
+  Coord dd = (dl - dr) / 2;
   
   // More random thoughts:
   // 1 and 0 should stay 1 and 0
   // 0.5 and 0 should stay 0.5 and 0
   // 0.5 and 0.5 should scale up (to 0.707 both?)
   
-  Float2 ult = makeAngle(getAngle(Float2(dv, dd)));
-  float dif = 1 / (abs(ult.x) + abs(ult.y));
+  Coord2 ult = makeAngle(getAngle(Coord2(dv, dd)));
+  Coord dif = 1 / (abs(ult.x) + abs(ult.y));
   dv /= dif;
   dd /= dif;
   
@@ -456,7 +456,7 @@ void Tank::respawn(Coord2 in_pos, Coord in_d) {
   team = old_team;
 }
 
-void Tank::tryToFire(Button keys[SIMUL_WEAPONS], Player *player, ProjectilePack *projectiles, int id, const GameImpactContext &gic, vector<pair<string, float> > *status_text, float *firepowerSpent) {
+void Tank::tryToFire(Button keys[SIMUL_WEAPONS], Player *player, ProjectilePack *projectiles, int id, const GameImpactContext &gic, vector<pair<string, float> > *status_text) {
   if(weaponCooldown <= 0) {
     StackString sst(StringPrintf("Firetesting"));
     // The player can fire, so let's find out if he does
@@ -502,7 +502,7 @@ void Tank::tryToFire(Button keys[SIMUL_WEAPONS], Player *player, ProjectilePack 
         
         // hack here to detect weapon out-of-ammo
         string lastname = informalNameFromIDB(weapon);
-        *firepowerSpent += player->shotFired(curfire);
+        player->shotFired(curfire);
         if(informalNameFromIDB(weapon) != lastname) {
           status_text->push_back(make_pair(informalNameFromIDB(weapon), 2));
           break;

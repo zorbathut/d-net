@@ -32,23 +32,21 @@ void GameAiStandard::updateGameWork(const vector<Tank> &players, int me) {
       targetplayer = targtank;
     } else if(neai < 0.9) {
       gamemode = AGM_WANDER;
-      targetdir.x = rng->frand() - 0.5;
-      targetdir.y = rng->frand() - 0.5;
-      targetdir = normalize(targetdir);
+      targetdir = makeAngle(rng->cfrand() * COORDPI * 2);
     } else {
       gamemode = AGM_BACKUP;
     }
   }
-  Float2 mypos = players[me].pos.toFloat();
+  Coord2 mypos = players[me].pos;
   if(gamemode == AGM_APPROACH) {
-    Float2 enepos = players[targetplayer].pos.toFloat();
+    Coord2 enepos = players[targetplayer].pos;
     enepos -= mypos;
     enepos.y *= -1;
     if(len(enepos) > 0)
       enepos = normalize(enepos);
     nextKeys.udlrax = enepos;
   } else if(gamemode == AGM_RETREAT) {
-    Float2 enepos = players[targetplayer].pos.toFloat();
+    Coord2 enepos = players[targetplayer].pos;
     enepos -= mypos;
     enepos.y *= -1;
     enepos *= -1;
@@ -59,7 +57,7 @@ void GameAiStandard::updateGameWork(const vector<Tank> &players, int me) {
   } else if(gamemode == AGM_WANDER) {
     nextKeys.udlrax = targetdir;
   } else if(gamemode == AGM_BACKUP) {
-    Float2 nx(-makeAngle(players[me].d.toFloat()));
+    Coord2 nx(-makeAngle(players[me].d));
     nx.x += (rng->frand() - 0.5) / 100;
     nx.y += (rng->frand() - 0.5) / 100;
     nx = normalize(nx);
@@ -81,11 +79,10 @@ void GameAiStandard::updateBombardmentWork(const vector<Tank> &players, Coord2 m
       clopos = players[i].pos;
     }
   }
-  Coord2 dir = clopos - mypos;
-  if(len(dir) != 0)
-    dir = normalize(dir);
-  nextKeys.udlrax = dir.toFloat();
+  nextKeys.udlrax = clopos - mypos;
   nextKeys.udlrax.y *= -1;
+  if(len(nextKeys.udlrax) != 0)
+    nextKeys.udlrax = normalize(nextKeys.udlrax);
   if(clodist < 10)
     nextKeys.fire[0].down = (rng->frand() < 0.02);
 }
@@ -129,7 +126,7 @@ void Ai::updatePregame() {
   updateKeys(CORE);
   
   zeroNextKeys();
-  nextKeys.menu = Float2(0, 0);
+  nextKeys.menu = Coord2(0, 0);
   nextKeys.keys[0].down = true;
 }
 
@@ -138,7 +135,7 @@ void Ai::updateSetup(int pos) {
   
   zeroNextKeys();
   if(pos != 3)
-    nextKeys.menu = Float2(0, 1);
+    nextKeys.menu = Coord2(0, 1);
   
   if(pos == 3 && frameNumber % 2)
     nextKeys.keys[0].down = true;
@@ -153,14 +150,14 @@ void Ai::updateCharacterChoice(const vector<FactionState> &factions, const Playe
     if(targfact >= factions.size() || targfact < 0)
       targfact = -1;
     if(targfact == -1) {
-      nextKeys.menu = Float2(0, 0);
+      nextKeys.menu = Coord2(0, 0);
       nextKeys.keys[0].down = true;
       return;
     }
-    Float2 targpt = factions[targfact].compass_location.midpoint() - player.compasspos;
+    Coord2 targpt = factions[targfact].compass_location.midpoint() - player.compasspos;
     if(len(targpt) != 0)
       targpt = normalize(targpt);
-    nextKeys.menu = Float2(targpt.x, -targpt.y);
+    nextKeys.menu = Coord2(targpt.x, -targpt.y);
     nextKeys.keys[0].down = isInside(factions[targfact].compass_location, player.compasspos);
   } else if(player.settingmode == SETTING_BUTTONS) {
     if(player.setting_button_current >= 0 && player.setting_button_current < nextKeys.keys.size())
@@ -171,14 +168,14 @@ void Ai::updateCharacterChoice(const vector<FactionState> &factions, const Playe
     if(player.setting_axistype != KSAX_ABSOLUTE) {
       if(frameNumber % 2 == 0) {
         if(player.setting_axistype_curchoice != KSAX_ABSOLUTE * 2)
-          nextKeys.menu = Float2(0, -1.0);
+          nextKeys.menu = Coord2(0, -1);
         else
           nextKeys.keys[BUTTON_ACCEPT].down = true;
       }
     } else {
       if(frameNumber % 2 == 0) {
         if(player.setting_axistype_curchoice != KSAX_END * 2)
-          nextKeys.menu = Float2(0, -1.0);
+          nextKeys.menu = Coord2(0, -1);
         else
           nextKeys.keys[BUTTON_ACCEPT].down = true;
       }
@@ -202,7 +199,7 @@ void Ai::updateCharacterChoice(const vector<FactionState> &factions, const Playe
   }
 }
 
-void Ai::updateTween(bool live, bool pending, Float2 playerpos, bool shopped, Float2 joinrange, Float2 fullshoprange, Float2 quickshoprange, Float2 donerange) {
+void Ai::updateTween(bool live, bool pending, Coord2 playerpos, bool shopped, Coord2 joinrange, Coord2 fullshoprange, Coord2 quickshoprange, Coord2 donerange) {
   updateKeys(CORE);
   
   zeroNextKeys();
@@ -225,7 +222,7 @@ void Ai::updateTween(bool live, bool pending, Float2 playerpos, bool shopped, Fl
     return;
   }*/
   
-  Float2 approach;
+  Coord2 approach;
   if(shopped) {
     approach = donerange;
   } else if(shoptarget == 0) {
@@ -252,10 +249,10 @@ void Ai::updateTween(bool live, bool pending, Float2 playerpos, bool shopped, Fl
   // we just sort of ignore the y
 }
 
-Controller makeController(float x, float y, bool key, bool toggle) {
+Controller makeController(Coord x, Coord y, bool key, bool toggle) {
   Controller rv;
   rv.keys.resize(BUTTON_LAST);
-  rv.menu = Float2(x, y);
+  rv.menu = Coord2(x, y);
   for(int i = 0; i < BUTTON_LAST; i++)
     rv.keys[i].down = 0;
   rv.keys[BUTTON_FIRE1].down = key;
@@ -332,7 +329,7 @@ vector<Controller> makeComboToggle(const vector<Controller> &src, Rng *rng) {
   for(int i = 0; i < rng->frand() * 4; i++) {  // yes, the rng frand gets called each time
     Controller rv;
     rv.keys.resize(BUTTON_LAST);
-    rv.menu = Float2(0, 0);
+    rv.menu = Coord2(0, 0);
     for(int i = 0; i < BUTTON_LAST; i++)
       rv.keys[i].down = 0;
     if(rng->frand() < 0.1) {
@@ -537,7 +534,7 @@ void Ai::updateWaitingForReport() {
   updateKeys(CORE);
   
   zeroNextKeys();
-  nextKeys.menu = Float2(0, 0);
+  nextKeys.menu = Coord2(0, 0);
   nextKeys.keys[0].down = frameNumber % 2;
 }
 
@@ -572,7 +569,7 @@ Ai::Ai() : rng(unsync().generate_seed()), gai(&rng) {
 }
 
 void Ai::zeroNextKeys() {
-  nextKeys.menu = Float2(0, 0);
+  nextKeys.menu = Coord2(0, 0);
   for(int i = 0; i < nextKeys.keys.size(); i++)
     nextKeys.keys[i].down = false;
 }

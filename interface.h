@@ -11,8 +11,8 @@ class Ai;
 class StdMenuItem {
 public:
   static StdMenuItem makeStandardMenu(const string &text, int trigger);
-  static StdMenuItem makeScale(const string &text, const vector<string> &labels, float *position);
-  static StdMenuItem makeRounds(const string &text, float *start, float *end, float *exp);
+  static StdMenuItem makeScale(const string &text, const vector<string> &labels, Coord *position);
+  static StdMenuItem makeRounds(const string &text, Coord *start, Coord *end, Coord *exp);
   static StdMenuItem makeOptions(const string &text, const vector<string> &labels, int *position);
 
   int tick(const Keystates &keys);
@@ -27,13 +27,13 @@ private:
   int trigger;
   
   vector<string> scale_labels;
-  float *scale_posfloat;
-  float scale_posint_approx;
+  Coord *scale_posfloat;
+  Coord scale_posint_approx;
   int *scale_posint;
   
-  float *rounds_start;
-  float *rounds_end;
-  float *rounds_exp;
+  Coord *rounds_start;
+  Coord *rounds_end;
+  Coord *rounds_exp;
 
   StdMenuItem();
 };
@@ -71,9 +71,9 @@ class InterfaceMain : boost::noncopyable {
   StdMenu mainmenu;
   StdMenu configmenu;
   
-  float start;
-  float end;
-  float moneyexp;
+  Coord start;
+  Coord end;
+  Coord moneyexp;
   
   // 0 represents "battle choice", 1-4 are the valid normal options
   int faction;
@@ -85,6 +85,8 @@ public:
   bool tick(const vector< Controller > &control, RngSeed gameseed);
   void ai(const vector<Ai *> &ais) const;
   void render() const;
+
+  void checksum(Adler32 *adl) const;
 
   InterfaceMain();
   ~InterfaceMain();

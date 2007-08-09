@@ -391,11 +391,11 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
         if(bombards[j].timer <= 0)
           bombards[j].state = BombardmentState::BS_ACTIVE;
       } else if(bombards[j].state == BombardmentState::BS_ACTIVE) {
-        Float2 deaded = deadzone(keys[j].udlrax, DEADZONE_CENTER, 0.2);
+        Coord2 deaded = deadzone(keys[j].udlrax, DEADZONE_CENTER, 0.2);
         if(len(deaded) > 1)
           deaded /= len(deaded);
         deaded.y *= -1;
-        bombards[j].pos += Coord2(deaded) * 3 / 2;
+        bombards[j].pos += deaded * 3 / 2;
         if(len(keys[j].udlrax) > 0.2)
           bombards[j].d = -getAngle(keys[j].udlrax);
         bombards[j].pos.x = max(bombards[j].pos.x, gmbr.sx);
@@ -444,7 +444,7 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
       // Attempt to actually fire - deals with all weapons that the tank has equipped.
       if(teams[tanks[i].team].weapons_enabled && frameNm >= frameNmToStart && frameNmToStart != -1) {
         vector<pair<string, float> > status;
-        tanks[i].tryToFire(keys[i].fire, players[i], &projectiles[i], i, gic, &status, &firepowerSpent);
+        tanks[i].tryToFire(keys[i].fire, players[i], &projectiles[i], i, gic, &status);
         for(int j = 0; j < status.size(); j++)
           addTankStatusText(i, status[j].first, status[j].second);
       }
@@ -642,10 +642,10 @@ void Game::renderToScreen(const vector<const Player *> &players, GameMetacontext
         float ps = (float)bombards[i].timer / (players[i]->getBombardment((int)bombardment_tier).lockdelay() * FPS);
         drawCirclePieces(bombards[i].pos, 1 - ps, 4 * ps);
         if(players[i]->getBombardment((int)bombardment_tier).showdirection()) {
-          vector<Float2> arrow;
-          arrow.push_back(makeAngle(bombards[i].d - 0.2) * 4 + bombards[i].pos.toFloat());
-          arrow.push_back(makeAngle(bombards[i].d) * 6 + bombards[i].pos.toFloat());
-          arrow.push_back(makeAngle(bombards[i].d + 0.2) * 4 + bombards[i].pos.toFloat());
+          vector<Coord2> arrow;
+          arrow.push_back(makeAngle(bombards[i].d - 0.2) * 4 + bombards[i].pos);
+          arrow.push_back(makeAngle(bombards[i].d) * 6 + bombards[i].pos);
+          arrow.push_back(makeAngle(bombards[i].d + 0.2) * 4 + bombards[i].pos);
           drawLinePath(arrow, 0.5);
         }
       } else if(bombards[i].state == BombardmentState::BS_COOLDOWN) {
@@ -1045,7 +1045,6 @@ void Game::initCommon(const vector<Player*> &in_playerdata, const vector<Color> 
 
   frameNm = 0;
   framesSinceOneLeft = 0;
-  firepowerSpent = 0;
   
   projectiles.resize(in_playerdata.size());
   

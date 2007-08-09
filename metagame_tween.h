@@ -29,12 +29,14 @@ public:
   void ai(const vector<Ai *> &ais) const;
   void render() const;
 
+  void checksum(Adler32 *adl) const;  
+
   // Triggers
-  void divvyCash(float firepowerSpent); // also sets to "result" mode
+  void divvyCash(); // also sets to "result" mode
   void startAtNormalShop();
 
   // Constructor
-  PersistentData(int playercount, Money startingcash, float multiple, int roundsbetweenshop);
+  PersistentData(int playercount, Money startingcash, Coord multiple, int roundsbetweenshop);
 
 private:
   // Persistent state
@@ -54,11 +56,10 @@ private:
   vector<float> lrPlayer;
   vector<Money> lrCash;
   Money lrBaseCash;
-  Money lrFirepower;
   vector<bool> checked;
   
   Money baseStartingCash;
-  float multiplePerRound;
+  Coord multiplePerRound;
   
   Money newPlayerStartingCash;
   Money highestPlayerCash;
@@ -90,7 +91,7 @@ private:
     vector<int> sps_quitconfirm;
 
     // Choosing only
-    vector<Float2> sps_playerpos;
+    vector<Coord2> sps_playerpos;
     
     // Sound timeout
     vector<int> sps_soundtimeout;
@@ -106,8 +107,8 @@ private:
   void renderSlot(int slotid) const;
   vector<const IDBFaction *> getUnfinishedFactions() const;
     
-  vector<pair<int, pair<float, float> > > getRanges() const;
-  Float2 targetCoords(int target) const;
+  vector<pair<int, pair<Coord, Coord> > > getRanges() const;
+  Coord2 targetCoords(int target) const;
 
   // Helper functions
   void drawMultibar(const vector<float> &sizes, const Float4 &dimensions) const;

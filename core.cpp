@@ -128,7 +128,7 @@ void MainLoop() {
         dprintf("%s\n", fname.c_str());
         outfile = fopen(fname.c_str(), "wb");
         if(outfile) {
-          int dat = 3;
+          int dat = 4;
           fwrite(&dat, 1, sizeof(dat), outfile);
           fwrite(&game_seed, 1, sizeof(game_seed), outfile);  // this is kind of grim and nasty
           dat = controllers.size();
@@ -157,6 +157,10 @@ void MainLoop() {
           for(int j = 0; j < controllers[i].axes.size(); j++)
             fwrite(&controllers[i].axes[j], 1, sizeof(controllers[i].axes[j]), outfile);
         }
+        Adler32 adl;
+        interface.checksum(&adl);
+        unsigned long res = adl.output();
+        fwrite(&res, 1, sizeof(res), outfile);
         fflush(outfile);
       }
     }

@@ -2,6 +2,7 @@
 #include "rng.h"
 
 #include "debug.h"
+#include "coord.h"
 
 #include <cmath>
 
@@ -45,6 +46,18 @@ float Rng::gaussian(float maxgauss) {
 
 float Rng::gaussian_scaled(float maxgauss) {
   return gaussian(maxgauss) / maxgauss;
+}
+
+Coord Rng::cfrand() {
+  sync = sync * 1103515245 + 12345;
+  return Coord((sync >> 16) & 32767) / 32768;
+}
+
+Coord Rng::sym_cfrand() {
+  if(frand() < 0.5)
+    return cfrand();
+  else
+    return -cfrand();
 }
 
 RngSeed Rng::generate_seed() {

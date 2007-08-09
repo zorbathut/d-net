@@ -2,7 +2,7 @@
 STDCXXFLAGS := @STDCXXFLAGS@ -DDPRINTF_MARKUP -Wall -Wno-sign-compare -Wno-uninitialized -g -O2
 STDLDFLAGS := @STDLDFLAGS@ -g -O2
 
-GAMESOURCES := main core game timer debug gfx collide gamemap util rng args interface metagame itemdb itemdb_adjust itemdb_parse parse dvec2 input level coord ai inputsnag os float cfcommon coord_boolean player metagame_config shop shop_demo shop_info game_ai game_effects color metagame_tween cfc game_tank game_util game_projectile socket httpd recorder generators audio itemdb_httpd test regex shop_layout perfbar
+GAMESOURCES := main core game timer debug gfx collide gamemap util rng args interface metagame itemdb itemdb_adjust itemdb_parse parse dvec2 input level coord ai inputsnag os float cfcommon coord_boolean player metagame_config shop shop_demo shop_info game_ai game_effects color metagame_tween cfc game_tank game_util game_projectile socket httpd recorder generators audio itemdb_httpd test regex shop_layout perfbar adler32
 GAMECXXFLAGS := @GAMECXXFLAGS@ $(STDCXXFLAGS) -DNOEXIT
 GAMELDFLAGS := @GAMELDFLAGS@ $(STDLDFLAGS)
 

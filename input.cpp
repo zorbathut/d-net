@@ -78,7 +78,7 @@ void Controller::newState(const Controller &nst) {
 }
 
 Controller::Controller() {
-  menu = Float2(0, 0);
+  menu = Coord2(0, 0);
 }
 
 bool operator==(const Controller &lhs, const Controller &rhs) {
@@ -92,31 +92,31 @@ void Keystates::nullMove() {
 
 Keystates::Keystates() {
   ax[0] = ax[1] = 0;
-  udlrax = Float2(0, 0);
+  udlrax = Coord2(0, 0);
   axmode = KSAX_STEERING;
 }
 
-float deadzone(float t, float o, int type, float amount) {
+Coord deadzone(Coord t, Coord o, int type, Coord amount) {
   if(type == DEADZONE_ABSOLUTE) {
     if(abs(t) < amount)
       return 0;
-    float diff = (abs(t) - amount) / (1.0 - amount);
+    Coord diff = (abs(t) - amount) / (1 - amount);
     if(t < 0)
       return -diff;
     return diff;
   } else if(type == DEADZONE_CENTER) {
     if(t*t + o*o < amount*amount)
       return 0;
-    float diff = (sqrt(t*t + o*o) - amount) / (1.0 - amount);
-    float ang = getAngle(Float2(t, o));
+    Coord diff = (sqrt(t*t + o*o) - amount) / (1 - amount);
+    Coord ang = getAngle(Coord2(t, o));
     return makeAngle(ang).x * diff;
   } else {
     CHECK(0);
   }
 }
 
-Float2 deadzone(const Float2 &mov, int type, float amount) {
-  return Float2(deadzone(mov.x, mov.y, type, amount), deadzone(mov.y, mov.x, type, amount));
+Coord2 deadzone(const Coord2 &mov, int type, Coord amount) {
+  return Coord2(deadzone(mov.x, mov.y, type, amount), deadzone(mov.y, mov.x, type, amount));
 }
 
 // This is all legacy stuff because we used to need two lines for some axis descriptions. I'm leaving it in because, hey, why not.
@@ -167,7 +167,7 @@ vector<vector<vector<string> > > ksax_axis_names_gen() {
   return rv;
 }
 
-float prepower(float x) {
+Coord prepower(Coord x) {
   if(x < 0)
     return -prepower(abs(x));
   CHECK(x >= 0);

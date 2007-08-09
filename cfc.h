@@ -13,6 +13,8 @@ class CFC {
 public:
   float v;
 
+  float &operator*() { return v; };
+  float operator*() const { return v; };
   float *operator->() { return &v; };
   const float *operator->() const { return &v; };
 
@@ -30,6 +32,8 @@ class CFC2 {
 public:
   Float2 v;
 
+  Float2 &operator*() { return v; };
+  const Float2 &operator*() const { return v; };
   Float2 *operator->() { return &v; };
   const Float2 *operator->() const { return &v; };
 
@@ -47,6 +51,8 @@ class CFC4 {
 public:
   Float4 v;
 
+  Float4 &operator*() { return v; };
+  const Float4 &operator*() const { return v; };
   Float4 *operator->() { return &v; };
   const Float4 *operator->() const { return &v; };
 

@@ -56,6 +56,8 @@ string Coord4::rawstr() const {
   return StringPrintf("%s %s %s %s", sx.rawstr().c_str(), sy.rawstr().c_str(), ex.rawstr().c_str(), ey.rawstr().c_str());
 }
 
+Coord4::Coord4(const Float4 &rhs) : sx(rhs.sx), sy(rhs.sy), ex(rhs.ex), ey(rhs.ey) { }
+
 /*************
  * Computational geometry
  */

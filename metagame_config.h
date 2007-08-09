@@ -27,7 +27,7 @@ public:
   static Config tankConfig(int axlsrc, int axrsrc);
   
   void updateConfig(const Config &conf);
-  Float2 getControls() const;
+  Coord2 getControls() const;
 
   GameAiAxisRotater(const Config &conf, RngSeed seed);
   
@@ -57,7 +57,7 @@ private:
 class FactionState {
 public:
   bool taken;
-  Float4 compass_location;
+  Coord4 compass_location;
   const IDBFaction *faction;
 };
 
@@ -69,7 +69,7 @@ enum { CHOICE_FIRSTPASS, CHOICE_REAXIS, CHOICE_ACTIVE, CHOICE_IDLE };
 enum ReadMode { RM_IDLE, RM_CHOOSING, RM_NOTRIGGER };
 struct PlayerMenuState {
 public:
-  Float2 compasspos;
+  Coord2 compasspos;
   FactionState *faction;
   int current_faction_over;
   int current_faction_over_duration;

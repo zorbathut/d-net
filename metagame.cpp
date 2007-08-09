@@ -89,12 +89,9 @@ bool Metagame::runTick(const vector<Controller> &keys) {
       CHECK(gameround == win_history.size());
       if(gameround % roundsBetweenShop == 0) {
         mode = MGM_TWEEN;
-        persistent.divvyCash(game.firepowerSpent);
+        persistent.divvyCash();
       } else {
-        // store the firepower, restart the game, and add firepower to it (kind of kludgy)
-        float firepower = game.firepowerSpent;
         game.initStandard(&persistent.players(), chooseLevel(), &rng);
-        game.firepowerSpent = firepower;
       }
     }
   } else {
@@ -102,6 +99,8 @@ bool Metagame::runTick(const vector<Controller> &keys) {
   }
   return false;
 }
+
+void Metagame::checksum(Adler32 *adl) const { };
   
 void Metagame::ai(const vector<Ai *> &ai) const {
   StackString stp("Metagame AI");
@@ -190,7 +189,7 @@ Level Metagame::chooseLevel() {
   }
 }
 
-Metagame::Metagame(int playercount, Money startingcash, float multiple, int faction, int in_roundsBetweenShop, RngSeed seed) :
+Metagame::Metagame(int playercount, Money startingcash, Coord multiple, int faction, int in_roundsBetweenShop, RngSeed seed) :
     persistent(playercount, startingcash, multiple, in_roundsBetweenShop), rng(seed) {
   
   faction_mode = faction;

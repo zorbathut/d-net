@@ -71,7 +71,7 @@ class GameAiScatterbombing : public GameAi {
       //dprintf("%f\n", len(dir).toFloat());
     if(len(dir) > 1)
       dir = normalize(dir);
-    nextKeys.udlrax = dir.toFloat();
+    nextKeys.udlrax = dir;
     nextKeys.udlrax.y *= -1;
     if(len(target - mypos).toFloat() < 0.2) {
       ready = true;
@@ -207,7 +207,7 @@ class GameAiTraversing : public GameAi {
     }
     if(!active)
       return;
-    nextKeys.udlrax = normalize(destination - players[me].pos).toFloat();
+    nextKeys.udlrax = normalize(destination - players[me].pos);
     nextKeys.udlrax.y *= -1;
   }
   void updateBombardmentWork(const vector<Tank> &players, Coord2 mypos) {

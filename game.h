@@ -18,12 +18,13 @@ class BombardmentState {
 public:
   enum { BS_OFF, BS_SPAWNING, BS_ACTIVE, BS_FIRING, BS_COOLDOWN, BS_LAST };
   Coord2 pos;
-  float d;
+  Coord d;
   int timer;
   int state;
   
   BombardmentState() {
     pos = Coord2(0, 0);
+    d = 0;
     timer = 0;
     state = BS_OFF;
   }
@@ -62,6 +63,8 @@ public:
   void ai(const vector<GameAi *> &ais) const;
   void renderToScreen(const vector<const Player *> &players, GameMetacontext gmc) const;
 
+  void checksum(Adler32 *adl) const;
+
   int winningTeam() const;
   vector<int> teamBreakdown() const;
 
@@ -77,8 +80,6 @@ public:
   void dumpMetastats(Recorder *recorder) const;
   
   void runShopcache(const IDBShopcache &cache, const vector<const Player *> &players, const Player *adjuster);
-
-  float firepowerSpent;
 
   Game();
 

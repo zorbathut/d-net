@@ -26,11 +26,9 @@ void Weaponmanager::eraseWeapon(const IDBWeapon *weap) {
   weaponops[pos.first].erase(weaponops[pos.first].begin() + pos.second);
 }
 
-float Weaponmanager::shotFired(int id) {
-  float val = (float)getWeaponSlot(id)->base_cost.value() / getWeaponSlot(id)->quantity;
+void Weaponmanager::shotFired(int id) {
   if(ammoCountSlot(id) != UNLIMITED_AMMO)
     removeAmmo(getWeaponSlot(id), 1);
-  return val;
 }
 
 void Weaponmanager::addAmmo(const IDBWeapon *weap, int count) {
@@ -472,8 +470,8 @@ float Player::consumeDamage() {
   return dd;
 }
 
-float Player::shotFired(int id) {
-  return weapons.shotFired(id) / adjustment.adjustmentfactor(IDBAdjustment::DISCOUNT_WEAPON);
+void Player::shotFired(int id) {
+  weapons.shotFired(id);
 }
 int Player::shotsLeft(int id) const {
   return weapons.ammoCountSlot(id);  

@@ -32,11 +32,13 @@ class Metagame : boost::noncopyable {
 
 public:
 
-  Metagame(int playercount, Money startingcash, float multiple, int faction, int roundsBetweenShop, RngSeed seed);
+  Metagame(int playercount, Money startingcash, Coord multiple, int faction, int roundsBetweenShop, RngSeed seed);
 
   void renderToScreen() const;
   void ai(const vector<Ai *> &ai) const;
   bool runTick(const vector< Controller > &keys);
+
+  void checksum(Adler32 *adl) const;
 
 private:
 
