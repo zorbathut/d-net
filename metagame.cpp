@@ -10,6 +10,7 @@
 #include "parse.h"
 #include "player.h"
 #include "perfbar.h"
+#include "adler32_util.h"
 
 #include <fstream>
 
@@ -100,7 +101,18 @@ bool Metagame::runTick(const vector<Controller> &keys) {
   return false;
 }
 
-void Metagame::checksum(Adler32 *adl) const { };
+void Metagame::checksum(Adler32 *adl) const {
+  adler(adl, mode);
+  adler(adl, faction_mode);
+  adler(adl, gameround);
+  adler(adl, roundsBetweenShop);
+  adler(adl, last_level);
+  adler(adl, rng);
+  adler(adl, win_history);
+  adler(adl, faction_mode_players);
+  persistent.checksum(adl);
+  game.checksum(adl);
+};
   
 void Metagame::ai(const vector<Ai *> &ai) const {
   StackString stp("Metagame AI");

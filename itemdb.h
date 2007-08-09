@@ -308,22 +308,22 @@ class IDBEffectsAdjust;
 struct IDBWarheadAdjust {
   const IDBWarhead *idb;
   IDBAdjustment adjust;
-  float mf;
+  Coord mf;
   
   float accumulate(const float *damage) const;
   
 public:
   typedef IDBWarhead base_type;
 
-  float impactdamage() const;
+  Coord impactdamage() const;
 
-  float radiusdamage() const;
-  float radiusfalloff() const;
+  Coord radiusdamage() const;
+  Coord radiusfalloff() const;
   Color radiuscolor_bright() const;
   Color radiuscolor_dim() const;
   
-  float wallremovalradius() const;
-  float wallremovalchance() const;
+  Coord wallremovalradius() const;
+  Coord wallremovalchance() const;
 
   vector<IDBDeployAdjust> deploy() const;
   vector<IDBEffectsAdjust> effects_impact() const;
@@ -332,10 +332,12 @@ public:
   float stats_damagePerShotType(int type) const;
 
   const IDBWarhead *base() const;
-  float multfactor() const;
+  Coord multfactor() const;
   IDBWarheadAdjust multiply(float mult) const;
+  
+  void checksum(Adler32 *adl) const;
 
-  IDBWarheadAdjust(const base_type *in_idb, const IDBAdjustment &in_adjust, float in_multfactor = 1.0f);
+  IDBWarheadAdjust(const base_type *in_idb, const IDBAdjustment &in_adjust, Coord in_multfactor = 1.0);
 };
 template<> struct IDBItemProperties<IDBWarheadAdjust::base_type> {
   typedef IDBWarheadAdjust adjusted;
@@ -391,6 +393,8 @@ public:
   bool no_intersection() const;
   
   float stats_damagePerShot() const;
+  
+  void checksum(Adler32 *adl) const;
 
   IDBProjectileAdjust(const base_type *in_idb, const IDBAdjustment &in_adjust);
 };
@@ -424,6 +428,8 @@ public:
   vector<IDBWarheadAdjust> chain_warhead() const;
 
   float stats_damagePerShot() const;
+  
+  void checksum(Adler32 *adl) const;
 
   IDBDeployAdjust(const base_type *in_idb, const IDBAdjustment &in_adjust);
 };
@@ -441,6 +447,8 @@ public:
   IDBDeployAdjust deploy() const;
   
   float stats_damagePerShot() const;
+
+  void checksum(Adler32 *adl) const;
 
   IDBLauncherAdjust(const base_type *in_idb, const IDBAdjustment &in_adjust);
 };
@@ -473,6 +481,7 @@ public:
   float stats_costPerSecond() const;
 
   const base_type *base() const;
+  void checksum(Adler32 *adl) const;
   IDBWeaponAdjust(const base_type *in_idb, const IDBAdjustment &in_adjust);
 };
 template<> struct IDBItemProperties<IDBWeaponAdjust::base_type> {
@@ -494,6 +503,7 @@ public:
 
   float stats_averageDamage() const;
   
+void checksum(Adler32 *adl) const;
   IDBGloryAdjust(const base_type *in_idb, const IDBAdjustment &in_adjust);
 };
 template<> struct IDBItemProperties<IDBGloryAdjust::base_type> {
@@ -511,6 +521,7 @@ public:
   Money cost() const;
   Money sellcost() const;
 
+  void checksum(Adler32 *adl) const;
   IDBUpgradeAdjust(const base_type *in_idb, const IDBTank *in_tank, const IDBAdjustment &in_adjust);
 };
 template<> struct IDBItemProperties<IDBUpgradeAdjust::base_type> {
@@ -540,7 +551,8 @@ public:
   float stats_damagePerShot() const;
   float stats_damagePerShotType(int type) const;
 
-  IDBBombardmentAdjust(const base_type *in_idb, const IDBAdjustment &in_adjust, int blevel);
+  void checksum(Adler32 *adl) const;
+  IDBBombardmentAdjust(const base_type *in_idb, const IDBAdjustment &in_adjust, Coord blevel);
 };
 template<> struct IDBItemProperties<IDBBombardmentAdjust::base_type> {
   typedef IDBBombardmentAdjust adjusted;
@@ -570,6 +582,7 @@ public:
   Money sellcost() const;
 
   const IDBTank *base() const;
+  void checksum(Adler32 *adl) const;
   IDBTankAdjust(const base_type *in_idb, const IDBAdjustment &in_adjust);
 };
 template<> struct IDBItemProperties<IDBTankAdjust::base_type> {
@@ -586,6 +599,7 @@ public:
 
   Money cost() const;
 
+  void checksum(Adler32 *adl) const;
   IDBImplantSlotAdjust(const base_type *in_idb, const IDBAdjustment &in_adjust);
 };
 template<> struct IDBItemProperties<IDBImplantSlotAdjust::base_type> {
@@ -601,6 +615,7 @@ public:
 
   Money costToLevel(int curlevel) const;
 
+  void checksum(Adler32 *adl) const;
   IDBImplantAdjust(const base_type *in_idb, const IDBAdjustment &in_adjust);
 };
 template<> struct IDBItemProperties<IDBImplantAdjust::base_type> {
@@ -728,8 +743,32 @@ const string &nameFromIDB(const IDBWarhead *idbw);
 const string &nameFromIDB(const IDBBombardment *bombard);
 const string &nameFromIDB(const IDBGlory *glory);
 const string &nameFromIDB(const IDBTank *tank);
+const string &nameFromIDB(const IDBProjectile *tank);
+const string &nameFromIDB(const IDBUpgrade *tank);
+const string &nameFromIDB(const IDBImplant *tank);
+const string &nameFromIDB(const IDBImplantSlot *tank);
 
 string informalNameFromIDB(const IDBWeapon *idbw);
 string informalNameFromIDB(const IDBWeaponAdjust &idbwa);
+
+void adler(Adler32 *adl, const IDBFaction *idb);
+
+void adler(Adler32 *adl, const IDBWeapon *idb);
+void adler(Adler32 *adl, const IDBBombardment *idb);
+void adler(Adler32 *adl, const IDBGlory *idb);
+void adler(Adler32 *adl, const IDBTank *idb);
+void adler(Adler32 *adl, const IDBProjectile *idb);
+void adler(Adler32 *adl, const IDBUpgrade *idb);
+void adler(Adler32 *adl, const IDBImplant *idb);
+void adler(Adler32 *adl, const IDBImplantSlot *idb);
+
+void adler(Adler32 *adl, const IDBAdjustment &idb);
+
+void adler(Adler32 *adl, const IDBWeaponAdjust &idb);
+void adler(Adler32 *adl, const IDBBombardmentAdjust &idb);
+void adler(Adler32 *adl, const IDBGloryAdjust &idb);
+void adler(Adler32 *adl, const IDBTankAdjust &idb);
+void adler(Adler32 *adl, const IDBUpgradeAdjust &idb);
+void adler(Adler32 *adl, const IDBProjectileAdjust &idb);
 
 #endif

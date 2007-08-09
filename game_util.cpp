@@ -66,7 +66,7 @@ void GameImpactContext::record(const IDBWarheadAdjust &warhead, Coord2 pos, cons
     sort(distadj.begin(), distadj.end());
     
     if(target != -1 || distadj.size())
-      recorder->warhead(warhead.base(), warhead.multfactor(), target, distadj);
+      recorder->warhead(warhead.base(), warhead.multfactor().toFloat(), target, distadj);
   }
 }
 
@@ -108,7 +108,7 @@ DeployLocation::DeployLocation(Coord2 pos, Coord d) {
   d_int = d;
 }
 
-void dealDamage(float dmg, Tank *target, Tank *owner, const DamageFlags &flags) {
+void dealDamage(Coord dmg, Tank *target, Tank *owner, const DamageFlags &flags) {
   CHECK(target);
   CHECK(owner);
   if(target->team == owner->team)
@@ -116,7 +116,7 @@ void dealDamage(float dmg, Tank *target, Tank *owner, const DamageFlags &flags) 
   CHECK(target != owner); // something has gone horribly wrong if this is the case
   //dprintf("Dealing %f damage\n", dmg);
   if(flags.glory)
-    dmg *= 1.0 - target->getGloryResistance();
+    dmg *= 1 - target->getGloryResistance();
   if(target->takeDamage(dmg) && flags.killcredit)
     owner->addKill();
   owner->addDamage(dmg * flags.damagecredit);
@@ -139,7 +139,7 @@ void detonateWarhead(const IDBWarheadAdjust &warhead, Coord2 pos, Coord normal, 
   }
   
   if(warhead.radiusfalloff() > 0 && (warhead.radiuscolor_bright() != C::black || warhead.radiuscolor_dim() != C::black))
-    gpc.gic->effects->push_back(GfxBlast(pos.toFloat(), warhead.radiusfalloff(), warhead.radiuscolor_bright(), warhead.radiuscolor_dim()));
+    gpc.gic->effects->push_back(GfxBlast(pos.toFloat(), warhead.radiusfalloff().toFloat(), warhead.radiuscolor_bright(), warhead.radiuscolor_dim()));
   
   if(warhead.wallremovalradius() > 0 && gpc.gic->rng->frand() < warhead.wallremovalchance())
     gpc.gic->gamemap->removeWalls(pos, warhead.wallremovalradius(), gpc.gic->rng);
@@ -293,3 +293,14 @@ int GamePlayerContext::owner_id() const {
 }
 
 GamePlayerContext::GamePlayerContext(Tank *owner, ProjectilePack *projpack, const GameImpactContext &gic) : projpack(projpack), owner(owner), gic(&gic) { };
+
+void adler(Adler32 *adl, const Team &team) {
+  adler(adl, team.weapons_enabled);
+  adler(adl, team.swap_colors);
+}
+
+void adler(Adler32 *adl, const DamageFlags &df) {
+  adler(adl, df.damagecredit);
+  adler(adl, df.killcredit);
+  adler(adl, df.glory);
+}

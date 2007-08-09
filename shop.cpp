@@ -7,6 +7,7 @@
 #include "player.h"
 #include "audio.h"
 #include "perfbar.h"
+#include "adler32_util.h"
 
 #include <boost/bind.hpp>
 
@@ -793,6 +794,10 @@ void Shop::renderToScreen(const Player *player) const {
   if(hasInfo(getCurNode().type)) {
     cshopinf.renderFrame(slay.hud(), slay.fontsize(), slay.demo(), player);
   }
+}
+
+void Shop::checksum(Adler32 *adl) const {
+  adler(adl, curloc);
 }
 
 // Not a valid state

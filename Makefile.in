@@ -6,15 +6,15 @@ GAMESOURCES := main core game timer debug gfx collide gamemap util rng args inte
 GAMECXXFLAGS := @GAMECXXFLAGS@ $(STDCXXFLAGS) -DNOEXIT
 GAMELDFLAGS := @GAMELDFLAGS@ $(STDLDFLAGS)
 
-EDITORSOURCES := vecedit vecedit_main debug os util gfx float coord parse color dvec2 cfcommon input itemdb itemdb_adjust itemdb_parse args regex rng
+EDITORSOURCES := vecedit vecedit_main debug os util gfx float coord parse color dvec2 cfcommon input itemdb itemdb_adjust itemdb_parse args regex rng adler32
 # rng is not really needed since it won't be linked in at all, but it's easier to just include it
 EDITORCXXFLAGS := `@WX@ --cxxflags` $(STDCXXFLAGS)
 EDITORLDFLAGS := `@WX@ --libs --gl-libs` -lopengl32 $(STDLDFLAGS)
 
-FUNCTORSOURCES := functor_gen debug os util parse
-MERGERSOURCES := merger debug os util parse itemdb itemdb_adjust itemdb_parse args color dvec2 float coord cfcommon merger_weapon merger_bombardment merger_tanks merger_glory merger_util merger_upgrades merger_factions regex rng
+FUNCTORSOURCES := functor_gen debug os util parse adler32
+MERGERSOURCES := merger debug os util parse itemdb itemdb_adjust itemdb_parse args color dvec2 float coord cfcommon merger_weapon merger_bombardment merger_tanks merger_glory merger_util merger_upgrades merger_factions regex rng adler32
 # rng is not really needed since it won't be linked in at all, but it's easier to just include it
-ODS2CSVSOURCES := ods2csv debug os util parse minizip/unzip minizip/ioapi
+ODS2CSVSOURCES := ods2csv debug os util parse adler32 minizip/unzip minizip/ioapi
 CONSOLECXXFLAGS := $(STDCXXFLAGS) -O0
 CONSOLELDFLAGS := $(STDLDFLAGS) -O0
 

@@ -18,7 +18,13 @@ class Coord;
 class Coord2;
 class Coord4;
 
+void adler(Adler32 *adl, bool val);
+void adler(Adler32 *adl, char val);
+void adler(Adler32 *adl, unsigned char val);
 void adler(Adler32 *adl, int val);
+void adler(Adler32 *adl, unsigned int val);
+void adler(Adler32 *adl, long long val);
+void adler(Adler32 *adl, unsigned long long val);
 void adler(Adler32 *adl, const Coord &val);
 void adler(Adler32 *adl, const Coord2 &val);
 void adler(Adler32 *adl, const Coord4 &val);

@@ -1,6 +1,10 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - add checksums to dumps :(
+    - get AI working again
+    - run AI to make checksums work really
+    - get checksum reading from target working
+    - somehow rig up checksum retester
   - fix the RNG with MT or something similar
   - Lasers up a bit more, because they're weak at the beginning and passable at the end
   - Missiles up a bit more too
@@ -11,6 +15,7 @@
   - Boost normal mine damage a bit
   - boomerang gun impact effect
   - change tank upgrade info screen to show + and - instead of just a percentage
+  - standardize normal rendering to be more obviously so
   - Many many more weapons
     - Add implementations for all trap weapons
       - Hunter/Killer: I need a new projectile for this.
@@ -47,7 +52,7 @@
     - add flags to dump file
     - Start with level 3
     - End with level 5
-    - Auto-equip the first weapon, auto-equip things into damage-type slots?
+    - Auto-equip the first weapon, auto-equip thinuuuuugs into damage-type slots?
     - Clean up implant interface a bit
     - Add implant costs to the balance sheet
     - Add tank bonuses to the balance sheet

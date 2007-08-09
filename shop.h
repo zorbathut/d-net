@@ -44,6 +44,7 @@ public:
   bool runTick(const Keystates &keys, Player *player);
   void ai(Ai *ai, const Player *player) const;
   void renderToScreen(const Player *player) const;
+  void checksum(Adler32 *adler) const;
 
   void init(bool miniature, const Player *player, int players, Money highestPlayerCount, float aspectRatio);
 

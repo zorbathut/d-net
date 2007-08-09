@@ -7,6 +7,7 @@
 #include "game_tank.h"
 #include "gfx.h"
 #include "player.h"
+#include "adler32_util.h"
 
 using namespace std;
 
@@ -1210,4 +1211,20 @@ void runSettingRender(const PlayerMenuState &pms, const string &availdescr) {
       drawLinePath(path, rin.linethick);
     }
   }
+}
+
+void adler(Adler32 *adl, const FactionState &pms) {
+  adler(adl, pms.taken);
+  adler(adl, pms.compass_location);
+  adler(adl, pms.faction);
+}
+void adler(Adler32 *adl, const PlayerMenuState &pms) {
+  adler(adl, pms.compasspos);
+  adler(adl, pms.faction);
+  adler(adl, pms.settingmode);
+  adler(adl, pms.choicemode);
+  adler(adl, pms.buttons);
+  adler(adl, pms.axes);
+  adler(adl, pms.axes_invert);
+  adler(adl, pms.setting_axistype);
 }

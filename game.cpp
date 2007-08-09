@@ -8,6 +8,7 @@
 #include "gfx.h"
 #include "player.h"
 #include "perfbar.h"
+#include "adler32_util.h"
 
 using namespace std;
 
@@ -409,7 +410,7 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
               firing = true;
           if(firing && !gamemap.isInsideWall(bombards[j].pos)) {
             bombards[j].state = BombardmentState::BS_FIRING;
-            bombards[j].timer = round(players[j]->getBombardment((int)bombardment_tier).lockdelay() * FPS);
+            bombards[j].timer = round(players[j]->getBombardment(bombardment_tier).lockdelay() * FPS);
           }
         }
       } else if(bombards[j].state == BombardmentState::BS_FIRING) {
@@ -418,9 +419,9 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
         bombards[j].timer--;
         if(bombards[j].timer <= 0) {
           CHECK(!gamemap.isInsideWall(bombards[j].pos));
-          detonateBombardment(players[j]->getBombardment((int)bombardment_tier), bombards[j].pos, Coord(bombards[j].d), GamePlayerContext(&tanks[j], &projectiles[j], gic));
+          detonateBombardment(players[j]->getBombardment(bombardment_tier), bombards[j].pos, Coord(bombards[j].d), GamePlayerContext(&tanks[j], &projectiles[j], gic));
           bombards[j].state = BombardmentState::BS_COOLDOWN;
-          bombards[j].timer = round(players[j]->getBombardment((int)bombardment_tier).unlockdelay() * FPS);
+          bombards[j].timer = round(players[j]->getBombardment(bombardment_tier).unlockdelay() * FPS);
         }
       } else if(bombards[j].state == BombardmentState::BS_COOLDOWN) {
         bombards[j].timer--;
@@ -639,9 +640,9 @@ void Game::renderToScreen(const vector<const Player *> &players, GameMetacontext
         drawCirclePieces(bombards[i].pos, 0.3, 4);
         drawCrosses(bombards[i].pos, 4);
         setColor(Color(1.0, 1.0, 1.0));
-        float ps = (float)bombards[i].timer / (players[i]->getBombardment((int)bombardment_tier).lockdelay() * FPS);
+        float ps = (float)bombards[i].timer / (players[i]->getBombardment(bombardment_tier).lockdelay() * FPS);
         drawCirclePieces(bombards[i].pos, 1 - ps, 4 * ps);
-        if(players[i]->getBombardment((int)bombardment_tier).showdirection()) {
+        if(players[i]->getBombardment(bombardment_tier).showdirection()) {
           vector<Coord2> arrow;
           arrow.push_back(makeAngle(bombards[i].d - 0.2) * 4 + bombards[i].pos);
           arrow.push_back(makeAngle(bombards[i].d) * 6 + bombards[i].pos);
@@ -652,7 +653,7 @@ void Game::renderToScreen(const vector<const Player *> &players, GameMetacontext
         setColor(tanks[i].getColor() * 0.5);
         drawCirclePieces(bombards[i].pos, 0.3, 4);
         drawCrosses(bombards[i].pos, 4);
-        float ps = (float)bombards[i].timer / (players[i]->getBombardment((int)bombardment_tier).unlockdelay() * FPS);
+        float ps = (float)bombards[i].timer / (players[i]->getBombardment(bombardment_tier).unlockdelay() * FPS);
         drawCirclePieces(bombards[i].pos, ps, 4 * (1 - ps));
       } else {
         CHECK(0);
@@ -739,7 +740,7 @@ void Game::renderToScreen(const vector<const Player *> &players, GameMetacontext
           float barl = loffset + 1;
           float bare = (roffset - 1) - (loffset + 1);
           bare /= players[i]->getTank().maxHealth();
-          bare *= tanks[i].getHealth();
+          bare *= tanks[i].getHealth().toFloat();
           drawShadedRect(Float4(barl, 3, barl + bare, 7), 0.1, 2);
         }
           
@@ -784,7 +785,8 @@ void Game::renderToScreen(const vector<const Player *> &players, GameMetacontext
     // Bombardment level text
     if(bombardment_tier != 0) {
       setColor(C::gray(1.0));
-      drawText(StringPrintf("Bombardment level %d, %.0fs until next level", (int)floor(bombardment_tier) + 1, ceil(getTimeUntilBombardmentUpgrade())), 2, Float2(2, 96));
+      static const char * const bdescr[] = { "Normal", "Improved", "Deadly", "Lethal", "Devastating" };
+      drawText(StringPrintf("Bombardment status: %s", bdescr[clamp(round(bombardment_tier).toInt(), 0, ARRAY_SIZE(bdescr) - 1)]), 2, Float2(2, 96));
     }
     
     setZoom(Float4(0, 0, 1.33333, 1));
@@ -864,6 +866,25 @@ void Game::renderToScreen(const vector<const Player *> &players, GameMetacontext
   }
   
 };
+
+void Game::checksum(Adler32 *adl) const {
+  adler(adl, frameNm);
+  adler(adl, frameNmToStart);
+  adler(adl, freezeUntilStart);
+  adler(adl, framesSinceOneLeft);
+  
+  adler(adl, teams);
+  adler(adl, tanks);
+  adler(adl, bombards);
+  adler(adl, projectiles);
+  adler(adl, gamemap);
+  
+  adler(adl, collider);
+  
+  adler(adl, gamemode);
+  
+  adler(adl, bombardment_tier);
+}
 
 int Game::winningTeam() const {
   int winteam = -1;
@@ -1004,17 +1025,17 @@ void Game::runShopcache(const IDBShopcache &cache, const vector<const Player *> 
       tanks[i].addCycle();
 }
 
-float Game::getBombardmentIncreasePerSec() const {
+Coord Game::getBombardmentIncreasePerSec() const {
   int bombardy = 0;
   for(int i = 0; i < bombards.size(); i++)
     if(bombards[i].state != BombardmentState::BS_OFF && bombards[i].state != BombardmentState::BS_SPAWNING)
       bombardy++;
   if(!bombardy)
     return 0;
-  return 1 / (10 / ((float)bombardy / tanks.size()));
+  return 1 / (10 / ((Coord)bombardy / tanks.size()));
 }
   
-float Game::getTimeUntilBombardmentUpgrade() const {
+Coord Game::getTimeUntilBombardmentUpgrade() const {
   return (floor(bombardment_tier + 1) - bombardment_tier) / getBombardmentIncreasePerSec();
 }
 
@@ -1337,3 +1358,10 @@ GameMetacontext::GameMetacontext() :
     wins(NULL), roundsPerShop(-1) { };
 GameMetacontext::GameMetacontext(const vector<const IDBFaction *> &wins, int roundsPerShop) :
     wins(&wins), roundsPerShop(roundsPerShop) { };
+
+void adler(Adler32 *adl, const BombardmentState &bs) {
+  adler(adl, bs.pos);
+  adler(adl, bs.d);
+  adler(adl, bs.timer);
+  adler(adl, bs.state);
+}

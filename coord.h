@@ -38,6 +38,7 @@ class Coord {
   friend Coord mod(const Coord &a, const Coord &b);
   friend inline Coord pow(const Coord &lhs, const Coord &rhs);
   friend inline Coord exp(const Coord &lhs);
+  friend inline Coord log(const Coord &lhs);
   
 private:
   long long d;
@@ -136,6 +137,10 @@ inline Coord pow(const Coord &lhs, const Coord &rhs) {
 
 inline Coord exp(const Coord &lhs) {
   return coordExplicit((long long)exp((long double)lhs.d / (1LL << 32)) * (1LL << 32));
+}
+
+inline Coord log(const Coord &lhs) {
+  return coordExplicit((long long)log((long double)lhs.d / (1LL << 32)) * (1LL << 32));
 }
 
 inline bool operator==(const Coord &lhs, const Coord &rhs) {

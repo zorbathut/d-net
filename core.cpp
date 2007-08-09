@@ -164,6 +164,13 @@ void MainLoop() {
         fflush(outfile);
       }
     }
+    {
+      Adler32 adl;
+      interface.checksum(&adl);
+      unsigned long res = adl.output();
+      if(frameNumber % 60 == 0)
+        dprintf("%08x", res);
+    }
     if(FLAGS_timing) {
       polling += bencher.ticksElapsed();
       bencher = Timer();

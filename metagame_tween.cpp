@@ -11,6 +11,7 @@
 #include "parse.h"
 #include "player.h"
 #include "perfbar.h"
+#include "adler32_util.h"
 
 #include <numeric>
 
@@ -492,6 +493,39 @@ void PersistentData::render() const {
       }
     }
   }
+}
+
+void adler(Adler32 *adl, const PersistentData::Slot &slt) {
+  adler(adl, slt.type);
+  adler(adl, slt.pid);
+  slt.shop.checksum(adl);
+}
+
+void PersistentData::checksum(Adler32 *adl) const {
+  adler(adl, mode);
+  adler(adl, playerdata);
+  adler(adl, pms);
+  adler(adl, playerid);
+  adler(adl, factions);
+  adler(adl, faction_mode);
+  adler(adl, lrCash);
+  adler(adl, lrBaseCash);
+  adler(adl, checked);
+  adler(adl, baseStartingCash);
+  adler(adl, multiplePerRound);
+  adler(adl, newPlayerStartingCash);
+  adler(adl, highestPlayerCash);
+  adler(adl, slot);
+  adler(adl, roundsbetweenshop);
+  adler(adl, shopcycles);
+  adler(adl, sps_shopped);
+  adler(adl, sps_playermode);
+  adler(adl, sps_quitconfirm);
+  adler(adl, sps_playerpos);
+  adler(adl, sps_soundtimeout);
+  adler(adl, sps_queue);
+  adler(adl, btt_notify);
+  adler(adl, btt_frames_left);
 }
 
 void PersistentData::reset() {
@@ -1003,7 +1037,7 @@ void PersistentData::divvyCash() {
   
   vector<vector<float> > values(4);
   for(int i = 0; i < playerdata.size(); i++) {
-    values[0].push_back(playerdata[i].consumeDamage());
+    values[0].push_back(playerdata[i].consumeDamage().toFloat());
     values[1].push_back(playerdata[i].consumeKills());
     values[2].push_back(playerdata[i].consumeWins());
     values[3].push_back(1);

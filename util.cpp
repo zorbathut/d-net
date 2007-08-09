@@ -2,6 +2,7 @@
 #include "util.h"
 
 #include "debug.h"
+#include "adler32.h"
 
 #include <vector>
 #include <cmath>
@@ -172,6 +173,10 @@ Money moneyFromString(const string &rhs) {
   }
   
   return accum;
+}
+
+void adler(Adler32 *adl, const Money &money) {
+  adler(adl, money.value());
 }
 
 // It's made of money!

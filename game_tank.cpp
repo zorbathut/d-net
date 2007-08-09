@@ -5,6 +5,7 @@
 #include "gfx.h"
 #include "player.h"
 #include "rng.h"
+#include "adler32_util.h"
 
 using namespace std;
 
@@ -39,11 +40,11 @@ void Tank::tick() {
   weaponCooldown--;
   
   {
-    static const float resistance_approach = 0.75;
-    static const float resistance_approach_per_sec = 0.75; // this is a fraction of how close it gets to the theoretical max
-    static const float resistance_dapproach_per_sec = 0.75;
-    static const float resistance_approach_per_frame = 1.0 - pow(1.0 - resistance_approach_per_sec, 1. / FPS);
-    static const float resistance_dapproach_per_frame = 1.0 - pow(1.0 - resistance_dapproach_per_sec, 1. / FPS);
+    static const Coord resistance_approach = 0.75;
+    static const Coord resistance_approach_per_sec = 0.75; // this is a fraction of how close it gets to the theoretical max
+    static const Coord resistance_dapproach_per_sec = 0.75;
+    static const Coord resistance_approach_per_frame = 1.0 - pow(1.0 - resistance_approach_per_sec, 1. / FPS);
+    static const Coord resistance_dapproach_per_frame = 1.0 - pow(1.0 - resistance_dapproach_per_sec, 1. / FPS);
     if(glory_resist_boost_frames) {
       glory_resist_boost_frames--;
       glory_resistance = glory_resistance * (1.0 - resistance_approach_per_frame) + resistance_approach * resistance_approach_per_frame;
@@ -79,6 +80,24 @@ void Tank::render(const vector<Team> &teams) const {
   
   setColor(small);
   drawLineLoop(smtankverts, 0.5);
+};
+
+void Tank::checksum(Adler32 *adl) const {
+  adler(adl, team);
+  adler(adl, zone_current);
+  adler(adl, zone_frames);
+  adler(adl, pos);
+  adler(adl, d);
+  adler(adl, inertia);
+  adler(adl, keys);
+  adler(adl, weaponCooldown);
+  adler(adl, weaponCooldownSubvals);
+  adler(adl, health);
+  adler(adl, spawnShards);
+  adler(adl, live);
+  adler(adl, tank);
+  adler(adl, glory_resistance);
+  adler(adl, glory_resist_boost_frames);
 };
 
 vector<Coord4> Tank::getCurrentCollide() const {
@@ -139,7 +158,7 @@ Coord2 Tank::getMinePoint(Rng *rng) const {
   for(int i = 0; i < minepath.size() - 1; i++)
     tlen += len(minepath[i] - minepath[i+1]);
   CHECK(tlen > 0);
-  tlen = Coord(rng->frand() * tlen.toFloat());
+  tlen = rng->cfrand() * tlen;
   for(int i = 0; i < minepath.size() - 1; i++) {
     if(tlen >= len(minepath[i] - minepath[i+1])) {
       tlen -= len(minepath[i] - minepath[i+1]);
@@ -283,7 +302,7 @@ pair<Coord2, Coord> Tank::getNextPosition() const {
   return make_pair(pos + inertia.first / FPS, mod(d + inertia.second / FPS + COORDPI * 2, COORDPI * 2));
 }
 
-bool Tank::takeDamage(float damage) {
+bool Tank::takeDamage(Coord damage) {
   health -= damage;
   
   damageEvents++;
@@ -291,9 +310,9 @@ bool Tank::takeDamage(float damage) {
   // We halve the first "damage" to do a better job of estimating damage.
   if(framesSinceDamage == -1) {
     framesSinceDamage = 0;
-    damageTaken += damage / 2;
+    damageTaken += damage.toFloat() / 2;
   } else {
-    damageTaken += damage;
+    damageTaken += damage.toFloat();
   }
   
   if(health <= 0 && live) {
@@ -414,10 +433,10 @@ void Tank::addCycle() {
   damageTaken = 0;
 }
 
-float Tank::getGloryResistance() const {
+Coord Tank::getGloryResistance() const {
   return glory_resistance;
 }
-void Tank::addDamage(float amount) {
+void Tank::addDamage(Coord amount) {
   damageDealt += amount;
 }
 void Tank::addKill() {
@@ -438,7 +457,7 @@ Color Tank::getColor() const {
   return color;
 }
 
-float Tank::getHealth() const {
+Coord Tank::getHealth() const {
   return health;
 }
 bool Tank::isLive() const {
@@ -466,7 +485,7 @@ void Tank::tryToFire(Button keys[SIMUL_WEAPONS], Player *player, ProjectilePack 
     // then we add the seconds-until-next-shot to that one. Any non-active weapons are clamped to 0 on the theory that the player is hammering
     // that button and really wants it to fire.
     
-    float rlev = 1e20; // uh, no
+    Coord rlev = 1 << 20; // uh, no
     int curfire = -1;
     for(int j = 0; j < SIMUL_WEAPONS; j++) {
       if(keys[j].down) {
@@ -484,7 +503,7 @@ void Tank::tryToFire(Button keys[SIMUL_WEAPONS], Player *player, ProjectilePack 
       // We're firing something!
       
       for(int j = 0; j < SIMUL_WEAPONS; j++) {
-        weaponCooldownSubvals[j] = max(weaponCooldownSubvals[j] - rlev, (float)0);
+        weaponCooldownSubvals[j] = max(weaponCooldownSubvals[j] - rlev, 0);
       }
       
       weaponCooldownSubvals[curfire] = FPS / player->getWeapon(curfire).firerate();
@@ -539,7 +558,8 @@ Tank::Tank() : tank(NULL, IDBAdjustment()) /* do not fucking use this */ {
   health = -47283;
   inertia = make_pair(Coord2(0.f, 0.f), 0.f);
   weaponCooldown = 0;
-  memset(weaponCooldownSubvals, 0, sizeof(weaponCooldownSubvals)); // if you're not using IEEE floats, get a new computer.
+  for(int i = 0; i < ARRAY_SIZE(weaponCooldownSubvals); i++)
+    weaponCooldownSubvals[i] = 0;
   zone_current = -1;
   zone_frames = 0;
   team = -12345;

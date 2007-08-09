@@ -77,6 +77,8 @@ public:
   void processMotion(vector<pair<Coord, CollideData> > *clds, const char *collidematrix) const;
 
   void render() const;
+
+  void checksum(Adler32 *adl) const;
 };
 
 enum {COM_PLAYER, COM_PROJECTILE};
@@ -146,5 +148,9 @@ private:
   // Debug stuff
   mutable int addedTokens;
 };
+
+inline void adler(Adler32 *adl, const Collider &collider) { collider.checksum(adl); }
+inline void adler(Adler32 *adl, const CollideZone &collider) { collider.checksum(adl); }
+void adler(Adler32 *adl, const CollidePiece &collider);
 
 #endif

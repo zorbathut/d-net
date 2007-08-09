@@ -60,8 +60,39 @@ Coord Rng::sym_cfrand() {
     return -cfrand();
 }
 
+Coord Rng::cgaussian() {
+  Coord x1, x2, w, y1;
+  
+  do {
+    x1 = 2 * cfrand() - 1;
+    x2 = 2 * cfrand() - 1;
+    w = x1 * x1 + x2 * x2;
+  } while (w >= 1);
+  
+  w = sqrt((-2 * log(w)) / w);
+  y1 = x1 * w;
+  
+  return y1;
+}
+
+Coord Rng::cgaussian(Coord maxgauss) {
+  while(1) {
+    Coord gauss = cgaussian();
+    if(abs(gauss) <= maxgauss)
+      return gauss;
+  }
+}
+
+Coord Rng::cgaussian_scaled(Coord maxgauss) {
+  return cgaussian(maxgauss) / maxgauss;
+}
+
 RngSeed Rng::generate_seed() {
   return RngSeed((int)(frand() * (1LL << 32)));
+}
+
+void Rng::checksum(Adler32 *adl) const {
+  adler(adl, sync);
 }
 
 Rng::Rng(RngSeed in_seed) {

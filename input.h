@@ -31,6 +31,8 @@ public:
 
 bool operator==(const Button &lhs, const Button &rhs);
 
+void adler(Adler32 *adl, const Button &kst);
+
 class Controller {
 public:
   Coord2 menu;
@@ -77,6 +79,8 @@ public:
 
   Keystates();
 };
+
+void adler(Adler32 *adl, const Keystates &kst);
 
 /*************
  * Utility funcs

@@ -5,6 +5,7 @@
 #include "args.h"
 #include "parse.h"
 #include "httpd.h"
+#include "adler32_util.h"
 
 #include <fstream>
 #include <numeric>
@@ -719,30 +720,21 @@ template<typename T> const string &nameFromIDBImp(const T *idbw, const map<strin
   return (*backward)[idbw];
 }
 
-static map<const IDBWeapon *, string> weaponclasses_reverse;
-const string &nameFromIDB(const IDBWeapon *idbw) {
-  return nameFromIDBImp(idbw, weaponclasses, &weaponclasses_reverse);
-}
+#define nameFromIdbMacro(idb, name)  \
+    static map<const idb *, string> name##classes_reverse;  \
+    const string &nameFromIDB(const idb *idbw) {  \
+      return nameFromIDBImp(idbw, name##classes, &name##classes_reverse);  \
+    }
 
-static map<const IDBWarhead *, string> warheadclasses_reverse;
-const string &nameFromIDB(const IDBWarhead *idbw) {
-  return nameFromIDBImp(idbw, warheadclasses, &warheadclasses_reverse);
-}
-
-static map<const IDBGlory *, string> gloryclasses_reverse;
-const string &nameFromIDB(const IDBGlory *idbw) {
-  return nameFromIDBImp(idbw, gloryclasses, &gloryclasses_reverse);
-}
-
-static map<const IDBBombardment *, string> bombardmentclasses_reverse;
-const string &nameFromIDB(const IDBBombardment *idbw) {
-  return nameFromIDBImp(idbw, bombardmentclasses, &bombardmentclasses_reverse);
-}
-
-static map<const IDBTank *, string> tankclasses_reverse;
-const string &nameFromIDB(const IDBTank *idbw) {
-  return nameFromIDBImp(idbw, tankclasses, &tankclasses_reverse);
-}
+nameFromIdbMacro(IDBWeapon, weapon);
+nameFromIdbMacro(IDBWarhead, warhead);
+nameFromIdbMacro(IDBGlory, glory);
+nameFromIdbMacro(IDBBombardment, bombardment);
+nameFromIdbMacro(IDBTank, tank);
+nameFromIdbMacro(IDBProjectile, projectile);
+nameFromIdbMacro(IDBUpgrade, upgrade);
+nameFromIdbMacro(IDBImplant, implant);
+nameFromIdbMacro(IDBImplantSlot, implantslot);
 
 string informalNameFromIDB(const IDBWeapon *idbw) {
   return tokenize(nameFromIDB(idbw), ".").back();
@@ -750,3 +742,36 @@ string informalNameFromIDB(const IDBWeapon *idbw) {
 string informalNameFromIDB(const IDBWeaponAdjust &idbwa) {
   return informalNameFromIDB(idbwa.base());
 }
+
+void adler(Adler32 *adl, const IDBFaction *idb) {
+  if(idb) {
+    CHECK(idb >= &factions[0] && idb < &factions[0] + factions.size());
+    adler(adl, idb - &factions[0]);
+  } else {
+    adl->addByte(0);
+  } 
+}
+
+void adler(Adler32 *adl, const IDBWeapon *idb) { if(idb) adler(adl, nameFromIDB(idb)); else adl->addByte(0); }
+void adler(Adler32 *adl, const IDBBombardment *idb) { if(idb) adler(adl, nameFromIDB(idb)); else adl->addByte(0); }
+void adler(Adler32 *adl, const IDBGlory *idb) { if(idb) adler(adl, nameFromIDB(idb)); else adl->addByte(0); }
+void adler(Adler32 *adl, const IDBTank *idb) { if(idb) adler(adl, nameFromIDB(idb)); else adl->addByte(0); }
+void adler(Adler32 *adl, const IDBProjectile *idb) { if(idb) adler(adl, nameFromIDB(idb)); else adl->addByte(0); }
+void adler(Adler32 *adl, const IDBUpgrade *idb) { if(idb) adler(adl, nameFromIDB(idb)); else adl->addByte(0); }
+void adler(Adler32 *adl, const IDBImplant *idb) { if(idb) adler(adl, nameFromIDB(idb)); else adl->addByte(0); }
+void adler(Adler32 *adl, const IDBImplantSlot *idb) { if(idb) adler(adl, nameFromIDB(idb)); else adl->addByte(0); }
+
+void adler(Adler32 *adl, const IDBAdjustment &idb) {
+  adler(adl, idb.ignore_excessive_radius);
+  adler(adl, idb.adjusts);
+  adler(adl, idb.tankhpboost);
+  adler(adl, idb.tankspeedreduction);
+  adler(adl, idb.adjustlist);
+}
+
+void adler(Adler32 *adl, const IDBWeaponAdjust &idb) { idb.checksum(adl); }
+void adler(Adler32 *adl, const IDBBombardmentAdjust &idb) { idb.checksum(adl); }
+void adler(Adler32 *adl, const IDBGloryAdjust &idb) { idb.checksum(adl); }
+void adler(Adler32 *adl, const IDBTankAdjust &idb) { idb.checksum(adl); }
+void adler(Adler32 *adl, const IDBUpgradeAdjust &idb) { idb.checksum(adl); }
+void adler(Adler32 *adl, const IDBProjectileAdjust &idb) { idb.checksum(adl); }

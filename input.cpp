@@ -64,6 +64,15 @@ bool operator==(const Button &lhs, const Button &rhs) {
   return lhs.down == rhs.down && lhs.push == rhs.push && lhs.release == rhs.release && lhs.repeat == rhs.repeat && lhs.dur == rhs.dur && lhs.sincerep == rhs.sincerep;
 }
 
+void adler(Adler32 *adl, const Button &kst) {
+  adler(adl, kst.down);
+  adler(adl, kst.push);
+  adler(adl, kst.release);
+  adler(adl, kst.repeat);
+  adler(adl, kst.dur);
+  adler(adl, kst.sincerep);
+}
+
 void Controller::newState(const Controller &nst) {
   menu = nst.menu;
   lastaxes = axes;
@@ -94,6 +103,20 @@ Keystates::Keystates() {
   ax[0] = ax[1] = 0;
   udlrax = Coord2(0, 0);
   axmode = KSAX_STEERING;
+}
+
+void adler(Adler32 *adl, const Keystates &kst) {
+  adler(adl, kst.ax);
+  adler(adl, kst.axmode);
+  adler(adl, kst.fire);
+  adler(adl, kst.udlrax);
+  adler(adl, kst.u);
+  adler(adl, kst.d);
+  adler(adl, kst.l);
+  adler(adl, kst.r);
+  adler(adl, kst.precision);
+  adler(adl, kst.accept);
+  adler(adl, kst.cancel);
 }
 
 Coord deadzone(Coord t, Coord o, int type, Coord amount) {

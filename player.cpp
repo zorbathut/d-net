@@ -2,6 +2,7 @@
 #include "player.h"
 
 #include "args.h"
+#include "adler32_util.h"
 
 #include <set>
 
@@ -119,10 +120,21 @@ bool Weaponmanager::weaponsReady() const {
   return weaponops[WMSPC_NEW].empty();
 }
 
+void Weaponmanager::checksum(Adler32 *adl) const {
+  adler(adl, weapons);
+  adler(adl, weaponops);
+  adler(adl, defaultweapon);
+}
+
 Weaponmanager::Weaponmanager(const IDBWeapon *weapon) {
   defaultweapon = weapon;
   weapons[NULL] = UNLIMITED_AMMO;
   weaponops.resize(WMSPC_LAST);
+}
+
+void TankEquipment::checksum(Adler32 *adl) const {
+  adler(adl, tank);
+  adler(adl, upgrades);
 }
 
 TankEquipment::TankEquipment() { tank = NULL; }
@@ -137,7 +149,7 @@ IDBUpgradeAdjust Player::adjustUpgradeForCurrentTank(const IDBUpgrade *in_upg) c
 }
 
 IDBGloryAdjust Player::adjustGlory(const IDBGlory *in_upg) const { return IDBGloryAdjust(in_upg, adjustment); };
-IDBBombardmentAdjust Player::adjustBombardment(const IDBBombardment *in_upg, int bombard_level) const { return IDBBombardmentAdjust(in_upg, adjustment, bombard_level); };
+IDBBombardmentAdjust Player::adjustBombardment(const IDBBombardment *in_upg, Coord bombard_level) const { return IDBBombardmentAdjust(in_upg, adjustment, bombard_level); };
 IDBWeaponAdjust Player::adjustWeapon(const IDBWeapon *in_upg) const { return IDBWeaponAdjust(in_upg, adjustment); };
 IDBTankAdjust Player::adjustTankWithInstanceUpgrades(const IDBTank *in_upg) const {
   IDBAdjustment idba = adjustment_notank;
@@ -434,7 +446,7 @@ void Player::setFactionMode(int faction_mode) {
 
 IDBGloryAdjust Player::getGlory() const {
   return adjustGlory(glory[0]); };
-IDBBombardmentAdjust Player::getBombardment(int bombard_level) const {
+IDBBombardmentAdjust Player::getBombardment(const Coord &bombard_level) const {
   return adjustBombardment(bombardment[0], bombard_level); };
 IDBTankAdjust Player::getTank() const {
   return adjustTankWithInstanceUpgrades(tank[0].tank); };
@@ -451,7 +463,7 @@ void Player::addCash(Money amount) {
   cash += amount;
 }
 
-void Player::accumulateStats(int in_kills, float damage) { damageDone += damage; kills += in_kills; }
+void Player::accumulateStats(int in_kills, Coord damage) { damageDone += damage; kills += in_kills; }
 void Player::addWin() { wins++; }
 
 int Player::consumeKills() {
@@ -464,8 +476,8 @@ int Player::consumeWins() {
   wins = 0;
   return wi;
 }
-float Player::consumeDamage() {
-  float dd = damageDone;
+Coord Player::consumeDamage() {
+  Coord dd = damageDone;
   damageDone = 0;
   return dd;
 }
@@ -531,6 +543,25 @@ Money Player::totalValue() const {
 
 bool Player::isCorrupted() const {
   return corrupted;
+}
+
+void Player::checksum(Adler32 *adl) const {
+  adler(adl, corrupted);
+  adler(adl, glory);
+  adler(adl, bombardment);
+  adler(adl, tank);
+  adler(adl, implantslots);
+  adler(adl, implantlevels);
+  adler(adl, implantequipped);
+  adler(adl, faction);
+  adler(adl, factionmode);
+  adler(adl, adjustment);
+  adler(adl, adjustment_notank);
+  adler(adl, cash);
+  adler(adl, damageDone);
+  adler(adl, kills);
+  adler(adl, wins);
+  weapons.checksum(adl);
 }
 
 Player::Player() : weapons(NULL) { // this kind of works with the weapon manager

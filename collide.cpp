@@ -4,6 +4,7 @@
 #include "args.h"
 #include "gfx.h"
 #include "util.h"
+#include "adler32_util.h"
 
 using namespace std;
 
@@ -543,7 +544,12 @@ void CollideZone::render() const {
     for(map<int, vector<pair<Coord4, Coord4> > >::const_iterator itr = items[i].second.begin(); itr != items[i].second.end(); itr++)
       for(int j = 0; j < itr->second.size(); j++)
         drawLine(itr->second[j].first, 1);*/
-}  
+}
+
+void CollideZone::checksum(Adler32 *adl) const {
+  adler(adl, items);
+  adler(adl, catrefs);
+}
 
 void Collider::cleanup(int mode, const Coord4 &bounds, const vector<int> &teams) {
   CHECK(state == CSTA_WAITING);
@@ -840,4 +846,23 @@ void Collider::renderAround(const Coord2 &kord) const {
       }
     }
   }
+}
+
+void Collider::checksum(Adler32 *adl) const {
+  adler(adl, players);
+  adler(adl, resolution);
+  adler(adl, state);
+  adler(adl, collidematrix);
+  adler(adl, sx);
+  adler(adl, ex);
+  adler(adl, sy);
+  adler(adl, ey);
+  adler(adl, zones);
+}
+
+void adler(Adler32 *adl, const CollidePiece &collider) {
+  adler(adl, collider.type);
+  adler(adl, collider.pos);
+  adler(adl, collider.vel);
+  adler(adl, collider.bbx);
 }

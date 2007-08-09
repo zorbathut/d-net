@@ -65,12 +65,14 @@ private:
   Money highestPlayerCash;
   
   // Tween layout info
+  public:
   struct Slot {
     enum { CHOOSE, SHOP, RESULTS, QUITCONFIRM, SETTINGS, EMPTY };
     int type;
     int pid;
     Shop shop;
   };
+  private:
   Slot slot[4];
   int slot_count; // 1 or 4
   

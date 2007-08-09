@@ -68,6 +68,9 @@ bool operator>=(const Money &lhs, const Money &rhs);
 
 Money moneyFromString(const string &rhs);
 
+class Adler32;
+void adler(Adler32 *adl, const Money &money);
+
 /*************
  * Misc
  */

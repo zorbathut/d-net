@@ -19,7 +19,7 @@ public:
   Coord4 getRenderBounds() const;
   Coord4 getCollisionBounds() const;
 
-  void removeWalls(Coord2 center, float radius, Rng *rng);
+  void removeWalls(Coord2 center, Coord radius, Rng *rng);
 
   bool isInsideWall(Coord2 point) const;
   
@@ -57,7 +57,14 @@ private:
 
   vector<int> available;
   vector<Pathchunk> paths;
+  
+  friend void adler(Adler32 *adl, const Pathchunk &pc);
 
 };
+
+inline void adler(Adler32 *adl, const Gamemap &gamemap) {
+  gamemap.checksum(adl);
+}
+void adler(Adler32 *adl, const Gamemap::Pathchunk &pc);
 
 #endif

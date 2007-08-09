@@ -1,6 +1,8 @@
 #ifndef DNET_RNG
 #define DNET_RNG
 
+#include "adler32.h"
+
 class Coord;
   
 class RngSeed {
@@ -29,11 +31,21 @@ public:
   Coord cfrand(); // [0,1)
   Coord sym_cfrand(); // (-1,1)
 
+  Coord cgaussian(); // returns gaussian distribution with a standard deviation of 1
+  Coord cgaussian(Coord maxgauss);  // returns gaussian distribution with a standard deviation of 1, maximum deviation of max (just chops off the probability curve)
+  Coord cgaussian_scaled(Coord maxgauss); // returns gaussian(maxgauss) / maxgauss
+
   RngSeed generate_seed();
+
+  void checksum(Adler32 *adler) const;
 
   explicit Rng(RngSeed seed);
 };
 
 Rng &unsync();
+
+inline void adler(Adler32 *adler, const Rng &rng) {
+  rng.checksum(adler);
+}
 
 #endif

@@ -35,7 +35,7 @@ public:
   pair<Coord2, Coord> getNextPosition() const;
 
   // Modifiers
-  bool takeDamage(float amount); // returns true on kill
+  bool takeDamage(Coord amount); // returns true on kill
   void genEffects(const GameImpactContext &gic, ProjectilePack *projectiles, const Player *player);
   void respawn(Coord2 pos, Coord facing);
   void tryToFire(Button keys[SIMUL_WEAPONS], Player *player, ProjectilePack *projectiles, int id, const GameImpactContext &gic, vector<pair<string, float> > *status_text);
@@ -55,8 +55,8 @@ public:
   void addCycle();
   
   // Damage and kill-related
-  float getGloryResistance() const;
-  void addDamage(float amount);
+  Coord getGloryResistance() const;
+  void addDamage(Coord amount);
   void addKill();
   
   void addAccumulatedScores(Player *player);
@@ -65,7 +65,7 @@ public:
   DeployLocation launchData() const;
   Color getColor() const;
   
-  float getHealth() const;
+  Coord getHealth() const;
   bool isLive() const;
   
   // Publics >:(
@@ -85,9 +85,9 @@ private:
   pair<Coord2, Coord> getNextInertia(const Keystates &keys) const;
 
   int weaponCooldown;
-  float weaponCooldownSubvals[SIMUL_WEAPONS];
+  Coord weaponCooldownSubvals[SIMUL_WEAPONS];
 
-  float health;
+  Coord health;
   bool spawnShards;
   bool live;
 
@@ -107,14 +107,16 @@ private:
   // this exists for all :D
   float damageTaken;
 
-  float damageDealt;
+  Coord damageDealt;
   int kills;
 
-  float glory_resistance;
+  Coord glory_resistance;
   int glory_resist_boost_frames;
   
   Coord2 worldFromLocal(const Coord2 &loc) const;
 
 };
+
+inline void adler(Adler32 *adler, const Tank &tank) { tank.checksum(adler); }
 
 #endif

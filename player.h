@@ -50,6 +50,8 @@ public:
   void changeDefaultWeapon(const IDBWeapon *weapon);
   bool weaponsReady() const;
 
+  void checksum(Adler32 *adler) const;
+
   Weaponmanager(const IDBWeapon *weapon);
 };
 
@@ -57,6 +59,8 @@ class TankEquipment {
 public:
   const IDBTank *tank;
   vector<const IDBUpgrade *> upgrades;
+
+  void checksum(Adler32 *adler) const;
 
   TankEquipment();
   TankEquipment(const IDBTank *tank);
@@ -68,7 +72,7 @@ public:
   IDBUpgradeAdjust adjustUpgrade(const IDBUpgrade *in_upg, const IDBTank *in_tank) const;
   IDBUpgradeAdjust adjustUpgradeForCurrentTank(const IDBUpgrade *in_upg) const;
   IDBGloryAdjust adjustGlory(const IDBGlory *in_upg) const;
-  IDBBombardmentAdjust adjustBombardment(const IDBBombardment *in_upg, int bombard_level = -1) const;
+  IDBBombardmentAdjust adjustBombardment(const IDBBombardment *in_upg, Coord bombard_level = -1) const;
   IDBWeaponAdjust adjustWeapon(const IDBWeapon *in_upg) const;
   IDBTankAdjust adjustTankWithInstanceUpgrades(const IDBTank *in_upg) const;
   IDBImplantSlotAdjust adjustImplantSlot(const IDBImplantSlot *in_impslot) const;
@@ -148,18 +152,18 @@ public:
   void setFactionMode(int faction_mode);
   
   IDBGloryAdjust getGlory() const;
-  IDBBombardmentAdjust getBombardment(int bombard_level) const;
+  IDBBombardmentAdjust getBombardment(const Coord &tier) const;
   IDBTankAdjust getTank() const;
   
   Money getCash() const;
   void addCash(Money amount); // this is really designed *solely* for the income phase
 
-  void accumulateStats(int kills, float damage);
+  void accumulateStats(int kills, Coord damage);
   void addWin();
 
   int consumeKills();
   int consumeWins();
-  float consumeDamage();
+  Coord consumeDamage();
 
   IDBWeaponAdjust getWeapon(int id) const;
   void shotFired(int id);  // Fire a single shot.
@@ -176,6 +180,8 @@ public:
   Money totalValue() const; // Update this when more stuff is added to the player
   
   bool isCorrupted() const;
+  
+  void checksum(Adler32 *adler) const;
 
   Player();
   Player(const IDBFaction *fact, int factionmode, Money cash);
@@ -206,9 +212,13 @@ private:
 
   Money cash;
 
-  float damageDone;
+  Coord damageDone;
   int kills;
   int wins;
 };
+
+inline void adler(Adler32 *adler, const Player &player) { player.checksum(adler); }
+inline void adler(Adler32 *adler, const TankEquipment &equip) { equip.checksum(adler); }
+inline void adler(Adler32 *adler, const Weaponmanager &weps) { weps.checksum(adler); }
 
 #endif

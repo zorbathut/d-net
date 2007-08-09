@@ -47,10 +47,10 @@ private:
   Coord2 missile_accel() const;
   Coord2 missile_backdrop() const;
   Coord2 missile_sidedrop() const;
-  float missile_sidedist;
+  Coord missile_sidedist;
 
-  float airbrake_liveness() const;
-  float airbrake_velocity;
+  Coord airbrake_liveness() const;
+  Coord airbrake_velocity;
 
   Coord2 boomerang_abspos;
   Coord boomerang_yfactor;
@@ -58,7 +58,7 @@ private:
   Coord boomerang_lastchange;
 
   vector<Coord2> mine_polys() const;
-  float mine_facing;
+  Coord mine_facing;
 
   Coord spider_vector;  // spider-vector, spider-vector, doin' things like a spectre. what's he like? no-one knows! he's got radioactive clothes! beware! here comes the spider vector
   enum { SV_NONE = -1000 }; // this seems like a reasonable sentinel
@@ -67,8 +67,8 @@ private:
   Coord d;
 
   Coord2 lasttail;
-  float arrow_spin;
-  float arrow_spin_next;
+  Coord arrow_spin;
+  Coord arrow_spin_next;
   bool arrow_spin_parity;
 
   int age;
@@ -78,9 +78,9 @@ private:
   bool live;
   bool detonating;
   
-  float distance_traveled;
+  Coord distance_traveled;
   
-  float closest_enemy_tank;
+  Coord closest_enemy_tank;
   
   DamageFlags damageflags;
 };
@@ -94,6 +94,7 @@ public:
   void updateCollisions(Collider *collider, int owner);
   void tick(vector<smart_ptr<GfxEffects> > *gfxe, Collider *collider, int owner, const GameImpactContext &gic);
   void render(const vector<Coord2> &tankpos) const;
+  void checksum(Adler32 *adl) const;
 
 private:
   map<int, Projectile> projectiles;
@@ -102,5 +103,8 @@ private:
   vector<int> newitems;
   vector<int> cleanup;
 };
+
+inline void adler(Adler32 *adl, const ProjectilePack &ppk) { ppk.checksum(adl); }
+inline void adler(Adler32 *adl, const Projectile &ppk) { ppk.checksum(adl); }
 
 #endif

@@ -5,13 +5,14 @@
 #include "gfx.h"
 #include "rng.h"
 #include "game_tank.h"
+#include "adler32_util.h"
 
 using namespace std;
 
 void Projectile::tick(vector<smart_ptr<GfxEffects> > *gfxe, const GameImpactContext &gic, int owner) {
   CHECK(live);
   CHECK(age != -1);
-  distance_traveled += len(movement()).toFloat();
+  distance_traveled += len(movement());
   pos += movement();
   lasttail = nexttail();
   age++;
@@ -72,7 +73,7 @@ void Projectile::tick(vector<smart_ptr<GfxEffects> > *gfxe, const GameImpactCont
   }
   
   if(projtype.proximity() != -1) {
-    float newdist = gic.getClosestFoeDistance(pos, owner);
+    Coord newdist = gic.getClosestFoeDistance(pos, owner);
     if(newdist > closest_enemy_tank && newdist < projtype.proximity())
       detonating = true; // BOOM
     closest_enemy_tank = newdist;
@@ -87,7 +88,7 @@ void Projectile::render(const vector<Coord2> &tankposes) const {
   } else if(projtype.motion() == PM_MISSILE) {
     setColor(projtype.color());
   } else if(projtype.motion() == PM_AIRBRAKE) {
-    setColor(projtype.color() * airbrake_liveness());
+    setColor(projtype.color() * airbrake_liveness().toFloat());
   } else if(projtype.motion() == PM_BOOMERANG) {
     setColor(projtype.color());
   } else if(projtype.motion() == PM_MINE || projtype.motion() == PM_SPIDERMINE) {
@@ -122,6 +123,44 @@ void Projectile::render(const vector<Coord2> &tankposes) const {
     CHECK(0);
   }
 };
+
+void Projectile::checksum(Adler32 *adl) const {
+  adler(adl, projtype);
+  adler(adl, age);
+  adler(adl, live);
+  adler(adl, detonating);
+  adler(adl, damageflags);
+  
+  if(projtype.motion() == PM_NORMAL) {
+  } else if(projtype.motion() == PM_MISSILE) {
+    adler(adl, missile_sidedist);
+  } else if(projtype.motion() == PM_AIRBRAKE) {
+    adler(adl, airbrake_velocity);
+  } else if(projtype.motion() == PM_BOOMERANG) {
+    adler(adl, boomerang_abspos);
+    adler(adl, boomerang_yfactor);
+    adler(adl, boomerang_angle);
+    adler(adl, boomerang_lastchange);
+  } else if(projtype.motion() == PM_MINE) {
+    adler(adl, mine_facing);
+  } else if(projtype.motion() == PM_SPIDERMINE) {
+    adler(adl, mine_facing);
+    adler(adl, spider_vector);
+  } else if(projtype.motion() == PM_DPS) {
+  } else {
+    CHECK(0);
+  }
+  
+  if(projtype.shape() == PS_DEFAULT) {
+    adler(adl, lasttail);
+  } else if(projtype.shape() == PS_ARROW) {
+    adler(adl, arrow_spin);
+    adler(adl, arrow_spin_next);
+    adler(adl, arrow_spin_parity);
+  } else {
+    CHECK(0);
+  }
+}
 
 void Projectile::firstCollide(Collider *collider, int owner, int id) const {
   if(projtype.motion() == PM_MINE) {
@@ -243,13 +282,13 @@ Coord2 Projectile::movement() const {
 }
 
 Coord2 Projectile::nexttail() const {
-  float maxlen = max(0., distance_traveled - 0.1);
+  Coord maxlen = max(0, distance_traveled - 0.1);
   if(projtype.motion() == PM_NORMAL) {
-    return makeAngle(d) * -Coord(min(projtype.defshape_length(), maxlen));
+    return makeAngle(d) * -min(Coord(projtype.defshape_length()), maxlen);
   } else if(projtype.motion() == PM_MISSILE) {
-    return makeAngle(d) * -Coord(min(projtype.defshape_length(), maxlen));
+    return makeAngle(d) * -min(Coord(projtype.defshape_length()), maxlen);
   } else if(projtype.motion() == PM_AIRBRAKE) {
-    return makeAngle(d) * -Coord(min(airbrake_velocity / FPS + 2, maxlen));
+    return makeAngle(d) * -min(airbrake_velocity / FPS + 2, maxlen);
   } else if(projtype.motion() == PM_MINE || projtype.motion() == PM_DPS || projtype.motion() == PM_SPIDERMINE || projtype.motion() == PM_BOOMERANG) {
     return Coord2(0, 0);
   } else {
@@ -267,15 +306,15 @@ Coord2 Projectile::missile_sidedrop() const {
   return makeAngle(Coord(d) - COORDPI / 2) * Coord(missile_sidedist);
 }
 
-float Projectile::airbrake_liveness() const {
-  return 1.0 - (age / float(FPS) / projtype.airbrake_life());
+Coord Projectile::airbrake_liveness() const {
+  return 1 - (Coord(age) / FPS / projtype.airbrake_life());
 }
 
 vector<Coord2> Projectile::mine_polys() const {
   vector<Coord2> rv;
   const int rad = projtype.mine_spikes() * 2;
   for(int i = 0; i < rad; i++) {
-    float expfact = (i % 2);
+    Coord expfact = (i % 2);
     expfact *= 3;
     expfact += 1;
     expfact /= 4;
@@ -379,4 +418,11 @@ void ProjectilePack::tick(vector<smart_ptr<GfxEffects> > *gfxe, Collider *collid
 void ProjectilePack::render(const vector<Coord2> &tankpos) const {
   for(map<int, Projectile>::const_iterator itr = projectiles.begin(); itr != projectiles.end(); ++itr)
     itr->second.render(tankpos);
+}
+
+void ProjectilePack::checksum(Adler32 *adl) const {
+  adler(adl, projectiles);
+  adler(adl, aid);
+  adler(adl, newitems);
+  adler(adl, cleanup);
 }

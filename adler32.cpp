@@ -37,15 +37,13 @@ BOOST_STATIC_ASSERT(sizeof(Coord) == 8);
 BOOST_STATIC_ASSERT(sizeof(Coord2) == 16);
 BOOST_STATIC_ASSERT(sizeof(Coord4) == 32);
 
-void adler(Adler32 *adl, int val) {
-  adl->addBytes(&val, sizeof(val));
-}
-void adler(Adler32 *adl, const Coord &val) {
-  adl->addBytes(&val, sizeof(val));
-}
-void adler(Adler32 *adl, const Coord2 &val) {
-  adl->addBytes(&val, sizeof(val));
-}
-void adler(Adler32 *adl, const Coord4 &val) {
-  adl->addBytes(&val, sizeof(val));
-}
+void adler(Adler32 *adl, bool val) { adler(adl, (char)val); }
+void adler(Adler32 *adl, char val) { adl->addBytes(&val, sizeof(val)); }
+void adler(Adler32 *adl, unsigned char val) { adl->addBytes(&val, sizeof(val)); }
+void adler(Adler32 *adl, int val) { adl->addBytes(&val, sizeof(val)); }
+void adler(Adler32 *adl, unsigned int val) { adl->addBytes(&val, sizeof(val)); }
+void adler(Adler32 *adl, long long val) { adl->addBytes(&val, sizeof(val)); }
+void adler(Adler32 *adl, unsigned long long val) { adl->addBytes(&val, sizeof(val)); }
+void adler(Adler32 *adl, const Coord &val) { adl->addBytes(&val, sizeof(val)); }
+void adler(Adler32 *adl, const Coord2 &val) { adl->addBytes(&val, sizeof(val)); }
+void adler(Adler32 *adl, const Coord4 &val) { adl->addBytes(&val, sizeof(val)); }

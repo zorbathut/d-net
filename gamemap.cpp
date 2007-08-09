@@ -5,6 +5,7 @@
 #include "collide.h"
 #include "gfx.h"
 #include "rng.h"
+#include "adler32_util.h"
 
 using namespace std;
 
@@ -118,6 +119,18 @@ void Gamemap::updateCollide(Collider *collider) {
   }
 }
 
+void Gamemap::checksum(Adler32 *adl) const {
+  adler(adl, smashable);
+  adler(adl, sx);
+  adler(adl, sy);
+  adler(adl, ex);
+  adler(adl, ey);
+  adler(adl, render_bounds);
+  adler(adl, links);
+  adler(adl, nlinks);
+  adler(adl, paths);
+}
+
 Coord4 Gamemap::getRenderBounds() const {
   return render_bounds;
 }
@@ -128,7 +141,7 @@ Coord4 Gamemap::getCollisionBounds() const {
 const Coord resolution = Coord(20);
 const Coord2 offset = Coord2(1.23456f, 0.12345f); // Nasty hack to largely eliminate many border cases
 
-void Gamemap::removeWalls(Coord2 center, float radius, Rng *rng) {
+void Gamemap::removeWalls(Coord2 center, Coord radius, Rng *rng) {
   if(!smashable)
     return;
   
@@ -147,9 +160,8 @@ void Gamemap::removeWalls(Coord2 center, float radius, Rng *rng) {
   }
   {
     Coord4 ib = getInternalBounds();
-    Coord cradius(radius);
-    if(center.x + cradius + 1 > ib.ex || center.x - cradius - 1 < ib.sx || center.y + cradius + 1 > ib.ey || center.y - cradius - 1 < ib.sy) {
-      dprintf("probin' at %f,%f %f", center.x.toFloat(), center.y.toFloat(), radius);
+    if(center.x + radius + 1 > ib.ex || center.x - radius - 1 < ib.sx || center.y + radius + 1 > ib.ey || center.y - radius - 1 < ib.sy) {
+      dprintf("probin' at %f,%f %f", center.x.toFloat(), center.y.toFloat(), radius.toFloat());
       Coord4 bounds = startCBoundBox();
     
       addToBoundBox(&bounds, ib);
@@ -213,15 +225,15 @@ void Gamemap::removeWalls(Coord2 center, float radius, Rng *rng) {
 
   vector<Coord2> inters;
   {
-    vector<float> rv;
-    int vct = int(rng->frand() * 3) + 3;
-    float ofs = rng->frand() * 2 * PI / vct;
-    float maxofs = 2 * PI / vct / 2;
+    vector<Coord> rv;
+    int vct = floor(rng->cfrand() * 3).toInt() + 3;
+    Coord ofs = rng->cfrand() * 2 * COORDPI / vct;
+    Coord maxofs = 2 * COORDPI / vct / 2;
     for(int i = 0; i < vct; i++) {
-      rv.push_back(i * 2 * PI / vct + ofs + rng->gaussian_scaled(2) * maxofs);
+      rv.push_back(i * 2 * COORDPI / vct + ofs + rng->cgaussian_scaled(2) * maxofs);
     }
     for(int i = 0; i < rv.size(); i++)
-      inters.push_back(center + makeAngle(Coord(rv[i])) * Coord(radius));
+      inters.push_back(center + makeAngle(rv[i]) * radius);
   }
   CHECK(!pathReversed(inters));
   if(set<Coord2>(inters.begin(), inters.end()).size() != inters.size() || !inPath(center, inters)) {
@@ -412,4 +424,10 @@ void Gamemap::Pathchunk::generateRenderPath() {
       cdd.clear();
     }
   }
+}
+
+void adler(Adler32 *adl, const Gamemap::Pathchunk &pc) {
+  adler(adl, pc.state);
+  adler(adl, pc.collisionpath);
+  adler(adl, pc.renderpath);
 }

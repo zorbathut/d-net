@@ -127,9 +127,9 @@ private:
   Float2 demo_hudpos;
   Recorder *demo_recorder;
   
-  float bombardment_tier;
-  float getBombardmentIncreasePerSec() const;
-  float getTimeUntilBombardmentUpgrade() const;
+  Coord bombardment_tier;
+  Coord getBombardmentIncreasePerSec() const;
+  Coord getTimeUntilBombardmentUpgrade() const;
 
 };
 
@@ -143,5 +143,7 @@ public:
 
   void runShopcache(const IDBShopcache &sc, int adjuster);
 };
+
+void adler(Adler32 *adler, const BombardmentState &bs);
 
 #endif

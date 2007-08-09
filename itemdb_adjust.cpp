@@ -61,6 +61,10 @@ float IDBDeployAdjust::stats_damagePerShot() const {
   return val * mult;
 }
 
+void IDBDeployAdjust::checksum(Adler32 *adl) const {
+  adler(adl, idb);
+  adler(adl, adjust);
+}
 IDBDeployAdjust::IDBDeployAdjust(const IDBDeploy *in_idb, const IDBAdjustment &in_adjust) { idb = in_idb; adjust = in_adjust; };
 
 /*************
@@ -74,15 +78,15 @@ float IDBWarheadAdjust::accumulate(const float *damage) const {
   return acc;
 }
 
-float IDBWarheadAdjust::impactdamage() const { return accumulate(idb->impactdamage) * mf; }
+Coord IDBWarheadAdjust::impactdamage() const { return accumulate(idb->impactdamage) * mf; }
 
-float IDBWarheadAdjust::radiusdamage() const { return accumulate(idb->radiusdamage) * mf; }
-float IDBWarheadAdjust::radiusfalloff() const { return (adjust.adjustmentfactor(IDBAdjustment::WARHEAD_RADIUS_FALLOFF) * idb->radiusfalloff * idb->radiusexplosive) + (idb->radiusfalloff * (1 - idb->radiusexplosive)); }
+Coord IDBWarheadAdjust::radiusdamage() const { return accumulate(idb->radiusdamage) * mf; }
+Coord IDBWarheadAdjust::radiusfalloff() const { return (adjust.adjustmentfactor(IDBAdjustment::WARHEAD_RADIUS_FALLOFF) * idb->radiusfalloff * idb->radiusexplosive) + (idb->radiusfalloff * (1 - idb->radiusexplosive)); }
 
-float IDBWarheadAdjust::wallremovalradius() const { return adjust.adjustmentfactor(IDBAdjustment::WARHEAD_RADIUS_FALLOFF) * idb->wallremovalradius; }  // just 'cause :)
-float IDBWarheadAdjust::wallremovalchance() const { return idb->wallremovalchance; }
-Color IDBWarheadAdjust::radiuscolor_bright() const { return idb->radiuscolor_bright * mf; }
-Color IDBWarheadAdjust::radiuscolor_dim() const { return idb->radiuscolor_dim * mf; }
+Coord IDBWarheadAdjust::wallremovalradius() const { return adjust.adjustmentfactor(IDBAdjustment::WARHEAD_RADIUS_FALLOFF) * idb->wallremovalradius; }  // just 'cause :)
+Coord IDBWarheadAdjust::wallremovalchance() const { return idb->wallremovalchance; }
+Color IDBWarheadAdjust::radiuscolor_bright() const { return idb->radiuscolor_bright * mf.toFloat(); }
+Color IDBWarheadAdjust::radiuscolor_dim() const { return idb->radiuscolor_dim * mf.toFloat(); }
 
 vector<IDBEffectsAdjust> IDBWarheadAdjust::effects_impact() const {
   vector<IDBEffectsAdjust> rv;
@@ -99,7 +103,7 @@ vector<IDBDeployAdjust> IDBWarheadAdjust::deploy() const {
 }
 
 float IDBWarheadAdjust::stats_damagePerShot() const {
-  float count = impactdamage() + radiusdamage();
+  float count = (impactdamage() + radiusdamage()).toFloat();
   vector<IDBDeployAdjust> dp = deploy();
   for(int i = 0; i < dp.size(); i++) {
     count += dp[i].stats_damagePerShot();
@@ -119,14 +123,19 @@ float IDBWarheadAdjust::stats_damagePerShotType(int type) const {
 const IDBWarhead *IDBWarheadAdjust::base() const {
   return idb;
 }
-float IDBWarheadAdjust::multfactor() const {
+Coord IDBWarheadAdjust::multfactor() const {
   return mf;
 }
 IDBWarheadAdjust IDBWarheadAdjust::multiply(float mult) const {
   return IDBWarheadAdjust(idb, adjust, mf * mult);
 }
 
-IDBWarheadAdjust::IDBWarheadAdjust(const IDBWarhead *in_idb, const IDBAdjustment &in_adjust, float in_multfactor) { idb = in_idb; adjust = in_adjust; mf = in_multfactor; }
+void IDBWarheadAdjust::checksum(Adler32 *adl) const {
+  adler(adl, idb);
+  adler(adl, adjust);
+  adler(adl, mf);
+}
+IDBWarheadAdjust::IDBWarheadAdjust(const IDBWarhead *in_idb, const IDBAdjustment &in_adjust, Coord in_multfactor) { idb = in_idb; adjust = in_adjust; mf = in_multfactor; }
 
 /*************
  * IDBProjectileAdjust
@@ -191,6 +200,10 @@ float IDBProjectileAdjust::stats_damagePerShot() const {
   return val;
 }
 
+void IDBProjectileAdjust::checksum(Adler32 *adl) const {
+  adler(adl, idb);
+  adler(adl, adjust);
+}
 IDBProjectileAdjust::IDBProjectileAdjust(const IDBProjectile *in_idb, const IDBAdjustment &in_adjust) { idb = in_idb; adjust = in_adjust; };
 
 /*************
@@ -201,6 +214,10 @@ IDBDeployAdjust IDBLauncherAdjust::deploy() const { return IDBDeployAdjust(idb->
 
 float IDBLauncherAdjust::stats_damagePerShot() const { return deploy().stats_damagePerShot(); };
 
+void IDBLauncherAdjust::checksum(Adler32 *adl) const {
+  adler(adl, idb);
+  adler(adl, adjust);
+}
 IDBLauncherAdjust::IDBLauncherAdjust(const IDBLauncher *in_idb, const IDBAdjustment &in_adjust) { idb = in_idb; adjust = in_adjust; };
 
 /*************
@@ -262,6 +279,10 @@ float IDBWeaponAdjust::stats_costPerDamage() const { return (float)cost_pack().v
 float IDBWeaponAdjust::stats_costPerSecond() const { return (float)cost_pack().value() / idb->quantity * firerate(); }
 
 const IDBWeapon *IDBWeaponAdjust::base() const { return idb; }
+void IDBWeaponAdjust::checksum(Adler32 *adl) const {
+  adler(adl, idb);
+  adler(adl, adjust);
+}
 IDBWeaponAdjust::IDBWeaponAdjust(const IDBWeapon *in_idb, const IDBAdjustment &in_adjust) { idb = in_idb; adjust = in_adjust; };
 
 /*************
@@ -287,6 +308,10 @@ float IDBGloryAdjust::stats_averageDamage() const {
   return v;
 }
 
+void IDBGloryAdjust::checksum(Adler32 *adl) const {
+  adler(adl, idb);
+  adler(adl, adjust);
+}
 IDBGloryAdjust::IDBGloryAdjust(const IDBGlory *in_idb, const IDBAdjustment &in_adjust) { idb = in_idb; adjust = in_adjust; };
 
 /*************
@@ -296,6 +321,11 @@ IDBGloryAdjust::IDBGloryAdjust(const IDBGlory *in_idb, const IDBAdjustment &in_a
 Money IDBUpgradeAdjust::cost() const { return tank->upgrade_base * idb->costmult / adjust.adjustmentfactor(IDBAdjustment::DISCOUNT_UPGRADE); };  // yes, it's based off the tank base cost, not the tank adjusted cost
 Money IDBUpgradeAdjust::sellcost() const { return cost() * adjust.recyclevalue(); };
 
+void IDBUpgradeAdjust::checksum(Adler32 *adl) const {
+  adler(adl, idb);
+  adler(adl, tank);
+  adler(adl, adjust);
+}
 IDBUpgradeAdjust::IDBUpgradeAdjust(const IDBUpgrade *in_idb, const IDBTank *in_tank, const IDBAdjustment &in_adjust) { idb = in_idb; tank = in_tank; adjust = in_adjust; };
 
 /*************
@@ -345,15 +375,19 @@ float IDBBombardmentAdjust::stats_damagePerShotType(int type) const {
   return IDBBombardmentAdjust(idb, adj, 0).stats_damagePerShot();
 }
 
-IDBBombardmentAdjust::IDBBombardmentAdjust(const IDBBombardment *in_idb, const IDBAdjustment &in_adjust, int in_bombardlevel) {
+void IDBBombardmentAdjust::checksum(Adler32 *adl) const {
+  adler(adl, idb);
+  adler(adl, adjust);
+}
+IDBBombardmentAdjust::IDBBombardmentAdjust(const IDBBombardment *in_idb, const IDBAdjustment &in_adjust, Coord in_bombardlevel) {
   idb = in_idb; adjust = in_adjust;
   if(in_bombardlevel != -1) {
     CHECK(in_bombardlevel >= 0);
     valid_level = true;
     for(int i = 0; i < IDBAdjustment::DAMAGE_LAST; i++)
-      adjust.adjusts[i] += 25 * in_bombardlevel;
-    adjust.adjusts[IDBAdjustment::WARHEAD_RADIUS_FALLOFF] += 20 * in_bombardlevel;
-    adjust.adjusts[IDBAdjustment::BOMBARDMENT_SPEED] += 25 * in_bombardlevel;
+      adjust.adjusts[i] += floor(25 * in_bombardlevel).toInt();
+    adjust.adjusts[IDBAdjustment::WARHEAD_RADIUS_FALLOFF] += floor(20 * in_bombardlevel).toInt();
+    adjust.adjusts[IDBAdjustment::BOMBARDMENT_SPEED] += floor(25 * in_bombardlevel).toInt();
     if(in_bombardlevel > 0)
       adjust.ignore_excessive_radius = true;
   } else {
@@ -382,6 +416,10 @@ vector<Coord2> IDBTankAdjust::getTankVertices(Coord2 pos, Coord td) const { retu
 
 const IDBTank *IDBTankAdjust::base() const { return idb; };
 
+void IDBTankAdjust::checksum(Adler32 *adl) const {
+  adler(adl, idb);
+  adler(adl, adjust);
+}
 IDBTankAdjust::IDBTankAdjust(const IDBTank *in_idb, const IDBAdjustment &in_adjust) { idb = in_idb; adjust = in_adjust; };
 
 bool operator==(const IDBTankAdjust &lhs, const IDBTankAdjust &rhs) {
@@ -394,6 +432,10 @@ bool operator==(const IDBTankAdjust &lhs, const IDBTankAdjust &rhs) {
 
 Money IDBImplantSlotAdjust::cost() const { return idb->cost / adjust.adjustmentfactor(IDBAdjustment::DISCOUNT_IMPLANT); };
 
+void IDBImplantSlotAdjust::checksum(Adler32 *adl) const {
+  adler(adl, idb);
+  adler(adl, adjust);
+}
 IDBImplantSlotAdjust::IDBImplantSlotAdjust(const IDBImplantSlot *in_idb, const IDBAdjustment &in_adjust) { idb = in_idb; adjust = in_adjust; };
 
 /*************
@@ -408,6 +450,10 @@ Money IDBImplantAdjust::costToLevel(int curlevel) const {
   return flev / adjust.adjustmentfactor(IDBAdjustment::DISCOUNT_IMPLANT);
 }
 
+void IDBImplantAdjust::checksum(Adler32 *adl) const {
+  adler(adl, idb);
+  adler(adl, adjust);
+}
 IDBImplantAdjust::IDBImplantAdjust(const IDBImplant *in_idb, const IDBAdjustment &in_adjust) { idb = in_idb; adjust = in_adjust; }
 
 /*************
