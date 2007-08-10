@@ -35,12 +35,12 @@ void Adler32::addBytes(const void *x, int len) {
   const unsigned char *dv = (const unsigned char *)x;
   CHECK(len);
   do {
-    int tlen = min(len, 5550 - count);
+    int tlen = min(len, 5540 - count);
     len -= tlen;
     for(int i = 0; i < tlen; i++)
       b += a += *dv++;
     count += tlen;
-    if(unlikely(count == 5550)) {
+    if(unlikely(count == 5540)) {
       a = (a & 0xffff) + (a >> 16) * (65536-MOD_ADLER);
       b = (b & 0xffff) + (b >> 16) * (65536-MOD_ADLER);
       count = 0;
@@ -71,22 +71,22 @@ static int wpos = 0;
 static int rpos = 0;
 static vector<unsigned long> adli;
 
-void reg_adler_worker(const Adler32 &adl, const char *file, int line) {
+void reg_adler_ul_worker(unsigned long dat, const char *file, int line) {
   if(read) {
-    if(wpos && adli[wpos - 1] == adl.output())
+    if(wpos && adli[wpos - 1] == dat)
       return;
     if(wpos >= adli.size()) {
       dprintf("Too many adler items at %s:%d frame %d (%d valid)\n", file, line, frameNumber, adli.size());
       CHECK(0);
     }
-    if(adli[wpos] != adl.output()) {
-      dprintf("Adler consistency failure at %s:%d %d (%08lx vs %08lx)\n", file, line, frameNumber, adli[wpos], adl.output());
+    if(adli[wpos] != dat) {
+      dprintf("Adler consistency failure at %s:%d %d (%08lx vs %08lx)\n", file, line, frameNumber, adli[wpos], dat);
       CHECK(0);
     }
     wpos++;
   } else {
-    if(!adli.size() || adli.back() != adl.output())
-      adli.push_back(adl.output());
+    if(!adli.size() || adli.back() != dat)
+      adli.push_back(dat);
   }
 }
 

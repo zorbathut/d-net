@@ -31,11 +31,6 @@ DEFINE_bool(frameskip, true, "Enable or disable frameskipping");
 DEFINE_bool(render, true, "Render shit");
 DEFINE_bool(timing, true, "Display timing information");
 
-long long polling = 0;
-long long waiting = 0;
-long long ticking = 0;
-long long rendering = 0;
-
 void displayCZInfo();
 
 void MainLoop() {
@@ -45,6 +40,12 @@ void MainLoop() {
   bool quit = false;
 
   int frako = 0;
+  
+  long long polling = 0;
+  long long waiting = 0;
+  long long ticking = 0;
+  long long rendering = 0;
+  int adlers = 0;
   
   Rng rng(unsync().generate_seed());
   pair<RngSeed, vector<Controller> > rc = controls_init(rng.generate_seed());
@@ -121,6 +122,7 @@ void MainLoop() {
       adler(&adl, frameNumber);
       interface.checksum(&adl);
       reg_adler(adl);
+      adlers += ret_adler_ref_count();
     }
     if(FLAGS_writeTarget != "" && controls_recordable()) {
       if(frameNumber == 0) {
@@ -236,12 +238,14 @@ void MainLoop() {
         dprintf("%4d skipped", skipped);
         dprintf("    %s", printGraphicsStats().c_str());
         displayCZInfo();
+        dprintf("    %d adlers per frame", adlers / frameSplit);
         dprintf("%d frames in %ld seconds, %.2fx overall (%.2f hours gametime)", frameNumber, time(NULL) - starttime, (frameNumber / 60.) / (time(NULL) - starttime), frameNumber / 60. / 60 / 60);
         polling = 0;
         ticking = 0;
         waiting = 0;
         rendering = 0;
         skipped = 0;
+        adlers = 0;
       }
     }
     frameNumber++;

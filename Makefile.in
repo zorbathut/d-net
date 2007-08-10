@@ -90,7 +90,7 @@ ailoop: d-net
 	while nice ./d-net.exe --nofullscreen --aiCount=12 --fastForwardTo=100000000 --factionmode=3 --terminateAfter=3600 --startingPhase=0 --noshopcache ; do echo Cycle. ; done
 
 aichecksumloop: d-net
-	while nice rm -f dumps/dump-*.dnd && nice ./d-net.exe --nofullscreen --aiCount=4 --fastForwardTo=100000000 --factionmode=3 --terminateAfterFrame=3600 --noshopcache && nice ./d-net.exe --nofullscreen --fastForwardTo=1000000000 --factionmode=3 --readtarget=`ls dumps/dump-*.dnd` ; do echo Cycle. ; done
+	while nice rm -f dumps/dump-*.dnd && nice ./d-net.exe --nofullscreen --aiCount=4 --fastForwardTo=100000000 --factionmode=3 --terminateAfter=3600 --noshopcache --perfbar && nice ./d-net.exe --nofullscreen --fastForwardTo=1000000000 --factionmode=3 --perfbar --readtarget=`ls dumps/dump-*.dnd` ; do echo Cycle. ; done
   
 veced: vecedit
 	./vecedit.exe

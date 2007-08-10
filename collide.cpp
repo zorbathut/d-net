@@ -825,7 +825,12 @@ void Collider::finishProcess() {
 }
 
 Collider::Collider(int players, Coord resolution) : players(players), resolution(resolution), state(CSTA_WAITING), sx(0), ex(0), sy(0), ey(0) { };
-Collider::~Collider() { };
+Collider::~Collider() {
+  sx = 1234;
+  sy = 5838;
+  ex = -3282;
+  ey = -5983; // for checksumming
+};
 
 DECLARE_bool(debugGraphics);
 void Collider::render() const {
