@@ -115,10 +115,12 @@ void MainLoop() {
     CHECK(controllers.size() == origcontrollers.size());
     for(int i = 0; i < controllers.size(); i++)
       CHECK(controllers[i].keys.size() == origcontrollers[i].keys.size());
-    Adler32 adl;
     {
+      Adler32 adl;
       PerfStack pst(PBC::checksum);
+      adler(&adl, frameNumber);
       interface.checksum(&adl);
+      reg_adler(adl);
     }
     if(FLAGS_writeTarget != "" && controls_recordable()) {
       if(frameNumber == 0) {
@@ -133,7 +135,7 @@ void MainLoop() {
         dprintf("%s\n", fname.c_str());
         outfile = fopen(fname.c_str(), "wb");
         if(outfile) {
-          int dat = 4;
+          int dat = 5;
           fwrite(&dat, 1, sizeof(dat), outfile);
           fwrite(&game_seed, 1, sizeof(game_seed), outfile);  // this is kind of grim and nasty
           dat = controllers.size();
@@ -163,13 +165,16 @@ void MainLoop() {
             fwrite(&controllers[i].axes[j], 1, sizeof(controllers[i].axes[j]), outfile);
         }
 
-        unsigned long res = adl.output();
-        fwrite(&res, 1, sizeof(res), outfile);
+        int refc = ret_adler_ref_count();
+        fwrite(&refc, 1, sizeof(refc), outfile);
+        for(int i = 0; i < refc; i++) {
+          unsigned long ref = ret_adler_ref();
+          fwrite(&ref, 1, sizeof(ref), outfile);
+        }
+        ret_adler_ref_clear();
         fflush(outfile);
       }
     }
-    if(frameNumber % 60 == 0)
-      dprintf("%08x", (unsigned int)adl.output());
     if(FLAGS_timing) {
       polling += bencher.ticksElapsed();
       bencher = Timer();

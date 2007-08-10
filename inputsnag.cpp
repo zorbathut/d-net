@@ -46,7 +46,7 @@ pair<RngSeed, vector<Controller> > controls_init(RngSeed default_seed) {
     CHECK(infile);
     int dat;
     fread(&dat, 1, sizeof(dat), infile);
-    CHECK(dat == 3);
+    CHECK(dat == 5);  // magic number
     fread(&rngs, 1, sizeof(rngs), infile);
     fread(&dat, 1, sizeof(dat), infile);
     dprintf("%d controllers\n", dat);
@@ -167,6 +167,17 @@ vector<Controller> controls_next() {
     }
     if(feof(infile))
       return vector<Controller>();
+    {
+      int ct = 0;
+      fread(&ct, 1, sizeof(ct), infile);
+      CHECK(ct >= 1);
+      reg_adler_ref_start();
+      for(int i = 0; i < ct; i++) {
+        unsigned long ite;
+        fread(&ite, 1, sizeof(ite), infile);
+        reg_adler_ref_item(ite);
+      }
+    }
     CHECK(!feof(infile));
     int cpos = ftell(infile);
     int x;

@@ -294,7 +294,15 @@ bool Gamemap::isInsideWall(Coord2 point) const {
   return false;
 }
 
-Gamemap::Gamemap() { };
+Gamemap::Gamemap() {
+  // these just exist for checksum
+  smashable = 0;
+  sx = 6293;
+  sy = 88883;
+  ex = -123987;
+  ey = -9438;
+  render_bounds = Coord4(1, 2, 3, 4);
+};
 Gamemap::Gamemap(const vector<vector<Coord2> > &lev, bool smashable) : smashable(smashable) {
   CHECK(lev.size());
   

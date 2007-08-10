@@ -502,9 +502,12 @@ void adler(Adler32 *adl, const PersistentData::Slot &slt) {
 }
 
 void PersistentData::checksum(Adler32 *adl) const {
-  adler(adl, mode);
+  reg_adler_intermed(*adl);
   adler(adl, playerdata);
+  reg_adler_intermed(*adl);
   adler(adl, pms);
+  reg_adler_intermed(*adl);
+  adler(adl, mode);
   adler(adl, playerid);
   adler(adl, factions);
   adler(adl, faction_mode);
@@ -526,6 +529,7 @@ void PersistentData::checksum(Adler32 *adl) const {
   adler(adl, sps_queue);
   adler(adl, btt_notify);
   adler(adl, btt_frames_left);
+  reg_adler_intermed(*adl);
 }
 
 void PersistentData::reset() {
@@ -1330,6 +1334,8 @@ PersistentData::PersistentData(int playercount, Money startingcash, Coord multip
   
   newPlayerStartingCash = baseStartingCash;
   highestPlayerCash = baseStartingCash;
+  
+  lrBaseCash = Money(0);
   
   reset();
   

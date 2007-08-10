@@ -12,6 +12,8 @@ public:
 private:
   unsigned int a;
   unsigned int b;
+
+  int count;
 };
 
 class Coord;
@@ -30,5 +32,16 @@ void adler(Adler32 *adl, const Coord2 &val);
 void adler(Adler32 *adl, const Coord4 &val);
 
 void adler(Adler32 *adl, float val);  // DO NOT IMPLEMENT
+
+#define reg_adler(x) reg_adler_worker(x, __FILE__, __LINE__)
+#define reg_adler_intermed(x) reg_adler(x)
+void reg_adler_worker(const Adler32 &adl, const char *file, int line);
+
+void reg_adler_ref_start();
+void reg_adler_ref_item(unsigned long unl);
+
+int ret_adler_ref_count();
+unsigned long ret_adler_ref();
+void ret_adler_ref_clear();
 
 #endif
