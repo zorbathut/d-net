@@ -31,6 +31,8 @@ namespace PBC {
   
   const Color gfxtext = Color(0.1, 0.1, 0.4);
   const Color gfxsolid = Color(0.1, 0.4, 0.1);
+  
+  const Color checksum = Color(0.6, 0.2, 0.2);
 };
 
 class PerfStack : boost::noncopyable {

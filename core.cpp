@@ -115,6 +115,11 @@ void MainLoop() {
     CHECK(controllers.size() == origcontrollers.size());
     for(int i = 0; i < controllers.size(); i++)
       CHECK(controllers[i].keys.size() == origcontrollers[i].keys.size());
+    Adler32 adl;
+    {
+      PerfStack pst(PBC::checksum);
+      interface.checksum(&adl);
+    }
     if(FLAGS_writeTarget != "" && controls_recordable()) {
       if(frameNumber == 0) {
         if(outfile)
@@ -157,20 +162,14 @@ void MainLoop() {
           for(int j = 0; j < controllers[i].axes.size(); j++)
             fwrite(&controllers[i].axes[j], 1, sizeof(controllers[i].axes[j]), outfile);
         }
-        Adler32 adl;
-        interface.checksum(&adl);
+
         unsigned long res = adl.output();
         fwrite(&res, 1, sizeof(res), outfile);
         fflush(outfile);
       }
     }
-    {
-      Adler32 adl;
-      interface.checksum(&adl);
-      unsigned long res = adl.output();
-      if(frameNumber % 60 == 0)
-        dprintf("%08x", (unsigned int)res);
-    }
+    if(frameNumber % 60 == 0)
+      dprintf("%08x", (unsigned int)adl.output());
     if(FLAGS_timing) {
       polling += bencher.ticksElapsed();
       bencher = Timer();
