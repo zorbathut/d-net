@@ -6,9 +6,6 @@
     - get checksum reading from target working
     - somehow rig up checksum retester
   - fix the RNG with MT or something similar
-  - Lasers up a bit more, because they're weak at the beginning and passable at the end
-  - Missiles up a bit more too
-  - Boomerang durability higher
   - Highlight selected box border
   - De-highlight past box border
   - Modify damagetype highlighting to make no-damage less similar to selected

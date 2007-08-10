@@ -16,7 +16,7 @@ warhead {
   name=warhead.weapon.missile
   impactdamage=MERGE(1) explosive
   radiusdamage=MERGE(3) explosive
-  radiusfalloff=4
+  radiusfalloff=6
   radiusexplosive=1
   wallremovalradius=1
 }
@@ -162,7 +162,7 @@ warhead {
   name=warhead.weapon.clustermissile
   impactdamage=MERGE(1) explosive
   radiusdamage=MERGE(3) explosive
-  radiusfalloff=4
+  radiusfalloff=6
   radiusexplosive=1
   wallremovalradius=1
 }
@@ -216,7 +216,7 @@ warhead {
   name=warhead.weapon.proximityrocket
   impactdamage=MERGE(1) explosive
   radiusdamage=MERGE(3) explosive
-  radiusfalloff=4
+  radiusfalloff=6
   radiusexplosive=1
   wallremovalradius=1
 }
@@ -270,7 +270,7 @@ warhead {
   name=warhead.weapon.adaptiverocket
   impactdamage=MERGE(1) explosive
   radiusdamage=MERGE(3) explosive
-  radiusfalloff=4
+  radiusfalloff=6
   radiusexplosive=1
   wallremovalradius=1
 }
@@ -324,7 +324,7 @@ warhead {
   name=warhead.weapon.compactnuke
   impactdamage=MERGE(1) explosive
   radiusdamage=MERGE(3) explosive
-  radiusfalloff=4
+  radiusfalloff=6
   radiusexplosive=1
   wallremovalradius=1
 }
@@ -378,7 +378,7 @@ warhead {
   name=warhead.weapon.conversionnuke
   impactdamage=MERGE(1) explosive
   radiusdamage=MERGE(3) explosive
-  radiusfalloff=4
+  radiusfalloff=6
   radiusexplosive=1
   wallremovalradius=1
 }

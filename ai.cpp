@@ -208,7 +208,7 @@ void Ai::updateTween(bool live, bool pending, Coord2 playerpos, bool shopped, Co
     shoptarget = -1;
   
   if(shoptarget == -1) {
-    nextKeys.menu.x = -1.0;
+    nextKeys.menu.x = -1;
     if(!live)
       shoptarget = 0;
     else if(rng.frand() < 0.25)
@@ -544,7 +544,9 @@ Controller Ai::getNextKeys() const {
   CHECK(curframe == frameNumber);
   
   if(source == CORE) {
-    return nextKeys;
+    Controller cnm = nextKeys;
+    cnm.menu = clamp(cnm.menu, Coord4(-1, -1, 1, 1));
+    return cnm;
   } else if(source == GAME) {
     Keystates kst = gai.getNextKeys();
     Controller kont;
@@ -554,6 +556,7 @@ Controller Ai::getNextKeys() const {
     kont.keys[BUTTON_CANCEL] = kst.cancel;
     for(int i = 0; i < SIMUL_WEAPONS; i++)
       kont.keys[BUTTON_FIRE1 + i] = kst.fire[i];
+    kont.menu = clamp(kont.menu, Coord4(-1, -1, 1, 1));
     return kont;
   } else {
     CHECK(0);
