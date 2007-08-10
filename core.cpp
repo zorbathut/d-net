@@ -169,7 +169,7 @@ void MainLoop() {
       interface.checksum(&adl);
       unsigned long res = adl.output();
       if(frameNumber % 60 == 0)
-        dprintf("%08x", res);
+        dprintf("%08x", (unsigned int)res);
     }
     if(FLAGS_timing) {
       polling += bencher.ticksElapsed();

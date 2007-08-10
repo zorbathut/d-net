@@ -519,6 +519,7 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
   if(gamemode == GMODE_STANDARD)
     bombardment_tier += getBombardmentIncreasePerSec() / FPS;
   
+  bool rv;
   if(framesSinceOneLeft / FPS >= 3 && gamemode != GMODE_TEST && gamemode != GMODE_DEMO && gamemode != GMODE_CENTERED_DEMO) {
     if(zones.size() == 0) {
       int winplayer = -1;
@@ -534,11 +535,12 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
     } else {
       CHECK(0);
     }
-    return true;
+    rv = true;
   } else {
-    return false;
+    rv = false;
   }
 
+  return rv;
 };
 
 void Game::ai(const vector<GameAi *> &ais) const {

@@ -358,7 +358,7 @@ inline Coord max(Coord lhs, int rhs) {
   return max(lhs, Coord(rhs));
 }
 inline Coord max(int lhs, Coord rhs) {
-  return max(lhs, Coord(rhs));
+  return max(Coord(lhs), rhs);
 }
 
 inline bool operator==(const Coord4 &lhs, const Coord4 &rhs) {
