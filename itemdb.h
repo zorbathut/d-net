@@ -703,6 +703,8 @@ public:
   
 };
 
+void adler(Adler32 *adl, const HierarchyNode &idb);
+
 void swap(HierarchyNode &lhs, HierarchyNode &rhs);
 
 void clearItemdb();

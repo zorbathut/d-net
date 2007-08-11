@@ -123,6 +123,13 @@ bool Weaponmanager::weaponsReady() const {
 void Weaponmanager::checksum(Adler32 *adl) const {
   reg_adler_intermed(*adl);
   reg_adler_ul(weapons.size());
+  for(map<const IDBWeapon *, int>::const_iterator itr = weapons.begin(); itr != weapons.end(); itr++) {
+    if(itr->first)
+      reg_adler_ul(distance(weaponList().begin(), weaponList().find(nameFromIDB(itr->first))));
+    else
+      reg_adler_ul(-1);
+    reg_adler_ul(itr->second);
+  }
   adler(adl, weapons);
   reg_adler_intermed(*adl);
   adler(adl, weaponops);

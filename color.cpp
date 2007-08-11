@@ -21,6 +21,16 @@ float Color::getHue() const {
   if(mx == b) return 60 * (r - g) / (mx - mn) + 240;
   CHECK(0);
 }
+float Color::getSaturation() const {
+  float mx = max(r, max(g, b));
+  float mn = min(r, min(g, b));
+  if(mx == 0)
+    return 0;
+  return 1 - mn/mx;
+}
+float Color::getValue() const {
+  return max(r, max(g, b));
+}
 
 Color colorFromString(const string &str) {
   if(str.size() == 3) {

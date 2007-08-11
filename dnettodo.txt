@@ -1,6 +1,7 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - run lots of checksumming
+    - random frame render permute
   - Highlight selected box border
   - De-highlight past box border
   - Remove unwanted past boxes

@@ -57,7 +57,7 @@ faction {
   text=text.faction.serpent
   
   file=serpent.dv2
-  color=3a0
+  color=0c0
   
   adjustment=adjustment.serpent
 }
@@ -78,7 +78,7 @@ faction { # increased everything
   text=text.faction.aquear
   
   file=ocean.dv2
-  color=22f
+  color=00f
   
   adjustment=adjustment.aquear
 }
@@ -99,7 +99,7 @@ faction { # much faster movement
   text=text.faction.academy
   
   file=lightning.dv2
-  color=fd0
+  color=ff0
   
   adjustment=adjustment.academy
 }
@@ -141,7 +141,7 @@ faction { # Extra damage to trap weapons, speed/armor bonus
   text=text.faction.security
   
   file=compass.dv2
-  color=f4f
+  color=3a7
   
   adjustment=adjustment.security
 }
@@ -162,7 +162,7 @@ faction { # Increased firerate
   text=text.faction.jason
   
   file=buzzsaw.dv2
-  color=88f
+  color=77f
   
   adjustment=adjustment.jason
 }
@@ -183,7 +183,7 @@ faction { # Cheaper tanks
   text=text.faction.korath
   
   file=zen.dv2
-  color=f51
+  color=f0f
   
   adjustment=adjustment.korath
 }
@@ -288,7 +288,7 @@ faction { # Higher resell value
   text=text.faction.sons
   
   file=trees.dv2
-  color=af5
+  color=8f2
   
   adjustment=adjustment.sons
 }
@@ -309,7 +309,7 @@ faction { # Extra damage to energy weapons
   text=text.faction.dust
   
   file=bone.dv2
-  color=fb8
+  color=fa6
   
   adjustment=adjustment.dust
 }

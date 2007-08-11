@@ -797,11 +797,22 @@ void Shop::renderToScreen(const Player *player) const {
 }
 
 void Shop::checksum(Adler32 *adl) const {
+  reg_adler_intermed(*adl);
   adler(adl, curloc);
+  adler(adl, equipselected);
+  adler(adl, highestcash);
+  adler(adl, playercount);
+  reg_adler_intermed(*adl);
+  adler(adl, hierarchroot);
+  reg_adler_intermed(*adl);
 }
 
 // Not a valid state
-Shop::Shop() { }
+Shop::Shop() {
+  equipselected = NULL;
+  highestcash = Money(-12345);
+  playercount = -34567;
+}
 
 void Shop::init(bool in_miniature, const Player *player, int in_playercount, Money in_highestCash, float aspectRatio) {
   curloc.clear();

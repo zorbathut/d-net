@@ -503,10 +503,6 @@ void adler(Adler32 *adl, const PersistentData::Slot &slt) {
 
 void PersistentData::checksum(Adler32 *adl) const {
   reg_adler_intermed(*adl);
-  adler(adl, playerdata);
-  reg_adler_intermed(*adl);
-  adler(adl, pms);
-  reg_adler_intermed(*adl);
   adler(adl, mode);
   adler(adl, playerid);
   adler(adl, factions);
@@ -529,6 +525,10 @@ void PersistentData::checksum(Adler32 *adl) const {
   adler(adl, sps_queue);
   adler(adl, btt_notify);
   adler(adl, btt_frames_left);
+  reg_adler_intermed(*adl);
+  adler(adl, playerdata);
+  reg_adler_intermed(*adl);
+  adler(adl, pms);
   reg_adler_intermed(*adl);
 }
 
@@ -1301,6 +1301,10 @@ PersistentData::PersistentData(int playercount, Money startingcash, Coord multip
       }
     }
     sort(facthues.begin(), facthues.end());
+    
+    for(int i = 0; i < facthues.size(); i++)
+      dprintf("%f %f %f: %s\n", facthues[i].first, factions[facthues[i].second].faction->color.getSaturation(), factions[facthues[i].second].faction->color.getValue(), factions[facthues[i].second].faction->name.c_str());
+    //CHECK(0);
     
     CHECK(centgrays.size() == factgrays.size());
     CHECK(centangs.size() == facthues.size());  // this is kind of flimsy

@@ -478,6 +478,28 @@ HierarchyNode::HierarchyNode() {
   despawncash = Money(0);
 }
 
+void adler(Adler32 *adl, const HierarchyNode &hn) {
+  adler(adl, hn.name);
+  adler(adl, hn.type);
+  adler(adl, hn.buyable);
+  adler(adl, hn.selectable);
+  adler(adl, hn.pack);
+  adler(adl, hn.weapon);
+  adler(adl, hn.upgrade);
+  adler(adl, hn.glory);
+  adler(adl, hn.bombardment);
+  adler(adl, hn.tank);
+  adler(adl, hn.implantitem);
+  adler(adl, hn.implantslot);
+  adler(adl, hn.equipweapon);
+  adler(adl, hn.equipweaponfirst);
+  adler(adl, hn.sellweapon);
+  adler(adl, hn.cat_restrictiontype);
+  adler(adl, hn.spawncash);
+  adler(adl, hn.despawncash);
+  adler(adl, hn.branches);
+}
+
 void swap(HierarchyNode &lhs, HierarchyNode &rhs) {
   if(&lhs == &rhs)
     return;
