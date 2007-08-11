@@ -307,7 +307,7 @@ void initFrame() {
   glBlendFunc(GL_SRC_ALPHA, GL_ONE);
   //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glStencilMask(1);
-  clearFrame(Color(0.05, 0.05, 0.05));
+  clearFrame(Color(0, 0, 0));
   CHECK(glGetError() == GL_NO_ERROR);
   glStencilMask(0);
   
@@ -691,7 +691,7 @@ void drawCircle(const Float2 &center, float radius, float weight) {
  * Text operations
  */
 
-const int betweenletter = 1.5;
+const float betweenletter = 1.25;
 const float thickness = 0.75;
 
 void drawText(const string &txt, float scale, float sx, float sy) {

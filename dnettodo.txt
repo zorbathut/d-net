@@ -3,6 +3,7 @@
   - run lots of checksumming
   - Highlight selected box border
   - De-highlight past box border
+  - remove 
   - Boost normal mine damage a bit
   - boomerang gun impact effect
   - change tank upgrade info screen to show + and - instead of just a percentage
