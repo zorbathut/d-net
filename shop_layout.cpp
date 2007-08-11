@@ -181,6 +181,9 @@ Float4 ShopLayout::boximplantupgrade(const ShopPlacement &place) const {
   float iyp = itemypos(place);
   return Float4(boxstart(place.depth) + boxwidth(place.depth) / 5, iyp + ymargin(), boxend(place.depth), iyp + cint_itemheight - ymargin());
 }
+float ShopLayout::boxfade(const ShopPlacement &place) const {
+  return expandy(place.depth);
+}
 
 Float2 ShopLayout::description(const ShopPlacement &place) const {
   return box(place).s() + Float2(border(), border());

@@ -311,10 +311,14 @@ void Shop::renderNode(const HierarchyNode &node, int depth, const Player *player
     const int itemid = renderorder[j];
     const ShopPlacement splace = ShopPlacement(tsp.depth, itemid, tsp.siblings, tsp.active);
     
-    setColor(C::box_border*0.5);
-    
     if(min(slay.box(splace).ex, getZoom().ex) - max(slay.box(splace).sx, getZoom().sx) < slay.box(splace).span_x() * 0.01)
       continue;   // if we can only see 1% of this box, just don't show any of it - gets rid of some ugly rendering edge cases
+    
+    if(depth < curloc.size() && curloc[depth] == itemid) {
+      setColor(C::box_border);
+    } else {
+      setColor(C::box_border * slay.boxfade(splace) * 0.5);
+    }
     
     if(node.branches[itemid].displaymode == HierarchyNode::HNDM_EQUIP || node.branches[itemid].displaymode == HierarchyNode::HNDM_IMPLANT_UPGRADE || node.branches[itemid].displaymode == HierarchyNode::HNDM_IMPLANT_EQUIP) {
       drawSolid(slay.boximplantupgrade(splace));

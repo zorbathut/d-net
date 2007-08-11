@@ -27,6 +27,7 @@ DEFINE_string(writeTarget, "dumps/dump", "Prefix for file dump");
 DEFINE_int(fastForwardTo, 0, "Fastforward rendering to this frame");
 DEFINE_int(terminateAfterFrame, -1, "Terminate execution after this many frames");
 DEFINE_int(terminateAfter, -1, "Terminate execution after this many seconds");
+DEFINE_int(randomizeFrameRender, 0, "Randomize frame render change to 1/this (default 0 for disabled)");
 
 DEFINE_bool(frameskip, true, "Enable or disable frameskipping");
 DEFINE_bool(render, true, "Render shit");
@@ -191,25 +192,36 @@ void MainLoop() {
       ticking += bencher.ticksElapsed();
       bencher = Timer();
     }
-    if(FLAGS_render && (!FLAGS_frameskip || frameNumber % (ffwd ? 60 : 6) == 0 || (!ffwd || frameNumber % 60 == 0) && !timer.skipFrame())) {
-      {
-        PerfStack pst(PBC::render);
-        {
-          PerfStack pst(PBC::renderinit);
-          initFrame();
-        }
-        interface.render();
-        if(!controls_users()) {
-          setColor(1.0, 1.0, 1.0);
-          setZoom(Float4(0, 0, 133.333, 100));
-          drawText(StringPrintf("%d", frameNumber), 10, Float2(5, 85));
-        }
+    if(FLAGS_render) {
+      bool render = false;
+      if(FLAGS_randomizeFrameRender != 0) {
+        CHECK(FLAGS_randomizeFrameRender > 0);
+        render = unsync().frand() < (1. / FLAGS_randomizeFrameRender);
+      } else if(ffwd) {
+        render = (frameNumber % 60 == 0);
+      } else {
+        render = (frameNumber % 6 == 0) || !timer.skipFrame();
       }
-      drawPerformanceBar();
-      deinitFrame();
-      SDL_GL_SwapBuffers();
-    } else {
-      skipped++;
+      if(render) {
+        {
+          PerfStack pst(PBC::render);
+          {
+            PerfStack pst(PBC::renderinit);
+            initFrame();
+          }
+          interface.render();
+          if(!controls_users()) {
+            setColor(1.0, 1.0, 1.0);
+            setZoom(Float4(0, 0, 133.333, 100));
+            drawText(StringPrintf("%d", frameNumber), 10, Float2(5, 85));
+          }
+        }
+        drawPerformanceBar();
+        deinitFrame();
+        SDL_GL_SwapBuffers();
+      } else {
+        skipped++;
+      }
     }
     if(FLAGS_timing) {
       rendering += bencher.ticksElapsed();

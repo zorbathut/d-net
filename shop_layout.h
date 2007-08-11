@@ -81,6 +81,7 @@ public:
   // Dynamic-zoom XY functions  
   Float4 box(const ShopPlacement &place) const;
   Float4 boximplantupgrade(const ShopPlacement &place) const;
+  float boxfade(const ShopPlacement &place) const;
 
   Float2 description(const ShopPlacement &place) const;
   Float2 descriptionimplantupgrade(const ShopPlacement &place) const;
