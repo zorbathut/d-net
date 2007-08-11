@@ -507,7 +507,7 @@ void parseProjectile(kvData *chunk, bool reload, ErrorAccumulator &accum) {
     titem->radius_physical = atof(chunk->consume("radius_physical").c_str());
     titem->mine_spikes = parseSingleItem<int>(chunk->consume("mine_spikes"));
     titem->halflife = atof(chunk->consume("halflife").c_str());
-    titem->mine_visibility = parseWithDefault(chunk, "mine_visibility", 40.f);
+    titem->mine_visibility = parseWithDefault(chunk, "mine_visibility", 30.f);
     allowed_shapes.insert("default");
   } else if(motion == "dps") {
     titem->motion = PM_DPS;
