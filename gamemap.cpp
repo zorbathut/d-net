@@ -18,7 +18,7 @@ bool isAvailable(int state) {
 
 void Gamemap::render() const {
   CHECK(paths.size());
-  setColor(0.5f, 0.5f, 0.5f);
+  setColor(C::gray(0.5f));
   for(int i = 0; i < paths.size(); i++) {
     if(isAvailable(paths[i].state))
       continue;

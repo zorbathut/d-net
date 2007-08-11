@@ -53,6 +53,7 @@ public:
   void checksum(Adler32 *adler) const;
 
   Weaponmanager(const IDBWeapon *weapon);
+  Weaponmanager();
 };
 
 class TankEquipment {

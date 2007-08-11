@@ -61,14 +61,14 @@ adjustment {
 
 adjustment {
   name=adjustment.tank.gupe
-  damage_all=-10
-  tank_firerate=-20
+  damage_all=-20
+  tank_firerate=-30
 }
 
 adjustment {
   name=adjustment.tank.himo
-  damage_all=10
-  tank_firerate=20
+  damage_all=20
+  tank_firerate=30
 }
 
 adjustment {

@@ -136,6 +136,10 @@ Weaponmanager::Weaponmanager(const IDBWeapon *weapon) {
   weaponops.resize(WMSPC_LAST);
 }
 
+Weaponmanager::Weaponmanager() {
+  defaultweapon = NULL;
+}
+
 void TankEquipment::checksum(Adler32 *adl) const {
   adler(adl, tank);
   adler(adl, upgrades);
