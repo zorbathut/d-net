@@ -1,7 +1,6 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - run lots of checksumming
-  - Boost normal mine damage a bit
   - boomerang gun impact effect
   - change tank upgrade info screen to show + and - instead of just a percentage
   - standardize normal rendering to be more obviously so (what the fuck did this mean)
