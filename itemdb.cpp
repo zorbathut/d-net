@@ -7,6 +7,8 @@
 #include "httpd.h"
 #include "adler32_util.h"
 
+#include <boost/static_assert.hpp>
+
 #include <fstream>
 #include <numeric>
 #include <set>
@@ -388,7 +390,9 @@ void HierarchyNode::checkConsistency(vector<string> *errors) const {
 // Kin, ene, exp, trap, exot
 // white blue orange cyan green
 
-const Color nhcolor[] = { Color(0.7, 0.7, 0.8), Color(0.5, 0.5, 1.0), Color(0.9, 0.5, 0.2), Color(0.2, 0.7, 0.7), Color(0.4, 0.7, 0.2) };
+const Color nhcolor[] = { Color(0.7, 0.7, 0.8), Color(0.5, 0.5, 1.0), Color(0.9, 0.5, 0.2), Color(0.2, 0.7, 0.7), Color(0.4, 0.7, 0.2), Color(0.4, 0.4, 0.2) };
+  
+BOOST_STATIC_ASSERT(ARRAY_SIZE(nhcolor) == IDBAdjustment::DAMAGE_LAST + 1);
 
 template<typename T> class getDamageType;
 
@@ -418,7 +422,7 @@ template<typename T> Color gcolor(const T *item) {
     }
   }
   if(dmg < 0)
-    return C::inactive_text;
+    return nhcolor[IDBAdjustment::DAMAGE_LAST];
   return nhcolor[dmg];
 }
 
