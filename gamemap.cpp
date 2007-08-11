@@ -93,8 +93,8 @@ void Gamemap::render() const {
   
   {
     GfxStenciled gfxs;
-    setColor(Color(0.3, 0.3, 0.3));
-    drawGrid(10.0, 0.1);
+    setColor(Color(0.4, 0.4, 0.4));
+    drawGrid(10.0, 0.2);
   }
 }
 
