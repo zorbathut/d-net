@@ -1,11 +1,6 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
-  - add checksums to dumps :(
-    - get AI working again
-    - run AI to make checksums work really
-    - get checksum reading from target working
-    - somehow rig up checksum retester
-  - fix the RNG with MT or something similar
+  - run lots of checksumming
   - Highlight selected box border
   - De-highlight past box border
   - Modify damagetype highlighting to make no-damage less similar to selected

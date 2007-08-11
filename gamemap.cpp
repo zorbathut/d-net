@@ -24,7 +24,7 @@ void Gamemap::render() const {
       continue;
     
     for(int j = 0; j < paths[i].renderpath.size(); j++)
-      drawLinePath(paths[i].renderpath[j], 0.5);
+      drawLinePath(paths[i].renderpath[j], 0.75);
     /*
     if(FLAGS_debugGraphics) {
       for(int j = 0; j < paths[i].second.size(); j++) {

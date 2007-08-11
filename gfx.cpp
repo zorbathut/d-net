@@ -224,7 +224,7 @@ void updateResolution(float aspect) {
   }
 }
 
-float curWeight = -1.f;
+float curWeight = 0;
 int lineCount = 0;
 int clusterCount = 0;
 int lpFailure = 0;
@@ -253,8 +253,8 @@ static bool frame_running = false;
 void beginLineCluster(float weight) {
   CHECK(frame_running);
   CHECK(glGetError() == GL_NO_ERROR);
-  CHECK(curWeight == -1.f);
-  CHECK(weight != -1.f);
+  CHECK(curWeight == 0);
+  CHECK(weight > 0);
   glLineWidth(weight / map_zoom * getResolutionY());   // GL uses pixels internally for this unit, so I have to translate from game-meters
   CHECK(glGetError() == GL_NO_ERROR);
   glBegin(GL_LINE_STRIP);
@@ -264,21 +264,33 @@ void beginLineCluster(float weight) {
   clusterCount++;
 }
 
-void finishLineCluster() {
+void beginPointCluster(float weight) {
   CHECK(frame_running);
-  if(curWeight != -1.f) {
-    curWeight = -1.f;
+  CHECK(glGetError() == GL_NO_ERROR);
+  CHECK(curWeight == 0);
+  CHECK(weight > 0);
+  glPointSize(weight / map_zoom * getResolutionY());   // GL uses pixels internally for this unit, so I have to translate from game-meters
+  CHECK(glGetError() == GL_NO_ERROR);
+  glBegin(GL_POINTS);
+  curWeight = -weight;
+  lineCount = 0;
+  clusterCount++;
+}
+
+void finishCluster() {
+  CHECK(frame_running);
+  if(curWeight != 0) {
+    curWeight = 0;
     glEnd();
     lineCount = 0;
   }
   CHECK(glGetError() == GL_NO_ERROR);
-  glLineWidth(1);
 }
 
 void initFrame() {
   CHECK(!frame_running);
   frame_running = true;
-  CHECK(curWeight == -1.f);
+  CHECK(curWeight == 0);
   {
     GLint v = 0;
     glGetIntegerv(GL_STENCIL_BITS, &v);
@@ -303,7 +315,7 @@ void initFrame() {
 }
 
 void clearFrame(const Color &color) {
-  finishLineCluster();
+  finishCluster();
   glClearColor(color.r, color.g, color.b, 0.0f);
   glClearStencil(0);
   glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -319,7 +331,7 @@ void deinitFrame() {
   unregisterCrashFunction(deinitFrame);
   
   CHECK(frame_running);
-  finishLineCluster();
+  finishCluster();
   glFlush();
   CHECK(glGetError() == GL_NO_ERROR);
   renderedFrameId++;
@@ -328,7 +340,7 @@ void deinitFrame() {
 
 GfxWindow::GfxWindow(const Float4 &obounds, float fade) {
   CHECK(frame_running);
-  finishLineCluster();
+  finishCluster();
   
   Float4 bounds = obounds;
   bounds.sx = max(bounds.sx, map_bounds.sx);
@@ -383,7 +395,7 @@ bool stenciled = false;
 GfxStenciled::GfxStenciled() {
   CHECK(frame_running);
   CHECK(!stenciled);
-  finishLineCluster();
+  finishCluster();
   CHECK(glGetError() == GL_NO_ERROR);
   glEnable(GL_STENCIL_TEST);
   glStencilFunc(GL_EQUAL, 1, 1);
@@ -395,7 +407,7 @@ GfxStenciled::GfxStenciled() {
 GfxStenciled::~GfxStenciled() {
   CHECK(frame_running);
   CHECK(stenciled);
-  finishLineCluster();
+  finishCluster();
   CHECK(glGetError() == GL_NO_ERROR);
   glDisable(GL_STENCIL_TEST);
   CHECK(glGetError() == GL_NO_ERROR);
@@ -407,7 +419,7 @@ GfxInvertingStencil::GfxInvertingStencil() {
   CHECK(frame_running);
   CHECK(!inverting);
   
-  finishLineCluster();
+  finishCluster();
   CHECK(glGetError() == GL_NO_ERROR);
 
   glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
@@ -423,7 +435,7 @@ GfxInvertingStencil::GfxInvertingStencil() {
 GfxInvertingStencil::~GfxInvertingStencil() {
   CHECK(frame_running);
   CHECK(inverting);
-  CHECK(curWeight == -1.f);
+  CHECK(curWeight == 0);
   
   glDisable(GL_STENCIL_TEST);
   glStencilMask(0);
@@ -461,7 +473,7 @@ void setZoomCenter(float cx, float cy, float radius_y) {
 
 void setZoomVertical(float in_sx, float in_sy, float in_ey) {
   CHECK(frame_running);
-  finishLineCluster();
+  finishCluster();
   
   map_saved_sx = in_sx;
   map_saved_sy = in_sy;
@@ -511,7 +523,7 @@ inline void localVertex2f(float x, float y) {
 void drawLine(float sx, float sy, float ex, float ey, float weight) {
   CHECK(weight > 0);
   if(unlikely(weight != curWeight || lineCount > 1000)) {
-    finishLineCluster();
+    finishCluster();
     beginLineCluster(weight);
   }
   if(likely(lastPoint != Float2(sx, sy))) {
@@ -566,7 +578,7 @@ void drawSolidLoop(const vector<Float2> &verts) {
   for(int i = 0; i < verts.size(); i++)
     CHECK(inPath((verts[i] + verts[(i + 1) % verts.size()] + verts[(i + 2) % verts.size()]) / 3, verts));
   
-  finishLineCluster();
+  finishCluster();
   CHECK(glGetError() == GL_NO_ERROR);
   glColor3f(clearcolor.r, clearcolor.g, clearcolor.b);
   glBlendFunc(GL_ONE, GL_ZERO);
@@ -586,11 +598,13 @@ void invertStencilLoop(const vector<Coord2> &verts) {
 }
 
 void drawPoint(const Float2 &pos, float weight) {
-  finishLineCluster();
-  glPointSize(weight / map_zoom * getResolutionY());   // GL uses pixels internally for this unit, so I have to translate from game-meters
-  glBegin(GL_POINTS);
-  glVertex2f((pos.x - map_sx) / map_zoom, (pos.y - map_sy) / map_zoom);
-  glEnd();
+  CHECK(weight > 0);
+  if(unlikely(weight != -curWeight || lineCount > 1000)) {
+    finishCluster();
+    beginPointCluster(weight);
+  }
+  localVertex2f(pos.x, pos.y);
+  lineCount++;
 }
 
 /*************
@@ -677,8 +691,8 @@ void drawCircle(const Float2 &center, float radius, float weight) {
  * Text operations
  */
 
-const int betweenletter = 1;
-const float thickness = 0.5;
+const int betweenletter = 1.5;
+const float thickness = 0.75;
 
 void drawText(const string &txt, float scale, float sx, float sy) {
   drawText(txt, scale, Float2(sx, sy));

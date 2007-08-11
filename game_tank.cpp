@@ -76,10 +76,10 @@ void Tank::render(const vector<Team> &teams) const {
   small = small * 0.5;
   
   setColor(main);
-  drawLineLoop(tankverts, 0.5);
+  drawLineLoop(tankverts, 0.75);
   
   setColor(small);
-  drawLineLoop(smtankverts, 0.5);
+  drawLineLoop(smtankverts, 0.75);
 };
 
 void Tank::checksum(Adler32 *adl) const {

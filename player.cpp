@@ -121,9 +121,13 @@ bool Weaponmanager::weaponsReady() const {
 }
 
 void Weaponmanager::checksum(Adler32 *adl) const {
+  reg_adler_intermed(*adl);
   adler(adl, weapons);
+  reg_adler_intermed(*adl);
   adler(adl, weaponops);
+  reg_adler_intermed(*adl);
   adler(adl, defaultweapon);
+  reg_adler_intermed(*adl);
 }
 
 Weaponmanager::Weaponmanager(const IDBWeapon *weapon) {

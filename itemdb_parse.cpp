@@ -467,7 +467,7 @@ void parseUpgrade(kvData *chunk, bool reload, ErrorAccumulator &accum) {
 void parseProjectile(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   IDBProjectile *titem = prepareName(chunk, &projectileclasses, reload, "projectile");
   
-  titem->visual_thickness = parseWithDefault(chunk, "visual_thickness", 0.3);
+  titem->visual_thickness = parseWithDefault(chunk, "visual_thickness", 0.5);
   
   set<string> allowed_shapes;
   
