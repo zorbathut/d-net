@@ -308,8 +308,8 @@ projectile {
   motion=boomerang
   velocity=120
   boomerang_convergence=24
-  boomerang_intersection=80
-  boomerang_maxrotate=20.0
+  boomerang_intersection=60
+  boomerang_maxrotate=24.0
   
   shape=arrow
   arrow_width=2

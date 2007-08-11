@@ -346,6 +346,7 @@ Projectile::Projectile(const Coord2 &in_pos, Coord in_d, const IDBProjectileAdju
     boomerang_abspos = Coord2(0, 0);
     boomerang_yfactor = cfcos(Coord(rng->frand()) * COORDPI / 4 + COORDPI / 8 * 3);
     boomerang_angle = 0;
+    boomerang_lastchange = 1000000;
   } else if(projtype.motion() == PM_MINE || projtype.motion() == PM_SPIDERMINE) {
     mine_facing = rng->frand() * 2 * PI;
   } else if(projtype.motion() == PM_DPS) {
