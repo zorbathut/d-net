@@ -390,7 +390,8 @@ void HierarchyNode::checkConsistency(vector<string> *errors) const {
 // Kin, ene, exp, trap, exot
 // white blue orange cyan green
 
-const Color nhcolor[] = { Color(0.7, 0.7, 0.8), Color(0.5, 0.5, 1.0), Color(0.9, 0.5, 0.2), Color(0.2, 0.7, 0.7), Color(0.4, 0.7, 0.2), Color(0.4, 0.4, 0.2) };
+const Color nhcolor[] = { Color(0.65, 0.65, 0.75), Color(0.5, 0.5, 0.9), Color(0.9, 0.5, 0.2), Color(0.2, 0.7, 0.7), Color(0.4, 0.7, 0.2), Color(0.4, 0.4, 0.2) };
+const Color nhcolorsel[] = { Color(0.85, 0.85, 0.9), Color(0.7, 0.7, 1.0), Color(1.0, 0.75, 0.3), Color(0.3, 1.0, 1.0), Color(0.6, 1.0, 0.3), Color(0.6, 0.6, 0.3) };
   
 BOOST_STATIC_ASSERT(ARRAY_SIZE(nhcolor) == IDBAdjustment::DAMAGE_LAST + 1);
 
@@ -410,7 +411,7 @@ public:
   }
 };
   
-template<typename T> Color gcolor(const T *item) {
+template<typename T> int gcolor(const T *item) {
   int dmg = -1;
   for(int i = 0; i < IDBAdjustment::DAMAGE_LAST; i++) {
     if(getDamageType<T>()(item, i) != 0) {
@@ -422,22 +423,23 @@ template<typename T> Color gcolor(const T *item) {
     }
   }
   if(dmg < 0)
-    return nhcolor[IDBAdjustment::DAMAGE_LAST];
-  return nhcolor[dmg];
+    return IDBAdjustment::DAMAGE_LAST;
+  return dmg;
 }
 
 Color HierarchyNode::getColor() const {
   if(type == HNT_WEAPON) {
-    return gcolor(weapon);
+    return nhcolor[gcolor(weapon)];
   } else if(type == HNT_BOMBARDMENT) {
-    return gcolor(bombardment);
+    return nhcolor[gcolor(bombardment)];
   } else if(type == HNT_EQUIPWEAPON) {
-    Color col = gcolor(equipweapon);
+    int col = gcolor(equipweapon);
     if(equipweaponfirst)
-      col *= 1.5;
-    return col;
+      return nhcolorsel[col];
+    else
+      return nhcolor[col];
   } else if(type == HNT_SELLWEAPON) {
-    return gcolor(sellweapon);
+    return nhcolor[gcolor(sellweapon)];
   } else if(type == HNT_CATEGORY && branches.size()) {
     if(name == "Bombardment")
       return C::inactive_text; // hackety hack hack
