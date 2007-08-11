@@ -278,11 +278,29 @@ text {
   data=Blah blah hamster blah yacht blah blah blah monocle polish
 }
 
+effects {
+  name=effects.weapon.boomeranggun
+  type=particle
+
+  quantity=8
+  
+  inertia=0.3
+  spread=30
+  
+  slowdown=0.3
+  lifetime=0.2
+  
+  radius=0.3
+  color=1.0, 0.9, 0.6
+}
+
 warhead {
   name=warhead.weapon.boomeranggun
   impactdamage=MERGE trap
   wallremovalradius=0.5
-  wallremovalchance=0.05
+  wallremovalchance=0.4
+  
+  effects_impact=effects.weapon.boomeranggun
 }
 
 projectile {
