@@ -1,7 +1,6 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - run lots of checksumming
-  - change tank upgrade info screen to show + and - instead of just a percentage
   - standardize normal rendering to be more obviously so (what the fuck did this mean)
   - Many many more weapons
     - Add implementations for all trap weapons
