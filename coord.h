@@ -3,7 +3,6 @@
 
 #include "cfcommon.h"
 #include "debug.h"
-#include "adler32.h"
 #include "util.h"
 
 #include <vector>

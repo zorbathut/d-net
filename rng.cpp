@@ -3,6 +3,7 @@
 
 #include "debug.h"
 #include "coord.h"
+#include "adler32.h"
 
 #include <cmath>
 

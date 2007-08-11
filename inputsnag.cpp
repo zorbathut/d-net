@@ -6,6 +6,7 @@
 #include "debug.h"
 #include "util.h"
 #include "smartptr.h"
+#include "adler32.h"
 
 #ifdef OSX_FRAMEWORK_PREFIXES
   #include <SDL/SDL.h>

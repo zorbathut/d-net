@@ -1,9 +1,8 @@
 #ifndef DNET_RNG
 #define DNET_RNG
 
-#include "adler32.h"
-
 class Coord;
+class Adler32;
   
 class RngSeed {
 friend class Rng;
@@ -44,8 +43,6 @@ public:
 
 Rng &unsync();
 
-inline void adler(Adler32 *adler, const Rng &rng) {
-  rng.checksum(adler);
-}
+inline void adler(Adler32 *adler, const Rng &rng) { rng.checksum(adler); }
 
 #endif

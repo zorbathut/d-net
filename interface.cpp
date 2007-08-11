@@ -11,6 +11,7 @@
 #include "os.h"
 #include "player.h"
 #include "audio.h"
+#include "adler32.h"
 
 #include <boost/assign.hpp>
 

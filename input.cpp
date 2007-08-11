@@ -1,6 +1,8 @@
 
 #include "input.h"
 
+#include "adler32.h"
+
 using namespace std;
 
 /*************

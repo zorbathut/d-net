@@ -11,6 +11,7 @@
 #include "util.h"
 #include "httpd.h"
 #include "perfbar.h"
+#include "adler32.h"
 
 #ifdef OSX_FRAMEWORK_PREFIXES
   #include <SDL/SDL.h>

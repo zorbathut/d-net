@@ -546,22 +546,39 @@ bool Player::isCorrupted() const {
 }
 
 void Player::checksum(Adler32 *adl) const {
+  reg_adler_intermed(*adl);
   adler(adl, corrupted);
+  reg_adler_intermed(*adl);
   adler(adl, glory);
+  reg_adler_intermed(*adl);
   adler(adl, bombardment);
+  reg_adler_intermed(*adl);
   adler(adl, tank);
+  reg_adler_intermed(*adl);
   adler(adl, implantslots);
+  reg_adler_intermed(*adl);
   adler(adl, implantlevels);
+  reg_adler_intermed(*adl);
   adler(adl, implantequipped);
+  reg_adler_intermed(*adl);
   adler(adl, faction);
+  reg_adler_intermed(*adl);
   adler(adl, factionmode);
+  reg_adler_intermed(*adl);
   adler(adl, adjustment);
+  reg_adler_intermed(*adl);
   adler(adl, adjustment_notank);
+  reg_adler_intermed(*adl);
   adler(adl, cash);
+  reg_adler_intermed(*adl);
   adler(adl, damageDone);
+  reg_adler_intermed(*adl);
   adler(adl, kills);
+  reg_adler_intermed(*adl);
   adler(adl, wins);
+  reg_adler_intermed(*adl);
   weapons.checksum(adl);
+  reg_adler_intermed(*adl);
 }
 
 Player::Player() : weapons(NULL) { // this kind of works with the weapon manager

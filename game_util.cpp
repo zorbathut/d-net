@@ -3,6 +3,7 @@
 
 #include "game_tank.h"
 #include "rng.h"
+#include "adler32.h"
 
 using namespace std;
 
