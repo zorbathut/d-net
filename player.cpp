@@ -122,6 +122,7 @@ bool Weaponmanager::weaponsReady() const {
 
 void Weaponmanager::checksum(Adler32 *adl) const {
   reg_adler_intermed(*adl);
+  reg_adler_ul(weapons.size());
   adler(adl, weapons);
   reg_adler_intermed(*adl);
   adler(adl, weaponops);

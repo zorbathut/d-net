@@ -57,7 +57,7 @@ faction {
   text=text.faction.serpent
   
   file=serpent.dv2
-  color=0a0
+  color=3a0
   
   adjustment=adjustment.serpent
 }
@@ -78,7 +78,7 @@ faction { # increased everything
   text=text.faction.aquear
   
   file=ocean.dv2
-  color=00f
+  color=22f
   
   adjustment=adjustment.aquear
 }
@@ -99,7 +99,7 @@ faction { # much faster movement
   text=text.faction.academy
   
   file=lightning.dv2
-  color=ff0
+  color=fd0
   
   adjustment=adjustment.academy
 }

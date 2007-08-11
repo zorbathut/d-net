@@ -3,11 +3,11 @@
   - run lots of checksumming
   - Highlight selected box border
   - De-highlight past box border
-  - remove 
+  - Remove unwanted past boxes
   - Boost normal mine damage a bit
   - boomerang gun impact effect
   - change tank upgrade info screen to show + and - instead of just a percentage
-  - standardize normal rendering to be more obviously so
+  - standardize normal rendering to be more obviously so (what the fuck did this mean)
   - Many many more weapons
     - Add implementations for all trap weapons
       - Hunter/Killer: I need a new projectile for this.
