@@ -31,12 +31,26 @@ void adler(Adler32 *adl, const Coord4 &val) { adl->addBytes(&val, sizeof(val)); 
 
 
 static bool read = false;
+static bool broke = false;
 static int wpos = 0;
 static int rpos = 0;
 static vector<unsigned long> adli;
 
-void reg_adler_ul_worker(unsigned long dat, const char *file, int line) {
-  if(read) {
+static vector<const AdlerIgnore *> aigl;
+
+AdlerIgnore::AdlerIgnore() {
+  aigl.push_back(this);
+}
+AdlerIgnore::~AdlerIgnore() {
+  CHECK(aigl.size());
+  CHECK(aigl.back() == this);
+  aigl.pop_back();
+}
+
+void reg_adler_ul_worker(unsigned long dat, const char *file, int line, const char *msg) {
+  if(aigl.size()) {
+  } else if(broke) {
+  } else if(read) {
     if(wpos && adli[wpos - 1] == dat)
       return;
     if(wpos >= adli.size()) {
@@ -45,6 +59,8 @@ void reg_adler_ul_worker(unsigned long dat, const char *file, int line) {
     }
     if(adli[wpos] != dat) {
       dprintf("Adler consistency failure at %s:%d %d (%08lx vs %08lx)\n", file, line, frameNumber, adli[wpos], dat);
+      if(msg)
+        dprintf("%s\n", msg);
       CHECK(0);
     }
     wpos++;
@@ -55,14 +71,21 @@ void reg_adler_ul_worker(unsigned long dat, const char *file, int line) {
 }
 
 void reg_adler_ref_start() {
+  CHECK(!broke);
   read = true;
   adli.clear();
   wpos = 0;
   rpos = 0;
 }
 void reg_adler_ref_item(unsigned long unl) {
+  CHECK(!broke);
   CHECK(read);
   adli.push_back(unl);
+}
+
+void reg_adler_ref_nullity() {
+  dprintf("Adler disabled!\n");
+  broke = true;
 }
 
 int ret_adler_ref_count() {

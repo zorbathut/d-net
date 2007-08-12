@@ -62,13 +62,22 @@ void adler(Adler32 *adl, const Coord4 &val);
 
 void adler(Adler32 *adl, float val);  // DO NOT IMPLEMENT
 
+class AdlerIgnore {
+public:
+  AdlerIgnore();
+  ~AdlerIgnore();
+};
+
 #define reg_adler(x) reg_adler_ul((x).output())
 #define reg_adler_intermed(x) reg_adler((x))
 #define reg_adler_ul(x) reg_adler_ul_worker((x), __FILE__, __LINE__)
-void reg_adler_ul_worker(unsigned long unl, const char *file, int line);
+#define reg_adler_ul_msg(x, y) reg_adler_ul_worker((x), __FILE__, __LINE__, y)
+void reg_adler_ul_worker(unsigned long unl, const char *file, int line, const char *msg = NULL);
 
 void reg_adler_ref_start();
 void reg_adler_ref_item(unsigned long unl);
+
+void reg_adler_ref_nullity();
 
 int ret_adler_ref_count();
 unsigned long ret_adler_ref();

@@ -47,7 +47,7 @@ pair<RngSeed, vector<Controller> > controls_init(RngSeed default_seed) {
     CHECK(infile);
     int dat;
     fread(&dat, 1, sizeof(dat), infile);
-    CHECK(dat == 5);  // magic number
+    CHECK(dat == 6);  // magic number
     fread(&rngs, 1, sizeof(rngs), infile);
     fread(&dat, 1, sizeof(dat), infile);
     dprintf("%d controllers\n", dat);
@@ -180,13 +180,6 @@ vector<Controller> controls_next() {
       }
     }
     CHECK(!feof(infile));
-    int cpos = ftell(infile);
-    int x;
-    fread(&x, 1, sizeof(x), infile);
-    if(feof(infile))
-      dprintf("EOF on frame %d\n", frameNumber);
-    fseek(infile, cpos, SEEK_SET);
-    CHECK(cpos == ftell(infile));
   } else if(FLAGS_aiCount) {
     for(int i = 0; i < FLAGS_aiCount; i++)
       now[i] = ai[i]->getNextKeys();
@@ -286,6 +279,24 @@ void controls_shutdown() {
     SDL_JoystickClose(joysticks[i]);
   if(infile)
     fclose(infile);
+}
+
+void controls_snag_next_checksum_set() {
+  if(infile) {
+    int ct = 0;
+    fread(&ct, 1, sizeof(ct), infile);
+    if(feof(infile)) {
+      reg_adler_ref_nullity();
+      return;
+    }
+    CHECK(ct >= 1);
+    reg_adler_ref_start();
+    for(int i = 0; i < ct; i++) {
+      unsigned long ite;
+      fread(&ite, 1, sizeof(ite), infile);
+      reg_adler_ref_item(ite);
+    }
+  }
 }
 
 int controls_primary_id() {

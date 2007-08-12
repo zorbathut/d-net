@@ -1,6 +1,7 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - run lots of checksumming
+    - split off file replay into its own cpp
   - standardize normal rendering to be more obviously so (what the fuck did this mean)
   - Many many more weapons
     - Add implementations for all trap weapons
@@ -168,8 +169,9 @@ Take a "queueSound" with Sound, volume, fade.
 Sound gets loaded, much like dvec2.
 Then there's IDBSoundPack items. This sounds good.
 
---- Boomerang
-- Variables: toss width, intersection point
-- Figure out an "angle" randomly, do the toss
-- How do I make my math work here?
-
+--- Hunter
+- Launch out similar to airbrake
+- Detonate on contact (use a diamond, perhaps, with one corner extended)
+- Lock on to the closest target, using a combination of distance and turning to figure out which is "closest"
+- Turn towards him
+- Once aimed directly towards him, start accelerating (continue turning, also)

@@ -92,7 +92,7 @@ ailoop: d-net
 AICSLFLAGS = --nofullscreen --fastForwardTo=100000000 --factionmode=3 --noshopcache --perfbar --randomizeFrameRender=60
 
 aichecksumloop: d-net
-	while nice rm -f dumps/dump-*.dnd && nice ./d-net.exe $(AICSLFLAGS) --aiCount=4 --terminateAfter=120 && nice ./d-net.exe $(AICSLFLAGS) --readtarget=`ls dumps/dump-*.dnd` ; do echo Cycle. ; done
+	while nice rm -f dumps/dump-*.dnd && nice ./d-net.exe $(AICSLFLAGS) --aiCount=4 --terminateAfter=60 && nice ./d-net.exe $(AICSLFLAGS) --readtarget=`ls dumps/dump-*.dnd` ; do echo Cycle. ; done
   
 veced: vecedit
 	./vecedit.exe

@@ -17,6 +17,8 @@ bool controls_users();
 bool controls_recordable();
 void controls_shutdown();
 
+void controls_snag_next_checksum_set();
+
 int controls_primary_id();
 string controls_availdescr(int cid);
 

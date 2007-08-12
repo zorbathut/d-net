@@ -126,6 +126,7 @@ void MainLoop() {
       reg_adler(adl);
       adlers += ret_adler_ref_count();
     }
+    
     if(FLAGS_writeTarget != "" && controls_recordable()) {
       if(frameNumber == 0) {
         if(outfile)
@@ -139,7 +140,7 @@ void MainLoop() {
         dprintf("%s\n", fname.c_str());
         outfile = fopen(fname.c_str(), "wb");
         if(outfile) {
-          int dat = 5;
+          int dat = 6;
           fwrite(&dat, 1, sizeof(dat), outfile);
           fwrite(&game_seed, 1, sizeof(game_seed), outfile);  // this is kind of grim and nasty
           dat = controllers.size();
@@ -179,6 +180,10 @@ void MainLoop() {
         fflush(outfile);
       }
     }
+    
+    controls_snag_next_checksum_set();
+    reg_adler_ul(0);  // so we have one item, and for rechecking's sake
+    
     if(FLAGS_timing) {
       polling += bencher.ticksElapsed();
       bencher = Timer();
@@ -223,6 +228,19 @@ void MainLoop() {
         skipped++;
       }
     }
+    
+    adlers += ret_adler_ref_count();
+    if(outfile) {
+      int refc = ret_adler_ref_count();
+      fwrite(&refc, 1, sizeof(refc), outfile);
+      for(int i = 0; i < refc; i++) {
+        unsigned long ref = ret_adler_ref();
+        fwrite(&ref, 1, sizeof(ref), outfile);
+      }
+      ret_adler_ref_clear();
+      fflush(outfile);
+    }
+    
     if(FLAGS_timing) {
       rendering += bencher.ticksElapsed();
       bencher = Timer();
