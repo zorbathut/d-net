@@ -538,6 +538,10 @@ void parseProjectile(kvData *chunk, bool reload, ErrorAccumulator &accum) {
     titem->arrow_height = parseSingleItem<float>(chunk->consume("arrow_height"));
     titem->arrow_width = parseSingleItem<float>(chunk->consume("arrow_width"));
     titem->arrow_rotate = parseWithDefault(chunk, "arrow_rotate", 0.0);
+  } else if(shape == "drone") {
+    titem->shape = PS_DRONE;
+    titem->drone_radius = parseSingleItem<float>(chunk->consume("drone_radius"));
+    titem->drone_spike = parseSingleItem<float>(chunk->consume("drone_spike"));
   } else {
     CHECK(0);
   }

@@ -2,7 +2,7 @@
 - "Finish the Damn Game" Initiative
   - run lots of checksumming
     - split off file replay into its own cpp
-  - standardize normal rendering to be more obviously so (what the fuck did this mean)
+  - make projectile rendering and shapes slightly saner
   - Many many more weapons
     - Add implementations for all trap weapons
       - Hunter/Killer: I need a new projectile for this.
