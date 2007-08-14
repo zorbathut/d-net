@@ -40,7 +40,10 @@ int GameImpactContext::getClosestFoeId(const Coord2 &pos, int owner) const {
       id = i;
     }
   }
-  return findTankId(taj[id].second);
+  if(id == -1)
+    return -1;
+  else
+    return findTankId(taj[id].second);
 }
 
 float GameImpactContext::getClosestFoeDistance(const Coord2 &pos, int owner) const {
@@ -216,10 +219,10 @@ void deployProjectile(const IDBDeployAdjust &deploy, const DeployLocation &locat
     CHECK(!tang);
     proji.push_back(make_pair(location.tank().getMinePoint(gpc.gic->rng), location.tank().d));
   } else if(type == DT_DIRECTED) {
-    dprintf("is directed\n");
     CHECK(!proji.size());
     int cid = gpc.gic->getClosestFoeId(location.pos(), gpc.owner_id());
     if(cid != -1) {
+      CHECK(cid >= 0 && cid < gpc.gic->players.size());
       Coord2 dp = gpc.gic->players[cid]->pos;
       dp -= location.pos();
       if(len(dp) <= Coord(deploy.directed_range()))

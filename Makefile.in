@@ -89,10 +89,10 @@ aisc: d-net data/shopcache.dwh
 ailoop: d-net
 	while nice ./d-net.exe --nofullscreen --aiCount=12 --fastForwardTo=100000000 --factionmode=3 --terminateAfter=3600 --startingPhase=0 --noshopcache ; do echo Cycle. ; done
 
-AICSLFLAGS = --nofullscreen --fastForwardTo=100000000 --factionmode=3 --noshopcache --perfbar --randomizeFrameRender=60
+AICSLFLAGS = --nofullscreen --fastForwardTo=100000000 --factionmode=3 --noshopcache --perfbar --randomizeFrameRender=60 --startingPhase=7
 
 aichecksumloop: d-net
-	while nice rm -f dumps/dump-*.dnd && nice ./d-net.exe $(AICSLFLAGS) --aiCount=4 --terminateAfter=60 && nice ./d-net.exe $(AICSLFLAGS) --readtarget=`ls dumps/dump-*.dnd` ; do echo Cycle. ; done
+	while nice rm -f dumps/dump-*.dnd && nice ./d-net.exe $(AICSLFLAGS) --aiCount=4 --terminateAfter=120 && nice ./d-net.exe $(AICSLFLAGS) --readtarget=`ls dumps/dump-*.dnd` ; do echo Cycle. ; done
   
 veced: vecedit
 	./vecedit.exe

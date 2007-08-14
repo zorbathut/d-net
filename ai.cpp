@@ -283,13 +283,14 @@ void doMegaEnumWorker(const HierarchyNode &rt, vector<pair<Money, vector<Control
     equips->push_back(path);  // this is kind of glitchy since it won't adjust after the player buys weapons, but whatever
   } else if(rt.type == HierarchyNode::HNT_IMPLANTSLOT) {
     upgs->push_back(make_pair(player->adjustImplantSlot(rt.implantslot).cost(), path));
-  } else if(rt.type == HierarchyNode::HNT_IMPLANTITEM) {
+  } else if(rt.type == HierarchyNode::HNT_IMPLANTITEM_EQUIP) {
     upgs->push_back(make_pair(Money(0), path));
   } else if(rt.type == HierarchyNode::HNT_IMPLANTITEM_UPG) {
     upgs->push_back(make_pair(player->adjustImplant(rt.implantitem).costToLevel(player->implantLevel(rt.implantitem)), path));
   } else if(rt.type == HierarchyNode::HNT_SELL) {
   } else if(rt.type == HierarchyNode::HNT_EQUIPCATEGORY) {
   } else if(rt.type == HierarchyNode::HNT_BONUSES) {
+  } else if(rt.type == HierarchyNode::HNT_IMPLANTITEM) {
   } else if(rt.type == HierarchyNode::HNT_DONE) {
     CHECK(done->size() == 0);
     *done = path;

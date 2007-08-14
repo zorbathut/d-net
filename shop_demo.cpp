@@ -305,7 +305,7 @@ void ShopDemo::init(const IDBWeapon *weap, const Player *player, Recorder *recor
         }
       }
       
-      dprintf("dist_max is %f\n", dist_max);
+      //dprintf("dist_max is %f\n", dist_max);
       dist_max += 0.1;
       
       CHECK(getPathRelation(tankminor.getTankVertices(Coord2(weapons_xpses_melee[4], weapons_ypses_melee[4]), Coord(facing[4])), tankminor.getTankVertices(Coord2(basetest + makeAngle(-PI / 4) * dist_max), Coord(weapons_facing[5]))) != PR_INTERSECT);
