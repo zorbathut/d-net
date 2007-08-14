@@ -51,6 +51,8 @@ public:
 
 bool operator==(const Controller &lhs, const Controller &rhs);
 
+void adler(Adler32 *adl, const Controller &kst);
+
 enum { KSAX_STEERING, KSAX_ABSOLUTE, KSAX_TANK, KSAX_END };
 const char *const ksax_names[] = { "Steering (default)", "Absolute", "Tank (advanced)" };
 

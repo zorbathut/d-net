@@ -733,6 +733,7 @@ const IDBShopcache &getShopcache(const IDBGlory *glory) {
 }
 
 template<typename T> const string &nameFromIDBImp(const T *idbw, const map<string, T> &forward, map<const T*, string> *backward) {
+  CHECK(idbw);
   if(forward.size() != backward->size()) {
     backward->clear();
     for(typename map<string, T>::const_iterator itr = forward.begin(); itr != forward.end(); itr++) {

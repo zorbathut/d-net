@@ -23,14 +23,11 @@ pair<int, int> Weaponmanager::findWeapon(const IDBWeapon *weap) const {
   return rv;
 }
 void Weaponmanager::eraseWeapon(const IDBWeapon *weap) {
-  reg_adler_ul_msg(distance(weaponList().begin(), weaponList().find(nameFromIDB(weap))), nameFromIDB(weap).c_str());
   pair<int, int> pos = findWeapon(weap);
   weaponops[pos.first].erase(weaponops[pos.first].begin() + pos.second);
 }
 
 void Weaponmanager::shotFired(int id) {
-  reg_adler_ul(0x35353535);
-  reg_adler_ul(id);
   if(ammoCountSlot(id) != UNLIMITED_AMMO)
     removeAmmo(getWeaponSlot(id), 1);
 }
@@ -38,12 +35,12 @@ void Weaponmanager::shotFired(int id) {
 void Weaponmanager::addAmmo(const IDBWeapon *weap, int count) {
   CHECK(weap);
   CHECK(count > 0);
-  reg_adler_ul_msg(distance(weaponList().begin(), weaponList().find(nameFromIDB(weap))), nameFromIDB(weap).c_str());
-  reg_adler_ul(count);
   if(weapons.count(weap)) {
     weapons[weap] += count;
+    CHECK(weapons[weap] > 0);
   } else {
     weapons[weap] = count;
+    CHECK(weapons.count(weap));
     weaponops[WMSPC_NEW].push_back(weap);
   }
 }
@@ -51,8 +48,6 @@ void Weaponmanager::addAmmo(const IDBWeapon *weap, int count) {
 void Weaponmanager::removeAmmo(const IDBWeapon *weap, int amount) {
   CHECK(weap);
   CHECK(amount > 0);
-  reg_adler_ul_msg(distance(weaponList().begin(), weaponList().find(nameFromIDB(weap))), nameFromIDB(weap).c_str());
-  reg_adler_ul(amount);
   CHECK(weapons.count(weap));
   CHECK(weapons[weap] > 0 && weapons[weap] >= amount);
   if(weapons[weap] == amount) {
@@ -89,7 +84,6 @@ const vector<vector<const IDBWeapon *> > &Weaponmanager::getWeaponList() const {
 }
 
 void Weaponmanager::moveWeaponUp(const IDBWeapon *a) {
-  reg_adler_ul_msg(distance(weaponList().begin(), weaponList().find(nameFromIDB(a))), nameFromIDB(a).c_str());
   pair<int, int> weppos = findWeapon(a);
   eraseWeapon(a);
   if(weppos.second == 0) {
@@ -101,7 +95,6 @@ void Weaponmanager::moveWeaponUp(const IDBWeapon *a) {
   weaponops[weppos.first].insert(weaponops[weppos.first].begin() + weppos.second, a);
 }
 void Weaponmanager::moveWeaponDown(const IDBWeapon *a) {
-  reg_adler_ul_msg(distance(weaponList().begin(), weaponList().find(nameFromIDB(a))), nameFromIDB(a).c_str());
   pair<int, int> weppos = findWeapon(a);
   eraseWeapon(a);
   if(weppos.second == weaponops[weppos.first].size()) {
@@ -116,8 +109,6 @@ void Weaponmanager::moveWeaponDown(const IDBWeapon *a) {
   weaponops[weppos.first].insert(weaponops[weppos.first].begin() + weppos.second, a);
 }
 void Weaponmanager::promoteWeapon(const IDBWeapon *a, int slot) {
-  reg_adler_ul_msg(distance(weaponList().begin(), weaponList().find(nameFromIDB(a))), nameFromIDB(a).c_str());
-  reg_adler_ul(slot);
   CHECK(a);
   CHECK(weapons.count(a));
   CHECK(slot >= 0 && slot < SIMUL_WEAPONS);
@@ -125,7 +116,6 @@ void Weaponmanager::promoteWeapon(const IDBWeapon *a, int slot) {
   weaponops[slot].insert(weaponops[slot].begin(), a);
 }
 void Weaponmanager::changeDefaultWeapon(const IDBWeapon *weapon) {
-  reg_adler_ul_msg(distance(weaponList().begin(), weaponList().find(nameFromIDB(weapon))), nameFromIDB(weapon).c_str());
   defaultweapon = weapon; // YES. IT'S EASY NOW.
 }
 bool Weaponmanager::weaponsReady() const {
@@ -133,23 +123,19 @@ bool Weaponmanager::weaponsReady() const {
 }
 
 void Weaponmanager::checksum(Adler32 *adl) const {
-  reg_adler_intermed(*adl);
-  reg_adler_ul(weapons.size());
-  for(map<const IDBWeapon *, int>::const_iterator itr = weapons.begin(); itr != weapons.end(); itr++) {
-    if(itr->first) {
-      string na = StringPrintf("%s and %d", itr->first ? nameFromIDB(itr->first).c_str() : "NULL weapon", itr->second);
-      reg_adler_ul_msg(distance(weaponList().begin(), weaponList().find(nameFromIDB(itr->first))), na.c_str());
-    } else {
-      reg_adler_ul(-1);
+  { // sigh
+    map<string, int> wepsi;
+    for(map<const IDBWeapon *, int>::const_iterator itr = weapons.begin(); itr != weapons.end(); itr++) {
+      string nam;
+      if(itr->first)
+        nam = nameFromIDB(itr->first);
+      CHECK(!wepsi.count(nam));
+      wepsi[nam] = itr->second;
     }
-    reg_adler_ul(itr->second);
+    adler(adl, wepsi);
   }
-  adler(adl, weapons);
-  reg_adler_intermed(*adl);
   adler(adl, weaponops);
-  reg_adler_intermed(*adl);
   adler(adl, defaultweapon);
-  reg_adler_intermed(*adl);
 }
 
 Weaponmanager::Weaponmanager(const IDBWeapon *weapon) {
@@ -202,7 +188,7 @@ IDBImplantAdjust Player::adjustImplant(const IDBImplant *in_upg) const { return 
 bool Player::canBuyUpgrade(const IDBUpgrade *in_upg) const { return stateUpgrade(in_upg) == ITEMSTATE_UNOWNED && adjustUpgradeForCurrentTank(in_upg).cost() <= cash && isUpgradeAvailable(in_upg); }; 
 bool Player::canBuyGlory(const IDBGlory *in_glory) const { return stateGlory(in_glory) == ITEMSTATE_UNOWNED && adjustGlory(in_glory).cost() <= cash; };
 bool Player::canBuyBombardment(const IDBBombardment *in_bombardment) const { return stateBombardment(in_bombardment) == ITEMSTATE_UNOWNED && adjustBombardment(in_bombardment).cost() <= cash; };
-bool Player::canBuyWeapon(const IDBWeapon *in_weap) const { reg_adler_ul(adjustWeapon(in_weap).cost(1) <= cash && in_weap->base_cost > Money(0)); return adjustWeapon(in_weap).cost(1) <= cash && in_weap->base_cost > Money(0); }
+bool Player::canBuyWeapon(const IDBWeapon *in_weap) const { return adjustWeapon(in_weap).cost(1) <= cash && in_weap->base_cost > Money(0); }
 bool Player::canBuyTank(const IDBTank *in_tank) const { return stateTank(in_tank) == ITEMSTATE_UNOWNED && adjustTankWithInstanceUpgrades(in_tank).cost() <= cash; };
 bool Player::canBuyImplantSlot(const IDBImplantSlot *in_impslot) const { return stateImplantSlot(in_impslot) == ITEMSTATE_UNOWNED && adjustImplantSlot(in_impslot).cost() <= cash; };
 
@@ -270,10 +256,8 @@ void Player::buyBombardment(const IDBBombardment *in_bombardment) {
 void Player::buyWeapon(const IDBWeapon *in_weap) {
   CHECK(canBuyWeapon(in_weap));
   // hahahah awful
-  reg_adler_ul(distance(weaponList().begin(), weaponList().find(nameFromIDB(in_weap))));
   for(int i = in_weap->quantity; i > 0; --i) {
     if(adjustWeapon(in_weap).cost(i) <= cash) {
-      reg_adler_ul(i);
       weapons.addAmmo(in_weap, i);
       cash -= adjustWeapon(in_weap).cost(i);
       return;
@@ -578,39 +562,22 @@ bool Player::isCorrupted() const {
 }
 
 void Player::checksum(Adler32 *adl) const {
-  reg_adler_intermed(*adl);
   adler(adl, corrupted);
-  reg_adler_intermed(*adl);
   adler(adl, glory);
-  reg_adler_intermed(*adl);
   adler(adl, bombardment);
-  reg_adler_intermed(*adl);
   adler(adl, tank);
-  reg_adler_intermed(*adl);
   adler(adl, implantslots);
-  reg_adler_intermed(*adl);
   adler(adl, implantlevels);
-  reg_adler_intermed(*adl);
   adler(adl, implantequipped);
-  reg_adler_intermed(*adl);
   adler(adl, faction);
-  reg_adler_intermed(*adl);
   adler(adl, factionmode);
-  reg_adler_intermed(*adl);
   adler(adl, adjustment);
-  reg_adler_intermed(*adl);
   adler(adl, adjustment_notank);
-  reg_adler_intermed(*adl);
   adler(adl, cash);
-  reg_adler_intermed(*adl);
   adler(adl, damageDone);
-  reg_adler_intermed(*adl);
   adler(adl, kills);
-  reg_adler_intermed(*adl);
   adler(adl, wins);
-  reg_adler_intermed(*adl);
   weapons.checksum(adl);
-  reg_adler_intermed(*adl);
 }
 
 Player::Player() : weapons(NULL) { // this kind of works with the weapon manager

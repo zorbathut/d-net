@@ -1,7 +1,7 @@
 
 #include "input.h"
 
-#include "adler32.h"
+#include "adler32_util.h"
 
 using namespace std;
 
@@ -94,6 +94,17 @@ Controller::Controller() {
 
 bool operator==(const Controller &lhs, const Controller &rhs) {
   return lhs.menu == rhs.menu && lhs.u == rhs.u && lhs.d == rhs.d && lhs.l == rhs.r && lhs.r == rhs.r && lhs.axes == rhs.axes && lhs.lastaxes == rhs.lastaxes && lhs.keys == rhs.keys;
+}
+
+void adler(Adler32 *adl, const Controller &kst) {
+  adler(adl, kst.menu);
+  adler(adl, kst.u);
+  adler(adl, kst.d);
+  adler(adl, kst.l);
+  adler(adl, kst.r);
+  adler(adl, kst.axes);
+  adler(adl, kst.lastaxes);
+  adler(adl, kst.keys);
 }
 
 void Keystates::nullMove() {

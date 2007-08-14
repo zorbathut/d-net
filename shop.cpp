@@ -665,7 +665,6 @@ bool Shop::runTick(const Keystates &keys, Player *player) {
         } else {
           CHECK(0);
         }
-
       } else {
         sound = S::null;
       }
@@ -801,14 +800,12 @@ void Shop::renderToScreen(const Player *player) const {
 }
 
 void Shop::checksum(Adler32 *adl) const {
-  reg_adler_intermed(*adl);
   adler(adl, curloc);
+  adler(adl, lastloc);
   adler(adl, equipselected);
   adler(adl, highestcash);
   adler(adl, playercount);
-  reg_adler_intermed(*adl);
   adler(adl, hierarchroot);
-  reg_adler_intermed(*adl);
 }
 
 // Not a valid state
