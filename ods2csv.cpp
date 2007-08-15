@@ -202,7 +202,9 @@ int main(int argc, char *argv[]) {
 
   {
     FILE *of = fopen(argv[1], "wb");
+    CHECK(dat.size());
     for(int i = 0; i < dat.size(); i++) {
+      CHECK(dat[i].size());
       for(int j = 0; j < dat[i].size(); j++) {
         if(j)
           fprintf(of, ",");

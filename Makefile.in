@@ -30,10 +30,11 @@ CC := gcc
 
 justdnet: d-net
 
-include $(GAMESOURCES:=.g.d)
-include $(EDITORSOURCES:=.e.d)
-include $(FUNCTORSOURCES:=.c.d)
-include $(MERGERSOURCES:=.c.d)
+include $(patsubst %,build/%.g.d,$(GAMESOURCES))
+include $(patsubst %,build/%.e.d,$(EDITORSOURCES))
+include $(patsubst %,build/%.c.d,$(FUNCTORSOURCES))
+include $(patsubst %,build/%.c.d,$(MERGERSOURCES))
+include $(patsubst %,build/%.c.d,$(ODS2CSVSOURCES))
 
 d-net: d-net.exe $(MERGEDATA)
 d-net-dbg: d-net-dbg.exe $(MERGEDATA)
@@ -41,24 +42,24 @@ vecedit: vecedit.exe $(MERGEDATA)
 	@
 vecedit-dbg: vecedit-dbg.exe $(MERGEDATA)
 
-d-net.exe: $(GAMESOURCES:=.g.o)
-	nice $(CXX) -o $@ $(GAMESOURCES:=.g.o) $(GAMELDFLAGS)
+d-net.exe: $(patsubst %,build/%.g.o,$(GAMESOURCES))
+	nice $(CXX) -o $@ $(patsubst %,build/%.g.o,$(GAMESOURCES)) $(GAMELDFLAGS)
 
-d-net-dbg.exe: $(GAMESOURCES:=.g.d.o)
-	nice $(CXX) -o $@ $(GAMESOURCES:=.g.d.o) $(GAMELDFLAGS)
+d-net-dbg.exe: $(patsubst %,build/%.g.d.o,$(GAMESOURCES))
+	nice $(CXX) -o $@ $(patsubst %,build/%.g.d.o,$(GAMESOURCES)) $(GAMELDFLAGS)
 
-vecedit.exe: $(EDITORSOURCES:=.e.o)
-	nice $(CXX) -o $@ $(EDITORSOURCES:=.e.o) $(EDITORLDFLAGS)
+vecedit.exe: $(patsubst %,build/%.e.o,$(EDITORSOURCES))
+	nice $(CXX) -o $@ $(patsubst %,build/%.e.o,$(EDITORSOURCES)) $(EDITORLDFLAGS)
   
-vecedit-dbg.exe: $(EDITORSOURCES:=.e.d.o)
-	nice $(CXX) -o $@ $(EDITORSOURCES:=.e.d.o) $(EDITORLDFLAGS)
+vecedit-dbg.exe: $(patsubst %,build/%.e.d.o,$(EDITORSOURCES))
+	nice $(CXX) -o $@ $(patsubst %,build/%.e.d.o,$(EDITORSOURCES)) $(EDITORLDFLAGS)
 
 all: d-net vecedit
 
-asm: $(GAMESOURCES:=.S) makefile
+#asm: $(GAMESOURCES:=.S) makefile
 
 clean:
-	rm -rf *.o *.exe *.d *.S data/shopcache.dwh $(patsubst %,data/base/%.dwh,$(MERGETYPES)) *.csv
+	rm -rf build/*.o *.exe build/*.d build/*.S data/shopcache.dwh $(patsubst %,data/base/%.dwh,$(MERGETYPES)) build/*.csv
 
 STDRUN = --nofullscreen --debugitems --startingPhase=7 --debugControllers=2 --factionMode=3 --nullControllers=11 --writeTarget= --auto_newgame --nocullShopTree --httpd_port=616 --noshopcache --runTests --noaudio --perfbar
 
@@ -155,44 +156,44 @@ localpackage: d-net
 	$(strip)
 	$(clean)
 
-%.g.o: %.cpp
+build/%.g.o: %.cpp
 	nice $(CXX) $(GAMECXXFLAGS) -c -o $@ $<
   
-%.g.d.o: %.cpp
+build/%.g.d.o: %.cpp
 	nice $(CXX) $(GAMECXXFLAGS) -c -o $@ $<
 
-%.g.S: %.cpp
+build/%.g.S: %.cpp
 	nice $(CXX) $(GAMECXXFLAGS) -c -Wa,-a,-ad $< > $@
 
-%.g.d: %.cpp
+build/%.g.d: %.cpp
 	nice bash -ec '$(CXX) $(GAMECXXFLAGS) -MM $< | sed "s!$*.o!$*.g.o $*.g.d.o $@!g" > $@'
 
-%.e.o: %.cpp
+build/%.e.o: %.cpp
 	nice $(CXX) $(EDITORCXXFLAGS) -c -o $@ $<
   
-%.e.d.o: %.cpp
+build/%.e.d.o: %.cpp
 	nice $(CXX) $(EDITORCXXFLAGS) -c -o $@ $<
 
-%.e.S: %.cpp
+build/%.e.S: %.cpp
 	nice $(CXX) $(EDITORCXXFLAGS) -c -Wa,-a,-ad $< > $@
 
-%.e.d: %.cpp functor.h  # some of these files use functor, so we make sure functor.h is built first
+build/%.e.d: %.cpp functor.h  # some of these files use functor, so we make sure functor.h is built first
 	nice bash -ec '$(CXX) $(EDITORCXXFLAGS) -MM $< | sed "s!$*.o!$*.e.o $*.e.d.o $@!g" > $@'
 
-%.c.o: %.cpp
+build/%.c.o: %.cpp
 	nice $(CXX) $(CONSOLECXXFLAGS) -c -o $@ $<
 
 # Any C files aren't ours, so we disable warnings
-%.c.o: %.c
+build/%.c.o: %.c
 	nice $(CC) $(CONSOLECXXFLAGS) -w -c -o $@ $<
 
-%.c.d.o: %.cpp
-	nice $(CXX) $(CONSOLECXXFLAGS) -c -o $@ $<
-
-%.c.S: %.cpp
+build/%.c.S: %.cpp
 	nice $(CXX) $(CONSOLECXXFLAGS) -c -Wa,-a,-ad $< > $@
 
-%.c.d: %.cpp
+build/%.c.d: %.cpp
+	nice bash -ec '$(CXX) $(CONSOLECXXFLAGS) -MM $< | sed "s!$*.o!$*.c.o $*.c.d.o $@!g" > $@'
+
+build/%.c.d: %.c
 	nice bash -ec '$(CXX) $(CONSOLECXXFLAGS) -MM $< | sed "s!$*.o!$*.c.o $*.c.d.o $@!g" > $@'
 
 data/shopcache.dwh: d-net $(DATAFILES)
@@ -202,39 +203,22 @@ export: d-net tools/generateWeaponGraph.py
 	./d-net.exe --generateWeaponStats || ( rm -f $@ && false )
 	/cygdrive/c/Python25/python.exe tools/generateWeaponGraph.py # this is not ideal
 
-functor_gen.exe: $(FUNCTORSOURCES:=.c.o)
-	nice $(CXX) -o $@ $(FUNCTORSOURCES:=.c.o) $(CONSOLELDFLAGS)
+functor_gen.exe: $(patsubst %,build/%.c.o,$(FUNCTORSOURCES))
+	nice $(CXX) -o $@ $(patsubst %,build/%.c.o,$(FUNCTORSOURCES)) $(CONSOLELDFLAGS)
 
 functor.h: functor_gen.exe functor.h.in
 	./functor_gen.exe || ( rm -f $@ && false )
   
-merger.exe: $(MERGERSOURCES:=.c.o)
-	nice $(CXX) -o $@ $(MERGERSOURCES:=.c.o) $(CONSOLELDFLAGS)
+merger.exe: $(patsubst %,build/%.c.o,$(MERGERSOURCES))
+	nice $(CXX) -o $@ $(patsubst %,build/%.c.o,$(MERGERSOURCES)) $(CONSOLELDFLAGS)
 
-ods2csv.exe: $(ODS2CSVSOURCES:=.c.o)
-	nice $(CXX) -o $@ $(ODS2CSVSOURCES:=.c.o) $(CONSOLELDFLAGS) -lxerces-c -lz
+ods2csv.exe: $(patsubst %,build/%.c.o,$(ODS2CSVSOURCES))
+	nice $(CXX) -o $@ $(patsubst %,build/%.c.o,$(ODS2CSVSOURCES)) $(CONSOLELDFLAGS) -lxerces-c -lz
 
-$(patsubst %,notes_%.csv,$(MERGETYPES)): notes.ods ods2csv.exe
-	./ods2csv.exe $@ notes.ods $(patsubst notes_%.csv,%,$@) || ( rm -f $@ && false )
+$(patsubst %,build/notes_%.csv,$(MERGETYPES)): notes.ods ods2csv.exe
+	./ods2csv.exe $@ notes.ods $(patsubst build/notes_%.csv,%,$@) || ( rm -f $@ && false )
 
 data/base/tank.dwh: data/base/weapon_sparker.dwh
 
-data/base/%.dwh: data/base/%.dwh.unmerged notes_%.csv merger.exe
-	./merger.exe notes_$*.csv data/base/$*.dwh.unmerged data/base/$*.dwh || ( rm -f $@ && false )
-
-stats:
-	@echo Graphics: `cat gfx.h gfx.cpp game_effects.h game_effects.cpp color.h color.cpp | wc -l` loc
-	@echo Sound: `cat audio.h audio.cpp | wc -l` loc
-	@echo Collisions: `cat collide.h collide.cpp | wc -l` loc
-	@echo Game mechanics: `cat game.h game.cpp gamemap.h gamemap.cpp level.cpp level.h player.cpp player.h game_tank.cpp game_tank.h game_util.cpp game_util.h game_projectile.h game_projectile.cpp | wc -l` loc
-	@echo Item hierarchy: `cat itemdb.h itemdb.cpp parse.h parse.cpp itemdb_adjust.cpp | wc -l` loc
-	@echo UI: `cat interface.h interface.cpp metagame.h metagame.cpp metagame_config.cpp metagame_config.h shop.cpp shop.h shop_demo.cpp shop_demo.h shop_info.cpp shop_info.h game_ai.h game_ai.cpp metagame_tween.cpp metagame_tween.h | wc -l` loc
-	@echo Framework: `cat core.h core.cpp main.cpp input.h input.cpp inputsnag.h inputsnag.cpp os.h os.cpp debug.h debug.cpp recorder.h recorder.cpp generators.h generators.cpp | wc -l` loc
-	@echo Util: `cat timer.h timer.cpp util.h util.cpp args.h args.cpp rng.h rng.cpp coord.h coord.cpp float.h float.cpp cfcommon.h cfcommon.cpp coord_boolean.cpp cfc.h cfc.cpp smartptr.h functor.h | wc -l` loc
-	@echo Networking: `cat httpd.h httpd.cpp socket.h socket.cpp | wc -l` loc
-	@echo Vector system: `cat dvec2.h dvec2.cpp | wc -l` loc
-	@echo Vector editor: `cat vecedit.cpp vecedit.h vecedit_main.cpp | wc -l` loc
-	@echo AI: `cat ai.h ai.cpp | wc -l` loc
-	@echo Infrastructure: `cat Makefile.in configure.in | wc -l` loc
-	@echo Total code: `cat *.h *.cpp Makefile.in configure.in | wc -l` loc
-	@echo Datafiles: `cd data; cat \`find -type f | grep -v .svn | grep -v weapon.*.dwh$ | grep -v shopcache.dwh\` | wc -l` lines
+data/base/%.dwh: data/base/%.dwh.unmerged build/notes_%.csv merger.exe
+	./merger.exe build/notes_$*.csv data/base/$*.dwh.unmerged data/base/$*.dwh || ( rm -f $@ && false )
