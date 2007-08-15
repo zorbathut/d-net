@@ -506,7 +506,7 @@ void parseProjectile(kvData *chunk, bool reload, ErrorAccumulator &accum) {
     CHECK(titem->halflife != -1);
     allowed_shapes.insert("star");
   } else if(motion == "spidermine") {
-    titem->motion = PM_MINE;
+    titem->motion = PM_SPIDERMINE;
     titem->proximity_visibility = parseWithDefault(chunk, "proximity_visibility", 30.f);
     CHECK(titem->halflife != -1);
     allowed_shapes.insert("star");
