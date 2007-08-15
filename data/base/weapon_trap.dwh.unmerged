@@ -442,6 +442,7 @@ projectile {
   
   motion=spidermine
   halflife=18
+  velocity=3
   
   shape=star
   proximity_visibility=1.5x
@@ -489,6 +490,7 @@ projectile {
   
   motion=spidermine
   halflife=18
+  velocity=3
   
   shape=star
   proximity_visibility=1.5x
@@ -536,6 +538,7 @@ projectile {
 
   motion=spidermine
   halflife=18
+  velocity=3
   
   shape=star
   proximity_visibility=1.5x
@@ -583,6 +586,7 @@ projectile {
 
   motion=spidermine
   halflife=18
+  velocity=3
   
   shape=star
   proximity_visibility=1.5x
@@ -630,6 +634,7 @@ projectile {
 
   motion=spidermine
   halflife=18
+  velocity=3
   
   shape=star
   proximity_visibility=1.5x
@@ -677,6 +682,7 @@ projectile {
 
   motion=spidermine
   halflife=18
+  velocity=3
   
   shape=star
   proximity_visibility=1.5x
