@@ -1,8 +1,7 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - run lots of checksumming
-    - split off file replay into its own cpp
-  - make projectile rendering and shapes slightly saner
+  - spider mines broken again :(
   - Many many more weapons
     - Add implementations for all trap weapons
       - Hunter/Killer: I need a new projectile for this.
@@ -36,10 +35,12 @@
     - Spruce up exotic weaponry
     - Spruce up OGRE
   - Eventual bugfixes
+    - split off file replay into its own cpp
+    - colorcode mines?
     - add flags to dump file
     - Start with level 3
     - End with level 5
-    - Auto-equip the first weapon, auto-equip thinuuuuugs into damage-type slots?
+    - Auto-equip the first weapon, auto-equip things into damage-type slots?
     - Clean up implant interface a bit
     - Add implant costs to the balance sheet
     - Add tank bonuses to the balance sheet

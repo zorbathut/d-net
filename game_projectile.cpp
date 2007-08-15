@@ -17,6 +17,9 @@ void Projectile::tick(vector<smart_ptr<GfxEffects> > *gfxe, const GameImpactCont
   lasttail = nexttail();
   age++;
   
+  if(projtype.halflife() != -1 && age >= projtype.halflife() * FPS / 2 && gic.rng->frand() > pow(0.5f, 1 / (projtype.halflife() * FPS)))
+    detonating = true;
+  
   if(projtype.motion() == PM_NORMAL) {
   } else if(projtype.motion() == PM_MISSILE) {
     if(age > projtype.missile_stabstart() * FPS)
@@ -47,18 +50,15 @@ void Projectile::tick(vector<smart_ptr<GfxEffects> > *gfxe, const GameImpactCont
     boomerang_angle += bchange;
     //dprintf("%p: %f, %f\n", this, boomerang_angle.toFloat(), bchange.toFloat());
     boomerang_abspos += makeAngle(boomerang_angle) * Coord(projtype.velocity()) / FPS;
-  } else if(projtype.motion() == PM_MINE || projtype.motion() == PM_SPIDERMINE) {
-    if(age >= projtype.halflife() * FPS / 2 && gic.rng->frand() > pow(0.5f, 1 / (projtype.halflife() * FPS)))
-      detonating = true;
-    if(projtype.motion() == PM_SPIDERMINE) {
-      spider_vector = Coord(SV_NONE);
-      int cid = gic.getClosestFoeId(pos, owner);
-      if(cid != -1) {
-        Coord2 dp = gic.players[cid]->pos;
-        dp -= pos;
-        if(len(dp) < Coord(projtype.mine_visibility()) && len(dp) > 0) {
-          spider_vector = getAngle(dp);
-        }
+  } else if(projtype.motion() == PM_MINE) {
+  } else if(projtype.motion() == PM_SPIDERMINE) {
+    spider_vector = Coord(SV_NONE);
+    int cid = gic.getClosestFoeId(pos, owner);
+    if(cid != -1) {
+      Coord2 dp = gic.players[cid]->pos;
+      dp -= pos;
+      if(len(dp) < Coord(projtype.proximity_visibility()) && len(dp) > 0) {
+        spider_vector = getAngle(dp);
       }
     }
   } else if(projtype.motion() == PM_DPS) {
@@ -83,44 +83,44 @@ void Projectile::tick(vector<smart_ptr<GfxEffects> > *gfxe, const GameImpactCont
 void Projectile::render(const vector<Coord2> &tankposes) const {
   CHECK(live);
   CHECK(age != -1);
-  if(projtype.motion() == PM_NORMAL) {
+  
+  bool visible = true;
+  
+  if(projtype.shape() == PS_INVISIBLE) {
+    visible = false;
+  } else if(projtype.proximity_visibility() == -1) {
     setColor(projtype.color());
-  } else if(projtype.motion() == PM_MISSILE) {
-    setColor(projtype.color());
-  } else if(projtype.motion() == PM_AIRBRAKE) {
-    setColor(projtype.color() * airbrake_liveness().toFloat());
-  } else if(projtype.motion() == PM_BOOMERANG) {
-    setColor(projtype.color());
-  } else if(projtype.motion() == PM_MINE || projtype.motion() == PM_SPIDERMINE) {
-    const float radarrange = projtype.mine_visibility();
-    float closest = 1000;
+  } else if(projtype.proximity_visibility() != -1) {
+    const float range = projtype.proximity_visibility();
+    float closest = range * 2;
     for(int i = 0; i < tankposes.size(); i++)
       if(len(tankposes[i] - pos).toFloat() < closest)
         closest = len(tankposes[i] - pos).toFloat();
-    if(closest < radarrange) {
-      if(closest < radarrange / 2) {
-        setColor(C::gray(1.0));
+    if(closest < range) {
+      if(closest < range / 2) {
+        setColor(projtype.color());
       } else {
-        setColor(C::gray((radarrange - closest) / radarrange * 2));
+        setColor(projtype.color() * ((range - closest) / range * 2));
       }
-      drawLineLoop(mine_polys(), 0.1);
+    } else {
+      visible = false;
     }
-    return;
-  } else if(projtype.motion() == PM_DPS) {
-  } else {
-    CHECK(0);
   }
   
-  if(projtype.shape() == PS_DEFAULT) {
-    drawLine(Coord4(pos, pos + lasttail), projtype.visual_thickness());
-  } else if(projtype.shape() == PS_ARROW) {
-    Coord2 l = pos + rotate(Coord2(projtype.arrow_width() / 2, projtype.arrow_height() / 2), Coord(arrow_spin));
-    Coord2 c = pos + rotate(Coord2(0, -projtype.arrow_height() / 2), Coord(arrow_spin));
-    Coord2 r = pos + rotate(Coord2(-projtype.arrow_width() / 2, projtype.arrow_height() / 2), Coord(arrow_spin));
-    drawLine(Coord4(l, c), projtype.visual_thickness());
-    drawLine(Coord4(c, r), projtype.visual_thickness());
-  } else {
-    CHECK(0);
+  if(visible) {
+    if(projtype.shape() == PS_DEFAULT) {
+      drawLine(Coord4(pos, pos + lasttail), projtype.visual_thickness());
+    } else if(projtype.shape() == PS_ARROW) {
+      Coord2 l = pos + rotate(Coord2(projtype.arrow_width() / 2, projtype.arrow_height() / 2), Coord(arrow_spin));
+      Coord2 c = pos + rotate(Coord2(0, -projtype.arrow_height() / 2), Coord(arrow_spin));
+      Coord2 r = pos + rotate(Coord2(-projtype.arrow_width() / 2, projtype.arrow_height() / 2), Coord(arrow_spin));
+      drawLine(Coord4(l, c), projtype.visual_thickness());
+      drawLine(Coord4(c, r), projtype.visual_thickness());
+    } else if(projtype.shape() == PS_STAR) {
+      drawLineLoop(star_polys(), 0.1);
+    } else {
+      CHECK(0);
+    }
   }
 };
 
@@ -142,9 +142,7 @@ void Projectile::checksum(Adler32 *adl) const {
     adler(adl, boomerang_angle);
     adler(adl, boomerang_lastchange);
   } else if(projtype.motion() == PM_MINE) {
-    adler(adl, mine_facing);
   } else if(projtype.motion() == PM_SPIDERMINE) {
-    adler(adl, mine_facing);
     adler(adl, spider_vector);
   } else if(projtype.motion() == PM_DPS) {
   } else {
@@ -157,6 +155,10 @@ void Projectile::checksum(Adler32 *adl) const {
     adler(adl, arrow_spin);
     adler(adl, arrow_spin_next);
     adler(adl, arrow_spin_parity);
+  } else if(projtype.shape() == PS_STAR) {
+    adler(adl, star_facing);
+  } else if(projtype.shape() == PS_DRONE) {
+  } else if(projtype.shape() == PS_INVISIBLE) {
   } else {
     CHECK(0);
   }
@@ -164,7 +166,8 @@ void Projectile::checksum(Adler32 *adl) const {
 
 void Projectile::firstCollide(Collider *collider, int owner, int id) const {
   if(projtype.motion() == PM_MINE) {
-    vector<Coord2> ite = mine_polys();
+    CHECK(projtype.shape() == PS_STAR);
+    vector<Coord2> ite = star_polys();
     for(int i = 0; i < ite.size(); i++)
       collider->addUnmovingToken(CollideId(CGR_STATPROJECTILE, owner, id), Coord4(ite[i], ite[(i + 1) % ite.size()]));
   }
@@ -172,31 +175,34 @@ void Projectile::firstCollide(Collider *collider, int owner, int id) const {
 
 void Projectile::addCollision(Collider *collider, int owner, int id) const {
   CHECK(live);
-  if(projtype.motion() == PM_MINE || projtype.motion() == PM_DPS) {
-  } else if(projtype.motion() == PM_SPIDERMINE) {
-    vector<Coord2> ite = mine_polys();
+  if(projtype.motion() == PM_MINE) {
+    // this is kind of a special case ATM
+  } else if(projtype.no_intersection()) {
+    collider->addPointToken(CollideId(CGR_NOINTPROJECTILE, owner, id), pos, movement());
+  } else if(projtype.shape() == PS_DEFAULT) {
+    collider->addNormalToken(CollideId(CGR_PROJECTILE, owner, id), Coord4(pos, pos + lasttail), Coord4(movement(), movement() + nexttail() - lasttail));
+  } else if(projtype.shape() == PS_ARROW) {
+    Coord2 l = pos + rotate(Coord2(projtype.arrow_width() / 2, projtype.arrow_height() / 2), Coord(arrow_spin));
+    Coord2 c = pos + rotate(Coord2(0, -projtype.arrow_height() / 2), Coord(arrow_spin));
+    Coord2 r = pos + rotate(Coord2(-projtype.arrow_width() / 2, projtype.arrow_height() / 2), Coord(arrow_spin));
+    Coord2 nl = pos + movement() + rotate(Coord2(projtype.arrow_width() / 2, projtype.arrow_height() / 2), Coord(arrow_spin_next));
+    Coord2 nc = pos + movement() + rotate(Coord2(0, -projtype.arrow_height() / 2), Coord(arrow_spin_next));
+    Coord2 nr = pos + movement() + rotate(Coord2(-projtype.arrow_width() / 2, projtype.arrow_height() / 2), Coord(arrow_spin_next));
+    collider->addNormalToken(CollideId(CGR_PROJECTILE, owner, id), Coord4(l, c), Coord4(nl - l, nc - c));
+    collider->addNormalToken(CollideId(CGR_PROJECTILE, owner, id), Coord4(c, r), Coord4(nc - c, nr - r));
+  } else if(projtype.shape() == PS_STAR) {
+    vector<Coord2> ite = star_polys();
     for(int i = 0; i < ite.size(); i++)
       collider->addNormalToken(CollideId(CGR_NOINTPROJECTILE, owner, id), Coord4(ite[i], ite[(i + 1) % ite.size()]), Coord4(movement(), movement()));
+  } else if(projtype.shape()== PS_INVISIBLE) {
   } else {
-    if(projtype.no_intersection()) {
-      collider->addPointToken(CollideId(CGR_NOINTPROJECTILE, owner, id), pos, movement());
-    } else if(projtype.shape() == PS_DEFAULT) {
-      collider->addNormalToken(CollideId(CGR_PROJECTILE, owner, id), Coord4(pos, pos + lasttail), Coord4(movement(), movement() + nexttail() - lasttail));
-    } else if(projtype.shape() == PS_ARROW) {
-      Coord2 l = pos + rotate(Coord2(projtype.arrow_width() / 2, projtype.arrow_height() / 2), Coord(arrow_spin));
-      Coord2 c = pos + rotate(Coord2(0, -projtype.arrow_height() / 2), Coord(arrow_spin));
-      Coord2 r = pos + rotate(Coord2(-projtype.arrow_width() / 2, projtype.arrow_height() / 2), Coord(arrow_spin));
-      Coord2 nl = pos + movement() + rotate(Coord2(projtype.arrow_width() / 2, projtype.arrow_height() / 2), Coord(arrow_spin_next));
-      Coord2 nc = pos + movement() + rotate(Coord2(0, -projtype.arrow_height() / 2), Coord(arrow_spin_next));
-      Coord2 nr = pos + movement() + rotate(Coord2(-projtype.arrow_width() / 2, projtype.arrow_height() / 2), Coord(arrow_spin_next));
-      collider->addNormalToken(CollideId(CGR_PROJECTILE, owner, id), Coord4(l, c), Coord4(nl - l, nc - c));
-      collider->addNormalToken(CollideId(CGR_PROJECTILE, owner, id), Coord4(c, r), Coord4(nc - c, nr - r));
-    }
+    CHECK(0);
   }
 }
 
 void Projectile::collideCleanup(Collider *collider, int owner, int id) const {
   if(projtype.motion() == PM_MINE) {
+    CHECK(projtype.shape() == PS_STAR);
     collider->dumpGroup(CollideId(CGR_STATPROJECTILE, owner, id));
   }
 }
@@ -310,15 +316,15 @@ Coord Projectile::airbrake_liveness() const {
   return 1 - (Coord(age) / FPS / projtype.airbrake_life());
 }
 
-vector<Coord2> Projectile::mine_polys() const {
+vector<Coord2> Projectile::star_polys() const {
   vector<Coord2> rv;
-  const int rad = projtype.mine_spikes() * 2;
+  const int rad = projtype.star_spikes() * 2;
   for(int i = 0; i < rad; i++) {
     Coord expfact = (i % 2);
     expfact *= 3;
     expfact += 1;
     expfact /= 4;
-    rv.push_back(Coord2(makeAngle(i * 2 * PI / rad + mine_facing) * projtype.radius_physical() * expfact) + pos);
+    rv.push_back(Coord2(makeAngle(i * 2 * PI / rad + star_facing) * projtype.star_radius() * expfact) + pos);
   }
   return rv;
 }
@@ -348,7 +354,6 @@ Projectile::Projectile(const Coord2 &in_pos, Coord in_d, const IDBProjectileAdju
     boomerang_angle = 0;
     boomerang_lastchange = 1000000;
   } else if(projtype.motion() == PM_MINE || projtype.motion() == PM_SPIDERMINE) {
-    mine_facing = rng->frand() * 2 * PI;
   } else if(projtype.motion() == PM_DPS) {
   } else {
     CHECK(0);
@@ -359,6 +364,10 @@ Projectile::Projectile(const Coord2 &in_pos, Coord in_d, const IDBProjectileAdju
     arrow_spin_parity = rng->frand() < 0.5;
     arrow_spin = in_d.toFloat() + PI / 2;
     arrow_spin_next = arrow_spin;
+  } else if(projtype.shape() == PS_STAR) {
+    star_facing = rng->frand() * 2 * PI;
+  } else if(projtype.shape() == PS_DRONE) {
+  } else if(projtype.shape() == PS_INVISIBLE) {
   } else {
     CHECK(0);
   }

@@ -471,7 +471,11 @@ void parseProjectile(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   
   set<string> allowed_shapes;
   
+  titem->proximity_visibility = -1;
+  titem->halflife = parseWithDefault(chunk, "halflife", -1.);
+  
   string motion = parseWithDefault(chunk, "motion", "normal");
+  string defshape = "default";
   if(motion == "normal") {
     titem->motion = PM_NORMAL;
     allowed_shapes.insert("default");
@@ -496,23 +500,21 @@ void parseProjectile(kvData *chunk, bool reload, ErrorAccumulator &accum) {
     titem->boomerang_intersection = parseSingleItem<float>(chunk->consume("boomerang_intersection"));
     titem->boomerang_maxrotate = parseSingleItem<float>(chunk->consume("boomerang_maxrotate"));
     allowed_shapes.insert("arrow");
-  } else if(motion == "mine" || motion == "spidermine") {
-    if(motion == "mine") {
-      titem->motion = PM_MINE;
-    } else if(motion == "spidermine") {
-      titem->motion = PM_SPIDERMINE;
-    } else {
-      CHECK(0);
-    }
-    titem->radius_physical = atof(chunk->consume("radius_physical").c_str());
-    titem->mine_spikes = parseSingleItem<int>(chunk->consume("mine_spikes"));
-    titem->halflife = atof(chunk->consume("halflife").c_str());
-    titem->mine_visibility = parseWithDefault(chunk, "mine_visibility", 30.f);
-    allowed_shapes.insert("default");
+  } else if(motion == "mine") {
+    titem->motion = PM_MINE;
+    titem->proximity_visibility = parseWithDefault(chunk, "proximity_visibility", 30.f);
+    CHECK(titem->halflife != -1);
+    allowed_shapes.insert("star");
+  } else if(motion == "spidermine") {
+    titem->motion = PM_MINE;
+    titem->proximity_visibility = parseWithDefault(chunk, "proximity_visibility", 30.f);
+    CHECK(titem->halflife != -1);
+    allowed_shapes.insert("star");
   } else if(motion == "dps") {
     titem->motion = PM_DPS;
     titem->dps_duration = parseSingleItem<float>(chunk->consume("duration"));
-    allowed_shapes.insert("default");
+    defshape = "invisible";
+    allowed_shapes.insert("invisible");
   } else {
     dprintf("Unknown projectile motion: %s\n", motion.c_str());
     CHECK(0);
@@ -520,9 +522,11 @@ void parseProjectile(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   
   titem->velocity = 0;
   if(titem->motion != PM_MINE && titem->motion != PM_DPS)
-    titem->velocity = atof(chunk->consume("velocity").c_str());
+    titem->velocity = parseSingleItem<float>(chunk->consume("velocity"));
   
-  string shape = parseWithDefault(chunk, "shape", "default");
+  bool has_color = true;
+  
+  string shape = parseWithDefault(chunk, "shape", defshape);
   CHECK(allowed_shapes.count(shape));
   if(shape == "default") {
     titem->shape = PS_DEFAULT;
@@ -538,15 +542,23 @@ void parseProjectile(kvData *chunk, bool reload, ErrorAccumulator &accum) {
     titem->arrow_height = parseSingleItem<float>(chunk->consume("arrow_height"));
     titem->arrow_width = parseSingleItem<float>(chunk->consume("arrow_width"));
     titem->arrow_rotate = parseWithDefault(chunk, "arrow_rotate", 0.0);
+  } else if(shape == "star") {
+    titem->shape = PS_STAR;
+    titem->star_radius = atof(chunk->consume("star_radius").c_str());
+    titem->star_spikes = parseSingleItem<int>(chunk->consume("star_spikes"));
   } else if(shape == "drone") {
     titem->shape = PS_DRONE;
     titem->drone_radius = parseSingleItem<float>(chunk->consume("drone_radius"));
     titem->drone_spike = parseSingleItem<float>(chunk->consume("drone_spike"));
+  } else if(shape == "invisible") {
+    titem->shape = PS_INVISIBLE;
+    has_color = false;
   } else {
     CHECK(0);
   }
   
-  titem->color = parseWithDefault(chunk, "color", C::gray(1.0));
+  if(has_color)
+    titem->color = parseWithDefault(chunk, "color", C::gray(1.0));
   
   titem->chain_warhead = parseSubclassSet(chunk, "warhead", warheadclasses);
   titem->chain_deploy = parseSubclassSet(chunk, "deploy", deployclasses);

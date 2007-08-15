@@ -433,11 +433,15 @@ warhead {
 
 projectile {
   name=projectile.bombardment.orbitalmines
+  
   motion=mine
-  radius_physical=1.4
-  mine_spikes=4
   halflife=12
+  
+  shape=star
+  star_spikes=4
+  star_radius=1.4
   color=0.8, 1.0, 0.9
+
   warhead=warhead.bombardment.orbitalmines
 }
 
@@ -469,11 +473,15 @@ warhead {
 
 projectile {
   name=projectile.bombardment.augmentedmines
+  
   motion=mine
-  radius_physical=1.5
-  mine_spikes=4
-  halflife=13
+  halflife=12
+  
+  shape=star
+  star_spikes=4
+  star_radius=1.5
   color=0.8, 1.0, 0.9
+
   warhead=warhead.bombardment.augmentedmines
 }
 
@@ -505,11 +513,15 @@ warhead {
 
 projectile {
   name=projectile.bombardment.boostedmines
+
   motion=mine
-  radius_physical=1.6
-  mine_spikes=4
-  halflife=14
+  halflife=12
+  
+  shape=star
+  star_spikes=4
+  star_radius=1.6
   color=0.8, 1.0, 0.9
+
   warhead=warhead.bombardment.boostedmines
 }
 
@@ -541,11 +553,15 @@ warhead {
 
 projectile {
   name=projectile.bombardment.blastmines
+  
   motion=mine
-  radius_physical=1.7
-  mine_spikes=4
-  halflife=15
+  halflife=12
+  
+  shape=star
+  star_spikes=4
+  star_radius=1.7
   color=0.8, 1.0, 0.9
+
   warhead=warhead.bombardment.blastmines
 }
 
@@ -577,11 +593,15 @@ warhead {
 
 projectile {
   name=projectile.bombardment.shockmines
+
   motion=mine
-  radius_physical=1.8
-  mine_spikes=4
-  halflife=16
+  halflife=12
+  
+  shape=star
+  star_spikes=4
+  star_radius=1.8
   color=0.8, 1.0, 0.9
+
   warhead=warhead.bombardment.shockmines
 }
 
@@ -613,11 +633,15 @@ warhead {
 
 projectile {
   name=projectile.bombardment.annihilationmines
+  
   motion=mine
-  radius_physical=1.9
-  mine_spikes=4
-  halflife=17
+  halflife=12
+  
+  shape=star
+  star_spikes=4
+  star_radius=1.9
   color=0.8, 1.0, 0.9
+
   warhead=warhead.bombardment.annihilationmines
 }
 

@@ -22,11 +22,15 @@ warhead {
 
 projectile {
   name=projectile.weapon.MinelayerI
+  
   motion=mine
-  mine_spikes=7
-  radius_physical=1
   halflife=12
+  
+  shape=star
+  star_spikes=7
+  star_radius=1
   color=1.0, 1.0, 1.0
+  
   warhead=warhead.weapon.MinelayerI
 }
 
@@ -64,11 +68,15 @@ warhead {
 
 projectile {
   name=projectile.weapon.MinelayerII
+  
   motion=mine
-  mine_spikes=7
-  radius_physical=1.2
   halflife=12
+  
+  shape=star
+  star_spikes=7
+  star_radius=1.2
   color=1.0, 1.0, 1.0
+
   warhead=warhead.weapon.MinelayerII
 }
 
@@ -106,11 +114,15 @@ warhead {
 
 projectile {
   name=projectile.weapon.MinelayerIII
+  
   motion=mine
-  mine_spikes=7
-  radius_physical=1.4
   halflife=12
+  
+  shape=star
+  star_spikes=7
+  star_radius=1.4
   color=1.0, 1.0, 1.0
+
   warhead=warhead.weapon.MinelayerIII
 }
 
@@ -148,11 +160,15 @@ warhead {
 
 projectile {
   name=projectile.weapon.MinelayerIV
+  
   motion=mine
-  mine_spikes=7
-  radius_physical=1.6
   halflife=12
+  
+  shape=star
+  star_spikes=7
+  star_radius=1.6
   color=1.0, 1.0, 1.0
+
   warhead=warhead.weapon.MinelayerIV
 }
 
@@ -190,11 +206,15 @@ warhead {
 
 projectile {
   name=projectile.weapon.MinelayerV
+  
   motion=mine
-  mine_spikes=7
-  radius_physical=1.8
   halflife=12
+  
+  shape=star
+  star_spikes=7
+  star_radius=1.8
   color=1.0, 1.0, 1.0
+
   warhead=warhead.weapon.MinelayerV
 }
 
@@ -232,11 +252,15 @@ warhead {
 
 projectile {
   name=projectile.weapon.MinelayerVI
+  
   motion=mine
-  mine_spikes=7
-  radius_physical=2.0
   halflife=12
+  
+  shape=star
+  star_spikes=7
+  star_radius=2
   color=1.0, 1.0, 1.0
+
   warhead=warhead.weapon.MinelayerVI
 }
 
@@ -415,13 +439,16 @@ warhead {
 
 projectile {
   name=projectile.weapon.SpiderMineI
+  
   motion=spidermine
-  mine_spikes=6
-  mine_visibility=1.5x
-  velocity=3
-  radius_physical=1
   halflife=18
+  
+  shape=star
+  proximity_visibility=1.5x
+  star_spikes=6
+  star_radius=1
   color=1.0, 1.0, 1.0
+
   warhead=warhead.weapon.SpiderMineI
 }
 
@@ -459,13 +486,16 @@ warhead {
 
 projectile {
   name=projectile.weapon.SpiderMineII
+  
   motion=spidermine
-  mine_spikes=6
-  mine_visibility=1.5x
-  velocity=3
-  radius_physical=1.2
   halflife=18
+  
+  shape=star
+  proximity_visibility=1.5x
+  star_spikes=6
+  star_radius=1.2
   color=1.0, 1.0, 1.0
+
   warhead=warhead.weapon.SpiderMineII
 }
 
@@ -503,13 +533,16 @@ warhead {
 
 projectile {
   name=projectile.weapon.SpiderMineIII
+
   motion=spidermine
-  mine_spikes=6
-  mine_visibility=1.5x
-  velocity=3
-  radius_physical=1.4
   halflife=18
+  
+  shape=star
+  proximity_visibility=1.5x
+  star_spikes=6
+  star_radius=1.4
   color=1.0, 1.0, 1.0
+
   warhead=warhead.weapon.SpiderMineIII
 }
 
@@ -547,13 +580,16 @@ warhead {
 
 projectile {
   name=projectile.weapon.SpiderMineIV
+
   motion=spidermine
-  mine_spikes=6
-  mine_visibility=1.5x
-  velocity=3
-  radius_physical=1.6
   halflife=18
+  
+  shape=star
+  proximity_visibility=1.5x
+  star_spikes=6
+  star_radius=1.6
   color=1.0, 1.0, 1.0
+
   warhead=warhead.weapon.SpiderMineIV
 }
 
@@ -591,13 +627,16 @@ warhead {
 
 projectile {
   name=projectile.weapon.SpiderMineV
+
   motion=spidermine
-  mine_spikes=6
-  mine_visibility=1.5x
-  velocity=3
-  radius_physical=1.8
   halflife=18
+  
+  shape=star
+  proximity_visibility=1.5x
+  star_spikes=6
+  star_radius=1.8
   color=1.0, 1.0, 1.0
+
   warhead=warhead.weapon.SpiderMineV
 }
 
@@ -635,13 +674,16 @@ warhead {
 
 projectile {
   name=projectile.weapon.SpiderMineVI
+
   motion=spidermine
-  mine_spikes=6
-  mine_visibility=1.5x
-  velocity=3
-  radius_physical=2.0
   halflife=18
+  
+  shape=star
+  proximity_visibility=1.5x
+  star_spikes=6
+  star_radius=2.0
   color=1.0, 1.0, 1.0
+
   warhead=warhead.weapon.SpiderMineVI
 }
 
@@ -724,14 +766,15 @@ projectile {
   name=projectile.weapon.SniperMineI
   
   motion=mine
-  mine_spikes=3
-  mine_visibility=2x
-  radius_physical=1.5
   halflife=18
-  
   proximity=20
   
+  shape=star
+  proximity_visibility=2x
+  star_spikes=3
+  star_radius=1.5
   color=1.0, 1.0, 1.0
+
   warhead=warhead.weapon.SniperMineI
   deploy=deploy.weapon.SniperMineI.snipe
 }
@@ -801,14 +844,15 @@ projectile {
   name=projectile.weapon.SniperMineII
   
   motion=mine
-  mine_spikes=3
-  mine_visibility=2x
-  radius_physical=1.6
   halflife=18
-  
   proximity=20
   
+  shape=star
+  proximity_visibility=2x
+  star_spikes=3
+  star_radius=1.6
   color=1.0, 1.0, 1.0
+  
   warhead=warhead.weapon.SniperMineII
   deploy=deploy.weapon.SniperMineII.snipe
 }
@@ -878,14 +922,15 @@ projectile {
   name=projectile.weapon.SniperMineIII
   
   motion=mine
-  mine_spikes=3
-  mine_visibility=2x
-  radius_physical=1.7
   halflife=18
-  
   proximity=20
   
+  shape=star
+  proximity_visibility=2x
+  star_spikes=3
+  star_radius=1.7
   color=1.0, 1.0, 1.0
+  
   warhead=warhead.weapon.SniperMineIII
   deploy=deploy.weapon.SniperMineIII.snipe
 }
@@ -955,14 +1000,15 @@ projectile {
   name=projectile.weapon.SniperMineIV
   
   motion=mine
-  mine_spikes=3
-  mine_visibility=2x
-  radius_physical=1.8
   halflife=18
-  
   proximity=20
   
+  shape=star
+  proximity_visibility=2x
+  star_spikes=3
+  star_radius=1.8
   color=1.0, 1.0, 1.0
+  
   warhead=warhead.weapon.SniperMineIV
   deploy=deploy.weapon.SniperMineIV.snipe
 }
@@ -1032,14 +1078,15 @@ projectile {
   name=projectile.weapon.SniperMineV
   
   motion=mine
-  mine_spikes=3
-  mine_visibility=2x
-  radius_physical=1.9
   halflife=18
-  
   proximity=20
   
+  shape=star
+  proximity_visibility=2x
+  star_spikes=3
+  star_radius=1.9
   color=1.0, 1.0, 1.0
+  
   warhead=warhead.weapon.SniperMineV
   deploy=deploy.weapon.SniperMineV.snipe
 }
@@ -1109,14 +1156,15 @@ projectile {
   name=projectile.weapon.SniperMineVI
   
   motion=mine
-  mine_spikes=3
-  mine_visibility=2x
-  radius_physical=2.0
   halflife=18
-  
   proximity=20
   
+  shape=star
+  proximity_visibility=2x
+  star_spikes=3
+  star_radius=2.0
   color=1.0, 1.0, 1.0
+  
   warhead=warhead.weapon.SniperMineVI
   deploy=deploy.weapon.SniperMineVI.snipe
 }
@@ -1194,15 +1242,19 @@ deploy {
   name=deploy.weapon.SatelliteMineI.dps
   projectile=projectile.weapon.SatelliteMineI.dps
 }
-
+  
 projectile {
   name=projectile.weapon.SatelliteMineI
+  
   motion=mine
-  mine_spikes=5
-  radius_physical=1.3
   halflife=14
-  proximity=8
+  proximity=20
+  
+  shape=star
+  star_spikes=5
+  star_radius=1.3
   color=1.0, 1.0, 1.0
+  
   deploy=deploy.weapon.SatelliteMineI.dps
   effects=effects.weapon.SatelliteMineI
 }
@@ -1269,12 +1321,16 @@ deploy {
 
 projectile {
   name=projectile.weapon.SatelliteMineII
+  
   motion=mine
-  mine_spikes=5
-  radius_physical=1.4
   halflife=14
-  proximity=9
+  proximity=20
+  
+  shape=star
+  star_spikes=5
+  star_radius=1.4
   color=1.0, 1.0, 1.0
+  
   deploy=deploy.weapon.SatelliteMineII.dps
   effects=effects.weapon.SatelliteMineII
 }
@@ -1341,12 +1397,16 @@ deploy {
 
 projectile {
   name=projectile.weapon.SatelliteMineIII
+
   motion=mine
-  mine_spikes=5
-  radius_physical=1.5
   halflife=14
-  proximity=10
+  proximity=20
+  
+  shape=star
+  star_spikes=5
+  star_radius=1.5
   color=1.0, 1.0, 1.0
+  
   deploy=deploy.weapon.SatelliteMineIII.dps
   effects=effects.weapon.SatelliteMineIII
 }
@@ -1413,12 +1473,16 @@ deploy {
 
 projectile {
   name=projectile.weapon.SatelliteMineIV
+
   motion=mine
-  mine_spikes=5
-  radius_physical=1.6
   halflife=14
-  proximity=11
+  proximity=20
+  
+  shape=star
+  star_spikes=5
+  star_radius=1.6
   color=1.0, 1.0, 1.0
+  
   deploy=deploy.weapon.SatelliteMineIV.dps
   effects=effects.weapon.SatelliteMineIV
 }
@@ -1485,12 +1549,16 @@ deploy {
 
 projectile {
   name=projectile.weapon.SatelliteMineV
+
   motion=mine
-  mine_spikes=5
-  radius_physical=1.7
   halflife=14
-  proximity=12
+  proximity=20
+  
+  shape=star
+  star_spikes=5
+  star_radius=1.7
   color=1.0, 1.0, 1.0
+  
   deploy=deploy.weapon.SatelliteMineV.dps
   effects=effects.weapon.SatelliteMineV
 }
@@ -1557,12 +1625,16 @@ deploy {
 
 projectile {
   name=projectile.weapon.SatelliteMineVI
+
   motion=mine
-  mine_spikes=5
-  radius_physical=1.8
   halflife=14
-  proximity=13
+  proximity=20
+  
+  shape=star
+  star_spikes=5
+  star_radius=1.8
   color=1.0, 1.0, 1.0
+  
   deploy=deploy.weapon.SatelliteMineVI.dps
   effects=effects.weapon.SatelliteMineVI
 }

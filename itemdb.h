@@ -108,49 +108,46 @@ struct IDBWarhead {
 };
 
 enum { PM_NORMAL, PM_MISSILE, PM_AIRBRAKE, PM_BOOMERANG, PM_MINE, PM_SPIDERMINE, PM_DPS, PM_LAST };
-enum { PS_DEFAULT, PS_ARROW, PS_DRONE };
+enum { PS_DEFAULT, PS_ARROW, PS_DRONE, PS_STAR, PS_INVISIBLE };
 
 struct IDBProjectile {
   int motion;
-  float velocity;
-  float radius_physical;
-  
-  float proximity;
-
-  int mine_spikes;
-  float mine_visibility;
+    float velocity;
+    float proximity;
+    float durability;
+    float halflife;
+    
+    float missile_sidelaunch;
+    float missile_backlaunch;
+    float missile_stabstart;
+    float missile_stabilization;
+    
+    float boomerang_convergence;
+    float boomerang_intersection;
+    float boomerang_maxrotate;
+    
+    float airbrake_life;
+    float airbrake_slowdown;
+    
+    float dps_duration;
   
   int shape;
-
-  float defshape_length;
-  
-  float arrow_width;
-  float arrow_height;
-  float arrow_rotate;
-  
-  float drone_radius;
-  float drone_spike;
-  
-  float visual_thickness;
-  Color color;
-
-  float durability;
-
-  float halflife;
-  
-  float missile_sidelaunch;
-  float missile_backlaunch;
-  float missile_stabstart;
-  float missile_stabilization;
-  
-  float boomerang_convergence;
-  float boomerang_intersection;
-  float boomerang_maxrotate;
-  
-  float airbrake_life;
-  float airbrake_slowdown;
-  
-  float dps_duration;
+    float proximity_visibility;
+    
+    float defshape_length;
+    
+    float arrow_width;
+    float arrow_height;
+    float arrow_rotate;
+    
+    float drone_radius;
+    float drone_spike;
+    
+    int star_spikes;
+    float star_radius;
+    
+    float visual_thickness;
+    Color color;
   
   bool no_intersection;
 
@@ -355,46 +352,48 @@ public:
   typedef IDBProjectile base_type;
 
   int motion() const;
-  float velocity() const;
-  float radius_physical() const;
-  float durability() const;
-  float proximity() const;
-
-  vector<IDBWarheadAdjust> chain_warhead(float multfactor = 1.0f) const;
-  vector<IDBDeployAdjust> chain_deploy() const;
-
-  vector<IDBEffectsAdjust> chain_effects() const;
-
-  int shape() const;
-
-  float defshape_length() const;
-
-  float arrow_width() const;
-  float arrow_height() const;
-  float arrow_rotate() const;
-  float visual_thickness() const;
-  Color color() const;
-
-  int mine_spikes() const;
-  float mine_visibility() const;
-
-  float halflife() const;
-
-  float airbrake_life() const;
-  float airbrake_slowdown() const;
-
-  float missile_stabstart() const;
-  float missile_stabilization() const;
-  float missile_sidelaunch() const;
-  float missile_backlaunch() const;
+    float velocity() const;
+    float proximity() const;
+    float durability() const;
+    float halflife() const;
+    
+    float missile_stabstart() const;
+    float missile_stabilization() const;
+    float missile_sidelaunch() const;
+    float missile_backlaunch() const;
+    
+    float boomerang_convergence() const;
+    float boomerang_intersection() const;
+    float boomerang_maxrotate() const;
+    
+    float airbrake_life() const;
+    float airbrake_slowdown() const;
+    
+    float dps_duration() const;
   
-  float boomerang_convergence() const;
-  float boomerang_intersection() const;
-  float boomerang_maxrotate() const;
-
-  float dps_duration() const;
+  int shape() const;
+    float proximity_visibility() const;
+    
+    float defshape_length() const;
+    
+    float arrow_width() const;
+    float arrow_height() const;
+    float arrow_rotate() const;
+    
+    float drone_radius() const;
+    float drone_spike() const;
+    
+    int star_spikes() const;
+    float star_radius() const;
+    
+    float visual_thickness() const;
+    Color color() const;
   
   bool no_intersection() const;
+  
+  vector<IDBWarheadAdjust> chain_warhead(float multfactor = 1.0f) const;
+  vector<IDBDeployAdjust> chain_deploy() const;
+  vector<IDBEffectsAdjust> chain_effects() const;
   
   float stats_damagePerShot() const;
   

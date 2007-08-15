@@ -142,38 +142,12 @@ IDBWarheadAdjust::IDBWarheadAdjust(const IDBWarhead *in_idb, const IDBAdjustment
  * IDBProjectileAdjust
  */
 
+// Motion-related functions
 int IDBProjectileAdjust::motion() const { return idb->motion; };
 float IDBProjectileAdjust::velocity() const { return idb->velocity; };
-float IDBProjectileAdjust::radius_physical() const { return idb->radius_physical; };
-float IDBProjectileAdjust::durability() const { return idb->durability; };
 float IDBProjectileAdjust::proximity() const { return idb->proximity; };
-
-vector<IDBWarheadAdjust> IDBProjectileAdjust::chain_warhead(float multfactor) const {
-  vector<IDBWarheadAdjust> rv;
-  for(int i = 0; i < idb->chain_warhead.size(); i++)
-    rv.push_back(IDBWarheadAdjust(idb->chain_warhead[i], adjust, multfactor));
-  return rv;
-}
-
-vector<IDBDeployAdjust> IDBProjectileAdjust::chain_deploy() const { return adjust_vector(idb->chain_deploy, adjust); }
-vector<IDBEffectsAdjust> IDBProjectileAdjust::chain_effects() const { return adjust_vector(idb->chain_effects, adjust); }
-
-int IDBProjectileAdjust::shape() const { return idb->shape; }
-
-float IDBProjectileAdjust::defshape_length() const { return idb->defshape_length; };
-
-float IDBProjectileAdjust::arrow_width() const { CHECK(shape() == PS_ARROW); return idb->arrow_width; }
-float IDBProjectileAdjust::arrow_height() const { CHECK(shape() == PS_ARROW); return idb->arrow_height; }
-float IDBProjectileAdjust::arrow_rotate() const { CHECK(shape() == PS_ARROW); return idb->arrow_rotate; }
-float IDBProjectileAdjust::visual_thickness() const { return idb->visual_thickness; };
-Color IDBProjectileAdjust::color() const { return idb->color; };
-
-int IDBProjectileAdjust::mine_spikes() const { return idb->mine_spikes; };
-float IDBProjectileAdjust::mine_visibility() const { return idb->mine_visibility; };
-
+float IDBProjectileAdjust::durability() const { return idb->durability; };
 float IDBProjectileAdjust::halflife() const { return idb->halflife; };
-float IDBProjectileAdjust::airbrake_life() const { CHECK(idb->motion == PM_AIRBRAKE); return idb->airbrake_life; }
-float IDBProjectileAdjust::airbrake_slowdown() const { CHECK(idb->motion == PM_AIRBRAKE); return idb->airbrake_slowdown; }
 
 float IDBProjectileAdjust::missile_stabstart() const { CHECK(idb->motion == PM_MISSILE); return idb->missile_stabstart; }
 float IDBProjectileAdjust::missile_stabilization() const { CHECK(idb->motion == PM_MISSILE); return idb->missile_stabilization; }
@@ -184,7 +158,40 @@ float IDBProjectileAdjust::boomerang_convergence() const { CHECK(idb->motion == 
 float IDBProjectileAdjust::boomerang_intersection() const { CHECK(idb->motion == PM_BOOMERANG); return idb->boomerang_intersection; }
 float IDBProjectileAdjust::boomerang_maxrotate() const { CHECK(idb->motion == PM_BOOMERANG); return idb->boomerang_maxrotate; }
 
+float IDBProjectileAdjust::airbrake_life() const { CHECK(idb->motion == PM_AIRBRAKE); return idb->airbrake_life; }
+float IDBProjectileAdjust::airbrake_slowdown() const { CHECK(idb->motion == PM_AIRBRAKE); return idb->airbrake_slowdown; }
+
 float IDBProjectileAdjust::dps_duration() const { CHECK(idb->motion == PM_DPS); return idb->dps_duration; }
+
+// Shape-related functions
+int IDBProjectileAdjust::shape() const { return idb->shape; }
+
+float IDBProjectileAdjust::proximity_visibility() const { return idb->proximity_visibility; };
+
+float IDBProjectileAdjust::defshape_length() const { CHECK(idb->shape == PS_DEFAULT); return idb->defshape_length; };
+
+float IDBProjectileAdjust::arrow_width() const { CHECK(idb->shape == PS_ARROW); return idb->arrow_width; }
+float IDBProjectileAdjust::arrow_height() const { CHECK(idb->shape == PS_ARROW); return idb->arrow_height; }
+float IDBProjectileAdjust::arrow_rotate() const { CHECK(idb->shape == PS_ARROW); return idb->arrow_rotate; }
+
+float IDBProjectileAdjust::drone_radius() const { CHECK(idb->shape == PS_DRONE); return idb->drone_radius; }
+float IDBProjectileAdjust::drone_spike() const { CHECK(idb->shape == PS_DRONE); return idb->drone_spike; }
+
+int IDBProjectileAdjust::star_spikes() const { CHECK(idb->shape == PS_STAR); return idb->star_spikes; }
+float IDBProjectileAdjust::star_radius() const { CHECK(idb->shape == PS_STAR); return idb->star_radius; }
+
+float IDBProjectileAdjust::visual_thickness() const { return idb->visual_thickness; };
+Color IDBProjectileAdjust::color() const { return idb->color; };
+
+vector<IDBWarheadAdjust> IDBProjectileAdjust::chain_warhead(float multfactor) const {
+  vector<IDBWarheadAdjust> rv;
+  for(int i = 0; i < idb->chain_warhead.size(); i++)
+    rv.push_back(IDBWarheadAdjust(idb->chain_warhead[i], adjust, multfactor));
+  return rv;
+}
+
+vector<IDBDeployAdjust> IDBProjectileAdjust::chain_deploy() const { return adjust_vector(idb->chain_deploy, adjust); }
+vector<IDBEffectsAdjust> IDBProjectileAdjust::chain_effects() const { return adjust_vector(idb->chain_effects, adjust); }
 
 bool IDBProjectileAdjust::no_intersection() const {
   return idb->no_intersection;

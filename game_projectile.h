@@ -57,8 +57,8 @@ private:
   Coord boomerang_angle;
   Coord boomerang_lastchange;
 
-  vector<Coord2> mine_polys() const;
-  Coord mine_facing;
+  vector<Coord2> star_polys() const;
+  Coord star_facing;
 
   Coord spider_vector;  // spider-vector, spider-vector, doin' things like a spectre. what's he like? no-one knows! he's got radioactive clothes! beware! here comes the spider vector
   enum { SV_NONE = -1000 }; // this seems like a reasonable sentinel
