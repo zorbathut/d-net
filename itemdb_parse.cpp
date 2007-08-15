@@ -510,6 +510,11 @@ void parseProjectile(kvData *chunk, bool reload, ErrorAccumulator &accum) {
     titem->proximity_visibility = parseWithDefault(chunk, "proximity_visibility", 30.f);
     CHECK(titem->halflife != -1);
     allowed_shapes.insert("star");
+  } else if(motion == "hunter") {
+    titem->motion = PM_HUNTER;
+    titem->hunter_rotation = parseSingleItem<float>(chunk->consume("hunter_rotation"));
+    titem->hunter_turnweight = parseSingleItem<float>(chunk->consume("hunter_turnweight"));
+    allowed_shapes.insert("drone");
   } else if(motion == "dps") {
     titem->motion = PM_DPS;
     titem->dps_duration = parseSingleItem<float>(chunk->consume("duration"));

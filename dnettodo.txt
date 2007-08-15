@@ -2,6 +2,7 @@
 - "Finish the Damn Game" Initiative
   - run lots of checksumming
   - spider mines broken again :(
+  - add new EMP effect
   - Many many more weapons
     - Add implementations for all trap weapons
       - Hunter/Killer: I need a new projectile for this.

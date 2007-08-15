@@ -63,6 +63,8 @@ void Projectile::tick(vector<smart_ptr<GfxEffects> > *gfxe, const GameImpactCont
     }
   } else if(projtype.motion() == PM_DPS) {
     detonating = true;
+  } else if(projtype.motion() == PM_HUNTER) {
+    
   } else {
     CHECK(0);
   }
@@ -353,8 +355,10 @@ Projectile::Projectile(const Coord2 &in_pos, Coord in_d, const IDBProjectileAdju
     boomerang_yfactor = cfcos(Coord(rng->frand()) * COORDPI / 4 + COORDPI / 8 * 3);
     boomerang_angle = 0;
     boomerang_lastchange = 1000000;
-  } else if(projtype.motion() == PM_MINE || projtype.motion() == PM_SPIDERMINE) {
+  } else if(projtype.motion() == PM_MINE) {
+  } else if(projtype.motion() == PM_SPIDERMINE) {
   } else if(projtype.motion() == PM_DPS) {
+  } else if(projtype.motion() == PM_HUNTER) {
   } else {
     CHECK(0);
   }

@@ -719,6 +719,134 @@ weapon {
 
 ###########################
 #
+#   Hunter Killer
+
+hierarchy {
+  name=ROOT.Ammo.Hunter Killer
+  pack=100
+}
+
+text {
+  name=text.weapon.hunterkiller
+  data=Blah blah hamster blah yacht blah blah blah monocle polish
+}
+
+effects {
+  name=effects.weapon.hunterkiller
+  type=particle
+
+  quantity=8
+  
+  inertia=0.3
+  spread=30
+  
+  slowdown=0.3
+  lifetime=0.2
+  
+  radius=0.3
+  color=1.0, 0.9, 0.6
+}
+
+warhead {
+  name=warhead.weapon.hunterkiller
+  radiusdamage=MERGE trap
+  radiusfalloff=6
+  radiusexplosive=0
+  wallremovalradius=1.0
+  wallremovalchance=0.4
+  
+  effects_impact=effects.weapon.hunterkiller
+}
+
+projectile {
+  name=projectile.weapon.hunterkiller
+  
+  motion=hunter
+  halflife=8
+  velocity=120
+  hunter_rotation=0.1
+  hunter_turnweight=20
+  
+  shape=drone
+  drone_radius=1
+  drone_spike=2
+  color=1.0, 0.9, 0.6
+  
+  durability=MERGE
+  warhead=warhead.weapon.hunterkiller
+}
+
+deploy {
+  name=deploy.weapon.hunterkiller
+  projectile=projectile.weapon.hunterkiller
+}
+
+launcher {
+  name=launcher.weapon.hunterkiller
+  
+  deploy=deploy.weapon.hunterkiller
+  
+  demo=back
+  
+  text=text.weapon.boomeranggun
+}
+
+weapon {
+  name=ROOT.Ammo.Hunter Killer.Hunter Killer I
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.weapon.hunterkiller
+}
+
+weapon {
+  name=ROOT.Ammo.Hunter Killer.Hunter Killer II
+
+  cost=MERGE
+  firerate=MERGE
+
+  launcher=launcher.weapon.hunterkiller
+}
+
+weapon {
+  name=ROOT.Ammo.Hunter Killer.Hunter Killer III
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.weapon.hunterkiller
+}
+
+weapon {
+  name=ROOT.Ammo.Hunter Killer.Hunter Killer IV
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.weapon.hunterkiller
+}
+
+weapon {
+  name=ROOT.Ammo.Hunter Killer.Hunter Killer V
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.weapon.hunterkiller
+}
+
+weapon {
+  name=ROOT.Ammo.Hunter Killer.Hunter Killer VI
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.weapon.hunterkiller
+}
+
+###########################
+#
 #   Sniper mines
 
 hierarchy {

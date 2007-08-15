@@ -107,7 +107,7 @@ struct IDBWarhead {
   vector<const IDBEffects *> effects_impact;
 };
 
-enum { PM_NORMAL, PM_MISSILE, PM_AIRBRAKE, PM_BOOMERANG, PM_MINE, PM_SPIDERMINE, PM_DPS, PM_LAST };
+enum { PM_NORMAL, PM_MISSILE, PM_AIRBRAKE, PM_BOOMERANG, PM_MINE, PM_SPIDERMINE, PM_HUNTER, PM_DPS, PM_LAST };
 enum { PS_DEFAULT, PS_ARROW, PS_DRONE, PS_STAR, PS_INVISIBLE };
 
 struct IDBProjectile {
@@ -128,6 +128,9 @@ struct IDBProjectile {
     
     float airbrake_life;
     float airbrake_slowdown;
+    
+    float hunter_rotation;
+    float hunter_turnweight;
     
     float dps_duration;
   
