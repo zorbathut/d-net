@@ -377,6 +377,16 @@ inline Coord4 &operator-=(Coord4 &lhs, const Coord2 &rhs) {
 }
 
 /*************
+ * PosInfo
+ */
+
+class CPosInfo {
+public:
+  Coord2 pos;
+  Coord d;
+};
+
+/*************
  * Computational geometry
  */
 

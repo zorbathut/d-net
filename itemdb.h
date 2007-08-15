@@ -108,7 +108,7 @@ struct IDBWarhead {
 };
 
 enum { PM_NORMAL, PM_MISSILE, PM_AIRBRAKE, PM_BOOMERANG, PM_MINE, PM_SPIDERMINE, PM_HUNTER, PM_DPS, PM_LAST };
-enum { PS_DEFAULT, PS_ARROW, PS_DRONE, PS_STAR, PS_INVISIBLE };
+enum { PS_LINE, PS_LINE_AIRBRAKE, PS_ARROW, PS_DRONE, PS_STAR, PS_INVISIBLE };
 
 struct IDBProjectile {
   int motion;
@@ -137,7 +137,7 @@ struct IDBProjectile {
   int shape;
     float proximity_visibility;
     
-    float defshape_length;
+    float line_length;
     
     float arrow_width;
     float arrow_height;
@@ -377,7 +377,7 @@ public:
   int shape() const;
     float proximity_visibility() const;
     
-    float defshape_length() const;
+    float line_length() const;
     
     float arrow_width() const;
     float arrow_height() const;

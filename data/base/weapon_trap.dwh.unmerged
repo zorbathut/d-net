@@ -788,9 +788,62 @@ launcher {
   
   demo=back
   
-  text=text.weapon.boomeranggun
+  text=text.weapon.hunterkiller
 }
 
+weapon {
+  name=ROOT.Ammo.Hunter Killer.Hunter Killer I
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.weapon.hunterkiller
+}
+
+weapon {
+  name=ROOT.Ammo.Hunter Killer.Hunter Killer II
+
+  cost=MERGE
+  firerate=MERGE
+
+  launcher=launcher.weapon.hunterkiller
+}
+
+weapon {
+  name=ROOT.Ammo.Hunter Killer.Hunter Killer III
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.weapon.hunterkiller
+}
+
+weapon {
+  name=ROOT.Ammo.Hunter Killer.Hunter Killer IV
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.weapon.hunterkiller
+}
+
+weapon {
+  name=ROOT.Ammo.Hunter Killer.Hunter Killer V
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.weapon.hunterkiller
+}
+
+weapon {
+  name=ROOT.Ammo.Hunter Killer.Hunter Killer VI
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.weapon.hunterkiller
+}
 
 ###########################
 #

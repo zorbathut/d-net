@@ -475,10 +475,10 @@ void parseProjectile(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   titem->halflife = parseWithDefault(chunk, "halflife", -1.);
   
   string motion = parseWithDefault(chunk, "motion", "normal");
-  string defshape = "default";
+  string defshape = "line";
   if(motion == "normal") {
     titem->motion = PM_NORMAL;
-    allowed_shapes.insert("default");
+    allowed_shapes.insert("line");
     allowed_shapes.insert("arrow");
   } else if(motion == "missile") {
     titem->motion = PM_MISSILE;
@@ -486,13 +486,14 @@ void parseProjectile(kvData *chunk, bool reload, ErrorAccumulator &accum) {
     titem->missile_stabilization = parseSingleItem<float>(chunk->consume("missile_stabilization"));
     titem->missile_sidelaunch = parseSingleItem<float>(chunk->consume("missile_sidelaunch"));
     titem->missile_backlaunch = parseSingleItem<float>(chunk->consume("missile_backlaunch"));
-    allowed_shapes.insert("default");
-    allowed_shapes.insert("arrow");
+    allowed_shapes.insert("line");
   } else if(motion == "airbrake") {
     titem->motion = PM_AIRBRAKE;
     titem->airbrake_life = parseSingleItem<float>(chunk->consume("airbrake_life"));
     titem->airbrake_slowdown = parseSingleItem<float>(chunk->consume("airbrake_slowdown"));
-    allowed_shapes.insert("default");
+    defshape = "line_airbrake";
+    allowed_shapes.insert("line");
+    allowed_shapes.insert("line_airbrake");
     allowed_shapes.insert("arrow");
   } else if(motion == "boomerang") {
     titem->motion = PM_BOOMERANG;
@@ -533,15 +534,11 @@ void parseProjectile(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   
   string shape = parseWithDefault(chunk, "shape", defshape);
   CHECK(allowed_shapes.count(shape));
-  if(shape == "default") {
-    titem->shape = PS_DEFAULT;
-    if(titem->motion == PM_NORMAL) {
-      titem->defshape_length = parseWithDefault(chunk, "defshape_length", titem->velocity / 60);
-    } else if(titem->motion == PM_MISSILE) {
-      titem->defshape_length = parseWithDefault(chunk, "defshape_length", 2.0);
-    } else {
-      titem->defshape_length = 0;
-    }
+  if(shape == "line") {
+    titem->shape = PS_LINE;
+    titem->line_length = parseWithDefault(chunk, "line_length", titem->velocity / 60);  // yes, this is 60, not FPS
+  } else if(shape == "line_airbrake") {
+    titem->shape = PS_LINE_AIRBRAKE;
   } else if(shape == "arrow") {
     titem->shape = PS_ARROW;
     titem->arrow_height = parseSingleItem<float>(chunk->consume("arrow_height"));

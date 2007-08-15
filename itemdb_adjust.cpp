@@ -168,7 +168,7 @@ int IDBProjectileAdjust::shape() const { return idb->shape; }
 
 float IDBProjectileAdjust::proximity_visibility() const { return idb->proximity_visibility; };
 
-float IDBProjectileAdjust::defshape_length() const { CHECK(idb->shape == PS_DEFAULT); return idb->defshape_length; };
+float IDBProjectileAdjust::line_length() const { CHECK(idb->shape == PS_LINE || idb->shape == PS_LINE_AIRBRAKE); return idb->line_length; };
 
 float IDBProjectileAdjust::arrow_width() const { CHECK(idb->shape == PS_ARROW); return idb->arrow_width; }
 float IDBProjectileAdjust::arrow_height() const { CHECK(idb->shape == PS_ARROW); return idb->arrow_height; }

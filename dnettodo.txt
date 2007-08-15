@@ -1,40 +1,43 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
+  - adding Hunter/Killer
+    - Name enums
+    - Standardize line path for projectile
+    - Make Bombardment drones actually drone-shaped
+  - airbrake fade doesn't seem to be working right
   - run lots of checksumming
-  - spider mines broken again :(
-  - add new EMP effect
   - Many many more weapons
     - Add implementations for all trap weapons
       - Hunter/Killer: I need a new projectile for this.
       - Tailwind Blast: Should spawn from centroid and sweep backwards, accelerating, with a triangle projectile.
     - Add implementations for all exotic weapons
     - Re-enable weapon checks
-    - Add trap behavior
-    - Add exotic behavior
     - Add glory behavior
       - Buff up the first glory's blast radius a bit
       - Make sure they don't spike CPU too badly
     - Add sparker behavior
-    - Special autocannon
-    - Special laser
-    - Special missile
-    - OGRE
+    - add new EMP effect
   - Make It Pretty
     - Add both "proportion" and "multiplier" merge options
     - Add wall-destruction sizes to the balance sheet
     - Spruce up sparker weaponry
     - Spruce up base autocannon weaponry
-    - Spruce up special autocannon weaponry
     - Spruce up base laser weaponry
       - beam laser?
       - lasers spawn sparklies
-    - Spruce up special laser weaponry
     - Spruce up base missile weaponry
-    - Spruce up special missile weaponry
     - Spruce up glory devices
     - Spruce up trap weaponry
     - Spruce up exotic weaponry
     - Spruce up OGRE
+  - Final weapons
+    - Special autocannon
+    - Special laser
+    - Special missile
+    - OGRE
+      - Spruce up special autocannon weaponry
+      - Spruce up special laser weaponry
+      - Spruce up special missile weaponry
   - Eventual bugfixes
     - split off file replay into its own cpp
     - colorcode mines?

@@ -26,12 +26,13 @@ projectile {
   color=0.9, 0.95, 1.0
   
   motion=missile
-  
   velocity=180
   missile_stabstart=0.0
   missile_stabilization=30
   missile_sidelaunch=30
   missile_backlaunch=15
+  
+  line_length=2
   
   durability=MERGE
   warhead=warhead.weapon.missile
@@ -124,7 +125,8 @@ projectile {
   missile_backlaunch=15
   
   visual_thickness=2x
-  defshape_length=1.5x
+  line_length=3
+  
   durability=MERGE
   warhead=warhead.weapon.hemissile
 }
@@ -178,6 +180,8 @@ projectile {
   missile_stabilization=30
   missile_sidelaunch=30
   missile_backlaunch=15
+  
+  line_length=2
   
   durability=MERGE
   warhead=warhead.weapon.clustermissile
@@ -233,6 +237,8 @@ projectile {
   missile_sidelaunch=30
   missile_backlaunch=15
   
+  line_length=2
+  
   durability=MERGE
   warhead=warhead.weapon.proximityrocket
 }
@@ -286,6 +292,8 @@ projectile {
   missile_stabilization=30
   missile_sidelaunch=30
   missile_backlaunch=15
+  
+  line_length=2
   
   durability=MERGE
   warhead=warhead.weapon.adaptiverocket
@@ -341,6 +349,8 @@ projectile {
   missile_sidelaunch=30
   missile_backlaunch=15
   
+  line_length=2
+  
   durability=MERGE
   warhead=warhead.weapon.compactnuke
 }
@@ -394,6 +404,8 @@ projectile {
   missile_stabilization=30
   missile_sidelaunch=30
   missile_backlaunch=15
+  
+  line_length=2
   
   durability=MERGE
   warhead=warhead.weapon.conversionnuke

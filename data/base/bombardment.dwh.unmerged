@@ -690,7 +690,7 @@ projectile {
   missile_backlaunch=0
   
   visual_thickness=3x
-  defshape_length=2x
+  line_length=2x
   durability=MERGE
   
   color=0.9,0.8,0.5
@@ -737,7 +737,7 @@ projectile {
   missile_backlaunch=0
   
   visual_thickness=3x
-  defshape_length=2x
+  line_length=2x
   durability=MERGE
   
   color=0.9,0.8,0.5
@@ -784,7 +784,7 @@ projectile {
   missile_backlaunch=0
   
   visual_thickness=3x
-  defshape_length=2x
+  line_length=2x
   durability=MERGE
   
   color=0.9,0.8,0.5
@@ -831,7 +831,7 @@ projectile {
   missile_backlaunch=0
   
   visual_thickness=3x
-  defshape_length=2x
+  line_length=2x
   durability=MERGE
   
   color=0.9,0.8,0.5
@@ -878,7 +878,7 @@ projectile {
   missile_backlaunch=0
   
   visual_thickness=3x
-  defshape_length=2x
+  line_length=2x
   durability=MERGE
   
   color=0.9,0.8,0.5
@@ -925,7 +925,7 @@ projectile {
   missile_backlaunch=0
   
   visual_thickness=3x
-  defshape_length=2x
+  line_length=2x
   durability=MERGE
   
   color=0.9,0.8,0.5

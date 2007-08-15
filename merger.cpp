@@ -20,6 +20,7 @@ template<typename Model, bool twopass> struct PAW;
 
 template<typename Model> struct PAW<Model, false> {
   static void f(const map<string, typename Model::Data> &tdd, const vector<kvData> &preproc, const string &merged) {
+    StackString ss("PAWfalse");
     ofstream ofs(merged.c_str());
     for(int i = 0; i < preproc.size(); i++) {
       checkForExtraMerges(preproc[i]);
@@ -30,6 +31,7 @@ template<typename Model> struct PAW<Model, false> {
 
 template<typename Model> struct PAW<Model, true> {
   static void f(const map<string, typename Model::Data> &tdd, const vector<kvData> &preproc, const string &merged) {
+    StackString ss("PAWtrue");
     set<string> names;
     for(typename map<string, typename Model::Data>::const_iterator itr = tdd.begin(); itr != tdd.end(); itr++)
       names.insert(itr->first);
@@ -108,6 +110,7 @@ template<typename Model> string nameFromKvd(const kvData &kvd, const set<string>
 }
 
 template<typename Model> void doMerge(const string &csv, const string &unmerged, const string &merged) {
+  StackString ss("domerge");
   map<string, typename Model::Data> tdd;
   set<string> names;
   {
@@ -191,6 +194,8 @@ template<typename Model> void doMerge(const string &csv, const string &unmerged,
 int main(int argc, char *argv[]) {
   set_exename("merger.exe");
   initFlags(argc, argv, 3);
+  
+  StackString ss("core");
   
   CHECK(argc == 4);
   

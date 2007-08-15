@@ -167,7 +167,7 @@ projectile {
   motion=normal
   velocity=800
   visual_thickness=1.5x
-  defshape_length=1.5x
+  line_length=1.5x
   durability=MERGE
   color=0.6, 0.9, 1.0
   warhead=warhead.weapon.megawattlaser

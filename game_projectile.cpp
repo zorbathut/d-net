@@ -24,16 +24,15 @@ void Projectile::tick(vector<smart_ptr<GfxEffects> > *gfxe, const GameImpactCont
   } else if(projtype.motion() == PM_MISSILE) {
     if(age > projtype.missile_stabstart() * FPS)
       missile_sidedist /= pow(projtype.missile_stabilization(), 1.f / FPS);
-    if(projtype.shape() == PS_DEFAULT) {
-      for(int i = 0; i < 2; i++) { // generate particle effects
-        float dir = unsync().frand() * 2 * PI;
-        Float2 pv = makeAngle(dir) / 3;
-        pv *= 1.0 - unsync().frand() * unsync().frand();
-        pv += movement().toFloat();
-        pv += missile_accel().toFloat() * -3 * abs(unsync().gaussian());
-        pv *= 60; // this is an actual 60, converting it from my previous movement-per-frame to movement-per-second
-        gfxe->push_back(GfxPoint(pos.toFloat() + lasttail.toFloat() - movement().toFloat(), pv, 0.17, Color(1.0, 0.9, 0.6)));
-      }
+    
+    for(int i = 0; i < 2; i++) { // generate particle effects
+      float dir = unsync().frand() * 2 * PI;
+      Float2 pv = makeAngle(dir) / 3;
+      pv *= 1.0 - unsync().frand() * unsync().frand();
+      pv += movement().toFloat();
+      pv += missile_accel().toFloat() * -3 * abs(unsync().gaussian());
+      pv *= 60; // this is an actual 60, converting it from my previous movement-per-frame to movement-per-second
+      gfxe->push_back(GfxPoint(pos.toFloat() + lasttail.toFloat() - movement().toFloat(), pv, 0.17, Color(1.0, 0.9, 0.6)));
     }
   } else if(projtype.motion() == PM_AIRBRAKE) {
     airbrake_velocity *= pow(1.0 - projtype.airbrake_slowdown(), 1. / FPS);
@@ -110,7 +109,7 @@ void Projectile::render(const vector<Coord2> &tankposes) const {
   }
   
   if(visible) {
-    if(projtype.shape() == PS_DEFAULT) {
+    if(projtype.shape() == PS_LINE || projtype.shape() == PS_LINE_AIRBRAKE) {
       drawLine(Coord4(pos, pos + lasttail), projtype.visual_thickness());
     } else if(projtype.shape() == PS_ARROW) {
       Coord2 l = pos + rotate(Coord2(projtype.arrow_width() / 2, projtype.arrow_height() / 2), Coord(arrow_spin));
@@ -151,7 +150,9 @@ void Projectile::checksum(Adler32 *adl) const {
     CHECK(0);
   }
   
-  if(projtype.shape() == PS_DEFAULT) {
+  if(projtype.shape() == PS_LINE) {
+    adler(adl, lasttail);
+  } else if(projtype.shape() == PS_LINE_AIRBRAKE) {
     adler(adl, lasttail);
   } else if(projtype.shape() == PS_ARROW) {
     adler(adl, arrow_spin);
@@ -181,7 +182,7 @@ void Projectile::addCollision(Collider *collider, int owner, int id) const {
     // this is kind of a special case ATM
   } else if(projtype.no_intersection()) {
     collider->addPointToken(CollideId(CGR_NOINTPROJECTILE, owner, id), pos, movement());
-  } else if(projtype.shape() == PS_DEFAULT) {
+  } else if(projtype.shape() == PS_LINE || projtype.shape() == PS_LINE_AIRBRAKE) {
     collider->addNormalToken(CollideId(CGR_PROJECTILE, owner, id), Coord4(pos, pos + lasttail), Coord4(movement(), movement() + nexttail() - lasttail));
   } else if(projtype.shape() == PS_ARROW) {
     Coord2 l = pos + rotate(Coord2(projtype.arrow_width() / 2, projtype.arrow_height() / 2), Coord(arrow_spin));
@@ -291,16 +292,14 @@ Coord2 Projectile::movement() const {
 
 Coord2 Projectile::nexttail() const {
   Coord maxlen = max(0, distance_traveled - 0.1);
-  if(projtype.motion() == PM_NORMAL) {
-    return makeAngle(d) * -min(Coord(projtype.defshape_length()), maxlen);
-  } else if(projtype.motion() == PM_MISSILE) {
-    return makeAngle(d) * -min(Coord(projtype.defshape_length()), maxlen);
-  } else if(projtype.motion() == PM_AIRBRAKE) {
+  if(projtype.shape() == PS_LINE) {
+    return makeAngle(d) * -min(Coord(projtype.line_length()), maxlen);
+  } else if(projtype.shape() == PS_LINE_AIRBRAKE) {
+    CHECK(projtype.motion() == PM_AIRBRAKE);
     return makeAngle(d) * -min(airbrake_velocity / FPS + 2, maxlen);
-  } else if(projtype.motion() == PM_MINE || projtype.motion() == PM_DPS || projtype.motion() == PM_SPIDERMINE || projtype.motion() == PM_BOOMERANG) {
-    return Coord2(0, 0);
   } else {
-    CHECK(0);
+    // soon: eliminate
+    return Coord2(0, 0);
   }
 }
 
@@ -363,7 +362,7 @@ Projectile::Projectile(const Coord2 &in_pos, Coord in_d, const IDBProjectileAdju
     CHECK(0);
   }
   
-  if(projtype.shape() == PS_DEFAULT) {
+  if(projtype.shape() == PS_LINE || projtype.shape() == PS_LINE_AIRBRAKE) {
   } else if(projtype.shape() == PS_ARROW) {
     arrow_spin_parity = rng->frand() < 0.5;
     arrow_spin = in_d.toFloat() + PI / 2;
