@@ -110,7 +110,7 @@ bool operator==(const IDBAdjustment &lhs, const IDBAdjustment &rhs) {
   return true;
 }
 
-double IDBAdjustment::adjustmentfactor(int type) const {
+double IDBAdjustment::adjustmentfactor(IDBAType type) const {
   CHECK(type >= 0 && type < LAST);
   if(type == WARHEAD_RADIUS_FALLOFF) {
     if(!ignore_excessive_radius && adjusts[type] + 100 > WARHEAD_RADIUS_MAXMULT * 100) {

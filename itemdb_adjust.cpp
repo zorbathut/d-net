@@ -17,7 +17,7 @@ template<typename T> vector<typename IDBItemProperties<T>::adjusted> adjust_vect
  * IDBDeployAdjust
  */
  
-int IDBDeployAdjust::type() const { return idb->type; };
+IDBDType IDBDeployAdjust::type() const { return idb->type; };
 
 int IDBDeployAdjust::exp_minsplits() const { return idb->exp_minsplits; };
 int IDBDeployAdjust::exp_maxsplits() const { return idb->exp_maxsplits; };
@@ -75,7 +75,7 @@ IDBDeployAdjust::IDBDeployAdjust(const IDBDeploy *in_idb, const IDBAdjustment &i
 float IDBWarheadAdjust::accumulate(const float *damage) const {
   float acc = 0;
   for(int i = 0; i < IDBAdjustment::DAMAGE_LAST; i++)
-    acc += damage[i] * adjust.adjustmentfactor(i);
+    acc += damage[i] * adjust.adjustmentfactor(IDBAdjustment::IDBAType(i));
   return acc;
 }
 
@@ -143,7 +143,7 @@ IDBWarheadAdjust::IDBWarheadAdjust(const IDBWarhead *in_idb, const IDBAdjustment
  */
 
 // Motion-related functions
-int IDBProjectileAdjust::motion() const { return idb->motion; };
+IDBPMotion IDBProjectileAdjust::motion() const { return idb->motion; };
 float IDBProjectileAdjust::velocity() const { return idb->velocity; };
 float IDBProjectileAdjust::proximity() const { return idb->proximity; };
 float IDBProjectileAdjust::durability() const { return idb->durability; };
@@ -164,7 +164,7 @@ float IDBProjectileAdjust::airbrake_slowdown() const { CHECK(idb->motion == PM_A
 float IDBProjectileAdjust::dps_duration() const { CHECK(idb->motion == PM_DPS); return idb->dps_duration; }
 
 // Shape-related functions
-int IDBProjectileAdjust::shape() const { return idb->shape; }
+IDBPShape IDBProjectileAdjust::shape() const { return idb->shape; }
 
 float IDBProjectileAdjust::proximity_visibility() const { return idb->proximity_visibility; };
 

@@ -1,7 +1,6 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - adding Hunter/Killer
-    - Name enums
     - Standardize line path for projectile
     - Make Bombardment drones actually drone-shaped
   - airbrake fade doesn't seem to be working right

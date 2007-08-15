@@ -166,7 +166,7 @@ build/%.g.S: %.cpp
 	nice $(CXX) $(GAMECXXFLAGS) -c -Wa,-a,-ad $< > $@
 
 build/%.g.d: %.cpp
-	nice bash -ec '$(CXX) $(GAMECXXFLAGS) -MM $< | sed "s!$*.o!$*.g.o $*.g.d.o $@!g" > $@'
+	nice bash -ec '$(CXX) $(GAMECXXFLAGS) -MM $< | sed "s!$*.o!build/$*.g.o build/$*.g.d.o $@!g" > $@'
 
 build/%.e.o: %.cpp
 	nice $(CXX) $(EDITORCXXFLAGS) -c -o $@ $<
@@ -178,7 +178,7 @@ build/%.e.S: %.cpp
 	nice $(CXX) $(EDITORCXXFLAGS) -c -Wa,-a,-ad $< > $@
 
 build/%.e.d: %.cpp functor.h  # some of these files use functor, so we make sure functor.h is built first
-	nice bash -ec '$(CXX) $(EDITORCXXFLAGS) -MM $< | sed "s!$*.o!$*.e.o $*.e.d.o $@!g" > $@'
+	nice bash -ec '$(CXX) $(EDITORCXXFLAGS) -MM $< | sed "s!$*.o!build/$*.e.o build/$*.e.d.o $@!g" > $@'
 
 build/%.c.o: %.cpp
 	nice $(CXX) $(CONSOLECXXFLAGS) -c -o $@ $<
@@ -191,10 +191,10 @@ build/%.c.S: %.cpp
 	nice $(CXX) $(CONSOLECXXFLAGS) -c -Wa,-a,-ad $< > $@
 
 build/%.c.d: %.cpp
-	nice bash -ec '$(CXX) $(CONSOLECXXFLAGS) -MM $< | sed "s!$*.o!$*.c.o $*.c.d.o $@!g" > $@'
+	nice bash -ec '$(CXX) $(CONSOLECXXFLAGS) -MM $< | sed "s!$*.o!build/$*.c.o build/$*.c.d.o $@!g" > $@'
 
 build/%.c.d: %.c
-	nice bash -ec '$(CXX) $(CONSOLECXXFLAGS) -MM $< | sed "s!$*.o!$*.c.o $*.c.d.o $@!g" > $@'
+	nice bash -ec '$(CXX) $(CONSOLECXXFLAGS) -MM $< | sed "s!$*.o!build/$*.c.o build/$*.c.d.o $@!g" > $@'
 
 data/shopcache.dwh: d-net $(DATAFILES)
 	./d-net.exe --generateCachedShops=0.99 || ( rm -f $@ && false )

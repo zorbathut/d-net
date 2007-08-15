@@ -252,8 +252,8 @@ void ShopInfo::renderFrame(Float4 bounds, float fontsize, Float4 inset, const Pl
     const Player unupg = getUnupgradedPlayer(player);
     const Player upg = getUpgradedPlayer(player);
     for(int i = 0; i < IDBAdjustment::LAST; i++) {
-      if(upgrade->adjustment->adjustmentfactor(i) != 1.0) {
-        kvp.print(adjust_human[i], formatChange(i, unupg, upg, *upgrade->adjustment));
+      if(upgrade->adjustment->adjustmentfactor(IDBAdjustment::IDBAType(i)) != 1.0) {
+        kvp.print(adjust_human[i], formatChange(IDBAdjustment::IDBAType(i), unupg, upg, *upgrade->adjustment));
       }
     }
   } else if(tank) {
@@ -279,8 +279,8 @@ void ShopInfo::renderFrame(Float4 bounds, float fontsize, Float4 inset, const Pl
     const Player unimp = getUnimplantedPlayer(player);
     const Player imp = getImplantedPlayer(player);
     for(int i = 0; i < IDBAdjustment::LAST; i++) {
-      if(implant->adjustment->adjustmentfactor(i) != 1.0) {
-        kvp.print(adjust_human[i], formatChange(i, unimp, imp, implant->makeAdjustment(player->implantLevel(implant))));
+      if(implant->adjustment->adjustmentfactor(IDBAdjustment::IDBAType(i)) != 1.0) {
+        kvp.print(adjust_human[i], formatChange(IDBAdjustment::IDBAType(i), unimp, imp, implant->makeAdjustment(player->implantLevel(implant))));
       }
     }
   } else if(implant && implant_upgrade) {
@@ -289,8 +289,8 @@ void ShopInfo::renderFrame(Float4 bounds, float fontsize, Float4 inset, const Pl
     const Player imp = getImplantedPlayer(player);
     const Player implev = getImplantedLeveledPlayer(player);
     for(int i = 0; i < IDBAdjustment::LAST; i++) {
-      if(implant->adjustment->adjustmentfactor(i) != 1.0) {
-        kvp.print(adjust_human[i], formatChange(i, imp, implev, *implant->adjustment));
+      if(implant->adjustment->adjustmentfactor(IDBAdjustment::IDBAType(i)) != 1.0) {
+        kvp.print(adjust_human[i], formatChange(IDBAdjustment::IDBAType(i), imp, implev, *implant->adjustment));
       }
     }
   } else if(implantslot) {
@@ -304,11 +304,11 @@ void ShopInfo::renderFrame(Float4 bounds, float fontsize, Float4 inset, const Pl
   }
 }
 
-string ShopInfo::formatChange(int cat, const Player &before, const Player &after, const IDBAdjustment &adjust) {
+string ShopInfo::formatChange(IDBAdjustment::IDBAType cat, const Player &before, const Player &after, const IDBAdjustment &adjust) {
   return StringPrintf("%s -> %s (+%.0f%%)%s", formatSlot(cat, before).c_str(), formatSlot(cat, after).c_str(), adjust.adjustmentfactor(cat) * 100 - 100, adjust_unit[cat]);
 }
 
-string ShopInfo::formatSlot(int cat, const Player &player) {
+string ShopInfo::formatSlot(IDBAdjustment::IDBAType cat, const Player &player) {
   if(cat == IDBAdjustment::TANK_SPEED && player.hasValidTank()) {
     return prettyFloatFormat(player.getTank().maxSpeed());
   } else if(cat == IDBAdjustment::TANK_TURN && player.hasValidTank()) {

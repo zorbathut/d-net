@@ -29,7 +29,7 @@ struct IDBAdjustment {
 public:
   // NOTE: there is currently an implicit assumption that the "damage" stats are first. Don't violate this. Look for DAMAGE_* for the places where it matters.
   // Also, these are obviously correlated with the string arrays above.
-  enum { DAMAGE_KINETIC, DAMAGE_ENERGY, DAMAGE_EXPLOSIVE, DAMAGE_TRAP, DAMAGE_EXOTIC, WARHEAD_RADIUS_FALLOFF, TANK_FIRERATE, TANK_SPEED, TANK_TURN, TANK_ARMOR, BOMBARDMENT_SPEED, DISCOUNT_WEAPON, DISCOUNT_IMPLANT, DISCOUNT_UPGRADE, DISCOUNT_TANK, RECYCLE_BONUS, LAST, DAMAGE_ALL = LAST, ALL, COMBO_LAST, DAMAGE_LAST = DAMAGE_EXOTIC + 1, DISCOUNT_BEGIN = DISCOUNT_WEAPON, DISCOUNT_END = DISCOUNT_TANK + 1, TANK_BEGIN = TANK_FIRERATE, TANK_END = TANK_ARMOR + 1 };
+  enum IDBAType { DAMAGE_KINETIC, DAMAGE_ENERGY, DAMAGE_EXPLOSIVE, DAMAGE_TRAP, DAMAGE_EXOTIC, WARHEAD_RADIUS_FALLOFF, TANK_FIRERATE, TANK_SPEED, TANK_TURN, TANK_ARMOR, BOMBARDMENT_SPEED, DISCOUNT_WEAPON, DISCOUNT_IMPLANT, DISCOUNT_UPGRADE, DISCOUNT_TANK, RECYCLE_BONUS, LAST, DAMAGE_ALL = LAST, ALL, COMBO_LAST, DAMAGE_LAST = DAMAGE_EXOTIC + 1, DISCOUNT_BEGIN = DISCOUNT_WEAPON, DISCOUNT_END = DISCOUNT_TANK + 1, TANK_BEGIN = TANK_FIRERATE, TANK_END = TANK_ARMOR + 1 };
   
   bool ignore_excessive_radius;
   int adjusts[LAST];  // These are in percentage points away from 100. Yes, this is kind of weird.
@@ -39,7 +39,7 @@ public:
   
   pair<int, int> adjustlist[5];
   
-  double adjustmentfactor(int type) const;
+  double adjustmentfactor(IDBAType type) const;
   double recyclevalue() const; // this is annoyingly different
   double tankhp() const; // this is also annoyingly different
   double tankspeed() const; // this is *also* annoyingly different. I should wrap these up into DisplayAdjustment and RealAdjustment
@@ -107,11 +107,11 @@ struct IDBWarhead {
   vector<const IDBEffects *> effects_impact;
 };
 
-enum { PM_NORMAL, PM_MISSILE, PM_AIRBRAKE, PM_BOOMERANG, PM_MINE, PM_SPIDERMINE, PM_HUNTER, PM_DPS, PM_LAST };
-enum { PS_LINE, PS_LINE_AIRBRAKE, PS_ARROW, PS_DRONE, PS_STAR, PS_INVISIBLE };
+enum IDBPMotion { PM_NORMAL, PM_MISSILE, PM_AIRBRAKE, PM_BOOMERANG, PM_MINE, PM_SPIDERMINE, PM_HUNTER, PM_DPS, PM_LAST };
+enum IDBPShape { PS_LINE, PS_LINE_AIRBRAKE, PS_ARROW, PS_DRONE, PS_STAR, PS_INVISIBLE };
 
 struct IDBProjectile {
-  int motion;
+  IDBPMotion motion;
     float velocity;
     float proximity;
     float durability;
@@ -134,7 +134,7 @@ struct IDBProjectile {
     
     float dps_duration;
   
-  int shape;
+  IDBPShape shape;
     float proximity_visibility;
     
     float line_length;
@@ -161,10 +161,10 @@ struct IDBProjectile {
 };
 
 // Normal specifies "Forward" for tanks, or "Centroid" on cases where there is no tank
-enum { DT_NORMAL, DT_FORWARD, DT_REAR, DT_CENTROID, DT_MINEPATH, DT_DIRECTED, DT_EXPLODE, DT_LAST };
+enum IDBDType { DT_NORMAL, DT_FORWARD, DT_REAR, DT_CENTROID, DT_MINEPATH, DT_DIRECTED, DT_EXPLODE, DT_LAST };
 
 struct IDBDeploy {
-  int type;
+  IDBDType type;
 
   float anglestddev;
 
@@ -182,13 +182,13 @@ struct IDBDeploy {
   vector<const IDBWarhead *> chain_warhead;
 };
 
-enum { WDM_FIRINGRANGE, WDM_BACKRANGE, WDM_MINES, WDM_LAST };
-enum { WFRD_NORMAL, WFRD_MELEE };
+enum IDBWDemoMode { WDM_FIRINGRANGE, WDM_BACKRANGE, WDM_MINES, WDM_LAST };
+enum IDBWFiringRangeDistance { WFRD_NORMAL, WFRD_MELEE };
 struct IDBLauncher {
   const IDBDeploy *deploy;
 
-  int demomode;
-  int firingrange_distance;
+  IDBWDemoMode demomode;
+  IDBWFiringRangeDistance firingrange_distance;
   
   const string *text;
 };
@@ -354,7 +354,7 @@ struct IDBProjectileAdjust {
 public:
   typedef IDBProjectile base_type;
 
-  int motion() const;
+  IDBPMotion motion() const;
     float velocity() const;
     float proximity() const;
     float durability() const;
@@ -374,7 +374,7 @@ public:
     
     float dps_duration() const;
   
-  int shape() const;
+  IDBPShape shape() const;
     float proximity_visibility() const;
     
     float line_length() const;
@@ -415,7 +415,7 @@ struct IDBDeployAdjust {
 public:
   typedef IDBDeploy base_type;
 
-  int type() const;
+  IDBDType type() const;
 
   int exp_minsplits() const;
   int exp_maxsplits() const;

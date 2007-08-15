@@ -34,8 +34,8 @@ private:
   
   void null();
 
-  static string formatChange(int cat, const Player &before, const Player &after, const IDBAdjustment &adjust);
-  static string formatSlot(int cat, const Player &player);
+  static string formatChange(IDBAdjustment::IDBAType cat, const Player &before, const Player &after, const IDBAdjustment &adjust);
+  static string formatSlot(IDBAdjustment::IDBAType cat, const Player &player);
 
   Player getUnupgradedPlayer(const Player *player) const;
   Player getUpgradedPlayer(const Player *player) const;
