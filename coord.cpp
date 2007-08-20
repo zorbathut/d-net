@@ -5,6 +5,9 @@
 #include "float.h"
 #include "util.h"
 #include "const.h"
+#include "adler32.h"
+
+#include <boost/static_assert.hpp>
 
 using namespace std;
 
@@ -203,4 +206,16 @@ Coord2 lerp(const Coord2 &lhs, const Coord2 &rhs, Coord dist) {
 
 Coord4 lerp(const Coord4 &lhs, const Coord4 &rhs, Coord dist) {
   return lhs + (rhs - lhs) * dist;
+}
+
+BOOST_STATIC_ASSERT(sizeof(Coord) == 8);
+BOOST_STATIC_ASSERT(sizeof(Coord2) == 16);
+BOOST_STATIC_ASSERT(sizeof(Coord4) == 32);
+
+void adler(Adler32 *adl, const Coord &val) { adl->addBytes(&val, sizeof(val)); }
+void adler(Adler32 *adl, const Coord2 &val) { adl->addBytes(&val, sizeof(val)); }
+void adler(Adler32 *adl, const Coord4 &val) { adl->addBytes(&val, sizeof(val)); }
+void adler(Adler32 *adl, const CPosInfo &val) {
+  adler(adl, val.pos);
+  adler(adl, val.d);
 }

@@ -21,14 +21,6 @@ unsigned long Adler32::output() const {
 
 BOOST_STATIC_ASSERT(sizeof(int) == 4);
 BOOST_STATIC_ASSERT(sizeof(long long) == 8);
-BOOST_STATIC_ASSERT(sizeof(Coord) == 8);
-BOOST_STATIC_ASSERT(sizeof(Coord2) == 16);
-BOOST_STATIC_ASSERT(sizeof(Coord4) == 32);
-
-void adler(Adler32 *adl, const Coord &val) { adl->addBytes(&val, sizeof(val)); }
-void adler(Adler32 *adl, const Coord2 &val) { adl->addBytes(&val, sizeof(val)); }
-void adler(Adler32 *adl, const Coord4 &val) { adl->addBytes(&val, sizeof(val)); }
-
 
 static bool read = false;
 static bool broke = false;

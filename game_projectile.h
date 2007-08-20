@@ -35,10 +35,20 @@ public:
   Projectile(const Coord2 &pos, Coord d, const IDBProjectileAdjust &projtype, Rng *rng, const DamageFlags &damageflags);
 
 private:
-  
-  Coord2 movement() const;
 
-  Coord2 nexttail() const;
+  struct ProjPostState {
+    CPosInfo pi;
+    
+    Coord airbrake_velocity;
+    
+    Coord arrow_spin;
+    
+    ProjPostState();
+  } now, last;
+  friend void adler(Adler32 *adl, const ProjPostState &pps);
+  
+  vector<Coord4> polys(const ProjPostState &stat) const;
+  Float2 rearspawn(const ProjPostState &stat) const;
 
   // Missile velocity is a factor of three things:
   // (1) Acceleration - constantly increases
@@ -50,25 +60,14 @@ private:
   Coord missile_sidedist;
 
   Coord airbrake_liveness() const;
-  Coord airbrake_velocity;
 
   Coord2 boomerang_abspos;
   Coord boomerang_yfactor;
   Coord boomerang_angle;
   Coord boomerang_lastchange;
 
-  vector<Coord2> star_polys() const;
   Coord star_facing;
 
-  Coord spider_vector;  // spider-vector, spider-vector, doin' things like a spectre. what's he like? no-one knows! he's got radioactive clothes! beware! here comes the spider vector
-  enum { SV_NONE = -1000 }; // this seems like a reasonable sentinel
-
-  Coord2 pos;
-  Coord d;
-
-  Coord2 lasttail;
-  Coord arrow_spin;
-  Coord arrow_spin_next;
   bool arrow_spin_parity;
 
   int age;
@@ -106,5 +105,6 @@ private:
 
 inline void adler(Adler32 *adl, const ProjectilePack &ppk) { ppk.checksum(adl); }
 inline void adler(Adler32 *adl, const Projectile &ppk) { ppk.checksum(adl); }
+void adler(Adler32 *adl, const Projectile::ProjPostState &pps);
 
 #endif

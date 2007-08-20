@@ -3,8 +3,10 @@
   - adding Hunter/Killer
     - Standardize line path for projectile
     - Make Bombardment drones actually drone-shaped
+  - PosInfo tanks
   - airbrake fade doesn't seem to be working right
   - run lots of checksumming
+    - make sure checksumming isn't bloating excessively
   - Many many more weapons
     - Add implementations for all trap weapons
       - Hunter/Killer: I need a new projectile for this.

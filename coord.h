@@ -508,4 +508,14 @@ Coord4 lerp(const Coord4 &lhs, const Coord4 &rhs, Coord dist);
 
 const Coord COORDPI = Coord(PI);
 
+/*************
+ * Adler
+ */
+
+class Adler32;
+void adler(Adler32 *adl, const Coord &val);
+void adler(Adler32 *adl, const Coord2 &val);
+void adler(Adler32 *adl, const Coord4 &val);
+void adler(Adler32 *adl, const CPosInfo &val);
+
 #endif
