@@ -426,6 +426,9 @@ bool pathReversed(const vector<Coord2> &path);
 
 bool colinear(const Coord4 &line, const Coord2 &pt);
 
+Coord ang_dist(Coord lhs, Coord rhs);
+Coord ang_approach(const Coord &cur, const Coord &goal, const Coord &amount);
+
 /*************
  * Bounding box
  */

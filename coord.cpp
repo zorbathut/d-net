@@ -165,6 +165,27 @@ bool colinear(const Coord4 &line, const Coord2 &pt) {
   return koord < Coord(0.00001f);
 }
 
+Coord ang_dist(Coord lhs, Coord rhs) {
+  lhs = mod(lhs, COORDPI * 2);
+  rhs = mod(rhs, COORDPI * 2);
+  Coord v = abs(lhs - rhs);
+  if(v > COORDPI)
+    return COORDPI * 2 - v;
+  else
+    return v;
+}
+Coord ang_approach(const Coord &cur, const Coord &goal, const Coord &amount) {
+  Coord jcur = mod(cur, COORDPI * 2);
+  Coord jgoal = mod(goal, COORDPI * 2);
+  if(abs(jcur - jgoal) > abs(jcur - (jgoal - COORDPI * 2))) {
+    jgoal -= COORDPI * 2;
+  } else if(abs(jcur - jgoal) > abs(jcur - (jgoal + COORDPI * 2))) {
+    jgoal += COORDPI * 2;
+  }
+  CHECK(ang_dist(cur, goal) >= ang_dist(approach(jcur, jgoal, amount), goal));
+  return approach(jcur, jgoal, amount);
+}
+
 /*************
  * Bounding box
  */

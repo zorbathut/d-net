@@ -43,6 +43,8 @@ private:
     
     Coord arrow_spin;
     
+    Coord hunter_vel;
+    
     ProjPostState();
   } now, last;
   friend void adler(Adler32 *adl, const ProjPostState &pps);

@@ -768,8 +768,8 @@ projectile {
   hunter_turnweight=20
   
   shape=drone
-  drone_radius=1
-  drone_spike=2
+  drone_radius=0.75
+  drone_spike=2.2
   color=1.0, 0.9, 0.6
   
   durability=MERGE

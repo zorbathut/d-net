@@ -161,6 +161,9 @@ float IDBProjectileAdjust::boomerang_maxrotate() const { CHECK(idb->motion == PM
 float IDBProjectileAdjust::airbrake_life() const { CHECK(idb->motion == PM_AIRBRAKE); return idb->airbrake_life; }
 float IDBProjectileAdjust::airbrake_slowdown() const { CHECK(idb->motion == PM_AIRBRAKE); return idb->airbrake_slowdown; }
 
+float IDBProjectileAdjust::hunter_rotation() const { CHECK(idb->motion == PM_HUNTER); return idb->hunter_rotation; }
+float IDBProjectileAdjust::hunter_turnweight() const { CHECK(idb->motion == PM_HUNTER); return idb->hunter_turnweight; }
+
 float IDBProjectileAdjust::dps_duration() const { CHECK(idb->motion == PM_DPS); return idb->dps_duration; }
 
 // Shape-related functions

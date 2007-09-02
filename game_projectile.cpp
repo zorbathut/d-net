@@ -71,7 +71,34 @@ void Projectile::tick(vector<smart_ptr<GfxEffects> > *gfxe, const GameImpactCont
   } else if(projtype.motion() == PM_DPS) {
     detonating = true;
   } else if(projtype.motion() == PM_HUNTER) {
-    /* we'll work on this */
+    if(now.hunter_vel != 0)
+      now.hunter_vel += projtype.velocity() / FPS;
+    
+    int lockon = -1;
+    Coord dist = Coord(1 << 30);
+    for(int i = 0; i < gic.players.size(); i++) {
+      if(!gic.players[i]->isLive())
+        continue;
+      if(gic.players[i]->team == gic.players[owner]->team)
+        continue;
+      Coord dang = getAngle(gic.players[i]->pos - now.pi.pos);
+      Coord diff = ang_dist(dang, now.pi.d);
+      
+      Coord val = diff * projtype.hunter_turnweight() + len(gic.players[i]->pos - now.pi.pos);
+      if(val < dist) {
+        dist = val;
+        lockon = i;
+      }
+    }
+    
+    if(lockon != -1) {
+      Coord dang = getAngle(gic.players[lockon]->pos - now.pi.pos);
+      now.pi.d = ang_approach(dang, now.pi.d, projtype.hunter_rotation() / FPS);
+      if(ang_dist(dang, now.pi.d) < projtype.hunter_rotation() / FPS && now.hunter_vel == 0)
+        now.hunter_vel += projtype.velocity() / FPS;
+    }
+    
+    now.pi.pos += makeAngle(now.pi.d) * now.hunter_vel;
   } else {
     CHECK(0);
   }
@@ -153,6 +180,7 @@ void Projectile::checksum(Adler32 *adl) const {
   } else if(projtype.motion() == PM_MINE) {
   } else if(projtype.motion() == PM_SPIDERMINE) {
   } else if(projtype.motion() == PM_DPS) {
+  } else if(projtype.motion() == PM_HUNTER) {
   } else {
     CHECK(0);
   }
@@ -368,6 +396,7 @@ Projectile::Projectile(const Coord2 &in_pos, Coord in_d, const IDBProjectileAdju
   } else if(projtype.shape() == PS_STAR) {
     star_facing = rng->frand() * 2 * PI;
   } else if(projtype.shape() == PS_DRONE) {
+    now.hunter_vel = 0;
   } else if(projtype.shape() == PS_INVISIBLE) {
   } else {
     CHECK(0);
@@ -387,6 +416,7 @@ void adler(Adler32 *adl, const Projectile::ProjPostState &pps) {
   adler(adl, pps.pi);
   adler(adl, pps.airbrake_velocity);
   adler(adl, pps.arrow_spin);
+  adler(adl, pps.hunter_vel);
 }
 
 Projectile &ProjectilePack::find(int id) {

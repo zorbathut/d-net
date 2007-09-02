@@ -372,6 +372,9 @@ public:
     float airbrake_life() const;
     float airbrake_slowdown() const;
     
+    float hunter_rotation() const;
+    float hunter_turnweight() const;
+    
     float dps_duration() const;
   
   IDBPShape shape() const;
