@@ -7,10 +7,10 @@ class Adler32;
 class RngSeed {
 friend class Rng;
 private:
-  int seed;
+  unsigned int seed;
 
 public:
-  explicit RngSeed(int seed) : seed(seed) { }
+  explicit RngSeed(unsigned int seed) : seed(seed) { }
 };
 
 class Rng {

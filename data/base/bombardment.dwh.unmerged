@@ -689,9 +689,11 @@ projectile {
   missile_sidelaunch=2
   missile_backlaunch=0
   
-  visual_thickness=3x
-  line_length=2x
   durability=MERGE
+  
+  shape=drone
+  drone_radius=0.5
+  drone_spike=1.5
   
   color=0.9,0.8,0.5
   

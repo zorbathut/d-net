@@ -487,6 +487,7 @@ void parseProjectile(kvData *chunk, bool reload, ErrorAccumulator &accum) {
     titem->missile_sidelaunch = parseSingleItem<float>(chunk->consume("missile_sidelaunch"));
     titem->missile_backlaunch = parseSingleItem<float>(chunk->consume("missile_backlaunch"));
     allowed_shapes.insert("line");
+    allowed_shapes.insert("drone");
   } else if(motion == "airbrake") {
     titem->motion = PM_AIRBRAKE;
     titem->airbrake_life = parseSingleItem<float>(chunk->consume("airbrake_life"));

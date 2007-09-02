@@ -89,7 +89,7 @@ Coord Rng::cgaussian_scaled(Coord maxgauss) {
 }
 
 RngSeed Rng::generate_seed() {
-  return RngSeed((int)(frand() * (1LL << 32)));
+  return RngSeed((unsigned int)(frand() * (1LL << 32)));
 }
 
 void Rng::checksum(Adler32 *adl) const {

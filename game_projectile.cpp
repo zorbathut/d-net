@@ -121,7 +121,7 @@ void Projectile::render(const vector<Coord2> &tankposes) const {
   }
   
   if(visible) {
-    if(projtype.shape() == PS_LINE || projtype.shape() == PS_LINE_AIRBRAKE || projtype.shape() == PS_ARROW || projtype.shape() == PS_STAR) {
+    if(projtype.shape() == PS_LINE || projtype.shape() == PS_LINE_AIRBRAKE || projtype.shape() == PS_ARROW || projtype.shape() == PS_STAR || projtype.shape() == PS_DRONE) {
       vector<Coord4> ps = polys(now);
       for(int i = 0; i < ps.size(); i++)
         drawLine(ps[i], projtype.visual_thickness());
@@ -305,6 +305,15 @@ vector<Coord4> Projectile::polys(const ProjPostState &stat) const {
       lpt = tpt;
     }
   } else if(projtype.shape() == PS_INVISIBLE) {
+  } else if(projtype.shape() == PS_DRONE) {
+    Coord2 opt = stat.pi.pos + makeAngle(stat.pi.d) * projtype.drone_spike();
+    Coord2 lpt = opt;
+    for(int i = 1; i < 4; i++) {
+      Coord2 npt = stat.pi.pos + makeAngle(stat.pi.d + COORDPI * i / 2) * projtype.drone_radius();
+      rv.push_back(Coord4(lpt, npt));
+      lpt = npt;
+    }
+    rv.push_back(Coord4(lpt, opt));
   } else {
     CHECK(0);
   }
@@ -313,7 +322,9 @@ vector<Coord4> Projectile::polys(const ProjPostState &stat) const {
 
 Float2 Projectile::rearspawn(const ProjPostState &stat) const {
   if(projtype.shape() == PS_LINE) {
-    return (stat.pi.pos - makeAngle(stat.pi.d) * Coord(projtype.line_length())).toFloat();
+    return (stat.pi.pos - makeAngle(stat.pi.d) * projtype.line_length()).toFloat();
+  } else if(projtype.shape() == PS_DRONE) {
+    return (stat.pi.pos - makeAngle(stat.pi.d) * projtype.drone_radius()).toFloat();
   } else {
     CHECK(0);
   }

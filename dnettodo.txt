@@ -1,8 +1,8 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - adding Hunter/Killer
-    - Standardize line path for projectile
     - Make Bombardment drones actually drone-shaped
+  - Why does it always start on the same map with the same layout
   - PosInfo tanks
   - airbrake fade doesn't seem to be working right
   - run lots of checksumming
