@@ -692,10 +692,10 @@ projectile {
   durability=MERGE
   
   shape=drone
-  drone_radius=0.5
-  drone_spike=1.5
+  drone_radius=0.75
+  drone_spike=2
   
-  color=0.9,0.8,0.5
+  color=0.5,0.9,0.2
   
   warhead=warhead.bombardment.explorerdrone
 }
@@ -738,11 +738,13 @@ projectile {
   missile_sidelaunch=2
   missile_backlaunch=0
   
-  visual_thickness=3x
-  line_length=2x
   durability=MERGE
   
-  color=0.9,0.8,0.5
+  shape=drone
+  drone_radius=0.8
+  drone_spike=2
+  
+  color=0.5,0.9,0.2
   
   warhead=warhead.bombardment.hunterdrone
 }
@@ -785,11 +787,13 @@ projectile {
   missile_sidelaunch=2
   missile_backlaunch=0
   
-  visual_thickness=3x
-  line_length=2x
   durability=MERGE
   
-  color=0.9,0.8,0.5
+  shape=drone
+  drone_radius=0.85
+  drone_spike=2
+  
+  color=0.5,0.9,0.2
   
   warhead=warhead.bombardment.slayerdrone
 }
@@ -832,11 +836,13 @@ projectile {
   missile_sidelaunch=2
   missile_backlaunch=0
   
-  visual_thickness=3x
-  line_length=2x
   durability=MERGE
   
-  color=0.9,0.8,0.5
+  shape=drone
+  drone_radius=0.9
+  drone_spike=2
+  
+  color=0.5,0.9,0.2
   
   warhead=warhead.bombardment.butcherdrone
 }
@@ -879,11 +885,13 @@ projectile {
   missile_sidelaunch=2
   missile_backlaunch=0
   
-  visual_thickness=3x
-  line_length=2x
   durability=MERGE
   
-  color=0.9,0.8,0.5
+  shape=drone
+  drone_radius=0.95
+  drone_spike=2
+  
+  color=0.5,0.9,0.2
   
   warhead=warhead.bombardment.eliminatordrone
 }
@@ -926,11 +934,13 @@ projectile {
   missile_sidelaunch=2
   missile_backlaunch=0
   
-  visual_thickness=3x
-  line_length=2x
   durability=MERGE
   
-  color=0.9,0.8,0.5
+  shape=drone
+  drone_radius=1
+  drone_spike=2
+  
+  color=0.5,0.9,0.2
   
   warhead=warhead.bombardment.liquidatordrone
 }
