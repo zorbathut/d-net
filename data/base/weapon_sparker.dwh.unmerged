@@ -25,7 +25,7 @@ effects {
 
   quantity=4
   
-  inertia=-0.1
+  multiple_inertia=-0.1
   spread=40
   
   slowdown=0.2
@@ -41,7 +41,7 @@ effects {
 
   quantity=4
   
-  inertia=-0.1
+  multiple_inertia=-0.1
   spread=40
   
   slowdown=0.2
@@ -57,7 +57,7 @@ effects {
 
   quantity=4
   
-  inertia=-0.1
+  multiple_inertia=-0.1
   spread=40
   
   slowdown=0.2

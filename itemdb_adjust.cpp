@@ -478,9 +478,9 @@ IDBImplantAdjust::IDBImplantAdjust(const IDBImplant *in_idb, const IDBAdjustment
 IDBEffects::IDBEType IDBEffectsAdjust::type() const { return idb->type; }
 int IDBEffectsAdjust::quantity() const { return idb->quantity; }
 
-float IDBEffectsAdjust::particle_inertia() const { CHECK(type() == IDBEffects::EFT_PARTICLE); return idb->particle_inertia; }
-float IDBEffectsAdjust::particle_reflect() const { CHECK(type() == IDBEffects::EFT_PARTICLE); return idb->particle_reflect; }
-float IDBEffectsAdjust::particle_force() const { CHECK(type() == IDBEffects::EFT_PARTICLE); return idb->particle_force; }
+float IDBEffectsAdjust::particle_multiple_inertia() const { CHECK(type() == IDBEffects::EFT_PARTICLE); return idb->particle_multiple_inertia; }
+float IDBEffectsAdjust::particle_multiple_reflect() const { CHECK(type() == IDBEffects::EFT_PARTICLE); return idb->particle_multiple_reflect; }
+float IDBEffectsAdjust::particle_multiple_force() const { CHECK(type() == IDBEffects::EFT_PARTICLE); return idb->particle_multiple_force; }
 
 float IDBEffectsAdjust::particle_spread() const { CHECK(type() == IDBEffects::EFT_PARTICLE); return idb->particle_spread; }
 

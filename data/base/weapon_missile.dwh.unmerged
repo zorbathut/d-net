@@ -17,8 +17,8 @@ effects {
   
   type=particle
   
-  force=1.0
-  inertia=0.8
+  multiple_force=1.0
+  multiple_inertia=0.8
   
   spread=0.3
   

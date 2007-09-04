@@ -18,7 +18,7 @@ effects {
 
   quantity=8
   
-  reflect=0.3
+  multiple_reflect=0.3
   spread=20
   
   slowdown=0.2
@@ -81,7 +81,7 @@ effects {
 
   quantity=8
   
-  reflect=0.4
+  multiple_reflect=0.4
   spread=20
   
   slowdown=0.3
@@ -145,7 +145,7 @@ effects {
 
   quantity=8
   
-  reflect=0.3
+  multiple_reflect=0.3
   spread=20
   
   slowdown=0.2
@@ -208,7 +208,7 @@ effects {
 
   quantity=8
   
-  reflect=0.3
+  multiple_reflect=0.3
   spread=20
   
   slowdown=0.2
@@ -271,7 +271,7 @@ effects {
 
   quantity=8
   
-  reflect=0.3
+  multiple_reflect=0.3
   spread=20
   
   slowdown=0.2
@@ -334,7 +334,7 @@ effects {
 
   quantity=8
   
-  reflect=0.3
+  multiple_reflect=0.3
   spread=20
   
   slowdown=0.2
@@ -397,7 +397,7 @@ effects {
 
   quantity=8
   
-  reflect=0.3
+  multiple_reflect=0.3
   spread=20
   
   slowdown=0.2

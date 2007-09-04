@@ -71,9 +71,9 @@ struct IDBEffects {
   int quantity;
 
   // percentage
-  float particle_inertia;
-  float particle_reflect;
-  float particle_force;   // for "outside forces"
+  float particle_multiple_inertia;
+  float particle_multiple_reflect;
+  float particle_multiple_force;   // for "outside forces"
   
   // m/s (times gaussian)
   float particle_spread;
@@ -649,9 +649,9 @@ public:
   IDBEffects::IDBEType type() const;
   int quantity() const;
 
-  float particle_inertia() const;
-  float particle_reflect() const;
-  float particle_force() const;
+  float particle_multiple_inertia() const;
+  float particle_multiple_reflect() const;
+  float particle_multiple_force() const;
   
   float particle_spread() const;
 

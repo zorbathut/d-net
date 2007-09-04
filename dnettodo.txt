@@ -1,7 +1,6 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - run lots of checksumming
-  - particle_inertia, reflect, force becomes particle_multiple_inertia, etc
   - re-tune missile flame
   - re-add missile flame to all the missiles
   - tune tailwind blast

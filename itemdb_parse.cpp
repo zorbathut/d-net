@@ -350,9 +350,9 @@ void parseEffects(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   if(effecttype == "particle") {
     titem->type = IDBEffects::EFT_PARTICLE;
     
-    titem->particle_inertia = parseWithDefault(chunk, "inertia", 0.f);
-    titem->particle_reflect = parseWithDefault(chunk, "reflect", 0.f);
-    titem->particle_force = parseWithDefault(chunk, "force", 0.f);
+    titem->particle_multiple_inertia = parseWithDefault(chunk, "multiple_inertia", 0.f);
+    titem->particle_multiple_reflect = parseWithDefault(chunk, "multiple_reflect", 0.f);
+    titem->particle_multiple_force = parseWithDefault(chunk, "multiple_force", 0.f);
     
     titem->particle_spread = parseSingleItem<float>(chunk->consume("spread"));
     

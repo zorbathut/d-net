@@ -181,7 +181,7 @@ public:
   
   GfxEffectsIdbParticle(Float2 center, float normal, Float2 in_velocity, Float2 in_force, const IDBEffectsAdjust &effect) : GfxEffects(effect.particle_lifetime(), effect.particle_color()), center(center), effect(effect) {
     CHECK(effect.type() == IDBEffects::EFT_PARTICLE);
-    velocity = in_velocity * effect.particle_inertia() + reflect(in_velocity, normal) * effect.particle_reflect() + in_force * effect.particle_force() + makeAngle(unsync().frand() * 2 * PI) * unsync().gaussian() * effect.particle_spread();
+    velocity = in_velocity * effect.particle_multiple_inertia() + reflect(in_velocity, normal) * effect.particle_multiple_reflect() + in_force * effect.particle_multiple_force() + makeAngle(unsync().frand() * 2 * PI) * unsync().gaussian() * effect.particle_spread();
   };
   
 private:
@@ -215,7 +215,7 @@ private:
 };
 
 smart_ptr<GfxEffects> GfxIdb(Float2 center, float normal, Float2 velocity, const IDBEffectsAdjust &effect) {
-  CHECK(effect.type() != IDBEffects::EFT_PARTICLE || effect.particle_force() == 0);
+  CHECK(effect.type() != IDBEffects::EFT_PARTICLE || effect.particle_multiple_force() == 0);
   return GfxIdb(center, normal, velocity, Float2(0, 0), effect);
 }
 

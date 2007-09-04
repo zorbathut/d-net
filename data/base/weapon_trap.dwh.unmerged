@@ -308,7 +308,7 @@ effects {
 
   quantity=8
   
-  inertia=0.3
+  multiple_inertia=0.3
   spread=30
   
   slowdown=0.3
@@ -737,7 +737,7 @@ effects {
 
   quantity=8
   
-  inertia=0.3
+  multiple_inertia=0.3
   spread=30
   
   slowdown=0.3
