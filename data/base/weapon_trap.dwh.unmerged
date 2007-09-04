@@ -1334,6 +1334,119 @@ weapon {
 
 ###########################
 #
+#   Tailwind Blast
+
+hierarchy {
+  name=ROOT.Ammo.Tailwind Blast
+  pack=100
+}
+
+text {
+  name=text.weapon.tailwindblast
+  data=Blah blah hamster blah yacht blah blah blah monocle polish
+}
+
+warhead {
+  name=warhead.weapon.tailwindblast
+  impactdamage=MERGE trap
+}
+
+projectile {
+  name=projectile.weapon.tailwindblast
+  
+  motion=missile
+  penetrating=true
+  velocity=100
+  missile_stabstart=0.0
+  missile_stabilization=20
+  missile_sidelaunch=20
+  missile_backlaunch=0
+  
+  shape=arrow
+  arrow_width=3
+  arrow_height=0.5
+  color=0.7, 1.0, 0.3
+  
+  durability=MERGE
+  warhead=warhead.weapon.tailwindblast
+}
+
+deploy {
+  name=deploy.weapon.tailwindblast
+  
+  type=centroid
+  anglemodifier=3.14159
+  anglestddev=0.05
+  
+  projectile=projectile.weapon.tailwindblast
+}
+
+launcher {
+  name=launcher.weapon.tailwindblast
+  
+  deploy=deploy.weapon.tailwindblast
+  
+  demo=back
+  
+  text=text.weapon.tailwindblast
+}
+
+weapon {
+  name=ROOT.Ammo.Tailwind Blast.Tailwind Blast I
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.weapon.tailwindblast
+}
+
+weapon {
+  name=ROOT.Ammo.Tailwind Blast.Tailwind Blast II
+
+  cost=MERGE
+  firerate=MERGE
+
+  launcher=launcher.weapon.tailwindblast
+}
+
+weapon {
+  name=ROOT.Ammo.Tailwind Blast.Tailwind Blast III
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.weapon.tailwindblast
+}
+
+weapon {
+  name=ROOT.Ammo.Tailwind Blast.Tailwind Blast IV
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.weapon.tailwindblast
+}
+
+weapon {
+  name=ROOT.Ammo.Tailwind Blast.Tailwind Blast V
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.weapon.tailwindblast
+}
+
+weapon {
+  name=ROOT.Ammo.Tailwind Blast.Tailwind Blast VI
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.weapon.tailwindblast
+}
+
+###########################
+#
 #   Satellite Mines
 
 hierarchy {

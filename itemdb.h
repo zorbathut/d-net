@@ -73,6 +73,7 @@ struct IDBEffects {
   // percentage
   float particle_inertia;
   float particle_reflect;
+  float particle_force;   // for "outside forces"
   
   // m/s (times gaussian)
   float particle_spread;
@@ -116,6 +117,7 @@ struct IDBProjectile {
     float proximity;
     float durability;
     float halflife;
+    bool penetrating;
     
     float missile_sidelaunch;
     float missile_backlaunch;
@@ -158,6 +160,7 @@ struct IDBProjectile {
   vector<const IDBDeploy *> chain_deploy;
   
   vector<const IDBEffects *> chain_effects;
+  vector<const IDBEffects *> burn_effects;
 };
 
 // Normal specifies "Forward" for tanks, or "Centroid" on cases where there is no tank
@@ -360,6 +363,7 @@ public:
     float proximity() const;
     float durability() const;
     float halflife() const;
+    bool penetrating() const;
     
     float missile_stabstart() const;
     float missile_stabilization() const;
@@ -401,6 +405,8 @@ public:
   vector<IDBWarheadAdjust> chain_warhead(float multfactor = 1.0f) const;
   vector<IDBDeployAdjust> chain_deploy() const;
   vector<IDBEffectsAdjust> chain_effects() const;
+  
+  vector<IDBEffectsAdjust> burn_effects() const;
   
   float stats_damagePerShot() const;
   
@@ -645,6 +651,7 @@ public:
 
   float particle_inertia() const;
   float particle_reflect() const;
+  float particle_force() const;
   
   float particle_spread() const;
 

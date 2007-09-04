@@ -12,6 +12,23 @@ text {
   data=Explosives in a can. The missile is one of the most powerful low-tech systems developed and extremely popular for wholesale demolition. The rocket engine takes several seconds to reach full speed, making this weapon difficult to aim with.
 }
 
+effects {
+  name=effects.weapon.missile.burn
+  
+  type=particle
+  
+  force=1.0
+  inertia=0.8
+  
+  spread=0.3
+  
+  slowdown=0
+  lifetime=0.17
+  
+  radius=0.5
+  color=1.0, 0.9, 0.6
+}
+
 warhead {
   name=warhead.weapon.missile
   impactdamage=MERGE(1) explosive
@@ -36,6 +53,9 @@ projectile {
   
   durability=MERGE
   warhead=warhead.weapon.missile
+  
+  burn_effects=effects.weapon.missile.burn
+  burn_effects=effects.weapon.missile.burn
 }
 
 deploy {

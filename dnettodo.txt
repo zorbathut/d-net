@@ -1,10 +1,12 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - run lots of checksumming
-    - make sure checksumming isn't bloating excessively
+  - particle_inertia, reflect, force becomes particle_multiple_inertia, etc
+  - re-tune missile flame
+  - re-add missile flame to all the missiles
+  - tune tailwind blast
   - Many many more weapons
     - Add implementations for all trap weapons
-      - Hunter/Killer: I need a new projectile for this.
       - Tailwind Blast: Should spawn from centroid and sweep backwards, accelerating, with a triangle projectile.
     - Add implementations for all exotic weapons
     - Re-enable weapon checks

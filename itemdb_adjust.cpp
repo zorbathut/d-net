@@ -149,6 +149,7 @@ float IDBProjectileAdjust::velocity() const { return idb->velocity; };
 float IDBProjectileAdjust::proximity() const { return idb->proximity; };
 float IDBProjectileAdjust::durability() const { return idb->durability; };
 float IDBProjectileAdjust::halflife() const { return idb->halflife; };
+bool IDBProjectileAdjust::penetrating() const { return idb->penetrating; };
 
 float IDBProjectileAdjust::missile_stabstart() const { CHECK(idb->motion == PM_MISSILE); return idb->missile_stabstart; }
 float IDBProjectileAdjust::missile_stabilization() const { CHECK(idb->motion == PM_MISSILE); return idb->missile_stabilization; }
@@ -196,6 +197,8 @@ vector<IDBWarheadAdjust> IDBProjectileAdjust::chain_warhead(float multfactor) co
 
 vector<IDBDeployAdjust> IDBProjectileAdjust::chain_deploy() const { return adjust_vector(idb->chain_deploy, adjust); }
 vector<IDBEffectsAdjust> IDBProjectileAdjust::chain_effects() const { return adjust_vector(idb->chain_effects, adjust); }
+
+vector<IDBEffectsAdjust> IDBProjectileAdjust::burn_effects() const { return adjust_vector(idb->burn_effects, adjust); }
 
 bool IDBProjectileAdjust::no_intersection() const {
   return idb->no_intersection;
@@ -477,6 +480,7 @@ int IDBEffectsAdjust::quantity() const { return idb->quantity; }
 
 float IDBEffectsAdjust::particle_inertia() const { CHECK(type() == IDBEffects::EFT_PARTICLE); return idb->particle_inertia; }
 float IDBEffectsAdjust::particle_reflect() const { CHECK(type() == IDBEffects::EFT_PARTICLE); return idb->particle_reflect; }
+float IDBEffectsAdjust::particle_force() const { CHECK(type() == IDBEffects::EFT_PARTICLE); return idb->particle_force; }
 
 float IDBEffectsAdjust::particle_spread() const { CHECK(type() == IDBEffects::EFT_PARTICLE); return idb->particle_spread; }
 

@@ -352,6 +352,7 @@ void parseEffects(kvData *chunk, bool reload, ErrorAccumulator &accum) {
     
     titem->particle_inertia = parseWithDefault(chunk, "inertia", 0.f);
     titem->particle_reflect = parseWithDefault(chunk, "reflect", 0.f);
+    titem->particle_force = parseWithDefault(chunk, "force", 0.f);
     
     titem->particle_spread = parseSingleItem<float>(chunk->consume("spread"));
     
@@ -473,6 +474,7 @@ void parseProjectile(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   
   titem->proximity_visibility = -1;
   titem->halflife = parseWithDefault(chunk, "halflife", -1.);
+  titem->penetrating = parseWithDefault(chunk, "penetrating", false);
   
   string motion = parseWithDefault(chunk, "motion", "normal");
   string defshape = "line";
@@ -488,6 +490,7 @@ void parseProjectile(kvData *chunk, bool reload, ErrorAccumulator &accum) {
     titem->missile_backlaunch = parseSingleItem<float>(chunk->consume("missile_backlaunch"));
     allowed_shapes.insert("line");
     allowed_shapes.insert("drone");
+    allowed_shapes.insert("arrow");
   } else if(motion == "airbrake") {
     titem->motion = PM_AIRBRAKE;
     titem->airbrake_life = parseSingleItem<float>(chunk->consume("airbrake_life"));
@@ -566,6 +569,8 @@ void parseProjectile(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   titem->chain_warhead = parseSubclassSet(chunk, "warhead", warheadclasses);
   titem->chain_deploy = parseSubclassSet(chunk, "deploy", deployclasses);
   titem->chain_effects = parseSubclassSet(chunk, "effects", effectsclasses);
+  
+  titem->burn_effects = parseSubclassSet(chunk, "burn_effects", effectsclasses);
   
   {
     string prox = parseWithDefault(chunk, "proximity", "off");

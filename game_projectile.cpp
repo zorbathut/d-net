@@ -26,16 +26,6 @@ void Projectile::tick(vector<smart_ptr<GfxEffects> > *gfxe, const GameImpactCont
     
     Coord2 mov = missile_accel() + missile_backdrop() + missile_sidedrop();
     
-    for(int i = 0; i < 2; i++) { // generate particle effects
-      float dir = unsync().frand() * 2 * PI;
-      Float2 pv = makeAngle(dir) / 3;
-      pv *= 1.0 - unsync().frand() * unsync().frand();
-      pv += mov.toFloat();
-      pv += missile_accel().toFloat() * -3 * abs(unsync().gaussian());
-      pv *= FPS;
-      gfxe->push_back(GfxPoint(rearspawn(now), pv, 0.17, Color(1.0, 0.9, 0.6)));
-    }
-    
     now.pi.pos += mov;
   } else if(projtype.motion() == PM_AIRBRAKE) {
     now.airbrake_velocity *= pow(1.0 - projtype.airbrake_slowdown(), 1. / FPS);
@@ -118,6 +108,11 @@ void Projectile::tick(vector<smart_ptr<GfxEffects> > *gfxe, const GameImpactCont
   }
   
   distance_traveled += len(last.pi.pos - now.pi.pos);
+  
+  for(int i = 0; i < projtype.burn_effects().size(); i++) {
+    CHECK(projtype.motion() == PM_MISSILE); // sigh
+    gfxe->push_back(GfxIdb(rearspawn(now), now.pi.d.toFloat(), (now.pi.pos - last.pi.pos).toFloat() * FPS, -missile_accel().toFloat(), projtype.burn_effects()[i]));
+  }
 }
 
 void Projectile::render(const vector<Coord2> &tankposes) const {
@@ -248,7 +243,7 @@ Coord2 Projectile::warheadposition() const {
   return now.pi.pos;
 }
 
-void Projectile::detonate(Coord2 pos, Coord normal, Tank *target, const GamePlayerContext &gpc, bool impacted) {
+void Projectile::trigger(Coord2 pos, Coord normal, Tank *target, const GamePlayerContext &gpc, bool impacted) {
   if(!live)
     return;
   
@@ -265,7 +260,8 @@ void Projectile::detonate(Coord2 pos, Coord normal, Tank *target, const GamePlay
     for(int i = 0; i < ide.size(); i++)
       gpc.gic->effects->push_back(GfxIdb(pos.toFloat(), normal.toFloat(), (now.pi.pos - last.pi.pos).toFloat(), ide[i]));
     
-    live = false;
+    if(!projtype.penetrating() || !target)
+      live = false; // otherwise we just keep on truckin'
   } else if(projtype.motion() == PM_DPS) {
     CHECK(!projtype.chain_deploy().size());
     CHECK(!projtype.chain_effects().size());
@@ -465,12 +461,12 @@ void ProjectilePack::tick(vector<smart_ptr<GfxEffects> > *gfxe, Collider *collid
   for(map<int, Projectile>::iterator itr = projectiles.begin(); itr != projectiles.end(); ) {
     // the logic here is kind of grim, sorry about this
     if(itr->second.isLive() && itr->second.isDetonating())
-      itr->second.detonate(itr->second.warheadposition(), NO_NORMAL, NULL, GamePlayerContext(gic.players[owner], this, gic), false);
+      itr->second.trigger(itr->second.warheadposition(), NO_NORMAL, NULL, GamePlayerContext(gic.players[owner], this, gic), false);
     if(itr->second.isLive()) {
       if(!count(newitems.begin(), newitems.end(), itr->first))  // we make sure we do collisions before ticks
         itr->second.tick(gfxe, gic, owner);
       if(itr->second.isLive() && itr->second.isDetonating())
-        itr->second.detonate(itr->second.warheadposition(), NO_NORMAL, NULL, GamePlayerContext(gic.players[owner], this, gic), false);
+        itr->second.trigger(itr->second.warheadposition(), NO_NORMAL, NULL, GamePlayerContext(gic.players[owner], this, gic), false);
       if(itr->second.isLive()) {
         ++itr;
         continue;
