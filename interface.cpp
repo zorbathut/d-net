@@ -628,8 +628,6 @@ void InterfaceMain::checksum(Adler32 *adl) const {
   adler(adl, moneyexp);
   adler(adl, faction);
   
-  reg_adler_intermed(*adl);
-  
   if(game)
     game->checksum(adl);
 }
