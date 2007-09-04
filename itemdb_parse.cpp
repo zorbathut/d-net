@@ -626,6 +626,7 @@ void parseDeploy(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   }
   
   titem->anglestddev = parseWithDefault(chunk, "anglestddev", 0.0);
+  titem->anglemodifier = parseWithDefault(chunk, "anglemodifier", 0.0);
   
   titem->chain_deploy = parseSubclassSet(chunk, "deploy", deployclasses);
   titem->chain_projectile = parseSubclassSet(chunk, "projectile", projectileclasses);

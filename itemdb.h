@@ -166,6 +166,7 @@ enum IDBDType { DT_NORMAL, DT_FORWARD, DT_REAR, DT_CENTROID, DT_MINEPATH, DT_DIR
 struct IDBDeploy {
   IDBDType type;
 
+  float anglemodifier;
   float anglestddev;
 
   int exp_minsplits;
@@ -429,6 +430,7 @@ public:
   int exp_shotspersplit() const;
 
   float anglestddev() const;
+  float anglemodifier() const;
 
   float directed_range() const;
   

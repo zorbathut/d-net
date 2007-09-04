@@ -778,6 +778,11 @@ projectile {
 
 deploy {
   name=deploy.weapon.hunterkiller
+  
+  type=centroid
+  anglemodifier=3.14159
+  anglestddev=0.3
+  
   projectile=projectile.weapon.hunterkiller
 }
 

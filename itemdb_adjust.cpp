@@ -28,6 +28,7 @@ int IDBDeployAdjust::exp_maxsplitsize() const { return idb->exp_maxsplitsize; };
 int IDBDeployAdjust::exp_shotspersplit() const { return idb->exp_shotspersplit; };
 
 float IDBDeployAdjust::anglestddev() const { return idb->anglestddev; };
+float IDBDeployAdjust::anglemodifier() const { return idb->anglemodifier; };
 
 float IDBDeployAdjust::directed_range() const { return idb->directed_range; };
 

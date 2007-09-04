@@ -260,6 +260,9 @@ void deployProjectile(const IDBDeployAdjust &deploy, const DeployLocation &locat
   for(int i = 0; i < proji.size(); i++)
     proji[i].second += Coord(deploy.anglestddev() * gpc.gic->rng->gaussian());
   
+  for(int i = 0; i < proji.size(); i++)
+    proji[i].second += deploy.anglemodifier();
+  
   {
     vector<IDBDeployAdjust> idd = deploy.chain_deploy();
     for(int i = 0; i < idd.size(); i++)
