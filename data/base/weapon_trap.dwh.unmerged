@@ -762,7 +762,7 @@ projectile {
   name=projectile.weapon.hunterkiller
   
   motion=hunter
-  halflife=8
+  halflife=4
   velocity=100
   hunter_rotation=0.5
   hunter_turnweight=30
