@@ -13,15 +13,15 @@ void Projectile::tick(vector<smart_ptr<GfxEffects> > *gfxe, const GameImpactCont
   CHECK(live);
   CHECK(age != -1);
   last = now;
-  age++;
+  age += Coord(1) / FPS;
   
-  if(projtype.halflife() != -1 && age >= projtype.halflife() * FPS / 2 && gic.rng->frand() > pow(0.5f, 1 / (projtype.halflife() * FPS)))
+  if(projtype.halflife() != -1 && age >= projtype.halflife() / 2 && gic.rng->frand() > pow(0.5f, 1 / (projtype.halflife() * FPS)))
     detonating = true;
   
   if(projtype.motion() == PM_NORMAL) {
     now.pi.pos += makeAngle(now.pi.d) * Coord(projtype.velocity()) / FPS;
   } else if(projtype.motion() == PM_MISSILE) {
-    if(age > projtype.missile_stabstart() * FPS)
+    if(age > projtype.missile_stabstart())
       missile_sidedist /= pow(projtype.missile_stabilization(), 1.f / FPS);
     
     Coord2 mov = missile_accel() + missile_backdrop() + missile_sidedrop();
@@ -130,7 +130,7 @@ void Projectile::render(const vector<Coord2> &tankposes) const {
     visible = false;
   } else if(projtype.shape() == PS_LINE_AIRBRAKE) {
     CHECK(projtype.proximity_visibility() == -1);
-    setColor(projtype.color() * (1.0 - projtype.airbrake_life() / age));
+    setColor(projtype.color() * airbrake_liveness().toFloat());
   } else if(projtype.proximity_visibility() == -1) {
     setColor(projtype.color());
   } else if(projtype.proximity_visibility() != -1) {
@@ -269,15 +269,15 @@ void Projectile::detonate(Coord2 pos, Coord normal, Tank *target, const GamePlay
   } else if(projtype.motion() == PM_DPS) {
     CHECK(!projtype.chain_deploy().size());
     CHECK(!projtype.chain_effects().size());
-    int alen = int(projtype.dps_duration() * FPS);
-    if(age > alen) {
+    if(age > projtype.dps_duration()) {
       live = false;
     } else {
+      int alen = int(projtype.dps_duration() * FPS);
       int shares = alen * (alen + 1) / 2;
-      int tshares = alen - age + 1;
+      int tshares = alen - round(age * FPS).toInt() + 1;
       vector<IDBWarheadAdjust> idw = projtype.chain_warhead();
       for(int i = 0; i < idw.size(); i++)
-        detonateWarhead(idw[i].multiply((float)tshares / shares), pos, 0, Coord2(0, 0), NULL, gpc, damageflags, false);
+        detonateWarhead(idw[i].multiply((Coord)tshares / shares), pos, 0, Coord2(0, 0), NULL, gpc, damageflags, false);
       detonating = false;
     }
   } else {
@@ -302,17 +302,17 @@ float Projectile::durability() const {
 }
 
 Coord2 Projectile::missile_accel() const {
-  return makeAngle(Coord(now.pi.d)) * Coord(projtype.velocity() / FPS) * age / FPS;
+  return makeAngle(now.pi.d) * Coord(projtype.velocity() / FPS) * age;
 }
 Coord2 Projectile::missile_backdrop() const {
-  return -makeAngle(Coord(now.pi.d)) * Coord(projtype.missile_backlaunch()) / FPS;
+  return -makeAngle(now.pi.d) * Coord(projtype.missile_backlaunch()) / FPS;
 }
 Coord2 Projectile::missile_sidedrop() const {
-  return makeAngle(Coord(now.pi.d) - COORDPI / 2) * Coord(missile_sidedist);
+  return makeAngle(now.pi.d - COORDPI / 2) * Coord(missile_sidedist);
 }
 
 Coord Projectile::airbrake_liveness() const {
-  return 1 - (Coord(age) / FPS / projtype.airbrake_life());
+  return 1 - age / projtype.airbrake_life();
 }
 
 vector<Coord4> Projectile::polys(const ProjPostState &stat) const {

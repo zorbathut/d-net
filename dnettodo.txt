@@ -1,6 +1,5 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
-  - airbrake fade doesn't seem to be working right
   - run lots of checksumming
     - make sure checksumming isn't bloating excessively
   - Many many more weapons

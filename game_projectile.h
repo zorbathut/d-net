@@ -74,7 +74,7 @@ private:
 
   bool arrow_spin_parity;
 
-  int age;
+  Coord age;
   
   IDBProjectileAdjust projtype;
   

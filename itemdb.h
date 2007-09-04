@@ -338,7 +338,7 @@ public:
 
   const IDBWarhead *base() const;
   Coord multfactor() const;
-  IDBWarheadAdjust multiply(float mult) const;
+  IDBWarheadAdjust multiply(Coord mult) const;
   
   void checksum(Adler32 *adl) const;
 

@@ -128,7 +128,7 @@ const IDBWarhead *IDBWarheadAdjust::base() const {
 Coord IDBWarheadAdjust::multfactor() const {
   return mf;
 }
-IDBWarheadAdjust IDBWarheadAdjust::multiply(float mult) const {
+IDBWarheadAdjust IDBWarheadAdjust::multiply(Coord mult) const {
   return IDBWarheadAdjust(idb, adjust, mf * mult);
 }
 
