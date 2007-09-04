@@ -93,7 +93,9 @@ void Projectile::tick(vector<smart_ptr<GfxEffects> > *gfxe, const GameImpactCont
     
     if(lockon != -1) {
       Coord dang = getAngle(gic.players[lockon]->pos - now.pi.pos);
-      now.pi.d = ang_approach(dang, now.pi.d, projtype.hunter_rotation() / FPS);
+      Coord bef = now.pi.d;
+      now.pi.d = ang_approach(now.pi.d, dang, projtype.hunter_rotation() / FPS);
+      dprintf("%f %f %f %f, ad is %f, cutoff is %f\n", bef.toFloat(), dang.toFloat(), now.pi.d.toFloat(), projtype.hunter_rotation() / FPS, ang_dist(dang, now.pi.d).toFloat(), projtype.hunter_rotation() / FPS);  // what
       if(ang_dist(dang, now.pi.d) < projtype.hunter_rotation() / FPS && now.hunter_vel == 0)
         now.hunter_vel += projtype.velocity() / FPS;
     }

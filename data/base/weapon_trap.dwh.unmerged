@@ -763,8 +763,8 @@ projectile {
   
   motion=hunter
   halflife=8
-  velocity=120
-  hunter_rotation=0.1
+  velocity=10
+  hunter_rotation=0.5
   hunter_turnweight=20
   
   shape=drone
