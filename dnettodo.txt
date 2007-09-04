@@ -30,6 +30,7 @@
     - Spruce up exotic weaponry
     - Spruce up OGRE
   - Final weapons
+    - I'd love to make HK higher firerate. Is there some way I can do this?
     - Special autocannon
     - Special laser
     - Special missile

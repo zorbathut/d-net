@@ -71,6 +71,9 @@ void Projectile::tick(vector<smart_ptr<GfxEffects> > *gfxe, const GameImpactCont
   } else if(projtype.motion() == PM_DPS) {
     detonating = true;
   } else if(projtype.motion() == PM_HUNTER) {
+    now.pi.pos += hk_drift;
+    hk_drift *= 0.95;
+    
     if(now.hunter_vel != 0)
       now.hunter_vel += projtype.velocity() / FPS;
     
@@ -94,11 +97,11 @@ void Projectile::tick(vector<smart_ptr<GfxEffects> > *gfxe, const GameImpactCont
     if(lockon != -1) {
       Coord dang = getAngle(gic.players[lockon]->pos - now.pi.pos);
       now.pi.d = ang_approach(now.pi.d, dang, projtype.hunter_rotation() / FPS);
-      if(ang_dist(dang, now.pi.d) < projtype.hunter_rotation() / FPS && now.hunter_vel == 0)
+      if(ang_dist(dang, now.pi.d) < projtype.hunter_rotation() && now.hunter_vel == 0)
         now.hunter_vel += projtype.velocity() / FPS;
     }
     
-    now.pi.pos += makeAngle(now.pi.d) * now.hunter_vel;
+    now.pi.pos += makeAngle(now.pi.d) * now.hunter_vel / FPS;
   } else {
     CHECK(0);
   }
@@ -156,6 +159,12 @@ void Projectile::render(const vector<Coord2> &tankposes) const {
       CHECK(0);
     }
   }
+  
+  if(projtype.motion() == PM_HUNTER) {
+    setColor(C::gray(1.0));
+    for(float i = 0; i < PI * 2; i += 0.04)
+      drawPoint(makeAngle(i + now.pi.d.toFloat()) * abs(PI - i) * projtype.hunter_turnweight() + now.pi.pos.toFloat(), 1);
+  }
 };
 
 void Projectile::checksum(Adler32 *adl) const {
@@ -181,6 +190,7 @@ void Projectile::checksum(Adler32 *adl) const {
   } else if(projtype.motion() == PM_SPIDERMINE) {
   } else if(projtype.motion() == PM_DPS) {
   } else if(projtype.motion() == PM_HUNTER) {
+    adler(adl, hk_drift);
   } else {
     CHECK(0);
   }
@@ -385,6 +395,10 @@ Projectile::Projectile(const Coord2 &in_pos, Coord in_d, const IDBProjectileAdju
   } else if(projtype.motion() == PM_SPIDERMINE) {
   } else if(projtype.motion() == PM_DPS) {
   } else if(projtype.motion() == PM_HUNTER) {
+    hk_drift = Coord2(rng->sym_frand(), rng->sym_frand());
+    hk_drift *= abs(hk_drift.y);
+    hk_drift = rotate(hk_drift, in_d);
+    hk_drift /= 2;
   } else {
     CHECK(0);
   }

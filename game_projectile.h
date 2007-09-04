@@ -60,6 +60,8 @@ private:
   Coord2 missile_backdrop() const;
   Coord2 missile_sidedrop() const;
   Coord missile_sidedist;
+  
+  Coord2 hk_drift;
 
   Coord airbrake_liveness() const;
 
