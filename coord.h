@@ -384,6 +384,10 @@ class CPosInfo {
 public:
   Coord2 pos;
   Coord d;
+
+  CPosInfo() { };
+  CPosInfo(const CPosInfo &cpi) : pos(cpi.pos), d(cpi.d) { };
+  CPosInfo(const Coord2 &pos, Coord d) : pos(pos), d(d) { };
 };
 
 /*************

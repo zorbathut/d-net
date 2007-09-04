@@ -11,7 +11,7 @@ vector<pair<float, Tank *> > GameImpactContext::getAdjacency(const Coord2 &cente
   vector<pair<float, Tank *> > rv;
   for(int i = 0; i < players.size(); i++) {
     if(players[i]->isLive()) {
-      vector<Coord2> tv = players[i]->getTankVertices(players[i]->pos, players[i]->d);
+      vector<Coord2> tv = players[i]->getTankVertices(players[i]->pi);
       if(inPath(center, tv)) {
         rv.push_back(make_pair(0, players[i]));
         continue;
@@ -90,13 +90,13 @@ const Tank &DeployLocation::tank() const {
 
 Coord2 DeployLocation::pos() const {
   if(tank_int)
-    return tank_int->pos;
+    return tank_int->pi.pos;
   else
     return pos_int;
 }
 Coord DeployLocation::d() const {
   if(tank_int)
-    return tank_int->d;
+    return tank_int->pi.d;
   else
     return d_int;
 }
@@ -206,24 +206,24 @@ void deployProjectile(const IDBDeployAdjust &deploy, const DeployLocation &locat
   if(type == DT_FORWARD) {
     CHECK(location.isTank());
     CHECK(!tang);
-    proji.push_back(make_pair(location.tank().getFiringPoint(), location.tank().d));
+    proji.push_back(make_pair(location.tank().getFiringPoint(), location.tank().pi.d));
   } else if(type == DT_REAR) {
     CHECK(location.isTank());
     CHECK(!tang);
-    proji.push_back(make_pair(location.tank().getRearFiringPoint(), location.tank().d + COORDPI));
+    proji.push_back(make_pair(location.tank().getRearFiringPoint(), location.tank().pi.d + COORDPI));
   } else if(type == DT_CENTROID) {
     CHECK(!tang);
     proji.push_back(make_pair(location.pos(), location.d()));
   } else if(type == DT_MINEPATH) {
     CHECK(location.isTank());
     CHECK(!tang);
-    proji.push_back(make_pair(location.tank().getMinePoint(gpc.gic->rng), location.tank().d));
+    proji.push_back(make_pair(location.tank().getMinePoint(gpc.gic->rng), location.tank().pi.d));
   } else if(type == DT_DIRECTED) {
     CHECK(!proji.size());
     int cid = gpc.gic->getClosestFoeId(location.pos(), gpc.owner_id());
     if(cid != -1) {
       CHECK(cid >= 0 && cid < gpc.gic->players.size());
-      Coord2 dp = gpc.gic->players[cid]->pos;
+      Coord2 dp = gpc.gic->players[cid]->pi.pos;
       dp -= location.pos();
       if(len(dp) <= Coord(deploy.directed_range()))
         proji.push_back(make_pair(location.pos(), getAngle(dp)));

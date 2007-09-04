@@ -31,8 +31,7 @@ void Tank::updateInertia(const Keystates &kst) {
 }
 
 void Tank::tick() {
-  pos = getNextPosition().first;
-  d = getNextPosition().second;
+  pi = getNextPosition();
   
   if(framesSinceDamage != -1)
     framesSinceDamage++;
@@ -58,7 +57,7 @@ void Tank::render(const vector<Team> &teams) const {
   if(!live)
     return;
 
-  vector<Coord2> tankverts = getTankVertices(pos, d);
+  vector<Coord2> tankverts = getTankVertices(pi);
   vector<Coord2> smtankverts;
   Coord2 centr = getCentroid(tankverts);
   for(int i = 0; i < tankverts.size(); i++)
@@ -86,8 +85,7 @@ void Tank::checksum(Adler32 *adl) const {
   adler(adl, team);
   adler(adl, zone_current);
   adler(adl, zone_frames);
-  adler(adl, pos);
-  adler(adl, d);
+  adler(adl, pi);
   adler(adl, inertia);
   adler(adl, keys);
   adler(adl, weaponCooldown);
@@ -104,7 +102,7 @@ vector<Coord4> Tank::getCurrentCollide() const {
   if(!live)
     return vector<Coord4>();
 
-  vector<Coord2> tankpts = getTankVertices(pos, d);
+  vector<Coord2> tankpts = getTankVertices(pi);
   vector<Coord4> rv;
   for(int i = 0; i < tankpts.size(); i++) {
     int j = (i + 1) % tankpts.size();
@@ -117,8 +115,7 @@ vector<Coord4> Tank::getNextCollide() const {
   if(!live)
     return vector<Coord4>();
 
-  pair<Coord2, Coord> newpos = getNextPosition();
-  vector<Coord2> tankpts = getTankVertices(newpos.first, newpos.second);
+  vector<Coord2> tankpts = getTankVertices(getNextPosition());
   vector<Coord4> rv;
   for(int i = 0; i < tankpts.size(); i++) {
     int j = (i + 1) % tankpts.size();
@@ -132,9 +129,8 @@ void Tank::addCollision(Collider *collider, int owner) const {
   if(!live)
     return;
 
-  vector<Coord2> tankpts = getTankVertices(pos, d);
-  pair<Coord2, Coord> newpos = getNextPosition();
-  vector<Coord2> newtankpts = getTankVertices(newpos.first, newpos.second);
+  vector<Coord2> tankpts = getTankVertices(pi);
+  vector<Coord2> newtankpts = getTankVertices(getNextPosition());
   CHECK(tankpts.size() == newtankpts.size());
   for(int i = 0; i < newtankpts.size(); i++)
     newtankpts[i] -= tankpts[i];
@@ -142,8 +138,8 @@ void Tank::addCollision(Collider *collider, int owner) const {
     collider->addNormalToken(CollideId(CGR_TANK, owner, 0), Coord4(tankpts[i], tankpts[(i + 1) % tankpts.size()]), Coord4(newtankpts[i], newtankpts[(i + 1) % tankpts.size()]));
 };
 
-vector<Coord2> Tank::getTankVertices(Coord2 pos, Coord td) const {
-  return tank.getTankVertices(pos, td);
+vector<Coord2> Tank::getTankVertices(const CPosInfo &cpi) const {
+  return tank.getTankVertices(cpi);
 };
 
 Coord2 Tank::getFiringPoint() const {
@@ -191,7 +187,7 @@ pair<Coord2, Coord> Tank::getNextInertia(const Keystates &keys) const {
         dv = dd = 0;
       } else {
         Coord desdir = getAngle(Coord2(xpd, -ypd));
-        desdir -= d;
+        desdir -= pi.d;
         desdir += 2 * PI;
         if(desdir > PI)
           desdir -= 2 * PI;
@@ -290,7 +286,7 @@ pair<Coord2, Coord> Tank::getNextInertia(const Keystates &keys) const {
   Coord cdv(dv);
 
   Coord turn = Coord(tank.turnSpeed()) * Coord(dd);
-  Coord2 speed = makeAngle(Coord(d) + turn / FPS) * Coord(tank.maxSpeed()) * cdv;
+  Coord2 speed = makeAngle(Coord(pi.d) + turn / FPS) * Coord(tank.maxSpeed()) * cdv;
   
   speed = approach(inertia.first, speed, 300 / Coord(tank.mass()) / FPS * Coord(tank.maxSpeed()));
   turn = approach(inertia.second, turn, 300 / Coord(tank.mass()) / FPS * Coord(tank.turnSpeed()));
@@ -298,8 +294,8 @@ pair<Coord2, Coord> Tank::getNextInertia(const Keystates &keys) const {
   return make_pair(speed, turn);
 }
 
-pair<Coord2, Coord> Tank::getNextPosition() const {
-  return make_pair(pos + inertia.first / FPS, mod(d + inertia.second / FPS + COORDPI * 2, COORDPI * 2));
+CPosInfo Tank::getNextPosition() const {
+  return CPosInfo(pi.pos + inertia.first / FPS, mod(pi.d + inertia.second / FPS + COORDPI * 2, COORDPI * 2));
 }
 
 bool Tank::takeDamage(Coord damage) {
@@ -327,7 +323,7 @@ void Tank::genEffects(const GameImpactContext &gic, ProjectilePack *projectiles,
   StackString sst("genEffects");
   
   if(spawnShards) {
-    vector<Coord2> tv = getTankVertices(pos, d);
+    vector<Coord2> tv = getTankVertices(pi);
     Coord2 centr = getCentroid(tv);
     Coord tva = getArea(tv);
     
@@ -470,8 +466,8 @@ void Tank::respawn(Coord2 in_pos, Coord in_d) {
   int old_team = team;
   *this = Tank();
   init(old_tank, old_color);
-  pos = in_pos;
-  d = in_d;
+  pi.pos = in_pos;
+  pi.d = in_d;
   team = old_team;
 }
 
@@ -551,8 +547,7 @@ void Tank::setDead() {
 }
 
 Tank::Tank() : tank(NULL, IDBAdjustment()) /* do not fucking use this */ {
-  pos = Coord2(0, 0);
-  d = 0;
+  pi = CPosInfo(Coord2(0, 0), 0);
   live = true;
   spawnShards = false;
   health = -47283;
@@ -566,7 +561,7 @@ Tank::Tank() : tank(NULL, IDBAdjustment()) /* do not fucking use this */ {
 }
 
 Coord2 Tank::worldFromLocal(const Coord2 &coord) const {
-  Coord2 xt = makeAngle(Coord(d));
-  Coord2 yt = makeAngle(Coord(d) - COORDPI / 2);
-  return Coord2(pos.x + coord.x * xt.x + coord.y * xt.y, pos.y + coord.y * yt.y + coord.x * yt.x);
+  Coord2 xt = makeAngle(Coord(pi.d));
+  Coord2 yt = makeAngle(Coord(pi.d) - COORDPI / 2);
+  return Coord2(pi.pos.x + coord.x * xt.x + coord.y * xt.y, pi.pos.y + coord.y * yt.y + coord.x * yt.x);
 }

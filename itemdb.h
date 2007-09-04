@@ -265,7 +265,7 @@ struct IDBTank {
 
   const string *text;
   
-  vector<Coord2> getTankVertices(Coord2 pos, Coord td) const;
+  vector<Coord2> getTankVertices(const CPosInfo &cpi) const;
   
   Coord2 centering_adjustment;
 };
@@ -587,7 +587,7 @@ public:
   Coord2 firepoint() const;
   Coord2 rearfirepoint() const;
   const vector<Coord2> &minepath() const;
-  vector<Coord2> getTankVertices(Coord2 pos, Coord td) const;
+  vector<Coord2> getTankVertices(const CPosInfo &cpi) const;
 
   Money cost() const;
   Money sellcost() const;

@@ -68,7 +68,7 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
   if(frameNm < frameNmToStart && freezeUntilStart) {
     for(int i = 0; i < keys.size(); i++) {
       if(keys[i].accept.push || keys[i].fire[0].push)
-        gfxeffects.push_back(GfxPing(tanks[i].pos.toFloat(), zoom_size.y, zoom_size.y / 50, 0.5, tanks[i].getColor()));
+        gfxeffects.push_back(GfxPing(tanks[i].pi.pos.toFloat(), zoom_size.y, zoom_size.y / 50, 0.5, tanks[i].getColor()));
       keys[i].nullMove();
       for(int j = 0; j < SIMUL_WEAPONS; j++)
         keys[i].fire[j] = Button();
@@ -116,10 +116,10 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
       if(!tanks[j].isLive())
         continue;
       StackString sst(StringPrintf("Adding player %d, status live %d", j, tanks[j].isLive()));
-      //CHECK(inPath(tanks[j].pos, gamemap.getCollide()[0]));
-      if(!isInside(gmbc, tanks[j].pos)) {
+      //CHECK(inPath(tanks[j].pi.pos, gamemap.getCollide()[0]));
+      if(!isInside(gmbc, tanks[j].pi.pos)) {
         StackString sst("Critical error, running tests");
-        dprintf("%s vs %s\n", tanks[j].pos.rawstr().c_str(), gmbc.rawstr().c_str());
+        dprintf("%s vs %s\n", tanks[j].pi.pos.rawstr().c_str(), gmbc.rawstr().c_str());
         CHECK(0);
       }
       tanks[j].updateInertia(keys[j]);
@@ -136,12 +136,12 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
         dprintf("FUCK ASS");
         addErrorMessage("A Zebra");
         float delta = 0.01;
-        Coord2 ps = tanks[j].pos;
-        Coord d = tanks[j].d;
+        Coord2 ps = tanks[j].pi.pos;
+        Coord d = tanks[j].pi.d;
         while(1) {
           dprintf("Moving with delta %f\n", delta);
-          tanks[j].pos = ps + Coord2(makeAngle(rng->frand() * 2 * PI) * rng->gaussian() * delta);
-          tanks[j].d = d + Coord(rng->gaussian() * delta / 10);
+          tanks[j].pi.pos = ps + Coord2(makeAngle(rng->frand() * 2 * PI) * rng->gaussian() * delta);
+          tanks[j].pi.d = d + Coord(rng->gaussian() * delta / 10);
           if(!collider.checkSimpleCollision(CGR_TANK, j, tanks[j].getCurrentCollide())) {
             collider.dumpGroup(CollideId(CGR_TANK, j, 0));
             vector<Coord4> cpos = tanks[j].getCurrentCollide();
@@ -238,7 +238,7 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
       
       StackString sst(StringPrintf("Moving player %d, status live %d", playerorder[i], tt.isLive()));
       //CHECK(inPath(tt.getNextPosition(keys[playerorder[i]], tt.pos, tt.d).first, gamemap.getCollide()[0]));
-      CHECK(isInside(gmbc, tt.getNextPosition().first));
+      CHECK(isInside(gmbc, tt.getNextPosition().pos));
       vector<Coord4> newpos = tt.getNextCollide();
       if(doinshit && tt.inertia != make_pair(Coord2(0, 0), Coord(0)) && collider.checkSimpleCollision(CGR_TANK, playerorder[i], newpos)) {
         //dprintf("collisions are hard, let's go shopping\n");
@@ -380,7 +380,7 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
       if(bombards[j].state == BombardmentState::BS_OFF) {
         if(!tanks[j].isLive()) {
           // if the player is dead and the bombard isn't initialized
-          bombards[j].pos = tanks[j].pos;
+          bombards[j].pos = tanks[j].pi.pos;
           bombards[j].state = BombardmentState::BS_SPAWNING;
           if(gamemode == GMODE_DEMO)
             bombards[j].timer = 0;
@@ -466,7 +466,7 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
       if(tanks[i].isLive()) {
         int inzone = -1;
         for(int j = 0; j < zones.size(); j++)
-          if(inPath(tanks[i].pos, zones[j].first))
+          if(inPath(tanks[i].pi.pos, zones[j].first))
             inzone = j;
         if(tanks[i].zone_current != inzone) {
           tanks[i].zone_current = inzone;
@@ -594,7 +594,7 @@ void Game::renderToScreen(const vector<const Player *> &players, GameMetacontext
       setZoomAround(Coord4(zoom_center.x - zoom_size.x / 2, zoom_center.y - zoom_size.y / 2, zoom_center.x + zoom_size.x / 2, zoom_center.y + zoom_size.y / 2));
     } else {
       CHECK(tanks[0].isLive());
-      setZoomVertical(tanks[0].pos.x.toFloat() - centereddemo_zoom / 2, tanks[0].pos.y.toFloat() - centereddemo_zoom / 2, tanks[0].pos.y.toFloat() + centereddemo_zoom / 2);
+      setZoomVertical(tanks[0].pi.pos.x.toFloat() - centereddemo_zoom / 2, tanks[0].pi.pos.y.toFloat() - centereddemo_zoom / 2, tanks[0].pi.pos.y.toFloat() + centereddemo_zoom / 2);
     }
     
     // In most modes, clear the background
@@ -612,7 +612,7 @@ void Game::renderToScreen(const vector<const Player *> &players, GameMetacontext
     for(int i = 0; i < tanks.size(); i++) {
       tanks[i].render(teams);
       // Debug graphics :D
-      collider.renderAround(tanks[i].pos);
+      collider.renderAround(tanks[i].pi.pos);
     }
     
     // Projectiles, graphics effects, and bombardments
@@ -621,7 +621,7 @@ void Game::renderToScreen(const vector<const Player *> &players, GameMetacontext
       vector<Coord2> tankposes;
       for(int i = 0; i < tanks.size(); i++)
         if(tanks[i].isLive())
-          tankposes.push_back(tanks[i].pos);
+          tankposes.push_back(tanks[i].pi.pos);
       
       for(int i = 0; i < projectiles.size(); i++)
         projectiles[i].render(tankposes);
@@ -935,7 +935,7 @@ int Game::frameCount() const {
 }
 
 Coord2 Game::queryPlayerLocation(int id) const {
-  return tanks[id].pos;
+  return tanks[id].pi.pos;
 }
 
 void Game::kill(int id) {
@@ -982,19 +982,19 @@ vector<pair<Float2, pair<float, string> > > Game::getStats() const {
       float v = tanks[i].getDPS();
       if(v <= 0)
         v = -1;
-      rv.push_back(make_pair(tanks[i].pos.toFloat() - demo_hudpos, make_pair(v, "DPS")));
+      rv.push_back(make_pair(tanks[i].pi.pos.toFloat() - demo_hudpos, make_pair(v, "DPS")));
     } else if(demo_playermodes[i] == DEMOPLAYER_DPC) {
       float v;
       if(demo_cycles == 0)
         v = -1;
       else
         v = tanks[i].getDPC(demo_cycles);
-      rv.push_back(make_pair(tanks[i].pos.toFloat() - demo_hudpos, make_pair(v, "DPH")));
+      rv.push_back(make_pair(tanks[i].pi.pos.toFloat() - demo_hudpos, make_pair(v, "DPH")));
     } else if(demo_playermodes[i] == DEMOPLAYER_DPH) {
       float v = tanks[i].getDPH();
       if(v <= 0)
         v = -1;
-      rv.push_back(make_pair(tanks[i].pos.toFloat() - demo_hudpos, make_pair(v, "DPH")));
+      rv.push_back(make_pair(tanks[i].pi.pos.toFloat() - demo_hudpos, make_pair(v, "DPH")));
     } else if(demo_playermodes[i] == DEMOPLAYER_BOMBSIGHT) {
     } else if(demo_playermodes[i] == DEMOPLAYER_QUIET) {
     } else {
@@ -1130,8 +1130,8 @@ void Game::initRandomTankPlacement(const map<int, vector<pair<Coord2, Coord> > >
   for(int i = 0; i < tanks.size(); i++) {
     int loc = int(rng->frand() * pstart.size());
     CHECK(loc >= 0 && loc < pstart.size());
-    tanks[i].pos = Coord2(pstart[loc].first);
-    tanks[i].d = pstart[loc].second;
+    tanks[i].pi.pos = Coord2(pstart[loc].first);
+    tanks[i].pi.d = pstart[loc].second;
     pstart.erase(pstart.begin() + loc);
   }
 }
@@ -1239,8 +1239,8 @@ void Game::initTest(Player *in_playerdata, const Float4 &bounds) {
   playerdata.push_back(in_playerdata);
   initCommon(playerdata, createBasicColors(playerdata), level, false);
   CHECK(tanks.size() == 1);
-  tanks[0].pos = Coord2(bounds.midpoint());
-  tanks[0].d = COORDPI / 2 * 3;
+  tanks[0].pi.pos = Coord2(bounds.midpoint());
+  tanks[0].pi.d = COORDPI / 2 * 3;
   
   clear = bounds;
   
@@ -1292,9 +1292,9 @@ void Game::initDemo(vector<Player> *in_playerdata, float boxradi, const float *x
   initCommon(playerdata, colors, level, false);
   
   for(int i = 0; i < tanks.size(); i++) {
-    tanks[i].pos = Coord2(xps[i], yps[i]);
+    tanks[i].pi.pos = Coord2(xps[i], yps[i]);
     if(facing)
-      tanks[i].d = Coord(facing[i]);
+      tanks[i].pi.d = Coord(facing[i]);
   }
   
   demo_playermodes.clear();
@@ -1344,8 +1344,8 @@ void Game::initCenteredDemo(Player *in_playerdata, float zoom) {
   playerdata.push_back(in_playerdata);
   initCommon(playerdata, createBasicColors(playerdata), level, false);
   CHECK(tanks.size() == 1);
-  tanks[0].pos = Coord2(0, 0);
-  tanks[0].d = COORDPI / 2 * 3;
+  tanks[0].pi.pos = Coord2(0, 0);
+  tanks[0].pi.d = COORDPI / 2 * 3;
   
   collider = Collider(tanks.size(), Coord(1000));
   
@@ -1355,7 +1355,7 @@ void Game::initCenteredDemo(Player *in_playerdata, float zoom) {
 void Game::addTankStatusText(int tankid, const string &text, float duration) {
   Float2 pos;
   if(tanks[tankid].isLive()) {
-    pos = tanks[tankid].pos.toFloat();
+    pos = tanks[tankid].pi.pos.toFloat();
   } else {
     pos = bombards[tankid].pos.toFloat();
   }

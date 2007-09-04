@@ -62,7 +62,7 @@ void Projectile::tick(vector<smart_ptr<GfxEffects> > *gfxe, const GameImpactCont
   } else if(projtype.motion() == PM_SPIDERMINE) {
     int cid = gic.getClosestFoeId(now.pi.pos, owner);
     if(cid != -1) {
-      Coord2 dp = gic.players[cid]->pos;
+      Coord2 dp = gic.players[cid]->pi.pos;
       dp -= now.pi.pos;
       if(len(dp) < Coord(projtype.proximity_visibility()) && len(dp) > 0) {
         now.pi.pos += normalize(dp) * Coord(projtype.velocity() / FPS);
@@ -84,10 +84,10 @@ void Projectile::tick(vector<smart_ptr<GfxEffects> > *gfxe, const GameImpactCont
         continue;
       if(gic.players[i]->team == gic.players[owner]->team)
         continue;
-      Coord dang = getAngle(gic.players[i]->pos - now.pi.pos);
+      Coord dang = getAngle(gic.players[i]->pi.pos - now.pi.pos);
       Coord diff = ang_dist(dang, now.pi.d);
       
-      Coord val = diff * projtype.hunter_turnweight() + len(gic.players[i]->pos - now.pi.pos);
+      Coord val = diff * projtype.hunter_turnweight() + len(gic.players[i]->pi.pos - now.pi.pos);
       if(val < dist) {
         dist = val;
         lockon = i;
@@ -95,7 +95,7 @@ void Projectile::tick(vector<smart_ptr<GfxEffects> > *gfxe, const GameImpactCont
     }
     
     if(lockon != -1) {
-      Coord dang = getAngle(gic.players[lockon]->pos - now.pi.pos);
+      Coord dang = getAngle(gic.players[lockon]->pi.pos - now.pi.pos);
       now.pi.d = ang_approach(now.pi.d, dang, projtype.hunter_rotation() / FPS);
       if(ang_dist(dang, now.pi.d) < projtype.hunter_rotation() && now.hunter_vel == 0)
         now.hunter_vel += projtype.velocity() / FPS;
@@ -160,11 +160,12 @@ void Projectile::render(const vector<Coord2> &tankposes) const {
     }
   }
   
+  /*
   if(projtype.motion() == PM_HUNTER) {
     setColor(C::gray(1.0));
     for(float i = 0; i < PI * 2; i += 0.04)
       drawPoint(makeAngle(i + now.pi.d.toFloat()) * abs(PI - i) * projtype.hunter_turnweight() + now.pi.pos.toFloat(), 1);
-  }
+  }*/
 };
 
 void Projectile::checksum(Adler32 *adl) const {

@@ -37,16 +37,16 @@ void GameAiStandard::updateGameWork(const vector<Tank> &players, int me) {
       gamemode = AGM_BACKUP;
     }
   }
-  Coord2 mypos = players[me].pos;
+  Coord2 mypos = players[me].pi.pos;
   if(gamemode == AGM_APPROACH) {
-    Coord2 enepos = players[targetplayer].pos;
+    Coord2 enepos = players[targetplayer].pi.pos;
     enepos -= mypos;
     enepos.y *= -1;
     if(len(enepos) > 0)
       enepos = normalize(enepos);
     nextKeys.udlrax = enepos;
   } else if(gamemode == AGM_RETREAT) {
-    Coord2 enepos = players[targetplayer].pos;
+    Coord2 enepos = players[targetplayer].pi.pos;
     enepos -= mypos;
     enepos.y *= -1;
     enepos *= -1;
@@ -57,7 +57,7 @@ void GameAiStandard::updateGameWork(const vector<Tank> &players, int me) {
   } else if(gamemode == AGM_WANDER) {
     nextKeys.udlrax = targetdir;
   } else if(gamemode == AGM_BACKUP) {
-    Coord2 nx(-makeAngle(players[me].d));
+    Coord2 nx(-makeAngle(players[me].pi.d));
     nx.x += (rng->frand() - 0.5) / 100;
     nx.y += (rng->frand() - 0.5) / 100;
     nx = normalize(nx);
@@ -74,9 +74,9 @@ void GameAiStandard::updateBombardmentWork(const vector<Tank> &players, Coord2 m
   Coord2 clopos(0, 0);
   Coord clodist = 1000000;
   for(int i = 0; i < players.size(); i++) {
-    if(players[i].isLive() && len(players[i].pos - mypos) < clodist) {
-      clodist = len(players[i].pos - mypos);
-      clopos = players[i].pos;
+    if(players[i].isLive() && len(players[i].pi.pos - mypos) < clodist) {
+      clodist = len(players[i].pi.pos - mypos);
+      clopos = players[i].pi.pos;
     }
   }
   nextKeys.udlrax = clopos - mypos;

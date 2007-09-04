@@ -27,12 +27,12 @@ public:
   vector<Coord4> getCurrentCollide() const;
   vector<Coord4> getNextCollide() const;
 
-  vector<Coord2> getTankVertices(Coord2 pos, Coord td) const;
+  vector<Coord2> getTankVertices(const CPosInfo &cpi) const;
   Coord2 getFiringPoint() const;
   Coord2 getRearFiringPoint() const;
   Coord2 getMinePoint(Rng *rng) const;
 
-  pair<Coord2, Coord> getNextPosition() const;
+  CPosInfo getNextPosition() const;
 
   // Modifiers
   bool takeDamage(Coord amount); // returns true on kill
@@ -75,8 +75,7 @@ public:
   int zone_current;
   int zone_frames;
 
-  Coord2 pos;
-  Coord d;
+  CPosInfo pi;
   pair<Coord2, Coord> inertia;
   
   Keystates keys;

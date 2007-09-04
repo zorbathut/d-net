@@ -63,7 +63,7 @@ class GameAiScatterbombing : public GameAi {
   }
   void updateBombardmentWork(const vector<Tank> &players, Coord2 mypos) {
     if(ready == false && bombing == true) {
-      target = players[targetid].pos + Coord2(randomDisc(rng) * rad);
+      target = players[targetid].pi.pos + Coord2(randomDisc(rng) * rad);
       bombing = false;
     }
     
@@ -81,7 +81,7 @@ class GameAiScatterbombing : public GameAi {
       nextKeys.fire[0].down = true;
       ready = false;
       bombing = false;
-      target = players[targetid].pos + Coord2(randomDisc(rng) * rad);
+      target = players[targetid].pi.pos + Coord2(randomDisc(rng) * rad);
     }
   }
   
@@ -104,7 +104,7 @@ class GameAiKamikaze : public GameAi {
   bool ready;
   
   void updateGameWork(const vector<Tank> &players, int me) {
-    float dist = len(players[targetid].pos - players[me].pos).toFloat();
+    float dist = len(players[targetid].pi.pos - players[me].pi.pos).toFloat();
     if(dist <= rad || rad > lastrad || abs(dist - lastrad) < 0.01) {
       ready = true;
     } else {
@@ -135,11 +135,11 @@ class GameAiCircling : public GameAi {
   void updateGameWork(const vector<Tank> &players, int me) {
     nextKeys.axmode = KSAX_STEERING;
     nextKeys.udlrax.y = 1;
-    if(len(players[me].pos).toFloat() > dist + 2)
+    if(len(players[me].pi.pos).toFloat() > dist + 2)
       nextKeys.udlrax.x += 0.5;
-    if(len(players[me].pos).toFloat() < dist - 2)
+    if(len(players[me].pi.pos).toFloat() < dist - 2)
       nextKeys.udlrax.x += -0.5;
-    Coord angdif = players[me].d - getAngle(players[me].pos) - COORDPI / 2;
+    Coord angdif = players[me].pi.d - getAngle(players[me].pi.pos) - COORDPI / 2;
     while(angdif < COORDPI) angdif += COORDPI * 2;
     while(angdif > COORDPI) angdif -= COORDPI * 2;
     if(angdif < Coord(-0.1))
@@ -166,13 +166,13 @@ class GameAiMining : public GameAi {
   
   void updateGameWork(const vector<Tank> &players, int me) {
     if(direction == 2) {
-      direction = -((players[me].pos.x) / abs(players[me].pos.x)).toInt();
+      direction = -((players[me].pi.pos.x) / abs(players[me].pi.pos.x)).toInt();
       CHECK(abs(direction) == 1);
       frames_to_start = int(rng.frand() * 30);
     }
     if(direction == 0)
       return;
-    if(players[me].pos.x * direction > 60) {
+    if(players[me].pi.pos.x * direction > 60) {
       direction = 0;
       return;
     }
@@ -200,15 +200,15 @@ class GameAiTraversing : public GameAi {
   void updateGameWork(const vector<Tank> &players, int me) {
     if(starting) {
       starting = false;
-      destination = Coord2(Coord(rng.frand() * 80 - 40), abs(players[me].pos.y) / players[me].pos.y * -60);
+      destination = Coord2(Coord(rng.frand() * 80 - 40), abs(players[me].pi.pos.y) / players[me].pi.pos.y * -60);
       active = true;
     }
-    if(len(players[me].pos - destination) < 1) {
+    if(len(players[me].pi.pos - destination) < 1) {
       active = false;
     }
     if(!active)
       return;
-    nextKeys.udlrax = normalize(destination - players[me].pos);
+    nextKeys.udlrax = normalize(destination - players[me].pi.pos);
     nextKeys.udlrax.y *= -1;
   }
   void updateBombardmentWork(const vector<Tank> &players, Coord2 mypos) {
@@ -298,7 +298,7 @@ void ShopDemo::init(const IDBWeapon *weap, const Player *player, Recorder *recor
       while(dist_max - dist_min > 0.01) {
         float dist_cen = (dist_min + dist_max) / 2;
         Float2 pos = basetest + makeAngle(-PI / 4) * dist_cen;
-        if(getPathRelation(tankmajor.getTankVertices(Coord2(weapons_xpses_melee[4], weapons_ypses_melee[4]), Coord(facing[4])), tankminor.getTankVertices(Coord2(pos), Coord(weapons_facing[5]))) == PR_INTERSECT) {
+        if(getPathRelation(tankmajor.getTankVertices(CPosInfo(Coord2(weapons_xpses_melee[4], weapons_ypses_melee[4]), Coord(facing[4]))), tankminor.getTankVertices(CPosInfo(Coord2(pos), Coord(weapons_facing[5])))) == PR_INTERSECT) {
           dist_min = dist_cen;
         } else {
           dist_max = dist_cen;
@@ -308,7 +308,7 @@ void ShopDemo::init(const IDBWeapon *weap, const Player *player, Recorder *recor
       //dprintf("dist_max is %f\n", dist_max);
       dist_max += 0.1;
       
-      CHECK(getPathRelation(tankminor.getTankVertices(Coord2(weapons_xpses_melee[4], weapons_ypses_melee[4]), Coord(facing[4])), tankminor.getTankVertices(Coord2(basetest + makeAngle(-PI / 4) * dist_max), Coord(weapons_facing[5]))) != PR_INTERSECT);
+      CHECK(getPathRelation(tankminor.getTankVertices(CPosInfo(Coord2(weapons_xpses_melee[4], weapons_ypses_melee[4]), Coord(facing[4]))), tankminor.getTankVertices(CPosInfo(Coord2(basetest + makeAngle(-PI / 4) * dist_max), Coord(weapons_facing[5])))) != PR_INTERSECT);
       
       float wxm[ARRAY_SIZE(weapons_xpses_melee)];
       float wym[ARRAY_SIZE(weapons_xpses_melee)];

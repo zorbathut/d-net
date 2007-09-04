@@ -41,7 +41,7 @@ void testLevel(const string &filename) {
   for(int i = 0; i < sttv.size(); i++) {
     for(int j = 0; j < tkz.size(); j++) {
       vector<Coord4> loop;
-      vector<Coord2> pts = tkz[j].second->getTankVertices(sttv[i].first, sttv[i].second);
+      vector<Coord2> pts = tkz[j].second->getTankVertices(CPosInfo(sttv[i].first, sttv[i].second));
       for(int i = 0; i < pts.size(); i++)
         loop.push_back(Coord4(pts[i], pts[(i + 1) % pts.size()]));
       if(collide.checkSimpleCollision(CGR_TANK, 0, loop)) {
