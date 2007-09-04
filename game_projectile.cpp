@@ -24,9 +24,7 @@ void Projectile::tick(vector<smart_ptr<GfxEffects> > *gfxe, const GameImpactCont
     if(age > projtype.missile_stabstart())
       missile_sidedist /= pow(projtype.missile_stabilization(), 1.f / FPS);
     
-    Coord2 mov = missile_accel() + missile_backdrop() + missile_sidedrop();
-    
-    now.pi.pos += mov;
+    now.pi.pos += missile_accel() + missile_backdrop() + missile_sidedrop();
   } else if(projtype.motion() == PM_AIRBRAKE) {
     now.airbrake_velocity *= pow(1.0 - projtype.airbrake_slowdown(), 1. / FPS);
     if(airbrake_liveness() <= 0)
@@ -111,7 +109,7 @@ void Projectile::tick(vector<smart_ptr<GfxEffects> > *gfxe, const GameImpactCont
   
   for(int i = 0; i < projtype.burn_effects().size(); i++) {
     CHECK(projtype.motion() == PM_MISSILE); // sigh
-    gfxe->push_back(GfxIdb(rearspawn(now), now.pi.d.toFloat(), (now.pi.pos - last.pi.pos).toFloat() * FPS, -missile_accel().toFloat(), projtype.burn_effects()[i]));
+    gfxe->push_back(GfxIdb(rearspawn(now), now.pi.d.toFloat(), (now.pi.pos - last.pi.pos).toFloat() * FPS, -missile_accel().toFloat() * FPS, projtype.burn_effects()[i]));
   }
 }
 

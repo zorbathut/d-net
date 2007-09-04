@@ -28,12 +28,12 @@ protected:
 
   void setBaseColor() const;
   
-  GfxEffects(float life, Color color);
+  GfxEffects(float life, Color color, bool distributed);
 
 private:
   
   float life;
-  int age;
+  float age;
   Color color;
 };
 
@@ -45,7 +45,7 @@ smart_ptr<GfxEffects> GfxPing(Float2 pos, float radius_d, float thickness_d, flo
 smart_ptr<GfxEffects> GfxBlast(Float2 center, float radius, Color bright, Color dim);
 
 class IDBEffectsAdjust;
-smart_ptr<GfxEffects> GfxIdb(Float2 center, float normal, Float2 velocity, const IDBEffectsAdjust &effect);
-smart_ptr<GfxEffects> GfxIdb(Float2 center, float normal, Float2 velocity, Float2 force, const IDBEffectsAdjust &effect);
+smart_ptr<GfxEffects> GfxIdb(Float2 center, float normal, Float2 inertia, const IDBEffectsAdjust &effect);
+smart_ptr<GfxEffects> GfxIdb(Float2 center, float normal, Float2 inertia, Float2 force, const IDBEffectsAdjust &effect);
 
 #endif

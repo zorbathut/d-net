@@ -11,18 +11,17 @@ text {
   name=text.weapon.missile
   data=Explosives in a can. The missile is one of the most powerful low-tech systems developed and extremely popular for wholesale demolition. The rocket engine takes several seconds to reach full speed, making this weapon difficult to aim with.
 }
-
+  
 effects {
   name=effects.weapon.missile.burn
   
   type=particle
   
-  multiple_force=1.0
-  multiple_inertia=0.8
+  distribute=true
+  #multiple_force=2.0
   
-  spread=0.3
+  spread=5
   
-  slowdown=0
   lifetime=0.17
   
   radius=0.5

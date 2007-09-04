@@ -2,6 +2,8 @@
 - "Finish the Damn Game" Initiative
   - run lots of checksumming
   - re-tune missile flame
+    - figure out why distribute fails
+    - are they being one-frame delayed or something?
   - re-add missile flame to all the missiles
   - tune tailwind blast
   - Many many more weapons

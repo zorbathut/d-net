@@ -70,6 +70,8 @@ struct IDBEffects {
   IDBEType type;
   int quantity;
 
+  bool particle_distribute;
+  
   // percentage
   float particle_multiple_inertia;
   float particle_multiple_reflect;
@@ -648,6 +650,8 @@ public:
 
   IDBEffects::IDBEType type() const;
   int quantity() const;
+
+  bool particle_distribute() const;
 
   float particle_multiple_inertia() const;
   float particle_multiple_reflect() const;

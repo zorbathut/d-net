@@ -478,6 +478,8 @@ IDBImplantAdjust::IDBImplantAdjust(const IDBImplant *in_idb, const IDBAdjustment
 IDBEffects::IDBEType IDBEffectsAdjust::type() const { return idb->type; }
 int IDBEffectsAdjust::quantity() const { return idb->quantity; }
 
+bool IDBEffectsAdjust::particle_distribute() const { CHECK(type() == IDBEffects::EFT_PARTICLE); return idb->particle_distribute; }
+
 float IDBEffectsAdjust::particle_multiple_inertia() const { CHECK(type() == IDBEffects::EFT_PARTICLE); return idb->particle_multiple_inertia; }
 float IDBEffectsAdjust::particle_multiple_reflect() const { CHECK(type() == IDBEffects::EFT_PARTICLE); return idb->particle_multiple_reflect; }
 float IDBEffectsAdjust::particle_multiple_force() const { CHECK(type() == IDBEffects::EFT_PARTICLE); return idb->particle_multiple_force; }

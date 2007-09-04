@@ -10,30 +10,33 @@ using namespace std;
 
 void GfxEffects::tick() {
   CHECK(life != -1);
-  age++;
+  age += 1.f / FPS;
 }
 bool GfxEffects::dead() const {
-  return ((float)age / FPS) >= life;
+  return age >= life;
 }
 
 Color GfxEffects::getColor() const {
   return color;
 }
 float GfxEffects::getAge() const {
-  return (float)age / FPS;
+  return age;
 }
 float GfxEffects::getAgeFactor() const {
-  return ((float)age / FPS) / life;
+  return age / life;
 }
 
 void GfxEffects::setBaseColor() const {
   setColor(color * (1.0 - getAgeFactor()));
 }
 
-GfxEffects::GfxEffects(float in_life, Color in_color) {
+GfxEffects::GfxEffects(float in_life, Color in_color, bool distributed) {
   life = in_life;
   color = in_color;
-  age = 0;
+  if(distributed)
+    age = unsync().frand() / FPS;
+  else
+    age = 0;
 }
 GfxEffects::~GfxEffects() { };
 
@@ -45,7 +48,7 @@ public:
     drawPoint(pos + vel * getAge(), 0.5f);
   }
 
-  GfxEffectsPoint(Float2 in_pos, Float2 in_vel, float life, Color color) : GfxEffects(life, color), pos(in_pos), vel(in_vel) { };
+  GfxEffectsPoint(Float2 in_pos, Float2 in_vel, float life, Color color) : GfxEffects(life, color, false), pos(in_pos), vel(in_vel) { };
 
 private:
   
@@ -64,7 +67,7 @@ public:
     drawCircle(center, radius, 0.1f);
   }
 
-  GfxEffectsCircle(Float2 in_center, float in_radius, float life, Color color) : GfxEffects(life, color), center(in_center), radius(in_radius) { };
+  GfxEffectsCircle(Float2 in_center, float in_radius, float life, Color color) : GfxEffects(life, color, false), center(in_center), radius(in_radius) { };
 
 private:
   
@@ -83,7 +86,7 @@ public:
     drawText(text, size, pos + vel * getAge());
   }
 
-  GfxEffectsText(Float2 in_pos, Float2 in_vel, float in_size, string in_text, float life, Color color) : GfxEffects(life, color), pos(in_pos), vel(in_vel), size(in_size), text(in_text) { };
+  GfxEffectsText(Float2 in_pos, Float2 in_vel, float in_size, string in_text, float life, Color color) : GfxEffects(life, color, false), pos(in_pos), vel(in_vel), size(in_size), text(in_text) { };
 
 private:
   
@@ -104,7 +107,7 @@ public:
     drawTransformedLinePath(path, ang_start + ang_vel * getAge() + ang_acc * getAge() * getAge() / 2, pos_start + pos_vel * getAge() + pos_acc * getAge() * getAge() / 2, 0.1f);
   }
 
-  GfxEffectsPath(vector<Float2> in_path, Float2 in_pos_start, Float2 in_pos_vel, Float2 in_pos_acc, float in_ang_start, float in_ang_vel, float in_ang_acc, float life, Color color) : GfxEffects(life, color), path(in_path), pos_start(in_pos_start), pos_vel(in_pos_vel), pos_acc(in_pos_acc), ang_start(in_ang_start), ang_vel(in_ang_vel), ang_acc(in_ang_acc) { };
+  GfxEffectsPath(vector<Float2> in_path, Float2 in_pos_start, Float2 in_pos_vel, Float2 in_pos_acc, float in_ang_start, float in_ang_vel, float in_ang_acc, float life, Color color) : GfxEffects(life, color, false), path(in_path), pos_start(in_pos_start), pos_vel(in_pos_vel), pos_acc(in_pos_acc), ang_start(in_ang_start), ang_vel(in_ang_vel), ang_acc(in_ang_acc) { };
 
 private:
   
@@ -128,7 +131,7 @@ public:
     drawCircle(pos, radius_d * getAge(), thickness_d * getAge());
   }
 
-  GfxEffectsPing(Float2 in_pos, float in_radius_d, float in_thickness_d, float life, Color color) : GfxEffects(life, color), pos(in_pos), radius_d(in_radius_d), thickness_d(in_thickness_d) { };
+  GfxEffectsPing(Float2 in_pos, float in_radius_d, float in_thickness_d, float life, Color color) : GfxEffects(life, color, false), pos(in_pos), radius_d(in_radius_d), thickness_d(in_thickness_d) { };
 
 private:
   
@@ -158,7 +161,7 @@ public:
     }
   }
 
-  GfxEffectsBlast(Float2 in_center, float in_radius, Color in_bright, Color in_dim) : GfxEffects(sqrt(in_radius) * 0.1, Color(1.0, 1.0, 1.0)), center(in_center), radius(in_radius), bright(in_bright), dim(in_dim) { };
+  GfxEffectsBlast(Float2 in_center, float in_radius, Color in_bright, Color in_dim) : GfxEffects(sqrt(in_radius) * 0.1, Color(1.0, 1.0, 1.0), false), center(in_center), radius(in_radius), bright(in_bright), dim(in_dim) { };
 
 private:
   
@@ -176,12 +179,18 @@ public:
     
   virtual void render() const {
     setBaseColor();
-    drawPoint(center + velocity * (pow(effect.particle_slowdown(), getAge()) / log(effect.particle_slowdown()) - 1 / log(effect.particle_slowdown())), effect.particle_radius());  // calculus FTW
+    if(effect.particle_slowdown() == 1) {
+      drawPoint(center + velocity * getAge(), effect.particle_radius());
+    } else {
+      drawPoint(center + velocity * (pow(effect.particle_slowdown(), getAge()) / log(effect.particle_slowdown()) - 1 / log(effect.particle_slowdown())), effect.particle_radius());  // calculus FTW
+    }
   }
   
-  GfxEffectsIdbParticle(Float2 center, float normal, Float2 in_velocity, Float2 in_force, const IDBEffectsAdjust &effect) : GfxEffects(effect.particle_lifetime(), effect.particle_color()), center(center), effect(effect) {
+  GfxEffectsIdbParticle(Float2 center, float normal, Float2 in_inertia, Float2 in_force, const IDBEffectsAdjust &effect) : GfxEffects(effect.particle_lifetime(), effect.particle_color(), effect.particle_distribute()), center(center), effect(effect) {
     CHECK(effect.type() == IDBEffects::EFT_PARTICLE);
-    velocity = in_velocity * effect.particle_multiple_inertia() + reflect(in_velocity, normal) * effect.particle_multiple_reflect() + in_force * effect.particle_multiple_force() + makeAngle(unsync().frand() * 2 * PI) * unsync().gaussian() * effect.particle_spread();
+    velocity = in_inertia * effect.particle_multiple_inertia() + reflect(in_inertia, normal) * effect.particle_multiple_reflect() + in_force * effect.particle_multiple_force() + makeAngle(unsync().frand() * 2 * PI) * unsync().gaussian() * effect.particle_spread();
+    if(effect.particle_distribute())
+      center += in_inertia * getAge();
   };
   
 private:
@@ -204,7 +213,7 @@ public:
     }
   }
   
-  GfxEffectsIdbIonBlast(Float2 center, const IDBEffectsAdjust &effect) : GfxEffects(effect.ionblast_duration(), Color(0, 0, 0)), center(center), effect(effect) {
+  GfxEffectsIdbIonBlast(Float2 center, const IDBEffectsAdjust &effect) : GfxEffects(effect.ionblast_duration(), Color(0, 0, 0), false), center(center), effect(effect) {
     CHECK(effect.type() == IDBEffects::EFT_IONBLAST);
   };
   
@@ -214,15 +223,15 @@ private:
   IDBEffectsAdjust effect;
 };
 
-smart_ptr<GfxEffects> GfxIdb(Float2 center, float normal, Float2 velocity, const IDBEffectsAdjust &effect) {
+smart_ptr<GfxEffects> GfxIdb(Float2 center, float normal, Float2 inertia, const IDBEffectsAdjust &effect) {
   CHECK(effect.type() != IDBEffects::EFT_PARTICLE || effect.particle_multiple_force() == 0);
-  return GfxIdb(center, normal, velocity, Float2(0, 0), effect);
+  return GfxIdb(center, normal, inertia, Float2(0, 0), effect);
 }
 
 
-smart_ptr<GfxEffects> GfxIdb(Float2 center, float normal, Float2 velocity, Float2 force, const IDBEffectsAdjust &effect) {
+smart_ptr<GfxEffects> GfxIdb(Float2 center, float normal, Float2 inertia, Float2 force, const IDBEffectsAdjust &effect) {
   if(effect.type() == IDBEffects::EFT_PARTICLE) {
-    return smart_ptr<GfxEffects>(new GfxEffectsIdbParticle(center, normal, velocity, force, effect));
+    return smart_ptr<GfxEffects>(new GfxEffectsIdbParticle(center, normal, inertia, force, effect));
   } else if(effect.type() == IDBEffects::EFT_IONBLAST) {
     return smart_ptr<GfxEffects>(new GfxEffectsIdbIonBlast(center, effect));
   } else {
