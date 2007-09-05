@@ -4,3 +4,61 @@ hierarchy {
   pack=100000
   debug=true
 }
+  
+effects {
+  name=effects.weapon.whee
+  
+  type=particle
+  
+  distribute=true
+  #multiple_force=2.0
+  
+  spread=0.2
+  
+  lifetime=5
+  
+  radius=0.5
+  color=1.0, 0.9, 0.6
+}
+
+warhead {
+  name=warhead.weapon.whee
+  impactdamage=1 trap
+}
+
+projectile {
+  name=projectile.weapon.whee
+  color=0.9, 0.95, 1.0
+
+  velocity=300
+  
+  line_length=2
+  
+  durability=20
+  warhead=warhead.weapon.whee
+  
+  burn_effects=effects.weapon.whee
+  burn_effects=effects.weapon.whee
+  burn_effects=effects.weapon.whee
+}
+
+deploy {
+  name=deploy.weapon.whee
+  type=forward
+  projectile=projectile.weapon.whee
+}
+
+launcher {
+  name=launcher.weapon.whee
+  
+  deploy=deploy.weapon.whee
+}
+
+weapon {
+  name=ROOT.Ammo.Debug.Whee
+  
+  cost=1
+  firerate=50
+  
+  launcher=launcher.weapon.whee
+}

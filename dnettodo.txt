@@ -1,6 +1,7 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - run lots of checksumming
+  - projectiles going one frame deeper than they should
   - re-tune missile flame
     - figure out why distribute fails
     - are they being one-frame delayed or something?

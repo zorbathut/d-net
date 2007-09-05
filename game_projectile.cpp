@@ -108,8 +108,11 @@ void Projectile::tick(vector<smart_ptr<GfxEffects> > *gfxe, const GameImpactCont
   now.distance_traveled += len(last.pi.pos - now.pi.pos);
   
   for(int i = 0; i < projtype.burn_effects().size(); i++) {
-    CHECK(projtype.motion() == PM_MISSILE); // sigh
-    gfxe->push_back(GfxIdb(rearspawn(now), now.pi.d.toFloat(), (now.pi.pos - last.pi.pos).toFloat() * FPS, -missile_accel().toFloat() * FPS, projtype.burn_effects()[i]));
+    if(projtype.motion() == PM_MISSILE) {
+      gfxe->push_back(GfxIdb(rearspawn(now), now.pi.d.toFloat(), (now.pi.pos - last.pi.pos).toFloat() * FPS, -missile_accel().toFloat() * FPS, projtype.burn_effects()[i]));
+    } else {
+      gfxe->push_back(GfxIdb(rearspawn(now), now.pi.d.toFloat(), (now.pi.pos - last.pi.pos).toFloat() * FPS, projtype.burn_effects()[i]));
+    }
   }
 }
 
