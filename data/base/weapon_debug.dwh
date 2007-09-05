@@ -19,11 +19,15 @@ effects {
   
   radius=0.5
   color=1.0, 0.9, 0.6
+  
+  debug=true
 }
 
 warhead {
   name=warhead.weapon.whee
   impactdamage=1 trap
+  
+  debug=true
 }
 
 projectile {
@@ -40,18 +44,24 @@ projectile {
   burn_effects=effects.weapon.whee
   burn_effects=effects.weapon.whee
   burn_effects=effects.weapon.whee
+  
+  debug=true
 }
 
 deploy {
   name=deploy.weapon.whee
   type=forward
   projectile=projectile.weapon.whee
+  
+  debug=true
 }
 
 launcher {
   name=launcher.weapon.whee
   
   deploy=deploy.weapon.whee
+  
+  debug=true
 }
 
 weapon {
@@ -61,4 +71,6 @@ weapon {
   firerate=50
   
   launcher=launcher.weapon.whee
+  
+  debug=true
 }
