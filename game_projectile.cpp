@@ -171,6 +171,7 @@ void Projectile::checksum(Adler32 *adl) const {
   
   reg_adler_intermed(*adl);
   adler(adl, now);
+  reg_adler_intermed(*adl);
   adler(adl, last);
   reg_adler_intermed(*adl);
   if(projtype.motion() == PM_NORMAL) {
@@ -426,6 +427,7 @@ Projectile::ProjPostState::ProjPostState() {
   pi.d = 0;
   airbrake_velocity = 0;
   arrow_spin = 0;
+  hunter_vel = 0;
 }
 
 void adler(Adler32 *adl, const Projectile::ProjPostState &pps) {
