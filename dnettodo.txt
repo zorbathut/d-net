@@ -1,6 +1,5 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
-  - we are now firing THROUGH THE WORLD again, fix this
   - run lots of checksumming
   - re-tune missile flame
     - figure out why distribute fails

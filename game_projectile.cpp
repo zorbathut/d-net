@@ -162,18 +162,18 @@ void Projectile::render(const vector<Coord2> &tankposes) const {
 };
 
 void Projectile::checksum(Adler32 *adl) const {
-  reg_adler_intermed(*adl);
+  //reg_adler_intermed(*adl);
   adler(adl, projtype);
   adler(adl, age);
   adler(adl, live);
   adler(adl, detonating);
   adler(adl, damageflags);
   
-  reg_adler_intermed(*adl);
+  //reg_adler_intermed(*adl);
   adler(adl, now);
-  reg_adler_intermed(*adl);
+  //reg_adler_intermed(*adl);
   adler(adl, last);
-  reg_adler_intermed(*adl);
+  //reg_adler_intermed(*adl);
   if(projtype.motion() == PM_NORMAL) {
   } else if(projtype.motion() == PM_MISSILE) {
     adler(adl, missile_sidedist);
@@ -191,7 +191,7 @@ void Projectile::checksum(Adler32 *adl) const {
   } else {
     CHECK(0);
   }
-  reg_adler_intermed(*adl);
+  //reg_adler_intermed(*adl);
   
   if(projtype.shape() == PS_LINE) {
   } else if(projtype.shape() == PS_LINE_AIRBRAKE) {
@@ -204,7 +204,7 @@ void Projectile::checksum(Adler32 *adl) const {
   } else {
     CHECK(0);
   }
-  reg_adler_intermed(*adl);
+  //reg_adler_intermed(*adl);
 }
 
 void Projectile::firstCollide(Collider *collider, int owner, int id) const {
