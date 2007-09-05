@@ -874,19 +874,46 @@ void Game::renderToScreen(const vector<const Player *> &players, GameMetacontext
 };
 
 void Game::checksum(Adler32 *adl) const {
+  reg_adler_intermed(*adl);
+  
   adler(adl, frameNm);
   adler(adl, frameNmToStart);
   adler(adl, freezeUntilStart);
   adler(adl, framesSinceOneLeft);
   
+  reg_adler_intermed(*adl);
+  
   adler(adl, teams);
+  
+  reg_adler_intermed(*adl);
+  
   adler(adl, tanks);
+  
+  reg_adler_intermed(*adl);
+  
   adler(adl, bombards);
+  
+  reg_adler_intermed(*adl);
+  
   adler(adl, projectiles);
+  
+  reg_adler_intermed(*adl);
+  
   adler(adl, gamemap);
+  
+  reg_adler_intermed(*adl);
+  
   adler(adl, collider);
+  
+  reg_adler_intermed(*adl);
+  
   adler(adl, gamemode);
+  
+  reg_adler_intermed(*adl);
+  
   adler(adl, bombardment_tier);
+  
+  reg_adler_intermed(*adl);
 }
 
 int Game::winningTeam() const {

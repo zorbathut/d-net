@@ -105,7 +105,7 @@ void Projectile::tick(vector<smart_ptr<GfxEffects> > *gfxe, const GameImpactCont
     closest_enemy_tank = newdist;
   }
   
-  distance_traveled += len(last.pi.pos - now.pi.pos);
+  now.distance_traveled += len(last.pi.pos - now.pi.pos);
   
   for(int i = 0; i < projtype.burn_effects().size(); i++) {
     CHECK(projtype.motion() == PM_MISSILE); // sigh
@@ -162,15 +162,17 @@ void Projectile::render(const vector<Coord2> &tankposes) const {
 };
 
 void Projectile::checksum(Adler32 *adl) const {
+  reg_adler_intermed(*adl);
   adler(adl, projtype);
   adler(adl, age);
   adler(adl, live);
   adler(adl, detonating);
   adler(adl, damageflags);
   
+  reg_adler_intermed(*adl);
   adler(adl, now);
   adler(adl, last);
-  
+  reg_adler_intermed(*adl);
   if(projtype.motion() == PM_NORMAL) {
   } else if(projtype.motion() == PM_MISSILE) {
     adler(adl, missile_sidedist);
@@ -188,6 +190,7 @@ void Projectile::checksum(Adler32 *adl) const {
   } else {
     CHECK(0);
   }
+  reg_adler_intermed(*adl);
   
   if(projtype.shape() == PS_LINE) {
   } else if(projtype.shape() == PS_LINE_AIRBRAKE) {
@@ -200,6 +203,7 @@ void Projectile::checksum(Adler32 *adl) const {
   } else {
     CHECK(0);
   }
+  reg_adler_intermed(*adl);
 }
 
 void Projectile::firstCollide(Collider *collider, int owner, int id) const {
@@ -225,8 +229,10 @@ void Projectile::addCollision(Collider *collider, int owner, int id) const {
     
     vector<Coord4> ps = polys(now);
     vector<Coord4> psl = polys(last);
-    for(int i = 0; i < ps.size(); i++)
-      collider->addNormalToken(CollideId(pt, owner, id), ps[i], ps[i] - psl[i]);
+    CHECK(ps.size() == psl.size());
+    for(int i = 0; i < ps.size(); i++) {
+      collider->addNormalToken(CollideId(pt, owner, id), psl[i], ps[i] - psl[i]);
+    }
   }
 }
 
@@ -312,11 +318,11 @@ Coord Projectile::airbrake_liveness() const {
 vector<Coord4> Projectile::polys(const ProjPostState &stat) const {
   vector<Coord4> rv;
   if(projtype.shape() == PS_LINE) {
-    Coord maxlen = max(0, distance_traveled - 0.1);
-    rv.push_back(Coord4(stat.pi.pos, stat.pi.pos - makeAngle(stat.pi.d) * -min(Coord(projtype.line_length()), maxlen)));
+    Coord maxlen = max(0, stat.distance_traveled);
+    rv.push_back(Coord4(stat.pi.pos, stat.pi.pos - makeAngle(stat.pi.d) * min(Coord(projtype.line_length()), maxlen)));
   } else if(projtype.shape() == PS_LINE_AIRBRAKE) {
-    Coord maxlen = max(0, distance_traveled - 0.1);
-    rv.push_back(Coord4(stat.pi.pos, stat.pi.pos - makeAngle(stat.pi.d) * -min(stat.airbrake_velocity / FPS + 2, maxlen)));
+    Coord maxlen = max(0, stat.distance_traveled);
+    rv.push_back(Coord4(stat.pi.pos, stat.pi.pos - makeAngle(stat.pi.d) * min(stat.airbrake_velocity / FPS + 2, maxlen)));
   } else if(projtype.shape() == PS_ARROW) {
     Coord2 l = stat.pi.pos + rotate(Coord2(projtype.arrow_width() / 2, projtype.arrow_height() / 2), Coord(stat.arrow_spin));
     Coord2 c = stat.pi.pos + rotate(Coord2(0, -projtype.arrow_height() / 2), Coord(stat.arrow_spin));
@@ -350,6 +356,7 @@ vector<Coord4> Projectile::polys(const ProjPostState &stat) const {
   } else {
     CHECK(0);
   }
+  
   return rv;
 }
 
@@ -373,7 +380,7 @@ Projectile::Projectile(const Coord2 &in_pos, Coord in_d, const IDBProjectileAdju
   age = 0;
   live = true;
   detonating = false;
-  distance_traveled = 0;
+  now.distance_traveled = 0;
   closest_enemy_tank = 1e20; // no
   
   if(projtype.motion() == PM_NORMAL) {
@@ -426,6 +433,7 @@ void adler(Adler32 *adl, const Projectile::ProjPostState &pps) {
   adler(adl, pps.airbrake_velocity);
   adler(adl, pps.arrow_spin);
   adler(adl, pps.hunter_vel);
+  adler(adl, pps.distance_traveled);
 }
 
 Projectile &ProjectilePack::find(int id) {

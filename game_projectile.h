@@ -38,6 +38,7 @@ private:
 
   struct ProjPostState {
     CPosInfo pi;
+    Coord distance_traveled;
     
     Coord airbrake_velocity;
     
@@ -80,8 +81,6 @@ private:
   
   bool live;
   bool detonating;
-  
-  Coord distance_traveled;
   
   Coord closest_enemy_tank;
   
