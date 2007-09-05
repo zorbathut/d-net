@@ -1,5 +1,6 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
+  - re-add instrumentation
   - run lots of checksumming
   - re-tune missile flame
     - figure out why distribute fails
