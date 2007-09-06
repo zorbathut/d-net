@@ -1359,12 +1359,12 @@ projectile {
   velocity=100
   missile_stabstart=0.0
   missile_stabilization=20
-  missile_sidelaunch=20
-  missile_backlaunch=0
+  missile_sidelaunch=10
+  missile_backlaunch=-50
   
   shape=arrow
-  arrow_width=3
-  arrow_height=0.5
+  arrow_width=5
+  arrow_height=0.8
   color=0.7, 1.0, 0.3
   
   durability=MERGE
@@ -1376,7 +1376,7 @@ deploy {
   
   type=centroid
   anglemodifier=3.14159
-  anglestddev=0.05
+  anglestddev=0.1
   
   projectile=projectile.weapon.tailwindblast
 }
