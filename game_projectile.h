@@ -95,6 +95,7 @@ public:
 
   void updateCollisions(Collider *collider, int owner);
   void tick(vector<smart_ptr<GfxEffects> > *gfxe, Collider *collider, int owner, const GameImpactContext &gic);
+  void cleanup(Collider *collider, int owner);
   void render(const vector<Coord2> &tankpos) const;
   void checksum(Adler32 *adl) const;
 
@@ -103,7 +104,6 @@ private:
   vector<int> aid;
 
   vector<int> newitems;
-  vector<int> cleanup;
 };
 
 inline void adler(Adler32 *adl, const ProjectilePack &ppk) { ppk.checksum(adl); }

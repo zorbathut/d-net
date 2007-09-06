@@ -493,6 +493,20 @@ void ProjectilePack::tick(vector<smart_ptr<GfxEffects> > *gfxe, Collider *collid
   }
 }
 
+void ProjectilePack::cleanup(Collider *collide, int owner) {
+  for(map<int, Projectile>::iterator itr = projectiles.begin(); itr != projectiles.end(); ) {
+    if(itr->second.isLive()) {
+      ++itr;
+      continue;
+    }
+    itr->second.collideCleanup(collide, owner, itr->first);
+    aid.push_back(itr->first);
+    map<int, Projectile>::iterator titr = itr;
+    ++itr;
+    projectiles.erase(titr);
+  }
+}
+
 void ProjectilePack::render(const vector<Coord2> &tankpos) const {
   for(map<int, Projectile>::const_iterator itr = projectiles.begin(); itr != projectiles.end(); ++itr)
     itr->second.render(tankpos);
@@ -502,5 +516,4 @@ void ProjectilePack::checksum(Adler32 *adl) const {
   adler(adl, projectiles);
   adler(adl, aid);
   adler(adl, newitems);
-  adler(adl, cleanup);
 }

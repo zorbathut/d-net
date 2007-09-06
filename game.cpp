@@ -266,6 +266,113 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
   }
   
   {
+    PerfStack pst(PBC::gametickpbwe);
+    for(int j = 0; j < bombards.size(); j++) {
+      CHECK(bombards[j].state >= 0 && bombards[j].state < BombardmentState::BS_LAST);
+      if(bombards[j].state == BombardmentState::BS_OFF) {
+        if(!tanks[j].isLive()) {
+          // if the player is dead and the bombard isn't initialized
+          bombards[j].pos = tanks[j].pi.pos;
+          bombards[j].state = BombardmentState::BS_SPAWNING;
+          if(gamemode == GMODE_DEMO)
+            bombards[j].timer = 0;
+          else
+            bombards[j].timer = 60 * 6;
+        }
+      } else if(bombards[j].state == BombardmentState::BS_SPAWNING) {
+        bombards[j].timer--;
+        if(bombards[j].timer <= 0)
+          bombards[j].state = BombardmentState::BS_ACTIVE;
+      } else if(bombards[j].state == BombardmentState::BS_ACTIVE) {
+        Coord2 deaded = deadzone(keys[j].udlrax, DEADZONE_CENTER, 0.2);
+        if(len(deaded) > 1)
+          deaded /= len(deaded);
+        deaded.y *= -1;
+        bombards[j].pos += deaded * 3 / 2;
+        if(len(keys[j].udlrax) > 0.2)
+          bombards[j].d = -getAngle(keys[j].udlrax);
+        bombards[j].pos.x = max(bombards[j].pos.x, gmbr.sx);
+        bombards[j].pos.y = max(bombards[j].pos.y, gmbr.sy);
+        bombards[j].pos.x = min(bombards[j].pos.x, gmbr.ex);
+        bombards[j].pos.y = min(bombards[j].pos.y, gmbr.ey);
+        {
+          bool firing = false;
+          for(int i = 0; i < SIMUL_WEAPONS; i++)
+            if(keys[j].fire[i].down)
+              firing = true;
+          if(firing && !gamemap.isInsideWall(bombards[j].pos)) {
+            bombards[j].state = BombardmentState::BS_FIRING;
+            bombards[j].timer = round(players[j]->getBombardment(bombardment_tier).lockdelay() * FPS);
+          }
+        }
+      } else if(bombards[j].state == BombardmentState::BS_FIRING) {
+        if(len(keys[j].udlrax) > 0.2)
+          bombards[j].d = -getAngle(keys[j].udlrax);
+        bombards[j].timer--;
+        if(bombards[j].timer <= 0) {
+          CHECK(!gamemap.isInsideWall(bombards[j].pos));
+          detonateBombardment(players[j]->getBombardment(bombardment_tier), bombards[j].pos, Coord(bombards[j].d), GamePlayerContext(&tanks[j], &projectiles[j], gic));
+          bombards[j].state = BombardmentState::BS_COOLDOWN;
+          bombards[j].timer = round(players[j]->getBombardment(bombardment_tier).unlockdelay() * FPS);
+        }
+      } else if(bombards[j].state == BombardmentState::BS_COOLDOWN) {
+        bombards[j].timer--;
+        if(bombards[j].timer <= 0)
+          bombards[j].state = BombardmentState::BS_ACTIVE;
+      } else {
+        CHECK(0);
+      }
+    }  
+    
+    for(int i = 0; i < tanks.size(); i++)
+      tanks[i].tick();
+  
+    for(int i = 0; i < tanks.size(); i++) {
+      StackString sst(StringPrintf("Player weaponry %d", i));
+      
+      // Dur.
+      if(!tanks[i].isLive())
+        continue;
+      
+      // Attempt to actually fire - deals with all weapons that the tank has equipped.
+      if(teams[tanks[i].team].weapons_enabled && frameNm >= frameNmToStart && frameNmToStart != -1) {
+        vector<pair<string, float> > status;
+        tanks[i].tryToFire(keys[i].fire, players[i], &projectiles[i], i, gic, &status);
+        for(int j = 0; j < status.size(); j++)
+          addTankStatusText(i, status[j].first, status[j].second);
+      }
+    }
+  
+    {
+      vector<smart_ptr<GfxEffects> > neffects;
+      for(int i = 0; i < gfxeffects.size(); i++) {
+        gfxeffects[i]->tick();
+        if(!gfxeffects[i]->dead())
+          neffects.push_back(gfxeffects[i]);
+      }
+      swap(neffects, gfxeffects);
+    }
+  
+    for(int i = 0; i < tanks.size(); i++) {
+      tanks[i].genEffects(gic, &projectiles[i], players[i]);
+      if(tanks[i].isLive()) {
+        int inzone = -1;
+        for(int j = 0; j < zones.size(); j++)
+          if(inPath(tanks[i].pi.pos, zones[j].first))
+            inzone = j;
+        if(tanks[i].zone_current != inzone) {
+          tanks[i].zone_current = inzone;
+          tanks[i].zone_frames = 0;
+        }
+        tanks[i].zone_frames++;
+      }
+    }
+    
+    for(int j = 0; j < projectiles.size(); j++)
+      projectiles[j].tick(&gfxeffects, &collider, j, gic);
+  }
+  
+  {
     StackString sst("Main collider");
     PerfStack pst(PBC::gametickcollider);
     
@@ -372,114 +479,9 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
     
     collider.finishProcess();
   }
-
-  {
-    PerfStack pst(PBC::gametickpbwe);
-    for(int j = 0; j < projectiles.size(); j++) {
-      projectiles[j].tick(&gfxeffects, &collider, j, gic);
-    }
   
-    for(int j = 0; j < bombards.size(); j++) {
-      CHECK(bombards[j].state >= 0 && bombards[j].state < BombardmentState::BS_LAST);
-      if(bombards[j].state == BombardmentState::BS_OFF) {
-        if(!tanks[j].isLive()) {
-          // if the player is dead and the bombard isn't initialized
-          bombards[j].pos = tanks[j].pi.pos;
-          bombards[j].state = BombardmentState::BS_SPAWNING;
-          if(gamemode == GMODE_DEMO)
-            bombards[j].timer = 0;
-          else
-            bombards[j].timer = 60 * 6;
-        }
-      } else if(bombards[j].state == BombardmentState::BS_SPAWNING) {
-        bombards[j].timer--;
-        if(bombards[j].timer <= 0)
-          bombards[j].state = BombardmentState::BS_ACTIVE;
-      } else if(bombards[j].state == BombardmentState::BS_ACTIVE) {
-        Coord2 deaded = deadzone(keys[j].udlrax, DEADZONE_CENTER, 0.2);
-        if(len(deaded) > 1)
-          deaded /= len(deaded);
-        deaded.y *= -1;
-        bombards[j].pos += deaded * 3 / 2;
-        if(len(keys[j].udlrax) > 0.2)
-          bombards[j].d = -getAngle(keys[j].udlrax);
-        bombards[j].pos.x = max(bombards[j].pos.x, gmbr.sx);
-        bombards[j].pos.y = max(bombards[j].pos.y, gmbr.sy);
-        bombards[j].pos.x = min(bombards[j].pos.x, gmbr.ex);
-        bombards[j].pos.y = min(bombards[j].pos.y, gmbr.ey);
-        {
-          bool firing = false;
-          for(int i = 0; i < SIMUL_WEAPONS; i++)
-            if(keys[j].fire[i].down)
-              firing = true;
-          if(firing && !gamemap.isInsideWall(bombards[j].pos)) {
-            bombards[j].state = BombardmentState::BS_FIRING;
-            bombards[j].timer = round(players[j]->getBombardment(bombardment_tier).lockdelay() * FPS);
-          }
-        }
-      } else if(bombards[j].state == BombardmentState::BS_FIRING) {
-        if(len(keys[j].udlrax) > 0.2)
-          bombards[j].d = -getAngle(keys[j].udlrax);
-        bombards[j].timer--;
-        if(bombards[j].timer <= 0) {
-          CHECK(!gamemap.isInsideWall(bombards[j].pos));
-          detonateBombardment(players[j]->getBombardment(bombardment_tier), bombards[j].pos, Coord(bombards[j].d), GamePlayerContext(&tanks[j], &projectiles[j], gic));
-          bombards[j].state = BombardmentState::BS_COOLDOWN;
-          bombards[j].timer = round(players[j]->getBombardment(bombardment_tier).unlockdelay() * FPS);
-        }
-      } else if(bombards[j].state == BombardmentState::BS_COOLDOWN) {
-        bombards[j].timer--;
-        if(bombards[j].timer <= 0)
-          bombards[j].state = BombardmentState::BS_ACTIVE;
-      } else {
-        CHECK(0);
-      }
-    }  
-    
-    for(int i = 0; i < tanks.size(); i++)
-      tanks[i].tick();
-  
-    for(int i = 0; i < tanks.size(); i++) {
-      StackString sst(StringPrintf("Player weaponry %d", i));
-      
-      // Dur.
-      if(!tanks[i].isLive())
-        continue;
-      
-      // Attempt to actually fire - deals with all weapons that the tank has equipped.
-      if(teams[tanks[i].team].weapons_enabled && frameNm >= frameNmToStart && frameNmToStart != -1) {
-        vector<pair<string, float> > status;
-        tanks[i].tryToFire(keys[i].fire, players[i], &projectiles[i], i, gic, &status);
-        for(int j = 0; j < status.size(); j++)
-          addTankStatusText(i, status[j].first, status[j].second);
-      }
-    }
-  
-    {
-      vector<smart_ptr<GfxEffects> > neffects;
-      for(int i = 0; i < gfxeffects.size(); i++) {
-        gfxeffects[i]->tick();
-        if(!gfxeffects[i]->dead())
-          neffects.push_back(gfxeffects[i]);
-      }
-      swap(neffects, gfxeffects);
-    }
-  
-    for(int i = 0; i < tanks.size(); i++) {
-      tanks[i].genEffects(gic, &projectiles[i], players[i]);
-      if(tanks[i].isLive()) {
-        int inzone = -1;
-        for(int j = 0; j < zones.size(); j++)
-          if(inPath(tanks[i].pi.pos, zones[j].first))
-            inzone = j;
-        if(tanks[i].zone_current != inzone) {
-          tanks[i].zone_current = inzone;
-          tanks[i].zone_frames = 0;
-        }
-        tanks[i].zone_frames++;
-      }
-    }
-  }
+  for(int j = 0; j < projectiles.size(); j++)
+    projectiles[j].cleanup(&collider, j);
   
   // This is a bit ugly - this only happens in choice mode
   if(zones.size() == 4) {
