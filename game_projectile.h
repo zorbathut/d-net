@@ -11,7 +11,8 @@ class Tank;
 class Projectile {
 public:
 
-  void tick(vector<smart_ptr<GfxEffects> > *gfx, const GameImpactContext &gic, int owner);
+  void tick(const GameImpactContext &gic, int owner);
+  void spawnEffects(vector<smart_ptr<GfxEffects> > *gfxe) const;
   void render(const vector<Coord2> &tposes) const;
 
   void checksum(Adler32 *adl) const;
@@ -94,7 +95,8 @@ public:
   void add(const Projectile &proj);
 
   void updateCollisions(Collider *collider, int owner);
-  void tick(vector<smart_ptr<GfxEffects> > *gfxe, Collider *collider, int owner, const GameImpactContext &gic);
+  void tick(Collider *collider, int owner, const GameImpactContext &gic);
+  void spawnEffects(vector<smart_ptr<GfxEffects> > *gfxe) const;
   void cleanup(Collider *collider, int owner);
   void render(const vector<Coord2> &tankpos) const;
   void checksum(Adler32 *adl) const;

@@ -9,7 +9,7 @@
 
 using namespace std;
 
-void Projectile::tick(vector<smart_ptr<GfxEffects> > *gfxe, const GameImpactContext &gic, int owner) {
+void Projectile::tick(const GameImpactContext &gic, int owner) {
   CHECK(live);
   CHECK(age != -1);
   last = now;
@@ -106,7 +106,9 @@ void Projectile::tick(vector<smart_ptr<GfxEffects> > *gfxe, const GameImpactCont
   }
   
   now.distance_traveled += len(last.pi.pos - now.pi.pos);
-  
+}
+
+void Projectile::spawnEffects(vector<smart_ptr<GfxEffects> > *gfxe) const {
   for(int i = 0; i < projtype.burn_effects().size(); i++) {
     if(projtype.motion() == PM_MISSILE) {
       gfxe->push_back(GfxIdb(rearspawn(now), now.pi.d.toFloat(), (now.pi.pos - last.pi.pos).toFloat() * FPS, -missile_accel().toFloat() * FPS, projtype.burn_effects()[i]));
@@ -468,14 +470,14 @@ void ProjectilePack::updateCollisions(Collider *collider, int owner) {
   }
 }
 
-void ProjectilePack::tick(vector<smart_ptr<GfxEffects> > *gfxe, Collider *collide, int owner, const GameImpactContext &gic) {
+void ProjectilePack::tick(Collider *collide, int owner, const GameImpactContext &gic) {
   for(map<int, Projectile>::iterator itr = projectiles.begin(); itr != projectiles.end(); ) {
     // the logic here is kind of grim, sorry about this
     if(itr->second.isLive() && itr->second.isDetonating())
       itr->second.trigger(itr->second.warheadposition(), NO_NORMAL, NULL, GamePlayerContext(gic.players[owner], this, gic), false);
     if(itr->second.isLive()) {
       if(!count(newitems.begin(), newitems.end(), itr->first))  // we make sure we do collisions before ticks
-        itr->second.tick(gfxe, gic, owner);
+        itr->second.tick(gic, owner);
       if(itr->second.isLive() && itr->second.isDetonating())
         itr->second.trigger(itr->second.warheadposition(), NO_NORMAL, NULL, GamePlayerContext(gic.players[owner], this, gic), false);
       if(itr->second.isLive()) {
@@ -490,6 +492,13 @@ void ProjectilePack::tick(vector<smart_ptr<GfxEffects> > *gfxe, Collider *collid
     map<int, Projectile>::iterator titr = itr;
     ++itr;
     projectiles.erase(titr);
+  }
+}
+
+void ProjectilePack::spawnEffects(vector<smart_ptr<GfxEffects> > *gfxe) const {
+  for(map<int, Projectile>::const_iterator itr = projectiles.begin(); itr != projectiles.end(); ++itr) {
+    if(itr->second.isLive())
+      itr->second.spawnEffects(gfxe);
   }
 }
 

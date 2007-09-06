@@ -369,7 +369,7 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
     }
     
     for(int j = 0; j < projectiles.size(); j++)
-      projectiles[j].tick(&gfxeffects, &collider, j, gic);
+      projectiles[j].tick(&collider, j, gic);
   }
   
   {
@@ -480,8 +480,10 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
     collider.finishProcess();
   }
   
-  for(int j = 0; j < projectiles.size(); j++)
+  for(int j = 0; j < projectiles.size(); j++) {
     projectiles[j].cleanup(&collider, j);
+    projectiles[j].spawnEffects(&gfxeffects);
+  }
   
   // This is a bit ugly - this only happens in choice mode
   if(zones.size() == 4) {

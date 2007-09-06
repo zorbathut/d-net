@@ -33,10 +33,7 @@ void GfxEffects::setBaseColor() const {
 GfxEffects::GfxEffects(float in_life, Color in_color, bool distributed) {
   life = in_life;
   color = in_color;
-  if(distributed)
-    age = unsync().frand() / FPS;
-  else
-    age = 0;
+  age = 0;
 }
 GfxEffects::~GfxEffects() { };
 
@@ -186,11 +183,11 @@ public:
     }
   }
   
-  GfxEffectsIdbParticle(Float2 center, float normal, Float2 in_inertia, Float2 in_force, const IDBEffectsAdjust &effect) : GfxEffects(effect.particle_lifetime(), effect.particle_color(), effect.particle_distribute()), center(center), effect(effect) {
+  GfxEffectsIdbParticle(Float2 in_center, float normal, Float2 in_inertia, Float2 in_force, const IDBEffectsAdjust &effect) : GfxEffects(effect.particle_lifetime(), effect.particle_color(), effect.particle_distribute()), center(in_center), effect(effect) {
     CHECK(effect.type() == IDBEffects::EFT_PARTICLE);
     velocity = in_inertia * effect.particle_multiple_inertia() + reflect(in_inertia, normal) * effect.particle_multiple_reflect() + in_force * effect.particle_multiple_force() + makeAngle(unsync().frand() * 2 * PI) * unsync().gaussian() * effect.particle_spread();
     if(effect.particle_distribute())
-      center += in_inertia * getAge();
+      center -= in_inertia * unsync().frand() / FPS;
   };
   
 private:
