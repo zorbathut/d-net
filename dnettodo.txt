@@ -2,7 +2,6 @@
 - "Finish the Damn Game" Initiative
   - run lots of checksumming
   - tune tailwind blast
-  - clean DPS projectile
   - split spawn shit into "instant", "constant", and "impact"?
   - Many many more weapons
     - Add implementations for all exotic weapons
