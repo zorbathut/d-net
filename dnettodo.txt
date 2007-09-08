@@ -12,6 +12,7 @@
       - Make sure they don't spike CPU too badly
     - Add sparker behavior
     - add new EMP effect
+  - Task-analyze the UI
   - Make It Pretty
     - Add both "proportion" and "multiplier" merge options
     - Add wall-destruction sizes to the balance sheet

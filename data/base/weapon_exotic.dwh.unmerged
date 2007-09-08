@@ -1,4 +1,8 @@
 
+###########################
+#
+#   EMP base stats
+
 hierarchy {
   name=ROOT.Ammo.EMP
   pack=25
@@ -34,6 +38,50 @@ launcher {
   
   text=text.weapon.emp
 }
+
+###########################
+#
+#   Chaos Field base stats
+
+hierarchy {
+  name=ROOT.Ammo.Chaos Field
+  pack=25
+}
+
+text {
+  name=text.weapon.chaosfield
+  data=Blah blah hamster blah yacht blah blah blah monocle polish
+}
+
+warhead {
+  name=warhead.weapon.chaosfield
+  radiusdamage=MERGE exotic
+  radiusfalloff=14
+  radiusexplosive=0
+  radiuscolor_bright=f88
+  radiuscolor_dim=810
+}
+
+deploy {
+  name=deploy.weapon.chaosfield
+  type=centroid
+  warhead=warhead.weapon.chaosfield
+}
+
+launcher {
+  name=launcher.weapon.chaosfield
+  
+  deploy=deploy.weapon.chaosfield
+
+  demo=firingrange
+  firingrange_distance=melee
+  
+  text=text.weapon.chaosfield
+}
+
+###########################
+#
+#   The actual weaponry
 
 weapon {
   name=ROOT.Ammo.EMP.EMP I
@@ -99,4 +147,70 @@ weapon {
   glory_resistance=true
   
   launcher=launcher.weapon.emp
+}
+
+weapon {
+  name=ROOT.Ammo.Chaos Field.Chaos Field I
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  glory_resistance=true
+  
+  launcher=launcher.weapon.chaosfield
+}
+
+weapon {
+  name=ROOT.Ammo.Chaos Field.Chaos Field II
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  glory_resistance=true
+
+  launcher=launcher.weapon.chaosfield
+}
+
+weapon {
+  name=ROOT.Ammo.Chaos Field.Chaos Field III
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  glory_resistance=true
+
+  launcher=launcher.weapon.chaosfield
+}
+
+weapon {
+  name=ROOT.Ammo.Chaos Field.Chaos Field IV
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  glory_resistance=true
+
+  launcher=launcher.weapon.chaosfield
+}
+
+weapon {
+  name=ROOT.Ammo.Chaos Field.Chaos Field V
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  glory_resistance=true
+  
+  launcher=launcher.weapon.chaosfield
+}
+
+weapon {
+  name=ROOT.Ammo.Chaos Field.Chaos Field VI
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  glory_resistance=true
+  
+  launcher=launcher.weapon.chaosfield
 }
