@@ -88,7 +88,6 @@ struct IDBEffects {
   
   float ionblast_radius;
   float ionblast_duration;
-  
   vector<pair<int, Color> > ionblast_visuals;
 };
 
@@ -138,6 +137,7 @@ struct IDBProjectile {
     
     float dps_duration;
     vector<const IDBWarhead *> dps_instant_warhead;
+    vector<pair<int, Color> > dps_visuals;
   
   IDBPShape shape;
     float proximity_visibility;
@@ -386,6 +386,7 @@ public:
     
     float dps_duration() const;
     vector<IDBWarheadAdjust> dps_instant_warhead() const;
+    const vector<pair<int, Color> > &dps_visuals() const;
   
   IDBPShape shape() const;
     float proximity_visibility() const;
@@ -671,7 +672,6 @@ public:
   
   float ionblast_radius() const;
   float ionblast_duration() const;
-  
   const vector<pair<int, Color> > &ionblast_visuals() const;
 
   IDBEffectsAdjust(const base_type *in_idb, const IDBAdjustment &in_adjust);

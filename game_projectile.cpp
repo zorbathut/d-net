@@ -281,6 +281,8 @@ void Projectile::trigger(Coord2 pos, Coord normal, Tank *target, const GamePlaye
       vector<IDBWarheadAdjust> idwi = projtype.dps_instant_warhead();
       for(int i = 0; i < idwi.size(); i++)
         detonateWarhead(idwi[i], pos, 0, Coord2(0, 0), NULL, gpc, damageflags, false);
+      
+      gpc.gic->effects->push_back(GfxIonBlast(pos.toFloat(), projtype.dps_duration(), projtype.chain_warhead()[0].radiusfalloff().toFloat(), projtype.dps_visuals()));
     }
     
     if(age > projtype.dps_duration()) {

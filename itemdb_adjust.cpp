@@ -169,6 +169,7 @@ float IDBProjectileAdjust::hunter_turnweight() const { CHECK(idb->motion == PM_H
 
 float IDBProjectileAdjust::dps_duration() const { CHECK(idb->motion == PM_DPS); return idb->dps_duration; }
 vector<IDBWarheadAdjust> IDBProjectileAdjust::dps_instant_warhead() const { return adjust_vector(idb->dps_instant_warhead, adjust); }
+const vector<pair<int, Color> > &IDBProjectileAdjust::dps_visuals() const { return idb->dps_visuals; }
 
 // Shape-related functions
 IDBPShape IDBProjectileAdjust::shape() const { return idb->shape; }

@@ -74,27 +74,17 @@ projectile {
   motion=dps
   duration=0.5
   
-  warhead=warhead.weapon.angelcannon
-  dps_instant_warhead=warhead.weapon.angelcannon.instant
-}
-
-effects {
-  name=effects.weapon.angelcannon
-  type=ionblast
-  
-  radius=8
-  
   visuals=20 029
   visuals=5 99f
   
-  duration=0.5
+  warhead=warhead.weapon.angelcannon
+  dps_instant_warhead=warhead.weapon.angelcannon.instant
 }
 
 deploy {
   name=deploy.weapon.angelcannon.dps
   type=centroid
   projectile=projectile.weapon.angelcannon.dps
-  effects=effects.weapon.angelcannon
 }
 
 projectile {

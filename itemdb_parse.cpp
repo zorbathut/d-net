@@ -193,6 +193,16 @@ void parseDamagecode(const string &str, float *arr) {
   }
 }
 
+vector<pair<int, Color> > parseIonVisuals(const string &in) {
+  vector<pair<int, Color> > rv;
+  vector<string> vislist = tokenize(in, "\n");
+  for(int i = 0; i < vislist.size(); i++) {
+    boost::smatch mch = match(vislist[i], "([0-9]+) (.*)");
+    rv.push_back(make_pair(parseSingleItem<int>(mch[1]), parseSingleItem<Color>(mch[2])));
+  }
+  return rv;
+}
+
 template<typename T> void doStandardPrereq(T *titem, const string &name, map<string, T> *classes) {
   
   titem->has_postreq = false;
@@ -369,12 +379,7 @@ void parseEffects(kvData *chunk, bool reload, ErrorAccumulator &accum) {
     titem->ionblast_radius = parseSingleItem<float>(chunk->consume("radius"));
     titem->ionblast_duration = parseSingleItem<float>(chunk->consume("duration"));
     
-    vector<string> vislist = tokenize(chunk->consume("visuals"), "\n");
-    for(int i = 0; i < vislist.size(); i++) {
-      boost::smatch mch = match(vislist[i], "([0-9]+) (.*)");
-      titem->ionblast_visuals.push_back(make_pair(parseSingleItem<int>(mch[1]), parseSingleItem<Color>(mch[2])));
-    }
-    dprintf("done\n");
+    titem->ionblast_visuals = parseIonVisuals(chunk->consume("visuals"));
   } else {
     CHECK(0);
   }
@@ -526,6 +531,8 @@ void parseProjectile(kvData *chunk, bool reload, ErrorAccumulator &accum) {
     titem->motion = PM_DPS;
     titem->dps_duration = parseSingleItem<float>(chunk->consume("duration"));
     titem->dps_instant_warhead = parseSubclassSet(chunk, "dps_instant_warhead", warheadclasses);
+    if(chunk->kv.count("visuals"))
+      titem->dps_visuals = parseIonVisuals(chunk->consume("visuals"));
     defshape = "invisible";
     allowed_shapes.insert("invisible");
   } else {
@@ -599,6 +606,15 @@ void parseProjectile(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   } else {
     titem->no_intersection = true;
     titem->durability = -1;
+  }
+  
+  if(titem->motion == PM_DPS) {
+    CHECK(titem->chain_warhead.size());
+    float rad = -1;
+    for(int i = 0; i < titem->chain_warhead.size(); i++)
+      rad = max(rad, titem->chain_warhead[i]->radiusfalloff);
+    CHECK(titem->chain_warhead[0]->radiusfalloff == rad);
+    CHECK(titem->chain_warhead[0]->radiusexplosive == 0);
   }
   
   CHECK(titem->chain_warhead.size() || titem->chain_deploy.size());

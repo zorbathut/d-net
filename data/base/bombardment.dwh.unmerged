@@ -971,18 +971,6 @@ text {
   data=Blah blah hamster blah yacht blah blah blah monocle polish
 }
 
-effects {
-  name=effects.bombardment.ionbeam
-  type=ionblast
-  
-  radius=8
-  
-  visuals=20 018
-  visuals=5 88f
-  
-  duration=0.5
-}
-
 warhead {
   name=warhead.bombardment.ionbeam
   radiusdamage=MERGE energy
@@ -999,6 +987,9 @@ projectile {
   motion=dps
   duration=0.5
   
+  visuals=20 018
+  visuals=5 88f
+  
   warhead=warhead.bombardment.ionbeam
 }
 
@@ -1007,7 +998,6 @@ bombardment {
   cost=MERGE
   
   projectile=projectile.bombardment.ionbeam
-  effects=effects.bombardment.ionbeam
   
   lockdelay=MERGE
   unlockdelay=MERGE
@@ -1019,18 +1009,6 @@ bombardment {
 text {
   name=text.bombardment.terawattbeam
   data=Blah blah hamster blah yacht blah blah blah monocle polish
-}
-
-effects {
-  name=effects.bombardment.terawattbeam
-  type=ionblast
-  
-  radius=8.5
-  
-  visuals=20 029
-  visuals=5 99f
-  
-  duration=0.5
 }
 
 warhead {
@@ -1049,6 +1027,9 @@ projectile {
   motion=dps
   duration=0.5
   
+  visuals=20 08a
+  visuals=5 ccf
+  
   warhead=warhead.bombardment.terawattbeam
 }
 
@@ -1057,7 +1038,6 @@ bombardment {
   cost=MERGE
   
   projectile=projectile.bombardment.terawattbeam
-  effects=effects.bombardment.terawattbeam
   
   lockdelay=MERGE
   unlockdelay=MERGE
@@ -1069,18 +1049,6 @@ bombardment {
 text {
   name=text.bombardment.plasmabeam
   data=Blah blah hamster blah yacht blah blah blah monocle polish
-}
-
-effects {
-  name=effects.bombardment.plasmabeam
-  type=ionblast
-  
-  radius=9
-  
-  visuals=20 881
-  visuals=5 ff8
-  
-  duration=0.5
 }
 
 warhead {
@@ -1099,6 +1067,9 @@ projectile {
   motion=dps
   duration=0.5
   
+  visuals=20 881
+  visuals=5 ff8
+  
   warhead=warhead.bombardment.plasmabeam
 }
 
@@ -1107,7 +1078,6 @@ bombardment {
   cost=MERGE
   
   projectile=projectile.bombardment.plasmabeam
-  effects=effects.bombardment.plasmabeam
   
   lockdelay=MERGE
   unlockdelay=MERGE
@@ -1119,18 +1089,6 @@ bombardment {
 text {
   name=text.bombardment.gammabeam
   data=Blah blah hamster blah yacht blah blah blah monocle polish
-}
-
-effects {
-  name=effects.bombardment.gammabeam
-  type=ionblast
-  
-  radius=9.5
-  
-  visuals=20 081
-  visuals=5 8f8
-  
-  duration=0.5
 }
 
 warhead {
@@ -1149,6 +1107,9 @@ projectile {
   motion=dps
   duration=0.5
   
+  visuals=20 081
+  visuals=5 8f8
+  
   warhead=warhead.bombardment.gammabeam
 }
 
@@ -1157,7 +1118,6 @@ bombardment {
   cost=MERGE
   
   projectile=projectile.bombardment.gammabeam
-  effects=effects.bombardment.gammabeam
   
   lockdelay=MERGE
   unlockdelay=MERGE
@@ -1169,18 +1129,6 @@ bombardment {
 text {
   name=text.bombardment.photonbeam
   data=Blah blah hamster blah yacht blah blah blah monocle polish
-}
-
-effects {
-  name=effects.bombardment.photonbeam
-  type=ionblast
-  
-  radius=10
-  
-  visuals=20 555
-  visuals=5 fff
-  
-  duration=0.5
 }
 
 warhead {
@@ -1199,6 +1147,9 @@ projectile {
   motion=dps
   duration=0.5
   
+  visuals=20 555
+  visuals=5 fff
+  
   warhead=warhead.bombardment.photonbeam
 }
 
@@ -1207,7 +1158,6 @@ bombardment {
   cost=MERGE
   
   projectile=projectile.bombardment.photonbeam
-  effects=effects.bombardment.photonbeam
   
   lockdelay=MERGE
   unlockdelay=MERGE
@@ -1219,19 +1169,6 @@ bombardment {
 text {
   name=text.bombardment.conversionbeam
   data=Blah blah hamster blah yacht blah blah blah monocle polish
-}
-
-effects {
-  name=effects.bombardment.conversionbeam
-  type=ionblast
-  
-  radius=10.5
-  
-  visuals=20 00f
-  visuals=20 0f0
-  visuals=20 f00
-  
-  duration=0.5
 }
 
 warhead {
@@ -1249,6 +1186,10 @@ projectile {
   name=projectile.bombardment.conversionbeam
   motion=dps
   duration=0.5
+    
+  visuals=20 00f
+  visuals=20 0f0
+  visuals=20 f00
   
   warhead=warhead.bombardment.conversionbeam
 }
@@ -1258,7 +1199,6 @@ bombardment {
   cost=MERGE
   
   projectile=projectile.bombardment.conversionbeam
-  effects=effects.bombardment.conversionbeam
   
   lockdelay=MERGE
   unlockdelay=MERGE
