@@ -962,6 +962,12 @@ bombardment {
 #
 #   Beams
 
+warhead {
+  name=warhead.bombardment.beams.wallculler
+  impactdamage=0 energy
+  wallremovalradius=2
+}
+
 hierarchy {
   name=ROOT.Bombardment.Beams
 }
@@ -976,11 +982,11 @@ warhead {
   radiusdamage=MERGE energy
   radiusfalloff=8
   radiusexplosive=0
-  wallremovalradius=2
   
   radiuscolor_dim=000
   radiuscolor_bright=000
 }
+
 
 projectile {
   name=projectile.bombardment.ionbeam
@@ -991,6 +997,7 @@ projectile {
   visuals=5 88f
   
   warhead=warhead.bombardment.ionbeam
+  dps_instant_warhead=warhead.bombardment.beams.wallculler
 }
 
 bombardment {
@@ -1016,7 +1023,6 @@ warhead {
   radiusdamage=MERGE energy
   radiusfalloff=8.5
   radiusexplosive=0
-  wallremovalradius=2
   
   radiuscolor_dim=000
   radiuscolor_bright=000
@@ -1031,6 +1037,7 @@ projectile {
   visuals=5 ccf
   
   warhead=warhead.bombardment.terawattbeam
+  dps_instant_warhead=warhead.bombardment.beams.wallculler
 }
 
 bombardment {
@@ -1056,7 +1063,6 @@ warhead {
   radiusdamage=MERGE energy
   radiusfalloff=9
   radiusexplosive=0
-  wallremovalradius=2
   
   radiuscolor_dim=000
   radiuscolor_bright=000
@@ -1071,6 +1077,7 @@ projectile {
   visuals=5 ff8
   
   warhead=warhead.bombardment.plasmabeam
+  dps_instant_warhead=warhead.bombardment.beams.wallculler
 }
 
 bombardment {
@@ -1096,7 +1103,6 @@ warhead {
   radiusdamage=MERGE energy
   radiusfalloff=9.5
   radiusexplosive=0
-  wallremovalradius=2
   
   radiuscolor_dim=000
   radiuscolor_bright=000
@@ -1111,6 +1117,7 @@ projectile {
   visuals=5 8f8
   
   warhead=warhead.bombardment.gammabeam
+  dps_instant_warhead=warhead.bombardment.beams.wallculler
 }
 
 bombardment {
@@ -1136,7 +1143,6 @@ warhead {
   radiusdamage=MERGE energy
   radiusfalloff=10
   radiusexplosive=0
-  wallremovalradius=2
   
   radiuscolor_dim=000
   radiuscolor_bright=000
@@ -1151,6 +1157,7 @@ projectile {
   visuals=5 fff
   
   warhead=warhead.bombardment.photonbeam
+  dps_instant_warhead=warhead.bombardment.beams.wallculler
 }
 
 bombardment {
@@ -1176,7 +1183,6 @@ warhead {
   radiusdamage=MERGE energy
   radiusfalloff=10.5
   radiusexplosive=0
-  wallremovalradius=2
   
   radiuscolor_dim=000
   radiuscolor_bright=000
@@ -1192,6 +1198,7 @@ projectile {
   visuals=20 f00
   
   warhead=warhead.bombardment.conversionbeam
+  dps_instant_warhead=warhead.bombardment.beams.wallculler
 }
 
 bombardment {
