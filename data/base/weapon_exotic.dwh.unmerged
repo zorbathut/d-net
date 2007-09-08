@@ -81,6 +81,46 @@ launcher {
 
 ###########################
 #
+#   Tesla Spike base stats
+
+hierarchy {
+  name=ROOT.Ammo.Tesla Spike
+  pack=25
+}
+
+text {
+  name=text.weapon.teslaspike
+  data=Blah blah hamster blah yacht blah blah blah monocle polish
+}
+
+warhead {
+  name=warhead.weapon.teslaspike
+  radiusdamage=MERGE exotic
+  radiusfalloff=14
+  radiusexplosive=0
+  radiuscolor_bright=ccf
+  radiuscolor_dim=458
+}
+
+deploy {
+  name=deploy.weapon.teslaspike
+  type=centroid
+  warhead=warhead.weapon.teslaspike
+}
+
+launcher {
+  name=launcher.weapon.teslaspike
+  
+  deploy=deploy.weapon.teslaspike
+
+  demo=firingrange
+  firingrange_distance=melee
+  
+  text=text.weapon.teslaspike
+}
+
+###########################
+#
 #   The actual weaponry
 
 weapon {
@@ -213,4 +253,70 @@ weapon {
   glory_resistance=true
   
   launcher=launcher.weapon.chaosfield
+}
+
+weapon {
+  name=ROOT.Ammo.Tesla Spike.Tesla Spike I
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  glory_resistance=true
+  
+  launcher=launcher.weapon.teslaspike
+}
+
+weapon {
+  name=ROOT.Ammo.Tesla Spike.Tesla Spike II
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  glory_resistance=true
+
+  launcher=launcher.weapon.teslaspike
+}
+
+weapon {
+  name=ROOT.Ammo.Tesla Spike.Tesla Spike III
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  glory_resistance=true
+
+  launcher=launcher.weapon.teslaspike
+}
+
+weapon {
+  name=ROOT.Ammo.Tesla Spike.Tesla Spike IV
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  glory_resistance=true
+
+  launcher=launcher.weapon.teslaspike
+}
+
+weapon {
+  name=ROOT.Ammo.Tesla Spike.Tesla Spike V
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  glory_resistance=true
+  
+  launcher=launcher.weapon.teslaspike
+}
+
+weapon {
+  name=ROOT.Ammo.Tesla Spike.Tesla Spike VI
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  glory_resistance=true
+  
+  launcher=launcher.weapon.teslaspike
 }
