@@ -80,6 +80,7 @@ private:
   
   IDBProjectileAdjust projtype;
   
+  bool first;
   bool live;
   bool detonating;
   

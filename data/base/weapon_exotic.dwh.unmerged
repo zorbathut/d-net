@@ -55,13 +55,18 @@ text {
 
 warhead {
   name=warhead.weapon.angelcannon
-  radiusdamage=MERGE exotic
+  radiusdamage=MERGE(1) exotic
   radiusfalloff=8
   radiusexplosive=0
-  wallremovalradius=4
   
   radiuscolor_dim=000
   radiuscolor_bright=000
+}
+
+warhead {
+  name=warhead.weapon.angelcannon.instant
+  impactdamage=MERGE(0) exotic
+  wallremovalradius=4
 }
 
 projectile {
@@ -70,12 +75,26 @@ projectile {
   duration=0.5
   
   warhead=warhead.weapon.angelcannon
+  dps_instant_warhead=warhead.weapon.angelcannon.instant
+}
+
+effects {
+  name=effects.weapon.angelcannon
+  type=ionblast
+  
+  radius=8
+  
+  visuals=20 029
+  visuals=5 99f
+  
+  duration=0.5
 }
 
 deploy {
   name=deploy.weapon.angelcannon.dps
   type=centroid
   projectile=projectile.weapon.angelcannon.dps
+  effects=effects.weapon.angelcannon
 }
 
 projectile {

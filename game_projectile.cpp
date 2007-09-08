@@ -173,6 +173,7 @@ void Projectile::checksum(Adler32 *adl) const {
   adler(adl, live);
   adler(adl, detonating);
   adler(adl, damageflags);
+  adler(adl, first);
   
   //reg_adler_intermed(*adl);
   adler(adl, now);
@@ -275,6 +276,13 @@ void Projectile::trigger(Coord2 pos, Coord normal, Tank *target, const GamePlaye
   } else if(projtype.motion() == PM_DPS) {
     CHECK(!projtype.chain_deploy().size());
     CHECK(!projtype.chain_effects().size());
+
+    if(first) {
+      vector<IDBWarheadAdjust> idwi = projtype.dps_instant_warhead();
+      for(int i = 0; i < idwi.size(); i++)
+        detonateWarhead(idwi[i], pos, 0, Coord2(0, 0), NULL, gpc, damageflags, false);
+    }
+    
     if(age > projtype.dps_duration()) {
       live = false;
     } else {
@@ -289,6 +297,8 @@ void Projectile::trigger(Coord2 pos, Coord normal, Tank *target, const GamePlaye
   } else {
     CHECK(0);
   }
+  
+  first = false;
 };
 
 bool Projectile::isLive() const {
@@ -384,6 +394,7 @@ Projectile::Projectile(const Coord2 &in_pos, Coord in_d, const IDBProjectileAdju
   now.pi.pos = in_pos;
   now.pi.d = in_d;
   age = 0;
+  first = true;
   live = true;
   detonating = false;
   now.distance_traveled = 0;

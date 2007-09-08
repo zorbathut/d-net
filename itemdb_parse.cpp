@@ -525,6 +525,7 @@ void parseProjectile(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   } else if(motion == "dps") {
     titem->motion = PM_DPS;
     titem->dps_duration = parseSingleItem<float>(chunk->consume("duration"));
+    titem->dps_instant_warhead = parseSubclassSet(chunk, "dps_instant_warhead", warheadclasses);
     defshape = "invisible";
     allowed_shapes.insert("invisible");
   } else {
@@ -638,6 +639,7 @@ void parseDeploy(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   titem->chain_deploy = parseSubclassSet(chunk, "deploy", deployclasses);
   titem->chain_projectile = parseSubclassSet(chunk, "projectile", projectileclasses);
   titem->chain_warhead = parseSubclassSet(chunk, "warhead", warheadclasses);
+  titem->chain_effects = parseSubclassSet(chunk, "effects", effectsclasses);
   for(int i = 0; i < titem->chain_deploy.size(); i++)
     CHECK(titem->chain_deploy[i] != titem);
   

@@ -283,6 +283,13 @@ void deployProjectile(const IDBDeployAdjust &deploy, const DeployLocation &locat
       for(int j = 0; j < proji.size(); j++)
         detonateWarhead(idw[i], proji[j].first, NO_NORMAL, Coord2(0, 0), NULL, gpc, flags, true);
   }
+  
+  {
+    vector<IDBEffectsAdjust> idw = deploy.chain_effects();
+    for(int i = 0; i < idw.size(); i++)
+      for(int j = 0; j < proji.size(); j++)
+        gpc.gic->effects->push_back(GfxIdb(proji[j].first.toFloat(), 0, makeAngle(proji[j].second.toFloat()), idw[i]));
+  }
 }
 
 Team::Team() {

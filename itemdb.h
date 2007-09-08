@@ -137,6 +137,7 @@ struct IDBProjectile {
     float hunter_turnweight;
     
     float dps_duration;
+    vector<const IDBWarhead *> dps_instant_warhead;
   
   IDBPShape shape;
     float proximity_visibility;
@@ -186,6 +187,7 @@ struct IDBDeploy {
   vector<const IDBDeploy *> chain_deploy;
   vector<const IDBProjectile *> chain_projectile;
   vector<const IDBWarhead *> chain_warhead;
+  vector<const IDBEffects *> chain_effects;
 };
 
 enum IDBWDemoMode { WDM_FIRINGRANGE, WDM_BACKRANGE, WDM_MINES, WDM_LAST };
@@ -383,6 +385,7 @@ public:
     float hunter_turnweight() const;
     
     float dps_duration() const;
+    vector<IDBWarheadAdjust> dps_instant_warhead() const;
   
   IDBPShape shape() const;
     float proximity_visibility() const;
@@ -445,6 +448,7 @@ public:
   vector<IDBDeployAdjust> chain_deploy() const;
   vector<IDBProjectileAdjust> chain_projectile() const;
   vector<IDBWarheadAdjust> chain_warhead() const;
+  vector<IDBEffectsAdjust> chain_effects() const;
 
   float stats_damagePerShot() const;
   

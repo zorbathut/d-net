@@ -35,6 +35,7 @@ float IDBDeployAdjust::directed_range() const { return idb->directed_range; };
 vector<IDBDeployAdjust> IDBDeployAdjust::chain_deploy() const { return adjust_vector(idb->chain_deploy, adjust); }
 vector<IDBProjectileAdjust> IDBDeployAdjust::chain_projectile() const { return adjust_vector(idb->chain_projectile, adjust); }
 vector<IDBWarheadAdjust> IDBDeployAdjust::chain_warhead() const { return adjust_vector(idb->chain_warhead, adjust); }
+vector<IDBEffectsAdjust> IDBDeployAdjust::chain_effects() const { return adjust_vector(idb->chain_effects, adjust); }
 
 float IDBDeployAdjust::stats_damagePerShot() const {
   float mult;
@@ -167,6 +168,7 @@ float IDBProjectileAdjust::hunter_rotation() const { CHECK(idb->motion == PM_HUN
 float IDBProjectileAdjust::hunter_turnweight() const { CHECK(idb->motion == PM_HUNTER); return idb->hunter_turnweight; }
 
 float IDBProjectileAdjust::dps_duration() const { CHECK(idb->motion == PM_DPS); return idb->dps_duration; }
+vector<IDBWarheadAdjust> IDBProjectileAdjust::dps_instant_warhead() const { return adjust_vector(idb->dps_instant_warhead, adjust); }
 
 // Shape-related functions
 IDBPShape IDBProjectileAdjust::shape() const { return idb->shape; }

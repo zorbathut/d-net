@@ -2,16 +2,15 @@
 - "Finish the Damn Game" Initiative
   - run lots of checksumming
   - tune tailwind blast
+  - clean DPS projectile
   - Many many more weapons
-    - Add implementations for all trap weapons
-      - Tailwind Blast: Should spawn from centroid and sweep backwards, accelerating, with a triangle projectile.
     - Add implementations for all exotic weapons
     - Re-enable weapon checks
     - Add glory behavior
       - Buff up the first glory's blast radius a bit
       - Make sure they don't spike CPU too badly
     - Add sparker behavior
-    - add new EMP effect
+    - add new EMP effects
   - Task-analyze the UI
   - Make It Pretty
     - Add both "proportion" and "multiplier" merge options
