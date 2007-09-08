@@ -88,12 +88,26 @@ deploy {
 }
 
 projectile {
+  name=projectile.weapon.angelcannon.delay
+  motion=delay
+  duration=0.7
+  
+  deploy=deploy.weapon.angelcannon.dps
+}
+
+deploy {
+  name=deploy.weapon.angelcannon.impact
+  type=centroid
+  projectile=projectile.weapon.angelcannon.delay
+}
+
+projectile {
   name=projectile.weapon.angelcannon
   motion=normal
-  velocity=600
+  velocity=800
   color=1.0, 1.0, 1.0
   durability=MERGE
-  deploy=deploy.weapon.angelcannon.dps
+  deploy=deploy.weapon.angelcannon.impact
 }
 
 deploy {

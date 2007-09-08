@@ -535,13 +535,18 @@ void parseProjectile(kvData *chunk, bool reload, ErrorAccumulator &accum) {
       titem->dps_visuals = parseIonVisuals(chunk->consume("visuals"));
     defshape = "invisible";
     allowed_shapes.insert("invisible");
+  } else if(motion == "delay") {
+    titem->motion = PM_DELAY;
+    titem->delay_duration = parseSingleItem<float>(chunk->consume("duration"));
+    defshape = "invisible";
+    allowed_shapes.insert("invisible");
   } else {
     dprintf("Unknown projectile motion: %s\n", motion.c_str());
     CHECK(0);
   }
   
   titem->velocity = 0;
-  if(titem->motion != PM_MINE && titem->motion != PM_DPS)
+  if(titem->motion != PM_MINE && titem->motion != PM_DPS && titem->motion != PM_DELAY)
     titem->velocity = parseSingleItem<float>(chunk->consume("velocity"));
   
   bool has_color = true;
@@ -597,7 +602,7 @@ void parseProjectile(kvData *chunk, bool reload, ErrorAccumulator &accum) {
     }
   }
   
-  if(titem->motion != PM_MINE && titem->motion != PM_DPS && titem->motion != PM_SPIDERMINE) {
+  if(titem->motion != PM_MINE && titem->motion != PM_DPS && titem->motion != PM_SPIDERMINE && titem->motion != PM_DELAY) {
     titem->no_intersection = parseWithDefault(chunk, "no_intersection", false);
     if(!titem->no_intersection)
       titem->durability = parseSingleItem<float>(chunk->consume("durability"));

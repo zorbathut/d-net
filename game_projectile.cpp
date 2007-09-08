@@ -90,6 +90,9 @@ void Projectile::tick(const GameImpactContext &gic, int owner) {
     }
     
     now.pi.pos += makeAngle(now.pi.d) * now.hunter_vel / FPS;
+  } else if(projtype.motion() == PM_DELAY) {
+    if(age >= projtype.delay_duration())
+      detonating = true;
   } else {
     CHECK(0);
   }
@@ -194,6 +197,7 @@ void Projectile::checksum(Adler32 *adl) const {
   } else if(projtype.motion() == PM_DPS) {
   } else if(projtype.motion() == PM_HUNTER) {
     adler(adl, hk_drift);
+  } else if(projtype.motion() == PM_DELAY) {
   } else {
     CHECK(0);
   }
@@ -224,7 +228,7 @@ void Projectile::firstCollide(Collider *collider, int owner, int id) const {
 
 void Projectile::addCollision(Collider *collider, int owner, int id) const {
   CHECK(live);
-  if(projtype.motion() == PM_MINE) {
+  if(projtype.motion() == PM_MINE || projtype.motion() == PM_DELAY) {
     // this is kind of a special case ATM
   } else if(projtype.no_intersection()) {
     collider->addPointToken(CollideId(CGR_NOINTPROJECTILE, owner, id), now.pi.pos, last.pi.pos - now.pi.pos);
@@ -420,6 +424,7 @@ Projectile::Projectile(const Coord2 &in_pos, Coord in_d, const IDBProjectileAdju
     hk_drift *= abs(hk_drift.y);
     hk_drift = rotate(hk_drift, in_d);
     hk_drift /= 2;
+  } else if(projtype.motion() == PM_DELAY) {
   } else {
     CHECK(0);
   }
