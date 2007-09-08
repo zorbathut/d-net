@@ -10,7 +10,7 @@ hierarchy {
 
 text {
   name=text.weapon.emp
-  data=A focused burst of electromagnetic energy damages tank armor and electronics at close range. These purchases include a limited-use compensation and shielding package designed to protect a tank from its own weapon, as well as from nearby glory devices.
+  data=A focused burst of electromagnetic energy damages tank armor and electronics at close range. This package includes a limited-use compensation and shielding system designed to protect a tank from its own weapon, as well as from nearby glory devices.
 }
 
 warhead {
@@ -37,6 +37,71 @@ launcher {
   firingrange_distance=melee
   
   text=text.weapon.emp
+}
+
+###########################
+#
+#   Angel Cannon base stats
+
+hierarchy {
+  name=ROOT.Ammo.Angel Cannon
+  pack=100
+}
+
+text {
+  name=text.weapon.angelcannon
+  data=Blah blah hamster blah yacht blah blah blah monocle polish
+}
+
+warhead {
+  name=warhead.weapon.angelcannon
+  radiusdamage=MERGE exotic
+  radiusfalloff=8
+  radiusexplosive=0
+  wallremovalradius=4
+  
+  radiuscolor_dim=000
+  radiuscolor_bright=000
+}
+
+projectile {
+  name=projectile.weapon.angelcannon.dps
+  motion=dps
+  duration=0.5
+  
+  warhead=warhead.weapon.angelcannon
+}
+
+deploy {
+  name=deploy.weapon.angelcannon.dps
+  type=centroid
+  projectile=projectile.weapon.angelcannon.dps
+}
+
+projectile {
+  name=projectile.weapon.angelcannon
+  motion=normal
+  velocity=600
+  color=1.0, 1.0, 1.0
+  durability=MERGE
+  deploy=deploy.weapon.angelcannon.dps
+}
+
+deploy {
+  name=deploy.weapon.angelcannon
+  type=forward
+  anglestddev=0.01
+  projectile=projectile.weapon.angelcannon
+}
+
+launcher {
+  name=launcher.weapon.angelcannon
+  
+  deploy=deploy.weapon.angelcannon
+
+  demo=firingrange
+  
+  text=text.weapon.angelcannon
 }
 
 ###########################
@@ -189,6 +254,62 @@ weapon {
   launcher=launcher.weapon.emp
 }
 
+
+weapon {
+  name=ROOT.Ammo.Angel Cannon.Angel Cannon I
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.weapon.angelcannon
+}
+
+weapon {
+  name=ROOT.Ammo.Angel Cannon.Angel Cannon II
+
+  cost=MERGE
+  firerate=MERGE
+
+  launcher=launcher.weapon.angelcannon
+}
+
+weapon {
+  name=ROOT.Ammo.Angel Cannon.Angel Cannon III
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.weapon.angelcannon
+}
+
+weapon {
+  name=ROOT.Ammo.Angel Cannon.Angel Cannon IV
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.weapon.angelcannon
+}
+
+weapon {
+  name=ROOT.Ammo.Angel Cannon.Angel Cannon V
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.weapon.angelcannon
+}
+
+weapon {
+  name=ROOT.Ammo.Angel Cannon.Angel Cannon VI
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.weapon.angelcannon
+}
+
+
 weapon {
   name=ROOT.Ammo.Chaos Field.Chaos Field I
   
@@ -254,6 +375,7 @@ weapon {
   
   launcher=launcher.weapon.chaosfield
 }
+
 
 weapon {
   name=ROOT.Ammo.Tesla Spike.Tesla Spike I
