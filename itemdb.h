@@ -185,6 +185,7 @@ struct IDBDeploy {
   int exp_shotspersplit;
   
   float directed_range;
+  float directed_approach;
 
   vector<const IDBDeploy *> chain_deploy;
   vector<const IDBProjectile *> chain_projectile;
@@ -449,6 +450,7 @@ public:
   float anglemodifier() const;
 
   float directed_range() const;
+  float directed_approach() const;
   
   vector<IDBDeployAdjust> chain_deploy() const;
   vector<IDBProjectileAdjust> chain_projectile() const;

@@ -2,6 +2,8 @@
 - "Finish the Damn Game" Initiative
   - run lots of checksumming
   - tune tailwind blast
+  - Collision determines time of impact and location of impact. It doesn't determine projectile center at time, and neither does the projectile. Fix this, it'll be important with things like the pulsar drone (even though I'm not using that)
+  - figure out collision a bit better - it should know which side impacted which, and then I can remove the "impact location" code entirely
   - split spawn shit into "instant", "constant", and "impact"?
   - Many many more weapons
     - Add implementations for all exotic weapons
@@ -13,6 +15,7 @@
     - add new EMP effects
   - Task-analyze the UI
   - Make It Pretty
+    - Explain the "quantity" and "recommended loadout" lines better
     - Add both "proportion" and "multiplier" merge options
     - Add wall-destruction sizes to the balance sheet
     - Spruce up sparker weaponry
@@ -99,6 +102,8 @@
   - Mutant
   - Onslaught
   - Bombing Run
+  - Bolo
+  - AvP
 
 ---- After I figure out where it's going
 - Need to sit down and rewrite the shop interface again.

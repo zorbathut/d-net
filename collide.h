@@ -33,11 +33,11 @@ struct CollideData {
 public:
   CollideId lhs;
   CollideId rhs;
-  Coord2 pos;
+  Coord t;
   pair<Coord, Coord> normals;
 
   CollideData() { };
-  CollideData(const CollideId &lhs, const CollideId &rhs, const Coord2 &pos, pair<Coord, Coord> normals) : lhs(lhs), rhs(rhs), pos(pos), normals(normals) { };
+  CollideData(const CollideId &lhs, const CollideId &rhs, const Coord &t, pair<Coord, Coord> normals) : lhs(lhs), rhs(rhs), t(t), normals(normals) { };
 };
 
 class CollidePiece {

@@ -129,6 +129,84 @@ launcher {
 
 ###########################
 #
+#   Rebounder Drone base stats
+
+hierarchy {
+  name=ROOT.Ammo.Rebounder Drone
+  pack=100
+}
+
+text {
+  name=text.weapon.rebounderdrone
+  data=Blah blah hamster blah yacht blah blah blah monocle polish
+}
+
+warhead {
+  name=warhead.weapon.rebounderdrone
+  radiusdamage=MERGE(1) exotic
+  radiusfalloff=5
+  radiusexplosive=0
+  
+  wallremovalradius=3.5
+  
+  radiuscolor_dim=180
+  radiuscolor_bright=5f1
+}
+
+projectile {
+  name=projectile.weapon.rebounderdrone.reflection
+  velocity=100
+  
+  durability=MERGE
+  
+  shape=drone
+  drone_radius=0.7
+  drone_spike=1.6
+  
+  warhead=warhead.weapon.rebounderdrone
+}
+
+deploy {
+  name=deploy.weapon.rebounderdrone.reflection
+  type=directed
+  directed_range=1000
+  directed_approach=0.5
+  anglestddev=0.03
+  projectile=projectile.weapon.rebounderdrone.reflection
+}
+
+projectile {
+  name=projectile.weapon.rebounderdrone
+  velocity=140
+  
+  durability=MERGE
+  
+  shape=drone
+  drone_radius=0.7
+  drone_spike=1.6
+  
+  deploy=deploy.weapon.rebounderdrone.reflection
+}
+
+deploy {
+  name=deploy.weapon.rebounderdrone
+  type=forward
+  anglestddev=0.06
+  projectile=projectile.weapon.rebounderdrone
+}
+
+launcher {
+  name=launcher.weapon.rebounderdrone
+  
+  deploy=deploy.weapon.rebounderdrone
+
+  demo=firingrange
+  
+  text=text.weapon.rebounderdrone
+}
+
+###########################
+#
 #   Chaos Field base stats
 
 hierarchy {
@@ -330,6 +408,61 @@ weapon {
   firerate=MERGE
   
   launcher=launcher.weapon.angelcannon
+}
+
+
+weapon {
+  name=ROOT.Ammo.Rebounder Drone.Rebounder Drone I
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.weapon.rebounderdrone
+}
+
+weapon {
+  name=ROOT.Ammo.Rebounder Drone.Rebounder Drone II
+
+  cost=MERGE
+  firerate=MERGE
+
+  launcher=launcher.weapon.rebounderdrone
+}
+
+weapon {
+  name=ROOT.Ammo.Rebounder Drone.Rebounder Drone III
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.weapon.rebounderdrone
+}
+
+weapon {
+  name=ROOT.Ammo.Rebounder Drone.Rebounder Drone IV
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.weapon.rebounderdrone
+}
+
+weapon {
+  name=ROOT.Ammo.Rebounder Drone.Rebounder Drone V
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.weapon.rebounderdrone
+}
+
+weapon {
+  name=ROOT.Ammo.Rebounder Drone.Rebounder Drone VI
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.weapon.rebounderdrone
 }
 
 

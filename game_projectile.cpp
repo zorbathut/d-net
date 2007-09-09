@@ -258,9 +258,11 @@ Coord2 Projectile::warheadposition() const {
   return now.pi.pos;
 }
 
-void Projectile::trigger(Coord2 pos, Coord normal, Tank *target, const GamePlayerContext &gpc, bool impacted) {
+void Projectile::trigger(Coord t, Coord normal, Tank *target, const GamePlayerContext &gpc, bool impacted) {
   if(!live)
     return;
+  
+  Coord2 pos = lerp(last.pi.pos, now.pi.pos, t);
   
   if(projtype.motion() != PM_DPS) {
     vector<IDBWarheadAdjust> idw = projtype.chain_warhead();
@@ -492,12 +494,12 @@ void ProjectilePack::tick(Collider *collide, int owner, const GameImpactContext 
   for(map<int, Projectile>::iterator itr = projectiles.begin(); itr != projectiles.end(); ) {
     // the logic here is kind of grim, sorry about this
     if(itr->second.isLive() && itr->second.isDetonating())
-      itr->second.trigger(itr->second.warheadposition(), NO_NORMAL, NULL, GamePlayerContext(gic.players[owner], this, gic), false);
+      itr->second.trigger(1, NO_NORMAL, NULL, GamePlayerContext(gic.players[owner], this, gic), false);
     if(itr->second.isLive()) {
       if(!count(newitems.begin(), newitems.end(), itr->first))  // we make sure we do collisions before ticks
         itr->second.tick(gic, owner);
       if(itr->second.isLive() && itr->second.isDetonating())
-        itr->second.trigger(itr->second.warheadposition(), NO_NORMAL, NULL, GamePlayerContext(gic.players[owner], this, gic), false);
+        itr->second.trigger(1, NO_NORMAL, NULL, GamePlayerContext(gic.players[owner], this, gic), false);
       if(itr->second.isLive()) {
         ++itr;
         continue;

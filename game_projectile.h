@@ -23,7 +23,7 @@ public:
 
   Coord2 warheadposition() const;
 
-  void trigger(Coord2 pos, Coord normal, Tank *target, const GamePlayerContext &gpc, bool impacted);
+  void trigger(Coord t, Coord normal, Tank *target, const GamePlayerContext &gpc, bool impacted);
 
   bool isLive() const;
   bool isDetonating() const;

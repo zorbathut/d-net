@@ -331,14 +331,14 @@ inline bool operator!=(const CollideId &lhs, const CollideId &rhs) {
 inline bool operator<(const CollideData &lhs, const CollideData &rhs) {
   if(lhs.lhs != rhs.lhs) return lhs.lhs < rhs.lhs;
   if(lhs.rhs != rhs.rhs) return lhs.rhs < rhs.rhs;
-  if(lhs.pos != rhs.pos) return lhs.pos < rhs.pos;
+  if(lhs.t != rhs.t) return lhs.t < rhs.t;
   return false;
 }
 
 inline bool operator==(const CollideData &lhs, const CollideData &rhs) {
   if(lhs.lhs != rhs.lhs) return false;
   if(lhs.rhs != rhs.rhs) return false;
-  if(lhs.pos != rhs.pos) return false;
+  if(lhs.t != rhs.t) return false;
   return true;
 }
 
@@ -527,7 +527,7 @@ void CollideZone::processMotion(vector<pair<Coord, CollideData> > *clds, const c
               if(unlikely(doCompare(&tx[xa], &ty[ya], &cd))) {
                 if(unlikely(cd.first != NOCOLLIDE)) {
                   CHECK(cd.first >= 0 && cd.first <= 1);
-                  clds->push_back(make_pair(cd.first, CollideData(CollideId(reverseCategoryFromCC(catrefs.size(), items[x].first), xitr->first), CollideId(reverseCategoryFromCC(catrefs.size(), items[y].first), yitr->first), cd.second, make_pair(getAngle(lerp(tx[xa].pos, tx[xa].pos + tx[xa].vel, cd.first).vector()).toFloat() + PI / 2, getAngle(lerp(ty[ya].pos, ty[ya].pos + ty[ya].vel, cd.first).vector()).toFloat() + PI / 2))));
+                  clds->push_back(make_pair(cd.first, CollideData(CollideId(reverseCategoryFromCC(catrefs.size(), items[x].first), xitr->first), CollideId(reverseCategoryFromCC(catrefs.size(), items[y].first), yitr->first), cd.first, make_pair(getAngle(lerp(tx[xa].pos, tx[xa].pos + tx[xa].vel, cd.first).vector()).toFloat() + PI / 2, getAngle(lerp(ty[ya].pos, ty[ya].pos + ty[ya].vel, cd.first).vector()).toFloat() + PI / 2))));
                 }
               }
             }

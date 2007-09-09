@@ -488,6 +488,7 @@ void parseProjectile(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   if(motion == "normal") {
     titem->motion = PM_NORMAL;
     allowed_shapes.insert("line");
+    allowed_shapes.insert("drone");
     allowed_shapes.insert("arrow");
   } else if(motion == "missile") {
     titem->motion = PM_MISSILE;
@@ -643,6 +644,7 @@ void parseDeploy(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   } else if(type == "directed") {
     titem->type = DT_DIRECTED;
     titem->directed_range = parseSingleItem<float>(chunk->consume("directed_range"));
+    titem->directed_approach = parseWithDefault(chunk, "directed_approach", 0.);
   } else if(type == "explode") {
     titem->type = DT_EXPLODE;
     titem->exp_minsplits = parseSingleItem<int>(chunk->consume("exp_minsplits"));

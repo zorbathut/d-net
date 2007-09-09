@@ -431,7 +431,7 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
           // tank-projectile collision - kill projectile, do damage
           if(projectiles[rhs.bucket].find(rhs.item).isConsumed())
             continue;
-          projectiles[rhs.bucket].find(rhs.item).trigger(collider.getCollision().pos, normals.first, &tanks[lhs.bucket], GamePlayerContext(&tanks[rhs.bucket], &projectiles[rhs.bucket], gic), true);
+          projectiles[rhs.bucket].find(rhs.item).trigger(collider.getCollision().t, normals.first, &tanks[lhs.bucket], GamePlayerContext(&tanks[rhs.bucket], &projectiles[rhs.bucket], gic), true);
         } else if(lhs.category == CGR_TANK && rhs.category == CGR_WALL) {
           // tank-wall collision, should never happen
           CHECK(0);
@@ -453,19 +453,19 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
           bool rhsdestroyed = rng->frand() < (projectiles[lhs.bucket].find(lhs.item).durability() / projectiles[rhs.bucket].find(rhs.item).durability());
           
           if(lft)
-            projectiles[lhs.bucket].find(lhs.item).trigger(collider.getCollision().pos, normals.second, NULL, GamePlayerContext(&tanks[lhs.bucket], &projectiles[lhs.bucket], gic), true);
+            projectiles[lhs.bucket].find(lhs.item).trigger(collider.getCollision().t, normals.second, NULL, GamePlayerContext(&tanks[lhs.bucket], &projectiles[lhs.bucket], gic), true);
           
           if(rhsdestroyed)
-            projectiles[rhs.bucket].find(rhs.item).trigger(collider.getCollision().pos, normals.first, NULL, GamePlayerContext(&tanks[rhs.bucket], &projectiles[rhs.bucket], gic), true);
+            projectiles[rhs.bucket].find(rhs.item).trigger(collider.getCollision().t, normals.first, NULL, GamePlayerContext(&tanks[rhs.bucket], &projectiles[rhs.bucket], gic), true);
           
           if(!lft)
-            projectiles[lhs.bucket].find(lhs.item).trigger(collider.getCollision().pos, normals.second, NULL, GamePlayerContext(&tanks[lhs.bucket], &projectiles[lhs.bucket], gic), true);
+            projectiles[lhs.bucket].find(lhs.item).trigger(collider.getCollision().t, normals.second, NULL, GamePlayerContext(&tanks[lhs.bucket], &projectiles[lhs.bucket], gic), true);
           
         } else if(lhs.category == CGR_PROJECTILE && rhs.category == CGR_WALL) {
           // projectile-wall collision - kill projectile
           if(projectiles[lhs.bucket].find(lhs.item).isConsumed())
             continue;
-          projectiles[lhs.bucket].find(lhs.item).trigger(collider.getCollision().pos, normals.second, NULL, GamePlayerContext(&tanks[lhs.bucket], &projectiles[lhs.bucket], gic), true);
+          projectiles[lhs.bucket].find(lhs.item).trigger(collider.getCollision().t, normals.second, NULL, GamePlayerContext(&tanks[lhs.bucket], &projectiles[lhs.bucket], gic), true);
         } else if(lhs.category == CGR_WALL && rhs.category == CGR_WALL) {
           // wall-wall collision, wtf?
           CHECK(0);

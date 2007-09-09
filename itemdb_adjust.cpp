@@ -31,6 +31,7 @@ float IDBDeployAdjust::anglestddev() const { return idb->anglestddev; };
 float IDBDeployAdjust::anglemodifier() const { return idb->anglemodifier; };
 
 float IDBDeployAdjust::directed_range() const { return idb->directed_range; };
+float IDBDeployAdjust::directed_approach() const { return idb->directed_approach; };
 
 vector<IDBDeployAdjust> IDBDeployAdjust::chain_deploy() const { return adjust_vector(idb->chain_deploy, adjust); }
 vector<IDBProjectileAdjust> IDBDeployAdjust::chain_projectile() const { return adjust_vector(idb->chain_projectile, adjust); }

@@ -226,7 +226,7 @@ void deployProjectile(const IDBDeployAdjust &deploy, const DeployLocation &locat
       Coord2 dp = gpc.gic->players[cid]->pi.pos;
       dp -= location.pos();
       if(len(dp) <= Coord(deploy.directed_range()))
-        proji.push_back(make_pair(location.pos(), getAngle(dp)));
+        proji.push_back(make_pair(location.pos() + normalize(dp) * deploy.directed_approach(), getAngle(dp)));
     }
     if(!proji.size())
       proji.push_back(make_pair(location.pos(), gpc.gic->rng->frand() * PI * 2));
