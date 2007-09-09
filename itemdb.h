@@ -110,7 +110,7 @@ struct IDBWarhead {
 };
 
 enum IDBPMotion { PM_NORMAL, PM_MISSILE, PM_AIRBRAKE, PM_BOOMERANG, PM_MINE, PM_SPIDERMINE, PM_HUNTER, PM_DPS, PM_DELAY, PM_LAST };
-enum IDBPShape { PS_LINE, PS_LINE_AIRBRAKE, PS_ARROW, PS_DRONE, PS_STAR, PS_INVISIBLE };
+enum IDBPShape { PS_LINE, PS_LINE_AIRBRAKE, PS_ARROW, PS_DRONE, PS_STAR, PS_ARCPIECE, PS_INVISIBLE };
 
 struct IDBProjectile {
   IDBPMotion motion;
@@ -169,7 +169,7 @@ struct IDBProjectile {
 };
 
 // Normal specifies "Forward" for tanks, or "Centroid" on cases where there is no tank
-enum IDBDType { DT_NORMAL, DT_FORWARD, DT_REAR, DT_CENTROID, DT_MINEPATH, DT_DIRECTED, DT_REFLECTED, DT_EXPLODE, DT_LAST };
+enum IDBDType { DT_NORMAL, DT_FORWARD, DT_REAR, DT_CENTROID, DT_MINEPATH, DT_DIRECTED, DT_REFLECTED, DT_ARC, DT_EXPLODE, DT_LAST };
 
 struct IDBDeploy {
   IDBDType type;

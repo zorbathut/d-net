@@ -342,6 +342,58 @@ launcher {
 
 ###########################
 #
+#   Pulse Emitter base stats
+
+hierarchy {
+  name=ROOT.Ammo.Pulse Emitter
+  pack=100
+}
+
+text {
+  name=text.weapon.pulseemitter
+  data=Blah blah hamster blah yacht blah blah blah monocle polish
+}
+
+warhead {
+  name=warhead.weapon.pulseemitter
+  impactdamage=MERGE(1) exotic
+}
+
+projectile {
+  name=projectile.weapon.pulseemitter
+  velocity=150
+  
+  shape=arcpiece
+  arc_width=1
+  arc_units=20
+  
+  durability=MERGE
+  
+  color=0.7,0.8,0.6
+  
+  warhead=warhead.weapon.pulseemitter
+}
+
+deploy {
+  name=deploy.weapon.pulseemitter
+  type=arc
+  arc_width=1
+  arc_units=20
+  projectile=projectile.weapon.pulseemitter
+}
+
+launcher {
+  name=launcher.weapon.pulseemitter
+  
+  deploy=deploy.weapon.pulseemitter
+
+  demo=firingrange
+  
+  text=text.weapon.pulseemitter
+}
+
+###########################
+#
 #   Tesla Spike base stats
 
 hierarchy {
@@ -680,6 +732,61 @@ weapon {
   firerate=MERGE
   
   launcher=launcher.weapon.reflectorray
+}
+
+
+weapon {
+  name=ROOT.Ammo.Pulse Emitter.Pulse Emitter I
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.weapon.pulseemitter
+}
+
+weapon {
+  name=ROOT.Ammo.Pulse Emitter.Pulse Emitter II
+
+  cost=MERGE
+  firerate=MERGE
+
+  launcher=launcher.weapon.pulseemitter
+}
+
+weapon {
+  name=ROOT.Ammo.Pulse Emitter.Pulse Emitter III
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.weapon.pulseemitter
+}
+
+weapon {
+  name=ROOT.Ammo.Pulse Emitter.Pulse Emitter IV
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.weapon.pulseemitter
+}
+
+weapon {
+  name=ROOT.Ammo.Pulse Emitter.Pulse Emitter V
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.weapon.pulseemitter
+}
+
+weapon {
+  name=ROOT.Ammo.Pulse Emitter.Pulse Emitter VI
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.weapon.pulseemitter
 }
 
 

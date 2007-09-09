@@ -2,7 +2,6 @@
 - "Finish the Damn Game" Initiative
   - run lots of checksumming
   - tune tailwind blast
-  - Collision determines time of impact and location of impact. It doesn't determine projectile center at time, and neither does the projectile. Fix this, it'll be important with things like the pulsar drone (even though I'm not using that)
   - figure out collision a bit better - it should know which side impacted which, and then I can remove the "impact location" code entirely
   - split spawn shit into "instant", "constant", and "impact"?
   - Many many more weapons
