@@ -12,9 +12,7 @@
       - Make sure they don't spike CPU too badly
     - Add sparker behavior
     - add new EMP effects
-  - Task-analyze the UI
-  - Make It Pretty
-    - Explain the "quantity" and "recommended loadout" lines better
+    - Spruce up glory devices
     - Add both "proportion" and "multiplier" merge options
     - Add wall-destruction sizes to the balance sheet
     - Spruce up sparker weaponry
@@ -23,11 +21,12 @@
       - beam laser?
       - lasers spawn sparklies
     - Spruce up base missile weaponry
-    - Spruce up glory devices
     - Spruce up trap weaponry
     - Spruce up exotic weaponry
     - Spruce up OGRE
     - Make long projectiles impacting the wall render part of the projectile, to avoid the "black target space" issue
+  - Task-analyze the UI
+  - Explain the "quantity" and "recommended loadout" lines better
   - Final weapons
     - I'd love to make HK higher firerate. Is there some way I can do this?
     - Special autocannon
