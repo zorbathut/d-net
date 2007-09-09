@@ -271,7 +271,7 @@ void Projectile::trigger(Coord t, Coord normal, Tank *target, const GamePlayerCo
     
     vector<IDBDeployAdjust> idd = projtype.chain_deploy();
     for(int i = 0; i < idd.size(); i++)
-      deployProjectile(idd[i], DeployLocation(pos, getAngle(now.pi.pos - last.pi.pos)), gpc, damageflags, NULL);
+      deployProjectile(idd[i], DeployLocation(pos, getAngle(now.pi.pos - last.pi.pos), normal), gpc, damageflags, NULL);
     
     vector<IDBEffectsAdjust> ide = projtype.chain_effects();
     for(int i = 0; i < ide.size(); i++)

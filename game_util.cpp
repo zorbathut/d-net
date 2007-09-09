@@ -100,16 +100,35 @@ Coord DeployLocation::d() const {
   else
     return d_int;
 }
+Coord DeployLocation::impacted_ang() const {
+  CHECK(!tank_int);
+  CHECK(has_impacted_ang);
+  return impacted_ang_int;
+}
 
 DeployLocation::DeployLocation(const Tank *tank) {
   CHECK(tank);
   tank_int = tank;
+  has_impacted_ang = false;
 }
 
 DeployLocation::DeployLocation(Coord2 pos, Coord d) {
   tank_int = NULL;
   pos_int = pos;
   d_int = d;
+  has_impacted_ang = false;
+}
+
+DeployLocation::DeployLocation(Coord2 pos, Coord d, Coord impacted_ang) {
+  tank_int = NULL;
+  pos_int = pos;
+  d_int = d;
+  if(impacted_ang != NO_NORMAL) {
+    has_impacted_ang = true;
+    impacted_ang_int = impacted_ang;
+  } else {
+    has_impacted_ang = false;
+  }
 }
 
 void dealDamage(Coord dmg, Tank *target, Tank *owner, const DamageFlags &flags) {
@@ -230,6 +249,9 @@ void deployProjectile(const IDBDeployAdjust &deploy, const DeployLocation &locat
     }
     if(!proji.size())
       proji.push_back(make_pair(location.pos(), gpc.gic->rng->frand() * PI * 2));
+  } else if(type == DT_REFLECTED) {
+    CHECK(!location.isTank());
+    proji.push_back(make_pair(location.pos() + makeAngle(reflect(location.d(), location.impacted_ang())) * 0.01, reflect(location.d(), location.impacted_ang())));
   } else if(type == DT_EXPLODE) {
     vector<float> ang;
     {

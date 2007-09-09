@@ -169,7 +169,7 @@ struct IDBProjectile {
 };
 
 // Normal specifies "Forward" for tanks, or "Centroid" on cases where there is no tank
-enum IDBDType { DT_NORMAL, DT_FORWARD, DT_REAR, DT_CENTROID, DT_MINEPATH, DT_DIRECTED, DT_EXPLODE, DT_LAST };
+enum IDBDType { DT_NORMAL, DT_FORWARD, DT_REAR, DT_CENTROID, DT_MINEPATH, DT_DIRECTED, DT_REFLECTED, DT_EXPLODE, DT_LAST };
 
 struct IDBDeploy {
   IDBDType type;

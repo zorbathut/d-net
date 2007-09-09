@@ -165,6 +165,13 @@ bool colinear(const Coord4 &line, const Coord2 &pt) {
   return koord < Coord(0.00001f);
 }
 
+Coord2 reflect(const Coord2 &incoming, Coord normal) {
+  return imp_reflect<Coords>(incoming, normal);
+}
+Coord reflect(Coord incoming, Coord normal) {
+  return imp_reflect<Coords>(incoming, normal);
+}
+
 Coord ang_dist(Coord lhs, Coord rhs) {
   lhs = mod(lhs, COORDPI * 2);
   rhs = mod(rhs, COORDPI * 2);

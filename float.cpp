@@ -50,9 +50,10 @@ float getArea(const vector<Float2> &are) {
 }
 
 Float2 reflect(const Float2 &incoming, float normal) {
-  if(len(incoming) == 0)
-    return Float2(0, 0);
-  return makeAngle(-(getAngle(-incoming) - normal) + normal) * len(incoming);
+  return imp_reflect<Floats>(incoming, normal);
+}
+float reflect(float incoming, float normal) {
+  return imp_reflect<Floats>(incoming, normal);
 }
 
 vector<Float2> generateCurve(const Float4 &ptah, const Float4 &ptbh, int midpoints) {

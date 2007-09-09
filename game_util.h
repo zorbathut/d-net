@@ -59,6 +59,9 @@ class DeployLocation {
   
   Coord2 pos_int;
   Coord d_int;
+  
+  bool has_impacted_ang;
+  Coord impacted_ang_int;
 public:
   
   bool isTank() const;
@@ -67,9 +70,11 @@ public:
 
   Coord2 pos() const;
   Coord d() const;
+  Coord impacted_ang() const;
 
   DeployLocation(const Tank *tank);
   DeployLocation(Coord2 pos, Coord d);
+  DeployLocation(Coord2 pos, Coord d, Coord impacted_ang);
 };
 
 struct DamageFlags {

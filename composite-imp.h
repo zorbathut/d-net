@@ -188,5 +188,13 @@ template <typename T> inline bool imp_pathReversed(const vector<Type2> &path) {
   return imp_getArea<T>(path) < 0;
 }
 
+template <typename T> inline Type1 imp_reflect(Type1 incoming, Type1 normal) {
+  return -incoming - TPI + normal + normal;
+}
+template <typename T> inline Type2 imp_reflect(const Type2 &incoming, Type1 normal) {
+  if(len(incoming) == 0)
+    return Type2(0, 0);
+  return makeAngle(reflect(getAngle(incoming), normal)) * len(incoming);
+}
 
 #endif

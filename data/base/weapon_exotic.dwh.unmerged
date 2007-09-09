@@ -41,6 +41,84 @@ launcher {
 
 ###########################
 #
+#   Rebounder Drone base stats
+
+hierarchy {
+  name=ROOT.Ammo.Rebounder Drone
+  pack=100
+}
+
+text {
+  name=text.weapon.rebounderdrone
+  data=Blah blah hamster blah yacht blah blah blah monocle polish
+}
+
+warhead {
+  name=warhead.weapon.rebounderdrone
+  radiusdamage=MERGE(1) exotic
+  radiusfalloff=5
+  radiusexplosive=0
+  
+  wallremovalradius=3.5
+  
+  radiuscolor_dim=180
+  radiuscolor_bright=5f1
+}
+
+projectile {
+  name=projectile.weapon.rebounderdrone.reflection
+  velocity=100
+  
+  durability=MERGE
+  
+  shape=drone
+  drone_radius=0.7
+  drone_spike=1.6
+  
+  warhead=warhead.weapon.rebounderdrone
+}
+
+deploy {
+  name=deploy.weapon.rebounderdrone.reflection
+  type=directed
+  directed_range=1000
+  directed_approach=0.5
+  anglestddev=0.03
+  projectile=projectile.weapon.rebounderdrone.reflection
+}
+
+projectile {
+  name=projectile.weapon.rebounderdrone
+  velocity=140
+  
+  durability=MERGE
+  
+  shape=drone
+  drone_radius=0.7
+  drone_spike=1.6
+  
+  deploy=deploy.weapon.rebounderdrone.reflection
+}
+
+deploy {
+  name=deploy.weapon.rebounderdrone
+  type=forward
+  anglestddev=0.06
+  projectile=projectile.weapon.rebounderdrone
+}
+
+launcher {
+  name=launcher.weapon.rebounderdrone
+  
+  deploy=deploy.weapon.rebounderdrone
+
+  demo=firingrange
+  
+  text=text.weapon.rebounderdrone
+}
+
+###########################
+#
 #   Angel Cannon base stats
 
 hierarchy {
@@ -129,84 +207,6 @@ launcher {
 
 ###########################
 #
-#   Rebounder Drone base stats
-
-hierarchy {
-  name=ROOT.Ammo.Rebounder Drone
-  pack=100
-}
-
-text {
-  name=text.weapon.rebounderdrone
-  data=Blah blah hamster blah yacht blah blah blah monocle polish
-}
-
-warhead {
-  name=warhead.weapon.rebounderdrone
-  radiusdamage=MERGE(1) exotic
-  radiusfalloff=5
-  radiusexplosive=0
-  
-  wallremovalradius=3.5
-  
-  radiuscolor_dim=180
-  radiuscolor_bright=5f1
-}
-
-projectile {
-  name=projectile.weapon.rebounderdrone.reflection
-  velocity=100
-  
-  durability=MERGE
-  
-  shape=drone
-  drone_radius=0.7
-  drone_spike=1.6
-  
-  warhead=warhead.weapon.rebounderdrone
-}
-
-deploy {
-  name=deploy.weapon.rebounderdrone.reflection
-  type=directed
-  directed_range=1000
-  directed_approach=0.5
-  anglestddev=0.03
-  projectile=projectile.weapon.rebounderdrone.reflection
-}
-
-projectile {
-  name=projectile.weapon.rebounderdrone
-  velocity=140
-  
-  durability=MERGE
-  
-  shape=drone
-  drone_radius=0.7
-  drone_spike=1.6
-  
-  deploy=deploy.weapon.rebounderdrone.reflection
-}
-
-deploy {
-  name=deploy.weapon.rebounderdrone
-  type=forward
-  anglestddev=0.06
-  projectile=projectile.weapon.rebounderdrone
-}
-
-launcher {
-  name=launcher.weapon.rebounderdrone
-  
-  deploy=deploy.weapon.rebounderdrone
-
-  demo=firingrange
-  
-  text=text.weapon.rebounderdrone
-}
-
-###########################
-#
 #   Chaos Field base stats
 
 hierarchy {
@@ -243,6 +243,101 @@ launcher {
   firingrange_distance=melee
   
   text=text.weapon.chaosfield
+}
+
+###########################
+#
+#   Reflector Ray base stats
+
+hierarchy {
+  name=ROOT.Ammo.Reflector Ray
+  pack=100
+}
+
+text {
+  name=text.weapon.reflectorray
+  data=Blah blah hamster blah yacht blah blah blah monocle polish
+}
+
+warhead {
+  name=warhead.weapon.reflectorray.gamma
+  impactdamage=MERGE(1) exotic
+}
+
+projectile {
+  name=projectile.weapon.reflectorray.gamma
+  velocity=200
+  
+  durability=MERGE
+  
+  color=0.6,0.7,0.8
+  
+  warhead=warhead.weapon.reflectorray.gamma
+}
+
+deploy {
+  name=deploy.weapon.reflectorray.gamma
+  type=reflected
+  anglestddev=0.03
+  projectile=projectile.weapon.reflectorray.gamma
+}
+
+warhead {
+  name=warhead.weapon.reflectorray.beta
+  impactdamage=MERGE(3) exotic
+}
+
+projectile {
+  name=projectile.weapon.reflectorray.beta
+  velocity=200
+  
+  durability=MERGE
+  
+  color=0.8,0.6,0.7
+  
+  warhead=warhead.weapon.reflectorray.beta
+  deploy=deploy.weapon.reflectorray.gamma
+}
+
+deploy {
+  name=deploy.weapon.reflectorray.beta
+  type=reflected
+  anglestddev=0.03
+  projectile=projectile.weapon.reflectorray.beta
+}
+
+warhead {
+  name=warhead.weapon.reflectorray.alpha
+  impactdamage=MERGE(2) exotic
+}
+
+projectile {
+  name=projectile.weapon.reflectorray.alpha
+  velocity=200
+  
+  durability=MERGE
+  
+  color=0.7,0.8,0.6
+  
+  warhead=warhead.weapon.reflectorray.alpha
+  deploy=deploy.weapon.reflectorray.beta
+}
+
+deploy {
+  name=deploy.weapon.reflectorray
+  type=forward
+  anglestddev=0.03
+  projectile=projectile.weapon.reflectorray.alpha
+}
+
+launcher {
+  name=launcher.weapon.reflectorray
+  
+  deploy=deploy.weapon.reflectorray
+
+  demo=firingrange
+  
+  text=text.weapon.reflectorray
 }
 
 ###########################
@@ -357,61 +452,6 @@ weapon {
 
 
 weapon {
-  name=ROOT.Ammo.Angel Cannon.Angel Cannon I
-  
-  cost=MERGE
-  firerate=MERGE
-  
-  launcher=launcher.weapon.angelcannon
-}
-
-weapon {
-  name=ROOT.Ammo.Angel Cannon.Angel Cannon II
-
-  cost=MERGE
-  firerate=MERGE
-
-  launcher=launcher.weapon.angelcannon
-}
-
-weapon {
-  name=ROOT.Ammo.Angel Cannon.Angel Cannon III
-  
-  cost=MERGE
-  firerate=MERGE
-  
-  launcher=launcher.weapon.angelcannon
-}
-
-weapon {
-  name=ROOT.Ammo.Angel Cannon.Angel Cannon IV
-  
-  cost=MERGE
-  firerate=MERGE
-  
-  launcher=launcher.weapon.angelcannon
-}
-
-weapon {
-  name=ROOT.Ammo.Angel Cannon.Angel Cannon V
-  
-  cost=MERGE
-  firerate=MERGE
-  
-  launcher=launcher.weapon.angelcannon
-}
-
-weapon {
-  name=ROOT.Ammo.Angel Cannon.Angel Cannon VI
-  
-  cost=MERGE
-  firerate=MERGE
-  
-  launcher=launcher.weapon.angelcannon
-}
-
-
-weapon {
   name=ROOT.Ammo.Rebounder Drone.Rebounder Drone I
   
   cost=MERGE
@@ -463,6 +503,61 @@ weapon {
   firerate=MERGE
   
   launcher=launcher.weapon.rebounderdrone
+}
+
+
+weapon {
+  name=ROOT.Ammo.Angel Cannon.Angel Cannon I
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.weapon.angelcannon
+}
+
+weapon {
+  name=ROOT.Ammo.Angel Cannon.Angel Cannon II
+
+  cost=MERGE
+  firerate=MERGE
+
+  launcher=launcher.weapon.angelcannon
+}
+
+weapon {
+  name=ROOT.Ammo.Angel Cannon.Angel Cannon III
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.weapon.angelcannon
+}
+
+weapon {
+  name=ROOT.Ammo.Angel Cannon.Angel Cannon IV
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.weapon.angelcannon
+}
+
+weapon {
+  name=ROOT.Ammo.Angel Cannon.Angel Cannon V
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.weapon.angelcannon
+}
+
+weapon {
+  name=ROOT.Ammo.Angel Cannon.Angel Cannon VI
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.weapon.angelcannon
 }
 
 
@@ -530,6 +625,61 @@ weapon {
   glory_resistance=true
   
   launcher=launcher.weapon.chaosfield
+}
+
+
+weapon {
+  name=ROOT.Ammo.Reflector Ray.Reflector Ray I
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.weapon.reflectorray
+}
+
+weapon {
+  name=ROOT.Ammo.Reflector Ray.Reflector Ray II
+
+  cost=MERGE
+  firerate=MERGE
+
+  launcher=launcher.weapon.reflectorray
+}
+
+weapon {
+  name=ROOT.Ammo.Reflector Ray.Reflector Ray III
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.weapon.reflectorray
+}
+
+weapon {
+  name=ROOT.Ammo.Reflector Ray.Reflector Ray IV
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.weapon.reflectorray
+}
+
+weapon {
+  name=ROOT.Ammo.Reflector Ray.Reflector Ray V
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.weapon.reflectorray
+}
+
+weapon {
+  name=ROOT.Ammo.Reflector Ray.Reflector Ray VI
+  
+  cost=MERGE
+  firerate=MERGE
+  
+  launcher=launcher.weapon.reflectorray
 }
 
 

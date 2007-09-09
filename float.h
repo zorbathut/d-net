@@ -198,6 +198,7 @@ float getArea(const vector<Float2> &are);
 bool pathReversed(const vector<Float2> &path);
 
 Float2 reflect(const Float2 &incoming, float normal);
+float reflect(float incoming, float normal);
 
 vector<Float2> generateCurve(const Float4 &ptah, const Float4 &ptbh, int midpoints);
 float bezinterp(float x0, float x1, float x2, float x3, float t);

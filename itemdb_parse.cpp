@@ -645,6 +645,8 @@ void parseDeploy(kvData *chunk, bool reload, ErrorAccumulator &accum) {
     titem->type = DT_DIRECTED;
     titem->directed_range = parseSingleItem<float>(chunk->consume("directed_range"));
     titem->directed_approach = parseWithDefault(chunk, "directed_approach", 0.);
+  } else if(type == "reflected") {
+    titem->type = DT_REFLECTED;
   } else if(type == "explode") {
     titem->type = DT_EXPLODE;
     titem->exp_minsplits = parseSingleItem<int>(chunk->consume("exp_minsplits"));
