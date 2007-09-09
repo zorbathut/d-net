@@ -130,6 +130,8 @@ inline void proc2(Coord *cBc, Coord2 *pos, pair<Coord, Coord> *tbv, const Coord4
   
   Coord u = getu(linepos, linevel, ptposvel, tbv->first);
   if(likely(u < 0 || u > 1)) {
+    if(likely(tbv->second == NOCOLLIDE))
+      return;
     u = getu(linepos, linevel, ptposvel, tbv->second);
     if(likely(u < 0 || u > 1))
       return;
@@ -191,10 +193,27 @@ inline pair<Coord, Coord2> doCollisionNN(const Coord4 &l1p, const Coord4 &l1v, c
     
     proc2(&cBc, &pos, &tbv, *linepos, *linevel, ptposvel);
   }
+  CHECK(cBc != NOCOLLIDE);
   if(likely(cBc == 2))
     cBc = NOCOLLIDE;
   return make_pair(cBc, pos);
 }
+
+/*
+#include "parse.h"
+class CollideOhgod {
+  public:
+  CollideOhgod() {
+    vector<string> cst = tokenize("00000075fd82148a 000000048e254405 00000075dfb5fe8f 000000061f1e2ee6 | 00000004fe86a300 000000003d697936 00000004f98f4a01 00000000803da05b | 0000007899798000 0000000d1a456000 0000007899798000 000000001f9a7000 | 0000000000000000 0000000000000000 0000000000000000 0000000000000000", "|");
+    vector<Coord4> tst;
+    for(int i = 0; i < cst.size(); i++) {
+      vector<string> tok = tokenize(cst[i], " ");
+      tst.push_back(Coord4(coordFromRawstr(tok[0]), coordFromRawstr(tok[1]), coordFromRawstr(tok[2]), coordFromRawstr(tok[3])));
+    }
+    CHECK(doCollisionNN(tst[0], tst[1], tst[2], tst[3]).first != NOCOLLIDE);
+  }
+} cog;
+*/
 
 inline pair<Coord, Coord2> doCollisionNU(const Coord4 &l1p, const Coord4 &l1v, const Coord4 &l2p, const Coord4 &l2v) {
   return doCollisionNN(l1p, l1v, l2p, l2v); // this can probably be optimized

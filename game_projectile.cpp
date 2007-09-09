@@ -152,7 +152,7 @@ void Projectile::render(const vector<Coord2> &tankposes) const {
   }
   
   if(visible) {
-    if(projtype.shape() == PS_LINE || projtype.shape() == PS_LINE_AIRBRAKE || projtype.shape() == PS_ARROW || projtype.shape() == PS_STAR || projtype.shape() == PS_DRONE) {
+    if(projtype.shape() == PS_LINE || projtype.shape() == PS_LINE_AIRBRAKE || projtype.shape() == PS_ARROW || projtype.shape() == PS_STAR || projtype.shape() == PS_DRONE || projtype.shape() == PS_ARCPIECE) {
       vector<Coord4> ps = polys(now);
       for(int i = 0; i < ps.size(); i++)
         drawLine(ps[i], projtype.visual_thickness());
@@ -210,6 +210,7 @@ void Projectile::checksum(Adler32 *adl) const {
   } else if(projtype.shape() == PS_STAR) {
     adler(adl, star_facing);
   } else if(projtype.shape() == PS_DRONE) {
+  } else if(projtype.shape() == PS_ARCPIECE) {
   } else if(projtype.shape() == PS_INVISIBLE) {
   } else {
     CHECK(0);
@@ -377,6 +378,10 @@ vector<Coord4> Projectile::polys(const ProjPostState &stat) const {
       lpt = npt;
     }
     rv.push_back(Coord4(lpt, opt));
+  } else if(projtype.shape() == PS_ARCPIECE) {
+    Coord arcrad = (Coord)projtype.arc_width() / projtype.arc_units() / 2;
+    Coord2 origin = stat.pi.pos - makeAngle(stat.pi.d) * stat.distance_traveled;
+    rv.push_back(Coord4(origin + makeAngle(stat.pi.d - arcrad) * stat.distance_traveled, origin + makeAngle(stat.pi.d + arcrad) * stat.distance_traveled));
   } else {
     CHECK(0);
   }
@@ -439,6 +444,8 @@ Projectile::Projectile(const Coord2 &in_pos, Coord in_d, const IDBProjectileAdju
     star_facing = rng->frand() * 2 * PI;
   } else if(projtype.shape() == PS_DRONE) {
     now.hunter_vel = 0;
+  } else if(projtype.shape() == PS_ARCPIECE) {
+    CHECK(projtype.motion() == PM_NORMAL || projtype.motion() == PM_AIRBRAKE);
   } else if(projtype.shape() == PS_INVISIBLE) {
   } else {
     CHECK(0);

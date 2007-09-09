@@ -490,6 +490,7 @@ void parseProjectile(kvData *chunk, bool reload, ErrorAccumulator &accum) {
     allowed_shapes.insert("line");
     allowed_shapes.insert("drone");
     allowed_shapes.insert("arrow");
+    allowed_shapes.insert("arcpiece");
   } else if(motion == "missile") {
     titem->motion = PM_MISSILE;
     titem->missile_stabstart = parseSingleItem<float>(chunk->consume("missile_stabstart"));
@@ -572,6 +573,11 @@ void parseProjectile(kvData *chunk, bool reload, ErrorAccumulator &accum) {
     titem->shape = PS_DRONE;
     titem->drone_radius = parseSingleItem<float>(chunk->consume("drone_radius"));
     titem->drone_spike = parseSingleItem<float>(chunk->consume("drone_spike"));
+  } else if(shape == "arcpiece") {
+    titem->shape = PS_ARCPIECE;
+    titem->arc_width = parseSingleItem<float>(chunk->consume("arc_width"));
+    titem->arc_units = parseSingleItem<int>(chunk->consume("arc_units"));
+    CHECK(titem->arc_units >= 1);
   } else if(shape == "invisible") {
     titem->shape = PS_INVISIBLE;
     has_color = false;
@@ -647,6 +653,10 @@ void parseDeploy(kvData *chunk, bool reload, ErrorAccumulator &accum) {
     titem->directed_approach = parseWithDefault(chunk, "directed_approach", 0.);
   } else if(type == "reflected") {
     titem->type = DT_REFLECTED;
+  } else if(type == "arc") {
+    titem->type = DT_ARC;
+    titem->arc_width = parseSingleItem<float>(chunk->consume("width"));
+    titem->arc_units = parseSingleItem<int>(chunk->consume("units"));
   } else if(type == "explode") {
     titem->type = DT_EXPLODE;
     titem->exp_minsplits = parseSingleItem<int>(chunk->consume("exp_minsplits"));

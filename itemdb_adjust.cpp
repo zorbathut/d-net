@@ -19,19 +19,22 @@ template<typename T> vector<typename IDBItemProperties<T>::adjusted> adjust_vect
  
 IDBDType IDBDeployAdjust::type() const { return idb->type; };
 
-int IDBDeployAdjust::exp_minsplits() const { return idb->exp_minsplits; };
-int IDBDeployAdjust::exp_maxsplits() const { return idb->exp_maxsplits; };
+int IDBDeployAdjust::exp_minsplits() const { CHECK(idb->type == DT_EXPLODE); return idb->exp_minsplits; };
+int IDBDeployAdjust::exp_maxsplits() const { CHECK(idb->type == DT_EXPLODE); return idb->exp_maxsplits; };
 
-int IDBDeployAdjust::exp_minsplitsize() const { return idb->exp_minsplitsize; };
-int IDBDeployAdjust::exp_maxsplitsize() const { return idb->exp_maxsplitsize; };
+int IDBDeployAdjust::exp_minsplitsize() const { CHECK(idb->type == DT_EXPLODE); return idb->exp_minsplitsize; };
+int IDBDeployAdjust::exp_maxsplitsize() const { CHECK(idb->type == DT_EXPLODE); return idb->exp_maxsplitsize; };
 
-int IDBDeployAdjust::exp_shotspersplit() const { return idb->exp_shotspersplit; };
+int IDBDeployAdjust::exp_shotspersplit() const { CHECK(idb->type == DT_EXPLODE); return idb->exp_shotspersplit; };
+
+float IDBDeployAdjust::directed_range() const { CHECK(idb->type == DT_DIRECTED); return idb->directed_range; };
+float IDBDeployAdjust::directed_approach() const { CHECK(idb->type == DT_DIRECTED); return idb->directed_approach; };
+
+float IDBDeployAdjust::arc_width() const { CHECK(idb->type == DT_ARC); return idb->arc_width; };
+int IDBDeployAdjust::arc_units() const { CHECK(idb->type == DT_ARC); return idb->arc_units; };
 
 float IDBDeployAdjust::anglestddev() const { return idb->anglestddev; };
 float IDBDeployAdjust::anglemodifier() const { return idb->anglemodifier; };
-
-float IDBDeployAdjust::directed_range() const { return idb->directed_range; };
-float IDBDeployAdjust::directed_approach() const { return idb->directed_approach; };
 
 vector<IDBDeployAdjust> IDBDeployAdjust::chain_deploy() const { return adjust_vector(idb->chain_deploy, adjust); }
 vector<IDBProjectileAdjust> IDBDeployAdjust::chain_projectile() const { return adjust_vector(idb->chain_projectile, adjust); }
@@ -44,6 +47,8 @@ float IDBDeployAdjust::stats_damagePerShot() const {
     mult = 1.0;
   } else if(idb->type == DT_EXPLODE) {
     mult = (exp_minsplits() + exp_maxsplits()) / 2.0 * exp_shotspersplit();
+  } else if(idb->type == DT_ARC) {
+    mult = arc_units();
   } else {
     CHECK(0);
   }
@@ -190,6 +195,9 @@ float IDBProjectileAdjust::drone_spike() const { CHECK(idb->shape == PS_DRONE); 
 
 int IDBProjectileAdjust::star_spikes() const { CHECK(idb->shape == PS_STAR); return idb->star_spikes; }
 float IDBProjectileAdjust::star_radius() const { CHECK(idb->shape == PS_STAR); return idb->star_radius; }
+
+float IDBProjectileAdjust::arc_width() const { CHECK(idb->shape == PS_ARCPIECE); return idb->arc_width; }
+int IDBProjectileAdjust::arc_units() const { CHECK(idb->shape == PS_ARCPIECE); return idb->arc_units; }
 
 float IDBProjectileAdjust::visual_thickness() const { return idb->visual_thickness; };
 Color IDBProjectileAdjust::color() const { return idb->color; };

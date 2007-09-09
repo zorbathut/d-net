@@ -27,6 +27,7 @@
     - Make long projectiles impacting the wall render part of the projectile, to avoid the "black target space" issue
   - Task-analyze the UI
   - Explain the "quantity" and "recommended loadout" lines better
+  - Batch shit in rendering better
   - Final weapons
     - I'd love to make HK higher firerate. Is there some way I can do this?
     - Special autocannon

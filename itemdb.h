@@ -156,6 +156,9 @@ struct IDBProjectile {
     int star_spikes;
     float star_radius;
     
+    float arc_width;
+    int arc_units;
+    
     float visual_thickness;
     Color color;
   
@@ -177,15 +180,18 @@ struct IDBDeploy {
   float anglemodifier;
   float anglestddev;
 
+  float directed_range;
+  float directed_approach;
+  
+  float arc_width;
+  int arc_units;
+  
   int exp_minsplits;
   int exp_maxsplits;
   int exp_minsplitsize;
   int exp_maxsplitsize;
 
   int exp_shotspersplit;
-  
-  float directed_range;
-  float directed_approach;
 
   vector<const IDBDeploy *> chain_deploy;
   vector<const IDBProjectile *> chain_projectile;
@@ -408,6 +414,9 @@ public:
     int star_spikes() const;
     float star_radius() const;
     
+    float arc_width() const;
+    int arc_units() const;
+    
     float visual_thickness() const;
     Color color() const;
   
@@ -446,11 +455,14 @@ public:
 
   int exp_shotspersplit() const;
 
-  float anglestddev() const;
-  float anglemodifier() const;
-
   float directed_range() const;
   float directed_approach() const;
+
+  float arc_width() const;
+  int arc_units() const;
+
+  float anglestddev() const;
+  float anglemodifier() const;
   
   vector<IDBDeployAdjust> chain_deploy() const;
   vector<IDBProjectileAdjust> chain_projectile() const;

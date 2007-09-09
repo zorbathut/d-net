@@ -238,6 +238,7 @@ void deployProjectile(const IDBDeployAdjust &deploy, const DeployLocation &locat
     CHECK(!tang);
     proji.push_back(make_pair(location.tank().getMinePoint(gpc.gic->rng), location.tank().pi.d));
   } else if(type == DT_DIRECTED) {
+    CHECK(!tang);
     CHECK(!proji.size());
     int cid = gpc.gic->getClosestFoeId(location.pos(), gpc.owner_id());
     if(cid != -1) {
@@ -250,8 +251,14 @@ void deployProjectile(const IDBDeployAdjust &deploy, const DeployLocation &locat
     if(!proji.size())
       proji.push_back(make_pair(location.pos(), gpc.gic->rng->frand() * PI * 2));
   } else if(type == DT_REFLECTED) {
+    CHECK(!tang);
     CHECK(!location.isTank());
     proji.push_back(make_pair(location.pos() + makeAngle(reflect(location.d(), location.impacted_ang())) * 0.01, reflect(location.d(), location.impacted_ang())));
+  } else if(type == DT_ARC) {
+    CHECK(!tang);
+    CHECK(deploy.anglestddev() == 0);
+    for(int i = 0; i < deploy.arc_units(); i++)
+      proji.push_back(make_pair(location.pos(), location.d() + (Coord)deploy.arc_width() * (i * 2 + 1 - deploy.arc_units()) / deploy.arc_units() / 2));
   } else if(type == DT_EXPLODE) {
     vector<float> ang;
     {
