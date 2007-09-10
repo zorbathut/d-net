@@ -160,10 +160,9 @@ template<typename Model> void doMerge(const string &csv, const string &unmerged,
       preproc.push_back(kvd);
     }
     
-    /*
     CHECK(done.size() == tdd.size());
     for(typename map<string, typename Model::Data>::const_iterator itr = tdd.begin(); itr != tdd.end(); itr++)
-      CHECK(done.count(itr->first));*/
+      CHECK(done.count(itr->first));
   }
   
   processAndWrite<Model>(tdd, preproc, merged);
