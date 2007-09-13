@@ -81,7 +81,7 @@ projectile {
 deploy {
   name=deploy.weapon.rebounderdrone.reflection
   type=directed
-  directed_range=1000
+  directed_range=1000000000
   directed_approach=0.5
   anglestddev=0.03
   projectile=projectile.weapon.rebounderdrone.reflection

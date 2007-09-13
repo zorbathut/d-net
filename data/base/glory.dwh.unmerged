@@ -1,4 +1,8 @@
 
+###########################
+#
+#   None
+
 text {
   name=text.glory.none
   data=When destroyed, a tank's reactor core tends to detonate with impressive fireworks. Compared to tank armor, however, this explosion is not very impressive.
@@ -13,7 +17,7 @@ warhead {
 projectile {
   name=projectile.glory.none.core
   visual_thickness=0.6
-  velocity=40
+  velocity=60
   color=1.0, 0.8, 0.3
   motion=airbrake
   
@@ -43,7 +47,7 @@ deploy {
 warhead {
   name=warhead.glory.none.blast
   radiusdamage=MERGE(5) explosive
-  radiusfalloff=6
+  radiusfalloff=9
   radiusexplosive=1
   wallremovalradius=2
 }
@@ -67,6 +71,9 @@ glory {
   text=text.glory.none
 }
 
+###########################
+#
+#   Shaped Charges
 
 text {
   name=text.glory.shapedcharges
@@ -135,6 +142,9 @@ glory {
   text=text.glory.shapedcharges
 }
 
+###########################
+#
+#   Plasma Charge
 
 text {
   name=text.glory.plasmacharge
@@ -244,6 +254,9 @@ glory {
   text=text.glory.plasmacharge
 }
 
+###########################
+#
+#   Vengeance Pulse
 
 text {
   name=text.glory.vengeancepulse
@@ -312,6 +325,9 @@ glory {
   text=text.glory.vengeancepulse
 }
 
+###########################
+#
+#   Core Explosive
 
 text {
   name=text.glory.coreexplosive
@@ -380,6 +396,9 @@ glory {
   text=text.glory.coreexplosive
 }
 
+###########################
+#
+#   Stasis Chamber
 
 text {
   name=text.glory.stasischamber
@@ -448,6 +467,9 @@ glory {
   text=text.glory.stasischamber
 }
 
+###########################
+#
+#   Overload Chip
 
 text {
   name=text.glory.overloadchip
@@ -516,6 +538,9 @@ glory {
   text=text.glory.overloadchip
 }
 
+###########################
+#
+#   Kamikaze Warhead
 
 text {
   name=text.glory.kamikazewarhead
@@ -584,6 +609,9 @@ glory {
   text=text.glory.kamikazewarhead
 }
 
+###########################
+#
+#   The Device
 
 text {
   name=text.glory.thedevice
@@ -652,6 +680,9 @@ glory {
   text=text.glory.thedevice
 }
 
+###########################
+#
+#   Deadman's Nuke
 
 text {
   name=text.glory.deadmansnuke
@@ -720,6 +751,9 @@ glory {
   text=text.glory.deadmansnuke
 }
 
+###########################
+#
+#   Immolation Device
 
 text {
   name=text.glory.immolationdevice
@@ -788,6 +822,9 @@ glory {
   text=text.glory.immolationdevice
 }
 
+###########################
+#
+#   Core Conversion
 
 text {
   name=text.glory.coreconversion

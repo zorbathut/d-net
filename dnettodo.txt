@@ -172,25 +172,16 @@ Take a "queueSound" with Sound, volume, fade.
 Sound gets loaded, much like dvec2.
 Then there's IDBSoundPack items. This sounds good.
 
---- Game logic
-- All projectiles must tick before they do anything
-- If an impact happens on a single frame, it should spawn the impact effects *that frame*
-
-
-* Tick
-* Collide
-* Anything that spawns get ticked, which means it can end up rendered *inside* a wall!
-
-* Solution: like tanks, have "now" and "next" positions. Render projectiles at their "now" positions.
-
-
-So:
-
-* Projectile created
-* Creates "now" location (i.e., ticks)
-* Flys around
-* Render "now"
-*Next cycle
-* Ticks
-* Collides with the new "now"
-* On impact, destroys and spawns new shit, which does not collide
+--- Glory devices
+None: Normal blast
+Shaped Charges: big blast
+Plasma Charge: blue spikes
+Vengeance Pulse: Large shotgun blast towards the killing tank
+Core Explosive: Plasma-charge-like shots out, energy DPS on impact
+Stasis Chamber: Shrapnel blast of projectiles
+Overload Chip: Lots of tesla spikes from the tank itself
+Kamikaze Warhead: airbrake arcs, half-circles, explosions at the end
+The Device: Fires out homing EMP DPS drones that include tesla spike generators
+Deadman's Nuke: Angel-cannon explosion
+Immolation Device: Multiple nearby explosions
+Core Conversion: DPS explosion, with spew of airbrake projectiles
