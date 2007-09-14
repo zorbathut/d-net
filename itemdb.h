@@ -109,8 +109,8 @@ struct IDBWarhead {
   vector<const IDBEffects *> effects_impact;
 };
 
-enum IDBPMotion { PM_NORMAL, PM_MISSILE, PM_AIRBRAKE, PM_BOOMERANG, PM_MINE, PM_SPIDERMINE, PM_HUNTER, PM_DPS, PM_DELAY, PM_LAST };
-enum IDBPShape { PS_LINE, PS_LINE_AIRBRAKE, PS_ARROW, PS_DRONE, PS_STAR, PS_ARCPIECE, PS_INVISIBLE };
+enum IDBPMotion { PM_NORMAL, PM_MISSILE, PM_AIRBRAKE, PM_BOOMERANG, PM_MINE, PM_SPIDERMINE, PM_HUNTER, PM_DPS, PM_DELAY, PM_TESLA, PM_LAST };
+enum IDBPShape { PS_LINE, PS_LINE_AIRBRAKE, PS_ARROW, PS_DRONE, PS_STAR, PS_ARCPIECE, PS_TESLA, PS_INVISIBLE };
 
 struct IDBProjectile {
   IDBPMotion motion;
@@ -138,6 +138,8 @@ struct IDBProjectile {
     float dps_duration;
     vector<const IDBWarhead *> dps_instant_warhead;
     vector<pair<int, Color> > dps_visuals;
+    
+    float tesla_radius;
     
     float delay_duration;
   
@@ -398,6 +400,8 @@ public:
     float dps_duration() const;
     vector<IDBWarheadAdjust> dps_instant_warhead() const;
     const vector<pair<int, Color> > &dps_visuals() const;
+    
+    float tesla_radius() const;
     
     float delay_duration() const;
   

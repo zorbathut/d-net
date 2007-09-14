@@ -44,6 +44,7 @@ smart_ptr<GfxEffects> GfxPath(vector<Float2> path, Float2 pos_start, Float2 pos_
 smart_ptr<GfxEffects> GfxPing(Float2 pos, float radius_d, float thickness_d, float life, Color color);
 smart_ptr<GfxEffects> GfxBlast(Float2 center, float radius, Color bright, Color dim);
 smart_ptr<GfxEffects> GfxIonBlast(Float2 center, float duration, float radius, const vector<pair<int, Color> > &visuals);
+smart_ptr<GfxEffects> GfxLightning(Float2 start, Float2 end);
 
 class IDBEffectsAdjust;
 smart_ptr<GfxEffects> GfxIdb(Float2 center, float normal, Float2 inertia, const IDBEffectsAdjust &effect);

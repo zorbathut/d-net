@@ -181,6 +181,8 @@ float IDBProjectileAdjust::dps_duration() const { CHECK(idb->motion == PM_DPS); 
 vector<IDBWarheadAdjust> IDBProjectileAdjust::dps_instant_warhead() const { CHECK(idb->motion == PM_DPS); return adjust_vector(idb->dps_instant_warhead, adjust); }
 const vector<pair<int, Color> > &IDBProjectileAdjust::dps_visuals() const { CHECK(idb->motion == PM_DPS); return idb->dps_visuals; }
 
+float IDBProjectileAdjust::tesla_radius() const { CHECK(idb->motion == PM_TESLA); return idb->tesla_radius; }
+
 float IDBProjectileAdjust::delay_duration() const { CHECK(idb->motion == PM_DELAY); return idb->delay_duration; }
 
 // Shape-related functions

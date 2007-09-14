@@ -987,7 +987,6 @@ warhead {
   radiuscolor_bright=000
 }
 
-
 projectile {
   name=projectile.bombardment.ionbeam
   motion=dps

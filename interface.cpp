@@ -76,7 +76,8 @@ int StdMenuItem::tick(const Keystates &keys) {
         *scale_posfloat -= Coord(1) / 16;
       if(keys.r.down)
         *scale_posfloat += Coord(1) / 16;
-      *scale_posfloat = clamp(*scale_posfloat, 0, scale_labels.size() - 1);
+      if(keys.l.down || keys.r.down)
+        *scale_posfloat = clamp(*scale_posfloat, 0, scale_labels.size() - 1);
     } else {
       CHECK(scale_posint);
       if(keys.l.down)

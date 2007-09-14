@@ -61,7 +61,7 @@ all: d-net vecedit
 clean:
 	rm -rf build/*.o *.exe build/*.d build/*.S data/shopcache.dwh $(patsubst %,data/base/%.dwh,$(MERGETYPES)) build/*.csv
 
-STDRUN = --nofullscreen --debugitems --startingPhase=7 --debugControllers=2 --factionMode=3 --nullControllers=11 --writeTarget= --auto_newgame --nocullShopTree --httpd_port=616 --noshopcache --runTests --noaudio --perfbar --nofastForwardOnNoCache
+STDRUN = --nofullscreen --debugitems --startingPhase=8 --debugControllers=2 --factionMode=3 --nullControllers=11 --writeTarget= --auto_newgame --nocullShopTree --httpd_port=616 --noshopcache --runTests --noaudio --perfbar --nofastForwardOnNoCache
 
 run: d-net
 	./d-net.exe $(STDRUN)

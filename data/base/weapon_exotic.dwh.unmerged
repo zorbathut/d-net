@@ -410,17 +410,22 @@ text {
 
 warhead {
   name=warhead.weapon.teslaspike
-  radiusdamage=MERGE exotic
-  radiusfalloff=14
-  radiusexplosive=0
-  radiuscolor_bright=ccf
-  radiuscolor_dim=458
+  impactdamage=MERGE(1) exotic
+}
+
+projectile {
+  name=projectile.weapon.teslaspike
+  motion=tesla
+  
+  radius=14
+  
+  warhead=warhead.weapon.teslaspike
 }
 
 deploy {
   name=deploy.weapon.teslaspike
   type=centroid
-  warhead=warhead.weapon.teslaspike
+  projectile=projectile.weapon.teslaspike
 }
 
 launcher {

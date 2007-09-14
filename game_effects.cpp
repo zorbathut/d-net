@@ -196,7 +196,49 @@ private:
 
 smart_ptr<GfxEffects> GfxIonBlast(Float2 center, float duration, float radius, const vector<pair<int, Color> > &visuals) {
   return smart_ptr<GfxEffects>(new GfxEffectsIonBlast(center, duration, radius, visuals)); }
+
+float dpp = 0.1;
+void genlofs(vector<float> *lofs, int s, int e) {
+  float ale = dpp * (e - s) - abs((*lofs)[s] - (*lofs)[e]);
+  float opt = ((*lofs)[s] + (*lofs)[e]) / 2;
+  (*lofs)[(s + e) / 2] = unsync().gaussian_scaled(10) * ale + opt;
+  if(e - s > 2) {
+    genlofs(lofs, s, (s + e) / 2);
+    genlofs(lofs, (s + e) / 2, e);
+  }
+}
+
+class GfxEffectsLightning : public GfxEffects {
+public:
+    
+  virtual void render() const {
+    setBaseColor();
+    CHECK(lofs.size());
+    for(int i = 0; i < lofs.size() - 1; i++)
+      drawLine(rotate(Float2((float)i / lofs.size(), lofs[i]) * l, d) + start, rotate(Float2((float)(i + 1) / lofs.size(), lofs[i + 1]) * l, d) + start, 0.5);
+  }
   
+  GfxEffectsLightning(Float2 start, Float2 end) : GfxEffects(0.8, Color(0.2, 0.3, 0.9), false), start(start) {
+    lofs.resize(17);
+    lofs[0] = 0;
+    lofs[16] = 0;
+    genlofs(&lofs, 0, 16);
+    
+    d = getAngle(end - start);
+    l = len(end - start);
+  };
+  
+private:
+  
+  Float2 start;
+  float d;
+  float l;
+  vector<float> lofs;
+};
+  
+smart_ptr<GfxEffects> GfxLightning(Float2 start, Float2 end) {
+  return smart_ptr<GfxEffects>(new GfxEffectsLightning(start, end)); }
+
 class GfxEffectsIdbParticle : public GfxEffects {
 public:
     
