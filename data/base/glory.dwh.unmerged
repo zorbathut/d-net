@@ -528,55 +528,79 @@ text {
 }
 
 warhead {
-  name=warhead.glory.stasischamber.core
-  impactdamage=MERGE(1) kinetic
-  wallremovalradius=1
+  name=warhead.glory.stasischamber.corealpha
+  impactdamage=MERGE(5) kinetic
+  wallremovalradius=4
 }
 
 projectile {
-  name=projectile.glory.stasischamber.core
-  visual_thickness=0.6
-  velocity=40
-  color=1.0, 0.8, 0.3
+  name=projectile.glory.stasischamber.corealpha
+  visual_thickness=1.0
+  velocity=220
+  color=0.8, 0.8, 0.9
   motion=airbrake
   
-  airbrake_life=1
-  airbrake_slowdown=0.95
+  airbrake_life=1.8
+  airbrake_slowdown=0.6
   
   no_intersection=true
-  warhead=warhead.glory.stasischamber.core
+  warhead=warhead.glory.stasischamber.corealpha
+}
+
+warhead {
+  name=warhead.glory.stasischamber.corebeta
+  impactdamage=MERGE(1) kinetic
+}
+
+projectile {
+  name=projectile.glory.stasischamber.corebeta
+  visual_thickness=0.6
+  velocity=150
+  color=0.5, 0.5, 0.8
+  motion=airbrake
+  
+  airbrake_life=0.8
+  airbrake_slowdown=0.9
+  
+  no_intersection=true
+  warhead=warhead.glory.stasischamber.corebeta
+}
+
+deploy {
+  name=deploy.glory.stasischamber.corebeta
+  type=centroid
+  
+  anglestddev=0.2
+  
+  projectile=projectile.glory.stasischamber.corebeta
+}
+
+deploy {
+  name=deploy.glory.stasischamber.corealpha
+  type=centroid
+  
+  anglestddev=0.05
+  
+  projectile=projectile.glory.stasischamber.corealpha
 }
 
 deploy {
   name=deploy.glory.stasischamber.core
   type=explode
   
-  exp_minsplits=2
-  exp_maxsplits=4
+  exp_minsplits=4
+  exp_maxsplits=6
   exp_minsplitsize=1
-  exp_maxsplitsize=5
+  exp_maxsplitsize=4
   
-  exp_shotspersplit=4
+  exp_shotspersplit=5
   
-  anglestddev=0.1
+  anglestddev=0
   
-  projectile=projectile.glory.stasischamber.core
-}
-
-warhead {
-  name=warhead.glory.stasischamber.blast
-  radiusdamage=MERGE(5) kinetic
-  radiusfalloff=6
-  radiusexplosive=1
-  wallremovalradius=2
-}
-
-deploy {
-  name=deploy.glory.stasischamber.blast
-  
-  type=centroid
-  
-  warhead=warhead.glory.stasischamber.blast
+  deploy=deploy.glory.stasischamber.corebeta
+  deploy=deploy.glory.stasischamber.corebeta
+  deploy=deploy.glory.stasischamber.corebeta
+  deploy=deploy.glory.stasischamber.corealpha
 }
 
 glory {
@@ -584,7 +608,6 @@ glory {
   cost=MERGE
   
   core=deploy.glory.stasischamber.core
-  blast=deploy.glory.stasischamber.blast
   
   text=text.glory.stasischamber
 }
