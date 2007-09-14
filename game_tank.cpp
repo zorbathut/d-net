@@ -18,6 +18,7 @@ void Tank::init(IDBTankAdjust in_tank, Color in_color) {
   damageTakenPreviousHits = 0;
   damageEvents = 0;
   damageTaken = 0;
+  has_vengeance_location = false;
   
   damageDealt = 0;
   kills = 0;
@@ -298,7 +299,7 @@ CPosInfo Tank::getNextPosition() const {
   return CPosInfo(pi.pos + inertia.first / FPS, mod(pi.d + inertia.second / FPS + COORDPI * 2, COORDPI * 2));
 }
 
-bool Tank::takeDamage(Coord damage) {
+bool Tank::takeDamage(Coord damage, const Coord2 &target) {
   health -= damage;
   
   damageEvents++;
@@ -310,6 +311,9 @@ bool Tank::takeDamage(Coord damage) {
   } else {
     damageTaken += damage.toFloat();
   }
+  
+  has_vengeance_location = true;
+  vengeance_location = target;
   
   if(health <= 0 && live) {
     live = false;
@@ -460,6 +464,11 @@ bool Tank::isLive() const {
   return live;
 }
 
+Coord2 Tank::get_vengeance_location() const {
+  CHECK(has_vengeance_location);
+  return vengeance_location;
+}
+
 void Tank::respawn(Coord2 in_pos, Coord in_d) {
   IDBTankAdjust old_tank = tank;
   Color old_color = color;
@@ -548,6 +557,7 @@ void Tank::setDead() {
 
 Tank::Tank() : tank(NULL, IDBAdjustment()) /* do not fucking use this */ {
   pi = CPosInfo(Coord2(0, 0), 0);
+  has_vengeance_location = false;
   live = true;
   spawnShards = false;
   health = -47283;

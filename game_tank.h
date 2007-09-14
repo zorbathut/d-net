@@ -35,7 +35,7 @@ public:
   CPosInfo getNextPosition() const;
 
   // Modifiers
-  bool takeDamage(Coord amount); // returns true on kill
+  bool takeDamage(Coord amount, const Coord2 &owner); // returns true on kill
   void genEffects(const GameImpactContext &gic, ProjectilePack *projectiles, const Player *player);
   void respawn(Coord2 pos, Coord facing);
   void tryToFire(Button keys[SIMUL_WEAPONS], Player *player, ProjectilePack *projectiles, int id, const GameImpactContext &gic, vector<pair<string, float> > *status_text);
@@ -67,6 +67,8 @@ public:
   
   Coord getHealth() const;
   bool isLive() const;
+  
+  Coord2 get_vengeance_location() const;
   
   // Publics >:(
   
@@ -108,6 +110,9 @@ private:
 
   Coord damageDealt;
   int kills;
+  
+  bool has_vengeance_location;
+  Coord2 vengeance_location;
 
   Coord glory_resistance;
   int glory_resist_boost_frames;

@@ -153,7 +153,7 @@ text {
 
 warhead {
   name=warhead.glory.plasmacharge.blast
-  impactdamage=MERGE(4) energy
+  impactdamage=MERGE(4) explosive
   wallremovalradius=2
 }
 
@@ -189,7 +189,7 @@ deploy {
 
 warhead {
   name=warhead.glory.plasmacharge.bomb
-  radiusdamage=MERGE(15) exotic
+  radiusdamage=MERGE(15) explosive
   radiusfalloff=14
   radiusexplosive=1
   wallremovalradius=4
@@ -265,19 +265,19 @@ text {
 
 warhead {
   name=warhead.glory.vengeancepulse.core
-  impactdamage=MERGE(1) explosive
+  impactdamage=MERGE(1) kinetic
   wallremovalradius=1
 }
 
 projectile {
   name=projectile.glory.vengeancepulse.core
   visual_thickness=0.6
-  velocity=40
-  color=1.0, 0.8, 0.3
+  velocity=80
+  color=0.7, 0.7, 0.9
   motion=airbrake
   
   airbrake_life=1
-  airbrake_slowdown=0.95
+  airbrake_slowdown=0.25
   
   no_intersection=true
   warhead=warhead.glory.vengeancepulse.core
@@ -287,32 +287,83 @@ deploy {
   name=deploy.glory.vengeancepulse.core
   type=explode
   
-  exp_minsplits=2
-  exp_maxsplits=4
+  exp_minsplits=3
+  exp_maxsplits=5
   exp_minsplitsize=1
   exp_maxsplitsize=5
   
   exp_shotspersplit=4
   
-  anglestddev=0.1
+  anglestddev=0.05
   
   projectile=projectile.glory.vengeancepulse.core
 }
 
 warhead {
   name=warhead.glory.vengeancepulse.blast
-  radiusdamage=MERGE(5) explosive
-  radiusfalloff=6
-  radiusexplosive=1
-  wallremovalradius=2
+  impactdamage=MERGE(1) kinetic
+  wallremovalradius=1
+}
+
+projectile {
+  name=projectile.glory.vengeancepulse.blast
+  visual_thickness=1.0
+  velocity=60
+  color=0.7, 0.7, 0.9
+  motion=airbrake
+  
+  airbrake_life=0.5
+  airbrake_slowdown=0.5
+  
+  no_intersection=true
+  warhead=warhead.glory.vengeancepulse.blast
 }
 
 deploy {
   name=deploy.glory.vengeancepulse.blast
   
-  type=centroid
+  type=explode
   
-  warhead=warhead.glory.vengeancepulse.blast
+  exp_minsplits=12
+  exp_maxsplits=20
+  exp_minsplitsize=1
+  exp_maxsplitsize=10
+  exp_shotspersplit=1
+  
+  anglestddev=0.1
+  
+  projectile=projectile.glory.vengeancepulse.blast
+}
+
+warhead {
+  name=warhead.glory.vengeancepulse.vengeance
+  impactdamage=MERGE(4) kinetic
+  wallremovalradius=1
+}
+
+projectile {
+  name=projectile.glory.vengeancepulse.vengeance
+  visual_thickness=1.0
+  velocity=180
+  color=0.7, 0.7, 0.9
+  motion=airbrake
+  
+  airbrake_life=1.5
+  airbrake_slowdown=0.5
+  
+  no_intersection=true
+  warhead=warhead.glory.vengeancepulse.vengeance
+}
+
+deploy {
+  name=deploy.glory.vengeancepulse.vengeance
+  
+  type=vengeance
+  multiple=10
+  
+  anglestddev=0.15
+  
+  projectile=projectile.glory.vengeancepulse.vengeance
 }
 
 glory {
@@ -321,6 +372,7 @@ glory {
   
   core=deploy.glory.vengeancepulse.core
   blast=deploy.glory.vengeancepulse.blast
+  blast=deploy.glory.vengeancepulse.vengeance
   
   text=text.glory.vengeancepulse
 }

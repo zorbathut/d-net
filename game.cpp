@@ -948,7 +948,7 @@ Coord2 Game::queryPlayerLocation(int id) const {
 
 void Game::kill(int id) {
   CHECK(gamemode == GMODE_DEMO);
-  tanks[id].takeDamage(1000000000);
+  tanks[id].takeDamage(1000000000, Coord2(0, 0));
 }
 
 void Game::respawnPlayer(int id, Coord2 pos, Coord facing) {

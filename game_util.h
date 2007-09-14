@@ -67,6 +67,7 @@ public:
   bool isTank() const;
 
   const Tank &tank() const;
+  Coord vengeance() const;
 
   Coord2 pos() const;
   Coord d() const;

@@ -657,6 +657,8 @@ void parseDeploy(kvData *chunk, bool reload, ErrorAccumulator &accum) {
     titem->type = DT_ARC;
     titem->arc_width = parseSingleItem<float>(chunk->consume("width"));
     titem->arc_units = parseSingleItem<int>(chunk->consume("units"));
+  } else if(type == "vengeance") {
+    titem->type = DT_VENGEANCE;
   } else if(type == "explode") {
     titem->type = DT_EXPLODE;
     titem->exp_minsplits = parseSingleItem<int>(chunk->consume("exp_minsplits"));
@@ -670,6 +672,8 @@ void parseDeploy(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   
   titem->anglestddev = parseWithDefault(chunk, "anglestddev", 0.0);
   titem->anglemodifier = parseWithDefault(chunk, "anglemodifier", 0.0);
+  
+  titem->multiple = parseWithDefault(chunk, "multiple", 1);
   
   titem->chain_deploy = parseSubclassSet(chunk, "deploy", deployclasses);
   titem->chain_projectile = parseSubclassSet(chunk, "projectile", projectileclasses);

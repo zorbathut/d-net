@@ -172,13 +172,15 @@ struct IDBProjectile {
 };
 
 // Normal specifies "Forward" for tanks, or "Centroid" on cases where there is no tank
-enum IDBDType { DT_NORMAL, DT_FORWARD, DT_REAR, DT_CENTROID, DT_MINEPATH, DT_DIRECTED, DT_REFLECTED, DT_ARC, DT_EXPLODE, DT_LAST };
+enum IDBDType { DT_NORMAL, DT_FORWARD, DT_REAR, DT_CENTROID, DT_MINEPATH, DT_DIRECTED, DT_REFLECTED, DT_ARC, DT_VENGEANCE, DT_EXPLODE, DT_LAST };
 
 struct IDBDeploy {
   IDBDType type;
 
   float anglemodifier;
   float anglestddev;
+  
+  int multiple;
 
   float directed_range;
   float directed_approach;
@@ -445,6 +447,11 @@ struct IDBDeployAdjust {
 public:
   typedef IDBDeploy base_type;
 
+  float anglestddev() const;
+  float anglemodifier() const;
+
+  int multiple() const;
+
   IDBDType type() const;
 
   int exp_minsplits() const;
@@ -460,9 +467,6 @@ public:
 
   float arc_width() const;
   int arc_units() const;
-
-  float anglestddev() const;
-  float anglemodifier() const;
   
   vector<IDBDeployAdjust> chain_deploy() const;
   vector<IDBProjectileAdjust> chain_projectile() const;
@@ -544,8 +548,9 @@ public:
   Money sellcost() const;
 
   float stats_averageDamage() const;
-  
-void checksum(Adler32 *adl) const;
+  float stats_averageDamageType(int type) const;
+
+  void checksum(Adler32 *adl) const;
   IDBGloryAdjust(const base_type *in_idb, const IDBAdjustment &in_adjust);
 };
 template<> struct IDBItemProperties<IDBGloryAdjust::base_type> {

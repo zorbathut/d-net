@@ -88,6 +88,11 @@ const Tank &DeployLocation::tank() const {
   return *tank_int;
 }
 
+Coord DeployLocation::vengeance() const {
+  CHECK(tank_int);
+  return getAngle(tank_int->get_vengeance_location() - tank_int->pi.pos);
+}
+
 Coord2 DeployLocation::pos() const {
   if(tank_int)
     return tank_int->pi.pos;
@@ -140,7 +145,7 @@ void dealDamage(Coord dmg, Tank *target, Tank *owner, const DamageFlags &flags) 
   //dprintf("Dealing %f damage\n", dmg);
   if(flags.glory)
     dmg *= 1 - target->getGloryResistance();
-  if(target->takeDamage(dmg) && flags.killcredit)
+  if(target->takeDamage(dmg, owner->pi.pos) && flags.killcredit)
     owner->addKill();
   owner->addDamage(dmg * flags.damagecredit);
 };
@@ -189,11 +194,11 @@ void detonateWarhead(const IDBWarheadAdjust &warhead, Coord2 pos, Coord normal, 
 
 void detonateWarheadDamageOnly(const IDBWarheadAdjust &warhead, Tank *impact, const vector<pair<float, Tank*> > &radius) {
   if(impact)
-    impact->takeDamage(warhead.impactdamage());
+    impact->takeDamage(warhead.impactdamage(), Coord2(0, 0));
   
   for(int i = 0; i < radius.size(); i++)
     if(radius[i].first < warhead.radiusfalloff())
-      radius[i].second->takeDamage(warhead.radiusdamage() / warhead.radiusfalloff() * (warhead.radiusfalloff() - radius[i].first));
+      radius[i].second->takeDamage(warhead.radiusdamage() / warhead.radiusfalloff() * (warhead.radiusfalloff() - radius[i].first), Coord2(0, 0));
 }
 
 void detonateBombardment(const IDBBombardmentAdjust &bombard, Coord2 pos, Coord direction, const GamePlayerContext &gpc) {
@@ -259,6 +264,9 @@ void deployProjectile(const IDBDeployAdjust &deploy, const DeployLocation &locat
     CHECK(deploy.anglestddev() == 0);
     for(int i = 0; i < deploy.arc_units(); i++)
       proji.push_back(make_pair(location.pos(), location.d() + (Coord)deploy.arc_width() * (i * 2 + 1 - deploy.arc_units()) / deploy.arc_units() / 2));
+  } else if(type == DT_VENGEANCE) {
+    CHECK(!tang);
+    proji.push_back(make_pair(location.pos(), location.vengeance()));
   } else if(type == DT_EXPLODE) {
     vector<float> ang;
     {
@@ -292,32 +300,34 @@ void deployProjectile(const IDBDeployAdjust &deploy, const DeployLocation &locat
   for(int i = 0; i < proji.size(); i++)
     proji[i].second += deploy.anglemodifier();
   
-  {
-    vector<IDBDeployAdjust> idd = deploy.chain_deploy();
-    for(int i = 0; i < idd.size(); i++)
-      for(int j = 0; j < proji.size(); j++)
-        deployProjectile(idd[i], DeployLocation(proji[j].first, proji[j].second), gpc, flags);
-  }
-  
-  {
-    vector<IDBProjectileAdjust> idp = deploy.chain_projectile();
-    for(int i = 0; i < idp.size(); i++)
-      for(int j = 0; j < proji.size(); j++)
-        gpc.projpack->add(Projectile(proji[j].first, proji[j].second, idp[i], gpc.gic->rng, flags));
-  }
-  
-  {
-    vector<IDBWarheadAdjust> idw = deploy.chain_warhead();
-    for(int i = 0; i < idw.size(); i++)
-      for(int j = 0; j < proji.size(); j++)
-        detonateWarhead(idw[i], proji[j].first, NO_NORMAL, Coord2(0, 0), NULL, gpc, flags, true);
-  }
-  
-  {
-    vector<IDBEffectsAdjust> idw = deploy.chain_effects();
-    for(int i = 0; i < idw.size(); i++)
-      for(int j = 0; j < proji.size(); j++)
-        gpc.gic->effects->push_back(GfxIdb(proji[j].first.toFloat(), 0, makeAngle(proji[j].second.toFloat()), idw[i]));
+  for(int m = 0; m < deploy.multiple(); m++) {
+    {
+      vector<IDBDeployAdjust> idd = deploy.chain_deploy();
+      for(int i = 0; i < idd.size(); i++)
+        for(int j = 0; j < proji.size(); j++)
+          deployProjectile(idd[i], DeployLocation(proji[j].first, proji[j].second), gpc, flags);
+    }
+    
+    {
+      vector<IDBProjectileAdjust> idp = deploy.chain_projectile();
+      for(int i = 0; i < idp.size(); i++)
+        for(int j = 0; j < proji.size(); j++)
+          gpc.projpack->add(Projectile(proji[j].first, proji[j].second, idp[i], gpc.gic->rng, flags));
+    }
+    
+    {
+      vector<IDBWarheadAdjust> idw = deploy.chain_warhead();
+      for(int i = 0; i < idw.size(); i++)
+        for(int j = 0; j < proji.size(); j++)
+          detonateWarhead(idw[i], proji[j].first, NO_NORMAL, Coord2(0, 0), NULL, gpc, flags, true);
+    }
+    
+    {
+      vector<IDBEffectsAdjust> idw = deploy.chain_effects();
+      for(int i = 0; i < idw.size(); i++)
+        for(int j = 0; j < proji.size(); j++)
+          gpc.gic->effects->push_back(GfxIdb(proji[j].first.toFloat(), 0, makeAngle(proji[j].second.toFloat()), idw[i]));
+    }
   }
 }
 

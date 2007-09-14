@@ -19,6 +19,11 @@ template<typename T> vector<typename IDBItemProperties<T>::adjusted> adjust_vect
  
 IDBDType IDBDeployAdjust::type() const { return idb->type; };
 
+float IDBDeployAdjust::anglestddev() const { return idb->anglestddev; };
+float IDBDeployAdjust::anglemodifier() const { return idb->anglemodifier; };
+
+int IDBDeployAdjust::multiple() const { return idb->multiple; };
+
 int IDBDeployAdjust::exp_minsplits() const { CHECK(idb->type == DT_EXPLODE); return idb->exp_minsplits; };
 int IDBDeployAdjust::exp_maxsplits() const { CHECK(idb->type == DT_EXPLODE); return idb->exp_maxsplits; };
 
@@ -33,9 +38,6 @@ float IDBDeployAdjust::directed_approach() const { CHECK(idb->type == DT_DIRECTE
 float IDBDeployAdjust::arc_width() const { CHECK(idb->type == DT_ARC); return idb->arc_width; };
 int IDBDeployAdjust::arc_units() const { CHECK(idb->type == DT_ARC); return idb->arc_units; };
 
-float IDBDeployAdjust::anglestddev() const { return idb->anglestddev; };
-float IDBDeployAdjust::anglemodifier() const { return idb->anglemodifier; };
-
 vector<IDBDeployAdjust> IDBDeployAdjust::chain_deploy() const { return adjust_vector(idb->chain_deploy, adjust); }
 vector<IDBProjectileAdjust> IDBDeployAdjust::chain_projectile() const { return adjust_vector(idb->chain_projectile, adjust); }
 vector<IDBWarheadAdjust> IDBDeployAdjust::chain_warhead() const { return adjust_vector(idb->chain_warhead, adjust); }
@@ -43,7 +45,7 @@ vector<IDBEffectsAdjust> IDBDeployAdjust::chain_effects() const { return adjust_
 
 float IDBDeployAdjust::stats_damagePerShot() const {
   float mult;
-  if(idb->type == DT_NORMAL || idb->type == DT_FORWARD || idb->type == DT_CENTROID || idb->type == DT_MINEPATH || idb->type == DT_REAR || idb->type == DT_DIRECTED || idb->type == DT_REFLECTED) {
+  if(idb->type == DT_NORMAL || idb->type == DT_FORWARD || idb->type == DT_CENTROID || idb->type == DT_MINEPATH || idb->type == DT_REAR || idb->type == DT_DIRECTED || idb->type == DT_REFLECTED || idb->type == DT_VENGEANCE) {
     mult = 1.0;
   } else if(idb->type == DT_EXPLODE) {
     mult = (exp_minsplits() + exp_maxsplits()) / 2.0 * exp_shotspersplit();
@@ -52,6 +54,8 @@ float IDBDeployAdjust::stats_damagePerShot() const {
   } else {
     CHECK(0);
   }
+  
+  mult *= multiple();
 
   float val = 0;
   
@@ -335,6 +339,14 @@ float IDBGloryAdjust::stats_averageDamage() const {
   for(int i = 0; i < vd.size(); i++)
     v += vd[i].stats_damagePerShot();
   return v;
+}
+float IDBGloryAdjust::stats_averageDamageType(int type) const {
+    // Sometimes I'm clever.
+  IDBAdjustment adj = adjust;
+  for(int i = 0; i < IDBAdjustment::DAMAGE_LAST; i++)
+    if(i != type)
+      adj.adjusts[i] = -100;
+  return IDBGloryAdjust(idb, adj).stats_averageDamage();
 }
 
 void IDBGloryAdjust::checksum(Adler32 *adl) const {

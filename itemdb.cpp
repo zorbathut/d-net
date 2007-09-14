@@ -410,7 +410,14 @@ public:
     return IDBBombardmentAdjust(item, IDBAdjustment(), 0).stats_damagePerShotType(type);
   }
 };
-  
+
+template<> class getDamageType<IDBGlory> {
+public:
+  float operator()(const IDBGlory *item, int type) {
+    return IDBGloryAdjust(item, IDBAdjustment()).stats_averageDamageType(type);
+  }
+};
+
 template<typename T> int gcolor(const T *item) {
   int dmg = -1;
   for(int i = 0; i < IDBAdjustment::DAMAGE_LAST; i++) {
@@ -432,6 +439,8 @@ Color HierarchyNode::getColor() const {
     return nhcolor[gcolor(weapon)];
   } else if(type == HNT_BOMBARDMENT) {
     return nhcolor[gcolor(bombardment)];
+  } else if(type == HNT_GLORY) {
+    return nhcolor[gcolor(glory)];
   } else if(type == HNT_EQUIPWEAPON) {
     int col = gcolor(equipweapon);
     if(equipweaponfirst)
