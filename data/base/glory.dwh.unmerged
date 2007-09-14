@@ -387,20 +387,86 @@ text {
 }
 
 warhead {
+  name=warhead.glory.coreexplosive.wallculler
+  impactdamage=MERGE(0) energy
+  wallremovalradius=2
+}
+
+warhead {
+  name=warhead.glory.coreexplosive.dps
+  radiusdamage=MERGE(10) energy
+  radiusfalloff=7
+  radiusexplosive=0
+  
+  radiuscolor_dim=000
+  radiuscolor_bright=000
+}
+
+projectile {
+  name=projectile.glory.coreexplosive.dps
+  motion=dps
+  duration=0.5
+  
+  visuals=5 018
+  visuals=3 88f
+  
+  warhead=warhead.glory.coreexplosive.dps
+  dps_instant_warhead=warhead.glory.coreexplosive.wallculler
+}
+
+deploy {
+  name=deploy.glory.coreexplosive.dps
+  
+  type=centroid
+  
+  projectile=projectile.glory.coreexplosive.dps
+}
+
+projectile {
+  name=projectile.glory.coreexplosive.chunk
+  
+  motion=normal
+  
+  visual_thickness=2.0
+  line_length=3
+  velocity=150
+  color=0.2, 0.8, 1.0
+  
+  durability=15
+  
+  deploy=deploy.glory.coreexplosive.dps
+}
+
+deploy {
+  name=deploy.glory.coreexplosive.chunk
+  type=explode
+  
+  exp_minsplits=5
+  exp_maxsplits=8
+  exp_minsplitsize=1
+  exp_maxsplitsize=8
+  
+  exp_shotspersplit=1
+  
+  anglestddev=0
+  
+  projectile=projectile.glory.coreexplosive.chunk
+}
+
+warhead {
   name=warhead.glory.coreexplosive.core
-  impactdamage=MERGE(1) explosive
-  wallremovalradius=1
+  impactdamage=MERGE(1) energy
 }
 
 projectile {
   name=projectile.glory.coreexplosive.core
-  visual_thickness=0.6
-  velocity=40
-  color=1.0, 0.8, 0.3
+  visual_thickness=0.8
+  velocity=60
+  color=0.2, 0.8, 1.0
   motion=airbrake
   
   airbrake_life=1
-  airbrake_slowdown=0.95
+  airbrake_slowdown=0.10
   
   no_intersection=true
   warhead=warhead.glory.coreexplosive.core
@@ -410,12 +476,12 @@ deploy {
   name=deploy.glory.coreexplosive.core
   type=explode
   
-  exp_minsplits=2
-  exp_maxsplits=4
+  exp_minsplits=3
+  exp_maxsplits=5
   exp_minsplitsize=1
   exp_maxsplitsize=5
   
-  exp_shotspersplit=4
+  exp_shotspersplit=5
   
   anglestddev=0.1
   
@@ -424,10 +490,13 @@ deploy {
 
 warhead {
   name=warhead.glory.coreexplosive.blast
-  radiusdamage=MERGE(5) explosive
-  radiusfalloff=6
-  radiusexplosive=1
-  wallremovalradius=2
+  radiusdamage=MERGE(5) energy
+  radiusfalloff=14
+  radiusexplosive=0
+  wallremovalradius=6
+  
+  radiuscolor_bright=8af
+  radiuscolor_dim=018
 }
 
 deploy {
@@ -442,8 +511,9 @@ glory {
   name=ROOT.Glory Devices.Core Explosive
   cost=MERGE
   
-  core=deploy.glory.coreexplosive.core
+  core=deploy.glory.coreexplosive.chunk
   blast=deploy.glory.coreexplosive.blast
+  blast=deploy.glory.coreexplosive.core
   
   text=text.glory.coreexplosive
 }
@@ -459,7 +529,7 @@ text {
 
 warhead {
   name=warhead.glory.stasischamber.core
-  impactdamage=MERGE(1) explosive
+  impactdamage=MERGE(1) kinetic
   wallremovalradius=1
 }
 
@@ -495,7 +565,7 @@ deploy {
 
 warhead {
   name=warhead.glory.stasischamber.blast
-  radiusdamage=MERGE(5) explosive
+  radiusdamage=MERGE(5) kinetic
   radiusfalloff=6
   radiusexplosive=1
   wallremovalradius=2
@@ -530,7 +600,7 @@ text {
 
 warhead {
   name=warhead.glory.overloadchip.core
-  impactdamage=MERGE(1) explosive
+  impactdamage=MERGE(1) energy
   wallremovalradius=1
 }
 
@@ -566,7 +636,7 @@ deploy {
 
 warhead {
   name=warhead.glory.overloadchip.blast
-  radiusdamage=MERGE(5) explosive
+  radiusdamage=MERGE(5) energy
   radiusfalloff=6
   radiusexplosive=1
   wallremovalradius=2
@@ -601,7 +671,7 @@ text {
 
 warhead {
   name=warhead.glory.kamikazewarhead.core
-  impactdamage=MERGE(1) explosive
+  impactdamage=MERGE(1) kinetic
   wallremovalradius=1
 }
 
@@ -637,7 +707,7 @@ deploy {
 
 warhead {
   name=warhead.glory.kamikazewarhead.blast
-  radiusdamage=MERGE(5) explosive
+  radiusdamage=MERGE(5) kinetic
   radiusfalloff=6
   radiusexplosive=1
   wallremovalradius=2
@@ -672,7 +742,7 @@ text {
 
 warhead {
   name=warhead.glory.thedevice.core
-  impactdamage=MERGE(1) explosive
+  impactdamage=MERGE(1) energy
   wallremovalradius=1
 }
 
@@ -708,7 +778,7 @@ deploy {
 
 warhead {
   name=warhead.glory.thedevice.blast
-  radiusdamage=MERGE(5) explosive
+  radiusdamage=MERGE(5) energy
   radiusfalloff=6
   radiusexplosive=1
   wallremovalradius=2
