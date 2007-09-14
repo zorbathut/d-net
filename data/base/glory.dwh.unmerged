@@ -343,13 +343,13 @@ warhead {
 
 projectile {
   name=projectile.glory.vengeancepulse.vengeance
-  visual_thickness=1.0
-  velocity=180
+  visual_thickness=0.7
+  velocity=250
   color=0.7, 0.7, 0.9
   motion=airbrake
   
-  airbrake_life=1.5
-  airbrake_slowdown=0.5
+  airbrake_life=1
+  airbrake_slowdown=0.25
   
   no_intersection=true
   warhead=warhead.glory.vengeancepulse.vengeance
@@ -359,9 +359,9 @@ deploy {
   name=deploy.glory.vengeancepulse.vengeance
   
   type=vengeance
-  multiple=10
+  multiple=20
   
-  anglestddev=0.15
+  anglestddev=0.10
   
   projectile=projectile.glory.vengeancepulse.vengeance
 }

@@ -227,70 +227,71 @@ void deployProjectile(const IDBDeployAdjust &deploy, const DeployLocation &locat
   
   vector<pair<Coord2, Coord> > proji;
   
-  if(type == DT_FORWARD) {
-    CHECK(location.isTank());
-    CHECK(!tang);
-    proji.push_back(make_pair(location.tank().getFiringPoint(), location.tank().pi.d));
-  } else if(type == DT_REAR) {
-    CHECK(location.isTank());
-    CHECK(!tang);
-    proji.push_back(make_pair(location.tank().getRearFiringPoint(), location.tank().pi.d + COORDPI));
-  } else if(type == DT_CENTROID) {
-    CHECK(!tang);
-    proji.push_back(make_pair(location.pos(), location.d()));
-  } else if(type == DT_MINEPATH) {
-    CHECK(location.isTank());
-    CHECK(!tang);
-    proji.push_back(make_pair(location.tank().getMinePoint(gpc.gic->rng), location.tank().pi.d));
-  } else if(type == DT_DIRECTED) {
-    CHECK(!tang);
-    CHECK(!proji.size());
-    int cid = gpc.gic->getClosestFoeId(location.pos(), gpc.owner_id());
-    if(cid != -1) {
-      CHECK(cid >= 0 && cid < gpc.gic->players.size());
-      Coord2 dp = gpc.gic->players[cid]->pi.pos;
-      dp -= location.pos();
-      if(len(dp) <= Coord(deploy.directed_range()))
-        proji.push_back(make_pair(location.pos() + normalize(dp) * deploy.directed_approach(), getAngle(dp)));
-    }
-    if(!proji.size())
-      proji.push_back(make_pair(location.pos(), gpc.gic->rng->frand() * PI * 2));
-  } else if(type == DT_REFLECTED) {
-    CHECK(!tang);
-    CHECK(!location.isTank());
-    proji.push_back(make_pair(location.pos() + makeAngle(reflect(location.d(), location.impacted_ang())) * 0.01, reflect(location.d(), location.impacted_ang())));
-  } else if(type == DT_ARC) {
-    CHECK(!tang);
-    CHECK(deploy.anglestddev() == 0);
-    for(int i = 0; i < deploy.arc_units(); i++)
-      proji.push_back(make_pair(location.pos(), location.d() + (Coord)deploy.arc_width() * (i * 2 + 1 - deploy.arc_units()) / deploy.arc_units() / 2));
-  } else if(type == DT_VENGEANCE) {
-    CHECK(!tang);
-    proji.push_back(make_pair(location.pos(), location.vengeance()));
-  } else if(type == DT_EXPLODE) {
-    vector<float> ang;
-    {
-      int ct = int(gpc.gic->rng->frand() * (deploy.exp_maxsplits() - deploy.exp_minsplits() + 1)) + deploy.exp_minsplits();
-      CHECK(ct <= deploy.exp_maxsplits() && ct >= deploy.exp_minsplits());
-      for(int i = 0; i < ct; i++)
-        ang.push_back(gpc.gic->rng->frand() * (deploy.exp_maxsplitsize() - deploy.exp_minsplitsize()) + deploy.exp_minsplitsize());
-      for(int i = 1; i < ang.size(); i++)
-        ang[i] += ang[i - 1];
-      float angtot = ang.back();
-      float shift = gpc.gic->rng->frand() * PI * 2;
-      for(int i = 0; i < ang.size(); i++) {
-        ang[i] *= PI * 2 / angtot;
-        ang[i] += shift;
+  for(int m = 0; m < deploy.multiple(); m++) {
+    if(type == DT_FORWARD) {
+      CHECK(location.isTank());
+      CHECK(!tang);
+      proji.push_back(make_pair(location.tank().getFiringPoint(), location.tank().pi.d));
+    } else if(type == DT_REAR) {
+      CHECK(location.isTank());
+      CHECK(!tang);
+      proji.push_back(make_pair(location.tank().getRearFiringPoint(), location.tank().pi.d + COORDPI));
+    } else if(type == DT_CENTROID) {
+      CHECK(!tang);
+      proji.push_back(make_pair(location.pos(), location.d()));
+    } else if(type == DT_MINEPATH) {
+      CHECK(location.isTank());
+      CHECK(!tang);
+      proji.push_back(make_pair(location.tank().getMinePoint(gpc.gic->rng), location.tank().pi.d));
+    } else if(type == DT_DIRECTED) {
+      CHECK(!tang);
+      int cid = gpc.gic->getClosestFoeId(location.pos(), gpc.owner_id());
+      if(cid != -1) {
+        CHECK(cid >= 0 && cid < gpc.gic->players.size());
+        Coord2 dp = gpc.gic->players[cid]->pi.pos;
+        dp -= location.pos();
+        if(len(dp) <= Coord(deploy.directed_range()))
+          proji.push_back(make_pair(location.pos() + normalize(dp) * deploy.directed_approach(), getAngle(dp)));
       }
+      if(!proji.size())
+        proji.push_back(make_pair(location.pos(), gpc.gic->rng->frand() * PI * 2));
+    } else if(type == DT_REFLECTED) {
+      CHECK(!tang);
+      CHECK(!location.isTank());
+      proji.push_back(make_pair(location.pos() + makeAngle(reflect(location.d(), location.impacted_ang())) * 0.01, reflect(location.d(), location.impacted_ang())));
+    } else if(type == DT_ARC) {
+      CHECK(!tang);
+      CHECK(deploy.anglestddev() == 0);
+      for(int i = 0; i < deploy.arc_units(); i++)
+        proji.push_back(make_pair(location.pos(), location.d() + (Coord)deploy.arc_width() * (i * 2 + 1 - deploy.arc_units()) / deploy.arc_units() / 2));
+    } else if(type == DT_VENGEANCE) {
+      CHECK(!tang);
+      proji.push_back(make_pair(location.pos(), location.vengeance()));
+    } else if(type == DT_EXPLODE) {
+      vector<float> ang;
+      {
+        int ct = int(gpc.gic->rng->frand() * (deploy.exp_maxsplits() - deploy.exp_minsplits() + 1)) + deploy.exp_minsplits();
+        CHECK(ct <= deploy.exp_maxsplits() && ct >= deploy.exp_minsplits());
+        for(int i = 0; i < ct; i++)
+          ang.push_back(gpc.gic->rng->frand() * (deploy.exp_maxsplitsize() - deploy.exp_minsplitsize()) + deploy.exp_minsplitsize());
+        for(int i = 1; i < ang.size(); i++)
+          ang[i] += ang[i - 1];
+        float angtot = ang.back();
+        float shift = gpc.gic->rng->frand() * PI * 2;
+        for(int i = 0; i < ang.size(); i++) {
+          ang[i] *= PI * 2 / angtot;
+          ang[i] += shift;
+        }
+      }
+      if(tang) {
+        *tang = ang;
+      }
+      for(int i = 0; i < ang.size(); i++)
+        for(int j = 0; j < deploy.exp_shotspersplit(); j++)
+          proji.push_back(make_pair(location.pos(), Coord(ang[i])));
+    } else {
+      CHECK(0);
     }
-    if(tang) {
-      *tang = ang;
-    }
-    for(int i = 0; i < ang.size(); i++)
-      for(int j = 0; j < deploy.exp_shotspersplit(); j++)
-        proji.push_back(make_pair(location.pos(), Coord(ang[i])));
-  } else {
-    CHECK(0);
   }
   
   CHECK(proji.size());
@@ -300,34 +301,32 @@ void deployProjectile(const IDBDeployAdjust &deploy, const DeployLocation &locat
   for(int i = 0; i < proji.size(); i++)
     proji[i].second += deploy.anglemodifier();
   
-  for(int m = 0; m < deploy.multiple(); m++) {
-    {
-      vector<IDBDeployAdjust> idd = deploy.chain_deploy();
-      for(int i = 0; i < idd.size(); i++)
-        for(int j = 0; j < proji.size(); j++)
-          deployProjectile(idd[i], DeployLocation(proji[j].first, proji[j].second), gpc, flags);
-    }
-    
-    {
-      vector<IDBProjectileAdjust> idp = deploy.chain_projectile();
-      for(int i = 0; i < idp.size(); i++)
-        for(int j = 0; j < proji.size(); j++)
-          gpc.projpack->add(Projectile(proji[j].first, proji[j].second, idp[i], gpc.gic->rng, flags));
-    }
-    
-    {
-      vector<IDBWarheadAdjust> idw = deploy.chain_warhead();
-      for(int i = 0; i < idw.size(); i++)
-        for(int j = 0; j < proji.size(); j++)
-          detonateWarhead(idw[i], proji[j].first, NO_NORMAL, Coord2(0, 0), NULL, gpc, flags, true);
-    }
-    
-    {
-      vector<IDBEffectsAdjust> idw = deploy.chain_effects();
-      for(int i = 0; i < idw.size(); i++)
-        for(int j = 0; j < proji.size(); j++)
-          gpc.gic->effects->push_back(GfxIdb(proji[j].first.toFloat(), 0, makeAngle(proji[j].second.toFloat()), idw[i]));
-    }
+  {
+    vector<IDBDeployAdjust> idd = deploy.chain_deploy();
+    for(int i = 0; i < idd.size(); i++)
+      for(int j = 0; j < proji.size(); j++)
+        deployProjectile(idd[i], DeployLocation(proji[j].first, proji[j].second), gpc, flags);
+  }
+  
+  {
+    vector<IDBProjectileAdjust> idp = deploy.chain_projectile();
+    for(int i = 0; i < idp.size(); i++)
+      for(int j = 0; j < proji.size(); j++)
+        gpc.projpack->add(Projectile(proji[j].first, proji[j].second, idp[i], gpc.gic->rng, flags));
+  }
+  
+  {
+    vector<IDBWarheadAdjust> idw = deploy.chain_warhead();
+    for(int i = 0; i < idw.size(); i++)
+      for(int j = 0; j < proji.size(); j++)
+        detonateWarhead(idw[i], proji[j].first, NO_NORMAL, Coord2(0, 0), NULL, gpc, flags, true);
+  }
+  
+  {
+    vector<IDBEffectsAdjust> idw = deploy.chain_effects();
+    for(int i = 0; i < idw.size(); i++)
+      for(int j = 0; j < proji.size(); j++)
+        gpc.gic->effects->push_back(GfxIdb(proji[j].first.toFloat(), 0, makeAngle(proji[j].second.toFloat()), idw[i]));
   }
 }
 
