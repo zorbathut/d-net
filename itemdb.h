@@ -109,7 +109,7 @@ struct IDBWarhead {
   vector<const IDBEffects *> effects_impact;
 };
 
-enum IDBPMotion { PM_NORMAL, PM_MISSILE, PM_AIRBRAKE, PM_BOOMERANG, PM_MINE, PM_SPIDERMINE, PM_HUNTER, PM_DPS, PM_DELAY, PM_LAST };
+enum IDBPMotion { PM_NORMAL, PM_MISSILE, PM_AIRBRAKE, PM_BOOMERANG, PM_MINE, PM_SPIDERMINE, PM_HUNTER, PM_DPS, PM_DELAY, PM_GENERATOR, PM_LAST };
 enum IDBPShape { PS_LINE, PS_LINE_AIRBRAKE, PS_ARROW, PS_DRONE, PS_STAR, PS_ARCPIECE, PS_INVISIBLE };
 
 struct IDBProjectile {
@@ -140,6 +140,10 @@ struct IDBProjectile {
     vector<pair<int, Color> > dps_visuals;
     
     float delay_duration;
+    
+    float generator_duration;
+    float generator_falloff;
+    float generator_per_second;
   
   IDBPShape shape;
     float proximity_visibility;
@@ -328,6 +332,7 @@ struct IDBInstant {
   IDBIType type;
   
   float tesla_radius;
+  float tesla_unlockshares;
   vector<const IDBWarhead *> tesla_warhead;
 };
 
@@ -413,6 +418,10 @@ public:
     float tesla_radius() const;
     
     float delay_duration() const;
+    
+    float generator_duration() const;
+    float generator_falloff() const;
+    float generator_per_second() const;
   
   IDBPShape shape() const;
     float proximity_visibility() const;
@@ -728,6 +737,7 @@ public:
   IDBIType type() const;
   
   float tesla_radius() const;
+  float tesla_unlockshares() const;
   vector<IDBWarheadAdjust> tesla_warhead() const;
 
   float stats_damagePerShot() const;

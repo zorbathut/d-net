@@ -142,7 +142,7 @@ template<typename Model> void doMerge(const string &csv, const string &unmerged,
     }
   }
   
-  dprintf("Got %d items\n", tdd.size());
+//  dprintf("Got %d items\n", tdd.size());
   
   vector<kvData> preproc;
   {
@@ -184,10 +184,6 @@ template<typename Model> void doMerge(const string &csv, const string &unmerged,
     Model::verify(itr->second, tdd[tt]);
     tdd.erase(tt);
   }
-  
-  for(typename map<string, typename Model::Data>::const_iterator itr = tdd.begin(); itr != tdd.end(); itr++)
-    dprintf("Didn't manage to process %s\n", itr->first.c_str());
-  //CHECK(tdd.empty());
 }  
 
 int main(int argc, char *argv[]) {
@@ -205,7 +201,7 @@ int main(int argc, char *argv[]) {
     CHECK(getline(ifs, line));
     type = parseCsv(line)[0];
   }
-  dprintf("Got type %s\n", type.c_str());
+  //dprintf("Got type %s\n", type.c_str());
   
   if(type == WeaponParams::token()) {
     doMerge<WeaponParams>(argv[1], argv[2], argv[3]);

@@ -283,7 +283,6 @@ void parseHierarchy(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   HierarchyNode *mountpoint = findNamedNode(chunk->kv["name"], 1);
   HierarchyNode tnode;
   tnode.name = tokenize(chunk->consume("name"), ".").back();
-  dprintf("name: %s\n", tnode.name.c_str());
   tnode.type = HierarchyNode::HNT_CATEGORY;
   if(chunk->kv.count("pack")) {
     tnode.displaymode = HierarchyNode::HNDM_PACK;
@@ -542,13 +541,21 @@ void parseProjectile(kvData *chunk, bool reload, ErrorAccumulator &accum) {
     titem->delay_duration = parseSingleItem<float>(chunk->consume("duration"));
     defshape = "invisible";
     allowed_shapes.insert("invisible");
+  } else if(motion == "generator") {
+    titem->motion = PM_GENERATOR;
+    titem->generator_duration = parseSingleItem<float>(chunk->consume("duration"));
+    titem->generator_falloff = parseSingleItem<float>(chunk->consume("falloff"));
+    titem->generator_per_second = parseSingleItem<float>(chunk->consume("per_second"));
+    CHECK(titem->generator_per_second <= FPS);
+    defshape = "invisible";
+    allowed_shapes.insert("invisible");
   } else {
     dprintf("Unknown projectile motion: %s\n", motion.c_str());
     CHECK(0);
   }
   
   titem->velocity = 0;
-  if(titem->motion != PM_MINE && titem->motion != PM_DPS && titem->motion != PM_DELAY)
+  if(titem->motion != PM_MINE && titem->motion != PM_DPS && titem->motion != PM_DELAY && titem->motion != PM_GENERATOR)
     titem->velocity = parseSingleItem<float>(chunk->consume("velocity"));
   
   bool has_color = true;
@@ -609,7 +616,7 @@ void parseProjectile(kvData *chunk, bool reload, ErrorAccumulator &accum) {
     }
   }
   
-  if(titem->motion != PM_MINE && titem->motion != PM_DPS && titem->motion != PM_SPIDERMINE && titem->motion != PM_DELAY) {
+  if(titem->motion != PM_MINE && titem->motion != PM_DPS && titem->motion != PM_SPIDERMINE && titem->motion != PM_DELAY && titem->motion != PM_GENERATOR) {
     titem->no_intersection = parseWithDefault(chunk, "no_intersection", false);
     if(!titem->no_intersection)
       titem->durability = parseSingleItem<float>(chunk->consume("durability"));
@@ -1118,6 +1125,7 @@ void parseInstant(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   if(type == "tesla") {
     titem->type = IT_TESLA;
     titem->tesla_radius = parseSingleItem<float>(chunk->consume("radius"));
+    titem->tesla_unlockshares = parseWithDefault(chunk, "unlockshares", 0.);
     titem->tesla_warhead = parseSubclassSet(chunk, "warhead", warheadclasses);
   } else {
     CHECK(0);

@@ -294,7 +294,7 @@ Dvec2::Dvec2() {
 }
 
 Dvec2 loadDvec2(const string &fname) {
-  dprintf("Loading %s\n", fname.c_str());
+  //dprintf("Loading %s\n", fname.c_str());
   Dvec2 rv;
   kvData dat;
   ifstream fil(fname.c_str());

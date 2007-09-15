@@ -93,6 +93,8 @@ void Projectile::tick(const GameImpactContext &gic, int owner) {
   } else if(projtype.motion() == PM_DELAY) {
     if(age >= projtype.delay_duration())
       detonating = true;
+  } else if(projtype.motion() == PM_GENERATOR) {
+    detonating = true; // this is pretty much all we do honestly
   } else {
     CHECK(0);
   }
@@ -198,6 +200,7 @@ void Projectile::checksum(Adler32 *adl) const {
   } else if(projtype.motion() == PM_HUNTER) {
     adler(adl, hk_drift);
   } else if(projtype.motion() == PM_DELAY) {
+  } else if(projtype.motion() == PM_GENERATOR) {
   } else {
     CHECK(0);
   }
@@ -265,22 +268,7 @@ void Projectile::trigger(Coord t, Coord normal, Tank *target, const GamePlayerCo
   
   Coord2 pos = lerp(last.pi.pos, now.pi.pos, t);
   
-  if(projtype.motion() != PM_DPS) {
-    vector<IDBWarheadAdjust> idw = projtype.chain_warhead();
-    for(int i = 0; i < idw.size(); i++)
-      detonateWarhead(idw[i], pos, normal, (now.pi.pos - last.pi.pos) * FPS, target, gpc, damageflags, impacted);
-    
-    vector<IDBDeployAdjust> idd = projtype.chain_deploy();
-    for(int i = 0; i < idd.size(); i++)
-      deployProjectile(idd[i], DeployLocation(pos, getAngle(now.pi.pos - last.pi.pos), normal), gpc, damageflags, NULL);
-    
-    vector<IDBEffectsAdjust> ide = projtype.chain_effects();
-    for(int i = 0; i < ide.size(); i++)
-      gpc.gic->effects->push_back(GfxIdb(pos.toFloat(), normal.toFloat(), (now.pi.pos - last.pi.pos).toFloat(), ide[i]));
-    
-    if(!projtype.penetrating() || !target)
-      live = false; // otherwise we just keep on truckin'
-  } else if(projtype.motion() == PM_DPS) {
+  if(projtype.motion() == PM_DPS) {
     CHECK(!projtype.chain_deploy().size());
     CHECK(!projtype.chain_effects().size());
 
@@ -303,12 +291,35 @@ void Projectile::trigger(Coord t, Coord normal, Tank *target, const GamePlayerCo
         detonateWarhead(idw[i].multiply((Coord)tshares / shares), pos, 0, Coord2(0, 0), NULL, gpc, damageflags, false);
       detonating = false;
     }
+  } else if(projtype.motion() == PM_GENERATOR) {
+    if(gpc.gic->rng->frand() < pow(projtype.generator_falloff(), age) * projtype.generator_per_second() / FPS)
+      triggerstandard(pos, normal, target, gpc, impacted);
+    
+    if(age >= projtype.generator_duration())
+      live = false;
   } else {
-    CHECK(0);
+    triggerstandard(pos, normal, target, gpc, impacted);
+    
+    if(!projtype.penetrating() || !target)
+      live = false; // otherwise we just keep on truckin'
   }
   
   first = false;
 };
+
+void Projectile::triggerstandard(Coord2 pos, Coord normal, Tank *target, const GamePlayerContext &gpc, bool impacted) {
+  vector<IDBWarheadAdjust> idw = projtype.chain_warhead();
+  for(int i = 0; i < idw.size(); i++)
+    detonateWarhead(idw[i], pos, normal, (now.pi.pos - last.pi.pos) * FPS, target, gpc, damageflags, impacted);
+  
+  vector<IDBDeployAdjust> idd = projtype.chain_deploy();
+  for(int i = 0; i < idd.size(); i++)
+    deployProjectile(idd[i], DeployLocation(pos, getAngle(now.pi.pos - last.pi.pos), normal), gpc, damageflags, NULL);
+  
+  vector<IDBEffectsAdjust> ide = projtype.chain_effects();
+  for(int i = 0; i < ide.size(); i++)
+    gpc.gic->effects->push_back(GfxIdb(pos.toFloat(), normal.toFloat(), (now.pi.pos - last.pi.pos).toFloat(), ide[i]));
+}
 
 bool Projectile::isLive() const {
   return live;
@@ -432,6 +443,7 @@ Projectile::Projectile(const Coord2 &in_pos, Coord in_d, const IDBProjectileAdju
     hk_drift = rotate(hk_drift, in_d);
     hk_drift /= 2;
   } else if(projtype.motion() == PM_DELAY) {
+  } else if(projtype.motion() == PM_GENERATOR) {
   } else {
     CHECK(0);
   }

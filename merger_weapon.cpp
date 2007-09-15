@@ -155,11 +155,11 @@ void WeaponParams::reprocess(kvData *kvd, float multiple) {
   if(kvd->category == "warhead") {
     if(kvd->kv.count("radiusdamage")) {
       kvd->kv["radiusdamage"] = splice(kvd->read("radiusdamage"), multiple);
-      dprintf("%s\n", kvd->read("radiusdamage").c_str());
+      //dprintf("%s\n", kvd->read("radiusdamage").c_str());
     }
     if(kvd->kv.count("impactdamage")) {
       kvd->kv["impactdamage"] = splice(kvd->read("impactdamage"), multiple);
-      dprintf("%s\n", kvd->read("impactdamage").c_str());
+      //dprintf("%s\n", kvd->read("impactdamage").c_str());
     }
   }
 }

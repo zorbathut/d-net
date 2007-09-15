@@ -36,6 +36,8 @@ public:
   Projectile(const Coord2 &pos, Coord d, const IDBProjectileAdjust &projtype, Rng *rng, const DamageFlags &damageflags);
 
 private:
+  
+  void triggerstandard(Coord2 pos, Coord normal, Tank *target, const GamePlayerContext &gpc, bool impacted);
 
   struct ProjPostState {
     CPosInfo pi;

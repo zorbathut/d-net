@@ -188,6 +188,10 @@ const vector<pair<int, Color> > &IDBProjectileAdjust::dps_visuals() const { CHEC
 
 float IDBProjectileAdjust::delay_duration() const { CHECK(idb->motion == PM_DELAY); return idb->delay_duration; }
 
+float IDBProjectileAdjust::generator_duration() const { CHECK(idb->motion == PM_GENERATOR); return idb->generator_duration; }
+float IDBProjectileAdjust::generator_falloff() const { CHECK(idb->motion == PM_GENERATOR); return idb->generator_falloff; }
+float IDBProjectileAdjust::generator_per_second() const { CHECK(idb->motion == PM_GENERATOR); return idb->generator_per_second; }
+
 // Shape-related functions
 IDBPShape IDBProjectileAdjust::shape() const { return idb->shape; }
 
@@ -228,6 +232,15 @@ bool IDBProjectileAdjust::no_intersection() const {
 }
 
 float IDBProjectileAdjust::stats_damagePerShot() const {
+  float mult = 1;
+  
+  if(motion() == PM_GENERATOR) {
+    // this is kind of a hack
+    mult = 0;
+    for(int i = 0; i < FPS * generator_duration(); i++)
+      mult += generator_per_second() / FPS * pow(pow(generator_falloff(), 1.f / FPS), i);
+  }
+      
   float val = 0;
   vector<IDBWarheadAdjust> idbwa = chain_warhead();
   for(int i = 0; i < idbwa.size(); i++)
@@ -235,7 +248,7 @@ float IDBProjectileAdjust::stats_damagePerShot() const {
   vector<IDBDeployAdjust> idbde = chain_deploy();
   for(int i = 0; i < idbde.size(); i++)
     val += idbde[i].stats_damagePerShot();
-  return val;
+  return val * mult;
 }
 
 void IDBProjectileAdjust::checksum(Adler32 *adl) const {
@@ -284,7 +297,7 @@ struct FFCETester {
         i += tfr.first;
         tfram += tfr.second;
       }
-      dprintf("tfram test: should be %dish, is %d\n", int(gole), tfram);
+//      dprintf("tfram test: should be %dish, is %d\n", int(gole), tfram);
       
       CHECK(tfram > gole * .95 && tfram < gole * 1.05);
     }
@@ -537,6 +550,7 @@ IDBEffectsAdjust::IDBEffectsAdjust(const base_type *in_idb, const IDBAdjustment 
 IDBIType IDBInstantAdjust::type() const { return idb->type; }
 
 float IDBInstantAdjust::tesla_radius() const { CHECK(type() == IT_TESLA); return idb->tesla_radius; }
+float IDBInstantAdjust::tesla_unlockshares() const { CHECK(type() == IT_TESLA); return idb->tesla_unlockshares; }
 vector<IDBWarheadAdjust> IDBInstantAdjust::tesla_warhead() const { return adjust_vector(idb->tesla_warhead, adjust); }
 
 float IDBInstantAdjust::stats_damagePerShot() const {

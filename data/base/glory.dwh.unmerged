@@ -622,23 +622,17 @@ text {
 }
 
 warhead {
-  name=warhead.glory.overloadchip.core
-  impactdamage=MERGE(1) energy
-  wallremovalradius=1
+  name=warhead.glory.overloadchip.null
+  impactdamage=MERGE(0) energy
 }
 
 projectile {
-  name=projectile.glory.overloadchip.core
-  visual_thickness=0.6
-  velocity=40
-  color=1.0, 0.8, 0.3
-  motion=airbrake
-  
-  airbrake_life=1
-  airbrake_slowdown=0.95
+  name=projectile.glory.overloadchip.null
+  velocity=1000
+  color=0, 0, 0
   
   no_intersection=true
-  warhead=warhead.glory.overloadchip.core
+  warhead=warhead.glory.overloadchip.null
 }
 
 deploy {
@@ -650,27 +644,55 @@ deploy {
   exp_minsplitsize=1
   exp_maxsplitsize=5
   
-  exp_shotspersplit=4
+  exp_shotspersplit=1
   
   anglestddev=0.1
   
-  projectile=projectile.glory.overloadchip.core
+  projectile=projectile.glory.overloadchip.null
 }
 
+
 warhead {
-  name=warhead.glory.overloadchip.blast
-  radiusdamage=MERGE(5) energy
-  radiusfalloff=6
-  radiusexplosive=1
-  wallremovalradius=2
+  name=warhead.glory.overloadchip.tesla
+  
+  impactdamage=MERGE(1) energy
+}
+
+instant {
+  name=instant.glory.overloadchip.tesla
+  
+  type=tesla
+  radius=28
+  unlockshares=3
+  
+  warhead=warhead.glory.overloadchip.tesla
 }
 
 deploy {
-  name=deploy.glory.overloadchip.blast
+  name=deploy.glory.overloadchip.tesla
   
   type=centroid
   
-  warhead=warhead.glory.overloadchip.blast
+  instant=instant.glory.overloadchip.tesla
+}
+
+projectile {
+  name=projectile.glory.overloadchip.teslagen
+  motion=generator
+  
+  duration=3
+  per_second=60
+  falloff=0.25
+  
+  deploy=deploy.glory.overloadchip.tesla
+}
+
+deploy {
+  name=deploy.glory.overloadchip.teslagen
+  
+  type=centroid
+  
+  projectile=projectile.glory.overloadchip.teslagen
 }
 
 glory {
@@ -678,7 +700,7 @@ glory {
   cost=MERGE
   
   core=deploy.glory.overloadchip.core
-  blast=deploy.glory.overloadchip.blast
+  blast=deploy.glory.overloadchip.teslagen
   
   text=text.glory.overloadchip
 }

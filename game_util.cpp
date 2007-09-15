@@ -347,7 +347,7 @@ void triggerInstant(const IDBInstantAdjust &instant, Coord2 pos, const GamePlaye
     for(int i = 0; i < tt.size(); i++)
       if(tt[i].first <= instant.tesla_radius() && tt[i].second->team != gpc.owner->team)
         opts.push_back(tt[i].second);
-    if(!opts.size()) {
+    if(gpc.gic->rng->frand() * (opts.size() + instant.tesla_unlockshares()) >= opts.size()) {
       detpos = pos + makeAngle(gpc.gic->rng->frand() * COORDPI * 2) * (gpc.gic->rng->frand() / 2 + 0.5) * instant.tesla_radius();
     } else {
       int rnt = gpc.gic->rng->choose(opts.size());
