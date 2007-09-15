@@ -231,7 +231,9 @@ Coord mod(const Coord &a, const Coord &b) {
 Coord2 lerp(const Coord2 &lhs, const Coord2 &rhs, Coord dist) {
   return lhs + (rhs - lhs) * dist;
 }
-
+Coord2 lerp(const Coord4 &movement, Coord dist) {
+  return lerp(movement.s(), movement.e(), dist);
+}
 Coord4 lerp(const Coord4 &lhs, const Coord4 &rhs, Coord dist) {
   return lhs + (rhs - lhs) * dist;
 }

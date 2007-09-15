@@ -248,6 +248,9 @@ inline float approach(float start, float target, float delta) {
 Float4 extend(const Float4 &in, float amount);
 Float4 contract(const Float4 &in, float amount);
 
+Float2 lerp(const Float2 &lhs, const Float2 &rhs, float dist);
+Float2 lerp(const Float4 &movement, float dist);
+
 /*************
  * Matrixtastic
  */

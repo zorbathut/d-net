@@ -23,6 +23,8 @@ public:
   float frand(); // [0,1)
   float sym_frand(); // (-1,1)
 
+  int choose(int opts);
+
   float gaussian(); // returns gaussian distribution with a standard deviation of 1
   float gaussian(float maxgauss);  // returns gaussian distribution with a standard deviation of 1, maximum deviation of max (just chops off the probability curve)
   float gaussian_scaled(float maxgauss); // returns gaussian(maxgauss) / maxgauss

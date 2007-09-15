@@ -514,6 +514,7 @@ inline bool boxLineIntersect(const Coord4 &box, const Coord4 &line) {
 Coord mod(const Coord &a, const Coord &b);
 
 Coord2 lerp(const Coord2 &lhs, const Coord2 &rhs, Coord dist);
+Coord2 lerp(const Coord4 &movement, Coord dist);
 Coord4 lerp(const Coord4 &lhs, const Coord4 &rhs, Coord dist);
 
 const Coord COORDPI = Coord(PI);

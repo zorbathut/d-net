@@ -215,7 +215,7 @@ public:
     setBaseColor();
     CHECK(lofs.size());
     for(int i = 0; i < lofs.size() - 1; i++)
-      drawLine(rotate(Float2((float)i / lofs.size(), lofs[i]) * l, d) + start, rotate(Float2((float)(i + 1) / lofs.size(), lofs[i + 1]) * l, d) + start, 0.5);
+      drawLine(rotate(Float2((float)i / (lofs.size() - 1), lofs[i]) * l, d) + start, rotate(Float2((float)(i + 1) / (lofs.size() - 1), lofs[i + 1]) * l, d) + start, 0.5);
   }
   
   GfxEffectsLightning(Float2 start, Float2 end) : GfxEffects(0.8, Color(0.2, 0.3, 0.9), false), start(start) {

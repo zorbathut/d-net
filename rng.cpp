@@ -37,6 +37,10 @@ float Rng::gaussian() {
   return y1;
 }
 
+int Rng::choose(int choices) {
+  return int(frand() * choices);
+}
+
 float Rng::gaussian(float maxgauss) {
   while(1) {
     float gauss = gaussian();

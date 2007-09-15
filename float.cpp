@@ -118,6 +118,13 @@ Float4 contract(const Float4 &in, float amount) {
   return Float4(in.sx + amount, in.sy + amount, in.ex - amount, in.ey - amount);
 };
 
+Float2 lerp(const Float2 &lhs, const Float2 &rhs, float dist) {
+  return lhs + (rhs - lhs) * dist;
+}
+Float2 lerp(const Float4 &movement, float dist) {
+  return lerp(movement.s(), movement.e(), dist);
+}
+
 
 /*************
  * Matrixtastic

@@ -291,13 +291,17 @@ void Projectile::trigger(Coord t, Coord normal, Tank *target, const GamePlayerCo
       if(!opts.size()) {
         detpos = now.pi.pos + makeAngle(gpc.gic->rng->frand() * COORDPI * 2) * gpc.gic->rng->frand() * projtype.tesla_radius();
       } else {
-        int rnt = int(gpc.gic->rng->frand() * opts.size());
-        detpos = opts[rnt]->pi.pos;
+        int rnt = gpc.gic->rng->choose(opts.size());
+        
+        vector<Coord4> v = opts[rnt]->getCurrentCollide();
+        
+        detpos = lerp(v[gpc.gic->rng->choose(v.size())], gpc.gic->rng->frand());
         dettar = opts[rnt];
       }
       detvel = detpos - now.pi.pos;
       
-      gpc.gic->effects->push_back(GfxLightning(now.pi.pos.toFloat(), detpos.toFloat()));
+      for(int i = 0; i < 3; i++)
+        gpc.gic->effects->push_back(GfxLightning(now.pi.pos.toFloat(), detpos.toFloat()));
     }
     
     vector<IDBWarheadAdjust> idw = projtype.chain_warhead();
