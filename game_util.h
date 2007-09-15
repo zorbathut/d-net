@@ -93,6 +93,8 @@ void detonateWarhead(const IDBWarheadAdjust &warhead, Coord2 pos, Coord normal, 
 void detonateWarheadDamageOnly(const IDBWarheadAdjust &warhead, Tank *impact, const vector<pair<float, Tank*> > &radius);
 void detonateBombardment(const IDBBombardmentAdjust &bombard, Coord2 pos, Coord direction, const GamePlayerContext &gpc);
 
+void triggerInstant(const IDBInstantAdjust &instant, Coord2 pos, const GamePlayerContext &gpc, const DamageFlags &flags);
+
 void adler(Adler32 *adl, const Team &team);
 void adler(Adler32 *adl, const DamageFlags &df);
 

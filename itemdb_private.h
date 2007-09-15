@@ -17,6 +17,7 @@ extern map<string, IDBAdjustment> adjustmentclasses;
 extern map<string, IDBEffects> effectsclasses;
 extern map<string, IDBImplantSlot> implantslotclasses;
 extern map<string, IDBImplant> implantclasses;
+extern map<string, IDBInstant> instantclasses;
 
 extern vector<IDBFaction> factions;
 extern map<string, string> text;

@@ -109,8 +109,8 @@ struct IDBWarhead {
   vector<const IDBEffects *> effects_impact;
 };
 
-enum IDBPMotion { PM_NORMAL, PM_MISSILE, PM_AIRBRAKE, PM_BOOMERANG, PM_MINE, PM_SPIDERMINE, PM_HUNTER, PM_DPS, PM_DELAY, PM_TESLA, PM_LAST };
-enum IDBPShape { PS_LINE, PS_LINE_AIRBRAKE, PS_ARROW, PS_DRONE, PS_STAR, PS_ARCPIECE, PS_TESLA, PS_INVISIBLE };
+enum IDBPMotion { PM_NORMAL, PM_MISSILE, PM_AIRBRAKE, PM_BOOMERANG, PM_MINE, PM_SPIDERMINE, PM_HUNTER, PM_DPS, PM_DELAY, PM_LAST };
+enum IDBPShape { PS_LINE, PS_LINE_AIRBRAKE, PS_ARROW, PS_DRONE, PS_STAR, PS_ARCPIECE, PS_INVISIBLE };
 
 struct IDBProjectile {
   IDBPMotion motion;
@@ -138,8 +138,6 @@ struct IDBProjectile {
     float dps_duration;
     vector<const IDBWarhead *> dps_instant_warhead;
     vector<pair<int, Color> > dps_visuals;
-    
-    float tesla_radius;
     
     float delay_duration;
   
@@ -176,6 +174,7 @@ struct IDBProjectile {
 // Normal specifies "Forward" for tanks, or "Centroid" on cases where there is no tank
 enum IDBDType { DT_NORMAL, DT_FORWARD, DT_REAR, DT_CENTROID, DT_MINEPATH, DT_DIRECTED, DT_REFLECTED, DT_ARC, DT_VENGEANCE, DT_EXPLODE, DT_LAST };
 
+class IDBInstant;
 struct IDBDeploy {
   IDBDType type;
 
@@ -201,6 +200,7 @@ struct IDBDeploy {
   vector<const IDBProjectile *> chain_projectile;
   vector<const IDBWarhead *> chain_warhead;
   vector<const IDBEffects *> chain_effects;
+  vector<const IDBInstant *> chain_instant;
 };
 
 enum IDBWDemoMode { WDM_FIRINGRANGE, WDM_BACKRANGE, WDM_MINES, WDM_LAST };
@@ -320,6 +320,15 @@ struct IDBImplant {
   const string *text;
   
   IDBAdjustment makeAdjustment(int level) const;
+};
+
+enum IDBIType { IT_TESLA };
+
+struct IDBInstant {
+  IDBIType type;
+  
+  float tesla_radius;
+  vector<const IDBWarhead *> tesla_warhead;
 };
 
 /*************
@@ -444,6 +453,7 @@ template<> struct IDBItemProperties<IDBProjectileAdjust::base_type> {
   typedef IDBProjectileAdjust adjusted;
 };
 
+struct IDBInstantAdjust;
 struct IDBDeployAdjust {
   const IDBDeploy *idb;
   IDBAdjustment adjust;
@@ -476,6 +486,7 @@ public:
   vector<IDBProjectileAdjust> chain_projectile() const;
   vector<IDBWarheadAdjust> chain_warhead() const;
   vector<IDBEffectsAdjust> chain_effects() const;
+  vector<IDBInstantAdjust> chain_instant() const;
 
   float stats_damagePerShot() const;
   
@@ -705,6 +716,26 @@ public:
 };
 template<> struct IDBItemProperties<IDBEffectsAdjust::base_type> {
   typedef IDBEffectsAdjust adjusted;
+};
+
+struct IDBInstantAdjust {
+  const IDBInstant *idb;
+  IDBAdjustment adjust;
+
+public:
+  typedef IDBInstant base_type;
+
+  IDBIType type() const;
+  
+  float tesla_radius() const;
+  vector<IDBWarheadAdjust> tesla_warhead() const;
+
+  float stats_damagePerShot() const;
+
+  IDBInstantAdjust(const base_type *in_idb, const IDBAdjustment &in_adjust);
+};
+template<> struct IDBItemProperties<IDBInstantAdjust::base_type> {
+  typedef IDBInstantAdjust adjusted;
 };
 
 /*************

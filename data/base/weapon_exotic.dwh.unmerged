@@ -413,10 +413,10 @@ warhead {
   impactdamage=MERGE(1) exotic
 }
 
-projectile {
-  name=projectile.weapon.teslaspike
-  motion=tesla
+instant {
+  name=instant.weapon.teslaspike
   
+  type=tesla
   radius=14
   
   warhead=warhead.weapon.teslaspike
@@ -425,7 +425,7 @@ projectile {
 deploy {
   name=deploy.weapon.teslaspike
   type=centroid
-  projectile=projectile.weapon.teslaspike
+  instant=instant.weapon.teslaspike
 }
 
 launcher {

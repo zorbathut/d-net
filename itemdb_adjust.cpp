@@ -42,6 +42,7 @@ vector<IDBDeployAdjust> IDBDeployAdjust::chain_deploy() const { return adjust_ve
 vector<IDBProjectileAdjust> IDBDeployAdjust::chain_projectile() const { return adjust_vector(idb->chain_projectile, adjust); }
 vector<IDBWarheadAdjust> IDBDeployAdjust::chain_warhead() const { return adjust_vector(idb->chain_warhead, adjust); }
 vector<IDBEffectsAdjust> IDBDeployAdjust::chain_effects() const { return adjust_vector(idb->chain_effects, adjust); }
+vector<IDBInstantAdjust> IDBDeployAdjust::chain_instant() const { return adjust_vector(idb->chain_instant, adjust); }
 
 float IDBDeployAdjust::stats_damagePerShot() const {
   float mult;
@@ -70,6 +71,10 @@ float IDBDeployAdjust::stats_damagePerShot() const {
   vector<IDBWarheadAdjust> idbwa = chain_warhead();
   for(int i = 0; i < idbwa.size(); i++)
     val += idbwa[i].stats_damagePerShot();
+  
+  vector<IDBInstantAdjust> idbia = chain_instant();
+  for(int i = 0; i < idbia.size(); i++)
+    val += idbia[i].stats_damagePerShot();
   
   return val * mult;
 }
@@ -180,8 +185,6 @@ float IDBProjectileAdjust::hunter_turnweight() const { CHECK(idb->motion == PM_H
 float IDBProjectileAdjust::dps_duration() const { CHECK(idb->motion == PM_DPS); return idb->dps_duration; }
 vector<IDBWarheadAdjust> IDBProjectileAdjust::dps_instant_warhead() const { CHECK(idb->motion == PM_DPS); return adjust_vector(idb->dps_instant_warhead, adjust); }
 const vector<pair<int, Color> > &IDBProjectileAdjust::dps_visuals() const { CHECK(idb->motion == PM_DPS); return idb->dps_visuals; }
-
-float IDBProjectileAdjust::tesla_radius() const { CHECK(idb->motion == PM_TESLA); return idb->tesla_radius; }
 
 float IDBProjectileAdjust::delay_duration() const { CHECK(idb->motion == PM_DELAY); return idb->delay_duration; }
 
@@ -526,3 +529,28 @@ float IDBEffectsAdjust::ionblast_duration() const { CHECK(type() == IDBEffects::
 const vector<pair<int, Color> > &IDBEffectsAdjust::ionblast_visuals() const { CHECK(type() == IDBEffects::EFT_IONBLAST); return idb->ionblast_visuals; }
 
 IDBEffectsAdjust::IDBEffectsAdjust(const base_type *in_idb, const IDBAdjustment &in_adjust) { idb = in_idb; adjust = in_adjust; }
+
+/*************
+ * IDBInstantAdjust
+ */
+
+IDBIType IDBInstantAdjust::type() const { return idb->type; }
+
+float IDBInstantAdjust::tesla_radius() const { CHECK(type() == IT_TESLA); return idb->tesla_radius; }
+vector<IDBWarheadAdjust> IDBInstantAdjust::tesla_warhead() const { return adjust_vector(idb->tesla_warhead, adjust); }
+
+float IDBInstantAdjust::stats_damagePerShot() const {
+  float rv = 0;
+  
+  if(type() == IT_TESLA) {
+    vector<IDBWarheadAdjust> idbwa = tesla_warhead();
+    for(int i = 0; i < idbwa.size(); i++)
+      rv += idbwa[i].stats_damagePerShot();
+  } else {
+    CHECK(0);
+  }
+  
+  return rv;
+}
+
+IDBInstantAdjust::IDBInstantAdjust(const base_type *in_idb, const IDBAdjustment &in_adjust) { idb = in_idb; adjust = in_adjust; }

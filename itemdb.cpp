@@ -29,6 +29,7 @@ map<string, IDBAdjustment> adjustmentclasses;
 map<string, IDBEffects> effectsclasses;
 map<string, IDBImplantSlot> implantslotclasses;
 map<string, IDBImplant> implantclasses;
+map<string, IDBInstant> instantclasses;
 
 vector<IDBFaction> factions;
 map<string, string> text;
@@ -539,6 +540,7 @@ void clearItemdb() {
   effectsclasses.clear();
   implantslotclasses.clear();
   implantclasses.clear();
+  instantclasses.clear();
   factions.clear();
   text.clear();
   shopcaches.clear();

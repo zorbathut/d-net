@@ -328,6 +328,45 @@ void deployProjectile(const IDBDeployAdjust &deploy, const DeployLocation &locat
       for(int j = 0; j < proji.size(); j++)
         gpc.gic->effects->push_back(GfxIdb(proji[j].first.toFloat(), 0, makeAngle(proji[j].second.toFloat()), idw[i]));
   }
+  
+  {
+    vector<IDBInstantAdjust> idw = deploy.chain_instant();
+    for(int i = 0; i < idw.size(); i++)
+      for(int j = 0; j < proji.size(); j++)
+        triggerInstant(idw[i], proji[j].first, gpc, flags);
+  }
+}
+
+void triggerInstant(const IDBInstantAdjust &instant, Coord2 pos, const GamePlayerContext &gpc, const DamageFlags &flags) {
+  if(instant.type() == IT_TESLA) {
+    Coord2 detpos;
+    Tank *dettar = NULL;
+    
+    vector<pair<float, Tank *> > tt = gpc.gic->getAdjacency(pos);
+    vector<Tank *> opts;
+    for(int i = 0; i < tt.size(); i++)
+      if(tt[i].first <= instant.tesla_radius() && tt[i].second->team != gpc.owner->team)
+        opts.push_back(tt[i].second);
+    if(!opts.size()) {
+      detpos = pos + makeAngle(gpc.gic->rng->frand() * COORDPI * 2) * (gpc.gic->rng->frand() / 2 + 0.5) * instant.tesla_radius();
+    } else {
+      int rnt = gpc.gic->rng->choose(opts.size());
+      
+      vector<Coord4> v = opts[rnt]->getCurrentCollide();
+      
+      detpos = lerp(v[gpc.gic->rng->choose(v.size())], gpc.gic->rng->frand());
+      dettar = opts[rnt];
+    }
+    
+    for(int i = 0; i < 3; i++)
+      gpc.gic->effects->push_back(GfxLightning(pos.toFloat(), detpos.toFloat()));
+    
+    vector<IDBWarheadAdjust> idw = instant.tesla_warhead();
+    for(int i = 0; i < idw.size(); i++)
+      detonateWarhead(idw[i], detpos, NO_NORMAL, Coord2(0, 0), dettar, gpc, flags, true);
+  } else {
+    CHECK(0);
+  }
 }
 
 Team::Team() {

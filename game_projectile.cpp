@@ -93,8 +93,6 @@ void Projectile::tick(const GameImpactContext &gic, int owner) {
   } else if(projtype.motion() == PM_DELAY) {
     if(age >= projtype.delay_duration())
       detonating = true;
-  } else if(projtype.motion() == PM_TESLA) {
-    detonating = true;  // this is always true, tesla never lasts more than a frame
   } else {
     CHECK(0);
   }
@@ -129,7 +127,7 @@ void Projectile::render(const vector<Coord2> &tankposes) const {
   
   bool visible = true;
   
-  if(projtype.shape() == PS_INVISIBLE || projtype.shape() == PS_TESLA) {
+  if(projtype.shape() == PS_INVISIBLE) {
     visible = false;
   } else if(projtype.shape() == PS_LINE_AIRBRAKE) {
     CHECK(projtype.proximity_visibility() == -1);
@@ -200,7 +198,6 @@ void Projectile::checksum(Adler32 *adl) const {
   } else if(projtype.motion() == PM_HUNTER) {
     adler(adl, hk_drift);
   } else if(projtype.motion() == PM_DELAY) {
-  } else if(projtype.motion() == PM_TESLA) {
   } else {
     CHECK(0);
   }
@@ -215,7 +212,6 @@ void Projectile::checksum(Adler32 *adl) const {
   } else if(projtype.shape() == PS_DRONE) {
   } else if(projtype.shape() == PS_ARCPIECE) {
   } else if(projtype.shape() == PS_INVISIBLE) {
-  } else if(projtype.shape() == PS_TESLA) {
   } else {
     CHECK(0);
   }
@@ -262,14 +258,6 @@ void Projectile::collideCleanup(Collider *collider, int owner, int id) const {
 Coord2 Projectile::warheadposition() const {
   return now.pi.pos;
 }
-/*
-    vector<pair<float, Tank *> > tt = gic.getAdjacency(now.pi.pos);
-    vector<Tank *> opts;
-    for(int i = 0; i < tt.size(); i++)
-      if(tt[i].first <= projtype.tesla_radius() && tt[i].second->team != gic.players[owner].team)
-        opts.push_back(tt[i].second);
-    if(!opts.size()) {
-      */
 
 void Projectile::trigger(Coord t, Coord normal, Tank *target, const GamePlayerContext &gpc, bool impacted) {
   if(!live)
@@ -278,43 +266,17 @@ void Projectile::trigger(Coord t, Coord normal, Tank *target, const GamePlayerCo
   Coord2 pos = lerp(last.pi.pos, now.pi.pos, t);
   
   if(projtype.motion() != PM_DPS) {
-    Coord2 detpos = now.pi.pos;
-    Coord2 detvel = (now.pi.pos - last.pi.pos) * FPS;
-    Tank *dettar = target;
-    
-    if(projtype.motion() == PM_TESLA) {
-      vector<pair<float, Tank *> > tt = gpc.gic->getAdjacency(now.pi.pos);
-      vector<Tank *> opts;
-      for(int i = 0; i < tt.size(); i++)
-        if(tt[i].first <= projtype.tesla_radius() && tt[i].second->team != gpc.owner->team)
-          opts.push_back(tt[i].second);
-      if(!opts.size()) {
-        detpos = now.pi.pos + makeAngle(gpc.gic->rng->frand() * COORDPI * 2) * gpc.gic->rng->frand() * projtype.tesla_radius();
-      } else {
-        int rnt = gpc.gic->rng->choose(opts.size());
-        
-        vector<Coord4> v = opts[rnt]->getCurrentCollide();
-        
-        detpos = lerp(v[gpc.gic->rng->choose(v.size())], gpc.gic->rng->frand());
-        dettar = opts[rnt];
-      }
-      detvel = detpos - now.pi.pos;
-      
-      for(int i = 0; i < 3; i++)
-        gpc.gic->effects->push_back(GfxLightning(now.pi.pos.toFloat(), detpos.toFloat()));
-    }
-    
     vector<IDBWarheadAdjust> idw = projtype.chain_warhead();
     for(int i = 0; i < idw.size(); i++)
-      detonateWarhead(idw[i], detpos, normal, detvel, dettar, gpc, damageflags, impacted);
+      detonateWarhead(idw[i], pos, normal, (now.pi.pos - last.pi.pos) * FPS, target, gpc, damageflags, impacted);
     
     vector<IDBDeployAdjust> idd = projtype.chain_deploy();
     for(int i = 0; i < idd.size(); i++)
-      deployProjectile(idd[i], DeployLocation(detpos, getAngle(detvel), normal), gpc, damageflags, NULL);
+      deployProjectile(idd[i], DeployLocation(pos, getAngle(now.pi.pos - last.pi.pos), normal), gpc, damageflags, NULL);
     
     vector<IDBEffectsAdjust> ide = projtype.chain_effects();
     for(int i = 0; i < ide.size(); i++)
-      gpc.gic->effects->push_back(GfxIdb(detpos.toFloat(), normal.toFloat(), detvel.toFloat(), ide[i]));
+      gpc.gic->effects->push_back(GfxIdb(pos.toFloat(), normal.toFloat(), (now.pi.pos - last.pi.pos).toFloat(), ide[i]));
     
     if(!projtype.penetrating() || !target)
       live = false; // otherwise we just keep on truckin'
@@ -469,7 +431,6 @@ Projectile::Projectile(const Coord2 &in_pos, Coord in_d, const IDBProjectileAdju
     hk_drift *= abs(hk_drift.y);
     hk_drift = rotate(hk_drift, in_d);
     hk_drift /= 2;
-  } else if(projtype.motion() == PM_TESLA) {
   } else if(projtype.motion() == PM_DELAY) {
   } else {
     CHECK(0);
@@ -485,7 +446,6 @@ Projectile::Projectile(const Coord2 &in_pos, Coord in_d, const IDBProjectileAdju
     now.hunter_vel = 0;
   } else if(projtype.shape() == PS_ARCPIECE) {
     CHECK(projtype.motion() == PM_NORMAL || projtype.motion() == PM_AIRBRAKE);
-  } else if(projtype.shape() == PS_TESLA) {
   } else if(projtype.shape() == PS_INVISIBLE) {
   } else {
     CHECK(0);

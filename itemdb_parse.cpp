@@ -542,21 +542,13 @@ void parseProjectile(kvData *chunk, bool reload, ErrorAccumulator &accum) {
     titem->delay_duration = parseSingleItem<float>(chunk->consume("duration"));
     defshape = "invisible";
     allowed_shapes.insert("invisible");
-  } else if(motion == "tesla") {
-    titem->motion = PM_TESLA;
-    titem->tesla_radius = parseSingleItem<float>(chunk->consume("radius"));
-    defshape = "tesla";
-    allowed_shapes.insert("tesla");
-    CHECK(titem->halflife == -1);
-    CHECK(titem->penetrating == false);
-    CHECK(titem->visual_thickness == 0.5); // these are all defaults - really we want to guarantee that these flags don't even show up, but I'm lazy
   } else {
     dprintf("Unknown projectile motion: %s\n", motion.c_str());
     CHECK(0);
   }
   
   titem->velocity = 0;
-  if(titem->motion != PM_MINE && titem->motion != PM_DPS && titem->motion != PM_DELAY && titem->motion != PM_TESLA)
+  if(titem->motion != PM_MINE && titem->motion != PM_DPS && titem->motion != PM_DELAY)
     titem->velocity = parseSingleItem<float>(chunk->consume("velocity"));
   
   bool has_color = true;
@@ -586,8 +578,6 @@ void parseProjectile(kvData *chunk, bool reload, ErrorAccumulator &accum) {
     titem->arc_width = parseSingleItem<float>(chunk->consume("arc_width"));
     titem->arc_units = parseSingleItem<int>(chunk->consume("arc_units"));
     CHECK(titem->arc_units >= 1);
-  } else if(shape == "tesla") {
-    titem->shape = PS_TESLA;
   } else if(shape == "invisible") {
     titem->shape = PS_INVISIBLE;
     has_color = false;
@@ -619,7 +609,7 @@ void parseProjectile(kvData *chunk, bool reload, ErrorAccumulator &accum) {
     }
   }
   
-  if(titem->motion != PM_MINE && titem->motion != PM_DPS && titem->motion != PM_SPIDERMINE && titem->motion != PM_DELAY && titem->motion != PM_TESLA) {
+  if(titem->motion != PM_MINE && titem->motion != PM_DPS && titem->motion != PM_SPIDERMINE && titem->motion != PM_DELAY) {
     titem->no_intersection = parseWithDefault(chunk, "no_intersection", false);
     if(!titem->no_intersection)
       titem->durability = parseSingleItem<float>(chunk->consume("durability"));
@@ -689,10 +679,11 @@ void parseDeploy(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   titem->chain_projectile = parseSubclassSet(chunk, "projectile", projectileclasses);
   titem->chain_warhead = parseSubclassSet(chunk, "warhead", warheadclasses);
   titem->chain_effects = parseSubclassSet(chunk, "effects", effectsclasses);
+  titem->chain_instant = parseSubclassSet(chunk, "instant", instantclasses);
   for(int i = 0; i < titem->chain_deploy.size(); i++)
     CHECK(titem->chain_deploy[i] != titem);
   
-  CHECK(titem->chain_deploy.size() || titem->chain_projectile.size() || titem->chain_warhead.size());
+  CHECK(titem->chain_deploy.size() || titem->chain_projectile.size() || titem->chain_warhead.size() || titem->chain_instant.size());
 }
 
 void parseWarhead(kvData *chunk, bool reload, ErrorAccumulator &accum) {
@@ -1120,6 +1111,19 @@ void parseImplant(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   }
 }
 
+void parseInstant(kvData *chunk, bool reload, ErrorAccumulator &accum) {
+  IDBInstant *titem = prepareName(chunk, &instantclasses, reload, "instant");
+  
+  string type = chunk->consume("type");
+  if(type == "tesla") {
+    titem->type = IT_TESLA;
+    titem->tesla_radius = parseSingleItem<float>(chunk->consume("radius"));
+    titem->tesla_warhead = parseSubclassSet(chunk, "warhead", warheadclasses);
+  } else {
+    CHECK(0);
+  }
+}
+
 kvData currentlyreading;
 void printCurread() {
   dprintf("%s\n", stringFromKvData(currentlyreading).c_str());
@@ -1174,6 +1178,8 @@ void parseItemFile(const string &fname, bool reload, vector<string> *errors) {
       parseImplantSlot(&chunk, reload, erac);
     } else if(chunk.category == "implant") {
       parseImplant(&chunk, reload, erac);
+    } else if(chunk.category == "instant") {
+      parseInstant(&chunk, reload, erac);
     } else {
       dprintf("Confusing category. Are you insane?\n");
       dprintf("%s\n", stringFromKvData(chunk).c_str());
