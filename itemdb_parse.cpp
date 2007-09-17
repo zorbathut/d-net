@@ -315,8 +315,11 @@ void parseHierarchy(kvData *chunk, bool reload, ErrorAccumulator &accum) {
     tnode.cat_restrictiontype = mountpoint->cat_restrictiontype;
   }
   
-  tnode.spawncash = parseWithDefault(chunk, "spawncash", Money(0));
-  tnode.despawncash = parseWithDefault(chunk, "despawncash", Money(0));
+  tnode.spawncash = parseWithDefault(chunk, "spawncash", Money(-1));
+  tnode.despawncash = parseWithDefault(chunk, "despawncash", Money(-1));
+  CHECK(tnode.spawncash >= Money(-1));
+  CHECK(tnode.despawncash >= Money(-1));
+  CHECK(tnode.despawncash >= tnode.spawncash || tnode.despawncash == Money(-1));
   
   CHECK(mountpoint->cat_restrictiontype == -1 || tnode.cat_restrictiontype == mountpoint->cat_restrictiontype);
   mountpoint->branches.push_back(tnode);
@@ -1148,7 +1151,6 @@ void parseItemFile(const string &fname, bool reload, vector<string> *errors) {
   while(getkvData(tfil, &chunk, &line, &nextline)) {
     //dprintf("%s\n", chunk.debugOutput().c_str());
     if(parseWithDefault(&chunk, "debug", false) && !FLAGS_debugitems) {
-      dprintf("Debug only, skipping\n");
       continue;
     }
     currentlyreading = chunk;

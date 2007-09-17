@@ -484,8 +484,8 @@ HierarchyNode::HierarchyNode() {
   equipweapon = NULL;
   equipweaponfirst = false;
   sellweapon = NULL;
-  spawncash = Money(0);
-  despawncash = Money(0);
+  spawncash = Money(-1);
+  despawncash = Money(-1);
 }
 
 void adler(Adler32 *adl, const HierarchyNode &hn) {

@@ -1,7 +1,6 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - run lots of checksumming
-  - later weapons don't show up
   - bombardment highlights on damagetype
   - is cash-per-round broken?
   - less durability on rebounders

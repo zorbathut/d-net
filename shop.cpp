@@ -164,7 +164,7 @@ void Shop::renormalize(HierarchyNode &item, const Player *player, int playercoun
         keep = false;
       
       // If holy crap we should be past this, we get rid of it.
-      if(keep && titem.despawncash > Money(0) && FLAGS_cullShopTree && titem.despawncash < highestCash)
+      if(keep && FLAGS_cullShopTree && titem.despawncash != Money(-1) && titem.despawncash < highestCash)
         keep = false;
       
       if(keep) {

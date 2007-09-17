@@ -159,7 +159,9 @@ Money moneyFromString(const string &rhs) {
   
   for(int i = 0; i < rhs.size(); i++) {
     if(isdigit(rhs[i])) {
+      Money laccum = accum;
       accum = accum * 10;
+      CHECK(accum >= laccum);
       accum = accum + Money(rhs[i] - '0');
     }
   }
