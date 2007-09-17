@@ -451,7 +451,7 @@ Color HierarchyNode::getColor() const {
   } else if(type == HNT_SELLWEAPON) {
     return nhcolor[gcolor(sellweapon)];
   } else if(type == HNT_CATEGORY && branches.size()) {
-    if(name == "Bombardment")
+    if(name == "Bombardment" || name == "Glory Devices")
       return C::inactive_text; // hackety hack hack
     Color col = branches[0].getColor();
     for(int i = 1; i < branches.size(); i++)
