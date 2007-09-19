@@ -308,6 +308,8 @@ string controls_availdescr(int cid) {
     return "Available buttons are 7890UIOPJKL;M,./";
   else if(sources[cid].first == CIP_KEYBOARD && sources[cid].second == 1)
     return "Available buttons are RTYFGHVBN";
+  else if(sources[cid].first == CIP_JOYSTICK)
+    return "Shoulder buttons recommended for weapons.";
   else
     return "";
 }

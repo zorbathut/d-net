@@ -1,6 +1,11 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - run lots of checksumming
+  - fastforward/rewind options
+  - Get rid of the horrible control methods
+  - Change faction to "on/off", default to on
+  - spread out bombardment statuses
+  - Make free version?
   - Many many more weapons
     - Add glory behavior
       - Make sure they don't spike CPU too badly
