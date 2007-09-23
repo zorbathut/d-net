@@ -209,6 +209,7 @@ Level Metagame::chooseLevel() {
 
 Metagame::Metagame(int playercount, Money startingcash, Coord multiple, int faction, int in_roundsBetweenShop, RngSeed seed) :
     persistent(playercount, startingcash, multiple, in_roundsBetweenShop), rng(seed) {
+  CHECK(multiple > 1);
   
   faction_mode = faction;
   if(faction_mode != -1) {

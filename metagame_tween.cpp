@@ -1254,6 +1254,7 @@ void PersistentData::attemptQueueSound(int player, const Sound *sound) {
 DEFINE_int(debugControllers, 0, "Number of controllers to set to debug defaults");
 
 PersistentData::PersistentData(int playercount, Money startingcash, Coord multiple, int in_roundsbetweenshop) {
+  CHECK(multiple > 1);
   roundsbetweenshop = in_roundsbetweenshop;
   faction_mode = 0;
   

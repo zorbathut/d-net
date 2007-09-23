@@ -425,6 +425,7 @@ bool InterfaceMain::tick(const vector< Controller > &control, RngSeed gameseed) 
       }
     }
     if(mrv == 1 || FLAGS_auto_newgame) {
+      dprintf("mexp %f, emx %f\n", moneyexp.toFloat(), exp(moneyexp).toFloat());
       game = new Metagame(control.size(), Money((long long)(1000 * pow(30, start.toFloat()))), exp(moneyexp), faction - 1, FLAGS_rounds_per_shop, gameseed);
       interface_mode = STATE_PLAYING;
     }

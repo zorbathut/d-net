@@ -135,11 +135,11 @@ inline Coord pow(const Coord &lhs, const Coord &rhs) {
 }
 
 inline Coord exp(const Coord &lhs) {
-  return coordExplicit((long long)exp((long double)lhs.d / (1LL << 32)) * (1LL << 32));
+  return exp(lhs.toFloat());
 }
 
 inline Coord log(const Coord &lhs) {
-  return coordExplicit((long long)log((long double)lhs.d / (1LL << 32)) * (1LL << 32));
+  return log(lhs.toFloat());
 }
 
 inline bool operator==(const Coord &lhs, const Coord &rhs) {
