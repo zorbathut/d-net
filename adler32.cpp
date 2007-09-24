@@ -22,7 +22,7 @@ unsigned long Adler32::output() const {
 BOOST_STATIC_ASSERT(sizeof(int) == 4);
 BOOST_STATIC_ASSERT(sizeof(long long) == 8);
 
-static bool read = false;
+static bool reading = false;
 static bool broke = false;
 static int wpos = 0;
 static int rpos = 0;
@@ -42,7 +42,7 @@ AdlerIgnore::~AdlerIgnore() {
 void reg_adler_ul_worker(unsigned long dat, const char *file, int line, const char *msg) {
   if(aigl.size()) {
   } else if(broke) {
-  } else if(read) {
+  } else if(reading) {
     if(wpos && adli[wpos - 1] == dat)
       return;
     if(wpos >= adli.size()) {
@@ -64,14 +64,14 @@ void reg_adler_ul_worker(unsigned long dat, const char *file, int line, const ch
 
 void reg_adler_ref_start() {
   CHECK(!broke);
-  read = true;
+  reading = true;
   adli.clear();
   wpos = 0;
   rpos = 0;
 }
 void reg_adler_ref_item(unsigned long unl) {
   CHECK(!broke);
-  CHECK(read);
+  CHECK(reading);
   adli.push_back(unl);
 }
 

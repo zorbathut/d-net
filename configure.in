@@ -38,7 +38,7 @@ case "${target_os}" in
     GAMECPPFLAGS="$GAMECPPFLAGS "
     GAMELDFLAGS="$GAMELDFLAGS -framework OpenGL -framework SDL -lSDLmain -framework Cocoa"
     
-    STDCPPFLAGS="$STDCPPFLAGS -DOSX_FRAMEWORK_PREFIXES -DNO_WINDOWS -I/usr/local/include/boost-1_34 "
+    CPPFLAGS="$STDCPPFLAGS -DOSX_FRAMEWORK_PREFIXES -DNO_WINDOWS -I/usr/local/include/boost-1_34_1"
     
     #AC_CHECK_LIB([GL], [glBegin],,AC_MSG_ERROR([opengl is needed]))
     #LDFLAGS="$GAMELDFLAGS -lGL"
@@ -46,8 +46,8 @@ case "${target_os}" in
     ;;
 
   *)
-    STDCPPFLAGS="$STDCPPFLAGS -DNO_WINDOWS -I/usr/local/include/boost-1_34"
-    CPPFLAGS="$CPPFLAGS -I/usr/local/include/boost-1_34"
+    STDCPPFLAGS="$STDCPPFLAGS -DNO_WINDOWS -I/usr/local/include/boost-1_34_1"
+    CPPFLAGS="$CPPFLAGS -I/usr/local/include/boost-1_34_1"
     LDFLAGS="$LDFLAGS -lboost_regex-gcc41-mt"
     AC_CHECK_LIB([GL], [glBegin],,AC_MSG_ERROR([opengl is needed]))
     GAMELDFLAGS="$GAMELDFLAGS -lGL"
