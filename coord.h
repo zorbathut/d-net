@@ -47,6 +47,8 @@ public:
   Coord(const Coord &rhs) : d(rhs.d) { };
   Coord(int rhs) { d = (long long)rhs * (1LL << 32); }
   Coord(unsigned int rhs) { d = (long long)rhs * (1LL << 32); }
+  Coord(long rhs) { d = (long long)rhs * (1LL << 32); }
+  Coord(unsigned long rhs) { d = (long long)rhs * (1LL << 32); }
   Coord(long long rhs) { CHECK(abs(rhs) < (1LL << 31)); d = rhs * (1LL << 32); }
   Coord(float rhs) { d = (long long)(rhs * (1LL << 32)); }
   Coord(double rhs) { d = (long long)(rhs * (1LL << 32)); }

@@ -103,7 +103,7 @@ void initFlags(int argc, char *argv[], int ignoreargs) {
     CHECK(argv[i][0] == '-' && argv[i][1] == '-');
     char *arg = argv[i] + 2;
     bool isBoolNo = false;
-    if(!strnicmp(arg, "no", 2)) {
+    if(tolower(arg[0]) == 'n' && tolower(arg[1]) == 'o') { // jon sucks
       isBoolNo = true;
       arg += 2;
     }

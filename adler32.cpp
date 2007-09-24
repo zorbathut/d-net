@@ -20,6 +20,7 @@ unsigned long Adler32::output() const {
 }
 
 BOOST_STATIC_ASSERT(sizeof(int) == 4);
+BOOST_STATIC_ASSERT(sizeof(long) == 4);
 BOOST_STATIC_ASSERT(sizeof(long long) == 8);
 
 static bool reading = false;

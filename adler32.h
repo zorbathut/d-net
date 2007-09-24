@@ -50,6 +50,8 @@ inline void adler(Adler32 *adl, char val) { adl->addByte(val); }
 inline void adler(Adler32 *adl, unsigned char val) { adl->addByte(val); }
 inline void adler(Adler32 *adl, int val) { adl->addBytes(&val, sizeof(val)); }
 inline void adler(Adler32 *adl, unsigned int val) { adl->addBytes(&val, sizeof(val)); }
+inline void adler(Adler32 *adl, long val) { adl->addBytes(&val, sizeof(val)); }
+inline void adler(Adler32 *adl, unsigned long val) { adl->addBytes(&val, sizeof(val)); }
 inline void adler(Adler32 *adl, long long val) { adl->addBytes(&val, sizeof(val)); }
 inline void adler(Adler32 *adl, unsigned long long val) { adl->addBytes(&val, sizeof(val)); }
 
