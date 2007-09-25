@@ -751,27 +751,13 @@ void Shop::doTableRender(const Player *player) const {
 
 void Shop::renderToScreen(const Player *player) const {
   PerfStack pst(PBC::rendershop);
+  StackString stp("ShopRender");
   CHECK(player);
   
   slay.staticZoom();
   
   setColor(1.0, 1.0, 1.0);
-  {
-    long long cash = player->getCash().value();
-    string v;
-    if(cash == 0)
-      v = "0";
-    else {
-      while(cash) {
-        if(v.size() && v.size() % 4 == 3)
-          v += ',';
-        v += cash % 10 + '0';
-        cash /= 10;
-      }
-    }
-    reverse(v.begin(), v.end());
-    drawText(StringPrintf("Cash available: %s", v.c_str()), slay.fontsize(), slay.cashpos());
-  }
+  drawText(StringPrintf("Cash available: %s", player->getCash().textual(Money::TEXT_NOABBREV).c_str()), slay.fontsize(), slay.cashpos());
   
   if(player->freeImplantSlots()) {
     setColor(C::red);
@@ -795,6 +781,7 @@ void Shop::renderToScreen(const Player *player) const {
   slay.staticZoom();
   
   if(hasInfo(getCurNode().type)) {
+    StackString stp("shopinf");
     cshopinf.renderFrame(slay.hud(), slay.fontsize(), slay.demo(), player);
   }
 }

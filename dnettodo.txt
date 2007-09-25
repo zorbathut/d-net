@@ -2,8 +2,6 @@
 - "Finish the Damn Game" Initiative
   - run lots of checksumming
   - make checksumloop work properly
-  - Add internal spacing, optional rounding, and optional end padding to money printouts
-  - cost-per-damage and cost-per-second in these units
   - Check to see if Hephaestus is balanced based on what it does to tank speed and armor values
   - Change faction to "on/off", default to on
   - remove or heavily modify pacman
@@ -13,6 +11,7 @@
   - boost T2 missile blast a little
   - add smaller levels, add player-per-level cap
   - take another look at intro screen
+  - Make cost unit consistent in shop tiers
   - deploy IGF version
   - Make free version
   - Many many more weapons

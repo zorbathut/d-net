@@ -6,6 +6,7 @@
 #include "dvec2.h"
 #include "util.h"
 #include "rng.h"
+#include "money.h"
 
 #include <map>
 

@@ -237,6 +237,7 @@ void drawShadedFormattedText(Float4 bounds, float fontsize, const string &text) 
 }
 
 void ShopInfo::renderFrame(Float4 bounds, float fontsize, Float4 inset, const Player *player) const {
+  StackString stp("ShopInfo");
   CHECK(bool(weapon) + bool(glory) + bool(bombardment) + bool(upgrade) + bool(tank) + bool(implant) + bool(implantslot)== 1);
   
   if(text && !miniature)
@@ -246,17 +247,18 @@ void ShopInfo::renderFrame(Float4 bounds, float fontsize, Float4 inset, const Pl
   
   const float fontshift = fontsize * 1.5;
   if(weapon) {
+    StackString stp("ShopInfoWeapon");
     ShopKVPrinter kvp(bounds, fontsize, fontshift);
     kvp.print("Theoretical DPS", prettyFloatFormat(player->adjustWeapon(weapon).stats_damagePerSecond()));
-    kvp.print("Cost per damage", prettyFloatFormat(player->adjustWeapon(weapon).stats_costPerDamage()));
-    kvp.print("Cost per second", prettyFloatFormat(player->adjustWeapon(weapon).stats_costPerSecond()));
+    kvp.print("Cost/damage", prettyFloatFormat(player->adjustWeapon(weapon).stats_costPerDamage()));
+    kvp.print("Cost/second", prettyFloatFormat(player->adjustWeapon(weapon).stats_costPerSecond()));
     if(weapon->recommended != -1) {
       kvp.discontinuity();
       int recommended = int(sqrt((float)playercount) * player->adjustWeapon(weapon).recommended());
       kvp.header("Recommended");
       kvp.print("Loadout", StringPrintf("%d", recommended));
       kvp.print("Ammo packs", StringPrintf("%d", (int)ceil((float)recommended / weapon->quantity)));
-      kvp.print("Cost", StringPrintf("%s", player->adjustWeapon(weapon).cost(recommended).textual().c_str()));
+      kvp.print("Cost", StringPrintf("%s", player->adjustWeapon(weapon).cost(recommended).textual(Money::TEXT_NORIGHTPAD | Money::TEXT_NOABBREV).c_str()));
     }
   } else if(glory) {
     ShopKVPrinter kvp(bounds, fontsize, fontshift);
