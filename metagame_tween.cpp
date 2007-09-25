@@ -1365,7 +1365,6 @@ PersistentData::PersistentData(int playercount, Money startingcash, Coord multip
     pms[cdbc].axes_invert[0] = false;
     pms[cdbc].axes_invert[1] = false;
     pms[cdbc].setting_axistype = KSAX_STEERING;
-    pms[cdbc].setting_old_axistype = KSAX_STEERING;
     playerid[cdbc] = playerdata.size();
     playerdata.push_back(Player(pms[cdbc].faction->faction, faction_mode, newPlayerStartingCash));
     cdbc++;
@@ -1389,8 +1388,7 @@ PersistentData::PersistentData(int playercount, Money startingcash, Coord multip
     pms[cdbc].axes[1] = 1;
     pms[cdbc].axes_invert[0] = false;
     pms[cdbc].axes_invert[1] = false;
-    pms[cdbc].setting_axistype = KSAX_ABSOLUTE;
-    pms[cdbc].setting_old_axistype = KSAX_ABSOLUTE;
+    pms[cdbc].setting_axistype = KSAX_STEERING;
     playerid[cdbc] = playerdata.size();
     playerdata.push_back(Player(pms[cdbc].faction->faction, faction_mode, newPlayerStartingCash));
     cdbc++;
@@ -1411,11 +1409,10 @@ PersistentData::PersistentData(int playercount, Money startingcash, Coord multip
     pms[cdbc].buttons[BUTTON_CANCEL] = 1;
     CHECK(pms[cdbc].buttons.size() == 7);
     pms[cdbc].axes[0] = 1;
-    pms[cdbc].axes[1] = 2;
+    pms[cdbc].axes[1] = 3;
     pms[cdbc].axes_invert[0] = false;
     pms[cdbc].axes_invert[1] = false;
-    pms[cdbc].setting_axistype = KSAX_TANK;
-    pms[cdbc].setting_old_axistype = KSAX_TANK;
+    pms[cdbc].setting_axistype = KSAX_STEERING;
     playerid[cdbc] = playerdata.size();
     playerdata.push_back(Player(pms[cdbc].faction->faction, faction_mode, newPlayerStartingCash));
     cdbc++;

@@ -164,30 +164,23 @@ void Ai::updateCharacterChoice(const vector<FactionState> &factions, const Playe
       nextKeys.keys[player.setting_button_current].down = frameNumber % 2;
     else if(player.setting_button_current == nextKeys.keys.size())
       nextKeys.keys[BUTTON_ACCEPT].down = frameNumber % 2;
-  } else if(player.settingmode == SETTING_AXISTYPE) {
+  } else if(player.settingmode == SETTING_AXISCHOOSE) {
     if(player.setting_axistype != KSAX_ABSOLUTE) {
       if(frameNumber % 2 == 0) {
-        if(player.setting_axistype_curchoice != KSAX_ABSOLUTE * 2)
-          nextKeys.menu = Coord2(0, -1);
-        else
-          nextKeys.keys[BUTTON_ACCEPT].down = true;
+        nextKeys.keys[BUTTON_FIRE1].down = true;
+        nextKeys.keys[BUTTON_FIRE2].down = true;
+        nextKeys.keys[BUTTON_FIRE3].down = true;
+        nextKeys.keys[BUTTON_FIRE4].down = true;
       }
     } else {
-      if(frameNumber % 2 == 0) {
-        if(player.setting_axistype_curchoice != KSAX_END * 2)
-          nextKeys.menu = Coord2(0, -1);
-        else
+      if(frameNumber % 2) {
+        if(player.setting_axis_current == 0)
+          nextKeys.menu.x = 1.0;
+        if(player.setting_axis_current == 1)
+          nextKeys.menu.y = 1.0;
+        if(player.setting_axis_current == 2)
           nextKeys.keys[BUTTON_ACCEPT].down = true;
       }
-    }
-  } else if(player.settingmode == SETTING_AXISCHOOSE) {
-    if(frameNumber % 2) {
-      if(player.setting_axis_current == 0)
-        nextKeys.menu.x = 1.0;
-      if(player.setting_axis_current == 1)
-        nextKeys.menu.y = 1.0;
-      if(player.setting_axis_current == 2)
-        nextKeys.keys[BUTTON_ACCEPT].down = true;
     }
   } else if(player.settingmode == SETTING_TEST) {
     nextKeys.keys[BUTTON_CANCEL].down = true;

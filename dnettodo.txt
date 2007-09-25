@@ -2,16 +2,15 @@
 - "Finish the Damn Game" Initiative
   - run lots of checksumming
   - make checksumloop work properly
+  - Change faction to "on/off", default to on
   - remove or heavily modify pacman
   - tank pieces aren't visible enough
-  - Get rid of the horrible control methods
-  - Change faction to "on/off", default to on
   - test to see if existing groundmines get buffer as bombardment goes up (should they?)
   - boost T1 missile blast
   - boost T2 missile blast a little
   - add smaller levels, add player-per-level cap
   - deploy IGF version
-  - Make free version?
+  - Make free version
   - Many many more weapons
     - Add glory behavior
       - Make sure they don't spike CPU too badly
@@ -195,3 +194,6 @@ The Device: Fires out homing EMP DPS drones that include tesla spike generators
 Deadman's Nuke: Angel-cannon explosion
 Immolation Device: Multiple nearby explosions
 Core Conversion: DPS explosion, with spew of airbrake projectiles
+
+--- Getting rid of control methods:
+The AI still needs to use Absolute mode at the moment. Since it goes through control methods "manually", I need a way to either re-enable that when AI is on, or to "escape" into it. I like the first one better since it'll be easier - I'll set it up so that pushing all four buttons in axis choice toggles the mode.

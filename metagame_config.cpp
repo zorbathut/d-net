@@ -93,11 +93,7 @@ PlayerMenuState::PlayerMenuState() {
   setting_button_current = -1;
   setting_axis_current = -1;
   
-  setting_axistype = -1;
-  setting_old_axistype = -1;
-  
-  setting_axistype_curchoice = 0;
-  setting_axistype_demo_cursegment = -1;
+  setting_axistype = KSAX_STEERING;
   
   buttons.resize(BUTTON_LAST, -1);
   axes.resize(2, -1);
@@ -105,26 +101,6 @@ PlayerMenuState::PlayerMenuState() {
 }
 
 PlayerMenuState::~PlayerMenuState() { }
-
-void PlayerMenuState::createNewAxistypeDemo(RngSeed seed) {
-  setting_axistype_demo.reset();
-  
-  setting_axistype_demo.reset(new GamePackage);
-  
-  setting_axistype_demo->players.push_back(Player(faction->faction, 0, Money(0)));
-  
-  const RenderInfo rin;
-  
-  Float4 boundy = Float4(rin.xstart, rin.ystarts[1], rin.xend, rin.ystarts[7]);
-  boundy -= boundy.midpoint();
-  
-  float mn = min(boundy.span_x(), boundy.span_y());
-  boundy *= (100 / mn);
-  
-  setting_axistype_demo->game.initCenteredDemo(&setting_axistype_demo->players[0], 50);
-  
-  setting_axistype_demo_ai.reset(new GameAiAxisRotater(GameAiAxisRotater::steeringConfig(false, false), seed));
-}
 
 Keystates PlayerMenuState::genKeystate(const Controller &keys) const {
   Keystates kst;
@@ -401,116 +377,6 @@ void standardButtonRender(const StandardButtonRenderData &sbrd) {
     drawJustifiedText(sbrd.description[i], sbrd.rin->textsize, Float2((sbrd.rin->xstart + sbrd.rin->xend) / 2, sbrd.rin->ystarts[sbrd.rin->ystarts.size() - sbrd.description.size() + i]), TEXT_CENTER, TEXT_MIN);
 }
 
-float GameAiAxisRotater::Randomater::next(Rng *rng) {
-  if(frameNumber >= fnext) {
-    if(smooth) {
-      current = rng->frand() * 2 - 1;
-    } else {
-      vector<float> opts;
-      opts.push_back(1);
-      opts.push_back(0);
-      opts.push_back(-1);
-      opts.erase(find(opts.begin(), opts.end(), current));
-      current = opts[int(rng->frand() * opts.size())];
-    }
-    int shift = int(rng->frand() * 120 + 120);
-    if(!smooth) {
-      if(current == 0)
-        shift /= 2;
-    }
-    fnext = frameNumber + shift;
-  }
-  return current;
-}
-
-GameAiAxisRotater::Randomater::Randomater() {
-  current = 0;
-  fnext = 0;
-}
-
-void GameAiAxisRotater::updateGameWork(const vector<Tank> &players, int me) {
-  StackString sstr("udg");
-  if(config.type == KSAX_STEERING) {
-    CHECK(rands.size() == 2);
-    for(int i = 0; i < 2; i++) {
-      if(config.ax[i])
-        next[i] = approach(next[i], rands[i].next(&rng), 0.05);
-      else
-        next[i] = approach(next[i], 0, 0.05);
-    }
-  } else if(config.type == KSAX_ABSOLUTE) {
-    CHECK(rands.size() == 1);
-    Float2 ps = makeAngle(rands[0].next(&rng) * PI);
-    next[0] = approach(next[0], ps.x, 0.05);
-    next[1] = approach(next[1], ps.y, 0.05);
-  } else if(config.type == KSAX_TANK) {
-    CHECK(rands.size() == 2);
-    for(int i = 0; i < 2; i++) {
-      if(config.tax[i] == 0)
-        next[i] = approach(next[i], 0, 0.05);
-      else if(config.tax[i] < 0)
-        next[i] = approach(next[i], -rands[-config.tax[i] - 1].next(&rng), 0.05);
-      else
-        next[i] = approach(next[i], rands[config.tax[i] - 1].next(&rng), 0.05);
-    }
-  } else {
-    CHECK(0);
-  }
-  
-  nextKeys.udlrax = getControls();
-
-  nextKeys.axmode = config.type;
-}
-
-void GameAiAxisRotater::updateBombardmentWork(const vector<Tank> &players, Coord2 mypos) {
-  CHECK(0);
-}
-
-void GameAiAxisRotater::updateConfig(const Config &conf) {
-  config = conf;
-  if(config.type == KSAX_STEERING || config.type == KSAX_TANK) {
-    rands.resize(2);
-    rands[0].smooth = false;
-    rands[1].smooth = false;
-  } else if(config.type == KSAX_ABSOLUTE) {
-    rands.resize(1);
-    rands[0].smooth = true;
-  } else {
-    CHECK(0);
-  }
-}
-
-GameAiAxisRotater::Config GameAiAxisRotater::steeringConfig(bool ax0, bool ax1) {
-  Config conf;
-  conf.type = KSAX_STEERING;
-  conf.ax[0] = ax0;
-  conf.ax[1] = ax1;
-  return conf;
-}
-GameAiAxisRotater::Config GameAiAxisRotater::absoluteConfig() {
-  Config conf;
-  conf.type = KSAX_ABSOLUTE;
-  return conf;
-}
-GameAiAxisRotater::Config GameAiAxisRotater::tankConfig(int axlsrc, int axrsrc) {
-  Config conf;
-  conf.type = KSAX_TANK;
-  conf.tax[0] = axlsrc;
-  conf.tax[1] = axrsrc;
-  for(int i = 0; i < 2; i++)
-    CHECK(conf.tax[i] >= -2 && conf.tax[i] <= 2);
-  return conf;
-}
-
-Coord2 GameAiAxisRotater::getControls() const {
-  return Coord2(next[0], next[1]);
-}
-
-GameAiAxisRotater::GameAiAxisRotater(const GameAiAxisRotater::Config &conf, RngSeed seed) : rng(seed) {
-  next.resize(2, 0.);
-  updateConfig(conf);
-}
-
 vector<pair<float, float> > choiceTopicXpos(float sx, float ex, float textsize) {
   vector<pair<float, float> > rv;
   float jtx = 0;
@@ -533,156 +399,6 @@ vector<pair<float, float> > choiceTopicXpos(float sx, float ex, float textsize) 
   }
   
   return rv;
-}
-
-class DemoSegment {
-public:
-  GameAiAxisRotater::Config config;
-  vector<string> text;
-};
-
-vector<vector<DemoSegment> > createDemoSegments() {
-  vector<vector<DemoSegment> > rv;
-  {
-    CHECK(rv.size() == KSAX_STEERING);
-    vector<DemoSegment> ts;
-    {
-      DemoSegment tds;
-      tds.config = GameAiAxisRotater::steeringConfig(false, false);
-      tds.text.push_back("Steering mode allows you to pilot your tank with");
-      tds.text.push_back("the same controls as most top-down games.");
-      tds.text.push_back("");
-      tds.text.push_back("Watch what the demonstration");
-      tds.text.push_back("tank on the right does when the example");
-      tds.text.push_back("controller on the left moves.");
-      ts.push_back(tds);
-    }
-    {
-      DemoSegment tds;
-      tds.config = GameAiAxisRotater::steeringConfig(false, true);
-      tds.text.push_back("Move your controller forwards and backwards");
-      tds.text.push_back("to move the tank forwards and backwards.");
-      ts.push_back(tds);
-    }
-    {
-      DemoSegment tds;
-      tds.config = GameAiAxisRotater::steeringConfig(true, false);
-      tds.text.push_back("Move your controller left and right");
-      tds.text.push_back("to turn your tank left and right.");
-      ts.push_back(tds);
-    }
-    {
-      DemoSegment tds;
-      tds.config = GameAiAxisRotater::steeringConfig(true, true);
-      tds.text.push_back("Combine these to drive around.");
-      tds.text.push_back("");
-      tds.text.push_back("This is the end of the demo.");
-      ts.push_back(tds);
-    }
-    rv.push_back(ts);
-  }
-  {
-    CHECK(rv.size() == KSAX_ABSOLUTE);
-    vector<DemoSegment> ts;
-    {
-      DemoSegment tds;
-      tds.config = GameAiAxisRotater::steeringConfig(false, false);
-      tds.text.push_back("In absolute mode, moving your controller in a");
-      tds.text.push_back("direction makes your tank move that way.");
-      tds.text.push_back("");
-      tds.text.push_back("Watch what the demonstration");
-      tds.text.push_back("tank on the right does when the example");
-      tds.text.push_back("controller on the left moves.");
-      ts.push_back(tds);
-    }
-    {
-      DemoSegment tds;
-      tds.config = GameAiAxisRotater::absoluteConfig();
-      tds.text.push_back("The computer will attempt to steer your tank in");
-      tds.text.push_back("the direction you want to go.");
-      ts.push_back(tds);
-    }
-    {
-      DemoSegment tds;
-      tds.config = GameAiAxisRotater::absoluteConfig();
-      tds.text.push_back("Moving the controller directly backwards will");
-      tds.text.push_back("allow you to drive backwards.");
-      ts.push_back(tds);
-    }
-    {
-      DemoSegment tds;
-      tds.config = GameAiAxisRotater::absoluteConfig();
-      tds.text.push_back("Absolute mode is easy to use, but occasionally");
-      tds.text.push_back("has trouble maneuvering or aiming precisely.");
-      tds.text.push_back("");
-      tds.text.push_back("This is the end of the demo.");
-      ts.push_back(tds);
-    }
-    rv.push_back(ts);
-  }
-  {
-    CHECK(rv.size() == KSAX_TANK);
-    vector<DemoSegment> ts;
-    {
-      DemoSegment tds;
-      tds.config = GameAiAxisRotater::tankConfig(0, 0);
-      tds.text.push_back("Tank mode gives you direct control over the");
-      tds.text.push_back("two tank treads.");
-      tds.text.push_back("");
-      tds.text.push_back("Watch what the demonstration");
-      tds.text.push_back("tank on the right does when the example");
-      tds.text.push_back("controller on the left moves.");
-      ts.push_back(tds);
-    }
-    {
-      DemoSegment tds;
-      tds.config = GameAiAxisRotater::tankConfig(1, 0);
-      tds.text.push_back("Your left stick moves only your left tread.");
-      ts.push_back(tds);
-    }
-    {
-      DemoSegment tds;
-      tds.config = GameAiAxisRotater::tankConfig(0, 2);
-      tds.text.push_back("Your right stick moves only your right tread.");
-      ts.push_back(tds);
-    }
-    {
-      DemoSegment tds;
-      tds.config = GameAiAxisRotater::tankConfig(2, 2);
-      tds.text.push_back("Move both sticks forward or backwards to");
-      tds.text.push_back("drive directly forwards or backwards.");
-      ts.push_back(tds);
-    }
-    {
-      DemoSegment tds;
-      tds.config = GameAiAxisRotater::tankConfig(-2, 2);
-      tds.text.push_back("Move the sticks opposite of each other to");
-      tds.text.push_back("rotate quickly.");
-      ts.push_back(tds);
-    }
-    {
-      DemoSegment tds;
-      tds.config = GameAiAxisRotater::tankConfig(1, 2);
-      tds.text.push_back("Using the sticks in combination allows");
-      tds.text.push_back("you to maneuver.");
-      tds.text.push_back("");
-      tds.text.push_back("This is the end of the demo.");
-      ts.push_back(tds);
-    }
-    rv.push_back(ts);
-  }
-  return rv;
-}
-
-const vector<vector<DemoSegment> > dsegments = createDemoSegments();
-
-int configDemoSegments(int type) {
-  return dsegments[type].size();
-}
-vector<string> configDemoText(int type, int segment);
-GameAiAxisRotater::Config configDemoRotater(int type, int segment) {
-  return dsegments[type][segment].config;
-
 }
 
 bool runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<FactionState> &factions) {
@@ -794,66 +510,10 @@ bool runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
           CHECK(0);
         }
       }
-    } else if(pms->settingmode == SETTING_AXISTYPE && pms->setting_axistype_demo_cursegment == -1) {
-      bool closing = false;
-      
-      if(keys.u.push) {
-        queueSound(S::select);
-        pms->setting_axistype_curchoice--;
-      }
-      if(keys.d.push) {
-        queueSound(S::select);
-        pms->setting_axistype_curchoice++;
-      }
-      
-      pms->setting_axistype_curchoice = modurot(pms->setting_axistype_curchoice, KSAX_END * 2 + 1);
-      
-      if(keys.keys[pms->buttons[BUTTON_ACCEPT]].push) {
-        if(pms->setting_axistype_curchoice == KSAX_END * 2) {
-          queueSound(S::accept);
-          closing = true;
-        } else if(pms->setting_axistype_curchoice % 2 == 0) {
-          queueSound(S::choose);
-          pms->setting_axistype = pms->setting_axistype_curchoice / 2;
-        } else {
-          queueSound(S::choose);
-          pms->setting_axistype_demo_cursegment = 0;
-          pms->createNewAxistypeDemo(unsync().generate_seed());
-        }
-      }
-      
-      if(pms->setting_axistype_demo_cursegment == -1) { // this only fails if we've gone into a demo mode
-        if(closing) {
-          if(pms->setting_old_axistype != pms->setting_axistype) {
-            pms->setting_old_axistype = pms->setting_axistype;
-            pms->setting_axistype_curchoice = 0;
-            pms->settingmode++;
-            if(pms->choicemode == CHOICE_ACTIVE) {
-              pms->choicemode = CHOICE_REAXIS;
-              pms->axes.clear();
-              pms->axes.resize(2, -1);
-            }
-          } else {
-            if(pms->choicemode != CHOICE_FIRSTPASS) {
-              pms->setting_axistype_curchoice = 0;
-              pms->choicemode = CHOICE_IDLE;
-            }
-          }
-        }
-      }
-    } else if(pms->settingmode == SETTING_AXISTYPE && pms->setting_axistype_demo_cursegment != -1) {
-      
-      if(keys.keys[pms->buttons[BUTTON_ACCEPT]].push) {
-        queueSound(S::choose);
-        pms->setting_axistype_demo_cursegment++;
-      }
-      
-      if(keys.keys[pms->buttons[BUTTON_CANCEL]].push) {
-        queueSound(S::choose);
-        pms->setting_axistype_demo_cursegment = -1;
-      }
-      
     } else if(pms->settingmode == SETTING_AXISCHOOSE) {
+      if(keys.keys[pms->buttons[BUTTON_FIRE1]].down && keys.keys[pms->buttons[BUTTON_FIRE2]].down && keys.keys[pms->buttons[BUTTON_FIRE3]].down && keys.keys[pms->buttons[BUTTON_FIRE4]].down && (keys.keys[pms->buttons[BUTTON_FIRE1]].push || keys.keys[pms->buttons[BUTTON_FIRE2]].push || keys.keys[pms->buttons[BUTTON_FIRE3]].push || keys.keys[pms->buttons[BUTTON_FIRE4]].push))
+        pms->setting_axistype = modurot(pms->setting_axistype + 1, KSAX_LAST);
+        
       StackString sstr("SAX");
       
       StandardButtonTickData sbtd;      
@@ -872,7 +532,7 @@ bool runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
       if(standardButtonTick(&sbtd)) {
         if(pms->choicemode == CHOICE_ACTIVE) {
           pms->choicemode = CHOICE_IDLE;
-        } else if(pms->choicemode == CHOICE_FIRSTPASS || pms->choicemode == CHOICE_REAXIS) {
+        } else if(pms->choicemode == CHOICE_FIRSTPASS) {
           pms->settingmode++;
         } else {
           CHECK(0);
@@ -922,62 +582,12 @@ bool runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
       if(pms->choicemode == CHOICE_IDLE) {
         vector<Keystates> kst(1);
         CHECK(!pms->test_game->runTick(kst, &unsync()));
-      } else if(pms->choicemode == CHOICE_ACTIVE || pms->choicemode == CHOICE_FIRSTPASS || pms->choicemode == CHOICE_REAXIS) {
+      } else if(pms->choicemode == CHOICE_ACTIVE || pms->choicemode == CHOICE_FIRSTPASS) {
         vector<Keystates> kst;
         kst.push_back(pms->genKeystate(keys));
         CHECK(!pms->test_game->runTick(kst, &unsync()));
       } else {
         CHECK(0);
-      }
-    }
-    
-    // oh yeah real hacky now
-    if(pms->setting_axistype_demo_cursegment != pms->setting_axistype_demo_aiframe) {
-      StackString sstr("aiinit");
-      int categ;
-      if(pms->setting_axistype_curchoice % 2 == 0) {
-        CHECK(pms->setting_axistype_demo_cursegment == -1);
-        categ = -1;
-      } else {
-        categ = pms->setting_axistype_curchoice / 2;
-      }
-      
-      if(categ == -1) {
-        pms->setting_axistype_demo_ai.reset();
-      } else if(pms->setting_axistype_demo_cursegment == -1) {
-      } else if(configDemoSegments(categ) == pms->setting_axistype_demo_cursegment) {
-        pms->setting_axistype_demo_cursegment = -1;
-      } else {
-        pms->setting_axistype_demo_ai->updateConfig(configDemoRotater(categ, pms->setting_axistype_demo_cursegment));
-      }
-      
-      if(pms->setting_axistype_demo_cursegment == -1) {
-        pms->setting_axistype_demo_ai.reset();
-        pms->setting_axistype_demo.reset();
-      }
-      
-      pms->setting_axistype_demo_aiframe = pms->setting_axistype_demo_cursegment;
-    }
-    
-    // wooooo go hack
-    if(!pms->setting_axistype_demo_ai.empty()) {
-      StackString sstr("rundemo");
-      CHECK(!pms->setting_axistype_demo.empty());
-  
-      vector<Keystates> kist;      
-      
-      {
-        StackString sstr("ai");
-        vector<GameAi *> tai;
-        tai.push_back(pms->setting_axistype_demo_ai.get());
-        pms->setting_axistype_demo->game.ai(tai);
-        for(int i = 0; i < tai.size(); i++)
-          kist.push_back(tai[i]->getNextKeys());
-      }
-  
-      {
-        StackString sstr("game");
-        pms->setting_axistype_demo->runTick(kist, &unsync());
       }
     }
   }
@@ -1030,98 +640,6 @@ void runSettingRender(const PlayerMenuState &pms, const string &availdescr) {
       sbrd.description.push_back(availdescr);
     
     standardButtonRender(sbrd);
-  } else if(pms.settingmode == SETTING_AXISTYPE && pms.setting_axistype_demo_cursegment == -1) {
-    int stopos = (rin.textline_count - 1 - KSAX_END * 2 - 2 - 3) / 2 + 1;
-    drawTextBoxAround(Float4(rin.xstart, rin.ystarts[stopos], rin.xend, rin.ystarts[stopos + KSAX_END * 2 + 1] + rin.textsize), rin.textsize);
-    for(int i = 0; i < KSAX_END * 2 + 1; i++) {
-      if(pms.choicemode != CHOICE_IDLE && pms.setting_axistype_curchoice == i)
-        setColor(C::active_text);
-      else
-        setColor(C::inactive_text);
-      
-      if(i == KSAX_END * 2)
-        drawText("Done", rin.textsize, Float2(rin.xstart, rin.ystarts[i + stopos + 1]));
-      else if(i % 2 == 0)
-        drawText(ksax_names[i / 2], rin.textsize, Float2(rin.xstart, rin.ystarts[i + stopos]));
-      else
-        drawText("(demo)", rin.textsize, Float2(rin.xstart + rin.textsize, rin.ystarts[i + stopos]));
-    }
-    
-    
-    if(pms.setting_axistype != -1) {
-      setColor(C::active_text);
-      drawJustifiedText("(chosen)", rin.textsize, Float2(rin.xend, rin.ystarts[pms.setting_axistype * 2 + stopos]), TEXT_MAX, TEXT_MIN);
-    }
-    
-    drawBottomBlock(rin, 3);
-    setColor(C::inactive_text);
-    drawJustifiedText("Choose your tank control mode. Choose \"done\" when", rin.textsize, Float2(rin.xcenter, rin.ystarts[rin.ystarts.size() - 3]), TEXT_CENTER, TEXT_MIN);
-    drawJustifiedText("ready. Choose \"demo\" for a demonstration of that", rin.textsize, Float2(rin.xcenter, rin.ystarts[rin.ystarts.size() - 2]), TEXT_CENTER, TEXT_MIN);
-    drawJustifiedText("mode. If you're unsure, \"Steering\" is recommended.", rin.textsize, Float2(rin.xcenter, rin.ystarts[rin.ystarts.size() - 1]), TEXT_CENTER, TEXT_MIN);
-  } else if(pms.settingmode == SETTING_AXISTYPE && pms.setting_axistype_demo_cursegment != -1) {
-    
-    const float demowindowwidth = rin.ystarts[rin.demo_line_end] - rin.ystarts[1];
-    const Float4 demowindow = Float4(rin.xcenter + demowindowwidth * 0.5, rin.ystarts[1], rin.xcenter + demowindowwidth * 1.5, rin.ystarts[1] + demowindowwidth);
-    const Float4 controllerwindow = Float4(rin.xcenter - demowindowwidth * 1.5, rin.ystarts[1], rin.xcenter - demowindowwidth * 0.5, rin.ystarts[1] + demowindowwidth);
-    
-    CHECK(!pms.setting_axistype_demo.empty());
-    {
-      GfxWindow gfxw(demowindow, 1.0);
-      pms.setting_axistype_demo->renderToScreen();
-    }
-    
-    if(pms.setting_axistype_demo_cursegment == dsegments[pms.setting_axistype_curchoice / 2].size() - 1) {
-      drawBottomBlock(rin, 1);
-      setColor(C::inactive_text);
-      drawJustifiedText("Press \"accept\" or \"cancel\" to end the demo.", rin.textsize, Float2(rin.xcenter, rin.ystarts[rin.ystarts.size() - 1]), TEXT_CENTER, TEXT_MIN);
-    } else {
-      drawBottomBlock(rin, 2);
-      setColor(C::inactive_text);
-      drawJustifiedText("Press your \"accept\" button to continue the demo.", rin.textsize, Float2(rin.xcenter, rin.ystarts[rin.ystarts.size() - 2]), TEXT_CENTER, TEXT_MIN);
-      drawJustifiedText("Press your \"cancel\" button to abort the demo.", rin.textsize, Float2(rin.xcenter, rin.ystarts[rin.ystarts.size() - 1]), TEXT_CENTER, TEXT_MIN);
-    }
-    
-    setColor(C::inactive_text);
-    {
-      int startline = rin.demo_line_end + 1;
-      vector<string> descr = dsegments[pms.setting_axistype_curchoice / 2][pms.setting_axistype_demo_cursegment].text;
-      drawTextBoxAround(Float4(rin.xstart, rin.ystarts[startline], rin.xend, rin.ystarts[startline + descr.size() - 1] + rin.textsize), rin.textsize);
-      for(int i = 0; i < descr.size(); i++)
-        drawJustifiedText(descr[i].c_str(), rin.textsize, Float2(rin.xcenter, rin.ystarts[startline + i]), TEXT_CENTER, TEXT_MIN);
-    }
-    
-    const float widgetsize = demowindowwidth / 16;
-    const float widgetthick = demowindowwidth / 100;
-    const float boxthick = demowindowwidth / 150;
-    const int sublines = 3;
-    Coord2 cont = pms.setting_axistype_demo_ai->getControls();
-    cont.x += 1;
-    cont.y += 1;
-    cont /= 2;
-  
-    if(pms.setting_axistype_curchoice / 2 == KSAX_STEERING || pms.setting_axistype_curchoice / 2 == KSAX_ABSOLUTE) {
-      setColor(C::inactive_text);
-      drawSolid(controllerwindow);
-      drawRect(controllerwindow, boxthick);
-      const Float4 livecwind = Float4(controllerwindow.sx + widgetsize, controllerwindow.sy + widgetsize, controllerwindow.ex - widgetsize, controllerwindow.ey - widgetsize);
-      setColor(C::active_text);
-      for(int i = 1; i <= sublines; i++)
-        drawRect(boxAround(Coord2((livecwind.ex - livecwind.sx) * cont.x + livecwind.sx, (livecwind.sy - livecwind.ey) * cont.y + livecwind.ey), widgetsize / sublines * i), widgetthick);
-    } else if(pms.setting_axistype_curchoice / 2 == KSAX_TANK) {
-      const float xshift = widgetsize * 5;
-      const float ys = controllerwindow.sy + widgetsize;
-      const float ye = controllerwindow.ey - widgetsize;
-      setColor(C::inactive_text);
-      drawRect(Float4(controllerwindow.ex - xshift, controllerwindow.sy, controllerwindow.ex - xshift + widgetsize, controllerwindow.ey), boxthick);
-      drawRect(Float4(controllerwindow.ex - widgetsize, controllerwindow.sy, controllerwindow.ex, controllerwindow.ey), boxthick);
-      setColor(C::active_text);
-      for(int i = 1; i <= sublines; i++)
-        drawRect(boxAround(Coord2(controllerwindow.ex - xshift + widgetsize / 2, (ys - ye) * cont.x + ye), widgetsize / sublines * i), widgetthick);
-      for(int i = 1; i <= sublines; i++)
-        drawRect(boxAround(Coord2(controllerwindow.ex - widgetsize / 2, (ys - ye) * cont.y + ye), widgetsize / sublines * i), widgetthick);
-    } else {
-      CHECK(0);
-    }
     
   } else if(pms.settingmode == SETTING_AXISCHOOSE) {
     StandardButtonRenderData sbrd;

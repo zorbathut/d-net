@@ -1,58 +1,14 @@
 #ifndef DNET_METAGAME_CONFIG
 #define DNET_METAGAME_CONFIG
 
-#include "game_ai.h"
 #include "itemdb.h"
 #include "smartptr.h"
+#include "input.h"
 
 using namespace std;
 
 // This is only really used for the "test" screen, and I don't want this to be considered a "full dependency" because it kind of isn't.
 class GamePackage;
-  
-class GameAiAxisRotater : public GameAi { // todo: get this dependency out
-public:
-      
-  class Config {
-    friend class GameAiAxisRotater;
-    
-    int type;
-  
-    bool ax[2];
-    int tax[2];
-  };
-  
-  static Config steeringConfig(bool ax0, bool ax1);
-  static Config absoluteConfig();
-  static Config tankConfig(int axlsrc, int axrsrc);
-  
-  void updateConfig(const Config &conf);
-  Coord2 getControls() const;
-
-  GameAiAxisRotater(const Config &conf, RngSeed seed);
-  
-private:
-  class Randomater {
-    float current;
-    int fnext;
-    
-  public:
-    bool smooth;
-  
-    float next(Rng *rng);
-    Randomater();
-  };
-  
-  vector<Randomater> rands;
-  vector<float> next;
-  
-  Config config;
-  
-  Rng rng;
-
-  void updateGameWork(const vector<Tank> &players, int me);
-  void updateBombardmentWork(const vector<Tank> &players, Coord2 mypos);
-};
 
 class FactionState {
 public:
@@ -61,10 +17,10 @@ public:
   const IDBFaction *faction;
 };
 
-enum { SETTING_BUTTONS, SETTING_AXISTYPE, SETTING_AXISCHOOSE, SETTING_TEST, SETTING_READY, SETTING_LAST };
-const char * const setting_names[] = { "Keys", "Mode", "Directions", "Test", "Done" };
+enum { SETTING_BUTTONS, SETTING_AXISCHOOSE, SETTING_TEST, SETTING_READY, SETTING_LAST };
+const char * const setting_names[] = { "Keys", "Directions", "Test", "Done" };
 
-enum { CHOICE_FIRSTPASS, CHOICE_REAXIS, CHOICE_ACTIVE, CHOICE_IDLE };
+enum { CHOICE_FIRSTPASS, CHOICE_ACTIVE, CHOICE_IDLE };
 
 enum ReadMode { RM_IDLE, RM_CHOOSING, RM_NOTRIGGER };
 struct PlayerMenuState {
@@ -87,14 +43,6 @@ public:
   vector<char> axes_invert;
 
   int setting_axistype;
-  int setting_axistype_curchoice;
-  int setting_old_axistype;
-
-  int setting_axistype_demo_cursegment;
-  int setting_axistype_demo_aiframe;
-  smart_ptr<GamePackage> setting_axistype_demo;
-  smart_ptr<GameAiAxisRotater> setting_axistype_demo_ai;
-  void createNewAxistypeDemo(RngSeed seed);
 
   smart_ptr<GamePackage> test_game;
   

@@ -53,12 +53,12 @@ bool operator==(const Controller &lhs, const Controller &rhs);
 
 void adler(Adler32 *adl, const Controller &kst);
 
-enum { KSAX_STEERING, KSAX_ABSOLUTE, KSAX_TANK, KSAX_END };
+enum { KSAX_STEERING, KSAX_ABSOLUTE, KSAX_TANK, KSAX_LAST };
 const char *const ksax_names[] = { "Steering (default)", "Absolute", "Tank (advanced)" };
 
 vector<vector<vector<string> > > ksax_axis_names_gen();
 const vector<vector<vector<string> > > ksax_axis_names = ksax_axis_names_gen(); // sigh.
-const char *const ksax_descriptions[KSAX_END][2] = { {"Turn axis and", "movement axis"}, {"Tank goes in", "stick direction"}, {"Independent", "tread control"} };
+const char *const ksax_descriptions[KSAX_LAST][2] = { {"Turn axis and", "movement axis"}, {"Tank goes in", "stick direction"}, {"Independent", "tread control"} };
 const int axis_groups[] = { 0, 0 };
 
 enum { BUTTON_FIRE1, BUTTON_FIRE2, BUTTON_FIRE3, BUTTON_FIRE4, BUTTON_PRECISION, BUTTON_ACCEPT, BUTTON_CANCEL, BUTTON_LAST };
