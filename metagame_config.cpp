@@ -166,8 +166,8 @@ struct StandardButtonRenderData {
 bool changeButtons(vector<int> *buttons, vector<char> *inversions, const vector<int> &groups, int choice, int button, bool inverted) {
   // Step 1: If this button has been chosen somewhere else, and we're not choosing this button for the first time, swap 'em (TODO: go back?)
   for(int j = 0; j < buttons->size(); j++) {
-    if(groups[j] != groups[choice])
-      continue;
+    //if(groups[j] != groups[choice])
+      //continue;
     if((*buttons)[j] == button) {
       if((*buttons)[choice] == -1) {
         return false;
