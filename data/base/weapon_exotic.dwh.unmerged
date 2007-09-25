@@ -134,7 +134,7 @@ text {
 warhead {
   name=warhead.weapon.angelcannon
   radiusdamage=MERGE(1) exotic
-  radiusfalloff=8
+  radiusfalloff=10
   radiusexplosive=0
   
   radiuscolor_dim=000
@@ -168,7 +168,7 @@ deploy {
 projectile {
   name=projectile.weapon.angelcannon.delay
   motion=delay
-  duration=0.7
+  duration=0.5
   
   deploy=deploy.weapon.angelcannon.dps
 }
