@@ -94,11 +94,13 @@ void ShopInfo::null() {
   implantslot = NULL;
 }
 
-void ShopInfo::init(const IDBWeapon *in_weapon, const Player *in_player, bool in_miniature) {
+void ShopInfo::init(const IDBWeapon *in_weapon, const Player *in_player, int in_playercount, bool in_miniature) {
   null();
   miniature = in_miniature;
   weapon = in_weapon;
   text = in_weapon->launcher->text;
+  playercount = in_playercount;
+  CHECK(playercount >= 2);
   if(!miniature)
     demo.init(weapon, in_player, NULL);
 }
@@ -148,9 +150,9 @@ void ShopInfo::init(const IDBImplantSlot *in_implantslot, const Player *in_playe
   // no working demo atm
 }
 
-void ShopInfo::initIfNeeded(const IDBWeapon *in_weapon, const Player *in_player, bool in_miniature) {
+void ShopInfo::initIfNeeded(const IDBWeapon *in_weapon, const Player *in_player, int in_playercount, bool in_miniature) {
   if(weapon != in_weapon || miniature != in_miniature)
-    init(in_weapon, in_player, in_miniature);
+    init(in_weapon, in_player, in_playercount, in_miniature);
 }
 void ShopInfo::initIfNeeded(const IDBGlory *in_glory, const Player *in_player, bool in_miniature) {
   if(glory != in_glory || miniature != in_miniature)
@@ -250,7 +252,7 @@ void ShopInfo::renderFrame(Float4 bounds, float fontsize, Float4 inset, const Pl
     kvp.print("Cost per second", prettyFloatFormat(player->adjustWeapon(weapon).stats_costPerSecond()));
     if(weapon->recommended != -1) {
       kvp.discontinuity();
-      int recommended = player->adjustWeapon(weapon).recommended();
+      int recommended = int(sqrt((float)playercount) * player->adjustWeapon(weapon).recommended());
       kvp.header("Recommended");
       kvp.print("Loadout", StringPrintf("%d", recommended));
       kvp.print("Ammo packs", StringPrintf("%d", (int)ceil((float)recommended / weapon->quantity)));

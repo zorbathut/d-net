@@ -480,7 +480,7 @@ bool findEquipItem(const HierarchyNode &hrt, const IDBWeapon *weap, vector<int> 
   return false;
 }
 
-bool Shop::runTick(const Keystates &keys, Player *player) {
+bool Shop::runTick(const Keystates &keys, Player *player, int playercount) {
   PerfStack pst(PBC::shop);
   
   CHECK(getCurNode().selectable);
@@ -710,9 +710,9 @@ bool Shop::runTick(const Keystates &keys, Player *player) {
   {
     bool hasinfo = true;
     if(getCurNode().type == HierarchyNode::HNT_WEAPON)
-      cshopinf.initIfNeeded(getCurNode().weapon, player, miniature);
+      cshopinf.initIfNeeded(getCurNode().weapon, player, playercount, miniature);
     else if(getCurNode().type == HierarchyNode::HNT_EQUIPWEAPON)
-      cshopinf.initIfNeeded(getCurNode().equipweapon, player, miniature);
+      cshopinf.initIfNeeded(getCurNode().equipweapon, player, playercount, miniature);
     else if(getCurNode().type == HierarchyNode::HNT_GLORY)
       cshopinf.initIfNeeded(getCurNode().glory, player, miniature);
     else if(getCurNode().type == HierarchyNode::HNT_BOMBARDMENT)
@@ -728,7 +728,7 @@ bool Shop::runTick(const Keystates &keys, Player *player) {
     else if(getCurNode().type == HierarchyNode::HNT_IMPLANTSLOT)
       cshopinf.initIfNeeded(getCurNode().implantslot, player, miniature);
     else if(getCurNode().type == HierarchyNode::HNT_SELLWEAPON)
-      cshopinf.initIfNeeded(getCurNode().sellweapon, player, miniature);
+      cshopinf.initIfNeeded(getCurNode().sellweapon, player, playercount, miniature);
     else {
       hasinfo = false;
       cshopinf.clear();

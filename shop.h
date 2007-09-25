@@ -41,7 +41,7 @@ private:
   bool hasInfo(int type) const;
 
 public:
-  bool runTick(const Keystates &keys, Player *player);
+  bool runTick(const Keystates &keys, Player *player, int playercount);
   void ai(Ai *ai, const Player *player) const;
   void renderToScreen(const Player *player) const;
   void checksum(Adler32 *adler) const;
