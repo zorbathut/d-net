@@ -53,7 +53,7 @@ public:
 };
 
 bool runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<FactionState> &factions);
-void runSettingRender(const PlayerMenuState &pms, const string &availdescr);  // kind of grim, second parameter is text description of what buttons are available
+void runSettingRender(const PlayerMenuState &pms, const ControlConsts &cc);  // kind of grim, second parameter is text description of what buttons are available
 
 void adler(Adler32 *adl, const FactionState &pms);
 void adler(Adler32 *adl, const PlayerMenuState &pms);

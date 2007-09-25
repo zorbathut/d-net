@@ -871,7 +871,7 @@ void PersistentData::renderSlot(int slotid) const {
     Coord2 sizes(tfs.compass_location.span_x(), tfs.compass_location.span_y());
     Coord2 mp = tfs.compass_location.midpoint();
     setZoomAround(Coord4(mp.x - sizes.x, mp.y - sizes.y, mp.x + sizes.x, mp.y + sizes.y).toFloat());
-    runSettingRender(pms[slt.pid], controls_availdescr(slt.pid));
+    runSettingRender(pms[slt.pid], controls_getcc(slt.pid));
   } else if(slt.type == Slot::QUITCONFIRM) {
     setZoomCenter(0, 0, 10);
     {

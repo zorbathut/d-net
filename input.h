@@ -12,8 +12,7 @@ using namespace std;
  * User input
  */
  
-class Button {
-public:
+struct Button {
   bool down;
   bool push;
   bool release;
@@ -33,8 +32,7 @@ bool operator==(const Button &lhs, const Button &rhs);
 
 void adler(Adler32 *adl, const Button &kst);
 
-class Controller {
-public:
+struct Controller {
   Coord2 menu;
   Button u;
   Button d;
@@ -62,11 +60,9 @@ const char *const ksax_descriptions[KSAX_LAST][2] = { {"Turn axis and", "movemen
 const int axis_groups[] = { 0, 0 };
 
 enum { BUTTON_FIRE1, BUTTON_FIRE2, BUTTON_FIRE3, BUTTON_FIRE4, BUTTON_PRECISION, BUTTON_ACCEPT, BUTTON_CANCEL, BUTTON_LAST };
-const char * const button_names[] = { "Fire weapon 1", "Fire weapon 2", "Fire weapon 3", "Fire weapon 4", "Slow movement", "Accept menu item key", "Change/abort menu key" };
 const int button_groups[] = { 0, 0, 0, 0, 0, 1, 1 };
 
-class Keystates {
-public:
+struct Keystates {
   Coord ax[2];
   int axmode;
   Button fire[SIMUL_WEAPONS];
@@ -80,6 +76,11 @@ public:
   void nullMove();
 
   Keystates();
+};
+
+struct ControlConsts {
+  string availdescr;
+  vector<string> buttonnames;
 };
 
 void adler(Adler32 *adl, const Keystates &kst);

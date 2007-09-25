@@ -2,6 +2,10 @@
 - "Finish the Damn Game" Initiative
   - run lots of checksumming
   - make checksumloop work properly
+  - Align L keys with actual game positions
+  - Disable multikey in config
+  - Make firerate modify the recommended loadout
+  - Check to see if Hephaestus is balanced based on what it does to tank speed and armor values
   - Change faction to "on/off", default to on
   - remove or heavily modify pacman
   - tank pieces aren't visible enough

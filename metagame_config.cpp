@@ -595,7 +595,7 @@ bool runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
   return false;
 }
 
-void runSettingRender(const PlayerMenuState &pms, const string &availdescr) {
+void runSettingRender(const PlayerMenuState &pms, const ControlConsts &cc) {
   StackString sstr("runSettingRender");
   CHECK(pms.faction);
 
@@ -617,7 +617,7 @@ void runSettingRender(const PlayerMenuState &pms, const string &availdescr) {
     vector<vector<string> > names;
     for(int i = 0; i < BUTTON_LAST; i++) {
       vector<string> tix;
-      tix.push_back(button_names[i]);
+      tix.push_back(cc.buttonnames[i]);
       names.push_back(tix);
     }
     
@@ -636,8 +636,8 @@ void runSettingRender(const PlayerMenuState &pms, const string &availdescr) {
     sbrd.sel_button_reading = pms.setting_button_reading;
     sbrd.prefix = "Button #";
     sbrd.description.push_back("Select your button setup. Choose \"done\" when ready.");
-    if(availdescr.size())
-      sbrd.description.push_back(availdescr);
+    if(!cc.availdescr.empty())
+      sbrd.description.push_back(cc.availdescr);
     
     standardButtonRender(sbrd);
     

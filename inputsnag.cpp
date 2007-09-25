@@ -8,6 +8,8 @@
 #include "smartptr.h"
 #include "adler32.h"
 
+#include <boost/assign/list_of.hpp>
+
 #ifdef OSX_FRAMEWORK_PREFIXES
   #include <SDL/SDL.h>
 #else
@@ -303,13 +305,24 @@ int controls_primary_id() {
   return FLAGS_nullControllers;
 }
 
-string controls_availdescr(int cid) {
-  if(sources[cid].first == CIP_KEYBOARD && sources[cid].second == 0)
-    return "Available buttons are 7890UIOPJKL;M,./";
-  else if(sources[cid].first == CIP_KEYBOARD && sources[cid].second == 1)
-    return "Available buttons are RTYFGHVBN";
-  else if(sources[cid].first == CIP_JOYSTICK)
-    return "Shoulder buttons recommended for weapons.";
-  else
-    return "";
+ControlConsts controls_getcc(int cid) {
+  ControlConsts rv;
+  
+  if(sources[cid].first == CIP_KEYBOARD && sources[cid].second == 0) {
+    rv.availdescr = "Available buttons are 7890UIOPJKL;M,./";
+  } else if(sources[cid].first == CIP_KEYBOARD && sources[cid].second == 1) {
+    rv.availdescr = "Available buttons are RTYFGHVBN";
+  } else if(sources[cid].first == CIP_JOYSTICK) {
+    rv.availdescr = "Shoulder buttons recommended for weapons.";
+  } else {
+    rv.availdescr = "";
+  }
+
+  if(sources[cid].first == CIP_KEYBOARD) {
+    rv.buttonnames = boost::assign::list_of("Fire weapon 1")("Fire weapon 2")("Fire weapon 3")("Fire weapon 4")("Slow movement")("Accept menu item key")("Change/abort menu key");
+  } else if(sources[cid].first == CIP_JOYSTICK) {
+    rv.buttonnames = boost::assign::list_of("Fire weapon 1 (L2)")("Fire weapon 2 (R2)")("Fire weapon 3 (L1)")("Fire weapon 4 (R1)")("Slow movement")("Accept menu item key")("Change/abort menu key");
+  }
+  
+  return rv;
 }
