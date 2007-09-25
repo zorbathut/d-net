@@ -23,7 +23,7 @@ DEFINE_float(startingPhase, -1, "Starting phase override");
 DEFINE_bool(showtanks, false, "Show-tank mode");
 DEFINE_bool(dumpTanks, false, "Dump-tank mode");
 
-DEFINE_int(factionMode, 0, "Faction mode to skip faction choice battle, -1 for normal faction mode");
+DEFINE_int(factionMode, 3, "Faction mode to skip faction choice battle, -1 for normal faction mode");
 
 StdMenuItem StdMenuItem::makeStandardMenu(const string &text, int trigger) {
   StdMenuItem stim;
@@ -666,7 +666,7 @@ InterfaceMain::InterfaceMain() {
   configmenu.pushMenuItem(StdMenuItem::makeScale("Game start", names, &start));
   //configmenu.pushMenuItem(StdMenuItem::makeScale("Game end", names, &end));
   configmenu.pushMenuItem(StdMenuItem::makeRounds("Estimated rounds", &start, &end, &moneyexp));
-  configmenu.pushMenuItem(StdMenuItem::makeOptions("Faction mode", boost::assign::list_of("On")("Off"), &faction_toggle));
+  configmenu.pushMenuItem(StdMenuItem::makeOptions("Factions", boost::assign::list_of("On")("Off"), &faction_toggle));
   //configmenu.pushMenuItem(StdMenuItem::makeOptions("Faction mode", boost::assign::list_of("Battle")("No factions")("Minor factions")("Normal factions")("Major factions"), &faction));
   configmenu.pushMenuItem(StdMenuItem::makeStandardMenu("Begin", 1));
   

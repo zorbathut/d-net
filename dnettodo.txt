@@ -2,7 +2,6 @@
 - "Finish the Damn Game" Initiative
   - run lots of checksumming
   - make checksumloop work properly
-  - Change faction to "on/off", default to on
   - remove or heavily modify pacman
   - tank pieces aren't visible enough
   - test to see if existing groundmines get buffer as bombardment goes up (should they?)
@@ -12,6 +11,7 @@
   - take another look at intro screen
   - Make cost unit consistent in shop tiers
   - deploy IGF version
+  - mines fade out on tank explosion
   - Make free version
   - Many many more weapons
     - Add glory behavior
