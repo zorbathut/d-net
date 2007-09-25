@@ -425,7 +425,10 @@ bool InterfaceMain::tick(const vector< Controller > &control, RngSeed gameseed) 
       }
     }
     if(mrv == 1 || FLAGS_auto_newgame) {
-      dprintf("mexp %f, emx %f\n", moneyexp.toFloat(), exp(moneyexp).toFloat());
+      if(faction_toggle == 0)
+        faction = 4;
+      else
+        faction = 1;
       game = new Metagame(control.size(), Money((long long)(1000 * pow(30, start.toFloat()))), exp(moneyexp), faction - 1, FLAGS_rounds_per_shop, gameseed);
       interface_mode = STATE_PLAYING;
     }
@@ -655,10 +658,16 @@ InterfaceMain::InterfaceMain() {
   faction = FLAGS_factionMode + 1;
   CHECK(faction >= 0 && faction < 5);
   
+  if(faction == 1)
+    faction_toggle = 1;
+  else
+    faction_toggle = 0;
+  
   configmenu.pushMenuItem(StdMenuItem::makeScale("Game start", names, &start));
   //configmenu.pushMenuItem(StdMenuItem::makeScale("Game end", names, &end));
   configmenu.pushMenuItem(StdMenuItem::makeRounds("Estimated rounds", &start, &end, &moneyexp));
-  configmenu.pushMenuItem(StdMenuItem::makeOptions("Faction mode", boost::assign::list_of("Battle")("No factions")("Minor factions")("Normal factions")("Major factions"), &faction));
+  configmenu.pushMenuItem(StdMenuItem::makeOptions("Faction mode", boost::assign::list_of("On")("Off"), &faction_toggle));
+  //configmenu.pushMenuItem(StdMenuItem::makeOptions("Faction mode", boost::assign::list_of("Battle")("No factions")("Minor factions")("Normal factions")("Major factions"), &faction));
   configmenu.pushMenuItem(StdMenuItem::makeStandardMenu("Begin", 1));
   
   grid = false;

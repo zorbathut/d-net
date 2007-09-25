@@ -77,6 +77,7 @@ class InterfaceMain : boost::noncopyable {
   
   // 0 represents "battle choice", 1-4 are the valid normal options
   int faction;
+  int faction_toggle;
   
   vector<Keystates> kst;
   
