@@ -285,7 +285,7 @@ ShopLayout::ShopLayout() {
   // not valid
 }
 
-ShopLayout::ShopLayout(bool miniature, float aspect) {
+ShopLayout::ShopLayout(bool miniature, float aspect) : miniature(miniature) {
   if(miniature) {
     cint_fontsize = 2;
     cint_itemheight = 4;
