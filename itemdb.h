@@ -541,6 +541,7 @@ public:
   Money cost(int shots) const;
   Money cost_pack() const;
   Money sellcost(int shots) const;
+  int recommended() const;
 
   bool glory_resistance() const;
 

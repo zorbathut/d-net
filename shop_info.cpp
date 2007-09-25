@@ -12,6 +12,7 @@ public:
   ShopKVPrinter(Float4 bounds, float fontsize, float linesize);
   ~ShopKVPrinter();
   
+  void header(const string &val);
   void print(const string &key, const string &value);
 
   void discontinuity();
@@ -21,6 +22,7 @@ private:
   Float4 activebounds() const;
 
   vector<pair<string, string> > pairz;
+  string head;
 
   Float4 bounds;
   float fontsize;
@@ -37,6 +39,12 @@ ShopKVPrinter::~ShopKVPrinter() {
   discontinuity();
 };
 
+void ShopKVPrinter::header(const string &in_head) {
+  CHECK(!in_head.empty());
+  CHECK(head.empty());
+  head = in_head;
+}
+
 void ShopKVPrinter::print(const string &key, const string &value) {
   pairz.push_back(make_pair(key, value));
 };
@@ -44,13 +52,18 @@ void ShopKVPrinter::print(const string &key, const string &value) {
 void ShopKVPrinter::discontinuity() {
   Float4 activerkt = activebounds();
   int step = twolinemode() + 1;
+  int len = pairz.size() * step - 1;
+  if(head.size())
+    len += 2;
   setColor(C::inactive_text);
-  Float4 tbx = Float4(activerkt.sx, activerkt.sy, activerkt.ex, activerkt.sy + (pairz.size() * step - 1) * linesize + fontsize);
+  Float4 tbx = Float4(activerkt.sx, activerkt.sy, activerkt.ex, activerkt.sy + len * linesize + fontsize);
   drawTextBoxAround(tbx, fontsize);
   for(int i = 0; i < pairz.size(); i++) {
-    drawText(pairz[i].first, fontsize, Float2(activerkt.sx, activerkt.sy + linesize * i * step));
-    drawJustifiedText(pairz[i].second, fontsize, Float2(activerkt.ex, activerkt.sy + linesize * (i * step + twolinemode())), TEXT_MAX, TEXT_MIN);
+    drawText(pairz[i].first, fontsize, Float2(activerkt.sx, activerkt.sy + linesize * (i + !!head.size() * 2) * step));
+    drawJustifiedText(pairz[i].second, fontsize, Float2(activerkt.ex, activerkt.sy + linesize * (i * step + twolinemode() + !!head.size() * 2)), TEXT_MAX, TEXT_MIN);
   }
+  if(head.size())
+    drawJustifiedText(head, fontsize, Float2((activerkt.sx + activerkt.ex) / 2, activerkt.sy), TEXT_CENTER, TEXT_MIN);
   pairz.clear();
   bounds.sy = tbx.ey + fontsize * 1.5;
 }
@@ -237,7 +250,11 @@ void ShopInfo::renderFrame(Float4 bounds, float fontsize, Float4 inset, const Pl
     kvp.print("Cost per second", prettyFloatFormat(player->adjustWeapon(weapon).stats_costPerSecond()));
     if(weapon->recommended != -1) {
       kvp.discontinuity();
-      kvp.print("Recommend loadout", StringPrintf("%d", weapon->recommended));
+      int recommended = player->adjustWeapon(weapon).recommended();
+      kvp.header("Recommended");
+      kvp.print("Loadout", StringPrintf("%d", recommended));
+      kvp.print("Ammo packs", StringPrintf("%d", (int)ceil((float)recommended / weapon->quantity)));
+      kvp.print("Cost", StringPrintf("%s", player->adjustWeapon(weapon).cost(recommended).textual().c_str()));
     }
   } else if(glory) {
     ShopKVPrinter kvp(bounds, fontsize, fontshift);

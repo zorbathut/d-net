@@ -2,7 +2,9 @@
 - "Finish the Damn Game" Initiative
   - run lots of checksumming
   - make checksumloop work properly
-  - Make firerate modify the recommended loadout
+  - Make playercount modify the recommended loadout (sqrt(playercount) multiple?)
+  - Add internal spacing, optional rounding, and optional end padding to money printouts
+  - cost-per-damage and cost-per-second in these units
   - Check to see if Hephaestus is balanced based on what it does to tank speed and armor values
   - Change faction to "on/off", default to on
   - remove or heavily modify pacman

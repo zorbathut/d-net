@@ -313,6 +313,7 @@ float IDBWeaponAdjust::firerate() const {
 Money IDBWeaponAdjust::cost(int amount) const { return (cost_pack() * amount + Money(idb->quantity - 1)) / idb->quantity; };
 Money IDBWeaponAdjust::cost_pack() const { return idb->base_cost / adjust.adjustmentfactor(IDBAdjustment::DISCOUNT_WEAPON); };
 Money IDBWeaponAdjust::sellcost(int amount) const { return cost_pack() * adjust.recyclevalue() * amount / idb->quantity; };
+int IDBWeaponAdjust::recommended() const { return (int)(idb->recommended * adjust.adjustmentfactor(IDBAdjustment::TANK_FIRERATE)); };
 
 bool IDBWeaponAdjust::glory_resistance() const { return idb->glory_resistance; };
 
