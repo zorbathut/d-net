@@ -31,6 +31,7 @@
     - Spruce up exotic weaponry
     - Spruce up OGRE
     - Make long projectiles impacting the wall render part of the projectile, to avoid the "black target space" issue
+  - Powerups?
   - Task-analyze the UI
   - Explain the "quantity" and "recommended loadout" lines better
   - Batch shit in rendering better

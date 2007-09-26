@@ -3,11 +3,14 @@
 
 #include "const.h"
 #include "debug.h"
+#include "os.h"
 
-#ifdef OSX_FRAMEWORK_PREFIXES
-  #include <SDL/SDL.h>
-#else
-  #include <SDL.h>
+#ifndef NOSDL
+  #ifdef OSX_FRAMEWORK_PREFIXES
+    #include <SDL/SDL.h>
+  #else
+    #include <SDL.h>
+  #endif
 #endif
 
 using namespace std;
@@ -40,10 +43,17 @@ static long long cpf() {
 
 #endif
 
-void Timer::waitForNextFrame() {
-  while(cpc() < frameNum * ticksPerFrame + ticksOffset)
-    SDL_Delay(1);
-};
+#ifndef NOSDL
+  void Timer::waitForNextFrame() {
+    while(cpc() < frameNum * ticksPerFrame + ticksOffset)
+      SDL_Delay(1);
+  };
+#else
+  void Timer::waitForNextFrame() {
+    while(cpc() < frameNum * ticksPerFrame + ticksOffset)
+      ;
+  }
+#endif
 
 bool Timer::skipFrame() {
   return cpc() > (frameNum + 2) * ticksPerFrame + ticksOffset;

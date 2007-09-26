@@ -6,9 +6,9 @@ GAMESOURCES := main core game timer debug gfx collide gamemap util rng args inte
 GAMECXXFLAGS := @GAMECXXFLAGS@ $(STDCXXFLAGS) -DNOEXIT
 GAMELDFLAGS := @GAMELDFLAGS@ $(STDLDFLAGS)
 
-EDITORSOURCES := vecedit vecedit_main debug os util gfx float coord parse color dvec2 cfcommon input itemdb itemdb_adjust itemdb_parse args regex rng adler32
+EDITORSOURCES := vecedit vecedit_main debug os util gfx float coord parse color dvec2 cfcommon input itemdb itemdb_adjust itemdb_parse args regex rng adler32 money perfbar timer
 # rng is not really needed since it won't be linked in at all, but it's easier to just include it
-EDITORCXXFLAGS := `@WX@ --cxxflags` $(STDCXXFLAGS)
+EDITORCXXFLAGS := `@WX@ --cxxflags` -DNOSDL $(STDCXXFLAGS)
 EDITORLDFLAGS := `@WX@ --libs --gl-libs` -lopengl32 $(STDLDFLAGS)
 
 FUNCTORSOURCES := functor_gen debug os util parse adler32

@@ -407,7 +407,7 @@ void Vecedit::render(const WrapperState &state) const {
     
     if(ent.type == ENTITY_TANKSTART) {
       setColor(getAppropriateColor(SelectItem(SelectItem::ENTITY, i), select));
-      drawLineLoop(defaultTank()->getTankVertices(Coord2(Coord(ent.pos.x), Coord(ent.pos.y)), (float)ent.tank_ang_numer / ent.tank_ang_denom * 2 * PI), state.zpp);
+      drawLineLoop(defaultTank()->getTankVertices(CPosInfo(Coord2(ent.pos.x, ent.pos.y), (float)ent.tank_ang_numer / ent.tank_ang_denom * 2 * PI)), state.zpp);
       if(select.entity == i) {
         setColor(getAppropriateColor(SelectItem(SelectItem::ENTITYROTATE, i), select));
         drawRectAround(ent.pos + makeAngle(2 * PI * ent.tank_ang_numer / ent.tank_ang_denom) * state.zpp * rotatehandle, state.zpp * secondnode, state.zpp);
