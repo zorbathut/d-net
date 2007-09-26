@@ -10,4 +10,5 @@ core.dv2
 ming6.dv2
 minidiag.dv2
 rubble.dv2
+fortress.dv2
 #spiney.dv2

@@ -240,10 +240,10 @@ void ShopInfo::renderFrame(Float4 bounds, float fontsize, Float4 inset, const Pl
   StackString stp("ShopInfo");
   CHECK(bool(weapon) + bool(glory) + bool(bombardment) + bool(upgrade) + bool(tank) + bool(implant) + bool(implantslot)== 1);
   
-  if(text && !miniature)
+  /*if(text && !miniature)
     drawShadedFormattedText(bounds, fontsize * 0.75, *text);
   
-  bounds.sy += fontsize * 8;
+  bounds.sy += fontsize * 8;*/
   
   const float fontshift = fontsize * 1.5;
   if(weapon) {

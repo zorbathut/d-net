@@ -62,8 +62,10 @@ string prettyFloatFormat(float v) {
     borf.erase(borf.end() - 1);
   if(borf[borf.size() - 1] == '.')
     borf.erase(borf.end() - 1);
-  for(int x = borf.size(); x > 3; x -= 3)
-    borf.insert(borf.begin() + x - 3, ',');
+  
+  if(count(borf.begin(), borf.end(), '.') == 0)
+    for(int x = borf.size(); x > 3; x -= 3)
+      borf.insert(borf.begin() + x - 3, ',');
   return borf;
 }
 
