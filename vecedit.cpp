@@ -230,6 +230,18 @@ void Vecedit::pathprops(OtherState *ost) const {
     ost->divisions = dv2.paths[select.path].dupes;
     ost->snowflakey = dv2.paths[select.path].reflect;
   }
+  
+  if(dv2.globals.count("mintanks")) {
+    ost->mintanks = atoi(dv2.globals.find("mintanks")->second.c_str());
+  } else {
+    ost->mintanks = 2;
+  }
+  
+  if(dv2.globals.count("maxtanks")) {
+    ost->maxtanks = atoi(dv2.globals.find("maxtanks")->second.c_str());
+  } else {
+    ost->maxtanks = 32;
+  }
 }
 
 bool Vecedit::changed() const {
@@ -777,6 +789,29 @@ OtherState Vecedit::snowflake(bool newstate, const WrapperState &wrap) {
   return ostate;
 }
 
+OtherState Vecedit::mintanks(int mp, const WrapperState &wrap) {
+  OtherState ostate;
+  ostate.ui = wrap.ui;
+  ostate.redraw = false;
+  ostate.snapshot = true;
+  
+  dv2.globals["mintanks"] = StringPrintf("%d", mp);
+  
+  pathprops(&ostate);
+  return ostate;
+}
+OtherState Vecedit::maxtanks(int mp, const WrapperState &wrap) {
+  OtherState ostate;
+  ostate.ui = wrap.ui;
+  ostate.redraw = false;
+  ostate.snapshot = true;
+  
+  dv2.globals["maxtanks"] = StringPrintf("%d", mp);
+  
+  pathprops(&ostate);
+  return ostate;
+}
+
 void Vecedit::clear() {
   *this = Vecedit();
   modified = false; 
@@ -829,7 +864,19 @@ bool Vecedit::save(const string &filename) {
     fprintf(outfile, "}\n");
     fprintf(outfile, "\n");
   }
+  
+  if(dv2.globals.size()) {
+    fprintf(outfile, "globals {\n");
+    for(map<string, string>::const_iterator cit = dv2.globals.begin(); cit != dv2.globals.end(); cit++)
+      fprintf(outfile, "  %s=%s\n", cit->first.c_str(), cit->second.c_str());
+    fprintf(outfile, "}\n");
+    fprintf(outfile, "\n");
+  }
+  
   fclose(outfile);
+  
+  Dvec2 dv2test = loadDvec2(filename);
+  CHECK(dv2test == dv2);
   
   modified = false;
   return true;

@@ -289,9 +289,7 @@ Float4 Dvec2::boundingBox() const {
   return bb;
 }
 
-Dvec2::Dvec2() {
-  scale = 1.0;
-}
+Dvec2::Dvec2() { }
 
 Dvec2 loadDvec2(const string &fname) {
   //dprintf("Loading %s\n", fname.c_str());
@@ -299,7 +297,7 @@ Dvec2 loadDvec2(const string &fname) {
   kvData dat;
   ifstream fil(fname.c_str());
   CHECK(fil);
-  bool got_params = false;
+  bool got_globals = false;
   while(getkvData(fil, &dat)) {
     if(dat.category == "path") {
       VectorPath nvp;
@@ -367,10 +365,13 @@ Dvec2 loadDvec2(const string &fname) {
       }
       
       rv.entities.push_back(ne);
-    } else if(dat.category == "params") {
-      CHECK(!got_params);
-      got_params = true;
-      rv.scale = atof(dat.consume("scale").c_str());
+    } else if(dat.category == "globals") {
+      CHECK(!got_globals);
+      got_globals = true;
+      rv.globals = dat.kv;
+      dat.kv.erase("scale");
+      dat.kv.erase("mintanks");
+      dat.kv.erase("maxtanks");
     } else {
       CHECK(0);
     }
@@ -379,32 +380,38 @@ Dvec2 loadDvec2(const string &fname) {
   return rv;
 }
 
-/*
-// this code should probably be salvaged sometime
-  {
-    static int firstrun = 1;
-    if(firstrun) {
-      firstrun = 0;
-      // Test my matrix inversion! Wheeee
-      for(int i = 0; i < VECRF_END; i++) {
-        for(int j = 0; j < rfg_repeats(i, 1); j++) {
-          Transform2d orig = rfg_behavior(i, j, 1, 0, 1);
-          Transform2d inv = orig;
-          inv.invert();
-          //dprintf("-----");
-          //orig.display();
-          //dprintf("--");
-          //inv.display();
-          inv = orig * inv;
-          //dprintf("--");
-          //inv.display();
-          for(int x = 0; x < 3; x++) {
-            for(int y = 0; y < 3; y++) {
-              CHECK(fabs(inv.m[x][y] - (x == y)) < 1e-9);
-            }
-          }
-        }
-      }
-    }
+bool operator==(const Entity &lhs, const Entity &rhs) {
+  if(lhs.type != rhs.type || lhs.pos != rhs.pos)
+    return false;
+  
+  if(lhs.type == ENTITY_TANKSTART) {
+    return lhs.tank_ang_numer == rhs.tank_ang_numer && lhs.tank_ang_denom == rhs.tank_ang_denom;
+  } else {
+    CHECK(0);
   }
-*/
+}
+
+bool operator==(const VectorPoint &lhs, const VectorPoint &rhs) {
+  if(lhs.pos != rhs.pos) return false;
+  if(lhs.curvlp != rhs.curvlp) return false;
+  if(lhs.curvrp != rhs.curvrp) return false;
+  if(lhs.curvl != rhs.curvl) return false;
+  if(lhs.curvr != rhs.curvr) return false;
+  if(lhs.flat != rhs.flat) return false;
+  return true;
+}
+
+bool operator==(const VectorPath &lhs, const VectorPath &rhs) {
+  if(lhs.center != rhs.center) return false;
+  if(lhs.vpath != rhs.vpath) return false;
+  if(lhs.reflect != rhs.reflect) return false;
+  if(lhs.dupes != rhs.dupes) return false;
+  if(lhs.ang_denom != rhs.ang_denom) return false;
+  if(lhs.ang_numer != rhs.ang_numer) return false;
+  if(lhs.path != rhs.path) return false;
+  return true;
+}
+
+bool operator==(const Dvec2 &lhs, const Dvec2 &rhs) {
+  return lhs.paths == rhs.paths && lhs.entities == rhs.entities && lhs.globals == rhs.globals;
+}

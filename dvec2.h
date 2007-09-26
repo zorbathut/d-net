@@ -4,6 +4,7 @@
 #include "float.h"
 
 #include <string>
+#include <map>
 
 using namespace std;
 
@@ -14,8 +15,6 @@ enum { ENTITY_TANKSTART, ENTITY_END };
 static const char *const ent_names[] = {"tank start location"};
 
 struct Entity {
-public:
-  
   int type;
 
   Float2 pos;
@@ -45,8 +44,6 @@ enum { VECRF_SPIN, VECRF_SNOWFLAKE, VECRF_END };
 static const char *const rf_names[] = {"spin", "snowflake"};
 
 struct VectorPath {
-public:
-  
   /*****
     * Stuff you should pay attention to no matter what you're doing
     */
@@ -102,11 +99,10 @@ private:
 };
 
 struct Dvec2 {
-public:
   vector<VectorPath> paths;
   vector<Entity> entities;
 
-  float scale;
+  map<string, string> globals;
 
   Dvec2();
 
@@ -114,5 +110,7 @@ public:
 };
 
 Dvec2 loadDvec2(const string &fname);
+
+bool operator==(const Dvec2 &lhs, const Dvec2 &rhs);
 
 #endif

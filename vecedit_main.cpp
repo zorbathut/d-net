@@ -13,11 +13,13 @@
 #include "util.h"
 #include "itemdb.h"
 
+#include <boost/noncopyable.hpp>
+
 /*************
  * VeceditGLC
  */
  
-class VeceditGLC : public wxGLCanvas {
+class VeceditGLC : public wxGLCanvas, boost::noncopyable {
 private:
   smart_ptr<Closure<> > render_callback;
   smart_ptr<Closure<const MouseInput &, int> > mouse_callback;
@@ -174,7 +176,7 @@ ScrollBounds VeceditGLC::getSB() const {
  * VeceditWindow
  */
 
-class VeceditWindow : public wxFrame {
+class VeceditWindow : public wxFrame, boost::noncopyable {
 private:
   Vecedit core;
 
@@ -189,6 +191,10 @@ private:
   // properties panel
   wxSpinCtrl *reflects;
   wxRadioBox *snowflake;
+
+  // globals panel
+  wxSpinCtrl *mintanks;
+  wxSpinCtrl *maxtanks;
 
   // while idle, the top item on undostack == core, since otherwise there's no way to intercept it *before* a change occurs
   vector<Vecedit> undostack;
@@ -246,6 +252,9 @@ public:
   
   void OnPathReflects(wxCommandEvent &event);
   void OnPathRotation(wxCommandEvent &event);
+  
+  void OnMinTanks(wxCommandEvent &event);
+  void OnMaxTanks(wxCommandEvent &event);
 
   void OnSave_dispatch(wxCommandEvent &event);
   void OnSaveas_dispatch(wxCommandEvent &event);
@@ -291,7 +300,11 @@ enum {
 
   // Property pane items
     ID_PathReflects,
-    ID_PathRotation
+    ID_PathRotation,
+  
+  // Global items
+    ID_MinTanks,
+    ID_MaxTanks,
 };
 
 BEGIN_EVENT_TABLE(VeceditWindow, wxFrame)
@@ -328,6 +341,9 @@ BEGIN_EVENT_TABLE(VeceditWindow, wxFrame)
 
   EVT_TEXT(ID_PathReflects, VeceditWindow::OnPathReflects)
   EVT_RADIOBOX(ID_PathRotation, VeceditWindow::OnPathRotation)
+  
+  EVT_TEXT(ID_MinTanks, VeceditWindow::OnMinTanks)
+  EVT_TEXT(ID_MaxTanks, VeceditWindow::OnMaxTanks)
 
   EVT_CLOSE(VeceditWindow::OnClose)
 END_EVENT_TABLE()
@@ -457,7 +473,26 @@ VeceditWindow::VeceditWindow() : wxFrame((wxFrame *)NULL, -1, veceditname, wxDef
     note->AddPage(pathprops, "Props");
   }
 
-  note->AddPage(new wxNotebookPage(note, wxID_ANY), "Globals");
+  {
+    wxNotebookPage *globals = new wxPanel(note, wxID_ANY);
+    
+    wxBoxSizer *sizer = new wxBoxSizer(wxVERTICAL);
+    
+    sizer->Add(new wxStaticText(globals, wxID_ANY, "Minimum tanks"));
+    sizer->Add(mintanks = new wxSpinCtrl(globals, ID_MinTanks, "2", wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 2, 32));
+    
+    sizer->Add(0, 20);
+    
+    sizer->Add(new wxStaticText(globals, wxID_ANY, "Maximum tanks"));
+    sizer->Add(maxtanks = new wxSpinCtrl(globals, ID_MaxTanks, "32", wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 2, 32));
+    
+    wxBoxSizer *internal = new wxBoxSizer(wxVERTICAL);
+    internal->Add(sizer, wxSizerFlags().Border());
+    
+    globals->SetSizer(internal);
+    
+    note->AddPage(globals, "Globals");
+  }
   
   toolbar = new wxToolBar(this, wxID_ANY);
   toolbar->AddTool(ID_NewPath, "add path", wxBitmap("data/vecedit/addpath.png", wxBITMAP_TYPE_PNG), "Add a new path", wxITEM_CHECK);
@@ -522,9 +557,9 @@ void VeceditWindow::OnOpen(wxCommandEvent& event) {
     undostack.clear();
     redostack.clear();
     undostack.push_back(core);
+    
+    redraw();
   }
-  
-  redraw();
 }
 bool VeceditWindow::OnSave() {
   if(filename.empty()) {
@@ -687,6 +722,13 @@ void VeceditWindow::OnPathRotation(wxCommandEvent &event) {
   process(core.snowflake(event.GetInt(), genwrap()));
 }
 
+void VeceditWindow::OnMinTanks(wxCommandEvent &event) {
+  process(core.mintanks(event.GetInt(), genwrap()));
+}
+void VeceditWindow::OnMaxTanks(wxCommandEvent &event) {
+  process(core.maxtanks(event.GetInt(), genwrap()));
+}
+
 void VeceditWindow::OnSave_dispatch(wxCommandEvent& event) {
   OnSave();
 }
@@ -731,6 +773,9 @@ void VeceditWindow::process(const OtherState &ost) {
     reflects->SetValue(ost.divisions);
     snowflake->SetSelection(ost.snowflakey);
   }
+  
+  mintanks->SetValue(ost.mintanks);
+  maxtanks->SetValue(ost.maxtanks);
 }
 
 bool VeceditWindow::maybeSaveChanges() {
@@ -748,7 +793,7 @@ bool VeceditWindow::maybeSaveChanges() {
  * VeceditMain
  */
 
-class VeceditMain: public wxApp {
+class VeceditMain: public wxApp, boost::noncopyable {
   virtual bool OnInit();
   virtual int OnExit();
 };

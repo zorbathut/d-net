@@ -15,6 +15,6 @@ path {
   node= --- | 96.000008,-95.999992 | ---
 }
 
-params {
+globals {
   scale=0.9
 }

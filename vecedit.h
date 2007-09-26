@@ -75,6 +75,9 @@ struct OtherState {
   int divisions;
   bool snowflakey;
   
+  int mintanks;
+  int maxtanks;
+  
   OtherState();
 };
 
@@ -127,6 +130,9 @@ public:
   OtherState del(const WrapperState &wrap);
   OtherState rotate(int reflects, const WrapperState &wrap);
   OtherState snowflake(bool newstate, const WrapperState &wrap);
+
+  OtherState mintanks(int mp, const WrapperState &state);
+  OtherState maxtanks(int mp, const WrapperState &state);
 
   void render(const WrapperState &state) const;
 

@@ -83,3 +83,7 @@ entity {
   angle=1/2
 }
 
+globals {
+  mintanks=3
+}
+

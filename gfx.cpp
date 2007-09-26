@@ -909,7 +909,10 @@ void drawVectorPath(const VectorPath &vecob, const Float4 &bounds, int midpoints
 void drawDvec2(const Dvec2 &vecob, const CFC4 &bounds, int midpoints, float weight) {
   CHECK(vecob.entities.size() == 0);
   pair<Float2, float> dimens = fitInside(vecob.boundingBox(), *bounds);
-  dimens.second *= vecob.scale;
+  float scale = 1.0;
+  if(vecob.globals.count("scale"))
+    scale = atof(vecob.globals.find("scale")->second.c_str());
+  dimens.second *= scale;
   //dprintf("fit %f,%f,%f,%f into %f,%f,%f,%f, got %f,%f, %f\n", vecob.boundingBox().sx, vecob.boundingBox().sy,
       //vecob.boundingBox().ex, vecob.boundingBox().ey, bounds.sx, bounds.sy, bounds.ex, bounds.ey,
       //dimens.first.first, dimens.first.second, dimens.second);
