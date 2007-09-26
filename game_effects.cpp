@@ -101,7 +101,7 @@ public:
 
   virtual void render() const {
     setBaseColor();
-    drawTransformedLinePath(path, ang_start + ang_vel * getAge() + ang_acc * getAge() * getAge() / 2, pos_start + pos_vel * getAge() + pos_acc * getAge() * getAge() / 2, 0.1f);
+    drawTransformedLinePath(path, ang_start + ang_vel * getAge() + ang_acc * getAge() * getAge() / 2, pos_start + pos_vel * getAge() + pos_acc * getAge() * getAge() / 2, 0.5f);
   }
 
   GfxEffectsPath(vector<Float2> in_path, Float2 in_pos_start, Float2 in_pos_vel, Float2 in_pos_acc, float in_ang_start, float in_ang_vel, float in_ang_acc, float life, Color color) : GfxEffects(life, color, false), path(in_path), pos_start(in_pos_start), pos_vel(in_pos_vel), pos_acc(in_pos_acc), ang_start(in_ang_start), ang_vel(in_ang_vel), ang_acc(in_ang_acc) { };
