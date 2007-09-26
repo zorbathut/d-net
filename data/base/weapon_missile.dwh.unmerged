@@ -9,7 +9,7 @@ hierarchy {
 
 text {
   name=text.weapon.missile
-  data=Explosives in a can. The missile is one of the most powerful low-tech systems developed and extremely popular for wholesale demolition. The rocket engine takes several seconds to reach full speed, making this weapon difficult to aim with.
+  data=Explosives in a can. The missile is one of the most powerful low-tech systems developed and extremely popular for wholesale demolition. The rocket engine takes several seconds to reach full power, making this weapon difficult to aim with.
 }
   
 effects {
@@ -30,9 +30,8 @@ effects {
 
 warhead {
   name=warhead.weapon.missile
-  impactdamage=MERGE(1) explosive
-  radiusdamage=MERGE(3) explosive
-  radiusfalloff=6
+  radiusdamage=MERGE(4) explosive
+  radiusfalloff=8
   radiusexplosive=1
   wallremovalradius=1
 }
@@ -112,7 +111,7 @@ warhead {
 projectile {
   name=projectile.weapon.hemissile.secondary
   visual_thickness=0.6
-  velocity=40
+  velocity=80
   color=1.0, 0.8, 0.3
   motion=airbrake
   airbrake_life=0.5
@@ -139,9 +138,8 @@ deploy {
 
 warhead {
   name=warhead.weapon.hemissile
-  impactdamage=MERGE(6) explosive
   radiusdamage=MERGE(10) explosive
-  radiusfalloff=6
+  radiusfalloff=10
   radiusexplosive=1
   wallremovalradius=2
   
@@ -218,7 +216,7 @@ warhead {
   name=warhead.weapon.clustermissile
   impactdamage=MERGE(1) explosive
   radiusdamage=MERGE(3) explosive
-  radiusfalloff=6
+  radiusfalloff=8
   radiusexplosive=1
   wallremovalradius=1
 }
@@ -293,7 +291,7 @@ warhead {
   name=warhead.weapon.proximityrocket
   impactdamage=MERGE(1) explosive
   radiusdamage=MERGE(3) explosive
-  radiusfalloff=6
+  radiusfalloff=8
   radiusexplosive=1
   wallremovalradius=1
 }
@@ -368,7 +366,7 @@ warhead {
   name=warhead.weapon.adaptiverocket
   impactdamage=MERGE(1) explosive
   radiusdamage=MERGE(3) explosive
-  radiusfalloff=6
+  radiusfalloff=8
   radiusexplosive=1
   wallremovalradius=1
 }
@@ -443,7 +441,7 @@ warhead {
   name=warhead.weapon.compactnuke
   impactdamage=MERGE(1) explosive
   radiusdamage=MERGE(3) explosive
-  radiusfalloff=6
+  radiusfalloff=8
   radiusexplosive=1
   wallremovalradius=1
 }
@@ -518,7 +516,7 @@ warhead {
   name=warhead.weapon.conversionnuke
   impactdamage=MERGE(1) explosive
   radiusdamage=MERGE(3) explosive
-  radiusfalloff=6
+  radiusfalloff=8
   radiusexplosive=1
   wallremovalradius=1
 }

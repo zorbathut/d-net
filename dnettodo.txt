@@ -2,9 +2,7 @@
 - "Finish the Damn Game" Initiative
   - run lots of checksumming
   - make checksumloop work properly
-  - test to see if existing groundmines get buffer as bombardment goes up (should they?)
-  - boost T1 missile blast
-  - boost T2 missile blast a little
+  - Fuck with full shop placement
   - add smaller levels, add player-per-level cap
   - take another look at intro screen
   - Make cost unit consistent in shop tiers
