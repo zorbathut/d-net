@@ -180,7 +180,6 @@ void Metagame::findLevels(int playercount) {
   levels.clear();
   if(FLAGS_singlelevel.size()) {
     Level lev = loadLevel(FLAGS_singlelevel);
-    CHECK(lev.playersValid.count(playercount));
     levels.push_back(lev);
     dprintf("Used single level %s\n", FLAGS_singlelevel.c_str());
   } else {

@@ -35,6 +35,8 @@ DEFINE_bool(dumpText, false, "Dump all \"text\" blocks");
 DEFINE_bool(runTests, true, "Run all tests");
 DEFINE_bool(runGame, true, "Run the actual game");
 
+DEFINE_bool(outputLevelChart, false, "Output a chart of which levels are available for what playercounts, then quit");
+
 DECLARE_bool(shopcache);
 
 int GetVideoFlags(void) {
@@ -140,17 +142,11 @@ int getFlagResY() {
 
 void initSystem() {
 
-  dprintf("inp\n");
   CHECK(SDL_Init(SDL_INIT_NOPARACHUTE) >= 0);
-  dprintf("iv\n");
   CHECK(SDL_InitSubSystem(SDL_INIT_VIDEO) >= 0);
-  dprintf("ia ia cthulhu fhtagn\n");
   CHECK(SDL_InitSubSystem(SDL_INIT_AUDIO) >= 0);
-  dprintf("it\n");
   CHECK(SDL_InitSubSystem(SDL_INIT_TIMER) >= 0);
-  dprintf("ij\n");
   CHECK(SDL_InitSubSystem(SDL_INIT_JOYSTICK) >= 0);
-  dprintf("ogl\n");
 
   SetupOgl();
   setDefaultResolution(FLAGS_fullscreen);
@@ -228,18 +224,20 @@ int main(int argc, char **argv) {
       return 0;
   }
   
-  initHttpd();
-
-  initSystem();
-  initGfx();
-  updateResolution(4.0 / 3.0);
-  initAudio();
-  
   if(FLAGS_runTests)
     runTests();
+  
+  if(FLAGS_outputLevelChart)
+    outputLevelChart();
 
-  if(FLAGS_runGame)
+  if(FLAGS_runGame) {
+    initHttpd();
+    initSystem();
+    initGfx();
+    updateResolution(4.0 / 3.0);
+    initAudio();
     MainLoop();
+  }
 
   deinitSystem();
   

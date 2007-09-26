@@ -68,3 +68,26 @@ void runTests() {
   
   dprintf("Tests passed\n");
 }
+
+void outputLevelChart() {
+  vector<pair<string, Level> > levels;
+  ifstream ifs("data/levels/levellist.txt");
+  CHECK(ifs);
+  string line;
+  while(getLineStripped(ifs, &line))
+    levels.push_back(make_pair(line, loadLevel("data/levels/" + line)));
+  
+  for(int i = 2; i <= 32; i++) {
+    int ct = 0;
+    string acul;
+    for(int j = 0; j < levels.size(); j++) {
+      if(levels[j].second.playersValid.count(i)) {
+        if(acul.size())
+          acul += ' ';
+        acul += levels[j].first;
+        ct++;
+      }
+    }
+    dprintf("%d: %d (%s)\n", i, ct, acul.c_str());
+  }
+}

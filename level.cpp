@@ -8,7 +8,6 @@
 using namespace std;
 
 Level loadLevel(const string &str) {
-  dprintf("Loading %s\n", str.c_str());
   Level rv;
   Dvec2 dv = loadDvec2(str);
   for(int i = 0; i < dv.paths.size(); i++) {
@@ -52,8 +51,17 @@ Level loadLevel(const string &str) {
         entallow[j]++;
       }
     }
+    
+    int mint = 2;
+    if(dv.globals.count("mintanks"))
+      mint = atoi(dv.globals.find("mintanks")->second.c_str());
+    
+    int maxt = 32;
+    if(dv.globals.count("maxtanks"))
+      maxt = atoi(dv.globals.find("maxtanks")->second.c_str());
+    
     for(map<int, int>::iterator itr = entallow.begin(); itr != entallow.end(); itr++) {
-      if(itr->second >= itr->first) {
+      if(itr->second >= itr->first && itr->first >= mint && itr->second <= maxt) {
         //dprintf("Entities valid for %d players, got %d starts", itr->first, itr->second);
         rv.playersValid.insert(itr->first);
         for(int i = 0; i < dv.entities.size(); i++) {
