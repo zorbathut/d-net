@@ -407,10 +407,13 @@ private:
   
   void genNewPos(Coord2 cpos) {
     int divert = 50;
+    float mag;
     do {
-      nextpos = cpos + makeAngle(unsync().frand() * COORDPI * 2) * unsync().frand() * divert;
+      mag = unsync().frand();
+      nextpos = cpos + makeAngle(unsync().frand() * COORDPI * 2) * mag * divert;
       divert += 10;
     } while(!isInside(Coord4(-364, -116, 364, 0), nextpos) && !isInside(Coord4(-112, 0, 112, 92), nextpos));
+    //dprintf("%f\n", mag);
     lastdist = 1000;
   }
   
@@ -671,7 +674,7 @@ void InterfaceMain::render() const {
     }
     
     {
-      GfxWindow gfxw(Float4(0, 0, getZoom().ex, 60), 1.0);
+      GfxWindow gfxw(Float4(0, 0, getZoom().ex, 60), 2.0);
       introscreen.renderToScreen();
     }
   } else if(interface_mode == STATE_CONFIGURE) {
