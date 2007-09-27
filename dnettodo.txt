@@ -2,7 +2,6 @@
 - "Finish the Damn Game" Initiative
   - run lots of checksumming
   - make checksumloop work properly
-  - add smaller levels, add player-per-level cap
   - take another look at intro screen
   - Make cost unit consistent in shop tiers
   - deploy IGF version

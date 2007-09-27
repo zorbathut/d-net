@@ -16,7 +16,7 @@ public:
   static StdMenuItem makeOptions(const string &text, const vector<string> &labels, int *position);
 
   int tick(const Keystates &keys);
-  float render(float y) const;
+  float render(float y, bool mainmenu) const;
 
 private:
   enum { TYPE_TRIGGER, TYPE_SCALE, TYPE_ROUNDS, TYPE_LAST };
@@ -48,7 +48,7 @@ public:
   void pushMenuItem(const StdMenuItem &site);
 
   int tick(const Keystates &keys);
-  void render() const;
+  void render(bool mainmenu) const;
 
   int currentItem() const;
 

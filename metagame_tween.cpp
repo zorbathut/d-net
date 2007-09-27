@@ -370,6 +370,12 @@ void PersistentData::render() const {
     
     text.push_back("Choose \"done\" when ready to play.");
     
+    if(shopcycles != 0) {
+      text.push_back("");
+      text.push_back("");
+      text.push_back("Press escape to quit the game.");
+    }
+    
     setColor(C::inactive_text * 0.5);
     drawJustifiedMultiText(text, 0.03, getZoom().midpoint(), TEXT_CENTER, TEXT_CENTER);
   }

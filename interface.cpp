@@ -101,9 +101,13 @@ int StdMenuItem::tick(const Keystates &keys) {
   return -1; 
 }
 
-float StdMenuItem::render(float y) const {
+float StdMenuItem::render(float y, bool mainmenu) const {
   if(type == TYPE_TRIGGER) {
-    drawText(name.c_str(), 4, Float2(2, y));
+    if(mainmenu) {
+      drawJustifiedText(name.c_str(), 4, Float2(getZoom().midpoint().x, y), TEXT_CENTER, TEXT_MIN);
+    } else {
+      drawText(name.c_str(), 4, Float2(2, y));
+    }
     return 6;
   } else if(type == TYPE_SCALE) {
     drawText(name.c_str(), 4, Float2(2, y));
@@ -178,17 +182,19 @@ int StdMenu::tick(const Keystates &keys) {
   return items[cpos].tick(keys);
 }
 
-void StdMenu::render() const {
+void StdMenu::render(bool mainmenu) const {
   setZoom(Float4(0, 0, 133.3333, 100));
   
   float y = 2;
+  if(mainmenu)
+    y = 70;
   for(int i = 0; i < items.size(); i++) {
     if(i == cpos) {
       setColor(C::active_text);
     } else {
       setColor(C::inactive_text);
     }
-    y += items[i].render(y);
+    y += items[i].render(y, mainmenu);
   }
 }
 
@@ -546,11 +552,9 @@ void InterfaceMain::render() const {
   }
   
   if(interface_mode == STATE_MAINMENU) {
-    mainmenu.render();
-    setColor(C::inactive_text);
-    drawText("Player one uses arrow keys and UIOJKL", 3, Float2(2, 30));
-    drawText("Player two uses wasd and RTYFGH", 3, Float2(2, 34));
-    drawText("Arrow keys to choose menu items, U to select", 3, Float2(2, 38));
+    mainmenu.render(true);
+    setColor(C::inactive_text * 0.5);
+    drawJustifiedText("Use the arrow keys to choose menu items. Hit Enter to select.", 3, Float2(getZoom().midpoint().x, getZoom().ey - 3), TEXT_CENTER, TEXT_MAX);
     if(grid) {
       setColor(1.0, 1.0, 1.0);
       drawGrid(1, 0.01);
@@ -615,7 +619,7 @@ void InterfaceMain::render() const {
       }
     }
   } else if(interface_mode == STATE_CONFIGURE) {
-    configmenu.render();
+    configmenu.render(false);
     setColor(C::inactive_text);
     drawText(StringPrintf("%s starting cash", Money((long long)(1000 * pow(30, start.toFloat()))).textual().c_str()), 2, Float2(1, 97));
   } else if(interface_mode == STATE_PLAYING) {
@@ -643,7 +647,7 @@ InterfaceMain::InterfaceMain() {
   interface_mode = STATE_MAINMENU;
   mainmenu.pushMenuItem(StdMenuItem::makeStandardMenu("New game", MAIN_NEWGAME));
   mainmenu.pushMenuItem(StdMenuItem::makeStandardMenu("Input test", MAIN_INPUTTEST));
-  mainmenu.pushMenuItem(StdMenuItem::makeStandardMenu("Grid toggle (useful for monitor sync)", MAIN_GRID));
+  //mainmenu.pushMenuItem(StdMenuItem::makeStandardMenu("Grid toggle (useful for monitor sync)", MAIN_GRID));
   mainmenu.pushMenuItem(StdMenuItem::makeStandardMenu("Exit", MAIN_EXIT));
   
   vector<string> names = boost::assign::list_of("Junkyard")("Civilian")("Professional")("Military")("Exotic")("Experimental")("Ultimate");
