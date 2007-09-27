@@ -7,6 +7,7 @@
 using namespace std;
 
 class Ai;
+class GameAiIntro;
 
 class StdMenuItem {
 public:
@@ -80,6 +81,9 @@ class InterfaceMain : boost::noncopyable {
   int faction_toggle;
   
   vector<Keystates> kst;
+  
+  GamePackage introscreen;
+  vector<GameAiIntro *> introscreen_ais;
   
 public:
 

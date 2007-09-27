@@ -12,6 +12,7 @@
 #include "player.h"
 #include "audio.h"
 #include "adler32.h"
+#include "game_ai.h"
 
 #include <boost/assign.hpp>
 
@@ -375,6 +376,15 @@ void InterfaceMain::render() const {
 
 #else
 
+class GameAiIntro : public GameAi{
+private:
+  void updateGameWork(const vector<Tank> &players, int me) {
+    CHECK(0);
+  }
+  void updateBombardmentWork(const vector<Tank> &players, Coord2 mypos) {
+  }
+};
+
 bool InterfaceMain::tick(const vector< Controller > &control, RngSeed gameseed) {
   if(FLAGS_showtanks)
     return false;
@@ -407,6 +417,8 @@ bool InterfaceMain::tick(const vector< Controller > &control, RngSeed gameseed) 
   }
 
   if(interface_mode == STATE_MAINMENU) {
+    introscreen.runTickWithAi(vector<GameAi*>(introscreen_ais.begin(), introscreen_ais.end()), &unsync());
+    
     int mrv = mainmenu.tick(kst[controls_primary_id()]);
     if(mrv == MAIN_NEWGAME || FLAGS_auto_newgame) {
       interface_mode = STATE_CONFIGURE;
@@ -618,6 +630,11 @@ void InterfaceMain::render() const {
         }
       }
     }
+    
+    {
+      GfxWindow gfxw(Float4(0, 0, getZoom().ex, 60), 1.0);
+      introscreen.renderToScreen();
+    }
   } else if(interface_mode == STATE_CONFIGURE) {
     configmenu.render(false);
     setColor(C::inactive_text);
@@ -677,6 +694,21 @@ InterfaceMain::InterfaceMain() {
   grid = false;
   inptest = false;
   game = NULL;
+  
+  {
+    introscreen.players.resize(8);
+    vector<const IDBFaction *> idbfa = ptrize(factionList());
+    for(int i = 0; i < introscreen.players.size(); i++) {
+      int fid = unsync().choose(idbfa.size());
+      introscreen.players[i] = Player(idbfa[fid], 0, Money(0));
+      idbfa.erase(idbfa.begin() + fid);
+    }
+  }
+  
+  introscreen.game.initTitlescreen(&introscreen.players);
+  
+  for(int i = 0; i < introscreen.players.size(); i++)
+    introscreen_ais.push_back(new GameAiIntro());
 }
 
 InterfaceMain::~InterfaceMain() {

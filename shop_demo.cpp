@@ -535,12 +535,8 @@ void ShopDemo::runSingleTick() {
   vector<GameAi *> tai;
   for(int i = 0; i < ais.size(); i++)
     tai.push_back(ais[i].get());
-  game.game.ai(tai);
   
-  vector<Keystates> kist;
-  for(int i = 0; i < tai.size(); i++)
-    kist.push_back(tai[i]->getNextKeys());
-  game.runTick(kist, &unsync());
+  game.runTickWithAi(tai, &unsync());
 };
 
 void ShopDemo::runTick() {

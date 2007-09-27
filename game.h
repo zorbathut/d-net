@@ -30,7 +30,7 @@ public:
   }
 };
 
-enum {GMODE_STANDARD, GMODE_CHOICE, GMODE_TEST, GMODE_DEMO, GMODE_CENTERED_DEMO, GMODE_LAST};
+enum {GMODE_STANDARD, GMODE_CHOICE, GMODE_TEST, GMODE_DEMO, GMODE_CENTERED_DEMO, GMODE_TITLESCREEN, GMODE_LAST};
 enum {FACTION_NULL, FACTION_SMALL, FACTION_MEDIUM, FACTION_BIG, FACTION_LAST};
 enum {DEMOPLAYER_QUIET, DEMOPLAYER_DPS, DEMOPLAYER_DPH, DEMOPLAYER_DPC, DEMOPLAYER_BOMBSIGHT, DEMOPLAYER_LAST};
 // Damage per second, damage per hit, damage per cycle (with cycle sent to game.h manually)
@@ -58,6 +58,7 @@ public:
   void initTest(Player *playerdata, const Float4 &bounds);
   void initDemo(vector<Player> *playerdata, float boxradi, const float *xps, const float *yps, const float *facing, const int *teams, const int *modes, bool blockades, Float2 hudpos, Recorder *recorder);
   void initCenteredDemo(Player *playerdata, float zoom);
+  void initTitlescreen(vector<Player> *playerdata);
 
   bool runTick(const vector<Keystates> &keys, const vector<Player *> &players, Rng *rng);
   void ai(const vector<GameAi *> &ais) const;
@@ -119,6 +120,7 @@ private:
   Float4 clear;
   
   float centereddemo_zoom;
+  Float4 titlescreen_size;
 
   vector<int> demo_playermodes;
   float demo_boxradi; // used for font sizes
@@ -139,6 +141,7 @@ public:
   Game game;
 
   bool runTick(const vector<Keystates> &keys, Rng *rng);
+  void runTickWithAi(const vector<GameAi *> &gai, Rng *rng);
   void renderToScreen() const;
 
   void runShopcache(const IDBShopcache &sc, int adjuster);

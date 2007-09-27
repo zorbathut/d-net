@@ -3,6 +3,7 @@
   - run lots of checksumming
   - make checksumloop work properly
   - take another look at intro screen
+  - add axes to vecedit
   - Make cost unit consistent in shop tiers
   - deploy IGF version
   - mines fade out on tank explosion

@@ -524,11 +524,11 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
     doInterp(&zoom_center.y, &z.first.y, &zoom_size.y, &z.second.y, &zoom_speed.y);
   }
   
-  if(gamemode == GMODE_STANDARD)
+  if(gamemode == GMODE_STANDARD || gamemode == GMODE_TITLESCREEN)
     bombardment_tier += getBombardmentIncreasePerSec() / FPS;
   
   bool rv;
-  if(framesSinceOneLeft / FPS >= 3 && gamemode != GMODE_TEST && gamemode != GMODE_DEMO && gamemode != GMODE_CENTERED_DEMO) {
+  if(framesSinceOneLeft / FPS >= 3 && gamemode != GMODE_TEST && gamemode != GMODE_DEMO && gamemode != GMODE_CENTERED_DEMO && gamemode != GMODE_TITLESCREEN) {
     if(zones.size() == 0) {
       int winplayer = -1;
       for(int i = 0; i < tanks.size(); i++) {
@@ -596,13 +596,15 @@ void Game::renderToScreen(const vector<const Player *> &players, GameMetacontext
     smart_ptr<GfxWindow> gfxw;
     
     // Possibly make the GFX window, and also make the actual zooming
-    if(gamemode != GMODE_CENTERED_DEMO) {
+    if(gamemode == GMODE_CENTERED_DEMO) {
+      CHECK(tanks[0].isLive());
+      setZoomVertical(tanks[0].pi.pos.x.toFloat() - centereddemo_zoom / 2, tanks[0].pi.pos.y.toFloat() - centereddemo_zoom / 2, tanks[0].pi.pos.y.toFloat() + centereddemo_zoom / 2);
+    } else if(gamemode == GMODE_TITLESCREEN) {
+      setZoomAround(titlescreen_size);
+    } else {
       gfxw.reset(new GfxWindow(Float4(0, hasStatus?0.1:0, getAspect(), 1), 1.0));
       
       setZoomAround(Coord4(zoom_center.x - zoom_size.x / 2, zoom_center.y - zoom_size.y / 2, zoom_center.x + zoom_size.x / 2, zoom_center.y + zoom_size.y / 2));
-    } else {
-      CHECK(tanks[0].isLive());
-      setZoomVertical(tanks[0].pi.pos.x.toFloat() - centereddemo_zoom / 2, tanks[0].pi.pos.y.toFloat() - centereddemo_zoom / 2, tanks[0].pi.pos.y.toFloat() + centereddemo_zoom / 2);
     }
     
     // In most modes, clear the background
@@ -730,7 +732,7 @@ void Game::renderToScreen(const vector<const Player *> &players, GameMetacontext
   }
   
   // Here's everything outside gamespace
-  if(gamemode != GMODE_TEST && gamemode != GMODE_DEMO && gamemode != GMODE_CENTERED_DEMO) {
+  if(gamemode != GMODE_TEST && gamemode != GMODE_DEMO && gamemode != GMODE_CENTERED_DEMO && gamemode != GMODE_TITLESCREEN) {
     setZoom(Float4(0, 0, 133.333, 100));
     
     // Player health
@@ -1360,6 +1362,25 @@ void Game::initCenteredDemo(Player *in_playerdata, float zoom) {
   checkLevelSanity();
 }
 
+void Game::initTitlescreen(vector<Player> *in_playerdata) {
+  gamemode = GMODE_TITLESCREEN;
+  
+  titlescreen_size = Float4(-400, -50, 400, 50);
+  
+  initCommon(ptrize(in_playerdata), createBasicColors(ptrize(in_playerdata)), loadLevel("data/levels_special/titlescreen.dv2").paths, true);
+  
+  for(int i = 0; i < bombards.size(); i++) {
+    bombards[i].state = BombardmentState::BS_ACTIVE;
+    bombards[i].pos = Coord2(0, 0);
+  }
+  
+  for(int i = 0; i < tanks.size(); i++) {
+    tanks[i].setDead();
+  }
+  
+  checkLevelSanity();
+}
+
 void Game::addTankStatusText(int tankid, const string &text, float duration) {
   Float2 pos;
   if(tanks[tankid].isLive()) {
@@ -1372,6 +1393,15 @@ void Game::addTankStatusText(int tankid, const string &text, float duration) {
 
 bool GamePackage::runTick(const vector<Keystates> &keys, Rng *rng) {
   return game.runTick(keys, ptrize(&players), rng);
+}
+
+void GamePackage::runTickWithAi(const vector<GameAi *> &gai, Rng *rng) {
+  game.ai(gai);
+  
+  vector<Keystates> kist;
+  for(int i = 0; i < gai.size(); i++)
+    kist.push_back(gai[i]->getNextKeys());
+  runTick(kist, rng);
 }
 
 void GamePackage::renderToScreen() const {
