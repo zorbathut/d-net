@@ -186,9 +186,7 @@ int StdMenu::tick(const Keystates &keys) {
 void StdMenu::render(bool mainmenu) const {
   setZoom(Float4(0, 0, 133.3333, 100));
   
-  float y = 2;
-  if(mainmenu)
-    y = 70;
+  float y = 70;
   for(int i = 0; i < items.size(); i++) {
     if(i == cpos) {
       setColor(C::active_text);
@@ -476,6 +474,9 @@ bool InterfaceMain::tick(const vector< Controller > &control, RngSeed gameseed) 
       CHECK(mrv == -1);
     }
   } else if(interface_mode == STATE_CONFIGURE) {
+    introscreen.runTickWithAi(vector<GameAi*>(introscreen_ais.begin(), introscreen_ais.end()), &unsync());
+    introscreen.runTickWithAi(vector<GameAi*>(introscreen_ais.begin(), introscreen_ais.end()), &unsync());
+    
     int mrv = configmenu.tick(kst[controls_primary_id()]);
     if(start > end) {
       if(configmenu.currentItem() == 0) {
@@ -685,9 +686,11 @@ void InterfaceMain::render() const {
       introscreen.renderToScreen();
     }
   } else if(interface_mode == STATE_CONFIGURE) {
+    {
+      GfxWindow gfxw(Float4(0, 0, getZoom().ex, 60), 2.0);
+      introscreen.renderToScreen();
+    }
     configmenu.render(false);
-    setColor(C::inactive_text);
-    drawText(StringPrintf("%s starting cash", Money((long long)(1000 * pow(30, start.toFloat()))).textual().c_str()), 2, Float2(1, 97));
   } else if(interface_mode == STATE_PLAYING) {
     game->renderToScreen();
   } else {
