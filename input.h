@@ -81,6 +81,8 @@ struct Keystates {
 struct ControlConsts {
   string availdescr;
   vector<string> buttonnames;
+  
+  string description;
 };
 
 void adler(Adler32 *adl, const Keystates &kst);

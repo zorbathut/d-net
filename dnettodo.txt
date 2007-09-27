@@ -3,6 +3,8 @@
   - run lots of checksumming
   - make checksumloop work properly
   - take another look at intro screen
+    - make input test work
+  - take another look at config screen
   - Make cost unit consistent in shop tiers
   - Add some kind of defaultperf file, then disable writing and adler
   - deploy IGF version

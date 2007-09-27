@@ -414,8 +414,6 @@ private:
       nextpos = cpos + makeAngle(unsync().frand() * COORDPI * 2) * mag * divert;
       divert += 10;
     } while(!isInside(Coord4(-364, -116, 364, 0), nextpos) && !isInside(Coord4(-112, 0, 112, 92), nextpos));
-    if(frameNumber % 60 == 0)
-      dprintf("%08x, %f, dist %f", this, mag, len(cpos - nextpos).toFloat());
     lastdist = 1000;
   }
   
@@ -460,8 +458,10 @@ bool InterfaceMain::tick(const vector< Controller > &control, RngSeed gameseed) 
   }
 
   if(interface_mode == STATE_MAINMENU) {
-    introscreen.runTickWithAi(vector<GameAi*>(introscreen_ais.begin(), introscreen_ais.end()), &unsync());
-    introscreen.runTickWithAi(vector<GameAi*>(introscreen_ais.begin(), introscreen_ais.end()), &unsync());
+    if(!inptest) {
+      introscreen.runTickWithAi(vector<GameAi*>(introscreen_ais.begin(), introscreen_ais.end()), &unsync());
+      introscreen.runTickWithAi(vector<GameAi*>(introscreen_ais.begin(), introscreen_ais.end()), &unsync());
+    }
     
     int mrv = mainmenu.tick(kst[controls_primary_id()]);
     if(mrv == MAIN_NEWGAME || FLAGS_auto_newgame) {
@@ -622,21 +622,28 @@ void InterfaceMain::render() const {
       const float bord = xsiz / 25;
       const float usablesiz = xsiz - bord * 4;
       const float crosshair = usablesiz / 2;
-      const float ysiz = crosshair + bord * 2;
+      const float textheight = 9;
+      const float ysiz = crosshair + bord * 3 + textheight;
       const float crosshairc = crosshair / 2;
       const float textsize = crosshair / 4;
       const float textrsize = textsize * 0.8;
-      const int wid = int(800 / xsiz);
+      const int wid = int(700 / xsiz);
       const int textymax = int(crosshair / textsize);
       const int textxmax = 2;
       const float textxofs = crosshair / textxmax;
       
-      const float boxthick = 0.5;
+      const float boxthick = 1.0;
       for(int i = 0; i < inptest_controls.size(); i++) {
         const Controller &ct = inptest_controls[i];
-        float x = (i % wid) * xsiz;
-        float y = (i / wid) * ysiz + 300;
-        Float4 chbox(x + bord, y + bord, x + bord + crosshair, y + bord + crosshair);
+        float x = (i % wid) * xsiz + 50;
+        float y = (i / wid) * ysiz + 50;
+        if(i % wid == 0 && i) {
+          setColor(C::box_border);
+          drawLine(Float4(50, y, 750, y), boxthick);
+        }
+        setColor(C::gray(1.0));
+        drawJustifiedText(controls_getcc(i).description, textheight, Float2(x + xsiz / 2, y + bord), TEXT_CENTER, TEXT_MIN);
+        Float4 chbox(x + bord, y + bord * 2 + textheight, x + bord + crosshair, y + bord * 2 + crosshair + textheight);
         setColor(C::box_border);
         drawLine(Float4(chbox.sx, chbox.sy, chbox.sx + crosshair / 4, chbox.sy), boxthick);
         drawLine(Float4(chbox.sx, chbox.sy, chbox.sx, chbox.sy + crosshair / 4), boxthick);
@@ -647,10 +654,10 @@ void InterfaceMain::render() const {
         drawLine(Float4(chbox.ex, chbox.ey, chbox.ex - crosshair / 4, chbox.ey), boxthick);
         drawLine(Float4(chbox.ex, chbox.ey, chbox.ex, chbox.ey - crosshair / 4), boxthick);
         setColor(C::inactive_text);
-        drawCrosshair(Coord2(ct.menu.x * crosshairc + bord + crosshairc + x, -ct.menu.y * crosshairc + bord + crosshairc + y), crosshair / 4, boxthick);
+        drawCrosshair(Coord2(ct.menu.x * crosshairc + bord + crosshairc + x, -ct.menu.y * crosshairc + bord * 2 + crosshairc + y + textheight), crosshair / 4, boxthick);
         setColor(C::active_text);
         float textx = x + bord * 3 + crosshair;
-        float texty = y + bord;
+        float texty = y + bord * 2 + textheight;
         int ctxt = 0;
         int kd = 0;
         for(int j = 0; j < ct.keys.size(); j++)
@@ -673,9 +680,7 @@ void InterfaceMain::render() const {
           }
         }
       }
-    }
-    
-    {
+    } else {
       GfxWindow gfxw(Float4(0, 0, getZoom().ex, 60), 2.0);
       introscreen.renderToScreen();
     }

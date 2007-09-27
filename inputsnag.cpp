@@ -324,5 +324,19 @@ ControlConsts controls_getcc(int cid) {
     rv.buttonnames = boost::assign::list_of("Fire weapon 1 (L2)")("Fire weapon 2 (R2)")("Fire weapon 3 (L1)")("Fire weapon 4 (R1)")("Slow movement")("Accept menu item key")("Change/abort menu key");
   }
   
+  if(sources[cid].first == CIP_KEYBOARD && sources[cid].second == 0) {
+    rv.description = "Right keyboard";
+  } else if(sources[cid].first == CIP_KEYBOARD && sources[cid].second == 1) {
+    rv.description = "Left keyboard";
+  } else if(sources[cid].first == CIP_JOYSTICK) {
+    rv.description = StringPrintf("Joystick #%d", sources[cid].second);
+  } else if(sources[cid].first == CIP_NULL) {
+    rv.description = StringPrintf("Null");
+  } else if(sources[cid].first == CIP_AI) {
+    rv.description = StringPrintf("AI #%d", sources[cid].second);
+  } else {
+    CHECK(0);
+  }
+  
   return rv;
 }
