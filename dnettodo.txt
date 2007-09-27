@@ -3,11 +3,9 @@
   - run lots of checksumming
   - make checksumloop work properly
   - Make cost unit consistent in shop tiers
-    - Disable in:
-      - glory
-      - tanks
-      - implants
-      - sell
+    - Add "no shortening" option along with "consistentize" and "no consistentize"
+    - No-consistent in sell, implants
+    - No-shorten in glory, tanks
   - Add some kind of defaultperf file, then disable writing and adler
   - deploy IGF version
   - mines fade out on tank explosion

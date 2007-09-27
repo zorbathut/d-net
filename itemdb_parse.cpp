@@ -321,6 +321,8 @@ void parseHierarchy(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   CHECK(tnode.despawncash >= Money(-1));
   CHECK(tnode.despawncash >= tnode.spawncash || tnode.despawncash == Money(-1));
   
+  tnode.cashscale = parseWithDefault(chunk, "cashscale", true);
+  
   CHECK(mountpoint->cat_restrictiontype == -1 || tnode.cat_restrictiontype == mountpoint->cat_restrictiontype);
   mountpoint->branches.push_back(tnode);
 }

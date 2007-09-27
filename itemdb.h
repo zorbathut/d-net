@@ -769,6 +769,8 @@ public:
   bool buyable;
   bool selectable;
   
+  bool cashscale;
+  
   int pack;
   
   const IDBWeapon *weapon;

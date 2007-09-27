@@ -6,6 +6,8 @@ hierarchy {
 hierarchy {
   name=ROOT.Glory Devices
   type=glory
+  
+  cashscale=false
 }
 
 hierarchy {
@@ -22,10 +24,14 @@ hierarchy {
 hierarchy {
   name=ROOT.Tanks
   type=tank
+  
+  cashscale=false
 }
 
 hierarchy {
   name=ROOT.Implants
   type=implant
   spawncash=20000
+  
+  cashscale=false
 }
