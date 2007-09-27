@@ -2,6 +2,7 @@
 #define DNET_MONEY
 
 #include <string>
+#include <vector>
 
 using namespace std;
 
@@ -44,6 +45,7 @@ bool operator>(const Money &lhs, const Money &rhs);
 bool operator>=(const Money &lhs, const Money &rhs);
 
 Money moneyFromString(const string &rhs);
+vector<string> formatMultiMoney(const vector<Money> &vm);
 
 class Adler32;
 void adler(Adler32 *adl, const Money &money);

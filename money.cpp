@@ -3,9 +3,9 @@
 
 #include "adler32.h"
 
-string Money::textual(int value) const {
+string getBaseText(const Money &mon) {
   string text;
-  long long moneytmp = money;
+  long long moneytmp = mon.value();
   CHECK(moneytmp >= 0);
   int dig = 0;
   while(moneytmp) {
@@ -17,33 +17,52 @@ string Money::textual(int value) const {
   }
   if(!text.size())
     text = "0";
-  
-  int ks = 0;
-  if(!(value & TEXT_NOABBREV)) {
+  return text;
+}
+
+int doabbrev(const string &in_text, int params) {
+  string text = in_text;
+  int rv = 0;
+  if(!(params & Money::TEXT_NOABBREV)) {
     while(text.size() >= 6 && text.substr(0, 4) == "000,") {
       text.erase(text.begin(), text.begin() + 4);
-      ks++;
+      rv++;
     }
   }
+  return rv;
+}
+
+string addsuffix(const string &in_a, int ks, int params) {
+  string in = in_a;
+  for(int i = 0; i < ks; i++) {
+    CHECK(in.size() >= 6 && in.substr(0, 4) == "000,");
+    in.erase(in.begin(), in.begin() + 4);
+  }
+  reverse(in.begin(), in.end());
   
-  reverse(text.begin(), text.end());
-  
-  if(ks == 0) {
-    if(!(value & TEXT_NORIGHTPAD))
-      text += " _";
+  if(ks == 0 && !(params & Money::TEXT_NORIGHTPAD)) {
+    in += " _";
+  } else if(ks == 0 && (params & Money::TEXT_NORIGHTPAD)) {
   } else if(ks == 1) {
-    text += " K";
+    in += " K";
   } else if(ks == 2) {
-    text += " M";
+    in += " M";
   } else if(ks == 3) {
-    text += " B";
+    in += " B";
   } else if(ks == 4) {
-    text += " T";
+    in += " T";
   } else {
     CHECK(0);
   }
+  return in;
+}
+
+string Money::textual(int value) const {
+  string text = getBaseText(*this);
   
-  return text;
+  int ks = doabbrev(text, value);
+  
+  return addsuffix(text, ks, value);
 }
 
 Money::Money() { };
@@ -116,6 +135,24 @@ Money moneyFromString(const string &rhs) {
   }
   
   return accum;
+}
+
+vector<string> formatMultiMoney(const vector<Money> &vm) {
+  if(!vm.size())
+    return vector<string>();
+  
+  vector<string> oot;
+  for(int i = 0; i < vm.size(); i++)
+    oot.push_back(getBaseText(vm[i]));
+  
+  int tx = 1000;
+  for(int i = 0; i < oot.size(); i++)
+    tx = min(tx, doabbrev(oot[i], 0));
+  
+  for(int i = 0; i < oot.size(); i++)
+    oot[i] = addsuffix(oot[i], tx, 0);
+  
+  return oot;
 }
 
 void adler(Adler32 *adl, const Money &money) {

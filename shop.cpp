@@ -307,6 +307,97 @@ void Shop::renderNode(const HierarchyNode &node, int depth, const Player *player
   
   vector<int> renderorder = slay.renderOrder(tsp);
   
+  vector<pair<pair<string, Money>, bool> > stddisplay;
+  for(int j = 0; j < renderorder.size(); j++) {
+    const int itemid = renderorder[j];
+    
+    // Figure out how we want to display the "cost" text
+    string display = "";
+    Money kash;
+    bool kashed = false;
+    bool displayset = false;
+    const int dispmode = node.branches[itemid].displaymode;
+    
+    // If it's "unique", we check to see if it's already been bought. If it has, we show what state it's in.
+    if(!display.size() && dispmode == HierarchyNode::HNDM_COSTUNIQUE) {
+      int state = 0;
+      if(node.branches[itemid].type == HierarchyNode::HNT_UPGRADE)
+        state = player->stateUpgrade(node.branches[itemid].upgrade);
+      else if(node.branches[itemid].type == HierarchyNode::HNT_GLORY)
+        state = player->stateGlory(node.branches[itemid].glory);
+      else if(node.branches[itemid].type == HierarchyNode::HNT_BOMBARDMENT)
+        state = player->stateBombardment(node.branches[itemid].bombardment);
+      else if(node.branches[itemid].type == HierarchyNode::HNT_TANK)
+        state = player->stateTank(node.branches[itemid].tank);
+      else if(node.branches[itemid].type == HierarchyNode::HNT_IMPLANTSLOT)
+        state = player->stateImplantSlot(node.branches[itemid].implantslot);
+      else
+        CHECK(0);
+      if(state == ITEMSTATE_UNOWNED) {
+      } else if(state == ITEMSTATE_BOUGHT) {
+        display = "Bought";
+        displayset = true;
+      } else if(state == ITEMSTATE_EQUIPPED) {
+        display = "Equipped";
+        displayset = true;
+      } else if(state == ITEMSTATE_UNAVAILABLE) {
+        display = "Unavailable";
+        displayset = true;
+      }
+    }
+    
+    // If it's not unique, or it is and it just hasn't been bought, we show the cost.
+    if(!displayset && (dispmode == HierarchyNode::HNDM_COST || dispmode == HierarchyNode::HNDM_COSTUNIQUE)) {
+      kash = cost(node.branches[itemid], player);
+      kashed = true;
+      displayset = true;
+    }
+    
+    // If it's a pack, we show pack quantities.
+    if(!displayset && dispmode == HierarchyNode::HNDM_PACK) {
+      display = StringPrintf("%dpk", node.branches[itemid].pack);
+      displayset = true;
+    }
+    
+    if(dispmode == HierarchyNode::HNDM_IMPLANT_EQUIP) {
+      if(player->hasImplant(node.branches[itemid].implantitem))
+        display = "Installed";
+      setColor(C::active_text);
+      displayset = true;
+    }
+    
+    if(dispmode == HierarchyNode::HNDM_IMPLANT_UPGRADE) {
+      kash = cost(node.branches[itemid], player);
+      kashed = true;
+      displayset = true;
+    }
+    
+    // If it's blank or equip we do fucking nothing
+    if(dispmode == HierarchyNode::HNDM_BLANK || dispmode == HierarchyNode::HNDM_EQUIP) {
+      displayset = true;
+    }
+    
+    CHECK(displayset);
+    
+    stddisplay.push_back(make_pair(make_pair(display, kash), kashed));
+  }
+  
+  {
+    vector<Money> munies;
+    for(int i = 0; i < stddisplay.size(); i++)
+      if(stddisplay[i].second)
+        munies.push_back(stddisplay[i].first.second);
+      
+    vector<string> munstring = formatMultiMoney(munies);
+    
+    int ofs = 0;
+    for(int i = 0; i < stddisplay.size(); i++)
+      if(stddisplay[i].second)
+        stddisplay[i].first.first = munstring[ofs++];
+    
+    CHECK(ofs == munstring.size());
+  }
+  
   for(int j = 0; j < renderorder.size(); j++) {
     const int itemid = renderorder[j];
     const ShopPlacement splace = ShopPlacement(tsp.depth, itemid, tsp.siblings, tsp.active);
@@ -393,72 +484,8 @@ void Shop::renderNode(const HierarchyNode &node, int depth, const Player *player
       drawLineLoop(pt, slay.boxthick());
     }
     
-    // Figure out how we want to display the "cost" text
-    string display = "";
-    bool displayset = false;
-    const int dispmode = node.branches[itemid].displaymode;
-    
-    // If it's "unique", we check to see if it's already been bought. If it has, we show what state it's in.
-    if(!display.size() && dispmode == HierarchyNode::HNDM_COSTUNIQUE) {
-      int state = 0;
-      if(node.branches[itemid].type == HierarchyNode::HNT_UPGRADE)
-        state = player->stateUpgrade(node.branches[itemid].upgrade);
-      else if(node.branches[itemid].type == HierarchyNode::HNT_GLORY)
-        state = player->stateGlory(node.branches[itemid].glory);
-      else if(node.branches[itemid].type == HierarchyNode::HNT_BOMBARDMENT)
-        state = player->stateBombardment(node.branches[itemid].bombardment);
-      else if(node.branches[itemid].type == HierarchyNode::HNT_TANK)
-        state = player->stateTank(node.branches[itemid].tank);
-      else if(node.branches[itemid].type == HierarchyNode::HNT_IMPLANTSLOT)
-        state = player->stateImplantSlot(node.branches[itemid].implantslot);
-      else
-        CHECK(0);
-      if(state == ITEMSTATE_UNOWNED) {
-      } else if(state == ITEMSTATE_BOUGHT) {
-        display = "Bought";
-        displayset = true;
-      } else if(state == ITEMSTATE_EQUIPPED) {
-        display = "Equipped";
-        displayset = true;
-      } else if(state == ITEMSTATE_UNAVAILABLE) {
-        display = "Unavailable";
-        displayset = true;
-      }
-    }
-    
-    // If it's not unique, or it is and it just hasn't been bought, we show the cost.
-    if(!displayset && (dispmode == HierarchyNode::HNDM_COST || dispmode == HierarchyNode::HNDM_COSTUNIQUE)) {
-      display = StringPrintf("%s", cost(node.branches[itemid], player).textual().c_str());
-      displayset = true;
-    }
-    
-    // If it's a pack, we show pack quantities.
-    if(!displayset && dispmode == HierarchyNode::HNDM_PACK) {
-      display = StringPrintf("%dpk", node.branches[itemid].pack);
-      displayset = true;
-    }
-    
-    if(dispmode == HierarchyNode::HNDM_IMPLANT_EQUIP) {
-      if(player->hasImplant(node.branches[itemid].implantitem))
-        display = "Installed";
-      setColor(C::active_text);
-      displayset = true;
-    }
-    
-    if(dispmode == HierarchyNode::HNDM_IMPLANT_UPGRADE) {
-      display = cost(node.branches[itemid], player).textual();
-      displayset = true;
-    }
-    
-    // If it's blank or equip we do fucking nothing
-    if(dispmode == HierarchyNode::HNDM_BLANK || dispmode == HierarchyNode::HNDM_EQUIP) {
-      displayset = true;
-    }
-    
-    CHECK(displayset);
-    
-    // Draw what we've got.
-    drawJustifiedText(display, slay.fontsize(), slay.price(splace), TEXT_MAX, TEXT_MIN);
+    // Draw the text we discovered previously.
+    drawJustifiedText(stddisplay[j].first.first, slay.fontsize(), slay.price(splace), TEXT_MAX, TEXT_MIN);
   }
 }
 

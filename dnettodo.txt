@@ -3,6 +3,11 @@
   - run lots of checksumming
   - make checksumloop work properly
   - Make cost unit consistent in shop tiers
+    - Disable in:
+      - glory
+      - tanks
+      - implants
+      - sell
   - Add some kind of defaultperf file, then disable writing and adler
   - deploy IGF version
   - mines fade out on tank explosion
