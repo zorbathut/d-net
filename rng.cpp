@@ -10,8 +10,7 @@
 using namespace std;
 
 float Rng::frand() {
-  sync = sync * 1103515245 + 12345;
-  return (float)((sync >> 16) & 32767) / 32768;
+  return sync();
 }
 
 // todo: something more cleverer
@@ -54,8 +53,7 @@ float Rng::gaussian_scaled(float maxgauss) {
 }
 
 Coord Rng::cfrand() {
-  sync = sync * 1103515245 + 12345;
-  return Coord((sync >> 16) & 32767) / 32768;
+  return Coord(sync());
 }
 
 Coord Rng::sym_cfrand() {
@@ -93,18 +91,24 @@ Coord Rng::cgaussian_scaled(Coord maxgauss) {
 }
 
 RngSeed Rng::generate_seed() {
-  return RngSeed((unsigned int)(frand() * (1LL << 32)));
+  RngSeed rv(0);
+  do {
+    rv = RngSeed((unsigned int)(frand() * (1LL << 32)));
+  } while(rv.seed == 0);
+  return rv;
 }
 
 void Rng::checksum(Adler32 *adl) const {
-  adler(adl, sync);
+  Rng trng = *this;
+  adler(adl, trng.cfrand());
+  adler(adl, trng.cfrand());
+  adler(adl, trng.cfrand());
+  adler(adl, trng.cfrand());
 }
 
 Rng::Rng(RngSeed in_seed) {
-  sync = in_seed.seed;
-  frand(); frand();
+  dprintf("%d\n", in_seed.seed);
+  sync = boost::lagged_fibonacci9689(in_seed.seed);
 }
 
-static Rng unsyncrng(RngSeed(time(NULL)));
-
-Rng &unsync() { return unsyncrng; }
+Rng &unsync() { static Rng unsyncrng(RngSeed(time(NULL))); return unsyncrng; }

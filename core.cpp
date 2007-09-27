@@ -50,7 +50,9 @@ void MainLoop() {
   long long rendering = 0;
   int adlers = 0;
   
+  dprintf("UGSa\n");
   Rng rng(unsync().generate_seed());
+  dprintf("UGSad\n");
   pair<RngSeed, vector<Controller> > rc = controls_init(rng.generate_seed());
   RngSeed game_seed = rc.first;
   vector<Controller> controllers = rc.second;

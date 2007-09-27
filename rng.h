@@ -1,6 +1,8 @@
 #ifndef DNET_RNG
 #define DNET_RNG
 
+#include <boost/random.hpp>
+
 class Coord;
 class Adler32;
   
@@ -15,7 +17,7 @@ public:
 
 class Rng {
 private:
-  unsigned int sync;
+  boost::lagged_fibonacci9689 sync;
 
   Rng();
 

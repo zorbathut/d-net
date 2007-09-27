@@ -380,6 +380,7 @@ class GameAiIntro : public GameAi{
 private:
   Coord2 nextpos;
   Coord lastdist;
+  int waitcycles;
 
   void updateGameWork(const vector<Tank> &players, int me) {
     CHECK(0);
@@ -397,7 +398,7 @@ private:
     nextKeys.udlrax.y *= -1;
     
     Coord tdist = len(nextpos - mypos);
-    if(tdist >= lastdist) {
+    if(tdist > lastdist) {
       nextKeys.fire[0].down = true;
       genNewPos(mypos);
     } else {
@@ -413,7 +414,8 @@ private:
       nextpos = cpos + makeAngle(unsync().frand() * COORDPI * 2) * mag * divert;
       divert += 10;
     } while(!isInside(Coord4(-364, -116, 364, 0), nextpos) && !isInside(Coord4(-112, 0, 112, 92), nextpos));
-    //dprintf("%f\n", mag);
+    if(frameNumber % 60 == 0)
+      dprintf("%08x, %f, dist %f", this, mag, len(cpos - nextpos).toFloat());
     lastdist = 1000;
   }
   
@@ -423,7 +425,7 @@ public:
     waitcycles = unsync().choose(FPS * 4);
   }
   
-  int waitcycles;
+  
 };
 
 bool InterfaceMain::tick(const vector< Controller > &control, RngSeed gameseed) {
