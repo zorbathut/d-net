@@ -1362,7 +1362,7 @@ void Game::initCenteredDemo(Player *in_playerdata, float zoom) {
   checkLevelSanity();
 }
 
-void Game::initTitlescreen(vector<Player> *in_playerdata) {
+void Game::initTitlescreen(vector<Player> *in_playerdata, Rng *rng) {
   gamemode = GMODE_TITLESCREEN;
   
   titlescreen_size = Float4(-400, -50, 400, 50);
@@ -1371,7 +1371,7 @@ void Game::initTitlescreen(vector<Player> *in_playerdata) {
   
   for(int i = 0; i < bombards.size(); i++) {
     bombards[i].state = BombardmentState::BS_ACTIVE;
-    bombards[i].pos = Coord2(0, 0);
+    bombards[i].pos = Coord2(rng->frand() * (364 + 364) - 364, rng->frand() * (116 + 96) - 116);
   }
   
   for(int i = 0; i < tanks.size(); i++) {

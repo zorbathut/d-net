@@ -433,6 +433,10 @@ void Vecedit::render(const WrapperState &state) const {
   if(state.grid > 0) {
     setColor(0.2, 0.2, 0.5);
     drawGrid(state.grid, state.zpp);
+    
+    setColor(0.3, 0.3, 0.6);
+    drawLine(Float4(getZoom().sx, 0, getZoom().ex, 0), state.zpp);
+    drawLine(Float4(0, getZoom().sy, 0, getZoom().ey), state.zpp);
   }
   
   // temporary hack for tank displays

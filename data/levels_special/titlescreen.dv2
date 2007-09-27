@@ -1,5 +1,5 @@
 path {
-  center=-224.000000,-48.000000
+  center=-328.000000,-56.000000
   reflect=spin
   dupes=1
   angle=0/1
@@ -12,7 +12,7 @@ path {
 }
 
 path {
-  center=-156.000000,-48.000000
+  center=-272.000000,-56.000000
   reflect=spin
   dupes=1
   angle=0/1
@@ -31,7 +31,7 @@ path {
 }
 
 path {
-  center=-44.000000,36.000000
+  center=-180.000000,28.000000
   reflect=spin
   dupes=1
   angle=0/1
@@ -48,7 +48,7 @@ path {
 }
 
 path {
-  center=-92.000000,116.000000
+  center=-40.000000,44.000000
   reflect=spin
   dupes=1
   angle=0/1
@@ -67,7 +67,7 @@ path {
 }
 
 path {
-  center=124.000000,-44.000000
+  center=-48.000000,-52.000000
   reflect=spin
   dupes=1
   angle=0/1
@@ -94,7 +94,7 @@ path {
 }
 
 path {
-  center=180.000000,-56.000000
+  center=0.000000,-64.000000
   reflect=spin
   dupes=1
   angle=0/1
@@ -109,7 +109,7 @@ path {
 }
 
 path {
-  center=280.000000,-60.000000
+  center=96.000000,-68.000000
   reflect=spin
   dupes=1
   angle=0/1
@@ -125,7 +125,7 @@ path {
 }
 
 path {
-  center=304.000000,0.000000
+  center=116.000000,-8.000000
   reflect=spin
   dupes=1
   angle=0/1
@@ -140,7 +140,7 @@ path {
 }
 
 path {
-  center=412.000000,-4.000000
+  center=216.000000,-12.000000
   reflect=spin
   dupes=1
   angle=0/1
@@ -159,7 +159,7 @@ path {
 }
 
 path {
-  center=536.000000,8.000000
+  center=332.000000,0.000000
   reflect=spin
   dupes=1
   angle=0/1
@@ -174,7 +174,7 @@ path {
 }
 
 path {
-  center=72.000000,-52.000000
+  center=-80.000000,-60.000000
   reflect=spin
   dupes=1
   angle=0/1
@@ -190,7 +190,7 @@ path {
 }
 
 path {
-  center=544.000000,-48.000000
+  center=332.000000,-56.000000
   reflect=spin
   dupes=1
   angle=0/1
@@ -208,7 +208,7 @@ path {
 }
 
 path {
-  center=-84.000000,100.000000
+  center=-16.000000,36.000000
   reflect=spin
   dupes=1
   angle=0/1
@@ -226,7 +226,7 @@ path {
 }
 
 path {
-  center=160.000000,32.000000
+  center=16.000000,16.000000
   reflect=spin
   dupes=1
   angle=0/1
@@ -236,15 +236,42 @@ path {
   node= --- | -560.000000,-228.000000 | ---
 }
 
+path {
+  center=76.000000,28.000000
+  reflect=spin
+  dupes=1
+  angle=0/1
+  node= --- | 16.000000,-28.000000 | ---
+  node= --- | 16.000000,-20.000000 | ---
+  node= --- | -8.000000,-20.000000 | ---
+  node= --- | -8.000000,52.000000 | ---
+  node= --- | -16.000000,52.000000 | ---
+  node= --- | -16.000000,-20.000000 | ---
+  node= --- | -40.000000,-20.000000 | ---
+  node= --- | -40.000000,-28.000000 | ---
+}
+
 entity {
   type=tank start location
-  coord=-312.000000,-88.000000
+  coord=-364.000000,-116.000000
   angle=1/8
 }
 
 entity {
   type=tank start location
-  coord=676.000000,-52.000000
+  coord=364.000000,96.000000
   angle=4/8
+}
+
+entity {
+  type=tank start location
+  coord=-112.000000,0.000000
+  angle=1/8
+}
+
+entity {
+  type=tank start location
+  coord=104.000000,92.000000
+  angle=1/8
 }
 

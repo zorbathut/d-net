@@ -378,11 +378,49 @@ void InterfaceMain::render() const {
 
 class GameAiIntro : public GameAi{
 private:
+  Coord2 nextpos;
+  Coord lastdist;
+
   void updateGameWork(const vector<Tank> &players, int me) {
     CHECK(0);
   }
   void updateBombardmentWork(const vector<Tank> &players, Coord2 mypos) {
+    if(waitcycles > 0) {
+      waitcycles--;
+      return;
+    }
+    
+    if(nextpos == Coord2(-1000, -1000))
+      genNewPos(mypos);
+    
+    nextKeys.udlrax = normalize(nextpos - mypos);
+    nextKeys.udlrax.y *= -1;
+    
+    Coord tdist = len(nextpos - mypos);
+    if(tdist >= lastdist) {
+      nextKeys.fire[0].down = true;
+      genNewPos(mypos);
+    } else {
+      lastdist = tdist;
+    }
   }
+  
+  void genNewPos(Coord2 cpos) {
+    int divert = 50;
+    do {
+      nextpos = cpos + makeAngle(unsync().frand() * COORDPI * 2) * unsync().frand() * divert;
+      divert += 10;
+    } while(!isInside(Coord4(-364, -116, 364, 0), nextpos) && !isInside(Coord4(-112, 0, 112, 92), nextpos));
+    lastdist = 1000;
+  }
+  
+public:
+  GameAiIntro() {
+    nextpos = Coord2(-1000, -1000);
+    waitcycles = unsync().choose(FPS * 4);
+  }
+  
+  int waitcycles;
 };
 
 bool InterfaceMain::tick(const vector< Controller > &control, RngSeed gameseed) {
@@ -417,6 +455,7 @@ bool InterfaceMain::tick(const vector< Controller > &control, RngSeed gameseed) 
   }
 
   if(interface_mode == STATE_MAINMENU) {
+    introscreen.runTickWithAi(vector<GameAi*>(introscreen_ais.begin(), introscreen_ais.end()), &unsync());
     introscreen.runTickWithAi(vector<GameAi*>(introscreen_ais.begin(), introscreen_ais.end()), &unsync());
     
     int mrv = mainmenu.tick(kst[controls_primary_id()]);
@@ -696,7 +735,7 @@ InterfaceMain::InterfaceMain() {
   game = NULL;
   
   {
-    introscreen.players.resize(8);
+    introscreen.players.resize(16);
     vector<const IDBFaction *> idbfa = ptrize(factionList());
     for(int i = 0; i < introscreen.players.size(); i++) {
       int fid = unsync().choose(idbfa.size());
@@ -705,10 +744,13 @@ InterfaceMain::InterfaceMain() {
     }
   }
   
-  introscreen.game.initTitlescreen(&introscreen.players);
+  introscreen.game.initTitlescreen(&introscreen.players, &unsync());
   
   for(int i = 0; i < introscreen.players.size(); i++)
     introscreen_ais.push_back(new GameAiIntro());
+  
+  for(int i = 0; i < 180; i++)
+    introscreen.runTickWithAi(vector<GameAi*>(introscreen_ais.begin(), introscreen_ais.end()), &unsync());
 }
 
 InterfaceMain::~InterfaceMain() {
