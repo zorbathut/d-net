@@ -38,7 +38,7 @@ float ShopLayout::frameend(int depth) const {
   return frameend(depth - 1) + framewidth(depth);
 }
 
-const float leftside = 45;
+const float leftside = 42;
 const float rightside = 100 - leftside;
 
 // this is probably O(n^2) or something
@@ -68,7 +68,7 @@ float ShopLayout::boxwidth(int depth) const {
 }
 
 float ShopLayout::quantx(int depth) const {
-  return lerp(boxstart(depth) + border(), boxend(depth) - border(), 0.7);
+  return lerp(boxstart(depth) + border(), boxend(depth) - border(), 0.68);
 }
 float ShopLayout::pricex(int depth) const {
   return boxend(depth) - border();

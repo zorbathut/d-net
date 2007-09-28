@@ -34,6 +34,8 @@ DEFINE_bool(render, true, "Render shit");
 DEFINE_bool(timing, true, "Display timing information");
 DEFINE_bool(warpkeys, false, "Enable timewarp keys");
 
+DEFINE_bool(checksumGameState, true, "Checksum the game state on every frame");
+
 void displayCZInfo();
 
 void MainLoop() {
@@ -143,7 +145,8 @@ void MainLoop() {
           Adler32 adl;
           PerfStack pst(PBC::checksum);
           adler(&adl, frameNumber);
-          interface.checksum(&adl);
+          if(FLAGS_checksumGameState)
+            interface.checksum(&adl);
           reg_adler(adl);
           adlers += ret_adler_ref_count();
         }

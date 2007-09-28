@@ -2,8 +2,8 @@
 - "Finish the Damn Game" Initiative
   - run lots of checksumming
   - make checksumloop work properly
-  - add default for adler
-  - disable writing and adler
+  - Add rounding to sell
+  - Shift ammocount to the left a bit
   - deploy IGF version
   - mines fade out on tank explosion
   - Make free version
