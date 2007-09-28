@@ -2,6 +2,10 @@
 #include "args.h"
 
 #include "debug.h"
+#include "parse.h"
+
+#include <vector>
+#include <fstream>
 
 using namespace std;
 
@@ -13,13 +17,13 @@ string canonize(const string &in) {
   return tbx;
 }
 
-map< string, LinkageData > &getLinkageSingleton() {
-  static map< string, LinkageData > singy;
+map<string, LinkageData> &getLinkageSingleton() {
+  static map<string, LinkageData> singy;
   return singy;
 }
 
 ARGS_LinkageObject::ARGS_LinkageObject(const string &id, string *writeto, const string &def, const string &descr) {
-  map< string, LinkageData > &links = getLinkageSingleton();
+  map<string, LinkageData> &links = getLinkageSingleton();
   LinkageData ld;
   ld.descr = descr;
   ld.type = LinkageData::LINKAGE_STRING;
@@ -28,7 +32,7 @@ ARGS_LinkageObject::ARGS_LinkageObject(const string &id, string *writeto, const 
   links[canonize(id)] = ld;
 }
 ARGS_LinkageObject::ARGS_LinkageObject(const string &id, int *writeto, int def, const string &descr) {
-  map< string, LinkageData > &links = getLinkageSingleton();
+  map<string, LinkageData> &links = getLinkageSingleton();
   LinkageData ld;
   ld.descr = descr;
   ld.type = LinkageData::LINKAGE_INT;
@@ -37,7 +41,7 @@ ARGS_LinkageObject::ARGS_LinkageObject(const string &id, int *writeto, int def, 
   links[canonize(id)] = ld;
 }
 ARGS_LinkageObject::ARGS_LinkageObject(const string &id, bool *writeto, bool def, const string &descr) {
-  map< string, LinkageData > &links = getLinkageSingleton();
+  map<string, LinkageData> &links = getLinkageSingleton();
   LinkageData ld;
   ld.descr = descr;
   ld.type = LinkageData::LINKAGE_BOOL;
@@ -46,7 +50,7 @@ ARGS_LinkageObject::ARGS_LinkageObject(const string &id, bool *writeto, bool def
   links[canonize(id)] = ld;
 }
 ARGS_LinkageObject::ARGS_LinkageObject(const string &id, float *writeto, float def, const string &descr) {
-  map< string, LinkageData > &links = getLinkageSingleton();
+  map<string, LinkageData> &links = getLinkageSingleton();
   LinkageData ld;
   ld.descr = descr;
   ld.type = LinkageData::LINKAGE_FLOAT;
@@ -71,7 +75,7 @@ map< string, string > getFlagDescriptions() {
   return rv;
 }
 
-void initFlags(int argc, char *argv[], int ignoreargs) {
+void initFlags(int argc, char *argv[], int ignoreargs, const string &settings) {
   map<string, LinkageData> &links = getLinkageSingleton();
   for(map<string, LinkageData>::iterator itr = links.begin(); itr != links.end(); itr++) {
     if(itr->second.type == LinkageData::LINKAGE_BOOL) {
@@ -99,15 +103,29 @@ void initFlags(int argc, char *argv[], int ignoreargs) {
       CHECK(0);
     }
   }
+  
+  vector<string> lines;
+  
+  if(settings.size()) {
+    ifstream ifs(settings.c_str());
+    string dt;
+    while(getLineStripped(ifs, &dt))
+      lines.push_back(dt);
+  }
+  
   for(int i = ignoreargs + 1; i < argc; i++) {
     CHECK(argv[i][0] == '-' && argv[i][1] == '-');
-    char *arg = argv[i] + 2;
+    lines.push_back(argv[i] + 2);
+  }
+  
+  for(int i = 0; i < lines.size(); i++) {
+    const char *arg = lines[i].c_str();
     bool isBoolNo = false;
     if(tolower(arg[0]) == 'n' && tolower(arg[1]) == 'o') { // jon sucks
       isBoolNo = true;
       arg += 2;
     }
-    char *eq = strchr(arg, '=');
+    const char *eq = strchr(arg, '=');
     string realarg;
     if(eq) {
       realarg = string(arg, eq);

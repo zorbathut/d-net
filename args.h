@@ -62,8 +62,8 @@ public:
   LinkageData();
 };
 
-map< string, string > getFlagDescriptions();
+map<string, string> getFlagDescriptions();
 
-void initFlags(int argc, char *argv[], int ignoreargs);
+void initFlags(int argc, char *argv[], int ignoreargs, const string &settings = "");
 
 #endif

@@ -181,7 +181,7 @@ int main(int argc, char **argv) {
 
   dprintf("Init\n");
   
-  initFlags(argc, argv, 0);
+  initFlags(argc, argv, 0, "settings");
   if(FLAGS_help) {
     map<string, string> flags = getFlagDescriptions();
     #undef printf
