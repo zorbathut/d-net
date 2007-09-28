@@ -382,7 +382,7 @@ void Shop::renderNode(const HierarchyNode &node, int depth, const Player *player
     stddisplay.push_back(make_pair(make_pair(display, kash), kashed));
   }
   
-  if(node.cashscale) {
+  if(node.cashscale == HierarchyNode::HNCS_CONSISTENT) {
     vector<Money> munies;
     for(int i = 0; i < stddisplay.size(); i++)
       if(stddisplay[i].second)
@@ -396,10 +396,16 @@ void Shop::renderNode(const HierarchyNode &node, int depth, const Player *player
         stddisplay[i].first.first = munstring[ofs++];
     
     CHECK(ofs == munstring.size());
-  } else {
+  } else if(node.cashscale == HierarchyNode::HNCS_NOCONSISTENT) {
+    for(int i = 0; i < stddisplay.size(); i++)
+      if(stddisplay[i].second)
+        stddisplay[i].first.first = stddisplay[i].first.second.textual();
+  } else if(node.cashscale == HierarchyNode::HNCS_NOSHORTEN) {
     for(int i = 0; i < stddisplay.size(); i++)
       if(stddisplay[i].second)
         stddisplay[i].first.first = stddisplay[i].first.second.textual(Money::TEXT_NOABBREV);
+  } else {
+    CHECK(0);
   }
   
   for(int j = 0; j < renderorder.size(); j++) {

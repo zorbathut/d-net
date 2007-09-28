@@ -483,7 +483,7 @@ HierarchyNode::HierarchyNode() {
   implantitem = NULL;
   equipweapon = NULL;
   equipweaponfirst = false;
-  cashscale = true;
+  cashscale = HNCS_CONSISTENT;
   sellweapon = NULL;
   spawncash = Money(-1);
   despawncash = Money(-1);
@@ -579,7 +579,7 @@ void loadItemDb(bool reload) {
     tnode.type = HierarchyNode::HNT_SELL;
     tnode.displaymode = HierarchyNode::HNDM_BLANK;
     tnode.cat_restrictiontype = HierarchyNode::HNT_SELLWEAPON;
-    tnode.cashscale = false;
+    tnode.cashscale = HierarchyNode::HNCS_NOCONSISTENT;
     root.branches.push_back(tnode);
   }
   

@@ -321,7 +321,18 @@ void parseHierarchy(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   CHECK(tnode.despawncash >= Money(-1));
   CHECK(tnode.despawncash >= tnode.spawncash || tnode.despawncash == Money(-1));
   
-  tnode.cashscale = parseWithDefault(chunk, "cashscale", true);
+  {
+    string val = parseWithDefault(chunk, "cashscale", "consistent");
+    if(val == "consistent") {
+      tnode.cashscale = HierarchyNode::HNCS_CONSISTENT;
+    } else if(val == "noconsistent") {
+      tnode.cashscale = HierarchyNode::HNCS_NOCONSISTENT;
+    } else if(val == "noshorten") {
+      tnode.cashscale = HierarchyNode::HNCS_NOSHORTEN;
+    } else {
+      CHECK(0);
+    }
+  }
   
   CHECK(mountpoint->cat_restrictiontype == -1 || tnode.cat_restrictiontype == mountpoint->cat_restrictiontype);
   mountpoint->branches.push_back(tnode);
