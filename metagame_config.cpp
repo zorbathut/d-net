@@ -614,6 +614,7 @@ void runSettingRender(const PlayerMenuState &pms, const ControlConsts &cc) {
 
   // Then we render our context-sensitive stuff, so it can be rendered over the logo as appropriate.
   if(pms.settingmode == SETTING_BUTTONS) {
+    StackString sstr("buttons");
     vector<vector<string> > names;
     for(int i = 0; i < BUTTON_LAST; i++) {
       vector<string> tix;
@@ -642,6 +643,7 @@ void runSettingRender(const PlayerMenuState &pms, const ControlConsts &cc) {
     standardButtonRender(sbrd);
     
   } else if(pms.settingmode == SETTING_AXISCHOOSE) {
+    StackString sstr("axischoose");
     StandardButtonRenderData sbrd;
     sbrd.rin = &rin;
     sbrd.buttons = &pms.axes;
@@ -658,6 +660,7 @@ void runSettingRender(const PlayerMenuState &pms, const ControlConsts &cc) {
     
     standardButtonRender(sbrd);
   } else if(pms.settingmode == SETTING_TEST) {
+    StackString sstr("test");
     drawBottomBlock(rin, 2);
     setColor(C::inactive_text);
     drawJustifiedText("Test your tank controls.", rin.textsize, Float2(rin.xcenter, rin.ystarts[rin.textline_count - 2]), TEXT_CENTER, TEXT_MIN);
@@ -669,6 +672,7 @@ void runSettingRender(const PlayerMenuState &pms, const ControlConsts &cc) {
     GfxWindow gfxw(Float4(rin.xstart, rin.ystarts[2], rin.xend, rin.ystarts[rin.textline_count - 4]), 1.0);
     pms.test_game->renderToScreen();
   } else if(pms.settingmode == SETTING_READY) {
+    StackString sstr("ready");
     setColor(C::inactive_text);
     const char * const text[] = {"You've finished setting up your controls. Push ", "\"accept\" if you're finished. Move your controller", "left and right to edit your settings if you", "are dissatisfied. You may return to change", "settings any time the shop is available."};
     int stp = (rin.textline_count - 1 - ARRAY_SIZE(text)) / 2;
@@ -681,6 +685,7 @@ void runSettingRender(const PlayerMenuState &pms, const ControlConsts &cc) {
   
   // Finally, we render our topic line and box, so it can fit around the rest without getting accidentally erased by our bottom-of-box-erase code.
   {
+    StackString sstr("topicline");
     vector<pair<float, float> > xpos = choiceTopicXpos(rin.external_xstart, rin.external_xend, rin.textsize);
     
     for(int dist = xpos.size(); dist >= 0; --dist) {

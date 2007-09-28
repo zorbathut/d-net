@@ -107,7 +107,6 @@ void Rng::checksum(Adler32 *adl) const {
 }
 
 Rng::Rng(RngSeed in_seed) {
-  dprintf("%d\n", in_seed.seed);
   sync = boost::lagged_fibonacci9689(in_seed.seed);
 }
 

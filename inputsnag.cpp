@@ -318,11 +318,12 @@ ControlConsts controls_getcc(int cid) {
     rv.availdescr = "";
   }
 
-  if(sources[cid].first == CIP_KEYBOARD) {
-    rv.buttonnames = boost::assign::list_of("Fire weapon 1")("Fire weapon 2")("Fire weapon 3")("Fire weapon 4")("Slow movement")("Accept menu item key")("Change/abort menu key");
-  } else if(sources[cid].first == CIP_JOYSTICK) {
+  if(sources[cid].first == CIP_JOYSTICK) {
     rv.buttonnames = boost::assign::list_of("Fire weapon 1 (L2)")("Fire weapon 2 (R2)")("Fire weapon 3 (L1)")("Fire weapon 4 (R1)")("Slow movement")("Accept menu item key")("Change/abort menu key");
+  } else {
+    rv.buttonnames = boost::assign::list_of("Fire weapon 1")("Fire weapon 2")("Fire weapon 3")("Fire weapon 4")("Slow movement")("Accept menu item key")("Change/abort menu key");
   }
+  CHECK(rv.buttonnames.size() == BUTTON_LAST);
   
   if(sources[cid].first == CIP_KEYBOARD && sources[cid].second == 0) {
     rv.description = "Right keyboard";
