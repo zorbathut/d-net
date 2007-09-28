@@ -469,3 +469,8 @@ character {
   path=
   width=6
 }
+
+character {
+  id=~
+  path=0,6 2,4 4,6 6,4
+}

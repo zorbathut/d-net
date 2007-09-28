@@ -2,8 +2,6 @@
 - "Finish the Damn Game" Initiative
   - run lots of checksumming
   - make checksumloop work properly
-  - Add rounding to sell
-  - Shift ammocount to the left a bit
   - deploy IGF version
   - mines fade out on tank explosion
   - Make free version

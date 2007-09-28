@@ -769,7 +769,7 @@ public:
   bool buyable;
   bool selectable;
   
-  enum Cashscale {HNCS_CONSISTENT, HNCS_NOCONSISTENT, HNCS_NOSHORTEN};
+  enum Cashscale {HNCS_CONSISTENT, HNCS_NOCONSISTENT, HNCS_NOSHORTEN, HNCS_ROUNDED};
   Cashscale cashscale;
   
   int pack;

@@ -579,7 +579,7 @@ void loadItemDb(bool reload) {
     tnode.type = HierarchyNode::HNT_SELL;
     tnode.displaymode = HierarchyNode::HNDM_BLANK;
     tnode.cat_restrictiontype = HierarchyNode::HNT_SELLWEAPON;
-    tnode.cashscale = HierarchyNode::HNCS_NOCONSISTENT;
+    tnode.cashscale = HierarchyNode::HNCS_ROUNDED;
     root.branches.push_back(tnode);
   }
   

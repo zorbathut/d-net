@@ -24,7 +24,7 @@ int doabbrev(const string &in_text, int params) {
   string text = in_text;
   int rv = 0;
   if(!(params & Money::TEXT_NOABBREV)) {
-    while(text.size() >= 6 && text.substr(0, 4) == "000,") {
+    while((text.size() >= 6 && text.substr(0, 4) == "000,") || (text.size() >= 7 && (params & Money::TEXT_ROUND))) {
       text.erase(text.begin(), text.begin() + 4);
       rv++;
     }
@@ -34,10 +34,19 @@ int doabbrev(const string &in_text, int params) {
 
 string addsuffix(const string &in_a, int ks, int params) {
   string in = in_a;
+  bool inexact = false;
   for(int i = 0; i < ks; i++) {
-    CHECK(in.size() >= 6 && in.substr(0, 4) == "000,");
+    CHECK(in.size() >= 6);
+    if(in.substr(0, 4) != "000,") {
+      CHECK(params & Money::TEXT_ROUND);
+      inexact = true;
+    }
     in.erase(in.begin(), in.begin() + 4);
   }
+  
+  if(inexact)
+    in += "~";
+  
   reverse(in.begin(), in.end());
   
   if(ks == 0 && !(params & Money::TEXT_NORIGHTPAD)) {

@@ -404,6 +404,10 @@ void Shop::renderNode(const HierarchyNode &node, int depth, const Player *player
     for(int i = 0; i < stddisplay.size(); i++)
       if(stddisplay[i].second)
         stddisplay[i].first.first = stddisplay[i].first.second.textual(Money::TEXT_NOABBREV);
+  } else if(node.cashscale == HierarchyNode::HNCS_ROUNDED) {
+    for(int i = 0; i < stddisplay.size(); i++)
+      if(stddisplay[i].second)
+        stddisplay[i].first.first = stddisplay[i].first.second.textual(Money::TEXT_ROUND);
   } else {
     CHECK(0);
   }

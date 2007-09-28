@@ -13,7 +13,7 @@ private:
 
 public:
   
-  enum { TEXT_NOABBREV = 1, TEXT_NORIGHTPAD = 4 };
+  enum { TEXT_NOABBREV = 1, TEXT_ROUND = 2, TEXT_NORIGHTPAD = 4 };
   
   string textual(int flags = 0) const;
 
