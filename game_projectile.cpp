@@ -110,6 +110,29 @@ void Projectile::tick(const GameImpactContext &gic, int owner) {
     closest_enemy_tank = newdist;
   }
   
+  if(projtype.proximity_visibility() != -1) {
+    const Coord range = projtype.proximity_visibility();
+    Coord closest = range * 2;
+    for(int i = 0; i < gic.players.size(); i++) {
+      if(!gic.players[i]->isLive())
+        continue;
+      closest = min(closest, len(gic.players[i]->pi.pos - now.pi.pos));
+    }
+    
+    Coord goalvis;
+    if(closest < range) {
+      if(closest < range / 2) {
+        goalvis = 1;
+      } else {
+        goalvis = (range - closest) / range * 2;
+      }
+    } else {
+      goalvis = 0;
+    }
+    
+    proxy_visibility = max(goalvis, approach(proxy_visibility, goalvis, Coord(1) / FPS));
+  }
+  
   now.distance_traveled += len(last.pi.pos - now.pi.pos);
 }
 
@@ -123,7 +146,7 @@ void Projectile::spawnEffects(vector<smart_ptr<GfxEffects> > *gfxe) const {
   }
 }
 
-void Projectile::render(const vector<Coord2> &tankposes) const {
+void Projectile::render() const {
   CHECK(live);
   CHECK(age != -1);
   
@@ -137,20 +160,10 @@ void Projectile::render(const vector<Coord2> &tankposes) const {
   } else if(projtype.proximity_visibility() == -1) {
     setColor(projtype.color());
   } else if(projtype.proximity_visibility() != -1) {
-    const float range = projtype.proximity_visibility();
-    float closest = range * 2;
-    for(int i = 0; i < tankposes.size(); i++)
-      if(len(tankposes[i] - now.pi.pos).toFloat() < closest)
-        closest = len(tankposes[i] - now.pi.pos).toFloat();
-    if(closest < range) {
-      if(closest < range / 2) {
-        setColor(projtype.color());
-      } else {
-        setColor(projtype.color() * ((range - closest) / range * 2));
-      }
-    } else {
+    if(proxy_visibility == 0)
       visible = false;
-    }
+    else
+      setColor(projtype.color() * proxy_visibility.toFloat());
   }
   
   if(visible) {
@@ -219,6 +232,9 @@ void Projectile::checksum(Adler32 *adl) const {
     CHECK(0);
   }
   //reg_adler_intermed(*adl);
+  
+  if(projtype.proximity_visibility() != -1)
+    adler(adl, proxy_visibility);
 }
 
 void Projectile::firstCollide(Collider *collider, int owner, int id) const {
@@ -463,6 +479,9 @@ Projectile::Projectile(const Coord2 &in_pos, Coord in_d, const IDBProjectileAdju
     CHECK(0);
   }
   
+  if(projtype.proximity_visibility() != -1)
+    proxy_visibility = 1;
+  
   last = now;
 }
 
@@ -555,9 +574,9 @@ void ProjectilePack::cleanup(Collider *collide, int owner) {
   }
 }
 
-void ProjectilePack::render(const vector<Coord2> &tankpos) const {
+void ProjectilePack::render() const {
   for(map<int, Projectile>::const_iterator itr = projectiles.begin(); itr != projectiles.end(); ++itr)
-    itr->second.render(tankpos);
+    itr->second.render();
 }
 
 void ProjectilePack::checksum(Adler32 *adl) const {

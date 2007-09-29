@@ -13,7 +13,7 @@ public:
 
   void tick(const GameImpactContext &gic, int owner);
   void spawnEffects(vector<smart_ptr<GfxEffects> > *gfxe) const;
-  void render(const vector<Coord2> &tposes) const;
+  void render() const;
 
   void checksum(Adler32 *adl) const;
 
@@ -86,6 +86,8 @@ private:
   bool live;
   bool detonating;
   
+  Coord proxy_visibility;
+  
   Coord closest_enemy_tank;
   
   DamageFlags damageflags;
@@ -101,7 +103,7 @@ public:
   void tick(Collider *collider, int owner, const GameImpactContext &gic);
   void spawnEffects(vector<smart_ptr<GfxEffects> > *gfxe) const;
   void cleanup(Collider *collider, int owner);
-  void render(const vector<Coord2> &tankpos) const;
+  void render() const;
   void checksum(Adler32 *adl) const;
 
 private:

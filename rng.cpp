@@ -10,7 +10,10 @@
 using namespace std;
 
 float Rng::frand() {
-  return sync();
+  float v = sync();
+  if(unlikely(v == 1.0))
+    return frand();
+  return v;
 }
 
 // todo: something more cleverer

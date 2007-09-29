@@ -23,6 +23,7 @@ DEFINE_bool(auto_newgame, false, "Automatically enter New Game");
 DEFINE_float(startingPhase, -1, "Starting phase override");
 DEFINE_bool(showtanks, false, "Show-tank mode");
 DEFINE_bool(dumpTanks, false, "Dump-tank mode");
+DEFINE_bool(showGlobalErrors, true, "Display global errors");
 
 DEFINE_int(factionMode, 3, "Faction mode to skip faction choice battle, -1 for normal faction mode");
 
@@ -602,10 +603,12 @@ void InterfaceMain::render() const {
   
   StackString stp("Interface rendering");
   
-  for(int i = 0; i < returnErrorMessages().size(); i++) {
-    setZoomCenter(0, 0, 100);
-    setColor(1.0, 1.0, 1.0);
-    drawJustifiedText(returnErrorMessages()[i], 30, Float2(0, 0), TEXT_CENTER, TEXT_CENTER);
+  if(FLAGS_showGlobalErrors) {
+    for(int i = 0; i < returnErrorMessages().size(); i++) {
+      setZoomCenter(0, 0, 100);
+      setColor(1.0, 1.0, 1.0);
+      drawJustifiedText(returnErrorMessages()[i], 30, Float2(0, 0), TEXT_CENTER, TEXT_CENTER);
+    }
   }
   
   if(interface_mode == STATE_MAINMENU) {

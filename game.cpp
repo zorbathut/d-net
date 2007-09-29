@@ -634,7 +634,7 @@ void Game::renderToScreen(const vector<const Player *> &players, GameMetacontext
           tankposes.push_back(tanks[i].pi.pos);
       
       for(int i = 0; i < projectiles.size(); i++)
-        projectiles[i].render(tankposes);
+        projectiles[i].render();
     }
     
     for(int i = 0; i < gfxeffects.size(); i++)
