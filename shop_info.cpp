@@ -100,6 +100,8 @@ void ShopInfo::init(const IDBWeapon *in_weapon, const Player *in_player, int in_
   weapon = in_weapon;
   text = in_weapon->launcher->text;
   playercount = in_playercount;
+  if(playercount == 1)
+    playercount = 2;
   CHECK(playercount >= 2);
   if(!miniature)
     demo.init(weapon, in_player, NULL);
