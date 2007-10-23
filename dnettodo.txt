@@ -1,9 +1,31 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
-  - run lots of checksumming
   - make checksumloop work properly
-  - deploy IGF version
+  - Some things (tanks) end up double-rowing when they shouldn't
+  - Explosions should do 100% damage to impact target
+  - Too big hull upgrades don't fit within the window which sort of sucks
+  - small tank bits probably shouldn't fly quite that far
+  - drive slower backwards
   - Make free version
+  - End-of-game
+  - Final score screen
+  - Load shopcache better somehow
+  - add dnet tank to bomberman :D
+  - Step-by-step: tanks vanish, *then* reappear exploding
+  - Reflectors vanish for two entire frames
+  - Slow tanks have more bombardment resistance
+  - Bombardment exclusion zone for people fighting
+  - Check to see if firerate bonus for firerate tanks is high enough to be worth it (it's not)
+  - Reflector ray is insufficiently awesome-looking, and the firerate should be boosted significatly
+  - Sniper mines also look insufficiently awesome
+  - reflector bouncing off people's shots is a problem?
+  - reflector ray is actually way too powerful for some reason
+  - pulse emitter isn't powerful enough, maybe needs to penetrate shit
+  - tailwind blast may be overpowered
+  - change color of fart attack
+  - tesla spike ROF up
+  - reduce drone blast radius
+  - satellite mines may be exploding too far away
   - Many many more weapons
     - Add glory behavior
       - Make sure they don't spike CPU too badly

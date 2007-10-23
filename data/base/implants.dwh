@@ -209,7 +209,7 @@ text {
 adjustment {
   name=adjustment.implant.trap
   
-  damage_trap=10
+  damage_trap=5
 }
 
 implant {
@@ -229,7 +229,7 @@ text {
 adjustment {
   name=adjustment.implant.exotic
   
-  damage_exotic=10
+  damage_exotic=5
 }
 
 implant {

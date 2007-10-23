@@ -121,7 +121,7 @@ void initFlags(int argc, char *argv[], int ignoreargs, const string &settings) {
   for(int i = 0; i < lines.size(); i++) {
     const char *arg = lines[i].c_str();
     bool isBoolNo = false;
-    if(tolower(arg[0]) == 'n' && tolower(arg[1]) == 'o') { // jon sucks
+    if(strlen(arg) >= 2 && tolower(arg[0]) == 'n' && tolower(arg[1]) == 'o') { // jon sucks
       isBoolNo = true;
       arg += 2;
     }

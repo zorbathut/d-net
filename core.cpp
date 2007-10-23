@@ -33,6 +33,7 @@ DEFINE_bool(frameskip, true, "Enable or disable frameskipping");
 DEFINE_bool(render, true, "Render shit");
 DEFINE_bool(timing, true, "Display timing information");
 DEFINE_bool(warpkeys, false, "Enable timewarp keys");
+DEFINE_bool(renderframenumber, true, "Render frame number when AI is on");
 
 DEFINE_bool(checksumGameState, true, "Checksum the game state on every frame");
 
@@ -112,6 +113,8 @@ void MainLoop() {
             speed = 0;
           if(FLAGS_warpkeys && event.key.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_c)
             thistick = true;
+          if(FLAGS_warpkeys && event.key.type == SDL_KEYUP && event.key.keysym.sym == SDLK_c)
+            speed = 0;
           
           controls_key(&event.key);
           break;
@@ -260,7 +263,7 @@ void MainLoop() {
             initFrame();
           }
           interface.render();
-          if(!controls_users()) {
+          if(!controls_users() && FLAGS_renderframenumber) {
             setColor(1.0, 1.0, 1.0);
             setZoom(Float4(0, 0, 133.333, 100));
             drawText(StringPrintf("%d", frameNumber), 10, Float2(5, 85));

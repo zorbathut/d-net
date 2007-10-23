@@ -16,6 +16,8 @@
 
 DEFINE_string(singlelevel, "", "The name of a level to load and use exclusively");
 
+DECLARE_bool(renderframenumber);
+
 using namespace std;
 
 bool Metagame::runTick(const vector<Controller> &keys) {
@@ -166,7 +168,7 @@ void Metagame::renderToScreen() const {
         ppt.push_back(&persistent.players()[i]);
     }
     game.renderToScreen(ppt, GameMetacontext(win_history, roundsBetweenShop));
-    if(!controls_users()) {    
+    if(!controls_users() && FLAGS_renderframenumber) {    
       setColor(1.0, 1.0, 1.0);
       setZoom(Float4(0, 0, 133.333, 100));
       drawText(StringPrintf("round %d", gameround), 2, Float2(5, 82));

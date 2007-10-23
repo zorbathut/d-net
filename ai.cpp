@@ -63,8 +63,19 @@ void GameAiStandard::updateGameWork(const vector<Tank> &players, int me) {
     nx = normalize(nx);
     nextKeys.udlrax = nx;
   }
+  int wepon = 0;
+  for(int i = 0; i < SIMUL_WEAPONS; i++)
+    if(firing[i])
+      wepon++;
+  
   for(int i = 0; i < SIMUL_WEAPONS; i++) {
-    if(rng->frand() < 0.001)
+    float chance = 0.001;
+    if(firing[i]) {
+      chance /= 5;  // we want to keep firing something more often than not
+      chance += wepon * 0.002; // but we'd like to be firing one thing at a time ideally as well
+    }
+    
+    if(rng->frand() < chance)
       firing[i] = !firing[i];
     nextKeys.fire[i].down = firing[i];
   }
@@ -267,7 +278,9 @@ void doMegaEnumWorker(const HierarchyNode &rt, vector<pair<Money, vector<Control
   } else if(rt.type == HierarchyNode::HNT_UPGRADE) {  // TODO: don't buy stuff if you already have it :)
     upgs->push_back(make_pair(player->adjustUpgradeForCurrentTank(rt.upgrade).cost(), path));
   } else if(rt.type == HierarchyNode::HNT_GLORY) {
-    upgs->push_back(make_pair(player->adjustGlory(rt.glory).cost(), path));
+    //if(!player->hasGlory(rt.glory))
+      //for(int i = 0; i < 20; i++)
+        upgs->push_back(make_pair(player->adjustGlory(rt.glory).cost(), path));
   } else if(rt.type == HierarchyNode::HNT_BOMBARDMENT) {
     upgs->push_back(make_pair(player->adjustBombardment(rt.bombardment, 0).cost(), path));
   } else if(rt.type == HierarchyNode::HNT_TANK) {
