@@ -284,10 +284,11 @@ pair<Coord2, Coord> Tank::getNextInertia(const Keystates &keys) const {
   CHECK(dv >= -1 && dv <= 1);
   CHECK(dd >= -1 && dd <= 1);
   
-  Coord cdv(dv);
+  if(dv < 0)
+    dv *= 0.75; // drive backwards more slowly
 
   Coord turn = Coord(tank.turnSpeed()) * Coord(dd);
-  Coord2 speed = makeAngle(Coord(pi.d) + turn / FPS) * Coord(tank.maxSpeed()) * cdv;
+  Coord2 speed = makeAngle(Coord(pi.d) + turn / FPS) * Coord(tank.maxSpeed()) * dv;
   
   speed = approach(inertia.first, speed, 300 / Coord(tank.mass()) / FPS * Coord(tank.maxSpeed()));
   turn = approach(inertia.second, turn, 300 / Coord(tank.mass()) / FPS * Coord(tank.turnSpeed()));
