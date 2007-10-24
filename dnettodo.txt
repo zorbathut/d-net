@@ -2,7 +2,6 @@
 - "Finish the Damn Game" Initiative
   - make checksumloop work properly
   - Some things (tanks) end up double-rowing when they shouldn't
-  - Explosions should do 100% damage to impact target
   - Too big hull upgrades don't fit within the window which sort of sucks
   - small tank bits probably shouldn't fly quite that far
   - drive slower backwards

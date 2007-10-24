@@ -7,8 +7,8 @@
 
 using namespace std;
 
-vector<pair<float, Tank *> > GameImpactContext::getAdjacency(const Coord2 &center) const {
-  vector<pair<float, Tank *> > rv;
+vector<pair<Coord, Tank *> > GameImpactContext::getAdjacency(const Coord2 &center) const {
+  vector<pair<Coord, Tank *> > rv;
   for(int i = 0; i < players.size(); i++) {
     if(players[i]->isLive()) {
       vector<Coord2> tv = players[i]->getTankVertices(players[i]->pi);
@@ -16,9 +16,9 @@ vector<pair<float, Tank *> > GameImpactContext::getAdjacency(const Coord2 &cente
         rv.push_back(make_pair(0, players[i]));
         continue;
       }
-      float closest = 1e10;
+      Coord closest = 1e10;
       for(int j = 0; j < tv.size(); j++) {
-        float tdist = distanceFromLine(Coord4(tv[j], tv[(j + 1) % tv.size()]), center).toFloat();
+        Coord tdist = distanceFromLine(Coord4(tv[j], tv[(j + 1) % tv.size()]), center);
         if(tdist < closest)
           closest = tdist;
       }
@@ -31,8 +31,8 @@ vector<pair<float, Tank *> > GameImpactContext::getAdjacency(const Coord2 &cente
 }
 
 int GameImpactContext::getClosestFoeId(const Coord2 &pos, int owner) const {
-  vector<pair<float, Tank *> > taj = getAdjacency(pos);
-  float closest = 1e20; // no
+  vector<pair<Coord, Tank *> > taj = getAdjacency(pos);
+  Coord closest = 1 << 30; // no
   int id = -1; // denied
   for(int i = 0; i < taj.size(); i++) {
     if(taj[i].first < closest && taj[i].second->team != players[owner]->team) {
@@ -46,9 +46,9 @@ int GameImpactContext::getClosestFoeId(const Coord2 &pos, int owner) const {
     return findTankId(taj[id].second);
 }
 
-float GameImpactContext::getClosestFoeDistance(const Coord2 &pos, int owner) const {
-  vector<pair<float, Tank *> > taj = getAdjacency(pos);
-  float closest = 1e20; // no
+Coord GameImpactContext::getClosestFoeDistance(const Coord2 &pos, int owner) const {
+  vector<pair<Coord, Tank *> > taj = getAdjacency(pos);
+  Coord closest = 1 << 30; // no
   for(int i = 0; i < taj.size(); i++)
     if(taj[i].first < closest && taj[i].second->team != players[owner]->team)
       closest = taj[i].first;
@@ -62,11 +62,11 @@ void GameImpactContext::record(const IDBWarheadAdjust &warhead, Coord2 pos, cons
       target = findTankId(impact_tank);
     }
     
-    vector<pair<float, Tank *> > dists = getAdjacency(pos);
+    vector<pair<Coord, Tank *> > dists = getAdjacency(pos);
     vector<pair<float, int> > distadj;
     for(int i = 0; i < dists.size(); i++)
       if(dists[i].first <= warhead.base()->radiusfalloff * WARHEAD_RADIUS_MAXMULT && dists[i].second->team != owner_tank->team)
-        distadj.push_back(make_pair(dists[i].first, findTankId(dists[i].second)));
+        distadj.push_back(make_pair(dists[i].first.toFloat(), findTankId(dists[i].second)));
     sort(distadj.begin(), distadj.end());
     
     if(target != -1 || distadj.size())
@@ -159,7 +159,13 @@ void detonateWarhead(const IDBWarheadAdjust &warhead, Coord2 pos, Coord normal, 
     dealDamage(warhead.impactdamage(), impact, gpc.owner, flags);
   
   if(warhead.radiusfalloff() >= 0) {
-    vector<pair<float, Tank *> > adjacency = gpc.gic->getAdjacency(pos);
+    vector<pair<Coord, Tank *> > adjacency = gpc.gic->getAdjacency(pos);
+    
+    if(impact)
+      for(int i = 0; i < adjacency.size(); i++)
+        if(adjacency[i].second == impact)
+          adjacency[i].first = 0; // uh-huh, you heard me
+    
     for(int i = 0; i < adjacency.size(); i++) {
       if(adjacency[i].first < warhead.radiusfalloff())
         dealDamage(warhead.radiusdamage() / warhead.radiusfalloff() * (warhead.radiusfalloff() - adjacency[i].first), adjacency[i].second, gpc.owner, flags);
@@ -342,7 +348,7 @@ void triggerInstant(const IDBInstantAdjust &instant, Coord2 pos, const GamePlaye
     Coord2 detpos;
     Tank *dettar = NULL;
     
-    vector<pair<float, Tank *> > tt = gpc.gic->getAdjacency(pos);
+    vector<pair<Coord, Tank *> > tt = gpc.gic->getAdjacency(pos);
     vector<Tank *> opts;
     for(int i = 0; i < tt.size(); i++)
       if(tt[i].first <= instant.tesla_radius() && tt[i].second->team != gpc.owner->team)
