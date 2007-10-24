@@ -287,7 +287,7 @@ ShopLayout::ShopLayout() {
 
 ShopLayout::ShopLayout(bool miniature, float aspect) : miniature(miniature) {
   if(miniature) {
-    cint_fontsize = 2;
+    cint_fontsize = 1.95;
     cint_itemheight = 4;
   } else {
     cint_fontsize = 1.5;

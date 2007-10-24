@@ -71,7 +71,7 @@ void ShopKVPrinter::discontinuity() {
 bool ShopKVPrinter::twolinemode() const {
   float wid = activebounds().span_x();
   for(int i = 0; i < pairz.size(); i++)
-    if(getTextWidth(pairz[i].first, fontsize) + getTextWidth(pairz[i].second, fontsize) + getTextWidth("  ", fontsize) * !pairz[i].second.empty() > wid)
+    if(pairz[i].second.size() && getTextWidth(pairz[i].first, fontsize) + getTextWidth(pairz[i].second, fontsize) + getTextWidth("  ", fontsize) * !pairz[i].second.empty() > wid)
       return true;
   return false;
 }
@@ -285,9 +285,12 @@ void ShopInfo::renderFrame(Float4 bounds, float fontsize, Float4 inset, const Pl
     kvp.print("Turn speed", prettyFloatFormat(player->adjustTankWithInstanceUpgrades(tank).turnSpeed()) + " rad/s");
     kvp.print("Forward speed", prettyFloatFormat(player->adjustTankWithInstanceUpgrades(tank).maxSpeed()) + " m/s");
     kvp.print("Mass", prettyFloatFormat(player->adjustTankWithInstanceUpgrades(tank).mass()) + " tons");
+    if(tank->upgrades.size())
+      kvp.print("", "");
     for(int i = 0; i < tank->upgrades.size(); i++)
       kvp.print(tank->upgrades[i] + " upgrades", "");
     if(tank->adjustment) {
+      kvp.print("", "");
       const IDBAdjustment *idba = tank->adjustment;
       for(int i = 0; i < ARRAY_SIZE(idba->adjustlist); i++) {
         if(idba->adjustlist[i].first == -1)

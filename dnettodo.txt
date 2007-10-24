@@ -1,6 +1,5 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
-  - Some things (tanks) end up double-rowing when they shouldn't
   - Too big hull upgrades don't fit within the window which sort of sucks
   - small tank bits probably shouldn't fly quite that far
   - drive slower backwards
