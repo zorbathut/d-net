@@ -290,8 +290,8 @@ pair<Coord2, Coord> Tank::getNextInertia(const Keystates &keys) const {
   Coord turn = Coord(tank.turnSpeed()) * Coord(dd);
   Coord2 speed = makeAngle(Coord(pi.d) + turn / FPS) * Coord(tank.maxSpeed()) * dv;
   
-  speed = approach(inertia.first, speed, 300 / Coord(tank.mass()) / FPS * Coord(tank.maxSpeed()));
-  turn = approach(inertia.second, turn, 300 / Coord(tank.mass()) / FPS * Coord(tank.turnSpeed()));
+  speed = approach(inertia.first, speed, 250 / Coord(tank.mass()) / FPS * Coord(tank.maxSpeed()), 2.5 / FPS * Coord(tank.maxSpeed()));
+  turn = approach(inertia.second, turn, 250 / Coord(tank.mass()) / FPS * Coord(tank.turnSpeed()), 2.5 / FPS * Coord(tank.turnSpeed()));
   
   return make_pair(speed, turn);
 }

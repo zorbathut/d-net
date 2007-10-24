@@ -1,6 +1,6 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
-  - drive slower backwards
+
   - Make free version
   - End-of-game
   - Final score screen

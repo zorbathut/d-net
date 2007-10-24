@@ -476,17 +476,10 @@ inline Coord4 boxAround(const Coord2 &lhs, Coord radius) {
 
 Coord2 rotate(const Coord2 &in, Coord ang);
 
-inline Coord approach(Coord start, Coord target, Coord delta) {
-  if(abs(start - target) <= delta)
-    return target;
-  else if(start < target)
-    return start + delta;
-  else if(start > target)
-    return start - delta;
-  else
-    CHECK(0);  // oh god bear is driving car how can this be
-}
+Coord approach(Coord start, Coord target, Coord delta);
+Coord approach(Coord start, Coord target, Coord delta, Coord drag);
 Coord2 approach(Coord2 start, Coord2 target, Coord delta);
+Coord2 approach(Coord2 start, Coord2 target, Coord delta, Coord drag);
 
 inline Coord4 snapToEnclosingGrid(Coord4 orig, Coord grid) {
   orig.sx = floor(orig.sx/grid) * grid;

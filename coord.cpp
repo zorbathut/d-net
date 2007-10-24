@@ -211,11 +211,35 @@ void expandBoundBox(Coord4 *bbox, Coord factor) { return imp_expandBoundBox<Coor
 bool linelineintersect(const Coord4 &lhs, const Coord4 &rhs) { return imp_linelineintersect<Coords>(lhs, rhs); };
 Coord linelineintersectpos(const Coord4 &lhs, const Coord4 &rhs) { return imp_linelineintersectpos<Coords>(lhs, rhs); };
 
+Coord approach(Coord start, Coord target, Coord delta) {
+  CHECK(delta >= 0);
+  if(abs(start - target) <= delta)
+    return target;
+  else if(start < target)
+    return start + delta;
+  else if(start > target)
+    return start - delta;
+  else
+    CHECK(0);  // oh god bear is driving car how can this be
+}
+Coord approach(Coord start, Coord target, Coord delta, Coord drag) {
+  if(!(((start < 0) == (target < 0)) && start < target))
+    delta += drag;
+  return approach(start, target, delta);
+}
 Coord2 approach(Coord2 start, Coord2 target, Coord delta) {
+  CHECK(delta >= 0);
   Coord2 diff = target - start;
   if(len(diff) <= delta)
     return target;
   return start + diff / len(diff) * delta;
+}
+Coord2 approach(Coord2 start, Coord2 target, Coord delta, Coord drag) {
+  if(target == start)
+    return target;
+  if(len(start) == 0)
+    return approach(start, target, delta);
+  return approach(start, target, delta + drag * max(Coord(0), -dot(normalize(start), normalize(target - start))));
 }
 
 Coord2 rotate(const Coord2 &in, Coord ang) {
