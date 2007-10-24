@@ -1,6 +1,5 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
-  - small tank bits probably shouldn't fly quite that far
   - drive slower backwards
   - Make free version
   - End-of-game

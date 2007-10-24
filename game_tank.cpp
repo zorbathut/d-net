@@ -382,7 +382,7 @@ void Tank::genEffects(const GameImpactContext &gic, ProjectilePack *projectiles,
       vector<Float2> vf2;
       for(int j = 0; j < chunks[i].size(); j++)
         vf2.push_back((chunks[i][j] - subcentroid).toFloat());
-      Coord2 vel = normalize(subcentroid) / 10 * tva / getArea(chunks[i]);
+      Coord2 vel = normalize(subcentroid) / 10 * tva / max(getArea(chunks[i]), 1);
       Float2 path_pos_vel = vel.toFloat();
       float path_ang_vel = gic.rng->gaussian() / 20;
       gic.effects->push_back(GfxPath(vf2, (centr + subcentroid).toFloat(), path_pos_vel * FPS, -path_pos_vel * FPS, 0, path_ang_vel * FPS, -path_ang_vel * FPS, 1, player->getFaction()->color));
