@@ -22,7 +22,7 @@ const char * const adjust_text[] = { "damage_kinetic", "damage_energy", "damage_
 const bool adjust_negative[] = { false, false, false, false, false, false, false, false, false, false, false, true, true, true, true, false };
 const int adjust_category[] = { 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2 };
 const char * const adjust_human[] = {"Kinetic weapons", "Energy weapons", "Explosive weapons", "Trap weapons", "Exotic weapons", "Blast radius", "Tank firerate", "Tank speed", "Tank turning", "Tank armor", "Bombardment speed", "Weapon discount", "Implant discount", "Upgrade discount", "Tank discount", "Sell efficiency", "All weapons", "Everything" };
-const char * const adjust_unit[] = {" KPE", " KJE", " TOTE", " FSE", " flux", " m", "", " m/s", " rad/s", " CME", "", "", "", "", "", ""};
+const char * const adjust_unit[] = {" kpe", " kje", " tote", " fse", " flux", " m", "", " m/s", " rad/s", " cme", "", "", "", "", "", ""};
 
 pair<string, bool> adjust_modifiertext(int id, int amount);
 

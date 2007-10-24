@@ -60,6 +60,9 @@ void ShopKVPrinter::discontinuity() {
   drawTextBoxAround(tbx, fontsize);
   for(int i = 0; i < pairz.size(); i++) {
     drawText(pairz[i].first, fontsize, Float2(activerkt.sx, activerkt.sy + linesize * (i + !!head.size() * 2) * step));
+    
+    if(pairz[i].second.size() > 4 && pairz[i].second.substr(pairz[i].second.size() - 4, 4) == " cme" && getTextWidth(pairz[i].second, fontsize) > activebounds().span_x())
+      pairz[i].second = pairz[i].second.substr(0, pairz[i].second.size() - 4);
     drawJustifiedText(pairz[i].second, fontsize, Float2(activerkt.ex, activerkt.sy + linesize * (i * step + twolinemode() + !!head.size() * 2)), TEXT_MAX, TEXT_MIN);
   }
   if(head.size())
