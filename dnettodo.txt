@@ -13,7 +13,7 @@
   - Step-by-step: tanks vanish, *then* reappear exploding
   - Reflectors vanish for two entire frames
   - Slow tanks have more bombardment resistance
-  - Bombardment exclusion zone for people fighting
+  - Bombardment shield for people fighting, moving, doing/taking damage
   - Check to see if firerate bonus for firerate tanks is high enough to be worth it (it's not)
   - Reflector ray is insufficiently awesome-looking, and the firerate should be boosted significatly
   - Sniper mines also look insufficiently awesome
@@ -25,6 +25,7 @@
   - tesla spike ROF up
   - reduce drone blast radius
   - satellite mines may be exploding too far away
+  - first-second-third place for wins?
   - Many many more weapons
     - Add glory behavior
       - Make sure they don't spike CPU too badly
@@ -218,3 +219,9 @@ Release build:
 - Disable adler
 - Disable writetotarget
 - Disable errormessages
+
+----
+So, drive-slower-backwards.
+* Tanks should brake faster than they accelerate
+* Tanks should max out at maybe 2/3 as fast backwards as forwards
+

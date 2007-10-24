@@ -11,7 +11,6 @@ EDITORSOURCES := vecedit vecedit_main debug os util gfx float coord parse color 
 EDITORCXXFLAGS := `@WX@ --cxxflags` -DNOSDL $(STDCXXFLAGS)
 EDITORLDFLAGS := `@WX@ --libs --gl-libs` -lopengl32 $(STDLDFLAGS)
 
-FUNCTORSOURCES := functor_gen debug os util parse adler32
 MERGERSOURCES := merger debug os util parse itemdb itemdb_adjust itemdb_parse args color dvec2 float coord cfcommon merger_weapon merger_bombardment merger_tanks merger_glory merger_util merger_upgrades merger_factions regex rng adler32 money
 # rng is not really needed since it won't be linked in at all, but it's easier to just include it
 ODS2CSVSOURCES := ods2csv debug os util parse adler32 minizip/unzip minizip/ioapi
@@ -32,7 +31,6 @@ justdnet: d-net
 
 include $(patsubst %,build/%.g.d,$(GAMESOURCES))
 include $(patsubst %,build/%.e.d,$(EDITORSOURCES))
-include $(patsubst %,build/%.c.d,$(FUNCTORSOURCES))
 include $(patsubst %,build/%.c.d,$(MERGERSOURCES))
 include $(patsubst %,build/%.c.d,$(ODS2CSVSOURCES))
 
@@ -93,7 +91,7 @@ ailoop: d-net
 AICSLFLAGS = --nofullscreen --fastForwardTo=100000000 --factionmode=3 --noshopcache --perfbar --randomizeFrameRender=60 --startingPhase=7
 
 aichecksumloop: d-net
-	while nice rm -f dumps/dump-*.dnd && nice ./d-net.exe $(AICSLFLAGS) --aiCount=4 --terminateAfter=300 && nice ./d-net.exe $(AICSLFLAGS) --readtarget=`ls dumps/dump-*.dnd` ; do echo Cycle. ; done
+	while nice rm -f dumps/dump-*.dnd && nice ./d-net.exe $(AICSLFLAGS) --aiCount=4 --terminateAfter=120 && nice ./d-net.exe $(AICSLFLAGS) --readtarget=`ls dumps/dump-*.dnd` ; do echo Cycle. ; done
   
 veced: vecedit
 	./vecedit.exe
@@ -177,7 +175,7 @@ build/%.e.d.o: %.cpp
 build/%.e.S: %.cpp
 	nice $(CXX) $(EDITORCXXFLAGS) -c -Wa,-a,-ad $< > $@
 
-build/%.e.d: %.cpp functor.h  # some of these files use functor, so we make sure functor.h is built first
+build/%.e.d: %.cpp
 	nice bash -ec '$(CXX) $(EDITORCXXFLAGS) -MM $< | sed "s!$*.o!build/$*.e.o build/$*.e.d.o $@!g" > $@'
 
 build/%.c.o: %.cpp
@@ -202,12 +200,6 @@ data/shopcache.dwh: d-net $(DATAFILES)
 export: d-net tools/generateWeaponGraph.py
 	./d-net.exe --generateWeaponStats || ( rm -f $@ && false )
 	/cygdrive/c/Python25/python.exe tools/generateWeaponGraph.py # this is not ideal
-
-functor_gen.exe: $(patsubst %,build/%.c.o,$(FUNCTORSOURCES))
-	nice $(CXX) -o $@ $(patsubst %,build/%.c.o,$(FUNCTORSOURCES)) $(CONSOLELDFLAGS)
-
-functor.h: functor_gen.exe functor.h.in
-	./functor_gen.exe || ( rm -f $@ && false )
   
 merger.exe: $(patsubst %,build/%.c.o,$(MERGERSOURCES))
 	nice $(CXX) -o $@ $(patsubst %,build/%.c.o,$(MERGERSOURCES)) $(CONSOLELDFLAGS)

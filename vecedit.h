@@ -1,7 +1,6 @@
 #ifndef DNET_VECEDIT
 #define DNET_VECEDIT
 
-#include "functor.h"
 #include "dvec2.h"
 #include "input.h"
 

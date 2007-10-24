@@ -14,6 +14,11 @@
 #include "itemdb.h"
 
 #include <boost/noncopyable.hpp>
+#include <boost/function.hpp>
+#include <boost/bind.hpp>
+
+using boost::function;
+using boost::bind;
 
 /*************
  * VeceditGLC
@@ -21,17 +26,17 @@
  
 class VeceditGLC : public wxGLCanvas, boost::noncopyable {
 private:
-  smart_ptr<Closure<> > render_callback;
-  smart_ptr<Closure<const MouseInput &, int> > mouse_callback;
+  function<void ()> render_callback;
+  function<void (const MouseInput &, int)> mouse_callback;
 
-  smart_ptr<Callback<ScrollBounds, Float2> > scroll_callback;
-  smart_ptr<Closure<Float2> > set_scroll_callback;
+  function<ScrollBounds (Float2)> scroll_callback;
+  function<void (Float2)> set_scroll_callback;
 
   MouseInput mstate;
 
 public:
   
-  VeceditGLC(wxWindow *wind, const smart_ptr<Closure<> > &render_callback, const smart_ptr<Closure<const MouseInput &, int> > &mouse_callback, const smart_ptr<Callback<ScrollBounds, Float2> > &scroll_callback, const smart_ptr<Closure<Float2> > &set_scroll_callback);
+  VeceditGLC(wxWindow *wind, const function<void ()> &render_callback, const function<void (const MouseInput &, int)> &mouse_callback, const function<ScrollBounds (Float2)> &scroll_callback, const function<void (Float2)> &set_scroll_callback);
   
   void OnPaint(wxPaintEvent &event);
   void OnSize(wxSizeEvent &event);
@@ -62,7 +67,7 @@ int gl_attribList[] = {
   WX_GL_DOUBLEBUFFER,
   0
 };
-VeceditGLC::VeceditGLC(wxWindow *wind, const smart_ptr<Closure<> > &render_callback, const smart_ptr<Closure<const MouseInput &, int> > &mouse_callback,  const smart_ptr<Callback<ScrollBounds, Float2> > &scroll_callback, const smart_ptr<Closure<Float2> > &set_scroll_callback) : wxGLCanvas(wind, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER | wxVSCROLL | wxHSCROLL | wxALWAYS_SHOW_SB, "GLCanvas", gl_attribList), render_callback(render_callback), mouse_callback(mouse_callback), scroll_callback(scroll_callback), set_scroll_callback(set_scroll_callback) {
+VeceditGLC::VeceditGLC(wxWindow *wind, const function<void ()> &render_callback, const function<void (const MouseInput &, int)> &mouse_callback, const function<ScrollBounds (Float2)> &scroll_callback, const function<void (Float2)> &set_scroll_callback) : wxGLCanvas(wind, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER | wxVSCROLL | wxHSCROLL | wxALWAYS_SHOW_SB, "GLCanvas", gl_attribList), render_callback(render_callback), mouse_callback(mouse_callback), scroll_callback(scroll_callback), set_scroll_callback(set_scroll_callback) {
   SetScrollbar(wxVERTICAL, 0, 40, 50);
   SetScrollbar(wxHORIZONTAL, 0, 40, 50);
 };
@@ -80,7 +85,7 @@ void VeceditGLC::OnPaint(wxPaintEvent& event) {
     updateResolution((float)w / h);
   }
   
-  render_callback->Run();
+  render_callback();
   
   SwapBuffers();
 }
@@ -101,7 +106,7 @@ void VeceditGLC::OnMouse(wxMouseEvent &event) {
   mstate.b[0].newState(event.LeftIsDown());
   mstate.b[1].newState(event.RightIsDown());
   
-  mouse_callback->Run(mstate, event.GetWheelRotation());
+  mouse_callback(mstate, event.GetWheelRotation());
   
   Refresh();
 }
@@ -132,9 +137,9 @@ void VeceditGLC::OnScroll(wxScrollWinEvent &event) {
   SetScrollbar(dir, cpos, thumbsize, GetScrollRange(dir));
   
   if(dir == wxVERTICAL) {
-    set_scroll_callback->Run(Float2(bounds.currentwindow.midpoint().x, (GetScrollPos(wxVERTICAL) + GetScrollThumb(wxVERTICAL) / 2.0) / GetScrollRange(wxVERTICAL) * bounds.objbounds.span_y() + bounds.objbounds.sy));
+    set_scroll_callback(Float2(bounds.currentwindow.midpoint().x, (GetScrollPos(wxVERTICAL) + GetScrollThumb(wxVERTICAL) / 2.0) / GetScrollRange(wxVERTICAL) * bounds.objbounds.span_y() + bounds.objbounds.sy));
   } else {
-    set_scroll_callback->Run(Float2((GetScrollPos(wxHORIZONTAL) + GetScrollThumb(wxHORIZONTAL) / 2.0) / GetScrollRange(wxHORIZONTAL) * bounds.objbounds.span_x() + bounds.objbounds.sx, bounds.currentwindow.midpoint().y));
+    set_scroll_callback(Float2((GetScrollPos(wxHORIZONTAL) + GetScrollThumb(wxHORIZONTAL) / 2.0) / GetScrollRange(wxHORIZONTAL) * bounds.objbounds.span_x() + bounds.objbounds.sx, bounds.currentwindow.midpoint().y));
   }
   
   Refresh();
@@ -169,7 +174,7 @@ void VeceditGLC::SetGLCCursor(Cursor curse) {
 ScrollBounds VeceditGLC::getSB() const {
   int w, h;
   GetClientSize(&w, &h);
-  return scroll_callback->Run(Float2(w, h));
+  return scroll_callback(Float2(w, h));
 }
 
 /*************
@@ -445,7 +450,7 @@ VeceditWindow::VeceditWindow() : wxFrame((wxFrame *)NULL, -1, veceditname, wxDef
   CreateStatusBar();
   SetStatusText("borf borf borf");
   
-  glc = new VeceditGLC(this, NewFunctor(this, &VeceditWindow::renderCore), NewFunctor(this, &VeceditWindow::mouseCore), NewFunctor(this, &VeceditWindow::getScrollBounds), NewFunctor(this, &VeceditWindow::setScrollPos));
+  glc = new VeceditGLC(this, bind(&VeceditWindow::renderCore, this), bind(&VeceditWindow::mouseCore, this, _1, _2), bind(&VeceditWindow::getScrollBounds, this, _1), bind(&VeceditWindow::setScrollPos, this, _1));
   wxNotebook *note = new wxNotebook(this, wxID_ANY);
   note->SetMinSize(wxSize(150, 150));
   
