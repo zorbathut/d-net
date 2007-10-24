@@ -277,6 +277,7 @@ bool controls_recordable() {
   return FLAGS_readTarget == "";
 }
 void controls_shutdown() {
+  CHECK(sources.size());
   for(int i = 0; i < joysticks.size(); i++)
     SDL_JoystickClose(joysticks[i]);
   if(infile)
@@ -335,6 +336,8 @@ ControlConsts controls_getcc(int cid) {
     rv.description = StringPrintf("Null");
   } else if(sources[cid].first == CIP_AI) {
     rv.description = StringPrintf("AI #%d", sources[cid].second);
+  } else if(sources[cid].first == CIP_PRERECORD) {
+    rv.description = StringPrintf("Recorded #%d", sources[cid].second);
   } else {
     CHECK(0);
   }

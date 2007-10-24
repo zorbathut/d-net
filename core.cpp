@@ -56,6 +56,7 @@ void MainLoop() {
   Rng rng(unsync().generate_seed());
   
   pair<RngSeed, vector<Controller> > rc = controls_init(rng.generate_seed());
+  ControlShutdown csd;
   RngSeed game_seed = rc.first;
   vector<Controller> controllers = rc.second;
   
@@ -140,7 +141,7 @@ void MainLoop() {
         interface.ai(controls_ai());  // has to be before controls
         controllers = controls_next();
         if(!controllers.size())
-          break;
+          return;
         CHECK(controllers.size() == origcontrollers.size());
         for(int i = 0; i < controllers.size(); i++)
           CHECK(controllers[i].keys.size() == origcontrollers[i].keys.size());
@@ -317,7 +318,4 @@ void MainLoop() {
     }
     frako++;
   }
-  dprintf("Control shutdown\n");
-  controls_shutdown();
-  dprintf("Exiting core\n");
 }

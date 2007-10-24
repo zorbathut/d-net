@@ -16,6 +16,12 @@ vector<Ai *> controls_ai();
 bool controls_users();
 bool controls_recordable();
 void controls_shutdown();
+class ControlShutdown {
+public:
+  ~ControlShutdown() {
+    controls_shutdown();
+  }
+};
 
 void controls_snag_next_checksum_set();
 
