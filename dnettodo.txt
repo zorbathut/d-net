@@ -1,7 +1,5 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
-  - End-of-game
-    - don't allow 0 rounds
   - Track number of rounds played
   - move second main menu up a bit
   - Load shopcache better somehow

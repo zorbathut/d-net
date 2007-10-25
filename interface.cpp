@@ -481,11 +481,11 @@ bool InterfaceMain::tick(const vector< Controller > &control, RngSeed gameseed) 
     introscreen->runTickWithAi(vector<GameAi*>(introscreen_ais.begin(), introscreen_ais.end()), &unsync());
     
     int mrv = configmenu.tick(kst[controls_primary_id()]);
-    if(start > end) {
+    if(start + 0.1 > end) {
       if(configmenu.currentItem() == 0) {
-        start = end;
+        start = end - 0.1;
       } else if(configmenu.currentItem() == 1) {
-        end = start;
+        end = start + 0.1;
       } else {
         CHECK(0); // what
       }
