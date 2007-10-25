@@ -615,7 +615,9 @@ void loadItemDb(bool reload) {
   }
   
   if(FLAGS_shopcache) {
+    dprintf("Starting shopcache\n");
     parseShopcacheFile("data/shopcache.dwh", &errors);
+    dprintf("Ending shopcache\n");
   }
   
   dprintf("done loading, consistency check\n");

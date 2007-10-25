@@ -103,6 +103,10 @@ int StdMenuItem::tick(const Keystates &keys) {
   return -1; 
 }
 
+int calculateRounds(Coord start, Coord end, Coord exp) {
+  return floor(ceil((end - start) * log(30) / exp / 6)).toInt() * 6;
+}
+
 float StdMenuItem::render(float y, bool mainmenu) const {
   if(type == TYPE_TRIGGER) {
     if(mainmenu) {
@@ -151,9 +155,8 @@ float StdMenuItem::render(float y, bool mainmenu) const {
     return 6;
   } else if(type == TYPE_ROUNDS) {
     drawText(name.c_str(), 4, Float2(2, y));
-    int rounds = int(ceil((rounds_end->toFloat() - rounds_start->toFloat()) * log(30) / rounds_exp->toFloat() / 6)) * 6;
     float percentage = (exp(rounds_exp->toFloat()) - 1) * 100;
-    drawText(StringPrintf("%d (+%.2f%% cash/round)", rounds, percentage), 4, Float2(60, y));
+    drawText(StringPrintf("%d (+%.2f%% cash/round)", calculateRounds(*rounds_start, *rounds_end, *rounds_exp), percentage), 4, Float2(60, y));
     return 6;
   } else {
     CHECK(0);
@@ -493,7 +496,7 @@ bool InterfaceMain::tick(const vector< Controller > &control, RngSeed gameseed) 
         faction = 4;
       else
         faction = 1;
-      game = new Metagame(control.size(), Money((long long)(1000 * pow(30, start.toFloat()))), exp(moneyexp), faction - 1, FLAGS_rounds_per_shop, gameseed);
+      game = new Metagame(control.size(), Money((long long)(1000 * pow(30, start.toFloat()))), exp(moneyexp), faction - 1, FLAGS_rounds_per_shop, calculateRounds(start, end, moneyexp), gameseed);
       interface_mode = STATE_PLAYING;
     }
   } else if(interface_mode == STATE_PLAYING) {
@@ -740,7 +743,8 @@ InterfaceMain::InterfaceMain() {
     faction_toggle = 0;
   
   configmenu.pushMenuItem(StdMenuItem::makeScale("Game start", names, &start));
-  //configmenu.pushMenuItem(StdMenuItem::makeScale("Game end", names, &end));
+  names.push_back("Armageddon");
+  configmenu.pushMenuItem(StdMenuItem::makeScale("Game end", names, &end));
   configmenu.pushMenuItem(StdMenuItem::makeRounds("Estimated rounds", &start, &end, &moneyexp));
   configmenu.pushMenuItem(StdMenuItem::makeOptions("Factions", boost::assign::list_of("On")("Off"), &faction_toggle));
   //configmenu.pushMenuItem(StdMenuItem::makeOptions("Faction mode", boost::assign::list_of("Battle")("No factions")("Minor factions")("Normal factions")("Major factions"), &faction));

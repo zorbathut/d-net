@@ -36,11 +36,11 @@ public:
   void startAtNormalShop();
 
   // Constructor
-  PersistentData(int playercount, Money startingcash, Coord multiple, int roundsbetweenshop);
+  PersistentData(int playercount, Money startingcash, Coord multiple, int roundsbetweenshop, int rounds_until_end);
 
 private:
   // Persistent state
-  enum { TM_PLAYERCHOOSE, TM_RESULTS, TM_SHOP };
+  enum { TM_PLAYERCHOOSE, TM_RESULTS, TM_SHOP, TM_GAMEEND };
   int mode;
   
   // Player data
@@ -63,6 +63,10 @@ private:
   
   Money newPlayerStartingCash;
   Money highestPlayerCash;
+  
+  Coord newPlayerDamageDone;
+  Coord newPlayerKills;
+  Coord newPlayerWins;
   
   // Tween layout info
   public:

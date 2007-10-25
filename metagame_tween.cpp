@@ -573,6 +573,9 @@ bool PersistentData::tickSlot(int slotid, const vector<Controller> &keys) {
     if(pms[slt.pid].faction) {
       playerid[slt.pid] = playerdata.size();
       playerdata.push_back(Player(pms[slt.pid].faction->faction, faction_mode, newPlayerStartingCash));
+      playerdata.back().total_damageDone = newPlayerDamageDone;
+      playerdata.back().total_kills = newPlayerKills;
+      playerdata.back().total_wins = newPlayerWins;
       slot[slotid].type = Slot::SETTINGS;
     }
   } else if(slt.type == Slot::RESULTS) {
@@ -1040,6 +1043,7 @@ vector<Keystates> PersistentData::genKeystates(const vector<Controller> &keys) c
 }
 
 void PersistentData::divvyCash() {
+  CHECK(playerdata.size());
   shopcycles++;
   
   checked.clear();
@@ -1113,6 +1117,24 @@ void PersistentData::divvyCash() {
   }
   newPlayerStartingCash = newPlayerStartingCash * 0.8;
   newPlayerStartingCash = max(newPlayerStartingCash, baseStartingCash);
+  
+  newPlayerDamageDone = 0;
+  newPlayerKills = 0;
+  newPlayerWins = 0;
+  
+  for(int i = 0; i < playerdata.size(); i++) {
+    playerdata[i].total_damageDone += values[0][i];
+    playerdata[i].total_kills += values[1][i];
+    playerdata[i].total_wins += values[2][i];
+    
+    newPlayerDamageDone += playerdata[i].total_damageDone;
+    newPlayerKills = playerdata[i].total_kills;
+    newPlayerWins = playerdata[i].total_wins;
+  }
+  
+  newPlayerDamageDone /= playerdata.size();
+  newPlayerKills /= playerdata.size();
+  newPlayerWins /= playerdata.size();
 }
 
 void PersistentData::startAtNormalShop() {
@@ -1259,7 +1281,7 @@ void PersistentData::attemptQueueSound(int player, const Sound *sound) {
 
 DEFINE_int(debugControllers, 0, "Number of controllers to set to debug defaults");
 
-PersistentData::PersistentData(int playercount, Money startingcash, Coord multiple, int in_roundsbetweenshop) {
+PersistentData::PersistentData(int playercount, Money startingcash, Coord multiple, int in_roundsbetweenshop, int rounds_until_end) {
   CHECK(multiple > 1);
   roundsbetweenshop = in_roundsbetweenshop;
   faction_mode = 0;

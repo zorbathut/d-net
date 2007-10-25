@@ -18,6 +18,7 @@ bool controls_recordable();
 void controls_shutdown();
 class ControlShutdown {
 public:
+  ControlShutdown() { } // this makes gcc shut up about unused variables
   ~ControlShutdown() {
     controls_shutdown();
   }

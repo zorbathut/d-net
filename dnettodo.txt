@@ -1,10 +1,9 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
-
-  - Make free version
   - End-of-game
   - Final score screen
   - Load shopcache better somehow
+  - Make free version
   - add dnet tank to bomberman :D
   - Step-by-step: tanks vanish, *then* reappear exploding
   - Reflectors vanish for two entire frames

@@ -603,6 +603,11 @@ Player::Player(const IDBFaction *fact, int in_factionmode, Money money) : weapon
   kills = 0;
   wins = 0;
   damageDone = 0;
+  
+  total_damageDone = 0;
+  total_kills = 0;
+  total_wins = 0;
+  
   corrupted = false;
 }
 

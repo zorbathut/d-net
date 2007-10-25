@@ -165,6 +165,11 @@ public:
   int consumeKills();
   int consumeWins();
   Coord consumeDamage();
+  
+  // shut up, they're basically public anyway
+  Coord total_damageDone;
+  Coord total_kills;
+  Coord total_wins;
 
   IDBWeaponAdjust getWeapon(int id) const;
   void shotFired(int id);  // Fire a single shot.
