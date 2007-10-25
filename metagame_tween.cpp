@@ -24,6 +24,8 @@ const float ticker_text_size = 2;
 const float ticker_queue_border = 1;
 const float ticker_waiting_border = 1;
 
+const float value_ratios[4] = { 1.0, 1.0, 0.6, 3.0 };
+
 bool PersistentData::isPlayerChoose() const {
   return mode == TM_PLAYERCHOOSE;
 }
@@ -61,7 +63,7 @@ public:
   }
 };
 
-bool PersistentData::tick(const vector< Controller > &keys) {
+bool PersistentData::tick(const vector<Controller> &keys) {
   StackString sps("Persistentdata tick");
   PerfStack pst(PBC::persistent);
   
@@ -109,8 +111,22 @@ bool PersistentData::tick(const vector< Controller > &keys) {
   if(mode == TM_RESULTS) {
     CHECK(slot_count == 1);
     if(slot[0].type == Slot::EMPTY) {
-      mode = TM_SHOP;
-      reset();
+      if(shopcycles * roundsbetweenshop >= rounds_until_end) {
+        slot_count = 1;
+        slot[0].type = Slot::GAMEEND;
+        slot[0].pid = -1;
+        mode = TM_GAMEEND;
+        checked.clear();
+        checked.resize(playerdata.size());
+      } else {
+        mode = TM_SHOP;
+        reset();
+      }
+    }
+  } else if(mode == TM_GAMEEND) {
+    CHECK(slot_count == 1);
+    if(slot[0].type == Slot::EMPTY) {
+      return true;  // I'm not actually quite sure what this will do
     }
   } else if(mode == TM_SHOP || mode == TM_PLAYERCHOOSE) {
     StackString sps(StringPrintf("Stdtween"));
@@ -337,7 +353,7 @@ bool PersistentData::tick(const vector< Controller > &keys) {
 void PersistentData::render() const {
   smart_ptr<GfxWindow> gfxwpos;
   
-  if(slot[0].type != Slot::RESULTS) {
+  if(slot[0].type != Slot::RESULTS && slot[0].type != Slot::GAMEEND) {
     setZoom(Float4(0, 0, 133.333, 100));
     gfxwpos.reset(new GfxWindow(Float4(0, 0, 133.333, divider_ypos), 1.0));
     setZoom(Float4(0, 0, getAspect(), 1.0));
@@ -421,7 +437,7 @@ void PersistentData::render() const {
   
   gfxwpos.reset();
   
-  if(slot[0].type != Slot::RESULTS) {
+  if(slot[0].type != Slot::RESULTS && slot[0].type != Slot::GAMEEND) {
     // Draw our framework
     setZoom(Float4(0, 0, 133.333, 100));
     setColor(C::active_text);
@@ -578,26 +594,26 @@ bool PersistentData::tickSlot(int slotid, const vector<Controller> &keys) {
       playerdata.back().total_wins = newPlayerWins;
       slot[slotid].type = Slot::SETTINGS;
     }
-  } else if(slt.type == Slot::RESULTS) {
+  } else if(slt.type == Slot::RESULTS || slt.type == Slot::GAMEEND) {
     CHECK(slotid == 0);
     CHECK(slt.pid == -1);
     CHECK(keys.size() > 1);
     vector<Keystates> ki = genKeystates(keys);
-    CHECK(slt.type == Slot::RESULTS);
     StackString stp("Results");
     for(int i = 0; i < ki.size(); i++) {
       bool pushed = false;
       for(int j = 0; j < SIMUL_WEAPONS; j++)
         if(ki[i].fire[j].push)
           pushed = true;
-      if((ki[i].accept.push || pushed) && !checked[i]) {
-        checked[i] = true;
-        queueSound(S::choose);
+      if(ki[i].accept.push || pushed) {
+        checked[i] = !checked[i];
+        //queueSound(S::choose);
       }
     }
     if(count(checked.begin(), checked.end(), false) == 0) {
-      for(int i = 0; i < playerdata.size(); i++)
-        playerdata[i].addCash(lrCash[i]);
+      if(slt.type == Slot::RESULTS)
+        for(int i = 0; i < playerdata.size(); i++)
+          playerdata[i].addCash(lrCash[i]);
       return true;
     }
   } else if(slt.type == Slot::SHOP) {
@@ -874,6 +890,79 @@ void PersistentData::renderSlot(int slotid) const {
         cpos++;
       }
     }
+  } else if(slt.type == Slot::GAMEEND) {
+    StackString stp("Gameend");
+    
+    vector<vector<float> > results(3);
+    for(int i = 0; i < playerdata.size(); i++) {
+      results[0].push_back(playerdata[i].total_damageDone.toFloat());
+      results[1].push_back(playerdata[i].total_kills.toFloat());
+      results[2].push_back(playerdata[i].total_wins.toFloat());
+    }
+    
+    for(int i = 0; i < results.size(); i++) {
+      float tot = accumulate(results[i].begin(), results[i].end(), 0.0);
+      if(tot != 0)
+        for(int j = 0; j < results[i].size(); j++)
+          results[i][j] /= tot;
+    }
+    
+    results.resize(results.size() + 1);
+    for(int i = 0; i < playerdata.size(); i++) {
+      results.back().push_back(0);
+      for(int j = 0; j < results.size() - 1; j++)
+        results.back()[i] += results[j][i] * value_ratios[j];
+    }
+    
+    {
+      float ttot = accumulate(results.back().begin(), results.back().end(), 0.0);
+      CHECK(ttot > 0);
+      for(int j = 0; j < results.back().size(); j++)
+        results.back()[j] /= ttot;
+    }
+    
+    setZoom(Float4(0, 0, 800, 600));
+    setColor(1.0, 1.0, 1.0);
+    
+    float cury = 20;
+    
+    setColor(C::inactive_text);
+    drawJustifiedText("Final scores", 30, Float2(400 , cury), TEXT_CENTER, TEXT_MIN);
+    cury += 60;
+    
+    setColor(C::inactive_text);
+    drawText("Damage", 30, Float2(40, cury));
+    drawMultibar(results[0], Float4(200, cury, 760, cury + 40));
+    cury += 60;
+    
+    setColor(C::inactive_text);
+    drawText("Kills", 30, Float2(40, cury));
+    drawMultibar(results[1], Float4(200, cury, 760, cury + 40));
+    cury += 60;
+    
+    setColor(C::inactive_text);
+    drawText("Wins", 30, Float2(40, cury));
+    drawMultibar(results[2], Float4(200, cury, 760, cury + 40));
+    cury += 60;
+    
+    cury += 40;
+    
+    setColor(C::inactive_text);
+    drawText("Totals", 30, Float2(40, cury));
+    drawMultibar(results[3], Float4(200, cury, 760, cury + 40));
+    cury += 100;
+    
+    int notdone = count(checked.begin(), checked.end(), false);
+    CHECK(notdone);
+    int cpos = 0;
+    float increment = 800.0 / notdone;
+    for(int i = 0; i < checked.size(); i++) {
+      if(!checked[i]) {
+        setColor(playerdata[i].getFaction()->color);
+        drawDvec2(playerdata[i].getFaction()->icon, boxAround(Float2((cpos + 0.5) * increment, float(cury + 580) / 2), min(increment * 0.95f, float(580 - cury)) / 2), 50, 1);
+        cpos++;
+      }
+    }
   } else if(slt.type == Slot::SETTINGS) {
     CHECK(slt.pid >= 0 && slt.pid < pms.size());
     const FactionState &tfs = *pms[slt.pid].faction;
@@ -982,6 +1071,10 @@ void PersistentData::ai(const vector<Ai *> &ais) const {
     for(int i = 0; i < ais.size(); i++)
       if(ais[i])
         ais[i]->updateWaitingForReport();
+  } else if(mode == TM_GAMEEND) {
+    for(int i = 0; i < ais.size(); i++)
+      if(ais[i])
+        ais[i]->updateGameEnd();
   } else if(mode == TM_SHOP || mode == TM_PLAYERCHOOSE) {
     vector<bool> dun(ais.size(), false);
     for(int i = 0; i < slot_count; i++) {
@@ -1061,11 +1154,11 @@ void PersistentData::divvyCash() {
   for(int j = 0; j < totals.size(); j++) {
     totals[j] = accumulate(values[j].begin(), values[j].end(), 0.0);
   }
-  const float ratios[4] = { 1.0, 1.0, 0.6, 3.0 };
+  
   float chunkTotal = 0;
   for(int i = 0; i < totals.size(); i++) {
     if(totals[i] > 1e-6)
-      chunkTotal += ratios[i];
+      chunkTotal += value_ratios[i];
   }
   
   // We give the users a good chunk of money at the beginning to get started, but then we tone it down a bit per round so they don't get an immediate 6x increase. (or whateverx increase.) In a lot of ways, "starting cash" is a crummy number - it should be "starting cash per round", with starting cash calculated from that. But it's easier to understand this way.
@@ -1087,11 +1180,15 @@ void PersistentData::divvyCash() {
   // values now stores percentages for each category
   
   vector<float> playercash(playerdata.size());
+  vector<float> playerresult(playerdata.size());
   for(int i = 0; i < playercash.size(); i++) {
     for(int j = 0; j < totals.size(); j++) {
-      playercash[i] += values[j][i] * ratios[j];
+      playercash[i] += values[j][i] * value_ratios[j];
+      if(j != totals.size() - 1)
+        playerresult[i] += values[j][i] * value_ratios[j];
     }
     playercash[i] /= chunkTotal;
+    playerresult[i] /= chunkTotal - value_ratios[totals.size() - 1];
   }
   // playercash now stores percentages for players
   
@@ -1102,7 +1199,7 @@ void PersistentData::divvyCash() {
   // playercashresult now stores cashola for players
   
   lrCategory = values;
-  lrPlayer = playercash;
+  lrPlayer = playerresult;
   lrCash = playercashresult;
   
   mode = TM_RESULTS;
@@ -1281,9 +1378,10 @@ void PersistentData::attemptQueueSound(int player, const Sound *sound) {
 
 DEFINE_int(debugControllers, 0, "Number of controllers to set to debug defaults");
 
-PersistentData::PersistentData(int playercount, Money startingcash, Coord multiple, int in_roundsbetweenshop, int rounds_until_end) {
+PersistentData::PersistentData(int playercount, Money startingcash, Coord multiple, int in_roundsbetweenshop, int in_rounds_until_end) {
   CHECK(multiple > 1);
   roundsbetweenshop = in_roundsbetweenshop;
+  rounds_until_end = in_rounds_until_end;
   faction_mode = 0;
   
   pms.clear();

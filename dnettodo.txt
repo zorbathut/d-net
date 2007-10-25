@@ -1,9 +1,17 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - End-of-game
-  - Final score screen
+  - Turn results into being coord-based
+  - Actually, you know, exit
+  - Track number of rounds played
+  - move second main menu down a bit
+  - don't allow 0 rounds
   - Load shopcache better somehow
+  - Add "end game" option to the menus
   - Make free version
+  - Modify shockwave pulse quite a lot
+  - un-duplicate some of the duplicated gameend/score code
+  - statistical variation of glory devices?
   - add dnet tank to bomberman :D
   - Step-by-step: tanks vanish, *then* reappear exploding
   - Reflectors vanish for two entire frames

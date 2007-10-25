@@ -61,6 +61,7 @@ public:
   void updateShop(const Player *player, const HierarchyNode &hierarchy, bool athead);
   GameAi *getGameAi();
   void updateWaitingForReport();
+  void updateGameEnd();
 
   Controller getNextKeys() const;
 

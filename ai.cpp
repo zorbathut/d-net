@@ -545,6 +545,14 @@ void Ai::updateWaitingForReport() {
   nextKeys.keys[0].down = frameNumber % 2;
 }
 
+void Ai::updateGameEnd() {
+  updateKeys(CORE);
+  
+  zeroNextKeys();
+  nextKeys.menu = Coord2(0, 0);
+  nextKeys.keys[0].down = frameNumber % 2;
+}
+
 Controller Ai::getNextKeys() const {
   if(curframe != frameNumber)
     dprintf("%d, %d\n", curframe, frameNumber);

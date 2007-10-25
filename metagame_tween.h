@@ -71,7 +71,7 @@ private:
   // Tween layout info
   public:
   struct Slot {
-    enum { CHOOSE, SHOP, RESULTS, QUITCONFIRM, SETTINGS, EMPTY };
+    enum { CHOOSE, SHOP, RESULTS, QUITCONFIRM, SETTINGS, GAMEEND, EMPTY };
     int type;
     int pid;
     Shop shop;
@@ -83,6 +83,7 @@ private:
   // Round count data
   int roundsbetweenshop;
   int shopcycles;
+  int rounds_until_end;
   
   // Shop player state
   void reset();
