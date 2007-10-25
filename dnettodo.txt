@@ -1,13 +1,12 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - End-of-game
-  - Turn results into being coord-based
-  - Actually, you know, exit
+    - don't allow 0 rounds
   - Track number of rounds played
-  - move second main menu down a bit
-  - don't allow 0 rounds
+  - move second main menu up a bit
   - Load shopcache better somehow
-  - Add "end game" option to the menus
+  - Add some kind of escape menu
+    - Add "end game" option to the menus
   - Make free version
   - Modify shockwave pulse quite a lot
   - un-duplicate some of the duplicated gameend/score code

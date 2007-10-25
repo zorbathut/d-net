@@ -67,7 +67,8 @@ bool Metagame::runTick(const vector<Controller> &keys) {
       persistent.setFactionMode(faction_mode);
     }
   } else if(mode == MGM_TWEEN) {
-    if(persistent.tick(keys)) {
+    PersistentData::PDRTR rv = persistent.tick(keys);
+    if(rv == PersistentData::PDRTR_PLAY) {
       mode = MGM_PLAY;
 
       findLevels(persistent.players().size());  // player count may have changed. TODO: make this suck less
@@ -75,6 +76,8 @@ bool Metagame::runTick(const vector<Controller> &keys) {
       if(win_history.size() != gameround)
         dprintf("%d, %d\n", win_history.size(), gameround);
       CHECK(win_history.size() == gameround);
+    } else if(rv == PersistentData::PDRTR_EXIT) {
+      return true;
     }
   } else if(mode == MGM_PLAY) {
     StackString stp("Play");

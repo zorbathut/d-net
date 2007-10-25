@@ -25,7 +25,8 @@ public:
   bool isPlayerChoose() const;
 
   // Main loop
-  bool tick(const vector< Controller > &keys);
+  enum PDRTR { PDRTR_CONTINUE, PDRTR_PLAY, PDRTR_EXIT };
+  PDRTR tick(const vector< Controller > &keys);
   void ai(const vector<Ai *> &ais) const;
   void render() const;
 
@@ -52,8 +53,8 @@ private:
   int faction_mode;
   
   // Temporaries for scoring
-  vector<vector<float> > lrCategory;
-  vector<float> lrPlayer;
+  vector<vector<Coord> > lrCategory;
+  vector<Coord> lrPlayer;
   vector<Money> lrCash;
   Money lrBaseCash;
   vector<bool> checked;
@@ -118,7 +119,7 @@ private:
   Coord2 targetCoords(int target) const;
 
   // Helper functions
-  void drawMultibar(const vector<float> &sizes, const Float4 &dimensions) const;
+  void drawMultibar(const vector<Coord> &sizes, const Float4 &dimensions) const;
   
   HierarchyNode generateShopHierarchy() const;
   void attemptQueueSound(int player, const Sound *sound);

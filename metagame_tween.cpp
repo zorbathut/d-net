@@ -63,7 +63,7 @@ public:
   }
 };
 
-bool PersistentData::tick(const vector<Controller> &keys) {
+PersistentData::PDRTR PersistentData::tick(const vector<Controller> &keys) {
   StackString sps("Persistentdata tick");
   PerfStack pst(PBC::persistent);
   
@@ -126,7 +126,7 @@ bool PersistentData::tick(const vector<Controller> &keys) {
   } else if(mode == TM_GAMEEND) {
     CHECK(slot_count == 1);
     if(slot[0].type == Slot::EMPTY) {
-      return true;  // I'm not actually quite sure what this will do
+      return PDRTR_EXIT;
     }
   } else if(mode == TM_SHOP || mode == TM_PLAYERCHOOSE) {
     StackString sps(StringPrintf("Stdtween"));
@@ -341,13 +341,13 @@ bool PersistentData::tick(const vector<Controller> &keys) {
     if(getUnfinishedFactions().size() == 0 && playerdata.size() >= 2) {
       mode = TM_SHOP; // if we're in PLAYERCHOOSE mode, then reset() won't be able to get the shop item positions for existing units
       reset();
-      return true;
+      return PDRTR_PLAY;
     }
     
   } else {
     CHECK(0);
   }
-  return false;
+  return PDRTR_CONTINUE;
 }
 
 void PersistentData::render() const {
@@ -893,15 +893,15 @@ void PersistentData::renderSlot(int slotid) const {
   } else if(slt.type == Slot::GAMEEND) {
     StackString stp("Gameend");
     
-    vector<vector<float> > results(3);
+    vector<vector<Coord> > results(3);
     for(int i = 0; i < playerdata.size(); i++) {
-      results[0].push_back(playerdata[i].total_damageDone.toFloat());
-      results[1].push_back(playerdata[i].total_kills.toFloat());
-      results[2].push_back(playerdata[i].total_wins.toFloat());
+      results[0].push_back(playerdata[i].total_damageDone);
+      results[1].push_back(playerdata[i].total_kills);
+      results[2].push_back(playerdata[i].total_wins);
     }
     
     for(int i = 0; i < results.size(); i++) {
-      float tot = accumulate(results[i].begin(), results[i].end(), 0.0);
+      Coord tot = accumulate(results[i].begin(), results[i].end(), Coord(0));
       if(tot != 0)
         for(int j = 0; j < results[i].size(); j++)
           results[i][j] /= tot;
@@ -915,7 +915,7 @@ void PersistentData::renderSlot(int slotid) const {
     }
     
     {
-      float ttot = accumulate(results.back().begin(), results.back().end(), 0.0);
+      Coord ttot = accumulate(results.back().begin(), results.back().end(), Coord(0));
       CHECK(ttot > 0);
       for(int j = 0; j < results.back().size(); j++)
         results.back()[j] /= ttot;
@@ -1142,20 +1142,19 @@ void PersistentData::divvyCash() {
   checked.clear();
   checked.resize(playerdata.size());
   
-  vector<vector<float> > values(4);
+  vector<vector<Coord> > values(4);
   for(int i = 0; i < playerdata.size(); i++) {
-    values[0].push_back(playerdata[i].consumeDamage().toFloat());
+    values[0].push_back(playerdata[i].consumeDamage());
     values[1].push_back(playerdata[i].consumeKills());
     values[2].push_back(playerdata[i].consumeWins());
     values[3].push_back(1);
-    dprintf("%d: %f %f %f", i, values[0].back(), values[1].back(), values[2].back());
   }
-  vector<float> totals(values.size());
+  vector<Coord> totals(values.size());
   for(int j = 0; j < totals.size(); j++) {
-    totals[j] = accumulate(values[j].begin(), values[j].end(), 0.0);
+    totals[j] = accumulate(values[j].begin(), values[j].end(), Coord(0));
   }
   
-  float chunkTotal = 0;
+  Coord chunkTotal = 0;
   for(int i = 0; i < totals.size(); i++) {
     if(totals[i] > 1e-6)
       chunkTotal += value_ratios[i];
@@ -1179,8 +1178,8 @@ void PersistentData::divvyCash() {
   }
   // values now stores percentages for each category
   
-  vector<float> playercash(playerdata.size());
-  vector<float> playerresult(playerdata.size());
+  vector<Coord> playercash(playerdata.size());
+  vector<Coord> playerresult(playerdata.size());
   for(int i = 0; i < playercash.size(); i++) {
     for(int j = 0; j < totals.size(); j++) {
       playercash[i] += values[j][i] * value_ratios[j];
@@ -1194,7 +1193,7 @@ void PersistentData::divvyCash() {
   
   vector<Money> playercashresult(playerdata.size());
   for(int i = 0; i < playercash.size(); i++) {
-    playercashresult[i] = Money((long long)(playercash[i] * total));
+    playercashresult[i] = Money((long long)(playercash[i].toFloat() * total));
   }
   // playercashresult now stores cashola for players
   
@@ -1282,16 +1281,14 @@ Coord2 PersistentData::targetCoords(int target) const {
   CHECK(0);
 }
   
-void PersistentData::drawMultibar(const vector<float> &sizes, const Float4 &dimensions) const {
+void PersistentData::drawMultibar(const vector<Coord> &sizes, const Float4 &dimensions) const {
   CHECK(sizes.size() == playerdata.size());
-  float total = accumulate(sizes.begin(), sizes.end(), 0.0);
-  if(total < 1e-6) {
-    dprintf("multibar failed, total is %f\n", total);
+  float total = accumulate(sizes.begin(), sizes.end(), Coord(0)).toFloat();
+  if(total < 1e-6)
     return;
-  }
   vector<pair<float, int> > order;
   for(int i = 0; i < sizes.size(); i++)
-    order.push_back(make_pair(sizes[i], i));
+    order.push_back(make_pair(sizes[i].toFloat(), i));
   sort(order.begin(), order.end());
   reverse(order.begin(), order.end());
   float width = dimensions.ex - dimensions.sx;

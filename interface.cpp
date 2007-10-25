@@ -230,10 +230,9 @@ extern bool dumpBooleanDetail;
 
 Controller ct;
 
-bool InterfaceMain::tick(const vector< Controller > &control) {
+bool InterfaceMain::tick(const vector<Controller> &control) {
   ct = control[controls_primary_id()];
   return false;
-  
 }
 
 void InterfaceMain::ai(const vector<Ai *> &ai) const {
@@ -461,8 +460,8 @@ bool InterfaceMain::tick(const vector< Controller > &control, RngSeed gameseed) 
 
   if(interface_mode == STATE_MAINMENU) {
     if(!inptest) {
-      introscreen.runTickWithAi(vector<GameAi*>(introscreen_ais.begin(), introscreen_ais.end()), &unsync());
-      introscreen.runTickWithAi(vector<GameAi*>(introscreen_ais.begin(), introscreen_ais.end()), &unsync());
+      introscreen->runTickWithAi(vector<GameAi*>(introscreen_ais.begin(), introscreen_ais.end()), &unsync());
+      introscreen->runTickWithAi(vector<GameAi*>(introscreen_ais.begin(), introscreen_ais.end()), &unsync());
     }
     
     int mrv = mainmenu.tick(kst[controls_primary_id()]);
@@ -478,8 +477,8 @@ bool InterfaceMain::tick(const vector< Controller > &control, RngSeed gameseed) 
       CHECK(mrv == -1);
     }
   } else if(interface_mode == STATE_CONFIGURE) {
-    introscreen.runTickWithAi(vector<GameAi*>(introscreen_ais.begin(), introscreen_ais.end()), &unsync());
-    introscreen.runTickWithAi(vector<GameAi*>(introscreen_ais.begin(), introscreen_ais.end()), &unsync());
+    introscreen->runTickWithAi(vector<GameAi*>(introscreen_ais.begin(), introscreen_ais.end()), &unsync());
+    introscreen->runTickWithAi(vector<GameAi*>(introscreen_ais.begin(), introscreen_ais.end()), &unsync());
     
     int mrv = configmenu.tick(kst[controls_primary_id()]);
     if(start > end) {
@@ -500,8 +499,9 @@ bool InterfaceMain::tick(const vector< Controller > &control, RngSeed gameseed) 
       interface_mode = STATE_PLAYING;
     }
   } else if(interface_mode == STATE_PLAYING) {
-    if(game->runTick(control))
-      interface_mode = STATE_MAINMENU;
+    if(game->runTick(control)) {
+      init();   // full reset
+    }
   } else {
     CHECK(0);
   }
@@ -689,12 +689,12 @@ void InterfaceMain::render() const {
       }
     } else {
       GfxWindow gfxw(Float4(0, 0, getZoom().ex, 60), 2.0);
-      introscreen.renderToScreen();
+      introscreen->renderToScreen();
     }
   } else if(interface_mode == STATE_CONFIGURE) {
     {
       GfxWindow gfxw(Float4(0, 0, getZoom().ex, 60), 2.0);
-      introscreen.renderToScreen();
+      introscreen->renderToScreen();
     }
     configmenu.render(false);
   } else if(interface_mode == STATE_PLAYING) {
@@ -718,7 +718,14 @@ void InterfaceMain::checksum(Adler32 *adl) const {
     game->checksum(adl);
 }
 
-InterfaceMain::InterfaceMain() {
+void InterfaceMain::init() {
+  mainmenu = StdMenu();
+  configmenu = StdMenu();
+  kst.clear();
+  introscreen_ais.clear();
+  delete introscreen;
+  introscreen = new GamePackage;
+  
   interface_mode = STATE_MAINMENU;
   mainmenu.pushMenuItem(StdMenuItem::makeStandardMenu("New game", MAIN_NEWGAME));
   mainmenu.pushMenuItem(StdMenuItem::makeStandardMenu("Input test", MAIN_INPUTTEST));
@@ -755,22 +762,26 @@ InterfaceMain::InterfaceMain() {
   game = NULL;
   
   {
-    introscreen.players.resize(16);
+    introscreen->players.resize(16);
     vector<const IDBFaction *> idbfa = ptrize(factionList());
-    for(int i = 0; i < introscreen.players.size(); i++) {
+    for(int i = 0; i < introscreen->players.size(); i++) {
       int fid = unsync().choose(idbfa.size());
-      introscreen.players[i] = Player(idbfa[fid], 0, Money(0));
+      introscreen->players[i] = Player(idbfa[fid], 0, Money(0));
       idbfa.erase(idbfa.begin() + fid);
     }
   }
   
-  introscreen.game.initTitlescreen(&introscreen.players, &unsync());
+  introscreen->game.initTitlescreen(&introscreen->players, &unsync());
   
-  for(int i = 0; i < introscreen.players.size(); i++)
+  for(int i = 0; i < introscreen->players.size(); i++)
     introscreen_ais.push_back(new GameAiIntro());
   
   for(int i = 0; i < 180; i++)
-    introscreen.runTickWithAi(vector<GameAi*>(introscreen_ais.begin(), introscreen_ais.end()), &unsync());
+    introscreen->runTickWithAi(vector<GameAi*>(introscreen_ais.begin(), introscreen_ais.end()), &unsync());
+}
+InterfaceMain::InterfaceMain() {
+  introscreen = NULL;
+  init();
 }
 
 InterfaceMain::~InterfaceMain() {

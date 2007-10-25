@@ -82,8 +82,10 @@ class InterfaceMain : boost::noncopyable {
   
   vector<Keystates> kst;
   
-  GamePackage introscreen;
+  GamePackage *introscreen;
   vector<GameAiIntro *> introscreen_ais;
+  
+  void init();
   
 public:
 
