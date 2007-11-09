@@ -67,7 +67,7 @@ void GameImpactContext::record(const IDBWarheadAdjust &warhead, Coord2 pos, cons
     for(int i = 0; i < dists.size(); i++)
       if(dists[i].first <= warhead.base()->radiusfalloff * WARHEAD_RADIUS_MAXMULT && dists[i].second->team != owner_tank->team)
         distadj.push_back(make_pair(dists[i].first.toFloat(), findTankId(dists[i].second)));
-    sort(distadj.begin(), distadj.end());
+    sort(distadj.begin(), distadj.end()); // I'm not actually sure why I do this
     
     if(target != -1 || distadj.size())
       recorder->warhead(warhead.base(), warhead.multfactor().toFloat(), target, distadj);

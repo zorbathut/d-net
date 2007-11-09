@@ -5,15 +5,17 @@
 #include "recorder.h"
 #include "player.h"
 #include "shop_demo.h"
+#include "stream_file.h"
+#include "stream_process_vector.h"
+#include "stream_process_utility.h"
+#include "stream_process_string.h"
 
 #include <deque>
 
 using namespace std;
 
-template<typename T> void generateShopCache(const string &itemname, const T &item, FILE *ofil, float accuracy) {
+template<typename T> FileShopcache generateShopCache(const string &itemname, const T &item, float accuracy) {
   dprintf("%s\n", itemname.c_str());
-  
-  fprintf(ofil, "shopcache {\n  name=%s\n", itemname.c_str());
   
   IDBAdjustment adjustment_null;
   
@@ -24,7 +26,7 @@ template<typename T> void generateShopCache(const string &itemname, const T &ite
   Player player(&faction, 0, Money(0));
   
   {
-    Recorder recorder(ofil);
+    Recorder recorder;
     
     ShopDemo demo;
     demo.init(&item, &player, &recorder);
@@ -60,7 +62,7 @@ template<typename T> void generateShopCache(const string &itemname, const T &ite
         if(end) {
           demo.dumpMetastats(&recorder);
           dprintf("Done at %d ticks\n", ticks);
-          break;
+          return recorder.data();
         } else {
           for(int i = 0; i < oldstats.size(); i++)
             oldstats[i].erase(oldstats[i].begin());
@@ -68,8 +70,20 @@ template<typename T> void generateShopCache(const string &itemname, const T &ite
       }
     }
   }
-  
-  fprintf(ofil, "}\n\n");
+}
+
+void stream_write(OStream *ostr, const FileShopcache &storage) {
+  ostr->write(storage.entries);
+  ostr->write(storage.cycles);
+  ostr->write(storage.damageframes);
+}
+
+void stream_write(OStream *ostr, const FileShopcache::Entry &storage) {
+  ostr->write(storage.warhead);
+  ostr->write(storage.count);
+  ostr->write(storage.mult);
+  ostr->write(storage.impact);
+  ostr->write(storage.adjacencies);
 }
 
 void generateCachedShops(float accuracy) {
@@ -77,50 +91,31 @@ void generateCachedShops(float accuracy) {
   const int gencount = weaponList().size() + bombardmentList().size() + gloryList().size();
   int gendone = 0;
   
-  FILE *ofil = fopen("data/shopcache.dwh", "w");
+  vector<pair<string, FileShopcache> > rsis;
+  
   for(map<string, IDBWeapon>::const_iterator itr = weaponList().begin(); itr != weaponList().end(); itr++) {
     dprintf("%d/%d (%.0f%%)\n", gendone, gencount, (float)gendone / gencount * 100);
     gendone++;
     if(itr->second.nocache)
       continue;
-    generateShopCache(itr->first, itr->second, ofil, accuracy);
+    rsis.push_back(make_pair(itr->first, generateShopCache(itr->first, itr->second, accuracy)));
   }
   
   for(map<string, IDBBombardment>::const_iterator itr = bombardmentList().begin(); itr != bombardmentList().end(); itr++) {
     dprintf("%d/%d (%.0f%%)\n", gendone, gencount, (float)gendone / gencount * 100);
     gendone++;
-    generateShopCache(itr->first, itr->second, ofil, accuracy);
+    rsis.push_back(make_pair(itr->first, generateShopCache(itr->first, itr->second, accuracy)));
   }
   
   for(map<string, IDBGlory>::const_iterator itr = gloryList().begin(); itr != gloryList().end(); itr++) {
     dprintf("%d/%d (%.0f%%)\n", gendone, gencount, (float)gendone / gencount * 100);
     gendone++;
-    generateShopCache(itr->first, itr->second, ofil, accuracy);
-  }
-  fclose(ofil);
-}
-
-/*void generateWeaponStats() {
-  FILE *ofil = fopen("tools/weapondump.dat", "w");
-  IDBAdjustment adj;
-  map<string, vector<pair<float, float> > > goof;
-  for(map<string, IDBWeapon>::const_iterator itr = weaponList().begin(); itr != weaponList().end(); itr++) {
-    IDBWeaponAdjust wa(&itr->second, adj);
-    string name = wa.name();
-    name = string(name.c_str(), (const char*)strrchr(name.c_str(), ' '));
-    if(wa.cost_pack() > Money(0))
-      goof[name].push_back(make_pair(wa.stats_damagePerSecond() * itr->second.launcher->stats->dps_efficiency, wa.stats_costPerSecond() * itr->second.launcher->stats->cps_efficiency));
+    rsis.push_back(make_pair(itr->first, generateShopCache(itr->first, itr->second, accuracy)));
   }
   
-  for(map<string, vector<pair<float, float> > >::iterator itr = goof.begin(); itr != goof.end(); itr++) {
-    sort(itr->second.begin(), itr->second.end());
-    fprintf(ofil, "%s", itr->first.c_str());
-    for(int i = 0; i < itr->second.size(); i++)
-      fprintf(ofil, ",%f,%f", itr->second[i].first, itr->second[i].second);
-    fprintf(ofil, "\n");
-  }
-  fclose(ofil);
-}*/
+  OStreamFile ofil("data/shopcache.dwh");
+  ofil.write(rsis);
+}
 
 void generateFactionStats() {
   FILE *ofil = fopen("tools/factiondump.dat", "w");

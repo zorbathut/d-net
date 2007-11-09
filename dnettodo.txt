@@ -1,5 +1,7 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
+  - Check for libboost-regex also
+  - Add library for libboost-regex or something
   - Track number of rounds played
   - move second main menu up a bit
   - Load shopcache better somehow

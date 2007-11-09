@@ -1025,7 +1025,7 @@ void Game::dumpMetastats(Recorder *recorder) const {
 
 void Game::runShopcache(const IDBShopcache &cache, const vector<const Player *> &players, const Player *adjuster) {
   CHECK(gamemode == GMODE_DEMO);
-  CHECK(tanks.size() == cache.tank_specific.size());
+  CHECK(tanks.size() == cache.damageframes.size());
   
   for(int i = 0; i < cache.entries.size(); i++) {
     const IDBShopcache::Entry ent = cache.entries[i];
@@ -1037,8 +1037,8 @@ void Game::runShopcache(const IDBShopcache &cache, const vector<const Player *> 
       impact_tank = &tanks[ent.impact];
     
     vector<pair<float, Tank*> > radius;
-    for(int i = 0; i < ent.distances.size(); i++)
-      radius.push_back(make_pair(ent.distances[i].first, &tanks[ent.distances[i].second]));
+    for(int i = 0; i < ent.adjacencies.size(); i++)
+      radius.push_back(make_pair(ent.adjacencies[i].first, &tanks[ent.adjacencies[i].second]));
     
     for(int i = 0; i < ent.count; i++)
       detonateWarheadDamageOnly(adj, impact_tank, radius);
@@ -1054,7 +1054,7 @@ void Game::runShopcache(const IDBShopcache &cache, const vector<const Player *> 
   
   demo_cycles = cache.cycles;
   for(int i = 0; i < tanks.size(); i++) // speed up/slow down based on TANK_FIRERATE
-    tanks[i].insertDamageframes((int)(cache.tank_specific[i] / players[0]->getAdjust().adjustmentfactor(IDBAdjustment::TANK_FIRERATE)));
+    tanks[i].insertDamageframes((int)(cache.damageframes[i] / players[0]->getAdjust().adjustmentfactor(IDBAdjustment::TANK_FIRERATE)));
   
   for(int i = 0; i < tanks.size(); i++)
     if(demo_playermodes[i] == DEMOPLAYER_DPC)

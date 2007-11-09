@@ -5,6 +5,10 @@
 #include "parse.h"
 #include "regex.h"
 #include "args.h"
+#include "stream_file.h"
+#include "stream_process_vector.h"
+#include "stream_process_utility.h"
+#include "stream_process_string.h"
 
 #include <set>
 #include <numeric>
@@ -40,10 +44,7 @@ bool prefixed(const string &label, const string &prefix) {
   return true;
 }
 
-template<typename T> T *prepareName(kvData *chunk, map<string, T> *classes, bool reload, const string &prefix = "", string *namestorage = NULL) {
-  string name = chunk->consume("name");
-  if(namestorage)
-    *namestorage = name;
+template<typename T> T *prepareName(const string &name, map<string, T> *classes, bool reload, const string &prefix = "", string *namestorage = NULL) {
   if(prefix.size())
     CHECK(prefixed(name, prefix));
   if(classes->count(name)) {
@@ -55,6 +56,13 @@ template<typename T> T *prepareName(kvData *chunk, map<string, T> *classes, bool
     }
   }
   return &(*classes)[name];
+}
+
+template<typename T> T *prepareName(kvData *chunk, map<string, T> *classes, bool reload, const string &prefix = "", string *namestorage = NULL) {
+  string name = chunk->consume("name");
+  if(namestorage)
+    *namestorage = name;
+  return prepareName(name, classes, reload, prefix);
 }
 
 template<typename T> T *prepareName(kvData *chunk, map<string, T> *classes, bool reload, string *namestorage) {
@@ -999,52 +1007,43 @@ void parseText(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   // yay
 }
 
-void parseShopcache(kvData *chunk, vector<string> *errors) {
-  IDBShopcache *titem = prepareName(chunk, &shopcaches, false);
-  
-  vector<string> tse = tokenize(chunk->consume("x"), "\n");
-  for(int i = 0; i < tse.size(); i++) {
-    IDBShopcache::Entry entry;
-    vector<string> tis = tokenize(tse[i], " ");
-    CHECK(tis.size() >= 3);
-    CHECK(tis.size() % 2 == 0);
-    entry.count = atoi(tis[0].c_str());
-    entry.warhead = &warheadclasses[tis[1]];
-    entry.mult = atof(tis[2].c_str());
-    if(tis[3] == "none") {
-      entry.impact = -1;
-    } else {
-      entry.impact = atoi(tis[3].c_str());
-    }
-    for(int i = 4; i < tis.size(); i += 2) {
-      entry.distances.push_back(make_pair(floatFromString(tis[i]), atoi(tis[i + 1].c_str())));
-    }
-    titem->entries.push_back(entry);
-  }
-  
-  titem->cycles = atoi(chunk->consume("cycles").c_str());
-  
-  vector<string> tspec = tokenize(chunk->consume("tankstats"), "\n");
-  for(int i = 0; i < tspec.size(); i++) {
-    vector<int> ti = sti(tokenize(tspec[i], " "));
-    CHECK(ti.size() == 2);
-    CHECK(ti[0] == i);
-    titem->tank_specific.push_back(ti[1]);
-  }
+void stream_read(IStream *istr, FileShopcache *storage) {
+  istr->read(&storage->entries);
+  istr->read(&storage->cycles);
+  istr->read(&storage->damageframes);
+}
+
+void stream_read(IStream *istr, FileShopcache::Entry *storage) {
+  istr->read(&storage->warhead);
+  istr->read(&storage->count);
+  istr->read(&storage->mult);
+  istr->read(&storage->impact);
+  istr->read(&storage->adjacencies);
 }
 
 void parseShopcacheFile(const string &fname, vector<string> *errors) {
-  ifstream shopcache(fname.c_str());
+  IStreamFile shopcache(fname);
   if(shopcache) {
     dprintf("Loading shop cache");
-    kvData chunk;
-    while(getkvData(shopcache, &chunk)) {
-      CHECK(chunk.category == "shopcache");
-      parseShopcache(&chunk, errors);
-      if(!chunk.isDone()) {
-        dprintf("Chunk still has unparsed data!\n");
-        dprintf("%s\n", chunk.debugOutput().c_str());
-        CHECK(0);
+    vector<pair<string, FileShopcache> > dat;
+    shopcache.read(&dat);
+    for(int i = 0; i < dat.size(); i++) {
+      const FileShopcache &tdat = dat[i].second;
+      IDBShopcache *titem = prepareName(dat[i].first, &shopcaches, false);
+      
+      // easy stuff first
+      titem->cycles = tdat.cycles;
+      titem->damageframes = tdat.damageframes;
+      
+      for(int j = 0; j < tdat.entries.size(); j++) {
+        IDBShopcache::Entry entry;
+        entry.warhead = parseSubclass(tdat.entries[j].warhead, warheadclasses);
+        entry.count = tdat.entries[j].count;
+        entry.mult = tdat.entries[j].mult;
+        entry.impact = tdat.entries[j].impact;
+        entry.adjacencies = tdat.entries[j].adjacencies;
+        
+        titem->entries.push_back(entry);
       }
     }
   } else {

@@ -295,20 +295,26 @@ struct IDBTank {
   Coord2 centering_adjustment;
 };
 
-struct IDBShopcache {
+template<typename T> struct ShopCacheRep {
   struct Entry {
+    T warhead;
     int count;
-    IDBWarhead *warhead;
     float mult;
     int impact;
-    vector<pair<float, int> > distances;
+    vector<pair<float, int> > adjacencies;
+    
+    Entry() { };
+    Entry(const T &warhead, float mult, int tankid, const vector<pair<float, int> > &adjacencies) : warhead(warhead), count(0), mult(mult), impact(impact), adjacencies(adjacencies) { }; // this is actually only used with the string version
   };
   
   vector<Entry> entries;
   
   int cycles;
-  vector<int> tank_specific;
+  vector<int> damageframes;
 };
+
+typedef ShopCacheRep<string> FileShopcache;
+typedef ShopCacheRep<const IDBWarhead *> IDBShopcache;
 
 struct IDBImplantSlot {
   Money cost;

@@ -2,10 +2,11 @@
 #define DNET_RECORDER
 
 #include "itemdb.h"
-
-#include <cstdio>
+#include "stream.h"
 
 using namespace std;
+
+bool operator<(const FileShopcache::Entry &lhs, const FileShopcache::Entry &rhs);
 
 class Recorder {
 public:
@@ -14,13 +15,12 @@ public:
 
   bool hasItems() const;
 
-  Recorder(FILE *output);
-  ~Recorder();
+  FileShopcache data() const;
 
 private:
-  map<string, int> lines;
-
-  FILE *output;
+  map<FileShopcache::Entry, int> lines;
+  int cycles;
+  vector<int> damageframes;
 };
 
 #endif
