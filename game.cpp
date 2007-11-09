@@ -1032,6 +1032,9 @@ void Game::runShopcache(const IDBShopcache &cache, const vector<const Player *> 
     
     IDBWarheadAdjust adj(ent.warhead, players[0]->getAdjust(), ent.mult);
     
+    if(!(ent.impact >= 0 && ent.impact < tanks.size() || ent.impact == -1)) {
+      dprintf("%d\n", ent.impact);
+    }
     Tank *impact_tank = NULL;
     if(ent.impact != -1)
       impact_tank = &tanks[ent.impact];

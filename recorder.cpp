@@ -12,6 +12,7 @@ bool operator<(const FileShopcache::Entry &lhs, const FileShopcache::Entry &rhs)
 
 void Recorder::warhead(const IDBWarhead *warhead, float factor, int tank_id, vector<pair<float, int> > &adjacencies) {
   CHECK(tank_id != -1 || adjacencies.size());
+  CHECK(tank_id >= 0 && tank_id < 16 || tank_id == -1);
   
   {
     bool doesdamage = false;

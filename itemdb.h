@@ -304,7 +304,7 @@ template<typename T> struct ShopCacheRep {
     vector<pair<float, int> > adjacencies;
     
     Entry() { };
-    Entry(const T &warhead, float mult, int tankid, const vector<pair<float, int> > &adjacencies) : warhead(warhead), count(0), mult(mult), impact(impact), adjacencies(adjacencies) { }; // this is actually only used with the string version
+    Entry(const T &warhead, float mult, int impact, const vector<pair<float, int> > &adjacencies) : warhead(warhead), count(0), mult(mult), impact(impact), adjacencies(adjacencies) { }; // this is actually only used with the string version
   };
   
   vector<Entry> entries;
@@ -315,6 +315,8 @@ template<typename T> struct ShopCacheRep {
 
 typedef ShopCacheRep<string> FileShopcache;
 typedef ShopCacheRep<const IDBWarhead *> IDBShopcache;
+
+bool operator==(const FileShopcache &lhs, const FileShopcache &rhs);
 
 struct IDBImplantSlot {
   Money cost;

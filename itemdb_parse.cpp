@@ -2,6 +2,7 @@
 #include "itemdb_parse.h"
 
 #include "itemdb_private.h"
+#include "itemdb_stream.h"
 #include "parse.h"
 #include "regex.h"
 #include "args.h"
@@ -1005,20 +1006,6 @@ void parseText(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   string *titem = prepareName(chunk, &text, reload, "text");
   *titem = chunk->consume("data");
   // yay
-}
-
-void stream_read(IStream *istr, FileShopcache *storage) {
-  istr->read(&storage->entries);
-  istr->read(&storage->cycles);
-  istr->read(&storage->damageframes);
-}
-
-void stream_read(IStream *istr, FileShopcache::Entry *storage) {
-  istr->read(&storage->warhead);
-  istr->read(&storage->count);
-  istr->read(&storage->mult);
-  istr->read(&storage->impact);
-  istr->read(&storage->adjacencies);
 }
 
 void parseShopcacheFile(const string &fname, vector<string> *errors) {

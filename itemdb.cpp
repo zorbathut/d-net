@@ -140,6 +140,22 @@ double IDBAdjustment::tankspeed() const {
   return (adjusts[TANK_SPEED] + 100.) * (100. - tankspeedreduction) / 10000.;
 }
 
+bool operator==(const FileShopcache::Entry &lhs, const FileShopcache::Entry &rhs) {
+  if(lhs.warhead != rhs.warhead) return false;
+  if(lhs.count != rhs.count) return false;
+  if(lhs.mult != rhs.mult) return false;
+  if(lhs.impact != rhs.impact) return false;
+  if(lhs.adjacencies != rhs.adjacencies) return false;
+  return true;
+}
+
+bool operator==(const FileShopcache &lhs, const FileShopcache &rhs) {
+  if(lhs.entries != rhs.entries) return false;
+  if(lhs.cycles != rhs.cycles) return false;
+  if(lhs.damageframes != rhs.damageframes) return false;
+  return true;
+}
+
 bool sortByTankCost(const HierarchyNode &lhs, const HierarchyNode &rhs) {
   CHECK(lhs.type == HierarchyNode::HNT_TANK);
   CHECK(rhs.type == HierarchyNode::HNT_TANK);

@@ -2,6 +2,7 @@
 #include "generators.h"
 
 #include "itemdb.h"
+#include "itemdb_stream.h"
 #include "recorder.h"
 #include "player.h"
 #include "shop_demo.h"
@@ -72,20 +73,6 @@ template<typename T> FileShopcache generateShopCache(const string &itemname, con
   }
 }
 
-void stream_write(OStream *ostr, const FileShopcache &storage) {
-  ostr->write(storage.entries);
-  ostr->write(storage.cycles);
-  ostr->write(storage.damageframes);
-}
-
-void stream_write(OStream *ostr, const FileShopcache::Entry &storage) {
-  ostr->write(storage.warhead);
-  ostr->write(storage.count);
-  ostr->write(storage.mult);
-  ostr->write(storage.impact);
-  ostr->write(storage.adjacencies);
-}
-
 void generateCachedShops(float accuracy) {
   
   const int gencount = weaponList().size() + bombardmentList().size() + gloryList().size();
@@ -113,8 +100,21 @@ void generateCachedShops(float accuracy) {
     rsis.push_back(make_pair(itr->first, generateShopCache(itr->first, itr->second, accuracy)));
   }
   
-  OStreamFile ofil("data/shopcache.dwh");
-  ofil.write(rsis);
+  {
+    OStreamFile ofil("data/shopcache.dwh");
+    ofil.write(rsis);
+  }
+  
+  {
+    vector<pair<string, FileShopcache> > rsis2;
+    IStreamFile ifil("data/shopcache.dwh");
+    ifil.read(&rsis2);
+    CHECK(rsis == rsis2);
+    
+    for(int i = 0; i < rsis.size(); i++)
+      for(int j = 0; j < rsis[i].second.entries.size(); j++)
+        CHECK(rsis[i].second.entries[j].impact >= 0 && rsis[i].second.entries[j].impact < 16 || rsis[i].second.entries[j].impact == -1);
+  }
 }
 
 void generateFactionStats() {

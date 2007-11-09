@@ -39,7 +39,7 @@ void OStream::write(const char *storage, int size) {
     write_worker(buff, sizeof(buff));
     storage += sizeof(buff) - buffpos;
     size -= sizeof(buff) - buffpos;
-    memcpy(buff, storage + buffpos, size);
+    memcpy(buff, storage, size);
     buffpos = size;
   } else {
     write_worker(buff, buffpos);
