@@ -49,6 +49,7 @@ case "${target_os}" in
   *)
     STDCPPFLAGS="$STDCPPFLAGS -DNO_WINDOWS -I/usr/local/include/boost-1_34_1"
     CPPFLAGS="$CPPFLAGS -I/usr/local/include/boost-1_34_1"
+    LDFLAGS="-lboost_regex"
     AC_CHECK_LIB([GL], [glBegin],,AC_MSG_ERROR([opengl is needed]))
     GAMELDFLAGS="$GAMELDFLAGS -lGL"
     ;;
