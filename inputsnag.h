@@ -9,9 +9,9 @@ using namespace std;
 class Ai;
 class SDL_KeyboardEvent;
 
-pair<RngSeed, vector<Controller> > controls_init(RngSeed default_seed);
+pair<RngSeed, InputState> controls_init(RngSeed default_seed);
 void controls_key(const SDL_KeyboardEvent *key);
-vector<Controller> controls_next();
+InputState controls_next();
 vector<Ai *> controls_ai();
 bool controls_users();
 bool controls_recordable();

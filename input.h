@@ -51,6 +51,13 @@ bool operator==(const Controller &lhs, const Controller &rhs);
 
 void adler(Adler32 *adl, const Controller &kst);
 
+struct InputState {
+  bool valid;
+  
+  vector<Controller> controllers;
+  //Button escape;
+};
+
 enum { KSAX_STEERING, KSAX_ABSOLUTE, KSAX_TANK, KSAX_LAST };
 const char *const ksax_names[] = { "Steering (default)", "Absolute", "Tank (advanced)" };
 

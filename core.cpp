@@ -55,16 +55,16 @@ void MainLoop() {
   
   Rng rng(unsync().generate_seed());
   
-  pair<RngSeed, vector<Controller> > rc = controls_init(rng.generate_seed());
+  pair<RngSeed, InputState> rc = controls_init(rng.generate_seed());
   ControlShutdown csd;
   RngSeed game_seed = rc.first;
-  vector<Controller> controllers = rc.second;
+  InputState is = rc.second;
   
-  vector<Controller> origcontrollers = controllers;
+  InputState origis = is;
   
   dprintf("Final controllers:");
-  for(int i = 0; i < controllers.size(); i++) {
-    dprintf("%d: %d buttons, %d axes", i, controllers[i].keys.size(), controllers[i].axes.size());
+  for(int i = 0; i < is.controllers.size(); i++) {
+    dprintf("%d: %d buttons, %d axes", i, is.controllers[i].keys.size(), is.controllers[i].axes.size());
   }
   
   FILE *outfile = NULL;
@@ -103,9 +103,6 @@ void MainLoop() {
 
         case SDL_KEYDOWN:
         case SDL_KEYUP:
-          if(event.key.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE)
-            quit = true;
-          
           if(FLAGS_warpkeys && event.key.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_z)
             speed = !speed;
           if(FLAGS_warpkeys && event.key.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_x)
@@ -139,12 +136,12 @@ void MainLoop() {
         tspeed = 1;
       for(int i = 0; i < tspeed; i++) {
         interface.ai(controls_ai());  // has to be before controls
-        controllers = controls_next();
-        if(!controllers.size())
+        is = controls_next();
+        if(!is.valid)
           return;
-        CHECK(controllers.size() == origcontrollers.size());
-        for(int i = 0; i < controllers.size(); i++)
-          CHECK(controllers[i].keys.size() == origcontrollers[i].keys.size());
+        CHECK(is.controllers.size() == origis.controllers.size());
+        for(int i = 0; i < is.controllers.size(); i++)
+          CHECK(is.controllers[i].keys.size() == origis.controllers[i].keys.size());
         {
           Adler32 adl;
           PerfStack pst(PBC::checksum);
@@ -168,15 +165,15 @@ void MainLoop() {
             dprintf("%s\n", fname.c_str());
             outfile = fopen(fname.c_str(), "wb");
             if(outfile) {
-              int dat = 6;
+              int dat = 7;
               fwrite(&dat, 1, sizeof(dat), outfile);
               fwrite(&game_seed, 1, sizeof(game_seed), outfile);  // this is kind of grim and nasty
-              dat = controllers.size();
+              dat = is.controllers.size();
               fwrite(&dat, 1, sizeof(dat), outfile);
-              for(int i = 0; i < controllers.size(); i++) {
-                dat = controllers[i].keys.size();
+              for(int i = 0; i < is.controllers.size(); i++) {
+                dat = is.controllers[i].keys.size();
                 fwrite(&dat, 1, sizeof(dat), outfile);
-                dat = controllers[i].axes.size();
+                dat = is.controllers[i].axes.size();
                 fwrite(&dat, 1, sizeof(dat), outfile);
               }
               fflush(outfile);
@@ -185,17 +182,18 @@ void MainLoop() {
             }
           }
           if(outfile) {
-            for(int i = 0; i < controllers.size(); i++) {
-              fwrite(&controllers[i].menu.x, 1, sizeof(controllers[i].menu.x), outfile);
-              fwrite(&controllers[i].menu.y, 1, sizeof(controllers[i].menu.y), outfile);
-              fwrite(&controllers[i].u.down, 1, sizeof(controllers[i].u.down), outfile);
-              fwrite(&controllers[i].d.down, 1, sizeof(controllers[i].d.down), outfile);
-              fwrite(&controllers[i].l.down, 1, sizeof(controllers[i].l.down), outfile);
-              fwrite(&controllers[i].r.down, 1, sizeof(controllers[i].r.down), outfile);
-              for(int j = 0; j < controllers[i].keys.size(); j++)
-                fwrite(&controllers[i].keys[j].down, 1, sizeof(controllers[i].keys[j].down), outfile);
-              for(int j = 0; j < controllers[i].axes.size(); j++)
-                fwrite(&controllers[i].axes[j], 1, sizeof(controllers[i].axes[j]), outfile);
+            //fwrite(&is.escape.down, 1, sizeof(is.escape.down), outfile);
+            for(int i = 0; i < is.controllers.size(); i++) {
+              fwrite(&is.controllers[i].menu.x, 1, sizeof(is.controllers[i].menu.x), outfile);
+              fwrite(&is.controllers[i].menu.y, 1, sizeof(is.controllers[i].menu.y), outfile);
+              fwrite(&is.controllers[i].u.down, 1, sizeof(is.controllers[i].u.down), outfile);
+              fwrite(&is.controllers[i].d.down, 1, sizeof(is.controllers[i].d.down), outfile);
+              fwrite(&is.controllers[i].l.down, 1, sizeof(is.controllers[i].l.down), outfile);
+              fwrite(&is.controllers[i].r.down, 1, sizeof(is.controllers[i].r.down), outfile);
+              for(int j = 0; j < is.controllers[i].keys.size(); j++)
+                fwrite(&is.controllers[i].keys[j].down, 1, sizeof(is.controllers[i].keys[j].down), outfile);
+              for(int j = 0; j < is.controllers[i].axes.size(); j++)
+                fwrite(&is.controllers[i].axes[j], 1, sizeof(is.controllers[i].axes[j]), outfile);
             }
     
             int refc = ret_adler_ref_count();
@@ -219,7 +217,7 @@ void MainLoop() {
         }
         {
           PerfStack pst(PBC::tick);
-          if(interface.tick(controllers, game_seed))
+          if(interface.tick(is.controllers, game_seed))
             quit = true;
         }
         if(FLAGS_timing) {

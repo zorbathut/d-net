@@ -2,6 +2,10 @@
 - "Finish the Damn Game" Initiative
   - Add some kind of escape menu
     - Add "end game" option to the menus
+    - Make it so explosions don't move constantly when paused
+  - Convert key output into OStream
+  - Add OStreamGz support
+  - Compress key output
   - Make free version
   - Add widescreen
   - Modify shockwave pulse quite a lot
