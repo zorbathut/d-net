@@ -170,6 +170,7 @@ public:
   Coord total_damageDone;
   Coord total_kills;
   Coord total_wins;
+  int total_rounds;
 
   IDBWeaponAdjust getWeapon(int id) const;
   void shotFired(int id);  // Fire a single shot.

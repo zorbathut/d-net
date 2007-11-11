@@ -119,7 +119,7 @@ private:
   Coord2 targetCoords(int target) const;
 
   // Helper functions
-  void drawMultibar(const vector<Coord> &sizes, const Float4 &dimensions) const;
+  void drawMultibar(const vector<Coord> &sizes, const Float4 &dimensions, const vector<int> *roundcount = NULL) const;
   
   HierarchyNode generateShopHierarchy() const;
   void attemptQueueSound(int player, const Sound *sound);

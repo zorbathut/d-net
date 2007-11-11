@@ -949,7 +949,12 @@ void PersistentData::renderSlot(int slotid) const {
     
     setColor(C::inactive_text);
     drawText("Totals", 30, Float2(40, cury));
-    drawMultibar(results[3], Float4(200, cury, 760, cury + 40));
+    {
+      vector<int> roundcount;
+      for(int i = 0; i < playerdata.size(); i++)
+        roundcount.push_back(playerdata[i].total_rounds);
+      drawMultibar(results[3], Float4(200, cury, 760, cury + 40), &roundcount);
+    }
     cury += 100;
     
     int notdone = count(checked.begin(), checked.end(), false);
@@ -1222,6 +1227,7 @@ void PersistentData::divvyCash() {
     playerdata[i].total_damageDone += values[0][i];
     playerdata[i].total_kills += values[1][i];
     playerdata[i].total_wins += values[2][i];
+    playerdata[i].total_rounds += roundsbetweenshop;
     
     newPlayerDamageDone += playerdata[i].total_damageDone;
     newPlayerKills = playerdata[i].total_kills;
@@ -1281,8 +1287,9 @@ Coord2 PersistentData::targetCoords(int target) const {
   CHECK(0);
 }
   
-void PersistentData::drawMultibar(const vector<Coord> &sizes, const Float4 &dimensions) const {
+void PersistentData::drawMultibar(const vector<Coord> &sizes, const Float4 &dimensions, const vector<int> *roundcount) const {
   CHECK(sizes.size() == playerdata.size());
+  CHECK(!roundcount || roundcount->size() == playerdata.size());
   float total = accumulate(sizes.begin(), sizes.end(), Coord(0)).toFloat();
   if(total < 1e-6)
     return;
@@ -1296,13 +1303,18 @@ void PersistentData::drawMultibar(const vector<Coord> &sizes, const Float4 &dime
   float cpos = dimensions.sx;
   float barbottom = (dimensions.ey - dimensions.sy) * 3 / 4 + dimensions.sy;
   float iconsize = (dimensions.ey - dimensions.sy) / 4 * 0.9;
+  float iconoffs = 0;
+  if(roundcount)
+    iconoffs = -iconsize;
   for(int i = 0; i < order.size(); i++) {
     if(order[i].first == 0)
       continue;
     setColor(playerdata[order[i].second].getFaction()->color);
     float epos = cpos + order[i].first * per;
     drawShadedRect(Float4(cpos, dimensions.sy, epos, barbottom), 1, 6);
-    drawDvec2(playerdata[order[i].second].getFaction()->icon, boxAround(Float2((cpos + epos) / 2, (dimensions.ey + (dimensions.ey - iconsize)) / 2), iconsize / 2), 20, 0.1);
+    drawDvec2(playerdata[order[i].second].getFaction()->icon, boxAround(Float2((cpos + epos) / 2 + iconoffs, (dimensions.ey + (dimensions.ey - iconsize)) / 2), iconsize / 2), 20, 0.1);
+    if(roundcount)
+      drawJustifiedText(StringPrintf("%d", (*roundcount)[order[i].second]), iconsize, Float2((cpos + epos) / 2 - iconoffs, (dimensions.ey + (dimensions.ey - iconsize)) / 2), TEXT_MIN, TEXT_CENTER);
     cpos = epos;
   }
 }
