@@ -4,23 +4,57 @@
 #include "input.h"
 #include "metagame.h"
 
+#include <boost/function.hpp>
+
 using namespace std;
+using boost::function;
 
 class Ai;
 class GameAiIntro;
 
-class StdMenuItem {
+class StdMenuItem;
+
+enum { SMR_NOTHING = -1, SMR_RETURN = -2 };
+
+class StdMenu {
+  
+  vector<StdMenuItem> items;
+  int cpos;
+  
+  bool inside;
+  
 public:
-  static StdMenuItem makeStandardMenu(const string &text, int trigger);
-  static StdMenuItem makeScale(const string &text, const vector<string> &labels, Coord *position);
-  static StdMenuItem makeRounds(const string &text, Coord *start, Coord *end, Coord *exp);
-  static StdMenuItem makeOptions(const string &text, const vector<string> &labels, int *position);
+
+  void pushMenuItem(const StdMenuItem &site);
 
   int tick(const Keystates &keys);
-  float render(float y, bool mainmenu) const;
+  void render(const Float4 &bounds, bool obscure) const;
+
+  void reset();
+
+  StdMenu();
+
+};
+
+class StdMenuItem {
+public:
+  static StdMenuItem makeTrigger(const string &text, int trigger);
+  static StdMenuItem makeScale(const string &text, const vector<string> &labels, Coord *position, const function<Coord (const Coord &)> &munge);
+  static StdMenuItem makeRounds(const string &text, Coord *start, Coord *end, Coord *exp);
+  static StdMenuItem makeOptions(const string &text, const vector<string> &labels, int *position);
+  static StdMenuItem makeSubmenu(const string &text, StdMenu menu);
+  static StdMenuItem makeBack(const string &text);
+
+  int tick(const Keystates &keys);
+
+  bool takeoverWhenActive() const;
+  void renderEntire(const Float4 &bounds, bool obscure) const;
+
+  float renderItemHeight() const; // returns height
+  void renderItem(const Float4 &bounds) const; // ey is ignored
 
 private:
-  enum { TYPE_TRIGGER, TYPE_SCALE, TYPE_ROUNDS, TYPE_LAST };
+  enum { TYPE_TRIGGER, TYPE_SCALE, TYPE_ROUNDS, TYPE_SUBMENU, TYPE_BACK, TYPE_LAST };
   
   int type;
   string name;
@@ -30,38 +64,23 @@ private:
   vector<string> scale_labels;
   Coord *scale_posfloat;
   Coord scale_posint_approx;
+  function<Coord (const Coord &)> scale_munge;
   int *scale_posint;
   
   Coord *rounds_start;
   Coord *rounds_end;
   Coord *rounds_exp;
+  
+  StdMenu submenu;
 
   StdMenuItem();
 };
 
-class StdMenu {
-  
-  vector<StdMenuItem> items;
-  int cpos;
-  
-public:
-
-  void pushMenuItem(const StdMenuItem &site);
-
-  int tick(const Keystates &keys);
-  void render(bool mainmenu) const;
-
-  int currentItem() const;
-  void setCurrentItem(int ncpos);
-
-  StdMenu();
-
-};
-
 class InterfaceMain : boost::noncopyable {
   
-  enum { STATE_MAINMENU, STATE_CONFIGURE, STATE_PLAYING };
+  enum { STATE_MAINMENU, STATE_PLAYING };
   enum { MAIN_NEWGAME, MAIN_INPUTTEST, MAIN_GRID, MAIN_EXIT };
+  enum { ESC_MAINMENU, ESC_EXIT };
   int interface_mode;
   
   bool escmenu;
@@ -80,6 +99,8 @@ class InterfaceMain : boost::noncopyable {
   Coord start;
   Coord end;
   Coord moneyexp;
+  Coord start_clamp(const Coord &opt) const;
+  Coord end_clamp(const Coord &opt) const;
   
   // 0 represents "battle choice", 1-4 are the valid normal options
   int faction;

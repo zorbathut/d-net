@@ -1,14 +1,18 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
-  - Add some kind of escape menu
-    - Add "end game" option to the menus
-    - Make it so explosions don't move constantly when paused
   - Rework the menu system to be saner and more easily modified
+  - Disable input test on new-game
+  - Add "return" menu on new-game
   - Convert key output into OStream
   - Add OStreamGz support
   - Compress key output
-  - Make free version
+  - Make it so explosions don't move constantly when paused
+  - Add screen resolutions
   - Add widescreen
+  - Add dragging to resize
+  - Make free version
+  - Figure out Linux packaging
+  - Figure out OSX packaging
   - Modify shockwave pulse quite a lot
   - un-duplicate some of the duplicated gameend/score code
   - statistical variation of glory devices?
@@ -80,7 +84,7 @@
     - Get rid of old weapons as they become obsolete
     - Add commas to large numbers in shop info
     - Add level editor options for subtraction, fix spiney and re-add
-    - Pacman scale up 20% or so
+   - Pacman scale up 20% or so
     - Better implant interface
     - Add wander-around-randomly-and-do-shit to the AI
     - Add calculation for missile explosion durability
@@ -214,9 +218,6 @@ Deadman's Nuke: Angel-cannon explosion
 Immolation Device: Multiple nearby explosions
 Core Conversion: DPS explosion, with spew of airbrake projectiles
 
---- Getting rid of control methods:
-The AI still needs to use Absolute mode at the moment. Since it goes through control methods "manually", I need a way to either re-enable that when AI is on, or to "escape" into it. I like the first one better since it'll be easier - I'll set it up so that pushing all four buttons in axis choice toggles the mode.
-
 ----
 Release build:
 - Disable adler
@@ -224,7 +225,9 @@ Release build:
 - Disable errormessages
 
 ----
-So, drive-slower-backwards.
-* Tanks should brake faster than they accelerate
-* Tanks should max out at maybe 2/3 as fast backwards as forwards
+Menus!
+Tick does what it currently does
+Render takes a render-mode and an area
 
+Menus return a few possible values, from "triggered" to "return" to "exitmenu". Otherwise, it's pretty much all done through pointers.
+Menu items contain their own bounds. Menu state: "inside" or "not_inside".

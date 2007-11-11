@@ -28,6 +28,7 @@ void setZoom(const Float4 &box);
 void setZoomAround(const CFC4 &bbox);
 void setZoomCenter(float cx, float cy, float radius_y);
 void setZoomVertical(float sx, float sy, float ey);
+void setZoomHorizontal(float sx, float ex, float sy);
 
 Float4 getZoom();
 
