@@ -52,6 +52,7 @@ public:
   void render(bool mainmenu) const;
 
   int currentItem() const;
+  void setCurrentItem(int ncpos);
 
   StdMenu();
 
@@ -73,6 +74,8 @@ class InterfaceMain : boost::noncopyable {
   
   StdMenu mainmenu;
   StdMenu configmenu;
+  
+  StdMenu escmenuitem;
   
   Coord start;
   Coord end;

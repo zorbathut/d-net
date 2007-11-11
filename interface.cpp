@@ -206,6 +206,11 @@ int StdMenu::currentItem() const {
   return cpos;
 }
 
+void StdMenu::setCurrentItem(int ncpos) {
+  CHECK(ncpos >= 0 && ncpos < items.size());
+  cpos = ncpos;
+}
+
 StdMenu::StdMenu() {
   cpos = 0;
 }
@@ -429,8 +434,11 @@ public:
 };
 
 bool InterfaceMain::tick(const InputState &is, RngSeed gameseed) {
-  if(is.escape.push)
+  if(is.escape.push) {
     escmenu = !escmenu;
+    if(escmenu)
+      escmenuitem.setCurrentItem(0);
+  }
   
   if(FLAGS_showtanks)
     return false;
@@ -463,6 +471,11 @@ bool InterfaceMain::tick(const InputState &is, RngSeed gameseed) {
   }
   
   if(escmenu) {
+    int rv = escmenuitem.tick(kst[controls_primary_id()]);
+    if(rv == 0)
+      escmenu = false;
+    if(rv == 1)
+      return true;
   } else {
     if(interface_mode == STATE_MAINMENU) {
       if(!inptest) {
@@ -715,6 +728,10 @@ void InterfaceMain::render() const {
       CHECK(0);
     }
   }
+  
+  if(escmenu) {
+    escmenuitem.render(false);
+  }
 };
 #endif
 
@@ -788,6 +805,9 @@ void InterfaceMain::init() {
   
   for(int i = 0; i < introscreen->players.size(); i++)
     introscreen_ais.push_back(new GameAiIntro());
+  
+  escmenuitem.pushMenuItem(StdMenuItem::makeStandardMenu("Return", 0));
+  escmenuitem.pushMenuItem(StdMenuItem::makeStandardMenu("Quit", 1));
   
   for(int i = 0; i < 180; i++)
     introscreen->runTickWithAi(vector<GameAi*>(introscreen_ais.begin(), introscreen_ais.end()), &unsync());
