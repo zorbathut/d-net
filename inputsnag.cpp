@@ -121,7 +121,6 @@ pair<RngSeed, InputState> controls_init(RngSeed default_seed) {
   CHECK(sources.size() != 0);
   CHECK(sources.size() == now.controllers.size());
   
-  now.valid = true;
   last = now;
   
   return make_pair(rngs, now);
@@ -147,6 +146,8 @@ void controls_key(const SDL_KeyboardEvent *key) {
       }
     }
   }
+  if(key->keysym.sym == SDLK_ESCAPE)
+    ps = &now.escape.down;
   if(!ps)
     return;
   if(key->type == SDL_KEYUP)
@@ -254,6 +255,7 @@ InputState controls_next() {
   
   for(int i = 0; i < now.controllers.size(); i++)
     last.controllers[i].newState(now.controllers[i]);
+  last.escape.newState(now.escape);
   
   for(int i = 0; i < last.controllers.size(); i++) {
     CHECK(last.controllers[i].menu.x >= -1 && last.controllers[i].menu.x <= 1);

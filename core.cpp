@@ -182,7 +182,7 @@ void MainLoop() {
             }
           }
           if(outfile) {
-            //fwrite(&is.escape.down, 1, sizeof(is.escape.down), outfile);
+            fwrite(&is.escape.down, 1, sizeof(is.escape.down), outfile);
             for(int i = 0; i < is.controllers.size(); i++) {
               fwrite(&is.controllers[i].menu.x, 1, sizeof(is.controllers[i].menu.x), outfile);
               fwrite(&is.controllers[i].menu.y, 1, sizeof(is.controllers[i].menu.y), outfile);
@@ -217,7 +217,7 @@ void MainLoop() {
         }
         {
           PerfStack pst(PBC::tick);
-          if(interface.tick(is.controllers, game_seed))
+          if(interface.tick(is, game_seed))
             quit = true;
         }
         if(FLAGS_timing) {

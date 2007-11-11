@@ -231,8 +231,8 @@ extern bool dumpBooleanDetail;
 
 Controller ct;
 
-bool InterfaceMain::tick(const vector<Controller> &control) {
-  ct = control[controls_primary_id()];
+bool InterfaceMain::tick(const InputState &control) {
+  ct = control.controllers[controls_primary_id()];
   return false;
 }
 
@@ -428,83 +428,89 @@ public:
   
 };
 
-bool InterfaceMain::tick(const vector< Controller > &control, RngSeed gameseed) {
+bool InterfaceMain::tick(const InputState &is, RngSeed gameseed) {
+  if(is.escape.push)
+    escmenu = !escmenu;
+  
   if(FLAGS_showtanks)
     return false;
   
   StackString stp("Interface ticking");
   
-  inptest_controls = control;
+  inptest_controls = is.controllers;
   
   if(kst.size() == 0) {
-    CHECK(control.size() != 0);
-    kst.resize(control.size());
+    CHECK(is.controllers.size() != 0);
+    kst.resize(is.controllers.size());
   }
   
-  CHECK(kst.size() == control.size());
+  CHECK(kst.size() == is.controllers.size());
   
-  for(int i = 0; i < control.size(); i++) {
-    CHECK(control[i].keys.size() >= 1);
-    kst[i].u.newState(control[i].menu.y > .5);
-    kst[i].d.newState(control[i].menu.y < -.5);
-    kst[i].r.newState(control[i].menu.x > .5);
-    kst[i].l.newState(control[i].menu.x < -.5);
+  for(int i = 0; i < is.controllers.size(); i++) {
+    CHECK(is.controllers[i].keys.size() >= 1);
+    kst[i].u.newState(is.controllers[i].menu.y > .5);
+    kst[i].d.newState(is.controllers[i].menu.y < -.5);
+    kst[i].r.newState(is.controllers[i].menu.x > .5);
+    kst[i].l.newState(is.controllers[i].menu.x < -.5);
     bool aButtonPushed = false;
-    for(int j = 0; j < control[i].keys.size(); j++)
-      if(control[i].keys[j].push)
+    for(int j = 0; j < is.controllers[i].keys.size(); j++)
+      if(is.controllers[i].keys[j].push)
         aButtonPushed = true;
     kst[i].accept.newState(aButtonPushed);
     kst[i].cancel.newState(false);
     for(int j = 0; j < SIMUL_WEAPONS; j++)
       kst[i].fire[j].newState(false);
   }
-
-  if(interface_mode == STATE_MAINMENU) {
-    if(!inptest) {
-      introscreen->runTickWithAi(vector<GameAi*>(introscreen_ais.begin(), introscreen_ais.end()), &unsync());
-      introscreen->runTickWithAi(vector<GameAi*>(introscreen_ais.begin(), introscreen_ais.end()), &unsync());
-    }
-    
-    int mrv = mainmenu.tick(kst[controls_primary_id()]);
-    if(mrv == MAIN_NEWGAME || FLAGS_auto_newgame) {
-      interface_mode = STATE_CONFIGURE;
-    } else if(mrv == MAIN_EXIT) {
-      return true;
-    } else if(mrv == MAIN_INPUTTEST) {
-      inptest = !inptest;
-    } else if(mrv == MAIN_GRID) {
-      grid = !grid;
-    } else {
-      CHECK(mrv == -1);
-    }
-  } else if(interface_mode == STATE_CONFIGURE) {
-    introscreen->runTickWithAi(vector<GameAi*>(introscreen_ais.begin(), introscreen_ais.end()), &unsync());
-    introscreen->runTickWithAi(vector<GameAi*>(introscreen_ais.begin(), introscreen_ais.end()), &unsync());
-    
-    int mrv = configmenu.tick(kst[controls_primary_id()]);
-    if(start + 0.1 > end) {
-      if(configmenu.currentItem() == 0) {
-        start = end - 0.1;
-      } else if(configmenu.currentItem() == 1) {
-        end = start + 0.1;
-      } else {
-        CHECK(0); // what
-      }
-    }
-    if(mrv == 1 || FLAGS_auto_newgame) {
-      if(faction_toggle == 0)
-        faction = 4;
-      else
-        faction = 1;
-      game = new Metagame(control.size(), Money((long long)(1000 * pow(30, start.toFloat()))), exp(moneyexp), faction - 1, FLAGS_rounds_per_shop, calculateRounds(start, end, moneyexp), gameseed);
-      interface_mode = STATE_PLAYING;
-    }
-  } else if(interface_mode == STATE_PLAYING) {
-    if(game->runTick(control)) {
-      init();   // full reset
-    }
+  
+  if(escmenu) {
   } else {
-    CHECK(0);
+    if(interface_mode == STATE_MAINMENU) {
+      if(!inptest) {
+        introscreen->runTickWithAi(vector<GameAi*>(introscreen_ais.begin(), introscreen_ais.end()), &unsync());
+        introscreen->runTickWithAi(vector<GameAi*>(introscreen_ais.begin(), introscreen_ais.end()), &unsync());
+      }
+      
+      int mrv = mainmenu.tick(kst[controls_primary_id()]);
+      if(mrv == MAIN_NEWGAME || FLAGS_auto_newgame) {
+        interface_mode = STATE_CONFIGURE;
+      } else if(mrv == MAIN_EXIT) {
+        return true;
+      } else if(mrv == MAIN_INPUTTEST) {
+        inptest = !inptest;
+      } else if(mrv == MAIN_GRID) {
+        grid = !grid;
+      } else {
+        CHECK(mrv == -1);
+      }
+    } else if(interface_mode == STATE_CONFIGURE) {
+      introscreen->runTickWithAi(vector<GameAi*>(introscreen_ais.begin(), introscreen_ais.end()), &unsync());
+      introscreen->runTickWithAi(vector<GameAi*>(introscreen_ais.begin(), introscreen_ais.end()), &unsync());
+      
+      int mrv = configmenu.tick(kst[controls_primary_id()]);
+      if(start + 0.1 > end) {
+        if(configmenu.currentItem() == 0) {
+          start = end - 0.1;
+        } else if(configmenu.currentItem() == 1) {
+          end = start + 0.1;
+        } else {
+          CHECK(0); // what
+        }
+      }
+      if(mrv == 1 || FLAGS_auto_newgame) {
+        if(faction_toggle == 0)
+          faction = 4;
+        else
+          faction = 1;
+        game = new Metagame(kst.size(), Money((long long)(1000 * pow(30, start.toFloat()))), exp(moneyexp), faction - 1, FLAGS_rounds_per_shop, calculateRounds(start, end, moneyexp), gameseed);
+        interface_mode = STATE_PLAYING;
+      }
+    } else if(interface_mode == STATE_PLAYING) {
+      if(game->runTick(is.controllers)) {
+        init();   // full reset
+      }
+    } else {
+      CHECK(0);
+    }
   }
   
   return false;
@@ -607,101 +613,107 @@ void InterfaceMain::render() const {
   
   StackString stp("Interface rendering");
   
-  if(FLAGS_showGlobalErrors) {
-    for(int i = 0; i < returnErrorMessages().size(); i++) {
-      setZoomCenter(0, 0, 100);
-      setColor(1.0, 1.0, 1.0);
-      drawJustifiedText(returnErrorMessages()[i], 30, Float2(0, 0), TEXT_CENTER, TEXT_CENTER);
-    }
-  }
+  {
+    smart_ptr<GfxWindow> wnd;
+    if(escmenu)
+      wnd.reset(new GfxWindow(getZoom(), 0.5));
   
-  if(interface_mode == STATE_MAINMENU) {
-    mainmenu.render(true);
-    setColor(C::inactive_text * 0.5);
-    drawJustifiedText("Use the arrow keys to choose menu items. Hit Enter to select.", 3, Float2(getZoom().midpoint().x, getZoom().ey - 3), TEXT_CENTER, TEXT_MAX);
-    if(grid) {
-      setColor(1.0, 1.0, 1.0);
-      drawGrid(1, 0.01);
+    if(FLAGS_showGlobalErrors) {
+      for(int i = 0; i < returnErrorMessages().size(); i++) {
+        setZoomCenter(0, 0, 100);
+        setColor(1.0, 1.0, 1.0);
+        drawJustifiedText(returnErrorMessages()[i], 30, Float2(0, 0), TEXT_CENTER, TEXT_CENTER);
+      }
     }
-    if(inptest) {
-      setZoom(Float4(0, 0, 800, 600));
-      setColor(1.0, 1.0, 1.0);
-      const float xsiz = 100;
-      const float bord = xsiz / 25;
-      const float usablesiz = xsiz - bord * 4;
-      const float crosshair = usablesiz / 2;
-      const float textheight = 9;
-      const float ysiz = crosshair + bord * 3 + textheight;
-      const float crosshairc = crosshair / 2;
-      const float textsize = crosshair / 4;
-      const float textrsize = textsize * 0.8;
-      const int wid = int(700 / xsiz);
-      const int textymax = int(crosshair / textsize);
-      const int textxmax = 2;
-      const float textxofs = crosshair / textxmax;
-      
-      const float boxthick = 1.0;
-      for(int i = 0; i < inptest_controls.size(); i++) {
-        const Controller &ct = inptest_controls[i];
-        float x = (i % wid) * xsiz + 50;
-        float y = (i / wid) * ysiz + 50;
-        if(i % wid == 0 && i) {
+    
+    if(interface_mode == STATE_MAINMENU) {
+      mainmenu.render(true);
+      setColor(C::inactive_text * 0.5);
+      drawJustifiedText("Use the arrow keys to choose menu items. Hit Enter to select.", 3, Float2(getZoom().midpoint().x, getZoom().ey - 3), TEXT_CENTER, TEXT_MAX);
+      if(grid) {
+        setColor(1.0, 1.0, 1.0);
+        drawGrid(1, 0.01);
+      }
+      if(inptest) {
+        setZoom(Float4(0, 0, 800, 600));
+        setColor(1.0, 1.0, 1.0);
+        const float xsiz = 100;
+        const float bord = xsiz / 25;
+        const float usablesiz = xsiz - bord * 4;
+        const float crosshair = usablesiz / 2;
+        const float textheight = 9;
+        const float ysiz = crosshair + bord * 3 + textheight;
+        const float crosshairc = crosshair / 2;
+        const float textsize = crosshair / 4;
+        const float textrsize = textsize * 0.8;
+        const int wid = int(700 / xsiz);
+        const int textymax = int(crosshair / textsize);
+        const int textxmax = 2;
+        const float textxofs = crosshair / textxmax;
+        
+        const float boxthick = 1.0;
+        for(int i = 0; i < inptest_controls.size(); i++) {
+          const Controller &ct = inptest_controls[i];
+          float x = (i % wid) * xsiz + 50;
+          float y = (i / wid) * ysiz + 50;
+          if(i % wid == 0 && i) {
+            setColor(C::box_border);
+            drawLine(Float4(50, y, 750, y), boxthick);
+          }
+          setColor(C::gray(1.0));
+          drawJustifiedText(controls_getcc(i).description, textheight, Float2(x + xsiz / 2, y + bord), TEXT_CENTER, TEXT_MIN);
+          Float4 chbox(x + bord, y + bord * 2 + textheight, x + bord + crosshair, y + bord * 2 + crosshair + textheight);
           setColor(C::box_border);
-          drawLine(Float4(50, y, 750, y), boxthick);
-        }
-        setColor(C::gray(1.0));
-        drawJustifiedText(controls_getcc(i).description, textheight, Float2(x + xsiz / 2, y + bord), TEXT_CENTER, TEXT_MIN);
-        Float4 chbox(x + bord, y + bord * 2 + textheight, x + bord + crosshair, y + bord * 2 + crosshair + textheight);
-        setColor(C::box_border);
-        drawLine(Float4(chbox.sx, chbox.sy, chbox.sx + crosshair / 4, chbox.sy), boxthick);
-        drawLine(Float4(chbox.sx, chbox.sy, chbox.sx, chbox.sy + crosshair / 4), boxthick);
-        drawLine(Float4(chbox.sx, chbox.ey, chbox.sx + crosshair / 4, chbox.ey), boxthick);
-        drawLine(Float4(chbox.sx, chbox.ey, chbox.sx, chbox.ey - crosshair / 4), boxthick);
-        drawLine(Float4(chbox.ex, chbox.sy, chbox.ex - crosshair / 4, chbox.sy), boxthick);
-        drawLine(Float4(chbox.ex, chbox.sy, chbox.ex, chbox.sy + crosshair / 4), boxthick);
-        drawLine(Float4(chbox.ex, chbox.ey, chbox.ex - crosshair / 4, chbox.ey), boxthick);
-        drawLine(Float4(chbox.ex, chbox.ey, chbox.ex, chbox.ey - crosshair / 4), boxthick);
-        setColor(C::inactive_text);
-        drawCrosshair(Coord2(ct.menu.x * crosshairc + bord + crosshairc + x, -ct.menu.y * crosshairc + bord * 2 + crosshairc + y + textheight), crosshair / 4, boxthick);
-        setColor(C::active_text);
-        float textx = x + bord * 3 + crosshair;
-        float texty = y + bord * 2 + textheight;
-        int ctxt = 0;
-        int kd = 0;
-        for(int j = 0; j < ct.keys.size(); j++)
-          if(ct.keys[j].down)
-            kd++;
-        for(int j = 0; j < ct.keys.size(); j++) {
-          if(ct.keys[j].down) {
-            string tbd;
-            if(ctxt >= textymax * textxmax) {
-              continue;
-            } else if(ctxt == textymax * textxmax - 1 && kd > textymax * textxmax) {
-              tbd = "...";
-            } else {
-              tbd = StringPrintf("%d", j);
-            }
-            if(tbd != "") {
-              drawText(tbd, textrsize, Float2(textx + ctxt / textymax * textxofs, texty + (ctxt % textymax) * textsize));
-              ctxt++;
+          drawLine(Float4(chbox.sx, chbox.sy, chbox.sx + crosshair / 4, chbox.sy), boxthick);
+          drawLine(Float4(chbox.sx, chbox.sy, chbox.sx, chbox.sy + crosshair / 4), boxthick);
+          drawLine(Float4(chbox.sx, chbox.ey, chbox.sx + crosshair / 4, chbox.ey), boxthick);
+          drawLine(Float4(chbox.sx, chbox.ey, chbox.sx, chbox.ey - crosshair / 4), boxthick);
+          drawLine(Float4(chbox.ex, chbox.sy, chbox.ex - crosshair / 4, chbox.sy), boxthick);
+          drawLine(Float4(chbox.ex, chbox.sy, chbox.ex, chbox.sy + crosshair / 4), boxthick);
+          drawLine(Float4(chbox.ex, chbox.ey, chbox.ex - crosshair / 4, chbox.ey), boxthick);
+          drawLine(Float4(chbox.ex, chbox.ey, chbox.ex, chbox.ey - crosshair / 4), boxthick);
+          setColor(C::inactive_text);
+          drawCrosshair(Coord2(ct.menu.x * crosshairc + bord + crosshairc + x, -ct.menu.y * crosshairc + bord * 2 + crosshairc + y + textheight), crosshair / 4, boxthick);
+          setColor(C::active_text);
+          float textx = x + bord * 3 + crosshair;
+          float texty = y + bord * 2 + textheight;
+          int ctxt = 0;
+          int kd = 0;
+          for(int j = 0; j < ct.keys.size(); j++)
+            if(ct.keys[j].down)
+              kd++;
+          for(int j = 0; j < ct.keys.size(); j++) {
+            if(ct.keys[j].down) {
+              string tbd;
+              if(ctxt >= textymax * textxmax) {
+                continue;
+              } else if(ctxt == textymax * textxmax - 1 && kd > textymax * textxmax) {
+                tbd = "...";
+              } else {
+                tbd = StringPrintf("%d", j);
+              }
+              if(tbd != "") {
+                drawText(tbd, textrsize, Float2(textx + ctxt / textymax * textxofs, texty + (ctxt % textymax) * textsize));
+                ctxt++;
+              }
             }
           }
         }
+      } else {
+        GfxWindow gfxw(Float4(0, 0, getZoom().ex, 60), 2.0);
+        introscreen->renderToScreen();
       }
+    } else if(interface_mode == STATE_CONFIGURE) {
+      {
+        GfxWindow gfxw(Float4(0, 0, getZoom().ex, 60), 2.0);
+        introscreen->renderToScreen();
+      }
+      configmenu.render(false);
+    } else if(interface_mode == STATE_PLAYING) {
+      game->renderToScreen();
     } else {
-      GfxWindow gfxw(Float4(0, 0, getZoom().ex, 60), 2.0);
-      introscreen->renderToScreen();
+      CHECK(0);
     }
-  } else if(interface_mode == STATE_CONFIGURE) {
-    {
-      GfxWindow gfxw(Float4(0, 0, getZoom().ex, 60), 2.0);
-      introscreen->renderToScreen();
-    }
-    configmenu.render(false);
-  } else if(interface_mode == STATE_PLAYING) {
-    game->renderToScreen();
-  } else {
-    CHECK(0);
   }
 };
 #endif
@@ -782,6 +794,7 @@ void InterfaceMain::init() {
 }
 InterfaceMain::InterfaceMain() {
   introscreen = NULL;
+  escmenu = false;
   init();
 }
 

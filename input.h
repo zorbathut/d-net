@@ -55,7 +55,9 @@ struct InputState {
   bool valid;
   
   vector<Controller> controllers;
-  //Button escape;
+  Button escape;
+  
+  InputState() { valid = true; }
 };
 
 enum { KSAX_STEERING, KSAX_ABSOLUTE, KSAX_TANK, KSAX_LAST };

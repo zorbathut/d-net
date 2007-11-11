@@ -63,6 +63,8 @@ class InterfaceMain : boost::noncopyable {
   enum { MAIN_NEWGAME, MAIN_INPUTTEST, MAIN_GRID, MAIN_EXIT };
   int interface_mode;
   
+  bool escmenu;
+  
   bool grid;
   bool inptest;
   vector<Controller> inptest_controls;
@@ -89,7 +91,7 @@ class InterfaceMain : boost::noncopyable {
   
 public:
 
-  bool tick(const vector< Controller > &control, RngSeed gameseed);
+  bool tick(const InputState &control, RngSeed gameseed);
   void ai(const vector<Ai *> &ais) const;
   void render() const;
 
