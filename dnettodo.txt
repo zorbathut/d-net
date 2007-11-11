@@ -1,9 +1,9 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
-  - move second main menu up a bit
   - Add some kind of escape menu
     - Add "end game" option to the menus
   - Make free version
+  - Add widescreen
   - Modify shockwave pulse quite a lot
   - un-duplicate some of the duplicated gameend/score code
   - statistical variation of glory devices?

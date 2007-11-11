@@ -190,7 +190,8 @@ int StdMenu::tick(const Keystates &keys) {
 void StdMenu::render(bool mainmenu) const {
   setZoom(Float4(0, 0, 133.3333, 100));
   
-  float y = 70;
+  float y = mainmenu ? 70 : 65;
+  
   for(int i = 0; i < items.size(); i++) {
     if(i == cpos) {
       setColor(C::active_text);
