@@ -118,7 +118,7 @@ int StdMenuItem::tickItem (const Keystates &keys) {
       if(keys.r.down)
         *scale_posfloat += Coord(1) / 16;
       if(keys.l.down || keys.r.down)
-        *scale_posfloat = clamp(*scale_posfloat, 0, scale_labels.size() - 1);
+        *scale_posfloat = scale_munge(clamp(*scale_posfloat, 0, scale_labels.size() - 1));
     } else {
       CHECK(scale_posint);
       if(keys.l.down)
@@ -436,10 +436,10 @@ bool tankCostSorter(const pair<string, IDBTank> &lhs, const pair<string, IDBTank
 }
 
 Coord InterfaceMain::start_clamp(const Coord &opt) const {
-  return clamp(opt, 0, end - 0.1);
+  return clamp(opt, 0, end - Coord(1) / 16);
 }
 Coord InterfaceMain::end_clamp(const Coord &opt) const {
-  return clamp(opt, start + 0.1, 8);
+  return clamp(opt, start + Coord(1) / 16, 8);
 }
 
 void InterfaceMain::render() const {
