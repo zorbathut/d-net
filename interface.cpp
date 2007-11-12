@@ -262,7 +262,7 @@ void StdMenu::render(const Float4 &bounds, bool obscure) const {
     
     setZoomCenter(0, 0, getZoom().span_y() / 2);
     
-    float curpos = 0;
+    float curpos = (getZoom().span_y() - totheight) / 2;
     for(int i = 0; i < items.size(); i++) {
       if(i == cpos) {
         setColor(C::active_text);
@@ -270,7 +270,7 @@ void StdMenu::render(const Float4 &bounds, bool obscure) const {
         setColor(C::inactive_text);
       }
       
-      items[i].renderItem(Float4(getZoom().sx, getZoom().sy + curpos, getZoom().ex, -1));
+      items[i].renderItem(Float4(getZoom().sx + 2, getZoom().sy + curpos, getZoom().ex - 2, -1));
       curpos += items[i].renderItemHeight();
     }
   }
@@ -530,7 +530,7 @@ void InterfaceMain::render() const {
     
     if(interface_mode == STATE_MAINMENU) {
       setZoomVertical(0, 0, 100);
-      mainmenu.render(Float4(0, 60, getZoom().ex, 100), false);
+      mainmenu.render(Float4(5, 50, getZoom().ex - 5, 95), false);
       setColor(C::inactive_text * 0.5);
       drawJustifiedText("Use the arrow keys to choose menu items. Hit Enter to select.", 3, Float2(getZoom().midpoint().x, getZoom().ey - 3), TEXT_CENTER, TEXT_MAX);
       if(grid) {

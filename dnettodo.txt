@@ -1,16 +1,16 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - Rework the menu system to be saner and more easily modified
-  - Disable input test on new-game
-  - Add "return" menu on new-game
+    - Disable input test on new-game
+    - Add "return" menu on new-game
+    - Highlight "The Segment" somehow
+    - Make it so explosions don't move constantly when paused
+    - Add screen resolutions
+    - Add widescreen
+    - Add dragging to resize
   - Convert key output into OStream
-  - Add OStreamGz support
-  - Compress key output
-  - Make it so explosions don't move constantly when paused
-  - Add screen resolutions
-  - Add widescreen
-  - Add dragging to resize
-  - Highlight "The Segment" somehow
+    - Add OStreamGz support
+    - Compress key output
   - Make free version
   - Figure out Linux packaging
   - Figure out OSX packaging
