@@ -10,6 +10,7 @@
   - Add screen resolutions
   - Add widescreen
   - Add dragging to resize
+  - Highlight "The Segment" somehow
   - Make free version
   - Figure out Linux packaging
   - Figure out OSX packaging

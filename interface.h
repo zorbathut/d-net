@@ -14,7 +14,7 @@ class GameAiIntro;
 
 class StdMenuItem;
 
-enum { SMR_NOTHING = -1, SMR_RETURN = -2 };
+enum { SMR_NOTHING = -1, SMR_ENTER = -2, SMR_RETURN = -3 };
 
 class StdMenu {
   
@@ -45,11 +45,10 @@ public:
   static StdMenuItem makeSubmenu(const string &text, StdMenu menu);
   static StdMenuItem makeBack(const string &text);
 
-  int tick(const Keystates &keys);
-
-  bool takeoverWhenActive() const;
+  int tickEntire(const Keystates &keys);
   void renderEntire(const Float4 &bounds, bool obscure) const;
-
+  
+  int tickItem(const Keystates &keys);
   float renderItemHeight() const; // returns height
   void renderItem(const Float4 &bounds) const; // ey is ignored
 
@@ -92,7 +91,6 @@ class InterfaceMain : boost::noncopyable {
   Metagame *game;
   
   StdMenu mainmenu;
-  StdMenu configmenu;
   
   StdMenu escmenuitem;
   

@@ -84,11 +84,32 @@ StdMenuItem StdMenuItem::makeBack(const string &text) {
   return stim;
 }
 
-int StdMenuItem::tick(const Keystates &keys) {
+int StdMenuItem::tickEntire(const Keystates &keys) {
+  CHECK(type == TYPE_SUBMENU);
+  return submenu.tick(keys);
+}
+
+void StdMenuItem::renderEntire(const Float4 &bounds, bool obscure) const {
+  CHECK(type == TYPE_SUBMENU);
+  submenu.render(bounds, obscure);
+}
+
+int StdMenuItem::tickItem (const Keystates &keys) {
   if(type == TYPE_TRIGGER) {
     if(keys.accept.push) {
       queueSound(S::accept);
       return trigger;
+    }
+  } else if(type == TYPE_SUBMENU) {
+    if(keys.accept.push) {
+      queueSound(S::accept);
+      submenu.reset();
+      return SMR_ENTER;
+    }
+  } else if(type == TYPE_BACK) {
+    if(keys.accept.push) {
+      queueSound(S::choose);
+      return SMR_RETURN;
     }
   } else if(type == TYPE_SCALE) {
     if(scale_posfloat) {
@@ -118,7 +139,7 @@ int StdMenuItem::tick(const Keystates &keys) {
   } else {
     CHECK(0);
   }
-  return -1; 
+  return SMR_NOTHING; 
 }
 
 int calculateRounds(Coord start, Coord end, Coord exp) {
@@ -146,7 +167,7 @@ void StdMenuItem::renderItem(const Float4 &bounds) const {
     else
       pos = scale_posint_approx.toFloat();
     
-    Float4 boundy = Float4(bounds.sx, bounds.sy, bounds.ex, bounds.sy + 4);
+    Float4 boundy = Float4(bounds.sx + 35, bounds.sy, bounds.ex, bounds.sy + 4);
     GfxWindow gfxw(boundy, 1.0);
     
     setZoomAround(Float4(pos - 2, 0, pos + 2, 0));
@@ -188,43 +209,70 @@ void StdMenu::pushMenuItem(const StdMenuItem &site) {
 }
 
 int StdMenu::tick(const Keystates &keys) {
-  if(keys.u.repeat) {
-    cpos--;
-    queueSound(S::select);
+  if(!inside) {
+    if(keys.u.repeat) {
+      cpos--;
+      queueSound(S::select);
+    }
+    if(keys.d.repeat) {
+      cpos++;
+      queueSound(S::select);
+    }
+    cpos = modurot(cpos, items.size());
   }
-  if(keys.d.repeat) {
-    cpos++;
-    queueSound(S::select);
-  }
-  cpos = modurot(cpos, items.size());
   
   for(int i = 0; i < items.size(); i++)
     if(i != cpos)
-      items[i].tick(Keystates());
-  return items[cpos].tick(keys);
+      items[i].tickItem(Keystates());
+    
+  {
+    int rv;
+    if(inside)
+      rv = items[cpos].tickEntire(keys);
+    else
+      rv = items[cpos].tickItem(keys);
+    
+    if(rv == SMR_NOTHING) {
+      return SMR_NOTHING;
+    } else if(rv == SMR_ENTER) {
+      inside = true;
+      return SMR_NOTHING;
+    } else if(rv == SMR_RETURN && !inside) {
+      return SMR_RETURN;
+    } else if(rv == SMR_RETURN && inside) {
+      inside = false;
+      return SMR_NOTHING;
+    } else {
+      return rv;
+    }
+  }
 }
 
 void StdMenu::render(const Float4 &bounds, bool obscure) const {
   CHECK(!obscure);
-  CHECK(!inside);
-  GfxWindow gfxw(bounds, 1.0);
   
-  float totheight = 0;
-  for(int i = 0; i < items.size(); i++)
-    totheight += items[i].renderItemHeight();
-  
-  setZoomCenter(0, 0, getZoom().span_y() / 2);
-  
-  float curpos = 0;
-  for(int i = 0; i < items.size(); i++) {
-    if(i == cpos) {
-      setColor(C::active_text);
-    } else {
-      setColor(C::inactive_text);
-    }
+  if(inside) {
+    items[cpos].renderEntire(bounds, obscure);
+  } else {
+    GfxWindow gfxw(bounds, 1.0);
     
-    items[i].renderItem(Float4(getZoom().sx, getZoom().sy + curpos, getZoom().ex, -1));
-    curpos += items[i].renderItemHeight();
+    float totheight = 0;
+    for(int i = 0; i < items.size(); i++)
+      totheight += items[i].renderItemHeight();
+    
+    setZoomCenter(0, 0, getZoom().span_y() / 2);
+    
+    float curpos = 0;
+    for(int i = 0; i < items.size(); i++) {
+      if(i == cpos) {
+        setColor(C::active_text);
+      } else {
+        setColor(C::inactive_text);
+      }
+      
+      items[i].renderItem(Float4(getZoom().sx, getZoom().sy + curpos, getZoom().ex, -1));
+      curpos += items[i].renderItemHeight();
+    }
   }
 }
 
@@ -586,24 +634,35 @@ void InterfaceMain::checksum(Adler32 *adl) const {
 
 void InterfaceMain::init() {
   mainmenu = StdMenu();
-  configmenu = StdMenu();
   kst.clear();
   introscreen_ais.clear();
   delete introscreen;
   introscreen = new GamePackage;
   
   interface_mode = STATE_MAINMENU;
-  mainmenu.pushMenuItem(StdMenuItem::makeTrigger("New game", MAIN_NEWGAME));
+  {
+    vector<string> names = boost::assign::list_of("Junkyard")("Civilian")("Professional")("Military")("Exotic")("Experimental")("Ultimate");
+    
+    StdMenu configmenu;
+    configmenu.pushMenuItem(StdMenuItem::makeScale("Game start", names, &start, bind(&InterfaceMain::start_clamp, this, _1)));
+    names.push_back("Armageddon");
+    configmenu.pushMenuItem(StdMenuItem::makeScale("Game end", names, &end, bind(&InterfaceMain::end_clamp, this, _1)));
+    configmenu.pushMenuItem(StdMenuItem::makeRounds("Estimated rounds", &start, &end, &moneyexp));
+    configmenu.pushMenuItem(StdMenuItem::makeOptions("Factions", boost::assign::list_of("On")("Off"), &faction_toggle));
+    //configmenu.pushMenuItem(StdMenuItem::makeOptions("Faction mode", boost::assign::list_of("Battle")("No factions")("Minor factions")("Normal factions")("Major factions"), &faction));
+    configmenu.pushMenuItem(StdMenuItem::makeTrigger("Begin", MAIN_NEWGAME));
+    
+    mainmenu.pushMenuItem(StdMenuItem::makeSubmenu("New game", configmenu));
+  }
+  
   mainmenu.pushMenuItem(StdMenuItem::makeTrigger("Input test", MAIN_INPUTTEST));
   mainmenu.pushMenuItem(StdMenuItem::makeTrigger("Exit", MAIN_EXIT));
-  
-  vector<string> names = boost::assign::list_of("Junkyard")("Civilian")("Professional")("Military")("Exotic")("Experimental")("Ultimate");
   
   if(FLAGS_startingPhase == -1)
     start = 0;
   else
     start = Coord(FLAGS_startingPhase);
-  end = names.size();
+  end = 7;
   moneyexp = Coord(0.1133);
   
   faction = FLAGS_factionMode + 1;
@@ -613,14 +672,6 @@ void InterfaceMain::init() {
     faction_toggle = 1;
   else
     faction_toggle = 0;
-  
-  configmenu.pushMenuItem(StdMenuItem::makeScale("Game start", names, &start, bind(&InterfaceMain::start_clamp, this, _1)));
-  names.push_back("Armageddon");
-  configmenu.pushMenuItem(StdMenuItem::makeScale("Game end", names, &end, bind(&InterfaceMain::end_clamp, this, _1)));
-  configmenu.pushMenuItem(StdMenuItem::makeRounds("Estimated rounds", &start, &end, &moneyexp));
-  configmenu.pushMenuItem(StdMenuItem::makeOptions("Factions", boost::assign::list_of("On")("Off"), &faction_toggle));
-  //configmenu.pushMenuItem(StdMenuItem::makeOptions("Faction mode", boost::assign::list_of("Battle")("No factions")("Minor factions")("Normal factions")("Major factions"), &faction));
-  configmenu.pushMenuItem(StdMenuItem::makeTrigger("Begin", MAIN_NEWGAME));
   
   grid = false;
   inptest = false;
