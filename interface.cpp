@@ -147,8 +147,18 @@ int calculateRounds(Coord start, Coord end, Coord exp) {
 }
 
 float StdMenuItem::renderItemHeight() const {
-  if(type == TYPE_TRIGGER || type == TYPE_SCALE || type == TYPE_ROUNDS || type == TYPE_SUBMENU) {
+  if(type == TYPE_TRIGGER || type == TYPE_SCALE || type == TYPE_ROUNDS || type == TYPE_SUBMENU || type == TYPE_BACK) {
     return 6;
+  } else {
+    CHECK(0);
+  }
+}
+
+float StdMenuItem::renderItemWidth(float tmx) const {
+  if(type == TYPE_TRIGGER || type == TYPE_SUBMENU || type == TYPE_BACK) {
+    return getTextWidth(name, 4);
+  } else if(type == TYPE_SCALE || type == TYPE_ROUNDS) {
+    return tmx;
   } else {
     CHECK(0);
   }
@@ -249,18 +259,26 @@ int StdMenu::tick(const Keystates &keys) {
 }
 
 void StdMenu::render(const Float4 &bounds, bool obscure) const {
-  CHECK(!obscure);
   
   if(inside) {
     items[cpos].renderEntire(bounds, obscure);
   } else {
     GfxWindow gfxw(bounds, 1.0);
+    setZoomCenter(0, 0, getZoom().span_y() / 2);
     
     float totheight = 0;
-    for(int i = 0; i < items.size(); i++)
+    float maxwidth = 0;
+    for(int i = 0; i < items.size(); i++) {
       totheight += items[i].renderItemHeight();
+      maxwidth = max(maxwidth, items[i].renderItemWidth(getZoom().span_x() - 4));
+    }
     
-    setZoomCenter(0, 0, getZoom().span_y() / 2);
+    if(obscure) {
+      Float2 upleft = Float2(maxwidth / 2 + 2, totheight / 2 + 2);
+      setColor(C::box_border);
+      drawSolid(Float4(-upleft, upleft));
+      drawRect(Float4(-upleft, upleft), 0.5);
+    }
     
     float curpos = (getZoom().span_y() - totheight) / 2;
     for(int i = 0; i < items.size(); i++) {
@@ -270,7 +288,7 @@ void StdMenu::render(const Float4 &bounds, bool obscure) const {
         setColor(C::inactive_text);
       }
       
-      items[i].renderItem(Float4(getZoom().sx + 2, getZoom().sy + curpos, getZoom().ex - 2, -1));
+      items[i].renderItem(Float4(-maxwidth / 2, getZoom().sy + curpos, maxwidth / 2, -1));
       curpos += items[i].renderItemHeight();
     }
   }
@@ -375,9 +393,9 @@ bool InterfaceMain::tick(const InputState &is, RngSeed gameseed) {
   
   if(escmenu) {
     int rv = escmenuitem.tick(kst[controls_primary_id()]);
-    if(rv == 0)
+    if(rv == SMR_RETURN)
       escmenu = false;
-    if(rv == 1)
+    if(rv == 2)
       return true;
   } else {
     if(interface_mode == STATE_MAINMENU) {

@@ -49,7 +49,8 @@ public:
   void renderEntire(const Float4 &bounds, bool obscure) const;
   
   int tickItem(const Keystates &keys);
-  float renderItemHeight() const; // returns height
+  float renderItemHeight() const;
+  float renderItemWidth(float tmx) const;
   void renderItem(const Float4 &bounds) const; // ey is ignored
 
 private:

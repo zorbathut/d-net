@@ -1,6 +1,9 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - Rework the menu system to be saner and more easily modified
+    - Make box appropriately sized (bigger bounds in both directions, not a weird space at the bottom)
+    - Make box actually show up (sigh.)
+    - Make "main menu" work
     - Disable input test on new-game
     - Add "return" menu on new-game
     - Highlight "The Segment" somehow
@@ -8,6 +11,7 @@
     - Add screen resolutions
     - Add widescreen
     - Add dragging to resize
+  - Set up some way to end the game before the rounds end
   - Convert key output into OStream
     - Add OStreamGz support
     - Compress key output
