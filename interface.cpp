@@ -43,7 +43,28 @@ void StdMenuItem::ScaleDisplayer::render(float pos) const {
   drawLine(Float4(0, height / 4, labels.size() - 1, height / 4), height / 20);
   
   setColor(C::active_text);
-  {
+  if(start && end)
+    drawLine(Float4(start->toFloat(), height / 4, end->toFloat(), height / 4), height / 10);
+  
+  if(start) {
+    vector<Float2> path;
+    path.push_back(Float2(start->toFloat(), height / 8));
+    path.push_back(Float2(start->toFloat() + height / 16, height / 4));
+    path.push_back(Float2(start->toFloat(), height / 2 - height / 8));
+    path.push_back(Float2(start->toFloat() - height / 16, height / 4));
+    drawLineLoop(path, height / 20);
+  }
+  
+  if(end) {
+    vector<Float2> path;
+    path.push_back(Float2(end->toFloat(), height / 8));
+    path.push_back(Float2(end->toFloat() + height / 16, height / 4));
+    path.push_back(Float2(end->toFloat(), height / 2 - height / 8));
+    path.push_back(Float2(end->toFloat() - height / 16, height / 4));
+    drawLineLoop(path, height / 20);
+  }
+  
+  if(!start && !end) {
     vector<Float2> path;
     path.push_back(Float2(pos, height / 8));
     path.push_back(Float2(pos + height / 16, height / 4));
