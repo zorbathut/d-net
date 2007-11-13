@@ -399,39 +399,43 @@ bool InterfaceMain::tick(const InputState &is, RngSeed gameseed) {
     int rv = escmenuitem.tick(kst[controls_primary_id()]);
     if(rv == SMR_RETURN)
       escmenu = false;
+    if(rv == 1) {
+      dprintf("re-initting\n");
+      escmenu = false;
+      interface_mode = STATE_MAINMENU;
+      init();
+    }
     if(rv == 2)
       return true;
-  } else {
-    if(interface_mode == STATE_MAINMENU) {
-      if(!inptest) {
-        introscreen->runTickWithAi(vector<GameAi*>(introscreen_ais.begin(), introscreen_ais.end()), &unsync());
-        introscreen->runTickWithAi(vector<GameAi*>(introscreen_ais.begin(), introscreen_ais.end()), &unsync());
-      }
-      
-      int mrv = mainmenu.tick(kst[controls_primary_id()]);
-      if(mrv == MAIN_NEWGAME || FLAGS_auto_newgame) {
-        if(faction_toggle == 0)
-          faction = 4;
-        else
-          faction = 1;
-        game = new Metagame(kst.size(), Money((long long)(1000 * pow(30, start.toFloat()))), exp(moneyexp), faction - 1, FLAGS_rounds_per_shop, calculateRounds(start, end, moneyexp), gameseed);
-        interface_mode = STATE_PLAYING;
-      } else if(mrv == MAIN_EXIT) {
-        return true;
-      } else if(mrv == MAIN_INPUTTEST) {
-        inptest = !inptest;
-      } else if(mrv == MAIN_GRID) {
-        grid = !grid;
-      } else {
-        CHECK(mrv == -1);
-      }
-    } else if(interface_mode == STATE_PLAYING) {
-      if(game->runTick(is.controllers)) {
-        init();   // full reset
-      }
-    } else {
-      CHECK(0);
+  } else if(interface_mode == STATE_MAINMENU) {
+    if(!inptest) {
+      introscreen->runTickWithAi(vector<GameAi*>(introscreen_ais.begin(), introscreen_ais.end()), &unsync());
+      introscreen->runTickWithAi(vector<GameAi*>(introscreen_ais.begin(), introscreen_ais.end()), &unsync());
     }
+    
+    int mrv = mainmenu.tick(kst[controls_primary_id()]);
+    if(mrv == MAIN_NEWGAME || FLAGS_auto_newgame) {
+      if(faction_toggle == 0)
+        faction = 4;
+      else
+        faction = 1;
+      game = new Metagame(kst.size(), Money((long long)(1000 * pow(30, start.toFloat()))), exp(moneyexp), faction - 1, FLAGS_rounds_per_shop, calculateRounds(start, end, moneyexp), gameseed);
+      interface_mode = STATE_PLAYING;
+    } else if(mrv == MAIN_EXIT) {
+      return true;
+    } else if(mrv == MAIN_INPUTTEST) {
+      inptest = !inptest;
+    } else if(mrv == MAIN_GRID) {
+      grid = !grid;
+    } else {
+      CHECK(mrv == -1);
+    }
+  } else if(interface_mode == STATE_PLAYING) {
+    if(game->runTick(is.controllers)) {
+      init();   // full reset
+    }
+  } else {
+    CHECK(0);
   }
   
   return false;
@@ -656,6 +660,7 @@ void InterfaceMain::checksum(Adler32 *adl) const {
 
 void InterfaceMain::init() {
   mainmenu = StdMenu();
+  escmenuitem = StdMenu();
   kst.clear();
   introscreen_ais.clear();
   delete introscreen;
@@ -718,7 +723,7 @@ void InterfaceMain::init() {
   escmenuitem.pushMenuItem(StdMenuItem::makeTrigger("Main menu", 1));
   escmenuitem.pushMenuItem(StdMenuItem::makeTrigger("Quit", 2));
   
-  for(int i = 0; i < 180; i++)
+  for(int i = 0; i < 30; i++)
     introscreen->runTickWithAi(vector<GameAi*>(introscreen_ais.begin(), introscreen_ais.end()), &unsync());
 }
 InterfaceMain::InterfaceMain() {

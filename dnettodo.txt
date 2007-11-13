@@ -1,7 +1,6 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - Rework the menu system to be saner and more easily modified
-    - Make "main menu" work
     - Disable input test on new-game
     - Add "return" menu on new-game
     - Highlight "The Segment" somehow
