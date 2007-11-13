@@ -949,7 +949,7 @@ void drawCrosshair(const CFC2 &pos, float rad, float weight) {
 }
 
 void drawBlast(const CFC2 &center, float rad, float chaos, int vertices, int seed) {
-  Rng rng((RngSeed(seed)));
+  RngFast rng((RngSeed(seed)));
   const float ofs = rng.frand() * 2 * PI / vertices;
   vector<Float2> pex;
   for(int j = 0; j < vertices; j++)

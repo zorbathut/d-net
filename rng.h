@@ -7,19 +7,18 @@ class Coord;
 class Adler32;
   
 class RngSeed {
-friend class Rng;
-private:
+public:
   unsigned int seed;
 
 public:
   explicit RngSeed(unsigned int seed) : seed(seed) { }
 };
 
-class Rng {
+template<typename T> class RngBase {
 private:
-  boost::lagged_fibonacci9689 sync;
+  T sync;
 
-  Rng();
+  RngBase();
 
 public:
   float frand(); // [0,1)
@@ -42,8 +41,11 @@ public:
 
   void checksum(Adler32 *adler) const;
 
-  explicit Rng(RngSeed seed);
+  explicit RngBase(RngSeed seed);
 };
+
+typedef RngBase<boost::lagged_fibonacci9689> Rng;
+typedef RngBase<boost::rand48> RngFast;
 
 Rng &unsync();
 

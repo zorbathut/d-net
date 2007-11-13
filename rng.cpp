@@ -9,22 +9,29 @@
 
 using namespace std;
 
-float Rng::frand() {
-  float v = sync();
+template<> float RngBase<boost::lagged_fibonacci9689>::frand() {
+  float v = (float)sync();
+  if(unlikely(v == 1.0))
+    return frand();
+  return v;
+}
+
+template<> float RngBase<boost::rand48>::frand() {
+  float v = (float)sync() / boost::rand48::max_value;
   if(unlikely(v == 1.0))
     return frand();
   return v;
 }
 
 // todo: something more cleverer
-float Rng::sym_frand() {
+template<typename T> float RngBase<T>::sym_frand() {
   if(frand() < 0.5)
     return frand();
   else
     return -frand();
 }
 
-float Rng::gaussian() {
+template<typename T> float RngBase<T>::gaussian() {
   float x1, x2, w, y1;
   
   do {
@@ -39,11 +46,11 @@ float Rng::gaussian() {
   return y1;
 }
 
-int Rng::choose(int choices) {
+template<typename T> int RngBase<T>::choose(int choices) {
   return int(frand() * choices);
 }
 
-float Rng::gaussian(float maxgauss) {
+template<typename T> float RngBase<T>::gaussian(float maxgauss) {
   while(1) {
     float gauss = gaussian();
     if(abs(gauss) <= maxgauss)
@@ -51,22 +58,22 @@ float Rng::gaussian(float maxgauss) {
   }
 }
 
-float Rng::gaussian_scaled(float maxgauss) {
+template<typename T> float RngBase<T>::gaussian_scaled(float maxgauss) {
   return gaussian(maxgauss) / maxgauss;
 }
 
-Coord Rng::cfrand() {
-  return Coord(sync());
+template<typename T> Coord RngBase<T>::cfrand() {
+  return Coord(frand());
 }
 
-Coord Rng::sym_cfrand() {
+template<typename T> Coord RngBase<T>::sym_cfrand() {
   if(frand() < 0.5)
     return cfrand();
   else
     return -cfrand();
 }
 
-Coord Rng::cgaussian() {
+template<typename T> Coord RngBase<T>::cgaussian() {
   Coord x1, x2, w, y1;
   
   do {
@@ -81,7 +88,7 @@ Coord Rng::cgaussian() {
   return y1;
 }
 
-Coord Rng::cgaussian(Coord maxgauss) {
+template<typename T> Coord RngBase<T>::cgaussian(Coord maxgauss) {
   while(1) {
     Coord gauss = cgaussian();
     if(abs(gauss) <= maxgauss)
@@ -89,11 +96,11 @@ Coord Rng::cgaussian(Coord maxgauss) {
   }
 }
 
-Coord Rng::cgaussian_scaled(Coord maxgauss) {
+template<typename T> Coord RngBase<T>::cgaussian_scaled(Coord maxgauss) {
   return cgaussian(maxgauss) / maxgauss;
 }
 
-RngSeed Rng::generate_seed() {
+template<typename T> RngSeed RngBase<T>::generate_seed() {
   RngSeed rv(0);
   do {
     rv = RngSeed((unsigned int)(frand() * (1LL << 32)));
@@ -101,16 +108,44 @@ RngSeed Rng::generate_seed() {
   return rv;
 }
 
-void Rng::checksum(Adler32 *adl) const {
-  Rng trng = *this;
+template<typename T> void RngBase<T>::checksum(Adler32 *adl) const {
+  RngBase<T> trng = *this;
   adler(adl, trng.cfrand());
   adler(adl, trng.cfrand());
   adler(adl, trng.cfrand());
   adler(adl, trng.cfrand());
 }
 
-Rng::Rng(RngSeed in_seed) {
-  sync = boost::lagged_fibonacci9689(in_seed.seed);
+template<typename T> RngBase<T>::RngBase(RngSeed in_seed) {
+  sync = T((int)in_seed.seed);
 }
 
 Rng &unsync() { static Rng unsyncrng(RngSeed(time(NULL))); return unsyncrng; }
+
+void dump() {
+  {
+    Rng rng(RngSeed(time(NULL)));
+    rng.frand();
+    rng.cfrand();
+    rng.sym_frand();
+    rng.gaussian();
+    rng.gaussian_scaled(1);
+    rng.cgaussian_scaled(1);
+    rng.generate_seed();
+    rng.choose(15);
+    rng.checksum(NULL); // lol
+  }
+  
+  {
+    RngFast rng(RngSeed(time(NULL)));
+    rng.frand();
+    rng.cfrand();
+    rng.sym_frand();
+    rng.gaussian();
+    rng.gaussian_scaled(1);
+    rng.cgaussian_scaled(1);
+    rng.generate_seed();
+    rng.choose(15);
+    rng.checksum(NULL); // lol
+  }
+}
