@@ -428,6 +428,9 @@ bool InterfaceMain::tick(const InputState &is, RngSeed gameseed) {
       inptest = !inptest;
     } else if(mrv.second == MAIN_GRID) {
       grid = !grid;
+    } else if(mrv.second == MAIN_NEWGAMEMENU) {
+      inptest = false;
+      grid = false; // :D
     } else {
       CHECK(mrv.second == -1);
     }
@@ -680,7 +683,7 @@ void InterfaceMain::init() {
     //configmenu.pushMenuItem(StdMenuItem::makeOptions("Faction mode", boost::assign::list_of("Battle")("No factions")("Minor factions")("Normal factions")("Major factions"), &faction));
     configmenu.pushMenuItem(StdMenuItem::makeTrigger("Begin", MAIN_NEWGAME));
     
-    mainmenu.pushMenuItem(StdMenuItem::makeSubmenu("New game", configmenu));
+    mainmenu.pushMenuItem(StdMenuItem::makeSubmenu("New game", configmenu, MAIN_NEWGAMEMENU));
   }
   
   mainmenu.pushMenuItem(StdMenuItem::makeTrigger("Input test", MAIN_INPUTTEST));

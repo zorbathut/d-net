@@ -80,7 +80,7 @@ private:
 class InterfaceMain : boost::noncopyable {
   
   enum { STATE_MAINMENU, STATE_PLAYING };
-  enum { MAIN_NEWGAME, MAIN_INPUTTEST, MAIN_GRID, MAIN_EXIT };
+  enum { MAIN_NEWGAME, MAIN_INPUTTEST, MAIN_GRID, MAIN_EXIT, MAIN_NEWGAMEMENU };
   enum { ESC_MAINMENU, ESC_EXIT };
   int interface_mode;
   
