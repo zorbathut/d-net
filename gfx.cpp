@@ -948,11 +948,12 @@ void drawCrosshair(const CFC2 &pos, float rad, float weight) {
   drawLine(pos->x, pos->y - rad, pos->x, pos->y + rad, weight);
 }
 
-void drawBlast(const CFC2 &center, float rad, float chaos, int vertices) {
-  const float ofs = unsync().frand() * 2 * PI / vertices;
+void drawBlast(const CFC2 &center, float rad, float chaos, int vertices, int seed) {
+  Rng rng((RngSeed(seed)));
+  const float ofs = rng.frand() * 2 * PI / vertices;
   vector<Float2> pex;
   for(int j = 0; j < vertices; j++)
-    pex.push_back(*center + makeAngle(j * PI * 2 / vertices + ofs) * rad + Float2(unsync().gaussian(), unsync().gaussian()) * chaos);
+    pex.push_back(*center + makeAngle(j * PI * 2 / vertices + ofs) * rad + Float2(rng.gaussian(), rng.gaussian()) * chaos);
   drawLineLoop(pex, 0.3);
 }
 

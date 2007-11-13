@@ -638,7 +638,7 @@ void Game::renderToScreen(const vector<const Player *> &players, GameMetacontext
     }
     
     for(int i = 0; i < gfxeffects.size(); i++)
-      gfxeffects[i]->render();
+      gfxeffects[i]->render(frameNm);
     
     for(int i = 0; i < bombards.size(); i++) {
       if(bombards[i].state == BombardmentState::BS_OFF) {

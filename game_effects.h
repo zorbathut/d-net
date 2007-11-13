@@ -16,7 +16,7 @@ public:
   void tick();
   bool dead() const;
 
-  virtual void render() const = 0;
+  virtual void render(int gameframe) const = 0;
 
   virtual ~GfxEffects();
 

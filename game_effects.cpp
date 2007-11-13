@@ -40,7 +40,7 @@ GfxEffects::~GfxEffects() { };
 class GfxEffectsPoint : public GfxEffects {
 public:
 
-  virtual void render() const {
+  virtual void render(int gameframe) const {
     setBaseColor();
     drawPoint(pos + vel * getAge(), 0.5f);
   }
@@ -59,7 +59,7 @@ smart_ptr<GfxEffects> GfxPoint(Float2 pos, Float2 vel, float life, Color color) 
 class GfxEffectsCircle : public GfxEffects {
 public:
 
-  virtual void render() const {
+  virtual void render(int gameframe) const {
     setBaseColor();
     drawCircle(center, radius, 0.1f);
   }
@@ -78,7 +78,7 @@ smart_ptr<GfxEffects> GfxCircle(Float2 center, float radius, float life, Color c
 class GfxEffectsText : public GfxEffects {
 public:
 
-  virtual void render() const {
+  virtual void render(int gameframe) const {
     setBaseColor();
     drawText(text, size, pos + vel * getAge());
   }
@@ -99,7 +99,7 @@ smart_ptr<GfxEffects> GfxText(Float2 pos, Float2 vel, float size, string text, f
 class GfxEffectsPath : public GfxEffects {
 public:
 
-  virtual void render() const {
+  virtual void render(int gameframe) const {
     setBaseColor();
     drawTransformedLinePath(path, ang_start + ang_vel * getAge() + ang_acc * getAge() * getAge() / 2, pos_start + pos_vel * getAge() + pos_acc * getAge() * getAge() / 2, 0.5f);
   }
@@ -123,7 +123,7 @@ smart_ptr<GfxEffects> GfxPath(vector<Float2> path, Float2 pos_start, Float2 pos_
 class GfxEffectsPing : public GfxEffects {
 public:
 
-  virtual void render() const {
+  virtual void render(int gameframe) const {
     setBaseColor();
     drawCircle(pos, radius_d * getAge(), thickness_d * getAge());
   }
@@ -143,7 +143,7 @@ smart_ptr<GfxEffects> GfxPing(Float2 pos, float radius_d, float thickness_d, flo
 class GfxEffectsBlast : public GfxEffects {
 public:
 
-  virtual void render() const {
+  virtual void render(int gameframe) const {
     const float desarea = radius * radius * PI * getAgeFactor();
     const float desrad = sqrt(desarea / PI);
     const int vertx = 16;
@@ -154,7 +154,7 @@ public:
         setColor(dim * (1.0 - getAgeFactor()));
       }
       const float chaos = len(makeAngle(1 * PI * 2 / vertx) - makeAngle(0)) * desrad / 2;
-      drawBlast(center, desrad, chaos, vertx);
+      drawBlast(center, desrad, chaos, vertx, (int)this + i + gameframe * 3571);
     }
   }
 
@@ -174,12 +174,12 @@ smart_ptr<GfxEffects> GfxBlast(Float2 center, float radius, Color bright, Color 
 class GfxEffectsIonBlast : public GfxEffects {
 public:
     
-  virtual void render() const {
+  virtual void render(int gameframe) const {
     for(int i = 0; i < visuals.size(); i++) {
       setColor(visuals[i].second * pow(1.0 - getAgeFactor(), 1.0));
       for(int j = 0; j < visuals[i].first; j++) {
         float rad = unsync().frand() * radius;
-        drawBlast(center, rad, rad * 0.1, 16);
+        drawBlast(center, rad, rad * 0.1, 16, (int)this + j + i * visuals[i].first + gameframe * 3571);
       }
     }
   }
@@ -197,7 +197,7 @@ private:
 smart_ptr<GfxEffects> GfxIonBlast(Float2 center, float duration, float radius, const vector<pair<int, Color> > &visuals) {
   return smart_ptr<GfxEffects>(new GfxEffectsIonBlast(center, duration, radius, visuals)); }
 
-float dpp = 0.1;
+const float dpp = 0.1;
 void genlofs(vector<float> *lofs, int s, int e) {
   float ale = dpp * (e - s) - abs((*lofs)[s] - (*lofs)[e]);
   float opt = ((*lofs)[s] + (*lofs)[e]) / 2;
@@ -211,7 +211,7 @@ void genlofs(vector<float> *lofs, int s, int e) {
 class GfxEffectsLightning : public GfxEffects {
 public:
     
-  virtual void render() const {
+  virtual void render(int gameframe) const {
     setBaseColor();
     CHECK(lofs.size());
     for(int i = 0; i < lofs.size() - 1; i++)
@@ -242,7 +242,7 @@ smart_ptr<GfxEffects> GfxLightning(Float2 start, Float2 end) {
 class GfxEffectsIdbParticle : public GfxEffects {
 public:
     
-  virtual void render() const {
+  virtual void render(int gameframe) const {
     setBaseColor();
     if(effect.particle_slowdown() == 1) {
       drawPoint(center + velocity * getAge(), effect.particle_radius());
