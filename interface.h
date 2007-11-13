@@ -46,15 +46,17 @@ public:
     vector<string> labels;
     const Coord *start;
     const Coord *end;
+    const bool *onstart;
+    bool mini;
     
-    void render(float center) const;
+    void render(float pos) const;
     
-    ScaleDisplayer(const vector<string> &labels, const Coord *start, const Coord *end) : labels(labels), start(start), end(end) { };
-    ScaleDisplayer(const vector<string> &labels) : labels(labels), start(NULL), end(NULL) { };
+    ScaleDisplayer(const vector<string> &labels, const Coord *start, const Coord *end, const bool *onstart, bool mini) : labels(labels), start(start), end(end), onstart(onstart), mini(mini) { };
+    ScaleDisplayer(const vector<string> &labels) : labels(labels), start(NULL), end(NULL), onstart(NULL) { };
     ScaleDisplayer() { };
   };
   
-  static StdMenuItem makeScale(const string &text, Coord *position, const function<Coord (const Coord &)> &munge, const ScaleDisplayer &sds);
+  static StdMenuItem makeScale(const string &text, Coord *position, const function<Coord (const Coord &)> &munge, const ScaleDisplayer &sds, bool selected_val, bool *selected_pos);
   static StdMenuItem makeRounds(const string &text, Coord *start, Coord *end, Coord *exp);
   static StdMenuItem makeOptions(const string &text, int *position, const ScaleDisplayer &sds);
   static StdMenuItem makeSubmenu(const string &text, StdMenu menu, int signal = SMR_NOTHING);
@@ -63,7 +65,7 @@ public:
   pair<StdMenuCommand, int> tickEntire(const Keystates &keys);
   void renderEntire(const Float4 &bounds, bool obscure) const;
   
-  pair<StdMenuCommand, int> tickItem(const Keystates &keys);
+  pair<StdMenuCommand, int> tickItem(const Keystates *keys);
   float renderItemHeight() const;
   float renderItemWidth(float tmx) const;
   void renderItem(const Float4 &bounds) const; // ey is ignored
@@ -81,6 +83,8 @@ private:
   Coord scale_posint_approx;
   function<Coord (const Coord &)> scale_munge;
   ScaleDisplayer scale_displayer;
+  bool scale_selected_val;
+  bool *scale_selected_pos;
   
   Coord *rounds_start;
   Coord *rounds_end;
@@ -113,6 +117,8 @@ class InterfaceMain : boost::noncopyable {
   
   Coord start;
   Coord end;
+  bool onstart;
+  
   Coord moneyexp;
   Coord start_clamp(const Coord &opt) const;
   Coord end_clamp(const Coord &opt) const;

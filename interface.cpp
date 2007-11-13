@@ -30,7 +30,22 @@ DEFINE_bool(showGlobalErrors, true, "Display global errors");
 DEFINE_int(factionMode, 3, "Faction mode to skip faction choice battle, -1 for normal faction mode");
 
 void StdMenuItem::ScaleDisplayer::render(float pos) const {
-  float height = getZoom().span_y();
+  float cent;
+  if(!onstart) {
+    cent = 0.5;
+  } else if(*onstart) {
+    cent = start->toFloat();
+  } else {
+    cent = end->toFloat();
+  }
+  
+  if(mini) {
+    setZoomAround(Float4(-0.5, 0, labels.size() + 0.5 - 1, 0));
+  } else {
+    setZoomAround(Float4(cent - 2, 0, cent + 2, 0));
+  }
+  
+  const float height = mini ? 0.27 : 0.19;
   
   for(int i = 0; i < labels.size(); i++) {
     setColor(C::active_text);
@@ -82,7 +97,7 @@ StdMenuItem StdMenuItem::makeTrigger(const string &text, int trigger) {
   return stim;
 }
 
-StdMenuItem StdMenuItem::makeScale(const string &text, Coord *position, const function<Coord (const Coord &)> &munge, const ScaleDisplayer &sds) {
+StdMenuItem StdMenuItem::makeScale(const string &text, Coord *position, const function<Coord (const Coord &)> &munge, const ScaleDisplayer &sds, bool scale_selected_val, bool *scale_selected_pos) {
   StdMenuItem stim;
   stim.type = TYPE_SCALE;
   stim.name = text;
@@ -90,6 +105,8 @@ StdMenuItem StdMenuItem::makeScale(const string &text, Coord *position, const fu
   stim.scale_munge = munge;
   stim.scale_posint = NULL;
   stim.scale_displayer = sds;
+  stim.scale_selected_val = scale_selected_val;
+  stim.scale_selected_pos = scale_selected_pos;
   return stim;
 }
 
@@ -111,6 +128,7 @@ StdMenuItem StdMenuItem::makeOptions(const string &text, int *position, const Sc
   stim.scale_posint = position;
   stim.scale_posint_approx = *position;
   stim.scale_displayer = sds;
+  stim.scale_selected_pos = NULL;
   return stim;
 }
 
@@ -140,47 +158,52 @@ void StdMenuItem::renderEntire(const Float4 &bounds, bool obscure) const {
   submenu.render(bounds, obscure);
 }
 
-pair<StdMenuCommand, int> StdMenuItem::tickItem(const Keystates &keys) {
+pair<StdMenuCommand, int> StdMenuItem::tickItem(const Keystates *keys) {
   StackString stp("StdMenuItem ticking");
   if(type == TYPE_TRIGGER) {
-    if(keys.accept.push) {
+    if(keys && keys->accept.push) {
       queueSound(S::accept);
       return make_pair(SMR_NOTHING, trigger);
     }
   } else if(type == TYPE_SUBMENU) {
-    if(keys.accept.push) {
+    if(keys && keys->accept.push) {
       queueSound(S::accept);
       submenu.reset();
       return make_pair(SMR_ENTER, submenu_signal);
     }
   } else if(type == TYPE_BACK) {
-    if(keys.accept.push) {
+    if(keys && keys->accept.push) {
       queueSound(S::choose);
       return make_pair(SMR_RETURN, SMR_NOTHING);
     }
   } else if(type == TYPE_SCALE) {
     if(scale_posfloat) {
-      if(keys.l.down)
-        *scale_posfloat -= Coord(1) / 16;
-      if(keys.r.down)
-        *scale_posfloat += Coord(1) / 16;
-      if(keys.l.down || keys.r.down)
-        *scale_posfloat = scale_munge(*scale_posfloat);
+      if(keys) {
+        if(keys->l.down)
+          *scale_posfloat -= Coord(1) / 16;
+        if(keys->r.down)
+          *scale_posfloat += Coord(1) / 16;
+        if(keys->l.down || keys->r.down)
+          *scale_posfloat = scale_munge(*scale_posfloat);
+      }
     } else {
       CHECK(scale_posint);
-      if(keys.l.down)
+      if(keys && keys->l.down)
         scale_posint_approx -= Coord(1) / 32;
-      if(keys.r.down)
+      if(keys && keys->r.down)
         scale_posint_approx += Coord(1) / 32;
-      if(!keys.l.down && !keys.r.down)
+      if(!keys || !keys->l.down && !keys->r.down)
         scale_posint_approx = approach(scale_posint_approx, round(scale_posint_approx), Coord(1) / 128);
       scale_posint_approx = clamp(scale_posint_approx, 0, 1); // sigh
       *scale_posint = round(scale_posint_approx).toInt();
     }
+    
+    if(keys && scale_selected_pos)
+      *scale_selected_pos = scale_selected_val;
   } else if(type == TYPE_ROUNDS) {
-    if(keys.l.down)
+    if(keys->l.down)
       *rounds_exp *= Coord(101) / 100;
-    if(keys.r.down)
+    if(keys->r.down)
       *rounds_exp /= Coord(101) / 100;
     *rounds_exp = clamp(*rounds_exp, Coord(0.001), 2);
   } else {
@@ -225,8 +248,6 @@ void StdMenuItem::renderItem(const Float4 &bounds) const {
     
     Float4 boundy = Float4(bounds.sx + 35, bounds.sy, bounds.ex, bounds.sy + 4);
     GfxWindow gfxw(boundy, 1.0);
-    
-    setZoomAround(Float4(pos - 2, 0, pos + 2, 0));
     
     scale_displayer.render(pos);
   } else if(type == TYPE_ROUNDS) {
@@ -274,14 +295,14 @@ pair<StdMenuCommand, int> StdMenu::tick(const Keystates &keys) {
   for(int i = 0; i < items.size(); i++)
     for(int j = 0; j < items[i].size(); j++)
       if(i != vpos && j != hpos)
-        items[i][j].tickItem(Keystates());
+        items[i][j].tickItem(NULL);
     
   {
     pair<StdMenuCommand, int> rv;
     if(inside)
       rv = items[vpos][hpos].tickEntire(keys);
     else
-      rv = items[vpos][hpos].tickItem(keys);
+      rv = items[vpos][hpos].tickItem(&keys);
     
     if(rv.first == SMR_NOTHING) {
       return rv;
@@ -526,7 +547,7 @@ Coord InterfaceMain::start_clamp(const Coord &opt) const {
   return clamp(opt, 0, end - Coord(1) / 16);
 }
 Coord InterfaceMain::end_clamp(const Coord &opt) const {
-  return clamp(opt, start + Coord(1) / 16, 8);
+  return clamp(opt, start + Coord(1) / 16, 7);
 }
 
 void InterfaceMain::render() const {
@@ -733,8 +754,8 @@ void InterfaceMain::init() {
     vector<string> onoff = boost::assign::list_of("On")("Off");
     
     StdMenu configmenu;
-    configmenu.pushMenuItem(StdMenuItem::makeScale("Game start", &start, bind(&InterfaceMain::start_clamp, this, _1), StdMenuItem::ScaleDisplayer(names, &start, &end)));
-    configmenu.pushMenuItem(StdMenuItem::makeScale("Game end", &end, bind(&InterfaceMain::end_clamp, this, _1), StdMenuItem::ScaleDisplayer(names, &start, &end)));
+    configmenu.pushMenuItem(StdMenuItem::makeScale("Game start", &start, bind(&InterfaceMain::start_clamp, this, _1), StdMenuItem::ScaleDisplayer(names, &start, &end, &onstart, true), true, &onstart));
+    configmenu.pushMenuItem(StdMenuItem::makeScale("Game end", &end, bind(&InterfaceMain::end_clamp, this, _1), StdMenuItem::ScaleDisplayer(names, &start, &end, &onstart, false), false, &onstart));
     configmenu.pushMenuItem(StdMenuItem::makeRounds("Estimated rounds", &start, &end, &moneyexp));
     configmenu.pushMenuItem(StdMenuItem::makeOptions("Factions", &faction_toggle, StdMenuItem::ScaleDisplayer(onoff)));
     //configmenu.pushMenuItem(StdMenuItem::makeOptions("Faction mode", boost::assign::list_of("Battle")("No factions")("Minor factions")("Normal factions")("Major factions"), &faction));

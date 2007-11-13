@@ -1,7 +1,6 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - Rework the menu system to be saner and more easily modified
-    - Highlight "The Segment" somehow
     - Make it so explosions don't move constantly when paused
     - Add screen resolutions
     - Add widescreen
@@ -53,6 +52,7 @@
     - Make long projectiles impacting the wall render part of the projectile, to avoid the "black target space" issue
   - Powerups?
   - Task-analyze the UI
+  - Improve game start/end
   - Explain the "quantity" and "recommended loadout" lines better
   - Batch shit in rendering better
   - Final weapons
