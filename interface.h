@@ -41,9 +41,22 @@ public:
 class StdMenuItem {
 public:
   static StdMenuItem makeTrigger(const string &text, int trigger);
-  static StdMenuItem makeScale(const string &text, const vector<string> &labels, Coord *position, const function<Coord (const Coord &)> &munge);
+
+  struct ScaleDisplayer {
+    vector<string> labels;
+    const Coord *start;
+    const Coord *end;
+    
+    void render(float center) const;
+    
+    ScaleDisplayer(const vector<string> &labels, const Coord *start, const Coord *end) : labels(labels), start(start), end(end) { };
+    ScaleDisplayer(const vector<string> &labels) : labels(labels), start(NULL), end(NULL) { };
+    ScaleDisplayer() { };
+  };
+  
+  static StdMenuItem makeScale(const string &text, Coord *position, const function<Coord (const Coord &)> &munge, const ScaleDisplayer &sds);
   static StdMenuItem makeRounds(const string &text, Coord *start, Coord *end, Coord *exp);
-  static StdMenuItem makeOptions(const string &text, const vector<string> &labels, int *position);
+  static StdMenuItem makeOptions(const string &text, int *position, const ScaleDisplayer &sds);
   static StdMenuItem makeSubmenu(const string &text, StdMenu menu, int signal = SMR_NOTHING);
   static StdMenuItem makeBack(const string &text);
 
@@ -63,11 +76,11 @@ private:
 
   int trigger;
   
-  vector<string> scale_labels;
   Coord *scale_posfloat;
+  int *scale_posint;
   Coord scale_posint_approx;
   function<Coord (const Coord &)> scale_munge;
-  int *scale_posint;
+  ScaleDisplayer scale_displayer;
   
   Coord *rounds_start;
   Coord *rounds_end;
