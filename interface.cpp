@@ -148,7 +148,7 @@ int calculateRounds(Coord start, Coord end, Coord exp) {
 
 float StdMenuItem::renderItemHeight() const {
   if(type == TYPE_TRIGGER || type == TYPE_SCALE || type == TYPE_ROUNDS || type == TYPE_SUBMENU || type == TYPE_BACK) {
-    return 6;
+    return 4;
   } else {
     CHECK(0);
   }
@@ -266,15 +266,19 @@ void StdMenu::render(const Float4 &bounds, bool obscure) const {
     GfxWindow gfxw(bounds, 1.0);
     setZoomCenter(0, 0, getZoom().span_y() / 2);
     
+    const float tween_items = 2;
+    const float border = 4;
+    
     float totheight = 0;
     float maxwidth = 0;
     for(int i = 0; i < items.size(); i++) {
       totheight += items[i].renderItemHeight();
       maxwidth = max(maxwidth, items[i].renderItemWidth(getZoom().span_x() - 4));
     }
+    totheight += tween_items * (items.size() - 1);
     
     if(obscure) {
-      Float2 upleft = Float2(maxwidth / 2 + 2, totheight / 2 + 2);
+      Float2 upleft = Float2(maxwidth / 2 + border, totheight / 2 + border);
       setColor(C::box_border);
       drawSolid(Float4(-upleft, upleft));
       drawRect(Float4(-upleft, upleft), 0.5);
@@ -289,7 +293,7 @@ void StdMenu::render(const Float4 &bounds, bool obscure) const {
       }
       
       items[i].renderItem(Float4(-maxwidth / 2, getZoom().sy + curpos, maxwidth / 2, -1));
-      curpos += items[i].renderItemHeight();
+      curpos += items[i].renderItemHeight() + tween_items;
     }
   }
 }
@@ -633,7 +637,7 @@ void InterfaceMain::render() const {
   
   if(escmenu) {
     setZoomVertical(0, 0, 100);
-    escmenuitem.render(boxAround(getZoom().midpoint(), 40), false);
+    escmenuitem.render(getZoom(), true);
   }
 };
 
