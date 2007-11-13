@@ -69,11 +69,12 @@ StdMenuItem StdMenuItem::makeOptions(const string &text, const vector<string> &l
   return stim;
 }
 
-StdMenuItem StdMenuItem::makeSubmenu(const string &text, StdMenu menu) {
+StdMenuItem StdMenuItem::makeSubmenu(const string &text, StdMenu menu, int signal) {
   StdMenuItem stim;
   stim.type = TYPE_SUBMENU;
   stim.name = text;
   stim.submenu = menu;
+  stim.submenu_signal = signal;
   return stim;
 }
 
@@ -84,7 +85,7 @@ StdMenuItem StdMenuItem::makeBack(const string &text) {
   return stim;
 }
 
-int StdMenuItem::tickEntire(const Keystates &keys) {
+pair<StdMenuCommand, int> StdMenuItem::tickEntire(const Keystates &keys) {
   CHECK(type == TYPE_SUBMENU);
   return submenu.tick(keys);
 }
@@ -94,22 +95,22 @@ void StdMenuItem::renderEntire(const Float4 &bounds, bool obscure) const {
   submenu.render(bounds, obscure);
 }
 
-int StdMenuItem::tickItem (const Keystates &keys) {
+pair<StdMenuCommand, int> StdMenuItem::tickItem(const Keystates &keys) {
   if(type == TYPE_TRIGGER) {
     if(keys.accept.push) {
       queueSound(S::accept);
-      return trigger;
+      return make_pair(SMR_NOTHING, trigger);
     }
   } else if(type == TYPE_SUBMENU) {
     if(keys.accept.push) {
       queueSound(S::accept);
       submenu.reset();
-      return SMR_ENTER;
+      return make_pair(SMR_ENTER, submenu_signal);
     }
   } else if(type == TYPE_BACK) {
     if(keys.accept.push) {
       queueSound(S::choose);
-      return SMR_RETURN;
+      return make_pair(SMR_RETURN, SMR_NOTHING);
     }
   } else if(type == TYPE_SCALE) {
     if(scale_posfloat) {
@@ -139,7 +140,7 @@ int StdMenuItem::tickItem (const Keystates &keys) {
   } else {
     CHECK(0);
   }
-  return SMR_NOTHING; 
+  return make_pair(SMR_NOTHING, SMR_NOTHING);
 }
 
 int calculateRounds(Coord start, Coord end, Coord exp) {
@@ -218,7 +219,7 @@ void StdMenu::pushMenuItem(const StdMenuItem &site) {
   items.push_back(site);
 }
 
-int StdMenu::tick(const Keystates &keys) {
+pair<StdMenuCommand, int> StdMenu::tick(const Keystates &keys) {
   if(!inside) {
     if(keys.u.repeat) {
       cpos--;
@@ -236,24 +237,24 @@ int StdMenu::tick(const Keystates &keys) {
       items[i].tickItem(Keystates());
     
   {
-    int rv;
+    pair<StdMenuCommand, int> rv;
     if(inside)
       rv = items[cpos].tickEntire(keys);
     else
       rv = items[cpos].tickItem(keys);
     
-    if(rv == SMR_NOTHING) {
-      return SMR_NOTHING;
-    } else if(rv == SMR_ENTER) {
-      inside = true;
-      return SMR_NOTHING;
-    } else if(rv == SMR_RETURN && !inside) {
-      return SMR_RETURN;
-    } else if(rv == SMR_RETURN && inside) {
-      inside = false;
-      return SMR_NOTHING;
-    } else {
+    if(rv.first == SMR_NOTHING) {
       return rv;
+    } else if(rv.first == SMR_ENTER) {
+      inside = true;
+      return make_pair(SMR_NOTHING, rv.second);
+    } else if(rv.first == SMR_RETURN && !inside) {
+      return make_pair(SMR_RETURN, rv.second);
+    } else if(rv.first == SMR_RETURN && inside) {
+      inside = false;
+      return make_pair(SMR_NOTHING, rv.second);
+    } else {
+      CHECK(0);
     }
   }
 }
@@ -396,16 +397,16 @@ bool InterfaceMain::tick(const InputState &is, RngSeed gameseed) {
   }
   
   if(escmenu) {
-    int rv = escmenuitem.tick(kst[controls_primary_id()]);
-    if(rv == SMR_RETURN)
+    pair<StdMenuCommand, int> rv = escmenuitem.tick(kst[controls_primary_id()]);
+    if(rv.first == SMR_RETURN)
       escmenu = false;
-    if(rv == 1) {
+    if(rv.second == 1) {
       dprintf("re-initting\n");
       escmenu = false;
       interface_mode = STATE_MAINMENU;
       init();
     }
-    if(rv == 2)
+    if(rv.second == 2)
       return true;
   } else if(interface_mode == STATE_MAINMENU) {
     if(!inptest) {
@@ -413,22 +414,22 @@ bool InterfaceMain::tick(const InputState &is, RngSeed gameseed) {
       introscreen->runTickWithAi(vector<GameAi*>(introscreen_ais.begin(), introscreen_ais.end()), &unsync());
     }
     
-    int mrv = mainmenu.tick(kst[controls_primary_id()]);
-    if(mrv == MAIN_NEWGAME || FLAGS_auto_newgame) {
+    pair<StdMenuCommand, int> mrv = mainmenu.tick(kst[controls_primary_id()]);
+    if(mrv.second == MAIN_NEWGAME || FLAGS_auto_newgame) {
       if(faction_toggle == 0)
         faction = 4;
       else
         faction = 1;
       game = new Metagame(kst.size(), Money((long long)(1000 * pow(30, start.toFloat()))), exp(moneyexp), faction - 1, FLAGS_rounds_per_shop, calculateRounds(start, end, moneyexp), gameseed);
       interface_mode = STATE_PLAYING;
-    } else if(mrv == MAIN_EXIT) {
+    } else if(mrv.second == MAIN_EXIT) {
       return true;
-    } else if(mrv == MAIN_INPUTTEST) {
+    } else if(mrv.second == MAIN_INPUTTEST) {
       inptest = !inptest;
-    } else if(mrv == MAIN_GRID) {
+    } else if(mrv.second == MAIN_GRID) {
       grid = !grid;
     } else {
-      CHECK(mrv == -1);
+      CHECK(mrv.second == -1);
     }
   } else if(interface_mode == STATE_PLAYING) {
     if(game->runTick(is.controllers)) {

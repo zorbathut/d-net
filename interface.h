@@ -14,7 +14,7 @@ class GameAiIntro;
 
 class StdMenuItem;
 
-enum { SMR_NOTHING = -1, SMR_ENTER = -2, SMR_RETURN = -3 };
+enum StdMenuCommand { SMR_NOTHING = -1, SMR_ENTER = -2, SMR_RETURN = -3 };
 
 class StdMenu {
   
@@ -27,7 +27,7 @@ public:
 
   void pushMenuItem(const StdMenuItem &site);
 
-  int tick(const Keystates &keys);
+  pair<StdMenuCommand, int> tick(const Keystates &keys);
   void render(const Float4 &bounds, bool obscure) const;
 
   void reset();
@@ -42,13 +42,13 @@ public:
   static StdMenuItem makeScale(const string &text, const vector<string> &labels, Coord *position, const function<Coord (const Coord &)> &munge);
   static StdMenuItem makeRounds(const string &text, Coord *start, Coord *end, Coord *exp);
   static StdMenuItem makeOptions(const string &text, const vector<string> &labels, int *position);
-  static StdMenuItem makeSubmenu(const string &text, StdMenu menu);
+  static StdMenuItem makeSubmenu(const string &text, StdMenu menu, int signal = SMR_NOTHING);
   static StdMenuItem makeBack(const string &text);
 
-  int tickEntire(const Keystates &keys);
+  pair<StdMenuCommand, int> tickEntire(const Keystates &keys);
   void renderEntire(const Float4 &bounds, bool obscure) const;
   
-  int tickItem(const Keystates &keys);
+  pair<StdMenuCommand, int> tickItem(const Keystates &keys);
   float renderItemHeight() const;
   float renderItemWidth(float tmx) const;
   void renderItem(const Float4 &bounds) const; // ey is ignored
@@ -72,6 +72,7 @@ private:
   Coord *rounds_exp;
   
   StdMenu submenu;
+  int submenu_signal;
 
   StdMenuItem();
 };
