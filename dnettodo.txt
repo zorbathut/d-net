@@ -1,7 +1,6 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - Rework the menu system to be saner and more easily modified
-    - Add "return" menu on new-game
     - Highlight "The Segment" somehow
     - Make it so explosions don't move constantly when paused
     - Add screen resolutions

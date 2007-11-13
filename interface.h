@@ -18,14 +18,16 @@ enum StdMenuCommand { SMR_NOTHING = -1, SMR_ENTER = -2, SMR_RETURN = -3 };
 
 class StdMenu {
   
-  vector<StdMenuItem> items;
-  int cpos;
+  vector<vector<StdMenuItem> > items;
+  int vpos;
+  int hpos;
   
   bool inside;
   
 public:
 
   void pushMenuItem(const StdMenuItem &site);
+  void pushMenuItemAdjacent(const StdMenuItem &site);
 
   pair<StdMenuCommand, int> tick(const Keystates &keys);
   void render(const Float4 &bounds, bool obscure) const;

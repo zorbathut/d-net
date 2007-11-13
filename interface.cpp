@@ -96,6 +96,7 @@ void StdMenuItem::renderEntire(const Float4 &bounds, bool obscure) const {
 }
 
 pair<StdMenuCommand, int> StdMenuItem::tickItem(const Keystates &keys) {
+  StackString stp("StdMenuItem ticking");
   if(type == TYPE_TRIGGER) {
     if(keys.accept.push) {
       queueSound(S::accept);
@@ -216,32 +217,47 @@ void StdMenuItem::renderItem(const Float4 &bounds) const {
 StdMenuItem::StdMenuItem() { }
 
 void StdMenu::pushMenuItem(const StdMenuItem &site) {
-  items.push_back(site);
+  items.push_back(vector<StdMenuItem>(1, site));
+}
+
+void StdMenu::pushMenuItemAdjacent(const StdMenuItem &site) {
+  CHECK(items.size());
+  items.back().push_back(site);
 }
 
 pair<StdMenuCommand, int> StdMenu::tick(const Keystates &keys) {
+  StackString stp("StdMenu ticking");
   if(!inside) {
-    if(keys.u.repeat) {
-      cpos--;
+    int pvpos = vpos;
+    int phpos = hpos;
+    
+    if(keys.u.repeat)
+      vpos--;
+    if(keys.d.repeat)
+      vpos++;
+    vpos = modurot(vpos, items.size());
+    
+    if(keys.r.repeat)
+      hpos++;
+    if(keys.l.repeat)
+      hpos--;
+    hpos = modurot(hpos, items[vpos].size());
+    
+    if(pvpos != vpos || phpos != hpos)
       queueSound(S::select);
-    }
-    if(keys.d.repeat) {
-      cpos++;
-      queueSound(S::select);
-    }
-    cpos = modurot(cpos, items.size());
   }
   
   for(int i = 0; i < items.size(); i++)
-    if(i != cpos)
-      items[i].tickItem(Keystates());
+    for(int j = 0; j < items[i].size(); j++)
+      if(i != vpos && j != hpos)
+        items[i][j].tickItem(Keystates());
     
   {
     pair<StdMenuCommand, int> rv;
     if(inside)
-      rv = items[cpos].tickEntire(keys);
+      rv = items[vpos][hpos].tickEntire(keys);
     else
-      rv = items[cpos].tickItem(keys);
+      rv = items[vpos][hpos].tickItem(keys);
     
     if(rv.first == SMR_NOTHING) {
       return rv;
@@ -262,19 +278,26 @@ pair<StdMenuCommand, int> StdMenu::tick(const Keystates &keys) {
 void StdMenu::render(const Float4 &bounds, bool obscure) const {
   
   if(inside) {
-    items[cpos].renderEntire(bounds, obscure);
+    items[vpos][hpos].renderEntire(bounds, obscure);
   } else {
     GfxWindow gfxw(bounds, 1.0);
     setZoomCenter(0, 0, getZoom().span_y() / 2);
     
-    const float tween_items = 2;
+    const float tween_items = 3;
     const float border = 4;
     
     float totheight = 0;
     float maxwidth = 0;
     for(int i = 0; i < items.size(); i++) {
-      totheight += items[i].renderItemHeight();
-      maxwidth = max(maxwidth, items[i].renderItemWidth(getZoom().span_x() - 4));
+      float theight = 0;
+      float twidth = 0;
+      for(int j = 0; j < items[i].size(); j++) {
+        theight = max(theight, items[i][j].renderItemHeight());
+        twidth += items[i][j].renderItemWidth((getZoom().span_x() - 4) / items[i].size());
+      }
+      
+      totheight += theight;
+      maxwidth = max(maxwidth, twidth);
     }
     totheight += tween_items * (items.size() - 1);
     
@@ -287,25 +310,35 @@ void StdMenu::render(const Float4 &bounds, bool obscure) const {
     
     float curpos = (getZoom().span_y() - totheight) / 2;
     for(int i = 0; i < items.size(); i++) {
-      if(i == cpos) {
-        setColor(C::active_text);
-      } else {
-        setColor(C::inactive_text);
-      }
+      float theight = 0;
+      float tx = 0;
       
-      items[i].renderItem(Float4(-maxwidth / 2, getZoom().sy + curpos, maxwidth / 2, -1));
-      curpos += items[i].renderItemHeight() + tween_items;
+      for(int j = 0; j < items[i].size(); j++) {
+        if(i == vpos && j == hpos) {
+          setColor(C::active_text);
+        } else {
+          setColor(C::inactive_text);
+        }
+        
+        items[i][j].renderItem(Float4(-maxwidth / 2 + tx, getZoom().sy + curpos, -maxwidth / 2 + tx + maxwidth / items[i].size(), -1));
+        
+        theight = max(theight, items[i][j].renderItemHeight());
+        tx += maxwidth / items[i].size();
+      }
+      curpos += theight + tween_items;
     }
   }
 }
 
 void StdMenu::reset() {
-  cpos = 0;
+  vpos = 0;
+  hpos = 0;
   inside = false;
 }
 
 StdMenu::StdMenu() {
-  cpos = 0;
+  vpos = 0;
+  hpos = 0;
   inside = false;
 }
 
@@ -682,6 +715,7 @@ void InterfaceMain::init() {
     configmenu.pushMenuItem(StdMenuItem::makeOptions("Factions", boost::assign::list_of("On")("Off"), &faction_toggle));
     //configmenu.pushMenuItem(StdMenuItem::makeOptions("Faction mode", boost::assign::list_of("Battle")("No factions")("Minor factions")("Normal factions")("Major factions"), &faction));
     configmenu.pushMenuItem(StdMenuItem::makeTrigger("Begin", MAIN_NEWGAME));
+    configmenu.pushMenuItemAdjacent(StdMenuItem::makeBack("Cancel"));
     
     mainmenu.pushMenuItem(StdMenuItem::makeSubmenu("New game", configmenu, MAIN_NEWGAMEMENU));
   }
