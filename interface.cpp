@@ -803,6 +803,23 @@ void InterfaceMain::init() {
     introscreen_ais.push_back(new GameAiIntro());
   
   escmenuitem.pushMenuItem(StdMenuItem::makeBack("Return to game"));
+  
+  /*
+  {
+    StdMenu optionsmenu;
+    configmenu.pushMenuItem(StdMenuItem::makeChooser("Resolution", &start));
+    configmenu.pushMenuItem(StdMenuItem::makeAspect("Resolution", &start));
+    configmenu.pushMenuItem(StdMenuItem::makeToggle("Fullscreen", &end, bind(&InterfaceMain::end_clamp, this, _1), StdMenuItem::ScaleDisplayer(names, &start, &end, &onstart, false), false, &onstart));
+    configmenu.pushMenuItem(StdMenuItem::makeRounds("Estimated rounds", &start, &end, &moneyexp));
+    configmenu.pushMenuItem(StdMenuItem::makeOptions("Factions", &faction_toggle, StdMenuItem::ScaleDisplayer(onoff)));
+    //configmenu.pushMenuItem(StdMenuItem::makeOptions("Faction mode", boost::assign::list_of("Battle")("No factions")("Minor factions")("Normal factions")("Major factions"), &faction));
+    configmenu.pushMenuItem(StdMenuItem::makeTrigger("Begin", MAIN_NEWGAME));
+    configmenu.pushMenuItemAdjacent(StdMenuItem::makeBack("Cancel"));
+    
+    mainmenu.pushMenuItem(StdMenuItem::makeSubmenu("New game", configmenu, MAIN_NEWGAMEMENU));
+  }
+  */
+  
   escmenuitem.pushMenuItem(StdMenuItem::makeTrigger("Main menu", 1));
   escmenuitem.pushMenuItem(StdMenuItem::makeTrigger("Quit", 2));
   

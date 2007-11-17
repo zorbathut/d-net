@@ -225,8 +225,19 @@ Release build:
 
 ----
 Menus!
-Tick does what it currently does
-Render takes a render-mode and an area
+Things I need:
 
-Menus return a few possible values, from "triggered" to "return" to "exitmenu". Otherwise, it's pretty much all done through pointers.
-Menu items contain their own bounds. Menu state: "inside" or "not_inside".
+* Resolution
+* Fullscreen
+* Aspect ratio
+* Color depth
+* Accept
+* Cancel
+
+----
+Chooser interface
+
+Name
+Key/value pairs (string/T)
+"Value" storage location
+Change notifier functor

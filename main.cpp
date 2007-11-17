@@ -9,6 +9,7 @@
 #include "generators.h"
 #include "audio.h"
 #include "test.h"
+#include "res_interface.h"
 
 #ifdef OSX_FRAMEWORK_PREFIXES
   #include <OpenGL/gl.h>
@@ -21,9 +22,6 @@
 #include <boost/assign.hpp>
 
 using namespace std;
-
-#define SCREEN_DEPTH  16
-SDL_Surface * MainWindow = NULL;
 
 DEFINE_bool(fullscreen, true, "Fullscreen");
 DEFINE_bool(help, false, "Get help");
@@ -39,105 +37,19 @@ DEFINE_bool(outputLevelChart, false, "Output a chart of which levels are availab
 
 DECLARE_bool(shopcache);
 
-int GetVideoFlags(void) {
-
-  int videoflags = 0;
-
-  videoflags = SDL_OPENGL | SDL_HWPALETTE/* | SDL_RESIZABLE*/;
-
-  const SDL_VideoInfo *videoinfo = SDL_GetVideoInfo();
-  CHECK(videoinfo);
-  if(videoinfo->hw_available)
-    videoflags |= SDL_HWSURFACE;
-  else {
-    dprintf("WARNING: Software surface\n");
-    videoflags |= SDL_SWSURFACE;
-  }
-  
-  if(videoinfo->blit_hw) {
-    videoflags |= SDL_HWACCEL;
-  } else {
-    dprintf("WARNING: Software blit\n");
-  }
-  
-  if(FLAGS_fullscreen)
-    videoflags |= SDL_FULLSCREEN;
-
-  return videoflags;
-
-}
-
-bool MakeWindow(const char * strWindowName, int width, int height) {
-  
-  dprintf("Attempting to make window %d/%d\n", width, height);
-
-  CHECK(height > 0);
-  CHECK(width > 0);
-  
-  MainWindow = SDL_SetVideoMode(width, height, SCREEN_DEPTH, GetVideoFlags());
-  if(!MainWindow)
-    return false;
-
-  SDL_WM_SetCaption(strWindowName, strWindowName);     // set the window caption (first argument) and icon caption (2nd arg)
-
-  glViewport(0, 0, width, height);
-
-  glLoadIdentity();
-  glOrtho(0, 1.25, 0, 1, 1.0, -1.0);  
-  
-  return true;
-
-}
-
 void SetupOgl() {
 
   CHECK(SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1) == 0);     // tell SDL that the GL drawing is going to be double buffered
   CHECK(SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8) == 0);
   CHECK(SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8) == 0);
   CHECK(SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8) == 0);
-  CHECK(SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, SCREEN_DEPTH) == 0);     // size of depth buffer
+  CHECK(SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 32) == 0);     // size of depth buffer
   CHECK(SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 1) == 0);      // now we do use the stencil buffer
   CHECK(SDL_GL_SetAttribute(SDL_GL_ACCUM_RED_SIZE, 0) == 0);    // this and the next three lines set the bits allocated per pixel -
   CHECK(SDL_GL_SetAttribute(SDL_GL_ACCUM_GREEN_SIZE, 0) == 0);    // - for the accumulation buffer to 0
   CHECK(SDL_GL_SetAttribute(SDL_GL_ACCUM_BLUE_SIZE, 0) == 0);
   CHECK(SDL_GL_SetAttribute(SDL_GL_ACCUM_ALPHA_SIZE, 0) == 0);
 
-}
-
-DEFINE_int(resolution_x, -1, "X resolution (Y is X/4*3), -1 for autodetect");
-
-void resDown() {
-  const int reses[] = { 1600, 1400, 1280, 1152, 1024, 800, 640, -1 };
-  CHECK(FLAGS_resolution_x > 0);
-  for(int i = 0; i < ARRAY_SIZE(reses); i++) {
-    if(FLAGS_resolution_x > reses[i]) {
-      FLAGS_resolution_x = reses[i];
-      break;
-    }
-  }
-  CHECK(FLAGS_resolution_x > 0);
-}
-
-void setDefaultResolution(bool fullscreen) {
-  const SDL_VideoInfo *vinf = SDL_GetVideoInfo();
-  
-  dprintf("Current detected resolution: %d/%d\n", vinf->current_w, vinf->current_h);
-  if(FLAGS_resolution_x == -1) {
-    FLAGS_resolution_x = vinf->current_w;
-    if(!fullscreen)
-      resDown();
-  }
-}
-  
-int getFlagResX() {
-  CHECK(FLAGS_resolution_x > 0);
-  CHECK(FLAGS_resolution_x % 4 == 0);
-  return FLAGS_resolution_x;
-}
-int getFlagResY() {
-  CHECK(FLAGS_resolution_x > 0);
-  CHECK(FLAGS_resolution_x % 4 == 0);
-  return FLAGS_resolution_x / 4 * 3;
 }
 
 void initSystem() {
@@ -149,9 +61,7 @@ void initSystem() {
   CHECK(SDL_InitSubSystem(SDL_INIT_JOYSTICK) >= 0);
 
   SetupOgl();
-  setDefaultResolution(FLAGS_fullscreen);
-  while(!MakeWindow("Devastation Net", getFlagResX(), getFlagResY()))
-    resDown();
+  CHECK(setResolution(800, 600, 4.0 / 3.0, FLAGS_fullscreen));
   
   {
     dprintf("GL version: %s\n", glGetString(GL_VERSION));
@@ -234,7 +144,6 @@ int main(int argc, char **argv) {
     initHttpd();
     initSystem();
     initGfx();
-    updateResolution(4.0 / 3.0);
     initAudio();
     MainLoop();
   }
