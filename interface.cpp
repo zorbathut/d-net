@@ -29,7 +29,122 @@ DEFINE_bool(showGlobalErrors, true, "Display global errors");
 
 DEFINE_int(factionMode, 3, "Faction mode to skip faction choice battle, -1 for normal faction mode");
 
-void StdMenuItem::ScaleDisplayer::render(float pos) const {
+/*************
+ * Std
+ */
+ 
+pair<StdMenuCommand, int> StdMenuItem::tickEntire(const Keystates &keys) {
+  CHECK(0);
+}
+void StdMenuItem::renderEntire(const Float4 &bounds, bool obscure) const {
+  CHECK(0);
+}
+
+float StdMenuItem::renderItemHeight() const {
+  return 4;
+}
+
+StdMenuItem::StdMenuItem() { };
+StdMenuItem::~StdMenuItem() { };
+
+/*************
+ * Trigger
+ */
+
+class StdMenuItemTrigger : public StdMenuItem {
+  StdMenuItemTrigger(const string &text, int trigger) : name(text), trigger(trigger) { };
+  
+  string name;
+  int trigger;
+  
+public:
+  static smart_ptr<StdMenuItem> make(const string &text, int trigger) { return smart_ptr<StdMenuItem>(new StdMenuItemTrigger(text, trigger)); }
+  
+  pair<StdMenuCommand, int> tickItem(const Keystates *keys) {
+    if(keys && keys->accept.push) {
+      queueSound(S::accept);
+      return make_pair(SMR_NOTHING, trigger);
+    }
+    
+    return make_pair(SMR_NOTHING, SMR_NOTHING);
+  }
+  
+  float renderItemWidth(float tmx) const {
+    return getTextWidth(name, 4);
+  }
+  
+  void renderItem(const Float4 &bounds) const {
+    drawJustifiedText(name.c_str(), 4, Float2(bounds.midpoint().x, bounds.sy), TEXT_CENTER, TEXT_MIN);
+  }
+};
+
+/*************
+ * Scale
+ */
+
+class StdMenuItemScale : public StdMenuItem {
+public:
+  
+  struct ScaleDisplayer {
+    vector<string> labels;
+    const Coord *start;
+    const Coord *end;
+    const bool *onstart;
+    bool mini;
+    
+    void render(float pos) const;
+    
+    ScaleDisplayer(const vector<string> &labels, const Coord *start, const Coord *end, const bool *onstart, bool mini) : labels(labels), start(start), end(end), onstart(onstart), mini(mini) { };
+    ScaleDisplayer() { };
+  };
+  
+private:
+  
+  StdMenuItemScale(const string &text, Coord *position, const function<Coord (const Coord &)> &munge, const ScaleDisplayer &sds, bool selected_val, bool *selected_pos) : name(text), position(position), munge(munge), displayer(sds), selected_val(selected_val), selected_pos(selected_pos) { };
+  
+  string name;
+
+  Coord *position;
+  function<Coord (const Coord &)> munge;
+  ScaleDisplayer displayer;
+  bool selected_val;
+  bool *selected_pos;
+
+public:
+  
+  static smart_ptr<StdMenuItem> make(const string &text, Coord *position, const function<Coord (const Coord &)> &munge, const ScaleDisplayer &sds, bool selected_val, bool *selected_pos) { return smart_ptr<StdMenuItem>(new StdMenuItemScale(text, position, munge, sds, selected_val, selected_pos)); }
+    
+  pair<StdMenuCommand, int> tickItem(const Keystates *keys) {
+    if(keys) {
+      if(keys->l.down)
+        *position -= Coord(1) / 16;
+      if(keys->r.down)
+        *position += Coord(1) / 16;
+      if(keys->l.down || keys->r.down)
+        *position = munge(*position);
+    }
+    
+    if(keys && selected_pos)
+      *selected_pos = selected_val;
+    
+    return make_pair(SMR_NOTHING, SMR_NOTHING);
+  }
+  
+  float renderItemWidth(float tmx) const {
+    return getTextWidth(name, 4);
+  }
+  
+  void renderItem(const Float4 &bounds) const {
+    drawText(name.c_str(), 4, bounds.s());
+    
+    Float4 boundy = Float4(bounds.sx + 35, bounds.sy, bounds.ex, bounds.sy + 4);
+    GfxWindow gfxw(boundy, 1.0);
+    
+    displayer.render(position->toFloat());
+  }
+};
+
+void StdMenuItemScale::ScaleDisplayer::render(float pos) const {
   float cent;
   if(!onstart) {
     cent = 0.5;
@@ -89,183 +204,180 @@ void StdMenuItem::ScaleDisplayer::render(float pos) const {
   }
 }
 
-StdMenuItem StdMenuItem::makeTrigger(const string &text, int trigger) {
-  StdMenuItem stim;
-  stim.type = TYPE_TRIGGER;
-  stim.name = text;
-  stim.trigger = trigger;
-  return stim;
-}
-
-StdMenuItem StdMenuItem::makeScale(const string &text, Coord *position, const function<Coord (const Coord &)> &munge, const ScaleDisplayer &sds, bool scale_selected_val, bool *scale_selected_pos) {
-  StdMenuItem stim;
-  stim.type = TYPE_SCALE;
-  stim.name = text;
-  stim.scale_posfloat = position;
-  stim.scale_munge = munge;
-  stim.scale_posint = NULL;
-  stim.scale_displayer = sds;
-  stim.scale_selected_val = scale_selected_val;
-  stim.scale_selected_pos = scale_selected_pos;
-  return stim;
-}
-
-StdMenuItem StdMenuItem::makeRounds(const string &text, Coord *start, Coord *end, Coord *exp) {
-  StdMenuItem stim;
-  stim.type = TYPE_ROUNDS;
-  stim.name = text;
-  stim.rounds_start = start;
-  stim.rounds_end = end;
-  stim.rounds_exp = exp;
-  return stim;
-}
-
-StdMenuItem StdMenuItem::makeOptions(const string &text, int *position, const ScaleDisplayer &sds) {
-  StdMenuItem stim;
-  stim.type = TYPE_SCALE;
-  stim.name = text;
-  stim.scale_posfloat = NULL;
-  stim.scale_posint = position;
-  stim.scale_posint_approx = *position;
-  stim.scale_displayer = sds;
-  stim.scale_selected_pos = NULL;
-  return stim;
-}
-
-StdMenuItem StdMenuItem::makeSubmenu(const string &text, StdMenu menu, int signal) {
-  StdMenuItem stim;
-  stim.type = TYPE_SUBMENU;
-  stim.name = text;
-  stim.submenu = menu;
-  stim.submenu_signal = signal;
-  return stim;
-}
-
-StdMenuItem StdMenuItem::makeBack(const string &text) {
-  StdMenuItem stim;
-  stim.type = TYPE_BACK;
-  stim.name = text;
-  return stim;
-}
-
-pair<StdMenuCommand, int> StdMenuItem::tickEntire(const Keystates &keys) {
-  CHECK(type == TYPE_SUBMENU);
-  return submenu.tick(keys);
-}
-
-void StdMenuItem::renderEntire(const Float4 &bounds, bool obscure) const {
-  CHECK(type == TYPE_SUBMENU);
-  submenu.render(bounds, obscure);
-}
-
-pair<StdMenuCommand, int> StdMenuItem::tickItem(const Keystates *keys) {
-  StackString stp("StdMenuItem ticking");
-  if(type == TYPE_TRIGGER) {
-    if(keys && keys->accept.push) {
-      queueSound(S::accept);
-      return make_pair(SMR_NOTHING, trigger);
-    }
-  } else if(type == TYPE_SUBMENU) {
-    if(keys && keys->accept.push) {
-      queueSound(S::accept);
-      submenu.reset();
-      return make_pair(SMR_ENTER, submenu_signal);
-    }
-  } else if(type == TYPE_BACK) {
-    if(keys && keys->accept.push) {
-      queueSound(S::choose);
-      return make_pair(SMR_RETURN, SMR_NOTHING);
-    }
-  } else if(type == TYPE_SCALE) {
-    if(scale_posfloat) {
-      if(keys) {
-        if(keys->l.down)
-          *scale_posfloat -= Coord(1) / 16;
-        if(keys->r.down)
-          *scale_posfloat += Coord(1) / 16;
-        if(keys->l.down || keys->r.down)
-          *scale_posfloat = scale_munge(*scale_posfloat);
-      }
-    } else {
-      CHECK(scale_posint);
-      if(keys && keys->l.down)
-        scale_posint_approx -= Coord(1) / 32;
-      if(keys && keys->r.down)
-        scale_posint_approx += Coord(1) / 32;
-      if(!keys || !keys->l.down && !keys->r.down)
-        scale_posint_approx = approach(scale_posint_approx, round(scale_posint_approx), Coord(1) / 128);
-      scale_posint_approx = clamp(scale_posint_approx, 0, 1); // sigh
-      *scale_posint = round(scale_posint_approx).toInt();
-    }
-    
-    if(keys && scale_selected_pos)
-      *scale_selected_pos = scale_selected_val;
-  } else if(type == TYPE_ROUNDS) {
-    if(keys->l.down)
-      *rounds_exp *= Coord(101) / 100;
-    if(keys->r.down)
-      *rounds_exp /= Coord(101) / 100;
-    *rounds_exp = clamp(*rounds_exp, Coord(0.001), 2);
-  } else {
-    CHECK(0);
-  }
-  return make_pair(SMR_NOTHING, SMR_NOTHING);
-}
+/*************
+ * Rounds
+ */
 
 int calculateRounds(Coord start, Coord end, Coord exp) {
   return floor(ceil((end - start) * log(30) / exp / 6)).toInt() * 6;
 }
 
-float StdMenuItem::renderItemHeight() const {
-  if(type == TYPE_TRIGGER || type == TYPE_SCALE || type == TYPE_ROUNDS || type == TYPE_SUBMENU || type == TYPE_BACK) {
-    return 4;
-  } else {
-    CHECK(0);
-  }
-}
+class StdMenuItemRounds : public StdMenuItem {
+  StdMenuItemRounds(const string &text, Coord *start, Coord *end, Coord *exp) : name(text), start(start), end(end), expv(exp) { };
 
-float StdMenuItem::renderItemWidth(float tmx) const {
-  if(type == TYPE_TRIGGER || type == TYPE_SUBMENU || type == TYPE_BACK) {
-    return getTextWidth(name, 4);
-  } else if(type == TYPE_SCALE || type == TYPE_ROUNDS) {
+  string name;
+  Coord *start;
+  Coord *end;
+  Coord *expv;
+  
+public:
+  static smart_ptr<StdMenuItem> make(const string &text, Coord *start, Coord *end, Coord *exp) { return smart_ptr<StdMenuItem>(new StdMenuItemRounds(text, start, end, exp)); }
+  
+  pair<StdMenuCommand, int> tickItem(const Keystates *keys) {
+    if(keys && keys->l.down)
+      *expv *= Coord(101) / 100;
+    if(keys && keys->r.down)
+      *expv /= Coord(101) / 100;
+    *expv = clamp(*expv, Coord(0.001), 2);
+    
+    return make_pair(SMR_NOTHING, SMR_NOTHING);
+  }
+  float renderItemWidth(float tmx) const {
     return tmx;
-  } else {
-    CHECK(0);
   }
-}
+  void renderItem(const Float4 &bounds) const {
+    drawText(name.c_str(), 4, bounds.s());
+    float percentage = (exp(expv->toFloat()) - 1) * 100;
+    drawText(StringPrintf("%d (+%.2f%% cash/round)", calculateRounds(*start, *end, *expv), percentage), 4, Float2(bounds.sx + 50, bounds.sy));
+  }
+};
 
-void StdMenuItem::renderItem(const Float4 &bounds) const {
-  if(type == TYPE_TRIGGER || type == TYPE_SUBMENU || type == TYPE_BACK) {
+/*************
+ * Chooser
+ */
+
+template<typename T> class StdMenuItemChooser : public StdMenuItem {
+  StdMenuItemChooser(const string &text, const vector<pair<string, T> > &options, T *storage) : name(text), options(options), storage(storage) {
+    maxx = 0;
+    item = -1;
+    
+    for(int i = 0; i < options.size(); i++) {
+      if(*storage == options[i].second) {
+        CHECK(item == -1);
+        item = i;
+      }
+      maxx = max(maxx, getTextWidth(options[i].first, 4));
+    }
+    
+    if(item == -1) {
+      item = 0;
+      *storage = options[item].second;
+    }
+    
+    CHECK(storage);
+    
+    maxx += getTextWidth(name, 4);
+    maxx += 8;
+  }
+  
+  string name;
+  float maxx;
+  
+  vector<pair<string, T> > options;
+  T * storage;
+  
+  int item;
+  
+public:
+  static smart_ptr<StdMenuItem> make(const string &text, const vector<pair<string, T> > &options, T *storage) { return smart_ptr<StdMenuItem>(new StdMenuItemChooser<T>(text, options, storage)); }
+  
+  pair<StdMenuCommand, int> tickItem(const Keystates *keys) {
+    if(keys && keys->l.push)
+      item--;
+    if(keys && keys->r.push)
+      item++;
+    
+    item = modurot(item, options.size());
+    
+    *storage = options[item].second;
+    
+    return make_pair(SMR_NOTHING, SMR_NOTHING);
+  }
+  float renderItemWidth(float tmx) const {
+    return tmx;
+  }
+  void renderItem(const Float4 &bounds) const {
+    drawText(name, 4, Float2(bounds.sx, bounds.sy));
+    drawJustifiedText(options[item].first, 4, Float2(bounds.ex, bounds.sy), TEXT_MAX, TEXT_MIN);
+  }
+};
+
+/*************
+ * Submenu
+ */
+
+class StdMenuItemSubmenu : public StdMenuItem {
+  StdMenuItemSubmenu(const string &text, StdMenu menu, int signal) : name(text), submenu(menu), signal(signal) { };
+  
+  string name;
+  
+  StdMenu submenu;
+  int signal;
+  
+public:
+  static smart_ptr<StdMenuItem> make(const string &text, StdMenu menu, int signal = SMR_NOTHING) { return smart_ptr<StdMenuItem>(new StdMenuItemSubmenu(text, menu, signal)); }
+  
+  pair<StdMenuCommand, int> tickEntire(const Keystates &keys) {
+    return submenu.tick(keys);
+  }
+  void renderEntire(const Float4 &bounds, bool obscure) const {
+    submenu.render(bounds, obscure);
+  }
+
+  pair<StdMenuCommand, int> tickItem(const Keystates *keys) {
+    if(keys && keys->accept.push) {
+      queueSound(S::accept);
+      submenu.reset();
+      return make_pair(SMR_ENTER, signal);
+    }
+    
+    return make_pair(SMR_NOTHING, SMR_NOTHING);
+  }
+  float renderItemWidth(float tmx) const {
+    return getTextWidth(name, 4);
+  }
+  void renderItem(const Float4 &bounds) const {
     drawJustifiedText(name.c_str(), 4, Float2(bounds.midpoint().x, bounds.sy), TEXT_CENTER, TEXT_MIN);
-  } else if(type == TYPE_SCALE) {
-    drawText(name.c_str(), 4, bounds.s());
-    
-    float pos;
-    if(scale_posfloat)
-      pos = scale_posfloat->toFloat();
-    else
-      pos = scale_posint_approx.toFloat();
-    
-    Float4 boundy = Float4(bounds.sx + 35, bounds.sy, bounds.ex, bounds.sy + 4);
-    GfxWindow gfxw(boundy, 1.0);
-    
-    scale_displayer.render(pos);
-  } else if(type == TYPE_ROUNDS) {
-    drawText(name.c_str(), 4, bounds.s());
-    float percentage = (exp(rounds_exp->toFloat()) - 1) * 100;
-    drawText(StringPrintf("%d (+%.2f%% cash/round)", calculateRounds(*rounds_start, *rounds_end, *rounds_exp), percentage), 4, Float2(bounds.sx + 50, bounds.sy));
-  } else {
-    CHECK(0);
   }
+};
+
+/*************
+ * Back
+ */
+
+class StdMenuItemBack : public StdMenuItem {
+  StdMenuItemBack(const string &text) : name(text) { };
+  
+  string name;
+  
+public:
+  static smart_ptr<StdMenuItem> make(const string &text) { return smart_ptr<StdMenuItem>(new StdMenuItemBack(text)); }
+  
+  pair<StdMenuCommand, int> tickItem(const Keystates *keys) {
+    if(keys && keys->accept.push) {
+      queueSound(S::choose);
+      return make_pair(SMR_RETURN, SMR_NOTHING);
+    }
+    
+    return make_pair(SMR_NOTHING, SMR_NOTHING);
+  }
+  float renderItemWidth(float tmx) const {
+    return getTextWidth(name, 4);
+  }
+  void renderItem(const Float4 &bounds) const {
+    drawJustifiedText(name.c_str(), 4, Float2(bounds.midpoint().x, bounds.sy), TEXT_CENTER, TEXT_MIN);
+  }
+};
+
+/*************
+ * StdMenu
+ */
+ 
+void StdMenu::pushMenuItem(const smart_ptr<StdMenuItem> &site) {
+  items.push_back(vector<smart_ptr<StdMenuItem> >(1, site));
 }
 
-StdMenuItem::StdMenuItem() { }
-
-void StdMenu::pushMenuItem(const StdMenuItem &site) {
-  items.push_back(vector<StdMenuItem>(1, site));
-}
-
-void StdMenu::pushMenuItemAdjacent(const StdMenuItem &site) {
+void StdMenu::pushMenuItemAdjacent(const smart_ptr<StdMenuItem> &site) {
   CHECK(items.size());
   items.back().push_back(site);
 }
@@ -295,14 +407,14 @@ pair<StdMenuCommand, int> StdMenu::tick(const Keystates &keys) {
   for(int i = 0; i < items.size(); i++)
     for(int j = 0; j < items[i].size(); j++)
       if(i != vpos && j != hpos)
-        items[i][j].tickItem(NULL);
+        items[i][j]->tickItem(NULL);
     
   {
     pair<StdMenuCommand, int> rv;
     if(inside)
-      rv = items[vpos][hpos].tickEntire(keys);
+      rv = items[vpos][hpos]->tickEntire(keys);
     else
-      rv = items[vpos][hpos].tickItem(&keys);
+      rv = items[vpos][hpos]->tickItem(&keys);
     
     if(rv.first == SMR_NOTHING) {
       return rv;
@@ -323,7 +435,7 @@ pair<StdMenuCommand, int> StdMenu::tick(const Keystates &keys) {
 void StdMenu::render(const Float4 &bounds, bool obscure) const {
   
   if(inside) {
-    items[vpos][hpos].renderEntire(bounds, obscure);
+    items[vpos][hpos]->renderEntire(bounds, obscure);
   } else {
     GfxWindow gfxw(bounds, 1.0);
     setZoomCenter(0, 0, getZoom().span_y() / 2);
@@ -337,8 +449,8 @@ void StdMenu::render(const Float4 &bounds, bool obscure) const {
       float theight = 0;
       float twidth = 0;
       for(int j = 0; j < items[i].size(); j++) {
-        theight = max(theight, items[i][j].renderItemHeight());
-        twidth += items[i][j].renderItemWidth((getZoom().span_x() - 4) / items[i].size());
+        theight = max(theight, items[i][j]->renderItemHeight());
+        twidth += items[i][j]->renderItemWidth((getZoom().span_x() - 4) / items[i].size());
       }
       
       totheight += theight;
@@ -365,9 +477,9 @@ void StdMenu::render(const Float4 &bounds, bool obscure) const {
           setColor(C::inactive_text);
         }
         
-        items[i][j].renderItem(Float4(-maxwidth / 2 + tx, getZoom().sy + curpos, -maxwidth / 2 + tx + maxwidth / items[i].size(), -1));
+        items[i][j]->renderItem(Float4(-maxwidth / 2 + tx, getZoom().sy + curpos, -maxwidth / 2 + tx + maxwidth / items[i].size(), -1));
         
-        theight = max(theight, items[i][j].renderItemHeight());
+        theight = max(theight, items[i][j]->renderItemHeight());
         tx += maxwidth / items[i].size();
       }
       curpos += theight + tween_items;
@@ -387,7 +499,11 @@ StdMenu::StdMenu() {
   inside = false;
 }
 
-class GameAiIntro : public GameAi{
+/*************
+ * GameAiIntro
+ */
+
+class GameAiIntro : public GameAi {
 private:
   Coord2 nextpos;
   Coord lastdist;
@@ -434,8 +550,11 @@ public:
     waitcycles = unsync().choose(FPS * 4);
   }
   
-  
 };
+
+/*************
+ * Interface
+ */
 
 bool InterfaceMain::tick(const InputState &is, RngSeed gameseed) {
   if(is.escape.push) {
@@ -494,10 +613,10 @@ bool InterfaceMain::tick(const InputState &is, RngSeed gameseed) {
     
     pair<StdMenuCommand, int> mrv = mainmenu.tick(kst[controls_primary_id()]);
     if(mrv.second == MAIN_NEWGAME || FLAGS_auto_newgame) {
-      if(faction_toggle == 0)
-        faction = 4;
-      else
+      if(!faction_toggle)
         faction = 1;
+      else
+        faction = 4;
       game = new Metagame(kst.size(), Money((long long)(1000 * pow(30, start.toFloat()))), exp(moneyexp), faction - 1, FLAGS_rounds_per_shop, calculateRounds(start, end, moneyexp), gameseed);
       interface_mode = STATE_PLAYING;
     } else if(mrv.second == MAIN_EXIT) {
@@ -751,22 +870,28 @@ void InterfaceMain::init() {
   interface_mode = STATE_MAINMENU;
   {
     vector<string> names = boost::assign::list_of("Junkyard")("Civilian")("Professional")("Military")("Exotic")("Experimental")("Ultimate")("Armageddon");
-    vector<string> onoff = boost::assign::list_of("On")("Off");
     
     StdMenu configmenu;
-    configmenu.pushMenuItem(StdMenuItem::makeScale("Game start", &start, bind(&InterfaceMain::start_clamp, this, _1), StdMenuItem::ScaleDisplayer(names, &start, &end, &onstart, true), true, &onstart));
-    configmenu.pushMenuItem(StdMenuItem::makeScale("Game end", &end, bind(&InterfaceMain::end_clamp, this, _1), StdMenuItem::ScaleDisplayer(names, &start, &end, &onstart, false), false, &onstart));
-    configmenu.pushMenuItem(StdMenuItem::makeRounds("Estimated rounds", &start, &end, &moneyexp));
-    configmenu.pushMenuItem(StdMenuItem::makeOptions("Factions", &faction_toggle, StdMenuItem::ScaleDisplayer(onoff)));
-    //configmenu.pushMenuItem(StdMenuItem::makeOptions("Faction mode", boost::assign::list_of("Battle")("No factions")("Minor factions")("Normal factions")("Major factions"), &faction));
-    configmenu.pushMenuItem(StdMenuItem::makeTrigger("Begin", MAIN_NEWGAME));
-    configmenu.pushMenuItemAdjacent(StdMenuItem::makeBack("Cancel"));
+    configmenu.pushMenuItem(StdMenuItemScale::make("Game start", &start, bind(&InterfaceMain::start_clamp, this, _1), StdMenuItemScale::ScaleDisplayer(names, &start, &end, &onstart, true), true, &onstart));
+    configmenu.pushMenuItem(StdMenuItemScale::make("Game end", &end, bind(&InterfaceMain::end_clamp, this, _1), StdMenuItemScale::ScaleDisplayer(names, &start, &end, &onstart, false), false, &onstart));
+    configmenu.pushMenuItem(StdMenuItemRounds::make("Estimated rounds", &start, &end, &moneyexp));
     
-    mainmenu.pushMenuItem(StdMenuItem::makeSubmenu("New game", configmenu, MAIN_NEWGAMEMENU));
+    {
+      vector<pair<string, bool> > onoff;
+      onoff.push_back(make_pair("On", true));
+      onoff.push_back(make_pair("Off", false));
+      configmenu.pushMenuItem(StdMenuItemChooser<bool>::make("Factions", onoff, &faction_toggle));
+    }
+    
+    //configmenu.pushMenuItem(StdMenuItem::makeOptions("Faction mode", boost::assign::list_of("Battle")("No factions")("Minor factions")("Normal factions")("Major factions"), &faction));
+    configmenu.pushMenuItem(StdMenuItemTrigger::make("Begin", MAIN_NEWGAME));
+    configmenu.pushMenuItemAdjacent(StdMenuItemBack::make("Cancel"));
+    
+    mainmenu.pushMenuItem(StdMenuItemSubmenu::make("New game", configmenu, MAIN_NEWGAMEMENU));
   }
   
-  mainmenu.pushMenuItem(StdMenuItem::makeTrigger("Input test", MAIN_INPUTTEST));
-  mainmenu.pushMenuItem(StdMenuItem::makeTrigger("Exit", MAIN_EXIT));
+  mainmenu.pushMenuItem(StdMenuItemTrigger::make("Input test", MAIN_INPUTTEST));
+  mainmenu.pushMenuItem(StdMenuItemTrigger::make("Exit", MAIN_EXIT));
   
   if(FLAGS_startingPhase == -1)
     start = 0;
@@ -779,9 +904,9 @@ void InterfaceMain::init() {
   CHECK(faction >= 0 && faction < 5);
   
   if(faction == 1)
-    faction_toggle = 1;
+    faction_toggle = false;
   else
-    faction_toggle = 0;
+    faction_toggle = true;
   
   grid = false;
   inptest = false;
@@ -802,7 +927,7 @@ void InterfaceMain::init() {
   for(int i = 0; i < introscreen->players.size(); i++)
     introscreen_ais.push_back(new GameAiIntro());
   
-  escmenuitem.pushMenuItem(StdMenuItem::makeBack("Return to game"));
+  escmenuitem.pushMenuItem(StdMenuItemBack::make("Return to game"));
   
   /*
   {
@@ -820,8 +945,8 @@ void InterfaceMain::init() {
   }
   */
   
-  escmenuitem.pushMenuItem(StdMenuItem::makeTrigger("Main menu", 1));
-  escmenuitem.pushMenuItem(StdMenuItem::makeTrigger("Quit", 2));
+  escmenuitem.pushMenuItem(StdMenuItemTrigger::make("Main menu", 1));
+  escmenuitem.pushMenuItem(StdMenuItemTrigger::make("Quit", 2));
   
   for(int i = 0; i < 30; i++)
     introscreen->runTickWithAi(vector<GameAi*>(introscreen_ais.begin(), introscreen_ais.end()), &unsync());

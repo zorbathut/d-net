@@ -5,6 +5,7 @@
 #include "metagame.h"
 
 #include <boost/function.hpp>
+#include <boost/noncopyable.hpp>
 
 using namespace std;
 using boost::function;
@@ -18,7 +19,7 @@ enum StdMenuCommand { SMR_NOTHING = -1, SMR_ENTER = -2, SMR_RETURN = -3 };
 
 class StdMenu {
   
-  vector<vector<StdMenuItem> > items;
+  vector<vector<smart_ptr<StdMenuItem> > > items;
   int vpos;
   int hpos;
   
@@ -26,8 +27,8 @@ class StdMenu {
   
 public:
 
-  void pushMenuItem(const StdMenuItem &site);
-  void pushMenuItemAdjacent(const StdMenuItem &site);
+  void pushMenuItem(const smart_ptr<StdMenuItem> &site);
+  void pushMenuItemAdjacent(const smart_ptr<StdMenuItem> &site);
 
   pair<StdMenuCommand, int> tick(const Keystates &keys);
   void render(const Float4 &bounds, bool obscure) const;
@@ -38,62 +39,19 @@ public:
 
 };
 
-class StdMenuItem {
+class StdMenuItem : boost::noncopyable {
 public:
-  static StdMenuItem makeTrigger(const string &text, int trigger);
 
-  struct ScaleDisplayer {
-    vector<string> labels;
-    const Coord *start;
-    const Coord *end;
-    const bool *onstart;
-    bool mini;
-    
-    void render(float pos) const;
-    
-    ScaleDisplayer(const vector<string> &labels, const Coord *start, const Coord *end, const bool *onstart, bool mini) : labels(labels), start(start), end(end), onstart(onstart), mini(mini) { };
-    ScaleDisplayer(const vector<string> &labels) : labels(labels), start(NULL), end(NULL), onstart(NULL) { };
-    ScaleDisplayer() { };
-  };
+  virtual pair<StdMenuCommand, int> tickEntire(const Keystates &keys);
+  virtual void renderEntire(const Float4 &bounds, bool obscure) const;
   
-  static StdMenuItem makeScale(const string &text, Coord *position, const function<Coord (const Coord &)> &munge, const ScaleDisplayer &sds, bool selected_val, bool *selected_pos);
-  static StdMenuItem makeRounds(const string &text, Coord *start, Coord *end, Coord *exp);
-  static StdMenuItem makeOptions(const string &text, int *position, const ScaleDisplayer &sds);
-  static StdMenuItem makeSubmenu(const string &text, StdMenu menu, int signal = SMR_NOTHING);
-  static StdMenuItem makeBack(const string &text);
-
-  pair<StdMenuCommand, int> tickEntire(const Keystates &keys);
-  void renderEntire(const Float4 &bounds, bool obscure) const;
-  
-  pair<StdMenuCommand, int> tickItem(const Keystates *keys);
-  float renderItemHeight() const;
-  float renderItemWidth(float tmx) const;
-  void renderItem(const Float4 &bounds) const; // ey is ignored
-
-private:
-  enum { TYPE_TRIGGER, TYPE_SCALE, TYPE_ROUNDS, TYPE_SUBMENU, TYPE_BACK, TYPE_LAST };
-  
-  int type;
-  string name;
-
-  int trigger;
-  
-  Coord *scale_posfloat;
-  int *scale_posint;
-  Coord scale_posint_approx;
-  function<Coord (const Coord &)> scale_munge;
-  ScaleDisplayer scale_displayer;
-  bool scale_selected_val;
-  bool *scale_selected_pos;
-  
-  Coord *rounds_start;
-  Coord *rounds_end;
-  Coord *rounds_exp;
-  
-  StdMenu submenu;
-  int submenu_signal;
+  virtual pair<StdMenuCommand, int> tickItem(const Keystates *keys) = 0;
+  virtual float renderItemHeight() const;
+  virtual float renderItemWidth(float tmx) const = 0;
+  virtual void renderItem(const Float4 &bounds) const = 0; // ey is ignored
 
   StdMenuItem();
+  virtual ~StdMenuItem();
 };
 
 class InterfaceMain : boost::noncopyable {
@@ -125,7 +83,7 @@ class InterfaceMain : boost::noncopyable {
   
   // 0 represents "battle choice", 1-4 are the valid normal options
   int faction;
-  int faction_toggle;
+  bool faction_toggle;
   
   vector<Keystates> kst;
   
