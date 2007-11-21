@@ -11,11 +11,14 @@ case "${target_os}" in
   cygwin)
     AC_MSG_NOTICE([adding extended boost and ogg directories for cygwin])
     
-    CPPFLAGS="-I/usr/mingw/local/include -I/usr/mingw/local/include/boost-1_33_1 -mno-cygwin"
+    CPPFLAGS="-I/usr/mingw/local/include -mno-cygwin"
     LDFLAGS="-L/usr/mingw/local/lib -mno-cygwin"
     
+    BOOSTCPPFLAGS="-I/usr/mingw/local/include/boost-1_33_1 "
+    BOOSTLDFLAGS="-lboost_regex-mgw-mt"
+    
     STDCPPFLAGS="$STDCPPFLAGS -DVECTOR_PARANOIA" # This should really only exist on Zorba's personal hacked headers
-    LDFLAGS="$LDFLAGS -lboost_regex-mgw-mt"
+    LDFLAGS="$LDFLAGS"
     
     AC_CHECK_HEADER([windows.h],,AC_MSG_ERROR([Can't find windows.h]))
     
@@ -38,8 +41,11 @@ case "${target_os}" in
     GAMECPPFLAGS="$GAMECPPFLAGS "
     GAMELDFLAGS="$GAMELDFLAGS -framework OpenGL -framework SDL -lSDLmain -framework Cocoa"
     
-    CPPFLAGS="$STDCPPFLAGS -DOSX_FRAMEWORK_PREFIXES -DNO_WINDOWS -I/usr/local/include/boost-1_34_1"
-    LDFLAGS="-lboost_regex-mt"
+    CPPFLAGS="$STDCPPFLAGS -DOSX_FRAMEWORK_PREFIXES -DNO_WINDOWS"
+    LDFLAGS=""
+    
+    BOOSTCPPFLAGS="-I/usr/local/include/boost-1_34_1"
+    BOOSTLDFLAGS="-lboost_regex-mt"
     
     #AC_CHECK_LIB([GL], [glBegin],,AC_MSG_ERROR([opengl is needed]))
     #LDFLAGS="$GAMELDFLAGS -lGL"
@@ -48,8 +54,12 @@ case "${target_os}" in
 
   *)
     STDCPPFLAGS="$STDCPPFLAGS -DNO_WINDOWS -I/usr/local/include/boost-1_34_1"
-    CPPFLAGS="$CPPFLAGS -I/usr/local/include/boost-1_34_1"
+    CPPFLAGS="$CPPFLAGS"
     LDFLAGS="-lboost_regex"
+    
+    BOOSTCPPFLAGS="-I/usr/local/include/boost-1_34_1"
+    BOOSTLDFLAGS="-lboost_regex"
+    
     AC_CHECK_LIB([GL], [glBegin],,AC_MSG_ERROR([opengl is needed]))
     GAMELDFLAGS="$GAMELDFLAGS -lGL"
     ;;
@@ -62,7 +72,10 @@ fi
 
 GAMECPPFLAGS="$GAMECPPFLAGS `$SDL --cflags`"
 GAMELDFLAGS="$GAMELDFLAGS `$SDL --libs`"
-    
+
+CPPFLAGS="$CPPFLAGS $BOOSTCPPFLAGS"
+LDFLAGS="$LDFLAGS $BOOSTLDFLAGS"
+
 AC_CHECK_HEADER([boost/noncopyable.hpp],,AC_MSG_ERROR([D-Net requires Boost.]))
 
 AC_CHECK_LIB([m], [sin],,AC_MSG_ERROR([libm is needed]))
