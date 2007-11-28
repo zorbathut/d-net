@@ -1,7 +1,6 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - Rework the menu system to be saner and more easily modified
-    - Add screen resolutions
     - Add widescreen
       - Change aspect when chosen res changes
     - Add dragging to resize
