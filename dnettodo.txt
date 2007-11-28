@@ -1,6 +1,8 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - Rework the menu system to be saner and more easily modified
+    - Add actual UI library :(
+      - Figure out how the is-a has-a relationships should work
     - Add widescreen
       - Change aspect when chosen res changes
     - Add dragging to resize
@@ -243,3 +245,12 @@ Name
 Key/value pairs (string/T)
 "Value" storage location
 Change notifier functor
+
+
+
+Okay, if we're doing a full menu GUI . . .
+
+* Widget
+Widget has a minsize, render, and input calls. Input includes mousein, mouseout, mouseclick, and key.
+
+Everything can, I think, be inherited from this. We can have functors for handling events, like wxwidgets does, but I'll just rig it up so that items must pass their own events around. Everything will be noncopyable to make it easier.
