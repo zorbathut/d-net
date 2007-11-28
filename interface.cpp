@@ -614,14 +614,19 @@ bool InterfaceMain::tick(const InputState &is, RngSeed gameseed) {
     pair<StdMenuCommand, int> rv = escmenu.tick(kst[controls_primary_id()]);
     if(rv.first == SMR_RETURN)
       inescmenu = false;
-    if(rv.second == 1) {
+    if(rv.second == SMR_NOTHING) {
+    } else if(rv.second == ESCMENU_MAINMENU) {
       dprintf("re-initting\n");
       inescmenu = false;
       interface_mode = STATE_MAINMENU;
       init();
-    }
-    if(rv.second == 2)
+    } else if(rv.second == ESCMENU_QUIT) {
       return true;
+    } else if(rv.second == OPTS_SETRES) {
+      setResolution(opts_res, opts_aspect, opts_fullscreen);
+    } else {
+      CHECK(0);
+    }
   } else if(interface_mode == STATE_MAINMENU) {
     if(!inptest) {
       introscreen->runTickWithAi(vector<GameAi*>(introscreen_ais.begin(), introscreen_ais.end()), &unsync());
@@ -645,6 +650,8 @@ bool InterfaceMain::tick(const InputState &is, RngSeed gameseed) {
     } else if(mrv.second == MAIN_NEWGAMEMENU) {
       inptest = false;
       grid = false; // :D
+    } else if(mrv.second == OPTS_SETRES) {
+      setResolution(opts_res, opts_aspect, opts_fullscreen);
     } else {
       CHECK(mrv.second == -1);
     }
@@ -908,6 +915,10 @@ void InterfaceMain::init() {
     mainmenu.pushMenuItem(StdMenuItemSubmenu::make("New game", configmenu, MAIN_NEWGAMEMENU));
   }
   
+  opts_res = getCurrentResolution();
+  opts_aspect = getCurrentAspect();
+  opts_fullscreen = getCurrentFullscreen();
+  
   {
     {
       vector<pair<string, pair<int, int> > > resoptions;
@@ -934,7 +945,7 @@ void InterfaceMain::init() {
       optionsmenu.pushMenuItem(StdMenuItemChooser<float>::make("Aspect ratio", aspects, &opts_aspect));
     }
     
-    optionsmenu.pushMenuItem(StdMenuItemBack::make("Accept", MAIN_SETRES));
+    optionsmenu.pushMenuItem(StdMenuItemBack::make("Accept", OPTS_SETRES));
     optionsmenu.pushMenuItemAdjacent(StdMenuItemBack::make("Cancel"));
     
     mainmenu.pushMenuItem(StdMenuItemSubmenu::make("Options", &optionsmenu));
@@ -978,9 +989,9 @@ void InterfaceMain::init() {
     introscreen_ais.push_back(new GameAiIntro());
   
   escmenu.pushMenuItem(StdMenuItemBack::make("Return to game"));
-  escmenu.pushMenuItem(StdMenuItemSubmenu::make("Options", &optionsmenu, MAIN_OPTIONSMENU));
-  escmenu.pushMenuItem(StdMenuItemTrigger::make("Main menu", 1));
-  escmenu.pushMenuItem(StdMenuItemTrigger::make("Quit", 2));
+  escmenu.pushMenuItem(StdMenuItemSubmenu::make("Options", &optionsmenu));
+  escmenu.pushMenuItem(StdMenuItemTrigger::make("Main menu", ESCMENU_MAINMENU));
+  escmenu.pushMenuItem(StdMenuItemTrigger::make("Quit", ESCMENU_QUIT));
   
   for(int i = 0; i < 30; i++)
     introscreen->runTickWithAi(vector<GameAi*>(introscreen_ais.begin(), introscreen_ais.end()), &unsync());

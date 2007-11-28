@@ -2,10 +2,11 @@
 - "Finish the Damn Game" Initiative
   - Rework the menu system to be saner and more easily modified
     - Add screen resolutions
-      - Pull the original resolution in
-      - Save the resolution somewhere (where?)
     - Add widescreen
+      - Change aspect when chosen res changes
     - Add dragging to resize
+      - Update screen as it goes
+    - Set up good defaults for resolution
   - Set up some way to end the game before the rounds end
   - Convert key output into OStream
     - Add OStreamGz support

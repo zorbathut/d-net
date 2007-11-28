@@ -62,11 +62,19 @@ bool MakeWindow(const char * strWindowName, int width, int height, bool fullscre
 
 }
 
-bool setResolution(int x, int y, float aspect, bool fullscreen) {
-  if(!MakeWindow("Devastation Net", x, y, fullscreen))
+static pair<int, int> cres;
+static float caspect;
+static bool cfull;
+
+bool setResolution(pair<int, int> res, float aspect, bool fullscreen) {
+  if(!MakeWindow("Devastation Net", res.first, res.second, fullscreen))
     return false;
   
   updateResolution(aspect);
+  
+  cres = res;
+  caspect = aspect;
+  cfull = fullscreen;
 
   return true;
 }
@@ -87,41 +95,12 @@ vector<pair<int, int> > getResolutions() {
   return rv;
 }
 
-
-/*
-DEFINE_int(resolution_x, -1, "X resolution (Y is X/4*3), -1 for autodetect");
-
-void resDown() {
-  const int reses[] = { 1600, 1400, 1280, 1152, 1024, 800, 640, -1 };
-  CHECK(FLAGS_resolution_x > 0);
-  for(int i = 0; i < ARRAY_SIZE(reses); i++) {
-    if(FLAGS_resolution_x > reses[i]) {
-      FLAGS_resolution_x = reses[i];
-      break;
-    }
-  }
-  CHECK(FLAGS_resolution_x > 0);
+pair<int, int> getCurrentResolution() {
+  return cres;
 }
-
-void setDefaultResolution(bool fullscreen) {
-  const SDL_VideoInfo *vinf = SDL_GetVideoInfo();
-  
-  dprintf("Current detected resolution: %d/%d\n", vinf->current_w, vinf->current_h);
-  if(FLAGS_resolution_x == -1) {
-    FLAGS_resolution_x = vinf->current_w;
-    if(!fullscreen)
-      resDown();
-  }
+float getCurrentAspect() {
+  return caspect;
 }
-
-int getFlagResX() {
-  CHECK(FLAGS_resolution_x > 0);
-  CHECK(FLAGS_resolution_x % 4 == 0);
-  return FLAGS_resolution_x;
+bool getCurrentFullscreen() {
+  return cfull;
 }
-int getFlagResY() {
-  CHECK(FLAGS_resolution_x > 0);
-  CHECK(FLAGS_resolution_x % 4 == 0);
-  return FLAGS_resolution_x / 4 * 3;
-}
-*/

@@ -61,7 +61,7 @@ void initSystem() {
   CHECK(SDL_InitSubSystem(SDL_INIT_JOYSTICK) >= 0);
 
   SetupOgl();
-  CHECK(setResolution(800, 600, 4.0 / 3.0, FLAGS_fullscreen));
+  CHECK(setResolution(make_pair(800, 600), 4.0 / 3.0, FLAGS_fullscreen));
   
   {
     dprintf("GL version: %s\n", glGetString(GL_VERSION));
