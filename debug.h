@@ -34,8 +34,8 @@ void disableStackTrace();
 
 extern void *stackStart;
 
-#define likely(x) __builtin_expect((x), 1)
-#define unlikely(x) __builtin_expect((x), 0)
+#define likely(x) __builtin_expect(!!(x), 1)
+#define unlikely(x) __builtin_expect(!!(x), 0)
 
 // Almost everything after here is necessary for the vector header patch
 #ifdef DPRINTF_MARKUP

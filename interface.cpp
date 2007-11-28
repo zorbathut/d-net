@@ -13,6 +13,7 @@
 #include "audio.h"
 #include "adler32.h"
 #include "game_ai.h"
+#include "res_interface.h"
 
 #include <boost/assign.hpp>
 #include <boost/bind.hpp>
@@ -294,7 +295,7 @@ public:
     return make_pair(SMR_NOTHING, SMR_NOTHING);
   }
   float renderItemWidth(float tmx) const {
-    return tmx;
+    return maxx;
   }
   void renderItem(const Float4 &bounds) const {
     drawText(name, 4, Float2(bounds.sx, bounds.sy));
@@ -307,27 +308,41 @@ public:
  */
 
 class StdMenuItemSubmenu : public StdMenuItem {
-  StdMenuItemSubmenu(const string &text, StdMenu menu, int signal) : name(text), submenu(menu), signal(signal) { };
+  StdMenuItemSubmenu(const string &text, StdMenu menu, int signal) : name(text), submenu(menu), submenu_ptr(NULL), signal(signal) { };
+  StdMenuItemSubmenu(const string &text, StdMenu *menu, int signal) : name(text), submenu_ptr(menu), signal(signal) { };
   
   string name;
   
   StdMenu submenu;
+  StdMenu *submenu_ptr;
+  
+  StdMenu &gsm() {
+    if(submenu_ptr) return *submenu_ptr;
+    return submenu;
+  }
+  
+  const StdMenu &gsm() const {
+    if(submenu_ptr) return *submenu_ptr;
+    return submenu;
+  }
+  
   int signal;
   
 public:
   static smart_ptr<StdMenuItem> make(const string &text, StdMenu menu, int signal = SMR_NOTHING) { return smart_ptr<StdMenuItem>(new StdMenuItemSubmenu(text, menu, signal)); }
+  static smart_ptr<StdMenuItem> make(const string &text, StdMenu *menu, int signal = SMR_NOTHING) { return smart_ptr<StdMenuItem>(new StdMenuItemSubmenu(text, menu, signal)); }
   
   pair<StdMenuCommand, int> tickEntire(const Keystates &keys) {
-    return submenu.tick(keys);
+    return gsm().tick(keys);
   }
   void renderEntire(const Float4 &bounds, bool obscure) const {
-    submenu.render(bounds, obscure);
+    gsm().render(bounds, obscure);
   }
 
   pair<StdMenuCommand, int> tickItem(const Keystates *keys) {
     if(keys && keys->accept.push) {
       queueSound(S::accept);
-      submenu.reset();
+      gsm().reset();
       return make_pair(SMR_ENTER, signal);
     }
     
@@ -346,17 +361,18 @@ public:
  */
 
 class StdMenuItemBack : public StdMenuItem {
-  StdMenuItemBack(const string &text) : name(text) { };
+  StdMenuItemBack(const string &text, int signal) : name(text), signal(signal) { };
   
   string name;
+  int signal;
   
 public:
-  static smart_ptr<StdMenuItem> make(const string &text) { return smart_ptr<StdMenuItem>(new StdMenuItemBack(text)); }
+  static smart_ptr<StdMenuItem> make(const string &text, int signal = SMR_NOTHING) { return smart_ptr<StdMenuItem>(new StdMenuItemBack(text, signal)); }
   
   pair<StdMenuCommand, int> tickItem(const Keystates *keys) {
     if(keys && keys->accept.push) {
       queueSound(S::choose);
-      return make_pair(SMR_RETURN, SMR_NOTHING);
+      return make_pair(SMR_RETURN, signal);
     }
     
     return make_pair(SMR_NOTHING, SMR_NOTHING);
@@ -456,6 +472,7 @@ void StdMenu::render(const Float4 &bounds, bool obscure) const {
       totheight += theight;
       maxwidth = max(maxwidth, twidth);
     }
+    
     totheight += tween_items * (items.size() - 1);
     
     if(obscure) {
@@ -558,9 +575,9 @@ public:
 
 bool InterfaceMain::tick(const InputState &is, RngSeed gameseed) {
   if(is.escape.push) {
-    escmenu = !escmenu;
-    if(escmenu)
-      escmenuitem.reset();
+    inescmenu = !inescmenu;
+    if(inescmenu)
+      escmenu.reset();
   }
   
   if(FLAGS_showtanks)
@@ -593,13 +610,13 @@ bool InterfaceMain::tick(const InputState &is, RngSeed gameseed) {
       kst[i].fire[j].newState(false);
   }
   
-  if(escmenu) {
-    pair<StdMenuCommand, int> rv = escmenuitem.tick(kst[controls_primary_id()]);
+  if(inescmenu) {
+    pair<StdMenuCommand, int> rv = escmenu.tick(kst[controls_primary_id()]);
     if(rv.first == SMR_RETURN)
-      escmenu = false;
+      inescmenu = false;
     if(rv.second == 1) {
       dprintf("re-initting\n");
-      escmenu = false;
+      inescmenu = false;
       interface_mode = STATE_MAINMENU;
       init();
     }
@@ -744,7 +761,7 @@ void InterfaceMain::render() const {
   
   {
     smart_ptr<GfxWindow> wnd;
-    if(escmenu)
+    if(inescmenu)
       wnd.reset(new GfxWindow(getZoom(), 0.5));
   
     if(FLAGS_showGlobalErrors) {
@@ -840,9 +857,9 @@ void InterfaceMain::render() const {
     }
   }
   
-  if(escmenu) {
+  if(inescmenu) {
     setZoomVertical(0, 0, 100);
-    escmenuitem.render(getZoom(), true);
+    escmenu.render(getZoom(), true);
   }
 };
 
@@ -861,7 +878,8 @@ void InterfaceMain::checksum(Adler32 *adl) const {
 
 void InterfaceMain::init() {
   mainmenu = StdMenu();
-  escmenuitem = StdMenu();
+  escmenu = StdMenu();
+  optionsmenu = StdMenu();
   kst.clear();
   introscreen_ais.clear();
   delete introscreen;
@@ -888,6 +906,38 @@ void InterfaceMain::init() {
     configmenu.pushMenuItemAdjacent(StdMenuItemBack::make("Cancel"));
     
     mainmenu.pushMenuItem(StdMenuItemSubmenu::make("New game", configmenu, MAIN_NEWGAMEMENU));
+  }
+  
+  {
+    {
+      vector<pair<string, pair<int, int> > > resoptions;
+      vector<pair<int, int> > resses = getResolutions();
+      for(int i = 0; i < resses.size(); i++)
+        resoptions.push_back(make_pair(StringPrintf("%dx%d", resses[i].first, resses[i].second), resses[i]));
+      optionsmenu.pushMenuItem(StdMenuItemChooser<pair<int, int> >::make("Resolution", resoptions, &opts_res));
+    }
+    
+    {
+      vector<pair<string, bool> > onoff;
+      onoff.push_back(make_pair("On", true));
+      onoff.push_back(make_pair("Off", false));
+      optionsmenu.pushMenuItem(StdMenuItemChooser<bool>::make("Fullscreen", onoff, &opts_fullscreen));
+    }
+    
+    {
+      vector<pair<string, float> > aspects;
+      aspects.push_back(make_pair("1:1", 1./1));
+      aspects.push_back(make_pair("5:4", 5./4));
+      aspects.push_back(make_pair("4:3", 4./3));
+      aspects.push_back(make_pair("16:10", 16./10));
+      aspects.push_back(make_pair("16:9", 16./9));
+      optionsmenu.pushMenuItem(StdMenuItemChooser<float>::make("Aspect ratio", aspects, &opts_aspect));
+    }
+    
+    optionsmenu.pushMenuItem(StdMenuItemBack::make("Accept", MAIN_SETRES));
+    optionsmenu.pushMenuItemAdjacent(StdMenuItemBack::make("Cancel"));
+    
+    mainmenu.pushMenuItem(StdMenuItemSubmenu::make("Options", &optionsmenu));
   }
   
   mainmenu.pushMenuItem(StdMenuItemTrigger::make("Input test", MAIN_INPUTTEST));
@@ -927,33 +977,17 @@ void InterfaceMain::init() {
   for(int i = 0; i < introscreen->players.size(); i++)
     introscreen_ais.push_back(new GameAiIntro());
   
-  escmenuitem.pushMenuItem(StdMenuItemBack::make("Return to game"));
-  
-  /*
-  {
-    StdMenu optionsmenu;
-    configmenu.pushMenuItem(StdMenuItem::makeChooser("Resolution", &start));
-    configmenu.pushMenuItem(StdMenuItem::makeAspect("Resolution", &start));
-    configmenu.pushMenuItem(StdMenuItem::makeToggle("Fullscreen", &end, bind(&InterfaceMain::end_clamp, this, _1), StdMenuItem::ScaleDisplayer(names, &start, &end, &onstart, false), false, &onstart));
-    configmenu.pushMenuItem(StdMenuItem::makeRounds("Estimated rounds", &start, &end, &moneyexp));
-    configmenu.pushMenuItem(StdMenuItem::makeOptions("Factions", &faction_toggle, StdMenuItem::ScaleDisplayer(onoff)));
-    //configmenu.pushMenuItem(StdMenuItem::makeOptions("Faction mode", boost::assign::list_of("Battle")("No factions")("Minor factions")("Normal factions")("Major factions"), &faction));
-    configmenu.pushMenuItem(StdMenuItem::makeTrigger("Begin", MAIN_NEWGAME));
-    configmenu.pushMenuItemAdjacent(StdMenuItem::makeBack("Cancel"));
-    
-    mainmenu.pushMenuItem(StdMenuItem::makeSubmenu("New game", configmenu, MAIN_NEWGAMEMENU));
-  }
-  */
-  
-  escmenuitem.pushMenuItem(StdMenuItemTrigger::make("Main menu", 1));
-  escmenuitem.pushMenuItem(StdMenuItemTrigger::make("Quit", 2));
+  escmenu.pushMenuItem(StdMenuItemBack::make("Return to game"));
+  escmenu.pushMenuItem(StdMenuItemSubmenu::make("Options", &optionsmenu, MAIN_OPTIONSMENU));
+  escmenu.pushMenuItem(StdMenuItemTrigger::make("Main menu", 1));
+  escmenu.pushMenuItem(StdMenuItemTrigger::make("Quit", 2));
   
   for(int i = 0; i < 30; i++)
     introscreen->runTickWithAi(vector<GameAi*>(introscreen_ais.begin(), introscreen_ais.end()), &unsync());
 }
 InterfaceMain::InterfaceMain() {
   introscreen = NULL;
-  escmenu = false;
+  inescmenu = false;
   init();
 }
 

@@ -57,11 +57,11 @@ public:
 class InterfaceMain : boost::noncopyable {
   
   enum { STATE_MAINMENU, STATE_PLAYING };
-  enum { MAIN_NEWGAME, MAIN_INPUTTEST, MAIN_GRID, MAIN_EXIT, MAIN_NEWGAMEMENU };
+  enum { MAIN_NEWGAME, MAIN_INPUTTEST, MAIN_GRID, MAIN_EXIT, MAIN_NEWGAMEMENU, MAIN_OPTIONSMENU, MAIN_SETRES };
   enum { ESC_MAINMENU, ESC_EXIT };
   int interface_mode;
   
-  bool escmenu;
+  bool inescmenu;
   
   bool grid;
   bool inptest;
@@ -70,8 +70,8 @@ class InterfaceMain : boost::noncopyable {
   Metagame *game;
   
   StdMenu mainmenu;
-  
-  StdMenu escmenuitem;
+  StdMenu escmenu;
+  StdMenu optionsmenu;
   
   Coord start;
   Coord end;
@@ -84,6 +84,10 @@ class InterfaceMain : boost::noncopyable {
   // 0 represents "battle choice", 1-4 are the valid normal options
   int faction;
   bool faction_toggle;
+  
+  pair<int, int> opts_res;
+  bool opts_fullscreen;
+  float opts_aspect;
   
   vector<Keystates> kst;
   

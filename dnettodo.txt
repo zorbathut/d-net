@@ -2,6 +2,8 @@
 - "Finish the Damn Game" Initiative
   - Rework the menu system to be saner and more easily modified
     - Add screen resolutions
+      - Pull the original resolution in
+      - Save the resolution somewhere (where?)
     - Add widescreen
     - Add dragging to resize
   - Set up some way to end the game before the rounds end
