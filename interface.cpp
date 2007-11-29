@@ -243,7 +243,7 @@ public:
   void renderItem(const Float4 &bounds) const {
     drawText(name.c_str(), 4, bounds.s());
     float percentage = (exp(expv->toFloat()) - 1) * 100;
-    drawText(StringPrintf("%d (+%.2f%% cash/round)", calculateRounds(*start, *end, *expv), percentage), 4, Float2(bounds.sx + 50, bounds.sy));
+    drawJustifiedText(StringPrintf("%d (+%.2f%% cash/round)", calculateRounds(*start, *end, *expv), percentage), 4, Float2(bounds.ex, bounds.sy), TEXT_MAX, TEXT_MIN);
   }
 };
 
@@ -970,7 +970,7 @@ void InterfaceMain::checksum(Adler32 *adl) const {
 
 void InterfaceMain::init() {
   StackString stp("IMain initting");
-  dprintf("a");
+  
   mainmenu = StdMenu();
   escmenu = StdMenu();
   optionsmenu = StdMenu();
@@ -978,19 +978,15 @@ void InterfaceMain::init() {
   introscreen_ais.clear();
   delete introscreen;
   introscreen = new GamePackage;
-  dprintf("b");
+  
   interface_mode = STATE_MAINMENU;
   {
     vector<string> names = boost::assign::list_of("Junkyard")("Civilian")("Professional")("Military")("Exotic")("Experimental")("Ultimate")("Armageddon");
     
     StdMenu configmenu;
-    dprintf("ba");
     configmenu.pushMenuItem(StdMenuItemScale::make("Game start", &start, bind(&InterfaceMain::start_clamp, this, _1), StdMenuItemScale::ScaleDisplayer(names, &start, &end, &onstart, true), true, &onstart));
-    dprintf("bb");
     configmenu.pushMenuItem(StdMenuItemScale::make("Game end", &end, bind(&InterfaceMain::end_clamp, this, _1), StdMenuItemScale::ScaleDisplayer(names, &start, &end, &onstart, false), false, &onstart));
-    dprintf("bc");
     configmenu.pushMenuItem(StdMenuItemRounds::make("Estimated rounds", &start, &end, &moneyexp));
-    dprintf("bd");
     
     {
       vector<pair<string, bool> > onoff;
@@ -1005,11 +1001,11 @@ void InterfaceMain::init() {
     
     mainmenu.pushMenuItem(StdMenuItemSubmenu::make("New game", configmenu, MAIN_NEWGAMEMENU));
   }
-  dprintf("c");
+  
   opts_res = getCurrentResolution();
   opts_aspect = getCurrentAspect();
   opts_fullscreen = getCurrentFullscreen();
-  dprintf("d");
+  
   {
     {
       vector<pair<string, pair<int, int> > > resoptions;
@@ -1034,17 +1030,17 @@ void InterfaceMain::init() {
     
     mainmenu.pushMenuItem(StdMenuItemSubmenu::make("Options", &optionsmenu));
   }
-  dprintf("e");
+  
   mainmenu.pushMenuItem(StdMenuItemTrigger::make("Input test", MAIN_INPUTTEST));
   mainmenu.pushMenuItem(StdMenuItemTrigger::make("Exit", MAIN_EXIT));
-  dprintf("f");
+  
   if(FLAGS_startingPhase == -1)
     start = 0;
   else
     start = Coord(FLAGS_startingPhase);
   end = 7;
   moneyexp = Coord(0.1133);
-  dprintf("g");
+  
   faction = FLAGS_factionMode + 1;
   CHECK(faction >= 0 && faction < 5);
   
@@ -1056,7 +1052,7 @@ void InterfaceMain::init() {
   grid = false;
   inptest = false;
   game = NULL;
-  dprintf("g");
+  
   {
     introscreen->players.resize(16);
     vector<const IDBFaction *> idbfa = ptrize(factionList());
@@ -1071,12 +1067,12 @@ void InterfaceMain::init() {
   
   for(int i = 0; i < introscreen->players.size(); i++)
     introscreen_ais.push_back(new GameAiIntro());
-  dprintf("i");
+  
   escmenu.pushMenuItem(StdMenuItemBack::make("Return to game"));
   escmenu.pushMenuItem(StdMenuItemSubmenu::make("Options", &optionsmenu));
   escmenu.pushMenuItem(StdMenuItemTrigger::make("Main menu", ESCMENU_MAINMENU));
   escmenu.pushMenuItem(StdMenuItemTrigger::make("Quit", ESCMENU_QUIT));
-  dprintf("j");
+  
   for(int i = 0; i < 30; i++)
     introscreen->runTickWithAi(vector<GameAi*>(introscreen_ais.begin(), introscreen_ais.end()), &unsync());
 }
