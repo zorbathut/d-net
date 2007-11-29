@@ -2,7 +2,7 @@
 - "Finish the Damn Game" Initiative
   - Rework the menu system to be saner and more easily modified
     - Add widescreen
-      - Change aspect when chosen res changes
+    - Why does the perfbar change shape?
     - Add dragging to resize
       - Update screen as it goes
     - Set up good defaults for resolution

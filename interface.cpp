@@ -727,19 +727,29 @@ bool is_relatively_prime(int i, int j) {
   return gcd(i, j) == 1;
 }
 
-vector<pair<string, float> > gen_aspects(float force_aspect) {
+class rati {
+public:
+  bool operator()(pair<int, int> lhs, pair<int, int> rhs) {
+    lhs.first *= rhs.second;
+    rhs.first *= lhs.second;
+    return lhs.first > rhs.first;
+  }
+};
+
+vector<pair<string, float> > gen_aspects(int x, int y) {
   vector<pair<int, int> > asps;
-  asps.push_back(make_pair(1, 1));
-  asps.push_back(make_pair(5, 4));
   asps.push_back(make_pair(4, 3));
   asps.push_back(make_pair(16, 10));
   asps.push_back(make_pair(16, 9));
   
-  for(int i = 1; i < 100; i++)
-    for(int j = 1; j < 100; j++)
-      if((float)i / j == force_aspect && is_relatively_prime(i, j))
-        asps.push_back(make_pair(i, j));
-      
+  asps.push_back(make_pair(x / gcd(x, y), y / gcd(x, y)));
+  
+  if(count(asps.begin(), asps.end(), make_pair(8, 5)))
+    asps.erase(find(asps.begin(), asps.end(), make_pair(8, 5)));
+  
+  sort(asps.begin(), asps.end(), rati());
+  asps.erase(unique(asps.begin(), asps.end()), asps.end());
+  
   vector<pair<string, float> > rv;
   for(int i = 0; i < asps.size(); i++)
     rv.push_back(make_pair(StringPrintf("%d:%d", asps[i].first, asps[i].second), (float)asps[i].first / asps[i].second));
@@ -748,12 +758,12 @@ vector<pair<string, float> > gen_aspects(float force_aspect) {
 }
 
 void InterfaceMain::opts_res_changed(pair<int, int> newres) {
-  if(newres.second * 5 == newres.first * 4) // this isn't actually 5:4
-    opts_aspect = 4./3;
-  else
-    opts_aspect = (float)newres.first / newres.second;
+  if(newres.second * 5 == newres.first * 4) // this isn't actually 5:4, this is probably 4:3
+    newres = make_pair(640, 480);
   
-  opts_aspect_chooser->changeOptionDb(gen_aspects(opts_aspect));
+  opts_aspect = (float)newres.first / newres.second;
+  
+  opts_aspect_chooser->changeOptionDb(gen_aspects(newres.first, newres.second));
 }
 
 void InterfaceMain::render() const {
@@ -1004,7 +1014,7 @@ void InterfaceMain::init() {
       optionsmenu.pushMenuItem(StdMenuItemChooser<bool>::make("Fullscreen", onoff, &opts_fullscreen));
     }
     
-    opts_aspect_chooser = StdMenuItemChooser<float>::make("Aspect ratio", gen_aspects(4./3), &opts_aspect);
+    opts_aspect_chooser = StdMenuItemChooser<float>::make("Aspect ratio", gen_aspects(640, 480), &opts_aspect);
     optionsmenu.pushMenuItem(opts_aspect_chooser);
     
     optionsmenu.pushMenuItem(StdMenuItemBack::make("Accept", OPTS_SETRES));
