@@ -241,6 +241,10 @@ static Color clearcolor;
 const Float2 invPoint(-1234e12, 394e9);
 Float2 lastPoint = invPoint;
 
+inline float weightconvert(float weight) {
+  return weight / map_zoom * (getResolutionY() + getResolutionX() / getScreenAspect()) / 2;
+}
+
 string printGraphicsStats() {
   string gstat = StringPrintf("%.2f/%.2f average clust/lines in %d frames, %d/%d strip hit (%.2f%%)", clusterCount / float(renderedFrameId - lastStats), totalLineCount / float(renderedFrameId - lastStats), renderedFrameId - lastStats, lpSuccess, lpFailure + lpSuccess, lpSuccess / float(lpFailure + lpSuccess) * 100);
   clusterCount = 0;
@@ -250,17 +254,20 @@ string printGraphicsStats() {
   lastStats = renderedFrameId;
   
   gstat += StringPrintf("\n  Current res %d/%d", getResolutionX(), getResolutionY());
+  gstat += StringPrintf("\n  Test with %f: %f, made of %f and %f", 10.f, weightconvert(10.f), 10.f / map_zoom * (getResolutionY()), 10.f / map_zoom * (getResolutionX() / getScreenAspect()));
   return gstat;
 }
 
 static bool frame_running = false;
+
+
 
 void beginLineCluster(float weight) {
   CHECK(frame_running);
   CHECK(glGetError() == GL_NO_ERROR);
   CHECK(curWeight == 0);
   CHECK(weight > 0);
-  glLineWidth(weight / map_zoom * getResolutionY());   // GL uses pixels internally for this unit, so I have to translate from game-meters
+  glLineWidth(weightconvert(weight));   // GL uses pixels internally for this unit, so I have to translate from game-meters
   CHECK(glGetError() == GL_NO_ERROR);
   glBegin(GL_LINE_STRIP);
   curWeight = weight;
@@ -274,7 +281,7 @@ void beginPointCluster(float weight) {
   CHECK(glGetError() == GL_NO_ERROR);
   CHECK(curWeight == 0);
   CHECK(weight > 0);
-  glPointSize(weight / map_zoom * getResolutionY());   // GL uses pixels internally for this unit, so I have to translate from game-meters
+  glPointSize(weightconvert(weight));   // GL uses pixels internally for this unit, so I have to translate from game-meters
   CHECK(glGetError() == GL_NO_ERROR);
   glBegin(GL_POINTS);
   curWeight = -weight;

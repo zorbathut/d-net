@@ -941,6 +941,18 @@ void InterfaceMain::render() const {
     setZoomVertical(0, 0, 100);
     escmenu.render(getZoom(), true);
   }
+  
+  // testing line width
+  /*
+  {
+    setZoomVertical(0, 0, 100);
+    setColor(C::gray(0.5));
+    for(int i = 0; i < 10; i++) {
+      const float mult = 2;
+      drawLine(Float4(10 + i * mult, 10, 10 + i * mult, 20), mult);
+      drawLine(Float4(100, 10 + i * mult, 110, 10 + i * mult), mult);
+    }
+  }*/
 };
 
 void InterfaceMain::checksum(Adler32 *adl) const {
