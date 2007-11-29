@@ -17,9 +17,13 @@
 
 #include <boost/assign.hpp>
 #include <boost/bind.hpp>
+#include <boost/optional.hpp>
+#include <boost/function.hpp>
 
 using namespace std;
 using boost::bind;
+using boost::function;
+using boost::optional;
 
 DEFINE_int(rounds_per_shop, 6, "How many rounds between each buying-things opportunity");
 DEFINE_bool(auto_newgame, false, "Automatically enter New Game");
@@ -59,7 +63,7 @@ class StdMenuItemTrigger : public StdMenuItem {
   int trigger;
   
 public:
-  static smart_ptr<StdMenuItem> make(const string &text, int trigger) { return smart_ptr<StdMenuItem>(new StdMenuItemTrigger(text, trigger)); }
+  static smart_ptr<StdMenuItemTrigger> make(const string &text, int trigger) { return smart_ptr<StdMenuItemTrigger>(new StdMenuItemTrigger(text, trigger)); }
   
   pair<StdMenuCommand, int> tickItem(const Keystates *keys) {
     if(keys && keys->accept.push) {
@@ -113,7 +117,7 @@ private:
 
 public:
   
-  static smart_ptr<StdMenuItem> make(const string &text, Coord *position, const function<Coord (const Coord &)> &munge, const ScaleDisplayer &sds, bool selected_val, bool *selected_pos) { return smart_ptr<StdMenuItem>(new StdMenuItemScale(text, position, munge, sds, selected_val, selected_pos)); }
+  static smart_ptr<StdMenuItemScale> make(const string &text, Coord *position, const function<Coord (const Coord &)> &munge, const ScaleDisplayer &sds, bool selected_val, bool *selected_pos) { return smart_ptr<StdMenuItemScale>(new StdMenuItemScale(text, position, munge, sds, selected_val, selected_pos)); }
     
   pair<StdMenuCommand, int> tickItem(const Keystates *keys) {
     if(keys) {
@@ -222,7 +226,7 @@ class StdMenuItemRounds : public StdMenuItem {
   Coord *expv;
   
 public:
-  static smart_ptr<StdMenuItem> make(const string &text, Coord *start, Coord *end, Coord *exp) { return smart_ptr<StdMenuItem>(new StdMenuItemRounds(text, start, end, exp)); }
+  static smart_ptr<StdMenuItemRounds> make(const string &text, Coord *start, Coord *end, Coord *exp) { return smart_ptr<StdMenuItemRounds>(new StdMenuItemRounds(text, start, end, exp)); }
   
   pair<StdMenuCommand, int> tickItem(const Keystates *keys) {
     if(keys && keys->l.down)
@@ -248,7 +252,12 @@ public:
  */
 
 template<typename T> class StdMenuItemChooser : public StdMenuItem {
-  StdMenuItemChooser(const string &text, const vector<pair<string, T> > &options, T *storage) : name(text), options(options), storage(storage) {
+  StdMenuItemChooser(const string &text, const vector<pair<string, T> > &options, T *storage, optional<function<void (T)> > changefunctor) : name(text), options(options), storage(storage), changefunctor(changefunctor) {
+    CHECK(storage);
+    syncoptions();
+  }
+  
+  void syncoptions() {
     maxx = 0;
     item = -1;
     
@@ -265,8 +274,6 @@ template<typename T> class StdMenuItemChooser : public StdMenuItem {
       *storage = options[item].second;
     }
     
-    CHECK(storage);
-    
     maxx += getTextWidth(name, 4);
     maxx += 8;
   }
@@ -277,10 +284,13 @@ template<typename T> class StdMenuItemChooser : public StdMenuItem {
   vector<pair<string, T> > options;
   T * storage;
   
+  optional<function<void (T)> > changefunctor;
+  
   int item;
   
 public:
-  static smart_ptr<StdMenuItem> make(const string &text, const vector<pair<string, T> > &options, T *storage) { return smart_ptr<StdMenuItem>(new StdMenuItemChooser<T>(text, options, storage)); }
+  static smart_ptr<StdMenuItemChooser<T> > make(const string &text, const vector<pair<string, T> > &options, T *storage) { return smart_ptr<StdMenuItemChooser<T> >(new StdMenuItemChooser<T>(text, options, storage, optional<function<void (T)> >())); }
+  static smart_ptr<StdMenuItemChooser<T> > make(const string &text, const vector<pair<string, T> > &options, T *storage, function<void (T)> changefunctor) { return smart_ptr<StdMenuItemChooser<T> >(new StdMenuItemChooser<T>(text, options, storage, changefunctor)); }
   
   pair<StdMenuCommand, int> tickItem(const Keystates *keys) {
     if(keys && keys->l.push)
@@ -292,6 +302,9 @@ public:
     
     *storage = options[item].second;
     
+    if(changefunctor)
+      (*changefunctor)(*storage);
+    
     return make_pair(SMR_NOTHING, SMR_NOTHING);
   }
   float renderItemWidth(float tmx) const {
@@ -300,6 +313,12 @@ public:
   void renderItem(const Float4 &bounds) const {
     drawText(name, 4, Float2(bounds.sx, bounds.sy));
     drawJustifiedText(options[item].first, 4, Float2(bounds.ex, bounds.sy), TEXT_MAX, TEXT_MIN);
+  }
+  
+  void changeOptionDb(const vector<pair<string, T> > &newopts) {
+    options = newopts;
+    
+    syncoptions();
   }
 };
 
@@ -329,8 +348,8 @@ class StdMenuItemSubmenu : public StdMenuItem {
   int signal;
   
 public:
-  static smart_ptr<StdMenuItem> make(const string &text, StdMenu menu, int signal = SMR_NOTHING) { return smart_ptr<StdMenuItem>(new StdMenuItemSubmenu(text, menu, signal)); }
-  static smart_ptr<StdMenuItem> make(const string &text, StdMenu *menu, int signal = SMR_NOTHING) { return smart_ptr<StdMenuItem>(new StdMenuItemSubmenu(text, menu, signal)); }
+  static smart_ptr<StdMenuItemSubmenu> make(const string &text, StdMenu menu, int signal = SMR_NOTHING) { return smart_ptr<StdMenuItemSubmenu>(new StdMenuItemSubmenu(text, menu, signal)); }
+  static smart_ptr<StdMenuItemSubmenu> make(const string &text, StdMenu *menu, int signal = SMR_NOTHING) { return smart_ptr<StdMenuItemSubmenu>(new StdMenuItemSubmenu(text, menu, signal)); }
   
   pair<StdMenuCommand, int> tickEntire(const Keystates &keys) {
     return gsm().tick(keys);
@@ -367,7 +386,7 @@ class StdMenuItemBack : public StdMenuItem {
   int signal;
   
 public:
-  static smart_ptr<StdMenuItem> make(const string &text, int signal = SMR_NOTHING) { return smart_ptr<StdMenuItem>(new StdMenuItemBack(text, signal)); }
+  static smart_ptr<StdMenuItemBack> make(const string &text, int signal = SMR_NOTHING) { return smart_ptr<StdMenuItemBack>(new StdMenuItemBack(text, signal)); }
   
   pair<StdMenuCommand, int> tickItem(const Keystates *keys) {
     if(keys && keys->accept.push) {
@@ -390,6 +409,7 @@ public:
  */
  
 void StdMenu::pushMenuItem(const smart_ptr<StdMenuItem> &site) {
+  StackString stp("pushmenuitem");
   items.push_back(vector<smart_ptr<StdMenuItem> >(1, site));
 }
 
@@ -449,6 +469,7 @@ pair<StdMenuCommand, int> StdMenu::tick(const Keystates &keys) {
 }
 
 void StdMenu::render(const Float4 &bounds, bool obscure) const {
+  StackString stp("StdMenu rendering");
   
   if(inside) {
     items[vpos][hpos]->renderEntire(bounds, obscure);
@@ -693,6 +714,48 @@ Coord InterfaceMain::end_clamp(const Coord &opt) const {
   return clamp(opt, start + Coord(1) / 16, 7);
 }
 
+int gcd(int x, int y) {
+  while(y) {
+    int t = y;
+    y = x % y;
+    x = t;
+  }
+  return x;
+}
+
+bool is_relatively_prime(int i, int j) {
+  return gcd(i, j) == 1;
+}
+
+vector<pair<string, float> > gen_aspects(float force_aspect) {
+  vector<pair<int, int> > asps;
+  asps.push_back(make_pair(1, 1));
+  asps.push_back(make_pair(5, 4));
+  asps.push_back(make_pair(4, 3));
+  asps.push_back(make_pair(16, 10));
+  asps.push_back(make_pair(16, 9));
+  
+  for(int i = 1; i < 100; i++)
+    for(int j = 1; j < 100; j++)
+      if((float)i / j == force_aspect && is_relatively_prime(i, j))
+        asps.push_back(make_pair(i, j));
+      
+  vector<pair<string, float> > rv;
+  for(int i = 0; i < asps.size(); i++)
+    rv.push_back(make_pair(StringPrintf("%d:%d", asps[i].first, asps[i].second), (float)asps[i].first / asps[i].second));
+  
+  return rv;
+}
+
+void InterfaceMain::opts_res_changed(pair<int, int> newres) {
+  if(newres.second * 5 == newres.first * 4) // this isn't actually 5:4
+    opts_aspect = 4./3;
+  else
+    opts_aspect = (float)newres.first / newres.second;
+  
+  opts_aspect_chooser->changeOptionDb(gen_aspects(opts_aspect));
+}
+
 void InterfaceMain::render() const {
   if(isUnoptimized()) {
     setZoom(Float4(0, 0, 133.3333, 100));
@@ -884,6 +947,8 @@ void InterfaceMain::checksum(Adler32 *adl) const {
 }
 
 void InterfaceMain::init() {
+  StackString stp("IMain initting");
+  dprintf("a");
   mainmenu = StdMenu();
   escmenu = StdMenu();
   optionsmenu = StdMenu();
@@ -891,15 +956,19 @@ void InterfaceMain::init() {
   introscreen_ais.clear();
   delete introscreen;
   introscreen = new GamePackage;
-  
+  dprintf("b");
   interface_mode = STATE_MAINMENU;
   {
     vector<string> names = boost::assign::list_of("Junkyard")("Civilian")("Professional")("Military")("Exotic")("Experimental")("Ultimate")("Armageddon");
     
     StdMenu configmenu;
+    dprintf("ba");
     configmenu.pushMenuItem(StdMenuItemScale::make("Game start", &start, bind(&InterfaceMain::start_clamp, this, _1), StdMenuItemScale::ScaleDisplayer(names, &start, &end, &onstart, true), true, &onstart));
+    dprintf("bb");
     configmenu.pushMenuItem(StdMenuItemScale::make("Game end", &end, bind(&InterfaceMain::end_clamp, this, _1), StdMenuItemScale::ScaleDisplayer(names, &start, &end, &onstart, false), false, &onstart));
+    dprintf("bc");
     configmenu.pushMenuItem(StdMenuItemRounds::make("Estimated rounds", &start, &end, &moneyexp));
+    dprintf("bd");
     
     {
       vector<pair<string, bool> > onoff;
@@ -914,18 +983,18 @@ void InterfaceMain::init() {
     
     mainmenu.pushMenuItem(StdMenuItemSubmenu::make("New game", configmenu, MAIN_NEWGAMEMENU));
   }
-  
+  dprintf("c");
   opts_res = getCurrentResolution();
   opts_aspect = getCurrentAspect();
   opts_fullscreen = getCurrentFullscreen();
-  
+  dprintf("d");
   {
     {
       vector<pair<string, pair<int, int> > > resoptions;
       vector<pair<int, int> > resses = getResolutions();
       for(int i = 0; i < resses.size(); i++)
         resoptions.push_back(make_pair(StringPrintf("%dx%d", resses[i].first, resses[i].second), resses[i]));
-      optionsmenu.pushMenuItem(StdMenuItemChooser<pair<int, int> >::make("Resolution", resoptions, &opts_res));
+      optionsmenu.pushMenuItem(StdMenuItemChooser<pair<int, int> >::make("Resolution", resoptions, &opts_res, bind(&InterfaceMain::opts_res_changed, this, _1)));
     }
     
     {
@@ -935,32 +1004,25 @@ void InterfaceMain::init() {
       optionsmenu.pushMenuItem(StdMenuItemChooser<bool>::make("Fullscreen", onoff, &opts_fullscreen));
     }
     
-    {
-      vector<pair<string, float> > aspects;
-      aspects.push_back(make_pair("1:1", 1./1));
-      aspects.push_back(make_pair("5:4", 5./4));
-      aspects.push_back(make_pair("4:3", 4./3));
-      aspects.push_back(make_pair("16:10", 16./10));
-      aspects.push_back(make_pair("16:9", 16./9));
-      optionsmenu.pushMenuItem(StdMenuItemChooser<float>::make("Aspect ratio", aspects, &opts_aspect));
-    }
+    opts_aspect_chooser = StdMenuItemChooser<float>::make("Aspect ratio", gen_aspects(4./3), &opts_aspect);
+    optionsmenu.pushMenuItem(opts_aspect_chooser);
     
     optionsmenu.pushMenuItem(StdMenuItemBack::make("Accept", OPTS_SETRES));
     optionsmenu.pushMenuItemAdjacent(StdMenuItemBack::make("Cancel"));
     
     mainmenu.pushMenuItem(StdMenuItemSubmenu::make("Options", &optionsmenu));
   }
-  
+  dprintf("e");
   mainmenu.pushMenuItem(StdMenuItemTrigger::make("Input test", MAIN_INPUTTEST));
   mainmenu.pushMenuItem(StdMenuItemTrigger::make("Exit", MAIN_EXIT));
-  
+  dprintf("f");
   if(FLAGS_startingPhase == -1)
     start = 0;
   else
     start = Coord(FLAGS_startingPhase);
   end = 7;
   moneyexp = Coord(0.1133);
-  
+  dprintf("g");
   faction = FLAGS_factionMode + 1;
   CHECK(faction >= 0 && faction < 5);
   
@@ -972,7 +1034,7 @@ void InterfaceMain::init() {
   grid = false;
   inptest = false;
   game = NULL;
-  
+  dprintf("g");
   {
     introscreen->players.resize(16);
     vector<const IDBFaction *> idbfa = ptrize(factionList());
@@ -987,12 +1049,12 @@ void InterfaceMain::init() {
   
   for(int i = 0; i < introscreen->players.size(); i++)
     introscreen_ais.push_back(new GameAiIntro());
-  
+  dprintf("i");
   escmenu.pushMenuItem(StdMenuItemBack::make("Return to game"));
   escmenu.pushMenuItem(StdMenuItemSubmenu::make("Options", &optionsmenu));
   escmenu.pushMenuItem(StdMenuItemTrigger::make("Main menu", ESCMENU_MAINMENU));
   escmenu.pushMenuItem(StdMenuItemTrigger::make("Quit", ESCMENU_QUIT));
-  
+  dprintf("j");
   for(int i = 0; i < 30; i++)
     introscreen->runTickWithAi(vector<GameAi*>(introscreen_ais.begin(), introscreen_ais.end()), &unsync());
 }

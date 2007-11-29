@@ -54,6 +54,8 @@ public:
   virtual ~StdMenuItem();
 };
 
+template<typename T> class StdMenuItemChooser;
+
 class InterfaceMain : boost::noncopyable {
   
   enum { STATE_MAINMENU, STATE_PLAYING };
@@ -88,6 +90,8 @@ class InterfaceMain : boost::noncopyable {
   pair<int, int> opts_res;
   bool opts_fullscreen;
   float opts_aspect;
+  smart_ptr<StdMenuItemChooser<float> > opts_aspect_chooser;
+  void opts_res_changed(pair<int, int> newres);
   
   vector<Keystates> kst;
   

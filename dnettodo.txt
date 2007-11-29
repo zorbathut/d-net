@@ -1,8 +1,6 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - Rework the menu system to be saner and more easily modified
-    - Add actual UI library :(
-      - Figure out how the is-a has-a relationships should work
     - Add widescreen
       - Change aspect when chosen res changes
     - Add dragging to resize

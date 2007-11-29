@@ -3,8 +3,10 @@
 
 #include "debug.h"
 
+template <typename B, typename D> B *upcast(D *d) { return static_cast<D *>(static_cast<B *>(d)); } 
+
 template<typename T> class smart_ptr {
-private:
+  template <typename U> friend class smart_ptr;
   T *ptr;
   int *ct;
 
@@ -57,12 +59,26 @@ public:
     }
     return *this;
   }
+  template<typename U> smart_ptr<T> &operator=(const smart_ptr<U> &x) {
+    reset();
+    if(x.ptr) {
+      ptr = upcast<T, U>(x.ptr);
+      ct = x.ct;
+      (*ct)++;
+    }
+    return *this;
+  }
 
   smart_ptr() {
     ct = NULL;
     ptr = NULL;
   }
   smart_ptr(const smart_ptr<T> &x) {
+    ct = NULL;
+    ptr = NULL;
+    *this = x;
+  }
+  template<typename U> smart_ptr(const smart_ptr<U> &x) {
     ct = NULL;
     ptr = NULL;
     *this = x;
