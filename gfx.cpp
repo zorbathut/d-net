@@ -77,18 +77,13 @@ template<typename T> Pool<T> PoolObj<T>::pool;
  * Infrastructure
  */
 
-vector<int> getView() {
-  GLint gli[4];
-  glGetIntegerv(GL_VIEWPORT, gli);
-  vector<int> rv(gli, gli + 4);
-  return rv;
-}
-
+int cres_x;
+int cres_y;
 int getResolutionX() {
-  return getView()[2];
+  return cres_x;
 }
 int getResolutionY() {
-  return getView()[3];
+  return cres_y;
 }
  
 class GfxWindowState {
@@ -196,10 +191,18 @@ void initGfx() {
 }
 
 void updateResolution(float aspect) {
+  {
+    GLint gli[4];
+    glGetIntegerv(GL_VIEWPORT, gli);
+    cres_x = gli[2];
+    cres_y = gli[3];
+  }
+
   // Set up our OpenGL translation so we have the right image size
   {
     glLoadIdentity();
-    GLfloat flipy[16]= { 2 / aspect, 0, 0, 0,   0, -2, 0, 0,   0, 0, 1, 0,  -1, -1, 0, 1 };
+    //GLfloat flipy[16]= { 2 / ((float)getResolutionX() / getResolutionY()), 0, 0, 0,   0, -2, 0, 0,   0, 0, 1, 0,  -1, -1, 0, 1 };
+    GLfloat flipy[16]= { 2 / (aspect), 0, 0, 0,   0, -2, 0, 0,   0, 0, 1, 0,  -1, -1, 0, 1 };
     glMultMatrixf(flipy);
     glTranslatef(0, -1, 0);
   }
@@ -245,6 +248,8 @@ string printGraphicsStats() {
   lpFailure = 0;
   lpSuccess = 0;
   lastStats = renderedFrameId;
+  
+  gstat += StringPrintf("\n  Current res %d/%d", getResolutionX(), getResolutionY());
   return gstat;
 }
 
@@ -384,9 +389,9 @@ GfxWindow::~GfxWindow() {
 }
 
 void GfxWindowState::setScissor() const { // yes, the Y's are correct - the screen coordinates are (0,0)-(1,aspect).
-  int sx = int(getResolutionY() * newbounds.sx);
+  int sx = int(getResolutionX() * newbounds.sx / getScreenAspect());  // Okay. sy might be up to aspect. So we want to divide by aspect, then multiply by ResolutionX
   int sy = int(getResolutionY() * newbounds.sy);
-  int ex = int(ceil(getResolutionY() * newbounds.ex));
+  int ex = int(ceil(getResolutionX() * newbounds.ex / getScreenAspect()));
   int ey = int(ceil(getResolutionY() * newbounds.ey));
   glScissor(sx, getResolutionY() - ey, ex - sx, ey - sy);
 }
