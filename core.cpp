@@ -118,8 +118,7 @@ void MainLoop() {
           break;
 
         case SDL_VIDEORESIZE:
-          CHECK(0);
-          //CreateWindow("Destruction Net", event.resize.w, event.resize.h);
+          interface.forceResize(event.resize.w, event.resize.h);
           break;
 
         default:

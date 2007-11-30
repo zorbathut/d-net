@@ -968,6 +968,17 @@ void InterfaceMain::checksum(Adler32 *adl) const {
     game->checksum(adl);
 }
 
+void InterfaceMain::forceResize(int w, int h) {
+  w = max(w, 100);
+  h = min(h, w / 4 * 3);
+  h = max(h, w / 6);  // no, you can't have 6:1 aspect. Not allowed.
+  float aspect_per_pixel = opts_aspect / opts_res.first * opts_res.second;
+  opts_res.first = w;
+  opts_res.second = h;
+  opts_aspect = aspect_per_pixel * w / h;
+  CHECK(setResolution(make_pair(w, h), opts_aspect, opts_fullscreen));
+}
+
 void InterfaceMain::init() {
   StackString stp("IMain initting");
   

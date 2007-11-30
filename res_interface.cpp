@@ -16,7 +16,7 @@ int GetVideoFlags(bool fullscreen) {
 
   int videoflags = 0;
 
-  videoflags = SDL_OPENGL | SDL_HWPALETTE/* | SDL_RESIZABLE*/;
+  videoflags = SDL_OPENGL | SDL_HWPALETTE | SDL_RESIZABLE;
 
   const SDL_VideoInfo *videoinfo = SDL_GetVideoInfo();
   CHECK(videoinfo);

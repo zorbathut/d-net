@@ -106,6 +106,8 @@ public:
   void ai(const vector<Ai *> &ais) const;
   void render() const;
 
+  void forceResize(int w, int h);
+
   void checksum(Adler32 *adl) const;
 
   InterfaceMain();
