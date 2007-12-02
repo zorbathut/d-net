@@ -155,7 +155,7 @@ PersistentData::PDRTR PersistentData::tick(const vector<Controller> &keys) {
         
         sps_playerpos[player].x += dz.x;
         sps_playerpos[player].y -= dz.y;
-        sps_playerpos[player] = clamp(sps_playerpos[player], Coord4(0, 90, 133.333, 100));
+        sps_playerpos[player] = clamp(sps_playerpos[player], Coord4(0, 90, 100, 100));
         
         if(!wasin) {
           bool isin = false;
@@ -441,8 +441,8 @@ void PersistentData::render() const {
     // Draw our framework
     setZoomVertical(0, 0, 100);
     setColor(C::active_text);
-    drawLine(Float4(0, divider_ypos, 140, divider_ypos), 0.1);
-    drawLine(Float4(0, ticker_ypos, 140, ticker_ypos), 0.1);
+    drawLine(Float4(0, divider_ypos, getZoom().ex, divider_ypos), 0.1);
+    drawLine(Float4(0, ticker_ypos, getZoom().ex, ticker_ypos), 0.1);
     
     // Draw our text descriptions
     setColor(C::inactive_text);
@@ -454,7 +454,7 @@ void PersistentData::render() const {
       vector<pair<int, pair<Coord, Coord> > > rng = getRanges();
       for(int i = 0; i < rng.size(); i++) {
         vector<string> lines = tokenize(tween_textlabels[rng[i].first], " ");
-        drawJustifiedMultiText(lines, ticker_text_size, Coord2((rng[i].second.first + rng[i].second.second) / 2, (ticker_ypos + 100) / 2), TEXT_CENTER, TEXT_CENTER);
+        drawJustifiedMultiText(lines, ticker_text_size, Coord2((rng[i].second.first + rng[i].second.second) / 2 / 100 * getZoom().ex, (ticker_ypos + 100) / 2), TEXT_CENTER, TEXT_CENTER);
       }
     }
     
@@ -509,9 +509,11 @@ void PersistentData::render() const {
           setColor(pms[i].faction->faction->color);
         else
           setColor(C::gray(0.8));
-        drawCrosshair(sps_playerpos[i], ticker_text_size, 0.1);
+        Coord2 rpp = sps_playerpos[i];
+        rpp.x = rpp.x / 100 * getZoom().ex;
+        drawCrosshair(rpp, ticker_text_size, 0.1);
         if(pms[i].faction)
-          drawDvec2(pms[i].faction->faction->icon, Coord4(0, 0, ticker_text_size, ticker_text_size) + sps_playerpos[i] + Coord2(ticker_text_size, ticker_text_size) / 10, 10, 0.001);
+          drawDvec2(pms[i].faction->faction->icon, Coord4(0, 0, ticker_text_size, ticker_text_size) + rpp + Coord2(ticker_text_size, ticker_text_size) / 10, 10, 0.001);
       }
     }
   }
@@ -1265,7 +1267,7 @@ vector<pair<int, pair<Coord, Coord> > > PersistentData::getRanges() const {
   vector<pair<int, pair<Coord, Coord> > > ranges;
   for(int i = 0; i < avails.size(); i++) {
     vector<string> lines = tokenize(tween_textlabels[avails[i]], " ");
-    const Coord pivot = 133.333 / (avails.size() * 2) * (i * 2 + 1);
+    const Coord pivot = 100. / (avails.size() * 2) * (i * 2 + 1);
     
     float mwid = 0;
     for(int j = 0; j < lines.size(); j++)

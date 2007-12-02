@@ -44,9 +44,7 @@ public:
 
   float aspect;
   
-  RenderInfo() {
-    aspect = 1.532563;  // lolz
-    
+  RenderInfo(float aspect) : aspect(aspect) {
     const float roundaborder = 0.05;
     
     drawzone = Float4(roundaborder, roundaborder, aspect - roundaborder, 1.0 - roundaborder);     // maaaagic
@@ -565,7 +563,7 @@ bool runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
       
       pms->test_game->players.push_back(Player(pms->faction->faction, 0, Money(0)));
       
-      const RenderInfo rin;
+      const RenderInfo rin(4./3.);
       
       Float4 boundy = Float4(rin.xstart, rin.ystarts[2], rin.xend, rin.ystarts[rin.textline_count - 4]);
       boundy -= boundy.midpoint();
@@ -600,7 +598,7 @@ void runSettingRender(const PlayerMenuState &pms, const ControlConsts &cc) {
   CHECK(pms.faction);
 
   setZoomVertical(0, 0, 1);
-  const RenderInfo rin;
+  const RenderInfo rin(getAspect());
   
   CHECK(abs((getAspect() / rin.aspect) - 1.0) < 0.0001);
   
