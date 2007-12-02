@@ -263,7 +263,7 @@ void MainLoop() {
           interface.render();
           if(!controls_users() && FLAGS_renderframenumber) {
             setColor(1.0, 1.0, 1.0);
-            setZoom(Float4(0, 0, 133.333, 100));
+            setZoomVertical(0, 0, 1);
             drawText(StringPrintf("%d", frameNumber), 10, Float2(5, 85));
           }
         }

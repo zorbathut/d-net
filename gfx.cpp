@@ -461,16 +461,6 @@ GfxInvertingStencil::~GfxInvertingStencil() {
  * Primitives
  */
 
-void setZoom(const Float4 &fl4) {
-  CHECK(frame_running);
-  float rat = fl4.span_x() / fl4.span_y() / getAspect();
-  if(rat < 0.999 || rat > 1.001) {
-    dprintf("rat is %f\n", rat);
-    CHECK(0);
-  }
-  setZoomVertical(fl4.sx, fl4.sy, fl4.ey);
-}
-
 void setZoomAround(const CFC4 &bbox) {
   Float2 center = bbox->midpoint();
   float zoomtop = bbox->span_y() / 2;

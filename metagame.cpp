@@ -158,7 +158,7 @@ void Metagame::renderToScreen() const {
     game.renderToScreen(ppt, GameMetacontext());
     if(!controls_users()) {    
       setColor(1.0, 1.0, 1.0);
-      setZoom(Float4(0, 0, 133.333, 100));
+      setZoomVertical(0, 0, 100);
       drawText(StringPrintf("faction setting round"), 2, Float2(5, 82));
     }
   } else if(mode == MGM_TWEEN) {
@@ -173,7 +173,7 @@ void Metagame::renderToScreen() const {
     game.renderToScreen(ppt, GameMetacontext(win_history, roundsBetweenShop));
     if(!controls_users() && FLAGS_renderframenumber) {    
       setColor(1.0, 1.0, 1.0);
-      setZoom(Float4(0, 0, 133.333, 100));
+      setZoomVertical(0, 0, 100);
       drawText(StringPrintf("round %d", gameround), 2, Float2(5, 82));
     }
   } else {

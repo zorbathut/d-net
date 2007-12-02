@@ -588,7 +588,7 @@ void Game::renderToScreen(const vector<const Player *> &players, GameMetacontext
   
   {
     // Set up zooming for the gfx window, if necessary
-    setZoom(Float4(0, 0, getAspect(), 1));
+    setZoomVertical(0, 0, 1);
     bool hasStatus = false;
     if(gamemode == GMODE_STANDARD || gamemode == GMODE_CHOICE)
       hasStatus = true;
@@ -733,7 +733,7 @@ void Game::renderToScreen(const vector<const Player *> &players, GameMetacontext
   
   // Here's everything outside gamespace
   if(gamemode != GMODE_TEST && gamemode != GMODE_DEMO && gamemode != GMODE_CENTERED_DEMO && gamemode != GMODE_TITLESCREEN) {
-    setZoom(Float4(0, 0, 133.333, 100));
+    setZoomVertical(0, 0, 1);
     
     // Player health
     {
@@ -776,7 +776,7 @@ void Game::renderToScreen(const vector<const Player *> &players, GameMetacontext
     // The giant overlay text for countdowns
     if(frameNmToStart == -1) {
       setColor(C::gray(1.0));
-      drawJustifiedText("Choose team", 8, Float2(133.3, 100) / 2, TEXT_CENTER, TEXT_CENTER);
+      drawJustifiedText("Choose team", 8, getZoom().midpoint(), TEXT_CENTER, TEXT_CENTER);
     } else if(frameNm < frameNmToStart) {
       setColor(C::gray(1.0));
       int fleft = frameNmToStart - frameNm;
@@ -788,10 +788,10 @@ void Game::renderToScreen(const vector<const Player *> &players, GameMetacontext
       } else {
         s = 8;
       }
-      drawJustifiedText(StringPrintf("Ready %d.%02d", fleft / 60, fleft % 60), s, Float2(133.3, 100) / 2, TEXT_CENTER, TEXT_CENTER);
+      drawJustifiedText(StringPrintf("Ready %d.%02d", fleft / 60, fleft % 60), s, getZoom().midpoint(), TEXT_CENTER, TEXT_CENTER);
     } else if(frameNm < frameNmToStart + 60) {
       setColor(C::gray((240.0 - frameNm) / 60));
-      drawJustifiedText("GO", 40, Float2(133.3, 100) / 2, TEXT_CENTER, TEXT_CENTER);
+      drawJustifiedText("GO", 40, getZoom().midpoint(), TEXT_CENTER, TEXT_CENTER);
     }
     
     // Bombardment level text
@@ -801,7 +801,7 @@ void Game::renderToScreen(const vector<const Player *> &players, GameMetacontext
       drawText(StringPrintf("Bombardment status: %s", bdescr[clamp(round(bombardment_tier).toInt(), 0, ARRAY_SIZE(bdescr) - 1)]), 2, Float2(2, 96));
     }
     
-    setZoom(Float4(0, 0, 1.33333, 1));
+    setZoomVertical(0, 0, 1);
     
     // Our win ticker
     if(gmc.hasMetacontext()) {
@@ -829,7 +829,7 @@ void Game::renderToScreen(const vector<const Player *> &players, GameMetacontext
           width += iconwidth * fc.size() + lineborder * 2;
         width += iconwidth * (winrup - i) + lineborder * 2 * ((winrup - i) / 6);
         
-        if(width >= 1.33)
+        if(width >= getZoom().ex)
           continue;
         
         float hei = min(iconwidth, iconwidth * 6 / smax);

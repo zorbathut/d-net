@@ -354,9 +354,9 @@ void PersistentData::render() const {
   smart_ptr<GfxWindow> gfxwpos;
   
   if(slot[0].type != Slot::RESULTS && slot[0].type != Slot::GAMEEND) {
-    setZoom(Float4(0, 0, 133.333, 100));
-    gfxwpos.reset(new GfxWindow(Float4(0, 0, 133.333, divider_ypos), 1.0));
-    setZoom(Float4(0, 0, getAspect(), 1.0));
+    setZoomVertical(0, 0, 100);
+    gfxwpos.reset(new GfxWindow(Float4(0, 0, getZoom().ex, divider_ypos), 1.0));
+    setZoomVertical(0, 0, 1);
     
     vector<string> text;
     if(shopcycles == 0) {
@@ -396,7 +396,7 @@ void PersistentData::render() const {
     drawJustifiedMultiText(text, 0.03, getZoom().midpoint(), TEXT_CENTER, TEXT_CENTER);
   }
   
-  setZoom(Float4(0, 0, getAspect(), 1.0));
+  setZoomVertical(0, 0, 1.0);
   
   if(slot_count == 1) {
     renderSlot(0);
@@ -439,7 +439,7 @@ void PersistentData::render() const {
   
   if(slot[0].type != Slot::RESULTS && slot[0].type != Slot::GAMEEND) {
     // Draw our framework
-    setZoom(Float4(0, 0, 133.333, 100));
+    setZoomVertical(0, 0, 100);
     setColor(C::active_text);
     drawLine(Float4(0, divider_ypos, 140, divider_ypos), 0.1);
     drawLine(Float4(0, ticker_ypos, 140, ticker_ypos), 0.1);
@@ -447,7 +447,7 @@ void PersistentData::render() const {
     // Draw our text descriptions
     setColor(C::inactive_text);
     drawJustifiedText("Next - ", ticker_text_size, Float2(ticker_queue_border, (divider_ypos + ticker_ypos) / 2), TEXT_MIN, TEXT_CENTER);
-    drawJustifiedText("- Not ready", ticker_text_size, Float2(133.333 - ticker_waiting_border, (divider_ypos + ticker_ypos) / 2), TEXT_MAX, TEXT_CENTER);
+    drawJustifiedText("- Not ready", ticker_text_size, Float2(getZoom().ex - ticker_waiting_border, (divider_ypos + ticker_ypos) / 2), TEXT_MAX, TEXT_CENTER);
     
     // Draw our text labels
     {
@@ -486,7 +486,7 @@ void PersistentData::render() const {
       vector<const IDBFaction *> nrfactions = getUnfinishedFactions();
       
       for(int i = 0; i < nrfactions.size(); i++) {
-        Float4 drawpos = Float4(-ticker_text_size, 0, 0, ticker_text_size) + Float2(133.333 - ticker_waiting_border - getTextWidth("- Not ready", ticker_text_size) - (i + 1) * ticker_text_size * 1.2 + ticker_text_size, (divider_ypos + ticker_ypos) / 2 - ticker_text_size / 2);
+        Float4 drawpos = Float4(-ticker_text_size, 0, 0, ticker_text_size) + Float2(getZoom().ex - ticker_waiting_border - getTextWidth("- Not ready", ticker_text_size) - (i + 1) * ticker_text_size * 1.2 + ticker_text_size, (divider_ypos + ticker_ypos) / 2 - ticker_text_size / 2);
         if(nrfactions[i]) {
           setColor(nrfactions[i]->color);
           drawDvec2(nrfactions[i]->icon, drawpos, 10, 0.001);
@@ -499,7 +499,7 @@ void PersistentData::render() const {
     
     if(btt_notify) {
       setColor(btt_notify->color);
-      drawJustifiedText("Use shop first", ticker_text_size, Float2(133.333 - ticker_waiting_border, ticker_ypos + 0.5), TEXT_MAX, TEXT_MIN);
+      drawJustifiedText("Use shop first", ticker_text_size, Float2(getZoom().ex - ticker_waiting_border, ticker_ypos + 0.5), TEXT_MAX, TEXT_MIN);
     }
     
     // Draw our crosshairs
@@ -840,39 +840,39 @@ void PersistentData::renderSlot(int slotid) const {
   } else if(slt.type == Slot::RESULTS) {
     StackString stp("Results");
     CHECK(lrCategory.size()); // make sure we *have* results
-    setZoom(Float4(0, 0, 800, 600));
+    setZoomVertical(0, 0, 600);
     setColor(1.0, 1.0, 1.0);
     
     float cury = 20;
     
     setColor(C::inactive_text);
     drawJustifiedText(StringPrintf("Base income: %s", lrBaseCash.textual().c_str()), 10, Float2(40 , cury), TEXT_MIN, TEXT_MIN);
-    drawJustifiedText(StringPrintf("Highest player cash: %s", highestPlayerCash.textual().c_str()), 10, Float2(760, cury), TEXT_MAX, TEXT_MIN);
+    drawJustifiedText(StringPrintf("Highest player cash: %s", highestPlayerCash.textual().c_str()), 10, Float2(getZoom().ex - 40, cury), TEXT_MAX, TEXT_MIN);
     cury += 20;
     
-    drawJustifiedText(StringPrintf("Starting cash: %s", newPlayerStartingCash.textual().c_str()), 10, Float2(760, cury), TEXT_MAX, TEXT_MIN);
+    drawJustifiedText(StringPrintf("Starting cash: %s", newPlayerStartingCash.textual().c_str()), 10, Float2(getZoom().ex - 40, cury), TEXT_MAX, TEXT_MIN);
     cury += 20;
     
     setColor(C::inactive_text);
     drawText("Damage", 30, Float2(40, cury));
-    drawMultibar(lrCategory[0], Float4(200, cury, 760, cury + 40));
+    drawMultibar(lrCategory[0], Float4(200, cury, getZoom().ex - 40, cury + 40));
     cury += 60;
     
     setColor(C::inactive_text);
     drawText("Kills", 30, Float2(40, cury));
-    drawMultibar(lrCategory[1], Float4(200, cury, 760, cury + 40));
+    drawMultibar(lrCategory[1], Float4(200, cury, getZoom().ex - 40, cury + 40));
     cury += 60;
     
     setColor(C::inactive_text);
     drawText("Wins", 30, Float2(40, cury));
-    drawMultibar(lrCategory[2], Float4(200, cury, 760, cury + 40));
+    drawMultibar(lrCategory[2], Float4(200, cury, getZoom().ex - 40, cury + 40));
     cury += 60;
     
     cury += 40;
     
     setColor(C::inactive_text);
     drawText("Totals", 30, Float2(40, cury));
-    drawMultibar(lrPlayer, Float4(200, cury, 760, cury + 40));
+    drawMultibar(lrPlayer, Float4(200, cury, getZoom().ex - 40, cury + 40));
     cury += 100;
     
     setColor(C::inactive_text);
@@ -882,7 +882,7 @@ void PersistentData::renderSlot(int slotid) const {
     int notdone = count(checked.begin(), checked.end(), false);
     CHECK(notdone);
     int cpos = 0;
-    float increment = 800.0 / notdone;
+    float increment = getZoom().ex / notdone;
     for(int i = 0; i < checked.size(); i++) {
       if(!checked[i]) {
         setColor(playerdata[i].getFaction()->color);
@@ -921,28 +921,28 @@ void PersistentData::renderSlot(int slotid) const {
         results.back()[j] /= ttot;
     }
     
-    setZoom(Float4(0, 0, 800, 600));
+    setZoomVertical(0, 0, 600);
     setColor(1.0, 1.0, 1.0);
     
     float cury = 20;
     
     setColor(C::inactive_text);
-    drawJustifiedText("Final scores", 30, Float2(400 , cury), TEXT_CENTER, TEXT_MIN);
+    drawJustifiedText("Final scores", 30, Float2(getZoom().ex / 2, cury), TEXT_CENTER, TEXT_MIN);
     cury += 60;
     
     setColor(C::inactive_text);
     drawText("Damage", 30, Float2(40, cury));
-    drawMultibar(results[0], Float4(200, cury, 760, cury + 40));
+    drawMultibar(results[0], Float4(200, cury, getZoom().ex - 40, cury + 40));
     cury += 60;
     
     setColor(C::inactive_text);
     drawText("Kills", 30, Float2(40, cury));
-    drawMultibar(results[1], Float4(200, cury, 760, cury + 40));
+    drawMultibar(results[1], Float4(200, cury, getZoom().ex - 40, cury + 40));
     cury += 60;
     
     setColor(C::inactive_text);
     drawText("Wins", 30, Float2(40, cury));
-    drawMultibar(results[2], Float4(200, cury, 760, cury + 40));
+    drawMultibar(results[2], Float4(200, cury, getZoom().ex - 40, cury + 40));
     cury += 60;
     
     cury += 40;
@@ -953,7 +953,7 @@ void PersistentData::renderSlot(int slotid) const {
       vector<int> roundcount;
       for(int i = 0; i < playerdata.size(); i++)
         roundcount.push_back(playerdata[i].total_rounds);
-      drawMultibar(results[3], Float4(200, cury, 760, cury + 40), &roundcount);
+      drawMultibar(results[3], Float4(200, cury, getZoom().ex - 40, cury + 40), &roundcount);
     }
     cury += 100;
     

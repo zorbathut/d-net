@@ -160,9 +160,9 @@ void StdMenuItemScale::ScaleDisplayer::render(float pos) const {
   }
   
   if(mini) {
-    setZoomAround(Float4(-0.5, 0, labels.size() + 0.5 - 1, 0));
+    setZoomAround(Float4(-0.5, -0.1, labels.size() + 0.5 - 1, 0.06));
   } else {
-    setZoomAround(Float4(cent - 2, 0, cent + 2, 0));
+    setZoomAround(Float4(cent, -0.09, cent, 0.08));
   }
   
   const float height = mini ? 0.27 : 0.19;
@@ -768,7 +768,7 @@ void InterfaceMain::opts_res_changed(pair<int, int> newres) {
 
 void InterfaceMain::render() const {
   if(isUnoptimized()) {
-    setZoom(Float4(0, 0, 133.3333, 100));
+    setZoomVertical(0, 0, 100);
     setColor(Color(1.0, 0.3, 0.3));
     drawText("Optimizations disabled!", 6, Float2(1, 1));
   }
@@ -862,7 +862,7 @@ void InterfaceMain::render() const {
         drawGrid(1, 0.01);
       }
       if(inptest) {
-        setZoom(Float4(0, 0, 800, 600));
+        setZoomVertical(0, 0, 600);
         setColor(1.0, 1.0, 1.0);
         const float xsiz = 100;
         const float bord = xsiz / 25;
@@ -873,7 +873,7 @@ void InterfaceMain::render() const {
         const float crosshairc = crosshair / 2;
         const float textsize = crosshair / 4;
         const float textrsize = textsize * 0.8;
-        const int wid = int(700 / xsiz);
+        const int wid = int((getZoom().ey - 100) / xsiz);
         const int textymax = int(crosshair / textsize);
         const int textxmax = 2;
         const float textxofs = crosshair / textxmax;

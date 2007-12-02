@@ -24,7 +24,6 @@ string printGraphicsStats();
 void clearFrame(const Color &color);
 
 void initFrame();
-void setZoom(const Float4 &box);
 void setZoomAround(const CFC4 &bbox);
 void setZoomCenter(float cx, float cy, float radius_y);
 void setZoomVertical(float sx, float sy, float ey);
