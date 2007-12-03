@@ -563,13 +563,8 @@ bool runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
       
       pms->test_game->players.push_back(Player(pms->faction->faction, 0, Money(0)));
       
-      const RenderInfo rin(4./3.);
-      
-      Float4 boundy = Float4(rin.xstart, rin.ystarts[2], rin.xend, rin.ystarts[rin.textline_count - 4]);
+      Float4 boundy = Float4(0, 0, 250, 100);
       boundy -= boundy.midpoint();
-      
-      float mn = min(boundy.span_x(), boundy.span_y());
-      boundy *= (100 / mn);
       
       pms->test_game->game.initTest(&pms->test_game->players[0], boundy);
     }
@@ -667,7 +662,10 @@ void runSettingRender(const PlayerMenuState &pms, const ControlConsts &cc) {
     } else {
       drawJustifiedText("Push your \"cancel\" button once you're done.", rin.textsize, Float2(rin.xcenter, rin.ystarts[rin.textline_count - 1]), TEXT_CENTER, TEXT_MIN);
     }
-    GfxWindow gfxw(Float4(rin.xstart, rin.ystarts[2], rin.xend, rin.ystarts[rin.textline_count - 4]), 1.0);
+    float height = rin.ystarts[rin.textline_count - 4] - rin.ystarts[2];
+    float twid = min(height * 2.5f, rin.xend - rin.xstart);
+    float xmid = (rin.xstart + rin.xend) / 2;
+    GfxWindow gfxw(Float4(xmid - twid / 2, rin.ystarts[2], xmid + twid / 2, rin.ystarts[rin.textline_count - 4]), 1.0);
     pms.test_game->renderToScreen();
   } else if(pms.settingmode == SETTING_READY) {
     StackString sstr("ready");
