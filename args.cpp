@@ -22,37 +22,41 @@ map<string, LinkageData> &getLinkageSingleton() {
   return singy;
 }
 
-ARGS_LinkageObject::ARGS_LinkageObject(const string &id, string *writeto, const string &def, const string &descr) {
+ARGS_LinkageObject::ARGS_LinkageObject(const string &id, string *writeto, FlagSource *source, const string &def, const string &descr) {
   map<string, LinkageData> &links = getLinkageSingleton();
   LinkageData ld;
   ld.descr = descr;
+  ld.source = source;
   ld.type = LinkageData::LINKAGE_STRING;
   ld.str_def = def;
   ld.str_link = writeto;
   links[canonize(id)] = ld;
 }
-ARGS_LinkageObject::ARGS_LinkageObject(const string &id, int *writeto, int def, const string &descr) {
+ARGS_LinkageObject::ARGS_LinkageObject(const string &id, int *writeto, FlagSource *source, int def, const string &descr) {
   map<string, LinkageData> &links = getLinkageSingleton();
   LinkageData ld;
   ld.descr = descr;
+  ld.source = source;
   ld.type = LinkageData::LINKAGE_INT;
   ld.int_def = def;
   ld.int_link = writeto;
   links[canonize(id)] = ld;
 }
-ARGS_LinkageObject::ARGS_LinkageObject(const string &id, bool *writeto, bool def, const string &descr) {
+ARGS_LinkageObject::ARGS_LinkageObject(const string &id, bool *writeto, FlagSource *source, bool def, const string &descr) {
   map<string, LinkageData> &links = getLinkageSingleton();
   LinkageData ld;
   ld.descr = descr;
+  ld.source = source;
   ld.type = LinkageData::LINKAGE_BOOL;
   ld.bool_def = def;
   ld.bool_link = writeto;
   links[canonize(id)] = ld;
 }
-ARGS_LinkageObject::ARGS_LinkageObject(const string &id, float *writeto, float def, const string &descr) {
+ARGS_LinkageObject::ARGS_LinkageObject(const string &id, float *writeto, FlagSource *source, float def, const string &descr) {
   map<string, LinkageData> &links = getLinkageSingleton();
   LinkageData ld;
   ld.descr = descr;
+  ld.source = source;
   ld.type = LinkageData::LINKAGE_FLOAT;
   ld.float_def = def;
   ld.float_link = writeto;
@@ -61,6 +65,7 @@ ARGS_LinkageObject::ARGS_LinkageObject(const string &id, float *writeto, float d
 
 LinkageData::LinkageData() {
   type = -1;
+  source = NULL;
   str_link = NULL;
   int_link = NULL;
   bool_link = NULL;
@@ -89,6 +94,7 @@ void initFlags(int argc, char *argv[], int ignoreargs, const string &settings) {
     } else {
       CHECK(0);
     }
+    *itr->second.source = FS_DEFAULT;
   }
   for(map<string, LinkageData>::iterator itr = links.begin(); itr != links.end(); itr++) {
     if(itr->second.type == LinkageData::LINKAGE_BOOL) {
@@ -104,22 +110,22 @@ void initFlags(int argc, char *argv[], int ignoreargs, const string &settings) {
     }
   }
   
-  vector<string> lines;
+  vector<pair<string, FlagSource> > lines;
   
   if(settings.size()) {
     ifstream ifs(settings.c_str());
     string dt;
     while(getLineStripped(ifs, &dt))
-      lines.push_back(dt);
+      lines.push_back(make_pair(dt, FS_FILE));
   }
   
   for(int i = ignoreargs + 1; i < argc; i++) {
     CHECK(argv[i][0] == '-' && argv[i][1] == '-');
-    lines.push_back(argv[i] + 2);
+    lines.push_back(make_pair(argv[i] + 2, FS_CLI));
   }
   
   for(int i = 0; i < lines.size(); i++) {
-    const char *arg = lines[i].c_str();
+    const char *arg = lines[i].first.c_str();
     bool isBoolNo = false;
     if(strlen(arg) >= 2 && tolower(arg[0]) == 'n' && tolower(arg[1]) == 'o') { // jon sucks
       isBoolNo = true;
@@ -167,6 +173,8 @@ void initFlags(int argc, char *argv[], int ignoreargs, const string &settings) {
     } else {
       CHECK(0);
     }
+    
+    *ld.source = lines[i].second;
   }
   for(map<string, LinkageData>::iterator itr = links.begin(); itr != links.end(); itr++) {
     if(itr->second.type == LinkageData::LINKAGE_BOOL) {

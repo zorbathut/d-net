@@ -1,9 +1,5 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
-  - Rework the menu system to be saner and more easily modified
-    - Store resolution
-    - Set up good defaults for resolution
-    - Add flag overriding
   - Set up some way to end the game before the rounds end
   - Convert key output into OStream
     - Add OStreamGz support

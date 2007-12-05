@@ -3,11 +3,17 @@
 #include "parse.h"
 #include "os.h"
 #include "util.h"
+#include "args.h"
 
 #include <fstream>
 #include <cstdio>
 
 using namespace std;
+
+DEFINE_int(resolutionx, -1, "X resolution");
+DEFINE_int(resolutiony, -1, "Y resolution");
+DEFINE_bool(fullscreen, false, "Fullscreen");
+DEFINE_float(aspect, -1, "Aspect");
 
 Settings::Settings() { };
 Settings::~Settings() { };
@@ -36,6 +42,15 @@ void Settings::load() {
   res_y = 768;
   res_fullscreen = true;
   res_aspect = 4.0 / 3.0;
+  
+  if(FLAGS_resolutionx_OVERRIDDEN != FS_DEFAULT)
+    res_x = FLAGS_resolutionx;
+  if(FLAGS_resolutiony_OVERRIDDEN != FS_DEFAULT)
+    res_y = FLAGS_resolutiony;
+  if(FLAGS_fullscreen_OVERRIDDEN != FS_DEFAULT)
+    res_fullscreen = FLAGS_fullscreen;
+  if(FLAGS_aspect_OVERRIDDEN != FS_DEFAULT)
+    res_aspect = FLAGS_aspect;
 }
 
 void Settings::save() const {
