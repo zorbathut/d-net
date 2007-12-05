@@ -8,9 +8,9 @@
 
 using namespace std;
 
-vector< string > tokenize(const string &in, const string &kar) {
+vector<string> tokenize(const string &in, const string &kar) {
   string::const_iterator cp = in.begin();
-  vector< string > oot;
+  vector<string> oot;
   while(cp != in.end()) {
     while(cp != in.end() && count(kar.begin(), kar.end(), *cp))
       cp++;
