@@ -38,19 +38,24 @@ float ShopLayout::frameend(int depth) const {
   return frameend(depth - 1) + framewidth(depth);
 }
 
-const float leftside = 42;
-const float rightside = 100 - leftside;
+const float leftside = 0.42;
+const float rightside = 1.0 - leftside;
 
 // this is probably O(n^2) or something
 float ShopLayout::framewidth(int depth) const {
   float start = 0;
   if(depth > 0)
     start = frameend(depth - 1);
+  
+  float ls = leftside * cint_height * aspect;
+  float rs = rightside * cint_height * aspect;
+  
   if(int_xofs >= start)
-    return leftside;
-  if(int_xofs < start - leftside)
-    return rightside;
-  return lerp(leftside, rightside, (start - int_xofs) / leftside);
+    return ls;
+  if(int_xofs < start - ls)
+    return rs;
+  //dprintf("fw: start %f, xofs %f, ls rs %f %f, ret %f, height/aspect/ls %f %f %f\n", start, int_xofs, ls, rs, lerp(ls, rs, (start - int_xofs) / ls), cint_height, aspect, leftside);
+  return lerp(ls, rs, (start - int_xofs) / ls);
 }
 
 float ShopLayout::xmargin() const {
@@ -111,6 +116,7 @@ vector<pair<int, float> > ShopLayout::getPriorityAndPlacement(const ShopPlacemen
 }
 
 void ShopLayout::drawMarkerSet(int depth, bool down) const {
+  StackString ss("slayout dms");
   Float4 zon = zone(depth);
   
   string text;
@@ -161,13 +167,13 @@ Float2 ShopLayout::cashpos() const {
 }
 
 Float4 ShopLayout::hud() const {
-  return Float4(xmargin() + cint_fontsize / 2, ystart() + cint_fontsize * 3, leftside - (xmargin() + cint_fontsize / 2), demo().sy);
+  return Float4(xmargin() + cint_fontsize / 2, ystart() + cint_fontsize * 3, leftside * cint_height * aspect - (xmargin() + cint_fontsize / 2), demo().sy);
 }
 Float4 ShopLayout::demo() const {
   const float xpadding = cint_fontsize * 4;
   Float4 dempos;
   dempos.sx = xmargin() + xpadding;
-  dempos.ex = leftside - (xmargin() + xpadding);
+  dempos.ex = leftside * cint_height * aspect - (xmargin() + xpadding);
   dempos.ey = yend();
   dempos.sy = dempos.ey - dempos.span_x();
   return dempos;
@@ -275,17 +281,17 @@ void ShopLayout::updateScroll(const vector<int> &curpos, const vector<int> &opti
 }
 
 void ShopLayout::staticZoom() const {
-  setZoomAround(Float4(0, 0, 100, 100 / getAspect()));
+  setZoomVertical(0, 0, cint_height);
 }
 void ShopLayout::dynamicZoom() const {
-  setZoomAround(Float4(int_xofs, 0, int_xofs + 100, 100 / getAspect()));
+  setZoomVertical(int_xofs, 0, cint_height);
 }
 
 ShopLayout::ShopLayout() {
   // not valid
 }
 
-ShopLayout::ShopLayout(bool miniature, float aspect) : miniature(miniature) {
+ShopLayout::ShopLayout(bool miniature, float aspect) : aspect(aspect), miniature(miniature) {
   if(miniature) {
     cint_fontsize = 1.95;
     cint_itemheight = 4;
@@ -294,7 +300,7 @@ ShopLayout::ShopLayout(bool miniature, float aspect) : miniature(miniature) {
     cint_itemheight = 3;
   }
   
-  cint_height = 100 / aspect;
+  cint_height = 65;
   
   int_xofs = 0;
   int_expandy.resize(2, 1.0); // not really ideal but hey

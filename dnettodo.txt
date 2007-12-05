@@ -2,6 +2,8 @@
 - "Finish the Damn Game" Initiative
   - Rework the menu system to be saner and more easily modified
     - Add widescreen
+      - Adjust shop aspect on each tick
+      - Make shop demo work properly
     - Why does the perfbar change shape?
     - Add dragging to resize
       - Update screen as it goes
