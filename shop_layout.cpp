@@ -174,7 +174,7 @@ Float4 ShopLayout::demo() const {
   Float4 dempos;
   
   dempos.ey = yend();
-  dempos.sy = dempos.ey - 30;
+  dempos.sy = dempos.ey - 35;
   
   dempos.sx = (leftside * cint_height * aspect - dempos.span_y()) / 2;
   dempos.ex = (leftside * cint_height * aspect + dempos.span_y()) / 2;
