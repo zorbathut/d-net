@@ -18,4 +18,7 @@ void set_exename(const string &str); // this should be removed eventually I thin
 // OS stuff
 void seriouslyCrash() __attribute__((__noreturn__)); // apparently this is needed. Why? Because SDL is stupid.
 
+string getConfigDirectory(); // oy
+void makeConfigDirectory();
+
 #endif

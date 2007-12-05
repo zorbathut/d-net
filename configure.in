@@ -15,7 +15,7 @@ case "${target_os}" in
     LDFLAGS="-L/usr/mingw/local/lib -mno-cygwin"
     
     BOOSTCPPFLAGS="-I/usr/mingw/local/include/boost-1_33_1 "
-    BOOSTLDFLAGS="-lboost_regex-mgw-mt"
+    BOOSTLDFLAGS="-lboost_regex-mgw-mt -lboost_filesystem-mgw-mt"
     
     STDCPPFLAGS="$STDCPPFLAGS -DVECTOR_PARANOIA" # This should really only exist on Zorba's personal hacked headers
     LDFLAGS="$LDFLAGS"
@@ -45,7 +45,7 @@ case "${target_os}" in
     LDFLAGS=""
     
     BOOSTCPPFLAGS="-I/usr/local/include/boost-1_34_1"
-    BOOSTLDFLAGS="-lboost_regex-mt"
+    BOOSTLDFLAGS="-lboost_regex-mt -lboost_filesystem-mt"
     
     #AC_CHECK_LIB([GL], [glBegin],,AC_MSG_ERROR([opengl is needed]))
     #LDFLAGS="$GAMELDFLAGS -lGL"

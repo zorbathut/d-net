@@ -253,8 +253,9 @@ string printGraphicsStats() {
   lpSuccess = 0;
   lastStats = renderedFrameId;
   
+  /*
   gstat += StringPrintf("\n  Current res %d/%d", getResolutionX(), getResolutionY());
-  gstat += StringPrintf("\n  Test with %f: %f, made of %f and %f", 10.f, weightconvert(10.f), 10.f / map_zoom * (getResolutionY()), 10.f / map_zoom * (getResolutionX() / getScreenAspect()));
+  gstat += StringPrintf("\n  Test with %f: %f, made of %f and %f", 10.f, weightconvert(10.f), 10.f / map_zoom * (getResolutionY()), 10.f / map_zoom * (getResolutionX() / getScreenAspect()));*/
   return gstat;
 }
 

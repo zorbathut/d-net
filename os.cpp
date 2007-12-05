@@ -3,6 +3,7 @@
 
 #include "debug.h"
 #include "util.h"
+#include "parse.h"
 
 #include <fstream>
 #include <vector>
@@ -20,6 +21,7 @@ void set_exename(const string &str) {
 #ifndef NO_WINDOWS
 
 #include <windows.h>
+#include <shlobj.h>
 
 void outputDebugString(const string &str) {
   OutputDebugString(str.c_str());
@@ -30,6 +32,25 @@ void seriouslyCrash() {
     TerminateProcess(GetCurrentProcess(), 1); // sigh
   #endif
   exit(-1);
+}
+
+string getConfigDirectory() {
+  char buff[MAX_PATH + 1];
+  SHGetFolderPath(NULL, CSIDL_APPDATA, NULL, 0, buff);
+  dprintf("Config directory: %s\n", buff);
+  return string(buff) + "\\Devastation Net\\";
+}
+
+void makeConfigDirectory() {
+  vector<string> tok = tokenize(getConfigDirectory(), "\\");
+  string cc;
+  for(int i = 0; i < tok.size(); i++) {
+    if(cc.size())
+      cc += "\\";
+    cc += tok[i];
+    dprintf("Making %s\n", cc.c_str());
+    mkdir(cc.c_str());
+  }
 }
 
 #else

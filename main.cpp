@@ -10,6 +10,7 @@
 #include "audio.h"
 #include "test.h"
 #include "res_interface.h"
+#include "settings.h"
 
 #ifdef OSX_FRAMEWORK_PREFIXES
   #include <OpenGL/gl.h>
@@ -23,7 +24,6 @@
 
 using namespace std;
 
-DEFINE_bool(fullscreen, true, "Fullscreen");
 DEFINE_bool(help, false, "Get help");
 DEFINE_float(generateCachedShops, -1, "Do all the work necessary to cache shops. Parameter is the accuracy");
 //DEFINE_bool(generateWeaponStats, false, "Do all the work necessary to dump weapon info");
@@ -61,7 +61,7 @@ void initSystem() {
   CHECK(SDL_InitSubSystem(SDL_INIT_JOYSTICK) >= 0);
 
   SetupOgl();
-  CHECK(setResolution(make_pair(800, 600), 4.0 / 3.0, FLAGS_fullscreen));
+  CHECK(setResolution(make_pair(Settings::get_instance().res_x, Settings::get_instance().res_y), Settings::get_instance().res_aspect, Settings::get_instance().res_fullscreen));
   
   {
     dprintf("GL version: %s\n", glGetString(GL_VERSION));
@@ -103,6 +103,8 @@ int main(int argc, char **argv) {
   if(FLAGS_generateCachedShops != -1) {
     FLAGS_shopcache = false;
   }
+  
+  Settings::get_instance().load();
   
   loadItemdb();
   
@@ -151,6 +153,8 @@ int main(int argc, char **argv) {
   deinitSystem();
   
   deinitHttpd();
+  
+  Settings::get_instance().save();
   
   dprintf("Leaving main");
   
