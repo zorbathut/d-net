@@ -170,12 +170,15 @@ Float4 ShopLayout::hud() const {
   return Float4(xmargin() + cint_fontsize / 2, ystart() + cint_fontsize * 3, leftside * cint_height * aspect - (xmargin() + cint_fontsize / 2), demo().sy);
 }
 Float4 ShopLayout::demo() const {
-  const float xpadding = cint_fontsize * 4;
+  
   Float4 dempos;
-  dempos.sx = xmargin() + xpadding;
-  dempos.ex = leftside * cint_height * aspect - (xmargin() + xpadding);
+  
   dempos.ey = yend();
-  dempos.sy = dempos.ey - dempos.span_x();
+  dempos.sy = dempos.ey - 30;
+  
+  dempos.sx = (leftside * cint_height * aspect - dempos.span_y()) / 2;
+  dempos.ex = (leftside * cint_height * aspect + dempos.span_y()) / 2;
+  
   return dempos;
 }
 
