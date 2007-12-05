@@ -1,12 +1,7 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - Rework the menu system to be saner and more easily modified
-    - Add widescreen
-      - Adjust shop aspect on each tick
-      - Make shop demo work properly
-    - Why does the perfbar change shape?
-    - Add dragging to resize
-      - Update screen as it goes
+    - Store resolution
     - Set up good defaults for resolution
   - Set up some way to end the game before the rounds end
   - Convert key output into OStream
@@ -58,6 +53,7 @@
   - Improve game start/end
   - Explain the "quantity" and "recommended loadout" lines better
   - Batch shit in rendering better
+  - Adjust shop aspect when window aspect changes
   - Final weapons
     - I'd love to make HK higher firerate. Is there some way I can do this?
     - Special autocannon
