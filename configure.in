@@ -55,7 +55,6 @@ case "${target_os}" in
   *)
     STDCPPFLAGS="$STDCPPFLAGS -DNO_WINDOWS -I/usr/local/include/boost-1_34_1"
     CPPFLAGS="$CPPFLAGS"
-    LDFLAGS="-lboost_regex"
     
     BOOSTCPPFLAGS="-I/usr/local/include/boost-1_34_1"
     BOOSTLDFLAGS="-lboost_regex"
@@ -77,6 +76,7 @@ CPPFLAGS="$CPPFLAGS $BOOSTCPPFLAGS"
 LDFLAGS="$LDFLAGS $BOOSTLDFLAGS"
 
 AC_CHECK_HEADER([boost/noncopyable.hpp],,AC_MSG_ERROR([D-Net requires Boost.]))
+AC_CHECK_LIB([boost_regex], [main],,AC_MSG_ERROR([D-Net requires Boost.]))
 
 AC_CHECK_LIB([m], [sin],,AC_MSG_ERROR([libm is needed]))
 GAMELDFLAGS="$GAMELDFLAGS -lm"

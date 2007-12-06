@@ -4,6 +4,7 @@
 #include "os.h"
 #include "util.h"
 #include "args.h"
+#include "debug.h"
 
 #include <fstream>
 #include <cstdio>
