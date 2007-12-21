@@ -37,7 +37,7 @@ const vector<Player> &PersistentData::players() const {
   return playerdata;
 }
 
-const char * const tween_textlabels[] = {"Leave/join game", "Leave game", "Join game", "Settings", "Full shop", "Quick shop", "Done"};
+const char * const tween_textlabels[] = {"Leave/join game", "Leave game", "Join game", "Settings", "Fullscreen shop", "Quick shop", "Done"};
 enum { TTL_LEAVEJOIN, TTL_LEAVE, TTL_JOIN, TTL_SETTINGS, TTL_FULLSHOP, TTL_QUICKSHOP, TTL_DONE, TTL_LAST }; 
 
 class QueueSorter {

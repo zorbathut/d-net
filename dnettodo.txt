@@ -4,6 +4,7 @@
   - Convert key output into OStream
     - Add OStreamGz support
     - Compress key output
+  - Redo interface setup (again)
   - Make free version
   - Figure out Linux packaging
   - Figure out OSX packaging
