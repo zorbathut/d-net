@@ -5,6 +5,8 @@
     - Add OStreamGz support
     - Compress key output
   - Redo interface setup (again)
+  - Jam AI into singleplayer
+  - add "instant action" option
   - Make free version
   - Figure out Linux packaging
   - Figure out OSX packaging

@@ -51,18 +51,21 @@ public:
   }
 
   smart_ptr<T> &operator=(const smart_ptr<T> &x) {
-    reset();
-    if(x.ptr) {
-      ptr = x.ptr;
-      ct = x.ct;
-      (*ct)++;
+    if(this != &x) {
+      reset();
+      if(x.ptr) {
+        ptr = x.ptr;
+        ct = x.ct;
+        (*ct)++;
+      }
     }
     return *this;
   }
   template<typename U> smart_ptr<T> &operator=(const smart_ptr<U> &x) {
+    CHECK(this != reinterpret_cast<const smart_ptr<T> *>(&x)); // oh boy oh boy
     reset();
     if(x.ptr) {
-      ptr = upcast<T, U>(x.ptr);
+      ptr = upcast<T, U>(x.ptr);  // I honestly don't remember why I needed upcast<> for this anymore, but I'm going to assume for now that I had a good reason
       ct = x.ct;
       (*ct)++;
     }
