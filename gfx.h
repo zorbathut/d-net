@@ -4,6 +4,7 @@
 #include "cfc.h"
 #include "color.h"
 #include "dvec2.h"
+#include "image.h"
 
 #include <boost/noncopyable.hpp>
 
@@ -77,6 +78,8 @@ void drawPoint(const Float2 &pos, float weight);
 void drawSolid(const Float4 &box);  // Background color only, and intentionally so
 void drawSolidLoop(const vector<Float2> &verts); // Must be convex
 void invertStencilLoop(const vector<Coord2> &verts);
+
+void drawImage(const Image &img, const Float4 &box, float alpha); // arglbargl
 
 /*************
  * Composites

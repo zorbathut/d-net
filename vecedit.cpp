@@ -439,6 +439,8 @@ void Vecedit::render(const WrapperState &state) const {
     drawLine(Float4(0, getZoom().sy, 0, getZoom().ey), state.zpp);
   }
   
+  drawImage(imageFromPng("c:\\x360c.png"), Float4(-240, -172.5, 240, 172.5), 0.3);
+  
   // temporary hack for tank displays
   /*{
     const float fontsize = 180;

@@ -560,6 +560,16 @@ void drawLine(const Coord4 &loc, float weight) {
   drawLine(loc.toFloat(), weight);
 }
 
+void drawPoint(const Float2 &pos, float weight) {
+  CHECK(weight > 0);
+  if(unlikely(weight != -curWeight || lineCount > 1000)) {
+    finishCluster();
+    beginPointCluster(weight);
+  }
+  localVertex2f(pos.x, pos.y);
+  lineCount++;
+}
+
 void drawSolid(const Float4 &box) {
   PoolObj<vector<Float2> > bochs;
   bochs->push_back(Float2(box.sx, box.sy));
@@ -600,14 +610,62 @@ void invertStencilLoop(const vector<Coord2> &verts) {
   glEnd();
 }
 
-void drawPoint(const Float2 &pos, float weight) {
-  CHECK(weight > 0);
-  if(unlikely(weight != -curWeight || lineCount > 1000)) {
-    finishCluster();
-    beginPointCluster(weight);
-  }
-  localVertex2f(pos.x, pos.y);
-  lineCount++;
+void drawImage(const Image &img, const Float4 &box, float alpha) {
+  
+  finishCluster();
+  GLuint texture;
+  
+  glGenTextures(1, &texture);
+  glBindTexture(GL_TEXTURE_2D, texture);
+  glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+  
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  
+  glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+  
+  int tx = 64;
+  int ty = 64;
+  
+  while(tx < img.x)
+    tx *= 2;
+  while(ty < img.y)
+    ty *= 2;
+  
+  float mtx = (float)img.x / tx;
+  float mty = (float)img.y / ty;
+  
+  vector<unsigned int> lol(tx * ty, 0);
+  for(int i = 0; i < img.c.size(); i++)
+    memcpy(&lol[i * tx], &img.c[i][0], img.c[i].size() * sizeof(unsigned int));
+  
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tx, ty, 0, GL_RGBA, GL_UNSIGNED_BYTE, &lol[0]);
+  CHECK(glGetError() == GL_NO_ERROR);
+  
+  glEnable(GL_TEXTURE_2D);
+ 
+  setColor(C::gray(alpha));
+  glBegin(GL_QUADS);
+  glTexCoord2f(0.0, 0.0);
+  localVertex2f(box.sx, box.sy);
+  glTexCoord2f(mtx, 0.0);
+  localVertex2f(box.ex, box.sy);
+  glTexCoord2f(mtx,  mty);
+  localVertex2f(box.ex, box.ey);
+  glTexCoord2f(0.0,  mty);
+  localVertex2f(box.sx, box.ey);
+  glEnd();
+  
+  glDisable(GL_TEXTURE_2D);
+  
+  CHECK(glGetError() == GL_NO_ERROR);
+  
+  glDeleteTextures(1, &texture);
+  
+  CHECK(glGetError() == GL_NO_ERROR);
 }
 
 /*************

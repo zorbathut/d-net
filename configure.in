@@ -76,12 +76,13 @@ CPPFLAGS="$CPPFLAGS $BOOSTCPPFLAGS"
 LDFLAGS="$LDFLAGS $BOOSTLDFLAGS"
 
 AC_CHECK_HEADER([boost/noncopyable.hpp],,AC_MSG_ERROR([D-Net requires Boost.]))
-AC_CHECK_LIB([boost_regex], [main],,AC_MSG_ERROR([D-Net requires Boost.]))
+AC_CHECK_LIB([m], [main],,AC_MSG_ERROR([D-Net requires Boost.]))
 
 AC_CHECK_LIB([m], [sin],,AC_MSG_ERROR([libm is needed]))
 GAMELDFLAGS="$GAMELDFLAGS -lm"
 
 AC_CHECK_LIB([z], [compress],,AC_MSG_ERROR([zlib is needed]))
+AC_CHECK_LIB([png], [png_create_read_struct],,AC_MSG_ERROR([libpng is needed]))
 AC_CHECK_LIB([xerces-c], [main],,AC_MSG_ERROR([xerces is needed]))
 
 AC_CHECK_HEADER([vorbis/vorbisfile.h],,AC_MSG_ERROR([Can't find a working vorbisfile include anywhere]))
