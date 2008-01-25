@@ -41,16 +41,16 @@ vecedit: vecedit.exe $(MERGEDATA)
 vecedit-dbg: vecedit-dbg.exe $(MERGEDATA)
 
 d-net.exe: $(patsubst %,build/%.g.o,$(GAMESOURCES))
-	nice $(CXX) -o $@ $(patsubst %,build/%.g.o,$(GAMESOURCES)) $(GAMELDFLAGS)
+	nice ./ewrap $@ $(CXX) -o $@ $(patsubst %,build/%.g.o,$(GAMESOURCES)) $(GAMELDFLAGS)
 
 d-net-dbg.exe: $(patsubst %,build/%.g.d.o,$(GAMESOURCES))
-	nice $(CXX) -o $@ $(patsubst %,build/%.g.d.o,$(GAMESOURCES)) $(GAMELDFLAGS)
+	nice ./ewrap $@ $(CXX) -o $@ $(patsubst %,build/%.g.d.o,$(GAMESOURCES)) $(GAMELDFLAGS)
 
 vecedit.exe: $(patsubst %,build/%.e.o,$(EDITORSOURCES))
-	nice $(CXX) -o $@ $(patsubst %,build/%.e.o,$(EDITORSOURCES)) $(EDITORLDFLAGS)
+	nice ./ewrap $@ $(CXX) -o $@ $(patsubst %,build/%.e.o,$(EDITORSOURCES)) $(EDITORLDFLAGS)
   
 vecedit-dbg.exe: $(patsubst %,build/%.e.d.o,$(EDITORSOURCES))
-	nice $(CXX) -o $@ $(patsubst %,build/%.e.d.o,$(EDITORSOURCES)) $(EDITORLDFLAGS)
+	nice ./ewrap $@ $(CXX) -o $@ $(patsubst %,build/%.e.d.o,$(EDITORSOURCES)) $(EDITORLDFLAGS)
 
 all: d-net vecedit
 
@@ -155,44 +155,44 @@ localpackage: d-net
 	$(clean)
 
 build/%.g.o: %.cpp
-	nice $(CXX) $(GAMECXXFLAGS) -c -o $@ $<
+	nice ./ewrap $@ $(CXX) $(GAMECXXFLAGS) -c -o $@ $<
   
 build/%.g.d.o: %.cpp
-	nice $(CXX) $(GAMECXXFLAGS) -c -o $@ $<
+	nice ./ewrap $@ $(CXX) $(GAMECXXFLAGS) -c -o $@ $<
 
 build/%.g.S: %.cpp
-	nice $(CXX) $(GAMECXXFLAGS) -c -Wa,-a,-ad $< > $@
+	nice ./ewrap $@ $(CXX) $(GAMECXXFLAGS) -c -Wa,-a,-ad $< > $@
 
 build/%.g.d: %.cpp
-	nice bash -ec '$(CXX) $(GAMECXXFLAGS) -MM $< | sed "s!$*.o!build/$*.g.o build/$*.g.d.o $@!g" > $@'
+	nice bash -ec './ewrap $@ $(CXX) $(GAMECXXFLAGS) -MM $< | sed "s!$*.o!build/$*.g.o build/$*.g.d.o $@!g" > $@'
 
 build/%.e.o: %.cpp
-	nice $(CXX) $(EDITORCXXFLAGS) -c -o $@ $<
+	nice ./ewrap $@ $(CXX) $(EDITORCXXFLAGS) -c -o $@ $<
   
 build/%.e.d.o: %.cpp
-	nice $(CXX) $(EDITORCXXFLAGS) -c -o $@ $<
+	nice ./ewrap $@ $(CXX) $(EDITORCXXFLAGS) -c -o $@ $<
 
 build/%.e.S: %.cpp
-	nice $(CXX) $(EDITORCXXFLAGS) -c -Wa,-a,-ad $< > $@
+	nice ./ewrap $@ $(CXX) $(EDITORCXXFLAGS) -c -Wa,-a,-ad $< > $@
 
 build/%.e.d: %.cpp
-	nice bash -ec '$(CXX) $(EDITORCXXFLAGS) -MM $< | sed "s!$*.o!build/$*.e.o build/$*.e.d.o $@!g" > $@'
+	nice bash -ec './ewrap $@ $(CXX) $(EDITORCXXFLAGS) -MM $< | sed "s!$*.o!build/$*.e.o build/$*.e.d.o $@!g" > $@'
 
 build/%.c.o: %.cpp
-	nice $(CXX) $(CONSOLECXXFLAGS) -c -o $@ $<
+	nice ./ewrap $@ $(CXX) $(CONSOLECXXFLAGS) -c -o $@ $<
 
 # Any C files aren't ours, so we disable warnings
 build/%.c.o: %.c
 	nice $(CC) $(CONSOLECXXFLAGS) -w -c -o $@ $<
 
 build/%.c.S: %.cpp
-	nice $(CXX) $(CONSOLECXXFLAGS) -c -Wa,-a,-ad $< > $@
+	nice ./ewrap $@ $(CXX) $(CONSOLECXXFLAGS) -c -Wa,-a,-ad $< > $@
 
 build/%.c.d: %.cpp
-	nice bash -ec '$(CXX) $(CONSOLECXXFLAGS) -MM $< | sed "s!$*.o!build/$*.c.o build/$*.c.d.o $@!g" > $@'
+	nice bash -ec './ewrap $@ $(CXX) $(CONSOLECXXFLAGS) -MM $< | sed "s!$*.o!build/$*.c.o build/$*.c.d.o $@!g" > $@'
 
 build/%.c.d: %.c
-	nice bash -ec '$(CXX) $(CONSOLECXXFLAGS) -MM $< | sed "s!$*.o!build/$*.c.o build/$*.c.d.o $@!g" > $@'
+	nice bash -ec './ewrap $@ $(CXX) $(CONSOLECXXFLAGS) -MM $< | sed "s!$*.o!build/$*.c.o build/$*.c.d.o $@!g" > $@'
 
 data/shopcache.dwh: d-net $(DATAFILES)
 	./d-net.exe --generateCachedShops=0.99 || ( rm -f $@ && false )
@@ -202,10 +202,10 @@ export: d-net tools/generateWeaponGraph.py
 	/cygdrive/c/Python25/python.exe tools/generateWeaponGraph.py # this is not ideal
   
 merger.exe: $(patsubst %,build/%.c.o,$(MERGERSOURCES))
-	nice $(CXX) -o $@ $(patsubst %,build/%.c.o,$(MERGERSOURCES)) $(CONSOLELDFLAGS)
+	nice ./ewrap $@ $(CXX) -o $@ $(patsubst %,build/%.c.o,$(MERGERSOURCES)) $(CONSOLELDFLAGS)
 
 ods2csv.exe: $(patsubst %,build/%.c.o,$(ODS2CSVSOURCES))
-	nice $(CXX) -o $@ $(patsubst %,build/%.c.o,$(ODS2CSVSOURCES)) $(CONSOLELDFLAGS) -lxerces-c -lz
+	nice ./ewrap $@ $(CXX) -o $@ $(patsubst %,build/%.c.o,$(ODS2CSVSOURCES)) $(CONSOLELDFLAGS) -lxerces-c -lz
 
 $(patsubst %,build/notes_%.csv,$(MERGETYPES)): notes.ods ods2csv.exe
 	./ods2csv.exe $@ notes.ods $(patsubst build/notes_%.csv,%,$@) || ( rm -f $@ && false )

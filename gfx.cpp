@@ -648,6 +648,7 @@ void drawImage(const Image &img, const Float4 &box, float alpha) {
   glEnable(GL_TEXTURE_2D);
  
   setColor(C::gray(alpha));
+  
   glBegin(GL_QUADS);
   glTexCoord2f(0.0, 0.0);
   localVertex2f(box.sx, box.sy);
