@@ -891,10 +891,13 @@ bool Vecedit::save(const string &filename) {
 static Vecedit *emerg_save = NULL;
 
 void doEmergSave() {
-  CHECK(emerg_save);
-  Vecedit *es = emerg_save;
-  emerg_save = NULL;
-  es->save("crash.dv2");
+  if(emerg_save) {
+    Vecedit *es = emerg_save;
+    emerg_save = NULL;
+    es->save("crash.dv2");
+  } else {
+    dprintf("Emergency save called, but no vecedit to save!");
+  }
 }
 
 void Vecedit::registerEmergencySave() {

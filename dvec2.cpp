@@ -136,7 +136,8 @@ void VectorPath::vpathModify(int node) {
     }
     setVRCurviness(node, vpath[node].curvr);
   }
-  if(node >= path.size()) {
+  //if(node >= path.size()) {
+  {
     pair<int, bool> canon = getCanonicalNode(node);
     VectorPoint tnode = vpath[node];
     if(canon.second)
@@ -144,11 +145,18 @@ void VectorPath::vpathModify(int node) {
     Transform2d trans = rfg_behavior(reflect, node / path.size(), dupes, ang_numer, ang_denom);
     trans.invert();
     tnode.transform(trans);
-    path[canon.first] = tnode;
-    path[canon.first].flat = tnode.flat;
+    if(orig.pos != vpath[node].pos)
+      path[canon.first].pos = tnode.pos;
+    if(orig.curvlp != vpath[node].curvlp)
+      path[canon.first].curvlp = tnode.curvlp;
+    if(orig.curvrp != vpath[node].curvrp)
+      path[canon.first].curvrp = tnode.curvrp;
+    path[canon.first].flat = tnode.flat;  // I'm not entirely sure why this is necessary
+  }
+  /*
   } else {
     path[node] = vpath[node];
-  }
+  }*/
   rebuildVpath();
   
   if(defcurv.first != -1) {
@@ -163,7 +171,7 @@ void VectorPath::vpathModify(int node) {
 void VectorPath::setVRCurviness(int node, bool curv) {
   pair<int, bool> canoa = getCanonicalNode(node);
   pair<int, bool> canob = getCanonicalNode((node + 1) % (path.size() * rfg_repeats(reflect, dupes)));
-  //dprintf("svrc: %d, %d %d, %d %d\n", node, canoa.first, canoa.second, canob.first, canob.second);
+  //dprintf("svrc: %d, %d %d, %d %d from %d, %d\n", node, canoa.first, canoa.second, canob.first, canob.second, node, (node + 1) % (path.size() * rfg_repeats(reflect, dupes)));
   if(!canoa.second)
     path[canoa.first].curvr = curv;
   else
