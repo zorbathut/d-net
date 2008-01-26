@@ -121,37 +121,47 @@ void setDefaultCurvs(VectorPoint *vpl, VectorPoint *vpr) {
 void VectorPath::vpathModify(int node) {
   CHECK(node >= 0 && node < vpath.size());
   VectorPoint orig = genNode(node);
+  VectorPoint tnode = vpath[node];
   pair<int, int> defcurv = make_pair(-1, -1);
-  if(orig.curvl != vpath[node].curvl) {
-    if(vpath[node].curvl) {
+  if(orig.curvl != tnode.curvl) {
+    if(tnode.curvl) {
       CHECK(defcurv.first == -1);
       defcurv = make_pair((node + vpath.size() - 1) % vpath.size(), node);
     }
-    setVRCurviness((node + vpath.size() - 1) % vpath.size(), vpath[node].curvl);
+    setVRCurviness((node + vpath.size() - 1) % vpath.size(), tnode.curvl);
   }
-  if(orig.curvr != vpath[node].curvr) {
-    if(vpath[node].curvr) {
+  if(orig.curvr != tnode.curvr) {
+    if(tnode.curvr) {
       CHECK(defcurv.first == -1);
       defcurv = make_pair(node, (node + 1) % vpath.size());
     }
-    setVRCurviness(node, vpath[node].curvr);
+    setVRCurviness(node, tnode.curvr);
   }
   //if(node >= path.size()) {
   {
     pair<int, bool> canon = getCanonicalNode(node);
-    VectorPoint tnode = vpath[node];
+    VectorPoint transnode = tnode;
     if(canon.second)
-      tnode.mirror();
+      transnode.mirror();
     Transform2d trans = rfg_behavior(reflect, node / path.size(), dupes, ang_numer, ang_denom);
     trans.invert();
-    tnode.transform(trans);
-    if(orig.pos != vpath[node].pos)
-      path[canon.first].pos = tnode.pos;
-    if(orig.curvlp != vpath[node].curvlp)
-      path[canon.first].curvlp = tnode.curvlp;
-    if(orig.curvrp != vpath[node].curvrp)
-      path[canon.first].curvrp = tnode.curvrp;
-    path[canon.first].flat = tnode.flat;  // I'm not entirely sure why this is necessary
+    
+    transnode.transform(trans);
+    
+    if(orig.pos != tnode.pos)
+      path[canon.first].pos = transnode.pos;
+    if(!canon.second) {
+      if(orig.curvlp != tnode.curvlp)
+        path[canon.first].curvlp = transnode.curvlp;
+      if(orig.curvrp != tnode.curvrp)
+        path[canon.first].curvrp = transnode.curvrp;
+    } else {
+      if(orig.curvrp != tnode.curvrp)
+        path[canon.first].curvlp = transnode.curvlp;
+      if(orig.curvlp != tnode.curvlp)
+        path[canon.first].curvrp = transnode.curvrp;
+    }
+    path[canon.first].flat = tnode.flat;
   }
   /*
   } else {
@@ -422,4 +432,17 @@ bool operator==(const VectorPath &lhs, const VectorPath &rhs) {
 
 bool operator==(const Dvec2 &lhs, const Dvec2 &rhs) {
   return lhs.paths == rhs.paths && lhs.entities == rhs.entities && lhs.globals == rhs.globals;
+}
+
+bool operator!=(const Entity &lhs, const Entity &rhs) {
+  return !(lhs == rhs);
+}
+bool operator!=(const VectorPoint &lhs, const VectorPoint &rhs) {
+  return !(lhs == rhs);
+}
+bool operator!=(const VectorPath &lhs, const VectorPath &rhs) {
+  return !(lhs == rhs);
+}
+bool operator!=(const Dvec2 &lhs, const Dvec2 &rhs) {
+  return !(lhs == rhs);
 }

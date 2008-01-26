@@ -111,6 +111,16 @@ struct Dvec2 {
 
 Dvec2 loadDvec2(const string &fname);
 
+bool operator==(const Entity &lhs, const Entity &rhs);
+bool operator!=(const Entity &lhs, const Entity &rhs);
+
+bool operator==(const VectorPoint &lhs, const VectorPoint &rhs);
+bool operator!=(const VectorPoint &lhs, const VectorPoint &rhs);
+
+bool operator==(const VectorPath &lhs, const VectorPath &rhs);
+bool operator!=(const VectorPath &lhs, const VectorPath &rhs);
+
 bool operator==(const Dvec2 &lhs, const Dvec2 &rhs);
+bool operator!=(const Dvec2 &lhs, const Dvec2 &rhs);
 
 #endif

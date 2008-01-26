@@ -439,7 +439,7 @@ void Vecedit::render(const WrapperState &state) const {
     drawLine(Float4(0, getZoom().sy, 0, getZoom().ey), state.zpp);
   }
   
-  drawImage(imageFromPng("c:\\x360c.png"), Float4(-240, -172.5, 240, 172.5), 0.3);
+  //drawImage(imageFromPng("c:\\x360c.png"), Float4(-240, -172.5, 240, 172.5), 0.3);
   
   // temporary hack for tank displays
   /*{
@@ -835,7 +835,7 @@ bool Vecedit::save(const string &filename) {
       
   for(int i = 0; i < dv2.paths.size(); i++) {
     fprintf(outfile, "path {\n");
-    fprintf(outfile, "  center=%.12f,%.12f\n", dv2.paths[i].center.x, dv2.paths[i].center.y);
+    fprintf(outfile, "  center=%f,%f\n", dv2.paths[i].center.x, dv2.paths[i].center.y);
     fprintf(outfile, "  reflect=%s\n", rf_names[dv2.paths[i].reflect]);
     fprintf(outfile, "  dupes=%d\n", dv2.paths[i].dupes);
     fprintf(outfile, "  angle=%d/%d\n", dv2.paths[i].ang_numer, dv2.paths[i].ang_denom);
@@ -844,16 +844,16 @@ bool Vecedit::save(const string &filename) {
       string rhs;
       string straight;
       if(dv2.paths[i].path[j].curvl)
-        lhs = StringPrintf("%.12f,%.12f", dv2.paths[i].path[j].curvlp.x, dv2.paths[i].path[j].curvlp.y);
+        lhs = StringPrintf("%f,%f", dv2.paths[i].path[j].curvlp.x, dv2.paths[i].path[j].curvlp.y);
       else
         lhs = "---";
       if(dv2.paths[i].path[j].curvr)
-        rhs = StringPrintf("%.12f,%.12f", dv2.paths[i].path[j].curvrp.x, dv2.paths[i].path[j].curvrp.y);
+        rhs = StringPrintf("%f,%f", dv2.paths[i].path[j].curvrp.x, dv2.paths[i].path[j].curvrp.y);
       else
         rhs = "---";
       if(dv2.paths[i].path[j].curvl && dv2.paths[i].path[j].curvr && dv2.paths[i].path[j].flat)
         straight = " (straight)";
-      fprintf(outfile, "  node= %s | %.12f,%.12f | %s%s\n", lhs.c_str(), dv2.paths[i].path[j].pos.x, dv2.paths[i].path[j].pos.y, rhs.c_str(), straight.c_str());
+      fprintf(outfile, "  node= %s | %f,%f | %s%s\n", lhs.c_str(), dv2.paths[i].path[j].pos.x, dv2.paths[i].path[j].pos.y, rhs.c_str(), straight.c_str());
     }
     fprintf(outfile, "}\n");
     fprintf(outfile, "\n");
@@ -861,7 +861,7 @@ bool Vecedit::save(const string &filename) {
   for(int i = 0; i < dv2.entities.size(); i++) {
     fprintf(outfile, "entity {\n");
     fprintf(outfile, "  type=%s\n", ent_names[dv2.entities[i].type]);
-    fprintf(outfile, "  coord=%.12f,%.12f\n", dv2.entities[i].pos.x, dv2.entities[i].pos.y);
+    fprintf(outfile, "  coord=%f,%f\n", dv2.entities[i].pos.x, dv2.entities[i].pos.y);
     if(dv2.entities[i].type == ENTITY_TANKSTART) {
       fprintf(outfile, "  angle=%d/%d\n", dv2.entities[i].tank_ang_numer, dv2.entities[i].tank_ang_denom);
     } else {
@@ -882,7 +882,14 @@ bool Vecedit::save(const string &filename) {
   fclose(outfile);
   
   Dvec2 dv2test = loadDvec2(filename);
-  CHECK(dv2test == dv2);
+  if(dv2test != dv2) {
+    CHECK(dv2.entities.size() == dv2test.entities.size());
+    CHECK(dv2.entities == dv2test.entities);
+    CHECK(dv2.globals.size() == dv2test.globals.size());
+    CHECK(dv2.globals == dv2test.globals);
+    CHECK(dv2.paths.size() == dv2test.paths.size());
+    CHECK(dv2.paths == dv2test.paths);
+  }
   
   modified = false;
   return true;
