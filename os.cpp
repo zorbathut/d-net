@@ -137,7 +137,7 @@ void dumpStackTrace() {
   {
     string line = "addr2line -f -e " + exename() + " ";
     for(int i = 0; i < stack.size(); i++)
-      line += StringPrintf("%p ", stack[i]);
+      line += StringPrintf("%08x ", (unsigned int)stack[i]);
     line += "> addr2linetmp.txt";
     int rv = system(line.c_str());
     if(!rv) {
