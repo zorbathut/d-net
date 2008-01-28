@@ -17,12 +17,11 @@ public:
   const IDBFaction *faction;
 };
 
-enum { SETTING_BUTTONS, SETTING_AXISCHOOSE, SETTING_TEST, SETTING_READY, SETTING_LAST };
-const char * const setting_names[] = { "Keys", "Directions", "Test", "Done" };
+enum { SETTING_BUTTONS, SETTING_TEST, SETTING_READY, SETTING_LAST };
+const char * const setting_names[] = { "Setup", "Test", "Done" };
 
 enum { CHOICE_FIRSTPASS, CHOICE_ACTIVE, CHOICE_IDLE };
 
-enum ReadMode { RM_IDLE, RM_CHOOSING, RM_NOTRIGGER };
 struct PlayerMenuState {
 public:
   Coord2 compasspos;
@@ -34,11 +33,7 @@ public:
   int choicemode;
 
   int setting_button_current;
-  ReadMode setting_button_reading;
   vector<int> buttons;
-
-  int setting_axis_current;
-  ReadMode setting_axis_reading;
   vector<int> axes;
   vector<char> axes_invert;
 

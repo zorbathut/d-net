@@ -89,7 +89,6 @@ PlayerMenuState::PlayerMenuState() {
   choicemode = CHOICE_FIRSTPASS;
   
   setting_button_current = -1;
-  setting_axis_current = -1;
   
   setting_axistype = KSAX_STEERING;
   
@@ -126,116 +125,60 @@ Keystates PlayerMenuState::genKeystate(const Controller &keys) const {
   return kst;
 }
 
+enum TriggerType { TT_BUTTON, TT_AXIS };
+
 struct StandardButtonTickData {
   vector<int> *outkeys;
   vector<char> *outinvert;
   
+  vector<TriggerType> desiredkeytype;
+  
   int *current_button;
-  ReadMode *current_mode;
-
-  bool require_trigger;
+  
   int accept_button;
-  int cancel_button;
-  
-  vector<int> groups;
-  
+
   Controller keys;
-  const vector<Coord> *triggers;
-  const vector<Coord> *oldtriggers;
+  vector<Coord> triggers;
+  vector<Coord> oldtriggers;
+  vector<TriggerType> triggertype;
 };
 
 struct StandardButtonRenderData {
   const RenderInfo *rin;
   
-  const vector<int> *buttons;
-  const vector<char> *inverts;
-  const vector<vector<string> > *names;
-  
-  const vector<string> *groupnames;
-  vector<int> groups;
-  
   int sel_button;
-  ReadMode sel_button_reading;
   
-  string prefix;
   vector<string> description;
 };
-
-bool changeButtons(vector<int> *buttons, vector<char> *inversions, const vector<int> &groups, int choice, int button, bool inverted) {
-  // Step 1: If this button has been chosen somewhere else, and we're not choosing this button for the first time, swap 'em (TODO: go back?)
-  for(int j = 0; j < buttons->size(); j++) {
-    //if(groups[j] != groups[choice])
-      //continue;
-    if((*buttons)[j] == button) {
-      if((*buttons)[choice] == -1) {
-        return false;
-      } else {
-        swap((*buttons)[j], (*buttons)[choice]);
-        if(inversions) {
-          swap((*inversions)[j], (*inversions)[choice]);
-          (*inversions)[choice] = inverted;
-        }
-        return true;
-      }
-      CHECK(0);
-    }
-  }
-  
-  // If we got to this point, our button is being chosen for the first time.
-  (*buttons)[choice] = button;
-  if(inversions)
-    (*inversions)[choice] = inverted;
-  
-  return true;
-}
 
 bool standardButtonTick(StandardButtonTickData *sbtd) {
   StackString sstr("standardButtonTick");
   CHECK(sbtd);
   CHECK(sbtd->outkeys);
+  CHECK(sbtd->outinvert);
   CHECK(sbtd->outkeys->size());
-  CHECK(sbtd->triggers);
-  CHECK(!sbtd->oldtriggers || sbtd->oldtriggers->size() == sbtd->triggers->size());
-  if(sbtd->outinvert)
-    CHECK(sbtd->outkeys->size() == sbtd->outinvert->size());
-  if(*sbtd->current_button == -1) {
-    if(sbtd->require_trigger) {
-      if((*sbtd->outkeys)[0] == -1) {
-        *sbtd->current_mode = RM_CHOOSING;
-      } else {
-        *sbtd->current_mode = RM_IDLE;
-      }
-    } else {
-      *sbtd->current_mode = RM_NOTRIGGER;
-    }
+  CHECK(sbtd->outkeys->size() == sbtd->outinvert->size());
+  CHECK(sbtd->oldtriggers.size() == sbtd->triggers.size());
+  
+  if(*sbtd->current_button == -1)
     *sbtd->current_button = 0;
-  }
   CHECK(*sbtd->current_button >= 0 && *sbtd->current_button <= sbtd->outkeys->size());
   
-  CHECK((*sbtd->current_mode == RM_NOTRIGGER) == !sbtd->require_trigger);
-  CHECK(sbtd->accept_button != -1 && sbtd->cancel_button != -1 || !sbtd->require_trigger);
-  
-  bool nomove = false;
-  
   // First off, let's see if we do successfully change buttons.
-  if((*sbtd->current_mode == RM_NOTRIGGER || *sbtd->current_mode == RM_CHOOSING) && *sbtd->current_button < sbtd->outkeys->size()) {
-    for(int i = 0; i < sbtd->triggers->size(); i++) { // For each input button . . .
-      if(abs((*sbtd->triggers)[i]) > 0.9 && (!sbtd->oldtriggers || abs((*sbtd->oldtriggers)[i]) <= 0.9)) { // If button was pushed . . .
-        int oldbutton = (*sbtd->outkeys)[*sbtd->current_button];
-        if(changeButtons(sbtd->outkeys, sbtd->outinvert, sbtd->groups, *sbtd->current_button, i, (*sbtd->triggers)[i] < 0)) { // If button successfully changed . . .
-          queueSound(S::choose);
-          if(oldbutton == -1) {
-            (*sbtd->current_button)++;
-            if(*sbtd->current_button == sbtd->outkeys->size() && *sbtd->current_mode == RM_CHOOSING) {
-              *sbtd->current_mode = RM_IDLE;
-              nomove = true;
-            }
-          } else if(*sbtd->current_mode == RM_NOTRIGGER) {
-          } else if(*sbtd->current_mode == RM_CHOOSING) {
-            *sbtd->current_mode = RM_IDLE;
-          } else {
-            CHECK(0);
+  if(*sbtd->current_button < sbtd->outkeys->size()) {
+    for(int i = 0; i < sbtd->triggers.size(); i++) { // For each input button . . .
+      if(sbtd->desiredkeytype[*sbtd->current_button] == sbtd->triggertype[i] && abs(sbtd->triggers[i]) > 0.9 && abs(sbtd->oldtriggers[i]) <= 0.9) { // If button was pushed . . .
+        bool valid = true;
+        for(int j = 0; j < sbtd->outkeys->size(); j++) {
+          if(sbtd->desiredkeytype[j] == sbtd->desiredkeytype[*sbtd->current_button] && (*sbtd->outkeys)[j] == i) {
+            valid = false;
+            break;
           }
+        }
+        if(valid) {
+          queueSound(S::choose);
+          (*sbtd->outkeys)[*sbtd->current_button] = i;
+          (*sbtd->current_button)++;
           break;
         } else {
           queueSound(S::error);
@@ -244,34 +187,13 @@ bool standardButtonTick(StandardButtonTickData *sbtd) {
     }
   }
   
-  // Now let's see if we move.
-  if(!nomove && (*sbtd->current_mode == RM_NOTRIGGER || *sbtd->current_mode == RM_IDLE)) {
-    if(sbtd->keys.u.repeat) {
-      queueSound(S::select);
-      (*sbtd->current_button)--;
-    }
-    if(sbtd->keys.d.repeat) {
-      queueSound(S::select);
-      (*sbtd->current_button)++;
-    }
-    *sbtd->current_button = modurot(*sbtd->current_button, sbtd->outkeys->size() + 1);
-    
+
     // Here's where we potentially quit.
-    if(*sbtd->current_button == sbtd->outkeys->size() && sbtd->accept_button != -1 && sbtd->keys.keys[sbtd->accept_button].push /*|| sbtd->cancel_button != -1 && sbtd->keys.keys[sbtd->cancel_button].push*/) { // if we're on done AND the accept button exists AND the accept button was pushed OR the cancel button exists AND the cancel button was pushed . . .
-      if(count(sbtd->outkeys->begin(), sbtd->outkeys->end(), -1) == 0) { // AND there are no unfinished keys . . .
-        *sbtd->current_button = -1;
-        queueSound(S::accept);
-        return true;  // then we're done.
-      } else {
-        queueSound(S::error);
-      }
-    }
-  }
-  
-  // Now let's see if we enter CHOOSING state. Only if we're not on DONE.
-  if(*sbtd->current_mode == RM_IDLE && *sbtd->current_button != sbtd->outkeys->size() && sbtd->keys.keys[sbtd->accept_button].push) {
+  if(*sbtd->current_button == sbtd->outkeys->size() && sbtd->keys.keys[sbtd->accept_button].push) {
     queueSound(S::accept);
-    (*sbtd->current_mode) = RM_CHOOSING;
+    return true;  // then we're done.
+  } else {
+    //queueSound(S::error);
   }
   
   return false;
@@ -284,90 +206,22 @@ void drawBottomBlock(const RenderInfo &rin, int lines) {
   drawLine(Float4(rin.drawzone.sx, bottom_point, rin.drawzone.ex, bottom_point), getTextBoxThickness(rin.textsize));
 }
 
+const Dvec2 controller_front = loadDvec2("data/controller_front.dv2");
+const Dvec2 controller_top = loadDvec2("data/controller_top.dv2");
+
 void standardButtonRender(const StandardButtonRenderData &sbrd) {
   StackString sstr("standardButtonRender");
   CHECK(sbrd.rin);
-  CHECK(sbrd.buttons);
-  CHECK(sbrd.names);
-  CHECK(sbrd.buttons->size() == sbrd.names->size());
-  CHECK(sbrd.buttons->size() == sbrd.groups.size());
-  CHECK(!sbrd.inverts || sbrd.buttons->size() == sbrd.inverts->size());
   
-  int linesneeded = 2;
-  for(int i = 0; i < sbrd.names->size(); i++)
-    linesneeded += (*sbrd.names)[i].size();
-  
-  {
-    set<int> grid(sbrd.groups.begin(), sbrd.groups.end());
-    CHECK(grid.size() > 0);
-    linesneeded += grid.size() - 1;
-    
-    vector<int> grod = sbrd.groups;
-    grod.erase(unique(grod.begin(), grod.end()), grod.end());
-    CHECK(grod.size() == grid.size());
-    
-    CHECK(!sbrd.groupnames || grid.size() == sbrd.groupnames->size());
-    for(int i = 0; i < grid.size(); i++)
-      CHECK(grid.count(i));
-    
-    if(sbrd.groupnames)
-      linesneeded += grid.size();
-  }
-  float xps = sbrd.rin->xstart;
-  float groupnamexps = xps;
-  if(sbrd.groupnames)
-    xps += sbrd.rin->textsize;
-  CHECK(linesneeded <= sbrd.rin->ystarts.size() - 1 - sbrd.description.size());
-  int scy = (sbrd.rin->ystarts.size() - linesneeded - sbrd.description.size() + 1) / 2;
-  int cy = scy;
-  CHECK(cy + linesneeded <= sbrd.rin->ystarts.size());
-  drawTextBoxAround(Float4(sbrd.rin->xstart, sbrd.rin->ystarts[scy], sbrd.rin->xend, sbrd.rin->ystarts[scy + linesneeded - 1] + sbrd.rin->textsize), sbrd.rin->textsize);
-  for(int i = 0; i < (*sbrd.names).size(); i++) {\
-    if(i && sbrd.groups[i-1] != sbrd.groups[i])
-      cy++;
-    if(sbrd.groupnames) {
-      if(!i || sbrd.groups[i-1] != sbrd.groups[i])  {
-        setColor(C::inactive_text);
-        drawText((*sbrd.groupnames)[sbrd.groups[i]], sbrd.rin->textsize, Float2(groupnamexps, sbrd.rin->ystarts[cy++]));
-      }
-    }
-    if(sbrd.sel_button == i) {
-      setColor(C::active_text);
-    } else {
-      setColor(C::inactive_text);
-    }
-    CHECK(i < sbrd.names->size());
-    CHECK(cy < sbrd.rin->ystarts.size());
-    for(int j = 0; j < (*sbrd.names)[i].size(); j++)
-      drawText((*sbrd.names)[i][j], sbrd.rin->textsize, Float2(xps, sbrd.rin->ystarts[cy++]));
-    string btext;
-    if(sbrd.sel_button == i && ((*sbrd.buttons)[i] == -1 || sbrd.sel_button_reading == RM_CHOOSING)) {
-      btext = "?";
-      setColor(C::active_text);
-    } else if((*sbrd.buttons)[i] == -1) {
-      btext = "";
-    } else {
-      if(!sbrd.inverts) {
-        btext = StringPrintf("%s%d", sbrd.prefix.c_str(), (*sbrd.buttons)[i]);
-      } else {
-        btext = StringPrintf("%s%d%c", sbrd.prefix.c_str(), (*sbrd.buttons)[i], (*sbrd.inverts)[i] ? '-' : '+');
-      }
-      setColor(C::inactive_text);
-    }
-    drawJustifiedText(btext.c_str(), sbrd.rin->textsize, Float2(sbrd.rin->xend, sbrd.rin->ystarts[cy - 1]), TEXT_MAX, TEXT_MIN);
-  }
-  cy++;
-  if(sbrd.sel_button == sbrd.names->size()) {
-    setColor(C::active_text);
+  const int realite = button_order[sbrd.sel_button];
+  Dvec2 renderobj;
+  if(realite == BUTTON_FIRE1 || realite == BUTTON_FIRE2 || realite == BUTTON_FIRE3 || realite == BUTTON_FIRE4) {
+    renderobj = controller_top;
   } else {
-    setColor(C::inactive_text);
+    renderobj = controller_front;
   }
   
-  if(sbrd.inverts)
-    drawText("Done", sbrd.rin->textsize, Float2(groupnamexps, sbrd.rin->ystarts[cy++]));
-  else
-    drawText("Done (use accept button)", sbrd.rin->textsize, Float2(groupnamexps, sbrd.rin->ystarts[cy++]));  // shut up
-  CHECK(cy == scy + linesneeded);
+  drawDvec2(renderobj, Float4(sbrd.rin->xstart, sbrd.rin->ystarts[1], sbrd.rin->xend, sbrd.rin->ystarts[sbrd.rin->ystarts.size() - sbrd.description.size() - 1]), 20, sbrd.rin->linethick);
 
   drawBottomBlock(*sbrd.rin, sbrd.description.size());
   setColor(C::inactive_text);
@@ -478,56 +332,65 @@ bool runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
         pms->choicemode = CHOICE_ACTIVE;
       }
     } else if(pms->settingmode == SETTING_BUTTONS) {
+      //      if(keys.keys[pms->buttons[BUTTON_FIRE1]].down && keys.keys[pms->buttons[BUTTON_FIRE2]].down && keys.keys[pms->buttons[BUTTON_FIRE3]].down && keys.keys[pms->buttons[BUTTON_FIRE4]].down && (keys.keys[pms->buttons[BUTTON_FIRE1]].push || keys.keys[pms->buttons[BUTTON_FIRE2]].push || keys.keys[pms->buttons[BUTTON_FIRE3]].push || keys.keys[pms->buttons[BUTTON_FIRE4]].push))
+        //pms->setting_axistype = modurot(pms->setting_axistype + 1, KSAX_LAST);
+      
       vector<Coord> triggers;
-      for(int i = 0; i < keys.keys.size(); i++)
-        triggers.push_back(keys.keys[i].push);
+      vector<Coord> oldtriggers;
       
-      vector<int> groups(BUTTON_LAST);
-      groups[BUTTON_ACCEPT] = 1;
-      groups[BUTTON_CANCEL] = 1;
+      vector<int> buttons;
+      vector<char> invert;
       
-      StandardButtonTickData sbtd;
-      sbtd.outkeys = &pms->buttons;
-      sbtd.outinvert = NULL;
-      sbtd.current_button = &pms->setting_button_current;
-      sbtd.current_mode = &pms->setting_button_reading;
-      sbtd.require_trigger = false;
-      sbtd.accept_button = pms->buttons[BUTTON_ACCEPT];
-      sbtd.cancel_button = pms->buttons[BUTTON_CANCEL];
-      sbtd.groups = VECTORIZE(button_groups);
-      sbtd.keys = keys;
-      sbtd.triggers = &triggers;
-      sbtd.oldtriggers = NULL;
+      vector<int> triggertype;
       
-      if(standardButtonTick(&sbtd)) {
-        if(pms->choicemode == CHOICE_ACTIVE) {
-          pms->choicemode = CHOICE_IDLE;
-        } else if(pms->choicemode == CHOICE_FIRSTPASS) {
-          pms->settingmode++;
+      for(int i = 0; i < keys.keys.size(); i++) {
+        triggers.push_back(keys.keys[i].down);
+        if(keys.keys[i].down)
+          oldtriggers.push_back(!keys.keys[i].push);
+        else
+          oldtriggers.push_back(!keys.keys[i].release);
+        triggertype.push_back(TT_BUTTON);
+      }
+      
+      for(int i = 0; i < keys.axes.size(); i++) {
+        triggers.push_back(keys.axes[i]);
+        oldtriggers.push_back(keys.lastaxes[i]);
+
+        triggertype.push_back(TT_AXIS);
+      }
+      
+      for(int i = 0; i < ARRAY_SIZE(button_order); i++) {
+        if(button_order[i] >= 0) {
+          buttons.push_back(pms->buttons[button_order[i]]);
+          invert.push_back(false);
         } else {
-          CHECK(0);
+          buttons.push_back(pms->axes[-button_order[i]]);
+          invert.push_back(pms->axes_invert[-button_order[i]]);
         }
       }
-    } else if(pms->settingmode == SETTING_AXISCHOOSE) {
-      if(keys.keys[pms->buttons[BUTTON_FIRE1]].down && keys.keys[pms->buttons[BUTTON_FIRE2]].down && keys.keys[pms->buttons[BUTTON_FIRE3]].down && keys.keys[pms->buttons[BUTTON_FIRE4]].down && (keys.keys[pms->buttons[BUTTON_FIRE1]].push || keys.keys[pms->buttons[BUTTON_FIRE2]].push || keys.keys[pms->buttons[BUTTON_FIRE3]].push || keys.keys[pms->buttons[BUTTON_FIRE4]].push))
-        pms->setting_axistype = modurot(pms->setting_axistype + 1, KSAX_LAST);
-        
-      StackString sstr("SAX");
       
-      StandardButtonTickData sbtd;      
-      sbtd.outkeys = &pms->axes;
-      sbtd.outinvert = &pms->axes_invert;
-      sbtd.current_button = &pms->setting_axis_current;
-      sbtd.current_mode = &pms->setting_axis_reading;
-      sbtd.require_trigger = true;
+      StandardButtonTickData sbtd;
+      sbtd.outkeys = &buttons;
+      sbtd.outinvert = &invert;
+      sbtd.current_button = &pms->setting_button_current;
       sbtd.accept_button = pms->buttons[BUTTON_ACCEPT];
-      sbtd.cancel_button = pms->buttons[BUTTON_CANCEL];
-      sbtd.groups = VECTORIZE(axis_groups);
       sbtd.keys = keys;
-      sbtd.triggers = &keys.axes;
-      sbtd.oldtriggers = &keys.lastaxes;
+      sbtd.triggers = triggers;
+      sbtd.oldtriggers.resize(triggers.size(), 0);
       
-      if(standardButtonTick(&sbtd)) {
+      bool rv = standardButtonTick(&sbtd);
+      
+      for(int i = 0; i < ARRAY_SIZE(button_order); i++) {
+        if(button_order[i] >= 0) {
+          pms->buttons[button_order[i]] = buttons[i];
+          CHECK(!invert[i]);
+        } else {
+          pms->axes[-button_order[i]] = buttons[i];
+          pms->axes_invert[-button_order[i]] = invert[i];
+        }
+      }
+      
+      if(rv) {
         if(pms->choicemode == CHOICE_ACTIVE) {
           pms->choicemode = CHOICE_IDLE;
         } else if(pms->choicemode == CHOICE_FIRSTPASS) {
@@ -615,41 +478,28 @@ void runSettingRender(const PlayerMenuState &pms, const ControlConsts &cc) {
       names.push_back(tix);
     }
     
-    vector<string> groups;
-    groups.push_back("Weapon buttons");
-    groups.push_back("Menu buttons");
-    
-    StandardButtonRenderData sbrd;
-    sbrd.rin = &rin;
-    sbrd.buttons = &pms.buttons;
-    sbrd.inverts = NULL;
-    sbrd.names = &names;
-    sbrd.groupnames = &groups;
-    sbrd.groups = VECTORIZE(button_groups);
-    sbrd.sel_button = pms.setting_button_current;
-    sbrd.sel_button_reading = pms.setting_button_reading;
-    sbrd.prefix = "Button #";
-    sbrd.description.push_back("Select your button setup. Choose \"done\" when ready.");
-    if(!cc.availdescr.empty())
-      sbrd.description.push_back(cc.availdescr);
-    
-    standardButtonRender(sbrd);
-    
-  } else if(pms.settingmode == SETTING_AXISCHOOSE) {
-    StackString sstr("axischoose");
+    /*
+        StackString sstr("axischoose");
     StandardButtonRenderData sbrd;
     sbrd.rin = &rin;
     sbrd.buttons = &pms.axes;
     sbrd.inverts = &pms.axes_invert;
     sbrd.names = &ksax_axis_names[pms.setting_axistype];
-    sbrd.groupnames = NULL;
-    sbrd.groups = VECTORIZE(axis_groups);
     sbrd.sel_button = pms.setting_axis_current;
     sbrd.sel_button_reading = pms.setting_axis_reading;
     sbrd.prefix = "Axis #";
     sbrd.description.push_back("Configure your control directions. Select the entry,");
     sbrd.description.push_back("then move your controller in the desired direction.");
     sbrd.description.push_back("Choose \"done\" when ready.");
+    
+    standardButtonRender(sbrd);
+    */
+    
+    StandardButtonRenderData sbrd;
+    sbrd.rin = &rin;
+    sbrd.description.push_back("Press the indicated buttons to configure your controller.");
+    if(!cc.availdescr.empty())
+      sbrd.description.push_back(cc.availdescr);
     
     standardButtonRender(sbrd);
   } else if(pms.settingmode == SETTING_TEST) {

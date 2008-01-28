@@ -39,11 +39,6 @@ void Settings::load() {
     }
   }
   
-  res_x = 1024;
-  res_y = 768;
-  res_fullscreen = true;
-  res_aspect = 4.0 / 3.0;
-  
   if(FLAGS_resolutionx_OVERRIDDEN != FS_DEFAULT)
     res_x = FLAGS_resolutionx;
   if(FLAGS_resolutiony_OVERRIDDEN != FS_DEFAULT)

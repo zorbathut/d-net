@@ -66,10 +66,10 @@ const char *const ksax_names[] = { "Steering (default)", "Absolute", "Tank (adva
 vector<vector<vector<string> > > ksax_axis_names_gen();
 const vector<vector<vector<string> > > ksax_axis_names = ksax_axis_names_gen(); // sigh.
 const char *const ksax_descriptions[KSAX_LAST][2] = { {"Turn axis and", "movement axis"}, {"Tank goes in", "stick direction"}, {"Independent", "tread control"} };
-const int axis_groups[] = { 0, 0 };
 
 enum { BUTTON_FIRE1, BUTTON_FIRE2, BUTTON_FIRE3, BUTTON_FIRE4, BUTTON_PRECISION, BUTTON_ACCEPT, BUTTON_CANCEL, BUTTON_LAST };
-const int button_groups[] = { 0, 0, 0, 0, 0, 1, 1 };
+
+const int button_order[] = { BUTTON_ACCEPT, BUTTON_CANCEL, -1, BUTTON_PRECISION, BUTTON_FIRE1, BUTTON_FIRE2, BUTTON_FIRE3, BUTTON_FIRE4 };
 
 struct Keystates {
   Coord ax[2];

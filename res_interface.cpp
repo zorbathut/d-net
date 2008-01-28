@@ -3,6 +3,7 @@
 
 #include "debug.h"
 #include "gfx.h"
+#include "settings.h"
 
 #ifdef OSX_FRAMEWORK_PREFIXES
   #include <OpenGL/gl.h>
@@ -71,6 +72,11 @@ bool setResolution(pair<int, int> res, float aspect, bool fullscreen) {
     return false;
   
   updateResolution(aspect);
+
+  Settings::get_instance().res_x = res.first;
+  Settings::get_instance().res_y = res.second;
+  Settings::get_instance().res_aspect = aspect;
+  Settings::get_instance().res_fullscreen = fullscreen;
   
   cres = res;
   caspect = aspect;
