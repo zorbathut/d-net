@@ -217,8 +217,13 @@ void standardButtonRender(const StandardButtonRenderData &sbrd) {
   CHECK(sbrd.rin);
   
   int cb = sbrd.sel_button;
-  if(cb == -1)
+  string text = sbrd.sel_text;
+  if(cb == ARRAY_SIZE(button_order)) {
+    cb--;
+    text = "Push \"accept\" to continue, or any other key to restart";
+  } else if(cb == -1) {
     cb = 0;
+  }
   
   const int realite = button_order[cb];
   Dvec2 renderobj;
@@ -231,7 +236,7 @@ void standardButtonRender(const StandardButtonRenderData &sbrd) {
   setColor(C::gray(1.0));
   drawDvec2(renderobj, Float4(sbrd.rin->xstart, sbrd.rin->ystarts[1], sbrd.rin->xend, sbrd.rin->ystarts[sbrd.rin->ystarts.size() - 2]), 20, sbrd.rin->linethick * 2);
   
-  drawJustifiedText(sbrd.sel_text, sbrd.rin->textsize, Float2((sbrd.rin->xstart + sbrd.rin->xend) / 2, sbrd.rin->ystarts[sbrd.rin->ystarts.size() - 1]), TEXT_CENTER, TEXT_MIN);
+  drawJustifiedText(text, sbrd.rin->textsize, Float2((sbrd.rin->xstart + sbrd.rin->xend) / 2, sbrd.rin->ystarts[sbrd.rin->ystarts.size() - 1]), TEXT_CENTER, TEXT_MIN);
   
   /*drawBottomBlock(*sbrd.rin, sbrd.description.size());
   setColor(C::inactive_text);
@@ -391,8 +396,8 @@ bool runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
       sbtd.accept_button = pms->buttons[BUTTON_ACCEPT];
       sbtd.keys = keys;
       sbtd.triggers = triggers;
+      sbtd.oldtriggers = oldtriggers;
       sbtd.triggertype = triggertype;
-      sbtd.oldtriggers.resize(triggers.size(), 0);
       
       bool rv = standardButtonTick(&sbtd);
       
