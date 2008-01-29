@@ -147,13 +147,14 @@ struct StandardButtonRenderData {
   const RenderInfo *rin;
   
   int sel_button;
+  string sel_text;
   
   vector<string> description;
 };
 
 bool standardButtonTick(StandardButtonTickData *sbtd) {
   StackString sstr("standardButtonTick");
-  dprintf("lol");
+  
   CHECK(sbtd);
   CHECK(sbtd->outkeys);
   CHECK(sbtd->outinvert);
@@ -162,18 +163,15 @@ bool standardButtonTick(StandardButtonTickData *sbtd) {
   CHECK(sbtd->outkeys->size() == sbtd->desiredkeytype.size());
   CHECK(sbtd->oldtriggers.size() == sbtd->triggers.size());
   CHECK(sbtd->oldtriggers.size() == sbtd->triggertype.size());
-  dprintf("lol");
+  
   if(*sbtd->current_button == -1)
     *sbtd->current_button = 0;
   CHECK(*sbtd->current_button >= 0 && *sbtd->current_button <= sbtd->outkeys->size());
-  dprintf("lol");
+  
   // First off, let's see if we do successfully change buttons.
   if(*sbtd->current_button < sbtd->outkeys->size()) {
-    dprintf("lol");
     for(int i = 0; i < sbtd->triggers.size(); i++) { // For each input button . . .
-      dprintf("lol %d %d %d %d %d %d", *sbtd->current_button, sbtd->desiredkeytype.size(), i, sbtd->triggertype.size(), sbtd->triggers.size(), sbtd->oldtriggers.size());
       if(sbtd->desiredkeytype[*sbtd->current_button] == sbtd->triggertype[i] && abs(sbtd->triggers[i]) > 0.9 && abs(sbtd->oldtriggers[i]) <= 0.9) { // If button was pushed . . .
-        dprintf("lol");
         bool valid = true;
         for(int j = 0; j < sbtd->outkeys->size(); j++) {
           if(sbtd->desiredkeytype[j] == sbtd->desiredkeytype[*sbtd->current_button] && (*sbtd->outkeys)[j] == i) {
@@ -191,18 +189,16 @@ bool standardButtonTick(StandardButtonTickData *sbtd) {
         }
       }
     }
-      dprintf("lol");
   }
-  dprintf("lol");
 
-    // Here's where we potentially quit.
+  // Here's where we potentially quit.
   if(*sbtd->current_button == sbtd->outkeys->size() && sbtd->keys.keys[sbtd->accept_button].push) {
     queueSound(S::accept);
     return true;  // then we're done.
   } else {
     //queueSound(S::error);
   }
-  dprintf("lol");
+  
   return false;
 }
 
@@ -233,12 +229,14 @@ void standardButtonRender(const StandardButtonRenderData &sbrd) {
   }
   
   setColor(C::gray(1.0));
-  drawDvec2(renderobj, Float4(sbrd.rin->xstart, sbrd.rin->ystarts[1], sbrd.rin->xend, sbrd.rin->ystarts[sbrd.rin->ystarts.size() - sbrd.description.size() - 1]), 20, sbrd.rin->linethick * 2);
+  drawDvec2(renderobj, Float4(sbrd.rin->xstart, sbrd.rin->ystarts[1], sbrd.rin->xend, sbrd.rin->ystarts[sbrd.rin->ystarts.size() - 2]), 20, sbrd.rin->linethick * 2);
   
-  drawBottomBlock(*sbrd.rin, sbrd.description.size());
+  drawJustifiedText(sbrd.sel_text, sbrd.rin->textsize, Float2((sbrd.rin->xstart + sbrd.rin->xend) / 2, sbrd.rin->ystarts[sbrd.rin->ystarts.size() - 1]), TEXT_CENTER, TEXT_MIN);
+  
+  /*drawBottomBlock(*sbrd.rin, sbrd.description.size());
   setColor(C::inactive_text);
   for(int i = 0; i < sbrd.description.size(); i++)
-    drawJustifiedText(sbrd.description[i], sbrd.rin->textsize, Float2((sbrd.rin->xstart + sbrd.rin->xend) / 2, sbrd.rin->ystarts[sbrd.rin->ystarts.size() - sbrd.description.size() + i]), TEXT_CENTER, TEXT_MIN);
+    drawJustifiedText(sbrd.description[i], sbrd.rin->textsize, Float2((sbrd.rin->xstart + sbrd.rin->xend) / 2, sbrd.rin->ystarts[sbrd.rin->ystarts.size() - sbrd.description.size() + i]), TEXT_CENTER, TEXT_MIN);*/
   
 }
 
@@ -513,9 +511,25 @@ void runSettingRender(const PlayerMenuState &pms, const ControlConsts &cc) {
     standardButtonRender(sbrd);
     */
     
+    string key_descr;
+    {
+      int rbc = pms.setting_button_current;
+      if(rbc == -1)
+        rbc = 0;
+      if(rbc == ARRAY_SIZE(button_order))
+        rbc = ARRAY_SIZE(button_order) - 1;
+      CHECK(rbc >= 0 && rbc < ARRAY_SIZE(button_order));
+      
+      if(button_order[rbc] < 0)
+        key_descr = "Move the right stick upwards.";
+      else
+        key_descr = "Press the button " + cc.buttonnames[button_order[rbc]];
+    }
+    
     StandardButtonRenderData sbrd;
     sbrd.rin = &rin;
     sbrd.sel_button = pms.setting_button_current;
+    sbrd.sel_text = key_descr;
     sbrd.description.push_back("Press the indicated buttons to configure your controller.");
     if(!cc.availdescr.empty())
       sbrd.description.push_back(cc.availdescr);
