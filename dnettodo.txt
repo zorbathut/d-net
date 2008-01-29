@@ -1,12 +1,19 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
+  - Redo interface setup (again)
+    - End properly on end
+    - Restart on restart
+    - Show appropriate keys
+    - Resize both controller views to be about the same
+    - Opacitize the controller view
+    - Get it working right with keyboard somehow
+    - Rejuvenate AI
   - Turn some things into errors
   - Set up some way to end the game before the rounds end
     - Option in the esc menu
   - Convert key output into OStream
     - Add OStreamGz support
     - Compress key output
-  - Redo interface setup (again)
   - Jam AI into singleplayer
   - add "instant action" option
   - Make free version
