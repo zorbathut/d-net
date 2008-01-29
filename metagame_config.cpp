@@ -95,11 +95,14 @@ PlayerMenuState::PlayerMenuState() {
   buttons.resize(BUTTON_LAST, -1);
   axes.resize(2, -1);
   axes_invert.resize(axes.size(), false);
+  
+  axes[1] = 1;
 }
 
 PlayerMenuState::~PlayerMenuState() { }
 
 Keystates PlayerMenuState::genKeystate(const Controller &keys) const {
+  StackString sstr("genkeystate");
   Keystates kst;
   kst.u = keys.u;
   kst.d = keys.d;
@@ -343,7 +346,6 @@ bool runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
         return true;
       }
       if(keys.keys[pms->buttons[BUTTON_ACCEPT]].push) {
-        dprintf("pushactive\n");
         queueSound(S::choose);
         pms->choicemode = CHOICE_ACTIVE;
       }
@@ -382,8 +384,8 @@ bool runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
           invert.push_back(false);
           desiredkeytype.push_back(TT_BUTTON);
         } else {
-          buttons.push_back(pms->axes[-button_order[i]]);
-          invert.push_back(pms->axes_invert[-button_order[i]]);
+          buttons.push_back(pms->axes[0] + keys.keys.size());
+          invert.push_back(pms->axes_invert[0]);
           desiredkeytype.push_back(TT_AXIS);
         }
       }
@@ -406,8 +408,8 @@ bool runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
           pms->buttons[button_order[i]] = buttons[i];
           CHECK(!invert[i]);
         } else {
-          pms->axes[-button_order[i]] = buttons[i];
-          pms->axes_invert[-button_order[i]] = invert[i];
+          pms->axes[0] = buttons[i] - keys.keys.size();  // sigh
+          pms->axes_invert[0] = invert[i];
         }
       }
       
@@ -526,7 +528,7 @@ void runSettingRender(const PlayerMenuState &pms, const ControlConsts &cc) {
       CHECK(rbc >= 0 && rbc < ARRAY_SIZE(button_order));
       
       if(button_order[rbc] < 0)
-        key_descr = "Move the right stick upwards.";
+        key_descr = "Move the right stick to the right.";
       else
         key_descr = "Press the button " + cc.buttonnames[button_order[rbc]];
     }

@@ -8,7 +8,6 @@
     - Opacitize the controller view
     - Get it working right with keyboard somehow
     - Rejuvenate AI
-  - Turn some things into errors
   - Set up some way to end the game before the rounds end
     - Option in the esc menu
   - Convert key output into OStream
@@ -19,6 +18,9 @@
   - Make free version
   - Figure out Linux packaging
   - Figure out OSX packaging
+  - boost::array
+    - Add vector_paranoia
+    - Integrate in a few places
   - Modify shockwave pulse quite a lot
   - un-duplicate some of the duplicated gameend/score code
   - statistical variation of glory devices?
