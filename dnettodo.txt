@@ -1,11 +1,9 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - Redo interface setup (again)
-    - End properly on end
-    - Restart on restart
+    - Opacitize the controller view
     - Show appropriate keys
     - Resize both controller views to be about the same
-    - Opacitize the controller view
     - Get it working right with keyboard somehow
     - Rejuvenate AI
   - Set up some way to end the game before the rounds end

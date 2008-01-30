@@ -327,7 +327,7 @@ ControlConsts controls_getcc(int cid) {
   }
 
   if(sources[cid].first == CIP_JOYSTICK) {
-    rv.buttonnames = boost::assign::list_of("L2")("R2")("L1")("R1")("left stick down")("A or X (for \"accept\")")("B or O (for \"cancel\")");
+    rv.buttonnames = boost::assign::list_of("L2")("R2")("L1")("R1")("the left stick inwards")("A or X (for \"accept\")")("B or O (for \"cancel\")");
   } else {
     rv.buttonnames = boost::assign::list_of("Fire weapon 1")("Fire weapon 2")("Fire weapon 3")("Fire weapon 4")("Slow movement")("Accept menu item key")("Change/abort menu key");
   }

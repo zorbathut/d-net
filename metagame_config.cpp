@@ -171,6 +171,8 @@ bool standardButtonTick(StandardButtonTickData *sbtd) {
     *sbtd->current_button = 0;
   CHECK(*sbtd->current_button >= 0 && *sbtd->current_button <= sbtd->outkeys->size());
   
+  bool assigned = false;
+  
   // First off, let's see if we do successfully change buttons.
   if(*sbtd->current_button < sbtd->outkeys->size()) {
     for(int i = 0; i < sbtd->triggers.size(); i++) { // For each input button . . .
@@ -186,6 +188,7 @@ bool standardButtonTick(StandardButtonTickData *sbtd) {
           queueSound(S::choose);
           (*sbtd->outkeys)[*sbtd->current_button] = i;
           (*sbtd->current_button)++;
+          assigned = true;
           break;
         } else {
           queueSound(S::error);
@@ -195,11 +198,23 @@ bool standardButtonTick(StandardButtonTickData *sbtd) {
   }
 
   // Here's where we potentially quit.
-  if(*sbtd->current_button == sbtd->outkeys->size() && sbtd->keys.keys[sbtd->accept_button].push) {
-    queueSound(S::accept);
-    return true;  // then we're done.
-  } else {
-    //queueSound(S::error);
+  if(*sbtd->current_button == sbtd->outkeys->size() && !assigned) {
+    if(sbtd->keys.keys[sbtd->accept_button].push) {
+      queueSound(S::accept);
+      return true;  // then we're done.
+    }
+    
+    bool anythingpushed = false;
+    for(int i = 0; i < sbtd->keys.keys.size(); i++)
+      if(sbtd->keys.keys[i].push)
+        anythingpushed = true;
+    if(anythingpushed) {
+      queueSound(S::accept);
+      sbtd->outkeys->clear();
+      sbtd->outkeys->resize(sbtd->outinvert->size(), -1);
+      *sbtd->current_button = -1;
+      // ABORT ABORT ABORT
+    }
   }
   
   return false;
@@ -236,7 +251,7 @@ void standardButtonRender(const StandardButtonRenderData &sbrd) {
     renderobj = controller_front;
   }
   
-  setColor(C::gray(1.0));
+  setColor(Color(0.85, 1.0, 0.8));
   drawDvec2(renderobj, Float4(sbrd.rin->xstart, sbrd.rin->ystarts[1], sbrd.rin->xend, sbrd.rin->ystarts[sbrd.rin->ystarts.size() - 2]), 20, sbrd.rin->linethick * 2);
   
   drawJustifiedText(text, sbrd.rin->textsize, Float2((sbrd.rin->xstart + sbrd.rin->xend) / 2, sbrd.rin->ystarts[sbrd.rin->ystarts.size() - 1]), TEXT_CENTER, TEXT_MIN);
@@ -530,7 +545,7 @@ void runSettingRender(const PlayerMenuState &pms, const ControlConsts &cc) {
       if(button_order[rbc] < 0)
         key_descr = "Move the right stick to the right.";
       else
-        key_descr = "Press the button " + cc.buttonnames[button_order[rbc]];
+        key_descr = "Press " + cc.buttonnames[button_order[rbc]];
     }
     
     StandardButtonRenderData sbrd;
