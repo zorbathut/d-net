@@ -255,7 +255,7 @@ void standardButtonRender(const StandardButtonRenderData &sbrd) {
   
   {
     GfxInvertingStencil gfxis;
-    stencilDvec2(renderobj, controllersize, 20);
+    stencilVectorPath(renderobj.paths[0], controllersize, 20);
   }
   
   {

@@ -134,6 +134,7 @@ void drawFormattedTextBox(const vector<string> &txt, float scale, Float4 bounds,
 void drawVectorPath(const VectorPath &vecob, const pair<Float2, float> &coord, int midpoints, float weight);
 void drawVectorPath(const VectorPath &vecob, const CFC4 &bounds, int midpoints, float weight);
 void stencilVectorPath(const VectorPath &vecob, const pair<Float2, float> &bounds, int midpoints);
+void stencilVectorPath(const VectorPath &vecob, const CFC4 &bounds, int midpoints);
 
 void drawDvec2(const Dvec2 &vecob, const CFC4 &bounds, int midpoints, float weight);
 void stencilDvec2(const Dvec2 &vecob, const CFC4 &bounds, int midpoints);

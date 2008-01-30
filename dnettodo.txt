@@ -1,7 +1,6 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - Redo interface setup (again)
-    - Opacitize the controller view
     - Show appropriate keys
     - Resize both controller views to be about the same
     - Get it working right with keyboard somehow

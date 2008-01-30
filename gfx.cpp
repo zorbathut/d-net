@@ -995,15 +995,20 @@ void drawVectorPath(const VectorPath &vecob, const pair<Float2, float> &coord, i
   drawLineLoop(*verts, weight);
 }
 
-void drawVectorPath(const VectorPath &vecob, const Float4 &bounds, int midpoints, float weight) {
-  CHECK(bounds.isNormalized());
-  drawVectorPath(vecob, fitInside(bounds, vecob.boundingBox()), midpoints, weight);
+void drawVectorPath(const VectorPath &vecob, const CFC4 &bounds, int midpoints, float weight) {
+  CHECK(bounds->isNormalized());
+  drawVectorPath(vecob, fitInside(*bounds, vecob.boundingBox()), midpoints, weight);
 }
 
 void stencilVectorPath(const VectorPath &vecob, const pair<Float2, float> &coord, int midpoints) {
   PoolObj<vector<Float2> > verts;
   buildVectorPath(vecob, coord, midpoints, &*verts);
   invertStencilLoop(*verts);
+}
+
+void stencilVectorPath(const VectorPath &vecob, const CFC4 &bounds, int midpoints) {
+  CHECK(bounds->isNormalized());
+  stencilVectorPath(vecob, fitInside(vecob.boundingBox(), *bounds), midpoints);
 }
 
 pair<Float2, float> getDvecScale(const Dvec2 &vecob, const CFC4 &bounds) {
