@@ -237,7 +237,7 @@ void standardButtonRender(const StandardButtonRenderData &sbrd) {
   int cb = sbrd.sel_button;
   string text = sbrd.sel_text;
   if(cb == ARRAY_SIZE(button_order)) {
-    cb--;
+    cb = 0;
     text = "Push \"accept\" to continue, or any other key to restart";
   } else if(cb == -1) {
     cb = 0;
@@ -245,10 +245,14 @@ void standardButtonRender(const StandardButtonRenderData &sbrd) {
   
   const int realite = button_order[cb];
   Dvec2 renderobj;
-  if(realite == BUTTON_FIRE1 || realite == BUTTON_FIRE2 || realite == BUTTON_FIRE3 || realite == BUTTON_FIRE4) {
-    renderobj = controller_top;
+  if(frameNumber / (FPS / 3) % 3 == 0) {
+    renderobj = loadDvec2(StringPrintf("data/controller_push%d.dv2", cb + 1));
   } else {
-    renderobj = controller_front;
+    if(realite == BUTTON_FIRE1 || realite == BUTTON_FIRE2 || realite == BUTTON_FIRE3 || realite == BUTTON_FIRE4) {
+      renderobj = controller_top;
+    } else {
+      renderobj = controller_front;
+    }
   }
   
   Float4 controllersize = Float4(sbrd.rin->xstart, sbrd.rin->ystarts[1], sbrd.rin->xend, sbrd.rin->ystarts[sbrd.rin->ystarts.size() - 2]);
