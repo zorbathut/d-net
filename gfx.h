@@ -73,10 +73,14 @@ void drawLine(const Coord2 &s, const Coord2 &e, float weight);
 void drawLine(const Float4 &loc, float weight);
 void drawLine(const Coord4 &loc, float weight);
 
+void buildLine(const Float4 &loc, vector<Float2> *out);
+
 void drawPoint(const Float2 &pos, float weight);
 
 void drawSolid(const Float4 &box);  // Background color only, and intentionally so
 void drawSolidLoop(const vector<Float2> &verts); // Must be convex
+
+void invertStencilLoop(const vector<Float2> &verts);
 void invertStencilLoop(const vector<Coord2> &verts);
 
 void drawImage(const Image &img, const Float4 &box, float alpha); // arglbargl
@@ -99,6 +103,7 @@ void drawRectAround(const CFC2 &pos, float rad, float weight);
 void drawShadedRect(const Float4 &locs, float weight, float shadedens);
 
 void drawCurve(const Float4 &ptah, const Float4 &ptbh, int midpoints, float weight);
+void buildCurve(const Float4 &ptah, const Float4 &ptbh, int midpoints, vector<Float2> *out);
 
 void drawCircle(const Float2 &center, float radius, float weight);
 
@@ -127,9 +132,11 @@ void drawFormattedTextBox(const vector<string> &txt, float scale, Float4 bounds,
 // VectorPath objects have their own local coordinate system - this scales it by whatever, then translates its origin to the new origin.
 // It is not necessarily an upper-left corner origin (it's more likely to be center, but that's not guaranteed either)
 void drawVectorPath(const VectorPath &vecob, const pair<Float2, float> &coord, int midpoints, float weight);
-void drawVectorPath(const VectorPath &vecob, const Float4 &bounds, int midpoints, float weight);
+void drawVectorPath(const VectorPath &vecob, const CFC4 &bounds, int midpoints, float weight);
+void stencilVectorPath(const VectorPath &vecob, const pair<Float2, float> &bounds, int midpoints);
 
 void drawDvec2(const Dvec2 &vecob, const CFC4 &bounds, int midpoints, float weight);
+void stencilDvec2(const Dvec2 &vecob, const CFC4 &bounds, int midpoints);
 
 void drawSpokes(float x, float y, int dupes, int numer, int denom, float len, float weight);
 void drawGrid(float spacing, float width);

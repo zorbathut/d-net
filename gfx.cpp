@@ -560,6 +560,14 @@ void drawLine(const Coord4 &loc, float weight) {
   drawLine(loc.toFloat(), weight);
 }
 
+void buildLine(const Float4 &loc, vector<Float2> *out) {
+  if(out->size())
+    CHECK(out->back() == loc.s());
+  else
+    out->push_back(loc.s());
+  out->push_back(loc.e());
+}
+
 void drawPoint(const Float2 &pos, float weight) {
   CHECK(weight > 0);
   if(unlikely(weight != -curWeight || lineCount > 1000)) {
@@ -599,6 +607,15 @@ void drawSolidLoop(const vector<Float2> &verts) {
   glBlendFunc(GL_SRC_ALPHA, GL_ONE);
   CHECK(glGetError() == GL_NO_ERROR);
   setColor(curcolor);
+}
+
+void invertStencilLoop(const vector<Float2> &verts) {
+  CHECK(inverting);
+  
+  glBegin(GL_TRIANGLE_FAN);
+  for(int i = 0; i < verts.size(); i++)
+    localVertex2f(verts[i].x, verts[i].y);
+  glEnd();
 }
 
 void invertStencilLoop(const vector<Coord2> &verts) {
@@ -740,6 +757,15 @@ void drawCurve(const Float4 &ptah, const Float4 &ptbh, int midpoints, float weig
   for(int i = 0; i <= midpoints; i++)
     verts->push_back(Float2(bezinterp(ptah.sx, ptah.ex, ptbh.sx, ptbh.ex, i / (float)midpoints), bezinterp(ptah.sy, ptah.ey, ptbh.sy, ptbh.ey, i / (float)midpoints)));
   drawLinePath(*verts, weight);
+}
+
+void buildCurve(const Float4 &ptah, const Float4 &ptbh, int midpoints, vector<Float2> *out) {
+  if(out->size())
+    CHECK(out->back() == ptah.s());
+  else
+    out->push_back(ptah.s());
+  for(int i = 1; i <= midpoints; i++)
+    out->push_back(Float2(bezinterp(ptah.sx, ptah.ex, ptbh.sx, ptbh.ex, i / (float)midpoints), bezinterp(ptah.sy, ptah.ey, ptbh.sy, ptbh.ey, i / (float)midpoints)));
 }
 
 void drawCircle(const Float2 &center, float radius, float weight) {
@@ -938,7 +964,7 @@ void drawFormattedTextBox(const vector<string> &txt, float scale, Float4 bounds,
  * Vector path operations
  */
 
-void drawVectorPath(const VectorPath &vecob, const pair<Float2, float> &coord, int midpoints, float weight) {
+void buildVectorPath(const VectorPath &vecob, const pair<Float2, float> &coord, int midpoints, vector<Float2> *out) {
   for(int i = 0; i < vecob.vpath.size(); i++) {
     int j = (i + 1) % vecob.vpath.size();
     CHECK(vecob.vpath[i].curvr == vecob.vpath[j].curvl);
@@ -956,11 +982,17 @@ void drawVectorPath(const VectorPath &vecob, const pair<Float2, float> &coord, i
     rc = rc * coord.second + coord.first;
     
     if(vecob.vpath[i].curvr) {
-      drawCurve(Float4(l, lc), Float4(rc, r), midpoints, weight);
+      buildCurve(Float4(l, lc), Float4(rc, r), midpoints, out);
     } else {
-      drawLine(Float4(l, r), weight);
+      buildLine(Float4(l, r), out);
     }
   }
+}
+
+void drawVectorPath(const VectorPath &vecob, const pair<Float2, float> &coord, int midpoints, float weight) {
+  PoolObj<vector<Float2> > verts;
+  buildVectorPath(vecob, coord, midpoints, &*verts);
+  drawLineLoop(*verts, weight);
 }
 
 void drawVectorPath(const VectorPath &vecob, const Float4 &bounds, int midpoints, float weight) {
@@ -968,8 +1000,13 @@ void drawVectorPath(const VectorPath &vecob, const Float4 &bounds, int midpoints
   drawVectorPath(vecob, fitInside(bounds, vecob.boundingBox()), midpoints, weight);
 }
 
-void drawDvec2(const Dvec2 &vecob, const CFC4 &bounds, int midpoints, float weight) {
-  CHECK(vecob.entities.size() == 0);
+void stencilVectorPath(const VectorPath &vecob, const pair<Float2, float> &coord, int midpoints) {
+  PoolObj<vector<Float2> > verts;
+  buildVectorPath(vecob, coord, midpoints, &*verts);
+  invertStencilLoop(*verts);
+}
+
+pair<Float2, float> getDvecScale(const Dvec2 &vecob, const CFC4 &bounds) {
   pair<Float2, float> dimens = fitInside(vecob.boundingBox(), *bounds);
   float scale = 1.0;
   if(vecob.globals.count("scale"))
@@ -978,8 +1015,21 @@ void drawDvec2(const Dvec2 &vecob, const CFC4 &bounds, int midpoints, float weig
   //dprintf("fit %f,%f,%f,%f into %f,%f,%f,%f, got %f,%f, %f\n", vecob.boundingBox().sx, vecob.boundingBox().sy,
       //vecob.boundingBox().ex, vecob.boundingBox().ey, bounds.sx, bounds.sy, bounds.ex, bounds.ey,
       //dimens.first.first, dimens.first.second, dimens.second);
+  return dimens;
+}
+
+void drawDvec2(const Dvec2 &vecob, const CFC4 &bounds, int midpoints, float weight) {
+  CHECK(vecob.entities.size() == 0);
+  pair<Float2, float> dvecs = getDvecScale(vecob, bounds);
   for(int i = 0; i < vecob.paths.size(); i++)
-    drawVectorPath(vecob.paths[i], dimens, midpoints, weight);
+    drawVectorPath(vecob.paths[i], dvecs, midpoints, weight);
+}
+
+void stencilDvec2(const Dvec2 &vecob, const CFC4 &bounds, int midpoints) {
+  CHECK(vecob.entities.size() == 0);
+  pair<Float2, float> dvecs = getDvecScale(vecob, bounds);
+  for(int i = 0; i < vecob.paths.size(); i++)
+    stencilVectorPath(vecob.paths[i], dvecs, midpoints);
 }
 
 /*************

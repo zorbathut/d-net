@@ -251,6 +251,18 @@ void standardButtonRender(const StandardButtonRenderData &sbrd) {
     renderobj = controller_front;
   }
   
+  Float4 controllersize = Float4(sbrd.rin->xstart, sbrd.rin->ystarts[1], sbrd.rin->xend, sbrd.rin->ystarts[sbrd.rin->ystarts.size() - 2]);
+  
+  {
+    GfxInvertingStencil gfxis;
+    stencilDvec2(renderobj, controllersize, 20);
+  }
+  
+  {
+    GfxStenciled gfxs;
+    drawSolid(controllersize);
+  }
+  
   setColor(Color(0.85, 1.0, 0.8));
   drawDvec2(renderobj, Float4(sbrd.rin->xstart, sbrd.rin->ystarts[1], sbrd.rin->xend, sbrd.rin->ystarts[sbrd.rin->ystarts.size() - 2]), 20, sbrd.rin->linethick * 2);
   
