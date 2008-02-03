@@ -187,6 +187,7 @@ bool standardButtonTick(StandardButtonTickData *sbtd) {
         if(valid) {
           queueSound(S::choose);
           (*sbtd->outkeys)[*sbtd->current_button] = i;
+          (*sbtd->outinvert)[*sbtd->current_button] = (sbtd->triggers[i] < 0);
           (*sbtd->current_button)++;
           assigned = true;
           break;
