@@ -733,7 +733,7 @@ void Game::renderToScreen(const vector<const Player *> &players, GameMetacontext
   
   // Here's everything outside gamespace
   if(gamemode != GMODE_TEST && gamemode != GMODE_DEMO && gamemode != GMODE_CENTERED_DEMO && gamemode != GMODE_TITLESCREEN) {
-    setZoomVertical(0, 0, 1);
+    setZoomVertical(0, 0, 100);
     
     // Player health
     {
