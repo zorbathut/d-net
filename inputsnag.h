@@ -27,6 +27,7 @@ public:
 void controls_snag_next_checksum_set();
 
 int controls_primary_id();
+pair<int, int> controls_getType(int id);
 
 ControlConsts controls_getcc(int cid);
 

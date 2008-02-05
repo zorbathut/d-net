@@ -23,9 +23,10 @@ DEFINE_string(readTarget, "", "File to replay from");
 DEFINE_int(aiCount, 0, "Number of AIs");
 DEFINE_int(nullControllers, 0, "Null controllers to insert in front");
 
-enum { CIP_KEYBOARD, CIP_JOYSTICK, CIP_AI, CIP_PRERECORD, CIP_NULL };
+enum { CIP_KEYBOARD, CIP_JOYSTICK, CIP_AI, CIP_NULL };
 
 static vector<pair<int, int> > sources;
+static vector<bool> prerecorded;
 static vector<SDL_Joystick *> joysticks;
 static vector<smart_ptr<Ai> > ai;
 static FILE *infile = NULL;
@@ -49,11 +50,12 @@ pair<RngSeed, InputState> controls_init(RngSeed default_seed) {
     CHECK(infile);
     int dat;
     fread(&dat, 1, sizeof(dat), infile);
-    CHECK(dat == 6);  // magic number
+    CHECK(dat == 8);  // magic number
     fread(&rngs, 1, sizeof(rngs), infile);
     fread(&dat, 1, sizeof(dat), infile);
     dprintf("%d controllers\n", dat);
     now.controllers.resize(dat);
+    prerecorded.resize(dat, true);
     for(int i = 0; i < now.controllers.size(); i++) {
       fread(&dat, 1, sizeof(dat), infile);
       dprintf("%d: %d buttons\n", i, dat);
@@ -61,10 +63,16 @@ pair<RngSeed, InputState> controls_init(RngSeed default_seed) {
       fread(&dat, 1, sizeof(dat), infile);
       dprintf("%d: %d axes\n", i, dat);
       now.controllers[i].axes.resize(dat);
-      sources.push_back(make_pair((int)CIP_PRERECORD, i));
+      
+      pair<int, int> source;
+      fread(&source.first, 1, sizeof(source.first), infile);
+      fread(&source.second, 1, sizeof(source.second), infile);
+      dprintf("%d: %d/%d type\n", i, source.first, source.second);
+      sources.push_back(source);
     }
   } else if(FLAGS_aiCount) {
     now.controllers.resize(FLAGS_aiCount);
+    prerecorded.resize(FLAGS_aiCount, false);
     dprintf("Creating AIs\n");
     for(int i = 0; i < FLAGS_aiCount; i++)
       ai.push_back(smart_ptr<Ai>(new Ai()));
@@ -117,6 +125,8 @@ pair<RngSeed, InputState> controls_init(RngSeed default_seed) {
       ct.keys.resize(SDL_JoystickNumButtons(joysticks[i]));
       now.controllers.push_back(ct);
     }
+    
+    prerecorded.resize(sources.size(), false);
   }
   CHECK(sources.size() != 0);
   CHECK(sources.size() == now.controllers.size());
@@ -214,6 +224,8 @@ InputState controls_next() {
   // now we update the parts that have to be implied
   
   for(int i = 0; i < now.controllers.size(); i++) {
+    if(prerecorded[i])
+      continue; // DENIED
     if(sources[i].first == CIP_KEYBOARD) {
       now.controllers[i].menu.x = now.controllers[i].r.down - now.controllers[i].l.down;
       now.controllers[i].menu.y = now.controllers[i].u.down - now.controllers[i].d.down;
@@ -245,7 +257,7 @@ InputState controls_next() {
         now.controllers[i].axes[0] = now.controllers[i].menu.x;
         now.controllers[i].axes[1] = now.controllers[i].menu.y;
       }
-    } else if(sources[i].first == CIP_PRERECORD || sources[i].first == CIP_NULL) {
+    } else if(sources[i].first == CIP_NULL) {
     } else {
       CHECK(0);
     }
@@ -313,6 +325,10 @@ int controls_primary_id() {
   return FLAGS_nullControllers;
 }
 
+pair<int, int> controls_getType(int id) {
+  return sources[id];
+}
+
 ControlConsts controls_getcc(int cid) {
   ControlConsts rv;
   
@@ -373,8 +389,6 @@ ControlConsts controls_getcc(int cid) {
     rv.description = StringPrintf("Null");
   } else if(sources[cid].first == CIP_AI) {
     rv.description = StringPrintf("AI #%d", sources[cid].second);
-  } else if(sources[cid].first == CIP_PRERECORD) {
-    rv.description = StringPrintf("Recorded #%d", sources[cid].second);
   } else {
     CHECK(0);
   }

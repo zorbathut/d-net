@@ -164,7 +164,7 @@ void MainLoop() {
             dprintf("%s\n", fname.c_str());
             outfile = fopen(fname.c_str(), "wb");
             if(outfile) {
-              int dat = 7;
+              int dat = 8;
               fwrite(&dat, 1, sizeof(dat), outfile);
               fwrite(&game_seed, 1, sizeof(game_seed), outfile);  // this is kind of grim and nasty
               dat = is.controllers.size();
@@ -173,6 +173,10 @@ void MainLoop() {
                 dat = is.controllers[i].keys.size();
                 fwrite(&dat, 1, sizeof(dat), outfile);
                 dat = is.controllers[i].axes.size();
+                fwrite(&dat, 1, sizeof(dat), outfile);
+                dat = controls_getType(i).first;
+                fwrite(&dat, 1, sizeof(dat), outfile);
+                dat = controls_getType(i).second;
                 fwrite(&dat, 1, sizeof(dat), outfile);
               }
               fflush(outfile);
