@@ -87,11 +87,22 @@ struct Keystates {
   Keystates();
 };
 
+struct CannedKeys {
+  bool canned;
+  
+  int button_layout[ARRAY_SIZE(button_order)];
+  
+  vector<string> descriptive_text;
+  
+  CannedKeys() { canned = false; }
+};
+
 struct ControlConsts {
-  string availdescr;
   vector<string> buttonnames;
   
   string description;
+  
+  CannedKeys ck;
 };
 
 void adler(Adler32 *adl, const Keystates &kst);

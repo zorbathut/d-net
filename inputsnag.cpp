@@ -34,7 +34,7 @@ static InputState last;
 static InputState now;
 
 const int playerone[] = { SDLK_UP, SDLK_DOWN, SDLK_LEFT, SDLK_RIGHT, SDLK_7, SDLK_8, SDLK_9, SDLK_0, SDLK_u, SDLK_i, SDLK_o, SDLK_p, SDLK_j, SDLK_k, SDLK_l, SDLK_SEMICOLON, SDLK_m, SDLK_COMMA, SDLK_PERIOD, SDLK_SLASH, SDLK_RETURN };
-const int playertwo[] = { SDLK_w, SDLK_s, SDLK_a, SDLK_d, SDLK_r, SDLK_t, SDLK_y, SDLK_f, SDLK_g, SDLK_h, SDLK_v, SDLK_b, SDLK_n };
+const int playertwo[] = { SDLK_w, SDLK_s, SDLK_a, SDLK_d, SDLK_r, SDLK_t, SDLK_y, SDLK_f, SDLK_g, SDLK_h, SDLK_x, SDLK_c, SDLK_v, SDLK_b, SDLK_n };
 
 const int *const baseplayermap[2] = { playerone, playertwo };
 const int baseplayersize[2] = { ARRAY_SIZE(playerone), ARRAY_SIZE(playertwo) };  
@@ -317,13 +317,43 @@ ControlConsts controls_getcc(int cid) {
   ControlConsts rv;
   
   if(sources[cid].first == CIP_KEYBOARD && sources[cid].second == 0) {
-    rv.availdescr = "Available buttons are 7890UIOPJKL;M,./";
+    //rv.availdescr = "Available buttons are 7890UIOPJKL;M,./";
+    rv.ck.canned = true;
+    rv.ck.button_layout[0] = 6; // accept is 9
+    rv.ck.button_layout[1] = 7; // cancel is 0
+    rv.ck.button_layout[2] = 17; // axis for keys
+    rv.ck.button_layout[3] = 15; // precision is /
+    rv.ck.button_layout[4] = 0; // fire1 is u
+    rv.ck.button_layout[5] = 1; // fire2 is i
+    rv.ck.button_layout[6] = 2; // fire3 is o
+    rv.ck.button_layout[7] = 3; // fire4 is p
+    rv.ck.descriptive_text.push_back("Keyboard keys are currently fixed.");
+    rv.ck.descriptive_text.push_back("");
+    rv.ck.descriptive_text.push_back("Arrow keys to move");
+    rv.ck.descriptive_text.push_back("O for menu accept, P for cancel");
+    rv.ck.descriptive_text.push_back("7890 to fire your four weapons");
+    rv.ck.descriptive_text.push_back("/ for precision mode");
   } else if(sources[cid].first == CIP_KEYBOARD && sources[cid].second == 1) {
-    rv.availdescr = "Available buttons are RTYFGHVBN";
+    //rv.availdescr = "Available buttons are RTYFGHVBN";
+    rv.ck.canned = true;
+    rv.ck.button_layout[0] = 3; // accept is F
+    rv.ck.button_layout[1] = 4; // cancel is G
+    rv.ck.button_layout[2] = 11; // axis for keys
+    rv.ck.button_layout[3] = 6; // precision is X
+    rv.ck.button_layout[4] = 7; // fire1 is C
+    rv.ck.button_layout[5] = 8; // fire2 is V
+    rv.ck.button_layout[6] = 9; // fire3 is B
+    rv.ck.button_layout[7] = 10; // fire4 is N
+    rv.ck.descriptive_text.push_back("Keyboard keys are currently fixed.");
+    rv.ck.descriptive_text.push_back("");
+    rv.ck.descriptive_text.push_back("WASD to move");
+    rv.ck.descriptive_text.push_back("F for menu accept, G for cancel");
+    rv.ck.descriptive_text.push_back("CVBN to fire your four weapons");
+    rv.ck.descriptive_text.push_back("X for precision mode");
   } else if(sources[cid].first == CIP_JOYSTICK) {
-    rv.availdescr = "Shoulder buttons recommended for weapons.";
+    //rv.availdescr = "Shoulder buttons recommended for weapons.";
   } else {
-    rv.availdescr = "";
+    //rv.availdescr = "";
   }
 
   if(sources[cid].first == CIP_JOYSTICK) {

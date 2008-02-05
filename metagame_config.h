@@ -47,7 +47,7 @@ public:
   ~PlayerMenuState();
 };
 
-bool runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<FactionState> &factions);
+bool runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<FactionState> &factions, const CannedKeys &ck);
 void runSettingRender(const PlayerMenuState &pms, const ControlConsts &cc);  // kind of grim, second parameter is text description of what buttons are available
 
 void adler(Adler32 *adl, const FactionState &pms);

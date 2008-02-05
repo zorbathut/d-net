@@ -109,6 +109,24 @@ Keystates PlayerMenuState::genKeystate(const Controller &keys) const {
   kst.l = keys.l;
   kst.r = keys.r;
   CHECK(SIMUL_WEAPONS == 4);
+  
+  {
+    bool error = false;
+    for(int i = 0; i < buttons.size(); i++) {
+      if(buttons[i] < 0 || buttons[i] >= keys.keys.size()) {
+        dprintf("Key range: button %d is %d (max %d)\n", i, buttons[i], keys.keys.size());
+        error = true;
+      }
+    }
+    for(int i = 0; i < axes.size(); i++) {
+      if(axes[i] < 0 || axes[i] >= keys.axes.size()) {
+        dprintf("Key range: axis %d is %d (max %d)\n", i, axes[i], keys.axes.size());
+        error = true;
+      }
+    }
+    CHECK(!error);
+  }
+  
   kst.accept = keys.keys[buttons[BUTTON_ACCEPT]];
   kst.cancel = keys.keys[buttons[BUTTON_CANCEL]];
   kst.precision = keys.keys[buttons[BUTTON_PRECISION]];
@@ -144,6 +162,8 @@ struct StandardButtonTickData {
   vector<Coord> triggers;
   vector<Coord> oldtriggers;
   vector<TriggerType> triggertype;
+  
+  CannedKeys ck;
 };
 
 struct StandardButtonRenderData {
@@ -153,6 +173,8 @@ struct StandardButtonRenderData {
   string sel_text;
   
   vector<string> description;
+  
+  CannedKeys ck;
 };
 
 bool standardButtonTick(StandardButtonTickData *sbtd) {
@@ -167,8 +189,21 @@ bool standardButtonTick(StandardButtonTickData *sbtd) {
   CHECK(sbtd->oldtriggers.size() == sbtd->triggers.size());
   CHECK(sbtd->oldtriggers.size() == sbtd->triggertype.size());
   
-  if(*sbtd->current_button == -1)
-    *sbtd->current_button = 0;
+  if(*sbtd->current_button == -1) {
+    if(sbtd->ck.canned) {
+      dprintf("Initting canned\n");
+      *sbtd->current_button = sbtd->outkeys->size();
+      
+      for(int i = 0; i < ARRAY_SIZE(button_order); i++) {
+        (*sbtd->outkeys)[i] = sbtd->ck.button_layout[i];
+        (*sbtd->outinvert)[i] = false;
+      }
+      dprintf("Canned done\n");
+      return false; // We wait a cycle so we can have things like sbtd->accept_button filled in for us. Go lazy.
+    } else {
+      *sbtd->current_button = 0;
+    }
+  }
   CHECK(*sbtd->current_button >= 0 && *sbtd->current_button <= sbtd->outkeys->size());
   
   bool assigned = false;
@@ -202,6 +237,7 @@ bool standardButtonTick(StandardButtonTickData *sbtd) {
   if(*sbtd->current_button == sbtd->outkeys->size() && !assigned) {
     if(sbtd->keys.keys[sbtd->accept_button].push) {
       queueSound(S::accept);
+      *sbtd->current_button = -1;
       return true;  // then we're done.
     }
     
@@ -244,33 +280,47 @@ void standardButtonRender(const StandardButtonRenderData &sbrd) {
     cb = 0;
   }
   
-  const int realite = button_order[cb];
-  Dvec2 renderobj;
-  if(frameNumber / (FPS / 3) % 3 == 0) {
-    renderobj = loadDvec2(StringPrintf("data/controller_push%d.dv2", cb + 1));
+  if(sbrd.ck.canned) {
+    setColor(Color(C::active_text));
+    Float2 origin = Float2((sbrd.rin->xstart + sbrd.rin->xend) / 2, (sbrd.rin->ystarts[1] + sbrd.rin->ystarts[sbrd.rin->ystarts.size() - 2]) / 2);
+    float mw = 0;
+    for(int i = 0; i < sbrd.ck.descriptive_text.size(); i++)
+      mw = max(mw, getTextWidth(sbrd.ck.descriptive_text[i], sbrd.rin->textsize));
+    float mh = getTextHeight(sbrd.ck.descriptive_text.size(), sbrd.rin->textsize);
+    
+    drawTextBoxAround(Float4(origin.x - mw / 2, origin.y - mh / 2, origin.x + mw / 2, origin.y + mh / 2), sbrd.rin->textsize);
+    drawJustifiedMultiText(sbrd.ck.descriptive_text, sbrd.rin->textsize, origin, TEXT_CENTER, TEXT_CENTER);
+    text = "Push \"accept\" to continue";
   } else {
-    if(realite == BUTTON_FIRE1 || realite == BUTTON_FIRE2 || realite == BUTTON_FIRE3 || realite == BUTTON_FIRE4) {
-      renderobj = controller_top;
+    const int realite = button_order[cb];
+    Dvec2 renderobj;
+    if(frameNumber / (FPS / 3) % 3 == 0) {
+      renderobj = loadDvec2(StringPrintf("data/controller_push%d.dv2", cb + 1));
     } else {
-      renderobj = controller_front;
+      if(realite == BUTTON_FIRE1 || realite == BUTTON_FIRE2 || realite == BUTTON_FIRE3 || realite == BUTTON_FIRE4) {
+        renderobj = controller_top;
+      } else {
+        renderobj = controller_front;
+      }
     }
+    
+    Float4 controllersize = Float4(sbrd.rin->xstart, sbrd.rin->ystarts[1], sbrd.rin->xend, sbrd.rin->ystarts[sbrd.rin->ystarts.size() - 2]);
+    
+    {
+      GfxInvertingStencil gfxis;
+      stencilVectorPath(renderobj.paths[0], controllersize, 20);
+    }
+    
+    {
+      GfxStenciled gfxs;
+      drawSolid(controllersize);
+    }
+    
+    setColor(Color(0.85, 1.0, 0.8));
+    drawDvec2(renderobj, Float4(sbrd.rin->xstart, sbrd.rin->ystarts[1], sbrd.rin->xend, sbrd.rin->ystarts[sbrd.rin->ystarts.size() - 2]), 20, sbrd.rin->linethick * 2);
   }
   
-  Float4 controllersize = Float4(sbrd.rin->xstart, sbrd.rin->ystarts[1], sbrd.rin->xend, sbrd.rin->ystarts[sbrd.rin->ystarts.size() - 2]);
-  
-  {
-    GfxInvertingStencil gfxis;
-    stencilVectorPath(renderobj.paths[0], controllersize, 20);
-  }
-  
-  {
-    GfxStenciled gfxs;
-    drawSolid(controllersize);
-  }
-  
-  setColor(Color(0.85, 1.0, 0.8));
-  drawDvec2(renderobj, Float4(sbrd.rin->xstart, sbrd.rin->ystarts[1], sbrd.rin->xend, sbrd.rin->ystarts[sbrd.rin->ystarts.size() - 2]), 20, sbrd.rin->linethick * 2);
-  
+  setColor(Color(C::active_text));
   drawJustifiedText(text, sbrd.rin->textsize, Float2((sbrd.rin->xstart + sbrd.rin->xend) / 2, sbrd.rin->ystarts[sbrd.rin->ystarts.size() - 1]), TEXT_CENTER, TEXT_MIN);
   
   /*drawBottomBlock(*sbrd.rin, sbrd.description.size());
@@ -304,7 +354,7 @@ vector<pair<float, float> > choiceTopicXpos(float sx, float ex, float textsize) 
   return rv;
 }
 
-bool runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<FactionState> &factions) {
+bool runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<FactionState> &factions, const CannedKeys &ck) {
   StackString sstr("runSettingTick");
   if(!pms->faction) { // if player hasn't chosen faction yet
     StackString sstr("chfact");
@@ -432,6 +482,7 @@ bool runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
       sbtd.triggers = triggers;
       sbtd.oldtriggers = oldtriggers;
       sbtd.triggertype = triggertype;
+      sbtd.ck = ck;
       
       bool rv = standardButtonTick(&sbtd);
       
@@ -570,8 +621,9 @@ void runSettingRender(const PlayerMenuState &pms, const ControlConsts &cc) {
     sbrd.sel_button = pms.setting_button_current;
     sbrd.sel_text = key_descr;
     sbrd.description.push_back("Press the indicated buttons to configure your controller.");
-    if(!cc.availdescr.empty())
-      sbrd.description.push_back(cc.availdescr);
+    sbrd.ck = cc.ck;
+    //if(!cc.availdescr.empty())
+      //sbrd.description.push_back(cc.availdescr);
     
     standardButtonRender(sbrd);
   } else if(pms.settingmode == SETTING_TEST) {

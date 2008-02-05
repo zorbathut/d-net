@@ -822,6 +822,10 @@ float getTextWidth(const string &txt, float scale) {
   return acum;
 }
 
+float getTextHeight(int lines, float scale) {
+  return (scale * 1.5) * lines - scale * 0.5;
+}
+
 int snatchLine(const vector<string> &left, float fontsize, float limit) {
   for(int i = 0; i <= left.size(); i++) {
     string v;

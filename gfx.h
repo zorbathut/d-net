@@ -110,6 +110,7 @@ void drawCircle(const Float2 &center, float radius, float weight);
 void drawText(const string &txt, float scale, const Float2 &pos);
 
 float getTextWidth(const string &txt, float scale);
+float getTextHeight(int lines, float scale);
 float getFormattedTextHeight(const string &txt, float scale, float width);
 
 float getTextBoxBorder(float scale);

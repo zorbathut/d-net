@@ -586,7 +586,7 @@ bool PersistentData::tickSlot(int slotid, const vector<Controller> &keys) {
     CHECK(slt.pid != -1);
     CHECK(keys.size() == 1);
 
-    runSettingTick(keys[0], &pms[slt.pid], factions);
+    runSettingTick(keys[0], &pms[slt.pid], factions, controls_getcc(slt.pid).ck);
 
     if(pms[slt.pid].faction) {
       playerid[slt.pid] = playerdata.size();
@@ -632,7 +632,7 @@ bool PersistentData::tickSlot(int slotid, const vector<Controller> &keys) {
   } else if(slt.type == Slot::SETTINGS) {
     CHECK(slt.pid >= 0 && slt.pid < pms.size());
     CHECK(keys.size() == 1);
-    return runSettingTick(keys[0], &pms[slt.pid], factions);
+    return runSettingTick(keys[0], &pms[slt.pid], factions, controls_getcc(slt.pid).ck);
   } else if(slt.type == Slot::QUITCONFIRM) {
     Keystates thesekeys = pms[slt.pid].genKeystate(keys[0]);
     
