@@ -738,11 +738,11 @@ void Game::renderToScreen(const vector<const Player *> &players, GameMetacontext
     // Player health
     {
       setColor(1.0, 1.0, 1.0);
-      drawLine(Float4(0, 10, (400./3.), 10), 0.1);
+      drawLine(Float4(0, 10, getZoom().ex, 10), 0.1);
       for(int i = 0; i < tanks.size(); i++) {
         setColor(1.0, 1.0, 1.0);
-        float loffset = (400./3.) / tanks.size() * i;
-        float roffset = (400./3.) / tanks.size() * (i + 1);
+        float loffset = getZoom().ex / tanks.size() * i;
+        float roffset = getZoom().ex / tanks.size() * (i + 1);
         if(i)
           drawLine(Float4(loffset, 0, loffset, 10), 0.1);
         
