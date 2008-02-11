@@ -63,17 +63,33 @@ class VectorParanoiaChecker {
   }
 public:
   VectorParanoiaChecker() {
-    vector<int> test(100);
     registerCrashFunction(&throwshit);
-    try {
-      dprintf("Testing vector paranoia, an error after this line is normal\n");
-      test[100];
-      unregisterCrashFunction(&throwshit);
-      dprintf("VECTOR PARANOIA FAILED");
-      CHECK(0);
-    } catch (int x) {
-      dprintf("Vector paranoia succeeded\n");
-      unregisterCrashFunction(&throwshit);
+    
+    {
+      vector<int> test(100);
+      try {
+        dprintf("Testing vector paranoia, an error after this line is normal\n");
+        test[100];
+        unregisterCrashFunction(&throwshit);
+        dprintf("VECTOR PARANOIA FAILED");
+        CHECK(0);
+      } catch (int x) {
+        dprintf("Vector paranoia succeeded\n");
+      }
+    }
+    
+    {
+      vector<bool> test(100);
+      try {
+        dprintf("Testing vector paranoia, an error after this line is normal\n");
+        test[100];
+        unregisterCrashFunction(&throwshit);
+        dprintf("VECTOR PARANOIA FAILED");
+        CHECK(0);
+      } catch (int x) {
+        dprintf("Vector paranoia succeeded\n");
+        unregisterCrashFunction(&throwshit);
+      }
     }
   }
 } paranoia;

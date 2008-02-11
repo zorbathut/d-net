@@ -1,7 +1,5 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
-  - HOW IS AI CRASHING
-    - HOW IS AI CRASHING
   - kill off vector<bool> for good
   - Status bar is broken in widescreen
   - Set up some way to end the game before the rounds end
