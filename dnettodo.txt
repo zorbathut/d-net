@@ -1,6 +1,5 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
-  - Status bar is broken in widescreen
   - Set up some way to end the game before the rounds end
     - Option in the esc menu
   - Convert key output into OStream

@@ -4,74 +4,38 @@
 #include <map>
 #include <string>
 
+#include <boost/noncopyable.hpp>
+
 using namespace std;
 
 enum FlagSource { FS_DEFAULT, FS_FILE, FS_CLI };
 
-#define DECLARE_string(id) \
-  extern string FLAGS_##id; \
+#define DECLARE_VARIABLE(id, type) \
+  extern type FLAGS_##id; \
   extern FlagSource FLAGS_##id##_OVERRIDDEN;
 
-#define DEFINE_string(id, def, descr) \
-  string FLAGS_##id;\
+#define DEFINE_VARIABLE(id, type, def, descr) \
+  type FLAGS_##id;\
   FlagSource FLAGS_##id##_OVERRIDDEN;\
-  ARGS_LinkageObject id##_linkage(#id, &FLAGS_##id, &FLAGS_##id##_OVERRIDDEN, def, descr);
+  ARGS_LinkageObject id##_linkage(#id, &FLAGS_##id, &FLAGS_##id##_OVERRIDDEN, def, descr); \
+  char ***FLAGS_no##id __attribute__((unused)); // this only exists so we can't accidentally make two flags that only differ in "no"ness
 
-#define DECLARE_int(id) \
-  extern int FLAGS_##id; \
-  extern FlagSource FLAGS_##id##_OVERRIDDEN;
+#define DECLARE_string(id) DECLARE_VARIABLE(id, string)
+#define DECLARE_int(id) DECLARE_VARIABLE(id, int)
+#define DECLARE_bool(id) DECLARE_VARIABLE(id, bool)
+#define DECLARE_float(id) DECLARE_VARIABLE(id, float)
 
-#define DEFINE_int(id, def, descr) \
-  int FLAGS_##id;\
-  FlagSource FLAGS_##id##_OVERRIDDEN;\
-  ARGS_LinkageObject id##_linkage(#id, &FLAGS_##id, &FLAGS_##id##_OVERRIDDEN, def, descr);
+#define DEFINE_string(id, def, descr) DEFINE_VARIABLE(id, string, def, descr)
+#define DEFINE_int(id, def, descr) DEFINE_VARIABLE(id, int, def, descr)
+#define DEFINE_bool(id, def, descr) DEFINE_VARIABLE(id, bool, def, descr)
+#define DEFINE_float(id, def, descr) DEFINE_VARIABLE(id, float, def, descr)
 
-#define DECLARE_bool(id) \
-  extern bool FLAGS_##id; \
-  extern FlagSource FLAGS_##id##_OVERRIDDEN;
-
-#define DEFINE_bool(id, def, descr) \
-  bool FLAGS_##id;\
-  FlagSource FLAGS_##id##_OVERRIDDEN;\
-  ARGS_LinkageObject id##_linkage(#id, &FLAGS_##id, &FLAGS_##id##_OVERRIDDEN, def, descr);
-
-#define DECLARE_float(id) \
-  extern float FLAGS_##id; \
-  extern FlagSource FLAGS_##id##_OVERRIDDEN;
-
-#define DEFINE_float(id, def, descr) \
-  float FLAGS_##id;\
-  FlagSource FLAGS_##id##_OVERRIDDEN;\
-  ARGS_LinkageObject id##_linkage(#id, &FLAGS_##id, &FLAGS_##id##_OVERRIDDEN, def, descr);
-
-class ARGS_LinkageObject {
+class ARGS_LinkageObject : boost::noncopyable {
 public:
   ARGS_LinkageObject(const string &id, string *writeto, FlagSource *source, const string &def, const string &descr);
   ARGS_LinkageObject(const string &id, int *writeto, FlagSource *source, int def, const string &descr);
   ARGS_LinkageObject(const string &id, bool *writeto, FlagSource *source, bool def, const string &descr);
   ARGS_LinkageObject(const string &id, float *writeto, FlagSource *source, float def, const string &descr);
-};
-
-class LinkageData {
-public:
-  enum { LINKAGE_BOOL, LINKAGE_STRING, LINKAGE_INT, LINKAGE_FLOAT, LINKAGE_LAST };
-  int type;
-  
-  string descr;
-  
-  FlagSource *source;
-  
-  string str_def;
-  int int_def;
-  bool bool_def;
-  float float_def;
-  
-  string *str_link;
-  int *int_link;
-  bool *bool_link;
-  float *float_link;
-  
-  LinkageData();
 };
 
 map<string, string> getFlagDescriptions();

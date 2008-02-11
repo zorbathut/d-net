@@ -9,6 +9,28 @@
 
 using namespace std;
 
+class LinkageData {
+public:
+  enum { LINKAGE_BOOL, LINKAGE_STRING, LINKAGE_INT, LINKAGE_FLOAT, LINKAGE_LAST };
+  int type;
+  
+  string descr;
+  
+  FlagSource *source;
+  
+  string str_def;
+  int int_def;
+  bool bool_def;
+  float float_def;
+  
+  string *str_link;
+  int *int_link;
+  bool *bool_link;
+  float *float_link;
+  
+  LinkageData();
+};
+
 string canonize(const string &in) {
   string tbx;
   for(int i = 0; i < in.size(); i++)
