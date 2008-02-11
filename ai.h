@@ -50,18 +50,20 @@ private:
   int source;
   int curframe;
   
+  int targfact;
+  
 public:
  
   void updateIdle();
 
   void updatePregame();
   void updateSetup(int pos);
-  void updateCharacterChoice(const vector<FactionState> &factions, const PlayerMenuState &player, int me);
+  void updateCharacterChoice(const vector<FactionState> &factions, const PlayerMenuState &player);
   void updateTween(bool live, bool pending, Coord2 playerpos, bool shopped, Coord2 joinrange, Coord2 fullshoprange, Coord2 quickshoprange, Coord2 donerange);
   void updateShop(const Player *player, const HierarchyNode &hierarchy, bool athead);
   GameAi *getGameAi();
-  void updateWaitingForReport();
-  void updateGameEnd();
+  void updateWaitingForReport(bool accepted);
+  void updateGameEnd(bool accepted);
 
   Controller getNextKeys() const;
 

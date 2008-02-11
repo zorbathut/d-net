@@ -60,7 +60,7 @@ struct InputState {
   InputState() { valid = true; }
 };
 
-enum { KSAX_STEERING, KSAX_ABSOLUTE, KSAX_TANK, KSAX_LAST };
+enum AxisType { KSAX_STEERING, KSAX_ABSOLUTE, KSAX_TANK, KSAX_LAST };
 const char *const ksax_names[] = { "Steering (default)", "Absolute", "Tank (advanced)" };
 
 vector<vector<vector<string> > > ksax_axis_names_gen();
@@ -101,6 +101,8 @@ struct ControlConsts {
   vector<string> buttonnames;
   
   string description;
+  
+  AxisType mode;
   
   CannedKeys ck;
 };

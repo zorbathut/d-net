@@ -137,8 +137,19 @@ void Ai::updatePregame() {
   updateKeys(CORE);
   
   zeroNextKeys();
-  nextKeys.menu = Coord2(0, 0);
-  nextKeys.keys[0].down = true;
+  
+  // This is pretty ghastly.
+  
+  if(frameNumber == 2) {
+    nextKeys.menu = Coord2(0, 0);
+    nextKeys.keys[0].down = true;
+  } else if(frameNumber == 4) {
+    nextKeys.menu = Coord2(0, 1);
+  } else if(frameNumber == 6) {
+    nextKeys.menu = Coord2(0, 0);
+    nextKeys.keys[0].down = true;
+  }
+  
 }
 
 void Ai::updateSetup(int pos) {
@@ -152,47 +163,35 @@ void Ai::updateSetup(int pos) {
     nextKeys.keys[0].down = true;
 }
 
-void Ai::updateCharacterChoice(const vector<FactionState> &factions, const PlayerMenuState &player, int you) {
+void Ai::updateCharacterChoice(const vector<FactionState> &factions, const PlayerMenuState &player) {
   updateKeys(CORE);
   
   zeroNextKeys();
+  
   if(!player.faction) {
-    int targfact = you;
-    if(targfact >= factions.size() || targfact < 0)
-      targfact = -1;
-    if(targfact == -1) {
-      nextKeys.menu = Coord2(0, 0);
-      nextKeys.keys[0].down = true;
-      return;
-    }
+    if(targfact == -1)
+      targfact = rng.choose(factions.size());
+    
     Coord2 targpt = factions[targfact].compass_location.midpoint() - player.compasspos;
     if(len(targpt) != 0)
       targpt = normalize(targpt);
     nextKeys.menu = Coord2(targpt.x, -targpt.y);
-    nextKeys.keys[0].down = isInside(factions[targfact].compass_location, player.compasspos);
+    if(isInside(factions[targfact].compass_location, player.compasspos)) {
+      nextKeys.keys[0].down = true;
+      targfact = -1; // try again!
+    }
   } else if(player.settingmode == SETTING_BUTTONS) {
-    if(player.setting_button_current >= 0 && player.setting_button_current < nextKeys.keys.size())
-      nextKeys.keys[player.setting_button_current].down = frameNumber % 2;
-    else if(player.setting_button_current == nextKeys.keys.size())
-      nextKeys.keys[BUTTON_ACCEPT].down = frameNumber % 2;
-/*  } else if(player.settingmode == SETTING_AXISCHOOSE) {
-    if(player.setting_axistype != KSAX_ABSOLUTE) {
-      if(frameNumber % 2 == 0) {
-        nextKeys.keys[BUTTON_FIRE1].down = true;
-        nextKeys.keys[BUTTON_FIRE2].down = true;
-        nextKeys.keys[BUTTON_FIRE3].down = true;
-        nextKeys.keys[BUTTON_FIRE4].down = true;
+    if(frameNumber % 2) {
+      if(player.setting_button_current >= 0 && player.setting_button_current < ARRAY_SIZE(button_order)) {
+        if(button_order[player.setting_button_current] < 0) {
+          nextKeys.menu = Coord2(1, 0);
+        } else {
+          nextKeys.keys[button_order[player.setting_button_current]].down = true;
+        }
+      } else if(player.setting_button_current == ARRAY_SIZE(button_order)) {
+        nextKeys.keys[BUTTON_ACCEPT].down = true;
       }
-    } else {
-      if(frameNumber % 2) {
-        if(player.setting_axis_current == 0)
-          nextKeys.menu.x = 1.0;
-        if(player.setting_axis_current == 1)
-          nextKeys.menu.y = 1.0;
-        if(player.setting_axis_current == 2)
-          nextKeys.keys[BUTTON_ACCEPT].down = true;
-      }
-    }*/
+    }
   } else if(player.settingmode == SETTING_TEST) {
     nextKeys.keys[BUTTON_CANCEL].down = true;
   } else if(player.settingmode == SETTING_READY) {
@@ -241,6 +240,7 @@ void Ai::updateTween(bool live, bool pending, Coord2 playerpos, bool shopped, Co
   
   if(len(playerpos - approach) < 2) {
     nextKeys.keys[BUTTON_ACCEPT].down = frameNumber % 2;
+    nextKeys.menu.x = rng.choose(2) * 2 - 1;  // toss some jitter in to make sure it actually ends up waking up
     if(shoptarget == 0)
       shoptarget = -1;
     return;
@@ -248,7 +248,7 @@ void Ai::updateTween(bool live, bool pending, Coord2 playerpos, bool shopped, Co
   
   if(playerpos.x < approach.x)
     nextKeys.menu.x = 1;
-  if(playerpos.x > approach.x)
+  else if(playerpos.x > approach.x)
     nextKeys.menu.x = -1;
   // we just sort of ignore the y
 }
@@ -537,20 +537,26 @@ GameAi *Ai::getGameAi() {
   return &gai;
 }
 
-void Ai::updateWaitingForReport() {
+void Ai::updateWaitingForReport(bool accepted) {
   updateKeys(CORE);
+  
+  dprintf("reporting %d, %d\n", accepted, frameNumber % 2);
   
   zeroNextKeys();
   nextKeys.menu = Coord2(0, 0);
-  nextKeys.keys[0].down = frameNumber % 2;
+  if(!accepted)
+    nextKeys.keys[0].down = frameNumber % 2;
 }
 
-void Ai::updateGameEnd() {
+void Ai::updateGameEnd(bool accepted) {
   updateKeys(CORE);
+  
+  dprintf("Gameend %d\n", accepted);
   
   zeroNextKeys();
   nextKeys.menu = Coord2(0, 0);
-  nextKeys.keys[0].down = frameNumber % 2;
+  if(!accepted)
+    nextKeys.keys[0].down = frameNumber % 2;
 }
 
 Controller Ai::getNextKeys() const {
@@ -584,6 +590,7 @@ Ai::Ai() : rng(unsync().generate_seed()), gai(&rng) {
   source = UNKNOWN;
   curframe = -1;
   shoptarget = -1;
+  targfact = -1;
 }
 
 void Ai::zeroNextKeys() {

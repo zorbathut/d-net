@@ -37,7 +37,7 @@ public:
   vector<int> axes;
   vector<char> axes_invert;
 
-  int setting_axistype;
+  AxisType setting_axistype;
 
   smart_ptr<GamePackage> test_game;
   
@@ -47,7 +47,7 @@ public:
   ~PlayerMenuState();
 };
 
-bool runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<FactionState> &factions, const CannedKeys &ck);
+bool runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<FactionState> &factions, const ControlConsts &ck);
 void runSettingRender(const PlayerMenuState &pms, const ControlConsts &cc);  // kind of grim, second parameter is text description of what buttons are available
 
 void adler(Adler32 *adl, const FactionState &pms);

@@ -10,6 +10,8 @@
 
 #include <boost/assign/list_of.hpp>
 
+#include <set>
+
 #ifdef OSX_FRAMEWORK_PREFIXES
   #include <SDL/SDL.h>
 #else
@@ -26,7 +28,7 @@ DEFINE_int(nullControllers, 0, "Null controllers to insert in front");
 enum { CIP_KEYBOARD, CIP_JOYSTICK, CIP_AI, CIP_NULL };
 
 static vector<pair<int, int> > sources;
-static vector<bool> prerecorded;
+static vector<int> prerecorded;
 static vector<SDL_Joystick *> joysticks;
 static vector<smart_ptr<Ai> > ai;
 static FILE *infile = NULL;
@@ -44,7 +46,17 @@ pair<RngSeed, InputState> controls_init(RngSeed default_seed) {
   RngSeed rngs(default_seed);
   CHECK(sources.size() == 0);
   CHECK(FLAGS_readTarget == "" || FLAGS_aiCount == 0);
+  
+  now.controllers.resize(FLAGS_nullControllers);
+  prerecorded.resize(FLAGS_nullControllers);
+  for(int i = 0; i < FLAGS_nullControllers; i++) {
+    sources.push_back(make_pair((int)CIP_NULL, 0));
+    now.controllers[i].axes.resize(2);
+    now.controllers[i].keys.resize(4);
+  }
+  
   if(FLAGS_readTarget != "") {
+    CHECK(FLAGS_nullControllers == 0);
     dprintf("Reading state record from file %s\n", FLAGS_readTarget.c_str());
     infile = fopen(FLAGS_readTarget.c_str(), "rb");
     CHECK(infile);
@@ -71,24 +83,19 @@ pair<RngSeed, InputState> controls_init(RngSeed default_seed) {
       sources.push_back(source);
     }
   } else if(FLAGS_aiCount) {
-    now.controllers.resize(FLAGS_aiCount);
-    prerecorded.resize(FLAGS_aiCount, false);
+    prerecorded.resize(prerecorded.size() + FLAGS_aiCount, false);
     dprintf("Creating AIs\n");
     for(int i = 0; i < FLAGS_aiCount; i++)
       ai.push_back(smart_ptr<Ai>(new Ai()));
     dprintf("AIs initialized\n");
     for(int i = 0; i < FLAGS_aiCount; i++) {
       sources.push_back(make_pair((int)CIP_AI, i));
-      now.controllers[i].keys.resize(BUTTON_LAST);
-      now.controllers[i].axes.resize(2);
+      Controller aic;
+      aic.keys.resize(BUTTON_LAST);
+      aic.axes.resize(2);
+      now.controllers.push_back(aic);
     }
   } else {
-    now.controllers.resize(FLAGS_nullControllers);
-    for(int i = 0; i < FLAGS_nullControllers; i++) {
-      sources.push_back(make_pair((int)CIP_NULL, 0));
-      now.controllers[i].axes.resize(2);
-      now.controllers[i].keys.resize(4);
-    }
     
     // Keyboard init
     sources.push_back(make_pair((int)CIP_KEYBOARD, 0));
@@ -130,6 +137,7 @@ pair<RngSeed, InputState> controls_init(RngSeed default_seed) {
   }
   CHECK(sources.size() != 0);
   CHECK(sources.size() == now.controllers.size());
+  CHECK(prerecorded.size() == sources.size());
   
   last = now;
   
@@ -200,8 +208,15 @@ InputState controls_next() {
     }
     CHECK(!feof(infile));
   } else if(FLAGS_aiCount) {
-    for(int i = 0; i < FLAGS_aiCount; i++)
-      now.controllers[i] = ai[i]->getNextKeys();
+    set<int> done;
+    for(int i = 0; i < sources.size(); i++) {
+      if(sources[i].first == CIP_AI) {
+        CHECK(!done.count(sources[i].second));
+        done.insert(sources[i].second);
+        now.controllers[i] = ai[sources[i].second]->getNextKeys();
+      }
+    }
+    CHECK(done.size() == FLAGS_aiCount);
   } else {
     SDL_JoystickUpdate();
     for(int i = 0; i < now.controllers.size(); i++) {
@@ -278,14 +293,14 @@ InputState controls_next() {
 }
 
 vector<Ai *> controls_ai() {
-  if(FLAGS_aiCount) {
-    vector<Ai *> ais;
-    for(int i = 0; i < ai.size(); i++)
-      ais.push_back(ai[i].get());
-    return ais;
-  } else {
-    return vector<Ai *>(now.controllers.size());
+  vector<Ai *> rv;
+  for(int i = 0; i < sources.size(); i++) {
+    if(sources[i].first == CIP_AI)
+      rv.push_back(ai[sources[i].second].get());
+    else
+      rv.push_back(NULL);
   }
+  return rv;
 }
 
 bool controls_users() {
@@ -391,6 +406,12 @@ ControlConsts controls_getcc(int cid) {
     rv.description = StringPrintf("AI #%d", sources[cid].second);
   } else {
     CHECK(0);
+  }
+  
+  if(sources[cid].first == CIP_AI) {
+    rv.mode = KSAX_ABSOLUTE;
+  } else {
+    rv.mode = KSAX_STEERING;
   }
   
   return rv;

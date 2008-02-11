@@ -354,7 +354,7 @@ vector<pair<float, float> > choiceTopicXpos(float sx, float ex, float textsize) 
   return rv;
 }
 
-bool runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<FactionState> &factions, const CannedKeys &ck) {
+bool runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<FactionState> &factions, const ControlConsts &cc) {
   StackString sstr("runSettingTick");
   if(!pms->faction) { // if player hasn't chosen faction yet
     StackString sstr("chfact");
@@ -482,7 +482,7 @@ bool runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
       sbtd.triggers = triggers;
       sbtd.oldtriggers = oldtriggers;
       sbtd.triggertype = triggertype;
-      sbtd.ck = ck;
+      sbtd.ck = cc.ck;
       
       bool rv = standardButtonTick(&sbtd);
       
@@ -505,6 +505,8 @@ bool runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
           CHECK(0);
         }
       }
+      
+      pms->setting_axistype = cc.mode;
     } else if(pms->settingmode == SETTING_TEST) {
       if(keys.keys[pms->buttons[BUTTON_CANCEL]].push) {
         queueSound(S::accept);

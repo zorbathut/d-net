@@ -165,11 +165,14 @@ PersistentData::PDRTR PersistentData::tick(const vector<Controller> &keys) {
           if(isin)
             queueSound(S::cursorover);
         }
+        
+        CHECK(pms.size() == sps_playermode.size());
       }
       
       // Subthird: Do various things depending on the player's current mode
       if(sps_playermode[player] == SPS_IDLE) {
       } else if(sps_playermode[player] == SPS_CHOOSING) {
+        
         bool accept = false;
         if(pms[player].faction) {
           accept = pms[player].genKeystate(keys[player]).accept.push;
@@ -210,6 +213,7 @@ PersistentData::PDRTR PersistentData::tick(const vector<Controller> &keys) {
             }
           }
         }
+        
       } else if(sps_playermode[player] == SPS_PENDING) {
         bool cancel = false;
         if(pms[player].faction) {
@@ -586,7 +590,7 @@ bool PersistentData::tickSlot(int slotid, const vector<Controller> &keys) {
     CHECK(slt.pid != -1);
     CHECK(keys.size() == 1);
 
-    runSettingTick(keys[0], &pms[slt.pid], factions, controls_getcc(slt.pid).ck);
+    runSettingTick(keys[0], &pms[slt.pid], factions, controls_getcc(slt.pid));
 
     if(pms[slt.pid].faction) {
       playerid[slt.pid] = playerdata.size();
@@ -632,7 +636,7 @@ bool PersistentData::tickSlot(int slotid, const vector<Controller> &keys) {
   } else if(slt.type == Slot::SETTINGS) {
     CHECK(slt.pid >= 0 && slt.pid < pms.size());
     CHECK(keys.size() == 1);
-    return runSettingTick(keys[0], &pms[slt.pid], factions, controls_getcc(slt.pid).ck);
+    return runSettingTick(keys[0], &pms[slt.pid], factions, controls_getcc(slt.pid));
   } else if(slt.type == Slot::QUITCONFIRM) {
     Keystates thesekeys = pms[slt.pid].genKeystate(keys[0]);
     
@@ -1059,9 +1063,15 @@ vector<const IDBFaction *> PersistentData::getUnfinishedFactions() const {
 vector<Ai *> PersistentData::distillAi(const vector<Ai *> &ai) const {
   CHECK(ai.size() == pms.size());
   vector<Ai *> rv(playerdata.size());
-  for(int i = 0; i < pms.size(); i++)
+  for(int i = 0; i < pms.size(); i++) {
     if(pms[i].faction)
       rv[playerid[i]] = ai[i];
+  }
+  
+  for(int i = 0; i < ai.size(); i++)
+    if(ai[i])
+      CHECK(count(rv.begin(), rv.end(), ai[i]) == 1);
+  
   return rv;
 }
 
@@ -1075,15 +1085,29 @@ void PersistentData::setFactionMode(int in_faction_mode) {
 void PersistentData::ai(const vector<Ai *> &ais) const {
   StackString sst("persistent AI");
   if(mode == TM_RESULTS) {
-    for(int i = 0; i < ais.size(); i++)
-      if(ais[i])
-        ais[i]->updateWaitingForReport();
+    for(int i = 0; i < playerid.size(); i++) {
+      //dprintf("%d, %d, %d\n", i, playerid.size(), checked.size());
+      //dprintf("%d\n", playerid[i]);
+      //dprintf("%d\n", checked[i]);
+      //dprintf("WFR %d %d %08x (%d)\n", i, playerid[i], ais[i], checked[i]);
+      if(playerid[i] != -1 && ais[i]) {
+        ais[i]->updateWaitingForReport(checked[playerid[i]]);
+      }
+    }
   } else if(mode == TM_GAMEEND) {
-    for(int i = 0; i < ais.size(); i++)
-      if(ais[i])
-        ais[i]->updateGameEnd();
+    for(int i = 0; i < playerid.size(); i++) {
+      //dprintf("GE %d %d %08x (%d)\n", i, playerid[i], ais[playerid[i]], checked[i]);
+      if(playerid[i] != -1 && ais[i]) {
+        ais[i]->updateGameEnd(checked[playerid[i]]);
+      }
+    }
   } else if(mode == TM_SHOP || mode == TM_PLAYERCHOOSE) {
     vector<bool> dun(ais.size(), false);
+    
+    int shops = 0;
+    int chooses = 0;
+    int tweens = 0;
+    
     for(int i = 0; i < slot_count; i++) {
       if(slot[i].type != Slot::EMPTY) {
         CHECK(slot[i].pid != -1); // blah
@@ -1093,8 +1117,10 @@ void PersistentData::ai(const vector<Ai *> &ais) const {
           continue;
         if(slot[i].type == Slot::SHOP) {
           slot[i].shop.ai(ais[slot[i].pid], &playerdata[playerid[slot[i].pid]]);
+          shops++;
         } else if(slot[i].type == Slot::CHOOSE || slot[i].type == Slot::SETTINGS) {
-          ais[slot[i].pid]->updateCharacterChoice(factions, pms[slot[i].pid], slot[i].pid);
+          ais[slot[i].pid]->updateCharacterChoice(factions, pms[slot[i].pid]);
+          chooses++;
         } else {
           dprintf("%d\n", slot[i].type);
           CHECK(0);
@@ -1102,7 +1128,11 @@ void PersistentData::ai(const vector<Ai *> &ais) const {
       }
     }
     for(int i = 0; i < dun.size(); i++) {
-      if(!dun[i] && ais[i]) {
+      if(!dun[i]) {
+        dun[i] = true;
+        
+        if(!ais[i])
+          continue;
         Coord2 joincoords;
         Coord2 fullshopcoords;
         Coord2 quickshopcoords;
@@ -1118,9 +1148,17 @@ void PersistentData::ai(const vector<Ai *> &ais) const {
           quickshopcoords = Coord2(0, 0);
           shopped = true;
         }
+        
         ais[i]->updateTween(!!pms[i].faction, sps_playermode[i] == SPS_PENDING, sps_playerpos[i], shopped, joincoords, fullshopcoords, quickshopcoords, targetCoords(TTL_DONE));
+        tweens++;
       }
     }
+    int factioned = 0;
+    for(int i = 0; i < pms.size(); i++)
+      if(pms[i].faction)
+        factioned++;
+    
+    CHECK(dun == vector<bool>(ais.size(), true));
   } else {
     CHECK(0);
   }

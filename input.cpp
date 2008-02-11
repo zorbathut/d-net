@@ -83,6 +83,8 @@ void Controller::newState(const Controller &nst) {
   d.newState(nst.d);
   l.newState(nst.l);
   r.newState(nst.r);
+  if(keys.size() != nst.keys.size())
+    dprintf("%d vs %d\n", keys.size(), nst.keys.size());
   CHECK(keys.size() == nst.keys.size());
   for(int i = 0; i < keys.size(); i++)
     keys[i].newState(nst.keys[i]);
