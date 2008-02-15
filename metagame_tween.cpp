@@ -37,8 +37,8 @@ const vector<Player> &PersistentData::players() const {
   return playerdata;
 }
 
-const char * const tween_textlabels[] = {"Leave/join game", "Leave game", "Join game", "Settings", "Fullscreen shop", "Quick shop", "Done"};
-enum { TTL_LEAVEJOIN, TTL_LEAVE, TTL_JOIN, TTL_SETTINGS, TTL_FULLSHOP, TTL_QUICKSHOP, TTL_DONE, TTL_LAST }; 
+const char * const tween_textlabels[] = {"End game", "Leave/join game", "Leave game", "Join game", "Settings", "Fullscreen shop", "Quick shop", "Done"};
+enum { TTL_END, TTL_LEAVEJOIN, TTL_LEAVE, TTL_JOIN, TTL_SETTINGS, TTL_FULLSHOP, TTL_QUICKSHOP, TTL_DONE, TTL_LAST }; 
 
 class QueueSorter {
   const vector<PlayerMenuState> *pms;
@@ -112,12 +112,7 @@ PersistentData::PDRTR PersistentData::tick(const vector<Controller> &keys) {
     CHECK(slot_count == 1);
     if(slot[0].type == Slot::EMPTY) {
       if(shopcycles * roundsbetweenshop >= rounds_until_end) {
-        slot_count = 1;
-        slot[0].type = Slot::GAMEEND;
-        slot[0].pid = -1;
-        mode = TM_GAMEEND;
-        checked.clear();
-        checked.resize(playerdata.size());
+        enterGameEnd();
       } else {
         mode = TM_SHOP;
         reset();
@@ -194,6 +189,9 @@ PersistentData::PDRTR PersistentData::tick(const vector<Controller> &keys) {
                     attemptQueueSound(player, S::choose);
                     sps_playermode[player] = SPS_DONE;
                   }
+                } else if(ranges[j].first == TTL_END) {
+                  attemptQueueSound(player, S::choose);
+                  sps_playermode[player] = SPS_END;
                 } else if(ranges[j].first == TTL_JOIN) {
                   attemptQueueSound(player, S::error);
                 } else {
@@ -250,7 +248,7 @@ PersistentData::PDRTR PersistentData::tick(const vector<Controller> &keys) {
         }
         if(!foundrunning)
           sps_playermode[player] = SPS_CHOOSING;
-      } else if(sps_playermode[player] == SPS_DONE) {
+      } else if(sps_playermode[player] == SPS_DONE || sps_playermode[player] == SPS_END) {
         // Let the player cancel
         CHECK(pms[player].faction);
         if(pms[player].genKeystate(keys[player]).cancel.push) {
@@ -342,10 +340,28 @@ PersistentData::PDRTR PersistentData::tick(const vector<Controller> &keys) {
       btt_notify = NULL;
     
     // Are we done?
-    if(getUnfinishedFactions().size() == 0 && playerdata.size() >= 2) {
-      mode = TM_SHOP; // if we're in PLAYERCHOOSE mode, then reset() won't be able to get the shop item positions for existing units
-      reset();
-      return PDRTR_PLAY;
+    if(getUnfinishedFactions().size() == 0 && playerdata.size() >= 1) {
+      // Okay, we're done. First, we see if we're in End Of Game Mode
+      int done = 0;
+      int end = 0;
+      for(int i = 0; i < sps_playermode.size(); i++) {
+        if(sps_playermode[i] == SPS_DONE) {
+          done++;
+        } else if(sps_playermode[i] == SPS_END) {
+          end++;
+        }
+      }
+      
+      if(end >= done) {
+        enterGameEnd();
+      } else if(playerdata.size() >= 2) {
+        for(int i = 0; i < sps_playermode.size(); i++)
+          if(sps_playermode[i] == SPS_END)
+            destroyPlayer(i);
+        mode = TM_SHOP; // if we're in PLAYERCHOOSE mode, then reset() won't be able to get the shop item positions for existing units
+        reset();
+        return PDRTR_PLAY;
+      }
     }
     
   } else {
@@ -381,12 +397,13 @@ void PersistentData::render() const {
     text.push_back("");
     text.push_back("");
     
+    /*
     if(mode == TM_SHOP) {
       text.push_back("\"Quick shop\" lets four people buy things at once.");
       text.push_back("\"Full shop\" gives weapon and upgrade demonstrations.");
       text.push_back("");
       text.push_back("");
-    }
+    }*/
     
     text.push_back("Choose \"done\" when ready to play.");
     
@@ -660,22 +677,8 @@ bool PersistentData::tickSlot(int slotid, const vector<Controller> &keys) {
     
     if(thesekeys.accept.push) {
       if(sps_quitconfirm[slt.pid] == 3) {
-        // DESTROY
-        dprintf("DESTROY %d\n", playerdata.size());
-        int spid = playerid[slt.pid];
-        pms[slt.pid].faction->taken = false;
-        // DESTROY
-        playerid[slt.pid] = -1;
-        sps_shopped[slt.pid] = false;
-        pms[slt.pid] = PlayerMenuState();
-        playerdata.erase(playerdata.begin() + spid);
-        // DESTROY
-        for(int i = 0; i < playerid.size(); i++)
-          if(playerid[i] > spid)
-            playerid[i]--;
-        dprintf("DESTROY %d\n", playerdata.size());
+        destroyPlayer(slt.pid);
         queueSound(S::accept);
-        // DESTROY
       } else {
         queueSound(S::choose);
       }
@@ -686,8 +689,6 @@ bool PersistentData::tickSlot(int slotid, const vector<Controller> &keys) {
   }
   return false;
 }
-
-// DESTROY
 
 class AdjustSorter {
 public:
@@ -882,7 +883,7 @@ void PersistentData::renderSlot(int slotid) const {
     cury += 100;
     
     setColor(C::inactive_text);
-    drawJustifiedText("Waiting for", 30, Float2(400, cury), TEXT_CENTER, TEXT_MIN);
+    drawJustifiedText("Waiting for", 30, Float2(getZoom().ex / 2, cury), TEXT_CENTER, TEXT_MIN);
     cury += 40;
     
     int notdone = count(checked.begin(), checked.end(), false);
@@ -966,7 +967,7 @@ void PersistentData::renderSlot(int slotid) const {
     int notdone = count(checked.begin(), checked.end(), false);
     CHECK(notdone);
     int cpos = 0;
-    float increment = 800.0 / notdone;
+    float increment = getZoom().ex / notdone;
     for(int i = 0; i < checked.size(); i++) {
       if(!checked[i]) {
         setColor(playerdata[i].getFaction()->color);
@@ -1041,7 +1042,7 @@ vector<const IDBFaction *> PersistentData::getUnfinishedFactions() const {
   for(int i = 0; i < pms.size(); i++) {
     bool ready = false;
     
-    if(sps_playermode[i] == SPS_DONE)
+    if(sps_playermode[i] == SPS_DONE || sps_playermode[i] == SPS_END)
       ready = true;
     
     if(!pms[i].faction && sps_playermode[i] == SPS_IDLE)
@@ -1293,9 +1294,10 @@ vector<pair<int, pair<Coord, Coord> > > PersistentData::getRanges() const {
     avails.push_back(TTL_SETTINGS);
     avails.push_back(TTL_DONE);
   } else if(mode == TM_SHOP) {
+    if(shopcycles)
+      avails.push_back(TTL_END);
     avails.push_back(TTL_LEAVEJOIN);
     avails.push_back(TTL_SETTINGS);
-    avails.push_back(TTL_FULLSHOP);
     avails.push_back(TTL_QUICKSHOP);
     avails.push_back(TTL_DONE);
   } else {
@@ -1423,6 +1425,38 @@ void PersistentData::attemptQueueSound(int player, const Sound *sound) {
     queueSound(sound);
     sps_soundtimeout[player] = FPS;
   }
+}
+
+// DESTROY
+
+void PersistentData::destroyPlayer(int pid) {
+  // DESTROY
+  dprintf("DESTROY %d\n", playerdata.size());
+  int spid = playerid[pid];
+  pms[pid].faction->taken = false;
+  // DESTROY
+  playerid[pid] = -1;
+  sps_shopped[pid] = false;
+  sps_playermode[pid] = SPS_IDLE;
+  pms[pid] = PlayerMenuState();
+  playerdata.erase(playerdata.begin() + spid);
+  // DESTROY
+  for(int i = 0; i < playerid.size(); i++)
+    if(playerid[i] > spid)
+      playerid[i]--;
+  dprintf("DESTROY %d\n", playerdata.size());
+  // DESTROY
+}
+
+// DESTROY
+
+void PersistentData::enterGameEnd() {
+  slot_count = 1;
+  slot[0].type = Slot::GAMEEND;
+  slot[0].pid = -1;
+  mode = TM_GAMEEND;
+  checked.clear();
+  checked.resize(playerdata.size());
 }
 
 DEFINE_int(debugControllers, 0, "Number of controllers to set to debug defaults");
@@ -1593,3 +1627,4 @@ PersistentData::PersistentData(int playercount, Money startingcash, Coord multip
     cdbc++;
   }
 }
+

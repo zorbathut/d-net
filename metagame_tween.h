@@ -47,7 +47,7 @@ private:
   // Player data
   vector<Player> playerdata;
   vector<PlayerMenuState> pms;  // heh.
-  vector<int> playerid; // from pms to playerdata ID
+  vector<int> playerid; // from pms to playerdata ID. EVERYTHING ELSE is still in pms mode, where the user ID (from the Controller vector) is authoritative
   
   vector<FactionState> factions;
   int faction_mode;
@@ -92,7 +92,7 @@ private:
     vector<bool> sps_shopped;
 
     // State
-    enum { SPS_IDLE, SPS_CHOOSING, SPS_PENDING, SPS_ACTIVE, SPS_DONE };
+    enum { SPS_IDLE, SPS_CHOOSING, SPS_PENDING, SPS_ACTIVE, SPS_DONE, SPS_END };
     vector<int> sps_playermode;
     
     // Quitconfirm cursor location
@@ -123,6 +123,9 @@ private:
   
   HierarchyNode generateShopHierarchy() const;
   void attemptQueueSound(int player, const Sound *sound);
+  
+  void destroyPlayer(int pid); // DESTROY
+  void enterGameEnd();
 };
 
 #endif

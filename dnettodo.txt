@@ -1,7 +1,6 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
-  - Set up some way to end the game before the rounds end
-    - Option in the esc menu
+  - Make AI end game, join/leave, etc, properly
   - Convert key output into OStream
     - Add OStreamGz support
     - Compress key output
