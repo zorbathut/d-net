@@ -138,6 +138,10 @@ void Metagame::ai(const vector<Ai *> &ai) const {
       else
         gai.push_back(NULL);
     game.ai(gai);
+    
+    for(int i = 0; i < ai.size(); i++)
+      if(ai[i] && !count(rai.begin(), rai.end(), ai[i]))
+        ai[i]->updateIdle();
   } else {
     CHECK(0);
   }

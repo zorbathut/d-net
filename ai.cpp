@@ -227,16 +227,18 @@ void Ai::updateTween(bool live, bool pending, Coord2 playerpos, bool shopped, Co
   if(live && shoptarget == 0)
     shoptarget = -1;
   
+  if(!live) {
+    nextKeys.menu.y = -1;
+    shoptarget = 0;
+  }
+  
   if(shoptarget == -1) {
     nextKeys.menu.y = -1;
-    if(!live) {
-      shoptarget = 0;
+    
+    if(rng.frand() > endchance || endrange.x == 0) {
+      shoptarget = 2;
     } else {
-      if(rng.frand() > endchance || endrange.x == 0) {
-        shoptarget = 2;
-      } else {
-        shoptarget = 3;
-      }
+      shoptarget = 3;
     }
   }
   /*
@@ -263,7 +265,7 @@ void Ai::updateTween(bool live, bool pending, Coord2 playerpos, bool shopped, Co
   if(abs(playerpos.x - approach.x) < 2) {
     nextKeys.keys[BUTTON_ACCEPT].down = frameNumber % 2;
     nextKeys.menu.x = rng.choose(2) * 2 - 1;  // toss some jitter in to make sure it actually ends up waking up
-    if(shoptarget == 0)
+    if(shoptarget == 0 || shoptarget == 3)
       shoptarget = -1;
     return;
   }
