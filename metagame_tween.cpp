@@ -1071,7 +1071,7 @@ vector<Ai *> PersistentData::distillAi(const vector<Ai *> &ai) const {
   
   for(int i = 0; i < ai.size(); i++)
     if(ai[i])
-      CHECK(count(rv.begin(), rv.end(), ai[i]) == 1);
+      CHECK(count(rv.begin(), rv.end(), ai[i]) <= 1);
   
   return rv;
 }
@@ -1085,6 +1085,11 @@ void PersistentData::setFactionMode(int in_faction_mode) {
 
 void PersistentData::ai(const vector<Ai *> &ais) const {
   StackString sst("persistent AI");
+  set<Ai *> untouched;
+  for(int i = 0; i < ais.size(); i++)
+    if(ais[i])
+      untouched.insert(ais[i]);
+  
   if(mode == TM_RESULTS) {
     for(int i = 0; i < playerid.size(); i++) {
       //dprintf("%d, %d, %d\n", i, playerid.size(), checked.size());
@@ -1092,6 +1097,8 @@ void PersistentData::ai(const vector<Ai *> &ais) const {
       //dprintf("%d\n", checked[i]);
       //dprintf("WFR %d %d %08x (%d)\n", i, playerid[i], ais[i], checked[i]);
       if(playerid[i] != -1 && ais[i]) {
+        CHECK(untouched.count(ais[i]));
+        untouched.erase(ais[i]);
         ais[i]->updateWaitingForReport(checked[playerid[i]]);
       }
     }
@@ -1099,6 +1106,8 @@ void PersistentData::ai(const vector<Ai *> &ais) const {
     for(int i = 0; i < playerid.size(); i++) {
       //dprintf("GE %d %d %08x (%d)\n", i, playerid[i], ais[playerid[i]], checked[i]);
       if(playerid[i] != -1 && ais[i]) {
+        CHECK(untouched.count(ais[i]));
+        untouched.erase(ais[i]);
         ais[i]->updateGameEnd(checked[playerid[i]]);
       }
     }
@@ -1116,6 +1125,10 @@ void PersistentData::ai(const vector<Ai *> &ais) const {
         dun[slot[i].pid] = true;
         if(!ais[slot[i].pid])
           continue;
+        
+        CHECK(untouched.count(ais[slot[i].pid]));
+        untouched.erase(ais[slot[i].pid]);
+        
         if(slot[i].type == Slot::SHOP) {
           slot[i].shop.ai(ais[slot[i].pid], &playerdata[playerid[slot[i].pid]]);
           shops++;
@@ -1134,23 +1147,30 @@ void PersistentData::ai(const vector<Ai *> &ais) const {
         
         if(!ais[i])
           continue;
+        Coord2 endcoords;
         Coord2 joincoords;
-        Coord2 fullshopcoords;
         Coord2 quickshopcoords;
         bool shopped;
         if(mode == TM_SHOP) {
           joincoords = targetCoords(TTL_LEAVEJOIN);
-          fullshopcoords = targetCoords(TTL_FULLSHOP);
           quickshopcoords = targetCoords(TTL_QUICKSHOP);
           shopped = sps_shopped[i];
         } else {
           joincoords = targetCoords(TTL_JOIN);
-          fullshopcoords = Coord2(0, 0);
           quickshopcoords = Coord2(0, 0);
           shopped = true;
         }
         
-        ais[i]->updateTween(!!pms[i].faction, sps_playermode[i] == SPS_PENDING, sps_playerpos[i], shopped, joincoords, fullshopcoords, quickshopcoords, targetCoords(TTL_DONE));
+        if(shopcycles) {
+          endcoords = targetCoords(TTL_END);
+        } else {
+          endcoords = Coord2(0, 0);
+        }
+        
+        CHECK(untouched.count(ais[i]));
+        untouched.erase(ais[i]);
+        
+        ais[i]->updateTween(!!pms[i].faction, sps_playermode[i] == SPS_PENDING, sps_playerpos[i], shopped, joincoords,  quickshopcoords, targetCoords(TTL_DONE), endcoords);
         tweens++;
       }
     }
@@ -1163,6 +1183,9 @@ void PersistentData::ai(const vector<Ai *> &ais) const {
   } else {
     CHECK(0);
   }
+  
+  for(set<Ai *>::iterator itr = untouched.begin(); itr != untouched.end(); itr++)
+    (*itr)->updateIdle();
 }
 
 vector<Keystates> PersistentData::genKeystates(const vector<Controller> &keys) const {

@@ -10,7 +10,8 @@
 using namespace std;
 
 void GameAiStandard::updateGameWork(const vector<Tank> &players, int me) {
-  if(rng->frand() < 0.01 || targetplayer == -1) {
+  if(rng->frand() < 0.01 || targetplayer == -1 || targetplayer >= players.size()) {
+    StackString sst("Choosing target");
     // find a tank, because approach and retreat both need one
     int targtank;
     {
@@ -37,47 +38,55 @@ void GameAiStandard::updateGameWork(const vector<Tank> &players, int me) {
       gamemode = AGM_BACKUP;
     }
   }
-  Coord2 mypos = players[me].pi.pos;
-  if(gamemode == AGM_APPROACH) {
-    Coord2 enepos = players[targetplayer].pi.pos;
-    enepos -= mypos;
-    enepos.y *= -1;
-    if(len(enepos) > 0)
-      enepos = normalize(enepos);
-    nextKeys.udlrax = enepos;
-  } else if(gamemode == AGM_RETREAT) {
-    Coord2 enepos = players[targetplayer].pi.pos;
-    enepos -= mypos;
-    enepos.y *= -1;
-    enepos *= -1;
-    
-    if(len(enepos) > 0)
-      enepos = normalize(enepos);
-    nextKeys.udlrax = enepos;
-  } else if(gamemode == AGM_WANDER) {
-    nextKeys.udlrax = targetdir;
-  } else if(gamemode == AGM_BACKUP) {
-    Coord2 nx(-makeAngle(players[me].pi.d));
-    nx.x += (rng->frand() - 0.5) / 100;
-    nx.y += (rng->frand() - 0.5) / 100;
-    nx = normalize(nx);
-    nextKeys.udlrax = nx;
-  }
-  int wepon = 0;
-  for(int i = 0; i < SIMUL_WEAPONS; i++)
-    if(firing[i])
-      wepon++;
   
-  for(int i = 0; i < SIMUL_WEAPONS; i++) {
-    float chance = 0.001;
-    if(firing[i]) {
-      chance /= 5;  // we want to keep firing something more often than not
-      chance += wepon * 0.002; // but we'd like to be firing one thing at a time ideally as well
+  {
+    StackString sst("Determining direction");
+    Coord2 mypos = players[me].pi.pos;
+    if(gamemode == AGM_APPROACH) {
+      Coord2 enepos = players[targetplayer].pi.pos;
+      enepos -= mypos;
+      enepos.y *= -1;
+      if(len(enepos) > 0)
+        enepos = normalize(enepos);
+      nextKeys.udlrax = enepos;
+    } else if(gamemode == AGM_RETREAT) {
+      Coord2 enepos = players[targetplayer].pi.pos;
+      enepos -= mypos;
+      enepos.y *= -1;
+      enepos *= -1;
+      
+      if(len(enepos) > 0)
+        enepos = normalize(enepos);
+      nextKeys.udlrax = enepos;
+    } else if(gamemode == AGM_WANDER) {
+      nextKeys.udlrax = targetdir;
+    } else if(gamemode == AGM_BACKUP) {
+      Coord2 nx(-makeAngle(players[me].pi.d));
+      nx.x += (rng->frand() - 0.5) / 100;
+      nx.y += (rng->frand() - 0.5) / 100;
+      nx = normalize(nx);
+      nextKeys.udlrax = nx;
     }
+  }
+  
+  {
+    StackString sst("Redoing weapons");
+    int wepon = 0;
+    for(int i = 0; i < SIMUL_WEAPONS; i++)
+      if(firing[i])
+        wepon++;
     
-    if(rng->frand() < chance)
-      firing[i] = !firing[i];
-    nextKeys.fire[i].down = firing[i];
+    for(int i = 0; i < SIMUL_WEAPONS; i++) {
+      float chance = 0.001;
+      if(firing[i]) {
+        chance /= 5;  // we want to keep firing something more often than not
+        chance += wepon * 0.002; // but we'd like to be firing one thing at a time ideally as well
+      }
+      
+      if(rng->frand() < chance)
+        firing[i] = !firing[i];
+      nextKeys.fire[i].down = firing[i];
+    }
   }
 }
 
@@ -133,6 +142,8 @@ void Ai::updateIdle() {
   zeroNextKeys();
 }
 
+static int lastpg = 0;
+
 void Ai::updatePregame() {
   updateKeys(CORE);
   
@@ -140,14 +151,18 @@ void Ai::updatePregame() {
   
   // This is pretty ghastly.
   
-  if(frameNumber == 2) {
+  if(frameNumber > lastpg  + 10)
+    lastpg = frameNumber;
+  
+  if(frameNumber == lastpg + 2) {
     nextKeys.menu = Coord2(0, 0);
     nextKeys.keys[0].down = true;
-  } else if(frameNumber == 4) {
+  } else if(frameNumber == lastpg + 4) {
     nextKeys.menu = Coord2(0, 1);
-  } else if(frameNumber == 6) {
+  } else if(frameNumber == lastpg + 6) {
     nextKeys.menu = Coord2(0, 0);
     nextKeys.keys[0].down = true;
+    lastpg = frameNumber;
   }
   
 }
@@ -202,7 +217,9 @@ void Ai::updateCharacterChoice(const vector<FactionState> &factions, const Playe
   }
 }
 
-void Ai::updateTween(bool live, bool pending, Coord2 playerpos, bool shopped, Coord2 joinrange, Coord2 fullshoprange, Coord2 quickshoprange, Coord2 donerange) {
+float endchance = 0;
+
+void Ai::updateTween(bool live, bool pending, Coord2 playerpos, bool shopped, Coord2 joinrange, Coord2 shoprange, Coord2 donerange, Coord2 endrange) {
   updateKeys(CORE);
   
   zeroNextKeys();
@@ -211,13 +228,16 @@ void Ai::updateTween(bool live, bool pending, Coord2 playerpos, bool shopped, Co
     shoptarget = -1;
   
   if(shoptarget == -1) {
-    nextKeys.menu.x = -1;
-    if(!live)
+    nextKeys.menu.y = -1;
+    if(!live) {
       shoptarget = 0;
-    else if(rng.frand() < 0.25)
-      shoptarget = 1;
-    else
-      shoptarget = 2;
+    } else {
+      if(rng.frand() > endchance || endrange.x == 0) {
+        shoptarget = 2;
+      } else {
+        shoptarget = 3;
+      }
+    }
   }
   /*
   if(pending) {
@@ -230,15 +250,17 @@ void Ai::updateTween(bool live, bool pending, Coord2 playerpos, bool shopped, Co
     approach = donerange;
   } else if(shoptarget == 0) {
     approach = joinrange;
-  } else if(shoptarget == 1) {
-    approach = fullshoprange;
   } else if(shoptarget == 2) {
-    approach = quickshoprange;
+    approach = shoprange;
+  } else if(shoptarget == 3) {
+    approach = endrange;
   } else {
     CHECK(0);
   }
   
-  if(len(playerpos - approach) < 2) {
+  //dprintf("target %d tpos %f mpos %f, live %d\n", shoptarget, approach.x.toFloat(), playerpos.x.toFloat(), live);
+  
+  if(abs(playerpos.x - approach.x) < 2) {
     nextKeys.keys[BUTTON_ACCEPT].down = frameNumber % 2;
     nextKeys.menu.x = rng.choose(2) * 2 - 1;  // toss some jitter in to make sure it actually ends up waking up
     if(shoptarget == 0)
@@ -418,7 +440,7 @@ void Ai::updateShop(const Player *player, const HierarchyNode &hierarchy, bool a
   vector<vector<Controller> > equips;
   vector<Controller> done;
   doMegaEnum(hierarchy, &weps, &upgs, &equips, &done, player);
-  dprintf("%d weps, %d upgs, %d equips, %d donesize\n", weps.size(), upgs.size(), equips.size(), done.size());
+  //dprintf("%d weps, %d upgs, %d equips, %d donesize\n", weps.size(), upgs.size(), equips.size(), done.size());
   CHECK(weps.size());
   CHECK(done.size());
   sort(weps.begin(), weps.end());
@@ -428,7 +450,7 @@ void Ai::updateShop(const Player *player, const HierarchyNode &hierarchy, bool a
   vector<vector<Controller> > commands;
   
   if(rng.frand() > (float)equips.size() / 10) {
-    dprintf("%d equips, buying more\n", equips.size());
+    //dprintf("%d equips, buying more\n", equips.size());
     {
       float cullperc = 0.9 + rng.frand() * 0.1;
       float singleperc = rng.frand() + 0.5;
@@ -525,7 +547,7 @@ void Ai::updateShop(const Player *player, const HierarchyNode &hierarchy, bool a
     }
     shopdone = true;
     updateShop(player, hierarchy, false);
-    dprintf("shop prepared, %d moves\n", shopQueue.size());
+    //dprintf("shop prepared, %d moves\n", shopQueue.size());
   }
 }
 
@@ -540,18 +562,19 @@ GameAi *Ai::getGameAi() {
 void Ai::updateWaitingForReport(bool accepted) {
   updateKeys(CORE);
   
-  dprintf("reporting %d, %d\n", accepted, frameNumber % 2);
-  
   zeroNextKeys();
   nextKeys.menu = Coord2(0, 0);
   if(!accepted)
     nextKeys.keys[0].down = frameNumber % 2;
+  
+  endchance = pow(unsync().frand(), 4);
 }
 
 void Ai::updateGameEnd(bool accepted) {
   updateKeys(CORE);
   
-  dprintf("Gameend %d\n", accepted);
+  shopdone = false;
+  shoptarget = -1;
   
   zeroNextKeys();
   nextKeys.menu = Coord2(0, 0);

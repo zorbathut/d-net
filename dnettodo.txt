@@ -6,6 +6,8 @@
     - Compress key output
   - Jam AI into singleplayer
   - add "instant action" option
+  - make sure full shop works in instant action
+  - Add forum
   - Make free version
   - Figure out Linux packaging
   - Figure out OSX packaging

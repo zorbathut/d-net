@@ -59,7 +59,7 @@ public:
   void updatePregame();
   void updateSetup(int pos);
   void updateCharacterChoice(const vector<FactionState> &factions, const PlayerMenuState &player);
-  void updateTween(bool live, bool pending, Coord2 playerpos, bool shopped, Coord2 joinrange, Coord2 fullshoprange, Coord2 quickshoprange, Coord2 donerange);
+  void updateTween(bool live, bool pending, Coord2 playerpos, bool shopped, Coord2 joinrange, Coord2 shoprange, Coord2 donerange, Coord2 endrange);
   void updateShop(const Player *player, const HierarchyNode &hierarchy, bool athead);
   GameAi *getGameAi();
   void updateWaitingForReport(bool accepted);
