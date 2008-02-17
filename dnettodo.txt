@@ -1,6 +1,5 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
-  - Make AI end game, join/leave, etc, properly
   - Convert key output into OStream
     - Add OStreamGz support
     - Compress key output
