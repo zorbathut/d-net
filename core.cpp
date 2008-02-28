@@ -154,13 +154,9 @@ void MainLoop() {
         {
           Adler32 adl;
           PerfStack pst(PBC::checksum);
-          reg_adler_intermed(adl);
           adler(&adl, frameNumber);
-          reg_adler_intermed(adl);
           if(FLAGS_checksumGameState) {
-            reg_adler_intermed(adl);
             interface.checksum(&adl);
-            reg_adler_intermed(adl);
           }
           reg_adler(adl);
         }

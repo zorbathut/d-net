@@ -61,6 +61,7 @@ void reg_adler_start_compare_done() {
 }
 
 void reg_adler_ul_data(unsigned long dat, const char *file, int line, const char *msg) {
+  //dprintf("%s, %d\n", file, line);
   if(aigl.size()) {
   } else if(state == ADLER_COMPARING) {
     if(currentpos && adli[currentpos - 1] == dat)
