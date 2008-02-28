@@ -167,20 +167,6 @@ void MainLoop() {
         
         reg_adler_ul(0);  // so we have one item, and for rechecking's sake
         
-        reg_adler_ul(is.escape.down);
-        for(int i = 0; i < is.controllers.size(); i++) {
-          reg_adler_ul((int)is.controllers[i].menu.x.toFloat() * 1000);
-          reg_adler_ul((int)is.controllers[i].menu.y.toFloat() * 1000);
-          reg_adler_ul(is.controllers[i].u.down);
-          reg_adler_ul(is.controllers[i].d.down);
-          reg_adler_ul(is.controllers[i].l.down);
-          reg_adler_ul(is.controllers[i].r.down);
-          for(int j = 0; j < is.controllers[i].keys.size(); j++)
-            reg_adler_ul(is.controllers[i].keys[j].down);
-          for(int j = 0; j < is.controllers[i].axes.size(); j++)
-            reg_adler_ul((int)is.controllers[i].axes[j].toFloat() * 1000);
-        }
-        
         if(FLAGS_timing) {
           polling += bencher.ticksElapsed();
           bencher = Timer();
@@ -196,8 +182,6 @@ void MainLoop() {
         }
         
         frameNumber++;
-        
-        reg_adler_ul(0x55827366);
         
         reg_adler_pause();
       }
