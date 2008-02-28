@@ -9,6 +9,7 @@
 #include "stream_process_rng.h"
 #include "stream_process_coord.h"
 #include "adler32.h"
+#include "audit.h"
 
 DEFINE_string(writeTarget, "dumps/dump", "Prefix for file dump");
 DEFINE_string(readTarget, "", "File to replay from");
@@ -114,30 +115,30 @@ void dumper_set_layout(const InputState &is, const vector<pair<int, int> > &in_s
 
 void dumper_read_adler() {
   if(istr) {
-    reg_adler_start_compare();
+    audit_start_compare();
     
     int count = istr->readInt();
     for(int i = 0; i < count; i++)
-      reg_adler_start_compare_add(istr->readInt());
+      audit_start_compare_add(istr->readInt());
     
-    reg_adler_start_compare_done();
+    audit_start_compare_done();
   } else {
-    reg_adler_start_create();
+    audit_start_create();
   }
 }
 
 void dumper_write_adler() {
-  reg_adler_register_finished();
+  audit_register_finished();
   
   if(ostr) {
-    int count = reg_adler_read_count();
+    int count = audit_read_count();
     ostr->write(count);
     for(int i = 0; i < count; i++)
-      ostr->write(reg_adler_read_ref());
+      ostr->write(audit_read_ref());
     ostr->flush();
   }
   
-  reg_adler_finished();
+  audit_finished();
 }
 
 InputState dumper_read_input() {

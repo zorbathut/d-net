@@ -13,6 +13,7 @@
 #include "perfbar.h"
 #include "adler32.h"
 #include "dumper.h"
+#include "audit.h"
 
 #ifdef OSX_FRAMEWORK_PREFIXES
   #include <SDL/SDL.h>
@@ -73,7 +74,7 @@ void MainLoop() {
 
   InterfaceMain interface;
 
-  reg_adler_pause();
+  audit_pause();
   
   time_t starttime = time(NULL);
 
@@ -138,9 +139,9 @@ void MainLoop() {
         
         interface.ai(controls_ai());  // has to be before controls
         
-        reg_adler_unpause();
+        audit_unpause();
         dumper_write_adler();
-        adlers += reg_adler_read_count();
+        adlers += audit_read_count();
         is = controls_next();
         if(!is.valid)
           return;
@@ -158,10 +159,10 @@ void MainLoop() {
           if(FLAGS_checksumGameState) {
             interface.checksum(&adl);
           }
-          reg_adler(adl);
+          audit(adl);
         }
         
-        reg_adler_ul(0);  // so we have one item, and for rechecking's sake
+        audit(0);  // so we have one item, and for rechecking's sake
         
         if(FLAGS_timing) {
           polling += bencher.ticksElapsed();
@@ -179,7 +180,7 @@ void MainLoop() {
         
         frameNumber++;
         
-        reg_adler_pause();
+        audit_pause();
       }
     }
     if(FLAGS_render) {
@@ -259,7 +260,7 @@ void MainLoop() {
     frako++;
   }
   
-  reg_adler_unpause();
+  audit_unpause();
   
   dumper_write_adler();
   

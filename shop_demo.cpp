@@ -8,6 +8,7 @@
 #include "player.h"
 #include "args.h"
 #include "adler32.h"
+#include "audit.h"
 
 using namespace std;
 
@@ -251,7 +252,7 @@ const int glory_mode[] = { DEMOPLAYER_DPC, DEMOPLAYER_QUIET, DEMOPLAYER_DPC, DEM
 const int glory_progression[] = { 6000, 0 };
 
 void ShopDemo::init(const IDBWeapon *weap, const Player *player, Recorder *recorder) {
-  AdlerIgnore aig;
+  AuditIgnore aig;
   StackString sst("Initting demo weapon shop");
   identifier = "weapon " + nameFromIDB(weap) + " with tank " + nameFromIDB(player->getTank().base());
   
@@ -368,7 +369,7 @@ void ShopDemo::init(const IDBWeapon *weap, const Player *player, Recorder *recor
 };
 
 void ShopDemo::init(const IDBBombardment *bombard, const Player *player, Recorder *recorder) {
-  AdlerIgnore aig;
+  AuditIgnore aig;
   StackString sst("Initting demo bombardment shop");
   identifier = "bombardment " + nameFromIDB(bombard);
   mode = DEMOMODE_BOMBARDMENT;
@@ -406,7 +407,7 @@ void ShopDemo::init(const IDBBombardment *bombard, const Player *player, Recorde
 };
 
 void ShopDemo::init(const IDBGlory *glory, const Player *player, Recorder *recorder) {
-  AdlerIgnore aig;
+  AuditIgnore aig;
   StackString sst("Initting demo glory shop");
   identifier = "glory " + nameFromIDB(glory);
   mode = DEMOMODE_GLORY;
@@ -480,7 +481,7 @@ int ShopDemo::getMultiplier() const {
 }
 
 void ShopDemo::runSingleTick() {
-  AdlerIgnore aig;
+  AuditIgnore aig;
   StackString sst("Demo tick " + identifier);
   if(mode == DEMOMODE_FIRINGRANGE) {
   } else if(mode == DEMOMODE_MINE) {
@@ -540,7 +541,7 @@ void ShopDemo::runSingleTick() {
 };
 
 void ShopDemo::runTick() {
-  AdlerIgnore aig;
+  AuditIgnore aig;
   int timing = getMultiplier();
   for(int i = 0; i < timing; i++) {
     runSingleTick();
@@ -548,7 +549,7 @@ void ShopDemo::runTick() {
 };
 
 void ShopDemo::renderFrame() const {
-  AdlerIgnore aig;
+  AuditIgnore aig;
   game.renderToScreen();
   if(getMultiplier() != 1) {
     setZoomVertical(0, 0, 1);
@@ -558,7 +559,7 @@ void ShopDemo::renderFrame() const {
 };
 
 vector<float> ShopDemo::getStats() const {
-  AdlerIgnore aig;
+  AuditIgnore aig;
   vector<pair<Float2, pair<float, string> > > stats = game.game.getStats();
   vector<float> rv;
   for(int i = 0; i < stats.size(); i++)
@@ -567,7 +568,7 @@ vector<float> ShopDemo::getStats() const {
 }
 
 void ShopDemo::dumpMetastats(Recorder *recorder) const {
-  AdlerIgnore aig;
+  AuditIgnore aig;
   game.game.dumpMetastats(recorder);
 }
 

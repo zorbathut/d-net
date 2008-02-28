@@ -1,6 +1,5 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
-  - Move adler registration system out of adler32.h
   - Convert key output into OStream
     - Add OStreamGz support
     - Compress key output
