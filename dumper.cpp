@@ -4,6 +4,7 @@
 #include "args.h"
 #include "stream.h"
 #include "stream_file.h"
+#include "stream_gz.h"
 #include "stream_process_primitive.h"
 #include "stream_process_utility.h"
 #include "stream_process_rng.h"
@@ -36,7 +37,7 @@ RngSeed dumper_init(const RngSeed &option) {
   if(FLAGS_readTarget != "") {
     dprintf("Reading state record from file %s\n", FLAGS_readTarget.c_str());
     
-    istr = new IStreamFile(FLAGS_readTarget);
+    istr = new IStreamGz(FLAGS_readTarget);
     CHECK(istr->readInt() == 8);
     istr->read(&seed);
     
@@ -61,7 +62,7 @@ RngSeed dumper_init(const RngSeed &option) {
     
     dprintf("Opening %s for write\n", fname.c_str());
     
-    ostr = new OStreamFile(fname);
+    ostr = new OStreamGz(fname);
     
     ostr->write(8);
     ostr->write(seed);

@@ -247,6 +247,10 @@ InputState controls_next() {
   for(int i = 0; i < last.controllers.size(); i++) {
     CHECK(last.controllers[i].menu.x >= -1 && last.controllers[i].menu.x <= 1);
     CHECK(last.controllers[i].menu.y >= -1 && last.controllers[i].menu.y <= 1);
+    
+    // in an attempt to make dumpfiles smaller
+    last.controllers[i].menu.x = round(last.controllers[i].menu.x * 128) / 128;
+    last.controllers[i].menu.y = round(last.controllers[i].menu.y * 128) / 128;
   }
   
   return last;
