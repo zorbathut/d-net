@@ -36,9 +36,7 @@ RngSeed dumper_init(const RngSeed &option) {
     dprintf("Reading state record from file %s\n", FLAGS_readTarget.c_str());
     
     istr = new IStreamFile(FLAGS_readTarget);
-    
     CHECK(istr->readInt() == 8);
-    
     istr->read(&seed);
     
     inputstate.controllers.resize(istr->readInt());
@@ -118,8 +116,6 @@ void dumper_read_adler() {
   if(istr) {
     reg_adler_start_compare();
     
-    int borf = istr->readInt();
-    CHECK(borf == 0x12345678);
     int count = istr->readInt();
     for(int i = 0; i < count; i++)
       reg_adler_start_compare_add(istr->readInt());
@@ -135,7 +131,6 @@ void dumper_write_adler() {
   
   if(ostr) {
     int count = reg_adler_read_count();
-    ostr->write(0x12345678);
     ostr->write(count);
     for(int i = 0; i < count; i++)
       ostr->write(reg_adler_read_ref());
@@ -147,8 +142,12 @@ void dumper_write_adler() {
 
 InputState dumper_read_input() {
   CHECK(istr);
-  CHECK(istr->readInt() == 0xabcdefff);
-  istr->read(&inputstate.escape.down);
+  bool failure = istr->tryRead(&inputstate.escape.down);
+  if(failure) {
+    InputState tt;
+    tt.valid = false;
+    return tt;
+  }
   for(int i = 0; i < inputstate.controllers.size(); i++) {
     istr->read(&inputstate.controllers[i].menu.x);
     istr->read(&inputstate.controllers[i].menu.y);
@@ -167,7 +166,6 @@ InputState dumper_read_input() {
 void dumper_write_input(const InputState &is) {
   confirmLayout(is);
   if(ostr) {
-    ostr->write(0xabcdefff);
     ostr->write(is.escape.down);
     for(int i = 0; i < is.controllers.size(); i++) {
       ostr->write(is.controllers[i].menu.x);
