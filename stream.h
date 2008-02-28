@@ -1,6 +1,8 @@
 #ifndef DNET_STREAM
 #define DNET_STREAM
 
+#include "debug.h"
+
 #include <boost/noncopyable.hpp>
 
 template<typename T> struct IStreamReader;
@@ -16,7 +18,11 @@ private:
 public:
   
   void read(char *storage, int size);
-  template<typename T> void read(T *storage) { IStreamReader<T>::read(this, storage); }
+  template<typename T> void read(T *storage) { CHECK(!IStreamReader<T>::read(this, storage)); }
+  
+  // non-zero is error. may leave storage in unknown state on failure.
+  bool tryRead(char *storage, int size);
+  template<typename T> bool tryRead(T *storage) { return IStreamReader<T>::read(this, storage); }
   
   int readInt();
   
@@ -41,10 +47,10 @@ public:
   virtual ~OStream();
 };
 
-template<typename T> void stream_read(IStream *istr, T *storage) { storage->stream_read(istr); }
-template<typename T> void stream_write(OStream *ostr, const T &storage) { storage.stream_write(ostr); }
-
-template<typename T> struct IStreamReader { static void read(IStream *istr, T *storage) { stream_read(istr, storage); } };
+template<typename T> bool stream_write(OStream *ostr, const T &storage) { return storage.stream_tryWrite(ostr); }
 template<typename T> struct OStreamWriter { static void write(OStream *ostr, const T &storage) { stream_write(ostr, storage); } };
+
+template<typename T> bool stream_read(IStream *istr, T *storage) { return storage->stream_read(istr); }
+template<typename T> struct IStreamReader { static bool read(IStream *istr, T *storage) { return stream_read(istr, storage); } };
 
 #endif

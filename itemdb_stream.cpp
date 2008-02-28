@@ -5,18 +5,20 @@
 #include "stream_process_utility.h"
 #include "stream_process_string.h"
 
-void stream_read(IStream *istr, FileShopcache *storage) {
-  istr->read(&storage->entries);
-  istr->read(&storage->cycles);
-  istr->read(&storage->damageframes);
+bool stream_read(IStream *istr, FileShopcache *storage) {
+  if(istr->tryRead(&storage->entries)) return true;
+  if(istr->tryRead(&storage->cycles)) return true;
+  if(istr->tryRead(&storage->damageframes)) return true;
+  return false;
 }
 
-void stream_read(IStream *istr, FileShopcache::Entry *storage) {
-  istr->read(&storage->warhead);
-  istr->read(&storage->count);
-  istr->read(&storage->mult);
-  istr->read(&storage->impact);
-  istr->read(&storage->adjacencies);
+bool stream_read(IStream *istr, FileShopcache::Entry *storage) {
+  if(istr->tryRead(&storage->warhead)) return true;
+  if(istr->tryRead(&storage->count)) return true;
+  if(istr->tryRead(&storage->mult)) return true;
+  if(istr->tryRead(&storage->impact)) return true;
+  if(istr->tryRead(&storage->adjacencies)) return true;
+  return false;
 }
 
 void stream_write(OStream *ostr, const FileShopcache &storage) {

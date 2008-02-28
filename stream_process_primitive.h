@@ -20,7 +20,7 @@ BOOST_STATIC_ASSERT(sizeof(long long) == 8);
 BOOST_STATIC_ASSERT(sizeof(float) == 4);
 
 #define PODTYPE(type) \
-  template<> struct IStreamReader<type> { static void read(IStream *istr, type *storage) { istr->read((char*)storage, sizeof(*storage)); } }; \
+  template<> struct IStreamReader<type> { static bool read(IStream *istr, type *storage) { return istr->tryRead((char*)storage, sizeof(*storage)); } }; \
   template<> struct OStreamWriter<type> { static void write(OStream *istr, const type &storage) { istr->write((char*)&storage, sizeof(storage)); } };
 
 PODTYPE(char);
@@ -37,7 +37,7 @@ PODTYPE(unsigned long long);
 PODTYPE(float);
 
 // a little bit different because the internal representation of bool is less defined
-template<> struct IStreamReader<bool> { static void read(IStream *istr, bool *storage) { char tv; istr->read(&tv); *storage = tv; } };
+template<> struct IStreamReader<bool> { static bool read(IStream *istr, bool *storage) { char tv; if(istr->tryRead(&tv)) return true; *storage = tv; return false; } };
 template<> struct OStreamWriter<bool> { static void write(OStream *istr, const bool &storage) { istr->write((char)storage); } };
 
 #endif

@@ -4,9 +4,13 @@
 #include "debug.h"
 #include "stream_process_primitive.h"
 
-// We want to use the fewest reads possible on average. This means reading the largest chunks possible.
 void IStream::read(char *storage, int size) {
-  CHECK(size >= 0);
+  CHECK(!tryRead(storage, size));
+}
+  
+// We want to use the fewest reads possible on average. This means reading the largest chunks possible.
+bool IStream::tryRead(char *storage, int size) {
+  CHECK(size > 0);
   int trfb = min(size, buffend - buffpos);
   memcpy(storage, buff + buffpos, trfb);
   buffpos += trfb;
@@ -15,14 +19,19 @@ void IStream::read(char *storage, int size) {
   
   if(size) { // We need more!
     if(size >= sizeof(buff)) {
-      CHECK(read_worker(storage, size) == size); // Just pull it straight into the buffer, it's easier this way.
+      return read_worker(storage, size) != size; // Just pull it straight into the buffer, it's easier this way.
     } else {
       buffend = read_worker(buff, sizeof(buff));
-      CHECK(buffend >= size);
+      if(buffend < size) {
+        buffpos = buffend;
+        return true;
+      }
       memcpy(storage, buff, size);
       buffpos = size;
     }
   }
+  
+  return false;
 }
 
 int IStream::readInt() {

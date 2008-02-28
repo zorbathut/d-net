@@ -7,12 +7,14 @@
 
 using namespace std;
 
-template<typename T> struct IStreamReader<vector<T> > { static void read(IStream *istr, vector<T> *storage) {
+template<typename T> struct IStreamReader<vector<T> > { static bool read(IStream *istr, vector<T> *storage) {
   int count;
-  istr->read(&count);
+  if(istr->tryRead(&count)) return true;
   storage->resize(count);
   for(int i = 0; i < count; i++)
-    istr->read(&(*storage)[i]);
+    if(istr->tryRead(&(*storage)[i]))
+      return true;
+  return false;
 } };
 
 template<typename T> struct OStreamWriter<vector<T> > { static void write(OStream *ostr, const vector<T> &storage) {

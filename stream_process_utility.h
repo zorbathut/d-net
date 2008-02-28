@@ -7,9 +7,10 @@
 
 using namespace std;
 
-template<typename T, typename U> struct IStreamReader<pair<T, U> > { static void read(IStream *istr, pair<T, U> *storage) {
-  istr->read(&storage->first);
-  istr->read(&storage->second);
+template<typename T, typename U> struct IStreamReader<pair<T, U> > { static bool read(IStream *istr, pair<T, U> *storage) {
+  if(istr->tryRead(&storage->first)) return true;
+  if(istr->tryRead(&storage->second)) return true;
+  return false;
 } };
 
 template<typename T, typename U> struct OStreamWriter<pair<T, U> > { static void write(OStream *ostr, const pair<T, U> &storage) {
