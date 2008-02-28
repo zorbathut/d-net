@@ -880,6 +880,7 @@ void Game::renderToScreen(const vector<const Player *> &players, GameMetacontext
 };
 
 void Game::checksum(Adler32 *adl) const {
+  StackString sstr("WE CHECKSUM GAME");
   //reg_adler_intermed(*adl);
   
   adler(adl, frameNm);

@@ -12,24 +12,32 @@ BOOST_STATIC_ASSERT(CHAR_BIT == 8);
 #error Little-endian required for this code at the moment, fix this at some point
 #endif
 
+BOOST_STATIC_ASSERT(sizeof(bool) == 1);
 BOOST_STATIC_ASSERT(sizeof(short) == 2);
 BOOST_STATIC_ASSERT(sizeof(int) == 4);
+BOOST_STATIC_ASSERT(sizeof(long) == 4);
+BOOST_STATIC_ASSERT(sizeof(long long) == 8);
 BOOST_STATIC_ASSERT(sizeof(float) == 4);
 
-template<> struct IStreamReader<char> { static void read(IStream *istr, char *storage) { istr->read((char*)storage, sizeof(*storage)); } };
-template<> struct IStreamReader<unsigned char> { static void read(IStream *istr, unsigned char *storage) { istr->read((char*)storage, sizeof(*storage)); } };
-template<> struct IStreamReader<short> { static void read(IStream *istr, short *storage) { istr->read((char*)storage, sizeof(*storage)); } };
-template<> struct IStreamReader<unsigned short> { static void read(IStream *istr, unsigned short *storage) { istr->read((char*)storage, sizeof(*storage)); } };
-template<> struct IStreamReader<int> { static void read(IStream *istr, int *storage) { istr->read((char*)storage, sizeof(*storage)); } };
-template<> struct IStreamReader<unsigned int> { static void read(IStream *istr, unsigned int *storage) { istr->read((char*)storage, sizeof(*storage)); } };
-template<> struct IStreamReader<float> { static void read(IStream *istr, float *storage) { istr->read((char*)storage, sizeof(*storage)); } };
+#define PODTYPE(type) \
+  template<> struct IStreamReader<type> { static void read(IStream *istr, type *storage) { istr->read((char*)storage, sizeof(*storage)); } }; \
+  template<> struct OStreamWriter<type> { static void write(OStream *istr, const type &storage) { istr->write((char*)&storage, sizeof(storage)); } };
 
-template<> struct OStreamWriter<char> { static void write(OStream *istr, const char &storage) { istr->write((char*)&storage, sizeof(storage)); } };
-template<> struct OStreamWriter<unsigned char> { static void write(OStream *istr, const unsigned char &storage) { istr->write((char*)&storage, sizeof(storage)); } };
-template<> struct OStreamWriter<short> { static void write(OStream *istr, const short &storage) { istr->write((char*)&storage, sizeof(storage)); } };
-template<> struct OStreamWriter<unsigned short> { static void write(OStream *istr, const unsigned short &storage) { istr->write((char*)&storage, sizeof(storage)); } };
-template<> struct OStreamWriter<int> { static void write(OStream *istr, const int &storage) { istr->write((char*)&storage, sizeof(storage)); } };
-template<> struct OStreamWriter<unsigned int> { static void write(OStream *istr, const unsigned int &storage) { istr->write((char*)&storage, sizeof(storage)); } };
-template<> struct OStreamWriter<float> { static void write(OStream *istr, const float &storage) { istr->write((char*)&storage, sizeof(storage)); } };
+PODTYPE(char);
+PODTYPE(unsigned char);
+PODTYPE(short);
+PODTYPE(unsigned short);
+PODTYPE(int);
+PODTYPE(unsigned int);
+PODTYPE(long);
+PODTYPE(unsigned long);
+PODTYPE(long long);
+PODTYPE(unsigned long long);
+
+PODTYPE(float);
+
+// a little bit different because the internal representation of bool is less defined
+template<> struct IStreamReader<bool> { static void read(IStream *istr, bool *storage) { char tv; istr->read(&tv); *storage = tv; } };
+template<> struct OStreamWriter<bool> { static void write(OStream *istr, const bool &storage) { istr->write((char)storage); } };
 
 #endif

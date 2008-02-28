@@ -17,7 +17,9 @@ public:
   
   void read(char *storage, int size);
   template<typename T> void read(T *storage) { IStreamReader<T>::read(this, storage); }
-
+  
+  int readInt();
+  
   IStream();
   virtual ~IStream() { };
 };

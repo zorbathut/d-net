@@ -2,6 +2,7 @@
 #include "stream.h"
 
 #include "debug.h"
+#include "stream_process_primitive.h"
 
 // We want to use the fewest reads possible on average. This means reading the largest chunks possible.
 void IStream::read(char *storage, int size) {
@@ -22,6 +23,12 @@ void IStream::read(char *storage, int size) {
       buffpos = size;
     }
   }
+}
+
+int IStream::readInt() {
+  int temp;
+  read(&temp);
+  return temp;
 }
   
 IStream::IStream() : buffpos(sizeof(buff)), buffend(sizeof(buff)) { };

@@ -28,11 +28,16 @@ rm -rf $TMPSTDOUT
 ! grep -q "error:" $TMPSTDERR
 TMPRET=$?
 
+# This is not exactly ideal
+! grep -q "ld returned" $TMPSTDERR
+GCCRET=$?
+
 rm -rf $TMPSTDERR
 
-if [ "$TMPRET" -ne 0 ]
+if [ $GCCRET -ne 0 -o $TMPRET -ne 0 ]
 then
   rm -rf $OUTFILE
+  exit 1
+else
+  exit 0
 fi
-
-exit $TMPRET

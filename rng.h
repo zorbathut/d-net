@@ -7,10 +7,11 @@ class Coord;
 class Adler32;
   
 class RngSeed {
-public:
+private:
   unsigned int seed;
 
 public:
+  unsigned int getSeed() const { return seed; } // I am not sure why I'm bothering with immutability with this class, I think I just wanted a strong typedef but noooooo we can't have that until c++0x can we, and x probably means 11 at this rate arglbargl
   explicit RngSeed(unsigned int seed) : seed(seed) { }
 };
 

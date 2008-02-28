@@ -104,7 +104,7 @@ template<typename T> RngSeed RngBase<T>::generate_seed() {
   RngSeed rv(0);
   do {
     rv = RngSeed((unsigned int)(frand() * (1LL << 32)));
-  } while(rv.seed == 0);
+  } while(rv.getSeed() == 0);
   return rv;
 }
 
@@ -117,7 +117,7 @@ template<typename T> void RngBase<T>::checksum(Adler32 *adl) const {
 }
 
 template<typename T> RngBase<T>::RngBase(RngSeed in_seed) {
-  sync = T((int)in_seed.seed);
+  sync = T((int)in_seed.getSeed());
 }
 
 Rng &unsync() { static Rng unsyncrng(RngSeed(time(NULL))); return unsyncrng; }

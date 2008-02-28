@@ -120,13 +120,13 @@ void initFlags(int argc, char *argv[], int ignoreargs, const string &settings) {
   }
   for(map<string, LinkageData>::iterator itr = links.begin(); itr != links.end(); itr++) {
     if(itr->second.type == LinkageData::LINKAGE_BOOL) {
-      dprintf("Initted bool %s to %d\n", itr->first.c_str(), *itr->second.bool_link);
+      //dprintf("Initted bool %s to %d\n", itr->first.c_str(), *itr->second.bool_link);
     } else if(itr->second.type == LinkageData::LINKAGE_INT) {
-      dprintf("Initted int %s to %d\n", itr->first.c_str(), *itr->second.int_link);
+      //dprintf("Initted int %s to %d\n", itr->first.c_str(), *itr->second.int_link);
     } else if(itr->second.type == LinkageData::LINKAGE_STRING) {
-      dprintf("Initted string %s to %s\n", itr->first.c_str(), itr->second.str_link->c_str());
+      //dprintf("Initted string %s to %s\n", itr->first.c_str(), itr->second.str_link->c_str());
     } else if(itr->second.type == LinkageData::LINKAGE_FLOAT) {
-      dprintf("Initted float %s to %f\n", itr->first.c_str(), *itr->second.float_link);
+      //dprintf("Initted float %s to %f\n", itr->first.c_str(), *itr->second.float_link);
     } else {
       CHECK(0);
     }
@@ -200,13 +200,13 @@ void initFlags(int argc, char *argv[], int ignoreargs, const string &settings) {
   }
   for(map<string, LinkageData>::iterator itr = links.begin(); itr != links.end(); itr++) {
     if(itr->second.type == LinkageData::LINKAGE_BOOL) {
-      dprintf("Set bool %s to %d\n", itr->first.c_str(), *itr->second.bool_link);
+      //dprintf("Set bool %s to %d\n", itr->first.c_str(), *itr->second.bool_link);
     } else if(itr->second.type == LinkageData::LINKAGE_INT) {
-      dprintf("Set int %s to %d\n", itr->first.c_str(), *itr->second.int_link);
+      //dprintf("Set int %s to %d\n", itr->first.c_str(), *itr->second.int_link);
     } else if(itr->second.type == LinkageData::LINKAGE_STRING) {
-      dprintf("Set string %s to %s\n", itr->first.c_str(), itr->second.str_link->c_str());
+      //dprintf("Set string %s to %s\n", itr->first.c_str(), itr->second.str_link->c_str());
     } else if(itr->second.type == LinkageData::LINKAGE_FLOAT) {
-      dprintf("Set float %s to %f\n", itr->first.c_str(), *itr->second.float_link);
+      //dprintf("Set float %s to %f\n", itr->first.c_str(), *itr->second.float_link);
     } else {
       CHECK(0);
     }

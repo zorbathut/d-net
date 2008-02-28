@@ -13,9 +13,24 @@ using boost::function;
 class Ai;
 class GameAiIntro;
 
-class StdMenuItem;
-
 enum StdMenuCommand { SMR_NOTHING = -1, SMR_ENTER = -2, SMR_RETURN = -3 };
+
+class StdMenuItem : boost::noncopyable {
+public:
+
+  virtual pair<StdMenuCommand, int> tickEntire(const Keystates &keys);
+  virtual void renderEntire(const Float4 &bounds, bool obscure) const;
+  
+  virtual pair<StdMenuCommand, int> tickItem(const Keystates *keys) = 0;
+  virtual float renderItemHeight() const;
+  virtual float renderItemWidth(float tmx) const = 0;
+  virtual void renderItem(const Float4 &bounds) const = 0; // ey is ignored
+
+  virtual void checksum(Adler32 *adl) const = 0;
+
+  StdMenuItem();
+  virtual ~StdMenuItem();
+};
 
 class StdMenu {
   
@@ -35,23 +50,10 @@ public:
 
   void reset();
 
+  void checksum(Adler32 *adl) const;
+
   StdMenu();
 
-};
-
-class StdMenuItem : boost::noncopyable {
-public:
-
-  virtual pair<StdMenuCommand, int> tickEntire(const Keystates &keys);
-  virtual void renderEntire(const Float4 &bounds, bool obscure) const;
-  
-  virtual pair<StdMenuCommand, int> tickItem(const Keystates *keys) = 0;
-  virtual float renderItemHeight() const;
-  virtual float renderItemWidth(float tmx) const = 0;
-  virtual void renderItem(const Float4 &bounds) const = 0; // ey is ignored
-
-  StdMenuItem();
-  virtual ~StdMenuItem();
 };
 
 template<typename T> class StdMenuItemChooser;

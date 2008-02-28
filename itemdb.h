@@ -856,6 +856,8 @@ const string &nameFromIDB(const IDBProjectile *tank);
 const string &nameFromIDB(const IDBUpgrade *tank);
 const string &nameFromIDB(const IDBImplant *tank);
 const string &nameFromIDB(const IDBImplantSlot *tank);
+const string &nameFromIDB(const IDBDeploy *tank);
+const string &nameFromIDB(const IDBLauncher *tank);
 
 string informalNameFromIDB(const IDBWeapon *idbw);
 string informalNameFromIDB(const IDBWeaponAdjust &idbwa);
@@ -870,6 +872,9 @@ void adler(Adler32 *adl, const IDBProjectile *idb);
 void adler(Adler32 *adl, const IDBUpgrade *idb);
 void adler(Adler32 *adl, const IDBImplant *idb);
 void adler(Adler32 *adl, const IDBImplantSlot *idb);
+void adler(Adler32 *adl, const IDBDeploy *idb);
+void adler(Adler32 *adl, const IDBWarhead *idb);
+void adler(Adler32 *adl, const IDBLauncher *idb);
 
 void adler(Adler32 *adl, const IDBAdjustment &idb);
 

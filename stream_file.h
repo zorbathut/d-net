@@ -14,7 +14,7 @@ private:
   
   int read_worker(char *buff, int avail);
 public:
-  
+
   operator void*() const;
 
   IStreamFile(const string &fname);

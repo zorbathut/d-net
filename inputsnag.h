@@ -9,12 +9,11 @@ using namespace std;
 class Ai;
 class SDL_KeyboardEvent;
 
-pair<RngSeed, InputState> controls_init(RngSeed default_seed);
+InputState controls_init();
 void controls_key(const SDL_KeyboardEvent *key);
 InputState controls_next();
 vector<Ai *> controls_ai();
 bool controls_users();
-bool controls_recordable();
 void controls_shutdown();
 class ControlShutdown {
 public:
@@ -23,8 +22,6 @@ public:
     controls_shutdown();
   }
 };
-
-void controls_snag_next_checksum_set();
 
 int controls_primary_id();
 pair<int, int> controls_getType(int id);

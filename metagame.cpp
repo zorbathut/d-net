@@ -107,6 +107,7 @@ bool Metagame::runTick(const vector<Controller> &keys) {
 }
 
 void Metagame::checksum(Adler32 *adl) const {
+  StackString sstr("WE CHECKSUM META");
   //reg_adler_intermed(*adl);
   adler(adl, mode);
   adler(adl, faction_mode);

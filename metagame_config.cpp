@@ -715,7 +715,10 @@ void adler(Adler32 *adl, const FactionState &pms) {
 }
 void adler(Adler32 *adl, const PlayerMenuState &pms) {
   adler(adl, pms.compasspos);
-  adler(adl, pms.faction);
+  if(pms.faction)
+    adler(adl, *pms.faction);
+  else
+    adl->addByte(0);
   adler(adl, pms.settingmode);
   adler(adl, pms.choicemode);
   adler(adl, pms.buttons);

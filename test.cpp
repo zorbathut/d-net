@@ -26,7 +26,7 @@ void testLevel(const string &filename) {
   collide.cleanup(COM_PLAYER, gmp.getCollisionBounds(), vector<int>(1, 0));
   gmp.updateCollide(&collide);
   
-  dprintf("Gamemap valid\n");
+  //dprintf("Gamemap valid\n");
   
   set<pair<Coord2, Coord> > stt;
   for(map<int, vector<pair<Coord2, Coord> > >::const_iterator itr = lev.playerStarts.begin(); itr != lev.playerStarts.end(); itr++) {
@@ -37,7 +37,7 @@ void testLevel(const string &filename) {
   
   vector<pair<Coord2, Coord> > sttv(stt.begin(), stt.end());
   
-  dprintf("Found %d origins\n", stt.size());
+  //dprintf("Found %d origins\n", stt.size());
   for(int i = 0; i < sttv.size(); i++) {
     for(int j = 0; j < tkz.size(); j++) {
       vector<Coord4> loop;

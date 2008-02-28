@@ -795,6 +795,8 @@ nameFromIdbMacro(IDBProjectile, projectile);
 nameFromIdbMacro(IDBUpgrade, upgrade);
 nameFromIdbMacro(IDBImplant, implant);
 nameFromIdbMacro(IDBImplantSlot, implantslot);
+nameFromIdbMacro(IDBDeploy, deploy);
+nameFromIdbMacro(IDBLauncher, launcher);
 
 string informalNameFromIDB(const IDBWeapon *idbw) {
   return tokenize(nameFromIDB(idbw), ".").back();
@@ -820,6 +822,9 @@ void adler(Adler32 *adl, const IDBProjectile *idb) { if(idb) adler(adl, nameFrom
 void adler(Adler32 *adl, const IDBUpgrade *idb) { if(idb) adler(adl, nameFromIDB(idb)); else adl->addByte(0); }
 void adler(Adler32 *adl, const IDBImplant *idb) { if(idb) adler(adl, nameFromIDB(idb)); else adl->addByte(0); }
 void adler(Adler32 *adl, const IDBImplantSlot *idb) { if(idb) adler(adl, nameFromIDB(idb)); else adl->addByte(0); }
+void adler(Adler32 *adl, const IDBDeploy *idb) { if(idb) adler(adl, nameFromIDB(idb)); else adl->addByte(0); }
+void adler(Adler32 *adl, const IDBWarhead *idb) { if(idb) adler(adl, nameFromIDB(idb)); else adl->addByte(0); }
+void adler(Adler32 *adl, const IDBLauncher *idb) { if(idb) adler(adl, nameFromIDB(idb)); else adl->addByte(0); }
 
 void adler(Adler32 *adl, const IDBAdjustment &idb) {
   adler(adl, idb.ignore_excessive_radius);

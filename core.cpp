@@ -12,6 +12,7 @@
 #include "httpd.h"
 #include "perfbar.h"
 #include "adler32.h"
+#include "dumper.h"
 
 #ifdef OSX_FRAMEWORK_PREFIXES
   #include <SDL/SDL.h>
@@ -20,9 +21,6 @@
 #endif
 
 using namespace std;
-
-DEFINE_string(writeTarget, "dumps/dump", "Prefix for file dump");
-//DEFINE_int(writeTargetCheckpoint, 2000000000, "Write target checkpoint frequency"); // currently disabled
 
 DEFINE_int(fastForwardTo, 0, "Fastforward rendering to this frame");
 DEFINE_int(terminateAfterFrame, -1, "Terminate execution after this many frames");
@@ -55,10 +53,12 @@ void MainLoop() {
   
   Rng rng(unsync().generate_seed());
   
-  pair<RngSeed, InputState> rc = controls_init(rng.generate_seed());
+  RngSeed game_seed = dumper_init(rng.generate_seed());
+  
+  InputState is = controls_init();
   ControlShutdown csd;
-  RngSeed game_seed = rc.first;
-  InputState is = rc.second;
+  
+  dumper_read_adler();
   
   InputState origis = is;
   
@@ -67,20 +67,21 @@ void MainLoop() {
     dprintf("%d: %d buttons, %d axes", i, is.controllers[i].keys.size(), is.controllers[i].axes.size());
   }
   
-  FILE *outfile = NULL;
-  
   int skipped = 0;
   
   frameNumber = 0;    // it's -1 before this point
-  
+
   InterfaceMain interface;
 
+  reg_adler_pause();
+  
   time_t starttime = time(NULL);
 
   Timer bencher;
   
   int speed = 1;
   
+  // This all needs to be commented much better.
   while(!quit) {
     bool thistick = false;
     
@@ -134,85 +135,51 @@ void MainLoop() {
       if(thistick && !tspeed)
         tspeed = 1;
       for(int i = 0; i < tspeed; i++) {
+        
         interface.ai(controls_ai());  // has to be before controls
+        
+        reg_adler_unpause();
+        dumper_write_adler();
+        adlers += reg_adler_read_count();
         is = controls_next();
         if(!is.valid)
           return;
+        dumper_write_input(is);
+        dumper_read_adler();
+        
         CHECK(is.controllers.size() == origis.controllers.size());
         for(int i = 0; i < is.controllers.size(); i++)
           CHECK(is.controllers[i].keys.size() == origis.controllers[i].keys.size());
+        
         {
           Adler32 adl;
           PerfStack pst(PBC::checksum);
+          reg_adler_intermed(adl);
           adler(&adl, frameNumber);
-          if(FLAGS_checksumGameState)
+          reg_adler_intermed(adl);
+          if(FLAGS_checksumGameState) {
+            reg_adler_intermed(adl);
             interface.checksum(&adl);
+            reg_adler_intermed(adl);
+          }
           reg_adler(adl);
-          adlers += ret_adler_ref_count();
         }
         
-        if(FLAGS_writeTarget != "" && controls_recordable()) {
-          if(frameNumber == 0) {
-            if(outfile)
-              fclose(outfile);
-            
-            string fname = FLAGS_writeTarget;
-            char timestampbuf[128];
-            time_t ctmt = time(NULL);
-            strftime(timestampbuf, sizeof(timestampbuf), "%Y%m%d-%H%M%S", gmtime(&ctmt));
-            fname = StringPrintf("%s-%s-%010d.dnd", fname.c_str(), timestampbuf, frameNumber);
-            dprintf("%s\n", fname.c_str());
-            outfile = fopen(fname.c_str(), "wb");
-            if(outfile) {
-              int dat = 8;
-              fwrite(&dat, 1, sizeof(dat), outfile);
-              fwrite(&game_seed, 1, sizeof(game_seed), outfile);  // this is kind of grim and nasty
-              dat = is.controllers.size();
-              fwrite(&dat, 1, sizeof(dat), outfile);
-              for(int i = 0; i < is.controllers.size(); i++) {
-                dat = is.controllers[i].keys.size();
-                fwrite(&dat, 1, sizeof(dat), outfile);
-                dat = is.controllers[i].axes.size();
-                fwrite(&dat, 1, sizeof(dat), outfile);
-                dat = controls_getType(i).first;
-                fwrite(&dat, 1, sizeof(dat), outfile);
-                dat = controls_getType(i).second;
-                fwrite(&dat, 1, sizeof(dat), outfile);
-              }
-              fflush(outfile);
-            } else {
-              dprintf("Outfile %s couldn't be opened! Not writing dump", fname.c_str());
-            }
-          }
-          if(outfile) {
-            fwrite(&is.escape.down, 1, sizeof(is.escape.down), outfile);
-            for(int i = 0; i < is.controllers.size(); i++) {
-              fwrite(&is.controllers[i].menu.x, 1, sizeof(is.controllers[i].menu.x), outfile);
-              fwrite(&is.controllers[i].menu.y, 1, sizeof(is.controllers[i].menu.y), outfile);
-              fwrite(&is.controllers[i].u.down, 1, sizeof(is.controllers[i].u.down), outfile);
-              fwrite(&is.controllers[i].d.down, 1, sizeof(is.controllers[i].d.down), outfile);
-              fwrite(&is.controllers[i].l.down, 1, sizeof(is.controllers[i].l.down), outfile);
-              fwrite(&is.controllers[i].r.down, 1, sizeof(is.controllers[i].r.down), outfile);
-              for(int j = 0; j < is.controllers[i].keys.size(); j++)
-                fwrite(&is.controllers[i].keys[j].down, 1, sizeof(is.controllers[i].keys[j].down), outfile);
-              for(int j = 0; j < is.controllers[i].axes.size(); j++)
-                fwrite(&is.controllers[i].axes[j], 1, sizeof(is.controllers[i].axes[j]), outfile);
-            }
-    
-            int refc = ret_adler_ref_count();
-            fwrite(&refc, 1, sizeof(refc), outfile);
-            for(int i = 0; i < refc; i++) {
-              unsigned long ref = ret_adler_ref();
-              fwrite(&ref, 1, sizeof(ref), outfile);
-            }
-            fflush(outfile);
-          }
-        }
-        
-        ret_adler_ref_clear();
-        
-        controls_snag_next_checksum_set();
         reg_adler_ul(0);  // so we have one item, and for rechecking's sake
+        
+        reg_adler_ul(is.escape.down);
+        for(int i = 0; i < is.controllers.size(); i++) {
+          reg_adler_ul((int)is.controllers[i].menu.x.toFloat() * 1000);
+          reg_adler_ul((int)is.controllers[i].menu.y.toFloat() * 1000);
+          reg_adler_ul(is.controllers[i].u.down);
+          reg_adler_ul(is.controllers[i].d.down);
+          reg_adler_ul(is.controllers[i].l.down);
+          reg_adler_ul(is.controllers[i].r.down);
+          for(int j = 0; j < is.controllers[i].keys.size(); j++)
+            reg_adler_ul(is.controllers[i].keys[j].down);
+          for(int j = 0; j < is.controllers[i].axes.size(); j++)
+            reg_adler_ul((int)is.controllers[i].axes[j].toFloat() * 1000);
+        }
         
         if(FLAGS_timing) {
           polling += bencher.ticksElapsed();
@@ -228,19 +195,11 @@ void MainLoop() {
           bencher = Timer();
         }
         
-        adlers += ret_adler_ref_count();
-        if(outfile) {
-          int refc = ret_adler_ref_count();
-          fwrite(&refc, 1, sizeof(refc), outfile);
-          for(int i = 0; i < refc; i++) {
-            unsigned long ref = ret_adler_ref();
-            fwrite(&ref, 1, sizeof(ref), outfile);
-          }
-          ret_adler_ref_clear();
-          fflush(outfile);
-        }
-        
         frameNumber++;
+        
+        reg_adler_ul(0x55827366);
+        
+        reg_adler_pause();
       }
     }
     if(FLAGS_render) {
@@ -319,4 +278,10 @@ void MainLoop() {
     }
     frako++;
   }
+  
+  reg_adler_unpause();
+  
+  dumper_write_adler();
+  
+  dumper_shutdown();
 }

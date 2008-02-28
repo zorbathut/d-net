@@ -14,6 +14,7 @@
 #include "adler32.h"
 #include "game_ai.h"
 #include "res_interface.h"
+#include "adler32_util.h"
 
 #include <boost/assign.hpp>
 #include <boost/bind.hpp>
@@ -66,11 +67,14 @@ public:
   static smart_ptr<StdMenuItemTrigger> make(const string &text, int trigger) { return smart_ptr<StdMenuItemTrigger>(new StdMenuItemTrigger(text, trigger)); }
   
   pair<StdMenuCommand, int> tickItem(const Keystates *keys) {
+    reg_adler_ul(__LINE__);
     if(keys && keys->accept.push) {
       queueSound(S::accept);
+      reg_adler_ul(__LINE__);
       return make_pair(SMR_NOTHING, trigger);
     }
     
+    reg_adler_ul(__LINE__);
     return make_pair(SMR_NOTHING, SMR_NOTHING);
   }
   
@@ -80,6 +84,12 @@ public:
   
   void renderItem(const Float4 &bounds) const {
     drawJustifiedText(name.c_str(), 4, Float2(bounds.midpoint().x, bounds.sy), TEXT_CENTER, TEXT_MIN);
+  }
+  
+  void checksum(Adler32 *adl) const {
+    adler(adl, "trigger");
+    adler(adl, name);
+    adler(adl, trigger);
   }
 };
 
@@ -120,6 +130,7 @@ public:
   static smart_ptr<StdMenuItemScale> make(const string &text, Coord *position, const function<Coord (const Coord &)> &munge, const ScaleDisplayer &sds, bool selected_val, bool *selected_pos) { return smart_ptr<StdMenuItemScale>(new StdMenuItemScale(text, position, munge, sds, selected_val, selected_pos)); }
     
   pair<StdMenuCommand, int> tickItem(const Keystates *keys) {
+    reg_adler_ul(__LINE__);
     if(keys) {
       if(keys->l.down)
         *position -= Coord(1) / 16;
@@ -132,6 +143,7 @@ public:
     if(keys && selected_pos)
       *selected_pos = selected_val;
     
+    reg_adler_ul(__LINE__);
     return make_pair(SMR_NOTHING, SMR_NOTHING);
   }
   
@@ -146,6 +158,16 @@ public:
     GfxWindow gfxw(boundy, 1.0);
     
     displayer.render(position->toFloat());
+  }
+  
+  void checksum(Adler32 *adl) const {
+    adler(adl, "scale");
+    adler(adl, name);
+    CHECK(position);
+    adler(adl, *position);
+    adler(adl, selected_val);
+    CHECK(selected_pos);
+    adler(adl, *selected_pos);
   }
 };
 
@@ -229,12 +251,14 @@ public:
   static smart_ptr<StdMenuItemRounds> make(const string &text, Coord *start, Coord *end, Coord *exp) { return smart_ptr<StdMenuItemRounds>(new StdMenuItemRounds(text, start, end, exp)); }
   
   pair<StdMenuCommand, int> tickItem(const Keystates *keys) {
+    reg_adler_ul(__LINE__);
     if(keys && keys->l.down)
       *expv *= Coord(101) / 100;
     if(keys && keys->r.down)
       *expv /= Coord(101) / 100;
     *expv = clamp(*expv, Coord(0.001), 2);
     
+    reg_adler_ul(__LINE__);
     return make_pair(SMR_NOTHING, SMR_NOTHING);
   }
   float renderItemWidth(float tmx) const {
@@ -244,6 +268,14 @@ public:
     drawText(name.c_str(), 4, bounds.s());
     float percentage = (exp(expv->toFloat()) - 1) * 100;
     drawJustifiedText(StringPrintf("%d (+%.2f%% cash/round)", calculateRounds(*start, *end, *expv), percentage), 4, Float2(bounds.ex, bounds.sy), TEXT_MAX, TEXT_MIN);
+  }
+  
+  void checksum(Adler32 *adl) const {
+    adler(adl, "rounds");
+    adler(adl, name);
+    adler(adl, *start);
+    adler(adl, *end);
+    adler(adl, *expv);
   }
 };
 
@@ -293,6 +325,7 @@ public:
   static smart_ptr<StdMenuItemChooser<T> > make(const string &text, const vector<pair<string, T> > &options, T *storage, function<void (T)> changefunctor) { return smart_ptr<StdMenuItemChooser<T> >(new StdMenuItemChooser<T>(text, options, storage, changefunctor)); }
   
   pair<StdMenuCommand, int> tickItem(const Keystates *keys) {
+    reg_adler_ul(__LINE__);
     if(keys && keys->l.push)
       item--;
     if(keys && keys->r.push)
@@ -305,6 +338,7 @@ public:
     if(changefunctor)
       (*changefunctor)(*storage);
     
+    reg_adler_ul(__LINE__);
     return make_pair(SMR_NOTHING, SMR_NOTHING);
   }
   float renderItemWidth(float tmx) const {
@@ -319,6 +353,15 @@ public:
     options = newopts;
     
     syncoptions();
+  }
+  
+  void checksum(Adler32 *adl) const {
+    adler(adl, "chooser");
+    adler(adl, name);
+    for(int i = 0; i < options.size(); i++) {
+      adler(adl, options[i].first);
+    }
+    adler(adl, item);
   }
 };
 
@@ -359,12 +402,18 @@ public:
   }
 
   pair<StdMenuCommand, int> tickItem(const Keystates *keys) {
+    reg_adler_ul(__LINE__);
+    reg_adler_ul((bool)keys);
+    reg_adler_ul(keys->accept.push);
     if(keys && keys->accept.push) {
+      reg_adler_ul(__LINE__);
       queueSound(S::accept);
       gsm().reset();
+      reg_adler_ul(__LINE__);
       return make_pair(SMR_ENTER, signal);
     }
     
+    reg_adler_ul(__LINE__);
     return make_pair(SMR_NOTHING, SMR_NOTHING);
   }
   float renderItemWidth(float tmx) const {
@@ -372,6 +421,14 @@ public:
   }
   void renderItem(const Float4 &bounds) const {
     drawJustifiedText(name.c_str(), 4, Float2(bounds.midpoint().x, bounds.sy), TEXT_CENTER, TEXT_MIN);
+  }
+  
+  void checksum(Adler32 *adl) const {
+    adler(adl, "submenu");
+    adler(adl, name);
+    submenu.checksum(adl);
+    if(submenu_ptr)
+      submenu_ptr->checksum(adl);
   }
 };
 
@@ -389,11 +446,13 @@ public:
   static smart_ptr<StdMenuItemBack> make(const string &text, int signal = SMR_NOTHING) { return smart_ptr<StdMenuItemBack>(new StdMenuItemBack(text, signal)); }
   
   pair<StdMenuCommand, int> tickItem(const Keystates *keys) {
+    reg_adler_ul(__LINE__);
     if(keys && keys->accept.push) {
       queueSound(S::choose);
       return make_pair(SMR_RETURN, signal);
     }
     
+    reg_adler_ul(__LINE__);
     return make_pair(SMR_NOTHING, SMR_NOTHING);
   }
   float renderItemWidth(float tmx) const {
@@ -401,6 +460,12 @@ public:
   }
   void renderItem(const Float4 &bounds) const {
     drawJustifiedText(name.c_str(), 4, Float2(bounds.midpoint().x, bounds.sy), TEXT_CENTER, TEXT_MIN);
+  }
+  
+  void checksum(Adler32 *adl) const {
+    adler(adl, "back");
+    adler(adl, name);
+    adler(adl, signal);
   }
 };
 
@@ -420,6 +485,8 @@ void StdMenu::pushMenuItemAdjacent(const smart_ptr<StdMenuItem> &site) {
 
 pair<StdMenuCommand, int> StdMenu::tick(const Keystates &keys) {
   StackString stp("StdMenu ticking");
+  reg_adler_ul(keys.accept.push);
+  reg_adler_ul(__LINE__);
   if(!inside) {
     int pvpos = vpos;
     int phpos = hpos;
@@ -439,33 +506,48 @@ pair<StdMenuCommand, int> StdMenu::tick(const Keystates &keys) {
     if(pvpos != vpos || phpos != hpos)
       queueSound(S::select);
   }
-  
+  reg_adler_ul(__LINE__);
   for(int i = 0; i < items.size(); i++)
     for(int j = 0; j < items[i].size(); j++)
       if(i != vpos && j != hpos)
         items[i][j]->tickItem(NULL);
-    
+  reg_adler_ul(__LINE__);
   {
     pair<StdMenuCommand, int> rv;
-    if(inside)
+    if(inside) {
+      reg_adler_ul(__LINE__);
       rv = items[vpos][hpos]->tickEntire(keys);
-    else
+      reg_adler_ul(__LINE__);
+    } else {
+      reg_adler_ul(__LINE__);
       rv = items[vpos][hpos]->tickItem(&keys);
+      reg_adler_ul(__LINE__);
+    }
     
+    reg_adler_ul(__LINE__);
     if(rv.first == SMR_NOTHING) {
+      reg_adler_ul(__LINE__);
       return rv;
     } else if(rv.first == SMR_ENTER) {
       inside = true;
+      reg_adler_ul(0x12341237);
+      reg_adler_ul(inside);
+      reg_adler_ul(__LINE__);
       return make_pair(SMR_NOTHING, rv.second);
     } else if(rv.first == SMR_RETURN && !inside) {
+      reg_adler_ul(__LINE__);
       return make_pair(SMR_RETURN, rv.second);
     } else if(rv.first == SMR_RETURN && inside) {
       inside = false;
+      reg_adler_ul(0x12341236);
+      reg_adler_ul(inside);
+      reg_adler_ul(__LINE__);
       return make_pair(SMR_NOTHING, rv.second);
     } else {
       CHECK(0);
     }
   }
+  reg_adler_ul(__LINE__);
 }
 
 void StdMenu::render(const Float4 &bounds, bool obscure) const {
@@ -529,12 +611,38 @@ void StdMenu::reset() {
   vpos = 0;
   hpos = 0;
   inside = false;
+  //reg_adler_ul(0x12341235);
+  reg_adler_ul(inside);
 }
 
 StdMenu::StdMenu() {
   vpos = 0;
   hpos = 0;
   inside = false;
+  //reg_adler_ul(0x12341234);
+  reg_adler_ul(inside);
+}
+
+void StdMenu::checksum(Adler32 *adl) const {vector<vector<smart_ptr<StdMenuItem> > > items;
+  StackString sstr("WE CHECKSUM MENUS");
+  reg_adler_ul(0x47283183);
+  reg_adler_intermed(*adl);
+  for(int i = 0; i < items.size(); i++) {
+    for(int j = 0; j < items[i].size(); j++) {
+      reg_adler_intermed(*adl);
+      items[i][j]->checksum(adl);
+      reg_adler_intermed(*adl);
+    }
+  }
+  reg_adler_intermed(*adl);
+  adler(adl, vpos);
+  reg_adler_intermed(*adl);
+  adler(adl, hpos);
+  reg_adler_intermed(*adl);
+  reg_adler_ul(inside);
+  adler(adl, inside);
+  reg_adler_intermed(*adl);
+  reg_adler_ul(0x47283184);
 }
 
 /*************
@@ -595,23 +703,26 @@ public:
  */
 
 bool InterfaceMain::tick(const InputState &is, RngSeed gameseed) {
+  reg_adler_ul(__LINE__);
   if(is.escape.push) {
     inescmenu = !inescmenu;
     if(inescmenu)
       escmenu.reset();
   }
-  
+  reg_adler_ul(__LINE__);
   if(FLAGS_showtanks)
     return false;
   
   StackString stp("Interface ticking");
   
   inptest_controls = is.controllers;
-  
+  reg_adler_ul(__LINE__);
   if(kst.size() == 0) {
     CHECK(is.controllers.size() != 0);
     kst.resize(is.controllers.size());
   }
+  
+  reg_adler_ul(__LINE__);
   
   CHECK(kst.size() == is.controllers.size());
   
@@ -630,8 +741,9 @@ bool InterfaceMain::tick(const InputState &is, RngSeed gameseed) {
     for(int j = 0; j < SIMUL_WEAPONS; j++)
       kst[i].fire[j].newState(false);
   }
-  
+  reg_adler_ul(__LINE__);
   if(inescmenu) {
+    reg_adler_ul(__LINE__);
     pair<StdMenuCommand, int> rv = escmenu.tick(kst[controls_primary_id()]);
     if(rv.first == SMR_RETURN)
       inescmenu = false;
@@ -648,19 +760,25 @@ bool InterfaceMain::tick(const InputState &is, RngSeed gameseed) {
     } else {
       CHECK(0);
     }
+    reg_adler_ul(__LINE__);
   } else if(interface_mode == STATE_MAINMENU) {
+    reg_adler_ul(__LINE__);
     if(!inptest) {
       introscreen->runTickWithAi(vector<GameAi*>(introscreen_ais.begin(), introscreen_ais.end()), &unsync());
       introscreen->runTickWithAi(vector<GameAi*>(introscreen_ais.begin(), introscreen_ais.end()), &unsync());
     }
-    
+    reg_adler_ul(controls_primary_id());
+    reg_adler_ul(__LINE__);
     pair<StdMenuCommand, int> mrv = mainmenu.tick(kst[controls_primary_id()]);
+    reg_adler_ul(__LINE__);
+    
     if(mrv.second == MAIN_NEWGAME || FLAGS_auto_newgame) {
       if(!faction_toggle)
         faction = 1;
       else
         faction = 4;
       game = new Metagame(kst.size(), Money((long long)(1000 * pow(30, start.toFloat()))), exp(moneyexp), faction - 1, FLAGS_rounds_per_shop, calculateRounds(start, end, moneyexp), gameseed);
+      dprintf("ENTERING PLAYING\n");
       interface_mode = STATE_PLAYING;
     } else if(mrv.second == MAIN_EXIT) {
       return true;
@@ -676,14 +794,16 @@ bool InterfaceMain::tick(const InputState &is, RngSeed gameseed) {
     } else {
       CHECK(mrv.second == -1);
     }
+    reg_adler_ul(__LINE__);
   } else if(interface_mode == STATE_PLAYING) {
+    reg_adler_ul(__LINE__);
     if(game->runTick(is.controllers)) {
       init();   // full reset
     }
   } else {
     CHECK(0);
   }
-  
+  reg_adler_ul(__LINE__);
   return false;
 }
 
@@ -701,7 +821,6 @@ void InterfaceMain::ai(const vector<Ai *> &ai) const {
 }
 
 bool tankCostSorter(const pair<string, IDBTank> &lhs, const pair<string, IDBTank> &rhs) {
-  //return lhs.first < rhs.first;
   if(lhs.second.base_cost != rhs.second.base_cost)
     return lhs.second.base_cost < rhs.second.base_cost;
   return lhs.second.engine > rhs.second.engine;
@@ -956,13 +1075,25 @@ void InterfaceMain::render() const {
 };
 
 void InterfaceMain::checksum(Adler32 *adl) const {
+  StackString sstr("WE CHECKSUM SHIT");
+  reg_adler_intermed(*adl);
+  mainmenu.checksum(adl);
+  reg_adler_intermed(*adl);
+  escmenu.checksum(adl);
+  reg_adler_intermed(*adl);
+  optionsmenu.checksum(adl);
+  reg_adler_intermed(*adl);
+  reg_adler_ul(interface_mode);
   adler(adl, interface_mode);
+  reg_adler_intermed(*adl);
   adler(adl, start);
+  reg_adler_intermed(*adl);
   adler(adl, end);
+  reg_adler_intermed(*adl);
   adler(adl, moneyexp);
+  reg_adler_intermed(*adl);
   adler(adl, faction);
-  
-  //reg_adler_intermed(*adl);
+  reg_adler_intermed(*adl);
   
   if(game)
     game->checksum(adl);

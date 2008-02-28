@@ -49,6 +49,13 @@ public:
   const T *operator->() const {
     return get();
   }
+  
+  T &operator*() {
+    return *get();
+  }
+  const T &operator*() const {
+    return *get();
+  }
 
   smart_ptr<T> &operator=(const smart_ptr<T> &x) {
     if(this != &x) {

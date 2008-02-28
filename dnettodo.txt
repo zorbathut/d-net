@@ -1,5 +1,6 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
+  - Move adler registration system out of adler32.h
   - Convert key output into OStream
     - Add OStreamGz support
     - Compress key output
@@ -7,6 +8,8 @@
   - add "instant action" option
   - make sure full shop works in instant action
   - Add forum
+  - Split data into "data_source", "data_demo", "data_release"
+  - Add demo mode
   - Make free version
   - Figure out Linux packaging
   - Figure out OSX packaging
@@ -220,33 +223,7 @@ Deadman's Nuke: Angel-cannon explosion
 Immolation Device: Multiple nearby explosions
 Core Conversion: DPS explosion, with spew of airbrake projectiles
 
-----
-Release build:
-- Disable adler
-- Disable writetotarget
-- Disable errormessages
-
-----
-Menus!
-Things I need:
-
-* Resolution
-* Fullscreen
-* Aspect ratio
-* Color depth
-* Accept
-* Cancel
-
-----
-Chooser interface
-
-Name
-Key/value pairs (string/T)
-"Value" storage location
-Change notifier functor
-
-
-
+---
 Okay, if we're doing a full menu GUI . . .
 
 * Widget
@@ -254,18 +231,23 @@ Widget has a minsize, render, and input calls. Input includes mousein, mouseout,
 
 Everything can, I think, be inherited from this. We can have functors for handling events, like wxwidgets does, but I'll just rig it up so that items must pass their own events around. Everything will be noncopyable to make it easier.
 
+
 ---
-Interface, again
+Let's think about adler some.
 
-"Press key X" for gamepads. What we need:
+* When reading:
+  * Initialize controls, initialize adler system
+    * Read pre-roll adler data
+    * Initialize game while verifying adler data
+    * On each frame:
+      * Read frame adler data
+      * Run frame while verifying adler data
+* When writing:
+  * Initialize controls, initialize adler system
+    * Initialize game while creating adler data
+    * Write post-initialize adler data
+    * On each frame:
+      * Run frame while creating adler data
+      * Write frame adler data
 
-* Press "A" or "X" for accept (can I get the right colors? Dammit, why is the XBox X blue)
-* Press "B" or "O" for cancel
-* Move the right stick up
-* Press the left stick in
-* Press L1 / LB
-* Press L2 / LT
-* Press R1 / RB
-* Press R2 / RT
-
-That is indeed all we need.
+Really I just need a "setup for next frame" function, and that shouldn't be done in inputsnag I'm thinking. I think I should move the file *reading* into core, and give that as a potential source for inputsnag. Adler in general should be cleaner and better-documented than it is now, it's moved from a hack into an actual tool. So, work on that.

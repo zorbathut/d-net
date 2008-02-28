@@ -7,6 +7,7 @@
 #include "util.h"
 #include "smartptr.h"
 #include "adler32.h"
+#include "dumper.h"
 
 #include <boost/assign/list_of.hpp>
 
@@ -20,8 +21,6 @@
 
 using namespace std;
 
-DEFINE_string(readTarget, "", "File to replay from");
-
 DEFINE_int(aiCount, 0, "Number of AIs");
 DEFINE_int(nullControllers, 0, "Null controllers to insert in front");
 
@@ -31,7 +30,7 @@ static vector<pair<int, int> > sources;
 static vector<int> prerecorded;
 static vector<SDL_Joystick *> joysticks;
 static vector<smart_ptr<Ai> > ai;
-static FILE *infile = NULL;
+static int primary_id;
 
 static InputState last;
 static InputState now;
@@ -42,10 +41,8 @@ const int playertwo[] = { SDLK_w, SDLK_s, SDLK_a, SDLK_d, SDLK_r, SDLK_t, SDLK_y
 const int *const baseplayermap[2] = { playerone, playertwo };
 const int baseplayersize[2] = { ARRAY_SIZE(playerone), ARRAY_SIZE(playertwo) };  
 
-pair<RngSeed, InputState> controls_init(RngSeed default_seed) {
-  RngSeed rngs(default_seed);
+InputState controls_init() {
   CHECK(sources.size() == 0);
-  CHECK(FLAGS_readTarget == "" || FLAGS_aiCount == 0);
   
   now.controllers.resize(FLAGS_nullControllers);
   prerecorded.resize(FLAGS_nullControllers);
@@ -54,34 +51,20 @@ pair<RngSeed, InputState> controls_init(RngSeed default_seed) {
     now.controllers[i].axes.resize(2);
     now.controllers[i].keys.resize(4);
   }
+  primary_id = FLAGS_nullControllers;
   
-  if(FLAGS_readTarget != "") {
+  if(dumper_is_replaying()) {
     CHECK(FLAGS_nullControllers == 0);
-    dprintf("Reading state record from file %s\n", FLAGS_readTarget.c_str());
-    infile = fopen(FLAGS_readTarget.c_str(), "rb");
-    CHECK(infile);
-    int dat;
-    fread(&dat, 1, sizeof(dat), infile);
-    CHECK(dat == 8);  // magic number
-    fread(&rngs, 1, sizeof(rngs), infile);
-    fread(&dat, 1, sizeof(dat), infile);
-    dprintf("%d controllers\n", dat);
-    now.controllers.resize(dat);
-    prerecorded.resize(dat, true);
-    for(int i = 0; i < now.controllers.size(); i++) {
-      fread(&dat, 1, sizeof(dat), infile);
-      dprintf("%d: %d buttons\n", i, dat);
-      now.controllers[i].keys.resize(dat);
-      fread(&dat, 1, sizeof(dat), infile);
-      dprintf("%d: %d axes\n", i, dat);
-      now.controllers[i].axes.resize(dat);
-      
-      pair<int, int> source;
-      fread(&source.first, 1, sizeof(source.first), infile);
-      fread(&source.second, 1, sizeof(source.second), infile);
-      dprintf("%d: %d/%d type\n", i, source.first, source.second);
-      sources.push_back(source);
-    }
+    CHECK(FLAGS_aiCount == 0);
+    
+    InputState is = dumper_get_layout();
+    
+    now.controllers = is.controllers;
+    prerecorded.resize(now.controllers.size(), true);
+    sources = dumper_get_sources();
+    primary_id = dumper_get_primary_id();
+    
+    CHECK(sources.size() == now.controllers.size());
   } else if(FLAGS_aiCount) {
     prerecorded.resize(prerecorded.size() + FLAGS_aiCount, false);
     dprintf("Creating AIs\n");
@@ -139,9 +122,11 @@ pair<RngSeed, InputState> controls_init(RngSeed default_seed) {
   CHECK(sources.size() == now.controllers.size());
   CHECK(prerecorded.size() == sources.size());
   
+  dumper_set_layout(now, sources, primary_id);
+  
   last = now;
   
-  return make_pair(rngs, now);
+  return now;
 }
 
 void controls_key(const SDL_KeyboardEvent *key) {
@@ -177,36 +162,11 @@ void controls_key(const SDL_KeyboardEvent *key) {
 InputState controls_next() {
   StackString sst("Controls");
   
-  if(infile) {
-    for(int i = 0; i < now.controllers.size(); i++) {
-      fread(&now.controllers[i].menu.x, 1, sizeof(now.controllers[i].menu.x), infile);
-      fread(&now.controllers[i].menu.y, 1, sizeof(now.controllers[i].menu.y), infile);
-      fread(&now.controllers[i].u.down, 1, sizeof(now.controllers[i].u.down), infile);
-      fread(&now.controllers[i].d.down, 1, sizeof(now.controllers[i].d.down), infile);
-      fread(&now.controllers[i].l.down, 1, sizeof(now.controllers[i].l.down), infile);
-      fread(&now.controllers[i].r.down, 1, sizeof(now.controllers[i].r.down), infile);
-      for(int j = 0; j < now.controllers[i].keys.size(); j++)
-        fread(&now.controllers[i].keys[j].down, 1, sizeof(now.controllers[i].keys[j].down), infile);
-      for(int j = 0; j < now.controllers[i].axes.size(); j++)
-        fread(&now.controllers[i].axes[j], 1, sizeof(now.controllers[i].axes[j]), infile);
-    }
-    if(feof(infile)) {
-      InputState is;
-      is.valid = false;
-      return is;
-    }
-    {
-      int ct = 0;
-      fread(&ct, 1, sizeof(ct), infile);
-      CHECK(ct >= 1);
-      reg_adler_ref_start();
-      for(int i = 0; i < ct; i++) {
-        unsigned long ite;
-        fread(&ite, 1, sizeof(ite), infile);
-        reg_adler_ref_item(ite);
-      }
-    }
-    CHECK(!feof(infile));
+  if(dumper_is_replaying()) {
+    now = dumper_read_input();
+    if(!now.valid)
+      return now;
+    CHECK(now.controllers.size() == last.controllers.size());
   } else if(FLAGS_aiCount) {
     set<int> done;
     for(int i = 0; i < sources.size(); i++) {
@@ -295,7 +255,7 @@ InputState controls_next() {
 vector<Ai *> controls_ai() {
   vector<Ai *> rv;
   for(int i = 0; i < sources.size(); i++) {
-    if(sources[i].first == CIP_AI)
+    if(sources[i].first == CIP_AI && !prerecorded[i])
       rv.push_back(ai[sources[i].second].get());
     else
       rv.push_back(NULL);
@@ -304,40 +264,17 @@ vector<Ai *> controls_ai() {
 }
 
 bool controls_users() {
-  return !infile && !FLAGS_aiCount;
+  return !dumper_is_replaying() && !FLAGS_aiCount;
 }
 
-bool controls_recordable() {
-  return FLAGS_readTarget == "";
-}
 void controls_shutdown() {
   CHECK(sources.size());
   for(int i = 0; i < joysticks.size(); i++)
     SDL_JoystickClose(joysticks[i]);
-  if(infile)
-    fclose(infile);
-}
-
-void controls_snag_next_checksum_set() {
-  if(infile) {
-    int ct = 0;
-    fread(&ct, 1, sizeof(ct), infile);
-    if(feof(infile)) {
-      reg_adler_ref_nullity();
-      return;
-    }
-    CHECK(ct >= 1);
-    reg_adler_ref_start();
-    for(int i = 0; i < ct; i++) {
-      unsigned long ite;
-      fread(&ite, 1, sizeof(ite), infile);
-      reg_adler_ref_item(ite);
-    }
-  }
 }
 
 int controls_primary_id() {
-  return FLAGS_nullControllers;
+  return primary_id;
 }
 
 pair<int, int> controls_getType(int id) {
