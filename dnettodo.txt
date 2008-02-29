@@ -1,9 +1,6 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - Convert key output into OStream
-    - Add OStreamGz support
-    - Compress key output
-    - Set it up to save properly on crash
     - Set it up to delete all but the last three newest
   - Jam AI into singleplayer
   - add "instant action" option

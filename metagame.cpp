@@ -11,6 +11,7 @@
 #include "player.h"
 #include "perfbar.h"
 #include "adler32_util.h"
+#include "audit.h"
 
 #include <fstream>
 
@@ -108,22 +109,22 @@ bool Metagame::runTick(const vector<Controller> &keys) {
 
 void Metagame::checksum(Adler32 *adl) const {
   StackString sstr("WE CHECKSUM META");
-  //reg_adler_intermed(*adl);
+  audit(*adl);
   adler(adl, mode);
   adler(adl, faction_mode);
   adler(adl, gameround);
   adler(adl, roundsBetweenShop);
   adler(adl, last_level);
   adler(adl, rng);
-  //reg_adler_intermed(*adl);
+  audit(*adl);
   adler(adl, win_history);
-  //reg_adler_intermed(*adl);
+  audit(*adl);
   adler(adl, faction_mode_players);
-  //reg_adler_intermed(*adl);
+  audit(*adl);
   persistent.checksum(adl);
-  //reg_adler_intermed(*adl);
+  audit(*adl);
   game.checksum(adl);
-  //reg_adler_intermed(*adl);
+  audit(*adl);
 };
   
 void Metagame::ai(const vector<Ai *> &ai) const {

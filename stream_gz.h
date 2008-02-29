@@ -24,9 +24,12 @@ private:
   void *gz;
   
   void write_worker(const char *buff, int avail);
+
+  friend void flushOstreamGzOnCrash();
+  void flush_and_terminate();
 public:
 
-  OStreamGz(const string &fname);
+  OStreamGz(const string &fname); // THIS IS NOT CURRENTLY THREADSAFE
   ~OStreamGz();
 };
 

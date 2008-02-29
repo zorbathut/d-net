@@ -230,6 +230,8 @@ void MainLoop() {
       waiting += bencher.ticksElapsed();
       bencher = Timer();
     }
+    if(frameNumber == 912)
+      CHECK(0);
     timer.frameDone();
     {
       int frameSplit;

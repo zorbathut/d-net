@@ -52,8 +52,8 @@ void registerCrashFunction(void (*fct)()) {
 }
 void unregisterCrashFunction(void (*fct)()) {
   CHECK(cfc.size());
-  CHECK(cfc.back() == fct);
-  cfc.pop_back();
+  CHECK(count(cfc.begin(), cfc.end(), fct) >= 1);
+  cfc.erase(find(cfc.begin(), cfc.end(), fct));
 }
 
 #ifdef VECTOR_PARANOIA

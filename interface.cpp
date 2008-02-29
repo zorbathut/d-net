@@ -15,6 +15,7 @@
 #include "game_ai.h"
 #include "res_interface.h"
 #include "adler32_util.h"
+#include "audit.h"
 
 #include <boost/assign.hpp>
 #include <boost/bind.hpp>
@@ -587,14 +588,19 @@ StdMenu::StdMenu() {
 }
 
 void StdMenu::checksum(Adler32 *adl) const {vector<vector<smart_ptr<StdMenuItem> > > items;
+  audit(*adl);
   for(int i = 0; i < items.size(); i++) {
     for(int j = 0; j < items[i].size(); j++) {
       items[i][j]->checksum(adl);
     }
   }
+  audit(*adl);
   adler(adl, vpos);
+  audit(*adl);
   adler(adl, hpos);
+  audit(*adl);
   adler(adl, inside);
+  audit(*adl);
 }
 
 /*************
