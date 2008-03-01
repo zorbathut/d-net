@@ -524,6 +524,8 @@ bool findEquipItem(const HierarchyNode &hrt, const IDBWeapon *weap, vector<int> 
 bool Shop::runTick(const Keystates &keys, Player *player, int playercount) {
   PerfStack pst(PBC::shop);
   
+  bool regenerate = false;
+  
   CHECK(getCurNode().selectable);
   if(keys.l.repeat && curloc.size() > 1) {
     queueSound(S::select);
@@ -567,9 +569,11 @@ bool Shop::runTick(const Keystates &keys, Player *player, int playercount) {
     
     if(equipselected) {
       if(keys.u.repeat) {
+        regenerate = true;
         player->moveWeaponUp(equipselected);
       }
       if(keys.d.repeat) {
+        regenerate = true;
         player->moveWeaponDown(equipselected);
       }
     }
@@ -591,6 +595,7 @@ bool Shop::runTick(const Keystates &keys, Player *player, int playercount) {
         for(int i = 0; i < SIMUL_WEAPONS; i++) {
           if(keys.fire[i].push) {
             if(getCurNode().buyable) {
+              regenerate = true;
               queueSound(S::choose);
               if(equipselected)
                 player->promoteWeapon(equipselected, i);
@@ -604,10 +609,6 @@ bool Shop::runTick(const Keystates &keys, Player *player, int playercount) {
         }
       }
     }
-  } else if(getCurNode().type == HierarchyNode::HNT_SELL) {
-    if(keys.accept.push) {
-      queueSound(S::choose);
-    }
   } else {
     
     if(keys.accept.repeat) {
@@ -616,7 +617,7 @@ bool Shop::runTick(const Keystates &keys, Player *player, int playercount) {
       
       if(getCurNode().buyable) {
         // Player is trying to buy something!
-        
+        regenerate = true;  // it's just easier
         if(getCurNode().type == HierarchyNode::HNT_DONE) {
           if(player->blockedReasons().empty()) {
             ret = true;
@@ -728,7 +729,7 @@ bool Shop::runTick(const Keystates &keys, Player *player, int playercount) {
   if(hasInfo(getCurNode().type))
     cshopinf.runTick();
   
-  {
+  if(regenerate) {
     PerfStack pst(PBC::shopnormalize);
     hierarchroot = itemDbRoot();
     renormalize(hierarchroot, player, playercount, highestcash);
