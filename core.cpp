@@ -158,6 +158,7 @@ void MainLoop() {
           for(int i = 0; i < is.controllers.size(); i++)
             CHECK(is.controllers[i].keys.size() == origis.controllers[i].keys.size());
           
+          /*
           {
             Adler32 adl;
             PerfStack pst(PBC::checksum);
@@ -167,6 +168,7 @@ void MainLoop() {
             }
             audit(adl);
           }
+          */
           
           audit(0);  // so we have one item, and for rechecking's sake
           
