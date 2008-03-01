@@ -767,6 +767,12 @@ void InterfaceMain::ai(const vector<Ai *> &ai) const {
   }
 }
 
+bool InterfaceMain::isWaitingOnAi(const vector<bool> &ais) const {
+  if(interface_mode == STATE_PLAYING)
+    return game->isWaitingOnAi(ais);
+  return false;
+}
+
 bool tankCostSorter(const pair<string, IDBTank> &lhs, const pair<string, IDBTank> &rhs) {
   if(lhs.second.base_cost != rhs.second.base_cost)
     return lhs.second.base_cost < rhs.second.base_cost;

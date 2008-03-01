@@ -106,6 +106,7 @@ public:
 
   bool tick(const InputState &control, RngSeed gameseed);
   void ai(const vector<Ai *> &ais) const;
+  bool isWaitingOnAi(const vector<bool> &ais) const;
   void render() const;
 
   void forceResize(int w, int h);

@@ -26,8 +26,9 @@ public:
 
   // Main loop
   enum PDRTR { PDRTR_CONTINUE, PDRTR_PLAY, PDRTR_EXIT };
-  PDRTR tick(const vector< Controller > &keys);
+  PDRTR tick(const vector<Controller> &keys);
   void ai(const vector<Ai *> &ais) const;
+  bool isWaitingOnAi(const vector<bool> &ais) const;
   void render() const;
 
   void checksum(Adler32 *adl) const;  
@@ -113,8 +114,11 @@ private:
   // Slot functions
   bool tickSlot(int slotid, const vector<Controller> &controllers);
   void renderSlot(int slotid) const;
+  
+  bool isUnfinished(int id) const;
   vector<const IDBFaction *> getUnfinishedFactions() const;
-    
+  bool onlyAiUnfinished(const vector<bool> &ais) const;
+  
   vector<pair<int, pair<Coord, Coord> > > getRanges() const;
   Coord2 targetCoords(int target) const;
 

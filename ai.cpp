@@ -625,8 +625,8 @@ void Ai::zeroNextKeys() {
 }
 
 void Ai::updateKeys(int desiredsource) {
-  if(curframe >= frameNumber)
-    dprintf("Weird frame inconsistency in AI on frame %d\n", curframe);
+  //if(curframe >= frameNumber)
+    //dprintf("Weird frame inconsistency in AI on frame %d\n", curframe);
   curframe = frameNumber;
   source = desiredsource;
 }

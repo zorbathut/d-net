@@ -267,6 +267,17 @@ vector<Ai *> controls_ai() {
   return rv;
 }
 
+vector<bool> controls_ai_flags() {
+  vector<bool> rv;
+  for(int i = 0; i < sources.size(); i++) {
+    if(sources[i].first == CIP_AI && !prerecorded[i])
+      rv.push_back(true);
+    else
+      rv.push_back(false);
+  }
+  return rv;
+}
+
 bool controls_users() {
   return !dumper_is_replaying() && !FLAGS_aiCount;
 }

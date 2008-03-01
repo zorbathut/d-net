@@ -13,6 +13,7 @@ InputState controls_init();
 void controls_key(const SDL_KeyboardEvent *key);
 InputState controls_next();
 vector<Ai *> controls_ai();
+vector<bool> controls_ai_flags();
 bool controls_users();
 void controls_shutdown();
 class ControlShutdown {

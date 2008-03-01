@@ -1,13 +1,13 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
-  - Convert key output into OStream
-    - Set it up to delete all but the last three newest
+  - Rig AI to optionally not do rendering of any kind in shop mode
   - Jam AI into singleplayer
   - add "instant action" option
   - make sure full shop works in instant action
   - Add forum
   - Split data into "data_source", "data_demo", "data_release"
   - Add demo mode
+  - Set it up to delete all but the three newest dumps
   - Make free version
   - Figure out Linux packaging
   - Figure out OSX packaging
@@ -21,7 +21,7 @@
   - Step-by-step: tanks vanish, *then* reappear exploding
   - Reflectors vanish for two entire frames
   - Slow tanks have more bombardment resistance
-  - Bombardment shield for people fighting, moving, doing/taking damage
+  - Bombardment shield for people fighting, moving closer, doing/taking damage
   - Check to see if firerate bonus for firerate tanks is high enough to be worth it (it's not)
   - Reflector ray is insufficiently awesome-looking, and the firerate should be boosted significatly
   - Sniper mines also look insufficiently awesome
@@ -64,9 +64,9 @@
     - Special laser
     - Special missile
     - OGRE
-      - Spruce up special autocannon weaponry
-      - Spruce up special laser weaponry
-      - Spruce up special missile weaponry
+    - Spruce up special autocannon weaponry
+    - Spruce up special laser weaponry
+    - Spruce up special missile weaponry
   - Eventual bugfixes
     - figure out collision a bit better - it should know which side impacted which, and then I can remove the "impact location" code entirely
     - split spawn shit into "instant", "constant", and "impact"?
@@ -83,16 +83,12 @@
     - Write a better allocator
       - Slowdown with lots of weapons?
     - Lever tanks off walls when they turn?
-    - Remove bombardment level visualization, and de-integer it
-    - Get rid of old weapons as they become obsolete
-    - Add commas to large numbers in shop info
     - Add level editor options for subtraction, fix spiney and re-add
-   - Pacman scale up 20% or so
+    - Pacman scale up 20% or so
     - Better implant interface
     - Add wander-around-randomly-and-do-shit to the AI
     - Add calculation for missile explosion durability
     - Glory durability?
-    - Set things up so that units don't change within groups
     - Add upgrades to the balance sheet
     - Get better at returning "no I'm sorry I just can't understand the itemdb"
   - Huge enormous things
@@ -101,9 +97,6 @@
     - Singleplayer
 
 - "Polish the Damn Interface" Initiative
-  - Fix config, again
-    - Remove tank, absolute
-    - Put in recommendations for split-axis
   - Four-weapon system
     - Figure out how to equip stuff well?
   - Colorcode tanks, based on relative tank level

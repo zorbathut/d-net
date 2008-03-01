@@ -1035,23 +1035,25 @@ void PersistentData::renderSlot(int slotid) const {
   }
 }
 
+bool PersistentData::isUnfinished(int id) const {
+  if(sps_playermode[id] == SPS_DONE || sps_playermode[id] == SPS_END)
+    return false;
+  
+  if(!pms[id].faction && sps_playermode[id] == SPS_IDLE)
+    return false;
+  
+  if(!pms[id].faction && sps_playermode[id] == SPS_CHOOSING)
+    return false;
+  
+  return true;
+}
+
 vector<const IDBFaction *> PersistentData::getUnfinishedFactions() const {
   StackString sst("guf");
   
   vector<const IDBFaction *> nrfactions;
   for(int i = 0; i < pms.size(); i++) {
-    bool ready = false;
-    
-    if(sps_playermode[i] == SPS_DONE || sps_playermode[i] == SPS_END)
-      ready = true;
-    
-    if(!pms[i].faction && sps_playermode[i] == SPS_IDLE)
-      ready = true;
-    
-    if(!pms[i].faction && sps_playermode[i] == SPS_CHOOSING)
-      ready = true;
-    
-    if(!ready) {
+    if(isUnfinished(i)) {
       if(pms[i].faction)
         nrfactions.push_back(pms[i].faction->faction);
       else
@@ -1059,6 +1061,14 @@ vector<const IDBFaction *> PersistentData::getUnfinishedFactions() const {
     }
   }
   return nrfactions;
+}
+
+bool PersistentData::onlyAiUnfinished(const vector<bool> &ais) const {
+  for(int i = 0; i < pms.size(); i++)
+    if(!ais[i] && isUnfinished(i))
+      return false;
+  
+  return true;
 }
 
 vector<Ai *> PersistentData::distillAi(const vector<Ai *> &ai) const {
@@ -1186,6 +1196,10 @@ void PersistentData::ai(const vector<Ai *> &ais) const {
   
   for(set<Ai *>::iterator itr = untouched.begin(); itr != untouched.end(); itr++)
     (*itr)->updateIdle();
+}
+
+bool PersistentData::isWaitingOnAi(const vector<bool> &isAi) const {
+  return playerdata.size() >= 1 && onlyAiUnfinished(isAi); // We built this city on rock and sheep.
 }
 
 vector<Keystates> PersistentData::genKeystates(const vector<Controller> &keys) const {

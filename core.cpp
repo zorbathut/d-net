@@ -96,93 +96,102 @@ void MainLoop() {
       timer = Timer();    // so we don't end up sitting there for aeons waiting for another frame
     if(FLAGS_timing)
       bencher = Timer();
-    SDL_Event event;
-    while(SDL_PollEvent(&event)) {
-      switch(event.type) {
-        case SDL_QUIT:
-          quit = true;
-          break;
+    
+    do {
+      {
+        SDL_Event event;
+        while(SDL_PollEvent(&event)) {
+          switch(event.type) {
+            case SDL_QUIT:
+              quit = true;
+              break;
 
-        case SDL_KEYDOWN:
-        case SDL_KEYUP:
-          if(FLAGS_warpkeys && event.key.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_z)
-            speed = !speed;
-          if(FLAGS_warpkeys && event.key.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_x)
-            speed = 10;
-          if(FLAGS_warpkeys && event.key.type == SDL_KEYUP && event.key.keysym.sym == SDLK_x)
-            speed = 0;
-          if(FLAGS_warpkeys && event.key.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_c)
-            thistick = true;
-          if(FLAGS_warpkeys && event.key.type == SDL_KEYUP && event.key.keysym.sym == SDLK_c)
-            speed = 0;
-          
-          controls_key(&event.key);
-          break;
+            case SDL_KEYDOWN:
+            case SDL_KEYUP:
+              if(FLAGS_warpkeys && event.key.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_z)
+                speed = !speed;
+              if(FLAGS_warpkeys && event.key.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_x)
+                speed = 10;
+              if(FLAGS_warpkeys && event.key.type == SDL_KEYUP && event.key.keysym.sym == SDLK_x)
+                speed = 0;
+              if(FLAGS_warpkeys && event.key.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_c)
+                thistick = true;
+              if(FLAGS_warpkeys && event.key.type == SDL_KEYUP && event.key.keysym.sym == SDLK_c)
+                speed = 0;
+              
+              controls_key(&event.key);
+              break;
 
-        case SDL_VIDEORESIZE:
-          interface.forceResize(event.resize.w, event.resize.h);
-          break;
+            case SDL_VIDEORESIZE:
+              interface.forceResize(event.resize.w, event.resize.h);
+              break;
 
-        default:
-          break;
-      }
-    }
-    if(quit || FLAGS_terminateAfter != -1 && time(NULL) - starttime >= FLAGS_terminateAfter)
-      break;
-    if(FLAGS_terminateAfterFrame != -1 && FLAGS_terminateAfterFrame <= frameNumber)
-      break;
-    {
-      int tspeed = speed;
-      if(thistick && !tspeed)
-        tspeed = 1;
-      for(int i = 0; i < tspeed; i++) {
-        
-        interface.ai(controls_ai());  // has to be before controls
-        
-        audit_unpause();
-        dumper_write_adler();
-        adlers += audit_read_count();
-        is = controls_next();
-        if(!is.valid)
-          return;
-        dumper_write_input(is);
-        dumper_read_adler();
-        
-        CHECK(is.controllers.size() == origis.controllers.size());
-        for(int i = 0; i < is.controllers.size(); i++)
-          CHECK(is.controllers[i].keys.size() == origis.controllers[i].keys.size());
-        
-        {
-          Adler32 adl;
-          PerfStack pst(PBC::checksum);
-          adler(&adl, frameNumber);
-          if(FLAGS_checksumGameState) {
-            interface.checksum(&adl);
+            default:
+              break;
           }
-          audit(adl);
         }
-        
-        audit(0);  // so we have one item, and for rechecking's sake
-        
-        if(FLAGS_timing) {
-          polling += bencher.ticksElapsed();
-          bencher = Timer();
-        }
-        {
-          PerfStack pst(PBC::tick);
-          if(interface.tick(is, game_seed))
-            quit = true;
-        }
-        if(FLAGS_timing) {
-          ticking += bencher.ticksElapsed();
-          bencher = Timer();
-        }
-        
-        frameNumber++;
-        
-        audit_pause();
       }
-    }
+      
+      if(quit || FLAGS_terminateAfter != -1 && time(NULL) - starttime >= FLAGS_terminateAfter)
+        break;
+      if(FLAGS_terminateAfterFrame != -1 && FLAGS_terminateAfterFrame <= frameNumber)
+        break;
+      
+      {
+        int tspeed = speed;
+        if(thistick && !tspeed)
+          tspeed = 1;
+        for(int i = 0; i < tspeed; i++) {
+          
+          interface.ai(controls_ai());  // has to be before controls
+          
+          audit_unpause();
+          dumper_write_adler();
+          adlers += audit_read_count();
+          is = controls_next();
+          if(!is.valid)
+            return;
+          dumper_write_input(is);
+          dumper_read_adler();
+          
+          CHECK(is.controllers.size() == origis.controllers.size());
+          for(int i = 0; i < is.controllers.size(); i++)
+            CHECK(is.controllers[i].keys.size() == origis.controllers[i].keys.size());
+          
+          {
+            Adler32 adl;
+            PerfStack pst(PBC::checksum);
+            adler(&adl, frameNumber);
+            if(FLAGS_checksumGameState) {
+              interface.checksum(&adl);
+            }
+            audit(adl);
+          }
+          
+          audit(0);  // so we have one item, and for rechecking's sake
+          
+          if(FLAGS_timing) {
+            polling += bencher.ticksElapsed();
+            bencher = Timer();
+          }
+          {
+            PerfStack pst(PBC::tick);
+            if(interface.tick(is, game_seed))
+              quit = true;
+          }
+          if(FLAGS_timing) {
+            ticking += bencher.ticksElapsed();
+            bencher = Timer();
+          }
+          
+          frameNumber++;
+          
+          audit_pause();
+        }
+      }
+      
+    } while(interface.isWaitingOnAi(controls_ai_flags()));
+    
     if(FLAGS_render) {
       bool render = false;
       if(FLAGS_randomizeFrameRender != 0) {
@@ -230,8 +239,7 @@ void MainLoop() {
       waiting += bencher.ticksElapsed();
       bencher = Timer();
     }
-    if(frameNumber == 912)
-      CHECK(0);
+    
     timer.frameDone();
     {
       int frameSplit;

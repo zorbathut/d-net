@@ -36,6 +36,7 @@ public:
 
   void renderToScreen() const;
   void ai(const vector<Ai *> &ai) const;
+  bool isWaitingOnAi(const vector<bool> &ais) const;
   bool runTick(const vector< Controller > &keys);
 
   void checksum(Adler32 *adl) const;

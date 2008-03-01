@@ -149,6 +149,12 @@ void Metagame::ai(const vector<Ai *> &ai) const {
   }
 }
 
+bool Metagame::isWaitingOnAi(const vector<bool> &ais) const {
+  if(mode == MGM_PLAYERCHOOSE || mode == MGM_TWEEN)
+    return persistent.isWaitingOnAi(ais);
+  return false;
+}
+
 void Metagame::renderToScreen() const {
   PerfStack pst(PBC::rendermeta);
   
