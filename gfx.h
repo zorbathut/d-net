@@ -14,7 +14,8 @@ using namespace std;
  * Setup and statistics
  */
 
-void initGfx();
+void loadFonts();
+void initWindowing(float aspect); // this isn't really necessary if you plan to call updateResolution
 void updateResolution(float aspect); // picks up viewport data from OpenGL
 
 int getResolutionX();

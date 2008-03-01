@@ -148,8 +148,28 @@ public:
 
 static map<char, FontCharacter> fontdata;
 
-void initGfx() {
-  // Load fonts. This used to include more code.
+void initWindowing(float aspect) {
+  // Set up our windowing system
+  if(windows.size() == 1)
+    windows.clear();
+  
+  {
+    CHECK(windows.size() == 0);
+    GfxWindowState gfws;
+    gfws.saved_sx = 0;
+    gfws.saved_sy = 0;
+    gfws.saved_ey = 1;
+    gfws.fade = 1;
+
+    gfws.newbounds = Float4(0, 0, aspect, 1);
+    gfws.gfxw = NULL;
+    
+    windows.push_back(gfws);
+    windows.back().setScissor();
+  }
+}
+
+void loadFonts() {
   CHECK(fontdata.size() == 0);
   ifstream font("data/font.dwh");
   CHECK(font);
@@ -207,24 +227,7 @@ void updateResolution(float aspect) {
     glTranslatef(0, -1, 0);
   }
   
-  // Set up our windowing system
-  if(windows.size() == 1)
-    windows.clear();
-  
-  {
-    CHECK(windows.size() == 0);
-    GfxWindowState gfws;
-    gfws.saved_sx = 0;
-    gfws.saved_sy = 0;
-    gfws.saved_ey = 1;
-    gfws.fade = 1;
-
-    gfws.newbounds = Float4(0, 0, aspect, 1);
-    gfws.gfxw = NULL;
-    
-    windows.push_back(gfws);
-    windows.back().setScissor();
-  }
+  initWindowing(aspect);
 }
 
 float curWeight = 0;

@@ -121,9 +121,9 @@ Keystates::Keystates() {
 }
 
 void adler(Adler32 *adl, const Keystates &kst) {
-  adler(adl, kst.ax);
+  adler_array(adl, kst.ax);
   adler(adl, kst.axmode);
-  adler(adl, kst.fire);
+  adler_array(adl, kst.fire);
   adler(adl, kst.udlrax);
   adler(adl, kst.u);
   adler(adl, kst.d);

@@ -10,6 +10,8 @@
 #include <signal.h>
 #include <unistd.h>
 
+#include <boost/static_assert.hpp>
+
 using namespace std;
 
 // Cross-platform
@@ -37,27 +39,25 @@ void seriouslyCrash() {
 string getConfigDirectory() {
   char buff[MAX_PATH + 1];
   SHGetFolderPath(NULL, CSIDL_APPDATA, NULL, 0, buff);
-  dprintf("Config directory: %s\n", buff);
+  //dprintf("Home directory: %s\n", buff);
   return string(buff) + "\\Devastation Net\\";
 }
 
-void makeConfigDirectory() {
-  vector<string> tok = tokenize(getConfigDirectory(), "\\");
-  string cc;
-  for(int i = 0; i < tok.size(); i++) {
-    if(cc.size())
-      cc += "\\";
-    cc += tok[i];
-    dprintf("Making %s\n", cc.c_str());
-    mkdir(cc.c_str());
-  }
+static const string directory_delimiter = "\\";
+
+void wrap_mkdir(const string &str) {
+  mkdir(str.c_str());
 }
 
 #else
 
+#include <sys/stat.h>
+
 #undef printf
 void outputDebugString(const string &str) {
-  printf("%s\n", str.c_str());
+  printf("%s", str.c_str());
+  if(!str.size() || str[str.size() - 1] != '\n')
+    printf("\n");
 }
 #define printf FAILURE
 
@@ -65,7 +65,32 @@ void seriouslyCrash() {
   exit(-1);
 }
 
+string getConfigDirectory() {
+  string bf = getenv("HOME");
+  //dprintf("Home directory: %s\n", bf.c_str());
+  return bf + "/.d-net/";
+}
+
+static const string directory_delimiter = "/";
+
+void wrap_mkdir(const string &str) {
+  mkdir(str.c_str(), 0700);
+}
+
 #endif
+
+void makeConfigDirectory() {
+  CHECK(directory_delimiter.size() == 1);
+  vector<string> tok = tokenize(getConfigDirectory(), directory_delimiter);
+  string cc;
+  for(int i = 0; i < tok.size(); i++) {
+    if(cc.size())
+      cc += directory_delimiter;
+    cc += tok[i];
+    dprintf("Making %s\n", cc.c_str());
+    wrap_mkdir(cc);
+  }
+}
 
 // if Cygwin or other Linux
 typedef void (*sighandler_t)(int);
@@ -92,7 +117,7 @@ string exename() {
  
 const unsigned int kStackTraceMax = 20;
 const unsigned int kMaxClassDepth = kStackTraceMax * 2 + 1;
-//BOOST_STATIC_ASSERT(kMaxClassDepth % 2 == 1); // Must be odd.
+BOOST_STATIC_ASSERT(kMaxClassDepth % 2 == 1); // Must be odd.
  
 template <unsigned int S, unsigned int N = 1> struct StackTracer {
   static void printStack(vector<const void *> *vek) {

@@ -16,7 +16,12 @@ DEFINE_int(resolutiony, -1, "Y resolution");
 DEFINE_bool(fullscreen, false, "Fullscreen");
 DEFINE_float(aspect, -1, "Aspect");
 
-Settings::Settings() { };
+Settings::Settings() {
+  res_x = 640;
+  res_y = 480;
+  res_fullscreen = true;
+  res_aspect = 4./3.;
+};
 Settings::~Settings() { };
 
 Settings &Settings::get_instance() {

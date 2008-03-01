@@ -559,7 +559,7 @@ void PersistentData::checksum(Adler32 *adl) const {
   adler(adl, multiplePerRound);
   adler(adl, newPlayerStartingCash);
   adler(adl, highestPlayerCash);
-  adler(adl, slot);
+  adler_array(adl, slot);
   adler(adl, roundsbetweenshop);
   adler(adl, shopcycles);
   adler(adl, sps_shopped);

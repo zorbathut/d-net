@@ -828,10 +828,10 @@ void adler(Adler32 *adl, const IDBLauncher *idb) { if(idb) adler(adl, nameFromID
 
 void adler(Adler32 *adl, const IDBAdjustment &idb) {
   adler(adl, idb.ignore_excessive_radius);
-  adler(adl, idb.adjusts);
+  adler_array(adl, idb.adjusts);
   adler(adl, idb.tankhpboost);
   adler(adl, idb.tankspeedreduction);
-  adler(adl, idb.adjustlist);
+  adler_array(adl, idb.adjustlist);
 }
 
 void adler(Adler32 *adl, const IDBWeaponAdjust &idb) { idb.checksum(adl); }

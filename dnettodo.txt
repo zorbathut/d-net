@@ -6,6 +6,7 @@
   - make sure full shop works in instant action
   - Add forum
   - Split data into "data_source", "data_demo", "data_release"
+  - Look at computer's screen res when starting for the first time
   - Add demo mode
   - Set it up to delete all but the three newest dumps
   - Make free version

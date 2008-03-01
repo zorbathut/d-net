@@ -36,6 +36,7 @@ DEFINE_bool(runGame, true, "Run the actual game");
 DEFINE_bool(outputLevelChart, false, "Output a chart of which levels are available for what playercounts, then quit");
 
 DECLARE_bool(shopcache);
+DECLARE_bool(render);
 
 void SetupOgl() {
 
@@ -53,13 +54,15 @@ void SetupOgl() {
 }
 
 void initSystem() {
-
   CHECK(SDL_Init(SDL_INIT_NOPARACHUTE) >= 0);
-  CHECK(SDL_InitSubSystem(SDL_INIT_VIDEO) >= 0);
   CHECK(SDL_InitSubSystem(SDL_INIT_AUDIO) >= 0);
   CHECK(SDL_InitSubSystem(SDL_INIT_TIMER) >= 0);
   CHECK(SDL_InitSubSystem(SDL_INIT_JOYSTICK) >= 0);
+}
 
+void initVideo() {
+  CHECK(SDL_InitSubSystem(SDL_INIT_VIDEO) >= 0);
+  
   SetupOgl();
   CHECK(setResolution(make_pair(Settings::get_instance().res_x, Settings::get_instance().res_y), Settings::get_instance().res_aspect, Settings::get_instance().res_fullscreen));
   
@@ -75,7 +78,7 @@ void initSystem() {
     glGetIntegerv(GL_STENCIL_BITS, &v);
     dprintf("Stencil bits: %d\n", (int)v);
   }
-};
+}
 
 void deinitSystem() {
 
@@ -145,7 +148,12 @@ int main(int argc, char **argv) {
   if(FLAGS_runGame) {
     initHttpd();
     initSystem();
-    initGfx();
+    if(FLAGS_render) {
+      initVideo();
+    } else {
+      initWindowing(4./3.);
+    }
+    loadFonts();
     initAudio();
     MainLoop();
   }

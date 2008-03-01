@@ -90,7 +90,7 @@ void Tank::checksum(Adler32 *adl) const {
   adler(adl, inertia);
   adler(adl, keys);
   adler(adl, weaponCooldown);
-  adler(adl, weaponCooldownSubvals);
+  adler_array(adl, weaponCooldownSubvals);
   adler(adl, health);
   adler(adl, spawnShards);
   adler(adl, live);

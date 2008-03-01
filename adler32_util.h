@@ -34,15 +34,16 @@ template<typename T> void adler(Adler32 *adl, const set<T> &tee) {
     adler(adl, *itr);
 }
 
-template<typename T, int K> void adler(Adler32 *adl, const T (&tee)[K]) {
-  for(int i = 0; i < K; i++)
-    adler(adl, tee[i]);
-}
-
 inline void adler(Adler32 *adl, const string &str) {
   adler(adl, str.size());
   for(int i = 0; i < str.size(); i++)
     adl->addByte(str[i]);
+}
+
+// sigh
+template<typename T, int K> void adler_array(Adler32 *adl, const T (&tee)[K]) {
+  for(int i = 0; i < K; i++)
+    adler(adl, tee[i]);
 }
 
 #endif

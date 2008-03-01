@@ -4,6 +4,7 @@
 #include "debug.h"
 #include "gfx.h"
 #include "settings.h"
+#include "args.h"
 
 #ifdef OSX_FRAMEWORK_PREFIXES
   #include <OpenGL/gl.h>
@@ -12,6 +13,8 @@
   #include <GL/gl.h>
   #include <SDL.h>
 #endif
+
+DECLARE_bool(render);
 
 int GetVideoFlags(bool fullscreen) {
 
@@ -68,6 +71,9 @@ static float caspect;
 static bool cfull;
 
 bool setResolution(pair<int, int> res, float aspect, bool fullscreen) {
+  CHECK(FLAGS_render);
+  
+  dprintf("%dx%d, %f, %d\n", res.first, res.second, aspect, fullscreen);
   if(!MakeWindow("Devastation Net", res.first, res.second, fullscreen))
     return false;
   
@@ -86,6 +92,11 @@ bool setResolution(pair<int, int> res, float aspect, bool fullscreen) {
 }
 
 vector<pair<int, int> > getResolutions() {
+  if(!FLAGS_render) {
+    // Make some shit up
+    return vector<pair<int, int> >(1, pair<int, int>(640, 480));
+  }
+  
   SDL_Rect **vmodes = SDL_ListModes(NULL, GetVideoFlags(true));
   
   CHECK(vmodes);
