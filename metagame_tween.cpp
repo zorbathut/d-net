@@ -127,8 +127,7 @@ PersistentData::PDRTR PersistentData::tick(const vector<Controller> &keys) {
     StackString sps(StringPrintf("Stdtween"));
     // Various complications and such!
     
-    // First: calculate our ugly ranges for the text labels.
-    vector<pair<int, pair<Coord, Coord> > > ranges = getRanges();
+    // First used to be calculating ranges. It isn't anymore, they're precalculated (yes it was an actual speed problem)
     
     // Second: Traverse all players and update them as necessary.
     for(int player = 0; player < sps_playermode.size(); player++) {
@@ -472,10 +471,9 @@ void PersistentData::render() const {
     
     // Draw our text labels
     {
-      vector<pair<int, pair<Coord, Coord> > > rng = getRanges();
-      for(int i = 0; i < rng.size(); i++) {
-        vector<string> lines = tokenize(tween_textlabels[rng[i].first], " ");
-        drawJustifiedMultiText(lines, ticker_text_size, Coord2((rng[i].second.first + rng[i].second.second) / 2 / 100 * getZoom().ex, (ticker_ypos + 100) / 2), TEXT_CENTER, TEXT_CENTER);
+      for(int i = 0; i < ranges.size(); i++) {
+        vector<string> lines = tokenize(tween_textlabels[ranges[i].first], " ");
+        drawJustifiedMultiText(lines, ticker_text_size, Coord2((ranges[i].second.first + ranges[i].second.second) / 2 / 100 * getZoom().ex, (ticker_ypos + 100) / 2), TEXT_CENTER, TEXT_CENTER);
       }
     }
     
@@ -586,6 +584,8 @@ void PersistentData::reset() {
   for(int i = 0; i < pms.size(); i++)
     if(pms[i].faction)
       sps_playermode[i] = SPS_CHOOSING;
+  
+  resetRanges();
   
   sps_playerpos.clear();
   for(int i = 0; i < pms.size(); i++) {
@@ -1323,7 +1323,7 @@ void PersistentData::startAtNormalShop() {
   slot[0].type = Slot::EMPTY;
 }
 
-vector<pair<int, pair<Coord, Coord> > > PersistentData::getRanges() const {
+void PersistentData::resetRanges() {
   vector<int> avails;
   if(mode == TM_PLAYERCHOOSE) {
     avails.push_back(TTL_LEAVE);
@@ -1341,7 +1341,9 @@ vector<pair<int, pair<Coord, Coord> > > PersistentData::getRanges() const {
     CHECK(0);
   }
   
-  vector<pair<int, pair<Coord, Coord> > > ranges;
+  ranges.clear();
+  range_targets.clear();
+  range_targets.resize(TTL_LAST, make_pair(Coord(0), Coord(0)));
   for(int i = 0; i < avails.size(); i++) {
     vector<string> lines = tokenize(tween_textlabels[avails[i]], " ");
     const Coord pivot = 100. / (avails.size() * 2) * (i * 2 + 1);
@@ -1351,19 +1353,16 @@ vector<pair<int, pair<Coord, Coord> > > PersistentData::getRanges() const {
       mwid = max(mwid, getTextWidth(lines[j], ticker_text_size));
     mwid += 2;
     
-    ranges.push_back(make_pair(avails[i], make_pair(pivot - mwid / 2, pivot + mwid / 2))); 
+    pair<Coord, Coord> item = make_pair(pivot - mwid / 2, pivot + mwid / 2);
+    ranges.push_back(make_pair(avails[i], item)); 
+    CHECK(range_targets[avails[i]].second == 0);
+    range_targets[avails[i]] = item;
   }
-  return ranges;
 }
 
 Coord2 PersistentData::targetCoords(int target) const {
-  vector<pair<int, pair<Coord, Coord> > > rang = getRanges();
-  
-  for(int i = 0; i < rang.size(); i++)
-    if(rang[i].first == target)
-      return Coord2((rang[i].second.first + rang[i].second.second) / 2, 95);
-
-  CHECK(0);
+  CHECK(range_targets[target].second != 0);
+  return Coord2((range_targets[target].first + range_targets[target].second) / 2, 95);
 }
   
 void PersistentData::drawMultibar(const vector<Coord> &sizes, const Float4 &dimensions, const vector<int> *roundcount) const {
@@ -1565,6 +1564,8 @@ PersistentData::PersistentData(int playercount, Money startingcash, Coord multip
   mode = TM_PLAYERCHOOSE;
   
   shopcycles = 0;
+  
+  resetRanges();
   
   CHECK(FLAGS_debugControllers >= 0 && FLAGS_debugControllers <= 3);
   CHECK(factions.size() >= FLAGS_debugControllers);

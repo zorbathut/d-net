@@ -71,7 +71,7 @@ bool Metagame::runTick(const vector<Controller> &keys) {
     PersistentData::PDRTR rv = persistent.tick(keys);
     if(rv == PersistentData::PDRTR_PLAY) {
       mode = MGM_PLAY;
-
+      
       findLevels(persistent.players().size());  // player count may have changed. TODO: make this suck less
       game.initStandard(&persistent.players(), chooseLevel(), &rng);
       if(win_history.size() != gameround)

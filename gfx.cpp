@@ -810,19 +810,25 @@ void drawText(const string &txt, float scale, const Float2 &pos) {
   }
 }
 
+static map<string, float> width_cached;
+
 float getTextWidth(const string &txt, float scale) {
   if(txt.size() == 0)
     return 0;
-  const float point = scale / 9;
-  float acum = point * (txt.size() - 1) * betweenletter;
+  float &vx = width_cached[txt];
+  if(vx != 0)
+    return vx * scale;
+  float acum = (txt.size() - 1) * betweenletter;
   for(int i = 0; i < txt.size(); i++) {
-    if(!fontdata.count(txt[i])) {
+    map<char, FontCharacter>::iterator itr = fontdata.find(txt[i]);
+    if(unlikely(itr == fontdata.end())) {
       dprintf("Couldn't find character '%c'", txt[i]);
       CHECK(0);
     }
-    acum += point * fontdata[txt[i]].width;
+    acum += itr->second.width;
   }
-  return acum;
+  vx = acum / 9;
+  return vx * scale;
 }
 
 float getTextHeight(int lines, float scale) {

@@ -766,12 +766,14 @@ const IDBShopcache &getShopcache(const IDBGlory *glory) {
 template<typename T> const string &nameFromIDBImp(const T *idbw, const map<string, T> &forward, map<const T*, string> *backward) {
   CHECK(idbw);
   if(forward.size() != backward->size()) {
+    dprintf("Regenning NFII %p with %d\n", backward, forward.size());
     backward->clear();
     for(typename map<string, T>::const_iterator itr = forward.begin(); itr != forward.end(); itr++) {
       CHECK(!backward->count(&itr->second));
       (*backward)[&itr->second] = itr->first;
     }
     CHECK(forward.size() == backward->size());
+    dprintf("done regenning\n");
   }
   
   CHECK(backward->count(idbw));

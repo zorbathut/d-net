@@ -119,7 +119,9 @@ private:
   vector<const IDBFaction *> getUnfinishedFactions() const;
   bool onlyAiUnfinished(const vector<bool> &ais) const;
   
-  vector<pair<int, pair<Coord, Coord> > > getRanges() const;
+  vector<pair<int, pair<Coord, Coord> > > ranges;
+  vector<pair<Coord, Coord> > range_targets;
+  void resetRanges();
   Coord2 targetCoords(int target) const;
 
   // Helper functions
