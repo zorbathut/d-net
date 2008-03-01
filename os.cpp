@@ -82,7 +82,11 @@ void wrap_mkdir(const string &str) {
 void makeConfigDirectory() {
   CHECK(directory_delimiter.size() == 1);
   vector<string> tok = tokenize(getConfigDirectory(), directory_delimiter);
+  
   string cc;
+  if(getConfigDirectory().size() && getConfigDirectory()[0] == directory_delimiter[0])
+    cc = directory_delimiter;
+  
   for(int i = 0; i < tok.size(); i++) {
     if(cc.size())
       cc += directory_delimiter;

@@ -132,9 +132,12 @@ void MainLoop() {
         }
       }
       
-      if(quit || FLAGS_terminateAfter != -1 && time(NULL) - starttime >= FLAGS_terminateAfter)
-        break;
+      if(FLAGS_terminateAfter != -1 && time(NULL) - starttime >= FLAGS_terminateAfter)
+        quit = true;
       if(FLAGS_terminateAfterFrame != -1 && FLAGS_terminateAfterFrame <= frameNumber)
+        quit = true;
+      
+      if(quit)
         break;
       
       {
@@ -193,6 +196,9 @@ void MainLoop() {
       }
       
     } while(interface.isWaitingOnAi(controls_ai_flags()));
+    
+    if(quit)
+      break;
     
     if(FLAGS_render) {
       bool render = false;
