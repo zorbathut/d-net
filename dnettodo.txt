@@ -1,6 +1,5 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
-  - Speed up "AI is hidden" (where is the CPU going?)
   - Jam AI into singleplayer
   - add "instant action" option
   - make sure full shop works in instant action
