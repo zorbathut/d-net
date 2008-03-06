@@ -54,12 +54,14 @@ void MainLoop() {
   
   Rng rng(unsync().generate_seed());
   
-  RngSeed game_seed = dumper_init(rng.generate_seed());
+  Dumper dumper;
   
-  InputState is = controls_init();
+  RngSeed game_seed = dumper.prepare(rng.generate_seed());
+  
+  InputState is = controls_init(&dumper);
   ControlShutdown csd;
   
-  dumper_read_adler();
+  dumper.read_audit();
   
   InputState origis = is;
   
@@ -149,19 +151,18 @@ void MainLoop() {
           interface.ai(controls_ai());  // has to be before controls
           
           audit_unpause();
-          dumper_write_adler();
+          dumper.write_audit();
           adlers += audit_read_count();
-          is = controls_next();
+          is = controls_next(&dumper);
           if(!is.valid)
             return;
-          dumper_write_input(is);
-          dumper_read_adler();
+          dumper.write_input(is);
+          dumper.read_audit();
           
           CHECK(is.controllers.size() == origis.controllers.size());
           for(int i = 0; i < is.controllers.size(); i++)
             CHECK(is.controllers[i].keys.size() == origis.controllers[i].keys.size());
           
-          /*
           {
             Adler32 adl;
             PerfStack pst(PBC::checksum);
@@ -171,7 +172,6 @@ void MainLoop() {
             }
             audit(adl);
           }
-          */
           
           audit(0);  // so we have one item, and for rechecking's sake
           
@@ -280,7 +280,5 @@ void MainLoop() {
   
   audit_unpause();
   
-  dumper_write_adler();
-  
-  dumper_shutdown();
+  dumper.write_audit();
 }

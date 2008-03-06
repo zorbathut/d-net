@@ -3,29 +3,41 @@
 
 #include "input.h"
 #include "rng.h"
+#include "stream.h"
 
-// Init-related functions
-// Set up input and output streams
-RngSeed dumper_init(const RngSeed &option);
+class Dumper {
+public:
+  
+  // Set up input and output streams. Pass it a potential RNG seed, it returns the one you should actually use.
+  RngSeed prepare(const RngSeed &option);
 
-// See if we're replaying an input stream, and get the layout if we are
-bool dumper_is_replaying();
-InputState dumper_get_layout();
-vector<pair<int, int> > dumper_get_sources();
-int dumper_get_primary_id();
+  // Tells you whether or not you're replaying an existing stream.
+  bool is_replaying();
+  InputState get_layout();
+  vector<pair<int, int> > get_sources();
+  int get_primary_id();
+  
+  // Write our layout
+  void set_layout(const InputState &is, const vector<pair<int, int> > &sources, int primary_id);
+  
+  // Handle adler queries properly
+  void read_audit(); // Reads adler sets from the file and primes the global audit storage system with 'em
+  void write_audit();  // Writes anything in the global audit system to the file
+  
+  // Handle the actual movement input or output
+  InputState read_input();
+  void write_input(const InputState &is);
+  
+  Dumper();
+  ~Dumper();
+  
+private:
+  IStream *istr;
+  OStream *ostr;
 
-// Alternatively, write our layout
-void dumper_set_layout(const InputState &is, const vector<pair<int, int> > &sources, int primary_id);
-
-// Handle adler queries properly
-void dumper_read_adler(); // Reads adler sets from the file and primes the adler storage system with 'em
-void dumper_write_adler();  // Writes anything in the adler system to the file
-
-// Handle the actual movement input or output
-InputState dumper_read_input();
-void dumper_write_input(const InputState &is);
-
-// close everything, etc
-void dumper_shutdown();
+  InputState layout;
+  vector<pair<int, int> > sources;
+  int primaryid;
+};
 
 #endif

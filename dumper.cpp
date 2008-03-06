@@ -15,22 +15,15 @@
 DEFINE_string(writeTarget, "dumps/dump", "Prefix for file dump");
 DEFINE_string(readTarget, "", "File to replay from");
 
-static IStream *istr = NULL;
-static OStream *ostr = NULL;
-
-static InputState inputstate;
-static vector<pair<int, int> > inputsources;
-int inputprimaryid = -1;
-
-void confirmLayout(const InputState &is) {
-  CHECK(inputstate.controllers.size() == is.controllers.size());
-  for(int i = 0; i < inputstate.controllers.size(); i++) {
-    CHECK(inputstate.controllers[i].axes.size() == is.controllers[i].axes.size());
-    CHECK(inputstate.controllers[i].keys.size() == is.controllers[i].keys.size());
+void compareLayouts(const InputState &lhs, const InputState &rhs) {
+  CHECK(lhs.controllers.size() == rhs.controllers.size());
+  for(int i = 0; i < lhs.controllers.size(); i++) {
+    CHECK(lhs.controllers[i].axes.size() == rhs.controllers[i].axes.size());
+    CHECK(lhs.controllers[i].keys.size() == rhs.controllers[i].keys.size());
   }
 }
 
-RngSeed dumper_init(const RngSeed &option) {
+RngSeed Dumper::prepare(const RngSeed &option) {
   
   RngSeed seed = option;
   
@@ -41,16 +34,16 @@ RngSeed dumper_init(const RngSeed &option) {
     CHECK(istr->readInt() == 8);
     istr->read(&seed);
     
-    inputstate.controllers.resize(istr->readInt());
-    inputsources.resize(inputstate.controllers.size());
-    CHECK(inputstate.controllers.size());
+    layout.controllers.resize(istr->readInt());
+    sources.resize(layout.controllers.size());
+    CHECK(layout.controllers.size());
     
-    for(int i = 0; i < inputstate.controllers.size(); i++) {
-      inputstate.controllers[i].keys.resize(istr->readInt());
-      inputstate.controllers[i].axes.resize(istr->readInt());
-      istr->read(&inputsources[i]);
+    for(int i = 0; i < layout.controllers.size(); i++) {
+      layout.controllers[i].keys.resize(istr->readInt());
+      layout.controllers[i].axes.resize(istr->readInt());
+      istr->read(&sources[i]);
     }
-    inputprimaryid = istr->readInt();
+    primaryid = istr->readInt();
   }
   
   if(FLAGS_writeTarget != "" && FLAGS_readTarget == "" || FLAGS_writeTarget_OVERRIDDEN) {
@@ -73,48 +66,48 @@ RngSeed dumper_init(const RngSeed &option) {
   return seed;
 }
 
-bool dumper_is_replaying() {
+bool Dumper::is_replaying() {
   return istr;
 }
 
-InputState dumper_get_layout() {
+InputState Dumper::get_layout() {
   CHECK(istr);
-  return inputstate;
+  return layout;
 }
 
-vector<pair<int, int> > dumper_get_sources() {
+vector<pair<int, int> > Dumper::get_sources() {
   CHECK(istr);
-  return inputsources;
+  return sources;
 }
 
-int dumper_get_primary_id() {
+int Dumper::get_primary_id() {
   CHECK(istr);
-  return inputprimaryid;
+  return primaryid;
 }
 
-void dumper_set_layout(const InputState &is, const vector<pair<int, int> > &in_sources, int in_primary_id) {
-  CHECK(!inputsources.size() || inputsources == in_sources);
-  if(inputstate.controllers.size())
-    confirmLayout(is);
-  CHECK(inputprimaryid == -1 || inputprimaryid == in_primary_id);
+void Dumper::set_layout(const InputState &is, const vector<pair<int, int> > &in_sources, int in_primary_id) {
+  CHECK(!sources.size() || sources == in_sources);
+  if(layout.controllers.size())
+    compareLayouts(is, layout);
+  CHECK(primaryid == -1 || primaryid == in_primary_id);
   
-  inputstate = is;
-  inputsources = in_sources;
-  inputprimaryid = in_primary_id;
+  layout = is;
+  sources = in_sources;
+  primaryid = in_primary_id;
   
   if(ostr) {
-    ostr->write(inputstate.controllers.size());
-    for(int i = 0; i < inputstate.controllers.size(); i++) {
-      ostr->write(inputstate.controllers[i].keys.size());
-      ostr->write(inputstate.controllers[i].axes.size());
-      ostr->write(inputsources[i]);
+    ostr->write(layout.controllers.size());
+    for(int i = 0; i < layout.controllers.size(); i++) {
+      ostr->write(layout.controllers[i].keys.size());
+      ostr->write(layout.controllers[i].axes.size());
+      ostr->write(sources[i]);
     }
-    ostr->write(inputprimaryid);
+    ostr->write(primaryid);
     ostr->flush();
   }
 }
 
-void dumper_read_adler() {
+void Dumper::read_audit() {
   if(istr) {
     audit_start_compare();
     
@@ -128,7 +121,7 @@ void dumper_read_adler() {
   }
 }
 
-void dumper_write_adler() {
+void Dumper::write_audit() {
   audit_register_finished();
   
   if(ostr) {
@@ -142,31 +135,31 @@ void dumper_write_adler() {
   audit_finished();
 }
 
-InputState dumper_read_input() {
+InputState Dumper::read_input() {
   CHECK(istr);
-  bool failure = istr->tryRead(&inputstate.escape.down);
+  bool failure = istr->tryRead(&layout.escape.down);
   if(failure) {
     InputState tt;
     tt.valid = false;
     return tt;
   }
-  for(int i = 0; i < inputstate.controllers.size(); i++) {
-    istr->read(&inputstate.controllers[i].menu.x);
-    istr->read(&inputstate.controllers[i].menu.y);
-    istr->read(&inputstate.controllers[i].u.down);
-    istr->read(&inputstate.controllers[i].d.down);
-    istr->read(&inputstate.controllers[i].l.down);
-    istr->read(&inputstate.controllers[i].r.down);
-    for(int j = 0; j < inputstate.controllers[i].keys.size(); j++)
-      istr->read(&inputstate.controllers[i].keys[j].down);
-    for(int j = 0; j < inputstate.controllers[i].axes.size(); j++)
-      istr->read(&inputstate.controllers[i].axes[j]);
+  for(int i = 0; i < layout.controllers.size(); i++) {
+    istr->read(&layout.controllers[i].menu.x);
+    istr->read(&layout.controllers[i].menu.y);
+    istr->read(&layout.controllers[i].u.down);
+    istr->read(&layout.controllers[i].d.down);
+    istr->read(&layout.controllers[i].l.down);
+    istr->read(&layout.controllers[i].r.down);
+    for(int j = 0; j < layout.controllers[i].keys.size(); j++)
+      istr->read(&layout.controllers[i].keys[j].down);
+    for(int j = 0; j < layout.controllers[i].axes.size(); j++)
+      istr->read(&layout.controllers[i].axes[j]);
   }
-  return inputstate;
+  return layout;
 }
 
-void dumper_write_input(const InputState &is) {
-  confirmLayout(is);
+void Dumper::write_input(const InputState &is) {
+  compareLayouts(layout, is);
   if(ostr) {
     ostr->write(is.escape.down);
     for(int i = 0; i < is.controllers.size(); i++) {
@@ -184,10 +177,13 @@ void dumper_write_input(const InputState &is) {
   }
 }
 
-void dumper_shutdown() {
-  delete istr;
-  delete ostr;
+Dumper::Dumper() {
   istr = NULL;
   ostr = NULL;
+  primaryid = -1;
 }
 
+Dumper::~Dumper() {
+  delete istr;
+  delete ostr;
+}

@@ -41,7 +41,7 @@ const int playertwo[] = { SDLK_w, SDLK_s, SDLK_a, SDLK_d, SDLK_r, SDLK_t, SDLK_y
 const int *const baseplayermap[2] = { playerone, playertwo };
 const int baseplayersize[2] = { ARRAY_SIZE(playerone), ARRAY_SIZE(playertwo) };  
 
-InputState controls_init() {
+InputState controls_init(Dumper *dumper) {
   CHECK(sources.size() == 0);
   
   now.controllers.resize(FLAGS_nullControllers);
@@ -53,16 +53,16 @@ InputState controls_init() {
   }
   primary_id = FLAGS_nullControllers;
   
-  if(dumper_is_replaying()) {
+  if(dumper->is_replaying()) {
     CHECK(FLAGS_nullControllers == 0);
     CHECK(FLAGS_aiCount == 0);
     
-    InputState is = dumper_get_layout();
+    InputState is = dumper->get_layout();
     
     now.controllers = is.controllers;
     prerecorded.resize(now.controllers.size(), true);
-    sources = dumper_get_sources();
-    primary_id = dumper_get_primary_id();
+    sources = dumper->get_sources();
+    primary_id = dumper->get_primary_id();
     
     CHECK(sources.size() == now.controllers.size());
   } else if(FLAGS_aiCount) {
@@ -122,7 +122,7 @@ InputState controls_init() {
   CHECK(sources.size() == now.controllers.size());
   CHECK(prerecorded.size() == sources.size());
   
-  dumper_set_layout(now, sources, primary_id);
+  dumper->set_layout(now, sources, primary_id);
   
   last = now;
   
@@ -159,11 +159,11 @@ void controls_key(const SDL_KeyboardEvent *key) {
     *ps = true;
 }
 
-InputState controls_next() {
+InputState controls_next(Dumper *dumper) {
   StackString sst("Controls");
   
-  if(dumper_is_replaying()) {
-    now = dumper_read_input();
+  if(dumper->is_replaying()) {
+    now = dumper->read_input();
     if(!now.valid)
       return now;
     CHECK(now.controllers.size() == last.controllers.size());
@@ -279,7 +279,8 @@ vector<bool> controls_ai_flags() {
 }
 
 bool controls_users() {
-  return !dumper_is_replaying() && !FLAGS_aiCount;
+  CHECK(prerecorded.size());
+  return !prerecorded[0] && !FLAGS_aiCount;
 }
 
 void controls_shutdown() {

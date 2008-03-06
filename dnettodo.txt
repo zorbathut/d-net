@@ -224,6 +224,14 @@ Everything can, I think, be inherited from this. We can have functors for handli
 
 
 ---
-Stupid design!
+Dump format
 
-Right now, I'd have to set it up so choose one read to be the "default", and have the other one implemented in terms of that. That would mean, inevitably, I'd need to have "try" be the default. Actually I can kinda live with that. Let's do that.
+We need packets. Packet ID:
+
+'I' - Init
+'L' - Layout
+'C' - Controls
+'K' - Full checksum
+'A' - Standard adler
+
+IL(AK?CL?)*
