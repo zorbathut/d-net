@@ -857,8 +857,8 @@ void Collider::render() const {
 void Collider::renderAround(const Coord2 &kord) const {
   if(FLAGS_debugGraphics) {
     setColor(Color(1.0, 0.4, 0.4));
-    int x = int(floor((kord.x / resolution).toFloat()));
-    int y = int(floor((kord.y / resolution).toFloat()));
+    int x = floor(kord.x / resolution).toInt();
+    int y = floor(kord.y / resolution).toInt();
     for(int dx = -1; dx <= 1; dx++) {
       for(int dy = -1; dy <= 1; dy++) {
         int tx = x + dx;

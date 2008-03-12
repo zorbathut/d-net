@@ -76,7 +76,7 @@ void MainLoop() {
 
   InterfaceMain interface;
 
-  audit_pause();
+  dumper.write_audit();
   
   time_t starttime = time(NULL);
 
@@ -147,11 +147,10 @@ void MainLoop() {
         if(thistick && !tspeed)
           tspeed = 1;
         for(int i = 0; i < tspeed; i++) {
+          if(dumper.is_done())
+            return;
           
           interface.ai(controls_ai());  // has to be before controls
-          
-          audit_unpause();
-          dumper.write_audit();
           
           if(dumper.has_checksum(true)) {
             dumper.read_checksum_audit();
@@ -167,8 +166,7 @@ void MainLoop() {
           
           adlers += audit_read_count();
           is = controls_next(&dumper);
-          if(!is.valid)
-            return;
+          
           dumper.write_input(is);
           dumper.read_audit();
           
@@ -194,7 +192,7 @@ void MainLoop() {
           
           frameNumber++;
           
-          audit_pause();
+          dumper.write_audit();
         }
       }
       
@@ -280,8 +278,4 @@ void MainLoop() {
     }
     frako++;
   }
-  
-  audit_unpause();
-  
-  dumper.write_audit();
 }

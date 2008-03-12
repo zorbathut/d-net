@@ -6,7 +6,6 @@
 #include "debug.h"
 #include "util.h"
 #include "smartptr.h"
-#include "adler32.h"
 #include "dumper.h"
 
 #include <boost/assign/list_of.hpp>
@@ -122,6 +121,7 @@ InputState controls_init(Dumper *dumper) {
   CHECK(sources.size() == now.controllers.size());
   CHECK(prerecorded.size() == sources.size());
   
+  dprintf("Primary ID is %d\n", primary_id);
   dumper->set_layout(now, sources, primary_id);
   
   last = now;
@@ -233,6 +233,8 @@ InputState controls_next(Dumper *dumper) {
         now.controllers[i].axes[1] = now.controllers[i].menu.y;
       }
     } else if(sources[i].first == CIP_NULL) {
+      for(int j = 0; j < now.controllers[i].axes.size(); j++)
+        now.controllers[i].axes[j] = 0;
     } else {
       CHECK(0);
     }
@@ -251,6 +253,9 @@ InputState controls_next(Dumper *dumper) {
     // in an attempt to make dumpfiles smaller
     last.controllers[i].menu.x = round(last.controllers[i].menu.x * 128) / 128;
     last.controllers[i].menu.y = round(last.controllers[i].menu.y * 128) / 128;
+    
+    for(int j = 0; j < last.controllers[i].axes.size(); j++)
+      CHECK(abs(last.controllers[i].axes[j]) <= 1);
   }
   
   return last;

@@ -12,6 +12,7 @@
 #include "player.h"
 #include "perfbar.h"
 #include "adler32_util.h"
+#include "audit.h"
 
 #include <numeric>
 
@@ -68,7 +69,7 @@ PersistentData::PDRTR PersistentData::tick(const vector<Controller> &keys) {
   PerfStack pst(PBC::persistent);
   
   CHECK(keys.size() == pms.size());
-  
+
   // Update our sound info
   for(int i = 0; i < sps_soundtimeout.size(); i++)
     sps_soundtimeout[i]--;
@@ -545,7 +546,6 @@ void adler(Adler32 *adl, const PersistentData::Slot &slt) {
 }
 
 void PersistentData::checksum(Adler32 *adl) const {
-  //reg_adler_intermed(*adl);
   adler(adl, mode);
   adler(adl, playerid);
   adler(adl, factions);
@@ -568,11 +568,8 @@ void PersistentData::checksum(Adler32 *adl) const {
   adler(adl, sps_queue);
   adler(adl, btt_notify);
   adler(adl, btt_frames_left);
-  //reg_adler_intermed(*adl);
   adler(adl, playerdata);
-  //reg_adler_intermed(*adl);
   adler(adl, pms);
-  //reg_adler_intermed(*adl);
 }
 
 void PersistentData::reset() {

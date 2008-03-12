@@ -40,7 +40,7 @@ void audit_worker(const Adler32 &adl, const char *file, int line) {
 }
 
 void audit_worker(unsigned long dat, const char *file, int line) {
-  //dprintf("%s, %d\n", file, line);
+  //dprintf("%d: %s, %d\n", (int)dat, file, line);
   if(aigl.size()) {
   } else if(state == AUDIT_COMPARING) {
     if(currentpos && adli[currentpos - 1] == dat)
@@ -85,7 +85,7 @@ void audit_unpause() {
 void audit_register_finished() {
   if(state == AUDIT_COMPARING) {
     if(currentpos != adli.size()) {
-      dprintf("%d, %d\n", currentpos, adli.size());
+      dprintf("Looked for %d audits, got %d\n", adli.size(), currentpos);
       CHECK(currentpos == adli.size());
     }
   } else if(state == AUDIT_CREATING) {

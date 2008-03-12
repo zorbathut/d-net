@@ -192,7 +192,10 @@ inline Coord abs(const Coord &in) {
 }
 
 inline Coord round(const Coord &in) {
-  return floor(in + Coord(1) / 2);
+  if(in.raw() >= 0)
+    return floor(in + Coord(1) / 2);
+  else
+    return -round(-in);
 }
 
 class Coord2 {

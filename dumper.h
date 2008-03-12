@@ -23,6 +23,9 @@ public:
   // Set up input and output streams. Pass it a potential RNG seed, it returns the one you should actually use.
   RngSeed prepare(const RngSeed &option);
 
+  // We have all our input complete. Yay.
+  bool is_done();
+
   // Tells you whether or not you're replaying an existing stream.
   bool is_replaying();
   InputState get_layout();
@@ -50,15 +53,14 @@ public:
   
 private:
   struct Packet {
-    enum Type { TYPE_INIT, TYPE_LAYOUT, TYPE_CONTROLS, TYPE_CHECKSUM, TYPE_AUDIT } type;
+    enum Type { TYPE_INIT, TYPE_LAYOUT, TYPE_CONTROLS, TYPE_CHECKSUM, TYPE_AUDIT, TYPE_EOF } type;
     
     RngSeed init_seed;
     
-    InputState layout_state;
     vector<pair<int, int> > layout_sources;
     int layout_primaryid;
     
-    InputState controls_state;
+    InputState inputstate;
     
     vector<unsigned long> audit_data; // we re-use this for checksum
     
@@ -68,7 +70,7 @@ private:
   Packet read_packet;
   Packet write_packet;
   
-  bool readPacket();
+  void readPacket();
   void writePacket();
   
   IStream *istr;
