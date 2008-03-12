@@ -248,10 +248,12 @@ void Dumper::writePacket() {
   CHECK(ostr);
   
   if(write_packet.type == Packet::TYPE_INIT) {
+    //dprintf("writing packet I\n");
     ostr->write('I');
     
     ostr->write(write_packet.init_seed);
   } else if(write_packet.type == Packet::TYPE_LAYOUT) {
+    //dprintf("writing packet L\n");
     ostr->write('L');
     
     ostr->write(write_packet.layout_state.controllers.size());
@@ -263,6 +265,7 @@ void Dumper::writePacket() {
     }
     ostr->write(write_packet.layout_primaryid);
   } else if(write_packet.type == Packet::TYPE_CONTROLS) {
+    //dprintf("writing packet C\n");
     ostr->write('C');
     
     ostr->write(write_packet.layout_state.escape.down);
@@ -279,9 +282,11 @@ void Dumper::writePacket() {
         ostr->write(write_packet.layout_state.controllers[i].axes[j]);
     }
   } else if(write_packet.type == Packet::TYPE_CHECKSUM || write_packet.type == Packet::TYPE_AUDIT) {
-    if(write_packet.type = Packet::TYPE_CHECKSUM) {
+    if(write_packet.type == Packet::TYPE_CHECKSUM) {
+      //dprintf("writing packet K\n");
       ostr->write('K');
-    } else if(write_packet.type = Packet::TYPE_AUDIT) {
+    } else if(write_packet.type == Packet::TYPE_AUDIT) {
+      //dprintf("writing packet A\n");
       ostr->write('A');
     } else {
       CHECK(0);
@@ -306,11 +311,11 @@ void Dumper::read_audit_internal() {
 }
 
 void Dumper::write_audit_internal() {
-  CHECK(write_packet.type == Packet::TYPE_AUDIT || write_packet.type == Packet::TYPE_CHECKSUM);
-  
   audit_register_finished();
   
   if(ostr) {
+    CHECK(write_packet.type == Packet::TYPE_AUDIT || write_packet.type == Packet::TYPE_CHECKSUM);
+    
     write_packet.audit_data = audit_read_ref();
 
     writePacket();
