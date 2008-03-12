@@ -5,6 +5,18 @@
 #include "rng.h"
 #include "stream.h"
 
+/* Okay, packet ordering:
+
+'I' - Init
+'L' - Layout
+'C' - Controls
+'K' - Full checksum
+'A' - Standard adler
+
+IL(AK?CL?)*
+
+Dumper handles a lot of stuff behind the scenes - mostly, you just ask it what it has, giving suggestions as to what you think it should want. It will override you if it's in read mode, and conform otherwise. */
+
 class Dumper {
 public:
   
@@ -23,8 +35,13 @@ public:
   // Handle adler queries properly
   void read_audit(); // Reads adler sets from the file and primes the global audit storage system with 'em
   void write_audit();  // Writes anything in the global audit system to the file
+
+  // Handle checksum queries properly
+  bool has_checksum(bool want_checksum);
+  void read_checksum_audit();
+  void write_checksum_audit();
   
-  // Handle the actual movement input or output
+  // Handle the actual movement input or output (if it has a checksum, you must deal with that first!)
   InputState read_input();
   void write_input(const InputState &is);
   
@@ -32,12 +49,37 @@ public:
   ~Dumper();
   
 private:
+  struct Packet {
+    enum Type { TYPE_INIT, TYPE_LAYOUT, TYPE_CONTROLS, TYPE_CHECKSUM, TYPE_AUDIT } type;
+    
+    RngSeed init_seed;
+    
+    InputState layout_state;
+    vector<pair<int, int> > layout_sources;
+    int layout_primaryid;
+    
+    InputState controls_state;
+    
+    vector<unsigned long> audit_data; // we re-use this for checksum
+    
+    Packet() : init_seed(0) { };
+  };
+  
+  Packet read_packet;
+  Packet write_packet;
+  
+  bool readPacket();
+  void writePacket();
+  
   IStream *istr;
   OStream *ostr;
 
   InputState layout;
   vector<pair<int, int> > sources;
   int primaryid;
+  
+  void read_audit_internal();
+  void write_audit_internal();
 };
 
 #endif

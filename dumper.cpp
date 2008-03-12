@@ -7,13 +7,15 @@
 #include "stream_gz.h"
 #include "stream_process_primitive.h"
 #include "stream_process_utility.h"
+#include "stream_process_vector.h"
 #include "stream_process_rng.h"
 #include "stream_process_coord.h"
-#include "adler32.h"
 #include "audit.h"
 
 DEFINE_string(writeTarget, "dumps/dump", "Prefix for file dump");
 DEFINE_string(readTarget, "", "File to replay from");
+
+const int layout_version = 8;
 
 void compareLayouts(const InputState &lhs, const InputState &rhs) {
   CHECK(lhs.controllers.size() == rhs.controllers.size());
@@ -31,20 +33,16 @@ RngSeed Dumper::prepare(const RngSeed &option) {
     dprintf("Reading state record from file %s\n", FLAGS_readTarget.c_str());
     
     istr = new IStreamGz(FLAGS_readTarget);
-    CHECK(istr->readInt() == 8);
-    istr->read(&seed);
+    CHECK(istr->readInt() == layout_version);
     
-    layout.controllers.resize(istr->readInt());
-    sources.resize(layout.controllers.size());
-    CHECK(layout.controllers.size());
+    readPacket();
     
-    for(int i = 0; i < layout.controllers.size(); i++) {
-      layout.controllers[i].keys.resize(istr->readInt());
-      layout.controllers[i].axes.resize(istr->readInt());
-      istr->read(&sources[i]);
-    }
-    primaryid = istr->readInt();
+    CHECK(read_packet.type == Packet::TYPE_INIT);
+    seed = read_packet.init_seed;
   }
+  
+  write_packet.type = Packet::TYPE_INIT;
+  write_packet.init_seed = seed;
   
   if(FLAGS_writeTarget != "" && FLAGS_readTarget == "" || FLAGS_writeTarget_OVERRIDDEN) {
     string fname = FLAGS_writeTarget;
@@ -57,11 +55,24 @@ RngSeed Dumper::prepare(const RngSeed &option) {
     
     ostr = new OStreamGz(fname);
     
-    ostr->write(8);
-    ostr->write(seed);
+    ostr->write(layout_version);
     
-    // we'll write controller layout soon
+    writePacket();
   }
+  
+  if(istr) {
+    readPacket();
+    
+    CHECK(read_packet.type == Packet::TYPE_LAYOUT);
+    
+    layout = read_packet.layout_state;
+    sources = read_packet.layout_sources;
+    primaryid = read_packet.layout_primaryid;
+    
+    readPacket(); // get the next packet ready
+  }
+  
+  // we'll write controller layout soon
   
   return seed;
 }
@@ -96,84 +107,75 @@ void Dumper::set_layout(const InputState &is, const vector<pair<int, int> > &in_
   primaryid = in_primary_id;
   
   if(ostr) {
-    ostr->write(layout.controllers.size());
-    for(int i = 0; i < layout.controllers.size(); i++) {
-      ostr->write(layout.controllers[i].keys.size());
-      ostr->write(layout.controllers[i].axes.size());
-      ostr->write(sources[i]);
-    }
-    ostr->write(primaryid);
-    ostr->flush();
+    write_packet.type = Packet::TYPE_LAYOUT;
+    
+    write_packet.layout_state = layout;
+    write_packet.layout_sources = sources;
+    write_packet.layout_primaryid = primaryid;
+    
+    writePacket();
   }
 }
 
 void Dumper::read_audit() {
   if(istr) {
-    audit_start_compare();
-    
-    int count = istr->readInt();
-    for(int i = 0; i < count; i++)
-      audit_start_compare_add(istr->readInt());
-    
-    audit_start_compare_done();
-  } else {
-    audit_start_create();
+    CHECK(read_packet.type == Packet::TYPE_AUDIT);
   }
+  
+  read_audit_internal();
 }
 
 void Dumper::write_audit() {
-  audit_register_finished();
-  
   if(ostr) {
-    int count = audit_read_count();
-    ostr->write(count);
-    for(int i = 0; i < count; i++)
-      ostr->write(audit_read_ref());
-    ostr->flush();
+    write_packet.type = Packet::TYPE_AUDIT;
   }
   
-  audit_finished();
+  write_audit_internal();
+}
+
+bool Dumper::has_checksum(bool want_checksum) {
+  if(istr) {
+    CHECK(read_packet.type == Packet::TYPE_CHECKSUM || read_packet.type == Packet::TYPE_CONTROLS);
+    return read_packet.type == Packet::TYPE_CHECKSUM;
+  } else {
+    return want_checksum;
+  }
+}
+
+void Dumper::read_checksum_audit() {
+  if(istr) {
+    CHECK(read_packet.type == Packet::TYPE_CHECKSUM);
+  }
+  
+  read_audit_internal();
+}
+void Dumper::write_checksum_audit() {
+  if(ostr) {
+    write_packet.type = Packet::TYPE_CHECKSUM;
+  }
+  
+  write_audit_internal();
 }
 
 InputState Dumper::read_input() {
   CHECK(istr);
-  bool failure = istr->tryRead(&layout.escape.down);
-  if(failure) {
-    InputState tt;
-    tt.valid = false;
-    return tt;
-  }
-  for(int i = 0; i < layout.controllers.size(); i++) {
-    istr->read(&layout.controllers[i].menu.x);
-    istr->read(&layout.controllers[i].menu.y);
-    istr->read(&layout.controllers[i].u.down);
-    istr->read(&layout.controllers[i].d.down);
-    istr->read(&layout.controllers[i].l.down);
-    istr->read(&layout.controllers[i].r.down);
-    for(int j = 0; j < layout.controllers[i].keys.size(); j++)
-      istr->read(&layout.controllers[i].keys[j].down);
-    for(int j = 0; j < layout.controllers[i].axes.size(); j++)
-      istr->read(&layout.controllers[i].axes[j]);
-  }
+  
+  CHECK(read_packet.type == Packet::TYPE_CONTROLS);
+  
+  layout = read_packet.layout_state;
+  
+  readPacket();
+  
   return layout;
 }
 
 void Dumper::write_input(const InputState &is) {
   compareLayouts(layout, is);
+
   if(ostr) {
-    ostr->write(is.escape.down);
-    for(int i = 0; i < is.controllers.size(); i++) {
-      ostr->write(is.controllers[i].menu.x);
-      ostr->write(is.controllers[i].menu.y);
-      ostr->write(is.controllers[i].u.down);
-      ostr->write(is.controllers[i].d.down);
-      ostr->write(is.controllers[i].l.down);
-      ostr->write(is.controllers[i].r.down);
-      for(int j = 0; j < is.controllers[i].keys.size(); j++)
-        ostr->write(is.controllers[i].keys[j].down);
-      for(int j = 0; j < is.controllers[i].axes.size(); j++)
-        ostr->write(is.controllers[i].axes[j]);
-    }
+    write_packet.type = Packet::TYPE_CONTROLS;
+    write_packet.controls_state = is;
+    writePacket();
   }
 }
 
@@ -187,3 +189,165 @@ Dumper::~Dumper() {
   delete istr;
   delete ostr;
 }
+
+bool Dumper::readPacket() {
+  CHECK(istr); // lolz
+  char type;
+  if(istr->tryRead(&type))
+    return true;
+  
+  if(type == 'I') {
+    read_packet.type = Packet::TYPE_INIT;
+    CHECK(!istr->tryRead(&read_packet.init_seed));
+  } else if(type == 'L') {
+    read_packet.type = Packet::TYPE_LAYOUT;
+    
+    read_packet.layout_state.controllers.resize(istr->readInt());
+    read_packet.layout_sources.resize(read_packet.layout_state.controllers.size());
+    CHECK(read_packet.layout_state.controllers.size());
+    
+    for(int i = 0; i < read_packet.layout_state.controllers.size(); i++) {
+      read_packet.layout_state.controllers[i].keys.resize(istr->readInt());
+      read_packet.layout_state.controllers[i].axes.resize(istr->readInt());
+      istr->read(&read_packet.layout_sources[i]);
+    }
+    read_packet.layout_primaryid = istr->readInt();
+  } else if(type == 'C') {
+    read_packet.type = Packet::TYPE_CONTROLS;
+    
+    istr->read(&read_packet.layout_state.escape.down);
+    for(int i = 0; i < read_packet.layout_state.controllers.size(); i++) {
+      istr->read(&read_packet.layout_state.controllers[i].menu.x);
+      istr->read(&read_packet.layout_state.controllers[i].menu.y);
+      istr->read(&read_packet.layout_state.controllers[i].u.down);
+      istr->read(&read_packet.layout_state.controllers[i].d.down);
+      istr->read(&read_packet.layout_state.controllers[i].l.down);
+      istr->read(&read_packet.layout_state.controllers[i].r.down);
+      for(int j = 0; j < read_packet.layout_state.controllers[i].keys.size(); j++)
+        istr->read(&read_packet.layout_state.controllers[i].keys[j].down);
+      for(int j = 0; j < read_packet.layout_state.controllers[i].axes.size(); j++)
+        istr->read(&read_packet.layout_state.controllers[i].axes[j]);
+    }
+  } else if(type == 'K' || type == 'A') {
+    if(type == 'K') {
+      read_packet.type = Packet::TYPE_CHECKSUM;
+    } else if(type == 'A') {
+      read_packet.type = Packet::TYPE_AUDIT;
+    } else {
+      CHECK(0);
+    }
+    
+    istr->read(&read_packet.audit_data);
+  } else {
+    CHECK(0);
+  }
+  
+  return false;
+}
+void Dumper::writePacket() {
+  CHECK(ostr);
+  
+  if(write_packet.type == Packet::TYPE_INIT) {
+    ostr->write('I');
+    
+    ostr->write(write_packet.init_seed);
+  } else if(write_packet.type == Packet::TYPE_LAYOUT) {
+    ostr->write('L');
+    
+    ostr->write(write_packet.layout_state.controllers.size());
+    
+    for(int i = 0; i < write_packet.layout_state.controllers.size(); i++) {
+      ostr->write(write_packet.layout_state.controllers[i].keys.size());
+      ostr->write(write_packet.layout_state.controllers[i].axes.size());
+      ostr->write(write_packet.layout_sources[i]);
+    }
+    ostr->write(write_packet.layout_primaryid);
+  } else if(write_packet.type == Packet::TYPE_CONTROLS) {
+    ostr->write('C');
+    
+    ostr->write(write_packet.layout_state.escape.down);
+    for(int i = 0; i < write_packet.layout_state.controllers.size(); i++) {
+      ostr->write(write_packet.layout_state.controllers[i].menu.x);
+      ostr->write(write_packet.layout_state.controllers[i].menu.y);
+      ostr->write(write_packet.layout_state.controllers[i].u.down);
+      ostr->write(write_packet.layout_state.controllers[i].d.down);
+      ostr->write(write_packet.layout_state.controllers[i].l.down);
+      ostr->write(write_packet.layout_state.controllers[i].r.down);
+      for(int j = 0; j < write_packet.layout_state.controllers[i].keys.size(); j++)
+        ostr->write(write_packet.layout_state.controllers[i].keys[j].down);
+      for(int j = 0; j < write_packet.layout_state.controllers[i].axes.size(); j++)
+        ostr->write(write_packet.layout_state.controllers[i].axes[j]);
+    }
+  } else if(write_packet.type == Packet::TYPE_CHECKSUM || write_packet.type == Packet::TYPE_AUDIT) {
+    if(write_packet.type = Packet::TYPE_CHECKSUM) {
+      ostr->write('K');
+    } else if(write_packet.type = Packet::TYPE_AUDIT) {
+      ostr->write('A');
+    } else {
+      CHECK(0);
+    }
+    
+    ostr->write(write_packet.audit_data);
+  } else {
+    CHECK(0);
+  }
+}
+
+void Dumper::read_audit_internal() {
+  if(istr) {
+    CHECK(read_packet.type == Packet::TYPE_AUDIT || read_packet.type == Packet::TYPE_CHECKSUM);
+    
+    audit_start_compare(read_packet.audit_data);
+    
+    readPacket();
+  } else {
+    audit_start_create();
+  }
+}
+
+void Dumper::write_audit_internal() {
+  CHECK(write_packet.type == Packet::TYPE_AUDIT || write_packet.type == Packet::TYPE_CHECKSUM);
+  
+  audit_register_finished();
+  
+  if(ostr) {
+    write_packet.audit_data = audit_read_ref();
+
+    writePacket();
+  }
+  
+  audit_finished();
+}
+
+/*
+
+    
+    layout.controllers.resize(istr->readInt());
+    sources.resize(layout.controllers.size());
+    CHECK(layout.controllers.size());
+    
+    for(int i = 0; i < layout.controllers.size(); i++) {
+      layout.controllers[i].keys.resize(istr->readInt());
+      layout.controllers[i].axes.resize(istr->readInt());
+      istr->read(&sources[i]);
+    }
+    primaryid = istr->readInt();
+    
+        
+*/
+
+/*
+ostr->write(is.escape.down);
+    for(int i = 0; i < is.controllers.size(); i++) {
+      ostr->write(is.controllers[i].menu.x);
+      ostr->write(is.controllers[i].menu.y);
+      ostr->write(is.controllers[i].u.down);
+      ostr->write(is.controllers[i].d.down);
+      ostr->write(is.controllers[i].l.down);
+      ostr->write(is.controllers[i].r.down);
+      for(int j = 0; j < is.controllers[i].keys.size(); j++)
+        ostr->write(is.controllers[i].keys[j].down);
+      for(int j = 0; j < is.controllers[i].axes.size(); j++)
+        ostr->write(is.controllers[i].axes[j]);
+    }
+    */

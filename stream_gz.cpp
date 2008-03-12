@@ -33,6 +33,7 @@ IStreamGz::~IStreamGz() {
 void OStreamGz::flush_and_terminate() {
   dprintf("flush-and-terminate!\n");
   CHECK(gz);
+  flush();
   gzclose(gz);
   gz = NULL;
 }
@@ -51,6 +52,7 @@ OStreamGz::OStreamGz(const string &fname) {
 }
 OStreamGz::~OStreamGz() {
   unregisterCrashFunction(flushOstreamGzOnCrash);
+  flush();
   if(gz)
     gzclose(gz);
   activeostreamgz.erase(find(activeostreamgz.begin(), activeostreamgz.end(), this));

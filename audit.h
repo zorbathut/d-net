@@ -3,15 +3,13 @@
 
 #include "adler32.h"
 
-// This is for the audit system
+#include <vector>
+
+using namespace std;
 
 // Start initializing.
 void audit_start_create();
-void audit_start_compare();
-
-// If we're in compare mode, we need to input the data.
-void audit_start_compare_add(unsigned long unl);
-void audit_start_compare_done();
+void audit_start_compare(const vector<unsigned long> &data);
 
 // Ignore audits while this is on the stack
 class AuditIgnore {
@@ -34,7 +32,7 @@ void audit_register_finished();
 
 // Once we're done, we can use this to output what we originally compared to, or what we created.
 int audit_read_count();
-unsigned long audit_read_ref();
+vector<unsigned long> audit_read_ref();
 
 // Eventually we're done. Init must happen after this.
 void audit_finished();

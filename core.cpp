@@ -152,6 +152,19 @@ void MainLoop() {
           
           audit_unpause();
           dumper.write_audit();
+          
+          if(dumper.has_checksum(true)) {
+            dumper.read_checksum_audit();
+            Adler32 adl;
+            PerfStack pst(PBC::checksum);
+            adler(&adl, frameNumber);
+            if(FLAGS_checksumGameState) {
+              interface.checksum(&adl);
+            }
+            audit(adl);
+            dumper.write_checksum_audit();
+          }
+          
           adlers += audit_read_count();
           is = controls_next(&dumper);
           if(!is.valid)
@@ -162,16 +175,6 @@ void MainLoop() {
           CHECK(is.controllers.size() == origis.controllers.size());
           for(int i = 0; i < is.controllers.size(); i++)
             CHECK(is.controllers[i].keys.size() == origis.controllers[i].keys.size());
-          
-          {
-            Adler32 adl;
-            PerfStack pst(PBC::checksum);
-            adler(&adl, frameNumber);
-            if(FLAGS_checksumGameState) {
-              interface.checksum(&adl);
-            }
-            audit(adl);
-          }
           
           audit(0);  // so we have one item, and for rechecking's sake
           

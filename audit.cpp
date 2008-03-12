@@ -18,7 +18,7 @@ AuditIgnore::~AuditIgnore() {
   aigl.pop_back();
 }
 
-enum AuditState { AUDIT_IDLE, AUDIT_COMPARE_PRIMING, AUDIT_COMPARING, AUDIT_CREATING, AUDIT_COMPARING_PAUSED, AUDIT_CREATING_PAUSED, AUDIT_OUTPUTTING } state;
+enum AuditState { AUDIT_IDLE, AUDIT_COMPARING, AUDIT_CREATING, AUDIT_COMPARING_PAUSED, AUDIT_CREATING_PAUSED, AUDIT_OUTPUTTING } state;
 
 static int currentpos = 0;
 static vector<unsigned long> adli;
@@ -28,20 +28,11 @@ void audit_start_create() {
   adli.clear();
   state = AUDIT_CREATING;
 }
-void audit_start_compare() {
+void audit_start_compare(const vector<unsigned long> &data) {
   CHECK(state == AUDIT_IDLE);
-  adli.clear();
-  state = AUDIT_COMPARE_PRIMING;
-}
-
-void audit_start_compare_add(unsigned long unl) {
-  CHECK(state == AUDIT_COMPARE_PRIMING);
-  adli.push_back(unl);
-}
-void audit_start_compare_done() {
-  CHECK(state == AUDIT_COMPARE_PRIMING);
-  state = AUDIT_COMPARING;
+  adli = data;
   currentpos = 0;
+  state = AUDIT_COMPARING;
 }
 
 void audit_worker(const Adler32 &adl, const char *file, int line) {
@@ -109,10 +100,9 @@ int audit_read_count() {
   CHECK(state == AUDIT_OUTPUTTING || state == AUDIT_IDLE);
   return adli.size();
 }
-unsigned long audit_read_ref() {
+vector<unsigned long> audit_read_ref() {
   CHECK(state == AUDIT_OUTPUTTING);
-  CHECK(currentpos <= adli.size());
-  return adli[currentpos++];
+  return adli;
 }
 
 void audit_finished() {
