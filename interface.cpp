@@ -940,19 +940,21 @@ void InterfaceMain::render() const {
         const float crosshairc = crosshair / 2;
         const float textsize = crosshair / 4;
         const float textrsize = textsize * 0.8;
-        const int wid = int((getZoom().ey - 100) / xsiz);
+        const int wid = int((getZoom().ex - 100) / xsiz);
         const int textymax = int(crosshair / textsize);
         const int textxmax = 2;
         const float textxofs = crosshair / textxmax;
         
+        float xmarg = (getZoom().ex - wid * xsiz) / 2;
+        
         const float boxthick = 1.0;
         for(int i = 0; i < inptest_controls.size(); i++) {
           const Controller &ct = inptest_controls[i];
-          float x = (i % wid) * xsiz + 50;
+          float x = (i % wid) * xsiz + xmarg;
           float y = (i / wid) * ysiz + 50;
           if(i % wid == 0 && i) {
             setColor(C::box_border);
-            drawLine(Float4(50, y, 750, y), boxthick);
+            drawLine(Float4(xmarg, y, getZoom().ex - xmarg, y), boxthick);
           }
           setColor(C::gray(1.0));
           drawJustifiedText(controls_getcc(i).description, textheight, Float2(x + xsiz / 2, y + bord), TEXT_CENTER, TEXT_MIN);
