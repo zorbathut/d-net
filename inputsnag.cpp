@@ -7,7 +7,6 @@
 #include "util.h"
 #include "smartptr.h"
 #include "dumper.h"
-#include "httpd.h"
 
 #include <boost/assign/list_of.hpp>
 
@@ -404,23 +403,3 @@ ControlConsts controls_getcc(int cid) {
   
   return rv;
 }
-
-class AIAdder : HTTPDhook {
-public:
-  virtual string reply(const map<string, string> &params) {
-    string rv;
-    if(params.count("ct")) {
-      controls_set_ai_count(atoi(params.find("ct")->second.c_str()));
-      rv += "Set AI count<br>";
-    } else {
-      rv += "Didn't set AI count<br>";
-    }
-    rv += "<br>";
-    for(int i = 0; i <= 16; i++) {
-      rv += StringPrintf("<a href=\"ai?ct=%d\">%d AIs</a><br>", i, i);
-    }
-    return rv;
-  }
-  
-  AIAdder() : HTTPDhook("ai") { };
-} aiadder;

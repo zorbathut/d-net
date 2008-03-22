@@ -89,6 +89,8 @@ class InterfaceMain : boost::noncopyable {
   int faction;
   bool faction_toggle;
   
+  int aicount;
+  
   pair<int, int> opts_res;
   bool opts_fullscreen;
   float opts_aspect;

@@ -278,11 +278,6 @@ public:
  */
 
 template<typename T> class StdMenuItemChooser : public StdMenuItem {
-  StdMenuItemChooser(const string &text, const vector<pair<string, T> > &options, T *storage, optional<function<void (T)> > changefunctor) : name(text), options(options), storage(storage), changefunctor(changefunctor) {
-    CHECK(storage);
-    syncoptions();
-  }
-  
   void syncoptions() {
     maxx = 0;
     item = -1;
@@ -315,6 +310,11 @@ template<typename T> class StdMenuItemChooser : public StdMenuItem {
   int item;
   
 public:
+  StdMenuItemChooser(const string &text, const vector<pair<string, T> > &options, T *storage, optional<function<void (T)> > changefunctor) : name(text), options(options), storage(storage), changefunctor(changefunctor) {
+    CHECK(storage);
+    syncoptions();
+  }
+  
   static smart_ptr<StdMenuItemChooser<T> > make(const string &text, const vector<pair<string, T> > &options, T *storage) { return smart_ptr<StdMenuItemChooser<T> >(new StdMenuItemChooser<T>(text, options, storage, optional<function<void (T)> >())); }
   static smart_ptr<StdMenuItemChooser<T> > make(const string &text, const vector<pair<string, T> > &options, T *storage, function<void (T)> changefunctor) { return smart_ptr<StdMenuItemChooser<T> >(new StdMenuItemChooser<T>(text, options, storage, changefunctor)); }
   
@@ -355,6 +355,24 @@ public:
     }
     adler(adl, item);
   }
+};
+
+/*************
+ * Counter
+ */
+
+class StdMenuItemCounter : public StdMenuItemChooser<int> {
+  static vector<pair<string, int> > makeOpts(int low, int high) {
+    vector<pair<string, int> > rv;
+    for(int i = low; i <= high; i++)
+      rv.push_back(make_pair(StringPrintf("%d", i), i));
+    return rv;
+  }
+  
+public:
+  StdMenuItemCounter(const string &text, int *storage, int low, int high) : StdMenuItemChooser<int>(text, makeOpts(low, high), storage, optional<function<void (int)> >()) { };
+  
+  static smart_ptr<StdMenuItemCounter> make(const string &text, int *storage, int low, int high) { return smart_ptr<StdMenuItemCounter>(new StdMenuItemCounter(text, storage, low, high)); }
 };
 
 /*************
@@ -722,7 +740,8 @@ bool InterfaceMain::tick(const InputState &is, RngSeed gameseed) {
         faction = 1;
       else
         faction = 4;
-      game = new Metagame(kst.size(), Money((long long)(1000 * pow(30, start.toFloat()))), exp(moneyexp), faction - 1, FLAGS_rounds_per_shop, calculateRounds(start, end, moneyexp), gameseed);
+      controls_set_ai_count(aicount); // this is pretty grim really
+      game = new Metagame(controls_ai_flags().size(), Money((long long)(1000 * pow(30, start.toFloat()))), exp(moneyexp), faction - 1, FLAGS_rounds_per_shop, calculateRounds(start, end, moneyexp), gameseed);
       dprintf("ENTERING PLAYING\n");
       interface_mode = STATE_PLAYING;
     } else if(mrv.second == MAIN_EXIT) {
@@ -1068,6 +1087,7 @@ void InterfaceMain::init() {
     configmenu.pushMenuItem(StdMenuItemScale::make("Game start", &start, bind(&InterfaceMain::start_clamp, this, _1), StdMenuItemScale::ScaleDisplayer(names, &start, &end, &onstart, true), true, &onstart));
     configmenu.pushMenuItem(StdMenuItemScale::make("Game end", &end, bind(&InterfaceMain::end_clamp, this, _1), StdMenuItemScale::ScaleDisplayer(names, &start, &end, &onstart, false), false, &onstart));
     configmenu.pushMenuItem(StdMenuItemRounds::make("Estimated rounds", &start, &end, &moneyexp));
+    configmenu.pushMenuItem(StdMenuItemCounter::make("AI count", &aicount, 0, 15));
     
     {
       vector<pair<string, bool> > onoff;
@@ -1121,6 +1141,8 @@ void InterfaceMain::init() {
     start = Coord(FLAGS_startingPhase);
   end = 7;
   moneyexp = Coord(0.1133);
+  
+  aicount = 0;
   
   faction = FLAGS_factionMode + 1;
   CHECK(faction >= 0 && faction < 5);
