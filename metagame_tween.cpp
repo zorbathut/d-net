@@ -1196,7 +1196,15 @@ void PersistentData::ai(const vector<Ai *> &ais) const {
 }
 
 bool PersistentData::isWaitingOnAi(const vector<bool> &isAi) const {
-  return playerdata.size() >= 1 && onlyAiUnfinished(isAi); // We built this city on rock and sheep.
+  if(count(isAi.begin(), isAi.end(), false)) {
+    bool hasReadyPlayer = false;
+    for(int i = 0; i < isAi.size(); i++)
+      if(!isAi[i] && (sps_playermode[i] == SPS_DONE || sps_playermode[i] == SPS_END))
+        hasReadyPlayer = true;
+    return hasReadyPlayer && onlyAiUnfinished(isAi);
+  } else {
+    return false;
+  }
 }
 
 vector<Keystates> PersistentData::genKeystates(const vector<Controller> &keys) const {
