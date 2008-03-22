@@ -48,17 +48,39 @@ public:
       CHECK(location[0] == '/');
       location.erase(location.begin());
       
-      if(!getHooks().count(location)) {
+      bool valid = true;
+      
+      map<string, string> params;
+      if(count(location.begin(), location.end(), '?')) {
+        dprintf("Snagerating params\n");
+        vector<string> tok = tokenize(strchr(location.c_str(), '?') + 1, "&");
+        for(int i = 0; i < tok.size(); i++) {
+          vector<string> toki = tokenize(tok[i], "=");
+          if(toki.size() != 2 || params.count(toki[0])) {
+            valid = false;
+            break;
+          }
+          params[toki[0]] = toki[1];
+          dprintf("Param %s set to %s\n", toki[0].c_str(), toki[1].c_str());
+        }
+        location = string(location.c_str(), (const char*)strchr(location.c_str(), '?'));
+      }
+      
+      if(!getHooks().count(location) || !valid) {
         ptr->sendline("HTTP/1.1 404 File Not Found");
         ptr->sendline("Content-type: text/html");
         ptr->sendline("");
-        ptr->sendline("owned");
+        ptr->sendline(StringPrintf("404 for /%s:<p>", location.c_str()));
+        if(!valid)
+          ptr->sendline("error'd");
+        else
+          ptr->sendline("owned");
       } else {
         ptr->sendline("HTTP/1.1 200 OK");
         ptr->sendline("Content-type: text/html");
         ptr->sendline("");
         ptr->sendline(StringPrintf("Listing for /%s:<p>", location.c_str()));
-        ptr->sendline(getHooks()[location]->reply(map<string, string>()));
+        ptr->sendline(getHooks()[location]->reply(params));
       }
     }
   }

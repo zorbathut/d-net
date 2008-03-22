@@ -674,12 +674,7 @@ bool InterfaceMain::tick(const InputState &is, RngSeed gameseed) {
   
   inptest_controls = is.controllers;
   
-  if(kst.size() == 0) {
-    CHECK(is.controllers.size() != 0);
-    kst.resize(is.controllers.size());
-  }
-  
-  CHECK(kst.size() == is.controllers.size());
+  kst.resize(is.controllers.size());  // yeah we'll throw them away and bring 'em back as new controllers show up and vanish
   
   for(int i = 0; i < is.controllers.size(); i++) {
     CHECK(is.controllers[i].keys.size() >= 1);

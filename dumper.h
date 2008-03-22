@@ -34,6 +34,7 @@ public:
   
   // Write our layout
   void set_layout(const InputState &is, const vector<pair<int, int> > &sources, int primary_id);
+  void get_layout(InputState *is, vector<pair<int, int> > *sources, int *primary_id);  // doesn't touch 'em if not reading, sets 'em if reading and the next packet is layout. if they've changed, write a layout packet
   
   // Handle adler queries properly
   void read_audit(); // Reads adler sets from the file and primes the global audit storage system with 'em

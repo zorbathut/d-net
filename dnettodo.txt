@@ -1,6 +1,8 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - Jam AI into singleplayer
+    - AI should conform to human decisions about ending the game
+    - Make sure AI always have time to join
   - add "instant action" option
   - make sure full shop works in instant action
   - Add forum

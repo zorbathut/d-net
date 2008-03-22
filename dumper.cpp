@@ -17,12 +17,13 @@ DEFINE_string(readTarget, "", "File to replay from");
 
 const int layout_version = 8;
 
-void compareLayouts(const InputState &lhs, const InputState &rhs) {
-  CHECK(lhs.controllers.size() == rhs.controllers.size());
+bool layoutsIdentical(const InputState &lhs, const InputState &rhs) {
+  if(lhs.controllers.size() != rhs.controllers.size()) return false;
   for(int i = 0; i < lhs.controllers.size(); i++) {
-    CHECK(lhs.controllers[i].axes.size() == rhs.controllers[i].axes.size());
-    CHECK(lhs.controllers[i].keys.size() == rhs.controllers[i].keys.size());
+    if(lhs.controllers[i].axes.size() != rhs.controllers[i].axes.size()) return false;
+    if(lhs.controllers[i].keys.size() != rhs.controllers[i].keys.size()) return false;
   }
+  return true;
 }
 
 RngSeed Dumper::prepare(const RngSeed &option) {
@@ -103,7 +104,7 @@ int Dumper::get_primary_id() {
 void Dumper::set_layout(const InputState &is, const vector<pair<int, int> > &in_sources, int in_primary_id) {
   CHECK(!sources.size() || sources == in_sources);
   if(layout.controllers.size())
-    compareLayouts(is, layout);
+    CHECK(layoutsIdentical(is, layout));
   CHECK(primaryid == -1 || primaryid == in_primary_id);
   
   layout = is;
@@ -119,6 +120,30 @@ void Dumper::set_layout(const InputState &is, const vector<pair<int, int> > &in_
     
     writePacket();
   }
+}
+
+void Dumper::get_layout(InputState *is, vector<pair<int, int> > *in_sources, int *in_primary_id) {
+  if(istr && read_packet.type == Packet::TYPE_LAYOUT) {
+    *is = read_packet.inputstate;
+    *in_sources = read_packet.layout_sources;
+    *in_primary_id = read_packet.layout_primaryid;
+    
+    readPacket();
+  }
+  
+  if(ostr && (!layoutsIdentical(layout, *is) || sources != *in_sources || primaryid != *in_primary_id)) {
+    write_packet.type = Packet::TYPE_LAYOUT;
+    
+    write_packet.inputstate = *is;
+    write_packet.layout_sources = *in_sources;
+    write_packet.layout_primaryid = *in_primary_id;
+    
+    writePacket();
+  }
+  
+  layout = *is;
+  sources = *in_sources;
+  primaryid = *in_primary_id;
 }
 
 void Dumper::read_audit() {
@@ -178,7 +203,7 @@ InputState Dumper::read_input() {
 }
 
 void Dumper::write_input(const InputState &is) {
-  compareLayouts(layout, is);
+  CHECK(layoutsIdentical(layout, is));
   
   for(int i = 0; i < is.controllers.size(); i++)
     for(int j = 0; j < is.controllers[i].axes.size(); j++)

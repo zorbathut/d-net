@@ -3,6 +3,7 @@
 
 #include "args.h"
 #include "adler32_util.h"
+#include "audit.h"
 
 #include <set>
 
@@ -562,22 +563,39 @@ bool Player::isCorrupted() const {
 }
 
 void Player::checksum(Adler32 *adl) const {
+  audit(*adl);
   adler(adl, corrupted);
+  audit(*adl);
   adler(adl, glory);
+  audit(*adl);
   adler(adl, bombardment);
+  audit(*adl);
   adler(adl, tank);
+  audit(*adl);
   adler(adl, implantslots);
+  audit(*adl);
   adler(adl, implantlevels);
+  audit(*adl);
   adler(adl, implantequipped);
+  audit(*adl);
   adler(adl, faction);
+  audit(*adl);
   adler(adl, factionmode);
+  audit(*adl);
   adler(adl, adjustment);
+  audit(*adl);
   adler(adl, adjustment_notank);
+  audit(*adl);
   adler(adl, cash);
+  audit(*adl);
   adler(adl, damageDone);
+  audit(*adl);
   adler(adl, kills);
+  audit(*adl);
   adler(adl, wins);
+  audit(*adl);
   weapons.checksum(adl);
+  audit(*adl);
 }
 
 Player::Player() : weapons(NULL) { // this kind of works with the weapon manager

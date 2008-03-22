@@ -7,6 +7,7 @@
 #include "util.h"
 #include "smartptr.h"
 #include "dumper.h"
+#include "httpd.h"
 
 #include <boost/assign/list_of.hpp>
 
@@ -20,7 +21,6 @@
 
 using namespace std;
 
-DEFINE_int(aiCount, 0, "Number of AIs");
 DEFINE_int(nullControllers, 0, "Null controllers to insert in front");
 
 enum { CIP_KEYBOARD, CIP_JOYSTICK, CIP_AI, CIP_NULL };
@@ -54,7 +54,6 @@ InputState controls_init(Dumper *dumper) {
   
   if(dumper->is_replaying()) {
     CHECK(FLAGS_nullControllers == 0);
-    CHECK(FLAGS_aiCount == 0);
     
     InputState is = dumper->get_layout();
     
@@ -64,19 +63,7 @@ InputState controls_init(Dumper *dumper) {
     primary_id = dumper->get_primary_id();
     
     CHECK(sources.size() == now.controllers.size());
-  } else if(FLAGS_aiCount) {
-    prerecorded.resize(prerecorded.size() + FLAGS_aiCount, false);
-    dprintf("Creating AIs\n");
-    for(int i = 0; i < FLAGS_aiCount; i++)
-      ai.push_back(smart_ptr<Ai>(new Ai()));
-    dprintf("AIs initialized\n");
-    for(int i = 0; i < FLAGS_aiCount; i++) {
-      sources.push_back(make_pair((int)CIP_AI, i));
-      Controller aic;
-      aic.keys.resize(BUTTON_LAST);
-      aic.axes.resize(2);
-      now.controllers.push_back(aic);
-    }
+    
   } else {
     
     // Keyboard init
@@ -129,23 +116,65 @@ InputState controls_init(Dumper *dumper) {
   return now;
 }
 
+// We're gonna have to do something funky here in dumper mode.
+void controls_set_ai_count(int ct) {
+  CHECK(ct >= 0 && ct <= 16);
+  
+  // First let's see how many AIs we have.
+  int cic = 0;
+  for(int i = 0; i < sources.size(); i++)
+    if(sources[i].first == CIP_AI)
+      cic++;
+  
+  dprintf("changing ai count from %d to %d\n", cic, ct);
+  if(cic > ct) {
+    // Strip 'em.
+    while(cic > ct) {
+      CHECK(sources.back().first == CIP_AI);
+      sources.pop_back();
+      ai.pop_back();
+      now.controllers.pop_back();
+      last.controllers.pop_back();
+      prerecorded.pop_back();
+      cic--;
+    }
+  } else if(cic < ct) {
+    // Add 'em.
+    while(cic < ct) {
+      sources.push_back(make_pair((int)CIP_AI, ai.size()));
+      ai.push_back(smart_ptr<Ai>(new Ai()));
+      ai.back()->updateIdle();
+      Controller aic;
+      aic.keys.resize(BUTTON_LAST);
+      aic.axes.resize(2);
+      now.controllers.push_back(aic);
+      last.controllers.push_back(aic);
+      prerecorded.push_back(prerecorded[0]);  // yeah yeah
+      cic++;
+    }
+  }
+  
+  CHECK(now.controllers.size() == last.controllers.size());
+}
+
 void controls_key(const SDL_KeyboardEvent *key) {
-  if(FLAGS_aiCount)
-    return;
   bool *ps = NULL;
-  for(int i = 0; i < ARRAY_SIZE(baseplayermap); i++) {
-    for(int j = 0; j < baseplayersize[i]; j++) {
-      if(key->keysym.sym == baseplayermap[i][j]) {
+  for(int i = 0; i < sources.size(); i++) {
+    if(sources[i].first != CIP_KEYBOARD)
+      continue;
+    CHECK(sources[i].second >= 0 && sources[i].second < ARRAY_SIZE(baseplayersize));
+    for(int j = 0; j < baseplayersize[sources[i].second]; j++) {
+      if(key->keysym.sym == baseplayermap[sources[i].second][j]) {
         if(j == 0)
-          ps = &now.controllers[FLAGS_nullControllers + i].u.down;
+          ps = &now.controllers[i].u.down;
         else if(j == 1)
-          ps = &now.controllers[FLAGS_nullControllers + i].d.down;
+          ps = &now.controllers[i].d.down;
         else if(j == 2)
-          ps = &now.controllers[FLAGS_nullControllers + i].l.down;
+          ps = &now.controllers[i].l.down;
         else if(j == 3)
-          ps = &now.controllers[FLAGS_nullControllers + i].r.down;
+          ps = &now.controllers[i].r.down;
         else
-          ps = &now.controllers[FLAGS_nullControllers + i].keys[j-4].down;
+          ps = &now.controllers[i].keys[j - 4].down;
       }
     }
   }
@@ -162,21 +191,13 @@ void controls_key(const SDL_KeyboardEvent *key) {
 InputState controls_next(Dumper *dumper) {
   StackString sst("Controls");
   
+  dumper->get_layout(&now, &sources, &primary_id);
+  
   if(dumper->is_replaying()) {
     now = dumper->read_input();
     if(!now.valid)
       return now;
     CHECK(now.controllers.size() == last.controllers.size());
-  } else if(FLAGS_aiCount) {
-    set<int> done;
-    for(int i = 0; i < sources.size(); i++) {
-      if(sources[i].first == CIP_AI) {
-        CHECK(!done.count(sources[i].second));
-        done.insert(sources[i].second);
-        now.controllers[i] = ai[sources[i].second]->getNextKeys();
-      }
-    }
-    CHECK(done.size() == FLAGS_aiCount);
   } else {
     SDL_JoystickUpdate();
     for(int i = 0; i < now.controllers.size(); i++) {
@@ -192,6 +213,10 @@ InputState controls_next(Dumper *dumper) {
             toggle *= -1;
           now.controllers[i].axes[j] = SDL_JoystickGetAxis(joysticks[jstarget], j) / 32768.0f * toggle;
         }
+      } else if(sources[i].first == CIP_AI) {
+        now.controllers[i] = ai[sources[i].second]->getNextKeys();
+      } else if(sources[i].first == CIP_NULL) {
+      } else if(sources[i].first == CIP_KEYBOARD) {
       }
     }
   }
@@ -242,6 +267,11 @@ InputState controls_next(Dumper *dumper) {
 
   // now we do the deltas
   
+  if(last.controllers.size() != now.controllers.size()) {
+    dprintf("controller mismatch, %d vs %d\n", last.controllers.size(), now.controllers.size());
+    CHECK(0);
+  }
+  
   for(int i = 0; i < now.controllers.size(); i++)
     last.controllers[i].newState(now.controllers[i]);
   last.escape.newState(now.escape);
@@ -285,7 +315,7 @@ vector<bool> controls_ai_flags() {
 
 bool controls_users() {
   CHECK(prerecorded.size());
-  return !prerecorded[0] && !FLAGS_aiCount;
+  return !prerecorded[0] && (sources[primary_id].first == CIP_KEYBOARD || sources[primary_id].first == CIP_JOYSTICK);
 }
 
 void controls_shutdown() {
@@ -374,3 +404,23 @@ ControlConsts controls_getcc(int cid) {
   
   return rv;
 }
+
+class AIAdder : HTTPDhook {
+public:
+  virtual string reply(const map<string, string> &params) {
+    string rv;
+    if(params.count("ct")) {
+      controls_set_ai_count(atoi(params.find("ct")->second.c_str()));
+      rv += "Set AI count<br>";
+    } else {
+      rv += "Didn't set AI count<br>";
+    }
+    rv += "<br>";
+    for(int i = 0; i <= 16; i++) {
+      rv += StringPrintf("<a href=\"ai?ct=%d\">%d AIs</a><br>", i, i);
+    }
+    return rv;
+  }
+  
+  AIAdder() : HTTPDhook("ai") { };
+} aiadder;

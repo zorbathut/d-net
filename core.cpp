@@ -42,8 +42,6 @@ void MainLoop() {
 
   Timer timer;
 
-  bool quit = false;
-
   int frako = 0;
   
   long long polling = 0;
@@ -62,8 +60,6 @@ void MainLoop() {
   ControlShutdown csd;
   
   dumper.read_audit();
-  
-  InputState origis = is;
   
   dprintf("Final controllers:");
   for(int i = 0; i < is.controllers.size(); i++) {
@@ -85,14 +81,13 @@ void MainLoop() {
   int speed = 1;
   
   // This all needs to be commented much better.
-  while(!quit) {
+  while(1) {
     bool thistick = false;
     
     startPerformanceBar();
     if(FLAGS_timing)
       bencher = Timer();
     StackString sst(StringPrintf("Frame %d loop", frameNumber));
-    tickHttpd();
     ffwd = (frameNumber < FLAGS_fastForwardTo);
     if(frameNumber == FLAGS_fastForwardTo || speed != 1)
       timer = Timer();    // so we don't end up sitting there for aeons waiting for another frame
@@ -105,8 +100,8 @@ void MainLoop() {
         while(SDL_PollEvent(&event)) {
           switch(event.type) {
             case SDL_QUIT:
-              quit = true;
-              break;
+              dprintf("Returning, SDL_QUIT\n");
+              return;
 
             case SDL_KEYDOWN:
             case SDL_KEYUP:
@@ -134,23 +129,24 @@ void MainLoop() {
         }
       }
       
-      if(FLAGS_terminateAfter != -1 && time(NULL) - starttime >= FLAGS_terminateAfter)
-        quit = true;
-      if(FLAGS_terminateAfterFrame != -1 && FLAGS_terminateAfterFrame <= frameNumber)
-        quit = true;
-      
-      if(quit)
-        break;
+      if(FLAGS_terminateAfter != -1 && time(NULL) - starttime >= FLAGS_terminateAfter) {
+        dprintf("Returning, %d seconds elapsed (%d allowed)\n", int(time(NULL) - starttime), FLAGS_terminateAfter);
+        return;
+      }
+      if(FLAGS_terminateAfterFrame != -1 && FLAGS_terminateAfterFrame <= frameNumber) {
+        dprintf("Returning, %d frames elapsed (%d allowed)\n", frameNumber, FLAGS_terminateAfterFrame);
+        return;
+      }
       
       {
         int tspeed = speed;
         if(thistick && !tspeed)
           tspeed = 1;
         for(int i = 0; i < tspeed; i++) {
-          if(dumper.is_done())
+          if(dumper.is_done()) {
+            dprintf("Returning, dumper is done\n");
             return;
-          
-          interface.ai(controls_ai());  // has to be before controls
+          }
           
           if(dumper.has_checksum(true)) {
             dumper.read_checksum_audit();
@@ -162,17 +158,31 @@ void MainLoop() {
             }
             audit(adl);
             dumper.write_checksum_audit();
+            adlers += audit_read_count();
           }
           
-          adlers += audit_read_count();
+          tickHttpd();  // We do this here so we can inject stuff between control cycles. Yurgh.
+          
           is = controls_next(&dumper);
           
           dumper.write_input(is);
+          
           dumper.read_audit();
           
-          CHECK(is.controllers.size() == origis.controllers.size());
-          for(int i = 0; i < is.controllers.size(); i++)
-            CHECK(is.controllers[i].keys.size() == origis.controllers[i].keys.size());
+          /*
+          for(int i = 0; i < is.controllers.size(); i++) {
+            for(int j = 0; j < is.controllers[i].keys.size(); j++)
+              audit(is.controllers[i].keys[j].down);
+            for(int j = 0; j < is.controllers[i].axes.size(); j++) {
+              audit(is.controllers[i].axes[j].raw());
+              audit(is.controllers[i].axes[j].raw() >> 32);
+            }
+            audit(is.controllers[i].menu.x.raw());
+            audit(is.controllers[i].menu.x.raw() >> 32);
+            audit(is.controllers[i].menu.y.raw());
+            audit(is.controllers[i].menu.y.raw() >> 32);
+          }
+          */
           
           audit(0);  // so we have one item, and for rechecking's sake
           
@@ -182,8 +192,11 @@ void MainLoop() {
           }
           {
             PerfStack pst(PBC::tick);
-            if(interface.tick(is, game_seed))
-              quit = true;
+            if(interface.tick(is, game_seed)) {
+              dprintf("Returning, interface said so\n");
+              dumper.write_audit();
+              return;
+            }
           }
           if(FLAGS_timing) {
             ticking += bencher.ticksElapsed();
@@ -193,13 +206,13 @@ void MainLoop() {
           frameNumber++;
           
           dumper.write_audit();
+          adlers += audit_read_count();
+          
+          interface.ai(controls_ai());  // We do this afterwards so we don't delay until our next tick is starting.
         }
       }
       
     } while(interface.isWaitingOnAi(controls_ai_flags()));
-    
-    if(quit)
-      break;
     
     if(FLAGS_render) {
       bool render = false;
@@ -278,4 +291,6 @@ void MainLoop() {
     }
     frako++;
   }
+  
+  CHECK(0); // Returns from this function
 }
