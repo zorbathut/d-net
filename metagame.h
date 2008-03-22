@@ -35,8 +35,8 @@ public:
   Metagame(int playercount, Money startingcash, Coord multiple, int faction, int roundsBetweenShop, int rounds_until_end, RngSeed seed);
 
   void renderToScreen() const;
-  void ai(const vector<Ai *> &ai) const;
-  bool isWaitingOnAi(const vector<bool> &ais) const;
+  void ai(const vector<Ai *> &ai, const vector<bool> &humans) const;
+  bool isWaitingOnAi(const vector<bool> &humans) const;
   bool runTick(const vector<Controller> &keys);
 
   void checksum(Adler32 *adl) const;

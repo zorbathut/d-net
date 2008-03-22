@@ -127,10 +127,10 @@ void Metagame::checksum(Adler32 *adl) const {
   audit(*adl);
 };
   
-void Metagame::ai(const vector<Ai *> &ai) const {
+void Metagame::ai(const vector<Ai *> &ai, const vector<bool> &isHuman) const {
   StackString stp("Metagame AI");
   if(mode == MGM_PLAYERCHOOSE || mode == MGM_TWEEN) {
-    persistent.ai(ai);
+    persistent.ai(ai, isHuman);
   } else if(mode == MGM_FACTIONTYPE || mode == MGM_PLAY) {
     vector<Ai *> rai = persistent.distillAi(ai);
     vector<GameAi *> gai;
@@ -149,9 +149,9 @@ void Metagame::ai(const vector<Ai *> &ai) const {
   }
 }
 
-bool Metagame::isWaitingOnAi(const vector<bool> &ais) const {
+bool Metagame::isWaitingOnAi(const vector<bool> &humans) const {
   if(mode == MGM_PLAYERCHOOSE || mode == MGM_TWEEN)
-    return persistent.isWaitingOnAi(ais);
+    return persistent.isWaitingOnAi(humans);
   return false;
 }
 

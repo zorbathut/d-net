@@ -741,7 +741,7 @@ bool InterfaceMain::tick(const InputState &is, RngSeed gameseed) {
       else
         faction = 4;
       controls_set_ai_count(aicount); // this is pretty grim really
-      game = new Metagame(controls_ai_flags().size(), Money((long long)(1000 * pow(30, start.toFloat()))), exp(moneyexp), faction - 1, FLAGS_rounds_per_shop, calculateRounds(start, end, moneyexp), gameseed);
+      game = new Metagame(controls_human_flags().size(), Money((long long)(1000 * pow(30, start.toFloat()))), exp(moneyexp), faction - 1, FLAGS_rounds_per_shop, calculateRounds(start, end, moneyexp), gameseed);
       dprintf("ENTERING PLAYING\n");
       interface_mode = STATE_PLAYING;
     } else if(mrv.second == MAIN_EXIT) {
@@ -768,22 +768,22 @@ bool InterfaceMain::tick(const InputState &is, RngSeed gameseed) {
   return false;
 }
 
-void InterfaceMain::ai(const vector<Ai *> &ai) const {
+void InterfaceMain::ai(const vector<Ai *> &ai, const vector<bool> &isHuman) const {
   StackString stp("Interface AI");
   if(interface_mode == STATE_MAINMENU) {
     for(int i = 0; i < ai.size(); i++)
       if(ai[i])
         ai[i]->updatePregame();
   } else if(interface_mode == STATE_PLAYING) {
-    game->ai(ai);
+    game->ai(ai, isHuman);
   } else {
     CHECK(0);
   }
 }
 
-bool InterfaceMain::isWaitingOnAi(const vector<bool> &ais) const {
+bool InterfaceMain::isWaitingOnAi(const vector<bool> &humans) const {
   if(interface_mode == STATE_PLAYING)
-    return game->isWaitingOnAi(ais);
+    return game->isWaitingOnAi(humans);
   return false;
 }
 

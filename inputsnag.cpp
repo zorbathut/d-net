@@ -301,13 +301,13 @@ vector<Ai *> controls_ai() {
   return rv;
 }
 
-vector<bool> controls_ai_flags() {
+vector<bool> controls_human_flags() {
   vector<bool> rv;
   for(int i = 0; i < sources.size(); i++) {
-    if(sources[i].first == CIP_AI && !prerecorded[i])
-      rv.push_back(true);
-    else
+    if((sources[i].first == CIP_AI || sources[i].first == CIP_NULL) && !prerecorded[i])
       rv.push_back(false);
+    else
+      rv.push_back(true);
   }
   return rv;
 }

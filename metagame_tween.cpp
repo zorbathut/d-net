@@ -1060,9 +1060,9 @@ vector<const IDBFaction *> PersistentData::getUnfinishedFactions() const {
   return nrfactions;
 }
 
-bool PersistentData::onlyAiUnfinished(const vector<bool> &ais) const {
+bool PersistentData::onlyAiUnfinished(const vector<bool> &humans) const {
   for(int i = 0; i < pms.size(); i++)
-    if(!ais[i] && isUnfinished(i))
+    if(humans[i] && isUnfinished(i))
       return false;
   
   return true;
@@ -1090,7 +1090,7 @@ void PersistentData::setFactionMode(int in_faction_mode) {
     playerdata[i].setFactionMode(faction_mode);
 }
 
-void PersistentData::ai(const vector<Ai *> &ais) const {
+void PersistentData::ai(const vector<Ai *> &ais, const vector<bool> &isHuman) const {
   StackString sst("persistent AI");
   set<Ai *> untouched;
   for(int i = 0; i < ais.size(); i++)
@@ -1119,74 +1119,86 @@ void PersistentData::ai(const vector<Ai *> &ais) const {
       }
     }
   } else if(mode == TM_SHOP || mode == TM_PLAYERCHOOSE) {
-    vector<bool> dun(ais.size(), false);
+    // First, we want to see if the players exist and are done.
+    // If players exist, and there is one in-game, and they're all done, then we can do AI.
+    // If no players exist, then we can do AI.
+    // Conveniently, this is almost the same logic as isWaitingOnAi(). The only difference is that, if there's no humans, we really want to continue.
     
-    int shops = 0;
-    int chooses = 0;
-    int tweens = 0;
-    
-    for(int i = 0; i < slot_count; i++) {
-      if(slot[i].type != Slot::EMPTY) {
-        CHECK(slot[i].pid != -1); // blah
-        CHECK(!dun[slot[i].pid]);
-        dun[slot[i].pid] = true;
-        if(!ais[slot[i].pid])
-          continue;
-        
-        CHECK(untouched.count(ais[slot[i].pid]));
-        untouched.erase(ais[slot[i].pid]);
-        
-        if(slot[i].type == Slot::SHOP) {
-          slot[i].shop.ai(ais[slot[i].pid], &playerdata[playerid[slot[i].pid]]);
-          shops++;
-        } else if(slot[i].type == Slot::CHOOSE || slot[i].type == Slot::SETTINGS) {
-          ais[slot[i].pid]->updateCharacterChoice(factions, pms[slot[i].pid]);
-          chooses++;
-        } else {
-          dprintf("%d\n", slot[i].type);
-          CHECK(0);
+    if(count(isHuman.begin(), isHuman.end(), true) && !isWaitingOnAi(isHuman)) {
+      // There are humans, and we're not waiting on the AI. Have the AIs idle.
+      for(int i = 0; i < ais.size(); i++)
+        if(ais[i])
+          ais[i]->updateIdle();
+    } else {
+      vector<bool> dun(ais.size(), false);
+      
+      int shops = 0;
+      int chooses = 0;
+      int tweens = 0;
+      
+      for(int i = 0; i < slot_count; i++) {
+        if(slot[i].type != Slot::EMPTY) {
+          CHECK(slot[i].pid != -1); // blah
+          CHECK(!dun[slot[i].pid]);
+          dun[slot[i].pid] = true;
+          if(!ais[slot[i].pid])
+            continue;
+          
+          CHECK(untouched.count(ais[slot[i].pid]));
+          untouched.erase(ais[slot[i].pid]);
+          
+          if(slot[i].type == Slot::SHOP) {
+            slot[i].shop.ai(ais[slot[i].pid], &playerdata[playerid[slot[i].pid]]);
+            shops++;
+          } else if(slot[i].type == Slot::CHOOSE || slot[i].type == Slot::SETTINGS) {
+            ais[slot[i].pid]->updateCharacterChoice(factions, pms[slot[i].pid]);
+            chooses++;
+          } else {
+            dprintf("%d\n", slot[i].type);
+            CHECK(0);
+          }
         }
       }
-    }
-    for(int i = 0; i < dun.size(); i++) {
-      if(!dun[i]) {
-        dun[i] = true;
-        
-        if(!ais[i])
-          continue;
-        Coord2 endcoords;
-        Coord2 joincoords;
-        Coord2 quickshopcoords;
-        bool shopped;
-        if(mode == TM_SHOP) {
-          joincoords = targetCoords(TTL_LEAVEJOIN);
-          quickshopcoords = targetCoords(TTL_QUICKSHOP);
-          shopped = sps_shopped[i];
-        } else {
-          joincoords = targetCoords(TTL_JOIN);
-          quickshopcoords = Coord2(0, 0);
-          shopped = true;
+      for(int i = 0; i < dun.size(); i++) {
+        if(!dun[i]) {
+          dun[i] = true;
+          
+          if(!ais[i])
+            continue;
+          Coord2 endcoords;
+          Coord2 joincoords;
+          Coord2 quickshopcoords;
+          bool shopped;
+          if(mode == TM_SHOP) {
+            joincoords = targetCoords(TTL_LEAVEJOIN);
+            quickshopcoords = targetCoords(TTL_QUICKSHOP);
+            shopped = sps_shopped[i];
+          } else {
+            joincoords = targetCoords(TTL_JOIN);
+            quickshopcoords = Coord2(0, 0);
+            shopped = true;
+          }
+          
+          if(shopcycles) {
+            endcoords = targetCoords(TTL_END);
+          } else {
+            endcoords = Coord2(0, 0);
+          }
+          
+          CHECK(untouched.count(ais[i]));
+          untouched.erase(ais[i]);
+          
+          ais[i]->updateTween(!!pms[i].faction, sps_playermode[i] == SPS_PENDING, sps_playerpos[i], shopped, joincoords,  quickshopcoords, targetCoords(TTL_DONE), endcoords);
+          tweens++;
         }
-        
-        if(shopcycles) {
-          endcoords = targetCoords(TTL_END);
-        } else {
-          endcoords = Coord2(0, 0);
-        }
-        
-        CHECK(untouched.count(ais[i]));
-        untouched.erase(ais[i]);
-        
-        ais[i]->updateTween(!!pms[i].faction, sps_playermode[i] == SPS_PENDING, sps_playerpos[i], shopped, joincoords,  quickshopcoords, targetCoords(TTL_DONE), endcoords);
-        tweens++;
       }
+      int factioned = 0;
+      for(int i = 0; i < pms.size(); i++)
+        if(pms[i].faction)
+          factioned++;
+      
+      CHECK(dun == vector<bool>(ais.size(), true));
     }
-    int factioned = 0;
-    for(int i = 0; i < pms.size(); i++)
-      if(pms[i].faction)
-        factioned++;
-    
-    CHECK(dun == vector<bool>(ais.size(), true));
   } else {
     CHECK(0);
   }
@@ -1195,14 +1207,21 @@ void PersistentData::ai(const vector<Ai *> &ais) const {
     (*itr)->updateIdle();
 }
 
-bool PersistentData::isWaitingOnAi(const vector<bool> &isAi) const {
-  if(count(isAi.begin(), isAi.end(), false)) {
-    bool hasReadyPlayer = false;
-    for(int i = 0; i < isAi.size(); i++)
-      if(!isAi[i] && (sps_playermode[i] == SPS_DONE || sps_playermode[i] == SPS_END))
-        hasReadyPlayer = true;
-    return hasReadyPlayer && onlyAiUnfinished(isAi);
+bool PersistentData::isWaitingOnAi(const vector<bool> &isHuman) const {
+  if(count(isHuman.begin(), isHuman.end(), true)) {
+    // If there are any humans, we've got a few questions. First, if there are no humans ready, we're not waiting on the AI guaranteed.
+    {
+      bool hasReadyPlayer = false;
+      for(int i = 0; i < isHuman.size(); i++)
+        if(isHuman[i] && (sps_playermode[i] == SPS_DONE || sps_playermode[i] == SPS_END))
+          hasReadyPlayer = true;
+      if(!hasReadyPlayer)
+        return false;
+    }
+    // If there are finished humans, we check to see if there's only AIs left.
+    return onlyAiUnfinished(isHuman);
   } else {
+    // If there are no humans, we might as well return false just so we avoid skipping stuff.
     return false;
   }
 }

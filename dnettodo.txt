@@ -3,13 +3,16 @@
   - Jam AI into singleplayer
     - AI should conform to human decisions about ending the game
     - Make sure AI always have time to join
+    - Add AI count into recommended loadout
+    - Keep it from fastforwarding when entering the game
   - add "instant action" option
   - make sure full shop works in instant action
-  - Add forum
+  - Fix up keyboard interface :(
   - Split data into "data_source", "data_demo", "data_release"
   - Look at computer's screen res when starting for the first time
   - Add demo mode
   - Set it up to delete all but the three newest dumps
+  - Add forum
   - Make free version
   - Figure out Linux packaging
   - Figure out OSX packaging
@@ -237,3 +240,16 @@ We need packets. Packet ID:
 'A' - Standard adler
 
 IL(AK?CL?)*
+
+---
+Game start/end logic
+
+- Player hasn't yet joined
+  - Don't start or end the game ever
+
+- Players are all "done" or "end"
+  - Conform to player's wishes
+
+- Players have all quit
+  - Abort game, return to main menu
+

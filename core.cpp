@@ -208,11 +208,11 @@ void MainLoop() {
           dumper.write_audit();
           adlers += audit_read_count();
           
-          interface.ai(controls_ai());  // We do this afterwards so we don't delay until our next tick is starting.
+          interface.ai(controls_ai(), controls_human_flags());  // We do this afterwards so we don't delay until our next tick is starting.
         }
       }
       
-    } while(interface.isWaitingOnAi(controls_ai_flags()));
+    } while(interface.isWaitingOnAi(controls_human_flags()));
     
     if(FLAGS_render) {
       bool render = false;

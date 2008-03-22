@@ -107,8 +107,8 @@ class InterfaceMain : boost::noncopyable {
 public:
 
   bool tick(const InputState &control, RngSeed gameseed);
-  void ai(const vector<Ai *> &ais) const;
-  bool isWaitingOnAi(const vector<bool> &ais) const;
+  void ai(const vector<Ai *> &ais, const vector<bool> &isHuman) const;
+  bool isWaitingOnAi(const vector<bool> &humans) const;
   void render() const;
 
   void forceResize(int w, int h);

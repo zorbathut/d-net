@@ -15,7 +15,7 @@ void controls_set_ai_count(int ct);
 void controls_key(const SDL_KeyboardEvent *key);
 InputState controls_next(Dumper *dumper);
 vector<Ai *> controls_ai();
-vector<bool> controls_ai_flags();
+vector<bool> controls_human_flags();
 bool controls_users();
 void controls_shutdown();
 class ControlShutdown {
