@@ -341,10 +341,23 @@ PersistentData::PDRTR PersistentData::tick(const vector<Controller> &keys) {
     
     // Are we done?
     if(getUnfinishedFactions().size() == 0 && playerdata.size() >= 1) {
-      // Okay, we're done. First, we see if we're in End Of Game Mode
+      dprintf("Checking potential doneness\n");
+      // Okay, we're done. Things are a bit complicated from here.
+      // If humans exist, we must have at least one complete, and the humans have authority.
+      // If humans don't exist, then we can rely on the AIs.
+      
+      bool havehumans = false;
+      CHECK(keys.size() == sps_playermode.size());
+      for(int i = 0; i < sps_playermode.size(); i++)
+        if(keys[i].human)
+          havehumans = true;
+      
       int done = 0;
       int end = 0;
       for(int i = 0; i < sps_playermode.size(); i++) {
+        if(havehumans && !keys[i].human)
+          continue;
+        
         if(sps_playermode[i] == SPS_DONE) {
           done++;
         } else if(sps_playermode[i] == SPS_END) {
@@ -352,7 +365,10 @@ PersistentData::PDRTR PersistentData::tick(const vector<Controller> &keys) {
         }
       }
       
-      if(end >= done) {
+      dprintf("%d, %d, %d\n", havehumans, done, end);
+      
+      if(!done && !end) {
+      } else if(end >= done) {
         enterGameEnd();
       } else if(playerdata.size() >= 2) {
         for(int i = 0; i < sps_playermode.size(); i++)
@@ -1208,7 +1224,7 @@ void PersistentData::ai(const vector<Ai *> &ais, const vector<bool> &isHuman) co
 }
 
 bool PersistentData::isWaitingOnAi(const vector<bool> &isHuman) const {
-  if(count(isHuman.begin(), isHuman.end(), true)) {
+  if((mode == TM_PLAYERCHOOSE || mode == TM_SHOP) && count(isHuman.begin(), isHuman.end(), true)) {
     // If there are any humans, we've got a few questions. First, if there are no humans ready, we're not waiting on the AI guaranteed.
     {
       bool hasReadyPlayer = false;

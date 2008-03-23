@@ -1,10 +1,9 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - Jam AI into singleplayer
-    - AI should conform to human decisions about ending the game
-    - Make sure AI always have time to join
     - Add AI count into recommended loadout
     - Keep it from fastforwarding when entering the game
+  - Factions default to off?
   - add "instant action" option
   - make sure full shop works in instant action
   - Fix up keyboard interface :(

@@ -110,6 +110,13 @@ InputState controls_init(Dumper *dumper) {
   dprintf("Primary ID is %d\n", primary_id);
   dumper->set_layout(now, sources, primary_id);
   
+  {
+    vector<bool> ihf = controls_human_flags();
+    CHECK(ihf.size() == now.controllers.size());
+    for(int i = 0; i < ihf.size(); i++)
+      now.controllers[i].human = ihf[i];
+  }
+  
   last = now;
   
   return now;
@@ -146,6 +153,7 @@ void controls_set_ai_count(int ct) {
       Controller aic;
       aic.keys.resize(BUTTON_LAST);
       aic.axes.resize(2);
+      aic.human = false;
       now.controllers.push_back(aic);
       last.controllers.push_back(aic);
       prerecorded.push_back(prerecorded[0]);  // yeah yeah
@@ -304,9 +312,9 @@ vector<Ai *> controls_ai() {
 vector<bool> controls_human_flags() {
   vector<bool> rv;
   for(int i = 0; i < sources.size(); i++) {
-    if((sources[i].first == CIP_AI || sources[i].first == CIP_NULL) && !prerecorded[i])
+    if(sources[i].first == CIP_AI || sources[i].first == CIP_NULL)
       rv.push_back(false);
-    else
+    else  // We let humans be considered human, even when replaying, since it changes some small behavior things.
       rv.push_back(true);
   }
   return rv;

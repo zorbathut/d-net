@@ -92,6 +92,7 @@ void Controller::newState(const Controller &nst) {
 
 Controller::Controller() {
   menu = Coord2(0, 0);
+  human = true;
 }
 
 bool operator==(const Controller &lhs, const Controller &rhs) {

@@ -41,6 +41,8 @@ struct Controller {
   vector<Coord> axes;
   vector<Coord> lastaxes;
   vector<Button> keys;
+  
+  bool human;
 
   void newState(const Controller &nst);
 
