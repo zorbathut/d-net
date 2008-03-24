@@ -310,10 +310,10 @@ PersistentData::PDRTR PersistentData::tick(const vector<Controller> &keys) {
           slot[empty].type = Slot::CHOOSE;
         } else if(sps_queue[0].second == TTL_FULLSHOP) {
           slot[empty].type = Slot::SHOP;
-          slot[empty].shop.init(false, &playerdata[playerid[slot[empty].pid]], playerdata.size(), highestPlayerCash, getScreenAspect() * 100 / divider_ypos);
+          slot[empty].shop.init(false, &playerdata[playerid[slot[empty].pid]], getExpectedPlayercount(), highestPlayerCash, getScreenAspect() * 100 / divider_ypos);
         } else if(sps_queue[0].second == TTL_QUICKSHOP) {
           slot[empty].type = Slot::SHOP;
-          slot[empty].shop.init(true, &playerdata[playerid[slot[empty].pid]], playerdata.size(), highestPlayerCash, getScreenAspect() * 100 / divider_ypos);
+          slot[empty].shop.init(true, &playerdata[playerid[slot[empty].pid]], getExpectedPlayercount(), highestPlayerCash, getScreenAspect() * 100 / divider_ypos);
         } else if(sps_queue[0].second == TTL_SETTINGS) {
           slot[empty].type = Slot::SETTINGS;
         } else {
@@ -657,7 +657,7 @@ bool PersistentData::tickSlot(int slotid, const vector<Controller> &keys) {
     CHECK(slt.pid >= 0 && slt.pid < pms.size());
     CHECK(keys.size() == 1);
     
-    bool srt = slt.shop.runTick(pms[slt.pid].genKeystate(keys[0]), &playerdata[playerid[slt.pid]], playerdata.size());
+    bool srt = slt.shop.runTick(pms[slt.pid].genKeystate(keys[0]), &playerdata[playerid[slt.pid]], getExpectedPlayercount());
     
     if(srt)
       sps_shopped[slt.pid] = true;
@@ -1535,13 +1535,22 @@ void PersistentData::enterGameEnd() {
   checked.resize(playerdata.size());
 }
 
+int PersistentData::getExpectedPlayercount() const {
+  if(shopcycles) {
+    return playerdata.size();
+  } else {
+    return min(playerdata.size() + aicount, factions.size());
+  }
+}
+
 DEFINE_int(debugControllers, 0, "Number of controllers to set to debug defaults");
 
-PersistentData::PersistentData(int playercount, Money startingcash, Coord multiple, int in_roundsbetweenshop, int in_rounds_until_end) {
+PersistentData::PersistentData(int playercount, int in_aicount, Money startingcash, Coord multiple, int in_roundsbetweenshop, int in_rounds_until_end) {
   CHECK(multiple > 1);
   roundsbetweenshop = in_roundsbetweenshop;
   rounds_until_end = in_rounds_until_end;
   faction_mode = 0;
+  aicount = in_aicount;
   
   pms.clear();
   pms.resize(playercount);

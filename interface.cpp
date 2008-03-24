@@ -741,7 +741,7 @@ bool InterfaceMain::tick(const InputState &is, RngSeed gameseed) {
       else
         faction = 4;
       controls_set_ai_count(aicount); // this is pretty grim really
-      game = new Metagame(controls_human_flags().size(), Money((long long)(1000 * pow(30, start.toFloat()))), exp(moneyexp), faction - 1, FLAGS_rounds_per_shop, calculateRounds(start, end, moneyexp), gameseed);
+      game = new Metagame(controls_human_flags().size(), aicount, Money((long long)(1000 * pow(30, start.toFloat()))), exp(moneyexp), faction - 1, FLAGS_rounds_per_shop, calculateRounds(start, end, moneyexp), gameseed);
       dprintf("ENTERING PLAYING\n");
       interface_mode = STATE_PLAYING;
     } else if(mrv.second == MAIN_EXIT) {

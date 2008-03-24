@@ -38,7 +38,7 @@ public:
   void startAtNormalShop();
 
   // Constructor
-  PersistentData(int playercount, Money startingcash, Coord multiple, int roundsbetweenshop, int rounds_until_end);
+  PersistentData(int playercount, int aicount, Money startingcash, Coord multiple, int roundsbetweenshop, int rounds_until_end);
 
 private:
   // Persistent state
@@ -132,6 +132,9 @@ private:
   
   void destroyPlayer(int pid); // DESTROY
   void enterGameEnd();
+  
+  int aicount;
+  int getExpectedPlayercount() const;
 };
 
 #endif
