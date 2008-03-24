@@ -594,9 +594,6 @@ void PersistentData::reset() {
   
   sps_playermode.clear();
   sps_playermode.resize(pms.size(), SPS_IDLE);
-  for(int i = 0; i < pms.size(); i++)
-    if(pms[i].faction)
-      sps_playermode[i] = SPS_CHOOSING;
   
   resetRanges();
   
@@ -1052,10 +1049,7 @@ bool PersistentData::isUnfinished(int id) const {
   if(sps_playermode[id] == SPS_DONE || sps_playermode[id] == SPS_END)
     return false;
   
-  if(!pms[id].faction && sps_playermode[id] == SPS_IDLE)
-    return false;
-  
-  if(!pms[id].faction && sps_playermode[id] == SPS_CHOOSING)
+  if(!pms[id].faction && (sps_playermode[id] == SPS_IDLE || sps_playermode[id] == SPS_CHOOSING))
     return false;
   
   return true;

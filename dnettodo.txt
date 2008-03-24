@@ -1,7 +1,6 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - Jam AI into singleplayer
-    - Don't render AI cursors
     - fix make ai
   - Factions default to off?
   - add "instant action" option
