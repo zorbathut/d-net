@@ -1,8 +1,8 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - Jam AI into singleplayer
-    - Keep it from fastforwarding when entering the game
     - Don't render AI cursors
+    - fix make ai
   - Factions default to off?
   - add "instant action" option
   - make sure full shop works in instant action

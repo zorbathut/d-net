@@ -94,125 +94,134 @@ void MainLoop() {
     if(FLAGS_timing)
       bencher = Timer();
     
-    do {
-      {
-        SDL_Event event;
-        while(SDL_PollEvent(&event)) {
-          switch(event.type) {
-            case SDL_QUIT:
-              dprintf("Returning, SDL_QUIT\n");
-              return;
+    {
+      int frames = 0;
+      do {
+        {
+          SDL_Event event;
+          while(SDL_PollEvent(&event)) {
+            switch(event.type) {
+              case SDL_QUIT:
+                dprintf("Returning, SDL_QUIT\n");
+                return;
 
-            case SDL_KEYDOWN:
-            case SDL_KEYUP:
-              if(FLAGS_warpkeys && event.key.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_z)
-                speed = !speed;
-              if(FLAGS_warpkeys && event.key.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_x)
-                speed = 10;
-              if(FLAGS_warpkeys && event.key.type == SDL_KEYUP && event.key.keysym.sym == SDLK_x)
-                speed = 0;
-              if(FLAGS_warpkeys && event.key.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_c)
-                thistick = true;
-              if(FLAGS_warpkeys && event.key.type == SDL_KEYUP && event.key.keysym.sym == SDLK_c)
-                speed = 0;
-              
-              controls_key(&event.key);
-              break;
+              case SDL_KEYDOWN:
+              case SDL_KEYUP:
+                if(FLAGS_warpkeys && event.key.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_z)
+                  speed = !speed;
+                if(FLAGS_warpkeys && event.key.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_x)
+                  speed = 10;
+                if(FLAGS_warpkeys && event.key.type == SDL_KEYUP && event.key.keysym.sym == SDLK_x)
+                  speed = 0;
+                if(FLAGS_warpkeys && event.key.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_c)
+                  thistick = true;
+                if(FLAGS_warpkeys && event.key.type == SDL_KEYUP && event.key.keysym.sym == SDLK_c)
+                  speed = 0;
+                
+                controls_key(&event.key);
+                break;
 
-            case SDL_VIDEORESIZE:
-              interface.forceResize(event.resize.w, event.resize.h);
-              break;
+              case SDL_VIDEORESIZE:
+                interface.forceResize(event.resize.w, event.resize.h);
+                break;
 
-            default:
-              break;
+              default:
+                break;
+            }
           }
         }
-      }
-      
-      if(FLAGS_terminateAfter != -1 && time(NULL) - starttime >= FLAGS_terminateAfter) {
-        dprintf("Returning, %d seconds elapsed (%d allowed)\n", int(time(NULL) - starttime), FLAGS_terminateAfter);
-        return;
-      }
-      if(FLAGS_terminateAfterFrame != -1 && FLAGS_terminateAfterFrame <= frameNumber) {
-        dprintf("Returning, %d frames elapsed (%d allowed)\n", frameNumber, FLAGS_terminateAfterFrame);
-        return;
-      }
-      
-      {
-        int tspeed = speed;
-        if(thistick && !tspeed)
-          tspeed = 1;
-        for(int i = 0; i < tspeed; i++) {
-          if(dumper.is_done()) {
-            dprintf("Returning, dumper is done\n");
-            return;
-          }
-          
-          if(dumper.has_checksum(true)) {
-            dumper.read_checksum_audit();
-            Adler32 adl;
-            PerfStack pst(PBC::checksum);
-            adler(&adl, frameNumber);
-            if(FLAGS_checksumGameState) {
-              interface.checksum(&adl);
+        
+        if(FLAGS_terminateAfter != -1 && time(NULL) - starttime >= FLAGS_terminateAfter) {
+          dprintf("Returning, %d seconds elapsed (%d allowed)\n", int(time(NULL) - starttime), FLAGS_terminateAfter);
+          return;
+        }
+        if(FLAGS_terminateAfterFrame != -1 && FLAGS_terminateAfterFrame <= frameNumber) {
+          dprintf("Returning, %d frames elapsed (%d allowed)\n", frameNumber, FLAGS_terminateAfterFrame);
+          return;
+        }
+        
+        {
+          int tspeed = speed;
+          if(thistick && !tspeed)
+            tspeed = 1;
+          for(int i = 0; i < tspeed; i++) {
+            if(dumper.is_done()) {
+              dprintf("Returning, dumper is done\n");
+              return;
             }
-            audit(adl);
-            dumper.write_checksum_audit();
+            
+            if(dumper.has_checksum(true)) {
+              dumper.read_checksum_audit();
+              Adler32 adl;
+              PerfStack pst(PBC::checksum);
+              adler(&adl, frameNumber);
+              if(FLAGS_checksumGameState) {
+                interface.checksum(&adl);
+              }
+              audit(adl);
+              dumper.write_checksum_audit();
+              adlers += audit_read_count();
+            }
+            
+            tickHttpd();  // We do this here so we can inject stuff between control cycles. Yurgh.
+            
+            is = controls_next(&dumper);
+            
+            dumper.write_input(is);
+            
+            dumper.read_audit();
+            
+            /*
+            for(int i = 0; i < is.controllers.size(); i++) {
+              for(int j = 0; j < is.controllers[i].keys.size(); j++)
+                audit(is.controllers[i].keys[j].down);
+              for(int j = 0; j < is.controllers[i].axes.size(); j++) {
+                audit(is.controllers[i].axes[j].raw());
+                audit(is.controllers[i].axes[j].raw() >> 32);
+              }
+              audit(is.controllers[i].menu.x.raw());
+              audit(is.controllers[i].menu.x.raw() >> 32);
+              audit(is.controllers[i].menu.y.raw());
+              audit(is.controllers[i].menu.y.raw() >> 32);
+            }
+            */
+            
+            audit(0);  // so we have one item, and for rechecking's sake
+            
+            if(FLAGS_timing) {
+              polling += bencher.ticksElapsed();
+              bencher = Timer();
+            }
+            {
+              PerfStack pst(PBC::tick);
+              if(interface.tick(is, game_seed)) {
+                dprintf("Returning, interface said so\n");
+                dumper.write_audit();
+                return;
+              }
+            }
+            if(FLAGS_timing) {
+              ticking += bencher.ticksElapsed();
+              bencher = Timer();
+            }
+            
+            frameNumber++;
+            
+            dumper.write_audit();
             adlers += audit_read_count();
+            
+            interface.ai(controls_ai(), controls_human_flags());  // We do this afterwards so we don't delay until our next tick is starting.
           }
-          
-          tickHttpd();  // We do this here so we can inject stuff between control cycles. Yurgh.
-          
-          is = controls_next(&dumper);
-          
-          dumper.write_input(is);
-          
-          dumper.read_audit();
-          
-          /*
-          for(int i = 0; i < is.controllers.size(); i++) {
-            for(int j = 0; j < is.controllers[i].keys.size(); j++)
-              audit(is.controllers[i].keys[j].down);
-            for(int j = 0; j < is.controllers[i].axes.size(); j++) {
-              audit(is.controllers[i].axes[j].raw());
-              audit(is.controllers[i].axes[j].raw() >> 32);
-            }
-            audit(is.controllers[i].menu.x.raw());
-            audit(is.controllers[i].menu.x.raw() >> 32);
-            audit(is.controllers[i].menu.y.raw());
-            audit(is.controllers[i].menu.y.raw() >> 32);
-          }
-          */
-          
-          audit(0);  // so we have one item, and for rechecking's sake
-          
-          if(FLAGS_timing) {
-            polling += bencher.ticksElapsed();
-            bencher = Timer();
-          }
-          {
-            PerfStack pst(PBC::tick);
-            if(interface.tick(is, game_seed)) {
-              dprintf("Returning, interface said so\n");
-              dumper.write_audit();
-              return;
-            }
-          }
-          if(FLAGS_timing) {
-            ticking += bencher.ticksElapsed();
-            bencher = Timer();
-          }
-          
-          frameNumber++;
-          
-          dumper.write_audit();
-          adlers += audit_read_count();
-          
-          interface.ai(controls_ai(), controls_human_flags());  // We do this afterwards so we don't delay until our next tick is starting.
         }
-      }
+        
+        frames++;
+      } while(interface.isWaitingOnAi(controls_human_flags()));
       
-    } while(interface.isWaitingOnAi(controls_human_flags()));
+      if(frames > 1) {
+        dprintf("Finished %d-frame AI chunk\n", frames);
+        timer = Timer();
+      }
+    }
     
     if(FLAGS_render) {
       bool render = false;
