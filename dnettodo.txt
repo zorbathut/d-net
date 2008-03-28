@@ -1,7 +1,5 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
-  - Jam AI into singleplayer
-    - Check input test after round is done?
   - test replay
     - AI replay
     - Non-AI replay

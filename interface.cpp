@@ -967,10 +967,16 @@ void InterfaceMain::render() const {
         float xmarg = (getZoom().ex - wid * xsiz) / 2;
         
         const float boxthick = 1.0;
+        
+        int citem = 0;
+        
         for(int i = 0; i < inptest_controls.size(); i++) {
+          if(!inptest_controls[i].human)
+            continue;
+          
           const Controller &ct = inptest_controls[i];
-          float x = (i % wid) * xsiz + xmarg;
-          float y = (i / wid) * ysiz + 50;
+          float x = (citem % wid) * xsiz + xmarg;
+          float y = (citem / wid) * ysiz + 50;
           if(i % wid == 0 && i) {
             setColor(C::box_border);
             drawLine(Float4(xmarg, y, getZoom().ex - xmarg, y), boxthick);
@@ -1013,6 +1019,8 @@ void InterfaceMain::render() const {
               }
             }
           }
+          
+          citem++;
         }
       } else {
         GfxWindow gfxw(Float4(0, 0, getZoom().ex, 60), 2.0);
