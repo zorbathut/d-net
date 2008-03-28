@@ -27,6 +27,7 @@ DEFINE_int(fastForwardTo, 0, "Fastforward rendering to this frame");
 DEFINE_int(terminateAfterFrame, -1, "Terminate execution after this many frames");
 DEFINE_int(terminateAfter, -1, "Terminate execution after this many seconds");
 DEFINE_int(randomizeFrameRender, 0, "Randomize frame render change to 1/this (default 0 for disabled)");
+DEFINE_int(aiCount, 0, "AI count for full automation");
 
 DEFINE_bool(frameskip, true, "Enable or disable frameskipping");
 DEFINE_bool(render, true, "Render shit");
@@ -56,7 +57,9 @@ void MainLoop() {
   
   RngSeed game_seed = dumper.prepare(rng.generate_seed());
   
-  InputState is = controls_init(&dumper);
+  frameNumber = 0;    // it's -1 before this point
+  
+  InputState is = controls_init(&dumper, FLAGS_aiCount == 0, FLAGS_aiCount);
   ControlShutdown csd;
   
   dumper.read_audit();
@@ -67,8 +70,6 @@ void MainLoop() {
   }
   
   int skipped = 0;
-  
-  frameNumber = 0;    // it's -1 before this point
 
   InterfaceMain interface;
 

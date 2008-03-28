@@ -1,7 +1,10 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - Jam AI into singleplayer
-    - fix make ai
+    - Check input test after round is done?
+  - test replay
+    - AI replay
+    - Non-AI replay
   - Factions default to off?
   - add "instant action" option
   - make sure full shop works in instant action
@@ -10,10 +13,13 @@
   - Look at computer's screen res when starting for the first time
   - Add demo mode
   - Set it up to delete all but the three newest dumps
+  - Bench and optimize AI shop
   - Add forum
   - Make free version
   - Figure out Linux packaging
   - Figure out OSX packaging
+  - Figure out how to make a CHECK variant with debug output on failure
+  - turn inputsnag into a singleton
   - boost::array
     - Add vector_paranoia
     - Integrate in a few places

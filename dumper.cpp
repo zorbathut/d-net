@@ -120,6 +120,8 @@ void Dumper::set_layout(const InputState &is, const vector<pair<int, int> > &in_
     
     writePacket();
   }
+  
+  CHECK(primaryid >= 0 && primaryid < layout.controllers.size());
 }
 
 void Dumper::get_layout(InputState *is, vector<pair<int, int> > *in_sources, int *in_primary_id) {

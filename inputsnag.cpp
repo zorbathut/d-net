@@ -39,7 +39,7 @@ const int playertwo[] = { SDLK_w, SDLK_s, SDLK_a, SDLK_d, SDLK_r, SDLK_t, SDLK_y
 const int *const baseplayermap[2] = { playerone, playertwo };
 const int baseplayersize[2] = { ARRAY_SIZE(playerone), ARRAY_SIZE(playertwo) };  
 
-InputState controls_init(Dumper *dumper) {
+InputState controls_init(Dumper *dumper, bool allow_standard, int ais) {
   CHECK(sources.size() == 0);
   
   now.controllers.resize(FLAGS_nullControllers);
@@ -63,7 +63,7 @@ InputState controls_init(Dumper *dumper) {
     
     CHECK(sources.size() == now.controllers.size());
     
-  } else {
+  } else if(allow_standard) {
     
     // Keyboard init
     sources.push_back(make_pair((int)CIP_KEYBOARD, 0));
@@ -102,13 +102,13 @@ InputState controls_init(Dumper *dumper) {
     }
     
     prerecorded.resize(sources.size(), false);
+  } else {
+    dprintf("Skipping humans\n");
   }
+  
   CHECK(sources.size() != 0);
   CHECK(sources.size() == now.controllers.size());
   CHECK(prerecorded.size() == sources.size());
-  
-  dprintf("Primary ID is %d\n", primary_id);
-  dumper->set_layout(now, sources, primary_id);
   
   {
     vector<bool> ihf = controls_human_flags();
@@ -119,6 +119,12 @@ InputState controls_init(Dumper *dumper) {
   
   last = now;
   
+  dprintf("AIS is %d\n", ais);
+  controls_set_ai_count(ais);
+  
+  dprintf("Primary ID is %d\n", primary_id);
+  dumper->set_layout(now, sources, primary_id);
+  
   return now;
 }
 
@@ -126,42 +132,42 @@ InputState controls_init(Dumper *dumper) {
 void controls_set_ai_count(int ct) {
   CHECK(ct >= 0 && ct <= 16);
   
-  // First let's see how many AIs we have.
+  dprintf("changing ai count from %d to %d\n", controls_get_ai_count(), ct);
+
+  // Technically this is O(n^2). I honestly don't care however.
+  while(controls_get_ai_count() > ct) {
+    CHECK(sources.back().first == CIP_AI);
+    sources.pop_back();
+    ai.pop_back();
+    now.controllers.pop_back();
+    last.controllers.pop_back();
+    prerecorded.pop_back();
+  }
+
+  while(controls_get_ai_count() < ct) {
+    sources.push_back(make_pair((int)CIP_AI, ai.size()));
+    ai.push_back(smart_ptr<Ai>(new Ai()));
+    ai.back()->updateIdle();
+    Controller aic;
+    aic.keys.resize(BUTTON_LAST);
+    aic.axes.resize(2);
+    aic.human = false;
+    now.controllers.push_back(aic);
+    last.controllers.push_back(aic);
+    prerecorded.push_back(prerecorded[0]);  // yeah yeah
+  }
+  
+  CHECK(now.controllers.size() == last.controllers.size());
+}
+
+int controls_get_ai_count(void) {
+ 
   int cic = 0;
   for(int i = 0; i < sources.size(); i++)
     if(sources[i].first == CIP_AI)
       cic++;
   
-  dprintf("changing ai count from %d to %d\n", cic, ct);
-  if(cic > ct) {
-    // Strip 'em.
-    while(cic > ct) {
-      CHECK(sources.back().first == CIP_AI);
-      sources.pop_back();
-      ai.pop_back();
-      now.controllers.pop_back();
-      last.controllers.pop_back();
-      prerecorded.pop_back();
-      cic--;
-    }
-  } else if(cic < ct) {
-    // Add 'em.
-    while(cic < ct) {
-      sources.push_back(make_pair((int)CIP_AI, ai.size()));
-      ai.push_back(smart_ptr<Ai>(new Ai()));
-      ai.back()->updateIdle();
-      Controller aic;
-      aic.keys.resize(BUTTON_LAST);
-      aic.axes.resize(2);
-      aic.human = false;
-      now.controllers.push_back(aic);
-      last.controllers.push_back(aic);
-      prerecorded.push_back(prerecorded[0]);  // yeah yeah
-      cic++;
-    }
-  }
-  
-  CHECK(now.controllers.size() == last.controllers.size());
+  return cic;
 }
 
 void controls_key(const SDL_KeyboardEvent *key) {
@@ -322,6 +328,10 @@ vector<bool> controls_human_flags() {
 
 bool controls_users() {
   CHECK(prerecorded.size());
+  if(!(primary_id >= 0 && primary_id < prerecorded.size())) {
+    dprintf("%d, %d\n", primary_id, prerecorded.size());
+    CHECK(primary_id >= 0 && primary_id < prerecorded.size());
+  }
   return !prerecorded[0] && (sources[primary_id].first == CIP_KEYBOARD || sources[primary_id].first == CIP_JOYSTICK);
 }
 

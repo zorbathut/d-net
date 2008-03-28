@@ -1079,6 +1079,8 @@ void InterfaceMain::init() {
   delete introscreen;
   introscreen = new GamePackage;
   
+  aicount = controls_get_ai_count();
+  
   interface_mode = STATE_MAINMENU;
   {
     vector<string> names = boost::assign::list_of("Junkyard")("Civilian")("Professional")("Military")("Exotic")("Experimental")("Ultimate")("Armageddon");
@@ -1087,7 +1089,7 @@ void InterfaceMain::init() {
     configmenu.pushMenuItem(StdMenuItemScale::make("Game start", &start, bind(&InterfaceMain::start_clamp, this, _1), StdMenuItemScale::ScaleDisplayer(names, &start, &end, &onstart, true), true, &onstart));
     configmenu.pushMenuItem(StdMenuItemScale::make("Game end", &end, bind(&InterfaceMain::end_clamp, this, _1), StdMenuItemScale::ScaleDisplayer(names, &start, &end, &onstart, false), false, &onstart));
     configmenu.pushMenuItem(StdMenuItemRounds::make("Estimated rounds", &start, &end, &moneyexp));
-    configmenu.pushMenuItem(StdMenuItemCounter::make("AI count", &aicount, 0, 15));
+    configmenu.pushMenuItem(StdMenuItemCounter::make("AI count", &aicount, 0, max(15, aicount)));
     
     {
       vector<pair<string, bool> > onoff;
@@ -1141,8 +1143,6 @@ void InterfaceMain::init() {
     start = Coord(FLAGS_startingPhase);
   end = 7;
   moneyexp = Coord(0.1133);
-  
-  aicount = 0;
   
   faction = FLAGS_factionMode + 1;
   CHECK(faction >= 0 && faction < 5);
