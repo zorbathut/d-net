@@ -14,6 +14,7 @@
 #include "adler32.h"
 #include "dumper.h"
 #include "audit.h"
+#include "dumper_registry.h"
 
 #ifdef OSX_FRAMEWORK_PREFIXES
   #include <SDL/SDL.h>
@@ -27,7 +28,6 @@ DEFINE_int(fastForwardTo, 0, "Fastforward rendering to this frame");
 DEFINE_int(terminateAfterFrame, -1, "Terminate execution after this many frames");
 DEFINE_int(terminateAfter, -1, "Terminate execution after this many seconds");
 DEFINE_int(randomizeFrameRender, 0, "Randomize frame render change to 1/this (default 0 for disabled)");
-DEFINE_int(aiCount, 0, "AI count for full automation");
 
 DEFINE_bool(frameskip, true, "Enable or disable frameskipping");
 DEFINE_bool(render, true, "Render shit");
@@ -36,6 +36,9 @@ DEFINE_bool(warpkeys, false, "Enable timewarp keys");
 DEFINE_bool(renderframenumber, true, "Render frame number when AI is on");
 
 DEFINE_bool(checksumGameState, true, "Checksum the game state on every frame");
+
+DEFINE_int(aiCount, 0, "AI count for full automation");
+REGISTER_int(aiCount);
 
 void displayCZInfo();
 

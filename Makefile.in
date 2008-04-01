@@ -2,7 +2,7 @@
 STDCXXFLAGS := @STDCXXFLAGS@ -DDPRINTF_MARKUP -Wall -Wno-sign-compare -Wno-uninitialized -g -O2
 STDLDFLAGS := @STDLDFLAGS@ -g -O2 -Wl,--as-needed
 
-GAMESOURCES := main core game timer debug gfx collide gamemap util rng args interface metagame itemdb itemdb_adjust itemdb_parse parse dvec2 input level coord ai inputsnag os float cfcommon coord_boolean player metagame_config shop shop_demo shop_info game_ai game_effects color metagame_tween cfc game_tank game_util game_projectile socket httpd recorder generators audio itemdb_httpd test regex shop_layout perfbar adler32 money stream stream_file itemdb_stream res_interface settings dumper audit stream_gz
+GAMESOURCES := main core game timer debug gfx collide gamemap util rng args interface metagame itemdb itemdb_adjust itemdb_parse parse dvec2 input level coord ai inputsnag os float cfcommon coord_boolean player metagame_config shop shop_demo shop_info game_ai game_effects color metagame_tween cfc game_tank game_util game_projectile socket httpd recorder generators audio itemdb_httpd test regex shop_layout perfbar adler32 money stream stream_file itemdb_stream res_interface settings dumper audit stream_gz dumper_registry
 GAMECXXFLAGS := @GAMECXXFLAGS@ $(STDCXXFLAGS) -DNOEXIT
 GAMELDFLAGS := @GAMELDFLAGS@ $(STDLDFLAGS) -lz
 
@@ -88,10 +88,10 @@ aisc: d-net data/shopcache.dwh
 ailoop: d-net
 	while nice ./d-net.exe --nofullscreen --aiCount=12 --fastForwardTo=100000000 --factionmode=3 --terminateAfter=3600 --startingPhase=0 --nullcontrollers=19 --noshopcache ; do echo Cycle. ; done
 
-AICSLFLAGS = --nofullscreen --fastForwardTo=100000000 --factionmode=3 --noshopcache --perfbar --randomizeFrameRender=60 --startingPhase=7
+AICSLFLAGS = --nofullscreen --fastForwardTo=100000000 --noshopcache --perfbar --randomizeFrameRender=60 
 
 aichecksumloop: d-net
-	while nice rm -f dumps/dump-*.dnd && nice ./d-net.exe $(AICSLFLAGS) --aiCount=6 --terminateAfter=300 --nullcontrollers=5 && nice ./d-net.exe $(AICSLFLAGS) --readtarget=`ls dumps/dump-*.dnd` ; do echo Cycle. ; done
+	while nice rm -f dumps/dump-*.dnd && nice ./d-net.exe $(AICSLFLAGS) --factionmode=3 --startingPhase=7 --aiCount=6 --terminateAfter=300 --nullcontrollers=5 && nice ./d-net.exe $(AICSLFLAGS) --readtarget=`ls dumps/dump-*.dnd` ; do echo Cycle. ; done
   
 veced: vecedit
 	./vecedit.exe

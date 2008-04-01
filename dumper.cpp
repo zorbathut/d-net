@@ -8,9 +8,12 @@
 #include "stream_process_primitive.h"
 #include "stream_process_utility.h"
 #include "stream_process_vector.h"
+#include "stream_process_map.h"
 #include "stream_process_rng.h"
 #include "stream_process_coord.h"
+#include "stream_process_string.h"
 #include "audit.h"
+#include "dumper_registry.h"
 
 DEFINE_string(writeTarget, "dumps/dump", "Prefix for file dump");
 DEFINE_string(readTarget, "", "File to replay from");
@@ -26,6 +29,8 @@ bool layoutsIdentical(const InputState &lhs, const InputState &rhs) {
   return true;
 }
 
+BOOST_STATIC_ASSERT(sizeof(float) == 4);  // ugh
+
 RngSeed Dumper::prepare(const RngSeed &option) {
   
   RngSeed seed = option;
@@ -40,10 +45,54 @@ RngSeed Dumper::prepare(const RngSeed &option) {
     
     CHECK(read_packet.type == Packet::TYPE_INIT);
     seed = read_packet.init_seed;
+    
+    CHECK(read_packet.init_registry.size() == getRegistrationSingleton().size());
+    for(map<string, RegistryData>::iterator itr = getRegistrationSingleton().begin(); itr != getRegistrationSingleton().end(); itr++) {
+      CHECK(read_packet.init_registry.count(itr->first));
+      CHECK(*itr->second.source != FS_CLI);
+      *itr->second.source = FS_CLI; // owned
+      
+      // This is not ideal but I am doing it anyway.
+      if(itr->second.type == RegistryData::REGISTRY_BOOL) {
+        if(read_packet.init_registry[itr->first] == "true") {
+          *itr->second.bool_link = true;
+        } else if(read_packet.init_registry[itr->first] == "false") {
+          *itr->second.bool_link = false;
+        } else {
+          CHECK(0);
+        }
+      } else if(itr->second.type == RegistryData::REGISTRY_INT) {
+        *itr->second.int_link = atoi(read_packet.init_registry[itr->first].c_str());
+      } else if(itr->second.type == RegistryData::REGISTRY_FLOAT) {
+        CHECK(read_packet.init_registry[itr->first].size() == 4);
+        *itr->second.float_link = *(float*)read_packet.init_registry[itr->first].c_str();
+      } else {
+        CHECK(0);
+      }
+    }
   }
   
   write_packet.type = Packet::TYPE_INIT;
   write_packet.init_seed = seed;
+  write_packet.init_registry.clear();
+  for(map<string, RegistryData>::iterator itr = getRegistrationSingleton().begin(); itr != getRegistrationSingleton().end(); itr++) {
+    CHECK(!write_packet.init_registry.count(itr->first));
+    
+    if(itr->second.type == RegistryData::REGISTRY_BOOL) {
+      if(*itr->second.bool_link)
+        write_packet.init_registry[itr->first] = "true";
+      else
+        write_packet.init_registry[itr->first] = "false";
+    } else if(itr->second.type == RegistryData::REGISTRY_INT) {
+      write_packet.init_registry[itr->first] = StringPrintf("%d", *itr->second.int_link);
+    } else if(itr->second.type == RegistryData::REGISTRY_FLOAT) {
+      write_packet.init_registry[itr->first] = string((const char *)itr->second.float_link, (const char *)(itr->second.float_link + 1));
+    } else {
+      CHECK(0);
+    }
+    
+    CHECK(write_packet.init_registry[itr->first].size());
+  }
   
   if(FLAGS_writeTarget != "" && FLAGS_readTarget == "" || FLAGS_writeTarget_OVERRIDDEN) {
     string fname = FLAGS_writeTarget;
@@ -243,6 +292,7 @@ void Dumper::readPacket() {
   if(type == 'I') {
     read_packet.type = Packet::TYPE_INIT;
     CHECK(!istr->tryRead(&read_packet.init_seed));
+    CHECK(!istr->tryRead(&read_packet.init_registry));
   } else if(type == 'L') {
     read_packet.type = Packet::TYPE_LAYOUT;
     
@@ -297,6 +347,7 @@ void Dumper::writePacket() {
     ostr->write('I');
     
     ostr->write(write_packet.init_seed);
+    ostr->write(write_packet.init_registry);
   } else if(write_packet.type == Packet::TYPE_LAYOUT) {
     //dprintf("writing packet L\n");
     ostr->write('L');

@@ -5,6 +5,10 @@
 #include "rng.h"
 #include "stream.h"
 
+#include <map>
+
+using namespace std;
+
 /* Okay, packet ordering:
 
 'I' - Init
@@ -20,7 +24,7 @@ Dumper handles a lot of stuff behind the scenes - mostly, you just ask it what i
 class Dumper {
 public:
   
-  // Set up input and output streams. Pass it a potential RNG seed, it returns the one you should actually use.
+  // Set up input and output streams. Pass it a potential RNG seed, it returns the one you should actually use. Also handles registered variables in whatever the appropriate way might be.
   RngSeed prepare(const RngSeed &option);
 
   // We have all our input complete. Yay.
@@ -57,6 +61,7 @@ private:
     enum Type { TYPE_INIT, TYPE_LAYOUT, TYPE_CONTROLS, TYPE_CHECKSUM, TYPE_AUDIT, TYPE_EOF } type;
     
     RngSeed init_seed;
+    map<string, string> init_registry;
     
     vector<pair<int, int> > layout_sources;
     int layout_primaryid;

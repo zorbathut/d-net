@@ -16,6 +16,7 @@
 #include "res_interface.h"
 #include "adler32_util.h"
 #include "audit.h"
+#include "dumper_registry.h"
 
 #include <boost/assign.hpp>
 #include <boost/bind.hpp>
@@ -29,12 +30,15 @@ using boost::optional;
 
 DEFINE_int(rounds_per_shop, 6, "How many rounds between each buying-things opportunity");
 DEFINE_bool(auto_newgame, false, "Automatically enter New Game");
-DEFINE_float(startingPhase, -1, "Starting phase override");
 DEFINE_bool(showtanks, false, "Show-tank mode");
 DEFINE_bool(dumpTanks, false, "Dump-tank mode");
 DEFINE_bool(showGlobalErrors, true, "Display global errors");
 
 DEFINE_int(factionMode, 3, "Faction mode to skip faction choice battle, -1 for normal faction mode");
+REGISTER_int(factionMode);
+
+DEFINE_float(startingPhase, -1, "Starting phase override");
+REGISTER_float(startingPhase);
 
 /*************
  * Std
