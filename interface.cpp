@@ -1095,6 +1095,14 @@ void InterfaceMain::init() {
   
   aicount = controls_get_ai_count();
   
+  faction = FLAGS_factionMode + 1;
+  CHECK(faction >= 0 && faction < 5);
+  
+  if(faction == 1)
+    faction_toggle = false;
+  else
+    faction_toggle = true;
+  
   interface_mode = STATE_MAINMENU;
   {
     vector<string> names = boost::assign::list_of("Junkyard")("Civilian")("Professional")("Military")("Exotic")("Experimental")("Ultimate")("Armageddon");
@@ -1157,14 +1165,6 @@ void InterfaceMain::init() {
     start = Coord(FLAGS_startingPhase);
   end = 7;
   moneyexp = Coord(0.1133);
-  
-  faction = FLAGS_factionMode + 1;
-  CHECK(faction >= 0 && faction < 5);
-  
-  if(faction == 1)
-    faction_toggle = false;
-  else
-    faction_toggle = true;
   
   grid = false;
   inptest = false;
