@@ -46,6 +46,8 @@ RngSeed Dumper::prepare(const RngSeed &option) {
     CHECK(read_packet.type == Packet::TYPE_INIT);
     seed = read_packet.init_seed;
     
+    dprintf("start read registry\n");
+    
     CHECK(read_packet.init_registry.size() == getRegistrationSingleton().size());
     for(map<string, RegistryData>::iterator itr = getRegistrationSingleton().begin(); itr != getRegistrationSingleton().end(); itr++) {
       CHECK(read_packet.init_registry.count(itr->first));
@@ -66,10 +68,14 @@ RngSeed Dumper::prepare(const RngSeed &option) {
       } else if(itr->second.type == RegistryData::REGISTRY_FLOAT) {
         CHECK(read_packet.init_registry[itr->first].size() == 4);
         *itr->second.float_link = *(float*)read_packet.init_registry[itr->first].c_str();
+      } else if(itr->second.type == RegistryData::REGISTRY_STRING) {
+        *itr->second.str_link = read_packet.init_registry[itr->first];
       } else {
         CHECK(0);
       }
     }
+    
+    dprintf("end read registry\n");
   }
   
   write_packet.type = Packet::TYPE_INIT;
@@ -87,11 +93,13 @@ RngSeed Dumper::prepare(const RngSeed &option) {
       write_packet.init_registry[itr->first] = StringPrintf("%d", *itr->second.int_link);
     } else if(itr->second.type == RegistryData::REGISTRY_FLOAT) {
       write_packet.init_registry[itr->first] = string((const char *)itr->second.float_link, (const char *)(itr->second.float_link + 1));
+    } else if(itr->second.type == RegistryData::REGISTRY_STRING) {
+      write_packet.init_registry[itr->first] = *itr->second.str_link;
     } else {
       CHECK(0);
     }
     
-    CHECK(write_packet.init_registry[itr->first].size());
+    CHECK(write_packet.init_registry.count(itr->first));
   }
   
   if(FLAGS_writeTarget != "" && FLAGS_readTarget == "" || FLAGS_writeTarget_OVERRIDDEN) {

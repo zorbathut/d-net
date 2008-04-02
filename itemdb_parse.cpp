@@ -10,6 +10,7 @@
 #include "stream_process_vector.h"
 #include "stream_process_utility.h"
 #include "stream_process_string.h"
+#include "dumper_registry.h"
 
 #include <set>
 #include <numeric>
@@ -18,6 +19,7 @@
 using namespace std;
 
 DEFINE_bool(debugitems, false, "Enable debug items");
+REGISTER_bool(debugitems);
 
 class ErrorAccumulator {
 public:

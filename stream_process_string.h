@@ -10,6 +10,10 @@ using namespace std;
 template<> struct IStreamReader<string> { static bool read(IStream *istr, string *storage) {
   int count;
   if(istr->tryRead(&count)) return true;
+  if(!count) {
+    storage->clear();
+    return false;
+  }
   vector<char> dt(count);
   if(istr->tryRead(&dt[0], count)) return true;
   storage->resize(count);

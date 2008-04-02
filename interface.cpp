@@ -35,9 +35,11 @@ DEFINE_bool(dumpTanks, false, "Dump-tank mode");
 DEFINE_bool(showGlobalErrors, true, "Display global errors");
 
 DEFINE_int(factionMode, 3, "Faction mode to skip faction choice battle, -1 for normal faction mode");
-REGISTER_int(factionMode);
-
 DEFINE_float(startingPhase, -1, "Starting phase override");
+
+REGISTER_int(rounds_per_shop);
+REGISTER_bool(auto_newgame);
+REGISTER_int(factionMode);
 REGISTER_float(startingPhase);
 
 /*************

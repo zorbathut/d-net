@@ -10,6 +10,7 @@ using namespace std;
 
 template<typename T, typename U> struct IStreamReader<map<T, U> > { static bool read(IStream *istr, map<T, U> *storage) {
   int count;
+  storage->clear();
   if(istr->tryRead(&count)) return true;
   for(int i = 0; i < count; i++) {
     pair<T, U> v;

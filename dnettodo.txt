@@ -1,9 +1,8 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
-  - test replay
-    - AI replay
-    - Non-AI replay
+  - move registry stuff into dumper_registry.cpp (sigh)
   - Factions default to off?
+  - fix perfbar
   - add "instant action" option
   - make sure full shop works in instant action
   - Fix up keyboard interface :(

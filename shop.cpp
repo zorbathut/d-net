@@ -8,12 +8,14 @@
 #include "audio.h"
 #include "perfbar.h"
 #include "adler32_util.h"
+#include "dumper_registry.h"
 
 #include <boost/bind.hpp>
 
 using namespace std;
 
 DEFINE_bool(cullShopTree, true, "Cull items which the players wouldn't want or realistically can't yet buy");
+REGISTER_bool(cullShopTree);
 
 class WeaponNameSorter {
 public:

@@ -13,6 +13,7 @@
 #include "perfbar.h"
 #include "adler32_util.h"
 #include "audit.h"
+#include "dumper_registry.h"
 
 #include <numeric>
 
@@ -1538,6 +1539,7 @@ int PersistentData::getExpectedPlayercount() const {
 }
 
 DEFINE_int(debugControllers, 0, "Number of controllers to set to debug defaults");
+REGISTER_int(debugControllers);
 
 PersistentData::PersistentData(int playercount, int in_aicount, Money startingcash, Coord multiple, int in_roundsbetweenshop, int in_rounds_until_end) {
   CHECK(multiple > 1);

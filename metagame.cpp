@@ -12,10 +12,12 @@
 #include "perfbar.h"
 #include "adler32_util.h"
 #include "audit.h"
+#include "dumper_registry.h"
 
 #include <fstream>
 
 DEFINE_string(singlelevel, "", "The name of a level to load and use exclusively");
+REGISTER_string(singlelevel);
 
 DECLARE_bool(renderframenumber);
 
