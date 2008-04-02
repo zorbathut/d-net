@@ -1,6 +1,5 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
-  - move registry stuff into dumper_registry.cpp (sigh)
   - Factions default to off?
   - fix perfbar
   - add "instant action" option

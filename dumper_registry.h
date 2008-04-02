@@ -24,21 +24,7 @@ public:
   REGISTER_LinkageObject(const string &id, float *item, FlagSource *overridden);
 };
 
-class RegistryData {
-public:
-  enum { REGISTRY_BOOL, REGISTRY_STRING, REGISTRY_INT, REGISTRY_FLOAT, REGISTRY_LAST };
-  int type;
-  
-  FlagSource *source;
-  
-  string *str_link;
-  int *int_link;
-  bool *bool_link;
-  float *float_link;
-  
-  RegistryData() { type = REGISTRY_LAST; }
-};
-
-map<string, RegistryData> &getRegistrationSingleton();
+map<string, string> getRegistryData();
+void setRegistryData(const map<string, string> &dat);
 
 #endif

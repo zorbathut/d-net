@@ -46,63 +46,14 @@ RngSeed Dumper::prepare(const RngSeed &option) {
     CHECK(read_packet.type == Packet::TYPE_INIT);
     seed = read_packet.init_seed;
     
-    dprintf("start read registry\n");
-    
-    CHECK(read_packet.init_registry.size() == getRegistrationSingleton().size());
-    for(map<string, RegistryData>::iterator itr = getRegistrationSingleton().begin(); itr != getRegistrationSingleton().end(); itr++) {
-      CHECK(read_packet.init_registry.count(itr->first));
-      CHECK(*itr->second.source != FS_CLI);
-      *itr->second.source = FS_CLI; // owned
-      
-      // This is not ideal but I am doing it anyway.
-      if(itr->second.type == RegistryData::REGISTRY_BOOL) {
-        if(read_packet.init_registry[itr->first] == "true") {
-          *itr->second.bool_link = true;
-        } else if(read_packet.init_registry[itr->first] == "false") {
-          *itr->second.bool_link = false;
-        } else {
-          CHECK(0);
-        }
-      } else if(itr->second.type == RegistryData::REGISTRY_INT) {
-        *itr->second.int_link = atoi(read_packet.init_registry[itr->first].c_str());
-      } else if(itr->second.type == RegistryData::REGISTRY_FLOAT) {
-        CHECK(read_packet.init_registry[itr->first].size() == 4);
-        *itr->second.float_link = *(float*)read_packet.init_registry[itr->first].c_str();
-      } else if(itr->second.type == RegistryData::REGISTRY_STRING) {
-        *itr->second.str_link = read_packet.init_registry[itr->first];
-      } else {
-        CHECK(0);
-      }
-    }
-    
-    dprintf("end read registry\n");
+    setRegistryData(read_packet.init_registry);
   }
   
   write_packet.type = Packet::TYPE_INIT;
   write_packet.init_seed = seed;
-  write_packet.init_registry.clear();
-  for(map<string, RegistryData>::iterator itr = getRegistrationSingleton().begin(); itr != getRegistrationSingleton().end(); itr++) {
-    CHECK(!write_packet.init_registry.count(itr->first));
-    
-    if(itr->second.type == RegistryData::REGISTRY_BOOL) {
-      if(*itr->second.bool_link)
-        write_packet.init_registry[itr->first] = "true";
-      else
-        write_packet.init_registry[itr->first] = "false";
-    } else if(itr->second.type == RegistryData::REGISTRY_INT) {
-      write_packet.init_registry[itr->first] = StringPrintf("%d", *itr->second.int_link);
-    } else if(itr->second.type == RegistryData::REGISTRY_FLOAT) {
-      write_packet.init_registry[itr->first] = string((const char *)itr->second.float_link, (const char *)(itr->second.float_link + 1));
-    } else if(itr->second.type == RegistryData::REGISTRY_STRING) {
-      write_packet.init_registry[itr->first] = *itr->second.str_link;
-    } else {
-      CHECK(0);
-    }
-    
-    CHECK(write_packet.init_registry.count(itr->first));
-  }
+  write_packet.init_registry = getRegistryData();
   
-  if(FLAGS_writeTarget != "" && FLAGS_readTarget == "" || FLAGS_writeTarget_OVERRIDDEN) {
+  if(FLAGS_writeTarget != "" && (FLAGS_readTarget == "" || FLAGS_writeTarget_OVERRIDDEN)) {
     string fname = FLAGS_writeTarget;
     char timestampbuf[128];
     time_t ctmt = time(NULL);
