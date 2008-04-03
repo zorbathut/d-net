@@ -227,6 +227,18 @@ void MainLoop() {
       }
     }
     
+    if(FLAGS_timing) {
+      rendering += bencher.ticksElapsed();
+      bencher = Timer();
+    }
+    if(frameNumber >= FLAGS_fastForwardTo) {
+      timer.waitForNextFrame();
+    }
+    if(FLAGS_timing) {
+      waiting += bencher.ticksElapsed();
+      bencher = Timer();
+    }
+    
     if(FLAGS_render) {
       bool render = false;
       if(FLAGS_randomizeFrameRender != 0) {
@@ -261,18 +273,6 @@ void MainLoop() {
       } else {
         skipped++;
       }
-    }
-    
-    if(FLAGS_timing) {
-      rendering += bencher.ticksElapsed();
-      bencher = Timer();
-    }
-    if(frameNumber >= FLAGS_fastForwardTo) {
-      timer.waitForNextFrame();
-    }
-    if(FLAGS_timing) {
-      waiting += bencher.ticksElapsed();
-      bencher = Timer();
     }
     
     timer.frameDone();

@@ -143,6 +143,11 @@ Keystates PlayerMenuState::genKeystate(const Controller &keys) const {
   kst.udlrax = keys.menu;
   CHECK(keys.menu.x >= -1 && keys.menu.x <= 1);
   CHECK(keys.menu.y >= -1 && keys.menu.y <= 1);
+  
+  kst.accept_or_fire = kst.accept;
+  for(int i = 0; i < ARRAY_SIZE(kst.fire); i++)
+    kst.accept_or_fire |= kst.fire[i];
+  
   return kst;
 }
 

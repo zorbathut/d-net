@@ -66,6 +66,13 @@ bool operator==(const Button &lhs, const Button &rhs) {
   return lhs.down == rhs.down && lhs.push == rhs.push && lhs.release == rhs.release && lhs.repeat == rhs.repeat && lhs.dur == rhs.dur && lhs.sincerep == rhs.sincerep;
 }
 
+void operator|=(Button &lhs, const Button &rhs) {
+  lhs.down |= rhs.down;
+  lhs.push |= rhs.push;
+  lhs.release |= rhs.release;
+  lhs.repeat |= rhs.repeat;
+}
+
 void adler(Adler32 *adl, const Button &kst) {
   adler(adl, kst.down);
   adler(adl, kst.push);

@@ -171,7 +171,7 @@ PersistentData::PDRTR PersistentData::tick(const vector<Controller> &keys) {
         
         bool accept = false;
         if(pms[player].faction) {
-          accept = pms[player].genKeystate(keys[player]).accept.push;
+          accept = pms[player].genKeystate(keys[player]).accept_or_fire.push;
         } else {
           for(int j = 0; j < keys[player].keys.size(); j++)
             if(keys[player].keys[j].push)

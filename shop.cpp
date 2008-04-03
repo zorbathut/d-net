@@ -613,7 +613,7 @@ bool Shop::runTick(const Keystates &keys, Player *player, int playercount) {
     }
   } else {
     
-    if(keys.accept.repeat) {
+    if(keys.accept_or_fire.repeat) {
       bool ret = false;
       const Sound *sound = NULL;
       

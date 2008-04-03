@@ -29,6 +29,7 @@ struct Button {
 };
 
 bool operator==(const Button &lhs, const Button &rhs);
+void operator|=(Button &lhs, const Button &rhs);
 
 void adler(Adler32 *adl, const Button &kst);
 
@@ -83,6 +84,8 @@ struct Keystates {
   Button precision;
   Button accept;
   Button cancel;
+  
+  Button accept_or_fire;
 
   void nullMove();
 

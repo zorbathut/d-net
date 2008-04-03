@@ -1,9 +1,10 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
-  - fix perfbar
-  - add "instant action" option
-  - make sure full shop works in instant action
   - Fix up keyboard interface :(
+    - Allow selecting items with the "fire" keys in some cases
+    - Add graphic for what keys are which
+  - add "instant action" option
+    - make sure full shop works in instant action
   - Split data into "data_source", "data_demo", "data_release"
   - Look at computer's screen res when starting for the first time
   - Add demo mode
