@@ -1075,7 +1075,11 @@ void InterfaceMain::forceResize(int w, int h) {
   w = max(w, 100);
   h = min(h, w / 4 * 3);
   h = max(h, w / 6);  // no, you can't have 6:1 aspect. Not allowed.
+  // At this point we have our actual W/H values that we'll be using.
+  
+  dprintf("oa is %f\n", opts_aspect);
   float aspect_per_pixel = opts_aspect / opts_res.first * opts_res.second;
+  dprintf("Resolution was %d/%d with app %f asp %f, now is %d/%d\n", opts_res.first, opts_res.second, aspect_per_pixel, opts_aspect, w, h);
   opts_res.first = w;
   opts_res.second = h;
   opts_aspect = aspect_per_pixel * w / h;
@@ -1147,7 +1151,7 @@ void InterfaceMain::init() {
       optionsmenu.pushMenuItem(StdMenuItemChooser<bool>::make("Fullscreen", onoff, &opts_fullscreen));
     }
     
-    opts_aspect_chooser = StdMenuItemChooser<float>::make("Aspect ratio", gen_aspects(640, 480), &opts_aspect);
+    opts_aspect_chooser = StdMenuItemChooser<float>::make("Aspect ratio", gen_aspects(opts_res.first, opts_res.second), &opts_aspect);
     optionsmenu.pushMenuItem(opts_aspect_chooser);
     
     optionsmenu.pushMenuItem(StdMenuItemBack::make("Accept", OPTS_SETRES));
@@ -1155,6 +1159,15 @@ void InterfaceMain::init() {
     
     mainmenu.pushMenuItem(StdMenuItemSubmenu::make("Options", &optionsmenu));
   }
+  
+  // we have to be really emphatic here
+  // Real reason: The Resolution chooser will choose a resolution it likes. If we currently have a non-standard windowed resolution, it's not going to be happy and it'll reset to 640x480.
+  // However, we need this to be accurate so that dragging to resize the screen works. So we set it here.
+  // We set it above *also* so that the resolution chooser can, in fact, pick our real resolution if that is a standard resolution.
+  // There is probably a better way to do this.
+  opts_res = getCurrentResolution();
+  opts_aspect = getCurrentAspect();
+  opts_fullscreen = getCurrentFullscreen();
   
   mainmenu.pushMenuItem(StdMenuItemTrigger::make("Input test", MAIN_INPUTTEST));
   mainmenu.pushMenuItem(StdMenuItemTrigger::make("Exit", MAIN_EXIT));
