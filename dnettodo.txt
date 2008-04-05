@@ -1,7 +1,5 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
-  - Fix up keyboard interface :(
-    - Why does it flicker when I push buttons?
   - Rescaling does not handle aspect ratio properly
   - add "instant action" option
     - make sure full shop works in instant action

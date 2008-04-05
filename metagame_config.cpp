@@ -303,7 +303,7 @@ void standardButtonRender(const StandardButtonRenderData &sbrd) {
   
   int cb = sbrd.sel_button;
   string text = sbrd.sel_text;
-  if(cb == ARRAY_SIZE(button_order)) {
+  if(cb == ARRAY_SIZE(button_order) || sbrd.ck.canned) {
     cb = 0;
     text = "Push \"accept\" to continue, or any other key to restart";
   } else if(cb == -1) {
