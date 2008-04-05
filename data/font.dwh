@@ -474,3 +474,8 @@ character {
   id=~
   path=0,6 2,4 4,6 6,4
 }
+
+character {
+  id=^
+  path=0,5 0,2 2,0 4,2 4,5
+}

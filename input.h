@@ -94,6 +94,7 @@ struct Keystates {
 
 struct CannedKeys {
   bool canned;
+  bool is_second;
   
   int button_layout[ARRAY_SIZE(button_order)];
   

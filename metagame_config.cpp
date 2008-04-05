@@ -269,6 +269,31 @@ void drawBottomBlock(const RenderInfo &rin, int lines) {
   drawLine(Float4(rin.drawzone.sx, bottom_point, rin.drawzone.ex, bottom_point), getTextBoxThickness(rin.textsize));
 }
 
+void drawButton(const Float2 &pos, char kar) {
+  const float bevel = 0.1;
+  const float border = 0.2;
+  
+  const float highv = 1.0 - border;
+  
+  setColor(C::inactive_text);
+  
+  vector<Float2> path;
+  path.push_back(pos + Float2(bevel, 0));
+  path.push_back(pos + Float2(0, bevel));
+  path.push_back(pos + Float2(0, highv - bevel));
+  path.push_back(pos + Float2(bevel, highv));
+  path.push_back(pos + Float2(highv - bevel, highv));
+  path.push_back(pos + Float2(highv, highv - bevel));
+  path.push_back(pos + Float2(highv, bevel));
+  path.push_back(pos + Float2(highv - bevel, 0));
+  
+  drawLineLoop(path, 0.05);
+  
+  setColor(C::active_text);
+  
+  drawJustifiedText(StringPrintf("%c", kar), 0.4, pos + Float2(highv / 2, highv / 2), TEXT_CENTER, TEXT_CENTER);
+}
+
 const Dvec2 controller_front = loadDvec2("data/controller_front.dv2");
 const Dvec2 controller_top = loadDvec2("data/controller_top.dv2");
 
@@ -286,6 +311,7 @@ void standardButtonRender(const StandardButtonRenderData &sbrd) {
   }
   
   if(sbrd.ck.canned) {
+    /*
     setColor(Color(C::active_text));
     Float2 origin = Float2((sbrd.rin->xstart + sbrd.rin->xend) / 2, (sbrd.rin->ystarts[1] + sbrd.rin->ystarts[sbrd.rin->ystarts.size() - 2]) / 2);
     float mw = 0;
@@ -295,7 +321,58 @@ void standardButtonRender(const StandardButtonRenderData &sbrd) {
     
     drawTextBoxAround(Float4(origin.x - mw / 2, origin.y - mh / 2, origin.x + mw / 2, origin.y + mh / 2), sbrd.rin->textsize);
     drawJustifiedMultiText(sbrd.ck.descriptive_text, sbrd.rin->textsize, origin, TEXT_CENTER, TEXT_CENTER);
-    text = "Push \"accept\" to continue";
+    text = "Push \"accept\" to continue";*/
+    
+    Float4 bounds = Float4(sbrd.rin->xstart + sbrd.rin->textsize, sbrd.rin->ystarts[2], sbrd.rin->xend - sbrd.rin->textsize, sbrd.rin->ystarts[sbrd.rin->ystarts.size() - 2]);
+    drawTextBoxAround(bounds, sbrd.rin->textsize);
+    
+    GfxWindow gfxw(bounds, 1.0);
+    
+    if(!sbrd.ck.is_second) {
+      setZoomAround(Float4(-0.5, 0, 10, 6));
+      
+      drawButton(Float2(0, 1), '7');
+      drawButton(Float2(1, 1), '8');
+      drawButton(Float2(2, 1), '9');
+      drawButton(Float2(3, 1), '0');
+      drawJustifiedText("Weapons 1 through 4", 0.4, Float2(2, 0.5), TEXT_CENTER, TEXT_CENTER);
+      
+      drawButton(Float2(2.5, 2.5), 'O');
+      drawButton(Float2(3.5, 2.5), 'P');
+      drawJustifiedText("Accept", 0.4, Float2(2.2, 3), TEXT_MAX, TEXT_CENTER);
+      drawJustifiedText("Cancel", 0.4, Float2(4.7, 3), TEXT_MIN, TEXT_CENTER);
+      
+      drawButton(Float2(4.5, 5), '/');
+      drawJustifiedText("Precision", 0.4, Float2(5, 4.5), TEXT_CENTER, TEXT_CENTER);
+      
+      drawButton(Float2(7, 4), '<');
+      drawButton(Float2(8, 4), 'v');
+      drawButton(Float2(9, 4), '>');
+      drawButton(Float2(8, 3), '^');
+      drawJustifiedText("Movement", 0.4, Float2(8.5, 2.5), TEXT_CENTER, TEXT_CENTER);
+    } else {
+      setZoomAround(Float4(-1.0, 0, 9.5, 6));
+      
+      drawButton(Float2(4, 3.5), 'C');
+      drawButton(Float2(5, 3.5), 'V');
+      drawButton(Float2(6, 3.5), 'B');
+      drawButton(Float2(7, 3.5), 'N');
+      drawJustifiedText("Weapons 1 through 4", 0.4, Float2(6, 5), TEXT_CENTER, TEXT_CENTER);
+      
+      drawButton(Float2(4.5, 2), 'F');
+      drawButton(Float2(6, 2), 'G');
+      drawJustifiedText("Accept", 0.4, Float2(4.5, 1.5), TEXT_CENTER, TEXT_CENTER);
+      drawJustifiedText("Cancel", 0.4, Float2(7, 1.5), TEXT_CENTER, TEXT_CENTER);
+      
+      drawButton(Float2(1.5, 3.5), 'X');
+      drawJustifiedText("Precision", 0.4, Float2(1.2, 4), TEXT_MAX, TEXT_CENTER);
+      
+      drawButton(Float2(0, 2), 'A');
+      drawButton(Float2(1, 2), 'S');
+      drawButton(Float2(2, 2), 'D');
+      drawButton(Float2(0.8, 1), 'W');
+      drawJustifiedText("Movement", 0.4, Float2(1.5, 0.5), TEXT_CENTER, TEXT_CENTER);
+    }
   } else {
     const int realite = button_order[cb];
     Dvec2 renderobj;
