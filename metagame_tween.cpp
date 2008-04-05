@@ -398,14 +398,15 @@ void PersistentData::render() const {
     vector<string> text;
     if(shopcycles == 0) {
       text.push_back("Choose \"join game\" to add more players.");
-      text.push_back("At least two players are needed.");
+      if(!aicount)
+        text.push_back("At least two players are needed.");
       text.push_back("");
       text.push_back("");
-      text.push_back("Left keyboard player uses WASD for movement");
-      text.push_back("and RTYFGHVBN as buttons.");
+      text.push_back("Left keyboard player:");
+      text.push_back("Use WASD for movement and F to choose an option.");
       text.push_back("");
-      text.push_back("Right keyboard player uses arrow keys for movement");
-      text.push_back("and 7890UIOPJKL;M,./ as buttons.");
+      text.push_back("Right keyboard player: ");
+      text.push_back("Use arrow keys for movement and Enter to choose an option.");
       text.push_back("");
       text.push_back("");
     }

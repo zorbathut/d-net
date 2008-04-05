@@ -1,7 +1,6 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - Fix up keyboard interface :(
-    - Add graphic for what keys are which
     - Why does it flicker when I push buttons?
   - Rescaling does not handle aspect ratio properly
   - add "instant action" option
