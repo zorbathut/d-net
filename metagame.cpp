@@ -23,6 +23,10 @@ DECLARE_bool(renderframenumber);
 
 using namespace std;
 
+void Metagame::instant_action_init(const ControlConsts &ck) {
+  persistent.instant_action_init(ck);
+}
+
 bool Metagame::runTick(const vector<Controller> &keys) {
   if(mode == MGM_PLAYERCHOOSE) {
     CHECK(persistent.isPlayerChoose());

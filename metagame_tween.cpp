@@ -402,11 +402,11 @@ void PersistentData::render() const {
         text.push_back("At least two players are needed.");
       text.push_back("");
       text.push_back("");
+      text.push_back("Right keyboard player: ");
+      text.push_back("Use arrow keys for movement and O to choose an option.");
+      text.push_back("");
       text.push_back("Left keyboard player:");
       text.push_back("Use WASD for movement and F to choose an option.");
-      text.push_back("");
-      text.push_back("Right keyboard player: ");
-      text.push_back("Use arrow keys for movement and Enter to choose an option.");
       text.push_back("");
       text.push_back("");
     }
@@ -1712,3 +1712,26 @@ PersistentData::PersistentData(int playercount, int in_aicount, Money startingca
   }
 }
 
+void PersistentData::instant_action_init(const ControlConsts &cc) {
+  CHECK(pms.size() >= 1); // better be
+  CHECK(playerdata.size() == 0);
+  
+  int cdbc = controls_primary_id();
+  pms[cdbc].faction = &factions[1];
+  pms[cdbc].faction->taken = true;
+  pms[cdbc].settingmode = SETTING_BUTTONS;
+  
+  CHECK(cc.ck.canned);
+  Controller cntr;
+  cntr.keys.resize(17);
+  cntr.axes.resize(4);
+  cntr.lastaxes = cntr.axes;
+  runSettingTick(cntr, &pms[cdbc], factions, cc);
+  
+  pms[cdbc].settingmode = SETTING_READY;
+  pms[cdbc].choicemode = CHOICE_IDLE;
+  sps_playermode[cdbc] = SPS_DONE;
+  
+  playerid[cdbc] = playerdata.size();
+  playerdata.push_back(Player(pms[cdbc].faction->faction, faction_mode, newPlayerStartingCash));
+}

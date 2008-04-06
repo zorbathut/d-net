@@ -39,6 +39,7 @@ public:
 
   // Constructor
   PersistentData(int playercount, int aicount, Money startingcash, Coord multiple, int roundsbetweenshop, int rounds_until_end);
+  void instant_action_init(const ControlConsts &ck);
 
 private:
   // Persistent state

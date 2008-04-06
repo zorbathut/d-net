@@ -2,6 +2,7 @@
 - "Finish the Damn Game" Initiative
   - add "instant action" option
     - make sure full shop works in instant action
+    - figure out which faction is appropriate
   - Split data into "data_source", "data_demo", "data_release"
   - Look at computer's screen res when starting for the first time
   - Add demo mode

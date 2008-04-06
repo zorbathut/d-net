@@ -741,6 +741,16 @@ bool InterfaceMain::tick(const InputState &is, RngSeed gameseed) {
     
     pair<StdMenuCommand, int> mrv = mainmenu.tick(kst[controls_primary_id()]);
     
+    bool instantaction = true;
+    if(mrv.second == MAIN_INSTANTACTION) {
+      aicount = 4;
+      faction_toggle = true;
+      start = 0;
+      end = 7;
+      moneyexp = Coord(0.18);
+      mrv.second = MAIN_NEWGAME;
+    }
+    
     if(mrv.second == MAIN_NEWGAME || FLAGS_auto_newgame) {
       if(!faction_toggle)
         faction = 1;
@@ -748,6 +758,8 @@ bool InterfaceMain::tick(const InputState &is, RngSeed gameseed) {
         faction = 4;
       controls_set_ai_count(aicount); // this is pretty grim really
       game = new Metagame(controls_human_flags().size(), aicount, Money((long long)(1000 * pow(30, start.toFloat()))), exp(moneyexp), faction - 1, FLAGS_rounds_per_shop, calculateRounds(start, end, moneyexp), gameseed);
+      if(instantaction)
+        game->instant_action_init(controls_getcc(controls_primary_id()));
       dprintf("ENTERING PLAYING\n");
       interface_mode = STATE_PLAYING;
     } else if(mrv.second == MAIN_EXIT) {
@@ -1134,6 +1146,8 @@ void InterfaceMain::init() {
   opts_res = getCurrentResolution();
   opts_aspect = getCurrentAspect();
   opts_fullscreen = getCurrentFullscreen();
+  
+  mainmenu.pushMenuItem(StdMenuItemTrigger::make("Instant Action", MAIN_INSTANTACTION));
   
   {
     {
