@@ -21,8 +21,7 @@ DEFINE_bool(debugGraphicsCollisions, false, "Enable HUD for collision stats");
 pair<Float2, Float2> getMapZoom(const Coord4 &mapbounds) {
   Float4 bounds = mapbounds.toFloat();
   pair<Float2, Float2> rv;
-  rv.first.x = (bounds.sx + bounds.ex) / 2;
-  rv.first.y = (bounds.sy + bounds.ey) / 2;
+  rv.first = bounds.midpoint();
   rv.second.x = bounds.ex - bounds.sx;
   rv.second.y = bounds.ey - bounds.sy;
   rv.second.x *= 1.1;
@@ -603,7 +602,12 @@ void Game::renderToScreen(const vector<const Player *> &players, GameMetacontext
     } else if(gamemode == GMODE_TITLESCREEN) {
       setZoomAround(titlescreen_size);
     } else {
-      gfxw.reset(new GfxWindow(Float4(0, hasStatus?0.1:0, getAspect(), 1), 1.0));
+      float eaten = 0;
+      if(hasStatus)
+        eaten += 0.1;
+      if(instant_action_keys)
+        eaten += 0.05;
+      gfxw.reset(new GfxWindow(Float4(0, eaten, getAspect(), 1), 1.0));
       
       setZoomAround(Coord4(zoom_center.x - zoom_size.x / 2, zoom_center.y - zoom_size.y / 2, zoom_center.x + zoom_size.x / 2, zoom_center.y + zoom_size.y / 2));
     }
@@ -772,6 +776,13 @@ void Game::renderToScreen(const vector<const Player *> &players, GameMetacontext
         drawJustifiedText(ammotext[2], 1, Float2(loffset + 1, 0.75), TEXT_MIN, TEXT_MIN);
         drawJustifiedText(ammotext[3], 1, Float2(roffset - 1, 0.75), TEXT_MAX, TEXT_MIN);
       }
+    }
+    
+    // Key descriptions
+    if(instant_action_keys) {
+      setColor(1.0, 1.0, 1.0);
+      drawLine(Float4(0, 15, getZoom().ex, 15), 0.1);
+      drawJustifiedText("Use arrow keys to move, and the keys 7890 to fire your weapons", 2.5, Float2(getZoom().midpoint().x, 12.5), TEXT_CENTER, TEXT_CENTER);
     }
     
     // The giant overlay text for countdowns
@@ -1138,6 +1149,8 @@ void Game::initCommon(const vector<Player*> &in_playerdata, const vector<Color> 
   
   demo_cycles = 0;
   demo_recorder = NULL;
+  
+  instant_action_keys = false;
 }
 
 void Game::initRandomTankPlacement(const map<int, vector<pair<Coord2, Coord> > > &player_starts, Rng *rng) {
@@ -1173,7 +1186,7 @@ vector<Color> createBasicColors(const vector<Player*> &in_playerdata) {
   return rv;
 }
 
-void Game::initStandard(vector<Player> *in_playerdata, const Level &lev, Rng *rng) {
+void Game::initStandard(vector<Player> *in_playerdata, const Level &lev, Rng *rng, bool in_instant_action_keys) {
   gamemode = GMODE_STANDARD;
   
   vector<Player*> playerdata;
@@ -1186,6 +1199,8 @@ void Game::initStandard(vector<Player> *in_playerdata, const Level &lev, Rng *rn
   
   frameNmToStart = 180;
   freezeUntilStart = true;
+  
+  instant_action_keys = in_instant_action_keys;
   
   checkLevelSanity();
 };

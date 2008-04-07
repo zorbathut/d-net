@@ -25,6 +25,7 @@ using namespace std;
 
 void Metagame::instant_action_init(const ControlConsts &ck) {
   persistent.instant_action_init(ck);
+  instant_action_keys = true;
 }
 
 bool Metagame::runTick(const vector<Controller> &keys) {
@@ -65,6 +66,7 @@ bool Metagame::runTick(const vector<Controller> &keys) {
       CHECK(faction_mode >= 0 && faction_mode < FACTION_LAST);
 
       mode = MGM_TWEEN;
+      instant_action_keys = false;
       
       faction_mode_players.clear();
       // Their job is done. Accumulated profit will vanish along with them.
@@ -79,7 +81,7 @@ bool Metagame::runTick(const vector<Controller> &keys) {
       mode = MGM_PLAY;
       
       findLevels(persistent.players().size());  // player count may have changed. TODO: make this suck less
-      game.initStandard(&persistent.players(), chooseLevel(), &rng);
+      game.initStandard(&persistent.players(), chooseLevel(), &rng, instant_action_keys);
       if(win_history.size() != gameround)
         dprintf("%d, %d\n", win_history.size(), gameround);
       CHECK(win_history.size() == gameround);
@@ -104,7 +106,7 @@ bool Metagame::runTick(const vector<Controller> &keys) {
         mode = MGM_TWEEN;
         persistent.divvyCash();
       } else {
-        game.initStandard(&persistent.players(), chooseLevel(), &rng);
+        game.initStandard(&persistent.players(), chooseLevel(), &rng, instant_action_keys);
       }
     }
   } else {
@@ -247,4 +249,6 @@ Metagame::Metagame(int playercount, int aicount, Money startingcash, Coord multi
   CHECK(roundsBetweenShop >= 1);
   
   last_level = -1;
+  
+  instant_action_keys = false;
 }

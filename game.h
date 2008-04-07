@@ -53,7 +53,7 @@ public:
 class Game : boost::noncopyable {
 public:
   
-  void initStandard(vector<Player> *playerdata, const Level &level, Rng *rng);
+  void initStandard(vector<Player> *playerdata, const Level &level, Rng *rng, bool instant_action_keys);
   void initChoice(vector<Player> *playerdata, Rng *rng);
   void initTest(Player *playerdata, const Float4 &bounds);
   void initDemo(vector<Player> *playerdata, float boxradi, const float *xps, const float *yps, const float *facing, const int *teams, const int *modes, bool blockades, Float2 hudpos, Recorder *recorder);
@@ -132,7 +132,8 @@ private:
   Coord bombardment_tier;
   Coord getBombardmentIncreasePerSec() const;
   Coord getTimeUntilBombardmentUpgrade() const;
-
+  
+  bool instant_action_keys;
 };
 
 class GamePackage {

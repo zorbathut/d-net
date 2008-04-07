@@ -27,6 +27,7 @@ class Metagame : boost::noncopyable {
   int roundsBetweenShop;
   
   int last_level;
+  bool instant_action_keys;
 
   Rng rng;
 
