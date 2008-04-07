@@ -136,6 +136,7 @@ private:
   
   int aicount;
   int getExpectedPlayercount() const;
+  int getHumanCount(const vector<Controller> &cnt) const;
 };
 
 #endif

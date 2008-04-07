@@ -1,8 +1,11 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - add "instant action" option
-    - make sure full shop works in instant action
     - figure out which faction is appropriate
+    - display key layouts
+  - Display something if waiting on AIs
+  - With two players, and AIs, do the AIs have a chance to join the game?
+  - Why do I have "test" and "ready" with the keyboard?
   - Split data into "data_source", "data_demo", "data_release"
   - Look at computer's screen res when starting for the first time
   - Add demo mode

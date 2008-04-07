@@ -39,15 +39,15 @@ const vector<Player> &PersistentData::players() const {
   return playerdata;
 }
 
-const char * const tween_textlabels[] = {"End game", "Leave/join game", "Leave game", "Join game", "Settings", "Fullscreen shop", "Quick shop", "Done"};
-enum { TTL_END, TTL_LEAVEJOIN, TTL_LEAVE, TTL_JOIN, TTL_SETTINGS, TTL_FULLSHOP, TTL_QUICKSHOP, TTL_DONE, TTL_LAST }; 
+const char * const tween_textlabels[] = {"End game", "Leave/join game", "Leave game", "Join game", "Settings", "Shop", "Done"};
+enum { TTL_END, TTL_LEAVEJOIN, TTL_LEAVE, TTL_JOIN, TTL_SETTINGS, TTL_SHOP, TTL_DONE, TTL_LAST }; 
 
 class QueueSorter {
   const vector<PlayerMenuState> *pms;
   
   int precedence(pair<int, int> item) const {
-    if(item.second == TTL_FULLSHOP)
-      return 2;
+    //if(item.second == TTL_FULLSHOP)
+      //return 2;
     // Prioritize leaving or joining the game
     if(item.second == TTL_LEAVEJOIN || item.second == TTL_JOIN || item.second == TTL_LEAVE)
       return 0;
@@ -269,7 +269,8 @@ PersistentData::PDRTR PersistentData::tick(const vector<Controller> &keys) {
       // For each item in the queue, try to jam it somewhere.
       while(sps_queue.size()) {
         CHECK(sps_playermode[sps_queue[0].first] == SPS_PENDING);
-        const int desired_slots = (sps_queue[0].second == TTL_FULLSHOP ? 1 : 4);
+        bool shop_is_quickshop = (getHumanCount(keys) > 1 || aicount == 0);  
+        const int desired_slots = ((sps_queue[0].second == TTL_SHOP && !shop_is_quickshop) ? 1 : 4);
         
         // Do we need to change modes?
         if(slot_count != desired_slots) {
@@ -309,12 +310,9 @@ PersistentData::PDRTR PersistentData::tick(const vector<Controller> &keys) {
         } else if(sps_queue[0].second == TTL_JOIN) {
           CHECK(!pms[sps_queue[0].first].faction);
           slot[empty].type = Slot::CHOOSE;
-        } else if(sps_queue[0].second == TTL_FULLSHOP) {
+        } else if(sps_queue[0].second == TTL_SHOP) {
           slot[empty].type = Slot::SHOP;
-          slot[empty].shop.init(false, &playerdata[playerid[slot[empty].pid]], getExpectedPlayercount(), highestPlayerCash, getScreenAspect() * 100 / divider_ypos);
-        } else if(sps_queue[0].second == TTL_QUICKSHOP) {
-          slot[empty].type = Slot::SHOP;
-          slot[empty].shop.init(true, &playerdata[playerid[slot[empty].pid]], getExpectedPlayercount(), highestPlayerCash, getScreenAspect() * 100 / divider_ypos);
+          slot[empty].shop.init(shop_is_quickshop, &playerdata[playerid[slot[empty].pid]], getExpectedPlayercount(), highestPlayerCash, getScreenAspect() * 100 / divider_ypos);
         } else if(sps_queue[0].second == TTL_SETTINGS) {
           slot[empty].type = Slot::SETTINGS;
         } else {
@@ -498,16 +496,16 @@ void PersistentData::render() const {
     
     // Draw our queues
     {
-      bool furtherbuffer = false;
+      //bool furtherbuffer = false;
       for(int i = 0; i < sps_queue.size(); i++) {
-        Float4 drawpos = Float4(0, 0, ticker_text_size, ticker_text_size) + Float2(getTextWidth("Next - ", ticker_text_size) + ticker_queue_border + (i + furtherbuffer * 0.4) * ticker_text_size * 1.2, (divider_ypos + ticker_ypos) / 2 - ticker_text_size / 2);
-        if(i && !furtherbuffer && ((sps_queue[i].second == TTL_FULLSHOP) != (sps_queue[i - 1].second == TTL_FULLSHOP))) {
+        Float4 drawpos = Float4(0, 0, ticker_text_size, ticker_text_size) + Float2(getTextWidth("Next - ", ticker_text_size) + ticker_queue_border + (i /*+ furtherbuffer * 0.4*/) * ticker_text_size * 1.2, (divider_ypos + ticker_ypos) / 2 - ticker_text_size / 2);
+        /*if(i && !furtherbuffer && ((sps_queue[i].second == TTL_FULLSHOP) != (sps_queue[i - 1].second == TTL_FULLSHOP))) {
           setColor(C::gray(0.7));
           drawLine(Float2(drawpos.sx, drawpos.sy), Float2(drawpos.sx, drawpos.ey), 0.1);
           furtherbuffer = true;
           i--;
           continue; // ahahahah so evil
-        }
+        }*/
         FactionState *fs = pms[sps_queue[i].first].faction;
         if(fs) {
           setColor(fs->faction->color);
@@ -602,7 +600,7 @@ void PersistentData::reset() {
   sps_playerpos.clear();
   for(int i = 0; i < pms.size(); i++) {
     if(pms[i].faction) {
-      sps_playerpos.push_back(targetCoords(TTL_QUICKSHOP));
+      sps_playerpos.push_back(targetCoords(TTL_SHOP));
     } else if(mode == TM_PLAYERCHOOSE) {
       sps_playerpos.push_back(targetCoords(TTL_JOIN));
     } else {
@@ -1183,7 +1181,7 @@ void PersistentData::ai(const vector<Ai *> &ais, const vector<bool> &isHuman) co
           bool shopped;
           if(mode == TM_SHOP) {
             joincoords = targetCoords(TTL_LEAVEJOIN);
-            quickshopcoords = targetCoords(TTL_QUICKSHOP);
+            quickshopcoords = targetCoords(TTL_SHOP);
             shopped = sps_shopped[i];
           } else {
             joincoords = targetCoords(TTL_JOIN);
@@ -1371,7 +1369,7 @@ void PersistentData::resetRanges() {
       avails.push_back(TTL_END);
     avails.push_back(TTL_LEAVEJOIN);
     avails.push_back(TTL_SETTINGS);
-    avails.push_back(TTL_QUICKSHOP);
+    avails.push_back(TTL_SHOP);
     avails.push_back(TTL_DONE);
   } else {
     CHECK(0);
@@ -1538,6 +1536,14 @@ int PersistentData::getExpectedPlayercount() const {
     return min(playerdata.size() + aicount, factions.size());
   }
 }
+
+int PersistentData::getHumanCount(const vector<Controller> &cnt) const {
+  int hc = 0;
+  for(int i = 0; i < pms.size(); i++)
+    if(pms[i].faction && cnt[i].human)
+      hc++;
+  return hc;
+};
 
 DEFINE_int(debugControllers, 0, "Number of controllers to set to debug defaults");
 REGISTER_int(debugControllers);
