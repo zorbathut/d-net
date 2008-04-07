@@ -38,7 +38,7 @@ public:
   void startAtNormalShop();
 
   // Constructor
-  PersistentData(int playercount, int aicount, Money startingcash, Coord multiple, int roundsbetweenshop, int rounds_until_end);
+  PersistentData(const vector<bool> &human, Money startingcash, Coord multiple, int roundsbetweenshop, int rounds_until_end);
   void instant_action_init(const ControlConsts &ck);
 
 private:
@@ -50,6 +50,7 @@ private:
   vector<Player> playerdata;
   vector<PlayerMenuState> pms;  // heh.
   vector<int> playerid; // from pms to playerdata ID. EVERYTHING ELSE is still in pms mode, where the user ID (from the Controller vector) is authoritative
+  vector<bool> humans;
   
   vector<FactionState> factions;
   int faction_mode;
@@ -136,7 +137,7 @@ private:
   
   int aicount;
   int getExpectedPlayercount() const;
-  int getHumanCount(const vector<Controller> &cnt) const;
+  int getHumanCount() const;
 };
 
 #endif

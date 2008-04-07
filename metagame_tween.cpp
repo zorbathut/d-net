@@ -70,6 +70,10 @@ PersistentData::PDRTR PersistentData::tick(const vector<Controller> &keys) {
   PerfStack pst(PBC::persistent);
   
   CHECK(keys.size() == pms.size());
+  CHECK(humans.size() == keys.size());
+  
+  for(int i = 0; i < keys.size(); i++)
+    CHECK(keys[i].human == humans[i]);
 
   // Update our sound info
   for(int i = 0; i < sps_soundtimeout.size(); i++)
@@ -269,7 +273,7 @@ PersistentData::PDRTR PersistentData::tick(const vector<Controller> &keys) {
       // For each item in the queue, try to jam it somewhere.
       while(sps_queue.size()) {
         CHECK(sps_playermode[sps_queue[0].first] == SPS_PENDING);
-        bool shop_is_quickshop = (getHumanCount(keys) > 1 || aicount == 0);  
+        bool shop_is_quickshop = (getHumanCount() > 1 || aicount == 0);  
         const int desired_slots = ((sps_queue[0].second == TTL_SHOP && !shop_is_quickshop) ? 1 : 4);
         
         // Do we need to change modes?
@@ -364,12 +368,12 @@ PersistentData::PDRTR PersistentData::tick(const vector<Controller> &keys) {
         }
       }
       
-      dprintf("%d, %d, %d\n", havehumans, done, end);
+      dprintf("%d, %d, %d, %d == %d\n", havehumans, done, end, getExpectedPlayercount(), playerdata.size());
       
       if(!done && !end) {
       } else if(end >= done) {
         enterGameEnd();
-      } else if(playerdata.size() >= 2) {
+      } else if(playerdata.size() >= 2 && getExpectedPlayercount() == playerdata.size()) {
         for(int i = 0; i < sps_playermode.size(); i++)
           if(sps_playermode[i] == SPS_END)
             destroyPlayer(i);
@@ -599,7 +603,7 @@ void PersistentData::reset() {
   
   sps_playerpos.clear();
   for(int i = 0; i < pms.size(); i++) {
-    if(pms[i].faction) {
+    if(playerid[i] != -1) {
       sps_playerpos.push_back(targetCoords(TTL_SHOP));
     } else if(mode == TM_PLAYERCHOOSE) {
       sps_playerpos.push_back(targetCoords(TTL_JOIN));
@@ -1082,7 +1086,7 @@ vector<Ai *> PersistentData::distillAi(const vector<Ai *> &ai) const {
   CHECK(ai.size() == pms.size());
   vector<Ai *> rv(playerdata.size());
   for(int i = 0; i < pms.size(); i++) {
-    if(pms[i].faction)
+    if(playerid[i] != -1)
       rv[playerid[i]] = ai[i];
   }
   
@@ -1140,6 +1144,7 @@ void PersistentData::ai(const vector<Ai *> &ais, const vector<bool> &isHuman) co
         if(ais[i])
           ais[i]->updateIdle();
     } else {
+      dprintf("AIs should be active\n");
       vector<bool> dun(ais.size(), false);
       
       int shops = 0;
@@ -1198,7 +1203,7 @@ void PersistentData::ai(const vector<Ai *> &ais, const vector<bool> &isHuman) co
           CHECK(untouched.count(ais[i]));
           untouched.erase(ais[i]);
           
-          ais[i]->updateTween(!!pms[i].faction, sps_playermode[i] == SPS_PENDING, sps_playerpos[i], shopped, joincoords,  quickshopcoords, targetCoords(TTL_DONE), endcoords);
+          ais[i]->updateTween(!!pms[i].faction, sps_playermode[i] == SPS_PENDING, sps_playerpos[i], shopped, joincoords, quickshopcoords, targetCoords(TTL_DONE), endcoords);
           tweens++;
         }
       }
@@ -1218,20 +1223,21 @@ void PersistentData::ai(const vector<Ai *> &ais, const vector<bool> &isHuman) co
 }
 
 bool PersistentData::isWaitingOnAi(const vector<bool> &isHuman) const {
-  if((mode == TM_PLAYERCHOOSE || mode == TM_SHOP) && count(isHuman.begin(), isHuman.end(), true)) {
+  if((mode == TM_PLAYERCHOOSE || mode == TM_SHOP) && count(isHuman.begin(), isHuman.end(), true) && aicount) {
     // If there are any humans, we've got a few questions. First, if there are no humans ready, we're not waiting on the AI guaranteed.
     {
       bool hasReadyPlayer = false;
-      for(int i = 0; i < isHuman.size(); i++)
+      for(int i = 0; i < isHuman.size(); i++) {
         if(isHuman[i] && (sps_playermode[i] == SPS_DONE || sps_playermode[i] == SPS_END))
           hasReadyPlayer = true;
+      }
       if(!hasReadyPlayer)
         return false;
     }
     // If there are finished humans, we check to see if there's only AIs left.
     return onlyAiUnfinished(isHuman);
   } else {
-    // If there are no humans, we might as well return false just so we avoid skipping stuff.
+    // If there are no humans, or no ais, we might as well return false just so we avoid skipping stuff.
     return false;
   }
 }
@@ -1530,17 +1536,20 @@ void PersistentData::enterGameEnd() {
 }
 
 int PersistentData::getExpectedPlayercount() const {
-  if(shopcycles) {
-    return playerdata.size();
-  } else {
-    return min(playerdata.size() + aicount, factions.size());
-  }
+  CHECK(humans.size());
+  int cai = 0;
+  for(int i = 0; i < pms.size(); i++)
+    if(playerid[i] != -1 && !humans[i])
+      cai++;
+  
+  return min(playerdata.size() - cai + aicount, factions.size());
 }
 
-int PersistentData::getHumanCount(const vector<Controller> &cnt) const {
+int PersistentData::getHumanCount() const {
+  CHECK(humans.size());
   int hc = 0;
   for(int i = 0; i < pms.size(); i++)
-    if(pms[i].faction && cnt[i].human)
+    if(playerid[i] != -1 && humans[i])
       hc++;
   return hc;
 };
@@ -1548,12 +1557,15 @@ int PersistentData::getHumanCount(const vector<Controller> &cnt) const {
 DEFINE_int(debugControllers, 0, "Number of controllers to set to debug defaults");
 REGISTER_int(debugControllers);
 
-PersistentData::PersistentData(int playercount, int in_aicount, Money startingcash, Coord multiple, int in_roundsbetweenshop, int in_rounds_until_end) {
+PersistentData::PersistentData(const vector<bool> &human, Money startingcash, Coord multiple, int in_roundsbetweenshop, int in_rounds_until_end) {
   CHECK(multiple > 1);
   roundsbetweenshop = in_roundsbetweenshop;
   rounds_until_end = in_rounds_until_end;
   faction_mode = 0;
-  aicount = in_aicount;
+  aicount = count(human.begin(), human.end(), false);
+  humans = human;
+  
+  const int playercount = human.size();
   
   pms.clear();
   pms.resize(playercount);

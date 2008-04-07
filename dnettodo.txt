@@ -1,12 +1,14 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
-  - crashes on starting a main game?
+  - Let the user know that, hey, AIs are good in 1-player mode?
+  - Turn aicount into a function, based on humans
+  - Even if another player has just started, it shouldn't go to full shop
   - better instant-action info on shop
   - Remove debug info from results
   - Add "total income" or something
   - Display something if waiting on AIs
     - With some kind of animation
-  - With two players, and AIs, do the AIs have a chance to join the game?
+  - Test every imaginable mode with players
   - Why do I have "test" and "ready" with the keyboard?
   - Split data into "data_source", "data_demo", "data_release"
   - Look at computer's screen res when starting for the first time
