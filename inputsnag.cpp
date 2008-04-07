@@ -36,6 +36,8 @@ static InputState now;
 const int playerone[] = { SDLK_UP, SDLK_DOWN, SDLK_LEFT, SDLK_RIGHT, SDLK_7, SDLK_8, SDLK_9, SDLK_0, SDLK_u, SDLK_i, SDLK_o, SDLK_p, SDLK_j, SDLK_k, SDLK_l, SDLK_SEMICOLON, SDLK_m, SDLK_COMMA, SDLK_PERIOD, SDLK_SLASH, SDLK_RETURN };
 const int playertwo[] = { SDLK_w, SDLK_s, SDLK_a, SDLK_d, SDLK_r, SDLK_t, SDLK_y, SDLK_f, SDLK_g, SDLK_h, SDLK_x, SDLK_c, SDLK_v, SDLK_b, SDLK_n };
 
+const int confusedkeys[] = { SDLK_RETURN, SDLK_SPACE, SDLK_LSHIFT, SDLK_RSHIFT, SDLK_LMETA, SDLK_RMETA, SDLK_LSUPER, SDLK_RSUPER };
+
 const int *const baseplayermap[2] = { playerone, playertwo };
 const int baseplayersize[2] = { ARRAY_SIZE(playerone), ARRAY_SIZE(playertwo) };  
 
@@ -171,6 +173,11 @@ int controls_get_ai_count(void) {
 }
 
 void controls_key(const SDL_KeyboardEvent *key) {
+  if(key->type == SDL_KEYDOWN)
+    for(int i = 0; i < ARRAY_SIZE(confusedkeys); i++)
+      if(key->keysym.sym == confusedkeys[i])
+        now.confused = true;
+  
   bool *ps = NULL;
   for(int i = 0; i < sources.size(); i++) {
     if(sources[i].first != CIP_KEYBOARD)
@@ -300,6 +307,12 @@ InputState controls_next(Dumper *dumper) {
     for(int j = 0; j < last.controllers[i].axes.size(); j++)
       CHECK(abs(last.controllers[i].axes[j]) <= 1);
   }
+  
+  last.confused = now.confused;
+  last.confused_mouse = now.confused_mouse;
+  
+  now.confused = false;
+  now.confused_mouse = false;
   
   return last;
 }

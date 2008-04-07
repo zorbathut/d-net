@@ -60,7 +60,10 @@ struct InputState {
   vector<Controller> controllers;
   Button escape;
   
-  InputState() { valid = true; }
+  bool confused;
+  bool confused_mouse;
+  
+  InputState() { valid = true; confused = false; confused_mouse = false; }
 };
 
 enum AxisType { KSAX_STEERING, KSAX_ABSOLUTE, KSAX_TANK, KSAX_LAST };

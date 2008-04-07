@@ -777,7 +777,7 @@ bool InterfaceMain::tick(const InputState &is, RngSeed gameseed) {
       CHECK(mrv.second == -1);
     }
   } else if(interface_mode == STATE_PLAYING) {
-    if(game->runTick(is.controllers)) {
+    if(game->runTick(is.controllers, is.confused)) {
       init();   // full reset
     }
   } else {

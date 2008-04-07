@@ -28,7 +28,7 @@ void Metagame::instant_action_init(const ControlConsts &ck) {
   instant_action_keys = true;
 }
 
-bool Metagame::runTick(const vector<Controller> &keys) {
+bool Metagame::runTick(const vector<Controller> &keys, bool confused) {
   if(mode == MGM_PLAYERCHOOSE) {
     CHECK(persistent.isPlayerChoose());
     if(persistent.tick(keys)) {
@@ -48,7 +48,7 @@ bool Metagame::runTick(const vector<Controller> &keys) {
     }
     
     // This is the "do init faction-related stuff" routine. If the faction_mode isn't -1 then we go straight into intting. Otherwise, we run the Faction Game, and only init once it's done.
-    if(faction_mode != -1 || game.runTick(persistent.genKeystates(keys), ppt, &rng)) {
+    if(faction_mode != -1 || game.runTick(persistent.genKeystates(keys), confused, ppt, &rng)) {
       if(faction_mode == -1)  // We must have been doing the faction game, so pull the winning team from that.
         faction_mode = game.winningTeam();
       
@@ -95,7 +95,7 @@ bool Metagame::runTick(const vector<Controller> &keys) {
       for(int i = 0; i < persistent.players().size(); i++)
         ppt.push_back(&persistent.players()[i]);
     }
-    if(game.runTick(persistent.genKeystates(keys), ppt, &rng)) {
+    if(game.runTick(persistent.genKeystates(keys), confused, ppt, &rng)) {
       if(game.winningTeam() == -1)
         win_history.push_back(NULL);
       else
@@ -104,6 +104,7 @@ bool Metagame::runTick(const vector<Controller> &keys) {
       CHECK(gameround == win_history.size());
       if(gameround % roundsBetweenShop == 0) {
         mode = MGM_TWEEN;
+        instant_action_keys = false;
         persistent.divvyCash();
       } else {
         game.initStandard(&persistent.players(), chooseLevel(), &rng, instant_action_keys);

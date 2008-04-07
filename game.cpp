@@ -47,7 +47,7 @@ void doInterp(float *curcenter, const float *nowcenter, float *curzoom, const fl
   }
 }
 
-bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &players, Rng *rng) {
+bool Game::runTick(const vector<Keystates> &rkeys, bool confused, const vector<Player *> &players, Rng *rng) {
   StackString sst("Frame runtick");
   PerfStack pst(PBC::gametick);
   
@@ -63,6 +63,10 @@ bool Game::runTick(const vector<Keystates> &rkeys, const vector<Player *> &playe
     dprintf("Ticking\n");
   
   frameNm++;
+  confused_cooldown--;
+  confused_cooldown = max(confused_cooldown, 0);
+  if(confused)
+    confused_cooldown = FPS / 8;
   
   vector<Keystates> keys = rkeys;
   if(frameNm < frameNmToStart && freezeUntilStart) {
@@ -782,7 +786,7 @@ void Game::renderToScreen(const vector<const Player *> &players, GameMetacontext
     if(instant_action_keys) {
       setColor(1.0, 1.0, 1.0);
       drawLine(Float4(0, 15, getZoom().ex, 15), 0.1);
-      drawJustifiedText("Use arrow keys to move, and the keys 7890 to fire your weapons", 2.5, Float2(getZoom().midpoint().x, 12.5), TEXT_CENTER, TEXT_CENTER);
+      drawJustifiedText("Use arrow keys to move, and the keys 7890 to fire your weapons", confused_cooldown ? 3.5 : 2.5, Float2(getZoom().midpoint().x, 12.5), TEXT_CENTER, TEXT_CENTER);
     }
     
     // The giant overlay text for countdowns
@@ -824,6 +828,8 @@ void Game::renderToScreen(const vector<const Player *> &players, GameMetacontext
       const float lineextra = 0.005;
       
       Float2 spos(0.01, 0.11);
+      if(instant_action_keys)
+        spos.y += 0.05;
       
       for(int i = 0; i < gmc.getWins().size(); i += 6) {
         map<const IDBFaction *, int> fc;
@@ -1151,6 +1157,7 @@ void Game::initCommon(const vector<Player*> &in_playerdata, const vector<Color> 
   demo_recorder = NULL;
   
   instant_action_keys = false;
+  confused_cooldown = 0;
 }
 
 void Game::initRandomTankPlacement(const map<int, vector<pair<Coord2, Coord> > > &player_starts, Rng *rng) {
@@ -1413,7 +1420,7 @@ void Game::addTankStatusText(int tankid, const string &text, float duration) {
 }
 
 bool GamePackage::runTick(const vector<Keystates> &keys, Rng *rng) {
-  return game.runTick(keys, ptrize(&players), rng);
+  return game.runTick(keys, false, ptrize(&players), rng);
 }
 
 void GamePackage::runTickWithAi(const vector<GameAi *> &gai, Rng *rng) {

@@ -1,7 +1,9 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
-  - add "instant action" option
-    - display key layouts on startup
+  - crashes on starting a main game?
+  - better instant-action info on shop
+  - Remove debug info from results
+  - Add "total income" or something
   - Display something if waiting on AIs
     - With some kind of animation
   - With two players, and AIs, do the AIs have a chance to join the game?

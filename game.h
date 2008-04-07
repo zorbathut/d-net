@@ -60,7 +60,7 @@ public:
   void initCenteredDemo(Player *playerdata, float zoom);
   void initTitlescreen(vector<Player> *playerdata, Rng *rng);
 
-  bool runTick(const vector<Keystates> &keys, const vector<Player *> &players, Rng *rng);
+  bool runTick(const vector<Keystates> &keys, bool confused, const vector<Player *> &players, Rng *rng);
   void ai(const vector<GameAi *> &ais) const;
   void renderToScreen(const vector<const Player *> &players, GameMetacontext gmc) const;
 
@@ -134,6 +134,7 @@ private:
   Coord getTimeUntilBombardmentUpgrade() const;
   
   bool instant_action_keys;
+  int confused_cooldown;
 };
 
 class GamePackage {
