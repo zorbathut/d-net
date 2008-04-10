@@ -807,9 +807,9 @@ void InterfaceMain::ai(const vector<Ai *> &ai, const vector<bool> &isHuman) cons
   }
 }
 
-bool InterfaceMain::isWaitingOnAi(const vector<bool> &humans) const {
+bool InterfaceMain::isWaitingOnAi() const {
   if(interface_mode == STATE_PLAYING)
-    return game->isWaitingOnAi(humans);
+    return game->isWaitingOnAi();
   return false;
 }
 

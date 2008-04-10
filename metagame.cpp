@@ -158,9 +158,9 @@ void Metagame::ai(const vector<Ai *> &ai, const vector<bool> &isHuman) const {
   }
 }
 
-bool Metagame::isWaitingOnAi(const vector<bool> &humans) const {
+bool Metagame::isWaitingOnAi() const {
   if(mode == MGM_PLAYERCHOOSE || mode == MGM_TWEEN)
-    return persistent.isWaitingOnAi(humans);
+    return persistent.isWaitingOnAi();
   return false;
 }
 

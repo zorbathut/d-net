@@ -389,6 +389,42 @@ PersistentData::PDRTR PersistentData::tick(const vector<Controller> &keys) {
 void PersistentData::render() const {
   smart_ptr<GfxWindow> gfxwpos;
   
+  if(isWaitingOnAi()) {
+    setZoomVertical(0, 0, 100);
+    setColor(C::inactive_text);
+    
+    drawJustifiedText("Please wait, the AIs are busy.", 4, Float2(getZoom().ex / 2, 20), TEXT_CENTER, TEXT_CENTER);
+    
+    CHECK(humans.size());
+    int done = 0;
+    
+    for(int i = 0; i < pms.size(); i++)
+      if(sps_playermode[i] == SPS_DONE && !humans[i])
+        done++;
+    
+    drawJustifiedText(StringPrintf("%d done out of %d", done, getAiCount()), 4, Float2(getZoom().ex / 2, 80), TEXT_CENTER, TEXT_CENTER);
+    
+    setColor(C::active_text);
+    
+    vector<string> opts;
+    opts.push_back("Buying every weapon in existence . . .");
+    opts.push_back("Driving away while firing . . .");
+    opts.push_back("Failing to upgrade tanks . . .");
+    opts.push_back("Fuming at the interface . . .");
+    opts.push_back("Getting stuck in a corner . . .");
+    opts.push_back("Head-butting the opposition . . .");
+    opts.push_back("Playing bumper-tanks . . .");
+    opts.push_back("Purchasing equipment . . .");
+    opts.push_back("Racing into walls . . .");
+    opts.push_back("Running in circles . . .");
+    opts.push_back("Shooting a wall . . .");
+    opts.push_back("Smashing into things . . .");
+    
+    drawJustifiedText(opts[unsync().choose(opts.size())], 3, Float2(getZoom().ex / 2, 50), TEXT_CENTER, TEXT_CENTER);
+    
+    return;
+  }
+    
   if(slot[0].type != Slot::RESULTS && slot[0].type != Slot::GAMEEND) {
     setZoomVertical(0, 0, 100);
     gfxwpos.reset(new GfxWindow(Float4(0, 0, getZoom().ex, divider_ypos), 1.0));
@@ -1097,7 +1133,7 @@ vector<const IDBFaction *> PersistentData::getUnfinishedFactions() const {
   return nrfactions;
 }
 
-bool PersistentData::onlyAiUnfinished(const vector<bool> &humans) const {
+bool PersistentData::onlyAiUnfinished() const {
   for(int i = 0; i < pms.size(); i++)
     if(humans[i] && isUnfinished(i))
       return false;
@@ -1134,6 +1170,8 @@ void PersistentData::ai(const vector<Ai *> &ais, const vector<bool> &isHuman) co
     if(ais[i])
       untouched.insert(ais[i]);
   
+  CHECK(humans == isHuman);
+  
   if(mode == TM_RESULTS) {
     for(int i = 0; i < playerid.size(); i++) {
       //dprintf("%d, %d, %d\n", i, playerid.size(), checked.size());
@@ -1161,7 +1199,7 @@ void PersistentData::ai(const vector<Ai *> &ais, const vector<bool> &isHuman) co
     // If no players exist, then we can do AI.
     // Conveniently, this is almost the same logic as isWaitingOnAi(). The only difference is that, if there's no humans, we really want to continue.
     
-    if(count(isHuman.begin(), isHuman.end(), true) && !isWaitingOnAi(isHuman)) {
+    if(count(isHuman.begin(), isHuman.end(), true) && !isWaitingOnAi()) {
       // There are humans, and we're not waiting on the AI. Have the AIs idle.
       for(int i = 0; i < ais.size(); i++)
         if(ais[i])
@@ -1244,20 +1282,20 @@ void PersistentData::ai(const vector<Ai *> &ais, const vector<bool> &isHuman) co
     (*itr)->updateIdle();
 }
 
-bool PersistentData::isWaitingOnAi(const vector<bool> &isHuman) const {
+bool PersistentData::isWaitingOnAi() const {
   if((mode == TM_PLAYERCHOOSE || mode == TM_SHOP) && getHumanCount() && getAiCount()) {
     // If there are any humans, we've got a few questions. First, if there are no humans ready, we're not waiting on the AI guaranteed.
     {
       bool hasReadyPlayer = false;
-      for(int i = 0; i < isHuman.size(); i++) {
-        if(isHuman[i] && (sps_playermode[i] == SPS_DONE || sps_playermode[i] == SPS_END))
+      for(int i = 0; i < humans.size(); i++) {
+        if(humans[i] && (sps_playermode[i] == SPS_DONE || sps_playermode[i] == SPS_END))
           hasReadyPlayer = true;
       }
       if(!hasReadyPlayer)
         return false;
     }
     // If there are finished humans, we check to see if there's only AIs left.
-    return onlyAiUnfinished(isHuman);
+    return onlyAiUnfinished();
   } else {
     // If there are no humans, or no ais, we might as well return false just so we avoid skipping stuff.
     return false;

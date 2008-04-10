@@ -223,7 +223,7 @@ void MainLoop() {
         }
         
         frames++;
-      } while(interface.isWaitingOnAi(controls_human_flags()));
+      } while(interface.isWaitingOnAi() && frames < FPS * 3);
       
       if(frames > 1) {
         dprintf("Finished %d-frame AI chunk\n", frames);

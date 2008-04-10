@@ -1,8 +1,8 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - Take a look at the equip screen?
-  - Display something if waiting on AIs
-    - With some kind of animation
+  - Can I easily make the AIs equip more intelligently?
+  - "End game" in escape menu
   - Test every imaginable mode with players
   - Why do I have "test" and "ready" with the keyboard?
   - Split data into "data_source", "data_demo", "data_release"
