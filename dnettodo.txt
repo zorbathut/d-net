@@ -1,7 +1,6 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - Take a look at the equip screen?
-  - make sure clicking yells at user
   - Remove debug info from results
   - Add "total income" or something
   - Get rid of the Centered Overlay Menu

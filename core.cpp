@@ -124,7 +124,11 @@ void MainLoop() {
                 
                 controls_key(&event.key);
                 break;
-
+              
+              case SDL_MOUSEBUTTONDOWN:
+                controls_mouseclick();
+                break;
+              
               case SDL_VIDEORESIZE:
                 interface.forceResize(event.resize.w, event.resize.h);
                 break;

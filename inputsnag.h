@@ -14,6 +14,7 @@ InputState controls_init(Dumper *dumper, bool allow_standard, int ais);
 void controls_set_ai_count(int ct);
 int controls_get_ai_count();
 void controls_key(const SDL_KeyboardEvent *key);
+void controls_mouseclick();
 InputState controls_next(Dumper *dumper);
 vector<Ai *> controls_ai();
 vector<bool> controls_human_flags();

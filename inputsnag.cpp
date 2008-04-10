@@ -44,6 +44,8 @@ const int baseplayersize[2] = { ARRAY_SIZE(playerone), ARRAY_SIZE(playertwo) };
 InputState controls_init(Dumper *dumper, bool allow_standard, int ais) {
   CHECK(sources.size() == 0);
   
+  SDL_ShowCursor(false);
+  
   now.controllers.resize(FLAGS_nullControllers);
   prerecorded.resize(FLAGS_nullControllers);
   for(int i = 0; i < FLAGS_nullControllers; i++) {
@@ -206,6 +208,10 @@ void controls_key(const SDL_KeyboardEvent *key) {
     *ps = false;
   else if(key->type == SDL_KEYDOWN)
     *ps = true;
+}
+
+void controls_mouseclick() {
+  now.confused_mouse = true;
 }
 
 InputState controls_next(Dumper *dumper) {

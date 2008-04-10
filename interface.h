@@ -66,6 +66,7 @@ class InterfaceMain : boost::noncopyable {
   int interface_mode;
   
   bool inescmenu;
+  int mouseconf_cooldown;
   
   bool grid;
   bool inptest;

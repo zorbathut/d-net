@@ -694,6 +694,11 @@ bool InterfaceMain::tick(const InputState &is, RngSeed gameseed) {
       escmenu.reset();
   }
   
+  mouseconf_cooldown--;
+  mouseconf_cooldown = max(mouseconf_cooldown, 0);
+  if(is.confused_mouse)
+    mouseconf_cooldown = FPS / 6;
+  
   if(FLAGS_showtanks)
     return false;
   
@@ -963,7 +968,7 @@ void InterfaceMain::render() const {
       setZoomVertical(0, 0, 100);
       mainmenu.render(Float4(5, 50, getZoom().ex - 5, 95), false);
       setColor(C::inactive_text * 0.5);
-      drawJustifiedText("Use the arrow keys to choose menu items. Hit Enter to select.", 3, Float2(getZoom().midpoint().x, getZoom().ey - 3), TEXT_CENTER, TEXT_MAX);
+      drawJustifiedText("Use the arrow keys to choose menu items. Hit Enter to select.", mouseconf_cooldown ? 4.5 : 3, Float2(getZoom().midpoint().x, getZoom().ey - 4.5), TEXT_CENTER, TEXT_CENTER);
       if(grid) {
         setColor(1.0, 1.0, 1.0);
         drawGrid(1, 0.01);
@@ -1337,6 +1342,7 @@ InterfaceMain::InterfaceMain() {
     introscreen[i] = NULL;
   tick_sync_frame = 0;
   inescmenu = false;
+  mouseconf_cooldown = 0;
   init();
 }
 
