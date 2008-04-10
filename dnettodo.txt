@@ -1,6 +1,5 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
-  - better instant-action info on shop
   - Instant action weaponry
   - Remove debug info from results
   - Add "total income" or something

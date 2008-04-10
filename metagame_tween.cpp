@@ -410,6 +410,11 @@ void PersistentData::render() const {
       text.push_back("");
     }
     
+    text.push_back("Enter the shop to purchase new, more powerful ammunition,");
+    text.push_back("tanks, tank upgrades, and more.");
+    text.push_back("");
+    text.push_back("");
+    
     text.push_back("Choose \"Settings\" to modify your controller settings.");
     text.push_back("");
     text.push_back("");
