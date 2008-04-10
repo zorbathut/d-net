@@ -344,7 +344,6 @@ PersistentData::PDRTR PersistentData::tick(const vector<Controller> &keys) {
     
     // Are we done?
     if(getUnfinishedFactions().size() == 0 && playerdata.size() >= 1) {
-      dprintf("Checking potential doneness\n");
       // Okay, we're done. Things are a bit complicated from here.
       // If humans exist, we must have at least one complete, and the humans have authority.
       // If humans don't exist, then we can rely on the AIs.
@@ -367,8 +366,6 @@ PersistentData::PDRTR PersistentData::tick(const vector<Controller> &keys) {
           end++;
         }
       }
-      
-      dprintf("%d, %d, %d, %d == %d\n", havehumans, done, end, getExpectedPlayercount(), playerdata.size());
       
       if(!done && !end) {
       } else if(end >= done) {
@@ -435,6 +432,25 @@ void PersistentData::render() const {
     
     setColor(C::inactive_text * 0.5);
     drawJustifiedMultiText(text, 0.03, getZoom().midpoint(), TEXT_CENTER, TEXT_CENTER);
+    
+    if(getUnfinishedFactions().size() == 0 && playerdata.size() < 2 && getExpectedPlayercount() == 1 && getHumanCount()) {
+      
+      vector<string> txt;
+      txt.push_back("Devastation Net is fundamentally a multiplayer game.");
+      txt.push_back("");
+      txt.push_back("To play, you either need two players,");
+      txt.push_back("or one or more AI players. If you want");
+      txt.push_back("to add AI players, you currently have to");
+      txt.push_back("restart the game.");
+      txt.push_back("");
+      txt.push_back("Hit Escape, choose \"End Game\",");
+      txt.push_back("and create a new game with AI players.");
+      txt.push_back("");
+      txt.push_back("Alternatively, if this is your first time playing,");
+      txt.push_back("you may want to try the Instant Action option.");
+      
+      drawJustifiedTextBox(txt, 0.03, getZoom().midpoint(), TEXT_CENTER, TEXT_CENTER, C::active_text, C::box_border);
+    }
   }
   
   setZoomVertical(0, 0, 1.0);

@@ -972,6 +972,39 @@ void drawFormattedTextBox(const vector<string> &txt, float scale, Float4 bounds,
   }
 }
 
+void drawJustifiedTextBox(const vector<string> &txt, float scale, const CFC2 &pos, Justification xps, Justification yps, Color text, Color box) {
+  float mxw = 0;
+  for(int i = 0; i < txt.size(); i++)
+    mxw = max(mxw, getTextWidth(txt[i], scale));
+  float myw = getTextHeight(txt.size(), scale);
+  
+  Float4 bounds;
+  
+  bounds.sx = pos->x;
+  bounds.ex = pos->x + mxw;
+  bounds.sy = pos->y;
+  bounds.ey = pos->y + myw;
+  
+  if(xps == TEXT_MAX) {
+  } else if(xps == TEXT_CENTER) {
+    bounds -= Float2(mxw / 2, 0);
+  } else if(xps == TEXT_MIN) {
+    bounds -= Float2(mxw, 0);
+  }
+  
+  if(yps == TEXT_MAX) {
+  } else if(yps == TEXT_CENTER) {
+    bounds -= Float2(0, myw / 2);
+  } else if(yps == TEXT_MIN) {
+    bounds -= Float2(0, myw);
+  }
+  
+  setColor(box);
+  drawTextBoxAround(bounds, scale);
+  setColor(text);
+  drawJustifiedMultiText(txt, scale, pos, xps, yps);
+}
+
 
 /*************
  * Vector path operations
