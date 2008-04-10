@@ -339,6 +339,14 @@ void clearFrame(const Color &color) {
   clearcolor = color;
 }
 
+void clearStencil() {
+  finishCluster();
+  glClearStencil(0);
+  glClear(GL_STENCIL_BUFFER_BIT);
+  CHECK(glGetError() == GL_NO_ERROR);
+}
+
+
 bool frameRunning() {
   return frame_running;
 }

@@ -1,8 +1,5 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
-  - Reset intro screen
-    - line 1044: 2.0?
-    - make stenciling work?
   - better instant-action info on shop
   - Instant action weaponry
   - Remove debug info from results

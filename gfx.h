@@ -24,6 +24,7 @@ int getResolutionY();
 string printGraphicsStats();
 
 void clearFrame(const Color &color);
+void clearStencil();
 
 void initFrame();
 void setZoomAround(const CFC4 &bbox);

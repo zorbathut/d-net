@@ -1212,48 +1212,35 @@ void InterfaceMain::init() {
 // < (100%)      ><preroll><fade_duration>
 
 
-const int frames_for_full_cycle = FPS * 120;
+const int frames_for_full_cycle = FPS * 180;
 const int fade_duration = FPS * 6;
 const int preroll = FPS / 2;
 
 void InterfaceMain::initIntroScreen(int id, bool first) {
   CHECK(id >= 0 && id < ARRAY_SIZE(introscreen));
-  dprintf("iis %d %d\n", id, first);
+  
   delete introscreen[id];
-  dprintf("lulz\n");
   introscreen_ais[id].clear();
-  dprintf("lulz\n");
   introscreen[id] = new GamePackage;
-  dprintf("lulz\n");
   
   {
-    dprintf("lulz\n");
     introscreen[id]->players.resize(16);
-    dprintf("lulz\n");
     vector<const IDBFaction *> idbfa = ptrize(factionList());
-    dprintf("lulz\n");
     for(int i = 0; i < introscreen[id]->players.size(); i++) {
-      dprintf("lulz\n");
       int fid = unsync().choose(idbfa.size());
-      dprintf("lulz\n");
       introscreen[id]->players[i] = Player(idbfa[fid], 0, Money(0));
-      dprintf("lulz\n");
       idbfa.erase(idbfa.begin() + fid);
-      dprintf("lulz\n");
     }
-    dprintf("lulz\n");
   }
-  dprintf("lulz\n");
+  
   introscreen[id]->game.initTitlescreen(&introscreen[id]->players, &unsync());
-  dprintf("lulz\n");
-  dprintf("lulz\n");
+  
   for(int i = 0; i < introscreen[id]->players.size(); i++)
     introscreen_ais[id].push_back(smart_ptr<GameAiIntro>(new GameAiIntro()));
-  dprintf("lulz\n");
+  
   if(!id && first)
     for(int i = 0; i < preroll; i++)
       introscreen[id]->runTickWithAi(vdc<GameAi*>(ptrize(introscreen_ais[id])), &unsync());
-  dprintf("iisd %d %d\n", id, first);
 }
 
 void InterfaceMain::tickIntroScreen() {
@@ -1279,10 +1266,15 @@ void InterfaceMain::renderIntroScreen() const {
   
   CHECK(brite.size() == ARRAY_SIZE(introscreen));
   
+  bool run = false;
+  
   for(int i = 0; i < brite.size(); i++) {
     if(brite[i] != 0.0) {
       CHECK(introscreen[i]);
       GfxWindow gfxw(getZoom(), brite[i]);
+      if(run)
+        clearStencil();
+      run = true;
       introscreen[i]->renderToScreen();
     }
   }
