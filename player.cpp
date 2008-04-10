@@ -358,6 +358,9 @@ void Player::forceLevelImplant(const IDBImplant *in_implant) {
   reCalculate();
   corrupted = true;
 }
+void Player::forceNonCorrupted() {
+  corrupted = false; // sigh
+}
 
 // Allows you to remove things, even things which are not meant to be removed
 void Player::forceRemoveUpgrade(const IDBUpgrade *in_upg) {

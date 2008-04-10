@@ -39,7 +39,7 @@ const vector<Player> &PersistentData::players() const {
   return playerdata;
 }
 
-const char * const tween_textlabels[] = {"End game", "Leave/join game", "Leave game", "Join game", "Settings", "Shop", "Done"};
+const char * const tween_textlabels[] = {"End game", "Leave/join game", "Leave game", "Join game", "Settings", "Shop", "Next round"};
 enum { TTL_END, TTL_LEAVEJOIN, TTL_LEAVE, TTL_JOIN, TTL_SETTINGS, TTL_SHOP, TTL_DONE, TTL_LAST }; 
 
 class QueueSorter {
@@ -427,7 +427,7 @@ void PersistentData::render() const {
       text.push_back("");
     }*/
     
-    text.push_back("Choose \"done\" when ready to play.");
+    text.push_back("Choose \"Next round\" when ready to play.");
     
     if(shopcycles != 0) {
       text.push_back("");
@@ -1754,6 +1754,11 @@ PersistentData::PersistentData(const vector<bool> &human, Money startingcash, Co
   }
 }
 
+void buyAndSlot(Player *player, const IDBWeapon *weapon, int amount, int slot) {
+  player->forceAcquireWeapon(weapon, amount);
+  player->promoteWeapon(weapon, slot);
+}
+
 void PersistentData::instant_action_init(const ControlConsts &cc) {
   CHECK(pms.size() >= 1); // better be
   CHECK(playerdata.size() == 0);
@@ -1776,4 +1781,11 @@ void PersistentData::instant_action_init(const ControlConsts &cc) {
   
   playerid[cdbc] = playerdata.size();
   playerdata.push_back(Player(pms[cdbc].faction->faction, faction_mode, newPlayerStartingCash));
+  
+  // Purchase shit
+  buyAndSlot(&playerdata.back(), getWeapon("ROOT.Ammo.Autocannon.Autocannon II"), 600, 0);
+  buyAndSlot(&playerdata.back(), getWeapon("ROOT.Ammo.Laser.Laser II"), 600, 1);
+  buyAndSlot(&playerdata.back(), getWeapon("ROOT.Ammo.Missile.Missile II"), 600, 2);
+  buyAndSlot(&playerdata.back(), getWeapon("ROOT.Ammo.EMP.EMP II"), 75, 3);
+  playerdata.back().forceNonCorrupted();
 }

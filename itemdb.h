@@ -839,6 +839,8 @@ const map<string, IDBUpgrade> &upgradeList();
 const vector<IDBFaction> &factionList();
 const map<string, string> &textList();
 
+const IDBWeapon *getWeapon(const string &weaponname);
+
 bool hasShopcache(const IDBWeapon *weap);
 bool hasShopcache(const IDBBombardment *bombard);
 bool hasShopcache(const IDBGlory *glory);

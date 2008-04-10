@@ -740,6 +740,14 @@ const map<string, IDBUpgrade> &upgradeList() { return upgradeclasses; }
 const vector<IDBFaction> &factionList() { return factions; }
 const map<string, string> &textList() { return text; }
 
+const IDBWeapon *getWeapon(const string &weaponname) {
+  if(!weaponclasses.count(weaponname)) {
+    dprintf("Couldn't find weapon %s\n", weaponname.c_str());
+    CHECK(weaponclasses.count(weaponname));
+  }
+  return &weaponclasses.find(weaponname)->second;
+}
+
 bool hasShopcache(const IDBWeapon *weap) {
   return shopcaches.count(nameFromIDB(weap));
 }
