@@ -19,6 +19,8 @@
 
 using namespace std;
 
+DEFINE_bool(hideAiShopping, true, "Allow skipping bits when waiting for the AI to buy stuff");
+
 const float divider_ypos = 87;
 const float ticker_ypos = 90;
 
@@ -273,7 +275,7 @@ PersistentData::PDRTR PersistentData::tick(const vector<Controller> &keys) {
       // For each item in the queue, try to jam it somewhere.
       while(sps_queue.size()) {
         CHECK(sps_playermode[sps_queue[0].first] == SPS_PENDING);
-        bool shop_is_quickshop = (getHumanCount() > 1 || getAiCount() == 0);  
+        bool shop_is_quickshop = (getHumanCount() > 1 || getAiCount() == 0 || !humans[sps_queue[0].first]);  
         const int desired_slots = ((sps_queue[0].second == TTL_SHOP && !shop_is_quickshop) ? 1 : 4);
         
         // Do we need to change modes?
@@ -389,7 +391,7 @@ PersistentData::PDRTR PersistentData::tick(const vector<Controller> &keys) {
 void PersistentData::render() const {
   smart_ptr<GfxWindow> gfxwpos;
   
-  if(isWaitingOnAi()) {
+  if(isWaitingOnAi() && FLAGS_hideAiShopping) {
     setZoomVertical(0, 0, 100);
     setColor(C::inactive_text);
     

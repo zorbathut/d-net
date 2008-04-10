@@ -289,13 +289,13 @@ Controller makeController(Coord x, Coord y, bool key, bool toggle) {
   return rv;
 }
 
-void doMegaEnumWorker(const HierarchyNode &rt, vector<pair<Money, vector<Controller> > > *weps, vector<pair<Money, vector<Controller> > > *upgs, vector<vector<Controller> > *equips, vector<Controller> *done, vector<Controller> path, const Player *player) {
+void doMegaEnumWorker(const HierarchyNode &rt, vector<pair<Money, vector<Controller> > > *weps, vector<pair<Money, vector<Controller> > > *upgs, vector<vector<Controller> > *equips, vector<Controller> *equip1, int *equipcount, vector<Controller> *done, vector<Controller> path, const Player *player) {
   if(rt.type == HierarchyNode::HNT_CATEGORY || rt.type == HierarchyNode::HNT_EQUIP) {
     path.push_back(makeController(1, 0, false, false));
     for(int i = 0; i < rt.branches.size(); i++) {
-      if(i)
+      if(i && rt.branches[i - 1].type != HierarchyNode::HNT_EQUIPCATEGORY)
         path.push_back(makeController(0, -1, false, false));
-      doMegaEnumWorker(rt.branches[i], weps, upgs, equips, done, path, player);
+      doMegaEnumWorker(rt.branches[i], weps, upgs, equips, equip1, equipcount, done, path, player);
     }
   } else if(rt.type == HierarchyNode::HNT_WEAPON) {
     weps->push_back(make_pair(player->adjustWeapon(rt.weapon).cost(rt.weapon->quantity), path));
@@ -311,6 +311,11 @@ void doMegaEnumWorker(const HierarchyNode &rt, vector<pair<Money, vector<Control
     upgs->push_back(make_pair(player->adjustTankWithInstanceUpgrades(rt.tank).cost(), path));
   } else if(rt.type == HierarchyNode::HNT_EQUIPWEAPON) {
     equips->push_back(path);  // this is kind of glitchy since it won't adjust after the player buys weapons, but whatever
+    if(*equipcount >= 0) {
+      if(equip1->size() == 0)
+        *equip1 = path;
+      (*equipcount)++;
+    }
   } else if(rt.type == HierarchyNode::HNT_IMPLANTSLOT) {
     upgs->push_back(make_pair(player->adjustImplantSlot(rt.implantslot).cost(), path));
   } else if(rt.type == HierarchyNode::HNT_IMPLANTITEM_EQUIP) {
@@ -319,6 +324,8 @@ void doMegaEnumWorker(const HierarchyNode &rt, vector<pair<Money, vector<Control
     upgs->push_back(make_pair(player->adjustImplant(rt.implantitem).costToLevel(player->implantLevel(rt.implantitem)), path));
   } else if(rt.type == HierarchyNode::HNT_SELL) {
   } else if(rt.type == HierarchyNode::HNT_EQUIPCATEGORY) {
+    if(rt.name == "New weapons")
+      *equipcount = 0;
   } else if(rt.type == HierarchyNode::HNT_BONUSES) {
   } else if(rt.type == HierarchyNode::HNT_IMPLANTITEM) {
   } else if(rt.type == HierarchyNode::HNT_DONE) {
@@ -330,12 +337,12 @@ void doMegaEnumWorker(const HierarchyNode &rt, vector<pair<Money, vector<Control
   }
 }
 
-void doMegaEnum(const HierarchyNode &rt, vector<pair<Money, vector<Controller> > > *weps, vector<pair<Money, vector<Controller> > > *upgs, vector<vector<Controller> > *equips, vector<Controller> *done, const Player *player) {
+void doMegaEnum(const HierarchyNode &rt, vector<pair<Money, vector<Controller> > > *weps, vector<pair<Money, vector<Controller> > > *upgs, vector<vector<Controller> > *equips, vector<Controller> *equip1, int *equipcount, vector<Controller> *done, const Player *player) {
   for(int i = 0; i < rt.branches.size(); i++) {
     vector<Controller> tvd;
     for(int j = 0; j < i; j++)
       tvd.push_back(makeController(0, -1, false, false));
-    doMegaEnumWorker(rt.branches[i], weps, upgs, equips, done, tvd, player);
+    doMegaEnumWorker(rt.branches[i], weps, upgs, equips, equip1, equipcount, done, tvd, player);
   }
 }
 
@@ -415,6 +422,14 @@ vector<Controller> makeComboAppend(const vector<Controller> &src, int count) {
   return oot;
 }
 
+vector<Controller> makeRoundTrip(const vector<Controller> &src) {
+  vector<Controller> oot;
+  oot.insert(oot.end(), src.begin(), src.end());
+  vector<Controller> rev = reversecontroller(src, false);
+  oot.insert(oot.end(), rev.begin(), rev.end());
+  return oot;
+}
+
 void Ai::updateShop(const Player *player, const HierarchyNode &hierarchy, bool athead) {
   updateKeys(CORE);
   
@@ -440,8 +455,10 @@ void Ai::updateShop(const Player *player, const HierarchyNode &hierarchy, bool a
   vector<pair<Money, vector<Controller> > > weps;
   vector<pair<Money, vector<Controller> > > upgs;
   vector<vector<Controller> > equips;
+  vector<Controller> equip1;
+  int equipcount = -1;
   vector<Controller> done;
-  doMegaEnum(hierarchy, &weps, &upgs, &equips, &done, player);
+  doMegaEnum(hierarchy, &weps, &upgs, &equips, &equip1, &equipcount, &done, player);
   //dprintf("%d weps, %d upgs, %d equips, %d donesize\n", weps.size(), upgs.size(), equips.size(), done.size());
   CHECK(weps.size());
   CHECK(done.size());
@@ -485,7 +502,7 @@ void Ai::updateShop(const Player *player, const HierarchyNode &hierarchy, bool a
     }
   }
   
-  {
+  if(0) {
     float cullperc = rng.frand();
     float singleperc = rng.frand() + 0.5;
     while(equips.size()) {
@@ -497,6 +514,18 @@ void Ai::updateShop(const Player *player, const HierarchyNode &hierarchy, bool a
       commands.push_back(makeComboToggle(equips[dite], &rng));
       if(rng.frand() < singleperc)
         equips.erase(equips.begin() + dite);
+    }
+  } else {
+    if(equipcount) {
+      vector<Controller> comms = equip1;
+      for(int i = 0; i < equipcount; i++) {
+        Controller k;
+        k.keys.resize(BUTTON_LAST);
+        k.menu = Coord2(0, 0);
+        k.keys[BUTTON_FIRE1 + rng.choose(4)].down = true;
+        comms.push_back(k);
+      }
+      commands.push_back(makeRoundTrip(comms));
     }
   }
   

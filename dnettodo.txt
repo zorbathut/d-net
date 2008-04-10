@@ -1,7 +1,6 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - Take a look at the equip screen?
-  - Can I easily make the AIs equip more intelligently?
   - "End game" in escape menu
   - Test every imaginable mode with players
   - Why do I have "test" and "ready" with the keyboard?

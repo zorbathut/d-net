@@ -37,6 +37,8 @@ DEFINE_bool(renderframenumber, true, "Render frame number when AI is on");
 
 DEFINE_bool(checksumGameState, true, "Checksum the game state on every frame");
 
+DECLARE_bool(hideAiShopping);
+
 DEFINE_int(aiCount, 0, "AI count for full automation");
 REGISTER_int(aiCount);
 
@@ -223,7 +225,7 @@ void MainLoop() {
         }
         
         frames++;
-      } while(interface.isWaitingOnAi() && frames < FPS * 3);
+      } while(interface.isWaitingOnAi() && frames < FPS * 3 && FLAGS_hideAiShopping);
       
       if(frames > 1) {
         dprintf("Finished %d-frame AI chunk\n", frames);
