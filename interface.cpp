@@ -17,6 +17,9 @@
 #include "adler32_util.h"
 #include "audit.h"
 #include "dumper_registry.h"
+#include "smartptr_util.h"
+
+#include <numeric>
 
 #include <boost/assign.hpp>
 #include <boost/bind.hpp>
@@ -735,8 +738,7 @@ bool InterfaceMain::tick(const InputState &is, RngSeed gameseed) {
     }
   } else if(interface_mode == STATE_MAINMENU) {
     if(!inptest) {
-      introscreen->runTickWithAi(vector<GameAi*>(introscreen_ais.begin(), introscreen_ais.end()), &unsync());
-      introscreen->runTickWithAi(vector<GameAi*>(introscreen_ais.begin(), introscreen_ais.end()), &unsync());
+      tickIntroScreen();
     }
     
     pair<StdMenuCommand, int> mrv = mainmenu.tick(kst[controls_primary_id()]);
@@ -1043,7 +1045,7 @@ void InterfaceMain::render() const {
         }
       } else {
         GfxWindow gfxw(Float4(0, 0, getZoom().ex, 60), 2.0);
-        introscreen->renderToScreen();
+        renderIntroScreen();
       }
     } else if(interface_mode == STATE_PLAYING) {
       game->renderToScreen();
@@ -1106,9 +1108,6 @@ void InterfaceMain::init() {
   escmenu = StdMenu();
   optionsmenu = StdMenu();
   kst.clear();
-  introscreen_ais.clear();
-  delete introscreen;
-  introscreen = new GamePackage;
   
   aicount = controls_get_ai_count();
   
@@ -1198,31 +1197,153 @@ void InterfaceMain::init() {
   inptest = false;
   game = NULL;
   
-  {
-    introscreen->players.resize(16);
-    vector<const IDBFaction *> idbfa = ptrize(factionList());
-    for(int i = 0; i < introscreen->players.size(); i++) {
-      int fid = unsync().choose(idbfa.size());
-      introscreen->players[i] = Player(idbfa[fid], 0, Money(0));
-      idbfa.erase(idbfa.begin() + fid);
-    }
-  }
-  
-  introscreen->game.initTitlescreen(&introscreen->players, &unsync());
-  
-  for(int i = 0; i < introscreen->players.size(); i++)
-    introscreen_ais.push_back(new GameAiIntro());
-  
   escmenu.pushMenuItem(StdMenuItemBack::make("Return to game"));
   escmenu.pushMenuItem(StdMenuItemSubmenu::make("Options", &optionsmenu));
   escmenu.pushMenuItem(StdMenuItemTrigger::make("Main menu", ESCMENU_MAINMENU));
   escmenu.pushMenuItem(StdMenuItemTrigger::make("Quit", ESCMENU_QUIT));
   
-  for(int i = 0; i < 30; i++)
-    introscreen->runTickWithAi(vector<GameAi*>(introscreen_ais.begin(), introscreen_ais.end()), &unsync());
+  tick_sync_frame = 0;
+  initIntroScreen(0, true);
 }
+
+
+// Cycle:
+// <---     frames_for_full_cycle     --->
+// < (100%)      ><preroll><fade_duration>
+
+
+const int frames_for_full_cycle = FPS * 120;
+const int fade_duration = FPS * 6;
+const int preroll = FPS / 2;
+
+void InterfaceMain::initIntroScreen(int id, bool first) {
+  CHECK(id >= 0 && id < ARRAY_SIZE(introscreen));
+  dprintf("iis %d %d\n", id, first);
+  delete introscreen[id];
+  dprintf("lulz\n");
+  introscreen_ais[id].clear();
+  dprintf("lulz\n");
+  introscreen[id] = new GamePackage;
+  dprintf("lulz\n");
+  
+  {
+    dprintf("lulz\n");
+    introscreen[id]->players.resize(16);
+    dprintf("lulz\n");
+    vector<const IDBFaction *> idbfa = ptrize(factionList());
+    dprintf("lulz\n");
+    for(int i = 0; i < introscreen[id]->players.size(); i++) {
+      dprintf("lulz\n");
+      int fid = unsync().choose(idbfa.size());
+      dprintf("lulz\n");
+      introscreen[id]->players[i] = Player(idbfa[fid], 0, Money(0));
+      dprintf("lulz\n");
+      idbfa.erase(idbfa.begin() + fid);
+      dprintf("lulz\n");
+    }
+    dprintf("lulz\n");
+  }
+  dprintf("lulz\n");
+  introscreen[id]->game.initTitlescreen(&introscreen[id]->players, &unsync());
+  dprintf("lulz\n");
+  dprintf("lulz\n");
+  for(int i = 0; i < introscreen[id]->players.size(); i++)
+    introscreen_ais[id].push_back(smart_ptr<GameAiIntro>(new GameAiIntro()));
+  dprintf("lulz\n");
+  if(!id && first)
+    for(int i = 0; i < preroll; i++)
+      introscreen[id]->runTickWithAi(vdc<GameAi*>(ptrize(introscreen_ais[id])), &unsync());
+  dprintf("iisd %d %d\n", id, first);
+}
+
+void InterfaceMain::tickIntroScreen() {
+  vector<bool> tq = introScreenToTick();
+  
+  CHECK(tq.size() == ARRAY_SIZE(introscreen));
+  
+  for(int i = 0; i < tq.size(); i++) {
+    if(tq[i]) {
+      introscreen[i]->runTickWithAi(vdc<GameAi*>(ptrize(introscreen_ais[i])), &unsync());
+      introscreen[i]->runTickWithAi(vdc<GameAi*>(ptrize(introscreen_ais[i])), &unsync());
+    }
+  }
+  
+  tick_sync_frame++;
+  
+  if(tick_sync_frame % frames_for_full_cycle == frames_for_full_cycle - preroll - fade_duration)
+    initIntroScreen((tick_sync_frame / frames_for_full_cycle + 1) % 2);
+}
+
+void InterfaceMain::renderIntroScreen() const {
+  vector<float> brite = introScreenBrightness();
+  
+  CHECK(brite.size() == ARRAY_SIZE(introscreen));
+  
+  for(int i = 0; i < brite.size(); i++) {
+    if(brite[i] != 0.0) {
+      CHECK(introscreen[i]);
+      GfxWindow gfxw(getZoom(), brite[i]);
+      introscreen[i]->renderToScreen();
+    }
+  }
+}
+
+vector<bool> InterfaceMain::introScreenToTick() const {
+  vector<bool> tq;
+  
+  int finq =tick_sync_frame % frames_for_full_cycle;
+  int ite = (tick_sync_frame / frames_for_full_cycle) % 2;
+  
+  for(int i = 0; i < 2; i++) {
+    if(finq >= frames_for_full_cycle - preroll - fade_duration) {
+      tq.push_back(true);
+    } else if(i == ite) {
+      tq.push_back(true);
+    } else {
+      tq.push_back(false);
+    }
+  }
+  
+  return tq;
+}
+
+vector<float> InterfaceMain::introScreenBrightness() const {
+  vector<float> brite;
+  int finq = tick_sync_frame % frames_for_full_cycle;
+  int ite = (tick_sync_frame / frames_for_full_cycle) % 2;
+  
+  for(int i = 0; i < 2; i++) {
+    if(finq >= (frames_for_full_cycle - fade_duration)) {
+      float base_val;
+      if(ite == i)
+        base_val = (frames_for_full_cycle - finq) / (float)fade_duration;
+      else
+        base_val = (finq + fade_duration - frames_for_full_cycle) / (float)fade_duration;
+      
+      brite.push_back(sqrt(base_val));
+    } else if(ite == i) {
+      brite.push_back(1.0);
+    } else {
+      brite.push_back(0.0);
+    }
+  }
+  
+  if(!(accumulate(brite.begin(), brite.end(), 0.) >= 1)) {  // note: make sure this catches NaN also
+    for(int i = 0; i < brite.size(); i++)
+      dprintf("%d: %f\n", i, brite[i]);
+    dprintf("%d, %d\n", finq, ite);
+    dprintf("%d\n", finq >= (frames_for_full_cycle - fade_duration));
+    dprintf("%f, %f\n", (frames_for_full_cycle - finq) / (float)fade_duration, (finq + fade_duration - frames_for_full_cycle) / (float)fade_duration);
+    CHECK(0);
+  }
+  
+  return brite;
+}
+
 InterfaceMain::InterfaceMain() {
-  introscreen = NULL;
+  for(int i = 0; i < ARRAY_SIZE(introscreen); i++)
+    introscreen[i] = NULL;
+  tick_sync_frame = 0;
   inescmenu = false;
   init();
 }

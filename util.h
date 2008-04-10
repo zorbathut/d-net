@@ -57,6 +57,13 @@ template <typename T> vector<const T*> ptrize(const vector<T> &vt) {
   return rv;
 }
 
+template<typename T, typename U> vector<T> vdc(const vector<U> &vt) {
+  vector<T> rv;
+  for(int i = 0; i < vt.size(); i++)
+    rv.push_back(vt[i]);
+  return rv;
+}
+
 template<typename T, typename U, typename V> T clamp(T x, U min, V max) {
   //CHECK(min <= max);
   if(x < min)
