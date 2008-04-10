@@ -1,7 +1,7 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
-  - What happens if all the humans quit
   - Turn aicount into a function, based on humans
+  - Reset intro screen
   - better instant-action info on shop
   - Instant action weaponry
   - Remove debug info from results
