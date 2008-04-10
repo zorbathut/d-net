@@ -1,6 +1,5 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
-  - Turn aicount into a function, based on humans
   - Reset intro screen
   - better instant-action info on shop
   - Instant action weaponry

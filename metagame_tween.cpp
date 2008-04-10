@@ -273,7 +273,7 @@ PersistentData::PDRTR PersistentData::tick(const vector<Controller> &keys) {
       // For each item in the queue, try to jam it somewhere.
       while(sps_queue.size()) {
         CHECK(sps_playermode[sps_queue[0].first] == SPS_PENDING);
-        bool shop_is_quickshop = (getHumanCount() > 1 || aicount == 0);  
+        bool shop_is_quickshop = (getHumanCount() > 1 || getAiCount() == 0);  
         const int desired_slots = ((sps_queue[0].second == TTL_SHOP && !shop_is_quickshop) ? 1 : 4);
         
         // Do we need to change modes?
@@ -397,7 +397,7 @@ void PersistentData::render() const {
     vector<string> text;
     if(shopcycles == 0) {
       text.push_back("Choose \"join game\" to add more players.");
-      if(!aicount)
+      if(!getAiCount())
         text.push_back("At least two players are needed.");
       text.push_back("");
       text.push_back("");
@@ -1238,7 +1238,7 @@ void PersistentData::ai(const vector<Ai *> &ais, const vector<bool> &isHuman) co
 }
 
 bool PersistentData::isWaitingOnAi(const vector<bool> &isHuman) const {
-  if((mode == TM_PLAYERCHOOSE || mode == TM_SHOP) && count(isHuman.begin(), isHuman.end(), true) && aicount) {
+  if((mode == TM_PLAYERCHOOSE || mode == TM_SHOP) && getHumanCount() && getAiCount()) {
     // If there are any humans, we've got a few questions. First, if there are no humans ready, we're not waiting on the AI guaranteed.
     {
       bool hasReadyPlayer = false;
@@ -1557,7 +1557,7 @@ int PersistentData::getExpectedPlayercount() const {
     if(playerid[i] != -1 && !humans[i])
       cai++;
   
-  return min(playerdata.size() - cai + aicount, factions.size());
+  return min(playerdata.size() - cai + getAiCount(), factions.size());
 }
 
 int PersistentData::getHumanCount() const {
@@ -1569,6 +1569,11 @@ int PersistentData::getHumanCount() const {
   return hc;
 };
 
+int PersistentData::getAiCount() const {
+  CHECK(humans.size());
+  return count(humans.begin(), humans.end(), false);
+};
+
 DEFINE_int(debugControllers, 0, "Number of controllers to set to debug defaults");
 REGISTER_int(debugControllers);
 
@@ -1577,7 +1582,6 @@ PersistentData::PersistentData(const vector<bool> &human, Money startingcash, Co
   roundsbetweenshop = in_roundsbetweenshop;
   rounds_until_end = in_rounds_until_end;
   faction_mode = 0;
-  aicount = count(human.begin(), human.end(), false);
   humans = human;
   
   const int playercount = human.size();

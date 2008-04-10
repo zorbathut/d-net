@@ -135,9 +135,9 @@ private:
   void destroyPlayer(int pid); // DESTROY
   void enterGameEnd();
   
-  int aicount;
   int getExpectedPlayercount() const;
   int getHumanCount() const;
+  int getAiCount() const;
 };
 
 #endif
