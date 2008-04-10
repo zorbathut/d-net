@@ -797,7 +797,7 @@ void PersistentData::renderSlot(int slotid) const {
       steer.push_back("Move the cursor over a");
       steer.push_back("faction icon for information");
       steer.push_back("");
-      steer.push_back("Press a button to");
+      steer.push_back("Press " + controls_getcc(slt.pid).active_button + " to");
       steer.push_back("choose that faction");
       drawJustifiedMultiText(steer, 0.04, getZoom().midpoint(), TEXT_CENTER, TEXT_CENTER);
     } else {

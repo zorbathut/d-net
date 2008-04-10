@@ -110,6 +110,7 @@ struct ControlConsts {
   vector<string> buttonnames;
   
   string description;
+  string active_button;
   
   AxisType mode;
   

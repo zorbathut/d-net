@@ -1,6 +1,5 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
-  - "Choose your faction" window needs the right key mentioned
   - What happens if all the humans quit
   - Turn aicount into a function, based on humans
   - better instant-action info on shop

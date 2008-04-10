@@ -383,6 +383,7 @@ ControlConsts controls_getcc(int cid) {
     rv.ck.descriptive_text.push_back("7890 to fire your four weapons");
     rv.ck.descriptive_text.push_back("/ for precision mode");
     rv.ck.is_second = false;
+    rv.active_button = "O";
   } else if(sources[cid].first == CIP_KEYBOARD && sources[cid].second == 1) {
     //rv.availdescr = "Available buttons are RTYFGHVBN";
     rv.ck.canned = true;
@@ -401,10 +402,13 @@ ControlConsts controls_getcc(int cid) {
     rv.ck.descriptive_text.push_back("CVBN to fire your four weapons");
     rv.ck.descriptive_text.push_back("X for precision mode");
     rv.ck.is_second = true;
+    rv.active_button = "F";
   } else if(sources[cid].first == CIP_JOYSTICK) {
     //rv.availdescr = "Shoulder buttons recommended for weapons.";
+    rv.active_button = "a button";
   } else {
     //rv.availdescr = "";
+    rv.active_button = "a virtual button";
   }
 
   if(sources[cid].first == CIP_JOYSTICK) {
