@@ -888,12 +888,14 @@ void PersistentData::renderSlot(int slotid) const {
     float cury = 20;
     
     setColor(C::inactive_text);
-    drawJustifiedText(StringPrintf("Base income: %s", lrBaseCash.textual().c_str()), 10, Float2(40 , cury), TEXT_MIN, TEXT_MIN);
+    /*drawJustifiedText(StringPrintf("Base income: %s", lrBaseCash.textual().c_str()), 10, Float2(40 , cury), TEXT_MIN, TEXT_MIN);
     drawJustifiedText(StringPrintf("Highest player cash: %s", highestPlayerCash.textual().c_str()), 10, Float2(getZoom().ex - 40, cury), TEXT_MAX, TEXT_MIN);
     cury += 20;
     
     drawJustifiedText(StringPrintf("Starting cash: %s", newPlayerStartingCash.textual().c_str()), 10, Float2(getZoom().ex - 40, cury), TEXT_MAX, TEXT_MIN);
-    cury += 20;
+    cury += 20;*/
+    
+    cury += 40;
     
     setColor(C::inactive_text);
     drawText("Damage", 30, Float2(40, cury));
@@ -913,7 +915,7 @@ void PersistentData::renderSlot(int slotid) const {
     cury += 40;
     
     setColor(C::inactive_text);
-    drawText("Totals", 30, Float2(40, cury));
+    drawText("Income", 30, Float2(40, cury));
     drawMultibar(lrPlayer, Float4(200, cury, getZoom().ex - 40, cury + 40));
     cury += 100;
     

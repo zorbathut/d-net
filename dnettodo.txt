@@ -1,9 +1,6 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - Take a look at the equip screen?
-  - Remove debug info from results
-  - Add "total income" or something
-  - Get rid of the Centered Overlay Menu
   - Display something if waiting on AIs
     - With some kind of animation
   - Test every imaginable mode with players
@@ -44,6 +41,7 @@
   - reduce drone blast radius
   - satellite mines may be exploding too far away
   - first-second-third place for wins?
+  - Get rid of the Centered Overlay Menu
   - Many many more weapons
     - Add glory behavior
       - Make sure they don't spike CPU too badly

@@ -87,6 +87,8 @@ bool setResolution(pair<int, int> res, float aspect, bool fullscreen) {
   cres = res;
   caspect = aspect;
   cfull = fullscreen;
+  
+  SDL_ShowCursor(!fullscreen);
 
   return true;
 }
