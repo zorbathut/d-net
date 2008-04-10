@@ -1144,7 +1144,6 @@ void PersistentData::ai(const vector<Ai *> &ais, const vector<bool> &isHuman) co
         if(ais[i])
           ais[i]->updateIdle();
     } else {
-      dprintf("AIs should be active\n");
       vector<bool> dun(ais.size(), false);
       
       int shops = 0;
