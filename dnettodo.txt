@@ -1,6 +1,6 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
-  - Take a look at the equip screen?
+  - Remove "unequip"
   - "End game" in escape menu
   - Test every imaginable mode with players
   - Automatic error collection?

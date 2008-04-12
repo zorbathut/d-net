@@ -754,9 +754,9 @@ bool Shop::runTick(const Keystates &keys, Player *player, int playercount) {
   {
     bool hasinfo = true;
     if(getCurNode().type == HierarchyNode::HNT_WEAPON)
-      cshopinf.initIfNeeded(getCurNode().weapon, player, playercount, miniature);
+      cshopinf.initIfNeeded(getCurNode().weapon, player, playercount, false, miniature);
     else if(getCurNode().type == HierarchyNode::HNT_EQUIPWEAPON)
-      cshopinf.initIfNeeded(getCurNode().equipweapon, player, playercount, miniature);
+      cshopinf.initIfNeeded(getCurNode().equipweapon, player, playercount, true, miniature);
     else if(getCurNode().type == HierarchyNode::HNT_GLORY)
       cshopinf.initIfNeeded(getCurNode().glory, player, miniature);
     else if(getCurNode().type == HierarchyNode::HNT_BOMBARDMENT)
@@ -772,7 +772,7 @@ bool Shop::runTick(const Keystates &keys, Player *player, int playercount) {
     else if(getCurNode().type == HierarchyNode::HNT_IMPLANTSLOT)
       cshopinf.initIfNeeded(getCurNode().implantslot, player, miniature);
     else if(getCurNode().type == HierarchyNode::HNT_SELLWEAPON)
-      cshopinf.initIfNeeded(getCurNode().sellweapon, player, playercount, miniature);
+      cshopinf.initIfNeeded(getCurNode().sellweapon, player, playercount, true, miniature);
     else {
       hasinfo = false;
       cshopinf.clear();

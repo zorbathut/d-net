@@ -97,12 +97,13 @@ void ShopInfo::null() {
   implantslot = NULL;
 }
 
-void ShopInfo::init(const IDBWeapon *in_weapon, const Player *in_player, int in_playercount, bool in_miniature) {
+void ShopInfo::init(const IDBWeapon *in_weapon, const Player *in_player, int in_playercount, bool equip_info, bool in_miniature) {
   null();
   miniature = in_miniature;
   weapon = in_weapon;
   text = in_weapon->launcher->text;
   playercount = in_playercount;
+  weapon_equipinfo = equip_info;
   if(playercount == 1)
     playercount = 2;
   CHECK(playercount >= 2);
@@ -155,9 +156,9 @@ void ShopInfo::init(const IDBImplantSlot *in_implantslot, const Player *in_playe
   // no working demo atm
 }
 
-void ShopInfo::initIfNeeded(const IDBWeapon *in_weapon, const Player *in_player, int in_playercount, bool in_miniature) {
+void ShopInfo::initIfNeeded(const IDBWeapon *in_weapon, const Player *in_player, int in_playercount, bool equip_info, bool in_miniature) {
   if(weapon != in_weapon || miniature != in_miniature)
-    init(in_weapon, in_player, in_playercount, in_miniature);
+    init(in_weapon, in_player, in_playercount, equip_info, in_miniature);
 }
 void ShopInfo::initIfNeeded(const IDBGlory *in_glory, const Player *in_player, bool in_miniature) {
   if(glory != in_glory || miniature != in_miniature)
@@ -264,6 +265,12 @@ void ShopInfo::renderFrame(Float4 bounds, float fontsize, Float4 inset, const Pl
       kvp.print("Loadout", StringPrintf("%d", recommended));
       kvp.print("Ammo packs", StringPrintf("%d", (int)ceil((float)recommended / weapon->quantity)));
       kvp.print("Cost", StringPrintf("%s", player->adjustWeapon(weapon).cost(recommended).textual(Money::TEXT_NORIGHTPAD | Money::TEXT_NOABBREV).c_str()));
+    }
+    
+    {
+      vector<string> et;
+      et.push_back("Move over the weapon you want to equip, then push the weapon key you wish to assign it to.");
+      drawFormattedTextBox(et, fontsize, Float4(inset.sx, inset.midpoint().y, inset.ex, inset.ey), C::active_text, C::box_border);
     }
   } else if(glory) {
     ShopKVPrinter kvp(bounds, fontsize, fontshift);
@@ -391,6 +398,6 @@ Player ShopInfo::getImplantedLeveledPlayer(const Player *player) const {
 }
 
 bool ShopInfo::hasDemo() const {
-  return (weapon || glory || bombardment) && !miniature;
+  return (weapon || glory || bombardment) && !miniature && !(weapon && weapon_equipinfo);
 }
 

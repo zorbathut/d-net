@@ -9,7 +9,7 @@ class ShopInfo {
 public:
   ShopInfo();
 
-  void init(const IDBWeapon *in_weapon, const Player *player, int playercount, bool miniature);
+  void init(const IDBWeapon *in_weapon, const Player *player, int playercount, bool equip_info, bool miniature);
   void init(const IDBGlory *in_glory, const Player *player, bool miniature);
   void init(const IDBBombardment *in_bombardment, const Player *player, bool miniature);
   void init(const IDBUpgrade *in_upgrade, const Player *player, bool miniature);
@@ -17,7 +17,7 @@ public:
   void init(const IDBImplant *in_implant, bool upgrade, const Player *player, bool miniature);
   void init(const IDBImplantSlot *in_implant, const Player *player, bool miniature);
 
-  void initIfNeeded(const IDBWeapon *in_weapon, const Player *player, int playercount, bool miniature);
+  void initIfNeeded(const IDBWeapon *in_weapon, const Player *player, int playercount, bool equip_info, bool miniature);
   void initIfNeeded(const IDBGlory *in_glory, const Player *player, bool miniature);
   void initIfNeeded(const IDBBombardment *in_bombardment, const Player *player, bool miniature);
   void initIfNeeded(const IDBUpgrade *in_upgrade, const Player *player, bool miniature);
@@ -50,6 +50,7 @@ private:
   bool miniature;
 
   const IDBWeapon *weapon;
+  bool weapon_equipinfo;
   const IDBGlory *glory;
   const IDBBombardment *bombardment;
   const IDBUpgrade *upgrade;
