@@ -1,6 +1,5 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
-  - Remove "unequip"
   - "End game" in escape menu
   - Test every imaginable mode with players
   - Automatic error collection?

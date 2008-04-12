@@ -998,6 +998,8 @@ void PersistentData::renderSlot(int slotid) const {
     
     {
       Coord ttot = accumulate(results.back().begin(), results.back().end(), Coord(0));
+      if(ttot == 0)
+        ttot = 1; // everyone sucks
       CHECK(ttot > 0);
       for(int j = 0; j < results.back().size(); j++)
         results.back()[j] /= ttot;
@@ -1040,14 +1042,17 @@ void PersistentData::renderSlot(int slotid) const {
     cury += 100;
     
     int notdone = count(checked.begin(), checked.end(), false);
-    CHECK(notdone);
-    int cpos = 0;
-    float increment = getZoom().ex / notdone;
-    for(int i = 0; i < checked.size(); i++) {
-      if(!checked[i]) {
-        setColor(playerdata[i].getFaction()->color);
-        drawDvec2(playerdata[i].getFaction()->icon, boxAround(Float2((cpos + 0.5) * increment, float(cury + 580) / 2), min(increment * 0.95f, float(580 - cury)) / 2), 50, 1);
-        cpos++;
+    CHECK(notdone || !checked.size());
+    if(notdone) {
+      CHECK(notdone);
+      int cpos = 0;
+      float increment = getZoom().ex / notdone;
+      for(int i = 0; i < checked.size(); i++) {
+        if(!checked[i]) {
+          setColor(playerdata[i].getFaction()->color);
+          drawDvec2(playerdata[i].getFaction()->icon, boxAround(Float2((cpos + 0.5) * increment, float(cury + 580) / 2), min(increment * 0.95f, float(580 - cury)) / 2), 50, 1);
+          cpos++;
+        }
       }
     }
   } else if(slt.type == Slot::SETTINGS) {
@@ -1323,7 +1328,10 @@ vector<Keystates> PersistentData::genKeystates(const vector<Controller> &keys) c
   return kst;
 }
 
-void PersistentData::divvyCash() {
+void PersistentData::divvyCash(int rounds) {
+  if(rounds == -1)
+    rounds = roundsbetweenshop;
+  
   CHECK(playerdata.size());
   shopcycles++;
   
@@ -1349,7 +1357,7 @@ void PersistentData::divvyCash() {
   }
   
   // We give the users a good chunk of money at the beginning to get started, but then we tone it down a bit per round so they don't get an immediate 6x increase. (or whateverx increase.) In a lot of ways, "starting cash" is a crummy number - it should be "starting cash per round", with starting cash calculated from that. But it's easier to understand this way.
-  lrBaseCash = Money((long long)((100. / 1000 * baseStartingCash.value()) * powl(multiplePerRound.toFloat(), roundsbetweenshop * shopcycles) * playerdata.size() * roundsbetweenshop));
+  lrBaseCash = Money((long long)((100. / 1000 * baseStartingCash.value()) * powl(multiplePerRound.toFloat(), roundsbetweenshop * shopcycles) * playerdata.size() * rounds));
   double total = lrBaseCash.value();
   dprintf("Total cash is %f", total);
   
@@ -1410,7 +1418,7 @@ void PersistentData::divvyCash() {
     playerdata[i].total_damageDone += values[0][i];
     playerdata[i].total_kills += values[1][i];
     playerdata[i].total_wins += values[2][i];
-    playerdata[i].total_rounds += roundsbetweenshop;
+    playerdata[i].total_rounds += rounds;
     
     newPlayerDamageDone += playerdata[i].total_damageDone;
     newPlayerKills = playerdata[i].total_kills;
@@ -1420,6 +1428,14 @@ void PersistentData::divvyCash() {
   newPlayerDamageDone /= playerdata.size();
   newPlayerKills /= playerdata.size();
   newPlayerWins /= playerdata.size();
+}
+
+void PersistentData::endgame(int rounds) {
+  if(playerdata.size())
+    divvyCash(rounds);
+  else
+    enterGameEnd();
+  rounds_until_end = 0;
 }
 
 void PersistentData::startAtNormalShop() {

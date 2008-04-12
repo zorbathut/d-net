@@ -41,6 +41,8 @@ public:
   bool isWaitingOnAi() const;
   bool runTick(const vector<Controller> &keys, bool confused);
 
+  void endgame();
+
   void checksum(Adler32 *adl) const;
 
 private:

@@ -116,6 +116,10 @@ bool Metagame::runTick(const vector<Controller> &keys, bool confused) {
   return false;
 }
 
+void Metagame::endgame() {
+  persistent.endgame(gameround % roundsBetweenShop);
+}
+
 void Metagame::checksum(Adler32 *adl) const {
   StackString sstr("WE CHECKSUM META");
   audit(*adl);

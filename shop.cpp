@@ -46,8 +46,8 @@ void Shop::renormalize(HierarchyNode &item, const Player *player, int playercoun
         hod.selectable = false;
         if(i < SIMUL_WEAPONS) {
           hod.name = StringPrintf("Weapon system %d", i + 1);
-        } else if(i == WMSPC_UNEQUIPPED) {
-          hod.name = "Offline weapons";
+        //} else if(i == WMSPC_UNEQUIPPED) {
+          //hod.name = "Offline weapons";
         } else if(i == WMSPC_NEW) {
           hod.name = "New weapons";
         } else {

@@ -34,7 +34,8 @@ public:
   void checksum(Adler32 *adl) const;  
 
   // Triggers
-  void divvyCash(); // also sets to "result" mode
+  void divvyCash(int rounds = -1); // also sets to "result" mode
+  void endgame(int rounds);
   void startAtNormalShop();
 
   // Constructor

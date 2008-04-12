@@ -736,6 +736,8 @@ bool InterfaceMain::tick(const InputState &is, RngSeed gameseed) {
       init();
     } else if(rv.second == ESCMENU_QUIT) {
       return true;
+    } else if(rv.second == ESCMENU_ENDGAME) {
+      game->endgame();
     } else if(rv.second == OPTS_SETRES) {
       setResolution(opts_res, opts_aspect, opts_fullscreen);
     } else {
@@ -770,6 +772,7 @@ bool InterfaceMain::tick(const InputState &is, RngSeed gameseed) {
         game->instant_action_init(controls_getcc(controls_primary_id()));
       dprintf("ENTERING PLAYING\n");
       interface_mode = STATE_PLAYING;
+      escmenu = escmenuig;
     } else if(mrv.second == MAIN_EXIT) {
       return true;
     } else if(mrv.second == MAIN_INPUTTEST) {
@@ -1080,6 +1083,7 @@ void InterfaceMain::render() const {
 void InterfaceMain::checksum(Adler32 *adl) const {
   mainmenu.checksum(adl);
   escmenu.checksum(adl);
+  escmenuig.checksum(adl);
   optionsmenu.checksum(adl);
   adler(adl, interface_mode);
   adler(adl, start);
@@ -1111,6 +1115,7 @@ void InterfaceMain::init() {
   
   mainmenu = StdMenu();
   escmenu = StdMenu();
+  escmenuig = StdMenu();
   optionsmenu = StdMenu();
   kst.clear();
   
@@ -1206,6 +1211,12 @@ void InterfaceMain::init() {
   escmenu.pushMenuItem(StdMenuItemSubmenu::make("Options", &optionsmenu));
   escmenu.pushMenuItem(StdMenuItemTrigger::make("Main menu", ESCMENU_MAINMENU));
   escmenu.pushMenuItem(StdMenuItemTrigger::make("Quit", ESCMENU_QUIT));
+  
+  escmenuig.pushMenuItem(StdMenuItemBack::make("Return to game"));
+  escmenuig.pushMenuItem(StdMenuItemTrigger::make("End game", ESCMENU_ENDGAME));
+  escmenuig.pushMenuItem(StdMenuItemSubmenu::make("Options", &optionsmenu));
+  escmenuig.pushMenuItem(StdMenuItemTrigger::make("Main menu", ESCMENU_MAINMENU));
+  escmenuig.pushMenuItem(StdMenuItemTrigger::make("Quit", ESCMENU_QUIT));
   
   tick_sync_frame = 0;
   initIntroScreen(0, true);

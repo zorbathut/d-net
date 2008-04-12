@@ -61,7 +61,7 @@ template<typename T> class StdMenuItemChooser;
 class InterfaceMain : boost::noncopyable {
   
   enum { STATE_MAINMENU, STATE_PLAYING };
-  enum { MAIN_NEWGAME, MAIN_INSTANTACTION, MAIN_INPUTTEST, MAIN_GRID, MAIN_EXIT, MAIN_NEWGAMEMENU, MAIN_OPTIONSMENU, OPTS_SETRES, ESCMENU_MAINMENU, ESCMENU_QUIT };
+  enum { MAIN_NEWGAME, MAIN_INSTANTACTION, MAIN_INPUTTEST, MAIN_GRID, MAIN_EXIT, MAIN_NEWGAMEMENU, MAIN_OPTIONSMENU, OPTS_SETRES, ESCMENU_ENDGAME, ESCMENU_MAINMENU, ESCMENU_QUIT };
   enum { ESC_MAINMENU, ESC_EXIT };
   int interface_mode;
   
@@ -75,7 +75,10 @@ class InterfaceMain : boost::noncopyable {
   Metagame *game;
   
   StdMenu mainmenu;
+  
   StdMenu escmenu;
+  StdMenu escmenuig;
+  
   StdMenu optionsmenu;
   
   Coord start;
