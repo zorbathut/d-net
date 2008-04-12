@@ -479,7 +479,6 @@ inline Coord4 boxAround(const Coord2 &lhs, Coord radius) {
 
 Coord2 rotate(const Coord2 &in, Coord ang);
 
-Coord approach(Coord start, Coord target, Coord delta);
 Coord approach(Coord start, Coord target, Coord delta, Coord drag);
 Coord2 approach(Coord2 start, Coord2 target, Coord delta);
 Coord2 approach(Coord2 start, Coord2 target, Coord delta, Coord drag);

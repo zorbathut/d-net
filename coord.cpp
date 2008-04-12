@@ -211,17 +211,6 @@ void expandBoundBox(Coord4 *bbox, Coord factor) { return imp_expandBoundBox<Coor
 bool linelineintersect(const Coord4 &lhs, const Coord4 &rhs) { return imp_linelineintersect<Coords>(lhs, rhs); };
 Coord linelineintersectpos(const Coord4 &lhs, const Coord4 &rhs) { return imp_linelineintersectpos<Coords>(lhs, rhs); };
 
-Coord approach(Coord start, Coord target, Coord delta) {
-  CHECK(delta >= 0);
-  if(abs(start - target) <= delta)
-    return target;
-  else if(start < target)
-    return start + delta;
-  else if(start > target)
-    return start - delta;
-  else
-    CHECK(0);  // oh god bear is driving car how can this be
-}
 Coord approach(Coord start, Coord target, Coord delta, Coord drag) {
   if(!(((start < 0) == (target < 0)) && start < target))
     delta += drag;

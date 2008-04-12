@@ -233,20 +233,11 @@ void MainLoop() {
       }
     }
     
-    if(FLAGS_timing) {
-      rendering += bencher.ticksElapsed();
-      bencher = Timer();
-    }
-    if(frameNumber >= FLAGS_fastForwardTo) {
-      timer.waitForNextFrame();
-    }
-    if(FLAGS_timing) {
-      waiting += bencher.ticksElapsed();
-      bencher = Timer();
-    }
+    //if(frameNumber % 15 == 0)
+      //timer.printStats();
     
+    bool render = false;
     if(FLAGS_render) {
-      bool render = false;
       if(FLAGS_randomizeFrameRender != 0) {
         CHECK(FLAGS_randomizeFrameRender > 0);
         render = unsync().frand() < (1. / FLAGS_randomizeFrameRender);
@@ -258,7 +249,9 @@ void MainLoop() {
       
       if(speed != 1)
         render = true;
-      
+    }
+  
+    {
       if(render) {
         {
           PerfStack pst(PBC::render);
@@ -273,11 +266,27 @@ void MainLoop() {
             drawText(StringPrintf("%d", frameNumber), 10, Float2(5, 85));
           }
         }
+        flushFrame();
+      } else {
+        skipped++;
+      }
+      
+      if(FLAGS_timing) {
+        rendering += bencher.ticksElapsed();
+        bencher = Timer();
+      }
+      if(frameNumber >= FLAGS_fastForwardTo) {
+        timer.waitForNextFrame();
+      }
+      if(FLAGS_timing) {
+        waiting += bencher.ticksElapsed();
+        bencher = Timer();
+      }
+      
+      if(render) {
         drawPerformanceBar();
         deinitFrame();
         SDL_GL_SwapBuffers();
-      } else {
-        skipped++;
       }
     }
     

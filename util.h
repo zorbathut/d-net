@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 
+#include "debug.h"
+
 using namespace std;
 
 extern bool ffwd;
@@ -65,12 +67,24 @@ template<typename T, typename U> vector<T> vdc(const vector<U> &vt) {
 }
 
 template<typename T, typename U, typename V> T clamp(T x, U min, V max) {
-  //CHECK(min <= max);
+  CHECK(min <= max);
   if(x < min)
     return min;
   if(x > max)
     return max;
   return x;
+}
+
+template<typename T> T approach(const T &start, const T &target, const T &delta) {
+  CHECK(delta >= 0);
+  if(abs(start - target) <= delta)
+    return target;
+  else if(start < target)
+    return start + delta;
+  else if(start > target)
+    return start - delta;
+  else
+    CHECK(0);  // oh god bear is driving car how can this be
 }
 
 // roman_number returns the roman equivalent of rid+1. This is retarded. If you're having trouble with that, for the love of god please fix it.

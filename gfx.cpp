@@ -303,27 +303,33 @@ void finishCluster() {
   CHECK(glGetError() == GL_NO_ERROR);
 }
 
+void initGfx() {
+  GLint v = 0;
+  glGetIntegerv(GL_STENCIL_BITS, &v);
+  CHECK(v >= 1); // :v:
+}
+
 void initFrame() {
   CHECK(!frame_running);
   frame_running = true;
   CHECK(curWeight == 0);
-  {
-    GLint v = 0;
-    glGetIntegerv(GL_STENCIL_BITS, &v);
-    CHECK(v >= 1);
-  }
+
   glEnable(GL_POINT_SMOOTH);
   glEnable(GL_LINE_SMOOTH);
   glEnable(GL_SCISSOR_TEST);
+  
   glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
   glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
   //glHint(GL_LINE_SMOOTH_HINT, GL_FASTEST);
   //glHint(GL_POINT_SMOOTH_HINT, GL_FASTEST);
   glEnable(GL_BLEND);
+  
   glBlendFunc(GL_SRC_ALPHA, GL_ONE);
   //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  
   glStencilMask(1);
   clearFrame(Color(0, 0, 0));
+  
   CHECK(glGetError() == GL_NO_ERROR);
   glStencilMask(0);
   
@@ -351,13 +357,18 @@ bool frameRunning() {
   return frame_running;
 }
 
-void deinitFrame() {
-  unregisterCrashFunction(deinitFrame);
-  
+void flushFrame() {
   CHECK(frame_running);
   finishCluster();
   glFlush();
   CHECK(glGetError() == GL_NO_ERROR);
+}
+
+void deinitFrame() {
+  unregisterCrashFunction(deinitFrame);
+  
+  flushFrame();
+  
   renderedFrameId++;
   frame_running = false;
 }

@@ -12,6 +12,8 @@ public:
   long long ticksElapsed();
   long long getFrameTicks();
 
+  void printStats() const;
+
   Timer();
 
 private:

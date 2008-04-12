@@ -15,6 +15,7 @@ using namespace std;
  */
 
 void loadFonts();
+void initGfx();
 void initWindowing(float aspect); // this isn't really necessary if you plan to call updateResolution
 void updateResolution(float aspect); // picks up viewport data from OpenGL
 
@@ -37,6 +38,7 @@ Float4 getZoom();
 float getAspect();
 float getScreenAspect();
 
+void flushFrame();
 void deinitFrame();
 
 /*************

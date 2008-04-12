@@ -77,7 +77,22 @@ void initVideo() {
     dprintf("Depth bits: %d\n", (int)v);
     glGetIntegerv(GL_STENCIL_BITS, &v);
     dprintf("Stencil bits: %d\n", (int)v);
+    
+    if(0) {
+      typedef void (APIENTRY *PFNWGLEXTSWAPCONTROLPROC) (int);
+      char* extensions = (char*)glGetString(GL_EXTENSIONS);
+      if(strstr(extensions, "WGL_EXT_swap_control")) {
+        dprintf("Disabling vsync\n");
+        PFNWGLEXTSWAPCONTROLPROC wglSwapIntervalEXT = NULL;
+        wglSwapIntervalEXT = (PFNWGLEXTSWAPCONTROLPROC)SDL_GL_GetProcAddress("wglSwapIntervalEXT");
+        wglSwapIntervalEXT(0);
+      } else {
+        dprintf("Can't disable vsync\n");
+      }
+    }
   }
+  
+  initGfx();
 }
 
 void deinitSystem() {

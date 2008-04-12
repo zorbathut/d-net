@@ -24,7 +24,7 @@ namespace PBC {
   const Color shopnormalize = Color(1.0, 1.0, 0.2);
   
   const Color render = Color(0.9, 0.9, 0.9);
-  const Color renderinit = Color(0.9, 0.2, 0.2);
+  const Color renderinit = Color(0.1, 0.1, 0.1);
   const Color rendermeta = Color(0.2, 0.9, 0.2);
   const Color rendershop = Color(0.9, 0.9, 0.2);
   const Color rendershopnode = Color(0.6, 0.1, 0.1);

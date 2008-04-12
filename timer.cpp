@@ -4,6 +4,7 @@
 #include "const.h"
 #include "debug.h"
 #include "os.h"
+#include "util.h"
 
 #ifndef NOSDL
   #ifdef OSX_FRAMEWORK_PREFIXES
@@ -46,7 +47,7 @@ static long long cpf() {
 #ifndef NOSDL
   void Timer::waitForNextFrame() {
     while(cpc() < frameNum * ticksPerFrame + ticksOffset)
-      SDL_Delay(1);
+      SDL_Delay(0);
   };
 #else
   void Timer::waitForNextFrame() {
@@ -56,15 +57,20 @@ static long long cpf() {
 #endif
 
 bool Timer::skipFrame() {
-  return cpc() > (frameNum + 2) * ticksPerFrame + ticksOffset;
+  return cpc() > (frameNum + 1) * ticksPerFrame + ticksOffset;
 };
 
 int Timer::framesBehind() {
   return (cpc() - ticksOffset) / ticksPerFrame - frameNum;
 }
 
-void Timer::frameDone() {
+void Timer::frameDone() {/*
+  long long diff = (cpc() - ticksOffset) - ticksPerFrame * frameNum;
+  //if(frameNum % 15 == 0)
+    //dprintf("diff is %lld\n", diff);
+  ticksOffset = approach(ticksOffset, ticksOffset + diff, ticksPerFrame / 50);*/
   frameNum++;
+  
 };
 
 long long Timer::ticksElapsed() {
@@ -74,6 +80,11 @@ long long Timer::ticksElapsed() {
 long long Timer::getFrameTicks() {
   return ticksPerFrame;
 };
+
+void Timer::printStats() const {
+  long long pos = cpc() - ticksOffset;
+  dprintf("%lld offset, %lld relative to current frame", pos, pos - frameNum * ticksPerFrame);
+}
 
 
 Timer::Timer() {
