@@ -737,7 +737,11 @@ bool InterfaceMain::tick(const InputState &is, RngSeed gameseed) {
     } else if(rv.second == ESCMENU_QUIT) {
       return true;
     } else if(rv.second == ESCMENU_ENDGAME) {
+      inescmenu = false;
       game->endgame();
+      if(game->runTick(is.controllers, is.confused)) {
+        init();   // full reset
+      }
     } else if(rv.second == OPTS_SETRES) {
       setResolution(opts_res, opts_aspect, opts_fullscreen);
     } else {

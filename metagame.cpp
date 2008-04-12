@@ -117,7 +117,8 @@ bool Metagame::runTick(const vector<Controller> &keys, bool confused) {
 }
 
 void Metagame::endgame() {
-  persistent.endgame(gameround % roundsBetweenShop);
+  persistent.endgame(gameround % roundsBetweenShop, mode == MGM_PLAY);
+  mode = MGM_TWEEN;
 }
 
 void Metagame::checksum(Adler32 *adl) const {

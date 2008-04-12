@@ -999,7 +999,7 @@ void PersistentData::renderSlot(int slotid) const {
     {
       Coord ttot = accumulate(results.back().begin(), results.back().end(), Coord(0));
       if(ttot == 0)
-        ttot = 1; // everyone sucks
+        ttot = 1; // you are all incompetent
       CHECK(ttot > 0);
       for(int j = 0; j < results.back().size(); j++)
         results.back()[j] /= ttot;
@@ -1042,17 +1042,14 @@ void PersistentData::renderSlot(int slotid) const {
     cury += 100;
     
     int notdone = count(checked.begin(), checked.end(), false);
-    CHECK(notdone || !checked.size());
-    if(notdone) {
-      CHECK(notdone);
-      int cpos = 0;
-      float increment = getZoom().ex / notdone;
-      for(int i = 0; i < checked.size(); i++) {
-        if(!checked[i]) {
-          setColor(playerdata[i].getFaction()->color);
-          drawDvec2(playerdata[i].getFaction()->icon, boxAround(Float2((cpos + 0.5) * increment, float(cury + 580) / 2), min(increment * 0.95f, float(580 - cury)) / 2), 50, 1);
-          cpos++;
-        }
+    CHECK(notdone);
+    int cpos = 0;
+    float increment = getZoom().ex / notdone;
+    for(int i = 0; i < checked.size(); i++) {
+      if(!checked[i]) {
+        setColor(playerdata[i].getFaction()->color);
+        drawDvec2(playerdata[i].getFaction()->icon, boxAround(Float2((cpos + 0.5) * increment, float(cury + 580) / 2), min(increment * 0.95f, float(580 - cury)) / 2), 50, 1);
+        cpos++;
       }
     }
   } else if(slt.type == Slot::SETTINGS) {
@@ -1430,12 +1427,18 @@ void PersistentData::divvyCash(int rounds) {
   newPlayerWins /= playerdata.size();
 }
 
-void PersistentData::endgame(int rounds) {
-  if(playerdata.size())
+void PersistentData::endgame(int rounds, bool playing) {
+  if(playerdata.size() || playing)
     divvyCash(rounds);
-  else
-    enterGameEnd();
+  
   rounds_until_end = 0;
+  
+  bool has_rounds = false;
+  for(int i = 0; i < playerdata.size(); i++)
+    if(playerdata[i].total_rounds)
+      has_rounds = true;
+  if(!has_rounds || !playing)
+    enterGameEnd();
 }
 
 void PersistentData::startAtNormalShop() {

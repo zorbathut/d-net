@@ -35,7 +35,7 @@ public:
 
   // Triggers
   void divvyCash(int rounds = -1); // also sets to "result" mode
-  void endgame(int rounds);
+  void endgame(int rounds, bool playing);
   void startAtNormalShop();
 
   // Constructor
