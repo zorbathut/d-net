@@ -254,11 +254,11 @@ void MainLoop() {
     {
       if(render) {
         {
-          PerfStack pst(PBC::render);
           {
-            PerfStack pst(PBC::renderinit);
+            PerfStack pst(PBC::rinit);
             initFrame();
           }
+          PerfStack pst(PBC::render);
           interface.render();
           if(!controls_users() && FLAGS_renderframenumber) {
             setColor(1.0, 1.0, 1.0);
