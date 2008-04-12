@@ -1201,11 +1201,14 @@ void PersistentData::ai(const vector<Ai *> &ais, const vector<bool> &isHuman) co
     // If no players exist, then we can do AI.
     // Conveniently, this is almost the same logic as isWaitingOnAi(). The only difference is that, if there's no humans, we really want to continue.
     
-    if(count(isHuman.begin(), isHuman.end(), true) && !isWaitingOnAi()) {
-      // There are humans, and we're not waiting on the AI. Have the AIs idle.
-      for(int i = 0; i < ais.size(); i++)
-        if(ais[i])
+    if(count(isHuman.begin(), isHuman.end(), true) && !isWaitingOnAi() && count(isHuman.begin(), isHuman.end(), false)) {
+      // There are humans, and we're not waiting on the AI, and there are actual AIs. Have the AIs idle.
+      for(int i = 0; i < ais.size(); i++) {
+        if(ais[i]) {
+          CHECK(!isHuman[i]);
           ais[i]->updateIdle();
+        }
+      }
     } else {
       vector<bool> dun(ais.size(), false);
       

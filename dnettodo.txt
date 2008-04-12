@@ -3,6 +3,7 @@
   - Take a look at the equip screen?
   - "End game" in escape menu
   - Test every imaginable mode with players
+  - Automatic error collection?
   - Why do I have "test" and "ready" with the keyboard?
   - Split data into "data_source", "data_demo", "data_release"
   - Look at computer's screen res when starting for the first time

@@ -3,6 +3,7 @@
 
 #include "ai.h"
 #include "args.h"
+#include "dumper_registry.h"
 #include "debug.h"
 #include "util.h"
 #include "smartptr.h"
@@ -21,6 +22,9 @@
 using namespace std;
 
 DEFINE_int(nullControllers, 0, "Null controllers to insert in front");
+
+DEFINE_bool(treatAiAsHuman, false, "Treat AIs as humans for all game-modifying decisions");
+REGISTER_bool(treatAiAsHuman);
 
 enum { CIP_KEYBOARD, CIP_JOYSTICK, CIP_AI, CIP_NULL };
 
@@ -153,7 +157,7 @@ void controls_set_ai_count(int ct) {
     Controller aic;
     aic.keys.resize(BUTTON_LAST);
     aic.axes.resize(2);
-    aic.human = false;
+    aic.human = FLAGS_treatAiAsHuman;
     now.controllers.push_back(aic);
     last.controllers.push_back(aic);
     prerecorded.push_back(prerecorded[0]);  // yeah yeah
@@ -336,7 +340,7 @@ vector<bool> controls_human_flags() {
   vector<bool> rv;
   for(int i = 0; i < sources.size(); i++) {
     if(sources[i].first == CIP_AI || sources[i].first == CIP_NULL)
-      rv.push_back(false);
+      rv.push_back(FLAGS_treatAiAsHuman);
     else  // We let humans be considered human, even when replaying, since it changes some small behavior things.
       rv.push_back(true);
   }
