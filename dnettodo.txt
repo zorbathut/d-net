@@ -1,7 +1,6 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   * Colorcode damage types in "show bonuses"
-  * Add "auto-catch-up" if it gets more than a second or two behind
   - Automatic error collection?
   - Split data into "data_source", "data_demo", "data_release"
   - Look at computer's screen res when starting for the first time

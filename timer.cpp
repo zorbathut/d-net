@@ -69,6 +69,10 @@ void Timer::frameDone() {/*
   //if(frameNum % 15 == 0)
     //dprintf("diff is %lld\n", diff);
   ticksOffset = approach(ticksOffset, ticksOffset + diff, ticksPerFrame / 50);*/
+  if(cpc() - ticksOffset - ticksPerFrame * frameNum > ticksPerFrame * 30) {
+    // If we're more than 30 seconds behind, just skip up ahead.
+    ticksOffset = cpc() - ticksPerFrame * frameNum;
+  }
   frameNum++;
   
 };
