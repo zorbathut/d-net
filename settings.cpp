@@ -40,7 +40,6 @@ void Settings::load() {
       res_y = atoi(kvd.consume("y").c_str());
       res_fullscreen = atoi(kvd.consume("fullscreen").c_str());
       res_aspect = atof(kvd.consume("aspect").c_str());
-      return;
     }
   }
   
