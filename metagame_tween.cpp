@@ -253,8 +253,13 @@ PersistentData::PDRTR PersistentData::tick(const vector<Controller> &keys) {
             foundrunning = true;
           }
         }
-        if(!foundrunning)
-          sps_playermode[player] = SPS_CHOOSING;
+        if(!foundrunning) {
+          if(playerid[player] == -1) {
+            sps_playermode[player] = SPS_IDLE;
+          } else {
+            sps_playermode[player] = SPS_CHOOSING;
+          }
+        }
       } else if(sps_playermode[player] == SPS_DONE || sps_playermode[player] == SPS_END) {
         // Let the player cancel
         CHECK(pms[player].faction);
@@ -314,6 +319,7 @@ PersistentData::PDRTR PersistentData::tick(const vector<Controller> &keys) {
           CHECK(pms[sps_queue[0].first].faction);
           slot[empty].type = Slot::QUITCONFIRM;
         } else if(sps_queue[0].second == TTL_JOIN) {
+          dprintf("Putting this beast back in the choose\n");
           CHECK(!pms[sps_queue[0].first].faction);
           slot[empty].type = Slot::CHOOSE;
         } else if(sps_queue[0].second == TTL_SHOP) {
@@ -688,7 +694,7 @@ bool PersistentData::tickSlot(int slotid, const vector<Controller> &keys) {
     CHECK(slt.pid != -1);
     CHECK(keys.size() == 1);
 
-    runSettingTick(keys[0], &pms[slt.pid], factions, controls_getcc(slt.pid));
+    bool cancel = runSettingTick(keys[0], &pms[slt.pid], factions, controls_getcc(slt.pid));
 
     if(pms[slt.pid].faction) {
       playerid[slt.pid] = playerdata.size();
@@ -697,6 +703,10 @@ bool PersistentData::tickSlot(int slotid, const vector<Controller> &keys) {
       playerdata.back().total_kills = newPlayerKills;
       playerdata.back().total_wins = newPlayerWins;
       slot[slotid].type = Slot::SETTINGS;
+    }
+    
+    if(cancel) {
+      return true;
     }
   } else if(slt.type == Slot::RESULTS || slt.type == Slot::GAMEEND) {
     CHECK(slotid == 0);

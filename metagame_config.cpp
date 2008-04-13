@@ -480,15 +480,23 @@ bool runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
         targetInside = j;
       }
     }
-    if(targetInside != -1) {            
-      for(int j = 0; j < keys.keys.size(); j++) {
-        if(keys.keys[j].repeat) {
-          pms->faction = &factions[targetInside];
-          pms->settingmode = SETTING_BUTTONS;
-          pms->choicemode = CHOICE_FIRSTPASS; // Because it is.
-          factions[targetInside].taken = true;
-          queueSound(S::accept);
-        }
+    
+    bool keyed = false;
+    for(int j = 0; j < keys.keys.size(); j++)
+        if(keys.keys[j].push)
+          keyed = true;
+    
+    if(keyed) {
+      if(targetInside != -1) {            
+        pms->faction = &factions[targetInside];
+        pms->settingmode = SETTING_BUTTONS;
+        pms->choicemode = CHOICE_FIRSTPASS; // Because it is.
+        factions[targetInside].taken = true;
+        queueSound(S::accept);
+      } else {
+        dprintf("RESET\n");
+        *pms = PlayerMenuState(); // RESET
+        return true;
       }
     }
     

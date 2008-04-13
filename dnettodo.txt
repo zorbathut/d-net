@@ -1,6 +1,5 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
-  * Way to cancel out of new-character mode
   * Add a "taunt" to accept
   * Colorcode damage types in "show bonuses"
   * Boomerangs should be more visible
