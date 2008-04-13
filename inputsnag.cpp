@@ -339,9 +339,9 @@ vector<Ai *> controls_ai() {
 vector<bool> controls_human_flags() {
   vector<bool> rv;
   for(int i = 0; i < sources.size(); i++) {
-    if(sources[i].first == CIP_AI || sources[i].first == CIP_NULL)
+    if(sources[i].first == CIP_AI)
       rv.push_back(FLAGS_treatAiAsHuman);
-    else  // We let humans be considered human, even when replaying, since it changes some small behavior things.
+    else  // We let humans be considered human, even when replaying, since it changes some small behavior things. Also, null controllers are human.
       rv.push_back(true);
   }
   return rv;

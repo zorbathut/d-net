@@ -1,5 +1,6 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
+  - nofullscreen not overriding?
   - Test every imaginable mode with players
   - AIs leave game when they should not!
   - Automatic error collection?
