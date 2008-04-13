@@ -1,6 +1,5 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
-  - AIs leave game when they should not!
   - Automatic error collection?
   - Why do I have "test" and "ready" with the keyboard?
   - Split data into "data_source", "data_demo", "data_release"
