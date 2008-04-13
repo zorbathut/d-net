@@ -587,7 +587,7 @@ void PersistentData::render() const {
     
     // Draw our ready-or-not-ready
     {
-      vector<const IDBFaction *> nrfactions = getUnfinishedFactions();
+      vector<const IDBFaction *> nrfactions = getUnfinishedHumanFactions();
       
       for(int i = 0; i < nrfactions.size(); i++) {
         Float4 drawpos = Float4(-ticker_text_size, 0, 0, ticker_text_size) + Float2(getZoom().ex - ticker_waiting_border - getTextWidth("- Not ready", ticker_text_size) - (i + 1) * ticker_text_size * 1.2 + ticker_text_size, (divider_ypos + ticker_ypos) / 2 - ticker_text_size / 2);
@@ -1136,6 +1136,21 @@ vector<const IDBFaction *> PersistentData::getUnfinishedFactions() const {
   vector<const IDBFaction *> nrfactions;
   for(int i = 0; i < pms.size(); i++) {
     if(isUnfinished(i)) {
+      if(pms[i].faction)
+        nrfactions.push_back(pms[i].faction->faction);
+      else
+        nrfactions.push_back(NULL);
+    }
+  }
+  return nrfactions;
+}
+
+vector<const IDBFaction *> PersistentData::getUnfinishedHumanFactions() const {
+  StackString sst("guf");
+  
+  vector<const IDBFaction *> nrfactions;
+  for(int i = 0; i < pms.size(); i++) {
+    if(humans[i] && isUnfinished(i)) {
       if(pms[i].faction)
         nrfactions.push_back(pms[i].faction->faction);
       else

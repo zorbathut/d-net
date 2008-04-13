@@ -120,6 +120,7 @@ private:
   
   bool isUnfinished(int id) const;
   vector<const IDBFaction *> getUnfinishedFactions() const;
+  vector<const IDBFaction *> getUnfinishedHumanFactions() const;
   bool onlyAiUnfinished() const;
   
   vector<pair<int, pair<Coord, Coord> > > ranges;
