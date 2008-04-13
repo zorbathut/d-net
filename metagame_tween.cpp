@@ -41,7 +41,7 @@ const vector<Player> &PersistentData::players() const {
   return playerdata;
 }
 
-const char * const tween_textlabels[] = {"End game", "Leave/join game", "Leave game", "Join game", "Settings", "Shop", "Next round"};
+const char * const tween_textlabels[] = {"Quit and end game", "Leave/join game", "Leave game", "Join game", "Settings", "Shop", "Next round"};
 enum { TTL_END, TTL_LEAVEJOIN, TTL_LEAVE, TTL_JOIN, TTL_SETTINGS, TTL_SHOP, TTL_DONE, TTL_LAST }; 
 
 class QueueSorter {
@@ -553,6 +553,11 @@ void PersistentData::render() const {
     {
       for(int i = 0; i < ranges.size(); i++) {
         vector<string> lines = tokenize(tween_textlabels[ranges[i].first], " ");
+        if(lines.size() == 4) {
+          lines[0] += " " + lines[1];
+          lines[1] = lines[2] + " " + lines[3];
+          lines.erase(lines.begin() + 2, lines.end());
+        }
         drawJustifiedMultiText(lines, ticker_text_size, Coord2((ranges[i].second.first + ranges[i].second.second) / 2 / 100 * getZoom().ex, (ticker_ypos + 100) / 2), TEXT_CENTER, TEXT_CENTER);
       }
     }
@@ -657,6 +662,9 @@ void PersistentData::reset() {
   
   sps_playermode.clear();
   sps_playermode.resize(pms.size(), SPS_IDLE);
+  for(int i = 0; i < sps_playermode.size(); i++)
+  if(humans[i] && playerid[i] != -1)
+    sps_playermode[i] = SPS_CHOOSING;
   
   resetRanges();
   

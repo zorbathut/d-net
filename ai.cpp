@@ -4,10 +4,13 @@
 #include "game_tank.h"
 #include "metagame_config.h"
 #include "player.h"
+#include "args.h"
 
 #include <list>
 
 using namespace std;
+
+DEFINE_bool(allowAisQuit, false, "Allow AIs to randomly quit the game");
 
 void GameAiStandard::updateGameWork(const vector<Tank> &players, int me) {
   if(rng->frand() < 0.01 || targetplayer == -1 || targetplayer >= players.size()) {
@@ -235,7 +238,7 @@ void Ai::updateTween(bool live, bool pending, Coord2 playerpos, bool shopped, Co
   if(shoptarget == -1) {
     nextKeys.menu.y = -1;
     
-    if(rng.frand() > endchance || endrange.x == 0) {
+    if(rng.frand() > endchance || endrange.x == 0 || !FLAGS_allowAisQuit) {
       shoptarget = 2;
     } else {
       shoptarget = 3;
