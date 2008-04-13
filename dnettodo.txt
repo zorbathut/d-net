@@ -1,5 +1,18 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
+  * Inwards needs to be something else?
+  * Make sure you can reassign gamepad controls
+  * Highlight "recommended"
+  * Remove equip message from buying normal weapons
+  * EMP needs some tweaking for recommended?
+  * Is "income" not correct? is it not factoring in the base values?
+  * AIs should not show up under "not ready"
+  * Way to cancel out of new-character mode
+  * Add a "taunt" to accept
+  * Colorcode damage types in "show bonuses"
+  * Boomerangs should be more visible
+  * Add "auto-catch-up" if it gets more than a second or two behind
+  * Buff lasers a teensy tiny bit
   - Automatic error collection?
   - Split data into "data_source", "data_demo", "data_release"
   - Look at computer's screen res when starting for the first time
