@@ -4,6 +4,7 @@
   - Automatic error collection?
   - Split data into "data_source", "data_demo", "data_release"
   - Look at computer's screen res when starting for the first time
+  - If in windowed mode, clamp window to screen res
   - Add demo mode
   - Set it up to delete all but the three newest dumps
   - Add forum
