@@ -92,12 +92,23 @@ PlayerMenuState::PlayerMenuState() {
   
   setting_axistype = KSAX_STEERING;
   
+  reset_controls();
+}
+
+void PlayerMenuState::reset_controls() {
+  setting_button_current = -1;
+  
+  fill(buttons.begin(), buttons.end(), -1);
+  fill(axes.begin(), axes.end(), -1);
+  fill(axes_invert.begin(), axes_invert.end(), false);
+
   buttons.resize(BUTTON_LAST, -1);
   axes.resize(2, -1);
   axes_invert.resize(axes.size(), false);
   
   axes[1] = 1;
 }
+
 
 PlayerMenuState::~PlayerMenuState() { }
 
@@ -490,6 +501,24 @@ bool runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
     }
   } else {
     StackString sstr("proc");
+    
+    // Here's how we want this to be structured.
+    // If we're idle, and in buttons, and we press any button, it should clear the keymap, use that button as a command, and switch to active.
+    // If we're idle and elsewhere, the old behavior persists.
+    
+    if(pms->choicemode == CHOICE_IDLE && pms->settingmode == SETTING_BUTTONS && !cc.ck.canned) {
+      bool pushedbutton = false;
+      for(int i = 0; i < keys.keys.size(); i++)
+        if(keys.keys[i].push)
+          pushedbutton = true;
+      
+      if(pushedbutton) {
+        pms->choicemode = CHOICE_FIRSTPASS;
+        pms->reset_controls();
+      }
+      
+      // Now the button will be echoed through.
+    }
     
     if(pms->choicemode == CHOICE_IDLE) {
       CHECK(pms->faction);

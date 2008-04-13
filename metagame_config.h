@@ -43,6 +43,8 @@ public:
   
   Keystates genKeystate(const Controller &keys) const;
 
+  void reset_controls();
+
   PlayerMenuState();
   ~PlayerMenuState();
 };
