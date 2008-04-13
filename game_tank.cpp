@@ -25,6 +25,8 @@ void Tank::init(IDBTankAdjust in_tank, Color in_color) {
   
   glory_resistance = 0;
   glory_resist_boost_frames = 0;
+  
+  taunt_frames = 0;
 }
 
 void Tank::updateInertia(const Keystates &kst) {

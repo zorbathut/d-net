@@ -81,6 +81,8 @@ public:
   pair<Coord2, Coord> inertia;
   
   Keystates keys;
+  
+  int taunt_frames;
 
 private:
   pair<Coord2, Coord> getNextInertia(const Keystates &keys) const;

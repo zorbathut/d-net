@@ -79,6 +79,22 @@ bool Game::runTick(const vector<Keystates> &rkeys, bool confused, const vector<P
     }
   }
   
+  for(int i = 0; i < tanks.size(); i++) {
+    if(keys[i].cancel.push) {
+      gfxeffects.push_back(GfxPing(tanks[i].pi.pos.toFloat(), zoom_size.y, zoom_size.y / 50, 0.5, tanks[i].getColor()));
+      addTankStatusText(i, "Come and get me!", 3.f);
+      tanks[i].taunt_frames = FPS * 3;
+    }
+    if(tanks[i].taunt_frames) {
+      keys[i].nullMove();
+      for(int j = 0; j < SIMUL_WEAPONS; j++)
+        keys[i].fire[j] = Button();
+    }
+    
+    tanks[i].taunt_frames--;
+    tanks[i].taunt_frames = max(tanks[i].taunt_frames, 0);
+  }
+  
   if(gamemode == GMODE_DEMO) {
     // EVERYONE IS INVINCIBLE
     for(int i = 0; i < tanks.size(); i++) {
