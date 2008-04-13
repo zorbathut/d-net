@@ -412,10 +412,10 @@ void standardButtonRender(const StandardButtonRenderData &sbrd) {
   
 }
 
-vector<pair<float, float> > choiceTopicXpos(float sx, float ex, float textsize) {
+vector<pair<float, float> > choiceTopicXpos(float sx, float ex, float textsize, int maxi) {
   vector<pair<float, float> > rv;
   float jtx = 0;
-  for(int i = 0; i < SETTING_LAST; i++) {
+  for(int i = 0; i < maxi; i++) {
     
     float sps = jtx;
     jtx += getTextWidth(setting_names[i], textsize);
@@ -742,7 +742,11 @@ void runSettingRender(const PlayerMenuState &pms, const ControlConsts &cc) {
   // Finally, we render our topic line and box, so it can fit around the rest without getting accidentally erased by our bottom-of-box-erase code.
   {
     StackString sstr("topicline");
-    vector<pair<float, float> > xpos = choiceTopicXpos(rin.external_xstart, rin.external_xend, rin.textsize);
+    int maxi = SETTING_LAST;
+    if(cc.ck.canned)
+      maxi = 1;
+    
+    vector<pair<float, float> > xpos = choiceTopicXpos(rin.external_xstart, rin.external_xend, rin.textsize, maxi);
     
     for(int dist = xpos.size(); dist >= 0; --dist) {
       for(int i = 0; i < xpos.size(); i++) {

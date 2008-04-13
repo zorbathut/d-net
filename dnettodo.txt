@@ -1,7 +1,6 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - Automatic error collection?
-  - Why do I have "test" and "ready" with the keyboard?
   - Split data into "data_source", "data_demo", "data_release"
   - Look at computer's screen res when starting for the first time
   - Add demo mode
