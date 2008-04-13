@@ -1,6 +1,5 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
-  - Test every imaginable mode with players
   - AIs leave game when they should not!
   - Automatic error collection?
   - Why do I have "test" and "ready" with the keyboard?
