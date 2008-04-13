@@ -6,7 +6,6 @@
   - Look at computer's screen res when starting for the first time
   - Add demo mode
   - Set it up to delete all but the three newest dumps
-  - Bench and optimize AI shop
   - Add forum
   - Make free version
   - Figure out Linux packaging
