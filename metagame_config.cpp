@@ -581,7 +581,9 @@ bool runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
       if(rv) {
         if(pms->choicemode == CHOICE_ACTIVE) {
           pms->choicemode = CHOICE_IDLE;
-        } else if(pms->choicemode == CHOICE_FIRSTPASS) {
+        } else if(pms->choicemode == CHOICE_FIRSTPASS && cc.ck.canned) {
+          return true;
+        } else if(pms->choicemode == CHOICE_FIRSTPASS && !cc.ck.canned) {
           pms->settingmode++;
         } else {
           CHECK(0);
