@@ -15,6 +15,7 @@
 #include "dumper.h"
 #include "audit.h"
 #include "dumper_registry.h"
+#include "audio.h"
 
 #ifdef OSX_FRAMEWORK_PREFIXES
   #include <SDL/SDL.h>
@@ -203,6 +204,10 @@ void MainLoop() {
               bencher = Timer();
             }
             {
+              smart_ptr<AudioShifter> as;
+              if(interface.isWaitingOnAi())
+                as.reset(new AudioShifter(0.0, 0.0));
+              
               PerfStack pst(PBC::tick);
               if(interface.tick(is, game_seed)) {
                 dprintf("Returning, interface said so\n");

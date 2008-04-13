@@ -17,6 +17,7 @@
   - boost::array
     - Add vector_paranoia
     - Integrate in a few places
+  - Add scoped_ptr
   - turn inputsnag into a singleton
   - rework text rendering functions
   - split stdmenu out
