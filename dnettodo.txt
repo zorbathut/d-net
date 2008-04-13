@@ -1,6 +1,5 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
-  * Remove equip message from buying normal weapons
   * EMP needs some tweaking for recommended?
   * Is "income" not correct? is it not factoring in the base values?
   * AIs should not show up under "not ready"

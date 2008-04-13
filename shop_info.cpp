@@ -269,7 +269,7 @@ void ShopInfo::renderFrame(Float4 bounds, float fontsize, Float4 inset, const Pl
       kvp.print("Cost", StringPrintf("%s", player->adjustWeapon(weapon).cost(recommended).textual(Money::TEXT_NORIGHTPAD | Money::TEXT_NOABBREV).c_str()));
     }
     
-    {
+    if(weapon_equipinfo) {
       vector<string> et;
       et.push_back("Move over the weapon you want to equip, then push the weapon key you wish to assign it to.");
       drawFormattedTextBox(et, fontsize, Float4(inset.sx, inset.midpoint().y, inset.ex, inset.ey), C::active_text, C::box_border);
