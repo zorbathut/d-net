@@ -65,8 +65,10 @@ void ShopKVPrinter::discontinuity() {
       pairz[i].second = pairz[i].second.substr(0, pairz[i].second.size() - 4);
     drawJustifiedText(pairz[i].second, fontsize, Float2(activerkt.ex, activerkt.sy + linesize * (i * step + twolinemode() + !!head.size() * 2)), TEXT_MAX, TEXT_MIN);
   }
-  if(head.size())
+  if(head.size()) {
+    setColor(C::active_text);
     drawJustifiedText(head, fontsize, Float2((activerkt.sx + activerkt.ex) / 2, activerkt.sy), TEXT_CENTER, TEXT_MIN);
+  }
   pairz.clear();
   bounds.sy = tbx.ey + fontsize * 1.5;
 }
