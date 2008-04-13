@@ -699,7 +699,7 @@ void runSettingRender(const PlayerMenuState &pms, const ControlConsts &cc) {
       if(button_order[rbc] < 0)
         key_descr = "Move the right stick to the right.";
       else
-        key_descr = "Press " + cc.buttonnames[button_order[rbc]];
+        key_descr = cc.buttonnames[button_order[rbc]];
     }
     
     StandardButtonRenderData sbrd;

@@ -1,6 +1,5 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
-  * Inwards needs to be something else?
   * Make sure you can reassign gamepad controls
   * Highlight "recommended"
   * Remove equip message from buying normal weapons
