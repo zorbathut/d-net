@@ -336,9 +336,10 @@ projectile {
   boomerang_maxrotate=24.0
   
   shape=arrow
-  arrow_width=2
-  arrow_height=0.75
+  arrow_width=3
+  arrow_height=1
   arrow_rotate=6
+  visual_thickness=1
   color=1.0, 0.9, 0.6
   
   durability=MERGE
