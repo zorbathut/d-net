@@ -11,6 +11,10 @@ EDITORSOURCES := vecedit vecedit_main debug os util gfx float coord parse color 
 EDITORCXXFLAGS := `@WX@ --cxxflags` -DNOSDL $(STDCXXFLAGS)
 EDITORLDFLAGS := `@WX@ --libs --gl-libs` -lopengl32 $(STDLDFLAGS) -lpng
 
+REPORTERSOURCES := reporter_main debug os util parse
+REPORTERCXXFLAGS := $(STDCXXFLAGS) -DCURL_STATICLIB
+REPORTERLDFLAGS :=  $(STDLDFLAGS) -lcurl -lz -lws2_32
+
 MERGERSOURCES := merger debug os util parse itemdb itemdb_adjust itemdb_parse args color dvec2 float coord cfcommon merger_weapon merger_bombardment merger_tanks merger_glory merger_util merger_upgrades merger_factions regex rng adler32 money stream stream_file itemdb_stream dumper_registry
 # some of these aren't really needed since they won't be linked in at all, but it's easier to just include them
 ODS2CSVSOURCES := ods2csv debug os util parse adler32 minizip/unzip minizip/ioapi
@@ -31,6 +35,7 @@ justdnet: d-net
 
 include $(patsubst %,build/%.g.d,$(GAMESOURCES))
 include $(patsubst %,build/%.e.d,$(EDITORSOURCES))
+include $(patsubst %,build/%.r.d,$(REPORTERSOURCES))
 include $(patsubst %,build/%.c.d,$(MERGERSOURCES))
 include $(patsubst %,build/%.c.d,$(ODS2CSVSOURCES))
 
@@ -51,6 +56,10 @@ vecedit.exe: $(patsubst %,build/%.e.o,$(EDITORSOURCES))
   
 vecedit-dbg.exe: $(patsubst %,build/%.e.d.o,$(EDITORSOURCES))
 	nice ./ewrap $@ $(CXX) -o $@ $(patsubst %,build/%.e.d.o,$(EDITORSOURCES)) $(EDITORLDFLAGS)
+
+reporter: reporter.exe
+reporter.exe: $(patsubst %,build/%.r.o,$(REPORTERSOURCES))
+	nice ./ewrap $@ $(CXX) -o $@ $(patsubst %,build/%.r.o,$(REPORTERSOURCES)) $(REPORTERLDFLAGS)
 
 all: d-net vecedit
 
@@ -80,15 +89,15 @@ debugbasicrun: d-net-dbg
 	./d-net-dbg.exe --nofullscreen --writeTarget= --httpd_port=616
 
 ai: d-net
-	./d-net.exe --nofullscreen --aiCount=16 --fastForwardTo=100000000 --factionMode=3 --nullcontrollers=19 --allowAisQuit --noshopcache --perfbar
+	./d-net.exe --nofullscreen --aiCount=16 --fastForwardTo=100000000 --factionMode=3 --nullcontrollers=19 --allowAisQuit --treatAiAsHuman --noshopcache --perfbar
 
 aisc: d-net data/shopcache.dwh
-	./d-net.exe --nofullscreen --aiCount=16 --fastForwardTo=100000000 --factionMode=3 --nullcontrollers=19 --allowAisQuit --perfbar
+	./d-net.exe --nofullscreen --aiCount=16 --fastForwardTo=100000000 --factionMode=3 --nullcontrollers=19 --allowAisQuit --treatAiAsHuman --perfbar
 
 ailoop: d-net
-	while nice ./d-net.exe --nofullscreen --aiCount=12 --fastForwardTo=100000000 --factionmode=3 --terminateAfter=3600 --startingPhase=0 --allowAisQuit --nullcontrollers=19 --noshopcache ; do echo Cycle. ; done
+	while nice ./d-net.exe --nofullscreen --aiCount=12 --fastForwardTo=100000000 --factionmode=3 --terminateAfter=3600 --startingPhase=0 --allowAisQuit --treatAiAsHuman --nullcontrollers=19 --noshopcache ; do echo Cycle. ; done
 
-AICSLFLAGS = --nofullscreen --fastForwardTo=100000000 --noshopcache --perfbar --randomizeFrameRender=60 
+AICSLFLAGS = --nofullscreen --fastForwardTo=100000000 --noshopcache --perfbar --treatAiAsHuman --randomizeFrameRender=60 
 
 aichecksumloop: d-net
 	while nice rm -f dumps/dump-*.dnd && nice ./d-net.exe $(AICSLFLAGS) --factionmode=3 --allowAisQuit --startingPhase=7 --aiCount=6 --terminateAfter=300 --nullcontrollers=5 --treataiashuman && sleep 2s && nice ./d-net.exe $(AICSLFLAGS) --readtarget=`ls dumps/dump-*.dnd` && sleep 2s ; do echo Cycle. ; done
@@ -177,6 +186,18 @@ build/%.e.S: %.cpp
 
 build/%.e.d: %.cpp
 	nice bash -ec './ewrap $@ $(CXX) $(EDITORCXXFLAGS) -MM $< | sed "s!$*.o!build/$*.e.o build/$*.e.d.o $@!g" > $@'
+
+build/%.r.o: %.cpp
+	nice ./ewrap $@ $(CXX) $(REPORTERCXXFLAGS) -c -o $@ $<
+  
+build/%.r.d.o: %.cpp
+	nice ./ewrap $@ $(CXX) $(REPORTERCXXFLAGS) -c -o $@ $<
+
+build/%.r.S: %.cpp
+	nice ./ewrap $@ $(CXX) $(REPORTERCXXFLAGS) -c -Wa,-a,-ad $< > $@
+
+build/%.r.d: %.cpp
+	nice bash -ec './ewrap $@ $(CXX) $(REPORTERCXXFLAGS) -MM $< | sed "s!$*.o!build/$*.r.o build/$*.r.d.o $@!g" > $@'
 
 build/%.c.o: %.cpp
 	nice ./ewrap $@ $(CXX) $(CONSOLECXXFLAGS) -c -o $@ $<

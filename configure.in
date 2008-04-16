@@ -83,6 +83,7 @@ GAMELDFLAGS="$GAMELDFLAGS -lm"
 
 AC_CHECK_LIB([z], [compress],,AC_MSG_ERROR([zlib is needed]))
 AC_CHECK_LIB([png], [png_create_read_struct],,AC_MSG_ERROR([libpng is needed]))
+AC_CHECK_LIB([curl], [curl_easy_init],,AC_MSG_ERROR([libcurl is needed]))
 AC_CHECK_LIB([xerces-c], [main],,AC_MSG_ERROR([xerces is needed]))
 
 AC_CHECK_HEADER([vorbis/vorbisfile.h],,AC_MSG_ERROR([Can't find a working vorbisfile include anywhere]))

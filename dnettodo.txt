@@ -1,13 +1,14 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
-  * Colorcode damage types in "show bonuses"
-  - Automatic error collection?
+  - Create new file with dprintf logs and upload it somewhere. Disable addr2line in some way.
   - Split data into "data_source", "data_demo", "data_release"
   - Look at computer's screen res when starting for the first time
   - If in windowed mode, clamp window to screen res
   - Add demo mode
   - Set it up to delete all but the three newest dumps
   - Add forum
+  - Add comments anchor to page
+  - Make sure I'm conforming to all licenses
   - Make free version
   - Figure out Linux packaging
   - Figure out OSX packaging
