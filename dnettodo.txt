@@ -1,6 +1,14 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - Create new file with dprintf logs and upload it somewhere. Disable addr2line in some way.
+    - Rig up 911 system
+    - Temp directory
+    - How to make it intelligently not trigger on my computer?
+    - Must send exe bytecount and crash file/line
+    - Server responds with "goahead" or with "here is info for the user"
+    - If given goahead, sends crash file (remember to compress with zlib)
+    - Server response with "ok" or with "here is info for the user"
+    - Make sure there really isn't any personal data involved in this
   - Split data into "data_source", "data_demo", "data_release"
   - Look at computer's screen res when starting for the first time
   - If in windowed mode, clamp window to screen res

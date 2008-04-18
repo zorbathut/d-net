@@ -21,4 +21,6 @@ void seriouslyCrash() __attribute__((__noreturn__)); // apparently this is neede
 string getConfigDirectory(); // oy
 void makeConfigDirectory();
 
+string getTempDirectory();
+
 #endif

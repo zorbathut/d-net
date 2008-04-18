@@ -43,6 +43,10 @@ string getConfigDirectory() {
   return string(buff) + "\\Devastation Net\\";
 }
 
+string getTempDirectory() {
+  CHECK(0);
+}
+
 static const string directory_delimiter = "\\";
 
 void wrap_mkdir(const string &str) {

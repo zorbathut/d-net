@@ -6,5 +6,18 @@
 int main() {
   CHECK(curl_global_init(CURL_GLOBAL_ALL) == 0);
   
-  dprintf("initted\n");
+  CURL *handle = curl_easy_init();
+  CHECK(handle);
+  
+  char errbuf[CURL_ERROR_SIZE];
+  curl_easy_setopt(handle, CURLOPT_ERRORBUFFER, errbuf);
+  
+  curl_easy_setopt(handle, CURLOPT_URL, "http://crashlog.cams.local/report.php");
+  dprintf("setopt\n");
+  if(curl_easy_perform(handle)) {
+    dprintf("Error: %s\n", errbuf);
+  }
+    
+  
+  curl_easy_cleanup(handle);
 };

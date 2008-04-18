@@ -7,6 +7,8 @@
 #include <assert.h>
 
 #include <vector>
+#include <deque>
+#include <fstream>
 
 using namespace std;
 
@@ -108,6 +110,10 @@ void crash_now() {
 
 static bool inthread = false;
 
+deque<string> &dbgrecord() {
+  static deque<string> dbr;
+  return dbr;
+}
 
 #ifdef DPRINTF_MARKUP
 int rdprintf(const char *bort, ...) {
@@ -142,11 +148,42 @@ int dprintf(const char *bort, ...) {
   } while(done == buf.size() - 1 || done == -1);
 
   //assert(done < (int)buf.size());
-
+  
   outputDebugString(&(buf[0]));
+  dbgrecord().push_back(&(buf[0]));
+  
+  if(dbgrecord().size() > 10000)
+    dbgrecord().pop_front();
 
   CHECK(inthread);
   inthread = false;
   
   return 0;
+};
+
+string writeDebug() {
+  string writedest = getTempDirectory() + "/dnetcrashlog.txt";
+  
+  ofstream ofs(writedest.c_str());
+  if(!ofs)
+    return "";
+  
+  for(int i = 0; i < dbgrecord().size(); i++) {
+    while(dbgrecord()[i].size() && dbgrecord()[i][dbgrecord()[i].size() - 1] == '\n')
+      dbgrecord()[i].erase(dbgrecord()[i].begin() + dbgrecord()[i].size() - 1);
+    
+    ofs << dbgrecord()[i] << '\n';
+  }
+  
+  if(ofs)
+    return writedest;
+  else
+    return "";
+};
+
+void Prepare911() {
+  dprintf("911\n");
+  CHECK(0);
+  string fname = writeDebug();
+  // do more later
 };

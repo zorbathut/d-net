@@ -68,13 +68,14 @@ all: d-net vecedit
 clean:
 	rm -rf build/*.o *.exe build/*.d build/*.S data/shopcache.dwh $(patsubst %,data/base/%.dwh,$(MERGETYPES)) build/*.csv
 
-STDRUN = --nofullscreen --debugitems --startingPhase=8 --debugControllers=2 --factionMode=3 --nullControllers=11 --writeTarget= --auto_newgame --nocullShopTree --httpd_port=616 --noshopcache --runTests --noaudio --perfbar --nofastForwardOnNoCache
+LOCALFLAGS = --writetarget=dumps/dump --nofullscreen --noaudio --perfbar --httpd_port=616 --runTests
+STDRUN = $(LOCALFLAGS) --debugitems --startingPhase=8 --debugControllers=2 --factionMode=3 --nullControllers=11 --writeTarget= --auto_newgame --nocullShopTree --httpd_port=616 --noshopcache --nofastForwardOnNoCache
 
 run: d-net
 	./d-net.exe $(STDRUN)
   
 basicrun: d-net
-	./d-net.exe --nofullscreen --writeTarget= --httpd_port=616
+	./d-net.exe $(LOCALFLAGS)
 
 cacherun: d-net
 	./d-net.exe $(STDRUN) --shopcache
@@ -86,21 +87,21 @@ debugrun: d-net-dbg
 	./d-net-dbg.exe $(STDRUN)
 
 debugbasicrun: d-net-dbg
-	./d-net-dbg.exe --nofullscreen --writeTarget= --httpd_port=616
+	./d-net-dbg.exe $(LOCALFLAGS)
 
 ai: d-net
-	./d-net.exe --nofullscreen --aiCount=16 --fastForwardTo=100000000 --factionMode=3 --nullcontrollers=19 --allowAisQuit --treatAiAsHuman --noshopcache --perfbar
+	./d-net.exe $(LOCALFLAGS) --aiCount=16 --fastForwardTo=100000000 --factionMode=3 --nullcontrollers=19 --allowAisQuit --treatAiAsHuman --noshopcache
 
 aisc: d-net data/shopcache.dwh
-	./d-net.exe --nofullscreen --aiCount=16 --fastForwardTo=100000000 --factionMode=3 --nullcontrollers=19 --allowAisQuit --treatAiAsHuman --perfbar
+	./d-net.exe $(LOCALFLAGS) --aiCount=16 --fastForwardTo=100000000 --factionMode=3 --nullcontrollers=19 --allowAisQuit --treatAiAsHuman
 
 ailoop: d-net
-	while nice ./d-net.exe --nofullscreen --aiCount=12 --fastForwardTo=100000000 --factionmode=3 --terminateAfter=3600 --startingPhase=0 --allowAisQuit --treatAiAsHuman --nullcontrollers=19 --noshopcache ; do echo Cycle. ; done
+	while nice ./d-net.exe $(LOCALFLAGS) --aiCount=12 --fastForwardTo=100000000 --factionmode=3 --terminateAfter=3600 --startingPhase=0 --allowAisQuit --treatAiAsHuman --nullcontrollers=19 --noshopcache ; do echo Cycle. ; done
 
-AICSLFLAGS = --nofullscreen --fastForwardTo=100000000 --noshopcache --perfbar --treatAiAsHuman --randomizeFrameRender=60 
+AICSLFLAGS = $(LOCALFLAGS) --fastForwardTo=100000000 --noshopcache --treatAiAsHuman --randomizeFrameRender=60 
 
 aichecksumloop: d-net
-	while nice rm -f dumps/dump-*.dnd && nice ./d-net.exe $(AICSLFLAGS) --factionmode=3 --allowAisQuit --startingPhase=7 --aiCount=6 --terminateAfter=300 --nullcontrollers=5 --treataiashuman && sleep 2s && nice ./d-net.exe $(AICSLFLAGS) --readtarget=`ls dumps/dump-*.dnd` && sleep 2s ; do echo Cycle. ; done
+	while nice rm -f dumps/dump-*.dnd && nice ./d-net.exe $(AICSLFLAGS) --factionmode=3 --allowAisQuit --startingPhase=7 --aiCount=6 --terminateAfter=300 --nullcontrollers=5 --treataiashuman && sleep 2s && nice ./d-net.exe $(AICSLFLAGS) --readtarget=`ls dumps/dump-*.dnd` --writetarget= && sleep 2s ; do echo Cycle. ; done
   
 veced: vecedit
 	./vecedit.exe
