@@ -101,13 +101,13 @@ void generateCachedShops(float accuracy) {
   }
   
   {
-    OStreamFile ofil("data/shopcache.dwh");
+    OStreamFile ofil(FLAGS_fileroot + "shopcache.dwh");
     ofil.write(rsis);
   }
   
   {
     vector<pair<string, FileShopcache> > rsis2;
-    IStreamFile ifil("data/shopcache.dwh");
+    IStreamFile ifil(FLAGS_fileroot + "shopcache.dwh");
     ifil.read(&rsis2);
     CHECK(rsis == rsis2);
     

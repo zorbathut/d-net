@@ -974,7 +974,7 @@ void parseAdjustment(kvData *chunk, bool reload, ErrorAccumulator &accum) {
 void parseFaction(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   IDBFaction fact;
   
-  fact.icon = loadDvec2("data/base/faction_icons/" + chunk->consume("file"));
+  fact.icon = loadDvec2(FLAGS_fileroot + "base/faction_icons/" + chunk->consume("file"));
   fact.color = colorFromString(chunk->consume("color"));
   fact.name = chunk->consume("name");
   
@@ -1142,6 +1142,7 @@ void printCurread() {
 }
 
 void parseItemFile(const string &fname, bool reload, vector<string> *errors) {
+  dprintf("Trying to open %s\n", fname.c_str());
   ifstream tfil(fname.c_str());
   CHECK(tfil);
   

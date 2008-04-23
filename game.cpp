@@ -1231,7 +1231,7 @@ void Game::initStandard(vector<Player> *in_playerdata, const Level &lev, Rng *rn
 void Game::initChoice(vector<Player> *in_playerdata, Rng *rng) {
   gamemode = GMODE_CHOICE;
   
-  Level lev = loadLevel("data/levels_special/choice_4.dv2");
+  Level lev = loadLevel(FLAGS_fileroot + "levels_special/choice_4.dv2");
   lev.playerStarts.clear();
   vector<Player*> playerdata;
   for(int i = 0; i < in_playerdata->size(); i++) {
@@ -1411,7 +1411,7 @@ void Game::initTitlescreen(vector<Player> *in_playerdata, Rng *rng) {
   
   titlescreen_size = Float4(-400, -50, 400, 50);
   
-  initCommon(ptrize(in_playerdata), createBasicColors(ptrize(in_playerdata)), loadLevel("data/levels_special/titlescreen.dv2").paths, true);
+  initCommon(ptrize(in_playerdata), createBasicColors(ptrize(in_playerdata)), loadLevel(FLAGS_fileroot + "levels_special/titlescreen.dv2").paths, true);
   
   for(int i = 0; i < bombards.size(); i++) {
     bombards[i].state = BombardmentState::BS_ACTIVE;

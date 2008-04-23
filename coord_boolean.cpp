@@ -949,6 +949,7 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
   try {
     return getDifferenceCore(lhs, rhs);
   } catch(pair<string, int> gde) {
+    /*
     dprintf("MASSIVE COORD BOOLEAN FAILURE! HOLY CRAPFUCK! EVERYTHING IS DYING!");
     kvData kvd;
     kvd.category = "coordfailure";
@@ -965,11 +966,11 @@ vector<vector<Coord2> > getDifference(const vector<Coord2> &lhs, const vector<Co
     kvd.kv["crash_loc"] = StringPrintf("%s:%d", gde.first.c_str(), gde.second);
     string dat = stringFromKvData(kvd);
     
-    FILE *fil = fopen("data/coordfailure", "a");
+    FILE *fil = fopen("coordfailure", "a");
     fwrite(dat.c_str(), dat.size(), 1, fil);
     fclose(fil);
     
-    dprintf("And now it's resuming.\n");
+    dprintf("And now it's resuming.\n");*/
     addErrorMessage("A Lion");
     return vector<vector<Coord2> >(1, lhs);
   }

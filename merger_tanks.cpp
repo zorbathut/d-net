@@ -46,7 +46,7 @@ void TankParams::preprocess(kvData *kvd, const Data &data) {
 }
 
 vector<string> TankParams::dependencies() {
-  return vector<string>(1, "data/base/weapon_sparker.dwh");
+  return vector<string>(1, FLAGS_fileroot + "base/weapon_sparker.dwh");
 }
 
 bool TankParams::verify(const IDBTank &item, const Data &data) {

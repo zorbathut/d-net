@@ -2,7 +2,6 @@
 #include "itemdb.h"
 
 #include "itemdb_parse.h"
-#include "args.h"
 #include "parse.h"
 #include "httpd.h"
 #include "adler32_util.h"
@@ -14,6 +13,8 @@
 #include <set>
 
 using namespace std;
+
+DEFINE_string(fileroot, "data/", "Root to pull data from");
 
 HierarchyNode root;
 map<string, IDBDeploy> deployclasses;
@@ -580,8 +581,10 @@ void loadItemDb(bool reload) {
   
   vector<string> errors;
   
-  string basepath = "data/base/";
+  string basepath = FLAGS_fileroot + "base/";
   ifstream manifest((basepath + "manifest").c_str());
+  CHECK(manifest);
+  
   string line;
   while(getLineStripped(manifest, &line)) {
     dprintf("%s\n", line.c_str());
@@ -632,7 +635,7 @@ void loadItemDb(bool reload) {
   
   if(FLAGS_shopcache) {
     dprintf("Starting shopcache\n");
-    parseShopcacheFile("data/shopcache.dwh", &errors);
+    parseShopcacheFile(FLAGS_fileroot + "shopcache.dwh", &errors);
     dprintf("Ending shopcache\n");
   }
   

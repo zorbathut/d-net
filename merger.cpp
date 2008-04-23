@@ -45,7 +45,7 @@ template<typename Model> struct PAW<Model, true> {
       }
     }
     
-    addItemFile("data/base/hierarchy.dwh");
+    addItemFile(FLAGS_fileroot + "base/hierarchy.dwh");
     vector<string> deps = Model::dependencies();
     for(int i = 0; i < deps.size(); i++)
       addItemFile(deps[i]);
@@ -167,7 +167,7 @@ template<typename Model> void doMerge(const string &csv, const string &unmerged,
   
   processAndWrite<Model>(tdd, preproc, merged);
   
-  addItemFile("data/base/hierarchy.dwh");
+  addItemFile(FLAGS_fileroot + "base/hierarchy.dwh");
   vector<string> deps = Model::dependencies();
     for(int i = 0; i < deps.size(); i++)
       addItemFile(deps[i]);
@@ -189,10 +189,12 @@ template<typename Model> void doMerge(const string &csv, const string &unmerged,
 int main(int argc, char *argv[]) {
   set_exename("merger.exe");
   initFlags(argc, argv, 3);
+  if(FLAGS_fileroot.size() && FLAGS_fileroot[FLAGS_fileroot.size() - 1] != '/')
+    FLAGS_fileroot += '/';
   
   StackString ss("core");
   
-  CHECK(argc == 4);
+  CHECK(argc >= 4);
   
   string type;
   {

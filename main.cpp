@@ -117,6 +117,8 @@ int main(int argc, char **argv) {
       printf("%s: %s\n", itr->first.c_str(), itr->second.c_str());
     return 0;
   }
+  if(FLAGS_fileroot.size() && FLAGS_fileroot[FLAGS_fileroot.size() - 1] != '/')
+    FLAGS_fileroot += '/';
   
   if(FLAGS_generateCachedShops != -1) {
     FLAGS_shopcache = false;

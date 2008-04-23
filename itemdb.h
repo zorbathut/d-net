@@ -7,10 +7,13 @@
 #include "util.h"
 #include "rng.h"
 #include "money.h"
+#include "args.h"
 
 #include <map>
 
 using namespace std;
+
+DECLARE_string(fileroot);
 
 /*************
  * Basic data items

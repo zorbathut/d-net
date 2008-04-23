@@ -21,11 +21,19 @@ ODS2CSVSOURCES := ods2csv debug os util parse adler32 minizip/unzip minizip/ioap
 CONSOLECXXFLAGS := $(STDCXXFLAGS) -O0
 CONSOLELDFLAGS := $(STDLDFLAGS) -O0
 
-MERGETYPES := $(shell ls data/base/*.dwh.unmerged | sed 's/data\/base\/\(.*\).dwh.unmerged/\1/')
-RELEASEMERGEDATA := $(patsubst %,data_release/base/%.dwh,$(MERGETYPES))
-DEMOMERGEDATA := $(patsubst %,data_demo/base/%.dwh,$(MERGETYPES))
 
-DATAFILES := $(shell find data | grep -v \.svn | grep -v shopcache.dwh | grep -v .unmerged) $(MERGEDATA)
+BASEDATADIRS := $(shell find data_source/* -type d | grep -v \.svn | sed 's^data_source/\(.*\)^\1^')
+
+MERGETYPES := $(shell ls data_source/base/*.dwh.unmerged | sed 's^data_source\/base\/\(.*\).dwh.unmerged^\1^')
+BASEMERGEDATA := $(patsubst %,base/%.dwh,$(MERGETYPES))
+
+BASECOPYDATA := $(shell find data_source/* | grep -v \.svn | grep -v shopcache.dwh | grep -v .unmerged | sed 's^data_source/\(.*\)^\1^')
+
+BASEDATA := $(BASEMERGEDATA) $(BASECOPYDATA)
+
+RELEASEDATA := data_release $(patsubst %,data_release/%,$(BASEDATA))
+DEMODATA := data_demo $(patsubst %,data_demo/%,$(BASEDATA))
+
 
 PACKAGESUBDIR := sekret
 
@@ -40,11 +48,11 @@ include $(patsubst %,build/%.r.d,$(REPORTERSOURCES))
 include $(patsubst %,build/%.c.d,$(MERGERSOURCES))
 include $(patsubst %,build/%.c.d,$(ODS2CSVSOURCES))
 
-d-net: d-net.exe $(MERGEDATA)
-d-net-dbg: d-net-dbg.exe $(MERGEDATA)
-vecedit: vecedit.exe $(MERGEDATA)
+d-net: d-net.exe $(RELEASEDATA)
+d-net-dbg: d-net-dbg.exe $(RELEASEDATA)
+vecedit: vecedit.exe $(RELEASEDATA)
 	@
-vecedit-dbg: vecedit-dbg.exe $(MERGEDATA)
+vecedit-dbg: vecedit-dbg.exe $(RELEASEDATA)
 
 d-net.exe: $(patsubst %,build/%.g.o,$(GAMESOURCES))
 	nice ./ewrap $@ $(CXX) -o $@ $(patsubst %,build/%.g.o,$(GAMESOURCES)) $(GAMELDFLAGS)
@@ -67,7 +75,7 @@ all: d-net vecedit
 #asm: $(GAMESOURCES:=.S) makefile
 
 clean:
-	rm -rf build/*.o *.exe build/*.d build/*.S data/shopcache.dwh $(patsubst %,data/base/%.dwh,$(MERGETYPES)) build/*.csv
+	rm -rf build/*.o *.exe build/*.d build/*.S build/*.csv data_release data_demo
 
 LOCALFLAGS = --writetarget=dumps/dump --nofullscreen --noaudio --perfbar --httpd_port=616 --runTests
 STDRUN = $(LOCALFLAGS) --debugitems --startingPhase=8 --debugControllers=2 --factionMode=3 --nullControllers=11 --writeTarget= --auto_newgame --nocullShopTree --httpd_port=616 --noshopcache --nofastForwardOnNoCache
@@ -217,8 +225,36 @@ build/%.c.d: %.cpp
 build/%.c.d: %.c
 	nice bash -ec './ewrap $@ $(CXX) $(CONSOLECXXFLAGS) -MM $< | sed "s!$*.o!build/$*.c.o build/$*.c.d.o $@!g" > $@'
 
-data/shopcache.dwh: d-net $(DATAFILES)
+###################################
+# Data files and data structure generation
+
+data_release data_demo:
+	mkdir $@
+	mkdir $(patsubst %,$@/%,$(BASEDATADIRS))
+
+define COPIER_TEMPLATE
+$(1): $(2)
+	cp $$< $$@
+endef
+
+$(foreach item,$(BASECOPYDATA),$(eval $(call COPIER_TEMPLATE,$(patsubst %,data_release/%,$(item)),$(patsubst %,data_source/%,$(item)))))
+$(foreach item,$(BASECOPYDATA),$(eval $(call COPIER_TEMPLATE,$(patsubst %,data_demo/%,$(item)),$(patsubst %,data_source/%,$(item)))))
+
+data/base/tank.dwh: data/base/weapon_sparker.dwh
+
+data_release/base/%.dwh: data_source/base/%.dwh.unmerged build/notes_%.csv merger.exe
+	./merger.exe build/notes_$*.csv data_source/base/$*.dwh.unmerged $@ --fileroot=data_release || ( rm -f $@ && false )
+
+data_demo/base/%.dwh: data_source/base/%.dwh.unmerged build/notes_%.csv merger.exe
+	./merger.exe build/notes_$*.csv data_source/base/$*.dwh.unmerged $@ --fileroot=data_release || ( rm -f $@ && false )
+
+
+data_release/shopcache.dwh: d-net $(DATAFILES)
 	./d-net.exe --generateCachedShops=0.99 || ( rm -f $@ && false )
+
+data_demo/shopcache.dwh: d-net $(DATAFILES)
+	./d-net.exe --generateCachedShops=0.99 || ( rm -f $@ && false )
+
 
 export: d-net tools/generateWeaponGraph.py
 	./d-net.exe --generateWeaponStats || ( rm -f $@ && false )
@@ -233,7 +269,3 @@ ods2csv.exe: $(patsubst %,build/%.c.o,$(ODS2CSVSOURCES))
 $(patsubst %,build/notes_%.csv,$(MERGETYPES)): notes.ods ods2csv.exe
 	./ods2csv.exe $@ notes.ods $(patsubst build/notes_%.csv,%,$@) || ( rm -f $@ && false )
 
-data/base/tank.dwh: data/base/weapon_sparker.dwh
-
-data/base/%.dwh: data/base/%.dwh.unmerged build/notes_%.csv merger.exe
-	./merger.exe build/notes_$*.csv data/base/$*.dwh.unmerged data/base/$*.dwh || ( rm -f $@ && false )

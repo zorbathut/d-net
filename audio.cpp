@@ -4,6 +4,7 @@
 #include "debug.h"
 #include "util.h"
 #include "args.h"
+#include "itemdb.h"
 
 #ifdef OSX_FRAMEWORK_PREFIXES
   #include <SDL/SDL.h>
@@ -78,13 +79,13 @@ void initAudio() {
     SDL_PauseAudio(0);
   }
   
-  accept_local = loadSound("data/sound/accept");
-  choose_local = loadSound("data/sound/choose");
+  accept_local = loadSound(FLAGS_fileroot + "sound/accept");
+  choose_local = loadSound(FLAGS_fileroot + "sound/choose");
   
-  select_local = loadSound("data/sound/select");
-  cursorover_local = loadSound("data/sound/cursorover");
+  select_local = loadSound(FLAGS_fileroot + "sound/select");
+  cursorover_local = loadSound(FLAGS_fileroot + "sound/cursorover");
   
-  error_local = loadSound("data/sound/error");
+  error_local = loadSound(FLAGS_fileroot + "sound/error");
   
   null_local.data[0].resize(1);
   null_local.data[1].resize(1);

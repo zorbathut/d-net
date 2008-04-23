@@ -102,12 +102,6 @@ void CrashHandler(const char *fname, int line) {
     (*cfc[i])();
 };
 
-void crash_now() {
-  dprintf("About to crash!\n");
-  seriouslyCrash();
-  dprintf("Crashed!\n");
-}
-
 static bool inthread = false;
 
 deque<string> &dbgrecord() {
@@ -187,3 +181,15 @@ void Prepare911() {
   string fname = writeDebug();
   // do more later
 };
+
+static bool reentering = false;
+void HandleFailure() {
+  if(reentering) {
+    dprintf("Error in crash handling somewhere, terminating extremely abruptly");
+  } else {
+    reentering = true;
+    PrintDebugStack();
+    Prepare911();
+  }
+  seriouslyCrash();
+}

@@ -56,11 +56,11 @@ void runTests() {
   dprintf("Tests starting\n");
   
   if(FLAGS_singlelevel == "") {
-    ifstream ifs("data/levels/levellist.txt");
+    ifstream ifs((FLAGS_fileroot + "levels/levellist.txt").c_str());
     CHECK(ifs);
     string line;
     while(getLineStripped(ifs, &line)) {
-      testLevel("data/levels/" + line);
+      testLevel(FLAGS_fileroot + "levels/" + line);
     }
   } else {
     testLevel(FLAGS_singlelevel);
@@ -71,11 +71,11 @@ void runTests() {
 
 void outputLevelChart() {
   vector<pair<string, Level> > levels;
-  ifstream ifs("data/levels/levellist.txt");
+  ifstream ifs((FLAGS_fileroot + "levels/levellist.txt").c_str());
   CHECK(ifs);
   string line;
   while(getLineStripped(ifs, &line))
-    levels.push_back(make_pair(line, loadLevel("data/levels/" + line)));
+    levels.push_back(make_pair(line, loadLevel(FLAGS_fileroot + "levels/" + line)));
   
   for(int i = 2; i <= 32; i++) {
     int ct = 0;

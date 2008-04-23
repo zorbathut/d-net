@@ -214,11 +214,11 @@ void Metagame::findLevels(int playercount) {
     levels.push_back(lev);
     dprintf("Used single level %s\n", FLAGS_singlelevel.c_str());
   } else {
-    ifstream ifs("data/levels/levellist.txt");
+    ifstream ifs((FLAGS_fileroot + "levels/levellist.txt").c_str());
     CHECK(ifs);
     string line;
     while(getLineStripped(ifs, &line)) {
-      Level lev = loadLevel("data/levels/" + line);
+      Level lev = loadLevel(FLAGS_fileroot + "levels/" + line);
       if(lev.playersValid.count(playercount))
         levels.push_back(lev);
     }

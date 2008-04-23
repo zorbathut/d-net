@@ -305,12 +305,19 @@ void drawButton(const Float2 &pos, char kar) {
   drawJustifiedText(StringPrintf("%c", kar), 0.4, pos + Float2(highv / 2, highv / 2), TEXT_CENTER, TEXT_CENTER);
 }
 
-const Dvec2 controller_front = loadDvec2("data/controller_front.dv2");
-const Dvec2 controller_top = loadDvec2("data/controller_top.dv2");
+static bool controller_loaded = false;
+static Dvec2 controller_front;
+static Dvec2 controller_top;
 
 void standardButtonRender(const StandardButtonRenderData &sbrd) {
   StackString sstr("standardButtonRender");
   CHECK(sbrd.rin);
+  
+  if(!controller_loaded) {
+    controller_front = loadDvec2(FLAGS_fileroot + "controller_front.dv2");
+    controller_top = loadDvec2(FLAGS_fileroot + "controller_top.dv2");
+    controller_loaded = true;
+  }
   
   int cb = sbrd.sel_button;
   string text = sbrd.sel_text;
@@ -388,7 +395,7 @@ void standardButtonRender(const StandardButtonRenderData &sbrd) {
     const int realite = button_order[cb];
     Dvec2 renderobj;
     if(frameNumber / (FPS / 3) % 3 == 0) {
-      renderobj = loadDvec2(StringPrintf("data/controller_push%d.dv2", cb + 1));
+      renderobj = loadDvec2(StringPrintf("%scontroller_push%d.dv2", FLAGS_fileroot.c_str(), cb + 1));
     } else {
       if(realite == BUTTON_FIRE1 || realite == BUTTON_FIRE2 || realite == BUTTON_FIRE3 || realite == BUTTON_FIRE4) {
         renderobj = controller_top;

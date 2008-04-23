@@ -8,6 +8,7 @@
 #include "debug.h"
 #include "rng.h"
 #include "perfbar.h"
+#include "itemdb.h"
 
 #include <fstream>
 
@@ -171,7 +172,7 @@ void initWindowing(float aspect) {
 
 void loadFonts() {
   CHECK(fontdata.size() == 0);
-  ifstream font("data/font.dwh");
+  ifstream font((FLAGS_fileroot + "font.dwh").c_str());
   CHECK(font);
   kvData kvd;
   while(getkvData(font, &kvd)) {

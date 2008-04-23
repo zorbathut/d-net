@@ -48,10 +48,8 @@ int dprintf(const char *bort, ...) __attribute__((format(printf,1,2)));
 extern int frameNumber;
 
 void CrashHandler(const char *fname, int line);
-void PrintDebugStack();
-void Prepare911();
-void crash_now() __attribute__((__noreturn__));
-#define CHECK(x) do { if(__builtin_expect(!(x), 0)) { dprintf("Error at %d, %s:%d - %s\n", frameNumber, __FILE__, __LINE__, #x); CrashHandler(__FILE__, __LINE__); PrintDebugStack(); Prepare911(); crash_now(); } } while(0)
+void HandleFailure() __attribute__((__noreturn__));
+#define CHECK(x) do { if(__builtin_expect(!(x), 0)) { dprintf("Error at %d, %s:%d - %s\n", frameNumber, __FILE__, __LINE__, #x); CrashHandler(__FILE__, __LINE__); HandleFailure(); } } while(0)
 // And here would be the end
 
 #define printf FAILURE
