@@ -22,7 +22,8 @@ CONSOLECXXFLAGS := $(STDCXXFLAGS) -O0
 CONSOLELDFLAGS := $(STDLDFLAGS) -O0
 
 MERGETYPES := $(shell ls data/base/*.dwh.unmerged | sed 's/data\/base\/\(.*\).dwh.unmerged/\1/')
-MERGEDATA := $(patsubst %,data/base/%.dwh,$(MERGETYPES))
+RELEASEMERGEDATA := $(patsubst %,data_release/base/%.dwh,$(MERGETYPES))
+DEMOMERGEDATA := $(patsubst %,data_demo/base/%.dwh,$(MERGETYPES))
 
 DATAFILES := $(shell find data | grep -v \.svn | grep -v shopcache.dwh | grep -v .unmerged) $(MERGEDATA)
 
