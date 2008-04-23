@@ -1,6 +1,13 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
-  - Create new file with dprintf logs and upload it somewhere. Disable addr2line in some way.
+  - Split data into "data_source", "data_demo", "data_release"
+  - Look at computer's screen res when starting for the first time
+  - If in windowed mode, clamp window to screen res
+  - Add demo mode
+  - Make free version
+  - Add forum
+  - More debug stuff
+    - Create new file with dprintf logs and upload it somewhere. Disable addr2line in some way.
     - Rig up 911 system
     - Temp directory
     - How to make it intelligently not trigger on my computer?
@@ -9,15 +16,8 @@
     - If given goahead, sends crash file (remember to compress with zlib)
     - Server response with "ok" or with "here is info for the user"
     - Make sure there really isn't any personal data involved in this
-  - Split data into "data_source", "data_demo", "data_release"
-  - Look at computer's screen res when starting for the first time
-  - If in windowed mode, clamp window to screen res
-  - Add demo mode
-  - Set it up to delete all but the three newest dumps
-  - Add forum
   - Add comments anchor to page
   - Make sure I'm conforming to all licenses
-  - Make free version
   - Figure out Linux packaging
   - Figure out OSX packaging
   - Figure out how to make a CHECK variant with debug output on failure
