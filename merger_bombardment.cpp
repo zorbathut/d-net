@@ -25,8 +25,8 @@ bool BombardParams::parseLine(const vector<string> &line, Data *data) {
   data->lock = line[4];
   data->unlock = line[5];
   data->durability = line[6];
-  CHECK(line[14] == "Y" || line[14] == "");
-  data->demoable = (line[14] == "Y");
+  CHECK(line[7] == "Y" || line[7] == "");
+  data->demoable = (line[7] == "Y");
   return true;
 }
 

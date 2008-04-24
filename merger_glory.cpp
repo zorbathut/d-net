@@ -13,12 +13,14 @@ string GloryParams::token() {
 }
 
 bool GloryParams::isDemoable(const Data &toki) {
-  return true;
+  return toki.demoable;
 }
 
 bool GloryParams::parseLine(const vector<string> &line, Data *data) {
   data->cost = line[1];
   data->intended_damage = atof(line[2].c_str());
+  CHECK(line[4] == "Y" || line[4] == "");
+  data->demoable = (line[4] == "Y");
   return true;
 }
 

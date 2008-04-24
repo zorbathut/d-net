@@ -14,6 +14,7 @@ using namespace std;
 struct UpgradeParams {
   struct Data {
     string costmult;
+    bool demoable;
   };
   
   typedef IDBUpgrade FinalType;

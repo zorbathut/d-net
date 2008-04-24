@@ -19,11 +19,13 @@ string UpgradeParams::token() {
 }
 
 bool UpgradeParams::isDemoable(const Data &toki) {
-  return true;
+  return toki.demoable;
 }
 
 bool UpgradeParams::parseLine(const vector<string> &line, Data *data) {
   data->costmult = line[3];
+  CHECK(line[4] == "Y" || line[4] == "");
+  data->demoable = (line[4] == "Y");
   return true;
 }
 

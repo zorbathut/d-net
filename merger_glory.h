@@ -15,6 +15,7 @@ struct GloryParams {
   struct Data {
     string cost;
     double intended_damage;
+    bool demoable;
   };
   
   typedef IDBGlory FinalType;
