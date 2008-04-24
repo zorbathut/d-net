@@ -40,37 +40,40 @@ string WeaponParams::token() {
 }
 
 bool WeaponParams::isDemoable(const Data &toki) {
-  return true;
+  return toki.demoable;
 }
 
 bool WeaponParams::parseLine(const vector<string> &line, Data *data) {
   if(line[1] == "Params") {
     CHECK(line[2].size());
     CHECK(line[3].size());
-    CHECK(!line[6].size());
-    CHECK(line[8].size());
+    CHECK(!line[7].size());
     data->params = true;
-    data->has_dpp = line[7].size();
-    data->dpp = atof(line[7].c_str());
+    data->has_dpp = line[8].size();
+    data->dpp = atof(line[8].c_str());
     data->durability = line[5];
     data->params_threshold = string(line[2].begin(), find(line[2].begin(), line[2].end(), '.'));
     data->params_dethreshold = string(line[3].begin(), find(line[3].begin(), line[3].end(), '.'));
     CHECK(data->params_threshold.size());
+    CHECK(line[6] == "Y" || line[6] == "");
+    data->demoable = (line[6] == "Y");  // I love magic numbers. Do you love magic numbers?
     return true;
   } else {
     CHECK(line[2].size());
     CHECK(line[3].size());
     CHECK(line[4].size());
-    CHECK(!line[6].size());
-    CHECK(line[7].size());
+    CHECK(!line[7].size());
+    CHECK(line[8].size());
     data->params = false;
     data->item_cost = line[2];
     data->item_firerate = line[3];
     CHECK(line[4].size());
     data->item_recommended = StringPrintf("%d", atoi(line[4].c_str()));
     data->has_dpp = true;
-    data->dpp = atof(line[7].c_str());
+    data->dpp = atof(line[8].c_str());
     data->durability = line[5];
+    CHECK(line[6] == "Y" || line[6] == "");
+    data->demoable = (line[6] == "Y");  // I love magic numbers. Do you love magic numbers?
     return true;
   }
 }

@@ -25,6 +25,8 @@ struct WeaponParams {
     bool has_dpp;
     float dpp;
     string durability;
+    
+    bool demoable;
   };
   
   typedef IDBWeapon FinalType;
