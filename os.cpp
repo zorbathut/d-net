@@ -53,6 +53,13 @@ void wrap_mkdir(const string &str) {
   mkdir(str.c_str());
 }
 
+pair<int, int> getScreenRes() {
+  pair<int, int> glorb;
+  glorb.first = GetSystemMetrics(SM_CXSCREEN);
+  glorb.second = GetSystemMetrics(SM_CYSCREEN);
+  return glorb;
+}
+
 #else
 
 #include <sys/stat.h>

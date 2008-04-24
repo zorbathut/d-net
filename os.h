@@ -23,4 +23,6 @@ void makeConfigDirectory();
 
 string getTempDirectory();
 
+pair<int, int> getScreenRes();
+
 #endif

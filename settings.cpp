@@ -17,10 +17,10 @@ DEFINE_bool(fullscreen, false, "Fullscreen");
 DEFINE_float(aspect, -1, "Aspect");
 
 Settings::Settings() {
-  res_x = 640;
-  res_y = 480;
+  res_x = getScreenRes().first;
+  res_y = getScreenRes().second;
   res_fullscreen = true;
-  res_aspect = 4./3.;
+  res_aspect = (float)res_x / (float)res_y;
 };
 Settings::~Settings() { };
 
