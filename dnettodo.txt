@@ -1,6 +1,5 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
-  - If in windowed mode, clamp window to screen res
   - Add demo mode
   - Make free version
   - Add forum
