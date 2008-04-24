@@ -1,7 +1,6 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
-  - Add demo mode
-  - Make free version
+  - Make demo version
   - Add forum
   - More debug stuff
     - Create new file with dprintf logs and upload it somewhere. Disable addr2line in some way.

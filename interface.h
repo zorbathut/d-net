@@ -83,6 +83,7 @@ class InterfaceMain : boost::noncopyable {
   
   Coord start;
   Coord end;
+  Coord end_max;
   bool onstart;
   
   Coord moneyexp;

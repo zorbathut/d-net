@@ -39,11 +39,13 @@ DEFINE_bool(showGlobalErrors, true, "Display global errors");
 
 DEFINE_int(factionMode, 3, "Faction mode to skip faction choice battle, -1 for normal faction mode");
 DEFINE_float(startingPhase, -1, "Starting phase override");
+DEFINE_bool(demolimits, false, "Demo mode limits");
 
 REGISTER_int(rounds_per_shop);
 REGISTER_bool(auto_newgame);
 REGISTER_int(factionMode);
 REGISTER_float(startingPhase);
+REGISTER_bool(demolimits);
 
 /*************
  * Std
@@ -187,7 +189,7 @@ void StdMenuItemScale::ScaleDisplayer::render(float pos) const {
   }
   
   if(mini) {
-    setZoomAround(Float4(-0.5, -0.1, labels.size() + 0.5 - 1, 0.06));
+    setZoomAround(Float4(-0.5, -0.2, labels.size() + 0.5 - 1, 0.16));
   } else {
     setZoomAround(Float4(cent, -0.09, cent, 0.08));
   }
@@ -759,7 +761,7 @@ bool InterfaceMain::tick(const InputState &is, RngSeed gameseed) {
       aicount = 4;
       faction_toggle = true;
       start = 0;
-      end = 7;
+      end = end_max;
       moneyexp = Coord(0.18);
       mrv.second = MAIN_NEWGAME;
       instantaction = true;
@@ -830,7 +832,7 @@ Coord InterfaceMain::start_clamp(const Coord &opt) const {
   return clamp(opt, 0, end - Coord(1) / 16);
 }
 Coord InterfaceMain::end_clamp(const Coord &opt) const {
-  return clamp(opt, start + Coord(1) / 16, 7);
+  return clamp(opt, start + Coord(1) / 16, end_max);
 }
 
 int gcd(int x, int y) {
@@ -1136,6 +1138,8 @@ void InterfaceMain::init() {
   interface_mode = STATE_MAINMENU;
   {
     vector<string> names = boost::assign::list_of("Junkyard")("Civilian")("Professional")("Military")("Exotic")("Experimental")("Ultimate")("Armageddon");
+    if(FLAGS_demolimits)
+      names.erase(names.begin() + 3, names.end());
     
     StdMenu configmenu;
     configmenu.pushMenuItem(StdMenuItemScale::make("Game start", &start, bind(&InterfaceMain::start_clamp, this, _1), StdMenuItemScale::ScaleDisplayer(names, &start, &end, &onstart, true), true, &onstart));
@@ -1155,6 +1159,14 @@ void InterfaceMain::init() {
     configmenu.pushMenuItemAdjacent(StdMenuItemBack::make("Cancel"));
     
     mainmenu.pushMenuItem(StdMenuItemSubmenu::make("New game", configmenu, MAIN_NEWGAMEMENU));
+    
+    if(FLAGS_startingPhase == -1)
+      start = 0;
+    else
+      start = Coord(FLAGS_startingPhase);
+    end_max = names.size() - 1;
+    end = end_max;
+    moneyexp = Coord(0.1133);
   }
   
   opts_res = getCurrentResolution();
@@ -1199,13 +1211,6 @@ void InterfaceMain::init() {
   
   mainmenu.pushMenuItem(StdMenuItemTrigger::make("Input test", MAIN_INPUTTEST));
   mainmenu.pushMenuItem(StdMenuItemTrigger::make("Exit", MAIN_EXIT));
-  
-  if(FLAGS_startingPhase == -1)
-    start = 0;
-  else
-    start = Coord(FLAGS_startingPhase);
-  end = 7;
-  moneyexp = Coord(0.1133);
   
   grid = false;
   inptest = false;
@@ -1303,7 +1308,7 @@ void InterfaceMain::renderIntroScreen() const {
 vector<bool> InterfaceMain::introScreenToTick() const {
   vector<bool> tq;
   
-  int finq =tick_sync_frame % frames_for_full_cycle;
+  int finq = tick_sync_frame % frames_for_full_cycle;
   int ite = (tick_sync_frame / frames_for_full_cycle) % 2;
   
   for(int i = 0; i < 2; i++) {
