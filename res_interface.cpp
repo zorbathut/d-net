@@ -5,6 +5,7 @@
 #include "gfx.h"
 #include "settings.h"
 #include "args.h"
+#include "os.h"
 
 #ifdef OSX_FRAMEWORK_PREFIXES
   #include <OpenGL/gl.h>
@@ -72,6 +73,11 @@ static bool cfull;
 
 bool setResolution(pair<int, int> res, float aspect, bool fullscreen) {
   CHECK(FLAGS_render);
+  
+  if(res.first > getScreenRes().first || res.second > getScreenRes().second) {
+    res = getScreenRes();
+    aspect = (float)res.first / res.second;
+  }
   
   dprintf("%dx%d, %f, %d\n", res.first, res.second, aspect, fullscreen);
   if(!MakeWindow("Devastation Net", res.first, res.second, fullscreen))
