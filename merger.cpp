@@ -16,6 +16,8 @@
 
 using namespace std;
 
+DEFINE_bool(demo, false, "Only allow demo-tagged items");
+
 template<typename Model, bool twopass> struct PAW;
 
 template<typename Model> struct PAW<Model, false> {
@@ -152,6 +154,16 @@ template<typename Model> void doMerge(const string &csv, const string &unmerged,
     while(getkvData(ifs, &kvd)) {
       string name = nameFromKvd<Model>(kvd, names);
       //dprintf("Name is \"%s\", checking \"%s\"\n", kvd.read("name").c_str(), name.c_str());
+      if(FLAGS_demo) {
+        if(kvd.kv.count("demo_enabled")) {
+          CHECK(kvd.kv["demo_enabled"] == "true");
+        } else {
+          continue;
+        }
+      }
+      
+      kvd.kv.erase("demo_enabled");
+      
       if(name.size()) {
         CHECK(tdd.count(name));
         done.insert(name);
@@ -160,9 +172,11 @@ template<typename Model> void doMerge(const string &csv, const string &unmerged,
       preproc.push_back(kvd);
     }
     
-    CHECK(done.size() == tdd.size());
-    for(typename map<string, typename Model::Data>::const_iterator itr = tdd.begin(); itr != tdd.end(); itr++)
-      CHECK(done.count(itr->first));
+    if(!FLAGS_demo) {
+      CHECK(done.size() == tdd.size());
+      for(typename map<string, typename Model::Data>::const_iterator itr = tdd.begin(); itr != tdd.end(); itr++)
+        CHECK(done.count(itr->first));
+    }
   }
   
   processAndWrite<Model>(tdd, preproc, merged);

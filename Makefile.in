@@ -27,7 +27,7 @@ BASEDATADIRS := $(shell find data_source/* -type d | grep -v \.svn | sed 's^data
 MERGETYPES := $(shell ls data_source/base/*.dwh.unmerged | sed 's^data_source\/base\/\(.*\).dwh.unmerged^\1^')
 BASEMERGEDATA := $(patsubst %,base/%.dwh,$(MERGETYPES))
 
-BASECOPYDATA := $(shell find data_source/* | grep -v \.svn | grep -v shopcache.dwh | grep -v .unmerged | sed 's^data_source/\(.*\)^\1^')
+BASECOPYDATA := $(shell find data_source/* -type f | grep -v \.svn | grep -v shopcache.dwh | grep -v .unmerged | sed 's^data_source/\(.*\)^\1^')
 
 BASEDATA := $(BASEMERGEDATA) $(BASECOPYDATA)
 
@@ -82,6 +82,9 @@ STDRUN = $(LOCALFLAGS) --debugitems --startingPhase=8 --debugControllers=2 --fac
 
 run: d-net
 	./d-net.exe $(STDRUN)
+
+demo: d-net.exe $(DEMODATA)
+	./d-net.exe $(STDRUN) --fileroot=data_demo
   
 basicrun: d-net
 	./d-net.exe $(LOCALFLAGS)
@@ -233,20 +236,24 @@ data_release data_demo:
 	mkdir $(patsubst %,$@/%,$(BASEDATADIRS))
 
 define COPIER_TEMPLATE
-$(1): $(2)
+$(1): $(2) $(3)
 	cp $$< $$@
 endef
 
-$(foreach item,$(BASECOPYDATA),$(eval $(call COPIER_TEMPLATE,$(patsubst %,data_release/%,$(item)),$(patsubst %,data_source/%,$(item)))))
-$(foreach item,$(BASECOPYDATA),$(eval $(call COPIER_TEMPLATE,$(patsubst %,data_demo/%,$(item)),$(patsubst %,data_source/%,$(item)))))
+$(foreach item,$(BASECOPYDATA),$(eval $(call COPIER_TEMPLATE,$(patsubst %,data_release/%,$(item)),$(patsubst %,data_source/%,$(item)),data_release)))
+$(foreach item,$(BASECOPYDATA),$(eval $(call COPIER_TEMPLATE,$(patsubst %,data_demo/%,$(item)),$(patsubst %,data_source/%,$(item)),data_demo)))
 
-data/base/tank.dwh: data/base/weapon_sparker.dwh
+data_demo/base/tank.dwh: data_demo/base/weapon_sparker.dwh
+data_release/base/tank.dwh: data_release/base/weapon_sparker.dwh
 
-data_release/base/%.dwh: data_source/base/%.dwh.unmerged build/notes_%.csv merger.exe
+data_demo/base/factions.dwh: $(patsubst data_source/%,data_demo/%,$(shell ls data_source/base/faction_icons/*))
+data_release/base/factions.dwh: $(patsubst data_source/%,data_release/%,$(shell ls data_source/base/faction_icons/*))
+
+data_release/base/%.dwh: data_source/base/%.dwh.unmerged build/notes_%.csv merger.exe data_release/base/hierarchy.dwh
 	./merger.exe build/notes_$*.csv data_source/base/$*.dwh.unmerged $@ --fileroot=data_release || ( rm -f $@ && false )
 
-data_demo/base/%.dwh: data_source/base/%.dwh.unmerged build/notes_%.csv merger.exe
-	./merger.exe build/notes_$*.csv data_source/base/$*.dwh.unmerged $@ --fileroot=data_release || ( rm -f $@ && false )
+data_demo/base/%.dwh: data_source/base/%.dwh.unmerged build/notes_%.csv merger.exe data_release/base/hierarchy.dwh
+	./merger.exe build/notes_$*.csv data_source/base/$*.dwh.unmerged $@ --fileroot=data_demo --demo || ( rm -f $@ && false )
 
 
 data_release/shopcache.dwh: d-net $(DATAFILES)
