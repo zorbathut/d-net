@@ -16,7 +16,7 @@ string BombardParams::token() {
 }
 
 bool BombardParams::isDemoable(const Data &toki) {
-  return true;
+  return toki.demoable;
 }
 
 bool BombardParams::parseLine(const vector<string> &line, Data *data) {
@@ -25,6 +25,8 @@ bool BombardParams::parseLine(const vector<string> &line, Data *data) {
   data->lock = line[4];
   data->unlock = line[5];
   data->durability = line[6];
+  CHECK(line[14] == "Y" || line[14] == "");
+  data->demoable = (line[14] == "Y");
   return true;
 }
 

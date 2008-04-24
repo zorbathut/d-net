@@ -161,7 +161,10 @@ template<typename Model> void doMerge(const string &csv, const string &unmerged,
         Model::preprocess(&kvd, tdd[name]);
         if(FLAGS_demo) {
           if(!Model::isDemoable(tdd[name])) {
+            dprintf("Not demoable: %s\n", name.c_str());
             continue;
+          } else {
+            dprintf("Demoable: %s\n", name.c_str());
           }
         }
       }

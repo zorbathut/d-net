@@ -21,6 +21,8 @@ struct BombardParams {
     string unlock;
     
     string durability;
+    
+    bool demoable;
   };
   
   typedef IDBBombardment FinalType;
