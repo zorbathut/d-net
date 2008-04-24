@@ -20,6 +20,8 @@ struct TankParams {
     string handling;
   
     string mass;
+    
+    bool demoable;
   };
   
   typedef IDBTank FinalType;

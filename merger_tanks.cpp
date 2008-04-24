@@ -13,7 +13,7 @@ string TankParams::token() {
 }
 
 bool TankParams::isDemoable(const Data &toki) {
-  return true;
+  return toki.demoable;
 }
 
 bool TankParams::parseLine(const vector<string> &line, Data *data) {
@@ -24,6 +24,8 @@ bool TankParams::parseLine(const vector<string> &line, Data *data) {
   data->engine= line[3];
   data->handling = line[4];
   data->mass = line[5];
+  CHECK(line[6] == "Y" || line[6] == "");
+  data->demoable = (line[6] == "Y");
   return true;
 }
 
