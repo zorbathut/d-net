@@ -154,20 +154,16 @@ template<typename Model> void doMerge(const string &csv, const string &unmerged,
     while(getkvData(ifs, &kvd)) {
       string name = nameFromKvd<Model>(kvd, names);
       //dprintf("Name is \"%s\", checking \"%s\"\n", kvd.read("name").c_str(), name.c_str());
-      if(FLAGS_demo) {
-        if(kvd.kv.count("demo_enabled")) {
-          CHECK(kvd.kv["demo_enabled"] == "true");
-        } else {
-          continue;
-        }
-      }
-      
-      kvd.kv.erase("demo_enabled");
       
       if(name.size()) {
         CHECK(tdd.count(name));
         done.insert(name);
         Model::preprocess(&kvd, tdd[name]);
+        if(FLAGS_demo) {
+          if(!Model::isDemoable(tdd[name])) {
+            continue;
+          }
+        }
       }
       preproc.push_back(kvd);
     }

@@ -15,6 +15,10 @@ string BombardParams::token() {
   return "BOMBARDMENT";
 }
 
+bool BombardParams::isDemoable(const Data &toki) {
+  return true;
+}
+
 bool BombardParams::parseLine(const vector<string> &line, Data *data) {
   data->cost = line[1];
   data->dpp = line[3];

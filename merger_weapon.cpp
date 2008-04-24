@@ -39,6 +39,10 @@ string WeaponParams::token() {
   return "WEAPON";
 }
 
+bool WeaponParams::isDemoable(const Data &toki) {
+  return true;
+}
+
 bool WeaponParams::parseLine(const vector<string> &line, Data *data) {
   if(line[1] == "Params") {
     CHECK(line[2].size());

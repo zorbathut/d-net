@@ -12,6 +12,10 @@ string TankParams::token() {
   return "TANKS";
 }
 
+bool TankParams::isDemoable(const Data &toki) {
+  return true;
+}
+
 bool TankParams::parseLine(const vector<string> &line, Data *data) {
   if(tokenize(line[0], " ")[0] == "Std")
     return false;

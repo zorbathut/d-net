@@ -18,6 +18,10 @@ string UpgradeParams::token() {
   return "UPGRADES";
 }
 
+bool UpgradeParams::isDemoable(const Data &toki) {
+  return true;
+}
+
 bool UpgradeParams::parseLine(const vector<string> &line, Data *data) {
   data->costmult = line[3];
   return true;

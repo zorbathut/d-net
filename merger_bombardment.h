@@ -31,6 +31,8 @@ struct BombardParams {
   
   static string token();
   
+  static bool isDemoable(const Data &toki);
+  
   static bool parseLine(const vector<string> &line, Data *data);
   static const bool kvdirect = false;
   static string nameFromKvname(const string &name, const set<string> &possiblenames);

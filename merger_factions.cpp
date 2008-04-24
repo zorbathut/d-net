@@ -21,6 +21,10 @@ string FactionParams::token() {
   return "FACTIONS";
 }
 
+bool FactionParams::isDemoable(const Data &toki) {
+  return true;
+}
+
 static const int darray[] = { IDBAdjustment::DAMAGE_KINETIC, IDBAdjustment::DAMAGE_ENERGY, IDBAdjustment::DAMAGE_EXPLOSIVE, IDBAdjustment::DAMAGE_TRAP, IDBAdjustment::DAMAGE_EXOTIC, IDBAdjustment::WARHEAD_RADIUS_FALLOFF, IDBAdjustment::DAMAGE_ALL, IDBAdjustment::TANK_FIRERATE, IDBAdjustment::TANK_SPEED, IDBAdjustment::TANK_TURN, IDBAdjustment::TANK_ARMOR, IDBAdjustment::DISCOUNT_WEAPON, IDBAdjustment::DISCOUNT_IMPLANT, IDBAdjustment::DISCOUNT_UPGRADE, IDBAdjustment::DISCOUNT_TANK, IDBAdjustment::RECYCLE_BONUS, IDBAdjustment::ALL };
   
 bool FactionParams::parseLine(const vector<string> &line, Data *data) {

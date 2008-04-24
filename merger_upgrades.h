@@ -27,6 +27,8 @@ struct UpgradeParams {
   
   static string token();
   
+  static bool isDemoable(const Data &toki);
+  
   static bool parseLine(const vector<string> &line, Data *data);
   static const bool kvdirect = true;
   static string nameFromKvd(const kvData &kvd, const set<string> &possiblenames);
