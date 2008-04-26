@@ -18,6 +18,7 @@
 DECLARE_bool(render);
 
 int GetVideoFlags(bool fullscreen) {
+  StackString sst("GetVidFlags");
 
   int videoflags = 0;
 
@@ -46,15 +47,22 @@ int GetVideoFlags(bool fullscreen) {
 }
 
 bool MakeWindow(const char * strWindowName, int width, int height, bool fullscreen) {
+  StackString sst("MakeWindow");
   
   dprintf("Attempting to make window %d/%d\n", width, height);
 
   CHECK(height > 0);
   CHECK(width > 0);
   
-  SDL_Surface *MainWindow = SDL_SetVideoMode(width, height, 32, GetVideoFlags(fullscreen));
-  if(!MainWindow)
+  SDL_Surface *MainWindow;
+  {
+    StackString sst("SDL apparently crashes sometimes! Amazing! Is that not amazing!");
+    MainWindow = SDL_SetVideoMode(width, height, 32, GetVideoFlags(fullscreen));
+  }
+  
+  if(!MainWindow) {
     return false;
+  }
 
   SDL_WM_SetCaption(strWindowName, strWindowName);     // set the window caption (first argument) and icon caption (2nd arg)
 
@@ -64,7 +72,6 @@ bool MakeWindow(const char * strWindowName, int width, int height, bool fullscre
   glOrtho(0, 1.25, 0, 1, 1.0, -1.0);  
   
   return true;
-
 }
 
 static pair<int, int> cres;
@@ -72,6 +79,7 @@ static float caspect;
 static bool cfull;
 
 bool setResolution(pair<int, int> res, float aspect, bool fullscreen) {
+  StackString sst("SetRes");
   CHECK(FLAGS_render);
   
   if(res.first > getScreenRes().first || res.second > getScreenRes().second) {
@@ -82,6 +90,7 @@ bool setResolution(pair<int, int> res, float aspect, bool fullscreen) {
   dprintf("%dx%d, %f, %d\n", res.first, res.second, aspect, fullscreen);
   if(!MakeWindow("Devastation Net", res.first, res.second, fullscreen))
     return false;
+  dprintf("We has made a window.");
   
   updateResolution(aspect);
 
@@ -100,6 +109,7 @@ bool setResolution(pair<int, int> res, float aspect, bool fullscreen) {
 }
 
 vector<pair<int, int> > getResolutions() {
+  StackString sst("GetReses");
   if(!FLAGS_render) {
     // Make some shit up
     return vector<pair<int, int> >(1, pair<int, int>(640, 480));

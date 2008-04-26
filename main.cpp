@@ -61,12 +61,15 @@ void initSystem() {
 }
 
 void initVideo() {
+  StackString sst("InitVideo");
+  
   CHECK(SDL_InitSubSystem(SDL_INIT_VIDEO) >= 0);
   
   SetupOgl();
   CHECK(setResolution(make_pair(Settings::get_instance().res_x, Settings::get_instance().res_y), Settings::get_instance().res_aspect, Settings::get_instance().res_fullscreen));
   
   {
+    StackString sst("GL minituae");
     dprintf("GL version: %s\n", glGetString(GL_VERSION));
  
     dprintf("Renderer: %s\n", glGetString(GL_RENDERER));

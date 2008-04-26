@@ -18,6 +18,7 @@
 #include "audit.h"
 #include "dumper_registry.h"
 #include "smartptr_util.h"
+#include "version.h"
 
 #include <numeric>
 
@@ -1061,6 +1062,9 @@ void InterfaceMain::render() const {
         GfxWindow gfxw(Float4(0, 0, getZoom().ex, 60), 2.0);
         renderIntroScreen();
       }
+      
+      setColor(C::gray(0.5));
+      drawText(dnet_version, 2, Float2(0.5, 0.5));
     } else if(interface_mode == STATE_PLAYING) {
       game->renderToScreen();
     } else {
