@@ -55,11 +55,11 @@ vecedit: vecedit.exe $(RELEASEDATA)
 	@
 vecedit-dbg: vecedit-dbg.exe $(RELEASEDATA)
 
-d-net.exe: $(patsubst %,build/%.g.o,$(GAMESOURCES))
-	nice ./ewrap $@ $(CXX) -o $@ $(patsubst %,build/%.g.o,$(GAMESOURCES)) $(GAMELDFLAGS)
+d-net.exe: $(patsubst %,build/%.g.o,$(GAMESOURCES)) build/resource.res
+	nice ./ewrap $@ $(CXX) -o $@ $(patsubst %,build/%.g.o,$(GAMESOURCES)) build/resource.res $(GAMELDFLAGS)
 
-d-net-dbg.exe: $(patsubst %,build/%.g.d.o,$(GAMESOURCES))
-	nice ./ewrap $@ $(CXX) -o $@ $(patsubst %,build/%.g.d.o,$(GAMESOURCES)) $(GAMELDFLAGS)
+d-net-dbg.exe: $(patsubst %,build/%.g.d.o,$(GAMESOURCES)) build/resource.res
+	nice ./ewrap $@ $(CXX) -o $@ $(patsubst %,build/%.g.d.o,$(GAMESOURCES)) build/resource.res $(GAMELDFLAGS)
 
 vecedit.exe: $(patsubst %,build/%.e.o,$(EDITORSOURCES))
 	nice ./ewrap $@ $(CXX) -o $@ $(patsubst %,build/%.e.o,$(EDITORSOURCES)) $(EDITORLDFLAGS)
@@ -173,6 +173,9 @@ build/%.c.d: %.cpp
 
 build/%.c.d: %.c
 	nice bash -ec './ewrap $@ $(CXX) $(CONSOLECXXFLAGS) -MM $< | sed "s!$*.o!build/$*.c.o build/$*.c.d.o $@!g" > $@'
+
+build/%.res: %.rc
+	nice windres $< -O coff -o $@
 
 ###################################
 # Installers

@@ -4,6 +4,7 @@
     - Remove versions that don't, if there are any
   - Add installer
     - Icons for game and website
+    - Faviconc
   - Add forum
   - scons argh
   - More debug stuff

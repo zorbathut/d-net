@@ -56,7 +56,7 @@ SectionEnd
 
 Section -AdditionalIcons
   WriteIniStr "$INSTDIR\Mandible Games.url" "InternetShortcut" "URL" "${PRODUCT_WEB_SITE}"
-  CreateShortCut "$SMPROGRAMS\Devastation Net\Mandible Games.lnk" "$INSTDIR\Mandible Games.url"
+  CreateShortCut "$SMPROGRAMS\Devastation Net\Mandible Games.lnk" "$INSTDIR\Mandible Games.url" "" "$INSTDIR\d-net.exe,101"
   CreateShortCut "$SMPROGRAMS\Devastation Net\Uninstall.lnk" "$INSTDIR\uninst.exe"
 SectionEnd
 
