@@ -1,0 +1,100 @@
+
+!define PRODUCT_NAME "Devastation Net"
+$$$VERSION$$$
+!define PRODUCT_PUBLISHER "Mandible Games"
+!define PRODUCT_WEB_SITE "http://www.mandible-games.com"
+!define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\d-net.exe"
+!define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
+!define PRODUCT_UNINST_ROOT_KEY "HKLM"
+
+SetCompressor bzip2
+
+; MUI 1.67 compatible ------
+!include "MUI.nsh"
+
+; MUI Settings
+!define MUI_ABORTWARNING
+!define MUI_ICON "${NSISDIR}\Contrib\Graphics\Icons\modern-install.ico"
+!define MUI_UNICON "${NSISDIR}\Contrib\Graphics\Icons\modern-uninstall.ico"
+
+; Welcome page
+!insertmacro MUI_PAGE_WELCOME
+; Directory page
+!insertmacro MUI_PAGE_DIRECTORY
+; Instfiles page
+!insertmacro MUI_PAGE_INSTFILES
+; Finish page
+!define MUI_FINISHPAGE_RUN "$INSTDIR\d-net.exe"
+!insertmacro MUI_PAGE_FINISH
+
+; Uninstaller pages
+!insertmacro MUI_UNPAGE_INSTFILES
+
+; Language files
+!insertmacro MUI_LANGUAGE "English"
+
+; Reserve files
+!insertmacro MUI_RESERVEFILE_INSTALLOPTIONS
+
+Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
+OutFile "dnet-${PRODUCT_VERSION}.exe"
+InstallDir "$PROGRAMFILES\Devastation Net"
+InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
+ShowInstDetails show
+ShowUnInstDetails show
+
+Section "MainSection" SEC01
+  SetOutPath "$INSTDIR"
+  SetOverwrite try
+
+$$$INSTALL$$$
+
+  CreateDirectory "$SMPROGRAMS\Devastation Net"
+  CreateShortCut "$SMPROGRAMS\Devastation Net\Devastation Net.lnk" "$INSTDIR\d-net.exe"
+  CreateShortCut "$DESKTOP\Devastation Net.lnk" "$INSTDIR\d-net.exe"
+SectionEnd
+
+Section -AdditionalIcons
+  WriteIniStr "$INSTDIR\Mandible Games.url" "InternetShortcut" "URL" "${PRODUCT_WEB_SITE}"
+  CreateShortCut "$SMPROGRAMS\Devastation Net\Mandible Games.lnk" "$INSTDIR\Mandible Games.url"
+  CreateShortCut "$SMPROGRAMS\Devastation Net\Uninstall.lnk" "$INSTDIR\uninst.exe"
+SectionEnd
+
+Section -Post
+  WriteUninstaller "$INSTDIR\uninst.exe"
+  WriteRegStr HKLM "${PRODUCT_DIR_REGKEY}" "" "$INSTDIR\d-net.exe"
+  WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayName" "$(^Name)"
+  WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "UninstallString" "$INSTDIR\uninst.exe"
+  WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayIcon" "$INSTDIR\d-net.exe"
+  WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayVersion" "${PRODUCT_VERSION}"
+  WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "URLInfoAbout" "${PRODUCT_WEB_SITE}"
+  WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "Publisher" "${PRODUCT_PUBLISHER}"
+SectionEnd
+
+
+
+Function un.onUninstSuccess
+  HideWindow
+  MessageBox MB_ICONINFORMATION|MB_OK "$(^Name) was successfully removed from your computer."
+FunctionEnd
+
+Function un.onInit
+  MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2 "Are you sure you want to completely remove $(^Name) and all of its components?" IDYES +2
+  Abort
+FunctionEnd
+
+
+Section Uninstall
+$$$UNINSTALL$$$
+  
+  Delete "$INSTDIR\Devastation Net\Mandible Games.lnk"
+  Delete "$DESKTOP\Devastation Net.lnk"
+  Delete "$SMPROGRAMS\Devastation Net\Uninstall.lnk"
+  Delete "$SMPROGRAMS\Devastation Net\Mandible Games.lnk"
+  Delete "$SMPROGRAMS\Devastation Net\Devastation Net.lnk"
+  RMDir "$SMPROGRAMS\Devastation Net"
+
+  DeleteRegKey ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}"
+  DeleteRegKey HKLM "${PRODUCT_DIR_REGKEY}"
+  SetAutoClose true
+SectionEnd

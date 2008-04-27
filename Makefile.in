@@ -27,13 +27,14 @@ BASEDATADIRS := $(shell find data_source/* -type d | grep -v \.svn | sed 's^data
 MERGETYPES := $(shell ls data_source/base/*.dwh.unmerged | sed 's^data_source\/base\/\(.*\).dwh.unmerged^\1^')
 BASEMERGEDATA := $(patsubst %,base/%.dwh,$(MERGETYPES))
 
-BASECOPYDATA := $(shell find data_source/* -type f | grep -v \.svn | grep -v shopcache.dwh | grep -v .unmerged | sed 's^data_source/\(.*\)^\1^')
+BASECOPYDATA := $(shell find data_source/* -type f | grep -v \.svn | grep -v shopcache.dwh | grep -v .unmerged | grep -v .wav | sed 's^data_source/\(.*\)^\1^')
+BASEOGGDATA := $(shell find data_source/* -type f | grep -v \.svn | grep -v shopcache.dwh | grep -v .unmerged | grep .wav | sed 's^data_source/\(.*\)^\1^' | sed 's/.wav/.ogg/')
 
-BASEDATA := $(BASEMERGEDATA) $(BASECOPYDATA)
+BASEDATA := $(BASEMERGEDATA) $(BASECOPYDATA) $(BASEOGGDATA)
 
 RELEASEDATA := data_release $(patsubst %,data_release/%,$(BASEDATA))
 DEMODATA := data_demo $(patsubst %,data_demo/%,$(BASEDATA))
-
+DEPLOYDATA := $(patsubst %,deploy/%,SDL.dll cygogg-0.dll libvorbis-0.dll libvorbisfile-3.dll d-net.exe)
 
 PACKAGESUBDIR := sekret
 
@@ -75,7 +76,7 @@ all: d-net vecedit
 #asm: $(GAMESOURCES:=.S) makefile
 
 clean:
-	rm -rf build/*.o *.exe build/*.d build/*.S build/*.csv data_release data_demo
+	rm -rf build/*.o *.exe build/*.d build/*.S build/*.csv build/*.nsi data_release data_demo version.cpp
 
 LOCALFLAGS = --writetarget=dumps/dump --nofullscreen --noaudio --perfbar --httpd_port=616 --runTests
 STDRUN = $(LOCALFLAGS) --debugitems --startingPhase=8 --debugControllers=2 --factionMode=3 --nullControllers=11 --writeTarget= --auto_newgame --nocullShopTree --httpd_port=616 --checksumgamestate --noshopcache --nofastForwardOnNoCache
@@ -118,73 +119,8 @@ aichecksumloop: d-net
 veced: vecedit
 	./vecedit.exe
 
-define prepackage
-rm -rf deploy
-rm -f \\\\192.168.100.4\\zorba\\www\\d-net\\$(PACKAGESUBDIR)\\Dnet\ Latest\ Windows.zip
-mkdir deploy
-cp d-net.exe deploy
-cp /usr/mingw/local/bin/SDL.dll /usr/mingw/local/bin/cygogg-0.dll /usr/mingw/local/bin/libvorbis-0.dll /usr/mingw/local/bin/libvorbisfile-3.dll deploy
-cp -r data deploy
-mkdir deploy/dumps
-cp dumps/readme.txt deploy/dumps
-endef
-
-define strip
-strip -s deploy/*.exe deploy/*.dll
-endef
-
-define clean
-cd deploy ; rm -rf `find | grep \.svn`
-cd deploy ; find | grep \.wav | xargs oggenc -q 6
-cd deploy ; rm -rf `find | grep \.wav`
-endef
-
-define postpackage
-$(clean)
-cd deploy ; zip -9 -r \\\\192.168.100.4\\zorba\\www\\d-net\\$(PACKAGESUBDIR)\\Dnet\ Latest\ Windows.zip *  # This is really too many backslashes.
-cp \\\\192.168.100.4\\zorba\\www\\d-net\\$(PACKAGESUBDIR)\\Dnet\ Latest\ Windows.zip `date +\\\\\\\\192.168.100.4\\\\zorba\\\\www\\\\d-net\\\\$(PACKAGESUBDIR)\\\\dnet%G%m%d%H%M%S.zip` # This is really too many backslashes.
-rm -rf deploy
-endef
-
-package: d-net data/shopcache.dwh
-	$(prepackage)
-	$(strip)
-	$(postpackage)
-  
-shortpackage: d-net
-	rm -f data/shopcache.dwh
-	$(prepackage)
-	$(strip)
-	$(postpackage)
-
-packageed: d-net vecedit data/shopcache.dwh
-	$(prepackage)
-	cp vecedit.exe deploy
-	cp /usr/mingw/local/lib/wxbase28_gcc_custom.dll deploy
-	cp /usr/mingw/local/lib/wxmsw28_core_gcc_custom.dll deploy
-	cp /usr/mingw/local/lib/wxmsw28_gl_gcc_custom.dll deploy
-	cp /usr/bin/mingwm10.dll deploy
-	cp -r vecedit deploy
-	$(strip)
-	$(postpackage)
-	cp \\\\192.168.100.4\\zorba\\www\\d-net\\$(PACKAGESUBDIR)\\Dnet\ Latest\ Windows.zip \\\\192.168.100.4\\zorba\\www\\d-net\\$(PACKAGESUBDIR)\\Dnet\ Latest\ Editor.zip
-
-localpackage: d-net
-	$(prepackage)
-	$(strip)
-	$(clean)
-
-demolocalpackage: d-net.exe data_demo/shopcache.dwh $(DEMODATA)
-	rm -rf deploy
-	mkdir deploy
-	cp d-net.exe deploy
-	cp settings.demo deploy/settings
-	cp /usr/mingw/local/bin/SDL.dll /usr/mingw/local/bin/cygogg-0.dll /usr/mingw/local/bin/libvorbis-0.dll /usr/mingw/local/bin/libvorbisfile-3.dll deploy
-	cp -r data_demo deploy/data
-	strip -s deploy/*.exe deploy/*.dll
-	cd deploy ; find | grep \.wav | xargs oggenc -q 6
-	cd deploy ; rm -rf `find | grep \.wav`
-	cd deploy ; zip -9 -r ..\\d-net.zip *
+###################################
+# Object files
 
 build/%.g.o: %.cpp
 	nice ./ewrap $@ $(CXX) $(GAMECXXFLAGS) -c -o $@ $<
@@ -239,6 +175,48 @@ build/%.c.d: %.c
 	nice bash -ec './ewrap $@ $(CXX) $(CONSOLECXXFLAGS) -MM $< | sed "s!$*.o!build/$*.c.o build/$*.c.d.o $@!g" > $@'
 
 ###################################
+# Installers
+
+fastdemopackage: build/installer_demo.nsi $(DEMODATA) $(DEPLOYDATA)
+	/cygdrive/c/Program\ Files\ \(x86\)/NSIS/makensis.exe - < $<
+
+demopackage: build/installer_demo_shopcache.nsi $(DEMODATA) $(DEPLOYDATA)
+	/cygdrive/c/Program\ Files\ \(x86\)/NSIS/makensis.exe - < $<
+
+fastreleasepackage: build/installer_release.nsi $(RELEASEDATA) $(DEPLOYDATA)
+	/cygdrive/c/Program\ Files\ \(x86\)/NSIS/makensis.exe - < $<
+
+releasepackage: build/installer_release_shopcache.nsi $(RELEASEDATA) $(DEPLOYDATA)
+	/cygdrive/c/Program\ Files\ \(x86\)/NSIS/makensis.exe - < $<
+
+###################################
+# Custom files
+
+build/installer_demo_shopcache.nsi: makeinstaller.py version_data $(DEMODATA) $(DEPLOYDATA) demo_data/shopcache.dwh
+	./makeinstaller.py data_demo version_data < installer.nsi.template > $@
+
+build/installer_demo.nsi: makeinstaller.py version_data $(DEMODATA) $(DEPLOYDATA)
+	./makeinstaller.py data_demo version_data < installer.nsi.template > $@
+
+build/installer_release_shopcache.nsi: makeinstaller.py version_data $(DEMODATA) $(DEPLOYDATA) demo_release/shopcache.dwh
+	./makeinstaller.py data_release version_data < installer.nsi.template > $@
+
+build/installer_release.nsi: makeinstaller.py version_data $(DEMODATA) $(DEPLOYDATA)
+	./makeinstaller.py data_release version_data < installer.nsi.template > $@
+
+version.cpp: version_gen.py version_data
+	./version_gen.py < version_data > $@
+
+deploy:
+	mkdir deploy
+
+data_demo/%.ogg: data_source/%.wav
+	oggenc -q 6 -o $@ $<
+
+data_release/%.ogg: data_source/%.wav
+	oggenc -q 6 -o $@ $<
+
+###################################
 # Data files and data structure generation
 
 data_release data_demo:
@@ -286,3 +264,18 @@ ods2csv.exe: $(patsubst %,build/%.c.o,$(ODS2CSVSOURCES))
 $(patsubst %,build/notes_%.csv,$(MERGETYPES)): notes.ods ods2csv.exe
 	./ods2csv.exe $@ notes.ods $(patsubst build/notes_%.csv,%,$@) || ( rm -f $@ && false )
 
+
+define DLLer
+deploy/$(1): deploy
+	cp /usr/mingw/local/bin/$(1) $$@
+	strip -s $$@
+endef
+
+$(eval $(call DLLer,SDL.dll))
+$(eval $(call DLLer,cygogg-0.dll))
+$(eval $(call DLLer,libvorbis-0.dll))
+$(eval $(call DLLer,libvorbisfile-3.dll))
+
+deploy/d-net.exe: d-net.exe deploy
+	cp d-net.exe $@
+	strip -s $@

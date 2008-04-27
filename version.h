@@ -5,6 +5,6 @@
 
 using namespace std;
 
-extern string dnet_version;
+extern const string dnet_version;
 
 #endif

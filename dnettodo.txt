@@ -1,7 +1,11 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
-  - Make demo version
+  - Make sure I'm conforming to all licenses
+    - Remove versions that don't, if there are any
+  - Add installer
+    - Icons for game and website
   - Add forum
+  - scons argh
   - More debug stuff
     - Create new file with dprintf logs and upload it somewhere. Disable addr2line in some way.
     - Rig up 911 system
@@ -13,7 +17,6 @@
     - Server response with "ok" or with "here is info for the user"
     - Make sure there really isn't any personal data involved in this
   - Add comments anchor to page
-  - Make sure I'm conforming to all licenses
   - Figure out Linux packaging
   - Figure out OSX packaging
   - look at scons again

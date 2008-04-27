@@ -1140,6 +1140,9 @@ void InterfaceMain::init() {
     faction_toggle = true;
   
   interface_mode = STATE_MAINMENU;
+  
+  mainmenu.pushMenuItem(StdMenuItemTrigger::make("Instant Action", MAIN_INSTANTACTION));
+  
   {
     vector<string> names = boost::assign::list_of("Junkyard")("Civilian")("Professional")("Military")("Exotic")("Experimental")("Ultimate")("Armageddon");
     if(FLAGS_demolimits)
@@ -1162,7 +1165,7 @@ void InterfaceMain::init() {
     configmenu.pushMenuItem(StdMenuItemTrigger::make("Begin", MAIN_NEWGAME));
     configmenu.pushMenuItemAdjacent(StdMenuItemBack::make("Cancel"));
     
-    mainmenu.pushMenuItem(StdMenuItemSubmenu::make("New game", configmenu, MAIN_NEWGAMEMENU));
+    mainmenu.pushMenuItem(StdMenuItemSubmenu::make("Custom or Multiplayer game", configmenu, MAIN_NEWGAMEMENU));
     
     if(FLAGS_startingPhase == -1)
       start = 0;
@@ -1176,8 +1179,6 @@ void InterfaceMain::init() {
   opts_res = getCurrentResolution();
   opts_aspect = getCurrentAspect();
   opts_fullscreen = getCurrentFullscreen();
-  
-  mainmenu.pushMenuItem(StdMenuItemTrigger::make("Instant Action", MAIN_INSTANTACTION));
   
   {
     {
