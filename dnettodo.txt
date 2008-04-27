@@ -2,10 +2,8 @@
 - "Finish the Damn Game" Initiative
   - Make sure I'm conforming to all licenses
     - Remove versions that don't, if there are any
-  - Add installer
-    - Icons for game and website
-    - Faviconc
   - Add forum
+  - Deploy 0.1.0
   - scons argh
   - More debug stuff
     - Create new file with dprintf logs and upload it somewhere. Disable addr2line in some way.
