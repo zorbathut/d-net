@@ -89,7 +89,7 @@ FunctionEnd
 Section Uninstall
 $$$UNINSTALL$$$
   
-  Delete "$INSTDIR\Devastation Net\Mandible Games.lnk"
+  Delete "$INSTDIR\Mandible Games.url"
   Delete "$DESKTOP\Devastation Net.lnk"
   Delete "$SMPROGRAMS\Devastation Net\Uninstall.lnk"
   Delete "$SMPROGRAMS\Devastation Net\Mandible Games.lnk"
