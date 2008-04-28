@@ -34,7 +34,7 @@ BASEDATA := $(BASEMERGEDATA) $(BASECOPYDATA) $(BASEOGGDATA)
 
 RELEASEDATA := data_release $(patsubst %,data_release/%,$(BASEDATA))
 DEMODATA := data_demo $(patsubst %,data_demo/%,$(BASEDATA))
-DEPLOYDATA := $(patsubst %,deploy/%,SDL.dll cygogg-0.dll libvorbis-0.dll libvorbisfile-3.dll d-net.exe)
+DEPLOYDATA := $(patsubst %,deploy/%,SDL.dll cygogg-0.dll libvorbis-0.dll libvorbisfile-3.dll d-net.exe license.txt)
 
 PACKAGESUBDIR := sekret
 
@@ -280,5 +280,8 @@ $(eval $(call DLLer,libvorbis-0.dll))
 $(eval $(call DLLer,libvorbisfile-3.dll))
 
 deploy/d-net.exe: d-net.exe deploy
-	cp d-net.exe $@
+	cp $< $@
 	strip -s $@
+
+deploy/license.txt: resources/license.txt
+	cp $< $@

@@ -2,8 +2,10 @@
 - "Finish the Damn Game" Initiative
   - Make sure I'm conforming to all licenses
     - Remove versions that don't, if there are any
+  - Check uninstaller's existence
   - Add forum
   - Deploy 0.1.0
+  - Remove 0.1.0 RC2
   - scons argh
   - More debug stuff
     - Create new file with dprintf logs and upload it somewhere. Disable addr2line in some way.
