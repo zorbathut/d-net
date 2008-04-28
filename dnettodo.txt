@@ -1,8 +1,7 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
-  - Make sure I'm conforming to all licenses
-    - Remove versions that don't, if there are any
-  - Check uninstaller's existence
+  - See why it doesn't run on w2k vm
+  - Test it'll run without admin
   - Add forum
   - Deploy 0.1.0
   - Remove 0.1.0 RC2

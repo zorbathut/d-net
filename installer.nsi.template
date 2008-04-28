@@ -90,6 +90,12 @@ Section Uninstall
 $$$UNINSTALL$$$
   
   Delete "$INSTDIR\Mandible Games.url"
+  Delete "$INSTDIR\addr2linetmp.txt"
+  Delete "$INSTDIR\stderr.txt"
+  Delete "$INSTDIR\stdout.txt"
+  Delete "$INSTDIR\uninst.exe"
+  RMDir "$INSTDIR"
+  
   Delete "$DESKTOP\Devastation Net.lnk"
   Delete "$SMPROGRAMS\Devastation Net\Uninstall.lnk"
   Delete "$SMPROGRAMS\Devastation Net\Mandible Games.lnk"
