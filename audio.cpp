@@ -74,9 +74,13 @@ void initAudio() {
     spec.callback = sound_callback;
     spec.userdata = NULL;
     
-    CHECK(SDL_OpenAudio(&spec, NULL) == 0);
-    
-    SDL_PauseAudio(0);
+    bool audioallowed = (SDL_OpenAudio(&spec, NULL) == 0);
+    if(audioallowed) {
+      SDL_PauseAudio(0);
+    } else {
+      dprintf("Audio initialization failed, disabling audio\n");
+      FLAGS_audio = false;
+    }
   }
   
   accept_local = loadSound(FLAGS_fileroot + "sound/accept");
