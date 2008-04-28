@@ -1,7 +1,5 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
-  - See why it doesn't run on w2k vm
-  - Test it'll run without admin
   - Add forum
   - Deploy 0.1.0
   - Remove 0.1.0 RC2
