@@ -34,7 +34,7 @@ BASEDATA := $(BASEMERGEDATA) $(BASECOPYDATA) $(BASEOGGDATA)
 
 RELEASEDATA := data_release $(patsubst %,data_release/%,$(BASEDATA))
 DEMODATA := data_demo $(patsubst %,data_demo/%,$(BASEDATA))
-DEPLOYDATA := $(patsubst %,deploy/%,SDL.dll cygogg-0.dll libvorbis-0.dll libvorbisfile-3.dll d-net.exe license.txt)
+DEPLOYDATA := $(patsubst %,deploy/%,SDL.dll libogg-0.dll libvorbis-0.dll libvorbisfile-3.dll d-net.exe license.txt)
 
 PACKAGESUBDIR := sekret
 
@@ -201,10 +201,10 @@ build/installer_demo_shopcache.nsi: makeinstaller.py version_data $(DEMODATA) $(
 build/installer_demo.nsi: makeinstaller.py version_data $(DEMODATA) $(DEPLOYDATA)
 	./makeinstaller.py data_demo version_data < installer.nsi.template > $@
 
-build/installer_release_shopcache.nsi: makeinstaller.py version_data $(DEMODATA) $(DEPLOYDATA) data_release/shopcache.dwh
+build/installer_release_shopcache.nsi: makeinstaller.py version_data $(RELEASEDATA) $(DEPLOYDATA) data_release/shopcache.dwh
 	./makeinstaller.py data_release version_data < installer.nsi.template > $@
 
-build/installer_release.nsi: makeinstaller.py version_data $(DEMODATA) $(DEPLOYDATA)
+build/installer_release.nsi: makeinstaller.py version_data $(RELEASEDATA) $(DEPLOYDATA)
 	./makeinstaller.py data_release version_data < installer.nsi.template > $@
 
 version.cpp: version_gen.py version_data
@@ -275,7 +275,7 @@ deploy/$(1): deploy
 endef
 
 $(eval $(call DLLer,SDL.dll))
-$(eval $(call DLLer,cygogg-0.dll))
+$(eval $(call DLLer,libogg-0.dll))
 $(eval $(call DLLer,libvorbis-0.dll))
 $(eval $(call DLLer,libvorbisfile-3.dll))
 
