@@ -8,6 +8,7 @@
 using namespace std;
 
 vector<string> tokenize(const string &in, const string &kar);
+vector<string> tokenize_withempty(const string &in, const string &kar);
 vector<int> sti(const vector<string> &foo);
 vector<float> stf(const vector<string> &foo);
   

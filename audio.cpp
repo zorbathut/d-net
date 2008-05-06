@@ -65,7 +65,10 @@ const Sound *const S::error = &error_local;
 const Sound *const S::null = &null_local;
 
 void initAudio() {
+  StackString sst("AudioInit");
+  
   if(FLAGS_audio) {
+    StackString sst("SDL");
     SDL_AudioSpec spec;
     spec.freq = 44100;
     spec.format = AUDIO_S16LSB;
@@ -163,11 +166,10 @@ void queueSound(const Sound *sound) {
 }
 
 Sound loadSoundOgg(const string &name) {
-  FILE *file = fopen((name + ".ogg").c_str(), "rb");
-  CHECK(file);
+  StackString sst("loadSoundOgg");
   
   OggVorbis_File ov;
-  CHECK(!ov_open(file, &ov, NULL, 0));
+  CHECK(!ov_fopen((char *)(name + ".ogg").c_str(), &ov));
   
   vorbis_info *inf = ov_info(&ov, -1);
   CHECK(inf);
@@ -200,6 +202,8 @@ Sound loadSoundOgg(const string &name) {
 }
 
 Sound loadSound(const string &name) {
+  StackString sst("loadSound");
+  
   CHECK(sizeof(short) == 2 && CHAR_BIT == 8);
   
   Sound sound;

@@ -21,6 +21,24 @@ vector<string> tokenize(const string &in, const string &kar) {
   return oot;
 };
 
+vector<string> tokenize_withempty(const string &in, const string &kar) {
+  vector<string> rv;
+  
+  const char *pt = in.c_str();
+  while(*pt) {
+    const char *nd = pt;
+    while(*nd && !count(kar.begin(), kar.end(), *nd))
+      nd++;
+    
+    rv.push_back(string(pt, nd));
+    pt = nd;
+    if(*pt)
+      pt++;
+  }
+  
+  return rv;
+};
+
 vector<int> sti(const vector<string> &foo) {
   vector<int> bar;
   for(int i = 0; i < foo.size(); i++)

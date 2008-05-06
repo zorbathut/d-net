@@ -166,6 +166,7 @@ int main(int argc, char **argv) {
     outputLevelChart();
 
   if(FLAGS_runGame) {
+    StackString sst("RunGame");
     initHttpd();
     initSystem();
     if(FLAGS_render) {

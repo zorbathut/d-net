@@ -1,8 +1,20 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
-  - Add forum
-  - Deploy 0.1.0
+  - Add a little bit of an intro screen
+  - Send in PAX
   - Remove 0.1.0 RC2
+  - Add forum
+    - Get rid of the ugly front page
+    - Add good thread icons
+    - Remove "sticky" text
+    - Desuckinate buttons
+    - favicon
+    - eliminate thread titles
+    - Figure out the flicker on reload
+    - Make sure link colors are right
+    - Add download-most-recent-version link?
+    - Add "contact" on mandible.net page
+  - Scan for profanity :D
   - scons argh
   - More debug stuff
     - Create new file with dprintf logs and upload it somewhere. Disable addr2line in some way.
@@ -24,9 +36,16 @@
     - Add vector_paranoia
     - Integrate in a few places
   - Add scoped_ptr
+  - Taunting: disable after death, make it less intense, make sure keyboard can do it
+  - pull test screen from the current tank, so it fires the actual weapons
+  - "missions"
   - turn inputsnag into a singleton
   - rework text rendering functions
   - split stdmenu out
+  - Autoping the player when there's only one
+  - Look at the starting timer and GO?
+  - Add explanation of bombing mode
+  - Numeric pad :downs:
   - Modify shockwave pulse quite a lot
   - un-duplicate some of the duplicated gameend/score code
   - statistical variation of glory devices?

@@ -128,7 +128,6 @@ void drawJustifiedText(const string &txt, float scale, const CFC2 &pos, Justific
 void drawJustifiedMultiText(const vector<string> &txt, float letterscale, const CFC2 &pos, Justification xjust, Justification yjust);
 
 void drawFormattedText(const string &txt, float scale, Float4 bounds);
-void drawFormattedText(const vector<string> &txt, float scale, Float4 bounds);
 void drawParagraphedText(const string &txt, float scale, pair<float, float> x_bounds, float y);
 void drawJustifiedParagraphedText(const string &txt, float scale, pair<float, float> x_bounds, float y, Justification yjust);
 

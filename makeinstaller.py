@@ -19,7 +19,7 @@ for line in files.splitlines():
   install = install + 'File "/oname=data\\%s" "%s\\%s"\n' % (line, sys.argv[1], line)
   uninstall = 'Delete "$INSTDIR\\data\\%s"\n' % line + uninstall
 
-install = install + 'File "/oname=settings" "settings.release"\n';
+install = install + 'File "/oname=settings" "settings.%s"\n' % sys.argv[1].split("_")[1]
 uninstall = 'Delete "$INSTDIR\\settings"\n' + uninstall;
 
 for line in dfiles.splitlines():

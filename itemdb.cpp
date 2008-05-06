@@ -583,6 +583,8 @@ void loadItemDb(bool reload) {
   
   string basepath = FLAGS_fileroot + "base/";
   ifstream manifest((basepath + "manifest").c_str());
+  if(!manifest)
+    dprintf("Failed to open %s\n", basepath.c_str());
   CHECK(manifest);
   
   string line;

@@ -750,6 +750,21 @@ bool InterfaceMain::tick(const InputState &is, RngSeed gameseed) {
     } else {
       CHECK(0);
     }
+  } else if(interface_mode == STATE_DISCLAIMER) {
+    bool pushed = false;
+    for(int i = 0; i < is.controllers.size(); i++)
+      for(int j = 0; j < is.controllers[i].keys.size(); j++)
+        if(is.controllers[i].keys[j].push)
+          pushed = true;
+    
+    if(is.confused)
+      pushed = true;
+    
+    if(is.confused_mouse)
+      pushed = true;
+    
+    if(pushed)
+      interface_mode = STATE_MAINMENU;
   } else if(interface_mode == STATE_MAINMENU) {
     if(!inptest) {
       tickIntroScreen();
@@ -806,7 +821,11 @@ bool InterfaceMain::tick(const InputState &is, RngSeed gameseed) {
 
 void InterfaceMain::ai(const vector<Ai *> &ai, const vector<bool> &isHuman) const {
   StackString stp("Interface AI");
-  if(interface_mode == STATE_MAINMENU) {
+  if(interface_mode == STATE_DISCLAIMER) {
+    for(int i = 0; i < ai.size(); i++)
+      if(ai[i])
+        ai[i]->updateIdle();
+  } else if(interface_mode == STATE_MAINMENU) {
     for(int i = 0; i < ai.size(); i++)
       if(ai[i])
         ai[i]->updatePregame();
@@ -974,7 +993,29 @@ void InterfaceMain::render() const {
       }
     }
     
-    if(interface_mode == STATE_MAINMENU) {
+    if(interface_mode == STATE_DISCLAIMER) {
+      setZoomVertical(0, 0, 100);
+      const float bord = 3;
+      
+      vector<string> text;
+      setColor(C::inactive_text);
+      text.push_back("Devastation Net is fundamentally a multiplayer game.");
+      text.push_back("There is, at this point, AI for it. However the AI is still under heavy development and does not work particularly well.");
+      text.push_back("It is best played with friends. It supports USB game controllers, which I highly recommend. Much like Super Smash Brothers Brawl and similar games, it is not really ideal as a singleplayer game.");
+      text.push_back("Singleplayer will, however, give you a sense of the gameplay - and hopefully interest you enough to bring some friends over.");
+      text.push_back("Visit www.mandible-games.com for recent versions, and thanks for playing.");
+      
+      string accum;
+      for(int i = 0; i < text.size(); i++) {
+        if(accum.size())
+          accum += "\n\n";
+        accum += text[i];
+      }
+      drawJustifiedParagraphedText(accum, 3, make_pair(getZoom().sx + bord, getZoom().ex - bord), getZoom().sy + bord, TEXT_MIN);
+      
+      setColor(C::active_text);
+      drawJustifiedText("(press enter to continue)", 3, Float2(getZoom().midpoint().x, getZoom().ey - bord), TEXT_CENTER, TEXT_MAX);
+    } else if(interface_mode == STATE_MAINMENU) {
       setZoomVertical(0, 0, 100);
       mainmenu.render(Float4(5, 50, getZoom().ex - 5, 95), false);
       setColor(C::inactive_text * 0.5);
@@ -1139,7 +1180,7 @@ void InterfaceMain::init() {
   else
     faction_toggle = true;
   
-  interface_mode = STATE_MAINMENU;
+  interface_mode = STATE_DISCLAIMER;
   
   mainmenu.pushMenuItem(StdMenuItemTrigger::make("Instant Action", MAIN_INSTANTACTION));
   

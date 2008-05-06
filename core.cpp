@@ -46,6 +46,7 @@ REGISTER_int(aiCount);
 void displayCZInfo();
 
 void MainLoop() {
+  StackString sst("MainLoop");
 
   Timer timer;
 

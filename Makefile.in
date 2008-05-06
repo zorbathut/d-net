@@ -195,13 +195,13 @@ releasepackage: build/installer_release_shopcache.nsi $(RELEASEDATA) $(DEPLOYDAT
 ###################################
 # Custom files
 
-build/installer_demo_shopcache.nsi: makeinstaller.py version_data $(DEMODATA) $(DEPLOYDATA) demo_data/shopcache.dwh
+build/installer_demo_shopcache.nsi: makeinstaller.py version_data $(DEMODATA) $(DEPLOYDATA) data_demo/shopcache.dwh
 	./makeinstaller.py data_demo version_data < installer.nsi.template > $@
 
 build/installer_demo.nsi: makeinstaller.py version_data $(DEMODATA) $(DEPLOYDATA)
 	./makeinstaller.py data_demo version_data < installer.nsi.template > $@
 
-build/installer_release_shopcache.nsi: makeinstaller.py version_data $(DEMODATA) $(DEPLOYDATA) demo_release/shopcache.dwh
+build/installer_release_shopcache.nsi: makeinstaller.py version_data $(DEMODATA) $(DEPLOYDATA) data_release/shopcache.dwh
 	./makeinstaller.py data_release version_data < installer.nsi.template > $@
 
 build/installer_release.nsi: makeinstaller.py version_data $(DEMODATA) $(DEPLOYDATA)

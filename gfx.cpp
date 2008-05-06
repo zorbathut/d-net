@@ -871,9 +871,13 @@ int snatchLine(const vector<string> &left, float fontsize, float limit) {
 
 vector<string> formatText(const string &txt, float fontsize, float width, const string &lineprefix) {
   vector<string> vlines;
-  vector<string> paras = tokenize(txt, "\n");
+  vector<string> paras = tokenize_withempty(txt, "\n");
   for(int i = 0; i < paras.size(); i++) {
     vector<string> left = tokenize(paras[i], " ");
+    if(!left.size()) {
+      vlines.push_back("");
+      continue;
+    }
     left[0] = lineprefix + left[0];
     while(left.size()) {
       int wordsa = snatchLine(left, fontsize, width);
