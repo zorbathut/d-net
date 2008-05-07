@@ -1,6 +1,7 @@
 
 !define PRODUCT_NAME "Devastation Net"
 $$$VERSION$$$
+$$$TYPE$$$
 !define PRODUCT_PUBLISHER "Mandible Games"
 !define PRODUCT_WEB_SITE "http://www.mandible-games.com"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\d-net.exe"
@@ -39,7 +40,7 @@ SetCompressor bzip2
 !insertmacro MUI_RESERVEFILE_INSTALLOPTIONS
 
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
-OutFile "dnet-${PRODUCT_VERSION}.exe"
+OutFile "dnet-${PRODUCT_VERSION}-${PRODUCT_TYPE}.exe"
 InstallDir "$PROGRAMFILES\Devastation Net"
 InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
 ShowInstDetails show

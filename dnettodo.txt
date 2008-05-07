@@ -1,7 +1,6 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - scons argh
-  - Add release/debug flags on the installers
   - More debug stuff
     - Create new file with dprintf logs and upload it somewhere. Disable addr2line in some way.
     - Rig up 911 system

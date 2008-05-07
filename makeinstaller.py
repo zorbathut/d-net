@@ -34,6 +34,8 @@ for line in sys.stdin.readlines():
     print uninstall
   elif line == "$$$VERSION$$$":
     print '!define PRODUCT_VERSION "%s"' % open(sys.argv[2]).readline()
+  elif line == "$$$TYPE$$$":
+    print '!define PRODUCT_TYPE "%s"' % sys.argv[1].split("_")[1]
   else:
     print line
 
