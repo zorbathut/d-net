@@ -652,7 +652,7 @@ void loadItemDb(bool reload) {
   root.checkConsistency(&errors);
   
   if(errors.size() == 0) {
-    dprintf("EVERYTHING IS AWESOME! HELLS FUCKING YES\n");
+    dprintf("EVERYTHING IS AWESOME!\n");
   } else {
     dprintf("%d errors\n", errors.size());
     for(int i = 0; i < errors.size(); i++)

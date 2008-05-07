@@ -31,7 +31,7 @@ DEFINE_int(terminateAfter, -1, "Terminate execution after this many seconds");
 DEFINE_int(randomizeFrameRender, 0, "Randomize frame render change to 1/this (default 0 for disabled)");
 
 DEFINE_bool(frameskip, true, "Enable or disable frameskipping");
-DEFINE_bool(render, true, "Render shit");
+DEFINE_bool(render, true, "Render toggle");
 DEFINE_bool(timing, true, "Display timing information");
 DEFINE_bool(warpkeys, false, "Enable timewarp keys");
 DEFINE_bool(renderframenumber, true, "Render frame number when AI is on");

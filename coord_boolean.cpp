@@ -751,7 +751,7 @@ vector<vector<Coord2> > getDifferenceCore(const vector<Coord2> &lhs, const vecto
             }
             if(junct <= itr->first) {
               // goddamn it
-              dprintf("Stupid vertical lines fuck everything up!\n");
+              dprintf("Stupid vertical lines screw everything up!\n");
               junct.x = coordExplicit(junct.x.raw() + 1);
               CHECK(junct > itr->first);
             }
@@ -906,7 +906,7 @@ vector<vector<Coord2> > getDifferenceCore(const vector<Coord2> &lhs, const vecto
       for(int j = 0; j < mas.size(); j++) {
         if(lhsInside) {
           if(pathReversed(mas[j])) {
-            dprintf("Holy fuck, this path is screwed up!\n");
+            dprintf("This path is incredibly screwed up!\n");
             CHECK(0);
           } else {
             rrv.push_back(mas[j]);

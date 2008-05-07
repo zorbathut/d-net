@@ -153,7 +153,7 @@ bool Game::runTick(const vector<Keystates> &rkeys, bool confused, const vector<P
       if(collider.checkSimpleCollision(CGR_TANK, j, tanks[j].getCurrentCollide())) {
         // FUCK
         // ASS
-        dprintf("FUCK ASS");
+        dprintf("Tanks are inside walls :smith:");
         addErrorMessage("A Zebra");
         float delta = 0.01;
         Coord2 ps = tanks[j].pi.pos;
