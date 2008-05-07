@@ -1,13 +1,9 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
-  - Remove 0.1.0 RC2
   - Add forum
     - Get rid of the ugly front page
     - Add good thread icons
-      - Make them show up right
       - Make it so they don't scroll
-      - Add 1px border
-      - Remove "default" text in people's replies
     - Remove "sticky" text
     - Desuckinate buttons
     - favicon
@@ -18,6 +14,7 @@
     - Add "contact" on mandible.net page
   - Scan for profanity :D
   - scons argh
+  - Add release/debug flags on the installers
   - More debug stuff
     - Create new file with dprintf logs and upload it somewhere. Disable addr2line in some way.
     - Rig up 911 system
