@@ -1,11 +1,13 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
-  - Add a little bit of an intro screen
-  - Send in PAX
   - Remove 0.1.0 RC2
   - Add forum
     - Get rid of the ugly front page
     - Add good thread icons
+      - Make them show up right
+      - Make it so they don't scroll
+      - Add 1px border
+      - Remove "default" text in people's replies
     - Remove "sticky" text
     - Desuckinate buttons
     - favicon
