@@ -1,8 +1,8 @@
 
-from SConstruct_config import Configure
+from SConstruct_config import Conf
 
 # Globals
 Decider('MD5-timestamp')
 SetOption('implicit_cache', 1)
 
-env = Configure()
+env = Conf()
