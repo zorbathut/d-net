@@ -24,6 +24,9 @@ buildables = [
 # Demoed data
 # Deployed data
 
+deploy_dlls = Split("SDL.dll libogg-0.dll libvorbis-0.dll libvorbisfile-3.dll")
+deploy = deploy_dlls + ["d-net.exe", "license.txt"]
+
 if 1:
   for item in categories:
     for flag in flagtypes:
@@ -63,9 +66,10 @@ for build in buildables:
 def commandstrip(env, source):
   env.Command('deploy/%s' % source.split('/')[-1], source, "cp $SOURCE $TARGET && strip -s $TARGET")
 
-for item in Split("SDL.dll libogg-0.dll libvorbis-0.dll libvorbisfile-3.dll"):
+for item in deploy_dlls:
   commandstrip(env, "/usr/mingw/local/bin/%s" % item)
 commandstrip(env, "d-net.exe")
+env.Command('deploy/license.txt', 'resources/license.txt', Copy("$TARGET", '$SOURCE'))
 
 # version.cpp
 env.Command('version.cpp', Split('version_data version_gen.py'), "./version_gen.py < version_data > $TARGET")
