@@ -9,6 +9,10 @@ def Conf():
   # Set up our environment
   env = Environment(LINKFLAGS = "-g -O2 -Wl,--as-needed -Wl,-\\(".split(" "), CXXFLAGS="-Wall -Wno-sign-compare -Wno-uninitialized -g -O2".split(" "), CPPDEFINES="DPRINTF_MARKUP".split(" "))
 
+  for item in ["GAME", "EDITOR", "REPORTER", "CONSOLE"]:
+    for flag in ["CCFLAGS", "CPPFLAGS", "CXXFLAGS", "LINKFLAGS", "LIBS", "CPPPATH", "LIBPATH", "CPPDEFINES"]:
+      env[flag + "_" + item] = ["$" + flag]
+  
   # Here's our custom tests
   def CheckFile(context, paths, file):
     context.Message("Checking for %s ... " % file)
@@ -46,11 +50,13 @@ def Conf():
     
     if not conf.CheckLibWithHeader("ws2_32", "windows.h", "c++", "WSACleanup();", autoadd=0):
       Exit(1)
-    env.Append(LIBS_GAME=["ws2_32"])
+    env.Append(LIBS_GAME="ws2_32")
+    env.Append(LIBS_REPORTER="ws2_32")
     
     if not conf.CheckLibWithHeader("opengl32", "GL/gl.h", "c++", "glLoadIdentity();", autoadd=0):
       Exit(1)
-    env.Append(LIBS_GAME=["opengl32"])
+    env.Append(LIBS_GAME="opengl32")
+    env.Append(LIBS_EDITOR="opengl32")
     
     if not conf.CheckLib("mingw32", autoadd=0):
       Exit(1)
@@ -78,19 +84,23 @@ def Conf():
   # zlib
   if not conf.CheckLib("z", "compress", autoadd=0):
     Exit(1)
+  env.Append(LIBS_GAME="z")
+  env.Append(LIBS_REPORTER="z")
 
   # libpng
   if not conf.CheckLib("png", "png_create_read_struct", autoadd=0):
     Exit(1)
+  env.Append(LIBS_EDITOR="z")
 
   # curl
   # curl depends on zlib and ws2_32 on Windows
   templibs = env['LIBS']
   env.Append(LIBS=["z", "ws2_32"])
-  env.Append(CPPDEFINES="CURL_STATICLIB")
+  env.Append(CPPDEFINES_REPORTER="CURL_STATICLIB")
   if not conf.CheckLib("curl", "curl_easy_init", autoadd=0):
     Exit(1)
   env['LIBS'] = templibs
+  env.Append(LIBS_REPORTER="curl")
 
   # xerces
   if not conf.CheckLib("xerces-c", autoadd=0):
@@ -113,6 +123,8 @@ def Conf():
   wxpath = conf.CheckFile(["/usr/mingw/local/bin", "/usr/local/bin", "/usr/bin"], "wx-config")
   if not wxpath:
     Exit(1)
+
+  env.Append(CXXFLAGS_REPORTER="-O0", LINKFLAGS_REPORTER="-O0")
 
   env = conf.Finish()
   
