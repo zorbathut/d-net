@@ -10,7 +10,7 @@ def Conf():
   # Set up our environment
   env = Environment(LINKFLAGS = Split("-g -O2 -Wl,--as-needed -Wl,-\\("), CXXFLAGS=Split("-Wall -Wno-sign-compare -Wno-uninitialized -g -O2"), CPPDEFINES=["DPRINTF_MARKUP"], CXX="nice ./ewrap $TARGET g++")
   
-  categories = Split("GAME EDITOR REPORTER CONSOLE")
+  categories = Split("GAME EDITOR REPORTER CONSOLE CONSOLE_MERGER CONSOLE_ODS2CSV")
   flagtypes = Split("CCFLAGS CPPFLAGS CXXFLAGS LINKFLAGS LIBS CPPPATH LIBPATH CPPDEFINES")
   
   for item in categories:
@@ -92,7 +92,7 @@ def Conf():
   env.Append(LIBS_GAME="z")
   env.Append(LIBS_EDITOR="z")
   env.Append(LIBS_REPORTER="z")
-  env.Append(LIBS_CONSOLE="z")
+  env.Append(LIBS_CONSOLE_ODS2CSV="z")
 
   # libpng
   if not conf.CheckLib("png", "png_create_read_struct", autoadd=0):
@@ -112,7 +112,7 @@ def Conf():
   # xerces
   if not conf.CheckLib("xerces-c", autoadd=0):
     Exit(1)
-  env.Append(LIBS_CONSOLE="xerces-c")
+  env.Append(LIBS_CONSOLE_ODS2CSV="xerces-c")
 
   # Check for libogg
   if not conf.CheckLib("ogg", "ogg_stream_init", autoadd=0):
