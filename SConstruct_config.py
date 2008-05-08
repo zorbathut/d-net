@@ -3,15 +3,19 @@ import os
 import subprocess
 
 from SCons.Environment import Environment
+from SCons.Util import Split
 
 def Conf():
 
   # Set up our environment
-  env = Environment(LINKFLAGS = "-g -O2 -Wl,--as-needed -Wl,-\\(".split(" "), CXXFLAGS="-Wall -Wno-sign-compare -Wno-uninitialized -g -O2".split(" "), CPPDEFINES="DPRINTF_MARKUP".split(" "))
-
-  for item in ["GAME", "EDITOR", "REPORTER", "CONSOLE"]:
-    for flag in ["CCFLAGS", "CPPFLAGS", "CXXFLAGS", "LINKFLAGS", "LIBS", "CPPPATH", "LIBPATH", "CPPDEFINES"]:
-      env[flag + "_" + item] = ["$" + flag]
+  env = Environment(LINKFLAGS = Split("-g -O2 -Wl,--as-needed -Wl,-\\("), CXXFLAGS=Split("-Wall -Wno-sign-compare -Wno-uninitialized -g -O2"), CPPDEFINES=["DPRINTF_MARKUP"], CXX="nice ./ewrap $TARGET g++")
+  
+  categories = Split("GAME EDITOR REPORTER CONSOLE")
+  flagtypes = Split("CCFLAGS CPPFLAGS CXXFLAGS LINKFLAGS LIBS CPPPATH LIBPATH CPPDEFINES")
+  
+  for item in categories:
+    for flag in flagtypes:
+      env[flag + "_" + item] = []
   
   # Here's our custom tests
   def CheckFile(context, paths, file):
@@ -36,14 +40,14 @@ def Conf():
 
   if 1: # Cygwin
     # Set up our environment defaults
-    env.Append(CPPPATH = "/usr/mingw/local/include".split(" "), LIBPATH = "/usr/mingw/local/lib".split(" "), CCFLAGS="-mno-cygwin".split(" "), CPPFLAGS="-mno-cygwin".split(" "), CXXFLAGS="-mno-cygwin".split(" "), LINKFLAGS="-mno-cygwin".split(" "))
+    env.Append(CPPPATH = Split("/usr/mingw/local/include"), LIBPATH = Split("/usr/mingw/local/lib"), CCFLAGS=Split("-mno-cygwin"), CPPFLAGS=Split("-mno-cygwin"), CXXFLAGS=Split("-mno-cygwin"), LINKFLAGS=Split("-mno-cygwin"))
     
     # Boost flags
     boostlibs=["boost_regex-mgw-mt", "boost_filesystem-mgw-mt"]
-    boostpath="/usr/mingw/local/include/boost-1_33_1"
+    boostpath=["/usr/mingw/local/include/boost-1_33_1"]
     
     # VECTOR_PARANOIA
-    env.Append(CPPDEFINES="VECTOR_PARANOIA")
+    env.Append(CPPDEFINES=["VECTOR_PARANOIA"])
     
     if not conf.CheckCXXHeader('windows.h', '<>'):
       Exit(1)
@@ -66,7 +70,8 @@ def Conf():
   sdlpath = conf.CheckFile(["/usr/mingw/local/bin", "/usr/local/bin", "/usr/bin"], "sdl-config")
   if not sdlpath:
     Exit(1)
-  env.Append(LINKFLAGS_GAME=conf.Execute(sdlpath + " --libs"), CPPFLAGS_GAME=conf.Execute(sdlpath + " --cflags"))
+  env.Append(LINKFLAGS_GAME=Split(conf.Execute(sdlpath + " --libs")), CPPFLAGS_GAME=Split(conf.Execute(sdlpath + " --cflags")))
+  env.Append(CPPDEFINES_EDITOR=["NOSDL"])
 
   # Boost
   env.Append(LIBS=boostlibs, CPPPATH=boostpath)
@@ -85,47 +90,53 @@ def Conf():
   if not conf.CheckLib("z", "compress", autoadd=0):
     Exit(1)
   env.Append(LIBS_GAME="z")
+  env.Append(LIBS_EDITOR="z")
   env.Append(LIBS_REPORTER="z")
+  env.Append(LIBS_CONSOLE="z")
 
   # libpng
   if not conf.CheckLib("png", "png_create_read_struct", autoadd=0):
     Exit(1)
-  env.Append(LIBS_EDITOR="z")
+  env.Append(LIBS_EDITOR="png")
 
   # curl
   # curl depends on zlib and ws2_32 on Windows
   templibs = env['LIBS']
   env.Append(LIBS=["z", "ws2_32"])
-  env.Append(CPPDEFINES_REPORTER="CURL_STATICLIB")
   if not conf.CheckLib("curl", "curl_easy_init", autoadd=0):
     Exit(1)
   env['LIBS'] = templibs
   env.Append(LIBS_REPORTER="curl")
+  env.Append(CPPDEFINES_REPORTER="CURL_STATICLIB")
 
   # xerces
   if not conf.CheckLib("xerces-c", autoadd=0):
     Exit(1)
+  env.Append(LIBS_CONSOLE="xerces-c")
 
   # Check for libogg
   if not conf.CheckLib("ogg", "ogg_stream_init", autoadd=0):
     Exit(1)
-    
+  env.Append(LIBS_GAME="ogg")
+  
   # Check for libvorbis
   if not conf.CheckLib("vorbis", "vorbis_info_init", autoadd=0):
     Exit(1)
-    
+  env.Append(LIBS_GAME="vorbis")
+  
   # Check for libvorbisfile
   if not conf.CheckLibWithHeader("vorbisfile", "vorbis/vorbisfile.h", "c++", 'ov_fopen("hi", NULL);', autoadd=0):
     Exit(1)
-
+  env.Append(LIBS_GAME="vorbisfile")
 
   # Check for wx
   wxpath = conf.CheckFile(["/usr/mingw/local/bin", "/usr/local/bin", "/usr/bin"], "wx-config")
   if not wxpath:
     Exit(1)
+  env.Append(LINKFLAGS_EDITOR=Split(conf.Execute(wxpath + " --libs --gl-libs")), CPPFLAGS_EDITOR=Split(conf.Execute(wxpath + " --cxxflags")))
 
   env.Append(CXXFLAGS_REPORTER="-O0", LINKFLAGS_REPORTER="-O0")
 
   env = conf.Finish()
   
-  return env
+  return env, categories, flagtypes

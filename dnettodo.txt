@@ -2,7 +2,8 @@
 - "Finish the Damn Game" Initiative
   - scons argh
     - benchmark final linking with --hash-size
-    - cache SDL stuff
+    - cache SDL/WX stuff
+    - split console into console_merger and console_ods2csv
   - More debug stuff
     - Create new file with dprintf logs and upload it somewhere. Disable addr2line in some way.
     - Rig up 911 system
