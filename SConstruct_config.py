@@ -134,8 +134,13 @@ def Conf():
     Exit(1)
   env.Append(LINKFLAGS_EDITOR=Split(conf.Execute(wxpath + " --libs --gl-libs")), CPPFLAGS_EDITOR=Split(conf.Execute(wxpath + " --cxxflags")))
 
+  # Check for oggenc
+  oggpath = conf.CheckFile(["/cygdrive/c/windows/util"], "oggenc")
+  if not oggpath:
+    Exit(1)
+  
   env.Append(CXXFLAGS_REPORTER="-O0", LINKFLAGS_REPORTER="-O0")
 
   env = conf.Finish()
   
-  return env, categories, flagtypes
+  return env, categories, flagtypes, oggpath
