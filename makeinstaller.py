@@ -1,8 +1,10 @@
 
+from __future__ import with_statement
+
 import commands
 import sys
 
-def generateInstaller(target, source, copyprefix, files, deployfiles):
+def generateInstaller(target, source, copyprefix, files, deployfiles, finaltarget, version):
 
   directories = {"data" : None}
   
@@ -10,40 +12,42 @@ def generateInstaller(target, source, copyprefix, files, deployfiles):
     for steps in range(len(item.split('/')) - 1):
       directories["data/" + item.rsplit('/', steps + 1)[0]] = None
   
-  print directories
-  directores = [x for (x, y) in directories.iterkeys()]
-  print directories
+  directories = [x.replace('/', '\\') for x in directories.iterkeys()]
+  files = [x.replace('/', '\\') for x in files]
+  deployfiles = [x.replace('/', '\\') for x in deployfiles]
   
-  sadlikgj
-
   install = ""
   uninstall = ""
 
-  for line in directories.splitlines():
+  for line in directories:
     install = install + 'CreateDirectory "$INSTDIR\\%s"\n' % line
     uninstall = 'RMDir "$INSTDIR\\%s"\n' % line + uninstall
 
-  for line in files.splitlines():
-    install = install + 'File "/oname=data\\%s" "%s\\%s"\n' % (line, sys.argv[1], line)
-    uninstall = 'Delete "$INSTDIR\\data\\%s"\n' % line + uninstall
+  for line in files:
+    install = install + 'File "/oname=data\\%s" "%s"\n' % (line.split('\\', 1)[1], line)
+    uninstall = 'Delete "$INSTDIR\\data\\%s"\n' % line.split('\\', 1)[1] + uninstall
 
-  install = install + 'File "/oname=settings" "settings.%s"\n' % sys.argv[1].split("_")[1]
+  install = install + 'File "/oname=settings" "settings.%s"\n' % copyprefix
   uninstall = 'Delete "$INSTDIR\\settings"\n' + uninstall;
 
-  for line in dfiles.splitlines():
-    install = install + 'File "/oname=%s" "deploy\\%s"\n' % (line, line)
-    uninstall = 'Delete "$INSTDIR\\%s"\n' % line + uninstall
+  for line in deployfiles:
+    install = install + 'File "/oname=%s" "%s"\n' % (line.split('\\', 1)[1], line)
+    uninstall = 'Delete "$INSTDIR\\%s"\n' % line.split('\\', 1)[1] + uninstall
 
-  for line in sys.stdin.readlines():
-    line = line.strip()
-    if line == "$$$INSTALL$$$":
-      print install
-    elif line == "$$$UNINSTALL$$$":
-      print uninstall
-    elif line == "$$$VERSION$$$":
-      print '!define PRODUCT_VERSION "%s"' % open(sys.argv[2]).readline()
-    elif line == "$$$TYPE$$$":
-      print '!define PRODUCT_TYPE "%s"' % sys.argv[1].split("_")[1]
-    else:
-      print line
+  with open(str(source[0])) as inp:
+    with open(str(target[0]), "w") as otp:
+      for line in inp.readlines():
+        line = line.strip()
+        if line == "$$$INSTALL$$$":
+          print >> otp, install
+        elif line == "$$$UNINSTALL$$$":
+          print >> otp, uninstall
+        elif line == "$$$VERSION$$$":
+          print >> otp, '!define PRODUCT_VERSION "%s"' % version
+        elif line == "$$$TYPE$$$":
+          print >> otp, '!define PRODUCT_TYPE "%s"' % copyprefix
+        elif line == "$$$OUTFILE$$$":
+          print >> otp, 'OutFile "%s"' % finaltarget
+        else:
+          print >> otp, line
 

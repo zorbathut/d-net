@@ -1,13 +1,16 @@
 
+from __future__ import with_statement
+
 from SConstruct_config import Conf
 from util import traverse, dispatcher
 from makeinstaller import generateInstaller
+import sys
 
 # Globals
 Decider('MD5-timestamp')
 SetOption('implicit_cache', 1)
 
-env, categories, flagtypes, oggpath = Conf()
+env, categories, flagtypes, oggpath, makensis = Conf()
 
 # List of buildables
 buildables = [
@@ -19,7 +22,6 @@ buildables = [
 ]
 
 deploy_dlls = Split("SDL.dll libogg-0.dll libvorbis-0.dll libvorbisfile-3.dll")
-deploy = deploy_dlls + ["d-net.exe", "license.txt"]
 
 if 0:
   for item in categories:
@@ -54,7 +56,7 @@ for build in buildables:
         built[(build[1], item)] = env.Object(source="%s.c" % item, target="build/%s.%s.o" % (item, abbreviation), **params)
       objects += built[(build[1], item)]
   
-  programs[build[0]] = env.Program(build[0], objects, **params)
+  programs[build[0]] = env.Program("build/" + build[0], objects, **params)
 
 # data copying and merging
 data_source = traverse("data_source")
@@ -93,21 +95,48 @@ def make_datadir(dest, mergeflags = ""):
   return results
 
 data_dests = {}
-
 data_dests["release"] = make_datadir("data_release")
 data_dests["demo"] = make_datadir("data_demo", "--demo")
 
+def make_shopcache(dest):
+  return env.Command(dest + "/shopcache.dwh", [programs["d-net"]] + data_dests[dest], "./${SOURCES[0]} --generateCachedShops=0.1 --fileroot=data_%s" % dest)
+
+shopcaches = {}
+shopcaches["release"] = make_shopcache("release")
+shopcaches["demo"] = make_shopcache("demo")
+
 # deploy directory and associated
 def commandstrip(env, source):
-  env.Command('deploy/%s' % source.split('/')[-1], source, "cp $SOURCE $TARGET && strip -s $TARGET")
+  return env.Command('deploy/%s' % source.split('/')[-1], source, "cp $SOURCE $TARGET && strip -s $TARGET")
+
+deployfiles = []
 
 for item in deploy_dlls:
-  commandstrip(env, "/usr/mingw/local/bin/%s" % item)
-commandstrip(env, "d-net.exe")
-env.Command('deploy/license.txt', 'resources/license.txt', Copy("$TARGET", '$SOURCE'))
+  deployfiles += commandstrip(env, "/usr/mingw/local/bin/%s" % item)
+deployfiles += commandstrip(env, "d-net.exe")
+deployfiles += env.Command('deploy/license.txt', 'resources/license.txt', Copy("$TARGET", '$SOURCE'))
 
 # installers
-env.Command('build/installer_demo.nsi', 'version_data', dispatcher(generateInstaller, copyprefix="demo", files=[str(x) for x in data_dests["demo"]], deployfiles=["deploy/" + x for x in deploy]))
+with open("version_data") as f:
+  version = f.readline()
+
+def create_installer(type, shopcaches):
+  if shopcaches == []:
+    quick = "-quick"
+  else:
+    quick = ""
+    
+  nsipath = 'build/installer_%s%s.nsi' % (type, quick)
+  ident = '%s-%s' % (version, type)
+  finalpath = 'build/d-net-%s-%s%s.exe' % (version, type, quick)
+  
+  env.Command(nsipath, ['installer.nsi.template', 'makeinstaller.py'], dispatcher(generateInstaller, copyprefix=type, files=[str(x) for x in data_dests[type] + shopcaches], deployfiles=[str(x) for x in deployfiles], finaltarget=finalpath, version=ident))
+  env.Command(finalpath, [nsipath] + data_dests["demo"] + deployfiles + shopcaches, "%s - < ${SOURCES[0]}" % makensis)
+
+create_installer("demo", [])
+create_installer("demo", [shopcaches["demo"]])
+create_installer("release", [])
+create_installer("release", [shopcaches["release"]])
 
 # version.cpp
 env.Command('version.cpp', Split('version_data version_gen.py'), "./version_gen.py < version_data > $TARGET")

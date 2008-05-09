@@ -24,8 +24,6 @@ class DispatcherClass:
     self.map = map
   
   def __call__(self, target, source, env):
-    print self.var
-    print self.map
     self.function(target, source, *self.var, **self.map)
 
 def dispatcher(function, *var, **map):

@@ -28,7 +28,7 @@ def Conf():
         testpath = path + "/" + file;
         if os.path.exists(testpath):
           context.Result(testpath)
-          return testpath
+          return '"%s"' % testpath
       context.Result(0)
       return 0
 
@@ -142,6 +142,11 @@ def Conf():
     oggpath = conf.CheckFile(["/cygdrive/c/windows/util"], "oggenc")
     if not oggpath:
       Exit(1)
+      
+    # Check for makensis
+    makensis = conf.CheckFile(["/cygdrive/c/Program Files (x86)/NSIS"], "makensis")
+    if not makensis:
+      Exit(1)
     
     env.Append(CXXFLAGS_REPORTER="-O0", LINKFLAGS_REPORTER="-O0")
 
@@ -150,5 +155,6 @@ def Conf():
   else:
     
     oggpath = ""
+    makensis = ""
   
-  return env, categories, flagtypes, oggpath
+  return env, categories, flagtypes, oggpath, makensis

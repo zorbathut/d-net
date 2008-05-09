@@ -40,7 +40,7 @@ SetCompressor bzip2
 !insertmacro MUI_RESERVEFILE_INSTALLOPTIONS
 
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
-OutFile "dnet-${PRODUCT_VERSION}-${PRODUCT_TYPE}.exe"
+$$$OUTFILE$$$
 InstallDir "$PROGRAMFILES\Devastation Net"
 InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
 ShowInstDetails show
