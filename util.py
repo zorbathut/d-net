@@ -16,3 +16,17 @@ def traverse(path, prefix=""):
     else:
       olist += [prefix + item]
   return olist
+
+class DispatcherClass:
+  def __init__(self, function, var, map):
+    self.function = function
+    self.var = var
+    self.map = map
+  
+  def __call__(self, target, source, env):
+    print self.var
+    print self.map
+    self.function(target, source, *self.var, **self.map)
+
+def dispatcher(function, *var, **map):
+  return DispatcherClass(function, var, map)

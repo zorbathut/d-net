@@ -1,6 +1,6 @@
 
 from SConstruct_config import Conf
-from util import traverse
+from util import traverse, dispatcher
 from makeinstaller import generateInstaller
 
 # Globals
@@ -73,11 +73,13 @@ for item in data_merge:
   csvs[identifier] = env.Command("build/notes_%s.csv" % identifier, [programs["ods2csv"], "notes.ods"], "./${SOURCES[0]} $TARGET notes.ods %s" % identifier)
 
 def make_datadir(dest, mergeflags = ""):
+  results = []
+  
   for item in data_copy:
-    env.Command(dest + "/" + item, "data_source/" + item, Copy("$TARGET", '$SOURCE'))
+    results += env.Command(dest + "/" + item, "data_source/" + item, Copy("$TARGET", '$SOURCE'))
   
   for item in data_oggize:
-    env.Command(dest + "/" + item.rsplit('.', 1)[0] + ".ogg", "data_source/" + item, "%s -q 6 -o $TARGET $SOURCE" % oggpath)
+    results += env.Command(dest + "/" + item.rsplit('.', 1)[0] + ".ogg", "data_source/" + item, "%s -q 6 -o $TARGET $SOURCE" % oggpath)
   
   for item in data_merge:
     identifier = item.split('.')[-3].split('/')[-1]
@@ -86,10 +88,14 @@ def make_datadir(dest, mergeflags = ""):
       emgd = [dest + "/" + x for x in extramergedeps[item.rsplit('.', 1)[0]]]
     else:
       emgd = []
-    env.Command(dest + "/" + item.rsplit('.', 1)[-2], [programs["merger"], csvs[identifier], "data_source/" + item] + emgd, "./${SOURCES[0]} ${SOURCES[1]} ${SOURCES[2]} $TARGET --fileroot=%s %s" % (dest, mergeflags))
+    results += env.Command(dest + "/" + item.rsplit('.', 1)[-2], [programs["merger"], csvs[identifier], "data_source/" + item] + emgd, "./${SOURCES[0]} ${SOURCES[1]} ${SOURCES[2]} $TARGET --fileroot=%s %s" % (dest, mergeflags))
+  
+  return results
 
-make_datadir("data_release")
-make_datadir("data_demo", "--demo")
+data_dests = {}
+
+data_dests["release"] = make_datadir("data_release")
+data_dests["demo"] = make_datadir("data_demo", "--demo")
 
 # deploy directory and associated
 def commandstrip(env, source):
@@ -101,8 +107,7 @@ commandstrip(env, "d-net.exe")
 env.Command('deploy/license.txt', 'resources/license.txt', Copy("$TARGET", '$SOURCE'))
 
 # installers
-
-#env.Command('build/installer_demo.nsi', 'version_data', 
+env.Command('build/installer_demo.nsi', 'version_data', dispatcher(generateInstaller, copyprefix="demo", files=[str(x) for x in data_dests["demo"]], deployfiles=["deploy/" + x for x in deploy]))
 
 # version.cpp
 env.Command('version.cpp', Split('version_data version_gen.py'), "./version_gen.py < version_data > $TARGET")

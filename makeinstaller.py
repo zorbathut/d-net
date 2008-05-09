@@ -2,12 +2,19 @@
 import commands
 import sys
 
-def generateInstaller(copyprefix, files, deployfiles):
+def generateInstaller(target, source, copyprefix, files, deployfiles):
 
-  directories = "data\n" + commands.getoutput("""cd %s ; find -type d -print | grep / | sed 's/.\//data\\\\/' | sed 's,/,\\\\,g'""" % sys.argv[1])
-  files = commands.getoutput("""cd %s ; find -type f -print | grep / | sed "s/.\///" | sed 's,/,\\\\,g'""" % sys.argv[1])
-
-  dfiles = commands.getoutput("""cd deploy ; find -type f -print | grep / | sed "s/.\///" | sed 's,/,\\\\,g'""")
+  directories = {"data" : None}
+  
+  for item in [x.split('/', 1)[1] for x in files]:
+    for steps in range(len(item.split('/')) - 1):
+      directories["data/" + item.rsplit('/', steps + 1)[0]] = None
+  
+  print directories
+  directores = [x for (x, y) in directories.iterkeys()]
+  print directories
+  
+  sadlikgj
 
   install = ""
   uninstall = ""
