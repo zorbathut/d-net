@@ -113,7 +113,7 @@ deployfiles = []
 
 for item in deploy_dlls:
   deployfiles += commandstrip(env, "/usr/mingw/local/bin/%s" % item)
-deployfiles += commandstrip(env, "d-net.exe")
+deployfiles += commandstrip(env, "build/d-net.exe")
 deployfiles += env.Command('deploy/license.txt', 'resources/license.txt', Copy("$TARGET", '$SOURCE'))
 
 # installers
@@ -130,13 +130,13 @@ def create_installer(type, shopcaches):
   ident = '%s-%s' % (version, type)
   finalpath = 'build/d-net-%s-%s%s.exe' % (version, type, quick)
   
-  env.Command(nsipath, ['installer.nsi.template', 'makeinstaller.py'], dispatcher(generateInstaller, copyprefix=type, files=[str(x) for x in data_dests[type] + shopcaches], deployfiles=[str(x) for x in deployfiles], finaltarget=finalpath, version=ident))
-  env.Command(finalpath, [nsipath] + data_dests["demo"] + deployfiles + shopcaches, "%s - < ${SOURCES[0]}" % makensis)
+  env.Command(nsipath, ['installer.nsi.template', 'makeinstaller.py'] + data_dests[type] + deployfiles + shopcaches, dispatcher(generateInstaller, copyprefix=type, files=[str(x) for x in data_dests[type] + shopcaches], deployfiles=[str(x) for x in deployfiles], finaltarget=finalpath, version=ident)) # Technically it only depends on those files existing, not their actual contents.
+  return env.Command(finalpath, [nsipath] + data_dests[type] + deployfiles + shopcaches, "%s - < ${SOURCES[0]}" % makensis)
 
-create_installer("demo", [])
-create_installer("demo", shopcaches["demo"])
-create_installer("release", [])
-create_installer("release", shopcaches["release"])
+Alias("packagedemoquick", create_installer("demo", []))
+Alias("packagedemo", create_installer("demo", shopcaches["demo"]))
+Alias("packagereleasequick", create_installer("release", []))
+Alias("package", Alias("packagerelease", create_installer("release", shopcaches["release"])))
 
 # version.cpp
 env.Command('version.cpp', Split('version_data version_gen.py'), "./version_gen.py < version_data > $TARGET")
