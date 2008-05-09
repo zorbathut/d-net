@@ -99,7 +99,7 @@ data_dests["release"] = make_datadir("data_release")
 data_dests["demo"] = make_datadir("data_demo", "--demo")
 
 def make_shopcache(dest):
-  return env.Command(dest + "/shopcache.dwh", [programs["d-net"]] + data_dests[dest], "./${SOURCES[0]} --generateCachedShops=0.1 --fileroot=data_%s" % dest)
+  return env.Command("data_" + dest + "/shopcache.dwh", [programs["d-net"]] + data_dests[dest], "./${SOURCES[0]} --generateCachedShops=0.1 --fileroot=data_%s" % dest)
 
 shopcaches = {}
 shopcaches["release"] = make_shopcache("release")
@@ -125,7 +125,7 @@ def create_installer(type, shopcaches):
     quick = "-quick"
   else:
     quick = ""
-    
+  
   nsipath = 'build/installer_%s%s.nsi' % (type, quick)
   ident = '%s-%s' % (version, type)
   finalpath = 'build/d-net-%s-%s%s.exe' % (version, type, quick)
@@ -134,9 +134,9 @@ def create_installer(type, shopcaches):
   env.Command(finalpath, [nsipath] + data_dests["demo"] + deployfiles + shopcaches, "%s - < ${SOURCES[0]}" % makensis)
 
 create_installer("demo", [])
-create_installer("demo", [shopcaches["demo"]])
+create_installer("demo", shopcaches["demo"])
 create_installer("release", [])
-create_installer("release", [shopcaches["release"]])
+create_installer("release", shopcaches["release"])
 
 # version.cpp
 env.Command('version.cpp', Split('version_data version_gen.py'), "./version_gen.py < version_data > $TARGET")

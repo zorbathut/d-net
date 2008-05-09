@@ -68,6 +68,8 @@ def Conf():
       if not conf.CheckLib("mingw32", autoadd=0):
         Exit(1)
       env.Append(LIBS="mingw32")
+      
+      env.Append(ENV = {"PATH" : os.environ['PATH']})  # this is not really ideal
 
     # SDL
     sdlpath = conf.CheckFile(["/usr/mingw/local/bin", "/usr/local/bin", "/usr/bin"], "sdl-config")
