@@ -212,6 +212,7 @@ int main(int argc, char *argv[]) {
       }
       fprintf(of, "\n");
     }
+    
     fclose(of);
   }
 }

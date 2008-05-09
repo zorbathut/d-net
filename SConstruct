@@ -141,12 +141,19 @@ create_installer("release", shopcaches["release"])
 # version.cpp
 env.Command('version.cpp', Split('version_data version_gen.py'), "./version_gen.py < version_data > $TARGET")
 
+# cleanup
+Clean("build", "build")
+Clean("data_release", "data_release")
+Clean("data_demo", "data_demo")
+Clean("deploy", "deploy")
+
 # How we actually do stuff
 def command(env, name, deps, line):
   env.AlwaysBuild(env.Alias(name, deps, line))
   
-fulldata = env.Alias("d-net program and release data", data_dests["demo"] + [programs["d-net"]])
-env.Default(fulldata)
+fulldata = env.Alias("d-net program and release data", data_dests["release"] + [programs["d-net"]])
+if not env.GetOption('clean'):
+  env.Default(fulldata) # if we clean, we want to clean everything
 
 localflags = "--writetarget=dumps/dump --nofullscreen --noaudio --perfbar --httpd_port=616 --runTests"
 stdrun = localflags + " --debugitems --startingPhase=8 --debugControllers=2 --factionMode=3 --nullControllers=11 --writeTarget= --auto_newgame --nocullShopTree --httpd_port=616 --checksumgamestate --noshopcache --nofastForwardOnNoCache"
