@@ -56,7 +56,7 @@ for build in buildables:
         built[(build[1], item)] = env.Object(source="%s.c" % item, target="build/%s.%s.o" % (item, abbreviation), **params)
       objects += built[(build[1], item)]
   
-  programs[build[0]] = env.Program("build/" + build[0], objects, **params)
+  programs[build[0]] = env.Program("build/" + build[0], objects, **params)[0]
 
 # data copying and merging
 data_source = traverse("data_source")
@@ -140,3 +140,24 @@ create_installer("release", shopcaches["release"])
 
 # version.cpp
 env.Command('version.cpp', Split('version_data version_gen.py'), "./version_gen.py < version_data > $TARGET")
+
+# How we actually do stuff
+def command(env, name, deps, line):
+  env.AlwaysBuild(env.Alias(name, deps, line))
+  
+fulldata = env.Alias("d-net program and release data", data_dests["demo"] + [programs["d-net"]])
+env.Default(fulldata)
+
+localflags = "--writetarget=dumps/dump --nofullscreen --noaudio --perfbar --httpd_port=616 --runTests"
+stdrun = localflags + " --debugitems --startingPhase=8 --debugControllers=2 --factionMode=3 --nullControllers=11 --writeTarget= --auto_newgame --nocullShopTree --httpd_port=616 --checksumgamestate --noshopcache --nofastForwardOnNoCache"
+
+command(env, "run", fulldata, "./%s %s" % (programs["d-net"], stdrun))
+command(env, "runclean", fulldata, "./%s %s" % (programs["d-net"], localflags))
+
+command(env, "ai", fulldata, "./%s %s --aiCount=16 --fastForwardTo=100000000 --factionMode=3 --nullcontrollers=19 --allowAisQuit --treatAiAsHuman --noshopcache" % (programs["d-net"], localflags))
+command(env, "ailoop", fulldata, "while nice ./%s %s --aiCount=12 --fastForwardTo=100000000 --factionmode=3 --terminateAfter=3600 --startingPhase=0 --allowAisQuit --treatAiAsHuman --nullcontrollers=19 --noshopcache ; do echo Cycle. ; done" % (programs["d-net"], localflags))
+
+aicslflags = localflags + " --fastForwardTo=100000000 --noshopcache --treatAiAsHuman --randomizeFrameRender=60"
+command(env, "aicsl", fulldata, "while nice rm -f dumps/dump-*.dnd && nice ./%s %s --factionmode=3 --allowAisQuit --startingPhase=7 --aiCount=6 --terminateAfter=300 --nullcontrollers=5 --treataiashuman && sleep 2s && nice ./d-net.exe %s --readtarget=`ls dumps/dump-*.dnd` --writetarget= && sleep 2s ; do echo Cycle. ; done" % (programs["d-net"], aicslflags, aicslflags))
+
+command(env, "vecedit", [programs["vecedit"]], "./%s" % (programs["vecedit"]))
