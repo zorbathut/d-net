@@ -22,12 +22,11 @@ buildables = [
 
 # Released data
 # Demoed data
-# Deployed data
 
 deploy_dlls = Split("SDL.dll libogg-0.dll libvorbis-0.dll libvorbisfile-3.dll")
 deploy = deploy_dlls + ["d-net.exe", "license.txt"]
 
-if 1:
+if 0:
   for item in categories:
     for flag in flagtypes:
       cube = flag + "_" + item
@@ -42,7 +41,6 @@ for build in buildables:
     buildstring = param + "_" + build[1];
     params[param] = []
     for i in range(buildstring.count("_"), -1, -1):
-      print buildstring.rsplit("_", i)[0]
       params[param] += env[buildstring.rsplit("_", i)[0]]
   
   abbreviation = "".join(x.lower()[0] for x in build[1].split("_"))

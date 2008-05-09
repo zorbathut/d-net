@@ -1,6 +1,6 @@
 
 import os
-import subprocess
+import commands
 
 from SCons.Environment import Environment
 from SCons.Util import Split
@@ -30,8 +30,7 @@ def Conf():
 
   def Execute(context, command):
     context.Message("Caching return value of %s ... " % command)
-    run = subprocess.Popen(command.split(" "), stdout=subprocess.PIPE)
-    rv = run.communicate()[0].strip()
+    rv = commands.getoutput(command)
     context.Result(rv)
     return rv
 
