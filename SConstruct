@@ -1,6 +1,7 @@
 
 from SConstruct_config import Conf
 from util import traverse
+from makeinstaller import generateInstaller
 
 # Globals
 Decider('MD5-timestamp')
@@ -98,6 +99,10 @@ for item in deploy_dlls:
   commandstrip(env, "/usr/mingw/local/bin/%s" % item)
 commandstrip(env, "d-net.exe")
 env.Command('deploy/license.txt', 'resources/license.txt', Copy("$TARGET", '$SOURCE'))
+
+# installers
+
+#env.Command('build/installer_demo.nsi', 'version_data', 
 
 # version.cpp
 env.Command('version.cpp', Split('version_data version_gen.py'), "./version_gen.py < version_data > $TARGET")
