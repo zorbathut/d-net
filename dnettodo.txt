@@ -2,9 +2,6 @@
 - "Finish the Damn Game" Initiative
   - scons argh
     - benchmark final linking with --hash-size
-    - cache SDL/WX stuff
-    - make build directories go away on clean
-    - changing file layout regenerate installer?
   - More debug stuff
     - Create new file with dprintf logs and upload it somewhere. Disable addr2line in some way.
     - Rig up 911 system

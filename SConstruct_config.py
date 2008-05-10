@@ -1,9 +1,21 @@
 
 import os
 import commands
+import SCons.dblite
 
 from SCons.Environment import Environment
 from SCons.Util import Split
+
+import SCons.Node.FS
+
+class SconToken:  # man, don't even ask
+  def __init__(self, toki):
+    self.toki = str(toki)
+    
+  def convert_to_sconsign(self):
+    pass
+  def convert_from_sconsign(self, dir, key):
+    pass
 
 def Conf():
 
@@ -24,19 +36,36 @@ def Conf():
     # Here's our custom tests
     def CheckFile(context, paths, file):
       context.Message("Checking for %s ... " % file)
-      for path in paths:
-        testpath = path + "/" + file;
-        if os.path.exists(testpath):
-          context.Result(testpath)
-          return '"%s"' % testpath
-      context.Result(0)
-      return 0
+      db = SCons.Node.FS.get_default_fs().Dir(".").sconsign().entries
+      ki = str(("CheckFile", paths, file))
+      if ki in db:
+        context.sconf.cached = 1
+        rv = db[ki].toki
+      else:
+        context.sconf.cached = 0
+        for path in paths:
+          testpath = path + "/" + file;
+          if os.path.exists(testpath):
+            rv = '"%s"' % testpath
+            db[ki] = SconToken(rv)
+            break
+      context.Result(rv)
+      return rv
 
     def Execute(context, command):
       context.Message("Caching return value of %s ... " % command)
-      rv = commands.getoutput(command)
+      db = SCons.Node.FS.get_default_fs().Dir(".").sconsign().entries
+      ki = str(("Execute", command))
+      if ki in db:
+        context.sconf.cached = 1
+        rv = db[ki].toki
+      else:
+        context.sconf.cached = 0
+        rv = commands.getoutput(command)
+        db[ki] = SconToken(rv)
       context.Result(rv)
       return rv
+      
 
     # Now let's actually configure it
     conf = env.Configure(custom_tests = {'CheckFile' : CheckFile, 'Execute' : Execute})
