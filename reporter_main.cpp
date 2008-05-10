@@ -14,7 +14,7 @@ int main(int argc, const char *argv[]) {
   char errbuf[CURL_ERROR_SIZE];
   curl_easy_setopt(handle, CURLOPT_ERRORBUFFER, errbuf);
   
-  curl_easy_setopt(handle, CURLOPT_URL, "http://crashlog.cams.local/report.php");
+  curl_easy_setopt(handle, CURLOPT_URL, "http://crashlog.cams.local/d-net.php");
   dprintf("setopt\n");
   if(curl_easy_perform(handle)) {
     dprintf("Error: %s\n", errbuf);
