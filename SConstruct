@@ -14,7 +14,7 @@ env, categories, flagtypes, oggpath, makensis = Conf()
 
 # List of buildables
 buildables = [
-  ("d-net", "GAME", Split("main core game timer debug gfx collide gamemap util rng args interface metagame itemdb itemdb_adjust itemdb_parse parse dvec2 input level coord ai inputsnag os float cfcommon coord_boolean player metagame_config shop shop_demo shop_info game_ai game_effects color metagame_tween cfc game_tank game_util game_projectile socket httpd recorder generators audio itemdb_httpd test regex shop_layout perfbar adler32 money stream stream_file itemdb_stream res_interface settings dumper audit stream_gz dumper_registry version")),
+  ("d-net", "GAME", Split("main core game timer debug gfx collide gamemap util rng args interface metagame itemdb itemdb_adjust itemdb_parse parse dvec2 input level coord ai inputsnag os float cfcommon coord_boolean player metagame_config shop shop_demo shop_info game_ai game_effects color metagame_tween cfc game_tank game_util game_projectile socket httpd recorder generators audio itemdb_httpd test regex shop_layout perfbar adler32 money stream stream_file itemdb_stream res_interface settings dumper audit stream_gz dumper_registry version"), [], Split("resource")),
   ("vecedit", "EDITOR", Split("vecedit vecedit_main debug os util gfx float coord parse color dvec2 cfcommon input itemdb itemdb_adjust itemdb_parse args regex rng adler32 money perfbar timer stream stream_file itemdb_stream image dumper_registry")),
   ("reporter", "REPORTER", Split("reporter_main debug os util parse")),
   ("merger", "CONSOLE_MERGER", Split("merger debug os util parse itemdb itemdb_adjust itemdb_parse args color dvec2 float coord cfcommon merger_weapon merger_bombardment merger_tanks merger_glory merger_util merger_upgrades merger_factions regex rng adler32 money stream stream_file itemdb_stream dumper_registry")),
@@ -47,13 +47,19 @@ for build in buildables:
   
   for item in build[2]:
     if not (build[1], item) in built:
-      built[(build[1], item)] = env.Object(source="%s.cpp" % item, target="build/%s.%s.o" % (item, abbreviation), **params);
+      built[(build[1], item)] = env.Object("build/%s.%s.o" % (item, abbreviation), "%s.cpp" % item, **params);
     objects += built[(build[1], item)]
   
   if len(build) > 3:
     for item in build[3]:
       if not (build[1], item) in built:
-        built[(build[1], item)] = env.Object(source="%s.c" % item, target="build/%s.%s.o" % (item, abbreviation), **params)
+        built[(build[1], item)] = env.Object("build/%s.%s.o" % (item, abbreviation), "%s.c" % item, **params)
+      objects += built[(build[1], item)]
+      
+  if len(build) > 4:
+    for item in build[4]:
+      if not (build[1], item) in built:
+        built[(build[1], item)] = env.Command("build/%s.%s.res" % (item, abbreviation), "%s.rc" % item, "nice windres $SOURCE -O coff -o $TARGET")
       objects += built[(build[1], item)]
   
   programs[build[0]] = env.Program("build/" + build[0], objects, **params)[0]
