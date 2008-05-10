@@ -2,6 +2,7 @@
 #define DNET_DEBUG
 
 #include <string>
+#include <deque>
 
 using namespace std;
 
@@ -27,6 +28,8 @@ private:
   string str_;
 };
 
+deque<string> &dbgrecord();
+
 void registerCrashFunction(void (*)());
 void unregisterCrashFunction(void (*)());
  
@@ -48,8 +51,8 @@ int dprintf(const char *bort, ...) __attribute__((format(printf,1,2)));
 extern int frameNumber;
 
 void CrashHandler(const char *fname, int line);
-void HandleFailure() __attribute__((__noreturn__));
-#define CHECK(x) do { if(__builtin_expect(!(x), 0)) { dprintf("Error at %d, %s:%d - %s\n", frameNumber, __FILE__, __LINE__, #x); CrashHandler(__FILE__, __LINE__); HandleFailure(); } } while(0)
+void HandleFailure(const char *fname, int line) __attribute__((__noreturn__));
+#define CHECK(x) do { if(__builtin_expect(!(x), 0)) { dprintf("Error at %d, %s:%d - %s\n", frameNumber, __FILE__, __LINE__, #x); CrashHandler(__FILE__, __LINE__); HandleFailure(__FILE__, __LINE__); } } while(0)
 // And here would be the end
 
 #define printf FAILURE

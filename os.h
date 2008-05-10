@@ -21,8 +21,10 @@ void seriouslyCrash() __attribute__((__noreturn__)); // apparently this is neede
 string getConfigDirectory(); // oy
 void makeConfigDirectory();
 
-string getTempDirectory();
+string getTempFilename();
 
 pair<int, int> getScreenRes();
+
+void SpawnProcess(const string &exec);
 
 #endif

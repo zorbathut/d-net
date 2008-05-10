@@ -98,7 +98,7 @@ def Conf():
         Exit(1)
       env.Append(LIBS="mingw32")
       
-      env.Append(ENV = {"PATH" : os.environ['PATH']})  # this is not really ideal
+      env.Append(ENV = {"PATH" : os.environ['PATH'], "TEMP" : os.environ['TEMP']})  # this is not really ideal
 
     # SDL
     sdlpath = conf.CheckFile(["/usr/mingw/local/bin", "/usr/local/bin", "/usr/bin"], "sdl-config")

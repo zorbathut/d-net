@@ -2,6 +2,7 @@
 #include "debug.h"
 
 #include "os.h"
+#include "debug_911.h"
 
 #include <stdarg.h>
 #include <assert.h>
@@ -155,41 +156,14 @@ int dprintf(const char *bort, ...) {
   return 0;
 };
 
-string writeDebug() {
-  string writedest = getTempDirectory() + "/dnetcrashlog.txt";
-  
-  ofstream ofs(writedest.c_str());
-  if(!ofs)
-    return "";
-  
-  for(int i = 0; i < dbgrecord().size(); i++) {
-    while(dbgrecord()[i].size() && dbgrecord()[i][dbgrecord()[i].size() - 1] == '\n')
-      dbgrecord()[i].erase(dbgrecord()[i].begin() + dbgrecord()[i].size() - 1);
-    
-    ofs << dbgrecord()[i] << '\n';
-  }
-  
-  if(ofs)
-    return writedest;
-  else
-    return "";
-};
-
-void Prepare911() {
-  dprintf("911\n");
-  CHECK(0);
-  string fname = writeDebug();
-  // do more later
-};
-
 static bool reentering = false;
-void HandleFailure() {
+void HandleFailure(const char *file, int line) {
   if(reentering) {
     dprintf("Error in crash handling somewhere, terminating extremely abruptly");
   } else {
     reentering = true;
     PrintDebugStack();
-    Prepare911();
+    Prepare911(file, line);
   }
   seriouslyCrash();
 }

@@ -3,7 +3,9 @@
 
 #include "debug.h"
 
-int main() {
+int main(int argc, const char *argv[]) {
+  dprintf("REPORTER IS YOUR FREND\n");
+  
   CHECK(curl_global_init(CURL_GLOBAL_ALL) == 0);
   
   CURL *handle = curl_easy_init();
@@ -17,7 +19,7 @@ int main() {
   if(curl_easy_perform(handle)) {
     dprintf("Error: %s\n", errbuf);
   }
-    
+  
   
   curl_easy_cleanup(handle);
 };

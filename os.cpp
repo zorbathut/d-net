@@ -43,8 +43,12 @@ string getConfigDirectory() {
   return string(buff) + "\\Devastation Net\\";
 }
 
-string getTempDirectory() {
-  CHECK(0);
+string getTempFilename() {
+  char buff[MAX_PATH + 1];
+  GetTempPath(sizeof(buff), buff);
+  char fname[MAX_PATH + 1];
+  GetTempFileName(buff, "dnd", 0, fname);
+  return fname;
 }
 
 static const string directory_delimiter = "\\";
@@ -58,6 +62,21 @@ pair<int, int> getScreenRes() {
   glorb.first = GetSystemMetrics(SM_CXSCREEN);
   glorb.second = GetSystemMetrics(SM_CYSCREEN);
   return glorb;
+}
+
+void SpawnProcess(const string &exec) {
+  dprintf("Spawning process %s\n", exec.c_str());
+  vector<char> argh(exec.begin(), exec.end());
+  dprintf("worf");
+  argh.push_back('\0'); // why
+  dprintf("worf");
+  STARTUPINFO sinfo;
+  memset(&sinfo, 0, sizeof(sinfo));
+  sinfo.cb = sizeof(sinfo);
+  PROCESS_INFORMATION pi;
+  CHECK(CreateProcess(NULL, &argh[0], NULL, NULL, FALSE, 0, NULL, NULL, &sinfo, &pi));
+  CloseHandle(&pi);
+  dprintf("worf");
 }
 
 #else
