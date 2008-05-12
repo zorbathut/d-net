@@ -39,5 +39,5 @@ void Prepare911(const char *crashfname, int crashline) {
     dprintf("Wrote debug dump to %s\n", fname.c_str());
   }
   
-  SpawnProcess(StringPrintf("build/reporter.exe \"%s\" %s %d", fname.c_str(), crashfname, crashline));
+  SpawnProcess(StringPrintf("build/reporter.exe d-net \"%s\" %s %d %d", fname.c_str(), crashfname, crashline, exesize()));
 };

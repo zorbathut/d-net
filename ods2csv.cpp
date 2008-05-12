@@ -172,7 +172,7 @@ vector<vector<string> > extractData(const vector<unsigned char> &data, const str
 }
 
 int main(int argc, char *argv[]) {
-  set_exename("ods2csv.exe");
+  set_exename("build/ods2csv.exe");
   
   CHECK(argc == 4);
   

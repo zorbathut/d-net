@@ -9,6 +9,7 @@
 #include <vector>
 #include <signal.h>
 #include <unistd.h>
+#include <sys/stat.h>
 
 #include <boost/static_assert.hpp>
 
@@ -18,6 +19,17 @@ using namespace std;
 static string loc_exename;
 void set_exename(const string &str) {
   loc_exename = str;
+  exesize(); // check to make sure we can get it
+}
+
+int exesize() {
+  CHECK(loc_exename.size());
+  struct stat lulz;
+  if(stat(loc_exename.c_str(), &lulz)) {
+    dprintf("Couldn't stat file %s\n", loc_exename.c_str());
+    CHECK(0);
+  }
+  return lulz.st_size;
 }
 
 #ifndef NO_WINDOWS

@@ -27,4 +27,6 @@ pair<int, int> getScreenRes();
 
 void SpawnProcess(const string &exec);
 
+int exesize();
+
 #endif
