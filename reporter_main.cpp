@@ -57,7 +57,7 @@ string request(string url, const map<string, string> &posts) {
 }
 
 int main(int argc, const char *argv[]) {
-  CHECK(argc == 6);
+  CHECK(argc == 7);
   
   dprintf("REPORTER IS YOUR FREND\n");
   
@@ -70,9 +70,10 @@ int main(int argc, const char *argv[]) {
   map<string, string> parms;
   string res;
   parms["instruction"] = "request";
-  parms["file"] = argv[3];
-  parms["line"] = argv[4];
-  parms["exesize"] = argv[5];
+  parms["version"] = argv[3];
+  parms["file"] = argv[4];
+  parms["line"] = argv[5];
+  parms["exesize"] = argv[6];
   
   res = request(url, parms);
   

@@ -14,12 +14,22 @@ env, categories, flagtypes, oggpath, makensis = Conf()
 
 # List of buildables
 buildables = [
-  ("d-net", "GAME", Split("main core game timer debug gfx collide gamemap util rng args interface metagame itemdb itemdb_adjust itemdb_parse parse dvec2 input level coord ai inputsnag os float cfcommon coord_boolean player metagame_config shop shop_demo shop_info game_ai game_effects color metagame_tween cfc game_tank game_util game_projectile socket httpd recorder generators audio itemdb_httpd test regex shop_layout perfbar adler32 money stream stream_file itemdb_stream res_interface settings dumper audit stream_gz dumper_registry version debug_911_on"), [], Split("resource")),
-  ("vecedit", "EDITOR", Split("vecedit vecedit_main debug os util gfx float coord parse color dvec2 cfcommon input itemdb itemdb_adjust itemdb_parse args regex rng adler32 money perfbar timer stream stream_file itemdb_stream image dumper_registry debug_911_off")),
-  ("reporter", "REPORTER", Split("reporter_main debug os util parse args debug_911_off")),
-  ("merger", "CONSOLE_MERGER", Split("merger debug os util parse itemdb itemdb_adjust itemdb_parse args color dvec2 float coord cfcommon merger_weapon merger_bombardment merger_tanks merger_glory merger_util merger_upgrades merger_factions regex rng adler32 money stream stream_file itemdb_stream dumper_registry debug_911_off")),
-  ("ods2csv", "CONSOLE_ODS2CSV", Split("ods2csv debug os util parse adler32 args debug_911_off"), Split("minizip/unzip minizip/ioapi"))
+  ["d-net", "GAME", Split("main core game timer debug gfx collide gamemap util rng args interface metagame itemdb itemdb_adjust itemdb_parse parse dvec2 input level coord ai inputsnag os float cfcommon coord_boolean player metagame_config shop shop_demo shop_info game_ai game_effects color metagame_tween cfc game_tank game_util game_projectile socket httpd recorder generators audio itemdb_httpd test regex shop_layout perfbar adler32 money stream stream_file itemdb_stream res_interface settings dumper audit stream_gz dumper_registry debug_911_on"), [], Split("resource")],
+  ["vecedit", "EDITOR", Split("vecedit vecedit_main debug os util gfx float coord parse color dvec2 cfcommon input itemdb itemdb_adjust itemdb_parse args regex rng adler32 money perfbar timer stream stream_file itemdb_stream image dumper_registry debug_911_off")],
+  ["reporter", "REPORTER", Split("reporter_main debug os util parse args debug_911_off")],
+  ["merger", "CONSOLE_MERGER", Split("merger debug os util parse itemdb itemdb_adjust itemdb_parse args color dvec2 float coord cfcommon merger_weapon merger_bombardment merger_tanks merger_glory merger_util merger_upgrades merger_factions regex rng adler32 money stream stream_file itemdb_stream dumper_registry debug_911_off")],
+  ["ods2csv", "CONSOLE_ODS2CSV", Split("ods2csv debug os util parse adler32 args debug_911_off"), Split("minizip/unzip minizip/ioapi")]
 ]
+
+def addReleaseVersion(buildables, suffix):
+  tversion = [buildables[0][0] + "-" + suffix] + buildables[0][1:]
+  tversion[2] = tversion[2] + ["version_" + suffix]
+  buildables += [tversion]
+
+addReleaseVersion(buildables, "demo")
+addReleaseVersion(buildables, "release")
+
+buildables[0][2] += ["version_local"]
 
 deploy_dlls = Split("SDL.dll libogg-0.dll libvorbis-0.dll libvorbisfile-3.dll")
 
@@ -111,17 +121,22 @@ shopcaches = {}
 shopcaches["release"] = make_shopcache("release")
 shopcaches["demo"] = make_shopcache("demo")
 
+
 # deploy directory and associated
 def commandstrip(env, source):
-  return env.Command('deploy/%s' % str(source).split('/')[-1], source, "cp $SOURCE $TARGET && strip -s $TARGET")
+  return env.Command('deploy/%s' % str(source).split('/')[-1], source, "cp $SOURCE $TARGET && strip -s $TARGET")[0]
+
+programs_stripped = {}
+for key, value in programs.items():
+  programs_stripped[key] = commandstrip(env, value)
 
 deployfiles = []
 
 for item in deploy_dlls:
-  deployfiles += commandstrip(env, "/usr/mingw/local/bin/%s" % item)
-deployfiles += commandstrip(env, programs["d-net"])
-deployfiles += commandstrip(env, programs["reporter"])
+  deployfiles += [commandstrip(env, "/usr/mingw/local/bin/%s" % item)]
+deployfiles += [programs_stripped["reporter"]]
 deployfiles += env.Command('deploy/license.txt', 'resources/license.txt', Copy("$TARGET", '$SOURCE'))
+
 
 # installers
 with open("version_data") as f:
@@ -136,17 +151,24 @@ def create_installer(type, shopcaches):
   nsipath = 'build/installer_%s%s.nsi' % (type, quick)
   ident = '%s-%s' % (version, type)
   finalpath = 'build/d-net-%s-%s%s.exe' % (version, type, quick)
+  mainexe = programs_stripped["d-net-" + type]
   
-  env.Command(nsipath, ['installer.nsi.template', 'makeinstaller.py'] + data_dests[type] + deployfiles + shopcaches, dispatcher(generateInstaller, copyprefix=type, files=[str(x) for x in data_dests[type] + shopcaches], deployfiles=[str(x) for x in deployfiles], finaltarget=finalpath, version=ident)) # Technically it only depends on those files existing, not their actual contents.
-  return env.Command(finalpath, [nsipath] + data_dests[type] + deployfiles + shopcaches, "%s - < ${SOURCES[0]}" % makensis)
+  env.Command(nsipath, ['installer.nsi.template', 'makeinstaller.py'] + data_dests[type] + deployfiles + shopcaches + [mainexe], dispatcher(generateInstaller, copyprefix=type, files=[str(x) for x in data_dests[type] + shopcaches], deployfiles=[str(x) for x in deployfiles], finaltarget=finalpath, mainexe=mainexe, version=ident)) # Technically it only depends on those files existing, not their actual contents.
+  return env.Command(finalpath, [nsipath] + data_dests[type] + deployfiles + shopcaches + [mainexe], "%s - < ${SOURCES[0]}" % makensis)
 
 Alias("packagedemoquick", create_installer("demo", []))
 Alias("packagedemo", create_installer("demo", shopcaches["demo"]))
 Alias("packagereleasequick", create_installer("release", []))
 Alias("package", Alias("packagerelease", create_installer("release", shopcaches["release"])))
 
-# version.cpp
-env.Command('version.cpp', Split('version_data version_gen.py'), "./version_gen.py < version_data > $TARGET")
+
+# version_*.cpp
+def addVersionFile(type):
+  env.Command('version_%s.cpp' % type, Split('version_data version_gen.py'), """( cat version_data ; echo -n "-%s" ) | ./version_gen.py > $TARGET""" % type)
+
+for item in "local demo release".split():
+  addVersionFile(item)
+
 
 # cleanup
 env.Clean("build", "build")
@@ -154,8 +176,10 @@ env.Clean("data_release", "data_release")
 env.Clean("data_demo", "data_demo")
 env.Clean("deploy", "deploy")
 
+
 # bugfix
 env.Dir("/usr/mingw/local/include/boost-1_33_1/boost/iterator")
+
 
 # How we actually do stuff
 def command(env, name, deps, line):

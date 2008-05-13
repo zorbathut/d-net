@@ -5,6 +5,7 @@
 #include "os.h"
 #include "util.h"
 #include "args.h"
+#include "version.h"
 
 #include <string>
 #include <fstream>
@@ -43,6 +44,6 @@ void Prepare911(const char *crashfname, int crashline) {
       dprintf("Wrote debug dump to %s\n", fname.c_str());
     }
     
-    SpawnProcess(StringPrintf("build/reporter.exe d-net \"%s\" %s %d %d", fname.c_str(), crashfname, crashline, exesize()));
+    SpawnProcess(StringPrintf("build/reporter.exe d-net %s \"%s\" %s %d %d", fname.c_str(), dnet_version.c_str(), crashfname, crashline, exesize()));
   }
 };

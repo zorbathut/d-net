@@ -4,7 +4,7 @@ from __future__ import with_statement
 import commands
 import sys
 
-def generateInstaller(target, source, copyprefix, files, deployfiles, finaltarget, version):
+def generateInstaller(target, source, copyprefix, files, deployfiles, finaltarget, mainexe, version):
 
   directories = {"data" : None}
   
@@ -15,6 +15,8 @@ def generateInstaller(target, source, copyprefix, files, deployfiles, finaltarge
   directories = [x.replace('/', '\\') for x in directories.iterkeys()]
   files = [x.replace('/', '\\') for x in files]
   deployfiles = [x.replace('/', '\\') for x in deployfiles]
+  
+  mainexe = str(mainexe).replace('/', '\\')
   
   install = ""
   uninstall = ""
@@ -33,6 +35,9 @@ def generateInstaller(target, source, copyprefix, files, deployfiles, finaltarge
   for line in deployfiles:
     install = install + 'File "/oname=%s" "%s"\n' % (line.split('\\', 1)[1], line)
     uninstall = 'Delete "$INSTDIR\\%s"\n' % line.split('\\', 1)[1] + uninstall
+  
+  install = install + 'File "/oname=d-net.exe" "%s"\n' % mainexe
+  uninstall = 'Delete "$INSTDIR\\d-net.exe"\n' + uninstall
 
   with open(str(source[0])) as inp:
     with open(str(target[0]), "w") as otp:
