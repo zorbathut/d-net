@@ -4,19 +4,14 @@
     - Add flags for addr2line and for reporting
       - Disable addr2line in some way.
       - How to make it intelligently not trigger on my computer?
-    - Rig up 911 system
-    - Temp directory    
-    - Must send exe bytecount and crash file/line
-    - Server responds with "goahead" or with "here is info for the user"
-    - If given goahead, sends crash file (remember to compress with zlib)
-    - Server response with "ok" or with "here is info for the user"
     - Make sure there really isn't any personal data involved in this
     - Make sure curl license is included
     - Remove .php at the end
     - Make it point to crashlog.mandible-games.com or something similar
     - Test the compression carefully
     - Include version
-    - Include release/demo/platform in version
+      - Include release/demo/platform in version
+    - Add user feedback
   - Add comments anchor to page
   - Figure out Linux packaging
   - Figure out OSX packaging
