@@ -1,2 +1,3 @@
 fileroot=data_release
-binarypathprefix=build/
+addr2line
+noreport

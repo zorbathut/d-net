@@ -47,8 +47,6 @@ void displayCZInfo();
 
 void MainLoop() {
   StackString sst("MainLoop");
-  
-  CHECK(0);
 
   Timer timer;
 

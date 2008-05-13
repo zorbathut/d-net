@@ -4,11 +4,14 @@
 #include "debug.h"
 #include "os.h"
 #include "util.h"
+#include "args.h"
 
 #include <string>
 #include <fstream>
 
 using namespace std;
+
+DEFINE_bool(report, true, "Attempt to report errors");
 
 string writeDebug() {
   string writedest = getTempFilename();
@@ -31,13 +34,15 @@ string writeDebug() {
 };
 
 void Prepare911(const char *crashfname, int crashline) {
-  string fname = writeDebug();
-  if(!fname.size()) {
-    dprintf("Failed to write file, aborting with a vengeance\n");
-    return; // welp
-  } else {
-    dprintf("Wrote debug dump to %s\n", fname.c_str());
+  if(FLAGS_report) {
+    string fname = writeDebug();
+    if(!fname.size()) {
+      dprintf("Failed to write file, aborting with a vengeance\n");
+      return; // welp
+    } else {
+      dprintf("Wrote debug dump to %s\n", fname.c_str());
+    }
+    
+    SpawnProcess(StringPrintf("build/reporter.exe d-net \"%s\" %s %d %d", fname.c_str(), crashfname, crashline, exesize()));
   }
-  
-  SpawnProcess(StringPrintf("build/reporter.exe d-net \"%s\" %s %d %d", fname.c_str(), crashfname, crashline, exesize()));
 };

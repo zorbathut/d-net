@@ -4,6 +4,7 @@
 #include "debug.h"
 #include "util.h"
 #include "parse.h"
+#include "args.h"
 
 #include <fstream>
 #include <vector>
@@ -14,6 +15,8 @@
 #include <boost/static_assert.hpp>
 
 using namespace std;
+
+DEFINE_bool(addr2line, false, "Call addr2line for stack traces");
 
 // Cross-platform
 static string loc_exename;
@@ -133,7 +136,6 @@ void makeConfigDirectory() {
     if(cc.size())
       cc += directory_delimiter;
     cc += tok[i];
-    dprintf("Making %s\n", cc.c_str());
     wrap_mkdir(cc);
   }
 }
@@ -193,7 +195,7 @@ inline bool verifyInlined(const void *const p) {
 bool testInlined() {
   return verifyInlined(__builtin_return_address(1));
 }
- 
+
 void dumpStackTrace() {
   vector<const void *> stack;
   if(testInlined()) {
@@ -205,7 +207,7 @@ void dumpStackTrace() {
   }
   
   vector<pair<string, string> > tokens;
-  {
+  if(FLAGS_addr2line) {
     string line = "addr2line -f -e " + exename() + " ";
     for(int i = 0; i < stack.size(); i++)
       line += StringPrintf("%08x ", (unsigned int)stack[i]);
@@ -226,32 +228,36 @@ void dumpStackTrace() {
       dprintf("Couldn't call addr2line\n");
       return;
     }
-  }
   
-  {
-    string line = "c++filt -n -s gnu-v3 ";
-    for(int i = 0; i < tokens.size(); i++)
-      line += tokens[i].first + " ";
-    line += "> cppfilttmp.txt";
-    int rv = system(line.c_str());
-    if(!rv) {
-      {
-        ifstream ifs("cppfilttmp.txt");
-        string lin;
-        int ct = 0;
-        while(getline(ifs, lin)) {
-          if(lin.size() && lin[0] == '_')
-            lin.erase(lin.begin());
-          dprintf("  %s - %s", tokens[ct].second.c_str(), lin.c_str());
-          ct++;
+    {
+      string line = "c++filt -n -s gnu-v3 ";
+      for(int i = 0; i < tokens.size(); i++)
+        line += tokens[i].first + " ";
+      line += "> cppfilttmp.txt";
+      int rv = system(line.c_str());
+      if(!rv) {
+        {
+          ifstream ifs("cppfilttmp.txt");
+          string lin;
+          int ct = 0;
+          while(getline(ifs, lin)) {
+            if(lin.size() && lin[0] == '_')
+              lin.erase(lin.begin());
+            dprintf("  %s - %s", tokens[ct].second.c_str(), lin.c_str());
+            ct++;
+          }
         }
+        unlink("cppfilttmp.txt");
+      } else {
+        dprintf("Couldn't call c++filt\n");
+        return;
       }
-      unlink("cppfilttmp.txt");
-    } else {
-      dprintf("Couldn't call c++filt\n");
-      return;
     }
+  } else {
+    for(int i = 0; i < stack.size(); i++)
+      dprintf("  %08x", (unsigned int)stack[i]);
   }
+
   dprintf("\n");
 }
 

@@ -16,9 +16,9 @@ env, categories, flagtypes, oggpath, makensis = Conf()
 buildables = [
   ("d-net", "GAME", Split("main core game timer debug gfx collide gamemap util rng args interface metagame itemdb itemdb_adjust itemdb_parse parse dvec2 input level coord ai inputsnag os float cfcommon coord_boolean player metagame_config shop shop_demo shop_info game_ai game_effects color metagame_tween cfc game_tank game_util game_projectile socket httpd recorder generators audio itemdb_httpd test regex shop_layout perfbar adler32 money stream stream_file itemdb_stream res_interface settings dumper audit stream_gz dumper_registry version debug_911_on"), [], Split("resource")),
   ("vecedit", "EDITOR", Split("vecedit vecedit_main debug os util gfx float coord parse color dvec2 cfcommon input itemdb itemdb_adjust itemdb_parse args regex rng adler32 money perfbar timer stream stream_file itemdb_stream image dumper_registry debug_911_off")),
-  ("reporter", "REPORTER", Split("reporter_main debug os util parse debug_911_off")),
+  ("reporter", "REPORTER", Split("reporter_main debug os util parse args debug_911_off")),
   ("merger", "CONSOLE_MERGER", Split("merger debug os util parse itemdb itemdb_adjust itemdb_parse args color dvec2 float coord cfcommon merger_weapon merger_bombardment merger_tanks merger_glory merger_util merger_upgrades merger_factions regex rng adler32 money stream stream_file itemdb_stream dumper_registry debug_911_off")),
-  ("ods2csv", "CONSOLE_ODS2CSV", Split("ods2csv debug os util parse adler32 debug_911_off"), Split("minizip/unzip minizip/ioapi"))
+  ("ods2csv", "CONSOLE_ODS2CSV", Split("ods2csv debug os util parse adler32 args debug_911_off"), Split("minizip/unzip minizip/ioapi"))
 ]
 
 deploy_dlls = Split("SDL.dll libogg-0.dll libvorbis-0.dll libvorbisfile-3.dll")
