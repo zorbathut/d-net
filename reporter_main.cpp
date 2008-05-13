@@ -5,6 +5,7 @@
 
 #include "debug.h"
 #include "util.h"
+#include "os_ui.h"
 
 using namespace std;
 
@@ -61,7 +62,8 @@ int main(int argc, const char *argv[]) {
   
   dprintf("REPORTER IS YOUR FREND\n");
   
-  // display message box here
+  if(!Message("Something unexpected has happened, and Devastation Net has been shut down.\n\nI've created a datafile including some information that may help Mandible Games fix\nthe error in future versions. It contains no personally identifying information.\n\nMay I send this to Mandible?", true))
+    return 1;
   
   CHECK(curl_global_init(CURL_GLOBAL_ALL) == 0);
   
@@ -78,7 +80,7 @@ int main(int argc, const char *argv[]) {
   res = request(url, parms);
   
   if(res != "OK") {
-    // display message box here
+    Message(res, false);
     return 1;
   }
   
@@ -103,7 +105,6 @@ int main(int argc, const char *argv[]) {
       while(comp.avail_in) {
         CHECK(deflate(&comp, 0) == Z_OK);
         krlog += string(out, out + sizeof(out) - comp.avail_out);
-        dprintf("%d, %d, %d\n", krlog.size(), comp.total_out, comp.avail_out);
         CHECK(krlog.size() == comp.total_out);
         comp.next_out = (Byte*)out;
         comp.avail_out = sizeof(out);
@@ -112,10 +113,8 @@ int main(int argc, const char *argv[]) {
     
     while(1) {
       int rv = deflate(&comp, Z_FINISH);
-      dprintf("%d\n", rv);
       CHECK(rv == Z_OK || rv == Z_STREAM_END);
       krlog += string(out, out + sizeof(out) - comp.avail_out);
-      dprintf("%d, %d\n", krlog.size(), comp.total_out);
       CHECK(krlog.size() == comp.total_out);
       comp.next_out = (Byte*)out;
       comp.avail_out = sizeof(out);
@@ -138,7 +137,11 @@ int main(int argc, const char *argv[]) {
   
   dprintf("res is %s\n", res.c_str());
   
-  // display message box here
-  dprintf("dun!\n");
-  
+  if(res != "OK") {
+    Message(res, true);
+    return 1;
+  } else {
+    Message("Dump sent, thank you for reporting the error!", false);
+    return 0;
+  }
 };

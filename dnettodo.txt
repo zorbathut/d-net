@@ -1,13 +1,14 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - More debug stuff
-    - Add user feedback
+    - Test user feedback
     - Remove .php at the end
     - Make it point to crashlog.mandible-games.com or something similar
     - Test the compression carefully
   - Add comments anchor to page
   - Figure out Linux packaging
   - Figure out OSX packaging
+  - Linux/OSX builds, include platform in version string
   - Add vecedit to standard package
     - Make sure wx license is included
   - merge ods2csv to output all files
