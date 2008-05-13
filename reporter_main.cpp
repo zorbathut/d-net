@@ -17,6 +17,8 @@ size_t writefunc(void *ptr, size_t size, size_t nmemb, void *lulz) {
 
 string cee(CURL *curl, const string &str) {
   char *escy = curl_easy_escape(curl, str.c_str(), str.size());
+  CHECK(escy);
+  CHECK(strlen(escy) >= str.size());
   string rv = escy;
   curl_free(escy);
   return rv;
@@ -49,8 +51,6 @@ string request(string url, const map<string, string> &posts) {
     CHECK(0);
   }
   
-  dprintf("result is %d, %s\n", out.size(), out.c_str());
-  
   curl_easy_cleanup(handle);
   
   return out;
@@ -65,13 +65,16 @@ int main(int argc, const char *argv[]) {
   
   CHECK(curl_global_init(CURL_GLOBAL_ALL) == 0);
   
+  string url = StringPrintf("http://crashlog.cams.local/%s.php", argv[1]);
+  
   map<string, string> parms;
+  string res;
   parms["instruction"] = "request";
   parms["file"] = argv[3];
   parms["line"] = argv[4];
   parms["exesize"] = argv[5];
   
-  string res = request(StringPrintf("http://crashlog.cams.local/%s.php", argv[1]), parms);
+  res = request(url, parms);
   
   if(res != "OK") {
     // display message box here
@@ -98,24 +101,43 @@ int main(int argc, const char *argv[]) {
       comp.avail_in = dat;
       while(comp.avail_in) {
         CHECK(deflate(&comp, 0) == Z_OK);
-        krlog += string(comp.next_out, comp.next_out + comp.avail_out);
+        krlog += string(out, out + sizeof(out) - comp.avail_out);
+        dprintf("%d, %d, %d\n", krlog.size(), comp.total_out, comp.avail_out);
+        CHECK(krlog.size() == comp.total_out);
         comp.next_out = (Byte*)out;
         comp.avail_out = sizeof(out);
       }
     }
     
-    while(deflate(&comp, Z_FINISH) == Z_OK) {
-      krlog += string((char*)comp.next_out, (char*)comp.next_out + comp.avail_out);
+    while(1) {
+      int rv = deflate(&comp, Z_FINISH);
+      dprintf("%d\n", rv);
+      CHECK(rv == Z_OK || rv == Z_STREAM_END);
+      krlog += string(out, out + sizeof(out) - comp.avail_out);
+      dprintf("%d, %d\n", krlog.size(), comp.total_out);
+      CHECK(krlog.size() == comp.total_out);
       comp.next_out = (Byte*)out;
       comp.avail_out = sizeof(out);
+      if(rv == Z_STREAM_END)
+        break;
     }
     
     fclose(fil);
     
-    dprintf("compressed %d to %d\n", comp.total_in, comp.total_out);
+    dprintf("compressed %d to %d\n", (int)comp.total_in, (int)comp.total_out);
+    CHECK(krlog.size() == comp.total_out);
     
     CHECK(deflateEnd(&comp) == Z_OK);
   }
+  
+  parms["dump"] = krlog;
+  parms["instruction"] = "dump";
 
+  res = request(url, parms);
+  
+  dprintf("res is %s\n", res.c_str());
+  
+  // display message box here
+  dprintf("dun!\n");
   
 };

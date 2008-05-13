@@ -1,8 +1,6 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - More debug stuff
-    - Create new file with dprintf logs and upload it somewhere.
-    - Make sure reporter can't report itself :D
     - Add flags for addr2line and for reporting
       - Disable addr2line in some way.
       - How to make it intelligently not trigger on my computer?
@@ -17,6 +15,8 @@
     - Remove .php at the end
     - Make it point to crashlog.mandible-games.com or something similar
     - Test the compression carefully
+    - Include version
+    - Include release/demo/platform in version
   - Add comments anchor to page
   - Figure out Linux packaging
   - Figure out OSX packaging
