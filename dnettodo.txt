@@ -1,8 +1,5 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
-  - More debug stuff
-    - Test the compression carefully
-    - packaging!
   - Add comments anchor to page
   - Figure out Linux packaging
   - Figure out OSX packaging
