@@ -1,10 +1,8 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - More debug stuff
-    - Test user feedback
-    - Remove .php at the end
-    - Make it point to crashlog.mandible-games.com or something similar
     - Test the compression carefully
+    - packaging!
   - Add comments anchor to page
   - Figure out Linux packaging
   - Figure out OSX packaging
@@ -49,6 +47,7 @@
   - satellite mines may be exploding too far away
   - first-second-third place for wins?
   - Get rid of the Centered Overlay Menu
+  - Crypto signing, add crypto to 911 and to devlog?
   - Many many more weapons
     - Add glory behavior
       - Make sure they don't spike CPU too badly

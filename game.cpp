@@ -51,6 +51,8 @@ bool Game::runTick(const vector<Keystates> &rkeys, bool confused, const vector<P
   StackString sst("Frame runtick");
   PerfStack pst(PBC::gametick);
   
+  CHECK(0);
+  
   CHECK(rkeys.size() == players.size());
   CHECK(players.size() == tanks.size());
   

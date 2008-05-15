@@ -67,7 +67,7 @@ int main(int argc, const char *argv[]) {
   
   CHECK(curl_global_init(CURL_GLOBAL_ALL) == 0);
   
-  string url = StringPrintf("http://crashlog.cams.local/%s.php", argv[1]);
+  string url = StringPrintf("http://crashlog.mandible-games.com:911/%s.php", argv[1]);
   
   map<string, string> parms;
   string res;
@@ -90,7 +90,7 @@ int main(int argc, const char *argv[]) {
     comp.zalloc = Z_NULL;
     comp.zfree = Z_NULL;
     comp.opaque = 0;
-    CHECK(deflateInit2(&comp, 5, Z_DEFLATED, 15, 8, Z_DEFAULT_STRATEGY) == Z_OK);
+    CHECK(deflateInit2(&comp, 5, Z_DEFLATED, 15 + 16, 8, Z_DEFAULT_STRATEGY) == Z_OK);
     
     FILE *fil = fopen(argv[2], "rb");
     CHECK(fil);
@@ -138,7 +138,7 @@ int main(int argc, const char *argv[]) {
   dprintf("res is %s\n", res.c_str());
   
   if(res != "OK") {
-    Message(res, true);
+    Message(res, false);
     return 1;
   } else {
     Message("Dump sent, thank you for reporting the error!", false);
