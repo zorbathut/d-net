@@ -11,6 +11,7 @@
 #include "test.h"
 #include "res_interface.h"
 #include "settings.h"
+#include "init.h"
 
 #ifdef OSX_FRAMEWORK_PREFIXES
   #include <OpenGL/gl.h>
@@ -105,10 +106,10 @@ void deinitSystem() {
 };
 
 int main(int argc, char **argv) {
+  initProgram(&argc, &argv);
+  
   StackString sst("Main");
   stackStart = &sst;
-  
-  set_exename(argv[0]);
 
   dprintf("Init\n");
   

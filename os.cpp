@@ -5,6 +5,7 @@
 #include "util.h"
 #include "parse.h"
 #include "args.h"
+#include "init.h"
 
 #include <fstream>
 #include <vector>
@@ -18,12 +19,14 @@ using namespace std;
 
 DEFINE_bool(addr2line, false, "Call addr2line for stack traces");
 
-// Cross-platform
 static string loc_exename;
-void set_exename(const string &str) {
-  loc_exename = str;
+void set_exename(int *argc, char ***argv) {
+  CHECK(*argc >= 1);
+  loc_exename = (*argv)[0];
   exesize(); // check to make sure we can get it
 }
+  
+ADD_INITTER(set_exename, -100);
 
 int exesize() {
   CHECK(loc_exename.size());

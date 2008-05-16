@@ -9,6 +9,7 @@
 #include "merger_upgrades.h"
 #include "merger_util.h"
 #include "merger_factions.h"
+#include "init.h"
 
 #include <fstream>
 #include <string>
@@ -200,7 +201,8 @@ template<typename Model> void doMerge(const string &csv, const string &unmerged,
 }  
 
 int main(int argc, char *argv[]) {
-  set_exename(argv[0]);
+  initProgram(&argc, &argv);
+  
   initFlags(argc, argv, 3);
   if(FLAGS_fileroot.size() && FLAGS_fileroot[FLAGS_fileroot.size() - 1] != '/')
     FLAGS_fileroot += '/';

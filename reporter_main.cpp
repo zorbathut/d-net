@@ -58,6 +58,8 @@ string request(string url, const map<string, string> &posts) {
 }
 
 int main(int argc, const char *argv[]) {
+  initProgram(&argc, &argv);
+  
   CHECK(argc == 7);
   
   dprintf("REPORTER IS YOUR FREND\n");

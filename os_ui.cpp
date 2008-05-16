@@ -23,6 +23,8 @@ pair<int, int> getScreenRes() {
 
 #include <gdk/gdk.h>
 
+ADD_INITTER(gdk_init, -10);
+
 pair<int, int> getScreenRes() {
   GdkScreen *screen = gdk_screen_get_default();
   return make_pair(gdk_screen_get_width(screen), gdk_screen_get_height(screen));

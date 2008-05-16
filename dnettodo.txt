@@ -1,8 +1,15 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - Figure out Linux packaging
+    - Set up new register init system
+      - Wrap initargs into it somehow
+      - Get it to initialize gtk properly
+      - Make sure vecedit still works
+      - Set up Global Files in scons?
+    - Split OS files?
     - Add platform to version string
     - Make sure reporter works!
+    - Improve tmpfile to mkstemp
   - Figure out OSX packaging
   - Add vecedit to standard package
     - Make sure wx license is included

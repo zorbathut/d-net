@@ -1,6 +1,7 @@
 
 #include "debug.h"
 #include "os.h"
+#include "init.h"
 
 #include "minizip/unzip.h"
 
@@ -172,7 +173,7 @@ vector<vector<string> > extractData(const vector<unsigned char> &data, const str
 }
 
 int main(int argc, char *argv[]) {
-  set_exename(argv[0]);
+  initProgram(&argc, &argv);
   
   CHECK(argc == 4);
   

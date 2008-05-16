@@ -13,9 +13,6 @@ void dumpStackTrace();
 
 bool isUnoptimized();
 
-// This can be used by stack traces and such
-void set_exename(const string &str); // this should be removed eventually I think
-
 // OS stuff
 void seriouslyCrash() __attribute__((__noreturn__)); // apparently this is needed. Why? Because SDL is stupid.
 
