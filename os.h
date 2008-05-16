@@ -2,6 +2,7 @@
 #define DNET_OS
 
 #include <string>
+#include <vector>
 
 using namespace std;
 
@@ -23,9 +24,7 @@ void makeConfigDirectory();
 
 string getTempFilename();
 
-pair<int, int> getScreenRes();
-
-void SpawnProcess(const string &exec);
+void SpawnProcess(const string &program, const vector<string> &params);
 
 int exesize();
 

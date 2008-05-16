@@ -64,7 +64,9 @@ def Conf():
         rv = db[ki].toki
       else:
         context.sconf.cached = 0
-        rv = commands.getoutput(command)
+        (status, rv) = commands.getstatusoutput(command)
+        if status != 0:
+          rv = None
         db[ki] = SconToken(rv)
       context.Result(rv)
       return rv
@@ -124,6 +126,14 @@ def Conf():
       if not conf.CheckLibWithHeader("GL", "GL/gl.h", "c++", "glBegin(0);", autoadd=0):
         env.Exit(1)
       env.Append(LIBS_GAME="GL")
+
+      pkgconfig = conf.CheckFile(["/usr/bin"], "pkg-config")
+      if not pkgconfig:
+        env.Exit(1)
+      pkgstring = conf.Execute("%s --libs --cflags gtk+-2.0" % pkgconfig)
+      if not pkgstring:
+        env.Exit(1)
+      env.MergeFlags(dict([(k + "_GAME", v) for k, v in env.ParseFlags(pkgstring).items()]))
 
       installer = None
     else:

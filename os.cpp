@@ -72,26 +72,22 @@ void wrap_mkdir(const string &str) {
   mkdir(str.c_str());
 }
 
-pair<int, int> getScreenRes() {
-  pair<int, int> glorb;
-  glorb.first = GetSystemMetrics(SM_CXSCREEN);
-  glorb.second = GetSystemMetrics(SM_CYSCREEN);
-  return glorb;
-}
+void SpawnProcess(const string &exec, const vector<string> &params) {
+  string texec = exec;
 
-void SpawnProcess(const string &exec) {
-  dprintf("Spawning process %s\n", exec.c_str());
-  vector<char> argh(exec.begin(), exec.end());
-  dprintf("worf");
+  for(int i = 0; i < params.size(); i++) {
+    CHECK(count(params[i].begin(), params[i].end(), '"') == 0);
+    texec += " \"" + params[i] + "\"";
+  }
+
+  vector<char> argh(texec.begin(), texec.end());
   argh.push_back('\0'); // why
-  dprintf("worf");
   STARTUPINFO sinfo;
   memset(&sinfo, 0, sizeof(sinfo));
   sinfo.cb = sizeof(sinfo);
   PROCESS_INFORMATION pi;
   CHECK(CreateProcess(NULL, &argh[0], NULL, NULL, FALSE, 0, NULL, NULL, &sinfo, &pi));
   CloseHandle(&pi);
-  dprintf("worf");
 }
 
 #else
@@ -120,6 +116,22 @@ static const string directory_delimiter = "/";
 
 void wrap_mkdir(const string &str) {
   mkdir(str.c_str(), 0700);
+}
+
+string getTempFilename() {
+  return tmpnam(NULL);
+}
+
+void SpawnProcess(const string &exec, const vector<string> &params) {
+  vector<const char*> args;
+
+  args.push_back(exec.c_str());
+  for(int i = 0; i < params.size(); i++)
+    args.push_back(params[i].c_str());
+  args.push_back(NULL);
+
+  if(fork() == 0)
+    execv(exec.c_str(), const_cast<char * const *>(&args[0]));  // stupid c
 }
 
 #endif

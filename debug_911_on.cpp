@@ -10,6 +10,8 @@
 #include <string>
 #include <fstream>
 
+#include <boost/assign.hpp>
+
 using namespace std;
 
 DEFINE_bool(report, true, "Attempt to report errors");
@@ -44,6 +46,8 @@ void Prepare911(const char *crashfname, int crashline) {
       dprintf("Wrote debug dump to %s\n", fname.c_str());
     }
     
-    SpawnProcess(StringPrintf("reporter.exe d-net %s \"%s\" %s %d %d", fname.c_str(), dnet_version.c_str(), crashfname, crashline, exesize()));
+    vector<string> params;
+    boost::assign::push_back(params)("d-net.exe")(fname)(dnet_version)(crashfname)(StringPrintf("%d", crashline))(StringPrintf("%d", exesize()));
+    SpawnProcess("reporter.exe", params);
   }
 };

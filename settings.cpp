@@ -5,6 +5,7 @@
 #include "util.h"
 #include "args.h"
 #include "debug.h"
+#include "os_ui.h"
 
 #include <fstream>
 #include <cstdio>

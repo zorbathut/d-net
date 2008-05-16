@@ -7,4 +7,6 @@ using namespace std;
 
 int Message(const string &text, bool yesno);
 
+pair<int, int> getScreenRes();
+
 #endif

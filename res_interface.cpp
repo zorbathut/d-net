@@ -6,6 +6,7 @@
 #include "settings.h"
 #include "args.h"
 #include "os.h"
+#include "os_ui.h"
 
 #ifdef OSX_FRAMEWORK_PREFIXES
   #include <OpenGL/gl.h>
