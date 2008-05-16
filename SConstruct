@@ -10,7 +10,7 @@ import sys
 Decider('MD5-timestamp')
 SetOption('implicit_cache', 1)
 
-env, categories, flagtypes, oggpath, makensis = Conf()
+env, categories, flagtypes, oggpath, platform, makensis = Conf()
 
 # List of buildables
 buildables = [

@@ -8,6 +8,8 @@ from SCons.Util import Split
 
 import SCons.Node.FS
 
+import sys
+
 class SconToken:  # man, don't even ask
   def __init__(self, toki):
     self.toki = str(toki)
@@ -43,6 +45,7 @@ def Conf():
         rv = db[ki].toki
       else:
         context.sconf.cached = 0
+        rv = 0
         for path in paths:
           testpath = path + "/" + file;
           if os.path.exists(testpath):
@@ -70,7 +73,11 @@ def Conf():
     # Now let's actually configure it
     conf = env.Configure(custom_tests = {'CheckFile' : CheckFile, 'Execute' : Execute})
 
-    if 1: # Cygwin
+    curldepend=""
+
+    if sys.platform == "cygwin": # Cygwin
+      platform="cygwin"
+
       # Set up our environment defaults
       env.Append(CPPPATH = Split("/usr/mingw/local/include"), LIBPATH = Split("/usr/mingw/local/lib"), CCFLAGS=Split("-mno-cygwin"), CPPFLAGS=Split("-mno-cygwin"), CXXFLAGS=Split("-mno-cygwin"), LINKFLAGS=Split("-mno-cygwin"))
       
@@ -82,47 +89,70 @@ def Conf():
       env.Append(CPPDEFINES=["VECTOR_PARANOIA"])
       
       if not conf.CheckCXXHeader('windows.h', '<>'):
-        Exit(1)
+        env.Exit(1)
       
       if not conf.CheckLibWithHeader("ws2_32", "windows.h", "c++", "WSACleanup();", autoadd=0):
-        Exit(1)
+        env.Exit(1)
       env.Append(LIBS_GAME="ws2_32")
       env.Append(LIBS_REPORTER="ws2_32")
       
       if not conf.CheckLibWithHeader("opengl32", "GL/gl.h", "c++", "glLoadIdentity();", autoadd=0):
-        Exit(1)
+        env.Exit(1)
       env.Append(LIBS_GAME="opengl32")
       env.Append(LIBS_EDITOR="opengl32")
       
       if not conf.CheckLib("mingw32", autoadd=0):
-        Exit(1)
+        env.Exit(1)
       env.Append(LIBS="mingw32")
       
       env.Append(ENV = {"PATH" : os.environ['PATH'], "TEMP" : os.environ['TEMP']})  # this is not really ideal
 
+      curldepend="ws2_32"
+      
+      # Check for makensis
+      installer = conf.CheckFile(["/cygdrive/c/Program Files (x86)/NSIS"], "makensis")
+      if not installer:
+        env.Exit(1)
+    elif sys.platform == "linux2":
+      platform="linux"
+
+      env.Append(CPPDEFINES = Split("NO_WINDOWS"), CPPPATH = Split("/usr/local/include/boost-1_34_1"))
+      
+      boostlibs=["boost_regex", "boost_filesystem"]
+      boostpath=["/usr/local/include/boost-1_34_1"]
+      
+      if not conf.CheckLibWithHeader("GL", "GL/gl.h", "c++", "glBegin(0);", autoadd=0):
+        env.Exit(1)
+      env.Append(LIBS_GAME="GL")
+
+      installer = None
+    else:
+      print "Platform is unrecognized platform " + sys.platform
+      env.Exit(1)
+
     # SDL
     sdlpath = conf.CheckFile(["/usr/mingw/local/bin", "/usr/local/bin", "/usr/bin"], "sdl-config")
     if not sdlpath:
-      Exit(1)
+      env.Exit(1)
     env.Append(LINKFLAGS_GAME=Split(conf.Execute(sdlpath + " --libs")), CPPFLAGS_GAME=Split(conf.Execute(sdlpath + " --cflags")))
     env.Append(CPPDEFINES_EDITOR=["NOSDL"])
 
     # Boost
     env.Append(LIBS=boostlibs, CPPPATH=boostpath)
     if not conf.CheckCXXHeader('boost/noncopyable.hpp', '<>'):
-      Exit(1)
+      env.Exit(1)
     for lib in boostlibs:
       if not conf.CheckLib(lib, autoadd=0):
-        Exit(1)
+        env.Exit(1)
 
     # libm
     if not conf.CheckLib("m", autoadd=0):
-      Exit(1)
+      env.Exit(1)
     env.Append(LIBS="m")
 
     # zlib
     if not conf.CheckLib("z", "compress", autoadd=0):
-      Exit(1)
+      env.Exit(1)
     env.Append(LIBS_GAME="z")
     env.Append(LIBS_EDITOR="z")
     env.Append(LIBS_REPORTER="z")
@@ -130,54 +160,49 @@ def Conf():
 
     # libpng
     if not conf.CheckLib("png", "png_create_read_struct", autoadd=0):
-      Exit(1)
+      env.Exit(1)
     env.Append(LIBS_EDITOR="png")
 
     # curl
-    # curl depends on zlib and ws2_32 on Windows
+    # curl depends on zlib and may depend on other libraries
     templibs = env['LIBS']
-    env.Append(LIBS=["z", "ws2_32"])
+    env.Append(LIBS=Split("z " + curldepend))
     if not conf.CheckLib("curl", "curl_easy_init", autoadd=0):
-      Exit(1)
+      env.Exit(1)
     env['LIBS'] = templibs
     env.Append(LIBS_REPORTER="curl")
     env.Append(CPPDEFINES_REPORTER="CURL_STATICLIB")
 
     # xerces
     if not conf.CheckLib("xerces-c", autoadd=0):
-      Exit(1)
+      env.Exit(1)
     env.Append(LIBS_CONSOLE_ODS2CSV="xerces-c")
 
     # Check for libogg
     if not conf.CheckLib("ogg", "ogg_stream_init", autoadd=0):
-      Exit(1)
+      env.Exit(1)
     env.Append(LIBS_GAME="ogg")
     
     # Check for libvorbis
     if not conf.CheckLib("vorbis", "vorbis_info_init", autoadd=0):
-      Exit(1)
+      env.Exit(1)
     env.Append(LIBS_GAME="vorbis")
     
     # Check for libvorbisfile
     if not conf.CheckLibWithHeader("vorbisfile", "vorbis/vorbisfile.h", "c++", 'ov_fopen("hi", NULL);', autoadd=0):
-      Exit(1)
+      env.Exit(1)
     env.Append(LIBS_GAME="vorbisfile")
 
     # Check for wx
     wxpath = conf.CheckFile(["/usr/mingw/local/bin", "/usr/local/bin", "/usr/bin"], "wx-config")
     if not wxpath:
-      Exit(1)
+      env.Exit(1)
     env.Append(LINKFLAGS_EDITOR=Split(conf.Execute(wxpath + " --libs --gl-libs")), CPPFLAGS_EDITOR=Split(conf.Execute(wxpath + " --cxxflags")))
 
     # Check for oggenc
-    oggpath = conf.CheckFile(["/cygdrive/c/windows/util"], "oggenc")
+    oggpath = conf.CheckFile(["/cygdrive/c/windows/util", "/usr/bin"], "oggenc")
     if not oggpath:
-      Exit(1)
-      
-    # Check for makensis
-    makensis = conf.CheckFile(["/cygdrive/c/Program Files (x86)/NSIS"], "makensis")
-    if not makensis:
-      Exit(1)
+      env.Exit(1)
     
     env.Append(CXXFLAGS_REPORTER="-O0", LINKFLAGS_REPORTER="-O0")
 
@@ -186,6 +211,7 @@ def Conf():
   else:
     
     oggpath = ""
-    makensis = ""
+    installer = ""
+    platform = ""
   
-  return env, categories, flagtypes, oggpath, makensis
+  return env, categories, flagtypes, oggpath, platform, installer
