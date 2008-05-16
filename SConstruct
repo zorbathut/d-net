@@ -115,7 +115,7 @@ data_dests["release"] = make_datadir("data_release")
 data_dests["demo"] = make_datadir("data_demo", "--demo")
 
 def make_shopcache(dest):
-  return env.Command("data_" + dest + "/shopcache.dwh", [programs["d-net"]] + data_dests[dest], "./${SOURCES[0]} --generateCachedShops=0.1 --fileroot=data_%s" % dest)
+  return env.Command("data_" + dest + "/shopcache.dwh", [programs["d-net"]] + data_dests[dest], "./${SOURCES[0]} --generateCachedShops=0.99 --fileroot=data_%s" % dest)
 
 shopcaches = {}
 shopcaches["release"] = make_shopcache("release")
@@ -150,7 +150,7 @@ def create_installer(type, shopcaches):
   
   nsipath = 'build/installer_%s%s.nsi' % (type, quick)
   ident = '%s-%s' % (version, type)
-  finalpath = 'build/d-net-%s-%s%s.exe' % (version, type, quick)
+  finalpath = 'build/dnet-%s-%s%s.exe' % (version, type, quick)
   mainexe = programs_stripped["d-net-" + type]
   
   env.Command(nsipath, ['installer.nsi.template', 'makeinstaller.py'] + data_dests[type] + deployfiles + shopcaches + [mainexe], dispatcher(generateInstaller, copyprefix=type, files=[str(x) for x in data_dests[type] + shopcaches], deployfiles=[str(x) for x in deployfiles], finaltarget=finalpath, mainexe=mainexe, version=ident)) # Technically it only depends on those files existing, not their actual contents.

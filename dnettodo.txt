@@ -1,9 +1,9 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
-  - Add comments anchor to page
   - Figure out Linux packaging
+    - Add platform to version string
+    - Make sure reporter works!
   - Figure out OSX packaging
-  - Linux/OSX builds, include platform in version string
   - Add vecedit to standard package
     - Make sure wx license is included
   - merge ods2csv to output all files
@@ -45,6 +45,7 @@
   - first-second-third place for wins?
   - Get rid of the Centered Overlay Menu
   - Crypto signing, add crypto to 911 and to devlog?
+  - Gradient more things on the forum
   - Many many more weapons
     - Add glory behavior
       - Make sure they don't spike CPU too badly
