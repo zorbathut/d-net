@@ -22,7 +22,7 @@ class SconToken:  # man, don't even ask
 def Conf():
 
   # Set up our environment
-  env = Environment(LINKFLAGS = Split("-g -O2 -Wl,--as-needed -mwindows -Wl,-\\("), CXXFLAGS=Split("-Wall -Wno-sign-compare -Wno-uninitialized -g -O2"), CPPDEFINES=["DPRINTF_MARKUP"], CXX="nice ./ewrap $TARGET g++")
+  env = Environment(LINKFLAGS = Split("-g -O2 -Wl,--as-needed -Wl,-\\("), CXXFLAGS=Split("-Wall -Wno-sign-compare -Wno-uninitialized -g -O2"), CPPDEFINES=["DPRINTF_MARKUP"], CXX="nice ./ewrap $TARGET g++")
   
   categories = Split("GAME EDITOR REPORTER CONSOLE CONSOLE_MERGER CONSOLE_ODS2CSV")
   flagtypes = Split("CCFLAGS CPPFLAGS CXXFLAGS LINKFLAGS LIBS CPPPATH LIBPATH CPPDEFINES")
@@ -79,7 +79,7 @@ def Conf():
       platform="cygwin"
 
       # Set up our environment defaults
-      env.Append(CPPPATH = Split("/usr/mingw/local/include"), LIBPATH = Split("/usr/mingw/local/lib"), CCFLAGS=Split("-mno-cygwin"), CPPFLAGS=Split("-mno-cygwin"), CXXFLAGS=Split("-mno-cygwin"), LINKFLAGS=Split("-mno-cygwin"))
+      env.Append(CPPPATH = Split("/usr/mingw/local/include"), LIBPATH = Split("/usr/mingw/local/lib"), CCFLAGS=Split("-mno-cygwin"), CPPFLAGS=Split("-mno-cygwin"), CXXFLAGS=Split("-mno-cygwin"), LINKFLAGS=Split("-mwindows -mno-cygwin"))
       
       # Boost flags
       boostlibs=["boost_regex-mgw-mt", "boost_filesystem-mgw-mt"]
@@ -134,7 +134,7 @@ def Conf():
     sdlpath = conf.CheckFile(["/usr/mingw/local/bin", "/usr/local/bin", "/usr/bin"], "sdl-config")
     if not sdlpath:
       env.Exit(1)
-    env.Append(LINKFLAGS_GAME=Split(conf.Execute(sdlpath + " --libs")), CPPFLAGS_GAME=Split(conf.Execute(sdlpath + " --cflags")))
+    env.MergeFlags(dict([(k + "_GAME", v) for k, v in env.ParseFlags(conf.Execute(sdlpath + " --libs --cflags")).items()]))
     env.Append(CPPDEFINES_EDITOR=["NOSDL"])
 
     # Boost

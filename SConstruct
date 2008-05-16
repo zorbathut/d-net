@@ -66,7 +66,7 @@ for build in buildables:
         built[(build[1], item)] = env.Object("build/%s.%s.o" % (item, abbreviation), "%s.c" % item, **params)
       objects += built[(build[1], item)]
       
-  if len(build) > 4:
+  if len(build) > 4 and platform=="cygwin":
     for item in build[4]:
       if not (build[1], item) in built:
         built[(build[1], item)] = env.Command("build/%s.%s.res" % (item, abbreviation), "%s.rc" % item, "nice windres $SOURCE -O coff -o $TARGET")
