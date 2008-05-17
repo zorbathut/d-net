@@ -21,6 +21,8 @@ pair<int, int> getScreenRes() {
 
 #else
 
+#include "init.h"
+
 #include <gdk/gdk.h>
 
 ADD_INITTER(gdk_init, -10);

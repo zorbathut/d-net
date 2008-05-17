@@ -134,6 +134,9 @@ def Conf():
       if not pkgstring:
         env.Exit(1)
       env.MergeFlags(dict([(k + "_GAME", v) for k, v in env.ParseFlags(pkgstring).items()]))
+ 
+      env.Append(ENV = os.environ)
+#      env.Append(ENV = {"DISPLAY" : os.environ['DISPLAY']})  # welp
 
       installer = None
     else:

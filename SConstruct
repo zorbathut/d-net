@@ -189,8 +189,8 @@ fulldata = env.Alias("d-net program and release data", data_dests["release"] + [
 if not env.GetOption('clean'):
   env.Default(fulldata) # if we clean, we want to clean everything
 
-localflags = "--writetarget=dumps/dump --nofullscreen --noaudio --perfbar --httpd_port=616 --runTests"
-stdrun = localflags + " --debugitems --startingPhase=8 --debugControllers=2 --factionMode=3 --nullControllers=11 --writeTarget= --auto_newgame --nocullShopTree --httpd_port=616 --checksumgamestate --noshopcache --nofastForwardOnNoCache"
+localflags = "--writetarget=dumps/dump --nofullscreen --noaudio --perfbar --httpd_port=1616 --runTests"
+stdrun = localflags + " --debugitems --startingPhase=8 --debugControllers=2 --factionMode=3 --nullControllers=11 --writeTarget= --auto_newgame --nocullShopTree --checksumgamestate --noshopcache --nofastForwardOnNoCache"
 
 command(env, "run", fulldata, "./%s %s" % (programs["d-net"], stdrun))
 command(env, "runclean", fulldata, "./%s %s" % (programs["d-net"], localflags))
