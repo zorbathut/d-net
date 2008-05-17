@@ -40,6 +40,7 @@ public:
 
 map<string, string> getFlagDescriptions();
 
-void initFlags(int argc, char *argv[], int ignoreargs, const string &settings = "");
+void setInitFlagFile(const string &fname);
+void setInitFlagIgnore(int args);
 
 #endif

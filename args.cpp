@@ -3,6 +3,7 @@
 
 #include "debug.h"
 #include "parse.h"
+#include "init.h"
 
 #include <vector>
 #include <fstream>
@@ -212,3 +213,17 @@ void initFlags(int argc, char *argv[], int ignoreargs, const string &settings) {
     }
   }
 }
+
+string ffile = "";
+int fignore = 0;
+void setInitFlagFile(const string &fname) {
+  ffile = fname;
+}
+void setInitFlagIgnore(int args) {
+  fignore = args;
+}
+
+void initFlagSpawner(int *argc, char ***argv) {
+  initFlags(*argc, *argv, fignore, ffile);
+}
+ADD_INITTER(initFlagSpawner, 0);

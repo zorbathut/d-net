@@ -201,9 +201,9 @@ template<typename Model> void doMerge(const string &csv, const string &unmerged,
 }  
 
 int main(int argc, char *argv[]) {
+  setInitFlagIgnore(3);
   initProgram(&argc, &argv);
   
-  initFlags(argc, argv, 3);
   if(FLAGS_fileroot.size() && FLAGS_fileroot[FLAGS_fileroot.size() - 1] != '/')
     FLAGS_fileroot += '/';
   

@@ -106,6 +106,7 @@ void deinitSystem() {
 };
 
 int main(int argc, char **argv) {
+  setInitFlagFile("settings");
   initProgram(&argc, &argv);
   
   StackString sst("Main");
@@ -113,7 +114,6 @@ int main(int argc, char **argv) {
 
   dprintf("Init\n");
   
-  initFlags(argc, argv, 0, "settings");
   if(FLAGS_help) {
     map<string, string> flags = getFlagDescriptions();
     #undef printf
