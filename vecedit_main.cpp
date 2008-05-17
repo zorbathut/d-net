@@ -12,6 +12,7 @@
 #include "os.h"
 #include "util.h"
 #include "itemdb.h"
+#include "init.h"
 
 #include <boost/noncopyable.hpp>
 #include <boost/function.hpp>
@@ -806,7 +807,7 @@ class VeceditMain: public wxApp, boost::noncopyable {
 IMPLEMENT_APP(VeceditMain)
 
 bool VeceditMain::OnInit() {
-  set_exename("vecedit.exe");
+  initProgram(&argc, &argv);
   
   loadItemdb();
   initGfx();

@@ -2,8 +2,6 @@
 - "Finish the Damn Game" Initiative
   - Figure out Linux packaging
     - Set up new register init system
-      - Wrap initargs into it somehow
-      - Get it to initialize gtk properly
       - Make sure vecedit still works
       - Set up Global Files in scons?
     - Split OS files?

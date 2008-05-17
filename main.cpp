@@ -5,6 +5,7 @@
 #include "gfx.h"
 #include "itemdb.h"
 #include "os.h"
+#include "os_ui.h"
 #include "httpd.h"
 #include "generators.h"
 #include "audio.h"
