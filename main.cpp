@@ -67,7 +67,12 @@ void initVideo() {
   CHECK(SDL_InitSubSystem(SDL_INIT_VIDEO) >= 0);
   
   SetupOgl();
-  CHECK(setResolution(make_pair(Settings::get_instance().res_x, Settings::get_instance().res_y), Settings::get_instance().res_aspect, Settings::get_instance().res_fullscreen));
+  if(!setResolution(make_pair(Settings::get_instance().res_x, Settings::get_instance().res_y), Settings::get_instance().res_aspect, Settings::get_instance().res_fullscreen)) {
+    if(!setResolution(make_pair(640, 480), 4.0/3.0, false)) {
+      Message("Can't find your 3d hardware, aborting.", false);
+      CHECK(0);
+    }
+  }
   
   {
     StackString sst("GL minituae");

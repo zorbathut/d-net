@@ -62,6 +62,8 @@ bool MakeWindow(const char * strWindowName, int width, int height, bool fullscre
   }
   
   if(!MainWindow) {
+    dprintf("We has failed to make a window.");
+    dprintf("%s\n", SDL_GetError());
     return false;
   }
 
