@@ -103,7 +103,7 @@ map< string, string > getFlagDescriptions() {
   return rv;
 }
 
-void initFlags(int argc, char *argv[], int ignoreargs, const string &settings) {
+void initFlags(int argc, const char *argv[], int ignoreargs, const string &settings) {
   map<string, LinkageData> &links = getLinkageSingleton();
   for(map<string, LinkageData>::iterator itr = links.begin(); itr != links.end(); itr++) {
     if(itr->second.type == LinkageData::LINKAGE_BOOL) {
@@ -223,7 +223,7 @@ void setInitFlagIgnore(int args) {
   fignore = args;
 }
 
-void initFlagSpawner(int *argc, char ***argv) {
+void initFlagSpawner(int *argc, const char ***argv) {
   initFlags(*argc, *argv, fignore, ffile);
 }
 ADD_INITTER(initFlagSpawner, 0);

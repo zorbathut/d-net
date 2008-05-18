@@ -20,7 +20,7 @@ using namespace std;
 DEFINE_bool(addr2line, false, "Call addr2line for stack traces");
 
 static string loc_exename;
-void set_exename(int *argc, char ***argv) {
+void set_exename(int *argc, const char ***argv) {
   CHECK(*argc >= 1);
   loc_exename = (*argv)[0];
   exesize(); // check to make sure we can get it

@@ -113,7 +113,7 @@ void deinitSystem() {
 
 int main(int argc, char **argv) {
   setInitFlagFile("settings");
-  initProgram(&argc, &argv);
+  initProgram(&argc, const_cast<const char ***>(&argv));
   
   StackString sst("Main");
   stackStart = &sst;

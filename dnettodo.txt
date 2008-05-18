@@ -8,6 +8,7 @@
     - Add platform to version string
     - Make sure reporter works!
     - Improve tmpfile to mkstemp
+  - Does Scons have build priority?
   - Figure out OSX packaging
   - Add vecedit to standard package
     - Make sure wx license is included

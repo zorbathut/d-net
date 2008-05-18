@@ -173,7 +173,7 @@ vector<vector<string> > extractData(const vector<unsigned char> &data, const str
   return rv;
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, const char *argv[]) {
   setInitFlagIgnore(4);
   initProgram(&argc, &argv);
   

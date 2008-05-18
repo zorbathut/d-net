@@ -200,7 +200,7 @@ template<typename Model> void doMerge(const string &csv, const string &unmerged,
   }
 }  
 
-int main(int argc, char *argv[]) {
+int main(int argc, const char *argv[]) {
   setInitFlagIgnore(3);
   initProgram(&argc, &argv);
   

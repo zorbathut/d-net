@@ -3,11 +3,11 @@
 
 #include <boost/function.hpp>
 
-void initProgram(int *argc, char ***argv);
+void initProgram(int *argc, const char ***argv);
 
 class InitterRegister {
 public:
-  InitterRegister(boost::function<void (int *, char ***)> func, int priority);
+  InitterRegister(boost::function<void (int *, const char ***)> func, int priority);
 };
 
 #define ADD_INITTER(func, priority)   namespace { InitterRegister inr##__LINE__(func, priority); }

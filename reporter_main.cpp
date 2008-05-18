@@ -6,6 +6,7 @@
 #include "debug.h"
 #include "util.h"
 #include "os_ui.h"
+#include "init.h"
 
 using namespace std;
 
