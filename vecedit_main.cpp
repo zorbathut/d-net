@@ -807,7 +807,8 @@ class VeceditMain: public wxApp, boost::noncopyable {
 IMPLEMENT_APP(VeceditMain)
 
 bool VeceditMain::OnInit() {
-  initProgram(&argc, &argv);
+  setInitFlagFile("settings");
+  initProgram(&argc, const_cast<const char ***>(&argv));
   
   loadItemdb();
   initGfx();

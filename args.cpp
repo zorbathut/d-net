@@ -8,6 +8,9 @@
 #include <vector>
 #include <fstream>
 
+#include <boost/function.hpp>
+#include <boost/bind.hpp>
+
 using namespace std;
 
 class LinkageData {
@@ -42,6 +45,11 @@ string canonize(const string &in) {
 
 map<string, LinkageData> &getLinkageSingleton() {
   static map<string, LinkageData> singy;
+  return singy;
+}
+
+vector<boost::function<void (void)> > &getMassageSingleton() {
+  static vector<boost::function<void (void)> > singy;
   return singy;
 }
 
@@ -94,6 +102,15 @@ LinkageData::LinkageData() {
   bool_link = NULL;
   float_link = NULL;
 }
+
+template<typename T> void ARGS_Massager::real_worker(T *item, void (&f)(T *)) {
+  getMassageSingleton().push_back(boost::bind(f, item));
+}
+
+template void ARGS_Massager::real_worker<string>(string *item, void (&f)(string *));
+template void ARGS_Massager::real_worker<int>(int *item, void (&f)(int *));
+template void ARGS_Massager::real_worker<bool>(bool *item, void (&f)(bool *));
+template void ARGS_Massager::real_worker<float>(float *item, void (&f)(float *));
 
 map< string, string > getFlagDescriptions() {
   map<string, string> rv;
@@ -199,6 +216,11 @@ void initFlags(int argc, const char *argv[], int ignoreargs, const string &setti
     
     *ld.source = lines[i].second;
   }
+  
+  for(int i = 0; i < getMassageSingleton().size(); i++) {
+    getMassageSingleton()[i]();
+  }
+  
   for(map<string, LinkageData>::iterator itr = links.begin(); itr != links.end(); itr++) {
     if(itr->second.type == LinkageData::LINKAGE_BOOL) {
       //dprintf("Set bool %s to %d\n", itr->first.c_str(), *itr->second.bool_link);

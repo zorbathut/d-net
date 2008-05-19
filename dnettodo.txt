@@ -4,6 +4,7 @@
     - Set up new register init system
       - Make sure vecedit still works
       - Set up Global Files in scons?
+      - Add "about" to vecedit with version
     - Split OS files?
     - Add platform to version string
     - Make sure reporter works!

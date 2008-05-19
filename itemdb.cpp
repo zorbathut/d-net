@@ -14,7 +14,14 @@
 
 using namespace std;
 
+
 DEFINE_string(fileroot, "data/", "Root to pull data from");
+
+static void fileroot_massager(string *frm) {
+  if(frm->size() && (*frm)[frm->size() - 1] != '/')
+    (*frm) += '/';
+}
+MASSAGE(fileroot, fileroot_massager);
 
 HierarchyNode root;
 map<string, IDBDeploy> deployclasses;

@@ -10,6 +10,14 @@ using namespace std;
 
 enum FlagSource { FS_DEFAULT, FS_FILE, FS_CLI };
 
+class ARGS_LinkageObject : boost::noncopyable {
+public:
+  ARGS_LinkageObject(const string &id, string *writeto, FlagSource *source, const string &def, const string &descr);
+  ARGS_LinkageObject(const string &id, int *writeto, FlagSource *source, int def, const string &descr);
+  ARGS_LinkageObject(const string &id, bool *writeto, FlagSource *source, bool def, const string &descr);
+  ARGS_LinkageObject(const string &id, float *writeto, FlagSource *source, float def, const string &descr);
+};
+
 #define DECLARE_VARIABLE(id, type) \
   extern type FLAGS_##id; \
   extern FlagSource FLAGS_##id##_OVERRIDDEN;
@@ -30,13 +38,13 @@ enum FlagSource { FS_DEFAULT, FS_FILE, FS_CLI };
 #define DEFINE_bool(id, def, descr) DEFINE_VARIABLE(id, bool, def, descr)
 #define DEFINE_float(id, def, descr) DEFINE_VARIABLE(id, float, def, descr)
 
-class ARGS_LinkageObject : boost::noncopyable {
+class ARGS_Massager : boost::noncopyable {
+  template<typename T> void real_worker(T *item, void (&)(T *)); // workaround for gcc bug
 public:
-  ARGS_LinkageObject(const string &id, string *writeto, FlagSource *source, const string &def, const string &descr);
-  ARGS_LinkageObject(const string &id, int *writeto, FlagSource *source, int def, const string &descr);
-  ARGS_LinkageObject(const string &id, bool *writeto, FlagSource *source, bool def, const string &descr);
-  ARGS_LinkageObject(const string &id, float *writeto, FlagSource *source, float def, const string &descr);
+  template<typename T> ARGS_Massager(T *item, void (&f)(T *)) { real_worker(item, f); }
 };
+
+#define MASSAGE(id, function) ARGS_Massager mass_##id##_##__LINE__(&FLAGS_##id, function);
 
 map<string, string> getFlagDescriptions();
 

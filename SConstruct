@@ -15,21 +15,25 @@ env, categories, flagtypes, oggpath, platform, makensis = Conf()
 # List of buildables
 buildables = [
   ["d-net", "GAME", Split("main core game timer debug gfx collide gamemap util rng args interface metagame itemdb itemdb_adjust itemdb_parse parse dvec2 input level coord ai inputsnag os float cfcommon coord_boolean player metagame_config shop shop_demo shop_info game_ai game_effects color metagame_tween cfc game_tank game_util game_projectile socket httpd recorder generators audio itemdb_httpd test regex shop_layout perfbar adler32 money stream stream_file itemdb_stream res_interface settings dumper audit stream_gz dumper_registry debug_911_on os_ui init"), [], Split("resource")],
-  ["vecedit", "EDITOR", Split("vecedit vecedit_main debug os util gfx float coord parse color dvec2 cfcommon input itemdb itemdb_adjust itemdb_parse args regex rng adler32 money perfbar timer stream stream_file itemdb_stream image dumper_registry debug_911_off init")],
+  ["vecedit", "EDITOR", Split("vecedit vecedit_main debug os util gfx float coord parse color dvec2 cfcommon input itemdb itemdb_adjust itemdb_parse args regex rng adler32 money perfbar timer stream stream_file itemdb_stream image dumper_registry debug_911_on os_ui init")],
   ["reporter", "REPORTER", Split("reporter_main debug os util parse args debug_911_off os_ui init")],
   ["merger", "CONSOLE_MERGER", Split("merger debug os util parse itemdb itemdb_adjust itemdb_parse args color dvec2 float coord cfcommon merger_weapon merger_bombardment merger_tanks merger_glory merger_util merger_upgrades merger_factions regex rng adler32 money stream stream_file itemdb_stream dumper_registry debug_911_off init")],
   ["ods2csv", "CONSOLE_ODS2CSV", Split("ods2csv debug os util parse adler32 args debug_911_off init"), Split("minizip/unzip minizip/ioapi")]
 ]
 
-def addReleaseVersion(buildables, suffix):
-  tversion = [buildables[0][0] + "-" + suffix] + buildables[0][1:]
+def addReleaseVersion(buildables, item, suffix):
+  tversion = [item[0] + "-" + suffix] + item[1:]
   tversion[2] = tversion[2] + ["version_" + suffix]
   buildables += [tversion]
 
-addReleaseVersion(buildables, "demo")
-addReleaseVersion(buildables, "release")
+def splitVersions(buildables, name):
+  for item in [x for x in buildables if x[0] == name]:
+    addReleaseVersion(buildables, item, "demo")
+    addReleaseVersion(buildables, item, "release")
+    item[2] += ["version_local"]
 
-buildables[0][2] += ["version_local"]
+splitVersions(buildables, "d-net")  # d-net
+splitVersions(buildables, "vecedit")  # vecedit
 
 deploy_dlls = Split("SDL.dll libogg-0.dll libvorbis-0.dll libvorbisfile-3.dll")
 
@@ -201,4 +205,4 @@ command(env, "ailoop", fulldata, "while nice ./%s %s --aiCount=12 --fastForwardT
 aicslflags = localflags + " --fastForwardTo=100000000 --noshopcache --treatAiAsHuman --randomizeFrameRender=60"
 command(env, "aicsl", fulldata, "while nice rm -f dumps/dump-*.dnd && nice ./%s %s --factionmode=3 --allowAisQuit --startingPhase=7 --aiCount=6 --terminateAfter=300 --nullcontrollers=5 --treataiashuman && sleep 2s && nice ./d-net.exe %s --readtarget=`ls dumps/dump-*.dnd` --writetarget= && sleep 2s ; do echo Cycle. ; done" % (programs["d-net"], aicslflags, aicslflags))
 
-command(env, "vecedit", [programs["vecedit"]], "./%s" % (programs["vecedit"]))
+command(env, "vecedit", [programs["vecedit"]] + data_dests["release"], "./%s" % (programs["vecedit"]))
