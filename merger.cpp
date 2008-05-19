@@ -204,9 +204,6 @@ int main(int argc, const char *argv[]) {
   setInitFlagIgnore(3);
   initProgram(&argc, &argv);
   
-  if(FLAGS_fileroot.size() && FLAGS_fileroot[FLAGS_fileroot.size() - 1] != '/')
-    FLAGS_fileroot += '/';
-  
   StackString ss("core");
   
   CHECK(argc >= 4);
