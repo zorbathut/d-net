@@ -305,8 +305,12 @@ void finishCluster() {
 }
 
 void initGfx() {
+  CHECK(glGetError() == GL_NO_ERROR);
   GLint v = 0;
   glGetIntegerv(GL_STENCIL_BITS, &v);
+  CHECK(glGetError() == GL_NO_ERROR);
+  if(v < 1)
+    dprintf("%d\n", v);
   CHECK(v >= 1); // :v:
 }
 

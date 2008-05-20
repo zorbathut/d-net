@@ -807,17 +807,19 @@ class VeceditMain: public wxApp, boost::noncopyable {
 IMPLEMENT_APP(VeceditMain)
 
 bool VeceditMain::OnInit() {
+
   setInitFlagFile("settings");
   initProgram(&argc, const_cast<const char ***>(&argv));
   
   loadItemdb();
-  initGfx();
+  loadFonts();
   
   wxImage::AddHandler(new wxPNGHandler);
   
   wxFrame *frame = new VeceditWindow();
   frame->Show(true);
   SetTopWindow(frame);
+  
   return true;
 }
 

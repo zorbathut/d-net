@@ -3,8 +3,11 @@
   - Figure out Linux packaging
     - Set up new register init system
       - Make sure vecedit still works
+      - Update wxwidgets
+      - Search for cyg
       - Set up Global Files in scons?
       - Add "about" to vecedit with version
+      - Integrate basepackage in
     - Split OS files?
     - Add platform to version string
     - Make sure reporter works!
@@ -19,6 +22,7 @@
   - boost::array
     - Add vector_paranoia
     - Integrate in a few places
+  - Figure out CamelCase/camelCase/under_score_words
   - Add scoped_ptr
   - Taunting: disable after death, make it less intense, make sure keyboard can do it
   - Improve EMP damage resistance, mention it in weapon stats, add visual effect

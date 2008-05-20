@@ -12,6 +12,8 @@ SetOption('implicit_cache', 1)
 
 env, categories, flagtypes, oggpath, platform, makensis = Conf()
 
+stdpackage = Split("debug os util parse args init")
+
 # List of buildables
 buildables = [
   ["d-net", "GAME", Split("main core game timer debug gfx collide gamemap util rng args interface metagame itemdb itemdb_adjust itemdb_parse parse dvec2 input level coord ai inputsnag os float cfcommon coord_boolean player metagame_config shop shop_demo shop_info game_ai game_effects color metagame_tween cfc game_tank game_util game_projectile socket httpd recorder generators audio itemdb_httpd test regex shop_layout perfbar adler32 money stream stream_file itemdb_stream res_interface settings dumper audit stream_gz dumper_registry debug_911_on os_ui init"), [], Split("resource")],
