@@ -304,7 +304,7 @@ void finishCluster() {
   CHECK(glGetError() == GL_NO_ERROR);
 }
 
-void initGfx() {
+void testGfx() {
   CHECK(glGetError() == GL_NO_ERROR);
   GLint v = 0;
   glGetIntegerv(GL_STENCIL_BITS, &v);

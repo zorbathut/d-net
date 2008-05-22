@@ -102,7 +102,7 @@ void initVideo() {
     }
   }
   
-  initGfx();
+  testGfx();
 }
 
 void deinitSystem() {

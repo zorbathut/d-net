@@ -79,6 +79,14 @@ void VeceditGLC::OnPaint(wxPaintEvent& event) {
   SetCurrent();
   
   {
+    static bool tested = false;
+    if(!tested) {
+      testGfx();
+      tested = true;
+    }
+  }
+  
+  {
     int w, h;
     GetClientSize(&w, &h);
     glViewport(0, 0, (GLint) w, (GLint) h); 

@@ -2,8 +2,6 @@
 - "Finish the Damn Game" Initiative
   - Figure out Linux packaging
     - Set up new register init system
-      - Make sure vecedit still works
-      - Rename initgfx, and place it somewhere appropriate in vecedit
       - Update wxwidgets
       - Search for cyg
       - Set up Global Files in scons?
