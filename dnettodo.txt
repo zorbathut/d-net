@@ -3,6 +3,7 @@
   - Figure out Linux packaging
     - Set up new register init system
       - Make sure vecedit still works
+      - Rename initgfx, and place it somewhere appropriate in vecedit
       - Update wxwidgets
       - Search for cyg
       - Set up Global Files in scons?
@@ -12,6 +13,10 @@
     - Add platform to version string
     - Make sure reporter works!
     - Improve tmpfile to mkstemp
+  - Instrument SDL for Chile
+  - Add a "hotmail warning" on the forums?
+  - Add an info page on what d-net is
+  - Make edit box larger
   - Does Scons have build priority?
   - Figure out OSX packaging
   - Add vecedit to standard package
@@ -58,6 +63,7 @@
   - Get rid of the Centered Overlay Menu
   - Crypto signing, add crypto to 911 and to devlog?
   - Gradient more things on the forum
+  - Add tags to tanks to see their capabilities easily?
   - Many many more weapons
     - Add glory behavior
       - Make sure they don't spike CPU too badly
