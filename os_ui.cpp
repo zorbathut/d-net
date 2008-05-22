@@ -24,8 +24,21 @@ pair<int, int> getScreenRes() {
 #include "init.h"
 
 #include <gdk/gdk.h>
+#include <gtk/gtk.h>
 
-ADD_INITTER(gdk_init, -10);
+int Message(const string &text, bool yesno) {
+  GtkWidget *gd = gtk_message_dialog_new(NULL, GTK_DIALOG_MODAL, GTK_MESSAGE_OTHER, yesno ? GTK_BUTTONS_YES_NO : GTK_BUTTONS_OK, text.c_str());
+  int rv = gtk_dialog_run(GTK_DIALOG(gd));
+  gtk_widget_destroy(gd);
+  if(rv == GTK_RESPONSE_ACCEPT)
+    return true;
+  return false;
+}
+
+void gdk_init_shell(int *argc, const char ***argv) {
+  gdk_init(argc, const_cast<char ***>(argv)); // rrrrgh
+}
+ADD_INITTER(gdk_init_shell, -10);
 
 pair<int, int> getScreenRes() {
   GdkScreen *screen = gdk_screen_get_default();
