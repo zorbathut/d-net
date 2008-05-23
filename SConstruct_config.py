@@ -177,6 +177,11 @@ def Conf():
     env.Append(LIBS_EDITOR="png")
 
     # curl
+    curlpath = conf.CheckFile(["/usr/mingw/local/bin", "/usr/local/bin", "/usr/bin"], "curl-config")
+    if not curlpath:
+      env.Exit(1)
+    env.MergeFlags(dict([(k + "_REPORTER", v) for k, v in env.ParseFlags(conf.Execute(curlpath + " --cflags --static-libs")).items()]))
+
     # curl depends on zlib and may depend on other libraries
     templibs = env['LIBS']
     env.Append(LIBS=Split("z " + curldepend))
@@ -210,7 +215,7 @@ def Conf():
     wxpath = conf.CheckFile(["/usr/mingw/local/bin", "/usr/local/bin", "/usr/bin"], "wx-config")
     if not wxpath:
       env.Exit(1)
-    env.Append(LINKFLAGS_EDITOR=Split(conf.Execute(wxpath + " --libs --gl-libs")), CPPFLAGS_EDITOR=Split(conf.Execute(wxpath + " --cxxflags")))
+    env.MergeFlags(dict([(k + "_EDITOR", v) for k, v in env.ParseFlags(conf.Execute(wxpath + " --libs --cxxflags --gl-libs")).items()]))
 
     # Check for oggenc
     oggpath = conf.CheckFile(["/cygdrive/c/windows/util", "/usr/bin"], "oggenc")

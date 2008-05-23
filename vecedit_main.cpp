@@ -72,7 +72,7 @@ int gl_attribList[] = {
   WX_GL_DOUBLEBUFFER,
   0
 };
-VeceditGLC::VeceditGLC(wxWindow *wind, const function<void ()> &render_callback, const function<void (const MouseInput &, int)> &mouse_callback, const function<ScrollBounds (Float2)> &scroll_callback, const function<void (Float2)> &set_scroll_callback) : wxGLCanvas(wind, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER | wxVSCROLL | wxHSCROLL | wxALWAYS_SHOW_SB, "GLCanvas", gl_attribList), render_callback(render_callback), mouse_callback(mouse_callback), scroll_callback(scroll_callback), set_scroll_callback(set_scroll_callback) {
+VeceditGLC::VeceditGLC(wxWindow *wind, const function<void ()> &render_callback, const function<void (const MouseInput &, int)> &mouse_callback, const function<ScrollBounds (Float2)> &scroll_callback, const function<void (Float2)> &set_scroll_callback) : wxGLCanvas(wind, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER | wxVSCROLL | wxHSCROLL | wxALWAYS_SHOW_SB, wxT("GLCanvas"), gl_attribList), render_callback(render_callback), mouse_callback(mouse_callback), scroll_callback(scroll_callback), set_scroll_callback(set_scroll_callback) {
   SetScrollbar(wxVERTICAL, 0, 40, 50);
   SetScrollbar(wxHORIZONTAL, 0, 40, 50);
 };
@@ -366,7 +366,7 @@ BEGIN_EVENT_TABLE(VeceditWindow, wxFrame)
   EVT_CLOSE(VeceditWindow::OnClose)
 END_EVENT_TABLE()
 
-const wxString veceditname =  "D-Net Vecedit2";
+const string veceditname =  "D-Net Vecedit2";
 
 void VeceditWindow::renderCore() const {
   initFrame();
@@ -409,59 +409,59 @@ void VeceditWindow::mouseCore(const MouseInput &mstate, int wheel) {
   process(ost);
 }
 
-VeceditWindow::VeceditWindow() : wxFrame((wxFrame *)NULL, -1, veceditname.c_str(), wxDefaultPosition, wxSize(800, 600)) {
+VeceditWindow::VeceditWindow() : wxFrame((wxFrame *)NULL, -1, wxConvUTF8.cMB2WX(veceditname.c_str()), wxDefaultPosition, wxSize(800, 600)) {
   wxMenuBar *menuBar = new wxMenuBar;
   
   {
     wxMenu *menuFile = new wxMenu;
     
-    menuFile->Append(ID_New, "&New\tCtrl-N");
-    menuFile->Append(ID_Open, "&Open...\tCtrl-O");
-    menuFile->Append(ID_Save, "&Save\tCtrl+S");
-    menuFile->Append(ID_Saveas, "Save &as...\tCtrl+Shift+S");
+    menuFile->Append(ID_New, wxT("&New\tCtrl-N"));
+    menuFile->Append(ID_Open, wxT("&Open...\tCtrl-O"));
+    menuFile->Append(ID_Save, wxT("&Save\tCtrl+S"));
+    menuFile->Append(ID_Saveas, wxT("Save &as...\tCtrl+Shift+S"));
     
     menuFile->AppendSeparator();
     
-    menuFile->Append(ID_Quit, "E&xit");
+    menuFile->Append(ID_Quit, wxT("E&xit"));
     
-    menuBar->Append(menuFile, "&File");
+    menuBar->Append(menuFile, wxT("&File"));
   }
   
   {
     wxMenu *menuFile = new wxMenu;
     
-    menuFile->Append(ID_Undo, "&Undo\tCtrl+Z");
-    menuFile->Append(ID_Redo, "&Redo\tCtrl+Y");
+    menuFile->Append(ID_Undo, wxT("&Undo\tCtrl+Z"));
+    menuFile->Append(ID_Redo, wxT("&Redo\tCtrl+Y"));
     
     menuFile->AppendSeparator();
     
-    menuFile->Append(ID_Cut, "Cu&t\tCtrl+X");
-    menuFile->Append(ID_Copy, "&Copy\tCtrl+C");
-    menuFile->Append(ID_Paste, "&Paste\tCtrl+V");
-    menuFile->Append(ID_Delete, "&Delete\tDel");
+    menuFile->Append(ID_Cut, wxT("Cu&t\tCtrl+X"));
+    menuFile->Append(ID_Copy, wxT("&Copy\tCtrl+C"));
+    menuFile->Append(ID_Paste, wxT("&Paste\tCtrl+V"));
+    menuFile->Append(ID_Delete, wxT("&Delete\tDel"));
     
     menuFile->AppendSeparator();
     
-    menuFile->Append(ID_NewPathMenu, "Add path\tP");
-    menuFile->Append(ID_NewNodeMenu, "Add node\tA");
-    menuFile->Append(ID_NewTankMenu, "Add tank\tT");
+    menuFile->Append(ID_NewPathMenu, wxT("Add path\tP"));
+    menuFile->Append(ID_NewNodeMenu, wxT("Add node\tA"));
+    menuFile->Append(ID_NewTankMenu, wxT("Add tank\tT"));
     
-    menuBar->Append(menuFile, "&Edit");
+    menuBar->Append(menuFile, wxT("&Edit"));
   }
   
   {
     wxMenu *menuFile = new wxMenu;
     
-    menuFile->Append(ID_About, "&About...");
+    menuFile->Append(ID_About, wxT("&About..."));
     
-    menuBar->Append(menuFile, "&Help");
+    menuBar->Append(menuFile, wxT("&Help"));
   }
   
   SetMenuBar(menuBar);
   
   // We make this first so it gets redrawn first, which reduces flicker a bit
   CreateStatusBar();
-  SetStatusText("borf borf borf");
+  SetStatusText(wxT("bah weep grah nah weep ninny bong"));
   
   glc = new VeceditGLC(this, bind(&VeceditWindow::renderCore, this), bind(&VeceditWindow::mouseCore, this, _1, _2), bind(&VeceditWindow::getScrollBounds, this, _1), bind(&VeceditWindow::setScrollPos, this, _1));
   wxNotebook *note = new wxNotebook(this, wxID_ANY);
@@ -472,15 +472,15 @@ VeceditWindow::VeceditWindow() : wxFrame((wxFrame *)NULL, -1, veceditname.c_str(
     
     wxBoxSizer *sizer = new wxBoxSizer(wxVERTICAL);
     
-    sizer->Add(new wxStaticText(pathprops, wxID_ANY, "Path reflections"));
-    sizer->Add(reflects = new wxSpinCtrl(pathprops, ID_PathReflects, "1", wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 1, 16384));
+    sizer->Add(new wxStaticText(pathprops, wxID_ANY, wxT("Path reflections")));
+    sizer->Add(reflects = new wxSpinCtrl(pathprops, ID_PathReflects, wxT("1"), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 1, 16384));
     
     sizer->Add(0, 20);
     
     {
-      wxString options[] = { "Buzzsaw", "Snowflake" };
+      wxString options[] = { wxT("Buzzsaw"), wxT("Snowflake") };
       
-      sizer->Add(snowflake = new wxRadioBox(pathprops, ID_PathRotation, "Rotation mode", wxDefaultPosition, wxDefaultSize, ARRAY_SIZE(options), options, 1));
+      sizer->Add(snowflake = new wxRadioBox(pathprops, ID_PathRotation, wxT("Rotation mode"), wxDefaultPosition, wxDefaultSize, ARRAY_SIZE(options), options, 1));
     }
     
     wxBoxSizer *internal = new wxBoxSizer(wxVERTICAL);
@@ -488,7 +488,7 @@ VeceditWindow::VeceditWindow() : wxFrame((wxFrame *)NULL, -1, veceditname.c_str(
     
     pathprops->SetSizer(internal);
     
-    note->AddPage(pathprops, "Props");
+    note->AddPage(pathprops, wxT("Props"));
   }
 
   {
@@ -496,40 +496,40 @@ VeceditWindow::VeceditWindow() : wxFrame((wxFrame *)NULL, -1, veceditname.c_str(
     
     wxBoxSizer *sizer = new wxBoxSizer(wxVERTICAL);
     
-    sizer->Add(new wxStaticText(globals, wxID_ANY, "Minimum tanks"));
-    sizer->Add(mintanks = new wxSpinCtrl(globals, ID_MinTanks, "2", wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 2, 32));
+    sizer->Add(new wxStaticText(globals, wxID_ANY, wxT("Minimum tanks")));
+    sizer->Add(mintanks = new wxSpinCtrl(globals, ID_MinTanks, wxT("2"), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 2, 32));
     
     sizer->Add(0, 20);
     
-    sizer->Add(new wxStaticText(globals, wxID_ANY, "Maximum tanks"));
-    sizer->Add(maxtanks = new wxSpinCtrl(globals, ID_MaxTanks, "32", wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 2, 32));
+    sizer->Add(new wxStaticText(globals, wxID_ANY, wxT("Maximum tanks")));
+    sizer->Add(maxtanks = new wxSpinCtrl(globals, ID_MaxTanks, wxT("32"), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 2, 32));
     
     wxBoxSizer *internal = new wxBoxSizer(wxVERTICAL);
     internal->Add(sizer, wxSizerFlags().Border());
     
     globals->SetSizer(internal);
     
-    note->AddPage(globals, "Globals");
+    note->AddPage(globals, wxT("Globals"));
   }
   
   toolbar = new wxToolBar(this, wxID_ANY);
-  toolbar->AddTool(ID_NewPath, "add path", wxBitmap((FLAGS_fileroot + "vecedit/addpath.png").c_str(), wxBITMAP_TYPE_PNG), "Add a new path", wxITEM_CHECK);
-  toolbar->AddTool(ID_NewNode, "add node", wxBitmap((FLAGS_fileroot + "vecedit/addnode.png").c_str(), wxBITMAP_TYPE_PNG), "Add a new node", wxITEM_CHECK);
-  toolbar->AddTool(ID_NewTank, "add tank", wxBitmap((FLAGS_fileroot + "vecedit/addtank.png").c_str(), wxBITMAP_TYPE_PNG), "Add a new tank", wxITEM_CHECK);
+  toolbar->AddTool(ID_NewPath, wxT("add path"), wxBitmap(wxConvUTF8.cMB2WX((FLAGS_fileroot + "vecedit/addpath.png").c_str()), wxBITMAP_TYPE_PNG), wxT("Add a new path"), wxITEM_CHECK);
+  toolbar->AddTool(ID_NewNode, wxT("add node"), wxBitmap(wxConvUTF8.cMB2WX((FLAGS_fileroot + "vecedit/addnode.png").c_str()), wxBITMAP_TYPE_PNG), wxT("Add a new node"), wxITEM_CHECK);
+  toolbar->AddTool(ID_NewTank, wxT("add tank"), wxBitmap(wxConvUTF8.cMB2WX((FLAGS_fileroot + "vecedit/addtank.png").c_str()), wxBITMAP_TYPE_PNG), wxT("Add a new tank"), wxITEM_CHECK);
   
   toolbar->AddSeparator();
-  toolbar->AddTool(ID_GridToggle, "toggle grid", wxBitmap((FLAGS_fileroot + "vecedit/grid.png").c_str(), wxBITMAP_TYPE_PNG), "Activate grid lock", wxITEM_CHECK);
-  toolbar->AddControl(grid = new wxSpinCtrl(toolbar, ID_GridSpinner, "16", wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 1, 16384));
+  toolbar->AddTool(ID_GridToggle, wxT("toggle grid"), wxBitmap(wxConvUTF8.cMB2WX((FLAGS_fileroot + "vecedit/grid.png").c_str()), wxBITMAP_TYPE_PNG), wxT("Activate grid lock"), wxITEM_CHECK);
+  toolbar->AddControl(grid = new wxSpinCtrl(toolbar, ID_GridSpinner, wxT("16"), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 1, 16384));
   wstate.grid = -1;
   
   toolbar->AddSeparator();
-  toolbar->AddTool(ID_RotGridToggle, "toggle rotation grid", wxBitmap((FLAGS_fileroot + "vecedit/rotgrid.png").c_str(), wxBITMAP_TYPE_PNG), "Activate rotation grid lock", wxITEM_CHECK);
+  toolbar->AddTool(ID_RotGridToggle, wxT("toggle rotation grid"), wxBitmap(wxConvUTF8.cMB2WX((FLAGS_fileroot + "vecedit/rotgrid.png").c_str()), wxBITMAP_TYPE_PNG), wxT("Activate rotation grid lock"), wxITEM_CHECK);
   toolbar->ToggleTool(ID_RotGridToggle, 1);
-  toolbar->AddControl(rotgrid = new wxSpinCtrl(toolbar, ID_RotGridSpinner, "8", wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 1, 16384));
+  toolbar->AddControl(rotgrid = new wxSpinCtrl(toolbar, ID_RotGridSpinner, wxT("8"), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 1, 16384));
   wstate.rotgrid = 8;
   
   toolbar->AddSeparator();
-  toolbar->AddTool(ID_ShowControlsToggle, "toggle controls", wxBitmap((FLAGS_fileroot + "vecedit/showcontrols.png").c_str(), wxBITMAP_TYPE_PNG), "Toggle control visibility", wxITEM_CHECK);
+  toolbar->AddTool(ID_ShowControlsToggle, wxT("toggle controls"), wxBitmap(wxConvUTF8.cMB2WX((FLAGS_fileroot + "vecedit/showcontrols.png").c_str()), wxBITMAP_TYPE_PNG), wxT("Toggle control visibility"), wxITEM_CHECK);
   toolbar->ToggleTool(ID_ShowControlsToggle, 1);
   
   toolbar->Realize();
@@ -568,7 +568,7 @@ void VeceditWindow::OnNew(wxCommandEvent& event) {
 void VeceditWindow::OnOpen(wxCommandEvent& event) {
   if(!maybeSaveChanges())
     return;
-  wxFileDialog wxfd(this, "Open File", veceditname, "", "DVec2 Files (*.dv2)|*.dv2|All Files (*.*)|*.*", wxFD_OPEN);
+  wxFileDialog wxfd(this, wxT("Open File"), wxConvUTF8.cMB2WX(veceditname.c_str()), wxT(""), wxT("DVec2 Files (*.dv2)|*.dv2|All Files (*.*)|*.*"), wxFD_OPEN);
   if(wxfd.ShowModal() == wxID_OK) {
     filename = wxConvUTF8.cWX2MB(wxfd.GetPath());
     core.load(filename);
@@ -584,17 +584,17 @@ bool VeceditWindow::OnSave() {
     return OnSaveas();
   } else {
     if(!core.save(filename))
-      wxMessageBox("Error saving! File is not saved!", "ba-weep-gra-na-weep-ninny-bong", wxOK | wxICON_INFORMATION, this);
+      wxMessageBox(wxT("Error saving! File is not saved!"), wxT("ba-weep-gra-na-weep-ninny-bong"), wxOK | wxICON_INFORMATION, this);
     return true;
   }
 }
 bool VeceditWindow::OnSaveas() {
-  wxFileDialog wxfd(this, "Save File", veceditname, "", "DVec2 Files (*.dv2)|*.dv2|All Files (*.*)|*.*", wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
+  wxFileDialog wxfd(this, wxT("Save File"), wxT(""), wxT(""), wxT("DVec2 Files (*.dv2)|*.dv2|All Files (*.*)|*.*"), wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
   if(wxfd.ShowModal() == wxID_OK) {
     if(core.save((string)wxConvUTF8.cWX2MB(wxfd.GetPath()))) {
       filename = wxConvUTF8.cWX2MB(wxfd.GetPath());
     } else {
-      wxMessageBox("Error saving! File is not saved!", "ba-weep-gra-na-weep-ninny-bong", wxOK | wxICON_INFORMATION, this);
+      wxMessageBox(wxT("Error saving! File is not saved!"), wxT("ba-weep-gra-na-weep-ninny-bong"), wxOK | wxICON_INFORMATION, this);
     }
     return true;
   } else {
@@ -630,14 +630,14 @@ void VeceditWindow::OnDelete(wxCommandEvent &event) {
 }
 
 void VeceditWindow::OnAbout(wxCommandEvent& WXUNUSED(event)) {
-  wxMessageBox("What is D-Net Vecedit2? We just don't know.", "About D-Net Vecedit2", wxOK | wxICON_INFORMATION, this);
+  wxMessageBox(wxT("What is D-Net Vecedit2? We just don't know."), wxT("About D-Net Vecedit2"), wxOK | wxICON_INFORMATION, this);
 }
 void VeceditWindow::OnClose(wxCloseEvent &event) {
   dprintf("enclose\n");
   if(!maybeSaveChanges()) {
     if(!event.CanVeto()) {
-      wxMessageBox("Cannot cancel closing, saving to c:\\backup.dv2", "ba-weep-gra-na-weep-ninny-bong", wxOK);
-      core.save("c:\\backup.dv2");
+      wxMessageBox(wxT("Cannot cancel closing, saving to backup.dv2"), wxT("ba-weep-gra-na-weep-ninny-bong"), wxOK);
+      core.save("backup.dv2");
       this->Destroy();
     } else {
       event.Veto();
@@ -798,7 +798,8 @@ void VeceditWindow::process(const OtherState &ost) {
 
 bool VeceditWindow::maybeSaveChanges() {
   if(core.changed()) {
-    int saveit = wxMessageBox(StringPrintf("The text in %s has changed.\n\nDo you want to save the changes?", filename.c_str()).c_str(), veceditname, wxYES_NO | wxCANCEL | wxICON_EXCLAMATION);
+    wxString text = wxConvUTF8.cMB2WX(StringPrintf("The data in %s has changed.\n\nDo you want to save the changes?", filename.c_str()).c_str());
+    int saveit = wxMessageBox(text, wxConvUTF8.cMB2WX(veceditname.c_str()), wxYES_NO | wxCANCEL | wxICON_EXCLAMATION);
     if(saveit == wxCANCEL)
       return false;
     if(saveit == wxYES)
