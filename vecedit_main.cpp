@@ -13,6 +13,7 @@
 #include "util.h"
 #include "itemdb.h"
 #include "init.h"
+#include "version.h"
 
 #include <boost/noncopyable.hpp>
 #include <boost/function.hpp>
@@ -630,7 +631,7 @@ void VeceditWindow::OnDelete(wxCommandEvent &event) {
 }
 
 void VeceditWindow::OnAbout(wxCommandEvent& WXUNUSED(event)) {
-  wxMessageBox(wxT("What is D-Net Vecedit2? We just don't know."), wxT("About D-Net Vecedit2"), wxOK | wxICON_INFORMATION, this);
+  wxMessageBox(wxConvUTF8.cMB2WX(StringPrintf("This is Devastation Net's vector and level editor.\nCheck out the game at http://www.mandible-games.com.\n\nVersion %s", dnet_version.c_str()).c_str()), wxT("About D-Net Vecedit2"), wxOK | wxICON_INFORMATION, this);
 }
 void VeceditWindow::OnClose(wxCloseEvent &event) {
   dprintf("enclose\n");
