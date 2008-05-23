@@ -23,6 +23,12 @@ static string loc_exename;
 void set_exename(int *argc, const char ***argv) {
   CHECK(*argc >= 1);
   loc_exename = (*argv)[0];
+  
+  struct stat lulz;
+  if(stat(loc_exename.c_str(), &lulz)) {
+    loc_exename += ".exe";  // lazy hack
+  }
+  
   exesize(); // check to make sure we can get it
 }
   
@@ -76,6 +82,7 @@ void wrap_mkdir(const string &str) {
 }
 
 void SpawnProcess(const string &exec, const vector<string> &params) {
+  dprintf("%s\n", exec.c_str());
   string texec = exec;
 
   for(int i = 0; i < params.size(); i++) {

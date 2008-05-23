@@ -16,8 +16,8 @@ stdpackage = Split("debug os util parse args init")
 
 # List of buildables
 buildables = [
-  ["d-net", "GAME", Split("main core game timer gfx collide gamemap rng interface metagame itemdb itemdb_adjust itemdb_parse dvec2 input level coord ai inputsnag float cfcommon coord_boolean player metagame_config shop shop_demo shop_info game_ai game_effects color metagame_tween cfc game_tank game_util game_projectile socket httpd recorder generators audio itemdb_httpd test regex shop_layout perfbar adler32 money stream stream_file itemdb_stream res_interface settings dumper audit stream_gz dumper_registry debug_911_on os_ui") + stdpackage, [], Split("resource")],
-  ["vecedit", "EDITOR", Split("vecedit vecedit_main gfx float coord color dvec2 cfcommon input itemdb itemdb_adjust itemdb_parse regex rng adler32 money perfbar timer stream stream_file itemdb_stream image dumper_registry debug_911_on") + stdpackage],
+  ["d-net", "GAME", Split("main core game timer gfx collide gamemap rng interface metagame itemdb itemdb_adjust itemdb_parse dvec2 input level coord ai inputsnag float cfcommon coord_boolean player metagame_config shop shop_demo shop_info game_ai game_effects color metagame_tween cfc game_tank game_util game_projectile socket httpd recorder generators audio itemdb_httpd test regex shop_layout perfbar adler32 money stream stream_file itemdb_stream res_interface settings dumper audit stream_gz dumper_registry debug_911_on os_ui package_conf_dnet") + stdpackage, [], Split("resource")],
+  ["vecedit", "EDITOR", Split("vecedit vecedit_main gfx float coord color dvec2 cfcommon input itemdb itemdb_adjust itemdb_parse regex rng adler32 money perfbar timer stream stream_file itemdb_stream image dumper_registry debug_911_on package_conf_vecedit") + stdpackage],
   ["reporter", "REPORTER", Split("reporter_main debug_911_off os_ui") + stdpackage],
   ["merger", "CONSOLE_MERGER", Split("merger itemdb itemdb_adjust itemdb_parse color dvec2 float coord cfcommon merger_weapon merger_bombardment merger_tanks merger_glory merger_util merger_upgrades merger_factions regex rng adler32 money stream stream_file itemdb_stream dumper_registry debug_911_off") + stdpackage],
   ["ods2csv", "CONSOLE_ODS2CSV", Split("ods2csv adler32 debug_911_off") + stdpackage, Split("minizip/unzip minizip/ioapi")]
@@ -72,7 +72,7 @@ for build in buildables:
         built[(build[1], item)] = env.Object("build/%s.%s.o" % (item, abbreviation), "%s.c" % item, **params)
       objects += built[(build[1], item)]
       
-  if len(build) > 4 and platform=="cygwin":
+  if len(build) > 4 and platform=="win":
     for item in build[4]:
       if not (build[1], item) in built:
         built[(build[1], item)] = env.Command("build/%s.%s.res" % (item, abbreviation), "%s.rc" % item, "nice windres $SOURCE -O coff -o $TARGET")
@@ -174,7 +174,7 @@ Alias("package", Alias("packagerelease", create_installer("release", shopcaches[
 
 # version_*.cpp
 def addVersionFile(type):
-  env.Command('version_%s.cpp' % type, Split('version_data version_gen.py'), """( cat version_data ; echo -n "-%s" ) | ./version_gen.py > $TARGET""" % type)
+  env.Command('version_%s.cpp' % type, Split('version_data version_gen.py'), """( cat version_data ; echo -n "-%s-%s" ) | ./version_gen.py > $TARGET""" % (platform, type))
 
 for item in "local demo release".split():
   addVersionFile(item)

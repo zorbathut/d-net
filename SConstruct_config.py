@@ -78,7 +78,7 @@ def Conf():
     curldepend=""
 
     if sys.platform == "cygwin": # Cygwin
-      platform="cygwin"
+      platform="win"
 
       # Set up our environment defaults
       env.Append(CPPPATH = Split("/usr/mingw/local/include"), LIBPATH = Split("/usr/mingw/local/lib"), CCFLAGS=Split("-mno-cygwin"), CPPFLAGS=Split("-mno-cygwin"), CXXFLAGS=Split("-mno-cygwin"), LINKFLAGS=Split("-mwindows -mno-cygwin"))

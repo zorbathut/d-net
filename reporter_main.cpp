@@ -7,6 +7,7 @@
 #include "util.h"
 #include "os_ui.h"
 #include "init.h"
+#include "args.h"
 
 using namespace std;
 
@@ -59,6 +60,7 @@ string request(string url, const map<string, string> &posts) {
 }
 
 int main(int argc, const char *argv[]) {
+  setInitFlagIgnore(7);
   initProgram(&argc, &argv);
   
   CHECK(argc == 7);

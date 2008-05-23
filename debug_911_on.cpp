@@ -6,6 +6,7 @@
 #include "util.h"
 #include "args.h"
 #include "version.h"
+#include "package_conf.h"
 
 #include <string>
 #include <fstream>
@@ -47,7 +48,7 @@ void Prepare911(const char *crashfname, int crashline) {
     }
     
     vector<string> params;
-    boost::assign::push_back(params)("d-net.exe")(fname)(dnet_version)(crashfname)(StringPrintf("%d", crashline))(StringPrintf("%d", exesize()));
-    SpawnProcess("reporter.exe", params);
+    boost::assign::push_back(params)(package_id)(fname)(package_id + "-" + dnet_version)(crashfname)(StringPrintf("%d", crashline))(StringPrintf("%d", exesize()));
+    SpawnProcess("reporter", params);
   }
 };

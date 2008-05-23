@@ -1,8 +1,6 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - Figure out Linux packaging
-    - Split OS files?
-    - Add platform to version string
     - Make sure reporter works!
     - Improve tmpfile to mkstemp
   - Add "for whatever" text to the controller choosing options
