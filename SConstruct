@@ -16,11 +16,11 @@ stdpackage = Split("debug os util parse args init")
 
 # List of buildables
 buildables = [
-  ["d-net", "GAME", Split("main core game timer debug gfx collide gamemap util rng args interface metagame itemdb itemdb_adjust itemdb_parse parse dvec2 input level coord ai inputsnag os float cfcommon coord_boolean player metagame_config shop shop_demo shop_info game_ai game_effects color metagame_tween cfc game_tank game_util game_projectile socket httpd recorder generators audio itemdb_httpd test regex shop_layout perfbar adler32 money stream stream_file itemdb_stream res_interface settings dumper audit stream_gz dumper_registry debug_911_on os_ui init"), [], Split("resource")],
-  ["vecedit", "EDITOR", Split("vecedit vecedit_main debug os util gfx float coord parse color dvec2 cfcommon input itemdb itemdb_adjust itemdb_parse args regex rng adler32 money perfbar timer stream stream_file itemdb_stream image dumper_registry debug_911_on init")],
-  ["reporter", "REPORTER", Split("reporter_main debug os util parse args debug_911_off os_ui init")],
-  ["merger", "CONSOLE_MERGER", Split("merger debug os util parse itemdb itemdb_adjust itemdb_parse args color dvec2 float coord cfcommon merger_weapon merger_bombardment merger_tanks merger_glory merger_util merger_upgrades merger_factions regex rng adler32 money stream stream_file itemdb_stream dumper_registry debug_911_off init")],
-  ["ods2csv", "CONSOLE_ODS2CSV", Split("ods2csv debug os util parse adler32 args debug_911_off init"), Split("minizip/unzip minizip/ioapi")]
+  ["d-net", "GAME", Split("main core game timer gfx collide gamemap rng interface metagame itemdb itemdb_adjust itemdb_parse dvec2 input level coord ai inputsnag float cfcommon coord_boolean player metagame_config shop shop_demo shop_info game_ai game_effects color metagame_tween cfc game_tank game_util game_projectile socket httpd recorder generators audio itemdb_httpd test regex shop_layout perfbar adler32 money stream stream_file itemdb_stream res_interface settings dumper audit stream_gz dumper_registry debug_911_on os_ui") + stdpackage, [], Split("resource")],
+  ["vecedit", "EDITOR", Split("vecedit vecedit_main gfx float coord color dvec2 cfcommon input itemdb itemdb_adjust itemdb_parse regex rng adler32 money perfbar timer stream stream_file itemdb_stream image dumper_registry debug_911_on") + stdpackage],
+  ["reporter", "REPORTER", Split("reporter_main debug_911_off os_ui") + stdpackage],
+  ["merger", "CONSOLE_MERGER", Split("merger itemdb itemdb_adjust itemdb_parse color dvec2 float coord cfcommon merger_weapon merger_bombardment merger_tanks merger_glory merger_util merger_upgrades merger_factions regex rng adler32 money stream stream_file itemdb_stream dumper_registry debug_911_off") + stdpackage],
+  ["ods2csv", "CONSOLE_ODS2CSV", Split("ods2csv adler32 debug_911_off") + stdpackage, Split("minizip/unzip minizip/ioapi")]
 ]
 
 def addReleaseVersion(buildables, item, suffix):
@@ -212,3 +212,5 @@ aicslflags = localflags + " --fastForwardTo=100000000 --noshopcache --treatAiAsH
 command(env, "aicsl", fulldata, "while nice rm -f dumps/dump-*.dnd && nice ./%s %s --factionmode=3 --allowAisQuit --startingPhase=7 --aiCount=6 --terminateAfter=300 --nullcontrollers=5 --treataiashuman && sleep 2s && nice ./d-net.exe %s --readtarget=`ls dumps/dump-*.dnd` --writetarget= && sleep 2s ; do echo Cycle. ; done" % (programs["d-net"], aicslflags, aicslflags))
 
 command(env, "vecedit", [programs["vecedit"]] + data_dests["release"] + data_dests["release_vecedit"], "./%s" % (programs["vecedit"]))
+
+command(env, "binaries", programs.values(), "")

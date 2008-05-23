@@ -2,15 +2,12 @@
 - "Finish the Damn Game" Initiative
   - Figure out Linux packaging
     - Set up new register init system
-      - Search for cyg
-      - Set up Global Files in scons?
       - Add "about" to vecedit with version
-      - Integrate basepackage in
     - Split OS files?
     - Add platform to version string
     - Make sure reporter works!
     - Improve tmpfile to mkstemp
-    - Add "for whatever" text to the controller choosing options
+  - Add "for whatever" text to the controller choosing options
   - Instrument SDL for Chile
   - Add a "hotmail warning" on the forums?
   - Add an info page on what d-net is
