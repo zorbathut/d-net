@@ -29,7 +29,18 @@ pair<int, int> getScreenRes() {
 #include <gtk/gtk.h>
 
 int Message(const string &text, bool yesno) {
-  GtkWidget *gd = gtk_message_dialog_new(NULL, GTK_DIALOG_MODAL, GTK_MESSAGE_OTHER, yesno ? GTK_BUTTONS_YES_NO : GTK_BUTTONS_OK, text.c_str());
+  string temptext;
+  for(int i = 0; i < text.size(); i++) {
+    if(text[i] == '\n' && i + 1 < text.size() && text[i + 1] == '\n') {
+      temptext += "\n\n";
+      i++;
+    } else if(text[i] == '\n') {
+      temptext += " ";
+    } else {
+      temptext += text[i];
+    }
+  }
+  GtkWidget *gd = gtk_message_dialog_new(NULL, GTK_DIALOG_MODAL, GTK_MESSAGE_OTHER, yesno ? GTK_BUTTONS_YES_NO : GTK_BUTTONS_OK, temptext.c_str());
   int rv = gtk_dialog_run(GTK_DIALOG(gd));
   gtk_widget_destroy(gd);
   if(rv == GTK_RESPONSE_YES)
