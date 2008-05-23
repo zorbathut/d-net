@@ -1,8 +1,6 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - Figure out Linux packaging
-    - Set up new register init system
-      - Add "about" to vecedit with version
     - Split OS files?
     - Add platform to version string
     - Make sure reporter works!
