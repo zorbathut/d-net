@@ -28,6 +28,7 @@ string cee(CURL *curl, const string &str) {
 }
 
 string request(string url, const map<string, string> &posts) {
+  dprintf("Entering request\n");
   CURL *handle = curl_easy_init();
   CHECK(handle);
   
@@ -48,11 +49,12 @@ string request(string url, const map<string, string> &posts) {
   
   curl_easy_setopt(handle, CURLOPT_POSTFIELDS, urlencode.c_str());
   curl_easy_setopt(handle, CURLOPT_URL, url.c_str());
-  
+  dprintf("Sending . . .\n");
   if(curl_easy_perform(handle)) {
     dprintf("Error: %s\n", errbuf);
     CHECK(0);
   }
+  dprintf("Done!\n");
   
   curl_easy_cleanup(handle);
   
