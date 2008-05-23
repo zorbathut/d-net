@@ -843,8 +843,6 @@ bool VeceditMain::OnInit() {
   loadItemdb();
   loadFonts();
   
-  CHECK(0);
-  
   wxImage::AddHandler(new wxPNGHandler);
   
   wxFrame *frame = new VeceditWindow();
