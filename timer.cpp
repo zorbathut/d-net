@@ -22,6 +22,10 @@ static long long cpf() {
   return 1000;
 };
 
+void delay() {
+  wxSleep(0);
+}
+
 #elif defined(NO_WINDOWS)
 
 #ifdef OSX_FRAMEWORK_PREFIXES
@@ -37,6 +41,10 @@ static long long cpc() {
 static long long cpf() {
   return 1000;
 };
+
+void delay() {
+  SDL_Delay(0);
+}
 
 #else
 
@@ -54,19 +62,15 @@ static long long cpf() {
   return li.QuadPart;
 };
 
+void delay() {
+}
+
 #endif
 
-#ifndef NOSDL
-  void Timer::waitForNextFrame() {
-    while(cpc() < frameNum * ticksPerFrame + ticksOffset)
-      SDL_Delay(0);
-  };
-#else
-  void Timer::waitForNextFrame() {
-    while(cpc() < frameNum * ticksPerFrame + ticksOffset)
-      ;
-  }
-#endif
+void Timer::waitForNextFrame() {
+  while(cpc() < frameNum * ticksPerFrame + ticksOffset)
+    delay();
+};
 
 bool Timer::skipFrame() {
   return cpc() > (frameNum + 1) * ticksPerFrame + ticksOffset;

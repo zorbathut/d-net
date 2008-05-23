@@ -2,7 +2,6 @@
 - "Finish the Damn Game" Initiative
   - Figure out Linux packaging
     - Set up new register init system
-      - Update wxwidgets
       - Search for cyg
       - Set up Global Files in scons?
       - Add "about" to vecedit with version
@@ -11,6 +10,7 @@
     - Add platform to version string
     - Make sure reporter works!
     - Improve tmpfile to mkstemp
+    - Add "for whatever" text to the controller choosing options
   - Instrument SDL for Chile
   - Add a "hotmail warning" on the forums?
   - Add an info page on what d-net is
@@ -62,6 +62,7 @@
   - Crypto signing, add crypto to 911 and to devlog?
   - Gradient more things on the forum
   - Add tags to tanks to see their capabilities easily?
+  - My gamepad doesn't look like that
   - Many many more weapons
     - Add glory behavior
       - Make sure they don't spike CPU too badly
