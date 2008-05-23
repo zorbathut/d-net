@@ -1,0 +1,14 @@
+Package: d-net
+Version: %%%VERSION%%%
+Architecture: i386
+Maintainer: Mandible Games <zorba-package@mandible-games.com>
+Installed-Size: %%%WHOKNOWS%%%
+Depends: %%%LOLS%%%
+Section: games
+Priority: optional
+Homepage: http://www.mandible-games.com/
+Description: a multiplayer tank game, including extra explosions
+ Devastation Net is a fast-paced multiplayer action tank game, designed for
+ up to 16 players with gamepads fighting on a single screen. It includes old-
+ fashioned vector-based graphics, brought up to modern standards. This is a
+ prerelease demo.
