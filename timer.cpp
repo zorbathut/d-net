@@ -6,17 +6,29 @@
 #include "os.h"
 #include "util.h"
 
-#ifndef NOSDL
-  #ifdef OSX_FRAMEWORK_PREFIXES
-    #include <SDL/SDL.h>
-  #else
-    #include <SDL.h>
-  #endif
-#endif
-
 using namespace std;
 
-#ifdef NO_WINDOWS
+#if defined(NO_WINDOWS) && defined(NOSDL)
+
+// we resort to wx
+
+#include <wx/timer.h>
+
+static long long cpc() {
+  return wxGetLocalTimeMillis().GetValue();
+};
+
+static long long cpf() {
+  return 1000;
+};
+
+#elif defined(NO_WINDOWS)
+
+#ifdef OSX_FRAMEWORK_PREFIXES
+  #include <SDL/SDL.h>
+#else
+  #include <SDL.h>
+#endif
 
 static long long cpc() {
   return SDL_GetTicks();

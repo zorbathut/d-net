@@ -39,7 +39,7 @@ public:
   SelectItem(Type type, int path, int item, bool curveside);
 };
 
-enum Cursor { CURSOR_NORMAL, CURSOR_CROSS, CURSOR_HAND, CURSOR_UNCHANGED = -1 };
+enum CursorMode { CURSORMODE_NORMAL, CURSORMODE_CROSS, CURSORMODE_HAND, CURSORMODE_UNCHANGED = -1 };
 
 struct UIState {
   bool newPath;
@@ -65,7 +65,7 @@ struct WrapperState {
 
 struct OtherState {
   UIState ui;
-  Cursor cursor;
+  CursorMode cursor;
 
   bool redraw;
   bool snapshot;

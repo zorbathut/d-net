@@ -92,7 +92,7 @@ WrapperState::WrapperState() {
 }
 
 OtherState::OtherState() {
-  cursor = CURSOR_UNCHANGED;
+  cursor = CURSORMODE_UNCHANGED;
   redraw = false;
   snapshot = false;
 }
@@ -532,9 +532,9 @@ OtherState Vecedit::mouse(const MouseInput &mouse, const WrapperState &wrap) {
   {
     SelectStack ss = getSelectionStack(mouse.pos, wrap.zpp);
     if(ss.hasItems()) {
-      ostate.cursor = CURSOR_HAND;
+      ostate.cursor = CURSORMODE_HAND;
     } else {
-      ostate.cursor = CURSOR_NORMAL;
+      ostate.cursor = CURSORMODE_NORMAL;
     }
   }
 

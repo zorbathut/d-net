@@ -1,6 +1,8 @@
 
 #include "image.h"
 
+#include "debug.h"
+
 #include <png.h>
 #include <boost/static_assert.hpp>
 

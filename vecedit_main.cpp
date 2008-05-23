@@ -20,6 +20,10 @@
 
 using boost::function;
 using boost::bind;
+/*
+wxString unicize(const string &str) {
+  return wxString(str.c_str());
+}*/
 
 /*************
  * VeceditGLC
@@ -47,7 +51,7 @@ public:
   void OnScroll(wxScrollWinEvent &event);
 
   void SetScrollBars();
-  void SetGLCCursor(Cursor curse);
+  void SetGLCCursor(CursorMode curse);
 
   ScrollBounds getSB() const;
 
@@ -165,13 +169,13 @@ void VeceditGLC::SetScrollBars() {
   SetScrollbar(wxHORIZONTAL, (int)((sb.currentwindow.sx - sb.objbounds.sx) * xscale), (int)(sb.currentwindow.span_x() * xscale), maxv);
   SetScrollbar(wxVERTICAL, (int)((sb.currentwindow.sy - sb.objbounds.sy) * yscale), (int)(sb.currentwindow.span_y() * yscale), maxv);
 }
-void VeceditGLC::SetGLCCursor(Cursor curse) {
+void VeceditGLC::SetGLCCursor(CursorMode curse) {
   int cid;
-  if(curse == CURSOR_NORMAL) {
+  if(curse == CURSORMODE_NORMAL) {
     cid = wxCURSOR_ARROW;
-  } else if(curse == CURSOR_CROSS) {
+  } else if(curse == CURSORMODE_CROSS) {
     cid = wxCURSOR_HAND;  // grr
-  } else if(curse == CURSOR_HAND) {
+  } else if(curse == CURSORMODE_HAND) {
     cid = wxCURSOR_HAND;
   } else {
     CHECK(0);
@@ -362,7 +366,7 @@ BEGIN_EVENT_TABLE(VeceditWindow, wxFrame)
   EVT_CLOSE(VeceditWindow::OnClose)
 END_EVENT_TABLE()
 
-const string veceditname =  "D-Net Vecedit2";
+const wxString veceditname =  "D-Net Vecedit2";
 
 void VeceditWindow::renderCore() const {
   initFrame();
@@ -405,7 +409,7 @@ void VeceditWindow::mouseCore(const MouseInput &mstate, int wheel) {
   process(ost);
 }
 
-VeceditWindow::VeceditWindow() : wxFrame((wxFrame *)NULL, -1, veceditname, wxDefaultPosition, wxSize(800, 600)) {
+VeceditWindow::VeceditWindow() : wxFrame((wxFrame *)NULL, -1, veceditname.c_str(), wxDefaultPosition, wxSize(800, 600)) {
   wxMenuBar *menuBar = new wxMenuBar;
   
   {
@@ -509,23 +513,23 @@ VeceditWindow::VeceditWindow() : wxFrame((wxFrame *)NULL, -1, veceditname, wxDef
   }
   
   toolbar = new wxToolBar(this, wxID_ANY);
-  toolbar->AddTool(ID_NewPath, "add path", wxBitmap(FLAGS_fileroot + "vecedit/addpath.png", wxBITMAP_TYPE_PNG), "Add a new path", wxITEM_CHECK);
-  toolbar->AddTool(ID_NewNode, "add node", wxBitmap(FLAGS_fileroot + "vecedit/addnode.png", wxBITMAP_TYPE_PNG), "Add a new node", wxITEM_CHECK);
-  toolbar->AddTool(ID_NewTank, "add tank", wxBitmap(FLAGS_fileroot + "vecedit/addtank.png", wxBITMAP_TYPE_PNG), "Add a new tank", wxITEM_CHECK);
+  toolbar->AddTool(ID_NewPath, "add path", wxBitmap((FLAGS_fileroot + "vecedit/addpath.png").c_str(), wxBITMAP_TYPE_PNG), "Add a new path", wxITEM_CHECK);
+  toolbar->AddTool(ID_NewNode, "add node", wxBitmap((FLAGS_fileroot + "vecedit/addnode.png").c_str(), wxBITMAP_TYPE_PNG), "Add a new node", wxITEM_CHECK);
+  toolbar->AddTool(ID_NewTank, "add tank", wxBitmap((FLAGS_fileroot + "vecedit/addtank.png").c_str(), wxBITMAP_TYPE_PNG), "Add a new tank", wxITEM_CHECK);
   
   toolbar->AddSeparator();
-  toolbar->AddTool(ID_GridToggle, "toggle grid", wxBitmap(FLAGS_fileroot + "vecedit/grid.png", wxBITMAP_TYPE_PNG), "Activate grid lock", wxITEM_CHECK);
+  toolbar->AddTool(ID_GridToggle, "toggle grid", wxBitmap((FLAGS_fileroot + "vecedit/grid.png").c_str(), wxBITMAP_TYPE_PNG), "Activate grid lock", wxITEM_CHECK);
   toolbar->AddControl(grid = new wxSpinCtrl(toolbar, ID_GridSpinner, "16", wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 1, 16384));
   wstate.grid = -1;
   
   toolbar->AddSeparator();
-  toolbar->AddTool(ID_RotGridToggle, "toggle rotation grid", wxBitmap(FLAGS_fileroot + "vecedit/rotgrid.png", wxBITMAP_TYPE_PNG), "Activate rotation grid lock", wxITEM_CHECK);
+  toolbar->AddTool(ID_RotGridToggle, "toggle rotation grid", wxBitmap((FLAGS_fileroot + "vecedit/rotgrid.png").c_str(), wxBITMAP_TYPE_PNG), "Activate rotation grid lock", wxITEM_CHECK);
   toolbar->ToggleTool(ID_RotGridToggle, 1);
   toolbar->AddControl(rotgrid = new wxSpinCtrl(toolbar, ID_RotGridSpinner, "8", wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 1, 16384));
   wstate.rotgrid = 8;
   
   toolbar->AddSeparator();
-  toolbar->AddTool(ID_ShowControlsToggle, "toggle controls", wxBitmap(FLAGS_fileroot + "vecedit/showcontrols.png", wxBITMAP_TYPE_PNG), "Toggle control visibility", wxITEM_CHECK);
+  toolbar->AddTool(ID_ShowControlsToggle, "toggle controls", wxBitmap((FLAGS_fileroot + "vecedit/showcontrols.png").c_str(), wxBITMAP_TYPE_PNG), "Toggle control visibility", wxITEM_CHECK);
   toolbar->ToggleTool(ID_ShowControlsToggle, 1);
   
   toolbar->Realize();
@@ -566,7 +570,7 @@ void VeceditWindow::OnOpen(wxCommandEvent& event) {
     return;
   wxFileDialog wxfd(this, "Open File", veceditname, "", "DVec2 Files (*.dv2)|*.dv2|All Files (*.*)|*.*", wxFD_OPEN);
   if(wxfd.ShowModal() == wxID_OK) {
-    filename = wxfd.GetPath();
+    filename = wxConvUTF8.cWX2MB(wxfd.GetPath());
     core.load(filename);
     undostack.clear();
     redostack.clear();
@@ -587,8 +591,8 @@ bool VeceditWindow::OnSave() {
 bool VeceditWindow::OnSaveas() {
   wxFileDialog wxfd(this, "Save File", veceditname, "", "DVec2 Files (*.dv2)|*.dv2|All Files (*.*)|*.*", wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
   if(wxfd.ShowModal() == wxID_OK) {
-    if(core.save((string)wxfd.GetPath())) {
-      filename = wxfd.GetPath();
+    if(core.save((string)wxConvUTF8.cWX2MB(wxfd.GetPath()))) {
+      filename = wxConvUTF8.cWX2MB(wxfd.GetPath());
     } else {
       wxMessageBox("Error saving! File is not saved!", "ba-weep-gra-na-weep-ninny-bong", wxOK | wxICON_INFORMATION, this);
     }
@@ -765,7 +769,7 @@ WrapperState VeceditWindow::genwrap() const {
   return ws;
 }
 void VeceditWindow::process(const OtherState &ost) {
-  if(ost.cursor != CURSOR_UNCHANGED)
+  if(ost.cursor != CURSORMODE_UNCHANGED)
     glc->SetGLCCursor(ost.cursor);
   if(ost.redraw)
     redraw();
@@ -794,7 +798,7 @@ void VeceditWindow::process(const OtherState &ost) {
 
 bool VeceditWindow::maybeSaveChanges() {
   if(core.changed()) {
-    int saveit = wxMessageBox(StringPrintf("The text in %s has changed.\n\nDo you want to save the changes?", filename.c_str()), veceditname, wxYES_NO | wxCANCEL | wxICON_EXCLAMATION);
+    int saveit = wxMessageBox(StringPrintf("The text in %s has changed.\n\nDo you want to save the changes?", filename.c_str()).c_str(), veceditname, wxYES_NO | wxCANCEL | wxICON_EXCLAMATION);
     if(saveit == wxCANCEL)
       return false;
     if(saveit == wxYES)
@@ -817,7 +821,22 @@ IMPLEMENT_APP(VeceditMain)
 bool VeceditMain::OnInit() {
 
   setInitFlagFile("settings");
-  initProgram(&argc, const_cast<const char ***>(&argv));
+  {
+    // man don't even ask
+    vector<string> str;
+    for(int i = 0; i < argc; i++)
+      str.push_back((string)wxConvUTF8.cWX2MB(argv[i]));
+    vector<const char *> strs;
+    for(int i = 0; i < str.size(); i++)
+      strs.push_back(str[i].c_str());
+
+    const char **strss = &strs[0];
+    int arg = argc;
+
+    initProgram(&arg, &strss);
+    
+    // I don't fucking care, no I'm not putting the data back
+  }
   
   loadItemdb();
   loadFonts();
