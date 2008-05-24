@@ -22,7 +22,7 @@ def Installers(platform):
 
       return []
 
-    def generateInstaller(target, source, copyprefix, files, deployfiles, finaltarget, mainexe, version):
+    def generateInstaller(target, source, copyprefix, files, deployfiles, finaltarget, mainexe, vecedit, version):
 
       directories = {"data" : None}
       
@@ -35,6 +35,7 @@ def Installers(platform):
       deployfiles = [x.replace('/', '\\') for x in deployfiles]
       
       mainexe = str(mainexe).replace('/', '\\')
+      vecedit = str(vecedit).replace('/', '\\')
       
       install = ""
       uninstall = ""
@@ -56,6 +57,9 @@ def Installers(platform):
       
       install = install + 'File "/oname=d-net.exe" "%s"\n' % mainexe
       uninstall = 'Delete "$INSTDIR\\d-net.exe"\n' + uninstall
+      
+      install = install + 'File "/oname=vecedit.exe" "%s"\n' % vecedit
+      uninstall = 'Delete "$INSTDIR\\vecedit.exe"\n' + uninstall
 
       with open(str(source[0])) as inp:
         with open(str(target[0]), "w") as otp:
@@ -79,9 +83,12 @@ def Installers(platform):
       ident = '%s-%s' % (version, suffix)
       finalpath = 'build/dnet-%s-%s.exe' % (version, suffix)
       mainexe = binaries["d-net-" + type]
+      vecedit = binaries["vecedit-" + type]
       
-      nsirv = env.Command(nsipath, ['installer.nsi.template', 'SConstruct_installer.py'] + data[type] + deployables + shopcaches + [mainexe], dispatcher(generateInstaller, copyprefix=type, files=[str(x) for x in data[type] + shopcaches], deployfiles=[str(x) for x in deployables], finaltarget=finalpath, mainexe=mainexe, version=ident)) # Technically it only depends on those files existing, not their actual contents.
-      return env.Command(finalpath, nsirv + data[type] + deployables + shopcaches + [mainexe], "%s - < ${SOURCES[0]}" % installers)
+      deps = data[type] + deployables + shopcaches + [mainexe] + [vecedit]
+      
+      nsirv = env.Command(nsipath, ['installer.nsi.template', 'SConstruct_installer.py'] + deps, dispatcher(generateInstaller, copyprefix=type, files=[str(x) for x in data[type] + shopcaches], deployfiles=[str(x) for x in deployables], finaltarget=finalpath, mainexe=mainexe, vecedit=vecedit, version=ident)) # Technically it only depends on those files existing, not their actual contents.
+      return env.Command(finalpath, nsirv + deps, "%s - < ${SOURCES[0]}" % installers)
     
     return MakeDeployables, MakeInstaller
   elif platform == "linux":

@@ -822,7 +822,6 @@ IMPLEMENT_APP(VeceditMain)
 
 bool VeceditMain::OnInit() {
 
-  setInitFlagFile("settings");
   {
     // man don't even ask
     vector<string> str;

@@ -115,13 +115,13 @@ def make_datadir(dest, mergeflags = ""):
     results += env.Command(dest + "/" + item.rsplit('.', 1)[-2], [programs["merger"], csvs[identifier], "data_source/" + item] + emgd, "./${SOURCES[0]} ${SOURCES[1]} ${SOURCES[2]} $TARGET --fileroot=%s %s" % (dest, mergeflags))
   
   for item in data_vecedit:
-    vecresults += env.Command(dest + "/" + item, "data_source/" + item, Copy("$TARGET", '$SOURCE'))
+    results += env.Command(dest + "/" + item, "data_source/" + item, Copy("$TARGET", '$SOURCE'))
   
-  return results, vecresults
+  return results
 
 data_dests = {}
-data_dests["release"], data_dests["release_vecedit"] = make_datadir("data_release")
-data_dests["demo"], data_dests["demo_vecedit"] = make_datadir("data_demo", "--demo")
+data_dests["release"] = make_datadir("data_release")
+data_dests["demo"] = make_datadir("data_demo", "--demo")
 
 def make_shopcache(dest):
   return env.Command("data_" + dest + "/shopcache.dwh", [programs["d-net"]] + data_dests[dest], "./${SOURCES[0]} --generateCachedShops=0.99 --fileroot=data_%s" % dest)
@@ -139,7 +139,6 @@ programs_stripped = {}
 for key, value in programs.items():
   programs_stripped[key] = commandstrip(env, value)
 
-###### okay we need to figure this the hell out
 deployfiles = MakeDeployables(env, commandstrip);
 deployfiles += env.Command('deploy/license.txt', 'resources/license.txt', Copy("$TARGET", '$SOURCE'))
 deployfiles += [programs_stripped["reporter"]]
@@ -200,6 +199,6 @@ command(env, "ailoop", fulldata, "while nice ./%s %s --aiCount=12 --fastForwardT
 aicslflags = localflags + " --fastForwardTo=100000000 --noshopcache --treatAiAsHuman --randomizeFrameRender=60"
 command(env, "aicsl", fulldata, "while nice rm -f dumps/dump-*.dnd && nice ./%s %s --factionmode=3 --allowAisQuit --startingPhase=7 --aiCount=6 --terminateAfter=300 --nullcontrollers=5 --treataiashuman && sleep 2s && nice ./d-net.exe %s --readtarget=`ls dumps/dump-*.dnd` --writetarget= && sleep 2s ; do echo Cycle. ; done" % (programs["d-net"], aicslflags, aicslflags))
 
-command(env, "vecedit", [programs["vecedit"]] + data_dests["release"] + data_dests["release_vecedit"], "./%s" % (programs["vecedit"]))
+command(env, "vecedit", [programs["vecedit"]] + data_dests["release"], "./%s --fileroot=data_release --addr2line --noreport" % (programs["vecedit"]))
 
 command(env, "binaries", programs.values(), "")
