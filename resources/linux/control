@@ -1,9 +1,9 @@
 Package: d-net
-Version: %%%VERSION%%%
+Version: &&&VERSION&&&
 Architecture: i386
 Maintainer: Mandible Games <zorba-package@mandible-games.com>
-Installed-Size: %%%WHOKNOWS%%%
-Depends: %%%LOLS%%%
+Installed-Size: &&&INSTALLSIZE&&&
+Depends: libc
 Section: games
 Priority: optional
 Homepage: http://www.mandible-games.com/
