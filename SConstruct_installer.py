@@ -102,16 +102,26 @@ def Installers(platform):
       return []
 
     def MakeInstaller(env, type, shopcaches, version, binaries, data, deployables, installers, suffix):
-      accumulate = []
+      gzipping = {}
+
+      gzipping["data"] = []
       for item in ["d-net-%s" % type, "vecedit-%s" % type, "reporter"]:
-        accumulate += env.Command("deploy/%s/files/usr/bin/%s" % (suffix, item), binaries[item], Copy('$TARGET', '$SOURCE'))
+        gzipping["data"] += env.Command("deploy/%s/data/usr/bin/%s" % (suffix, item), binaries[item], Copy('$TARGET', '$SOURCE'))
 
       for item in data[type]:
-        accumulate += env.Command("deploy/%s/files/usr/share/d-net/%s" % (suffix, str(item).split('/', 1)[1]), item, Copy('$TARGET', '$SOURCE'))
+        gzipping["data"] += env.Command("deploy/%s/data/usr/share/d-net/%s" % (suffix, str(item).split('/', 1)[1]), item, Copy('$TARGET', '$SOURCE'))
 
-      gzit = env.Command("deploy/%s/data.tar.gz" % suffix, accumulate, "( cd deploy/%s/files ; tar -cf - * ) | gzip --best > $TARGET" % suffix)
- 
-      return gzit
+      gzipping["control"] = []
+      gzipping["control"] += env.Command("deploy/%s/control/control" % suffix, "resources/linux/control", Copy('$TARGET', '$SOURCE'))
+
+      gzits = []
+      gzits += env.Command("deploy/%s/package/debian-binary" % (suffix), "resources/linux/debian-binary", Copy('$TARGET', '$SOURCE'))
+
+      for item in ["control", "data"]:
+        gzits += env.Command("deploy/%s/package/%s.tar.gz" % (suffix, item), gzipping[item], "( cd deploy/%s/%s ; tar -cf - * ) | gzip --best > $TARGET" % (suffix, item))
+
+      return env.Command("build/dnet-%s+%s.deb" % (version, suffix), gzits, "ar r $TARGET $SOURCES")
+      return gzits
 
       nsipath = 'build/installer_%s.nsi' % (suffix)
       ident = '%s-%s' % (version, suffix)
