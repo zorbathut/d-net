@@ -89,6 +89,25 @@ def Installers(platform):
       return env.Command(finalpath, nsirv + data[type] + deployables + shopcaches + [mainexe], "%s - < ${SOURCES[0]}" % installers)
     
     return MakeDeployables, MakeInstaller
+  elif platform == "linux":
+    def MakeDeployables(env, commandstrip):
+      return []
+
+    def MakeInstaller(env, type, shopcaches, version, binaries, data, deployables, installers):
+      if shopcaches == []:
+        quick = "-quick"
+      else:
+        quick = ""
+      
+      nsipath = 'build/installer_%s%s.nsi' % (type, quick)
+      ident = '%s-%s' % (version, type)
+      finalpath = 'build/dnet-%s-%s%s.exe' % (version, type, quick)
+      mainexe = binaries["d-net-" + type]
+      
+      nsirv = env.Command(nsipath, ['installer.nsi.template', 'SConstruct_installer.py'] + data[type] + deployables + shopcaches + [mainexe], dispatcher(generateInstaller, copyprefix=type, files=[str(x) for x in data[type] + shopcaches], deployfiles=[str(x) for x in deployables], finaltarget=finalpath, mainexe=mainexe, version=ident)) # Technically it only depends on those files existing, not their actual contents.
+      return env.Command(finalpath, nsirv + data[type] + deployables + shopcaches + [mainexe], "%s - < ${SOURCES[0]}" % installers)
+    
+    return MakeDeployables, MakeInstaller
   else:
     lol
 
