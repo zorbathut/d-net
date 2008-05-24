@@ -1,8 +1,9 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - Figure out Linux packaging
-    - Make sure reporter works!
     - Improve tmpfile to mkstemp
+    - add md5sum?
+    - make icon
   - Add "for whatever" text to the controller choosing options
   - Instrument SDL for Chile
   - Add a "hotmail warning" on the forums?

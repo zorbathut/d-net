@@ -2,15 +2,15 @@
 from __future__ import with_statement
 
 from SConstruct_config import Conf
-from SConstruct_installer import MakeInstaller
-from util import traverse, dispatcher
+from SConstruct_installer import MakeInstaller, MakeDeployables
+from util import traverse
 import sys
 
 # Globals
 Decider('MD5-timestamp')
 SetOption('implicit_cache', 1)
 
-env, categories, flagtypes, oggpath, platform, makensis = Conf()
+env, categories, flagtypes, oggpath, platform, installers = Conf()
 
 stdpackage = Split("debug os util parse args init")
 
@@ -36,8 +36,6 @@ def splitVersions(buildables, name):
 
 splitVersions(buildables, "d-net")  # d-net
 splitVersions(buildables, "vecedit")  # vecedit
-
-deploy_dlls = Split("SDL.dll libogg-0.dll libvorbis-0.dll libvorbisfile-3.dll")
 
 if 0:
   for item in categories:
@@ -140,20 +138,17 @@ programs_stripped = {}
 for key, value in programs.items():
   programs_stripped[key] = commandstrip(env, value)
 
-deployfiles = []
-
-for item in deploy_dlls:
-  deployfiles += [commandstrip(env, "/usr/mingw/local/bin/%s" % item)]
-deployfiles += [programs_stripped["reporter"]]
+###### okay we need to figure this the hell out
+deployfiles = MakeDeployables(env, commandstrip);
 deployfiles += env.Command('deploy/license.txt', 'resources/license.txt', Copy("$TARGET", '$SOURCE'))
-
+deployfiles += [programs_stripped["reporter"]]
 
 # installers
 with open("version_data") as f:
   version = f.readline()
 
 def MakeInstallerShell(name, shopcaches):
-  return MakeInstaller(env, name, shopcaches)
+  return MakeInstaller(env=env, type=name, shopcaches=shopcaches, version=version, binaries=programs_stripped, data=data_dests, deployables=deployfiles, installers=installers)
 
 Alias("packagedemoquick", MakeInstallerShell("demo", []))
 Alias("packagedemo", MakeInstallerShell("demo", shopcaches["demo"]))
