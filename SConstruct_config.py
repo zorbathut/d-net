@@ -32,6 +32,14 @@ def Conf():
     for item in categories:
       env[flag + "_" + item] = []
   
+  if sys.platform == "cygwin": # Cygwin
+    platform="win"
+  elif sys.platform == "linux2":
+    platform="linux"
+  else:
+    print "Platform is unrecognized platform " + sys.platform
+    env.Exit(1)
+
   # If we're cleaning, we don't need all this.
   if not env.GetOption('clean'):
     
@@ -77,9 +85,7 @@ def Conf():
 
     curldepend=""
 
-    if sys.platform == "cygwin": # Cygwin
-      platform="win"
-
+    if platform == "win": # Cygwin
       # Set up our environment defaults
       env.Append(CPPPATH = Split("/usr/mingw/local/include"), LIBPATH = Split("/usr/mingw/local/lib"), CCFLAGS=Split("-mno-cygwin"), CPPFLAGS=Split("-mno-cygwin"), CXXFLAGS=Split("-mno-cygwin"), LINKFLAGS=Split("-mwindows -mno-cygwin"))
       
@@ -115,9 +121,7 @@ def Conf():
       installer = conf.CheckFile(["/cygdrive/c/Program Files (x86)/NSIS"], "makensis")
       if not installer:
         env.Exit(1)
-    elif sys.platform == "linux2":
-      platform="linux"
-
+    elif platform == "linux":
       env.Append(CPPDEFINES = Split("NO_WINDOWS"), CPPPATH = Split("/usr/local/include/boost-1_34_1"))
       
       boostlibs=["boost_regex", "boost_filesystem"]
@@ -231,6 +235,5 @@ def Conf():
     
     oggpath = ""
     installer = ""
-    platform = ""
   
   return env, categories, flagtypes, oggpath, platform, installer

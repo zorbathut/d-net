@@ -103,15 +103,18 @@ def Installers(platform):
 
     def MakeInstaller(env, type, shopcaches, version, binaries, data, deployables, installers, suffix):
       vtoken = "%s+%s" % (version, suffix)
+      env.Clean("deploy/%s" % suffix, "deploy/%s" % suffix)
 
       gzipping = {}
 
       gzipping["data"] = []
       for item in ["d-net-%s" % type, "vecedit-%s" % type, "reporter"]:
-        gzipping["data"] += env.Command("deploy/%s/data/usr/bin/%s" % (suffix, item), binaries[item], Copy('$TARGET', '$SOURCE'))
+        gzipping["data"] += env.Command("deploy/%s/data/usr/games/%s" % (suffix, item.rsplit('-', 1)[0]), binaries[item], Copy('$TARGET', '$SOURCE'))
 
       for item in data[type]:
         gzipping["data"] += env.Command("deploy/%s/data/usr/share/d-net/%s" % (suffix, str(item).split('/', 1)[1]), item, Copy('$TARGET', '$SOURCE'))
+      
+      gzipping["data"] += env.Command("deploy/%s/data/usr/share/doc/d-net/copyright" % suffix, "resources/license.txt", Copy('$TARGET', '$SOURCE'))
 
       gzipping["control"] = []
       gzipping["control"] += env.Command("deploy/%s/control/control" % suffix, ["resources/linux/control"] + gzipping["data"], """cat $SOURCE | sed -e 's/&&&VERSION&&&/%s/' -e 's/&&&INSTALLSIZE&&&/'`du -s deploy/%s/data | cut -f 1`'/' > $TARGET""" % (vtoken, suffix))
@@ -120,21 +123,9 @@ def Installers(platform):
       gzits += env.Command("deploy/%s/package/debian-binary" % (suffix), "resources/linux/debian-binary", Copy('$TARGET', '$SOURCE'))
 
       for item in ["control", "data"]:
-        gzits += env.Command("deploy/%s/package/%s.tar.gz" % (suffix, item), gzipping[item], "( cd deploy/%s/%s ; tar -cf - * ) | gzip --best > $TARGET" % (suffix, item))
+        gzits += env.Command("deploy/%s/package/%s.tar.gz" % (suffix, item), gzipping[item], "( cd deploy/%s/%s ; tar --owner root --group root -cf - * ) | gzip --best > $TARGET" % (suffix, item))
 
       return env.Command("build/dnet-%s.deb" % (vtoken), gzits, "ar r $TARGET $SOURCES")
-      return gzits
-
-      nsipath = 'build/installer_%s.nsi' % (suffix)
-      ident = '%s-%s' % (version, suffix)
-      finalpath = 'build/dnet-%s-%s.exe' % (version, suffix)
-      mainexe = binaries["d-net-" + type]
-      vecedit = binaries["vecedit-" + type]
-      
-      deps = data[type] + deployables + shopcaches + [mainexe] + [vecedit]
-      
-      nsirv = env.Command(nsipath, ['installer.nsi.template', 'SConstruct_installer.py'] + deps, dispatcher(generateInstaller, copyprefix=type, files=[str(x) for x in data[type] + shopcaches], deployfiles=[str(x) for x in deployables], finaltarget=finalpath, mainexe=mainexe, vecedit=vecedit, version=ident)) # Technically it only depends on those files existing, not their actual contents.
-      return env.Command(finalpath, nsirv + deps, "%s - < ${SOURCES[0]}" % installers)
     
     return MakeDeployables, MakeInstaller
   else:

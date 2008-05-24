@@ -1,4 +1,4 @@
-I hate legal boilerplate so I'll keep this simple.
+I hate legal boilerplate so I'll keep this simple. Devastation Net is copyright (c) 2006-2008 Ben Wilhelm.
 
 Devastation Net uses the Simple DirectMedia Layer Library, which is included under the terms of the LGPL license. The text of that license is below.
 
