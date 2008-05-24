@@ -149,7 +149,11 @@ with open("version_data") as f:
   version = f.readline()
 
 def MakeInstallerShell(name, shopcaches):
-  return MakeInstaller(env=env, type=name, shopcaches=shopcaches, version=version, binaries=programs_stripped, data=data_dests, deployables=deployfiles, installers=installers)
+  if shopcaches == []:
+    quick = "+quick"
+  else:
+    quick = ""
+  return MakeInstaller(env=env, type=name, shopcaches=shopcaches, version=version, binaries=programs_stripped, data=data_dests, deployables=deployfiles, installers=installers, suffix="%s%s" % (name, quick))
 
 Alias("packagedemoquick", MakeInstallerShell("demo", []))
 Alias("packagedemo", MakeInstallerShell("demo", shopcaches["demo"]))
