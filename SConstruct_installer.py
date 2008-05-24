@@ -7,6 +7,7 @@ import sys
 
 from SCons.Environment import Environment
 from SCons.Util import Split
+from SCons.Defaults import Copy
 
 from util import dispatcher
 
@@ -101,13 +102,27 @@ def Installers(platform):
       return []
 
     def MakeInstaller(env, type, shopcaches, version, binaries, data, deployables, installers, suffix):
+      accumulate = []
+      for item in ["d-net-%s" % type, "vecedit-%s" % type, "reporter"]:
+        accumulate += env.Command("deploy/%s/files/usr/bin/%s" % (suffix, item), binaries[item], Copy('$TARGET', '$SOURCE'))
+
+      for item in data[type]:
+        accumulate += env.Command("deploy/%s/files/usr/share/d-net/%s" % (suffix, str(item).split('/', 1)[1]), item, Copy('$TARGET', '$SOURCE'))
+
+      gzit = env.Command("deploy/%s/data.tar.gz" % suffix, accumulate, "( cd deploy/%s/files ; tar -cf - * ) | gzip --best > $TARGET" % suffix)
+ 
+      return gzit
+
       nsipath = 'build/installer_%s.nsi' % (suffix)
       ident = '%s-%s' % (version, suffix)
       finalpath = 'build/dnet-%s-%s.exe' % (version, suffix)
       mainexe = binaries["d-net-" + type]
+      vecedit = binaries["vecedit-" + type]
       
-      nsirv = env.Command(nsipath, ['installer.nsi.template', 'SConstruct_installer.py'] + data[type] + deployables + shopcaches + [mainexe], dispatcher(generateInstaller, copyprefix=type, files=[str(x) for x in data[type] + shopcaches], deployfiles=[str(x) for x in deployables], finaltarget=finalpath, mainexe=mainexe, version=ident)) # Technically it only depends on those files existing, not their actual contents.
-      return env.Command(finalpath, nsirv + data[type] + deployables + shopcaches + [mainexe], "%s - < ${SOURCES[0]}" % installers)
+      deps = data[type] + deployables + shopcaches + [mainexe] + [vecedit]
+      
+      nsirv = env.Command(nsipath, ['installer.nsi.template', 'SConstruct_installer.py'] + deps, dispatcher(generateInstaller, copyprefix=type, files=[str(x) for x in data[type] + shopcaches], deployfiles=[str(x) for x in deployables], finaltarget=finalpath, mainexe=mainexe, vecedit=vecedit, version=ident)) # Technically it only depends on those files existing, not their actual contents.
+      return env.Command(finalpath, nsirv + deps, "%s - < ${SOURCES[0]}" % installers)
     
     return MakeDeployables, MakeInstaller
   else:
