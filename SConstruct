@@ -2,7 +2,7 @@
 from __future__ import with_statement
 
 from SConstruct_config import Conf
-from SConstruct_installer import MakeInstaller, MakeDeployables
+from SConstruct_installer import Installers
 from util import traverse
 import sys
 
@@ -11,6 +11,7 @@ Decider('MD5-timestamp')
 SetOption('implicit_cache', 1)
 
 env, categories, flagtypes, oggpath, platform, installers = Conf()
+MakeDeployables, MakeInstaller = Installers(platform)
 
 stdpackage = Split("debug os util parse args init")
 
