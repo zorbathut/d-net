@@ -14,13 +14,18 @@ def Installers(platform):
   
   if platform == "win":
     def MakeDeployables(env, commandstrip):
-      deploy_dlls = Split("SDL.dll libogg-0.dll libvorbis-0.dll libvorbisfile-3.dll")
+      deploy_dlls = Split("SDL.dll libogg-0.dll libvorbis-0.dll libvorbisfile-3.dll libpng-3.dll wxbase28_gcc_custom.dll wxmsw28_core_gcc_custom.dll wxmsw28_gl_gcc_custom.dll mingwm10.dll")
       
       deployfiles = []
+      paths = ["/usr/mingw/local/bin/", "/usr/mingw/local/lib/", "/bin/"]
+      
       for item in deploy_dlls:
-        deployfiles += [commandstrip(env, "/usr/mingw/local/bin/%s" % item)]
+        for prefix in paths:
+          if os.path.exists(prefix + item):
+            deployfiles += [commandstrip(env, prefix + item)]
+            break
 
-      return []
+      return deployfiles
 
     def generateInstaller(target, source, copyprefix, files, deployfiles, finaltarget, mainexe, vecedit, version):
 
