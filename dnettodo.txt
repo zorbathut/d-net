@@ -2,8 +2,10 @@
 - "Finish the Damn Game" Initiative
   - Figure out Linux packaging
     - Improve tmpfile to mkstemp
+    - Make it point at its appropriate datafiles (add some kind of a config file?)
     - add md5sum?
     - make icon
+    - make menu item
   - Add "for whatever" text to the controller choosing options
   - Instrument SDL for Chile
   - Add a "hotmail warning" on the forums?
