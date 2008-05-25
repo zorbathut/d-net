@@ -103,33 +103,32 @@ def Installers(platform):
 
     def MakeInstaller(env, type, shopcaches, version, binaries, data, deployables, installers, suffix):
       vtoken = "%s+%s" % (version, suffix)
-      env.Clean("deploy/%s" % suffix, "deploy/%s" % suffix)
 
       gzipping = {}
 
       gzipping["data"] = []
       for item in ["d-net-%s" % type, "vecedit-%s" % type, "reporter"]:
-        gzipping["data"] += env.Command("deploy/%s/data/usr/games/%s" % (suffix, item.rsplit('-', 1)[0]), binaries[item], Copy('$TARGET', '$SOURCE'))
+        gzipping["data"] += env.Command("build/deploy/%s/data/usr/games/%s" % (suffix, item.rsplit('-', 1)[0]), binaries[item], Copy('$TARGET', '$SOURCE'))
 
       for item in data[type]:
-        gzipping["data"] += env.Command("deploy/%s/data/usr/share/d-net/data/%s" % (suffix, str(item).split('/', 1)[1]), item, Copy('$TARGET', '$SOURCE'))
-      gzipping["data"] += env.Command("deploy/%s/data/usr/share/d-net/settings" % (suffix), "settings." + type, Copy('$TARGET', '$SOURCE'))
-      gzipping["data"] += env.Command("deploy/%s/data/usr/share/app-install/icons/d-net-icon.png" % (suffix), "resources/dneticomulti.ico", "convert $SOURCE[1] $TARGET")
+        gzipping["data"] += env.Command("build/deploy/%s/data/usr/share/d-net/data/%s" % (suffix, str(item).split('/', 1)[1]), item, Copy('$TARGET', '$SOURCE'))
+      gzipping["data"] += env.Command("build/deploy/%s/data/usr/share/d-net/settings" % (suffix), "settings." + type, Copy('$TARGET', '$SOURCE'))
+      gzipping["data"] += env.Command("build/deploy/%s/data/usr/share/app-install/icons/d-net-icon.png" % (suffix), "resources/dneticomulti.ico", "convert $SOURCE[1] $TARGET")
       
-      gzipping["data"] += env.Command("deploy/%s/data/usr/share/doc/d-net/copyright" % suffix, "resources/license.txt", Copy('$TARGET', '$SOURCE'))
-      gzipping["data"] += env.Command("deploy/%s/data/usr/share/menu/d-net" % suffix, "resources/linux/menu-d-net", Copy('$TARGET', '$SOURCE'))
-      gzipping["data"] += env.Command("deploy/%s/data/usr/share/applications/d-net.desktop" % suffix, "resources/linux/applications-d-net", Copy('$TARGET', '$SOURCE'))
+      gzipping["data"] += env.Command("build/deploy/%s/data/usr/share/doc/d-net/copyright" % suffix, "resources/license.txt", Copy('$TARGET', '$SOURCE'))
+      gzipping["data"] += env.Command("build/deploy/%s/data/usr/share/menu/d-net" % suffix, "resources/linux/menu-d-net", Copy('$TARGET', '$SOURCE'))
+      gzipping["data"] += env.Command("build/deploy/%s/data/usr/share/applications/d-net.desktop" % suffix, "resources/linux/applications-d-net", Copy('$TARGET', '$SOURCE'))
 
       gzipping["control"] = []
-      gzipping["control"] += env.Command("deploy/%s/control/control" % suffix, ["resources/linux/control"] + gzipping["data"], """cat $SOURCE | sed -e 's/&&&VERSION&&&/%s/' -e 's/&&&INSTALLSIZE&&&/'`du -s deploy/%s/data | cut -f 1`'/' > $TARGET""" % (vtoken, suffix))
-      gzipping["control"] += env.Command("deploy/%s/control/postrm" % suffix, "resources/linux/postrm", Copy('$TARGET', '$SOURCE'))
-      gzipping["control"] += env.Command("deploy/%s/control/postinst" % suffix, "resources/linux/postinst", Copy('$TARGET', '$SOURCE'))
+      gzipping["control"] += env.Command("build/deploy/%s/control/control" % suffix, ["resources/linux/control"] + gzipping["data"], """cat $SOURCE | sed -e 's/&&&VERSION&&&/%s/' -e 's/&&&INSTALLSIZE&&&/'`du -s build/deploy/%s/data | cut -f 1`'/' > $TARGET""" % (vtoken, suffix))
+      gzipping["control"] += env.Command("build/deploy/%s/control/postrm" % suffix, "resources/linux/postrm", Copy('$TARGET', '$SOURCE'))
+      gzipping["control"] += env.Command("build/deploy/%s/control/postinst" % suffix, "resources/linux/postinst", Copy('$TARGET', '$SOURCE'))
 
       gzits = []
-      gzits += env.Command("deploy/%s/package/debian-binary" % (suffix), "resources/linux/debian-binary", Copy('$TARGET', '$SOURCE'))
+      gzits += env.Command("build/deploy/%s/package/debian-binary" % (suffix), "resources/linux/debian-binary", Copy('$TARGET', '$SOURCE'))
 
       for item in ["control", "data"]:
-        gzits += env.Command("deploy/%s/package/%s.tar.gz" % (suffix, item), gzipping[item], "( cd deploy/%s/%s ; tar --owner root --group root -cf - * ) | gzip --best > $TARGET" % (suffix, item))
+        gzits += env.Command("build/deploy/%s/package/%s.tar.gz" % (suffix, item), gzipping[item], "( cd build/deploy/%s/%s ; tar --owner root --group root -cf - * ) | gzip --best > $TARGET" % (suffix, item))
 
       return env.Command("build/dnet-%s.deb" % (vtoken), gzits, "ar r $TARGET $SOURCES")
     

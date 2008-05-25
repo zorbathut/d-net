@@ -133,14 +133,14 @@ shopcaches["demo"] = make_shopcache("demo")
 
 # deploy directory and associated
 def commandstrip(env, source):
-  return env.Command('deploy/%s' % str(source).split('/')[-1], source, "cp $SOURCE $TARGET && strip -s $TARGET")[0]
+  return env.Command('build/deploy/%s' % str(source).split('/')[-1], source, "cp $SOURCE $TARGET && strip -s $TARGET")[0]
 
 programs_stripped = {}
 for key, value in programs.items():
   programs_stripped[key] = commandstrip(env, value)
 
 deployfiles = MakeDeployables(env, commandstrip);
-deployfiles += env.Command('deploy/license.txt', 'resources/license.txt', Copy("$TARGET", '$SOURCE'))
+deployfiles += env.Command('build/deploy/license.txt', 'resources/license.txt', Copy("$TARGET", '$SOURCE'))
 deployfiles += [programs_stripped["reporter"]]
 
 # installers
@@ -174,8 +174,6 @@ env.Command('config.h', [], """echo '#define DEFAULTPATH "%s"' > $TARGET""" % de
 env.Clean("build", "build")
 env.Clean("data_release", "data_release")
 env.Clean("data_demo", "data_demo")
-env.Clean("deploy", "deploy")
-
 
 # bugfix
 env.Dir("/usr/mingw/local/include/boost-1_33_1/boost/iterator")
