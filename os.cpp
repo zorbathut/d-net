@@ -29,6 +29,10 @@ void set_exename(int *argc, const char ***argv) {
     loc_exename += ".exe";  // lazy hack
   }
   
+  if(stat(loc_exename.c_str(), &lulz)) {
+    loc_exename = "/proc/self/exe";  // :rolleyes:
+  }
+  
   exesize(); // check to make sure we can get it
 }
   
