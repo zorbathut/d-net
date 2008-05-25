@@ -69,8 +69,10 @@ int main(int argc, const char *argv[]) {
   
   dprintf("REPORTER IS YOUR FREND\n");
   
-  if(!Message("Something unexpected has happened, and Devastation Net has been shut down.\n\nI've created a datafile including some information that may help Mandible Games fix\nthe error in future versions. It contains no personally identifying information.\n\nMay I send this to Mandible?", true))
+  if(!Message("Something unexpected has happened, and Devastation Net has been shut down.\n\nI've created a datafile including some information that may help Mandible Games fix\nthe error in future versions. It contains no personally identifying information.\n\nMay I send this to Mandible?", true)) {
+    unlink(argv[2]);
     return 1;
+  }
   
   CHECK(curl_global_init(CURL_GLOBAL_ALL) == 0);
   
@@ -130,7 +132,8 @@ int main(int argc, const char *argv[]) {
     }
     
     fclose(fil);
-    
+    unlink(argv[2]);
+
     dprintf("compressed %d to %d\n", (int)comp.total_in, (int)comp.total_out);
     CHECK(krlog.size() == comp.total_out);
     

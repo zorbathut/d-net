@@ -130,7 +130,7 @@ def Installers(platform):
       for item in ["control", "data"]:
         gzits += env.Command("build/deploy/%s/package/%s.tar.gz" % (suffix, item), gzipping[item], "( cd build/deploy/%s/%s ; tar --owner root --group root -cf - * ) | gzip --best > $TARGET" % (suffix, item))
 
-      return env.Command("build/dnet-%s.deb" % (vtoken), gzits, "ar r $TARGET $SOURCES")
+      return env.Command("build/dnet-%s.deb" % (vtoken), gzits, "ar rc $TARGET $SOURCES")
     
     return MakeDeployables, MakeInstaller
   else:

@@ -133,7 +133,9 @@ void wrap_mkdir(const string &str) {
 }
 
 string getTempFilename() {
-  return tmpnam(NULL);
+  char temparg[20] = "/tmp/d-net-XXXXXX";
+  close(mkstemp(temparg));
+  return temparg;
 }
 
 void SpawnProcess(const string &exec, const vector<string> &params) {
