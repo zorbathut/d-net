@@ -5,6 +5,7 @@
 #include "parse.h"
 #include "httpd.h"
 #include "adler32_util.h"
+#include "config.h"
 
 #include <boost/static_assert.hpp>
 
@@ -15,7 +16,7 @@
 using namespace std;
 
 
-DEFINE_string(fileroot, "data/", "Root to pull data from");
+DEFINE_string(fileroot, DEFAULTPATH "data/", "Root to pull data from");
 
 static void fileroot_massager(string *frm) {
   if(frm->size() && (*frm)[frm->size() - 1] != '/')

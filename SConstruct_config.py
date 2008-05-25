@@ -121,6 +121,9 @@ def Conf():
       installer = conf.CheckFile(["/cygdrive/c/Program Files (x86)/NSIS"], "makensis")
       if not installer:
         env.Exit(1)
+        
+      defaultdata = ""
+      
     elif platform == "linux":
       env.Append(CPPDEFINES = Split("NO_WINDOWS"), CPPPATH = Split("/usr/local/include/boost-1_34_1"))
       
@@ -144,6 +147,9 @@ def Conf():
 #      env.Append(ENV = {"DISPLAY" : os.environ['DISPLAY']})  # welp
 
       installer = None
+      
+      defaultdata = "/usr/share/d-net/"
+      
     else:
       print "Platform is unrecognized platform " + sys.platform
       env.Exit(1)
@@ -235,5 +241,6 @@ def Conf():
     
     oggpath = ""
     installer = ""
+    defaultdata = ""
   
-  return env, categories, flagtypes, oggpath, platform, installer
+  return env, categories, flagtypes, oggpath, platform, installer, defaultdata

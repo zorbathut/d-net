@@ -10,7 +10,7 @@ import sys
 Decider('MD5-timestamp')
 SetOption('implicit_cache', 1)
 
-env, categories, flagtypes, oggpath, platform, installers = Conf()
+env, categories, flagtypes, oggpath, platform, installers, defaultdata = Conf()
 MakeDeployables, MakeInstaller = Installers(platform)
 
 stdpackage = Split("debug os util parse args init")
@@ -167,6 +167,8 @@ def addVersionFile(type):
 for item in "local demo release".split():
   addVersionFile(item)
 
+# config.h
+env.Command('config.h', [], """echo '#define DEFAULTPATH "%s"' > $TARGET""" % defaultdata)
 
 # cleanup
 env.Clean("build", "build")
