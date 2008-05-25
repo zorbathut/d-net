@@ -114,11 +114,16 @@ def Installers(platform):
       for item in data[type]:
         gzipping["data"] += env.Command("deploy/%s/data/usr/share/d-net/data/%s" % (suffix, str(item).split('/', 1)[1]), item, Copy('$TARGET', '$SOURCE'))
       gzipping["data"] += env.Command("deploy/%s/data/usr/share/d-net/settings" % (suffix), "settings." + type, Copy('$TARGET', '$SOURCE'))
+      gzipping["data"] += env.Command("deploy/%s/data/usr/share/app-install/icons/d-net-icon.png" % (suffix), "resources/dneticomulti.ico", "convert $SOURCE[1] $TARGET")
       
       gzipping["data"] += env.Command("deploy/%s/data/usr/share/doc/d-net/copyright" % suffix, "resources/license.txt", Copy('$TARGET', '$SOURCE'))
+      gzipping["data"] += env.Command("deploy/%s/data/usr/share/menu/d-net" % suffix, "resources/linux/menu-d-net", Copy('$TARGET', '$SOURCE'))
+      gzipping["data"] += env.Command("deploy/%s/data/usr/share/applications/d-net.desktop" % suffix, "resources/linux/applications-d-net", Copy('$TARGET', '$SOURCE'))
 
       gzipping["control"] = []
       gzipping["control"] += env.Command("deploy/%s/control/control" % suffix, ["resources/linux/control"] + gzipping["data"], """cat $SOURCE | sed -e 's/&&&VERSION&&&/%s/' -e 's/&&&INSTALLSIZE&&&/'`du -s deploy/%s/data | cut -f 1`'/' > $TARGET""" % (vtoken, suffix))
+      gzipping["control"] += env.Command("deploy/%s/control/postrm" % suffix, "resources/linux/postrm", Copy('$TARGET', '$SOURCE'))
+      gzipping["control"] += env.Command("deploy/%s/control/postinst" % suffix, "resources/linux/postinst", Copy('$TARGET', '$SOURCE'))
 
       gzits = []
       gzits += env.Command("deploy/%s/package/debian-binary" % (suffix), "resources/linux/debian-binary", Copy('$TARGET', '$SOURCE'))

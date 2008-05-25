@@ -1,0 +1,4 @@
+?package(d-net):needs="X11" section="Games/Action" \
+	title="Devastation Net" command="/usr/games/d-net" \
+	icon="/usr/share/pixmaps/gnome-sudoku.xpm"
+

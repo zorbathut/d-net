@@ -150,6 +150,9 @@ def Conf():
       
       defaultdata = "/usr/share/d-net/"
       
+      convert = conf.CheckFile(["/usr/bin"], "convert")
+      if not convert:
+        env.Exit(1)
     else:
       print "Platform is unrecognized platform " + sys.platform
       env.Exit(1)
