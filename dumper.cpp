@@ -16,7 +16,7 @@
 #include "dumper_registry.h"
 #include "os.h"
 
-DEFINE_string(writeTarget, "dumps/dump-", "Prefix for file dump");
+DEFINE_string(writeTarget, "", "Prefix for file dump");
 DEFINE_string(readTarget, "", "File to replay from");
 
 const int layout_version = 8;

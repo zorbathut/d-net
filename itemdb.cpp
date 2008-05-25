@@ -16,7 +16,7 @@
 using namespace std;
 
 
-DEFINE_string(fileroot, DEFAULTPATH "data/", "Root to pull data from");
+DEFINE_string(fileroot, DEFAULTPATH, "Root to pull data from");
 
 static void fileroot_massager(string *frm) {
   if(frm->size() && (*frm)[frm->size() - 1] != '/')
