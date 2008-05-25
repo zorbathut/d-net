@@ -13,6 +13,7 @@
 #include "res_interface.h"
 #include "settings.h"
 #include "init.h"
+#include "config.h"
 
 #ifdef OSX_FRAMEWORK_PREFIXES
   #include <OpenGL/gl.h>
@@ -112,7 +113,7 @@ void deinitSystem() {
 };
 
 int main(int argc, char **argv) {
-  setInitFlagFile("settings");
+  setInitFlagFile(DEFAULTPATH "settings");
   initProgram(&argc, const_cast<const char ***>(&argv));
   
   StackString sst("Main");

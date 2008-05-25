@@ -112,7 +112,8 @@ def Installers(platform):
         gzipping["data"] += env.Command("deploy/%s/data/usr/games/%s" % (suffix, item.rsplit('-', 1)[0]), binaries[item], Copy('$TARGET', '$SOURCE'))
 
       for item in data[type]:
-        gzipping["data"] += env.Command("deploy/%s/data/usr/share/d-net/%s" % (suffix, str(item).split('/', 1)[1]), item, Copy('$TARGET', '$SOURCE'))
+        gzipping["data"] += env.Command("deploy/%s/data/usr/share/d-net/data/%s" % (suffix, str(item).split('/', 1)[1]), item, Copy('$TARGET', '$SOURCE'))
+      gzipping["data"] += env.Command("deploy/%s/data/usr/share/d-net/settings" % (suffix), "settings." + type, Copy('$TARGET', '$SOURCE'))
       
       gzipping["data"] += env.Command("deploy/%s/data/usr/share/doc/d-net/copyright" % suffix, "resources/license.txt", Copy('$TARGET', '$SOURCE'))
 
