@@ -1,12 +1,12 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - Figure out Linux packaging
-    - Improve tmpfile to mkstemp
-    - add md5sum?
-    - make icon
-    - make menu item
+    - Make sure reporter works
+      - d-net
+      - vecedit
   - Add "for whatever" text to the controller choosing options
   - Instrument SDL for Chile
+  - Test one or two controllers?
   - Add a "hotmail warning" on the forums?
   - Add an info page on what d-net is
   - Make edit box larger
