@@ -22,15 +22,15 @@ DEFINE_bool(addr2line, false, "Call addr2line for stack traces");
 static string loc_exename;
 void set_exename(int *argc, const char ***argv) {
   CHECK(*argc >= 1);
-  loc_exename = (*argv)[0];
-  
+  loc_exename = "/proc/self/exe";
+
   struct stat lulz;
   if(stat(loc_exename.c_str(), &lulz)) {
-    loc_exename += ".exe";  // lazy hack
+    loc_exename = (*argv)[0];
   }
   
   if(stat(loc_exename.c_str(), &lulz)) {
-    loc_exename = "/proc/self/exe";  // :rolleyes:
+    loc_exename += ".exe";  // lazy hack
   }
   
   exesize(); // check to make sure we can get it
@@ -146,8 +146,13 @@ void SpawnProcess(const string &exec, const vector<string> &params) {
     args.push_back(params[i].c_str());
   args.push_back(NULL);
 
-  if(fork() == 0)
+  if(fork() == 0) {
+    dprintf("trying to execv\n");
     execv(exec.c_str(), const_cast<char * const *>(&args[0]));  // stupid c
+    dprintf("execv failed :(\n");
+    execv(("/usr/games/" + exec).c_str(), const_cast<char * const *>(&args[0]));
+    dprintf("execv *really* failed\n");
+  }
 }
 
 #endif
