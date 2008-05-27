@@ -101,27 +101,45 @@ def Installers(platform):
     def MakeDeployables(env, commandstrip):
       return []
 
-    def MakeInstaller(env, type, shopcaches, version, binaries, data, deployables, installers, suffix):
-      vtoken = "%s+%s" % (version, suffix)
-
-      datasources = []
+    def SpewDatafiles(env, suffix, binaries, data, type, incdata):
+      sources = []
+      binrel = []
 
       for item in ["d-net-%s" % type, "vecedit-%s" % type, "reporter"]:
-        datasources += env.Command("build/deploy/%s/usr/games/%s" % (suffix, item.rsplit('-', 1)[0]), binaries[item], Copy('$TARGET', '$SOURCE'))
+        brs = "usr/games/%s" % item.rsplit('-', 1)[0]
+        sources += env.Command("build/deploy/%s/%s" % (suffix, brs), binaries[item], Copy('$TARGET', '$SOURCE'))
+        binrel += [brs]
 
-      for item in data[type]:
-        datasources += env.Command("build/deploy/%s/usr/share/d-net/data/%s" % (suffix, str(item).split('/', 1)[1]), item, Copy('$TARGET', '$SOURCE'))
-      datasources += env.Command("build/deploy/%s/usr/share/d-net/settings" % (suffix), "settings." + type, Copy('$TARGET', '$SOURCE'))
-      datasources += env.Command("build/deploy/%s/usr/share/app-install/icons/d-net-icon.png" % (suffix), "resources/dneticomulti.ico", "convert $SOURCE[1] $TARGET")
-      
-      datasources += env.Command("build/deploy/%s/usr/share/doc/d-net/copyright" % suffix, "resources/license.txt", Copy('$TARGET', '$SOURCE'))
-      datasources += env.Command("build/deploy/%s/usr/share/menu/d-net" % suffix, "resources/linux/menu-d-net", Copy('$TARGET', '$SOURCE'))
-      datasources += env.Command("build/deploy/%s/usr/share/applications/d-net.desktop" % suffix, "resources/linux/applications-d-net", Copy('$TARGET', '$SOURCE'))
+      if incdata:
+        for item in data[type]:
+          sources += env.Command("build/deploy/%s/usr/share/d-net/data/%s" % (suffix, str(item).split('/', 1)[1]), item, Copy('$TARGET', '$SOURCE'))
+        sources += env.Command("build/deploy/%s/usr/share/d-net/settings" % (suffix), "settings." + type, Copy('$TARGET', '$SOURCE'))
+        sources += env.Command("build/deploy/%s/usr/share/app-install/icons/d-net-icon.png" % (suffix), "resources/dneticomulti.ico", "convert $SOURCE[1] $TARGET")
+        
+        sources += env.Command("build/deploy/%s/usr/share/doc/d-net/copyright" % suffix, "resources/license.txt", Copy('$TARGET', '$SOURCE'))
+        sources += env.Command("build/deploy/%s/usr/share/menu/d-net" % suffix, "resources/linux/menu-d-net", Copy('$TARGET', '$SOURCE'))
+        sources += env.Command("build/deploy/%s/usr/share/applications/d-net.desktop" % suffix, "resources/linux/applications-d-net", Copy('$TARGET', '$SOURCE'))
 
-      sources = [x for x in datasources] # there is probably a better way to do this
-      sources += env.Command("build/deploy/%s/DEBIAN/control" % suffix, ["resources/linux/control"] + datasources, """cat $SOURCE | sed -e 's/&&&VERSION&&&/%s/' -e 's/&&&INSTALLSIZE&&&/'`du -s build/deploy/%s/usr | cut -f 1`'/' > $TARGET""" % (vtoken, suffix))
       sources += env.Command("build/deploy/%s/DEBIAN/postrm" % suffix, "resources/linux/postrm", Copy('$TARGET', '$SOURCE'))
       sources += env.Command("build/deploy/%s/DEBIAN/postinst" % suffix, "resources/linux/postinst", Copy('$TARGET', '$SOURCE'))
+
+      return sources, binrel
+      
+
+    def MakeInstaller(env, type, shopcaches, version, binaries, data, deployables, installers, suffix):
+      vtoken = "%s+%s" % (version, suffix)
+      depsuffix = suffix + "+dependey"
+      deploysources, binrel = SpewDatafiles(env, suffix, binaries, data, type, True)
+      dependcreatesources, binrel = SpewDatafiles(env, depsuffix, binaries, data, type, False)
+
+      depcont = env.Command("build/deploy/%s/debian/control" % depsuffix, ["resources/linux/control"] + dependcreatesources, """(cat $SOURCE ; echo "Source: lulz") > $TARGET""")
+      shlibdepl = ""
+      for item in binrel:
+        if shlibdepl != "":
+          shlibdepl += " -e"
+        shlibdepl += item
+      subst = env.Command("build/deploy/%s/debian/substvars" % depsuffix, depcont + dependcreatesources, """cd build/deploy/%s && dpkg-shlibdeps %s""" % (depsuffix, shlibdepl))
+      sources = env.Command("build/deploy/%s/DEBIAN/control" % suffix, ["resources/linux/control"] + subst + deploysources, """(cat $SOURCE ; (cat ${SOURCES[1]} | cut -d : -f2- | sed 's/=/: /')) | sed -e 's/&&&VERSION&&&/%s/' -e 's/&&&INSTALLSIZE&&&/'`du -s build/deploy/%s/usr | cut -f 1`'/' > $TARGET""" % (vtoken, suffix))
 
       return env.Command("build/dnet-%s.deb" % (vtoken), sources, "fakeroot dpkg-deb -bz9 build/deploy/%s $TARGET" % suffix)
     
