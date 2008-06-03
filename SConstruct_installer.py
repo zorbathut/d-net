@@ -111,7 +111,7 @@ def Installers(platform):
         binrel += [brs]
 
       if incdata:
-        for item in data[type]:
+        for item in data:
           sources += env.Command("build/deploy/%s/usr/share/d-net/data/%s" % (suffix, str(item).split('/', 1)[1]), item, Copy('$TARGET', '$SOURCE'))
         sources += env.Command("build/deploy/%s/usr/share/d-net/settings" % (suffix), "settings." + type, Copy('$TARGET', '$SOURCE'))
         sources += env.Command("build/deploy/%s/usr/share/app-install/icons/d-net-icon.png" % (suffix), "resources/dneticomulti.ico", "convert $SOURCE[1] $TARGET")
@@ -129,8 +129,8 @@ def Installers(platform):
     def MakeInstaller(env, type, shopcaches, version, binaries, data, deployables, installers, suffix):
       vtoken = "%s+%s" % (version, suffix)
       depsuffix = suffix + "+dependey"
-      deploysources, binrel = SpewDatafiles(env, suffix, binaries, data, type, True)
-      dependcreatesources, binrel = SpewDatafiles(env, depsuffix, binaries, data, type, False)
+      deploysources, binrel = SpewDatafiles(env, suffix, binaries, data[type] + shopcaches, type, True)
+      dependcreatesources, binrel = SpewDatafiles(env, depsuffix, binaries, data[type] + shopcaches, type, False)
 
       depcont = env.Command("build/deploy/%s/debian/control" % depsuffix, ["resources/linux/control"] + dependcreatesources, """(cat $SOURCE ; echo "Source: lulz") > $TARGET""")
       shlibdepl = ""
