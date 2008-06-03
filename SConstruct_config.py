@@ -122,7 +122,7 @@ def Conf():
       if not installer:
         env.Exit(1)
         
-      defaultdata = "data/"
+      defaultdata = ""
       
     elif platform == "linux":
       env.Append(CPPDEFINES = Split("NO_WINDOWS"), CPPPATH = Split("/usr/local/include/boost-1_34_1"))

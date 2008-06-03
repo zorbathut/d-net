@@ -1,7 +1,6 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - Add "for whatever" text to the controller choosing options
-  - Fix scrollbars on vecedit (linux only?)
   - Instrument SDL for Chile
   - Test one or two controllers?
   - Deployment scripts and such
