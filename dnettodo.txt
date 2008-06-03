@@ -1,12 +1,10 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
-  - Figure out Linux packaging
-    - Make sure reporter works
-      - d-net
-      - vecedit
   - Add "for whatever" text to the controller choosing options
   - Instrument SDL for Chile
   - Test one or two controllers?
+  - Deployment scripts and such
+  - New build
   - Add a "hotmail warning" on the forums?
   - Add an info page on what d-net is
   - Make edit box larger
