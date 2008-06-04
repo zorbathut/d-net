@@ -728,7 +728,7 @@ bool InterfaceMain::tick(const InputState &is, RngSeed gameseed) {
   }
   
   if(inescmenu) {
-    pair<StdMenuCommand, int> rv = escmenu.tick(kst[controls_primary_id()]);
+    pair<StdMenuCommand, int> rv = escmenu.tick(kst[isnag().primary_id()]);
     if(rv.first == SMR_RETURN)
       inescmenu = false;
     if(rv.second == SMR_NOTHING) {
@@ -770,7 +770,7 @@ bool InterfaceMain::tick(const InputState &is, RngSeed gameseed) {
       tickIntroScreen();
     }
     
-    pair<StdMenuCommand, int> mrv = mainmenu.tick(kst[controls_primary_id()]);
+    pair<StdMenuCommand, int> mrv = mainmenu.tick(kst[isnag().primary_id()]);
     
     bool instantaction = false;
     if(mrv.second == MAIN_INSTANTACTION) {
@@ -788,10 +788,10 @@ bool InterfaceMain::tick(const InputState &is, RngSeed gameseed) {
         faction = 1;
       else
         faction = 4;
-      controls_set_ai_count(aicount); // this is pretty grim really
-      game = new Metagame(controls_human_flags(), Money((long long)(1000 * pow(30, start.toFloat()))), exp(moneyexp), faction - 1, FLAGS_rounds_per_shop, calculateRounds(start, end, moneyexp), gameseed);
+      isnag().set_ai_count(aicount); // this is pretty grim really
+      game = new Metagame(isnag().human_flags(), Money((long long)(1000 * pow(30, start.toFloat()))), exp(moneyexp), faction - 1, FLAGS_rounds_per_shop, calculateRounds(start, end, moneyexp), gameseed);
       if(instantaction)
-        game->instant_action_init(controls_getcc(controls_primary_id()));
+        game->instant_action_init(isnag().getcc(isnag().primary_id()));
       dprintf("ENTERING PLAYING\n");
       interface_mode = STATE_PLAYING;
       escmenu = escmenuig;
@@ -1059,7 +1059,7 @@ void InterfaceMain::render() const {
             drawLine(Float4(xmarg, y, getZoom().ex - xmarg, y), boxthick);
           }
           setColor(C::gray(1.0));
-          drawJustifiedText(controls_getcc(i).description, textheight, Float2(x + xsiz / 2, y + bord), TEXT_CENTER, TEXT_MIN);
+          drawJustifiedText(isnag().getcc(i).description, textheight, Float2(x + xsiz / 2, y + bord), TEXT_CENTER, TEXT_MIN);
           Float4 chbox(x + bord, y + bord * 2 + textheight, x + bord + crosshair, y + bord * 2 + crosshair + textheight);
           setColor(C::box_border);
           drawLine(Float4(chbox.sx, chbox.sy, chbox.sx + crosshair / 4, chbox.sy), boxthick);
@@ -1170,7 +1170,7 @@ void InterfaceMain::init() {
   optionsmenu = StdMenu();
   kst.clear();
   
-  aicount = controls_get_ai_count();
+  aicount = isnag().get_ai_count();
   
   faction = FLAGS_factionMode + 1;
   CHECK(faction >= 0 && faction < 5);

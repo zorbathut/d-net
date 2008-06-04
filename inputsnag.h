@@ -10,27 +10,44 @@ using namespace std;
 class Ai;
 class SDL_KeyboardEvent;
 
-InputState controls_init(Dumper *dumper, bool allow_standard, int ais);
-void controls_set_ai_count(int ct);
-int controls_get_ai_count();
-void controls_key(const SDL_KeyboardEvent *key);
-void controls_mouseclick();
-InputState controls_next(Dumper *dumper);
-vector<Ai *> controls_ai();
-vector<bool> controls_human_flags();
-bool controls_users();
-void controls_shutdown();
+class InputSnag : boost::noncopyable {
+public:
+  // init/shutdown
+  InputState init(Dumper *dumper, bool allow_standard, int ais);
+  void shutdown();
+
+  // the loop
+  void set_ai_count(int ct);
+  int get_ai_count() const;
+
+  void key(const SDL_KeyboardEvent *key);
+  void mouseclick();
+  
+  InputState next(Dumper *dumper);
+  
+  // informational
+  vector<Ai *> ais() const;
+  vector<bool> human_flags() const;
+  bool users() const;
+  int primary_id() const;
+  pair<int, int> getType(int id) const;
+  ControlConsts getcc(int cid) const;
+
+private:
+  InputSnag(); // no soup for you
+  ~InputSnag();
+  friend InputSnag &isnag();
+};
+
+// singleton
+InputSnag &isnag();
+  
 class ControlShutdown {
 public:
   ControlShutdown() { } // this makes gcc shut up about unused variables
   ~ControlShutdown() {
-    controls_shutdown();
+    isnag().shutdown();
   }
 };
-
-int controls_primary_id();
-pair<int, int> controls_getType(int id);
-
-ControlConsts controls_getcc(int cid);
 
 #endif

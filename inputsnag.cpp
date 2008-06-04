@@ -32,7 +32,7 @@ static vector<pair<int, int> > sources;
 static vector<int> prerecorded;
 static vector<SDL_Joystick *> joysticks;
 static vector<smart_ptr<Ai> > ai;
-static int primary_id;
+static int primaryid;
 
 static InputState last;
 static InputState now;
@@ -45,7 +45,7 @@ const int confusedkeys[] = { SDLK_RETURN, SDLK_SPACE, SDLK_LSHIFT, SDLK_RSHIFT, 
 const int *const baseplayermap[2] = { playerone, playertwo };
 const int baseplayersize[2] = { ARRAY_SIZE(playerone), ARRAY_SIZE(playertwo) };  
 
-InputState controls_init(Dumper *dumper, bool allow_standard, int ais) {
+InputState InputSnag::init(Dumper *dumper, bool allow_standard, int ais) {
   CHECK(sources.size() == 0);
   
   now.controllers.resize(FLAGS_nullControllers);
@@ -55,7 +55,7 @@ InputState controls_init(Dumper *dumper, bool allow_standard, int ais) {
     now.controllers[i].axes.resize(2);
     now.controllers[i].keys.resize(4);
   }
-  primary_id = FLAGS_nullControllers;
+  primaryid = FLAGS_nullControllers;
   
   if(dumper->is_replaying()) {
     CHECK(FLAGS_nullControllers == 0);
@@ -65,7 +65,7 @@ InputState controls_init(Dumper *dumper, bool allow_standard, int ais) {
     now.controllers = is.controllers;
     prerecorded.resize(now.controllers.size(), true);
     sources = dumper->get_sources();
-    primary_id = dumper->get_primary_id();
+    primaryid = dumper->get_primary_id();
     
     CHECK(sources.size() == now.controllers.size());
     
@@ -117,7 +117,7 @@ InputState controls_init(Dumper *dumper, bool allow_standard, int ais) {
   CHECK(prerecorded.size() == sources.size());
   
   {
-    vector<bool> ihf = controls_human_flags();
+    vector<bool> ihf = human_flags();
     CHECK(ihf.size() == now.controllers.size());
     for(int i = 0; i < ihf.size(); i++)
       now.controllers[i].human = ihf[i];
@@ -126,22 +126,22 @@ InputState controls_init(Dumper *dumper, bool allow_standard, int ais) {
   last = now;
   
   dprintf("AIS is %d\n", ais);
-  controls_set_ai_count(ais);
+  set_ai_count(ais);
   
-  dprintf("Primary ID is %d\n", primary_id);
-  dumper->set_layout(now, sources, primary_id);
+  dprintf("Primary ID is %d\n", primaryid);
+  dumper->set_layout(now, sources, primaryid);
   
   return now;
 }
 
 // We're gonna have to do something funky here in dumper mode.
-void controls_set_ai_count(int ct) {
+void InputSnag::set_ai_count(int ct) {
   CHECK(ct >= 0 && ct <= 16);
   
-  dprintf("changing ai count from %d to %d\n", controls_get_ai_count(), ct);
+  dprintf("changing ai count from %d to %d\n", get_ai_count(), ct);
 
   // Technically this is O(n^2). I honestly don't care however.
-  while(controls_get_ai_count() > ct) {
+  while(get_ai_count() > ct) {
     CHECK(sources.back().first == CIP_AI);
     sources.pop_back();
     ai.pop_back();
@@ -150,7 +150,7 @@ void controls_set_ai_count(int ct) {
     prerecorded.pop_back();
   }
 
-  while(controls_get_ai_count() < ct) {
+  while(get_ai_count() < ct) {
     sources.push_back(make_pair((int)CIP_AI, ai.size()));
     ai.push_back(smart_ptr<Ai>(new Ai()));
     ai.back()->updateIdle();
@@ -166,7 +166,7 @@ void controls_set_ai_count(int ct) {
   CHECK(now.controllers.size() == last.controllers.size());
 }
 
-int controls_get_ai_count(void) {
+int InputSnag::get_ai_count(void) const {
  
   int cic = 0;
   for(int i = 0; i < sources.size(); i++)
@@ -176,7 +176,7 @@ int controls_get_ai_count(void) {
   return cic;
 }
 
-void controls_key(const SDL_KeyboardEvent *key) {
+void InputSnag::key(const SDL_KeyboardEvent *key) {
   if(key->type == SDL_KEYDOWN)
     for(int i = 0; i < ARRAY_SIZE(confusedkeys); i++)
       if(key->keysym.sym == confusedkeys[i])
@@ -212,14 +212,14 @@ void controls_key(const SDL_KeyboardEvent *key) {
     *ps = true;
 }
 
-void controls_mouseclick() {
+void InputSnag::mouseclick() {
   now.confused_mouse = true;
 }
 
-InputState controls_next(Dumper *dumper) {
+InputState InputSnag::next(Dumper *dumper) {
   StackString sst("Controls");
   
-  dumper->get_layout(&now, &sources, &primary_id);
+  dumper->get_layout(&now, &sources, &primaryid);
   
   if(dumper->is_replaying()) {
     now = dumper->read_input();
@@ -325,7 +325,7 @@ InputState controls_next(Dumper *dumper) {
   return last;
 }
 
-vector<Ai *> controls_ai() {
+vector<Ai *> InputSnag::ais() const {
   vector<Ai *> rv;
   for(int i = 0; i < sources.size(); i++) {
     if(sources[i].first == CIP_AI && !prerecorded[i])
@@ -336,7 +336,7 @@ vector<Ai *> controls_ai() {
   return rv;
 }
 
-vector<bool> controls_human_flags() {
+vector<bool> InputSnag::human_flags() const {
   vector<bool> rv;
   for(int i = 0; i < sources.size(); i++) {
     if(sources[i].first == CIP_AI)
@@ -347,30 +347,30 @@ vector<bool> controls_human_flags() {
   return rv;
 }
 
-bool controls_users() {
+bool InputSnag::users() const {
   CHECK(prerecorded.size());
-  if(!(primary_id >= 0 && primary_id < prerecorded.size())) {
-    dprintf("%d, %d\n", primary_id, prerecorded.size());
-    CHECK(primary_id >= 0 && primary_id < prerecorded.size());
+  if(!(primaryid >= 0 && primaryid < prerecorded.size())) {
+    dprintf("%d, %d\n", primaryid, prerecorded.size());
+    CHECK(primaryid >= 0 && primaryid < prerecorded.size());
   }
-  return !prerecorded[0] && (sources[primary_id].first == CIP_KEYBOARD || sources[primary_id].first == CIP_JOYSTICK);
+  return !prerecorded[0] && (sources[primaryid].first == CIP_KEYBOARD || sources[primaryid].first == CIP_JOYSTICK);
 }
 
-void controls_shutdown() {
+void InputSnag::shutdown() {
   CHECK(sources.size());
   for(int i = 0; i < joysticks.size(); i++)
     SDL_JoystickClose(joysticks[i]);
 }
 
-int controls_primary_id() {
-  return primary_id;
+int InputSnag::primary_id() const {
+  return primaryid;
 }
 
-pair<int, int> controls_getType(int id) {
+pair<int, int> InputSnag::getType(int id) const {
   return sources[id];
 }
 
-ControlConsts controls_getcc(int cid) {
+ControlConsts InputSnag::getcc(int cid) const {
   ControlConsts rv;
   
   if(sources[cid].first == CIP_KEYBOARD && sources[cid].second == 0) {
@@ -447,4 +447,12 @@ ControlConsts controls_getcc(int cid) {
   }
   
   return rv;
+}
+
+InputSnag::InputSnag() { };
+InputSnag::~InputSnag() { };
+
+InputSnag &isnag() {
+  static InputSnag tis;
+  return tis;
 }

@@ -66,7 +66,7 @@ void MainLoop() {
   
   frameNumber = 0;    // it's -1 before this point
   
-  InputState is = controls_init(&dumper, FLAGS_aiCount == 0, FLAGS_aiCount);
+  InputState is = isnag().init(&dumper, FLAGS_aiCount == 0, FLAGS_aiCount);
   ControlShutdown csd;
   
   dumper.read_audit();
@@ -126,11 +126,11 @@ void MainLoop() {
                 if(FLAGS_warpkeys && event.key.type == SDL_KEYUP && event.key.keysym.sym == SDLK_c)
                   speed = 0;
                 
-                controls_key(&event.key);
+                isnag().key(&event.key);
                 break;
               
               case SDL_MOUSEBUTTONDOWN:
-                controls_mouseclick();
+                isnag().mouseclick();
                 break;
               
               case SDL_VIDEORESIZE:
@@ -177,7 +177,7 @@ void MainLoop() {
             
             tickHttpd();  // We do this here so we can inject stuff between control cycles. Yurgh.
             
-            is = controls_next(&dumper);
+            is = isnag().next(&dumper);
             
             dumper.write_input(is);
             
@@ -226,7 +226,7 @@ void MainLoop() {
             dumper.write_audit();
             adlers += audit_read_count();
             
-            interface.ai(controls_ai(), controls_human_flags());  // We do this afterwards so we don't delay until our next tick is starting.
+            interface.ai(isnag().ais(), isnag().human_flags());  // We do this afterwards so we don't delay until our next tick is starting.
           }
         }
         
@@ -266,7 +266,7 @@ void MainLoop() {
           }
           PerfStack pst(PBC::render);
           interface.render();
-          if(!controls_users() && FLAGS_renderframenumber) {
+          if(!isnag().users() && FLAGS_renderframenumber) {
             setColor(1.0, 1.0, 1.0);
             setZoomVertical(0, 0, 1);
             drawText(StringPrintf("%d", frameNumber), 10, Float2(5, 85));

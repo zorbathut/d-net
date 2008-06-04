@@ -182,7 +182,7 @@ void Metagame::renderToScreen() const {
         ppt.push_back(&persistent.players()[i]);
     }
     game.renderToScreen(ppt, GameMetacontext());
-    if(!controls_users() && FLAGS_renderframenumber) {    
+    if(!isnag().users() && FLAGS_renderframenumber) {    
       setColor(1.0, 1.0, 1.0);
       setZoomVertical(0, 0, 100);
       drawText(StringPrintf("faction setting round"), 2, Float2(5, 82));
@@ -197,7 +197,7 @@ void Metagame::renderToScreen() const {
         ppt.push_back(&persistent.players()[i]);
     }
     game.renderToScreen(ppt, GameMetacontext(win_history, roundsBetweenShop));
-    if(!controls_users() && FLAGS_renderframenumber) {    
+    if(!isnag().users() && FLAGS_renderframenumber) {    
       setColor(1.0, 1.0, 1.0);
       setZoomVertical(0, 0, 100);
       drawText(StringPrintf("round %d", gameround), 2, Float2(5, 82));

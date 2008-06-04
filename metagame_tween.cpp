@@ -694,7 +694,7 @@ bool PersistentData::tickSlot(int slotid, const vector<Controller> &keys) {
     CHECK(slt.pid != -1);
     CHECK(keys.size() == 1);
 
-    bool cancel = runSettingTick(keys[0], &pms[slt.pid], factions, controls_getcc(slt.pid));
+    bool cancel = runSettingTick(keys[0], &pms[slt.pid], factions, isnag().getcc(slt.pid));
 
     if(pms[slt.pid].faction) {
       playerid[slt.pid] = playerdata.size();
@@ -744,7 +744,7 @@ bool PersistentData::tickSlot(int slotid, const vector<Controller> &keys) {
   } else if(slt.type == Slot::SETTINGS) {
     CHECK(slt.pid >= 0 && slt.pid < pms.size());
     CHECK(keys.size() == 1);
-    return runSettingTick(keys[0], &pms[slt.pid], factions, controls_getcc(slt.pid));
+    return runSettingTick(keys[0], &pms[slt.pid], factions, isnag().getcc(slt.pid));
   } else if(slt.type == Slot::QUITCONFIRM) {
     Keystates thesekeys = pms[slt.pid].genKeystate(keys[0]);
     
@@ -858,7 +858,7 @@ void PersistentData::renderSlot(int slotid) const {
       steer.push_back("Move the cursor over a");
       steer.push_back("faction icon for information");
       steer.push_back("");
-      steer.push_back("Press " + controls_getcc(slt.pid).active_button + " to");
+      steer.push_back("Press " + isnag().getcc(slt.pid).active_button + " to");
       steer.push_back("choose that faction");
       drawJustifiedMultiText(steer, 0.04, getZoom().midpoint(), TEXT_CENTER, TEXT_CENTER);
     } else {
@@ -1076,7 +1076,7 @@ void PersistentData::renderSlot(int slotid) const {
     Coord2 sizes(tfs.compass_location.span_x(), tfs.compass_location.span_y());
     Coord2 mp = tfs.compass_location.midpoint();
     setZoomAround(Coord4(mp.x - sizes.x, mp.y - sizes.y, mp.x + sizes.x, mp.y + sizes.y).toFloat());
-    runSettingRender(pms[slt.pid], controls_getcc(slt.pid));
+    runSettingRender(pms[slt.pid], isnag().getcc(slt.pid));
   } else if(slt.type == Slot::QUITCONFIRM) {
     setZoomCenter(0, 0, 10);
     {
@@ -1776,7 +1776,7 @@ PersistentData::PersistentData(const vector<bool> &human, Money startingcash, Co
   
   reset();
   
-  int cdbc = controls_primary_id();
+  int cdbc = isnag().primary_id();
   if(FLAGS_debugControllers >= 1) {
     CHECK(pms.size() >= 1); // better be
     const int fact = 5;
@@ -1860,7 +1860,7 @@ void PersistentData::instant_action_init(const ControlConsts &cc) {
   CHECK(pms.size() >= 1); // better be
   CHECK(playerdata.size() == 0);
   
-  int cdbc = controls_primary_id();
+  int cdbc = isnag().primary_id();
   pms[cdbc].faction = &factions[1];
   pms[cdbc].faction->taken = true;
   pms[cdbc].settingmode = SETTING_BUTTONS;
