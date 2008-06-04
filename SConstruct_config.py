@@ -22,7 +22,7 @@ class SconToken:  # man, don't even ask
 def Conf():
 
   # Set up our environment
-  env = Environment(LINKFLAGS = Split("-g -O2 -Wl,--as-needed -Wl,-\\("), CXXFLAGS=Split("-Wall -Wno-sign-compare -Wno-uninitialized -g -O2"), CPPDEFINES=["DPRINTF_MARKUP"], CXX="nice ./ewrap $TARGET g++")
+  env = Environment(LINKFLAGS = Split("-g -O2 -Wl,--as-needed"), CXXFLAGS=Split("-Wall -Wno-sign-compare -Wno-uninitialized -g -O2"), CPPDEFINES=["DPRINTF_MARKUP"], CXX="nice ./ewrap $TARGET g++")
   
   categories = Split("GAME EDITOR REPORTER CONSOLE CONSOLE_MERGER CONSOLE_ODS2CSV")
   flagtypes = Split("CCFLAGS CPPFLAGS CXXFLAGS LINKFLAGS LIBS CPPPATH LIBPATH CPPDEFINES")
@@ -195,15 +195,7 @@ def Conf():
     if not curlpath:
       env.Exit(1)
     env.MergeFlags(dict([(k + "_REPORTER", v) for k, v in env.ParseFlags(conf.Execute(curlpath + " --cflags --static-libs")).items()]))
-
-    # curl depends on zlib and may depend on other libraries
-    templibs = env['LIBS']
-    env.Append(LIBS=Split("z " + curldepend))
-    if not conf.CheckLib("curl", "curl_easy_init", autoadd=0):
-      env.Exit(1)
-    env['LIBS'] = templibs
-    env.Append(LIBS_REPORTER="curl")
-    env.Append(CPPDEFINES_REPORTER="CURL_STATICLIB")
+    env.Append(CPPDEFINES_REPORTER="CURL_STATICLIB") # sigh
 
     # xerces
     if not conf.CheckLib("xerces-c", autoadd=0):

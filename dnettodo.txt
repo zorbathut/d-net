@@ -1,6 +1,5 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
-  - doublecheck licenses :(
   - Instrument SDL for Chile
   - Test setting controllers to default and such
   - Add a "hotmail warning" on the forums?
