@@ -146,15 +146,15 @@ public:
     return *get();
   }
 
-  smart_ptr() {
+  scoped_ptr() {
     ptr = NULL;
   }
-  explicit smart_ptr<T>(T *pt) {
+  explicit scoped_ptr<T>(T *pt) {
     ptr = pt;
   }
-  ~smart_ptr() {
+  ~scoped_ptr() {
     reset();
   }
-}
+};
 
 #endif

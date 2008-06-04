@@ -80,7 +80,12 @@ bool Game::runTick(const vector<Keystates> &rkeys, bool confused, const vector<P
   }
   
   for(int i = 0; i < tanks.size(); i++) {
-    if(keys[i].cancel.push) {
+    if(!tanks[i].isLive()) {  // can't taunt when dead
+      tanks[i].taunt_frames = 0;
+      continue;
+    }
+    
+    if(keys[i].cancel.push && tanks[i].taunt_frames < FPS * 2) {
       gfxeffects.push_back(GfxPing(tanks[i].pi.pos.toFloat(), zoom_size.y, zoom_size.y / 50, 0.5, tanks[i].getColor()));
       addTankStatusText(i, "Come and get me!", 3.f);
       tanks[i].taunt_frames = FPS * 3;

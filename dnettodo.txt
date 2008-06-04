@@ -12,7 +12,6 @@
   - Figure out how to make a CHECK variant with debug output on failure
   - Abstract SDL stuff away a bit further
   - Figure out CamelCase/camelCase/under_score_words
-  - Taunting: disable after death, make it less intense, make sure keyboard can do it
   - Improve EMP damage resistance, mention it in weapon stats, add visual effect
   - pull test screen from the current tank, so it fires the actual weapons
   - "missions"
