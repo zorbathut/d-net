@@ -1,13 +1,12 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - Instrument SDL for Chile
-  - Test setting controllers to default and such
-  - Add a "hotmail warning" on the forums?
-  - Make edit box larger
-  - Does Scons have build priority?
+  - Gamesmithing
+    - Test setting controllers to default and such
+  - Website stuff
+    - Add a "hotmail warning" on the forums?
+    - Make edit box larger
   - Figure out OSX packaging
-  - Add vecedit to standard package
-    - Make sure wx license is included
   - merge ods2csv to output all files
   - Figure out how to make a CHECK variant with debug output on failure
   - Abstract SDL stuff away a bit further
