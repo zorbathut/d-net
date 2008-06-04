@@ -4,11 +4,14 @@
 #include "input.h"
 #include "rng.h"
 #include "dumper.h"
+#include "smartptr.h"
 
 using namespace std;
 
 class Ai;
 class SDL_KeyboardEvent;
+
+struct JS; // man just don't ask
 
 class InputSnag : boost::noncopyable {
 public:
@@ -26,7 +29,7 @@ public:
   InputState next(Dumper *dumper);
   
   // informational
-  vector<Ai *> ais() const;
+  vector<Ai *> ais();
   vector<bool> human_flags() const;
   bool users() const;
   int primary_id() const;
@@ -34,6 +37,15 @@ public:
   ControlConsts getcc(int cid) const;
 
 private:
+  vector<pair<int, int> > sources;
+  vector<int> prerecorded;
+  vector<JS> joysticks;
+  vector<smart_ptr<Ai> > ai;
+  int primaryid;
+
+  InputState last;
+  InputState now;
+
   InputSnag(); // no soup for you
   ~InputSnag();
   friend InputSnag &isnag();

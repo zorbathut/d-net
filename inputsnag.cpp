@@ -21,21 +21,19 @@
 
 using namespace std;
 
+struct JS {
+  SDL_Joystick *js;
+  
+  JS() { };
+  JS(SDL_Joystick *js) : js(js) { };
+};
+
 DEFINE_int(nullControllers, 0, "Null controllers to insert in front");
 
 DEFINE_bool(treatAiAsHuman, false, "Treat AIs as humans for all game-modifying decisions");
 REGISTER_bool(treatAiAsHuman);
 
 enum { CIP_KEYBOARD, CIP_JOYSTICK, CIP_AI, CIP_NULL };
-
-static vector<pair<int, int> > sources;
-static vector<int> prerecorded;
-static vector<SDL_Joystick *> joysticks;
-static vector<smart_ptr<Ai> > ai;
-static int primaryid;
-
-static InputState last;
-static InputState now;
 
 const int playerone[] = { SDLK_UP, SDLK_DOWN, SDLK_LEFT, SDLK_RIGHT, SDLK_7, SDLK_8, SDLK_9, SDLK_0, SDLK_u, SDLK_i, SDLK_o, SDLK_p, SDLK_j, SDLK_k, SDLK_l, SDLK_SEMICOLON, SDLK_m, SDLK_COMMA, SDLK_PERIOD, SDLK_SLASH, SDLK_RETURN };
 const int playertwo[] = { SDLK_w, SDLK_s, SDLK_a, SDLK_d, SDLK_r, SDLK_t, SDLK_y, SDLK_f, SDLK_g, SDLK_h, SDLK_x, SDLK_c, SDLK_v, SDLK_b, SDLK_n };
@@ -93,8 +91,8 @@ InputState InputSnag::init(Dumper *dumper, bool allow_standard, int ais) {
       dprintf("Opening %d: %s\n", i, SDL_JoystickName(i));
       joysticks.push_back(SDL_JoystickOpen(i));
       
-      CHECK(SDL_JoystickNumButtons(joysticks.back()) >= 1);
-      dprintf("%d axes, %d buttons\n", SDL_JoystickNumAxes(joysticks.back()), SDL_JoystickNumButtons(joysticks.back()));
+      CHECK(SDL_JoystickNumButtons(joysticks.back().js) >= 1);
+      dprintf("%d axes, %d buttons\n", SDL_JoystickNumAxes(joysticks.back().js), SDL_JoystickNumButtons(joysticks.back().js));
     }
     
     dprintf("Done opening joysticks\n");
@@ -102,8 +100,8 @@ InputState InputSnag::init(Dumper *dumper, bool allow_standard, int ais) {
     for(int i = 0; i < joysticks.size(); i++) {
       sources.push_back(make_pair((int)CIP_JOYSTICK, i));
       Controller ct;
-      ct.axes.resize(SDL_JoystickNumAxes(joysticks[i]));
-      ct.keys.resize(SDL_JoystickNumButtons(joysticks[i]));
+      ct.axes.resize(SDL_JoystickNumAxes(joysticks[i].js));
+      ct.keys.resize(SDL_JoystickNumButtons(joysticks[i].js));
       now.controllers.push_back(ct);
     }
     
@@ -231,15 +229,15 @@ InputState InputSnag::next(Dumper *dumper) {
     for(int i = 0; i < now.controllers.size(); i++) {
       if(sources[i].first == CIP_JOYSTICK) {
         int jstarget = sources[i].second;
-        now.controllers[i].menu.x = SDL_JoystickGetAxis(joysticks[jstarget], 0) / 32768.0f;
-        now.controllers[i].menu.y = -(SDL_JoystickGetAxis(joysticks[jstarget], 1) / 32768.0f);
+        now.controllers[i].menu.x = SDL_JoystickGetAxis(joysticks[jstarget].js, 0) / 32768.0f;
+        now.controllers[i].menu.y = -(SDL_JoystickGetAxis(joysticks[jstarget].js, 1) / 32768.0f);
         for(int j = 0; j < now.controllers[i].keys.size(); j++)
-          now.controllers[i].keys[j].down = SDL_JoystickGetButton(joysticks[jstarget], j);
+          now.controllers[i].keys[j].down = SDL_JoystickGetButton(joysticks[jstarget].js, j);
         for(int j = 0; j < now.controllers[i].axes.size(); j++) {
           int toggle = 1;
           if(j == 1 || j == 2)
             toggle *= -1;
-          now.controllers[i].axes[j] = SDL_JoystickGetAxis(joysticks[jstarget], j) / 32768.0f * toggle;
+          now.controllers[i].axes[j] = SDL_JoystickGetAxis(joysticks[jstarget].js, j) / 32768.0f * toggle;
         }
       } else if(sources[i].first == CIP_AI) {
         now.controllers[i] = ai[sources[i].second]->getNextKeys();
@@ -325,7 +323,7 @@ InputState InputSnag::next(Dumper *dumper) {
   return last;
 }
 
-vector<Ai *> InputSnag::ais() const {
+vector<Ai *> InputSnag::ais() {
   vector<Ai *> rv;
   for(int i = 0; i < sources.size(); i++) {
     if(sources[i].first == CIP_AI && !prerecorded[i])
@@ -359,7 +357,7 @@ bool InputSnag::users() const {
 void InputSnag::shutdown() {
   CHECK(sources.size());
   for(int i = 0; i < joysticks.size(); i++)
-    SDL_JoystickClose(joysticks[i]);
+    SDL_JoystickClose(joysticks[i].js);
 }
 
 int InputSnag::primary_id() const {
