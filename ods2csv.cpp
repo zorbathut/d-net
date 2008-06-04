@@ -3,6 +3,7 @@
 #include "os.h"
 #include "init.h"
 #include "args.h"
+#include "util.h"
 
 #include "minizip/unzip.h"
 
@@ -123,10 +124,10 @@ vector<vector<string> > extractDataFromTable(DOMTreeWalker *walkor) {
   return rv;
 }
 
-vector<vector<string> > extractData(const vector<unsigned char> &data, const string &tablename) {
+vector<pair<string, vector<vector<string> > > > extractData(const vector<unsigned char> &data) {
   XMLPlatformUtils::Initialize();
   
-  vector<vector<string> > rv;
+  vector<pair<string, vector<vector<string> > > > rrv;
   
   {
     MemBufInputSource mbis(&data[0], data.size(), "extracted_data");
@@ -152,10 +153,12 @@ vector<vector<string> > extractData(const vector<unsigned char> &data, const str
         CHECK(walkor->firstChild());
         do {
           CHECK(FX(walkor->getCurrentNode()->getNodeName()) == "table:table");
-          if(attrib(walkor, "table:name") == tablename) {
-            CHECK(rv.empty());
-            rv = extractDataFromTable(walkor);
+          
+          if(hasattrib(walkor, "table:name") && attrib(walkor, "table:name") != "globals") {
+            dprintf("%s\n", attrib(walkor, "table:name").c_str());
+            vector<vector<string> > rv = extractDataFromTable(walkor);
             CHECK(!rv.empty());
+            rrv.push_back(make_pair(attrib(walkor, "table:name"), rv));
           }
         } while(walkor->nextSibling());
         CHECK(walkor->parentNode());
@@ -170,18 +173,18 @@ vector<vector<string> > extractData(const vector<unsigned char> &data, const str
   
   XMLPlatformUtils::Terminate();
   
-  return rv;
+  return rrv;
 }
 
 int main(int argc, const char *argv[]) {
-  setInitFlagIgnore(4);
+  setInitFlagIgnore(2);
   initProgram(&argc, &argv);
   
-  CHECK(argc == 4);
+  CHECK(argc == 2);
   
   vector<unsigned char> file;
   {
-    unzFile unzf = unzOpen(argv[2]);
+    unzFile unzf = unzOpen(argv[1]);
     CHECK(unzf);
     
     CHECK(unzLocateFile(unzf, "content.xml", 1) == UNZ_OK);
@@ -201,17 +204,18 @@ int main(int argc, const char *argv[]) {
     dprintf("Content read, %d bytes\n", file.size());
   }
   
-  vector<vector<string> > dat = extractData(file, argv[3]);
+  vector<pair<string, vector<vector<string> > > > dat = extractData(file);
 
-  {
-    FILE *of = fopen(argv[1], "wb");
-    CHECK(dat.size());
-    for(int i = 0; i < dat.size(); i++) {
-      CHECK(dat[i].size());
-      for(int j = 0; j < dat[i].size(); j++) {
+  CHECK(dat.size());
+  for(int k = 0; k < dat.size(); k++) {
+    FILE *of = fopen(StringPrintf("build/notes_%s.csv", dat[k].first.c_str()).c_str(), "wb");
+    CHECK(dat[k].second.size());
+    for(int i = 0; i < dat[k].second.size(); i++) {
+      CHECK(dat[k].second[i].size());
+      for(int j = 0; j < dat[k].second[i].size(); j++) {
         if(j)
           fprintf(of, ",");
-        fprintf(of, "\"%s\"", dat[i][j].c_str());
+        fprintf(of, "\"%s\"", dat[k].second[i][j].c_str());
       }
       fprintf(of, "\n");
     }

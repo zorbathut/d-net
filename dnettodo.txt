@@ -1,13 +1,14 @@
 ---- Major work path
 - "Finish the Damn Game" Initiative
-  - Instrument SDL for Chile
-  - Gamesmithing
-    - Test setting controllers to default and such
-  - Website stuff
-    - Add a "hotmail warning" on the forums?
-    - Make edit box larger
-  - Figure out OSX packaging
-  - merge ods2csv to output all files
+  - Queued stuff
+    - Instrument SDL for Chile
+    - Gamesmithing
+      - Test setting controllers to default and such
+    - Website stuff
+      - Add a "hotmail warning" on the forums?
+      - Make edit box larger
+    - Figure out OSX packaging
+  
   - Figure out how to make a CHECK variant with debug output on failure
   - Abstract SDL stuff away a bit further
   - boost::array

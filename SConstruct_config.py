@@ -227,8 +227,6 @@ def Conf():
     oggpath = conf.CheckFile(["/cygdrive/c/windows/util", "/usr/bin"], "oggenc")
     if not oggpath:
       env.Exit(1)
-    
-    env.Append(CXXFLAGS_REPORTER="-O0", LINKFLAGS_REPORTER="-O0")
 
     env = conf.Finish()
     

@@ -5,6 +5,7 @@ from SConstruct_config import Conf
 from SConstruct_installer import Installers
 from util import traverse
 import sys
+import re
 
 # Globals
 Decider('MD5-timestamp')
@@ -87,13 +88,9 @@ data_oggize = [x for x in data_source if x.split('.')[-1] == "wav"]
 data_merge = [x for x in data_source if x.split('.')[-1] == "unmerged"]
 data_copy = [x for x in data_source if not (x in data_vecedit or x in data_oggize or x in data_merge)]
 
-csvs = {}
-
 extramergedeps = {"base/tank.dwh" : ["base/weapon_sparker.dwh"], "base/factions.dwh" : [x for x in data_copy if x.rsplit('/', 1)[0] == "base/faction_icons"]}
 
-for item in data_merge:
-  identifier = item.split('.')[-3].split('/')[-1]
-  csvs[identifier] = env.Command("build/notes_%s.csv" % identifier, [programs["ods2csv"], "notes.ods"], "./${SOURCES[0]} $TARGET notes.ods %s" % identifier)
+csvs = dict([(re.compile("^build/notes_(.*)\.csv$").match(str(item)).group(1), item) for item in env.Command(["build/notes_%s.csv" % item.split('.')[-3].split('/')[-1] for item in data_merge], [programs["ods2csv"], "notes.ods"], "./$SOURCE notes.ods --addr2line")])
 
 def make_datadir(dest, mergeflags = ""):
   results = []
@@ -112,7 +109,7 @@ def make_datadir(dest, mergeflags = ""):
       emgd = [dest + "/" + x for x in extramergedeps[item.rsplit('.', 1)[0]]]
     else:
       emgd = []
-    results += env.Command(dest + "/" + item.rsplit('.', 1)[-2], [programs["merger"], csvs[identifier], "data_source/" + item] + emgd, "./${SOURCES[0]} ${SOURCES[1]} ${SOURCES[2]} $TARGET --fileroot=%s %s" % (dest, mergeflags))
+    results += env.Command(dest + "/" + item.rsplit('.', 1)[-2], [programs["merger"], csvs[identifier], "data_source/" + item] + emgd, "./${SOURCES[0]} ${SOURCES[1]} ${SOURCES[2]} $TARGET --fileroot=%s %s --addr2line" % (dest, mergeflags))
   
   for item in data_vecedit:
     results += env.Command(dest + "/" + item, "data_source/" + item, Copy("$TARGET", '$SOURCE'))

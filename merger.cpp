@@ -206,7 +206,7 @@ int main(int argc, const char *argv[]) {
   
   StackString ss("core");
   
-  CHECK(argc >= 4);
+  CHECK(argc == 3);
   
   string type;
   {
