@@ -165,54 +165,6 @@ Coord2 deadzone(const Coord2 &mov, int type, Coord amount) {
   return Coord2(deadzone(mov.x, mov.y, type, amount), deadzone(mov.y, mov.x, type, amount));
 }
 
-// This is all legacy stuff because we used to need two lines for some axis descriptions. I'm leaving it in because, hey, why not.
-vector<vector<vector<string> > > ksax_axis_names_gen() {
-  vector<vector<vector<string> > > rv;
-  {
-    vector<vector<string> > thisset;
-    {
-      vector<string> thisax;
-      thisax.push_back("Turn right");
-      thisset.push_back(thisax);
-    }
-    {
-      vector<string> thisax;
-      thisax.push_back("Drive forward");
-      thisset.push_back(thisax);
-    }
-    rv.push_back(thisset);
-  }
-  {
-    vector<vector<string> > thisset;
-    {
-      vector<string> thisax;
-      thisax.push_back("Move \"right\"");
-      thisset.push_back(thisax);
-    }
-    {
-      vector<string> thisax;
-      thisax.push_back("Move \"up\"");
-      thisset.push_back(thisax);
-    }
-    rv.push_back(thisset);
-  }
-  {
-    vector<vector<string> > thisset;
-    {
-      vector<string> thisax;
-      thisax.push_back("Left tread forward");
-      thisset.push_back(thisax);
-    }
-    {
-      vector<string> thisax;
-      thisax.push_back("Right tread forward");
-      thisset.push_back(thisax);
-    }
-    rv.push_back(thisset);
-  }
-  return rv;
-}
-
 Coord prepower(Coord x) {
   if(x < 0)
     return -prepower(abs(x));

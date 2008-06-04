@@ -558,8 +558,6 @@ bool runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
         pms->choicemode = CHOICE_ACTIVE;
       }
     } else if(pms->settingmode == SETTING_BUTTONS) {
-      //      if(keys.keys[pms->buttons[BUTTON_FIRE1]].down && keys.keys[pms->buttons[BUTTON_FIRE2]].down && keys.keys[pms->buttons[BUTTON_FIRE3]].down && keys.keys[pms->buttons[BUTTON_FIRE4]].down && (keys.keys[pms->buttons[BUTTON_FIRE1]].push || keys.keys[pms->buttons[BUTTON_FIRE2]].push || keys.keys[pms->buttons[BUTTON_FIRE3]].push || keys.keys[pms->buttons[BUTTON_FIRE4]].push))
-        //pms->setting_axistype = modurot(pms->setting_axistype + 1, KSAX_LAST);
       
       vector<Coord> triggers;
       vector<Coord> oldtriggers;
@@ -713,23 +711,6 @@ void runSettingRender(const PlayerMenuState &pms, const ControlConsts &cc) {
       tix.push_back(cc.buttonnames[i]);
       names.push_back(tix);
     }
-    
-    /*
-        StackString sstr("axischoose");
-    StandardButtonRenderData sbrd;
-    sbrd.rin = &rin;
-    sbrd.buttons = &pms.axes;
-    sbrd.inverts = &pms.axes_invert;
-    sbrd.names = &ksax_axis_names[pms.setting_axistype];
-    sbrd.sel_button = pms.setting_axis_current;
-    sbrd.sel_button_reading = pms.setting_axis_reading;
-    sbrd.prefix = "Axis #";
-    sbrd.description.push_back("Configure your control directions. Select the entry,");
-    sbrd.description.push_back("then move your controller in the desired direction.");
-    sbrd.description.push_back("Choose \"done\" when ready.");
-    
-    standardButtonRender(sbrd);
-    */
     
     string key_descr;
     {
