@@ -420,7 +420,7 @@ ControlConsts controls_getcc(int cid) {
   }
 
   if(sources[cid].first == CIP_JOYSTICK) {
-    rv.buttonnames = boost::assign::list_of("Click L2")("Click R2")("Click L1")("Click R1")("Click the left stick in")("Click A or X (for \"accept\")")("Click B or O (for \"cancel\")");
+    rv.buttonnames = boost::assign::list_of("Click L2 (for Weapon 1)")("Click R2 (for Weapon 2)")("Click L1 (for Weapon 3)")("Click R1 (for Weapon 4)")("Click the left stick in (for precision movement)")("Click A or X (for \"accept\")")("Click B or O (for \"cancel\")");
   } else {
     rv.buttonnames = boost::assign::list_of("Fire weapon 1")("Fire weapon 2")("Fire weapon 3")("Fire weapon 4")("Slow movement")("Accept menu item key")("Change/abort menu key");
   }
