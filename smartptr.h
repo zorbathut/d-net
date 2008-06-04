@@ -3,6 +3,8 @@
 
 #include "debug.h"
 
+#include <boost/noncopyable.hpp>
+
 template <typename B, typename D> B *upcast(D *d) { return static_cast<D *>(static_cast<B *>(d)); } 
 
 template<typename T> class smart_ptr {
@@ -102,5 +104,57 @@ public:
     reset();
   }
 };
+
+// basically it's a smart_ptr without a copy operator, and thus no refcounting
+template<typename T> class scoped_ptr : boost::noncopyable {
+  T *ptr;
+
+public:
+  void reset() {
+    delete ptr;
+    ptr = NULL;
+  }
+  void reset(T *pt) {
+    reset();
+    ptr = pt;
+  }
+  
+  bool empty() const {
+    return !ptr;
+  }
+  
+  T *get() {
+    CHECK(ptr);
+    return ptr;
+  }
+  const T *get() const {
+    CHECK(ptr);
+    return ptr;
+  }
+
+  T *operator->() {
+    return get();
+  }
+  const T *operator->() const {
+    return get();
+  }
+  
+  T &operator*() {
+    return *get();
+  }
+  const T &operator*() const {
+    return *get();
+  }
+
+  smart_ptr() {
+    ptr = NULL;
+  }
+  explicit smart_ptr<T>(T *pt) {
+    ptr = pt;
+  }
+  ~smart_ptr() {
+    reset();
+  }
+}
 
 #endif
