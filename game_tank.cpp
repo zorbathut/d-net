@@ -83,11 +83,13 @@ void Tank::render(const vector<Team> &teams) const {
   setColor(small);
   drawLineLoop(smtankverts, 0.75);
   
-  setColor(Color(1, 0.8, 0) * glory_resistance.toFloat());
-  const float radi = 3;
-  drawPolygon(pi.pos, radi, 0.25, 6, PI / 2);
+  setColor(Color(1, 0.8, 0) * glory_resistance.toFloat() * 0.5);
+  const float radi = 2;
+  const float width = 1;
+  drawPolygon(pi.pos, radi, width, 6, pi.d.toFloat());
+  setColor(Color(1, 0.8, 0) * glory_resistance.toFloat() * 0.3);
   for(int i = 0; i < 6; i++)
-    drawPolygon(pi.pos.toFloat() + makeAngle(i * 2 * PI / 6 + PI / 2) * radi, 3, 0.25, 6, PI / 2);
+    drawPolygon(pi.pos.toFloat() + makeAngle(i * 2 * PI / 6 + PI / 2 + pi.d.toFloat()) * cos(PI / 6) * radi * 2, radi, width, 6, pi.d.toFloat());
 };
 
 void Tank::checksum(Adler32 *adl) const {

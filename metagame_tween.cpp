@@ -449,7 +449,7 @@ void PersistentData::render(const InputSnag &is) const {
       text.push_back("Use arrow keys for movement and O to choose an option.");
       text.push_back("");
       text.push_back("Left keyboard player:");
-      text.push_back("Use WASD for movement and G to choose an option.");
+      text.push_back("Use WASD for movement and F to choose an option.");
       text.push_back("");
       text.push_back("");
     }
