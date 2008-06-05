@@ -41,19 +41,18 @@ extern void *stackStart;
 #define unlikely(x) __builtin_expect(!!(x), 0)
 
 // Almost everything after here is necessary for the vector header patch
-#ifdef DPRINTF_MARKUP
 int rdprintf(const char *bort, ...) __attribute__((format(printf,1,2)));
-#define dprintf(format, args...) rdprintf("%10.10s:%4d: " format, __FILE__, __LINE__, ##args)
-#else
-int dprintf(const char *bort, ...) __attribute__((format(printf,1,2)));
-#endif
+int rdprintf();
+#define dprintf(format, args...) rdprintf("%10.10s:%4d: " format, __FILE__, __LINE__, ## args)
 
 extern int frameNumber;
 
 void CrashHandler(const char *fname, int line);
 void HandleFailure(const char *fname, int line) __attribute__((__noreturn__));
-#define CHECK(x) do { if(__builtin_expect(!(x), 0)) { dprintf("Error at %d, %s:%d - %s\n", frameNumber, __FILE__, __LINE__, #x); CrashHandler(__FILE__, __LINE__); HandleFailure(__FILE__, __LINE__); } } while(0)
+#define CHECK(x, args...) (__builtin_expect(!!(x), 1) ? (void)(1) : (dprintf("Error at %d, %s:%d - %s\n", frameNumber, __FILE__, __LINE__, #x), dprintf("" args), CrashHandler(__FILE__, __LINE__), HandleFailure(__FILE__, __LINE__)))
 // And here would be the end
+
+
 
 #define printf FAILURE
  

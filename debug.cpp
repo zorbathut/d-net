@@ -110,11 +110,7 @@ deque<string> &dbgrecord() {
   return dbr;
 }
 
-#ifdef DPRINTF_MARKUP
 int rdprintf(const char *bort, ...) {
-#else
-int dprintf(const char *bort, ...) {
-#endif
   CHECK(!inthread);
   inthread = true;
 
