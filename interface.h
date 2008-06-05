@@ -72,7 +72,7 @@ class InterfaceMain : boost::noncopyable {
   bool inptest;
   vector<Controller> inptest_controls;
   
-  Metagame *game;
+  scoped_ptr<Metagame> game;
   
   StdMenu mainmenu;
   
@@ -104,7 +104,7 @@ class InterfaceMain : boost::noncopyable {
   
   vector<Keystates> kst;
   
-  GamePackage *introscreen[2];
+  scoped_ptr<GamePackage> introscreen[2];
   vector<smart_ptr<GameAiIntro> > introscreen_ais[2];
   int tick_sync_frame;
   void initIntroScreen(int id, bool first = false);

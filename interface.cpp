@@ -789,7 +789,7 @@ bool InterfaceMain::tick(const InputState &is, RngSeed gameseed, InputSnag &isna
       else
         faction = 4;
       isnag.set_ai_count(aicount); // this is pretty grim really
-      game = new Metagame(isnag.human_flags(), Money((long long)(1000 * pow(30, start.toFloat()))), exp(moneyexp), faction - 1, FLAGS_rounds_per_shop, calculateRounds(start, end, moneyexp), gameseed, isnag.primary_id());
+      game.reset(new Metagame(isnag.human_flags(), Money((long long)(1000 * pow(30, start.toFloat()))), exp(moneyexp), faction - 1, FLAGS_rounds_per_shop, calculateRounds(start, end, moneyexp), gameseed, isnag.primary_id()));
       if(instantaction)
         game->instant_action_init(isnag.getcc(isnag.primary_id()), isnag.primary_id());
       dprintf("ENTERING PLAYING\n");
@@ -1260,7 +1260,6 @@ void InterfaceMain::init(const InputSnag &isnag) {
   
   grid = false;
   inptest = false;
-  game = NULL;
   
   escmenu.pushMenuItem(StdMenuItemBack::make("Return to game"));
   escmenu.pushMenuItem(StdMenuItemSubmenu::make("Options", &optionsmenu));
@@ -1290,9 +1289,8 @@ const int preroll = FPS / 2;
 void InterfaceMain::initIntroScreen(int id, bool first) {
   CHECK(id >= 0 && id < ARRAY_SIZE(introscreen));
   
-  delete introscreen[id];
+  introscreen[id].reset(new GamePackage);
   introscreen_ais[id].clear();
-  introscreen[id] = new GamePackage;
   
   {
     introscreen[id]->players.resize(16);
@@ -1404,8 +1402,6 @@ vector<float> InterfaceMain::introScreenBrightness() const {
 }
 
 InterfaceMain::InterfaceMain(const InputSnag &isnag) {
-  for(int i = 0; i < ARRAY_SIZE(introscreen); i++)
-    introscreen[i] = NULL;
   tick_sync_frame = 0;
   inescmenu = false;
   mouseconf_cooldown = 0;
@@ -1414,7 +1410,7 @@ InterfaceMain::InterfaceMain(const InputSnag &isnag) {
 
 InterfaceMain::~InterfaceMain() {
   dprintf("Deleting metagame\n");
-  delete game;
+  game.reset(); // right now, we do this explicitly to help with debugging
   dprintf("Metagame deleted\n");
 }
 

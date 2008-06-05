@@ -80,6 +80,10 @@ public:
     }
     return *this;
   }
+  
+  operator void *() const {
+    return ptr;
+  }
 
   smart_ptr() {
     ct = NULL;
@@ -144,6 +148,10 @@ public:
   }
   const T &operator*() const {
     return *get();
+  }
+  
+  operator void *() const {
+    return ptr;
   }
 
   scoped_ptr() {
