@@ -447,10 +447,6 @@ ControlConsts InputSnag::getcc(int cid) const {
   return rv;
 }
 
-InputSnag::InputSnag() { };
-InputSnag::~InputSnag() { };
-
-InputSnag &isnag() {
-  static InputSnag tis;
-  return tis;
-}
+static bool welp = false;
+InputSnag::InputSnag() { CHECK(!welp); welp = true; };
+InputSnag::~InputSnag() { shutdown(); };

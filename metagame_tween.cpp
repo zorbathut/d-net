@@ -67,7 +67,7 @@ public:
   }
 };
 
-PersistentData::PDRTR PersistentData::tick(const vector<Controller> &keys) {
+PersistentData::PDRTR PersistentData::tick(const vector<Controller> &keys, const InputSnag &is) {
   StackString sps("Persistentdata tick");
   PerfStack pst(PBC::persistent);
   
@@ -104,9 +104,9 @@ PersistentData::PDRTR PersistentData::tick(const vector<Controller> &keys) {
     
     bool clear;
     if(slot[i].pid == -1) {
-      clear = tickSlot(i, keys);
+      clear = tickSlot(i, keys, is);
     } else {
-      clear = tickSlot(i, vector<Controller>(1, keys[slot[i].pid]));
+      clear = tickSlot(i, vector<Controller>(1, keys[slot[i].pid]), is);
     }
     if(clear) {
       slot[i].type = Slot::EMPTY;
@@ -394,7 +394,7 @@ PersistentData::PDRTR PersistentData::tick(const vector<Controller> &keys) {
   return PDRTR_CONTINUE;
 }
 
-void PersistentData::render() const {
+void PersistentData::render(const InputSnag &is) const {
   smart_ptr<GfxWindow> gfxwpos;
   
   if(isWaitingOnAi() && FLAGS_hideAiShopping) {
@@ -505,23 +505,23 @@ void PersistentData::render() const {
   setZoomVertical(0, 0, 1.0);
   
   if(slot_count == 1) {
-    renderSlot(0);
+    renderSlot(0, is);
   } else if(slot_count == 4) {
     {
       GfxWindow gfxw2(Float4(0, 0, getAspect() / 2, 0.5), 1.0);
-      renderSlot(0);
+      renderSlot(0, is);
     }
     {
       GfxWindow gfxw2(Float4(getAspect() / 2, 0, getAspect(), 0.5), 1.0);
-      renderSlot(1);
+      renderSlot(1, is);
     }
     {
       GfxWindow gfxw2(Float4(0, 0.5, getAspect() / 2, 1), 1.0);
-      renderSlot(2);
+      renderSlot(2, is);
     }
     {
       GfxWindow gfxw2(Float4(getAspect() / 2, 0.5, getAspect(), 1), 1.0);
-      renderSlot(3);
+      renderSlot(3, is);
     }
     
     setColor(C::inactive_text);
@@ -686,7 +686,7 @@ void PersistentData::reset() {
   }
 }
 
-bool PersistentData::tickSlot(int slotid, const vector<Controller> &keys) {
+bool PersistentData::tickSlot(int slotid, const vector<Controller> &keys, const InputSnag &is) {
   CHECK(slotid >= 0 && slotid < 4);
   Slot &slt = slot[slotid];
   if(slt.type == Slot::CHOOSE) {
@@ -694,7 +694,7 @@ bool PersistentData::tickSlot(int slotid, const vector<Controller> &keys) {
     CHECK(slt.pid != -1);
     CHECK(keys.size() == 1);
 
-    bool cancel = runSettingTick(keys[0], &pms[slt.pid], factions, isnag().getcc(slt.pid));
+    bool cancel = runSettingTick(keys[0], &pms[slt.pid], factions, is.getcc(slt.pid));
 
     if(pms[slt.pid].faction) {
       playerid[slt.pid] = playerdata.size();
@@ -744,7 +744,7 @@ bool PersistentData::tickSlot(int slotid, const vector<Controller> &keys) {
   } else if(slt.type == Slot::SETTINGS) {
     CHECK(slt.pid >= 0 && slt.pid < pms.size());
     CHECK(keys.size() == 1);
-    return runSettingTick(keys[0], &pms[slt.pid], factions, isnag().getcc(slt.pid));
+    return runSettingTick(keys[0], &pms[slt.pid], factions, is.getcc(slt.pid));
   } else if(slt.type == Slot::QUITCONFIRM) {
     Keystates thesekeys = pms[slt.pid].genKeystate(keys[0]);
     
@@ -792,7 +792,7 @@ public:
   }
 };
 
-void PersistentData::renderSlot(int slotid) const {
+void PersistentData::renderSlot(int slotid, const InputSnag &is) const {
   CHECK(slotid >= 0 && slotid < 4);
   const Slot &slt = slot[slotid];
   
@@ -858,7 +858,7 @@ void PersistentData::renderSlot(int slotid) const {
       steer.push_back("Move the cursor over a");
       steer.push_back("faction icon for information");
       steer.push_back("");
-      steer.push_back("Press " + isnag().getcc(slt.pid).active_button + " to");
+      steer.push_back("Press " + is.getcc(slt.pid).active_button + " to");
       steer.push_back("choose that faction");
       drawJustifiedMultiText(steer, 0.04, getZoom().midpoint(), TEXT_CENTER, TEXT_CENTER);
     } else {
@@ -1076,7 +1076,7 @@ void PersistentData::renderSlot(int slotid) const {
     Coord2 sizes(tfs.compass_location.span_x(), tfs.compass_location.span_y());
     Coord2 mp = tfs.compass_location.midpoint();
     setZoomAround(Coord4(mp.x - sizes.x, mp.y - sizes.y, mp.x + sizes.x, mp.y + sizes.y).toFloat());
-    runSettingRender(pms[slt.pid], isnag().getcc(slt.pid));
+    runSettingRender(pms[slt.pid], is.getcc(slt.pid));
   } else if(slt.type == Slot::QUITCONFIRM) {
     setZoomCenter(0, 0, 10);
     {
@@ -1679,7 +1679,7 @@ int PersistentData::getAiCount() const {
 DEFINE_int(debugControllers, 0, "Number of controllers to set to debug defaults");
 REGISTER_int(debugControllers);
 
-PersistentData::PersistentData(const vector<bool> &human, Money startingcash, Coord multiple, int in_roundsbetweenshop, int in_rounds_until_end) {
+PersistentData::PersistentData(const vector<bool> &human, Money startingcash, Coord multiple, int in_roundsbetweenshop, int in_rounds_until_end, int primary_id) {
   CHECK(multiple > 1);
   roundsbetweenshop = in_roundsbetweenshop;
   rounds_until_end = in_rounds_until_end;
@@ -1776,7 +1776,7 @@ PersistentData::PersistentData(const vector<bool> &human, Money startingcash, Co
   
   reset();
   
-  int cdbc = isnag().primary_id();
+  int cdbc = primary_id;
   if(FLAGS_debugControllers >= 1) {
     CHECK(pms.size() >= 1); // better be
     const int fact = 5;
@@ -1856,11 +1856,11 @@ void buyAndSlot(Player *player, const IDBWeapon *weapon, int amount, int slot) {
   player->promoteWeapon(weapon, slot);
 }
 
-void PersistentData::instant_action_init(const ControlConsts &cc) {
+void PersistentData::instant_action_init(const ControlConsts &cc, int primary_id) {
   CHECK(pms.size() >= 1); // better be
   CHECK(playerdata.size() == 0);
   
-  int cdbc = isnag().primary_id();
+  int cdbc = primary_id;
   pms[cdbc].faction = &factions[1];
   pms[cdbc].faction->taken = true;
   pms[cdbc].settingmode = SETTING_BUTTONS;

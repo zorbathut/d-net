@@ -17,7 +17,6 @@ class InputSnag : boost::noncopyable {
 public:
   // init/shutdown
   InputState init(Dumper *dumper, bool allow_standard, int ais);
-  void shutdown();
 
   // the loop
   void set_ai_count(int ct);
@@ -48,18 +47,8 @@ private:
 
   InputSnag(); // no soup for you
   ~InputSnag();
-  friend InputSnag &isnag();
-};
-
-// singleton
-InputSnag &isnag();
-  
-class ControlShutdown {
-public:
-  ControlShutdown() { } // this makes gcc shut up about unused variables
-  ~ControlShutdown() {
-    isnag().shutdown();
-  }
+  void shutdown();
+  friend void MainLoop();
 };
 
 #endif

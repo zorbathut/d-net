@@ -23,15 +23,15 @@ DECLARE_bool(renderframenumber);
 
 using namespace std;
 
-void Metagame::instant_action_init(const ControlConsts &ck) {
-  persistent.instant_action_init(ck);
+void Metagame::instant_action_init(const ControlConsts &ck, int primary_id) {
+  persistent.instant_action_init(ck, primary_id);
   instant_action_keys = true;
 }
 
-bool Metagame::runTick(const vector<Controller> &keys, bool confused) {
+bool Metagame::runTick(const vector<Controller> &keys, bool confused, const InputSnag &is) {
   if(mode == MGM_PLAYERCHOOSE) {
     CHECK(persistent.isPlayerChoose());
-    if(persistent.tick(keys)) {
+    if(persistent.tick(keys, is)) {
       mode = MGM_FACTIONTYPE;
 
       findLevels(persistent.players().size());
@@ -76,7 +76,7 @@ bool Metagame::runTick(const vector<Controller> &keys, bool confused) {
       persistent.setFactionMode(faction_mode);
     }
   } else if(mode == MGM_TWEEN) {
-    PersistentData::PDRTR rv = persistent.tick(keys);
+    PersistentData::PDRTR rv = persistent.tick(keys, is);
     if(rv == PersistentData::PDRTR_PLAY) {
       mode = MGM_PLAY;
       
@@ -169,11 +169,11 @@ bool Metagame::isWaitingOnAi() const {
   return false;
 }
 
-void Metagame::renderToScreen() const {
+void Metagame::renderToScreen(const InputSnag &is) const {
   PerfStack pst(PBC::rendermeta);
   
   if(mode == MGM_PLAYERCHOOSE) {
-    persistent.render();
+    persistent.render(is);
   } else if(mode == MGM_FACTIONTYPE) {
     StackString stp("Factiontype");
     vector<const Player *> ppt;
@@ -182,13 +182,13 @@ void Metagame::renderToScreen() const {
         ppt.push_back(&persistent.players()[i]);
     }
     game.renderToScreen(ppt, GameMetacontext());
-    if(!isnag().users() && FLAGS_renderframenumber) {    
+    if(!is.users() && FLAGS_renderframenumber) {    
       setColor(1.0, 1.0, 1.0);
       setZoomVertical(0, 0, 100);
       drawText(StringPrintf("faction setting round"), 2, Float2(5, 82));
     }
   } else if(mode == MGM_TWEEN) {
-    persistent.render();
+    persistent.render(is);
   } else if(mode == MGM_PLAY) {
     StackString stp("Play");
     vector<const Player *> ppt;
@@ -197,7 +197,7 @@ void Metagame::renderToScreen() const {
         ppt.push_back(&persistent.players()[i]);
     }
     game.renderToScreen(ppt, GameMetacontext(win_history, roundsBetweenShop));
-    if(!isnag().users() && FLAGS_renderframenumber) {    
+    if(!is.users() && FLAGS_renderframenumber) {    
       setColor(1.0, 1.0, 1.0);
       setZoomVertical(0, 0, 100);
       drawText(StringPrintf("round %d", gameround), 2, Float2(5, 82));
@@ -237,8 +237,8 @@ Level Metagame::chooseLevel() {
   }
 }
 
-Metagame::Metagame(const vector<bool> &humans, Money startingcash, Coord multiple, int faction, int in_roundsBetweenShop, int rounds_until_end, RngSeed seed) :
-    persistent(humans, startingcash, multiple, in_roundsBetweenShop, rounds_until_end), rng(seed) {
+Metagame::Metagame(const vector<bool> &humans, Money startingcash, Coord multiple, int faction, int in_roundsBetweenShop, int rounds_until_end, RngSeed seed, int primary_id) :
+    persistent(humans, startingcash, multiple, in_roundsBetweenShop, rounds_until_end, primary_id), rng(seed) {
   CHECK(multiple > 1);
   
   faction_mode = faction;

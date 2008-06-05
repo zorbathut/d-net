@@ -690,7 +690,7 @@ public:
  * Interface
  */
 
-bool InterfaceMain::tick(const InputState &is, RngSeed gameseed) {
+bool InterfaceMain::tick(const InputState &is, RngSeed gameseed, InputSnag &isnag) {
   if(is.escape.push) {
     inescmenu = !inescmenu;
     if(inescmenu)
@@ -728,7 +728,7 @@ bool InterfaceMain::tick(const InputState &is, RngSeed gameseed) {
   }
   
   if(inescmenu) {
-    pair<StdMenuCommand, int> rv = escmenu.tick(kst[isnag().primary_id()]);
+    pair<StdMenuCommand, int> rv = escmenu.tick(kst[isnag.primary_id()]);
     if(rv.first == SMR_RETURN)
       inescmenu = false;
     if(rv.second == SMR_NOTHING) {
@@ -736,14 +736,14 @@ bool InterfaceMain::tick(const InputState &is, RngSeed gameseed) {
       dprintf("re-initting\n");
       inescmenu = false;
       interface_mode = STATE_MAINMENU;
-      init();
+      init(isnag);
     } else if(rv.second == ESCMENU_QUIT) {
       return true;
     } else if(rv.second == ESCMENU_ENDGAME) {
       inescmenu = false;
       game->endgame();
-      if(game->runTick(is.controllers, is.confused)) {
-        init();   // full reset
+      if(game->runTick(is.controllers, is.confused, isnag)) {
+        init(isnag);   // full reset
       }
     } else if(rv.second == OPTS_SETRES) {
       setResolution(opts_res, opts_aspect, opts_fullscreen);
@@ -770,7 +770,7 @@ bool InterfaceMain::tick(const InputState &is, RngSeed gameseed) {
       tickIntroScreen();
     }
     
-    pair<StdMenuCommand, int> mrv = mainmenu.tick(kst[isnag().primary_id()]);
+    pair<StdMenuCommand, int> mrv = mainmenu.tick(kst[isnag.primary_id()]);
     
     bool instantaction = false;
     if(mrv.second == MAIN_INSTANTACTION) {
@@ -788,10 +788,10 @@ bool InterfaceMain::tick(const InputState &is, RngSeed gameseed) {
         faction = 1;
       else
         faction = 4;
-      isnag().set_ai_count(aicount); // this is pretty grim really
-      game = new Metagame(isnag().human_flags(), Money((long long)(1000 * pow(30, start.toFloat()))), exp(moneyexp), faction - 1, FLAGS_rounds_per_shop, calculateRounds(start, end, moneyexp), gameseed);
+      isnag.set_ai_count(aicount); // this is pretty grim really
+      game = new Metagame(isnag.human_flags(), Money((long long)(1000 * pow(30, start.toFloat()))), exp(moneyexp), faction - 1, FLAGS_rounds_per_shop, calculateRounds(start, end, moneyexp), gameseed, isnag.primary_id());
       if(instantaction)
-        game->instant_action_init(isnag().getcc(isnag().primary_id()));
+        game->instant_action_init(isnag.getcc(isnag.primary_id()), isnag.primary_id());
       dprintf("ENTERING PLAYING\n");
       interface_mode = STATE_PLAYING;
       escmenu = escmenuig;
@@ -810,8 +810,8 @@ bool InterfaceMain::tick(const InputState &is, RngSeed gameseed) {
       CHECK(mrv.second == -1);
     }
   } else if(interface_mode == STATE_PLAYING) {
-    if(game->runTick(is.controllers, is.confused)) {
-      init();   // full reset
+    if(game->runTick(is.controllers, is.confused, isnag)) {
+      init(isnag);   // full reset
     }
   } else {
     CHECK(0);
@@ -907,7 +907,7 @@ void InterfaceMain::opts_res_changed(pair<int, int> newres) {
   opts_aspect_chooser->changeOptionDb(gen_aspects(newres.first, newres.second));
 }
 
-void InterfaceMain::render() const {
+void InterfaceMain::render(const InputSnag &is) const {
   if(isUnoptimized()) {
     setZoomVertical(0, 0, 100);
     setColor(Color(1.0, 0.3, 0.3));
@@ -1059,7 +1059,7 @@ void InterfaceMain::render() const {
             drawLine(Float4(xmarg, y, getZoom().ex - xmarg, y), boxthick);
           }
           setColor(C::gray(1.0));
-          drawJustifiedText(isnag().getcc(i).description, textheight, Float2(x + xsiz / 2, y + bord), TEXT_CENTER, TEXT_MIN);
+          drawJustifiedText(is.getcc(i).description, textheight, Float2(x + xsiz / 2, y + bord), TEXT_CENTER, TEXT_MIN);
           Float4 chbox(x + bord, y + bord * 2 + textheight, x + bord + crosshair, y + bord * 2 + crosshair + textheight);
           setColor(C::box_border);
           drawLine(Float4(chbox.sx, chbox.sy, chbox.sx + crosshair / 4, chbox.sy), boxthick);
@@ -1107,7 +1107,7 @@ void InterfaceMain::render() const {
       setColor(C::gray(0.5));
       drawText(dnet_version, 2, Float2(0.5, 0.5));
     } else if(interface_mode == STATE_PLAYING) {
-      game->renderToScreen();
+      game->renderToScreen(is);
     } else {
       CHECK(0);
     }
@@ -1161,7 +1161,7 @@ void InterfaceMain::forceResize(int w, int h) {
   CHECK(setResolution(make_pair(w, h), opts_aspect, opts_fullscreen));
 }
 
-void InterfaceMain::init() {
+void InterfaceMain::init(const InputSnag &isnag) {
   StackString stp("IMain initting");
   
   mainmenu = StdMenu();
@@ -1170,7 +1170,7 @@ void InterfaceMain::init() {
   optionsmenu = StdMenu();
   kst.clear();
   
-  aicount = isnag().get_ai_count();
+  aicount = isnag.get_ai_count();
   
   faction = FLAGS_factionMode + 1;
   CHECK(faction >= 0 && faction < 5);
@@ -1403,13 +1403,13 @@ vector<float> InterfaceMain::introScreenBrightness() const {
   return brite;
 }
 
-InterfaceMain::InterfaceMain() {
+InterfaceMain::InterfaceMain(const InputSnag &isnag) {
   for(int i = 0; i < ARRAY_SIZE(introscreen); i++)
     introscreen[i] = NULL;
   tick_sync_frame = 0;
   inescmenu = false;
   mouseconf_cooldown = 0;
-  init();
+  init(isnag);
 }
 
 InterfaceMain::~InterfaceMain() {

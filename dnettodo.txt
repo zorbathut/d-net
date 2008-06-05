@@ -14,7 +14,7 @@
   - Figure out CamelCase/camelCase/under_score_words
   - Improve EMP damage resistance, mention it in weapon stats, add visual effect
   - pull test screen from the current tank, so it fires the actual weapons
-  - turn inputsnag into a singleton
+  
   - rework text rendering functions
   - split stdmenu out
   - Autoping the player when there's only one

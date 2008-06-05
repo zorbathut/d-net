@@ -66,8 +66,8 @@ void MainLoop() {
   
   frameNumber = 0;    // it's -1 before this point
   
-  InputState is = isnag().init(&dumper, FLAGS_aiCount == 0, FLAGS_aiCount);
-  ControlShutdown csd;
+  InputSnag isnag;
+  InputState is = isnag.init(&dumper, FLAGS_aiCount == 0, FLAGS_aiCount);
   
   dumper.read_audit();
   
@@ -78,7 +78,7 @@ void MainLoop() {
   
   int skipped = 0;
 
-  InterfaceMain interface;
+  InterfaceMain interface(isnag);
 
   dumper.write_audit();
   
@@ -126,11 +126,11 @@ void MainLoop() {
                 if(FLAGS_warpkeys && event.key.type == SDL_KEYUP && event.key.keysym.sym == SDLK_c)
                   speed = 0;
                 
-                isnag().key(&event.key);
+                isnag.key(&event.key);
                 break;
               
               case SDL_MOUSEBUTTONDOWN:
-                isnag().mouseclick();
+                isnag.mouseclick();
                 break;
               
               case SDL_VIDEORESIZE:
@@ -177,7 +177,7 @@ void MainLoop() {
             
             tickHttpd();  // We do this here so we can inject stuff between control cycles. Yurgh.
             
-            is = isnag().next(&dumper);
+            is = isnag.next(&dumper);
             
             dumper.write_input(is);
             
@@ -210,7 +210,7 @@ void MainLoop() {
                 as.reset(new AudioShifter(0.0, 0.0));
               
               PerfStack pst(PBC::tick);
-              if(interface.tick(is, game_seed)) {
+              if(interface.tick(is, game_seed, isnag)) {
                 dprintf("Returning, interface said so\n");
                 dumper.write_audit();
                 return;
@@ -226,7 +226,7 @@ void MainLoop() {
             dumper.write_audit();
             adlers += audit_read_count();
             
-            interface.ai(isnag().ais(), isnag().human_flags());  // We do this afterwards so we don't delay until our next tick is starting.
+            interface.ai(isnag.ais(), isnag.human_flags());  // We do this afterwards so we don't delay until our next tick is starting.
           }
         }
         
@@ -265,8 +265,8 @@ void MainLoop() {
             initFrame();
           }
           PerfStack pst(PBC::render);
-          interface.render();
-          if(!isnag().users() && FLAGS_renderframenumber) {
+          interface.render(isnag);
+          if(!isnag.users() && FLAGS_renderframenumber) {
             setColor(1.0, 1.0, 1.0);
             setZoomVertical(0, 0, 1);
             drawText(StringPrintf("%d", frameNumber), 10, Float2(5, 85));

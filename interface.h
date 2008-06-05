@@ -114,20 +114,20 @@ class InterfaceMain : boost::noncopyable {
   vector<bool> introScreenToTick() const;
   vector<float> introScreenBrightness() const;
   
-  void init();
+  void init(const InputSnag &isnag);
   
 public:
 
-  bool tick(const InputState &control, RngSeed gameseed);
+  bool tick(const InputState &control, RngSeed gameseed, InputSnag &is);
   void ai(const vector<Ai *> &ais, const vector<bool> &isHuman) const;
   bool isWaitingOnAi() const;
-  void render() const;
+  void render(const InputSnag &is) const;
 
   void forceResize(int w, int h);
 
   void checksum(Adler32 *adl) const;
 
-  InterfaceMain();
+  InterfaceMain(const InputSnag &isnag);
   ~InterfaceMain();
 
 };

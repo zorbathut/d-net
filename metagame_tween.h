@@ -4,6 +4,7 @@
 #include "metagame_config.h"
 #include "shop.h"
 #include "audio.h"
+#include "inputsnag.h"
 
 #include <boost/noncopyable.hpp>
 
@@ -26,10 +27,10 @@ public:
 
   // Main loop
   enum PDRTR { PDRTR_CONTINUE, PDRTR_PLAY, PDRTR_EXIT };
-  PDRTR tick(const vector<Controller> &keys);
+  PDRTR tick(const vector<Controller> &keys, const InputSnag &is);
   void ai(const vector<Ai *> &ais, const vector<bool> &isHuman) const;
   bool isWaitingOnAi() const;
-  void render() const;
+  void render(const InputSnag &is) const;
 
   void checksum(Adler32 *adl) const;  
 
@@ -39,8 +40,8 @@ public:
   void startAtNormalShop();
 
   // Constructor
-  PersistentData(const vector<bool> &human, Money startingcash, Coord multiple, int roundsbetweenshop, int rounds_until_end);
-  void instant_action_init(const ControlConsts &ck);
+  PersistentData(const vector<bool> &human, Money startingcash, Coord multiple, int roundsbetweenshop, int rounds_until_end, int primary_id);
+  void instant_action_init(const ControlConsts &ck, int primary_id);
 
 private:
   // Persistent state
@@ -115,8 +116,8 @@ private:
     int btt_frames_left;
 
   // Slot functions
-  bool tickSlot(int slotid, const vector<Controller> &controllers);
-  void renderSlot(int slotid) const;
+  bool tickSlot(int slotid, const vector<Controller> &controllers, const InputSnag &is);
+  void renderSlot(int slotid, const InputSnag &is) const;
   
   bool isUnfinished(int id) const;
   vector<const IDBFaction *> getUnfinishedFactions() const;

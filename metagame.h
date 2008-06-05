@@ -33,13 +33,13 @@ class Metagame : boost::noncopyable {
 
 public:
 
-  Metagame(const vector<bool> &humans, Money startingcash, Coord multiple, int faction, int roundsBetweenShop, int rounds_until_end, RngSeed seed);
-  void instant_action_init(const ControlConsts &ck);
+  Metagame(const vector<bool> &humans, Money startingcash, Coord multiple, int faction, int roundsBetweenShop, int rounds_until_end, RngSeed seed, int primary_id);
+  void instant_action_init(const ControlConsts &ck, int primary_id);
 
-  void renderToScreen() const;
+  void renderToScreen(const InputSnag &is) const;
   void ai(const vector<Ai *> &ai, const vector<bool> &humans) const;
   bool isWaitingOnAi() const;
-  bool runTick(const vector<Controller> &keys, bool confused);
+  bool runTick(const vector<Controller> &keys, bool confused, const InputSnag &is);
 
   void endgame();
 
