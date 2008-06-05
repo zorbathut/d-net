@@ -40,7 +40,7 @@ public:
   void startAtNormalShop();
 
   // Constructor
-  PersistentData(const vector<bool> &human, Money startingcash, Coord multiple, int roundsbetweenshop, int rounds_until_end, int primary_id);
+  PersistentData(const vector<bool> &human, Money startingcash, Coord multiple, int roundsbetweenshop, int rounds_until_end, const InputSnag &isnag);
   void instant_action_init(const ControlConsts &ck, int primary_id);
 
 private:

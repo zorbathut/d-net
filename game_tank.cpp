@@ -42,8 +42,8 @@ void Tank::tick() {
   weaponCooldown--;
   
   {
-    static const Coord resistance_approach = 0.75;
-    static const Coord resistance_approach_per_sec = 0.75; // this is a fraction of how close it gets to the theoretical max
+    static const Coord resistance_approach = 0.95;
+    static const Coord resistance_approach_per_sec = 0.95; // this is a fraction of how close it gets to the theoretical max
     static const Coord resistance_dapproach_per_sec = 0.75;
     static const Coord resistance_approach_per_frame = 1.0 - pow(1.0 - resistance_approach_per_sec, 1. / FPS);
     static const Coord resistance_dapproach_per_frame = 1.0 - pow(1.0 - resistance_dapproach_per_sec, 1. / FPS);
@@ -82,6 +82,9 @@ void Tank::render(const vector<Team> &teams) const {
   
   setColor(small);
   drawLineLoop(smtankverts, 0.75);
+  
+  setColor(C::gray(1));
+  drawText(StringPrintf("%.3f", glory_resistance.toFloat()), 2, pi.pos + Coord2(5, 0));
 };
 
 void Tank::checksum(Adler32 *adl) const {

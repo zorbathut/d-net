@@ -1679,7 +1679,7 @@ int PersistentData::getAiCount() const {
 DEFINE_int(debugControllers, 0, "Number of controllers to set to debug defaults");
 REGISTER_int(debugControllers);
 
-PersistentData::PersistentData(const vector<bool> &human, Money startingcash, Coord multiple, int in_roundsbetweenshop, int in_rounds_until_end, int primary_id) {
+PersistentData::PersistentData(const vector<bool> &human, Money startingcash, Coord multiple, int in_roundsbetweenshop, int in_rounds_until_end, const InputSnag &isnag) {
   CHECK(multiple > 1);
   roundsbetweenshop = in_roundsbetweenshop;
   rounds_until_end = in_rounds_until_end;
@@ -1776,29 +1776,27 @@ PersistentData::PersistentData(const vector<bool> &human, Money startingcash, Co
   
   reset();
   
-  int cdbc = primary_id;
+  int cdbc = isnag.primary_id();
   if(FLAGS_debugControllers >= 1) {
+    
     CHECK(pms.size() >= 1); // better be
     const int fact = 5;
     pms[cdbc].faction = &factions[fact];
     factions[fact].taken = true;
+    playerid[cdbc] = playerdata.size();
+    
+    playerdata.push_back(Player(pms[cdbc].faction->faction, faction_mode, newPlayerStartingCash));
+    
+    Controller tc;
+    tc.axes.resize(isnag.getaxiscount(cdbc));
+    tc.lastaxes.resize(isnag.getaxiscount(cdbc));
+    tc.keys.resize(isnag.getbuttoncount(cdbc));
+    pms[cdbc].settingmode = SETTING_BUTTONS;
+    pms[cdbc].choicemode = CHOICE_FIRSTPASS;
+    runSettingTick(tc, &pms[cdbc], factions, isnag.getcc(cdbc));
     pms[cdbc].settingmode = SETTING_READY;
     pms[cdbc].choicemode = CHOICE_IDLE;
-    pms[cdbc].buttons[BUTTON_FIRE1] = 4;
-    pms[cdbc].buttons[BUTTON_FIRE2] = 8;
-    pms[cdbc].buttons[BUTTON_FIRE3] = 5;
-    pms[cdbc].buttons[BUTTON_FIRE4] = 9;
-    pms[cdbc].buttons[BUTTON_PRECISION] = 12;
-    pms[cdbc].buttons[BUTTON_ACCEPT] = 4;
-    pms[cdbc].buttons[BUTTON_CANCEL] = 8;
-    CHECK(pms[cdbc].buttons.size() == 7);
-    pms[cdbc].axes[0] = 0;
-    pms[cdbc].axes[1] = 1;
-    pms[cdbc].axes_invert[0] = false;
-    pms[cdbc].axes_invert[1] = false;
-    pms[cdbc].setting_axistype = KSAX_STEERING;
-    playerid[cdbc] = playerdata.size();
-    playerdata.push_back(Player(pms[cdbc].faction->faction, faction_mode, newPlayerStartingCash));
+    
     cdbc++;
   }
   if(FLAGS_debugControllers >= 2) {

@@ -35,6 +35,9 @@ public:
   pair<int, int> getType(int id) const;
   ControlConsts getcc(int cid) const;
 
+  int getbuttoncount(int cid) const;
+  int getaxiscount(int cid) const;
+
 private:
   vector<pair<int, int> > sources;
   vector<int> prerecorded;

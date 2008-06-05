@@ -111,7 +111,7 @@ void buildCurve(const Float4 &ptah, const Float4 &ptbh, int midpoints, vector<Fl
 
 void drawCircle(const Float2 &center, float radius, float weight);
 
-void drawText(const string &txt, float scale, const Float2 &pos);
+void drawText(const string &txt, float scale, const CFC2 &pos);
 
 float getTextWidth(const string &txt, float scale);
 float getTextHeight(int lines, float scale);

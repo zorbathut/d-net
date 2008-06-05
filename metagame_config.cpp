@@ -558,6 +558,7 @@ bool runSettingTick(const Controller &keys, PlayerMenuState *pms, vector<Faction
         pms->choicemode = CHOICE_ACTIVE;
       }
     } else if(pms->settingmode == SETTING_BUTTONS) {
+      StackString sstr("butans");
       
       vector<Coord> triggers;
       vector<Coord> oldtriggers;

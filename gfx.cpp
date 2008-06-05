@@ -813,9 +813,9 @@ void drawText(const string &txt, float scale, float sx, float sy) {
   drawText(txt, scale, Float2(sx, sy));
 }
 
-void drawText(const string &txt, float scale, const Float2 &pos) {
+void drawText(const string &txt, float scale, const CFC2 &pos) {
   PerfStack pst(PBC::gfxtext);
-  float sx = pos.x;
+  float sx = pos->x;
   scale /= 9;
   for(int i = 0; i < txt.size(); i++) {
     char kar = txt[i];
@@ -827,7 +827,7 @@ void drawText(const string &txt, float scale, const Float2 &pos) {
     for(int i = 0; i < pathdat.art.size(); i++) {
       PoolObj<vector<Float2> > verts;
       for(int j = 0; j < pathdat.art[i].size(); j++)
-        verts->push_back(Float2(sx + pathdat.art[i][j].first * scale, pos.y + pathdat.art[i][j].second * scale));
+        verts->push_back(Float2(sx + pathdat.art[i][j].first * scale, pos->y + pathdat.art[i][j].second * scale));
       drawLinePath(*verts, scale * thickness);
     }
     sx += scale * (pathdat.width + betweenletter);

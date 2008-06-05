@@ -33,7 +33,7 @@ class Metagame : boost::noncopyable {
 
 public:
 
-  Metagame(const vector<bool> &humans, Money startingcash, Coord multiple, int faction, int roundsBetweenShop, int rounds_until_end, RngSeed seed, int primary_id);
+  Metagame(const vector<bool> &humans, Money startingcash, Coord multiple, int faction, int roundsBetweenShop, int rounds_until_end, RngSeed seed, const InputSnag &isnag);
   void instant_action_init(const ControlConsts &ck, int primary_id);
 
   void renderToScreen(const InputSnag &is) const;

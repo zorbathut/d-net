@@ -237,8 +237,8 @@ Level Metagame::chooseLevel() {
   }
 }
 
-Metagame::Metagame(const vector<bool> &humans, Money startingcash, Coord multiple, int faction, int in_roundsBetweenShop, int rounds_until_end, RngSeed seed, int primary_id) :
-    persistent(humans, startingcash, multiple, in_roundsBetweenShop, rounds_until_end, primary_id), rng(seed) {
+Metagame::Metagame(const vector<bool> &humans, Money startingcash, Coord multiple, int faction, int in_roundsBetweenShop, int rounds_until_end, RngSeed seed, const InputSnag &isnag) :
+    persistent(humans, startingcash, multiple, in_roundsBetweenShop, rounds_until_end, isnag), rng(seed) {
   CHECK(multiple > 1);
   
   faction_mode = faction;

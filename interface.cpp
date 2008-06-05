@@ -789,7 +789,7 @@ bool InterfaceMain::tick(const InputState &is, RngSeed gameseed, InputSnag &isna
       else
         faction = 4;
       isnag.set_ai_count(aicount); // this is pretty grim really
-      game.reset(new Metagame(isnag.human_flags(), Money((long long)(1000 * pow(30, start.toFloat()))), exp(moneyexp), faction - 1, FLAGS_rounds_per_shop, calculateRounds(start, end, moneyexp), gameseed, isnag.primary_id()));
+      game.reset(new Metagame(isnag.human_flags(), Money((long long)(1000 * pow(30, start.toFloat()))), exp(moneyexp), faction - 1, FLAGS_rounds_per_shop, calculateRounds(start, end, moneyexp), gameseed, isnag));
       if(instantaction)
         game->instant_action_init(isnag.getcc(isnag.primary_id()), isnag.primary_id());
       dprintf("ENTERING PLAYING\n");

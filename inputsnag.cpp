@@ -447,6 +447,13 @@ ControlConsts InputSnag::getcc(int cid) const {
   return rv;
 }
 
+int InputSnag::getbuttoncount(int cid) const {
+  return now.controllers[cid].keys.size();
+}
+int InputSnag::getaxiscount(int cid) const {
+  return now.controllers[cid].axes.size();
+}
+
 static bool welp = false;
 InputSnag::InputSnag() { CHECK(!welp); welp = true; };
 InputSnag::~InputSnag() { shutdown(); };
