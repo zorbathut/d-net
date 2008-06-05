@@ -110,6 +110,7 @@ void drawCurve(const Float4 &ptah, const Float4 &ptbh, int midpoints, float weig
 void buildCurve(const Float4 &ptah, const Float4 &ptbh, int midpoints, vector<Float2> *out);
 
 void drawCircle(const Float2 &center, float radius, float weight);
+void drawPolygon(const CFC2 &center, float radius, float weight, int vertexes, float origin);
 
 void drawText(const string &txt, float scale, const CFC2 &pos);
 
