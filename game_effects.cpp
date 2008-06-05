@@ -124,8 +124,8 @@ class GfxEffectsPing : public GfxEffects {
 public:
 
   virtual void render(int gameframe) const {
-    setBaseColor();
-    drawCircle(pos, radius_d * getAge(), thickness_d * getAge());
+    setColor(getColor() * (1.0 - pow(getAgeFactor(), 4)));
+    drawCircle(pos, radius_d * getAge(), thickness_d * (getAge() / 2 + 0.5));
   }
 
   GfxEffectsPing(Float2 in_pos, float in_radius_d, float in_thickness_d, float life, Color color) : GfxEffects(life, color, false), pos(in_pos), radius_d(in_radius_d), thickness_d(in_thickness_d) { };

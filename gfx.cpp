@@ -797,8 +797,16 @@ void buildCurve(const Float4 &ptah, const Float4 &ptbh, int midpoints, vector<Fl
 
 void drawCircle(const Float2 &center, float radius, float weight) {
   PoolObj<vector<Float2> > verts;
-  for(int i = 0; i < 64; i++)
-    verts->push_back(makeAngle(i * PI / 8) * radius + center);
+  const int ct = 64;
+  for(int i = 0; i < ct; i++)
+    verts->push_back(makeAngle(i * PI * 2 / ct) * radius + center);
+  drawLineLoop(*verts, weight);
+}
+
+void drawPolygon(const CFC2 &center, float radius, float weight, int sides, float origin) {
+  PoolObj<vector<Float2> > verts;
+  for(int i = 0; i < sides; i++)
+    verts->push_back(makeAngle(i * PI * 2 / sides + origin) * radius + *center);
   drawLineLoop(*verts, weight);
 }
 

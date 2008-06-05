@@ -449,7 +449,7 @@ void PersistentData::render(const InputSnag &is) const {
       text.push_back("Use arrow keys for movement and O to choose an option.");
       text.push_back("");
       text.push_back("Left keyboard player:");
-      text.push_back("Use WASD for movement and F to choose an option.");
+      text.push_back("Use WASD for movement and G to choose an option.");
       text.push_back("");
       text.push_back("");
     }
@@ -1778,8 +1778,8 @@ PersistentData::PersistentData(const vector<bool> &human, Money startingcash, Co
   
   int cdbc = isnag.primary_id();
   if(FLAGS_debugControllers >= 1) {
-    
     CHECK(pms.size() >= 1); // better be
+    
     const int fact = 5;
     pms[cdbc].faction = &factions[fact];
     factions[fact].taken = true;
@@ -1801,26 +1801,24 @@ PersistentData::PersistentData(const vector<bool> &human, Money startingcash, Co
   }
   if(FLAGS_debugControllers >= 2) {
     CHECK(pms.size() >= 2); // better be
+    
     const int fact = 6;
     pms[cdbc].faction = &factions[fact];
     factions[fact].taken = true;
+    playerid[cdbc] = playerdata.size();
+    
+    playerdata.push_back(Player(pms[cdbc].faction->faction, faction_mode, newPlayerStartingCash));
+    
+    Controller tc;
+    tc.axes.resize(isnag.getaxiscount(cdbc));
+    tc.lastaxes.resize(isnag.getaxiscount(cdbc));
+    tc.keys.resize(isnag.getbuttoncount(cdbc));
+    pms[cdbc].settingmode = SETTING_BUTTONS;
+    pms[cdbc].choicemode = CHOICE_FIRSTPASS;
+    runSettingTick(tc, &pms[cdbc], factions, isnag.getcc(cdbc));
     pms[cdbc].settingmode = SETTING_READY;
     pms[cdbc].choicemode = CHOICE_IDLE;
-    pms[cdbc].buttons[BUTTON_FIRE1] = 2;
-    pms[cdbc].buttons[BUTTON_FIRE2] = 5;
-    pms[cdbc].buttons[BUTTON_FIRE3] = 1;
-    pms[cdbc].buttons[BUTTON_FIRE4] = 4;
-    pms[cdbc].buttons[BUTTON_PRECISION] = 8;
-    pms[cdbc].buttons[BUTTON_ACCEPT] = 2;
-    pms[cdbc].buttons[BUTTON_CANCEL] = 5;
-    CHECK(pms[cdbc].buttons.size() == 7);
-    pms[cdbc].axes[0] = 0;
-    pms[cdbc].axes[1] = 1;
-    pms[cdbc].axes_invert[0] = false;
-    pms[cdbc].axes_invert[1] = false;
-    pms[cdbc].setting_axistype = KSAX_STEERING;
-    playerid[cdbc] = playerdata.size();
-    playerdata.push_back(Player(pms[cdbc].faction->faction, faction_mode, newPlayerStartingCash));
+    
     cdbc++;
   }
   if(FLAGS_debugControllers >= 3) {
