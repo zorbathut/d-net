@@ -9,7 +9,7 @@ using namespace std;
 
 class ShopKVPrinter {
 public:
-  ShopKVPrinter(Float4 bounds, float fontsize, float linesize);
+  ShopKVPrinter(Float4 bounds, float fontsize, float linesize, float *writeend);
   ~ShopKVPrinter();
   
   void header(const string &val);
@@ -27,12 +27,15 @@ private:
   Float4 bounds;
   float fontsize;
   float linesize;
+
+  float *writeend;
 };
 
-ShopKVPrinter::ShopKVPrinter(Float4 in_bounds, float in_fontsize, float in_linesize) {
+ShopKVPrinter::ShopKVPrinter(Float4 in_bounds, float in_fontsize, float in_linesize, float *in_writeend) {
   bounds = in_bounds;
   fontsize = in_fontsize;
   linesize = in_linesize;
+  writeend = in_writeend;
 };
 
 ShopKVPrinter::~ShopKVPrinter() {
@@ -71,6 +74,8 @@ void ShopKVPrinter::discontinuity() {
   }
   pairz.clear();
   bounds.sy = tbx.ey + fontsize * 1.5;
+  
+  *writeend = bounds.sy;
 }
 
 bool ShopKVPrinter::twolinemode() const {
@@ -246,7 +251,7 @@ void drawShadedFormattedText(Float4 bounds, float fontsize, const string &text) 
 
 void ShopInfo::renderFrame(Float4 bounds, float fontsize, Float4 inset, const Player *player) const {
   StackString stp("ShopInfo");
-  CHECK(bool(weapon) + bool(glory) + bool(bombardment) + bool(upgrade) + bool(tank) + bool(implant) + bool(implantslot)== 1);
+  CHECK(bool(weapon) + bool(glory) + bool(bombardment) + bool(upgrade) + bool(tank) + bool(implant) + bool(implantslot) == 1);
   
   /*if(text && !miniature)
     drawShadedFormattedText(bounds, fontsize * 0.75, *text);
@@ -254,12 +259,18 @@ void ShopInfo::renderFrame(Float4 bounds, float fontsize, Float4 inset, const Pl
   bounds.sy += fontsize * 8;*/
   
   const float fontshift = fontsize * 1.5;
+  float kvpend = 0;
+  
   if(weapon) {
     StackString stp("ShopInfoWeapon");
-    ShopKVPrinter kvp(bounds, fontsize, fontshift);
+    ShopKVPrinter kvp(bounds, fontsize, fontshift, &kvpend);
     kvp.print("Theoretical DPS", prettyFloatFormat(player->adjustWeapon(weapon).stats_damagePerSecond()));
     kvp.print("Cost/damage", prettyFloatFormat(player->adjustWeapon(weapon).stats_costPerDamage()));
     kvp.print("Cost/second", prettyFloatFormat(player->adjustWeapon(weapon).stats_costPerSecond()));
+    if(player->adjustWeapon(weapon).glory_resistance()) {
+      kvp.print("", "");
+      kvp.print("Glory device resistance", "");
+    }
     if(weapon->recommended != -1) {
       kvp.discontinuity();
       int recommended = int(sqrt((float)playercount) * player->adjustWeapon(weapon).recommended());
@@ -275,15 +286,15 @@ void ShopInfo::renderFrame(Float4 bounds, float fontsize, Float4 inset, const Pl
       drawFormattedTextBox(et, fontsize, Float4(inset.sx, inset.midpoint().y, inset.ex, inset.ey), C::active_text, C::box_border);
     }
   } else if(glory) {
-    ShopKVPrinter kvp(bounds, fontsize, fontshift);
+    ShopKVPrinter kvp(bounds, fontsize, fontshift, &kvpend);
     kvp.print("Total average damage", prettyFloatFormat(player->adjustGlory(glory).stats_averageDamage()));
   } else if(bombardment) {
-    ShopKVPrinter kvp(bounds, fontsize, fontshift);
+    ShopKVPrinter kvp(bounds, fontsize, fontshift, &kvpend);
     kvp.print("Damage per hit", prettyFloatFormat(player->adjustBombardment(bombardment, 0).stats_damagePerShot()));
     kvp.print("Firing delay", prettyFloatFormat(player->adjustBombardment(bombardment, 0).lockdelay()) + " seconds");
     kvp.print("Cooldown", prettyFloatFormat(player->adjustBombardment(bombardment, 0).unlockdelay()) + " second");
   } else if(upgrade) {
-    ShopKVPrinter kvp(bounds, fontsize, fontshift);
+    ShopKVPrinter kvp(bounds, fontsize, fontshift, &kvpend);
     const Player unupg = getUnupgradedPlayer(player);
     const Player upg = getUpgradedPlayer(player);
     for(int i = 0; i < IDBAdjustment::LAST; i++) {
@@ -292,7 +303,7 @@ void ShopInfo::renderFrame(Float4 bounds, float fontsize, Float4 inset, const Pl
       }
     }
   } else if(tank) {
-    ShopKVPrinter kvp(bounds, fontsize, fontshift);
+    ShopKVPrinter kvp(bounds, fontsize, fontshift, &kvpend);
     kvp.print("Max health", prettyFloatFormat(player->adjustTankWithInstanceUpgrades(tank).maxHealth()) + " cme");
     kvp.print("Turn speed", prettyFloatFormat(player->adjustTankWithInstanceUpgrades(tank).turnSpeed()) + " rad/s");
     kvp.print("Forward speed", prettyFloatFormat(player->adjustTankWithInstanceUpgrades(tank).maxSpeed()) + " m/s");
@@ -312,7 +323,7 @@ void ShopInfo::renderFrame(Float4 bounds, float fontsize, Float4 inset, const Pl
       }
     }
   } else if(implant && !implant_upgrade) {
-    ShopKVPrinter kvp(bounds, fontsize, fontshift);
+    ShopKVPrinter kvp(bounds, fontsize, fontshift, &kvpend);
     CHECK(implant->adjustment);
     const Player unimp = getUnimplantedPlayer(player);
     const Player imp = getImplantedPlayer(player);
@@ -322,7 +333,7 @@ void ShopInfo::renderFrame(Float4 bounds, float fontsize, Float4 inset, const Pl
       }
     }
   } else if(implant && implant_upgrade) {
-    ShopKVPrinter kvp(bounds, fontsize, fontshift);
+    ShopKVPrinter kvp(bounds, fontsize, fontshift, &kvpend);
     CHECK(implant->adjustment);
     const Player imp = getImplantedPlayer(player);
     const Player implev = getImplantedLeveledPlayer(player);
@@ -335,6 +346,8 @@ void ShopInfo::renderFrame(Float4 bounds, float fontsize, Float4 inset, const Pl
   } else {
     CHECK(0);
   }
+  
+  inset.sy = max(inset.sy, kvpend);
   
   if(hasDemo()) {
     GfxWindow gfxw(inset, 1.0);
