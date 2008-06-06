@@ -14,7 +14,9 @@
   - pull test screen from the current tank, so it fires the actual weapons
   - rework text rendering functions
   
-  - split stdmenu out
+  - split interface demo out
+  
+  - Header stuff
   - Autoping the player when there's only one
   - Look at the starting timer and GO?
   - Add explanation of bombing mode

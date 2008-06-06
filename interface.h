@@ -14,51 +14,6 @@ using boost::function;
 class Ai;
 class GameAiIntro;
 
-enum StdMenuCommand { SMR_NOTHING = -1, SMR_ENTER = -2, SMR_RETURN = -3 };
-
-class StdMenuItem : boost::noncopyable {
-public:
-
-  virtual pair<StdMenuCommand, int> tickEntire(const Keystates &keys);
-  virtual void renderEntire(const Float4 &bounds, bool obscure) const;
-  
-  virtual pair<StdMenuCommand, int> tickItem(const Keystates *keys) = 0;
-  virtual float renderItemHeight() const;
-  virtual float renderItemWidth(float tmx) const = 0;
-  virtual void renderItem(const Float4 &bounds) const = 0; // ey is ignored
-
-  virtual void checksum(Adler32 *adl) const = 0;
-
-  StdMenuItem();
-  virtual ~StdMenuItem();
-};
-
-class StdMenu {
-  
-  vector<vector<smart_ptr<StdMenuItem> > > items;
-  int vpos;
-  int hpos;
-  
-  bool inside;
-  
-public:
-
-  void pushMenuItem(const smart_ptr<StdMenuItem> &site);
-  void pushMenuItemAdjacent(const smart_ptr<StdMenuItem> &site);
-
-  pair<StdMenuCommand, int> tick(const Keystates &keys);
-  void render(const Float4 &bounds, bool obscure) const;
-
-  void reset();
-
-  void checksum(Adler32 *adl) const;
-
-  StdMenu();
-
-};
-
-template<typename T> class StdMenuItemChooser;
-
 class InterfaceMain : boost::noncopyable {
   
   enum { STATE_DISCLAIMER, STATE_MAINMENU, STATE_PLAYING };
@@ -90,6 +45,8 @@ class InterfaceMain : boost::noncopyable {
   Coord moneyexp;
   Coord start_clamp(const Coord &opt) const;
   Coord end_clamp(const Coord &opt) const;
+  
+  int rounds;
   
   // 0 represents "battle choice", 1-4 are the valid normal options
   int faction;

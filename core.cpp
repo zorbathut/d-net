@@ -90,12 +90,14 @@ void MainLoop() {
   
   // This all needs to be commented much better.
   while(1) {
+    StackString sst(StringPrintf("Frame %d loop", frameNumber));
+    
     bool thistick = false;
     
     startPerformanceBar();
     if(FLAGS_timing)
       bencher = Timer();
-    StackString sst(StringPrintf("Frame %d loop", frameNumber));
+    
     ffwd = (frameNumber < FLAGS_fastForwardTo);
     if(frameNumber == FLAGS_fastForwardTo || speed != 1)
       timer = Timer();    // so we don't end up sitting there for aeons waiting for another frame
@@ -105,7 +107,9 @@ void MainLoop() {
     {
       int frames = 0;
       do {
+        StackString sst("Brain loop");
         {
+          StackString sst("SDL events");
           SDL_Event event;
           while(SDL_PollEvent(&event)) {
             switch(event.type) {
@@ -153,6 +157,8 @@ void MainLoop() {
         }
         
         {
+          StackString sst("Brain core");
+          
           int tspeed = speed;
           if(thistick && !tspeed)
             tspeed = 1;
@@ -244,6 +250,8 @@ void MainLoop() {
     
     bool render = false;
     if(FLAGS_render) {
+      StackString sst("Render test");
+      
       if(FLAGS_randomizeFrameRender != 0) {
         CHECK(FLAGS_randomizeFrameRender > 0);
         render = unsync().frand() < (1. / FLAGS_randomizeFrameRender);
@@ -259,6 +267,7 @@ void MainLoop() {
   
     {
       if(render) {
+        StackString sst("Render");
         {
           {
             PerfStack pst(PBC::rinit);
@@ -298,6 +307,8 @@ void MainLoop() {
     
     timer.frameDone();
     {
+      StackString sst("Bookkeeping");
+      
       int frameSplit;
       if(ffwd)
         frameSplit = 600;
