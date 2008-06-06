@@ -15,13 +15,8 @@
 #include "init.h"
 #include "config.h"
 
-#ifdef OSX_FRAMEWORK_PREFIXES
-  #include <OpenGL/gl.h>
-  #include <SDL/SDL.h>
-#else
-  #include <GL/gl.h>
-  #include <SDL.h>
-#endif
+#include "os_gl.h"
+#include "os_sdl.h"
 
 #include <boost/assign.hpp>
 
