@@ -4,6 +4,7 @@
 #include "stream_process_primitive.h"
 
 #include <string>
+#include <vector>
 
 using namespace std;
 

@@ -4,6 +4,7 @@ from __future__ import with_statement
 from SConstruct_config import Conf
 from SConstruct_installer import Installers
 from util import traverse
+import copy
 import sys
 import re
 
@@ -49,6 +50,8 @@ to_build = []
 built = {}
 programs = {}
 
+includeculls = {}
+
 for build in buildables:
   params = {}
   for param in flagtypes:
@@ -63,7 +66,23 @@ for build in buildables:
   
   for item in build[2]:
     if not (build[1], item) in built:
-      built[(build[1], item)] = env.Object("build/%s.%s.o" % (item, abbreviation), "%s.cpp" % item, **params);
+      built[(build[1], item)] = env.Object("build/%s.%s.o" % (item, abbreviation), "%s.cpp" % item, **params)
+      
+      # uncomment these to enable includecull (warning: slow)
+      ptmp = dict([k for k in params.items()])
+      ptmp["CPPPATH"] = ptmp["CPPPATH"] + ["."]
+      includeculls["build/%s.cpp.%s.o" % (item, abbreviation)] = env.Command("build/%s.cpp.%s.o" % (item, abbreviation), built[(build[1], item)], Copy("$TARGET", "$SOURCE"))
+      with open("%s.cpp" % item) as f:
+        for line in f:
+          metchsteek = re.match("""^#include "(.*)"$""", line)
+          if metchsteek != None:
+            fil = metchsteek.group(1)
+            if fil[0:7] == "minizip":
+              continue
+            if not ("build/%s.%s.o" % (fil, abbreviation) in includeculls):
+              copy = env.Command("build/%s.%s.cpp" % (fil, abbreviation), fil, Copy("$TARGET", "$SOURCE"))
+              includeculls["build/%s.%s.o" % (fil, abbreviation)] = env.Object("build/%s.%s.o" % (fil, abbreviation), copy, **ptmp)
+      
     objects += built[(build[1], item)]
   
   if len(build) > 3:
@@ -90,7 +109,7 @@ data_copy = [x for x in data_source if not (x in data_vecedit or x in data_oggiz
 
 extramergedeps = {"base/tank.dwh" : ["base/weapon_sparker.dwh"], "base/factions.dwh" : [x for x in data_copy if x.rsplit('/', 1)[0] == "base/faction_icons"]}
 
-csvs = dict([(re.compile("^build/notes_(.*)\.csv$").match(str(item)).group(1), item) for item in env.Command(["build/notes_%s.csv" % item.split('.')[-3].split('/')[-1] for item in data_merge], [programs["ods2csv"], "notes.ods"], "./$SOURCE notes.ods --addr2line")])
+csvs = dict([(re.match("^build/notes_(.*)\.csv$", str(item)).group(1), item) for item in env.Command(["build/notes_%s.csv" % item.split('.')[-3].split('/')[-1] for item in data_merge], [programs["ods2csv"], "notes.ods"], "./$SOURCE notes.ods --addr2line")])
 
 def make_datadir(dest, mergeflags = ""):
   results = []
@@ -199,3 +218,5 @@ command(env, "aicsl", fulldata, "while nice rm -f dumps/dump-*.dnd && nice ./%s 
 command(env, "vecedit", [programs["vecedit"]] + data_dests["release"], "./%s --fileroot=data_release --addr2line --noreport" % (programs["vecedit"]))
 
 command(env, "binaries", programs.values(), "")
+
+command(env, "includecullsetup", includeculls.values(), "")
