@@ -2,7 +2,7 @@
 #include "perfbar.h"
 
 #include "gfx.h"
-#include "timer.h"
+#include "os_timer.h"
 #include "args.h"
 
 #include <vector>

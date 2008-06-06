@@ -7,7 +7,7 @@
 #include "inputsnag.h"
 #include "interface.h"
 #include "rng.h"
-#include "timer.h"
+#include "os_timer.h"
 #include "util.h"
 #include "httpd.h"
 #include "perfbar.h"

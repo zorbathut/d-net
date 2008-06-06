@@ -1,5 +1,5 @@
 
-#include "timer.h"
+#include "os_timer.h"
 
 #include "const.h"
 #include "debug.h"
