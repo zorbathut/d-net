@@ -15,7 +15,7 @@ using namespace std;
 #include <wx/timer.h>
 
 static long long cpc() {
-  return wxGetLocalTimeMillisnag().GetValue();
+  return wxGetLocalTimeMillis().GetValue();
 };
 
 static long long cpf() {
