@@ -200,7 +200,6 @@ inline pair<Coord, Coord2> doCollisionNN(const Coord4 &l1p, const Coord4 &l1v, c
 }
 
 /*
-#include "parse.h"
 class CollideOhgod {
   public:
   CollideOhgod() {

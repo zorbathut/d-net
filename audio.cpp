@@ -6,11 +6,7 @@
 #include "args.h"
 #include "itemdb.h"
 
-#ifdef OSX_FRAMEWORK_PREFIXES
-  #include <SDL/SDL.h>
-#else
-  #include <SDL.h>
-#endif
+#include "os_sdl.h"
 
 #include <vorbis/vorbisfile.h>
 
