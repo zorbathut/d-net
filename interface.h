@@ -3,6 +3,7 @@
 
 #include "input.h"
 #include "metagame.h"
+#include "interface_stdmenu.h"
 
 #include <boost/function.hpp>
 #include <boost/noncopyable.hpp>

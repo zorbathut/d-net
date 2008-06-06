@@ -58,8 +58,8 @@ def Installers(platform):
       uninstall = 'Delete "$INSTDIR\\settings"\n' + uninstall;
 
       for line in deployfiles:
-        install = install + 'File "/oname=%s" "%s"\n' % (line.split('\\', 1)[1], line)
-        uninstall = 'Delete "$INSTDIR\\%s"\n' % line.split('\\', 1)[1] + uninstall
+        install = install + 'File "/oname=%s" "%s"\n' % (line.rsplit('\\', 1)[1], line)
+        uninstall = 'Delete "$INSTDIR\\%s"\n' % line.rsplit('\\', 1)[1] + uninstall
       
       install = install + 'File "/oname=d-net.exe" "%s"\n' % mainexe
       uninstall = 'Delete "$INSTDIR\\d-net.exe"\n' + uninstall

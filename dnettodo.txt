@@ -12,8 +12,8 @@
   - Abstract SDL stuff away a bit further
   - Figure out CamelCase/camelCase/under_score_words
   - pull test screen from the current tank, so it fires the actual weapons
-  
   - rework text rendering functions
+  
   - split stdmenu out
   - Autoping the player when there's only one
   - Look at the starting timer and GO?
