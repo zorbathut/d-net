@@ -9,7 +9,7 @@ import sys
 import re
 
 # Globals
-Decider('MD5-timestamp')
+# Decider('MD5-timestamp')
 SetOption('implicit_cache', 1)
 
 env, categories, flagtypes, oggpath, platform, installers, defaultdata = Conf()
@@ -51,12 +51,37 @@ built = {}
 programs = {}
 
 includeculls = {}
-includeculledheaders = {}
+includeculleditems = {}
+includecullheaders = {}
 
 provideincludecull = False
 for item in COMMAND_LINE_TARGETS:
   if re.match("includecull\..*", item):
     provideincludecull = True
+
+def cullitude(item, abbreviation, ptmp):
+  if not (item, abbreviation) in includeculleditems:
+    includeculleditems[(item, abbreviation)] = None
+    if not item in includeculls:
+      includeculls[item] = []
+      
+    if item.rsplit('.', 1)[1] == "cpp":
+      includeculls[item] += env.Command("build/%s.%s.o" % (item, abbreviation), built[(build[1], item.rsplit('.', 1)[0])], Copy("$TARGET", "$SOURCE"))
+    elif item.rsplit('.', 1)[1] == "h":
+      if not item in includecullheaders:
+        includecullheaders[item] = env.Command("build/%s.cpp" % item, item, Copy("$TARGET", "$SOURCE"))
+      includeculls[item] += env.Object("build/%s.%s.o" % (item, abbreviation), includecullheaders[item], **ptmp)
+    else:
+      fnord();
+    
+    with open("%s" % item) as f:
+      for line in f:
+        metchsteek = re.match("""^#include "(.*)"$""", line)
+        if metchsteek != None:
+          fil = metchsteek.group(1)
+          if fil[0:7] == "minizip":
+            continue
+          cullitude(fil, abbreviation, ptmp)
 
 for build in buildables:
   params = {}
@@ -78,22 +103,7 @@ for build in buildables:
       if provideincludecull:
         ptmp = dict([k for k in params.items()])
         ptmp["CPPPATH"] = ptmp["CPPPATH"] + ["."]
-        if not item + ".cpp" in includeculls:
-          includeculls[item + ".cpp"] = []
-        includeculls[item + ".cpp"] += env.Command("build/%s.cpp.%s.o" % (item, abbreviation), built[(build[1], item)], Copy("$TARGET", "$SOURCE"))
-        with open("%s.cpp" % item) as f:
-          for line in f:
-            metchsteek = re.match("""^#include "(.*)"$""", line)
-            if metchsteek != None:
-              fil = metchsteek.group(1)
-              if fil[0:7] == "minizip":
-                continue
-              if not (fil, abbreviation) in includeculledheaders:
-                includeculledheaders[(fil, abbreviation)] = None
-                copy = env.Command("build/%s.%s.cpp" % (fil, abbreviation), fil, Copy("$TARGET", "$SOURCE"))
-                if not fil in includeculls:
-                  includeculls[fil] = []
-                includeculls[fil] += env.Object("build/%s.%s.o" % (fil, abbreviation), copy, **ptmp)
+        cullitude(item + ".cpp", abbreviation, ptmp)
       
     objects += built[(build[1], item)]
   
