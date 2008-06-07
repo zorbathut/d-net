@@ -51,6 +51,7 @@ built = {}
 programs = {}
 
 includeculls = {}
+includeculledheaders = {}
 
 for build in buildables:
   params = {}
@@ -71,7 +72,9 @@ for build in buildables:
       # uncomment these to enable includecull (warning: slow)
       ptmp = dict([k for k in params.items()])
       ptmp["CPPPATH"] = ptmp["CPPPATH"] + ["."]
-      includeculls["build/%s.cpp.%s.o" % (item, abbreviation)] = env.Command("build/%s.cpp.%s.o" % (item, abbreviation), built[(build[1], item)], Copy("$TARGET", "$SOURCE"))
+      if not item + ".cpp" in includeculls:
+        includeculls[item + ".cpp"] = []
+      includeculls[item + ".cpp"] += env.Command("build/%s.cpp.%s.o" % (item, abbreviation), built[(build[1], item)], Copy("$TARGET", "$SOURCE"))
       with open("%s.cpp" % item) as f:
         for line in f:
           metchsteek = re.match("""^#include "(.*)"$""", line)
@@ -79,9 +82,12 @@ for build in buildables:
             fil = metchsteek.group(1)
             if fil[0:7] == "minizip":
               continue
-            if not ("build/%s.%s.o" % (fil, abbreviation) in includeculls):
+            if not (fil, abbreviation) in includeculledheaders:
+              includeculledheaders[(fil, abbreviation)] = None
               copy = env.Command("build/%s.%s.cpp" % (fil, abbreviation), fil, Copy("$TARGET", "$SOURCE"))
-              includeculls["build/%s.%s.o" % (fil, abbreviation)] = env.Object("build/%s.%s.o" % (fil, abbreviation), copy, **ptmp)
+              if not fil in includeculls:
+                includeculls[fil] = []
+              includeculls[fil] += env.Object("build/%s.%s.o" % (fil, abbreviation), copy, **ptmp)
       
     objects += built[(build[1], item)]
   
@@ -219,4 +225,6 @@ command(env, "vecedit", [programs["vecedit"]] + data_dests["release"], "./%s --f
 
 command(env, "binaries", programs.values(), "")
 
-command(env, "includecullsetup", includeculls.values(), "")
+for key, value in includeculls.items():
+  command(env, "includecull." + key, value, "")
+
