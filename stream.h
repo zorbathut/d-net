@@ -8,6 +8,10 @@
 template<typename T> struct IStreamReader;
 template<typename T> struct OStreamWriter;
 
+#ifndef CHECK
+#error CHECK has to be defined for this file to work. This check only exists so that includecull can work properly.
+#endif
+
 class IStream : boost::noncopyable {
 private:
   char buff[16384];
