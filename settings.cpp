@@ -1,16 +1,15 @@
 
 #include "settings.h"
-#include "parse.h"
-#include "os.h"
-#include "util.h"
 #include "args.h"
-#include "debug.h"
+#include "os.h"
 #include "os_ui.h"
+#include "parse.h"
+#include "util.h"
 
 #include <fstream>
-#include <cstdio>
-
 using namespace std;
+
+
 
 DEFINE_int(resolutionx, -1, "X resolution");
 DEFINE_int(resolutiony, -1, "Y resolution");

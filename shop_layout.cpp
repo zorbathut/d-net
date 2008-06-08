@@ -1,7 +1,7 @@
 
 #include "shop_layout.h"
-#include "util.h"
 #include "gfx.h"
+using namespace std;
 
 float ShopLayout::expandy(int tier) const {
   CHECK(tier >= 0);

@@ -1,11 +1,12 @@
 #ifndef DNET_STREAM_PROCESS_VECTOR
 #define DNET_STREAM_PROCESS_VECTOR
 
-#include "stream_process_primitive.h"
+#include "stream.h"
 
 #include <vector>
-
 using namespace std;
+
+
 
 template<typename T> struct IStreamReader<vector<T> > { static bool read(IStream *istr, vector<T> *storage) {
   int count;

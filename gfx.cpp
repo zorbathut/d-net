@@ -1,16 +1,13 @@
 
 #include "gfx.h"
-
-#include "args.h"
-#include "coord.h"
-#include "parse.h"
-#include "util.h"
-#include "debug.h"
-#include "rng.h"
-#include "perfbar.h"
 #include "itemdb.h"
+#include "parse.h"
+#include "perfbar.h"
 
 #include <fstream>
+using namespace std;
+
+
 
 #ifdef OSX_FRAMEWORK_PREFIXES
   #include <OpenGL/gl.h>
@@ -18,7 +15,6 @@
   #include <GL/gl.h>
 #endif
 
-using namespace std;
 
 /*************
  * Expensive object pool

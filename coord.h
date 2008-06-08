@@ -2,12 +2,10 @@
 #define DNET_COORD
 
 #include "cfcommon.h"
-#include "debug.h"
 #include "util.h"
-
-#include <vector>
-
 using namespace std;
+
+
 
 class Float2;
 class Float4;

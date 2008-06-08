@@ -1,10 +1,13 @@
 
 #include "image.h"
-
 #include "debug.h"
 
-#include <png.h>
 #include <boost/static_assert.hpp>
+
+#include <png.h>
+using namespace std;
+
+
 
 BOOST_STATIC_ASSERT(sizeof(unsigned long) == 4);
 

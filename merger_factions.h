@@ -1,15 +1,13 @@
 #ifndef MERGER_FACTIONS
 #define MERGER_FACTIONS
 
-#include <string>
-#include <vector>
-#include <set>
-
 #include "itemdb.h"
 #include "parse.h"
-#include "merger_util.h"
 
+#include <set>
 using namespace std;
+
+
 
 struct FactionParams {
   struct Data {

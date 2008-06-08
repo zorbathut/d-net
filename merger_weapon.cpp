@@ -1,14 +1,9 @@
 
 #include "merger_weapon.h"
 #include "merger_util.h"
-#include "itemdb.h"
-#include "parse.h"
-
-#include <map>
-#include <fstream>
-#include <set>
-
 using namespace std;
+
+
 
 string WeaponParams::Namer::getName(const vector<string> &line) {
   if(line[0] == "") {

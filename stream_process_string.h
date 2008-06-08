@@ -3,10 +3,10 @@
 
 #include "stream_process_primitive.h"
 
-#include <string>
 #include <vector>
-
 using namespace std;
+
+
 
 template<> struct IStreamReader<string> { static bool read(IStream *istr, string *storage) {
   int count;

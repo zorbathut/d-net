@@ -1,9 +1,9 @@
 
 #include "input.h"
-
 #include "adler32_util.h"
-
 using namespace std;
+
+
 
 /*************
  * User input

@@ -1,14 +1,14 @@
 
 #include "perfbar.h"
-
+#include "args.h"
 #include "gfx.h"
 #include "os_timer.h"
-#include "args.h"
 
-#include <vector>
 #include <stack>
-
 using namespace std;
+
+
+
 
 DEFINE_bool(perfbar, false, "Enable performance bar");
 

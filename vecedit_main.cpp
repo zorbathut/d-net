@@ -1,23 +1,19 @@
 
+#include "gfx.h"
+#include "init.h"
+#include "itemdb.h"
+#include "vecedit.h"
+#include "version.h"
+
+#include <boost/bind.hpp>
+
 #include <wx/wx.h>
 #include <wx/glcanvas.h>
 #include <wx/notebook.h>
-#include <wx/toolbar.h>
-#include <wx/tbarbase.h>
 #include <wx/spinctrl.h>
+using namespace std;
 
-#include "debug.h"
-#include "gfx.h"
-#include "vecedit.h"
-#include "os.h"
-#include "util.h"
-#include "itemdb.h"
-#include "init.h"
-#include "version.h"
 
-#include <boost/noncopyable.hpp>
-#include <boost/function.hpp>
-#include <boost/bind.hpp>
 
 using boost::function;
 using boost::bind;

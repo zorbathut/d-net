@@ -2,11 +2,9 @@
 #define DNET_STREAM_GZ
 
 #include "stream.h"
-
-#include <string>
-#include <fstream>
-
 using namespace std;
+
+
 
 class IStreamGz : public IStream {
 private:

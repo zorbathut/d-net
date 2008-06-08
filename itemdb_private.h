@@ -2,6 +2,7 @@
 #define DNET_ITEMDB_PRIVATE
 
 #include "itemdb.h"
+using namespace std;
 
 extern HierarchyNode root;
 extern map<string, IDBDeploy> deployclasses;

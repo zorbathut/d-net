@@ -1,10 +1,11 @@
 #ifndef DNET_DEBUG
 #define DNET_DEBUG
 
-#include <string>
-#include <deque>
 
+#include <deque>
+#include <string>
 using namespace std;
+
 
 /*************
  * CHECK/TEST macros

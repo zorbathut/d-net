@@ -1,16 +1,16 @@
 
 #include "test.h"
-
-#include "debug.h"
 #include "collide.h"
-#include "itemdb.h"
 #include "gamemap.h"
+#include "itemdb.h"
+#include "level.h"
 #include "parse.h"
-#include "args.h"
 
 #include <fstream>
-
 using namespace std;
+
+
+
 
 DECLARE_string(singlelevel);
 

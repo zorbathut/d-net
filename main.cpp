@@ -1,26 +1,22 @@
 
-#include "args.h"
-#include "core.h"
-#include "debug.h"
-#include "gfx.h"
-#include "itemdb.h"
-#include "os.h"
-#include "os_ui.h"
-#include "httpd.h"
-#include "generators.h"
 #include "audio.h"
-#include "test.h"
-#include "res_interface.h"
-#include "settings.h"
-#include "init.h"
 #include "config.h"
-
+#include "core.h"
+#include "generators.h"
+#include "gfx.h"
+#include "httpd.h"
+#include "init.h"
+#include "itemdb.h"
 #include "os_gl.h"
 #include "os_sdl.h"
-
-#include <boost/assign.hpp>
-
+#include "os_ui.h"
+#include "res_interface.h"
+#include "settings.h"
+#include "test.h"
 using namespace std;
+
+
+
 
 DEFINE_bool(help, false, "Get help");
 DEFINE_float(generateCachedShops, -1, "Do all the work necessary to cache shops. Parameter is the accuracy");

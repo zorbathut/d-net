@@ -1,14 +1,11 @@
 #ifndef DNET_INTERFACE
 #define DNET_INTERFACE
 
-#include "input.h"
-#include "metagame.h"
 #include "interface_stdmenu.h"
-
-#include <boost/function.hpp>
-#include <boost/noncopyable.hpp>
-
+#include "metagame.h"
 using namespace std;
+
+
 using boost::function;
 
 class Ai;

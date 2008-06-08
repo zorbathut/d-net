@@ -3,10 +3,9 @@
 
 #include "color.h"
 #include "float.h"
-#include "util.h"
 #include "smartptr.h"
-
 using namespace std;
+
   
 // there's a lot of redundancy here, but ATM I don't care
 // I'm not really sure whether inheritance will honestly be better thanks to allocation overhead, though

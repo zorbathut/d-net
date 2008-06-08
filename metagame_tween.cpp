@@ -1,23 +1,19 @@
 
 #include "metagame_tween.h"
-
+#include "adler32_util.h"
 #include "ai.h"
-#include "audio.h"
-#include "args.h"
-#include "debug.h"
+#include "dumper_registry.h"
+#include "game_projectile.h"
 #include "game_tank.h"
 #include "gfx.h"
-#include "inputsnag.h"
 #include "parse.h"
-#include "player.h"
 #include "perfbar.h"
-#include "adler32_util.h"
-#include "audit.h"
-#include "dumper_registry.h"
 
 #include <numeric>
-
 using namespace std;
+
+
+
 
 DEFINE_bool(hideAiShopping, true, "Allow skipping bits when waiting for the AI to buy stuff");
 

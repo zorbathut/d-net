@@ -1,7 +1,9 @@
 #ifndef DNET_SETTINGS
 #define DNET_SETTINGS
 
+
 #include <boost/noncopyable.hpp>
+using namespace std;
 
 class Settings : boost::noncopyable {
 private:

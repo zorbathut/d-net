@@ -1,10 +1,10 @@
 #ifndef DNET_AUDIO
 #define DNET_AUDIO
 
-#include <string>
-#include <vector>
 
+#include <vector>
 using namespace std;
+
 
 /*************
  * Sound class

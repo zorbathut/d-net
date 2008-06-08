@@ -1,7 +1,7 @@
 
 #include "stream_file.h"
+using namespace std;
 
-#include "debug.h"
 
 int IStreamFile::read_worker(char *buff, int avail) {
   CHECK(file);

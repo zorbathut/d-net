@@ -1,11 +1,11 @@
 
 #include "interface_stdmenu.h"
-
-#include "audio.h"
-#include "gfx.h"
-#include "adler32.h"
 #include "adler32_util.h"
+#include "audio.h"
 #include "audit.h"
+#include "gfx.h"
+using namespace std;
+
 
 /*************
  * Std

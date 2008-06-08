@@ -1,7 +1,9 @@
 #ifndef DNET_RNG
 #define DNET_RNG
 
+
 #include <boost/random.hpp>
+using namespace std;
 
 class Coord;
 class Adler32;

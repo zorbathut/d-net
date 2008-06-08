@@ -1,12 +1,11 @@
 
 #include "collide.h"
-
+#include "adler32_util.h"
 #include "args.h"
 #include "gfx.h"
-#include "util.h"
-#include "adler32_util.h"
-
 using namespace std;
+
+
 
 DECLARE_bool(verboseCollisions);
 

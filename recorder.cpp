@@ -1,5 +1,6 @@
 
 #include "recorder.h"
+using namespace std;
 
 bool operator<(const FileShopcache::Entry &lhs, const FileShopcache::Entry &rhs) {
   if(lhs.warhead != rhs.warhead) return lhs.warhead < rhs.warhead;

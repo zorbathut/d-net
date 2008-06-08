@@ -1,15 +1,15 @@
 
-#include <curl/curl.h>
-#include <map>
-#include <zlib.h>
-
-#include "debug.h"
-#include "util.h"
-#include "os_ui.h"
-#include "init.h"
 #include "args.h"
+#include "init.h"
+#include "os_ui.h"
+#include "util.h"
 
+#include <curl/curl.h>
+
+#include <zlib.h>
 using namespace std;
+
+
 
 size_t writefunc(void *ptr, size_t size, size_t nmemb, void *lulz) {
   dprintf("appendinating %d\n", size * nmemb);

@@ -1,10 +1,10 @@
 #ifndef DNET_MONEY
 #define DNET_MONEY
 
-#include <string>
-#include <vector>
 
+#include <vector>
 using namespace std;
+
 
 class Money { // Like my hat?
 private:

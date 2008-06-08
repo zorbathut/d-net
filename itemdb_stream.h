@@ -3,6 +3,7 @@
 
 #include "itemdb.h"
 #include "stream.h"
+using namespace std;
 
 bool stream_read(IStream *istr, FileShopcache *storage);
 bool stream_read(IStream *istr, FileShopcache::Entry *storage);

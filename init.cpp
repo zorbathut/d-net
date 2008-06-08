@@ -2,8 +2,9 @@
 #include "init.h"
 
 #include <map>
-
 using namespace std;
+
+
 
 multimap<int, boost::function<void (int*, const char ***)> > &getFuncs() {
   static multimap<int, boost::function<void (int*, const char ***)> > it;

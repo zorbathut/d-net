@@ -2,14 +2,13 @@
 #define DNET_GAME
 
 #include "collide.h"
-#include "game_projectile.h"
+#include "game_util.h"
 #include "input.h"
-#include "rng.h"
+#include "level.h"
 #include "player.h"
-
-#include <boost/noncopyable.hpp>
-
 using namespace std;
+
+
 
 class Collider;
 class GameAi;

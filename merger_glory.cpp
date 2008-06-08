@@ -1,12 +1,7 @@
 
 #include "merger_glory.h"
-#include "merger_util.h"
-#include "debug.h"
-#include "parse.h"
-#include "itemdb.h"
+using namespace std;
 
-#include <fstream>
-#include <set>
 
 string GloryParams::token() {
   return "GLORY";

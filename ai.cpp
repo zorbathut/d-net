@@ -1,14 +1,13 @@
 
 #include "ai.h"
-
 #include "game_tank.h"
 #include "metagame_config.h"
-#include "player.h"
-#include "args.h"
 
 #include <list>
-
 using namespace std;
+
+
+
 
 DEFINE_bool(allowAisQuit, false, "Allow AIs to randomly quit the game");
 

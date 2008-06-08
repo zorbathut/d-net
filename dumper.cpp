@@ -1,20 +1,16 @@
 
 #include "dumper.h"
-
-#include "args.h"
-#include "stream.h"
-#include "stream_file.h"
-#include "stream_gz.h"
-#include "stream_process_primitive.h"
-#include "stream_process_utility.h"
-#include "stream_process_vector.h"
-#include "stream_process_map.h"
-#include "stream_process_rng.h"
-#include "stream_process_coord.h"
-#include "stream_process_string.h"
 #include "audit.h"
 #include "dumper_registry.h"
-#include "os.h"
+#include "stream_gz.h"
+#include "stream_process_coord.h"
+#include "stream_process_map.h"
+#include "stream_process_rng.h"
+#include "stream_process_string.h"
+#include "stream_process_utility.h"
+#include "stream_process_vector.h"
+using namespace std;
+
 
 DEFINE_string(writeTarget, "", "Prefix for file dump");
 DEFINE_string(readTarget, "", "File to replay from");

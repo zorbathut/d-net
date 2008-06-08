@@ -1,9 +1,10 @@
 #ifndef DNET_COLOR
 #define DNET_COLOR
 
-#include <string>
 
+#include <string>
 using namespace std;
+
  
 struct Color {
 public:

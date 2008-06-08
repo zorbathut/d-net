@@ -1,12 +1,12 @@
 #ifndef DNET_UTIL
 #define DNET_UTIL
 
-#include <string>
-#include <vector>
-
 #include "debug.h"
 
+#include <vector>
 using namespace std;
+
+
 
 extern bool ffwd;
 

@@ -1,19 +1,16 @@
 
 #include "itemdb.h"
-
-#include "itemdb_parse.h"
-#include "parse.h"
-#include "httpd.h"
 #include "adler32_util.h"
 #include "config.h"
-
-#include <boost/static_assert.hpp>
+#include "itemdb_parse.h"
+#include "parse.h"
 
 #include <fstream>
-#include <numeric>
-#include <set>
-
 using namespace std;
+
+
+
+
 
 
 DEFINE_string(fileroot, DEFAULTPATH "data/", "Root to pull data from");

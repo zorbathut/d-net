@@ -1,14 +1,13 @@
 #ifndef DNET_METAGAME_TWEEN
 #define DNET_METAGAME_TWEEN
 
-#include "metagame_config.h"
-#include "shop.h"
 #include "audio.h"
 #include "inputsnag.h"
-
-#include <boost/noncopyable.hpp>
-
+#include "metagame_config.h"
+#include "shop.h"
 using namespace std;
+
+
 
 class PersistentData {
 public:

@@ -1,12 +1,7 @@
 
 #include "merger_upgrades.h"
-#include "merger_util.h"
-#include "debug.h"
-#include "parse.h"
-#include "itemdb.h"
+using namespace std;
 
-#include <fstream>
-#include <set>
 
 string UpgradeParams::Namer::getName(const vector<string> &line) {
   if(line[0] == "")

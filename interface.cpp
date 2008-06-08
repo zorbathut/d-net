@@ -1,22 +1,12 @@
 
 #include "interface.h"
-
 #include "ai.h"
-#include "args.h"
-#include "debug.h"
+#include "dumper_registry.h"
+#include "game_projectile.h"
 #include "game_tank.h"
 #include "gfx.h"
-#include "inputsnag.h"
-#include "metagame.h"
 #include "os.h"
-#include "player.h"
-#include "audio.h"
-#include "adler32.h"
-#include "game_ai.h"
 #include "res_interface.h"
-#include "adler32_util.h"
-#include "audit.h"
-#include "dumper_registry.h"
 #include "smartptr_util.h"
 #include "version.h"
 
@@ -24,8 +14,11 @@
 
 #include <boost/assign.hpp>
 #include <boost/bind.hpp>
-
 using namespace std;
+
+
+
+
 using boost::bind;
 
 DEFINE_int(rounds_per_shop, 6, "How many rounds between each buying-things opportunity");

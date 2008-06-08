@@ -1,10 +1,8 @@
 
 #include "itemdb.h"
-
-#include "rng.h"
-#include "adler32.h"
-
 using namespace std;
+
+
 
 template<typename T> vector<typename IDBItemProperties<T>::adjusted> adjust_vector(const vector<const T *> &orig, const IDBAdjustment &adjust) {
   vector<typename IDBItemProperties<T>::adjusted> rv;

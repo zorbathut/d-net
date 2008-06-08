@@ -5,8 +5,9 @@
 #include "input.h"
 
 #include <set>
-
 using namespace std;
+
+
 
 struct MouseInput {
   Float2 pos;

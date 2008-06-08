@@ -1,17 +1,15 @@
 #ifndef DNET_INTERFACE_STDMENU
 #define DNET_INTERFACE_STDMENU
 
-#include "smartptr.h"
 #include "input.h"
-
-#include <vector>
-#include <utility>
+#include "smartptr.h"
 
 #include <boost/function.hpp>
 #include <boost/optional.hpp>
-#include <boost/noncopyable.hpp>
-
 using namespace std;
+
+
+
 
 using boost::function;
 using boost::optional;

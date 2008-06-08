@@ -3,10 +3,9 @@
 
 #include "game_effects.h"
 #include "gamemap.h"
-#include "itemdb.h"
 #include "recorder.h"
-
 using namespace std;
+
 
 class Tank;
 

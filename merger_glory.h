@@ -1,15 +1,11 @@
 #ifndef MERGER_GLORY
 #define MERGER_GLORY
 
-#include <string>
-#include <vector>
-#include <set>
-
 #include "itemdb.h"
-#include "parse.h"
 #include "merger_util.h"
-
 using namespace std;
+
+
 
 struct GloryParams {
   struct Data {

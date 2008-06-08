@@ -1,12 +1,10 @@
 #ifndef DNET_INPUT
 #define DNET_INPUT
 
-#include "const.h"
 #include "coord.h"
-
-#include <string>
-
 using namespace std;
+
+
 
 /*************
  * User input

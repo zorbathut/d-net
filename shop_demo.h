@@ -2,8 +2,8 @@
 #define DNET_SHOPDEMO
 
 #include "game.h"
-
 using namespace std;
+
 
 class GameAiScatterbombing;
 class GameAiKamikaze;

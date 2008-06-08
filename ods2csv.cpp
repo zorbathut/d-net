@@ -1,22 +1,20 @@
 
-#include "debug.h"
-#include "os.h"
-#include "init.h"
 #include "args.h"
-#include "util.h"
+#include "init.h"
 
 #include "minizip/unzip.h"
 
-#include <xercesc/util/PlatformUtils.hpp>
-#include <xercesc/dom/DOMDocument.hpp>
+#include "util.h"
+
 #include <xercesc/dom/DOMNamedNodeMap.hpp>
 #include <xercesc/dom/DOMTreeWalker.hpp>
 #include <xercesc/framework/MemBufInputSource.hpp>
 #include <xercesc/parsers/XercesDOMParser.hpp>
-
-#include <vector>
-
 using namespace std;
+
+
+
+
 using namespace xercesc;
 
 class XSargh {

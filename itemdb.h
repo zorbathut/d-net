@@ -1,17 +1,15 @@
 #ifndef DNET_ITEMDB
 #define DNET_ITEMDB
 
+#include "args.h"
 #include "color.h"
 #include "coord.h"
 #include "dvec2.h"
-#include "util.h"
-#include "rng.h"
 #include "money.h"
-#include "args.h"
-
-#include <map>
-
+#include "rng.h"
 using namespace std;
+
+
 
 DECLARE_string(fileroot);
 

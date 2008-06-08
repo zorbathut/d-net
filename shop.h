@@ -3,9 +3,8 @@
 
 #include "shop_info.h"
 #include "shop_layout.h"
-#include "player.h"
-
 using namespace std;
+
 
 class Ai;
 

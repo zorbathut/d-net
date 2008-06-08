@@ -3,11 +3,9 @@
 
 #include "game_ai.h"
 #include "rng.h"
-#include "float.h"
-
-#include <deque>
-
 using namespace std;
+
+
 
 class FactionState;
 class PlayerMenuState;

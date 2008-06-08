@@ -1,15 +1,14 @@
 
 #include "coord.h"
-
+#include "adler32.h"
 #include "composite-imp.h"
 #include "float.h"
-#include "util.h"
-#include "const.h"
-#include "adler32.h"
 
 #include <boost/static_assert.hpp>
-
 using namespace std;
+
+
+
 
 class Coords {
 public:

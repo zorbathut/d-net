@@ -1,21 +1,14 @@
 
 #include "core.h"
-
-#include "args.h"
-#include "debug.h"
-#include "gfx.h"
-#include "inputsnag.h"
-#include "interface.h"
-#include "rng.h"
-#include "os_timer.h"
-#include "util.h"
-#include "httpd.h"
-#include "perfbar.h"
-#include "adler32.h"
-#include "dumper.h"
 #include "audit.h"
 #include "dumper_registry.h"
-#include "audio.h"
+#include "gfx.h"
+#include "httpd.h"
+#include "interface.h"
+#include "os_timer.h"
+#include "perfbar.h"
+using namespace std;
+
 
 #ifdef OSX_FRAMEWORK_PREFIXES
   #include <SDL/SDL.h>
@@ -23,7 +16,6 @@
   #include <SDL.h>
 #endif
 
-using namespace std;
 
 DEFINE_int(fastForwardTo, 0, "Fastforward rendering to this frame");
 DEFINE_int(terminateAfterFrame, -1, "Terminate execution after this many frames");

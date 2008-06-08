@@ -1,7 +1,9 @@
 #ifndef DNET_INIT
 #define DNET_INIT
 
+
 #include <boost/function.hpp>
+using namespace std;
 
 void initProgram(int *argc, const char ***argv);
 

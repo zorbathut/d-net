@@ -1,8 +1,8 @@
 
 #include "dumper_registry.h"
-
-#include "debug.h"
 #include "util.h"
+using namespace std;
+
 
 class RegistryData {
 public:

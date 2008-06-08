@@ -1,13 +1,12 @@
 
 #include "coord.h"
 
-#include "debug.h"
-#include "parse.h"
-#include "util.h"
-
+#include <map>
 #include <set>
-
 using namespace std;
+
+
+
 
 bool dumpBooleanDetail = true;
 

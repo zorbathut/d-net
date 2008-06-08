@@ -1,13 +1,13 @@
 
 #include "dvec2.h"
-
-#include "parse.h"
-#include "util.h"
 #include "const.h"
+#include "parse.h"
 
 #include <fstream>
-
 using namespace std;
+
+
+
 
 void VectorPoint::mirror() {
   swap(curvlp, curvrp);

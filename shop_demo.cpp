@@ -1,16 +1,13 @@
 
 #include "shop_demo.h"
-
-#include "debug.h"
+#include "audit.h"
 #include "game_ai.h"
+#include "game_projectile.h"
 #include "game_tank.h"
 #include "gfx.h"
-#include "player.h"
-#include "args.h"
-#include "adler32.h"
-#include "audit.h"
-
 using namespace std;
+
+
 
 enum {DEMOMODE_FIRINGRANGE, DEMOMODE_MINE, DEMOMODE_BOMBARDMENT, DEMOMODE_GLORY, DEMOMODE_LAST};
 

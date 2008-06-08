@@ -1,13 +1,11 @@
 
 #include "game_tank.h"
-
+#include "adler32_util.h"
 #include "collide.h"
 #include "gfx.h"
-#include "player.h"
-#include "rng.h"
-#include "adler32_util.h"
-
 using namespace std;
+
+
 
 void Tank::init(IDBTankAdjust in_tank, Color in_color) {
   tank = in_tank;

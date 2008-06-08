@@ -1,13 +1,12 @@
 
 #include "game_projectile.h"
-
-#include "collide.h"
-#include "gfx.h"
-#include "rng.h"
-#include "game_tank.h"
 #include "adler32_util.h"
-
+#include "collide.h"
+#include "game_tank.h"
+#include "gfx.h"
 using namespace std;
+
+
 
 void Projectile::tick(const GameImpactContext &gic, int owner) {
   CHECK(live);

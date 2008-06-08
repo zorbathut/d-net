@@ -1,14 +1,12 @@
 
 #include "util.h"
 
-#include "debug.h"
-
-#include <vector>
 #include <cmath>
 #include <sstream>
-#include <stdarg.h>
-
 using namespace std;
+
+
+
 
 bool ffwd = false;
 

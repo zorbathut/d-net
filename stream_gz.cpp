@@ -2,10 +2,11 @@
 #include "stream_gz.h"
 
 #include <vector>
-
 #include <zlib.h>
-
 using namespace std;
+
+
+
 
 vector<OStreamGz *> activeostreamgz;
 

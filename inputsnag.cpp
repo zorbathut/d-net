@@ -1,17 +1,13 @@
 
 #include "inputsnag.h"
-
 #include "ai.h"
-#include "args.h"
 #include "dumper_registry.h"
-#include "debug.h"
-#include "util.h"
-#include "smartptr.h"
-#include "dumper.h"
 
 #include <boost/assign/list_of.hpp>
+using namespace std;
 
-#include <set>
+
+
 
 #ifdef OSX_FRAMEWORK_PREFIXES
   #include <SDL/SDL.h>
@@ -19,7 +15,6 @@
   #include <SDL.h>
 #endif
 
-using namespace std;
 
 struct JS {
   SDL_Joystick *js;

@@ -1,15 +1,14 @@
 
 #include "vecedit.h"
-
 #include "gfx.h"
-#include "util.h"
-
 #include "itemdb.h"
 
-#include <set>
 #include <boost/assign.hpp>
-
 using namespace std;
+
+
+
+
 
 const float primenode = 8;
 const float secondnode = 5;

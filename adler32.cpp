@@ -1,10 +1,10 @@
 
 #include "adler32.h"
 
-#include "debug.h"
-#include "coord.h"
-
 #include <boost/static_assert.hpp>
+using namespace std;
+
+
 
 Adler32::Adler32() {
   a = 1;

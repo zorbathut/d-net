@@ -1,8 +1,8 @@
 
 #include "stream.h"
-
-#include "debug.h"
 #include "stream_process_primitive.h"
+using namespace std;
+
 
 void IStream::read(char *storage, int size) {
   CHECK(!tryRead(storage, size));

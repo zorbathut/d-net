@@ -1,13 +1,12 @@
 #ifndef DNET_FLOAT
 #define DNET_FLOAT
 
-#include "debug.h"
 #include "util.h"
 
 #include <cmath>
-#include <vector>
-
 using namespace std;
+
+
 
 /*************
  * Float2/Float4 classes and operators

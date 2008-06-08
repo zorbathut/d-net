@@ -2,6 +2,7 @@
 #define DNET_ADLER32
 
 #include "debug.h"
+using namespace std;
 
 #define MOD_ADLER 65521
 

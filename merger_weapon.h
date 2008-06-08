@@ -1,15 +1,13 @@
 #ifndef MERGER_WEAPON
 #define MERGER_WEAPON
 
-#include <string>
-#include <vector>
-#include <set>
-
 #include "itemdb.h"
 #include "parse.h"
-#include "merger_util.h"
 
+#include <set>
 using namespace std;
+
+
 
 struct WeaponParams {
   struct Data {

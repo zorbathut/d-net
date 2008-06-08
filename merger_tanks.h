@@ -1,15 +1,11 @@
 #ifndef MERGER_TANKS
 #define MERGER_TANKS
 
-#include <string>
-#include <vector>
-#include <set>
-
 #include "itemdb.h"
-#include "parse.h"
 #include "merger_util.h"
-
 using namespace std;
+
+
 
 struct TankParams {
   struct Data {

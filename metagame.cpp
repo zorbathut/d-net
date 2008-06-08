@@ -1,27 +1,25 @@
 
 #include "metagame.h"
-
-#include "ai.h"
-#include "args.h"
-#include "debug.h"
-#include "game_tank.h"
-#include "gfx.h"
-#include "inputsnag.h"
-#include "parse.h"
-#include "player.h"
-#include "perfbar.h"
 #include "adler32_util.h"
+#include "ai.h"
 #include "audit.h"
 #include "dumper_registry.h"
+#include "game_projectile.h"
+#include "game_tank.h"
+#include "gfx.h"
+#include "parse.h"
+#include "perfbar.h"
 
 #include <fstream>
+using namespace std;
+
+
 
 DEFINE_string(singlelevel, "", "The name of a level to load and use exclusively");
 REGISTER_string(singlelevel);
 
 DECLARE_bool(renderframenumber);
 
-using namespace std;
 
 void Metagame::instant_action_init(const ControlConsts &ck, int primary_id) {
   persistent.instant_action_init(ck, primary_id);

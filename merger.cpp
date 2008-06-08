@@ -1,21 +1,16 @@
 
-#include "os.h"
-#include "args.h"
-#include "debug.h"
-#include "merger_weapon.h"
-#include "merger_bombardment.h"
-#include "merger_tanks.h"
-#include "merger_glory.h"
-#include "merger_upgrades.h"
-#include "merger_util.h"
-#include "merger_factions.h"
 #include "init.h"
+#include "merger_bombardment.h"
+#include "merger_factions.h"
+#include "merger_glory.h"
+#include "merger_tanks.h"
+#include "merger_upgrades.h"
+#include "merger_weapon.h"
 
 #include <fstream>
-#include <string>
-#include <map>
-
 using namespace std;
+
+
 
 DEFINE_bool(demo, false, "Only allow demo-tagged items");
 

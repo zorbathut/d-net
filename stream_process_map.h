@@ -1,12 +1,12 @@
 #ifndef DNET_STREAM_PROCESS_MAP
 #define DNET_STREAM_PROCESS_MAP
 
-#include "stream_process_primitive.h"
-#include "stream_process_utility.h"
+#include "stream.h"
 
 #include <map>
-
 using namespace std;
+
+
 
 template<typename T, typename U> struct IStreamReader<map<T, U> > { static bool read(IStream *istr, map<T, U> *storage) {
   int count;

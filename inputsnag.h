@@ -1,12 +1,10 @@
 #ifndef DNET_INPUTSNAG
 #define DNET_INPUTSNAG
 
-#include "input.h"
-#include "rng.h"
 #include "dumper.h"
 #include "smartptr.h"
-
 using namespace std;
+
 
 class Ai;
 class SDL_KeyboardEvent;
