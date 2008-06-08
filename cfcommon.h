@@ -4,9 +4,8 @@
 #include "const.h"
 
 #include <cmath>
+
 using namespace std;
-
-
 
 /*************
  * Fast sin/cos

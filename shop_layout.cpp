@@ -1,6 +1,8 @@
 
 #include "shop_layout.h"
+
 #include "gfx.h"
+
 using namespace std;
 
 float ShopLayout::expandy(int tier) const {

@@ -1,17 +1,14 @@
 
 #include "itemdb.h"
+
 #include "adler32_util.h"
 #include "config.h"
 #include "itemdb_parse.h"
 #include "parse.h"
 
 #include <fstream>
+
 using namespace std;
-
-
-
-
-
 
 DEFINE_string(fileroot, DEFAULTPATH "data/", "Root to pull data from");
 

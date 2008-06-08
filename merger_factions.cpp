@@ -1,8 +1,9 @@
 
 #include "merger_factions.h"
-#include "merger_util.h"
-using namespace std;
 
+#include "merger_util.h"
+
+using namespace std;
 
 string FactionParams::Namer::getName(const vector<string> &line) {
   if(!line[0].size())

@@ -2,8 +2,8 @@
 #define DNET_METAGAME
 
 #include "metagame_tween.h"
-using namespace std;
 
+using namespace std;
 
 class Ai;
 

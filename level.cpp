@@ -1,9 +1,9 @@
 
 #include "level.h"
+
 #include "dvec2.h"
+
 using namespace std;
-
-
 
 Level loadLevel(const string &str) {
   Level rv;

@@ -1,12 +1,13 @@
 
 #include "httpd.h"
+
 #include "args.h"
 #include "debug.h"
 #include "parse.h"
 #include "socket.h"
 #include "util.h"
-using namespace std;
 
+using namespace std;
 
 map<string, HTTPDhook *> &getHooks() {
   static map<string, HTTPDhook *> hooks;

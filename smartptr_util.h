@@ -4,9 +4,8 @@
 #include "smartptr.h"
 
 #include <vector>
+
 using namespace std;
-
-
 
 template <typename T> vector<const T*> ptrize(const vector<smart_ptr<T> > &vt) {
   vector<const T*> rv;

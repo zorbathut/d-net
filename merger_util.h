@@ -4,9 +4,8 @@
 #include "parse.h"
 
 #include <set>
+
 using namespace std;
-
-
 
 vector<string> parseCsv(const string &in);
 string splice(const string &source, const string &splicetext);

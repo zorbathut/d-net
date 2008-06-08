@@ -3,8 +3,8 @@
 
 #include "interface_stdmenu.h"
 #include "metagame.h"
-using namespace std;
 
+using namespace std;
 
 using boost::function;
 

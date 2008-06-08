@@ -4,8 +4,8 @@
 #include "debug.h"
 
 #include <boost/noncopyable.hpp>
-using namespace std;
 
+using namespace std;
 
 template<typename T> struct IStreamReader;
 template<typename T> struct OStreamWriter;

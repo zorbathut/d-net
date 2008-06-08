@@ -2,9 +2,8 @@
 #define DNET_STREAM_PROCESS_UTILITY
 
 #include "stream.h"
+
 using namespace std;
-
-
 
 template<typename T, typename U> struct IStreamReader<pair<T, U> > { static bool read(IStream *istr, pair<T, U> *storage) {
   if(istr->tryRead(&storage->first)) return true;

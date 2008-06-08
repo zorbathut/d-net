@@ -8,11 +8,8 @@
 #include <fstream>
 
 #include <boost/assign.hpp>
+
 using namespace std;
-
-
-
-
 
 DEFINE_bool(report, true, "Attempt to report errors");
 

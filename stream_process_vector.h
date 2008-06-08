@@ -4,9 +4,8 @@
 #include "stream.h"
 
 #include <vector>
+
 using namespace std;
-
-
 
 template<typename T> struct IStreamReader<vector<T> > { static bool read(IStream *istr, vector<T> *storage) {
   int count;

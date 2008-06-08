@@ -2,7 +2,12 @@
 #define DNET_RNG
 
 
+
+
+
+
 #include <boost/random.hpp>
+
 using namespace std;
 
 class Coord;

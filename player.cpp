@@ -1,11 +1,10 @@
 
 #include "player.h"
+
 #include "adler32_util.h"
 #include "audit.h"
+
 using namespace std;
-
-
-
 
 pair<int, int> Weaponmanager::findWeapon(const IDBWeapon *weap) const {
   pair<int, int> rv = make_pair(-1, -1);

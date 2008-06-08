@@ -3,8 +3,8 @@
 
 #include "coord.h"
 #include "rng.h"
-using namespace std;
 
+using namespace std;
 
 class Collider;
 

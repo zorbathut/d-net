@@ -1,8 +1,9 @@
 
 #include "socket.h"
-#include "debug.h"
-using namespace std;
 
+#include "debug.h"
+
+using namespace std;
 
 #ifdef NO_WINDOWS
   #include <sys/socket.h>

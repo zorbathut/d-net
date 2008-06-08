@@ -1,5 +1,6 @@
 
 #include "itemdb_parse.h"
+
 #include "dumper_registry.h"
 #include "itemdb_private.h"
 #include "itemdb_stream.h"
@@ -13,10 +14,8 @@
 #include <fstream>
 #include <numeric>
 #include <set>
+
 using namespace std;
-
-
-
 
 DEFINE_bool(debugitems, false, "Enable debug items");
 REGISTER_bool(debugitems);

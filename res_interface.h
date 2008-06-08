@@ -2,9 +2,13 @@
 #define DNET_RESINTERFACE
 
 
-#include <vector>
-using namespace std;
 
+
+
+
+#include <vector>
+
+using namespace std;
 
 bool setResolution(pair<int, int> res, float aspect, bool fullscreen);
 

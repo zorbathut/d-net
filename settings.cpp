@@ -1,5 +1,6 @@
 
 #include "settings.h"
+
 #include "args.h"
 #include "os.h"
 #include "os_ui.h"
@@ -7,9 +8,8 @@
 #include "util.h"
 
 #include <fstream>
+
 using namespace std;
-
-
 
 DEFINE_int(resolutionx, -1, "X resolution");
 DEFINE_int(resolutiony, -1, "Y resolution");

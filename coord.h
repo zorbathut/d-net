@@ -3,9 +3,8 @@
 
 #include "cfcommon.h"
 #include "util.h"
+
 using namespace std;
-
-
 
 class Float2;
 class Float4;

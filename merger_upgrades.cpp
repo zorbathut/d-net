@@ -1,7 +1,8 @@
 
 #include "merger_upgrades.h"
-using namespace std;
 
+
+using namespace std;
 
 string UpgradeParams::Namer::getName(const vector<string> &line) {
   if(line[0] == "")

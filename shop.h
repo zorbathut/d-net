@@ -3,8 +3,8 @@
 
 #include "shop_info.h"
 #include "shop_layout.h"
-using namespace std;
 
+using namespace std;
 
 class Ai;
 

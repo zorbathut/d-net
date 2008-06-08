@@ -1,10 +1,11 @@
 
 #include "merger_util.h"
+
 #include "util.h"
 
 #include <boost/regex.hpp>
-using namespace std;
 
+using namespace std;
 
 vector<string> parseCsv(const string &in) {
   //dprintf("%s\n", in.c_str());

@@ -7,13 +7,12 @@
 
 #include <boost/bind.hpp>
 
-#include <wx/wx.h>
 #include <wx/glcanvas.h>
 #include <wx/notebook.h>
 #include <wx/spinctrl.h>
+#include <wx/wx.h>
+
 using namespace std;
-
-
 
 using boost::function;
 using boost::bind;

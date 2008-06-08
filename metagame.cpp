@@ -1,5 +1,6 @@
 
 #include "metagame.h"
+
 #include "adler32_util.h"
 #include "ai.h"
 #include "audit.h"
@@ -11,9 +12,8 @@
 #include "perfbar.h"
 
 #include <fstream>
+
 using namespace std;
-
-
 
 DEFINE_string(singlelevel, "", "The name of a level to load and use exclusively");
 REGISTER_string(singlelevel);

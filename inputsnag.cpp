@@ -1,13 +1,12 @@
 
 #include "inputsnag.h"
+
 #include "ai.h"
 #include "dumper_registry.h"
 
 #include <boost/assign/list_of.hpp>
+
 using namespace std;
-
-
-
 
 #ifdef OSX_FRAMEWORK_PREFIXES
   #include <SDL/SDL.h>

@@ -3,9 +3,8 @@
 
 #include "itemdb.h"
 #include "merger_util.h"
+
 using namespace std;
-
-
 
 struct BombardParams {
   struct Data {

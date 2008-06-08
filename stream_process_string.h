@@ -4,9 +4,8 @@
 #include "stream_process_primitive.h"
 
 #include <vector>
+
 using namespace std;
-
-
 
 template<> struct IStreamReader<string> { static bool read(IStream *istr, string *storage) {
   int count;

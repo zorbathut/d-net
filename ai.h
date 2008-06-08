@@ -3,9 +3,8 @@
 
 #include "game_ai.h"
 #include "rng.h"
+
 using namespace std;
-
-
 
 class FactionState;
 class PlayerMenuState;

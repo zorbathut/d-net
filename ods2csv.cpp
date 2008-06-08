@@ -10,10 +10,8 @@
 #include <xercesc/dom/DOMTreeWalker.hpp>
 #include <xercesc/framework/MemBufInputSource.hpp>
 #include <xercesc/parsers/XercesDOMParser.hpp>
+
 using namespace std;
-
-
-
 
 using namespace xercesc;
 

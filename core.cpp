@@ -1,5 +1,6 @@
 
 #include "core.h"
+
 #include "audit.h"
 #include "dumper_registry.h"
 #include "gfx.h"
@@ -7,8 +8,8 @@
 #include "interface.h"
 #include "os_timer.h"
 #include "perfbar.h"
-using namespace std;
 
+using namespace std;
 
 #ifdef OSX_FRAMEWORK_PREFIXES
   #include <SDL/SDL.h>

@@ -6,9 +6,8 @@
 #include "stream.h"
 
 #include <map>
+
 using namespace std;
-
-
 
 /* Okay, packet ordering:
 

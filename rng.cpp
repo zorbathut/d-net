@@ -1,10 +1,9 @@
 
 #include "rng.h"
+
 #include "coord.h"
+
 using namespace std;
-
-
-
 
 template<> float RngBase<boost::lagged_fibonacci9689>::frand() {
   float v = (float)sync();

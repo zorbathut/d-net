@@ -1,10 +1,10 @@
 
 #include "color.h"
+
 #include "debug.h"
 #include "parse.h"
+
 using namespace std;
-
-
 
 Color::Color() { };
 Color::Color(float in_r, float in_g, float in_b) :

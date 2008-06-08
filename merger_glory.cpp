@@ -1,7 +1,8 @@
 
 #include "merger_glory.h"
-using namespace std;
 
+
+using namespace std;
 
 string GloryParams::token() {
   return "GLORY";

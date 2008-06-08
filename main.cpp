@@ -13,10 +13,8 @@
 #include "res_interface.h"
 #include "settings.h"
 #include "test.h"
+
 using namespace std;
-
-
-
 
 DEFINE_bool(help, false, "Get help");
 DEFINE_float(generateCachedShops, -1, "Do all the work necessary to cache shops. Parameter is the accuracy");

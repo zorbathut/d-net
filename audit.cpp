@@ -1,9 +1,8 @@
 
 #include "audit.h"
+
+
 using namespace std;
-
-
-
 
 static vector<const AuditIgnore *> aigl;
 

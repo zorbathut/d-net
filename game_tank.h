@@ -4,8 +4,8 @@
 #include "game_util.h"
 #include "input.h"
 #include "player.h"
-using namespace std;
 
+using namespace std;
 
 class Tank {
 public:

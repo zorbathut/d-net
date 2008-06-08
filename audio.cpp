@@ -1,12 +1,12 @@
 
 #include "audio.h"
+
 #include "itemdb.h"
 #include "os_sdl.h"
 
 #include <vorbis/vorbisfile.h>
+
 using namespace std;
-
-
 
 DEFINE_bool(audio, true, "Turn sound on or off entirely");
 

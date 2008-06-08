@@ -3,10 +3,8 @@
 
 #include <map>
 #include <set>
+
 using namespace std;
-
-
-
 
 bool dumpBooleanDetail = true;
 

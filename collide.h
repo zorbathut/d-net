@@ -4,9 +4,8 @@
 #include "coord.h"
 
 #include <map>
+
 using namespace std;
-
-
 
 #define ENABLE_COLLIDE_DEBUG_VIS
 

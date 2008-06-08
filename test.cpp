@@ -1,5 +1,6 @@
 
 #include "test.h"
+
 #include "collide.h"
 #include "gamemap.h"
 #include "itemdb.h"
@@ -7,10 +8,8 @@
 #include "parse.h"
 
 #include <fstream>
+
 using namespace std;
-
-
-
 
 DECLARE_string(singlelevel);
 

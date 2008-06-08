@@ -2,8 +2,8 @@
 #define DNET_SHOPINFO
 
 #include "shop_demo.h"
-using namespace std;
 
+using namespace std;
 
 class ShopInfo {
 public:

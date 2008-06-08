@@ -1,12 +1,12 @@
 
 #include "gamemap.h"
+
 #include "adler32_util.h"
 #include "args.h"
 #include "collide.h"
 #include "gfx.h"
+
 using namespace std;
-
-
 
 DECLARE_bool(debugGraphics);
 

@@ -1,14 +1,14 @@
 
 #include "metagame_config.h"
+
 #include "adler32_util.h"
 #include "audio.h"
 #include "game.h"
 #include "game_projectile.h"
 #include "game_tank.h"
 #include "gfx.h"
+
 using namespace std;
-
-
 
 class RenderInfo {
 public:

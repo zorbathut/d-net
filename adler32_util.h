@@ -6,9 +6,8 @@
 #include <map>
 #include <set>
 #include <vector>
+
 using namespace std;
-
-
 
 template<typename T, typename U> void adler(Adler32 *adl, const pair<T, U> &tee) {
   adler(adl, tee.first);

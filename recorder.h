@@ -2,8 +2,8 @@
 #define DNET_RECORDER
 
 #include "itemdb.h"
-using namespace std;
 
+using namespace std;
 
 bool operator<(const FileShopcache::Entry &lhs, const FileShopcache::Entry &rhs);
 

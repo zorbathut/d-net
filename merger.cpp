@@ -8,9 +8,8 @@
 #include "merger_weapon.h"
 
 #include <fstream>
+
 using namespace std;
-
-
 
 DEFINE_bool(demo, false, "Only allow demo-tagged items");
 

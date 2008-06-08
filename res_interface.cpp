@@ -1,11 +1,12 @@
 
 #include "res_interface.h"
+
 #include "args.h"
 #include "gfx.h"
 #include "os_ui.h"
 #include "settings.h"
-using namespace std;
 
+using namespace std;
 
 #ifdef OSX_FRAMEWORK_PREFIXES
   #include <OpenGL/gl.h>

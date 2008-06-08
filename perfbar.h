@@ -4,8 +4,8 @@
 #include "color.h"
 
 #include <boost/noncopyable.hpp>
-using namespace std;
 
+using namespace std;
 
 namespace PBC {
   const Color tick = Color(0.2, 0.2, 0.2);

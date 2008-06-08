@@ -2,11 +2,15 @@
 #define DNET_SMARTPTR
 
 
+
+
+
+
 #include <string>
 
 #include <boost/noncopyable.hpp>
-using namespace std;
 
+using namespace std;
 
 template <typename B, typename D> B *upcast(D *d) { return static_cast<D *>(static_cast<B *>(d)); } 
 

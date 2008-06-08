@@ -1,7 +1,8 @@
 
 #include "merger_tanks.h"
-using namespace std;
 
+
+using namespace std;
 
 string TankParams::token() {
   return "TANKS";

@@ -7,9 +7,8 @@
 #include "image.h"
 
 #include <boost/noncopyable.hpp>
+
 using namespace std;
-
-
 
 /*************
  * Setup and statistics

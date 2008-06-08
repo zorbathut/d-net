@@ -4,9 +4,8 @@
 #include "adler32.h"
 
 #include <vector>
+
 using namespace std;
-
-
 
 // Start initializing.
 void audit_start_create();

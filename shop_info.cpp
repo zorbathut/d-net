@@ -1,10 +1,10 @@
 
 #include "shop_info.h"
+
 #include "gfx.h"
 #include "parse.h"
+
 using namespace std;
-
-
 
 class ShopKVPrinter {
 public:

@@ -1,12 +1,11 @@
 
 #include "util.h"
 
+
 #include <cmath>
 #include <sstream>
+
 using namespace std;
-
-
-
 
 bool ffwd = false;
 

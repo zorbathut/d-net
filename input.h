@@ -2,9 +2,8 @@
 #define DNET_INPUT
 
 #include "coord.h"
+
 using namespace std;
-
-
 
 /*************
  * User input

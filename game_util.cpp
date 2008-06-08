@@ -1,10 +1,10 @@
 
 #include "game_util.h"
+
 #include "game_projectile.h"
 #include "game_tank.h"
+
 using namespace std;
-
-
 
 vector<pair<Coord, Tank *> > GameImpactContext::getAdjacency(const Coord2 &center) const {
   vector<pair<Coord, Tank *> > rv;

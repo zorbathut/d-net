@@ -1,5 +1,6 @@
 
 #include "game.h"
+
 #include "adler32_util.h"
 #include "audit.h"
 #include "game_ai.h"
@@ -7,9 +8,8 @@
 #include "game_tank.h"
 #include "gfx.h"
 #include "perfbar.h"
+
 using namespace std;
-
-
 
 DEFINE_bool(verboseCollisions, false, "Verbose collisions");
 DEFINE_bool(debugGraphics, false, "Enable various debug graphics");

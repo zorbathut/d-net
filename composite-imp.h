@@ -6,9 +6,8 @@
 #include <algorithm>
 #include <cmath>
 #include <vector>
+
 using namespace std;
-
-
 
 #define Type1 typename T::T1
 #define Type2 typename T::T2

@@ -3,8 +3,8 @@
 
 #include "dumper.h"
 #include "smartptr.h"
-using namespace std;
 
+using namespace std;
 
 class Ai;
 class SDL_KeyboardEvent;

@@ -4,8 +4,8 @@
 #include "game_effects.h"
 #include "gamemap.h"
 #include "recorder.h"
-using namespace std;
 
+using namespace std;
 
 class Tank;
 

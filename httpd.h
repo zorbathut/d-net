@@ -2,13 +2,16 @@
 #define DNET_HTTPD
 
 
+
+
+
+
 #include <map>
 #include <string>
 
 #include <boost/noncopyable.hpp>
+
 using namespace std;
-
-
 
 class HTTPDhook : boost::noncopyable {
   string identifier;

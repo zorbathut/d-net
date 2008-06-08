@@ -1,10 +1,11 @@
 
 #include "itemdb_stream.h"
+
 #include "stream_process_string.h"
 #include "stream_process_utility.h"
 #include "stream_process_vector.h"
-using namespace std;
 
+using namespace std;
 
 bool stream_read(IStream *istr, FileShopcache *storage) {
   if(istr->tryRead(&storage->entries)) return true;

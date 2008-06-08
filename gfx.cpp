@@ -1,13 +1,13 @@
 
 #include "gfx.h"
+
 #include "itemdb.h"
 #include "parse.h"
 #include "perfbar.h"
 
 #include <fstream>
+
 using namespace std;
-
-
 
 #ifdef OSX_FRAMEWORK_PREFIXES
   #include <OpenGL/gl.h>

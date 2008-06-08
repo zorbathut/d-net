@@ -4,8 +4,8 @@
 #include "input.h"
 #include "itemdb.h"
 #include "smartptr.h"
-using namespace std;
 
+using namespace std;
 
 // This is only really used for the "test" screen, and I don't want this to be considered a "full dependency" because it kind of isn't.
 class GamePackage;

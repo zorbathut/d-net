@@ -1,9 +1,9 @@
 
 #include "merger_weapon.h"
+
 #include "merger_util.h"
+
 using namespace std;
-
-
 
 string WeaponParams::Namer::getName(const vector<string> &line) {
   if(line[0] == "") {

@@ -1,9 +1,8 @@
 
 #include "merger_bombardment.h"
+
+
 using namespace std;
-
-
-
 
 string BombardParams::token() {
   return "BOMBARDMENT";

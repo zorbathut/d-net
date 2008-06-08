@@ -2,9 +2,8 @@
 #define DNET_SHOP_LAYOUT
 
 #include "float.h"
+
 using namespace std;
-
-
 
 class ShopPlacement {
 public:

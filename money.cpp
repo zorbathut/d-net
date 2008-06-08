@@ -1,8 +1,9 @@
 
 #include "money.h"
-#include "adler32.h"
-using namespace std;
 
+#include "adler32.h"
+
+using namespace std;
 
 string getBaseText(const Money &mon) {
   string text;

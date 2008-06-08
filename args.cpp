@@ -1,5 +1,6 @@
 
 #include "args.h"
+
 #include "debug.h"
 #include "init.h"
 #include "parse.h"
@@ -7,11 +8,8 @@
 #include <fstream>
 
 #include <boost/bind.hpp>
+
 using namespace std;
-
-
-
-
 
 class LinkageData {
 public:

@@ -5,9 +5,8 @@
 #include "parse.h"
 
 #include <set>
+
 using namespace std;
-
-
 
 struct WeaponParams {
   struct Data {

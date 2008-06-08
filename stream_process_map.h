@@ -4,9 +4,8 @@
 #include "stream.h"
 
 #include <map>
+
 using namespace std;
-
-
 
 template<typename T, typename U> struct IStreamReader<map<T, U> > { static bool read(IStream *istr, map<T, U> *storage) {
   int count;

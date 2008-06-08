@@ -7,9 +7,8 @@
 #include "dvec2.h"
 #include "money.h"
 #include "rng.h"
+
 using namespace std;
-
-
 
 DECLARE_string(fileroot);
 

@@ -5,8 +5,8 @@
 
 #include <boost/detail/endian.hpp>
 #include <boost/static_assert.hpp>
-using namespace std;
 
+using namespace std;
 
 BOOST_STATIC_ASSERT(sizeof(char) == 1); // if this is wrong, we have problems
 BOOST_STATIC_ASSERT(CHAR_BIT == 8);

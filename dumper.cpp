@@ -1,5 +1,6 @@
 
 #include "dumper.h"
+
 #include "audit.h"
 #include "dumper_registry.h"
 #include "stream_gz.h"
@@ -9,8 +10,8 @@
 #include "stream_process_string.h"
 #include "stream_process_utility.h"
 #include "stream_process_vector.h"
-using namespace std;
 
+using namespace std;
 
 DEFINE_string(writeTarget, "", "Prefix for file dump");
 DEFINE_string(readTarget, "", "File to replay from");

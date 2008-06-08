@@ -6,9 +6,8 @@
 #include "input.h"
 #include "level.h"
 #include "player.h"
+
 using namespace std;
-
-
 
 class Collider;
 class GameAi;

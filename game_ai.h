@@ -4,9 +4,8 @@
 #include "input.h"
 
 #include <boost/noncopyable.hpp>
+
 using namespace std;
-
-
 
 class Tank;
 class Coord2;

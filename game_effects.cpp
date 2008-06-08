@@ -1,10 +1,10 @@
 
 #include "game_effects.h"
+
 #include "gfx.h"
 #include "itemdb.h"
+
 using namespace std;
-
-
 
 void GfxEffects::tick() {
   CHECK(life != -1);

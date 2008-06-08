@@ -6,10 +6,8 @@
 
 #include <boost/function.hpp>
 #include <boost/optional.hpp>
+
 using namespace std;
-
-
-
 
 using boost::function;
 using boost::optional;

@@ -5,9 +5,8 @@
 #include "parse.h"
 
 #include <set>
+
 using namespace std;
-
-
 
 struct FactionParams {
   struct Data {

@@ -1,15 +1,14 @@
 
 #include "generators.h"
+
 #include "itemdb_stream.h"
 #include "shop_demo.h"
 #include "stream_file.h"
 #include "stream_process_string.h"
 #include "stream_process_utility.h"
 #include "stream_process_vector.h"
+
 using namespace std;
-
-
-
 
 template<typename T> FileShopcache generateShopCache(const string &itemname, const T &item, float accuracy) {
   dprintf("%s\n", itemname.c_str());

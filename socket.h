@@ -2,8 +2,8 @@
 #define DNET_SOCKET
 
 #include "smartptr.h"
-using namespace std;
 
+using namespace std;
 
 class Socket : boost::noncopyable {
 private:

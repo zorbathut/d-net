@@ -1,5 +1,6 @@
 
 #include "metagame_tween.h"
+
 #include "adler32_util.h"
 #include "ai.h"
 #include "dumper_registry.h"
@@ -10,10 +11,8 @@
 #include "perfbar.h"
 
 #include <numeric>
+
 using namespace std;
-
-
-
 
 DEFINE_bool(hideAiShopping, true, "Allow skipping bits when waiting for the AI to buy stuff");
 

@@ -1,5 +1,6 @@
 
 #include "interface.h"
+
 #include "ai.h"
 #include "dumper_registry.h"
 #include "game_projectile.h"
@@ -14,10 +15,8 @@
 
 #include <boost/assign.hpp>
 #include <boost/bind.hpp>
+
 using namespace std;
-
-
-
 
 using boost::bind;
 

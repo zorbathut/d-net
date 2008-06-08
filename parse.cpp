@@ -1,12 +1,11 @@
 
 #include "parse.h"
+
 #include "util.h"
 
 #include <iostream>
+
 using namespace std;
-
-
-
 
 vector<string> tokenize(const string &in, const string &kar) {
   string::const_iterator cp = in.begin();

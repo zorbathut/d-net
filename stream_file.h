@@ -2,9 +2,8 @@
 #define DNET_STREAM_FILE
 
 #include "stream.h"
+
 using namespace std;
-
-
 
 class IStreamFile : public IStream {
 private:

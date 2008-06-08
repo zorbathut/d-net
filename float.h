@@ -4,9 +4,8 @@
 #include "util.h"
 
 #include <cmath>
+
 using namespace std;
-
-
 
 /*************
  * Float2/Float4 classes and operators
