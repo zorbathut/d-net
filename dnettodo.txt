@@ -12,12 +12,15 @@ Notable things I added:
       - Make edit box larger
     - Figure out OSX packaging
   
-  - Abstract SDL stuff away a bit further
-  - Figure out CamelCase/camelCase/under_score_words
-  - pull test screen from the current tank, so it fires the actual weapons
-  - rework text rendering functions
+  - Things that will be annoying and not particularly fun
+    - Abstract SDL stuff away a bit further
+    - Figure out CamelCase/camelCase/under_score_words
+    - pull test screen from the current tank, so it fires the actual weapons
+    - rework text rendering functions
   
-  - Look at the starting timer and GO?
+  - UI crap
+    - Look at the starting timer and GO?
+  
   - Add explanation of bombing mode
   - Numeric pad :downs:
   - Modify shockwave pulse quite a lot
