@@ -2,3 +2,6 @@ so tired of all this
 
 wx:
 CPPFLAGS="-mno-cygwin -I/usr/mingw/local/include" LDFLAGS="-mno-cygwin -L/usr/mingw/local/lib" CCFLAGS="-mno-cygwin" CXXFLAGS="-mno-cygwin" ./configure --prefix=/usr/mingw/local --with-opengl --disable-precomp-headers --build=mingw32 && make && make -j1 install
+
+sdl:
+CPPFLAGS="-mno-cygwin -I/usr/mingw/local/include -I/usr/mingw/dx6/include" LDFLAGS="-mno-cygwin -L/usr/mingw/local/lib -L/usr/mingw/dx6/lib" CCFLAGS="-mno-cygwin" CXXFLAGS="-mno-cygwin" ./configure --prefix=/usr/mingw/local --build=mingw32 && make && make -j1 install
