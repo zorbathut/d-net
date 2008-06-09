@@ -45,12 +45,13 @@ void doInterp(float *curcenter, const float *nowcenter, float *curzoom, const fl
   }
 }
 
-bool Game::runTick(const vector<Keystates> &rkeys, bool confused, const vector<Player *> &players, Rng *rng) {
+bool Game::runTick(const vector<Keystates> &rkeys, bool confused, const vector<Player *> &players, const vector<bool> &human, Rng *rng) {
   StackString sst("Frame runtick");
   PerfStack pst(PBC::gametick);
   
   CHECK(rkeys.size() == players.size());
   CHECK(players.size() == tanks.size());
+  CHECK(human.size() == players.size());
   
   for(int i = 0; i < tanks.size(); i++)
     CHECK(tanks[i].team >= 0 && tanks[i].team < teams.size());
@@ -69,7 +70,7 @@ bool Game::runTick(const vector<Keystates> &rkeys, bool confused, const vector<P
   vector<Keystates> keys = rkeys;
   if(frameNm < frameNmToStart && freezeUntilStart) {
     for(int i = 0; i < keys.size(); i++) {
-      if(keys[i].accept.push || keys[i].fire[0].push)
+      if(human[i] && (keys[i].accept.push || keys[i].fire[0].push || count(human.begin(), human.end(), true) == 1 && frameNm == frameNmToStart / 2))  // autoping support here
         gfxeffects.push_back(GfxPing(tanks[i].pi.pos.toFloat(), zoom_size.y, zoom_size.y / 50, 0.5, tanks[i].getColor()));
       keys[i].nullMove();
       for(int j = 0; j < SIMUL_WEAPONS; j++)
@@ -1439,7 +1440,7 @@ void Game::addTankStatusText(int tankid, const string &text, float duration) {
 }
 
 bool GamePackage::runTick(const vector<Keystates> &keys, Rng *rng) {
-  return game.runTick(keys, false, ptrize(&players), rng);
+  return game.runTick(keys, false, ptrize(&players), vector<bool>(keys.size(), false), rng);
 }
 
 void GamePackage::runTickWithAi(const vector<GameAi *> &gai, Rng *rng) {

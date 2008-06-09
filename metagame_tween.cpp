@@ -1353,6 +1353,22 @@ vector<Keystates> PersistentData::genKeystates(const vector<Controller> &keys) c
   return kst;
 }
 
+vector<bool> PersistentData::genHumans(const vector<bool> &human) const {
+  vector<bool> kst(playerdata.size());
+  int ct = 0;
+  set<int> kstd;
+  for(int i = 0; i < pms.size(); i++) {
+    if(pms[i].faction) {
+      kst[playerid[i]] = human[i];
+      ct++;
+      kstd.insert(playerid[i]);
+    }
+  }
+  CHECK(kstd.size() == ct);
+  CHECK(ct == kst.size());
+  return kst;
+}
+
 void PersistentData::divvyCash(int rounds) {
   if(rounds == -1)
     rounds = roundsbetweenshop;

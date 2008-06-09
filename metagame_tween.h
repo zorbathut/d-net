@@ -15,6 +15,7 @@ public:
   const vector<Player> &players() const;
 
   vector<Keystates> genKeystates(const vector<Controller> &keys) const;
+  vector<bool> genHumans(const vector<bool> &human) const;
 
   vector<Ai *> distillAi(const vector<Ai *> &ais) const;
 

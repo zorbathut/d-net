@@ -1,3 +1,6 @@
+Notable things I added:
+- Autoping the player in singleplayer mode
+
 ---- Major work path
 - "Finish the Damn Game" Initiative
   - Queued stuff
@@ -14,7 +17,6 @@
   - pull test screen from the current tank, so it fires the actual weapons
   - rework text rendering functions
   
-  - Autoping the player when there's only one
   - Look at the starting timer and GO?
   - Add explanation of bombing mode
   - Numeric pad :downs:

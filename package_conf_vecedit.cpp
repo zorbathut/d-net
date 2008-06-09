@@ -4,4 +4,4 @@
 
 using namespace std;
 
-const string package_id = "vecedit";
+extern const string package_id = "vecedit";

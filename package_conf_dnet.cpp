@@ -4,4 +4,4 @@
 
 using namespace std;
 
-const string package_id = "d-net";
+extern const string package_id = "d-net";

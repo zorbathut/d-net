@@ -6,6 +6,6 @@ print """
 
 #include "version.h"
 
-const string dnet_version = "%s";
+extern const string dnet_version = "%s";
 
 """ % sys.stdin.readline()

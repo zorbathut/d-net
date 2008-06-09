@@ -58,7 +58,7 @@ public:
   void initCenteredDemo(Player *playerdata, float zoom);
   void initTitlescreen(vector<Player> *playerdata, Rng *rng);
 
-  bool runTick(const vector<Keystates> &keys, bool confused, const vector<Player *> &players, Rng *rng);
+  bool runTick(const vector<Keystates> &keys, bool confused, const vector<Player *> &players, const vector<bool> &human, Rng *rng);
   void ai(const vector<GameAi *> &ais) const;
   void renderToScreen(const vector<const Player *> &players, GameMetacontext gmc) const;
 

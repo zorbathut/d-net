@@ -4,6 +4,8 @@
 #include "debug_911.h"
 #include "os.h"
 
+#include <stdarg.h>
+
 using namespace std;
 
 int frameNumber = -1;
