@@ -45,6 +45,8 @@ void doInterp(float *curcenter, const float *nowcenter, float *curzoom, const fl
   }
 }
 
+const int confused_cooldown_delay = FPS / 8;
+
 bool Game::runTick(const vector<Keystates> &rkeys, bool confused, const vector<Player *> &players, const vector<bool> &human, Rng *rng) {
   StackString sst("Frame runtick");
   PerfStack pst(PBC::gametick);
@@ -65,7 +67,7 @@ bool Game::runTick(const vector<Keystates> &rkeys, bool confused, const vector<P
   confused_cooldown--;
   confused_cooldown = max(confused_cooldown, 0);
   if(confused)
-    confused_cooldown = FPS / 8;
+    confused_cooldown = confused_cooldown_delay;
   
   vector<Keystates> keys = rkeys;
   if(frameNm < frameNmToStart && freezeUntilStart) {
@@ -305,8 +307,13 @@ bool Game::runTick(const vector<Keystates> &rkeys, bool confused, const vector<P
         }
       } else if(bombards[j].state == BombardmentState::BS_SPAWNING) {
         bombards[j].timer--;
-        if(bombards[j].timer <= 0)
+        if(bombards[j].timer <= 0) {
           bombards[j].state = BombardmentState::BS_ACTIVE;
+          if(human[j]) {
+            confused_cooldown = confused_cooldown_delay;
+            confused_bombing = true;
+          }
+        }
       } else if(bombards[j].state == BombardmentState::BS_ACTIVE) {
         Coord2 deaded = deadzone(keys[j].udlrax, DEADZONE_CENTER, 0.2);
         if(len(deaded) > 1)
@@ -588,6 +595,8 @@ void Game::ai(const vector<GameAi *> &ais) const {
   }
 }
 
+const float bs_thickness = 0.5;
+
 void drawCirclePieces(const Coord2 &cloc, float solidity, float rad) {
   Float2 loc = cloc.toFloat();
   for(int i = 0; i < 3; i++) {
@@ -596,7 +605,7 @@ void drawCirclePieces(const Coord2 &cloc, float solidity, float rad) {
     vector<Float2> path;
     for(int k = 0; k <= 10; k++)
       path.push_back(makeAngle(core - span / 2 + span / 10 * k) * rad + loc);
-    drawLinePath(path, 0.3);
+    drawLinePath(path, bs_thickness);
   }
 }
 
@@ -604,7 +613,7 @@ void drawCrosses(const Coord2 &cloc, float rad) {
   Float2 loc = cloc.toFloat();
   for(int i = 0; i < 3; i++) {
     float core = PI / 2 * 3 + (PI * 2 / 3 * i);
-    drawLine(makeAngle(core) * rad * 1.25 + loc, makeAngle(core) * rad * 0.75 + loc, 0.3);
+    drawLine(makeAngle(core) * rad * 1.25 + loc, makeAngle(core) * rad * 0.75 + loc, bs_thickness);
   }
 }
 
@@ -688,7 +697,7 @@ void Game::renderToScreen(const vector<const Player *> &players, GameMetacontext
           arrow.push_back(makeAngle(bombards[i].d - 0.2) * 4 + bombards[i].pos);
           arrow.push_back(makeAngle(bombards[i].d) * 6 + bombards[i].pos);
           arrow.push_back(makeAngle(bombards[i].d + 0.2) * 4 + bombards[i].pos);
-          drawLinePath(arrow, 0.5);
+          drawLinePath(arrow, 0.6);
         }
       } else if(bombards[i].state == BombardmentState::BS_COOLDOWN) {
         setColor(tanks[i].getColor() * 0.5);
@@ -806,7 +815,10 @@ void Game::renderToScreen(const vector<const Player *> &players, GameMetacontext
     if(instant_action_keys) {
       setColor(1.0, 1.0, 1.0);
       drawLine(Float4(0, 15, getZoom().ex, 15), 0.1);
-      drawJustifiedText("Use arrow keys to move, and the keys 7890 to fire your weapons", confused_cooldown ? 3.5 : 2.5, Float2(getZoom().midpoint().x, 12.5), TEXT_CENTER, TEXT_CENTER);
+      string text = "Use arrow keys to move, and the keys 7890 to fire your weapons";
+      if(confused_bombing)
+        text = "Use arrow keys to aim bombsight, and any of the keys 7890 to drop a bomb";
+      drawJustifiedText(text, confused_cooldown ? 3.5 : 2.5, Float2(getZoom().midpoint().x, 12.5), TEXT_CENTER, TEXT_CENTER);
     }
     
     // The giant overlay text for countdowns
@@ -1178,6 +1190,7 @@ void Game::initCommon(const vector<Player*> &in_playerdata, const vector<Color> 
   
   instant_action_keys = false;
   confused_cooldown = 0;
+  confused_bombing = false;
 }
 
 void Game::initRandomTankPlacement(const map<int, vector<pair<Coord2, Coord> > > &player_starts, Rng *rng) {

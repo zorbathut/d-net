@@ -1,5 +1,7 @@
 Notable things I added:
 - Autoping the player in singleplayer mode
+- Add explanation of bombing mode
+- Made bombing reticles a bit thicker
 
 ---- Major work path
 - "Finish the Damn Game" Initiative
@@ -21,7 +23,6 @@ Notable things I added:
   - UI crap
     - Look at the starting timer and GO?
   
-  - Add explanation of bombing mode
   - Numeric pad :downs:
   - Modify shockwave pulse quite a lot
   - un-duplicate some of the duplicated gameend/score code

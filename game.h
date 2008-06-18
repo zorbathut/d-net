@@ -133,6 +133,7 @@ private:
   
   bool instant_action_keys;
   int confused_cooldown;
+  bool confused_bombing;
 };
 
 class GamePackage {

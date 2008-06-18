@@ -9,7 +9,7 @@ import sys
 import re
 
 # Globals
-# Decider('MD5-timestamp')
+Decider('MD5-timestamp')
 SetOption('implicit_cache', 1)
 
 env, categories, flagtypes, oggpath, platform, installers, defaultdata = Conf()
