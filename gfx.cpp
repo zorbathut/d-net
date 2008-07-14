@@ -45,7 +45,7 @@ private:
   vector<T*> poolitems;
 };
 
-template<typename T> class PoolObj : boost::noncopyable{
+template<typename T> class PoolObj : boost::noncopyable {
 public:
   T *operator->() {
     return item;

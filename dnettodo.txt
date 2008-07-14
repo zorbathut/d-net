@@ -22,8 +22,8 @@ Notable things I added:
   
   - UI crap
     - Look at the starting timer and GO?
+    - Numeric pad :downs:
   
-  - Numeric pad :downs:
   - Modify shockwave pulse quite a lot
   - un-duplicate some of the duplicated gameend/score code
   - statistical variation of glory devices?
@@ -48,6 +48,7 @@ Notable things I added:
   - Crypto signing, add crypto to 911 and to devlog?
   - Gradient more things on the forum
   - Add tags to tanks to see their capabilities easily?
+  - Liftoff button
   - "missions"
   - Many many more weapons
     - Add glory behavior
