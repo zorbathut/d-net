@@ -294,6 +294,9 @@ void deployProjectile(const IDBDeployAdjust &deploy, const DeployLocation &locat
       for(int i = 0; i < ang.size(); i++)
         for(int j = 0; j < deploy.exp_shotspersplit(); j++)
           proji.push_back(make_pair(location.pos(), Coord(ang[i])));
+    } else if(type == DT_CHAOS) {
+      CHECK(!tang);
+      proji.push_back(make_pair(location.pos() + makeAngle(gpc.gic->rng->cfrand() * 2 * COORDPI) * gpc.gic->rng->cfrand() * deploy.chaos_radius(), location.d()));
     } else {
       CHECK(0);
     }

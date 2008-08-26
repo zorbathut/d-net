@@ -14,7 +14,7 @@ void Projectile::tick(const GameImpactContext &gic, int owner) {
   last = now;
   age += Coord(1) / FPS;
   
-  if(projtype.halflife() != -1 && age >= projtype.halflife() / 2 && gic.rng->frand() > pow(0.5f, 1 / (projtype.halflife() * FPS)) || projtype.lifetime() != -1. && projtype.lifetime() < age)
+  if(projtype.halflife() != -1 && age >= projtype.halflife() / 2 && gic.rng->frand() > pow(0.5f, 1 / (projtype.halflife() * FPS)))
     detonating = true;
   
   if(projtype.motion() == PM_NORMAL) {

@@ -119,7 +119,6 @@ struct IDBProjectile {
     float proximity;
     float durability;
     float halflife;
-    float lifetime;
     bool penetrating;
     
     float missile_sidelaunch;
@@ -178,7 +177,7 @@ struct IDBProjectile {
 };
 
 // Normal specifies "Forward" for tanks, or "Centroid" on cases where there is no tank
-enum IDBDType { DT_NORMAL, DT_FORWARD, DT_REAR, DT_CENTROID, DT_MINEPATH, DT_DIRECTED, DT_REFLECTED, DT_ARC, DT_VENGEANCE, DT_EXPLODE, DT_LAST };
+enum IDBDType { DT_NORMAL, DT_FORWARD, DT_REAR, DT_CENTROID, DT_MINEPATH, DT_DIRECTED, DT_REFLECTED, DT_ARC, DT_VENGEANCE, DT_EXPLODE, DT_CHAOS, DT_LAST };
 
 class IDBInstant;
 struct IDBDeploy {
@@ -201,6 +200,8 @@ struct IDBDeploy {
   int exp_maxsplitsize;
 
   int exp_shotspersplit;
+  
+  float chaos_radius;
 
   vector<const IDBDeploy *> chain_deploy;
   vector<const IDBProjectile *> chain_projectile;
@@ -404,7 +405,6 @@ public:
     float proximity() const;
     float durability() const;
     float halflife() const;
-    float lifetime() const;
     bool penetrating() const;
     
     float missile_stabstart() const;
@@ -501,6 +501,8 @@ public:
 
   float arc_width() const;
   int arc_units() const;
+  
+  float chaos_radius() const;
   
   vector<IDBDeployAdjust> chain_deploy() const;
   vector<IDBProjectileAdjust> chain_projectile() const;

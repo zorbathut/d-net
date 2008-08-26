@@ -211,7 +211,7 @@ launcher {
 
 hierarchy {
   name=ROOT.Ammo.Chaos Field
-  pack=25
+  pack=50
 }
 
 text {
@@ -222,16 +222,26 @@ text {
 warhead {
   name=warhead.weapon.chaosfield
   radiusdamage=MERGE exotic
-  radiusfalloff=14
+  radiusfalloff=4
   radiusexplosive=0
   radiuscolor_bright=f88
   radiuscolor_dim=810
 }
 
 deploy {
+  name=deploy.weapon.chaosfield.chaoser
+  type=chaos
+  
+  chaos_radius=12
+  
+  warhead=warhead.weapon.chaosfield
+}
+
+deploy {
   name=deploy.weapon.chaosfield
   type=centroid
-  warhead=warhead.weapon.chaosfield
+  
+  deploy=deploy.weapon.chaosfield.chaoser
 }
 
 launcher {

@@ -506,7 +506,6 @@ void parseProjectile(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   
   titem->proximity_visibility = -1;
   titem->halflife = parseWithDefault(chunk, "halflife", -1.);
-  titem->lifetime = parseWithDefault(chunk, "lifetime", -1.);
   titem->penetrating = parseWithDefault(chunk, "penetrating", false);
   
   string motion = parseWithDefault(chunk, "motion", "normal");
@@ -700,6 +699,9 @@ void parseDeploy(kvData *chunk, bool reload, ErrorAccumulator &accum) {
     titem->exp_minsplitsize = parseSingleItem<int>(chunk->consume("exp_minsplitsize"));
     titem->exp_maxsplitsize = parseSingleItem<int>(chunk->consume("exp_maxsplitsize"));
     titem->exp_shotspersplit = parseSingleItem<int>(chunk->consume("exp_shotspersplit"));
+  } else if(type == "chaos") {
+    titem->type = DT_CHAOS;
+    titem->chaos_radius = parseSingleItem<float>(chunk->consume("chaos_radius"));
   } else {
     CHECK(0);
   }

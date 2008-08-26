@@ -41,9 +41,11 @@ vector<IDBWarheadAdjust> IDBDeployAdjust::chain_warhead() const { return adjust_
 vector<IDBEffectsAdjust> IDBDeployAdjust::chain_effects() const { return adjust_vector(idb->chain_effects, adjust); }
 vector<IDBInstantAdjust> IDBDeployAdjust::chain_instant() const { return adjust_vector(idb->chain_instant, adjust); }
 
+float IDBDeployAdjust::chaos_radius() const { return idb->chaos_radius; }
+
 float IDBDeployAdjust::stats_damagePerShot() const {
   float mult;
-  if(idb->type == DT_NORMAL || idb->type == DT_FORWARD || idb->type == DT_CENTROID || idb->type == DT_MINEPATH || idb->type == DT_REAR || idb->type == DT_DIRECTED || idb->type == DT_REFLECTED || idb->type == DT_VENGEANCE) {
+  if(idb->type == DT_NORMAL || idb->type == DT_FORWARD || idb->type == DT_CENTROID || idb->type == DT_MINEPATH || idb->type == DT_REAR || idb->type == DT_DIRECTED || idb->type == DT_REFLECTED || idb->type == DT_VENGEANCE || idb->type == DT_CHAOS) {
     mult = 1.0;
   } else if(idb->type == DT_EXPLODE) {
     mult = (exp_minsplits() + exp_maxsplits()) / 2.0 * exp_shotspersplit();
@@ -162,7 +164,6 @@ float IDBProjectileAdjust::velocity() const { return idb->velocity; };
 float IDBProjectileAdjust::proximity() const { return idb->proximity; };
 float IDBProjectileAdjust::durability() const { return idb->durability; };
 float IDBProjectileAdjust::halflife() const { return idb->halflife; };
-float IDBProjectileAdjust::lifetime() const { return idb->lifetime; };
 bool IDBProjectileAdjust::penetrating() const { return idb->penetrating; };
 
 float IDBProjectileAdjust::missile_stabstart() const { CHECK(idb->motion == PM_MISSILE); return idb->missile_stabstart; }
