@@ -206,19 +206,62 @@ effects {
   
   spread=5
   
-  lifetime=0.17
+  lifetime=0.20
   
-  radius=0.5
+  radius=0.6
   color=1.0, 0.9, 0.6
 }
 
 warhead {
+  name=warhead.weapon.clustermissile.cluster
+  
+  radiusdamage=MERGE(1) explosive
+  radiusfalloff=3
+  radiusexplosive=1
+  wallremovalradius=0.5
+}
+
+projectile {
+  name=projectile.weapon.clustermissile.cluster
+  color=0.9, 0.95, 1.0
+  
+  motion=normal
+  
+  velocity=120
+  halflife=0.5
+
+  visual_thickness=1x
+  line_length=1.5
+  
+  durability=MERGE
+  warhead=warhead.weapon.clustermissile.cluster
+}
+
+deploy {
+  name=deploy.weapon.clustermissile.cluster
+  
+  type=explode
+  exp_minsplits=5
+  exp_maxsplits=5
+  exp_minsplitsize=1
+  exp_maxsplitsize=5
+  
+  exp_shotspersplit=1
+  
+  anglestddev=0
+  
+  projectile=projectile.weapon.clustermissile.cluster
+}
+
+warhead {
   name=warhead.weapon.clustermissile
-  impactdamage=MERGE(1) explosive
-  radiusdamage=MERGE(3) explosive
+  impactdamage=MERGE(2) explosive
+  radiusdamage=MERGE(4) explosive
   radiusfalloff=8
   radiusexplosive=1
   wallremovalradius=1
+  
+  deploy=deploy.weapon.clustermissile.cluster
 }
 
 projectile {
@@ -227,13 +270,14 @@ projectile {
   
   motion=missile
   
-  velocity=180
+  velocity=160
   missile_stabstart=0.0
   missile_stabilization=30
   missile_sidelaunch=30
   missile_backlaunch=15
   
-  line_length=2
+  visual_thickness=3x
+  line_length=4
   
   durability=MERGE
   warhead=warhead.weapon.clustermissile
@@ -245,7 +289,7 @@ projectile {
 deploy {
   name=deploy.weapon.clustermissile
   type=forward
-  anglestddev=0.002
+  anglestddev=0.005
   projectile=projectile.weapon.clustermissile
 }
 
