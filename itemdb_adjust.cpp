@@ -162,6 +162,7 @@ float IDBProjectileAdjust::velocity() const { return idb->velocity; };
 float IDBProjectileAdjust::proximity() const { return idb->proximity; };
 float IDBProjectileAdjust::durability() const { return idb->durability; };
 float IDBProjectileAdjust::halflife() const { return idb->halflife; };
+float IDBProjectileAdjust::lifetime() const { return idb->lifetime; };
 bool IDBProjectileAdjust::penetrating() const { return idb->penetrating; };
 
 float IDBProjectileAdjust::missile_stabstart() const { CHECK(idb->motion == PM_MISSILE); return idb->missile_stabstart; }
