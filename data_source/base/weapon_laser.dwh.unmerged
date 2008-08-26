@@ -118,7 +118,7 @@ effects {
   slowdown=0.3
   lifetime=0.2
   
-  radius=0.4
+  radius=0.6
   color=0.6, 0.9, 1.0
 }
 
@@ -134,7 +134,7 @@ effects {
   slowdown=0.3
   lifetime=0.2
   
-  radius=0.4
+  radius=0.6
   color=0.6, 0.9, 1.0
 }
 
@@ -149,7 +149,7 @@ effects {
   slowdown=0.5
   lifetime=1
   
-  radius=0.4
+  radius=0.6
   color=0.6, 0.9, 1.0
 }
 
@@ -206,7 +206,7 @@ effects {
   name=effects.weapon.gigawattlaser1
   type=particle
 
-  quantity=4
+  quantity=6
   
   multiple_inertia=0.1
   spread=20
@@ -214,7 +214,7 @@ effects {
   slowdown=0.3
   lifetime=0.15
   
-  radius=0.4
+  radius=0.7
   color=0.6, 0.9, 1.0
 }
 
@@ -222,7 +222,7 @@ effects {
   name=effects.weapon.gigawattlaser2
   type=particle
 
-  quantity=4
+  quantity=6
   
   multiple_inertia=-0.1
   spread=20
@@ -230,7 +230,7 @@ effects {
   slowdown=0.3
   lifetime=0.15
   
-  radius=0.4
+  radius=0.7
   color=0.6, 0.9, 1.0
 }
 
@@ -238,14 +238,14 @@ effects {
   name=effects.weapon.gigawattlaser3
   type=particle
 
-  quantity=2
+  quantity=3
   
   spread=3
   
   slowdown=0.5
   lifetime=0.6
   
-  radius=0.4
+  radius=0.7
   color=0.6, 0.9, 1.0
 }
 
@@ -260,7 +260,9 @@ warhead {
 projectile {
   name=projectile.weapon.gigawattlaser
   motion=normal
-  velocity=600
+  velocity=900
+  visual_thickness=2x
+  line_length=2x
   color=0.6, 0.9, 1.0
   durability=MERGE
   warhead=warhead.weapon.gigawattlaser
