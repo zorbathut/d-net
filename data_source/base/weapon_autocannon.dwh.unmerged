@@ -145,11 +145,11 @@ effects {
 
   quantity=12
   
-  multiple_reflect=0.3
+  multiple_reflect=0.5
   spread=20
   
   slowdown=0.2
-  lifetime=0.15
+  lifetime=0.2
   
   radius=0.7
   color=1.0, 0.9, 0.6
