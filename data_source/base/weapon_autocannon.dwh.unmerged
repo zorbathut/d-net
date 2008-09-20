@@ -253,8 +253,8 @@ projectile {
   motion=normal
   velocity=150
   halflife=0.05
-  visual_thickness=3x
-  line_length=0.5x
+  visual_thickness=1.2x
+  line_length=1.5x
   durability=MERGE
   
   deploy=deploy.weapon.sabotshotgun.deviator

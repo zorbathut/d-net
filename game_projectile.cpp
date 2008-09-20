@@ -12,6 +12,8 @@ void Projectile::tick(const GameImpactContext &gic, int owner) {
   CHECK(live);
   CHECK(age != -1);
   last = now;
+  bool firsttick = (age == 0);
+  
   age += Coord(1) / FPS;
   
   if(projtype.halflife() != -1 && age >= projtype.halflife() / 2 && gic.rng->frand() > pow(0.5f, 1 / (projtype.halflife() * FPS)))
@@ -101,6 +103,10 @@ void Projectile::tick(const GameImpactContext &gic, int owner) {
   if(projtype.shape() == PS_ARROW) {
     now.arrow_spin += projtype.arrow_rotate() / FPS * (arrow_spin_parity * 2 - 1);
   }
+  
+  /*
+  if(firsttick)
+    now.pi.pos = lerp(last.pi.pos, now.pi.pos, gic.rng->frand());*/
   
   if(projtype.proximity() != -1) {
     Coord newdist = gic.getClosestFoeDistance(now.pi.pos, owner);
@@ -528,7 +534,16 @@ void ProjectilePack::updateCollisions(Collider *collider, int owner) {
 }
 
 void ProjectilePack::tick(Collider *collide, int owner, const GameImpactContext &gic) {
+  set<int> existnow;
+  for(map<int, Projectile>::iterator itr = projectiles.begin(); itr != projectiles.end(); ++itr)
+    existnow.insert(itr->first);
+    
   for(map<int, Projectile>::iterator itr = projectiles.begin(); itr != projectiles.end(); ) {
+    if(!existnow.count(itr->first)) {
+      ++itr;
+      continue;
+    }
+    
     // the logic here is kind of grim, sorry about this
     if(itr->second.isLive() && itr->second.isDetonating())
       itr->second.trigger(1, NO_NORMAL, NULL, GamePlayerContext(gic.players[owner], this, gic), false);
