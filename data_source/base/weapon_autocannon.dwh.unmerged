@@ -231,18 +231,47 @@ warhead {
 
 projectile {
   name=projectile.weapon.sabotshotgun
-  motion=normal
-  velocity=120
+  motion=airbrake
+  velocity=150
+  airbrake_life=3
+  airbrake_slowdown=0.3
+  shape=line
+  line_length=0.6x
   color=1.0, 0.9, 0.6
   durability=MERGE
   warhead=warhead.weapon.sabotshotgun
 }
 
 deploy {
+  name=deploy.weapon.sabotshotgun.deviator
+  anglestddev=0.04
+  projectile=projectile.weapon.sabotshotgun
+}
+
+projectile {
+  name=projectile.weapon.sabotshotgun.core
+  motion=normal
+  velocity=150
+  halflife=0.05
+  visual_thickness=3x
+  line_length=0.5x
+  durability=MERGE
+  
+  deploy=deploy.weapon.sabotshotgun.deviator
+  deploy=deploy.weapon.sabotshotgun.deviator
+  deploy=deploy.weapon.sabotshotgun.deviator
+  deploy=deploy.weapon.sabotshotgun.deviator
+  deploy=deploy.weapon.sabotshotgun.deviator
+  deploy=deploy.weapon.sabotshotgun.deviator
+  deploy=deploy.weapon.sabotshotgun.deviator
+  deploy=deploy.weapon.sabotshotgun.deviator
+}
+
+deploy {
   name=deploy.weapon.sabotshotgun
   type=forward
-  anglestddev=0.030
-  projectile=projectile.weapon.sabotshotgun
+  anglestddev=0.10
+  projectile=projectile.weapon.sabotshotgun.core
 }
 
 launcher {
