@@ -116,6 +116,7 @@ enum IDBPShape { PS_LINE, PS_LINE_AIRBRAKE, PS_ARROW, PS_DRONE, PS_STAR, PS_ARCP
 struct IDBProjectile {
   IDBPMotion motion;
     float velocity;
+    float velocity_stddev;
     float proximity;
     float durability;
     float halflife;
@@ -402,6 +403,7 @@ public:
 
   IDBPMotion motion() const;
     float velocity() const;
+    float velocity_stddev() const;
     float proximity() const;
     float durability() const;
     float halflife() const;

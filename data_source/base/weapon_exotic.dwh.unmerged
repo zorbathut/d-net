@@ -352,25 +352,25 @@ launcher {
 
 ###########################
 #
-#   Pulse Emitter base stats
+#   Corrosion Mist base stats
 
 hierarchy {
-  name=ROOT.Ammo.Pulse Emitter
+  name=ROOT.Ammo.Corrosion Mist
   pack=100
 }
 
 text {
-  name=text.weapon.pulseemitter
+  name=text.weapon.corrosionmist
   data=Blah blah hamster blah yacht blah blah blah monocle polish
 }
 
 warhead {
-  name=warhead.weapon.pulseemitter
+  name=warhead.weapon.corrosionmist
   impactdamage=MERGE(1) exotic
 }
 
 projectile {
-  name=projectile.weapon.pulseemitter
+  name=projectile.weapon.corrosionmist
   velocity=170
   
   shape=arcpiece
@@ -381,27 +381,27 @@ projectile {
   
   color=0.5,0.6,0.9
   
-  warhead=warhead.weapon.pulseemitter
+  warhead=warhead.weapon.corrosionmist
 }
 
 deploy {
-  name=deploy.weapon.pulseemitter
+  name=deploy.weapon.corrosionmist
   
   type=arc
   width=1
   units=20
   
-  projectile=projectile.weapon.pulseemitter
+  projectile=projectile.weapon.corrosionmist
 }
 
 launcher {
-  name=launcher.weapon.pulseemitter
+  name=launcher.weapon.corrosionmist
   
-  deploy=deploy.weapon.pulseemitter
+  deploy=deploy.weapon.corrosionmist
 
   demo=firingrange
   
-  text=text.weapon.pulseemitter
+  text=text.weapon.corrosionmist
 }
 
 ###########################
@@ -753,57 +753,57 @@ weapon {
 
 
 weapon {
-  name=ROOT.Ammo.Pulse Emitter.Pulse Emitter I
+  name=ROOT.Ammo.Corrosion Mist.Corrosion Mist I
   
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.weapon.pulseemitter
+  launcher=launcher.weapon.corrosionmist
 }
 
 weapon {
-  name=ROOT.Ammo.Pulse Emitter.Pulse Emitter II
+  name=ROOT.Ammo.Corrosion Mist.Corrosion Mist II
 
   cost=MERGE
   firerate=MERGE
 
-  launcher=launcher.weapon.pulseemitter
+  launcher=launcher.weapon.corrosionmist
 }
 
 weapon {
-  name=ROOT.Ammo.Pulse Emitter.Pulse Emitter III
+  name=ROOT.Ammo.Corrosion Mist.Corrosion Mist III
   
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.weapon.pulseemitter
+  launcher=launcher.weapon.corrosionmist
 }
 
 weapon {
-  name=ROOT.Ammo.Pulse Emitter.Pulse Emitter IV
+  name=ROOT.Ammo.Corrosion Mist.Corrosion Mist IV
   
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.weapon.pulseemitter
+  launcher=launcher.weapon.corrosionmist
 }
 
 weapon {
-  name=ROOT.Ammo.Pulse Emitter.Pulse Emitter V
+  name=ROOT.Ammo.Corrosion Mist.Corrosion Mist V
   
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.weapon.pulseemitter
+  launcher=launcher.weapon.corrosionmist
 }
 
 weapon {
-  name=ROOT.Ammo.Pulse Emitter.Pulse Emitter VI
+  name=ROOT.Ammo.Corrosion Mist.Corrosion Mist VI
   
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.weapon.pulseemitter
+  launcher=launcher.weapon.corrosionmist
 }
 
 

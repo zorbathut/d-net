@@ -77,6 +77,7 @@ private:
   Coord star_facing;
 
   bool arrow_spin_parity;
+  float velocity;
 
   Coord age;
   

@@ -298,38 +298,6 @@ text {
 }
 
 effects {
-  name=effects.weapon.plasmacannon1
-  type=particle
-
-  quantity=4
-  
-  multiple_inertia=0.1
-  spread=20
-  
-  slowdown=0.3
-  lifetime=0.15
-  
-  radius=0.4
-  color=0.6, 0.9, 1.0
-}
-
-effects {
-  name=effects.weapon.plasmacannon2
-  type=particle
-
-  quantity=4
-  
-  multiple_inertia=-0.1
-  spread=20
-  
-  slowdown=0.3
-  lifetime=0.15
-  
-  radius=0.4
-  color=0.6, 0.9, 1.0
-}
-
-effects {
   name=effects.weapon.plasmacannon3
   type=particle
 
@@ -345,27 +313,73 @@ effects {
 }
 
 warhead {
+  name=warhead.weapon.plasmacannon.splash
+  impactdamage=MERGE(1) energy
+}
+
+projectile {
+  name=projectile.weapon.plasmacannon.splash
+  visual_thickness=1
+  velocity=30
+  velocity_stddev=15
+  color=0.3, 0.5, 0.45
+  motion=airbrake
+  
+  airbrake_life=2
+  airbrake_slowdown=0.95
+  
+  no_intersection=true
+  warhead=warhead.weapon.plasmacannon.splash
+}
+
+deploy {
+  name=deploy.weapon.plasmacannon.splash
+  type=explode
+  
+  exp_minsplits=2
+  exp_maxsplits=4
+  exp_minsplitsize=1
+  exp_maxsplitsize=5
+  
+  exp_shotspersplit=4
+  
+  anglestddev=0.1
+  
+  projectile=projectile.weapon.plasmacannon.splash
+}
+
+warhead {
   name=warhead.weapon.plasmacannon
-  impactdamage=MERGE energy
-  effects_impact=effects.weapon.plasmacannon1
-  effects_impact=effects.weapon.plasmacannon2
+  impactdamage=MERGE(20) energy
   effects_impact=effects.weapon.plasmacannon3
+  
+  deploy=deploy.weapon.plasmacannon.splash
 }
 
 projectile {
   name=projectile.weapon.plasmacannon
   motion=normal
-  velocity=600
-  color=0.6, 0.9, 1.0
+  velocity=800
+  color=0.6, 1.0, 0.9
+  visual_thickness=1.7x
+  line_length=1.7x
   durability=MERGE
   warhead=warhead.weapon.plasmacannon
 }
 
 deploy {
+  name=deploy.weapon.plasmacannon.spike
+  anglestddev=0.006
+  projectile=projectile.weapon.plasmacannon
+}
+
+deploy {
   name=deploy.weapon.plasmacannon
   type=forward
-  anglestddev=0.008
-  projectile=projectile.weapon.plasmacannon
+  anglestddev=0.002
+  deploy=deploy.weapon.plasmacannon.spike
+  deploy=deploy.weapon.plasmacannon.spike
+  deploy=deploy.weapon.plasmacannon.spike
 }
 
 launcher {

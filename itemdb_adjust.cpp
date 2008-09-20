@@ -161,6 +161,7 @@ IDBWarheadAdjust::IDBWarheadAdjust(const IDBWarhead *in_idb, const IDBAdjustment
 // Motion-related functions
 IDBPMotion IDBProjectileAdjust::motion() const { return idb->motion; };
 float IDBProjectileAdjust::velocity() const { return idb->velocity; };
+float IDBProjectileAdjust::velocity_stddev() const { return idb->velocity_stddev; };
 float IDBProjectileAdjust::proximity() const { return idb->proximity; };
 float IDBProjectileAdjust::durability() const { return idb->durability; };
 float IDBProjectileAdjust::halflife() const { return idb->halflife; };

@@ -12,7 +12,7 @@ void Projectile::tick(const GameImpactContext &gic, int owner) {
   CHECK(live);
   CHECK(age != -1);
   last = now;
-  bool firsttick = (age == 0);
+  //bool firsttick = (age == 0);
   
   age += Coord(1) / FPS;
   
@@ -20,7 +20,7 @@ void Projectile::tick(const GameImpactContext &gic, int owner) {
     detonating = true;
   
   if(projtype.motion() == PM_NORMAL) {
-    now.pi.pos += makeAngle(now.pi.d) * Coord(projtype.velocity()) / FPS;
+    now.pi.pos += makeAngle(now.pi.d) * velocity / FPS;
   } else if(projtype.motion() == PM_MISSILE) {
     if(age > projtype.missile_stabstart())
       missile_sidedist /= pow(projtype.missile_stabilization(), 1.f / FPS);
@@ -42,9 +42,9 @@ void Projectile::tick(const GameImpactContext &gic, int owner) {
     boomerang_lastchange = bchange;
     boomerang_angle += bchange;
     //dprintf("%p: %f, %f\n", this, boomerang_angle.toFloat(), bchange.toFloat());
-    boomerang_abspos += makeAngle(boomerang_angle) * Coord(projtype.velocity()) / FPS;
+    boomerang_abspos += makeAngle(boomerang_angle) * velocity / FPS;
     
-    Coord2 mang = makeAngle(boomerang_angle) * Coord(projtype.velocity()) / FPS;
+    Coord2 mang = makeAngle(boomerang_angle) * velocity / FPS;
     mang.y *= boomerang_yfactor;
     now.pi.pos += rotate(mang, now.pi.d);
   } else if(projtype.motion() == PM_MINE) {
@@ -54,7 +54,7 @@ void Projectile::tick(const GameImpactContext &gic, int owner) {
       Coord2 dp = gic.players[cid]->pi.pos;
       dp -= now.pi.pos;
       if(len(dp) < Coord(projtype.proximity_visibility()) && len(dp) > 0) {
-        now.pi.pos += normalize(dp) * Coord(projtype.velocity() / FPS);
+        now.pi.pos += normalize(dp) * velocity / FPS;
       }
     }
   } else if(projtype.motion() == PM_DPS) {
@@ -64,7 +64,7 @@ void Projectile::tick(const GameImpactContext &gic, int owner) {
     hk_drift *= 0.95;
     
     if(now.hunter_vel != 0)
-      now.hunter_vel += projtype.velocity() / FPS;
+      now.hunter_vel += velocity / FPS;
     
     int lockon = -1;
     Coord dist = Coord(1 << 30);
@@ -87,7 +87,7 @@ void Projectile::tick(const GameImpactContext &gic, int owner) {
       Coord dang = getAngle(gic.players[lockon]->pi.pos - now.pi.pos);
       now.pi.d = ang_approach(now.pi.d, dang, projtype.hunter_rotation() / FPS);
       if(ang_dist(dang, now.pi.d) < projtype.hunter_rotation() && now.hunter_vel == 0)
-        now.hunter_vel += projtype.velocity() / FPS;
+        now.hunter_vel += velocity / FPS;
     }
     
     now.pi.pos += makeAngle(now.pi.d) * now.hunter_vel / FPS;
@@ -359,7 +359,7 @@ float Projectile::durability() const {
 }
 
 Coord2 Projectile::missile_accel() const {
-  return makeAngle(now.pi.d) * Coord(projtype.velocity() / FPS) * age;
+  return makeAngle(now.pi.d) * velocity / FPS * age;
 }
 Coord2 Projectile::missile_backdrop() const {
   return -makeAngle(now.pi.d) * Coord(projtype.missile_backlaunch()) / FPS;
@@ -434,6 +434,7 @@ Float2 Projectile::rearspawn(const ProjPostState &stat) const {
 Projectile::Projectile() : projtype(NULL, IDBAdjustment()), damageflags(0.0, false, false) {
   live = false;
   age = -1;
+  velocity = -20;
 }
 Projectile::Projectile(const Coord2 &in_pos, Coord in_d, const IDBProjectileAdjust &projtype, Rng *rng, const DamageFlags &damageflags) : projtype(projtype), damageflags(damageflags) {
   now.pi.pos = in_pos;
@@ -445,11 +446,17 @@ Projectile::Projectile(const Coord2 &in_pos, Coord in_d, const IDBProjectileAdju
   now.distance_traveled = 0;
   closest_enemy_tank = 1e20; // no
   
+  if(projtype.motion() == PM_NORMAL || projtype.motion() == PM_AIRBRAKE || projtype.motion() == PM_MISSILE || projtype.motion() == PM_BOOMERANG || projtype.motion() == PM_SPIDERMINE || projtype.motion() == PM_HUNTER) {
+    velocity = projtype.velocity() + projtype.velocity_stddev() * rng->sym_frand();
+  } else {
+    velocity = -50; // lulz
+  }
+  
   if(projtype.motion() == PM_NORMAL) {
   } else if(projtype.motion() == PM_MISSILE) {
     missile_sidedist = rng->gaussian() * projtype.missile_sidelaunch() / FPS;
   } else if(projtype.motion() == PM_AIRBRAKE) {
-    now.airbrake_velocity = (rng->gaussian_scaled(2) / 4 + 1) * projtype.velocity();
+    now.airbrake_velocity = (rng->gaussian_scaled(2) / 4 + 1) * velocity;
   } else if(projtype.motion() == PM_BOOMERANG) {
     boomerang_abspos = Coord2(0, 0);
     boomerang_yfactor = cfcos(Coord(rng->frand()) * COORDPI / 4 + COORDPI / 8 * 3);

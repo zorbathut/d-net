@@ -581,8 +581,10 @@ void parseProjectile(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   }
   
   titem->velocity = 0;
-  if(titem->motion != PM_MINE && titem->motion != PM_DPS && titem->motion != PM_DELAY && titem->motion != PM_GENERATOR)
+  if(titem->motion != PM_MINE && titem->motion != PM_DPS && titem->motion != PM_DELAY && titem->motion != PM_GENERATOR) {
     titem->velocity = parseSingleItem<float>(chunk->consume("velocity"));
+    titem->velocity_stddev = parseWithDefault(chunk, "velocity_stddev", 0.0);
+  }
   
   bool has_color = true;
   
