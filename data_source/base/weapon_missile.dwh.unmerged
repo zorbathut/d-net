@@ -370,12 +370,66 @@ text {
 }
 
 warhead {
-  name=warhead.weapon.proximityrocket
+  name=warhead.weapon.proximityrocket.chunky
   impactdamage=MERGE(1) explosive
-  radiusdamage=MERGE(3) explosive
-  radiusfalloff=8
+}
+
+projectile {
+  name=projectile.weapon.proximityrocket.chunky
+  visual_thickness=0.7
+  velocity=120
+  velocity_stddev=40
+  color=1.0, 0.8, 0.3
+  motion=airbrake
+  airbrake_life=0.25
+  airbrake_slowdown=0.99
+  no_intersection=true
+  warhead=warhead.weapon.proximityrocket.chunky
+}
+
+deploy {
+  name=deploy.weapon.proximityrocket.spray
+  
+  multiple=16
+  
+  anglestddev=0.1
+  
+  projectile=projectile.weapon.proximityrocket.chunky
+}
+
+deploy {
+  name=deploy.weapon.proximityrocket.minispray
+  
+  multiple=4
+  
+  anglestddev=0.1
+  
+  projectile=projectile.weapon.proximityrocket.chunky
+}
+
+deploy {
+  name=deploy.weapon.proximityrocket.left
+  anglemodifier=.6pi
+  deploy=deploy.weapon.proximityrocket.spray
+}
+
+deploy {
+  name=deploy.weapon.proximityrocket.right
+  anglemodifier=1.4pi
+  deploy=deploy.weapon.proximityrocket.spray
+}
+
+warhead {
+  name=warhead.weapon.proximityrocket
+  impactdamage=MERGE(10) explosive
+  radiusdamage=MERGE(10) explosive
+  radiusfalloff=12
   radiusexplosive=1
-  wallremovalradius=1
+  wallremovalradius=3
+  
+  deploy=deploy.weapon.proximityrocket.left
+  deploy=deploy.weapon.proximityrocket.right
+  deploy=deploy.weapon.proximityrocket.minispray
 }
 
 projectile {
@@ -384,13 +438,15 @@ projectile {
   
   motion=missile
   
-  velocity=180
+  velocity=250
   missile_stabstart=0.0
   missile_stabilization=30
-  missile_sidelaunch=30
+  missile_sidelaunch=40
   missile_backlaunch=15
   
-  line_length=2
+  line_length=4
+  
+  proximity=18
   
   durability=MERGE
   warhead=warhead.weapon.proximityrocket

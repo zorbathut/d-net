@@ -244,6 +244,7 @@ projectile {
 
 deploy {
   name=deploy.weapon.sabotshotgun.deviator
+  multiple=8
   anglestddev=0.04
   projectile=projectile.weapon.sabotshotgun
 }
@@ -257,13 +258,6 @@ projectile {
   line_length=1.5x
   durability=MERGE
   
-  deploy=deploy.weapon.sabotshotgun.deviator
-  deploy=deploy.weapon.sabotshotgun.deviator
-  deploy=deploy.weapon.sabotshotgun.deviator
-  deploy=deploy.weapon.sabotshotgun.deviator
-  deploy=deploy.weapon.sabotshotgun.deviator
-  deploy=deploy.weapon.sabotshotgun.deviator
-  deploy=deploy.weapon.sabotshotgun.deviator
   deploy=deploy.weapon.sabotshotgun.deviator
 }
 

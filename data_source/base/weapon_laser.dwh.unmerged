@@ -370,6 +370,7 @@ projectile {
 deploy {
   name=deploy.weapon.plasmacannon.spike
   anglestddev=0.006
+  multiple=3
   projectile=projectile.weapon.plasmacannon
 }
 
@@ -377,8 +378,6 @@ deploy {
   name=deploy.weapon.plasmacannon
   type=forward
   anglestddev=0.002
-  deploy=deploy.weapon.plasmacannon.spike
-  deploy=deploy.weapon.plasmacannon.spike
   deploy=deploy.weapon.plasmacannon.spike
 }
 

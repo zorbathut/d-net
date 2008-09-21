@@ -123,8 +123,11 @@ template<> int parseSingleItem<int>(const string &val) {
 
 template<> float parseSingleItem<float>(const string &val) {
   CHECK(val.size());
+  bool pi_suffix = false;
+  if(val.size() >= 2 && val[val.size() - 2] == 'p' && val[val.size() - 1] == 'i')
+    pi_suffix = true;
   bool foundperiod = false;
-  for(int i = 0; i < val.size(); i++) {
+  for(int i = 0; i < val.size() - pi_suffix * 2; i++) {
     if(val[i] == '-' && i == 0) {
     } else if(val[i] == '.') {
       CHECK(!foundperiod);
@@ -133,7 +136,7 @@ template<> float parseSingleItem<float>(const string &val) {
       CHECK(isdigit(val[i]));
     }
   }
-  return atof(val.c_str());
+  return atof(val.c_str()) * (pi_suffix ? PI : 1);
 }
 
 template<> Color parseSingleItem<Color>(const string &val) {
