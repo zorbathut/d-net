@@ -91,6 +91,10 @@ void Projectile::tick(const GameImpactContext &gic, int owner) {
     }
     
     now.pi.pos += makeAngle(now.pi.d) * now.hunter_vel / FPS;
+  } else if(projtype.motion() == PM_SINE) {
+    now.sine_phase += 1.0 / sine_frequency / FPS * COORDPI * 2;
+    now.pi.pos += makeAngle(now.pi.d) * velocity / FPS;
+    now.pi.pos += makeAngle(now.pi.d + COORDPI / 2) * projtype.sine_width() / projtype.sine_frequency() * cfcos(now.sine_phase) / FPS; // hee hee
   } else if(projtype.motion() == PM_DELAY) {
     if(age >= projtype.delay_duration())
       detonating = true;
@@ -212,6 +216,7 @@ void Projectile::checksum(Adler32 *adl) const {
     adler(adl, boomerang_yfactor);
     adler(adl, boomerang_angle);
     adler(adl, boomerang_lastchange);
+  } else if(projtype.motion() == PM_SINE) {
   } else if(projtype.motion() == PM_MINE) {
   } else if(projtype.motion() == PM_SPIDERMINE) {
   } else if(projtype.motion() == PM_DPS) {
@@ -376,7 +381,11 @@ vector<Coord4> Projectile::polys(const ProjPostState &stat) const {
   vector<Coord4> rv;
   if(projtype.shape() == PS_LINE) {
     Coord maxlen = max(0, stat.distance_traveled);
-    rv.push_back(Coord4(stat.pi.pos, stat.pi.pos - makeAngle(stat.pi.d) * min(Coord(projtype.line_length()), maxlen)));
+    Coord locald = stat.pi.d;
+    if(projtype.motion() == PM_SINE) { // we have to do something special to account for the sine movement - this should technically probably be another shape, but, eh
+      locald = getAngle(makeAngle(now.pi.d) * velocity + makeAngle(now.pi.d + COORDPI / 2) * projtype.sine_width() / projtype.sine_frequency() * cfcos(now.sine_phase));
+    }
+    rv.push_back(Coord4(stat.pi.pos, stat.pi.pos - makeAngle(locald) * min(Coord(projtype.line_length()), maxlen)));
   } else if(projtype.shape() == PS_LINE_AIRBRAKE) {
     Coord maxlen = max(0, stat.distance_traveled);
     rv.push_back(Coord4(stat.pi.pos, stat.pi.pos - makeAngle(stat.pi.d) * min(stat.airbrake_velocity / FPS + 2, maxlen)));
@@ -446,7 +455,7 @@ Projectile::Projectile(const Coord2 &in_pos, Coord in_d, const IDBProjectileAdju
   now.distance_traveled = 0;
   closest_enemy_tank = 1e20; // no
   
-  if(projtype.motion() == PM_NORMAL || projtype.motion() == PM_AIRBRAKE || projtype.motion() == PM_MISSILE || projtype.motion() == PM_BOOMERANG || projtype.motion() == PM_SPIDERMINE || projtype.motion() == PM_HUNTER) {
+  if(projtype.motion() == PM_NORMAL || projtype.motion() == PM_AIRBRAKE || projtype.motion() == PM_MISSILE || projtype.motion() == PM_BOOMERANG || projtype.motion() == PM_SPIDERMINE || projtype.motion() == PM_HUNTER || projtype.motion() == PM_SINE) {
     velocity = projtype.velocity() + projtype.velocity_stddev() * rng->sym_frand();
   } else {
     velocity = -50; // lulz
@@ -462,6 +471,9 @@ Projectile::Projectile(const Coord2 &in_pos, Coord in_d, const IDBProjectileAdju
     boomerang_yfactor = cfcos(Coord(rng->frand()) * COORDPI / 4 + COORDPI / 8 * 3);
     boomerang_angle = 0;
     boomerang_lastchange = 1000000;
+  } else if(projtype.motion() == PM_SINE) {
+    now.sine_phase = rng->cfrand() * COORDPI * 2;
+    sine_frequency = projtype.sine_frequency() + projtype.sine_frequency_stddev() * rng->sym_frand();
   } else if(projtype.motion() == PM_MINE) {
   } else if(projtype.motion() == PM_SPIDERMINE) {
   } else if(projtype.motion() == PM_DPS) {

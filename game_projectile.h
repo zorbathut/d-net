@@ -49,6 +49,8 @@ private:
     
     Coord hunter_vel;
     
+    Coord sine_phase;
+    
     ProjPostState();
   } now, last;
   friend void adler(Adler32 *adl, const ProjPostState &pps);
@@ -75,9 +77,11 @@ private:
   Coord boomerang_lastchange;
 
   Coord star_facing;
+  
+  Coord sine_frequency;
 
   bool arrow_spin_parity;
-  float velocity;
+  Coord velocity;
 
   Coord age;
   

@@ -310,15 +310,18 @@ warhead {
   name=warhead.weapon.bladelauncher
   impactdamage=MERGE kinetic
   wallremovalradius=0.5
-  wallremovalchance=0.05
+  wallremovalchance=1
   
   effects_impact=effects.weapon.bladelauncher
 }
 
 projectile {
   name=projectile.weapon.bladelauncher
-  motion=normal
-  velocity=120
+  motion=sine
+  velocity=180
+  sine_width=30
+  sine_frequency=0.4
+  sine_frequency_stddev=0.05
   color=1.0, 0.9, 0.6
   durability=MERGE
   warhead=warhead.weapon.bladelauncher
@@ -327,7 +330,7 @@ projectile {
 deploy {
   name=deploy.weapon.bladelauncher
   type=forward
-  anglestddev=0.030
+  anglestddev=0.010
   projectile=projectile.weapon.bladelauncher
 }
 

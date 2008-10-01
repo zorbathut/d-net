@@ -182,6 +182,10 @@ float IDBProjectileAdjust::airbrake_slowdown() const { CHECK(idb->motion == PM_A
 float IDBProjectileAdjust::hunter_rotation() const { CHECK(idb->motion == PM_HUNTER); return idb->hunter_rotation; }
 float IDBProjectileAdjust::hunter_turnweight() const { CHECK(idb->motion == PM_HUNTER); return idb->hunter_turnweight; }
 
+float IDBProjectileAdjust::sine_width() const { CHECK(idb->motion == PM_SINE); return idb->sine_width; }
+float IDBProjectileAdjust::sine_frequency() const { CHECK(idb->motion == PM_SINE); return idb->sine_frequency; }
+float IDBProjectileAdjust::sine_frequency_stddev() const { CHECK(idb->motion == PM_SINE); return idb->sine_frequency_stddev; }
+
 float IDBProjectileAdjust::dps_duration() const { CHECK(idb->motion == PM_DPS); return idb->dps_duration; }
 vector<IDBWarheadAdjust> IDBProjectileAdjust::dps_instant_warhead() const { CHECK(idb->motion == PM_DPS); return adjust_vector(idb->dps_instant_warhead, adjust); }
 const vector<pair<int, Color> > &IDBProjectileAdjust::dps_visuals() const { CHECK(idb->motion == PM_DPS); return idb->dps_visuals; }
