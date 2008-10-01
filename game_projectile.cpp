@@ -1,6 +1,8 @@
 
 #include "game_projectile.h"
 
+#include <numeric>
+
 #include "adler32_util.h"
 #include "collide.h"
 #include "game_tank.h"
@@ -347,6 +349,32 @@ void Projectile::triggerstandard(Coord2 pos, Coord normal, Tank *target, const G
     gpc.gic->effects->push_back(GfxIdb(pos.toFloat(), normal.toFloat(), (now.pi.pos - last.pi.pos).toFloat(), ide[i]));
 }
 
+void Projectile::frame_spawns(const GamePlayerContext &gpc) {
+  vector<IDBDeployAdjust> idd = projtype.poly_deploy();
+  if(idd.size()) {
+    vector<Coord4> poly = polys(now);
+    vector<Coord> pl;
+    for(int i = 0; i < poly.size(); i++)
+      pl.push_back(len(poly[i].s() - poly[i].e()));
+    Coord pl_tot = accumulate(pl.begin(), pl.end(), Coord(0));
+    
+    for(int i = 0; i < idd.size(); i++) {
+      Coord spawnpoint = gpc.gic->rng->cfrand() * pl_tot;
+      //dprintf("sp %f, first %f\n", spawnpoint.toFloat(), pl[0].toFloat());
+      int spawnstart;
+      for(spawnstart = 0; spawnstart < poly.size(); spawnstart++) {
+        if(pl[spawnstart] >= spawnpoint)
+          break;
+        spawnpoint -= pl[spawnstart];
+      }
+      //dprintf("sp %f, first %f\n", spawnpoint.toFloat(), pl[0].toFloat());
+      CHECK(spawnstart < poly.size());
+      Coord2 pt = lerp(poly[spawnstart].s(), poly[spawnstart].e(), spawnpoint / pl[spawnstart]);
+      deployProjectile(idd[i], DeployLocation(pt, now.pi.d), gpc, damageflags);
+    }
+  }
+}
+
 bool Projectile::isLive() const {
   return live;
 }
@@ -388,7 +416,7 @@ vector<Coord4> Projectile::polys(const ProjPostState &stat) const {
     rv.push_back(Coord4(stat.pi.pos, stat.pi.pos - makeAngle(locald) * min(Coord(projtype.line_length()), maxlen)));
   } else if(projtype.shape() == PS_LINE_AIRBRAKE) {
     Coord maxlen = max(0, stat.distance_traveled);
-    rv.push_back(Coord4(stat.pi.pos, stat.pi.pos - makeAngle(stat.pi.d) * min(stat.airbrake_velocity / FPS + 2, maxlen)));
+    rv.push_back(Coord4(stat.pi.pos, stat.pi.pos - makeAngle(stat.pi.d) * min(stat.airbrake_velocity / FPS + projtype.line_airbrake_lengthaddition(), maxlen)));
   } else if(projtype.shape() == PS_ARROW) {
     Coord2 l = stat.pi.pos + rotate(Coord2(projtype.arrow_width() / 2, projtype.arrow_height() / 2), Coord(stat.arrow_spin));
     Coord2 c = stat.pi.pos + rotate(Coord2(0, -projtype.arrow_height() / 2), Coord(stat.arrow_spin));
@@ -567,8 +595,10 @@ void ProjectilePack::tick(Collider *collide, int owner, const GameImpactContext 
     if(itr->second.isLive() && itr->second.isDetonating())
       itr->second.trigger(1, NO_NORMAL, NULL, GamePlayerContext(gic.players[owner], this, gic), false);
     if(itr->second.isLive()) {
-      if(!count(newitems.begin(), newitems.end(), itr->first))  // we make sure we do collisions before ticks
+      if(!count(newitems.begin(), newitems.end(), itr->first)) {  // we make sure we do collisions before ticks
+        itr->second.frame_spawns(GamePlayerContext(gic.players[owner], this, gic));
         itr->second.tick(gic, owner);
+      }
       if(itr->second.isLive() && itr->second.isDetonating())
         itr->second.trigger(1, NO_NORMAL, NULL, GamePlayerContext(gic.players[owner], this, gic), false);
       if(itr->second.isLive()) {

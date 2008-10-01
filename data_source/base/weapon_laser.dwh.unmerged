@@ -452,25 +452,58 @@ effects {
 
 warhead {
   name=warhead.weapon.gammalance
-  impactdamage=MERGE energy
+  impactdamage=MERGE(10) energy
   effects_impact=effects.weapon.gammalance1
   effects_impact=effects.weapon.gammalance2
   effects_impact=effects.weapon.gammalance3
 }
 
+warhead {
+  name=warhead.weapon.gammalance.spark
+  impactdamage=MERGE(1) energy
+}
+
+projectile {
+  name=projectile.weapon.gammalance.spark
+  motion=airbrake
+  airbrake_life=0.6
+  airbrake_slowdown=0.9999
+  line_airbrake_lengthaddition=0.6
+  velocity=40
+  color=0.6, 1.0, 1.0
+  durability=MERGE
+  warhead=warhead.weapon.gammalance.spark
+}
+
+deploy {
+  name=deploy.weapon.gammalance.spark
+  type=normal
+  anglestddev=2
+  projectile=projectile.weapon.gammalance.spark
+}
+
 projectile {
   name=projectile.weapon.gammalance
   motion=normal
-  velocity=600
-  color=0.6, 0.9, 1.0
+  velocity=700
+  color=0.6, 1.0, 0.95
   durability=MERGE
   warhead=warhead.weapon.gammalance
+  
+  poly_deploy=deploy.weapon.gammalance.spark
+  poly_deploy=deploy.weapon.gammalance.spark
+  poly_deploy=deploy.weapon.gammalance.spark
+  poly_deploy=deploy.weapon.gammalance.spark
+  poly_deploy=deploy.weapon.gammalance.spark
+  poly_deploy=deploy.weapon.gammalance.spark
+  poly_deploy=deploy.weapon.gammalance.spark
+  poly_deploy=deploy.weapon.gammalance.spark
 }
 
 deploy {
   name=deploy.weapon.gammalance
   type=forward
-  anglestddev=0.008
+  anglestddev=0.006
   projectile=projectile.weapon.gammalance
 }
 

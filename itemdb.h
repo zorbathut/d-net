@@ -156,6 +156,8 @@ struct IDBProjectile {
     
     float line_length;
     
+    float line_airbrake_lengthaddition;
+    
     float arrow_width;
     float arrow_height;
     float arrow_rotate;
@@ -176,6 +178,8 @@ struct IDBProjectile {
 
   vector<const IDBWarhead *> chain_warhead;
   vector<const IDBDeploy *> chain_deploy;
+  
+  vector<const IDBDeploy *> poly_deploy;
   
   vector<const IDBEffects *> chain_effects;
   vector<const IDBEffects *> burn_effects;
@@ -449,6 +453,8 @@ public:
     
     float line_length() const;
     
+    float line_airbrake_lengthaddition() const;
+    
     float arrow_width() const;
     float arrow_height() const;
     float arrow_rotate() const;
@@ -470,6 +476,8 @@ public:
   vector<IDBWarheadAdjust> chain_warhead(float multfactor = 1.0f) const;
   vector<IDBDeployAdjust> chain_deploy() const;
   vector<IDBEffectsAdjust> chain_effects() const;
+  
+  vector<IDBDeployAdjust> poly_deploy() const;
   
   vector<IDBEffectsAdjust> burn_effects() const;
   

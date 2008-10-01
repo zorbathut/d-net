@@ -604,6 +604,7 @@ void parseProjectile(kvData *chunk, bool reload, ErrorAccumulator &accum) {
     titem->line_length = parseWithDefault(chunk, "line_length", titem->velocity / 60);  // yes, this is 60, not FPS
   } else if(shape == "line_airbrake") {
     titem->shape = PS_LINE_AIRBRAKE;
+    titem->line_airbrake_lengthaddition = parseWithDefault(chunk, "line_airbrake_lengthaddition", 2.0);
   } else if(shape == "arrow") {
     titem->shape = PS_ARROW;
     titem->arrow_height = parseSingleItem<float>(chunk->consume("arrow_height"));
@@ -635,6 +636,8 @@ void parseProjectile(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   titem->chain_warhead = parseSubclassSet(chunk, "warhead", warheadclasses);
   titem->chain_deploy = parseSubclassSet(chunk, "deploy", deployclasses);
   titem->chain_effects = parseSubclassSet(chunk, "effects", effectsclasses);
+  
+  titem->poly_deploy = parseSubclassSet(chunk, "poly_deploy", deployclasses);
   
   titem->burn_effects = parseSubclassSet(chunk, "burn_effects", effectsclasses);
   

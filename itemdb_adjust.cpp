@@ -201,7 +201,8 @@ IDBPShape IDBProjectileAdjust::shape() const { return idb->shape; }
 
 float IDBProjectileAdjust::proximity_visibility() const { return idb->proximity_visibility; };
 
-float IDBProjectileAdjust::line_length() const { CHECK(idb->shape == PS_LINE || idb->shape == PS_LINE_AIRBRAKE); return idb->line_length; };
+float IDBProjectileAdjust::line_length() const { CHECK(idb->shape == PS_LINE); return idb->line_length; };
+float IDBProjectileAdjust::line_airbrake_lengthaddition() const { CHECK(idb->shape == PS_LINE_AIRBRAKE); return idb->line_airbrake_lengthaddition; };
 
 float IDBProjectileAdjust::arrow_width() const { CHECK(idb->shape == PS_ARROW); return idb->arrow_width; }
 float IDBProjectileAdjust::arrow_height() const { CHECK(idb->shape == PS_ARROW); return idb->arrow_height; }
@@ -228,6 +229,8 @@ vector<IDBWarheadAdjust> IDBProjectileAdjust::chain_warhead(float multfactor) co
 
 vector<IDBDeployAdjust> IDBProjectileAdjust::chain_deploy() const { return adjust_vector(idb->chain_deploy, adjust); }
 vector<IDBEffectsAdjust> IDBProjectileAdjust::chain_effects() const { return adjust_vector(idb->chain_effects, adjust); }
+
+vector<IDBDeployAdjust> IDBProjectileAdjust::poly_deploy() const { return adjust_vector(idb->poly_deploy, adjust); }
 
 vector<IDBEffectsAdjust> IDBProjectileAdjust::burn_effects() const { return adjust_vector(idb->burn_effects, adjust); }
 
