@@ -410,6 +410,14 @@ void Shop::renderNode(const HierarchyNode &node, int depth, const Player *player
     CHECK(0);
   }
   
+  vector<bool> cantafford;  // this should be rolled into stddisplay itself, but, eh, :effort:
+  for(int i = 0; i < stddisplay.size(); i++) {
+    if(!stddisplay[i].second)
+      cantafford.push_back(false);
+    else
+      cantafford.push_back(stddisplay[i].first.second > player->getCash());
+  }
+    
   for(int j = 0; j < renderorder.size(); j++) {
     const int itemid = renderorder[j];
     const ShopPlacement splace = ShopPlacement(tsp.depth, itemid, tsp.siblings, tsp.active);
@@ -449,42 +457,40 @@ void Shop::renderNode(const HierarchyNode &node, int depth, const Player *player
     }
     
     // Display ammo count
-    {
-      if(node.branches[itemid].type == HierarchyNode::HNT_WEAPON || node.branches[itemid].type == HierarchyNode::HNT_EQUIPWEAPON || node.branches[itemid].type == HierarchyNode::HNT_SELLWEAPON) {
-        const IDBWeapon *weap;
-        if(node.branches[itemid].type == HierarchyNode::HNT_WEAPON) {
-          weap = node.branches[itemid].weapon;
-        } else if(node.branches[itemid].type == HierarchyNode::HNT_EQUIPWEAPON) {
-          weap = node.branches[itemid].equipweapon;
-        } else if(node.branches[itemid].type == HierarchyNode::HNT_SELLWEAPON) {
-          weap = node.branches[itemid].sellweapon;
-        } else {
-          CHECK(0);
-        }
-        CHECK(weap);
-        
-        string text;
-        {
-          int pac = player->ammoCount(weap);
-          if(pac == UNLIMITED_AMMO) {
-            text = "Unlimited";
-          } else if(pac == 0) {
-            text = "";
-          } else if(pac > 0) {
-            text = StringPrintf("%d", player->ammoCount(weap));
-          } else {
-            CHECK(0);
-          }
-        }
-        
-        if(node.branches[itemid].type == HierarchyNode::HNT_WEAPON || node.branches[itemid].type == HierarchyNode::HNT_SELLWEAPON) {
-          drawJustifiedText(text, slay.fontsize(), slay.quantity(splace), TEXT_MAX, TEXT_MIN);
-        } else if(node.branches[itemid].type == HierarchyNode::HNT_EQUIPWEAPON) {
-          drawJustifiedText(text, slay.fontsize(), slay.price(splace), TEXT_MAX, TEXT_MIN);
-        } else {
-          CHECK(0);
-        }        
+    if(node.branches[itemid].type == HierarchyNode::HNT_WEAPON || node.branches[itemid].type == HierarchyNode::HNT_EQUIPWEAPON || node.branches[itemid].type == HierarchyNode::HNT_SELLWEAPON) {
+      const IDBWeapon *weap;
+      if(node.branches[itemid].type == HierarchyNode::HNT_WEAPON) {
+        weap = node.branches[itemid].weapon;
+      } else if(node.branches[itemid].type == HierarchyNode::HNT_EQUIPWEAPON) {
+        weap = node.branches[itemid].equipweapon;
+      } else if(node.branches[itemid].type == HierarchyNode::HNT_SELLWEAPON) {
+        weap = node.branches[itemid].sellweapon;
+      } else {
+        CHECK(0);
       }
+      CHECK(weap);
+      
+      string text;
+      {
+        int pac = player->ammoCount(weap);
+        if(pac == UNLIMITED_AMMO) {
+          text = "Unlimited";
+        } else if(pac == 0) {
+          text = "";
+        } else if(pac > 0) {
+          text = StringPrintf("%d", player->ammoCount(weap));
+        } else {
+          CHECK(0);
+        }
+      }
+      
+      if(node.branches[itemid].type == HierarchyNode::HNT_WEAPON || node.branches[itemid].type == HierarchyNode::HNT_SELLWEAPON) {
+        drawJustifiedText(text, slay.fontsize(), slay.quantity(splace), TEXT_MAX, TEXT_MIN);
+      } else if(node.branches[itemid].type == HierarchyNode::HNT_EQUIPWEAPON) {
+        drawJustifiedText(text, slay.fontsize(), slay.price(splace), TEXT_MAX, TEXT_MIN);
+      } else {
+        CHECK(0);
+      }        
     }
     
     if(node.branches[itemid].type == HierarchyNode::HNT_EQUIPWEAPON && node.branches[itemid].equipweapon == equipselected) {
@@ -495,6 +501,9 @@ void Shop::renderNode(const HierarchyNode &node, int depth, const Player *player
       drawSolidLoop(pt);
       drawLineLoop(pt, slay.boxthick());
     }
+    
+    if(cantafford[j])
+      setColor(C::red);
     
     // Draw the text we discovered previously.
     drawJustifiedText(stddisplay[j].first.first, slay.fontsize(), slay.price(splace), TEXT_MAX, TEXT_MIN);
