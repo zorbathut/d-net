@@ -277,10 +277,12 @@ warhead {
 projectile {
   name=projectile.weapon.reflectorray.gamma
   velocity=200
+  visual_thickness=0.7
+  line_length=2x
   
   durability=MERGE
   
-  color=0.6,0.7,0.8
+  color=0.8,0.9,1.0
   
   warhead=warhead.weapon.reflectorray.gamma
 }
@@ -300,10 +302,12 @@ warhead {
 projectile {
   name=projectile.weapon.reflectorray.beta
   velocity=200
+  visual_thickness=0.7
+  line_length=2x
   
   durability=MERGE
   
-  color=0.8,0.6,0.7
+  color=1.0,0.8,0.9
   
   warhead=warhead.weapon.reflectorray.beta
   deploy=deploy.weapon.reflectorray.gamma
@@ -324,10 +328,12 @@ warhead {
 projectile {
   name=projectile.weapon.reflectorray.alpha
   velocity=200
+  visual_thickness=0.7
+  line_length=2x
   
   durability=MERGE
   
-  color=0.7,0.8,0.6
+  color=0.9,1.0,0.8
   
   warhead=warhead.weapon.reflectorray.alpha
   deploy=deploy.weapon.reflectorray.beta

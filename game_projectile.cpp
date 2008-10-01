@@ -116,8 +116,11 @@ void Projectile::tick(const GameImpactContext &gic, int owner) {
   
   if(projtype.proximity() != -1) {
     Coord newdist = gic.getClosestFoeDistance(now.pi.pos, owner);
-    if(newdist > closest_enemy_tank && newdist < projtype.proximity())
+    if(newdist > closest_enemy_tank && newdist < projtype.proximity()) {
       detonating = true; // BOOM
+      // Let's also lerp randomly between now and last
+      now.pi.pos = lerp(now.pi.pos, last.pi.pos, gic.rng->cfrand());
+    }
     closest_enemy_tank = newdist;
   }
   
