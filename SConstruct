@@ -150,7 +150,7 @@ def make_datadir(dest, mergeflags = ""):
       emgd = [dest + "/" + x for x in extramergedeps[item.rsplit('.', 1)[0]]]
     else:
       emgd = []
-    results += env.Command(dest + "/" + item.rsplit('.', 1)[-2], [programs["merger"], csvs[identifier], "data_source/" + item] + emgd, "./${SOURCES[0]} ${SOURCES[1]} ${SOURCES[2]} $TARGET --fileroot=%s %s --addr2line" % (dest, mergeflags))
+    results += env.Command(dest + "/" + item.rsplit('.', 1)[-2], [programs["merger"], csvs[identifier], "data_source/" + item, dest + "/base/hierarchy.dwh"] + emgd, "./${SOURCES[0]} ${SOURCES[1]} ${SOURCES[2]} $TARGET --fileroot=%s %s --addr2line" % (dest, mergeflags))
   
   for item in data_vecedit:
     results += env.Command(dest + "/" + item, "data_source/" + item, Copy("$TARGET", '$SOURCE'))
@@ -192,11 +192,14 @@ def MakeInstallerShell(name, shopcaches):
     quick = ""
   return MakeInstaller(env=env, type=name, shopcaches=shopcaches, version=version, binaries=programs_stripped, data=data_dests, deployables=deployfiles, installers=installers, suffix="%s%s" % (name, quick))
 
-Alias("packagedemoquick", MakeInstallerShell("demo", []))
-Alias("packagedemo", MakeInstallerShell("demo", shopcaches["demo"]))
-Alias("packagereleasequick", MakeInstallerShell("release", []))
-Alias("package", Alias("packagerelease", MakeInstallerShell("release", shopcaches["release"])))
+allpackages = []
 
+allpackages += Alias("packagedemoquick", MakeInstallerShell("demo", []))
+allpackages += Alias("packagedemo", MakeInstallerShell("demo", shopcaches["demo"]))
+allpackages += Alias("packagereleasequick", MakeInstallerShell("release", []))
+allpackages += Alias("package", Alias("packagerelease", MakeInstallerShell("release", shopcaches["release"])))
+
+Alias("allpackages", allpackages)
 
 # version_*.cpp
 def addVersionFile(type):
