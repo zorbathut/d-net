@@ -330,7 +330,7 @@ projectile {
 deploy {
   name=deploy.weapon.bladelauncher
   type=forward
-  anglestddev=0.010
+  anglestddev=0.040
   projectile=projectile.weapon.bladelauncher
 }
 

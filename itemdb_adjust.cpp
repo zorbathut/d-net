@@ -255,6 +255,14 @@ float IDBProjectileAdjust::stats_damagePerShot() const {
   vector<IDBDeployAdjust> idbde = chain_deploy();
   for(int i = 0; i < idbde.size(); i++)
     val += idbde[i].stats_damagePerShot();
+  
+  CHECK(motion() == PM_NORMAL || !idb->poly_deploy.size());
+  if(motion() == PM_NORMAL && idb->poly_deploy.size()) {
+    float multi = 5000 / velocity(); // vague approximation
+    vector<IDBDeployAdjust> idbde = poly_deploy();
+    for(int i = 0; i < idbde.size(); i++)
+      val += idbde[i].stats_damagePerShot() * multi;
+  }
   return val * mult;
 }
 

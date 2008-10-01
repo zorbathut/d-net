@@ -452,7 +452,7 @@ effects {
 
 warhead {
   name=warhead.weapon.gammalance
-  impactdamage=MERGE(10) energy
+  impactdamage=MERGE(6) energy
   effects_impact=effects.weapon.gammalance1
   effects_impact=effects.weapon.gammalance2
   effects_impact=effects.weapon.gammalance3
