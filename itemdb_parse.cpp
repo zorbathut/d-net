@@ -509,6 +509,7 @@ void parseProjectile(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   
   titem->proximity_visibility = -1;
   titem->halflife = parseWithDefault(chunk, "halflife", -1.);
+  titem->halflife_base = parseWithDefault(chunk, "halflife_base", titem->halflife / 2);
   titem->penetrating = parseWithDefault(chunk, "penetrating", false);
   
   string motion = parseWithDefault(chunk, "motion", "normal");

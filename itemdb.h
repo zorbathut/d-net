@@ -120,6 +120,7 @@ struct IDBProjectile {
     float proximity;
     float durability;
     float halflife;
+    float halflife_base;
     bool penetrating;
     
     float missile_sidelaunch;
@@ -417,6 +418,7 @@ public:
     float proximity() const;
     float durability() const;
     float halflife() const;
+    float halflife_base() const;
     bool penetrating() const;
     
     float missile_stabstart() const;

@@ -485,7 +485,7 @@ effects {
   type=particle
   
   distribute=true
-  multiple_force=2.0
+  multiple_force=3.0
   
   spread=5
   
@@ -516,18 +516,16 @@ projectile {
   motion=homing
   
   velocity=200
-  halflife=0.08
+  halflife=0.03
+  halflife_base=0.1
   
-  homing_turn=8
+  homing_turn=15
   
   line_length=1
   visual_thickness=1.5x
   
   durability=MERGE
   warhead=warhead.weapon.swarmerrocket.swarm
-  
-  #burn_effects=effects.weapon.missile.burn
-  #burn_effects=effects.weapon.missile.burn
 }
 
 deploy {
@@ -574,8 +572,10 @@ projectile {
   durability=MERGE
   warhead=warhead.weapon.swarmerrocket
   
-  burn_effects=effects.weapon.missile.burn
-  burn_effects=effects.weapon.missile.burn
+  burn_effects=effects.weapon.swarmerrocket.burn
+  burn_effects=effects.weapon.swarmerrocket.burn
+  burn_effects=effects.weapon.swarmerrocket.burn
+  burn_effects=effects.weapon.swarmerrocket.burn
 }
 
 deploy {
