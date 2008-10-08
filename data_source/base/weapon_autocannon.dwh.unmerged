@@ -362,8 +362,8 @@ effects {
 
   quantity=8
   
-  multiple_reflect=0.3
-  spread=20
+  multiple_reflect=0.7
+  spread=80
   
   slowdown=0.2
   lifetime=0.15
@@ -376,7 +376,7 @@ warhead {
   name=warhead.weapon.relativisticcannon
   impactdamage=MERGE kinetic
   wallremovalradius=0.5
-  wallremovalchance=0.05
+  wallremovalchance=0.5
   
   effects_impact=effects.weapon.relativisticcannon
 }
@@ -384,7 +384,8 @@ warhead {
 projectile {
   name=projectile.weapon.relativisticcannon
   motion=normal
-  velocity=120
+  velocity=480
+  visual_thickness=2x
   color=1.0, 0.9, 0.6
   durability=MERGE
   warhead=warhead.weapon.relativisticcannon
@@ -393,7 +394,7 @@ projectile {
 deploy {
   name=deploy.weapon.relativisticcannon
   type=forward
-  anglestddev=0.030
+  anglestddev=0.05
   projectile=projectile.weapon.relativisticcannon
 }
 
