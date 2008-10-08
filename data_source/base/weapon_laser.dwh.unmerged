@@ -577,18 +577,162 @@ effects {
 }
 
 warhead {
-  name=warhead.weapon.fissionlaser
-  impactdamage=MERGE energy
+  name=warhead.weapon.fissionlaser.puffy
+  impactdamage=MERGE(1) energy
+}
+
+warhead {
+  name=warhead.weapon.fissionlaser.short
+  impactdamage=MERGE(16) energy
+  effects_impact=effects.weapon.fissionlaser1
+  effects_impact=effects.weapon.fissionlaser2
+  effects_impact=effects.weapon.fissionlaser3
+}
+
+warhead {
+  name=warhead.weapon.fissionlaser.medium
+  impactdamage=MERGE(8) energy
+  effects_impact=effects.weapon.fissionlaser1
+  effects_impact=effects.weapon.fissionlaser2
+  effects_impact=effects.weapon.fissionlaser3
+}
+
+warhead {
+  name=warhead.weapon.fissionlaser.long
+  impactdamage=MERGE(8) energy
   effects_impact=effects.weapon.fissionlaser1
   effects_impact=effects.weapon.fissionlaser2
   effects_impact=effects.weapon.fissionlaser3
 }
 
 projectile {
+  name=projectile.weapon.fissionlaser.puffy
+  motion=normal
+  velocity=70
+  velocity_stddev=50
+  color=1.0, 1.0, 1.0
+  line_length=0.1
+  halflife=0.2
+  halflife_base=0
+  durability=MERGE
+  warhead=warhead.weapon.fissionlaser.puffy
+}
+
+projectile {
+  name=projectile.weapon.fissionlaser.short
+  motion=normal
+  velocity=180
+  color=0.9, 0.8, 0.9
+  halflife=0.2
+  halflife_base=0
+  durability=MERGE
+  warhead=warhead.weapon.fissionlaser.short
+}
+
+projectile {
+  name=projectile.weapon.fissionlaser.medium
+  motion=normal
+  velocity=450
+  color=0.6, 1.0, 0.9
+  halflife=0.2
+  halflife_base=0
+  durability=MERGE
+  warhead=warhead.weapon.fissionlaser.medium
+}
+
+projectile {
+  name=projectile.weapon.fissionlaser.long
+  motion=normal
+  velocity=950
+  color=0.5, 0.7, 1.0
+  halflife=0.2
+  halflife_base=0
+  durability=MERGE
+  warhead=warhead.weapon.fissionlaser.long
+}
+
+deploy {
+  name=deploy.weapon.fissionlaser.puffy
+  
+  type=explode
+  
+  exp_minsplits=2
+  exp_maxsplits=4
+  exp_minsplitsize=1
+  exp_maxsplitsize=10
+  
+  exp_shotspersplit=8
+  
+  anglestddev=0.1
+  
+  projectile=projectile.weapon.fissionlaser.puffy
+}
+
+deploy {
+  name=deploy.weapon.fissionlaser.short
+  
+  type=explode
+  
+  exp_minsplits=2
+  exp_maxsplits=4
+  exp_minsplitsize=1
+  exp_maxsplitsize=10
+  
+  exp_shotspersplit=1
+  
+  projectile=projectile.weapon.fissionlaser.short
+}
+
+deploy {
+  name=deploy.weapon.fissionlaser.medium
+  
+  type=explode
+  
+  exp_minsplits=2
+  exp_maxsplits=4
+  exp_minsplitsize=1
+  exp_maxsplitsize=10
+  
+  exp_shotspersplit=1
+  
+  projectile=projectile.weapon.fissionlaser.medium
+}
+
+deploy {
+  name=deploy.weapon.fissionlaser.long
+  
+  type=explode
+  
+  exp_minsplits=2
+  exp_maxsplits=4
+  exp_minsplitsize=1
+  exp_maxsplitsize=10
+  
+  exp_shotspersplit=1
+  
+  projectile=projectile.weapon.fissionlaser.long
+}
+
+warhead {
+  name=warhead.weapon.fissionlaser
+  impactdamage=MERGE(16) energy
+  effects_impact=effects.weapon.fissionlaser1
+  effects_impact=effects.weapon.fissionlaser2
+  effects_impact=effects.weapon.fissionlaser3
+  
+  deploy=deploy.weapon.fissionlaser.puffy
+  deploy=deploy.weapon.fissionlaser.short
+  deploy=deploy.weapon.fissionlaser.medium
+  deploy=deploy.weapon.fissionlaser.long
+}
+
+projectile {
   name=projectile.weapon.fissionlaser
   motion=normal
-  velocity=600
-  color=0.6, 0.9, 1.0
+  velocity=750
+  visual_thickness=1.5x
+  line_length=0.8x
+  color=0.8, 1.0, 1.0
   durability=MERGE
   warhead=warhead.weapon.fissionlaser
 }
