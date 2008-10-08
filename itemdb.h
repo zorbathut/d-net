@@ -110,7 +110,7 @@ struct IDBWarhead {
   vector<const IDBEffects *> effects_impact;
 };
 
-enum IDBPMotion { PM_NORMAL, PM_MISSILE, PM_AIRBRAKE, PM_BOOMERANG, PM_SINE, PM_HUNTER, PM_MINE, PM_SPIDERMINE, PM_DPS, PM_DELAY, PM_GENERATOR, PM_LAST };
+enum IDBPMotion { PM_NORMAL, PM_MISSILE, PM_AIRBRAKE, PM_BOOMERANG, PM_SINE, PM_HUNTER, PM_HOMING, PM_MINE, PM_SPIDERMINE, PM_DPS, PM_DELAY, PM_GENERATOR, PM_LAST };
 enum IDBPShape { PS_LINE, PS_LINE_AIRBRAKE, PS_ARROW, PS_DRONE, PS_STAR, PS_ARCPIECE, PS_INVISIBLE };
 
 struct IDBProjectile {
@@ -136,6 +136,8 @@ struct IDBProjectile {
     
     float hunter_rotation;
     float hunter_turnweight;
+    
+    float homing_turn;
     
     float sine_width;
     float sine_frequency;
@@ -431,6 +433,8 @@ public:
     
     float hunter_rotation() const;
     float hunter_turnweight() const;
+    
+    float homing_turn() const;
     
     float sine_width() const;
     float sine_frequency() const;

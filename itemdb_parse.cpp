@@ -557,6 +557,10 @@ void parseProjectile(kvData *chunk, bool reload, ErrorAccumulator &accum) {
     titem->hunter_rotation = parseSingleItem<float>(chunk->consume("hunter_rotation"));
     titem->hunter_turnweight = parseSingleItem<float>(chunk->consume("hunter_turnweight"));
     allowed_shapes.insert("drone");
+  } else if(motion == "homing") {
+    titem->motion = PM_HOMING;
+    titem->homing_turn = parseSingleItem<float>(chunk->consume("homing_turn"));
+    allowed_shapes.insert("line");
   } else if(motion == "sine") {
     titem->motion = PM_SINE;
     titem->sine_width = parseSingleItem<float>(chunk->consume("sine_width"));

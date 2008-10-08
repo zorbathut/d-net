@@ -472,15 +472,15 @@ launcher {
 
 ###########################
 #
-#   Adaptive Rocket base stats
+#   Swarmer Rocket base stats
 
 hierarchy {
-  name=ROOT.Ammo.Adaptive Rocket
+  name=ROOT.Ammo.Swarmer Rocket
   pack=100
 }
 
 effects {
-  name=effects.weapon.adaptiverocket.burn
+  name=effects.weapon.swarmerrocket.burn
   
   type=particle
   
@@ -496,53 +496,101 @@ effects {
 }
 
 text {
-  name=text.weapon.adaptiverocket
+  name=text.weapon.swarmerrocket
   data=Blah blah hamster blah yacht blah blah blah monocle polish
 }
 
 warhead {
-  name=warhead.weapon.adaptiverocket
+  name=warhead.weapon.swarmerrocket.swarm
   impactdamage=MERGE(1) explosive
   radiusdamage=MERGE(3) explosive
-  radiusfalloff=8
+  radiusfalloff=10
   radiusexplosive=1
   wallremovalradius=1
 }
 
 projectile {
-  name=projectile.weapon.adaptiverocket
+  name=projectile.weapon.swarmerrocket.swarm
+  color=0.9, 0.95, 1.0
+  
+  motion=homing
+  
+  velocity=200
+  halflife=0.08
+  
+  homing_turn=8
+  
+  line_length=1
+  visual_thickness=1.5x
+  
+  durability=MERGE
+  warhead=warhead.weapon.swarmerrocket.swarm
+  
+  #burn_effects=effects.weapon.missile.burn
+  #burn_effects=effects.weapon.missile.burn
+}
+
+deploy {
+  name=deploy.weapon.swarmerrocket.swarm
+  
+  type=explode
+  
+  exp_minsplits=5
+  exp_maxsplits=5
+  exp_minsplitsize=4
+  exp_maxsplitsize=5
+  
+  exp_shotspersplit=1
+  
+  projectile=projectile.weapon.swarmerrocket.swarm
+}
+
+warhead {
+  name=warhead.weapon.swarmerrocket
+  impactdamage=MERGE(1) explosive
+  radiusdamage=MERGE(3) explosive
+  radiusfalloff=6
+  radiusexplosive=1
+  wallremovalradius=1
+  
+  deploy=deploy.weapon.swarmerrocket.swarm
+}
+
+projectile {
+  name=projectile.weapon.swarmerrocket
   color=0.9, 0.95, 1.0
   
   motion=missile
   
-  velocity=180
+  velocity=140
   missile_stabstart=0.0
   missile_stabilization=30
   missile_sidelaunch=30
   missile_backlaunch=15
   
   line_length=2
+  visual_thickness=3x
   
   durability=MERGE
-  warhead=warhead.weapon.adaptiverocket
+  warhead=warhead.weapon.swarmerrocket
   
   burn_effects=effects.weapon.missile.burn
   burn_effects=effects.weapon.missile.burn
 }
 
 deploy {
-  name=deploy.weapon.adaptiverocket
+  name=deploy.weapon.swarmerrocket
   type=forward
-  anglestddev=0.002
-  projectile=projectile.weapon.adaptiverocket
+  anglestddev=0.003
+  projectile=projectile.weapon.swarmerrocket
 }
 
 launcher {
-  name=launcher.weapon.adaptiverocket
+  name=launcher.weapon.swarmerrocket
   
-  deploy=deploy.weapon.adaptiverocket
+  deploy=deploy.weapon.swarmerrocket
   
-  text=text.weapon.adaptiverocket
+  text=text.weapon.swarmerrocket
 }
 
 ###########################
@@ -919,57 +967,57 @@ weapon {
 
 
 weapon {
-  name=ROOT.Ammo.Adaptive Rocket.Adaptive Rocket I
+  name=ROOT.Ammo.Swarmer Rocket.Swarmer Rocket I
   
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.weapon.adaptiverocket
+  launcher=launcher.weapon.swarmerrocket
 }
 
 weapon {
-  name=ROOT.Ammo.Adaptive Rocket.Adaptive Rocket II
+  name=ROOT.Ammo.Swarmer Rocket.Swarmer Rocket II
   
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.weapon.adaptiverocket
+  launcher=launcher.weapon.swarmerrocket
 }
 
 weapon {
-  name=ROOT.Ammo.Adaptive Rocket.Adaptive Rocket III
+  name=ROOT.Ammo.Swarmer Rocket.Swarmer Rocket III
   
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.weapon.adaptiverocket
+  launcher=launcher.weapon.swarmerrocket
 }
 
 weapon {
-  name=ROOT.Ammo.Adaptive Rocket.Adaptive Rocket IV
+  name=ROOT.Ammo.Swarmer Rocket.Swarmer Rocket IV
   
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.weapon.adaptiverocket
+  launcher=launcher.weapon.swarmerrocket
 }
 
 weapon {
-  name=ROOT.Ammo.Adaptive Rocket.Adaptive Rocket V
+  name=ROOT.Ammo.Swarmer Rocket.Swarmer Rocket V
   
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.weapon.adaptiverocket
+  launcher=launcher.weapon.swarmerrocket
 }
 
 weapon {
-  name=ROOT.Ammo.Adaptive Rocket.Adaptive Rocket VI
+  name=ROOT.Ammo.Swarmer Rocket.Swarmer Rocket VI
   
   cost=MERGE
   firerate=MERGE
   
-  launcher=launcher.weapon.adaptiverocket
+  launcher=launcher.weapon.swarmerrocket
 }
 
 

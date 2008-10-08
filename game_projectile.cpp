@@ -10,6 +10,27 @@
 
 using namespace std;
 
+int huntForHoming(const CPosInfo &pi, const vector<Tank *> &targets, int team, Coord turncost) {
+  int lockon = -1;
+  Coord dist = Coord(1 << 30);
+  for(int i = 0; i < targets.size(); i++) {
+    if(!targets[i]->isLive())
+      continue;
+    if(targets[i]->team == team)
+      continue;
+    Coord dang = getAngle(targets[i]->pi.pos - pi.pos);
+    Coord diff = ang_dist(dang, pi.d);
+    
+    Coord val = diff * turncost + len(targets[i]->pi.pos - pi.pos);
+    if(val < dist) {
+      dist = val;
+      lockon = i;
+    }
+  }
+  
+  return lockon;
+}
+
 void Projectile::tick(const GameImpactContext &gic, int owner) {
   CHECK(live);
   CHECK(age != -1);
@@ -68,22 +89,7 @@ void Projectile::tick(const GameImpactContext &gic, int owner) {
     if(now.hunter_vel != 0)
       now.hunter_vel += velocity / FPS;
     
-    int lockon = -1;
-    Coord dist = Coord(1 << 30);
-    for(int i = 0; i < gic.players.size(); i++) {
-      if(!gic.players[i]->isLive())
-        continue;
-      if(gic.players[i]->team == gic.players[owner]->team)
-        continue;
-      Coord dang = getAngle(gic.players[i]->pi.pos - now.pi.pos);
-      Coord diff = ang_dist(dang, now.pi.d);
-      
-      Coord val = diff * projtype.hunter_turnweight() + len(gic.players[i]->pi.pos - now.pi.pos);
-      if(val < dist) {
-        dist = val;
-        lockon = i;
-      }
-    }
+    int lockon = huntForHoming(now.pi, gic.players, gic.players[owner]->team, projtype.hunter_turnweight());
     
     if(lockon != -1) {
       Coord dang = getAngle(gic.players[lockon]->pi.pos - now.pi.pos);
@@ -93,6 +99,15 @@ void Projectile::tick(const GameImpactContext &gic, int owner) {
     }
     
     now.pi.pos += makeAngle(now.pi.d) * now.hunter_vel / FPS;
+  } else if(projtype.motion() == PM_HOMING) {
+    int lockon = huntForHoming(now.pi, gic.players, gic.players[owner]->team, 0.2 / projtype.homing_turn() * velocity);
+    
+    if(lockon != -1) {
+      Coord dang = getAngle(gic.players[lockon]->pi.pos - now.pi.pos);
+      now.pi.d = ang_approach(now.pi.d, dang, projtype.homing_turn() / FPS);
+    }
+    
+    now.pi.pos += makeAngle(now.pi.d) * velocity / FPS;
   } else if(projtype.motion() == PM_SINE) {
     now.sine_phase += 1.0 / sine_frequency / FPS * COORDPI * 2;
     now.pi.pos += makeAngle(now.pi.d) * velocity / FPS;
@@ -101,7 +116,7 @@ void Projectile::tick(const GameImpactContext &gic, int owner) {
     if(age >= projtype.delay_duration())
       detonating = true;
   } else if(projtype.motion() == PM_GENERATOR) {
-    detonating = true; // this is pretty much all we do honestly
+    detonating = true; // this is pretty much all we do honestly. BOOOM hee hee hee
   } else {
     CHECK(0);
   }
@@ -227,6 +242,7 @@ void Projectile::checksum(Adler32 *adl) const {
   } else if(projtype.motion() == PM_DPS) {
   } else if(projtype.motion() == PM_HUNTER) {
     adler(adl, hk_drift);
+  } else if(projtype.motion() == PM_HOMING) {
   } else if(projtype.motion() == PM_DELAY) {
   } else if(projtype.motion() == PM_GENERATOR) {
   } else {
@@ -486,7 +502,7 @@ Projectile::Projectile(const Coord2 &in_pos, Coord in_d, const IDBProjectileAdju
   now.distance_traveled = 0;
   closest_enemy_tank = 1e20; // no
   
-  if(projtype.motion() == PM_NORMAL || projtype.motion() == PM_AIRBRAKE || projtype.motion() == PM_MISSILE || projtype.motion() == PM_BOOMERANG || projtype.motion() == PM_SPIDERMINE || projtype.motion() == PM_HUNTER || projtype.motion() == PM_SINE) {
+  if(projtype.motion() == PM_NORMAL || projtype.motion() == PM_AIRBRAKE || projtype.motion() == PM_MISSILE || projtype.motion() == PM_BOOMERANG || projtype.motion() == PM_SPIDERMINE || projtype.motion() == PM_HUNTER || projtype.motion() == PM_HOMING || projtype.motion() == PM_SINE) {
     velocity = projtype.velocity() + projtype.velocity_stddev() * rng->sym_frand();
   } else {
     velocity = -50; // lulz
@@ -513,6 +529,7 @@ Projectile::Projectile(const Coord2 &in_pos, Coord in_d, const IDBProjectileAdju
     hk_drift *= abs(hk_drift.y);
     hk_drift = rotate(hk_drift, in_d);
     hk_drift /= 2;
+  } else if(projtype.motion() == PM_HOMING) {
   } else if(projtype.motion() == PM_DELAY) {
   } else if(projtype.motion() == PM_GENERATOR) {
   } else {
