@@ -773,12 +773,12 @@ effects {
   quantity=4
   
   multiple_inertia=0.1
-  spread=20
+  spread=60
   
   slowdown=0.3
-  lifetime=0.15
+  lifetime=0.2
   
-  radius=0.4
+  radius=0.8
   color=0.6, 0.9, 1.0
 }
 
@@ -786,15 +786,15 @@ effects {
   name=effects.weapon.conversionlance2
   type=particle
 
-  quantity=4
+  quantity=8
   
   multiple_inertia=-0.1
-  spread=20
+  spread=60
   
   slowdown=0.3
-  lifetime=0.15
+  lifetime=0.2
   
-  radius=0.4
+  radius=0.8
   color=0.6, 0.9, 1.0
 }
 
@@ -802,14 +802,14 @@ effects {
   name=effects.weapon.conversionlance3
   type=particle
 
-  quantity=2
+  quantity=6
   
-  spread=3
+  spread=8
   
   slowdown=0.5
-  lifetime=0.6
+  lifetime=1.2
   
-  radius=0.4
+  radius=0.6
   color=0.6, 0.9, 1.0
 }
 
@@ -821,13 +821,40 @@ warhead {
   effects_impact=effects.weapon.conversionlance3
 }
 
+effects {
+  name=effects.weapon.conversionlance.haze
+  type=particle
+  
+  multiple_inertia=15
+  spread=6
+  
+  slowdown=0.5
+  lifetime=0.8
+  
+  radius=0.6
+  color=0.6, 0.9, 1.0
+}
+
+deploy {
+  name=deploy.weapon.conversionlance.haze
+  
+  effects=effects.weapon.conversionlance.haze
+}
+
 projectile {
   name=projectile.weapon.conversionlance
   motion=normal
-  velocity=600
+  velocity=1200
+  visual_thickness=2x
+  line_length=2x
   color=0.6, 0.9, 1.0
   durability=MERGE
   warhead=warhead.weapon.conversionlance
+  
+  poly_deploy=deploy.weapon.conversionlance.haze
+  poly_deploy=deploy.weapon.conversionlance.haze
+  poly_deploy=deploy.weapon.conversionlance.haze
+  poly_deploy=deploy.weapon.conversionlance.haze
 }
 
 deploy {

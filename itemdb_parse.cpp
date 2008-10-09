@@ -737,7 +737,7 @@ void parseDeploy(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   for(int i = 0; i < titem->chain_deploy.size(); i++)
     CHECK(titem->chain_deploy[i] != titem);
   
-  CHECK(titem->chain_deploy.size() || titem->chain_projectile.size() || titem->chain_warhead.size() || titem->chain_instant.size());
+  CHECK(titem->chain_deploy.size() || titem->chain_projectile.size() || titem->chain_warhead.size() || titem->chain_instant.size() || titem->chain_effects.size());
 }
 
 void parseWarhead(kvData *chunk, bool reload, ErrorAccumulator &accum) {
