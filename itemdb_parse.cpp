@@ -678,7 +678,6 @@ void parseProjectile(kvData *chunk, bool reload, ErrorAccumulator &accum) {
     for(int i = 0; i < titem->chain_warhead.size(); i++)
       rad = max(rad, titem->chain_warhead[i]->radiusfalloff);
     CHECK(titem->chain_warhead[0]->radiusfalloff == rad);
-    CHECK(titem->chain_warhead[0]->radiusexplosive == 0);
   }
   
   CHECK(titem->chain_warhead.size() || titem->chain_deploy.size());

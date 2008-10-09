@@ -757,11 +757,36 @@ text {
 
 warhead {
   name=warhead.weapon.conversionnuke
-  impactdamage=MERGE(1) explosive
   radiusdamage=MERGE(3) explosive
-  radiusfalloff=8
+  radiusfalloff=12
   radiusexplosive=1
-  wallremovalradius=1
+  
+  radiuscolor_dim=000
+  radiuscolor_bright=000
+}
+
+warhead {
+  name=warhead.weapon.conversionnuke.instant
+  impactdamage=MERGE(0) exotic
+  wallremovalradius=4
+}
+
+projectile {
+  name=projectile.weapon.conversionnuke.dps
+  motion=dps
+  duration=0.4
+  
+  visuals=30 0.6,0.2,0.0
+  visuals=8 1.0,0.8,0.2
+  
+  warhead=warhead.weapon.conversionnuke
+  dps_instant_warhead=warhead.weapon.conversionnuke.instant
+}
+
+deploy {
+  name=deploy.weapon.conversionnuke.dps
+  type=centroid
+  projectile=projectile.weapon.conversionnuke.dps
 }
 
 projectile {
@@ -770,16 +795,17 @@ projectile {
   
   motion=missile
   
-  velocity=180
+  velocity=220
   missile_stabstart=0.0
   missile_stabilization=30
   missile_sidelaunch=30
   missile_backlaunch=15
   
   line_length=2
+  visual_thickness=1.5x
   
   durability=MERGE
-  warhead=warhead.weapon.conversionnuke
+  deploy=deploy.weapon.conversionnuke.dps
   
   burn_effects=effects.weapon.missile.burn
   burn_effects=effects.weapon.missile.burn
