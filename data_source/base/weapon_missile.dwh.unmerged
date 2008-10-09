@@ -624,12 +624,62 @@ text {
 }
 
 warhead {
-  name=warhead.weapon.compactnuke
-  impactdamage=MERGE(1) explosive
-  radiusdamage=MERGE(3) explosive
-  radiusfalloff=8
+  name=warhead.weapon.compactnuke.small
+  radiusdamage=MERGE(10) explosive
+  radiusfalloff=14
   radiusexplosive=1
-  wallremovalradius=1
+  wallremovalradius=3
+}
+
+warhead {
+  name=warhead.weapon.compactnuke.medium
+  radiusdamage=MERGE(10) explosive
+  radiusfalloff=20
+  radiusexplosive=1
+  wallremovalradius=3
+}
+
+warhead {
+  name=warhead.weapon.compactnuke.large
+  radiusdamage=MERGE(10) explosive
+  radiusfalloff=26
+  radiusexplosive=1
+  wallremovalradius=3
+}
+
+warhead {
+  name=warhead.weapon.compactnuke.chaos
+  radiusdamage=MERGE(4) explosive
+  radiusfalloff=5
+  radiusexplosive=1
+}
+
+deploy {
+  name=deploy.weapon.compactnuke.chaos
+  type=chaos
+  
+  chaos_radius=12
+  
+  warhead=warhead.weapon.compactnuke.chaos
+}
+
+projectile {
+  name=projectile.weapon.compactnuke.chaosgen
+  motion=generator
+  
+  duration=0.5
+  per_second=60
+  falloff=0.001
+  
+  deploy=deploy.weapon.compactnuke.chaos
+}
+
+deploy {
+  name=deploy.weapon.compactnuke.chaosgen
+  
+  type=centroid
+  
+  projectile=projectile.weapon.compactnuke.chaosgen
 }
 
 projectile {
@@ -638,17 +688,24 @@ projectile {
   
   motion=missile
   
-  velocity=180
+  velocity=240
   missile_stabstart=0.0
-  missile_stabilization=30
+  missile_stabilization=50
   missile_sidelaunch=30
   missile_backlaunch=15
   
-  line_length=2
+  line_length=3
+  visual_thickness=2.5x
   
   durability=MERGE
-  warhead=warhead.weapon.compactnuke
+  warhead=warhead.weapon.compactnuke.small
+  warhead=warhead.weapon.compactnuke.medium
+  warhead=warhead.weapon.compactnuke.large
   
+  deploy=deploy.weapon.compactnuke.chaosgen
+  
+  burn_effects=effects.weapon.missile.burn
+  burn_effects=effects.weapon.missile.burn
   burn_effects=effects.weapon.missile.burn
   burn_effects=effects.weapon.missile.burn
 }
