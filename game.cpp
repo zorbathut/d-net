@@ -9,11 +9,15 @@
 #include "gfx.h"
 #include "perfbar.h"
 
+#include <boost/assign.hpp>
+
 using namespace std;
 
 DEFINE_bool(verboseCollisions, false, "Verbose collisions");
 DEFINE_bool(debugGraphics, false, "Enable various debug graphics");
 DEFINE_bool(debugGraphicsCollisions, false, "Enable HUD for collision stats");
+
+const vector<string> taunts = boost::assign::list_of("l2p nub")("your mother is a hamster")("hey what does this button do")("your beef is mediocre beef")("pika pika");
 
 // returns center and width/height
 pair<Float2, Float2> getMapZoom(const Coord4 &mapbounds) {
@@ -88,7 +92,7 @@ bool Game::runTick(const vector<Keystates> &rkeys, bool confused, const vector<P
     
     if(keys[i].cancel.push && tanks[i].taunt_frames < FPS * 2) {
       gfxeffects.push_back(GfxPing(tanks[i].pi.pos.toFloat(), zoom_size.y, zoom_size.y / 50, 0.5, tanks[i].getColor()));
-      addTankStatusText(i, "Come and get me!", 3.f);
+      addTankStatusText(i, taunts[unsync().choose(taunts.size())], 3.f);
       tanks[i].taunt_frames = FPS * 3;
     }
     if(tanks[i].taunt_frames) {
