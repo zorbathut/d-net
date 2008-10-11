@@ -426,38 +426,110 @@ effects {
 
   quantity=8
   
-  multiple_reflect=0.3
-  spread=20
+  multiple_reflect=0.6
+  spread=40
   
   slowdown=0.2
-  lifetime=0.15
+  lifetime=0.25
   
-  radius=0.3
+  radius=0.6
   color=1.0, 0.9, 0.6
+}
+
+effects {
+  name=effects.weapon.conversioncannon.r
+  type=particle
+
+  quantity=10
+  
+  spread=40
+  
+  slowdown=0.2
+  lifetime=0.20
+  
+  radius=0.4
+  color=f00
+}
+
+effects {
+  name=effects.weapon.conversioncannon.g
+  type=particle
+
+  quantity=10
+  
+  spread=40
+  
+  slowdown=0.2
+  lifetime=0.20
+  
+  radius=0.4
+  color=0f0
+}
+
+effects {
+  name=effects.weapon.conversioncannon.b
+  type=particle
+
+  quantity=10
+  
+  spread=40
+  
+  slowdown=0.2
+  lifetime=0.20
+  
+  radius=0.4
+  color=00f
 }
 
 warhead {
   name=warhead.weapon.conversioncannon
   impactdamage=MERGE kinetic
   wallremovalradius=0.5
-  wallremovalchance=0.05
   
   effects_impact=effects.weapon.conversioncannon
+  effects_impact=effects.weapon.conversioncannon.r
+  effects_impact=effects.weapon.conversioncannon.g
+  effects_impact=effects.weapon.conversioncannon.b
+}
+
+effects {
+  name=effects.weapon.conversioncannon.sparkle.motion
+  type=particle
+
+  quantity=10
+  
+  spread=10
+  
+  slowdown=0.2
+  lifetime=0.5
+  
+  radius=0.8
+  color=0.5,0.4,0.2
+}
+
+deploy {
+  name=deploy.weapon.conversioncannon.sparkle.motion
+  
+  effects=effects.weapon.conversioncannon.sparkle.motion
 }
 
 projectile {
   name=projectile.weapon.conversioncannon
   motion=normal
-  velocity=120
+  velocity=160
   color=1.0, 0.9, 0.6
   durability=MERGE
+  visual_thickness=2x
+  line_length=2x
   warhead=warhead.weapon.conversioncannon
+  
+  poly_deploy=deploy.weapon.conversioncannon.sparkle.motion
 }
 
 deploy {
   name=deploy.weapon.conversioncannon
   type=forward
-  anglestddev=0.030
+  anglestddev=0.040
   projectile=projectile.weapon.conversioncannon
 }
 
