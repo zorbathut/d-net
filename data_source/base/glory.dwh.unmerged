@@ -570,6 +570,8 @@ deploy {
   name=deploy.glory.stasischamber.corebeta
   type=centroid
   
+  multiple=3
+  
   anglestddev=0.2
   
   projectile=projectile.glory.stasischamber.corebeta
@@ -597,8 +599,6 @@ deploy {
   
   anglestddev=0
   
-  deploy=deploy.glory.stasischamber.corebeta
-  deploy=deploy.glory.stasischamber.corebeta
   deploy=deploy.glory.stasischamber.corebeta
   deploy=deploy.glory.stasischamber.corealpha
 }
@@ -715,55 +715,71 @@ text {
 }
 
 warhead {
-  name=warhead.glory.kamikazewarhead.core
-  impactdamage=MERGE(1) kinetic
-  wallremovalradius=1
+  name=warhead.glory.kamikazewarhead.coreshrapnel
+  impactdamage=MERGE(5) kinetic
+}
+
+projectile {
+  name=projectile.glory.kamikazewarhead.coreshrapnel
+  visual_thickness=0.6
+  velocity=120
+  color=0.5, 0.5, 0.8
+  motion=airbrake
+  
+  airbrake_life=0.4
+  airbrake_slowdown=0.9
+  
+  no_intersection=true
+  warhead=warhead.glory.kamikazewarhead.coreshrapnel
+}
+
+deploy {
+  name=deploy.glory.kamikazewarhead.coreshrapnel
+  type=explode
+  
+  exp_minsplits=5
+  exp_maxsplits=7
+  exp_minsplitsize=1
+  exp_maxsplitsize=4
+  
+  exp_shotspersplit=2
+  
+  anglestddev=0.2
+  
+  projectile=projectile.glory.kamikazewarhead.coreshrapnel
 }
 
 projectile {
   name=projectile.glory.kamikazewarhead.core
-  visual_thickness=0.6
-  velocity=40
-  color=1.0, 0.8, 0.3
+  visual_thickness=1.5
+  velocity=150
+  color=0.5, 0.5, 0.8
   motion=airbrake
   
-  airbrake_life=1
+  airbrake_life=2.0
   airbrake_slowdown=0.95
   
+  halflife=0.2
+  halflife_base=0.6
+  
   no_intersection=true
-  warhead=warhead.glory.kamikazewarhead.core
+  deploy=deploy.glory.kamikazewarhead.coreshrapnel
 }
 
 deploy {
   name=deploy.glory.kamikazewarhead.core
   type=explode
   
-  exp_minsplits=2
-  exp_maxsplits=4
+  exp_minsplits=5
+  exp_maxsplits=7
   exp_minsplitsize=1
-  exp_maxsplitsize=5
+  exp_maxsplitsize=4
   
-  exp_shotspersplit=4
+  exp_shotspersplit=1
   
-  anglestddev=0.1
+  anglestddev=0
   
   projectile=projectile.glory.kamikazewarhead.core
-}
-
-warhead {
-  name=warhead.glory.kamikazewarhead.blast
-  radiusdamage=MERGE(5) kinetic
-  radiusfalloff=6
-  radiusexplosive=1
-  wallremovalradius=2
-}
-
-deploy {
-  name=deploy.glory.kamikazewarhead.blast
-  
-  type=centroid
-  
-  warhead=warhead.glory.kamikazewarhead.blast
 }
 
 glory {
@@ -771,7 +787,7 @@ glory {
   cost=MERGE
   
   core=deploy.glory.kamikazewarhead.core
-  blast=deploy.glory.kamikazewarhead.blast
+  demo_range=2x
   
   text=text.glory.kamikazewarhead
 }
