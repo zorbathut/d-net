@@ -721,9 +721,9 @@ warhead {
 
 projectile {
   name=projectile.glory.kamikazewarhead.coreshrapnel
-  visual_thickness=0.6
-  velocity=120
-  color=0.5, 0.5, 0.8
+  visual_thickness=0.8
+  velocity=180
+  color=0.6, 0.6, 1.0
   motion=airbrake
   
   airbrake_life=0.4
@@ -742,7 +742,7 @@ deploy {
   exp_minsplitsize=1
   exp_maxsplitsize=4
   
-  exp_shotspersplit=2
+  exp_shotspersplit=5
   
   anglestddev=0.2
   
@@ -782,12 +782,130 @@ deploy {
   projectile=projectile.glory.kamikazewarhead.core
 }
 
+warhead {
+  name=warhead.glory.kamikazewarhead.wave
+  impactdamage=MERGE(1) kinetic
+}
+
+projectile {
+  name=projectile.glory.kamikazewarhead.wave
+  visual_thickness=0.6
+  velocity=220
+  velocity_stddev=40
+  color=0.5, 0.5, 0.8
+  motion=airbrake
+  
+  airbrake_life=0.8
+  airbrake_slowdown=0.9
+  
+  no_intersection=true
+  warhead=warhead.glory.kamikazewarhead.wave
+}
+
+deploy {
+  name=deploy.glory.kamikazewarhead.wave
+  
+  type=explode
+  
+  exp_minsplits=5
+  exp_maxsplits=7
+  exp_minsplitsize=1
+  exp_maxsplitsize=4
+  
+  exp_shotspersplit=6
+  
+  anglestddev=0.1
+  
+  projectile=projectile.glory.kamikazewarhead.wave
+}
+
+projectile {
+  name=projectile.glory.kamikazewarhead.blast1
+  motion=delay
+  duration=0.4
+  repeats=3
+  
+  deploy=deploy.glory.kamikazewarhead.wave
+}
+
+projectile {
+  name=projectile.glory.kamikazewarhead.blast2
+  motion=delay
+  duration=0.7
+  repeats=3
+  
+  deploy=deploy.glory.kamikazewarhead.wave
+}
+
+projectile {
+  name=projectile.glory.kamikazewarhead.blast3
+  motion=delay
+  duration=0.9
+  repeats=3
+  
+  deploy=deploy.glory.kamikazewarhead.wave
+}
+
+projectile {
+  name=projectile.glory.kamikazewarhead.core2
+  motion=delay
+  duration=0.5
+  repeats=2
+  
+  deploy=deploy.glory.kamikazewarhead.core
+}
+
+projectile {
+  name=projectile.glory.kamikazewarhead.core3
+  motion=delay
+  duration=0.8
+  repeats=2
+  
+  deploy=deploy.glory.kamikazewarhead.core
+}
+
+deploy {
+  name=deploy.glory.kamikazewarhead.blast1
+  
+  projectile=projectile.glory.kamikazewarhead.blast1
+}
+
+deploy {
+  name=deploy.glory.kamikazewarhead.blast2
+  
+  projectile=projectile.glory.kamikazewarhead.blast2
+}
+
+deploy {
+  name=deploy.glory.kamikazewarhead.blast3
+  
+  projectile=projectile.glory.kamikazewarhead.blast3
+}
+
+deploy {
+  name=deploy.glory.kamikazewarhead.core2
+  
+  projectile=projectile.glory.kamikazewarhead.core2
+}
+
+deploy {
+  name=deploy.glory.kamikazewarhead.core3
+  
+  projectile=projectile.glory.kamikazewarhead.core3
+}
+
 glory {
   name=ROOT.Glory Devices.Kamikaze Warhead
   cost=MERGE
   
-  core=deploy.glory.kamikazewarhead.core
   demo_range=2x
+  
+  core=deploy.glory.kamikazewarhead.core
+  blast=deploy.glory.kamikazewarhead.blast1
+  blast=deploy.glory.kamikazewarhead.blast2
+  blast=deploy.glory.kamikazewarhead.blast3
+  blast=deploy.glory.kamikazewarhead.core2
+  blast=deploy.glory.kamikazewarhead.core3
   
   text=text.glory.kamikazewarhead
 }

@@ -194,6 +194,7 @@ vector<IDBWarheadAdjust> IDBProjectileAdjust::dps_instant_warhead() const { CHEC
 const vector<pair<int, Color> > &IDBProjectileAdjust::dps_visuals() const { CHECK(idb->motion == PM_DPS); return idb->dps_visuals; }
 
 float IDBProjectileAdjust::delay_duration() const { CHECK(idb->motion == PM_DELAY); return idb->delay_duration; }
+int IDBProjectileAdjust::delay_repeats() const { CHECK(idb->motion == PM_DELAY); return idb->delay_repeats; }
 
 float IDBProjectileAdjust::generator_duration() const { CHECK(idb->motion == PM_GENERATOR); return idb->generator_duration; }
 float IDBProjectileAdjust::generator_falloff() const { CHECK(idb->motion == PM_GENERATOR); return idb->generator_falloff; }
@@ -249,8 +250,10 @@ float IDBProjectileAdjust::stats_damagePerShot() const {
     mult = 0;
     for(int i = 0; i < FPS * generator_duration(); i++)
       mult += generator_per_second() / FPS * pow(pow(generator_falloff(), 1.f / FPS), i);
+  } else if(motion() == PM_DELAY) {
+    mult = delay_repeats();
   }
-      
+  
   float val = 0;
   vector<IDBWarheadAdjust> idbwa = chain_warhead();
   for(int i = 0; i < idbwa.size(); i++)

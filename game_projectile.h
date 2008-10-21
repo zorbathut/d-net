@@ -80,6 +80,8 @@ private:
   Coord star_facing;
   
   Coord sine_frequency;
+  
+  int delay_cycle_count;
 
   bool arrow_spin_parity;
   Coord velocity;

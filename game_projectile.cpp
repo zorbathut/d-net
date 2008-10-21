@@ -113,7 +113,7 @@ void Projectile::tick(const GameImpactContext &gic, int owner) {
     now.pi.pos += makeAngle(now.pi.d) * velocity / FPS;
     now.pi.pos += makeAngle(now.pi.d + COORDPI / 2) * projtype.sine_width() / projtype.sine_frequency() * cfcos(now.sine_phase) / FPS; // hee hee
   } else if(projtype.motion() == PM_DELAY) {
-    if(age >= projtype.delay_duration())
+    if(age >= projtype.delay_duration() * delay_cycle_count)
       detonating = true;
   } else if(projtype.motion() == PM_GENERATOR) {
     detonating = true; // this is pretty much all we do honestly. BOOOM hee hee hee
@@ -344,6 +344,12 @@ void Projectile::trigger(Coord t, Coord normal, Tank *target, const GamePlayerCo
     
     if(age >= projtype.generator_duration())
       live = false;
+  } else if(projtype.motion() == PM_DELAY) {
+    triggerstandard(pos, normal, target, gpc, impacted);
+    detonating = false;
+    delay_cycle_count++;
+    if(delay_cycle_count > projtype.delay_repeats())  // done!
+      live = false;
   } else {
     triggerstandard(pos, normal, target, gpc, impacted);
     
@@ -501,6 +507,7 @@ Projectile::Projectile(const Coord2 &in_pos, Coord in_d, const IDBProjectileAdju
   detonating = false;
   now.distance_traveled = 0;
   closest_enemy_tank = 1e20; // no
+  delay_cycle_count = 12345;
   
   if(projtype.motion() == PM_NORMAL || projtype.motion() == PM_AIRBRAKE || projtype.motion() == PM_MISSILE || projtype.motion() == PM_BOOMERANG || projtype.motion() == PM_SPIDERMINE || projtype.motion() == PM_HUNTER || projtype.motion() == PM_HOMING || projtype.motion() == PM_SINE) {
     velocity = projtype.velocity() + projtype.velocity_stddev() * rng->sym_frand();
@@ -531,6 +538,7 @@ Projectile::Projectile(const Coord2 &in_pos, Coord in_d, const IDBProjectileAdju
     hk_drift /= 2;
   } else if(projtype.motion() == PM_HOMING) {
   } else if(projtype.motion() == PM_DELAY) {
+    delay_cycle_count = 1;
   } else if(projtype.motion() == PM_GENERATOR) {
   } else {
     CHECK(0);

@@ -579,6 +579,7 @@ void parseProjectile(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   } else if(motion == "delay") {
     titem->motion = PM_DELAY;
     titem->delay_duration = parseSingleItem<float>(chunk->consume("duration"));
+    titem->delay_repeats = parseWithDefault(chunk, "repeats", 1);
     defshape = "invisible";
     allowed_shapes.insert("invisible");
   } else if(motion == "generator") {

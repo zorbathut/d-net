@@ -149,6 +149,7 @@ struct IDBProjectile {
     vector<pair<int, Color> > dps_visuals;
     
     float delay_duration;
+    int delay_repeats;
     
     float generator_duration;
     float generator_falloff;
@@ -449,6 +450,7 @@ public:
     float tesla_radius() const;
     
     float delay_duration() const;
+    int delay_repeats() const;
     
     float generator_duration() const;
     float generator_falloff() const;
