@@ -1129,63 +1129,198 @@ text {
 }
 
 warhead {
-  name=warhead.glory.immolationdevice.core
-  impactdamage=MERGE(1) explosive
-  wallremovalradius=1
+  name=warhead.glory.immolationdevice.chaos
+  radiusdamage=MERGE(1) explosive
+  radiusfalloff=4
+  radiusexplosive=1
+}
+
+deploy {
+  name=deploy.glory.immolationdevice.chaosgen1
+  type=chaos
+  
+  chaos_radius=18
+  radiusexplosive=1
+  
+  warhead=warhead.glory.immolationdevice.chaos
 }
 
 projectile {
-  name=projectile.glory.immolationdevice.core
-  visual_thickness=0.6
-  velocity=40
-  color=1.0, 0.8, 0.3
-  motion=airbrake
+  name=projectile.glory.immolationdevice.blast1
+  motion=generator
+  duration=0.5
+  per_second=15
+  falloff=1.0
   
-  airbrake_life=1
-  airbrake_slowdown=0.95
-  
-  no_intersection=true
-  warhead=warhead.glory.immolationdevice.core
+  deploy=deploy.glory.immolationdevice.chaosgen1
 }
 
 deploy {
-  name=deploy.glory.immolationdevice.core
-  type=explode
+  name=deploy.glory.immolationdevice.blast1
   
-  exp_minsplits=2
-  exp_maxsplits=4
-  exp_minsplitsize=1
-  exp_maxsplitsize=5
+  projectile=projectile.glory.immolationdevice.blast1
+}
+
+deploy {
+  name=deploy.glory.immolationdevice.chaosgen2
+  type=chaos
   
-  exp_shotspersplit=4
+  chaos_radius=15
+  radiusexplosive=1
   
-  anglestddev=0.1
+  warhead=warhead.glory.immolationdevice.chaos
+}
+
+projectile {
+  name=projectile.glory.immolationdevice.blast2
+  motion=generator
+  duration=1.0
+  per_second=30
+  falloff=1.0
   
-  projectile=projectile.glory.immolationdevice.core
+  deploy=deploy.glory.immolationdevice.chaosgen2
+}
+
+deploy {
+  name=deploy.glory.immolationdevice.blast2
+  
+  projectile=projectile.glory.immolationdevice.blast2
+}
+
+deploy {
+  name=deploy.glory.immolationdevice.chaosgen3
+  type=chaos
+  
+  chaos_radius=12
+  radiusexplosive=1
+  
+  warhead=warhead.glory.immolationdevice.chaos
+}
+
+projectile {
+  name=projectile.glory.immolationdevice.blast3
+  motion=generator
+  duration=1.5
+  per_second=24
+  falloff=1.0
+  
+  deploy=deploy.glory.immolationdevice.chaosgen3
+}
+
+deploy {
+  name=deploy.glory.immolationdevice.blast3
+  
+  projectile=projectile.glory.immolationdevice.blast3
+}
+
+deploy {
+  name=deploy.glory.immolationdevice.chaosgen4
+  type=chaos
+  
+  chaos_radius=9
+  radiusexplosive=1
+  
+  warhead=warhead.glory.immolationdevice.chaos
+}
+
+projectile {
+  name=projectile.glory.immolationdevice.blast4
+  motion=generator
+  duration=2.0
+  per_second=18
+  falloff=1.0
+  
+  deploy=deploy.glory.immolationdevice.chaosgen4
+}
+
+deploy {
+  name=deploy.glory.immolationdevice.blast4
+  
+  projectile=projectile.glory.immolationdevice.blast4
+}
+
+deploy {
+  name=deploy.glory.immolationdevice.chaosgen5
+  type=chaos
+  
+  chaos_radius=6
+  radiusexplosive=1
+  
+  warhead=warhead.glory.immolationdevice.chaos
+}
+
+projectile {
+  name=projectile.glory.immolationdevice.blast5
+  motion=generator
+  duration=2.5
+  per_second=12
+  falloff=1.0
+  
+  deploy=deploy.glory.immolationdevice.chaosgen5
+}
+
+deploy {
+  name=deploy.glory.immolationdevice.blast5
+  
+  projectile=projectile.glory.immolationdevice.blast5
+}
+
+deploy {
+  name=deploy.glory.immolationdevice.chaosgen6
+  type=chaos
+  
+  chaos_radius=3
+  radiusexplosive=1
+  
+  warhead=warhead.glory.immolationdevice.chaos
+}
+
+projectile {
+  name=projectile.glory.immolationdevice.blast6
+  motion=generator
+  duration=3.0
+  per_second=6
+  falloff=1.0
+  
+  deploy=deploy.glory.immolationdevice.chaosgen6
+}
+
+deploy {
+  name=deploy.glory.immolationdevice.blast6
+  
+  projectile=projectile.glory.immolationdevice.blast6
 }
 
 warhead {
-  name=warhead.glory.immolationdevice.blast
-  radiusdamage=MERGE(5) explosive
-  radiusfalloff=6
-  radiusexplosive=1
-  wallremovalradius=2
+  name=warhead.glory.immolationdevice.null
+  impactdamage=MERGE(0) explosive # just 'cause
 }
 
 deploy {
-  name=deploy.glory.immolationdevice.blast
+  name=deploy.glory.immolationdevice.split
+  type=explode
   
-  type=centroid
+  exp_minsplits=6
+  exp_maxsplits=12
+  exp_minsplitsize=1
+  exp_maxsplitsize=5
   
-  warhead=warhead.glory.immolationdevice.blast
+  exp_shotspersplit=1
+  
+  warhead=warhead.glory.immolationdevice.null
 }
 
 glory {
   name=ROOT.Glory Devices.Immolation Device
   cost=MERGE
   
-  core=deploy.glory.immolationdevice.core
-  blast=deploy.glory.immolationdevice.blast
+  core=deploy.glory.immolationdevice.split
+  blast=deploy.glory.immolationdevice.blast1
+  blast=deploy.glory.immolationdevice.blast2
+  blast=deploy.glory.immolationdevice.blast3
+  blast=deploy.glory.immolationdevice.blast4
+  blast=deploy.glory.immolationdevice.blast5
+  blast=deploy.glory.immolationdevice.blast6
   
   text=text.glory.immolationdevice
 }
