@@ -51,7 +51,7 @@ template<typename T> FileShopcache generateShopCache(const string &itemname, con
           if(ticks % 36000 == 0)
             dprintf("%f (%f) and %f (%f)", ratdiff, accuracy, absdiff, 0.01);
         }
-        if(end && !recorder.hasItems()) {
+        if(end && !recorder.hasItems() && (!strstr(itemname.c_str(), "Corrosion Mist") || ticks < 36000)) {
           CHECK(ticks < 36000);
           end = false;
         }
