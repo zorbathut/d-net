@@ -920,55 +920,81 @@ text {
 }
 
 warhead {
-  name=warhead.glory.thedevice.core
-  impactdamage=MERGE(1) energy
-  wallremovalradius=1
+  name=warhead.glory.thedevice.coredps
+  radiusdamage=MERGE(5) energy
+  radiusfalloff=8
+  radiusexplosive=0
+  
+  radiuscolor_dim=000
+  radiuscolor_bright=000
+}
+
+projectile {
+  name=projectile.glory.thedevice.coredps
+  motion=dps
+  duration=1.0
+  
+  visuals=20 029
+  visuals=5 99f
+  
+  warhead=warhead.glory.thedevice.coredps
+}
+
+deploy {
+  name=deploy.glory.thedevice.coredps
+  type=centroid
+  projectile=projectile.glory.thedevice.coredps
+}
+  
+warhead {
+  name=warhead.glory.thedevice.spark
+  impactdamage=MERGE(10) energy
+}
+
+instant {
+  name=instant.glory.thedevice.spark
+  
+  type=tesla
+  radius=30
+  
+  warhead=warhead.glory.thedevice.spark
+}
+
+deploy {
+  name=deploy.glory.thedevice.spark
+  type=centroid
+  instant=instant.glory.thedevice.spark
 }
 
 projectile {
   name=projectile.glory.thedevice.core
   visual_thickness=0.6
-  velocity=40
-  color=1.0, 0.8, 0.3
-  motion=airbrake
+  velocity=60
+  color=0.4, 0.5, 1.0
+  motion=homing
   
-  airbrake_life=1
-  airbrake_slowdown=0.95
+  halflife=1
+  homing_turn=3
   
   no_intersection=true
-  warhead=warhead.glory.thedevice.core
+  deploy=deploy.glory.thedevice.coredps
+  poly_deploy=deploy.glory.thedevice.spark
 }
 
 deploy {
   name=deploy.glory.thedevice.core
   type=explode
   
-  exp_minsplits=2
-  exp_maxsplits=4
-  exp_minsplitsize=1
+  exp_minsplits=5
+  exp_maxsplits=7
+  exp_minsplitsize=3
   exp_maxsplitsize=5
   
-  exp_shotspersplit=4
+  exp_shotspersplit=1
   
-  anglestddev=0.1
+  anglestddev=0
   
   projectile=projectile.glory.thedevice.core
-}
-
-warhead {
-  name=warhead.glory.thedevice.blast
-  radiusdamage=MERGE(5) energy
-  radiusfalloff=6
-  radiusexplosive=1
-  wallremovalradius=2
-}
-
-deploy {
-  name=deploy.glory.thedevice.blast
-  
-  type=centroid
-  
-  warhead=warhead.glory.thedevice.blast
 }
 
 glory {
@@ -976,7 +1002,6 @@ glory {
   cost=MERGE
   
   core=deploy.glory.thedevice.core
-  blast=deploy.glory.thedevice.blast
   
   text=text.glory.thedevice
 }
