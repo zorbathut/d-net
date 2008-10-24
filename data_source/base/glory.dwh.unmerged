@@ -1335,15 +1335,54 @@ text {
 }
 
 warhead {
-  name=warhead.glory.coreconversion.core
-  impactdamage=MERGE(1) explosive
+  name=warhead.glory.coreconversion.core2
+  radiusdamage=MERGE(2) explosive
+  radiusfalloff=8
+  radiusexplosive=1
   wallremovalradius=1
 }
 
 projectile {
-  name=projectile.glory.coreconversion.core
+  name=projectile.glory.coreconversion.core2
   visual_thickness=0.6
-  velocity=40
+  velocity=120
+  color=1.0, 0.8, 0.3
+  motion=airbrake
+  
+  airbrake_life=3
+  airbrake_slowdown=0.95
+  halflife=0.3
+  halflife_base=0.3
+  
+  no_intersection=true
+  warhead=warhead.glory.coreconversion.core2
+}
+
+deploy {
+  name=deploy.glory.coreconversion.core2
+  type=explode
+  
+  exp_minsplits=3
+  exp_maxsplits=5
+  exp_minsplitsize=1
+  exp_maxsplitsize=5
+  
+  exp_shotspersplit=2
+  
+  anglestddev=0.2
+  
+  projectile=projectile.glory.coreconversion.core2
+}
+
+warhead {
+  name=warhead.glory.coreconversion.coreshards2
+  impactdamage=MERGE(1) explosive
+}
+
+projectile {
+  name=projectile.glory.coreconversion.coreshards2
+  visual_thickness=0.6
+  velocity=80
   color=1.0, 0.8, 0.3
   motion=airbrake
   
@@ -1351,19 +1390,98 @@ projectile {
   airbrake_slowdown=0.95
   
   no_intersection=true
+  warhead=warhead.glory.coreconversion.coreshards2
+}
+
+deploy {
+  name=deploy.glory.coreconversion.coreshards2
+  type=explode
+  
+  exp_minsplits=4
+  exp_maxsplits=6
+  exp_minsplitsize=1
+  exp_maxsplitsize=5
+  
+  exp_shotspersplit=4
+  
+  anglestddev=0.1
+  
+  projectile=projectile.glory.coreconversion.coreshards2
+}
+
+
+warhead {
+  name=warhead.glory.coreconversion.coreshards
+  impactdamage=MERGE(1) explosive
+}
+
+projectile {
+  name=projectile.glory.coreconversion.coreshards
+  visual_thickness=0.8
+  velocity=120
+  color=1.0, 0.8, 0.3
+  motion=airbrake
+  
+  airbrake_life=1
+  airbrake_slowdown=0.95
+  
+  no_intersection=true
+  warhead=warhead.glory.coreconversion.coreshards
+}
+
+deploy {
+  name=deploy.glory.coreconversion.coreshards
+  type=explode
+  
+  exp_minsplits=4
+  exp_maxsplits=6
+  exp_minsplitsize=1
+  exp_maxsplitsize=5
+  
+  exp_shotspersplit=6
+  
+  anglestddev=0.1
+  
+  projectile=projectile.glory.coreconversion.coreshards
+}
+
+
+warhead {
+  name=warhead.glory.coreconversion.core
+  radiusdamage=MERGE(5) explosive
+  radiusfalloff=12
+  radiusexplosive=1
+  wallremovalradius=1
+}
+
+projectile {
+  name=projectile.glory.coreconversion.core
+  visual_thickness=0.6
+  velocity=80
+  color=1.0, 0.8, 0.3
+  motion=airbrake
+  
+  airbrake_life=3
+  airbrake_slowdown=0.95
+  halflife=0.2
+  halflife_base=0.5
+  
+  no_intersection=true
   warhead=warhead.glory.coreconversion.core
+  deploy=deploy.glory.coreconversion.core2
+  deploy=deploy.glory.coreconversion.coreshards2
 }
 
 deploy {
   name=deploy.glory.coreconversion.core
   type=explode
   
-  exp_minsplits=2
-  exp_maxsplits=4
+  exp_minsplits=3
+  exp_maxsplits=5
   exp_minsplitsize=1
   exp_maxsplitsize=5
   
-  exp_shotspersplit=4
+  exp_shotspersplit=2
   
   anglestddev=0.1
   
@@ -1372,8 +1490,8 @@ deploy {
 
 warhead {
   name=warhead.glory.coreconversion.blast
-  radiusdamage=MERGE(5) explosive
-  radiusfalloff=6
+  radiusdamage=MERGE(10) explosive
+  radiusfalloff=18
   radiusexplosive=1
   wallremovalradius=2
 }
@@ -1392,6 +1510,7 @@ glory {
   
   core=deploy.glory.coreconversion.core
   blast=deploy.glory.coreconversion.blast
+  blast=deploy.glory.coreconversion.coreshards
   
   text=text.glory.coreconversion
 }
