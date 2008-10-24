@@ -41,7 +41,7 @@ vector<IDBWarheadAdjust> IDBDeployAdjust::chain_warhead() const { return adjust_
 vector<IDBEffectsAdjust> IDBDeployAdjust::chain_effects() const { return adjust_vector(idb->chain_effects, adjust); }
 vector<IDBInstantAdjust> IDBDeployAdjust::chain_instant() const { return adjust_vector(idb->chain_instant, adjust); }
 
-float IDBDeployAdjust::chaos_radius() const { return idb->chaos_radius; }
+float IDBDeployAdjust::chaos_radius() const { return (adjust.adjustmentfactor(IDBAdjustment::WARHEAD_RADIUS_FALLOFF) * idb->chaos_radius * idb->chaos_radiusexplosive) + (idb->chaos_radius * (1 - idb->chaos_radiusexplosive)); }
 
 float IDBDeployAdjust::stats_damagePerShot() const {
   float mult;

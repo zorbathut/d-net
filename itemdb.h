@@ -215,6 +215,7 @@ struct IDBDeploy {
   int exp_shotspersplit;
   
   float chaos_radius;
+  float chaos_radiusexplosive;
 
   vector<const IDBDeploy *> chain_deploy;
   vector<const IDBProjectile *> chain_projectile;
@@ -529,6 +530,7 @@ public:
   int arc_units() const;
   
   float chaos_radius() const;
+  float chaos_radiusexplosive() const;
   
   vector<IDBDeployAdjust> chain_deploy() const;
   vector<IDBProjectileAdjust> chain_projectile() const;

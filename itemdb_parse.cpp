@@ -721,6 +721,7 @@ void parseDeploy(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   } else if(type == "chaos") {
     titem->type = DT_CHAOS;
     titem->chaos_radius = parseSingleItem<float>(chunk->consume("chaos_radius"));
+    titem->chaos_radiusexplosive = parseWithDefault(chunk, "radiusexplosive", 0.);
   } else {
     CHECK(0);
   }

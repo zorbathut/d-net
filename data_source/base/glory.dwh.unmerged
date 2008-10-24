@@ -1016,63 +1016,105 @@ text {
 }
 
 warhead {
-  name=warhead.glory.deadmansnuke.core
-  impactdamage=MERGE(1) explosive
-  wallremovalradius=1
+  name=warhead.glory.deadmansnuke.angel
+  radiusdamage=MERGE(50) explosive
+  radiusfalloff=25
+  radiusexplosive=1
+  
+  #radiuscolor_dim=000
+  #radiuscolor_bright=000
 }
 
 projectile {
-  name=projectile.glory.deadmansnuke.core
-  visual_thickness=0.6
-  velocity=40
-  color=1.0, 0.8, 0.3
-  motion=airbrake
+  name=projectile.glory.deadmansnuke.angel
+  motion=dps
+  duration=1.0
   
-  airbrake_life=1
-  airbrake_slowdown=0.95
+  visuals=60 920
+  visuals=15 f99
   
-  no_intersection=true
-  warhead=warhead.glory.deadmansnuke.core
+  warhead=warhead.glory.deadmansnuke.angel
 }
 
 deploy {
-  name=deploy.glory.deadmansnuke.core
-  type=explode
+  name=deploy.glory.deadmansnuke.angel
   
-  exp_minsplits=2
-  exp_maxsplits=4
-  exp_minsplitsize=1
-  exp_maxsplitsize=5
+  projectile=projectile.glory.deadmansnuke.angel
+}
+
+projectile {
+  name=projectile.glory.deadmansnuke.angeldelay
+  motion=delay
+  duration=2.5
   
-  exp_shotspersplit=4
+  deploy=deploy.glory.deadmansnuke.angel
+}
+
+deploy {
+  name=deploy.glory.deadmansnuke.angeldelay
   
-  anglestddev=0.1
-  
-  projectile=projectile.glory.deadmansnuke.core
+  projectile=projectile.glory.deadmansnuke.angeldelay
 }
 
 warhead {
-  name=warhead.glory.deadmansnuke.blast
-  radiusdamage=MERGE(5) explosive
-  radiusfalloff=6
+  name=warhead.glory.deadmansnuke.chaos
+  radiusdamage=MERGE(1) explosive
+  radiusfalloff=4
   radiusexplosive=1
-  wallremovalradius=2
 }
 
 deploy {
-  name=deploy.glory.deadmansnuke.blast
+  name=deploy.glory.deadmansnuke.chaosgen
+  type=chaos
   
-  type=centroid
+  chaos_radius=25
+  radiusexplosive=1
   
-  warhead=warhead.glory.deadmansnuke.blast
+  warhead=warhead.glory.deadmansnuke.chaos
+}
+
+projectile {
+  name=projectile.glory.deadmansnuke.chaos
+  motion=generator
+  duration=2.5
+  per_second=15
+  falloff=1.0
+  
+  deploy=deploy.glory.deadmansnuke.chaosgen
+}
+
+deploy {
+  name=deploy.glory.deadmansnuke.chaos
+  
+  projectile=projectile.glory.deadmansnuke.chaos
+}
+
+warhead {
+  name=warhead.glory.deadmansnuke.null
+  impactdamage=MERGE(0) explosive # just 'cause
+}
+
+deploy {
+  name=deploy.glory.deadmansnuke.split
+  type=explode
+  
+  exp_minsplits=6
+  exp_maxsplits=12
+  exp_minsplitsize=1
+  exp_maxsplitsize=5
+  
+  exp_shotspersplit=1
+  
+  warhead=warhead.glory.deadmansnuke.null
 }
 
 glory {
   name=ROOT.Glory Devices.Deadman's Nuke
   cost=MERGE
   
-  core=deploy.glory.deadmansnuke.core
-  blast=deploy.glory.deadmansnuke.blast
+  core=deploy.glory.deadmansnuke.split
+  blast=deploy.glory.deadmansnuke.chaos
+  blast=deploy.glory.deadmansnuke.angeldelay
   
   text=text.glory.deadmansnuke
 }
