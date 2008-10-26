@@ -162,6 +162,12 @@ void Projectile::tick(const GameImpactContext &gic, int owner) {
     proxy_visibility = max(goalvis, approach(proxy_visibility, goalvis, Coord(1) / FPS));
   }
   
+  if(freeze_state == FS_UNFROZEN && projtype.freeze() != -1 && age >= projtype.freeze())
+    freeze_state = FS_FREEZING;
+  
+  if(freeze_state != FS_UNFROZEN)
+    now = last; // welp
+  
   now.distance_traveled += len(last.pi.pos - now.pi.pos);
 }
 
@@ -268,39 +274,37 @@ void Projectile::checksum(Adler32 *adl) const {
     adler(adl, proxy_visibility);
 }
 
-void Projectile::firstCollide(Collider *collider, int owner, int id) const {
-  if(projtype.motion() == PM_MINE) {
-    CHECK(projtype.shape() == PS_STAR);
+void Projectile::addCollision(Collider *collider, int owner, int id) {
+  CHECK(live);
+  
+  if(freeze_state == FS_FREEZING) {
     vector<Coord4> ite = polys(now);
     for(int i = 0; i < ite.size(); i++)
       collider->addUnmovingToken(CollideId(CGR_STATPROJECTILE, owner, id), Coord4(ite[i].s(), ite[i].e()));
+    freeze_state = FS_FROZEN;
   }
-}
-
-void Projectile::addCollision(Collider *collider, int owner, int id) const {
-  CHECK(live);
-  if(projtype.motion() == PM_MINE || projtype.motion() == PM_DELAY) {
-    // this is kind of a special case ATM
-  } else if(projtype.no_intersection()) {
-    collider->addPointToken(CollideId(CGR_NOINTPROJECTILE, owner, id), now.pi.pos, last.pi.pos - now.pi.pos);
-  } else {
-    int pt = CGR_PROJECTILE;
-    
-    if(projtype.motion() == PM_SPIDERMINE)
-      pt = CGR_NOINTPROJECTILE;
-    
-    vector<Coord4> ps = polys(now);
-    vector<Coord4> psl = polys(last);
-    CHECK(ps.size() == psl.size());
-    for(int i = 0; i < ps.size(); i++) {
-      collider->addNormalToken(CollideId(pt, owner, id), psl[i], ps[i] - psl[i]);
+  
+  if(freeze_state == FS_UNFROZEN) {
+    if(projtype.no_intersection()) {
+      collider->addPointToken(CollideId(CGR_NOINTPROJECTILE, owner, id), now.pi.pos, last.pi.pos - now.pi.pos);
+    } else {
+      int pt = CGR_PROJECTILE;
+      
+      if(projtype.motion() == PM_SPIDERMINE)
+        pt = CGR_NOINTPROJECTILE;
+      
+      vector<Coord4> ps = polys(now);
+      vector<Coord4> psl = polys(last);
+      CHECK(ps.size() == psl.size());
+      for(int i = 0; i < ps.size(); i++) {
+        collider->addNormalToken(CollideId(pt, owner, id), psl[i], ps[i] - psl[i]);
+      }
     }
   }
 }
 
 void Projectile::collideCleanup(Collider *collider, int owner, int id) const {
-  if(projtype.motion() == PM_MINE) {
-    CHECK(projtype.shape() == PS_STAR);
+  if(freeze_state == FS_FROZEN) {
     collider->dumpGroup(CollideId(CGR_STATPROJECTILE, owner, id));
   }
 }
@@ -508,6 +512,10 @@ Projectile::Projectile(const Coord2 &in_pos, Coord in_d, const IDBProjectileAdju
   now.distance_traveled = 0;
   closest_enemy_tank = 1e20; // no
   delay_cycle_count = 12345;
+  freeze_state = FS_UNFROZEN;
+  
+  if(projtype.motion() == PM_MINE)
+    freeze_state = FS_FREEZING;
   
   if(projtype.motion() == PM_NORMAL || projtype.motion() == PM_AIRBRAKE || projtype.motion() == PM_MISSILE || projtype.motion() == PM_BOOMERANG || projtype.motion() == PM_SPIDERMINE || projtype.motion() == PM_HUNTER || projtype.motion() == PM_HOMING || projtype.motion() == PM_SINE) {
     velocity = projtype.velocity() + projtype.velocity_stddev() * rng->sym_frand();
@@ -599,11 +607,9 @@ void ProjectilePack::add(const Projectile &proj) {
 }
 
 void ProjectilePack::updateCollisions(Collider *collider, int owner) {
-  for(int i = 0; i < newitems.size(); i++)
-    projectiles[newitems[i]].firstCollide(collider, owner, newitems[i]);
-  newitems.clear();
+  newitems.clear(); // this is a serious hack, the actual logic behind all of this now escapes me. sorry :(
   
-  for(map<int, Projectile>::const_iterator itr = projectiles.begin(); itr != projectiles.end(); ++itr) {
+  for(map<int, Projectile>::iterator itr = projectiles.begin(); itr != projectiles.end(); ++itr) {
     itr->second.addCollision(collider, owner, itr->first);
   }
 }

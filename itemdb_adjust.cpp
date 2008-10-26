@@ -167,6 +167,7 @@ float IDBProjectileAdjust::durability() const { return idb->durability; };
 float IDBProjectileAdjust::halflife() const { return idb->halflife; };
 float IDBProjectileAdjust::halflife_base() const { return idb->halflife_base; };
 bool IDBProjectileAdjust::penetrating() const { return idb->penetrating; };
+float IDBProjectileAdjust::freeze() const { return idb->freeze; };
 
 float IDBProjectileAdjust::missile_stabstart() const { CHECK(idb->motion == PM_MISSILE); return idb->missile_stabstart; }
 float IDBProjectileAdjust::missile_stabilization() const { CHECK(idb->motion == PM_MISSILE); return idb->missile_stabilization; }

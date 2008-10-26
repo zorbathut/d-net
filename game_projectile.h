@@ -17,8 +17,7 @@ public:
 
   void checksum(Adler32 *adl) const;
 
-  void firstCollide(Collider *collider, int owner, int id) const;
-  void addCollision(Collider *collider, int owner, int id) const;
+  void addCollision(Collider *collider, int owner, int id);
   void collideCleanup(Collider *collider, int owner, int id) const;
 
   Coord2 warheadposition() const;
@@ -90,9 +89,11 @@ private:
   
   IDBProjectileAdjust projtype;
   
+  enum FreezeState { FS_UNFROZEN, FS_FREEZING, FS_FROZEN } freeze_state;
   bool first;
   bool live;
   bool detonating;
+  
   
   Coord proxy_visibility;
   

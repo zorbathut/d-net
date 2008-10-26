@@ -511,6 +511,7 @@ void parseProjectile(kvData *chunk, bool reload, ErrorAccumulator &accum) {
   titem->halflife = parseWithDefault(chunk, "halflife", -1.);
   titem->halflife_base = parseWithDefault(chunk, "halflife_base", titem->halflife / 2);
   titem->penetrating = parseWithDefault(chunk, "penetrating", false);
+  titem->freeze = parseWithDefault(chunk, "freeze", -1.);
   
   string motion = parseWithDefault(chunk, "motion", "normal");
   string defshape = "line";
