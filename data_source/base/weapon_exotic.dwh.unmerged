@@ -362,7 +362,7 @@ launcher {
 
 hierarchy {
   name=ROOT.Ammo.Corrosion Mist
-  pack=100
+  pack=1000
 }
 
 text {
@@ -395,8 +395,9 @@ projectile {
 
 deploy {
   name=deploy.weapon.corrosionmist
+  type=centroid
   
-  anglestddev=0.15
+  anglestddev=1000
   
   projectile=projectile.weapon.corrosionmist
 }
