@@ -53,6 +53,9 @@ public:
   InputState read_input();
   void write_input(const InputState &is);
   
+  // Here's just some introspection:
+  bool is_writing() const;
+  
   Dumper();
   ~Dumper();
   

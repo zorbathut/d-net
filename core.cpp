@@ -161,7 +161,7 @@ void MainLoop() {
               return;
             }
             
-            if(dumper.has_checksum(true)) {
+            if(dumper.has_checksum(dumper.is_writing())) {
               dumper.read_checksum_audit();
               Adler32 adl;
               PerfStack pst(PBC::checksum);

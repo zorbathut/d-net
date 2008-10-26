@@ -210,6 +210,10 @@ InputState Dumper::read_input() {
   return layout;
 }
 
+bool Dumper::is_writing() const {
+  return ostr;
+}
+
 void Dumper::write_input(const InputState &is) {
   CHECK(layoutsIdentical(layout, is));
   
