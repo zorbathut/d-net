@@ -3,7 +3,7 @@
 
 #include "itemdb_stream.h"
 #include "shop_demo.h"
-#include "stream_file.h"
+#include "stream_gz.h"
 #include "stream_process_string.h"
 #include "stream_process_utility.h"
 #include "stream_process_vector.h"
@@ -96,13 +96,13 @@ void generateCachedShops(float accuracy) {
   }
   
   {
-    OStreamFile ofil(FLAGS_fileroot + "shopcache.dwh");
+    OStreamGz ofil(FLAGS_fileroot + "shopcache.dwh", 9);
     ofil.write(rsis);
   }
   
   {
     vector<pair<string, FileShopcache> > rsis2;
-    IStreamFile ifil(FLAGS_fileroot + "shopcache.dwh");
+    IStreamGz ifil(FLAGS_fileroot + "shopcache.dwh");
     ifil.read(&rsis2);
     CHECK(rsis == rsis2);
     

@@ -7,6 +7,7 @@
 #include "parse.h"
 #include "regex.h"
 #include "stream_file.h"
+#include "stream_gz.h"
 #include "stream_process_string.h"
 #include "stream_process_utility.h"
 #include "stream_process_vector.h"
@@ -1034,7 +1035,7 @@ void parseText(kvData *chunk, bool reload, ErrorAccumulator &accum) {
 }
 
 void parseShopcacheFile(const string &fname, vector<string> *errors) {
-  IStreamFile shopcache(fname);
+  IStreamGz shopcache(fname);
   if(shopcache) {
     dprintf("Loading shop cache");
     vector<pair<string, FileShopcache> > dat;

@@ -12,7 +12,7 @@ private:
   int read_worker(char *buff, int avail);
 public:
 
-  operator void*() const;
+  operator const void*() const;
 
   IStreamFile(const string &fname);
   ~IStreamFile();
@@ -25,7 +25,7 @@ private:
   void write_worker(const char *buff, int avail);
 public:
 
-  operator void*() const;
+  operator const void*() const;
 
   OStreamFile(const string &fname);
   ~OStreamFile();

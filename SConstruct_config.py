@@ -183,6 +183,7 @@ def Conf():
     env.Append(LIBS_GAME="z")
     env.Append(LIBS_EDITOR="z")
     env.Append(LIBS_REPORTER="z")
+    env.Append(LIBS_CONSOLE_MERGER="z")
     env.Append(LIBS_CONSOLE_ODS2CSV="z")
 
     # libpng

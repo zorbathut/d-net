@@ -1,6 +1,7 @@
 
 #include "stream_gz.h"
 
+#include "util.h"
 
 #include <vector>
 #include <zlib.h>
@@ -21,6 +22,8 @@ int IStreamGz::read_worker(char *buff, int avail) {
   CHECK(rv >= 0);
   return rv;
 }
+
+IStreamGz::operator const void*() const { return this; }
 
 IStreamGz::IStreamGz(const string &fname) {
   gz = gzopen(fname.c_str(), "rb");
@@ -44,8 +47,11 @@ void OStreamGz::write_worker(const char *buff, int avail) {
   CHECK(rv == avail);
 }
 
-OStreamGz::OStreamGz(const string &fname) {
-  gz = gzopen(fname.c_str(), "wb");
+OStreamGz::operator const void*() const { return this; }
+
+OStreamGz::OStreamGz(const string &fname, int level) {
+  CHECK(level >= 0 && level <= 9);
+  gz = gzopen(fname.c_str(), StringPrintf("wb%d", level).c_str());
   CHECK(gz);
   activeostreamgz.push_back(this);
   registerCrashFunction(flushOstreamGzOnCrash);

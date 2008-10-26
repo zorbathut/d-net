@@ -11,7 +11,7 @@ int IStreamFile::read_worker(char *buff, int avail) {
   return fr;
 }
 
-IStreamFile::operator void*() const { return file; }
+IStreamFile::operator const void*() const { return file; }
 
 IStreamFile::IStreamFile(const string &fname) : file(fopen(fname.c_str(), "rb")) { };
 IStreamFile::~IStreamFile() { if(file) fclose(file); };
@@ -23,7 +23,7 @@ void OStreamFile::write_worker(const char *buff, int avail) {
   CHECK(fr == avail);
 }
 
-OStreamFile::operator void*() const { return file; }
+OStreamFile::operator const void*() const { return file; }
 
 OStreamFile::OStreamFile(const string &fname) : file(fopen(fname.c_str(), "wb")) { };
 OStreamFile::~OStreamFile() { flush(); if(file) fclose(file); };

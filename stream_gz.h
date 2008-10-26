@@ -12,6 +12,8 @@ private:
   int read_worker(char *buff, int avail);
 public:
 
+  operator const void*() const;
+
   IStreamGz(const string &fname);
   ~IStreamGz();
 };
@@ -26,7 +28,9 @@ private:
   void flush_and_terminate();
 public:
 
-  OStreamGz(const string &fname); // THIS IS NOT CURRENTLY THREADSAFE
+  operator const void*() const;
+
+  OStreamGz(const string &fname, int level = 5); // THIS IS NOT CURRENTLY THREADSAFE
   ~OStreamGz();
 };
 
