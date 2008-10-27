@@ -921,8 +921,8 @@ text {
 
 warhead {
   name=warhead.glory.thedevice.coredps
-  radiusdamage=MERGE(5) energy
-  radiusfalloff=8
+  radiusdamage=MERGE(20) energy
+  radiusfalloff=12
   radiusexplosive=0
   
   radiuscolor_dim=000
@@ -948,14 +948,14 @@ deploy {
   
 warhead {
   name=warhead.glory.thedevice.spark
-  impactdamage=MERGE(10) energy
+  impactdamage=MERGE(1) energy
 }
 
 instant {
   name=instant.glory.thedevice.spark
   
   type=tesla
-  radius=30
+  radius=6
   
   warhead=warhead.glory.thedevice.spark
 }
