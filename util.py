@@ -28,3 +28,16 @@ class DispatcherClass:
 
 def dispatcher(function, *var, **map):
   return DispatcherClass(function, var, map)
+
+def exe_rv(line):
+  ldat = line.split(" ")
+  if line.find("BASHHACK") != -1:
+    ldat = ["bash", "-c", line.split(" ", 1)[1]]
+  
+  sp = subprocess.Popen(ldat, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+  so, se = sp.communicate()
+  so = str(so, "ascii")
+  se = str(se, "ascii")
+  rv = sp.returncode
+  assert(rv != None)
+  return so, se, rv
