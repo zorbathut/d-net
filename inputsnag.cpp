@@ -85,7 +85,7 @@ InputState InputSnag::init(Dumper *dumper, bool allow_standard, int ais) {
       dprintf("Opening %d: %s\n", i, SDL_JoystickName(i));
       joysticks.push_back(SDL_JoystickOpen(i));
       
-      CHECK(SDL_JoystickNumButtons(joysticks.back().js) >= 1);
+      //CHECK(SDL_JoystickNumButtons(joysticks.back().js) >= 1);
       dprintf("%d axes, %d buttons\n", SDL_JoystickNumAxes(joysticks.back().js), SDL_JoystickNumButtons(joysticks.back().js));
     }
     
@@ -95,7 +95,7 @@ InputState InputSnag::init(Dumper *dumper, bool allow_standard, int ais) {
       sources.push_back(make_pair((int)CIP_JOYSTICK, i));
       Controller ct;
       ct.axes.resize(SDL_JoystickNumAxes(joysticks[i].js));
-      ct.keys.resize(SDL_JoystickNumButtons(joysticks[i].js));
+      ct.keys.resize(max(1, SDL_JoystickNumButtons(joysticks[i].js)));
       now.controllers.push_back(ct);
     }
     
